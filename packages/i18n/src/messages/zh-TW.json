@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "appName": "AI 新創驗證框架",
+    "appDescription": "以 AI 為基礎的新創想法驗證平台",
+    "titleSuffix": "AI 新創驗證框架"
+  },
+  "common": {
+    "save": "儲存",
+    "cancel": "取消",
+    "delete": "刪除",
+    "edit": "編輯",
+    "create": "建立",
+    "back": "返回",
+    "backToProject": "返回專案",
+    "backToList": "返回列表",
+    "loading": "載入中...",
+    "generating": "產生中...",
+    "processing": "處理中...",
+    "search": "搜尋",
+    "preview": "預覽",
+    "regenerate": "重新產生",
+    "notProvided": "尚未填寫",
+    "language": "語言"
+  },
+  "shell": {
+    "workspace": "工作區",
+    "navigation": "導覽",
+    "openMenu": "開啟導覽選單",
+    "singleUser": "單一使用者 · 本機工作區",
+    "footer": "MVP — 無需登入"
+  },
+  "nav": {
+    "dashboard": "儀表板",
+    "dashboardDesc": "查看新創驗證進度概覽。",
+    "projects": "新創專案",
+    "projectsDesc": "管理和建立新創想法專案。",
+    "research": "研究",
+    "researchDesc": "設計和追蹤市場研究計畫。",
+    "evidence": "證據資料",
+    "evidenceDesc": "收集和整理支持性證據。",
+    "competitors": "競爭對手",
+    "competitorsDesc": "分析競爭格局。",
+    "voc": "VOC",
+    "vocDesc": "顧客之聲 — 分析顧客痛點。",
+    "grants": "政府補助",
+    "grantsDesc": "探索政府支持計畫。",
+    "validation": "驗證評分",
+    "validationDesc": "GO / NO GO 評估結果。",
+    "reports": "報告",
+    "reportsDesc": "AI 產生的驗證報告。",
+    "settings": "設定",
+    "settingsDesc": "工作區和應用程式設定。"
+  },
+  "dashboard": {
+    "emptyTitle": "歡迎使用驗證工作區",
+    "emptyDescription": "建立新創專案，開始驗證您的想法。"
+  },
+  "settings": {
+    "emptyTitle": "工作區設定",
+    "emptyDescription": "本機工作區設定。身分驗證功能即將推出。"
+  },
+  "projects": {
+    "title": "新創專案",
+    "description": "管理新創想法專案",
+    "newProject": "新增專案",
+    "emptyTitle": "尚無專案",
+    "emptyDescription": "建立您的第一個新創想法專案。",
+    "created": "建立日期",
+    "deleteConfirm": "確定刪除專案？",
+    "deleteWarning": "此操作無法復原。"
+  },
+  "projectDetail": {
+    "researchPlans": "研究計畫",
+    "evidence": "證據資料",
+    "competitors": "競爭對手",
+    "voc": "VOC",
+    "grants": "政府補助",
+    "validation": "驗證",
+    "reports": "報告",
+    "businessPlan": "商業計畫書",
+    "prd": "PRD",
+    "devSpec": "開發規格",
+    "knowledge": "知識庫",
+    "agent": "AI 代理",
+    "backToProjects": "返回專案列表",
+    "problem": "問題",
+    "solution": "解決方案",
+    "targetCustomer": "目標客戶",
+    "businessModel": "商業模式",
+    "industry": "產業"
+  },
+  "features": {
+    "selectProject": "選擇專案",
+    "selectProjectDesc": "選擇要使用此功能的專案。",
+    "noProjects": "尚無專案。請先建立專案。"
+  },
+  "featurePicker": {
+    "viewResearch": "查看研究計畫",
+    "viewEvidence": "查看證據",
+    "viewCompetitors": "查看競爭對手",
+    "viewVoc": "查看VOC",
+    "viewGrants": "查看政府補助",
+    "viewValidation": "查看驗證分數",
+    "viewReports": "查看報告"
+  },
+  "agent": {
+    "title": "AI 驗證代理",
+    "description": "AI 新創顧問",
+    "ask": "向代理提問",
+    "questionLabel": "您的問題",
+    "questionPlaceholder": "例如：「銀髮市場成長的證據有哪些？」",
+    "submit": "取得建議",
+    "analyzing": "分析中...",
+    "summary": "摘要",
+    "recommendation": "建議",
+    "sources": "來源",
+    "nextActions": "下一步行動",
+    "mockMode": "模擬模式"
+  },
+  "knowledge": {
+    "title": "知識庫",
+    "description": "以證據為基礎的 AI 搜尋",
+    "generate": "建立知識庫",
+    "query": "AI 查詢",
+    "emptyTitle": "尚無知識文件",
+    "emptyDescription": "將證據資料處理為可搜尋的知識。"
+  },
+  "status": {
+    "draft": "草稿",
+    "generating": "產生中",
+    "completed": "已完成",
+    "pending": "待處理",
+    "processing": "處理中",
+    "failed": "失敗"
+  }
+}

@@ -2,6 +2,274 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
+> **Master plan:** [MASTER_PLAN.md](./MASTER_PLAN.md) · **Status:** Sprint 0–14 ✅ Complete
+
+---
+
+## Sprint 14 — AI Startup Validation Agent ✅
+
+**Status:** Complete  
+**Goal:** Knowledge + Validation 통합 AI 창업 컨설턴트 Agent.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `@repo/ai` validation-agent prompt + generator | ✅ Done | AI |
+| Agent context (Validation + Knowledge search) | ✅ Done | AI |
+| `askValidationAgent()` server action | ✅ Done | AI |
+| `/projects/[id]/agent` UI | ✅ Done | AI |
+| Project Detail → Agent CTA | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 13 — AI Knowledge Base & Evidence Intelligence ✅
+
+**Status:** Complete  
+**Goal:** Evidence 기반 Knowledge Base 구조 — Chunk, Mock Vector Search, Query API.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `knowledge_documents` + `knowledge_chunks` migration + seed | ✅ Done | AI |
+| KnowledgeDocument + Chunk repositories | ✅ Done | AI |
+| `@repo/ai/knowledge` chunker + vector-store + retriever | ✅ Done | AI |
+| `processEvidence()` / `queryKnowledge()` actions | ✅ Done | AI |
+| `/projects/[id]/knowledge` list + process button | ✅ Done | AI |
+| `/projects/[id]/knowledge/query` search UI | ✅ Done | AI |
+| VectorStore interface + MockVectorStore | ✅ Done | AI |
+| Project Detail → Knowledge CTA | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 12 — AI Development Specification Generator ✅
+
+**Status:** Complete  
+**Goal:** PRD 기반 개발팀이 바로 사용할 수 있는 Technical Specification 자동 생성.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `development_specs` + `development_spec_sections` migration + seed | ✅ Done | AI |
+| DevelopmentSpecRepository + SectionRepository | ✅ Done | AI |
+| `@repo/ai` development-spec prompt + generator | ✅ Done | AI |
+| Context collector (+ PRD + Validation Report) | ✅ Done | AI |
+| generateDevelopmentSpec / CRUD actions | ✅ Done | AI |
+| `/projects/[id]/development-spec` list + AI generate | ✅ Done | AI |
+| Editor + Preview | ✅ Done | AI |
+| PRD relation (prdId FK) | ✅ Done | AI |
+| Project Detail → Dev Spec CTA | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 11 — AI PRD Generator ✅
+
+**Status:** Complete  
+**Goal:** 검증 완료된 Startup Project 기반 개발 가능 PRD 자동 생성.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `prd_documents` + `prd_sections` migration + seed | ✅ Done | AI |
+| PRDRepository + PRDSectionRepository | ✅ Done | AI |
+| `@repo/ai` prd-generator prompt + generator | ✅ Done | AI |
+| Context collector (+ Validation Report + Business Plan) | ✅ Done | AI |
+| generatePRD / CRUD actions | ✅ Done | AI |
+| `/projects/[id]/prd` list + AI generate | ✅ Done | AI |
+| Editor (Edit/Save/Delete) + Preview | ✅ Done | AI |
+| Project Detail → PRD CTA | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 10 — AI Business Plan Generator ✅
+
+**Status:** Complete  
+**Goal:** AI 기반 Business Plan 생성 — 정부지원/투자용 (PDF Export 없음).
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `business_plans` + `business_plan_sections` migration + seed | ✅ Done | AI |
+| BusinessPlanRepository + SectionRepository | ✅ Done | AI |
+| `@repo/ai` business-plan prompt + generator | ✅ Done | AI |
+| Context collector (+ Validation Report) | ✅ Done | AI |
+| generateBusinessPlan / CRUD actions | ✅ Done | AI |
+| `/projects/[id]/business-plan` list + AI generate | ✅ Done | AI |
+| Editor + Preview | ✅ Done | AI |
+| Project Detail → Business Plan CTA | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 9 — AI Validation Report Generator ✅
+
+**Status:** Complete  
+**Goal:** Project 데이터 기반 AI Report 초안 생성 — Prompt pipeline (RAG/Agent 없음).
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `@repo/ai` validation module (client, context, prompt, generator) | ✅ Done | AI |
+| OpenAI + Anthropic HTTP provider | ✅ Done | AI |
+| `ai_report_generations` migration | ✅ Done | AI |
+| Context collector (7 data sources) | ✅ Done | AI |
+| generateValidationReport / getGenerationStatus | ✅ Done | AI |
+| Report Detail → AI Report 생성 버튼 | ✅ Done | AI |
+| JSON Zod validation + retry | ✅ Done | AI |
+| Mock fallback (no API key) | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 8 — Validation Report Framework ✅
+
+**Status:** Complete  
+**Goal:** Report + Section CRUD, Markdown editor, Preview (AI 생성/PDF Export 없음).
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `validation_reports` + `report_sections` migration + seed | ✅ Done | AI |
+| ValidationReportRepository + ReportSectionRepository | ✅ Done | AI |
+| Server Actions (create/update/delete/reorder) | ✅ Done | AI |
+| `/projects/[id]/reports` card list | ✅ Done | AI |
+| `/projects/[id]/reports/new` + 10 default sections | ✅ Done | AI |
+| `/projects/[id]/reports/[reportId]` detail + section edit | ✅ Done | AI |
+| `/projects/[id]/reports/[reportId]/preview` read-only | ✅ Done | AI |
+| Markdown editor + preview | ✅ Done | AI |
+| Section order (up/down) | ✅ Done | AI |
+| Project Detail → Reports CTA | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 7 — Validation Score Engine ✅
+
+**Status:** Complete  
+**Goal:** GO / NO GO 평가 Score Engine — 수동 입력 기반 점수화 (AI/LLM 자동 판단 없음).
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `validation_scores` DB migration + seed | ✅ Done | AI |
+| ValidationScoreRepository (@repo/db) | ✅ Done | AI |
+| Server Actions (create/update/get/getHistory) | ✅ Done | AI |
+| `/projects/[id]/validation` Score Dashboard | ✅ Done | AI |
+| `/projects/[id]/validation/new` create form | ✅ Done | AI |
+| `/projects/[id]/validation/history` history table | ✅ Done | AI |
+| `/projects/[id]/validation/summary` strength/risk | ✅ Done | AI |
+| Radar Chart + Progress Circle | ✅ Done | AI |
+| Project Detail → Validation CTA | ✅ Done | AI |
+| Zod validation (0–20 / 0–15 per category) | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 6 — Government Support Intelligence ✅
+
+**Status:** Complete  
+**Goal:** 정부지원사업 CRUD + Filtering + Dashboard (자동 검색/AI 추천 없음).
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `government_grants` DB migration + seed | ✅ Done | AI |
+| GovernmentGrantRepository (@repo/db) | ✅ Done | AI |
+| Server Actions (create/update/delete/getList/getDashboard) | ✅ Done | AI |
+| `/projects/[id]/grants` card list + filters | ✅ Done | AI |
+| `/projects/[id]/grants/new` create form | ✅ Done | AI |
+| `/projects/[id]/grants/[grantId]` detail + edit + delete | ✅ Done | AI |
+| `/projects/[id]/grants/dashboard` stats + chart + calendar | ✅ Done | AI |
+| Project Detail → Grants CTA | ✅ Done | AI |
+| Zod validation (name, organization required) | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 5 — VOC Analysis System ✅
+
+**Status:** Complete  
+**Goal:** VOC CRUD + Filtering + Summary Dashboard (AI 감성 분석/자동 수집 없음).
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `voc_entries` DB migration + seed | ✅ Done | AI |
+| VOCRepository (@repo/db) | ✅ Done | AI |
+| Server Actions (create/update/delete/getList/getSummary) | ✅ Done | AI |
+| `/projects/[id]/voc` card list + filters | ✅ Done | AI |
+| `/projects/[id]/voc/new` create form | ✅ Done | AI |
+| `/projects/[id]/voc/[vocId]` detail + edit + delete | ✅ Done | AI |
+| `/projects/[id]/voc/summary` dashboard + Recharts | ✅ Done | AI |
+| Project Detail → VOC CTA | ✅ Done | AI |
+| Zod validation (title, content, painPoint required) | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 4 — Competitor Intelligence ✅
+
+**Status:** Complete  
+**Goal:** Startup Project별 경쟁사 CRUD + Comparison Matrix (AI 자동 분석 없음).
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `competitors` DB migration + seed | ✅ Done | AI |
+| CompetitorRepository (@repo/db) | ✅ Done | AI |
+| Server Actions (create/update/delete/get/compare) | ✅ Done | AI |
+| `/projects/[id]/competitors` card list | ✅ Done | AI |
+| `/projects/[id]/competitors/new` create form | ✅ Done | AI |
+| `/projects/[id]/competitors/[competitorId]` detail + edit + delete | ✅ Done | AI |
+| `/projects/[id]/competitors/compare` matrix | ✅ Done | AI |
+| Project Detail → Competitors CTA | ✅ Done | AI |
+| Zod validation (name, category required) | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 3 — Evidence Database ✅
+
+**Status:** Complete  
+**Goal:** Research 결과를 뒷받침하는 Evidence CRUD — 근거 저장 Framework (AI 자동 수집 없음).
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `evidence` DB migration + seed | ✅ Done | AI |
+| EvidenceRepository (@repo/db) | ✅ Done | AI |
+| Server Actions (create/update/delete/getList/getDetail) | ✅ Done | AI |
+| `/projects/[id]/evidence` list + filters | ✅ Done | AI |
+| `/projects/[id]/evidence/new` create form | ✅ Done | AI |
+| `/projects/[id]/evidence/[evidenceId]` detail + edit + delete | ✅ Done | AI |
+| Research Plan optional link | ✅ Done | AI |
+| Project Detail → Evidence CTA | ✅ Done | AI |
+| Zod validation (title, category, summary required) | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
+## Sprint 2 — Research Master Plan ✅
+
+**Status:** Complete  
+**Goal:** Startup Project별 Research Plan CRUD — 검증 항목 설계 Framework (AI 실행 없음).
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `research_plans` DB migration + seed | ✅ Done | AI |
+| ResearchPlanRepository (@repo/db) | ✅ Done | AI |
+| Server Actions (create/update/delete/get) | ✅ Done | AI |
+| `/projects/[id]/research` list page | ✅ Done | AI |
+| `/projects/[id]/research/new` create form | ✅ Done | AI |
+| `/projects/[id]/research/[researchId]` detail + edit + delete | ✅ Done | AI |
+| Project Detail → Research Plans CTA | ✅ Done | AI |
+| Zod validation (title, researchType required) | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
 ---
 
 ## Sprint 1 — Startup Project Workspace ✅

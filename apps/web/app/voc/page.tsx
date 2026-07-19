@@ -1,21 +1,22 @@
 import type { Metadata } from 'next';
 
-import { FeatureEmptyPage } from '@/components/feature-empty-page';
-import { getNavItem } from '@/lib/navigation';
+import {
+  generateFeaturePickerMetadata,
+  GlobalFeaturePickerPage,
+} from '@/components/global-feature-picker-page';
 
-const nav = getNavItem('/voc')!;
+export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: `${nav.label} | AI Startup Validation Framework`,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return generateFeaturePickerMetadata('/voc');
+}
 
 export default function VocPage() {
   return (
-    <FeatureEmptyPage
-      title={nav.label}
-      description={nav.description}
-      emptyTitle="No customer insights yet"
-      emptyDescription="Collect voice-of-customer data to validate real pain points."
+    <GlobalFeaturePickerPage
+      href="/voc"
+      featurePath="voc"
+      actionLabelKey="featurePicker.viewVoc"
     />
   );
 }

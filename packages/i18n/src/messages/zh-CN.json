@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "appName": "AI 创业验证框架",
+    "appDescription": "基于 AI 的创业想法验证平台",
+    "titleSuffix": "AI 创业验证框架"
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "back": "返回",
+    "backToProject": "返回项目",
+    "backToList": "返回列表",
+    "loading": "加载中...",
+    "generating": "生成中...",
+    "processing": "处理中...",
+    "search": "搜索",
+    "preview": "预览",
+    "regenerate": "重新生成",
+    "notProvided": "尚未填写",
+    "language": "语言"
+  },
+  "shell": {
+    "workspace": "工作区",
+    "navigation": "导航",
+    "openMenu": "打开导航菜单",
+    "singleUser": "单用户 · 本地工作区",
+    "footer": "MVP — 无需登录"
+  },
+  "nav": {
+    "dashboard": "仪表盘",
+    "dashboardDesc": "查看创业验证进度概览。",
+    "projects": "创业项目",
+    "projectsDesc": "管理和创建创业想法项目。",
+    "research": "调研",
+    "researchDesc": "设计和跟踪市场调研计划。",
+    "evidence": "证据资料",
+    "evidenceDesc": "收集和整理支持性证据。",
+    "competitors": "竞争对手",
+    "competitorsDesc": "分析竞争格局。",
+    "voc": "VOC",
+    "vocDesc": "客户之声 — 分析客户痛点。",
+    "grants": "政府资助",
+    "grantsDesc": "探索政府支持项目。",
+    "validation": "验证评分",
+    "validationDesc": "GO / NO GO 评估结果。",
+    "reports": "报告",
+    "reportsDesc": "AI 生成的验证报告。",
+    "settings": "设置",
+    "settingsDesc": "工作区和应用设置。"
+  },
+  "dashboard": {
+    "emptyTitle": "欢迎使用验证工作区",
+    "emptyDescription": "创建创业项目，开始验证您的想法。"
+  },
+  "settings": {
+    "emptyTitle": "工作区设置",
+    "emptyDescription": "本地工作区配置。身份验证功能即将推出。"
+  },
+  "projects": {
+    "title": "创业项目",
+    "description": "管理创业想法项目",
+    "newProject": "新建项目",
+    "emptyTitle": "暂无项目",
+    "emptyDescription": "创建您的第一个创业想法项目。",
+    "created": "创建时间",
+    "deleteConfirm": "确定删除项目？",
+    "deleteWarning": "此操作无法撤销。"
+  },
+  "projectDetail": {
+    "researchPlans": "调研计划",
+    "evidence": "证据资料",
+    "competitors": "竞争对手",
+    "voc": "VOC",
+    "grants": "政府资助",
+    "validation": "验证",
+    "reports": "报告",
+    "businessPlan": "商业计划书",
+    "prd": "PRD",
+    "devSpec": "开发规格",
+    "knowledge": "知识库",
+    "agent": "AI 代理",
+    "backToProjects": "返回项目列表",
+    "problem": "问题",
+    "solution": "解决方案",
+    "targetCustomer": "目标客户",
+    "businessModel": "商业模式",
+    "industry": "行业"
+  },
+  "features": {
+    "selectProject": "选择项目",
+    "selectProjectDesc": "选择要使用此功能的项目。",
+    "noProjects": "暂无项目。请先创建项目。"
+  },
+  "featurePicker": {
+    "viewResearch": "查看研究计划",
+    "viewEvidence": "查看证据",
+    "viewCompetitors": "查看竞争对手",
+    "viewVoc": "查看VOC",
+    "viewGrants": "查看政府资助",
+    "viewValidation": "查看验证分数",
+    "viewReports": "查看报告"
+  },
+  "agent": {
+    "title": "AI 验证代理",
+    "description": "AI 创业顾问",
+    "ask": "向代理提问",
+    "questionLabel": "您的问题",
+    "questionPlaceholder": "例如：\"银发市场增长的证据有哪些？\"",
+    "submit": "获取建议",
+    "analyzing": "分析中...",
+    "summary": "摘要",
+    "recommendation": "建议",
+    "sources": "来源",
+    "nextActions": "下一步行动",
+    "mockMode": "模拟模式"
+  },
+  "knowledge": {
+    "title": "知识库",
+    "description": "基于证据的 AI 搜索",
+    "generate": "构建知识库",
+    "query": "AI 查询",
+    "emptyTitle": "暂无知识文档",
+    "emptyDescription": "将证据资料处理为可搜索的知识。"
+  },
+  "status": {
+    "draft": "草稿",
+    "generating": "生成中",
+    "completed": "已完成",
+    "pending": "待处理",
+    "processing": "处理中",
+    "failed": "失败"
+  }
+}

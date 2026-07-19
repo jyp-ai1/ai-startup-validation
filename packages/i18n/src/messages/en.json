@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "appName": "AI Startup Validation Framework",
+    "appDescription": "AI-powered startup idea validation platform",
+    "titleSuffix": "AI Startup Validation Framework"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "backToProject": "Back to project",
+    "backToList": "Back to list",
+    "loading": "Loading...",
+    "generating": "Generating...",
+    "processing": "Processing...",
+    "search": "Search",
+    "preview": "Preview",
+    "regenerate": "Regenerate",
+    "notProvided": "Not provided yet",
+    "language": "Language"
+  },
+  "shell": {
+    "workspace": "Workspace",
+    "navigation": "Navigation",
+    "openMenu": "Open navigation menu",
+    "singleUser": "Single User · Local Workspace",
+    "footer": "MVP — no auth required"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "dashboardDesc": "Overview of your startup validation progress.",
+    "projects": "Startup Projects",
+    "projectsDesc": "Manage and create startup idea projects.",
+    "research": "Research",
+    "researchDesc": "Design and track market research plans.",
+    "evidence": "Evidence",
+    "evidenceDesc": "Collect and organize supporting evidence.",
+    "competitors": "Competitors",
+    "competitorsDesc": "Analyze competitive landscape.",
+    "voc": "VOC",
+    "vocDesc": "Voice of Customer — customer problem analysis.",
+    "grants": "Government Grants",
+    "grantsDesc": "Explore government support programs.",
+    "validation": "Validation Score",
+    "validationDesc": "GO / NO GO evaluation results.",
+    "reports": "Reports",
+    "reportsDesc": "AI-generated validation reports.",
+    "settings": "Settings",
+    "settingsDesc": "Workspace and application settings."
+  },
+  "dashboard": {
+    "emptyTitle": "Welcome to your validation workspace",
+    "emptyDescription": "Create a startup project to begin validating your idea."
+  },
+  "settings": {
+    "emptyTitle": "Workspace settings",
+    "emptyDescription": "Local workspace configuration. Authentication coming soon."
+  },
+  "projects": {
+    "title": "Startup Projects",
+    "description": "Manage startup idea projects",
+    "newProject": "New Project",
+    "emptyTitle": "No projects yet",
+    "emptyDescription": "Create your first startup idea project.",
+    "created": "Created",
+    "deleteConfirm": "Delete project?",
+    "deleteWarning": "This action cannot be undone."
+  },
+  "projectDetail": {
+    "researchPlans": "Research Plans",
+    "evidence": "Evidence",
+    "competitors": "Competitors",
+    "voc": "VOC",
+    "grants": "Grants",
+    "validation": "Validation",
+    "reports": "Reports",
+    "businessPlan": "Business Plan",
+    "prd": "PRD",
+    "devSpec": "Dev Spec",
+    "knowledge": "Knowledge",
+    "agent": "Agent",
+    "backToProjects": "Back to projects",
+    "problem": "Problem",
+    "solution": "Solution",
+    "targetCustomer": "Target Customer",
+    "businessModel": "Business Model",
+    "industry": "Industry"
+  },
+  "features": {
+    "selectProject": "Select a project",
+    "selectProjectDesc": "Choose a project to use this feature.",
+    "noProjects": "No projects yet. Create a project first."
+  },
+  "featurePicker": {
+    "viewResearch": "View Research Plans",
+    "viewEvidence": "View Evidence",
+    "viewCompetitors": "View Competitors",
+    "viewVoc": "View VOC",
+    "viewGrants": "View Grants",
+    "viewValidation": "View Validation",
+    "viewReports": "View Reports"
+  },
+  "agent": {
+    "title": "Validation Agent",
+    "description": "AI startup consultant",
+    "ask": "Ask the Agent",
+    "questionLabel": "Your question",
+    "questionPlaceholder": "e.g. \"What evidence supports silver market growth?\"",
+    "submit": "Get Recommendation",
+    "analyzing": "Analyzing...",
+    "summary": "Summary",
+    "recommendation": "Recommendation",
+    "sources": "Sources",
+    "nextActions": "Next Actions",
+    "mockMode": "Mock mode"
+  },
+  "knowledge": {
+    "title": "Knowledge Base",
+    "description": "Evidence-based AI search",
+    "generate": "Build Knowledge",
+    "query": "AI Query",
+    "emptyTitle": "No knowledge documents yet",
+    "emptyDescription": "Process Evidence into searchable knowledge."
+  },
+  "status": {
+    "draft": "Draft",
+    "generating": "Generating",
+    "completed": "Completed",
+    "pending": "Pending",
+    "processing": "Processing",
+    "failed": "Failed"
+  }
+}

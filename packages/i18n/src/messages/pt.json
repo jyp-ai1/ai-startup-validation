@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "appName": "Framework de Validação de Startups com IA",
+    "appDescription": "Plataforma de validação de ideias de startup com IA",
+    "titleSuffix": "Framework de Validação de Startups com IA"
+  },
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "create": "Criar",
+    "back": "Voltar",
+    "backToProject": "Voltar ao projeto",
+    "backToList": "Voltar à lista",
+    "loading": "Carregando...",
+    "generating": "Gerando...",
+    "processing": "Processando...",
+    "search": "Pesquisar",
+    "preview": "Visualizar",
+    "regenerate": "Regenerar",
+    "notProvided": "Ainda não informado",
+    "language": "Idioma"
+  },
+  "shell": {
+    "workspace": "Espaço de trabalho",
+    "navigation": "Navegação",
+    "openMenu": "Abrir menu de navegação",
+    "singleUser": "Usuário único · Espaço de trabalho local",
+    "footer": "MVP — sem autenticação necessária"
+  },
+  "nav": {
+    "dashboard": "Painel",
+    "dashboardDesc": "Visão geral do progresso de validação da sua startup.",
+    "projects": "Projetos de Startup",
+    "projectsDesc": "Gerencie e crie projetos de ideias de startup.",
+    "research": "Pesquisa",
+    "researchDesc": "Projete e acompanhe planos de pesquisa de mercado.",
+    "evidence": "Evidências",
+    "evidenceDesc": "Colete e organize evidências de apoio.",
+    "competitors": "Concorrentes",
+    "competitorsDesc": "Analise o cenário competitivo.",
+    "voc": "VOC",
+    "vocDesc": "Voz do Cliente — análise de problemas do cliente.",
+    "grants": "Subsídios Governamentais",
+    "grantsDesc": "Explore programas de apoio governamental.",
+    "validation": "Pontuação de Validação",
+    "validationDesc": "Resultados de avaliação GO / NO GO.",
+    "reports": "Relatórios",
+    "reportsDesc": "Relatórios de validação gerados por IA.",
+    "settings": "Configurações",
+    "settingsDesc": "Configurações do espaço de trabalho e do aplicativo."
+  },
+  "dashboard": {
+    "emptyTitle": "Bem-vindo ao seu espaço de validação",
+    "emptyDescription": "Crie um projeto de startup para começar a validar sua ideia."
+  },
+  "settings": {
+    "emptyTitle": "Configurações do espaço de trabalho",
+    "emptyDescription": "Configuração do espaço de trabalho local. Autenticação em breve."
+  },
+  "projects": {
+    "title": "Projetos de Startup",
+    "description": "Gerencie projetos de ideias de startup",
+    "newProject": "Novo Projeto",
+    "emptyTitle": "Nenhum projeto ainda",
+    "emptyDescription": "Crie seu primeiro projeto de ideia de startup.",
+    "created": "Criado",
+    "deleteConfirm": "Excluir projeto?",
+    "deleteWarning": "Esta ação não pode ser desfeita."
+  },
+  "projectDetail": {
+    "researchPlans": "Planos de Pesquisa",
+    "evidence": "Evidências",
+    "competitors": "Concorrentes",
+    "voc": "VOC",
+    "grants": "Subsídios",
+    "validation": "Validação",
+    "reports": "Relatórios",
+    "businessPlan": "Plano de Negócios",
+    "prd": "PRD",
+    "devSpec": "Especificação de Desenvolvimento",
+    "knowledge": "Base de Conhecimento",
+    "agent": "Agente",
+    "backToProjects": "Voltar aos projetos",
+    "problem": "Problema",
+    "solution": "Solução",
+    "targetCustomer": "Cliente-Alvo",
+    "businessModel": "Modelo de Negócio",
+    "industry": "Setor"
+  },
+  "features": {
+    "selectProject": "Selecionar um projeto",
+    "selectProjectDesc": "Escolha um projeto para usar este recurso.",
+    "noProjects": "Nenhum projeto ainda. Crie um projeto primeiro."
+  },
+  "featurePicker": {
+    "viewResearch": "Ver planos de pesquisa",
+    "viewEvidence": "Ver evidências",
+    "viewCompetitors": "Ver concorrentes",
+    "viewVoc": "Ver VOC",
+    "viewGrants": "Ver subsídios",
+    "viewValidation": "Ver validação",
+    "viewReports": "Ver relatórios"
+  },
+  "agent": {
+    "title": "Agente de Validação",
+    "description": "Consultor de startups com IA",
+    "ask": "Perguntar ao Agente",
+    "questionLabel": "Sua pergunta",
+    "questionPlaceholder": "ex.: \"Quais evidências apoiam o crescimento do mercado prateado?\"",
+    "submit": "Obter Recomendação",
+    "analyzing": "Analisando...",
+    "summary": "Resumo",
+    "recommendation": "Recomendação",
+    "sources": "Fontes",
+    "nextActions": "Próximas Ações",
+    "mockMode": "Modo simulado"
+  },
+  "knowledge": {
+    "title": "Base de Conhecimento",
+    "description": "Busca com IA baseada em evidências",
+    "generate": "Construir Conhecimento",
+    "query": "Consulta com IA",
+    "emptyTitle": "Nenhum documento de conhecimento ainda",
+    "emptyDescription": "Processe evidências em conhecimento pesquisável."
+  },
+  "status": {
+    "draft": "Rascunho",
+    "generating": "Gerando",
+    "completed": "Concluído",
+    "pending": "Pendente",
+    "processing": "Processando",
+    "failed": "Falhou"
+  }
+}

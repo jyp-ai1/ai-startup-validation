@@ -12,76 +12,51 @@ import {
   Swords,
 } from 'lucide-react';
 
-export type NavItem = {
-  label: string;
+export type NavItemKey =
+  | 'dashboard'
+  | 'projects'
+  | 'research'
+  | 'evidence'
+  | 'competitors'
+  | 'voc'
+  | 'grants'
+  | 'validation'
+  | 'reports'
+  | 'settings';
+
+export type NavItemConfig = {
+  key: NavItemKey;
   href: string;
   icon: LucideIcon;
-  description: string;
+  labelKey: `nav.${NavItemKey}` | 'nav.grants' | 'nav.validation';
+  descKey: `${NavItemConfig['labelKey']}Desc`;
 };
 
-export const NAV_ITEMS: NavItem[] = [
-  {
-    label: 'Dashboard',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-    description: 'Overview of your startup validation progress.',
-  },
-  {
-    label: 'Startup Projects',
-    href: '/projects',
-    icon: FlaskConical,
-    description: 'Manage and create startup idea projects.',
-  },
-  {
-    label: 'Research',
-    href: '/research',
-    icon: Search,
-    description: 'Design and track market research plans.',
-  },
-  {
-    label: 'Evidence',
-    href: '/evidence',
-    icon: FileText,
-    description: 'Collect and organize supporting evidence.',
-  },
-  {
-    label: 'Competitors',
-    href: '/competitors',
-    icon: Swords,
-    description: 'Analyze competitive landscape.',
-  },
-  {
-    label: 'VOC',
-    href: '/voc',
-    icon: MessageSquareQuote,
-    description: 'Voice of Customer — customer problem analysis.',
-  },
-  {
-    label: 'Government Grants',
-    href: '/government-grants',
-    icon: Landmark,
-    description: 'Explore government support programs.',
-  },
-  {
-    label: 'Validation Score',
-    href: '/validation-score',
-    icon: Gauge,
-    description: 'GO / NO GO evaluation results.',
-  },
-  {
-    label: 'Reports',
-    href: '/reports',
-    icon: BarChart3,
-    description: 'AI-generated validation reports.',
-  },
-  {
-    label: 'Settings',
-    href: '/settings',
-    icon: Settings,
-    description: 'Workspace and application settings.',
-  },
+export const NAV_ITEM_CONFIGS: NavItemConfig[] = [
+  { key: 'dashboard', href: '/dashboard', icon: LayoutDashboard, labelKey: 'nav.dashboard', descKey: 'nav.dashboardDesc' },
+  { key: 'projects', href: '/projects', icon: FlaskConical, labelKey: 'nav.projects', descKey: 'nav.projectsDesc' },
+  { key: 'research', href: '/research', icon: Search, labelKey: 'nav.research', descKey: 'nav.researchDesc' },
+  { key: 'evidence', href: '/evidence', icon: FileText, labelKey: 'nav.evidence', descKey: 'nav.evidenceDesc' },
+  { key: 'competitors', href: '/competitors', icon: Swords, labelKey: 'nav.competitors', descKey: 'nav.competitorsDesc' },
+  { key: 'voc', href: '/voc', icon: MessageSquareQuote, labelKey: 'nav.voc', descKey: 'nav.vocDesc' },
+  { key: 'grants', href: '/government-grants', icon: Landmark, labelKey: 'nav.grants', descKey: 'nav.grantsDesc' },
+  { key: 'validation', href: '/validation-score', icon: Gauge, labelKey: 'nav.validation', descKey: 'nav.validationDesc' },
+  { key: 'reports', href: '/reports', icon: BarChart3, labelKey: 'nav.reports', descKey: 'nav.reportsDesc' },
+  { key: 'settings', href: '/settings', icon: Settings, labelKey: 'nav.settings', descKey: 'nav.settingsDesc' },
 ];
 
-export function getNavItem(href: string): NavItem | undefined {
+export function getNavItemConfig(href: string): NavItemConfig | undefined {
+  return NAV_ITEM_CONFIGS.find((item) => item.href === href);
+}
+
+/** @deprecated Use NAV_ITEM_CONFIGS with useTranslations */
+export const NAV_ITEMS = NAV_ITEM_CONFIGS.map((item) => ({
+  label: item.key,
+  href: item.href,
+  icon: item.icon,
+  description: item.descKey,
+}));
+
+export function getNavItem(href: string) {
   return NAV_ITEMS.find((item) => item.href === href);
 }

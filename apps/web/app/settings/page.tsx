@@ -1,21 +1,24 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 import { FeatureEmptyPage } from '@/components/feature-empty-page';
-import { getNavItem } from '@/lib/navigation';
 
-const nav = getNavItem('/settings')!;
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations();
+  return {
+    title: `${t('nav.settings')} | ${t('meta.titleSuffix')}`,
+  };
+}
 
-export const metadata: Metadata = {
-  title: `${nav.label} | AI Startup Validation Framework`,
-};
+export default async function SettingsPage() {
+  const t = await getTranslations();
 
-export default function SettingsPage() {
   return (
     <FeatureEmptyPage
-      title={nav.label}
-      description={nav.description}
-      emptyTitle="Workspace settings"
-      emptyDescription="Local workspace configuration. Authentication will be added in Sprint 13."
+      title={t('nav.settings')}
+      description={t('nav.settingsDesc')}
+      emptyTitle={t('settings.emptyTitle')}
+      emptyDescription={t('settings.emptyDescription')}
     />
   );
 }

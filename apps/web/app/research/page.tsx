@@ -1,21 +1,22 @@
 import type { Metadata } from 'next';
 
-import { FeatureEmptyPage } from '@/components/feature-empty-page';
-import { getNavItem } from '@/lib/navigation';
+import {
+  generateFeaturePickerMetadata,
+  GlobalFeaturePickerPage,
+} from '@/components/global-feature-picker-page';
 
-const nav = getNavItem('/research')!;
+export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: `${nav.label} | AI Startup Validation Framework`,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return generateFeaturePickerMetadata('/research');
+}
 
 export default function ResearchPage() {
   return (
-    <FeatureEmptyPage
-      title={nav.label}
-      description={nav.description}
-      emptyTitle="No research plans yet"
-      emptyDescription="Design market research plans after creating a startup project."
+    <GlobalFeaturePickerPage
+      href="/research"
+      featurePath="research"
+      actionLabelKey="featurePicker.viewResearch"
     />
   );
 }

@@ -1,21 +1,22 @@
 import type { Metadata } from 'next';
 
-import { FeatureEmptyPage } from '@/components/feature-empty-page';
-import { getNavItem } from '@/lib/navigation';
+import {
+  generateFeaturePickerMetadata,
+  GlobalFeaturePickerPage,
+} from '@/components/global-feature-picker-page';
 
-const nav = getNavItem('/validation-score')!;
+export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: `${nav.label} | AI Startup Validation Framework`,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return generateFeaturePickerMetadata('/validation-score');
+}
 
 export default function ValidationScorePage() {
   return (
-    <FeatureEmptyPage
-      title={nav.label}
-      description={nav.description}
-      emptyTitle="No validation score yet"
-      emptyDescription="Complete research and evidence collection to generate a GO / NO GO score."
+    <GlobalFeaturePickerPage
+      href="/validation-score"
+      featurePath="validation"
+      actionLabelKey="featurePicker.viewValidation"
     />
   );
 }

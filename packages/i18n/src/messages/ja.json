@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "appName": "AIスタートアップ検証フレームワーク",
+    "appDescription": "AIベースのスタートアップアイデア検証プラットフォーム",
+    "titleSuffix": "AIスタートアップ検証フレームワーク"
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "back": "戻る",
+    "backToProject": "プロジェクトに戻る",
+    "backToList": "一覧に戻る",
+    "loading": "読み込み中...",
+    "generating": "生成中...",
+    "processing": "処理中...",
+    "search": "検索",
+    "preview": "プレビュー",
+    "regenerate": "再生成",
+    "notProvided": "未入力",
+    "language": "言語"
+  },
+  "shell": {
+    "workspace": "ワークスペース",
+    "navigation": "ナビゲーション",
+    "openMenu": "メニューを開く",
+    "singleUser": "単一ユーザー · ローカルワークスペース",
+    "footer": "MVP — ログイン不要"
+  },
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "dashboardDesc": "スタートアップ検証の進捗概要。",
+    "projects": "スタートアッププロジェクト",
+    "projectsDesc": "起業アイデアプロジェクトを管理します。",
+    "research": "リサーチ",
+    "researchDesc": "市場調査計画を設計・追跡します。",
+    "evidence": "エビデンス",
+    "evidenceDesc": "検証根拠を収集・整理します。",
+    "competitors": "競合",
+    "competitorsDesc": "競争環境を分析します。",
+    "voc": "VOC",
+    "vocDesc": "顧客の声とペインポイントを分析します。",
+    "grants": "政府支援",
+    "grantsDesc": "政府支援プログラムを探索します。",
+    "validation": "検証スコア",
+    "validationDesc": "GO / NO GO 評価結果。",
+    "reports": "レポート",
+    "reportsDesc": "AI生成検証レポート。",
+    "settings": "設定",
+    "settingsDesc": "ワークスペースとアプリ設定。"
+  },
+  "dashboard": {
+    "emptyTitle": "検証ワークスペースへようこそ",
+    "emptyDescription": "スタートアッププロジェクトを作成して検証を始めましょう。"
+  },
+  "settings": {
+    "emptyTitle": "ワークスペース設定",
+    "emptyDescription": "ローカルワークスペース設定。認証は今後追加予定。"
+  },
+  "projects": {
+    "title": "スタートアッププロジェクト",
+    "description": "起業アイデアプロジェクト管理",
+    "newProject": "新規プロジェクト",
+    "emptyTitle": "プロジェクトがありません",
+    "emptyDescription": "最初のスタートアッププロジェクトを作成してください。",
+    "created": "作成日",
+    "deleteConfirm": "プロジェクトを削除しますか？",
+    "deleteWarning": "元に戻せません。"
+  },
+  "projectDetail": {
+    "researchPlans": "リサーチ計画",
+    "evidence": "エビデンス",
+    "competitors": "競合",
+    "voc": "VOC",
+    "grants": "政府支援",
+    "validation": "検証",
+    "reports": "レポート",
+    "businessPlan": "事業計画書",
+    "prd": "PRD",
+    "devSpec": "開発仕様",
+    "knowledge": "ナレッジベース",
+    "agent": "AIエージェント",
+    "backToProjects": "プロジェクト一覧",
+    "problem": "課題",
+    "solution": "解決策",
+    "targetCustomer": "ターゲット顧客",
+    "businessModel": "ビジネスモデル",
+    "industry": "業界"
+  },
+  "features": {
+    "selectProject": "プロジェクトを選択",
+    "selectProjectDesc": "機能を使用するプロジェクトを選んでください。",
+    "noProjects": "プロジェクトがありません。先に作成してください。"
+  },
+  "featurePicker": {
+    "viewResearch": "リサーチ計画を見る",
+    "viewEvidence": "エビデンスを見る",
+    "viewCompetitors": "競合を見る",
+    "viewVoc": "VOCを見る",
+    "viewGrants": "助成金を見る",
+    "viewValidation": "検証スコアを見る",
+    "viewReports": "レポートを見る"
+  },
+  "agent": {
+    "title": "AI検証エージェント",
+    "description": "AI起業コンサルタント",
+    "ask": "エージェントに質問",
+    "questionLabel": "質問を入力",
+    "questionPlaceholder": "例: 「シルバー市場成長の根拠は？」",
+    "submit": "推奨を取得",
+    "analyzing": "分析中...",
+    "summary": "要約",
+    "recommendation": "推奨",
+    "sources": "出典",
+    "nextActions": "次のアクション",
+    "mockMode": "Mockモード"
+  },
+  "knowledge": {
+    "title": "ナレッジベース",
+    "description": "エビデンスベースAI検索",
+    "generate": "Knowledge生成",
+    "query": "AIクエリ",
+    "emptyTitle": "Knowledgeドキュメントがありません",
+    "emptyDescription": "エビデンスを検索可能なKnowledgeに変換してください。"
+  },
+  "status": {
+    "draft": "下書き",
+    "generating": "生成中",
+    "completed": "完了",
+    "pending": "待機",
+    "processing": "処理中",
+    "failed": "失敗"
+  }
+}

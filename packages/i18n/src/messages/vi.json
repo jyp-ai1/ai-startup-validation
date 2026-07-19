@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "appName": "Khung Xác Thực Startup AI",
+    "appDescription": "Nền tảng xác thực ý tưởng startup được hỗ trợ bởi AI",
+    "titleSuffix": "Khung Xác Thực Startup AI"
+  },
+  "common": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "create": "Tạo",
+    "back": "Quay lại",
+    "backToProject": "Quay lại dự án",
+    "backToList": "Quay lại danh sách",
+    "loading": "Đang tải...",
+    "generating": "Đang tạo...",
+    "processing": "Đang xử lý...",
+    "search": "Tìm kiếm",
+    "preview": "Xem trước",
+    "regenerate": "Tạo lại",
+    "notProvided": "Chưa cung cấp",
+    "language": "Ngôn ngữ"
+  },
+  "shell": {
+    "workspace": "Không gian làm việc",
+    "navigation": "Điều hướng",
+    "openMenu": "Mở menu điều hướng",
+    "singleUser": "Người dùng đơn · Không gian làm việc cục bộ",
+    "footer": "MVP — không cần đăng nhập"
+  },
+  "nav": {
+    "dashboard": "Bảng điều khiển",
+    "dashboardDesc": "Tổng quan tiến độ xác thực startup của bạn.",
+    "projects": "Dự án Startup",
+    "projectsDesc": "Quản lý và tạo dự án ý tưởng startup.",
+    "research": "Nghiên cứu",
+    "researchDesc": "Thiết kế và theo dõi kế hoạch nghiên cứu thị trường.",
+    "evidence": "Bằng chứng",
+    "evidenceDesc": "Thu thập và sắp xếp bằng chứng hỗ trợ.",
+    "competitors": "Đối thủ cạnh tranh",
+    "competitorsDesc": "Phân tích bối cảnh cạnh tranh.",
+    "voc": "VOC",
+    "vocDesc": "Tiếng nói khách hàng — phân tích vấn đề của khách hàng.",
+    "grants": "Hỗ trợ Chính phủ",
+    "grantsDesc": "Khám phá các chương trình hỗ trợ của chính phủ.",
+    "validation": "Điểm Xác Thực",
+    "validationDesc": "Kết quả đánh giá GO / NO GO.",
+    "reports": "Báo cáo",
+    "reportsDesc": "Báo cáo xác thực được tạo bởi AI.",
+    "settings": "Cài đặt",
+    "settingsDesc": "Cài đặt không gian làm việc và ứng dụng."
+  },
+  "dashboard": {
+    "emptyTitle": "Chào mừng đến không gian xác thực của bạn",
+    "emptyDescription": "Tạo dự án startup để bắt đầu xác thực ý tưởng của bạn."
+  },
+  "settings": {
+    "emptyTitle": "Cài đặt không gian làm việc",
+    "emptyDescription": "Cấu hình không gian làm việc cục bộ. Tính năng xác thực sẽ sớm ra mắt."
+  },
+  "projects": {
+    "title": "Dự án Startup",
+    "description": "Quản lý dự án ý tưởng startup",
+    "newProject": "Dự án Mới",
+    "emptyTitle": "Chưa có dự án nào",
+    "emptyDescription": "Tạo dự án ý tưởng startup đầu tiên của bạn.",
+    "created": "Ngày tạo",
+    "deleteConfirm": "Xóa dự án?",
+    "deleteWarning": "Hành động này không thể hoàn tác."
+  },
+  "projectDetail": {
+    "researchPlans": "Kế hoạch Nghiên cứu",
+    "evidence": "Bằng chứng",
+    "competitors": "Đối thủ cạnh tranh",
+    "voc": "VOC",
+    "grants": "Hỗ trợ",
+    "validation": "Xác thực",
+    "reports": "Báo cáo",
+    "businessPlan": "Kế hoạch Kinh doanh",
+    "prd": "PRD",
+    "devSpec": "Đặc tả Phát triển",
+    "knowledge": "Cơ sở Tri thức",
+    "agent": "Tác tử",
+    "backToProjects": "Quay lại danh sách dự án",
+    "problem": "Vấn đề",
+    "solution": "Giải pháp",
+    "targetCustomer": "Khách hàng Mục tiêu",
+    "businessModel": "Mô hình Kinh doanh",
+    "industry": "Ngành"
+  },
+  "features": {
+    "selectProject": "Chọn dự án",
+    "selectProjectDesc": "Chọn dự án để sử dụng tính năng này.",
+    "noProjects": "Chưa có dự án nào. Hãy tạo dự án trước."
+  },
+  "featurePicker": {
+    "viewResearch": "Xem kế hoạch nghiên cứu",
+    "viewEvidence": "Xem bằng chứng",
+    "viewCompetitors": "Xem đối thủ",
+    "viewVoc": "Xem VOC",
+    "viewGrants": "Xem trợ cấp",
+    "viewValidation": "Xem điểm xác thực",
+    "viewReports": "Xem báo cáo"
+  },
+  "agent": {
+    "title": "Tác tử Xác Thực",
+    "description": "Tư vấn startup AI",
+    "ask": "Hỏi Tác tử",
+    "questionLabel": "Câu hỏi của bạn",
+    "questionPlaceholder": "vd: \"Bằng chứng nào hỗ trợ sự tăng trưởng của thị trường bạc?\"",
+    "submit": "Nhận Đề xuất",
+    "analyzing": "Đang phân tích...",
+    "summary": "Tóm tắt",
+    "recommendation": "Đề xuất",
+    "sources": "Nguồn",
+    "nextActions": "Hành động Tiếp theo",
+    "mockMode": "Chế độ mô phỏng"
+  },
+  "knowledge": {
+    "title": "Cơ sở Tri thức",
+    "description": "Tìm kiếm AI dựa trên bằng chứng",
+    "generate": "Xây dựng Tri thức",
+    "query": "Truy vấn AI",
+    "emptyTitle": "Chưa có tài liệu tri thức",
+    "emptyDescription": "Xử lý Bằng chứng thành tri thức có thể tìm kiếm."
+  },
+  "status": {
+    "draft": "Bản nháp",
+    "generating": "Đang tạo",
+    "completed": "Hoàn thành",
+    "pending": "Đang chờ",
+    "processing": "Đang xử lý",
+    "failed": "Thất bại"
+  }
+}

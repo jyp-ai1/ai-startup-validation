@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "appName": "KI-Startup-Validierungsframework",
+    "appDescription": "KI-gestützte Plattform zur Validierung von Startup-Ideen",
+    "titleSuffix": "KI-Startup-Validierungsframework"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "back": "Zurück",
+    "backToProject": "Zurück zum Projekt",
+    "backToList": "Zurück zur Liste",
+    "loading": "Wird geladen...",
+    "generating": "Wird generiert...",
+    "processing": "Wird verarbeitet...",
+    "search": "Suchen",
+    "preview": "Vorschau",
+    "regenerate": "Neu generieren",
+    "notProvided": "Noch nicht angegeben",
+    "language": "Sprache"
+  },
+  "shell": {
+    "workspace": "Arbeitsbereich",
+    "navigation": "Navigation",
+    "openMenu": "Navigationsmenü öffnen",
+    "singleUser": "Einzelbenutzer · Lokaler Arbeitsbereich",
+    "footer": "MVP — keine Anmeldung erforderlich"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "dashboardDesc": "Überblick über den Fortschritt Ihrer Startup-Validierung.",
+    "projects": "Startup-Projekte",
+    "projectsDesc": "Startup-Ideenprojekte verwalten und erstellen.",
+    "research": "Recherche",
+    "researchDesc": "Marktforschungspläne entwerfen und verfolgen.",
+    "evidence": "Belege",
+    "evidenceDesc": "Unterstützende Belege sammeln und organisieren.",
+    "competitors": "Wettbewerber",
+    "competitorsDesc": "Wettbewerbslandschaft analysieren.",
+    "voc": "VOC",
+    "vocDesc": "Voice of Customer — Analyse von Kundenproblemen.",
+    "grants": "Staatliche Förderung",
+    "grantsDesc": "Staatliche Förderprogramme erkunden.",
+    "validation": "Validierungsbewertung",
+    "validationDesc": "GO / NO GO Bewertungsergebnisse.",
+    "reports": "Berichte",
+    "reportsDesc": "KI-generierte Validierungsberichte.",
+    "settings": "Einstellungen",
+    "settingsDesc": "Arbeitsbereich- und Anwendungseinstellungen."
+  },
+  "dashboard": {
+    "emptyTitle": "Willkommen in Ihrem Validierungs-Arbeitsbereich",
+    "emptyDescription": "Erstellen Sie ein Startup-Projekt, um mit der Validierung Ihrer Idee zu beginnen."
+  },
+  "settings": {
+    "emptyTitle": "Arbeitsbereich-Einstellungen",
+    "emptyDescription": "Lokale Arbeitsbereich-Konfiguration. Authentifizierung folgt demnächst."
+  },
+  "projects": {
+    "title": "Startup-Projekte",
+    "description": "Startup-Ideenprojekte verwalten",
+    "newProject": "Neues Projekt",
+    "emptyTitle": "Noch keine Projekte",
+    "emptyDescription": "Erstellen Sie Ihr erstes Startup-Ideenprojekt.",
+    "created": "Erstellt",
+    "deleteConfirm": "Projekt löschen?",
+    "deleteWarning": "Diese Aktion kann nicht rückgängig gemacht werden."
+  },
+  "projectDetail": {
+    "researchPlans": "Recherchepläne",
+    "evidence": "Belege",
+    "competitors": "Wettbewerber",
+    "voc": "VOC",
+    "grants": "Förderung",
+    "validation": "Validierung",
+    "reports": "Berichte",
+    "businessPlan": "Geschäftsplan",
+    "prd": "PRD",
+    "devSpec": "Entwicklungsspezifikation",
+    "knowledge": "Wissensbasis",
+    "agent": "Agent",
+    "backToProjects": "Zurück zu Projekten",
+    "problem": "Problem",
+    "solution": "Lösung",
+    "targetCustomer": "Zielkunde",
+    "businessModel": "Geschäftsmodell",
+    "industry": "Branche"
+  },
+  "features": {
+    "selectProject": "Projekt auswählen",
+    "selectProjectDesc": "Wählen Sie ein Projekt, um diese Funktion zu nutzen.",
+    "noProjects": "Noch keine Projekte. Erstellen Sie zuerst ein Projekt."
+  },
+  "featurePicker": {
+    "viewResearch": "Forschungspläne anzeigen",
+    "viewEvidence": "Belege anzeigen",
+    "viewCompetitors": "Wettbewerber anzeigen",
+    "viewVoc": "VOC anzeigen",
+    "viewGrants": "Förderungen anzeigen",
+    "viewValidation": "Validierung anzeigen",
+    "viewReports": "Berichte anzeigen"
+  },
+  "agent": {
+    "title": "Validierungsagent",
+    "description": "KI-Startup-Berater",
+    "ask": "Agent fragen",
+    "questionLabel": "Ihre Frage",
+    "questionPlaceholder": "z. B. \"Welche Belege unterstützen das Wachstum des Silbermarkts?\"",
+    "submit": "Empfehlung erhalten",
+    "analyzing": "Analyse läuft...",
+    "summary": "Zusammenfassung",
+    "recommendation": "Empfehlung",
+    "sources": "Quellen",
+    "nextActions": "Nächste Schritte",
+    "mockMode": "Simulationsmodus"
+  },
+  "knowledge": {
+    "title": "Wissensbasis",
+    "description": "Belegbasierte KI-Suche",
+    "generate": "Wissen aufbauen",
+    "query": "KI-Abfrage",
+    "emptyTitle": "Noch keine Wissensdokumente",
+    "emptyDescription": "Verarbeiten Sie Belege in durchsuchbares Wissen."
+  },
+  "status": {
+    "draft": "Entwurf",
+    "generating": "Wird generiert",
+    "completed": "Abgeschlossen",
+    "pending": "Ausstehend",
+    "processing": "Wird verarbeitet",
+    "failed": "Fehlgeschlagen"
+  }
+}

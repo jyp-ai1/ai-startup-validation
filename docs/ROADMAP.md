@@ -1,5 +1,8 @@
 # Roadmap
 
+> **Product track (Validation Framework Sprints 0–14):** see [MASTER_PLAN.md](./MASTER_PLAN.md)  
+> **Status:** Sprints 0–13 ✅ complete · Sprint 14 (AI Validation Agent) next
+
 ## Foundation (Sprint 0–6) ✅
 
 | Sprint | Focus | Status |

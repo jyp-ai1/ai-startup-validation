@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "appName": "Kerangka Validasi Startup AI",
+    "appDescription": "Platform validasi ide startup berbasis AI",
+    "titleSuffix": "Kerangka Validasi Startup AI"
+  },
+  "common": {
+    "save": "Simpan",
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "edit": "Edit",
+    "create": "Buat",
+    "back": "Kembali",
+    "backToProject": "Kembali ke proyek",
+    "backToList": "Kembali ke daftar",
+    "loading": "Memuat...",
+    "generating": "Menghasilkan...",
+    "processing": "Memproses...",
+    "search": "Cari",
+    "preview": "Pratinjau",
+    "regenerate": "Buat ulang",
+    "notProvided": "Belum diisi",
+    "language": "Bahasa"
+  },
+  "shell": {
+    "workspace": "Ruang kerja",
+    "navigation": "Navigasi",
+    "openMenu": "Buka menu navigasi",
+    "singleUser": "Pengguna tunggal · Ruang kerja lokal",
+    "footer": "MVP — tanpa autentikasi"
+  },
+  "nav": {
+    "dashboard": "Dasbor",
+    "dashboardDesc": "Ikhtisar kemajuan validasi startup Anda.",
+    "projects": "Proyek Startup",
+    "projectsDesc": "Kelola dan buat proyek ide startup.",
+    "research": "Riset",
+    "researchDesc": "Rancang dan lacak rencana riset pasar.",
+    "evidence": "Bukti",
+    "evidenceDesc": "Kumpulkan dan atur bukti pendukung.",
+    "competitors": "Pesaing",
+    "competitorsDesc": "Analisis lanskap kompetitif.",
+    "voc": "VOC",
+    "vocDesc": "Voice of Customer — analisis masalah pelanggan.",
+    "grants": "Hibah Pemerintah",
+    "grantsDesc": "Jelajahi program dukungan pemerintah.",
+    "validation": "Skor Validasi",
+    "validationDesc": "Hasil evaluasi GO / NO GO.",
+    "reports": "Laporan",
+    "reportsDesc": "Laporan validasi yang dihasilkan AI.",
+    "settings": "Pengaturan",
+    "settingsDesc": "Pengaturan ruang kerja dan aplikasi."
+  },
+  "dashboard": {
+    "emptyTitle": "Selamat datang di ruang kerja validasi Anda",
+    "emptyDescription": "Buat proyek startup untuk mulai memvalidasi ide Anda."
+  },
+  "settings": {
+    "emptyTitle": "Pengaturan ruang kerja",
+    "emptyDescription": "Konfigurasi ruang kerja lokal. Autentikasi segera hadir."
+  },
+  "projects": {
+    "title": "Proyek Startup",
+    "description": "Kelola proyek ide startup",
+    "newProject": "Proyek Baru",
+    "emptyTitle": "Belum ada proyek",
+    "emptyDescription": "Buat proyek ide startup pertama Anda.",
+    "created": "Dibuat",
+    "deleteConfirm": "Hapus proyek?",
+    "deleteWarning": "Tindakan ini tidak dapat dibatalkan."
+  },
+  "projectDetail": {
+    "researchPlans": "Rencana Riset",
+    "evidence": "Bukti",
+    "competitors": "Pesaing",
+    "voc": "VOC",
+    "grants": "Hibah",
+    "validation": "Validasi",
+    "reports": "Laporan",
+    "businessPlan": "Rencana Bisnis",
+    "prd": "PRD",
+    "devSpec": "Spesifikasi Pengembangan",
+    "knowledge": "Basis Pengetahuan",
+    "agent": "Agen",
+    "backToProjects": "Kembali ke proyek",
+    "problem": "Masalah",
+    "solution": "Solusi",
+    "targetCustomer": "Pelanggan Target",
+    "businessModel": "Model Bisnis",
+    "industry": "Industri"
+  },
+  "features": {
+    "selectProject": "Pilih proyek",
+    "selectProjectDesc": "Pilih proyek untuk menggunakan fitur ini.",
+    "noProjects": "Belum ada proyek. Buat proyek terlebih dahulu."
+  },
+  "featurePicker": {
+    "viewResearch": "Lihat rencana riset",
+    "viewEvidence": "Lihat bukti",
+    "viewCompetitors": "Lihat kompetitor",
+    "viewVoc": "Lihat VOC",
+    "viewGrants": "Lihat hibah",
+    "viewValidation": "Lihat validasi",
+    "viewReports": "Lihat laporan"
+  },
+  "agent": {
+    "title": "Agen Validasi",
+    "description": "Konsultan startup AI",
+    "ask": "Tanya Agen",
+    "questionLabel": "Pertanyaan Anda",
+    "questionPlaceholder": "mis. \"Bukti apa yang mendukung pertumbuhan pasar silver?\"",
+    "submit": "Dapatkan Rekomendasi",
+    "analyzing": "Menganalisis...",
+    "summary": "Ringkasan",
+    "recommendation": "Rekomendasi",
+    "sources": "Sumber",
+    "nextActions": "Tindakan Selanjutnya",
+    "mockMode": "Mode simulasi"
+  },
+  "knowledge": {
+    "title": "Basis Pengetahuan",
+    "description": "Pencarian AI berbasis bukti",
+    "generate": "Bangun Pengetahuan",
+    "query": "Kueri AI",
+    "emptyTitle": "Belum ada dokumen pengetahuan",
+    "emptyDescription": "Proses Bukti menjadi pengetahuan yang dapat dicari."
+  },
+  "status": {
+    "draft": "Draf",
+    "generating": "Menghasilkan",
+    "completed": "Selesai",
+    "pending": "Menunggu",
+    "processing": "Memproses",
+    "failed": "Gagal"
+  }
+}

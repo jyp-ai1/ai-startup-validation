@@ -107,6 +107,9 @@ export * from './embeddings';
 // RAG (interface)
 export * from './rag';
 
+// Knowledge base (chunking + mock vector search)
+export * from './knowledge';
+
 // Memory (interface)
 export * from './memory';
 
@@ -128,3 +131,6 @@ export * from './utils';
 // Env
 export { aiEnv, isProviderConfigured } from './env/env';
 export type { AiEnv } from './env/env';
+
+// Validation report generation (Sprint 9)
+export * from './validation';

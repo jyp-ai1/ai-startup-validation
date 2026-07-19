@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "appName": "AI 스타트업 검증 프레임워크",
+    "appDescription": "AI 기반 스타트업 아이디어 검증 플랫폼",
+    "titleSuffix": "AI 스타트업 검증 프레임워크"
+  },
+  "common": {
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "수정",
+    "create": "생성",
+    "back": "뒤로",
+    "backToProject": "프로젝트로 돌아가기",
+    "backToList": "목록으로",
+    "loading": "로딩 중...",
+    "generating": "생성 중...",
+    "processing": "처리 중...",
+    "search": "검색",
+    "preview": "미리보기",
+    "regenerate": "재생성",
+    "notProvided": "아직 입력되지 않음",
+    "language": "언어"
+  },
+  "shell": {
+    "workspace": "워크스페이스",
+    "navigation": "메뉴",
+    "openMenu": "메뉴 열기",
+    "singleUser": "단일 사용자 · 로컬 워크스페이스",
+    "footer": "MVP — 로그인 불필요"
+  },
+  "nav": {
+    "dashboard": "대시보드",
+    "dashboardDesc": "스타트업 검증 진행 현황을 확인합니다.",
+    "projects": "스타트업 프로젝트",
+    "projectsDesc": "창업 아이디어 프로젝트를 관리합니다.",
+    "research": "리서치",
+    "researchDesc": "시장 조사 계획을 설계하고 추적합니다.",
+    "evidence": "근거 자료",
+    "evidenceDesc": "검증 근거를 수집하고 정리합니다.",
+    "competitors": "경쟁사",
+    "competitorsDesc": "경쟁 환경을 분석합니다.",
+    "voc": "VOC",
+    "vocDesc": "고객의 목소리와 Pain Point를 분석합니다.",
+    "grants": "정부지원",
+    "grantsDesc": "정부 지원 사업을 탐색합니다.",
+    "validation": "검증 점수",
+    "validationDesc": "GO / NO GO 평가 결과입니다.",
+    "reports": "리포트",
+    "reportsDesc": "AI 생성 검증 리포트입니다.",
+    "settings": "설정",
+    "settingsDesc": "워크스페이스 및 앱 설정입니다."
+  },
+  "dashboard": {
+    "emptyTitle": "검증 워크스페이스에 오신 것을 환영합니다",
+    "emptyDescription": "스타트업 프로젝트를 생성하여 아이디어 검증을 시작하세요."
+  },
+  "settings": {
+    "emptyTitle": "워크스페이스 설정",
+    "emptyDescription": "로컬 워크스페이스 설정입니다. 인증 기능은 추후 추가됩니다."
+  },
+  "projects": {
+    "title": "스타트업 프로젝트",
+    "description": "창업 아이디어 프로젝트 관리",
+    "newProject": "새 프로젝트",
+    "emptyTitle": "프로젝트가 없습니다",
+    "emptyDescription": "첫 번째 스타트업 아이디어 프로젝트를 생성하세요.",
+    "created": "생성일",
+    "deleteConfirm": "프로젝트를 삭제하시겠습니까?",
+    "deleteWarning": "영구 삭제되며 되돌릴 수 없습니다."
+  },
+  "projectDetail": {
+    "researchPlans": "리서치 계획",
+    "evidence": "근거 자료",
+    "competitors": "경쟁사",
+    "voc": "VOC",
+    "grants": "정부지원",
+    "validation": "검증",
+    "reports": "리포트",
+    "businessPlan": "사업계획서",
+    "prd": "PRD",
+    "devSpec": "개발 명세",
+    "knowledge": "지식 베이스",
+    "agent": "AI 에이전트",
+    "backToProjects": "프로젝트 목록",
+    "problem": "문제",
+    "solution": "해결책",
+    "targetCustomer": "타겟 고객",
+    "businessModel": "비즈니스 모델",
+    "industry": "산업"
+  },
+  "features": {
+    "selectProject": "프로젝트 선택",
+    "selectProjectDesc": "기능을 사용할 프로젝트를 선택하세요.",
+    "noProjects": "프로젝트가 없습니다. 먼저 프로젝트를 생성하세요."
+  },
+  "featurePicker": {
+    "viewResearch": "리서치 계획 보기",
+    "viewEvidence": "근거 자료 보기",
+    "viewCompetitors": "경쟁사 보기",
+    "viewVoc": "VOC 보기",
+    "viewGrants": "정부지원 보기",
+    "viewValidation": "검증 점수 보기",
+    "viewReports": "리포트 보기"
+  },
+  "agent": {
+    "title": "AI 검증 에이전트",
+    "description": "AI 창업 컨설턴트",
+    "ask": "질문하기",
+    "questionLabel": "질문을 입력하세요",
+    "questionPlaceholder": "예: \"실버 시장 성장 근거는?\"",
+    "submit": "추천 받기",
+    "analyzing": "분석 중...",
+    "summary": "요약",
+    "recommendation": "추천",
+    "sources": "출처",
+    "nextActions": "다음 액션",
+    "mockMode": "Mock 모드"
+  },
+  "knowledge": {
+    "title": "지식 베이스",
+    "description": "Evidence 기반 AI 검색",
+    "generate": "Knowledge 생성",
+    "query": "AI 질의",
+    "emptyTitle": "Knowledge 문서가 없습니다",
+    "emptyDescription": "Evidence를 검색 가능한 Knowledge로 변환하세요."
+  },
+  "status": {
+    "draft": "초안",
+    "generating": "생성 중",
+    "completed": "완료",
+    "pending": "대기",
+    "processing": "처리 중",
+    "failed": "실패"
+  }
+}

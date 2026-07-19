@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "appName": "Marco de Validación de Startups con IA",
+    "appDescription": "Plataforma de validación de ideas de startup impulsada por IA",
+    "titleSuffix": "Marco de Validación de Startups con IA"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "back": "Volver",
+    "backToProject": "Volver al proyecto",
+    "backToList": "Volver a la lista",
+    "loading": "Cargando...",
+    "generating": "Generando...",
+    "processing": "Procesando...",
+    "search": "Buscar",
+    "preview": "Vista previa",
+    "regenerate": "Regenerar",
+    "notProvided": "Aún no proporcionado",
+    "language": "Idioma"
+  },
+  "shell": {
+    "workspace": "Espacio de trabajo",
+    "navigation": "Navegación",
+    "openMenu": "Abrir menú de navegación",
+    "singleUser": "Usuario único · Espacio de trabajo local",
+    "footer": "MVP — no requiere autenticación"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "dashboardDesc": "Resumen del progreso de validación de tu startup.",
+    "projects": "Proyectos de Startup",
+    "projectsDesc": "Gestiona y crea proyectos de ideas de startup.",
+    "research": "Investigación",
+    "researchDesc": "Diseña y realiza un seguimiento de planes de investigación de mercado.",
+    "evidence": "Evidencia",
+    "evidenceDesc": "Recopila y organiza evidencia de apoyo.",
+    "competitors": "Competidores",
+    "competitorsDesc": "Analiza el panorama competitivo.",
+    "voc": "VOC",
+    "vocDesc": "Voz del Cliente — análisis de problemas del cliente.",
+    "grants": "Subvenciones Gubernamentales",
+    "grantsDesc": "Explora programas de apoyo gubernamental.",
+    "validation": "Puntuación de Validación",
+    "validationDesc": "Resultados de evaluación GO / NO GO.",
+    "reports": "Informes",
+    "reportsDesc": "Informes de validación generados por IA.",
+    "settings": "Configuración",
+    "settingsDesc": "Configuración del espacio de trabajo y la aplicación."
+  },
+  "dashboard": {
+    "emptyTitle": "Bienvenido a tu espacio de validación",
+    "emptyDescription": "Crea un proyecto de startup para comenzar a validar tu idea."
+  },
+  "settings": {
+    "emptyTitle": "Configuración del espacio de trabajo",
+    "emptyDescription": "Configuración del espacio de trabajo local. La autenticación estará disponible próximamente."
+  },
+  "projects": {
+    "title": "Proyectos de Startup",
+    "description": "Gestiona proyectos de ideas de startup",
+    "newProject": "Nuevo Proyecto",
+    "emptyTitle": "Aún no hay proyectos",
+    "emptyDescription": "Crea tu primer proyecto de idea de startup.",
+    "created": "Creado",
+    "deleteConfirm": "¿Eliminar proyecto?",
+    "deleteWarning": "Esta acción no se puede deshacer."
+  },
+  "projectDetail": {
+    "researchPlans": "Planes de Investigación",
+    "evidence": "Evidencia",
+    "competitors": "Competidores",
+    "voc": "VOC",
+    "grants": "Subvenciones",
+    "validation": "Validación",
+    "reports": "Informes",
+    "businessPlan": "Plan de Negocio",
+    "prd": "PRD",
+    "devSpec": "Especificación de Desarrollo",
+    "knowledge": "Base de Conocimiento",
+    "agent": "Agente",
+    "backToProjects": "Volver a proyectos",
+    "problem": "Problema",
+    "solution": "Solución",
+    "targetCustomer": "Cliente Objetivo",
+    "businessModel": "Modelo de Negocio",
+    "industry": "Industria"
+  },
+  "features": {
+    "selectProject": "Seleccionar un proyecto",
+    "selectProjectDesc": "Elige un proyecto para usar esta función.",
+    "noProjects": "Aún no hay proyectos. Crea un proyecto primero."
+  },
+  "featurePicker": {
+    "viewResearch": "Ver planes de investigación",
+    "viewEvidence": "Ver evidencia",
+    "viewCompetitors": "Ver competidores",
+    "viewVoc": "Ver VOC",
+    "viewGrants": "Ver subvenciones",
+    "viewValidation": "Ver validación",
+    "viewReports": "Ver informes"
+  },
+  "agent": {
+    "title": "Agente de Validación",
+    "description": "Consultor de startups con IA",
+    "ask": "Preguntar al Agente",
+    "questionLabel": "Tu pregunta",
+    "questionPlaceholder": "p. ej. \"¿Qué evidencia respalda el crecimiento del mercado plateado?\"",
+    "submit": "Obtener Recomendación",
+    "analyzing": "Analizando...",
+    "summary": "Resumen",
+    "recommendation": "Recomendación",
+    "sources": "Fuentes",
+    "nextActions": "Próximas Acciones",
+    "mockMode": "Modo simulado"
+  },
+  "knowledge": {
+    "title": "Base de Conocimiento",
+    "description": "Búsqueda con IA basada en evidencia",
+    "generate": "Construir Conocimiento",
+    "query": "Consulta con IA",
+    "emptyTitle": "Aún no hay documentos de conocimiento",
+    "emptyDescription": "Procesa la evidencia en conocimiento buscable."
+  },
+  "status": {
+    "draft": "Borrador",
+    "generating": "Generando",
+    "completed": "Completado",
+    "pending": "Pendiente",
+    "processing": "Procesando",
+    "failed": "Fallido"
+  }
+}

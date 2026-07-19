@@ -14,9 +14,11 @@
     "./tools": "./src/tools/index.ts",
     "./embeddings": "./src/embeddings/index.ts",
     "./rag": "./src/rag/index.ts",
+    "./knowledge": "./src/knowledge/index.ts",
     "./memory": "./src/memory/index.ts",
     "./observability": "./src/observability/index.ts",
-    "./errors": "./src/errors/index.ts"
+    "./errors": "./src/errors/index.ts",
+    "./validation": "./src/validation/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

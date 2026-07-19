@@ -1,21 +1,22 @@
 import type { Metadata } from 'next';
 
-import { FeatureEmptyPage } from '@/components/feature-empty-page';
-import { getNavItem } from '@/lib/navigation';
+import {
+  generateFeaturePickerMetadata,
+  GlobalFeaturePickerPage,
+} from '@/components/global-feature-picker-page';
 
-const nav = getNavItem('/government-grants')!;
+export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: `${nav.label} | AI Startup Validation Framework`,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return generateFeaturePickerMetadata('/government-grants');
+}
 
 export default function GovernmentGrantsPage() {
   return (
-    <FeatureEmptyPage
-      title={nav.label}
-      description={nav.description}
-      emptyTitle="No grant programs matched yet"
-      emptyDescription="Discover government support programs relevant to your startup idea."
+    <GlobalFeaturePickerPage
+      href="/government-grants"
+      featurePath="grants"
+      actionLabelKey="featurePicker.viewGrants"
     />
   );
 }

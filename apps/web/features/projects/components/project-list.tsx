@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import type { StartupProject } from '@repo/types/validation';
 import { Button, EmptyState, PageHeader } from '@repo/ui';
@@ -11,28 +14,30 @@ type ProjectListProps = {
 };
 
 export function ProjectList({ projects }: ProjectListProps) {
+  const t = useTranslations();
+
   if (projects.length === 0) {
     return (
       <>
         <PageHeader
-          title="Startup Projects"
-          description="Manage and create startup idea projects."
+          title={t('projects.title')}
+          description={t('projects.description')}
           actions={
             <Button asChild>
               <Link href="/projects/new">
                 <Plus className="size-4" />
-                New Project
+                {t('projects.newProject')}
               </Link>
             </Button>
           }
         />
         <div className="mt-8">
           <EmptyState
-            title="No startup projects yet"
-            description="Register your first startup idea to start the validation workflow."
+            title={t('projects.emptyTitle')}
+            description={t('projects.emptyDescription')}
             action={
               <Button asChild>
-                <Link href="/projects/new">Create Project</Link>
+                <Link href="/projects/new">{t('projects.newProject')}</Link>
               </Button>
             }
           />
@@ -44,13 +49,13 @@ export function ProjectList({ projects }: ProjectListProps) {
   return (
     <>
       <PageHeader
-        title="Startup Projects"
-        description="Manage and create startup idea projects."
+        title={t('projects.title')}
+        description={t('projects.description')}
         actions={
           <Button asChild>
             <Link href="/projects/new">
               <Plus className="size-4" />
-              New Project
+              {t('projects.newProject')}
             </Link>
           </Button>
         }
