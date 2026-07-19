@@ -1,0 +1,45 @@
+{
+  "name": "@repo/db",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Database platform — hexagonal adapters (Supabase, future Prisma/Neon)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./env": "./src/env/env.ts",
+    "./container": "./src/di/container.ts",
+    "./ports/auth": "./src/auth/auth.port.ts",
+    "./ports/storage": "./src/storage/storage.port.ts",
+    "./ports/realtime": "./src/realtime/realtime.port.ts",
+    "./repositories/user": "./src/repositories/user.repository.ts",
+    "./repositories/organization": "./src/repositories/organization.repository.ts",
+    "./repositories/project": "./src/repositories/project.repository.ts",
+    "./adapters/supabase/browser": "./src/adapters/supabase/browser.ts",
+    "./adapters/supabase/server": "./src/adapters/supabase/server.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*",
+    "@repo/types": "workspace:*",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.8",
+    "@t3-oss/env-core": "^0.13.8",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "@types/node": "^20",
+    "next": "^15.3.3",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "next": "^15.0.0"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
+  }
+}

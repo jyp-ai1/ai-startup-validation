@@ -1,0 +1,41 @@
+---
+description: Testing conventions and expectations
+globs: "**/*.{test,spec}.{ts,tsx}"
+alwaysApply: false
+---
+
+# Testing
+
+## Purpose
+
+Define when and how to test as the codebase grows.
+
+## When It Applies
+
+Adding tests, CI setup, and reviewing test coverage. See `docs/TESTING.md`.
+
+## Requirements
+
+- Unit tests for `@repo/utils` and pure business logic in services.
+- Integration tests for API routes and repository adapters.
+- No tests that hit production DB; use mocks or test containers.
+- Test file colocation: `*.test.ts` next to source or in `__tests__/`.
+- Run tests before marking sprint tasks complete (when test runner exists).
+
+## Examples
+
+```typescript
+// ✅ Pure function test
+expect(slugify('Hello World')).toBe('hello-world');
+
+// ✅ Service test with mocked repository
+const repo = { findById: vi.fn().mockResolvedValue(mockUser) };
+```
+
+## Bad Examples
+
+```typescript
+// ❌ Testing implementation details of shadcn internals
+// ❌ Snapshot-only tests with no assertion meaning
+// ❌ Tests requiring real SUPABASE_URL in CI
+```

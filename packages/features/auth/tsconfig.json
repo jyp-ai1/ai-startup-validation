@@ -1,0 +1,11 @@
+{
+  "extends": "@repo/config/tsconfig/react-library",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@repo/feature-auth/*": ["./src/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

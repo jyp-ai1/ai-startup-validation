@@ -1,0 +1,22 @@
+{
+  "name": "@repo/types",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared TypeScript types for the AI SaaS Starter Kit",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./api": "./src/api.ts",
+    "./pagination": "./src/pagination.ts",
+    "./user": "./src/user.ts",
+    "./role": "./src/role.ts",
+    "./theme": "./src/theme.ts",
+    "./organization": "./src/organization.ts",
+    "./project": "./src/project.ts",
+    "./validation": "./src/validation/index.ts"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "extends": "@repo/config/tsconfig/node-library",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@repo/utils/*": ["./src/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

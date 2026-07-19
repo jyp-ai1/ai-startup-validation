@@ -1,0 +1,46 @@
+---
+description: Monorepo architecture, layer boundaries, and adapter patterns
+alwaysApply: true
+---
+
+# Architecture
+
+## Purpose
+
+Enforce the layered architecture so database, auth, and AI providers remain swappable.
+
+## When It Applies
+
+Every feature, refactor, or new package. Always read `docs/ARCHITECTURE.md` and `docs/BACKEND_ARCHITECTURE.md` before backend work.
+
+## Requirements
+
+- Apps consume packages; packages never import from apps.
+- Application → Service → Repository (interface) → Adapter → External SDK.
+- No Supabase/Prisma/OpenAI SDK imports in `apps/` or `packages/core`.
+- UI components live in `@repo/ui`, not duplicated in apps.
+- Shared types in `@repo/types`; infrastructure in `@repo/core`.
+
+## Examples
+
+```typescript
+// ✅ Service uses repository interface
+class UserService extends BaseService {
+  constructor(logger: Logger, private repo: BaseRepository<User>) {
+    super(logger);
+  }
+}
+
+// ✅ API route uses response helpers
+return Response.json(createSuccessResponse(data));
+```
+
+## Bad Examples
+
+```typescript
+// ❌ Direct SDK in a service
+import { createClient } from '@supabase/supabase-js';
+
+// ❌ UI component duplicated in apps/web/components/ui/
+// ❌ Business logic inside a React component
+```

@@ -1,0 +1,26 @@
+{
+  "name": "@repo/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backend infrastructure layer for the AI SaaS Starter Kit",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./env": "./src/env/env.ts",
+    "./logger": "./src/logger/logger.ts",
+    "./errors": "./src/errors/index.ts",
+    "./response": "./src/response/index.ts",
+    "./validation": "./src/validation/index.ts",
+    "./repository": "./src/repository/base-repository.ts",
+    "./service": "./src/service/base-service.ts"
+  },
+  "dependencies": {
+    "@repo/types": "workspace:*",
+    "@t3-oss/env-nextjs": "^0.13.8",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "typescript": "^5"
+  }
+}

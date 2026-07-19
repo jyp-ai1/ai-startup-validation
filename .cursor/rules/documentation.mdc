@@ -1,0 +1,44 @@
+---
+description: Documentation standards and when to update docs
+alwaysApply: true
+---
+
+# Documentation
+
+## Purpose
+
+Keep docs as the source of truth for humans and AI across sprints.
+
+## When It Applies
+
+Any feature, architecture change, API addition, or sprint completion.
+
+## Requirements
+
+| Change | Update |
+|--------|--------|
+| New API route | `docs/API.md` |
+| Architecture decision | `docs/DECISIONS.md` (ADR) |
+| New sprint | `docs/TASKS.md`, `docs/ROADMAP.md` |
+| Release | `docs/RELEASES.md`, `CHANGELOG.md` |
+| New package | `docs/ARCHITECTURE.md`, `docs/PROJECT_STRUCTURE.md` |
+| Coding convention | `docs/CODING_GUIDE.md` |
+
+- Use templates from `docs/templates/` for new documents.
+- Write for AI consumption: explicit constraints, file paths, out-of-scope.
+- Keep ROADMAP checkboxes in sync with reality.
+
+## Examples
+
+```
+✅ Sprint 2-1 adds @repo/core → updates BACKEND_ARCHITECTURE.md + DECISIONS ADR-003
+✅ New /api/users → API.md endpoint section + Zod schema noted
+```
+
+## Bad Examples
+
+```
+❌ Code merged with zero doc updates
+❌ ADR without context, alternatives, or decision rationale
+❌ Duplicate info in 5 files without cross-links
+```

@@ -1,0 +1,41 @@
+---
+description: Code review checklist before merge
+alwaysApply: false
+---
+
+# Review Checklist
+
+## Purpose
+
+Standardize review quality for human and AI reviewers.
+
+## When It Applies
+
+Before merging any PR or marking a sprint task complete.
+
+## Requirements
+
+- [ ] Scope matches PRD/sprint task — no unrelated changes
+- [ ] Layer boundaries respected (no SDK leaks)
+- [ ] Types exported from `@repo/types` where shared
+- [ ] Errors use `BaseError`; API uses `ApiResponse` envelope
+- [ ] Env vars documented in `.env.example` if added
+- [ ] Docs updated (API.md, ARCHITECTURE.md, etc.) if behavior changed
+- [ ] `pnpm lint` and `pnpm build` pass
+- [ ] No secrets committed
+- [ ] Accessibility basics (labels, keyboard) for new UI
+
+## Examples
+
+```
+✅ PR adds UserService + tests + updates docs/API.md
+✅ PR notes "Out of scope: auth middleware (Sprint 4)"
+```
+
+## Bad Examples
+
+```
+❌ PR adds Supabase SDK to apps/web without adapter layer
+❌ PR changes 20 files but description says "small fix"
+❌ PR merges with failing build "will fix later"
+```

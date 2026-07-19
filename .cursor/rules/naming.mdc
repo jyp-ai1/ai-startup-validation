@@ -1,0 +1,44 @@
+---
+description: Naming conventions for files, packages, and symbols
+alwaysApply: true
+---
+
+# Naming
+
+## Purpose
+
+Predictable names reduce AI search errors and review friction.
+
+## When It Applies
+
+New files, packages, components, types, and Git branches.
+
+## Requirements
+
+| Kind | Convention | Example |
+|------|------------|---------|
+| Packages | `@repo/{name}` lowercase | `@repo/ui`, `@repo/core` |
+| React components | PascalCase file + export | `ThemeToggle.tsx` |
+| Hooks | `use` prefix, camelCase | `use-theme.ts` |
+| Utils | camelCase functions | `formatRelativeTime` |
+| Types | PascalCase | `User`, `ApiResponse` |
+| API routes | kebab-case folders | `app/api/health/route.ts` |
+| Constants | SCREAMING_SNAKE | `APP_NAME` |
+| Services | `{Entity}Service` | `UserService` |
+| Repositories | `{Entity}Repository` | `SupabaseUserRepository` |
+
+## Examples
+
+```
+packages/ui/src/components/empty-state.tsx   → EmptyState
+packages/core/src/errors/index.ts            → ValidationError
+docs/BACKEND_ARCHITECTURE.md                 → kebab in paths, SCREAMING for doc types
+```
+
+## Bad Examples
+
+```
+utils2.ts, helperFunctions.ts, data.ts
+SupabaseStuff, user_service, APIHandler
+mixing camelCase and snake_case in same module
+```

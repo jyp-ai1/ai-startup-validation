@@ -1,0 +1,44 @@
+---
+description: Git branching, commits, and PR conventions
+alwaysApply: true
+---
+
+# Git Workflow
+
+## Purpose
+
+Maintain clean history that humans and AI can trace across sprints.
+
+## When It Applies
+
+Every commit, branch, and pull request.
+
+## Requirements
+
+- Branch naming: `sprint-N/feature-name` or `fix/short-description`.
+- Commits: imperative mood, focus on **why** not what.
+- One logical change per commit; no drive-by refactors.
+- Never force-push to `main`; never skip hooks unless explicitly requested.
+- Update `docs/TASKS.md` when starting/finishing work.
+- Record architecture decisions in `docs/DECISIONS.md` (ADR format).
+
+## Examples
+
+```
+feat(ui): add ThemeToggle to app shell
+
+Sprint 1 — exposes light/dark/system switching via @repo/ui.
+
+fix(core): make DATABASE_URL optional until adapter is connected
+
+Allows build without .env during Sprint 2-1.
+```
+
+## Bad Examples
+
+```
+update files
+fix stuff
+WIP
+feat: everything (500 files changed)
+```

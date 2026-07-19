@@ -1,0 +1,15 @@
+{
+  "name": "@repo/research",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Research master plan domain — Sprint 2+",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "@repo/types": "workspace:*",
+    "typescript": "^5"
+  }
+}

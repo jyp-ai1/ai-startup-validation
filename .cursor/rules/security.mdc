@@ -1,0 +1,47 @@
+---
+description: Security practices for env, auth, and API routes
+globs: "**/*.{ts,tsx,env*}"
+alwaysApply: false
+---
+
+# Security
+
+## Purpose
+
+Prevent common vulnerabilities before auth/DB layers are added.
+
+## When It Applies
+
+Env files, API routes, user input handling, and dependency changes. See `docs/SECURITY.md`.
+
+## Requirements
+
+- Never commit `.env`, keys, or tokens.
+- Server secrets stay server-side; only `NEXT_PUBLIC_*` in client.
+- Validate all input with Zod via `parseRequest`.
+- No raw SQL or string-concatenated queries (use adapters when DB arrives).
+- Sanitize user-generated content before rendering (React escapes by default).
+- Depend on `@repo/core/env` for typed env access.
+
+## Examples
+
+```typescript
+// ✅ Validated input
+const body = parseRequest(createUserSchema, await request.json());
+
+// ✅ Server-only key
+const apiKey = env.OPENAI_API_KEY; // server module only
+```
+
+## Bad Examples
+
+```typescript
+// ❌ Secret in client component
+const key = process.env.OPENAI_API_KEY;
+
+// ❌ Trusting client data without validation
+const { email } = await request.json();
+
+// ❌ Logging full request bodies with passwords
+logger.info('login', { body: req.body });
+```

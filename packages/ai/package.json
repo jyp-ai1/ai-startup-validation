@@ -1,0 +1,38 @@
+{
+  "name": "@repo/ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Provider-agnostic AI Platform — LLM, streaming, prompts, tools",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./env": "./src/env/env.ts",
+    "./providers": "./src/providers/index.ts",
+    "./models": "./src/models/index.ts",
+    "./chat": "./src/chat/index.ts",
+    "./prompts": "./src/prompts/index.ts",
+    "./tools": "./src/tools/index.ts",
+    "./embeddings": "./src/embeddings/index.ts",
+    "./rag": "./src/rag/index.ts",
+    "./memory": "./src/memory/index.ts",
+    "./observability": "./src/observability/index.ts",
+    "./errors": "./src/errors/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*",
+    "@repo/types": "workspace:*",
+    "@t3-oss/env-core": "^0.13.8",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "@types/node": "^20",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  }
+}

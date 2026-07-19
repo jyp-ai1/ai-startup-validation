@@ -1,0 +1,22 @@
+{
+  "name": "@repo/utils",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared utility functions for the AI SaaS Starter Kit",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./date": "./src/date.ts",
+    "./string": "./src/string.ts",
+    "./number": "./src/number.ts",
+    "./array": "./src/array.ts",
+    "./object": "./src/object.ts",
+    "./debounce": "./src/debounce.ts",
+    "./throttle": "./src/throttle.ts",
+    "./sleep": "./src/sleep.ts"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "typescript": "^5"
+  }
+}

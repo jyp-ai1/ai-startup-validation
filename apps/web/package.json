@@ -1,0 +1,47 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@repo/config": "workspace:*",
+    "@repo/core": "workspace:*",
+    "@repo/feature-auth": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/ai": "workspace:*",
+    "@repo/mcp": "workspace:*",
+    "@repo/automation": "workspace:*",
+    "@repo/browser": "workspace:*",
+    "@repo/types": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@repo/utils": "workspace:*",
+    "archiver": "^7.0.1",
+    "cheerio": "^1.0.0",
+    "lucide-react": "^0.525.0",
+    "next": "^15.3.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "@eslint/eslintrc": "^3.3.1",
+    "@tailwindcss/postcss": "^4",
+    "@types/archiver": "^6.0.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^15.3.3",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^3.2.7"
+  }
+}

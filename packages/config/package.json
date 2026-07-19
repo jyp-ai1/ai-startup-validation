@@ -1,0 +1,23 @@
+{
+  "name": "@repo/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared configuration for the AI SaaS Starter Kit monorepo",
+  "exports": {
+    "./tsconfig/base": "./tsconfig/base.json",
+    "./tsconfig/nextjs": "./tsconfig/nextjs.json",
+    "./tsconfig/react-library": "./tsconfig/react-library.json",
+    "./tsconfig/node-library": "./tsconfig/node-library.json",
+    "./eslint/next": "./eslint/next.mjs",
+    "./prettier": "./prettier/index.mjs",
+    "./constants": "./constants/index.ts"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "eslint": "^9",
+    "eslint-config-next": "^15.3.3",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "typescript": "^5"
+  }
+}

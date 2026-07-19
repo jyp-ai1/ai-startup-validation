@@ -1,0 +1,50 @@
+---
+description: TypeScript and React coding conventions
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Coding Style
+
+## Purpose
+
+Keep code consistent, readable, and aligned with existing patterns.
+
+## When It Applies
+
+All `.ts` and `.tsx` files. See also `docs/CODING_GUIDE.md`.
+
+## Requirements
+
+- TypeScript strict mode; no `any` unless documented with a reason.
+- Prefer `interface` for object shapes; `type` for unions and utilities.
+- Use `@repo/ui` components; use `cn()` for conditional classes.
+- Server Components by default; add `'use client'` only when needed.
+- Throw `BaseError` subclasses in services; convert to `ApiResponse` in routes.
+- Match existing import order: external → workspace → relative.
+
+## Examples
+
+```typescript
+// ✅ Typed, minimal scope
+export function formatUserName(user: User): string {
+  return user.fullName ?? user.email;
+}
+
+// ✅ Client boundary explicit
+'use client';
+export function ThemeToggle() { /* ... */ }
+```
+
+## Bad Examples
+
+```typescript
+// ❌ any escape hatch
+function handle(data: any) {}
+
+// ❌ Inline styles when Tailwind token exists
+<div style={{ color: '#333' }} />
+
+// ❌ Catching and swallowing errors
+try { await save(); } catch (e) { return null; }
+```

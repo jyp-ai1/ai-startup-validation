@@ -1,0 +1,32 @@
+{
+  "name": "@repo/automation",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Automation Platform — scheduler, queue, jobs, pipelines",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./jobs": "./src/jobs/index.ts",
+    "./scheduler": "./src/scheduler/index.ts",
+    "./queue": "./src/queue/index.ts",
+    "./pipeline": "./src/pipeline/index.ts",
+    "./errors": "./src/errors/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@repo/browser": "workspace:*",
+    "@repo/core": "workspace:*",
+    "@repo/types": "workspace:*",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "@types/node": "^20",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  }
+}

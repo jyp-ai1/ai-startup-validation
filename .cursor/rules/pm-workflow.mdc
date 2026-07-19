@@ -1,0 +1,41 @@
+---
+description: PM/architect workflow for sprint planning and AI handoff
+alwaysApply: true
+---
+
+# PM Workflow
+
+## Purpose
+
+Enable PM + AI collaboration: human sets direction, AI implements with full context.
+
+## When It Applies
+
+Sprint planning, task assignment, and session handoff to Cursor.
+
+## Requirements
+
+1. **Before sprint:** Update `docs/ROADMAP.md`, create sprint section in `docs/TASKS.md`.
+2. **Task prompt must include:** goal, constraints, out-of-scope, completion criteria.
+3. **AI reads first:** PRD, DECISIONS, TASKS, BACKLOG, relevant rules.
+4. **After sprint:** Update TASKS (done), BACKLOG (moved), RELEASES, DECISIONS (if ADR).
+5. PM reviews terminal commands before execution on destructive ops.
+6. One sprint = one concern (UI, infra, db adapter, auth, etc.).
+
+## Examples
+
+```
+Sprint 2-1 prompt includes:
+- GOAL: infrastructure layer
+- Do NOT install Supabase
+- Completion: packages/core, packages/types, packages/utils
+- Run pnpm lint && pnpm build
+```
+
+## Bad Examples
+
+```
+❌ "Add everything" without scope
+❌ Skipping DECISIONS when choosing Supabase vs Prisma
+❌ Starting Sprint 3 before Sprint 2-2 operating docs exist
+```

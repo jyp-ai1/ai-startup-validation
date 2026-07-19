@@ -1,0 +1,30 @@
+{
+  "name": "@repo/browser",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Production Playwright Browser Platform — automation, scraping, MCP",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./crawl": "./src/crawl/index.ts",
+    "./errors": "./src/errors/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "install:browsers": "playwright install chromium"
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*",
+    "@repo/types": "workspace:*",
+    "playwright": "^1.52.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "@types/node": "^20",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  }
+}

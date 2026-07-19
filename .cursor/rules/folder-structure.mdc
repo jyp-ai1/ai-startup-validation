@@ -1,0 +1,44 @@
+---
+description: Where files belong in the monorepo
+alwaysApply: true
+---
+
+# Folder Structure
+
+## Purpose
+
+Prevent sprawl and keep AI/human navigation predictable.
+
+## When It Applies
+
+Creating new files, packages, routes, or documentation.
+
+## Requirements
+
+| Location | Put here |
+|----------|----------|
+| `apps/web/app/` | Routes, layouts, app-specific shells |
+| `packages/ui/src/components/` | Reusable UI (shadcn + composites) |
+| `packages/core/src/` | Env, logger, errors, validation, base patterns |
+| `packages/types/src/` | Shared TypeScript types |
+| `packages/utils/src/` | Pure utility functions |
+| `packages/db/` (Sprint 3+) | Database adapters only |
+| `docs/` | All project documentation |
+| `docs/templates/` | Document templates |
+| `.cursor/rules/` | AI behavior rules |
+
+## Examples
+
+```
+packages/ui/src/components/dialog.tsx     ✅ shadcn component
+apps/web/components/app-shell.tsx         ✅ app-specific layout wiring
+packages/core/src/repository/base-repository.ts  ✅ interface only
+```
+
+## Bad Examples
+
+```
+apps/web/components/ui/button.tsx         ❌ duplicates @repo/ui
+packages/core/src/adapters/supabase.ts    ❌ belongs in @repo/db (Sprint 3)
+docs/random-notes.md                      ❌ use BACKLOG or TASKS instead
+```
