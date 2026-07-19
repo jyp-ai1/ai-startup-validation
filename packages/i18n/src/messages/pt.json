@@ -27,7 +27,10 @@
     "navigation": "Navegação",
     "openMenu": "Abrir menu de navegação",
     "singleUser": "Usuário único · Espaço de trabalho local",
-    "footer": "MVP — sem autenticação necessária"
+    "footer": "MVP — sem autenticação necessária",
+    "groupMain": "Main",
+    "groupValidation": "Validation",
+    "groupSystem": "System"
   },
   "nav": {
     "dashboard": "Painel",
@@ -53,7 +56,15 @@
   },
   "dashboard": {
     "emptyTitle": "Bem-vindo ao seu espaço de validação",
-    "emptyDescription": "Crie um projeto de startup para começar a validar sua ideia."
+    "emptyDescription": "Crie um projeto de startup para começar a validar sua ideia.",
+    "welcome": "Validation workspace",
+    "welcomeDesc": "Click each feature to verify screens load correctly.",
+    "statusHint": "MVP demo · No login required",
+    "featuresTitle": "Quick links",
+    "featuresDesc": "Jump to any feature screen quickly.",
+    "projectCount": "{count} projects",
+    "featureCount": "{count} features",
+    "newProject": "New project"
   },
   "settings": {
     "emptyTitle": "Configurações do espaço de trabalho",
@@ -87,7 +98,10 @@
     "solution": "Solução",
     "targetCustomer": "Cliente-Alvo",
     "businessModel": "Modelo de Negócio",
-    "industry": "Setor"
+    "industry": "Setor",
+    "featuresTitle": "Project features",
+    "featuresDesc": "Validation tools available for this project.",
+    "openFeature": "Open feature screen"
   },
   "features": {
     "selectProject": "Selecionar um projeto",

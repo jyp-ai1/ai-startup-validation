@@ -27,7 +27,10 @@
     "navigation": "Navigasi",
     "openMenu": "Buka menu navigasi",
     "singleUser": "Pengguna tunggal · Ruang kerja lokal",
-    "footer": "MVP — tanpa autentikasi"
+    "footer": "MVP — tanpa autentikasi",
+    "groupMain": "Main",
+    "groupValidation": "Validation",
+    "groupSystem": "System"
   },
   "nav": {
     "dashboard": "Dasbor",
@@ -53,7 +56,15 @@
   },
   "dashboard": {
     "emptyTitle": "Selamat datang di ruang kerja validasi Anda",
-    "emptyDescription": "Buat proyek startup untuk mulai memvalidasi ide Anda."
+    "emptyDescription": "Buat proyek startup untuk mulai memvalidasi ide Anda.",
+    "welcome": "Validation workspace",
+    "welcomeDesc": "Click each feature to verify screens load correctly.",
+    "statusHint": "MVP demo · No login required",
+    "featuresTitle": "Quick links",
+    "featuresDesc": "Jump to any feature screen quickly.",
+    "projectCount": "{count} projects",
+    "featureCount": "{count} features",
+    "newProject": "New project"
   },
   "settings": {
     "emptyTitle": "Pengaturan ruang kerja",
@@ -87,7 +98,10 @@
     "solution": "Solusi",
     "targetCustomer": "Pelanggan Target",
     "businessModel": "Model Bisnis",
-    "industry": "Industri"
+    "industry": "Industri",
+    "featuresTitle": "Project features",
+    "featuresDesc": "Validation tools available for this project.",
+    "openFeature": "Open feature screen"
   },
   "features": {
     "selectProject": "Pilih proyek",

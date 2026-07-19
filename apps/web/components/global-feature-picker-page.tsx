@@ -58,17 +58,17 @@ export async function GlobalFeaturePickerPage({
         title={t(config.labelKey)}
         description={t('features.selectProjectDesc')}
       />
-      <div className="mt-8 space-y-3">
+      <div className="mt-8 grid gap-3 sm:grid-cols-2">
         {projects.map((project) => (
           <div
             key={project.id}
-            className="flex flex-col gap-2 rounded-md border p-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-xl border border-border/80 bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
           >
-            <div>
-              <p className="font-medium">{project.title}</p>
-              <p className="text-sm text-muted-foreground">{project.summary}</p>
+            <div className="min-w-0">
+              <p className="truncate font-medium">{project.title}</p>
+              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{project.summary}</p>
             </div>
-            <Button variant="outline" asChild>
+            <Button variant="outline" className="shrink-0" asChild>
               <Link href={`/projects/${project.id}/${featurePath}`}>
                 {t(actionLabelKey)}
               </Link>

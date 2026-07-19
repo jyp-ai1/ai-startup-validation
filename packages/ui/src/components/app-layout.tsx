@@ -20,7 +20,7 @@ export function AppLayout({
       {header}
       <div className="flex flex-1">
         {sidebar ? (
-          <aside className="hidden w-64 shrink-0 border-r border-border bg-sidebar lg:block">
+          <aside className="hidden w-60 shrink-0 border-r border-sidebar-border bg-sidebar lg:block">
             {sidebar}
           </aside>
         ) : null}
@@ -41,7 +41,7 @@ export function AppHeader({
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 flex h-14 items-center border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:px-6',
+        'sticky top-0 z-50 flex h-14 items-center border-b border-border/80 bg-background/90 px-4 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/75 lg:px-6',
         className,
       )}
     >
@@ -58,7 +58,7 @@ export function AppSidebar({
   className?: string;
 }) {
   return (
-    <nav className={cn('flex h-full flex-col gap-1 p-4', className)}>
+    <nav className={cn('flex h-full flex-col gap-6 p-4', className)}>
       {children}
     </nav>
   );
@@ -74,7 +74,7 @@ export function AppFooter({
   return (
     <footer
       className={cn(
-        'mt-auto border-t border-border bg-muted/30 px-4 py-4 text-center text-sm text-muted-foreground lg:px-6',
+        'border-t border-border/60 px-4 py-3 text-center text-xs text-muted-foreground lg:px-6',
         className,
       )}
     >
@@ -91,6 +91,6 @@ export function AppContent({
   className?: string;
 }) {
   return (
-    <div className={cn('flex-1 p-4 lg:p-6', className)}>{children}</div>
+    <div className={cn('mx-auto w-full max-w-6xl flex-1 p-4 lg:p-8', className)}>{children}</div>
   );
 }

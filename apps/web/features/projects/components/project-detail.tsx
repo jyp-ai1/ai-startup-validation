@@ -3,22 +3,7 @@
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import {
-  BookOpen,
-  Bot,
-  Briefcase,
-  ClipboardList,
-  Code2,
-  Database,
-  FileCode,
-  FileText,
-  Gauge,
-  Landmark,
-  MessageSquare,
-  Pencil,
-  Swords,
-  Trash2,
-} from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 import type { StartupProject } from '@repo/types/validation';
 import {
@@ -36,7 +21,9 @@ import {
   PageHeader,
 } from '@repo/ui';
 
+import { FeatureLinkCard } from '@/components/feature-link-card';
 import { deleteProject } from '../actions/project-actions';
+import { PROJECT_FEATURE_CONFIGS } from '@/lib/project-features';
 import { ProjectForm } from './project-form';
 import { ProjectStatusBadge } from './project-status-badge';
 
@@ -108,78 +95,6 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         description={project.summary}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/research`}>
-                <ClipboardList className="size-4" />
-                {t('projectDetail.researchPlans')}
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/evidence`}>
-                <Database className="size-4" />
-                {t('projectDetail.evidence')}
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/knowledge`}>
-                <BookOpen className="size-4" />
-                {t('projectDetail.knowledge')}
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/agent`}>
-                <Bot className="size-4" />
-                {t('projectDetail.agent')}
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/competitors`}>
-                <Swords className="size-4" />
-                {t('projectDetail.competitors')}
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/voc`}>
-                <MessageSquare className="size-4" />
-                {t('projectDetail.voc')}
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/grants`}>
-                <Landmark className="size-4" />
-                {t('projectDetail.grants')}
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/validation`}>
-                <Gauge className="size-4" />
-                {t('projectDetail.validation')}
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/reports`}>
-                <FileText className="size-4" />
-                {t('projectDetail.reports')}
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/business-plan`}>
-                <Briefcase className="size-4" />
-                {t('projectDetail.businessPlan')}
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/prd`}>
-                <FileCode className="size-4" />
-                {t('projectDetail.prd')}
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href={`/projects/${project.id}/development-spec`}>
-                <Code2 className="size-4" />
-                {t('projectDetail.devSpec')}
-              </Link>
-            </Button>
             <Button variant="outline" onClick={() => setIsEditing(true)}>
               <Pencil className="size-4" />
               {t('common.edit')}
@@ -192,7 +107,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         }
       />
 
-      <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+      <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
         <ProjectStatusBadge status={project.status} />
         <span>
           {t('projects.created')} {createdDate}
@@ -202,7 +117,25 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         </Button>
       </div>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-2">
+      <section className="mt-8 space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold tracking-tight">{t('projectDetail.featuresTitle')}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t('projectDetail.featuresDesc')}</p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {PROJECT_FEATURE_CONFIGS.map((feature) => (
+            <FeatureLinkCard
+              key={feature.segment}
+              href={`/projects/${project.id}/${feature.segment}`}
+              icon={feature.icon}
+              title={t(feature.labelKey)}
+              description={t('projectDetail.openFeature')}
+            />
+          ))}
+        </div>
+      </section>
+
+      <div className="mt-10 grid gap-4 lg:grid-cols-2">
         <DetailSection
           title={t('projectDetail.problem')}
           value={project.problem}

@@ -27,7 +27,10 @@
     "navigation": "메뉴",
     "openMenu": "메뉴 열기",
     "singleUser": "단일 사용자 · 로컬 워크스페이스",
-    "footer": "MVP — 로그인 불필요"
+    "footer": "MVP — 로그인 불필요",
+    "groupMain": "메인",
+    "groupValidation": "검증",
+    "groupSystem": "시스템"
   },
   "nav": {
     "dashboard": "대시보드",
@@ -53,7 +56,15 @@
   },
   "dashboard": {
     "emptyTitle": "검증 워크스페이스에 오신 것을 환영합니다",
-    "emptyDescription": "스타트업 프로젝트를 생성하여 아이디어 검증을 시작하세요."
+    "emptyDescription": "스타트업 프로젝트를 생성하여 아이디어 검증을 시작하세요.",
+    "welcome": "검증 워크스페이스",
+    "welcomeDesc": "각 기능을 클릭해 화면이 정상적으로 열리는지 확인하세요.",
+    "statusHint": "MVP 데모 · 로그인 없이 바로 사용 가능",
+    "featuresTitle": "기능 바로가기",
+    "featuresDesc": "메뉴별 화면을 빠르게 확인할 수 있습니다.",
+    "projectCount": "프로젝트 {count}개",
+    "featureCount": "기능 {count}개",
+    "newProject": "새 프로젝트"
   },
   "settings": {
     "emptyTitle": "워크스페이스 설정",
@@ -87,7 +98,10 @@
     "solution": "해결책",
     "targetCustomer": "타겟 고객",
     "businessModel": "비즈니스 모델",
-    "industry": "산업"
+    "industry": "산업",
+    "featuresTitle": "프로젝트 기능",
+    "featuresDesc": "이 프로젝트에서 사용할 수 있는 검증 기능입니다.",
+    "openFeature": "기능 화면 열기"
   },
   "features": {
     "selectProject": "프로젝트 선택",

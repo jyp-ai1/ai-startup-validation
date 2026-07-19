@@ -109,20 +109,54 @@ SUPABASE_SERVICE_ROLE_KEY=<service_role key — never expose to client>
 
 ---
 
-## Verify URLs
+### Verify URLs (production — latest deploy)
 
 ```
-https://YOUR-URL.vercel.app/dashboard
-https://YOUR-URL.vercel.app/projects
-https://YOUR-URL.vercel.app/settings
+https://ai-startup-validation-psi.vercel.app/dashboard
+https://ai-startup-validation-truck-grease-reservation.vercel.app/dashboard
 ```
+
+> **Note:** `https://ai-startup-validation.vercel.app` is currently owned by a **different Vercel project** (old demo app). To reclaim it, log in as **jyp-ai1** and delete/reassign that domain in the Vercel dashboard.
+
+Legacy target (blocked until domain reclaimed):
+
+```
+https://ai-startup-validation.vercel.app/dashboard
 
 ---
 
+## Account (important)
+
+| Service | Correct account |
+|---------|-----------------|
+| GitHub repo | `jyp-ai1` |
+| Vercel team | `jyp-ai1s-projects` |
+| Production URL | `https://ai-startup-validation.vercel.app` |
+
+**Wrong (do not use):** `kiraranim-jyp` / `truck-grease-reservation`
+
+After `vercel login`, confirm:
+
+```powershell
+vercel whoami
+vercel teams ls
+# Must include jyp-ai1s-projects
+```
+
+If you see `detourdada-9608` or `truck-grease-reservation` only, logout and login with the **jyp-ai1 Vercel** account.
+
 ## Current Blocker
 
-PC CLI is logged in as `kiraranim-jyp`, not `jyp-ai1`.
-Run Step 1 + Step 3 above to switch accounts.
+PC CLI must be on **jyp-ai1s-projects**. Run:
 
-Temporary deploy (kiraranim-jyp account):
-https://ai-startup-validation-truck-grease-reservation.vercel.app
+```powershell
+vercel logout
+vercel login
+# → Browser → jyp-ai1 Vercel account (NOT kiraranim-jyp, NOT detourdada personal)
+
+cd "C:\Users\김성길\Documents\GitHub\cursor-project"
+vercel link --yes --scope jyp-ai1s-projects --project ai-startup-validation
+vercel project update ai-startup-validation --install-command "pnpm install" --build-command "pnpm --filter web build" --output-directory apps/web/.next
+vercel project protection disable ai-startup-validation --sso
+vercel --prod --yes
+```

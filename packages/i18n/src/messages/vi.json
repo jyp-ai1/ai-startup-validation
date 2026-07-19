@@ -27,7 +27,10 @@
     "navigation": "Điều hướng",
     "openMenu": "Mở menu điều hướng",
     "singleUser": "Người dùng đơn · Không gian làm việc cục bộ",
-    "footer": "MVP — không cần đăng nhập"
+    "footer": "MVP — không cần đăng nhập",
+    "groupMain": "Main",
+    "groupValidation": "Validation",
+    "groupSystem": "System"
   },
   "nav": {
     "dashboard": "Bảng điều khiển",
@@ -53,7 +56,15 @@
   },
   "dashboard": {
     "emptyTitle": "Chào mừng đến không gian xác thực của bạn",
-    "emptyDescription": "Tạo dự án startup để bắt đầu xác thực ý tưởng của bạn."
+    "emptyDescription": "Tạo dự án startup để bắt đầu xác thực ý tưởng của bạn.",
+    "welcome": "Validation workspace",
+    "welcomeDesc": "Click each feature to verify screens load correctly.",
+    "statusHint": "MVP demo · No login required",
+    "featuresTitle": "Quick links",
+    "featuresDesc": "Jump to any feature screen quickly.",
+    "projectCount": "{count} projects",
+    "featureCount": "{count} features",
+    "newProject": "New project"
   },
   "settings": {
     "emptyTitle": "Cài đặt không gian làm việc",
@@ -87,7 +98,10 @@
     "solution": "Giải pháp",
     "targetCustomer": "Khách hàng Mục tiêu",
     "businessModel": "Mô hình Kinh doanh",
-    "industry": "Ngành"
+    "industry": "Ngành",
+    "featuresTitle": "Project features",
+    "featuresDesc": "Validation tools available for this project.",
+    "openFeature": "Open feature screen"
   },
   "features": {
     "selectProject": "Chọn dự án",

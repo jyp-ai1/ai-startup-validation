@@ -27,7 +27,10 @@
     "navigation": "導覽",
     "openMenu": "開啟導覽選單",
     "singleUser": "單一使用者 · 本機工作區",
-    "footer": "MVP — 無需登入"
+    "footer": "MVP — 無需登入",
+    "groupMain": "Main",
+    "groupValidation": "Validation",
+    "groupSystem": "System"
   },
   "nav": {
     "dashboard": "儀表板",
@@ -53,7 +56,15 @@
   },
   "dashboard": {
     "emptyTitle": "歡迎使用驗證工作區",
-    "emptyDescription": "建立新創專案，開始驗證您的想法。"
+    "emptyDescription": "建立新創專案，開始驗證您的想法。",
+    "welcome": "Validation workspace",
+    "welcomeDesc": "Click each feature to verify screens load correctly.",
+    "statusHint": "MVP demo · No login required",
+    "featuresTitle": "Quick links",
+    "featuresDesc": "Jump to any feature screen quickly.",
+    "projectCount": "{count} projects",
+    "featureCount": "{count} features",
+    "newProject": "New project"
   },
   "settings": {
     "emptyTitle": "工作區設定",
@@ -87,7 +98,10 @@
     "solution": "解決方案",
     "targetCustomer": "目標客戶",
     "businessModel": "商業模式",
-    "industry": "產業"
+    "industry": "產業",
+    "featuresTitle": "Project features",
+    "featuresDesc": "Validation tools available for this project.",
+    "openFeature": "Open feature screen"
   },
   "features": {
     "selectProject": "選擇專案",

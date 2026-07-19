@@ -27,7 +27,10 @@
     "navigation": "导航",
     "openMenu": "打开导航菜单",
     "singleUser": "单用户 · 本地工作区",
-    "footer": "MVP — 无需登录"
+    "footer": "MVP — 无需登录",
+    "groupMain": "Main",
+    "groupValidation": "Validation",
+    "groupSystem": "System"
   },
   "nav": {
     "dashboard": "仪表盘",
@@ -53,7 +56,15 @@
   },
   "dashboard": {
     "emptyTitle": "欢迎使用验证工作区",
-    "emptyDescription": "创建创业项目，开始验证您的想法。"
+    "emptyDescription": "创建创业项目，开始验证您的想法。",
+    "welcome": "Validation workspace",
+    "welcomeDesc": "Click each feature to verify screens load correctly.",
+    "statusHint": "MVP demo · No login required",
+    "featuresTitle": "Quick links",
+    "featuresDesc": "Jump to any feature screen quickly.",
+    "projectCount": "{count} projects",
+    "featureCount": "{count} features",
+    "newProject": "New project"
   },
   "settings": {
     "emptyTitle": "工作区设置",
@@ -87,7 +98,10 @@
     "solution": "解决方案",
     "targetCustomer": "目标客户",
     "businessModel": "商业模式",
-    "industry": "行业"
+    "industry": "行业",
+    "featuresTitle": "Project features",
+    "featuresDesc": "Validation tools available for this project.",
+    "openFeature": "Open feature screen"
   },
   "features": {
     "selectProject": "选择项目",

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-import { FeatureEmptyPage } from '@/components/feature-empty-page';
+import { DashboardHome } from '@/components/dashboard-home';
+import { listStartupProjects } from '@/features/projects/services/project-service';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();
@@ -11,14 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DashboardPage() {
-  const t = await getTranslations();
+  const projects = await listStartupProjects();
 
-  return (
-    <FeatureEmptyPage
-      title={t('nav.dashboard')}
-      description={t('nav.dashboardDesc')}
-      emptyTitle={t('dashboard.emptyTitle')}
-      emptyDescription={t('dashboard.emptyDescription')}
-    />
-  );
+  return <DashboardHome projectCount={projects.length} />;
 }
