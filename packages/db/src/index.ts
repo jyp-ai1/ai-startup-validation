@@ -28,6 +28,8 @@ export type { OrganizationRepository } from './repositories/organization.reposit
 export { SupabaseOrganizationRepository } from './repositories/organization.repository';
 export type { ProjectRepository } from './repositories/project.repository';
 export { SupabaseProjectRepository } from './repositories/project.repository';
+export type { StartupProjectRepository } from './repositories/startup-project.repository';
+export { SupabaseStartupProjectRepository } from './repositories/startup-project.repository';
 
 // Adapters (use via container — avoid direct imports in apps when possible)
 export { SupabaseAuthAdapter } from './adapters/supabase/auth/auth.adapter';

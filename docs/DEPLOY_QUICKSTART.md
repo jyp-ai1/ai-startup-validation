@@ -1,5 +1,42 @@
 # Deploy Guide — AI Startup Validation Framework
 
+## jyp-ai1 Vercel Project
+
+Dashboard: https://vercel.com/jyp-ai1s-projects/ai-startup-validation
+
+### One-shot deploy (Cursor terminal)
+
+```powershell
+# Must be logged in as detourdada1 (NOT kiraranim-jyp)
+vercel logout
+vercel login
+
+cd "C:\Users\김성길\Documents\GitHub\cursor-project\apps\web"
+vercel link --yes --scope jyp-ai1s-projects --project ai-startup-validation
+vercel --prod --yes
+```
+
+Or run: `powershell -ExecutionPolicy Bypass -File scripts/deploy-jyp-ai1.ps1`
+
+### Vercel Build Settings (Dashboard → Settings → General)
+
+| Setting | Value |
+|---------|-------|
+| Root Directory | `apps/web` |
+| Install Command | `cd ../.. && pnpm install` |
+| Build Command | `cd ../.. && pnpm --filter web build` |
+| Node.js | 20.x |
+
+### Environment Variables
+
+```
+NEXT_PUBLIC_APP_URL=https://ai-startup-validation.vercel.app
+```
+
+(Get exact URL from Settings → Domains after first deploy)
+
+---
+
 ## Quick Deploy (copy-paste in Cursor terminal)
 
 ### Step 1: GitHub login (jyp-ai1)

@@ -10,6 +10,8 @@ import type { OrganizationRepository } from '../repositories/organization.reposi
 import { SupabaseOrganizationRepository } from '../repositories/organization.repository';
 import type { ProjectRepository } from '../repositories/project.repository';
 import { SupabaseProjectRepository } from '../repositories/project.repository';
+import type { StartupProjectRepository } from '../repositories/startup-project.repository';
+import { SupabaseStartupProjectRepository } from '../repositories/startup-project.repository';
 import type { UserRepository } from '../repositories/user.repository';
 import { SupabaseUserRepository } from '../repositories/user.repository';
 import type { StoragePort } from '../storage/storage.port';
@@ -19,6 +21,7 @@ export const DbTokens = {
   UserRepository: Symbol('UserRepository'),
   OrganizationRepository: Symbol('OrganizationRepository'),
   ProjectRepository: Symbol('ProjectRepository'),
+  StartupProjectRepository: Symbol('StartupProjectRepository'),
   AuthPort: Symbol('AuthPort'),
   StoragePort: Symbol('StoragePort'),
   RealtimePort: Symbol('RealtimePort'),
@@ -29,6 +32,7 @@ export type DatabasePlatform = {
     user: UserRepository;
     organization: OrganizationRepository;
     project: ProjectRepository;
+    startupProject: StartupProjectRepository;
   };
   auth: AuthPort;
   storage: StoragePort;
@@ -66,6 +70,9 @@ export class DbContainer {
           DbTokens.OrganizationRepository,
         ),
         project: this.resolve<ProjectRepository>(DbTokens.ProjectRepository),
+        startupProject: this.resolve<StartupProjectRepository>(
+          DbTokens.StartupProjectRepository,
+        ),
       },
       auth: this.resolve<AuthPort>(DbTokens.AuthPort),
       storage: this.resolve<StoragePort>(DbTokens.StoragePort),
@@ -80,6 +87,7 @@ export function createDatabasePlatform(): DbContainer {
   const userRepo = new SupabaseUserRepository();
   const orgRepo = new SupabaseOrganizationRepository();
   const projectRepo = new SupabaseProjectRepository();
+  const startupProjectRepo = new SupabaseStartupProjectRepository();
   const auth = new SupabaseAuthAdapter();
   const storage = new SupabaseStorageAdapter();
   const realtime = new SupabaseRealtimeAdapter();
@@ -88,6 +96,7 @@ export function createDatabasePlatform(): DbContainer {
     .register(DbTokens.UserRepository, userRepo)
     .register(DbTokens.OrganizationRepository, orgRepo)
     .register(DbTokens.ProjectRepository, projectRepo)
+    .register(DbTokens.StartupProjectRepository, startupProjectRepo)
     .register(DbTokens.AuthPort, auth)
     .register(DbTokens.StoragePort, storage)
     .register(DbTokens.RealtimePort, realtime);

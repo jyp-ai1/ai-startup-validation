@@ -53,6 +53,9 @@ export type {
 
 export type {
   StartupProject,
+  StartupProjectStatus,
+  CreateStartupProjectInput,
+  UpdateStartupProjectInput,
   Research,
   Evidence,
   Competitor,
@@ -61,3 +64,5 @@ export type {
   Score,
   Report,
 } from './validation';
+
+export { STARTUP_PROJECT_STATUSES } from './validation';

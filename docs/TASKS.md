@@ -4,6 +4,25 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 1 — Startup Project Workspace ✅
+
+**Status:** Complete  
+**Goal:** 창업 아이디어 Project CRUD — 입력, 저장, 목록, 상세, 수정, 삭제.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `startup_projects` DB migration + seed | ✅ Done | AI |
+| StartupProjectRepository (@repo/db) | ✅ Done | AI |
+| Server Actions (create/update/delete/get) | ✅ Done | AI |
+| `/projects` list page | ✅ Done | AI |
+| `/projects/new` create form | ✅ Done | AI |
+| `/projects/[id]` detail + edit + delete | ✅ Done | AI |
+| Zod validation (title, summary required) | ✅ Done | AI |
+| Verify pnpm lint && pnpm build | ✅ Done | AI |
+| SPRINT_RESULT.md | ✅ Done | AI |
+
+---
+
 ## Sprint 0 — Project Foundation ✅
 
 **Status:** Complete  

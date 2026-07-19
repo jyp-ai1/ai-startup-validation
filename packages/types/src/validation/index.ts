@@ -1,15 +1,51 @@
 import type { ID, ISODateString } from '../global';
 
+/** Startup project lifecycle status. */
+export const STARTUP_PROJECT_STATUSES = [
+  'DRAFT',
+  'RESEARCHING',
+  'ANALYZING',
+  'COMPLETED',
+  'ARCHIVED',
+] as const;
+
+export type StartupProjectStatus = (typeof STARTUP_PROJECT_STATUSES)[number];
+
 /** Startup project — core entity for idea validation workflow. */
 export type StartupProject = {
   id: ID;
-  name: string;
-  idea: string;
-  problem: string;
-  targetCustomer: string;
-  businessModel: string;
+  title: string;
+  summary: string;
+  problem: string | null;
+  solution: string | null;
+  targetCustomer: string | null;
+  industry: string | null;
+  businessModel: string | null;
+  status: StartupProjectStatus;
   createdAt: ISODateString;
   updatedAt: ISODateString;
+};
+
+export type CreateStartupProjectInput = {
+  title: string;
+  summary: string;
+  problem?: string | null;
+  solution?: string | null;
+  targetCustomer?: string | null;
+  industry?: string | null;
+  businessModel?: string | null;
+  status?: StartupProjectStatus;
+};
+
+export type UpdateStartupProjectInput = {
+  title?: string;
+  summary?: string;
+  problem?: string | null;
+  solution?: string | null;
+  targetCustomer?: string | null;
+  industry?: string | null;
+  businessModel?: string | null;
+  status?: StartupProjectStatus;
 };
 
 /** Research master plan for market investigation. */
