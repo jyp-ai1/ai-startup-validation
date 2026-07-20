@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: KnowledgeQueryPageProps): Pro
 
   return {
     title: project
-      ? `Knowledge Query | ${project.title} | AI Startup Validation Framework`
-      : 'Knowledge Query | AI Startup Validation Framework',
+      ? `Knowledge Query | ${project.title} | LaunchLens`
+      : 'Knowledge Query | LaunchLens',
   };
 }
 

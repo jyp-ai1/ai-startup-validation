@@ -1,8 +1,9 @@
 {
   "meta": {
-    "appName": "Framework de Validação de Startups com IA",
-    "appDescription": "Plataforma de validação de ideias de startup com IA",
-    "titleSuffix": "Framework de Validação de Startups com IA"
+    "appName": "LaunchLens",
+    "appDescription": "AI-powered startup idea validation platform",
+    "titleSuffix": "LaunchLens",
+    "appTagline": "AI Startup Validation Framework"
   },
   "common": {
     "save": "Salvar",
@@ -30,33 +31,47 @@
     "footer": "MVP — sem autenticação necessária",
     "groupMain": "Main",
     "groupValidation": "Validation",
-    "groupSystem": "System"
+    "groupSystem": "System",
+    "groupWorkspace": "Workspace",
+    "groupAi": "AI Studio",
+    "groupKnowledge": "Knowledge",
+    "currentProject": "Current Project",
+    "recentProjects": "Recent Projects",
+    "groupIntelligence": "Intelligence",
+    "searchPlaceholder": "Search workspace…"
   },
   "nav": {
-    "dashboard": "Painel",
-    "dashboardDesc": "Visão geral do progresso de validação da sua startup.",
-    "projects": "Projetos de Startup",
-    "projectsDesc": "Gerencie e crie projetos de ideias de startup.",
-    "research": "Pesquisa",
-    "researchDesc": "Projete e acompanhe planos de pesquisa de mercado.",
-    "evidence": "Evidências",
-    "evidenceDesc": "Colete e organize evidências de apoio.",
-    "competitors": "Concorrentes",
-    "competitorsDesc": "Analise o cenário competitivo.",
+    "dashboard": "Dashboard",
+    "dashboardDesc": "Overview of your startup validation progress.",
+    "projects": "Startup Projects",
+    "projectsDesc": "Manage and create startup idea projects.",
+    "research": "Research",
+    "researchDesc": "Design and track market research plans.",
+    "evidence": "Evidence",
+    "evidenceDesc": "Collect and organize supporting evidence.",
+    "competitors": "Competitors",
+    "competitorsDesc": "Analyze competitive landscape.",
     "voc": "VOC",
-    "vocDesc": "Voz do Cliente — análise de problemas do cliente.",
-    "grants": "Subsídios Governamentais",
-    "grantsDesc": "Explore programas de apoio governamental.",
-    "validation": "Pontuação de Validação",
-    "validationDesc": "Resultados de avaliação GO / NO GO.",
-    "reports": "Relatórios",
-    "reportsDesc": "Relatórios de validação gerados por IA.",
-    "settings": "Configurações",
-    "settingsDesc": "Configurações do espaço de trabalho e do aplicativo."
+    "vocDesc": "Voice of Customer — customer problem analysis.",
+    "grants": "Government Grants",
+    "grantsDesc": "Explore government support programs.",
+    "validation": "Validation Score",
+    "validationDesc": "GO / NO GO evaluation results.",
+    "reports": "Validation Report",
+    "reportsDesc": "AI-generated validation reports.",
+    "settings": "Settings",
+    "settingsDesc": "Workspace and application settings.",
+    "businessPlan": "Business Plan",
+    "prd": "PRD",
+    "devSpec": "Development Spec",
+    "knowledge": "Knowledge Base",
+    "agent": "AI Startup Agent",
+    "aiStudio": "AI Studio",
+    "agentConsultant": "AI Consultant"
   },
   "dashboard": {
-    "emptyTitle": "Bem-vindo ao seu espaço de validação",
-    "emptyDescription": "Crie um projeto de startup para começar a validar sua ideia.",
+    "emptyTitle": "Welcome to your validation workspace",
+    "emptyDescription": "Create a startup project to begin validating your idea.",
     "welcome": "Validation workspace",
     "welcomeDesc": "Click each feature to verify screens load correctly.",
     "statusHint": "MVP demo · No login required",
@@ -64,21 +79,104 @@
     "featuresDesc": "Jump to any feature screen quickly.",
     "projectCount": "{count} projects",
     "featureCount": "{count} features",
-    "newProject": "New project"
+    "newProject": "New project",
+    "emptyWorkspaceDesc": "Create a project to see Validation Score, KPIs, and progress on one screen.",
+    "pageTitle": "Today's Status",
+    "todayStatus": "Today's validation status",
+    "validationScore": "Validation Score",
+    "points": "pts",
+    "notEvaluated": "Not evaluated",
+    "updatedAgo": "Updated {time} ago",
+    "noScoreHint": "No validation score yet. Run validation to get a GO / NO GO decision.",
+    "runValidation": "Run validation",
+    "researchProgress": "Research Progress",
+    "researchCompleted": "{completed} / {total} completed",
+    "evidenceBreakdown": "Evidence",
+    "competitorMatrix": "Competitor Matrix",
+    "validationRadar": "Validation Breakdown",
+    "recentActivity": "Recent Activity",
+    "nextActions": "Next Recommended Action",
+    "noActivity": "No recent activity.",
+    "grants": "Government Grants",
+    "viewGrants": "View grants",
+    "kpi": {
+      "score": "Score",
+      "evidence": "Evidence",
+      "voc": "VOC",
+      "competitors": "Competitor"
+    },
+    "categories": {
+      "market": "Market",
+      "problem": "Problem",
+      "competition": "Competition",
+      "businessModel": "Business Model",
+      "execution": "Execution",
+      "founder": "Founder Fit"
+    },
+    "confidence": {
+      "high": "High Confidence",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "positions": {
+      "leader": "Leader",
+      "challenger": "Challenger",
+      "follower": "Follower",
+      "newcomer": "New"
+    },
+    "health": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "needsWork": "Needs Work",
+      "critical": "Critical",
+      "pending": "Pending"
+    },
+    "activity": {
+      "EVIDENCE": "Evidence added",
+      "VOC": "VOC updated",
+      "VALIDATION": "Validation completed",
+      "REPORT": "Report generated",
+      "RESEARCH": "Research updated",
+      "COMPETITOR": "Competitor added"
+    },
+    "actions": {
+      "vocVolume": "Collect 20+ VOC entries",
+      "addCompetitors": "Add 3+ competitors",
+      "evidenceQuality": "10+ high-confidence evidence items",
+      "completeResearch": "Complete research plans",
+      "runValidation": "Run validation score"
+    },
+    "topPercent": "Top {percent}%",
+    "timeline": {
+      "title": "Workspace Timeline",
+      "recentActivity": "Recent activity",
+      "recentDocs": "Recently generated documents",
+      "validationHistory": "Validation history",
+      "upcomingDeadlines": "Upcoming deadlines",
+      "recentAi": "Recent AI results",
+      "noDeadlines": "No upcoming deadlines",
+      "viewHistory": "View validation history"
+    }
   },
   "settings": {
     "emptyTitle": "Configurações do espaço de trabalho",
     "emptyDescription": "Configuração do espaço de trabalho local. Autenticação em breve."
   },
   "projects": {
-    "title": "Projetos de Startup",
-    "description": "Gerencie projetos de ideias de startup",
-    "newProject": "Novo Projeto",
-    "emptyTitle": "Nenhum projeto ainda",
-    "emptyDescription": "Crie seu primeiro projeto de ideia de startup.",
-    "created": "Criado",
-    "deleteConfirm": "Excluir projeto?",
-    "deleteWarning": "Esta ação não pode ser desfeita."
+    "title": "Projects",
+    "description": "Manage startup idea projects",
+    "newProject": "New Project",
+    "emptyTitle": "No projects yet",
+    "emptyDescription": "Create your first startup idea project.",
+    "created": "Created",
+    "deleteConfirm": "Delete project?",
+    "deleteWarning": "This action cannot be undone.",
+    "workspaceDesc": "Open each workspace to review Validation Score and KPIs at a glance.",
+    "recommendations": {
+      "sample": "Start with a demo project to explore the flow",
+      "validation": "Run Validation Score for a GO / NO GO decision",
+      "research": "Begin with a structured Research Plan"
+    }
   },
   "projectDetail": {
     "researchPlans": "Planos de Pesquisa",
@@ -101,7 +199,8 @@
     "industry": "Setor",
     "featuresTitle": "Project features",
     "featuresDesc": "Validation tools available for this project.",
-    "openFeature": "Open feature screen"
+    "openFeature": "Open feature screen",
+    "overviewTitle": "Project Overview"
   },
   "features": {
     "selectProject": "Selecionar um projeto",
@@ -129,7 +228,15 @@
     "recommendation": "Recomendação",
     "sources": "Fontes",
     "nextActions": "Próximas Ações",
-    "mockMode": "Modo simulado"
+    "mockMode": "Modo simulado",
+    "confidence": "Confidence",
+    "similarity": "Similarity",
+    "kpi": {
+      "evidence": "Evidence",
+      "highConfidence": "High Confidence",
+      "voc": "VOC",
+      "score": "Validation Score"
+    }
   },
   "knowledge": {
     "title": "Base de Conhecimento",
@@ -137,7 +244,27 @@
     "generate": "Construir Conhecimento",
     "query": "Consulta com IA",
     "emptyTitle": "Nenhum documento de conhecimento ainda",
-    "emptyDescription": "Processe evidências em conhecimento pesquisável."
+    "emptyDescription": "Processe evidências em conhecimento pesquisável.",
+    "aiQuery": "AI Query",
+    "processEvidence": "Process evidence",
+    "importSample": "Import sample knowledge",
+    "kpi": {
+      "total": "Total",
+      "ready": "Ready",
+      "processing": "Processing",
+      "pending": "Pending"
+    },
+    "columns": {
+      "title": "Title",
+      "source": "Source",
+      "status": "Status",
+      "created": "Created"
+    },
+    "recommendations": {
+      "evidence": "Add evidence before processing",
+      "chunks": "Build knowledge chunks from reports",
+      "query": "Try AI Query after processing"
+    }
   },
   "status": {
     "draft": "Rascunho",
@@ -146,5 +273,636 @@
     "pending": "Pendente",
     "processing": "Processando",
     "failed": "Falhou"
+  },
+  "workspace": {
+    "sections": {
+      "validation": "Validation",
+      "aiStudio": "AI Studio",
+      "knowledge": "Knowledge",
+      "workspace": "Workspace"
+    },
+    "projectCard": {
+      "research": "Research",
+      "evidence": "Evidence",
+      "voc": "VOC",
+      "competitors": "Competitor",
+      "openWorkspace": "Open Workspace"
+    },
+    "insight": {
+      "title": "AI Insight",
+      "description": "Validation gaps and recommended actions",
+      "aiLabel": "AI Advisor",
+      "recommended": "Recommended actions",
+      "allGood": "Core validation items look healthy.",
+      "openAgent": "Open AI Agent",
+      "gaps": {
+        "research": "Research progress is incomplete",
+        "voc": "VOC coverage is insufficient",
+        "competitors": "Competitor analysis needs more entries",
+        "evidence": "High-confidence evidence is low",
+        "validation": "Validation Score is required"
+      },
+      "feature": {
+        "voc": {
+          "interviews": "Customer interviews are insufficient",
+          "payment": "Payment intent signals are low"
+        },
+        "grants": {
+          "programs": "Few grant programs matched",
+          "deadline": "Review upcoming grant deadlines"
+        },
+        "validation": {
+          "competition": "Competition score is low",
+          "founder": "Founder fit is strong"
+        },
+        "knowledge": {
+          "chunks": "Knowledge chunks are insufficient"
+        },
+        "agent": {
+          "context": "Agent lacks sufficient evidence context"
+        }
+      }
+    },
+    "breadcrumb": {
+      "workspace": "Workspace"
+    }
+  },
+  "research": {
+    "title": "Research Plan",
+    "description": "Validation research plans for {project}",
+    "newPlan": "New Research Plan",
+    "createPlan": "Create research plan",
+    "importSample": "Import sample",
+    "emptyTitle": "No research plans yet",
+    "emptyDescription": "Define market, customer, and competitor investigations to start validation.",
+    "summary": "{completed} / {total} completed",
+    "progressByType": "Research Progress",
+    "columns": {
+      "title": "Title",
+      "type": "Type",
+      "priority": "Priority",
+      "status": "Status"
+    },
+    "recommendations": {
+      "market": "Start with market size research",
+      "customer": "Design customer pain-point interviews",
+      "competitor": "Map direct and indirect competitors"
+    }
+  },
+  "evidence": {
+    "title": "Evidence",
+    "description": "Validation evidence for {project}",
+    "newEvidence": "New Evidence",
+    "createEvidence": "Add evidence",
+    "importSample": "Import sample evidence",
+    "emptyTitle": "No evidence yet",
+    "emptyDescription": "Add market data, reports, and statistics to strengthen validation confidence.",
+    "emptyFilteredTitle": "No evidence matches your filters",
+    "emptyFilteredDescription": "Adjust filters or add new evidence.",
+    "totalCount": "{count} total",
+    "totalCountLabel": "Total",
+    "confidence": "Confidence",
+    "source": "Source",
+    "date": "Date",
+    "recommendations": {
+      "market": "Add market size statistics",
+      "statista": "Register Statista / public data sources",
+      "report": "Link industry report PDFs"
+    },
+    "columns": {
+      "title": "Title"
+    }
+  },
+  "competitors": {
+    "title": "Competitor Intelligence",
+    "description": "Competitive landscape for {project}",
+    "newCompetitor": "New Competitor",
+    "addCompetitor": "Add competitor",
+    "importSample": "Import sample competitors",
+    "compareMatrix": "Compare Matrix",
+    "emptyTitle": "No competitors yet",
+    "emptyDescription": "Map the landscape using Leader / Challenger / Follower positions.",
+    "totalCount": "{count} total",
+    "matrixGroup": "{count} companies",
+    "recommendations": {
+      "direct": "Add at least 2 direct competitors",
+      "leader": "Analyze market leader positioning",
+      "differentiation": "Document differentiation clearly"
+    }
+  },
+  "aiStudio": {
+    "title": "AI Studio",
+    "description": "AI document workspace for {project}",
+    "badge": "AI Workspace",
+    "status": {
+      "ready": "Ready",
+      "generate": "Generate",
+      "generating": "Generating…",
+      "completed": "Completed",
+      "draft": "Draft"
+    },
+    "open": "Open",
+    "generate": "Generate",
+    "regenerate": "Regenerate",
+    "docCount": "{count} docs",
+    "items": {
+      "report": "Validation Report",
+      "reportDesc": "GO / NO GO validation report",
+      "businessPlan": "Business Plan",
+      "businessPlanDesc": "Investor-ready business plan",
+      "prd": "PRD",
+      "prdDesc": "Product requirements document",
+      "devSpec": "Development Spec",
+      "devSpecDesc": "Development spec and architecture"
+    },
+    "workspaceTitle": "Document Pipeline"
+  },
+  "voc": {
+    "title": "Voice of Customer",
+    "description": "Customer insights and pain points for {project}",
+    "summaryDashboard": "Summary Dashboard",
+    "newEntry": "New VOC Entry",
+    "createEntry": "Create VOC entry",
+    "importSample": "Import sample VOC",
+    "emptyTitle": "No VOC entries yet",
+    "emptyDescription": "Collect customer interviews and surveys to validate problem-solution fit.",
+    "emptyFilteredTitle": "No VOC entries match your filters",
+    "emptyFilteredDescription": "Adjust filters or add new VOC data.",
+    "kpi": {
+      "total": "Total",
+      "critical": "Critical Pain",
+      "payment": "Payment Intent",
+      "interview": "Interviews",
+      "survey": "Surveys"
+    },
+    "recommendations": {
+      "interview": "Conduct 5+ customer interviews",
+      "pain": "Document critical pain points",
+      "payment": "Capture willingness-to-pay signals"
+    },
+    "painDashboard": {
+      "interviews": "Interviews",
+      "highPain": "High Pain Signals",
+      "paymentIntent": "Payment Intent",
+      "severityChart": "Pain Severity Distribution",
+      "cardsTitle": "Customer Pain Points"
+    }
+  },
+  "grants": {
+    "title": "Government Grants",
+    "description": "Government support programs for {project}",
+    "dashboard": "Grant Dashboard",
+    "newGrant": "New Grant",
+    "addGrant": "Add grant program",
+    "importSample": "Import sample grants",
+    "emptyTitle": "No grant programs yet",
+    "emptyDescription": "Map government funding opportunities and track fit scores.",
+    "emptyFilteredTitle": "No grants match your filters",
+    "emptyFilteredDescription": "Adjust filters or add new grant programs.",
+    "kpi": {
+      "total": "Total Grants",
+      "open": "Open",
+      "deadline": "Upcoming Deadlines",
+      "avgFit": "Average Fit",
+      "funding": "Funding Programs"
+    },
+    "recommendations": {
+      "prestartup": "Add pre-startup support programs",
+      "rnd": "Review R&D grant eligibility",
+      "deadline": "Track upcoming application deadlines"
+    }
+  },
+  "validation": {
+    "title": "Validation Score",
+    "description": "GO / NO GO evaluation for {project}",
+    "emptyTitle": "No validation score yet",
+    "emptyDescription": "Run a structured validation evaluation to get a GO / NO GO decision.",
+    "createScore": "Create validation score",
+    "importSample": "Import sample score",
+    "editTitle": "Edit Validation Score",
+    "history": "History",
+    "summary": "Summary",
+    "newEvaluation": "New Evaluation",
+    "totalScore": "Total Score",
+    "comment": "Consultant Comment",
+    "kpi": {
+      "total": "Total Score",
+      "decision": "Decision"
+    },
+    "recommendations": {
+      "market": "Complete market size research first",
+      "evidence": "Add high-confidence evidence",
+      "voc": "Collect 20+ VOC entries"
+    }
+  },
+  "reports": {
+    "title": "Validation Reports",
+    "description": "AI-generated validation reports for {project}",
+    "newReport": "New Report",
+    "createReport": "Generate report",
+    "importSample": "Import sample report",
+    "emptyTitle": "No reports yet",
+    "emptyDescription": "Generate a validation report after completing research and evidence collection.",
+    "kpi": {
+      "generated": "Generated",
+      "draft": "Draft",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "updated": "Last Updated"
+    },
+    "recommendations": {
+      "validation": "Complete Validation Score first",
+      "evidence": "Add 10+ evidence items",
+      "export": "Export report for stakeholders"
+    }
+  },
+  "businessPlan": {
+    "title": "Business Plan",
+    "description": "Investor-ready business plan for {project}",
+    "newPlan": "New Business Plan",
+    "generate": "Generate business plan",
+    "importSample": "Import sample plan",
+    "emptyTitle": "No business plans yet",
+    "emptyDescription": "Generate a business plan from your validation data and evidence.",
+    "recommendations": {
+      "validation": "Complete Validation Score first",
+      "market": "Include market size analysis",
+      "grant": "Align with grant program requirements"
+    }
+  },
+  "prd": {
+    "title": "Product Requirements",
+    "description": "PRD documents for {project}",
+    "newPrd": "New PRD",
+    "generate": "Generate PRD",
+    "importSample": "Import sample PRD",
+    "emptyTitle": "No PRD documents yet",
+    "emptyDescription": "Generate a PRD from your business plan and validation results.",
+    "recommendations": {
+      "businessPlan": "Complete Business Plan first",
+      "features": "Define MVP feature scope",
+      "metrics": "Add success metrics"
+    }
+  },
+  "devSpec": {
+    "title": "Development Spec",
+    "description": "Technical specification for {project}",
+    "newSpec": "New Dev Spec",
+    "generate": "Generate dev spec",
+    "importSample": "Import sample spec",
+    "createPrdFirst": "Create PRD first",
+    "emptyTitle": "No development specs yet",
+    "emptyDescription": "Generate a development spec from your PRD.",
+    "emptyNoPrdDescription": "Create a PRD before generating a development spec.",
+    "kpi": {
+      "prdReady": "PRD Ready"
+    },
+    "recommendations": {
+      "architecture": "Define system architecture",
+      "api": "Document API endpoints",
+      "stack": "Specify tech stack"
+    }
+  },
+  "documents": {
+    "kpi": {
+      "total": "Total",
+      "draft": "Draft",
+      "generating": "Generating",
+      "completed": "Completed"
+    }
+  },
+  "intelligence": {
+    "platformTitle": "AI Startup Intelligence",
+    "platformSubtitle": "AI Startup Intelligence Platform",
+    "emptyDesc": "Create a project to see readiness scores, expert opinions, and recommended actions.",
+    "startupReadiness": "Startup Readiness",
+    "grade": "Grade",
+    "decision": "Decision",
+    "ranking": "Ranking",
+    "readinessTitle": "Readiness Overview",
+    "readiness": {
+      "startup": "Startup Readiness",
+      "investment": "Investment Readiness",
+      "grant": "Grant Readiness",
+      "ai": "AI Readiness"
+    },
+    "status": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "needsWork": "Needs Work",
+      "critical": "Critical"
+    },
+    "actionCenter": "Action Center",
+    "actionCenterDesc": "Priority actions to improve your validation score",
+    "action": {
+      "priority": "Priority {n}",
+      "allComplete": "All priority actions completed",
+      "scoreImpact": "+{points} score impact",
+      "timeWeeks": "~{weeks} weeks",
+      "timeDays": "~3 days",
+      "statusPending": "Pending"
+    },
+    "riskTimeline": "Risk & Timeline",
+    "recentActivity": "Recent Activity",
+    "expertTitle": "Expert Opinion",
+    "expertDesc": "Multi-disciplinary perspectives on your startup thesis",
+    "confidenceIndex": "Confidence Index",
+    "detailTable": "Detailed Records",
+    "expert": {
+      "insufficient": "Insufficient data for a confident opinion. Complete research and validation first.",
+      "vc": {
+        "label": "VC Opinion",
+        "positive": "Market size and business model show investable signals. Due diligence on unit economics recommended.",
+        "neutral": "Market opportunity is plausible but requires stronger traction and clearer moat before Series A.",
+        "negative": "Market validation is weak. Revisit TAM analysis and revenue model before investor conversations."
+      },
+      "pm": {
+        "label": "PM Opinion",
+        "positive": "Problem-solution fit is well supported by VOC data. MVP scope can be narrowed confidently.",
+        "neutral": "Customer pain is documented but sample size is limited. Run more structured interviews.",
+        "negative": "Problem hypothesis lacks customer evidence. Prioritize discovery before building features."
+      },
+      "cto": {
+        "label": "CTO Opinion",
+        "positive": "Technical execution path is feasible with current evidence base. Architecture decisions can proceed.",
+        "neutral": "Core technical risks are identified but need deeper validation on scalability and integrations.",
+        "negative": "Execution feasibility is unclear. Add technical evidence and define MVP architecture."
+      },
+      "marketing": {
+        "label": "Marketing Opinion",
+        "positive": "Competitive positioning is differentiated. GTM narrative can be sharpened for early adopters.",
+        "neutral": "Competitive landscape is mapped but differentiation message needs refinement.",
+        "negative": "Market positioning is undifferentiated. Complete competitor analysis and value proposition work."
+      }
+    },
+    "aiRecommendation": "AI Recommendation",
+    "fundingProbability": "Funding Probability",
+    "confidence": "Confidence",
+    "confidenceMeter": "Confidence Meter",
+    "topInsights": "Top Insights",
+    "whyVerdict": "Why this verdict?",
+    "growthTimeline": "Growth Timeline",
+    "dataCards": "Evidence Cards",
+    "rawData": "Raw Data",
+    "evidenceSnapshot": "Evidence Snapshot",
+    "categories": {
+      "startup": "Startup",
+      "investment": "Investment",
+      "technology": "Technology",
+      "government": "Government",
+      "market": "Market Research",
+      "problem": "Customer Research",
+      "competition": "Competition",
+      "businessModel": "Business Model"
+    },
+    "sentiment": {
+      "positive": "Positive",
+      "neutral": "Neutral",
+      "negative": "Negative"
+    },
+    "reliability": {
+      "excellent": "Highly Reliable",
+      "reliable": "Reliable",
+      "moderate": "Moderate",
+      "low": "Low Confidence"
+    },
+    "summary": {
+      "insufficient": "Insufficient validation data. Complete research, VOC, and evidence collection to unlock AI recommendations.",
+      "goStrong": "Strong GO signal. Market, evidence, and customer data support proceeding with confidence.",
+      "go": "GO recommendation. Core validation criteria are met with manageable risk.",
+      "review": "Conditional GO — proceed with targeted improvements in weak score categories.",
+      "hold": "HOLD recommendation. Critical validation gaps require resolution before investment.",
+      "needVoc": "Customer evidence is insufficient. VOC collection should be the immediate priority.",
+      "needGrants": "Government grant mapping is incomplete. Explore funding programs to de-risk capital needs.",
+      "needCompetitors": "Competitive landscape is under-mapped. Add competitors before final GO decision.",
+      "default": "Validation in progress. Continue building evidence across all categories."
+    },
+    "insights": {
+      "marketStrong": "Strong market validation signals",
+      "marketReview": "Market size requires additional evidence",
+      "competitionLow": "Competitive pressure appears manageable",
+      "competitionReview": "Competition score needs improvement",
+      "grantFit": "Government grant programs show good fit",
+      "pmfPossible": "Product-market fit signals emerging",
+      "customerRisk": "Customer acquisition risk remains elevated",
+      "vcInterest": "VC interest indicators increasing"
+    },
+    "reasoning": {
+      "market": "Market Size",
+      "competition": "Competition",
+      "execution": "Execution",
+      "funding": "Funding Readiness"
+    },
+    "evidence": {
+      "summary": {
+        "strong": "Current market evidence is sufficient to support validation decisions.",
+        "moderate": "Evidence base is growing but high-confidence sources should be expanded.",
+        "weak": "Evidence is insufficient. Prioritize adding market data and industry reports."
+      },
+      "insights": {
+        "sufficient": "High-confidence evidence meets validation threshold",
+        "needMore": "More evidence needed for reliable AI analysis",
+        "addHigh": "Add high-confidence sources to strengthen thesis",
+        "depth": "Evidence depth supports investor conversations",
+        "volume": "Increase evidence volume for stronger confidence"
+      }
+    },
+    "voc": {
+      "summary": {
+        "strong": "VOC coverage is strong. Customer pain and payment intent are well documented.",
+        "moderate": "VOC data is emerging. Continue interviews to strengthen problem validation.",
+        "weak": "VOC coverage is insufficient for confident customer validation."
+      },
+      "insights": {
+        "pain": "Critical pain points are clearly documented",
+        "needPain": "Document more critical customer pain points",
+        "payment": "Payment intent signals need strengthening",
+        "interviews": "Interview coverage meets validation threshold",
+        "needInterviews": "Conduct more structured customer interviews"
+      }
+    },
+    "grants": {
+      "summary": {
+        "strong": "Multiple grant programs show strong fit for this startup stage.",
+        "moderate": "Grant opportunities exist but fit scores vary. Review eligibility criteria.",
+        "weak": "No grant programs mapped. Explore government support options."
+      },
+      "insights": {
+        "fit": "Review grant fit scores and eligibility",
+        "deadlines": "Upcoming deadlines require immediate attention",
+        "programs": "Add more grant programs to the pipeline",
+        "funding": "Funding-type grants available",
+        "rnd": "Consider R&D grant programs"
+      }
+    },
+    "validation": {
+      "summary": {
+        "empty": "No validation score yet. Run evaluation to unlock AI insights.",
+        "go": "Validation supports GO. Investment and execution readiness are aligned.",
+        "review": "Conditional validation — address weak categories before scaling.",
+        "hold": "Validation indicates significant risk. Revisit core assumptions."
+      },
+      "insights": {
+        "run": "Run Validation Score to generate AI analysis",
+        "founder": "Founder-market fit is a strength",
+        "founderReview": "Founder fit requires additional validation"
+      }
+    },
+    "reports": {
+      "summary": {
+        "strong": "Validation reports are ready for stakeholder distribution.",
+        "moderate": "Reports in progress. Complete generation for full analysis.",
+        "weak": "No reports generated. Create a validation report from current data."
+      }
+    },
+    "businessPlan": {
+      "summary": {
+        "strong": "Business plan is investor-ready.",
+        "moderate": "Business plan draft exists. Refine before investor use.",
+        "weak": "Generate a business plan from validation data."
+      }
+    },
+    "prd": {
+      "summary": {
+        "strong": "PRD documents define clear product scope.",
+        "moderate": "PRD in draft. Complete before development planning.",
+        "weak": "Create a PRD from business plan and validation results."
+      }
+    },
+    "devSpec": {
+      "summary": {
+        "strong": "Development specs are ready for engineering handoff.",
+        "moderate": "Dev spec in progress. Complete architecture documentation.",
+        "weak": "Generate development spec from PRD."
+      }
+    },
+    "knowledge": {
+      "summary": {
+        "strong": "Knowledge base is ready for AI-powered queries.",
+        "moderate": "Knowledge processing underway. Complete remaining documents.",
+        "weak": "Process evidence into searchable knowledge for AI analysis."
+      },
+      "insights": {
+        "ready": "Knowledge chunks available for AI queries",
+        "process": "Process evidence to build knowledge base",
+        "chunks": "Knowledge depth supports AI consultant",
+        "more": "Add more evidence sources for richer AI context"
+      }
+    },
+    "documents": {
+      "insights": {
+        "ready": "Document ready for review and export",
+        "draft": "Draft in progress — complete generation",
+        "generating": "AI generation in progress",
+        "generate": "Generate document from validation data"
+      }
+    },
+    "decisionTitle": "Decision Analysis",
+    "decisionDesc": "Why LaunchLens recommends this verdict",
+    "chartsTitle": "Analytics",
+    "riskHeatmap": "Risk Heatmap",
+    "scoreBreakdown": "Score Breakdown",
+    "risk": {
+      "low": "Low Risk",
+      "medium": "Moderate",
+      "high": "Elevated",
+      "critical": "Critical"
+    },
+    "executiveSummary": "Executive Summary",
+    "aiStudio": {
+      "summary": {
+        "strong": "Document portfolio is investor-ready. Review, export, and share with stakeholders.",
+        "moderate": "Core documents exist. Complete remaining AI Studio outputs for a full package.",
+        "weak": "No AI documents generated yet. Start with the Validation Report."
+      },
+      "insights": {
+        "report": "Validation report available for review",
+        "needReport": "Generate validation report first",
+        "plan": "Business plan supports fundraising narrative",
+        "needPlan": "Business plan not yet generated",
+        "portfolio": "Multi-document portfolio strengthens credibility",
+        "start": "Begin with Validation Report generation"
+      }
+    },
+    "research": {
+      "summary": {
+        "strong": "Research coverage is comprehensive. Core validation topics are documented.",
+        "moderate": "Research is underway. Complete remaining plans to strengthen market thesis.",
+        "weak": "Research coverage is insufficient. Start with market size and customer analysis."
+      },
+      "insights": {
+        "coverage": "Research plans cover key validation dimensions",
+        "expand": "Expand research across market, customer, and competition",
+        "competitor": "Competitive research completed",
+        "needCompetitor": "Add competitor research plan",
+        "inProgress": "Active research plans in progress",
+        "start": "Create your first research plan"
+      }
+    },
+    "competitors": {
+      "summary": {
+        "strong": "Competitive landscape is well mapped with clear positioning.",
+        "moderate": "Competitor coverage is emerging. Map market positions for differentiation.",
+        "weak": "Competitive analysis is insufficient. Identify direct competitors first."
+      },
+      "insights": {
+        "landscape": "Direct competitor landscape is documented",
+        "needDirect": "Add direct competitors to the landscape",
+        "positioned": "Market positions mapped across key players",
+        "mapPosition": "Assign market position to each competitor",
+        "leaders": "Market leaders identified for differentiation strategy",
+        "identifyLeaders": "Identify market leaders in your category"
+      },
+      "categories": {
+        "direct": "Direct",
+        "indirect": "Indirect",
+        "substitute": "Substitute",
+        "leaders": "Market Leaders"
+      },
+      "matrix": {
+        "title": "Competitive Positioning Matrix",
+        "highThreat": "High Threat",
+        "lowThreat": "Low Threat",
+        "highShare": "High Share",
+        "lowShare": "Low Share",
+        "newcomer": "New Entrants",
+        "challenger": "Challengers",
+        "follower": "Followers",
+        "leader": "Market Leaders",
+        "unmapped": "Unmapped"
+      }
+    }
+  },
+  "landing": {
+    "eyebrow": "Enterprise AI Intelligence",
+    "heroTitle": "Validate startups like a VC — with AI that leads with insight.",
+    "heroSubtitle": "LaunchLens turns research, evidence, and validation into executive-grade decisions. Conclusions first, data when you need it.",
+    "ctaPrimary": "Open Dashboard",
+    "ctaSecondary": "Start New Project",
+    "valueAiTitle": "AI-First Decisions",
+    "valueAiDesc": "GO, funding probability, and expert consensus — before you open a spreadsheet.",
+    "valueDataTitle": "Evidence-Driven",
+    "valueDataDesc": "Market, VOC, competitors, and grants unified into one intelligence layer.",
+    "valueDecisionTitle": "Executive Ready",
+    "valueDecisionDesc": "Typography-first dashboards built for founders, advisors, and investors.",
+    "recentProjects": "Recent Projects",
+    "recentProjectsDesc": "Pick up where you left off.",
+    "viewAll": "View all",
+    "updatedAgo": "Updated {time}",
+    "dashboardCtaTitle": "Ready to decide?",
+    "dashboardCtaDesc": "Your validation workspace is one click away.",
+    "openDashboard": "Open Dashboard",
+    "footerFramework": "Powered by the AI Startup Validation Framework",
+    "statDecisions": "AI Verdict",
+    "statReadiness": "Avg. Readiness",
+    "statConfidence": "Confidence Index"
+  },
+  "projectWorkspace": {
+    "eyebrow": "Workspace Overview",
+    "progressTitle": "Validation Progress",
+    "modulesTitle": "Intelligence Modules",
+    "modulesDesc": "Decision-first modules — conclusion before data.",
+    "viewDashboard": "Open Command Center",
+    "openModule": "View intelligence"
   }
 }

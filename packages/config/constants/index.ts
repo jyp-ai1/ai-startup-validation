@@ -1,9 +1,13 @@
 /** Application-wide shared constants. */
 
-export const APP_NAME = 'AI Startup Validation Framework' as const;
+export const APP_NAME = 'LaunchLens' as const;
+
+export const APP_TAGLINE = 'AI Startup Intelligence Platform' as const;
+
+export const LEGACY_FRAMEWORK_NAME = 'AI Startup Validation Framework' as const;
 
 export const APP_DESCRIPTION =
-  'AI-powered startup idea validation platform' as const;
+  'AI-powered startup intelligence and validation platform' as const;
 
 export const DEFAULT_LOCALE = 'ko' as const;
 

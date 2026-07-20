@@ -2,7 +2,45 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Master plan:** [MASTER_PLAN.md](./MASTER_PLAN.md) · **Status:** Sprint 0–14 ✅ Complete
+> **Master plan:** [MASTER_PLAN.md](./MASTER_PLAN.md) · **Status:** Sprint 0–14 ✅ Complete  
+> **Product Experience:** [LAUNCHLENS_PRODUCT_EXPERIENCE.md](./LAUNCHLENS_PRODUCT_EXPERIENCE.md) v1.0 (primary)  
+> **Design System:** [LAUNCHLENS_DESIGN_SYSTEM.md](./LAUNCHLENS_DESIGN_SYSTEM.md) v1.0 (secondary)
+
+---
+
+## Sprint PX 1.0 — Product Experience Bible 🔄
+
+**Status:** Draft complete — awaiting PM Design Review  
+**Goal:** Define *why* LaunchLens exists and how it should feel. **No code.**  
+**Design 5.0 / 5.1 implementation:** ❌ **Blocked** until PX Review sign-off
+
+| Task | Status | Owner |
+|------|--------|-------|
+| Product Philosophy & positioning | ✅ Draft | PM/AI |
+| Brand Voice | ✅ Draft | PM/AI |
+| AI + Expert Personas (VC, PM, CTO, Marketing) | ✅ Draft | PM/AI |
+| Information Hierarchy (Decision → Evidence → Documents) | ✅ Draft | PM/AI |
+| Decision First Principle | ✅ Draft | PM/AI |
+| User Journey + Success Moment | ✅ Draft | PM/AI |
+| Empty State / Micro Copy / Motion / Accessibility | ✅ Draft | PM/AI |
+| AI Summary / Action Center / Dashboard Rules | ✅ Draft | PM/AI |
+| Future Vision | ✅ Draft | PM/AI |
+| PM Design Review sign-off | ⏳ Pending | PM |
+
+**Deliverable:** [docs/LAUNCHLENS_PRODUCT_EXPERIENCE.md](./LAUNCHLENS_PRODUCT_EXPERIENCE.md)
+
+**Roadmap after review:**
+1. PX 1.0 Review
+2. Design 5.1 — Shell + Dashboard
+3. Design 5.2 — Project + Evidence + Research
+4. Design 5.3 — AI Studio + AI Consultant
+
+---
+
+## Sprint Design 5.0A — Design System (companion) ✅ Draft
+
+**Status:** Draft — subordinate to Product Experience Bible  
+**Deliverable:** [docs/LAUNCHLENS_DESIGN_SYSTEM.md](./LAUNCHLENS_DESIGN_SYSTEM.md)
 
 ---
 

@@ -21,8 +21,8 @@ export async function generateMetadata({
 
   return {
     title: project
-      ? `New Research | ${project.title} | AI Startup Validation Framework`
-      : 'New Research | AI Startup Validation Framework',
+      ? `New Research | ${project.title} | LaunchLens`
+      : 'New Research | LaunchLens',
   };
 }
 

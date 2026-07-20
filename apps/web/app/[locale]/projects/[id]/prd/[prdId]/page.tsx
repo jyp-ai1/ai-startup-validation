@@ -17,10 +17,10 @@ export async function generateMetadata({ params }: PRDDetailPageProps): Promise<
 
   return {
     title: prd
-      ? `${prd.title} | AI Startup Validation Framework`
+      ? `${prd.title} | LaunchLens`
       : project
-        ? `PRD | ${project.title} | AI Startup Validation Framework`
-        : 'PRD | AI Startup Validation Framework',
+        ? `PRD | ${project.title} | LaunchLens`
+        : 'PRD | LaunchLens',
   };
 }
 

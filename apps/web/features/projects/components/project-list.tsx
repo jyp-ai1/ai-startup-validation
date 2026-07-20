@@ -4,53 +4,25 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { StartupProject } from '@repo/types/validation';
-import { Button, EmptyState, PageHeader } from '@repo/ui';
+import type { ProjectOverviewCard } from '@/features/dashboard/services/dashboard-service';
+import { Button } from '@repo/ui';
 
-import { ProjectCard } from './project-card';
+import { ProjectWorkspaceCard } from './project-workspace-card';
+import { WorkspaceEmpty, WorkspaceHeader } from '@/components/workspace';
 
 type ProjectListProps = {
-  projects: StartupProject[];
+  overviews: ProjectOverviewCard[];
 };
 
-export function ProjectList({ projects }: ProjectListProps) {
+export function ProjectList({ overviews }: ProjectListProps) {
   const t = useTranslations();
-
-  if (projects.length === 0) {
-    return (
-      <>
-        <PageHeader
-          title={t('projects.title')}
-          description={t('projects.description')}
-          actions={
-            <Button asChild>
-              <Link href="/projects/new">
-                <Plus className="size-4" />
-                {t('projects.newProject')}
-              </Link>
-            </Button>
-          }
-        />
-        <div className="mt-8">
-          <EmptyState
-            title={t('projects.emptyTitle')}
-            description={t('projects.emptyDescription')}
-            action={
-              <Button asChild>
-                <Link href="/projects/new">{t('projects.newProject')}</Link>
-              </Button>
-            }
-          />
-        </div>
-      </>
-    );
-  }
 
   return (
     <>
-      <PageHeader
+      <WorkspaceHeader
+        eyebrow={t('meta.appTagline')}
         title={t('projects.title')}
-        description={t('projects.description')}
+        description={t('projects.workspaceDesc')}
         actions={
           <Button asChild>
             <Link href="/projects/new">
@@ -60,11 +32,25 @@ export function ProjectList({ projects }: ProjectListProps) {
           </Button>
         }
       />
-      <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+
+      {overviews.length === 0 ? (
+        <WorkspaceEmpty
+          title={t('projects.emptyTitle')}
+          description={t('projects.emptyDescription')}
+          primaryAction={{ label: t('projects.newProject'), href: '/projects/new' }}
+          recommendations={[
+            t('projects.recommendations.sample'),
+            t('projects.recommendations.validation'),
+            t('projects.recommendations.research'),
+          ]}
+        />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-2">
+          {overviews.map((overview) => (
+            <ProjectWorkspaceCard key={overview.project.id} overview={overview} />
+          ))}
+        </div>
+      )}
     </>
   );
 }

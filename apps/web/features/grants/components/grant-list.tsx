@@ -1,8 +1,14 @@
+'use client';
+
 import Link from 'next/link';
 import { LayoutDashboard, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
+import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
+import { IntelligencePage } from '@/components/intelligence';
+import { buildGrantInsights } from '@/lib/intelligence/build-feature-insights';
 import type { GovernmentGrant, StartupProject } from '@repo/types/validation';
-import { Button, EmptyState, PageHeader } from '@repo/ui';
+import { Button } from '@repo/ui';
 
 import type { GrantFilterParams } from '../schemas/grant-schema';
 import { GrantCard } from './grant-card';
@@ -15,66 +21,54 @@ type GrantListProps = {
 };
 
 export function GrantList({ project, grants, filters }: GrantListProps) {
+  const t = useTranslations();
   const basePath = `/projects/${project.id}/grants`;
+  const hasFilters = Boolean(
+    filters.category || filters.targetStage || filters.supportType || filters.status,
+  );
+  const insight = buildGrantInsights(grants);
 
   return (
-    <>
-      <PageHeader
-        title="Government Support"
-        description={`Grant programs for ${project.title}`}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" asChild>
-              <Link href={`${basePath}/dashboard`}>
-                <LayoutDashboard className="size-4" />
-                Dashboard
-              </Link>
-            </Button>
-            <Button asChild>
-              <Link href={`${basePath}/new`}>
-                <Plus className="size-4" />
-                New Grant
-              </Link>
-            </Button>
-          </div>
-        }
-      />
-      <div className="mt-4">
-        <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}`}>Back to project</Link>
-        </Button>
-      </div>
-
-      <div className="mt-6">
-        <GrantFilters projectId={project.id} current={filters} />
-      </div>
-
-      {grants.length === 0 ? (
-        <div className="mt-8">
-          <EmptyState
-            title="No grant programs found"
+    <IntelligencePage
+      eyebrow={t('meta.appName')}
+      title={t('grants.title')}
+      description={t('grants.description', { project: project.title })}
+      insight={insight}
+      actions={
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" asChild>
+            <Link href={`${basePath}/dashboard`}>
+              <LayoutDashboard className="size-4" />
+              {t('grants.dashboard')}
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href={`${basePath}/new`}>
+              <Plus className="size-4" />
+              {t('grants.newGrant')}
+            </Link>
+          </Button>
+        </div>
+      }
+      filters={grants.length > 0 ? <GrantFilters projectId={project.id} current={filters} /> : null}
+      emptyState={
+        grants.length === 0 ? (
+          <ConsultingEmptyState
+            title={hasFilters ? t('grants.emptyFilteredTitle') : t('grants.emptyTitle')}
             description={
-              filters.category ||
-              filters.targetStage ||
-              filters.supportType ||
-              filters.status
-                ? 'Try adjusting your filters or add a new grant program.'
-                : 'Register government support programs relevant to your startup idea.'
+              hasFilters ? t('grants.emptyFilteredDescription') : t('grants.emptyDescription')
             }
-            action={
-              <Button asChild>
-                <Link href={`${basePath}/new`}>Add Grant</Link>
-              </Button>
-            }
+            primaryLabel={t('grants.addGrant')}
+            primaryHref={`${basePath}/new`}
           />
-        </div>
-      ) : (
-        <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {grants.map((grant) => (
-            <GrantCard key={grant.id} projectId={project.id} grant={grant} />
-          ))}
-        </div>
-      )}
-    </>
+        ) : undefined
+      }
+    >
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {grants.map((grant) => (
+          <GrantCard key={grant.id} projectId={project.id} grant={grant} />
+        ))}
+      </div>
+    </IntelligencePage>
   );
 }

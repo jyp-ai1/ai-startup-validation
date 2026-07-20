@@ -1,8 +1,9 @@
 {
   "meta": {
-    "appName": "AI 스타트업 검증 프레임워크",
+    "appName": "LaunchLens",
+    "appTagline": "AI Startup Intelligence Platform",
     "appDescription": "AI 기반 스타트업 아이디어 검증 플랫폼",
-    "titleSuffix": "AI 스타트업 검증 프레임워크"
+    "titleSuffix": "LaunchLens"
   },
   "common": {
     "save": "저장",
@@ -30,7 +31,14 @@
     "footer": "MVP — 로그인 불필요",
     "groupMain": "메인",
     "groupValidation": "검증",
-    "groupSystem": "시스템"
+    "groupSystem": "설정",
+    "groupWorkspace": "워크스페이스",
+    "groupAi": "AI Studio",
+    "groupKnowledge": "Knowledge",
+    "groupIntelligence": "Intelligence",
+    "currentProject": "현재 프로젝트",
+    "recentProjects": "최근 프로젝트",
+    "searchPlaceholder": "워크스페이스 검색…"
   },
   "nav": {
     "dashboard": "대시보드",
@@ -49,14 +57,22 @@
     "grantsDesc": "정부 지원 사업을 탐색합니다.",
     "validation": "검증 점수",
     "validationDesc": "GO / NO GO 평가 결과입니다.",
-    "reports": "리포트",
+    "reports": "검증 리포트",
     "reportsDesc": "AI 생성 검증 리포트입니다.",
+    "businessPlan": "사업계획서",
+    "prd": "PRD",
+    "devSpec": "개발 명세",
+    "knowledge": "지식 베이스",
+    "agent": "AI 스타트업 에이전트",
+    "agentConsultant": "AI Consultant",
+    "aiStudio": "AI Studio",
     "settings": "설정",
     "settingsDesc": "워크스페이스 및 앱 설정입니다."
   },
   "dashboard": {
     "emptyTitle": "검증 워크스페이스에 오신 것을 환영합니다",
     "emptyDescription": "스타트업 프로젝트를 생성하여 아이디어 검증을 시작하세요.",
+    "emptyWorkspaceDesc": "프로젝트를 생성하면 Validation Score, KPI, 진행률을 한 화면에서 확인할 수 있습니다.",
     "welcome": "검증 워크스페이스",
     "welcomeDesc": "각 기능을 클릭해 화면이 정상적으로 열리는지 확인하세요.",
     "statusHint": "MVP 데모 · 로그인 없이 바로 사용 가능",
@@ -64,23 +80,245 @@
     "featuresDesc": "메뉴별 화면을 빠르게 확인할 수 있습니다.",
     "projectCount": "프로젝트 {count}개",
     "featureCount": "기능 {count}개",
-    "newProject": "새 프로젝트"
+    "newProject": "새 프로젝트",
+    "pageTitle": "Today's Status",
+    "todayStatus": "오늘의 검증 현황",
+    "validationScore": "Validation Score",
+    "points": "점",
+    "notEvaluated": "미평가",
+    "topPercent": "Top {percent}%",
+    "updatedAgo": "{time} 업데이트",
+    "noScoreHint": "아직 검증 점수가 없습니다. AI 검증을 실행해 GO / NO GO를 확인하세요.",
+    "runValidation": "검증 실행",
+    "researchProgress": "Research Progress",
+    "researchCompleted": "{completed} / {total} 완료",
+    "evidenceBreakdown": "Evidence",
+    "competitorMatrix": "Competitor Matrix",
+    "validationRadar": "Validation Breakdown",
+    "recentActivity": "Recent Activity",
+    "nextActions": "Next Recommended Action",
+    "noActivity": "최근 활동이 없습니다.",
+    "grants": "Government Grants",
+    "viewGrants": "정부지원 보기",
+    "kpi": {
+      "score": "Score",
+      "evidence": "Evidence",
+      "voc": "VOC",
+      "competitors": "Competitor"
+    },
+    "categories": {
+      "market": "Market",
+      "problem": "Problem",
+      "competition": "Competition",
+      "businessModel": "Business Model",
+      "execution": "Execution",
+      "founder": "Founder Fit"
+    },
+    "confidence": {
+      "high": "High Confidence",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "positions": {
+      "leader": "Leader",
+      "challenger": "Challenger",
+      "follower": "Follower",
+      "newcomer": "New"
+    },
+    "health": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "needsWork": "Needs Work",
+      "critical": "Critical",
+      "pending": "Pending"
+    },
+    "activity": {
+      "EVIDENCE": "Evidence 추가",
+      "VOC": "VOC 업데이트",
+      "VALIDATION": "Validation 완료",
+      "REPORT": "Report 생성",
+      "RESEARCH": "Research 업데이트",
+      "COMPETITOR": "Competitor 추가"
+    },
+    "actions": {
+      "vocVolume": "VOC 20건 이상 확보",
+      "addCompetitors": "경쟁사 3개 이상 등록",
+      "evidenceQuality": "High Confidence 근거 10건 이상",
+      "completeResearch": "Research Plan 완료",
+      "runValidation": "Validation Score 실행"
+    },
+    "timeline": {
+      "title": "워크스페이스 타임라인",
+      "recentActivity": "최근 활동",
+      "recentDocs": "최근 생성 문서",
+      "validationHistory": "Validation 이력",
+      "upcomingDeadlines": "다가오는 마감",
+      "recentAi": "최근 AI 생성 결과",
+      "noDeadlines": "다가오는 마감이 없습니다",
+      "viewHistory": "Validation 이력 보기"
+    }
   },
   "settings": {
     "emptyTitle": "워크스페이스 설정",
     "emptyDescription": "로컬 워크스페이스 설정입니다. 인증 기능은 추후 추가됩니다."
   },
   "projects": {
-    "title": "스타트업 프로젝트",
+    "title": "Projects",
     "description": "창업 아이디어 프로젝트 관리",
+    "workspaceDesc": "각 프로젝트 워크스페이스에서 Validation Score와 KPI를 확인하세요.",
     "newProject": "새 프로젝트",
     "emptyTitle": "프로젝트가 없습니다",
     "emptyDescription": "첫 번째 스타트업 아이디어 프로젝트를 생성하세요.",
     "created": "생성일",
     "deleteConfirm": "프로젝트를 삭제하시겠습니까?",
-    "deleteWarning": "영구 삭제되며 되돌릴 수 없습니다."
+    "deleteWarning": "영구 삭제되며 되돌릴 수 없습니다.",
+    "recommendations": {
+      "sample": "데모 프로젝트로 UI 흐름을 먼저 확인하세요",
+      "validation": "Validation Score를 실행해 GO / NO GO를 확인하세요",
+      "research": "Research Plan부터 체계적으로 시작하세요"
+    }
+  },
+  "workspace": {
+    "sections": {
+      "validation": "Validation",
+      "aiStudio": "AI Studio",
+      "knowledge": "Knowledge",
+      "workspace": "Workspace"
+    },
+    "breadcrumb": {
+      "workspace": "Workspace"
+    },
+    "projectCard": {
+      "research": "Research",
+      "evidence": "Evidence",
+      "voc": "VOC",
+      "competitors": "Competitor",
+      "openWorkspace": "Open Workspace"
+    },
+    "insight": {
+      "title": "AI Insight",
+      "description": "검증 갭과 추천 행동",
+      "aiLabel": "AI Advisor",
+      "recommended": "추천 행동",
+      "allGood": "현재 핵심 검증 항목이 충족되었습니다.",
+      "openAgent": "AI Agent 열기",
+      "gaps": {
+        "research": "Research 진행률이 부족합니다",
+        "voc": "VOC 데이터가 부족합니다",
+        "competitors": "경쟁사 분석이 부족합니다",
+        "evidence": "High Confidence 근거가 부족합니다",
+        "validation": "Validation Score가 필요합니다"
+      },
+      "feature": {
+        "voc": {
+          "interviews": "고객 인터뷰가 부족합니다",
+          "payment": "Payment Intent가 낮습니다"
+        },
+        "grants": {
+          "programs": "매칭된 지원 프로그램이 적습니다",
+          "deadline": "다가오는 마감일을 확인하세요"
+        },
+        "validation": {
+          "competition": "Competition Score가 낮습니다",
+          "founder": "Founder Fit은 우수합니다"
+        },
+        "knowledge": {
+          "chunks": "Knowledge Chunk가 부족합니다"
+        },
+        "agent": {
+          "context": "Agent가 사용할 근거가 충분하지 않습니다"
+        }
+      }
+    }
+  },
+  "research": {
+    "title": "Research Plan",
+    "description": "{project}의 검증 리서치 계획",
+    "newPlan": "New Research Plan",
+    "createPlan": "리서치 계획 생성",
+    "importSample": "샘플 가져오기",
+    "emptyTitle": "리서치 계획이 없습니다",
+    "emptyDescription": "시장·고객·경쟁 조사 항목을 정의해 검증을 시작하세요.",
+    "summary": "{completed} / {total} 완료",
+    "progressByType": "Research Progress",
+    "columns": {
+      "title": "Title",
+      "type": "Type",
+      "priority": "Priority",
+      "status": "Status"
+    },
+    "recommendations": {
+      "market": "Market Size 조사부터 시작",
+      "customer": "Customer Pain Point 인터뷰 설계",
+      "competitor": "Direct / Indirect 경쟁사 매핑"
+    }
+  },
+  "evidence": {
+    "title": "Evidence",
+    "description": "{project}의 검증 근거",
+    "newEvidence": "New Evidence",
+    "createEvidence": "근거 추가",
+    "importSample": "샘플 근거 가져오기",
+    "emptyTitle": "근거 자료가 없습니다",
+    "emptyDescription": "시장 데이터, 리포트, 통계를 등록해 검증 신뢰도를 높이세요.",
+    "emptyFilteredTitle": "조건에 맞는 근거가 없습니다",
+    "emptyFilteredDescription": "필터를 조정하거나 새 근거를 추가하세요.",
+    "totalCount": "총 {count}건",
+    "totalCountLabel": "Total",
+    "confidence": "Confidence",
+    "source": "Source",
+    "date": "Date",
+    "columns": {
+      "title": "Title"
+    },
+    "recommendations": {
+      "market": "시장 규모 통계 추가",
+      "statista": "Statista / KOSIS 출처 등록",
+      "report": "산업 리포트 PDF 링크 추가"
+    }
+  },
+  "competitors": {
+    "title": "Competitor Intelligence",
+    "description": "{project}의 경쟁 환경",
+    "newCompetitor": "New Competitor",
+    "addCompetitor": "경쟁사 추가",
+    "importSample": "샘플 경쟁사 가져오기",
+    "compareMatrix": "Compare Matrix",
+    "emptyTitle": "경쟁사가 없습니다",
+    "emptyDescription": "Leader / Challenger / Follower 포지션으로 경쟁 환경을 매핑하세요.",
+    "totalCount": "총 {count}개",
+    "matrixGroup": "{count} companies",
+    "recommendations": {
+      "direct": "Direct competitor 2개 이상 등록",
+      "leader": "Market Leader 포지션 분석",
+      "differentiation": "차별화 포인트 명시"
+    }
+  },
+  "aiStudio": {
+    "title": "AI Studio",
+    "description": "{project}의 AI 생성 문서 워크스페이스",
+    "badge": "AI Workspace",
+    "status": {
+      "ready": "Ready",
+      "generate": "Generate"
+    },
+    "open": "Open",
+    "generate": "Generate",
+    "regenerate": "Regenerate",
+    "docCount": "{count} docs",
+    "items": {
+      "report": "Validation Report",
+      "reportDesc": "GO / NO GO 검증 리포트",
+      "businessPlan": "Business Plan",
+      "businessPlanDesc": "투자 심사용 사업계획서",
+      "prd": "PRD",
+      "prdDesc": "제품 요구사항 문서",
+      "devSpec": "Development Spec",
+      "devSpecDesc": "개발 명세 및 아키텍처"
+    }
   },
   "projectDetail": {
+    "overviewTitle": "프로젝트 Overview",
     "researchPlans": "리서치 계획",
     "evidence": "근거 자료",
     "competitors": "경쟁사",
@@ -118,26 +356,261 @@
     "viewReports": "리포트 보기"
   },
   "agent": {
-    "title": "AI 검증 에이전트",
-    "description": "AI 창업 컨설턴트",
-    "ask": "질문하기",
-    "questionLabel": "질문을 입력하세요",
+    "title": "Validation Agent",
+    "description": "{project} AI 스타트업 컨설턴트",
+    "ask": "Agent에게 질문",
+    "questionLabel": "질문",
     "questionPlaceholder": "예: \"실버 시장 성장 근거는?\"",
     "submit": "추천 받기",
     "analyzing": "분석 중...",
     "summary": "요약",
     "recommendation": "추천",
     "sources": "출처",
-    "nextActions": "다음 액션",
-    "mockMode": "Mock 모드"
+    "nextActions": "다음 행동",
+    "mockMode": "Mock 모드",
+    "confidence": "신뢰도",
+    "similarity": "유사도",
+    "kpi": {
+      "evidence": "Evidence",
+      "highConfidence": "High Confidence",
+      "voc": "VOC",
+      "score": "Validation Score"
+    }
+  },
+  "voc": {
+    "title": "Voice of Customer",
+    "description": "{project}의 고객 인사이트",
+    "summaryDashboard": "Summary Dashboard",
+    "newEntry": "VOC 추가",
+    "createEntry": "VOC 등록",
+    "importSample": "샘플 VOC 가져오기",
+    "emptyTitle": "VOC 데이터가 없습니다",
+    "emptyDescription": "고객 인터뷰와 설문을 수집해 Problem-Solution Fit을 검증하세요.",
+    "emptyFilteredTitle": "조건에 맞는 VOC가 없습니다",
+    "emptyFilteredDescription": "필터를 조정하거나 새 VOC를 추가하세요.",
+    "kpi": {
+      "total": "Total",
+      "critical": "Critical Pain",
+      "payment": "Payment Intent",
+      "interview": "인터뷰",
+      "survey": "설문"
+    },
+    "recommendations": {
+      "interview": "고객 인터뷰 5건 이상 진행",
+      "pain": "Critical Pain Point 기록",
+      "payment": "지불 의향 신호 수집"
+    }
+  },
+  "grants": {
+    "title": "Government Grants",
+    "description": "{project}의 정부지원 프로그램",
+    "dashboard": "Grant Dashboard",
+    "newGrant": "지원사업 추가",
+    "addGrant": "지원사업 등록",
+    "importSample": "샘플 지원사업 가져오기",
+    "emptyTitle": "등록된 지원사업이 없습니다",
+    "emptyDescription": "정부 지원 프로그램을 매핑하고 적합도를 추적하세요.",
+    "emptyFilteredTitle": "조건에 맞는 지원사업이 없습니다",
+    "emptyFilteredDescription": "필터를 조정하거나 새 지원사업을 추가하세요.",
+    "kpi": {
+      "total": "Total Grant",
+      "open": "Open",
+      "deadline": "Deadline",
+      "avgFit": "Average Fit",
+      "funding": "Funding"
+    },
+    "recommendations": {
+      "prestartup": "예비창업 지원 프로그램 추가",
+      "rnd": "R&D 지원사업 적합도 검토",
+      "deadline": "마감일 임박 프로그램 확인"
+    }
+  },
+  "validation": {
+    "title": "Validation Score",
+    "description": "{project}의 GO / NO GO 평가",
+    "emptyTitle": "Validation Score가 없습니다",
+    "emptyDescription": "체계적인 검증 평가를 실행해 GO / NO GO를 확인하세요.",
+    "createScore": "Validation Score 생성",
+    "importSample": "샘플 점수 가져오기",
+    "editTitle": "Validation Score 수정",
+    "history": "이력",
+    "summary": "요약",
+    "newEvaluation": "새 평가",
+    "totalScore": "총점",
+    "comment": "컨설턴트 코멘트",
+    "kpi": {
+      "total": "Total Score",
+      "decision": "Decision"
+    },
+    "recommendations": {
+      "market": "Market Size 리서치 먼저 완료",
+      "evidence": "High Confidence 근거 추가",
+      "voc": "VOC 20건 이상 수집"
+    }
+  },
+  "reports": {
+    "title": "Validation Reports",
+    "description": "{project}의 AI 생성 검증 리포트",
+    "newReport": "New Report",
+    "createReport": "리포트 생성",
+    "importSample": "샘플 리포트 가져오기",
+    "emptyTitle": "리포트가 없습니다",
+    "emptyDescription": "Research와 Evidence를 완료한 후 검증 리포트를 생성하세요.",
+    "kpi": {
+      "generated": "Generated",
+      "draft": "Draft",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "updated": "Updated"
+    },
+    "recommendations": {
+      "validation": "Validation Score 먼저 완료",
+      "evidence": "Evidence 10건 이상 추가",
+      "export": "이해관계자용 리포트 내보내기"
+    }
+  },
+  "businessPlan": {
+    "title": "Business Plan",
+    "description": "{project}의 투자 심사용 사업계획서",
+    "newPlan": "New Business Plan",
+    "generate": "사업계획서 생성",
+    "importSample": "샘플 사업계획서 가져오기",
+    "emptyTitle": "사업계획서가 없습니다",
+    "emptyDescription": "검증 데이터와 Evidence를 기반으로 사업계획서를 생성하세요.",
+    "recommendations": {
+      "validation": "Validation Score 먼저 완료",
+      "market": "시장 규모 분석 포함",
+      "grant": "지원사업 요건과 정렬"
+    }
+  },
+  "prd": {
+    "title": "Product Requirements",
+    "description": "{project}의 PRD 문서",
+    "newPrd": "New PRD",
+    "generate": "PRD 생성",
+    "importSample": "샘플 PRD 가져오기",
+    "emptyTitle": "PRD가 없습니다",
+    "emptyDescription": "Business Plan과 검증 결과를 기반으로 PRD를 생성하세요.",
+    "recommendations": {
+      "businessPlan": "Business Plan 먼저 완료",
+      "features": "MVP 기능 범위 정의",
+      "metrics": "성공 지표 추가"
+    }
+  },
+  "devSpec": {
+    "title": "Development Spec",
+    "description": "{project}의 기술 명세",
+    "newSpec": "New Dev Spec",
+    "generate": "Dev Spec 생성",
+    "importSample": "샘플 명세 가져오기",
+    "createPrdFirst": "PRD 먼저 생성",
+    "emptyTitle": "개발 명세가 없습니다",
+    "emptyDescription": "PRD를 기반으로 Development Spec을 생성하세요.",
+    "emptyNoPrdDescription": "Development Spec 생성 전 PRD가 필요합니다.",
+    "kpi": {
+      "prdReady": "PRD Ready"
+    },
+    "recommendations": {
+      "architecture": "시스템 아키텍처 정의",
+      "api": "API 엔드포인트 문서화",
+      "stack": "기술 스택 명시"
+    }
+  },
+  "documents": {
+    "kpi": {
+      "total": "Total",
+      "draft": "Draft",
+      "generating": "Generating",
+      "completed": "Completed"
+    }
   },
   "knowledge": {
-    "title": "지식 베이스",
-    "description": "Evidence 기반 AI 검색",
-    "generate": "Knowledge 생성",
-    "query": "AI 질의",
+    "title": "Knowledge Base",
+    "description": "{project}의 Evidence 기반 지식",
+    "generate": "Knowledge 구축",
+    "aiQuery": "AI Query",
+    "processEvidence": "Evidence 처리",
+    "importSample": "샘플 Knowledge 가져오기",
     "emptyTitle": "Knowledge 문서가 없습니다",
-    "emptyDescription": "Evidence를 검색 가능한 Knowledge로 변환하세요."
+    "emptyDescription": "Evidence를 처리해 AI Query용 검색 가능한 지식을 구축하세요.",
+    "kpi": {
+      "total": "Total",
+      "ready": "Ready",
+      "processing": "Processing",
+      "pending": "Pending"
+    },
+    "columns": {
+      "title": "Title",
+      "source": "Source",
+      "status": "Status",
+      "created": "Created"
+    },
+    "recommendations": {
+      "evidence": "처리 전 Evidence 추가",
+      "chunks": "리포트에서 Knowledge Chunk 구축",
+      "query": "처리 후 AI Query 시도"
+    }
+  },
+  "intelligence": {
+    "platformTitle": "AI Startup Intelligence",
+    "platformSubtitle": "AI Startup Intelligence Platform",
+    "emptyDesc": "프로젝트를 생성하면 Readiness Score, Expert Opinion, Action Center를 확인할 수 있습니다.",
+    "startupReadiness": "Startup Readiness",
+    "grade": "Grade",
+    "decision": "Decision",
+    "ranking": "Ranking",
+    "readinessTitle": "Readiness Overview",
+    "readiness": {
+      "startup": "Startup Readiness",
+      "investment": "Investment Readiness",
+      "grant": "Grant Readiness",
+      "ai": "AI Readiness"
+    },
+    "status": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "needsWork": "Needs Work",
+      "critical": "Critical"
+    },
+    "actionCenter": "Action Center",
+    "actionCenterDesc": "Validation Score를 높이기 위한 우선순위 행동",
+    "action": {
+      "priority": "Priority {n}",
+      "allComplete": "모든 우선순위 행동이 완료되었습니다"
+    },
+    "riskTimeline": "Risk & Timeline",
+    "recentActivity": "Recent Activity",
+    "expertTitle": "Expert Opinion",
+    "expertDesc": "스타트업 가설에 대한 다학제적 관점",
+    "confidenceIndex": "Confidence Index",
+    "detailTable": "Detailed Records",
+    "expert": {
+      "insufficient": "신뢰할 수 있는 의견을 내기에 데이터가 부족합니다. Research와 Validation을 먼저 완료하세요.",
+      "vc": {
+        "label": "VC Opinion",
+        "positive": "시장 규모와 비즈니스 모델에서 투자 가능 신호가 보입니다. Unit Economics 실사를 권장합니다.",
+        "neutral": "시장 기회는 그럴듯하지만 Series A 전 Traction과 Moat를 더 강화해야 합니다.",
+        "negative": "시장 검증이 약합니다. 투자자 미팅 전 TAM 분석과 Revenue Model을 재검토하세요."
+      },
+      "pm": {
+        "label": "PM Opinion",
+        "positive": "VOC 데이터로 Problem-Solution Fit이 잘 뒷받침됩니다. MVP 범위를 좁혀도 됩니다.",
+        "neutral": "고객 Pain은 기록됐지만 표본이 부족합니다. 구조화된 인터뷰를 더 진행하세요.",
+        "negative": "Problem 가설에 고객 근거가 부족합니다. 기능 개발 전 Discovery를 우선하세요."
+      },
+      "cto": {
+        "label": "CTO Opinion",
+        "positive": "현재 Evidence 기준 기술 실행 경로가 실현 가능합니다. 아키텍처 결정을 진행해도 됩니다.",
+        "neutral": "핵심 기술 리스크는 파악됐지만 확장성·연동 검증이 더 필요합니다.",
+        "negative": "실행 가능성이 불명확합니다. 기술 Evidence와 MVP 아키텍처를 정의하세요."
+      },
+      "marketing": {
+        "label": "Marketing Opinion",
+        "positive": "경쟁 포지셔닝이 차별화됐습니다. Early Adopter용 GTM 내러티브를 다듬을 수 있습니다.",
+        "neutral": "경쟁 환경은 매핑됐지만 차별화 메시지를 더 정교화해야 합니다.",
+        "negative": "시장 포지셔닝이 획일적입니다. 경쟁사 분석과 Value Proposition 작업을 완료하세요."
+      }
+    }
   },
   "status": {
     "draft": "초안",

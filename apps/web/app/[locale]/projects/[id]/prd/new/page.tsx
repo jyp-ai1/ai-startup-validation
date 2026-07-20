@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: NewPRDPageProps): Promise<Met
 
   return {
     title: project
-      ? `New PRD | ${project.title} | AI Startup Validation Framework`
-      : 'New PRD | AI Startup Validation Framework',
+      ? `New PRD | ${project.title} | LaunchLens`
+      : 'New PRD | LaunchLens',
   };
 }
 

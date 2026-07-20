@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: KnowledgeListPageProps): Prom
 
   return {
     title: project
-      ? `Knowledge Base | ${project.title} | AI Startup Validation Framework`
-      : 'Knowledge Base | AI Startup Validation Framework',
+      ? `Knowledge Base | ${project.title} | LaunchLens`
+      : 'Knowledge Base | LaunchLens',
   };
 }
 

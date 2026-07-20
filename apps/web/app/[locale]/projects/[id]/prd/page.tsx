@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: PRDListPageProps): Promise<Me
 
   return {
     title: project
-      ? `PRD | ${project.title} | AI Startup Validation Framework`
-      : 'PRD | AI Startup Validation Framework',
+      ? `PRD | ${project.title} | LaunchLens`
+      : 'PRD | LaunchLens',
   };
 }
 

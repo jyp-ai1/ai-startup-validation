@@ -1,18 +1,16 @@
-import Link from 'next/link';
-import { Plus } from 'lucide-react';
+'use client';
 
-import type { Evidence, StartupProject } from '@repo/types/validation';
-import {
-  Button,
-  EmptyState,
-  PageHeader,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@repo/ui';
+import Link from 'next/link';
+import { Plus, Star } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
+import { IntelligencePage } from '@/components/intelligence';
+import { buildEvidenceInsights } from '@/lib/intelligence/build-feature-insights';
+import type { Evidence, EvidenceConfidence, StartupProject } from '@repo/types/validation';
+import { Button } from '@repo/ui';
+import { cn } from '@repo/ui/lib/utils';
+import { formatRelativeTime } from '@repo/utils/date';
 
 import type { EvidenceFilterParams } from '../schemas/evidence-schema';
 import {
@@ -28,100 +26,124 @@ type EvidenceListProps = {
   filters: EvidenceFilterParams;
 };
 
-export function EvidenceList({
-  project,
-  evidenceList,
-  filters,
-}: EvidenceListProps) {
+function confidenceStars(confidence: EvidenceConfidence) {
+  const map = { HIGH: 5, MEDIUM: 3, LOW: 1 } as const;
+  const count = map[confidence];
+  return Array.from({ length: 5 }).map((_, i) => (
+    <Star
+      key={i}
+      className={cn(
+        'size-3.5',
+        i < count ? 'fill-consulting-accent text-consulting-accent' : 'text-muted-foreground/20',
+      )}
+    />
+  ));
+}
+
+export function EvidenceList({ project, evidenceList, filters }: EvidenceListProps) {
+  const t = useTranslations();
   const basePath = `/projects/${project.id}/evidence`;
+  const hasFilters = Boolean(filters.category || filters.sourceType || filters.confidence);
+  const insight = buildEvidenceInsights(evidenceList);
+
+  const emptyState = (
+    <ConsultingEmptyState
+      title={hasFilters ? t('evidence.emptyFilteredTitle') : t('evidence.emptyTitle')}
+      description={
+        hasFilters ? t('evidence.emptyFilteredDescription') : t('evidence.emptyDescription')
+      }
+      primaryLabel={t('evidence.createEvidence')}
+      primaryHref={`${basePath}/new`}
+    />
+  );
 
   return (
-    <>
-      <PageHeader
-        title="Evidence Database"
-        description={`Validation evidence for ${project.title}`}
-        actions={
-          <Button asChild>
-            <Link href={`${basePath}/new`}>
-              <Plus className="size-4" />
-              New Evidence
-            </Link>
-          </Button>
-        }
-      />
-      <div className="mt-4 flex flex-wrap gap-3">
-        <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}`}>Back to project</Link>
+    <IntelligencePage
+      eyebrow={t('meta.appTagline')}
+      title={t('evidence.title')}
+      description={t('evidence.description', { project: project.title })}
+      insight={insight}
+      dataSectionTitle={t('intelligence.dataCards')}
+      actions={
+        <Button className="h-11 px-6" asChild>
+          <Link href={`${basePath}/new`}>
+            <Plus className="size-4" />
+            {t('evidence.newEvidence')}
+          </Link>
         </Button>
-        <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}/research`}>Research Plans</Link>
-        </Button>
+      }
+      filters={evidenceList.length > 0 ? <EvidenceFilters projectId={project.id} current={filters} /> : null}
+      emptyState={evidenceList.length === 0 ? emptyState : undefined}
+      rawData={
+        evidenceList.length > 0 ? (
+          <div className="overflow-hidden rounded-2xl border border-border/60 bg-card">
+            <table className="w-full text-sm">
+              <thead className="border-b border-border/50 bg-muted/30 text-left text-[13px] text-muted-foreground">
+                <tr>
+                  <th className="px-6 py-4 font-medium">{t('evidence.columns.title')}</th>
+                  <th className="px-6 py-4 font-medium">{t('evidence.confidence')}</th>
+                  <th className="px-6 py-4 font-medium">{t('evidence.source')}</th>
+                  <th className="px-6 py-4 font-medium">{t('evidence.date')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {evidenceList.map((item) => (
+                  <tr key={item.id} className="border-b border-border/30 last:border-0">
+                    <td className="px-6 py-4">
+                      <Link href={`${basePath}/${item.id}`} className="font-medium hover:text-primary">
+                        {item.title}
+                      </Link>
+                    </td>
+                    <td className="px-6 py-4">
+                      <EvidenceConfidenceBadge confidence={item.confidence} />
+                    </td>
+                    <td className="px-6 py-4">
+                      <EvidenceSourceBadge sourceType={item.sourceType} sourceName={item.sourceName} />
+                    </td>
+                    <td className="px-6 py-4 tabular-nums text-muted-foreground">
+                      {new Date(item.createdAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : null
+      }
+    >
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {evidenceList.map((item) => (
+          <Link
+            key={item.id}
+            href={`${basePath}/${item.id}`}
+            className="ll-consulting-card-hover group block"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-[18px] font-semibold tracking-tight group-hover:text-primary">
+                {item.title}
+              </p>
+              <EvidenceCategoryBadge category={item.category} />
+            </div>
+            <p className="mt-3 line-clamp-2 text-[13px] leading-relaxed text-muted-foreground">
+              {item.summary || t('common.notProvided')}
+            </p>
+            <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-muted/60">
+              <div
+                className="h-full rounded-full bg-primary transition-all duration-700"
+                style={{
+                  width: `${item.confidence === 'HIGH' ? 100 : item.confidence === 'MEDIUM' ? 65 : 35}%`,
+                }}
+              />
+            </div>
+            <div className="mt-5 flex items-center justify-between gap-2 text-[13px]">
+              <div className="flex items-center gap-1">{confidenceStars(item.confidence)}</div>
+              <span className="text-muted-foreground">
+                {formatRelativeTime(new Date(item.updatedAt))}
+              </span>
+            </div>
+          </Link>
+        ))}
       </div>
-
-      <div className="mt-6">
-        <EvidenceFilters projectId={project.id} current={filters} />
-      </div>
-
-      {evidenceList.length === 0 ? (
-        <div className="mt-8">
-          <EmptyState
-            title="No evidence found"
-            description={
-              filters.category || filters.sourceType || filters.confidence
-                ? 'Try adjusting your filters or add new evidence.'
-                : 'Register market data, reports, and references to support validation decisions.'
-            }
-            action={
-              <Button asChild>
-                <Link href={`${basePath}/new`}>Create Evidence</Link>
-              </Button>
-            }
-          />
-        </div>
-      ) : (
-        <div className="mt-8 rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Source</TableHead>
-                <TableHead>Confidence</TableHead>
-                <TableHead>Created</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {evidenceList.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>
-                    <Link
-                      href={`${basePath}/${item.id}`}
-                      className="font-medium hover:underline"
-                    >
-                      {item.title}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <EvidenceCategoryBadge category={item.category} />
-                  </TableCell>
-                  <TableCell>
-                    <EvidenceSourceBadge
-                      sourceType={item.sourceType}
-                      sourceName={item.sourceName}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <EvidenceConfidenceBadge confidence={item.confidence} />
-                  </TableCell>
-                  <TableCell>
-                    {new Date(item.createdAt).toLocaleDateString('ko-KR')}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-    </>
+    </IntelligencePage>
   );
 }

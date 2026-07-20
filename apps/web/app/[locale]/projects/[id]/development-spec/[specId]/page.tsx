@@ -19,10 +19,10 @@ export async function generateMetadata({
 
   return {
     title: spec
-      ? `${spec.title} | AI Startup Validation Framework`
+      ? `${spec.title} | LaunchLens`
       : project
-        ? `Development Spec | ${project.title} | AI Startup Validation Framework`
-        : 'Development Spec | AI Startup Validation Framework',
+        ? `Development Spec | ${project.title} | LaunchLens`
+        : 'Development Spec | LaunchLens',
   };
 }
 

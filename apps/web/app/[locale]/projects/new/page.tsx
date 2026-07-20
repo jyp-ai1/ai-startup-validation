@@ -6,7 +6,7 @@ import { ProjectForm } from '@/features/projects';
 import { PageHeader } from '@repo/ui';
 
 export const metadata: Metadata = {
-  title: 'New Project | AI Startup Validation Framework',
+  title: 'New Project | LaunchLens',
 };
 
 export default function NewProjectPage() {

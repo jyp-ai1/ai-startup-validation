@@ -3,8 +3,10 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
+import { buildProjectDashboardStats } from '@/features/dashboard/services/dashboard-service';
 import { getProject } from '@/features/projects/actions/project-actions';
 import { ValidationAgentPanel } from '@/features/validation-agent';
+import { WorkspaceFeatureShell } from '@/components/workspace/workspace-feature-shell';
 
 type ValidationAgentPageProps = {
   params: Promise<{ id: string }>;
@@ -16,8 +18,8 @@ export async function generateMetadata({ params }: ValidationAgentPageProps): Pr
 
   return {
     title: project
-      ? `Validation Agent | ${project.title} | AI Startup Validation Framework`
-      : 'Validation Agent | AI Startup Validation Framework',
+      ? `Validation Agent | ${project.title} | LaunchLens`
+      : 'Validation Agent | LaunchLens',
   };
 }
 
@@ -29,5 +31,15 @@ export default async function ValidationAgentPage({ params }: ValidationAgentPag
     notFound();
   }
 
-  return <ValidationAgentPanel project={project} />;
+  const stats = await buildProjectDashboardStats(id);
+
+  if (!stats) {
+    notFound();
+  }
+
+  return (
+    <WorkspaceFeatureShell projectId={id}>
+      <ValidationAgentPanel project={project} stats={stats} />
+    </WorkspaceFeatureShell>
+  );
 }

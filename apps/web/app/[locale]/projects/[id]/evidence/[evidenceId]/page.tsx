@@ -19,8 +19,8 @@ export async function generateMetadata({
 
   return {
     title: evidence
-      ? `${evidence.title} | AI Startup Validation Framework`
-      : 'Evidence | AI Startup Validation Framework',
+      ? `${evidence.title} | LaunchLens`
+      : 'Evidence | LaunchLens',
   };
 }
 

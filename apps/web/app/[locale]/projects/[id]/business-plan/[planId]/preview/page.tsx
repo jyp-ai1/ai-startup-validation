@@ -18,8 +18,8 @@ export async function generateMetadata({
 
   return {
     title: plan
-      ? `Preview: ${plan.title} | AI Startup Validation Framework`
-      : 'Business Plan Preview | AI Startup Validation Framework',
+      ? `Preview: ${plan.title} | LaunchLens`
+      : 'Business Plan Preview | LaunchLens',
   };
 }
 

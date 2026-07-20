@@ -18,8 +18,8 @@ export async function generateMetadata({
 
   return {
     title: project
-      ? `Compare Competitors | ${project.title} | AI Startup Validation Framework`
-      : 'Compare Competitors | AI Startup Validation Framework',
+      ? `Compare Competitors | ${project.title} | LaunchLens`
+      : 'Compare Competitors | LaunchLens',
   };
 }
 

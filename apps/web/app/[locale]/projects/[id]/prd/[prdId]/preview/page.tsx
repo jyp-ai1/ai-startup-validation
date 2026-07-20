@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: PRDPreviewPageProps): Promise
 
   return {
     title: prd
-      ? `Preview: ${prd.title} | AI Startup Validation Framework`
-      : 'PRD Preview | AI Startup Validation Framework',
+      ? `Preview: ${prd.title} | LaunchLens`
+      : 'PRD Preview | LaunchLens',
   };
 }
 

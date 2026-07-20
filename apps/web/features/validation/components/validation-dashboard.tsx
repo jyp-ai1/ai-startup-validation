@@ -3,17 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { History, Pencil, Plus, FileText } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
+import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
+import { IntelligencePage } from '@/components/intelligence';
+import { buildValidationInsights } from '@/lib/intelligence/build-feature-insights';
 import type { StartupProject, ValidationScore } from '@repo/types/validation';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  EmptyState,
-  PageHeader,
-} from '@repo/ui';
+import { Button } from '@repo/ui';
 
 import {
   SCORE_CATEGORIES,
@@ -29,166 +25,113 @@ type ValidationDashboardProps = {
   score: ValidationScore | null;
 };
 
-function ScoreCategoryCard({
-  label,
-  description,
-  score,
-  maxScore,
-}: {
-  label: string;
-  description: string;
-  score: number;
-  maxScore: number;
-}) {
-  const percent = getScorePercentage(score, maxScore);
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base">{label}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        <div className="flex items-end justify-between">
-          <span className="text-2xl font-semibold">{score}</span>
-          <span className="text-sm text-muted-foreground">/ {maxScore}</span>
-        </div>
-        <div className="h-2 overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full bg-primary transition-all"
-            style={{ width: `${percent}%` }}
-          />
-        </div>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </CardContent>
-    </Card>
-  );
-}
-
 export function ValidationDashboard({ project, score }: ValidationDashboardProps) {
+  const t = useTranslations();
   const [isEditing, setIsEditing] = useState(false);
   const basePath = `/projects/${project.id}/validation`;
+  const insight = buildValidationInsights(score);
+
+  if (isEditing && score) {
+    return (
+      <>
+        <header className="mb-8 border-b border-border/40 pb-8">
+          <h1 className="text-intelligence-section font-semibold">{t('validation.editTitle')}</h1>
+          <Button variant="outline" className="mt-4" onClick={() => setIsEditing(false)}>
+            {t('common.cancel')}
+          </Button>
+        </header>
+        <ValidationScoreForm mode="edit" projectId={project.id} score={score} />
+      </>
+    );
+  }
 
   if (!score) {
     return (
-      <>
-        <PageHeader
-          title="Validation Score"
-          description={`GO / NO GO evaluation for ${project.title}`}
-        />
-        <div className="mt-4">
-          <Button variant="link" className="h-auto p-0" asChild>
-            <Link href={`/projects/${project.id}`}>Back to project</Link>
-          </Button>
-        </div>
-        <div className="mt-8">
-          <EmptyState
-            title="No validation score yet"
-            description="Evaluate market, problem, competition, and execution to get a GO / NO GO recommendation."
-            action={
-              <Button asChild>
-                <Link href={`${basePath}/new`}>Create Validation Score</Link>
-              </Button>
-            }
+      <IntelligencePage
+        eyebrow={t('meta.appName')}
+        title={t('validation.title')}
+        description={t('validation.description', { project: project.title })}
+        insight={insight}
+        emptyState={
+          <ConsultingEmptyState
+            title={t('validation.emptyTitle')}
+            description={t('validation.description', { project: project.title })}
+            primaryLabel={t('validation.createScore')}
+            primaryHref={`${basePath}/new`}
           />
-        </div>
-      </>
-    );
-  }
-
-  if (isEditing) {
-    return (
-      <>
-        <PageHeader
-          title="Edit Validation Score"
-          description={project.title}
-          actions={
-            <Button variant="outline" onClick={() => setIsEditing(false)}>
-              Cancel Edit
-            </Button>
-          }
-        />
-        <div className="mt-8">
-          <ValidationScoreForm mode="edit" projectId={project.id} score={score} />
-        </div>
-      </>
+        }
+      />
     );
   }
 
   return (
-    <>
-      <PageHeader
-        title="Validation Score"
-        description={`GO / NO GO evaluation for ${project.title}`}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" asChild>
-              <Link href={`${basePath}/history`}>
-                <History className="size-4" />
-                History
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href={`${basePath}/summary`}>
-                <FileText className="size-4" />
-                Summary
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href={`${basePath}/new`}>
-                <Plus className="size-4" />
-                New Evaluation
-              </Link>
-            </Button>
-            <Button onClick={() => setIsEditing(true)}>
-              <Pencil className="size-4" />
-              Edit
-            </Button>
-          </div>
-        }
-      />
-
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <ValidationDecisionBadge decision={score.decision} />
-        <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}`}>Back to project</Link>
-        </Button>
-      </div>
-
-      <div className="mt-8 grid gap-6 lg:grid-cols-[240px_1fr]">
-        <Card className="flex flex-col items-center justify-center p-6">
+    <IntelligencePage
+      eyebrow={t('meta.appName')}
+      title={t('validation.title')}
+      description={t('validation.description', { project: project.title })}
+      insight={insight}
+      actions={
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" asChild>
+            <Link href={`${basePath}/history`}>
+              <History className="size-4" />
+              {t('validation.history')}
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href={`${basePath}/summary`}>
+              <FileText className="size-4" />
+              {t('validation.summary')}
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href={`${basePath}/new`}>
+              <Plus className="size-4" />
+              {t('validation.newEvaluation')}
+            </Link>
+          </Button>
+          <Button onClick={() => setIsEditing(true)}>
+            <Pencil className="size-4" />
+            {t('common.edit')}
+          </Button>
+        </div>
+      }
+    >
+      <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+        <div className="ll-consulting-card flex flex-col items-center justify-center p-10">
           <ScoreProgressCircle totalScore={score.totalScore} />
-          <p className="mt-4 text-sm text-muted-foreground">Total Score</p>
-        </Card>
-        <Card className="p-4">
-          <h3 className="mb-4 text-sm font-medium">Score Radar</h3>
+          <ValidationDecisionBadge decision={score.decision} />
+        </div>
+        <div className="ll-consulting-card p-10">
           <ValidationScoreRadar score={score} />
-        </Card>
+        </div>
       </div>
-
-      <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {SCORE_CATEGORIES.map((category) => (
-          <ScoreCategoryCard
-            key={category.key}
-            label={category.label}
-            description={category.description}
-            score={score[category.key]}
-            maxScore={category.maxScore}
-          />
-        ))}
+      <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {SCORE_CATEGORIES.map((category) => {
+          const value = score[category.key];
+          const percent = getScorePercentage(value, category.maxScore);
+          return (
+            <div key={category.key} className="ll-consulting-card p-8">
+              <p className="font-medium">{category.label}</p>
+              <div className="mt-4 flex items-end justify-between">
+                <span className="text-3xl font-semibold tabular-nums">{value}</span>
+                <span className="text-muted-foreground">/ {category.maxScore}</span>
+              </div>
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
+                <div className="h-full rounded-full bg-consulting-accent" style={{ width: `${percent}%` }} />
+              </div>
+            </div>
+          );
+        })}
       </div>
-
       {score.comment ? (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="text-base">Comment</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap text-sm text-muted-foreground">
-              {score.comment}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="ll-consulting-card mt-6 p-8">
+          <p className="text-[13px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {t('validation.comment')}
+          </p>
+          <p className="mt-3 whitespace-pre-wrap text-muted-foreground">{score.comment}</p>
+        </div>
       ) : null}
-    </>
+    </IntelligencePage>
   );
 }

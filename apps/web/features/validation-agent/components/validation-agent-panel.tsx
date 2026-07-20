@@ -2,17 +2,14 @@
 
 import Link from 'next/link';
 import { useActionState } from 'react';
+import { useTranslations } from 'next-intl';
 
+import type { ProjectDashboardStats } from '@/features/dashboard/types';
 import type { StartupProject, ValidationAgentOutput } from '@repo/types/validation';
 import {
   Badge,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   Input,
-  PageHeader,
 } from '@repo/ui';
 
 import { renderMarkdown } from '@/features/reports/utils/markdown';
@@ -33,66 +30,87 @@ const DECISION_VARIANT: Record<
 
 type ValidationAgentPanelProps = {
   project: StartupProject;
+  stats: ProjectDashboardStats;
 };
 
-export function ValidationAgentPanel({ project }: ValidationAgentPanelProps) {
+export function ValidationAgentPanel({ project, stats }: ValidationAgentPanelProps) {
+  const t = useTranslations();
   const action = askValidationAgent.bind(null, project.id);
   const [state, formAction, pending] = useActionState(action, initialState);
 
-  return (
-    <>
-      <PageHeader
-        title="Validation Agent"
-        description={`AI startup consultant for ${project.title}`}
-      />
+  const kpis = [
+    { label: t('agent.kpi.evidence'), value: String(stats.evidence.total) },
+    { label: t('agent.kpi.highConfidence'), value: String(stats.evidence.byConfidence.HIGH) },
+    { label: t('agent.kpi.voc'), value: String(stats.voc.total) },
+    { label: t('agent.kpi.score'), value: String(stats.validationScore?.totalScore ?? '—') },
+  ];
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}`}>Back to project</Link>
-        </Button>
-        <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}/knowledge`}>Knowledge Base</Link>
-        </Button>
+  return (
+    <div className="space-y-16 pb-16 motion-safe:animate-in motion-safe:fade-in">
+      <header className="ll-section-rule space-y-3">
+        <div className="ll-accent-rule" />
+        <p className="text-[13px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          {t('meta.appTagline')}
+        </p>
+        <div className="mt-3 flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <h1 className="text-intelligence-section font-semibold tracking-tight">{t('agent.title')}</h1>
+            <p className="mt-2 max-w-2xl text-base text-muted-foreground">
+              {t('agent.description', { project: project.title })}
+            </p>
+          </div>
+          <Button variant="outline" className="h-11 px-6" asChild>
+            <Link href={`/projects/${project.id}/knowledge`}>{t('nav.knowledge')}</Link>
+          </Button>
+        </div>
+      </header>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {kpis.map((kpi) => (
+          <div key={kpi.label} className="ll-consulting-card px-6 py-6">
+            <p className="text-[13px] text-muted-foreground">{kpi.label}</p>
+            <p className="mt-2 text-3xl font-semibold tabular-nums tracking-tight">{kpi.value}</p>
+          </div>
+        ))}
       </div>
 
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle className="text-base">Ask the Agent</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form action={formAction} className="space-y-4">
-            {state.error ? (
-              <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-                {state.error}
-              </div>
-            ) : null}
-
-            <div className="space-y-2">
-              <label htmlFor="question" className="text-sm font-medium">
-                Your question
-              </label>
-              <Input
-                id="question"
-                name="question"
-                required
-                placeholder='e.g. "이 시장이 성장한다는 근거는?"'
-              />
-              {state.fieldErrors?.question ? (
-                <p className="text-sm text-destructive">{state.fieldErrors.question[0]}</p>
-              ) : null}
+      <div className="ll-consulting-card p-8">
+        <p className="text-[13px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {t('agent.ask')}
+        </p>
+        <form action={formAction} className="mt-6 space-y-4">
+          {state.error ? (
+            <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+              {state.error}
             </div>
+          ) : null}
 
-            <Button type="submit" disabled={pending}>
-              {pending ? 'Analyzing...' : 'Get Recommendation'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          <div className="space-y-2">
+            <label htmlFor="question" className="text-sm font-medium">
+              {t('agent.questionLabel')}
+            </label>
+            <Input
+              id="question"
+              name="question"
+              required
+              className="h-11"
+              placeholder={t('agent.questionPlaceholder')}
+            />
+            {state.fieldErrors?.question ? (
+              <p className="text-sm text-destructive">{state.fieldErrors.question[0]}</p>
+            ) : null}
+          </div>
+
+          <Button type="submit" className="h-11 px-6" disabled={pending}>
+            {pending ? t('agent.analyzing') : t('agent.submit')}
+          </Button>
+        </form>
+      </div>
 
       {state.output ? (
         <AgentRecommendation output={state.output} usedMock={state.usedMock} />
       ) : null}
-    </>
+    </div>
   );
 }
 
@@ -103,74 +121,69 @@ function AgentRecommendation({
   output: ValidationAgentOutput;
   usedMock?: boolean;
 }) {
+  const t = useTranslations();
+
   return (
-    <div className="mt-10 space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <Badge variant={DECISION_VARIANT[output.decision]}>{output.decision}</Badge>
-        <Badge variant="outline">Confidence: {output.confidence}</Badge>
-        {usedMock ? <Badge variant="secondary">Mock mode</Badge> : null}
+        <Badge variant="outline">
+          {t('agent.confidence')}: {output.confidence}
+        </Badge>
+        {usedMock ? <Badge variant="secondary">{t('agent.mockMode')}</Badge> : null}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">{output.summary}</p>
-        </CardContent>
-      </Card>
+      <div className="ll-consulting-card p-8">
+        <p className="text-[13px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {t('agent.summary')}
+        </p>
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground">{output.summary}</p>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Recommendation</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div
-            className="prose prose-sm dark:prose-invert max-w-none"
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(output.recommendation) }}
-          />
-        </CardContent>
-      </Card>
+      <div className="ll-consulting-card p-8">
+        <p className="text-[13px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {t('agent.recommendation')}
+        </p>
+        <div
+          className="prose prose-sm dark:prose-invert mt-4 max-w-none"
+          dangerouslySetInnerHTML={{ __html: renderMarkdown(output.recommendation) }}
+        />
+      </div>
 
       {output.sources.length > 0 ? (
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Sources</h2>
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">{t('agent.sources')}</h2>
           {output.sources.map((source, index) => (
-            <Card key={`${source.title}-${index}`}>
-              <CardHeader className="pb-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <CardTitle className="text-base">{source.title}</CardTitle>
-                  <Badge variant="outline">{source.source}</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {source.score !== undefined ? (
-                  <p className="mb-2 text-xs text-muted-foreground">
-                    Similarity: {source.score}
-                  </p>
-                ) : null}
-                <p className="whitespace-pre-wrap text-sm text-muted-foreground">
-                  {source.excerpt}
+            <div key={`${source.title}-${index}`} className="ll-consulting-card p-6">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-base font-semibold">{source.title}</p>
+                <Badge variant="outline">{source.source}</Badge>
+              </div>
+              {source.score !== undefined ? (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {t('agent.similarity')}: {source.score}
                 </p>
-              </CardContent>
-            </Card>
+              ) : null}
+              <p className="mt-3 whitespace-pre-wrap text-sm text-muted-foreground">{source.excerpt}</p>
+            </div>
           ))}
         </div>
       ) : null}
 
       {output.nextActions.length > 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Next Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="list-inside list-disc space-y-1 text-sm text-muted-foreground">
-              {output.nextActions.map((action) => (
-                <li key={action}>{action}</li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <div className="ll-consulting-card p-8">
+          <p className="text-[13px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {t('agent.nextActions')}
+          </p>
+          <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+            {output.nextActions.map((action) => (
+              <li key={action} className="flex gap-3">
+                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-consulting-accent" />
+                {action}
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
     </div>
   );

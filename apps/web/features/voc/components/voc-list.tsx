@@ -1,8 +1,15 @@
-import Link from 'next/link';
-import { BarChart3, Plus } from 'lucide-react';
+'use client';
 
+import Link from 'next/link';
+import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
+import { VocPainDashboard } from '@/components/consulting/voc-pain-dashboard';
+import { IntelligencePage } from '@/components/intelligence';
+import { buildVocInsights } from '@/lib/intelligence/build-feature-insights';
 import type { StartupProject, VOC } from '@repo/types/validation';
-import { Button, EmptyState, PageHeader } from '@repo/ui';
+import { Button } from '@repo/ui';
 
 import type { VOCFilterParams } from '../schemas/voc-schema';
 import { VOCCard } from './voc-card';
@@ -15,66 +22,53 @@ type VOCListProps = {
 };
 
 export function VOCList({ project, entries, filters }: VOCListProps) {
+  const t = useTranslations();
   const basePath = `/projects/${project.id}/voc`;
+  const hasFilters = Boolean(
+    filters.sourceType || filters.customerSegment || filters.severity || filters.frequency,
+  );
+  const insight = buildVocInsights(entries);
 
   return (
-    <>
-      <PageHeader
-        title="VOC Analysis"
-        description={`Customer voice data for ${project.title}`}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" asChild>
-              <Link href={`${basePath}/summary`}>
-                <BarChart3 className="size-4" />
-                Summary Dashboard
-              </Link>
-            </Button>
-            <Button asChild>
-              <Link href={`${basePath}/new`}>
-                <Plus className="size-4" />
-                New VOC
-              </Link>
-            </Button>
-          </div>
-        }
-      />
-      <div className="mt-4 flex flex-wrap gap-3">
-        <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}`}>Back to project</Link>
-        </Button>
-      </div>
-
-      <div className="mt-6">
-        <VOCFilters projectId={project.id} current={filters} />
-      </div>
-
-      {entries.length === 0 ? (
-        <div className="mt-8">
-          <EmptyState
-            title="No VOC entries found"
+    <IntelligencePage
+      eyebrow={t('meta.appTagline')}
+      title={t('voc.title')}
+      description={t('voc.description', { project: project.title })}
+      insight={insight}
+      dataSectionTitle={t('voc.painDashboard.cardsTitle')}
+      beforeData={entries.length > 0 ? <VocPainDashboard entries={entries} /> : null}
+      actions={
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" className="h-11" asChild>
+            <Link href={`${basePath}/summary`}>{t('voc.summaryDashboard')}</Link>
+          </Button>
+          <Button className="h-11 px-6" asChild>
+            <Link href={`${basePath}/new`}>
+              <Plus className="size-4" />
+              {t('voc.newEntry')}
+            </Link>
+          </Button>
+        </div>
+      }
+      filters={entries.length > 0 ? <VOCFilters projectId={project.id} current={filters} /> : null}
+      emptyState={
+        entries.length === 0 ? (
+          <ConsultingEmptyState
+            title={hasFilters ? t('voc.emptyFilteredTitle') : t('voc.emptyTitle')}
             description={
-              filters.sourceType ||
-              filters.customerSegment ||
-              filters.severity ||
-              filters.frequency
-                ? 'Try adjusting your filters or add new customer feedback.'
-                : 'Collect customer interviews, surveys, and reviews to validate pain points.'
+              hasFilters ? t('voc.emptyFilteredDescription') : t('voc.emptyDescription')
             }
-            action={
-              <Button asChild>
-                <Link href={`${basePath}/new`}>Create VOC</Link>
-              </Button>
-            }
+            primaryLabel={t('voc.createEntry')}
+            primaryHref={`${basePath}/new`}
           />
-        </div>
-      ) : (
-        <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {entries.map((entry) => (
-            <VOCCard key={entry.id} projectId={project.id} entry={entry} />
-          ))}
-        </div>
-      )}
-    </>
+        ) : undefined
+      }
+    >
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {entries.map((entry) => (
+          <VOCCard key={entry.id} projectId={project.id} entry={entry} />
+        ))}
+      </div>
+    </IntelligencePage>
   );
 }

@@ -1,8 +1,14 @@
+'use client';
+
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
+import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
+import { IntelligencePage } from '@/components/intelligence';
+import { buildReportInsights } from '@/lib/intelligence/build-feature-insights';
 import type { StartupProject, ValidationReport } from '@repo/types/validation';
-import { Button, EmptyState, PageHeader } from '@repo/ui';
+import { Button } from '@repo/ui';
 
 import { ReportCard } from './report-card';
 
@@ -12,47 +18,40 @@ type ReportListProps = {
 };
 
 export function ReportList({ project, reports }: ReportListProps) {
+  const t = useTranslations();
   const basePath = `/projects/${project.id}/reports`;
+  const insight = buildReportInsights(reports);
 
   return (
-    <>
-      <PageHeader
-        title="Validation Reports"
-        description={`Structured reports for ${project.title}`}
-        actions={
-          <Button asChild>
-            <Link href={`${basePath}/new`}>
-              <Plus className="size-4" />
-              New Report
-            </Link>
-          </Button>
-        }
-      />
-      <div className="mt-4">
-        <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}`}>Back to project</Link>
+    <IntelligencePage
+      eyebrow={t('meta.appName')}
+      title={t('reports.title')}
+      description={t('reports.description', { project: project.title })}
+      insight={insight}
+      actions={
+        <Button asChild>
+          <Link href={`${basePath}/new`}>
+            <Plus className="size-4" />
+            {t('reports.newReport')}
+          </Link>
         </Button>
-      </div>
-
-      {reports.length === 0 ? (
-        <div className="mt-8">
-          <EmptyState
-            title="No reports yet"
-            description="Create a validation report to organize your research, evidence, and GO / NO GO results."
-            action={
-              <Button asChild>
-                <Link href={`${basePath}/new`}>Create Report</Link>
-              </Button>
-            }
+      }
+      emptyState={
+        reports.length === 0 ? (
+          <ConsultingEmptyState
+            title={t('reports.emptyTitle')}
+            description={t('reports.emptyDescription')}
+            primaryLabel={t('reports.createReport')}
+            primaryHref={`${basePath}/new`}
           />
-        </div>
-      ) : (
-        <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {reports.map((report) => (
-            <ReportCard key={report.id} projectId={project.id} report={report} />
-          ))}
-        </div>
-      )}
-    </>
+        ) : undefined
+      }
+    >
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {reports.map((report) => (
+          <ReportCard key={report.id} projectId={project.id} report={report} />
+        ))}
+      </div>
+    </IntelligencePage>
   );
 }

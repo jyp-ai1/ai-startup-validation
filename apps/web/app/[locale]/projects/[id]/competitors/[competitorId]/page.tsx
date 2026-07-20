@@ -18,8 +18,8 @@ export async function generateMetadata({
 
   return {
     title: competitor
-      ? `${competitor.name} | AI Startup Validation Framework`
-      : 'Competitor | AI Startup Validation Framework',
+      ? `${competitor.name} | LaunchLens`
+      : 'Competitor | LaunchLens',
   };
 }
 
