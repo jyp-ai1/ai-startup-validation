@@ -2,19 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 
-import type { ResearchPlan, ResearchType } from '@repo/types/validation';
+import type { ResearchPlan } from '@repo/types/validation';
 import { RESEARCH_TYPES } from '@repo/types/validation';
 import { cn } from '@repo/ui/lib/utils';
-
-const RESEARCH_TYPE_LABELS: Record<ResearchType, string> = {
-  MARKET_SIZE: 'Market',
-  CUSTOMER: 'Customer',
-  TREND: 'Trend',
-  COMPETITOR: 'Competitor',
-  BUSINESS_MODEL: 'Business Model',
-  TECHNOLOGY: 'Technology',
-  REGULATION: 'Regulation',
-};
 
 type ResearchProgressDashboardProps = {
   plans: ResearchPlan[];
@@ -23,6 +13,7 @@ type ResearchProgressDashboardProps = {
 
 export function ResearchProgressDashboard({ plans, className }: ResearchProgressDashboardProps) {
   const t = useTranslations();
+  const tType = useTranslations('enums.researchType');
 
   const groups = RESEARCH_TYPES.map((type) => {
     const items = plans.filter((plan) => plan.researchType === type);
@@ -49,7 +40,7 @@ export function ResearchProgressDashboard({ plans, className }: ResearchProgress
           {groups.map(({ type, completed, total }) => (
             <div key={type}>
               <div className="mb-2 flex items-center justify-between text-[13px]">
-                <span className="font-medium">{RESEARCH_TYPE_LABELS[type]}</span>
+                <span className="font-medium">{tType(type)}</span>
                 <span className="tabular-nums text-muted-foreground">
                   {completed}/{total}
                 </span>

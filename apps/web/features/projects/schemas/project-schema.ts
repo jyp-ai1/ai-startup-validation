@@ -2,8 +2,8 @@ import { z } from '@repo/core/validation';
 import { STARTUP_PROJECT_STATUSES } from '@repo/types/validation';
 
 export const createStartupProjectSchema = z.object({
-  title: z.string().trim().min(1, '프로젝트명을 입력해주세요'),
-  summary: z.string().trim().min(1, '서비스 한줄 설명을 입력해주세요'),
+  title: z.string().trim().min(1, 'projects.validation.titleRequired'),
+  summary: z.string().trim().min(1, 'projects.validation.summaryRequired'),
   problem: z.string().trim().optional().nullable(),
   solution: z.string().trim().optional().nullable(),
   targetCustomer: z.string().trim().optional().nullable(),

@@ -1,3 +1,7 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
 import type {
   EvidenceCategory,
   EvidenceConfidence,
@@ -5,18 +9,15 @@ import type {
 } from '@repo/types/validation';
 import { Badge } from '@repo/ui';
 
-import {
-  EVIDENCE_CATEGORY_LABELS,
-  EVIDENCE_CONFIDENCE_LABELS,
-  EVIDENCE_SOURCE_TYPE_LABELS,
-} from '../schemas/evidence-schema';
+import { useEnumLabel } from '@/lib/i18n/use-form-labels';
 
 type EvidenceCategoryBadgeProps = {
   category: EvidenceCategory;
 };
 
 export function EvidenceCategoryBadge({ category }: EvidenceCategoryBadgeProps) {
-  return <Badge variant="outline">{EVIDENCE_CATEGORY_LABELS[category]}</Badge>;
+  const label = useEnumLabel('evidenceCategory', category);
+  return <Badge variant="outline">{label}</Badge>;
 }
 
 type EvidenceConfidenceBadgeProps = {
@@ -35,11 +36,8 @@ const CONFIDENCE_VARIANT: Record<
 export function EvidenceConfidenceBadge({
   confidence,
 }: EvidenceConfidenceBadgeProps) {
-  return (
-    <Badge variant={CONFIDENCE_VARIANT[confidence]}>
-      {EVIDENCE_CONFIDENCE_LABELS[confidence]}
-    </Badge>
-  );
+  const label = useEnumLabel('evidenceConfidence', confidence);
+  return <Badge variant={CONFIDENCE_VARIANT[confidence]}>{label}</Badge>;
 }
 
 type EvidenceSourceBadgeProps = {
@@ -51,13 +49,14 @@ export function EvidenceSourceBadge({
   sourceType,
   sourceName,
 }: EvidenceSourceBadgeProps) {
+  const t = useTranslations('common');
+  const typeT = useTranslations('enums.evidenceSourceType');
+
   if (!sourceType && !sourceName) {
     return <span className="text-sm text-muted-foreground">—</span>;
   }
 
-  const label = sourceType
-    ? EVIDENCE_SOURCE_TYPE_LABELS[sourceType]
-    : 'Unknown';
+  const label = sourceType ? typeT(sourceType) : t('notProvided');
 
   return (
     <span className="text-sm">

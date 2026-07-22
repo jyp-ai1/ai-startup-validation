@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import {
   InternalServerError,
@@ -36,6 +37,26 @@ function mapValidationError(error: ValidationError): ProjectActionState {
   return {
     error: error.message,
     fieldErrors: error.details as Record<string, string[]> | undefined,
+  };
+}
+
+async function localizeValidationState(state: ProjectActionState): Promise<ProjectActionState> {
+  if (!state.fieldErrors) return state;
+  const t = await getTranslations();
+  return {
+    ...state,
+    fieldErrors: Object.fromEntries(
+      Object.entries(state.fieldErrors).map(([field, messages]) => [
+        field,
+        messages.map((message) => {
+          try {
+            return t(message as 'projects.validation.titleRequired');
+          } catch {
+            return message;
+          }
+        }),
+      ]),
+    ),
   };
 }
 
@@ -80,7 +101,10 @@ export async function createProject(
     redirect(`/projects/${project.id}`);
   } catch (error) {
     if (error instanceof ValidationError) {
-      return mapValidationError(error);
+      return localizeValidationState(mapValidationError(error));
+    }
+    if (error instanceof InternalServerError) {
+      return { error: error.message };
     }
     throw error;
   }
@@ -118,7 +142,10 @@ export async function updateProject(
     redirect(`/projects/${id}`);
   } catch (error) {
     if (error instanceof ValidationError) {
-      return mapValidationError(error);
+      return localizeValidationState(mapValidationError(error));
+    }
+    if (error instanceof InternalServerError) {
+      return { error: error.message };
     }
     throw error;
   }

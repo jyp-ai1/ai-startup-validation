@@ -112,7 +112,9 @@ export function ValidationDashboard({ project, score }: ValidationDashboardProps
           const percent = getScorePercentage(value, category.maxScore);
           return (
             <div key={category.key} className="ll-consulting-card p-8">
-              <p className="font-medium">{category.label}</p>
+              <p className="font-medium">
+                {t(`validation.scoreCategories.${category.key}.label`)}
+              </p>
               <div className="mt-4 flex items-end justify-between">
                 <span className="text-3xl font-semibold tabular-nums">{value}</span>
                 <span className="text-muted-foreground">/ {category.maxScore}</span>

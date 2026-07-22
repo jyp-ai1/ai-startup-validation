@@ -21,7 +21,18 @@
     "preview": "Vorschau",
     "regenerate": "Neu generieren",
     "notProvided": "Noch nicht angegeben",
-    "language": "Sprache"
+    "language": "Sprache",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "cancelEdit": "Cancel Edit",
+    "saveSection": "Save Section",
+    "saveReport": "Save Report",
+    "createProject": "Create Project",
+    "createVoc": "Create VOC",
+    "createGrant": "Create Grant",
+    "createResearch": "Create Research Plan",
+    "createEvidence": "Create Evidence",
+    "createCompetitor": "Create Competitor"
   },
   "shell": {
     "workspace": "Arbeitsbereich",
@@ -176,6 +187,28 @@
       "sample": "Start with a demo project to explore the flow",
       "validation": "Run Validation Score for a GO / NO GO decision",
       "research": "Begin with a structured Research Plan"
+    },
+    "form": {
+      "title": "Project name",
+      "summary": "One-line description",
+      "industry": "Industry",
+      "businessModel": "Business model",
+      "problem": "Problem statement",
+      "solution": "Solution",
+      "targetCustomer": "Target customer",
+      "placeholders": {
+        "title": "Silver generation matching service",
+        "summary": "Relationship platform for users aged 60+",
+        "industry": "Senior Tech",
+        "businessModel": "Subscription",
+        "problem": "Lack of social connection among seniors",
+        "solution": "AI-powered relationship matching",
+        "targetCustomer": "Ages 60+"
+      }
+    },
+    "validation": {
+      "titleRequired": "Please enter a project name",
+      "summaryRequired": "Please enter a one-line description"
     }
   },
   "projectDetail": {
@@ -493,6 +526,32 @@
       "market": "Complete market size research first",
       "evidence": "Add high-confidence evidence",
       "voc": "Collect 20+ VOC entries"
+    },
+    "scoreCategories": {
+      "marketScore": {
+        "label": "Market",
+        "description": "Market size and growth potential"
+      },
+      "problemScore": {
+        "label": "Problem",
+        "description": "Pain point clarity and VOC support"
+      },
+      "competitionScore": {
+        "label": "Competition",
+        "description": "Competitive intensity and differentiation"
+      },
+      "businessModelScore": {
+        "label": "Business Model",
+        "description": "Revenue structure and pricing viability"
+      },
+      "executionScore": {
+        "label": "Execution",
+        "description": "Development difficulty and operability"
+      },
+      "founderFitScore": {
+        "label": "Founder Fit",
+        "description": "Experience fit, network, domain expertise"
+      }
     }
   },
   "reports": {
@@ -904,5 +963,133 @@
     "modulesDesc": "Decision-first modules — conclusion before data.",
     "viewDashboard": "Open Command Center",
     "openModule": "View intelligence"
+  },
+  "enums": {
+    "researchType": {
+      "MARKET_SIZE": "Market Size",
+      "CUSTOMER": "Customer",
+      "TREND": "Trend",
+      "COMPETITOR": "Competitor",
+      "BUSINESS_MODEL": "Business Model",
+      "TECHNOLOGY": "Technology",
+      "REGULATION": "Regulation"
+    },
+    "researchStatus": {
+      "TODO": "To Do",
+      "IN_PROGRESS": "In Progress",
+      "COMPLETED": "Completed"
+    },
+    "researchPriority": {
+      "HIGH": "High",
+      "MEDIUM": "Medium",
+      "LOW": "Low"
+    },
+    "evidenceCategory": {
+      "MARKET": "Market",
+      "CUSTOMER": "Customer",
+      "COMPETITOR": "Competitor",
+      "TREND": "Trend",
+      "TECHNOLOGY": "Technology",
+      "REGULATION": "Regulation",
+      "BUSINESS": "Business"
+    },
+    "evidenceSourceType": {
+      "REPORT": "Report",
+      "ARTICLE": "Article",
+      "NEWS": "News",
+      "PAPER": "Paper",
+      "SURVEY": "Survey",
+      "STATISTICS": "Statistics",
+      "WEBSITE": "Website",
+      "OTHER": "Other"
+    },
+    "evidenceConfidence": {
+      "HIGH": "High",
+      "MEDIUM": "Medium",
+      "LOW": "Low"
+    },
+    "competitorCategory": {
+      "DIRECT": "Direct",
+      "INDIRECT": "Indirect",
+      "SUBSTITUTE": "Substitute"
+    },
+    "competitorMarketPosition": {
+      "LEADER": "Leader",
+      "CHALLENGER": "Challenger",
+      "FOLLOWER": "Follower",
+      "NEWCOMER": "Newcomer"
+    },
+    "grantCategory": {
+      "STARTUP": "Startup",
+      "TECHNOLOGY": "Technology",
+      "AI": "AI",
+      "SOCIAL": "Social",
+      "LOCAL": "Local",
+      "SME": "SME",
+      "CONTENT": "Content",
+      "OTHER": "Other"
+    },
+    "grantTargetStage": {
+      "IDEA": "Idea",
+      "PRE_MVP": "Pre-MVP",
+      "MVP": "MVP",
+      "GROWTH": "Growth",
+      "SCALE": "Scale"
+    },
+    "grantSupportType": {
+      "FUNDING": "Funding",
+      "CONSULTING": "Consulting",
+      "EDUCATION": "Education",
+      "SPACE": "Space",
+      "MARKETING": "Marketing",
+      "RND": "R&D"
+    },
+    "grantStatus": {
+      "OPEN": "Open",
+      "CLOSED": "Closed",
+      "PREPARING": "Preparing"
+    },
+    "vocSourceType": {
+      "INTERVIEW": "Interview",
+      "SURVEY": "Survey",
+      "COMMUNITY": "Community",
+      "REVIEW": "Review",
+      "ARTICLE": "Article",
+      "SOCIAL": "Social",
+      "OTHER": "Other"
+    },
+    "vocCustomerSegment": {
+      "B2C": "B2C",
+      "B2B": "B2B",
+      "B2G": "B2G"
+    },
+    "vocEmotion": {
+      "NEGATIVE": "Negative",
+      "NEUTRAL": "Neutral",
+      "POSITIVE": "Positive"
+    },
+    "vocFrequency": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High"
+    },
+    "vocSeverity": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "CRITICAL": "Critical"
+    },
+    "vocWillingness": {
+      "UNKNOWN": "Unknown",
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High"
+    },
+    "validationDecision": {
+      "DRAFT": "Draft",
+      "GO": "GO",
+      "CONDITIONAL_GO": "Conditional GO",
+      "NO_GO": "NO GO"
+    }
   }
 }

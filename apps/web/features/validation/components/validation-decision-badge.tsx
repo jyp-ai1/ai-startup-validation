@@ -1,7 +1,9 @@
+'use client';
+
 import type { ValidationDecision } from '@repo/types/validation';
 import { Badge } from '@repo/ui';
 
-import { VALIDATION_DECISION_LABELS } from '../utils/score-calculator';
+import { useEnumLabel } from '@/lib/i18n/use-form-labels';
 
 const VARIANT: Record<
   ValidationDecision,
@@ -18,9 +20,10 @@ export function ValidationDecisionBadge({
 }: {
   decision: ValidationDecision;
 }) {
+  const label = useEnumLabel('validationDecision', decision);
   return (
     <Badge variant={VARIANT[decision]} className="text-sm">
-      {VALIDATION_DECISION_LABELS[decision]}
+      {label}
     </Badge>
   );
 }

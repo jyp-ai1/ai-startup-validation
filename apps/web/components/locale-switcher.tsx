@@ -1,7 +1,7 @@
 'use client';
 
 import { LOCALE_LABELS, type AppLocale } from '@repo/i18n/config';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
@@ -15,6 +15,7 @@ import {
 
 export function LocaleSwitcher() {
   const locale = useLocale() as AppLocale;
+  const t = useTranslations('common');
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -27,7 +28,7 @@ export function LocaleSwitcher() {
 
   return (
     <Select value={locale} onValueChange={onChange} disabled={isPending}>
-      <SelectTrigger className="h-8 w-[132px] border-border/80 bg-background text-xs" aria-label="Language">
+      <SelectTrigger className="h-8 w-[132px] border-border/80 bg-background text-xs" aria-label={t('language')}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

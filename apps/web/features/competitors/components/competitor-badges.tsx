@@ -1,13 +1,14 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
 import type {
   CompetitorCategory,
   CompetitorMarketPosition,
 } from '@repo/types/validation';
 import { Badge } from '@repo/ui';
 
-import {
-  COMPETITOR_CATEGORY_LABELS,
-  COMPETITOR_MARKET_POSITION_LABELS,
-} from '../schemas/competitor-schema';
+import { useEnumLabel } from '@/lib/i18n/use-form-labels';
 
 type CompetitorCategoryBadgeProps = {
   category: CompetitorCategory;
@@ -25,11 +26,8 @@ const CATEGORY_VARIANT: Record<
 export function CompetitorCategoryBadge({
   category,
 }: CompetitorCategoryBadgeProps) {
-  return (
-    <Badge variant={CATEGORY_VARIANT[category]}>
-      {COMPETITOR_CATEGORY_LABELS[category]}
-    </Badge>
-  );
+  const label = useEnumLabel('competitorCategory', category);
+  return <Badge variant={CATEGORY_VARIANT[category]}>{label}</Badge>;
 }
 
 type CompetitorMarketPositionBadgeProps = {
@@ -49,13 +47,12 @@ const POSITION_VARIANT: Record<
 export function CompetitorMarketPositionBadge({
   position,
 }: CompetitorMarketPositionBadgeProps) {
+  const t = useTranslations('common');
+
   if (!position) {
-    return <span className="text-sm text-muted-foreground">Not set</span>;
+    return <span className="text-sm text-muted-foreground">{t('notProvided')}</span>;
   }
 
-  return (
-    <Badge variant={POSITION_VARIANT[position]}>
-      {COMPETITOR_MARKET_POSITION_LABELS[position]}
-    </Badge>
-  );
+  const label = useEnumLabel('competitorMarketPosition', position);
+  return <Badge variant={POSITION_VARIANT[position]}>{label}</Badge>;
 }

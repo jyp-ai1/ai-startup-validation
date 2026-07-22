@@ -2,10 +2,13 @@
 
 import Link from 'next/link';
 import { useActionState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import type { StartupProject } from '@repo/types/validation';
 import { Button, Input, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
+
+import { useFormLabels } from '@/lib/i18n/use-form-labels';
 
 import {
   createProject,
@@ -20,11 +23,7 @@ type ProjectFormProps = {
   project?: StartupProject;
 };
 
-function FieldError({
-  messages,
-}: {
-  messages?: string[];
-}) {
+function FieldError({ messages }: { messages?: string[] }) {
   if (!messages?.length) return null;
   return <p className="text-sm text-destructive">{messages[0]}</p>;
 }
@@ -50,6 +49,8 @@ function FormLabel({
 }
 
 export function ProjectForm({ mode, project }: ProjectFormProps) {
+  const t = useTranslations('projects.form');
+  const labels = useFormLabels();
   const action =
     mode === 'create'
       ? createProject
@@ -68,13 +69,13 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2 md:col-span-2">
           <FormLabel htmlFor="title" required>
-            프로젝트명
+            {t('title')}
           </FormLabel>
           <Input
             id="title"
             name="title"
             defaultValue={project?.title ?? ''}
-            placeholder="실버 세대 매칭 서비스"
+            placeholder={t('placeholders.title')}
             aria-invalid={Boolean(state.fieldErrors?.title)}
           />
           <FieldError messages={state.fieldErrors?.title} />
@@ -82,79 +83,83 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
 
         <div className="space-y-2 md:col-span-2">
           <FormLabel htmlFor="summary" required>
-            서비스 한줄 설명
+            {t('summary')}
           </FormLabel>
           <Textarea
             id="summary"
             name="summary"
             rows={3}
             defaultValue={project?.summary ?? ''}
-            placeholder="60대 이상 사용자를 위한 관계 형성 플랫폼"
+            placeholder={t('placeholders.summary')}
             aria-invalid={Boolean(state.fieldErrors?.summary)}
           />
           <FieldError messages={state.fieldErrors?.summary} />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="industry">산업군</FormLabel>
+          <FormLabel htmlFor="industry">{t('industry')}</FormLabel>
           <Input
             id="industry"
             name="industry"
             defaultValue={project?.industry ?? ''}
-            placeholder="Senior Tech"
+            placeholder={t('placeholders.industry')}
           />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="businessModel">비즈니스 모델</FormLabel>
+          <FormLabel htmlFor="businessModel">{t('businessModel')}</FormLabel>
           <Input
             id="businessModel"
             name="businessModel"
             defaultValue={project?.businessModel ?? ''}
-            placeholder="Subscription"
+            placeholder={t('placeholders.businessModel')}
           />
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="problem">문제 정의</FormLabel>
+          <FormLabel htmlFor="problem">{t('problem')}</FormLabel>
           <Textarea
             id="problem"
             name="problem"
             rows={4}
             defaultValue={project?.problem ?? ''}
-            placeholder="고령층 사회적 연결 부족"
+            placeholder={t('placeholders.problem')}
           />
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="solution">해결 방법</FormLabel>
+          <FormLabel htmlFor="solution">{t('solution')}</FormLabel>
           <Textarea
             id="solution"
             name="solution"
             rows={4}
             defaultValue={project?.solution ?? ''}
-            placeholder="AI 기반 관계 매칭"
+            placeholder={t('placeholders.solution')}
           />
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="targetCustomer">타겟 고객</FormLabel>
+          <FormLabel htmlFor="targetCustomer">{t('targetCustomer')}</FormLabel>
           <Input
             id="targetCustomer"
             name="targetCustomer"
             defaultValue={project?.targetCustomer ?? ''}
-            placeholder="60대 이상"
+            placeholder={t('placeholders.targetCustomer')}
           />
         </div>
       </div>
 
       <div className={cn('flex items-center gap-3')}>
         <Button type="submit" disabled={pending}>
-          {pending ? 'Saving...' : mode === 'create' ? 'Create Project' : 'Save Changes'}
+          {pending
+            ? labels.saving
+            : mode === 'create'
+              ? labels.createProject
+              : labels.saveChanges}
         </Button>
         <Button type="button" variant="outline" asChild>
           <Link href={mode === 'create' ? '/projects' : `/projects/${project?.id}`}>
-            Cancel
+            {labels.cancel}
           </Link>
         </Button>
       </div>

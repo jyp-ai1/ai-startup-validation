@@ -1,3 +1,5 @@
+'use client';
+
 import type {
   ResearchPlanStatus,
   ResearchPriority,
@@ -5,18 +7,15 @@ import type {
 } from '@repo/types/validation';
 import { Badge } from '@repo/ui';
 
-import {
-  RESEARCH_PRIORITY_LABELS,
-  RESEARCH_STATUS_LABELS,
-  RESEARCH_TYPE_LABELS,
-} from '../schemas/research-schema';
+import { useEnumLabel } from '@/lib/i18n/use-form-labels';
 
 type ResearchTypeBadgeProps = {
   type: ResearchType;
 };
 
 export function ResearchTypeBadge({ type }: ResearchTypeBadgeProps) {
-  return <Badge variant="outline">{RESEARCH_TYPE_LABELS[type]}</Badge>;
+  const label = useEnumLabel('researchType', type);
+  return <Badge variant="outline">{label}</Badge>;
 }
 
 type ResearchStatusBadgeProps = {
@@ -33,11 +32,8 @@ const STATUS_VARIANT: Record<
 };
 
 export function ResearchStatusBadge({ status }: ResearchStatusBadgeProps) {
-  return (
-    <Badge variant={STATUS_VARIANT[status]}>
-      {RESEARCH_STATUS_LABELS[status]}
-    </Badge>
-  );
+  const label = useEnumLabel('researchStatus', status);
+  return <Badge variant={STATUS_VARIANT[status]}>{label}</Badge>;
 }
 
 type ResearchPriorityBadgeProps = {
@@ -54,9 +50,6 @@ const PRIORITY_VARIANT: Record<
 };
 
 export function ResearchPriorityBadge({ priority }: ResearchPriorityBadgeProps) {
-  return (
-    <Badge variant={PRIORITY_VARIANT[priority]}>
-      {RESEARCH_PRIORITY_LABELS[priority]}
-    </Badge>
-  );
+  const label = useEnumLabel('researchPriority', priority);
+  return <Badge variant={PRIORITY_VARIANT[priority]}>{label}</Badge>;
 }

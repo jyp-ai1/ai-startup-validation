@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import type { ResearchPlan } from '@repo/types/validation';
@@ -12,16 +13,13 @@ import {
 import { Button, Input, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
+import { useFormLabels } from '@/lib/i18n/use-form-labels';
+
 import {
   createResearchPlan,
   updateResearchPlan,
   type ResearchActionState,
 } from '../actions/research-actions';
-import {
-  RESEARCH_PRIORITY_LABELS,
-  RESEARCH_STATUS_LABELS,
-  RESEARCH_TYPE_LABELS,
-} from '../schemas/research-schema';
 import { FormSelect } from './form-select';
 
 const initialState: ResearchActionState = {};
@@ -59,20 +57,38 @@ function FormLabel({
 
 const typeOptions = RESEARCH_TYPES.map((type) => ({
   value: type,
-  label: RESEARCH_TYPE_LABELS[type],
+  label: type,
 }));
 
 const priorityOptions = RESEARCH_PRIORITIES.map((priority) => ({
   value: priority,
-  label: RESEARCH_PRIORITY_LABELS[priority],
+  label: priority,
 }));
 
 const statusOptions = RESEARCH_PLAN_STATUSES.map((status) => ({
   value: status,
-  label: RESEARCH_STATUS_LABELS[status],
+  label: status,
 }));
 
 export function ResearchForm({ mode, projectId, plan }: ResearchFormProps) {
+  const t = useTranslations();
+  const tType = useTranslations('enums.researchType');
+  const tPriority = useTranslations('enums.researchPriority');
+  const tStatus = useTranslations('enums.researchStatus');
+  const labels = useFormLabels();
+
+  const localizedTypeOptions = typeOptions.map((o) => ({
+    ...o,
+    label: tType(o.value),
+  }));
+  const localizedPriorityOptions = priorityOptions.map((o) => ({
+    ...o,
+    label: tPriority(o.value),
+  }));
+  const localizedStatusOptions = statusOptions.map((o) => ({
+    ...o,
+    label: tStatus(o.value),
+  }));
   const action =
     mode === 'create'
       ? createResearchPlan.bind(null, projectId)
@@ -96,7 +112,7 @@ export function ResearchForm({ mode, projectId, plan }: ResearchFormProps) {
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2 md:col-span-2">
           <FormLabel htmlFor="title" required>
-            Research 제목
+            {t('research.columns.title')}
           </FormLabel>
           <Input
             id="title"
@@ -110,11 +126,11 @@ export function ResearchForm({ mode, projectId, plan }: ResearchFormProps) {
 
         <div className="space-y-2">
           <FormLabel htmlFor="researchType" required>
-            Research Type
+            {t('research.columns.type')}
           </FormLabel>
           <FormSelect
             name="researchType"
-            options={typeOptions}
+            options={localizedTypeOptions}
             defaultValue={plan?.researchType ?? ''}
             placeholder="Type 선택"
             required
@@ -124,10 +140,10 @@ export function ResearchForm({ mode, projectId, plan }: ResearchFormProps) {
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="priority">Priority</FormLabel>
+          <FormLabel htmlFor="priority">{t('research.columns.priority')}</FormLabel>
           <FormSelect
             name="priority"
-            options={priorityOptions}
+            options={localizedPriorityOptions}
             defaultValue={plan?.priority ?? 'MEDIUM'}
             placeholder="Priority 선택"
           />
@@ -136,10 +152,10 @@ export function ResearchForm({ mode, projectId, plan }: ResearchFormProps) {
 
         {mode === 'edit' ? (
           <div className="space-y-2 md:col-span-2">
-            <FormLabel htmlFor="status">Status</FormLabel>
+            <FormLabel htmlFor="status">{t('research.columns.status')}</FormLabel>
             <FormSelect
               name="status"
-              options={statusOptions}
+              options={localizedStatusOptions}
               defaultValue={plan?.status ?? 'TODO'}
               placeholder="Status 선택"
             />
@@ -163,13 +179,13 @@ export function ResearchForm({ mode, projectId, plan }: ResearchFormProps) {
       <div className={cn('flex items-center gap-3')}>
         <Button type="submit" disabled={pending}>
           {pending
-            ? 'Saving...'
+            ? labels.saving
             : mode === 'create'
-              ? 'Create Research Plan'
-              : 'Save Changes'}
+              ? labels.createResearch
+              : labels.saveChanges}
         </Button>
         <Button type="button" variant="outline" asChild>
-          <Link href={cancelHref}>Cancel</Link>
+          <Link href={cancelHref}>{labels.cancel}</Link>
         </Button>
       </div>
     </form>

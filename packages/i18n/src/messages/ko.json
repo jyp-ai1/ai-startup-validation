@@ -21,7 +21,18 @@
     "preview": "미리보기",
     "regenerate": "재생성",
     "notProvided": "아직 입력되지 않음",
-    "language": "언어"
+    "language": "언어",
+    "saving": "저장 중...",
+    "saveChanges": "변경 사항 저장",
+    "cancelEdit": "수정 취소",
+    "saveSection": "섹션 저장",
+    "saveReport": "리포트 저장",
+    "createProject": "프로젝트 생성",
+    "createVoc": "VOC 생성",
+    "createGrant": "지원사업 등록",
+    "createResearch": "리서치 계획 생성",
+    "createEvidence": "근거 자료 추가",
+    "createCompetitor": "경쟁사 추가"
   },
   "shell": {
     "workspace": "워크스페이스",
@@ -163,7 +174,7 @@
     "emptyDescription": "로컬 워크스페이스 설정입니다. 인증 기능은 추후 추가됩니다."
   },
   "projects": {
-    "title": "Projects",
+    "title": "프로젝트",
     "description": "창업 아이디어 프로젝트 관리",
     "workspaceDesc": "각 프로젝트 워크스페이스에서 Validation Score와 KPI를 확인하세요.",
     "newProject": "새 프로젝트",
@@ -176,6 +187,28 @@
       "sample": "데모 프로젝트로 UI 흐름을 먼저 확인하세요",
       "validation": "Validation Score를 실행해 GO / NO GO를 확인하세요",
       "research": "Research Plan부터 체계적으로 시작하세요"
+    },
+    "form": {
+      "title": "프로젝트명",
+      "summary": "서비스 한줄 설명",
+      "industry": "산업군",
+      "businessModel": "비즈니스 모델",
+      "problem": "문제 정의",
+      "solution": "해결 방법",
+      "targetCustomer": "타겟 고객",
+      "placeholders": {
+        "title": "실버 세대 매칭 서비스",
+        "summary": "60대 이상 사용자를 위한 관계 형성 플랫폼",
+        "industry": "Senior Tech",
+        "businessModel": "Subscription",
+        "problem": "고령층 사회적 연결 부족",
+        "solution": "AI 기반 관계 매칭",
+        "targetCustomer": "60대 이상"
+      }
+    },
+    "validation": {
+      "titleRequired": "프로젝트명을 입력해주세요",
+      "summaryRequired": "서비스 한줄 설명을 입력해주세요"
     }
   },
   "workspace": {
@@ -446,6 +479,32 @@
       "market": "Market Size 리서치 먼저 완료",
       "evidence": "High Confidence 근거 추가",
       "voc": "VOC 20건 이상 수집"
+    },
+    "scoreCategories": {
+      "marketScore": {
+        "label": "시장",
+        "description": "시장 규모, 시장 성장성"
+      },
+      "problemScore": {
+        "label": "문제",
+        "description": "Pain Point 명확성, VOC 근거"
+      },
+      "competitionScore": {
+        "label": "경쟁",
+        "description": "경쟁 강도, 차별 가능성"
+      },
+      "businessModelScore": {
+        "label": "비즈니스 모델",
+        "description": "수익 구조, 가격 가능성"
+      },
+      "executionScore": {
+        "label": "실행",
+        "description": "개발 난이도, 운영 가능성"
+      },
+      "founderFitScore": {
+        "label": "창업자 적합성",
+        "description": "경험 적합성, 네트워크, 도메인 이해도"
+      }
     }
   },
   "reports": {
@@ -619,5 +678,133 @@
     "pending": "대기",
     "processing": "처리 중",
     "failed": "실패"
+  },
+  "enums": {
+    "researchType": {
+      "MARKET_SIZE": "시장 규모",
+      "CUSTOMER": "고객",
+      "TREND": "트렌드",
+      "COMPETITOR": "경쟁사",
+      "BUSINESS_MODEL": "비즈니스 모델",
+      "TECHNOLOGY": "기술",
+      "REGULATION": "규제"
+    },
+    "researchStatus": {
+      "TODO": "할 일",
+      "IN_PROGRESS": "진행 중",
+      "COMPLETED": "완료"
+    },
+    "researchPriority": {
+      "HIGH": "높음",
+      "MEDIUM": "중간",
+      "LOW": "낮음"
+    },
+    "evidenceCategory": {
+      "MARKET": "시장",
+      "CUSTOMER": "고객",
+      "COMPETITOR": "경쟁",
+      "TREND": "트렌드",
+      "TECHNOLOGY": "기술",
+      "REGULATION": "규제",
+      "BUSINESS": "비즈니스"
+    },
+    "evidenceSourceType": {
+      "REPORT": "리포트",
+      "ARTICLE": "기사",
+      "NEWS": "뉴스",
+      "PAPER": "논문",
+      "SURVEY": "설문",
+      "STATISTICS": "통계",
+      "WEBSITE": "웹사이트",
+      "OTHER": "기타"
+    },
+    "evidenceConfidence": {
+      "HIGH": "높음",
+      "MEDIUM": "중간",
+      "LOW": "낮음"
+    },
+    "competitorCategory": {
+      "DIRECT": "직접 경쟁",
+      "INDIRECT": "간접 경쟁",
+      "SUBSTITUTE": "대체재"
+    },
+    "competitorMarketPosition": {
+      "LEADER": "리더",
+      "CHALLENGER": "도전자",
+      "FOLLOWER": "추종자",
+      "NEWCOMER": "신규 진입"
+    },
+    "grantCategory": {
+      "STARTUP": "창업",
+      "TECHNOLOGY": "기술",
+      "AI": "AI",
+      "SOCIAL": "사회",
+      "LOCAL": "지역",
+      "SME": "중소기업",
+      "CONTENT": "콘텐츠",
+      "OTHER": "기타"
+    },
+    "grantTargetStage": {
+      "IDEA": "아이디어",
+      "PRE_MVP": "Pre-MVP",
+      "MVP": "MVP",
+      "GROWTH": "성장",
+      "SCALE": "스케일"
+    },
+    "grantSupportType": {
+      "FUNDING": "자금",
+      "CONSULTING": "컨설팅",
+      "EDUCATION": "교육",
+      "SPACE": "공간",
+      "MARKETING": "마케팅",
+      "RND": "R&D"
+    },
+    "grantStatus": {
+      "OPEN": "모집 중",
+      "CLOSED": "마감",
+      "PREPARING": "준비 중"
+    },
+    "vocSourceType": {
+      "INTERVIEW": "인터뷰",
+      "SURVEY": "설문",
+      "COMMUNITY": "커뮤니티",
+      "REVIEW": "리뷰",
+      "ARTICLE": "기사",
+      "SOCIAL": "소셜",
+      "OTHER": "기타"
+    },
+    "vocCustomerSegment": {
+      "B2C": "B2C",
+      "B2B": "B2B",
+      "B2G": "B2G"
+    },
+    "vocEmotion": {
+      "NEGATIVE": "부정",
+      "NEUTRAL": "중립",
+      "POSITIVE": "긍정"
+    },
+    "vocFrequency": {
+      "LOW": "낮음",
+      "MEDIUM": "중간",
+      "HIGH": "높음"
+    },
+    "vocSeverity": {
+      "LOW": "낮음",
+      "MEDIUM": "중간",
+      "HIGH": "높음",
+      "CRITICAL": "심각"
+    },
+    "vocWillingness": {
+      "UNKNOWN": "미확인",
+      "LOW": "낮음",
+      "MEDIUM": "중간",
+      "HIGH": "높음"
+    },
+    "validationDecision": {
+      "DRAFT": "초안",
+      "GO": "GO",
+      "CONDITIONAL_GO": "조건부 GO",
+      "NO_GO": "NO GO"
+    }
   }
 }

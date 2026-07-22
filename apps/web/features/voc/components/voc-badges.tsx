@@ -1,3 +1,7 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
 import type {
   VOCCustomerSegment,
   VOCEmotion,
@@ -8,20 +12,12 @@ import type {
 } from '@repo/types/validation';
 import { Badge } from '@repo/ui';
 
-import {
-  VOC_CUSTOMER_SEGMENT_LABELS,
-  VOC_EMOTION_LABELS,
-  VOC_FREQUENCY_LABELS,
-  VOC_SEVERITY_LABELS,
-  VOC_SOURCE_TYPE_LABELS,
-  VOC_WILLINGNESS_LABELS,
-} from '../schemas/voc-schema';
-
 export function VOCSourceTypeBadge({ type }: { type: VOCSourceType | null }) {
+  const t = useTranslations('enums.vocSourceType');
   if (!type) {
     return <span className="text-sm text-muted-foreground">—</span>;
   }
-  return <Badge variant="outline">{VOC_SOURCE_TYPE_LABELS[type]}</Badge>;
+  return <Badge variant="outline">{t(type)}</Badge>;
 }
 
 export function VOCCustomerSegmentBadge({
@@ -29,13 +25,15 @@ export function VOCCustomerSegmentBadge({
 }: {
   segment: VOCCustomerSegment | null;
 }) {
+  const t = useTranslations('enums.vocCustomerSegment');
   if (!segment) {
     return <span className="text-sm text-muted-foreground">—</span>;
   }
-  return <Badge variant="secondary">{VOC_CUSTOMER_SEGMENT_LABELS[segment]}</Badge>;
+  return <Badge variant="secondary">{t(segment)}</Badge>;
 }
 
 export function VOCEmotionBadge({ emotion }: { emotion: VOCEmotion | null }) {
+  const t = useTranslations('enums.vocEmotion');
   if (!emotion) {
     return <span className="text-sm text-muted-foreground">—</span>;
   }
@@ -45,7 +43,7 @@ export function VOCEmotionBadge({ emotion }: { emotion: VOCEmotion | null }) {
       : emotion === 'POSITIVE'
         ? 'default'
         : 'secondary';
-  return <Badge variant={variant}>{VOC_EMOTION_LABELS[emotion]}</Badge>;
+  return <Badge variant={variant}>{t(emotion)}</Badge>;
 }
 
 export function VOCFrequencyBadge({
@@ -53,15 +51,17 @@ export function VOCFrequencyBadge({
 }: {
   frequency: VOCFrequency | null;
 }) {
+  const t = useTranslations('enums.vocFrequency');
   if (!frequency) {
     return <span className="text-sm text-muted-foreground">—</span>;
   }
   const variant =
     frequency === 'HIGH' ? 'destructive' : frequency === 'MEDIUM' ? 'default' : 'secondary';
-  return <Badge variant={variant}>{VOC_FREQUENCY_LABELS[frequency]}</Badge>;
+  return <Badge variant={variant}>{t(frequency)}</Badge>;
 }
 
 export function VOCSeverityBadge({ severity }: { severity: VOCSeverity | null }) {
+  const t = useTranslations('enums.vocSeverity');
   if (!severity) {
     return <span className="text-sm text-muted-foreground">—</span>;
   }
@@ -71,7 +71,7 @@ export function VOCSeverityBadge({ severity }: { severity: VOCSeverity | null })
       : severity === 'MEDIUM'
         ? 'default'
         : 'secondary';
-  return <Badge variant={variant}>{VOC_SEVERITY_LABELS[severity]}</Badge>;
+  return <Badge variant={variant}>{t(severity)}</Badge>;
 }
 
 export function VOCWillingnessBadge({
@@ -79,15 +79,12 @@ export function VOCWillingnessBadge({
 }: {
   willingness: VOCWillingnessToPay;
 }) {
+  const t = useTranslations('enums.vocWillingness');
   const variant =
     willingness === 'HIGH'
       ? 'default'
       : willingness === 'MEDIUM'
         ? 'secondary'
-        : willingness === 'LOW'
-          ? 'outline'
-          : 'outline';
-  return (
-    <Badge variant={variant}>{VOC_WILLINGNESS_LABELS[willingness]}</Badge>
-  );
+        : 'outline';
+  return <Badge variant={variant}>{t(willingness)}</Badge>;
 }

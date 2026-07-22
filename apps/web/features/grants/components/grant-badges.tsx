@@ -1,3 +1,7 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
 import type {
   GrantCategory,
   GrantStatus,
@@ -6,18 +10,12 @@ import type {
 } from '@repo/types/validation';
 import { Badge } from '@repo/ui';
 
-import {
-  GRANT_CATEGORY_LABELS,
-  GRANT_STATUS_LABELS,
-  GRANT_SUPPORT_TYPE_LABELS,
-  GRANT_TARGET_STAGE_LABELS,
-} from '../schemas/grant-schema';
-
 export function GrantCategoryBadge({ category }: { category: GrantCategory | null }) {
+  const t = useTranslations('enums.grantCategory');
   if (!category) {
     return <span className="text-sm text-muted-foreground">—</span>;
   }
-  return <Badge variant="outline">{GRANT_CATEGORY_LABELS[category]}</Badge>;
+  return <Badge variant="outline">{t(category)}</Badge>;
 }
 
 export function GrantTargetStageBadge({
@@ -25,10 +23,11 @@ export function GrantTargetStageBadge({
 }: {
   stage: GrantTargetStage | null;
 }) {
+  const t = useTranslations('enums.grantTargetStage');
   if (!stage) {
     return <span className="text-sm text-muted-foreground">—</span>;
   }
-  return <Badge variant="secondary">{GRANT_TARGET_STAGE_LABELS[stage]}</Badge>;
+  return <Badge variant="secondary">{t(stage)}</Badge>;
 }
 
 export function GrantSupportTypeBadge({
@@ -36,16 +35,18 @@ export function GrantSupportTypeBadge({
 }: {
   type: GrantSupportType | null;
 }) {
+  const t = useTranslations('enums.grantSupportType');
   if (!type) {
     return <span className="text-sm text-muted-foreground">—</span>;
   }
-  return <Badge variant="outline">{GRANT_SUPPORT_TYPE_LABELS[type]}</Badge>;
+  return <Badge variant="outline">{t(type)}</Badge>;
 }
 
 export function GrantStatusBadge({ status }: { status: GrantStatus }) {
+  const t = useTranslations('enums.grantStatus');
   const variant =
     status === 'OPEN' ? 'default' : status === 'PREPARING' ? 'secondary' : 'outline';
-  return <Badge variant={variant}>{GRANT_STATUS_LABELS[status]}</Badge>;
+  return <Badge variant={variant}>{t(status)}</Badge>;
 }
 
 export function GrantFitScoreBadge({ score }: { score: number | null }) {
