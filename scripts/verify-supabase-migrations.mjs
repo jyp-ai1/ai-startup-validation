@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Verify Supabase migrations 016 + 017 are applied.
+ * Verify Supabase migrations 016 + 017 + 018 are applied.
  * Usage: node scripts/verify-supabase-migrations.mjs
  * Requires SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY in apps/web/.env.local
  */
@@ -65,11 +65,26 @@ async function checkDemoProject() {
   return Array.isArray(rows) && rows.length > 0;
 }
 
+async function checkMemoryTable() {
+  const res = await fetch(`${url}/rest/v1/project_memory_entries?select=id,project_id,memory_type&limit=1`, {
+    headers,
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    console.error('Memory table check failed:', res.status, body);
+    return false;
+  }
+  return true;
+}
+
 async function main() {
   console.log('Migration Applied Check\n');
 
   const columnsOk = await checkColumns();
   console.log(columnsOk ? '✅ user_id, country, project_goal, is_demo, onboarding_context' : '❌ columns missing — run 016 + 017 SQL');
+
+  const memoryOk = await checkMemoryTable();
+  console.log(memoryOk ? '✅ project_memory_entries (018)' : '⚠️  Memory table missing — run 018_project_memory.sql');
 
   const demoOk = await checkDemoProject();
   console.log(demoOk ? '✅ Demo project marked (is_demo=true)' : '⚠️  No demo project found');

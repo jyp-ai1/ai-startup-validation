@@ -18,6 +18,7 @@ import {
   isOnboardingComplete,
   parseOnboardingContext,
 } from '@/features/onboarding-consultant';
+import { loadProjectIntelligence } from '@/features/project-intelligence/server';
 import { getWorkspaceSession } from '@/lib/auth/workspace-session';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -58,6 +59,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   let executive = null;
   let strategy = null;
   let consultant = null;
+  let intelligence = null;
   let onboardingComplete = false;
 
   if (workspace.activeProject && workspace.stats) {
@@ -91,6 +93,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       orchestratorPlan,
       onboardingContext,
     });
+    intelligence = await loadProjectIntelligence({
+      project: workspace.activeProject,
+      stats: workspace.stats,
+      executive,
+      strategy,
+      onboardingContext,
+      hasExecutiveReport: Boolean(executiveReport),
+      orchestratorPlan,
+    });
   }
 
   return (
@@ -101,6 +112,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         executive={executive}
         strategy={strategy}
         consultant={consultant}
+        intelligence={intelligence}
         demoMode={demoMode}
         onboardingComplete={onboardingComplete}
       />

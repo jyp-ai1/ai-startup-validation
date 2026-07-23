@@ -17,6 +17,7 @@ import { getProject } from '@/features/projects/actions/project-actions';
 import { getExecutiveReport } from '@/features/report-engine';
 import { listReports } from '@/features/reports/services/report-service';
 import { buildStrategyWorkspace } from '@/features/strategy-workspace';
+import { loadProjectIntelligence } from '@/features/project-intelligence/server';
 import { buildWorkspaceHomeViewModel } from '@/features/workspace-home';
 
 type ProjectDetailPageProps = {
@@ -81,6 +82,16 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     onboardingContext,
   });
 
+  const intelligence = await loadProjectIntelligence({
+    project,
+    stats,
+    executive,
+    strategy,
+    onboardingContext,
+    hasExecutiveReport,
+    orchestratorPlan,
+  });
+
   const workspaceHome = buildWorkspaceHomeViewModel({
     project,
     stats,
@@ -95,6 +106,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
       project={project}
       stats={stats}
       consultant={consultant}
+      intelligence={intelligence}
       workspaceHome={workspaceHome}
     />
   );

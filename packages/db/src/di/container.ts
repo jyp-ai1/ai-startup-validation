@@ -46,6 +46,8 @@ import type { KnowledgeDocumentRepository } from '../repositories/knowledge-docu
 import { SupabaseKnowledgeDocumentRepository } from '../repositories/knowledge-document.repository';
 import type { KnowledgeChunkRepository } from '../repositories/knowledge-chunk.repository';
 import { SupabaseKnowledgeChunkRepository } from '../repositories/knowledge-chunk.repository';
+import type { ProjectMemoryRepository } from '../repositories/project-memory.repository';
+import { SupabaseProjectMemoryRepository } from '../repositories/project-memory.repository';
 import type { UserRepository } from '../repositories/user.repository';
 import { SupabaseUserRepository } from '../repositories/user.repository';
 import type { StoragePort } from '../storage/storage.port';
@@ -73,6 +75,7 @@ export const DbTokens = {
   DevelopmentSpecSectionRepository: Symbol('DevelopmentSpecSectionRepository'),
   KnowledgeDocumentRepository: Symbol('KnowledgeDocumentRepository'),
   KnowledgeChunkRepository: Symbol('KnowledgeChunkRepository'),
+  ProjectMemoryRepository: Symbol('ProjectMemoryRepository'),
   AuthPort: Symbol('AuthPort'),
   StoragePort: Symbol('StoragePort'),
   RealtimePort: Symbol('RealtimePort'),
@@ -101,6 +104,7 @@ export type DatabasePlatform = {
     developmentSpecSection: DevelopmentSpecSectionRepository;
     knowledgeDocument: KnowledgeDocumentRepository;
     knowledgeChunk: KnowledgeChunkRepository;
+    projectMemory: ProjectMemoryRepository;
   };
   auth: AuthPort;
   storage: StoragePort;
@@ -182,6 +186,7 @@ export class DbContainer {
           DbTokens.KnowledgeDocumentRepository,
         ),
         knowledgeChunk: this.resolve<KnowledgeChunkRepository>(DbTokens.KnowledgeChunkRepository),
+        projectMemory: this.resolve<ProjectMemoryRepository>(DbTokens.ProjectMemoryRepository),
       },
       auth: this.resolve<AuthPort>(DbTokens.AuthPort),
       storage: this.resolve<StoragePort>(DbTokens.StoragePort),
@@ -214,6 +219,7 @@ export function createDatabasePlatform(): DbContainer {
   const developmentSpecSectionRepo = new SupabaseDevelopmentSpecSectionRepository();
   const knowledgeDocumentRepo = new SupabaseKnowledgeDocumentRepository();
   const knowledgeChunkRepo = new SupabaseKnowledgeChunkRepository();
+  const projectMemoryRepo = new SupabaseProjectMemoryRepository();
   const auth = new SupabaseAuthAdapter();
   const storage = new SupabaseStorageAdapter();
   const realtime = new SupabaseRealtimeAdapter();
@@ -240,6 +246,7 @@ export function createDatabasePlatform(): DbContainer {
     .register(DbTokens.DevelopmentSpecSectionRepository, developmentSpecSectionRepo)
     .register(DbTokens.KnowledgeDocumentRepository, knowledgeDocumentRepo)
     .register(DbTokens.KnowledgeChunkRepository, knowledgeChunkRepo)
+    .register(DbTokens.ProjectMemoryRepository, projectMemoryRepo)
     .register(DbTokens.AuthPort, auth)
     .register(DbTokens.StoragePort, storage)
     .register(DbTokens.RealtimePort, realtime);

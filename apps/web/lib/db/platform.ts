@@ -22,6 +22,7 @@ import {
   type DevelopmentSpecSectionRepository,
   type KnowledgeDocumentRepository,
   type KnowledgeChunkRepository,
+  type ProjectMemoryRepository,
   type VOCRepository,
 } from '@repo/db';
 
@@ -103,6 +104,10 @@ export function getKnowledgeChunkRepository(): KnowledgeChunkRepository {
   return db.resolve<KnowledgeChunkRepository>(DbTokens.KnowledgeChunkRepository);
 }
 
+export function getProjectMemoryRepository(): ProjectMemoryRepository {
+  return db.resolve<ProjectMemoryRepository>(DbTokens.ProjectMemoryRepository);
+}
+
 export { DbTokens, getDatabasePlatform };
 export type {
   UserRepository,
@@ -126,4 +131,5 @@ export type {
   DevelopmentSpecSectionRepository,
   KnowledgeDocumentRepository,
   KnowledgeChunkRepository,
+  ProjectMemoryRepository,
 } from '@repo/db';
