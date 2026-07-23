@@ -23,7 +23,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | Rename Validation → Decision Engine (labels) | ✅ Done | AI |
 | Rename Reports → Decision Report, Business Plan → Strategy Report | ✅ Done | AI |
 | Placeholder: Business Strategy, Market Intelligence | ✅ Done | AI |
-| Build + lint + deploy + verify | ⏳ Pending | AI |
+| Build + lint + deploy + verify | ✅ Done | AI |
 
 **Migration:** Run `packages/db/src/migration/015_project_type.sql` in Supabase before creating non-STARTUP projects.
 
