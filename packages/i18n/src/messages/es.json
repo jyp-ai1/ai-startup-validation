@@ -2222,5 +2222,157 @@
         "knowledge": "Decision knowledge node"
       }
     }
+  },
+  "executive": {
+    "placeholder": "Est.",
+    "empty": {
+      "eyebrow": "Executive Decision Platform",
+      "title": "Your executive workspace awaits",
+      "desc": "Create a strategy project to see AI-driven decisions, risks, and recommended actions in one view.",
+      "cta": "Create Project",
+      "projects": "{count} projects in workspace"
+    },
+    "hero": {
+      "eyebrow": "Executive Decision Workspace",
+      "confidence": "Confidence {value}%",
+      "openDecisionCenter": "Open Decision Center →"
+    },
+    "summary": {
+      "eyebrow": "AI Executive Summary",
+      "title": "Strategic Assessment",
+      "line1": "Market growth signals remain positive, but competitive intensity requires a differentiated entry strategy.",
+      "line2": "Evidence coverage supports a directional GO, with gaps in VOC and competitor depth.",
+      "line3": "Government programs and grant fit add upside to the investment case.",
+      "line4": "Recommend HOLD pending targeted validation before full capital commitment."
+    },
+    "decisionStatus": {
+      "verdict": "Decision Status",
+      "coverage": "Evidence Coverage",
+      "updated": "Last Updated"
+    },
+    "typeKpis": {
+      "title": "Strategic KPIs"
+    },
+    "metrics": {
+      "title": "Key Metrics",
+      "decisionScore": "Decision Score",
+      "marketScore": "Market Score",
+      "evidenceQuality": "Evidence Quality",
+      "competition": "Competition",
+      "execution": "Execution",
+      "confidence": "Confidence"
+    },
+    "kpis": {
+      "units": {
+        "score": "pts",
+        "million": "M USD",
+        "kPerMonth": "K/mo",
+        "months": "mo",
+        "percent": "%"
+      },
+      "startup": {
+        "tam": "TAM",
+        "burnRate": "Burn Rate",
+        "runway": "Runway",
+        "pmfScore": "PMF Score"
+      },
+      "enterprise": {
+        "strategicFit": "Strategic Fit",
+        "revenueImpact": "Revenue Impact",
+        "costSaving": "Cost Saving",
+        "riskLevel": "Risk Level"
+      },
+      "ai": {
+        "readiness": "AI Readiness",
+        "roi": "ROI",
+        "automation": "Automation Potential",
+        "dataMaturity": "Data Maturity"
+      }
+    },
+    "risks": {
+      "title": "Strategic Risks",
+      "desc": "Top risks ranked by impact and probability.",
+      "heatmap": "Risk Matrix",
+      "columns": {
+        "risk": "Risk",
+        "impact": "Impact",
+        "probability": "Probability",
+        "mitigation": "Mitigation"
+      }
+    },
+    "opportunities": {
+      "title": "Strategic Opportunities",
+      "desc": "Highest-impact opportunities for this initiative.",
+      "priority": "Priority {value}"
+    },
+    "execution": {
+      "title": "AI Execution Status",
+      "desc": "Orchestrator agent pipeline — current progress.",
+      "noPlan": "No orchestrator plan yet. Start a strategy plan from AI Execution Center."
+    },
+    "actions": {
+      "title": "Recommended Actions",
+      "desc": "Top 5 actions to improve decision readiness.",
+      "eta": "ETA {days}d",
+      "owners": {
+        "strategy": "Strategy Lead",
+        "product": "Product",
+        "finance": "Finance",
+        "legal": "Legal",
+        "ceo": "CEO Office"
+      }
+    },
+    "evidence": {
+      "title": "Supporting Evidence",
+      "desc": "Highest-confidence evidence backing this decision.",
+      "columns": {
+        "title": "Evidence",
+        "source": "Source",
+        "confidence": "Confidence",
+        "date": "Date"
+      },
+      "source": {
+        "evidence": "Evidence Library",
+        "voc": "Voice of Customer",
+        "research": "Research",
+        "competitor": "Competitor Intel",
+        "grant": "Government",
+        "validation": "Validation Score"
+      }
+    },
+    "inbox": {
+      "title": "Executive Inbox",
+      "marketGrowth": {
+        "title": "Market growth rate updated",
+        "summary": "CAGR revised upward based on latest industry signals."
+      },
+      "competitorInvestment": {
+        "title": "Competitor raised new funding",
+        "summary": "Key competitor closed Series B — positioning review recommended."
+      },
+      "policyChange": {
+        "title": "Government policy change detected",
+        "summary": "New innovation grant program may affect funding strategy."
+      },
+      "evidenceDrop": {
+        "title": "Evidence confidence declined",
+        "summary": "Overall evidence quality dropped below executive threshold."
+      }
+    },
+    "scenario": {
+      "title": "Scenario Planning",
+      "desc": "Compare Best, Base, and Worst case strategic outcomes.",
+      "comingSoon": "Coming Soon",
+      "best": "Best Case",
+      "base": "Base Case",
+      "worst": "Worst Case"
+    },
+    "export": {
+      "title": "Export Report",
+      "pdf": "PDF",
+      "ppt": "PPT",
+      "docx": "DOCX",
+      "hint": "Full export available in Sprint 8.7"
+    }
   }
 }

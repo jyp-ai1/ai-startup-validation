@@ -1869,6 +1869,158 @@
       "decision": { "title": "Decision Evidence", "summary": "최종 전략 판정", "knowledge": "Decision 지식 노드" }
     }
   },
+  "executive": {
+    "placeholder": "예상",
+    "empty": {
+      "eyebrow": "Executive Decision Platform",
+      "title": "Executive Workspace를 시작하세요",
+      "desc": "전략 프로젝트를 생성하면 AI Decision, 리스크, 권장 Action을 한 화면에서 확인할 수 있습니다.",
+      "cta": "프로젝트 생성",
+      "projects": "워크스페이스 {count}개 프로젝트"
+    },
+    "hero": {
+      "eyebrow": "Executive Decision Workspace",
+      "confidence": "신뢰도 {value}%",
+      "openDecisionCenter": "Decision Center 열기 →"
+    },
+    "summary": {
+      "eyebrow": "AI Executive Summary",
+      "title": "전략 평가",
+      "line1": "시장 성장률은 높지만 경쟁 강도가 높아 초기 진입 전략 수정이 필요합니다.",
+      "line2": "Evidence 커버리지는 방향성 GO를 지지하나 VOC·경쟁사 깊이에 공백이 있습니다.",
+      "line3": "정부 프로그램 및 Grant 적합성이 투자 케이스에 상방 요인을 더합니다.",
+      "line4": "본격 자본 투입 전 타겟 Validation 완료까지 HOLD를 권고합니다."
+    },
+    "decisionStatus": {
+      "verdict": "Decision Status",
+      "coverage": "Evidence Coverage",
+      "updated": "Last Updated"
+    },
+    "typeKpis": {
+      "title": "전략 KPI"
+    },
+    "metrics": {
+      "title": "Key Metrics",
+      "decisionScore": "Decision Score",
+      "marketScore": "Market Score",
+      "evidenceQuality": "Evidence Quality",
+      "competition": "Competition",
+      "execution": "Execution",
+      "confidence": "Confidence"
+    },
+    "kpis": {
+      "units": {
+        "score": "점",
+        "million": "M USD",
+        "kPerMonth": "K/월",
+        "months": "개월",
+        "percent": "%"
+      },
+      "startup": {
+        "tam": "TAM",
+        "burnRate": "Burn Rate",
+        "runway": "Runway",
+        "pmfScore": "PMF Score"
+      },
+      "enterprise": {
+        "strategicFit": "Strategic Fit",
+        "revenueImpact": "Revenue Impact",
+        "costSaving": "Cost Saving",
+        "riskLevel": "Risk Level"
+      },
+      "ai": {
+        "readiness": "AI Readiness",
+        "roi": "ROI",
+        "automation": "Automation Potential",
+        "dataMaturity": "Data Maturity"
+      }
+    },
+    "risks": {
+      "title": "Strategic Risks",
+      "desc": "Impact·Probability 기준 상위 리스크.",
+      "heatmap": "Risk Matrix",
+      "columns": {
+        "risk": "Risk",
+        "impact": "Impact",
+        "probability": "Probability",
+        "mitigation": "Mitigation"
+      }
+    },
+    "opportunities": {
+      "title": "Strategic Opportunities",
+      "desc": "이 이니셔티브의 고영향 기회.",
+      "priority": "Priority {value}"
+    },
+    "execution": {
+      "title": "AI Execution Status",
+      "desc": "Orchestrator Agent 파이프라인 — 현재 진행 상태.",
+      "noPlan": "Orchestrator 플랜 없음. AI Execution Center에서 전략 플랜을 시작하세요."
+    },
+    "actions": {
+      "title": "Recommended Actions",
+      "desc": "Decision 준비도를 높이는 Top 5 Action.",
+      "eta": "ETA {days}일",
+      "owners": {
+        "strategy": "전략 리드",
+        "product": "Product",
+        "finance": "Finance",
+        "legal": "Legal",
+        "ceo": "CEO Office"
+      }
+    },
+    "evidence": {
+      "title": "Supporting Evidence",
+      "desc": "이 Decision을 뒷받침하는 고신뢰 Evidence.",
+      "columns": {
+        "title": "Evidence",
+        "source": "Source",
+        "confidence": "Confidence",
+        "date": "Date"
+      },
+      "source": {
+        "evidence": "Evidence Library",
+        "voc": "Voice of Customer",
+        "research": "Research",
+        "competitor": "Competitor Intel",
+        "grant": "Government",
+        "validation": "Validation Score"
+      }
+    },
+    "inbox": {
+      "title": "Executive Inbox",
+      "marketGrowth": {
+        "title": "시장 성장률 업데이트",
+        "summary": "최신 산업 신호 기반 CAGR 상향 조정."
+      },
+      "competitorInvestment": {
+        "title": "경쟁사 신규 투자",
+        "summary": "주요 경쟁사 Series B 클로징 — 포지셔닝 재검토 권장."
+      },
+      "policyChange": {
+        "title": "정부 정책 변경 감지",
+        "summary": "신규 혁신 Grant 프로그램 — 펀딩 전략 영향 가능."
+      },
+      "evidenceDrop": {
+        "title": "Evidence Confidence 하락",
+        "summary": "전체 Evidence 품질이 Executive 임계치 이하로 하락."
+      }
+    },
+    "scenario": {
+      "title": "Scenario Planning",
+      "desc": "Best / Base / Worst Case 전략 결과 비교.",
+      "comingSoon": "Coming Soon",
+      "best": "Best Case",
+      "base": "Base Case",
+      "worst": "Worst Case"
+    },
+    "export": {
+      "title": "Export Report",
+      "pdf": "PDF",
+      "ppt": "PPT",
+      "docx": "DOCX",
+      "hint": "전체 Export는 Sprint 8.7에서 제공"
+    }
+  },
   "marketIntel": {
     "eyebrow": "AI Market Intelligence",
     "snapshotTitle": "Market Snapshot",

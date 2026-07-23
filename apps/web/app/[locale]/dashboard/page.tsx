@@ -1,15 +1,14 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { cookies } from 'next/headers';
 
-import { IntelligenceDashboard } from '@/features/dashboard/components/intelligence-dashboard';
+import { getLatestPlan } from '@/features/agents/orchestrator';
 import { getWorkspaceContext } from '@/features/dashboard/services/dashboard-service';
 import { generateProjectDecision } from '@/features/decision';
-import { getAgentActivityStats } from '@/features/agents/research';
 import {
-  getExecutionCenterStats,
-  getLatestPlan,
-} from '@/features/agents/orchestrator';
-import { cookies } from 'next/headers';
+  buildExecutiveWorkspace,
+  ExecutiveDashboard,
+} from '@/features/executive';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();
@@ -22,24 +21,20 @@ export default async function DashboardPage() {
   const cookieStore = await cookies();
   const preferredProjectId = cookieStore.get('ACTIVE_PROJECT_ID')?.value ?? null;
   const workspace = await getWorkspaceContext(preferredProjectId);
-  const decision = workspace.activeProject
-    ? await generateProjectDecision(workspace.activeProject.id)
-    : null;
-  const agentActivity = await getAgentActivityStats();
-  const orchestratorStats = await getExecutionCenterStats();
-  const orchestratorPlan = workspace.activeProject
-    ? await getLatestPlan(workspace.activeProject.id)
-    : null;
 
-  return (
-    <IntelligenceDashboard
-      workspace={workspace}
-      decision={decision}
-      agentActivity={agentActivity}
-      orchestratorStats={orchestratorStats}
-      orchestratorPlan={orchestratorPlan}
-      activeProjectId={workspace.activeProject?.id ?? null}
-      activeProjectTitle={workspace.activeProject?.title ?? null}
-    />
-  );
+  let executive = null;
+  if (workspace.activeProject && workspace.stats) {
+    const decision = await generateProjectDecision(workspace.activeProject.id);
+    const orchestratorPlan = await getLatestPlan(workspace.activeProject.id);
+    if (decision) {
+      executive = buildExecutiveWorkspace(
+        workspace.activeProject,
+        workspace.stats,
+        decision,
+        orchestratorPlan,
+      );
+    }
+  }
+
+  return <ExecutiveDashboard workspace={workspace} executive={executive} />;
 }

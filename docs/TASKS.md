@@ -65,7 +65,31 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 10 | SEO (OG, robots, sitemap, canonical) | ✅ Done | AI |
 | — | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.6 — Knowledge Graph + Evidence Merge
+**Next:** Sprint 8.7 — Executive Report Export
+
+---
+
+## Sprint 8.6 — Executive Decision Workspace ✅
+
+**Status:** Complete  
+**Goal:** Rebuild Dashboard as Executive Decision Workspace — CEO/CFO-ready single screen integrating Decision, Market, Framework, Agent, Orchestrator outputs.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `features/executive/` — workspace service, KPI registry, inbox mock | ✅ Done | AI |
+| Executive Dashboard (new — not legacy Intelligence Dashboard) | ✅ Done | AI |
+| Executive Hero, Summary, Decision Status, Key Metrics | ✅ Done | AI |
+| Strategic Risks + Opportunities + Risk Matrix | ✅ Done | AI |
+| Execution Status (Orchestrator timeline) | ✅ Done | AI |
+| Decision Drivers + Confidence Lineage (reuse) | ✅ Done | AI |
+| Recommended Actions + Supporting Evidence | ✅ Done | AI |
+| Scenario Planning + Executive Inbox placeholders | ✅ Done | AI |
+| Export bar placeholder (PDF/PPT/DOCX — Sprint 8.7) | ✅ Done | AI |
+| Analytics: dashboard_open, executive_summary_view, risk_view, action_click, export_click | ✅ Done | AI |
+| i18n (en/ko + sync 11 locales) | ✅ Done | AI |
+| Build + deploy + verify | ✅ Done | AI |
+
+**Next:** Sprint 8.7 — Executive Report Export
 
 ---
 
@@ -91,7 +115,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Rule:** Only Orchestrator may call Decision Engine — agents produce evidence/knowledge only.
 
-**Next:** Sprint 8.6 — Knowledge Graph + Evidence Merge
+**Next:** Sprint 8.7 — Executive Report Export
 
 ---
 
@@ -114,7 +138,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Rule:** Research Agent never calls Decision Engine — evidence only.
 
-**Next:** Sprint 8.6 — Knowledge Graph + Evidence Merge
+**Next:** Sprint 8.7 — Executive Report Export
 
 ---
 
