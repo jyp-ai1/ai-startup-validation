@@ -7,6 +7,8 @@ import { useTranslations } from 'next-intl';
 import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
 import { ResearchProgressDashboard } from '@/components/consulting/research-progress-dashboard';
 import { IntelligencePage } from '@/components/intelligence';
+import { ResearchAgentPanel } from '@/features/agents/research/components/research-agent-panel';
+import type { ResearchJob } from '@/features/agents/research';
 import { buildResearchInsights } from '@/lib/intelligence/build-feature-insights';
 import type { ResearchPlan, StartupProject } from '@repo/types/validation';
 import { Button } from '@repo/ui';
@@ -20,9 +22,10 @@ import {
 type ResearchListProps = {
   project: StartupProject;
   plans: ResearchPlan[];
+  agentJobs?: ResearchJob[];
 };
 
-export function ResearchList({ project, plans }: ResearchListProps) {
+export function ResearchList({ project, plans, agentJobs = [] }: ResearchListProps) {
   const t = useTranslations();
   const basePath = `/projects/${project.id}/research`;
   const insight = buildResearchInsights(plans);
@@ -39,7 +42,13 @@ export function ResearchList({ project, plans }: ResearchListProps) {
   );
 
   return (
-    <IntelligencePage
+    <div className="space-y-8">
+      <ResearchAgentPanel
+        projectId={project.id}
+        projectType={project.projectType}
+        jobs={agentJobs}
+      />
+      <IntelligencePage
       eyebrow={t('meta.appTagline')}
       title={t('research.title')}
       description={t('research.description', { project: project.title })}
@@ -92,5 +101,6 @@ export function ResearchList({ project, plans }: ResearchListProps) {
         ) : undefined
       }
     />
+    </div>
   );
 }

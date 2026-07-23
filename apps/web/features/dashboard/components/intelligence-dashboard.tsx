@@ -20,6 +20,8 @@ import {
 import type { DecisionResult } from '@/features/decision';
 import { DecisionSummaryPanel } from '@/features/decision/components/decision-summary-panel';
 import { MarketSnapshotPanel } from '@/features/market-intelligence/components/market-snapshot-panel';
+import { AiActivityPanel } from '@/features/agents/research/components/ai-activity-panel';
+import type { AgentActivityStats } from '@/features/agents/research';
 import type { WorkspaceContext } from '@/features/dashboard/types';
 import { buildReadinessMetrics } from '@/features/dashboard/utils/readiness-calculator';
 import { buildDashboardInsights } from '@/lib/intelligence/build-dashboard-insights';
@@ -30,6 +32,7 @@ import { formatRelativeTime } from '@repo/utils/date';
 type IntelligenceDashboardProps = {
   workspace: WorkspaceContext;
   decision?: DecisionResult | null;
+  agentActivity?: AgentActivityStats | null;
   activeProjectId?: string | null;
   activeProjectTitle?: string | null;
 };
@@ -37,6 +40,7 @@ type IntelligenceDashboardProps = {
 export function IntelligenceDashboard({
   workspace,
   decision,
+  agentActivity,
   activeProjectId,
   activeProjectTitle,
 }: IntelligenceDashboardProps) {
@@ -99,6 +103,8 @@ export function IntelligenceDashboard({
           variant="dashboard"
         />
       ) : null}
+
+      {agentActivity ? <AiActivityPanel stats={agentActivity} /> : null}
 
       {/* 3. AI Executive Summary */}
       <AiSummaryCard insight={insight} />

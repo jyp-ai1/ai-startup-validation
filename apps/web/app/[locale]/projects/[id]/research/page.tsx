@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { getProject } from '@/features/projects/actions/project-actions';
+import { getProjectResearchJobs } from '@/features/agents/research';
 import { getResearchPlans, ResearchList } from '@/features/research';
 
 type ResearchListPageProps = {
@@ -31,7 +32,10 @@ export default async function ResearchListPage({ params }: ResearchListPageProps
     notFound();
   }
 
-  const plans = await getResearchPlans(id);
+  const [plans, agentJobs] = await Promise.all([
+    getResearchPlans(id),
+    getProjectResearchJobs(id),
+  ]);
 
-  return <ResearchList project={project} plans={plans} />;
+  return <ResearchList project={project} plans={plans} agentJobs={agentJobs} />;
 }

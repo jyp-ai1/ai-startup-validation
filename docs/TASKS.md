@@ -65,7 +65,30 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 10 | SEO (OG, robots, sitemap, canonical) | ✅ Done | AI |
 | — | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.4 — AI Research Agent
+**Next:** Sprint 8.5 — Multi-Agent Orchestrator
+
+---
+
+## Sprint 8.4 — AI Research Agent Foundation ✅
+
+**Status:** Complete  
+**Goal:** Provider-based research agent architecture — job queue, state machine, evidence builder, approval workflow; Mock active.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `features/agents/research/` provider pattern (Mock + stubs) | ✅ Done | AI |
+| Task planner + state machine + async job queue | ✅ Done | AI |
+| Mock knowledge store + execution history | ✅ Done | AI |
+| Approval workflow (Review → Approve/Reject) | ✅ Done | AI |
+| Research tab — AI result + Agent Timeline | ✅ Done | AI |
+| Dashboard AI Activity panel | ✅ Done | AI |
+| Analytics: agent_start/complete/failed, research_execute/review | ✅ Done | AI |
+| Prompt templates + i18n | ✅ Done | AI |
+| Build + deploy + verify | ✅ Done | AI |
+
+**Rule:** Research Agent never calls Decision Engine — evidence only.
+
+**Next:** Sprint 8.5 — Multi-Agent Orchestrator
 
 ---
 
@@ -87,7 +110,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Architecture:** `MarketEngine` → `MarketSelector` → `MarketProvider` → `MarketResult` — runs before Framework and Decision scoring.
 
-**Next:** Sprint 8.4 — AI Research Agent
+**Next:** Sprint 8.4 — AI Research Agent ✅
 
 ---
 

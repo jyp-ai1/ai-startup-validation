@@ -1708,6 +1708,82 @@
       }
     }
   },
+  "researchAgent": {
+    "eyebrow": "AI Research Agent",
+    "title": "Autonomous Research",
+    "desc": "AI investigates markets, competitors, and evidence — you review and approve.",
+    "start": "Start AI Research",
+    "running": "Agent running…",
+    "timelineLabel": "Agent Timeline",
+    "resultTitle": "AI Research Result",
+    "marketInsight": "Market",
+    "competitorInsight": "Competitors",
+    "governmentInsight": "Government",
+    "evidenceGenerated": "{count} evidence items generated",
+    "approve": "Approve",
+    "reject": "Reject",
+    "failed": "Research agent failed",
+    "noRuns": "No AI research runs yet. Start the agent to autonomously gather evidence.",
+    "duration": "Completed in {ms}ms",
+    "confidence": "Confidence {value}%",
+    "timeline": {
+      "empty": "No active research job",
+      "queued": "Queued",
+      "running": "Running",
+      "searching": "Searching",
+      "extracting": "Extracting",
+      "analyzing": "Analyzing",
+      "completed": "Completed"
+    },
+    "approval": {
+      "pending_review": "Pending Review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "activity": {
+      "eyebrow": "AI Activity",
+      "title": "Agent Activity",
+      "desc": "Running agents, recent completions, and average execution time.",
+      "running": "Running",
+      "completed": "Completed",
+      "avgDuration": "Avg Duration",
+      "durationValue": "{ms}ms",
+      "recent": "Recent runs"
+    },
+    "result": {
+      "summary": "AI completed {tasks} research tasks for {project} in the {industry} space.",
+      "marketInsight": "Market shows viable TAM with moderate growth potential.",
+      "competitorInsight": "Competitive landscape mapped with differentiation opportunities.",
+      "governmentInsight": "Government programs and policy signals identified."
+    },
+    "evidence": {
+      "marketSize": {
+        "title": "Market sizing analysis",
+        "summary": "TAM/SAM estimates derived from industry reports and demand signals."
+      },
+      "competitor": {
+        "title": "Competitive landscape scan",
+        "summary": "Key players, positioning gaps, and entry barrier assessment."
+      },
+      "government": {
+        "title": "Government support scan",
+        "summary": "Eligible grant programs and regulatory context for the target market."
+      },
+      "voc": {
+        "title": "Customer demand signals",
+        "summary": "Synthesized pain points and job-to-be-done indicators from public sources."
+      },
+      "technology": {
+        "title": "Technology trend analysis",
+        "summary": "Emerging tech vectors and adoption patterns relevant to the initiative."
+      }
+    },
+    "sources": {
+      "industryReport": "Industry market report",
+      "governmentPortal": "Government innovation portal",
+      "newsAnalysis": "Market news analysis"
+    }
+  },
   "marketIntel": {
     "eyebrow": "AI Market Intelligence",
     "snapshotTitle": "Market Snapshot",

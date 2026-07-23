@@ -23,6 +23,11 @@ export const ANALYTICS_EVENTS = {
   marketAnalysisExecute: 'market_analysis_execute',
   marketSnapshotView: 'market_snapshot_view',
   marketDetailView: 'market_detail_view',
+  agentStart: 'agent_start',
+  agentComplete: 'agent_complete',
+  agentFailed: 'agent_failed',
+  researchExecute: 'research_execute',
+  researchReview: 'research_review',
   strategyGenerate: 'strategy_generate',
   businessPlanGenerate: 'business_plan_generate',
   reportGenerate: 'report_generate',
@@ -51,6 +56,7 @@ export type AnalyticsEventParams = {
   metric_rating?: string;
   query?: string;
   framework_name?: string;
+  provider?: string;
   [key: string]: string | number | boolean | undefined;
 };
 

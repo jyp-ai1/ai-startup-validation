@@ -1708,6 +1708,82 @@
       }
     }
   },
+  "researchAgent": {
+    "eyebrow": "AI Research Agent",
+    "title": "자율 리서치",
+    "desc": "AI가 시장·경쟁사·근거를 조사합니다 — 검토 후 승인하세요.",
+    "start": "AI 리서치 시작",
+    "running": "에이전트 실행 중…",
+    "timelineLabel": "Agent Timeline",
+    "resultTitle": "AI 리서치 결과",
+    "marketInsight": "시장",
+    "competitorInsight": "경쟁사",
+    "governmentInsight": "정부지원",
+    "evidenceGenerated": "Evidence {count}건 생성",
+    "approve": "승인",
+    "reject": "거부",
+    "failed": "리서치 에이전트 실패",
+    "noRuns": "AI 리서치 실행 이력이 없습니다. 에이전트를 시작하세요.",
+    "duration": "{ms}ms 소요",
+    "confidence": "신뢰도 {value}%",
+    "timeline": {
+      "empty": "실행 중인 리서치 작업 없음",
+      "queued": "대기",
+      "running": "실행",
+      "searching": "검색",
+      "extracting": "추출",
+      "analyzing": "분석",
+      "completed": "완료"
+    },
+    "approval": {
+      "pending_review": "검토 대기",
+      "approved": "승인됨",
+      "rejected": "거부됨"
+    },
+    "activity": {
+      "eyebrow": "AI Activity",
+      "title": "에이전트 활동",
+      "desc": "실행 중 에이전트, 최근 완료, 평균 수행 시간.",
+      "running": "실행 중",
+      "completed": "완료",
+      "avgDuration": "평균 시간",
+      "durationValue": "{ms}ms",
+      "recent": "최근 실행"
+    },
+    "result": {
+      "summary": "AI가 {project}({industry})에 대해 {tasks}개 리서치 태스크를 완료했습니다.",
+      "marketInsight": "TAM/SAM 관점에서 실행 가능한 시장 잠재력이 확인됩니다.",
+      "competitorInsight": "경쟁 구도가 매핑되었으며 차별화 기회가 있습니다.",
+      "governmentInsight": "정부 프로그램 및 정책 신호가 식별되었습니다."
+    },
+    "evidence": {
+      "marketSize": {
+        "title": "시장 규모 분석",
+        "summary": "산업 리포트·수요 신호 기반 TAM/SAM 추정."
+      },
+      "competitor": {
+        "title": "경쟁사 스캔",
+        "summary": "주요 플레이어, 포지셔닝 공백, 진입 장벽 평가."
+      },
+      "government": {
+        "title": "정부지원 스캔",
+        "summary": "대상 시장 관련 지원 프로그램·규제 맥락."
+      },
+      "voc": {
+        "title": "고객 수요 신호",
+        "summary": "공개 소스 기반 Pain Point·JTBD 지표."
+      },
+      "technology": {
+        "title": "기술 트렌드 분석",
+        "summary": "관련 신흥 기술·채택 패턴."
+      }
+    },
+    "sources": {
+      "industryReport": "산업 시장 리포트",
+      "governmentPortal": "정부 혁신 포털",
+      "newsAnalysis": "시장 뉴스 분석"
+    }
+  },
   "marketIntel": {
     "eyebrow": "AI Market Intelligence",
     "snapshotTitle": "Market Snapshot",
