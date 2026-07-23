@@ -23,9 +23,13 @@ export type WorkspaceFocusTask = {
   id: string;
   labelKey: string;
   descriptionKey: string;
+  whyKey: string;
   href: string;
   rank: number;
   effectKey: string;
+  stars: number;
+  estimatedMinutes: number;
+  scoreImpact: number;
 };
 
 export type WorkspaceKnowledgeCounts = {

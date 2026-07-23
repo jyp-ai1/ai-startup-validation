@@ -3237,5 +3237,69 @@
       "market": "Market",
       "competitor": "Competitor"
     }
+  },
+  "polish": {
+    "header": {
+      "industryUnknown": "Industry TBD",
+      "goLabel": "GO",
+      "favorite": "Add to favorites",
+      "unfavorite": "Remove from favorites"
+    },
+    "focus": {
+      "todayPick": "Today's pick",
+      "minutes": "{count} min",
+      "scoreImpact": "Decision Score +{points}",
+      "why": {
+        "research": "Market validation needs more depth before Decision.",
+        "voc": "Customer interviews strengthen GO/HOLD confidence.",
+        "evidence": "High-confidence sources unlock defensible Decision.",
+        "decision": "Enough inputs exist — synthesize GO/HOLD/NO GO.",
+        "report": "Decision is ready — export for stakeholders."
+      }
+    },
+    "search": {
+      "title": "Search workspace",
+      "placeholder": "Search everything…",
+      "empty": "No results found",
+      "categories": {
+        "project": "Project",
+        "evidence": "Evidence",
+        "report": "Report",
+        "decision": "Decision",
+        "memory": "Memory",
+        "research": "Research"
+      }
+    },
+    "command": {
+      "title": "Workspace command",
+      "filter": "Type a command…",
+      "openProject": "Open project",
+      "generateDecision": "Generate decision",
+      "runAi": "Run AI research",
+      "exportReport": "Export report",
+      "addResearch": "Add research plan",
+      "openDashboard": "Open dashboard",
+      "search": "Search workspace"
+    },
+    "favorites": {
+      "title": "Favorites",
+      "toggle": "Toggle favorite"
+    },
+    "activity": {
+      "empty": "No recent activity yet.",
+      "types": {
+        "research": "Research",
+        "evidence": "Evidence",
+        "voc": "VOC",
+        "competitor": "Competitor",
+        "validation": "Decision",
+        "report": "Report"
+      }
+    },
+    "empty": {
+      "aiGuide": "AI guide",
+      "hint": "Start here — AI will build project memory as you research.",
+      "runAi": "Run AI research"
+    }
   }
 }

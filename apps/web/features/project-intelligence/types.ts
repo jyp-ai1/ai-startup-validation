@@ -38,7 +38,11 @@ export type TimelineItem = {
 export type DailyBriefTask = {
   id: string;
   labelKey: string;
+  whyKey?: string;
   href: string;
+  stars?: number;
+  estimatedMinutes?: number;
+  scoreImpact?: number;
 };
 
 export type DailyBriefViewModel = {

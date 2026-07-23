@@ -1,5 +1,4 @@
 import { getWorkspaceSession } from '@/lib/auth/workspace-session';
-import type { StartupProject } from '@repo/types/validation';
 
 import { AppShell } from './app-shell';
 import { AppShellGate } from './app-shell-gate';
@@ -11,16 +10,7 @@ type AppShellWrapperProps = {
 export async function AppShellWrapper({ children }: AppShellWrapperProps) {
   const session = await getWorkspaceSession();
 
-  const activeProject: Pick<StartupProject, 'id' | 'title' | 'status' | 'updatedAt'> | null =
-    session.workspace.activeProject
-      ? {
-          id: session.workspace.activeProject.id,
-          title: session.workspace.activeProject.title,
-          status: session.workspace.activeProject.status,
-          updatedAt: session.workspace.activeProject.updatedAt,
-        }
-      : null;
-
+  const activeProject = session.workspace.activeProject;
   const recentProjects = session.demoMode ? session.demoProjects : session.userProjects;
 
   return (
