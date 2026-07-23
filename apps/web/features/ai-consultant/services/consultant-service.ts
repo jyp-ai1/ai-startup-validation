@@ -149,8 +149,10 @@ function buildTopRecommendation(
 }
 
 function buildContext(input: ConsultantInput): ConsultantProjectContext {
-  const { stats, executive, strategy } = input;
+  const { stats, executive, strategy, onboardingContext } = input;
   const project = stats.project;
+  const targetCustomer =
+    onboardingContext?.answers.targetCustomer ?? project.targetCustomer;
 
   const decisionAvailable =
     Boolean(executive?.decision) &&
@@ -163,8 +165,8 @@ function buildContext(input: ConsultantInput): ConsultantProjectContext {
     industry: project.industry,
     industryKey: project.industry ? 'context.industrySet' : 'context.industryUnknown',
     stageKey: `context.stages.${project.status.toLowerCase()}`,
-    target: project.targetCustomer,
-    targetKey: project.targetCustomer ? 'context.targetSet' : 'context.targetUnknown',
+    target: targetCustomer,
+    targetKey: targetCustomer ? 'context.targetSet' : 'context.targetUnknown',
     score: executive?.decision.scores.decisionScore ?? strategy?.health.aiScore ?? 0,
     decisionLabelKey: decisionAvailable
       ? `context.decisions.${executive!.verdict.toLowerCase()}`
@@ -181,8 +183,9 @@ function buildQuestions(input: ConsultantInput): ConsultantQuestion[] {
   const projectId = project.id;
   const base = `/projects/${projectId}`;
   const questions: ConsultantQuestion[] = [];
+  const onboarding = input.onboardingContext?.answers;
 
-  if (!project.targetCustomer) {
+  if (!project.targetCustomer && !onboarding?.targetCustomer) {
     questions.push({
       id: 'target-customer',
       questionKey: 'questions.targetCustomer',
@@ -218,7 +221,7 @@ function buildQuestions(input: ConsultantInput): ConsultantQuestion[] {
       fieldId: 'grants',
     });
   }
-  if (input.stats.competitors.total === 0) {
+  if (input.stats.competitors.total === 0 && !onboarding?.competitors) {
     questions.push({
       id: 'competitors',
       questionKey: 'questions.competitors',
@@ -233,6 +236,16 @@ function buildQuestions(input: ConsultantInput): ConsultantQuestion[] {
 function buildMemory(input: ConsultantInput): ConsultantMemoryItem[] {
   const projectId = input.stats.project.id;
   const items: ConsultantMemoryItem[] = [];
+
+  if (input.onboardingContext?.completedAt) {
+    items.push({
+      id: 'mem-onboarding',
+      type: 'ANALYSIS',
+      labelKey: 'memory.onboardingComplete',
+      occurredAt: input.onboardingContext.completedAt,
+      href: `/projects/${projectId}`,
+    });
+  }
 
   for (const activity of input.stats.recentActivity.slice(0, 3)) {
     items.push({

@@ -16,6 +16,7 @@ import { Button } from '@repo/ui';
 import type { ConsultantViewModel } from '@/features/ai-consultant';
 import { ConsultantPanel } from '@/features/ai-consultant';
 import { WelcomeChecklist } from '@/features/activation';
+import { OnboardingConsultantHost } from '@/features/onboarding-consultant';
 import { DemoWelcomeCard } from '@/features/onboarding';
 
 import type { StrategyWorkspaceViewModel } from '@/features/strategy-workspace';
@@ -41,6 +42,7 @@ type ExecutiveDashboardProps = {
   strategy: StrategyWorkspaceViewModel | null;
   consultant: ConsultantViewModel | null;
   demoMode?: boolean;
+  onboardingComplete?: boolean;
 };
 
 type DashboardShellProps = {
@@ -76,6 +78,7 @@ export function ExecutiveDashboard({
   strategy,
   consultant,
   demoMode = false,
+  onboardingComplete = true,
 }: ExecutiveDashboardProps) {
   const t = useTranslations('executive');
   const { trackEvent } = useAnalytics();
@@ -127,10 +130,20 @@ export function ExecutiveDashboard({
 
   if (!executive && strategy) {
     return (
-      <DashboardShell consultant={consultant} checklist={checklist}>
+      <>
+        {workspace.activeProject ? (
+          <OnboardingConsultantHost
+            projectId={workspace.activeProject.id}
+            projectTitle={workspace.activeProject.title}
+            onboardingComplete={onboardingComplete}
+            demoMode={demoMode}
+          />
+        ) : null}
+        <DashboardShell consultant={consultant} checklist={checklist}>
         {demoMode ? <DemoWelcomeCard projectId={strategy.projectId} className="mb-8" /> : null}
         <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
-      </DashboardShell>
+        </DashboardShell>
+      </>
     );
   }
 
@@ -141,7 +154,16 @@ export function ExecutiveDashboard({
   const lineage = executive.orchestratorPlan?.confidenceLineage;
 
   return (
-    <DashboardShell consultant={consultant} checklist={checklist}>
+    <>
+      {workspace.activeProject ? (
+        <OnboardingConsultantHost
+          projectId={workspace.activeProject.id}
+          projectTitle={workspace.activeProject.title}
+          onboardingComplete={onboardingComplete}
+          demoMode={demoMode}
+        />
+      ) : null}
+      <DashboardShell consultant={consultant} checklist={checklist}>
       {demoMode ? <DemoWelcomeCard projectId={executive.project.id} className="mb-8" /> : null}
       {strategy ? (
         <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
@@ -180,6 +202,7 @@ export function ExecutiveDashboard({
       <ExecutiveEvidence evidence={executive.evidence} />
 
       <ExecutiveExportBar projectId={executive.project.id} />
-    </DashboardShell>
+      </DashboardShell>
+    </>
   );
 }

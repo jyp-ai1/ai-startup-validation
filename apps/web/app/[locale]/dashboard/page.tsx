@@ -13,6 +13,11 @@ import {
 import { getExecutiveReport } from '@/features/report-engine';
 import { buildStrategyWorkspace } from '@/features/strategy-workspace';
 import { buildConsultantViewModel } from '@/features/ai-consultant';
+import {
+  getProjectOnboardingContext,
+  isOnboardingComplete,
+  parseOnboardingContext,
+} from '@/features/onboarding-consultant';
 import { getWorkspaceSession } from '@/lib/auth/workspace-session';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type DashboardPageProps = {
-  searchParams: Promise<{ project?: string; demo?: string }>;
+  searchParams: Promise<{ project?: string; demo?: string; onboarding?: string }>;
 };
 
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
@@ -53,8 +58,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   let executive = null;
   let strategy = null;
   let consultant = null;
+  let onboardingComplete = false;
+
   if (workspace.activeProject && workspace.stats) {
     const projectId = workspace.activeProject.id;
+    const onboardingContext =
+      parseOnboardingContext(workspace.activeProject.onboardingContext) ??
+      (await getProjectOnboardingContext(projectId));
+    onboardingComplete = isOnboardingComplete(onboardingContext);
+
     const decision = await generateProjectDecision(projectId);
     const orchestratorPlan = await getLatestPlan(projectId);
     const executiveReport = await getExecutiveReport(projectId);
@@ -77,6 +89,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       strategy,
       hasExecutiveReport: Boolean(executiveReport),
       orchestratorPlan,
+      onboardingContext,
     });
   }
 
@@ -89,6 +102,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         strategy={strategy}
         consultant={consultant}
         demoMode={demoMode}
+        onboardingComplete={onboardingComplete}
       />
     </>
   );

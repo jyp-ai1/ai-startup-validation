@@ -30,6 +30,7 @@ type StartupProjectRow = {
   project_type: StartupProject['projectType'];
   user_id: string | null;
   is_demo: boolean;
+  onboarding_context: Record<string, unknown> | null;
   status: StartupProject['status'];
   created_at: string;
   updated_at: string;
@@ -50,6 +51,7 @@ function toStartupProject(row: StartupProjectRow): StartupProject {
     projectType: row.project_type ?? 'STARTUP',
     userId: row.user_id,
     isDemo: row.is_demo ?? false,
+    onboardingContext: row.onboarding_context ?? null,
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -90,6 +92,9 @@ function toUpdateRow(input: UpdateStartupProjectInput) {
     ...(input.projectType !== undefined ? { project_type: input.projectType } : {}),
     ...(input.country !== undefined ? { country: input.country } : {}),
     ...(input.projectGoal !== undefined ? { project_goal: input.projectGoal } : {}),
+    ...(input.onboardingContext !== undefined
+      ? { onboarding_context: input.onboardingContext }
+      : {}),
     ...(input.status !== undefined ? { status: input.status } : {}),
     updated_at: new Date().toISOString(),
   };

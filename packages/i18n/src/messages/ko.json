@@ -2313,6 +2313,7 @@
       "decisionGenerated": "Decision 분석 완료",
       "reportGenerated": "Executive Report 생성",
       "orchestratorComplete": "AI Orchestrator 실행 완료",
+      "onboardingComplete": "온보딩 인터뷰 완료",
       "activity": {
         "research": "Research 활동",
         "evidence": "Evidence 추가",
@@ -2836,6 +2837,85 @@
         "r2Label": "Outcome 적합성 측정",
         "r2Text": "솔루션이 고객이 원하는 Outcome을 얼마나 충족하는지 정량화하세요."
       }
+    }
+  },
+  "onboardingConsultant": {
+    "welcome": {
+      "title": "LaunchLens AI Strategy Consultant",
+      "body": "안녕하세요.\n\n저는 LaunchLens AI Strategy Consultant입니다.\n\n앞으로 이 프로젝트를 함께 분석하겠습니다.\n\n먼저 몇 가지 질문만 드리겠습니다.",
+      "project": "프로젝트: {project}",
+      "cta": "시작하기"
+    },
+    "questions": {
+      "q1": {
+        "title": "무엇을 검증하려고 하나요?",
+        "hint": "검증하려는 핵심 가설을 설명해 주세요.",
+        "placeholder": "예: 실버 세대가 취미 매칭 서비스를 원한다"
+      },
+      "q2": {
+        "title": "주요 고객은 누구인가요?",
+        "hint": "세그먼트와 상황을 구체적으로 적어 주세요.",
+        "placeholder": "예: 수도권 60–75세 활동적인 시니어"
+      },
+      "q3": {
+        "title": "현재 알고 있는 경쟁사는?",
+        "hint": "직접·간접 경쟁사를 알고 있는 만큼 적어 주세요.",
+        "placeholder": "예: 시니어 커뮤니티 앱, 오프라인 센터"
+      },
+      "q4": {
+        "title": "가장 걱정되는 부분은?",
+        "hint": "가장 큰 불확실성을 선택하세요."
+      },
+      "q5": {
+        "title": "최종 목표는?",
+        "hint": "리서치 우선순위를 정하는 데 사용됩니다."
+      }
+    },
+    "concerns": {
+      "MARKET": "시장성",
+      "REVENUE": "수익성",
+      "COMPETITION": "경쟁",
+      "GOVERNMENT": "정부지원",
+      "INVESTMENT": "투자",
+      "TECHNOLOGY": "기술"
+    },
+    "goals": {
+      "FUNDRAISING": "투자유치",
+      "NEW_BUSINESS": "신규사업",
+      "STRATEGY": "전략수립",
+      "AI_ADOPTION": "AI 도입",
+      "GOVERNMENT_GRANT": "정부과제"
+    },
+    "back": "이전",
+    "next": "다음",
+    "review": "확인",
+    "edit": "답변 수정",
+    "confirmClose": "인터뷰를 종료할까요? 진행 내용이 저장되지 않습니다.",
+    "summary": {
+      "title": "제가 이해한 내용입니다",
+      "desc": "리서치 플랜 생성 전 내용을 확인해 주세요.",
+      "intro": "이렇게 이해했습니다:",
+      "target": "주요 고객: {target}",
+      "competitors": "경쟁사: {competitors}",
+      "concern": "주요 우려: {concern}",
+      "goal": "최종 목표: {goal}",
+      "unknown": "미입력",
+      "confirm": "확인 — 플랜 생성"
+    },
+    "saving": "저장 중…",
+    "plan": {
+      "title": "AI 리서치 플랜",
+      "desc": "답변을 바탕으로 우선순위를 정했습니다.",
+      "start": "AI 조사 시작",
+      "starting": "AI 시작 중…"
+    },
+    "plans": {
+      "market": { "title": "시장 분석", "category": "Market" },
+      "competitor": { "title": "경쟁사 조사", "category": "Competitor" },
+      "voc": { "title": "고객 VOC", "category": "VOC" },
+      "government": { "title": "정부 지원", "category": "Government" },
+      "technology": { "title": "기술 검토", "category": "Technology" },
+      "investment": { "title": "사업·투자", "category": "Investment" }
     }
   },
   "auth": {

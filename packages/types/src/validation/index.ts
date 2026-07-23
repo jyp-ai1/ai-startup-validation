@@ -51,6 +51,7 @@ export type StartupProject = {
   projectType: ProjectType;
   userId: ID | null;
   isDemo: boolean;
+  onboardingContext: Record<string, unknown> | null;
   status: StartupProjectStatus;
   createdAt: ISODateString;
   updatedAt: ISODateString;
@@ -83,6 +84,7 @@ export type UpdateStartupProjectInput = {
   country?: string | null;
   projectGoal?: ProjectGoal | null;
   projectType?: ProjectType;
+  onboardingContext?: Record<string, unknown> | null;
   status?: StartupProjectStatus;
 };
 

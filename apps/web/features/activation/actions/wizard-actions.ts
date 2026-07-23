@@ -115,7 +115,7 @@ export async function createProjectFromWizard(
 
     revalidatePath('/dashboard');
     revalidatePath('/projects');
-    redirect(`/dashboard?project=${project.id}`);
+    redirect(`/dashboard?project=${project.id}&onboarding=1`);
   } catch (error) {
     if (error instanceof ValidationError) {
       return {
