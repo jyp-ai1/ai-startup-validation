@@ -26,6 +26,12 @@ export default getRequestConfig(async ({ requestLocale }) => {
   return {
     locale: resolvedLocale,
     messages: await loadMessages(resolvedLocale),
+    onError(error) {
+      if (error.code === 'MISSING_MESSAGE') {
+        return;
+      }
+      console.error(error);
+    },
     getMessageFallback({ namespace, key, error }) {
       const fullKey = namespace ? `${namespace}.${key}` : key;
       if (error.code === 'MISSING_MESSAGE') {

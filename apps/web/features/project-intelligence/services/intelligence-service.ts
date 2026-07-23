@@ -52,48 +52,48 @@ function buildProactiveMessage(
   const lastMarket = memories.find((entry) => entry.memoryType === 'MARKET');
   if (lastMarket?.summary?.toLowerCase().includes('tam') || stats.research.total >= 1) {
     return {
-      messageKey: 'memory.proactive.tam',
-      actionKey: 'memory.proactive.action.tam',
+      messageKey: 'proactive.tam',
+      actionKey: 'proactive.action.tam',
       actionHref: `/projects/${projectId}/market-intelligence`,
     };
   }
 
   if (stats.voc.total < 5) {
     return {
-      messageKey: 'memory.proactive.voc',
+      messageKey: 'proactive.voc',
       messageParams: { count: stats.voc.total },
-      actionKey: 'memory.proactive.action.voc',
+      actionKey: 'proactive.action.voc',
       actionHref: `/projects/${projectId}/voc/new`,
     };
   }
 
   if (stats.competitors.total < 2) {
     return {
-      messageKey: 'memory.proactive.competitor',
-      actionKey: 'memory.proactive.action.competitor',
+      messageKey: 'proactive.competitor',
+      actionKey: 'proactive.action.competitor',
       actionHref: `/projects/${projectId}/competitors`,
     };
   }
 
   if (stats.evidence.total < 3) {
     return {
-      messageKey: 'memory.proactive.evidence',
-      actionKey: 'memory.proactive.action.evidence',
+      messageKey: 'proactive.evidence',
+      actionKey: 'proactive.action.evidence',
       actionHref: `/projects/${projectId}/evidence/new`,
     };
   }
 
   if (input.executive?.decision && !input.hasExecutiveReport) {
     return {
-      messageKey: 'memory.proactive.report',
-      actionKey: 'memory.proactive.action.report',
+      messageKey: 'proactive.report',
+      actionKey: 'proactive.action.report',
       actionHref: `/projects/${projectId}/executive-report`,
     };
   }
 
   return {
-    messageKey: 'memory.proactive.continue',
-    actionKey: 'memory.proactive.action.continue',
+    messageKey: 'proactive.continue',
+    actionKey: 'proactive.action.continue',
     actionHref: `/projects/${projectId}/agent`,
   };
 }
