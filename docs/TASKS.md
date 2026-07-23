@@ -65,7 +65,33 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 10 | SEO (OG, robots, sitemap, canonical) | ✅ Done | AI |
 | — | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.5 — Multi-Agent Orchestrator
+**Next:** Sprint 8.6 — Knowledge Graph + Evidence Merge
+
+---
+
+## Sprint 8.5 — AI Strategy Orchestrator ✅
+
+**Status:** Complete  
+**Goal:** AI Strategy OS — Orchestrator plans tasks, schedules agents, merges knowledge/evidence, triggers Decision (orchestrator-only); human-in-the-loop controls.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `features/agents/orchestrator/` — types, planner, registry, scheduler | ✅ Done | AI |
+| Agent Registry — 9 agents with common `StrategyAgentWorker` interface | ✅ Done | AI |
+| Strategy Planner — task trees (Startup / Enterprise / AI Initiative) | ✅ Done | AI |
+| Agent Scheduler — dependency graph, parallel execution, retry 3x | ✅ Done | AI |
+| Knowledge Merge + Evidence Merge + Confidence Lineage | ✅ Done | AI |
+| Decision Trigger — orchestrator-only Decision call after approval | ✅ Done | AI |
+| Cost tracking (provider, duration, tokens, cost, retries) | ✅ Done | AI |
+| Human-in-the-loop — rerun / pause / resume per agent | ✅ Done | AI |
+| Dashboard AI Execution Center + Execution Graph | ✅ Done | AI |
+| Analytics: planner_start/complete, agent_schedule/retry, knowledge_merge | ✅ Done | AI |
+| i18n (en/ko + sync 11 locales) | ✅ Done | AI |
+| Build + deploy + verify | ✅ Done | AI |
+
+**Rule:** Only Orchestrator may call Decision Engine — agents produce evidence/knowledge only.
+
+**Next:** Sprint 8.6 — Knowledge Graph + Evidence Merge
 
 ---
 
@@ -88,7 +114,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Rule:** Research Agent never calls Decision Engine — evidence only.
 
-**Next:** Sprint 8.5 — Multi-Agent Orchestrator
+**Next:** Sprint 8.6 — Knowledge Graph + Evidence Merge
 
 ---
 

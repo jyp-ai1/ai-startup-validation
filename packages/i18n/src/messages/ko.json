@@ -1784,6 +1784,91 @@
       "newsAnalysis": "시장 뉴스 분석"
     }
   },
+  "orchestrator": {
+    "eyebrow": "AI Strategy OS",
+    "title": "AI Execution Center",
+    "desc": "Strategy Orchestrator가 작업을 계획·분배·통합합니다 — 각 단계를 직접 제어하세요.",
+    "startPlan": "전략 플랜 시작",
+    "noProject": "Orchestrator를 실행하려면 활성 프로젝트를 선택하세요.",
+    "graphTitle": "Execution Graph",
+    "taskQueue": "Task Queue",
+    "approve": "승인 후 Decision 실행",
+    "reject": "거부",
+    "rerun": "다시 실행",
+    "pause": "보류",
+    "resume": "재개",
+    "confidence": "신뢰도 {value}%",
+    "totalCost": "예상 비용 ${cost} · 총 {ms}ms",
+    "costSummary": "{provider} · {tokens} tokens · ${cost} · 재시도 {retries}회",
+    "graph": {
+      "planning": "Strategy Planning"
+    },
+    "planStatus": {
+      "planning": "계획 중",
+      "running": "실행 중",
+      "waiting": "검토 대기",
+      "completed": "완료",
+      "failed": "실패"
+    },
+    "status": {
+      "planning": "계획",
+      "queued": "대기",
+      "running": "실행",
+      "waiting": "대기",
+      "completed": "완료",
+      "failed": "실패",
+      "paused": "보류",
+      "skipped": "건너뜀"
+    },
+    "stats": {
+      "activePlans": "활성 플랜",
+      "runningTasks": "실행 중 Task",
+      "queuedTasks": "대기 Queue",
+      "completedPlans": "완료 플랜"
+    },
+    "agents": {
+      "research": "Research Agent",
+      "market": "Market Agent",
+      "competitor": "Competitor Agent",
+      "government": "Government Agent",
+      "technology": "Technology Agent",
+      "investment": "Investment Agent",
+      "framework": "Framework Agent",
+      "voc": "VOC Agent",
+      "decision": "Decision Agent"
+    },
+    "lineage": {
+      "title": "Confidence Lineage",
+      "decisionConfidence": "Decision Confidence",
+      "evidenceQuality": "Evidence Quality"
+    },
+    "summaries": {
+      "research": "리서치 종합 완료",
+      "market": "시장 인텔리전스 수집",
+      "competitor": "경쟁 구도 매핑",
+      "government": "정부 프로그램 식별",
+      "technology": "기술 트렌드 분석",
+      "investment": "투자 ROI 평가",
+      "framework": "전략 프레임워크 적용",
+      "voc": "고객 VOC 종합",
+      "decision": "전략 Decision 생성",
+      "crossMarketFramework": "시장 데이터를 프레임워크 분석에 통합"
+    },
+    "knowledge": {
+      "crossRef": "에이전트 간 지식 참조"
+    },
+    "evidence": {
+      "research": { "title": "리서치 Evidence", "summary": "자율 리서치 결과", "knowledge": "리서치 지식 노드" },
+      "market": { "title": "시장 Evidence", "summary": "TAM/SAM·성장 신호", "knowledge": "시장 지식 노드" },
+      "competitor": { "title": "경쟁사 Evidence", "summary": "경쟁 포지셔닝 데이터", "knowledge": "경쟁사 지식 노드" },
+      "government": { "title": "정부 Evidence", "summary": "정책·지원 신호", "knowledge": "정부 지식 노드" },
+      "technology": { "title": "기술 Evidence", "summary": "기술 채택 패턴", "knowledge": "기술 지식 노드" },
+      "investment": { "title": "투자 Evidence", "summary": "ROI·펀딩 맥락", "knowledge": "투자 지식 노드" },
+      "framework": { "title": "프레임워크 Evidence", "summary": "SWOT/PESTEL/Porter 출력", "knowledge": "프레임워크 지식 노드" },
+      "voc": { "title": "VOC Evidence", "summary": "고객 수요 신호", "knowledge": "VOC 지식 노드" },
+      "decision": { "title": "Decision Evidence", "summary": "최종 전략 판정", "knowledge": "Decision 지식 노드" }
+    }
+  },
   "marketIntel": {
     "eyebrow": "AI Market Intelligence",
     "snapshotTitle": "Market Snapshot",

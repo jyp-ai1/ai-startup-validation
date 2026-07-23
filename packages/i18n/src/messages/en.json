@@ -1784,6 +1784,91 @@
       "newsAnalysis": "Market news analysis"
     }
   },
+  "orchestrator": {
+    "eyebrow": "AI Strategy OS",
+    "title": "AI Execution Center",
+    "desc": "Strategy Orchestrator plans tasks, schedules agents, and merges knowledge — you control each step.",
+    "startPlan": "Start Strategy Plan",
+    "noProject": "Select an active project to run the orchestrator.",
+    "graphTitle": "Execution Graph",
+    "taskQueue": "Task Queue",
+    "approve": "Approve & Run Decision",
+    "reject": "Reject",
+    "rerun": "Rerun",
+    "pause": "Pause",
+    "resume": "Resume",
+    "confidence": "Confidence {value}%",
+    "totalCost": "Est. cost ${cost} · {ms}ms total",
+    "costSummary": "{provider} · {tokens} tokens · ${cost} · {retries} retries",
+    "graph": {
+      "planning": "Strategy Planning"
+    },
+    "planStatus": {
+      "planning": "Planning",
+      "running": "Running",
+      "waiting": "Awaiting Review",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "status": {
+      "planning": "Planning",
+      "queued": "Queued",
+      "running": "Running",
+      "waiting": "Waiting",
+      "completed": "Completed",
+      "failed": "Failed",
+      "paused": "Paused",
+      "skipped": "Skipped"
+    },
+    "stats": {
+      "activePlans": "Active Plans",
+      "runningTasks": "Running Tasks",
+      "queuedTasks": "Queued",
+      "completedPlans": "Completed"
+    },
+    "agents": {
+      "research": "Research Agent",
+      "market": "Market Agent",
+      "competitor": "Competitor Agent",
+      "government": "Government Agent",
+      "technology": "Technology Agent",
+      "investment": "Investment Agent",
+      "framework": "Framework Agent",
+      "voc": "VOC Agent",
+      "decision": "Decision Agent"
+    },
+    "lineage": {
+      "title": "Confidence Lineage",
+      "decisionConfidence": "Decision Confidence",
+      "evidenceQuality": "Evidence Quality"
+    },
+    "summaries": {
+      "research": "Research synthesis complete",
+      "market": "Market intelligence gathered",
+      "competitor": "Competitive landscape mapped",
+      "government": "Government programs identified",
+      "technology": "Technology trends analyzed",
+      "investment": "Investment ROI assessed",
+      "framework": "Strategic frameworks applied",
+      "voc": "Voice of customer synthesized",
+      "decision": "Strategic decision generated",
+      "crossMarketFramework": "Market data integrated into framework analysis"
+    },
+    "knowledge": {
+      "crossRef": "Cross-agent knowledge reference"
+    },
+    "evidence": {
+      "research": { "title": "Research evidence", "summary": "Autonomous research findings", "knowledge": "Research knowledge node" },
+      "market": { "title": "Market evidence", "summary": "TAM/SAM and growth signals", "knowledge": "Market knowledge node" },
+      "competitor": { "title": "Competitor evidence", "summary": "Competitive positioning data", "knowledge": "Competitor knowledge node" },
+      "government": { "title": "Government evidence", "summary": "Policy and grant signals", "knowledge": "Government knowledge node" },
+      "technology": { "title": "Technology evidence", "summary": "Tech adoption patterns", "knowledge": "Technology knowledge node" },
+      "investment": { "title": "Investment evidence", "summary": "ROI and funding context", "knowledge": "Investment knowledge node" },
+      "framework": { "title": "Framework evidence", "summary": "SWOT/PESTEL/Porter outputs", "knowledge": "Framework knowledge node" },
+      "voc": { "title": "VOC evidence", "summary": "Customer demand signals", "knowledge": "VOC knowledge node" },
+      "decision": { "title": "Decision evidence", "summary": "Final strategic verdict", "knowledge": "Decision knowledge node" }
+    }
+  },
   "marketIntel": {
     "eyebrow": "AI Market Intelligence",
     "snapshotTitle": "Market Snapshot",
