@@ -230,7 +230,8 @@
       "titleRequired": "Please enter a project name",
       "summaryRequired": "Please enter a one-line description"
     },
-    "industryNotSet": "Industry not set"
+    "industryNotSet": "Industry not set",
+    "newProjectDesc": "Choose a strategy type and define your initiative."
   },
   "projectDetail": {
     "researchPlans": "Rencana Riset",

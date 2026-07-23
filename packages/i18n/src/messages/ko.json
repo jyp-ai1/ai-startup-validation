@@ -188,6 +188,7 @@
     "description": "전략 및 검증 프로젝트 관리",
     "workspaceDesc": "각 워크스페이스에서 Decision Engine 점수와 KPI를 확인하세요.",
     "newProject": "새 프로젝트",
+    "newProjectDesc": "전략 유형을 선택하고 검토할 이니셔티브를 정의하세요.",
     "emptyTitle": "프로젝트가 없습니다",
     "emptyDescription": "첫 번째 전략 프로젝트를 생성하세요.",
     "industryNotSet": "산업군 미입력",

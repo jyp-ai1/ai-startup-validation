@@ -188,6 +188,7 @@
     "description": "Manage strategy and validation projects",
     "workspaceDesc": "Open each workspace to review Decision Engine scores and KPIs at a glance.",
     "newProject": "New Project",
+    "newProjectDesc": "Choose a strategy type and define your initiative.",
     "emptyTitle": "No projects yet",
     "emptyDescription": "Create your first strategy project.",
     "industryNotSet": "Industry not set",
