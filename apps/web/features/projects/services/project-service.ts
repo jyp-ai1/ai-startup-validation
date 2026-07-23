@@ -18,7 +18,13 @@ export async function listDemoProjects(): Promise<StartupProject[]> {
   }
 
   const repo = getStartupProjectRepository();
-  return repo.findAll({ is_demo: true });
+  try {
+    return await repo.findAll({ is_demo: true });
+  } catch {
+    // Migration 016 not applied — fall back to seed projects
+    const all = await repo.findAll();
+    return all.filter((p) => p.isDemo || p.title.includes('실버'));
+  }
 }
 
 export async function listUserProjects(userId: string): Promise<StartupProject[]> {
@@ -27,7 +33,12 @@ export async function listUserProjects(userId: string): Promise<StartupProject[]
   }
 
   const repo = getStartupProjectRepository();
-  return repo.findAll({ user_id: userId, is_demo: false });
+  try {
+    return await repo.findAll({ user_id: userId, is_demo: false });
+  } catch {
+    // Migration 016 not applied — no user-scoped projects yet
+    return [];
+  }
 }
 
 export async function findStartupProject(id: string): Promise<StartupProject | null> {
