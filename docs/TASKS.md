@@ -65,7 +65,29 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 10 | SEO (OG, robots, sitemap, canonical) | ✅ Done | AI |
 | — | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.0 — AI Decision Engine (Decision Center)
+**Next:** Sprint 8.1 — Evidence Score Engine
+
+---
+
+## Sprint 8.0 — AI Decision Center ✅
+
+**Status:** Complete  
+**Goal:** Conclusion-first UX — Decision Center as top-level menu; mock Decision Engine with swappable providers; Dashboard Decision Summary above AI summary.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| Decision service layer (types, score, mock provider, engine) | ✅ Done | AI |
+| Provider pattern (Mock, OpenAI, Anthropic, Gemini, Ollama stubs) | ✅ Done | AI |
+| Decision Center page (`/decision-center`, `/projects/[id]/decision`) | ✅ Done | AI |
+| Dashboard Decision Summary (Hero → Decision → AI Summary) | ✅ Done | AI |
+| Sidebar IA: Decision Center after Dashboard | ✅ Done | AI |
+| i18n `decision.*` keys (en/ko + sync 11 locales) | ✅ Done | AI |
+| Analytics: `decision_view`, `decision_generate`, `decision_action_click` | ✅ Done | AI |
+| Build + lint + deploy + verify | ✅ Done | AI |
+
+**Architecture:** `DecisionService` → `getDecisionProvider()` → `MockDecisionProvider` (default). LLM providers stubbed for Sprint 8.1+.
+
+**Next:** Sprint 8.1 — Evidence Score Engine
 
 ---
 

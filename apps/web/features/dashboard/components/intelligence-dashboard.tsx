@@ -17,6 +17,8 @@ import {
   RiskHeatmap,
   ScoreBreakdown,
 } from '@/components/intelligence';
+import type { DecisionResult } from '@/features/decision';
+import { DecisionSummaryPanel } from '@/features/decision/components/decision-summary-panel';
 import type { WorkspaceContext } from '@/features/dashboard/types';
 import { buildReadinessMetrics } from '@/features/dashboard/utils/readiness-calculator';
 import { buildDashboardInsights } from '@/lib/intelligence/build-dashboard-insights';
@@ -26,9 +28,17 @@ import { formatRelativeTime } from '@repo/utils/date';
 
 type IntelligenceDashboardProps = {
   workspace: WorkspaceContext;
+  decision?: DecisionResult | null;
+  activeProjectId?: string | null;
+  activeProjectTitle?: string | null;
 };
 
-export function IntelligenceDashboard({ workspace }: IntelligenceDashboardProps) {
+export function IntelligenceDashboard({
+  workspace,
+  decision,
+  activeProjectId,
+  activeProjectTitle,
+}: IntelligenceDashboardProps) {
   const t = useTranslations();
   const { stats, projectCount } = workspace;
 
@@ -70,7 +80,17 @@ export function IntelligenceDashboard({ workspace }: IntelligenceDashboardProps)
       {/* 1. Hero */}
       <IntelligenceHero stats={stats} />
 
-      {/* 2. AI Executive Summary */}
+      {/* 2. Decision Summary — conclusion first */}
+      {decision && activeProjectId && activeProjectTitle ? (
+        <DecisionSummaryPanel
+          decision={decision}
+          projectId={activeProjectId}
+          projectTitle={activeProjectTitle}
+          detailHref={`/projects/${activeProjectId}/decision`}
+        />
+      ) : null}
+
+      {/* 3. AI Executive Summary */}
       <AiSummaryCard insight={insight} />
 
       {/* 3. Executive KPI */}

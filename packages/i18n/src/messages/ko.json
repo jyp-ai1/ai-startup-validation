@@ -208,7 +208,9 @@
     "settings": "설정",
     "settingsDesc": "워크스페이스 및 앱 설정입니다.",
     "operations": "Operations",
-    "operationsDesc": "제품 분석 및 운영 지표"
+    "operationsDesc": "제품 분석 및 운영 지표",
+    "decisionCenter": "Decision Center",
+    "decisionCenterDesc": "AI 전략 의사결정 — GO, HOLD, NO GO 및 경영진 근거."
   },
   "dashboard": {
     "emptyTitle": "검증 워크스페이스에 오신 것을 환영합니다",
@@ -1402,6 +1404,195 @@
     "noErrors": "기록된 오류 없음",
     "webVitals": "Core Web Vitals",
     "futureGaNote": "GA API 연동 전까지 Mock 지표가 표시됩니다. 이벤트 저장 구조는 GA 연동 준비 완료."
+  },
+  "decision": {
+    "centerTitle": "Decision Center",
+    "backToProject": "프로젝트로 돌아가기",
+    "consultantEyebrow": "AI Strategy Consultant",
+    "verdictHeading": "전략적 의사결정",
+    "providerNote": "분석 엔진: {provider}",
+    "scoresTitle": "의사결정 지표",
+    "executiveTitle": "Executive Summary",
+    "reasonTitle": "의사결정 근거",
+    "missingTitle": "부족한 데이터",
+    "actionsTitle": "권장 조치",
+    "riskTitle": "리스크 매트릭스",
+    "riskColumn": "리스크",
+    "severityColumn": "심각도",
+    "probabilityColumn": "발생 가능성",
+    "mitigationColumn": "완화 방안",
+    "opportunityTitle": "기회 평가",
+    "generatedAt": "생성 시각 {time}",
+    "summaryEyebrow": "Decision Summary",
+    "summaryTitle": "전략적 판정",
+    "topAction": "우선 조치",
+    "openDecisionCenter": "Decision Center 열기",
+    "scoreImpactShort": "+{points}점",
+    "daysShort": "{days}일",
+    "emptyTitle": "선택된 프로젝트 없음",
+    "emptyDescription": "프로젝트를 생성하면 AI 전략 의사결정을 확인할 수 있습니다.",
+    "createProject": "프로젝트 생성",
+    "verdict": {
+      "go": "GO",
+      "hold": "HOLD",
+      "noGo": "NO GO"
+    },
+    "scores": {
+      "decisionScore": "Decision Score",
+      "confidence": "Confidence",
+      "investmentReadiness": "Investment Readiness",
+      "executionReadiness": "Execution Readiness"
+    },
+    "severity": {
+      "high": "높음",
+      "medium": "중간",
+      "low": "낮음"
+    },
+    "probability": {
+      "high": "높음",
+      "medium": "중간",
+      "low": "낮음"
+    },
+    "opportunityCategory": {
+      "market": "시장",
+      "grant": "정부지원",
+      "growth": "시장 성장",
+      "technology": "기술"
+    },
+    "executive": {
+      "insufficient1": "확정적 전략 권고를 내리기에 데이터가 부족합니다.",
+      "insufficient2": "투자 의사결정 전 리서치, 근거, 고객 검증 입력을 완료해야 합니다.",
+      "insufficient3": "현재 판정: 증거 보완 전 HOLD.",
+      "go2": "시장 매력도와 근거 품질이 조건부 GO 권고를 뒷받침합니다.",
+      "go3": "실행 준비도가 충분합니다. 단계적 투자와 마일스톤 게이트로 진행하십시오.",
+      "noGo2": "경쟁 강도와 근거 공백이 단기 시장 기회를 상회합니다.",
+      "noGo3": "검증 임계값 충족 전까지 자본 배분을 연기할 것을 권고합니다.",
+      "hold2": "전략적 잠재력은 있으나 핵심 근거 공백이 남아 있습니다.",
+      "hold3": "아래 우선 조치를 완료하면 의사결정 신뢰도가 상승합니다."
+    },
+    "summary": {
+      "startup": {
+        "go1": "시장 검증 신호가 스타트업 런칭 궤적에 유리합니다.",
+        "hold1": "스타트업 타당성은 있으나 추가 고객·시장 검증이 필요합니다.",
+        "noGo1": "현재 가설은 GO 권고에 필요한 검증 수준에 미달합니다."
+      },
+      "businessStrategy": {
+        "go1": "전략 정합성과 시장 조건이 이니셔티브 진행을 뒷받침합니다.",
+        "hold1": "경쟁·재무 검증을 추가로 수행해야 합니다.",
+        "noGo1": "전략 리스크 프로필이 즉시 실행 허용 임계값을 초과합니다."
+      },
+      "aiInitiative": {
+        "go1": "AI 이니셔티브가 명확한 가치 가설과 근거를 보유합니다.",
+        "hold1": "AI 이니셔티브는 유망하나 기술·조직 준비도 확인이 필요합니다.",
+        "noGo1": "AI 이니셜티브 ROI 근거가 현 단계에서 불충분합니다."
+      },
+      "dx": {
+        "go1": "디지털 전환 범위가 운영 준비도 지표와 정합합니다.",
+        "hold1": "DX 프로그램은 실행 계획과 이해관계자 정렬 강화가 필요합니다.",
+        "noGo1": "디지털 전환 준비도가 단기 투자를 정당화하지 못합니다."
+      },
+      "newBusiness": {
+        "go1": "신규 사업 라인이 유리한 시장 진입 조건을 보입니다.",
+        "hold1": "시장 규모 산정과 경쟁 분석을 추가로 수행해야 합니다.",
+        "noGo1": "신규 사업 진입 리스크가 현재 근거상 예상 수익을 상회합니다."
+      },
+      "marketExpansion": {
+        "go1": "목표 시장 확장에 긍정적 수요·경쟁 포지셔닝이 확인됩니다.",
+        "hold1": "현지 검증과 규제 검토가 필요합니다.",
+        "noGo1": "확장 시장 진입 장벽이 기회를 상회합니다."
+      },
+      "default": {
+        "go1": "종합 근거가 조건부 GO 권고를 지지합니다.",
+        "hold1": "전략적 잠재력은 있으나 확정 전 근거 보완이 필요합니다.",
+        "noGo1": "현재 근거로는 GO 권고를 내릴 수 없습니다."
+      }
+    },
+    "reasons": {
+      "go": {
+        "market": "Decision Score {score}점 — 시장·검증 신호가 유리합니다.",
+        "evidence": "고신뢰도 근거가 전략적 확신을 뒷받침합니다.",
+        "execution": "Execution Readiness {score}% — 운영 실행 가능성이 충분합니다."
+      },
+      "noGo": {
+        "market": "시장 신호가 최소 생존 임계값에 미달합니다.",
+        "competition": "경쟁 환경이 진입 장벽을 형성합니다.",
+        "evidence": "근거 품질이 투자 의사결정을 뒷받침하기에 부족합니다."
+      },
+      "hold": {
+        "voc": "고객 검증 {count}건 — GO 신뢰도를 위해 최소 10건 필요.",
+        "competition": "최종 판정 전 경쟁 인텔리전스 완료가 필요합니다.",
+        "data": "데이터 완성도 {percent}% — 의사결정 임계값 미달."
+      }
+    },
+    "missing": {
+      "vocInterviews": "고객 인터뷰 (VOC)",
+      "marketSize": "시장 규모 리서치",
+      "competitorPricing": "경쟁사 가격 분석",
+      "governmentReview": "정부지원 검토",
+      "highConfidenceEvidence": "고신뢰도 근거 (5건 이상)",
+      "validationScore": "Validation Score 평가"
+    },
+    "actions": {
+      "voc10": {
+        "label": "VOC 10건 확보",
+        "desc": "문제-솔루션 적합성 검증을 위한 구조화된 고객 인터뷰.",
+        "effect": "고객 검증 신뢰도 상승"
+      },
+      "evidenceHigh": {
+        "label": "고신뢰도 근거 추가",
+        "desc": "정부·학술·1차 리서치 출처 근거를 확보합니다.",
+        "effect": "분석 기반 강화"
+      },
+      "competitorMatrix": {
+        "label": "경쟁사 매트릭스 완성",
+        "desc": "핵심 경쟁사의 가격·포지셔닝·차별화를 매핑합니다.",
+        "effect": "경쟁 사각지대 축소"
+      },
+      "grantFit": {
+        "label": "지원사업 적합도 평가",
+        "desc": "프로젝트 범위·단계에 맞는 정부 프로그램을 검토합니다.",
+        "effect": "비희석 자금 경로 식별"
+      },
+      "validationRun": {
+        "label": "Validation Score 실행",
+        "desc": "가중 기준 GO/NO GO 구조화 검증을 수행합니다.",
+        "effect": "Investment Readiness 정량화"
+      },
+      "generic": {
+        "desc": "이 근거 공백을 보완하면 의사결정 신뢰도가 개선됩니다.",
+        "effect": "점수 점진적 상승 예상"
+      }
+    },
+    "risks": {
+      "competitionIntensity": "높은 경쟁 강도",
+      "competitionMitigation": "미충족 세그먼트 또는 독점 역량으로 차별화.",
+      "competitionBlindSpot": "경쟁 환경 미파악",
+      "competitionBlindMitigation": "시장 진입 전 구조화된 경쟁 분석 수행.",
+      "vocGap": "고객 검증 부족",
+      "vocMitigation": "최소 10건 구조화 고객 인터뷰 실행.",
+      "weakEvidence": "고신뢰도 출처 근거 부족",
+      "evidenceMitigation": "정부·학술·1차 리서치 출처 우선 확보.",
+      "fundingPath": "정부 자금 경로 미식별",
+      "fundingMitigation": "적격 지원사업 및 R&D 세제 혜택 검토."
+    },
+    "opportunities": {
+      "market": {
+        "title": "시장 기회",
+        "desc": "리서치 진행률이 추가 투자 가치가 있는 시장 잠재력을 시사합니다."
+      },
+      "grant": {
+        "title": "정부지원",
+        "desc": "적격 지원사업 식별 — 비희석 자금으로 실행 가속 가능."
+      },
+      "growth": {
+        "title": "시장 성장 신호",
+        "desc": "고객 Voice 데이터가 목표 세그먼트 수요 성장을 시사합니다."
+      },
+      "tech": {
+        "title": "기술 우위",
+        "desc": "근거가 기술 차별화 또는 혁신 해자를 뒷받침합니다."
+      }
+    }
   },
   "errors": {
     "serverError": "서버 오류",

@@ -208,7 +208,9 @@
     "decisionReport": "Decision Report",
     "strategyReport": "Strategy Report",
     "operations": "Operations",
-    "operationsDesc": "Product analytics and operational metrics."
+    "operationsDesc": "Product analytics and operational metrics.",
+    "decisionCenter": "Decision Center",
+    "decisionCenterDesc": "AI strategic decision — GO, HOLD, or NO GO with executive rationale."
   },
   "dashboard": {
     "emptyTitle": "Welcome to your validation workspace",
@@ -1431,5 +1433,194 @@
     "backToDashboard": "Back to dashboard",
     "notFoundTitle": "Page not found",
     "notFoundDescription": "The page you requested does not exist or has been moved."
+  },
+  "decision": {
+    "centerTitle": "Decision Center",
+    "backToProject": "Back to project",
+    "consultantEyebrow": "AI Strategy Consultant",
+    "verdictHeading": "Strategic Decision",
+    "providerNote": "Analysis engine: {provider}",
+    "scoresTitle": "Decision Metrics",
+    "executiveTitle": "Executive Summary",
+    "reasonTitle": "Decision Rationale",
+    "missingTitle": "Missing Evidence",
+    "actionsTitle": "Recommended Actions",
+    "riskTitle": "Risk Matrix",
+    "riskColumn": "Risk",
+    "severityColumn": "Severity",
+    "probabilityColumn": "Probability",
+    "mitigationColumn": "Mitigation",
+    "opportunityTitle": "Opportunity Assessment",
+    "generatedAt": "Generated {time}",
+    "summaryEyebrow": "Decision Summary",
+    "summaryTitle": "Strategic Verdict",
+    "topAction": "Priority Action",
+    "openDecisionCenter": "Open Decision Center",
+    "scoreImpactShort": "+{points} pts",
+    "daysShort": "{days} days",
+    "emptyTitle": "No project selected",
+    "emptyDescription": "Create a project to generate an AI strategic decision.",
+    "createProject": "Create Project",
+    "verdict": {
+      "go": "GO",
+      "hold": "HOLD",
+      "noGo": "NO GO"
+    },
+    "scores": {
+      "decisionScore": "Decision Score",
+      "confidence": "Confidence",
+      "investmentReadiness": "Investment Readiness",
+      "executionReadiness": "Execution Readiness"
+    },
+    "severity": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "probability": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "opportunityCategory": {
+      "market": "Market",
+      "grant": "Government Support",
+      "growth": "Market Growth",
+      "technology": "Technology"
+    },
+    "executive": {
+      "insufficient1": "Insufficient data to render a definitive strategic recommendation.",
+      "insufficient2": "Complete research, evidence, and customer validation inputs before proceeding to investment decisions.",
+      "insufficient3": "Current posture: HOLD pending evidence completion.",
+      "go2": "Market attractiveness and evidence quality support a conditional GO recommendation.",
+      "go3": "Execution readiness is adequate; proceed with phased investment and milestone gates.",
+      "noGo2": "Competitive intensity and evidence gaps outweigh near-term market opportunity.",
+      "noGo3": "Recommend deferring capital allocation until validation thresholds are met.",
+      "hold2": "Strategic potential exists but critical evidence gaps remain unresolved.",
+      "hold3": "Address priority actions below to elevate decision confidence."
+    },
+    "summary": {
+      "startup": {
+        "go1": "Market validation signals are favorable for a startup launch trajectory.",
+        "hold1": "Startup viability is plausible but requires additional customer and market proof.",
+        "noGo1": "Current startup hypothesis lacks sufficient validation for a GO recommendation."
+      },
+      "businessStrategy": {
+        "go1": "Strategic alignment and market conditions support proceeding with the initiative.",
+        "hold1": "Business strategy requires further competitive and financial validation.",
+        "noGo1": "Strategic risk profile exceeds acceptable thresholds for immediate execution."
+      },
+      "aiInitiative": {
+        "go1": "AI initiative demonstrates clear value hypothesis with supporting evidence.",
+        "hold1": "AI initiative shows promise; technical and organizational readiness need confirmation.",
+        "noGo1": "AI initiative ROI case is insufficiently substantiated at this stage."
+      },
+      "dx": {
+        "go1": "Digital transformation scope aligns with operational readiness indicators.",
+        "hold1": "DX program requires stronger execution planning and stakeholder alignment.",
+        "noGo1": "Digital transformation readiness does not justify near-term investment."
+      },
+      "newBusiness": {
+        "go1": "New business line exhibits favorable market entry conditions.",
+        "hold1": "New business opportunity warrants further market sizing and competitive analysis.",
+        "noGo1": "New business entry risk exceeds projected returns based on current evidence."
+      },
+      "marketExpansion": {
+        "go1": "Target market expansion shows positive demand and competitive positioning.",
+        "hold1": "Market expansion thesis requires localized validation and regulatory review.",
+        "noGo1": "Expansion market entry barriers outweigh identified opportunities."
+      },
+      "default": {
+        "go1": "Aggregate evidence supports a conditional GO recommendation.",
+        "hold1": "Strategic potential exists; evidence completion is required before commitment.",
+        "noGo1": "Evidence base does not support a GO recommendation at this time."
+      }
+    },
+    "reasons": {
+      "go": {
+        "market": "Decision score of {score} reflects favorable market and validation signals.",
+        "evidence": "High-confidence evidence base supports strategic conviction.",
+        "execution": "Execution readiness at {score}% indicates operational feasibility."
+      },
+      "noGo": {
+        "market": "Market signals do not meet minimum viability thresholds.",
+        "competition": "Competitive landscape presents material entry barriers.",
+        "evidence": "Evidence quality is insufficient to support investment decisions."
+      },
+      "hold": {
+        "voc": "Customer validation at {count} interviews — minimum 10 required for GO confidence.",
+        "competition": "Competitive intelligence requires completion before final verdict.",
+        "data": "Data completeness at {percent}% — below decision threshold."
+      }
+    },
+    "missing": {
+      "vocInterviews": "Customer interviews (VOC)",
+      "marketSize": "Market sizing research",
+      "competitorPricing": "Competitor pricing analysis",
+      "governmentReview": "Government support review",
+      "highConfidenceEvidence": "High-confidence evidence (5+ items)",
+      "validationScore": "Validation score evaluation"
+    },
+    "actions": {
+      "voc10": {
+        "label": "Secure 10 VOC interviews",
+        "desc": "Structured customer interviews to validate problem-solution fit.",
+        "effect": "Elevates customer validation confidence"
+      },
+      "evidenceHigh": {
+        "label": "Add high-confidence evidence",
+        "desc": "Source peer-reviewed, government, or primary research evidence.",
+        "effect": "Strengthens analytical foundation"
+      },
+      "competitorMatrix": {
+        "label": "Complete competitor matrix",
+        "desc": "Map pricing, positioning, and differentiation across key competitors.",
+        "effect": "Reduces competitive blind spots"
+      },
+      "grantFit": {
+        "label": "Evaluate grant fit",
+        "desc": "Assess government programs aligned with project scope and stage.",
+        "effect": "Identifies non-dilutive funding pathways"
+      },
+      "validationRun": {
+        "label": "Run validation scoring",
+        "desc": "Execute structured GO/NO GO validation with weighted criteria.",
+        "effect": "Quantifies investment readiness"
+      },
+      "generic": {
+        "desc": "Complete this evidence gap to improve decision confidence.",
+        "effect": "Incremental score improvement expected"
+      }
+    },
+    "risks": {
+      "competitionIntensity": "High competitive intensity",
+      "competitionMitigation": "Differentiate on underserved segment or proprietary capability.",
+      "competitionBlindSpot": "Competitive landscape unmapped",
+      "competitionBlindMitigation": "Conduct structured competitor analysis before market entry.",
+      "vocGap": "Insufficient customer validation",
+      "vocMitigation": "Execute minimum 10 structured customer interviews.",
+      "weakEvidence": "Evidence base lacks high-confidence sources",
+      "evidenceMitigation": "Prioritize government, academic, and primary research sources.",
+      "fundingPath": "No government funding pathway identified",
+      "fundingMitigation": "Screen eligible grant programs and R&D tax incentives."
+    },
+    "opportunities": {
+      "market": {
+        "title": "Market Opportunity",
+        "desc": "Research progress indicates addressable market potential worth further investment."
+      },
+      "grant": {
+        "title": "Government Support",
+        "desc": "Eligible grant programs identified — non-dilutive funding may accelerate execution."
+      },
+      "growth": {
+        "title": "Market Growth Signal",
+        "desc": "Customer voice data suggests growing demand in target segment."
+      },
+      "tech": {
+        "title": "Technology Advantage",
+        "desc": "Evidence supports technical differentiation or innovation moat."
+      }
+    }
   }
 }

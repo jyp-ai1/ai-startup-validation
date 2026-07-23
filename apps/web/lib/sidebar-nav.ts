@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   LineChart,
   MessageSquareQuote,
+  Scale,
   Search,
   Settings,
   Swords,
@@ -21,6 +22,7 @@ import {
 
 export type SidebarNavKey =
   | 'dashboard'
+  | 'decisionCenter'
   | 'projects'
   | 'startupValidation'
   | 'businessStrategy'
@@ -64,6 +66,13 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
     labelKey: 'shell.groupWorkspace',
     items: [
       { key: 'dashboard', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
+      {
+        key: 'decisionCenter',
+        icon: Scale,
+        labelKey: 'nav.decisionCenter',
+        segment: 'decision',
+        globalHref: '/decision-center',
+      },
       { key: 'projects', icon: FlaskConical, labelKey: 'nav.projects' },
     ],
   },
@@ -157,6 +166,7 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
 
 const GLOBAL_HREFS: Partial<Record<SidebarNavKey, string>> = {
   dashboard: '/dashboard',
+  decisionCenter: '/decision-center',
   projects: '/projects',
   settings: '/settings',
   operations: '/admin/operations',
@@ -165,6 +175,7 @@ const GLOBAL_HREFS: Partial<Record<SidebarNavKey, string>> = {
 export function resolveSidebarHref(item: SidebarNavItem, projectId?: string | null): string {
   if (
     item.key === 'dashboard' ||
+    item.key === 'decisionCenter' ||
     item.key === 'projects' ||
     item.key === 'settings' ||
     item.key === 'operations'
