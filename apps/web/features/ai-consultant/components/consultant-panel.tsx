@@ -10,6 +10,9 @@ import { useAnalytics } from '@/lib/analytics/use-analytics';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
+import type { IntelligenceViewModel } from '@/features/project-intelligence';
+import { ConsultantMemoryUpgrade } from '@/features/project-intelligence/components/consultant-memory-upgrade';
+
 import type { ConsultantViewModel } from '../services/consultant-types';
 import { ConsultantActions } from './consultant-actions';
 import { ConsultantContextPanel } from './consultant-context-panel';
@@ -22,9 +25,10 @@ import { ConsultantRecommendations } from './consultant-recommendations';
 
 type ConsultantPanelProps = {
   consultant: ConsultantViewModel;
+  intelligence?: IntelligenceViewModel | null;
 };
 
-export function ConsultantPanel({ consultant }: ConsultantPanelProps) {
+export function ConsultantPanel({ consultant, intelligence = null }: ConsultantPanelProps) {
   const t = useTranslations('aiConsultant');
   const td = useTranslations('decision');
   const ts = useTranslations('strategyWorkspace');
@@ -116,7 +120,15 @@ export function ConsultantPanel({ consultant }: ConsultantPanelProps) {
 
         <ConsultantQuestions questions={consultant.questions} projectId={consultant.projectId} />
 
-        <ConsultantMemory items={consultant.memory} />
+        {intelligence ? (
+          <ConsultantMemoryUpgrade
+            projectId={consultant.projectId}
+            sections={intelligence.memorySections}
+            proactiveMessage={intelligence.proactiveMessage}
+          />
+        ) : (
+          <ConsultantMemory items={consultant.memory} />
+        )}
 
         <ConsultantActions actions={consultant.actions} projectId={consultant.projectId} />
 

@@ -16,7 +16,13 @@ import { Button } from '@repo/ui';
 import type { ConsultantViewModel } from '@/features/ai-consultant';
 import { ConsultantPanel } from '@/features/ai-consultant';
 import { WelcomeChecklist } from '@/features/activation';
-import { DashboardTodaysFocus } from '@/features/dashboard/components/dashboard-todays-focus';
+import {
+  ContextScorePanel,
+  DailyBriefPanel,
+  ExecutiveTimelinePanel,
+  IntelligenceAnalyticsTracker,
+  type IntelligenceViewModel,
+} from '@/features/project-intelligence';
 import { OnboardingConsultantHost } from '@/features/onboarding-consultant';
 import { DemoWelcomeCard } from '@/features/onboarding';
 
@@ -42,18 +48,20 @@ type ExecutiveDashboardProps = {
   executive: ExecutiveWorkspaceViewModel | null;
   strategy: StrategyWorkspaceViewModel | null;
   consultant: ConsultantViewModel | null;
+  intelligence?: IntelligenceViewModel | null;
   demoMode?: boolean;
   onboardingComplete?: boolean;
 };
 
 type DashboardShellProps = {
   consultant: ConsultantViewModel | null;
+  intelligence?: IntelligenceViewModel | null;
   children: ReactNode;
   className?: string;
   checklist?: ReactNode;
 };
 
-function DashboardShell({ consultant, children, className, checklist }: DashboardShellProps) {
+function DashboardShell({ consultant, intelligence, children, className, checklist }: DashboardShellProps) {
   if (!consultant) {
     return <div className={className ?? 'mx-auto max-w-6xl'}>{children}</div>;
   }
@@ -66,7 +74,7 @@ function DashboardShell({ consultant, children, className, checklist }: Dashboar
         </div>
         <div className="space-y-6 xl:sticky xl:top-24 xl:self-start">
           {checklist}
-          <ConsultantPanel consultant={consultant} />
+          <ConsultantPanel consultant={consultant} intelligence={intelligence ?? null} />
         </div>
       </div>
     </div>
@@ -78,6 +86,7 @@ export function ExecutiveDashboard({
   executive,
   strategy,
   consultant,
+  intelligence = null,
   demoMode = false,
   onboardingComplete = true,
 }: ExecutiveDashboardProps) {
@@ -139,8 +148,16 @@ export function ExecutiveDashboard({
     executive?.project.title ?? workspace.activeProject?.title ?? t('empty.title');
 
   const focusPanel =
-    workspace.activeProject && !demoMode ? (
-      <DashboardTodaysFocus projectId={workspace.activeProject.id} />
+    intelligence && workspace.activeProject && !demoMode ? (
+      <>
+        <IntelligenceAnalyticsTracker
+          projectId={workspace.activeProject.id}
+          memoryCount={intelligence.memories.length}
+          contextProvider={intelligence.promptContext.provider}
+        />
+        <DailyBriefPanel projectId={workspace.activeProject.id} brief={intelligence.dailyBrief} />
+        <ContextScorePanel scores={intelligence.contextScore} />
+      </>
     ) : null;
 
   if (!executive && strategy) {
@@ -154,7 +171,7 @@ export function ExecutiveDashboard({
             demoMode={demoMode}
           />
         ) : null}
-        <DashboardShell consultant={consultant} checklist={checklist}>
+        <DashboardShell consultant={consultant} intelligence={intelligence} checklist={checklist}>
         {focusPanel}
         {demoMode ? <DemoWelcomeCard projectId={strategy.projectId} className="mb-8" /> : null}
         <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
@@ -179,7 +196,7 @@ export function ExecutiveDashboard({
           demoMode={demoMode}
         />
       ) : null}
-      <DashboardShell consultant={consultant} checklist={checklist}>
+      <DashboardShell consultant={consultant} intelligence={intelligence} checklist={checklist}>
       {focusPanel}
       {demoMode ? <DemoWelcomeCard projectId={executive.project.id} className="mb-8" /> : null}
       {strategy ? (
@@ -219,6 +236,10 @@ export function ExecutiveDashboard({
       <ExecutiveEvidence evidence={executive.evidence} />
 
       <ExecutiveExportBar projectId={executive.project.id} />
+
+      {intelligence ? (
+        <ExecutiveTimelinePanel projectId={executive.project.id} items={intelligence.timeline} />
+      ) : null}
       </DashboardShell>
     </>
   );

@@ -64,6 +64,17 @@ export type { KnowledgeDocumentRepository } from './repositories/knowledge-docum
 export { SupabaseKnowledgeDocumentRepository } from './repositories/knowledge-document.repository';
 export type { KnowledgeChunkRepository } from './repositories/knowledge-chunk.repository';
 export { SupabaseKnowledgeChunkRepository } from './repositories/knowledge-chunk.repository';
+export type {
+  ProjectMemoryRepository,
+  ProjectMemoryEntry,
+  ProjectMemoryType,
+  CreateProjectMemoryInput,
+  UpdateProjectMemoryInput,
+} from './repositories/project-memory.repository';
+export {
+  SupabaseProjectMemoryRepository,
+  PROJECT_MEMORY_TYPES,
+} from './repositories/project-memory.repository';
 
 // Adapters (use via container — avoid direct imports in apps when possible)
 export { SupabaseAuthAdapter } from './adapters/supabase/auth/auth.adapter';

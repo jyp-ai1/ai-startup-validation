@@ -3128,5 +3128,95 @@
     "projectNotFoundDesc": "삭제되었거나 URL이 올바르지 않을 수 있습니다.",
     "newVocDesc": "새 고객 피드백 항목",
     "newPrdDesc": "{project} PRD 생성"
+  },
+  "memory": {
+    "sections": {
+      "title": "프로젝트 Memory",
+      "conversations": "최근 대화",
+      "research": "최근 조사",
+      "decisions": "최근 Decision",
+      "reports": "최근 Report",
+      "activity": "최근 Activity"
+    },
+    "proactive": {
+      "tam": "지난번에 시장규모가 부족했습니다. 오늘은 TAM 분석부터 진행하는 것을 추천합니다.",
+      "voc": "고객 검증이 아직 부족합니다 (VOC {count}건). 인터뷰를 먼저 확대하세요.",
+      "competitor": "경쟁사 매핑이 미완료입니다. 직접 경쟁사 2–3개를 벤치마킹하세요.",
+      "evidence": "Evidence가 부족합니다. Decision 전 HIGH 신뢰도 근거를 추가하세요.",
+      "report": "Decision이 준비되었습니다. Executive Report를 생성해 마무리하세요.",
+      "continue": "다시 오셨군요 — 지난 AI Research부터 이어서 진행하세요.",
+      "action": {
+        "tam": "TAM 분석 시작",
+        "voc": "VOC 추가",
+        "competitor": "경쟁사 매핑",
+        "evidence": "Evidence 추가",
+        "report": "Report 생성",
+        "continue": "Research 계속"
+      }
+    }
+  },
+  "context": {
+    "title": "AI Context Score",
+    "projectCompleteness": "Project Completeness",
+    "memory": "Memory",
+    "evidence": "Evidence",
+    "decisionReady": "Decision Ready"
+  },
+  "brief": {
+    "eyebrow": "AI Daily Brief",
+    "greeting": {
+      "morning": "Good Morning",
+      "afternoon": "Good Afternoon",
+      "evening": "Good Evening"
+    },
+    "summary": {
+      "default": "오늘 프로젝트에서 집중할 내용입니다.",
+      "vocGap": "VOC가 {count}건 — 고객 인터뷰를 우선하세요.",
+      "competitorDone": "경쟁사 조사가 업데이트되었습니다. 포지셔닝을 검토하세요.",
+      "grantUpdate": "정부지원 변경 — 적합도를 다시 확인하세요.",
+      "marketUpdate": "시장 성장률 업데이트 — TAM 가정을 재검토하세요.",
+      "decisionReady": "Decision 준비 완료 — GO/HOLD/NO GO를 검토하세요."
+    },
+    "tasksTitle": "오늘 해야 할 일 3개",
+    "tasks": {
+      "research": "AI Research 계속",
+      "voc": "고객 인터뷰 추가",
+      "evidence": "HIGH Evidence 추가",
+      "decision": "Decision 생성",
+      "report": "Executive Report 생성"
+    },
+    "highlights": {
+      "start": "프로젝트 Memory 구축 시작",
+      "conversation": "온보딩 인터뷰 저장됨",
+      "research": "Research 활동 기록",
+      "decision": "Decision Memory 업데이트",
+      "report": "Report 생성됨",
+      "evidence": "Evidence 추가됨",
+      "government": "지원사업 검토됨",
+      "market": "시장 Intelligence 업데이트",
+      "competitor": "경쟁사 Landscape 업데이트"
+    },
+    "start": "시작",
+    "aiSummary": "프로젝트 Memory와 최근 Activity를 바탕으로 AI Summary를 구성했습니다."
+  },
+  "timeline": {
+    "eyebrow": "Executive Timeline",
+    "title": "프로젝트 Activity",
+    "buckets": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "thisWeek": "This Week",
+      "earlier": "Earlier"
+    },
+    "types": {
+      "conversation": "Conversation",
+      "research": "Research",
+      "decision": "Decision",
+      "report": "Report",
+      "evidence": "Evidence",
+      "government": "Government",
+      "market": "Market",
+      "competitor": "Competitor"
+    }
   }
 }

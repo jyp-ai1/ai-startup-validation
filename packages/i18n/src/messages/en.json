@@ -3147,5 +3147,95 @@
     "projectNotFoundDesc": "It may have been deleted or the URL is incorrect.",
     "newVocDesc": "New customer feedback entry",
     "newPrdDesc": "New PRD for {project}"
+  },
+  "memory": {
+    "sections": {
+      "title": "Project memory",
+      "conversations": "Recent conversations",
+      "research": "Recent research",
+      "decisions": "Recent decisions",
+      "reports": "Recent reports",
+      "activity": "Recent activity"
+    },
+    "proactive": {
+      "tam": "Last time, market size was insufficient. I recommend starting with TAM analysis today.",
+      "voc": "Customer validation is still thin ({count} VOC entries). Let's deepen interviews first.",
+      "competitor": "Competitor mapping is incomplete. Benchmark 2–3 direct players next.",
+      "evidence": "Evidence is thin. Add high-confidence sources before Decision.",
+      "report": "Decision is ready. Generate the executive report to close the loop.",
+      "continue": "Welcome back — let's continue where we left off with AI research.",
+      "action": {
+        "tam": "Start TAM analysis",
+        "voc": "Add VOC",
+        "competitor": "Map competitors",
+        "evidence": "Add evidence",
+        "report": "Generate report",
+        "continue": "Continue research"
+      }
+    }
+  },
+  "context": {
+    "title": "AI context score",
+    "projectCompleteness": "Project completeness",
+    "memory": "Memory",
+    "evidence": "Evidence",
+    "decisionReady": "Decision ready"
+  },
+  "brief": {
+    "eyebrow": "AI Daily Brief",
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "summary": {
+      "default": "Here's what matters for your project today.",
+      "vocGap": "VOC is still at {count} entries — prioritize customer interviews.",
+      "competitorDone": "Competitor research is updated. Review positioning next.",
+      "grantUpdate": "Government grant landscape changed — review fit scores.",
+      "marketUpdate": "Market growth signals updated — revisit TAM assumptions.",
+      "decisionReady": "Decision inputs are ready — review GO/HOLD/NO GO."
+    },
+    "tasksTitle": "Today's focus (3 tasks)",
+    "tasks": {
+      "research": "Continue AI research",
+      "voc": "Add customer interviews",
+      "evidence": "Add high-confidence evidence",
+      "decision": "Generate decision analysis",
+      "report": "Generate executive report"
+    },
+    "highlights": {
+      "start": "Start building project memory",
+      "conversation": "Onboarding interview saved",
+      "research": "Research activity recorded",
+      "decision": "Decision memory updated",
+      "report": "Report generated",
+      "evidence": "Evidence added",
+      "government": "Grant programs reviewed",
+      "market": "Market intelligence updated",
+      "competitor": "Competitor landscape updated"
+    },
+    "start": "Start",
+    "aiSummary": "AI summary compiled from project memory and recent activity."
+  },
+  "timeline": {
+    "eyebrow": "Executive timeline",
+    "title": "Project activity",
+    "buckets": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "thisWeek": "This week",
+      "earlier": "Earlier"
+    },
+    "types": {
+      "conversation": "Conversation",
+      "research": "Research",
+      "decision": "Decision",
+      "report": "Report",
+      "evidence": "Evidence",
+      "government": "Government",
+      "market": "Market",
+      "competitor": "Competitor"
+    }
   }
 }

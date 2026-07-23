@@ -2,6 +2,7 @@
 
 import type { ConsultantViewModel } from '@/features/ai-consultant';
 import type { ProjectDashboardStats } from '@/features/dashboard/types';
+import type { IntelligenceViewModel } from '@/features/project-intelligence';
 import { ProjectWorkspaceHome } from '@/features/workspace-home';
 import type { WorkspaceHomeViewModel } from '@/features/workspace-home';
 import type { StartupProject } from '@repo/types/validation';
@@ -10,6 +11,7 @@ type ProjectWorkspaceOverviewProps = {
   project: StartupProject;
   stats: ProjectDashboardStats;
   consultant: ConsultantViewModel | null;
+  intelligence?: IntelligenceViewModel | null;
   workspaceHome: WorkspaceHomeViewModel;
 };
 

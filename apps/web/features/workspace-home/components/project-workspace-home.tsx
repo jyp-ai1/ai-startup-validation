@@ -43,12 +43,15 @@ import {
 } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
+import type { IntelligenceViewModel } from '@/features/project-intelligence';
+
 import type { WorkspaceHomeViewModel, WorkspaceTabId } from '../types';
 
 type ProjectWorkspaceHomeProps = {
   project: StartupProject;
   stats: ProjectDashboardStats;
   consultant: ConsultantViewModel | null;
+  intelligence?: IntelligenceViewModel | null;
   workspaceHome: WorkspaceHomeViewModel;
 };
 
@@ -83,6 +86,7 @@ export function ProjectWorkspaceHome({
   project,
   stats,
   consultant,
+  intelligence = null,
   workspaceHome,
 }: ProjectWorkspaceHomeProps) {
   const t = useTranslations();
@@ -499,7 +503,7 @@ export function ProjectWorkspaceHome({
       <div className="grid gap-8 xl:grid-cols-[1fr_minmax(320px,380px)]">
         <div className="min-w-0">{mainContent}</div>
         <div className="xl:sticky xl:top-24 xl:self-start">
-          <ConsultantPanel consultant={consultant} />
+          <ConsultantPanel consultant={consultant} intelligence={intelligence} />
         </div>
       </div>
     </div>
