@@ -1,4 +1,4 @@
-import type { DecisionInput, DecisionScores, DecisionVerdict } from './decision-types';
+import type { DecisionInput, DecisionScores, DecisionVerdict, ScoreBreakdown } from './decision-types';
 
 function clamp(value: number): number {
   return Math.min(100, Math.max(0, Math.round(value)));
@@ -19,7 +19,7 @@ export function calculateDataCompleteness(input: DecisionInput): number {
   return checks.filter(Boolean).length / checks.length;
 }
 
-export function calculateDecisionScores(input: DecisionInput): DecisionScores {
+export function calculateScoreBreakdown(input: DecisionInput): ScoreBreakdown {
   const completeness = calculateDataCompleteness(input);
 
   const researchScore =
@@ -47,26 +47,43 @@ export function calculateDecisionScores(input: DecisionInput): DecisionScores {
     ? input.validationScore.totalScore * 0.35
     : completeness * 25;
 
+  return {
+    researchScore,
+    evidenceScore,
+    vocScore,
+    competitorScore,
+    grantScore,
+    validationBoost,
+  };
+}
+
+export function calculateDecisionScores(input: DecisionInput): DecisionScores {
+  const completeness = calculateDataCompleteness(input);
+  const breakdown = calculateScoreBreakdown(input);
+
   const decisionScore = clamp(
-    researchScore * 0.15 +
-      evidenceScore * 0.2 +
-      vocScore * 0.2 +
-      competitorScore * 0.15 +
-      grantScore * 0.1 +
-      validationBoost * 0.2,
+    breakdown.researchScore * 0.15 +
+      breakdown.evidenceScore * 0.2 +
+      breakdown.vocScore * 0.2 +
+      breakdown.competitorScore * 0.15 +
+      breakdown.grantScore * 0.1 +
+      breakdown.validationBoost * 0.2,
   );
 
-  const confidence = clamp(completeness * 100);
+  const confidence = calculateEnhancedConfidence(input, completeness);
 
   const investmentReadiness = clamp(
     (input.validationScore?.totalScore ?? decisionScore * 0.6) * 0.5 +
-      grantScore * 0.25 +
-      evidenceScore * 0.15 +
-      vocScore * 0.1,
+      breakdown.grantScore * 0.25 +
+      breakdown.evidenceScore * 0.15 +
+      breakdown.vocScore * 0.1,
   );
 
   const executionReadiness = clamp(
-    researchScore * 0.35 + evidenceScore * 0.25 + competitorScore * 0.2 + vocScore * 0.2,
+    breakdown.researchScore * 0.35 +
+      breakdown.evidenceScore * 0.25 +
+      breakdown.competitorScore * 0.2 +
+      breakdown.vocScore * 0.2,
   );
 
   return {
@@ -75,6 +92,43 @@ export function calculateDecisionScores(input: DecisionInput): DecisionScores {
     investmentReadiness,
     executionReadiness,
   };
+}
+
+/** XAI confidence — evidence volume, quality, recency proxy, source trust. */
+export function calculateEnhancedConfidence(input: DecisionInput, completeness?: number): number {
+  const ratio = completeness ?? calculateDataCompleteness(input);
+
+  const evidenceVolume = clamp(Math.min(input.evidence.total, 20) * 5);
+  const evidenceQuality =
+    input.evidence.total === 0
+      ? 0
+      : clamp(
+          (input.evidence.highConfidence / Math.max(input.evidence.total, 1)) * 100,
+        );
+  const recency = clamp(
+    (input.research.progressPercent * 0.5 + Math.min(input.voc.total, 10) * 5) * 0.8,
+  );
+  const sourceTrust = clamp(
+    input.evidence.highConfidence * 12 + input.evidence.mediumConfidence * 4,
+  );
+
+  return clamp(ratio * 40 + evidenceVolume * 0.15 + evidenceQuality * 0.25 + recency * 0.1 + sourceTrust * 0.1);
+}
+
+export function getConfidenceFactors(input: DecisionInput) {
+  const evidenceVolume = clamp(Math.min(input.evidence.total, 20) * 5);
+  const evidenceQuality =
+    input.evidence.total === 0
+      ? 0
+      : clamp((input.evidence.highConfidence / Math.max(input.evidence.total, 1)) * 100);
+  const recency = clamp(
+    (input.research.progressPercent * 0.5 + Math.min(input.voc.total, 10) * 5) * 0.8,
+  );
+  const sourceTrust = clamp(
+    input.evidence.highConfidence * 12 + input.evidence.mediumConfidence * 4,
+  );
+
+  return { evidenceVolume, evidenceQuality, recency, sourceTrust };
 }
 
 export function resolveVerdict(

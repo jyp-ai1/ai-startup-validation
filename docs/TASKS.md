@@ -65,7 +65,25 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 10 | SEO (OG, robots, sitemap, canonical) | ✅ Done | AI |
 | — | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.1 — Evidence Score Engine
+**Next:** Sprint 8.2 — Strategy Framework Engine
+
+---
+
+## Sprint 8.1 — Explainable Decision Engine (XAI) ✅
+
+**Status:** Complete  
+**Goal:** Transparent decision-making — drivers, evidence coverage, explain score, supporting evidence, Why? explain mode.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `decision-explainer.ts` XAI layer | ✅ Done | AI |
+| Enhanced confidence (volume, quality, recency, trust) | ✅ Done | AI |
+| Decision Center restructure (CEO Summary → Drivers → Evidence) | ✅ Done | AI |
+| Why? Explain Mode + Decision Logic dialog | ✅ Done | AI |
+| Analytics: explain_view, driver_click, missing_data_click | ✅ Done | AI |
+| Build + deploy + verify | ✅ Done | AI |
+
+**Next:** Sprint 8.2 — Strategy Framework Engine
 
 ---
 
@@ -85,9 +103,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | Analytics: `decision_view`, `decision_generate`, `decision_action_click` | ✅ Done | AI |
 | Build + lint + deploy + verify | ✅ Done | AI |
 
-**Architecture:** `DecisionService` → `getDecisionProvider()` → `MockDecisionProvider` (default). LLM providers stubbed for Sprint 8.1+.
+**Architecture:** `DecisionService` → `getDecisionProvider()` → `MockDecisionProvider` (default). LLM providers stubbed for Sprint 8.2+.
 
-**Next:** Sprint 8.1 — Evidence Score Engine
+**Next:** Sprint 8.1 — Explainable Decision Engine ✅
 
 ---
 

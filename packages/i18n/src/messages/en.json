@@ -1420,6 +1420,9 @@
     "riskColumn": "Risk",
     "severityColumn": "Severity",
     "probabilityColumn": "Probability",
+    "ceoSummaryEyebrow": "CEO Executive Summary",
+    "ceoSummaryTitle": "Strategic Decision Brief",
+    "impactColumn": "Impact",
     "mitigationColumn": "Mitigation",
     "opportunityTitle": "Opportunity Assessment",
     "generatedAt": "Generated {time}",
@@ -1453,11 +1456,17 @@
       "medium": "Medium",
       "low": "Low"
     },
+    "impact": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
     "opportunityCategory": {
       "market": "Market",
       "grant": "Government Support",
       "growth": "Market Growth",
-      "technology": "Technology"
+      "technology": "Technology",
+      "ai": "AI Opportunity"
     },
     "executive": {
       "insufficient1": "Insufficient data to render a definitive strategic recommendation.",
@@ -1591,6 +1600,87 @@
       "tech": {
         "title": "Technology Advantage",
         "desc": "Evidence supports technical differentiation or innovation moat."
+      },
+      "ai": {
+        "title": "AI Opportunity",
+        "desc": "AI-driven automation or intelligence layer can create defensible competitive advantage."
+      }
+    },
+    "drivers": {
+      "title": "Decision Drivers",
+      "desc": "Top factors influencing the strategic verdict",
+      "marketGrowth": "Market growth potential",
+      "grantFit": "Government program fit",
+      "vocGap": "Insufficient customer validation (VOC)",
+      "competitionIntensity": "Competitive intensity",
+      "competitionBlindSpot": "Unmapped competitive landscape",
+      "weakEvidence": "Weak evidence base",
+      "techDifficulty": "Technical execution difficulty",
+      "strongEvidence": "Strong evidence foundation"
+    },
+    "explain": {
+      "title": "Score Breakdown",
+      "desc": "How readiness scores are derived from your data",
+      "startupReadiness": "Startup Readiness",
+      "research": "Research",
+      "evidence": "Evidence",
+      "voc": "VOC",
+      "competitor": "Competitor",
+      "government": "Government"
+    },
+    "coverage": {
+      "title": "Evidence Coverage",
+      "desc": "Required validation data vs. current acquisition",
+      "research": "Market research",
+      "evidence": "High-confidence evidence",
+      "voc": "Customer interviews",
+      "competitors": "Competitor analysis",
+      "grants": "Government programs",
+      "validation": "Validation score"
+    },
+    "confidence": {
+      "title": "Confidence",
+      "desc": "Derived from evidence volume, quality, recency, and source trust",
+      "evidenceVolume": "Evidence volume",
+      "evidenceQuality": "Evidence quality",
+      "recency": "Recency",
+      "sourceTrust": "Source trust"
+    },
+    "explainMode": {
+      "whyButton": "Why?",
+      "title": "Decision Logic",
+      "stepData": "Data completeness assessment",
+      "stepDataDetail": "Overall evidence coverage is {percent}% — threshold for GO is 55%+.",
+      "stepScore": "Weighted decision score",
+      "stepScoreDetail": "Composite score of {score} from research, evidence, VOC, competition, and grants.",
+      "stepConfidence": "Confidence calibration",
+      "stepConfidenceDetail": "Confidence index at {confidence}% based on evidence quality and source trust.",
+      "stepVerdict": "Verdict resolution",
+      "stepVerdictGo": "Score and confidence thresholds met — conditional GO issued.",
+      "stepVerdictNoGo": "Score below viability threshold with sufficient data — NO GO issued.",
+      "stepVerdictHold": "Insufficient data or borderline scores — HOLD pending evidence completion."
+    },
+    "supporting": {
+      "title": "Supporting Evidence",
+      "desc": "Data sources used in this decision",
+      "empty": "No supporting records yet. Add research, evidence, or VOC to strengthen the decision.",
+      "research": "Research plan",
+      "evidence": "Evidence item",
+      "competitor": "Competitor",
+      "grant": "Grant program",
+      "researchCount": "{count} research plans",
+      "evidenceCount": "{count} evidence items ({high} high-confidence)",
+      "vocCount": "{count} VOC entries",
+      "competitorCount": "{count} competitors analyzed",
+      "grantCount": "{count} grant programs",
+      "validationScore": "Validation score: {score} pts",
+      "type": {
+        "evidence": "Evidence",
+        "voc": "VOC",
+        "research": "Research",
+        "competitor": "Competitor",
+        "grant": "Government",
+        "validation": "Validation"
       }
     }
   },

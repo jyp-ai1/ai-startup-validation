@@ -8,6 +8,7 @@ import type {
   RecommendedAction,
   RiskMatrixItem,
 } from '../decision-types';
+import { buildDecisionExplanation } from '../decision-explainer';
 import {
   calculateDataCompleteness,
   calculateDecisionScores,
@@ -158,6 +159,7 @@ function buildRisks(input: DecisionInput, verdict: DecisionResult['verdict']): R
       riskKey: 'risks.competitionIntensity',
       severity: 'HIGH',
       probability: 'HIGH',
+      impact: 'HIGH',
       mitigationKey: 'risks.competitionMitigation',
     });
   } else if (input.competitors.total === 0) {
@@ -166,6 +168,7 @@ function buildRisks(input: DecisionInput, verdict: DecisionResult['verdict']): R
       riskKey: 'risks.competitionBlindSpot',
       severity: 'MEDIUM',
       probability: 'HIGH',
+      impact: 'MEDIUM',
       mitigationKey: 'risks.competitionBlindMitigation',
     });
   }
@@ -176,6 +179,7 @@ function buildRisks(input: DecisionInput, verdict: DecisionResult['verdict']): R
       riskKey: 'risks.vocGap',
       severity: verdict === 'GO' ? 'MEDIUM' : 'HIGH',
       probability: 'HIGH',
+      impact: verdict === 'GO' ? 'MEDIUM' : 'HIGH',
       mitigationKey: 'risks.vocMitigation',
     });
   }
@@ -186,6 +190,7 @@ function buildRisks(input: DecisionInput, verdict: DecisionResult['verdict']): R
       riskKey: 'risks.weakEvidence',
       severity: 'MEDIUM',
       probability: 'MEDIUM',
+      impact: 'MEDIUM',
       mitigationKey: 'risks.evidenceMitigation',
     });
   }
@@ -196,6 +201,7 @@ function buildRisks(input: DecisionInput, verdict: DecisionResult['verdict']): R
       riskKey: 'risks.fundingPath',
       severity: 'LOW',
       probability: 'MEDIUM',
+      impact: 'LOW',
       mitigationKey: 'risks.fundingMitigation',
     });
   }
@@ -242,7 +248,16 @@ function buildOpportunities(input: DecisionInput): OpportunityItem[] {
     });
   }
 
-  return items.slice(0, 4);
+  if (input.projectType === 'AI_INITIATIVE' || input.evidence.highConfidence >= 2) {
+    items.push({
+      id: 'ai',
+      category: 'AI',
+      titleKey: 'opportunities.ai.title',
+      descriptionKey: 'opportunities.ai.desc',
+    });
+  }
+
+  return items.slice(0, 5);
 }
 
 function projectTypeSummaryPrefix(projectType: DecisionInput['projectType']): string {
@@ -322,6 +337,8 @@ export class MockDecisionProvider implements DecisionProvider {
               { id: 'r3', textKey: 'reasons.hold.data', params: { percent: Math.round(completeness * 100) } },
             ];
 
+    const explanation = buildDecisionExplanation(input, scores, verdict, missingEvidence);
+
     return {
       verdict,
       scores,
@@ -331,9 +348,11 @@ export class MockDecisionProvider implements DecisionProvider {
       recommendedActions,
       risks,
       opportunities,
+      explanation,
       generatedAt: new Date().toISOString(),
       providerId: 'mock',
       projectType: input.projectType,
+      locale: input.locale,
     };
   }
 }

@@ -1,14 +1,18 @@
+import { DEFAULT_LOCALE } from '@repo/i18n/config';
+
 import type { ProjectDashboardStats } from '@/features/dashboard/types';
 
 import type { DecisionInput } from './decision-types';
 
-export function statsToDecisionInput(stats: ProjectDashboardStats): DecisionInput {
-  const grantFitScores = stats.grants.total > 0 ? null : null;
-  // avgFitScore computed at service layer when loading grants detail — placeholder here
+export function statsToDecisionInput(
+  stats: ProjectDashboardStats,
+  locale = DEFAULT_LOCALE,
+): DecisionInput {
   return {
     projectId: stats.project.id,
     projectTitle: stats.project.title,
     projectType: stats.project.projectType,
+    locale,
     research: stats.research,
     evidence: {
       total: stats.evidence.total,
@@ -20,7 +24,7 @@ export function statsToDecisionInput(stats: ProjectDashboardStats): DecisionInpu
     competitors: stats.competitors,
     grants: {
       total: stats.grants.total,
-      avgFitScore: grantFitScores,
+      avgFitScore: null,
     },
     validationScore: stats.validationScore,
   };

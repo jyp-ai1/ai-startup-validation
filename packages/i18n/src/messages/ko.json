@@ -1420,6 +1420,9 @@
     "riskColumn": "리스크",
     "severityColumn": "심각도",
     "probabilityColumn": "발생 가능성",
+    "ceoSummaryEyebrow": "CEO Executive Summary",
+    "ceoSummaryTitle": "전략적 의사결정 브리프",
+    "impactColumn": "영향",
     "mitigationColumn": "완화 방안",
     "opportunityTitle": "기회 평가",
     "generatedAt": "생성 시각 {time}",
@@ -1453,11 +1456,17 @@
       "medium": "중간",
       "low": "낮음"
     },
+    "impact": {
+      "high": "높음",
+      "medium": "중간",
+      "low": "낮음"
+    },
     "opportunityCategory": {
       "market": "시장",
       "grant": "정부지원",
       "growth": "시장 성장",
-      "technology": "기술"
+      "technology": "기술",
+      "ai": "AI 기회"
     },
     "executive": {
       "insufficient1": "확정적 전략 권고를 내리기에 데이터가 부족합니다.",
@@ -1591,6 +1600,87 @@
       "tech": {
         "title": "기술 우위",
         "desc": "근거가 기술 차별화 또는 혁신 해자를 뒷받침합니다."
+      },
+      "ai": {
+        "title": "AI 기회",
+        "desc": "AI 기반 자동화·인텔리전스 레이어가 방어 가능한 경쟁 우위를 창출할 수 있습니다."
+      }
+    },
+    "drivers": {
+      "title": "의사결정 드라이버",
+      "desc": "전략적 판정에 영향을 준 핵심 요인",
+      "marketGrowth": "시장 성장률",
+      "grantFit": "정부지원 적합도",
+      "vocGap": "VOC 부족",
+      "competitionIntensity": "경쟁 심화",
+      "competitionBlindSpot": "경쟁 환경 미파악",
+      "weakEvidence": "근거 기반 취약",
+      "techDifficulty": "기술 난이도",
+      "strongEvidence": "강력한 근거 기반"
+    },
+    "explain": {
+      "title": "점수 산출 근거",
+      "desc": "준비도 점수가 데이터에서 어떻게 도출되는지",
+      "startupReadiness": "스타트업 준비도",
+      "research": "리서치",
+      "evidence": "근거",
+      "voc": "VOC",
+      "competitor": "경쟁사",
+      "government": "정부지원"
+    },
+    "coverage": {
+      "title": "Evidence Coverage",
+      "desc": "필요 검증 데이터 대비 현재 확보율",
+      "research": "시장 리서치",
+      "evidence": "고신뢰도 근거",
+      "voc": "고객 인터뷰",
+      "competitors": "경쟁사 분석",
+      "grants": "정부지원",
+      "validation": "Validation Score"
+    },
+    "confidence": {
+      "title": "Confidence",
+      "desc": "근거 수, 품질, 최신성, 출처 신뢰도 기준",
+      "evidenceVolume": "근거 수",
+      "evidenceQuality": "근거 품질",
+      "recency": "최신성",
+      "sourceTrust": "출처 신뢰도"
+    },
+    "explainMode": {
+      "whyButton": "Why?",
+      "title": "Decision Logic",
+      "stepData": "데이터 완성도 평가",
+      "stepDataDetail": "전체 Evidence Coverage {percent}% — GO 임계값 55% 이상.",
+      "stepScore": "가중 의사결정 점수",
+      "stepScoreDetail": "리서치·근거·VOC·경쟁·정부지원 종합 점수 {score}점.",
+      "stepConfidence": "신뢰도 보정",
+      "stepConfidenceDetail": "근거 품질·출처 신뢰도 기준 Confidence {confidence}%.",
+      "stepVerdict": "판정 결정",
+      "stepVerdictGo": "점수·신뢰도 임계값 충족 — 조건부 GO.",
+      "stepVerdictNoGo": "생존 임계값 미달 및 데이터 충분 — NO GO.",
+      "stepVerdictHold": "데이터 부족 또는 경계 점수 — HOLD."
+    },
+    "supporting": {
+      "title": "Supporting Evidence",
+      "desc": "이번 의사결정에 사용된 데이터",
+      "empty": "지원 근거가 없습니다. 리서치·근거·VOC를 추가하세요.",
+      "research": "리서치 계획",
+      "evidence": "근거 자료",
+      "competitor": "경쟁사",
+      "grant": "지원사업",
+      "researchCount": "리서치 {count}건",
+      "evidenceCount": "근거 {count}건 (고신뢰 {high}건)",
+      "vocCount": "VOC {count}건",
+      "competitorCount": "경쟁사 {count}곳 분석",
+      "grantCount": "지원사업 {count}건",
+      "validationScore": "Validation Score {score}점",
+      "type": {
+        "evidence": "근거",
+        "voc": "VOC",
+        "research": "리서치",
+        "competitor": "경쟁사",
+        "grant": "정부지원",
+        "validation": "Validation"
       }
     }
   },

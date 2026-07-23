@@ -57,6 +57,15 @@ export function DecisionSummaryPanel({
 
       <DecisionScoreGrid scores={decision.scores} compact={variant === 'compact'} />
 
+      <div className="rounded-xl border border-border/50 bg-muted/20 px-5 py-4">
+        <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
+          {t('coverage.title')}
+        </p>
+        <p className="mt-1 text-2xl font-semibold tabular-nums">
+          {decision.explanation.evidenceCoverage.overallPercent}%
+        </p>
+      </div>
+
       <div className="space-y-3">
         {decision.executiveSummaryKeys.slice(0, variant === 'compact' ? 2 : 4).map((key) => (
           <p key={key} className="text-[15px] leading-relaxed text-foreground/90">
