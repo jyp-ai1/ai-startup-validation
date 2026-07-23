@@ -48,27 +48,27 @@ export function LandingPricing() {
     <section id="pricing" ref={sectionRef} className="py-[120px]">
       <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
         <div className="mx-auto max-w-2xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-4 py-1.5 text-xs font-semibold text-zinc-700">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-1.5 text-xs font-semibold text-foreground/80">
             <Star className="size-3.5 fill-amber-400 text-amber-400" />
             {t('betaBadge')}
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <span className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-emerald-800">
+            <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
               {t('earlyAccessBadge')}
             </span>
-            <span className="rounded-full bg-violet-100 px-3 py-1 text-[11px] font-semibold text-violet-800">
+            <span className="rounded-full bg-violet-500/15 px-3 py-1 text-[11px] font-semibold text-violet-700 dark:text-violet-400">
               {t('foundingUserBadge')}
             </span>
-            <span className="rounded-full bg-zinc-200 px-3 py-1 text-[11px] font-semibold text-zinc-800">
+            <span className="rounded-full bg-muted px-3 py-1 text-[11px] font-semibold text-foreground/80">
               {t('betaLabelBadge')}
             </span>
           </div>
-          <h2 className="mt-5 text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl">{t('title')}</h2>
-          <p className="mt-4 text-[15px] text-zinc-600">{t('desc')}</p>
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm font-medium text-zinc-700">
+          <h2 className="mt-5 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">{t('title')}</h2>
+          <p className="mt-4 text-[15px] text-muted-foreground">{t('desc')}</p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm font-medium text-foreground/80">
             <span>{t('betaStats')}</span>
-            <span className="text-zinc-300">·</span>
-            <span className="text-emerald-700">{t('betaFree')}</span>
+            <span className="text-border">·</span>
+            <span className="text-emerald-600 dark:text-emerald-400">{t('betaFree')}</span>
           </div>
         </div>
 
@@ -83,20 +83,20 @@ export function LandingPricing() {
                 className={cn(
                   'relative flex flex-col rounded-[20px] border p-8',
                   highlighted
-                    ? 'border-zinc-900 bg-zinc-900 text-white shadow-[0_12px_40px_-12px_rgba(0,0,0,0.25)]'
-                    : 'border-black/[0.06] bg-white shadow-[0_2px_12px_-4px_rgba(0,0,0,0.05)]',
+                    ? 'border-primary/50 bg-foreground text-background shadow-lg ring-1 ring-primary/30 dark:bg-card dark:text-foreground'
+                    : 'border-border/60 bg-card shadow-sm',
                 )}
               >
                 {highlighted ? (
-                  <span className="absolute -top-3 left-6 rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-zinc-900">
+                  <span className="absolute -top-3 left-6 rounded-full bg-primary px-3 py-1 text-[11px] font-semibold text-primary-foreground">
                     {t('recommended')}
                   </span>
                 ) : null}
                 <h3 className="text-xl font-semibold">{t(`${plan}.name`)}</h3>
-                <p className={cn('mt-2 text-3xl font-bold', !highlighted && 'text-zinc-900')}>
+                <p className={cn('mt-2 text-3xl font-bold', !highlighted && 'text-foreground')}>
                   {t(`${plan}.price`)}
                 </p>
-                <p className={cn('mt-2 text-sm', highlighted ? 'text-zinc-300' : 'text-zinc-600')}>
+                <p className={cn('mt-2 text-sm', highlighted ? 'text-background/70 dark:text-muted-foreground' : 'text-muted-foreground')}>
                   {t(`${plan}.desc`)}
                 </p>
                 <ul className="mt-8 flex-1 space-y-3">
@@ -120,18 +120,18 @@ export function LandingPricing() {
                       className={cn(
                         'h-11 w-full rounded-xl',
                         highlighted
-                          ? 'bg-white text-zinc-900 hover:bg-zinc-100'
-                          : 'bg-zinc-900 text-white hover:bg-zinc-800',
+                          ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                          : 'bg-foreground text-background hover:bg-foreground/90',
                       )}
                     >
                       {t('free.cta')}
                     </LandingCtaLink>
                   ) : plan === 'enterprise' ? (
-                    <Button variant="outline" className="h-11 w-full rounded-xl border-zinc-200" disabled>
+                    <Button variant="outline" className="h-11 w-full rounded-xl border-border" disabled>
                       {t('enterprise.cta')}
                     </Button>
                   ) : (
-                    <Button variant="outline" className="h-11 w-full rounded-xl border-zinc-200" disabled>
+                    <Button variant="outline" className="h-11 w-full rounded-xl border-border" disabled>
                       {t('pro.cta')}
                     </Button>
                   )}
@@ -141,21 +141,21 @@ export function LandingPricing() {
           })}
         </div>
 
-        <div className="mx-auto mt-16 max-w-3xl rounded-[24px] border border-black/[0.06] bg-zinc-50 p-8 md:p-10">
-          <h3 className="text-lg font-semibold text-zinc-900">{t('betaBenefitsTitle')}</h3>
+        <div className="mx-auto mt-16 max-w-3xl rounded-[24px] border border-border/60 bg-muted/30 p-8 md:p-10">
+          <h3 className="text-lg font-semibold text-foreground">{t('betaBenefitsTitle')}</h3>
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
             {BETA_BENEFITS.map((key) => (
-              <li key={key} className="flex items-start gap-2 text-sm text-zinc-700">
+              <li key={key} className="flex items-start gap-2 text-sm text-foreground/80">
                 <Check className="mt-0.5 size-4 shrink-0 text-emerald-600" />
                 {t(key)}
               </li>
             ))}
           </ul>
 
-          <div className="mt-10 flex flex-col items-center rounded-2xl bg-white px-6 py-8 text-center shadow-sm">
-            <Rocket className="size-8 text-zinc-900" />
-            <p className="mt-4 text-xl font-semibold leading-snug text-zinc-900 md:text-2xl">{t('betaNotice')}</p>
-            <p className="mt-2 text-sm text-zinc-600">{t('betaNoticeSub')}</p>
+          <div className="mt-10 flex flex-col items-center rounded-2xl bg-card px-6 py-8 text-center shadow-sm">
+            <Rocket className="size-8 text-primary" />
+            <p className="mt-4 text-xl font-semibold leading-snug text-foreground md:text-2xl">{t('betaNotice')}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t('betaNoticeSub')}</p>
           </div>
         </div>
       </div>

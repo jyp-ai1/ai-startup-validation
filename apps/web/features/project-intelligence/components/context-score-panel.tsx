@@ -11,10 +11,10 @@ type ContextScorePanelProps = {
 };
 
 const SCORE_ITEMS = [
-  { key: 'projectCompleteness', labelKey: 'context.projectCompleteness' },
-  { key: 'memory', labelKey: 'context.memory' },
-  { key: 'evidence', labelKey: 'context.evidence' },
-  { key: 'decisionReady', labelKey: 'context.decisionReady' },
+  { key: 'projectCompleteness', labelKey: 'projectCompleteness' },
+  { key: 'memory', labelKey: 'memory' },
+  { key: 'evidence', labelKey: 'evidence' },
+  { key: 'decisionReady', labelKey: 'decisionReady' },
 ] as const;
 
 function scoreTone(value: number): string {

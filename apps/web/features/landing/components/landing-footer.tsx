@@ -20,14 +20,14 @@ export function LandingFooter() {
     <>
       <section className="py-[120px]">
         <div className="mx-auto max-w-[1440px] px-6 text-center lg:px-10">
-          <h2 className="text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl">
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
             {t('ctaTitle')}
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-[15px] text-zinc-600">{t('ctaDesc')}</p>
+          <p className="mx-auto mt-4 max-w-xl text-[15px] text-muted-foreground">{t('ctaDesc')}</p>
           <LandingCtaLink
             href="/auth/login?next=/dashboard"
             event="cta_start"
-            className="mt-10 h-12 rounded-xl bg-zinc-900 px-10 text-white hover:bg-zinc-800"
+            className="mt-10 h-12 rounded-xl bg-primary px-10 text-primary-foreground hover:bg-primary/90"
           >
             {t('ctaButton')}
             <ArrowRight className="size-4" />
@@ -35,9 +35,9 @@ export function LandingFooter() {
         </div>
       </section>
 
-      <footer className="border-t border-black/[0.06] bg-white py-12">
+      <footer className="border-t border-border/60 bg-card py-12">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-6 md:flex-row lg:px-10">
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} {t('copyright')}
           </p>
           <nav className="flex flex-wrap justify-center gap-6">
@@ -45,7 +45,7 @@ export function LandingFooter() {
               <Link
                 key={href}
                 href={href}
-                className="text-sm text-zinc-600 transition-colors hover:text-zinc-900"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 {label}
               </Link>

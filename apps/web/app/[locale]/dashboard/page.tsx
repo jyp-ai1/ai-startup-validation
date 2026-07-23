@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { ProjectWizard, DemoEntryTracker } from '@/features/activation';
@@ -36,15 +35,6 @@ type DashboardPageProps = {
 
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const params = await searchParams;
-  const cookieStore = await cookies();
-
-  if (params.project) {
-    cookieStore.set('ACTIVE_PROJECT_ID', params.project, {
-      path: '/',
-      maxAge: 60 * 60 * 24 * 365,
-      sameSite: 'lax',
-    });
-  }
 
   const session = await getWorkspaceSession(params.project ?? null);
   const { user, demoMode, workspace } = session;

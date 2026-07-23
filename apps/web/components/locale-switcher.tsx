@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { trackEvent } from '@/lib/analytics/client';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import {
   Select,
   SelectContent,
@@ -23,6 +24,8 @@ const LOCALE_MAX_AGE = 60 * 60 * 24 * 365;
 
 export function LocaleSwitcher({ variant = 'default' }: LocaleSwitcherProps) {
   const locale = useLocale() as AppLocale;
+  const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations('common');
   const compact = variant === 'compact';
 
@@ -34,8 +37,9 @@ export function LocaleSwitcher({ variant = 'default' }: LocaleSwitcherProps) {
       screen: typeof window !== 'undefined' ? window.location.pathname : undefined,
     });
 
-    // Hard reload — localePrefix never keeps URL at `/`, so soft navigation won't refresh messages.
+    // Persist locale for middleware + RSC message loading, then hard reload for full refresh.
     document.cookie = `${LOCALE_COOKIE}=${nextLocale}; path=/; max-age=${LOCALE_MAX_AGE}; SameSite=Lax`;
+    router.replace(pathname, { locale: nextLocale as AppLocale });
     window.location.reload();
   }
 
