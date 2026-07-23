@@ -40,6 +40,7 @@ function buildInsights(score: ValidationScore) {
 
 export async function ValidationSummary({ project, score }: ValidationSummaryProps) {
   const t = await getTranslations('pages');
+  const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/validation`;
 
   if (!score) {
@@ -75,7 +76,7 @@ export async function ValidationSummary({ project, score }: ValidationSummaryPro
           Total Score: {score.totalScore} / 100
         </span>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={basePath}>Back to dashboard</Link>
+          <Link href={basePath}>{tNav('backToValidation')}</Link>
         </Button>
       </div>
 

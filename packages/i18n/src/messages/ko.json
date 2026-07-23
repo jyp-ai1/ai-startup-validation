@@ -54,6 +54,20 @@
       "confidence": "신뢰도",
       "recommendedActions": "권장 조치"
     },
+    "navLinks": {
+      "backToVocList": "VOC 목록으로",
+      "backToProject": "프로젝트로 돌아가기",
+      "backToEvidence": "근거 자료로 돌아가기",
+      "backToResearch": "리서치 계획으로 돌아가기",
+      "backToCompetitors": "경쟁사로 돌아가기",
+      "backToGrants": "지원사업으로 돌아가기",
+      "backToValidation": "대시보드로 돌아가기",
+      "backToReports": "리포트로 돌아가기",
+      "backToList": "목록으로",
+      "backToProjects": "프로젝트 목록으로",
+      "backToEditor": "편집기로 돌아가기",
+      "backToKnowledge": "지식 베이스로 돌아가기"
+    },
     "relativeTime": {
       "justNow": "just now",
       "minutesAgo": "{count} minutes ago",
@@ -501,6 +515,21 @@
       "paymentIntent": "결제 의향",
       "severityChart": "Pain 심각도 분포",
       "cardsTitle": "고객 Pain Point"
+    },
+    "summaryPageTitle": "VOC 요약 대시보드",
+    "summaryPageDesc": "{count}건 · {project}",
+    "emptySummaryTitle": "요약할 VOC 데이터가 없습니다",
+    "emptySummaryDesc": "고객 피드백을 추가하면 Pain Point 순위와 분포를 확인할 수 있습니다.",
+    "painPointRanking": "Pain Point 순위",
+    "painPointColumn": "Pain Point",
+    "occurrencesColumn": "발생 횟수",
+    "noPainPoints": "기록된 Pain Point가 없습니다.",
+    "charts": {
+      "severity": "심각도 분포",
+      "frequency": "빈도 분포",
+      "paymentIntent": "결제 의향 (지불 의사)",
+      "customerSegment": "고객 세그먼트 분포",
+      "noData": "아직 데이터가 없습니다"
     }
   },
   "grants": {
@@ -680,9 +709,9 @@
     }
   },
   "intelligence": {
-    "platformTitle": "AI Strategy Consultant",
-    "platformSubtitle": "Executive Decision Platform",
-    "emptyDesc": "프로젝트를 생성하면 Readiness Score, Expert Opinion, Action Center를 확인할 수 있습니다.",
+    "platformTitle": "AI 전략 컨설턴트",
+    "platformSubtitle": "경영진 의사결정 플랫폼",
+    "emptyDesc": "프로젝트를 생성하면 준비도 점수, 전문가 의견, 권장 조치를 확인할 수 있습니다.",
     "startupReadiness": "스타트업 준비도",
     "grade": "등급",
     "decision": "의사결정",
@@ -701,10 +730,10 @@
       "critical": "위험"
     },
     "actionCenter": "액션 센터",
-    "actionCenterDesc": "Decision Engine 점수를 높이기 위한 우선순위 조치",
+    "actionCenterDesc": "검증 점수를 높이기 위한 우선순위 조치",
     "action": {
       "priority": "우선순위 {n}",
-      "allComplete": "모든 우선순위 행동이 완료되었습니다",
+      "allComplete": "모든 우선순위 조치가 완료되었습니다",
       "scoreImpact": "+{points}점 영향",
       "timeWeeks": "약 {weeks}주",
       "timeDays": "약 3일",
@@ -724,7 +753,7 @@
     "riskTimeline": "리스크 및 타임라인",
     "recentActivity": "최근 활동",
     "expertTitle": "전문가 의견",
-    "expertDesc": "가설에 대한 다학제적 관점",
+    "expertDesc": "스타트업 가설에 대한 다학제적 관점",
     "confidenceIndex": "신뢰도 지수",
     "detailTable": "상세 기록",
     "aiRecommendation": "AI 권장",
@@ -754,230 +783,230 @@
       "negative": "부정"
     },
     "reliability": {
-      "excellent": "Highly Reliable",
-      "reliable": "Reliable",
-      "moderate": "Moderate",
-      "low": "Low Confidence"
+      "excellent": "매우 높은 신뢰도",
+      "reliable": "신뢰 가능",
+      "moderate": "보통",
+      "low": "낮은 신뢰도"
     },
     "summary": {
-      "insufficient": "Insufficient validation data. Complete research, VOC, and evidence collection to unlock AI recommendations.",
-      "goStrong": "Strong GO signal. Market, evidence, and customer data support proceeding with confidence.",
-      "go": "GO recommendation. Core validation criteria are met with manageable risk.",
-      "review": "Conditional GO — proceed with targeted improvements in weak score categories.",
-      "hold": "HOLD recommendation. Critical validation gaps require resolution before investment.",
-      "needVoc": "Customer evidence is insufficient. VOC collection should be the immediate priority.",
-      "needGrants": "Government grant mapping is incomplete. Explore funding programs to de-risk capital needs.",
-      "needCompetitors": "Competitive landscape is under-mapped. Add competitors before final GO decision.",
-      "default": "Validation in progress. Continue building evidence across all categories."
+      "insufficient": "검증 데이터가 부족합니다. Research, VOC, Evidence를 완료하면 AI 권장을 확인할 수 있습니다.",
+      "goStrong": "강한 GO 신호입니다. 시장, 근거, 고객 데이터가 자신 있게 진행할 수 있음을 뒷받침합니다.",
+      "go": "GO 권장. 핵심 검증 기준을 충족하며 리스크는 관리 가능한 수준입니다.",
+      "review": "조건부 GO — 취약한 점수 항목을 집중 보완하며 진행하세요.",
+      "hold": "HOLD 권장. 투자 전에 해결해야 할 중요한 검증 공백이 있습니다.",
+      "needVoc": "고객 근거가 부족합니다. VOC 수집을 최우선으로 진행하세요.",
+      "needGrants": "정부지원 매핑이 미완료입니다. 자본 리스크를 줄이기 위해 지원 프로그램을 탐색하세요.",
+      "needCompetitors": "경쟁 환경 매핑이 부족합니다. 최종 GO 결정 전에 경쟁사를 추가하세요.",
+      "default": "검증이 진행 중입니다. 모든 카테고리에서 근거를 계속 쌓으세요."
     },
     "insights": {
-      "marketStrong": "Strong market validation signals",
-      "marketReview": "Market size requires additional evidence",
-      "competitionLow": "Competitive pressure appears manageable",
-      "competitionReview": "Competition score needs improvement",
-      "grantFit": "Government grant programs show good fit",
-      "pmfPossible": "Product-market fit signals emerging",
-      "customerRisk": "Customer acquisition risk remains elevated",
-      "vcInterest": "VC interest indicators increasing"
+      "marketStrong": "강한 시장 검증 신호",
+      "marketReview": "시장 규모에 대한 추가 근거가 필요합니다",
+      "competitionLow": "경쟁 압력은 관리 가능해 보입니다",
+      "competitionReview": "경쟁 점수 개선이 필요합니다",
+      "grantFit": "정부지원 프로그램 적합도가 양호합니다",
+      "pmfPossible": "제품-시장 적합 신호가 나타나고 있습니다",
+      "customerRisk": "고객 확보 리스크가 여전히 높습니다",
+      "vcInterest": "VC 관심 지표가 상승하고 있습니다"
     },
     "reasoning": {
-      "market": "Market Size",
-      "competition": "Competition",
-      "execution": "Execution",
-      "funding": "Funding Readiness"
+      "market": "시장 규모",
+      "competition": "경쟁",
+      "execution": "실행",
+      "funding": "투자 준비도"
     },
     "evidence": {
       "summary": {
-        "strong": "Current market evidence is sufficient to support validation decisions.",
-        "moderate": "Evidence base is growing but high-confidence sources should be expanded.",
-        "weak": "Evidence is insufficient. Prioritize adding market data and industry reports."
+        "strong": "현재 시장 근거가 검증 의사결정을 뒷받침하기에 충분합니다.",
+        "moderate": "근거 기반이 성장 중이지만 고신뢰도 출처를 확대해야 합니다.",
+        "weak": "근거가 부족합니다. 시장 데이터와 업계 리포트 추가를 우선하세요."
       },
       "insights": {
-        "sufficient": "High-confidence evidence meets validation threshold",
-        "needMore": "More evidence needed for reliable AI analysis",
-        "addHigh": "Add high-confidence sources to strengthen thesis",
-        "depth": "Evidence depth supports investor conversations",
-        "volume": "Increase evidence volume for stronger confidence"
+        "sufficient": "고신뢰도 근거가 검증 임계값을 충족합니다",
+        "needMore": "신뢰할 수 있는 AI 분석을 위해 더 많은 근거가 필요합니다",
+        "addHigh": "가설을 강화하기 위해 고신뢰도 출처를 추가하세요",
+        "depth": "근거 깊이가 투자자 대화를 뒷받침합니다",
+        "volume": "더 높은 신뢰도를 위해 근거 양을 늘리세요"
       }
     },
     "voc": {
       "summary": {
-        "strong": "VOC coverage is strong. Customer pain and payment intent are well documented.",
-        "moderate": "VOC data is emerging. Continue interviews to strengthen problem validation.",
-        "weak": "VOC coverage is insufficient for confident customer validation."
+        "strong": "VOC 커버리지가 충분합니다. 고객 Pain과 결제 의향이 잘 문서화되어 있습니다.",
+        "moderate": "VOC 데이터가 축적 중입니다. 문제 검증을 강화하려면 인터뷰를 계속하세요.",
+        "weak": "고객 검증을 확신하기에 VOC 커버리지가 부족합니다."
       },
       "insights": {
-        "pain": "Critical pain points are clearly documented",
-        "needPain": "Document more critical customer pain points",
-        "payment": "Payment intent signals need strengthening",
-        "interviews": "Interview coverage meets validation threshold",
-        "needInterviews": "Conduct more structured customer interviews"
+        "pain": "핵심 Pain Point가 명확히 문서화되어 있습니다",
+        "needPain": "핵심 고객 Pain Point를 더 문서화하세요",
+        "payment": "결제 의향 신호를 강화하세요",
+        "interviews": "인터뷰 커버리지가 검증 임계값을 충족합니다",
+        "needInterviews": "구조화된 고객 인터뷰를 더 진행하세요"
       }
     },
     "research": {
       "summary": {
-        "strong": "Research coverage is comprehensive. Core validation topics are documented.",
-        "moderate": "Research is underway. Complete remaining plans to strengthen market thesis.",
-        "weak": "Research coverage is insufficient. Start with market size and customer analysis."
+        "strong": "리서치 커버리지가 포괄적입니다. 핵심 검증 주제가 문서화되어 있습니다.",
+        "moderate": "리서치가 진행 중입니다. 시장 가설을 강화하려면 남은 계획을 완료하세요.",
+        "weak": "리서치 커버리지가 부족합니다. 시장 규모와 고객 분석부터 시작하세요."
       },
       "insights": {
-        "coverage": "Research plans cover key validation dimensions",
-        "expand": "Expand research across market, customer, and competition",
-        "competitor": "Competitive research completed",
-        "needCompetitor": "Add competitor research plan",
-        "inProgress": "Active research plans in progress",
-        "start": "Create your first research plan"
+        "coverage": "리서치 계획이 핵심 검증 차원을 포함합니다",
+        "expand": "시장, 고객, 경쟁 영역으로 리서치를 확장하세요",
+        "competitor": "경쟁 리서치가 완료되었습니다",
+        "needCompetitor": "경쟁사 리서치 계획을 추가하세요",
+        "inProgress": "진행 중인 리서치 계획이 있습니다",
+        "start": "첫 리서치 계획을 생성하세요"
       }
     },
     "competitors": {
       "summary": {
-        "strong": "Competitive landscape is well mapped with clear positioning.",
-        "moderate": "Competitor coverage is emerging. Map market positions for differentiation.",
-        "weak": "Competitive analysis is insufficient. Identify direct competitors first."
+        "strong": "경쟁 환경이 명확한 포지셔닝과 함께 잘 매핑되어 있습니다.",
+        "moderate": "경쟁사 커버리지가 형성 중입니다. 차별화를 위해 시장 포지션을 매핑하세요.",
+        "weak": "경쟁 분석이 부족합니다. 먼저 직접 경쟁사를 식별하세요."
       },
       "insights": {
-        "landscape": "Direct competitor landscape is documented",
-        "needDirect": "Add direct competitors to the landscape",
-        "positioned": "Market positions mapped across key players",
-        "mapPosition": "Assign market position to each competitor",
-        "leaders": "Market leaders identified for differentiation strategy",
-        "identifyLeaders": "Identify market leaders in your category"
+        "landscape": "직접 경쟁 환경이 문서화되어 있습니다",
+        "needDirect": "경쟁 환경에 직접 경쟁사를 추가하세요",
+        "positioned": "주요 플레이어의 시장 포지션이 매핑되어 있습니다",
+        "mapPosition": "각 경쟁사에 시장 포지션을 할당하세요",
+        "leaders": "차별화 전략을 위한 시장 리더가 식별되었습니다",
+        "identifyLeaders": "카테고리 내 시장 리더를 식별하세요"
       },
       "categories": {
-        "direct": "Direct",
-        "indirect": "Indirect",
-        "substitute": "Substitute",
-        "leaders": "Market Leaders"
+        "direct": "직접",
+        "indirect": "간접",
+        "substitute": "대체",
+        "leaders": "시장 리더"
       },
       "matrix": {
-        "title": "Competitive Positioning Matrix",
-        "highThreat": "High Threat",
-        "lowThreat": "Low Threat",
-        "highShare": "High Share",
-        "lowShare": "Low Share",
-        "newcomer": "New Entrants",
-        "challenger": "Challengers",
-        "follower": "Followers",
-        "leader": "Market Leaders",
-        "unmapped": "Unmapped"
+        "title": "경쟁 포지셔닝 매트릭스",
+        "highThreat": "높은 위협",
+        "lowThreat": "낮은 위협",
+        "highShare": "높은 점유",
+        "lowShare": "낮은 점유",
+        "newcomer": "신규 진입",
+        "challenger": "도전자",
+        "follower": "추종자",
+        "leader": "시장 리더",
+        "unmapped": "미매핑"
       }
     },
     "grants": {
       "summary": {
-        "strong": "Multiple grant programs show strong fit for this startup stage.",
-        "moderate": "Grant opportunities exist but fit scores vary. Review eligibility criteria.",
-        "weak": "No grant programs mapped. Explore government support options."
+        "strong": "여러 지원 프로그램이 이 스타트업 단계에 강하게 적합합니다.",
+        "moderate": "지원 기회는 있으나 적합도 점수가 다양합니다. 자격 기준을 검토하세요.",
+        "weak": "매핑된 지원 프로그램이 없습니다. 정부 지원 옵션을 탐색하세요."
       },
       "insights": {
-        "fit": "Review grant fit scores and eligibility",
-        "deadlines": "Upcoming deadlines require immediate attention",
-        "programs": "Add more grant programs to the pipeline",
-        "funding": "Funding-type grants available",
-        "rnd": "Consider R&D grant programs"
+        "fit": "지원 적합도 점수와 자격을 검토하세요",
+        "deadlines": "임박한 마감일에 즉시 대응이 필요합니다",
+        "programs": "파이프라인에 지원 프로그램을 더 추가하세요",
+        "funding": "자금형 지원 프로그램을 이용할 수 있습니다",
+        "rnd": "R&D 지원 프로그램을 검토하세요"
       }
     },
     "validation": {
       "summary": {
-        "empty": "No validation score yet. Run evaluation to unlock AI insights.",
-        "go": "Validation supports GO. Investment and execution readiness are aligned.",
-        "review": "Conditional validation — address weak categories before scaling.",
-        "hold": "Validation indicates significant risk. Revisit core assumptions."
+        "empty": "아직 검증 점수가 없습니다. 평가를 실행하면 AI 인사이트를 확인할 수 있습니다.",
+        "go": "검증 결과 GO를 지지합니다. 투자 및 실행 준비도가 정렬되어 있습니다.",
+        "review": "조건부 검증 — 확장 전 취약 카테고리를 보완하세요.",
+        "hold": "검증 결과 상당한 리스크를 나타냅니다. 핵심 가설을 재검토하세요."
       },
       "insights": {
-        "run": "Run Validation Score to generate AI analysis",
-        "founder": "Founder-market fit is a strength",
-        "founderReview": "Founder fit requires additional validation"
+        "run": "AI 분석을 생성하려면 Validation Score를 실행하세요",
+        "founder": "창업자-시장 적합이 강점입니다",
+        "founderReview": "창업자 적합에 대한 추가 검증이 필요합니다"
       }
     },
     "reports": {
       "summary": {
-        "strong": "Validation reports are ready for stakeholder distribution.",
-        "moderate": "Reports in progress. Complete generation for full analysis.",
-        "weak": "No reports generated. Create a validation report from current data."
+        "strong": "검증 리포트가 이해관계자 배포 준비가 되었습니다.",
+        "moderate": "리포트 생성 중입니다. 전체 분석을 위해 생성을 완료하세요.",
+        "weak": "생성된 리포트가 없습니다. 현재 데이터로 검증 리포트를 생성하세요."
       }
     },
     "businessPlan": {
       "summary": {
-        "strong": "Business plan is investor-ready.",
-        "moderate": "Business plan draft exists. Refine before investor use.",
-        "weak": "Generate a business plan from validation data."
+        "strong": "사업계획서가 투자자 대응 준비가 되었습니다.",
+        "moderate": "사업계획서 초안이 있습니다. 투자자 활용 전 다듬으세요.",
+        "weak": "검증 데이터로 사업계획서를 생성하세요."
       }
     },
     "prd": {
       "summary": {
-        "strong": "PRD documents define clear product scope.",
-        "moderate": "PRD in draft. Complete before development planning.",
-        "weak": "Create a PRD from business plan and validation results."
+        "strong": "PRD 문서가 명확한 제품 범위를 정의합니다.",
+        "moderate": "PRD가 초안 상태입니다. 개발 계획 전에 완료하세요.",
+        "weak": "사업계획과 검증 결과로 PRD를 생성하세요."
       }
     },
     "devSpec": {
       "summary": {
-        "strong": "Development specs are ready for engineering handoff.",
-        "moderate": "Dev spec in progress. Complete architecture documentation.",
-        "weak": "Generate development spec from PRD."
+        "strong": "개발 명세가 엔지니어링 인계 준비가 되었습니다.",
+        "moderate": "개발 명세 작성 중입니다. 아키텍처 문서를 완료하세요.",
+        "weak": "PRD에서 개발 명세를 생성하세요."
       }
     },
     "knowledge": {
       "summary": {
-        "strong": "Knowledge base is ready for AI-powered queries.",
-        "moderate": "Knowledge processing underway. Complete remaining documents.",
-        "weak": "Process evidence into searchable knowledge for AI analysis."
+        "strong": "지식 베이스가 AI 기반 질의 준비가 되었습니다.",
+        "moderate": "지식 처리가 진행 중입니다. 남은 문서를 완료하세요.",
+        "weak": "AI 분석을 위해 근거를 검색 가능한 지식으로 처리하세요."
       },
       "insights": {
-        "ready": "Knowledge chunks available for AI queries",
-        "process": "Process evidence to build knowledge base",
-        "chunks": "Knowledge depth supports AI consultant",
-        "more": "Add more evidence sources for richer AI context"
+        "ready": "AI 질의에 사용할 수 있는 지식 청크가 있습니다",
+        "process": "지식 베이스 구축을 위해 근거를 처리하세요",
+        "chunks": "지식 깊이가 AI 컨설턴트를 뒷받침합니다",
+        "more": "더 풍부한 AI 컨텍스트를 위해 근거 출처를 추가하세요"
       }
     },
     "documents": {
       "insights": {
-        "ready": "Document ready for review and export",
-        "draft": "Draft in progress — complete generation",
-        "generating": "AI generation in progress",
-        "generate": "Generate document from validation data"
+        "ready": "문서가 검토 및 내보내기 준비가 되었습니다",
+        "draft": "초안 작성 중 — 생성을 완료하세요",
+        "generating": "AI 생성 진행 중",
+        "generate": "검증 데이터에서 문서를 생성하세요"
       }
     },
     "aiStudio": {
       "summary": {
-        "strong": "Document portfolio is investor-ready. Review, export, and share with stakeholders.",
-        "moderate": "Core documents exist. Complete remaining AI Studio outputs for a full package.",
-        "weak": "No AI documents generated yet. Start with the Validation Report."
+        "strong": "문서 포트폴리오가 투자자 대응 준비가 되었습니다. 검토, 내보내기, 이해관계자 공유를 진행하세요.",
+        "moderate": "핵심 문서가 있습니다. 전체 패키지를 위해 남은 AI Studio 결과물을 완료하세요.",
+        "weak": "아직 AI 문서가 생성되지 않았습니다. Validation Report부터 시작하세요."
       },
       "insights": {
-        "report": "Validation report available for review",
-        "needReport": "Generate validation report first",
-        "plan": "Business plan supports fundraising narrative",
-        "needPlan": "Business plan not yet generated",
-        "portfolio": "Multi-document portfolio strengthens credibility",
-        "start": "Begin with Validation Report generation"
+        "report": "검토 가능한 검증 리포트가 있습니다",
+        "needReport": "먼저 검증 리포트를 생성하세요",
+        "plan": "사업계획서가 펀딩 내러티브를 뒷받침합니다",
+        "needPlan": "아직 사업계획서가 생성되지 않았습니다",
+        "portfolio": "다중 문서 포트폴리오가 신뢰도를 강화합니다",
+        "start": "Validation Report 생성부터 시작하세요"
       }
     },
     "expert": {
-      "insufficient": "신뢰할 수 있는 의견을 내기에 데이터가 부족합니다. Research와 Validation을 먼저 완료하세요.",
+      "insufficient": "확신 있는 의견을 내기에 데이터가 부족합니다. 먼저 리서치와 검증을 완료하세요.",
       "vc": {
-        "label": "VC Opinion",
-        "positive": "시장 규모와 비즈니스 모델에서 투자 가능 신호가 보입니다. Unit Economics 실사를 권장합니다.",
-        "neutral": "시장 기회는 그럴듯하지만 Series A 전 Traction과 Moat를 더 강화해야 합니다.",
-        "negative": "시장 검증이 약합니다. 투자자 미팅 전 TAM 분석과 Revenue Model을 재검토하세요."
+        "label": "VC 의견",
+        "positive": "시장 규모와 비즈니스 모델에서 투자 가능 신호가 보입니다. 단위 경제성 실사를 권장합니다.",
+        "neutral": "시장 기회는 타당하나 Series A 전 더 강한 견인력과 명확한 해자가 필요합니다.",
+        "negative": "시장 검증이 약합니다. 투자자 미팅 전 TAM 분석과 수익 모델을 재검토하세요."
       },
       "pm": {
-        "label": "PM Opinion",
-        "positive": "VOC 데이터로 Problem-Solution Fit이 잘 뒷받침됩니다. MVP 범위를 좁혀도 됩니다.",
-        "neutral": "고객 Pain은 기록됐지만 표본이 부족합니다. 구조화된 인터뷰를 더 진행하세요.",
-        "negative": "Problem 가설에 고객 근거가 부족합니다. 기능 개발 전 Discovery를 우선하세요."
+        "label": "PM 의견",
+        "positive": "문제-솔루션 적합이 VOC 데이터로 잘 뒷받침됩니다. MVP 범위를 자신 있게 좁힐 수 있습니다.",
+        "neutral": "고객 Pain은 문서화되었으나 표본 크기가 제한적입니다. 구조화된 인터뷰를 더 진행하세요.",
+        "negative": "문제 가설에 고객 근거가 부족합니다. 기능 개발 전 디스커버리를 우선하세요."
       },
       "cto": {
-        "label": "CTO Opinion",
-        "positive": "현재 Evidence 기준 기술 실행 경로가 실현 가능합니다. 아키텍처 결정을 진행해도 됩니다.",
-        "neutral": "핵심 기술 리스크는 파악됐지만 확장성·연동 검증이 더 필요합니다.",
-        "negative": "실행 가능성이 불명확합니다. 기술 Evidence와 MVP 아키텍처를 정의하세요."
+        "label": "CTO 의견",
+        "positive": "현재 근거 기반으로 기술 실행 경로가 실현 가능합니다. 아키텍처 결정을 진행할 수 있습니다.",
+        "neutral": "핵심 기술 리스크는 식별되었으나 확장성과 연동에 대한 검증이 더 필요합니다.",
+        "negative": "실행 가능성이 불명확합니다. 기술 근거를 추가하고 MVP 아키텍처를 정의하세요."
       },
       "marketing": {
-        "label": "Marketing Opinion",
-        "positive": "경쟁 포지셔닝이 차별화됐습니다. Early Adopter용 GTM 내러티브를 다듬을 수 있습니다.",
-        "neutral": "경쟁 환경은 매핑됐지만 차별화 메시지를 더 정교화해야 합니다.",
-        "negative": "시장 포지셔닝이 획일적입니다. 경쟁사 분석과 Value Proposition 작업을 완료하세요."
+        "label": "마케팅 의견",
+        "positive": "경쟁 포지셔닝이 차별화되어 있습니다. 초기 얼리어답터를 위한 GTM 내러티브를 다듬을 수 있습니다.",
+        "neutral": "경쟁 환경은 매핑되었으나 차별화 메시지 다듬기가 필요합니다.",
+        "negative": "시장 포지셔닝이 차별화되지 않았습니다. 경쟁 분석과 가치 제안 작업을 완료하세요."
       }
     }
   },

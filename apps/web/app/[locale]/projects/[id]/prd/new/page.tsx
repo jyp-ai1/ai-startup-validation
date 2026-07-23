@@ -27,6 +27,7 @@ export async function generateMetadata({ params }: NewPRDPageProps): Promise<Met
 
 export default async function NewPRDPage({ params }: NewPRDPageProps) {
   const t = await getTranslations('pages');
+  const tNav = await getTranslations('common.navLinks');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -42,7 +43,7 @@ export default async function NewPRDPage({ params }: NewPRDPageProps) {
       />
       <div className="mt-4">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${id}/prd`}>Back to list</Link>
+          <Link href={`/projects/${id}/prd`}>{tNav('backToList')}</Link>
         </Button>
       </div>
       <div className="mt-8">

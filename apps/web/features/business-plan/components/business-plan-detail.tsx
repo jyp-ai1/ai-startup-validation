@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Eye, Trash2 } from 'lucide-react';
 
@@ -29,6 +30,7 @@ type BusinessPlanDetailProps = {
 };
 
 export function BusinessPlanDetail({ project, plan }: BusinessPlanDetailProps) {
+  const tNav = useTranslations('common.navLinks');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
 
@@ -70,7 +72,7 @@ export function BusinessPlanDetail({ project, plan }: BusinessPlanDetailProps) {
         <BusinessPlanStatusBadge status={plan.status} />
         <span className="text-sm text-muted-foreground">{plan.sections.length} sections</span>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}/business-plan`}>Back to list</Link>
+          <Link href={`/projects/${project.id}/business-plan`}>{tNav('backToList')}</Link>
         </Button>
       </div>
 

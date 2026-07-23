@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState, useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 
@@ -48,6 +49,7 @@ function FieldError({ messages }: { messages?: string[] }) {
 }
 
 export function ReportDetail({ project, report, latestGeneration }: ReportDetailProps) {
+  const tNav = useTranslations('common.navLinks');
   const [isEditingHeader, setIsEditingHeader] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -162,7 +164,7 @@ export function ReportDetail({ project, report, latestGeneration }: ReportDetail
           {report.sections.length} sections
         </span>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}/reports`}>Back to reports</Link>
+          <Link href={`/projects/${project.id}/reports`}>{tNav('backToReports')}</Link>
         </Button>
       </div>
 

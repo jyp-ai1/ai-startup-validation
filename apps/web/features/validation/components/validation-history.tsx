@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import type { StartupProject, ValidationScore } from '@repo/types/validation';
 import {
@@ -20,7 +21,8 @@ type ValidationHistoryProps = {
   history: ValidationScore[];
 };
 
-export function ValidationHistory({ project, history }: ValidationHistoryProps) {
+export async function ValidationHistory({ project, history }: ValidationHistoryProps) {
+  const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/validation`;
 
   return (
@@ -31,10 +33,10 @@ export function ValidationHistory({ project, history }: ValidationHistoryProps) 
       />
       <div className="mt-4 flex flex-wrap gap-3">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={basePath}>Back to dashboard</Link>
+          <Link href={basePath}>{tNav('backToValidation')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}`}>Back to project</Link>
+          <Link href={`/projects/${project.id}`}>{tNav('backToProject')}</Link>
         </Button>
       </div>
 

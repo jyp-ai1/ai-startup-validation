@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import type { StartupProject, VOCSummary } from '@repo/types/validation';
 import {
@@ -40,28 +43,26 @@ function ProgressBar({ value, max }: { value: number; max: number }) {
 }
 
 export function VOCSummaryView({ project, summary }: VOCSummaryViewProps) {
+  const t = useTranslations();
   const basePath = `/projects/${project.id}/voc`;
   const maxPainCount = summary.painPointRanking[0]?.count ?? 0;
 
   if (summary.totalCount === 0) {
     return (
       <>
-        <PageHeader
-          title="VOC Summary Dashboard"
-          description={project.title}
-        />
+        <PageHeader title={t('voc.summaryPageTitle')} description={project.title} />
         <div className="mt-4">
           <Button variant="link" className="h-auto p-0" asChild>
-            <Link href={basePath}>Back to VOC list</Link>
+            <Link href={basePath}>{t('common.navLinks.backToVocList')}</Link>
           </Button>
         </div>
         <div className="mt-8">
           <EmptyState
-            title="No VOC data to summarize"
-            description="Add customer feedback entries to see pain point rankings and distributions."
+            title={t('voc.emptySummaryTitle')}
+            description={t('voc.emptySummaryDesc')}
             action={
               <Button asChild>
-                <Link href={`${basePath}/new`}>Create VOC</Link>
+                <Link href={`${basePath}/new`}>{t('common.createVoc')}</Link>
               </Button>
             }
           />
@@ -73,32 +74,35 @@ export function VOCSummaryView({ project, summary }: VOCSummaryViewProps) {
   return (
     <>
       <PageHeader
-        title="VOC Summary Dashboard"
-        description={`${summary.totalCount} entries · ${project.title}`}
+        title={t('voc.summaryPageTitle')}
+        description={t('voc.summaryPageDesc', {
+          count: summary.totalCount,
+          project: project.title,
+        })}
       />
       <div className="mt-4 flex flex-wrap gap-3">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={basePath}>Back to VOC list</Link>
+          <Link href={basePath}>{t('common.navLinks.backToVocList')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}`}>Back to project</Link>
+          <Link href={`/projects/${project.id}`}>{t('common.navLinks.backToProject')}</Link>
         </Button>
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">Pain Point Ranking</CardTitle>
+            <CardTitle className="text-base">{t('voc.painPointRanking')}</CardTitle>
           </CardHeader>
           <CardContent>
             {summary.painPointRanking.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No pain points recorded.</p>
+              <p className="text-sm text-muted-foreground">{t('voc.noPainPoints')}</p>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Pain Point</TableHead>
-                    <TableHead className="w-[200px]">Occurrences</TableHead>
+                    <TableHead>{t('voc.painPointColumn')}</TableHead>
+                    <TableHead className="w-[200px]">{t('voc.occurrencesColumn')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

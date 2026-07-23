@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Eye, Trash2 } from 'lucide-react';
 
@@ -29,6 +30,7 @@ type PRDDetailProps = {
 };
 
 export function PRDDetail({ project, prd }: PRDDetailProps) {
+  const tNav = useTranslations('common.navLinks');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
 
@@ -66,7 +68,7 @@ export function PRDDetail({ project, prd }: PRDDetailProps) {
         <PRDStatusBadge status={prd.status} />
         <span className="text-sm text-muted-foreground">{prd.sections.length} sections</span>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}/prd`}>Back to list</Link>
+          <Link href={`/projects/${project.id}/prd`}>{tNav('backToList')}</Link>
         </Button>
       </div>
 

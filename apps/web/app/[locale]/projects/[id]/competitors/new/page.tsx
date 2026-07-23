@@ -30,6 +30,7 @@ export async function generateMetadata({
 
 export default async function NewCompetitorPage({ params }: NewCompetitorPageProps) {
   const t = await getTranslations('pages');
+  const tNav = await getTranslations('common.navLinks');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -42,7 +43,7 @@ export default async function NewCompetitorPage({ params }: NewCompetitorPagePro
       <PageHeader title={t('newCompetitor')} description={project.title} />
       <div className="mt-4">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${id}/competitors`}>Back to competitors</Link>
+          <Link href={`/projects/${id}/competitors`}>{tNav('backToCompetitors')}</Link>
         </Button>
       </div>
       <div className="mt-8">

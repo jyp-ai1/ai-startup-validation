@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import type {
   StartupProject,
@@ -14,7 +15,8 @@ type ReportPreviewProps = {
   report: ValidationReportWithSections;
 };
 
-export function ReportPreview({ project, report }: ReportPreviewProps) {
+export async function ReportPreview({ project, report }: ReportPreviewProps) {
+  const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/reports/${report.id}`;
   const createdDate = new Date(report.createdAt).toLocaleDateString('ko-KR', {
     year: 'numeric',
@@ -29,7 +31,7 @@ export function ReportPreview({ project, report }: ReportPreviewProps) {
         description={report.title}
         actions={
           <Button variant="outline" asChild>
-            <Link href={basePath}>Back to Editor</Link>
+            <Link href={basePath}>{tNav('backToEditor')}</Link>
           </Button>
         }
       />

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useActionState } from 'react';
 
@@ -24,6 +25,7 @@ type KnowledgeQueryPanelProps = {
 };
 
 export function KnowledgeQueryPanel({ project }: KnowledgeQueryPanelProps) {
+  const tNav = useTranslations('common.navLinks');
   const action = queryKnowledge.bind(null, project.id);
   const [state, formAction, pending] = useActionState(action, initialState);
 
@@ -36,7 +38,7 @@ export function KnowledgeQueryPanel({ project }: KnowledgeQueryPanelProps) {
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}/knowledge`}>Back to Knowledge Base</Link>
+          <Link href={`/projects/${project.id}/knowledge`}>{tNav('backToKnowledge')}</Link>
         </Button>
       </div>
 

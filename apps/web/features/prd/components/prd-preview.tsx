@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import type { PRDWithSections, StartupProject } from '@repo/types/validation';
 import { Button, PageHeader } from '@repo/ui';
@@ -12,7 +13,8 @@ type PRDPreviewProps = {
   prd: PRDWithSections;
 };
 
-export function PRDPreview({ project, prd }: PRDPreviewProps) {
+export async function PRDPreview({ project, prd }: PRDPreviewProps) {
+  const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/prd/${prd.id}`;
   const createdDate = new Date(prd.createdAt).toLocaleDateString('ko-KR', {
     year: 'numeric',
@@ -27,7 +29,7 @@ export function PRDPreview({ project, prd }: PRDPreviewProps) {
         description={prd.title}
         actions={
           <Button variant="outline" asChild>
-            <Link href={basePath}>Back to Editor</Link>
+            <Link href={basePath}>{tNav('backToEditor')}</Link>
           </Button>
         }
       />

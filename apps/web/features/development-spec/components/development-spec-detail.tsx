@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Eye, Trash2 } from 'lucide-react';
 
@@ -29,6 +30,7 @@ type DevelopmentSpecDetailProps = {
 };
 
 export function DevelopmentSpecDetail({ project, spec }: DevelopmentSpecDetailProps) {
+  const tNav = useTranslations('common.navLinks');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
 
@@ -71,7 +73,7 @@ export function DevelopmentSpecDetail({ project, spec }: DevelopmentSpecDetailPr
         <DevelopmentSpecStatusBadge status={spec.status} />
         <span className="text-sm text-muted-foreground">{spec.sections.length} sections</span>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}/development-spec`}>Back to list</Link>
+          <Link href={`/projects/${project.id}/development-spec`}>{tNav('backToList')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`/projects/${project.id}/prd/${spec.prdId}`}>View PRD</Link>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
 
@@ -57,6 +58,7 @@ export function EvidenceDetail({
   researchPlans,
   linkedResearch,
 }: EvidenceDetailProps) {
+  const tNav = useTranslations('common.navLinks');
   const [isEditing, setIsEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -120,7 +122,7 @@ export function EvidenceDetail({
         <EvidenceCategoryBadge category={evidence.category} />
         <EvidenceConfidenceBadge confidence={evidence.confidence} />
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={listPath}>Back to evidence</Link>
+          <Link href={listPath}>{tNav('backToEvidence')}</Link>
         </Button>
       </div>
 

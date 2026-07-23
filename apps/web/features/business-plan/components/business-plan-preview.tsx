@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import type { BusinessPlanWithSections, StartupProject } from '@repo/types/validation';
 import { Button, PageHeader } from '@repo/ui';
@@ -12,7 +13,8 @@ type BusinessPlanPreviewProps = {
   plan: BusinessPlanWithSections;
 };
 
-export function BusinessPlanPreview({ project, plan }: BusinessPlanPreviewProps) {
+export async function BusinessPlanPreview({ project, plan }: BusinessPlanPreviewProps) {
+  const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/business-plan/${plan.id}`;
   const createdDate = new Date(plan.createdAt).toLocaleDateString('ko-KR', {
     year: 'numeric',
@@ -27,7 +29,7 @@ export function BusinessPlanPreview({ project, plan }: BusinessPlanPreviewProps)
         description={plan.title}
         actions={
           <Button variant="outline" asChild>
-            <Link href={basePath}>Back to Editor</Link>
+            <Link href={basePath}>{tNav('backToEditor')}</Link>
           </Button>
         }
       />

@@ -45,6 +45,7 @@ function FitScoreProgress({ score }: { score: number | null }) {
 
 export async function GrantDashboardView({ project, dashboard }: GrantDashboardViewProps) {
   const t = await getTranslations('pages');
+  const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/grants`;
 
   if (dashboard.totalCount === 0) {
@@ -53,7 +54,7 @@ export async function GrantDashboardView({ project, dashboard }: GrantDashboardV
         <PageHeader title={t('grantDashboard')} description={project.title} />
         <div className="mt-4">
           <Button variant="link" className="h-auto p-0" asChild>
-            <Link href={basePath}>Back to grants</Link>
+            <Link href={basePath}>{tNav('backToGrants')}</Link>
           </Button>
         </div>
         <div className="mt-8">
@@ -79,10 +80,10 @@ export async function GrantDashboardView({ project, dashboard }: GrantDashboardV
       />
       <div className="mt-4 flex flex-wrap gap-3">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={basePath}>Back to grants</Link>
+          <Link href={basePath}>{tNav('backToGrants')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}`}>Back to project</Link>
+          <Link href={`/projects/${project.id}`}>{tNav('backToProject')}</Link>
         </Button>
       </div>
 

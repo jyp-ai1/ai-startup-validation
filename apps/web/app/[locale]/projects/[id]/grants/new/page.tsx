@@ -30,6 +30,7 @@ export async function generateMetadata({
 
 export default async function NewGrantPage({ params }: NewGrantPageProps) {
   const t = await getTranslations('pages');
+  const tNav = await getTranslations('common.navLinks');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -42,7 +43,7 @@ export default async function NewGrantPage({ params }: NewGrantPageProps) {
       <PageHeader title={t('newGrant')} description={project.title} />
       <div className="mt-4">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${id}/grants`}>Back to grants</Link>
+          <Link href={`/projects/${id}/grants`}>{tNav('backToGrants')}</Link>
         </Button>
       </div>
       <div className="mt-8">

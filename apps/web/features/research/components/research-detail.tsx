@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Pencil, Trash2 } from 'lucide-react';
 
@@ -50,6 +51,7 @@ function MetaRow({ label, children }: { label: string; children: React.ReactNode
 }
 
 export function ResearchDetail({ project, plan }: ResearchDetailProps) {
+  const tNav = useTranslations('common.navLinks');
   const [isEditing, setIsEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -103,10 +105,10 @@ export function ResearchDetail({ project, plan }: ResearchDetailProps) {
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={listPath}>Back to research plans</Link>
+          <Link href={listPath}>{tNav('backToResearch')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}`}>Back to project</Link>
+          <Link href={`/projects/${project.id}`}>{tNav('backToProject')}</Link>
         </Button>
       </div>
 

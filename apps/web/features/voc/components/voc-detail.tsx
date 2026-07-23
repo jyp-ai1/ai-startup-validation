@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Pencil, Trash2 } from 'lucide-react';
 
@@ -48,6 +49,7 @@ function MetaRow({ label, children }: { label: string; children: React.ReactNode
 }
 
 export function VOCDetail({ project, entry }: VOCDetailProps) {
+  const tNav = useTranslations('common.navLinks');
   const [isEditing, setIsEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -105,7 +107,7 @@ export function VOCDetail({ project, entry }: VOCDetailProps) {
         <VOCFrequencyBadge frequency={entry.frequency} />
         <VOCSeverityBadge severity={entry.severity} />
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={listPath}>Back to VOC list</Link>
+          <Link href={listPath}>{tNav('backToVocList')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`${listPath}/summary`}>Summary Dashboard</Link>

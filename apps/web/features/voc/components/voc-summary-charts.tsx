@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import type { VOCDistributionItem } from '@repo/types/validation';
 import {
   Bar,
@@ -14,14 +15,10 @@ import {
 type DistributionChartProps = {
   title: string;
   data: VOCDistributionItem[];
-  emptyMessage?: string;
+  emptyMessage: string;
 };
 
-function DistributionChart({
-  title,
-  data,
-  emptyMessage = 'No data yet',
-}: DistributionChartProps) {
+function DistributionChart({ title, data, emptyMessage }: DistributionChartProps) {
   const hasData = data.some((item) => item.count > 0);
 
   return (
@@ -66,17 +63,29 @@ export function VOCSummaryCharts({
   willingnessDistribution,
   customerSegmentDistribution,
 }: VOCSummaryChartsProps) {
+  const t = useTranslations('voc.charts');
+
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <DistributionChart title="Severity Distribution" data={severityDistribution} />
-      <DistributionChart title="Frequency Distribution" data={frequencyDistribution} />
       <DistributionChart
-        title="Payment Intent (Willingness To Pay)"
-        data={willingnessDistribution}
+        title={t('severity')}
+        data={severityDistribution}
+        emptyMessage={t('noData')}
       />
       <DistributionChart
-        title="Customer Segment Distribution"
+        title={t('frequency')}
+        data={frequencyDistribution}
+        emptyMessage={t('noData')}
+      />
+      <DistributionChart
+        title={t('paymentIntent')}
+        data={willingnessDistribution}
+        emptyMessage={t('noData')}
+      />
+      <DistributionChart
+        title={t('customerSegment')}
         data={customerSegmentDistribution}
+        emptyMessage={t('noData')}
       />
     </div>
   );

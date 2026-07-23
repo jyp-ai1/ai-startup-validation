@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { getLocale, getMessages, setRequestLocale } from 'next-intl/server';
 
 import { AppShell } from '@/components/app-shell';
 import { routing } from '@/i18n/routing';
@@ -22,11 +22,12 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     notFound();
   }
 
-  setRequestLocale(locale);
+  const resolvedLocale = await getLocale();
+  setRequestLocale(resolvedLocale);
   const messages = await getMessages();
 
   return (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider locale={resolvedLocale} messages={messages}>
       <ThemeProvider>
         <AppShell>{children}</AppShell>
       </ThemeProvider>

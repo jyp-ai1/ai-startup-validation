@@ -29,6 +29,7 @@ export async function generateMetadata({
 
 export default async function NewValidationPage({ params }: NewValidationPageProps) {
   const t = await getTranslations('pages');
+  const tNav = await getTranslations('common.navLinks');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -44,7 +45,7 @@ export default async function NewValidationPage({ params }: NewValidationPagePro
       />
       <div className="mt-4">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${id}/validation`}>Back to dashboard</Link>
+          <Link href={`/projects/${id}/validation`}>{tNav('backToValidation')}</Link>
         </Button>
       </div>
       <div className="mt-8">

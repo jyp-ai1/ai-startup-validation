@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
 
@@ -54,6 +55,7 @@ function DetailSection({
 }
 
 export function CompetitorDetail({ project, competitor }: CompetitorDetailProps) {
+  const tNav = useTranslations('common.navLinks');
   const [isEditing, setIsEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -112,7 +114,7 @@ export function CompetitorDetail({ project, competitor }: CompetitorDetailProps)
         <CompetitorCategoryBadge category={competitor.category} />
         <CompetitorMarketPositionBadge position={competitor.marketPosition} />
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={listPath}>Back to competitors</Link>
+          <Link href={listPath}>{tNav('backToCompetitors')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`${listPath}/compare`}>Compare Matrix</Link>

@@ -31,6 +31,7 @@ export async function generateMetadata({
 
 export default async function NewEvidencePage({ params }: NewEvidencePageProps) {
   const t = await getTranslations('pages');
+  const tNav = await getTranslations('common.navLinks');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -45,7 +46,7 @@ export default async function NewEvidencePage({ params }: NewEvidencePageProps) 
       <PageHeader title={t('newEvidence')} description={project.title} />
       <div className="mt-4">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${id}/evidence`}>Back to evidence</Link>
+          <Link href={`/projects/${id}/evidence`}>{tNav('backToEvidence')}</Link>
         </Button>
       </div>
       <div className="mt-8">

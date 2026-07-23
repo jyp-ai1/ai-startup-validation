@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import type { CompetitorComparison, StartupProject } from '@repo/types/validation';
 import type { CompetitorComparisonField } from '@repo/types/validation';
@@ -30,10 +31,11 @@ function getFieldValue(
   return value?.trim() ? value : '—';
 }
 
-export function CompetitorCompare({
+export async function CompetitorCompare({
   project,
   comparison,
 }: CompetitorCompareProps) {
+  const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/competitors`;
   const { competitors, fields } = comparison;
 
@@ -45,10 +47,10 @@ export function CompetitorCompare({
       />
       <div className="mt-4 flex flex-wrap gap-3">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={basePath}>Back to competitors</Link>
+          <Link href={basePath}>{tNav('backToCompetitors')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}`}>Back to project</Link>
+          <Link href={`/projects/${project.id}`}>{tNav('backToProject')}</Link>
         </Button>
       </div>
 

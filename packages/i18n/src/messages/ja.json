@@ -59,6 +59,20 @@
       "minutesAgo": "{count} minutes ago",
       "hoursAgo": "{count} hours ago",
       "daysAgo": "{count} days ago"
+    },
+    "navLinks": {
+      "backToVocList": "Back to VOC list",
+      "backToProject": "Back to project",
+      "backToEvidence": "Back to evidence",
+      "backToResearch": "Back to research plans",
+      "backToCompetitors": "Back to competitors",
+      "backToGrants": "Back to grants",
+      "backToValidation": "Back to dashboard",
+      "backToReports": "Back to reports",
+      "backToList": "Back to list",
+      "backToProjects": "Back to Projects",
+      "backToEditor": "Back to Editor",
+      "backToKnowledge": "Back to Knowledge Base"
     }
   },
   "shell": {
@@ -529,6 +543,21 @@
       "paymentIntent": "Payment Intent",
       "severityChart": "Pain Severity Distribution",
       "cardsTitle": "Customer Pain Points"
+    },
+    "summaryPageTitle": "VOC Summary Dashboard",
+    "summaryPageDesc": "{count} entries · {project}",
+    "emptySummaryTitle": "No VOC data to summarize",
+    "emptySummaryDesc": "Add customer feedback entries to see pain point rankings and distributions.",
+    "painPointRanking": "Pain Point Ranking",
+    "painPointColumn": "Pain Point",
+    "occurrencesColumn": "Occurrences",
+    "noPainPoints": "No pain points recorded.",
+    "charts": {
+      "severity": "Severity Distribution",
+      "frequency": "Frequency Distribution",
+      "paymentIntent": "Payment Intent (Willingness To Pay)",
+      "customerSegment": "Customer Segment Distribution",
+      "noData": "No data yet"
     }
   },
   "grants": {

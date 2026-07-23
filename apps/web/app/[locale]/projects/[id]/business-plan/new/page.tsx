@@ -29,6 +29,7 @@ export async function generateMetadata({
 
 export default async function NewBusinessPlanPage({ params }: NewBusinessPlanPageProps) {
   const t = await getTranslations('pages');
+  const tNav = await getTranslations('common.navLinks');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -44,7 +45,7 @@ export default async function NewBusinessPlanPage({ params }: NewBusinessPlanPag
       />
       <div className="mt-4">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${id}/business-plan`}>Back to list</Link>
+          <Link href={`/projects/${id}/business-plan`}>{tNav('backToList')}</Link>
         </Button>
       </div>
       <div className="mt-8">

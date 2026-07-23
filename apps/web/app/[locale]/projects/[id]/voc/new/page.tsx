@@ -30,6 +30,7 @@ export async function generateMetadata({
 
 export default async function NewVOCPage({ params }: NewVOCPageProps) {
   const t = await getTranslations('pages');
+  const tNav = await getTranslations('common.navLinks');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -42,7 +43,7 @@ export default async function NewVOCPage({ params }: NewVOCPageProps) {
       <PageHeader title={t('newVoc')} description={project.title} />
       <div className="mt-4">
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${id}/voc`}>Back to VOC list</Link>
+          <Link href={`/projects/${id}/voc`}>{tNav('backToVocList')}</Link>
         </Button>
       </div>
       <div className="mt-8">

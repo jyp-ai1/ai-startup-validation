@@ -5,6 +5,7 @@ import { Button, EmptyState, PageHeader } from '@repo/ui';
 
 export default async function ProjectNotFound() {
   const t = await getTranslations('pages');
+  const tNav = await getTranslations('common.navLinks');
 
   return (
     <>
@@ -15,7 +16,7 @@ export default async function ProjectNotFound() {
           description="It may have been deleted or the URL is incorrect."
           action={
             <Button asChild>
-              <Link href="/projects">Back to Projects</Link>
+              <Link href="/projects">{tNav('backToProjects')}</Link>
             </Button>
           }
         />

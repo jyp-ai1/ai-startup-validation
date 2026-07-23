@@ -2,9 +2,9 @@
 
 import { LOCALE_LABELS, type AppLocale } from '@repo/i18n/config';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
+import { usePathname, useRouter } from '@/i18n/navigation';
 import {
   Select,
   SelectContent,
@@ -17,11 +17,15 @@ export function LocaleSwitcher() {
   const locale = useLocale() as AppLocale;
   const t = useTranslations('common');
   const router = useRouter();
+  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
   function onChange(nextLocale: string) {
+    if (nextLocale === locale) return;
+
     startTransition(() => {
       document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
+      router.replace(pathname, { locale: nextLocale as AppLocale });
       router.refresh();
     });
   }

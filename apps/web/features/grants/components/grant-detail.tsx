@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
 
@@ -47,6 +48,7 @@ function MetaRow({ label, children }: { label: string; children: React.ReactNode
 }
 
 export function GrantDetail({ project, grant }: GrantDetailProps) {
+  const tNav = useTranslations('common.navLinks');
   const [isEditing, setIsEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -104,7 +106,7 @@ export function GrantDetail({ project, grant }: GrantDetailProps) {
         <GrantStatusBadge status={grant.status} />
         <GrantFitScoreBadge score={grant.fitScore} />
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={listPath}>Back to grants</Link>
+          <Link href={listPath}>{tNav('backToGrants')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`${listPath}/dashboard`}>Dashboard</Link>

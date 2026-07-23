@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import type { DevelopmentSpecWithSections, StartupProject } from '@repo/types/validation';
 import { Button, PageHeader } from '@repo/ui';
@@ -12,7 +13,8 @@ type DevelopmentSpecPreviewProps = {
   spec: DevelopmentSpecWithSections;
 };
 
-export function DevelopmentSpecPreview({ project, spec }: DevelopmentSpecPreviewProps) {
+export async function DevelopmentSpecPreview({ project, spec }: DevelopmentSpecPreviewProps) {
+  const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/development-spec/${spec.id}`;
   const createdDate = new Date(spec.createdAt).toLocaleDateString('ko-KR', {
     year: 'numeric',
@@ -27,7 +29,7 @@ export function DevelopmentSpecPreview({ project, spec }: DevelopmentSpecPreview
         description={spec.title}
         actions={
           <Button variant="outline" asChild>
-            <Link href={basePath}>Back to Editor</Link>
+            <Link href={basePath}>{tNav('backToEditor')}</Link>
           </Button>
         }
       />
