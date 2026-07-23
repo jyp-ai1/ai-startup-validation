@@ -1191,10 +1191,260 @@
     "dashboardCtaTitle": "Ready to decide?",
     "dashboardCtaDesc": "Your validation workspace is one click away.",
     "openDashboard": "Open Dashboard",
-    "footerFramework": "LaunchLens · AI Strategy Consultant",
     "statDecisions": "AI Verdict",
     "statReadiness": "Avg. Readiness",
-    "statConfidence": "Confidence Index"
+    "statConfidence": "Confidence Index",
+    "meta": {
+      "title": "LaunchLens — AI Strategy Consultant",
+      "description": "AI Strategy Consultant for market research, competitive analysis, business validation, and executive reports. Evidence-based GO / NO GO decisions for startups and strategy teams.",
+      "keywords": "AI Strategy Consultant, AI Startup Validation, Business Strategy, Market Research, Competitive Analysis, Executive Report, GO NO GO"
+    },
+    "nav": {
+      "brand": "LaunchLens",
+      "features": "Features",
+      "demo": "Demo",
+      "pricing": "Pricing",
+      "faq": "FAQ",
+      "signIn": "Sign in",
+      "startFree": "Start free"
+    },
+    "hero": {
+      "eyebrow": "AI Strategy Consultant",
+      "title": "Strategy consulting — automated by AI",
+      "bullet1": "Market research",
+      "bullet2": "Business validation",
+      "bullet3": "Competitive analysis",
+      "bullet4": "Executive reports",
+      "bullet5": "Government grant fit analysis",
+      "tagline": "AI performs the work. You make the decision.",
+      "ctaStart": "Start free",
+      "ctaDemo": "View demo"
+    },
+    "preview": {
+      "windowTitle": "Strategy Workspace",
+      "verdictLabel": "AI Verdict",
+      "score": "{score} pts",
+      "confidence": "Confidence",
+      "research": "Research",
+      "competitor": "Competitor",
+      "voc": "VOC",
+      "government": "Government",
+      "nextAction": "Next Action",
+      "nextActionText": "Investigate grant programs",
+      "evidence": "Evidence items"
+    },
+    "trusted": {
+      "rating": "Trusted by strategy teams",
+      "segment1": "Startup",
+      "segment2": "Enterprise",
+      "segment3": "Strategy Team",
+      "segment4": "Consulting",
+      "segment5": "VC",
+      "badge1": "AI Powered",
+      "badge2": "Decision Driven",
+      "badge3": "Evidence Based",
+      "badge4": "Explainable AI"
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "desc": "From idea to executive report in four guided steps.",
+      "step1": {
+        "title": "Create project",
+        "desc": "Define your idea, target customer, and industry in minutes."
+      },
+      "step2": {
+        "title": "AI research",
+        "desc": "Market, competitors, VOC, evidence, and grants — orchestrated by AI."
+      },
+      "step3": {
+        "title": "Decision",
+        "desc": "GO / HOLD / NO GO with explainable scores and risk matrix."
+      },
+      "step4": {
+        "title": "Executive report",
+        "desc": "Export board-ready strategy reports in PDF, PPT, or DOCX."
+      }
+    },
+    "features": {
+      "title": "Everything you need to decide",
+      "desc": "Six integrated modules — one strategy workspace.",
+      "market": {
+        "title": "Market Intelligence",
+        "desc": "TAM, growth rate, and industry signals in one snapshot."
+      },
+      "competition": {
+        "title": "Competition Analysis",
+        "desc": "Positioning matrix, pricing gaps, and competitor benchmarks."
+      },
+      "evidence": {
+        "title": "Evidence Builder",
+        "desc": "Confidence-scored evidence library with source lineage."
+      },
+      "framework": {
+        "title": "Strategy Framework",
+        "desc": "SWOT, Porter, and consulting frameworks — auto-structured."
+      },
+      "decision": {
+        "title": "Decision Center",
+        "desc": "Explainable GO / NO GO with drivers and missing data."
+      },
+      "report": {
+        "title": "Executive Report",
+        "desc": "Story-driven reports for investors, boards, and executives."
+      }
+    },
+    "demo": {
+      "eyebrow": "Live preview",
+      "title": "AI Consultant speaks first",
+      "desc": "Not a chat box — a consultant that analyzes your project and tells you what to do next.",
+      "highlight1": " verdict with explainable score",
+      "highlight2": " confidence from evidence quality",
+      "highlight3": " evidence items tracked with lineage",
+      "cta": "Open demo workspace"
+    },
+    "useCases": {
+      "title": "Built for every strategy team",
+      "desc": "From solo founders to enterprise planning units.",
+      "startup": {
+        "title": "Startup",
+        "desc": "Validate ideas before you build or fundraise."
+      },
+      "enterprise": {
+        "title": "Enterprise strategy",
+        "desc": "Structure new business and innovation bets."
+      },
+      "newBiz": {
+        "title": "New business",
+        "desc": "De-risk corporate venture and spin-off ideas."
+      },
+      "vc": {
+        "title": "VC & investment",
+        "desc": "Standardize diligence with evidence-backed scores."
+      },
+      "consulting": {
+        "title": "Consulting",
+        "desc": "Accelerate research and deliver executive-ready output."
+      },
+      "public": {
+        "title": "Public sector",
+        "desc": "Grant fit analysis and policy-aware strategy."
+      }
+    },
+    "pricing": {
+      "title": "Simple pricing",
+      "desc": "Start free today. Pro and Enterprise coming soon.",
+      "recommended": "Available now",
+      "free": {
+        "name": "Free",
+        "price": "$0",
+        "desc": "Full workspace access — available now",
+        "cta": "Start free",
+        "features": [
+          "Unlimited projects",
+          "AI Strategy Consultant",
+          "Decision Engine",
+          "Executive Dashboard",
+          "Report preview"
+        ],
+        "f1": "Unlimited projects",
+        "f2": "AI Strategy Consultant",
+        "f3": "Decision Engine",
+        "f4": "Executive Dashboard",
+        "f5": "Report preview"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "Coming Soon",
+        "desc": "Advanced AI agents and exports",
+        "cta": "Coming Soon",
+        "features": [
+          "Real LLM integration",
+          "Browser research agent",
+          "Priority exports",
+          "Team collaboration"
+        ],
+        "f1": "Real LLM integration",
+        "f2": "Browser research agent",
+        "f3": "Priority exports",
+        "f4": "Team collaboration"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Contact us",
+        "desc": "Custom deployment and SSO",
+        "cta": "Contact us",
+        "features": [
+          "Dedicated support",
+          "Custom integrations",
+          "Audit logs",
+          "SLA & compliance"
+        ],
+        "f1": "Dedicated support",
+        "f2": "Custom integrations",
+        "f3": "Audit logs",
+        "f4": "SLA & compliance"
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "desc": "Everything you need to know about LaunchLens.",
+      "q1": {
+        "question": "What is an AI Strategy Consultant?",
+        "answer": "LaunchLens is an AI-powered strategy platform that automates market research, competitive analysis, evidence collection, and executive reporting — guiding you to a defensible GO / NO GO decision."
+      },
+      "q2": {
+        "question": "How does market research work?",
+        "answer": "The AI orchestrator runs structured research tasks across market sizing, trends, and customer segments. Results feed into the Evidence library with confidence scores."
+      },
+      "q3": {
+        "question": "Is SWOT generated automatically?",
+        "answer": "Yes. The Framework Engine applies SWOT, Porter's Five Forces, and other consulting frameworks based on your project data and market analysis."
+      },
+      "q4": {
+        "question": "Does it analyze government grant programs?",
+        "answer": "Yes. Government module maps K-Startup, ministry programs, and grant fit scores to your project profile."
+      },
+      "q5": {
+        "question": "Can I export reports as PPT?",
+        "answer": "Executive Report supports PDF, PPT, and DOCX export through the report preview and export queue."
+      },
+      "q6": {
+        "question": "Do I need to log in to try it?",
+        "answer": "No login required for Sprint L1. Click Start free or View demo to enter the workspace immediately."
+      },
+      "q7": {
+        "question": "How is GO / NO GO calculated?",
+        "answer": "The Decision Engine scores research, evidence, VOC, competitors, and grants — with explainable drivers and missing-data checklist."
+      },
+      "q8": {
+        "question": "Is my data used to train AI models?",
+        "answer": "Your project data stays in your workspace. Real LLM integration (Sprint 9.0+) will follow enterprise privacy standards."
+      },
+      "q9": {
+        "question": "Who is LaunchLens for?",
+        "answer": "Startups, corporate strategy teams, consultants, VCs, and public-sector innovators validating new initiatives."
+      },
+      "q10": {
+        "question": "When will paid plans launch?",
+        "answer": "Pro and Enterprise plans are coming soon. The Free plan includes the full workspace available today."
+      }
+    },
+    "footer": {
+      "ctaTitle": "Ready to validate your next big bet?",
+      "ctaDesc": "Start free — no credit card, no login required.",
+      "ctaButton": "Start free",
+      "copyright": "LaunchLens · AI Strategy Consultant",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact",
+      "version": "Version"
+    },
+    "legal": {
+      "privacyTitle": "Privacy Policy",
+      "privacyBody": "LaunchLens respects your data. Project information is stored in your workspace and is not sold to third parties. Full privacy policy will be published before Sprint L2 authentication launch.",
+      "termsTitle": "Terms of Service",
+      "termsBody": "By using LaunchLens you agree to use the platform for lawful business strategy purposes. Full terms of service will be published before paid plans launch."
+    }
   },
   "projectWorkspace": {
     "eyebrow": "Workspace Overview",

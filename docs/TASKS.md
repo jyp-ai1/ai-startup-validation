@@ -69,6 +69,31 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+**Next:** Sprint L2 — Google Login + Supabase Auth
+
+---
+
+## Sprint L1 — Landing Page & First Experience ✅
+
+**Status:** Complete  
+**Goal:** SaaS launch foundation — Landing as service face, Demo → Dashboard without login.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| Landing page at `/` (Hero, Trusted, How it Works, Features) | ✅ Done | AI |
+| AI Consultant Demo section + Hero preview mock | ✅ Done | AI |
+| Use Cases, Pricing Preview, FAQ (10), Footer | ✅ Done | AI |
+| AppShell bypass on `/` via AppShellGate + AppShellWrapper | ✅ Done | AI |
+| Landing analytics (landing_view, cta_start, cta_demo, pricing_view, faq_expand) | ✅ Done | AI |
+| SEO metadata + OpenGraph + Twitter + JSON-LD schema | ✅ Done | AI |
+| Privacy / Terms placeholder pages | ✅ Done | AI |
+| i18n (en/ko + sync 11 locales) | ✅ Done | AI |
+| Build + deploy + verify | ✅ Done | AI |
+
+**Next:** Sprint L2 — Google Login + Supabase Auth + User Workspace
+
+---
+
 ## Sprint 8.9 — AI Strategy Consultant ✅
 
 **Status:** Complete  

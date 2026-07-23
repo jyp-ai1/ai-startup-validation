@@ -1,5 +1,15 @@
-import { redirect } from 'next/navigation';
+import { LandingJsonLd } from '@/features/landing/lib/landing-schema';
+import { LandingPage, generateLandingMetadata } from '@/features/landing';
 
-export default function Home() {
-  redirect('/dashboard');
+export async function generateMetadata() {
+  return generateLandingMetadata();
+}
+
+export default async function Home() {
+  return (
+    <>
+      <LandingJsonLd />
+      <LandingPage />
+    </>
+  );
 }

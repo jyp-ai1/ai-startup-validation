@@ -1172,28 +1172,160 @@
     }
   },
   "landing": {
-    "eyebrow": "기업 AI 전략",
-    "heroTitle": "컨설팅팀처럼 전략적 의사결정 — AI가 인사이트부터 제시합니다.",
-    "heroSubtitle": "LaunchLens는 조사, 근거, 분석을 경영진급 GO / NO GO 판단으로 연결합니다. 결론 먼저, 필요할 때 데이터.",
-    "ctaPrimary": "Open Dashboard",
-    "ctaSecondary": "Start New Project",
-    "valueAiTitle": "AI-First Decisions",
-    "valueAiDesc": "GO, funding probability, and expert consensus — before you open a spreadsheet.",
-    "valueDataTitle": "Evidence-Driven",
-    "valueDataDesc": "Market, VOC, competitors, and grants unified into one intelligence layer.",
-    "valueDecisionTitle": "Executive Ready",
-    "valueDecisionDesc": "Typography-first dashboards built for founders, advisors, and investors.",
-    "recentProjects": "Recent Projects",
-    "recentProjectsDesc": "Pick up where you left off.",
-    "viewAll": "View all",
-    "updatedAgo": "Updated {time}",
-    "dashboardCtaTitle": "Ready to decide?",
-    "dashboardCtaDesc": "Your validation workspace is one click away.",
-    "openDashboard": "Open Dashboard",
-    "footerFramework": "LaunchLens · AI Strategy Consultant",
-    "statDecisions": "AI Verdict",
-    "statReadiness": "Avg. Readiness",
-    "statConfidence": "Confidence Index"
+    "meta": {
+      "title": "LaunchLens — AI Strategy Consultant",
+      "description": "시장조사, 경쟁사 분석, 사업성 검증, Executive Report를 AI가 자동 수행하는 AI Strategy Consultant. 스타트업과 전략기획팀을 위한 Evidence 기반 GO / NO GO 의사결정.",
+      "keywords": "AI Strategy Consultant, AI Startup Validation, Business Strategy, Market Research, Competitive Analysis, Executive Report, GO NO GO"
+    },
+    "nav": {
+      "brand": "LaunchLens",
+      "features": "기능",
+      "demo": "데모",
+      "pricing": "요금",
+      "faq": "FAQ",
+      "signIn": "로그인",
+      "startFree": "무료 시작"
+    },
+    "hero": {
+      "eyebrow": "AI Strategy Consultant",
+      "title": "전략 컨설팅, AI가 자동으로",
+      "bullet1": "시장조사",
+      "bullet2": "사업성 분석",
+      "bullet3": "경쟁사 분석",
+      "bullet4": "Executive Report",
+      "bullet5": "정부지원사업 적합도 분석",
+      "tagline": "AI가 조사합니다. 당신은 결정합니다.",
+      "ctaStart": "무료 시작하기",
+      "ctaDemo": "데모 보기"
+    },
+    "preview": {
+      "windowTitle": "Strategy Workspace",
+      "verdictLabel": "AI Verdict",
+      "score": "{score}점",
+      "confidence": "Confidence",
+      "research": "Research",
+      "competitor": "Competitor",
+      "voc": "VOC",
+      "government": "Government",
+      "nextAction": "Next Action",
+      "nextActionText": "정부지원사업 조사",
+      "evidence": "Evidence"
+    },
+    "trusted": {
+      "rating": "전략팀이 신뢰하는 AI",
+      "segment1": "Startup",
+      "segment2": "Enterprise",
+      "segment3": "Strategy Team",
+      "segment4": "Consulting",
+      "segment5": "VC",
+      "badge1": "AI Powered",
+      "badge2": "Decision Driven",
+      "badge3": "Evidence Based",
+      "badge4": "Explainable AI"
+    },
+    "howItWorks": {
+      "title": "How it Works",
+      "desc": "아이디어에서 Executive Report까지 4단계로 안내합니다.",
+      "step1": { "title": "프로젝트 생성", "desc": "아이디어, 타깃 고객, Industry를 정의합니다." },
+      "step2": { "title": "AI 조사", "desc": "시장, 경쟁사, VOC, Evidence, 정부지원을 AI가 수행합니다." },
+      "step3": { "title": "Decision", "desc": "GO / HOLD / NO GO와 Explainable Score, Risk Matrix." },
+      "step4": { "title": "Executive Report", "desc": "PDF, PPT, DOCX로 경영 보고서를 내보냅니다." }
+    },
+    "features": {
+      "title": "의사결정에 필요한 모든 것",
+      "desc": "6개 모듈 — 하나의 Strategy Workspace.",
+      "market": { "title": "Market Intelligence", "desc": "TAM, 성장률, Industry Signal을 한눈에." },
+      "competition": { "title": "Competition Analysis", "desc": "포지셔닝 매트릭스, Pricing Gap, 경쟁사 벤치마크." },
+      "evidence": { "title": "Evidence Builder", "desc": "Confidence Score와 Source Lineage가 있는 Evidence Library." },
+      "framework": { "title": "Strategy Framework", "desc": "SWOT, Porter 등 컨설팅 Framework 자동 구조화." },
+      "decision": { "title": "Decision Center", "desc": "Explainable GO / NO GO, Drivers, Missing Data." },
+      "report": { "title": "Executive Report", "desc": "투자자·이사회용 Story-driven Report." }
+    },
+    "demo": {
+      "eyebrow": "Live Preview",
+      "title": "AI Consultant가 먼저 말합니다",
+      "desc": "Chat UI가 아닙니다. 프로젝트를 분석하고 다음 행동을 제안하는 Consultant입니다.",
+      "highlight1": " Verdict + Explainable Score",
+      "highlight2": " Confidence — Evidence 품질 기반",
+      "highlight3": " Evidence — Lineage 추적",
+      "cta": "데모 Workspace 열기"
+    },
+    "useCases": {
+      "title": "모든 전략팀을 위해",
+      "desc": "1인 스타트업부터 기업 전략기획팀까지.",
+      "startup": { "title": "Startup", "desc": "Build·Fundraising 전에 아이디어를 검증합니다." },
+      "enterprise": { "title": "기업 전략기획", "desc": "신사업·Innovation Bet을 구조화합니다." },
+      "newBiz": { "title": "신사업", "desc": "Corporate Venture와 Spin-off 리스크를 줄입니다." },
+      "vc": { "title": "VC", "desc": "Evidence 기반 Score로 Due Diligence를 표준화합니다." },
+      "consulting": { "title": "컨설팅", "desc": "Research를 가속하고 Executive-ready Output을 제공합니다." },
+      "public": { "title": "공공기관", "desc": "Grant Fit Analysis와 Policy-aware Strategy." }
+    },
+    "pricing": {
+      "title": "Simple Pricing",
+      "desc": "지금 무료로 시작하세요. Pro·Enterprise는 Coming Soon.",
+      "recommended": "지금 이용 가능",
+      "free": {
+        "name": "Free",
+        "price": "₩0",
+        "desc": "전체 Workspace — 지금 이용 가능",
+        "cta": "무료 시작하기",
+        "f1": "프로젝트 무제한",
+        "f2": "AI Strategy Consultant",
+        "f3": "Decision Engine",
+        "f4": "Executive Dashboard",
+        "f5": "Report Preview"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "Coming Soon",
+        "desc": "Advanced AI Agent & Export",
+        "cta": "Coming Soon",
+        "f1": "Real LLM 연동",
+        "f2": "Browser Research Agent",
+        "f3": "Priority Export",
+        "f4": "Team Collaboration"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Contact Us",
+        "desc": "Custom Deployment & SSO",
+        "cta": "Contact Us",
+        "f1": "Dedicated Support",
+        "f2": "Custom Integration",
+        "f3": "Audit Log",
+        "f4": "SLA & Compliance"
+      }
+    },
+    "faq": {
+      "title": "자주 묻는 질문",
+      "desc": "LaunchLens에 대해 궁금한 점을 확인하세요.",
+      "q1": { "question": "AI Strategy Consultant란?", "answer": "LaunchLens는 시장조사, 경쟁사 분석, Evidence 수집, Executive Report를 AI가 자동 수행하고 GO / NO GO Decision까지 안내하는 AI 전략 플랫폼입니다." },
+      "q2": { "question": "시장조사는 어떻게 하나요?", "answer": "AI Orchestrator가 Market Sizing, Trend, Customer Segment Research를 구조화하여 실행하고, 결과는 Confidence Score와 함께 Evidence Library에 저장됩니다." },
+      "q3": { "question": "SWOT은 자동 생성되나요?", "answer": "네. Framework Engine이 프로젝트 데이터와 Market Analysis를 기반으로 SWOT, Porter's Five Forces 등을 자동 적용합니다." },
+      "q4": { "question": "정부지원사업도 분석하나요?", "answer": "네. Government Module이 K-Startup, 중기부 프로그램 등 Grant Fit Score를 프로젝트 Profile에 매핑합니다." },
+      "q5": { "question": "보고서는 PPT로 출력되나요?", "answer": "Executive Report Preview와 Export Queue를 통해 PDF, PPT, DOCX 내보내기를 지원합니다." },
+      "q6": { "question": "로그인 없이 사용할 수 있나요?", "answer": "Sprint L1에서는 로그인 없이 '무료 시작하기' 또는 '데모 보기'로 바로 Workspace에 진입할 수 있습니다." },
+      "q7": { "question": "GO / NO GO는 어떻게 계산되나요?", "answer": "Decision Engine이 Research, Evidence, VOC, Competitor, Grant를 Score하고 Explainable Drivers와 Missing Data Checklist를 제공합니다." },
+      "q8": { "question": "내 데이터가 AI 학습에 사용되나요?", "answer": "프로젝트 데이터는 Workspace에 보관됩니다. Real LLM 연동(Sprint 9.0+) 시 Enterprise Privacy Standard를 따릅니다." },
+      "q9": { "question": "누가 사용하나요?", "answer": "Startup, 기업 전략기획팀, Consultant, VC, 공공 Innovation 담당자 등 새 Initiative를 검증하는 모든 팀." },
+      "q10": { "question": "유료 플랜은 언제 출시되나요?", "answer": "Pro와 Enterprise는 Coming Soon입니다. Free Plan으로 지금 전체 Workspace를 이용할 수 있습니다." }
+    },
+    "footer": {
+      "ctaTitle": "다음 Big Bet을 검증할 준비가 되셨나요?",
+      "ctaDesc": "무료로 시작하세요 — 카드·로그인 불필요.",
+      "ctaButton": "무료 시작하기",
+      "copyright": "LaunchLens · AI Strategy Consultant",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact",
+      "version": "Version"
+    },
+    "legal": {
+      "privacyTitle": "Privacy Policy",
+      "privacyBody": "LaunchLens는 사용자 데이터를 존중합니다. 프로젝트 정보는 Workspace에 저장되며 제3자에게 판매되지 않습니다. Sprint L2 인증 출시 전 전체 Privacy Policy가 게시됩니다.",
+      "termsTitle": "Terms of Service",
+      "termsBody": "LaunchLens 이용 시 합법적인 Business Strategy 목적으로 플랫폼을 사용하는 것에 동의합니다. 유료 플랜 출시 전 전체 Terms of Service가 게시됩니다."
+    }
   },
   "status": {
     "draft": "초안",

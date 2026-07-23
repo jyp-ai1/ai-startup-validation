@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, setRequestLocale } from 'next-intl/server';
 
 import { AnalyticsProvider } from '@/lib/analytics/providers/analytics-provider';
-import { AppShell } from '@/components/app-shell';
+import { AppShellWrapper } from '@/components/app-shell-wrapper';
 import { routing } from '@/i18n/routing';
 import { ThemeProvider } from '@repo/ui';
 
@@ -34,7 +34,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <NextIntlClientProvider locale={resolvedLocale} messages={messages}>
       <ThemeProvider>
         <AnalyticsProvider>
-          <AppShell>{children}</AppShell>
+          <AppShellWrapper>{children}</AppShellWrapper>
         </AnalyticsProvider>
       </ThemeProvider>
     </NextIntlClientProvider>
