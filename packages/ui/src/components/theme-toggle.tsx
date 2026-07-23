@@ -18,8 +18,19 @@ const themes = [
   { value: 'system', label: 'System', icon: Laptop },
 ] as const;
 
-export function ThemeToggle({ className }: { className?: string }) {
+export function ThemeToggle({
+  className,
+  onThemeChange,
+}: {
+  className?: string;
+  onThemeChange?: (theme: string) => void;
+}) {
   const { theme, setTheme } = useTheme();
+
+  function handleChange(value: string) {
+    setTheme(value);
+    onThemeChange?.(value);
+  }
 
   return (
     <DropdownMenu>
@@ -37,7 +48,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {themes.map(({ value, label, icon: Icon }) => (
-          <DropdownMenuItem key={value} onClick={() => setTheme(value)}>
+          <DropdownMenuItem key={value} onClick={() => handleChange(value)}>
             <Icon className="size-4" />
             {label}
             {theme === value ? <Check className="ml-auto size-4" /> : null}

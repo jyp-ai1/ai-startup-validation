@@ -18,13 +18,15 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  ThemeToggle,
 } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
+import { TrackedThemeToggle } from '@/components/analytics/tracked-theme-toggle';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { ShellBreadcrumb } from '@/components/shell/shell-breadcrumb';
 import { ProjectQuickSwitch } from '@/components/workspace/project-quick-switch';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
+import { useAnalytics } from '@/lib/analytics/use-analytics';
 import {
   isSidebarItemActive,
   resolveSidebarHref,
@@ -120,6 +122,7 @@ export function AppShell({
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const t = useTranslations();
+  const { trackEvent } = useAnalytics();
   const appName = t('meta.appName');
   const routeProjectId = pathname.match(/\/projects\/([^/]+)/)?.[1] ?? null;
   const projectId = routeProjectId ?? activeProject?.id ?? null;
@@ -145,7 +148,22 @@ export function AppShell({
               <span className="truncate text-sm font-semibold lg:hidden">{appName}</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="hidden items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-3 py-2 md:flex">
+              <div
+                className="hidden cursor-pointer items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-3 py-2 md:flex"
+                onClick={() =>
+                  trackEvent(ANALYTICS_EVENTS.search, {
+                    screen: pathname,
+                    query: t('shell.searchPlaceholder'),
+                  })
+                }
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    trackEvent(ANALYTICS_EVENTS.search, { screen: pathname });
+                  }
+                }}
+              >
                 <Search className="size-4 text-muted-foreground" />
                 <span className="w-36 text-[13px] text-muted-foreground">{t('shell.searchPlaceholder')}</span>
               </div>
@@ -153,7 +171,7 @@ export function AppShell({
                 <Bell className="size-4" />
               </Button>
               <LocaleSwitcher />
-              <ThemeToggle />
+              <TrackedThemeToggle />
               <div
                 className="hidden size-9 items-center justify-center rounded-full border border-border/60 bg-muted/50 sm:flex"
                 aria-hidden

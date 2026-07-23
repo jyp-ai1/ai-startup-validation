@@ -12,6 +12,8 @@ import {
   updateValidationScore,
   type ValidationActionState,
 } from '../actions/validation-actions';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
+import { useAnalytics } from '@/lib/analytics/use-analytics';
 import { SCORE_CATEGORIES } from '../utils/score-calculator';
 
 const initialState: ValidationActionState = {};
@@ -38,6 +40,7 @@ export function ValidationScoreForm({
       : updateValidationScore.bind(null, projectId, score!.id);
 
   const [state, formAction, pending] = useActionState(action, initialState);
+  const { trackEvent } = useAnalytics();
 
   const cancelHref =
     mode === 'create'
@@ -45,7 +48,16 @@ export function ValidationScoreForm({
       : `/projects/${projectId}/validation`;
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form
+      action={formAction}
+      onSubmit={() =>
+        trackEvent(ANALYTICS_EVENTS.validationExecute, {
+          project_id: projectId,
+          screen: `/projects/${projectId}/validation/new`,
+        })
+      }
+      className="space-y-6"
+    >
       {state.error ? (
         <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           {state.error}

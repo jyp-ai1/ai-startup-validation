@@ -8,6 +8,8 @@ import type { AIReportGeneration } from '@repo/types/validation';
 import { Button } from '@repo/ui';
 
 import { generateValidationReport } from '../actions/ai-report-actions';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
+import { useAnalytics } from '@/lib/analytics/use-analytics';
 import { GenerationStatusBadge } from './generation-status-badge';
 
 type AIReportGenerateButtonProps = {
@@ -22,6 +24,7 @@ export function AIReportGenerateButton({
   latestGeneration,
 }: AIReportGenerateButtonProps) {
   const router = useRouter();
+  const { trackEvent } = useAnalytics();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -38,6 +41,14 @@ export function AIReportGenerateButton({
       if (result.error) {
         setError(result.error);
       } else if (result.success) {
+        trackEvent(ANALYTICS_EVENTS.reportGenerate, {
+          project_id: projectId,
+          screen: `/projects/${projectId}/reports/${reportId}`,
+        });
+        trackEvent(ANALYTICS_EVENTS.decisionGenerate, {
+          project_id: projectId,
+          screen: `/projects/${projectId}/reports/${reportId}`,
+        });
         setSuccessMessage(
           result.usedMock
             ? 'Report draft generated (mock mode — configure AI API keys for LLM output).'

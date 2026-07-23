@@ -5,6 +5,9 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 
 import { usePathname, useRouter } from '@/i18n/navigation';
+
+import { trackEvent } from '@/lib/analytics/client';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import {
   Select,
   SelectContent,
@@ -25,6 +28,10 @@ export function LocaleSwitcher() {
 
     startTransition(() => {
       document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
+      trackEvent(ANALYTICS_EVENTS.languageChange, {
+        language: nextLocale,
+        screen: pathname,
+      });
       router.replace(pathname, { locale: nextLocale as AppLocale });
       router.refresh();
     });

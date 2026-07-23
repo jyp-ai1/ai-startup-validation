@@ -10,6 +10,8 @@ import { Button, Input, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { useFormLabels } from '@/lib/i18n/use-form-labels';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
+import { useAnalytics } from '@/lib/analytics/use-analytics';
 
 import {
   createProject,
@@ -52,6 +54,7 @@ function FormLabel({
 export function ProjectForm({ mode, project }: ProjectFormProps) {
   const t = useTranslations('projects.form');
   const labels = useFormLabels();
+  const { trackEvent } = useAnalytics();
   const action =
     mode === 'create'
       ? createProject
@@ -60,7 +63,16 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form
+      action={formAction}
+      onSubmit={() =>
+        trackEvent(
+          mode === 'create' ? ANALYTICS_EVENTS.projectCreate : ANALYTICS_EVENTS.projectUpdate,
+          { screen: mode === 'create' ? '/projects/new' : `/projects/${project?.id}` },
+        )
+      }
+      className="space-y-6"
+    >
       {state.error ? (
         <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           {state.error}

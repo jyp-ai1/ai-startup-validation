@@ -86,6 +86,9 @@ importers:
       sharp:
         specifier: ^0.33.5
         version: 0.33.5
+      web-vitals:
+        specifier: ^6.0.0
+        version: 6.0.0
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.3.1
@@ -4451,6 +4454,9 @@ packages:
       jsdom:
         optional: true
 
+  web-vitals@6.0.0:
+    resolution: {integrity: sha512-Guaibvy/+uNtL6Bsu4jmMJGzuSl91oeRH5iO9pPRbYftnFUr3yqT1TUNX/OE4o9HexuEMU3Kb/Wg7iKhlffZUA==}
+
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
@@ -8625,6 +8631,8 @@ snapshots:
       - terser
       - tsx
       - yaml
+
+  web-vitals@6.0.0: {}
 
   whatwg-encoding@3.1.1:
     dependencies:

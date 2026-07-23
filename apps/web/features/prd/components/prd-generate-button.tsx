@@ -7,6 +7,8 @@ import { Sparkles } from 'lucide-react';
 import { Button } from '@repo/ui';
 
 import { generatePRD } from '../actions/prd-actions';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
+import { useAnalytics } from '@/lib/analytics/use-analytics';
 
 type PRDGenerateButtonProps = {
   projectId: string;
@@ -20,11 +22,18 @@ export function PRDGenerateButton({
   label = 'AI PRD 생성',
 }: PRDGenerateButtonProps) {
   const router = useRouter();
+  const { trackEvent } = useAnalytics();
   const [isPending, startTransition] = useTransition();
 
   function handleGenerate() {
     startTransition(async () => {
       const result = await generatePRD(projectId, prdId);
+      if (result.success) {
+        trackEvent(ANALYTICS_EVENTS.strategyGenerate, {
+          project_id: projectId,
+          screen: `/projects/${projectId}/prd`,
+        });
+      }
       if (result.success && result.prdId && !prdId) {
         router.push(`/projects/${projectId}/prd/${result.prdId}`);
       } else {

@@ -18,6 +18,8 @@ import { cn } from '@repo/ui/lib/utils';
 
 import { FormSelect } from '@/features/research/components/form-select';
 import { useFormLabels } from '@/lib/i18n/use-form-labels';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
+import { useAnalytics } from '@/lib/analytics/use-analytics';
 
 import { createVOC, updateVOC, type VOCActionState } from '../actions/voc-actions';
 import {
@@ -75,6 +77,7 @@ const withNone = <T extends string>(
 export function VOCForm({ mode, projectId, entry }: VOCFormProps) {
   const tCommon = useTranslations('common');
   const labels = useFormLabels();
+  const { trackEvent } = useAnalytics();
   const action =
     mode === 'create'
       ? createVOC.bind(null, projectId)
@@ -88,7 +91,16 @@ export function VOCForm({ mode, projectId, entry }: VOCFormProps) {
       : `/projects/${projectId}/voc/${entry?.id}`;
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form
+      action={formAction}
+      onSubmit={() =>
+        trackEvent(ANALYTICS_EVENTS.vocCreate, {
+          project_id: projectId,
+          screen: `/projects/${projectId}/voc/new`,
+        })
+      }
+      className="space-y-6"
+    >
       {state.error ? (
         <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           {state.error}

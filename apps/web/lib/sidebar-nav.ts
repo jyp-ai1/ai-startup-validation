@@ -16,6 +16,7 @@ import {
   Settings,
   Swords,
   TrendingUp,
+  Activity,
 } from 'lucide-react';
 
 export type SidebarNavKey =
@@ -35,6 +36,7 @@ export type SidebarNavKey =
   | 'devSpec'
   | 'knowledge'
   | 'agent'
+  | 'operations'
   | 'settings';
 
 export type SidebarNavItem = {
@@ -52,6 +54,7 @@ export type SidebarNavGroup = {
     | 'shell.groupAnalysis'
     | 'shell.groupAi'
     | 'shell.groupKnowledge'
+    | 'shell.groupAdmin'
     | 'shell.groupSystem';
   items: SidebarNavItem[];
 };
@@ -136,6 +139,17 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
     ],
   },
   {
+    labelKey: 'shell.groupAdmin',
+    items: [
+      {
+        key: 'operations',
+        icon: Activity,
+        labelKey: 'nav.operations',
+        globalHref: '/admin/operations',
+      },
+    ],
+  },
+  {
     labelKey: 'shell.groupSystem',
     items: [{ key: 'settings', icon: Settings, labelKey: 'nav.settings' }],
   },
@@ -145,10 +159,16 @@ const GLOBAL_HREFS: Partial<Record<SidebarNavKey, string>> = {
   dashboard: '/dashboard',
   projects: '/projects',
   settings: '/settings',
+  operations: '/admin/operations',
 };
 
 export function resolveSidebarHref(item: SidebarNavItem, projectId?: string | null): string {
-  if (item.key === 'dashboard' || item.key === 'projects' || item.key === 'settings') {
+  if (
+    item.key === 'dashboard' ||
+    item.key === 'projects' ||
+    item.key === 'settings' ||
+    item.key === 'operations'
+  ) {
     return GLOBAL_HREFS[item.key]!;
   }
 

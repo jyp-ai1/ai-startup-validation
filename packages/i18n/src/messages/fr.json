@@ -168,7 +168,8 @@
     "groupIntelligence": "Intelligence",
     "searchPlaceholder": "Search workspace…",
     "groupStrategy": "Strategy",
-    "groupAnalysis": "Analysis"
+    "groupAnalysis": "Analysis",
+    "groupAdmin": "Admin"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -205,7 +206,9 @@
     "marketIntelligence": "Market Intelligence",
     "marketIntelligenceDesc": "Market size, trends, and competitive landscape.",
     "decisionReport": "Decision Report",
-    "strategyReport": "Strategy Report"
+    "strategyReport": "Strategy Report",
+    "operations": "Operations",
+    "operationsDesc": "Product analytics and operational metrics."
   },
   "dashboard": {
     "emptyTitle": "Welcome to your validation workspace",
@@ -1386,5 +1389,47 @@
     "newPrdDesc": "New PRD for {project}",
     "projectNotFoundTitle": "This project does not exist",
     "projectNotFoundDesc": "It may have been deleted or the URL is incorrect."
+  },
+  "analytics": {
+    "consent": {
+      "title": "Analytics & cookies",
+      "description": "We use analytics to improve LaunchLens. Accept to enable Google Analytics and product event tracking. You can decline and still use the product.",
+      "accept": "Accept analytics",
+      "reject": "Decline"
+    }
+  },
+  "operations": {
+    "title": "Operations Dashboard",
+    "description": "Product usage, analytics events, and operational health.",
+    "loading": "Loading metrics…",
+    "liveData": "Live events",
+    "mockData": "Mock baseline",
+    "todayVisitors": "Today's visitors",
+    "weekVisitors": "This week's visitors",
+    "projectCreates": "Projects created",
+    "aiGenerations": "AI generations",
+    "aiGenerationsHint": "Reports, strategy docs, PRD, dev spec",
+    "reportGenerations": "Reports generated",
+    "gaStatus": "Google Analytics",
+    "gaConnected": "Configured",
+    "gaDisabled": "Not configured",
+    "gaHint": "Set NEXT_PUBLIC_GA_MEASUREMENT_ID to enable GA4",
+    "totalEvents": "Total events tracked",
+    "languageBreakdown": "Language mix",
+    "themeBreakdown": "Theme mix",
+    "topScreens": "Top screens",
+    "recentErrors": "Recent errors",
+    "noErrors": "No errors recorded",
+    "webVitals": "Core Web Vitals",
+    "futureGaNote": "Mock metrics shown until GA API integration. Event store is GA-ready."
+  },
+  "errors": {
+    "serverError": "Server error",
+    "somethingWrong": "Something went wrong",
+    "tryAgain": "An unexpected error occurred. Please try again.",
+    "retry": "Try again",
+    "backToDashboard": "Back to dashboard",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The page you requested does not exist or has been moved."
   }
 }

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { getLocale, getTranslations } from 'next-intl/server';
 
+import { env } from '@repo/core/env';
+
 import '@repo/ui/globals.css';
 
 const geistSans = Geist({
@@ -16,9 +18,36 @@ const geistMono = Geist_Mono({
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('meta');
+  const baseUrl = env.NEXT_PUBLIC_APP_URL;
+
   return {
-    title: t('appName'),
+    metadataBase: new URL(baseUrl),
+    title: {
+      default: t('appName'),
+      template: `%s | ${t('titleSuffix')}`,
+    },
     description: t('appDescription'),
+    applicationName: t('appName'),
+    openGraph: {
+      type: 'website',
+      locale: 'ko_KR',
+      url: baseUrl,
+      siteName: t('appName'),
+      title: t('appName'),
+      description: t('appDescription'),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('appName'),
+      description: t('appDescription'),
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    alternates: {
+      canonical: baseUrl,
+    },
   };
 }
 
