@@ -2,9 +2,6 @@
 
 import { LOCALE_LABELS, type AppLocale } from '@repo/i18n/config';
 import { useLocale, useTranslations } from 'next-intl';
-import { useTransition } from 'react';
-
-import { usePathname, useRouter } from '@/i18n/navigation';
 
 import { trackEvent } from '@/lib/analytics/client';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
@@ -21,28 +18,29 @@ type LocaleSwitcherProps = {
   variant?: 'default' | 'compact';
 };
 
+const LOCALE_COOKIE = 'NEXT_LOCALE';
+const LOCALE_MAX_AGE = 60 * 60 * 24 * 365;
+
 export function LocaleSwitcher({ variant = 'default' }: LocaleSwitcherProps) {
   const locale = useLocale() as AppLocale;
   const t = useTranslations('common');
-  const pathname = usePathname();
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const compact = variant === 'compact';
 
   function onChange(nextLocale: string) {
     if (nextLocale === locale || !nextLocale) return;
 
-    startTransition(() => {
-      trackEvent(ANALYTICS_EVENTS.languageChange, {
-        language: nextLocale,
-        screen: pathname,
-      });
-      router.replace(pathname || '/', { locale: nextLocale as AppLocale });
+    trackEvent(ANALYTICS_EVENTS.languageChange, {
+      language: nextLocale,
+      screen: typeof window !== 'undefined' ? window.location.pathname : undefined,
     });
+
+    // Hard reload — localePrefix never keeps URL at `/`, so soft navigation won't refresh messages.
+    document.cookie = `${LOCALE_COOKIE}=${nextLocale}; path=/; max-age=${LOCALE_MAX_AGE}; SameSite=Lax`;
+    window.location.reload();
   }
 
   return (
-    <Select value={locale} onValueChange={onChange} disabled={isPending}>
+    <Select value={locale} onValueChange={onChange}>
       <SelectTrigger
         className={
           compact

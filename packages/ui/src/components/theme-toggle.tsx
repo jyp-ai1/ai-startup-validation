@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Laptop, Moon, Sun } from 'lucide-react';
+import { Check, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 import { Button } from '@repo/ui/components/button';
@@ -13,9 +13,8 @@ import {
 import { cn } from '@repo/ui/lib/utils';
 
 const themes = [
-  { value: 'light', icon: Sun },
   { value: 'dark', icon: Moon },
-  { value: 'system', icon: Laptop },
+  { value: 'light', icon: Sun },
 ] as const;
 
 export function ThemeToggle({
@@ -29,7 +28,7 @@ export function ThemeToggle({
   /** Native hover tooltip on trigger (icon-only). */
   tooltip?: string;
   /** Per-theme labels for menu tooltips and screen readers. */
-  labels?: { light: string; dark: string; system: string };
+  labels?: { light: string; dark: string; system?: string };
 }) {
   const { theme, setTheme } = useTheme();
 
@@ -41,8 +40,7 @@ export function ThemeToggle({
   function labelFor(value: string) {
     if (!labels) return value;
     if (value === 'light') return labels.light;
-    if (value === 'dark') return labels.dark;
-    return labels.system;
+    return labels.dark;
   }
 
   return (
