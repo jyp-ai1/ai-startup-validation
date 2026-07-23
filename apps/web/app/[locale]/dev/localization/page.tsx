@@ -3,27 +3,27 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-import { loadMessages, humanizeMessageKey } from '@repo/i18n';
+import { BETA_LOCALES, loadMessages, humanizeMessageKey } from '@repo/i18n';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { PageHeader } from '@repo/ui';
 
 const SAMPLE_KEYS = [
-  'intelligence.aiRecommendation',
-  'intelligence.executiveSummary',
-  'intelligence.readinessTitle',
-  'intelligence.fundingProbability',
-  'intelligence.confidence',
+  'landing.hero.title',
+  'landing.nav.startFree',
+  'landing.pricing.title',
+  'landing.faq.title',
   'nav.dashboard',
   'nav.research',
   'nav.decisionReport',
   'common.save',
-  'common.terminology.evidence',
+  'common.language',
   'dashboard.newProject',
   'validation.title',
   'reports.title',
-  'businessPlan.title',
-  'agent.title',
+  'decision.title',
+  'auth.signIn',
+  'meta.appName',
 ] as const;
 
 function resolve(messages: Record<string, unknown>, dotPath: string): string | undefined {
@@ -39,7 +39,7 @@ function resolve(messages: Record<string, unknown>, dotPath: string): string | u
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('dev');
-  return { title: t('localizationTitle') };
+  return { title: t('localizationTitle'), robots: { index: false, follow: false } };
 }
 
 export default async function LocalizationTestPage() {
@@ -68,9 +68,11 @@ export default async function LocalizationTestPage() {
         title={t('localizationTitle')}
         description={t('localizationDesc', { missing: missingCount, total: rows.length })}
       />
-      <div className="mt-6 flex items-center gap-3">
-        <LocaleSwitcher />
-        <p className="text-sm text-muted-foreground">{t('switchHint')}</p>
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <LocaleSwitcher variant="compact" />
+        <p className="text-sm text-muted-foreground">
+          Beta locales: {BETA_LOCALES.join(', ')} · Run <code className="text-xs">pnpm audit:i18n</code>
+        </p>
       </div>
       <div className="mt-8 overflow-x-auto rounded-xl border border-border/70">
         <table className="w-full min-w-[720px] text-left text-sm">

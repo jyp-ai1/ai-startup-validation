@@ -2,11 +2,18 @@ import type { AppLocale } from './config';
 import { mergeMessages } from './merge-messages';
 
 export {
+  BETA_LOCALES,
   DEFAULT_LOCALE,
   LOCALES,
+  LOCALE_DROPDOWN_LABELS,
+  LOCALE_ISO_CODES,
   LOCALE_LABELS,
+  OPEN_GRAPH_LOCALES,
   isAppLocale,
+  isBetaLocale,
+  localeToIsoCode,
   type AppLocale,
+  type BetaLocale,
 } from './config';
 
 export { mergeMessages, humanizeMessageKey } from './merge-messages';

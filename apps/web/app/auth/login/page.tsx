@@ -5,13 +5,15 @@ import { getTranslations } from 'next-intl/server';
 import { Sparkles } from 'lucide-react';
 
 import { GoogleSignInButton } from '@/features/auth';
+import { LocaleSwitcher } from '@/components/locale-switcher';
 import { getServerAuthUser } from '@/lib/auth/server-auth';
 import { isSupabaseConfigured } from '@repo/db';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('auth');
+  const tm = await getTranslations('meta');
   return {
-    title: `${t('signIn')} | LaunchLens`,
+    title: `${t('signIn')} | ${tm('titleSuffix')}`,
     robots: { index: false, follow: false },
   };
 }
@@ -26,6 +28,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const safeNext = next.startsWith('/') ? next : '/dashboard';
   const user = await getServerAuthUser();
   const t = await getTranslations('auth');
+  const tm = await getTranslations('meta');
 
   if (user) {
     redirect(safeNext);
@@ -34,19 +37,22 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const supabaseReady = isSupabaseConfigured();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-6 dark:bg-zinc-950">
-      <div className="w-full max-w-md rounded-2xl border border-black/[0.06] bg-white p-8 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-6">
+      <div className="absolute right-4 top-4 flex items-center gap-2 sm:right-6 sm:top-6">
+        <LocaleSwitcher variant="compact" />
+      </div>
+      <div className="w-full max-w-md rounded-2xl border border-border/60 bg-card p-8 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-zinc-900 text-white">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Sparkles className="size-5" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">LaunchLens</h1>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('tagline')}</p>
+            <h1 className="text-xl font-semibold tracking-tight">{tm('appName')}</h1>
+            <p className="text-sm text-muted-foreground">{t('tagline')}</p>
           </div>
         </div>
 
-        <p className="mt-8 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">{t('loginDesc')}</p>
+        <p className="mt-8 text-sm leading-relaxed text-muted-foreground">{t('loginDesc')}</p>
 
         {params.error ? (
           <p className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
@@ -64,11 +70,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <GoogleSignInButton redirectTo={safeNext} className="h-11 w-full rounded-xl" />
         </div>
 
-        <p className="mt-6 text-center text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-6 text-center text-xs text-muted-foreground">
           {t('demoHint')}{' '}
           <Link
             href="/demo/enter"
-            className="font-medium text-zinc-900 underline-offset-2 hover:underline dark:text-zinc-100"
+            className="font-medium text-foreground underline-offset-2 hover:underline"
           >
             {t('demoLink')}
           </Link>

@@ -8,7 +8,25 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint 5.9 — Localization Complete (Hotfix) ✅
+## Sprint L2.4.1 — Global UX Stabilization & Beta Quality 🔄
+
+**Status:** In progress (awaiting PM deploy approval)  
+**Goal:** Beta-ready global UX — language selector, locale persistence, KO/EN beta policy, SEO locale, translation audit. **No new features.**
+
+| EPIC | Status | Owner |
+|------|--------|-------|
+| E1 Language selector UI (opaque dropdown) | ✅ Done | AI |
+| E2 Header KO/EN + flag dropdown | ✅ Done | AI |
+| E3/E6 Locale change + persistence | ✅ Done | AI |
+| E7 SEO hreflang / og locale | ✅ Done | AI |
+| E8 Beta locales (KO/EN only in switcher) | ✅ Done | AI |
+| E4/E5 Translation audit tool (`pnpm audit:i18n`) | ✅ Done | AI |
+| Senior QA (Lighthouse manual) | ⏳ Pending PM | PM |
+| DevOps deploy to production | ⏳ Blocked — PM approval | PM |
+
+**Verify:** `pnpm build && pnpm lint && pnpm audit:i18n`
+
+---
 
 **Status:** Complete  
 **Goal:** Fix i18n bug — translation keys must never appear in UI. Korean + English fully supported with en fallback chain.

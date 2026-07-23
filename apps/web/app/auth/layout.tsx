@@ -9,6 +9,8 @@ type AuthLayoutProps = {
 };
 
 /** Auth routes sit outside `[locale]` — provide i18n + theme here. */
+export const dynamic = 'force-dynamic';
+
 export default async function AuthLayout({ children }: AuthLayoutProps) {
   const locale = await getLocale();
   const messages = await getMessages();

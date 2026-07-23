@@ -15,6 +15,11 @@ export const LOCALES = [
 
 export type AppLocale = (typeof LOCALES)[number];
 
+/** Beta public UI — only these appear in the language switcher. */
+export const BETA_LOCALES = ['ko', 'en'] as const satisfies readonly AppLocale[];
+
+export type BetaLocale = (typeof BETA_LOCALES)[number];
+
 export const DEFAULT_LOCALE: AppLocale = 'ko';
 
 export const LOCALE_LABELS: Record<AppLocale, string> = {
@@ -31,6 +36,50 @@ export const LOCALE_LABELS: Record<AppLocale, string> = {
   id: 'Bahasa Indonesia',
 };
 
+/** Header trigger — ISO 639-1 style (2 letters). */
+export const LOCALE_ISO_CODES: Record<AppLocale, string> = {
+  ko: 'KO',
+  en: 'EN',
+  ja: 'JA',
+  'zh-CN': 'ZH',
+  'zh-TW': 'TW',
+  es: 'ES',
+  fr: 'FR',
+  de: 'DE',
+  pt: 'PT',
+  vi: 'VI',
+  id: 'ID',
+};
+
+/** Dropdown — flag + native label (beta locales). */
+export const LOCALE_DROPDOWN_LABELS: Record<BetaLocale, string> = {
+  ko: '🇰🇷 한국어',
+  en: '🇺🇸 English',
+};
+
+/** Open Graph locale tags. */
+export const OPEN_GRAPH_LOCALES: Record<AppLocale, string> = {
+  ko: 'ko_KR',
+  en: 'en_US',
+  ja: 'ja_JP',
+  'zh-CN': 'zh_CN',
+  'zh-TW': 'zh_TW',
+  es: 'es_ES',
+  fr: 'fr_FR',
+  de: 'de_DE',
+  pt: 'pt_BR',
+  vi: 'vi_VN',
+  id: 'id_ID',
+};
+
 export function isAppLocale(value: string): value is AppLocale {
   return (LOCALES as readonly string[]).includes(value);
+}
+
+export function isBetaLocale(value: string): value is BetaLocale {
+  return (BETA_LOCALES as readonly string[]).includes(value);
+}
+
+export function localeToIsoCode(locale: AppLocale): string {
+  return LOCALE_ISO_CODES[locale];
 }

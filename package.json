@@ -9,7 +9,9 @@
     "start": "pnpm --filter web start",
     "lint": "pnpm --filter web lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css}\""
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
+    "audit:i18n": "node scripts/audit-i18n-coverage.mjs",
+    "audit:i18n:strict": "node scripts/audit-i18n-coverage.mjs --strict"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",
