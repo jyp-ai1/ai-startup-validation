@@ -1,7 +1,4 @@
-import { cookies } from 'next/headers';
-
-import { getWorkspaceContext } from '@/features/dashboard/services/dashboard-service';
-import { listStartupProjects } from '@/features/projects/services/project-service';
+import { getWorkspaceSession } from '@/lib/auth/workspace-session';
 import type { StartupProject } from '@repo/types/validation';
 
 import { AppShell } from './app-shell';
@@ -12,29 +9,32 @@ type AppShellWrapperProps = {
 };
 
 export async function AppShellWrapper({ children }: AppShellWrapperProps) {
-  const cookieStore = await cookies();
-  const preferredProjectId = cookieStore.get('ACTIVE_PROJECT_ID')?.value ?? null;
-  const workspace = await getWorkspaceContext(preferredProjectId);
-  const projects = await listStartupProjects();
-  const recentProjects = projects
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-    .slice(0, 6)
-    .map((p) => ({ id: p.id, title: p.title }));
+  const session = await getWorkspaceSession();
 
   const activeProject: Pick<StartupProject, 'id' | 'title' | 'status' | 'updatedAt'> | null =
-    workspace.activeProject
+    session.workspace.activeProject
       ? {
-          id: workspace.activeProject.id,
-          title: workspace.activeProject.title,
-          status: workspace.activeProject.status,
-          updatedAt: workspace.activeProject.updatedAt,
+          id: session.workspace.activeProject.id,
+          title: session.workspace.activeProject.title,
+          status: session.workspace.activeProject.status,
+          updatedAt: session.workspace.activeProject.updatedAt,
         }
       : null;
+
+  const recentProjects = session.demoMode ? session.demoProjects : session.userProjects;
 
   return (
     <AppShellGate
       shell={
-        <AppShell activeProject={activeProject} recentProjects={recentProjects}>
+        <AppShell
+          activeProject={activeProject}
+          recentProjects={recentProjects}
+          user={session.user}
+          demoMode={session.demoMode}
+          userProjects={session.userProjects}
+          demoProjects={session.demoProjects}
+          stats={session.workspace.stats}
+        >
           {children}
         </AppShell>
       }

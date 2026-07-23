@@ -34,7 +34,7 @@ export function LandingConsultantDemo() {
               </li>
             </ul>
             <LandingCtaLink
-              href="/dashboard"
+              href="/demo/enter"
               event="cta_demo"
               className="mt-10 h-12 rounded-xl bg-zinc-900 px-8 text-white hover:bg-zinc-800"
             >

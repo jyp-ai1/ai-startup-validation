@@ -2,10 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ArrowLeft, Bell, Menu, Search, Sparkles, UserRound } from 'lucide-react';
+import { ArrowLeft, Bell, Menu, Search, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import type { ProjectDashboardStats } from '@/features/dashboard/types';
+import { OnboardingProgressBar, WorkspaceSwitcher } from '@/features/activation';
+import { UserMenu } from '@/features/auth';
+import type { AppAuthUser } from '@/lib/auth/server-auth';
 import type { StartupProject, ValidationScore } from '@repo/types/validation';
 import {
   AppContent,
@@ -41,6 +45,11 @@ type AppShellProps = {
   activeProject?: ActiveProjectSummary | null;
   validationScore?: ValidationScore | null;
   recentProjects?: Pick<StartupProject, 'id' | 'title'>[];
+  user?: AppAuthUser | null;
+  demoMode?: boolean;
+  userProjects?: Pick<StartupProject, 'id' | 'title'>[];
+  demoProjects?: Pick<StartupProject, 'id' | 'title'>[];
+  stats?: ProjectDashboardStats | null;
 };
 
 function SidebarBrand() {
@@ -119,14 +128,22 @@ export function AppShell({
   children,
   activeProject,
   recentProjects = [],
+  user = null,
+  demoMode = false,
+  userProjects = [],
+  demoProjects = [],
+  stats = null,
 }: AppShellProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const t = useTranslations();
+  const tAuth = useTranslations('auth');
   const { trackEvent } = useAnalytics();
   const appName = t('meta.appName');
   const routeProjectId = pathname.match(/\/projects\/([^/]+)/)?.[1] ?? null;
   const projectId = routeProjectId ?? activeProject?.id ?? null;
+  const showOnboardingProgress =
+    pathname.includes('/dashboard') && stats && activeProject && !demoMode;
 
   return (
     <AppLayout
@@ -160,7 +177,7 @@ export function AppShell({
               <span className="truncate text-sm font-semibold lg:hidden">{appName}</span>
             </div>
             <div className="flex items-center gap-2">
-              <DemoModeBadge />
+              {demoMode ? <DemoModeBadge /> : null}
               <div
                 className="hidden cursor-pointer items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-3 py-2 md:flex"
                 onClick={() =>
@@ -185,12 +202,13 @@ export function AppShell({
               </Button>
               <LocaleSwitcher />
               <TrackedThemeToggle />
-              <div
-                className="hidden size-9 items-center justify-center rounded-full border border-border/60 bg-muted/50 sm:flex"
-                aria-hidden
-              >
-                <UserRound className="size-4 text-muted-foreground" />
-              </div>
+              {user ? (
+                <UserMenu user={user} />
+              ) : (
+                <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
+                  <Link href="/auth/login?next=/dashboard">{tAuth('signIn')}</Link>
+                </Button>
+              )}
             </div>
           </div>
         </AppHeader>
@@ -198,6 +216,14 @@ export function AppShell({
       sidebar={
         <AppSidebar className="gap-6 bg-sidebar text-sidebar-foreground">
           <SidebarBrand />
+          <WorkspaceSwitcher
+            demoMode={demoMode}
+            isAuthenticated={Boolean(user)}
+            activeProjectId={projectId}
+            userProjects={userProjects}
+            demoProjects={demoProjects}
+            className="w-full"
+          />
           {projectId && activeProject ? (
             <div className="space-y-3 border-b border-sidebar-border pb-6">
               <p className="px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-sidebar-foreground/45">
@@ -237,7 +263,14 @@ export function AppShell({
           </nav>
         </DialogContent>
       </Dialog>
-      <AppContent>{children}</AppContent>
+      <AppContent>
+        {showOnboardingProgress ? (
+          <div className="mb-6">
+            <OnboardingProgressBar stats={stats} />
+          </div>
+        ) : null}
+        {children}
+      </AppContent>
     </AppLayout>
   );
 }

@@ -25,7 +25,12 @@ type StartupProjectRow = {
   target_customer: string | null;
   industry: string | null;
   business_model: string | null;
+  country: string | null;
+  project_goal: StartupProject['projectGoal'];
   project_type: StartupProject['projectType'];
+  user_id: string | null;
+  is_demo: boolean;
+  onboarding_context: Record<string, unknown> | null;
   status: StartupProject['status'];
   created_at: string;
   updated_at: string;
@@ -41,7 +46,12 @@ function toStartupProject(row: StartupProjectRow): StartupProject {
     targetCustomer: row.target_customer,
     industry: row.industry,
     businessModel: row.business_model,
+    country: row.country,
+    projectGoal: row.project_goal,
     projectType: row.project_type ?? 'STARTUP',
+    userId: row.user_id,
+    isDemo: row.is_demo ?? false,
+    onboardingContext: row.onboarding_context ?? null,
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -57,7 +67,11 @@ function toInsertRow(input: CreateStartupProjectInput) {
     target_customer: input.targetCustomer ?? null,
     industry: input.industry ?? null,
     business_model: input.businessModel ?? null,
+    country: input.country ?? null,
+    project_goal: input.projectGoal ?? null,
     project_type: input.projectType ?? 'STARTUP',
+    user_id: input.userId ?? null,
+    is_demo: input.isDemo ?? false,
     status: input.status ?? 'DRAFT',
   };
 }
@@ -76,6 +90,11 @@ function toUpdateRow(input: UpdateStartupProjectInput) {
       ? { business_model: input.businessModel }
       : {}),
     ...(input.projectType !== undefined ? { project_type: input.projectType } : {}),
+    ...(input.country !== undefined ? { country: input.country } : {}),
+    ...(input.projectGoal !== undefined ? { project_goal: input.projectGoal } : {}),
+    ...(input.onboardingContext !== undefined
+      ? { onboarding_context: input.onboardingContext }
+      : {}),
     ...(input.status !== undefined ? { status: input.status } : {}),
     updated_at: new Date().toISOString(),
   };

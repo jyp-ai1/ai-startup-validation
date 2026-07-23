@@ -2313,6 +2313,7 @@
       "decisionGenerated": "Decision analysis completed",
       "reportGenerated": "Executive report generated",
       "orchestratorComplete": "AI orchestrator run completed",
+      "onboardingComplete": "Onboarding interview completed",
       "activity": {
         "research": "Research activity",
         "evidence": "Evidence added",
@@ -2837,6 +2838,181 @@
         "r2Label": "Measure outcome fit",
         "r2Text": "Quantify how well the solution delivers desired customer outcomes."
       }
+    }
+  },
+  "onboardingConsultant": {
+    "welcome": {
+      "title": "LaunchLens AI Strategy Consultant",
+      "body": "Hello.\n\nI'm your LaunchLens AI Strategy Consultant.\n\nI'll analyze this project with you.\n\nLet me ask a few quick questions first.",
+      "project": "Project: {project}",
+      "cta": "Get started"
+    },
+    "questions": {
+      "q1": {
+        "title": "What are you trying to validate?",
+        "hint": "Describe the core hypothesis you want to test.",
+        "placeholder": "e.g. Seniors want a trusted matching service for hobbies"
+      },
+      "q2": {
+        "title": "Who is your primary customer?",
+        "hint": "Be specific about segment and context.",
+        "placeholder": "e.g. Active seniors aged 60–75 in urban Korea"
+      },
+      "q3": {
+        "title": "Who are your known competitors?",
+        "hint": "Direct or indirect — list what you know today.",
+        "placeholder": "e.g. Senior community apps, offline centers"
+      },
+      "q4": {
+        "title": "What worries you most right now?",
+        "hint": "Pick the biggest uncertainty."
+      },
+      "q5": {
+        "title": "What is your ultimate goal?",
+        "hint": "This sets research priorities."
+      }
+    },
+    "concerns": {
+      "MARKET": "Market demand",
+      "REVENUE": "Revenue model",
+      "COMPETITION": "Competition",
+      "GOVERNMENT": "Government support",
+      "INVESTMENT": "Investment",
+      "TECHNOLOGY": "Technology"
+    },
+    "goals": {
+      "FUNDRAISING": "Fundraising",
+      "NEW_BUSINESS": "New business",
+      "STRATEGY": "Strategy planning",
+      "AI_ADOPTION": "AI adoption",
+      "GOVERNMENT_GRANT": "Government grant"
+    },
+    "back": "Back",
+    "next": "Next",
+    "review": "Review",
+    "edit": "Edit answers",
+    "confirmClose": "Leave the interview? Your progress will be lost.",
+    "summary": {
+      "title": "Here's what I understood",
+      "desc": "Confirm before I generate your research plan.",
+      "intro": "Here's my understanding:",
+      "target": "Primary customer: {target}",
+      "competitors": "Competitors: {competitors}",
+      "concern": "Top concern: {concern}",
+      "goal": "Ultimate goal: {goal}",
+      "unknown": "Not specified",
+      "confirm": "Looks good — create plan"
+    },
+    "saving": "Saving…",
+    "plan": {
+      "title": "Your AI research plan",
+      "desc": "Prioritized based on your answers.",
+      "start": "Start AI research",
+      "starting": "Starting AI…"
+    },
+    "plans": {
+      "market": {
+        "title": "Market analysis",
+        "category": "Market"
+      },
+      "competitor": {
+        "title": "Competitor scan",
+        "category": "Competitor"
+      },
+      "voc": {
+        "title": "Customer VOC",
+        "category": "VOC"
+      },
+      "government": {
+        "title": "Government programs",
+        "category": "Government"
+      },
+      "technology": {
+        "title": "Technology review",
+        "category": "Technology"
+      },
+      "investment": {
+        "title": "Business & investment",
+        "category": "Investment"
+      }
+    }
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "account": "Account",
+    "continueWithGoogle": "Continue with Google",
+    "signingIn": "Signing in…"
+  },
+  "activation": {
+    "wizard": {
+      "eyebrow": "First project",
+      "title": "Create your first project",
+      "desc": "Answer a few questions — we'll set up your strategy workspace in under 5 minutes.",
+      "step1Title": "What type of project?",
+      "step2Title": "Tell us about your project",
+      "step3Title": "What's your primary goal?",
+      "typeStartup": "Startup Validation",
+      "typeStrategy": "Business Strategy",
+      "typeAi": "AI Initiative",
+      "projectName": "Project name",
+      "projectNamePlaceholder": "e.g. Silver Generation Matching Service",
+      "industry": "Industry",
+      "industryPlaceholder": "e.g. HealthTech, SaaS",
+      "country": "Country / market",
+      "countryPlaceholder": "e.g. South Korea",
+      "description": "Description",
+      "descriptionPlaceholder": "What problem are you solving?",
+      "targetCustomer": "Target customer",
+      "targetPlaceholder": "Who is your primary customer?",
+      "back": "Back",
+      "next": "Next",
+      "create": "Create project",
+      "creating": "Creating…",
+      "goal": {
+        "MARKET_VALIDATION": "Market validation",
+        "BUSINESS_STRATEGY": "Business strategy",
+        "GOVERNMENT_GRANT": "Government grant",
+        "FUNDRAISING": "Fundraising",
+        "NEW_BUSINESS": "New business",
+        "AI_BUILD": "AI build"
+      },
+      "errors": {
+        "titleRequired": "Project name is required",
+        "industryRequired": "Industry is required",
+        "countryRequired": "Country is required",
+        "descriptionRequired": "Description is required",
+        "targetRequired": "Target customer is required"
+      }
+    },
+    "progress": {
+      "label": "Onboarding progress",
+      "steps": {
+        "research": "Research",
+        "voc": "VOC",
+        "evidence": "Evidence",
+        "decision": "Decision",
+        "report": "Report"
+      }
+    },
+    "checklist": {
+      "title": "Today's tasks",
+      "desc": "Complete these steps to generate your first report.",
+      "items": {
+        "project": "Create project",
+        "research": "AI Research",
+        "evidence": "Add evidence",
+        "decision": "Run decision",
+        "report": "Generate report"
+      }
+    },
+    "workspace": {
+      "title": "Workspace",
+      "demoLabel": "Demo",
+      "myProjects": "My Projects",
+      "active": "Active",
+      "recentDemo": "Demo projects",
+      "recentProjects": "Recent projects"
     }
   },
   "errors": {

@@ -113,10 +113,13 @@ export type ConsultantViewModel = {
   feed: ConsultantFeedItem[];
 };
 
+import type { OnboardingContext } from '@/features/onboarding-consultant/types';
+
 export type ConsultantInput = {
   stats: ProjectDashboardStats;
   executive: ExecutiveWorkspaceViewModel | null;
   strategy: StrategyWorkspaceViewModel | null;
   hasExecutiveReport: boolean;
   orchestratorPlan: ExecutionPlan | null;
+  onboardingContext?: OnboardingContext | null;
 };

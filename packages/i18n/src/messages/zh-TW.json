@@ -2979,6 +2979,7 @@
       "decisionGenerated": "Decision analysis completed",
       "reportGenerated": "Executive report generated",
       "orchestratorComplete": "AI orchestrator run completed",
+      "onboardingComplete": "Onboarding interview completed",
       "activity": {
         "research": "Research activity",
         "evidence": "Evidence added",

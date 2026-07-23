@@ -48,10 +48,10 @@ export function LandingHeader() {
           <LocaleSwitcher variant="compact" />
           <TrackedThemeToggle />
           <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
-            <Link href="/dashboard">{t('nav.signIn')}</Link>
+            <Link href="/auth/login?next=/dashboard">{t('nav.signIn')}</Link>
           </Button>
           <LandingCtaLink
-            href="/dashboard"
+            href="/auth/login?next=/dashboard"
             event="cta_start"
             size="sm"
             className="h-9 rounded-xl bg-zinc-900 px-3 text-white hover:bg-zinc-800 sm:px-4"

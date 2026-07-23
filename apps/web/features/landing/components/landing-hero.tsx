@@ -39,7 +39,7 @@ export function LandingHero() {
 
           <div className="mt-10 flex flex-wrap gap-3">
             <LandingCtaLink
-              href="/dashboard"
+              href="/auth/login?next=/dashboard"
               event="cta_start"
               className="h-12 rounded-xl bg-zinc-900 px-8 text-white hover:bg-zinc-800"
             >
@@ -47,7 +47,7 @@ export function LandingHero() {
               <ArrowRight className="size-4" />
             </LandingCtaLink>
             <LandingCtaLink
-              href="/dashboard"
+              href="/demo/enter"
               event="cta_demo"
               variant="outline"
               className="h-12 rounded-xl border-zinc-200 bg-white px-8 text-zinc-900 hover:bg-zinc-50"
