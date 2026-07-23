@@ -4,7 +4,7 @@ import { LOCALE_LABELS, type AppLocale } from '@repo/i18n/config';
 import { useLocale, useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 
-import { usePathname } from '@/i18n/navigation';
+import { usePathname, useRouter } from '@/i18n/navigation';
 
 import { trackEvent } from '@/lib/analytics/client';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
@@ -25,6 +25,7 @@ export function LocaleSwitcher({ variant = 'default' }: LocaleSwitcherProps) {
   const locale = useLocale() as AppLocale;
   const t = useTranslations('common');
   const pathname = usePathname();
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const compact = variant === 'compact';
 
@@ -32,13 +33,11 @@ export function LocaleSwitcher({ variant = 'default' }: LocaleSwitcherProps) {
     if (nextLocale === locale || !nextLocale) return;
 
     startTransition(() => {
-      document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
       trackEvent(ANALYTICS_EVENTS.languageChange, {
         language: nextLocale,
         screen: pathname,
       });
-      // Hard navigation ensures server components reload with the new cookie locale.
-      window.location.href = pathname || '/dashboard';
+      router.replace(pathname || '/', { locale: nextLocale as AppLocale });
     });
   }
 
@@ -52,9 +51,11 @@ export function LocaleSwitcher({ variant = 'default' }: LocaleSwitcherProps) {
         }
         aria-label={t('language')}
       >
-        <SelectValue>{compact ? locale.toUpperCase().replace('-', '') : undefined}</SelectValue>
+        <SelectValue placeholder={LOCALE_LABELS[locale]}>
+          {compact ? locale.toUpperCase().replace('-', '') : LOCALE_LABELS[locale]}
+        </SelectValue>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent position="popper" className="z-[120]">
         {(Object.entries(LOCALE_LABELS) as [AppLocale, string][]).map(([code, label]) => (
           <SelectItem key={code} value={code}>
             {label}

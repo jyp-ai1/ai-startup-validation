@@ -18,30 +18,30 @@ export function LandingHero() {
   ];
 
   return (
-    <section className="relative min-h-[100vh] overflow-hidden bg-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(120,119,198,0.08),transparent)]" />
+    <section className="relative min-h-[100vh] overflow-hidden bg-background">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(120,119,198,0.08),transparent)] dark:bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(120,119,198,0.16),transparent)]" />
 
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 pb-20 pt-16 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10 lg:pb-28 lg:pt-24">
         <div className="max-w-xl">
-          <p className="text-sm font-medium text-zinc-500">{t('eyebrow')}</p>
-          <h1 className="mt-4 text-4xl font-semibold leading-[1.08] tracking-tight text-zinc-900 md:text-5xl lg:text-[3.25rem]">
+          <p className="text-sm font-medium text-muted-foreground">{t('eyebrow')}</p>
+          <h1 className="mt-4 text-4xl font-semibold leading-[1.08] tracking-tight text-foreground md:text-5xl lg:text-[3.25rem]">
             {t('title')}
           </h1>
           <ul className="mt-8 space-y-2.5">
             {bullets.map((item) => (
-              <li key={item} className="flex items-center gap-2 text-[15px] text-zinc-600">
-                <span className="size-1.5 shrink-0 rounded-full bg-zinc-900" />
+              <li key={item} className="flex items-center gap-2 text-[15px] text-muted-foreground">
+                <span className="size-1.5 shrink-0 rounded-full bg-foreground" />
                 {item}
               </li>
             ))}
           </ul>
-          <p className="mt-6 text-lg font-medium text-zinc-800">{t('tagline')}</p>
+          <p className="mt-6 text-lg font-medium text-foreground/90">{t('tagline')}</p>
 
           <div className="mt-10 flex flex-wrap gap-3">
             <LandingCtaLink
               href="/auth/login?next=/dashboard"
               event="cta_start"
-              className="h-12 rounded-xl bg-zinc-900 px-8 text-white hover:bg-zinc-800"
+              className="h-12 rounded-xl bg-primary px-8 text-primary-foreground hover:bg-primary/90"
             >
               {t('ctaStart')}
               <ArrowRight className="size-4" />
@@ -50,13 +50,13 @@ export function LandingHero() {
               href="/demo/enter"
               event="cta_demo"
               variant="outline"
-              className="h-12 rounded-xl border-zinc-200 bg-white px-8 text-zinc-900 hover:bg-zinc-50"
+              className="h-12 rounded-xl border-border bg-background px-8 text-foreground hover:bg-muted"
             >
               <Play className="size-4" />
               {t('ctaDemo')}
             </LandingCtaLink>
           </div>
-          <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-[13px] text-zinc-500">
+          <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-[13px] text-muted-foreground">
             <li>{t('ctaHint1')}</li>
             <li className="hidden sm:list-item">·</li>
             <li>{t('ctaHint2')}</li>

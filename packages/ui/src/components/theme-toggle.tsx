@@ -60,18 +60,18 @@ export function ThemeToggle({
           <span className="sr-only">{tooltip ?? 'Toggle theme'}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-[3rem]">
+      <DropdownMenuContent align="end" className="z-[120] min-w-[8rem]">
         {themes.map(({ value, icon: Icon }) => (
           <DropdownMenuItem
             key={value}
             onClick={() => handleChange(value)}
             title={labelFor(value)}
             aria-label={labelFor(value)}
-            className="justify-center px-3"
+            className="gap-2 px-3"
           >
             <Icon className="size-4" />
-            {theme === value ? <Check className="ml-1 size-3.5" /> : null}
-            <span className="sr-only">{labelFor(value)}</span>
+            <span className="text-sm">{labelFor(value)}</span>
+            {theme === value ? <Check className="ml-auto size-3.5" /> : null}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

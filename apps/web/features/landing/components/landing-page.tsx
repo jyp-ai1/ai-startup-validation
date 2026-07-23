@@ -14,7 +14,7 @@ import { LandingUseCases } from './landing-use-cases';
 
 export function LandingPage() {
   return (
-    <div className="min-h-full bg-white text-zinc-900">
+    <div className="min-h-full bg-background text-foreground">
       <LandingTracker />
       <LandingHeader />
       <main>
