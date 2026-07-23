@@ -2,10 +2,8 @@
 
 import Link from 'next/link';
 import {
-  ArrowRight,
   BarChart3,
   Bot,
-  Clock,
   FileText,
   Landmark,
   MessageSquareQuote,
@@ -13,7 +11,6 @@ import {
   Plus,
   Search,
   ShieldCheck,
-  Sparkles,
   Swords,
   Trash2,
 } from 'lucide-react';
@@ -26,8 +23,8 @@ import type { ProjectDashboardStats } from '@/features/dashboard/types';
 import { getValidationHealth } from '@/features/dashboard/types';
 import { deleteProject } from '@/features/projects/actions/project-actions';
 import { ProjectForm } from '@/features/projects/components/project-form';
-import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import { ValidationDecisionBadge } from '@/features/validation/components/validation-decision-badge';
+import type { IntelligenceViewModel } from '@/features/project-intelligence';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
 import type { StartupProject } from '@repo/types/validation';
@@ -43,7 +40,14 @@ import {
 } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
-import type { IntelligenceViewModel } from '@/features/project-intelligence';
+import {
+  BlockProgress,
+  RecentActivityPanel,
+  TodaysFocusCard,
+  useFavoriteProjects,
+  WorkspaceEmptyState,
+  WorkspaceHeader,
+} from '@/features/workspace-polish';
 
 import type { WorkspaceHomeViewModel, WorkspaceTabId } from '../types';
 
@@ -65,18 +69,36 @@ const KNOWLEDGE_ITEMS = [
   { key: 'grants' as const, icon: Landmark, href: 'grants', labelKey: 'knowledge.grants' },
 ] as const;
 
-function ProgressBar({ label, percent }: { label: string; percent: number }) {
+function ProgressStats({
+  workspaceHome,
+  health,
+  t,
+  tw,
+}: {
+  workspaceHome: WorkspaceHomeViewModel;
+  health: ReturnType<typeof getValidationHealth>;
+  t: ReturnType<typeof useTranslations>;
+  tw: ReturnType<typeof useTranslations>;
+}) {
   return (
-    <div>
-      <div className="mb-2 flex items-center justify-between text-[13px]">
-        <span className="font-medium text-foreground">{label}</span>
-        <span className="tabular-nums text-muted-foreground">{percent}%</span>
+    <div className="grid gap-4 sm:grid-cols-3">
+      <div className="rounded-xl border border-border/60 bg-muted/30 p-4 motion-safe:transition-shadow hover:shadow-sm">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {tw('hero.overallProgress')}
+        </p>
+        <p className="mt-2 text-3xl font-semibold tabular-nums">{workspaceHome.overallProgress}%</p>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-muted">
-        <div
-          className="h-full rounded-full bg-primary transition-all duration-700"
-          style={{ width: `${Math.min(100, percent)}%` }}
-        />
+      <div className="rounded-xl border border-border/60 bg-muted/30 p-4 motion-safe:transition-shadow hover:shadow-sm">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {tw('hero.health')}
+        </p>
+        <p className="mt-2 text-lg font-semibold">{t(`dashboard.health.${health.label}`)}</p>
+      </div>
+      <div className="rounded-xl border border-border/60 bg-muted/30 p-4 motion-safe:transition-shadow hover:shadow-sm">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {tw('hero.confidence')}
+        </p>
+        <p className="mt-2 text-3xl font-semibold tabular-nums">{workspaceHome.confidencePercent}%</p>
       </div>
     </div>
   );
@@ -100,6 +122,7 @@ export function ProjectWorkspaceHome({
   const [isEditing, setIsEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
+  const { isFavorite, toggleFavorite } = useFavoriteProjects();
 
   const score = stats.validationScore?.totalScore ?? null;
   const decision = stats.validationScore?.decision ?? null;
@@ -162,72 +185,27 @@ export function ProjectWorkspaceHome({
   }
 
   const mainContent = (
-    <div className="space-y-10 motion-safe:animate-in motion-safe:fade-in">
-      {/* Hero */}
-      <header className="ll-consulting-card space-y-5">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="min-w-0 space-y-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-              {tw('hero.eyebrow')}
-            </p>
-            <h1 className="text-intelligence-section font-semibold tracking-tight">{project.title}</h1>
-            {project.summary ? (
-              <p className="max-w-2xl text-[15px] leading-relaxed text-muted-foreground">{project.summary}</p>
-            ) : null}
-            <div className="flex flex-wrap items-center gap-3">
-              <ProjectStatusBadge status={project.status} />
-              {decision && decision !== 'DRAFT' ? (
-                <ValidationDecisionBadge decision={decision} />
-              ) : null}
-              {score !== null ? (
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-[13px] font-semibold text-primary">
-                  {tw('hero.score', { score })}
-                </span>
-              ) : null}
-              <span className="rounded-full bg-muted px-3 py-1 text-[13px] text-muted-foreground">
-                {tw('hero.confidence', { percent: workspaceHome.confidencePercent })}
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" asChild>
-              <Link href="/dashboard">{tw('hero.openDashboard')}</Link>
-            </Button>
-            <Button variant="outline" onClick={() => setIsEditing(true)}>
-              <Pencil className="size-4" />
-              {t('common.edit')}
-            </Button>
-            <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
-              <Trash2 className="size-4" />
-              {t('common.delete')}
-            </Button>
-          </div>
-        </div>
+    <div className="space-y-10 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500">
+      <WorkspaceHeader
+        project={project}
+        consultant={consultant}
+        decision={decision}
+        isFavorite={isFavorite(project.id)}
+        onToggleFavorite={() => toggleFavorite({ id: project.id, title: project.title })}
+      />
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-xl border border-border/60 bg-muted/30 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {tw('hero.overallProgress')}
-            </p>
-            <p className="mt-2 text-3xl font-semibold tabular-nums">{workspaceHome.overallProgress}%</p>
-          </div>
-          <div className="rounded-xl border border-border/60 bg-muted/30 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {tw('hero.health')}
-            </p>
-            <p className="mt-2 text-lg font-semibold">{t(`dashboard.health.${health.label}`)}</p>
-          </div>
-          <div className="rounded-xl border border-border/60 bg-muted/30 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {tw('hero.updated')}
-            </p>
-            <p className="mt-2 flex items-center gap-2 text-[15px] font-medium">
-              <Clock className="size-4 text-muted-foreground" />
-              {formatRelativeTime(new Date(project.updatedAt))}
-            </p>
-          </div>
-        </div>
-      </header>
+      <ProgressStats workspaceHome={workspaceHome} health={health} t={t} tw={tw} />
+
+      <div className="flex flex-wrap justify-end gap-2">
+        <Button variant="outline" onClick={() => setIsEditing(true)}>
+          <Pencil className="size-4" />
+          {t('common.edit')}
+        </Button>
+        <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
+          <Trash2 className="size-4" />
+          {t('common.delete')}
+        </Button>
+      </div>
 
       {/* Quick Actions */}
       <section>
@@ -279,44 +257,26 @@ export function ProjectWorkspaceHome({
       {activeTab === 'overview' ? (
         <div className="space-y-10">
           {workspaceHome.isEmpty ? (
-            <div className="ll-consulting-card flex flex-col items-start gap-4 border-dashed">
-              <Sparkles className="size-6 text-primary" />
-              <div>
-                <h3 className="text-lg font-semibold">{tw('empty.title')}</h3>
-                <p className="mt-2 max-w-xl text-[15px] text-muted-foreground">
-                  {tw(workspaceHome.emptySuggestionKey as 'empty.suggestion')}
-                </p>
-              </div>
-              <Button asChild>
-                <Link href={workspaceHome.emptyCtaHref}>
-                  {tw(workspaceHome.emptyCtaLabelKey as 'empty.cta')}
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-            </div>
+            <WorkspaceEmptyState
+              titleKey="empty.title"
+              suggestionKey={workspaceHome.emptySuggestionKey}
+              ctaHref={workspaceHome.emptyCtaHref}
+              ctaLabelKey={workspaceHome.emptyCtaLabelKey}
+              projectId={project.id}
+            />
           ) : null}
 
           {workspaceHome.focusTasks.length > 0 ? (
             <section>
               <h2 className="mb-4 text-lg font-semibold tracking-tight">{tw('focus.title')}</h2>
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {workspaceHome.focusTasks.map((task) => (
-                  <Link
+                  <TodaysFocusCard
                     key={task.id}
-                    href={task.href}
+                    task={task}
+                    translateLabel={translateConsultantKey}
                     onClick={() => handleFocusClick(task.id)}
-                    className="ll-consulting-card-hover group"
-                  >
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-primary">
-                      {tw('focus.rank', { rank: task.rank })}
-                    </span>
-                    <p className="mt-3 text-[16px] font-semibold group-hover:text-primary">
-                      {translateConsultantKey(task.labelKey)}
-                    </p>
-                    <p className="mt-2 text-[13px] text-muted-foreground">
-                      {translateConsultantKey(task.descriptionKey)}
-                    </p>
-                  </Link>
+                  />
                 ))}
               </div>
             </section>
@@ -324,12 +284,8 @@ export function ProjectWorkspaceHome({
 
           <section>
             <h2 className="mb-4 text-lg font-semibold tracking-tight">{tw('progress.title')}</h2>
-            <div className="ll-consulting-card space-y-6">
-              {workspaceHome.progressSteps.map((step) => (
-                <Link key={step.id} href={step.href} className="block">
-                  <ProgressBar label={tw(step.labelKey as 'steps.research')} percent={step.percent} />
-                </Link>
-              ))}
+            <div className="ll-consulting-card">
+              <BlockProgress projectId={project.id} steps={workspaceHome.progressSteps} />
             </div>
           </section>
 
@@ -454,23 +410,7 @@ export function ProjectWorkspaceHome({
       ) : null}
 
       {activeTab === 'activity' ? (
-        <div className="space-y-3">
-          {stats.recentActivity.length === 0 ? (
-            <p className="text-muted-foreground">{tw('activity.empty')}</p>
-          ) : (
-            stats.recentActivity.map((item) => (
-              <div key={item.id} className="ll-consulting-card flex items-center justify-between gap-4 py-4">
-                <div>
-                  <p className="font-medium">{item.label}</p>
-                  <p className="text-[13px] text-muted-foreground">{item.type}</p>
-                </div>
-                <span className="shrink-0 text-[13px] text-muted-foreground">
-                  {formatRelativeTime(new Date(item.occurredAt))}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
+        <RecentActivityPanel items={stats.recentActivity} projectId={project.id} />
       ) : null}
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>

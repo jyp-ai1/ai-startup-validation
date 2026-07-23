@@ -116,9 +116,13 @@ function buildFocusTasks(consultant: ConsultantViewModel | null): WorkspaceFocus
     id: rec.id,
     labelKey: rec.labelKey,
     descriptionKey: rec.descriptionKey,
+    whyKey: rec.descriptionKey,
     href: rec.href,
     rank: rec.rank,
     effectKey: rec.effectKey,
+    stars: Math.max(3, 6 - rec.rank),
+    estimatedMinutes: Math.max(5, rec.estimatedDays * 10),
+    scoreImpact: rec.scoreImpact,
   }));
 }
 

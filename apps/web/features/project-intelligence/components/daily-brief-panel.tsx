@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
+import { Clock, Sparkles, Star } from 'lucide-react';
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -18,6 +18,7 @@ type DailyBriefPanelProps = {
 
 export function DailyBriefPanel({ projectId, brief }: DailyBriefPanelProps) {
   const t = useTranslations('brief');
+  const tp = useTranslations('polish.focus');
   const { trackEvent } = useAnalytics();
 
   useEffect(() => {
@@ -62,13 +63,36 @@ export function DailyBriefPanel({ projectId, brief }: DailyBriefPanelProps) {
             <li key={task.id}>
               <Link
                 href={task.href}
-                className="flex items-center gap-4 rounded-xl border border-border/60 bg-background px-4 py-3 transition-colors hover:border-primary/40 hover:bg-muted/30"
+                className="flex flex-col gap-2 rounded-xl border border-border/60 bg-background px-4 py-3 transition-all duration-200 hover:border-primary/40 hover:bg-muted/30 motion-safe:hover:-translate-y-0.5 sm:flex-row sm:items-center"
               >
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
                   {index + 1}
                 </span>
-                <span className="flex-1 font-medium">{t(task.labelKey as 'tasks.research')}</span>
-                <Button variant="ghost" size="sm" className="shrink-0 text-primary" tabIndex={-1}>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-1">
+                    {Array.from({ length: task.stars ?? 4 }).map((_, i) => (
+                      <Star key={i} className="size-3 fill-amber-400 text-amber-400" />
+                    ))}
+                  </span>
+                  <span className="mt-1 block font-medium">{t(task.labelKey as 'tasks.research')}</span>
+                  {task.whyKey ? (
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      {tp(task.whyKey as 'why.research')}
+                    </span>
+                  ) : null}
+                </span>
+                <span className="flex shrink-0 flex-col items-end gap-1 text-xs text-muted-foreground">
+                  {task.estimatedMinutes ? (
+                    <span className="inline-flex items-center gap-1">
+                      <Clock className="size-3" />
+                      {tp('minutes', { count: task.estimatedMinutes })}
+                    </span>
+                  ) : null}
+                  {task.scoreImpact ? (
+                    <span className="font-medium text-emerald-600">{tp('scoreImpact', { points: task.scoreImpact })}</span>
+                  ) : null}
+                </span>
+                <Button variant="ghost" size="sm" className="hidden shrink-0 text-primary sm:inline-flex" tabIndex={-1}>
                   {t('start')}
                 </Button>
               </Link>

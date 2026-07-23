@@ -28,6 +28,12 @@ import { cn } from '@repo/ui/lib/utils';
 import { TrackedThemeToggle } from '@/components/analytics/tracked-theme-toggle';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { DemoModeBadge } from '@/features/onboarding';
+import {
+  FavoritesList,
+  openWorkspaceSearch,
+  useFavoriteProjects,
+  WorkspacePolishHost,
+} from '@/features/workspace-polish';
 import { ShellBreadcrumb } from '@/components/shell/shell-breadcrumb';
 import { ProjectQuickSwitch } from '@/components/workspace/project-quick-switch';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
@@ -38,7 +44,7 @@ import {
   SIDEBAR_NAV_GROUPS,
 } from '@/lib/sidebar-nav';
 
-type ActiveProjectSummary = Pick<StartupProject, 'id' | 'title' | 'status' | 'updatedAt'>;
+type ActiveProjectSummary = StartupProject;
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -148,6 +154,7 @@ export function AppShell({
   const projectId = routeProjectId ?? activeProject?.id ?? null;
   const showOnboardingProgress =
     pathname.includes('/dashboard') && stats && activeProject && !demoMode;
+  const { favorites, toggleFavorite, isFavorite } = useFavoriteProjects();
 
   function trackHomeNavigation(target: string) {
     trackEvent(ANALYTICS_EVENTS.homeNavigation, { screen: pathname, target });
@@ -187,23 +194,22 @@ export function AppShell({
             <div className="flex items-center gap-2">
               {demoMode ? <DemoModeBadge /> : null}
               <div
-                className="hidden cursor-pointer items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-3 py-2 md:flex"
-                onClick={() =>
-                  trackEvent(ANALYTICS_EVENTS.search, {
-                    screen: pathname,
-                    query: t('shell.searchPlaceholder'),
-                  })
-                }
+                className="hidden cursor-pointer items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-3 py-2 transition-colors hover:border-primary/40 md:flex"
+                onClick={() => {
+                  trackEvent(ANALYTICS_EVENTS.workspaceSearch, { screen: pathname });
+                  openWorkspaceSearch();
+                }}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    trackEvent(ANALYTICS_EVENTS.search, { screen: pathname });
-                  }
+                  if (e.key === 'Enter') openWorkspaceSearch();
                 }}
               >
                 <Search className="size-4 text-muted-foreground" />
                 <span className="w-36 text-[13px] text-muted-foreground">{t('shell.searchPlaceholder')}</span>
+                <kbd className="hidden rounded border border-border bg-background px-1 text-[10px] text-muted-foreground lg:inline">
+                  ⌘K
+                </kbd>
               </div>
               <Button variant="ghost" size="icon-sm" className="hidden sm:inline-flex" aria-label="Notifications">
                 <Bell className="size-4" />
@@ -232,6 +238,7 @@ export function AppShell({
             demoProjects={demoProjects}
             className="w-full"
           />
+          <FavoritesList favorites={favorites} activeProjectId={projectId} />
           {projectId && activeProject ? (
             <div className="space-y-3 border-b border-sidebar-border pb-6">
               <p className="px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-sidebar-foreground/45">
@@ -243,6 +250,21 @@ export function AppShell({
               >
                 {activeProject.title}
               </Link>
+              <button
+                type="button"
+                className="px-3 text-left text-[11px] text-sidebar-foreground/60 hover:text-sidebar-foreground"
+                onClick={() => {
+                  const added = !isFavorite(activeProject.id);
+                  toggleFavorite({ id: activeProject.id, title: activeProject.title });
+                  trackEvent(
+                    added ? ANALYTICS_EVENTS.workspaceFavoriteAdd : ANALYTICS_EVENTS.workspaceFavoriteRemove,
+                    { project_id: activeProject.id },
+                  );
+                }}
+              >
+                {isFavorite(activeProject.id) ? '★ ' : '☆ '}
+                {t('polish.favorites.toggle')}
+              </button>
               {recentProjects.length > 1 ? (
                 <ProjectQuickSwitch
                   projects={recentProjects}
@@ -279,6 +301,12 @@ export function AppShell({
         ) : null}
         {children}
       </AppContent>
+      <WorkspacePolishHost
+        projectId={projectId}
+        project={activeProject}
+        stats={stats}
+        recentProjects={recentProjects}
+      />
     </AppLayout>
   );
 }

@@ -30,7 +30,11 @@ function buildTasks(input: DailyBriefInput): DailyBriefTask[] {
     tasks.push({
       id: 'research',
       labelKey: 'brief.tasks.research',
+      whyKey: 'why.research',
       href: `/projects/${projectId}/agent`,
+      stars: 5,
+      estimatedMinutes: 15,
+      scoreImpact: 8,
     });
   }
 
@@ -38,7 +42,11 @@ function buildTasks(input: DailyBriefInput): DailyBriefTask[] {
     tasks.push({
       id: 'voc',
       labelKey: 'brief.tasks.voc',
+      whyKey: 'why.voc',
       href: `/projects/${projectId}/voc/new`,
+      stars: 4,
+      estimatedMinutes: 10,
+      scoreImpact: 6,
     });
   }
 
@@ -46,7 +54,11 @@ function buildTasks(input: DailyBriefInput): DailyBriefTask[] {
     tasks.push({
       id: 'evidence',
       labelKey: 'brief.tasks.evidence',
+      whyKey: 'why.evidence',
       href: `/projects/${projectId}/evidence/new`,
+      stars: 4,
+      estimatedMinutes: 8,
+      scoreImpact: 5,
     });
   }
 
@@ -54,7 +66,11 @@ function buildTasks(input: DailyBriefInput): DailyBriefTask[] {
     tasks.push({
       id: 'decision',
       labelKey: 'brief.tasks.decision',
+      whyKey: 'why.decision',
       href: `/projects/${projectId}/decision`,
+      stars: 5,
+      estimatedMinutes: 12,
+      scoreImpact: 10,
     });
   }
 
@@ -62,7 +78,11 @@ function buildTasks(input: DailyBriefInput): DailyBriefTask[] {
     tasks.push({
       id: 'report',
       labelKey: 'brief.tasks.report',
+      whyKey: 'why.report',
       href: `/projects/${projectId}/executive-report`,
+      stars: 3,
+      estimatedMinutes: 5,
+      scoreImpact: 4,
     });
   }
 
