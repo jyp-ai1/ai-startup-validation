@@ -221,7 +221,7 @@ export function AppShell({
                 stats={stats}
                 initialViewModel={watchCenter}
               />
-              <LocaleSwitcher variant="compact" />
+              <LocaleSwitcher />
               <TrackedThemeToggle />
               {user ? (
                 <UserMenu user={user} />

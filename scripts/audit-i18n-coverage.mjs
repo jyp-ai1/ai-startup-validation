@@ -96,7 +96,7 @@ const report = {
     missingInEn: missingInEn.length,
     emptyInKo: emptyInKo.length,
     hardcodedInCriticalSurfaces: hardcoded.length,
-    betaLocales: ['ko', 'en'],
+    betaLocales: ['ko', 'en', 'ja', 'zh-CN'],
   },
   missingInKoSample: missingInKo.slice(0, 15),
   missingInEnSample: missingInEn.slice(0, 15),

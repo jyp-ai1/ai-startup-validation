@@ -11,7 +11,8 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
     "audit:i18n": "node scripts/audit-i18n-coverage.mjs",
-    "audit:i18n:strict": "node scripts/audit-i18n-coverage.mjs --strict"
+    "audit:i18n:strict": "node scripts/audit-i18n-coverage.mjs --strict",
+    "i18n:launch": "node scripts/apply-launch-translations.mjs"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",

@@ -1293,31 +1293,31 @@
     },
     "nav": {
       "brand": "LaunchLens",
-      "features": "Features",
+      "features": "機能",
       "demo": "Demo",
-      "pricing": "Pricing",
+      "pricing": "料金",
       "faq": "FAQ",
-      "signIn": "Sign in",
-      "startFree": "Start free",
+      "signIn": "ログイン",
+      "startFree": "無料で始める",
       "builtFor": "Built For",
       "roadmap": "Roadmap",
       "tagline": "AI Strategy Consultant",
-      "howItWorks": "How it Works"
+      "howItWorks": "使い方"
     },
     "hero": {
       "eyebrow": "AI Strategy Consultant",
-      "title": "Strategy consulting — automated by AI",
+      "title": "AIが自動化する戦略コンサルティング",
       "bullet1": "Market research",
       "bullet2": "Business validation",
       "bullet3": "Competitive analysis",
       "bullet4": "Executive reports",
       "bullet5": "Government grant fit analysis",
-      "tagline": "AI performs the work. You make the decision.",
-      "ctaStart": "Start free",
-      "ctaDemo": "View demo",
-      "ctaHint1": "No credit card required",
-      "ctaHint2": "Get started in 3 minutes",
-      "ctaHint3": "Free during Beta"
+      "tagline": "AIが調査します。あなたが決断します。",
+      "ctaStart": "無料で始める",
+      "ctaDemo": "デモを見る",
+      "ctaHint1": "クレジットカード不要",
+      "ctaHint2": "3分で開始",
+      "ctaHint3": "Beta期間無料"
     },
     "preview": {
       "windowTitle": "Strategy Workspace",
@@ -1842,7 +1842,12 @@
     "retry": "Try again",
     "backToDashboard": "Back to dashboard",
     "notFoundTitle": "Page not found",
-    "notFoundDescription": "The page you requested does not exist or has been moved."
+    "notFoundDescription": "The page you requested does not exist or has been moved.",
+    "maintenanceTitle": "メンテナンス中",
+    "maintenanceDescription": "サービス改善のためメンテナンス中です。しばらくしてから再度アクセスしてください。",
+    "unauthorizedTitle": "アクセス権限がありません",
+    "unauthorizedDescription": "このページを表示するにはログインが必要です。",
+    "backToHome": "ホームに戻る"
   },
   "decision": {
     "centerTitle": "Decision Center",

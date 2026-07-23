@@ -3109,7 +3109,12 @@
     "retry": "다시 시도",
     "backToDashboard": "대시보드로 돌아가기",
     "notFoundTitle": "페이지를 찾을 수 없습니다",
-    "notFoundDescription": "요청한 페이지가 없거나 이동되었습니다."
+    "notFoundDescription": "요청한 페이지가 없거나 이동되었습니다.",
+    "maintenanceTitle": "점검 중입니다",
+    "maintenanceDescription": "더 나은 서비스를 위해 잠시 점검 중입니다. 잠시 후 다시 방문해 주세요.",
+    "unauthorizedTitle": "접근 권한이 없습니다",
+    "unauthorizedDescription": "이 페이지를 보려면 로그인이 필요합니다.",
+    "backToHome": "홈으로 돌아가기"
   },
   "pages": {
     "newVoc": "VOC 추가",

@@ -15,10 +15,16 @@ export const LOCALES = [
 
 export type AppLocale = (typeof LOCALES)[number];
 
-/** Beta public UI — only these appear in the language switcher. */
-export const BETA_LOCALES = ['ko', 'en'] as const satisfies readonly AppLocale[];
+/** International launch — shown in the language switcher (Sprint L2.5). */
+export const LAUNCH_LOCALES = ['ko', 'en', 'ja', 'zh-CN'] as const satisfies readonly AppLocale[];
 
-export type BetaLocale = (typeof BETA_LOCALES)[number];
+/** @deprecated Use LAUNCH_LOCALES */
+export const BETA_LOCALES = LAUNCH_LOCALES;
+
+export type LaunchLocale = (typeof LAUNCH_LOCALES)[number];
+
+/** @deprecated Use LaunchLocale */
+export type BetaLocale = LaunchLocale;
 
 export const DEFAULT_LOCALE: AppLocale = 'ko';
 
@@ -36,12 +42,20 @@ export const LOCALE_LABELS: Record<AppLocale, string> = {
   id: 'Bahasa Indonesia',
 };
 
-/** Header trigger — ISO 639-1 style (2 letters). */
+/** Header trigger — short code (KO / EN / JP / CN). */
+export const LOCALE_SHORT_CODES: Record<LaunchLocale, string> = {
+  ko: 'KO',
+  en: 'EN',
+  ja: 'JP',
+  'zh-CN': 'CN',
+};
+
+/** @deprecated Use LOCALE_SHORT_CODES */
 export const LOCALE_ISO_CODES: Record<AppLocale, string> = {
   ko: 'KO',
   en: 'EN',
-  ja: 'JA',
-  'zh-CN': 'ZH',
+  ja: 'JP',
+  'zh-CN': 'CN',
   'zh-TW': 'TW',
   es: 'ES',
   fr: 'FR',
@@ -51,10 +65,12 @@ export const LOCALE_ISO_CODES: Record<AppLocale, string> = {
   id: 'ID',
 };
 
-/** Dropdown — flag + native label (beta locales). */
-export const LOCALE_DROPDOWN_LABELS: Record<BetaLocale, string> = {
-  ko: '🇰🇷 한국어',
+/** Dropdown — flag + English label for launch locales. */
+export const LOCALE_DROPDOWN_LABELS: Record<LaunchLocale, string> = {
+  ko: '🇰🇷 Korean',
   en: '🇺🇸 English',
+  ja: '🇯🇵 Japanese',
+  'zh-CN': '🇨🇳 Chinese',
 };
 
 /** Open Graph locale tags. */
@@ -76,10 +92,21 @@ export function isAppLocale(value: string): value is AppLocale {
   return (LOCALES as readonly string[]).includes(value);
 }
 
-export function isBetaLocale(value: string): value is BetaLocale {
-  return (BETA_LOCALES as readonly string[]).includes(value);
+export function isLaunchLocale(value: string): value is LaunchLocale {
+  return (LAUNCH_LOCALES as readonly string[]).includes(value);
 }
 
-export function localeToIsoCode(locale: AppLocale): string {
+/** @deprecated Use isLaunchLocale */
+export function isBetaLocale(value: string): value is LaunchLocale {
+  return isLaunchLocale(value);
+}
+
+export function localeToShortCode(locale: AppLocale): string {
+  if (isLaunchLocale(locale)) return LOCALE_SHORT_CODES[locale];
   return LOCALE_ISO_CODES[locale];
+}
+
+/** @deprecated Use localeToShortCode */
+export function localeToIsoCode(locale: AppLocale): string {
+  return localeToShortCode(locale);
 }

@@ -1293,31 +1293,31 @@
     },
     "nav": {
       "brand": "LaunchLens",
-      "features": "Features",
+      "features": "功能",
       "demo": "Demo",
-      "pricing": "Pricing",
-      "faq": "FAQ",
-      "signIn": "Sign in",
-      "startFree": "Start free",
+      "pricing": "定价",
+      "faq": "常见问题",
+      "signIn": "登录",
+      "startFree": "免费开始",
       "builtFor": "Built For",
       "roadmap": "Roadmap",
       "tagline": "AI Strategy Consultant",
-      "howItWorks": "How it Works"
+      "howItWorks": "使用方式"
     },
     "hero": {
       "eyebrow": "AI Strategy Consultant",
-      "title": "Strategy consulting — automated by AI",
+      "title": "AI 驱动的战略咨询",
       "bullet1": "Market research",
       "bullet2": "Business validation",
       "bullet3": "Competitive analysis",
       "bullet4": "Executive reports",
       "bullet5": "Government grant fit analysis",
-      "tagline": "AI performs the work. You make the decision.",
-      "ctaStart": "Start free",
-      "ctaDemo": "View demo",
-      "ctaHint1": "No credit card required",
-      "ctaHint2": "Get started in 3 minutes",
-      "ctaHint3": "Free during Beta"
+      "tagline": "AI 负责调研，您来做决策。",
+      "ctaStart": "免费开始",
+      "ctaDemo": "查看演示",
+      "ctaHint1": "无需信用卡",
+      "ctaHint2": "3 分钟即可开始",
+      "ctaHint3": "Beta 期间免费"
     },
     "preview": {
       "windowTitle": "Strategy Workspace",
@@ -1842,7 +1842,12 @@
     "retry": "Try again",
     "backToDashboard": "Back to dashboard",
     "notFoundTitle": "Page not found",
-    "notFoundDescription": "The page you requested does not exist or has been moved."
+    "notFoundDescription": "您请求的页面不存在或已被移动。",
+    "maintenanceTitle": "系统维护中",
+    "maintenanceDescription": "我们正在进行维护，请稍后再访问。",
+    "unauthorizedTitle": "无权访问",
+    "unauthorizedDescription": "您需要登录才能访问此页面。",
+    "backToHome": "返回首页"
   },
   "decision": {
     "centerTitle": "Decision Center",

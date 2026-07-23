@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Moon, Sun } from 'lucide-react';
+import { Check, Monitor, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 import { Button } from '@repo/ui/components/button';
@@ -13,8 +13,9 @@ import {
 import { cn } from '@repo/ui/lib/utils';
 
 const themes = [
-  { value: 'dark', icon: Moon },
   { value: 'light', icon: Sun },
+  { value: 'dark', icon: Moon },
+  { value: 'system', icon: Monitor },
 ] as const;
 
 export function ThemeToggle({
@@ -25,9 +26,7 @@ export function ThemeToggle({
 }: {
   className?: string;
   onThemeChange?: (theme: string) => void;
-  /** Native hover tooltip on trigger (icon-only). */
   tooltip?: string;
-  /** Per-theme labels for menu tooltips and screen readers. */
   labels?: { light: string; dark: string; system?: string };
 }) {
   const { theme, setTheme } = useTheme();
@@ -40,6 +39,7 @@ export function ThemeToggle({
   function labelFor(value: string) {
     if (!labels) return value;
     if (value === 'light') return labels.light;
+    if (value === 'system') return labels.system ?? 'System';
     return labels.dark;
   }
 
@@ -58,7 +58,10 @@ export function ThemeToggle({
           <span className="sr-only">{tooltip ?? 'Toggle theme'}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="z-[120] min-w-[8rem]">
+      <DropdownMenuContent
+        align="end"
+        className="z-[200] min-w-[9rem] border border-border bg-white shadow-xl dark:border-gray-800 dark:bg-gray-950"
+      >
         {themes.map(({ value, icon: Icon }) => (
           <DropdownMenuItem
             key={value}

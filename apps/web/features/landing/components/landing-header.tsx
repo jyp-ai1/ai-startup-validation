@@ -65,7 +65,7 @@ export function LandingHeader() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
-          <LocaleSwitcher variant="compact" />
+          <LocaleSwitcher />
           <TrackedThemeToggle />
           <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
             <Link href="/auth/login?next=/dashboard">{t('nav.signIn')}</Link>

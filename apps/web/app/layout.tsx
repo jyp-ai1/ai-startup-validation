@@ -53,6 +53,10 @@ export async function generateMetadata(): Promise<Metadata> {
       follow: true,
     },
     alternates: buildLocaleAlternates(baseUrl),
+    icons: {
+      icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+      apple: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    },
   };
 }
 

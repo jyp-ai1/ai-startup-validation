@@ -29,7 +29,7 @@ export async function LaunchLensLanding() {
             </div>
           </Link>
           <div className="flex items-center gap-2">
-            <LocaleSwitcher variant="compact" />
+            <LocaleSwitcher />
             <ThemeToggle />
             <Button asChild className="hidden h-10 sm:inline-flex">
               <Link href="/dashboard">

@@ -5,6 +5,7 @@ import { env } from '@repo/core/env';
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = env.NEXT_PUBLIC_APP_URL;
   const paths = [
+    '/',
     '/dashboard',
     '/projects',
     '/settings',

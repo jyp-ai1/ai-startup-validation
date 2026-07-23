@@ -3127,7 +3127,12 @@
     "retry": "Try again",
     "backToDashboard": "Back to dashboard",
     "notFoundTitle": "Page not found",
-    "notFoundDescription": "The page you requested does not exist or has been moved."
+    "notFoundDescription": "The page you requested does not exist or has been moved.",
+    "maintenanceTitle": "Under maintenance",
+    "maintenanceDescription": "We are performing scheduled maintenance. Please check back shortly.",
+    "unauthorizedTitle": "Unauthorized",
+    "unauthorizedDescription": "You need to sign in to access this page.",
+    "backToHome": "Back to home"
   },
   "pages": {
     "newVoc": "New VOC",

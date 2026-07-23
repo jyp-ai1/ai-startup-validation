@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-import { BETA_LOCALES, loadMessages, humanizeMessageKey } from '@repo/i18n';
+import { LAUNCH_LOCALES, loadMessages, humanizeMessageKey } from '@repo/i18n';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { PageHeader } from '@repo/ui';
@@ -69,9 +69,9 @@ export default async function LocalizationTestPage() {
         description={t('localizationDesc', { missing: missingCount, total: rows.length })}
       />
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <LocaleSwitcher variant="compact" />
+        <LocaleSwitcher />
         <p className="text-sm text-muted-foreground">
-          Beta locales: {BETA_LOCALES.join(', ')} · Run <code className="text-xs">pnpm audit:i18n</code>
+          Launch locales: {LAUNCH_LOCALES.join(', ')} · Run <code className="text-xs">pnpm audit:i18n</code>
         </p>
       </div>
       <div className="mt-8 overflow-x-auto rounded-xl border border-border/70">

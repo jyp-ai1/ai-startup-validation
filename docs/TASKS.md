@@ -8,9 +8,30 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint L2.4.1 — Global UX Stabilization & Beta Quality 🔄
+## Sprint L2.4.1 — Global UX Stabilization & Beta Quality ✅
 
-**Status:** In progress (awaiting PM deploy approval)  
+**Status:** Complete ✅ (deployed 2026-07-24, commit `392b6cd`)
+
+---
+
+## Sprint L2.5 — Quality & International Launch 🔄
+
+**Status:** In progress  
+**Goal:** 제품 품질 향상 — 실제 다국어, UX polish, SEO, error/loading/empty, QA automation
+
+| EPIC | Status |
+|------|--------|
+| E1 실제 다국어 (KO/EN/JA/zh-CN landing) | 🔄 Partial |
+| E2 Language switch (🌐 KO/EN/JP/CN) | ✅ Done |
+| E3 Theme Light/Dark/System | ✅ Done |
+| E4 SEO (manifest, og:image, icons) | ✅ Done |
+| E5 Error pages (404/503/401) | ✅ Done |
+| E6 Loading skeletons | ✅ Done (landing/dashboard/projects) |
+| E7 Empty UX 전 페이지 | ⏳ Next |
+| E8–9 Responsive/A11y QA | ⏳ PM manual |
+| E10 Playwright smoke | ✅ Scaffold |
+
+---  
 **Goal:** Beta-ready global UX — language selector, locale persistence, KO/EN beta policy, SEO locale, translation audit. **No new features.**
 
 | EPIC | Status | Owner |
@@ -22,7 +43,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E8 Beta locales (KO/EN only in switcher) | ✅ Done | AI |
 | E4/E5 Translation audit tool (`pnpm audit:i18n`) | ✅ Done | AI |
 | Senior QA (Lighthouse manual) | ⏳ Pending PM | PM |
-| DevOps deploy to production | ⏳ Blocked — PM approval | PM |
+| DevOps deploy to production | ✅ Done (`392b6cd` on gilt) | AI |
 
 **Verify:** `pnpm build && pnpm lint && pnpm audit:i18n`
 

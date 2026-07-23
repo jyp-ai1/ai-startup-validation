@@ -1,4 +1,4 @@
-import { BETA_LOCALES, OPEN_GRAPH_LOCALES, type AppLocale } from '@repo/i18n/config';
+import { LAUNCH_LOCALES, OPEN_GRAPH_LOCALES, type AppLocale } from '@repo/i18n/config';
 
 /** hreflang + canonical for cookie-based locale (same URL, locale from cookie). */
 export function buildLocaleAlternates(baseUrl: string, path = '') {
@@ -8,7 +8,7 @@ export function buildLocaleAlternates(baseUrl: string, path = '') {
     'x-default': url,
   };
 
-  for (const locale of BETA_LOCALES) {
+  for (const locale of LAUNCH_LOCALES) {
     languages[OPEN_GRAPH_LOCALES[locale].replace('_', '-')] = url;
   }
 
@@ -20,7 +20,7 @@ export function buildLocaleAlternates(baseUrl: string, path = '') {
 
 export function buildOpenGraphLocale(locale: AppLocale) {
   const primary = OPEN_GRAPH_LOCALES[locale] ?? OPEN_GRAPH_LOCALES.ko;
-  const alternates = BETA_LOCALES.filter((code) => code !== locale).map(
+  const alternates = LAUNCH_LOCALES.filter((code) => code !== locale).map(
     (code) => OPEN_GRAPH_LOCALES[code],
   );
 
