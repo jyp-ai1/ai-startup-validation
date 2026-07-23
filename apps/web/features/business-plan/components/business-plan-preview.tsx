@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import type { BusinessPlanWithSections, StartupProject } from '@repo/types/validation';
+import { formatLocaleDate } from '@repo/utils/date';
 import { Button, PageHeader } from '@repo/ui';
 
 import { renderMarkdown } from '@/features/reports/utils/markdown';
@@ -14,9 +15,12 @@ type BusinessPlanPreviewProps = {
 };
 
 export async function BusinessPlanPreview({ project, plan }: BusinessPlanPreviewProps) {
+  const locale = await getLocale();
+  const t = await getTranslations('businessPlan');
+  const tCommon = await getTranslations('common');
   const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/business-plan/${plan.id}`;
-  const createdDate = new Date(plan.createdAt).toLocaleDateString('ko-KR', {
+  const createdDate = formatLocaleDate(new Date(plan.createdAt), locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -25,7 +29,7 @@ export async function BusinessPlanPreview({ project, plan }: BusinessPlanPreview
   return (
     <>
       <PageHeader
-        title="Business Plan Preview"
+        title={t('previewTitle')}
         description={plan.title}
         actions={
           <Button variant="outline" asChild>
@@ -61,7 +65,7 @@ export async function BusinessPlanPreview({ project, plan }: BusinessPlanPreview
                   dangerouslySetInnerHTML={{ __html: renderMarkdown(section.content) }}
                 />
               ) : (
-                <p className="text-sm italic text-muted-foreground">No content.</p>
+                <p className="text-sm italic text-muted-foreground">{tCommon('noContent')}</p>
               )}
             </section>
           ))}

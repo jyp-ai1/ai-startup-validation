@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import type { Evidence, ResearchPlan } from '@repo/types/validation';
@@ -13,6 +14,7 @@ import { Button, Input, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { FormSelect } from '@/features/research/components/form-select';
+import { useFormLabels } from '@/lib/i18n/use-form-labels';
 
 import {
   createEvidence,
@@ -66,14 +68,6 @@ const categoryOptions = EVIDENCE_CATEGORIES.map((category) => ({
 
 const NONE_VALUE = 'NONE';
 
-const sourceTypeOptions = [
-  { value: NONE_VALUE, label: 'Not specified' },
-  ...EVIDENCE_SOURCE_TYPES.map((type) => ({
-    value: type,
-    label: EVIDENCE_SOURCE_TYPE_LABELS[type],
-  })),
-];
-
 const confidenceOptions = EVIDENCE_CONFIDENCE_LEVELS.map((level) => ({
   value: level,
   label: EVIDENCE_CONFIDENCE_LABELS[level],
@@ -85,6 +79,8 @@ export function EvidenceForm({
   researchPlans,
   evidence,
 }: EvidenceFormProps) {
+  const tCommon = useTranslations('common');
+  const labels = useFormLabels();
   const action =
     mode === 'create'
       ? createEvidence.bind(null, projectId)
@@ -97,8 +93,16 @@ export function EvidenceForm({
       ? `/projects/${projectId}/evidence`
       : `/projects/${projectId}/evidence/${evidence?.id}`;
 
+  const sourceTypeOptions = [
+    { value: NONE_VALUE, label: tCommon('notSpecified') },
+    ...EVIDENCE_SOURCE_TYPES.map((type) => ({
+      value: type,
+      label: EVIDENCE_SOURCE_TYPE_LABELS[type],
+    })),
+  ];
+
   const researchOptions = [
-    { value: NONE_VALUE, label: 'No research link' },
+    { value: NONE_VALUE, label: tCommon('placeholders.noResearchLink') },
     ...researchPlans.map((plan) => ({
       value: plan.id,
       label: plan.title,
@@ -116,7 +120,7 @@ export function EvidenceForm({
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2 md:col-span-2">
           <FormLabel htmlFor="title" required>
-            Title
+            {tCommon('fields.title')}
           </FormLabel>
           <Input
             id="title"
@@ -130,13 +134,13 @@ export function EvidenceForm({
 
         <div className="space-y-2">
           <FormLabel htmlFor="category" required>
-            Category
+            {tCommon('fields.category')}
           </FormLabel>
           <FormSelect
             name="category"
             options={categoryOptions}
             defaultValue={evidence?.category ?? ''}
-            placeholder="Category 선택"
+            placeholder={tCommon('placeholders.selectCategory')}
             required
             aria-invalid={Boolean(state.fieldErrors?.category)}
           />
@@ -144,19 +148,19 @@ export function EvidenceForm({
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="confidence">Confidence</FormLabel>
+          <FormLabel htmlFor="confidence">{tCommon('fields.confidence')}</FormLabel>
           <FormSelect
             name="confidence"
             options={confidenceOptions}
             defaultValue={evidence?.confidence ?? 'MEDIUM'}
-            placeholder="Confidence 선택"
+            placeholder={tCommon('placeholders.selectConfidence')}
           />
           <FieldError messages={state.fieldErrors?.confidence} />
         </div>
 
         <div className="space-y-2 md:col-span-2">
           <FormLabel htmlFor="summary" required>
-            Summary
+            {tCommon('fields.summary')}
           </FormLabel>
           <Textarea
             id="summary"
@@ -170,29 +174,29 @@ export function EvidenceForm({
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="researchId">Research Plan (optional)</FormLabel>
+          <FormLabel htmlFor="researchId">{tCommon('fields.researchPlanOptional')}</FormLabel>
           <FormSelect
             name="researchId"
             options={researchOptions}
             defaultValue={evidence?.researchId ?? NONE_VALUE}
-            placeholder="Research Plan 연결"
+            placeholder={tCommon('placeholders.selectResearchPlan')}
           />
           <FieldError messages={state.fieldErrors?.researchId} />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="sourceType">Source Type</FormLabel>
+          <FormLabel htmlFor="sourceType">{tCommon('fields.sourceType')}</FormLabel>
           <FormSelect
             name="sourceType"
             options={sourceTypeOptions}
             defaultValue={evidence?.sourceType ?? NONE_VALUE}
-            placeholder="Source Type 선택"
+            placeholder={tCommon('placeholders.selectSourceType')}
           />
           <FieldError messages={state.fieldErrors?.sourceType} />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="sourceName">Source Name</FormLabel>
+          <FormLabel htmlFor="sourceName">{tCommon('fields.sourceName')}</FormLabel>
           <Input
             id="sourceName"
             name="sourceName"
@@ -203,7 +207,7 @@ export function EvidenceForm({
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="sourceUrl">Source URL</FormLabel>
+          <FormLabel htmlFor="sourceUrl">{tCommon('fields.sourceUrl')}</FormLabel>
           <Input
             id="sourceUrl"
             name="sourceUrl"
@@ -216,7 +220,7 @@ export function EvidenceForm({
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="publishedDate">Published Date</FormLabel>
+          <FormLabel htmlFor="publishedDate">{tCommon('fields.publishedDate')}</FormLabel>
           <Input
             id="publishedDate"
             name="publishedDate"
@@ -227,7 +231,7 @@ export function EvidenceForm({
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="content">Content</FormLabel>
+          <FormLabel htmlFor="content">{tCommon('fields.content')}</FormLabel>
           <Textarea
             id="content"
             name="content"
@@ -242,13 +246,13 @@ export function EvidenceForm({
       <div className={cn('flex items-center gap-3')}>
         <Button type="submit" disabled={pending}>
           {pending
-            ? 'Saving...'
+            ? labels.saving
             : mode === 'create'
-              ? 'Create Evidence'
-              : 'Save Changes'}
+              ? labels.createEvidence
+              : labels.saveChanges}
         </Button>
         <Button type="button" variant="outline" asChild>
-          <Link href={cancelHref}>Cancel</Link>
+          <Link href={cancelHref}>{labels.cancel}</Link>
         </Button>
       </div>
     </form>

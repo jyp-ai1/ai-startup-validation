@@ -132,7 +132,7 @@ export function ResearchForm({ mode, projectId, plan }: ResearchFormProps) {
             name="researchType"
             options={localizedTypeOptions}
             defaultValue={plan?.researchType ?? ''}
-            placeholder="Type 선택"
+            placeholder={t('common.placeholders.selectType')}
             required
             aria-invalid={Boolean(state.fieldErrors?.researchType)}
           />
@@ -145,7 +145,7 @@ export function ResearchForm({ mode, projectId, plan }: ResearchFormProps) {
             name="priority"
             options={localizedPriorityOptions}
             defaultValue={plan?.priority ?? 'MEDIUM'}
-            placeholder="Priority 선택"
+            placeholder={t('common.placeholders.selectPriority')}
           />
           <FieldError messages={state.fieldErrors?.priority} />
         </div>
@@ -157,14 +157,14 @@ export function ResearchForm({ mode, projectId, plan }: ResearchFormProps) {
               name="status"
               options={localizedStatusOptions}
               defaultValue={plan?.status ?? 'TODO'}
-              placeholder="Status 선택"
+              placeholder={t('common.placeholders.selectStatus')}
             />
             <FieldError messages={state.fieldErrors?.status} />
           </div>
         ) : null}
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="description">Description</FormLabel>
+          <FormLabel htmlFor="description">{t('common.fields.description')}</FormLabel>
           <Textarea
             id="description"
             name="description"

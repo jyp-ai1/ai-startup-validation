@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import type { GrantDeadlineItem } from '@repo/types/validation';
 import type { VOCDistributionItem } from '@repo/types/validation';
@@ -15,14 +16,17 @@ import {
   YAxis,
 } from 'recharts';
 
+import { useLocalizedFormatters } from '@/lib/i18n/use-localized-formatters';
+
 import { GrantStatusBadge } from './grant-badges';
 
 type DistributionChartProps = {
   title: string;
   data: VOCDistributionItem[];
+  noDataLabel: string;
 };
 
-function DistributionChart({ title, data }: DistributionChartProps) {
+function DistributionChart({ title, data, noDataLabel }: DistributionChartProps) {
   const hasData = data.some((item) => item.count > 0);
 
   return (
@@ -48,7 +52,7 @@ function DistributionChart({ title, data }: DistributionChartProps) {
           </ResponsiveContainer>
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">No data yet</p>
+        <p className="text-sm text-muted-foreground">{noDataLabel}</p>
       )}
     </div>
   );
@@ -61,10 +65,14 @@ type GrantDashboardChartsProps = {
 export function GrantDashboardCharts({
   supportTypeDistribution,
 }: GrantDashboardChartsProps) {
+  const t = useTranslations('grants');
+  const tVoc = useTranslations('voc');
+
   return (
     <DistributionChart
-      title="Support Type Distribution"
+      title={t('supportTypeDistribution')}
       data={supportTypeDistribution}
+      noDataLabel={tVoc('charts.noData')}
     />
   );
 }
@@ -74,12 +82,12 @@ type GrantDeadlineCalendarProps = {
   deadlines: GrantDeadlineItem[];
 };
 
-const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
 export function GrantDeadlineCalendar({
   projectId,
   deadlines,
 }: GrantDeadlineCalendarProps) {
+  const t = useTranslations('grants');
+  const { formatDate } = useLocalizedFormatters();
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
@@ -96,10 +104,20 @@ export function GrantDeadlineCalendar({
       .map((d) => new Date(d.deadline).getDate()),
   );
 
-  const monthLabel = now.toLocaleDateString('ko-KR', {
+  const monthLabel = formatDate(now, {
     year: 'numeric',
     month: 'long',
   });
+
+  const weekdayLabels = [
+    formatDate(new Date(2024, 0, 7), { weekday: 'short' }),
+    formatDate(new Date(2024, 0, 8), { weekday: 'short' }),
+    formatDate(new Date(2024, 0, 9), { weekday: 'short' }),
+    formatDate(new Date(2024, 0, 10), { weekday: 'short' }),
+    formatDate(new Date(2024, 0, 11), { weekday: 'short' }),
+    formatDate(new Date(2024, 0, 12), { weekday: 'short' }),
+    formatDate(new Date(2024, 0, 13), { weekday: 'short' }),
+  ];
 
   const cells: Array<number | null> = [
     ...Array.from({ length: startOffset }, () => null),
@@ -112,9 +130,11 @@ export function GrantDeadlineCalendar({
 
   return (
     <div className="rounded-md border p-4">
-      <h3 className="mb-4 text-sm font-medium">Deadline Calendar — {monthLabel}</h3>
+      <h3 className="mb-4 text-sm font-medium">
+        {t('deadlineCalendar')} — {monthLabel}
+      </h3>
       <div className="mb-4 grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground">
-        {WEEKDAY_LABELS.map((day) => (
+        {weekdayLabels.map((day) => (
           <div key={day} className="py-1 font-medium">
             {day}
           </div>
@@ -140,7 +160,7 @@ export function GrantDeadlineCalendar({
       </div>
 
       {deadlines.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No deadlines scheduled yet.</p>
+        <p className="text-sm text-muted-foreground">{t('noDeadlines')}</p>
       ) : (
         <ul className="space-y-2 border-t pt-4">
           {deadlines.map((item) => (
@@ -158,7 +178,7 @@ export function GrantDeadlineCalendar({
                 <p className="text-sm text-muted-foreground">{item.organization}</p>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <span>{new Date(item.deadline).toLocaleDateString('ko-KR')}</span>
+                <span>{formatDate(new Date(item.deadline))}</span>
                 <GrantStatusBadge status={item.status} />
               </div>
             </li>

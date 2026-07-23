@@ -21,6 +21,8 @@ import {
   PageHeader,
 } from '@repo/ui';
 
+import { useLocalizedFormatters } from '@/lib/i18n/use-localized-formatters';
+
 import { deleteGrant } from '../actions/grant-actions';
 import {
   GrantCategoryBadge,
@@ -48,15 +50,18 @@ function MetaRow({ label, children }: { label: string; children: React.ReactNode
 }
 
 export function GrantDetail({ project, grant }: GrantDetailProps) {
+  const t = useTranslations('grants');
+  const tCommon = useTranslations('common');
   const tNav = useTranslations('common.navLinks');
+  const { formatDate } = useLocalizedFormatters();
   const [isEditing, setIsEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
 
   const listPath = `/projects/${project.id}/grants`;
   const deadlineLabel = grant.deadline
-    ? new Date(grant.deadline).toLocaleDateString('ko-KR')
-    : 'Not set';
+    ? formatDate(new Date(grant.deadline))
+    : tCommon('notSet');
 
   function handleDelete() {
     startDelete(async () => {
@@ -68,11 +73,11 @@ export function GrantDetail({ project, grant }: GrantDetailProps) {
     return (
       <>
         <PageHeader
-          title="Edit Grant"
+          title={t('editTitle')}
           description={grant.name}
           actions={
             <Button variant="outline" onClick={() => setIsEditing(false)}>
-              Cancel Edit
+              {tCommon('cancelEdit')}
             </Button>
           }
         />
@@ -92,11 +97,11 @@ export function GrantDetail({ project, grant }: GrantDetailProps) {
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => setIsEditing(true)}>
               <Pencil className="size-4" />
-              Edit
+              {tCommon('edit')}
             </Button>
             <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="size-4" />
-              Delete
+              {tCommon('delete')}
             </Button>
           </div>
         }
@@ -109,59 +114,59 @@ export function GrantDetail({ project, grant }: GrantDetailProps) {
           <Link href={listPath}>{tNav('backToGrants')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`${listPath}/dashboard`}>Dashboard</Link>
+          <Link href={`${listPath}/dashboard`}>{tCommon('dashboard')}</Link>
         </Button>
       </div>
 
       <Card className="mt-8">
         <CardHeader>
-          <CardTitle className="text-base">Grant Details</CardTitle>
+          <CardTitle className="text-base">{t('detailsTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <MetaRow label="Organization">{grant.organization}</MetaRow>
-          <MetaRow label="Category">
+          <MetaRow label={tCommon('fields.organization')}>{grant.organization}</MetaRow>
+          <MetaRow label={tCommon('fields.category')}>
             <GrantCategoryBadge category={grant.category} />
           </MetaRow>
-          <MetaRow label="Target Stage">
+          <MetaRow label={tCommon('fields.targetStage')}>
             <GrantTargetStageBadge stage={grant.targetStage} />
           </MetaRow>
-          <MetaRow label="Support Type">
+          <MetaRow label={tCommon('fields.supportType')}>
             <GrantSupportTypeBadge type={grant.supportType} />
           </MetaRow>
-          <MetaRow label="Amount">
-            {grant.amount?.trim() ? grant.amount : 'Not provided'}
+          <MetaRow label={tCommon('fields.amount')}>
+            {grant.amount?.trim() ? grant.amount : tCommon('notProvided')}
           </MetaRow>
-          <MetaRow label="Deadline">{deadlineLabel}</MetaRow>
-          <MetaRow label="Fit Score">
+          <MetaRow label={tCommon('fields.deadline')}>{deadlineLabel}</MetaRow>
+          <MetaRow label={tCommon('fields.fitScore')}>
             <GrantFitScoreBadge score={grant.fitScore} />
           </MetaRow>
           {grant.applicationUrl ? (
-            <MetaRow label="Application">
+            <MetaRow label={tCommon('fields.application')}>
               <a
                 href={grant.applicationUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-primary hover:underline"
               >
-                Apply
+                {tCommon('apply')}
                 <ExternalLink className="size-3.5" />
               </a>
             </MetaRow>
           ) : null}
           <div className="border-t pt-4">
             <p className="mb-2 text-sm font-medium text-muted-foreground">
-              Description
+              {tCommon('fields.description')}
             </p>
             <p className="whitespace-pre-wrap text-sm">
-              {grant.description?.trim() ? grant.description : 'Not provided yet'}
+              {grant.description?.trim() ? grant.description : tCommon('notProvided')}
             </p>
           </div>
           <div className="border-t pt-4">
             <p className="mb-2 text-sm font-medium text-muted-foreground">
-              Eligibility
+              {tCommon('fields.eligibility')}
             </p>
             <p className="whitespace-pre-wrap text-sm">
-              {grant.eligibility?.trim() ? grant.eligibility : 'Not provided yet'}
+              {grant.eligibility?.trim() ? grant.eligibility : tCommon('notProvided')}
             </p>
           </div>
         </CardContent>
@@ -170,22 +175,19 @@ export function GrantDetail({ project, grant }: GrantDetailProps) {
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete grant?</DialogTitle>
-            <DialogDescription>
-              &quot;{grant.name}&quot; will be permanently deleted. This action
-              cannot be undone.
-            </DialogDescription>
+            <DialogTitle>{t('deleteConfirm')}</DialogTitle>
+            <DialogDescription>{t('deleteConfirmDesc', { title: grant.name })}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)}>
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={isDeleting}
             >
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? tCommon('processing') : tCommon('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Pencil } from 'lucide-react';
 
 import type { BusinessPlanSection } from '@repo/types/validation';
@@ -9,6 +10,7 @@ import { Button, Input } from '@repo/ui';
 
 import { MarkdownEditor } from '@/features/reports/components/markdown-editor';
 import { renderMarkdown } from '@/features/reports/utils/markdown';
+import { useFormLabels } from '@/lib/i18n/use-form-labels';
 
 import {
   updateBusinessPlanSection,
@@ -34,6 +36,8 @@ export function BusinessPlanSectionItem({
   planId,
   section,
 }: BusinessPlanSectionItemProps) {
+  const tCommon = useTranslations('common');
+  const labels = useFormLabels();
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
   const action = updateBusinessPlanSection.bind(null, projectId, planId, section.id);
@@ -67,7 +71,7 @@ export function BusinessPlanSectionItem({
           onClick={() => setIsEditing((value) => !value)}
         >
           <Pencil className="size-4" />
-          {isEditing ? 'Close' : 'Edit'}
+          {isEditing ? tCommon('close') : tCommon('edit')}
         </Button>
       </div>
 
@@ -81,7 +85,7 @@ export function BusinessPlanSectionItem({
             ) : null}
             <div className="space-y-2">
               <label htmlFor={`title-${section.id}`} className="text-sm font-medium">
-                Section Title
+                {tCommon('fields.sectionTitle')}
               </label>
               <Input
                 id={`title-${section.id}`}
@@ -94,10 +98,10 @@ export function BusinessPlanSectionItem({
             <MarkdownEditor
               name="content"
               defaultValue={section.content}
-              placeholder="Write section content in Markdown..."
+              placeholder={tCommon('placeholders.markdownSection')}
             />
             <Button type="submit" disabled={pending}>
-              {pending ? 'Saving...' : 'Save Section'}
+              {pending ? labels.saving : labels.saveSection}
             </Button>
           </form>
         ) : section.content.trim() ? (
@@ -106,7 +110,7 @@ export function BusinessPlanSectionItem({
             dangerouslySetInnerHTML={{ __html: renderMarkdown(section.content) }}
           />
         ) : (
-          <p className="text-sm italic text-muted-foreground">No content yet.</p>
+          <p className="text-sm italic text-muted-foreground">{tCommon('noContentYet')}</p>
         )}
       </div>
     </div>

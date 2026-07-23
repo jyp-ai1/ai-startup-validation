@@ -25,6 +25,7 @@ import {
 
 import { FormSelect } from '@/features/research/components/form-select';
 import { AIReportGenerateButton } from '@/features/ai-report';
+import { useFormLabels } from '@/lib/i18n/use-form-labels';
 
 import {
   deleteReport,
@@ -49,7 +50,10 @@ function FieldError({ messages }: { messages?: string[] }) {
 }
 
 export function ReportDetail({ project, report, latestGeneration }: ReportDetailProps) {
+  const t = useTranslations('reports');
+  const tCommon = useTranslations('common');
   const tNav = useTranslations('common.navLinks');
+  const labels = useFormLabels();
   const [isEditingHeader, setIsEditingHeader] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -69,11 +73,11 @@ export function ReportDetail({ project, report, latestGeneration }: ReportDetail
     return (
       <>
         <PageHeader
-          title="Edit Report"
+          title={t('editTitle')}
           description={report.title}
           actions={
             <Button variant="outline" onClick={() => setIsEditingHeader(false)}>
-              Cancel Edit
+              {tCommon('cancelEdit')}
             </Button>
           }
         />
@@ -86,7 +90,7 @@ export function ReportDetail({ project, report, latestGeneration }: ReportDetail
 
           <div className="space-y-2">
             <label htmlFor="title" className="text-sm font-medium">
-              Title
+              {tCommon('fields.title')}
             </label>
             <Input
               id="title"
@@ -100,7 +104,7 @@ export function ReportDetail({ project, report, latestGeneration }: ReportDetail
 
           <div className="space-y-2">
             <label htmlFor="status" className="text-sm font-medium">
-              Status
+              {tCommon('fields.status')}
             </label>
             <FormSelect
               name="status"
@@ -114,19 +118,19 @@ export function ReportDetail({ project, report, latestGeneration }: ReportDetail
 
           <div className="space-y-2">
             <label htmlFor="summary" className="text-sm font-medium">
-              Summary
+              {tCommon('fields.summary')}
             </label>
             <Textarea
               id="summary"
               name="summary"
               rows={3}
               defaultValue={report.summary ?? ''}
-              placeholder="Optional report summary"
+              placeholder={tCommon('placeholders.optionalSummary')}
             />
           </div>
 
           <Button type="submit" disabled={pending}>
-            {pending ? 'Saving...' : 'Save Report'}
+            {pending ? labels.saving : labels.saveReport}
           </Button>
         </form>
       </>
@@ -143,16 +147,16 @@ export function ReportDetail({ project, report, latestGeneration }: ReportDetail
             <Button variant="outline" asChild>
               <Link href={`${basePath}/preview`}>
                 <Eye className="size-4" />
-                Preview
+                {tCommon('preview')}
               </Link>
             </Button>
             <Button variant="outline" onClick={() => setIsEditingHeader(true)}>
               <Pencil className="size-4" />
-              Edit Report
+              {t('editReport')}
             </Button>
             <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="size-4" />
-              Delete
+              {tCommon('delete')}
             </Button>
           </div>
         }
@@ -161,7 +165,7 @@ export function ReportDetail({ project, report, latestGeneration }: ReportDetail
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <ReportStatusBadge status={report.status} />
         <span className="text-sm text-muted-foreground">
-          {report.sections.length} sections
+          {tCommon('sectionsCount', { count: report.sections.length })}
         </span>
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`/projects/${project.id}/reports`}>{tNav('backToReports')}</Link>
@@ -173,10 +177,8 @@ export function ReportDetail({ project, report, latestGeneration }: ReportDetail
       ) : null}
 
       <div className="mt-6 rounded-lg border bg-muted/20 p-4">
-        <h3 className="text-sm font-medium">AI Report Generation</h3>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Generate a validation report draft from project data using AI.
-        </p>
+        <h3 className="text-sm font-medium">{t('aiGenerationTitle')}</h3>
+        <p className="mt-1 text-xs text-muted-foreground">{t('aiGenerationDesc')}</p>
         <div className="mt-3">
           <AIReportGenerateButton
             projectId={project.id}
@@ -202,17 +204,15 @@ export function ReportDetail({ project, report, latestGeneration }: ReportDetail
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete report?</DialogTitle>
-            <DialogDescription>
-              &quot;{report.title}&quot; and all sections will be permanently deleted.
-            </DialogDescription>
+            <DialogTitle>{t('deleteConfirm')}</DialogTitle>
+            <DialogDescription>{t('deleteConfirmDesc', { title: report.title })}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)}>
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? tCommon('processing') : tCommon('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

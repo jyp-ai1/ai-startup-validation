@@ -30,6 +30,9 @@ type DevelopmentSpecDetailProps = {
 };
 
 export function DevelopmentSpecDetail({ project, spec }: DevelopmentSpecDetailProps) {
+  const t = useTranslations('devSpec');
+  const tAi = useTranslations('aiStudio');
+  const tCommon = useTranslations('common');
   const tNav = useTranslations('common.navLinks');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -53,17 +56,17 @@ export function DevelopmentSpecDetail({ project, spec }: DevelopmentSpecDetailPr
               projectId={project.id}
               specId={spec.id}
               prdId={spec.prdId}
-              label="Regenerate"
+              label={tAi('regenerate')}
             />
             <Button variant="outline" asChild>
               <Link href={`${basePath}/preview`}>
                 <Eye className="size-4" />
-                Preview
+                {tCommon('preview')}
               </Link>
             </Button>
             <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="size-4" />
-              Delete
+              {tCommon('delete')}
             </Button>
           </div>
         }
@@ -71,12 +74,14 @@ export function DevelopmentSpecDetail({ project, spec }: DevelopmentSpecDetailPr
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <DevelopmentSpecStatusBadge status={spec.status} />
-        <span className="text-sm text-muted-foreground">{spec.sections.length} sections</span>
+        <span className="text-sm text-muted-foreground">
+          {tCommon('sectionsCount', { count: spec.sections.length })}
+        </span>
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`/projects/${project.id}/development-spec`}>{tNav('backToList')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`/projects/${project.id}/prd/${spec.prdId}`}>View PRD</Link>
+          <Link href={`/projects/${project.id}/prd/${spec.prdId}`}>{tCommon('viewPrd')}</Link>
         </Button>
       </div>
 
@@ -101,17 +106,15 @@ export function DevelopmentSpecDetail({ project, spec }: DevelopmentSpecDetailPr
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete development spec?</DialogTitle>
-            <DialogDescription>
-              &quot;{spec.title}&quot; will be permanently deleted.
-            </DialogDescription>
+            <DialogTitle>{t('deleteConfirm')}</DialogTitle>
+            <DialogDescription>{t('deleteConfirmDesc', { title: spec.title })}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)}>
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? tCommon('processing') : tCommon('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

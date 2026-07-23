@@ -21,6 +21,8 @@ import {
   PageHeader,
 } from '@repo/ui';
 
+import { useLocalizedFormatters } from '@/lib/i18n/use-localized-formatters';
+
 import { deleteEvidence } from '../actions/evidence-actions';
 import {
   EVIDENCE_CATEGORY_LABELS,
@@ -58,15 +60,18 @@ export function EvidenceDetail({
   researchPlans,
   linkedResearch,
 }: EvidenceDetailProps) {
+  const t = useTranslations('evidence');
+  const tCommon = useTranslations('common');
   const tNav = useTranslations('common.navLinks');
+  const { formatDate } = useLocalizedFormatters();
   const [isEditing, setIsEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
 
   const listPath = `/projects/${project.id}/evidence`;
-  const createdDate = new Date(evidence.createdAt).toLocaleDateString('ko-KR');
+  const createdDate = formatDate(new Date(evidence.createdAt));
   const publishedDate = evidence.publishedDate
-    ? new Date(evidence.publishedDate).toLocaleDateString('ko-KR')
+    ? formatDate(new Date(evidence.publishedDate))
     : null;
 
   function handleDelete() {
@@ -79,11 +84,11 @@ export function EvidenceDetail({
     return (
       <>
         <PageHeader
-          title="Edit Evidence"
+          title={t('editTitle')}
           description={evidence.title}
           actions={
             <Button variant="outline" onClick={() => setIsEditing(false)}>
-              Cancel Edit
+              {tCommon('cancelEdit')}
             </Button>
           }
         />
@@ -108,11 +113,11 @@ export function EvidenceDetail({
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => setIsEditing(true)}>
               <Pencil className="size-4" />
-              Edit
+              {tCommon('edit')}
             </Button>
             <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="size-4" />
-              Delete
+              {tCommon('delete')}
             </Button>
           </div>
         }
@@ -128,16 +133,16 @@ export function EvidenceDetail({
 
       <Card className="mt-8">
         <CardHeader>
-          <CardTitle className="text-base">Evidence Details</CardTitle>
+          <CardTitle className="text-base">{t('detailsTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <MetaRow label="Category">
+          <MetaRow label={tCommon('fields.category')}>
             {EVIDENCE_CATEGORY_LABELS[evidence.category]}
           </MetaRow>
-          <MetaRow label="Confidence">
+          <MetaRow label={tCommon('fields.confidence')}>
             {EVIDENCE_CONFIDENCE_LABELS[evidence.confidence]}
           </MetaRow>
-          <MetaRow label="Source">
+          <MetaRow label={tCommon('fields.source')}>
             <EvidenceSourceBadge
               sourceType={evidence.sourceType}
               sourceName={evidence.sourceName}
@@ -149,7 +154,7 @@ export function EvidenceDetail({
             ) : null}
           </MetaRow>
           {evidence.sourceUrl ? (
-            <MetaRow label="URL">
+            <MetaRow label={tCommon('fields.url')}>
               <a
                 href={evidence.sourceUrl}
                 target="_blank"
@@ -162,7 +167,7 @@ export function EvidenceDetail({
             </MetaRow>
           ) : null}
           {linkedResearch ? (
-            <MetaRow label="Research Plan">
+            <MetaRow label={tCommon('fields.researchPlan')}>
               <Link
                 href={`/projects/${project.id}/research/${linkedResearch.id}`}
                 className="text-primary hover:underline"
@@ -172,21 +177,21 @@ export function EvidenceDetail({
             </MetaRow>
           ) : null}
           {publishedDate ? (
-            <MetaRow label="Published">{publishedDate}</MetaRow>
+            <MetaRow label={tCommon('fields.published')}>{publishedDate}</MetaRow>
           ) : null}
-          <MetaRow label="Created">{createdDate}</MetaRow>
+          <MetaRow label={tCommon('fields.created')}>{createdDate}</MetaRow>
           <div className="border-t pt-4">
             <p className="mb-2 text-sm font-medium text-muted-foreground">
-              Summary
+              {tCommon('fields.summary')}
             </p>
             <p className="whitespace-pre-wrap text-sm">{evidence.summary}</p>
           </div>
           <div className="border-t pt-4">
             <p className="mb-2 text-sm font-medium text-muted-foreground">
-              Content
+              {tCommon('fields.content')}
             </p>
             <p className="whitespace-pre-wrap text-sm">
-              {evidence.content?.trim() ? evidence.content : 'Not provided yet'}
+              {evidence.content?.trim() ? evidence.content : tCommon('notProvided')}
             </p>
           </div>
         </CardContent>
@@ -195,22 +200,21 @@ export function EvidenceDetail({
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete evidence?</DialogTitle>
+            <DialogTitle>{t('deleteConfirm')}</DialogTitle>
             <DialogDescription>
-              &quot;{evidence.title}&quot; will be permanently deleted. This action
-              cannot be undone.
+              {t('deleteConfirmDesc', { title: evidence.title })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)}>
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={isDeleting}
             >
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? tCommon('processing') : tCommon('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -73,7 +73,83 @@
       "backToProjects": "Back to Projects",
       "backToEditor": "Back to Editor",
       "backToKnowledge": "Back to Knowledge Base"
-    }
+    },
+    "fields": {
+      "title": "Title",
+      "content": "Content",
+      "description": "Description",
+      "summary": "Summary",
+      "name": "Name",
+      "companyName": "Company Name",
+      "website": "Website",
+      "sourceName": "Source Name",
+      "sourceUrl": "Source URL",
+      "sourceType": "Source Type",
+      "publishedDate": "Published Date",
+      "eligibility": "Eligibility",
+      "strengths": "Strengths",
+      "weaknesses": "Weaknesses",
+      "differentiation": "Differentiation",
+      "targetCustomer": "Target Customer",
+      "businessModel": "Business Model",
+      "willingnessToPay": "Willingness To Pay",
+      "applicationUrl": "Application URL",
+      "researchPlanOptional": "Research Plan (optional)",
+      "sectionTitle": "Section Title",
+      "date": "Date",
+      "comment": "Comment",
+      "created": "Created",
+      "published": "Published",
+      "status": "Status",
+      "priority": "Priority",
+      "category": "Category",
+      "source": "Source",
+      "url": "URL",
+      "organization": "Organization",
+      "deadline": "Deadline",
+      "amount": "Amount",
+      "application": "Application",
+      "confidence": "Confidence",
+      "researchPlan": "Research Plan",
+      "researchType": "Research Type",
+      "targetStage": "Target Stage",
+      "supportType": "Support Type",
+      "fitScore": "Fit Score",
+      "customerSegment": "Customer Segment",
+      "painPoint": "Pain Point",
+      "emotion": "Emotion",
+      "frequency": "Frequency",
+      "severity": "Severity",
+      "paymentIntent": "Payment Intent",
+      "marketPosition": "Market Position",
+      "pricing": "Pricing"
+    },
+    "placeholders": {
+      "selectType": "Select type",
+      "selectPriority": "Select priority",
+      "selectStatus": "Select status",
+      "selectCategory": "Select category",
+      "selectConfidence": "Select confidence",
+      "selectResearchPlan": "Link research plan",
+      "selectSourceType": "Select source type",
+      "markdownSection": "Write section content in Markdown...",
+      "optionalSummary": "Optional report summary",
+      "noResearchLink": "No research link"
+    },
+    "actions": {
+      "moveSectionUp": "Move section up",
+      "moveSectionDown": "Move section down"
+    },
+    "close": "Close",
+    "noContent": "No content.",
+    "noContentYet": "No content yet.",
+    "notSpecified": "Not specified",
+    "notSet": "Not set",
+    "noDeadline": "No deadline",
+    "apply": "Apply",
+    "sectionsCount": "{count} sections",
+    "viewPrd": "View PRD",
+    "dashboard": "Dashboard"
   },
   "shell": {
     "workspace": "Espace de travail",
@@ -361,7 +437,14 @@
       "evidence": "Add evidence before processing",
       "chunks": "Build knowledge chunks from reports",
       "query": "Try AI Query after processing"
-    }
+    },
+    "queryTitle": "Knowledge Query",
+    "queryDesc": "Search indexed evidence for {project}",
+    "askQuestion": "Ask a question",
+    "searchKnowledge": "Search Knowledge",
+    "results": "Results",
+    "noResults": "No matching knowledge found. Process Evidence first.",
+    "scoreLabel": "Score {score}"
   },
   "status": {
     "draft": "Brouillon",
@@ -444,7 +527,11 @@
       "market": "Start with market size research",
       "customer": "Design customer pain-point interviews",
       "competitor": "Map direct and indirect competitors"
-    }
+    },
+    "editTitle": "Edit Research Plan",
+    "detailsTitle": "Research Plan Details",
+    "deleteConfirm": "Delete research plan?",
+    "deleteConfirmDesc": "\"{title}\" will be permanently deleted. This action cannot be undone."
   },
   "evidence": {
     "title": "Evidence",
@@ -468,7 +555,11 @@
     },
     "columns": {
       "title": "Title"
-    }
+    },
+    "editTitle": "Edit Evidence",
+    "detailsTitle": "Evidence Details",
+    "deleteConfirm": "Delete evidence?",
+    "deleteConfirmDesc": "\"{title}\" will be permanently deleted. This action cannot be undone."
   },
   "competitors": {
     "title": "Competitor Intelligence",
@@ -485,7 +576,23 @@
       "direct": "Add at least 2 direct competitors",
       "leader": "Analyze market leader positioning",
       "differentiation": "Document differentiation clearly"
-    }
+    },
+    "editTitle": "Edit Competitor",
+    "detailsTitle": "Competitor Details",
+    "deleteConfirm": "Delete competitor?",
+    "deleteConfirmDesc": "\"{title}\" will be permanently deleted. This action cannot be undone.",
+    "compareTitle": "Competitor Comparison Matrix",
+    "compareDesc": "Side-by-side analysis for {project}",
+    "compareEmptyTitle": "No competitors to compare",
+    "compareEmptyDesc": "Add at least one competitor to build a comparison matrix.",
+    "compareFieldColumn": "Field",
+    "sectionOverview": "Company Overview",
+    "sectionCustomer": "Customer",
+    "sectionBusinessModel": "Business Model",
+    "sectionPricing": "Pricing",
+    "sectionStrength": "Strength",
+    "sectionWeakness": "Weakness",
+    "sectionDifferentiation": "Differentiation"
   },
   "aiStudio": {
     "title": "AI Studio",
@@ -558,7 +665,12 @@
       "paymentIntent": "Payment Intent (Willingness To Pay)",
       "customerSegment": "Customer Segment Distribution",
       "noData": "No data yet"
-    }
+    },
+    "editTitle": "Edit VOC",
+    "detailsTitle": "VOC Details",
+    "summaryDashboardLink": "Summary Dashboard",
+    "deleteConfirm": "Delete VOC?",
+    "deleteConfirmDesc": "\"{title}\" will be permanently deleted. This action cannot be undone."
   },
   "grants": {
     "title": "Government Grants",
@@ -582,7 +694,22 @@
       "prestartup": "Add pre-startup support programs",
       "rnd": "Review R&D grant eligibility",
       "deadline": "Track upcoming application deadlines"
-    }
+    },
+    "editTitle": "Edit Grant",
+    "detailsTitle": "Grant Details",
+    "deleteConfirm": "Delete grant?",
+    "deleteConfirmDesc": "\"{title}\" will be permanently deleted. This action cannot be undone.",
+    "dashboardEmptyTitle": "No grants to analyze",
+    "dashboardEmptyDesc": "Add government support programs to see dashboard insights.",
+    "supportTypeDistribution": "Support Type Distribution",
+    "totalPrograms": "Total Programs",
+    "averageFitScore": "Average Fit Score",
+    "registeredPrograms": "Registered support programs",
+    "averageFit": "average fit",
+    "noFitScores": "No fit scores recorded",
+    "deadlineCalendar": "Deadline Calendar",
+    "noDeadlines": "No deadlines scheduled yet.",
+    "dashboardProgramCount": "{count} programs · {project}"
   },
   "validation": {
     "title": "Validation Score",
@@ -631,7 +758,20 @@
         "label": "Founder Fit",
         "description": "Experience fit, network, domain expertise"
       }
-    }
+    },
+    "historyTitle": "Validation History",
+    "historyDesc": "Past evaluations for {project}",
+    "historyEmptyTitle": "No evaluation history",
+    "historyEmptyDesc": "Create your first validation score to start tracking decisions over time.",
+    "summaryEmptyTitle": "No validation data",
+    "summaryEmptyDesc": "Create a validation score first to generate a summary report.",
+    "summaryStrength": "Strength",
+    "summaryRisk": "Risk",
+    "noStrengths": "No category scored above 70% yet.",
+    "allPerformingWell": "All categories are performing well.",
+    "recommendationTitle": "Recommendation",
+    "addCommentHint": "Add a comment in your validation score to capture recommendations.",
+    "totalScoreLabel": "Total Score: {score} / 100"
   },
   "reports": {
     "title": "Validation Reports",
@@ -652,7 +792,14 @@
       "validation": "Complete Validation Score first",
       "evidence": "Add 10+ evidence items",
       "export": "Export report for stakeholders"
-    }
+    },
+    "editTitle": "Edit Report",
+    "editReport": "Edit Report",
+    "previewTitle": "Report Preview",
+    "deleteConfirm": "Delete report?",
+    "deleteConfirmDesc": "\"{title}\" and all sections will be permanently deleted.",
+    "aiGenerationTitle": "AI Report Generation",
+    "aiGenerationDesc": "Generate a validation report draft from project data using AI."
   },
   "businessPlan": {
     "title": "Business Plan",
@@ -666,7 +813,10 @@
       "validation": "Complete Validation Score first",
       "market": "Include market size analysis",
       "grant": "Align with grant program requirements"
-    }
+    },
+    "previewTitle": "Business Plan Preview",
+    "deleteConfirm": "Delete business plan?",
+    "deleteConfirmDesc": "\"{title}\" will be permanently deleted."
   },
   "prd": {
     "title": "Product Requirements",
@@ -680,7 +830,10 @@
       "businessPlan": "Complete Business Plan first",
       "features": "Define MVP feature scope",
       "metrics": "Add success metrics"
-    }
+    },
+    "previewTitle": "PRD Preview",
+    "deleteConfirm": "Delete PRD?",
+    "deleteConfirmDesc": "\"{title}\" will be permanently deleted."
   },
   "devSpec": {
     "title": "Development Spec",
@@ -699,7 +852,10 @@
       "architecture": "Define system architecture",
       "api": "Document API endpoints",
       "stack": "Specify tech stack"
-    }
+    },
+    "previewTitle": "Development Spec Preview",
+    "deleteConfirm": "Delete development spec?",
+    "deleteConfirmDesc": "\"{title}\" will be permanently deleted."
   },
   "documents": {
     "kpi": {
@@ -1227,6 +1383,8 @@
     "grantDashboard": "Grant Dashboard",
     "projectNotFound": "Project Not Found",
     "newVocDesc": "New customer feedback entry",
-    "newPrdDesc": "New PRD for {project}"
+    "newPrdDesc": "New PRD for {project}",
+    "projectNotFoundTitle": "This project does not exist",
+    "projectNotFoundDesc": "It may have been deleted or the URL is incorrect."
   }
 }

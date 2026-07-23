@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import type { GovernmentGrant } from '@repo/types/validation';
@@ -14,6 +15,7 @@ import { Button, Input, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { FormSelect } from '@/features/research/components/form-select';
+import { useFormLabels } from '@/lib/i18n/use-form-labels';
 
 import { createGrant, updateGrant, type GrantActionState } from '../actions/grant-actions';
 import {
@@ -67,6 +69,8 @@ const withNone = <T extends string>(
 ];
 
 export function GrantForm({ mode, projectId, grant }: GrantFormProps) {
+  const tCommon = useTranslations('common');
+  const labels = useFormLabels();
   const action =
     mode === 'create'
       ? createGrant.bind(null, projectId)
@@ -90,7 +94,7 @@ export function GrantForm({ mode, projectId, grant }: GrantFormProps) {
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2 md:col-span-2">
           <FormLabel htmlFor="name" required>
-            Name
+            {tCommon('fields.name')}
           </FormLabel>
           <Input
             id="name"
@@ -104,7 +108,7 @@ export function GrantForm({ mode, projectId, grant }: GrantFormProps) {
 
         <div className="space-y-2 md:col-span-2">
           <FormLabel htmlFor="organization" required>
-            Organization
+            {tCommon('fields.organization')}
           </FormLabel>
           <Input
             id="organization"
@@ -117,7 +121,7 @@ export function GrantForm({ mode, projectId, grant }: GrantFormProps) {
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="description">Description</FormLabel>
+          <FormLabel htmlFor="description">{tCommon('fields.description')}</FormLabel>
           <Textarea
             id="description"
             name="description"
@@ -128,45 +132,45 @@ export function GrantForm({ mode, projectId, grant }: GrantFormProps) {
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="category">Category</FormLabel>
+          <FormLabel htmlFor="category">{tCommon('fields.category')}</FormLabel>
           <FormSelect
             name="category"
-            options={withNone(GRANT_CATEGORIES, GRANT_CATEGORY_LABELS, 'Not specified')}
+            options={withNone(GRANT_CATEGORIES, GRANT_CATEGORY_LABELS, tCommon('notSpecified'))}
             defaultValue={grant?.category ?? NONE_VALUE}
-            placeholder="Category"
+            placeholder={tCommon('placeholders.selectCategory')}
           />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="targetStage">Target Stage</FormLabel>
+          <FormLabel htmlFor="targetStage">{tCommon('fields.targetStage')}</FormLabel>
           <FormSelect
             name="targetStage"
             options={withNone(
               GRANT_TARGET_STAGES,
               GRANT_TARGET_STAGE_LABELS,
-              'Not specified',
+              tCommon('notSpecified'),
             )}
             defaultValue={grant?.targetStage ?? NONE_VALUE}
-            placeholder="Target Stage"
+            placeholder={tCommon('fields.targetStage')}
           />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="supportType">Support Type</FormLabel>
+          <FormLabel htmlFor="supportType">{tCommon('fields.supportType')}</FormLabel>
           <FormSelect
             name="supportType"
             options={withNone(
               GRANT_SUPPORT_TYPES,
               GRANT_SUPPORT_TYPE_LABELS,
-              'Not specified',
+              tCommon('notSpecified'),
             )}
             defaultValue={grant?.supportType ?? NONE_VALUE}
-            placeholder="Support Type"
+            placeholder={tCommon('fields.supportType')}
           />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="status">Status</FormLabel>
+          <FormLabel htmlFor="status">{tCommon('fields.status')}</FormLabel>
           <FormSelect
             name="status"
             options={GRANT_STATUSES.map((value) => ({
@@ -174,12 +178,12 @@ export function GrantForm({ mode, projectId, grant }: GrantFormProps) {
               label: GRANT_STATUS_LABELS[value],
             }))}
             defaultValue={grant?.status ?? 'OPEN'}
-            placeholder="Status"
+            placeholder={tCommon('placeholders.selectStatus')}
           />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="amount">Amount</FormLabel>
+          <FormLabel htmlFor="amount">{tCommon('fields.amount')}</FormLabel>
           <Input
             id="amount"
             name="amount"
@@ -189,7 +193,7 @@ export function GrantForm({ mode, projectId, grant }: GrantFormProps) {
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="deadline">Deadline</FormLabel>
+          <FormLabel htmlFor="deadline">{tCommon('fields.deadline')}</FormLabel>
           <Input
             id="deadline"
             name="deadline"
@@ -199,7 +203,7 @@ export function GrantForm({ mode, projectId, grant }: GrantFormProps) {
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="fitScore">Fit Score (0-100)</FormLabel>
+          <FormLabel htmlFor="fitScore">{tCommon('fields.fitScore')} (0-100)</FormLabel>
           <Input
             id="fitScore"
             name="fitScore"
@@ -214,7 +218,7 @@ export function GrantForm({ mode, projectId, grant }: GrantFormProps) {
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="eligibility">Eligibility</FormLabel>
+          <FormLabel htmlFor="eligibility">{tCommon('fields.eligibility')}</FormLabel>
           <Textarea
             id="eligibility"
             name="eligibility"
@@ -225,7 +229,7 @@ export function GrantForm({ mode, projectId, grant }: GrantFormProps) {
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="applicationUrl">Application URL</FormLabel>
+          <FormLabel htmlFor="applicationUrl">{tCommon('fields.applicationUrl')}</FormLabel>
           <Input
             id="applicationUrl"
             name="applicationUrl"
@@ -240,10 +244,10 @@ export function GrantForm({ mode, projectId, grant }: GrantFormProps) {
 
       <div className={cn('flex items-center gap-3')}>
         <Button type="submit" disabled={pending}>
-          {pending ? 'Saving...' : mode === 'create' ? 'Create Grant' : 'Save Changes'}
+          {pending ? labels.saving : mode === 'create' ? labels.createGrant : labels.saveChanges}
         </Button>
         <Button type="button" variant="outline" asChild>
-          <Link href={cancelHref}>Cancel</Link>
+          <Link href={cancelHref}>{labels.cancel}</Link>
         </Button>
       </div>
     </form>

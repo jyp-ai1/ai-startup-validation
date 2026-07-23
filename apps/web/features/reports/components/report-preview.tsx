@@ -1,10 +1,11 @@
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import type {
   StartupProject,
   ValidationReportWithSections,
 } from '@repo/types/validation';
+import { formatLocaleDate } from '@repo/utils/date';
 import { Button, PageHeader } from '@repo/ui';
 
 import { renderMarkdown } from '../utils/markdown';
@@ -16,9 +17,12 @@ type ReportPreviewProps = {
 };
 
 export async function ReportPreview({ project, report }: ReportPreviewProps) {
+  const locale = await getLocale();
+  const t = await getTranslations('reports');
+  const tCommon = await getTranslations('common');
   const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/reports/${report.id}`;
-  const createdDate = new Date(report.createdAt).toLocaleDateString('ko-KR', {
+  const createdDate = formatLocaleDate(new Date(report.createdAt), locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -27,7 +31,7 @@ export async function ReportPreview({ project, report }: ReportPreviewProps) {
   return (
     <>
       <PageHeader
-        title="Report Preview"
+        title={t('previewTitle')}
         description={report.title}
         actions={
           <Button variant="outline" asChild>
@@ -60,7 +64,7 @@ export async function ReportPreview({ project, report }: ReportPreviewProps) {
                   dangerouslySetInnerHTML={{ __html: renderMarkdown(section.content) }}
                 />
               ) : (
-                <p className="text-sm italic text-muted-foreground">No content.</p>
+                <p className="text-sm italic text-muted-foreground">{tCommon('noContent')}</p>
               )}
             </section>
           ))}

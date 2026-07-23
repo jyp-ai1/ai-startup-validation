@@ -36,9 +36,11 @@ type CompetitorDetailProps = {
 function DetailSection({
   title,
   value,
+  emptyLabel,
 }: {
   title: string;
   value: string | null;
+  emptyLabel: string;
 }) {
   return (
     <Card>
@@ -47,7 +49,7 @@ function DetailSection({
       </CardHeader>
       <CardContent>
         <p className="whitespace-pre-wrap text-sm text-muted-foreground">
-          {value?.trim() ? value : 'Not provided yet'}
+          {value?.trim() ? value : emptyLabel}
         </p>
       </CardContent>
     </Card>
@@ -55,6 +57,8 @@ function DetailSection({
 }
 
 export function CompetitorDetail({ project, competitor }: CompetitorDetailProps) {
+  const t = useTranslations('competitors');
+  const tCommon = useTranslations('common');
   const tNav = useTranslations('common.navLinks');
   const [isEditing, setIsEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -72,11 +76,11 @@ export function CompetitorDetail({ project, competitor }: CompetitorDetailProps)
     return (
       <>
         <PageHeader
-          title="Edit Competitor"
+          title={t('editTitle')}
           description={competitor.name}
           actions={
             <Button variant="outline" onClick={() => setIsEditing(false)}>
-              Cancel Edit
+              {tCommon('cancelEdit')}
             </Button>
           }
         />
@@ -100,11 +104,11 @@ export function CompetitorDetail({ project, competitor }: CompetitorDetailProps)
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => setIsEditing(true)}>
               <Pencil className="size-4" />
-              Edit
+              {tCommon('edit')}
             </Button>
             <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="size-4" />
-              Delete
+              {tCommon('delete')}
             </Button>
           </div>
         }
@@ -117,7 +121,7 @@ export function CompetitorDetail({ project, competitor }: CompetitorDetailProps)
           <Link href={listPath}>{tNav('backToCompetitors')}</Link>
         </Button>
         <Button variant="link" className="h-auto p-0" asChild>
-          <Link href={`${listPath}/compare`}>Compare Matrix</Link>
+          <Link href={`${listPath}/compare`}>{t('compareMatrix')}</Link>
         </Button>
       </div>
 
@@ -136,37 +140,61 @@ export function CompetitorDetail({ project, competitor }: CompetitorDetailProps)
       ) : null}
 
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
-        <DetailSection title="Company Overview" value={competitor.description} />
-        <DetailSection title="Customer" value={competitor.targetCustomer} />
-        <DetailSection title="Business Model" value={competitor.businessModel} />
-        <DetailSection title="Pricing" value={competitor.pricing} />
-        <DetailSection title="Strength" value={competitor.strengths} />
-        <DetailSection title="Weakness" value={competitor.weaknesses} />
         <DetailSection
-          title="Differentiation"
+          title={t('sectionOverview')}
+          value={competitor.description}
+          emptyLabel={tCommon('notProvided')}
+        />
+        <DetailSection
+          title={t('sectionCustomer')}
+          value={competitor.targetCustomer}
+          emptyLabel={tCommon('notProvided')}
+        />
+        <DetailSection
+          title={t('sectionBusinessModel')}
+          value={competitor.businessModel}
+          emptyLabel={tCommon('notProvided')}
+        />
+        <DetailSection
+          title={t('sectionPricing')}
+          value={competitor.pricing}
+          emptyLabel={tCommon('notProvided')}
+        />
+        <DetailSection
+          title={t('sectionStrength')}
+          value={competitor.strengths}
+          emptyLabel={tCommon('notProvided')}
+        />
+        <DetailSection
+          title={t('sectionWeakness')}
+          value={competitor.weaknesses}
+          emptyLabel={tCommon('notProvided')}
+        />
+        <DetailSection
+          title={t('sectionDifferentiation')}
           value={competitor.differentiation}
+          emptyLabel={tCommon('notProvided')}
         />
       </div>
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete competitor?</DialogTitle>
+            <DialogTitle>{t('deleteConfirm')}</DialogTitle>
             <DialogDescription>
-              &quot;{competitor.name}&quot; will be permanently deleted. This action
-              cannot be undone.
+              {t('deleteConfirmDesc', { title: competitor.name })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)}>
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={isDeleting}
             >
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? tCommon('processing') : tCommon('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

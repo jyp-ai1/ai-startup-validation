@@ -12,8 +12,8 @@ export default async function ProjectNotFound() {
       <PageHeader title={t('projectNotFound')} />
       <div className="mt-8">
         <EmptyState
-          title="This project does not exist"
-          description="It may have been deleted or the URL is incorrect."
+          title={t('projectNotFoundTitle')}
+          description={t('projectNotFoundDesc')}
           action={
             <Button asChild>
               <Link href="/projects">{tNav('backToProjects')}</Link>

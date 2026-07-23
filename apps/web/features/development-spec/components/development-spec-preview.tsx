@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import type { DevelopmentSpecWithSections, StartupProject } from '@repo/types/validation';
+import { formatLocaleDate } from '@repo/utils/date';
 import { Button, PageHeader } from '@repo/ui';
 
 import { renderMarkdown } from '@/features/reports/utils/markdown';
@@ -14,9 +15,12 @@ type DevelopmentSpecPreviewProps = {
 };
 
 export async function DevelopmentSpecPreview({ project, spec }: DevelopmentSpecPreviewProps) {
+  const locale = await getLocale();
+  const t = await getTranslations('devSpec');
+  const tCommon = await getTranslations('common');
   const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/development-spec/${spec.id}`;
-  const createdDate = new Date(spec.createdAt).toLocaleDateString('ko-KR', {
+  const createdDate = formatLocaleDate(new Date(spec.createdAt), locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -25,7 +29,7 @@ export async function DevelopmentSpecPreview({ project, spec }: DevelopmentSpecP
   return (
     <>
       <PageHeader
-        title="Development Spec Preview"
+        title={t('previewTitle')}
         description={spec.title}
         actions={
           <Button variant="outline" asChild>
@@ -61,7 +65,7 @@ export async function DevelopmentSpecPreview({ project, spec }: DevelopmentSpecP
                   dangerouslySetInnerHTML={{ __html: renderMarkdown(section.content) }}
                 />
               ) : (
-                <p className="italic text-muted-foreground">No content.</p>
+                <p className="italic text-muted-foreground">{tCommon('noContent')}</p>
               )}
             </section>
           ))}

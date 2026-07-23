@@ -73,7 +73,83 @@
       "minutesAgo": "{count} minutes ago",
       "hoursAgo": "{count} hours ago",
       "daysAgo": "{count} days ago"
-    }
+    },
+    "fields": {
+      "title": "제목",
+      "content": "내용",
+      "description": "설명",
+      "summary": "요약",
+      "name": "이름",
+      "companyName": "회사명",
+      "website": "웹사이트",
+      "sourceName": "출처명",
+      "sourceUrl": "출처 URL",
+      "sourceType": "출처 유형",
+      "publishedDate": "발행일",
+      "eligibility": "지원 자격",
+      "strengths": "강점",
+      "weaknesses": "약점",
+      "differentiation": "차별점",
+      "targetCustomer": "타겟 고객",
+      "businessModel": "비즈니스 모델",
+      "willingnessToPay": "지불 의향",
+      "applicationUrl": "신청 URL",
+      "researchPlanOptional": "리서치 계획 (선택)",
+      "sectionTitle": "섹션 제목",
+      "date": "날짜",
+      "comment": "코멘트",
+      "created": "생성일",
+      "published": "발행일",
+      "status": "상태",
+      "priority": "우선순위",
+      "category": "카테고리",
+      "source": "출처",
+      "url": "URL",
+      "organization": "기관",
+      "deadline": "마감일",
+      "amount": "지원 규모",
+      "application": "신청",
+      "confidence": "신뢰도",
+      "researchPlan": "리서치 계획",
+      "researchType": "리서치 유형",
+      "targetStage": "대상 단계",
+      "supportType": "지원 유형",
+      "fitScore": "적합도",
+      "customerSegment": "고객 세그먼트",
+      "painPoint": "Pain Point",
+      "emotion": "감정",
+      "frequency": "빈도",
+      "severity": "심각도",
+      "paymentIntent": "지불 의향",
+      "marketPosition": "시장 포지션",
+      "pricing": "가격"
+    },
+    "placeholders": {
+      "selectType": "유형 선택",
+      "selectPriority": "우선순위 선택",
+      "selectStatus": "상태 선택",
+      "selectCategory": "카테고리 선택",
+      "selectConfidence": "신뢰도 선택",
+      "selectResearchPlan": "리서치 계획 연결",
+      "selectSourceType": "출처 유형 선택",
+      "markdownSection": "Markdown으로 섹션 내용 작성...",
+      "optionalSummary": "리포트 요약 (선택)",
+      "noResearchLink": "리서치 연결 없음"
+    },
+    "actions": {
+      "moveSectionUp": "섹션 위로 이동",
+      "moveSectionDown": "섹션 아래로 이동"
+    },
+    "close": "닫기",
+    "noContent": "내용 없음.",
+    "noContentYet": "아직 내용이 없습니다.",
+    "notSpecified": "미지정",
+    "notSet": "미설정",
+    "noDeadline": "마감일 없음",
+    "apply": "신청",
+    "sectionsCount": "섹션 {count}개",
+    "viewPrd": "PRD 보기",
+    "dashboard": "대시보드"
   },
   "shell": {
     "workspace": "워크스페이스",
@@ -348,7 +424,11 @@
       "market": "Market Size 조사부터 시작",
       "customer": "Customer Pain Point 인터뷰 설계",
       "competitor": "Direct / Indirect 경쟁사 매핑"
-    }
+    },
+    "editTitle": "리서치 계획 수정",
+    "detailsTitle": "리서치 계획 상세",
+    "deleteConfirm": "리서치 계획을 삭제하시겠습니까?",
+    "deleteConfirmDesc": "\"{title}\"이(가) 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다."
   },
   "evidence": {
     "title": "Evidence",
@@ -372,7 +452,11 @@
       "market": "시장 규모 통계 추가",
       "statista": "Statista / KOSIS 출처 등록",
       "report": "산업 리포트 PDF 링크 추가"
-    }
+    },
+    "editTitle": "근거 자료 수정",
+    "detailsTitle": "근거 자료 상세",
+    "deleteConfirm": "근거 자료를 삭제하시겠습니까?",
+    "deleteConfirmDesc": "\"{title}\"이(가) 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다."
   },
   "competitors": {
     "title": "Competitor Intelligence",
@@ -389,7 +473,23 @@
       "direct": "Direct competitor 2개 이상 등록",
       "leader": "Market Leader 포지션 분석",
       "differentiation": "차별화 포인트 명시"
-    }
+    },
+    "editTitle": "경쟁사 수정",
+    "detailsTitle": "경쟁사 상세",
+    "deleteConfirm": "경쟁사를 삭제하시겠습니까?",
+    "deleteConfirmDesc": "\"{title}\"이(가) 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.",
+    "compareTitle": "경쟁사 비교 매트릭스",
+    "compareDesc": "{project} 경쟁사 비교 분석",
+    "compareEmptyTitle": "비교할 경쟁사가 없습니다",
+    "compareEmptyDesc": "비교 매트릭스를 만들려면 경쟁사를 1개 이상 추가하세요.",
+    "compareFieldColumn": "항목",
+    "sectionOverview": "회사 개요",
+    "sectionCustomer": "고객",
+    "sectionBusinessModel": "비즈니스 모델",
+    "sectionPricing": "가격",
+    "sectionStrength": "강점",
+    "sectionWeakness": "약점",
+    "sectionDifferentiation": "차별점"
   },
   "aiStudio": {
     "title": "AI Studio",
@@ -530,7 +630,12 @@
       "paymentIntent": "결제 의향 (지불 의사)",
       "customerSegment": "고객 세그먼트 분포",
       "noData": "아직 데이터가 없습니다"
-    }
+    },
+    "editTitle": "VOC 수정",
+    "detailsTitle": "VOC 상세",
+    "summaryDashboardLink": "요약 대시보드",
+    "deleteConfirm": "VOC를 삭제하시겠습니까?",
+    "deleteConfirmDesc": "\"{title}\"이(가) 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다."
   },
   "grants": {
     "title": "Government Grants",
@@ -554,7 +659,22 @@
       "prestartup": "예비창업 지원 프로그램 추가",
       "rnd": "R&D 지원사업 적합도 검토",
       "deadline": "마감일 임박 프로그램 확인"
-    }
+    },
+    "editTitle": "지원사업 수정",
+    "detailsTitle": "지원사업 상세",
+    "deleteConfirm": "지원사업을 삭제하시겠습니까?",
+    "deleteConfirmDesc": "\"{title}\"이(가) 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.",
+    "dashboardEmptyTitle": "분석할 지원사업이 없습니다",
+    "dashboardEmptyDesc": "정부 지원 프로그램을 추가하면 대시보드 인사이트를 확인할 수 있습니다.",
+    "supportTypeDistribution": "지원 유형 분포",
+    "totalPrograms": "전체 프로그램",
+    "averageFitScore": "평균 적합도",
+    "registeredPrograms": "등록된 지원 프로그램",
+    "averageFit": "평균 적합도",
+    "noFitScores": "기록된 적합도가 없습니다",
+    "deadlineCalendar": "마감일 캘린더",
+    "noDeadlines": "예정된 마감일이 없습니다.",
+    "dashboardProgramCount": "프로그램 {count}개 · {project}"
   },
   "validation": {
     "title": "Decision Engine",
@@ -603,7 +723,20 @@
         "label": "창업자 적합성",
         "description": "경험 적합성, 네트워크, 도메인 이해도"
       }
-    }
+    },
+    "historyTitle": "검증 이력",
+    "historyDesc": "{project}의 과거 평가 기록",
+    "historyEmptyTitle": "평가 이력이 없습니다",
+    "historyEmptyDesc": "첫 Validation Score를 생성해 의사결정 변화를 추적하세요.",
+    "summaryEmptyTitle": "검증 데이터가 없습니다",
+    "summaryEmptyDesc": "요약 리포트를 생성하려면 먼저 Validation Score를 생성하세요.",
+    "summaryStrength": "강점",
+    "summaryRisk": "리스크",
+    "noStrengths": "70% 이상인 카테고리가 아직 없습니다.",
+    "allPerformingWell": "모든 카테고리가 양호합니다.",
+    "recommendationTitle": "권장 사항",
+    "addCommentHint": "Validation Score에 코멘트를 추가해 권장 사항을 기록하세요.",
+    "totalScoreLabel": "총점: {score} / 100"
   },
   "reports": {
     "title": "Decision Reports",
@@ -624,7 +757,14 @@
       "validation": "Validation Score 먼저 완료",
       "evidence": "Evidence 10건 이상 추가",
       "export": "이해관계자용 리포트 내보내기"
-    }
+    },
+    "editTitle": "리포트 수정",
+    "editReport": "리포트 수정",
+    "previewTitle": "리포트 미리보기",
+    "deleteConfirm": "리포트를 삭제하시겠습니까?",
+    "deleteConfirmDesc": "\"{title}\" 및 모든 섹션이 영구 삭제됩니다.",
+    "aiGenerationTitle": "AI 리포트 생성",
+    "aiGenerationDesc": "프로젝트 데이터를 기반으로 AI 검증 리포트 초안을 생성합니다."
   },
   "businessPlan": {
     "title": "Strategy Report",
@@ -638,7 +778,10 @@
       "validation": "Validation Score 먼저 완료",
       "market": "시장 규모 분석 포함",
       "grant": "지원사업 요건과 정렬"
-    }
+    },
+    "previewTitle": "사업계획서 미리보기",
+    "deleteConfirm": "사업계획서를 삭제하시겠습니까?",
+    "deleteConfirmDesc": "\"{title}\"이(가) 영구 삭제됩니다."
   },
   "prd": {
     "title": "Product Requirements",
@@ -652,7 +795,10 @@
       "businessPlan": "Business Plan 먼저 완료",
       "features": "MVP 기능 범위 정의",
       "metrics": "성공 지표 추가"
-    }
+    },
+    "previewTitle": "PRD 미리보기",
+    "deleteConfirm": "PRD를 삭제하시겠습니까?",
+    "deleteConfirmDesc": "\"{title}\"이(가) 영구 삭제됩니다."
   },
   "devSpec": {
     "title": "Development Spec",
@@ -671,7 +817,10 @@
       "architecture": "시스템 아키텍처 정의",
       "api": "API 엔드포인트 문서화",
       "stack": "기술 스택 명시"
-    }
+    },
+    "previewTitle": "개발 명세 미리보기",
+    "deleteConfirm": "개발 명세를 삭제하시겠습니까?",
+    "deleteConfirmDesc": "\"{title}\"이(가) 영구 삭제됩니다."
   },
   "documents": {
     "kpi": {
@@ -706,7 +855,14 @@
       "evidence": "처리 전 Evidence 추가",
       "chunks": "리포트에서 Knowledge Chunk 구축",
       "query": "처리 후 AI Query 시도"
-    }
+    },
+    "queryTitle": "지식 검색",
+    "queryDesc": "{project}의 인덱싱된 근거 검색",
+    "askQuestion": "질문하기",
+    "searchKnowledge": "지식 검색",
+    "results": "검색 결과",
+    "noResults": "일치하는 지식이 없습니다. 먼저 Evidence를 처리하세요.",
+    "scoreLabel": "점수 {score}"
   },
   "intelligence": {
     "platformTitle": "AI 전략 컨설턴트",
@@ -1225,6 +1381,8 @@
     "validationSummary": "검증 요약",
     "grantDashboard": "지원사업 대시보드",
     "projectNotFound": "프로젝트를 찾을 수 없습니다",
+    "projectNotFoundTitle": "프로젝트가 존재하지 않습니다",
+    "projectNotFoundDesc": "삭제되었거나 URL이 올바르지 않을 수 있습니다.",
     "newVocDesc": "새 고객 피드백 항목",
     "newPrdDesc": "{project} PRD 생성"
   }

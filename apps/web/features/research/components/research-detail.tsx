@@ -21,6 +21,8 @@ import {
   PageHeader,
 } from '@repo/ui';
 
+import { useLocalizedFormatters } from '@/lib/i18n/use-localized-formatters';
+
 import { deleteResearchPlan } from '../actions/research-actions';
 import {
   RESEARCH_PRIORITY_LABELS,
@@ -51,13 +53,16 @@ function MetaRow({ label, children }: { label: string; children: React.ReactNode
 }
 
 export function ResearchDetail({ project, plan }: ResearchDetailProps) {
+  const t = useTranslations('research');
+  const tCommon = useTranslations('common');
   const tNav = useTranslations('common.navLinks');
+  const { formatDate } = useLocalizedFormatters();
   const [isEditing, setIsEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
 
   const listPath = `/projects/${project.id}/research`;
-  const createdDate = new Date(plan.createdAt).toLocaleDateString('ko-KR');
+  const createdDate = formatDate(new Date(plan.createdAt));
 
   function handleDelete() {
     startDelete(async () => {
@@ -69,11 +74,11 @@ export function ResearchDetail({ project, plan }: ResearchDetailProps) {
     return (
       <>
         <PageHeader
-          title="Edit Research Plan"
+          title={t('editTitle')}
           description={plan.title}
           actions={
             <Button variant="outline" onClick={() => setIsEditing(false)}>
-              Cancel Edit
+              {tCommon('cancelEdit')}
             </Button>
           }
         />
@@ -93,11 +98,11 @@ export function ResearchDetail({ project, plan }: ResearchDetailProps) {
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => setIsEditing(true)}>
               <Pencil className="size-4" />
-              Edit
+              {tCommon('edit')}
             </Button>
             <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="size-4" />
-              Delete
+              {tCommon('delete')}
             </Button>
           </div>
         }
@@ -114,34 +119,34 @@ export function ResearchDetail({ project, plan }: ResearchDetailProps) {
 
       <Card className="mt-8">
         <CardHeader>
-          <CardTitle className="text-base">Research Plan Details</CardTitle>
+          <CardTitle className="text-base">{t('detailsTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <MetaRow label="Research Type">
+          <MetaRow label={tCommon('fields.researchType')}>
             <ResearchTypeBadge type={plan.researchType} />
             <span className="ml-2 text-muted-foreground">
               ({RESEARCH_TYPE_LABELS[plan.researchType]})
             </span>
           </MetaRow>
-          <MetaRow label="Priority">
+          <MetaRow label={tCommon('fields.priority')}>
             <ResearchPriorityBadge priority={plan.priority} />
             <span className="ml-2 text-muted-foreground">
               ({RESEARCH_PRIORITY_LABELS[plan.priority]})
             </span>
           </MetaRow>
-          <MetaRow label="Status">
+          <MetaRow label={tCommon('fields.status')}>
             <ResearchStatusBadge status={plan.status} />
             <span className="ml-2 text-muted-foreground">
               ({RESEARCH_STATUS_LABELS[plan.status]})
             </span>
           </MetaRow>
-          <MetaRow label="Created">{createdDate}</MetaRow>
+          <MetaRow label={tCommon('fields.created')}>{createdDate}</MetaRow>
           <div className="border-t pt-4">
             <p className="mb-2 text-sm font-medium text-muted-foreground">
-              Description
+              {tCommon('fields.description')}
             </p>
             <p className="whitespace-pre-wrap text-sm">
-              {plan.description?.trim() ? plan.description : 'Not provided yet'}
+              {plan.description?.trim() ? plan.description : tCommon('notProvided')}
             </p>
           </div>
         </CardContent>
@@ -150,22 +155,19 @@ export function ResearchDetail({ project, plan }: ResearchDetailProps) {
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete research plan?</DialogTitle>
-            <DialogDescription>
-              &quot;{plan.title}&quot; will be permanently deleted. This action
-              cannot be undone.
-            </DialogDescription>
+            <DialogTitle>{t('deleteConfirm')}</DialogTitle>
+            <DialogDescription>{t('deleteConfirmDesc', { title: plan.title })}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)}>
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={isDeleting}
             >
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? tCommon('processing') : tCommon('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

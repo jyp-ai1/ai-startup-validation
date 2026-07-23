@@ -35,6 +35,7 @@ export async function CompetitorCompare({
   project,
   comparison,
 }: CompetitorCompareProps) {
+  const t = await getTranslations('competitors');
   const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/competitors`;
   const { competitors, fields } = comparison;
@@ -42,8 +43,8 @@ export async function CompetitorCompare({
   return (
     <>
       <PageHeader
-        title="Competitor Comparison Matrix"
-        description={`Side-by-side analysis for ${project.title}`}
+        title={t('compareTitle')}
+        description={t('compareDesc', { project: project.title })}
       />
       <div className="mt-4 flex flex-wrap gap-3">
         <Button variant="link" className="h-auto p-0" asChild>
@@ -57,11 +58,11 @@ export async function CompetitorCompare({
       {competitors.length === 0 ? (
         <div className="mt-8">
           <EmptyState
-            title="No competitors to compare"
-            description="Add at least one competitor to build a comparison matrix."
+            title={t('compareEmptyTitle')}
+            description={t('compareEmptyDesc')}
             action={
               <Button asChild>
-                <Link href={`${basePath}/new`}>Add Competitor</Link>
+                <Link href={`${basePath}/new`}>{t('addCompetitor')}</Link>
               </Button>
             }
           />
@@ -72,7 +73,7 @@ export async function CompetitorCompare({
             <TableHeader>
               <TableRow>
                 <TableHead className="min-w-[160px] sticky left-0 bg-background">
-                  항목
+                  {t('compareFieldColumn')}
                 </TableHead>
                 {competitors.map((competitor) => (
                   <TableHead key={competitor.id} className="min-w-[200px]">

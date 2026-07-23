@@ -23,6 +23,26 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | Language test page (/dev/localization) | ✅ Done | AI |
 | Hardcoded PageHeader fixes | ✅ Done | AI |
 | Project status badge i18n | ✅ Done | AI |
+| Intelligence ko translations (198 keys) | ✅ Done | AI |
+| Locale switcher + NextIntlClientProvider locale | ✅ Done | AI |
+| VOC summary + navLinks back navigation | ✅ Done | AI |
+
+---
+
+## Sprint 5.9b — Screen i18n Gate (Pre–Sprint 7) ✅
+
+**Status:** Complete  
+**Goal:** All feature detail/preview/form screens localized before next sprint. No hardcoded English in user-visible copy when locale=ko.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| common.fields / placeholders / actions keys | ✅ Done | AI |
+| Feature detail + preview + form i18n (29 components) | ✅ Done | AI |
+| Locale-aware dates (useLocalizedFormatters) | ✅ Done | AI |
+| Sync keys to all 11 locales | ✅ Done | AI |
+| Build verify | ✅ Done | AI |
+
+**Gate:** Sprint 7+ feature work may proceed.
 
 ---
 

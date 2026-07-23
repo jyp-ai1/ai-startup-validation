@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import type { VOC } from '@repo/types/validation';
@@ -16,6 +17,7 @@ import { Button, Input, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { FormSelect } from '@/features/research/components/form-select';
+import { useFormLabels } from '@/lib/i18n/use-form-labels';
 
 import { createVOC, updateVOC, type VOCActionState } from '../actions/voc-actions';
 import {
@@ -71,6 +73,8 @@ const withNone = <T extends string>(
 ];
 
 export function VOCForm({ mode, projectId, entry }: VOCFormProps) {
+  const tCommon = useTranslations('common');
+  const labels = useFormLabels();
   const action =
     mode === 'create'
       ? createVOC.bind(null, projectId)
@@ -94,7 +98,7 @@ export function VOCForm({ mode, projectId, entry }: VOCFormProps) {
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2 md:col-span-2">
           <FormLabel htmlFor="title" required>
-            Title
+            {tCommon('fields.title')}
           </FormLabel>
           <Input
             id="title"
@@ -108,7 +112,7 @@ export function VOCForm({ mode, projectId, entry }: VOCFormProps) {
 
         <div className="space-y-2 md:col-span-2">
           <FormLabel htmlFor="content" required>
-            Content
+            {tCommon('fields.content')}
           </FormLabel>
           <Textarea
             id="content"
@@ -123,7 +127,7 @@ export function VOCForm({ mode, projectId, entry }: VOCFormProps) {
 
         <div className="space-y-2 md:col-span-2">
           <FormLabel htmlFor="painPoint" required>
-            Pain Point
+            {tCommon('fields.painPoint')}
           </FormLabel>
           <Input
             id="painPoint"
@@ -136,61 +140,69 @@ export function VOCForm({ mode, projectId, entry }: VOCFormProps) {
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="sourceType">Source Type</FormLabel>
+          <FormLabel htmlFor="sourceType">{tCommon('fields.sourceType')}</FormLabel>
           <FormSelect
             name="sourceType"
-            options={withNone(VOC_SOURCE_TYPES, VOC_SOURCE_TYPE_LABELS, 'Not specified')}
+            options={withNone(
+              VOC_SOURCE_TYPES,
+              VOC_SOURCE_TYPE_LABELS,
+              tCommon('notSpecified'),
+            )}
             defaultValue={entry?.sourceType ?? NONE_VALUE}
-            placeholder="Source Type"
+            placeholder={tCommon('placeholders.selectSourceType')}
           />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="customerSegment">Customer Segment</FormLabel>
+          <FormLabel htmlFor="customerSegment">{tCommon('fields.customerSegment')}</FormLabel>
           <FormSelect
             name="customerSegment"
             options={withNone(
               VOC_CUSTOMER_SEGMENTS,
               VOC_CUSTOMER_SEGMENT_LABELS,
-              'Not specified',
+              tCommon('notSpecified'),
             )}
             defaultValue={entry?.customerSegment ?? NONE_VALUE}
-            placeholder="Customer Segment"
+            placeholder={tCommon('fields.customerSegment')}
           />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="emotion">Emotion</FormLabel>
+          <FormLabel htmlFor="emotion">{tCommon('fields.emotion')}</FormLabel>
           <FormSelect
             name="emotion"
-            options={withNone(VOC_EMOTIONS, VOC_EMOTION_LABELS, 'Not specified')}
+            options={withNone(VOC_EMOTIONS, VOC_EMOTION_LABELS, tCommon('notSpecified'))}
             defaultValue={entry?.emotion ?? NONE_VALUE}
-            placeholder="Emotion"
+            placeholder={tCommon('fields.emotion')}
           />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="frequency">Frequency</FormLabel>
+          <FormLabel htmlFor="frequency">{tCommon('fields.frequency')}</FormLabel>
           <FormSelect
             name="frequency"
-            options={withNone(VOC_FREQUENCIES, VOC_FREQUENCY_LABELS, 'Not specified')}
+            options={withNone(
+              VOC_FREQUENCIES,
+              VOC_FREQUENCY_LABELS,
+              tCommon('notSpecified'),
+            )}
             defaultValue={entry?.frequency ?? NONE_VALUE}
-            placeholder="Frequency"
+            placeholder={tCommon('fields.frequency')}
           />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="severity">Severity</FormLabel>
+          <FormLabel htmlFor="severity">{tCommon('fields.severity')}</FormLabel>
           <FormSelect
             name="severity"
-            options={withNone(VOC_SEVERITIES, VOC_SEVERITY_LABELS, 'Not specified')}
+            options={withNone(VOC_SEVERITIES, VOC_SEVERITY_LABELS, tCommon('notSpecified'))}
             defaultValue={entry?.severity ?? NONE_VALUE}
-            placeholder="Severity"
+            placeholder={tCommon('fields.severity')}
           />
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="willingnessToPay">Willingness To Pay</FormLabel>
+          <FormLabel htmlFor="willingnessToPay">{tCommon('fields.willingnessToPay')}</FormLabel>
           <FormSelect
             name="willingnessToPay"
             options={VOC_WILLINGNESS_TO_PAY.map((value) => ({
@@ -198,17 +210,21 @@ export function VOCForm({ mode, projectId, entry }: VOCFormProps) {
               label: VOC_WILLINGNESS_LABELS[value],
             }))}
             defaultValue={entry?.willingnessToPay ?? 'UNKNOWN'}
-            placeholder="Willingness To Pay"
+            placeholder={tCommon('fields.willingnessToPay')}
           />
         </div>
       </div>
 
       <div className={cn('flex items-center gap-3')}>
         <Button type="submit" disabled={pending}>
-          {pending ? 'Saving...' : mode === 'create' ? 'Create VOC' : 'Save Changes'}
+          {pending
+            ? labels.saving
+            : mode === 'create'
+              ? labels.createVoc
+              : labels.saveChanges}
         </Button>
         <Button type="button" variant="outline" asChild>
-          <Link href={cancelHref}>Cancel</Link>
+          <Link href={cancelHref}>{labels.cancel}</Link>
         </Button>
       </div>
     </form>

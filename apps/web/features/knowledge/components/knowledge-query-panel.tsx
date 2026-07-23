@@ -25,6 +25,8 @@ type KnowledgeQueryPanelProps = {
 };
 
 export function KnowledgeQueryPanel({ project }: KnowledgeQueryPanelProps) {
+  const t = useTranslations('knowledge');
+  const tCommon = useTranslations('common');
   const tNav = useTranslations('common.navLinks');
   const action = queryKnowledge.bind(null, project.id);
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -32,8 +34,8 @@ export function KnowledgeQueryPanel({ project }: KnowledgeQueryPanelProps) {
   return (
     <>
       <PageHeader
-        title="Knowledge Query"
-        description={`Search indexed evidence for ${project.title}`}
+        title={t('queryTitle')}
+        description={t('queryDesc', { project: project.title })}
       />
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -51,7 +53,7 @@ export function KnowledgeQueryPanel({ project }: KnowledgeQueryPanelProps) {
 
         <div className="space-y-2">
           <label htmlFor="question" className="text-sm font-medium">
-            Ask a question
+            {t('askQuestion')}
           </label>
           <Input
             id="question"
@@ -65,19 +67,21 @@ export function KnowledgeQueryPanel({ project }: KnowledgeQueryPanelProps) {
         </div>
 
         <Button type="submit" disabled={pending}>
-          {pending ? 'Searching...' : 'Search Knowledge'}
+          {pending ? tCommon('searching') : t('searchKnowledge')}
         </Button>
       </form>
 
       {state.results && state.results.length > 0 ? (
         <div className="mt-10 space-y-4">
-          <h2 className="text-lg font-semibold">Results</h2>
+          <h2 className="text-lg font-semibold">{t('results')}</h2>
           {state.results.map((result, index) => (
             <Card key={`${result.chunkId ?? result.title}-${index}`}>
               <CardHeader className="pb-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <CardTitle className="text-base">{result.title}</CardTitle>
-                  <Badge variant="secondary">Score {result.score}</Badge>
+                  <Badge variant="secondary">
+                    {t('scoreLabel', { score: result.score })}
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -90,9 +94,7 @@ export function KnowledgeQueryPanel({ project }: KnowledgeQueryPanelProps) {
           ))}
         </div>
       ) : state.success && state.results?.length === 0 ? (
-        <p className="mt-8 text-sm text-muted-foreground">
-          No matching knowledge found. Process Evidence first.
-        </p>
+        <p className="mt-8 text-sm text-muted-foreground">{t('noResults')}</p>
       ) : null}
     </>
   );

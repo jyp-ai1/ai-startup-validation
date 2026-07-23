@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import type { GovernmentGrant } from '@repo/types/validation';
 import {
@@ -8,6 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@repo/ui';
+
+import { useLocalizedFormatters } from '@/lib/i18n/use-localized-formatters';
 
 import {
   GrantFitScoreBadge,
@@ -22,10 +27,12 @@ type GrantCardProps = {
 };
 
 export function GrantCard({ projectId, grant }: GrantCardProps) {
+  const t = useTranslations('common');
+  const { formatDate } = useLocalizedFormatters();
   const href = `/projects/${projectId}/grants/${grant.id}`;
   const deadlineLabel = grant.deadline
-    ? new Date(grant.deadline).toLocaleDateString('ko-KR')
-    : 'No deadline';
+    ? formatDate(new Date(grant.deadline))
+    : t('noDeadline');
 
   return (
     <Card className="transition-shadow hover:shadow-md">
@@ -48,7 +55,9 @@ export function GrantCard({ projectId, grant }: GrantCardProps) {
           <GrantTargetStageBadge stage={grant.targetStage} />
           <GrantStatusBadge status={grant.status} />
         </div>
-        <p className="text-muted-foreground">Deadline: {deadlineLabel}</p>
+        <p className="text-muted-foreground">
+          {t('fields.deadline')}: {deadlineLabel}
+        </p>
       </CardContent>
     </Card>
   );

@@ -2,10 +2,13 @@
 
 import { useActionState, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { ChevronDown, ChevronUp, Pencil } from 'lucide-react';
 
 import type { ReportSection } from '@repo/types/validation';
 import { Button, Input } from '@repo/ui';
+
+import { useFormLabels } from '@/lib/i18n/use-form-labels';
 
 import {
   moveSectionDown,
@@ -39,6 +42,8 @@ export function ReportSectionItem({
   isFirst,
   isLast,
 }: ReportSectionItemProps) {
+  const tCommon = useTranslations('common');
+  const labels = useFormLabels();
   const [isEditing, setIsEditing] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
   const router = useRouter();
@@ -87,7 +92,7 @@ export function ReportSectionItem({
             size="sm"
             disabled={isFirst || isMoving}
             onClick={() => handleMove('up')}
-            aria-label="Move section up"
+            aria-label={tCommon('actions.moveSectionUp')}
           >
             <ChevronUp className="size-4" />
           </Button>
@@ -97,7 +102,7 @@ export function ReportSectionItem({
             size="sm"
             disabled={isLast || isMoving}
             onClick={() => handleMove('down')}
-            aria-label="Move section down"
+            aria-label={tCommon('actions.moveSectionDown')}
           >
             <ChevronDown className="size-4" />
           </Button>
@@ -108,7 +113,7 @@ export function ReportSectionItem({
             onClick={() => setIsEditing((value) => !value)}
           >
             <Pencil className="size-4" />
-            {isEditing ? 'Close' : 'Edit'}
+            {isEditing ? tCommon('close') : tCommon('edit')}
           </Button>
         </div>
       </div>
@@ -124,7 +129,7 @@ export function ReportSectionItem({
 
             <div className="space-y-2">
               <label htmlFor={`title-${section.id}`} className="text-sm font-medium">
-                Section Title
+                {tCommon('fields.sectionTitle')}
               </label>
               <Input
                 id={`title-${section.id}`}
@@ -139,11 +144,11 @@ export function ReportSectionItem({
             <MarkdownEditor
               name="content"
               defaultValue={section.content}
-              placeholder="Write section content in Markdown..."
+              placeholder={tCommon('placeholders.markdownSection')}
             />
 
             <Button type="submit" disabled={pending}>
-              {pending ? 'Saving...' : 'Save Section'}
+              {pending ? labels.saving : labels.saveSection}
             </Button>
           </form>
         ) : section.content.trim() ? (
@@ -152,7 +157,7 @@ export function ReportSectionItem({
             dangerouslySetInnerHTML={{ __html: renderMarkdown(section.content) }}
           />
         ) : (
-          <p className="text-sm italic text-muted-foreground">No content yet.</p>
+          <p className="text-sm italic text-muted-foreground">{tCommon('noContentYet')}</p>
         )}
       </div>
     </div>

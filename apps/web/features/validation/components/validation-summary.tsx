@@ -39,21 +39,22 @@ function buildInsights(score: ValidationScore) {
 }
 
 export async function ValidationSummary({ project, score }: ValidationSummaryProps) {
-  const t = await getTranslations('pages');
+  const t = await getTranslations('validation');
+  const tPages = await getTranslations('pages');
   const tNav = await getTranslations('common.navLinks');
   const basePath = `/projects/${project.id}/validation`;
 
   if (!score) {
     return (
       <>
-        <PageHeader title={t('validationSummary')} description={project.title} />
+        <PageHeader title={tPages('validationSummary')} description={project.title} />
         <div className="mt-8">
           <EmptyState
-            title="No validation data"
-            description="Create a validation score first to generate a summary report."
+            title={t('summaryEmptyTitle')}
+            description={t('summaryEmptyDesc')}
             action={
               <Button asChild>
-                <Link href={`${basePath}/new`}>Create Validation Score</Link>
+                <Link href={`${basePath}/new`}>{tPages('newValidation')}</Link>
               </Button>
             }
           />
@@ -67,13 +68,13 @@ export async function ValidationSummary({ project, score }: ValidationSummaryPro
   return (
     <>
       <PageHeader
-        title={t('validationSummary')}
+        title={tPages('validationSummary')}
         description={project.title}
       />
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <ValidationDecisionBadge decision={score.decision} />
         <span className="text-sm text-muted-foreground">
-          Total Score: {score.totalScore} / 100
+          {t('totalScoreLabel', { score: score.totalScore })}
         </span>
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={basePath}>{tNav('backToValidation')}</Link>
@@ -84,14 +85,12 @@ export async function ValidationSummary({ project, score }: ValidationSummaryPro
         <Card>
           <CardHeader>
             <CardTitle className="text-base text-green-600 dark:text-green-400">
-              Strength
+              {t('summaryStrength')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {strengths.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No category scored above 70% yet.
-              </p>
+              <p className="text-sm text-muted-foreground">{t('noStrengths')}</p>
             ) : (
               strengths.map((item) => (
                 <div key={item.label}>
@@ -110,13 +109,11 @@ export async function ValidationSummary({ project, score }: ValidationSummaryPro
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base text-destructive">Risk</CardTitle>
+            <CardTitle className="text-base text-destructive">{t('summaryRisk')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {risks.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                All categories are performing well.
-              </p>
+              <p className="text-sm text-muted-foreground">{t('allPerformingWell')}</p>
             ) : (
               risks.map((item) => (
                 <div key={item.label}>
@@ -136,13 +133,11 @@ export async function ValidationSummary({ project, score }: ValidationSummaryPro
 
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle className="text-base">Recommendation</CardTitle>
+          <CardTitle className="text-base">{t('recommendationTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="whitespace-pre-wrap text-sm">
-            {score.comment?.trim()
-              ? score.comment
-              : 'Add a comment in your validation score to capture recommendations.'}
+            {score.comment?.trim() ? score.comment : t('addCommentHint')}
           </p>
         </CardContent>
       </Card>

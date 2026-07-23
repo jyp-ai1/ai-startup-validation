@@ -30,6 +30,9 @@ type BusinessPlanDetailProps = {
 };
 
 export function BusinessPlanDetail({ project, plan }: BusinessPlanDetailProps) {
+  const t = useTranslations('businessPlan');
+  const tAi = useTranslations('aiStudio');
+  const tCommon = useTranslations('common');
   const tNav = useTranslations('common.navLinks');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -52,17 +55,17 @@ export function BusinessPlanDetail({ project, plan }: BusinessPlanDetailProps) {
             <BusinessPlanGenerateButton
               projectId={project.id}
               planId={plan.id}
-              label="Regenerate"
+              label={tAi('regenerate')}
             />
             <Button variant="outline" asChild>
               <Link href={`${basePath}/preview`}>
                 <Eye className="size-4" />
-                Preview
+                {tCommon('preview')}
               </Link>
             </Button>
             <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="size-4" />
-              Delete
+              {tCommon('delete')}
             </Button>
           </div>
         }
@@ -70,7 +73,9 @@ export function BusinessPlanDetail({ project, plan }: BusinessPlanDetailProps) {
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <BusinessPlanStatusBadge status={plan.status} />
-        <span className="text-sm text-muted-foreground">{plan.sections.length} sections</span>
+        <span className="text-sm text-muted-foreground">
+          {tCommon('sectionsCount', { count: plan.sections.length })}
+        </span>
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`/projects/${project.id}/business-plan`}>{tNav('backToList')}</Link>
         </Button>
@@ -97,17 +102,15 @@ export function BusinessPlanDetail({ project, plan }: BusinessPlanDetailProps) {
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete business plan?</DialogTitle>
-            <DialogDescription>
-              &quot;{plan.title}&quot; will be permanently deleted.
-            </DialogDescription>
+            <DialogTitle>{t('deleteConfirm')}</DialogTitle>
+            <DialogDescription>{t('deleteConfirmDesc', { title: plan.title })}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)}>
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? tCommon('processing') : tCommon('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -30,6 +30,9 @@ type PRDDetailProps = {
 };
 
 export function PRDDetail({ project, prd }: PRDDetailProps) {
+  const t = useTranslations('prd');
+  const tAi = useTranslations('aiStudio');
+  const tCommon = useTranslations('common');
   const tNav = useTranslations('common.navLinks');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -49,16 +52,16 @@ export function PRDDetail({ project, prd }: PRDDetailProps) {
         description={project.title}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <PRDGenerateButton projectId={project.id} prdId={prd.id} label="Regenerate" />
+            <PRDGenerateButton projectId={project.id} prdId={prd.id} label={tAi('regenerate')} />
             <Button variant="outline" asChild>
               <Link href={`${basePath}/preview`}>
                 <Eye className="size-4" />
-                Preview
+                {tCommon('preview')}
               </Link>
             </Button>
             <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="size-4" />
-              Delete
+              {tCommon('delete')}
             </Button>
           </div>
         }
@@ -66,7 +69,9 @@ export function PRDDetail({ project, prd }: PRDDetailProps) {
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <PRDStatusBadge status={prd.status} />
-        <span className="text-sm text-muted-foreground">{prd.sections.length} sections</span>
+        <span className="text-sm text-muted-foreground">
+          {tCommon('sectionsCount', { count: prd.sections.length })}
+        </span>
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`/projects/${project.id}/prd`}>{tNav('backToList')}</Link>
         </Button>
@@ -93,17 +98,15 @@ export function PRDDetail({ project, prd }: PRDDetailProps) {
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete PRD?</DialogTitle>
-            <DialogDescription>
-              &quot;{prd.title}&quot; will be permanently deleted.
-            </DialogDescription>
+            <DialogTitle>{t('deleteConfirm')}</DialogTitle>
+            <DialogDescription>{t('deleteConfirmDesc', { title: prd.title })}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)}>
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? tCommon('processing') : tCommon('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

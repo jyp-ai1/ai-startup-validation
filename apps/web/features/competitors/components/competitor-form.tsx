@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import type { Competitor } from '@repo/types/validation';
@@ -12,6 +13,7 @@ import { Button, Input, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { FormSelect } from '@/features/research/components/form-select';
+import { useFormLabels } from '@/lib/i18n/use-form-labels';
 
 import {
   createCompetitor,
@@ -63,19 +65,13 @@ const categoryOptions = COMPETITOR_CATEGORIES.map((category) => ({
   label: `${COMPETITOR_CATEGORY_LABELS[category]} — ${COMPETITOR_CATEGORY_DESCRIPTIONS[category]}`,
 }));
 
-const marketPositionOptions = [
-  { value: NONE_VALUE, label: 'Not specified' },
-  ...COMPETITOR_MARKET_POSITIONS.map((position) => ({
-    value: position,
-    label: COMPETITOR_MARKET_POSITION_LABELS[position],
-  })),
-];
-
 export function CompetitorForm({
   mode,
   projectId,
   competitor,
 }: CompetitorFormProps) {
+  const tCommon = useTranslations('common');
+  const labels = useFormLabels();
   const action =
     mode === 'create'
       ? createCompetitor.bind(null, projectId)
@@ -88,6 +84,14 @@ export function CompetitorForm({
       ? `/projects/${projectId}/competitors`
       : `/projects/${projectId}/competitors/${competitor?.id}`;
 
+  const marketPositionOptions = [
+    { value: NONE_VALUE, label: tCommon('notSpecified') },
+    ...COMPETITOR_MARKET_POSITIONS.map((position) => ({
+      value: position,
+      label: COMPETITOR_MARKET_POSITION_LABELS[position],
+    })),
+  ];
+
   return (
     <form action={formAction} className="space-y-6">
       {state.error ? (
@@ -99,7 +103,7 @@ export function CompetitorForm({
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2 md:col-span-2">
           <FormLabel htmlFor="name" required>
-            Company Name
+            {tCommon('fields.companyName')}
           </FormLabel>
           <Input
             id="name"
@@ -113,13 +117,13 @@ export function CompetitorForm({
 
         <div className="space-y-2">
           <FormLabel htmlFor="category" required>
-            Category
+            {tCommon('fields.category')}
           </FormLabel>
           <FormSelect
             name="category"
             options={categoryOptions}
             defaultValue={competitor?.category ?? ''}
-            placeholder="Category 선택"
+            placeholder={tCommon('placeholders.selectCategory')}
             required
             aria-invalid={Boolean(state.fieldErrors?.category)}
           />
@@ -127,18 +131,18 @@ export function CompetitorForm({
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="marketPosition">Market Position</FormLabel>
+          <FormLabel htmlFor="marketPosition">{tCommon('fields.marketPosition')}</FormLabel>
           <FormSelect
             name="marketPosition"
             options={marketPositionOptions}
             defaultValue={competitor?.marketPosition ?? NONE_VALUE}
-            placeholder="Market Position 선택"
+            placeholder={tCommon('fields.marketPosition')}
           />
           <FieldError messages={state.fieldErrors?.marketPosition} />
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="description">Description</FormLabel>
+          <FormLabel htmlFor="description">{tCommon('fields.description')}</FormLabel>
           <Textarea
             id="description"
             name="description"
@@ -149,7 +153,7 @@ export function CompetitorForm({
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="website">Website</FormLabel>
+          <FormLabel htmlFor="website">{tCommon('fields.website')}</FormLabel>
           <Input
             id="website"
             name="website"
@@ -162,7 +166,7 @@ export function CompetitorForm({
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="targetCustomer">Target Customer</FormLabel>
+          <FormLabel htmlFor="targetCustomer">{tCommon('fields.targetCustomer')}</FormLabel>
           <Input
             id="targetCustomer"
             name="targetCustomer"
@@ -172,7 +176,7 @@ export function CompetitorForm({
         </div>
 
         <div className="space-y-2">
-          <FormLabel htmlFor="businessModel">Business Model</FormLabel>
+          <FormLabel htmlFor="businessModel">{tCommon('fields.businessModel')}</FormLabel>
           <Input
             id="businessModel"
             name="businessModel"
@@ -182,7 +186,7 @@ export function CompetitorForm({
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="pricing">Pricing</FormLabel>
+          <FormLabel htmlFor="pricing">{tCommon('fields.pricing')}</FormLabel>
           <Input
             id="pricing"
             name="pricing"
@@ -192,7 +196,7 @@ export function CompetitorForm({
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="strengths">Strengths</FormLabel>
+          <FormLabel htmlFor="strengths">{tCommon('fields.strengths')}</FormLabel>
           <Textarea
             id="strengths"
             name="strengths"
@@ -203,7 +207,7 @@ export function CompetitorForm({
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="weaknesses">Weaknesses</FormLabel>
+          <FormLabel htmlFor="weaknesses">{tCommon('fields.weaknesses')}</FormLabel>
           <Textarea
             id="weaknesses"
             name="weaknesses"
@@ -214,7 +218,7 @@ export function CompetitorForm({
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <FormLabel htmlFor="differentiation">Differentiation</FormLabel>
+          <FormLabel htmlFor="differentiation">{tCommon('fields.differentiation')}</FormLabel>
           <Textarea
             id="differentiation"
             name="differentiation"
@@ -228,13 +232,13 @@ export function CompetitorForm({
       <div className={cn('flex items-center gap-3')}>
         <Button type="submit" disabled={pending}>
           {pending
-            ? 'Saving...'
+            ? labels.saving
             : mode === 'create'
-              ? 'Create Competitor'
-              : 'Save Changes'}
+              ? labels.createCompetitor
+              : labels.saveChanges}
         </Button>
         <Button type="button" variant="outline" asChild>
-          <Link href={cancelHref}>Cancel</Link>
+          <Link href={cancelHref}>{labels.cancel}</Link>
         </Button>
       </div>
     </form>
