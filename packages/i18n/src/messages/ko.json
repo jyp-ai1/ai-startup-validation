@@ -2018,7 +2018,101 @@
       "pdf": "PDF",
       "ppt": "PPT",
       "docx": "DOCX",
-      "hint": "전체 Export는 Sprint 8.7에서 제공"
+      "hint": "Preview에서 PDF/PPT/DOCX Export"
+    }
+  },
+  "reportEngine": {
+    "preview": {
+      "pageTitle": "Executive Report",
+      "eyebrow": "Executive Report Preview",
+      "sectionList": "Sections",
+      "backToDashboard": "Dashboard로 돌아가기",
+      "prev": "이전",
+      "next": "다음",
+      "openFromDashboard": "Report Preview",
+      "dashboardHint": "Export는 Report Preview에서 — PDF/PPT/DOCX Export Queue"
+    },
+    "templates": {
+      "executive": "Executive",
+      "boardMeeting": "Board Meeting",
+      "investment": "Investment",
+      "startup": "Startup",
+      "enterprise": "Enterprise",
+      "subtitles": {
+        "executive": "Executive Strategy Report",
+        "board": "Board Meeting Brief",
+        "investment": "Investment Committee Memo",
+        "startup": "Startup Strategy Report",
+        "enterprise": "Enterprise Strategy Report"
+      }
+    },
+    "story": {
+      "step1": "① Executive Summary",
+      "step2": "② 핵심 결론",
+      "step3": "③ 왜 이런 결론인가",
+      "step4": "④ 근거",
+      "step5": "⑤ 리스크",
+      "step6": "⑥ 기회",
+      "step7": "⑦ 실행계획",
+      "step8": "⑧ Appendix"
+    },
+    "sections": {
+      "executiveSummary": "Executive Summary",
+      "decision": "Strategic Decision",
+      "strategicKpi": "Strategic KPIs",
+      "marketIntel": "Market Intelligence",
+      "framework": "Framework Analysis",
+      "risks": "Strategic Risks",
+      "opportunities": "Strategic Opportunities",
+      "actions": "Recommended Actions",
+      "execution": "Execution Status",
+      "evidence": "Supporting Evidence",
+      "appendix": "Appendix",
+      "verdictLabel": "Decision Verdict",
+      "decisionScore": "Decision Score",
+      "confidence": "Confidence",
+      "marketScore": "Market Score",
+      "tam": "TAM",
+      "cagr": "CAGR",
+      "marketUnavailable": "시장 인텔리전스 데이터 없음.",
+      "frameworkUnavailable": "프레임워크 분석 미실행.",
+      "executionUnavailable": "Orchestrator 실행 플랜 없음.",
+      "appendixIntro": "보조 데이터 및 방법론 참조.",
+      "appendixGenerated": "Report 생성 {date}",
+      "appendixProvider": "Decision provider: {value}"
+    },
+    "version": {
+      "draft": "Draft",
+      "internalReview": "Internal Review",
+      "approved": "Approved"
+    },
+    "review": {
+      "title": "Reviewer Workflow",
+      "desc": "AI 생성 → Reviewer 코멘트 → Resolve → Approve → Export",
+      "resolve": "Resolve",
+      "approve": "Report 승인",
+      "sampleAuthor": "Strategy Reviewer",
+      "sampleComment": "Decision 섹션의 경쟁 포지셔닝을 명확히 해 주세요.",
+      "steps": {
+        "aiGenerated": "AI Generated",
+        "inReview": "In Review",
+        "approved": "Approved",
+        "exported": "Exported"
+      }
+    },
+    "export": {
+      "title": "Export Queue",
+      "desc": "Mock Export — REQUESTED → GENERATING → COMPLETED",
+      "pdf": "PDF Export",
+      "pptx": "PPT Export",
+      "docx": "DOCX Export",
+      "ready": "준비됨: {file}",
+      "status": {
+        "requested": "Export 요청됨…",
+        "generating": "문서 생성 중…",
+        "completed": "Export 완료",
+        "failed": "Export 실패"
+      }
     }
   },
   "marketIntel": {

@@ -2018,7 +2018,101 @@
       "pdf": "PDF",
       "ppt": "PPT",
       "docx": "DOCX",
-      "hint": "Full export available in Sprint 8.7"
+      "hint": "Open preview to export PDF, PPT, or DOCX"
+    }
+  },
+  "reportEngine": {
+    "preview": {
+      "pageTitle": "Executive Report",
+      "eyebrow": "Executive Report Preview",
+      "sectionList": "Sections",
+      "backToDashboard": "Back to Dashboard",
+      "prev": "Previous",
+      "next": "Next",
+      "openFromDashboard": "Preview Report",
+      "dashboardHint": "Export opens report preview — PDF/PPT/DOCX via export queue"
+    },
+    "templates": {
+      "executive": "Executive",
+      "boardMeeting": "Board Meeting",
+      "investment": "Investment",
+      "startup": "Startup",
+      "enterprise": "Enterprise",
+      "subtitles": {
+        "executive": "Executive Strategy Report",
+        "board": "Board Meeting Brief",
+        "investment": "Investment Committee Memo",
+        "startup": "Startup Strategy Report",
+        "enterprise": "Enterprise Strategy Report"
+      }
+    },
+    "story": {
+      "step1": "① Executive Summary",
+      "step2": "② Key Conclusion",
+      "step3": "③ Why This Conclusion",
+      "step4": "④ Supporting Evidence",
+      "step5": "⑤ Strategic Risks",
+      "step6": "⑥ Strategic Opportunities",
+      "step7": "⑦ Execution Plan",
+      "step8": "⑧ Appendix"
+    },
+    "sections": {
+      "executiveSummary": "Executive Summary",
+      "decision": "Strategic Decision",
+      "strategicKpi": "Strategic KPIs",
+      "marketIntel": "Market Intelligence",
+      "framework": "Framework Analysis",
+      "risks": "Strategic Risks",
+      "opportunities": "Strategic Opportunities",
+      "actions": "Recommended Actions",
+      "execution": "Execution Status",
+      "evidence": "Supporting Evidence",
+      "appendix": "Appendix",
+      "verdictLabel": "Decision Verdict",
+      "decisionScore": "Decision Score",
+      "confidence": "Confidence",
+      "marketScore": "Market Score",
+      "tam": "TAM",
+      "cagr": "CAGR",
+      "marketUnavailable": "Market intelligence not yet available for this project.",
+      "frameworkUnavailable": "Framework analysis not yet run.",
+      "executionUnavailable": "Orchestrator execution plan not started.",
+      "appendixIntro": "Supplementary data and methodology references.",
+      "appendixGenerated": "Report generated {date}",
+      "appendixProvider": "Decision provider: {value}"
+    },
+    "version": {
+      "draft": "Draft",
+      "internalReview": "Internal Review",
+      "approved": "Approved"
+    },
+    "review": {
+      "title": "Reviewer Workflow",
+      "desc": "AI generates → Reviewer comments → Resolve → Approve → Export",
+      "resolve": "Resolve",
+      "approve": "Approve Report",
+      "sampleAuthor": "Strategy Reviewer",
+      "sampleComment": "Please clarify competitive positioning in the decision section.",
+      "steps": {
+        "aiGenerated": "AI Generated",
+        "inReview": "In Review",
+        "approved": "Approved",
+        "exported": "Exported"
+      }
+    },
+    "export": {
+      "title": "Export Queue",
+      "desc": "Mock export — REQUESTED → GENERATING → COMPLETED",
+      "pdf": "Export PDF",
+      "pptx": "Export PPT",
+      "docx": "Export DOCX",
+      "ready": "Ready: {file}",
+      "status": {
+        "requested": "Export requested…",
+        "generating": "Generating document…",
+        "completed": "Export completed",
+        "failed": "Export failed"
+      }
     }
   },
   "marketIntel": {

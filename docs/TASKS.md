@@ -65,7 +65,30 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 10 | SEO (OG, robots, sitemap, canonical) | ✅ Done | AI |
 | — | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.7 — Executive Report Export
+**Next:** Sprint 8.8 — AI Consultant Chat
+
+---
+
+## Sprint 8.7 — Executive Report Engine ✅
+
+**Status:** Complete  
+**Goal:** Executive Report Platform — Report Builder, Template Engine, slide Preview, Export Queue, Version + Reviewer workflow models.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `features/report-engine/` — types, builder, sections, templates | ✅ Done | AI |
+| Story-driven section order (consulting report flow) | ✅ Done | AI |
+| Report Version model (Draft → Internal Review → Approved) | ✅ Done | AI |
+| Reviewer Workflow model + placeholder UI | ✅ Done | AI |
+| Export Queue (REQUESTED → GENERATING → COMPLETED) | ✅ Done | AI |
+| Mock ExportProvider — PDF / PPTX / DOCX | ✅ Done | AI |
+| Executive Report Preview (section list + slide preview) | ✅ Done | AI |
+| Dashboard Export → Preview wiring | ✅ Done | AI |
+| Analytics: report_preview/generate/export/template_change | ✅ Done | AI |
+| i18n (en/ko + sync 11 locales) | ✅ Done | AI |
+| Build + deploy + verify | ✅ Done | AI |
+
+**Next:** Sprint 8.8 — AI Consultant Chat
 
 ---
 
@@ -89,7 +112,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | i18n (en/ko + sync 11 locales) | ✅ Done | AI |
 | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.7 — Executive Report Export
+**Next:** Sprint 8.8 — AI Consultant Chat
 
 ---
 
@@ -115,7 +138,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Rule:** Only Orchestrator may call Decision Engine — agents produce evidence/knowledge only.
 
-**Next:** Sprint 8.7 — Executive Report Export
+**Next:** Sprint 8.8 — AI Consultant Chat
 
 ---
 
@@ -138,7 +161,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Rule:** Research Agent never calls Decision Engine — evidence only.
 
-**Next:** Sprint 8.7 — Executive Report Export
+**Next:** Sprint 8.8 — AI Consultant Chat
 
 ---
 
