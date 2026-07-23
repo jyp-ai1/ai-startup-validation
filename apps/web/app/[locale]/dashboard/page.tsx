@@ -11,6 +11,7 @@ import {
 } from '@/features/executive';
 import { getExecutiveReport } from '@/features/report-engine';
 import { buildStrategyWorkspace } from '@/features/strategy-workspace';
+import { buildConsultantViewModel } from '@/features/ai-consultant';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();
@@ -26,6 +27,7 @@ export default async function DashboardPage() {
 
   let executive = null;
   let strategy = null;
+  let consultant = null;
   if (workspace.activeProject && workspace.stats) {
     const projectId = workspace.activeProject.id;
     const decision = await generateProjectDecision(projectId);
@@ -44,7 +46,21 @@ export default async function DashboardPage() {
       executive,
       hasExecutiveReport: Boolean(executiveReport),
     });
+    consultant = buildConsultantViewModel({
+      stats: workspace.stats,
+      executive,
+      strategy,
+      hasExecutiveReport: Boolean(executiveReport),
+      orchestratorPlan,
+    });
   }
 
-  return <ExecutiveDashboard workspace={workspace} executive={executive} strategy={strategy} />;
+  return (
+    <ExecutiveDashboard
+      workspace={workspace}
+      executive={executive}
+      strategy={strategy}
+      consultant={consultant}
+    />
+  );
 }

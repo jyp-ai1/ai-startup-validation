@@ -2567,5 +2567,149 @@
       "start": "Get started",
       "sample": "Load sample data"
     }
+  },
+  "aiConsultant": {
+    "panel": {
+      "eyebrow": "AI Strategy Consultant",
+      "title": "Your consultant"
+    },
+    "summary": {
+      "analyzed": "I've analyzed your project state. Review module progress and follow the top recommendation below.",
+      "vocLow": "VOC is critically low ({vocCount} entries). Customer validation is the biggest gap right now.",
+      "vocNeedsMore": "VOC needs more depth — {vocCount} entries so far. Aim for at least 10 interviews.",
+      "competitorLow": "Competitor mapping is incomplete ({competitorCount} registered). Benchmark at least 2–3 players.",
+      "evidenceLow": "Evidence library is thin ({evidenceCount} items). Add high-confidence sources before Decision.",
+      "decisionBlocked": "Decision cannot be generated yet — complete Research, VOC, and Evidence first.",
+      "almostReady": "You're close to a defensible decision. Finish remaining checklist items.",
+      "complete": "Strategy pipeline is complete. Review Decision and export the Executive Report."
+    },
+    "overview": {
+      "title": "Project analysis"
+    },
+    "modules": {
+      "research": "Research",
+      "voc": "VOC",
+      "evidence": "Evidence",
+      "competitor": "Competitor",
+      "government": "Government",
+      "decision": "Decision",
+      "decisionBlocked": "Not ready",
+      "status": {
+        "ready": "Ready",
+        "progress": "In progress",
+        "blocked": "Blocked"
+      }
+    },
+    "recommendations": {
+      "title": "Top recommendations",
+      "topEyebrow": "Recommended",
+      "aiInvestigate": "AI investigate",
+      "manualInput": "I'll input",
+      "impact": "+{points} pts",
+      "time": "~{days}d",
+      "fallback": {
+        "voc": {
+          "label": "VOC is insufficient",
+          "desc": "Secure at least 10 customer interviews to strengthen validation."
+        }
+      }
+    },
+    "context": {
+      "title": "Project context",
+      "fieldIndustry": "Industry",
+      "fieldStage": "Stage",
+      "fieldTarget": "Target",
+      "fieldScore": "Score",
+      "fieldDecision": "Decision",
+      "fieldTimeline": "Timeline",
+      "industryUnknown": "Not set",
+      "industrySet": "Set",
+      "targetUnknown": "Not defined",
+      "targetSet": "Defined",
+      "stages": {
+        "draft": "Draft",
+        "researching": "Researching",
+        "analyzing": "Analyzing",
+        "completed": "Completed",
+        "archived": "Archived"
+      },
+      "decisions": {
+        "blocked": "Cannot generate",
+        "go": "GO",
+        "hold": "HOLD",
+        "no_go": "NO GO"
+      },
+      "timeline": {
+        "early": "Getting started",
+        "research": "Research",
+        "evidence": "Evidence",
+        "voc": "VOC",
+        "competitor": "Competitor",
+        "market": "Market",
+        "framework": "Framework",
+        "decision": "Decision",
+        "report": "Report"
+      }
+    },
+    "questions": {
+      "title": "AI questions for you",
+      "targetCustomer": "What is your target customer age segment?",
+      "targetCustomerHint": "Define primary persona in project settings.",
+      "marketSize": "What is the estimated market size (TAM)?",
+      "marketSizeHint": "Add market sizing in Research.",
+      "revenueModel": "What is your revenue model?",
+      "revenueModelHint": "Subscription, transaction fee, or B2B license?",
+      "grantEligibility": "Are you eligible for government grant programs?",
+      "grantEligibilityHint": "Review K-Startup and ministry programs.",
+      "competitors": "Who are your top 2–3 direct competitors?"
+    },
+    "memory": {
+      "title": "AI memory",
+      "decisionGenerated": "Decision analysis completed",
+      "reportGenerated": "Executive report generated",
+      "orchestratorComplete": "AI orchestrator run completed",
+      "activity": {
+        "research": "Research activity",
+        "evidence": "Evidence added",
+        "voc": "VOC recorded",
+        "competitor": "Competitor mapped",
+        "validation": "Validation run",
+        "report": "Report activity"
+      }
+    },
+    "actions": {
+      "title": "Quick actions",
+      "aiResearch": "AI investigate",
+      "generateDecision": "Generate Decision",
+      "generateReport": "Generate Report",
+      "continueResearch": "Continue Research"
+    },
+    "prompts": {
+      "title": "Suggested prompts",
+      "marketResearch": "Research the market",
+      "findCompetitors": "Find competitors",
+      "findGrants": "Find grant programs",
+      "showRisks": "Show risks",
+      "goProbability": "GO probability"
+    },
+    "feed": {
+      "title": "Consultant activity",
+      "research": "Research updated",
+      "evidence": "Evidence created",
+      "voc": "VOC entry added",
+      "competitor": "Competitor registered",
+      "decision": "Decision generated",
+      "report": "Report generated",
+      "reportGenerated": "Executive report ready",
+      "agentComplete": "{agent} agent completed",
+      "agentRunning": "{agent} agent running"
+    },
+    "goProbability": {
+      "label": "GO probability",
+      "strong": "Strong signal",
+      "moderate": "Moderate signal",
+      "weak": "Weak signal",
+      "early": "Early stage"
+    }
   }
 }

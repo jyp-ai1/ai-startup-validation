@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -11,6 +12,9 @@ import type { WorkspaceContext } from '@/features/dashboard/types';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
 import { Button } from '@repo/ui';
+
+import type { ConsultantViewModel } from '@/features/ai-consultant';
+import { ConsultantPanel } from '@/features/ai-consultant';
 
 import type { StrategyWorkspaceViewModel } from '@/features/strategy-workspace';
 import { GuidedWorkspacePanel } from '@/features/strategy-workspace';
@@ -33,9 +37,35 @@ type ExecutiveDashboardProps = {
   workspace: WorkspaceContext;
   executive: ExecutiveWorkspaceViewModel | null;
   strategy: StrategyWorkspaceViewModel | null;
+  consultant: ConsultantViewModel | null;
 };
 
-export function ExecutiveDashboard({ workspace, executive, strategy }: ExecutiveDashboardProps) {
+type DashboardShellProps = {
+  consultant: ConsultantViewModel | null;
+  children: ReactNode;
+  className?: string;
+};
+
+function DashboardShell({ consultant, children, className }: DashboardShellProps) {
+  if (!consultant) {
+    return <div className={className ?? 'mx-auto max-w-6xl'}>{children}</div>;
+  }
+
+  return (
+    <div className="mx-auto max-w-7xl pb-20">
+      <div className="grid gap-8 xl:grid-cols-[1fr_minmax(320px,380px)]">
+        <div className={className ?? 'min-w-0 space-y-14 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500'}>
+          {children}
+        </div>
+        <div className="xl:sticky xl:top-24 xl:self-start">
+          <ConsultantPanel consultant={consultant} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ExecutiveDashboard({ workspace, executive, strategy, consultant }: ExecutiveDashboardProps) {
   const t = useTranslations('executive');
   const { trackEvent } = useAnalytics();
   const { projectCount } = workspace;
@@ -78,9 +108,9 @@ export function ExecutiveDashboard({ workspace, executive, strategy }: Executive
 
   if (!executive && strategy) {
     return (
-      <div className="mx-auto max-w-6xl space-y-14 pb-20 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500">
+      <DashboardShell consultant={consultant}>
         <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
-      </div>
+      </DashboardShell>
     );
   }
 
@@ -91,7 +121,7 @@ export function ExecutiveDashboard({ workspace, executive, strategy }: Executive
   const lineage = executive.orchestratorPlan?.confidenceLineage;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-14 pb-20 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500">
+    <DashboardShell consultant={consultant}>
       {strategy ? (
         <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
       ) : null}
@@ -129,6 +159,6 @@ export function ExecutiveDashboard({ workspace, executive, strategy }: Executive
       <ExecutiveEvidence evidence={executive.evidence} />
 
       <ExecutiveExportBar projectId={executive.project.id} />
-    </div>
+    </DashboardShell>
   );
 }

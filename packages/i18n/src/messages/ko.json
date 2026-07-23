@@ -2021,6 +2021,150 @@
       "hint": "Preview에서 PDF/PPT/DOCX Export"
     }
   },
+  "aiConsultant": {
+    "panel": {
+      "eyebrow": "AI Strategy Consultant",
+      "title": "AI 컨설턴트"
+    },
+    "summary": {
+      "analyzed": "프로젝트 상태를 분석했습니다. 모듈 진행률과 아래 추천을 확인하세요.",
+      "vocLow": "VOC가 매우 부족합니다 ({vocCount}건). 고객 검증이 가장 큰 Gap입니다.",
+      "vocNeedsMore": "VOC가 더 필요합니다 — 현재 {vocCount}건. 인터뷰 10건 이상을 목표로 하세요.",
+      "competitorLow": "경쟁사 매핑이 부족합니다 ({competitorCount}개). 최소 2–3개를 등록하세요.",
+      "evidenceLow": "Evidence가 부족합니다 ({evidenceCount}건). Decision 전 HIGH 신뢰도 근거를 추가하세요.",
+      "decisionBlocked": "아직 Decision을 생성할 수 없습니다 — Research, VOC, Evidence를 먼저 완료하세요.",
+      "almostReady": "Decision 생성에 거의 준비되었습니다. 남은 체크리스트를 마무리하세요.",
+      "complete": "전략 파이프라인이 완료되었습니다. Decision을 검토하고 Executive Report를 내보내세요."
+    },
+    "overview": {
+      "title": "프로젝트 분석"
+    },
+    "modules": {
+      "research": "Research",
+      "voc": "VOC",
+      "evidence": "Evidence",
+      "competitor": "Competitor",
+      "government": "Government",
+      "decision": "Decision",
+      "decisionBlocked": "생성 불가",
+      "status": {
+        "ready": "준비됨",
+        "progress": "진행 중",
+        "blocked": "차단됨"
+      }
+    },
+    "recommendations": {
+      "title": "Top 5 추천",
+      "topEyebrow": "추천",
+      "aiInvestigate": "AI가 조사",
+      "manualInput": "내가 입력",
+      "impact": "+{points}점",
+      "time": "~{days}일",
+      "fallback": {
+        "voc": {
+          "label": "VOC가 너무 부족합니다",
+          "desc": "인터뷰를 최소 10건 확보하여 검증력을 높이세요."
+        }
+      }
+    },
+    "context": {
+      "title": "프로젝트 Context",
+      "fieldIndustry": "Industry",
+      "fieldStage": "Stage",
+      "fieldTarget": "Target",
+      "fieldScore": "Score",
+      "fieldDecision": "Decision",
+      "fieldTimeline": "Timeline",
+      "industryUnknown": "미설정",
+      "industrySet": "설정됨",
+      "targetUnknown": "미정의",
+      "targetSet": "정의됨",
+      "stages": {
+        "draft": "Draft",
+        "researching": "Researching",
+        "analyzing": "Analyzing",
+        "completed": "Completed",
+        "archived": "Archived"
+      },
+      "decisions": {
+        "blocked": "생성 불가",
+        "go": "GO",
+        "hold": "HOLD",
+        "no_go": "NO GO"
+      },
+      "timeline": {
+        "early": "시작 단계",
+        "research": "Research",
+        "evidence": "Evidence",
+        "voc": "VOC",
+        "competitor": "Competitor",
+        "market": "Market",
+        "framework": "Framework",
+        "decision": "Decision",
+        "report": "Report"
+      }
+    },
+    "questions": {
+      "title": "AI 질문",
+      "targetCustomer": "타깃 고객 연령은?",
+      "targetCustomerHint": "프로젝트 설정에서 주요 페르소나를 정의하세요.",
+      "marketSize": "시장 규모(TAM)는?",
+      "marketSizeHint": "Research에 시장 규모를 추가하세요.",
+      "revenueModel": "수익 모델은?",
+      "revenueModelHint": "구독, 거래 수수료, B2B 라이선스 중 무엇인가요?",
+      "grantEligibility": "정부지원사업 대상입니까?",
+      "grantEligibilityHint": "K-Startup 및 중기부 프로그램을 검토하세요.",
+      "competitors": "직접 경쟁사 2–3곳은?"
+    },
+    "memory": {
+      "title": "AI Memory",
+      "decisionGenerated": "Decision 분석 완료",
+      "reportGenerated": "Executive Report 생성",
+      "orchestratorComplete": "AI Orchestrator 실행 완료",
+      "activity": {
+        "research": "Research 활동",
+        "evidence": "Evidence 추가",
+        "voc": "VOC 기록",
+        "competitor": "경쟁사 등록",
+        "validation": "Validation 실행",
+        "report": "Report 활동"
+      }
+    },
+    "actions": {
+      "title": "빠른 실행",
+      "aiResearch": "AI가 조사",
+      "generateDecision": "Decision 생성",
+      "generateReport": "Report 생성",
+      "continueResearch": "Research 계속"
+    },
+    "prompts": {
+      "title": "추천 프롬프트",
+      "marketResearch": "시장 조사해줘",
+      "findCompetitors": "경쟁사 찾아줘",
+      "findGrants": "정부지원사업 찾아줘",
+      "showRisks": "리스크 알려줘",
+      "goProbability": "GO 가능성 알려줘"
+    },
+    "feed": {
+      "title": "컨설턴트 활동",
+      "research": "Research 업데이트",
+      "evidence": "Evidence 생성",
+      "voc": "VOC 추가",
+      "competitor": "경쟁사 등록",
+      "decision": "Decision 생성",
+      "report": "Report 생성",
+      "reportGenerated": "Executive Report 준비",
+      "agentComplete": "{agent} Agent 완료",
+      "agentRunning": "{agent} Agent 실행 중"
+    },
+    "goProbability": {
+      "label": "GO 가능성",
+      "strong": "강한 신호",
+      "moderate": "보통 신호",
+      "weak": "약한 신호",
+      "early": "초기 단계"
+    }
+  },
   "strategyWorkspace": {
     "progress": {
       "eyebrow": "가이드 전략 워크스페이스",

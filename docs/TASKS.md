@@ -65,7 +65,31 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 10 | SEO (OG, robots, sitemap, canonical) | ✅ Done | AI |
 | — | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.9 — AI Consultant Chat
+**Next:** Sprint 9.0 — Real LLM (Claude API)
+
+---
+
+## Sprint 8.9 — AI Strategy Consultant ✅
+
+**Status:** Complete  
+**Goal:** Project-aware AI Consultant panel on Dashboard — not ChatGPT UI, but consultant that speaks first with analysis, recommendations, and actions.
+
+| EPIC | Task | Status | Owner |
+|------|------|--------|-------|
+| 1 | Consultant Overview — module progress analysis | ✅ Done | AI |
+| 2 | Top 5 Recommendations (priority, impact, time) | ✅ Done | AI |
+| 3 | Project Context (industry, stage, target, score, decision) | ✅ Done | AI |
+| 4 | AI Questions — proactive gaps (target, market, grants) | ✅ Done | AI |
+| 5 | AI Memory — recent executions, analyses, reports | ✅ Done | AI |
+| 6 | Action Buttons — AI investigate, Decision, Report, Research | ✅ Done | AI |
+| 7 | Suggested Prompts — market, competitors, grants, risks, GO | ✅ Done | AI |
+| 8 | Consultant Feed — activity log | ✅ Done | AI |
+| — | Analytics: consultant_open/action/question/prompt/report | ✅ Done | AI |
+| — | Dashboard right panel integration | ✅ Done | AI |
+| — | i18n (en/ko + sync 11 locales) | ✅ Done | AI |
+| — | Build + deploy + verify | ✅ Done | AI |
+
+**Next:** Sprint 9.0 — Real LLM (Claude API)
 
 ---
 
@@ -89,7 +113,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | — | Dashboard integration | ✅ Done | AI |
 | — | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.9 — AI Consultant Chat
+**Next:** Sprint 9.0 — Real LLM (Claude API)
 
 ---
 
@@ -112,7 +136,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | i18n (en/ko + sync 11 locales) | ✅ Done | AI |
 | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.9 — AI Consultant Chat
+**Next:** Sprint 9.0 — Real LLM (Claude API)
 
 ---
 
@@ -136,7 +160,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | i18n (en/ko + sync 11 locales) | ✅ Done | AI |
 | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.9 — AI Consultant Chat
+**Next:** Sprint 9.0 — Real LLM (Claude API)
 
 ---
 
@@ -162,7 +186,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Rule:** Only Orchestrator may call Decision Engine — agents produce evidence/knowledge only.
 
-**Next:** Sprint 8.9 — AI Consultant Chat
+**Next:** Sprint 9.0 — Real LLM (Claude API)
 
 ---
 
@@ -185,7 +209,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Rule:** Research Agent never calls Decision Engine — evidence only.
 
-**Next:** Sprint 8.9 — AI Consultant Chat
+**Next:** Sprint 9.0 — Real LLM (Claude API)
 
 ---
 
