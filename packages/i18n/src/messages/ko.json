@@ -1,8 +1,8 @@
 {
   "meta": {
     "appName": "LaunchLens",
-    "appTagline": "AI Startup Intelligence Platform",
-    "appDescription": "AI 기반 스타트업 아이디어 검증 플랫폼",
+    "appTagline": "AI Strategy Consultant",
+    "appDescription": "스타트업과 기업 전략팀을 위한 AI 전략 컨설팅 플랫폼",
     "titleSuffix": "LaunchLens"
   },
   "common": {
@@ -42,6 +42,8 @@
     "footer": "MVP — 로그인 불필요",
     "groupMain": "메인",
     "groupValidation": "검증",
+    "groupStrategy": "Strategy",
+    "groupAnalysis": "Analysis",
     "groupSystem": "설정",
     "groupWorkspace": "워크스페이스",
     "groupAi": "AI Studio",
@@ -53,9 +55,9 @@
   },
   "nav": {
     "dashboard": "대시보드",
-    "dashboardDesc": "스타트업 검증 진행 현황을 확인합니다.",
-    "projects": "스타트업 프로젝트",
-    "projectsDesc": "창업 아이디어 프로젝트를 관리합니다.",
+    "dashboardDesc": "전략 워크스페이스 현황을 확인합니다.",
+    "projects": "Projects",
+    "projectsDesc": "전략 및 검증 프로젝트를 관리합니다.",
     "research": "리서치",
     "researchDesc": "시장 조사 계획을 설계하고 추적합니다.",
     "evidence": "근거 자료",
@@ -64,17 +66,25 @@
     "competitorsDesc": "경쟁 환경을 분석합니다.",
     "voc": "VOC",
     "vocDesc": "고객의 목소리와 Pain Point를 분석합니다.",
-    "grants": "정부지원",
+    "grants": "Government",
     "grantsDesc": "정부 지원 사업을 탐색합니다.",
-    "validation": "검증 점수",
+    "startupValidation": "AI Startup Validation",
+    "startupValidationDesc": "스타트업 아이디어 검증 및 GO / NO GO 평가",
+    "businessStrategy": "AI Business Strategy",
+    "businessStrategyDesc": "SWOT, PEST 등 전략 프레임워크 (Sprint 6.2)",
+    "marketIntelligence": "Market Intelligence",
+    "marketIntelligenceDesc": "시장 규모, 트렌드, 경쟁 환경 분석",
+    "validation": "Decision Engine",
     "validationDesc": "GO / NO GO 평가 결과입니다.",
-    "reports": "검증 리포트",
-    "reportsDesc": "AI 생성 검증 리포트입니다.",
-    "businessPlan": "사업계획서",
+    "decisionReport": "Decision Report",
+    "reports": "Decision Report",
+    "reportsDesc": "AI 생성 의사결정 리포트",
+    "strategyReport": "Strategy Report",
+    "businessPlan": "Strategy Report",
     "prd": "PRD",
     "devSpec": "개발 명세",
     "knowledge": "지식 베이스",
-    "agent": "AI 스타트업 에이전트",
+    "agent": "AI Consultant",
     "agentConsultant": "AI Consultant",
     "aiStudio": "AI Studio",
     "settings": "설정",
@@ -174,12 +184,13 @@
     "emptyDescription": "로컬 워크스페이스 설정입니다. 인증 기능은 추후 추가됩니다."
   },
   "projects": {
-    "title": "프로젝트",
-    "description": "창업 아이디어 프로젝트 관리",
-    "workspaceDesc": "각 프로젝트 워크스페이스에서 Validation Score와 KPI를 확인하세요.",
+    "title": "Projects",
+    "description": "전략 및 검증 프로젝트 관리",
+    "workspaceDesc": "각 워크스페이스에서 Decision Engine 점수와 KPI를 확인하세요.",
     "newProject": "새 프로젝트",
     "emptyTitle": "프로젝트가 없습니다",
-    "emptyDescription": "첫 번째 스타트업 아이디어 프로젝트를 생성하세요.",
+    "emptyDescription": "첫 번째 전략 프로젝트를 생성하세요.",
+    "industryNotSet": "산업군 미입력",
     "created": "생성일",
     "deleteConfirm": "프로젝트를 삭제하시겠습니까?",
     "deleteWarning": "영구 삭제되며 되돌릴 수 없습니다.",
@@ -191,6 +202,16 @@
     "form": {
       "title": "프로젝트명",
       "summary": "서비스 한줄 설명",
+      "projectTypeLegend": "무엇을 검토하시나요?",
+      "projectTypes": {
+        "STARTUP": "Startup",
+        "BUSINESS_STRATEGY": "Business Strategy",
+        "NEW_BUSINESS": "New Business",
+        "AI_INITIATIVE": "AI Initiative",
+        "DIGITAL_TRANSFORMATION": "Digital Transformation",
+        "MARKET_EXPANSION": "Market Expansion",
+        "CUSTOM": "Custom"
+      },
       "industry": "산업군",
       "businessModel": "비즈니스 모델",
       "problem": "문제 정의",
@@ -459,7 +480,7 @@
     }
   },
   "validation": {
-    "title": "Validation Score",
+    "title": "Decision Engine",
     "description": "{project}의 GO / NO GO 평가",
     "emptyTitle": "Validation Score가 없습니다",
     "emptyDescription": "체계적인 검증 평가를 실행해 GO / NO GO를 확인하세요.",
@@ -508,7 +529,7 @@
     }
   },
   "reports": {
-    "title": "Validation Reports",
+    "title": "Decision Reports",
     "description": "{project}의 AI 생성 검증 리포트",
     "newReport": "New Report",
     "createReport": "리포트 생성",
@@ -529,7 +550,7 @@
     }
   },
   "businessPlan": {
-    "title": "Business Plan",
+    "title": "Strategy Report",
     "description": "{project}의 투자 심사용 사업계획서",
     "newPlan": "New Business Plan",
     "generate": "사업계획서 생성",
@@ -611,8 +632,8 @@
     }
   },
   "intelligence": {
-    "platformTitle": "AI Startup Intelligence",
-    "platformSubtitle": "AI Startup Intelligence Platform",
+    "platformTitle": "AI Strategy Consultant",
+    "platformSubtitle": "Executive Decision Platform",
     "emptyDesc": "프로젝트를 생성하면 Readiness Score, Expert Opinion, Action Center를 확인할 수 있습니다.",
     "startupReadiness": "Startup Readiness",
     "grade": "Grade",
@@ -805,6 +826,29 @@
       "GO": "GO",
       "CONDITIONAL_GO": "조건부 GO",
       "NO_GO": "NO GO"
+    },
+    "projectTypeBadge": {
+      "STARTUP": "STARTUP",
+      "BUSINESS_STRATEGY": "STRATEGY",
+      "NEW_BUSINESS": "NEW",
+      "AI_INITIATIVE": "AI",
+      "DIGITAL_TRANSFORMATION": "DX",
+      "MARKET_EXPANSION": "EXPANSION",
+      "CUSTOM": "CUSTOM"
+    }
+  },
+  "strategy": {
+    "business": {
+      "title": "AI Business Strategy",
+      "description": "{project} 전략 프레임워크",
+      "emptyTitle": "Sprint 6.2 예정",
+      "emptyDescription": "SWOT, PEST, Porter 5 Forces 등 전략 프레임워크가 제공됩니다."
+    },
+    "marketIntelligence": {
+      "title": "Market Intelligence",
+      "description": "{project} 시장 분석",
+      "emptyTitle": "Sprint 6.3 예정",
+      "emptyDescription": "TAM/SAM/SOM, 산업 동향, 경쟁 벤치마크가 제공됩니다."
     }
   }
 }

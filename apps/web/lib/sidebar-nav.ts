@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react';
 import {
   BarChart3,
   BookOpen,
@@ -8,23 +7,28 @@ import {
   FileCode,
   FileText,
   FlaskConical,
+  Gauge,
   Landmark,
   LayoutDashboard,
+  LineChart,
   MessageSquareQuote,
   Search,
   Settings,
   Swords,
+  TrendingUp,
 } from 'lucide-react';
 
 export type SidebarNavKey =
   | 'dashboard'
   | 'projects'
+  | 'startupValidation'
+  | 'businessStrategy'
   | 'research'
   | 'evidence'
   | 'voc'
   | 'competitors'
+  | 'marketIntelligence'
   | 'grants'
-  | 'validation'
   | 'reports'
   | 'businessPlan'
   | 'prd'
@@ -35,7 +39,7 @@ export type SidebarNavKey =
 
 export type SidebarNavItem = {
   key: SidebarNavKey;
-  icon: LucideIcon;
+  icon: typeof LayoutDashboard;
   labelKey: string;
   segment?: string;
   globalHref?: string;
@@ -44,9 +48,10 @@ export type SidebarNavItem = {
 export type SidebarNavGroup = {
   labelKey:
     | 'shell.groupWorkspace'
-    | 'shell.groupValidation'
+    | 'shell.groupStrategy'
+    | 'shell.groupAnalysis'
     | 'shell.groupAi'
-    | 'shell.groupIntelligence'
+    | 'shell.groupKnowledge'
     | 'shell.groupSystem';
   items: SidebarNavItem[];
 };
@@ -60,7 +65,24 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
     ],
   },
   {
-    labelKey: 'shell.groupValidation',
+    labelKey: 'shell.groupStrategy',
+    items: [
+      {
+        key: 'startupValidation',
+        icon: Gauge,
+        labelKey: 'nav.startupValidation',
+        segment: 'validation',
+      },
+      {
+        key: 'businessStrategy',
+        icon: LineChart,
+        labelKey: 'nav.businessStrategy',
+        segment: 'business-strategy',
+      },
+    ],
+  },
+  {
+    labelKey: 'shell.groupAnalysis',
     items: [
       { key: 'research', icon: Search, labelKey: 'nav.research', segment: 'research', globalHref: '/research' },
       { key: 'evidence', icon: FileText, labelKey: 'nav.evidence', segment: 'evidence', globalHref: '/evidence' },
@@ -72,6 +94,12 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
         segment: 'competitors',
         globalHref: '/competitors',
       },
+      {
+        key: 'marketIntelligence',
+        icon: TrendingUp,
+        labelKey: 'nav.marketIntelligence',
+        segment: 'market-intelligence',
+      },
       { key: 'grants', icon: Landmark, labelKey: 'nav.grants', segment: 'grants', globalHref: '/government-grants' },
     ],
   },
@@ -81,14 +109,14 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
       {
         key: 'reports',
         icon: BarChart3,
-        labelKey: 'nav.reports',
+        labelKey: 'nav.decisionReport',
         segment: 'reports',
         globalHref: '/reports',
       },
       {
         key: 'businessPlan',
         icon: Briefcase,
-        labelKey: 'nav.businessPlan',
+        labelKey: 'nav.strategyReport',
         segment: 'business-plan',
       },
       { key: 'prd', icon: FileCode, labelKey: 'nav.prd', segment: 'prd' },
@@ -101,7 +129,7 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
     ],
   },
   {
-    labelKey: 'shell.groupIntelligence',
+    labelKey: 'shell.groupKnowledge',
     items: [
       { key: 'knowledge', icon: BookOpen, labelKey: 'nav.knowledge', segment: 'knowledge' },
       { key: 'agent', icon: Bot, labelKey: 'nav.agentConsultant', segment: 'agent' },

@@ -5,6 +5,7 @@ import { useActionState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import type { StartupProject } from '@repo/types/validation';
+import { PROJECT_TYPES } from '@repo/types/validation';
 import { Button, Input, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
@@ -64,6 +65,29 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
         <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           {state.error}
         </div>
+      ) : null}
+
+      {mode === 'create' ? (
+        <fieldset className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-4">
+          <legend className="px-1 text-sm font-medium">{t('projectTypeLegend')}</legend>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {PROJECT_TYPES.map((type, index) => (
+              <label
+                key={type}
+                className="flex cursor-pointer items-center gap-3 rounded-lg border border-border/60 bg-background px-3 py-2.5 text-sm transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+              >
+                <input
+                  type="radio"
+                  name="projectType"
+                  value={type}
+                  defaultChecked={index === 0}
+                  className="size-4 accent-primary"
+                />
+                <span>{t(`projectTypes.${type}`)}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
       ) : null}
 
       <div className="grid gap-6 md:grid-cols-2">

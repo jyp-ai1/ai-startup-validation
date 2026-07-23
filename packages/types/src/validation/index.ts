@@ -11,6 +11,19 @@ export const STARTUP_PROJECT_STATUSES = [
 
 export type StartupProjectStatus = (typeof STARTUP_PROJECT_STATUSES)[number];
 
+/** Strategy workspace project type — drives wizard and UI emphasis. */
+export const PROJECT_TYPES = [
+  'STARTUP',
+  'BUSINESS_STRATEGY',
+  'NEW_BUSINESS',
+  'AI_INITIATIVE',
+  'DIGITAL_TRANSFORMATION',
+  'MARKET_EXPANSION',
+  'CUSTOM',
+] as const;
+
+export type ProjectType = (typeof PROJECT_TYPES)[number];
+
 /** Startup project — core entity for idea validation workflow. */
 export type StartupProject = {
   id: ID;
@@ -21,6 +34,7 @@ export type StartupProject = {
   targetCustomer: string | null;
   industry: string | null;
   businessModel: string | null;
+  projectType: ProjectType;
   status: StartupProjectStatus;
   createdAt: ISODateString;
   updatedAt: ISODateString;
@@ -34,6 +48,7 @@ export type CreateStartupProjectInput = {
   targetCustomer?: string | null;
   industry?: string | null;
   businessModel?: string | null;
+  projectType?: ProjectType;
   status?: StartupProjectStatus;
 };
 
@@ -45,6 +60,7 @@ export type UpdateStartupProjectInput = {
   targetCustomer?: string | null;
   industry?: string | null;
   businessModel?: string | null;
+  projectType?: ProjectType;
   status?: StartupProjectStatus;
 };
 

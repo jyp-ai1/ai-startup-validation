@@ -8,6 +8,29 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 6.0 — Product Pivot (AI Strategy Consultant) 🔄
+
+**Status:** In progress  
+**Goal:** Reposition LaunchLens from startup-only validation to **AI Strategy Consultant** platform. Minimal DB change; reuse existing engines.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| Brand: AI Strategy Consultant tagline | ✅ Done | AI |
+| Sidebar: Workspace / Strategy / Analysis / AI Studio / Knowledge | ✅ Done | AI |
+| Project type enum + migration 015 | ✅ Done | AI |
+| Project create wizard (type selection) | ✅ Done | AI |
+| Project type badge on cards | ✅ Done | AI |
+| Rename Validation → Decision Engine (labels) | ✅ Done | AI |
+| Rename Reports → Decision Report, Business Plan → Strategy Report | ✅ Done | AI |
+| Placeholder: Business Strategy, Market Intelligence | ✅ Done | AI |
+| Build + lint + deploy + verify | ⏳ Pending | AI |
+
+**Migration:** Run `packages/db/src/migration/015_project_type.sql` in Supabase before creating non-STARTUP projects.
+
+**Out of scope (Sprint 6.1+):** Full project wizard UX, SWOT/PEST frameworks, executive dashboard, Decision AI personas.
+
+---
+
 ## Sprint PX 1.0 — Product Experience Bible 🔄
 
 **Status:** Draft complete — awaiting PM Design Review  

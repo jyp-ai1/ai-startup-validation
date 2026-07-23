@@ -1,9 +1,9 @@
 {
   "meta": {
     "appName": "LaunchLens",
-    "appDescription": "AI-powered startup idea validation platform",
+    "appDescription": "AI-powered strategy consulting platform for startups and enterprise teams",
     "titleSuffix": "LaunchLens",
-    "appTagline": "AI Startup Validation Framework"
+    "appTagline": "AI Strategy Consultant"
   },
   "common": {
     "save": "Speichern",
@@ -49,7 +49,9 @@
     "currentProject": "Current Project",
     "recentProjects": "Recent Projects",
     "groupIntelligence": "Intelligence",
-    "searchPlaceholder": "Search workspace…"
+    "searchPlaceholder": "Search workspace…",
+    "groupStrategy": "Strategy",
+    "groupAnalysis": "Analysis"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -78,7 +80,15 @@
     "knowledge": "Knowledge Base",
     "agent": "AI Startup Agent",
     "aiStudio": "AI Studio",
-    "agentConsultant": "AI Consultant"
+    "agentConsultant": "AI Consultant",
+    "startupValidation": "AI Startup Validation",
+    "startupValidationDesc": "Startup idea validation and GO / NO GO scoring.",
+    "businessStrategy": "AI Business Strategy",
+    "businessStrategyDesc": "SWOT, PEST, and strategic frameworks (Sprint 6.2).",
+    "marketIntelligence": "Market Intelligence",
+    "marketIntelligenceDesc": "Market size, trends, and competitive landscape.",
+    "decisionReport": "Decision Report",
+    "strategyReport": "Strategy Report"
   },
   "dashboard": {
     "emptyTitle": "Welcome to your validation workspace",
@@ -204,12 +214,23 @@
         "problem": "Lack of social connection among seniors",
         "solution": "AI-powered relationship matching",
         "targetCustomer": "Ages 60+"
+      },
+      "projectTypeLegend": "What are you reviewing?",
+      "projectTypes": {
+        "STARTUP": "Startup",
+        "BUSINESS_STRATEGY": "Business Strategy",
+        "NEW_BUSINESS": "New Business",
+        "AI_INITIATIVE": "AI Initiative",
+        "DIGITAL_TRANSFORMATION": "Digital Transformation",
+        "MARKET_EXPANSION": "Market Expansion",
+        "CUSTOM": "Custom"
       }
     },
     "validation": {
       "titleRequired": "Please enter a project name",
       "summaryRequired": "Please enter a one-line description"
-    }
+    },
+    "industryNotSet": "Industry not set"
   },
   "projectDetail": {
     "researchPlans": "Recherchepläne",
@@ -631,8 +652,8 @@
     }
   },
   "intelligence": {
-    "platformTitle": "AI Startup Intelligence",
-    "platformSubtitle": "AI Startup Intelligence Platform",
+    "platformTitle": "AI Strategy Consultant",
+    "platformSubtitle": "Executive Decision Platform",
     "emptyDesc": "Create a project to see readiness scores, expert opinions, and recommended actions.",
     "startupReadiness": "Startup Readiness",
     "grade": "Grade",
@@ -951,7 +972,7 @@
     "dashboardCtaTitle": "Ready to decide?",
     "dashboardCtaDesc": "Your validation workspace is one click away.",
     "openDashboard": "Open Dashboard",
-    "footerFramework": "Powered by the AI Startup Validation Framework",
+    "footerFramework": "LaunchLens · AI Strategy Consultant",
     "statDecisions": "AI Verdict",
     "statReadiness": "Avg. Readiness",
     "statConfidence": "Confidence Index"
@@ -1090,6 +1111,29 @@
       "GO": "GO",
       "CONDITIONAL_GO": "Conditional GO",
       "NO_GO": "NO GO"
+    },
+    "projectTypeBadge": {
+      "STARTUP": "STARTUP",
+      "BUSINESS_STRATEGY": "STRATEGY",
+      "NEW_BUSINESS": "NEW",
+      "AI_INITIATIVE": "AI",
+      "DIGITAL_TRANSFORMATION": "DX",
+      "MARKET_EXPANSION": "EXPANSION",
+      "CUSTOM": "CUSTOM"
+    }
+  },
+  "strategy": {
+    "business": {
+      "title": "AI Business Strategy",
+      "description": "Strategic frameworks for {project}",
+      "emptyTitle": "Coming in Sprint 6.2",
+      "emptyDescription": "SWOT, PEST, Porter 5 Forces, and other frameworks will be available here."
+    },
+    "marketIntelligence": {
+      "title": "Market Intelligence",
+      "description": "Market analysis for {project}",
+      "emptyTitle": "Coming in Sprint 6.3",
+      "emptyDescription": "TAM/SAM/SOM, industry trends, and competitive benchmarks will be available here."
     }
   }
 }

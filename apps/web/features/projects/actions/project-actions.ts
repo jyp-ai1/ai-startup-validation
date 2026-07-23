@@ -11,7 +11,7 @@ import {
 } from '@repo/core/errors';
 import { parseWithSchema } from '@repo/core/validation';
 import { isSupabaseConfigured } from '@repo/db';
-import type { StartupProject } from '@repo/types/validation';
+import type { CreateStartupProjectInput, StartupProject } from '@repo/types/validation';
 
 import { getStartupProjectRepository } from '@/lib/db/platform';
 
@@ -71,7 +71,7 @@ export async function getProject(id: string): Promise<StartupProject | null> {
 function assertDbConfigured(): void {
   if (!isSupabaseConfigured()) {
     throw new InternalServerError(
-      'Database is not configured. Add Supabase environment variables and run migration 002_startup_projects.sql.',
+      'Database is not configured. Add Supabase environment variables and run migrations through 015_project_type.sql.',
     );
   }
 }
@@ -91,6 +91,7 @@ export async function createProject(
       targetCustomer: emptyToNull(raw.targetCustomer),
       industry: emptyToNull(raw.industry),
       businessModel: emptyToNull(raw.businessModel),
+      projectType: (raw.projectType as CreateStartupProjectInput['projectType']) || 'STARTUP',
     });
 
     const repo = getStartupProjectRepository();

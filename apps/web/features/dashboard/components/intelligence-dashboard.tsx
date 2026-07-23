@@ -39,8 +39,11 @@ export function IntelligenceDashboard({ workspace }: IntelligenceDashboardProps)
           {t('meta.appName')}
         </p>
         <h1 className="mt-4 text-intelligence-hero font-semibold tracking-tight">
-          {t('meta.appTagline')}
+          {t('intelligence.platformTitle')}
         </h1>
+        <p className="mx-auto mt-3 max-w-lg text-lg text-muted-foreground">
+          {t('intelligence.platformSubtitle')}
+        </p>
         <p className="mx-auto mt-4 max-w-lg text-base text-muted-foreground">
           {t('intelligence.emptyDesc')}
         </p>

@@ -25,6 +25,7 @@ type StartupProjectRow = {
   target_customer: string | null;
   industry: string | null;
   business_model: string | null;
+  project_type: StartupProject['projectType'];
   status: StartupProject['status'];
   created_at: string;
   updated_at: string;
@@ -40,6 +41,7 @@ function toStartupProject(row: StartupProjectRow): StartupProject {
     targetCustomer: row.target_customer,
     industry: row.industry,
     businessModel: row.business_model,
+    projectType: row.project_type ?? 'STARTUP',
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -55,6 +57,7 @@ function toInsertRow(input: CreateStartupProjectInput) {
     target_customer: input.targetCustomer ?? null,
     industry: input.industry ?? null,
     business_model: input.businessModel ?? null,
+    project_type: input.projectType ?? 'STARTUP',
     status: input.status ?? 'DRAFT',
   };
 }
@@ -72,6 +75,7 @@ function toUpdateRow(input: UpdateStartupProjectInput) {
     ...(input.businessModel !== undefined
       ? { business_model: input.businessModel }
       : {}),
+    ...(input.projectType !== undefined ? { project_type: input.projectType } : {}),
     ...(input.status !== undefined ? { status: input.status } : {}),
     updated_at: new Date().toISOString(),
   };

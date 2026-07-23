@@ -1,34 +1,46 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dir = path.join(__dirname, '../packages/i18n/src/messages');
-const source = JSON.parse(fs.readFileSync(path.join(dir, 'en.json'), 'utf8'));
-const locales = ['ja', 'zh-CN', 'zh-TW', 'es', 'fr', 'de', 'pt', 'vi', 'id'];
+const dir = path.join('packages', 'i18n', 'src', 'messages');
+const master = JSON.parse(fs.readFileSync(path.join(dir, 'en.json'), 'utf8'));
+const locales = fs
+  .readdirSync(dir)
+  .filter((file) => file.endsWith('.json') && file !== 'en.json' && file !== 'ko.json');
 
-function deepMerge(target, sourceObj) {
-  for (const key of Object.keys(sourceObj)) {
-    if (
-      sourceObj[key] &&
-      typeof sourceObj[key] === 'object' &&
-      !Array.isArray(sourceObj[key])
+function mergeMissing(target, source) {
+  for (const key of Object.keys(source)) {
+    if (!(key in target)) {
+      target[key] = source[key];
+    } else if (
+      source[key] &&
+      typeof source[key] === 'object' &&
+      !Array.isArray(source[key]) &&
+      target[key] &&
+      typeof target[key] === 'object' &&
+      !Array.isArray(target[key])
     ) {
-      if (!target[key] || typeof target[key] !== 'object') {
-        target[key] = {};
-      }
-      deepMerge(target[key], sourceObj[key]);
-    } else if (!(key in target)) {
-      target[key] = sourceObj[key];
+      mergeMissing(target[key], source[key]);
     }
   }
-  return target;
 }
 
-for (const locale of locales) {
-  const file = path.join(dir, `${locale}.json`);
-  const target = JSON.parse(fs.readFileSync(file, 'utf8'));
-  deepMerge(target, source);
-  fs.writeFileSync(file, `${JSON.stringify(target, null, 2)}\n`);
-  console.log(`Synced ${locale}`);
+for (const file of locales) {
+  const filePath = path.join(dir, file);
+  const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  mergeMissing(data, master);
+
+  if (data.meta) {
+    data.meta.appTagline = 'AI Strategy Consultant';
+    data.meta.appDescription = master.meta.appDescription;
+  }
+  if (data.intelligence) {
+    data.intelligence.platformTitle = master.intelligence.platformTitle;
+    data.intelligence.platformSubtitle = master.intelligence.platformSubtitle;
+  }
+  if (data.landing) {
+    data.landing.footerFramework = master.landing.footerFramework;
+  }
+
+  fs.writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`);
+  console.log(`patched ${file}`);
 }

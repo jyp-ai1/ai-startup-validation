@@ -1,5 +1,5 @@
 import { z } from '@repo/core/validation';
-import { STARTUP_PROJECT_STATUSES } from '@repo/types/validation';
+import { PROJECT_TYPES, STARTUP_PROJECT_STATUSES } from '@repo/types/validation';
 
 export const createStartupProjectSchema = z.object({
   title: z.string().trim().min(1, 'projects.validation.titleRequired'),
@@ -9,6 +9,7 @@ export const createStartupProjectSchema = z.object({
   targetCustomer: z.string().trim().optional().nullable(),
   industry: z.string().trim().optional().nullable(),
   businessModel: z.string().trim().optional().nullable(),
+  projectType: z.enum(PROJECT_TYPES).default('STARTUP'),
 });
 
 export const updateStartupProjectSchema = createStartupProjectSchema

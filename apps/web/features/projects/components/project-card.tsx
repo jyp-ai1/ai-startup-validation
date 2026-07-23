@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Pencil } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import type { StartupProject } from '@repo/types/validation';
 import {
@@ -15,12 +16,14 @@ import {
 import { formatRelativeTime } from '@repo/utils/date';
 
 import { ProjectStatusBadge } from './project-status-badge';
+import { ProjectTypeBadge } from './project-type-badge';
 
 type ProjectCardProps = {
   project: StartupProject;
 };
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const t = useTranslations('projects');
   const createdLabel = formatRelativeTime(new Date(project.createdAt));
 
   return (
@@ -40,12 +43,15 @@ export function ProjectCard({ project }: ProjectCardProps) {
               {project.summary}
             </CardDescription>
           </div>
-          <ProjectStatusBadge status={project.status} />
+          <div className="flex shrink-0 flex-col items-end gap-2">
+            <ProjectTypeBadge projectType={project.projectType} />
+            <ProjectStatusBadge status={project.status} />
+          </div>
         </div>
       </CardHeader>
       <CardContent className="flex items-center justify-between gap-4 pt-0">
         <div className="space-y-0.5 text-xs text-muted-foreground">
-          <p>{project.industry ?? 'Industry not set'}</p>
+          <p>{project.industry ?? t('industryNotSet')}</p>
           <p>{createdLabel}</p>
         </div>
         <Button variant="outline" size="sm" asChild>

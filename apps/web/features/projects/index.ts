@@ -6,3 +6,4 @@ export { ProjectDetail } from './components/project-detail';
 export { ProjectForm } from './components/project-form';
 export { ProjectList } from './components/project-list';
 export { ProjectStatusBadge } from './components/project-status-badge';
+export { ProjectTypeBadge } from './components/project-type-badge';

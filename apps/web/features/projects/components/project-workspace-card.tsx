@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import type { ProjectOverviewCard } from '@/features/dashboard/services/dashboard-service';
 import { getDecisionTone } from '@/features/dashboard/types';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
+import { ProjectTypeBadge } from '@/features/projects/components/project-type-badge';
 import { VALIDATION_DECISION_LABELS } from '@/features/validation/utils/score-calculator';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
@@ -36,6 +37,7 @@ export function ProjectWorkspaceCard({ overview }: ProjectWorkspaceCardProps) {
               {project.title}
             </Link>
             <div className="mt-2 flex flex-wrap items-center gap-2">
+              <ProjectTypeBadge projectType={project.projectType} />
               <ProjectStatusBadge status={project.status} />
               <span className="text-xs text-muted-foreground">
                 {formatRelativeTime(new Date(project.updatedAt))}
