@@ -209,7 +209,7 @@
     "settingsDesc": "워크스페이스 및 앱 설정입니다.",
     "operations": "Operations",
     "operationsDesc": "제품 분석 및 운영 지표",
-    "decisionCenter": "Decision Center",
+    "decisionCenter": "의사결정 센터",
     "decisionCenterDesc": "AI 전략 의사결정 — GO, HOLD, NO GO 및 경영진 근거."
   },
   "dashboard": {
@@ -1406,13 +1406,13 @@
     "futureGaNote": "GA API 연동 전까지 Mock 지표가 표시됩니다. 이벤트 저장 구조는 GA 연동 준비 완료."
   },
   "decision": {
-    "centerTitle": "Decision Center",
+    "centerTitle": "의사결정 센터",
     "backToProject": "프로젝트로 돌아가기",
-    "consultantEyebrow": "AI Strategy Consultant",
+    "consultantEyebrow": "AI 전략 컨설턴트",
     "verdictHeading": "전략적 의사결정",
     "providerNote": "분석 엔진: {provider}",
     "scoresTitle": "의사결정 지표",
-    "executiveTitle": "Executive Summary",
+    "executiveTitle": "경영진 요약",
     "reasonTitle": "의사결정 근거",
     "missingTitle": "부족한 데이터",
     "actionsTitle": "권장 조치",
@@ -1423,10 +1423,10 @@
     "mitigationColumn": "완화 방안",
     "opportunityTitle": "기회 평가",
     "generatedAt": "생성 시각 {time}",
-    "summaryEyebrow": "Decision Summary",
+    "summaryEyebrow": "의사결정 요약",
     "summaryTitle": "전략적 판정",
     "topAction": "우선 조치",
-    "openDecisionCenter": "Decision Center 열기",
+    "openDecisionCenter": "의사결정 센터 열기",
     "scoreImpactShort": "+{points}점",
     "daysShort": "{days}일",
     "emptyTitle": "선택된 프로젝트 없음",
@@ -1438,10 +1438,10 @@
       "noGo": "NO GO"
     },
     "scores": {
-      "decisionScore": "Decision Score",
-      "confidence": "Confidence",
-      "investmentReadiness": "Investment Readiness",
-      "executionReadiness": "Execution Readiness"
+      "decisionScore": "의사결정 점수",
+      "confidence": "신뢰도",
+      "investmentReadiness": "투자 준비도",
+      "executionReadiness": "실행 준비도"
     },
     "severity": {
       "high": "높음",
@@ -1509,9 +1509,9 @@
     },
     "reasons": {
       "go": {
-        "market": "Decision Score {score}점 — 시장·검증 신호가 유리합니다.",
+        "market": "의사결정 점수 {score}점 — 시장·검증 신호가 유리합니다.",
         "evidence": "고신뢰도 근거가 전략적 확신을 뒷받침합니다.",
-        "execution": "Execution Readiness {score}% — 운영 실행 가능성이 충분합니다."
+        "execution": "실행 준비도 {score}% — 운영 실행 가능성이 충분합니다."
       },
       "noGo": {
         "market": "시장 신호가 최소 생존 임계값에 미달합니다.",
