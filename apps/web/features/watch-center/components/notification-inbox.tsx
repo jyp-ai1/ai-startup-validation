@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Trash2 } from 'lucide-react';
 
+import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
+import { useGuidedEmptyHint } from '@/components/consulting/use-guided-empty-hint';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
-import { Button } from '@repo/ui';
+import { appToast, Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 import { formatRelativeTime } from '@repo/utils/date';
 
@@ -43,11 +45,14 @@ const BUCKET_ORDER: TimelineBucket[] = ['today', 'yesterday', 'thisWeek', 'earli
 
 export function NotificationInbox({ projectId, notifications, onChange }: NotificationInboxProps) {
   const t = useTranslations('watch');
+  const tp = useTranslations('polish.toast');
+  const { aiHint, aiGuideLabel } = useGuidedEmptyHint('notification');
   const { trackEvent } = useAnalytics();
 
   async function handleRead(notification: WatchNotification) {
     if (notification.read) return;
     await readWatchNotification(projectId, notification.id);
+    appToast.success(tp('notificationRead'));
     trackEvent(ANALYTICS_EVENTS.notificationRead, {
       project_id: projectId,
       category: notification.category,
@@ -58,6 +63,7 @@ export function NotificationInbox({ projectId, notifications, onChange }: Notifi
 
   async function handleDismiss(notificationId: string) {
     await dismissWatchNotification(projectId, notificationId);
+    appToast.success(tp('notificationDismissed'));
     onChange?.();
   }
 
@@ -68,9 +74,17 @@ export function NotificationInbox({ projectId, notifications, onChange }: Notifi
 
   if (notifications.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed border-border/60 px-4 py-8 text-center text-sm text-muted-foreground">
-        {t('inbox.empty')}
-      </p>
+      <ConsultingEmptyState
+        className="py-10"
+        title={t('inbox.emptyTitle')}
+        description={t('inbox.empty')}
+        primaryLabel={t('inbox.emptyAction')}
+        primaryHref={`/projects/${projectId}/research/new`}
+        secondaryLabel={t('watchList.market')}
+        secondaryHref={`/projects/${projectId}`}
+        aiHint={aiHint}
+        aiGuideLabel={aiGuideLabel}
+      />
     );
   }
 
@@ -86,7 +100,7 @@ export function NotificationInbox({ projectId, notifications, onChange }: Notifi
               <li
                 key={item.id}
                 className={cn(
-                  'rounded-lg border px-4 py-3 transition-colors',
+                  'rounded-lg border px-4 py-3 transition-all duration-200 motion-safe:hover:shadow-sm',
                   item.read ? 'border-border/30 bg-muted/10' : 'border-primary/20 bg-primary/5',
                 )}
               >

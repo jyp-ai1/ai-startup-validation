@@ -1725,6 +1725,14 @@
     "daysShort": "{days} days",
     "emptyTitle": "No project selected",
     "emptyDescription": "Create a project to generate an AI strategic decision.",
+    "emptyInsufficientTitle": "Decision not ready yet",
+    "emptyInsufficientDescription": "Inputs for {project} are still thin. Add research and evidence so AI can suggest GO/HOLD/NO GO.",
+    "emptyNextStepsTitle": "AI recommended next steps",
+    "emptySteps": {
+      "research": "Add research plan",
+      "evidence": "Add evidence",
+      "voc": "Collect VOC"
+    },
     "createProject": "Create Project",
     "verdict": {
       "go": "GO",
@@ -2409,6 +2417,9 @@
     },
     "memory": {
       "title": "AI memory",
+      "emptyTitle": "AI memory is empty",
+      "emptyDescription": "Research and decision activity builds project context that AI remembers.",
+      "emptyAction": "Start research",
       "decisionGenerated": "Decision analysis completed",
       "reportGenerated": "Executive report generated",
       "orchestratorComplete": "AI orchestrator run completed",
@@ -3305,6 +3316,64 @@
       "aiGuide": "AI guide",
       "hint": "Start here — AI will build project memory as you research.",
       "runAi": "Run AI research"
+    },
+    "emptySections": {
+      "aiGuide": "AI guide",
+      "research": {
+        "hint": "Add a research plan and AI will structure market, competitor, and customer work. Link findings to evidence next."
+      },
+      "evidence": {
+        "hint": "Three or more HIGH-confidence evidence items materially improve decision confidence."
+      },
+      "competitor": {
+        "hint": "Map leader/challenger positions so competitive risk flows into your decision."
+      },
+      "government": {
+        "hint": "Track grant programs so fit scores strengthen the investment case."
+      },
+      "decision": {
+        "hint": "With enough research, evidence, and VOC, AI synthesizes GO/HOLD/NO GO with rationale."
+      },
+      "report": {
+        "hint": "When the decision is ready, generate an executive report for stakeholders."
+      },
+      "memory": {
+        "hint": "Research and decision activity builds AI memory of your project context."
+      },
+      "notification": {
+        "hint": "AI notifies you when research completes, evidence is added, decisions are ready, or reports are generated."
+      }
+    },
+    "health": {
+      "title": "Workspace health",
+      "research": "Research",
+      "evidence": "Evidence",
+      "voc": "VOC",
+      "decision": "Decision",
+      "report": "Report"
+    },
+    "aiStatus": {
+      "idle": "AI idle",
+      "researching": "AI researching",
+      "generating_report": "Generating report",
+      "analyzing": "Analyzing"
+    },
+    "toast": {
+      "success": "Done",
+      "error": "Error",
+      "warning": "Warning",
+      "loading": "Working…",
+      "undo": "Undo",
+      "notificationRead": "Notification marked read",
+      "notificationDismissed": "Notification dismissed",
+      "watchAdded": "Added to watch list",
+      "watchRemoved": "Removed from watch list"
+    },
+    "shortcuts": {
+      "search": "⌘K",
+      "dashboard": "G D",
+      "project": "G P",
+      "slash": "/"
     }
   },
   "watch": {
@@ -3336,6 +3405,8 @@
       "REPORT": "Report"
     },
     "inbox": {
+      "emptyTitle": "Inbox is empty",
+      "emptyAction": "Start research",
       "empty": "No notifications yet. Add watch items or complete research to get AI alerts.",
       "markRead": "Mark read",
       "dismiss": "Dismiss",
@@ -3421,6 +3492,24 @@
       "inactive": {
         "title": "30+ days since last activity",
         "summary": "Your project context may be stale — review market and evidence."
+      }
+    },
+    "events": {
+      "researchComplete": {
+        "title": "Research complete",
+        "summary": "Research plans are done — link findings to evidence next."
+      },
+      "evidenceAdded": {
+        "title": "Evidence added",
+        "summary": "New sources improve decision confidence."
+      },
+      "decisionReady": {
+        "title": "Decision ready",
+        "summary": "Inputs are sufficient — review GO/HOLD/NO GO."
+      },
+      "reportReady": {
+        "title": "Report ready",
+        "summary": "Generate an executive report for stakeholders."
       }
     },
     "aiRecommendations": {

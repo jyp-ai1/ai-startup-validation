@@ -14,10 +14,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint L2.5 — Quality & International Launch 🔄
+## Sprint L2.5 — Quality & International Launch ✅
 
-**Status:** In progress  
-**Goal:** 제품 품질 향상 — 실제 다국어, UX polish, SEO, error/loading/empty, QA automation
+**Status:** Complete ✅ (deployed 2026-07-24, commit `7f684a1`)
 
 | EPIC | Status |
 |------|--------|
@@ -27,23 +26,29 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E4 SEO (manifest, og:image, icons) | ✅ Done |
 | E5 Error pages (404/503/401) | ✅ Done |
 | E6 Loading skeletons | ✅ Done (landing/dashboard/projects) |
-| E7 Empty UX 전 페이지 | ⏳ Next |
+| E7 Empty UX 전 페이지 | ⏳ → L2.6 |
 | E8–9 Responsive/A11y QA | ⏳ PM manual |
 | E10 Playwright smoke | ✅ Scaffold |
 
----  
-**Goal:** Beta-ready global UX — language selector, locale persistence, KO/EN beta policy, SEO locale, translation audit. **No new features.**
+---
 
-| EPIC | Status | Owner |
-|------|--------|-------|
-| E1 Language selector UI (opaque dropdown) | ✅ Done | AI |
-| E2 Header KO/EN + flag dropdown | ✅ Done | AI |
-| E3/E6 Locale change + persistence | ✅ Done | AI |
-| E7 SEO hreflang / og locale | ✅ Done | AI |
-| E8 Beta locales (KO/EN only in switcher) | ✅ Done | AI |
-| E4/E5 Translation audit tool (`pnpm audit:i18n`) | ✅ Done | AI |
-| Senior QA (Lighthouse manual) | ⏳ Pending PM | PM |
-| DevOps deploy to production | ✅ Done (`392b6cd` on gilt) | AI |
+## Sprint L2.6 — Product Polish ✅
+
+**Status:** Complete ✅ (deploy pending PM)  
+**Goal:** 기능 추가 없음 — Empty/Loading/Toast/AI Status/Notification/Health/Keyboard/Micro-interaction polish
+
+| EPIC | Status |
+|------|--------|
+| E1 Dashboard Empty UX (Research/Evidence/Competitor/Government/Decision/Report/Memory/Notification) | ✅ Done |
+| E2 Loading skeletons (Dashboard/Workspace/Research/Decision/Report) | ✅ Done |
+| E3 Toast system (success/error/warning/loading/undo) | ✅ Done |
+| E4 AI Status indicator (header) | ✅ Done |
+| E5 Notification Center workspace events (mock defaults removed) | ✅ Done |
+| E6 Workspace Health (Research/Evidence/VOC/Decision/Report) | ✅ Done |
+| E7 Keyboard UX (⌘K, /, Esc, G D, G P) | ✅ Done |
+| E8 Micro-interaction (cards/buttons/hover) | ✅ Partial |
+| E9 Responsive QA (390–1920) | ⏳ PM manual |
+| E10 Accessibility QA | ⏳ PM manual |
 
 **Verify:** `pnpm build && pnpm lint && pnpm audit:i18n`
 

@@ -76,6 +76,8 @@ export {
   AppSidebar,
 } from './components/app-layout';
 export { EmptyState } from './components/empty-state';
+export { Toaster } from './components/sonner';
+export { appToast, toast } from './lib/toast';
 export { LoadingSpinner } from './components/loading-spinner';
 export { LoadingSpinner as Loading } from './components/loading-spinner';
 export { PageHeader } from './components/page-header';

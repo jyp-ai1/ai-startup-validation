@@ -5,6 +5,7 @@ import { Plus, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
+import { useGuidedEmptyHint } from '@/components/consulting/use-guided-empty-hint';
 import { IntelligencePage } from '@/components/intelligence';
 import { buildEvidenceInsights } from '@/lib/intelligence/build-feature-insights';
 import type { Evidence, EvidenceConfidence, StartupProject } from '@repo/types/validation';
@@ -45,6 +46,7 @@ export function EvidenceList({ project, evidenceList, filters }: EvidenceListPro
   const basePath = `/projects/${project.id}/evidence`;
   const hasFilters = Boolean(filters.category || filters.sourceType || filters.confidence);
   const insight = buildEvidenceInsights(evidenceList);
+  const { aiHint, aiGuideLabel } = useGuidedEmptyHint('evidence');
 
   const emptyState = (
     <ConsultingEmptyState
@@ -54,6 +56,8 @@ export function EvidenceList({ project, evidenceList, filters }: EvidenceListPro
       }
       primaryLabel={t('evidence.createEvidence')}
       primaryHref={`${basePath}/new`}
+      aiHint={aiHint}
+      aiGuideLabel={aiGuideLabel}
     />
   );
 

@@ -190,6 +190,8 @@ export function ProjectWorkspaceHome({
         project={project}
         consultant={consultant}
         decision={decision}
+        stats={stats}
+        hasExecutiveReport={workspaceHome.recentReports.length > 0}
         isFavorite={isFavorite(project.id)}
         onToggleFavorite={() => toggleFavorite({ id: project.id, title: project.title })}
       />

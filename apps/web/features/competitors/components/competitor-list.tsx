@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { CompetitorPositioningMatrix } from '@/components/consulting/competitor-positioning-matrix';
 import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
+import { useGuidedEmptyHint } from '@/components/consulting/use-guided-empty-hint';
 import { IntelligencePage } from '@/components/intelligence';
 import { buildCompetitorInsights } from '@/lib/intelligence/build-feature-insights';
 import type { Competitor, StartupProject } from '@repo/types/validation';
@@ -22,6 +23,7 @@ export function CompetitorList({ project, competitors }: CompetitorListProps) {
   const t = useTranslations();
   const basePath = `/projects/${project.id}/competitors`;
   const insight = buildCompetitorInsights(competitors);
+  const { aiHint, aiGuideLabel } = useGuidedEmptyHint('competitor');
 
   const emptyState = (
     <ConsultingEmptyState
@@ -31,6 +33,8 @@ export function CompetitorList({ project, competitors }: CompetitorListProps) {
       primaryHref={`${basePath}/new`}
       secondaryLabel={t('competitors.importSample')}
       secondaryHref={`${basePath}/new`}
+      aiHint={aiHint}
+      aiGuideLabel={aiGuideLabel}
     />
   );
 

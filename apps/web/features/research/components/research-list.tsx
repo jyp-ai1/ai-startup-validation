@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
+import { useGuidedEmptyHint } from '@/components/consulting/use-guided-empty-hint';
 import { ResearchProgressDashboard } from '@/components/consulting/research-progress-dashboard';
 import { IntelligencePage } from '@/components/intelligence';
 import { ResearchAgentPanel } from '@/features/agents/research/components/research-agent-panel';
@@ -29,6 +30,7 @@ export function ResearchList({ project, plans, agentJobs = [] }: ResearchListPro
   const t = useTranslations();
   const basePath = `/projects/${project.id}/research`;
   const insight = buildResearchInsights(plans);
+  const { aiHint, aiGuideLabel } = useGuidedEmptyHint('research');
 
   const emptyState = (
     <ConsultingEmptyState
@@ -38,6 +40,8 @@ export function ResearchList({ project, plans, agentJobs = [] }: ResearchListPro
       primaryHref={`${basePath}/new`}
       secondaryLabel={t('research.importSample')}
       secondaryHref={`${basePath}/new`}
+      aiHint={aiHint}
+      aiGuideLabel={aiGuideLabel}
     />
   );
 

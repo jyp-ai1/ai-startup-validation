@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
+import { useGuidedEmptyHint } from '@/components/consulting/use-guided-empty-hint';
 import { IntelligencePage } from '@/components/intelligence';
 import { buildReportInsights } from '@/lib/intelligence/build-feature-insights';
 import type { StartupProject, ValidationReport } from '@repo/types/validation';
@@ -21,6 +22,7 @@ export function ReportList({ project, reports }: ReportListProps) {
   const t = useTranslations();
   const basePath = `/projects/${project.id}/reports`;
   const insight = buildReportInsights(reports);
+  const { aiHint, aiGuideLabel } = useGuidedEmptyHint('report');
 
   return (
     <IntelligencePage
@@ -43,6 +45,8 @@ export function ReportList({ project, reports }: ReportListProps) {
             description={t('reports.emptyDescription')}
             primaryLabel={t('reports.createReport')}
             primaryHref={`${basePath}/new`}
+            aiHint={aiHint}
+            aiGuideLabel={aiGuideLabel}
           />
         ) : undefined
       }

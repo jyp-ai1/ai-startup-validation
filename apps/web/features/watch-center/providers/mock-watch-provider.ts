@@ -63,38 +63,7 @@ export class MockWatchProvider implements WatchProvider {
     }
 
     if (signals.length === 0) {
-      signals.push(
-        {
-          id: 'mock-market-default',
-          watchType: 'MARKET',
-          label: 'Healthcare AI',
-          titleKey: 'signals.marketGrowth.title',
-          summaryKey: 'signals.marketGrowth.summary',
-          priority: 'INFO',
-          category: 'MARKET',
-          href: `/projects/${projectId}/market`,
-        },
-        {
-          id: 'mock-competitor-default',
-          watchType: 'COMPETITOR',
-          label: 'OpenAI',
-          titleKey: 'signals.competitorLaunch.title',
-          summaryKey: 'signals.competitorLaunch.summary',
-          priority: 'WARNING',
-          category: 'COMPETITOR',
-          href: `/projects/${projectId}/competitors`,
-        },
-        {
-          id: 'mock-government-default',
-          watchType: 'GOVERNMENT',
-          label: 'TIPS',
-          titleKey: 'signals.governmentDeadline.title',
-          summaryKey: 'signals.governmentDeadline.summary',
-          priority: 'CRITICAL',
-          category: 'GOVERNMENT',
-          href: `/projects/${projectId}/government`,
-        },
-      );
+      return signals;
     }
 
     return signals.map((signal, index) => ({

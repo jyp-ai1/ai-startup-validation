@@ -127,7 +127,7 @@ export function ConsultantPanel({ consultant, intelligence = null }: ConsultantP
             proactiveMessage={intelligence.proactiveMessage}
           />
         ) : (
-          <ConsultantMemory items={consultant.memory} />
+          <ConsultantMemory items={consultant.memory} projectId={consultant.projectId} />
         )}
 
         <ConsultantActions actions={consultant.actions} projectId={consultant.projectId} />

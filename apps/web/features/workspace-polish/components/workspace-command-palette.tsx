@@ -46,7 +46,12 @@ export function WorkspaceCommandPalette({
     return BASE_COMMANDS.map((id): WorkspaceCommand => {
       switch (id) {
         case 'open_project':
-          return { id, labelKey: 'openProject', href: projectId ? `/projects/${projectId}` : '/projects' };
+          return {
+            id,
+            labelKey: 'openProject',
+            href: projectId ? `/projects/${projectId}` : '/projects',
+            shortcut: projectId ? 'G P' : undefined,
+          };
         case 'generate_decision':
           return {
             id,
@@ -68,7 +73,7 @@ export function WorkspaceCommandPalette({
             href: projectId ? `/projects/${projectId}/research/new` : undefined,
           };
         case 'open_dashboard':
-          return { id, labelKey: 'openDashboard', href: '/dashboard' };
+          return { id, labelKey: 'openDashboard', href: '/dashboard', shortcut: 'G D' };
         case 'search':
           return { id, labelKey: 'search', action: 'search', shortcut: '⌘K' };
         default:
@@ -93,7 +98,7 @@ export function WorkspaceCommandPalette({
       <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-md">
         <DialogHeader className="border-b border-border px-4 py-3">
           <DialogTitle className="text-sm font-semibold">{t('title')}</DialogTitle>
-          <Input placeholder={t('filter')} className="mt-2" disabled aria-hidden />
+          <Input placeholder={t('filter')} className="mt-2" aria-label={t('filter')} />
         </DialogHeader>
         <ul className="max-h-72 overflow-y-auto p-2">
           {commands.map((command) => {

@@ -30,6 +30,7 @@ import { LocaleSwitcher } from '@/components/locale-switcher';
 import { DemoModeBadge } from '@/features/onboarding';
 import {
   FavoritesList,
+  AiStatusIndicator,
   openWorkspaceSearch,
   useFavoriteProjects,
   WorkspacePolishHost,
@@ -215,6 +216,7 @@ export function AppShell({
                   ⌘K
                 </kbd>
               </div>
+              <AiStatusIndicator />
               <WatchCenterHost
                 projectId={projectId}
                 userId={user?.id ?? null}

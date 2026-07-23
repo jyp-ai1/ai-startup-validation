@@ -5,17 +5,22 @@ import { Clock, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { ConsultantViewModel } from '@/features/ai-consultant';
+import type { ProjectDashboardStats } from '@/features/dashboard/types';
 import type { ValidationDecision } from '@repo/types/validation';
 import { ValidationDecisionBadge } from '@/features/validation/components/validation-decision-badge';
 import { Button } from '@repo/ui';
 import { formatRelativeTime } from '@repo/utils/date';
 import type { StartupProject } from '@repo/types/validation';
 
+import { WorkspaceHealthBadges } from './workspace-health-badges';
+
 type WorkspaceHeaderProps = {
   project: StartupProject;
   consultant: ConsultantViewModel | null;
   goProbability?: number;
   decision?: ValidationDecision | null;
+  stats?: ProjectDashboardStats | null;
+  hasExecutiveReport?: boolean;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
 };
@@ -29,6 +34,8 @@ export function WorkspaceHeader({
   consultant,
   goProbability,
   decision,
+  stats,
+  hasExecutiveReport = false,
   isFavorite = false,
   onToggleFavorite,
 }: WorkspaceHeaderProps) {
@@ -99,6 +106,9 @@ export function WorkspaceHeader({
           <Link href="/dashboard">{tw('hero.openDashboard')}</Link>
         </Button>
       </div>
+      {stats ? (
+        <WorkspaceHealthBadges stats={stats} hasExecutiveReport={hasExecutiveReport} />
+      ) : null}
     </header>
   );
 }

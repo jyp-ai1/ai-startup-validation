@@ -5,6 +5,7 @@ import { LayoutDashboard, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ConsultingEmptyState } from '@/components/consulting/consulting-empty-state';
+import { useGuidedEmptyHint } from '@/components/consulting/use-guided-empty-hint';
 import { IntelligencePage } from '@/components/intelligence';
 import { buildGrantInsights } from '@/lib/intelligence/build-feature-insights';
 import type { GovernmentGrant, StartupProject } from '@repo/types/validation';
@@ -27,6 +28,7 @@ export function GrantList({ project, grants, filters }: GrantListProps) {
     filters.category || filters.targetStage || filters.supportType || filters.status,
   );
   const insight = buildGrantInsights(grants);
+  const { aiHint, aiGuideLabel } = useGuidedEmptyHint('government');
 
   return (
     <IntelligencePage
@@ -60,6 +62,8 @@ export function GrantList({ project, grants, filters }: GrantListProps) {
             }
             primaryLabel={t('grants.addGrant')}
             primaryHref={`${basePath}/new`}
+            aiHint={aiHint}
+            aiGuideLabel={aiGuideLabel}
           />
         ) : undefined
       }

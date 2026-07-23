@@ -33,6 +33,7 @@ import {
   buildDecisionNotifications,
   buildDefaultWatchSuggestions,
   buildSmartReminders,
+  buildWorkspaceEventNotifications,
   mergeNotifications,
   signalsToNotifications,
 } from './notification-builder-service';
@@ -139,6 +140,7 @@ async function buildGeneratedNotifications(input: WatchCenterInput, settings: No
   };
 
   return mergeNotifications(
+    buildWorkspaceEventNotifications(builderInput),
     signalsToNotifications(input.projectId, signals, settings),
     buildSmartReminders(builderInput),
     buildAiRecommendations(builderInput),

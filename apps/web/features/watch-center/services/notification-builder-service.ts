@@ -21,6 +21,72 @@ function daysAgo(days: number): string {
   return new Date(Date.now() - days * 86400_000).toISOString();
 }
 
+export function buildWorkspaceEventNotifications(input: BuilderInput): WatchNotification[] {
+  const { projectId, stats, executive, hasExecutiveReport } = input;
+  const items: WatchNotification[] = [];
+
+  if (stats.research.progressPercent >= 100 && stats.research.total > 0) {
+    items.push({
+      id: `event-research-complete-${projectId}`,
+      projectId,
+      category: 'AI_RECOMMENDATION',
+      priority: 'SUCCESS',
+      titleKey: 'events.researchComplete.title',
+      summaryKey: 'events.researchComplete.summary',
+      href: `/projects/${projectId}/research`,
+      read: false,
+      occurredAt: hoursAgo(0.5),
+    });
+  }
+
+  if (stats.evidence.total > 0) {
+    items.push({
+      id: `event-evidence-added-${projectId}-${stats.evidence.total}`,
+      projectId,
+      category: 'REMINDER',
+      priority: 'INFO',
+      titleKey: 'events.evidenceAdded.title',
+      summaryKey: 'events.evidenceAdded.summary',
+      href: `/projects/${projectId}/evidence`,
+      read: false,
+      occurredAt: hoursAgo(1),
+    });
+  }
+
+  if (
+    executive &&
+    executive.decision.explanation.evidenceCoverage.overallPercent >= 70
+  ) {
+    items.push({
+      id: `event-decision-ready-${projectId}`,
+      projectId,
+      category: 'DECISION',
+      priority: 'SUCCESS',
+      titleKey: 'events.decisionReady.title',
+      summaryKey: 'events.decisionReady.summary',
+      href: `/projects/${projectId}/decision`,
+      read: false,
+      occurredAt: hoursAgo(0.25),
+    });
+  }
+
+  if (hasExecutiveReport) {
+    items.push({
+      id: `event-report-ready-${projectId}`,
+      projectId,
+      category: 'REPORT',
+      priority: 'SUCCESS',
+      titleKey: 'events.reportReady.title',
+      summaryKey: 'events.reportReady.summary',
+      href: `/projects/${projectId}/executive-report`,
+      read: false,
+      occurredAt: hoursAgo(0.1),
+    });
+  }
+
+  return items;
+}
+
 export function buildSmartReminders(input: BuilderInput): WatchNotification[] {
   const { projectId, stats, executive, hasExecutiveReport, settings } = input;
   if (!settings.reminderEnabled) return [];

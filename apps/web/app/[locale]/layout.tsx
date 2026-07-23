@@ -5,7 +5,7 @@ import { getLocale, getMessages, setRequestLocale } from 'next-intl/server';
 import { AnalyticsProvider } from '@/lib/analytics/providers/analytics-provider';
 import { AppShellWrapper } from '@/components/app-shell-wrapper';
 import { routing } from '@/i18n/routing';
-import { ThemeProvider } from '@repo/ui';
+import { ThemeProvider, Toaster } from '@repo/ui';
 
 type LocaleLayoutProps = {
   children: React.ReactNode;
@@ -35,6 +35,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <ThemeProvider>
         <AnalyticsProvider>
           <AppShellWrapper>{children}</AppShellWrapper>
+          <Toaster position="top-right" richColors closeButton />
         </AnalyticsProvider>
       </ThemeProvider>
     </NextIntlClientProvider>

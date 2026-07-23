@@ -18,3 +18,6 @@ export { FavoritesList } from './components/favorites-list';
 export { RecentActivityPanel } from './components/recent-activity-panel';
 export { WorkspaceEmptyState } from './components/workspace-empty-state';
 export { WorkspacePolishHost, openWorkspaceSearch } from './components/workspace-polish-host';
+export { WorkspaceHealthBadges } from './components/workspace-health-badges';
+export { AiStatusIndicator, setAiStatus } from './components/ai-status-indicator';
+export { computeWorkspaceHealthMetrics } from './utils/workspace-health';
