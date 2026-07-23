@@ -1,4 +1,5 @@
 import { getWorkspaceSession } from '@/lib/auth/workspace-session';
+import { loadWatchCenter } from '@/features/watch-center/server';
 
 import { AppShell } from './app-shell';
 import { AppShellGate } from './app-shell-gate';
@@ -12,6 +13,16 @@ export async function AppShellWrapper({ children }: AppShellWrapperProps) {
 
   const activeProject = session.workspace.activeProject;
   const recentProjects = session.demoMode ? session.demoProjects : session.userProjects;
+  const stats = session.workspace.stats;
+
+  const watchCenter =
+    activeProject && stats
+      ? await loadWatchCenter({
+          projectId: activeProject.id,
+          userId: session.user?.id ?? null,
+          stats,
+        })
+      : null;
 
   return (
     <AppShellGate
@@ -23,7 +34,8 @@ export async function AppShellWrapper({ children }: AppShellWrapperProps) {
           demoMode={session.demoMode}
           userProjects={session.userProjects}
           demoProjects={session.demoProjects}
-          stats={session.workspace.stats}
+          stats={stats}
+          watchCenter={watchCenter}
         >
           {children}
         </AppShell>

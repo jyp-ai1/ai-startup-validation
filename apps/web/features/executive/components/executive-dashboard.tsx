@@ -23,6 +23,7 @@ import {
   IntelligenceAnalyticsTracker,
   type IntelligenceViewModel,
 } from '@/features/project-intelligence';
+import { WatchCenterDashboardSection, type WatchCenterViewModel } from '@/features/watch-center';
 import { OnboardingConsultantHost } from '@/features/onboarding-consultant';
 import { DemoWelcomeCard } from '@/features/onboarding';
 
@@ -49,6 +50,7 @@ type ExecutiveDashboardProps = {
   strategy: StrategyWorkspaceViewModel | null;
   consultant: ConsultantViewModel | null;
   intelligence?: IntelligenceViewModel | null;
+  watchCenter?: WatchCenterViewModel | null;
   demoMode?: boolean;
   onboardingComplete?: boolean;
 };
@@ -87,6 +89,7 @@ export function ExecutiveDashboard({
   strategy,
   consultant,
   intelligence = null,
+  watchCenter = null,
   demoMode = false,
   onboardingComplete = true,
 }: ExecutiveDashboardProps) {
@@ -211,7 +214,11 @@ export function ExecutiveDashboard({
           projectId={executive.project.id}
           projectType={executive.projectType}
         />
-        <ExecutiveInbox items={executive.inbox} />
+        {watchCenter ? (
+          <WatchCenterDashboardSection viewModel={watchCenter} />
+        ) : (
+          <ExecutiveInbox items={executive.inbox} />
+        )}
       </div>
 
       <ExecutiveDecisionStatus workspace={executive} />

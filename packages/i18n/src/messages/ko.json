@@ -3282,5 +3282,142 @@
       "hint": "여기서 시장조사를 시작하세요. Research를 진행하면 AI Memory가 쌓입니다.",
       "runAi": "AI Research 실행"
     }
+  },
+  "watch": {
+    "trigger": {
+      "label": "알림"
+    },
+    "panel": {
+      "title": "알림",
+      "subtitle": "AI가 시장·경쟁사·정부지원을 추적하고 중요한 변화를 알려줍니다."
+    },
+    "tabs": {
+      "inbox": "받은함",
+      "watch": "관심 목록",
+      "settings": "설정"
+    },
+    "priority": {
+      "CRITICAL": "긴급",
+      "WARNING": "주의",
+      "INFO": "정보",
+      "SUCCESS": "성공"
+    },
+    "category": {
+      "MARKET": "시장",
+      "COMPETITOR": "경쟁사",
+      "GOVERNMENT": "정부지원",
+      "REMINDER": "리마인더",
+      "AI_RECOMMENDATION": "AI 추천",
+      "DECISION": "Decision",
+      "REPORT": "Report"
+    },
+    "inbox": {
+      "empty": "아직 알림이 없습니다. 관심 항목을 추가하거나 Research를 진행하세요.",
+      "markRead": "읽음 처리",
+      "dismiss": "삭제",
+      "read": "읽음",
+      "buckets": {
+        "today": "오늘",
+        "yesterday": "어제",
+        "thisWeek": "이번 주",
+        "earlier": "이전"
+      }
+    },
+    "watchList": {
+      "market": "시장 Watch",
+      "competitor": "경쟁사 Watch",
+      "government": "정부지원 Watch",
+      "empty": "등록된 항목이 없습니다 — 아래 추천에서 추가하세요.",
+      "remove": "관심 항목 제거"
+    },
+    "settings": {
+      "desc": "이 프로젝트에서 AI가 표시할 알림 유형을 선택하세요.",
+      "market": "시장",
+      "competitor": "경쟁사",
+      "government": "정부지원",
+      "reminder": "스마트 리마인더",
+      "aiRecommendation": "AI 추천"
+    },
+    "brief": {
+      "title": "오늘의 AI 브리핑",
+      "headline": "부재 중에 이렇게 변했습니다",
+      "marketChanges": "시장 변화 {count}건",
+      "competitorUpdates": "경쟁사 업데이트 {count}건",
+      "governmentItems": "정부지원 {count}건",
+      "defaultAction": "시장조사를 다시 실행하세요"
+    },
+    "dashboard": {
+      "title": "AI 알림",
+      "subtitle": "AI가 변화를 먼저 알려줍니다 — 실행은 사용자가 결정합니다.",
+      "openCenter": "알림 센터 열기"
+    },
+    "signals": {
+      "marketUpdate": {
+        "title": "{label} 시장 데이터 업데이트",
+        "summary": "관심 시장의 성장률·TAM 추정치가 갱신되었습니다."
+      },
+      "marketGrowth": {
+        "title": "시장 성장률 변화",
+        "summary": "Healthcare AI 세그먼트에서 분기 funding이 가속화되었습니다."
+      },
+      "competitorUpdate": {
+        "title": "{label} 제품 업데이트 감지",
+        "summary": "Watch 목록 경쟁사가 새 AI 기능을 출시했습니다."
+      },
+      "competitorLaunch": {
+        "title": "경쟁사 AI 기능 출시",
+        "summary": "OpenAI가 귀사 시장과 관련된 enterprise workflow를 발표했습니다."
+      },
+      "governmentUpdate": {
+        "title": "{label} 사업 공고 변경",
+        "summary": "마감일 또는 자격 요건이 변경되었을 수 있습니다."
+      },
+      "governmentDeadline": {
+        "title": "정부지원 마감 임박",
+        "summary": "TIPS 접수 마감이 가까워졌습니다 — 자격을 확인하세요."
+      }
+    },
+    "reminders": {
+      "evidence": {
+        "title": "Evidence 부족",
+        "summary": "방어 가능한 Decision 전에 고신뢰도 출처를 추가하세요."
+      },
+      "voc": {
+        "title": "VOC 부족",
+        "summary": "고객 인터뷰가 GO/HOLD 신뢰도를 높입니다."
+      },
+      "decision": {
+        "title": "Decision 가능",
+        "summary": "입력이 충분합니다 — GO/HOLD/NO GO를 생성하세요."
+      },
+      "report": {
+        "title": "Report 생성 추천",
+        "summary": "Decision confidence가 높습니다 — 이해관계자용 Report를 생성하세요."
+      },
+      "inactive": {
+        "title": "30일 이상 미접속",
+        "summary": "프로젝트 컨텍스트가 오래되었을 수 있습니다 — 시장·Evidence를 검토하세요."
+      }
+    },
+    "aiRecommendations": {
+      "marketResearch": {
+        "title": "시장조사 재실행 추천",
+        "summary": "Watch 시장의 TAM·성장 신호를 새로고침하는 것을 권장합니다."
+      },
+      "report": {
+        "title": "Executive Report 생성",
+        "summary": "Decision confidence가 충분합니다 — Report를 공유하세요."
+      },
+      "evidence": {
+        "title": "Evidence 보강 필요",
+        "summary": "Coverage가 70% 미만입니다 — Decision 전에 출처를 추가하세요."
+      }
+    },
+    "decision": {
+      "confidence": {
+        "title": "Decision Confidence 업데이트",
+        "summary": "다음 미팅 전 drivers와 missing data를 검토하세요."
+      }
+    }
   }
 }

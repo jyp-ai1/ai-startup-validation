@@ -48,6 +48,12 @@ import type { KnowledgeChunkRepository } from '../repositories/knowledge-chunk.r
 import { SupabaseKnowledgeChunkRepository } from '../repositories/knowledge-chunk.repository';
 import type { ProjectMemoryRepository } from '../repositories/project-memory.repository';
 import { SupabaseProjectMemoryRepository } from '../repositories/project-memory.repository';
+import type { UserWatchlistRepository } from '../repositories/user-watchlist.repository';
+import { SupabaseUserWatchlistRepository } from '../repositories/user-watchlist.repository';
+import type { NotificationRepository } from '../repositories/notification.repository';
+import { SupabaseNotificationRepository } from '../repositories/notification.repository';
+import type { NotificationSettingsRepository } from '../repositories/notification-settings.repository';
+import { SupabaseNotificationSettingsRepository } from '../repositories/notification-settings.repository';
 import type { UserRepository } from '../repositories/user.repository';
 import { SupabaseUserRepository } from '../repositories/user.repository';
 import type { StoragePort } from '../storage/storage.port';
@@ -76,6 +82,9 @@ export const DbTokens = {
   KnowledgeDocumentRepository: Symbol('KnowledgeDocumentRepository'),
   KnowledgeChunkRepository: Symbol('KnowledgeChunkRepository'),
   ProjectMemoryRepository: Symbol('ProjectMemoryRepository'),
+  UserWatchlistRepository: Symbol('UserWatchlistRepository'),
+  NotificationRepository: Symbol('NotificationRepository'),
+  NotificationSettingsRepository: Symbol('NotificationSettingsRepository'),
   AuthPort: Symbol('AuthPort'),
   StoragePort: Symbol('StoragePort'),
   RealtimePort: Symbol('RealtimePort'),
@@ -105,6 +114,9 @@ export type DatabasePlatform = {
     knowledgeDocument: KnowledgeDocumentRepository;
     knowledgeChunk: KnowledgeChunkRepository;
     projectMemory: ProjectMemoryRepository;
+    userWatchlist: UserWatchlistRepository;
+    notification: NotificationRepository;
+    notificationSettings: NotificationSettingsRepository;
   };
   auth: AuthPort;
   storage: StoragePort;
@@ -187,6 +199,11 @@ export class DbContainer {
         ),
         knowledgeChunk: this.resolve<KnowledgeChunkRepository>(DbTokens.KnowledgeChunkRepository),
         projectMemory: this.resolve<ProjectMemoryRepository>(DbTokens.ProjectMemoryRepository),
+        userWatchlist: this.resolve<UserWatchlistRepository>(DbTokens.UserWatchlistRepository),
+        notification: this.resolve<NotificationRepository>(DbTokens.NotificationRepository),
+        notificationSettings: this.resolve<NotificationSettingsRepository>(
+          DbTokens.NotificationSettingsRepository,
+        ),
       },
       auth: this.resolve<AuthPort>(DbTokens.AuthPort),
       storage: this.resolve<StoragePort>(DbTokens.StoragePort),
@@ -220,6 +237,9 @@ export function createDatabasePlatform(): DbContainer {
   const knowledgeDocumentRepo = new SupabaseKnowledgeDocumentRepository();
   const knowledgeChunkRepo = new SupabaseKnowledgeChunkRepository();
   const projectMemoryRepo = new SupabaseProjectMemoryRepository();
+  const userWatchlistRepo = new SupabaseUserWatchlistRepository();
+  const notificationRepo = new SupabaseNotificationRepository();
+  const notificationSettingsRepo = new SupabaseNotificationSettingsRepository();
   const auth = new SupabaseAuthAdapter();
   const storage = new SupabaseStorageAdapter();
   const realtime = new SupabaseRealtimeAdapter();
@@ -247,6 +267,9 @@ export function createDatabasePlatform(): DbContainer {
     .register(DbTokens.KnowledgeDocumentRepository, knowledgeDocumentRepo)
     .register(DbTokens.KnowledgeChunkRepository, knowledgeChunkRepo)
     .register(DbTokens.ProjectMemoryRepository, projectMemoryRepo)
+    .register(DbTokens.UserWatchlistRepository, userWatchlistRepo)
+    .register(DbTokens.NotificationRepository, notificationRepo)
+    .register(DbTokens.NotificationSettingsRepository, notificationSettingsRepo)
     .register(DbTokens.AuthPort, auth)
     .register(DbTokens.StoragePort, storage)
     .register(DbTokens.RealtimePort, realtime);

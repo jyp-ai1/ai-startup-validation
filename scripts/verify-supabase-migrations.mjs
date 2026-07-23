@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Verify Supabase migrations 016 + 017 + 018 are applied.
+ * Verify Supabase migrations 016 + 017 + 018 + 019 are applied.
  * Usage: node scripts/verify-supabase-migrations.mjs
  * Requires SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY in apps/web/.env.local
  */
@@ -77,6 +77,18 @@ async function checkMemoryTable() {
   return true;
 }
 
+async function checkWatchCenterTables() {
+  const res = await fetch(`${url}/rest/v1/notifications?select=id,project_id,category&limit=1`, {
+    headers,
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    console.error('Watch center table check failed:', res.status, body);
+    return false;
+  }
+  return true;
+}
+
 async function main() {
   console.log('Migration Applied Check\n');
 
@@ -85,6 +97,9 @@ async function main() {
 
   const memoryOk = await checkMemoryTable();
   console.log(memoryOk ? '✅ project_memory_entries (018)' : '⚠️  Memory table missing — run 018_project_memory.sql');
+
+  const watchOk = await checkWatchCenterTables();
+  console.log(watchOk ? '✅ notifications, user_watchlist, notification_settings (019)' : '⚠️  Watch center tables missing — run 019_watch_center.sql');
 
   const demoOk = await checkDemoProject();
   console.log(demoOk ? '✅ Demo project marked (is_demo=true)' : '⚠️  No demo project found');
