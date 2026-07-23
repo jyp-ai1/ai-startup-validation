@@ -19,6 +19,7 @@ import {
   parseOnboardingContext,
 } from '@/features/onboarding-consultant';
 import { loadProjectIntelligence } from '@/features/project-intelligence/server';
+import { loadWatchCenter } from '@/features/watch-center/server';
 import { getWorkspaceSession } from '@/lib/auth/workspace-session';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -60,6 +61,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   let strategy = null;
   let consultant = null;
   let intelligence = null;
+  let watchCenter = null;
   let onboardingComplete = false;
 
   if (workspace.activeProject && workspace.stats) {
@@ -102,6 +104,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       hasExecutiveReport: Boolean(executiveReport),
       orchestratorPlan,
     });
+    watchCenter = await loadWatchCenter({
+      projectId,
+      userId: user?.id ?? null,
+      stats: workspace.stats,
+      executive,
+      hasExecutiveReport: Boolean(executiveReport),
+    });
   }
 
   return (
@@ -113,6 +122,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         strategy={strategy}
         consultant={consultant}
         intelligence={intelligence}
+        watchCenter={watchCenter}
         demoMode={demoMode}
         onboardingComplete={onboardingComplete}
       />

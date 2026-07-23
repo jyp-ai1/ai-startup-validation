@@ -23,6 +23,9 @@ import {
   type KnowledgeDocumentRepository,
   type KnowledgeChunkRepository,
   type ProjectMemoryRepository,
+  type UserWatchlistRepository,
+  type NotificationRepository,
+  type NotificationSettingsRepository,
   type VOCRepository,
 } from '@repo/db';
 
@@ -108,6 +111,18 @@ export function getProjectMemoryRepository(): ProjectMemoryRepository {
   return db.resolve<ProjectMemoryRepository>(DbTokens.ProjectMemoryRepository);
 }
 
+export function getUserWatchlistRepository(): UserWatchlistRepository {
+  return db.resolve<UserWatchlistRepository>(DbTokens.UserWatchlistRepository);
+}
+
+export function getNotificationRepository(): NotificationRepository {
+  return db.resolve<NotificationRepository>(DbTokens.NotificationRepository);
+}
+
+export function getNotificationSettingsRepository(): NotificationSettingsRepository {
+  return db.resolve<NotificationSettingsRepository>(DbTokens.NotificationSettingsRepository);
+}
+
 export { DbTokens, getDatabasePlatform };
 export type {
   UserRepository,
@@ -132,4 +147,7 @@ export type {
   KnowledgeDocumentRepository,
   KnowledgeChunkRepository,
   ProjectMemoryRepository,
+  UserWatchlistRepository,
+  NotificationRepository,
+  NotificationSettingsRepository,
 } from '@repo/db';

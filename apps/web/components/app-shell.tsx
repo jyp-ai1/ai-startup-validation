@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ArrowLeft, Bell, Menu, Search, Sparkles } from 'lucide-react';
+import { ArrowLeft, Menu, Search, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -34,6 +34,8 @@ import {
   useFavoriteProjects,
   WorkspacePolishHost,
 } from '@/features/workspace-polish';
+import { WatchCenterHost } from '@/features/watch-center';
+import type { WatchCenterViewModel } from '@/features/watch-center';
 import { ShellBreadcrumb } from '@/components/shell/shell-breadcrumb';
 import { ProjectQuickSwitch } from '@/components/workspace/project-quick-switch';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
@@ -56,6 +58,7 @@ type AppShellProps = {
   userProjects?: Pick<StartupProject, 'id' | 'title'>[];
   demoProjects?: Pick<StartupProject, 'id' | 'title'>[];
   stats?: ProjectDashboardStats | null;
+  watchCenter?: WatchCenterViewModel | null;
 };
 
 function SidebarBrand({ onNavigate }: { onNavigate?: (target: string) => void }) {
@@ -143,6 +146,7 @@ export function AppShell({
   userProjects = [],
   demoProjects = [],
   stats = null,
+  watchCenter = null,
 }: AppShellProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -211,9 +215,12 @@ export function AppShell({
                   ⌘K
                 </kbd>
               </div>
-              <Button variant="ghost" size="icon-sm" className="hidden sm:inline-flex" aria-label="Notifications">
-                <Bell className="size-4" />
-              </Button>
+              <WatchCenterHost
+                projectId={projectId}
+                userId={user?.id ?? null}
+                stats={stats}
+                initialViewModel={watchCenter}
+              />
               <LocaleSwitcher />
               <TrackedThemeToggle />
               {user ? (

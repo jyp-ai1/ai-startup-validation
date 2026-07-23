@@ -3301,5 +3301,142 @@
       "hint": "Start here — AI will build project memory as you research.",
       "runAi": "Run AI research"
     }
+  },
+  "watch": {
+    "trigger": {
+      "label": "Notifications"
+    },
+    "panel": {
+      "title": "Notifications",
+      "subtitle": "AI watches markets, competitors, and grants — then tells you what matters."
+    },
+    "tabs": {
+      "inbox": "Inbox",
+      "watch": "Watch list",
+      "settings": "Settings"
+    },
+    "priority": {
+      "CRITICAL": "Critical",
+      "WARNING": "Warning",
+      "INFO": "Info",
+      "SUCCESS": "Success"
+    },
+    "category": {
+      "MARKET": "Market",
+      "COMPETITOR": "Competitor",
+      "GOVERNMENT": "Government",
+      "REMINDER": "Reminder",
+      "AI_RECOMMENDATION": "AI recommendation",
+      "DECISION": "Decision",
+      "REPORT": "Report"
+    },
+    "inbox": {
+      "empty": "No notifications yet. Add watch items or complete research to get AI alerts.",
+      "markRead": "Mark read",
+      "dismiss": "Dismiss",
+      "read": "Read",
+      "buckets": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "thisWeek": "This week",
+        "earlier": "Earlier"
+      }
+    },
+    "watchList": {
+      "market": "Market watch",
+      "competitor": "Competitor watch",
+      "government": "Government watch",
+      "empty": "No items yet — add from suggestions below.",
+      "remove": "Remove watch item"
+    },
+    "settings": {
+      "desc": "Choose which alerts AI should surface for this project.",
+      "market": "Market",
+      "competitor": "Competitor",
+      "government": "Government",
+      "reminder": "Smart reminders",
+      "aiRecommendation": "AI recommendations"
+    },
+    "brief": {
+      "title": "Today's AI briefing",
+      "headline": "Here's what changed while you were away",
+      "marketChanges": "{count} market changes",
+      "competitorUpdates": "{count} competitor updates",
+      "governmentItems": "{count} government grant updates",
+      "defaultAction": "Run market research again"
+    },
+    "dashboard": {
+      "title": "AI notifications",
+      "subtitle": "AI surfaces what changed — you decide what to act on.",
+      "openCenter": "Open notification center"
+    },
+    "signals": {
+      "marketUpdate": {
+        "title": "Market data updated for {label}",
+        "summary": "Growth rate and TAM estimates were refreshed in your watch list."
+      },
+      "marketGrowth": {
+        "title": "Market growth rate shifted",
+        "summary": "Healthcare AI segment shows accelerated funding this quarter."
+      },
+      "competitorUpdate": {
+        "title": "{label} product update detected",
+        "summary": "A competitor in your watch list released a new AI feature."
+      },
+      "competitorLaunch": {
+        "title": "Competitor launched new AI feature",
+        "summary": "OpenAI announced enterprise workflow tools relevant to your market."
+      },
+      "governmentUpdate": {
+        "title": "{label} program update",
+        "summary": "Deadline or eligibility criteria may have changed — review grants."
+      },
+      "governmentDeadline": {
+        "title": "Government grant deadline approaching",
+        "summary": "TIPS application window closes soon — check your eligibility."
+      }
+    },
+    "reminders": {
+      "evidence": {
+        "title": "Evidence is thin",
+        "summary": "Add high-confidence sources before generating a defensible decision."
+      },
+      "voc": {
+        "title": "Customer voice missing",
+        "summary": "Interview notes strengthen GO/HOLD confidence."
+      },
+      "decision": {
+        "title": "Ready for decision",
+        "summary": "Enough inputs exist — synthesize GO/HOLD/NO GO now."
+      },
+      "report": {
+        "title": "Report generation recommended",
+        "summary": "Decision confidence is high — export for stakeholders."
+      },
+      "inactive": {
+        "title": "30+ days since last activity",
+        "summary": "Your project context may be stale — review market and evidence."
+      }
+    },
+    "aiRecommendations": {
+      "marketResearch": {
+        "title": "Re-run market research",
+        "summary": "AI recommends refreshing TAM and growth signals for your watch markets."
+      },
+      "report": {
+        "title": "Generate executive report",
+        "summary": "Decision confidence is strong — share a stakeholder-ready report."
+      },
+      "evidence": {
+        "title": "Strengthen evidence base",
+        "summary": "Coverage is below 70% — add sources before finalizing decision."
+      }
+    },
+    "decision": {
+      "confidence": {
+        "title": "Decision confidence update",
+        "summary": "Review drivers and missing data before your next stakeholder meeting."
+      }
+    }
   }
 }

@@ -75,6 +75,34 @@ export {
   SupabaseProjectMemoryRepository,
   PROJECT_MEMORY_TYPES,
 } from './repositories/project-memory.repository';
+export type {
+  UserWatchlistRepository,
+  UserWatchlistEntry,
+  CreateWatchlistInput,
+  WatchType,
+} from './repositories/user-watchlist.repository';
+export {
+  SupabaseUserWatchlistRepository,
+  WATCH_TYPES,
+} from './repositories/user-watchlist.repository';
+export type {
+  NotificationRepository,
+  NotificationRecord,
+  CreateNotificationInput,
+  NotificationPriority,
+  NotificationCategory,
+} from './repositories/notification.repository';
+export {
+  SupabaseNotificationRepository,
+  NOTIFICATION_PRIORITIES,
+  NOTIFICATION_CATEGORIES,
+} from './repositories/notification.repository';
+export type {
+  NotificationSettingsRepository,
+  NotificationSettingsRecord,
+  UpsertNotificationSettingsInput,
+} from './repositories/notification-settings.repository';
+export { SupabaseNotificationSettingsRepository } from './repositories/notification-settings.repository';
 
 // Adapters (use via container — avoid direct imports in apps when possible)
 export { SupabaseAuthAdapter } from './adapters/supabase/auth/auth.adapter';
