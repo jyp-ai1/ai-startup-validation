@@ -29,6 +29,7 @@ export function DecisionSummaryPanel({
   variant = 'dashboard',
 }: DecisionSummaryPanelProps) {
   const t = useTranslations('decision');
+  const tf = useTranslations('framework');
   const { trackEvent } = useAnalytics();
 
   useEffect(() => {
@@ -65,6 +66,24 @@ export function DecisionSummaryPanel({
           {decision.explanation.evidenceCoverage.overallPercent}%
         </p>
       </div>
+
+      {decision.frameworkAnalysis && decision.frameworkAnalysis.frameworks.length > 0 ? (
+        <div className="rounded-xl border border-border/50 bg-muted/20 px-5 py-4">
+          <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
+            {tf('summaryTitle')}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {decision.frameworkAnalysis.frameworks.map((fw) => (
+              <span
+                key={fw.id}
+                className="inline-flex items-center gap-1 rounded-full border border-border/50 bg-background px-2.5 py-1 text-xs font-medium"
+              >
+                ✓ {tf(fw.titleKey as 'names.swot')}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <div className="space-y-3">
         {decision.executiveSummaryKeys.slice(0, variant === 'compact' ? 2 : 4).map((key) => (

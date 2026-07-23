@@ -4,6 +4,7 @@ import { buildProjectDashboardStats } from '@/features/dashboard/services/dashbo
 import { listCompetitors } from '@/features/competitors/services/competitor-service';
 import { listEvidence } from '@/features/evidence/services/evidence-service';
 import { listGrants } from '@/features/grants/services/grant-service';
+import { runFrameworkAnalysisForDecision } from '@/features/framework/services/framework-service';
 import { listResearchPlans } from '@/features/research/services/research-service';
 import { listVOCEntries } from '@/features/voc/services/voc-service';
 
@@ -54,7 +55,13 @@ export async function generateProjectDecision(
     avgFitScore,
   );
 
-  return decisionService.generateDecision(input);
+  const frameworkAnalysis = await runFrameworkAnalysisForDecision(
+    input,
+    stats.project.industry,
+    stats.project.status,
+  );
+
+  return decisionService.generateDecision({ ...input, frameworkAnalysis });
 }
 
 export type { DecisionResult } from './decision-types';

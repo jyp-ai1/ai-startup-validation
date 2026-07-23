@@ -8,11 +8,26 @@ import type {
   ScoreBreakdown,
   SupportingEvidenceRef,
 } from './decision-types';
+import type { FrameworkAnalysisResult } from '@/features/framework/services/framework-types';
 import {
   calculateDataCompleteness,
   calculateScoreBreakdown,
   getConfidenceFactors,
 } from './decision-score';
+
+const FRAMEWORK_DRIVER_LABELS: Record<string, string> = {
+  SWOT: 'frameworkSwot',
+  PESTEL: 'frameworkPestel',
+  PORTER: 'frameworkPorter',
+  THREE_C: 'frameworkThreeC',
+  STP: 'frameworkStp',
+  BCG: 'frameworkBcg',
+  ANSOFF: 'frameworkAnsoff',
+  VALUE_CHAIN: 'frameworkValueChain',
+  BMC: 'frameworkBmc',
+  LEAN_CANVAS: 'frameworkLeanCanvas',
+  JTBD: 'frameworkJtbd',
+};
 
 function scaleComponent(raw: number, weight: number, total: number): number {
   if (total <= 0) return 0;
@@ -69,6 +84,7 @@ export function buildExplainScore(
 export function buildDecisionDrivers(
   input: DecisionInput,
   breakdown: ScoreBreakdown,
+  frameworkAnalysis?: FrameworkAnalysisResult | null,
 ): DecisionExplanation['drivers'] {
   const drivers: DecisionExplanation['drivers'] = [];
 
@@ -143,9 +159,20 @@ export function buildDecisionDrivers(
     });
   }
 
+  if (frameworkAnalysis) {
+    for (const fw of frameworkAnalysis.frameworks) {
+      drivers.push({
+        id: `framework-${fw.id}`,
+        labelKey: FRAMEWORK_DRIVER_LABELS[fw.id] ?? 'frameworkSwot',
+        impact: fw.decisionImpact,
+        direction: fw.decisionImpact >= 0 ? 'positive' : 'negative',
+      });
+    }
+  }
+
   return drivers
     .sort((a, b) => Math.abs(b.impact) - Math.abs(a.impact))
-    .slice(0, 5);
+    .slice(0, 8);
 }
 
 export function buildEvidenceCoverage(
@@ -348,8 +375,9 @@ export function buildDecisionLogic(
   scores: DecisionScores,
   verdict: DecisionVerdict,
   completeness: number,
+  frameworkAnalysis?: FrameworkAnalysisResult | null,
 ): DecisionExplanation['decisionLogic'] {
-  return [
+  const steps: DecisionExplanation['decisionLogic'] = [
     {
       id: 'step-data',
       labelKey: 'stepData',
@@ -380,6 +408,21 @@ export function buildDecisionLogic(
       params: { verdict },
     },
   ];
+
+  if (frameworkAnalysis && frameworkAnalysis.frameworks.length > 0) {
+    steps.splice(2, 0, {
+      id: 'step-framework',
+      labelKey: 'stepFramework',
+      detailKey: 'stepFrameworkDetail',
+      params: {
+        count: frameworkAnalysis.frameworks.length,
+        impact: frameworkAnalysis.aggregateImpact,
+        names: frameworkAnalysis.selectedIds.join(', '),
+      },
+    });
+  }
+
+  return steps;
 }
 
 export function buildDecisionExplanation(
@@ -392,11 +435,17 @@ export function buildDecisionExplanation(
   const completeness = calculateDataCompleteness(input);
 
   return {
-    drivers: buildDecisionDrivers(input, breakdown),
+    drivers: buildDecisionDrivers(input, breakdown, input.frameworkAnalysis),
     explainScore: buildExplainScore(input, scores, breakdown),
     evidenceCoverage: buildEvidenceCoverage(input, missingEvidence),
     supportingEvidence: buildSupportingEvidence(input),
-    decisionLogic: buildDecisionLogic(input, scores, verdict, completeness),
+    decisionLogic: buildDecisionLogic(
+      input,
+      scores,
+      verdict,
+      completeness,
+      input.frameworkAnalysis,
+    ),
     confidenceFactors: getConfidenceFactors(input),
   };
 }

@@ -61,7 +61,7 @@ export function calculateDecisionScores(input: DecisionInput): DecisionScores {
   const completeness = calculateDataCompleteness(input);
   const breakdown = calculateScoreBreakdown(input);
 
-  const decisionScore = clamp(
+  let decisionScore = clamp(
     breakdown.researchScore * 0.15 +
       breakdown.evidenceScore * 0.2 +
       breakdown.vocScore * 0.2 +
@@ -69,6 +69,10 @@ export function calculateDecisionScores(input: DecisionInput): DecisionScores {
       breakdown.grantScore * 0.1 +
       breakdown.validationBoost * 0.2,
   );
+
+  if (input.frameworkAnalysis) {
+    decisionScore = clamp(decisionScore + input.frameworkAnalysis.aggregateImpact);
+  }
 
   const confidence = calculateEnhancedConfidence(input, completeness);
 

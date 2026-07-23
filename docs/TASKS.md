@@ -65,7 +65,28 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 10 | SEO (OG, robots, sitemap, canonical) | ✅ Done | AI |
 | — | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.2 — Strategy Framework Engine
+**Next:** Sprint 8.3 — Market Intelligence Engine
+
+---
+
+## Sprint 8.2 — AI Strategy Framework Engine ✅
+
+**Status:** Complete  
+**Goal:** Frameworks as Decision analysis modules (not standalone menus) — orchestrator, selector, 11 frameworks, Decision score integration, accordion UI, analytics, locale.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `features/framework/` service layer (engine, selector, provider) | ✅ Done | AI |
+| Mock provider — 11 frameworks (SWOT, PESTEL, Porter, 3C, STP, BCG, Ansoff, Value Chain, BMC, Lean Canvas, JTBD) | ✅ Done | AI |
+| Decision integration (score impact, drivers, explain mode) | ✅ Done | AI |
+| Framework Summary accordion in Decision Center + Dashboard badges | ✅ Done | AI |
+| Analytics: framework_execute, framework_view, framework_detail | ✅ Done | AI |
+| i18n (en/ko + sync 11 locales) + LLM prompt stubs | ✅ Done | AI |
+| Build + deploy + verify | ✅ Done | AI |
+
+**Architecture:** `FrameworkEngine` → `FrameworkSelector` → `FrameworkProvider` → `FrameworkResult[]` — invoked from `generateProjectDecision()` before Decision scoring.
+
+**Next:** Sprint 8.3 — Market Intelligence Engine
 
 ---
 
@@ -83,7 +104,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | Analytics: explain_view, driver_click, missing_data_click | ✅ Done | AI |
 | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.2 — Strategy Framework Engine
+**Next:** Sprint 8.2 — Strategy Framework Engine ✅
 
 ---
 

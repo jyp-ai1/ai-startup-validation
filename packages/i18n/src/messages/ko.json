@@ -1616,7 +1616,18 @@
       "competitionBlindSpot": "경쟁 환경 미파악",
       "weakEvidence": "근거 기반 취약",
       "techDifficulty": "기술 난이도",
-      "strongEvidence": "강력한 근거 기반"
+      "strongEvidence": "강력한 근거 기반",
+      "frameworkSwot": "SWOT 전략 분석",
+      "frameworkPestel": "PESTEL 거시환경 분석",
+      "frameworkPorter": "Porter 5 Forces 분석",
+      "frameworkThreeC": "3C 전략 분석",
+      "frameworkStp": "STP 세분화 분석",
+      "frameworkBcg": "BCG 포트폴리오 분석",
+      "frameworkAnsoff": "Ansoff 성장 매트릭스 분석",
+      "frameworkValueChain": "가치사슬 분석",
+      "frameworkBmc": "Business Model Canvas 분석",
+      "frameworkLeanCanvas": "Lean Canvas 분석",
+      "frameworkJtbd": "Jobs-to-be-Done 분석"
     },
     "explain": {
       "title": "점수 산출 근거",
@@ -1658,7 +1669,11 @@
       "stepVerdict": "판정 결정",
       "stepVerdictGo": "점수·신뢰도 임계값 충족 — 조건부 GO.",
       "stepVerdictNoGo": "생존 임계값 미달 및 데이터 충분 — NO GO.",
-      "stepVerdictHold": "데이터 부족 또는 경계 점수 — HOLD."
+      "stepVerdictHold": "데이터 부족 또는 경계 점수 — HOLD.",
+      "stepFramework": "전략 프레임워크 분석",
+      "stepFrameworkDetail": "{count}개 프레임워크 적용, 의사결정 영향도 합계 {impact} ({names}).",
+      "frameworkSectionTitle": "프레임워크 분석 근거",
+      "frameworkSectionDesc": "AI가 독립 보고서가 아닌 의사결정 근거로 적용한 전략 프레임워크입니다."
     },
     "supporting": {
       "title": "Supporting Evidence",
@@ -1681,6 +1696,206 @@
         "competitor": "경쟁사",
         "grant": "정부지원",
         "validation": "Validation"
+      }
+    }
+  },
+  "framework": {
+    "summaryTitle": "프레임워크 분석",
+    "summaryDesc": "의사결정 근거로 적용된 전략 프레임워크 — 독립 메뉴가 아닙니다.",
+    "analyzedCount": "{count}개 프레임워크 분석 완료",
+    "aggregateImpact": "종합 영향도: {impact}점",
+    "score": "점수",
+    "confidence": "신뢰도",
+    "topInsight": "핵심 인사이트",
+    "insightsTitle": "핵심 인사이트",
+    "recommendationsTitle": "권고사항",
+    "evidenceTitle": "근거",
+    "names": {
+      "swot": "SWOT",
+      "pestel": "PESTEL",
+      "porter": "Porter 5 Forces",
+      "threec": "3C 분석",
+      "stp": "STP",
+      "bcg": "BCG Matrix",
+      "ansoff": "Ansoff Matrix",
+      "valuechain": "가치사슬",
+      "bmc": "Business Model Canvas",
+      "leancanvas": "Lean Canvas",
+      "jtbd": "Jobs-to-be-Done"
+    },
+    "summaries": {
+      "swot": "{project} SWOT 분석 {score}/100 — 근거 {evidence}건, VOC {voc}건 기반.",
+      "pestel": "{project} PESTEL 거시환경 분석 {score}/100.",
+      "porter": "{project} Porter 분석 {score}/100 — 경쟁 근거 {evidence}건.",
+      "threec": "{project} 3C 분석 {score}/100 — 기업·고객·경쟁사 관점.",
+      "stp": "{project} STP 세분화 {score}/100 — VOC {voc}건 기반.",
+      "bcg": "{project} BCG 포트폴리오 {score}/100.",
+      "ansoff": "{project} Ansoff 성장 매트릭스 {score}/100.",
+      "valuechain": "{project} 가치사슬 분석 {score}/100.",
+      "bmc": "{project} BMC 분석 {score}/100.",
+      "leancanvas": "{project} Lean Canvas {score}/100.",
+      "jtbd": "{project} JTBD 분석 {score}/100 — 고객 Job 신호 {voc}건."
+    },
+    "evidence": {
+      "research": "리서치",
+      "voc": "고객의 소리",
+      "swotResearch": "시장·경쟁 인텔리전스 리서치",
+      "swotVoc": "고객 인터뷰 및 VOC 검증 데이터",
+      "pestelResearch": "거시환경·규제 리서치",
+      "pestelVoc": "이해관계자·정책 영향 신호",
+      "porterResearch": "산업 구조·경쟁사 매핑",
+      "porterVoc": "구매자 교섭력·전환비용 지표",
+      "threecResearch": "기업 역량·시장 포지셔닝 데이터",
+      "threecVoc": "고객 니즈·경쟁사 벤치마크",
+      "stpResearch": "시장 세분화·규모 리서치",
+      "stpVoc": "VOC 기반 타겟 세그먼트 검증",
+      "bcgResearch": "포트폴리오 성장·점유율 데이터",
+      "bcgVoc": "고객 채택·유지 신호",
+      "ansoffResearch": "성장 경로·시장 진입 리서치",
+      "ansoffVoc": "신규 제품·시장 수요",
+      "valuechainResearch": "운영·공급망 분석",
+      "valuechainVoc": "프로세스 효율·고객 전달 피드백",
+      "bmcResearch": "수익 모델·비용 구조 리서치",
+      "bmcVoc": "지불 의향 신호",
+      "leancanvasResearch": "문제 검증·솔루션 가설",
+      "leancanvasVoc": "얼리어답터 인터뷰",
+      "jtbdResearch": "Job 매핑·Outcome 리서치",
+      "jtbdVoc": "고객 Job 진술·Pain Point"
+    },
+    "insights": {
+      "swot": {
+        "i1Label": "강점",
+        "i1Text": "현재 데이터에서 경쟁 강점이 식별됩니다.",
+        "i2Label": "리스크",
+        "i2Text": "경쟁·검증 공백이 전략 포지셔닝을 약화시킬 수 있습니다."
+      },
+      "pestel": {
+        "i1Label": "거시 순풍",
+        "i1Text": "규제·시장 트렌드가 단기 전략에 유리합니다.",
+        "i2Label": "거시 역풍",
+        "i2Text": "정책·경제 불확실성이 실행 시점을 제약할 수 있습니다."
+      },
+      "porter": {
+        "i1Label": "산업 매력도",
+        "i1Text": "경쟁 구조상 진입 장벽과 차별화 기회가 공존합니다.",
+        "i2Label": "경쟁 압력",
+        "i2Text": "경쟁 강도·구매자 교섭력이 마진을 압박할 수 있습니다."
+      },
+      "threec": {
+        "i1Label": "전략 적합성",
+        "i1Text": "기업 역량이 타겟 고객 니즈와 정렬됩니다.",
+        "i2Label": "공백",
+        "i2Text": "경쟁사 우위·역량 공백을 보완해야 합니다."
+      },
+      "stp": {
+        "i1Label": "세그먼트 명확성",
+        "i1Text": "타겟 세그먼트가 고객 검증 신호로 뒷받침됩니다.",
+        "i2Label": "포지셔닝 리스크",
+        "i2Text": "세그먼트 중복·약한 차별화가 GTM 효과를 희석시킬 수 있습니다."
+      },
+      "bcg": {
+        "i1Label": "성장 잠재력",
+        "i1Text": "포트폴리오 지표가 투자 가능한 성장 기회를 시사합니다.",
+        "i2Label": "자원 배분",
+        "i2Text": "저점유·쇠퇴 포지션은 철수·피벗 검토가 필요합니다."
+      },
+      "ansoff": {
+        "i1Label": "성장 경로",
+        "i1Text": "시장 침투·개발 경로에 실행 가능한 옵션이 있습니다.",
+        "i2Label": "확장 리스크",
+        "i2Text": "다각화·신규 시장 진입은 실행 리스크가 큽니다."
+      },
+      "valuechain": {
+        "i1Label": "운영 레버리지",
+        "i1Text": "주요 활동에서 효율·차별화 잠재력이 보입니다.",
+        "i2Label": "비용 압력",
+        "i2Text": "지원 활동·공급 의존성이 마진을 잠식할 수 있습니다."
+      },
+      "bmc": {
+        "i1Label": "모델 적합성",
+        "i1Text": "수익원·가치 제안이 일관된 비즈니스 모델을 형성합니다.",
+        "i2Label": "모델 공백",
+        "i2Text": "비용 구조·채널 가정의 추가 검증이 필요합니다."
+      },
+      "leancanvas": {
+        "i1Label": "Problem-Solution Fit",
+        "i1Text": "문제·솔루션 가설이 고객 데이터로 부분 검증되었습니다.",
+        "i2Label": "채널 불확실성",
+        "i2Text": "획득 채널·수익 모델의 추가 테스트가 필요합니다."
+      },
+      "jtbd": {
+        "i1Label": "핵심 Job",
+        "i1Text": "VOC·리서치에서 고객 Job-to-be-Done이 식별됩니다.",
+        "i2Label": "Outcome 공백",
+        "i2Text": "원하는 Outcome이 타겟 세그먼트 전반에서 아직 미검증입니다."
+      }
+    },
+    "recommendations": {
+      "swot": {
+        "r1Label": "강점 활용",
+        "r1Text": "검증된 강점을 강화하고 경쟁 공백을 보완하세요.",
+        "r2Label": "검증 공백 해소",
+        "r2Text": "대규모 투자 전 VOC·경쟁사 분석을 완료하세요."
+      },
+      "pestel": {
+        "r1Label": "거시 신호 모니터링",
+        "r1Text": "시장 진입 시점에 영향을 주는 규제·경제 지표를 추적하세요.",
+        "r2Label": "정책 적합성 평가",
+        "r2Text": "정부 프로그램 정렬을 전략 순풍으로 활용하세요."
+      },
+      "porter": {
+        "r1Label": "전략적 차별화",
+        "r1Text": "기존 경쟁사 대비 방어 가능한 포지셔닝을 확보하세요.",
+        "r2Label": "구매자 교섭력 완화",
+        "r2Text": "전환비용·니치 집중으로 가격 압력을 줄이세요."
+      },
+      "threec": {
+        "r1Label": "역량 정렬",
+        "r1Text": "기업 강점을 최고 가치 고객 세그먼트에 맞추세요.",
+        "r2Label": "경쟁사 벤치마킹",
+        "r2Text": "확장 전 구조화된 경쟁사 비교를 완료하세요."
+      },
+      "stp": {
+        "r1Label": "타겟 세그먼트 정교화",
+        "r1Text": "1차 리서치로 세그먼트 규모·지불 의향을 검증하세요.",
+        "r2Label": "포지셔닝 선명화",
+        "r2Text": "최근접 경쟁사 대비 차별점을 명확히 하세요."
+      },
+      "bcg": {
+        "r1Label": "Star 투자",
+        "r1Text": "고성장·고점유 기회에 자원을 배분하세요.",
+        "r2Label": "Dog 검토",
+        "r2Text": "저성장 포트폴리오 요소의 철수·피벗을 검토하세요."
+      },
+      "ansoff": {
+        "r1Label": "침투 우선",
+        "r1Text": "지리·제품 확장 전 기존 시장 깊이에 집중하세요.",
+        "r2Label": "단계적 확장",
+        "r2Text": "신규 시장·제품 다각화에 단계별 게이트를 적용하세요."
+      },
+      "valuechain": {
+        "r1Label": "주요 활동 최적화",
+        "r1Text": "핵심 운영에서 비용·차별화 개선점을 찾으세요.",
+        "r2Label": "지원 기능 강화",
+        "r2Text": "기술·조달 효율에 투자하세요."
+      },
+      "bmc": {
+        "r1Label": "수익 모델 검증",
+        "r1Text": "타겟 고객으로 가격·단위 경제성을 테스트하세요.",
+        "r2Label": "비용 동인 매핑",
+        "r2Text": "확장 가능 vs 고정 비용 요소를 구분하세요."
+      },
+      "leancanvas": {
+        "r1Label": "문제 가설 테스트",
+        "r1Text": "구조화된 고객 발견으로 핵심 문제를 확인하세요.",
+        "r2Label": "채널 검증",
+        "r2Text": "지출 확대 전 획득 채널을 실험하세요."
+      },
+      "jtbd": {
+        "r1Label": "고객 Job 매핑",
+        "r1Text": "VOC에서 기능·감정·사회적 Job을 문서화하세요.",
+        "r2Label": "Outcome 적합성 측정",
+        "r2Text": "솔루션이 고객이 원하는 Outcome을 얼마나 충족하는지 정량화하세요."
       }
     }
   },

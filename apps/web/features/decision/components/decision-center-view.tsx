@@ -31,6 +31,7 @@ import { DecisionExplainDialog } from './decision-explain-dialog';
 import { DecisionExplainScore } from './decision-explain-score';
 import { DecisionSupportingEvidence } from './decision-supporting-evidence';
 import { DecisionVerdictBadge } from './decision-verdict-badge';
+import { FrameworkSummaryAccordion } from '@/features/framework/components/framework-summary-accordion';
 
 type DecisionCenterViewProps = {
   decision: DecisionResult;
@@ -65,6 +66,14 @@ export function DecisionCenterView({
       project_type: decision.projectType,
       provider: decision.providerId,
     });
+    if (decision.frameworkAnalysis) {
+      trackEvent(ANALYTICS_EVENTS.frameworkExecute, {
+        project_id: projectId,
+        project_type: decision.projectType,
+        framework_name: decision.frameworkAnalysis.selectedIds.join(','),
+        duration: decision.frameworkAnalysis.executionDurationMs,
+      });
+    }
   }, [decision, projectId, trackEvent]);
 
   function handleActionClick(actionId: string) {
@@ -100,6 +109,7 @@ export function DecisionCenterView({
           <div className="flex flex-wrap items-center gap-2">
             <DecisionExplainDialog
               steps={explanation.decisionLogic}
+              frameworks={decision.frameworkAnalysis?.frameworks ?? []}
               projectId={projectId}
               verdict={decision.verdict}
             />
@@ -165,6 +175,15 @@ export function DecisionCenterView({
         drivers={explanation.drivers}
         onDriverClick={handleDriverClick}
       />
+
+      {/* Framework Analysis — evidence modules, not standalone menus */}
+      {decision.frameworkAnalysis ? (
+        <FrameworkSummaryAccordion
+          analysis={decision.frameworkAnalysis}
+          projectId={projectId}
+          projectType={decision.projectType}
+        />
+      ) : null}
 
       {/* Explain Score breakdown */}
       <DecisionExplainScore explainScore={explanation.explainScore} />

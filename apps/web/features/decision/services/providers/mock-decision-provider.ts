@@ -349,6 +349,7 @@ export class MockDecisionProvider implements DecisionProvider {
       risks,
       opportunities,
       explanation,
+      frameworkAnalysis: input.frameworkAnalysis ?? null,
       generatedAt: new Date().toISOString(),
       providerId: 'mock',
       projectType: input.projectType,

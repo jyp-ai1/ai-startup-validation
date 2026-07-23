@@ -17,6 +17,9 @@ export const ANALYTICS_EVENTS = {
   decisionExplainView: 'decision_explain_view',
   decisionDriverClick: 'decision_driver_click',
   missingDataClick: 'missing_data_click',
+  frameworkExecute: 'framework_execute',
+  frameworkView: 'framework_view',
+  frameworkDetail: 'framework_detail',
   strategyGenerate: 'strategy_generate',
   businessPlanGenerate: 'business_plan_generate',
   reportGenerate: 'report_generate',
@@ -44,6 +47,7 @@ export type AnalyticsEventParams = {
   metric_value?: number;
   metric_rating?: string;
   query?: string;
+  framework_name?: string;
   [key: string]: string | number | boolean | undefined;
 };
 

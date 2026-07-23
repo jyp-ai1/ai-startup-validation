@@ -1645,7 +1645,18 @@
       "competitionBlindSpot": "Unmapped competitive landscape",
       "weakEvidence": "Weak evidence base",
       "techDifficulty": "Technical execution difficulty",
-      "strongEvidence": "Strong evidence foundation"
+      "strongEvidence": "Strong evidence foundation",
+      "frameworkSwot": "SWOT strategic analysis",
+      "frameworkPestel": "PESTEL macro-environment analysis",
+      "frameworkPorter": "Porter Five Forces analysis",
+      "frameworkThreeC": "3C strategic analysis",
+      "frameworkStp": "STP segmentation analysis",
+      "frameworkBcg": "BCG portfolio analysis",
+      "frameworkAnsoff": "Ansoff growth matrix analysis",
+      "frameworkValueChain": "Value chain analysis",
+      "frameworkBmc": "Business Model Canvas analysis",
+      "frameworkLeanCanvas": "Lean Canvas analysis",
+      "frameworkJtbd": "Jobs-to-be-Done analysis"
     },
     "explain": {
       "title": "Score Breakdown",
@@ -1687,7 +1698,11 @@
       "stepVerdict": "Verdict resolution",
       "stepVerdictGo": "Score and confidence thresholds met — conditional GO issued.",
       "stepVerdictNoGo": "Score below viability threshold with sufficient data — NO GO issued.",
-      "stepVerdictHold": "Insufficient data or borderline scores — HOLD pending evidence completion."
+      "stepVerdictHold": "Insufficient data or borderline scores — HOLD pending evidence completion.",
+      "stepFramework": "Strategy framework analysis",
+      "stepFrameworkDetail": "{count} frameworks applied with aggregate decision impact of {impact} ({names}).",
+      "frameworkSectionTitle": "Framework Analysis Evidence",
+      "frameworkSectionDesc": "AI applied these strategy frameworks as analytical evidence — not as standalone reports."
     },
     "supporting": {
       "title": "Supporting Evidence",
@@ -1710,6 +1725,206 @@
         "competitor": "Competitor",
         "grant": "Government",
         "validation": "Validation"
+      }
+    }
+  },
+  "framework": {
+    "summaryTitle": "Framework Analysis",
+    "summaryDesc": "Strategy frameworks applied as decision evidence — not standalone reports.",
+    "analyzedCount": "{count} frameworks analyzed",
+    "aggregateImpact": "Aggregate impact: {impact} pts",
+    "score": "Score",
+    "confidence": "Confidence",
+    "topInsight": "Top Insight",
+    "insightsTitle": "Key Insights",
+    "recommendationsTitle": "Recommendations",
+    "evidenceTitle": "Evidence Basis",
+    "names": {
+      "swot": "SWOT",
+      "pestel": "PESTEL",
+      "porter": "Porter Five Forces",
+      "threec": "3C Analysis",
+      "stp": "STP",
+      "bcg": "BCG Matrix",
+      "ansoff": "Ansoff Matrix",
+      "valuechain": "Value Chain",
+      "bmc": "Business Model Canvas",
+      "leancanvas": "Lean Canvas",
+      "jtbd": "Jobs-to-be-Done"
+    },
+    "summaries": {
+      "swot": "SWOT for {project} scores {score}/100 using {evidence} evidence items and {voc} VOC entries.",
+      "pestel": "PESTEL macro scan for {project} scores {score}/100 from regulatory and market signals.",
+      "porter": "Porter analysis for {project} scores {score}/100 with {evidence} evidence-backed competitive inputs.",
+      "threec": "3C analysis for {project} scores {score}/100 across company, customer, and competitor dimensions.",
+      "stp": "STP segmentation for {project} scores {score}/100 based on {voc} customer voice entries.",
+      "bcg": "BCG portfolio view for {project} scores {score}/100 from growth and share indicators.",
+      "ansoff": "Ansoff growth matrix for {project} scores {score}/100 on expansion readiness.",
+      "valuechain": "Value chain analysis for {project} scores {score}/100 on operational leverage points.",
+      "bmc": "Business Model Canvas for {project} scores {score}/100 on revenue and cost structure fit.",
+      "leancanvas": "Lean Canvas for {project} scores {score}/100 on problem-solution and channel fit.",
+      "jtbd": "JTBD analysis for {project} scores {score}/100 from {voc} customer job signals."
+    },
+    "evidence": {
+      "research": "Research",
+      "voc": "Customer Voice",
+      "swotResearch": "Market research and competitive intelligence inputs",
+      "swotVoc": "Customer interview and VOC validation data",
+      "pestelResearch": "Macro-environment and regulatory research",
+      "pestelVoc": "Stakeholder and policy impact signals",
+      "porterResearch": "Industry structure and competitor mapping",
+      "porterVoc": "Buyer power and switching cost indicators",
+      "threecResearch": "Company capability and market positioning data",
+      "threecVoc": "Customer needs and competitor benchmarks",
+      "stpResearch": "Market segmentation and sizing research",
+      "stpVoc": "Target segment validation from VOC",
+      "bcgResearch": "Portfolio growth and market share data",
+      "bcgVoc": "Customer adoption and retention signals",
+      "ansoffResearch": "Growth pathway and market entry research",
+      "ansoffVoc": "Customer demand for new offerings",
+      "valuechainResearch": "Operational and supply chain analysis",
+      "valuechainVoc": "Process efficiency and customer delivery feedback",
+      "bmcResearch": "Revenue model and cost structure research",
+      "bmcVoc": "Customer willingness-to-pay signals",
+      "leancanvasResearch": "Problem validation and solution hypothesis",
+      "leancanvasVoc": "Early adopter interview data",
+      "jtbdResearch": "Job mapping and outcome-driven research",
+      "jtbdVoc": "Customer job statements and pain points"
+    },
+    "insights": {
+      "swot": {
+        "i1Label": "Strength",
+        "i1Text": "Evidence quality supports identifiable competitive strengths in the current data set.",
+        "i2Label": "Risk",
+        "i2Text": "Competitive and validation gaps remain that could weaken strategic positioning."
+      },
+      "pestel": {
+        "i1Label": "Macro Tailwind",
+        "i1Text": "Regulatory and market trends appear favorable for near-term strategic moves.",
+        "i2Label": "Macro Headwind",
+        "i2Text": "Policy or economic uncertainty may constrain execution timing."
+      },
+      "porter": {
+        "i1Label": "Industry Attractiveness",
+        "i1Text": "Competitive structure suggests moderate entry barriers with differentiation opportunities.",
+        "i2Label": "Competitive Pressure",
+        "i2Text": "Rival intensity or buyer power may compress margins without clear differentiation."
+      },
+      "threec": {
+        "i1Label": "Strategic Fit",
+        "i1Text": "Company capabilities align with identified customer needs in target segments.",
+        "i2Label": "Gap",
+        "i2Text": "Competitor advantages or capability gaps require mitigation before scaling."
+      },
+      "stp": {
+        "i1Label": "Segment Clarity",
+        "i1Text": "Target segment definition is supported by customer validation signals.",
+        "i2Label": "Positioning Risk",
+        "i2Text": "Segment overlap or weak differentiation may dilute go-to-market effectiveness."
+      },
+      "bcg": {
+        "i1Label": "Growth Potential",
+        "i1Text": "Portfolio indicators suggest investable growth opportunities.",
+        "i2Label": "Resource Allocation",
+        "i2Text": "Low-share or declining positions may require divestment or pivot."
+      },
+      "ansoff": {
+        "i1Label": "Growth Path",
+        "i1Text": "Market penetration or development pathways show viable expansion options.",
+        "i2Label": "Expansion Risk",
+        "i2Text": "Diversification or new market entry carries elevated execution risk."
+      },
+      "valuechain": {
+        "i1Label": "Operational Leverage",
+        "i1Text": "Primary activities show efficiency or differentiation potential.",
+        "i2Label": "Cost Pressure",
+        "i2Text": "Support activities or supplier dependencies may erode margin."
+      },
+      "bmc": {
+        "i1Label": "Model Fit",
+        "i1Text": "Revenue streams and value proposition show coherent business model alignment.",
+        "i2Label": "Model Gap",
+        "i2Text": "Cost structure or channel assumptions need further validation."
+      },
+      "leancanvas": {
+        "i1Label": "Problem-Solution Fit",
+        "i1Text": "Problem and solution hypotheses are partially validated by customer data.",
+        "i2Label": "Channel Uncertainty",
+        "i2Text": "Acquisition channels or revenue model require additional testing."
+      },
+      "jtbd": {
+        "i1Label": "Core Job",
+        "i1Text": "Customer job-to-be-done is identifiable from VOC and research inputs.",
+        "i2Label": "Outcome Gap",
+        "i2Text": "Desired outcomes are not yet fully validated across target segments."
+      }
+    },
+    "recommendations": {
+      "swot": {
+        "r1Label": "Leverage strengths",
+        "r1Text": "Double down on validated strengths while addressing competitive blind spots.",
+        "r2Label": "Close validation gaps",
+        "r2Text": "Complete VOC and competitor analysis before major resource commitment."
+      },
+      "pestel": {
+        "r1Label": "Monitor macro signals",
+        "r1Text": "Track regulatory and economic indicators affecting market entry timing.",
+        "r2Label": "Assess policy fit",
+        "r2Text": "Evaluate government program alignment as strategic tailwind."
+      },
+      "porter": {
+        "r1Label": "Differentiate strategically",
+        "r1Text": "Identify defensible positioning against established competitors.",
+        "r2Label": "Reduce buyer power exposure",
+        "r2Text": "Build switching costs or niche focus to mitigate price pressure."
+      },
+      "threec": {
+        "r1Label": "Align capabilities",
+        "r1Text": "Match company strengths to highest-value customer segments.",
+        "r2Label": "Benchmark competitors",
+        "r2Text": "Complete structured competitor comparison before scaling."
+      },
+      "stp": {
+        "r1Label": "Refine target segment",
+        "r1Text": "Validate segment size and willingness-to-pay with primary research.",
+        "r2Label": "Sharpen positioning",
+        "r2Text": "Articulate clear differentiation vs. nearest competitors."
+      },
+      "bcg": {
+        "r1Label": "Invest in stars",
+        "r1Text": "Allocate resources to high-growth, high-share opportunities.",
+        "r2Label": "Review dogs",
+        "r2Text": "Evaluate exit or pivot for low-growth portfolio elements."
+      },
+      "ansoff": {
+        "r1Label": "Prioritize penetration",
+        "r1Text": "Focus on existing market depth before geographic or product expansion.",
+        "r2Label": "Stage expansion",
+        "r2Text": "Use phased gates for new market or product diversification."
+      },
+      "valuechain": {
+        "r1Label": "Optimize primary activities",
+        "r1Text": "Identify cost or differentiation improvements in core operations.",
+        "r2Label": "Strengthen support functions",
+        "r2Text": "Invest in technology and procurement efficiency."
+      },
+      "bmc": {
+        "r1Label": "Validate revenue model",
+        "r1Text": "Test pricing and unit economics with target customers.",
+        "r2Label": "Map cost drivers",
+        "r2Text": "Identify scalable vs. fixed cost components in the model."
+      },
+      "leancanvas": {
+        "r1Label": "Test problem hypothesis",
+        "r1Text": "Run structured customer discovery to confirm core problem.",
+        "r2Label": "Validate channels",
+        "r2Text": "Experiment with acquisition channels before scaling spend."
+      },
+      "jtbd": {
+        "r1Label": "Map customer jobs",
+        "r1Text": "Document functional, emotional, and social jobs from VOC data.",
+        "r2Label": "Measure outcome fit",
+        "r2Text": "Quantify how well the solution delivers desired customer outcomes."
       }
     }
   }
