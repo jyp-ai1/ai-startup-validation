@@ -15,6 +15,7 @@ import { Button } from '@repo/ui';
 
 import type { ConsultantViewModel } from '@/features/ai-consultant';
 import { ConsultantPanel } from '@/features/ai-consultant';
+import { WelcomeChecklist } from '@/features/activation';
 import { DemoWelcomeCard } from '@/features/onboarding';
 
 import type { StrategyWorkspaceViewModel } from '@/features/strategy-workspace';
@@ -39,15 +40,17 @@ type ExecutiveDashboardProps = {
   executive: ExecutiveWorkspaceViewModel | null;
   strategy: StrategyWorkspaceViewModel | null;
   consultant: ConsultantViewModel | null;
+  demoMode?: boolean;
 };
 
 type DashboardShellProps = {
   consultant: ConsultantViewModel | null;
   children: ReactNode;
   className?: string;
+  checklist?: ReactNode;
 };
 
-function DashboardShell({ consultant, children, className }: DashboardShellProps) {
+function DashboardShell({ consultant, children, className, checklist }: DashboardShellProps) {
   if (!consultant) {
     return <div className={className ?? 'mx-auto max-w-6xl'}>{children}</div>;
   }
@@ -58,7 +61,8 @@ function DashboardShell({ consultant, children, className }: DashboardShellProps
         <div className={className ?? 'min-w-0 space-y-14 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500'}>
           {children}
         </div>
-        <div className="xl:sticky xl:top-24 xl:self-start">
+        <div className="space-y-6 xl:sticky xl:top-24 xl:self-start">
+          {checklist}
           <ConsultantPanel consultant={consultant} />
         </div>
       </div>
@@ -66,10 +70,21 @@ function DashboardShell({ consultant, children, className }: DashboardShellProps
   );
 }
 
-export function ExecutiveDashboard({ workspace, executive, strategy, consultant }: ExecutiveDashboardProps) {
+export function ExecutiveDashboard({
+  workspace,
+  executive,
+  strategy,
+  consultant,
+  demoMode = false,
+}: ExecutiveDashboardProps) {
   const t = useTranslations('executive');
   const { trackEvent } = useAnalytics();
-  const { projectCount } = workspace;
+  const { projectCount, stats, activeProject } = workspace;
+
+  const checklist =
+    stats && activeProject && !demoMode ? (
+      <WelcomeChecklist stats={stats} projectId={activeProject.id} />
+    ) : null;
 
   useEffect(() => {
     trackEvent(ANALYTICS_EVENTS.dashboardOpen, {
@@ -112,8 +127,8 @@ export function ExecutiveDashboard({ workspace, executive, strategy, consultant 
 
   if (!executive && strategy) {
     return (
-      <DashboardShell consultant={consultant}>
-        <DemoWelcomeCard projectId={strategy.projectId} className="mb-8" />
+      <DashboardShell consultant={consultant} checklist={checklist}>
+        {demoMode ? <DemoWelcomeCard projectId={strategy.projectId} className="mb-8" /> : null}
         <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
       </DashboardShell>
     );
@@ -126,8 +141,8 @@ export function ExecutiveDashboard({ workspace, executive, strategy, consultant 
   const lineage = executive.orchestratorPlan?.confidenceLineage;
 
   return (
-    <DashboardShell consultant={consultant}>
-      <DemoWelcomeCard projectId={executive.project.id} className="mb-8" />
+    <DashboardShell consultant={consultant} checklist={checklist}>
+      {demoMode ? <DemoWelcomeCard projectId={executive.project.id} className="mb-8" /> : null}
       {strategy ? (
         <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
       ) : null}

@@ -249,8 +249,21 @@ export async function buildProjectDashboardStats(
 
 export async function getWorkspaceContext(
   preferredProjectId?: string | null,
+  options?: { userId?: string | null; demoMode?: boolean },
 ): Promise<WorkspaceContext> {
-  const projects = await listStartupProjects();
+  const { userId, demoMode = false } = options ?? {};
+
+  let projects: Awaited<ReturnType<typeof listStartupProjects>>;
+  if (demoMode) {
+    const { listDemoProjects } = await import('@/features/projects/services/project-service');
+    projects = await listDemoProjects();
+  } else if (userId) {
+    const { listUserProjects } = await import('@/features/projects/services/project-service');
+    projects = await listUserProjects(userId);
+  } else {
+    projects = await listStartupProjects();
+  }
+
   const activeProject = pickActiveProject(projects, preferredProjectId);
   const stats = activeProject
     ? await buildProjectDashboardStats(activeProject.id)

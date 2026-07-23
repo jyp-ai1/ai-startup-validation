@@ -24,6 +24,18 @@ export const PROJECT_TYPES = [
 
 export type ProjectType = (typeof PROJECT_TYPES)[number];
 
+/** Primary goal selected during onboarding wizard. */
+export const PROJECT_GOALS = [
+  'MARKET_VALIDATION',
+  'BUSINESS_STRATEGY',
+  'GOVERNMENT_GRANT',
+  'FUNDRAISING',
+  'NEW_BUSINESS',
+  'AI_BUILD',
+] as const;
+
+export type ProjectGoal = (typeof PROJECT_GOALS)[number];
+
 /** Startup project — core entity for idea validation workflow. */
 export type StartupProject = {
   id: ID;
@@ -34,7 +46,11 @@ export type StartupProject = {
   targetCustomer: string | null;
   industry: string | null;
   businessModel: string | null;
+  country: string | null;
+  projectGoal: ProjectGoal | null;
   projectType: ProjectType;
+  userId: ID | null;
+  isDemo: boolean;
   status: StartupProjectStatus;
   createdAt: ISODateString;
   updatedAt: ISODateString;
@@ -48,7 +64,11 @@ export type CreateStartupProjectInput = {
   targetCustomer?: string | null;
   industry?: string | null;
   businessModel?: string | null;
+  country?: string | null;
+  projectGoal?: ProjectGoal | null;
   projectType?: ProjectType;
+  userId?: ID | null;
+  isDemo?: boolean;
   status?: StartupProjectStatus;
 };
 
@@ -60,6 +80,8 @@ export type UpdateStartupProjectInput = {
   targetCustomer?: string | null;
   industry?: string | null;
   businessModel?: string | null;
+  country?: string | null;
+  projectGoal?: ProjectGoal | null;
   projectType?: ProjectType;
   status?: StartupProjectStatus;
 };

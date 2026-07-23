@@ -25,7 +25,7 @@ export function LandingFooter() {
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-[15px] text-zinc-600">{t('ctaDesc')}</p>
           <LandingCtaLink
-            href="/dashboard"
+            href="/auth/login?next=/dashboard"
             event="cta_start"
             className="mt-10 h-12 rounded-xl bg-zinc-900 px-10 text-white hover:bg-zinc-800"
           >

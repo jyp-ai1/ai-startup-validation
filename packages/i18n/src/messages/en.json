@@ -2839,6 +2839,84 @@
       }
     }
   },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "account": "Account",
+    "continueWithGoogle": "Continue with Google",
+    "signingIn": "Signing in…"
+  },
+  "activation": {
+    "wizard": {
+      "eyebrow": "First project",
+      "title": "Create your first project",
+      "desc": "Answer a few questions — we'll set up your strategy workspace in under 5 minutes.",
+      "step1Title": "What type of project?",
+      "step2Title": "Tell us about your project",
+      "step3Title": "What's your primary goal?",
+      "typeStartup": "Startup Validation",
+      "typeStrategy": "Business Strategy",
+      "typeAi": "AI Initiative",
+      "projectName": "Project name",
+      "projectNamePlaceholder": "e.g. Silver Generation Matching Service",
+      "industry": "Industry",
+      "industryPlaceholder": "e.g. HealthTech, SaaS",
+      "country": "Country / market",
+      "countryPlaceholder": "e.g. South Korea",
+      "description": "Description",
+      "descriptionPlaceholder": "What problem are you solving?",
+      "targetCustomer": "Target customer",
+      "targetPlaceholder": "Who is your primary customer?",
+      "back": "Back",
+      "next": "Next",
+      "create": "Create project",
+      "creating": "Creating…",
+      "goal": {
+        "MARKET_VALIDATION": "Market validation",
+        "BUSINESS_STRATEGY": "Business strategy",
+        "GOVERNMENT_GRANT": "Government grant",
+        "FUNDRAISING": "Fundraising",
+        "NEW_BUSINESS": "New business",
+        "AI_BUILD": "AI build"
+      },
+      "errors": {
+        "titleRequired": "Project name is required",
+        "industryRequired": "Industry is required",
+        "countryRequired": "Country is required",
+        "descriptionRequired": "Description is required",
+        "targetRequired": "Target customer is required"
+      }
+    },
+    "progress": {
+      "label": "Onboarding progress",
+      "steps": {
+        "research": "Research",
+        "voc": "VOC",
+        "evidence": "Evidence",
+        "decision": "Decision",
+        "report": "Report"
+      }
+    },
+    "checklist": {
+      "title": "Today's tasks",
+      "desc": "Complete these steps to generate your first report.",
+      "items": {
+        "project": "Create project",
+        "research": "AI Research",
+        "evidence": "Add evidence",
+        "decision": "Run decision",
+        "report": "Generate report"
+      }
+    },
+    "workspace": {
+      "title": "Workspace",
+      "demoLabel": "Demo",
+      "myProjects": "My Projects",
+      "active": "Active",
+      "recentDemo": "Demo projects",
+      "recentProjects": "Recent projects"
+    }
+  },
   "errors": {
     "serverError": "Server error",
     "somethingWrong": "Something went wrong",
