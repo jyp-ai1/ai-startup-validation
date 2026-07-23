@@ -2,49 +2,69 @@
 
 import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { TrackedThemeToggle } from '@/components/analytics/tracked-theme-toggle';
 import { Button } from '@repo/ui';
+import { cn } from '@repo/ui/lib/utils';
 
 import { LandingCtaLink } from './landing-cta-link';
 
+const NAV_LINKS = [
+  { href: '#features', key: 'features' as const },
+  { href: '#how-it-works', key: 'howItWorks' as const },
+  { href: '#pricing', key: 'pricing' as const },
+  { href: '#faq', key: 'faq' as const },
+] as const;
+
 export function LandingHeader() {
   const t = useTranslations('landing');
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 8);
+    }
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-black/[0.06] bg-white/80 backdrop-blur-md">
-      <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between gap-4 px-6 lg:px-10">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-80">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-zinc-900 text-white">
+    <header
+      className={cn(
+        'sticky top-0 z-50 border-b border-black/[0.06] bg-white/85 backdrop-blur-md transition-shadow duration-200',
+        scrolled && 'shadow-[0_4px_24px_-8px_rgba(0,0,0,0.12)]',
+      )}
+    >
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-3 px-4 sm:gap-4 sm:px-6 lg:h-[72px] lg:px-10">
+        <Link href="/" className="flex min-w-0 shrink items-center gap-2.5 transition-opacity hover:opacity-80">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-white">
             <Sparkles className="size-4" />
           </div>
-          <span className="text-[15px] font-semibold tracking-tight text-zinc-900">{t('nav.brand')}</span>
+          <div className="min-w-0 leading-tight">
+            <span className="block truncate text-[15px] font-semibold tracking-tight text-zinc-900">
+              {t('nav.brand')}
+            </span>
+            <span className="hidden truncate text-[11px] text-zinc-500 sm:block">{t('nav.tagline')}</span>
+          </div>
         </Link>
 
-        <nav className="hidden items-center gap-6 lg:flex xl:gap-8">
-          <a href="#features" className="text-sm text-zinc-600 transition-colors hover:text-zinc-900">
-            {t('nav.features')}
-          </a>
-          <a href="#demo" className="text-sm text-zinc-600 transition-colors hover:text-zinc-900">
-            {t('nav.demo')}
-          </a>
-          <a href="#built-for" className="text-sm text-zinc-600 transition-colors hover:text-zinc-900">
-            {t('nav.builtFor')}
-          </a>
-          <a href="#pricing" className="text-sm text-zinc-600 transition-colors hover:text-zinc-900">
-            {t('nav.pricing')}
-          </a>
-          <a href="#roadmap" className="text-sm text-zinc-600 transition-colors hover:text-zinc-900">
-            {t('nav.roadmap')}
-          </a>
-          <a href="#faq" className="text-sm text-zinc-600 transition-colors hover:text-zinc-900">
-            {t('nav.faq')}
-          </a>
+        <nav className="hidden items-center gap-5 lg:flex xl:gap-7">
+          {NAV_LINKS.map(({ href, key }) => (
+            <a
+              key={key}
+              href={href}
+              className="text-sm text-zinc-600 transition-colors hover:text-zinc-900"
+            >
+              {t(`nav.${key}`)}
+            </a>
+          ))}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
           <LocaleSwitcher variant="compact" />
           <TrackedThemeToggle />
           <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>

@@ -56,6 +56,13 @@ export function LandingHero() {
               {t('ctaDemo')}
             </LandingCtaLink>
           </div>
+          <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-[13px] text-zinc-500">
+            <li>{t('ctaHint1')}</li>
+            <li className="hidden sm:list-item">·</li>
+            <li>{t('ctaHint2')}</li>
+            <li className="hidden sm:list-item">·</li>
+            <li className="font-medium text-emerald-700">{t('ctaHint3')}</li>
+          </ul>
         </div>
 
         <div className="relative lg:pl-4">

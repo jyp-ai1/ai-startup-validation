@@ -28,10 +28,12 @@ export function LandingCtaLink({
   const { trackEvent } = useAnalytics();
 
   function handleClick() {
-    trackEvent(
-      event === 'cta_start' ? ANALYTICS_EVENTS.ctaStart : ANALYTICS_EVENTS.ctaDemo,
-      { screen: '/', destination: href },
-    );
+    if (event === 'cta_start') {
+      trackEvent(ANALYTICS_EVENTS.landingStartClick, { screen: '/', destination: href });
+      trackEvent(ANALYTICS_EVENTS.ctaStart, { screen: '/', destination: href });
+    } else {
+      trackEvent(ANALYTICS_EVENTS.ctaDemo, { screen: '/', destination: href });
+    }
   }
 
   return (

@@ -22,7 +22,10 @@
     "regenerate": "Regenerate",
     "notProvided": "Not provided yet",
     "language": "Language",
-    "themeToggle": "Dark Mode",
+    "themeToggle": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
     "saving": "Saving...",
     "saveChanges": "Save Changes",
     "cancelEdit": "Cancel Edit",
@@ -240,6 +243,15 @@
     "competitorMatrix": "Competitor Matrix",
     "validationRadar": "Validation Breakdown",
     "recentActivity": "Recent Activity",
+    "focus": {
+      "eyebrow": "Today's Focus",
+      "title": "Start here",
+      "desc": "Three steps to validate your idea with AI.",
+      "research": "Start AI Research",
+      "evidence": "Upload Evidence",
+      "decision": "Generate Decision",
+      "start": "Start"
+    },
     "nextActions": "Next Recommended Action",
     "noActivity": "No recent activity.",
     "grants": "Government Grants",
@@ -365,6 +377,7 @@
       "workspace": "Workspace"
     },
     "breadcrumb": {
+      "home": "Home",
       "workspace": "Workspace"
     },
     "projectCard": {
@@ -1278,14 +1291,16 @@
     },
     "nav": {
       "brand": "LaunchLens",
+      "tagline": "AI Strategy Consultant",
       "features": "Features",
+      "howItWorks": "How it Works",
       "demo": "Demo",
       "builtFor": "Built For",
       "pricing": "Pricing",
       "roadmap": "Roadmap",
       "faq": "FAQ",
       "signIn": "Sign in",
-      "startFree": "Start free"
+      "startFree": "Start Free"
     },
     "hero": {
       "eyebrow": "AI Strategy Consultant",
@@ -1297,7 +1312,10 @@
       "bullet5": "Government grant fit analysis",
       "tagline": "AI performs the work. You make the decision.",
       "ctaStart": "Start free",
-      "ctaDemo": "View demo"
+      "ctaDemo": "Try live demo",
+      "ctaHint1": "No credit card required",
+      "ctaHint2": "Get started in 3 minutes",
+      "ctaHint3": "Free during Beta"
     },
     "preview": {
       "windowTitle": "Strategy Workspace",
@@ -1388,18 +1406,21 @@
       "title": "Simple pricing",
       "desc": "Join the Private Beta — all features free during early access.",
       "betaBadge": "Private Beta",
+      "earlyAccessBadge": "Early Access",
+      "foundingUserBadge": "Founding User",
+      "betaLabelBadge": "Beta",
       "betaStats": "100+ test projects",
-      "betaFree": "Free during Beta",
-      "betaBenefitsTitle": "Beta Benefits",
-      "b1": "Unlimited projects",
-      "b2": "Unlimited reports",
-      "b3": "AI Consultant",
-      "b4": "Strategy OS",
-      "b5": "Future updates included",
-      "b6": "Early adopter status",
+      "betaFree": "All features free during Beta",
+      "betaBenefitsTitle": "Everything included in Beta",
+      "b1": "AI Consultant",
+      "b2": "Market Analysis",
+      "b3": "Decision Engine",
+      "b4": "Executive Report",
+      "b5": "Unlimited Projects",
+      "b6": "Future updates included",
       "b7": "Priority support",
       "betaNotice": "All features free during Beta",
-      "betaNoticeSub": "No credit card. No login required to start.",
+      "betaNoticeSub": "Pro plan pricing after official launch.",
       "recommended": "Available now",
       "free": {
         "name": "Private Beta",
@@ -1441,7 +1462,7 @@
       "q3": { "question": "Is SWOT generated automatically?", "answer": "Yes. The Framework Engine applies SWOT, Porter's Five Forces, and other consulting frameworks based on your project data and market analysis." },
       "q4": { "question": "Does it analyze government grant programs?", "answer": "Yes. Government module maps K-Startup, ministry programs, and grant fit scores to your project profile." },
       "q5": { "question": "Can I export reports as PPT?", "answer": "Executive Report supports PDF, PPT, and DOCX export through the report preview and export queue." },
-      "q6": { "question": "Do I need to log in to try it?", "answer": "No login required for Sprint L1. Click Start free or View demo to enter the workspace immediately." },
+      "q6": { "question": "Do I need to log in?", "answer": "Sign in with Google to save your projects. Use 'Try live demo' to explore without an account." },
       "q7": { "question": "How is GO / NO GO calculated?", "answer": "The Decision Engine scores research, evidence, VOC, competitors, and grants — with explainable drivers and missing-data checklist." },
       "q8": { "question": "Is my data used to train AI models?", "answer": "Your project data stays in your workspace. Real LLM integration (Sprint 9.0+) will follow enterprise privacy standards." },
       "q9": { "question": "Who is LaunchLens for?", "answer": "Startups, corporate strategy teams, consultants, VCs, and public-sector innovators validating new initiatives." },
@@ -1450,7 +1471,7 @@
     },
     "footer": {
       "ctaTitle": "Ready to validate your next big bet?",
-      "ctaDesc": "Start free — no credit card, no login required.",
+      "ctaDesc": "Start free with Google — no credit card required.",
       "ctaButton": "Start free",
       "copyright": "LaunchLens · AI Strategy Consultant",
       "privacy": "Privacy",
@@ -3019,6 +3040,12 @@
     "signIn": "Sign in",
     "signOut": "Sign out",
     "account": "Account",
+    "tagline": "AI Strategy Consultant",
+    "loginDesc": "Sign in with Google and start your first project in under 5 minutes.",
+    "loginError": "Sign-in failed. Please try again.",
+    "supabaseNotConfigured": "Authentication is not configured. Contact support or try Demo mode.",
+    "demoHint": "Just exploring?",
+    "demoLink": "Try Demo Workspace",
     "continueWithGoogle": "Continue with Google",
     "signingIn": "Signing in…"
   },

@@ -29,16 +29,14 @@ type ShellBreadcrumbProps = {
 export function ShellBreadcrumb({ projectTitle, projectId }: ShellBreadcrumbProps) {
   const pathname = usePathname();
   const t = useTranslations();
+  const homeLabel = t('workspace.breadcrumb.home');
 
   const isDashboard = /\/dashboard\/?$/.test(pathname);
   const projectMatch = pathname.match(/\/projects\/([^/]+)(?:\/([^/]+))?/);
 
   if (isDashboard) {
     const items = [
-      { label: t('workspace.breadcrumb.workspace'), href: '/dashboard' },
-      ...(projectTitle && projectId
-        ? [{ label: projectTitle, href: `/projects/${projectId}` }]
-        : []),
+      { label: homeLabel, href: '/' },
       { label: t('nav.dashboard') },
     ];
     return <WorkspaceBreadcrumb items={items} className="text-[13px]" />;
@@ -51,7 +49,8 @@ export function ShellBreadcrumb({ projectTitle, projectId }: ShellBreadcrumbProp
     const title = projectTitle ?? t('nav.projects');
 
     const items = [
-      { label: t('workspace.breadcrumb.workspace'), href: '/dashboard' },
+      { label: homeLabel, href: '/' },
+      { label: t('nav.projects'), href: '/projects' },
       { label: title, href: `/projects/${id}` },
     ];
 
@@ -69,7 +68,7 @@ export function ShellBreadcrumb({ projectTitle, projectId }: ShellBreadcrumbProp
     return (
       <WorkspaceBreadcrumb
         items={[
-          { label: t('workspace.breadcrumb.workspace'), href: '/dashboard' },
+          { label: homeLabel, href: '/' },
           { label: t('nav.projects') },
         ]}
         className="text-[13px]"
@@ -81,7 +80,7 @@ export function ShellBreadcrumb({ projectTitle, projectId }: ShellBreadcrumbProp
     return (
       <WorkspaceBreadcrumb
         items={[
-          { label: t('workspace.breadcrumb.workspace'), href: '/dashboard' },
+          { label: homeLabel, href: '/' },
           { label: t('nav.settings') },
         ]}
         className="text-[13px]"

@@ -52,6 +52,17 @@ export function LandingPricing() {
             <Star className="size-3.5 fill-amber-400 text-amber-400" />
             {t('betaBadge')}
           </div>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <span className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-emerald-800">
+              {t('earlyAccessBadge')}
+            </span>
+            <span className="rounded-full bg-violet-100 px-3 py-1 text-[11px] font-semibold text-violet-800">
+              {t('foundingUserBadge')}
+            </span>
+            <span className="rounded-full bg-zinc-200 px-3 py-1 text-[11px] font-semibold text-zinc-800">
+              {t('betaLabelBadge')}
+            </span>
+          </div>
           <h2 className="mt-5 text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl">{t('title')}</h2>
           <p className="mt-4 text-[15px] text-zinc-600">{t('desc')}</p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm font-medium text-zinc-700">
