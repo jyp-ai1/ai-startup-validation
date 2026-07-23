@@ -69,6 +69,78 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+**Next:** Sprint L2.2 Project Workspace Home (migration gate PASS)
+
+---
+
+## Sprint L2.0.1 — Production Gate ⛔ PM ACTION
+
+**Status:** Migration PASS — remaining OAuth QA + merge/deploy
+**Goal:** Migration + OAuth + merge/deploy before production E2E.
+
+| Gate | Status | Owner |
+|------|--------|-------|
+| Run `016_user_workspace.sql` + `017_onboarding_context.sql` | ✅ Done | PM |
+| `node scripts/verify-supabase-migrations.mjs` → PASS | ✅ PASS | PM |
+| Google OAuth redirect + login/logout/session QA | ⛔ Pending | PM |
+| Merge `sprint-L2.1/ai-onboarding-consultant` → `main` + deploy | ⛔ Pending | PM |
+
+**Verify command:** `node scripts/verify-supabase-migrations.mjs`
+
+---
+
+## Sprint L2 — Google Auth & First Project Experience ✅
+
+**Status:** Complete (branch `sprint-L2/auth-first-project`, commit `6477fdc`)  
+**Goal:** Landing → Google Login → Project Wizard → Dashboard activation path.
+
+---
+
+## Sprint L2.1 — AI Onboarding Consultant ✅
+
+**Status:** Complete (branch `sprint-L2.1/ai-onboarding-consultant`, commit `c282db0`)  
+**Goal:** Wizard → AI 5-question interview → Research Plan → Orchestrator start.
+
+| EPIC | Status |
+|------|--------|
+| Welcome Consultant modal | ✅ Done |
+| 5-step interview + summary | ✅ Done |
+| Auto research plan + Start AI | ✅ Done |
+| Consultant memory/context | ✅ Done |
+| Analytics + i18n (ko/en) | ✅ Done |
+
+**Note:** Conversational follow-up (answer → feedback → next Q) deferred to L3 (real LLM).
+
+**Next:** L2.0.1 gate PASS → merge → deploy → Sprint L2.2
+
+---
+
+## Sprint L2.2 — Project Workspace Home 🚧 IN PROGRESS
+
+**Status:** In progress (branch `sprint-L2.2/project-workspace-home`)
+**Goal:** Expand existing `ProjectWorkspaceOverview` into a Notion-like Project Home (not a new route).
+**Base:** `apps/web/features/workspace-home/` + `project-workspace-overview.tsx`
+**Roles:** Dashboard = project list · Project Home = single-project workspace
+
+| EPIC | Scope | Status |
+|------|-------|--------|
+| 1 | Project Hero (name, desc, progress, decision, confidence, updated) | ✅ Done |
+| 2 | Today's Focus — AI Top 3 recommended tasks | ✅ Done |
+| 3 | Project Progress steps (Research → Report) | ✅ Done |
+| 4 | Recent Activity timeline | ✅ Done |
+| 5 | AI Consultant Summary — right panel always visible | ✅ Done |
+| 6 | Knowledge Snapshot counts | ✅ Done |
+| 7 | Recent Reports | ✅ Done |
+| 8 | Workspace tabs (Overview, Research, Decision, Report, Activity) | ✅ Done |
+| 9 | Quick Actions (+ Research, Run AI, Decision, Report) | ✅ Done |
+| 10 | Empty UX — AI suggests first market research | ✅ Done |
+| — | Analytics: workspace_open, workspace_continue, workspace_action, workspace_tab | ✅ Done |
+| — | i18n: `workspace.home.*` (en/ko + 11 locales) | ✅ Done |
+
+**Completion:** Build ✅ · push + deploy + `/health` + E2E pending
+
+---
+
 **Next:** Sprint L2 — Google Login + Supabase Auth
 
 ---

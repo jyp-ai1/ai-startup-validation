@@ -408,6 +408,84 @@
           "context": "Agent lacks sufficient evidence context"
         }
       }
+    },
+    "home": {
+      "hero": {
+        "eyebrow": "Project Home",
+        "openDashboard": "Open Command Center",
+        "overallProgress": "Overall progress",
+        "health": "Validation health",
+        "updated": "Last updated",
+        "score": "Readiness: {score}",
+        "confidence": "Confidence: {percent}%"
+      },
+      "quickActions": {
+        "title": "Quick actions",
+        "addResearch": "Add research",
+        "runAi": "Run AI",
+        "decision": "Decision",
+        "report": "Report"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "research": "Research",
+        "decision": "Decision",
+        "report": "Report",
+        "activity": "Activity"
+      },
+      "focus": {
+        "title": "Today's focus",
+        "rank": "Priority #{rank}"
+      },
+      "progress": {
+        "title": "Project progress"
+      },
+      "steps": {
+        "research": "Research",
+        "voc": "VOC",
+        "evidence": "Evidence",
+        "competitor": "Competitors",
+        "government": "Government grants",
+        "decision": "Decision",
+        "report": "Report"
+      },
+      "knowledge": {
+        "title": "Knowledge snapshot",
+        "research": "Research",
+        "evidence": "Evidence",
+        "voc": "VOC",
+        "competitors": "Competitors",
+        "grants": "Grants"
+      },
+      "reports": {
+        "title": "Recent reports",
+        "viewAll": "View all",
+        "empty": "No reports yet.",
+        "create": "Create report"
+      },
+      "reportFormat": {
+        "draft": "Draft",
+        "inProgress": "In progress",
+        "completed": "Completed"
+      },
+      "empty": {
+        "title": "Start with market research",
+        "suggestion": "Your workspace is empty. AI recommends starting with market research to validate demand and competition.",
+        "cta": "Start market research"
+      },
+      "researchTab": {
+        "count": "{count} items",
+        "runAi": "Run AI research",
+        "runAiDesc": "Let the orchestrator plan and execute research"
+      },
+      "decisionTab": {
+        "pending": "No decision yet — collect evidence and run validation first.",
+        "score": "Validation score: {score}",
+        "open": "Open decision center"
+      },
+      "activity": {
+        "empty": "No recent activity yet."
+      }
     }
   },
   "research": {
