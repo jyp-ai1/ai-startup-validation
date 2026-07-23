@@ -150,7 +150,10 @@
     "sectionsCount": "{count} sections",
     "viewPrd": "View PRD",
     "dashboard": "Dashboard",
-    "themeToggle": "Dark Mode"
+    "themeToggle": "Dark Mode",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System"
   },
   "shell": {
     "workspace": "ワークスペース",
@@ -300,6 +303,15 @@
       "recentAi": "Recent AI results",
       "noDeadlines": "No upcoming deadlines",
       "viewHistory": "View validation history"
+    },
+    "focus": {
+      "eyebrow": "Today's Focus",
+      "title": "Start here",
+      "desc": "Three steps to validate your idea with AI.",
+      "research": "Start AI Research",
+      "evidence": "Upload Evidence",
+      "decision": "Generate Decision",
+      "start": "Start"
     }
   },
   "settings": {
@@ -510,7 +522,8 @@
       }
     },
     "breadcrumb": {
-      "workspace": "Workspace"
+      "workspace": "Workspace",
+      "home": "Home"
     },
     "home": {
       "hero": {
@@ -1287,7 +1300,9 @@
       "signIn": "Sign in",
       "startFree": "Start free",
       "builtFor": "Built For",
-      "roadmap": "Roadmap"
+      "roadmap": "Roadmap",
+      "tagline": "AI Strategy Consultant",
+      "howItWorks": "How it Works"
     },
     "hero": {
       "eyebrow": "AI Strategy Consultant",
@@ -1299,7 +1314,10 @@
       "bullet5": "Government grant fit analysis",
       "tagline": "AI performs the work. You make the decision.",
       "ctaStart": "Start free",
-      "ctaDemo": "View demo"
+      "ctaDemo": "View demo",
+      "ctaHint1": "No credit card required",
+      "ctaHint2": "Get started in 3 minutes",
+      "ctaHint3": "Free during Beta"
     },
     "preview": {
       "windowTitle": "Strategy Workspace",
@@ -1477,7 +1495,10 @@
       "b6": "Early adopter status",
       "b7": "Priority support",
       "betaNotice": "All features free during Beta",
-      "betaNoticeSub": "No credit card. No login required to start."
+      "betaNoticeSub": "No credit card. No login required to start.",
+      "earlyAccessBadge": "Early Access",
+      "foundingUserBadge": "Founding User",
+      "betaLabelBadge": "Beta"
     },
     "faq": {
       "title": "Frequently asked questions",
@@ -3121,5 +3142,18 @@
       "tooltip": "You are viewing demo data.",
       "dialogBody": "You are viewing demo data.\n\nCreate a project to start real analysis with your own strategy workspace."
     }
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "account": "Account",
+    "tagline": "AI Strategy Consultant",
+    "loginDesc": "Sign in with Google and start your first project in under 5 minutes.",
+    "loginError": "Sign-in failed. Please try again.",
+    "supabaseNotConfigured": "Authentication is not configured. Contact support or try Demo mode.",
+    "demoHint": "Just exploring?",
+    "demoLink": "Try Demo Workspace",
+    "continueWithGoogle": "Continue with Google",
+    "signingIn": "Signing in…"
   }
 }

@@ -52,11 +52,15 @@ type AppShellProps = {
   stats?: ProjectDashboardStats | null;
 };
 
-function SidebarBrand() {
+function SidebarBrand({ onNavigate }: { onNavigate?: (target: string) => void }) {
   const t = useTranslations();
 
   return (
-    <Link href="/" className="flex items-center gap-3 px-1 py-2 transition-opacity hover:opacity-80">
+    <Link
+      href="/"
+      onClick={() => onNavigate?.('/')}
+      className="flex items-center gap-3 px-1 py-2 transition-opacity hover:opacity-80"
+    >
       <div className="flex size-10 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
         <Sparkles className="size-4" />
       </div>
@@ -145,6 +149,10 @@ export function AppShell({
   const showOnboardingProgress =
     pathname.includes('/dashboard') && stats && activeProject && !demoMode;
 
+  function trackHomeNavigation(target: string) {
+    trackEvent(ANALYTICS_EVENTS.homeNavigation, { screen: pathname, target });
+  }
+
   return (
     <AppLayout
       header={
@@ -161,12 +169,12 @@ export function AppShell({
                 <Menu className="size-5" />
               </Button>
               <Button variant="ghost" size="icon-sm" className="shrink-0 lg:hidden" asChild>
-                <Link href="/" aria-label={t('onboarding.home')}>
+                <Link href="/" aria-label={t('onboarding.home')} onClick={() => trackHomeNavigation('/')}>
                   <ArrowLeft className="size-4" />
                 </Link>
               </Button>
               <Button variant="ghost" size="sm" className="hidden shrink-0 gap-1.5 text-muted-foreground lg:inline-flex" asChild>
-                <Link href="/">
+                <Link href="/" onClick={() => trackHomeNavigation('/')}>
                   <ArrowLeft className="size-4" />
                   {t('onboarding.home')}
                 </Link>
@@ -215,7 +223,7 @@ export function AppShell({
       }
       sidebar={
         <AppSidebar className="gap-6 bg-sidebar text-sidebar-foreground">
-          <SidebarBrand />
+          <SidebarBrand onNavigate={trackHomeNavigation} />
           <WorkspaceSwitcher
             demoMode={demoMode}
             isAuthenticated={Boolean(user)}

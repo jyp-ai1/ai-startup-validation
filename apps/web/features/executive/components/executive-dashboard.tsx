@@ -16,6 +16,7 @@ import { Button } from '@repo/ui';
 import type { ConsultantViewModel } from '@/features/ai-consultant';
 import { ConsultantPanel } from '@/features/ai-consultant';
 import { WelcomeChecklist } from '@/features/activation';
+import { DashboardTodaysFocus } from '@/features/dashboard/components/dashboard-todays-focus';
 import { OnboardingConsultantHost } from '@/features/onboarding-consultant';
 import { DemoWelcomeCard } from '@/features/onboarding';
 
@@ -95,6 +96,15 @@ export function ExecutiveDashboard({
       project_type: executive?.projectType ?? workspace.activeProject?.projectType,
       screen: '/dashboard',
     });
+
+    const seenKey = 'dashboard_first_open';
+    if (typeof window !== 'undefined' && !sessionStorage.getItem(seenKey)) {
+      sessionStorage.setItem(seenKey, '1');
+      trackEvent(ANALYTICS_EVENTS.dashboardFirstOpen, {
+        project_id: workspace.activeProject?.id,
+        screen: '/dashboard',
+      });
+    }
   }, [executive, trackEvent, workspace.activeProject]);
 
   if (!executive && !strategy) {
@@ -128,6 +138,11 @@ export function ExecutiveDashboard({
   const projectTitle =
     executive?.project.title ?? workspace.activeProject?.title ?? t('empty.title');
 
+  const focusPanel =
+    workspace.activeProject && !demoMode ? (
+      <DashboardTodaysFocus projectId={workspace.activeProject.id} />
+    ) : null;
+
   if (!executive && strategy) {
     return (
       <>
@@ -140,6 +155,7 @@ export function ExecutiveDashboard({
           />
         ) : null}
         <DashboardShell consultant={consultant} checklist={checklist}>
+        {focusPanel}
         {demoMode ? <DemoWelcomeCard projectId={strategy.projectId} className="mb-8" /> : null}
         <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
         </DashboardShell>
@@ -164,6 +180,7 @@ export function ExecutiveDashboard({
         />
       ) : null}
       <DashboardShell consultant={consultant} checklist={checklist}>
+      {focusPanel}
       {demoMode ? <DemoWelcomeCard projectId={executive.project.id} className="mb-8" /> : null}
       {strategy ? (
         <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />

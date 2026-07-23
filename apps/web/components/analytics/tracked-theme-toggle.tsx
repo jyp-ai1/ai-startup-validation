@@ -15,6 +15,11 @@ export function TrackedThemeToggle({ className }: { className?: string }) {
     <ThemeToggle
       className={className}
       tooltip={t('themeToggle')}
+      labels={{
+        light: t('themeLight'),
+        dark: t('themeDark'),
+        system: t('themeSystem'),
+      }}
       onThemeChange={(theme) => {
         trackEvent(ANALYTICS_EVENTS.themeChange, {
           theme,
