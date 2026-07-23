@@ -16,11 +16,17 @@ import {
   SelectValue,
 } from '@repo/ui';
 
-export function LocaleSwitcher() {
+type LocaleSwitcherProps = {
+  /** Compact trigger for marketing header (avoids overlap with theme/login). */
+  variant?: 'default' | 'compact';
+};
+
+export function LocaleSwitcher({ variant = 'default' }: LocaleSwitcherProps) {
   const locale = useLocale() as AppLocale;
   const t = useTranslations('common');
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
+  const compact = variant === 'compact';
 
   function onChange(nextLocale: string) {
     if (nextLocale === locale || !nextLocale) return;
@@ -38,8 +44,15 @@ export function LocaleSwitcher() {
 
   return (
     <Select value={locale} onValueChange={onChange} disabled={isPending}>
-      <SelectTrigger className="h-8 w-[132px] border-border/80 bg-background text-xs" aria-label={t('language')}>
-        <SelectValue />
+      <SelectTrigger
+        className={
+          compact
+            ? 'h-8 w-[4.25rem] shrink-0 border-border/80 bg-background px-2 text-xs uppercase'
+            : 'h-8 w-[132px] border-border/80 bg-background text-xs'
+        }
+        aria-label={t('language')}
+      >
+        <SelectValue>{compact ? locale.toUpperCase().replace('-', '') : undefined}</SelectValue>
       </SelectTrigger>
       <SelectContent>
         {(Object.entries(LOCALE_LABELS) as [AppLocale, string][]).map(([code, label]) => (

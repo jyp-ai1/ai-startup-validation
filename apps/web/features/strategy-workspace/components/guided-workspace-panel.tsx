@@ -14,7 +14,7 @@ type GuidedWorkspacePanelProps = {
 
 export function GuidedWorkspacePanel({ strategy, projectTitle }: GuidedWorkspacePanelProps) {
   return (
-    <div className="space-y-8">
+    <div id="guided-workspace-panel" className="space-y-8">
       <StrategyProgressHero strategy={strategy} projectTitle={projectTitle} />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(240px,280px)_1fr]">

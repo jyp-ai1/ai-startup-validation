@@ -149,7 +149,8 @@
     "apply": "Apply",
     "sectionsCount": "{count} sections",
     "viewPrd": "View PRD",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "themeToggle": "Dark Mode"
   },
   "shell": {
     "workspace": "Espaço de trabalho",
@@ -1206,7 +1207,9 @@
       "pricing": "Pricing",
       "faq": "FAQ",
       "signIn": "Sign in",
-      "startFree": "Start free"
+      "startFree": "Start free",
+      "builtFor": "Built For",
+      "roadmap": "Roadmap"
     },
     "hero": {
       "eyebrow": "AI Strategy Consultant",
@@ -1383,7 +1386,20 @@
         "f2": "Custom integrations",
         "f3": "Audit logs",
         "f4": "SLA & compliance"
-      }
+      },
+      "betaBadge": "Private Beta",
+      "betaStats": "100+ test projects",
+      "betaFree": "Free during Beta",
+      "betaBenefitsTitle": "Beta Benefits",
+      "b1": "Unlimited projects",
+      "b2": "Unlimited reports",
+      "b3": "AI Consultant",
+      "b4": "Strategy OS",
+      "b5": "Future updates included",
+      "b6": "Early adopter status",
+      "b7": "Priority support",
+      "betaNotice": "All features free during Beta",
+      "betaNoticeSub": "No credit card. No login required to start."
     },
     "faq": {
       "title": "Frequently asked questions",
@@ -1427,6 +1443,10 @@
       "q10": {
         "question": "When will paid plans launch?",
         "answer": "Pro and Enterprise plans are coming soon. The Free plan includes the full workspace available today."
+      },
+      "q11": {
+        "question": "What is Private Beta?",
+        "answer": "Private Beta gives you unlimited access to every LaunchLens feature at no cost while we refine the product with early adopters. Your feedback shapes the roadmap."
       }
     },
     "footer": {
@@ -1444,6 +1464,47 @@
       "privacyBody": "LaunchLens respects your data. Project information is stored in your workspace and is not sold to third parties. Full privacy policy will be published before Sprint L2 authentication launch.",
       "termsTitle": "Terms of Service",
       "termsBody": "By using LaunchLens you agree to use the platform for lawful business strategy purposes. Full terms of service will be published before paid plans launch."
+    },
+    "builtFor": {
+      "title": "Built for",
+      "desc": "From solo founders to enterprise strategy teams.",
+      "startup": "Startup",
+      "enterprise": "Enterprise",
+      "innovation": "Innovation Team",
+      "strategy": "Strategy Team",
+      "pm": "PM",
+      "consultant": "Consultant",
+      "vc": "VC",
+      "government": "Government"
+    },
+    "roadmap": {
+      "title": "LaunchLens Roadmap",
+      "year": "2026",
+      "desc": "Where we are today — and where we are headed.",
+      "beta": {
+        "title": "Private Beta",
+        "desc": "Full workspace, AI Consultant, and Decision Engine — live now."
+      },
+      "aiResearch": {
+        "title": "AI Research",
+        "desc": "Browser agents and deeper market intelligence."
+      },
+      "realAi": {
+        "title": "Real AI",
+        "desc": "Production LLM integration with explainable outputs."
+      },
+      "collaboration": {
+        "title": "Collaboration",
+        "desc": "Team workspaces and shared strategy boards."
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "desc": "SSO, audit logs, and custom deployment."
+      },
+      "marketplace": {
+        "title": "Marketplace",
+        "desc": "Strategy templates, plugins, and partner integrations."
+      }
     }
   },
   "projectWorkspace": {
@@ -2960,6 +3021,26 @@
       "moderate": "Moderate signal",
       "weak": "Weak signal",
       "early": "Early stage"
+    }
+  },
+  "onboarding": {
+    "home": "Home",
+    "welcome": {
+      "eyebrow": "Demo workspace",
+      "title": "Welcome to LaunchLens",
+      "subtitle": "This is a live demo workspace.",
+      "desc": "Experience AI strategy consulting in 3 minutes — follow the steps below.",
+      "step1": "Create project",
+      "step2": "AI Research",
+      "step3": "Decision",
+      "step4": "Report",
+      "startTour": "Start Tour",
+      "dismiss": "Dismiss"
+    },
+    "demoMode": {
+      "label": "Demo Mode",
+      "tooltip": "You are viewing demo data.",
+      "dialogBody": "You are viewing demo data.\n\nCreate a project to start real analysis with your own strategy workspace."
     }
   }
 }

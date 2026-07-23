@@ -15,6 +15,7 @@ import { Button } from '@repo/ui';
 
 import type { ConsultantViewModel } from '@/features/ai-consultant';
 import { ConsultantPanel } from '@/features/ai-consultant';
+import { DemoWelcomeCard } from '@/features/onboarding';
 
 import type { StrategyWorkspaceViewModel } from '@/features/strategy-workspace';
 import { GuidedWorkspacePanel } from '@/features/strategy-workspace';
@@ -80,7 +81,9 @@ export function ExecutiveDashboard({ workspace, executive, strategy, consultant 
 
   if (!executive && !strategy) {
     return (
-      <div className="mx-auto max-w-2xl py-24 text-center">
+      <div className="mx-auto max-w-2xl py-12">
+        <DemoWelcomeCard className="mb-10" />
+        <div className="py-12 text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
           {t('empty.eyebrow')}
         </p>
@@ -99,6 +102,7 @@ export function ExecutiveDashboard({ workspace, executive, strategy, consultant 
         <p className="mt-8 text-sm text-muted-foreground">
           {t('empty.projects', { count: projectCount })}
         </p>
+        </div>
       </div>
     );
   }
@@ -109,6 +113,7 @@ export function ExecutiveDashboard({ workspace, executive, strategy, consultant 
   if (!executive && strategy) {
     return (
       <DashboardShell consultant={consultant}>
+        <DemoWelcomeCard projectId={strategy.projectId} className="mb-8" />
         <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
       </DashboardShell>
     );
@@ -122,6 +127,7 @@ export function ExecutiveDashboard({ workspace, executive, strategy, consultant 
 
   return (
     <DashboardShell consultant={consultant}>
+      <DemoWelcomeCard projectId={executive.project.id} className="mb-8" />
       {strategy ? (
         <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
       ) : null}

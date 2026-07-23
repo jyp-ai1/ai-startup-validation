@@ -22,6 +22,7 @@
     "regenerate": "재생성",
     "notProvided": "아직 입력되지 않음",
     "language": "언어",
+    "themeToggle": "다크 모드",
     "saving": "저장 중...",
     "saveChanges": "변경 사항 저장",
     "cancelEdit": "수정 취소",
@@ -1171,17 +1172,39 @@
       }
     }
   },
+  "onboarding": {
+    "home": "홈",
+    "welcome": {
+      "eyebrow": "데모 Workspace",
+      "title": "LaunchLens에 오신 것을 환영합니다",
+      "subtitle": "이곳은 실제 데모 Workspace입니다.",
+      "desc": "3분 안에 AI 전략 컨설팅을 체험해보세요. 아래 순서대로 진행하세요.",
+      "step1": "프로젝트 생성",
+      "step2": "AI Research",
+      "step3": "Decision",
+      "step4": "Report",
+      "startTour": "투어 시작",
+      "dismiss": "닫기"
+    },
+    "demoMode": {
+      "label": "Demo Mode",
+      "tooltip": "현재는 Demo 데이터입니다.",
+      "dialogBody": "현재는 Demo 데이터입니다.\n\n프로젝트를 생성하면 실제 분석이 시작됩니다."
+    }
+  },
   "landing": {
     "meta": {
       "title": "LaunchLens — AI Strategy Consultant",
       "description": "시장조사, 경쟁사 분석, 사업성 검증, Executive Report를 AI가 자동 수행하는 AI Strategy Consultant. 스타트업과 전략기획팀을 위한 Evidence 기반 GO / NO GO 의사결정.",
-      "keywords": "AI Strategy Consultant, AI Startup Validation, Business Strategy, Market Research, Competitive Analysis, Executive Report, GO NO GO"
+      "keywords": "AI Strategy Consultant, AI Startup Validation, Business Strategy, Enterprise Strategy, Market Research, Competitive Analysis, Executive Report, GO NO GO, Private Beta, AI 전략 컨설팅"
     },
     "nav": {
       "brand": "LaunchLens",
       "features": "기능",
       "demo": "데모",
+      "builtFor": "Built For",
       "pricing": "요금",
+      "roadmap": "Roadmap",
       "faq": "FAQ",
       "signIn": "로그인",
       "startFree": "무료 시작"
@@ -1260,14 +1283,50 @@
       "consulting": { "title": "컨설팅", "desc": "Research를 가속하고 Executive-ready Output을 제공합니다." },
       "public": { "title": "공공기관", "desc": "Grant Fit Analysis와 Policy-aware Strategy." }
     },
+    "builtFor": {
+      "title": "Built for",
+      "desc": "스타트업부터 기업 전략팀까지.",
+      "startup": "Startup",
+      "enterprise": "Enterprise",
+      "innovation": "Innovation Team",
+      "strategy": "Strategy Team",
+      "pm": "PM",
+      "consultant": "Consultant",
+      "vc": "VC",
+      "government": "Government"
+    },
+    "roadmap": {
+      "title": "LaunchLens Roadmap",
+      "year": "2026",
+      "desc": "지금과 앞으로의 LaunchLens.",
+      "beta": { "title": "Private Beta", "desc": "전체 Workspace, AI Consultant, Decision Engine — 지금 이용 가능." },
+      "aiResearch": { "title": "AI Research", "desc": "Browser Agent와 심화 Market Intelligence." },
+      "realAi": { "title": "Real AI", "desc": "Production LLM 연동과 Explainable Output." },
+      "collaboration": { "title": "Collaboration", "desc": "팀 Workspace와 공유 Strategy Board." },
+      "enterprise": { "title": "Enterprise", "desc": "SSO, Audit Log, Custom Deployment." },
+      "marketplace": { "title": "Marketplace", "desc": "Strategy Template, Plugin, Partner Integration." }
+    },
     "pricing": {
       "title": "Simple Pricing",
-      "desc": "지금 무료로 시작하세요. Pro·Enterprise는 Coming Soon.",
+      "desc": "Private Beta에 참여하세요 — Beta 기간 동안 모든 기능 무료.",
+      "betaBadge": "Private Beta",
+      "betaStats": "100+ Test Projects",
+      "betaFree": "Beta 기간 무료",
+      "betaBenefitsTitle": "Beta Benefits",
+      "b1": "Unlimited Projects",
+      "b2": "Unlimited Reports",
+      "b3": "AI Consultant",
+      "b4": "Strategy OS",
+      "b5": "Future Updates",
+      "b6": "Early Adopter",
+      "b7": "Priority Support",
+      "betaNotice": "모든 기능을 Beta 기간 동안 무료 제공합니다",
+      "betaNoticeSub": "카드·로그인 없이 바로 시작하세요.",
       "recommended": "지금 이용 가능",
       "free": {
-        "name": "Free",
+        "name": "Private Beta",
         "price": "₩0",
-        "desc": "전체 Workspace — 지금 이용 가능",
+        "desc": "전체 Workspace — Beta 기간 무료",
         "cta": "무료 시작하기",
         "f1": "프로젝트 무제한",
         "f2": "AI Strategy Consultant",
@@ -1308,7 +1367,8 @@
       "q7": { "question": "GO / NO GO는 어떻게 계산되나요?", "answer": "Decision Engine이 Research, Evidence, VOC, Competitor, Grant를 Score하고 Explainable Drivers와 Missing Data Checklist를 제공합니다." },
       "q8": { "question": "내 데이터가 AI 학습에 사용되나요?", "answer": "프로젝트 데이터는 Workspace에 보관됩니다. Real LLM 연동(Sprint 9.0+) 시 Enterprise Privacy Standard를 따릅니다." },
       "q9": { "question": "누가 사용하나요?", "answer": "Startup, 기업 전략기획팀, Consultant, VC, 공공 Innovation 담당자 등 새 Initiative를 검증하는 모든 팀." },
-      "q10": { "question": "유료 플랜은 언제 출시되나요?", "answer": "Pro와 Enterprise는 Coming Soon입니다. Free Plan으로 지금 전체 Workspace를 이용할 수 있습니다." }
+      "q10": { "question": "유료 플랜은 언제 출시되나요?", "answer": "Pro와 Enterprise는 Coming Soon입니다. Free Plan으로 지금 전체 Workspace를 이용할 수 있습니다." },
+      "q11": { "question": "Private Beta란?", "answer": "Private Beta 기간 동안 LaunchLens의 모든 기능을 무료로 이용할 수 있습니다. Early Adopter 피드백이 Roadmap에 반영됩니다." }
     },
     "footer": {
       "ctaTitle": "다음 Big Bet을 검증할 준비가 되셨나요?",

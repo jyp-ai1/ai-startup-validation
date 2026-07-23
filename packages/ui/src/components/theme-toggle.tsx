@@ -21,9 +21,12 @@ const themes = [
 export function ThemeToggle({
   className,
   onThemeChange,
+  tooltip,
 }: {
   className?: string;
   onThemeChange?: (theme: string) => void;
+  /** Native hover tooltip (icon-only mode). */
+  tooltip?: string;
 }) {
   const { theme, setTheme } = useTheme();
 
@@ -38,8 +41,9 @@ export function ThemeToggle({
         <Button
           variant="outline"
           size="icon-sm"
-          className={cn(className)}
-          aria-label="Toggle theme"
+          className={cn('relative shrink-0', className)}
+          aria-label={tooltip ?? 'Toggle theme'}
+          title={tooltip}
         >
           <Sun className="size-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
           <Moon className="absolute size-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />

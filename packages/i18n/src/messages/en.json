@@ -22,6 +22,7 @@
     "regenerate": "Regenerate",
     "notProvided": "Not provided yet",
     "language": "Language",
+    "themeToggle": "Dark Mode",
     "saving": "Saving...",
     "saveChanges": "Save Changes",
     "cancelEdit": "Cancel Edit",
@@ -1171,17 +1172,39 @@
       }
     }
   },
+  "onboarding": {
+    "home": "Home",
+    "welcome": {
+      "eyebrow": "Demo workspace",
+      "title": "Welcome to LaunchLens",
+      "subtitle": "This is a live demo workspace.",
+      "desc": "Experience AI strategy consulting in 3 minutes — follow the steps below.",
+      "step1": "Create project",
+      "step2": "AI Research",
+      "step3": "Decision",
+      "step4": "Report",
+      "startTour": "Start Tour",
+      "dismiss": "Dismiss"
+    },
+    "demoMode": {
+      "label": "Demo Mode",
+      "tooltip": "You are viewing demo data.",
+      "dialogBody": "You are viewing demo data.\n\nCreate a project to start real analysis with your own strategy workspace."
+    }
+  },
   "landing": {
     "meta": {
       "title": "LaunchLens — AI Strategy Consultant",
       "description": "AI Strategy Consultant for market research, competitive analysis, business validation, and executive reports. Evidence-based GO / NO GO decisions for startups and strategy teams.",
-      "keywords": "AI Strategy Consultant, AI Startup Validation, Business Strategy, Market Research, Competitive Analysis, Executive Report, GO NO GO"
+      "keywords": "AI Strategy Consultant, AI Startup Validation, Business Strategy, Enterprise Strategy, Market Research, Competitive Analysis, Executive Report, GO NO GO, Private Beta"
     },
     "nav": {
       "brand": "LaunchLens",
       "features": "Features",
       "demo": "Demo",
+      "builtFor": "Built For",
       "pricing": "Pricing",
+      "roadmap": "Roadmap",
       "faq": "FAQ",
       "signIn": "Sign in",
       "startFree": "Start free"
@@ -1260,14 +1283,50 @@
       "consulting": { "title": "Consulting", "desc": "Accelerate research and deliver executive-ready output." },
       "public": { "title": "Public sector", "desc": "Grant fit analysis and policy-aware strategy." }
     },
+    "builtFor": {
+      "title": "Built for",
+      "desc": "From solo founders to enterprise strategy teams.",
+      "startup": "Startup",
+      "enterprise": "Enterprise",
+      "innovation": "Innovation Team",
+      "strategy": "Strategy Team",
+      "pm": "PM",
+      "consultant": "Consultant",
+      "vc": "VC",
+      "government": "Government"
+    },
+    "roadmap": {
+      "title": "LaunchLens Roadmap",
+      "year": "2026",
+      "desc": "Where we are today — and where we are headed.",
+      "beta": { "title": "Private Beta", "desc": "Full workspace, AI Consultant, and Decision Engine — live now." },
+      "aiResearch": { "title": "AI Research", "desc": "Browser agents and deeper market intelligence." },
+      "realAi": { "title": "Real AI", "desc": "Production LLM integration with explainable outputs." },
+      "collaboration": { "title": "Collaboration", "desc": "Team workspaces and shared strategy boards." },
+      "enterprise": { "title": "Enterprise", "desc": "SSO, audit logs, and custom deployment." },
+      "marketplace": { "title": "Marketplace", "desc": "Strategy templates, plugins, and partner integrations." }
+    },
     "pricing": {
       "title": "Simple pricing",
-      "desc": "Start free today. Pro and Enterprise coming soon.",
+      "desc": "Join the Private Beta — all features free during early access.",
+      "betaBadge": "Private Beta",
+      "betaStats": "100+ test projects",
+      "betaFree": "Free during Beta",
+      "betaBenefitsTitle": "Beta Benefits",
+      "b1": "Unlimited projects",
+      "b2": "Unlimited reports",
+      "b3": "AI Consultant",
+      "b4": "Strategy OS",
+      "b5": "Future updates included",
+      "b6": "Early adopter status",
+      "b7": "Priority support",
+      "betaNotice": "All features free during Beta",
+      "betaNoticeSub": "No credit card. No login required to start.",
       "recommended": "Available now",
       "free": {
-        "name": "Free",
+        "name": "Private Beta",
         "price": "$0",
-        "desc": "Full workspace access — available now",
+        "desc": "Full workspace — free during Beta",
         "cta": "Start free",
         "f1": "Unlimited projects",
         "f2": "AI Strategy Consultant",
@@ -1308,7 +1367,8 @@
       "q7": { "question": "How is GO / NO GO calculated?", "answer": "The Decision Engine scores research, evidence, VOC, competitors, and grants — with explainable drivers and missing-data checklist." },
       "q8": { "question": "Is my data used to train AI models?", "answer": "Your project data stays in your workspace. Real LLM integration (Sprint 9.0+) will follow enterprise privacy standards." },
       "q9": { "question": "Who is LaunchLens for?", "answer": "Startups, corporate strategy teams, consultants, VCs, and public-sector innovators validating new initiatives." },
-      "q10": { "question": "When will paid plans launch?", "answer": "Pro and Enterprise plans are coming soon. The Free plan includes the full workspace available today." }
+      "q10": { "question": "When will paid plans launch?", "answer": "Pro and Enterprise plans are coming soon. The Free plan includes the full workspace available today." },
+      "q11": { "question": "What is Private Beta?", "answer": "Private Beta gives you unlimited access to every LaunchLens feature at no cost while we refine the product with early adopters. Your feedback shapes the roadmap." }
     },
     "footer": {
       "ctaTitle": "Ready to validate your next big bet?",

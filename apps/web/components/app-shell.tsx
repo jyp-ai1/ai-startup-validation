@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, Menu, Search, Sparkles, UserRound } from 'lucide-react';
+import { ArrowLeft, Bell, Menu, Search, Sparkles, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -23,6 +23,7 @@ import { cn } from '@repo/ui/lib/utils';
 
 import { TrackedThemeToggle } from '@/components/analytics/tracked-theme-toggle';
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import { DemoModeBadge } from '@/features/onboarding';
 import { ShellBreadcrumb } from '@/components/shell/shell-breadcrumb';
 import { ProjectQuickSwitch } from '@/components/workspace/project-quick-switch';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
@@ -46,7 +47,7 @@ function SidebarBrand() {
   const t = useTranslations();
 
   return (
-    <Link href="/dashboard" className="flex items-center gap-3 px-1 py-2">
+    <Link href="/" className="flex items-center gap-3 px-1 py-2 transition-opacity hover:opacity-80">
       <div className="flex size-10 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
         <Sparkles className="size-4" />
       </div>
@@ -132,7 +133,7 @@ export function AppShell({
       header={
         <AppHeader>
           <div className="flex w-full items-center justify-between gap-6">
-            <div className="flex min-w-0 flex-1 items-center gap-4">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
               <Button
                 variant="ghost"
                 size="icon-sm"
@@ -142,12 +143,24 @@ export function AppShell({
               >
                 <Menu className="size-5" />
               </Button>
+              <Button variant="ghost" size="icon-sm" className="shrink-0 lg:hidden" asChild>
+                <Link href="/" aria-label={t('onboarding.home')}>
+                  <ArrowLeft className="size-4" />
+                </Link>
+              </Button>
+              <Button variant="ghost" size="sm" className="hidden shrink-0 gap-1.5 text-muted-foreground lg:inline-flex" asChild>
+                <Link href="/">
+                  <ArrowLeft className="size-4" />
+                  {t('onboarding.home')}
+                </Link>
+              </Button>
               <div className="hidden min-w-0 lg:block">
                 <ShellBreadcrumb projectTitle={activeProject?.title} projectId={projectId} />
               </div>
               <span className="truncate text-sm font-semibold lg:hidden">{appName}</span>
             </div>
             <div className="flex items-center gap-2">
+              <DemoModeBadge />
               <div
                 className="hidden cursor-pointer items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-3 py-2 md:flex"
                 onClick={() =>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { Check } from 'lucide-react';
+import { Check, Rocket, Star } from 'lucide-react';
 
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
@@ -17,6 +17,8 @@ const PLAN_FEATURES: Record<(typeof PLANS)[number], string[]> = {
   pro: ['f1', 'f2', 'f3', 'f4'],
   enterprise: ['f1', 'f2', 'f3', 'f4'],
 };
+
+const BETA_BENEFITS = ['b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7'] as const;
 
 export function LandingPricing() {
   const t = useTranslations('landing.pricing');
@@ -46,10 +48,17 @@ export function LandingPricing() {
     <section id="pricing" ref={sectionRef} className="py-[120px]">
       <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl">
-            {t('title')}
-          </h2>
+          <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-4 py-1.5 text-xs font-semibold text-zinc-700">
+            <Star className="size-3.5 fill-amber-400 text-amber-400" />
+            {t('betaBadge')}
+          </div>
+          <h2 className="mt-5 text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl">{t('title')}</h2>
           <p className="mt-4 text-[15px] text-zinc-600">{t('desc')}</p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm font-medium text-zinc-700">
+            <span>{t('betaStats')}</span>
+            <span className="text-zinc-300">·</span>
+            <span className="text-emerald-700">{t('betaFree')}</span>
+          </div>
         </div>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">
@@ -107,19 +116,11 @@ export function LandingPricing() {
                       {t('free.cta')}
                     </LandingCtaLink>
                   ) : plan === 'enterprise' ? (
-                    <Button
-                      variant="outline"
-                      className="h-11 w-full rounded-xl border-zinc-200"
-                      disabled
-                    >
+                    <Button variant="outline" className="h-11 w-full rounded-xl border-zinc-200" disabled>
                       {t('enterprise.cta')}
                     </Button>
                   ) : (
-                    <Button
-                      variant="outline"
-                      className="h-11 w-full rounded-xl border-zinc-200"
-                      disabled
-                    >
+                    <Button variant="outline" className="h-11 w-full rounded-xl border-zinc-200" disabled>
                       {t('pro.cta')}
                     </Button>
                   )}
@@ -127,6 +128,24 @@ export function LandingPricing() {
               </article>
             );
           })}
+        </div>
+
+        <div className="mx-auto mt-16 max-w-3xl rounded-[24px] border border-black/[0.06] bg-zinc-50 p-8 md:p-10">
+          <h3 className="text-lg font-semibold text-zinc-900">{t('betaBenefitsTitle')}</h3>
+          <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+            {BETA_BENEFITS.map((key) => (
+              <li key={key} className="flex items-start gap-2 text-sm text-zinc-700">
+                <Check className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+                {t(key)}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-10 flex flex-col items-center rounded-2xl bg-white px-6 py-8 text-center shadow-sm">
+            <Rocket className="size-8 text-zinc-900" />
+            <p className="mt-4 text-xl font-semibold leading-snug text-zinc-900 md:text-2xl">{t('betaNotice')}</p>
+            <p className="mt-2 text-sm text-zinc-600">{t('betaNoticeSub')}</p>
+          </div>
         </div>
       </div>
     </section>
