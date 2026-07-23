@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { getProject } from '@/features/projects/actions/project-actions';
 import { BusinessPlanForm } from '@/features/business-plan';
@@ -15,17 +16,19 @@ type NewBusinessPlanPageProps = {
 export async function generateMetadata({
   params,
 }: NewBusinessPlanPageProps): Promise<Metadata> {
+  const t = await getTranslations();
   const { id } = await params;
   const project = await getProject(id);
 
   return {
     title: project
-      ? `New Business Plan | ${project.title} | LaunchLens`
-      : 'New Business Plan | LaunchLens',
+      ? `${t('pages.newBusinessPlan')} | ${project.title} | ${t('meta.titleSuffix')}`
+      : `${t('pages.newBusinessPlan')} | ${t('meta.titleSuffix')}`,
   };
 }
 
 export default async function NewBusinessPlanPage({ params }: NewBusinessPlanPageProps) {
+  const t = await getTranslations('pages');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -36,7 +39,7 @@ export default async function NewBusinessPlanPage({ params }: NewBusinessPlanPag
   return (
     <>
       <PageHeader
-        title="Create Business Plan"
+        title={t('newBusinessPlan')}
         description={`New plan for ${project.title}`}
       />
       <div className="mt-4">

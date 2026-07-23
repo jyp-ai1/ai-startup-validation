@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { getProject } from '@/features/projects/actions/project-actions';
 import { PRDForm } from '@/features/prd';
@@ -13,17 +14,19 @@ type NewPRDPageProps = {
 };
 
 export async function generateMetadata({ params }: NewPRDPageProps): Promise<Metadata> {
+  const t = await getTranslations();
   const { id } = await params;
   const project = await getProject(id);
 
   return {
     title: project
-      ? `New PRD | ${project.title} | LaunchLens`
-      : 'New PRD | LaunchLens',
+      ? `${t('pages.newPrd')} | ${project.title} | ${t('meta.titleSuffix')}`
+      : `${t('pages.newPrd')} | ${t('meta.titleSuffix')}`,
   };
 }
 
 export default async function NewPRDPage({ params }: NewPRDPageProps) {
+  const t = await getTranslations('pages');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -33,7 +36,10 @@ export default async function NewPRDPage({ params }: NewPRDPageProps) {
 
   return (
     <>
-      <PageHeader title="Create PRD" description={`New PRD for ${project.title}`} />
+      <PageHeader
+        title={t('newPrd')}
+        description={t('newPrdDesc', { project: project.title })}
+      />
       <div className="mt-4">
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`/projects/${id}/prd`}>Back to list</Link>

@@ -1,11 +1,14 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { Button, EmptyState, PageHeader } from '@repo/ui';
 
-export default function ProjectNotFound() {
+export default async function ProjectNotFound() {
+  const t = await getTranslations('pages');
+
   return (
     <>
-      <PageHeader title="Project Not Found" />
+      <PageHeader title={t('projectNotFound')} />
       <div className="mt-8">
         <EmptyState
           title="This project does not exist"

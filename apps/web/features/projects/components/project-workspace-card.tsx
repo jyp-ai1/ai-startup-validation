@@ -11,7 +11,7 @@ import { ProjectTypeBadge } from '@/features/projects/components/project-type-ba
 import { VALIDATION_DECISION_LABELS } from '@/features/validation/utils/score-calculator';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
-import { formatRelativeTime } from '@repo/utils/date';
+import { useLocalizedFormatters } from '@/lib/i18n/use-localized-formatters';
 
 type ProjectWorkspaceCardProps = {
   overview: ProjectOverviewCard;
@@ -19,6 +19,7 @@ type ProjectWorkspaceCardProps = {
 
 export function ProjectWorkspaceCard({ overview }: ProjectWorkspaceCardProps) {
   const t = useTranslations();
+  const { formatRelative } = useLocalizedFormatters();
   const { project, validationScore, researchProgress, evidenceCount, vocCount, competitorCount } =
     overview;
   const score = validationScore?.totalScore ?? null;
@@ -40,7 +41,7 @@ export function ProjectWorkspaceCard({ overview }: ProjectWorkspaceCardProps) {
               <ProjectTypeBadge projectType={project.projectType} />
               <ProjectStatusBadge status={project.status} />
               <span className="text-xs text-muted-foreground">
-                {formatRelativeTime(new Date(project.updatedAt))}
+                {formatRelative(new Date(project.updatedAt))}
               </span>
             </div>
           </div>

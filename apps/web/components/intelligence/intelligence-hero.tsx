@@ -4,14 +4,13 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import type { ProjectDashboardStats } from '@/features/dashboard/types';
-import { getDecisionTone } from '@/features/dashboard/types';
 import {
   getLetterGrade,
   getTopPercent,
 } from '@/features/dashboard/utils/readiness-calculator';
 import { VALIDATION_DECISION_LABELS } from '@/features/validation/utils/score-calculator';
 import { cn } from '@repo/ui/lib/utils';
-import { formatRelativeTime } from '@repo/utils/date';
+import { useLocalizedFormatters } from '@/lib/i18n/use-localized-formatters';
 
 import { CountUp } from './count-up';
 
@@ -21,6 +20,7 @@ type IntelligenceHeroProps = {
 
 export function IntelligenceHero({ stats }: IntelligenceHeroProps) {
   const t = useTranslations();
+  const { formatRelative } = useLocalizedFormatters();
   const { project, validationScore } = stats;
   const score = validationScore?.totalScore ?? null;
   const decision = validationScore?.decision ?? null;
@@ -45,7 +45,7 @@ export function IntelligenceHero({ stats }: IntelligenceHeroProps) {
               </Link>
               <p className="mt-2 text-[13px] text-primary-foreground/65">
                 {t('dashboard.updatedAgo', {
-                  time: formatRelativeTime(new Date(project.updatedAt)),
+                  time: formatRelative(new Date(project.updatedAt)),
                 })}
               </p>
             </div>

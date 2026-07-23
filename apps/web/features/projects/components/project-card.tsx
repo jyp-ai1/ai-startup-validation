@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@repo/ui';
-import { formatRelativeTime } from '@repo/utils/date';
+import { useLocalizedFormatters } from '@/lib/i18n/use-localized-formatters';
 
 import { ProjectStatusBadge } from './project-status-badge';
 import { ProjectTypeBadge } from './project-type-badge';
@@ -24,7 +24,9 @@ type ProjectCardProps = {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const t = useTranslations('projects');
-  const createdLabel = formatRelativeTime(new Date(project.createdAt));
+  const tCommon = useTranslations('common');
+  const { formatRelative } = useLocalizedFormatters();
+  const createdLabel = formatRelative(new Date(project.createdAt));
 
   return (
     <Card className="border-border/80 transition-all hover:border-primary/20 hover:shadow-md">
@@ -57,7 +59,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <Button variant="outline" size="sm" asChild>
           <Link href={`/projects/${project.id}`}>
             <Pencil className="size-4" />
-            View
+            {tCommon('view')}
           </Link>
         </Button>
       </CardContent>

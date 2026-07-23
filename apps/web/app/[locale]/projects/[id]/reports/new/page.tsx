@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { getProject } from '@/features/projects/actions/project-actions';
 import { Button, PageHeader } from '@repo/ui';
@@ -15,17 +16,19 @@ type NewReportPageProps = {
 export async function generateMetadata({
   params,
 }: NewReportPageProps): Promise<Metadata> {
+  const t = await getTranslations();
   const { id } = await params;
   const project = await getProject(id);
 
   return {
     title: project
-      ? `New Report | ${project.title} | LaunchLens`
-      : 'New Report | LaunchLens',
+      ? `${t('pages.newReport')} | ${project.title} | ${t('meta.titleSuffix')}`
+      : `${t('pages.newReport')} | ${t('meta.titleSuffix')}`,
   };
 }
 
 export default async function NewReportPage({ params }: NewReportPageProps) {
+  const t = await getTranslations('pages');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -36,7 +39,7 @@ export default async function NewReportPage({ params }: NewReportPageProps) {
   return (
     <>
       <PageHeader
-        title="Create Validation Report"
+        title={t('newReport')}
         description={`New report for ${project.title}`}
       />
       <div className="mt-4">

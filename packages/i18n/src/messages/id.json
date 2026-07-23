@@ -32,7 +32,34 @@
     "createGrant": "Create Grant",
     "createResearch": "Create Research Plan",
     "createEvidence": "Create Evidence",
-    "createCompetitor": "Create Competitor"
+    "createCompetitor": "Create Competitor",
+    "view": "View",
+    "open": "Open",
+    "searching": "Searching…",
+    "terminology": {
+      "dashboard": "Dashboard",
+      "projects": "Projects",
+      "strategyAnalysis": "Strategy Analysis",
+      "startupValidation": "Startup Validation",
+      "marketResearch": "Market Research",
+      "evidence": "Evidence",
+      "voc": "Customer Interview (VOC)",
+      "competitorAnalysis": "Competitor Analysis",
+      "governmentGrants": "Government Grants",
+      "validationReport": "Validation Report",
+      "strategyReport": "Strategy Report",
+      "aiConsultant": "AI Consultant",
+      "decision": "Decision",
+      "investmentReadiness": "Investment Readiness",
+      "confidence": "Confidence",
+      "recommendedActions": "Recommended Actions"
+    },
+    "relativeTime": {
+      "justNow": "just now",
+      "minutesAgo": "{count} minutes ago",
+      "hoursAgo": "{count} hours ago",
+      "daysAgo": "{count} days ago"
+    }
   },
   "shell": {
     "workspace": "Ruang kerja",
@@ -181,7 +208,8 @@
   },
   "settings": {
     "emptyTitle": "Pengaturan ruang kerja",
-    "emptyDescription": "Konfigurasi ruang kerja lokal. Autentikasi segera hadir."
+    "emptyDescription": "Konfigurasi ruang kerja lokal. Autentikasi segera hadir.",
+    "localizationTestLink": "Localization test page"
   },
   "projects": {
     "title": "Projects",
@@ -1121,6 +1149,13 @@
       "DIGITAL_TRANSFORMATION": "DX",
       "MARKET_EXPANSION": "EXPANSION",
       "CUSTOM": "CUSTOM"
+    },
+    "projectStatus": {
+      "DRAFT": "Draft",
+      "RESEARCHING": "Researching",
+      "ANALYZING": "Analyzing",
+      "COMPLETED": "Completed",
+      "ARCHIVED": "Archived"
     }
   },
   "strategy": {
@@ -1136,5 +1171,33 @@
       "emptyTitle": "Coming in Sprint 6.3",
       "emptyDescription": "TAM/SAM/SOM, industry trends, and competitive benchmarks will be available here."
     }
+  },
+  "dev": {
+    "localizationTitle": "Localization Test",
+    "localizationDesc": "{missing} of {total} sample keys need attention",
+    "switchHint": "Switch language — page refreshes immediately via router.refresh()",
+    "table": {
+      "key": "Key",
+      "status": "Status",
+      "ok": "OK",
+      "missing": "Check"
+    }
+  },
+  "pages": {
+    "newVoc": "New VOC",
+    "newEvidence": "New Evidence",
+    "newCompetitor": "New Competitor",
+    "newGrant": "New Grant Program",
+    "newResearch": "New Research Plan",
+    "newValidation": "Create Validation Score",
+    "newReport": "Create Decision Report",
+    "newBusinessPlan": "Create Strategy Report",
+    "newPrd": "Create PRD",
+    "newDevSpec": "Create Development Spec",
+    "validationSummary": "Validation Summary",
+    "grantDashboard": "Grant Dashboard",
+    "projectNotFound": "Project Not Found",
+    "newVocDesc": "New customer feedback entry",
+    "newPrdDesc": "New PRD for {project}"
   }
 }

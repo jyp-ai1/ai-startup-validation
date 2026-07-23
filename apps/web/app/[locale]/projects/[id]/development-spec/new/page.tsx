@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { getProject } from '@/features/projects/actions/project-actions';
 import { getPRDList } from '@/features/prd';
@@ -16,19 +17,21 @@ type NewDevelopmentSpecPageProps = {
 export async function generateMetadata({
   params,
 }: NewDevelopmentSpecPageProps): Promise<Metadata> {
+  const t = await getTranslations();
   const { id } = await params;
   const project = await getProject(id);
 
   return {
     title: project
-      ? `New Development Spec | ${project.title} | LaunchLens`
-      : 'New Development Spec | LaunchLens',
+      ? `${t('pages.newDevSpec')} | ${project.title} | ${t('meta.titleSuffix')}`
+      : `${t('pages.newDevSpec')} | ${t('meta.titleSuffix')}`,
   };
 }
 
 export default async function NewDevelopmentSpecPage({
   params,
 }: NewDevelopmentSpecPageProps) {
+  const t = await getTranslations('pages');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -44,7 +47,7 @@ export default async function NewDevelopmentSpecPage({
   return (
     <>
       <PageHeader
-        title="Create Development Spec"
+        title={t('newDevSpec')}
         description={`New engineering spec for ${project.title}`}
       />
       <div className="mt-4">

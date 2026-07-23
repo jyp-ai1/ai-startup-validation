@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import type { StartupProject, ValidationScore } from '@repo/types/validation';
 import {
@@ -37,13 +38,14 @@ function buildInsights(score: ValidationScore) {
   };
 }
 
-export function ValidationSummary({ project, score }: ValidationSummaryProps) {
+export async function ValidationSummary({ project, score }: ValidationSummaryProps) {
+  const t = await getTranslations('pages');
   const basePath = `/projects/${project.id}/validation`;
 
   if (!score) {
     return (
       <>
-        <PageHeader title="Validation Summary" description={project.title} />
+        <PageHeader title={t('validationSummary')} description={project.title} />
         <div className="mt-8">
           <EmptyState
             title="No validation data"
@@ -64,7 +66,7 @@ export function ValidationSummary({ project, score }: ValidationSummaryProps) {
   return (
     <>
       <PageHeader
-        title="Validation Report Summary"
+        title={t('validationSummary')}
         description={project.title}
       />
       <div className="mt-4 flex flex-wrap items-center gap-3">

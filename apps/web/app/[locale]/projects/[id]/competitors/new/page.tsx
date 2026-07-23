@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { Button, PageHeader } from '@repo/ui';
 
@@ -16,17 +17,19 @@ type NewCompetitorPageProps = {
 export async function generateMetadata({
   params,
 }: NewCompetitorPageProps): Promise<Metadata> {
+  const t = await getTranslations();
   const { id } = await params;
   const project = await getProject(id);
 
   return {
     title: project
-      ? `New Competitor | ${project.title} | LaunchLens`
-      : 'New Competitor | LaunchLens',
+      ? `${t('pages.newCompetitor')} | ${project.title} | ${t('meta.titleSuffix')}`
+      : `${t('pages.newCompetitor')} | ${t('meta.titleSuffix')}`,
   };
 }
 
 export default async function NewCompetitorPage({ params }: NewCompetitorPageProps) {
+  const t = await getTranslations('pages');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -36,7 +39,7 @@ export default async function NewCompetitorPage({ params }: NewCompetitorPagePro
 
   return (
     <>
-      <PageHeader title="New Competitor" description={project.title} />
+      <PageHeader title={t('newCompetitor')} description={project.title} />
       <div className="mt-4">
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`/projects/${id}/competitors`}>Back to competitors</Link>

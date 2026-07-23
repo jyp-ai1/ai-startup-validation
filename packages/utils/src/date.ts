@@ -21,20 +21,48 @@ export function addDays(date: Date, days: number): Date {
   return result;
 }
 
-/** Get relative time label (e.g. "2 hours ago"). */
-export function formatRelativeTime(date: Date, now: Date = new Date()): string {
+/** Locale-aware calendar date (e.g. Jul 23, 2026 / 2026년 7월 23일). */
+export function formatLocaleDate(
+  date: Date,
+  locale = 'ko',
+  options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  },
+): string {
+  return new Intl.DateTimeFormat(locale, options).format(date);
+}
+
+/** Locale-aware number formatting. */
+export function formatLocaleNumber(
+  value: number,
+  locale = 'ko',
+  options?: Intl.NumberFormatOptions,
+): string {
+  return new Intl.NumberFormat(locale, options).format(value);
+}
+
+/** Relative time using Intl (locale-aware). */
+export function formatRelativeTime(
+  date: Date,
+  now: Date = new Date(),
+  locale = 'ko',
+): string {
   const diffMs = now.getTime() - date.getTime();
   const diffSec = Math.floor(diffMs / 1000);
   const diffMin = Math.floor(diffSec / 60);
   const diffHour = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHour / 24);
 
-  if (diffSec < 60) return 'just now';
-  if (diffMin < 60) return `${diffMin} minute${diffMin === 1 ? '' : 's'} ago`;
-  if (diffHour < 24) return `${diffHour} hour${diffHour === 1 ? '' : 's'} ago`;
-  if (diffDay < 30) return `${diffDay} day${diffDay === 1 ? '' : 's'} ago`;
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
 
-  return date.toLocaleDateString();
+  if (Math.abs(diffSec) < 60) return rtf.format(0, 'second');
+  if (Math.abs(diffMin) < 60) return rtf.format(-diffMin, 'minute');
+  if (Math.abs(diffHour) < 24) return rtf.format(-diffHour, 'hour');
+  if (Math.abs(diffDay) < 30) return rtf.format(-diffDay, 'day');
+
+  return formatLocaleDate(date, locale);
 }
 
 /** Start of day in local timezone. */

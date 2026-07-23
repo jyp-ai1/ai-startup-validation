@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import type { GrantDashboard, StartupProject } from '@repo/types/validation';
 import {
@@ -42,13 +43,14 @@ function FitScoreProgress({ score }: { score: number | null }) {
   );
 }
 
-export function GrantDashboardView({ project, dashboard }: GrantDashboardViewProps) {
+export async function GrantDashboardView({ project, dashboard }: GrantDashboardViewProps) {
+  const t = await getTranslations('pages');
   const basePath = `/projects/${project.id}/grants`;
 
   if (dashboard.totalCount === 0) {
     return (
       <>
-        <PageHeader title="Grant Dashboard" description={project.title} />
+        <PageHeader title={t('grantDashboard')} description={project.title} />
         <div className="mt-4">
           <Button variant="link" className="h-auto p-0" asChild>
             <Link href={basePath}>Back to grants</Link>
@@ -72,7 +74,7 @@ export function GrantDashboardView({ project, dashboard }: GrantDashboardViewPro
   return (
     <>
       <PageHeader
-        title="Grant Dashboard"
+        title={t('grantDashboard')}
         description={`${dashboard.totalCount} programs · ${project.title}`}
       />
       <div className="mt-4 flex flex-wrap gap-3">

@@ -1,14 +1,10 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
 import type { StartupProjectStatus } from '@repo/types/validation';
 import { Badge } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
-
-const STATUS_LABELS: Record<StartupProjectStatus, string> = {
-  DRAFT: 'Draft',
-  RESEARCHING: 'Researching',
-  ANALYZING: 'Analyzing',
-  COMPLETED: 'Completed',
-  ARCHIVED: 'Archived',
-};
 
 const STATUS_VARIANTS: Record<
   StartupProjectStatus,
@@ -27,11 +23,11 @@ type ProjectStatusBadgeProps = {
 };
 
 export function ProjectStatusBadge({ status, className }: ProjectStatusBadgeProps) {
+  const t = useTranslations('enums.projectStatus');
+
   return (
     <Badge variant={STATUS_VARIANTS[status]} className={cn(className)}>
-      {STATUS_LABELS[status]}
+      {t(status)}
     </Badge>
   );
 }
-
-export { STATUS_LABELS };

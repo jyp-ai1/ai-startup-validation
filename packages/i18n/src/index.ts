@@ -1,4 +1,5 @@
 import type { AppLocale } from './config';
+import { mergeMessages } from './merge-messages';
 
 export {
   DEFAULT_LOCALE,
@@ -8,9 +9,11 @@ export {
   type AppLocale,
 } from './config';
 
+export { mergeMessages, humanizeMessageKey } from './merge-messages';
+
 export type Messages = typeof import('./messages/ko.json');
 
-export async function loadMessages(locale: AppLocale): Promise<Messages> {
+async function importLocaleFile(locale: AppLocale): Promise<Partial<Messages>> {
   switch (locale) {
     case 'ko':
       return (await import('./messages/ko.json')).default;
@@ -37,4 +40,19 @@ export async function loadMessages(locale: AppLocale): Promise<Messages> {
     default:
       return (await import('./messages/ko.json')).default;
   }
+}
+
+/**
+ * Load messages with fallback chain: locale → English → (runtime humanize).
+ * Korean and English are fully maintained; other locales merge over English.
+ */
+export async function loadMessages(locale: AppLocale): Promise<Messages> {
+  const en = (await import('./messages/en.json')).default;
+
+  if (locale === 'en') {
+    return en;
+  }
+
+  const localeMessages = await importLocaleFile(locale);
+  return mergeMessages(en, localeMessages) as Messages;
 }

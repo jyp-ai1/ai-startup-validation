@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { Button, PageHeader } from '@repo/ui';
 
@@ -17,17 +18,19 @@ type NewEvidencePageProps = {
 export async function generateMetadata({
   params,
 }: NewEvidencePageProps): Promise<Metadata> {
+  const t = await getTranslations();
   const { id } = await params;
   const project = await getProject(id);
 
   return {
     title: project
-      ? `New Evidence | ${project.title} | LaunchLens`
-      : 'New Evidence | LaunchLens',
+      ? `${t('pages.newEvidence')} | ${project.title} | ${t('meta.titleSuffix')}`
+      : `${t('pages.newEvidence')} | ${t('meta.titleSuffix')}`,
   };
 }
 
 export default async function NewEvidencePage({ params }: NewEvidencePageProps) {
+  const t = await getTranslations('pages');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -39,7 +42,7 @@ export default async function NewEvidencePage({ params }: NewEvidencePageProps) 
 
   return (
     <>
-      <PageHeader title="New Evidence" description={project.title} />
+      <PageHeader title={t('newEvidence')} description={project.title} />
       <div className="mt-4">
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`/projects/${id}/evidence`}>Back to evidence</Link>

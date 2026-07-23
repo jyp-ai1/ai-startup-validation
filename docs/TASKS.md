@@ -8,9 +8,25 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint 6.0 — Product Pivot (AI Strategy Consultant) 🔄
+## Sprint 5.9 — Localization Complete (Hotfix) ✅
 
-**Status:** In progress  
+**Status:** Complete  
+**Goal:** Fix i18n bug — translation keys must never appear in UI. Korean + English fully supported with en fallback chain.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| Merge en fallback in loadMessages | ✅ Done | AI |
+| Complete ko.json (867 keys) | ✅ Done | AI |
+| getMessageFallback + humanize | ✅ Done | AI |
+| PM terminology glossary (common.terminology) | ✅ Done | AI |
+| Locale date/number formatters | ✅ Done | AI |
+| Language test page (/dev/localization) | ✅ Done | AI |
+| Hardcoded PageHeader fixes | ✅ Done | AI |
+| Project status badge i18n | ✅ Done | AI |
+
+---
+
+## Sprint 6.0 — Product Pivot (AI Strategy Consultant) ✅
 **Goal:** Reposition LaunchLens from startup-only validation to **AI Strategy Consultant** platform. Minimal DB change; reuse existing engines.
 
 | Task | Status | Owner |

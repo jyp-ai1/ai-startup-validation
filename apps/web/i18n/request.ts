@@ -1,6 +1,12 @@
 import { getRequestConfig } from 'next-intl/server';
 
-import { loadMessages, isAppLocale, DEFAULT_LOCALE, type AppLocale } from '@repo/i18n';
+import {
+  humanizeMessageKey,
+  loadMessages,
+  isAppLocale,
+  DEFAULT_LOCALE,
+  type AppLocale,
+} from '@repo/i18n';
 import { cookies } from 'next/headers';
 
 export default getRequestConfig(async ({ requestLocale }) => {
@@ -20,5 +26,12 @@ export default getRequestConfig(async ({ requestLocale }) => {
   return {
     locale: resolvedLocale,
     messages: await loadMessages(resolvedLocale),
+    getMessageFallback({ namespace, key, error }) {
+      const fullKey = namespace ? `${namespace}.${key}` : key;
+      if (error.code === 'MISSING_MESSAGE') {
+        return humanizeMessageKey(fullKey);
+      }
+      return fullKey;
+    },
   };
 });

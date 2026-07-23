@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { Button, PageHeader } from '@repo/ui';
 
@@ -16,17 +17,19 @@ type NewVOCPageProps = {
 export async function generateMetadata({
   params,
 }: NewVOCPageProps): Promise<Metadata> {
+  const t = await getTranslations();
   const { id } = await params;
   const project = await getProject(id);
 
   return {
     title: project
-      ? `New VOC | ${project.title} | LaunchLens`
-      : 'New VOC | LaunchLens',
+      ? `${t('pages.newVoc')} | ${project.title} | ${t('meta.titleSuffix')}`
+      : `${t('pages.newVoc')} | ${t('meta.titleSuffix')}`,
   };
 }
 
 export default async function NewVOCPage({ params }: NewVOCPageProps) {
+  const t = await getTranslations('pages');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -36,7 +39,7 @@ export default async function NewVOCPage({ params }: NewVOCPageProps) {
 
   return (
     <>
-      <PageHeader title="New VOC" description={project.title} />
+      <PageHeader title={t('newVoc')} description={project.title} />
       <div className="mt-4">
         <Button variant="link" className="h-auto p-0" asChild>
           <Link href={`/projects/${id}/voc`}>Back to VOC list</Link>

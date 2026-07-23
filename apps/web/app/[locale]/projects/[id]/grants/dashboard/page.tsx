@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { getProject } from '@/features/projects/actions/project-actions';
 import { getGrantDashboard, GrantDashboardView } from '@/features/grants';
@@ -13,13 +14,14 @@ type GrantDashboardPageProps = {
 export async function generateMetadata({
   params,
 }: GrantDashboardPageProps): Promise<Metadata> {
+  const t = await getTranslations();
   const { id } = await params;
   const project = await getProject(id);
 
   return {
     title: project
-      ? `Grant Dashboard | ${project.title} | LaunchLens`
-      : 'Grant Dashboard | LaunchLens',
+      ? `${t('pages.grantDashboard')} | ${project.title} | ${t('meta.titleSuffix')}`
+      : `${t('pages.grantDashboard')} | ${t('meta.titleSuffix')}`,
   };
 }
 

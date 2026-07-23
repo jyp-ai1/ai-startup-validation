@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { getProject } from '@/features/projects/actions/project-actions';
 import { Button, PageHeader } from '@repo/ui';
@@ -15,17 +16,19 @@ type NewValidationPageProps = {
 export async function generateMetadata({
   params,
 }: NewValidationPageProps): Promise<Metadata> {
+  const t = await getTranslations();
   const { id } = await params;
   const project = await getProject(id);
 
   return {
     title: project
-      ? `New Validation Score | ${project.title} | LaunchLens`
-      : 'New Validation Score | LaunchLens',
+      ? `${t('pages.newValidation')} | ${project.title} | ${t('meta.titleSuffix')}`
+      : `${t('pages.newValidation')} | ${t('meta.titleSuffix')}`,
   };
 }
 
 export default async function NewValidationPage({ params }: NewValidationPageProps) {
+  const t = await getTranslations('pages');
   const { id } = await params;
   const project = await getProject(id);
 
@@ -36,7 +39,7 @@ export default async function NewValidationPage({ params }: NewValidationPagePro
   return (
     <>
       <PageHeader
-        title="Create Validation Score"
+        title={t('newValidation')}
         description={`Evaluate ${project.title} across six dimensions`}
       />
       <div className="mt-4">
