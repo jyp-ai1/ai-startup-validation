@@ -9,6 +9,7 @@ import type {
   SupportingEvidenceRef,
 } from './decision-types';
 import type { FrameworkAnalysisResult } from '@/features/framework/services/framework-types';
+import type { MarketAnalysisResult } from '@/features/market-intelligence/services/market-types';
 import {
   calculateDataCompleteness,
   calculateScoreBreakdown,
@@ -166,6 +167,17 @@ export function buildDecisionDrivers(
         labelKey: FRAMEWORK_DRIVER_LABELS[fw.id] ?? 'frameworkSwot',
         impact: fw.decisionImpact,
         direction: fw.decisionImpact >= 0 ? 'positive' : 'negative',
+      });
+    }
+  }
+
+  if (input.marketAnalysis) {
+    for (const driver of input.marketAnalysis.result.decisionDrivers) {
+      drivers.push({
+        id: `market-${driver.id}`,
+        labelKey: driver.labelKey,
+        impact: driver.impact,
+        direction: driver.direction,
       });
     }
   }
@@ -376,6 +388,7 @@ export function buildDecisionLogic(
   verdict: DecisionVerdict,
   completeness: number,
   frameworkAnalysis?: FrameworkAnalysisResult | null,
+  marketAnalysis?: MarketAnalysisResult | null,
 ): DecisionExplanation['decisionLogic'] {
   const steps: DecisionExplanation['decisionLogic'] = [
     {
@@ -408,6 +421,19 @@ export function buildDecisionLogic(
       params: { verdict },
     },
   ];
+
+  if (marketAnalysis) {
+    steps.splice(1, 0, {
+      id: 'step-market',
+      labelKey: 'stepMarket',
+      detailKey: 'stepMarketDetail',
+      params: {
+        score: marketAnalysis.result.marketScore,
+        impact: marketAnalysis.result.aggregateImpact,
+        growth: marketAnalysis.result.growthRate,
+      },
+    });
+  }
 
   if (frameworkAnalysis && frameworkAnalysis.frameworks.length > 0) {
     steps.splice(2, 0, {
@@ -445,6 +471,7 @@ export function buildDecisionExplanation(
       verdict,
       completeness,
       input.frameworkAnalysis,
+      input.marketAnalysis,
     ),
     confidenceFactors: getConfidenceFactors(input),
   };

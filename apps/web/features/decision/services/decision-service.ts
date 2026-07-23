@@ -5,6 +5,7 @@ import { listCompetitors } from '@/features/competitors/services/competitor-serv
 import { listEvidence } from '@/features/evidence/services/evidence-service';
 import { listGrants } from '@/features/grants/services/grant-service';
 import { runFrameworkAnalysisForDecision } from '@/features/framework/services/framework-service';
+import { runMarketAnalysisForDecision } from '@/features/market-intelligence/services/market-service';
 import { listResearchPlans } from '@/features/research/services/research-service';
 import { listVOCEntries } from '@/features/voc/services/voc-service';
 
@@ -55,13 +56,16 @@ export async function generateProjectDecision(
     avgFitScore,
   );
 
+  const marketAnalysis = await runMarketAnalysisForDecision(input, stats.project);
+
   const frameworkAnalysis = await runFrameworkAnalysisForDecision(
     input,
     stats.project.industry,
     stats.project.status,
+    marketAnalysis,
   );
 
-  return decisionService.generateDecision({ ...input, frameworkAnalysis });
+  return decisionService.generateDecision({ ...input, marketAnalysis, frameworkAnalysis });
 }
 
 export type { DecisionResult } from './decision-types';

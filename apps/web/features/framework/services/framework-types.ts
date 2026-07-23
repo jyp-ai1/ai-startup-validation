@@ -69,6 +69,7 @@ export type FrameworkAnalysisInput = {
   voc: { total: number };
   competitors: { total: number };
   grants: { total: number; avgFitScore: number | null };
+  marketIntel?: import('@/features/market-intelligence/services/market-types').MarketAnalysisResult | null;
 };
 
 export type FrameworkAnalysisResult = {

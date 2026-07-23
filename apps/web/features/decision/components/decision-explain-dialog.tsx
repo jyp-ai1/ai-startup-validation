@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import type { DecisionLogicStep } from '@/features/decision';
 import type { FrameworkResult } from '@/features/framework';
+import type { MarketAnalysisResult } from '@/features/market-intelligence';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
 import {
@@ -21,6 +22,7 @@ import { cn } from '@repo/ui/lib/utils';
 type DecisionExplainDialogProps = {
   steps: DecisionLogicStep[];
   frameworks?: FrameworkResult[];
+  marketAnalysis?: MarketAnalysisResult | null;
   projectId: string;
   verdict: string;
 };
@@ -28,11 +30,13 @@ type DecisionExplainDialogProps = {
 export function DecisionExplainDialog({
   steps,
   frameworks = [],
+  marketAnalysis,
   projectId,
   verdict,
 }: DecisionExplainDialogProps) {
   const t = useTranslations('decision.explainMode');
   const tf = useTranslations('framework');
+  const tm = useTranslations('marketIntel');
   const { trackEvent } = useAnalytics();
   const [open, setOpen] = useState(false);
 
@@ -74,6 +78,44 @@ export function DecisionExplainDialog({
             </li>
           ))}
         </ol>
+
+        {marketAnalysis ? (
+          <div className="mt-6 border-t border-border/50 pt-6">
+            <h3 className="font-semibold">{t('marketSectionTitle')}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">{t('marketSectionDesc')}</p>
+            <div className="mt-4 space-y-2 rounded-lg border border-border/50 bg-muted/20 px-4 py-3 text-sm">
+              <div className="flex justify-between">
+                <span>{tm('cards.marketSize')}</span>
+                <span className="font-medium tabular-nums">
+                  {tm('cards.marketSizeValue', {
+                    tam: marketAnalysis.result.tam,
+                    sam: marketAnalysis.result.sam,
+                  })}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>{tm('cards.growth')}</span>
+                <span className="font-medium tabular-nums">
+                  {tm('cards.growthValue', { rate: marketAnalysis.result.growthRate })}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>{tm('marketScore')}</span>
+                <span
+                  className={cn(
+                    'font-bold tabular-nums',
+                    marketAnalysis.result.aggregateImpact >= 0
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-rose-600 dark:text-rose-400',
+                  )}
+                >
+                  {marketAnalysis.result.aggregateImpact > 0 ? '+' : ''}
+                  {marketAnalysis.result.aggregateImpact}
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         {frameworks.length > 0 ? (
           <div className="mt-6 border-t border-border/50 pt-6">

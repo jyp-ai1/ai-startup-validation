@@ -74,6 +74,10 @@ export function calculateDecisionScores(input: DecisionInput): DecisionScores {
     decisionScore = clamp(decisionScore + input.frameworkAnalysis.aggregateImpact);
   }
 
+  if (input.marketAnalysis) {
+    decisionScore = clamp(decisionScore + input.marketAnalysis.result.aggregateImpact);
+  }
+
   const confidence = calculateEnhancedConfidence(input, completeness);
 
   const investmentReadiness = clamp(

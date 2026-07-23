@@ -7,6 +7,7 @@ export function decisionInputToFrameworkInput(
   input: DecisionInput,
   industry: string | null,
   stage: FrameworkAnalysisInput['stage'],
+  marketIntel?: FrameworkAnalysisInput['marketIntel'],
 ): FrameworkAnalysisInput {
   return {
     projectId: input.projectId,
@@ -20,6 +21,7 @@ export function decisionInputToFrameworkInput(
     voc: input.voc,
     competitors: input.competitors,
     grants: input.grants,
+    marketIntel: marketIntel ?? null,
   };
 }
 
@@ -33,6 +35,9 @@ export async function runFrameworkAnalysisForDecision(
   decisionInput: DecisionInput,
   industry: string | null,
   stage: FrameworkAnalysisInput['stage'],
+  marketIntel?: FrameworkAnalysisInput['marketIntel'],
 ): Promise<FrameworkAnalysisResult> {
-  return runFrameworkAnalysis(decisionInputToFrameworkInput(decisionInput, industry, stage));
+  return runFrameworkAnalysis(
+    decisionInputToFrameworkInput(decisionInput, industry, stage, marketIntel),
+  );
 }

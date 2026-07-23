@@ -1627,7 +1627,12 @@
       "frameworkValueChain": "가치사슬 분석",
       "frameworkBmc": "Business Model Canvas 분석",
       "frameworkLeanCanvas": "Lean Canvas 분석",
-      "frameworkJtbd": "Jobs-to-be-Done 분석"
+      "frameworkJtbd": "Jobs-to-be-Done 분석",
+      "highCompetition": "높은 경쟁 강도",
+      "regulation": "규제 역풍",
+      "regulationTailwind": "유리한 규제 환경",
+      "customerDemand": "강한 고객 수요 신호",
+      "demandGap": "미검증 고객 수요"
     },
     "explain": {
       "title": "점수 산출 근거",
@@ -1673,7 +1678,11 @@
       "stepFramework": "전략 프레임워크 분석",
       "stepFrameworkDetail": "{count}개 프레임워크 적용, 의사결정 영향도 합계 {impact} ({names}).",
       "frameworkSectionTitle": "프레임워크 분석 근거",
-      "frameworkSectionDesc": "AI가 독립 보고서가 아닌 의사결정 근거로 적용한 전략 프레임워크입니다."
+      "frameworkSectionDesc": "AI가 독립 보고서가 아닌 의사결정 근거로 적용한 전략 프레임워크입니다.",
+      "stepMarket": "시장 인텔리전스 분석",
+      "stepMarketDetail": "시장 점수 {score}, CAGR {growth}% — 의사결정 영향 {impact}점.",
+      "marketSectionTitle": "시장 인텔리전스 근거",
+      "marketSectionDesc": "전략 프레임워크와 Decision Score에 반영된 AI 시장 분석입니다."
     },
     "supporting": {
       "title": "Supporting Evidence",
@@ -1697,6 +1706,94 @@
         "grant": "정부지원",
         "validation": "Validation"
       }
+    }
+  },
+  "marketIntel": {
+    "eyebrow": "AI Market Intelligence",
+    "snapshotTitle": "Market Snapshot",
+    "snapshotDesc": "AI가 수행한 시장 분석 — 수동 리서치 입력이 아닙니다.",
+    "confidence": "신뢰도 {value}%",
+    "marketScore": "시장 점수 {score}",
+    "expand": "상세 보기",
+    "collapse": "접기",
+    "opportunitiesTitle": "시장 기회",
+    "threatsTitle": "시장 위협",
+    "cards": {
+      "marketSize": "시장 규모",
+      "marketSizeValue": "TAM ${tam}M · SAM ${sam}M",
+      "somSub": "SOM ${som}M 접근 가능",
+      "growth": "성장률",
+      "growthValue": "CAGR {rate}%",
+      "competition": "경쟁",
+      "demand": "수요",
+      "technology": "기술"
+    },
+    "maturity": {
+      "emerging": "신흥 시장",
+      "growth": "성장 단계",
+      "mature": "성숙 시장",
+      "declining": "쇠퇴 시장"
+    },
+    "competition": {
+      "low": "낮은 강도",
+      "moderate": "보통",
+      "high": "높은 강도",
+      "very_high": "매우 높음"
+    },
+    "demand": {
+      "low": "낮은 수요",
+      "moderate": "보통",
+      "high": "강한 수요",
+      "very_high": "매우 강함"
+    },
+    "trend": {
+      "rising": "상승",
+      "stable": "안정",
+      "declining": "하락"
+    },
+    "emergingTech": {
+      "aiAgents": "AI 에이전트·자동화",
+      "digitalPlatforms": "디지털 플랫폼 생태계"
+    },
+    "players": {
+      "incumbent": "시장 기존 강자",
+      "challenger": "성장형 도전자",
+      "newcomer": "신규 진입자",
+      "leader": "시장 리더"
+    },
+    "investors": {
+      "vc": "벤처캐피털",
+      "corporate": "CVC",
+      "seriesA": "Series A 중심",
+      "strategic": "전략적 투자자"
+    },
+    "opportunities": {
+      "growth": {
+        "label": "시장 성장",
+        "text": "접근 가능 시장이 CAGR 기준 유리한 궤적로 확장 중입니다."
+      },
+      "segment": {
+        "label": "미충족 세그먼트",
+        "text": "기존 강자 대비 니치 세그먼트에 미충족 수요가 있습니다."
+      }
+    },
+    "threats": {
+      "competition": {
+        "label": "경쟁 압력",
+        "text": "차별화 없이는 기존 플레이어가 마진을 압박할 수 있습니다."
+      },
+      "regulation": {
+        "label": "규제 불확실성",
+        "text": "정책 변화가 진입 시점·컴플라이언스 비용에 영향을 줄 수 있습니다."
+      }
+    },
+    "sources": {
+      "research": "리서치 데이터",
+      "researchDetail": "프로젝트 리서치·시장 규模 입력",
+      "industry": "산업 신호",
+      "industryDetail": "산업 분류·거시 트렌드 지표",
+      "competitor": "경쟁사 인텔리전스",
+      "competitorDetail": "매핑된 경쟁 구도·포지셔닝 데이터"
     }
   },
   "framework": {

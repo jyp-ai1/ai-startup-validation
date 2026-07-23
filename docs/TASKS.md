@@ -65,7 +65,29 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 10 | SEO (OG, robots, sitemap, canonical) | ✅ Done | AI |
 | — | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.3 — Market Intelligence Engine
+**Next:** Sprint 8.4 — AI Research Agent
+
+---
+
+## Sprint 8.3 — AI Market Intelligence Engine ✅
+
+**Status:** Complete  
+**Goal:** AI-performed market analysis as Decision input module — TAM/SAM/SOM, growth, competition, demand, trends; no standalone menu.
+
+| Task | Status | Owner |
+|------|--------|-------|
+| `features/market-intelligence/` service layer (engine, selector, provider) | ✅ Done | AI |
+| Mock provider — TAM, SAM, SOM, CAGR, maturity, trends, players, opportunities/threats | ✅ Done | AI |
+| Decision integration (market score, drivers, explain mode) | ✅ Done | AI |
+| Framework integration (PESTEL, Porter, SWOT use market intel) | ✅ Done | AI |
+| Dashboard Market Snapshot below Decision Summary | ✅ Done | AI |
+| Analytics: market_analysis_execute, market_snapshot_view, market_detail_view | ✅ Done | AI |
+| i18n (en/ko + sync 11 locales) | ✅ Done | AI |
+| Build + deploy + verify | ✅ Done | AI |
+
+**Architecture:** `MarketEngine` → `MarketSelector` → `MarketProvider` → `MarketResult` — runs before Framework and Decision scoring.
+
+**Next:** Sprint 8.4 — AI Research Agent
 
 ---
 
@@ -86,7 +108,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Architecture:** `FrameworkEngine` → `FrameworkSelector` → `FrameworkProvider` → `FrameworkResult[]` — invoked from `generateProjectDecision()` before Decision scoring.
 
-**Next:** Sprint 8.3 — Market Intelligence Engine
+**Next:** Sprint 8.3 — Market Intelligence Engine ✅
 
 ---
 

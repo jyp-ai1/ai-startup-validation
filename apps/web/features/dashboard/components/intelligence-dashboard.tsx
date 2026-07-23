@@ -19,6 +19,7 @@ import {
 } from '@/components/intelligence';
 import type { DecisionResult } from '@/features/decision';
 import { DecisionSummaryPanel } from '@/features/decision/components/decision-summary-panel';
+import { MarketSnapshotPanel } from '@/features/market-intelligence/components/market-snapshot-panel';
 import type { WorkspaceContext } from '@/features/dashboard/types';
 import { buildReadinessMetrics } from '@/features/dashboard/utils/readiness-calculator';
 import { buildDashboardInsights } from '@/lib/intelligence/build-dashboard-insights';
@@ -87,6 +88,15 @@ export function IntelligenceDashboard({
           projectId={activeProjectId}
           projectTitle={activeProjectTitle}
           detailHref={`/projects/${activeProjectId}/decision`}
+        />
+      ) : null}
+
+      {decision?.marketAnalysis && activeProjectId ? (
+        <MarketSnapshotPanel
+          analysis={decision.marketAnalysis}
+          projectId={activeProjectId}
+          projectType={decision.projectType}
+          variant="dashboard"
         />
       ) : null}
 

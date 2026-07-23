@@ -1627,7 +1627,12 @@
       "frameworkValueChain": "Value chain analysis",
       "frameworkBmc": "Business Model Canvas analysis",
       "frameworkLeanCanvas": "Lean Canvas analysis",
-      "frameworkJtbd": "Jobs-to-be-Done analysis"
+      "frameworkJtbd": "Jobs-to-be-Done analysis",
+      "highCompetition": "High competitive intensity",
+      "regulation": "Regulatory headwinds",
+      "regulationTailwind": "Favorable regulatory environment",
+      "customerDemand": "Strong customer demand signals",
+      "demandGap": "Unvalidated customer demand"
     },
     "explain": {
       "title": "Score Breakdown",
@@ -1673,7 +1678,11 @@
       "stepFramework": "Strategy framework analysis",
       "stepFrameworkDetail": "{count} frameworks applied with aggregate decision impact of {impact} ({names}).",
       "frameworkSectionTitle": "Framework Analysis Evidence",
-      "frameworkSectionDesc": "AI applied these strategy frameworks as analytical evidence — not as standalone reports."
+      "frameworkSectionDesc": "AI applied these strategy frameworks as analytical evidence — not as standalone reports.",
+      "stepMarket": "Market intelligence analysis",
+      "stepMarketDetail": "Market score {score} with CAGR {growth}% — decision impact {impact} pts.",
+      "marketSectionTitle": "Market Intelligence Evidence",
+      "marketSectionDesc": "AI market analysis feeding strategy frameworks and decision scoring."
     },
     "supporting": {
       "title": "Supporting Evidence",
@@ -1697,6 +1706,95 @@
         "grant": "Government",
         "validation": "Validation"
       }
+    }
+  },
+  "marketIntel": {
+    "eyebrow": "AI Market Intelligence",
+    "snapshotTitle": "Market Snapshot",
+    "snapshotDesc": "AI-performed market analysis — not manual research input.",
+    "confidence": "Confidence {value}%",
+    "marketScore": "Market score {score}",
+    "expand": "View details",
+    "collapse": "Hide details",
+    "opportunitiesTitle": "Market Opportunities",
+    "threatsTitle": "Market Threats",
+    "cards": {
+      "marketSize": "Market Size",
+      "marketSizeValue": "TAM ${tam}M · SAM ${sam}M",
+      "somSub": "SOM ${som}M addressable",
+      "growth": "Growth",
+      "growthValue": "CAGR {rate}%",
+      "competition": "Competition",
+      "demand": "Demand",
+      "technology": "Technology"
+    },
+    "maturity": {
+      "emerging": "Emerging market",
+      "growth": "Growth stage",
+      "mature": "Mature market",
+      "declining": "Declining market"
+    },
+    "competition": {
+      "low": "Low intensity",
+      "moderate": "Moderate",
+      "high": "High intensity",
+      "very_high": "Very high"
+    },
+    "demand": {
+      "low": "Low demand",
+      "moderate": "Moderate",
+      "high": "Strong demand",
+      "very_high": "Very strong"
+    },
+    "trend": {
+      "rising": "Rising",
+      "stable": "Stable",
+      "declining": "Declining"
+    },
+    "emergingTech": {
+      "aiAgents": "AI agents & automation",
+      "digitalPlatforms": "Digital platform ecosystems"
+    },
+    "players": {
+      "incumbent": "Market incumbent",
+      "challenger": "Growth challenger",
+      "newcomer": "Emerging entrant",
+      "leader": "Market leader",
+      "newcomerRole": "New entrant"
+    },
+    "investors": {
+      "vc": "Venture capital",
+      "corporate": "Corporate venture",
+      "seriesA": "Series A focus",
+      "strategic": "Strategic investor"
+    },
+    "opportunities": {
+      "growth": {
+        "label": "Market growth",
+        "text": "Addressable market expanding with favorable CAGR trajectory."
+      },
+      "segment": {
+        "label": "Underserved segment",
+        "text": "Niche segment shows unmet demand relative to incumbent offerings."
+      }
+    },
+    "threats": {
+      "competition": {
+        "label": "Competitive pressure",
+        "text": "Established players may compress margins without differentiation."
+      },
+      "regulation": {
+        "label": "Regulatory uncertainty",
+        "text": "Policy changes may affect market entry timing or compliance cost."
+      }
+    },
+    "sources": {
+      "research": "Research data",
+      "researchDetail": "Project research plans and market sizing inputs",
+      "industry": "Industry signals",
+      "industryDetail": "Industry classification and macro trend indicators",
+      "competitor": "Competitor intelligence",
+      "competitorDetail": "Mapped competitor landscape and positioning data"
     }
   },
   "framework": {

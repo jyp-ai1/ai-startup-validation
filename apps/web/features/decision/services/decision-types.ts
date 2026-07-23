@@ -2,6 +2,7 @@ import type { AppLocale } from '@repo/i18n/config';
 import type { ProjectType, ValidationScore } from '@repo/types/validation';
 
 import type { FrameworkAnalysisResult } from '@/features/framework/services/framework-types';
+import type { MarketAnalysisResult } from '@/features/market-intelligence/services/market-types';
 
 /** Strategic decision verdict — 3-tier model for Decision Center. */
 export type DecisionVerdict = 'GO' | 'HOLD' | 'NO_GO';
@@ -56,6 +57,7 @@ export type DecisionInput = {
     grants: SupportingItemRef[];
   };
   frameworkAnalysis?: FrameworkAnalysisResult;
+  marketAnalysis?: MarketAnalysisResult;
 };
 
 export type DecisionScores = {
@@ -190,6 +192,7 @@ export type DecisionResult = {
   opportunities: OpportunityItem[];
   explanation: DecisionExplanation;
   frameworkAnalysis: FrameworkAnalysisResult | null;
+  marketAnalysis: MarketAnalysisResult | null;
   generatedAt: string;
   providerId: DecisionProviderId;
   projectType: ProjectType;

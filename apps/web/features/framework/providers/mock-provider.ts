@@ -38,14 +38,42 @@ function computeConfidence(input: FrameworkAnalysisInput, score: number): number
 type FrameworkModifier = (base: number, input: FrameworkAnalysisInput) => number;
 
 const FRAMEWORK_MODIFIERS: Record<FrameworkId, FrameworkModifier> = {
-  SWOT: (base, input) =>
-    base +
-    (input.evidence.highConfidence >= 5 ? 8 : -5) +
-    (input.competitors.total >= 3 ? -6 : 4),
-  PESTEL: (base, input) =>
-    base + (input.grants.total > 0 ? 6 : -3) + (input.research.progressPercent >= 60 ? 5 : -4),
-  PORTER: (base, input) =>
-    base - input.competitors.total * 4 + (input.competitors.total === 0 ? -12 : 0),
+  SWOT: (base, input) => {
+    let score =
+      base +
+      (input.evidence.highConfidence >= 5 ? 8 : -5) +
+      (input.competitors.total >= 3 ? -6 : 4);
+    const market = input.marketIntel?.result;
+    if (market) {
+      score += market.marketScore * 0.08;
+      if (market.growthRate >= 10) score += 4;
+      if (market.competitionIntensity === 'VERY_HIGH') score -= 6;
+    }
+    return score;
+  },
+  PESTEL: (base, input) => {
+    let score =
+      base + (input.grants.total > 0 ? 6 : -3) + (input.research.progressPercent >= 60 ? 5 : -4);
+    const market = input.marketIntel?.result;
+    if (market) {
+      if (market.regulation === 'RISING') score += 5;
+      if (market.regulation === 'DECLINING') score -= 4;
+      score += market.growthRate * 0.3;
+    }
+    return score;
+  },
+  PORTER: (base, input) => {
+    let score =
+      base - input.competitors.total * 4 + (input.competitors.total === 0 ? -12 : 0);
+    const market = input.marketIntel?.result;
+    if (market) {
+      if (market.competitionIntensity === 'VERY_HIGH') score -= 10;
+      else if (market.competitionIntensity === 'HIGH') score -= 6;
+      else if (market.competitionIntensity === 'LOW') score += 8;
+      if (market.entryBarrier === 'HIGH') score -= 4;
+    }
+    return score;
+  },
   THREE_C: (base, input) =>
     base + Math.min(input.voc.total, 15) * 1.2 - (input.competitors.total >= 4 ? 8 : 0),
   STP: (base, input) =>
