@@ -2021,6 +2021,105 @@
       "hint": "Preview에서 PDF/PPT/DOCX Export"
     }
   },
+  "strategyWorkspace": {
+    "progress": {
+      "eyebrow": "가이드 전략 워크스페이스",
+      "label": "전체 진행률",
+      "currentStage": "현재 단계",
+      "estimatedTime": "예상 {min}분 남음",
+      "remainingTasks": "남은 작업 {count}개",
+      "greetingStart": "안녕하세요 — {project} 검증을 시작합니다.",
+      "greetingContinue": "다시 오셨군요 — {project}를 이어갑니다.",
+      "introActive": "아래 체크리스트와 다음 행동을 따라 각 단계를 완료하세요. AI 의사결정과 경영 보고서를 잠금 해제합니다.",
+      "introComplete": "모든 전략 단계가 완료되었습니다. 의사결정을 검토하고 경영 보고서를 내보내세요."
+    },
+    "checklist": {
+      "title": "프로젝트 체크리스트",
+      "desc": "각 단계를 완료하여 방어 가능한 전략을 구축하세요.",
+      "research": "Research",
+      "evidence": "Evidence",
+      "voc": "VOC",
+      "competitor": "Competitor",
+      "market": "Market Intelligence",
+      "framework": "Framework",
+      "decision": "Decision",
+      "report": "Report"
+    },
+    "nextAction": {
+      "eyebrow": "다음 추천 행동",
+      "estimated": "예상 {min}분",
+      "research": {
+        "label": "Research 시작",
+        "desc": "시장 가설과 핵심 가정을 문서화한 뒤 Evidence를 수집하세요.",
+        "cta": "Research 시작"
+      },
+      "evidence": {
+        "label": "Evidence 등록",
+        "desc": "Evidence 3개 이상, HIGH 신뢰도 1개 이상을 등록하세요.",
+        "cta": "Evidence 추가"
+      },
+      "voc": {
+        "label": "VOC 입력",
+        "desc": "고객 Pain Point를 기록하세요 — VOC 5개 이상을 목표로 하세요.",
+        "cta": "VOC 시작"
+      },
+      "competitor": {
+        "label": "경쟁사 등록",
+        "desc": "경쟁사 2개 이상을 등록하여 포지셔닝과 Gap을 분석하세요.",
+        "cta": "경쟁사 추가"
+      },
+      "market": {
+        "label": "시장 분석 실행",
+        "desc": "Market Intelligence 스냅샷으로 기회 규모와 성장성을 파악하세요.",
+        "cta": "Market Intel 열기"
+      },
+      "framework": {
+        "label": "Framework 분석",
+        "desc": "SWOT, Porter 등 전략 프레임워크로 의사결정을 구조화하세요.",
+        "cta": "Framework 실행"
+      },
+      "decision": {
+        "label": "Decision 생성",
+        "desc": "입력이 충분합니다 — AI 기반 전략 의사결정을 생성하세요.",
+        "cta": "Decision 생성"
+      },
+      "report": {
+        "label": "경영 보고서 내보내기",
+        "desc": "전략을 이해관계자용 경영 보고서로 패키징하세요.",
+        "cta": "Report 열기"
+      }
+    },
+    "timeline": {
+      "title": "워크스페이스 타임라인",
+      "desc": "전략 여정을 순서대로 — 단계를 클릭해 이동하세요.",
+      "status": {
+        "completed": "완료",
+        "current": "진행 중",
+        "upcoming": "예정"
+      }
+    },
+    "health": {
+      "title": "프로젝트 헬스",
+      "desc": "AI Score, 진행률, 리스크, 신뢰도를 한눈에 확인하세요.",
+      "aiScore": "AI Score",
+      "progress": "Progress",
+      "risk": "Risk",
+      "confidence": "Confidence",
+      "moduleBadges": "모듈 완료율"
+    },
+    "quickActions": {
+      "research": "Research 시작",
+      "decision": "Decision 생성",
+      "report": "Report 열기",
+      "runAi": "AI 실행"
+    },
+    "empty": {
+      "defaultTitle": "아직 데이터가 없습니다",
+      "defaultDesc": "이 단계를 시작하여 전략 워크스페이스 입력을 수집하세요.",
+      "start": "시작하기",
+      "sample": "샘플 데이터 불러오기"
+    }
+  },
   "reportEngine": {
     "preview": {
       "pageTitle": "Executive Report",

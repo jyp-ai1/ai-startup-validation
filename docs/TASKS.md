@@ -65,7 +65,31 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 10 | SEO (OG, robots, sitemap, canonical) | ✅ Done | AI |
 | — | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.8 — AI Consultant Chat
+**Next:** Sprint 8.9 — AI Consultant Chat
+
+---
+
+## Sprint 8.8 — Guided Strategy Workspace ✅
+
+**Status:** Complete  
+**Goal:** UX Flow — AI가 사용자를 끝까지 안내하는 Guided Strategy Workspace (기능 추가 아님, 진행 흐름 구축).
+
+| EPIC | Task | Status | Owner |
+|------|------|--------|-------|
+| 1 | Strategy Progress Hero (0–100%, stage, ETA, remaining tasks) | ✅ Done | AI |
+| 2 | Next Best Action — single AI-recommended CTA | ✅ Done | AI |
+| 3 | Project Checklist (Research → Report, auto-check) | ✅ Done | AI |
+| 4 | Workspace Timeline (chronological flow) | ✅ Done | AI |
+| 5 | Module completion badges (per-stage %) | ✅ Done | AI |
+| 6 | Project Health (AI Score, Progress, Risk, Confidence) | ✅ Done | AI |
+| 7 | Quick Actions bar (Research, Decision, Report, Run AI) | ✅ Done | AI |
+| 8 | StrategyEmptyState + existing ConsultingEmptyState on list pages | ✅ Done | AI |
+| — | Analytics: strategy_start/continue/complete, next_action_click, timeline_click | ✅ Done | AI |
+| — | i18n (en/ko + sync 11 locales) | ✅ Done | AI |
+| — | Dashboard integration | ✅ Done | AI |
+| — | Build + deploy + verify | ✅ Done | AI |
+
+**Next:** Sprint 8.9 — AI Consultant Chat
 
 ---
 
@@ -88,7 +112,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | i18n (en/ko + sync 11 locales) | ✅ Done | AI |
 | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.8 — AI Consultant Chat
+**Next:** Sprint 8.9 — AI Consultant Chat
 
 ---
 
@@ -112,7 +136,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | i18n (en/ko + sync 11 locales) | ✅ Done | AI |
 | Build + deploy + verify | ✅ Done | AI |
 
-**Next:** Sprint 8.8 — AI Consultant Chat
+**Next:** Sprint 8.9 — AI Consultant Chat
 
 ---
 
@@ -138,7 +162,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Rule:** Only Orchestrator may call Decision Engine — agents produce evidence/knowledge only.
 
-**Next:** Sprint 8.8 — AI Consultant Chat
+**Next:** Sprint 8.9 — AI Consultant Chat
 
 ---
 
@@ -161,7 +185,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Rule:** Research Agent never calls Decision Engine — evidence only.
 
-**Next:** Sprint 8.8 — AI Consultant Chat
+**Next:** Sprint 8.9 — AI Consultant Chat
 
 ---
 

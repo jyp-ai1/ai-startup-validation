@@ -9,6 +9,8 @@ import {
   buildExecutiveWorkspace,
   ExecutiveDashboard,
 } from '@/features/executive';
+import { getExecutiveReport } from '@/features/report-engine';
+import { buildStrategyWorkspace } from '@/features/strategy-workspace';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();
@@ -23,9 +25,12 @@ export default async function DashboardPage() {
   const workspace = await getWorkspaceContext(preferredProjectId);
 
   let executive = null;
+  let strategy = null;
   if (workspace.activeProject && workspace.stats) {
-    const decision = await generateProjectDecision(workspace.activeProject.id);
-    const orchestratorPlan = await getLatestPlan(workspace.activeProject.id);
+    const projectId = workspace.activeProject.id;
+    const decision = await generateProjectDecision(projectId);
+    const orchestratorPlan = await getLatestPlan(projectId);
+    const executiveReport = await getExecutiveReport(projectId);
     if (decision) {
       executive = buildExecutiveWorkspace(
         workspace.activeProject,
@@ -34,7 +39,12 @@ export default async function DashboardPage() {
         orchestratorPlan,
       );
     }
+    strategy = buildStrategyWorkspace({
+      stats: workspace.stats,
+      executive,
+      hasExecutiveReport: Boolean(executiveReport),
+    });
   }
 
-  return <ExecutiveDashboard workspace={workspace} executive={executive} />;
+  return <ExecutiveDashboard workspace={workspace} executive={executive} strategy={strategy} />;
 }

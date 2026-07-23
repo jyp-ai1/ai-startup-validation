@@ -2021,6 +2021,105 @@
       "hint": "Open preview to export PDF, PPT, or DOCX"
     }
   },
+  "strategyWorkspace": {
+    "progress": {
+      "eyebrow": "Guided Strategy Workspace",
+      "label": "Overall progress",
+      "currentStage": "Current stage",
+      "estimatedTime": "Est. {min} min remaining",
+      "remainingTasks": "{count} tasks left",
+      "greetingStart": "Hello — let's validate {project}.",
+      "greetingContinue": "Welcome back — continuing {project}.",
+      "introActive": "Follow the checklist and next action below. Complete each stage to unlock AI decision and executive reporting.",
+      "introComplete": "All strategy stages are complete. Review your decision and export the executive report."
+    },
+    "checklist": {
+      "title": "Project checklist",
+      "desc": "Complete each stage to build a defensible strategy.",
+      "research": "Research",
+      "evidence": "Evidence",
+      "voc": "VOC",
+      "competitor": "Competitor",
+      "market": "Market Intelligence",
+      "framework": "Framework",
+      "decision": "Decision",
+      "report": "Report"
+    },
+    "nextAction": {
+      "eyebrow": "Next best action",
+      "estimated": "Est. {min} min",
+      "research": {
+        "label": "Start research",
+        "desc": "Document your market hypothesis and key assumptions before collecting evidence.",
+        "cta": "Start Research"
+      },
+      "evidence": {
+        "label": "Add evidence",
+        "desc": "Register at least 3 evidence items with one high-confidence source.",
+        "cta": "Add Evidence"
+      },
+      "voc": {
+        "label": "Capture VOC",
+        "desc": "Record customer pain points — aim for at least 5 voice-of-customer entries.",
+        "cta": "Start VOC"
+      },
+      "competitor": {
+        "label": "Map competitors",
+        "desc": "Register at least 2 competitors to benchmark positioning and gaps.",
+        "cta": "Add Competitors"
+      },
+      "market": {
+        "label": "Run market analysis",
+        "desc": "Generate market intelligence snapshot to size opportunity and growth.",
+        "cta": "Open Market Intel"
+      },
+      "framework": {
+        "label": "Run framework analysis",
+        "desc": "Apply strategic frameworks (SWOT, Porter, etc.) to structure your decision.",
+        "cta": "Run Framework"
+      },
+      "decision": {
+        "label": "Generate decision",
+        "desc": "You have enough inputs — generate an AI-backed strategic decision.",
+        "cta": "Generate Decision"
+      },
+      "report": {
+        "label": "Export executive report",
+        "desc": "Package your strategy into an executive-ready report for stakeholders.",
+        "cta": "Open Report"
+      }
+    },
+    "timeline": {
+      "title": "Workspace timeline",
+      "desc": "Your strategy journey in order — click any stage to jump.",
+      "status": {
+        "completed": "Done",
+        "current": "In progress",
+        "upcoming": "Upcoming"
+      }
+    },
+    "health": {
+      "title": "Project health",
+      "desc": "AI score, progress, risk, and confidence at a glance.",
+      "aiScore": "AI Score",
+      "progress": "Progress",
+      "risk": "Risk",
+      "confidence": "Confidence",
+      "moduleBadges": "Module completion"
+    },
+    "quickActions": {
+      "research": "Start Research",
+      "decision": "Generate Decision",
+      "report": "Open Report",
+      "runAi": "Run AI"
+    },
+    "empty": {
+      "defaultTitle": "Nothing here yet",
+      "defaultDesc": "Start this stage to collect inputs for your strategy workspace.",
+      "start": "Get started",
+      "sample": "Load sample data"
+    }
+  },
   "reportEngine": {
     "preview": {
       "pageTitle": "Executive Report",

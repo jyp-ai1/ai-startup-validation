@@ -12,6 +12,9 @@ import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
 import { Button } from '@repo/ui';
 
+import type { StrategyWorkspaceViewModel } from '@/features/strategy-workspace';
+import { GuidedWorkspacePanel } from '@/features/strategy-workspace';
+
 import type { ExecutiveWorkspaceViewModel } from '../services/executive-types';
 import { ExecutiveActions } from './executive-actions';
 import { ExecutiveDecisionStatus } from './executive-decision-status';
@@ -29,22 +32,23 @@ import { ExecutiveSummary } from './executive-summary';
 type ExecutiveDashboardProps = {
   workspace: WorkspaceContext;
   executive: ExecutiveWorkspaceViewModel | null;
+  strategy: StrategyWorkspaceViewModel | null;
 };
 
-export function ExecutiveDashboard({ workspace, executive }: ExecutiveDashboardProps) {
+export function ExecutiveDashboard({ workspace, executive, strategy }: ExecutiveDashboardProps) {
   const t = useTranslations('executive');
   const { trackEvent } = useAnalytics();
   const { projectCount } = workspace;
 
   useEffect(() => {
     trackEvent(ANALYTICS_EVENTS.dashboardOpen, {
-      project_id: executive?.project.id,
-      project_type: executive?.projectType,
+      project_id: executive?.project.id ?? workspace.activeProject?.id,
+      project_type: executive?.projectType ?? workspace.activeProject?.projectType,
       screen: '/dashboard',
     });
-  }, [executive, trackEvent]);
+  }, [executive, trackEvent, workspace.activeProject]);
 
-  if (!executive) {
+  if (!executive && !strategy) {
     return (
       <div className="mx-auto max-w-2xl py-24 text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
@@ -69,10 +73,29 @@ export function ExecutiveDashboard({ workspace, executive }: ExecutiveDashboardP
     );
   }
 
+  const projectTitle =
+    executive?.project.title ?? workspace.activeProject?.title ?? t('empty.title');
+
+  if (!executive && strategy) {
+    return (
+      <div className="mx-auto max-w-6xl space-y-14 pb-20 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500">
+        <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
+      </div>
+    );
+  }
+
+  if (!executive) {
+    return null;
+  }
+
   const lineage = executive.orchestratorPlan?.confidenceLineage;
 
   return (
     <div className="mx-auto max-w-6xl space-y-14 pb-20 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500">
+      {strategy ? (
+        <GuidedWorkspacePanel strategy={strategy} projectTitle={projectTitle} />
+      ) : null}
+
       <ExecutiveHero workspace={executive} />
 
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
