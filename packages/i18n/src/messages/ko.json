@@ -408,6 +408,84 @@
           "context": "Agent가 사용할 근거가 충분하지 않습니다"
         }
       }
+    },
+    "home": {
+      "hero": {
+        "eyebrow": "프로젝트 홈",
+        "openDashboard": "커맨드 센터 열기",
+        "overallProgress": "전체 진행률",
+        "health": "검증 상태",
+        "updated": "최근 업데이트",
+        "score": "준비도: {score}",
+        "confidence": "신뢰도: {percent}%"
+      },
+      "quickActions": {
+        "title": "빠른 실행",
+        "addResearch": "리서치 추가",
+        "runAi": "AI 실행",
+        "decision": "의사결정",
+        "report": "리포트"
+      },
+      "tabs": {
+        "overview": "개요",
+        "research": "리서치",
+        "decision": "의사결정",
+        "report": "리포트",
+        "activity": "활동"
+      },
+      "focus": {
+        "title": "오늘의 집중 과제",
+        "rank": "우선순위 #{rank}"
+      },
+      "progress": {
+        "title": "프로젝트 진행 단계"
+      },
+      "steps": {
+        "research": "리서치",
+        "voc": "VOC",
+        "evidence": "근거 자료",
+        "competitor": "경쟁사",
+        "government": "정부지원",
+        "decision": "의사결정",
+        "report": "리포트"
+      },
+      "knowledge": {
+        "title": "지식 스냅샷",
+        "research": "리서치",
+        "evidence": "근거 자료",
+        "voc": "VOC",
+        "competitors": "경쟁사",
+        "grants": "정부지원"
+      },
+      "reports": {
+        "title": "최근 리포트",
+        "viewAll": "전체 보기",
+        "empty": "아직 리포트가 없습니다.",
+        "create": "리포트 생성"
+      },
+      "reportFormat": {
+        "draft": "초안",
+        "inProgress": "작성 중",
+        "completed": "완료"
+      },
+      "empty": {
+        "title": "시장 리서치부터 시작하세요",
+        "suggestion": "워크스페이스가 비어 있습니다. AI는 수요와 경쟁 검증을 위해 시장 리서치부터 시작할 것을 권장합니다.",
+        "cta": "시장 리서치 시작"
+      },
+      "researchTab": {
+        "count": "{count}건",
+        "runAi": "AI 리서치 실행",
+        "runAiDesc": "오케스트레이터가 리서치를 계획하고 실행합니다"
+      },
+      "decisionTab": {
+        "pending": "아직 의사결정이 없습니다 — 근거를 수집하고 검증을 실행하세요.",
+        "score": "검증 점수: {score}",
+        "open": "의사결정 센터 열기"
+      },
+      "activity": {
+        "empty": "최근 활동이 없습니다."
+      }
     }
   },
   "research": {
