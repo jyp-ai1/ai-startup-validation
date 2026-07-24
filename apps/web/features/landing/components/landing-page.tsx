@@ -47,7 +47,7 @@ const LandingFooter = dynamic(
   { loading: () => <div className="min-h-[160px]" aria-hidden /> },
 );
 
-export function LandingPage() {
+export async function LandingPage() {
   return (
     <div className="min-h-full bg-background text-foreground">
       <LandingTracker />

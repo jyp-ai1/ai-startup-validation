@@ -29,14 +29,24 @@ Prior: https://ai-startup-validation-nxbepconk-jyp-ai1s-projects.vercel.app (`dp
 
 ---
 
-## QA Summary
+## Commit 3 — `fb11936` ✅ pushed + **Production deployed**
 
-| Gate | v2.0.1 | v2.0.2 batch | Target |
+Landing LCP: sync hero/header, lazy preview, idle analytics, CTA a11y fix
+
+**Production:** `dpl_B4w5YcY498sKPmHuf8teLRAHjHXU`  
+**Tag:** `alpha-v2.0.3`  
+**URL:** https://ai-startup-validation-tau.vercel.app
+
+---
+
+## QA Summary (Production URL — not Preview)
+
+| Gate | Before | After deploy | Target |
 |------|--------|--------------|--------|
-| Lint / Build | ✅ | ✅ | PASS |
-| Performance | 39 | **49** | 85+ |
-| Accessibility | 91 | **91** | 95+ |
-| Production | ⛔ | ⛔ | Gates not met |
+| Performance | 71 | **80** | 85+ ⚠️ |
+| Accessibility | 96 | **96** | 95+ ✅ |
+| TTFB | ~1170ms est | **10ms** | — |
+| Production | v2.0.0 | **v2.0.3 LIVE** | Perf 5pt short |
 
 ---
 

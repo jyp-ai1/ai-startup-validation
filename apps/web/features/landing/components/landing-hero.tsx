@@ -1,30 +1,19 @@
-'use client';
+import { getTranslations } from 'next-intl/server';
 
-import dynamic from 'next/dynamic';
-import { useTranslations } from 'next-intl';
-import { ArrowRight, Play } from 'lucide-react';
-
-import { LandingCtaLink } from './landing-cta-link';
+import { LandingHeroActions } from './landing-hero-actions';
+import { LandingHeroPreviewLazy } from './landing-hero-preview-lazy';
 import { LandingJourneyStrip } from './landing-journey-strip';
 import { LandingLazySection } from './landing-lazy-section';
 
-const LandingHeroPreview = dynamic(
-  () => import('./landing-hero-preview').then((m) => m.LandingHeroPreview),
-  {
-    loading: () => (
-      <div className="aspect-[4/3] w-full rounded-[20px] border border-border/60 bg-muted/40" aria-hidden />
-    ),
-  },
-);
-
-export function LandingHero() {
-  const t = useTranslations('landing.hero');
+/** Server-rendered hero — h1 in initial HTML for LCP (Epic 2 perf). */
+export async function LandingHero() {
+  const t = await getTranslations('landing.hero');
 
   return (
-    <section className="relative min-h-[85vh] overflow-hidden bg-background sm:min-h-[100vh]">
+    <section className="relative overflow-hidden bg-background pb-16 pt-12 sm:pb-20 sm:pt-16 lg:pb-28 lg:pt-24">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(120,119,198,0.08),transparent)] dark:bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(120,119,198,0.16),transparent)]" />
 
-      <div className="mx-auto grid max-w-[1440px] gap-10 px-4 pb-16 pt-12 sm:gap-12 sm:px-6 sm:pb-20 sm:pt-16 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10 lg:pb-28 lg:pt-24">
+      <div className="mx-auto grid max-w-[1440px] gap-10 px-4 sm:gap-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10">
         <div className="max-w-xl">
           <p className="text-sm font-medium text-primary">{t('eyebrow')}</p>
           <h1 className="mt-4 text-4xl font-semibold leading-[1.08] tracking-tight text-foreground md:text-5xl lg:text-[3.25rem]">
@@ -32,44 +21,22 @@ export function LandingHero() {
           </h1>
           <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">{t('northStar')}</p>
 
-          <LandingJourneyStrip className="mt-8" />
+          <LandingLazySection minHeight={120} rootMargin="200px 0px" className="mt-8">
+            <LandingJourneyStrip />
+          </LandingLazySection>
 
           <p className="mt-6 text-lg font-medium text-foreground/90">{t('tagline')}</p>
 
-          <div className="mt-10 flex flex-wrap gap-3">
-            <LandingCtaLink
-              href="/goal"
-              event="cta_start"
-              className="h-11 rounded-xl bg-primary px-5 text-primary-foreground hover:bg-primary/90 sm:h-12 sm:px-8"
-            >
-              {t('ctaStart')}
-              <ArrowRight className="size-4" />
-            </LandingCtaLink>
-            <LandingCtaLink
-              href="/demo/enter"
-              event="cta_demo"
-              variant="outline"
-              className="h-11 rounded-xl border-border bg-background px-5 text-foreground hover:bg-muted sm:h-12 sm:px-8"
-            >
-              <Play className="size-4" />
-              {t('ctaDemo')}
-            </LandingCtaLink>
-          </div>
-          <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-[13px] text-muted-foreground">
-            <li>{t('ctaHint1')}</li>
-            <li className="hidden sm:list-item">·</li>
-            <li>{t('ctaHint2')}</li>
-            <li className="hidden sm:list-item">·</li>
-            <li className="font-medium text-emerald-700 dark:text-emerald-400">{t('ctaHint3')}</li>
-          </ul>
+          <LandingHeroActions
+            ctaStart={t('ctaStart')}
+            ctaDemo={t('ctaDemo')}
+            ctaHint1={t('ctaHint1')}
+            ctaHint2={t('ctaHint2')}
+            ctaHint3={t('ctaHint3')}
+          />
         </div>
 
-        <div className="relative lg:pl-4">
-          <div className="pointer-events-none absolute -inset-4 rounded-[28px] bg-gradient-to-br from-violet-100/40 to-transparent blur-2xl" />
-          <LandingLazySection minHeight={320} rootMargin="120px 0px">
-            <LandingHeroPreview className="relative" />
-          </LandingLazySection>
-        </div>
+        <LandingHeroPreviewLazy />
       </div>
     </section>
   );

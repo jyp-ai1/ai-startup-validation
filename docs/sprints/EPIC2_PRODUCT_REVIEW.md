@@ -37,7 +37,7 @@ LaunchLens는 **"AI 보고서 생성기"에서 "Explainable AI Strategy Workspac
 
 | Gate | Prod (pre-v2.0.2) | Target | Status |
 |------|-------------------|--------|--------|
-| Performance | 71 | 85+ | ⏳ After deploy |
+| Performance | 80 | 85+ | ⚠️ 5pt short (LCP 3.7s) |
 | Accessibility | 96 | 95+ | ✅ |
 | Build/Lint/Smoke | ✅ | PASS | ✅ |
 

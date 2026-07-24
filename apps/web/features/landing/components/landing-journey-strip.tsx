@@ -1,6 +1,4 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { ArrowDown } from 'lucide-react';
 
 import { cn } from '@repo/ui/lib/utils';
@@ -9,9 +7,8 @@ type LandingJourneyStripProps = {
   className?: string;
 };
 
-export function LandingJourneyStrip({ className }: LandingJourneyStripProps) {
-  const t = useTranslations('landing.hero.journey');
-
+export async function LandingJourneyStrip({ className }: LandingJourneyStripProps) {
+  const t = await getTranslations('landing.hero.journey');
   const steps = ['goal', 'workflow', 'decision', 'execution'] as const;
 
   return (
@@ -38,10 +35,7 @@ export function LandingJourneyStrip({ className }: LandingJourneyStripProps) {
               />
             ) : null}
             {index < steps.length - 1 ? (
-              <span
-                className="hidden h-px flex-1 bg-border sm:mx-2 sm:block"
-                aria-hidden
-              />
+              <span className="hidden h-px flex-1 bg-border sm:mx-2 sm:block" aria-hidden />
             ) : null}
           </li>
         ))}
