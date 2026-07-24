@@ -46,7 +46,7 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
   const stages = getDecisionStages(goalId);
   const [stageIndex, setStageIndex] = useState(0);
   const [healthOpen, setHealthOpen] = useState(false);
-  const [whyOpen, setWhyOpen] = useState(true);
+  const [whyOpen, setWhyOpen] = useState(false);
 
   const stage = stages[stageIndex] ?? stages[0]!;
   const isFinal = stageIndex >= stages.length - 1;

@@ -11,6 +11,7 @@ type MissingDataProgressProps = {
   target: number;
   items: MissingDataItem[];
   completedIds?: string[];
+  onItemToggle?: (id: string) => void;
   className?: string;
 };
 
@@ -19,6 +20,7 @@ export function MissingDataProgress({
   target,
   items,
   completedIds = [],
+  onItemToggle,
   className,
 }: MissingDataProgressProps) {
   const t = useTranslations('workflow.intelligence.missing');
@@ -62,25 +64,55 @@ export function MissingDataProgress({
                 done
                   ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/30'
                   : 'border-dashed border-border/70',
+                onItemToggle && !done && 'cursor-pointer hover:border-primary/40',
               )}
             >
-              <span
-                className={cn(
-                  'flex size-4 shrink-0 items-center justify-center rounded border text-[10px]',
-                  done
-                    ? 'border-emerald-600 bg-emerald-600 text-white'
-                    : 'border-muted-foreground/50',
-                )}
-                aria-hidden
-              >
-                {done ? '✓' : ''}
-              </span>
-              <span className={cn('flex-1', done && 'text-emerald-900 dark:text-emerald-200')}>
-                {t(`items.${item.labelKey}`)}
-              </span>
-              <span className="text-xs font-medium text-emerald-700 tabular-nums dark:text-emerald-400">
-                +{item.gain}
-              </span>
+              {onItemToggle ? (
+                <button
+                  type="button"
+                  onClick={() => onItemToggle(item.id)}
+                  className="flex flex-1 items-center gap-2 text-left"
+                  aria-pressed={done}
+                >
+                  <span
+                    className={cn(
+                      'flex size-4 shrink-0 items-center justify-center rounded border text-[10px]',
+                      done
+                        ? 'border-emerald-600 bg-emerald-600 text-white'
+                        : 'border-muted-foreground/50',
+                    )}
+                    aria-hidden
+                  >
+                    {done ? '✓' : ''}
+                  </span>
+                  <span className={cn('flex-1', done && 'text-emerald-900 dark:text-emerald-200')}>
+                    {t(`items.${item.labelKey}`)}
+                  </span>
+                  <span className="text-xs font-medium text-emerald-700 tabular-nums dark:text-emerald-400">
+                    +{item.gain}
+                  </span>
+                </button>
+              ) : (
+                <>
+                  <span
+                    className={cn(
+                      'flex size-4 shrink-0 items-center justify-center rounded border text-[10px]',
+                      done
+                        ? 'border-emerald-600 bg-emerald-600 text-white'
+                        : 'border-muted-foreground/50',
+                    )}
+                    aria-hidden
+                  >
+                    {done ? '✓' : ''}
+                  </span>
+                  <span className={cn('flex-1', done && 'text-emerald-900 dark:text-emerald-200')}>
+                    {t(`items.${item.labelKey}`)}
+                  </span>
+                  <span className="text-xs font-medium text-emerald-700 tabular-nums dark:text-emerald-400">
+                    +{item.gain}
+                  </span>
+                </>
+              )}
             </li>
           );
         })}

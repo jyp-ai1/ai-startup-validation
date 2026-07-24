@@ -3660,7 +3660,7 @@
       "gainLabel": "+{gain}%",
       "goReached": "축하합니다 — 1차 GO 판단에 도달했습니다.",
       "whyAllClear": "주요 리스크가 해소되었습니다.",
-      "evidencePlaceholder": "근거 상세는 Evidence 패널에서 확인할 수 있습니다.",
+      "evidencePlaceholder": "아래 Intelligence 패널에서 근거·규칙·부족 정보를 확인하세요.",
       "historyTitle": "판단 기록",
       "historyToday": "오늘",
       "actions": {

@@ -35,6 +35,7 @@ export function EvidenceIntelligencePanel({
 }: EvidenceIntelligencePanelProps) {
   const t = useTranslations('workflow.intelligence');
   const analytics = useJourneyAnalytics();
+  const [completedMissingIds, setCompletedMissingIds] = useState<string[]>([]);
   const [open, setOpen] = useState(defaultOpen);
 
   const breakdown = calculateConfidence(FUTURE_GAIN.current, completedRuleIds, CONFIDENCE_RULES, FUTURE_GAIN.target);
@@ -129,7 +130,13 @@ export function EvidenceIntelligencePanel({
             current={FUTURE_GAIN.current}
             target={FUTURE_GAIN.target}
             items={MISSING_DATA}
-            completedIds={completedRuleIds}
+            completedIds={[...completedRuleIds, ...completedMissingIds]}
+            onItemToggle={(id) => {
+              setCompletedMissingIds((prev) =>
+                prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+              );
+              analytics.trackCoachClicked('missing_data');
+            }}
           />
 
           <div>
