@@ -135,15 +135,43 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **DoD:** 5분 내 첫 프로젝트+리포트 · E2E PASS · Lighthouse · prod deploy · PM QA PASS
 
-**PM note:** OpenAI 키 불필요 (OpenRouter ONLY). Browser/MCP → **L3.4/L3.5** (오픈베타 후).
+**PM note:** OpenAI 키 불필요 (OpenRouter ONLY). E1 OAuth QA → **L3.4**. Browser/MCP → **L3.5/L3.6** (오픈베타 후).
 
 **Config:** `NEXT_PUBLIC_FEEDBACK_BUG_URL`, `NEXT_PUBLIC_FEEDBACK_IDEA_URL`, optional `NEXT_PUBLIC_DISCORD_URL`
 
 ---
 
-## Sprint L3.4 — Browser Research Agent 🔜
+## Sprint L3.4 — Open Beta QA & Stabilization 🔄
 
-**Status:** Planned (after open beta)  
+**Status:** In progress — **Feature Freeze** (PM approved 2026-07-24 ★★★★★)  
+**Goal:** Beta v0.9 — 외부 사용자 100명 사용 가능 (품질·안정성·사용성만)
+
+**Feature Freeze:** 새 기능 금지 · Browser/MCP/OpenAI/AI 기능 추가 금지
+
+| EPIC | Scope | Status |
+|------|-------|--------|
+| E1 Google OAuth QA | 가입·로그인·로그아웃·세션·만료·에러 UX | 🔄 |
+| E2 Responsive QA | 390 / 430 / 768 / 1024 / 1440 / 1920 | 🔄 |
+| E3 Accessibility | Keyboard · Focus · aria · ESC · Contrast | 🔄 |
+| E4 Lighthouse | Perf ≥90 · SEO ≥95 · A11y ≥90 · BP ≥95 | ⏳ |
+| E5 Empty UX | Empty 화면 통일 | 🔄 |
+| E6 Loading UX | Skeleton 통일 | 🔄 |
+| E7 Error UX | 401/403/404/500/Timeout/Network/AI | 🔄 |
+| E8 Beta Feedback | Bug · Feature · Contact · Discord 확인 | ⏳ |
+| E9 SEO 최종 | robots · sitemap · canonical · og · manifest | 🔄 |
+| E10 Release Checklist | Beta v0.9 checklist | ⏳ |
+
+**Deploy process:** Dev (build/lint/type) → QA (functional/regression/responsive/a11y/lighthouse) → DevOps (push/deploy/health/smoke) → PM Release Gate
+
+**DoD:** MVP Gate 전 항목 PASS · QA 리포트 제출 · PM Release 승인 · prod deploy
+
+**Leverage (L3.4):** 기존 UI/SEO/auth/analytics — 수정만
+
+---
+
+## Sprint L3.5 — Browser Research Agent 🔜
+
+**Status:** Planned (after open beta QA PASS)  
 **Goal:** Mock 조사 탈출 — Playwright 웹 검색 + Evidence → Decision
 
 | EPIC | Scope |
@@ -157,7 +185,66 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Development process (L3.3+)
+## L3.4 QA completion report (Cursor submission format)
+
+```text
+Sprint L3.4 완료
+
+========================
+
+Senior Developer
+----------------
+Build PASS
+Lint PASS
+Type PASS
+
+PR:
+Commit:
+Branch:
+
+========================
+
+Senior QA
+----------------
+
+Unit PASS
+Integration PASS
+Regression PASS
+Responsive PASS
+Accessibility PASS
+
+Lighthouse
+Performance:
+SEO:
+Best Practices:
+Accessibility:
+
+Cross Browser PASS
+
+Known Issues:
+
+========================
+
+DevOps
+
+Git Push PASS
+PR Merge PASS
+Production Deploy PASS
+Health PASS
+Rollback PASS
+
+========================
+
+PM 확인 요청
+
+1.
+2.
+3.
+```
+
+---
+
+## Development process (L3.4+)
 
 | Role | Responsibility |
 |------|----------------|

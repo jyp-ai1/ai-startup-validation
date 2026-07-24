@@ -354,6 +354,7 @@
     "deleteConfirm": "프로젝트를 삭제하시겠습니까?",
     "deleteWarning": "영구 삭제되며 되돌릴 수 없습니다.",
     "recommendations": {
+      "label": "추천",
       "sample": "데모 프로젝트로 UI 흐름을 먼저 확인하세요",
       "validation": "Validation Score를 실행해 GO / NO GO를 확인하세요",
       "research": "Research Plan부터 체계적으로 시작하세요"
@@ -1323,7 +1324,10 @@
       "roadmap": "Roadmap",
       "faq": "FAQ",
       "signIn": "로그인",
-      "startFree": "무료 시작"
+      "startFree": "무료 시작",
+      "menuLabel": "내비게이션 메뉴",
+      "openMenu": "메뉴 열기",
+      "closeMenu": "메뉴 닫기"
     },
     "hero": {
       "eyebrow": "AI Strategy Consultant",
@@ -3070,6 +3074,9 @@
     "tagline": "AI Strategy Consultant",
     "loginDesc": "Google 계정으로 로그인하고 5분 안에 첫 프로젝트를 시작하세요.",
     "loginError": "로그인에 실패했습니다. 다시 시도해 주세요.",
+    "loginCancelled": "로그인이 취소되었습니다. 준비되면 다시 시도해 주세요.",
+    "loginSessionError": "세션을 복원하지 못했습니다. 다시 로그인해 주세요.",
+    "loginNetworkError": "로그인 중 네트워크 오류가 발생했습니다. 연결을 확인하고 다시 시도해 주세요.",
     "supabaseNotConfigured": "인증 설정이 완료되지 않았습니다. 데모 모드를 이용해 주세요.",
     "demoHint": "데모만 보고 싶다면",
     "demoLink": "Demo Workspace",
@@ -3161,6 +3168,8 @@
     "maintenanceDescription": "더 나은 서비스를 위해 잠시 점검 중입니다. 잠시 후 다시 방문해 주세요.",
     "unauthorizedTitle": "접근 권한이 없습니다",
     "unauthorizedDescription": "이 페이지를 보려면 로그인이 필요합니다.",
+    "forbiddenTitle": "접근이 거부되었습니다",
+    "forbiddenDescription": "이 페이지를 볼 권한이 없습니다.",
     "backToHome": "홈으로 돌아가기"
   },
   "pages": {

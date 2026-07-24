@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ArrowLeft, Menu, Search, Sparkles } from 'lucide-react';
+import { ArrowLeft, LogIn, Menu, Search, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -209,8 +209,12 @@ export function AppShell({
                 }}
                 role="button"
                 tabIndex={0}
+                aria-label={t('shell.searchPlaceholder')}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') openWorkspaceSearch();
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openWorkspaceSearch();
+                  }
                 }}
               >
                 <Search className="size-4 text-muted-foreground" />
@@ -231,8 +235,12 @@ export function AppShell({
               {user ? (
                 <UserMenu user={user} />
               ) : (
-                <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
-                  <Link href="/auth/login?next=/dashboard">{tAuth('signIn')}</Link>
+                <Button variant="outline" size="sm" className="inline-flex gap-1.5 px-2 sm:px-3" asChild>
+                  <Link href={`/auth/login?next=${encodeURIComponent(pathname || '/dashboard')}`}>
+                    <LogIn className="size-4 sm:hidden" aria-hidden />
+                    <span className="hidden sm:inline">{tAuth('signIn')}</span>
+                    <span className="sr-only sm:hidden">{tAuth('signIn')}</span>
+                  </Link>
                 </Button>
               )}
             </div>
@@ -265,6 +273,8 @@ export function AppShell({
               <button
                 type="button"
                 className="px-3 text-left text-[11px] text-sidebar-foreground/60 hover:text-sidebar-foreground"
+                aria-pressed={isFavorite(activeProject.id)}
+                aria-label={t('polish.favorites.toggle')}
                 onClick={() => {
                   const added = !isFavorite(activeProject.id);
                   toggleFavorite({ id: activeProject.id, title: activeProject.title });

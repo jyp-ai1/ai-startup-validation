@@ -38,6 +38,7 @@ export function ProjectList({ overviews }: ProjectListProps) {
           title={t('projects.emptyTitle')}
           description={t('projects.emptyDescription')}
           primaryAction={{ label: t('projects.newProject'), href: '/projects/new' }}
+          recommendationsLabel={t('projects.recommendations.label')}
           recommendations={[
             t('projects.recommendations.sample'),
             t('projects.recommendations.validation'),

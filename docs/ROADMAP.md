@@ -83,23 +83,28 @@
 
 ## LaunchLens Product Phase — AI Strategy Consultant (L3.x)
 
-> **PM principle (2026-07-24):** 기능 추가보다 **서비스 품질** · Mock → Real AI 조사가 최우선.  
+> **PM principle (2026-07-24):** **Feature Freeze** — L3.4는 품질·안정성만. 새 기능은 L3.5+ (사용자 피드백 후).  
 > **Deploy target:** `jyp-ai1s-projects/ai-startup-validation` → https://ai-startup-validation-tau.vercel.app  
-> **Process:** Senior Dev + Senior QA + DevOps Reviewer 체크리스트 필수 (see [TASKS.md](./TASKS.md))
+> **Process:** Dev → QA PASS → DevOps Deploy → PM Release Gate (see [TASKS.md](./TASKS.md))
 
 | Sprint | Focus | Priority | Status |
 |--------|-------|----------|--------|
 | L3.0 | OpenRouter + Gemini Flash | ★★★★★ | ✅ |
 | L3.1 | Research pipeline + Evidence DB + Decision LLM | ★★★★★ | ✅ |
 | L3.2 | OpenAI adapter + fallback + Orchestrator RESEARCH | ★★★★ | ✅ |
-| **L3.3** | **Open Beta Ready (UX + ops + funnel)** | ★★★★★ | ✅ |
-| L3.4 | Browser Research Agent | ★★★★★ | Planned |
-| L3.5 | MCP Integration | ★★★★★ | Planned |
-| L3.6 | Scenario Planning (Best / Base / Worst) | ★★★★★ | Planned |
-| L3.7 | Financial Model (ROI, NPV, IRR) | ★★★★★ | Planned |
-| L3.8 | Investor Deck (IR PDF/PPT) | ★★★★★ | Planned |
+| L3.3 | Open Beta Ready (UX + ops + funnel) | ★★★★★ | ✅ |
+| **L3.4** | **Open Beta QA & Stabilization** | ★★★★★ | 🔄 In progress |
+| L3.5 | Browser Research Agent | ★★★★★ | Planned (post-beta) |
+| L3.6 | MCP Integration | ★★★★★ | Planned |
+| L3.7 | Scenario Planning (Best / Base / Worst) | ★★★★★ | Planned |
+| L3.8 | Financial Model (ROI, NPV, IRR) | ★★★★★ | Planned |
+| L3.9 | Investor Deck (IR PDF/PPT) | ★★★★★ | Planned |
 
-### L3.4 target flow (post-beta)
+### L3.4 goal
+
+**외부 사용자 100명이 사용 가능한 수준** — Responsive · A11y · Lighthouse · OAuth · Error UX. 새 기능 거의 없음.
+
+### L3.5+ target flow (post-beta)
 
 ```
 Project → Browser Search → MCP → Evidence Merge → Decision

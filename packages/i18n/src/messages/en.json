@@ -354,6 +354,7 @@
     "deleteConfirm": "Delete project?",
     "deleteWarning": "This action cannot be undone.",
     "recommendations": {
+      "label": "Recommended",
       "sample": "Start with a demo project to explore the flow",
       "validation": "Run Validation Score for a GO / NO GO decision",
       "research": "Begin with a structured Research Plan"
@@ -1323,7 +1324,10 @@
       "roadmap": "Roadmap",
       "faq": "FAQ",
       "signIn": "Sign in",
-      "startFree": "Start Free"
+      "startFree": "Start Free",
+      "menuLabel": "Navigation menu",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
     },
     "hero": {
       "eyebrow": "AI Strategy Consultant",
@@ -3088,6 +3092,9 @@
     "tagline": "AI Strategy Consultant",
     "loginDesc": "Sign in with Google and start your first project in under 5 minutes.",
     "loginError": "Sign-in failed. Please try again.",
+    "loginCancelled": "Sign-in was cancelled. You can try again when ready.",
+    "loginSessionError": "We could not restore your session. Please sign in again.",
+    "loginNetworkError": "Network error during sign-in. Check your connection and try again.",
     "supabaseNotConfigured": "Authentication is not configured. Contact support or try Demo mode.",
     "demoHint": "Just exploring?",
     "demoLink": "Try Demo Workspace",
@@ -3179,6 +3186,8 @@
     "maintenanceDescription": "We are performing scheduled maintenance. Please check back shortly.",
     "unauthorizedTitle": "Unauthorized",
     "unauthorizedDescription": "You need to sign in to access this page.",
+    "forbiddenTitle": "Access denied",
+    "forbiddenDescription": "You do not have permission to view this page.",
     "backToHome": "Back to home"
   },
   "pages": {

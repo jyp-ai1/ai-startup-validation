@@ -17,6 +17,7 @@ type WorkspaceEmptyProps = {
   primaryAction?: WorkspaceEmptyAction;
   secondaryAction?: WorkspaceEmptyAction;
   recommendations?: string[];
+  recommendationsLabel?: string;
   className?: string;
 };
 
@@ -26,6 +27,7 @@ export function WorkspaceEmpty({
   primaryAction,
   secondaryAction,
   recommendations = [],
+  recommendationsLabel = 'Recommended',
   className,
 }: WorkspaceEmptyProps) {
   return (
@@ -71,7 +73,7 @@ export function WorkspaceEmpty({
       {recommendations.length > 0 ? (
         <div className="mx-auto mt-8 max-w-md rounded-lg border border-border/60 bg-background/80 p-4 text-left">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Recommended
+            {recommendationsLabel}
           </p>
           <ul className="mt-2 space-y-1.5 text-sm text-muted-foreground">
             {recommendations.map((item) => (

@@ -9,6 +9,13 @@ import { LocaleSwitcher } from '@/components/locale-switcher';
 import { getServerAuthUser } from '@/lib/auth/server-auth';
 import { isSupabaseConfigured } from '@repo/db';
 
+const ERROR_KEYS = {
+  auth: 'loginError',
+  cancelled: 'loginCancelled',
+  session: 'loginSessionError',
+  config: 'supabaseNotConfigured',
+} as const;
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('auth');
   const tm = await getTranslations('meta');
@@ -35,16 +42,22 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   }
 
   const supabaseReady = isSupabaseConfigured();
+  const errorKey =
+    params.error && params.error in ERROR_KEYS
+      ? ERROR_KEYS[params.error as keyof typeof ERROR_KEYS]
+      : params.error
+        ? 'loginError'
+        : null;
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background px-6">
+    <main className="relative flex min-h-screen items-center justify-center bg-background px-4 sm:px-6">
       <div className="absolute right-4 top-4 flex items-center gap-2 sm:right-6 sm:top-6">
         <LocaleSwitcher />
       </div>
-      <div className="w-full max-w-md rounded-2xl border border-border/60 bg-card p-8 shadow-sm">
+      <div className="w-full max-w-md rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:p-8">
         <div className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Sparkles className="size-5" />
+            <Sparkles className="size-5" aria-hidden />
           </div>
           <div>
             <h1 className="text-xl font-semibold tracking-tight">{tm('appName')}</h1>
@@ -54,14 +67,20 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
         <p className="mt-8 text-sm leading-relaxed text-muted-foreground">{t('loginDesc')}</p>
 
-        {params.error ? (
-          <p className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
-            {t('loginError')}
+        {errorKey ? (
+          <p
+            className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300"
+            role="alert"
+          >
+            {t(errorKey)}
           </p>
         ) : null}
 
-        {!supabaseReady ? (
-          <p className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-200">
+        {!supabaseReady && !errorKey ? (
+          <p
+            className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-200"
+            role="status"
+          >
             {t('supabaseNotConfigured')}
           </p>
         ) : null}
@@ -80,6 +99,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </Link>
         </p>
       </div>
-    </div>
+    </main>
   );
 }
