@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server';
 import {
   getWorkflowTemplate,
   readJourneyGoal,
+  WorkflowComposeLoader,
   WorkflowPlanView,
 } from '@/features/workflow-journey';
 
@@ -17,10 +18,19 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function WorkflowPage() {
+type WorkflowPageProps = {
+  searchParams: Promise<{ compose?: string }>;
+};
+
+export default async function WorkflowPage({ searchParams }: WorkflowPageProps) {
+  const params = await searchParams;
   const goalId = await readJourneyGoal();
   if (!goalId) {
     redirect('/goal');
+  }
+
+  if (params.compose === '1') {
+    return <WorkflowComposeLoader goalId={goalId} />;
   }
 
   const template = getWorkflowTemplate(goalId);

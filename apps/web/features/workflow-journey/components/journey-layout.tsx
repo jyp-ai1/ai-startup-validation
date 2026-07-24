@@ -11,18 +11,24 @@ type JourneyPhase = 'goal' | 'workflow' | 'workspace';
 
 type JourneyLayoutProps = {
   phase: JourneyPhase;
+  width?: 'default' | 'wide';
   children: React.ReactNode;
 };
 
 const PHASES: JourneyPhase[] = ['goal', 'workflow', 'workspace'];
 
-export function JourneyLayout({ phase, children }: JourneyLayoutProps) {
+export function JourneyLayout({ phase, children, width = 'default' }: JourneyLayoutProps) {
   const t = useTranslations('workflow.journey');
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/60 bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4 sm:px-6">
+        <div
+          className={cn(
+            'mx-auto flex h-14 items-center justify-between px-4 sm:px-6',
+            width === 'wide' ? 'max-w-6xl' : 'max-w-3xl',
+          )}
+        >
           <Link href="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
             <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Sparkles className="size-4" aria-hidden />
@@ -32,7 +38,10 @@ export function JourneyLayout({ phase, children }: JourneyLayoutProps) {
           <LocaleSwitcher />
         </div>
         <nav
-          className="mx-auto flex max-w-3xl gap-1 px-4 pb-3 sm:px-6"
+          className={cn(
+            'mx-auto flex gap-1 px-4 pb-3 sm:px-6',
+            width === 'wide' ? 'max-w-6xl' : 'max-w-3xl',
+          )}
           aria-label={t('progressLabel')}
         >
           {PHASES.map((step, index) => {
@@ -41,16 +50,10 @@ export function JourneyLayout({ phase, children }: JourneyLayoutProps) {
             return (
               <div
                 key={step}
-                className={cn(
-                  'flex flex-1 flex-col gap-1',
-                  index < PHASES.length - 1 && 'pr-1',
-                )}
+                className={cn('flex flex-1 flex-col gap-1', index < PHASES.length - 1 && 'pr-1')}
               >
                 <div
-                  className={cn(
-                    'h-1 rounded-full',
-                    active || done ? 'bg-primary' : 'bg-muted',
-                  )}
+                  className={cn('h-1 rounded-full', active || done ? 'bg-primary' : 'bg-muted')}
                 />
                 <span
                   className={cn(
@@ -65,7 +68,14 @@ export function JourneyLayout({ phase, children }: JourneyLayoutProps) {
           })}
         </nav>
       </header>
-      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">{children}</main>
+      <main
+        className={cn(
+          'mx-auto px-4 py-8 sm:px-6 sm:py-12',
+          width === 'wide' ? 'max-w-6xl' : 'max-w-3xl',
+        )}
+      >
+        {children}
+      </main>
     </div>
   );
 }

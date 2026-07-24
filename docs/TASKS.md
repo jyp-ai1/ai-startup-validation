@@ -8,15 +8,28 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Epic 1 Sprint 1 (Product QA gate)
+## 🟢 CURRENT — Epic 1 Sprint 2 (Decision Panel + AI Guide)
 
-**Status:** Implemented locally — commit `68359bb` · pending Preview deploy + PM Product QA  
-**Kickoff:** [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)  
+**Status:** 🟢 In progress — Preview only (PM approved 2026-07-24)  
+**Kickoff:** [sprints/EPIC1_SPRINT2_KICKOFF.md](./sprints/EPIC1_SPRINT2_KICKOFF.md)  
+**Prior QA:** [sprints/EPIC1_SPRINT1_QA_REPORT.md](./sprints/EPIC1_SPRINT1_QA_REPORT.md)  
 **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
 
-**Flow:** `/` → `/goal` → `/workflow` → `/workspace` (no legacy sidebar on journey routes)
+**Sprint 2 focus:** Workspace fixed right panel — Decision + Confidence + Next Action + AI speaks first
 
-**Verify:** `pnpm lint && pnpm build` ✅ · Preview deploy · smoke `/goal`, `/demo/enter` · tag `epic1-sprint1` after prod
+**Production:** Sprint 1 ⛔ HOLD · Sprint 2 Preview → Product QA → prod + tag `epic1-sprint2`
+
+---
+
+## Epic 1 Sprint 1 — Journey shell ✅ (Production HOLD)
+
+**Status:** Closed — 🟡 Product QA Conditional PASS (~85) · Preview `dpl_3dEo22Ty2KX4oCeDDD2ayb8bMkau`  
+**Kickoff:** [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)  
+**QA report:** [sprints/EPIC1_SPRINT1_QA_REPORT.md](./sprints/EPIC1_SPRINT1_QA_REPORT.md)
+
+**Experience delivered:** Goal 선택 → AI Workflow 구성 → Workspace shell (`68359bb`)
+
+**Not deployed to Production** — tag `epic1-sprint1` withheld per PM gate
 
 ---
 

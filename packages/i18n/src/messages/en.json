@@ -1330,15 +1330,17 @@
       "closeMenu": "Close menu"
     },
     "hero": {
-      "eyebrow": "LaunchLens",
-      "title": "Strategic decisions — through to completion",
+      "eyebrow": "AI Strategy Workspace",
+      "title": "Turn your business idea into a strategy project",
       "northStar": "LaunchLens is not an AI report generator. It is an AI Strategy Workspace that guides your project through to a completed strategic decision.",
-      "bullet1": "Pick your goal",
-      "bullet2": "AI builds your workflow",
-      "bullet3": "AI guides next actions",
-      "bullet4": "GO / HOLD / NO GO verdict",
-      "bullet5": "Evidence and confidence",
-      "tagline": "Not a report — a completed decision.",
+      "journey": {
+        "label": "How it works",
+        "goal": "Goal",
+        "workflow": "Workflow",
+        "decision": "Decision",
+        "execution": "Execution"
+      },
+      "tagline": "Not a report — a strategy project led by your AI coach.",
       "ctaStart": "Choose a goal to start",
       "ctaDemo": "Try demo workflow",
       "ctaHint1": "No credit card required",
@@ -3604,7 +3606,7 @@
           "description": "Structure a new venture proposal with decision-ready rationale."
         },
         "mvp-development": {
-          "title": "MVP development",
+          "title": "Build an MVP",
           "description": "Prioritize what to build first and plan validation."
         },
         "investment-prep": {
@@ -3617,13 +3619,84 @@
         }
       }
     },
+    "compose": {
+      "message": "AI is building your workflow...",
+      "goalContext": "Selected goal: {goal}",
+      "done": "Ready",
+      "templates": {
+        "startup": "Startup Workflow",
+        "pm": "PM Workflow",
+        "investor": "Investor Workflow"
+      },
+      "goals": {
+        "business-viability": "Business viability review",
+        "new-business": "New business planning",
+        "mvp-development": "Build an MVP",
+        "investment-prep": "Investment readiness",
+        "market-research": "Market research"
+      }
+    },
+    "coach": {
+      "panelLabel": "AI Strategy Coach",
+      "title": "AI Strategy Coach",
+      "subtitle": "Guides your next action",
+      "currentDecision": "Current decision",
+      "verdict": {
+        "GO": "GO",
+        "HOLD": "HOLD",
+        "NO GO": "NO GO"
+      },
+      "confidence": "Confidence",
+      "projectHealth": "Project health",
+      "confidenceProgress": "Confidence progress",
+      "confidenceAfter": "After step {value}%",
+      "confidenceDelta": "Expected gain {delta}%",
+      "nextActionLabel": "Recommended task",
+      "eta": "Estimated time",
+      "etaMinutes": "{minutes} min",
+      "afterComplete": "After complete",
+      "whyTitle": "Why HOLD?",
+      "whyReasons": {
+        "noCompetitorAnalysis": "No competitor analysis yet",
+        "insufficientInterviews": "Not enough customer interviews",
+        "marketSizeUnknown": "Market size not confirmed"
+      }
+    },
     "plan": {
       "aiLabel": "AI Workflow",
       "title": "Your workflow is ready",
       "goalContext": "Selected goal: {goal}",
-      "intro": "Follow these steps to complete a strategic decision. AI guides the next action at each step.",
+      "intro": "Follow these steps to complete a strategic decision. AI Strategy Coach guides the next action at each step.",
+      "currentStepLabel": "Current step",
+      "upcomingLabel": "Upcoming steps",
       "readyHint": "{count} steps · first decision in about 1–2 weeks",
-      "cta": "Start workflow",
+      "cta": "Open workspace",
+      "guide": {
+        "eta": "Est. {minutes} min",
+        "requiredLabel": "Required inputs",
+        "fields": {
+          "projectName": "Project name",
+          "oneLiner": "One-line description",
+          "targetCustomer": "Target customer",
+          "marketName": "Market name",
+          "competitorUrl": "Competitor URL",
+          "differentiation": "Differentiation",
+          "sources": "Sources",
+          "claims": "Claims",
+          "verdictRationale": "Verdict rationale",
+          "nextQuarterActions": "Next-quarter actions",
+          "notes": "Notes"
+        }
+      },
+      "forecast": {
+        "title": "Completion forecast",
+        "todayLabel": "Today",
+        "tomorrowLabel": "Tomorrow",
+        "weekLabel": "This week",
+        "today": "20%",
+        "tomorrow": "50%",
+        "week": "100%"
+      },
       "steps": {
         "context": {
           "title": "Define project context",
@@ -3657,11 +3730,8 @@
       "currentStep": "Step {current} / {total}",
       "stepFallback": "First step",
       "stepFallbackBody": "Define project context.",
-      "emptyState": "Step input UI connects in Epic 1 Sprint 2. This sprint validates the workflow shell.",
-      "guideTitle": "AI Guide",
-      "guideBody": "You don't need to wonder what to do next. AI guides the current step in this workflow.",
-      "nextAction": "Next action",
-      "nextActionDetail": "Enter a project name and one-line description to define context.",
+      "inputPlaceholderLabel": "Step input",
+      "inputPlaceholder": "Input UI connects in a later sprint. AI Strategy Coach guides your next action now.",
       "ctaContinue": "Sign in to continue",
       "ctaLogin": "Connect account to continue",
       "legacyHint": "Need the legacy beta workspace?",

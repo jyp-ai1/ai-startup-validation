@@ -1330,16 +1330,18 @@
       "closeMenu": "메뉴 닫기"
     },
     "hero": {
-      "eyebrow": "LaunchLens",
-      "title": "전략적 의사결정, 끝까지 함께",
+      "eyebrow": "AI Strategy Workspace",
+      "title": "사업 아이디어를 전략 프로젝트로 완성하세요",
       "northStar": "LaunchLens는 AI가 보고서를 생성하는 서비스가 아니라, 전략적 의사결정을 완료하도록 프로젝트를 끝까지 이끄는 AI Strategy Workspace이다.",
-      "bullet1": "목표만 선택",
-      "bullet2": "AI가 Workflow 자동 구성",
-      "bullet3": "다음 행동 AI 가이드",
-      "bullet4": "GO / HOLD / NO GO 판단",
-      "bullet5": "근거와 Confidence",
-      "tagline": "보고서가 아니라, 완료된 결정까지.",
-      "ctaStart": "목표 선택하고 시작하기",
+      "journey": {
+        "label": "이렇게 진행됩니다",
+        "goal": "Goal",
+        "workflow": "Workflow",
+        "decision": "Decision",
+        "execution": "Execution"
+      },
+      "tagline": "보고서가 아니라, AI 프로젝트 매니저와 함께하는 전략 프로젝트.",
+      "ctaStart": "Goal 선택하고 시작하기",
       "ctaDemo": "데모 Workflow 체험하기",
       "ctaHint1": "신용카드 필요 없음",
       "ctaHint2": "3분 만에 시작",
@@ -3586,7 +3588,7 @@
           "description": "신사업 제안을 구조화하고 의사결정 근거를 만듭니다."
         },
         "mvp-development": {
-          "title": "MVP 개발",
+          "title": "MVP 만들기",
           "description": "최소 기능 제품으로 검증할 우선순위와 실행 계획을 잡습니다."
         },
         "investment-prep": {
@@ -3599,13 +3601,84 @@
         }
       }
     },
+    "compose": {
+      "message": "AI가 Workflow를 구성하고 있습니다...",
+      "goalContext": "선택한 목표: {goal}",
+      "done": "구성 완료",
+      "templates": {
+        "startup": "Startup Workflow",
+        "pm": "PM Workflow",
+        "investor": "Investor Workflow"
+      },
+      "goals": {
+        "business-viability": "사업 가능성 검토",
+        "new-business": "신규사업 기획",
+        "mvp-development": "MVP 만들기",
+        "investment-prep": "투자 준비",
+        "market-research": "시장 조사"
+      }
+    },
+    "coach": {
+      "panelLabel": "AI Strategy Coach",
+      "title": "AI Strategy Coach",
+      "subtitle": "다음 행동을 안내합니다",
+      "currentDecision": "현재 판단",
+      "verdict": {
+        "GO": "GO",
+        "HOLD": "HOLD",
+        "NO GO": "NO GO"
+      },
+      "confidence": "Confidence",
+      "projectHealth": "프로젝트 건강도",
+      "confidenceProgress": "Confidence Progress",
+      "confidenceAfter": "완료 시 {value}%",
+      "confidenceDelta": "작업 완료 예상 {delta}%",
+      "nextActionLabel": "추천 작업",
+      "eta": "예상 시간",
+      "etaMinutes": "{minutes}분",
+      "afterComplete": "완료 시",
+      "whyTitle": "왜 HOLD인가?",
+      "whyReasons": {
+        "noCompetitorAnalysis": "경쟁사 분석 없음",
+        "insufficientInterviews": "고객 인터뷰 부족",
+        "marketSizeUnknown": "시장 규모 미확인"
+      }
+    },
     "plan": {
       "aiLabel": "AI Workflow",
       "title": "맞춤 Workflow가 준비되었습니다",
       "goalContext": "선택한 목표: {goal}",
-      "intro": "아래 순서대로 진행하면 전략적 의사결정을 완료할 수 있습니다. 각 단계마다 AI가 다음 행동을 안내합니다.",
+      "intro": "아래 순서대로 진행하면 전략적 의사결정을 완료할 수 있습니다. 각 단계마다 AI Strategy Coach가 다음 행동을 안내합니다.",
+      "currentStepLabel": "현재 단계",
+      "upcomingLabel": "다음 단계",
       "readyHint": "총 {count}단계 · 예상 1–2주 내 1차 Decision",
-      "cta": "Workflow 시작하기",
+      "cta": "Workspace 시작하기",
+      "guide": {
+        "eta": "예상 {minutes}분",
+        "requiredLabel": "필요한 정보",
+        "fields": {
+          "projectName": "프로젝트 이름",
+          "oneLiner": "한 줄 설명",
+          "targetCustomer": "목표 고객",
+          "marketName": "시장명",
+          "competitorUrl": "경쟁사 URL",
+          "differentiation": "차별점",
+          "sources": "출처 목록",
+          "claims": "주장 정리",
+          "verdictRationale": "판단 근거",
+          "nextQuarterActions": "다음 분기 액션",
+          "notes": "메모"
+        }
+      },
+      "forecast": {
+        "title": "완료 예상",
+        "todayLabel": "오늘",
+        "tomorrowLabel": "내일",
+        "weekLabel": "이번 주",
+        "today": "20%",
+        "tomorrow": "50%",
+        "week": "100%"
+      },
       "steps": {
         "context": {
           "title": "프로젝트 맥락 정의",
@@ -3639,11 +3712,8 @@
       "currentStep": "Step {current} / {total}",
       "stepFallback": "첫 단계",
       "stepFallbackBody": "프로젝트 맥락을 정의합니다.",
-      "emptyState": "이 단계의 입력 UI는 Epic 1 Sprint 2에서 연결됩니다. 지금은 Workflow shell을 확인하세요.",
-      "guideTitle": "AI Guide",
-      "guideBody": "다음 행동을 고민하지 않아도 됩니다. AI가 이 Workflow에서 지금 해야 할 일을 안내합니다.",
-      "nextAction": "다음 행동",
-      "nextActionDetail": "프로젝트 이름과 한 줄 설명을 입력해 맥락을 정의하세요.",
+      "inputPlaceholderLabel": "이 단계 입력",
+      "inputPlaceholder": "입력 UI는 다음 Sprint에서 연결됩니다. 지금은 AI Strategy Coach가 다음 행동을 안내합니다.",
       "ctaContinue": "로그인하고 계속하기",
       "ctaLogin": "계정 연결하고 계속하기",
       "legacyHint": "기존 Beta Workspace가 필요하면",
