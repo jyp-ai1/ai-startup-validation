@@ -8,17 +8,15 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Epic 1 Sprint 1 (await PM start)
+## 🟢 CURRENT — Epic 1 Sprint 1 (implementation)
 
-**Constitution:** ✅ [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md) v1.0 ratified  
-**Sprint 0:** ✅ Complete — PASS WITH REVISIONS (2026-07-24)  
-**Kickoff:** [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)
+**Status:** In progress — journey shell shipped locally  
+**Kickoff:** [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)  
+**Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
 
-**Success sentence:** Goal 선택 → AI Workflow 자동 구성 → 다음 행동 고민 없음
+**Flow:** `/` → `/goal` → `/workflow` → `/workspace` (no legacy sidebar on journey routes)
 
-**Engineering:** Do **not** start code until PM says **"Epic 1 Sprint 1 시작"**
-
-**Prod (unchanged):** https://ai-startup-validation-tau.vercel.app · L3.4 RC
+**Verify:** `pnpm lint && pnpm build` · smoke includes `/goal`
 
 ---
 

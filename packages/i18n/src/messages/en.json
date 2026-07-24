@@ -1330,16 +1330,17 @@
       "closeMenu": "Close menu"
     },
     "hero": {
-      "eyebrow": "AI Strategy Consultant",
-      "title": "Strategy consulting — automated by AI",
-      "bullet1": "Market research",
-      "bullet2": "Business validation",
-      "bullet3": "Competitive analysis",
-      "bullet4": "Executive reports",
-      "bullet5": "Government grant fit analysis",
-      "tagline": "AI performs the work. You make the decision.",
-      "ctaStart": "Start free",
-      "ctaDemo": "Try live demo",
+      "eyebrow": "LaunchLens",
+      "title": "Strategic decisions — through to completion",
+      "northStar": "LaunchLens is not an AI report generator. It is an AI Strategy Workspace that guides your project through to a completed strategic decision.",
+      "bullet1": "Pick your goal",
+      "bullet2": "AI builds your workflow",
+      "bullet3": "AI guides next actions",
+      "bullet4": "GO / HOLD / NO GO verdict",
+      "bullet5": "Evidence and confidence",
+      "tagline": "Not a report — a completed decision.",
+      "ctaStart": "Choose a goal to start",
+      "ctaDemo": "Try demo workflow",
       "ctaHint1": "No credit card required",
       "ctaHint2": "Get started in 3 minutes",
       "ctaHint3": "Free during Beta"
@@ -3575,6 +3576,121 @@
       "confidence": {
         "title": "Decision confidence update",
         "summary": "Review drivers and missing data before your next stakeholder meeting."
+      }
+    }
+  },
+  "workflow": {
+    "journey": {
+      "progressLabel": "Progress",
+      "phases": {
+        "goal": "Goal",
+        "workflow": "Workflow",
+        "workspace": "Workspace"
+      }
+    },
+    "goal": {
+      "eyebrow": "Step 1 · Choose goal",
+      "title": "What would you like to do today?",
+      "subtitle": "Don't pick features — pick a goal. AI will build your workflow.",
+      "demoBanner": "Demo mode — select a goal to preview a sample workflow.",
+      "hint": "AI will guide your next steps based on your goal.",
+      "options": {
+        "business-viability": {
+          "title": "Business viability review",
+          "description": "Decide GO/HOLD/NO GO on whether your idea can win in market."
+        },
+        "new-business": {
+          "title": "New business planning",
+          "description": "Structure a new venture proposal with decision-ready rationale."
+        },
+        "mvp-development": {
+          "title": "MVP development",
+          "description": "Prioritize what to build first and plan validation."
+        },
+        "investment-prep": {
+          "title": "Investment readiness",
+          "description": "Prepare strategy narrative and risks for investors."
+        },
+        "market-research": {
+          "title": "Market research",
+          "description": "Collect market size, competition, and demand signals with evidence."
+        }
+      }
+    },
+    "plan": {
+      "aiLabel": "AI Workflow",
+      "title": "Your workflow is ready",
+      "goalContext": "Selected goal: {goal}",
+      "intro": "Follow these steps to complete a strategic decision. AI guides the next action at each step.",
+      "readyHint": "{count} steps · first decision in about 1–2 weeks",
+      "cta": "Start workflow",
+      "steps": {
+        "context": {
+          "title": "Define project context",
+          "description": "Clarify idea, customer, and market scope."
+        },
+        "market": {
+          "title": "Market & demand research",
+          "description": "Gather TAM, growth signals, and customer needs."
+        },
+        "competition": {
+          "title": "Competition & positioning",
+          "description": "Map competitors and differentiation."
+        },
+        "evidence": {
+          "title": "Evidence assembly",
+          "description": "Attach sources and confidence to each claim."
+        },
+        "decision": {
+          "title": "GO / HOLD / NO GO",
+          "description": "Make an evidence-based first verdict."
+        },
+        "execution": {
+          "title": "Execution plan",
+          "description": "Define next-quarter actions and deliverables."
+        }
+      }
+    },
+    "workspace": {
+      "title": "Strategy Workspace",
+      "progressLabel": "Progress",
+      "currentStep": "Step {current} / {total}",
+      "stepFallback": "First step",
+      "stepFallbackBody": "Define project context.",
+      "emptyState": "Step input UI connects in Epic 1 Sprint 2. This sprint validates the workflow shell.",
+      "guideTitle": "AI Guide",
+      "guideBody": "You don't need to wonder what to do next. AI guides the current step in this workflow.",
+      "nextAction": "Next action",
+      "nextActionDetail": "Enter a project name and one-line description to define context.",
+      "ctaContinue": "Sign in to continue",
+      "ctaLogin": "Connect account to continue",
+      "legacyHint": "Need the legacy beta workspace?",
+      "legacyLink": "Go to dashboard",
+      "steps": {
+        "context": {
+          "title": "Define project context",
+          "body": "Clarify what the idea is, who it serves, and which market it targets."
+        },
+        "market": {
+          "title": "Market & demand research",
+          "body": "Collect market size and demand signals."
+        },
+        "competition": {
+          "title": "Competition & positioning",
+          "body": "Summarize competitive landscape."
+        },
+        "evidence": {
+          "title": "Evidence assembly",
+          "body": "Link claims to sources."
+        },
+        "decision": {
+          "title": "GO / HOLD / NO GO",
+          "body": "Decide based on evidence."
+        },
+        "execution": {
+          "title": "Execution plan",
+          "body": "Plan next actions."
+        }
       }
     }
   }

@@ -2,8 +2,8 @@
 
 **Epic:** Goal & Workflow Experience  
 **Sprint:** 1 — First journey shell  
-**Status:** Ready for implementation (Sprint 0 constitution ratified)  
-**PM approval:** ☐ Pending implementation start
+**Status:** Implemented — pending Preview deploy + Product QA  
+**PM approval:** ✅ Epic 1 Sprint 1 시작 (2026-07-24)
 
 ---
 

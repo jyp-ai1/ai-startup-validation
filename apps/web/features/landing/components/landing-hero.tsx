@@ -36,6 +36,7 @@ export function LandingHero() {
           <h1 className="mt-4 text-4xl font-semibold leading-[1.08] tracking-tight text-foreground md:text-5xl lg:text-[3.25rem]">
             {t('title')}
           </h1>
+          <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">{t('northStar')}</p>
           <ul className="mt-8 space-y-2.5">
             {bullets.map((item) => (
               <li key={item} className="flex items-center gap-2 text-[15px] text-muted-foreground">
@@ -48,7 +49,7 @@ export function LandingHero() {
 
           <div className="mt-10 flex flex-wrap gap-3">
             <LandingCtaLink
-              href="/auth/login?next=/dashboard"
+              href="/goal"
               event="cta_start"
               className="h-11 rounded-xl bg-primary px-5 text-primary-foreground hover:bg-primary/90 sm:h-12 sm:px-8"
             >

@@ -1330,16 +1330,17 @@
       "closeMenu": "메뉴 닫기"
     },
     "hero": {
-      "eyebrow": "AI Strategy Consultant",
-      "title": "전략 컨설팅, AI가 자동으로",
-      "bullet1": "시장조사",
-      "bullet2": "사업성 분석",
-      "bullet3": "경쟁사 분석",
-      "bullet4": "Executive Report",
-      "bullet5": "정부지원사업 적합도 분석",
-      "tagline": "AI가 조사합니다. 당신은 결정합니다.",
-      "ctaStart": "무료로 시작하기",
-      "ctaDemo": "실제 데모 체험하기",
+      "eyebrow": "LaunchLens",
+      "title": "전략적 의사결정, 끝까지 함께",
+      "northStar": "LaunchLens는 AI가 보고서를 생성하는 서비스가 아니라, 전략적 의사결정을 완료하도록 프로젝트를 끝까지 이끄는 AI Strategy Workspace이다.",
+      "bullet1": "목표만 선택",
+      "bullet2": "AI가 Workflow 자동 구성",
+      "bullet3": "다음 행동 AI 가이드",
+      "bullet4": "GO / HOLD / NO GO 판단",
+      "bullet5": "근거와 Confidence",
+      "tagline": "보고서가 아니라, 완료된 결정까지.",
+      "ctaStart": "목표 선택하고 시작하기",
+      "ctaDemo": "데모 Workflow 체험하기",
       "ctaHint1": "신용카드 필요 없음",
       "ctaHint2": "3분 만에 시작",
       "ctaHint3": "Beta 무료"
@@ -3557,6 +3558,121 @@
       "confidence": {
         "title": "Decision Confidence 업데이트",
         "summary": "다음 미팅 전 drivers와 missing data를 검토하세요."
+      }
+    }
+  },
+  "workflow": {
+    "journey": {
+      "progressLabel": "진행 단계",
+      "phases": {
+        "goal": "목표",
+        "workflow": "Workflow",
+        "workspace": "Workspace"
+      }
+    },
+    "goal": {
+      "eyebrow": "Step 1 · 목표 선택",
+      "title": "오늘 무엇을 하시겠습니까?",
+      "subtitle": "기능을 고르지 않아도 됩니다. 목표만 선택하면 AI가 Workflow를 구성합니다.",
+      "demoBanner": "데모 모드 — Goal을 선택하면 샘플 Workflow를 체험할 수 있습니다.",
+      "hint": "선택한 목표에 맞춰 AI가 다음 단계를 안내합니다.",
+      "options": {
+        "business-viability": {
+          "title": "사업 가능성 검토",
+          "description": "아이디어가 시장에서 통할지 GO/HOLD/NO GO로 판단합니다."
+        },
+        "new-business": {
+          "title": "신규사업 기획",
+          "description": "신사업 제안을 구조화하고 의사결정 근거를 만듭니다."
+        },
+        "mvp-development": {
+          "title": "MVP 개발",
+          "description": "최소 기능 제품으로 검증할 우선순위와 실행 계획을 잡습니다."
+        },
+        "investment-prep": {
+          "title": "투자 준비",
+          "description": "투자자 설득에 필요한 전략 스토리와 리스크를 정리합니다."
+        },
+        "market-research": {
+          "title": "시장 조사",
+          "description": "시장 규모, 경쟁, 수요 신호를 근거와 함께 수집합니다."
+        }
+      }
+    },
+    "plan": {
+      "aiLabel": "AI Workflow",
+      "title": "맞춤 Workflow가 준비되었습니다",
+      "goalContext": "선택한 목표: {goal}",
+      "intro": "아래 순서대로 진행하면 전략적 의사결정을 완료할 수 있습니다. 각 단계마다 AI가 다음 행동을 안내합니다.",
+      "readyHint": "총 {count}단계 · 예상 1–2주 내 1차 Decision",
+      "cta": "Workflow 시작하기",
+      "steps": {
+        "context": {
+          "title": "프로젝트 맥락 정의",
+          "description": "아이디어, 고객, 시장 범위를 명확히 합니다."
+        },
+        "market": {
+          "title": "시장·수요 조사",
+          "description": "TAM, 성장 신호, 고객 니즈를 수집합니다."
+        },
+        "competition": {
+          "title": "경쟁·포지셔닝",
+          "description": "경쟁사와 차별점을 정리합니다."
+        },
+        "evidence": {
+          "title": "근거 정리",
+          "description": "주장마다 출처와 Confidence를 붙입니다."
+        },
+        "decision": {
+          "title": "GO / HOLD / NO GO",
+          "description": "근거 기반으로 1차 판단을 내립니다."
+        },
+        "execution": {
+          "title": "실행 계획",
+          "description": "다음 분기 액션과 산출물을 정합니다."
+        }
+      }
+    },
+    "workspace": {
+      "title": "Strategy Workspace",
+      "progressLabel": "진행률",
+      "currentStep": "Step {current} / {total}",
+      "stepFallback": "첫 단계",
+      "stepFallbackBody": "프로젝트 맥락을 정의합니다.",
+      "emptyState": "이 단계의 입력 UI는 Epic 1 Sprint 2에서 연결됩니다. 지금은 Workflow shell을 확인하세요.",
+      "guideTitle": "AI Guide",
+      "guideBody": "다음 행동을 고민하지 않아도 됩니다. AI가 이 Workflow에서 지금 해야 할 일을 안내합니다.",
+      "nextAction": "다음 행동",
+      "nextActionDetail": "프로젝트 이름과 한 줄 설명을 입력해 맥락을 정의하세요.",
+      "ctaContinue": "로그인하고 계속하기",
+      "ctaLogin": "계정 연결하고 계속하기",
+      "legacyHint": "기존 Beta Workspace가 필요하면",
+      "legacyLink": "대시보드로 이동",
+      "steps": {
+        "context": {
+          "title": "프로젝트 맥락 정의",
+          "body": "아이디어가 무엇인지, 누구를 위한 것인지, 어떤 시장인지 명확히 합니다. 이 단계가 이후 모든 AI 분석의 기준이 됩니다."
+        },
+        "market": {
+          "title": "시장·수요 조사",
+          "body": "시장 규모와 수요 신호를 수집합니다."
+        },
+        "competition": {
+          "title": "경쟁·포지셔닝",
+          "body": "경쟁 환경과 차별점을 정리합니다."
+        },
+        "evidence": {
+          "title": "근거 정리",
+          "body": "주장과 출처를 연결합니다."
+        },
+        "decision": {
+          "title": "GO / HOLD / NO GO",
+          "body": "근거를 바탕으로 판단합니다."
+        },
+        "execution": {
+          "title": "실행 계획",
+          "body": "다음 액션을 정합니다."
+        }
       }
     }
   }
