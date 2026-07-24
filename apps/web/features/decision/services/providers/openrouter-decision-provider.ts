@@ -1,4 +1,4 @@
-import { chatService, promptBuilder, resolveDefaultModel } from '@repo/ai';
+import { chatService, chatWithFallback, promptBuilder, resolveDefaultModel } from '@repo/ai';
 
 import type { DecisionInput, DecisionProvider, DecisionResult, DecisionVerdict } from '../decision-types';
 import { MockDecisionProvider } from './mock-decision-provider';
@@ -45,13 +45,16 @@ export class OpenRouterDecisionProvider implements DecisionProvider {
       'v1',
     );
 
-    const response = await chatService.chat({
-      model: resolveDefaultModel('openrouter'),
-      messages,
-      temperature: 0.35,
-      maxTokens: 700,
-      responseFormat: { type: 'json_object' },
-    });
+    const response = await chatWithFallback(
+      (req) => chatService.chat(req),
+      {
+        model: resolveDefaultModel('openrouter'),
+        messages,
+        temperature: 0.35,
+        maxTokens: 700,
+        responseFormat: { type: 'json_object' },
+      },
+    );
 
     const parsed = parseDecisionJson(response.content);
     const verdict = isValidVerdict(parsed.verdict) ? parsed.verdict : base.verdict;
@@ -71,7 +74,7 @@ export class OpenRouterDecisionProvider implements DecisionProvider {
       verdict,
       executiveSummaryText,
       reasonTexts,
-      providerId: 'gemini',
+      providerId: response.provider === 'openai' ? 'openai' : 'gemini',
       generatedAt: new Date().toISOString(),
     };
   }

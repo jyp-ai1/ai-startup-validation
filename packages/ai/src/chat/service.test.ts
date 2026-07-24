@@ -2,9 +2,16 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 import { ChatService } from './service';
 import { ProviderRegistry } from '../providers/registry';
-import { OpenAIProviderAdapter } from '../providers/adapters';
+import { BaseProviderAdapter } from '../providers/base-provider.adapter';
+import type { ModelKind } from '../types';
 import { ModelRegistry, DEFAULT_MODELS } from '../models/registry';
 import { ObservabilityTracker } from '../observability/tracker';
+
+class TestOpenAIAdapter extends BaseProviderAdapter {
+  readonly id = 'openai' as const;
+  readonly name = 'OpenAI Test';
+  readonly capabilities: ModelKind[] = ['chat', 'embedding', 'vision', 'reasoning', 'audio', 'image'];
+}
 
 describe('ChatService', () => {
   let chat: ChatService;
@@ -14,7 +21,7 @@ describe('ChatService', () => {
   beforeEach(() => {
     providers = new ProviderRegistry();
     providers.clear();
-    providers.registerFactory('openai', (c) => new OpenAIProviderAdapter(c));
+    providers.registerFactory('openai', (c) => new TestOpenAIAdapter(c));
     providers.create('openai', { apiKey: 'test-key' });
 
     observability = new ObservabilityTracker();

@@ -85,6 +85,8 @@ export function OperationsDashboard() {
     totalCostUsd: number;
     model: string;
     openrouterConfigured: boolean;
+    openaiConfigured: boolean;
+    fallbackModel: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -107,6 +109,8 @@ export function OperationsDashboard() {
             totalCostUsd: json.data.tokenStats.totalCostUsd,
             model: json.data.model,
             openrouterConfigured: json.data.openrouterConfigured,
+            openaiConfigured: json.data.openaiConfigured ?? false,
+            fallbackModel: json.data.fallbackModel ?? 'gpt-4o-mini',
           });
         }
       })
@@ -148,7 +152,7 @@ export function OperationsDashboard() {
           </div>
 
           {aiStats ? (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
               <StatCard
                 title="AI avg latency"
                 value={`${aiStats.avgLatencyMs}ms`}
@@ -165,6 +169,11 @@ export function OperationsDashboard() {
                 title="OpenRouter"
                 value={aiStats.openrouterConfigured ? 'Configured' : 'Mock fallback'}
                 icon={Globe}
+              />
+              <StatCard
+                title="OpenAI fallback"
+                value={aiStats.openaiConfigured ? aiStats.fallbackModel : 'Not set'}
+                icon={Sparkles}
               />
             </div>
           ) : null}

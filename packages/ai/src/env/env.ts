@@ -15,6 +15,7 @@ export const aiEnv = createEnv({
       .enum(['openai', 'anthropic', 'google', 'openrouter', 'azure-openai', 'ollama'])
       .optional(),
     AI_DEFAULT_MODEL: z.string().optional(),
+    AI_FALLBACK_MODEL: z.string().optional(),
     /** Preferred provider alias: OPENAI | CLAUDE (maps to openai | anthropic). */
     AI_PROVIDER: z.enum(['OPENAI', 'CLAUDE', 'openai', 'anthropic']).optional(),
     AI_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().optional(),

@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { chatService, promptBuilder, resolveDefaultModel } from '@repo/ai';
+import { chatService, chatWithFallback, promptBuilder, resolveDefaultModel, tokenManager } from '@repo/ai';
 
 export type ConsultantChatInput = {
   question: string;
@@ -38,16 +38,17 @@ export async function generateConsultantAnswer(
   );
 
   const model = resolveDefaultModel('openrouter');
-  const response = await chatService.chat({
-    model,
-    messages,
-    temperature: 0.5,
-    maxTokens: 512,
-  });
+  const response = await chatWithFallback(
+    (req) => chatService.chat(req),
+    {
+      model,
+      messages,
+      temperature: 0.5,
+      maxTokens: 512,
+    },
+  );
 
-  const estimatedCostUsd =
-    (response.usage.inputTokens / 1_000_000) * 0.15 +
-    (response.usage.outputTokens / 1_000_000) * 0.6;
+  const estimatedCostUsd = tokenManager.estimateCostUsd(response.model, response.usage);
 
   return {
     answer: response.content,

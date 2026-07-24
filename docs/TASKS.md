@@ -77,9 +77,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint L3.1 — AI Research Pipeline (Phase 2) 🔄
+## Sprint L3.1 — AI Research Pipeline (Phase 2) ✅
 
-**Status:** In progress  
+**Status:** Complete ✅ (prod: https://ai-startup-validation-tau.vercel.app, commit `0ac804f`)  
 **Goal:** Research → Gemini → Evidence DB + Decision LLM + citable sources
 
 | EPIC | Status |
@@ -88,9 +88,27 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E2 Decision Engine OpenRouter/Gemini provider | ✅ Done |
 | E3 Research prompt v2 with source URLs | ✅ Done |
 | E4 Prod URL migration (tau.vercel.app) | ✅ Done |
-| E5 Build/test/deploy + smoke | 🔄 In progress |
+| E5 Build/test/deploy + smoke | ✅ Done |
 
 **Verify:** Research approve → Evidence list · Decision Center live summary · `/api/ai/health`
+
+---
+
+## Sprint L3.2 — OpenAI Provider + Fallback (Phase 3) 🔄
+
+**Status:** In progress  
+**Goal:** Direct OpenAI adapter + OpenRouter→OpenAI fallback + Orchestrator RESEARCH real worker
+
+| EPIC | Status |
+|------|--------|
+| E1 OpenAI HTTP adapter + tests | ✅ Done |
+| E2 Provider fallback chain (consultant + decision) | ✅ Done |
+| E3 Orchestrator RESEARCH real worker | ✅ Done |
+| E4 Health API + ops dashboard + env docs | ✅ Done |
+| E5 Build/test/deploy + smoke | 🔄 In progress |
+
+**Env:** `OPENAI_API_KEY` (fallback), optional `AI_FALLBACK_MODEL=gpt-4o-mini`  
+**Verify:** `/api/ai/health` shows `openaiConfigured` · Orchestrator RESEARCH uses Gemini · fallback on 429/5xx
 
 ---
 

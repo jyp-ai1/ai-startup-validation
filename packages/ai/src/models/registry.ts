@@ -31,6 +31,17 @@ export type AIModel =
 /** Default model catalog — extend or override at runtime. */
 export const DEFAULT_MODELS: AIModel[] = [
   {
+    id: 'gpt-4o-mini',
+    name: 'GPT-4o Mini',
+    provider: 'openai',
+    kind: 'chat',
+    contextWindow: 128_000,
+    maxOutputTokens: 16_384,
+    supportsStreaming: true,
+    supportsTools: true,
+    supportsVision: true,
+  },
+  {
     id: 'gpt-4o',
     name: 'GPT-4o',
     provider: 'openai',

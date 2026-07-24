@@ -1,5 +1,8 @@
 import { randomUUID } from 'crypto';
 
+import { runResearchSync } from '@/features/agents/research/services/research-agent';
+import { resolveResearchProviderId } from '@/lib/ai/config';
+
 import type {
   AgentExecutionResult,
   AgentId,
@@ -117,19 +120,40 @@ function createMockWorker(agentId: AgentId): StrategyAgentWorker {
   };
 }
 
-const WORKERS: StrategyAgentWorker[] = (
-  [
-    'RESEARCH',
-    'MARKET',
-    'COMPETITOR',
-    'GOVERNMENT',
-    'TECHNOLOGY',
-    'INVESTMENT',
-    'FRAMEWORK',
-    'VOC',
-    'DECISION',
-  ] as AgentId[]
-).map(createMockWorker);
+function createResearchWorker(): StrategyAgentWorker {
+  const defaults = AGENT_DEFAULTS.RESEARCH;
+  const mockWorker = createMockWorker('RESEARCH');
+
+  return {
+    id: 'RESEARCH',
+    nameKey: 'agents.research',
+    capabilityKey: 'capabilities.research',
+    priority: 5,
+    estimatedDurationMs: defaults.duration,
+    async execute(ctx: OrchestratorContext): Promise<AgentExecutionResult> {
+      if (resolveResearchProviderId() === 'mock') {
+        return mockWorker.execute(ctx);
+      }
+      return runResearchSync(ctx);
+    },
+  };
+}
+
+const AGENT_IDS: AgentId[] = [
+  'RESEARCH',
+  'MARKET',
+  'COMPETITOR',
+  'GOVERNMENT',
+  'TECHNOLOGY',
+  'INVESTMENT',
+  'FRAMEWORK',
+  'VOC',
+  'DECISION',
+];
+
+const WORKERS: StrategyAgentWorker[] = AGENT_IDS.map((agentId) =>
+  agentId === 'RESEARCH' ? createResearchWorker() : createMockWorker(agentId),
+);
 
 const REGISTRY = new Map<AgentId, StrategyAgentWorker>(
   WORKERS.map((w) => [w.id, w]),

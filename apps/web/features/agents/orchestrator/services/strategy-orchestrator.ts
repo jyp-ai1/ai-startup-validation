@@ -206,6 +206,7 @@ export class StrategyOrchestrator {
     const decisionResult = await triggerDecisionForPlan(plan);
     const lineageTotal = plan.confidenceLineage?.total;
     const decisionConfidence = decisionResult?.scores.confidence ?? 0;
+    const decisionProvider = decisionResult?.providerId ?? 'mock';
     const nodes = plan.nodes.map((n) =>
       n.agentId === 'DECISION'
         ? {
@@ -218,7 +219,13 @@ export class StrategyOrchestrator {
               evidence: [],
               knowledge: [],
               summaryKey: 'summaries.decision',
-              cost: { provider: 'mock', durationMs: 500, estimatedTokens: 600, estimatedCostUsd: 0.001, retryCount: 0 },
+              cost: {
+                provider: decisionProvider,
+                durationMs: 500,
+                estimatedTokens: 600,
+                estimatedCostUsd: decisionProvider === 'mock' ? 0.001 : 0.002,
+                retryCount: 0,
+              },
             },
           }
         : n,

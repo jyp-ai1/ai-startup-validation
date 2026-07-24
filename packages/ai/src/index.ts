@@ -87,12 +87,13 @@ export * from './errors';
 // Providers
 export * from './providers';
 export { openRouterHealth } from './providers/openrouter-http';
+export { openAIHealth } from './providers/openai-http';
 
 // Models
 export * from './models';
 
 // Chat & Completion
-export { ChatService, chatService } from './chat';
+export { ChatService, chatService, chatWithFallback } from './chat';
 export type { ChatServiceOptions } from './chat';
 
 // Prompts
@@ -138,8 +139,10 @@ export type { AiEnv } from './env/env';
 // Config
 export {
   DEFAULT_GEMINI_FLASH_MODEL,
+  DEFAULT_OPENAI_MINI_MODEL,
   resolveDefaultModel,
   resolveDefaultProvider,
+  resolveFallbackModel,
   isRealAIEnabled,
 } from './config/defaults';
 

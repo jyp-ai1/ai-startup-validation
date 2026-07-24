@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 
 import type {
   AgentExecutionRecord,
+  GeneratedEvidenceItem,
   ResearchApprovalStatus,
   ResearchJob,
   ResearchProviderId,
@@ -13,6 +14,12 @@ import { advanceJobThroughPipeline, enqueueJob, transitionJob } from './job-queu
 import { getResearchProviderService } from './research-provider';
 import { planResearchTasks } from './task-planner';
 import { knowledgeStore } from '../repositories/mock-knowledge-store';
+import type {
+  AgentExecutionResult,
+  MergedEvidenceItem,
+  OrchestratorContext,
+} from '../../orchestrator/services/orchestrator-types';
+import { resolveResearchProviderId } from '@/lib/ai/config';
 
 function createJob(request: ResearchRequest, providerId: ResearchProviderId): ResearchJob {
   const now = new Date().toISOString();
@@ -154,4 +161,71 @@ export async function getProjectExecutionHistory(projectId: string) {
 
 export async function getResearchJob(jobId: string) {
   return knowledgeStore.getJob(jobId);
+}
+
+function confidenceToScore(level: GeneratedEvidenceItem['confidence']): number {
+  switch (level) {
+    case 'HIGH':
+      return 88;
+    case 'MEDIUM':
+      return 72;
+    default:
+      return 55;
+  }
+}
+
+/** Synchronous research for orchestrator RESEARCH worker (L3.2). */
+export async function runResearchSync(ctx: OrchestratorContext): Promise<AgentExecutionResult> {
+  const startMs = Date.now();
+  const providerId = resolveResearchProviderId();
+  const request: ResearchRequest = {
+    projectId: ctx.projectId,
+    projectTitle: ctx.projectTitle,
+    projectType: ctx.projectType,
+    industry: ctx.industry,
+    country: ctx.country,
+    language: ctx.language,
+    targetCustomer: ctx.targetCustomer,
+  };
+  const tasks = planResearchTasks(request);
+  const provider = getResearchProviderService(providerId);
+  const result = await provider.execute(request, tasks);
+
+  const evidence: MergedEvidenceItem[] = result.evidence.map((item) => ({
+    id: item.id,
+    agentId: 'RESEARCH',
+    titleKey: item.titleKey,
+    summaryKey: item.summaryKey,
+    confidence: confidenceToScore(item.confidence),
+    sourceAgent: 'RESEARCH',
+  }));
+
+  const knowledge = [
+    {
+      id: randomUUID(),
+      agentId: 'RESEARCH' as const,
+      labelKey: 'evidence.research.knowledge',
+      valueKey: 'summaries.research',
+      confidence: result.confidence,
+      relatedAgents: ['RESEARCH' as const],
+    },
+  ];
+
+  const durationMs = Date.now() - startMs;
+  const estimatedTokens = Math.round(900 + durationMs * 1.2);
+
+  return {
+    agentId: 'RESEARCH',
+    confidence: result.confidence,
+    evidence,
+    knowledge,
+    summaryKey: 'summaries.research',
+    cost: {
+      provider: providerId === 'gemini' ? 'openrouter' : providerId,
+      durationMs,
+      estimatedTokens,
+      estimatedCostUsd: providerId === 'mock' ? estimatedTokens * 0.000002 : 0.002,
+      retryCount: 0,
+    },
+  };
 }

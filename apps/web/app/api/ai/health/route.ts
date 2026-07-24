@@ -3,8 +3,10 @@ import {
   aiEnv,
   getAIPlatform,
   isProviderConfigured,
+  openAIHealth,
   openRouterHealth,
   resolveDefaultModel,
+  resolveFallbackModel,
 } from '@repo/ai';
 
 export async function GET() {
@@ -12,19 +14,31 @@ export async function GET() {
     const platform = getAIPlatform();
     const stats = platform.observability.getStats();
     const openrouterConfigured = isProviderConfigured('openrouter');
+    const openaiConfigured = isProviderConfigured('openai');
 
     let openrouterHealth: { ok: boolean; latencyMs: number } | null = null;
     if (openrouterConfigured && aiEnv.OPENROUTER_API_KEY) {
       openrouterHealth = await openRouterHealth(aiEnv.OPENROUTER_API_KEY);
     }
 
+    let openaiHealthResult: { ok: boolean; latencyMs: number } | null = null;
+    if (openaiConfigured && aiEnv.OPENAI_API_KEY) {
+      openaiHealthResult = await openAIHealth(aiEnv.OPENAI_API_KEY);
+    }
+
+    const primaryOk = openrouterHealth?.ok !== false && openaiHealthResult?.ok !== false;
+    const hasLiveProvider = openrouterConfigured || openaiConfigured;
+
     return Response.json(
       createSuccessResponse({
-        status: openrouterHealth?.ok === false ? 'degraded' : 'ok',
-        provider: 'openrouter',
+        status: primaryOk || !hasLiveProvider ? 'ok' : 'degraded',
+        provider: openrouterConfigured ? 'openrouter' : openaiConfigured ? 'openai' : 'mock',
         model: resolveDefaultModel('openrouter'),
+        fallbackModel: resolveFallbackModel(),
         openrouterConfigured,
         openrouterHealth,
+        openaiConfigured,
+        openaiHealth: openaiHealthResult,
         tokenStats: {
           totalRequests: stats.totalRequests,
           avgLatencyMs: Math.round(stats.avgLatencyMs),

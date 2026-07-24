@@ -4,6 +4,9 @@ import type { ProviderId } from '../types';
 /** Primary MVP model — Gemini Flash via OpenRouter. */
 export const DEFAULT_GEMINI_FLASH_MODEL = 'google/gemini-2.5-flash';
 
+/** OpenAI fallback when OpenRouter fails (L3.2). */
+export const DEFAULT_OPENAI_MINI_MODEL = 'gpt-4o-mini';
+
 export function resolveDefaultProvider(): ProviderId {
   if (aiEnv.AI_DEFAULT_PROVIDER) return aiEnv.AI_DEFAULT_PROVIDER;
   if (isProviderConfigured('openrouter')) return 'openrouter';
@@ -21,12 +24,16 @@ export function resolveDefaultModel(provider: ProviderId = resolveDefaultProvide
     case 'google':
       return DEFAULT_GEMINI_FLASH_MODEL;
     case 'openai':
-      return 'gpt-4o-mini';
+      return DEFAULT_OPENAI_MINI_MODEL;
     case 'anthropic':
       return 'claude-sonnet-4-20250514';
     default:
       return DEFAULT_GEMINI_FLASH_MODEL;
   }
+}
+
+export function resolveFallbackModel(): string {
+  return aiEnv.AI_FALLBACK_MODEL ?? DEFAULT_OPENAI_MINI_MODEL;
 }
 
 export function isRealAIEnabled(): boolean {
