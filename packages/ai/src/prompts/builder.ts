@@ -11,6 +11,13 @@ export type PromptBuilderContext = {
   question?: string;
   tasks?: string;
   locale?: string;
+  researchTotal?: string;
+  evidenceTotal?: string;
+  evidenceHigh?: string;
+  vocTotal?: string;
+  competitorTotal?: string;
+  validationScore?: string;
+  mockVerdict?: string;
 };
 
 function compactContext(ctx: PromptBuilderContext): string {
@@ -40,7 +47,7 @@ export class PromptBuilder {
     );
   }
 
-  buildResearchPrompt(ctx: PromptBuilderContext, version = 'v1'): RenderedPrompt {
+  buildResearchPrompt(ctx: PromptBuilderContext, version = 'v2'): RenderedPrompt {
     return promptManager.render(
       'research.agent',
       {
@@ -52,11 +59,35 @@ export class PromptBuilder {
     );
   }
 
-  buildMessages(ctx: PromptBuilderContext, kind: 'consultant' | 'research', version = 'v1'): ChatMessage[] {
+  buildDecisionPrompt(ctx: PromptBuilderContext, version = 'v1'): RenderedPrompt {
+    return promptManager.render(
+      'decision.agent',
+      {
+        context: compactContext(ctx),
+        locale: ctx.locale ?? 'ko',
+        researchTotal: ctx.researchTotal ?? '0',
+        evidenceTotal: ctx.evidenceTotal ?? '0',
+        evidenceHigh: ctx.evidenceHigh ?? '0',
+        vocTotal: ctx.vocTotal ?? '0',
+        competitorTotal: ctx.competitorTotal ?? '0',
+        validationScore: ctx.validationScore ?? 'n/a',
+        mockVerdict: ctx.mockVerdict ?? 'HOLD',
+      },
+      version,
+    );
+  }
+
+  buildMessages(
+    ctx: PromptBuilderContext,
+    kind: 'consultant' | 'research' | 'decision',
+    version = 'v1',
+  ): ChatMessage[] {
     const rendered =
       kind === 'consultant'
         ? this.buildConsultantPrompt(ctx, version)
-        : this.buildResearchPrompt(ctx, version);
+        : kind === 'research'
+          ? this.buildResearchPrompt(ctx, version)
+          : this.buildDecisionPrompt(ctx, version);
     return rendered.messages;
   }
 }

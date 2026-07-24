@@ -8,6 +8,7 @@ import type {
   ResearchRequest,
 } from './research-agent-types';
 import { buildEvidenceFromResult, countEvidence } from './evidence-builder';
+import { persistResearchEvidence } from './evidence-persistence';
 import { advanceJobThroughPipeline, enqueueJob, transitionJob } from './job-queue';
 import { getResearchProviderService } from './research-provider';
 import { planResearchTasks } from './task-planner';
@@ -103,7 +104,19 @@ export class ResearchAgent {
   }
 
   async approveJob(jobId: string): Promise<ResearchJob | null> {
-    return this.setApproval(jobId, 'APPROVED');
+    const job = await this.setApproval(jobId, 'APPROVED');
+    if (!job || job.evidencePersisted) return job;
+
+    const persistedEvidenceCount = await persistResearchEvidence(job);
+    if (persistedEvidenceCount === 0) return job;
+
+    const updated: ResearchJob = {
+      ...job,
+      evidencePersisted: true,
+      persistedEvidenceCount,
+    };
+    await knowledgeStore.updateJob(updated);
+    return updated;
   }
 
   async rejectJob(jobId: string): Promise<ResearchJob | null> {
@@ -115,7 +128,9 @@ export class ResearchAgent {
     status: ResearchApprovalStatus,
   ): Promise<ResearchJob | null> {
     const job = await knowledgeStore.getJob(jobId);
-    if (!job || job.state !== 'COMPLETED') return null;
+    if (!job || job.state !== 'COMPLETED' || job.approvalStatus !== 'PENDING_REVIEW') {
+      return null;
+    }
 
     const updated = { ...job, approvalStatus: status };
     await knowledgeStore.updateJob(updated);

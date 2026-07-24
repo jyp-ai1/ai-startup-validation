@@ -185,6 +185,9 @@ export type DecisionResult = {
   scores: DecisionScores;
   executiveSummaryKeys: string[];
   executiveSummaryParams?: Record<string, string | number>[];
+  /** Live LLM paragraphs when provider is gemini (L3.1). */
+  executiveSummaryText?: string[];
+  reasonTexts?: Array<{ id: string; text: string }>;
   reasons: DecisionReason[];
   missingEvidence: MissingEvidenceItem[];
   recommendedActions: RecommendedAction[];

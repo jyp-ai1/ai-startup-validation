@@ -42,7 +42,7 @@ function buildHeaders(apiKey: string): Record<string, string> {
   return {
     Authorization: `Bearer ${apiKey}`,
     'Content-Type': 'application/json',
-    'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL ?? 'https://ai-startup-validation-gilt.vercel.app',
+    'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL ?? 'https://ai-startup-validation-tau.vercel.app',
     'X-Title': 'LaunchLens AI',
   };
 }

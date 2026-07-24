@@ -144,11 +144,17 @@ export function DecisionCenterView({
           <DecisionVerdictBadge verdict={decision.verdict} size="lg" />
         </div>
         <div className="mt-8 space-y-3">
-          {decision.executiveSummaryKeys.map((key) => (
-            <p key={key} className="text-[15px] leading-relaxed text-foreground/90">
-              {t(key as 'executive.insufficient1')}
-            </p>
-          ))}
+          {decision.executiveSummaryText?.length
+            ? decision.executiveSummaryText.map((paragraph) => (
+                <p key={paragraph.slice(0, 40)} className="text-[15px] leading-relaxed text-foreground/90">
+                  {paragraph}
+                </p>
+              ))
+            : decision.executiveSummaryKeys.map((key) => (
+                <p key={key} className="text-[15px] leading-relaxed text-foreground/90">
+                  {t(key as 'executive.insufficient1')}
+                </p>
+              ))}
         </div>
       </section>
 
@@ -156,15 +162,25 @@ export function DecisionCenterView({
       <section className="space-y-4">
         <h2 className="text-lg font-semibold tracking-tight">{t('reasonTitle')}</h2>
         <ul className="space-y-3">
-          {decision.reasons.map((reason) => (
-            <li
-              key={reason.id}
-              className="flex gap-3 rounded-lg border border-border/50 bg-card px-5 py-4 text-[15px] leading-relaxed"
-            >
-              <span className="mt-1 size-1.5 shrink-0 rounded-full bg-primary" />
-              <span>{t(reason.textKey as 'reasons.hold.voc', reason.params ?? {})}</span>
-            </li>
-          ))}
+          {(decision.reasonTexts?.length
+            ? decision.reasonTexts.map((reason) => (
+                <li
+                  key={reason.id}
+                  className="flex gap-3 rounded-lg border border-border/50 bg-card px-5 py-4 text-[15px] leading-relaxed"
+                >
+                  <span className="mt-1 size-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>{reason.text}</span>
+                </li>
+              ))
+            : decision.reasons.map((reason) => (
+                <li
+                  key={reason.id}
+                  className="flex gap-3 rounded-lg border border-border/50 bg-card px-5 py-4 text-[15px] leading-relaxed"
+                >
+                  <span className="mt-1 size-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>{t(reason.textKey as 'reasons.hold.voc', reason.params ?? {})}</span>
+                </li>
+              )))}
         </ul>
       </section>
 

@@ -44,7 +44,13 @@ export async function approveResearchJob(jobId: string, projectId: string) {
   const job = await researchAgent.approveJob(jobId);
   if (!job) return { error: 'Job not found or not completed' };
   revalidatePath(`/projects/${projectId}/research`);
-  return { success: true };
+  revalidatePath(`/projects/${projectId}/evidence`);
+  revalidatePath(`/projects/${projectId}`);
+  revalidatePath('/dashboard');
+  return {
+    success: true,
+    persistedEvidenceCount: job.persistedEvidenceCount ?? 0,
+  };
 }
 
 export async function rejectResearchJob(jobId: string, projectId: string) {

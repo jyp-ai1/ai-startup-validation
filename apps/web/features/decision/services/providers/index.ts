@@ -1,4 +1,7 @@
 import type { DecisionProvider, DecisionProviderId } from '../decision-types';
+import { isProviderConfigured } from '@repo/ai';
+
+import { OpenRouterDecisionProvider } from './openrouter-decision-provider';
 import { MockDecisionProvider } from './mock-decision-provider';
 
 /** Future LLM providers — implement DecisionProvider and register here. */
@@ -35,15 +38,20 @@ export class OllamaDecisionProvider implements DecisionProvider {
 }
 
 const mockProvider = new MockDecisionProvider();
+const openRouterDecision = new OpenRouterDecisionProvider();
 
 export function getDecisionProvider(id: DecisionProviderId = 'mock'): DecisionProvider {
+  if (id === 'gemini' && isProviderConfigured('openrouter')) {
+    return openRouterDecision;
+  }
+
   switch (id) {
     case 'openai':
       return new OpenAIDecisionProvider();
     case 'anthropic':
       return new AnthropicDecisionProvider();
     case 'gemini':
-      return new GeminiDecisionProvider();
+      return openRouterDecision;
     case 'ollama':
       return new OllamaDecisionProvider();
     case 'mock':

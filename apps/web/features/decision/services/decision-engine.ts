@@ -1,5 +1,6 @@
 import type { DecisionInput, DecisionProviderId, DecisionResult } from './decision-types';
 import { getDecisionProvider } from './providers';
+import { resolveDecisionProviderId } from '@/lib/ai/config';
 
 export type DecisionEngineOptions = {
   providerId?: DecisionProviderId;
@@ -13,7 +14,7 @@ export class DecisionService {
   private readonly providerId: DecisionProviderId;
 
   constructor(options: DecisionEngineOptions = {}) {
-    this.providerId = options.providerId ?? 'mock';
+    this.providerId = options.providerId ?? resolveDecisionProviderId();
   }
 
   async generateDecision(input: DecisionInput): Promise<DecisionResult> {
@@ -22,4 +23,4 @@ export class DecisionService {
   }
 }
 
-export const decisionService = new DecisionService({ providerId: 'mock' });
+export const decisionService = new DecisionService();

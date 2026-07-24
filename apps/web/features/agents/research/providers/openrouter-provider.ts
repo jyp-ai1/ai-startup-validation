@@ -12,11 +12,18 @@ import type {
 type ResearchAgentJson = {
   summary?: string;
   confidence?: number;
+  sources?: Array<{
+    id?: string;
+    title?: string;
+    url?: string;
+    sourceType?: ResearchSource['sourceType'];
+  }>;
   evidence?: Array<{
     title?: string;
     summary?: string;
     confidence?: 'HIGH' | 'MEDIUM' | 'LOW';
     category?: ResearchTaskType;
+    sourceId?: string;
   }>;
   market?: { score?: number; insight?: string };
   competitor?: { count?: number; insight?: string };
@@ -36,7 +43,17 @@ function fallbackEvidence(tasks: ResearchTaskType[]): GeneratedEvidenceItem[] {
   }));
 }
 
-function buildSources(): ResearchSource[] {
+function buildSources(parsed: ResearchAgentJson): ResearchSource[] {
+  if (parsed.sources?.length) {
+    return parsed.sources.map((source, index) => ({
+      id: source.id ?? `src-${index + 1}`,
+      titleKey: 'sources.industryReport',
+      title: source.title ?? 'Research source',
+      url: source.url,
+      sourceType: source.sourceType ?? 'WEB',
+    }));
+  }
+
   return [
     {
       id: 'src-ai-1',
@@ -62,7 +79,7 @@ export class OpenRouterResearchProvider implements ResearchProvider {
         locale: request.language,
       },
       'research',
-      'v1',
+      'v2',
     );
 
     const response = await chatService.chat({
@@ -80,6 +97,8 @@ export class OpenRouterResearchProvider implements ResearchProvider {
       parsed = { summary: response.content.slice(0, 500), confidence: 55 };
     }
 
+    const sources = buildSources(parsed);
+
     const evidence: GeneratedEvidenceItem[] =
       parsed.evidence?.map((item, index) => ({
         id: `ai-ev-${index}`,
@@ -88,7 +107,7 @@ export class OpenRouterResearchProvider implements ResearchProvider {
         title: item.title ?? `${item.category ?? 'MARKET'} evidence`,
         summary: item.summary ?? 'AI-generated evidence item.',
         confidence: item.confidence ?? 'MEDIUM',
-        sourceId: 'src-ai-1',
+        sourceId: item.sourceId ?? sources[0]?.id ?? 'src-ai-1',
         category: item.category ?? 'MARKET',
       })) ?? fallbackEvidence(tasks);
 
@@ -116,7 +135,7 @@ export class OpenRouterResearchProvider implements ResearchProvider {
         insightText: parsed.government?.insight,
         programs: parsed.government?.programs ?? 1,
       },
-      sources: buildSources(),
+      sources,
       confidence: Math.min(95, parsed.confidence ?? 60),
     };
   }

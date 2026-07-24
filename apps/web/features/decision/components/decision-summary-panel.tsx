@@ -86,11 +86,19 @@ export function DecisionSummaryPanel({
       ) : null}
 
       <div className="space-y-3">
-        {decision.executiveSummaryKeys.slice(0, variant === 'compact' ? 2 : 4).map((key) => (
-          <p key={key} className="text-[15px] leading-relaxed text-foreground/90">
-            {t(key as 'executive.insufficient1')}
-          </p>
-        ))}
+        {decision.executiveSummaryText?.length
+          ? decision.executiveSummaryText
+              .slice(0, variant === 'compact' ? 2 : 4)
+              .map((paragraph) => (
+                <p key={paragraph.slice(0, 40)} className="text-[15px] leading-relaxed text-foreground/90">
+                  {paragraph}
+                </p>
+              ))
+          : decision.executiveSummaryKeys.slice(0, variant === 'compact' ? 2 : 4).map((key) => (
+              <p key={key} className="text-[15px] leading-relaxed text-foreground/90">
+                {t(key as 'executive.insufficient1')}
+              </p>
+            ))}
       </div>
 
       {decision.recommendedActions.length > 0 ? (

@@ -54,9 +54,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint L3.0 — Real AI Integration (Phase 1) ⏸
+## Sprint L3.0 — Real AI Integration (Phase 1) ✅
 
-**Status:** Dev complete — deploy + live QA gate pending (`facce84`)  
+**Status:** Complete ✅ (prod: https://ai-startup-validation-tau.vercel.app, commit `b6c76cb`)  
 **Goal:** Mock → OpenRouter + Gemini Flash real responses (Claude deferred)
 
 | EPIC | Status |
@@ -72,9 +72,25 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E9 Prompt registry v1–v3 | ✅ Done |
 | E10 AI Playground (`/admin/ai-playground`) | ✅ Done |
 
-**Env:** `OPENROUTER_API_KEY`, `AI_DEFAULT_PROVIDER=openrouter`, `AI_DEFAULT_MODEL=google/gemini-2.5-flash`
+**Env:** `OPENROUTER_API_KEY`, `AI_DEFAULT_PROVIDER=openrouter`, `AI_DEFAULT_MODEL=google/gemini-2.5-flash`  
+**Deploy target:** `jyp-ai1s-projects/ai-startup-validation`
 
-**Verify:** `pnpm build && pnpm --filter @repo/ai test && curl /api/ai/health`
+---
+
+## Sprint L3.1 — AI Research Pipeline (Phase 2) 🔄
+
+**Status:** In progress  
+**Goal:** Research → Gemini → Evidence DB + Decision LLM + citable sources
+
+| EPIC | Status |
+|------|--------|
+| E1 Research approve → Evidence DB persistence | ✅ Done |
+| E2 Decision Engine OpenRouter/Gemini provider | ✅ Done |
+| E3 Research prompt v2 with source URLs | ✅ Done |
+| E4 Prod URL migration (tau.vercel.app) | ✅ Done |
+| E5 Build/test/deploy + smoke | 🔄 In progress |
+
+**Verify:** Research approve → Evidence list · Decision Center live summary · `/api/ai/health`
 
 ---
 

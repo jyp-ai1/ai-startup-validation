@@ -84,6 +84,9 @@ export type ResearchJob = {
   durationMs: number | null;
   evidenceCount: number;
   errorMessage: string | null;
+  /** Set after approve → Evidence DB persistence (L3.1). */
+  evidencePersisted?: boolean;
+  persistedEvidenceCount?: number;
 };
 
 export type AgentExecutionRecord = {
