@@ -3,32 +3,22 @@
 Current and recent sprint tasks. Update at sprint start and completion.
 
 > **Master plan (legacy features):** [MASTER_PLAN.md](./MASTER_PLAN.md)  
-> **LaunchLens 2.0 (active):** [LAUNCHLENS_2.0_ROADMAP.md](./LAUNCHLENS_2.0_ROADMAP.md) · [SPRINT_PROCESS.md](./SPRINT_PROCESS.md)  
-> **Product Experience:** [LAUNCHLENS_PRODUCT_EXPERIENCE.md](./LAUNCHLENS_PRODUCT_EXPERIENCE.md) v1.0 (Sprint 0 will align v2.0)
+> **LaunchLens 2.0:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md) · [LAUNCHLENS_2.0_ROADMAP.md](./LAUNCHLENS_2.0_ROADMAP.md) · [SPRINT_PROCESS.md](./SPRINT_PROCESS.md)  
+> **Legacy features:** [MASTER_PLAN.md](./MASTER_PLAN.md)
 
 ---
 
-## 🔴 CURRENT — Sprint 0 Product Pivot (LaunchLens 2.0)
+## 🟢 CURRENT — Epic 1 Sprint 1 (await PM start)
 
-**Status:** In progress — **documentation only, no feature code**  
-**Brief:** [sprints/SPRINT_0_PRODUCT_PIVOT.md](./sprints/SPRINT_0_PRODUCT_PIVOT.md)  
-**Goal:** AI Report Generator → **Workflow Driven AI Strategy Workspace**
+**Constitution:** ✅ [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md) v1.0 ratified  
+**Sprint 0:** ✅ Complete — PASS WITH REVISIONS (2026-07-24)  
+**Kickoff:** [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)
 
-| Deliverable | Status |
-|-------------|--------|
-| Product Vision | ⏳ draft in sprint doc |
-| Product Principle | ⏳ draft in sprint doc |
-| Workflow Map | ⏳ draft in sprint doc |
-| IA | ⏳ draft in sprint doc |
-| Navigation | ⏳ draft in sprint doc |
-| UX Flow | ⏳ draft in sprint doc |
-| PM sign-off | ⏳ |
+**Success sentence:** Goal 선택 → AI Workflow 자동 구성 → 다음 행동 고민 없음
 
-**Forbidden:** AI models, analysis, tools, prompts, export, route/component implementation
+**Engineering:** Do **not** start code until PM says **"Epic 1 Sprint 1 시작"**
 
-**Prod (unchanged):** https://ai-startup-validation-tau.vercel.app · commit `7bc5fe9` · L3.4 RC maintained during pivot
-
-**Next after sign-off:** Epic 1 Sprint 1 — Landing → Goal Selection → Workflow → Strategy Workspace shell
+**Prod (unchanged):** https://ai-startup-validation-tau.vercel.app · L3.4 RC
 
 ---
 

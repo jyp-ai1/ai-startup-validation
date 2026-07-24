@@ -95,8 +95,12 @@
 | L3.2 | OpenAI adapter + fallback + Orchestrator RESEARCH | ★★★★ | ✅ |
 | L3.3 | Open Beta Ready (UX + ops + funnel) | ★★★★★ | ✅ |
 | **L3.4** | **Open Beta QA → RC** | ★★★★★ | ✅ |
-| **2.0 Sprint 0** | **Product Pivot (docs only)** | ★★★★★ | 🔄 **Current** |
-| **Epic 1** | **Workflow Experience** | ★★★★★ | Planned |
+| **2.0 Sprint 0** | **Product Constitution** | ★★★★★ | ✅ |
+| **Epic 1** | **Goal & Workflow Experience** | ★★★★★ | ⏳ Ready |
+| **Epic 2** | **Confidence & Evidence Engine** | ★★★★★ | Planned |
+| **Epic 3** | **Decision Engine** | ★★★★★ | Planned |
+| **Epic 4** | **Execution Workspace** | ★★★★★ | Planned |
+| **Epic 5** | **Living Strategy Platform** | ★★★★★ | Planned |
 | L3.6 | MCP Integration | ★★★★★ | Planned |
 | L3.7 | Scenario Planning (Best / Base / Worst) | ★★★★★ | Planned |
 | L3.8 | Financial Model (ROI, NPV, IRR) | ★★★★★ | Planned |

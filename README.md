@@ -1,8 +1,14 @@
-# AI SaaS Starter Kit
+# AI SaaS Starter Kit · LaunchLens
 
 Production-ready boilerplate for building AI-powered SaaS applications — optimized for **long-term human + AI collaboration**, not just a quick demo.
 
-> **Differentiator:** Documentation and Cursor rules are first-class citizens. Code follows the adapter pattern so Supabase, Prisma, or any DB can be swapped without rewriting your app.
+## LaunchLens — Product North Star
+
+> **LaunchLens는 AI가 보고서를 생성하는 서비스가 아니라, 전략적 의사결정을 완료하도록 프로젝트를 끝까지 이끄는 AI Strategy Workspace이다.**
+
+**Product Constitution:** [docs/PRODUCT_CONSTITUTION.md](./docs/PRODUCT_CONSTITUTION.md)  
+**Prod (Beta RC):** https://ai-startup-validation-tau.vercel.app  
+**Roadmap:** [docs/LAUNCHLENS_2.0_ROADMAP.md](./docs/LAUNCHLENS_2.0_ROADMAP.md)
 
 ---
 

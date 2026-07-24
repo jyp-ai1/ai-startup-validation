@@ -41,17 +41,12 @@ Template: [templates/SPRINT_KICKOFF_TEMPLATE.md](./templates/SPRINT_KICKOFF_TEMP
 - Smoke URLs (`docs/DEPLOY_SMOKE.md`)
 - Regression on auth, demo, dashboard
 
-### Product / UX QA (primary from 2.0)
+### Product / UX QA (primary — constitution)
 
-Each sprint defines **one measurable UX question**, e.g.:
+Each sprint uses **exactly 5 Product QA questions** (all must PASS).  
+Epic 1 default set in [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md) and [templates/UX_QA_TEMPLATE.md](./templates/UX_QA_TEMPLATE.md).
 
-| Sprint | UX QA question |
-|--------|----------------|
-| Epic 1 Sprint 1 | 신규 사용자가 **5초** 안에 서비스 목적을 이해하는가? |
-| Epic 1 Sprint 2 | 다음 행동을 **AI 가이드**가 안내하는가 (메뉴 탐색이 아닌가)? |
-| Epic 1 Sprint 3 | **전체 보고서 없이** GO/HOLD/NO GO를 판단할 수 있는가? |
-
-Template: [templates/UX_QA_TEMPLATE.md](./templates/UX_QA_TEMPLATE.md)
+Functional QA (login, API, build) is **necessary but not sufficient**.
 
 ---
 
@@ -89,4 +84,6 @@ See [DEPLOY_QUICKSTART.md](./DEPLOY_QUICKSTART.md), [DEPLOY_SMOKE.md](./DEPLOY_S
 
 ## Current pointer
 
-**Active:** [Sprint 0 — Product Pivot](./sprints/SPRINT_0_PRODUCT_PIVOT.md) (documentation only — **no feature code**)
+**Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)  
+**Sprint 0:** ✅ Complete (PASS WITH REVISIONS)  
+**Next:** [Epic 1 Sprint 1 kickoff](./sprints/EPIC1_SPRINT1_KICKOFF.md) — await PM "시작" for code
