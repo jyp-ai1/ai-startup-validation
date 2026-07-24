@@ -114,9 +114,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint L3.3 — Open Beta Ready 🔄
+## Sprint L3.3 — Open Beta Ready ✅
 
-**Status:** In progress (PM approved ★★★★★)  
+**Status:** Complete ✅ (prod: https://ai-startup-validation-tau.vercel.app, commit `5663c39`, deploy `dpl_EViPKgJLsNSAfiQAS8JmKhjz3Voy`)  
 **Goal:** 오픈베타 공개 가능 — UX·안정성·운영 준비 (기능 추가 아님)
 
 | EPIC | Scope | Status |
@@ -131,7 +131,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E8 Contact | Footer 문의·Discord·GitHub·About | ✅ Done |
 | E9 Analytics | Ops 퍼널 (가입→리포트) | ✅ Done |
 | E10 Beta Badge | PRIVATE BETA v0.9 | ✅ Done |
-| E11 Build/deploy/QA | lint/build/smoke/prod | ⏳ |
+| E11 Build/deploy/QA | lint/build/smoke/prod | ✅ Done |
 
 **DoD:** 5분 내 첫 프로젝트+리포트 · E2E PASS · Lighthouse · prod deploy · PM QA PASS
 

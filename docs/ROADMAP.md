@@ -92,7 +92,7 @@
 | L3.0 | OpenRouter + Gemini Flash | ★★★★★ | ✅ |
 | L3.1 | Research pipeline + Evidence DB + Decision LLM | ★★★★★ | ✅ |
 | L3.2 | OpenAI adapter + fallback + Orchestrator RESEARCH | ★★★★ | ✅ |
-| **L3.3** | **Open Beta Ready (UX + ops + funnel)** | ★★★★★ | 🔄 In progress |
+| **L3.3** | **Open Beta Ready (UX + ops + funnel)** | ★★★★★ | ✅ |
 | L3.4 | Browser Research Agent | ★★★★★ | Planned |
 | L3.5 | MCP Integration | ★★★★★ | Planned |
 | L3.6 | Scenario Planning (Best / Base / Worst) | ★★★★★ | Planned |
