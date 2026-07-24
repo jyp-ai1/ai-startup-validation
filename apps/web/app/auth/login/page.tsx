@@ -7,7 +7,12 @@ import { Sparkles } from 'lucide-react';
 import { GoogleSignInButton } from '@/features/auth';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { getServerAuthUser } from '@/lib/auth/server-auth';
-import { isSupabaseConfigured } from '@repo/db';
+
+function isSupabaseReady(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  );
+}
 
 const ERROR_KEYS = {
   auth: 'loginError',
@@ -41,7 +46,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     redirect(safeNext);
   }
 
-  const supabaseReady = isSupabaseConfigured();
+  const supabaseReady = isSupabaseReady();
   const errorKey =
     params.error && params.error in ERROR_KEYS
       ? ERROR_KEYS[params.error as keyof typeof ERROR_KEYS]

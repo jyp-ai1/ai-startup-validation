@@ -38,7 +38,7 @@ export function LandingCtaLink({
 
   return (
     <Button variant={variant} size={size} className={cn(className)} asChild onClick={handleClick}>
-      <Link href={href}>{children}</Link>
+      <Link href={href} prefetch={false}>{children}</Link>
     </Button>
   );
 }

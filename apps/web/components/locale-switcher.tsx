@@ -12,7 +12,6 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { trackEvent } from '@/lib/analytics/client';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
-import { usePathname, useRouter } from '@/i18n/navigation';
 import {
   Select,
   SelectContent,
@@ -30,8 +29,6 @@ const LOCALE_MENU_CLASS =
 
 export function LocaleSwitcher() {
   const locale = useLocale() as AppLocale;
-  const router = useRouter();
-  const pathname = usePathname();
   const t = useTranslations('common');
 
   const activeLocale = (LAUNCH_LOCALES as readonly string[]).includes(locale)
@@ -47,7 +44,6 @@ export function LocaleSwitcher() {
     });
 
     document.cookie = `${LOCALE_COOKIE}=${nextLocale}; path=/; max-age=${LOCALE_MAX_AGE}; SameSite=Lax`;
-    router.replace(pathname, { locale: nextLocale as AppLocale });
     window.location.reload();
   }
 
