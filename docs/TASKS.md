@@ -8,21 +8,30 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Autonomous Alpha v2.0.1 (Preview)
+## 🟢 CURRENT — Epic 3 Project Intelligence Workspace
 
-**Status:** ✅ Complete — Preview deploy · Production ⛔  
-**Report:** [sprints/AUTONOMOUS_ALPHA_v2.0.1_REPORT.md](./sprints/AUTONOMOUS_ALPHA_v2.0.1_REPORT.md)  
-**Epic 2 kickoff:** [sprints/EPIC2_SPRINT1_KICKOFF.md](./sprints/EPIC2_SPRINT1_KICKOFF.md)
+**Status:** 🟢 In Progress — `alpha-v2.0.5`  
+**Epic 2 close:** [sprints/EPIC2_CLOSE_REPORT.md](./sprints/EPIC2_CLOSE_REPORT.md)  
+**Epic 3 kickoff:** [sprints/EPIC3_KICKOFF.md](./sprints/EPIC3_KICKOFF.md)  
+**Autonomous report:** [sprints/LAUNCHLENS_AUTONOMOUS_REPORT.md](./sprints/LAUNCHLENS_AUTONOMOUS_REPORT.md)
 
-**Delivered:** Epic 1.6 polish + Intelligence foundation UI + Alpha validation docs
+**Delivered (v2.0.5):** Journey workspace — Daily Coach, project switcher, smart nav, timeline, AI memory, achievements, exit coach
 
 ---
 
-## Epic 2 Sprint 1 — Intelligence Engine (foundation in v2.0.1)
+## Epic 2 — Intelligence Engine ✅
 
-**Status:** **COMPLETE** — PM approved 2026-07-24  
-**Close report:** [sprints/EPIC1_CLOSE_REPORT.md](./sprints/EPIC1_CLOSE_REPORT.md)  
-**Tag:** `alpha-v2.0.0`
+**Status:** **CLOSED** — Autonomous 2026-07-25  
+**Close report:** [sprints/EPIC2_CLOSE_REPORT.md](./sprints/EPIC2_CLOSE_REPORT.md)  
+**Tags:** `alpha-v2.0.2` → `alpha-v2.0.4`  
+**Gate note:** Accessibility 96 ✅ · Performance ~80 ⚠️ (Epic 4)
+
+---
+
+## Autonomous Alpha v2.0.1 (Preview) ✅
+
+**Status:** Complete — superseded by Epic 2 autonomous window  
+**Report:** [sprints/AUTONOMOUS_ALPHA_v2.0.1_REPORT.md](./sprints/AUTONOMOUS_ALPHA_v2.0.1_REPORT.md)
 
 | Sprint | Theme | QA |
 |--------|-------|-----|

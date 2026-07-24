@@ -11,6 +11,8 @@ import { Button, toast } from '@repo/ui';
 import { getStrategyCoachState } from '../constants/decision-mock';
 import { getStepGuideMeta } from '../constants/step-guides';
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
+import { useJourneyProject } from '../hooks/use-journey-project';
+import { useWorkspaceExitCoach } from '../hooks/use-workspace-exit-coach';
 import type { WorkflowGoalId, WorkflowTemplate } from '../types';
 import { AlphaFeedbackWidget } from './alpha-feedback-widget';
 import { CoachSkeleton } from './coach-skeleton';
@@ -18,6 +20,15 @@ import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 import { WorkflowGuideCard } from './workflow-guide-card';
 import { WorkspaceSkeleton } from './workspace-skeleton';
+import { JourneyAchievementsPanel } from './intelligence-workspace/journey-achievements-panel';
+import { JourneyAiMemoryPanel } from './intelligence-workspace/journey-ai-memory-panel';
+import { JourneyDailyCoach } from './intelligence-workspace/journey-daily-coach';
+import { JourneyProjectSwitcher } from './intelligence-workspace/journey-project-switcher';
+import { JourneyTimelinePanel } from './intelligence-workspace/journey-timeline-panel';
+import {
+  JourneyWorkspaceNav,
+  type JourneyWorkspaceTab,
+} from './intelligence-workspace/journey-workspace-nav';
 
 const DecisionExperienceCoach = dynamic(
   () => import('./decision-experience-coach').then((m) => m.DecisionExperienceCoach),
@@ -36,6 +47,7 @@ export function StrategyWorkspaceShell({
   demoMode = false,
 }: StrategyWorkspaceShellProps) {
   const t = useTranslations('workflow.workspace');
+  const te = useTranslations('workflow.epic3');
   const tg = useTranslations('workflow.goal');
   const coachState = getStrategyCoachState(goalId);
   const activeStepId = coachState.nextActionStepId;
@@ -44,7 +56,11 @@ export function StrategyWorkspaceShell({
   const progress = Math.round((1 / template.stepCount) * 100);
   const tt = useTranslations('workflow.toast');
   const analytics = useJourneyAnalytics(demoMode);
+  const { project, setProjectId, ready: projectReady } = useJourneyProject();
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<JourneyWorkspaceTab>('today');
+
+  useWorkspaceExitCoach(!loading && projectReady);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -58,17 +74,93 @@ export function StrategyWorkspaceShell({
     return () => clearTimeout(id);
   }, [analytics, coachState.verdict, goalId, tt]);
 
+  const renderTabContent = () => {
+    switch (tab) {
+      case 'today':
+        return (
+          <div className="space-y-6">
+            <JourneyDailyCoach confidence={project.confidence} />
+            <div className="grid gap-6 lg:grid-cols-2">
+              <JourneyAiMemoryPanel />
+              <JourneyAchievementsPanel />
+            </div>
+            <DecisionExperienceCoach goalId={goalId} className="w-full max-w-none" />
+          </div>
+        );
+      case 'workflow':
+        return (
+          <div className="space-y-6">
+            {activeStep ? (
+              <WorkflowGuideCard
+                stepId={activeStep.id}
+                order={activeStep.order}
+                meta={stepMeta}
+                active
+              />
+            ) : null}
+            <section className="rounded-2xl border border-dashed border-border/70 bg-muted/10 p-4 sm:p-5 md:p-6">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {t('inputPlaceholderLabel')}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t('inputPlaceholder')}</p>
+            </section>
+            <DecisionExperienceCoach goalId={goalId} className="w-full max-w-none" />
+          </div>
+        );
+      case 'decision':
+        return <DecisionExperienceCoach goalId={goalId} className="w-full max-w-none" />;
+      case 'history':
+        return (
+          <div className="grid gap-6 lg:grid-cols-2">
+            <JourneyTimelinePanel />
+            <JourneyAiMemoryPanel />
+          </div>
+        );
+      case 'settings':
+        return (
+          <section className="rounded-2xl border border-border/70 bg-card p-5 sm:p-6">
+            <h3 className="text-sm font-semibold">{te('settings.title')}</h3>
+            <p className="mt-2 text-sm text-muted-foreground">{te('settings.desc')}</p>
+            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li>{te('settings.mockNote')}</li>
+              <li>{te('settings.locale')}</li>
+            </ul>
+          </section>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <JourneyLayout phase="workspace" width="wide">
+    <JourneyLayout
+      phase="workspace"
+      width="wide"
+      variant="intelligence"
+      navSlot={
+        <JourneyWorkspaceNav
+          active={tab}
+          onChange={(next) => {
+            setTab(next);
+            analytics.trackMockActionCompleted(`tab_${next}`, project.confidence);
+          }}
+        />
+      }
+    >
       <AlphaFeedbackWidget />
-      {loading ? (
+      {loading || !projectReady ? (
         <WorkspaceSkeleton />
       ) : (
         <JourneyFade>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-sm text-muted-foreground">{tg(`options.${goalId}.title`)}</p>
-              <h1 className="text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl">{t('title')}</h1>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0 space-y-3">
+              <JourneyProjectSwitcher project={project} onSelect={setProjectId} />
+              <div>
+                <p className="text-sm text-muted-foreground">{tg(`options.${goalId}.title`)}</p>
+                <h1 className="text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl">
+                  {t('title')}
+                </h1>
+              </div>
             </div>
             <div className="text-right">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -85,31 +177,11 @@ export function StrategyWorkspaceShell({
             />
           </div>
 
-          <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_minmax(280px,360px)] xl:items-start">
-            <div className="min-w-0 space-y-6">
-              {activeStep ? (
-                <WorkflowGuideCard
-                  stepId={activeStep.id}
-                  order={activeStep.order}
-                  meta={stepMeta}
-                  active
-                />
-              ) : null}
-
-              <section className="rounded-2xl border border-dashed border-border/70 bg-muted/10 p-4 sm:p-5 md:p-6">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  {t('inputPlaceholderLabel')}
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t('inputPlaceholder')}</p>
-              </section>
-            </div>
-
-            <DecisionExperienceCoach goalId={goalId} className="w-full max-w-none" />
-          </div>
+          <div className="mt-8">{renderTabContent()}</div>
 
           <div className="mt-8">
             <Button asChild size="lg" className="h-12 w-full rounded-xl sm:max-w-md">
-              <Link href={demoMode ? '/auth/login?next=/workspace' : '/auth/login?next=/workspace'}>
+              <Link href="/auth/login?next=/workspace">
                 {demoMode ? t('ctaLogin') : t('ctaContinue')}
                 <ArrowRight className="size-4" />
               </Link>

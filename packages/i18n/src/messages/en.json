@@ -3850,6 +3850,78 @@
         }
       }
     },
+    "epic3": {
+      "project": {
+        "switchLabel": "Switch project",
+        "recent": "Recent projects",
+        "archived": "Archived",
+        "confidence": "Confidence {value}%"
+      },
+      "nav": {
+        "label": "Workspace navigation",
+        "today": "Today",
+        "workflow": "Workflow",
+        "decision": "Decision",
+        "history": "History",
+        "settings": "Settings"
+      },
+      "coach": {
+        "eyebrow": "AI Daily Coach",
+        "greeting": "Good morning.",
+        "focusLine": "Add 2 VOC entries today to move Confidence from {current}% to {after}%.",
+        "eta": "Estimated {minutes} min",
+        "gainHint": "+{gain}% possible today",
+        "exitSummary": "You improved {gain}% today.",
+        "exitNext": "Tomorrow we recommend {topic}.",
+        "exitTopics": {
+          "pricing": "Pricing"
+        }
+      },
+      "timeline": {
+        "title": "Decision Timeline",
+        "desc": "Track decisions and confidence changes over time.",
+        "entries": {
+          "projectStart": "Project started — goal set",
+          "marketDone": "Market research completed",
+          "confidenceUp": "Confidence increased",
+          "holdConfirmed": "HOLD decision confirmed",
+          "competitorAdded": "Competitor analysis added"
+        }
+      },
+      "memory": {
+        "eyebrow": "AI Memory",
+        "title": "Context AI remembers",
+        "labels": {
+          "lastDecision": "Previous decision",
+          "primaryGoal": "Previous goal",
+          "topRisk": "Previous risk",
+          "lastProgress": "Previous progress",
+          "activeStep": "Previous workflow"
+        },
+        "values": {
+          "holdJul23": "Jul 23 HOLD — VOC gap",
+          "viability": "Business viability review",
+          "vocGap": "2 customer interviews missing",
+          "marketDone": "Market research 80% done",
+          "vocStep": "VOC collection in progress"
+        }
+      },
+      "achievements": {
+        "title": "Next badges",
+        "nextBadge": "Confidence Master badge at 3 VOC entries",
+        "badges": {
+          "voc3": "VOC Master (3)",
+          "conf80": "Confidence 80%",
+          "firstGo": "First GO"
+        }
+      },
+      "settings": {
+        "title": "Workspace settings",
+        "desc": "Epic 3 Alpha — mock projects and AI Coach preferences.",
+        "mockNote": "Multi-project and AI Memory use mock data.",
+        "locale": "Change language via the locale switcher above."
+      }
+    },
     "workspace": {
       "title": "AI Strategy Workspace",
       "progressLabel": "Progress",

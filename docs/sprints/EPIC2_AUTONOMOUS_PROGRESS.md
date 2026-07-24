@@ -48,6 +48,24 @@ Landing LCP: sync hero/header, lazy preview, idle analytics, CTA a11y fix
 
 ---
 
+## Commit 6 — `alpha-v2.0.5` (Epic 3 kickoff)
+
+**Epic 2:** Formally closed — [EPIC2_CLOSE_REPORT.md](./EPIC2_CLOSE_REPORT.md)
+
+**Epic 3 Phase 1–6 (journey `/workspace`):**
+
+- Project switcher (mock multi-project, archive, favorite)
+- AI Daily Coach greeting + exit toast
+- Smart nav: Today / Workflow / Decision / History / Settings
+- Timeline, AI Memory, Achievements panels
+- Journey layout `intelligence` variant (replaces phase bar in workspace)
+
+**QA:** Build ✅ · A11y 96 ✅ · Perf ~80 ⚠️
+
+**Report:** [LAUNCHLENS_AUTONOMOUS_REPORT.md](./LAUNCHLENS_AUTONOMOUS_REPORT.md)
+
+---
+
 ## QA Summary (Production URL — not Preview)
 
 | Gate | Before | After deploy | Target |

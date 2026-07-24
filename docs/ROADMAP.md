@@ -96,8 +96,9 @@
 | L3.3 | Open Beta Ready (UX + ops + funnel) | ★★★★★ | ✅ |
 | **L3.4** | **Open Beta QA → RC** | ★★★★★ | ✅ |
 | **2.0 Sprint 0** | **Product Constitution** | ★★★★★ | ✅ |
-| **Epic 1** | **Goal & Workflow Experience** | ★★★★★ | ⏳ Ready |
-| **Epic 2** | **Confidence & Evidence Engine** | ★★★★★ | Planned |
+| **Epic 1** | **Goal & Workflow Experience** | ★★★★★ | ✅ Alpha |
+| **Epic 2** | **Intelligence Engine** | ★★★★★ | ✅ Closed |
+| **Epic 3** | **Project Intelligence Workspace** | ★★★★★ | 🟢 In Progress |
 | **Epic 3** | **Decision Engine** | ★★★★★ | Planned |
 | **Epic 4** | **Execution Workspace** | ★★★★★ | Planned |
 | **Epic 5** | **Living Strategy Platform** | ★★★★★ | Planned |

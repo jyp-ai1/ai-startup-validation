@@ -12,13 +12,22 @@ type JourneyPhase = 'goal' | 'workflow' | 'workspace';
 type JourneyLayoutProps = {
   phase: JourneyPhase;
   width?: 'default' | 'wide';
+  variant?: 'journey' | 'intelligence';
+  navSlot?: React.ReactNode;
   children: React.ReactNode;
 };
 
 const PHASES: JourneyPhase[] = ['goal', 'workflow', 'workspace'];
 
-export function JourneyLayout({ phase, children, width = 'default' }: JourneyLayoutProps) {
+export function JourneyLayout({
+  phase,
+  children,
+  width = 'default',
+  variant = 'journey',
+  navSlot,
+}: JourneyLayoutProps) {
   const t = useTranslations('workflow.journey');
+  const showJourneyPhases = variant === 'journey';
 
   return (
     <div className="min-h-screen bg-background">
@@ -37,36 +46,47 @@ export function JourneyLayout({ phase, children, width = 'default' }: JourneyLay
           </Link>
           <LocaleSwitcher />
         </div>
-        <nav
-          className={cn(
-            'mx-auto flex gap-1 px-4 pb-3 sm:px-6',
-            width === 'wide' ? 'max-w-6xl' : 'max-w-3xl',
-          )}
-          aria-label={t('progressLabel')}
-        >
-          {PHASES.map((step, index) => {
-            const active = step === phase;
-            const done = PHASES.indexOf(phase) > index;
-            return (
-              <div
-                key={step}
-                className={cn('flex flex-1 flex-col gap-1', index < PHASES.length - 1 && 'pr-1')}
-              >
+        {showJourneyPhases ? (
+          <nav
+            className={cn(
+              'mx-auto flex gap-1 px-4 pb-3 sm:px-6',
+              width === 'wide' ? 'max-w-6xl' : 'max-w-3xl',
+            )}
+            aria-label={t('progressLabel')}
+          >
+            {PHASES.map((step, index) => {
+              const active = step === phase;
+              const done = PHASES.indexOf(phase) > index;
+              return (
                 <div
-                  className={cn('h-1 rounded-full', active || done ? 'bg-primary' : 'bg-muted')}
-                />
-                <span
-                  className={cn(
-                    'text-[10px] font-medium uppercase tracking-wide sm:text-xs',
-                    active ? 'text-foreground' : 'text-muted-foreground',
-                  )}
+                  key={step}
+                  className={cn('flex flex-1 flex-col gap-1', index < PHASES.length - 1 && 'pr-1')}
                 >
-                  {t(`phases.${step}`)}
-                </span>
-              </div>
-            );
-          })}
-        </nav>
+                  <div
+                    className={cn('h-1 rounded-full', active || done ? 'bg-primary' : 'bg-muted')}
+                  />
+                  <span
+                    className={cn(
+                      'text-[10px] font-medium uppercase tracking-wide sm:text-xs',
+                      active ? 'text-foreground' : 'text-muted-foreground',
+                    )}
+                  >
+                    {t(`phases.${step}`)}
+                  </span>
+                </div>
+              );
+            })}
+          </nav>
+        ) : navSlot ? (
+          <div
+            className={cn(
+              'mx-auto px-4 pb-3 sm:px-6',
+              width === 'wide' ? 'max-w-6xl' : 'max-w-3xl',
+            )}
+          >
+            {navSlot}
+          </div>
+        ) : null}
       </header>
       <main
         className={cn(
