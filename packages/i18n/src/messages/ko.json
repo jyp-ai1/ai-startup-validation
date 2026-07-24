@@ -2440,6 +2440,14 @@
       "generateReport": "Report 생성",
       "continueResearch": "Research 계속"
     },
+    "chat": {
+      "title": "AI Consultant Chat",
+      "placeholder": "프로젝트에 대해 질문하세요. Gemini Flash가 답변합니다.",
+      "inputPlaceholder": "예: 시장 진입 전략을 어떻게 수정해야 할까요?",
+      "thinking": "Thinking…",
+      "error": "AI 응답을 가져오지 못했습니다. API Key와 네트워크를 확인하세요.",
+      "empty": "응답이 비어 있습니다."
+    },
     "prompts": {
       "title": "추천 프롬프트",
       "marketResearch": "시장 조사해줘",

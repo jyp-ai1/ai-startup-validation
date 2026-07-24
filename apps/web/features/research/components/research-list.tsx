@@ -24,9 +24,15 @@ type ResearchListProps = {
   project: StartupProject;
   plans: ResearchPlan[];
   agentJobs?: ResearchJob[];
+  researchProviderId?: string;
 };
 
-export function ResearchList({ project, plans, agentJobs = [] }: ResearchListProps) {
+export function ResearchList({
+  project,
+  plans,
+  agentJobs = [],
+  researchProviderId = 'mock',
+}: ResearchListProps) {
   const t = useTranslations();
   const basePath = `/projects/${project.id}/research`;
   const insight = buildResearchInsights(plans);
@@ -51,6 +57,7 @@ export function ResearchList({ project, plans, agentJobs = [] }: ResearchListPro
         projectId={project.id}
         projectType={project.projectType}
         jobs={agentJobs}
+        providerId={researchProviderId}
       />
       <IntelligencePage
       eyebrow={t('meta.appTagline')}

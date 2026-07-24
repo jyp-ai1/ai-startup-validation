@@ -34,7 +34,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## Sprint L2.6 — Product Polish ✅
 
-**Status:** Complete ✅ (deploy pending PM)  
+**Status:** Complete ✅ (deployed 2026-07-24, commit `d28a795`)  
 **Goal:** 기능 추가 없음 — Empty/Loading/Toast/AI Status/Notification/Health/Keyboard/Micro-interaction polish
 
 | EPIC | Status |
@@ -51,6 +51,30 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E10 Accessibility QA | ⏳ PM manual |
 
 **Verify:** `pnpm build && pnpm lint && pnpm audit:i18n`
+
+---
+
+## Sprint L3.0 — Real AI Integration (Phase 1) 🔄
+
+**Status:** In progress  
+**Goal:** Mock → OpenRouter + Gemini Flash real responses (Claude deferred)
+
+| EPIC | Status |
+|------|--------|
+| E1 AI Provider Layer (port + registry) | ✅ Done |
+| E2 OpenRouter + `google/gemini-2.5-flash` | ✅ Done |
+| E3 Prompt Builder + context compression | ✅ Done |
+| E4 AI Consultant Gemini chat + streaming | ✅ Done |
+| E5 Research Agent → Gemini → evidence | ✅ Done |
+| E6 Streaming UI | ✅ Done |
+| E7 Token usage dashboard | ✅ Done |
+| E8 Error/retry/fallback (429/401/500/timeout) | ✅ Done |
+| E9 Prompt registry v1–v3 | ✅ Done |
+| E10 AI Playground (`/admin/ai-playground`) | ✅ Done |
+
+**Env:** `OPENROUTER_API_KEY`, `AI_DEFAULT_PROVIDER=openrouter`, `AI_DEFAULT_MODEL=google/gemini-2.5-flash`
+
+**Verify:** `pnpm build && pnpm --filter @repo/ai test && curl /api/ai/health`
 
 ---
 

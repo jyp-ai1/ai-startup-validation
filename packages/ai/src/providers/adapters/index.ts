@@ -1,5 +1,7 @@
 import type { ModelKind, ProviderConfig } from '../../types';
 import { BaseProviderAdapter } from '../base-provider.adapter';
+import { openRouterChat, openRouterStream } from '../openrouter-http';
+import type { ChatRequest, ChatResponse, StreamChunk } from '../../types';
 
 export class OpenAIProviderAdapter extends BaseProviderAdapter {
   readonly id = 'openai' as const;
@@ -38,6 +40,20 @@ export class OpenRouterProviderAdapter extends BaseProviderAdapter {
 
   constructor(config: ProviderConfig = {}) {
     super({ ...config, adapterFramework: config.adapterFramework ?? 'native' });
+  }
+
+  override isConfigured(): boolean {
+    return Boolean(this.config.apiKey);
+  }
+
+  override async chat(request: ChatRequest): Promise<ChatResponse> {
+    this.ensureConfigured();
+    return openRouterChat(this.config.apiKey!, request);
+  }
+
+  override async *stream(request: ChatRequest): AsyncIterable<StreamChunk> {
+    this.ensureConfigured();
+    yield* openRouterStream(this.config.apiKey!, request);
   }
 }
 

@@ -11,6 +11,7 @@ export const DEFAULT_PRICING: Record<string, ModelPricing> = {
   'gpt-4o-mini': { inputPer1M: 0.15, outputPer1M: 0.6 },
   'claude-sonnet-4-20250514': { inputPer1M: 3, outputPer1M: 15 },
   'gemini-2.0-flash': { inputPer1M: 0.1, outputPer1M: 0.4 },
+  'google/gemini-2.5-flash': { inputPer1M: 0.15, outputPer1M: 0.6 },
   'text-embedding-3-small': { inputPer1M: 0.02, outputPer1M: 0 },
   'llama3.2': { inputPer1M: 0, outputPer1M: 0 },
 };

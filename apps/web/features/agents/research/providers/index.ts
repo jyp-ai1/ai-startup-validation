@@ -1,16 +1,18 @@
 import type { ResearchProvider, ResearchProviderId } from '../services/research-agent-types';
 import { MockResearchProvider } from './mock-provider';
+import { OpenRouterResearchProvider } from './openrouter-provider';
 
-const stub = new MockResearchProvider();
+const mock = new MockResearchProvider();
+const openrouter = new OpenRouterResearchProvider();
 
 const providers: Record<ResearchProviderId, ResearchProvider> = {
-  mock: new MockResearchProvider(),
-  openai: stub,
-  claude: stub,
-  gemini: stub,
-  perplexity: stub,
-  mcp_search: stub,
-  browser_agent: stub,
+  mock,
+  gemini: openrouter,
+  openai: openrouter,
+  claude: mock,
+  perplexity: mock,
+  mcp_search: mock,
+  browser_agent: mock,
 };
 
 export function getResearchProvider(id: ResearchProviderId = 'mock'): ResearchProvider {

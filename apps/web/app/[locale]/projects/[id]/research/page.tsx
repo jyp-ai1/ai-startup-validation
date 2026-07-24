@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { getProject } from '@/features/projects/actions/project-actions';
 import { getProjectResearchJobs } from '@/features/agents/research';
 import { getResearchPlans, ResearchList } from '@/features/research';
+import { resolveResearchProviderId } from '@/lib/ai/config';
 
 type ResearchListPageProps = {
   params: Promise<{ id: string }>;
@@ -36,6 +37,14 @@ export default async function ResearchListPage({ params }: ResearchListPageProps
     getResearchPlans(id),
     getProjectResearchJobs(id),
   ]);
+  const researchProviderId = resolveResearchProviderId();
 
-  return <ResearchList project={project} plans={plans} agentJobs={agentJobs} />;
+  return (
+    <ResearchList
+      project={project}
+      plans={plans}
+      agentJobs={agentJobs}
+      researchProviderId={researchProviderId}
+    />
+  );
 }

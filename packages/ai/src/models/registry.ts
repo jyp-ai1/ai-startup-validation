@@ -88,6 +88,17 @@ export const DEFAULT_MODELS: AIModel[] = [
     dimensions: 768,
   },
   {
+    id: 'google/gemini-2.5-flash',
+    name: 'Gemini 2.5 Flash (OpenRouter)',
+    provider: 'openrouter',
+    kind: 'chat',
+    contextWindow: 1_000_000,
+    maxOutputTokens: 8192,
+    supportsStreaming: true,
+    supportsTools: true,
+    supportsVision: true,
+  },
+  {
     id: 'openrouter/auto',
     name: 'OpenRouter Auto',
     provider: 'openrouter',

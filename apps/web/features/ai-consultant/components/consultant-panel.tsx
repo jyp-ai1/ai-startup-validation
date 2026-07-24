@@ -15,6 +15,7 @@ import { ConsultantMemoryUpgrade } from '@/features/project-intelligence/compone
 
 import type { ConsultantViewModel } from '../services/consultant-types';
 import { ConsultantActions } from './consultant-actions';
+import { ConsultantChatPanel } from './consultant-chat-panel';
 import { ConsultantContextPanel } from './consultant-context-panel';
 import { ConsultantFeed } from './consultant-feed';
 import { ConsultantMemory } from './consultant-memory';
@@ -119,6 +120,8 @@ export function ConsultantPanel({ consultant, intelligence = null }: ConsultantP
         <ConsultantContextPanel context={consultant.context} />
 
         <ConsultantQuestions questions={consultant.questions} projectId={consultant.projectId} />
+
+        <ConsultantChatPanel projectTitle={consultant.projectTitle} />
 
         {intelligence ? (
           <ConsultantMemoryUpgrade

@@ -79,6 +79,13 @@ function BreakdownList({ title, data }: { title: string; data: Record<string, nu
 export function OperationsDashboard() {
   const t = useTranslations('operations');
   const [stats, setStats] = useState<OpsDashboardStats | null>(null);
+  const [aiStats, setAiStats] = useState<{
+    avgLatencyMs: number;
+    totalTokens: number;
+    totalCostUsd: number;
+    model: string;
+    openrouterConfigured: boolean;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -89,6 +96,23 @@ export function OperationsDashboard() {
         else setError(json.error?.message ?? 'Failed to load stats');
       })
       .catch(() => setError('Failed to load stats'));
+
+    fetch('/api/ai/health')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success) {
+          setAiStats({
+            avgLatencyMs: json.data.tokenStats.avgLatencyMs,
+            totalTokens: json.data.tokenStats.totalTokens,
+            totalCostUsd: json.data.tokenStats.totalCostUsd,
+            model: json.data.model,
+            openrouterConfigured: json.data.openrouterConfigured,
+          });
+        }
+      })
+      .catch(() => {
+        /* optional */
+      });
   }, []);
 
   return (
@@ -122,6 +146,28 @@ export function OperationsDashboard() {
               hint={t('aiGenerationsHint')}
             />
           </div>
+
+          {aiStats ? (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <StatCard
+                title="AI avg latency"
+                value={`${aiStats.avgLatencyMs}ms`}
+                icon={Activity}
+                hint={aiStats.model}
+              />
+              <StatCard title="AI tokens" value={aiStats.totalTokens} icon={BarChart3} />
+              <StatCard
+                title="AI cost (USD)"
+                value={`$${aiStats.totalCostUsd.toFixed(4)}`}
+                icon={Sparkles}
+              />
+              <StatCard
+                title="OpenRouter"
+                value={aiStats.openrouterConfigured ? 'Configured' : 'Mock fallback'}
+                icon={Globe}
+              />
+            </div>
+          ) : null}
 
           <div className="grid gap-4 lg:grid-cols-3">
             <StatCard title={t('reportGenerations')} value={stats.reportGenerations} icon={BarChart3} />

@@ -1,4 +1,5 @@
 import { aiEnv, isProviderConfigured } from './env/env';
+import { registerDefaultPrompts } from './prompts/defaults';
 import { ChatService } from './chat/service';
 import { providerRegistry } from './providers/registry';
 import { modelRegistry } from './models/registry';
@@ -29,6 +30,7 @@ export function createAIPlatform(options?: {
   const configure = options?.configureProviders ?? true;
 
   if (configure) {
+    registerDefaultPrompts();
     if (isProviderConfigured('openai')) {
       providerRegistry.create('openai', { apiKey: aiEnv.OPENAI_API_KEY });
     }
@@ -84,6 +86,7 @@ export * from './errors';
 
 // Providers
 export * from './providers';
+export { openRouterHealth } from './providers/openrouter-http';
 
 // Models
 export * from './models';
@@ -131,6 +134,14 @@ export * from './utils';
 // Env
 export { aiEnv, isProviderConfigured } from './env/env';
 export type { AiEnv } from './env/env';
+
+// Config
+export {
+  DEFAULT_GEMINI_FLASH_MODEL,
+  resolveDefaultModel,
+  resolveDefaultProvider,
+  isRealAIEnabled,
+} from './config/defaults';
 
 // Validation report generation (Sprint 9)
 export * from './validation';

@@ -21,9 +21,15 @@ type ResearchAgentPanelProps = {
   projectId: string;
   projectType: string;
   jobs: ResearchJob[];
+  providerId?: string;
 };
 
-export function ResearchAgentPanel({ projectId, projectType, jobs }: ResearchAgentPanelProps) {
+export function ResearchAgentPanel({
+  projectId,
+  projectType,
+  jobs,
+  providerId = 'mock',
+}: ResearchAgentPanelProps) {
   const t = useTranslations('researchAgent');
   const router = useRouter();
   const { trackEvent } = useAnalytics();
@@ -60,14 +66,14 @@ export function ResearchAgentPanel({ projectId, projectType, jobs }: ResearchAge
       trackEvent(ANALYTICS_EVENTS.agentStart, {
         project_id: projectId,
         project_type: projectType,
-        provider: 'mock',
+        provider: providerId,
       });
       const result = await startResearchAgent(projectId);
       if (result.jobId) {
         trackEvent(ANALYTICS_EVENTS.researchExecute, {
           project_id: projectId,
           project_type: projectType,
-          provider: 'mock',
+          provider: providerId,
         });
       }
       router.refresh();
@@ -151,9 +157,9 @@ export function ResearchAgentPanel({ projectId, projectType, jobs }: ResearchAge
                 <ul className="mt-2 space-y-2">
                   {latestJob.result.evidence.map((ev) => (
                     <li key={ev.id} className="rounded-lg bg-background px-4 py-3 text-sm">
-                      <p className="font-medium">{t(ev.titleKey as 'evidence.marketSize.title')}</p>
+                      <p className="font-medium">{ev.title ?? t(ev.titleKey as 'evidence.marketSize.title')}</p>
                       <p className="mt-1 text-muted-foreground">
-                        {t(ev.summaryKey as 'evidence.marketSize.summary')}
+                        {ev.summary ?? t(ev.summaryKey as 'evidence.marketSize.summary')}
                       </p>
                     </li>
                   ))}

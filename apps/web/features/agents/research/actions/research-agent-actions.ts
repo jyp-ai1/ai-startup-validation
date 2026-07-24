@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { getLocale } from 'next-intl/server';
 
 import { getProject } from '@/features/projects/actions/project-actions';
+import { resolveResearchProviderId } from '@/lib/ai/config';
 
 import {
   getAgentActivityStats,
@@ -29,7 +30,8 @@ export async function startResearchAgent(
   const request = projectToResearchRequestWithLocale(project, locale as 'ko' | 'en');
 
   try {
-    const job = await researchAgent.startResearch(request, 'mock');
+    const providerId = resolveResearchProviderId();
+    const job = await researchAgent.startResearch(request, providerId);
     revalidatePath(`/projects/${projectId}/research`);
     revalidatePath('/dashboard');
     return { jobId: job.id };

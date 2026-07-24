@@ -2440,6 +2440,14 @@
       "generateReport": "Generate Report",
       "continueResearch": "Continue Research"
     },
+    "chat": {
+      "title": "AI consultant chat",
+      "placeholder": "Ask about your project — Gemini Flash will respond.",
+      "inputPlaceholder": "e.g. How should we adjust our market entry strategy?",
+      "thinking": "Thinking…",
+      "error": "Could not fetch AI response. Check API key and network.",
+      "empty": "Empty response."
+    },
     "prompts": {
       "title": "Suggested prompts",
       "marketResearch": "Research the market",

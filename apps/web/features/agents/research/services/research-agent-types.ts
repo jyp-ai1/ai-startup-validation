@@ -37,6 +37,7 @@ export type ResearchRequest = {
 export type ResearchSource = {
   id: string;
   titleKey: string;
+  title?: string;
   url?: string;
   sourceType: 'WEB' | 'GOVERNMENT' | 'NEWS' | 'REPORT';
 };
@@ -45,6 +46,8 @@ export type GeneratedEvidenceItem = {
   id: string;
   titleKey: string;
   summaryKey: string;
+  title?: string;
+  summary?: string;
   confidence: 'HIGH' | 'MEDIUM' | 'LOW';
   sourceId: string;
   category: ResearchTaskType;
@@ -52,11 +55,12 @@ export type GeneratedEvidenceItem = {
 
 export type ResearchResultPayload = {
   summaryKey: string;
+  summaryText?: string;
   summaryParams?: Record<string, string | number>;
   evidence: GeneratedEvidenceItem[];
-  market: { insightKey: string; score: number };
-  competitor: { insightKey: string; count: number };
-  government: { insightKey: string; programs: number };
+  market: { insightKey: string; insightText?: string; score: number };
+  competitor: { insightKey: string; insightText?: string; count: number };
+  government: { insightKey: string; insightText?: string; programs: number };
   sources: ResearchSource[];
   confidence: number;
 };

@@ -1,4 +1,4 @@
-import { RateLimitError } from '../errors';
+import { RateLimitError, AIProviderError } from '../errors';
 
 export type RetryOptions = {
   maxRetries: number;
@@ -11,6 +11,17 @@ export const DEFAULT_RETRY_OPTIONS: RetryOptions = {
   baseDelayMs: 500,
   maxDelayMs: 10_000,
 };
+
+export function isRetriableError(error: unknown): boolean {
+  if (error instanceof RateLimitError) return true;
+  if (error instanceof AIProviderError) {
+    return error.statusCode >= 500 || error.statusCode === 429;
+  }
+  if (error instanceof Error) {
+    return error.name === 'TimeoutError' || error.message.includes('timeout');
+  }
+  return false;
+}
 
 export async function withRetry<T>(
   fn: () => Promise<T>,
@@ -26,7 +37,7 @@ export async function withRetry<T>(
       return { result, retries };
     } catch (error) {
       lastError = error;
-      if (attempt >= opts.maxRetries) break;
+      if (!isRetriableError(error) || attempt >= opts.maxRetries) break;
       retries++;
       const delay = Math.min(opts.baseDelayMs * 2 ** attempt, opts.maxDelayMs);
       await sleep(delay);
