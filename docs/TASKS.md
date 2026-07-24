@@ -186,6 +186,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E9 Known Issues | `docs/KNOWN_ISSUES.md` | ✅ |
 | E10 Release Gate | RC checklist PASS | ⏳ |
 
+**Deploy batch 3 RC:** prod https://ai-startup-validation-tau.vercel.app · commit `cfb15f8` · `dpl_3R9dWVYZz6NxeGjVHWBhKsNnntPC` · smoke: `/api/health` `/api/ai/health` `/ko` `/auth/login` 200 · Lighthouse: ⏳ re-measure post-deploy
+
 **RC submission format:** see `docs/TASKS.md` L3.4 RC section below · **Do NOT open beta until PM Release Gate PASS**
 
 ---
