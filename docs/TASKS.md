@@ -161,7 +161,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E9 SEO 최종 | robots · sitemap · canonical · og · manifest | 🔄 robots/sitemap |
 | E10 Release Checklist | Beta v0.9 checklist | 🔄 template added |
 
-**Deploy batch 1:** prod https://ai-startup-validation-tau.vercel.app · commit `e3291fa` · `dpl_5t4fPZjDaGsHZ1HvBwJb8PSJjhom`
+**Deploy batch 1:** prod https://ai-startup-validation-tau.vercel.app · commit `e3291fa` · `dpl_5t4fPZjDaGsHZ1HvBwJb8PSJjhom`  
+**Deploy batch 2:** commit `d4eabff` · `dpl_GUFYq4tcmPkYhzTXFS7iLEdecgtG` · Lighthouse landing: Perf 64→TBD · A11y 92 · SEO 100 · BP 100
 
 **Deploy process:** Dev (build/lint/type) → QA (functional/regression/responsive/a11y/lighthouse) → DevOps (push/deploy/health/smoke) → PM Release Gate
 
