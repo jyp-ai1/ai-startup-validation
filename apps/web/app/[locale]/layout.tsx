@@ -16,9 +16,6 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-/** Cookie-based locale must resolve per request — avoid stale SSG bundles. */
-export const dynamic = 'force-dynamic';
-
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
   const { locale } = await params;
 

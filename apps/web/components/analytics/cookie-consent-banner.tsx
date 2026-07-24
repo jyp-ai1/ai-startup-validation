@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { setAnalyticsConsent } from '@/lib/analytics/consent';
@@ -8,7 +8,17 @@ import { Button } from '@repo/ui';
 
 export function CookieConsentBanner() {
   const t = useTranslations('analytics.consent');
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const show = () => setVisible(true);
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(show, { timeout: 2500 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const timer = window.setTimeout(show, 1500);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   function accept() {
     setAnalyticsConsent(true);
