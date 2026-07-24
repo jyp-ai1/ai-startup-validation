@@ -54,9 +54,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint L3.0 — Real AI Integration (Phase 1) 🔄
+## Sprint L3.0 — Real AI Integration (Phase 1) ⏸
 
-**Status:** In progress  
+**Status:** Dev complete — deploy + live QA gate pending (`facce84`)  
 **Goal:** Mock → OpenRouter + Gemini Flash real responses (Claude deferred)
 
 | EPIC | Status |
