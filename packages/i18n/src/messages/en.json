@@ -5,6 +5,19 @@
     "appDescription": "AI-powered strategy consulting platform for startups and enterprise teams",
     "titleSuffix": "LaunchLens"
   },
+  "beta": {
+    "badge": "Private Beta"
+  },
+  "about": {
+    "title": "About LaunchLens",
+    "desc": "LaunchLens is an AI Strategy Consultant platform for startup validation and enterprise strategy. You are using a private beta — feedback shapes our roadmap.",
+    "version": "Version",
+    "commit": "Build",
+    "environment": "Environment",
+    "contact": "Contact us",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
@@ -32,6 +45,9 @@
     "saveSection": "Save Section",
     "saveReport": "Save Report",
     "createProject": "Create Project",
+    "aiError": {
+      "retry": "Try again"
+    },
     "createVoc": "Create VOC",
     "createGrant": "Create Grant",
     "createResearch": "Create Research Plan",
@@ -160,7 +176,13 @@
     "navigation": "Navigation",
     "openMenu": "Open navigation menu",
     "singleUser": "Single User · Local Workspace",
-    "footer": "MVP — no auth required",
+    "footer": {
+      "bugReport": "Report a bug",
+      "featureRequest": "Suggest a feature",
+      "contact": "Contact",
+      "discord": "Discord",
+      "about": "About"
+    },
     "groupMain": "Main",
     "groupValidation": "Validation",
     "groupStrategy": "Strategy",
@@ -448,6 +470,7 @@
       },
       "focus": {
         "title": "Today's focus",
+        "subtitle": "Start here — these are the highest-impact tasks for today.",
         "rank": "Priority #{rank}"
       },
       "progress": {
@@ -1477,7 +1500,10 @@
       "privacy": "Privacy",
       "terms": "Terms",
       "contact": "Contact",
-      "version": "Version"
+      "version": "Version",
+      "about": "About",
+      "bugReport": "Report a bug",
+      "featureRequest": "Suggest a feature"
     },
     "legal": {
       "privacyTitle": "Privacy Policy",
@@ -3072,7 +3098,9 @@
     "wizard": {
       "eyebrow": "First project",
       "title": "Create your first project",
-      "desc": "Answer a few questions — we'll set up your strategy workspace in under 5 minutes.",
+      "desc": "Answer a few questions — we'll set up your strategy workspace in about 3 minutes.",
+      "timeEstimate": "Estimated time: ~3 minutes",
+      "optional": "optional",
       "step1Title": "What type of project?",
       "step2Title": "Tell us about your project",
       "step3Title": "What's your primary goal?",

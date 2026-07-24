@@ -7,6 +7,8 @@ import { useTranslations } from 'next-intl';
 import { Button, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
+import { AiErrorRetry } from '@/components/ai-error-retry';
+
 type ConsultantChatPanelProps = {
   projectTitle: string;
   className?: string;
@@ -22,81 +24,91 @@ export function ConsultantChatPanel({ projectTitle, className }: ConsultantChatP
   const t = useTranslations('aiConsultant');
   const [question, setQuestion] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [chatError, setChatError] = useState<string | null>(null);
+  const [lastFailedQuestion, setLastFailedQuestion] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  function handleSubmit() {
-    const trimmed = question.trim();
+  function submitQuestion(rawQuestion: string) {
+    const trimmed = rawQuestion.trim();
     if (!trimmed || pending) return;
 
+    setChatError(null);
+    setLastFailedQuestion(null);
     setQuestion('');
     setMessages((prev) => [...prev, { role: 'user', content: trimmed }]);
 
     startTransition(async () => {
       setMessages((prev) => [...prev, { role: 'assistant', content: '', streaming: true }]);
 
-      const response = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: trimmed,
-          projectTitle,
-          stream: true,
-          locale: document.documentElement.lang || 'ko',
-        }),
-      });
-
-      if (!response.ok || !response.body) {
-        setMessages((prev) => {
-          const next = [...prev];
-          next[next.length - 1] = {
-            role: 'assistant',
-            content: t('chat.error'),
-          };
-          return next;
+      try {
+        const response = await fetch('/api/ai/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question: trimmed,
+            projectTitle,
+            stream: true,
+            locale: document.documentElement.lang || 'ko',
+          }),
         });
-        return;
-      }
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-      let answer = '';
+        if (!response.ok || !response.body) {
+          throw new Error(t('chat.error'));
+        }
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() ?? '';
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let answer = '';
 
-        for (const line of lines) {
-          if (!line.startsWith('data:')) continue;
-          const payload = line.slice(5).trim();
-          if (payload === '[DONE]') continue;
-          try {
-            const parsed = JSON.parse(payload) as { delta?: string; error?: string };
-            if (parsed.error) {
-              answer = parsed.error;
-            } else if (parsed.delta) {
-              answer += parsed.delta;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data:')) continue;
+            const payload = line.slice(5).trim();
+            if (payload === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(payload) as { delta?: string; error?: string };
+              if (parsed.error) {
+                throw new Error(parsed.error);
+              }
+              if (parsed.delta) {
+                answer += parsed.delta;
+              }
+              setMessages((prev) => {
+                const next = [...prev];
+                next[next.length - 1] = { role: 'assistant', content: answer, streaming: true };
+                return next;
+              });
+            } catch (error) {
+              if (error instanceof Error && error.message !== t('chat.error')) {
+                throw error;
+              }
             }
-            setMessages((prev) => {
-              const next = [...prev];
-              next[next.length - 1] = { role: 'assistant', content: answer, streaming: true };
-              return next;
-            });
-          } catch {
-            /* ignore */
           }
         }
-      }
 
-      setMessages((prev) => {
-        const next = [...prev];
-        next[next.length - 1] = { role: 'assistant', content: answer || t('chat.empty') };
-        return next;
-      });
+        setMessages((prev) => {
+          const next = [...prev];
+          next[next.length - 1] = { role: 'assistant', content: answer || t('chat.empty') };
+          return next;
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : t('chat.error');
+        setChatError(message);
+        setLastFailedQuestion(trimmed);
+        setMessages((prev) => prev.slice(0, -1));
+      }
     });
+  }
+
+  function handleSubmit() {
+    submitQuestion(question);
   }
 
   return (
@@ -132,6 +144,16 @@ export function ConsultantChatPanel({ projectTitle, className }: ConsultantChatP
           ))
         )}
       </div>
+
+      {chatError ? (
+        <AiErrorRetry
+          message={chatError}
+          disabled={pending}
+          onRetry={() => {
+            if (lastFailedQuestion) submitQuestion(lastFailedQuestion);
+          }}
+        />
+      ) : null}
 
       <div className="flex gap-2">
         <Textarea

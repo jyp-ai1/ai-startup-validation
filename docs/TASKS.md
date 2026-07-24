@@ -96,7 +96,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## Sprint L3.2 — OpenAI Provider + Fallback (Phase 3) ✅
 
-**Status:** Complete ✅ (commit `b21bb77`, deploy pending push)  
+**Status:** Complete ✅ (prod: https://ai-startup-validation-tau.vercel.app, commit `d89eeb0`)  
 **Goal:** Direct OpenAI adapter + OpenRouter→OpenAI fallback + Orchestrator RESEARCH real worker
 
 | EPIC | Status |
@@ -105,10 +105,68 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E2 Provider fallback chain (consultant + decision) | ✅ Done |
 | E3 Orchestrator RESEARCH real worker | ✅ Done |
 | E4 Health API + ops dashboard + env docs | ✅ Done |
-| E5 Build/test/deploy + smoke | ✅ Tests/build · ⏳ push/deploy |
+| E5 Build/test/deploy + smoke | ✅ Done |
 
 **Env:** `OPENAI_API_KEY` (fallback), optional `AI_FALLBACK_MODEL=gpt-4o-mini`  
 **Verify:** `/api/ai/health` shows `openaiConfigured` · Orchestrator RESEARCH uses Gemini · fallback on 429/5xx
+
+**PM note:** `OPENAI_API_KEY` on Vercel 권장 — OpenRouter 장애 시 서비스 연속성 (현 prod: `openaiConfigured: false`)
+
+---
+
+## Sprint L3.3 — Open Beta Ready 🔄
+
+**Status:** In progress (PM approved ★★★★★)  
+**Goal:** 오픈베타 공개 가능 — UX·안정성·운영 준비 (기능 추가 아님)
+
+| EPIC | Scope | Status |
+|------|-------|--------|
+| E1 Google Login QA | 가입·로그인·로그아웃·세션 | ⏳ PM checklist |
+| E2 Wizard UX | 3분 온보딩, optional 필드 | ✅ Done |
+| E3 Demo UX | DemoWelcomeCard 체험형 | ✅ Done |
+| E4 Project Home | Today's Focus 상단 | ✅ Done |
+| E5 Loading UX | Skeleton/spinner (기존) | ✅ Done |
+| E6 Error UX | AI 실패 재시도 | ✅ Done |
+| E7 Feedback | Footer 버그/기능 제안 | ✅ Done |
+| E8 Contact | Footer 문의·Discord·GitHub·About | ✅ Done |
+| E9 Analytics | Ops 퍼널 (가입→리포트) | ✅ Done |
+| E10 Beta Badge | PRIVATE BETA v0.9 | ✅ Done |
+| E11 Build/deploy/QA | lint/build/smoke/prod | ⏳ |
+
+**DoD:** 5분 내 첫 프로젝트+리포트 · E2E PASS · Lighthouse · prod deploy · PM QA PASS
+
+**PM note:** OpenAI 키 불필요 (OpenRouter ONLY). Browser/MCP → **L3.4/L3.5** (오픈베타 후).
+
+**Config:** `NEXT_PUBLIC_FEEDBACK_BUG_URL`, `NEXT_PUBLIC_FEEDBACK_IDEA_URL`, optional `NEXT_PUBLIC_DISCORD_URL`
+
+---
+
+## Sprint L3.4 — Browser Research Agent 🔜
+
+**Status:** Planned (after open beta)  
+**Goal:** Mock 조사 탈출 — Playwright 웹 검색 + Evidence → Decision
+
+| EPIC | Scope |
+|------|-------|
+| E1 Browser Agent | `@repo/browser` Playwright 검색·크롤 |
+| E2 Evidence Engine | URL·Confidence·dedup |
+| E3 Research Workflow | Browser → Merge → Decision |
+| E4 UI | 진행률·출처·Evidence 리스트 |
+
+**Leverage:** `packages/browser`, `research/providers/` registry
+
+---
+
+## Development process (L3.3+)
+
+| Role | Responsibility |
+|------|----------------|
+| PM | Strategy, IA/UX, sprint design, PASS/HOLD |
+| Senior Developer (Cursor) | Design, implement, refactor, tests |
+| Senior QA (Cursor) | Unit/integration/regression, responsive, a11y, Lighthouse, E2E |
+| DevOps Reviewer (Cursor) | Git, build, env, deploy `jyp-ai1s-projects`, health smoke, rollback report |
+
+**Deploy report must include:** Commit, branch, prod URL, deployment ID, build/lint results, smoke, known issues, PM manual QA, rollback steps.
 
 ---
 

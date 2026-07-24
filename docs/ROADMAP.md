@@ -81,6 +81,47 @@
 
 ---
 
+## LaunchLens Product Phase — AI Strategy Consultant (L3.x)
+
+> **PM principle (2026-07-24):** 기능 추가보다 **서비스 품질** · Mock → Real AI 조사가 최우선.  
+> **Deploy target:** `jyp-ai1s-projects/ai-startup-validation` → https://ai-startup-validation-tau.vercel.app  
+> **Process:** Senior Dev + Senior QA + DevOps Reviewer 체크리스트 필수 (see [TASKS.md](./TASKS.md))
+
+| Sprint | Focus | Priority | Status |
+|--------|-------|----------|--------|
+| L3.0 | OpenRouter + Gemini Flash | ★★★★★ | ✅ |
+| L3.1 | Research pipeline + Evidence DB + Decision LLM | ★★★★★ | ✅ |
+| L3.2 | OpenAI adapter + fallback + Orchestrator RESEARCH | ★★★★ | ✅ |
+| **L3.3** | **Open Beta Ready (UX + ops + funnel)** | ★★★★★ | 🔄 In progress |
+| L3.4 | Browser Research Agent | ★★★★★ | Planned |
+| L3.5 | MCP Integration | ★★★★★ | Planned |
+| L3.6 | Scenario Planning (Best / Base / Worst) | ★★★★★ | Planned |
+| L3.7 | Financial Model (ROI, NPV, IRR) | ★★★★★ | Planned |
+| L3.8 | Investor Deck (IR PDF/PPT) | ★★★★★ | Planned |
+
+### L3.4 target flow (post-beta)
+
+```
+Project → Browser Search → MCP → Evidence Merge → Decision
+```
+
+**Leverage:** `@repo/browser`, `@repo/mcp`, `research/providers/` registry
+
+---
+
+## Development process (L3.3+)
+
+| Role | Responsibility |
+|------|----------------|
+| PM | Strategy, IA/UX, sprint design, PASS/HOLD |
+| Senior Developer (Cursor) | Design, implement, refactor, tests |
+| Senior QA (Cursor) | Unit/integration/regression, responsive, a11y, Lighthouse, E2E |
+| DevOps Reviewer (Cursor) | Git, build, env, deploy `jyp-ai1s-projects`, health smoke, rollback report |
+
+**Deploy report must include:** Commit, branch, prod URL, deployment ID, build/lint results, smoke, known issues, PM manual QA, rollback steps.
+
+---
+
 ## Legacy
 
 <details>

@@ -110,6 +110,14 @@ const MOCK_STATS: OpsDashboardStats = {
   webVitals: { lcp: 2100, cls: 0.04, inp: 180 },
   gaConnected: Boolean(env.NEXT_PUBLIC_GA_MEASUREMENT_ID),
   totalEvents: 0,
+  activationFunnel: {
+    landing: 0,
+    signup: 0,
+    wizardComplete: 0,
+    researchExecute: 0,
+    decisionGenerate: 0,
+    reportGenerate: 0,
+  },
 };
 
 export function recordAnalyticsEvent(payload: AnalyticsEventPayload): void {
@@ -148,5 +156,13 @@ export function getOpsDashboardStats(): OpsDashboardStats {
     webVitals: latestWebVitals(),
     gaConnected: Boolean(env.NEXT_PUBLIC_GA_MEASUREMENT_ID),
     totalEvents: events.length,
+    activationFunnel: {
+      landing: countEvents(ANALYTICS_EVENTS.landingView) + countEvents(ANALYTICS_EVENTS.landingStartClick),
+      signup: countEvents(ANALYTICS_EVENTS.signup) + countEvents(ANALYTICS_EVENTS.login),
+      wizardComplete: countEvents(ANALYTICS_EVENTS.wizardComplete),
+      researchExecute: countEvents(ANALYTICS_EVENTS.researchExecute),
+      decisionGenerate: countEvents(ANALYTICS_EVENTS.decisionGenerate),
+      reportGenerate: countEvents(ANALYTICS_EVENTS.reportGenerate),
+    },
   };
 }

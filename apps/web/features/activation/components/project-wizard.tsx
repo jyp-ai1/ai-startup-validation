@@ -44,6 +44,7 @@ export function ProjectWizard() {
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">{t('eyebrow')}</p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">{t('title')}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{t('desc')}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{t('timeEstimate')}</p>
       </div>
 
       <div className="mb-8 flex items-center justify-center gap-2">
@@ -102,20 +103,28 @@ export function ProjectWizard() {
               <Input id="title" name="title" required placeholder={t('projectNamePlaceholder')} />
             </div>
             <div className="space-y-2">
-              <label htmlFor="industry" className="text-sm font-medium">{t('industry')}</label>
-              <Input id="industry" name="industry" required placeholder={t('industryPlaceholder')} />
+              <label htmlFor="industry" className="text-sm font-medium">
+                {t('industry')} <span className="text-muted-foreground">({t('optional')})</span>
+              </label>
+              <Input id="industry" name="industry" placeholder={t('industryPlaceholder')} />
             </div>
             <div className="space-y-2">
-              <label htmlFor="country" className="text-sm font-medium">{t('country')}</label>
-              <Input id="country" name="country" required placeholder={t('countryPlaceholder')} />
+              <label htmlFor="country" className="text-sm font-medium">
+                {t('country')} <span className="text-muted-foreground">({t('optional')})</span>
+              </label>
+              <Input id="country" name="country" placeholder={t('countryPlaceholder')} />
             </div>
             <div className="space-y-2">
-              <label htmlFor="summary" className="text-sm font-medium">{t('description')}</label>
-              <Textarea id="summary" name="summary" required rows={3} placeholder={t('descriptionPlaceholder')} />
+              <label htmlFor="summary" className="text-sm font-medium">
+                {t('description')} <span className="text-muted-foreground">({t('optional')})</span>
+              </label>
+              <Textarea id="summary" name="summary" rows={3} placeholder={t('descriptionPlaceholder')} />
             </div>
             <div className="space-y-2">
-              <label htmlFor="targetCustomer" className="text-sm font-medium">{t('targetCustomer')}</label>
-              <Input id="targetCustomer" name="targetCustomer" required placeholder={t('targetPlaceholder')} />
+              <label htmlFor="targetCustomer" className="text-sm font-medium">
+                {t('targetCustomer')} <span className="text-muted-foreground">({t('optional')})</span>
+              </label>
+              <Input id="targetCustomer" name="targetCustomer" placeholder={t('targetPlaceholder')} />
             </div>
           </div>
         ) : null}

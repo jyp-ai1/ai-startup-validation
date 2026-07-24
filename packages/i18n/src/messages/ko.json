@@ -5,6 +5,19 @@
     "appDescription": "스타트업과 기업 전략팀을 위한 AI 전략 컨설팅 플랫폼",
     "titleSuffix": "LaunchLens"
   },
+  "beta": {
+    "badge": "프라이빗 베타"
+  },
+  "about": {
+    "title": "LaunchLens 소개",
+    "desc": "LaunchLens는 스타트업 검증과 기업 전략을 위한 AI Strategy Consultant 플랫폼입니다. 프라이빗 베타를 이용 중이며, 피드백이 로드맵을 만듭니다.",
+    "version": "버전",
+    "commit": "빌드",
+    "environment": "환경",
+    "contact": "문의하기",
+    "privacy": "개인정보",
+    "terms": "이용약관"
+  },
   "common": {
     "save": "저장",
     "cancel": "취소",
@@ -32,6 +45,9 @@
     "saveSection": "섹션 저장",
     "saveReport": "리포트 저장",
     "createProject": "프로젝트 생성",
+    "aiError": {
+      "retry": "다시 시도"
+    },
     "createVoc": "VOC 생성",
     "createGrant": "지원사업 등록",
     "createResearch": "리서치 계획 생성",
@@ -160,7 +176,13 @@
     "navigation": "메뉴",
     "openMenu": "메뉴 열기",
     "singleUser": "단일 사용자 · 로컬 워크스페이스",
-    "footer": "MVP — 로그인 불필요",
+    "footer": {
+      "bugReport": "버그 신고",
+      "featureRequest": "기능 제안",
+      "contact": "문의",
+      "discord": "Discord",
+      "about": "소개"
+    },
     "groupMain": "메인",
     "groupValidation": "검증",
     "groupStrategy": "Strategy",
@@ -448,6 +470,7 @@
       },
       "focus": {
         "title": "오늘의 집중 과제",
+        "subtitle": "여기서 시작하세요 — 오늘 가장 영향력 있는 작업입니다.",
         "rank": "우선순위 #{rank}"
       },
       "progress": {
@@ -1476,8 +1499,11 @@
       "copyright": "LaunchLens · AI Strategy Consultant",
       "privacy": "Privacy",
       "terms": "Terms",
-      "contact": "Contact",
-      "version": "Version"
+      "contact": "문의하기",
+      "version": "버전",
+      "about": "소개",
+      "bugReport": "버그 신고",
+      "featureRequest": "기능 제안"
     },
     "legal": {
       "privacyTitle": "Privacy Policy",
@@ -3054,7 +3080,9 @@
     "wizard": {
       "eyebrow": "첫 프로젝트",
       "title": "첫 프로젝트를 만들어 보세요",
-      "desc": "몇 가지 질문에 답하면 5분 안에 전략 워크스페이스가 준비됩니다.",
+      "desc": "몇 가지 질문에 답하면 약 3분 안에 전략 워크스페이스가 준비됩니다.",
+      "timeEstimate": "예상 소요 시간: 약 3분",
+      "optional": "선택",
       "step1Title": "프로젝트 유형을 선택하세요",
       "step2Title": "프로젝트 정보를 입력하세요",
       "step3Title": "주요 목표를 선택하세요",

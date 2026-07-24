@@ -26,6 +26,8 @@ import {
 import { cn } from '@repo/ui/lib/utils';
 
 import { TrackedThemeToggle } from '@/components/analytics/tracked-theme-toggle';
+import { AppFooterLinks } from '@/components/app-footer-links';
+import { BetaBadge } from '@/components/beta-badge';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { DemoModeBadge } from '@/features/onboarding';
 import {
@@ -197,6 +199,7 @@ export function AppShell({
               <span className="truncate text-sm font-semibold lg:hidden">{appName}</span>
             </div>
             <div className="flex items-center gap-2">
+              <BetaBadge className="hidden sm:inline-flex" />
               {demoMode ? <DemoModeBadge /> : null}
               <div
                 className="hidden cursor-pointer items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-3 py-2 transition-colors hover:border-primary/40 md:flex"
@@ -288,7 +291,7 @@ export function AppShell({
       }
       footer={
         <AppFooter className="border-border/40 text-[13px]">
-          © {new Date().getFullYear()} {appName} · {t('meta.appTagline')}
+          <AppFooterLinks appName={appName} tagline={t('meta.appTagline')} />
         </AppFooter>
       }
     >

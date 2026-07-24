@@ -99,6 +99,8 @@ export const ANALYTICS_EVENTS = {
   languageChange: 'language_change',
   themeChange: 'theme_change',
   search: 'search',
+  feedbackClick: 'feedback_click',
+  funnelStep: 'funnel_step',
   pageView: 'page_view',
   error: 'error',
   webVital: 'web_vital',
@@ -154,6 +156,14 @@ export type OpsDashboardStats = {
   };
   gaConnected: boolean;
   totalEvents: number;
+  activationFunnel?: {
+    landing: number;
+    signup: number;
+    wizardComplete: number;
+    researchExecute: number;
+    decisionGenerate: number;
+    reportGenerate: number;
+  };
 };
 
 declare global {

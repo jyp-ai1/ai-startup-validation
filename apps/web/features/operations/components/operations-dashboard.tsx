@@ -189,6 +189,33 @@ export function OperationsDashboard() {
             <StatCard title={t('totalEvents')} value={stats.totalEvents} icon={Activity} />
           </div>
 
+          {stats.activationFunnel ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Activation funnel (beta)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm">
+                  {(
+                    [
+                      ['Landing / CTA', stats.activationFunnel.landing],
+                      ['Signup / Login', stats.activationFunnel.signup],
+                      ['Wizard complete', stats.activationFunnel.wizardComplete],
+                      ['Research execute', stats.activationFunnel.researchExecute],
+                      ['Decision generate', stats.activationFunnel.decisionGenerate],
+                      ['Report generate', stats.activationFunnel.reportGenerate],
+                    ] as const
+                  ).map(([label, count]) => (
+                    <li key={label} className="flex justify-between gap-4 border-b border-border/40 py-2 last:border-0">
+                      <span>{label}</span>
+                      <span className="font-semibold tabular-nums">{count}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ) : null}
+
           <div className="grid gap-4 lg:grid-cols-2">
             <BreakdownList title={t('languageBreakdown')} data={stats.languageBreakdown} />
             <BreakdownList title={t('themeBreakdown')} data={stats.themeBreakdown} />

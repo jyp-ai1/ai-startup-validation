@@ -196,18 +196,31 @@ export function ProjectWorkspaceHome({
         onToggleFavorite={() => toggleFavorite({ id: project.id, title: project.title })}
       />
 
-      <ProgressStats workspaceHome={workspaceHome} health={health} t={t} tw={tw} />
-
-      <div className="flex flex-wrap justify-end gap-2">
-        <Button variant="outline" onClick={() => setIsEditing(true)}>
-          <Pencil className="size-4" />
-          {t('common.edit')}
-        </Button>
-        <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
-          <Trash2 className="size-4" />
-          {t('common.delete')}
-        </Button>
-      </div>
+      {/* Today's focus — primary CTA (L3.3 EPIC 4) */}
+      {workspaceHome.focusTasks.length > 0 ? (
+        <section className="rounded-2xl border border-primary/20 bg-primary/5 p-6">
+          <h2 className="text-lg font-semibold tracking-tight">{tw('focus.title')}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{tw('focus.subtitle')}</p>
+          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {workspaceHome.focusTasks.map((task) => (
+              <TodaysFocusCard
+                key={task.id}
+                task={task}
+                translateLabel={translateConsultantKey}
+                onClick={() => handleFocusClick(task.id)}
+              />
+            ))}
+          </div>
+        </section>
+      ) : workspaceHome.isEmpty ? (
+        <WorkspaceEmptyState
+          titleKey="empty.title"
+          suggestionKey={workspaceHome.emptySuggestionKey}
+          ctaHref={workspaceHome.emptyCtaHref}
+          ctaLabelKey={workspaceHome.emptyCtaLabelKey}
+          projectId={project.id}
+        />
+      ) : null}
 
       {/* Quick Actions */}
       <section>
@@ -234,6 +247,19 @@ export function ProjectWorkspaceHome({
         </div>
       </section>
 
+      <ProgressStats workspaceHome={workspaceHome} health={health} t={t} tw={tw} />
+
+      <div className="flex flex-wrap justify-end gap-2">
+        <Button variant="outline" onClick={() => setIsEditing(true)}>
+          <Pencil className="size-4" />
+          {t('common.edit')}
+        </Button>
+        <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
+          <Trash2 className="size-4" />
+          {t('common.delete')}
+        </Button>
+      </div>
+
       {/* Tabs */}
       <div className="border-b border-border">
         <nav className="-mb-px flex flex-wrap gap-1">
@@ -258,32 +284,6 @@ export function ProjectWorkspaceHome({
       {/* Tab panels */}
       {activeTab === 'overview' ? (
         <div className="space-y-10">
-          {workspaceHome.isEmpty ? (
-            <WorkspaceEmptyState
-              titleKey="empty.title"
-              suggestionKey={workspaceHome.emptySuggestionKey}
-              ctaHref={workspaceHome.emptyCtaHref}
-              ctaLabelKey={workspaceHome.emptyCtaLabelKey}
-              projectId={project.id}
-            />
-          ) : null}
-
-          {workspaceHome.focusTasks.length > 0 ? (
-            <section>
-              <h2 className="mb-4 text-lg font-semibold tracking-tight">{tw('focus.title')}</h2>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {workspaceHome.focusTasks.map((task) => (
-                  <TodaysFocusCard
-                    key={task.id}
-                    task={task}
-                    translateLabel={translateConsultantKey}
-                    onClick={() => handleFocusClick(task.id)}
-                  />
-                ))}
-              </div>
-            </section>
-          ) : null}
-
           <section>
             <h2 className="mb-4 text-lg font-semibold tracking-tight">{tw('progress.title')}</h2>
             <div className="ll-consulting-card">

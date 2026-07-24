@@ -46,16 +46,9 @@ function parseWizardInput(formData: FormData): WizardInput {
   if (!title) fieldErrors.title = ['activation.wizard.errors.titleRequired'];
 
   const industry = String(formData.get('industry') ?? '').trim();
-  if (!industry) fieldErrors.industry = ['activation.wizard.errors.industryRequired'];
-
-  const country = String(formData.get('country') ?? '').trim();
-  if (!country) fieldErrors.country = ['activation.wizard.errors.countryRequired'];
-
-  const summary = String(formData.get('summary') ?? '').trim();
-  if (!summary) fieldErrors.summary = ['activation.wizard.errors.descriptionRequired'];
-
-  const targetCustomer = String(formData.get('targetCustomer') ?? '').trim();
-  if (!targetCustomer) fieldErrors.targetCustomer = ['activation.wizard.errors.targetRequired'];
+  const country = String(formData.get('country') ?? '').trim() || 'KR';
+  const summary = String(formData.get('summary') ?? '').trim() || title;
+  const targetCustomer = String(formData.get('targetCustomer') ?? '').trim() || 'TBD';
 
   const projectGoal = parseEnum(formData.get('projectGoal'), PROJECT_GOALS);
   if (!projectGoal) fieldErrors.projectGoal = ['activation.wizard.errors.goalRequired'];

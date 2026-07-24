@@ -15,6 +15,8 @@ import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
 import { Button, Badge } from '@repo/ui';
 
+import { AiErrorRetry } from '@/components/ai-error-retry';
+
 import { AgentTimeline } from './agent-timeline';
 
 type ResearchAgentPanelProps = {
@@ -192,7 +194,11 @@ export function ResearchAgentPanel({
           ) : null}
 
           {latestJob.state === 'FAILED' ? (
-            <p className="text-sm text-rose-600">{latestJob.errorMessage ?? t('failed')}</p>
+            <AiErrorRetry
+              message={latestJob.errorMessage ?? t('failed')}
+              disabled={pending}
+              onRetry={handleStart}
+            />
           ) : null}
 
           {latestJob.state === 'COMPLETED' ? (
