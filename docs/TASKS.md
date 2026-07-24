@@ -8,16 +8,28 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Epic 1 Sprint 2 (Decision Panel + AI Guide)
+## 🟢 CURRENT — Epic 1 Sprint 3 (Decision Experience)
 
 **Status:** 🟢 In progress — Preview only (PM approved 2026-07-24)  
-**Kickoff:** [sprints/EPIC1_SPRINT2_KICKOFF.md](./sprints/EPIC1_SPRINT2_KICKOFF.md)  
-**Prior QA:** [sprints/EPIC1_SPRINT1_QA_REPORT.md](./sprints/EPIC1_SPRINT1_QA_REPORT.md)  
+**Kickoff:** [sprints/EPIC1_SPRINT3_KICKOFF.md](./sprints/EPIC1_SPRINT3_KICKOFF.md)  
+**Prior QA:** [sprints/EPIC1_SPRINT2_QA_REPORT.md](./sprints/EPIC1_SPRINT2_QA_REPORT.md)  
 **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
 
-**Sprint 2 focus:** Workspace fixed right panel — Decision + Confidence + Next Action + AI speaks first
+**Sprint 3 focus:** Dynamic Decision · Confidence Timeline · Decision History · Health Detail · Why Drawer
 
-**Production:** Sprint 1 ⛔ HOLD · Sprint 2 Preview → Product QA → prod + tag `epic1-sprint2`
+**Release:** Private Preview until Epic 1 complete — ⛔ Production HOLD (PM strategy)
+
+---
+
+## Epic 1 Sprint 2 — Decision Workspace MVP ✅ (Release HOLD)
+
+**Status:** Closed — 🟢 Product QA PASS (~92) · Preview `dpl_4TWRqqZnMdR9ouukab8NdyAzrmBm`  
+**Kickoff:** [sprints/EPIC1_SPRINT2_KICKOFF.md](./sprints/EPIC1_SPRINT2_KICKOFF.md)  
+**QA report:** [sprints/EPIC1_SPRINT2_QA_REPORT.md](./sprints/EPIC1_SPRINT2_QA_REPORT.md)
+
+**Experience delivered:** AI Strategy Coach — HOLD, Why, Next Action, Confidence mock (`6659537`)
+
+**Not deployed to Production** — strategic HOLD until Epic 1 Sprint 3+
 
 ---
 

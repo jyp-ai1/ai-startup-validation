@@ -52,7 +52,8 @@ See [SPRINT_PROCESS.md](./SPRINT_PROCESS.md): Epic → Sprint → **5 Product QA
 | Sprint | Focus | Product QA | Status |
 |--------|-------|------------|--------|
 | **1** | Landing → Goal → Workflow → Workspace shell | Journey 5 questions | ✅ PASS WITH REVISION · Prod ⛔ HOLD |
-| **2** | **Decision Panel** + AI Guide + Confidence + Next Action | Law3 + Workspace QA-04 | ⏳ Kickoff ready |
+| **2** | Decision Panel + AI Strategy Coach | Law3 + Workspace | ✅ PASS · Release ⛔ HOLD |
+| **3** | **Decision Experience** (living mock) | Dynamic decision QA | 🟢 In progress |
 | **3** | Quick Assessment, GO/HOLD/NO GO surface | Decide without full report | Planned |
 
 Sprint 1 QA: [sprints/EPIC1_SPRINT1_QA_REPORT.md](./sprints/EPIC1_SPRINT1_QA_REPORT.md)  

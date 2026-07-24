@@ -2,8 +2,9 @@
 
 **Epic:** Goal & Workflow Experience  
 **Sprint:** 2 — Decision Panel + AI Guide  
-**Status:** 🟢 In progress — Decision Workspace MVP (Preview only)  
-**PM approval:** ✅ Sprint 2 시작 (2026-07-24)  
+**Status:** ✅ **Closed — PASS WITH MINOR REVISION** · Release 🟡 strategic HOLD  
+**QA report:** [EPIC1_SPRINT2_QA_REPORT.md](./EPIC1_SPRINT2_QA_REPORT.md)  
+**PM approval:** ✅ Sprint 2 시작 · ✅ Product QA PASS (2026-07-24)  
 **Prior QA:** [EPIC1_SPRINT1_QA_REPORT.md](./EPIC1_SPRINT1_QA_REPORT.md)
 
 ---

@@ -9,7 +9,7 @@ import { Button } from '@repo/ui';
 import { getStrategyCoachState } from '../constants/decision-mock';
 import { getStepGuideMeta } from '../constants/step-guides';
 import type { WorkflowGoalId, WorkflowTemplate } from '../types';
-import { AiStrategyCoach } from './ai-strategy-coach';
+import { DecisionExperienceCoach } from './decision-experience-coach';
 import { JourneyLayout } from './journey-layout';
 import { WorkflowGuideCard } from './workflow-guide-card';
 
@@ -70,7 +70,7 @@ export function StrategyWorkspaceShell({
           </section>
         </div>
 
-        <AiStrategyCoach state={coachState} />
+        <DecisionExperienceCoach goalId={goalId} />
       </div>
 
       <div className="mt-8">

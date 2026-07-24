@@ -108,5 +108,5 @@ See [DEPLOY_QUICKSTART.md](./DEPLOY_QUICKSTART.md), [DEPLOY_SMOKE.md](./DEPLOY_S
 
 **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)  
 **Sprint 0:** ✅ Complete (PASS WITH REVISIONS)  
-**Epic 1 Sprint 1:** ✅ Product QA Conditional PASS · Production ⛔ HOLD — [QA report](./sprints/EPIC1_SPRINT1_QA_REPORT.md)  
-**Next:** [Epic 1 Sprint 2 kickoff](./sprints/EPIC1_SPRINT2_KICKOFF.md) — await PM **"Sprint 2 시작"**
+**Epic 1 Sprint 2:** ✅ Product QA PASS · Release ⛔ strategic HOLD — [QA report](./sprints/EPIC1_SPRINT2_QA_REPORT.md)  
+**Next:** [Epic 1 Sprint 3 kickoff](./sprints/EPIC1_SPRINT3_KICKOFF.md) — Decision Experience (Preview only)

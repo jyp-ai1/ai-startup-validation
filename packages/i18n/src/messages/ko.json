@@ -3644,6 +3644,42 @@
         "marketSizeUnknown": "시장 규모 미확인"
       }
     },
+    "decisionExperience": {
+      "decisionUpdated": "Decision이 업데이트되었습니다",
+      "healthDetailTitle": "건강도 상세",
+      "health": {
+        "market": "시장",
+        "execution": "실행",
+        "finance": "재무",
+        "customer": "고객"
+      },
+      "gainsPreviewTitle": "다음 추천 · Confidence",
+      "timelineTitle": "Confidence Timeline",
+      "timelineGoal": "목표 Confidence 81%",
+      "gainLabel": "+{gain}%",
+      "goReached": "축하합니다 — 1차 GO Decision에 도달했습니다.",
+      "whyAllClear": "주요 리스크가 해소되었습니다.",
+      "evidencePlaceholder": "근거 상세는 Epic 2 Evidence Engine에서 연결됩니다.",
+      "historyTitle": "Decision History",
+      "historyToday": "오늘",
+      "actions": {
+        "marketAnalysis": "시장 규모 분석",
+        "competitorAnalysis": "경쟁사 분석",
+        "vocInterviews": "고객 인터뷰"
+      },
+      "mockActions": {
+        "completeMarket": "시장 규모 분석 완료 (Mock)",
+        "completeCompetitor": "경쟁사 분석 완료 (Mock)",
+        "completeVoc": "고객 인터뷰 완료 (Mock)",
+        "done": "완료"
+      },
+      "historyEvents": {
+        "startedHold": "프로젝트 시작 — 1차 판단",
+        "marketResearchDone": "시장 조사 완료",
+        "competitorDone": "경쟁사 분석 완료",
+        "movedToGo": "GO Decision 달성"
+      }
+    },
     "plan": {
       "aiLabel": "AI Workflow",
       "title": "맞춤 Workflow가 준비되었습니다",

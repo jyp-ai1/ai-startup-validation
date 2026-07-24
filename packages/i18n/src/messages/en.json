@@ -3662,6 +3662,42 @@
         "marketSizeUnknown": "Market size not confirmed"
       }
     },
+    "decisionExperience": {
+      "decisionUpdated": "Decision updated",
+      "healthDetailTitle": "Health breakdown",
+      "health": {
+        "market": "Market",
+        "execution": "Execution",
+        "finance": "Finance",
+        "customer": "Customer"
+      },
+      "gainsPreviewTitle": "Next up · Confidence",
+      "timelineTitle": "Confidence timeline",
+      "timelineGoal": "Target confidence 81%",
+      "gainLabel": "+{gain}%",
+      "goReached": "Congratulations — first GO decision reached.",
+      "whyAllClear": "Major risks have been addressed.",
+      "evidencePlaceholder": "Evidence details connect in Epic 2 Evidence Engine.",
+      "historyTitle": "Decision history",
+      "historyToday": "Today",
+      "actions": {
+        "marketAnalysis": "Market size analysis",
+        "competitorAnalysis": "Competitor analysis",
+        "vocInterviews": "Customer interviews"
+      },
+      "mockActions": {
+        "completeMarket": "Complete market analysis (Mock)",
+        "completeCompetitor": "Complete competitor analysis (Mock)",
+        "completeVoc": "Complete customer interviews (Mock)",
+        "done": "Done"
+      },
+      "historyEvents": {
+        "startedHold": "Project started — initial verdict",
+        "marketResearchDone": "Market research complete",
+        "competitorDone": "Competitor analysis complete",
+        "movedToGo": "GO decision reached"
+      }
+    },
     "plan": {
       "aiLabel": "AI Workflow",
       "title": "Your workflow is ready",
