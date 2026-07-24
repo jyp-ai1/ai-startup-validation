@@ -17,7 +17,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **Sprint 1 focus:** Evidence Card · Why→Evidence · Confidence Rule Engine v0 · Citation · Missing Data
 
-**Alpha (Epic 1):** `alpha-v2.0.0` · LaunchLens 2.0 Alpha on prod after tag
+**Alpha (Epic 1):** `alpha-v2.0.0` · Prod `dpl_46ZfcJ33BdkFhv4tjnhwQzH9CCLF` → https://ai-startup-validation-tau.vercel.app
 
 ---
 

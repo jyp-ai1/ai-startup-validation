@@ -16,7 +16,7 @@ See [sprints/EPIC2_SPRINT1_KICKOFF.md](./sprints/EPIC2_SPRINT1_KICKOFF.md)
 
 **Tag:** `alpha-v2.0.0`  
 **Stage:** LaunchLens 2.0 Alpha (Epic 1 complete)  
-**Prod:** https://ai-startup-validation-tau.vercel.app
+**Prod:** https://ai-startup-validation-tau.vercel.app · Deploy `dpl_46ZfcJ33BdkFhv4tjnhwQzH9CCLF`
 
 > **이번 Release에서 사용자가 새롭게 얻게 되는 경험:** Goal 하나만 선택하면 AI가 Workflow를 구성하고, Strategy Workspace에서 AI Strategy Coach가 Decision·Confidence·Next Action으로 프로젝트를 이끈다.
 
