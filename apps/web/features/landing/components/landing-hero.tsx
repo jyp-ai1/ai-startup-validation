@@ -18,10 +18,10 @@ export function LandingHero() {
   ];
 
   return (
-    <section className="relative min-h-[100vh] overflow-hidden bg-background">
+    <section className="relative min-h-[85vh] overflow-hidden bg-background sm:min-h-[100vh]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(120,119,198,0.08),transparent)] dark:bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(120,119,198,0.16),transparent)]" />
 
-      <div className="mx-auto grid max-w-[1440px] gap-12 px-6 pb-20 pt-16 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10 lg:pb-28 lg:pt-24">
+      <div className="mx-auto grid max-w-[1440px] gap-10 px-4 pb-16 pt-12 sm:gap-12 sm:px-6 sm:pb-20 sm:pt-16 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10 lg:pb-28 lg:pt-24">
         <div className="max-w-xl">
           <p className="text-sm font-medium text-muted-foreground">{t('eyebrow')}</p>
           <h1 className="mt-4 text-4xl font-semibold leading-[1.08] tracking-tight text-foreground md:text-5xl lg:text-[3.25rem]">
@@ -41,7 +41,7 @@ export function LandingHero() {
             <LandingCtaLink
               href="/auth/login?next=/dashboard"
               event="cta_start"
-              className="h-12 rounded-xl bg-primary px-8 text-primary-foreground hover:bg-primary/90"
+              className="h-11 rounded-xl bg-primary px-5 text-primary-foreground hover:bg-primary/90 sm:h-12 sm:px-8"
             >
               {t('ctaStart')}
               <ArrowRight className="size-4" />
@@ -50,7 +50,7 @@ export function LandingHero() {
               href="/demo/enter"
               event="cta_demo"
               variant="outline"
-              className="h-12 rounded-xl border-border bg-background px-8 text-foreground hover:bg-muted"
+              className="h-11 rounded-xl border-border bg-background px-5 text-foreground hover:bg-muted sm:h-12 sm:px-8"
             >
               <Play className="size-4" />
               {t('ctaDemo')}

@@ -10,40 +10,40 @@ export function LandingConsultantDemo() {
   const t = useTranslations('landing.demo');
 
   return (
-    <section id="demo" className="py-[120px]">
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+    <section id="demo" className="py-16 sm:py-[120px]">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-20">
           <div>
-            <p className="text-sm font-medium text-violet-600">{t('eyebrow')}</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl">
+            <p className="text-sm font-medium text-primary">{t('eyebrow')}</p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl md:text-4xl">
               {t('title')}
             </h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-zinc-600">{t('desc')}</p>
-            <ul className="mt-8 space-y-3 text-sm text-zinc-700">
+            <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">{t('desc')}</p>
+            <ul className="mt-8 space-y-3 text-sm text-muted-foreground">
               <li className="flex gap-2">
-                <span className="font-semibold text-zinc-900">GO</span>
+                <span className="font-semibold text-foreground">GO</span>
                 {t('highlight1')}
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-zinc-900">92%</span>
+                <span className="font-semibold text-foreground">92%</span>
                 {t('highlight2')}
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-zinc-900">146</span>
+                <span className="font-semibold text-foreground">146</span>
                 {t('highlight3')}
               </li>
             </ul>
             <LandingCtaLink
               href="/demo/enter"
               event="cta_demo"
-              className="mt-10 h-12 rounded-xl bg-zinc-900 px-8 text-white hover:bg-zinc-800"
+              className="mt-10 h-12 rounded-xl bg-primary px-6 text-primary-foreground hover:bg-primary/90 sm:px-8"
             >
               {t('cta')}
               <ArrowRight className="size-4" />
             </LandingCtaLink>
           </div>
-          <div className="relative">
-            <div className="absolute -inset-6 rounded-[32px] bg-gradient-to-tr from-violet-100/50 via-transparent to-sky-100/40 blur-3xl" />
+          <div className="relative min-w-0">
+            <div className="pointer-events-none absolute -inset-4 rounded-[32px] bg-gradient-to-tr from-primary/10 via-transparent to-primary/5 blur-3xl sm:-inset-6" />
             <LandingHeroPreview variant="demo" className="relative animate-in fade-in duration-700" />
           </div>
         </div>

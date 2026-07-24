@@ -69,9 +69,9 @@ function DashboardShell({ consultant, intelligence, children, className, checkli
   }
 
   return (
-    <div className="mx-auto max-w-7xl pb-20">
-      <div className="grid gap-8 xl:grid-cols-[1fr_minmax(320px,380px)]">
-        <div className={className ?? 'min-w-0 space-y-14 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500'}>
+    <div className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
+      <div className="grid gap-8 xl:grid-cols-[1fr_minmax(280px,380px)]">
+        <div className={className ?? 'min-w-0 space-y-10 sm:space-y-14 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500'}>
           {children}
         </div>
         <div className="space-y-6 xl:sticky xl:top-24 xl:self-start">
@@ -121,7 +121,7 @@ export function ExecutiveDashboard({
 
   if (!executive && !strategy) {
     return (
-      <div className="mx-auto max-w-2xl py-12">
+      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
         <DemoWelcomeCard className="mb-10" />
         <div className="py-12 text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
