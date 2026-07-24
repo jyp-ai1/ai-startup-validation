@@ -29,7 +29,16 @@ Prior: https://ai-startup-validation-nxbepconk-jyp-ai1s-projects.vercel.app (`dp
 
 ---
 
-## Commit 3 — `fb11936` ✅ pushed + **Production deployed**
+## Commit 5 — `2fdfe10` ✅ Production LIVE
+
+**Tag:** `alpha-v2.0.4`
+
+- Landing header server shell + lazy locale/theme (First Load **200kB → 169kB**)
+- Cookie consent deferred 3.5s on marketing
+- Missing Data checklist mock toggle (click to complete)
+- Why drawer default collapsed (faster workspace paint)
+
+**Production:** https://ai-startup-validation-tau.vercel.app
 
 Landing LCP: sync hero/header, lazy preview, idle analytics, CTA a11y fix
 
