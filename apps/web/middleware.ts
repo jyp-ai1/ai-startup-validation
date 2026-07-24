@@ -8,9 +8,15 @@ const intlMiddleware = createMiddleware(routing);
 export default function middleware(request: NextRequest) {
   const response = intlMiddleware(request);
   const projectId = request.nextUrl.searchParams.get('project');
+  const pathname = request.nextUrl.pathname;
+
+  const applyPathHeader = (res: NextResponse) => {
+    res.headers.set('x-pathname', pathname);
+    return res;
+  };
 
   if (!projectId) {
-    return response;
+    return response instanceof NextResponse ? applyPathHeader(response) : response;
   }
 
   if (response instanceof NextResponse) {
@@ -19,10 +25,11 @@ export default function middleware(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 365,
       sameSite: 'lax',
     });
-    return response;
+    return applyPathHeader(response);
   }
 
   const next = NextResponse.next();
+  next.headers.set('x-pathname', pathname);
   next.cookies.set('ACTIVE_PROJECT_ID', projectId, {
     path: '/',
     maxAge: 60 * 60 * 24 * 365,

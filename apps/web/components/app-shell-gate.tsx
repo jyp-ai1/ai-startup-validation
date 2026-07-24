@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 
 type AppShellGateProps = {
-  shell: React.ReactNode;
+  shell: React.ReactNode | null;
   children: React.ReactNode;
 };
 
@@ -30,6 +30,10 @@ export function AppShellGate({ shell, children }: AppShellGateProps) {
   const pathname = usePathname();
 
   if (isMarketingRoute(pathname) || isAuthRoute(pathname) || isJourneyRoute(pathname)) {
+    return <>{children}</>;
+  }
+
+  if (!shell) {
     return <>{children}</>;
   }
 

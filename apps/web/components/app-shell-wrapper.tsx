@@ -1,3 +1,5 @@
+import { headers } from 'next/headers';
+
 import { getWorkspaceSession } from '@/lib/auth/workspace-session';
 import { loadWatchCenter } from '@/features/watch-center/server';
 
@@ -8,7 +10,27 @@ type AppShellWrapperProps = {
   children: React.ReactNode;
 };
 
+function shouldSkipAppShellData(pathname: string): boolean {
+  return (
+    pathname === '/' ||
+    pathname === '' ||
+    pathname.startsWith('/auth') ||
+    pathname === '/goal' ||
+    pathname.startsWith('/goal/') ||
+    pathname === '/workflow' ||
+    pathname.startsWith('/workflow/') ||
+    pathname === '/workspace' ||
+    pathname.startsWith('/workspace/')
+  );
+}
+
 export async function AppShellWrapper({ children }: AppShellWrapperProps) {
+  const pathname = (await headers()).get('x-pathname') ?? '/';
+
+  if (shouldSkipAppShellData(pathname)) {
+    return <AppShellGate shell={null}>{children}</AppShellGate>;
+  }
+
   const session = await getWorkspaceSession();
 
   const activeProject = session.workspace.activeProject;
