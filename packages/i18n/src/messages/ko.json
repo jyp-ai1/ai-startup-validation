@@ -3649,6 +3649,7 @@
       "healthDetailTitle": "건강도 상세",
       "health": {
         "market": "시장",
+        "technology": "기술",
         "execution": "실행",
         "finance": "재무",
         "customer": "고객"
@@ -3673,11 +3674,98 @@
         "completeVoc": "고객 인터뷰 완료 (Mock)",
         "done": "완료"
       },
+      "coachTone": {
+        "hold": "현재는 HOLD를 추천합니다. 시장 검증이 부족합니다. VOC 3건만 확보해도 GO 가능성이 높아집니다.",
+        "go": "축하합니다. 근거가 충분해 GO Decision에 도달했습니다. 실행 단계로 넘어갈 준비가 되었습니다."
+      },
       "historyEvents": {
         "startedHold": "프로젝트 시작 — 1차 판단",
         "marketResearchDone": "시장 조사 완료",
         "competitorDone": "경쟁사 분석 완료",
         "movedToGo": "GO Decision 달성"
+      }
+    },
+    "thinking": {
+      "title": "LaunchLens가 전략 프로젝트를 준비하고 있습니다",
+      "goalContext": "목표: {goal}",
+      "failed": "Workflow 구성에 실패했습니다. 다시 시도해 주세요.",
+      "retry": "다시 시도",
+      "steps": {
+        "goalAnalysis": "목표 분석",
+        "workflowBuild": "Workflow 생성",
+        "coachPrep": "AI Strategy Coach 준비",
+        "workspaceCreate": "Workspace 생성"
+      },
+      "rotate": {
+        "market": "시장 분석 준비 중...",
+        "workflow": "Workflow 구성 중...",
+        "coach": "AI Coach 준비 중...",
+        "confidence": "Confidence 계산 중..."
+      }
+    },
+    "toast": {
+      "workflowReady": "Workflow 생성이 완료되었습니다",
+      "workspaceReady": "Strategy Workspace가 준비되었습니다",
+      "retrying": "다시 시도하는 중..."
+    },
+    "feedback": {
+      "label": "👍 Feedback",
+      "prompt": "이 경험이 도움이 되었나요?",
+      "up": "좋아요",
+      "down": "아쉬워요",
+      "thanks": "피드백 감사합니다",
+      "sent": "전송됨"
+    },
+    "intelligence": {
+      "drawerTitle": "Why · Evidence · Intelligence",
+      "coachTone": {
+        "hold": "현재는 HOLD를 추천합니다. 시장 검증이 부족합니다. VOC 3건만 확보해도 GO 가능성이 높아집니다."
+      },
+      "stability": {
+        "title": "Decision Stability"
+      },
+      "futureGain": {
+        "title": "Future Gain",
+        "target": "목표 {value}%까지"
+      },
+      "actions": {
+        "voc": "VOC 완료"
+      },
+      "evidence": {
+        "section": "Evidence",
+        "confidence": "신뢰도",
+        "sources": "출처",
+        "sourceLink": "{name} 출처 보기",
+        "items": {
+          "marketSize": "시장 규모",
+          "marketGrowth": "시장 성장률"
+        }
+      },
+      "rules": {
+        "title": "Confidence Rules",
+        "calculated": "Rule Engine 계산값: {value}%",
+        "marketResearch": "시장 조사",
+        "voc": "VOC",
+        "competitor": "경쟁사",
+        "finance": "재무"
+      },
+      "missing": {
+        "title": "필요한 정보",
+        "subtitle": "현재 {current}% → 목표 {target}%",
+        "items": {
+          "customerInterviews": "고객 인터뷰",
+          "competitorPricing": "경쟁사 가격",
+          "cac": "CAC",
+          "marketGrowthRate": "시장 성장률"
+        }
+      },
+      "health": {
+        "title": "Project Health",
+        "market": "시장",
+        "technology": "기술",
+        "execution": "실행",
+        "customer": "고객",
+        "finance": "재무"
       }
     },
     "plan": {

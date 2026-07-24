@@ -3667,6 +3667,7 @@
       "healthDetailTitle": "Health breakdown",
       "health": {
         "market": "Market",
+        "technology": "Technology",
         "execution": "Execution",
         "finance": "Finance",
         "customer": "Customer"
@@ -3696,6 +3697,93 @@
         "marketResearchDone": "Market research complete",
         "competitorDone": "Competitor analysis complete",
         "movedToGo": "GO decision reached"
+      },
+      "coachTone": {
+        "hold": "I recommend HOLD for now. Market validation is thin. Even 3 VOC interviews could raise GO likelihood.",
+        "go": "Congratulations — enough evidence for GO. You're ready to move into execution."
+      }
+    },
+    "thinking": {
+      "title": "LaunchLens is preparing your strategy project",
+      "goalContext": "Goal: {goal}",
+      "failed": "Could not build workflow. Please retry.",
+      "retry": "Retry",
+      "steps": {
+        "goalAnalysis": "Goal analysis",
+        "workflowBuild": "Workflow creation",
+        "coachPrep": "AI Strategy Coach setup",
+        "workspaceCreate": "Workspace creation"
+      },
+      "rotate": {
+        "market": "Preparing market analysis...",
+        "workflow": "Building workflow...",
+        "coach": "Preparing AI Coach...",
+        "confidence": "Calculating confidence..."
+      }
+    },
+    "toast": {
+      "workflowReady": "Workflow is ready",
+      "workspaceReady": "Strategy Workspace is ready",
+      "retrying": "Retrying..."
+    },
+    "feedback": {
+      "label": "👍 Feedback",
+      "prompt": "Was this helpful?",
+      "up": "Thumbs up",
+      "down": "Thumbs down",
+      "thanks": "Thanks for your feedback",
+      "sent": "Sent"
+    },
+    "intelligence": {
+      "drawerTitle": "Why · Evidence · Intelligence",
+      "coachTone": {
+        "hold": "I recommend HOLD. Market validation is insufficient. Three VOC interviews could unlock GO."
+      },
+      "stability": {
+        "title": "Decision stability"
+      },
+      "futureGain": {
+        "title": "Future gain",
+        "target": "Target {value}%"
+      },
+      "actions": {
+        "voc": "Complete VOC"
+      },
+      "evidence": {
+        "section": "Evidence",
+        "confidence": "Confidence",
+        "sources": "Sources",
+        "sourceLink": "View source {name}",
+        "items": {
+          "marketSize": "Market size",
+          "marketGrowth": "Market growth"
+        }
+      },
+      "rules": {
+        "title": "Confidence rules",
+        "calculated": "Rule engine: {value}%",
+        "marketResearch": "Market research",
+        "voc": "VOC",
+        "competitor": "Competitor",
+        "finance": "Finance"
+      },
+      "missing": {
+        "title": "Missing data",
+        "subtitle": "Current {current}% → target {target}%",
+        "items": {
+          "customerInterviews": "Customer interviews",
+          "competitorPricing": "Competitor pricing",
+          "cac": "CAC",
+          "marketGrowthRate": "Market growth rate"
+        }
+      },
+      "health": {
+        "title": "Project health",
+        "market": "Market",
+        "technology": "Technology",
+        "execution": "Execution",
+        "customer": "Customer",
+        "finance": "Finance"
       }
     },
     "plan": {

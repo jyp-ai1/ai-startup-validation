@@ -1,84 +1,71 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { Loader2, Sparkles } from 'lucide-react';
 
-import { cn } from '@repo/ui/lib/utils';
+import { toast } from '@repo/ui';
 
 import type { WorkflowGoalId } from '../types';
-import { JourneyLayout } from './journey-layout';
+import { AiThinkingOverlay } from './ai-thinking-overlay';
 
-const COMPOSE_MS = 2800;
+const COMPOSE_MS = 3200;
+const STEP_MS = 700;
 
 type WorkflowComposeLoaderProps = {
   goalId: WorkflowGoalId;
 };
 
 export function WorkflowComposeLoader({ goalId }: WorkflowComposeLoaderProps) {
-  const t = useTranslations('workflow.compose');
+  const tc = useTranslations('workflow.compose.goals');
+  const tt = useTranslations('workflow.toast');
   const router = useRouter();
-  const [phase, setPhase] = useState(0);
+  const searchParams = useSearchParams();
+  const simulateFail = searchParams.get('simulateFail') === '1';
 
-  const templateLabels = [
-    t('templates.startup'),
-    t('templates.pm'),
-    t('templates.investor'),
-  ];
+  const [activeStep, setActiveStep] = useState(0);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
-  useEffect(() => {
+  const runCompose = useCallback(() => {
+    setActiveStep(0);
+
+    if (simulateFail && attempt === 0) {
+      const failTimer = window.setTimeout(() => setFailed(true), 1200);
+      return () => clearTimeout(failTimer);
+    }
+
     const timers = [
-      window.setTimeout(() => setPhase(1), 600),
-      window.setTimeout(() => setPhase(2), 1200),
-      window.setTimeout(() => setPhase(3), 1800),
+      window.setTimeout(() => setActiveStep(1), STEP_MS),
+      window.setTimeout(() => setActiveStep(2), STEP_MS * 2),
+      window.setTimeout(() => setActiveStep(3), STEP_MS * 3),
       window.setTimeout(() => {
+        sessionStorage.setItem('workflow_toast', '1');
         router.replace('/workflow');
       }, COMPOSE_MS),
     ];
     return () => timers.forEach(clearTimeout);
-  }, [router]);
+  }, [attempt, router, simulateFail]);
+
+  useEffect(() => {
+    if (failed) return undefined;
+    return runCompose();
+  }, [failed, runCompose]);
+
+  const handleRetry = () => {
+    setFailed(false);
+    setAttempt((a) => a + 1);
+    toast.info(tt('retrying'));
+  };
 
   return (
-    <JourneyLayout phase="workflow" width="default">
-      <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-        <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-          <Sparkles className="size-7 animate-pulse" aria-hidden />
-        </span>
-        <p className="mt-6 text-lg font-semibold text-foreground">{t('message')}</p>
-        <p className="mt-2 text-sm text-muted-foreground">{t('goalContext', { goal: t(`goals.${goalId}`) })}</p>
-
-        <ul className="mt-8 w-full max-w-sm space-y-2 text-left" role="list" aria-live="polite">
-          {templateLabels.map((label, index) => {
-            const visible = phase > index;
-            const done = phase > index + 1 || (phase === 3 && index === 2);
-            return (
-              <li
-                key={label}
-                className={cn(
-                  'flex items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-all duration-500',
-                  visible ? 'border-border/70 bg-card opacity-100' : 'border-transparent opacity-40',
-                )}
-              >
-                {done ? (
-                  <span className="text-emerald-600 dark:text-emerald-400" aria-hidden>
-                    ✓
-                  </span>
-                ) : visible ? (
-                  <Loader2 className="size-4 animate-spin text-primary" aria-hidden />
-                ) : (
-                  <span className="size-4" aria-hidden />
-                )}
-                <span className={done ? 'text-muted-foreground line-through' : 'font-medium'}>{label}</span>
-              </li>
-            );
-          })}
-        </ul>
-
-        {phase >= 3 ? (
-          <p className="mt-6 text-sm font-medium text-emerald-700 dark:text-emerald-400">{t('done')}</p>
-        ) : null}
-      </div>
-    </JourneyLayout>
+    <AiThinkingOverlay
+      goalLabel={tc(goalId)}
+      activeStep={activeStep}
+      stepCount={4}
+      failed={failed}
+      onRetry={handleRetry}
+    />
   );
 }

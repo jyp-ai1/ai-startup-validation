@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
@@ -22,6 +23,10 @@ type WorkflowPageProps = {
   searchParams: Promise<{ compose?: string }>;
 };
 
+function ComposeFallback() {
+  return null;
+}
+
 export default async function WorkflowPage({ searchParams }: WorkflowPageProps) {
   const params = await searchParams;
   const goalId = await readJourneyGoal();
@@ -30,7 +35,11 @@ export default async function WorkflowPage({ searchParams }: WorkflowPageProps) 
   }
 
   if (params.compose === '1') {
-    return <WorkflowComposeLoader goalId={goalId} />;
+    return (
+      <Suspense fallback={<ComposeFallback />}>
+        <WorkflowComposeLoader goalId={goalId} />
+      </Suspense>
+    );
   }
 
   const template = getWorkflowTemplate(goalId);

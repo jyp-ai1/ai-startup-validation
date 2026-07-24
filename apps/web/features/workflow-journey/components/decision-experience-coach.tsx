@@ -12,10 +12,11 @@ import {
   CONFIDENCE_TIMELINE,
   DECISION_HISTORY,
   getDecisionStages,
-  HEALTH_BREAKDOWN,
   type DecisionStage,
 } from '../constants/decision-experience';
+import { HEALTH_DETAIL } from '../constants/intelligence-mock';
 import type { WorkflowGoalId } from '../types';
+import { EvidenceIntelligencePanel } from './evidence-intelligence-panel';
 
 type DecisionExperienceCoachProps = {
   goalId: WorkflowGoalId;
@@ -74,6 +75,10 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
       </div>
 
       <div className="mt-4 space-y-4">
+        <div className="rounded-lg bg-muted/40 px-3 py-2.5 text-sm leading-relaxed text-foreground/90">
+          {stage.verdict === 'GO' ? td('coachTone.go') : td('coachTone.hold')}
+        </div>
+
         {/* Dynamic Decision */}
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -127,8 +132,8 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
               {td('healthDetailTitle')}
             </p>
             <ul className="mt-2 space-y-2" role="list">
-              {(Object.keys(HEALTH_BREAKDOWN) as (keyof typeof HEALTH_BREAKDOWN)[]).map((key) => {
-                const value = HEALTH_BREAKDOWN[key];
+              {(Object.keys(HEALTH_DETAIL) as (keyof typeof HEALTH_DETAIL)[]).map((key) => {
+                const value = HEALTH_DETAIL[key];
                 const warn = value < 60;
                 return (
                   <li key={key} className="flex items-center justify-between text-sm">
@@ -286,6 +291,8 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
             </div>
           ) : null}
         </div>
+
+        <EvidenceIntelligencePanel evidenceOpen={whyOpen} completedRuleIds={[]} />
 
         {/* Decision History */}
         <div>

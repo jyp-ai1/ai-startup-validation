@@ -8,20 +8,17 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Epic 2 Sprint 1 (Intelligence Engine)
+## 🟢 CURRENT — Autonomous Alpha v2.0.1 (Preview)
 
-**Status:** ⏳ Kickoff ready — await PM **"Epic 2 시작"** · Preview only  
-**Kickoff:** [sprints/EPIC2_SPRINT1_KICKOFF.md](./sprints/EPIC2_SPRINT1_KICKOFF.md)  
-**Epic 1 close:** [sprints/EPIC1_CLOSE_REPORT.md](./sprints/EPIC1_CLOSE_REPORT.md)  
-**Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
+**Status:** ✅ Complete — Preview deploy · Production ⛔  
+**Report:** [sprints/AUTONOMOUS_ALPHA_v2.0.1_REPORT.md](./sprints/AUTONOMOUS_ALPHA_v2.0.1_REPORT.md)  
+**Epic 2 kickoff:** [sprints/EPIC2_SPRINT1_KICKOFF.md](./sprints/EPIC2_SPRINT1_KICKOFF.md)
 
-**Sprint 1 focus:** Evidence Card · Why→Evidence · Confidence Rule Engine v0 · Citation · Missing Data
-
-**Alpha (Epic 1):** `alpha-v2.0.0` · Prod `dpl_46ZfcJ33BdkFhv4tjnhwQzH9CCLF` → https://ai-startup-validation-tau.vercel.app
+**Delivered:** Epic 1.6 polish + Intelligence foundation UI + Alpha validation docs
 
 ---
 
-## Epic 1 — Goal & Workflow Experience ✅ (LaunchLens 2.0 Alpha)
+## Epic 2 Sprint 1 — Intelligence Engine (foundation in v2.0.1)
 
 **Status:** **COMPLETE** — PM approved 2026-07-24  
 **Close report:** [sprints/EPIC1_CLOSE_REPORT.md](./sprints/EPIC1_CLOSE_REPORT.md)  

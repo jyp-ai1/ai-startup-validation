@@ -1,17 +1,21 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 
-import { Button } from '@repo/ui';
+import { Button, toast } from '@repo/ui';
 
 import { getStrategyCoachState } from '../constants/decision-mock';
 import { getStepGuideMeta } from '../constants/step-guides';
 import type { WorkflowGoalId, WorkflowTemplate } from '../types';
+import { AlphaFeedbackWidget } from './alpha-feedback-widget';
 import { DecisionExperienceCoach } from './decision-experience-coach';
+import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 import { WorkflowGuideCard } from './workflow-guide-card';
+import { WorkspaceSkeleton } from './workspace-skeleton';
 
 type StrategyWorkspaceShellProps = {
   goalId: WorkflowGoalId;
@@ -31,9 +35,25 @@ export function StrategyWorkspaceShell({
   const activeStep = template.steps.find((s) => s.id === activeStepId) ?? template.steps[0];
   const stepMeta = getStepGuideMeta(activeStep?.id ?? 'context');
   const progress = Math.round((1 / template.stepCount) * 100);
+  const tt = useTranslations('workflow.toast');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => setLoading(false), 450);
+    if (sessionStorage.getItem('workspace_toast') === '1') {
+      sessionStorage.removeItem('workspace_toast');
+      toast.success(tt('workspaceReady'));
+    }
+    return () => clearTimeout(id);
+  }, [tt]);
 
   return (
     <JourneyLayout phase="workspace" width="wide">
+      <AlphaFeedbackWidget />
+      {loading ? (
+        <WorkspaceSkeleton />
+      ) : (
+        <JourneyFade>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm text-muted-foreground">{tg(`options.${goalId}.title`)}</p>
@@ -87,6 +107,8 @@ export function StrategyWorkspaceShell({
           </Link>
         </p>
       </div>
+        </JourneyFade>
+      )}
     </JourneyLayout>
   );
 }
