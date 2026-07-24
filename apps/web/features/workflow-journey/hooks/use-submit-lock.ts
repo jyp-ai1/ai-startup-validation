@@ -26,5 +26,10 @@ export function useSubmitLock(cooldownMs = 800) {
     [lock, locked],
   );
 
-  return { locked, lock, runLocked };
+  const resetLock = useCallback(() => {
+    setLocked(false);
+    untilRef.current = 0;
+  }, []);
+
+  return { locked, lock, runLocked, resetLock };
 }

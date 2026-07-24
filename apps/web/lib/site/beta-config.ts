@@ -1,5 +1,5 @@
-/** LaunchLens 2.0 Closed Beta — Epic 4 */
-export const BETA_VERSION = 'Alpha 2.0.6';
+/** LaunchLens Alpha — P0 hotfix v2.0.7 */
+export const BETA_VERSION = 'Alpha 2.0.7-hotfix';
 export const BETA_LABEL = 'CLOSED BETA PREVIEW';
 
 export const SITE_LINKS = {

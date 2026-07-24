@@ -15,7 +15,7 @@ export async function LandingHero() {
       <div className="mx-auto grid max-w-[1440px] gap-10 px-4 sm:gap-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10">
         <div className="max-w-xl">
           <p className="text-sm font-medium text-primary">{t('eyebrow')}</p>
-          <h1 className="mt-4 text-4xl font-semibold leading-[1.12] tracking-tight text-foreground md:text-5xl lg:text-[3.25rem]">
+          <h1 className="mt-4 whitespace-pre-line text-4xl font-semibold leading-[1.12] tracking-tight text-foreground md:text-5xl lg:text-[3.25rem]">
             {t('title')}
           </h1>
           <p className="mt-5 text-lg font-medium leading-relaxed text-foreground/90 md:text-xl">

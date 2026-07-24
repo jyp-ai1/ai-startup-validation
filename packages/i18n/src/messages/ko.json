@@ -1331,9 +1331,9 @@
     },
     "hero": {
       "eyebrow": "AI Strategy Workspace",
-      "title": "사업 아이디어가 있으신가요?",
-      "subtitle": "AI가 시장성부터 실행계획까지 함께 만듭니다.",
-      "northStar": "보고서가 아닌, AI와 함께 끝까지 진행하는 전략 프로젝트입니다.",
+      "title": "AI와 함께\n전략 프로젝트를 시작하세요.",
+      "subtitle": "사업 아이디어를 AI와 함께 검증하고 실행까지 이어갑니다.",
+      "northStar": "Goal을 선택하면 AI가 Workflow를 만들고, 전략 프로젝트를 끝까지 안내합니다.",
       "journey": {
         "label": "이렇게 진행됩니다",
         "goal": "목표",
@@ -1374,12 +1374,12 @@
       "badge4": "Explainable AI"
     },
     "howItWorks": {
-      "title": "How it Works",
-      "desc": "아이디어에서 Executive Report까지 4단계로 안내합니다.",
-      "step1": { "title": "프로젝트 생성", "desc": "아이디어, 타깃 고객, Industry를 정의합니다." },
-      "step2": { "title": "AI 조사", "desc": "시장, 경쟁사, VOC, Evidence, 정부지원을 AI가 수행합니다." },
-      "step3": { "title": "Decision", "desc": "GO / HOLD / NO GO와 Explainable Score, Risk Matrix." },
-      "step4": { "title": "Executive Report", "desc": "PDF, PPT, DOCX로 경영 보고서를 내보냅니다." }
+      "title": "이렇게 진행됩니다",
+      "desc": "Goal → Workflow → Decision. 5분 안에 시작할 수 있습니다.",
+      "step1": { "title": "① 목표 선택", "desc": "오늘 무엇을 할지 Goal만 선택합니다." },
+      "step2": { "title": "② AI Workflow 생성", "desc": "AI가 맞춤 Workflow를 자동 구성합니다." },
+      "step3": { "title": "③ AI Strategy Coach", "desc": "Coach가 다음 행동과 Evidence를 안내합니다." },
+      "step4": { "title": "④ GO / HOLD / Next Action", "desc": "Decision과 실행 계획까지 한 Workspace에서." }
     },
     "features": {
       "title": "의사결정에 필요한 모든 것",
@@ -1392,9 +1392,9 @@
       "report": { "title": "Executive Report", "desc": "투자자·이사회용 Story-driven Report." }
     },
     "demo": {
-      "eyebrow": "Live Preview",
-      "title": "AI Consultant가 먼저 말합니다",
-      "desc": "Chat UI가 아닙니다. 프로젝트를 분석하고 다음 행동을 제안하는 Consultant입니다.",
+      "eyebrow": "Workspace Preview",
+      "title": "AI Strategy Coach가 먼저 말합니다",
+      "desc": "Chat UI가 아닙니다. Goal → Workflow → Decision을 함께 진행하는 Coach입니다.",
       "highlight1": " Verdict + Explainable Score",
       "highlight2": " Confidence — Evidence 품질 기반",
       "highlight3": " Evidence — Lineage 추적",
@@ -3689,8 +3689,10 @@
     "thinking": {
       "title": "LaunchLens가 전략 프로젝트를 준비하고 있습니다",
       "goalContext": "목표: {goal}",
-      "failed": "Workflow 구성에 실패했습니다. 다시 시도해 주세요.",
+      "failed": "전략 프로젝트 준비에 실패했습니다.",
       "retry": "다시 시도",
+      "etaHint": "약 2초 소요됩니다.",
+      "progressLabel": "진행률",
       "steps": {
         "goalAnalysis": "목표 분석",
         "workflowBuild": "워크플로 생성",
@@ -3698,6 +3700,7 @@
         "workspaceCreate": "워크스페이스 생성"
       },
       "rotate": {
+        "building": "AI가 전략 프로젝트를 구성하고 있습니다.",
         "market": "시장 조사 중...",
         "competitor": "경쟁사를 찾고 있습니다...",
         "workflow": "프로젝트를 구성하는 중...",

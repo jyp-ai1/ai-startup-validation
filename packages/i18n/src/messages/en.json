@@ -1331,9 +1331,9 @@
     },
     "hero": {
       "eyebrow": "AI Strategy Workspace",
-      "title": "Have a business idea?",
-      "subtitle": "AI builds with you — from market fit to execution plan.",
-      "northStar": "Not a report — a strategy project you finish together with AI.",
+      "title": "Start your strategy project\nwith AI.",
+      "subtitle": "Validate your idea with AI and carry it through to execution.",
+      "northStar": "Pick a Goal — AI builds your Workflow and guides the project to completion.",
       "journey": {
         "label": "How it works",
         "goal": "Goal",
@@ -1375,11 +1375,11 @@
     },
     "howItWorks": {
       "title": "How it works",
-      "desc": "From idea to executive report in four guided steps.",
-      "step1": { "title": "Create project", "desc": "Define your idea, target customer, and industry in minutes." },
-      "step2": { "title": "AI research", "desc": "Market, competitors, VOC, evidence, and grants — orchestrated by AI." },
-      "step3": { "title": "Decision", "desc": "GO / HOLD / NO GO with explainable scores and risk matrix." },
-      "step4": { "title": "Executive report", "desc": "Export board-ready strategy reports in PDF, PPT, or DOCX." }
+      "desc": "Goal → Workflow → Decision. Start in under 5 minutes.",
+      "step1": { "title": "① Pick a Goal", "desc": "Choose what you want to accomplish today." },
+      "step2": { "title": "② AI builds Workflow", "desc": "AI composes a tailored workflow automatically." },
+      "step3": { "title": "③ AI Strategy Coach", "desc": "Coach guides next actions and evidence." },
+      "step4": { "title": "④ GO / HOLD / Next Action", "desc": "Decision and execution in one workspace." }
     },
     "features": {
       "title": "Everything you need to decide",
@@ -3707,8 +3707,10 @@
     "thinking": {
       "title": "LaunchLens is preparing your strategy project",
       "goalContext": "Goal: {goal}",
-      "failed": "Could not build workflow. Please retry.",
+      "failed": "Could not prepare your strategy project.",
       "retry": "Retry",
+      "etaHint": "About 2 seconds.",
+      "progressLabel": "Progress",
       "steps": {
         "goalAnalysis": "Goal analysis",
         "workflowBuild": "Workflow creation",
@@ -3716,6 +3718,7 @@
         "workspaceCreate": "Workspace creation"
       },
       "rotate": {
+        "building": "AI is building your strategy project.",
         "market": "Researching the market...",
         "competitor": "Finding competitors...",
         "workflow": "Building your project...",

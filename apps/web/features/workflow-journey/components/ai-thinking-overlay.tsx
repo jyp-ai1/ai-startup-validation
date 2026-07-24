@@ -7,12 +7,13 @@ import { Brain, Check, Loader2 } from 'lucide-react';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
-const ROTATE_MS = 2200;
+const ROTATE_MS = 1800;
 
 type AiThinkingOverlayProps = {
   goalLabel?: string;
   stepCount?: number;
   activeStep?: number;
+  progressPercent?: number;
   loadingMessage?: string;
   failed?: boolean;
   onRetry?: () => void;
@@ -23,6 +24,7 @@ export function AiThinkingOverlay({
   goalLabel,
   stepCount = 4,
   activeStep = 0,
+  progressPercent,
   loadingMessage,
   failed = false,
   onRetry,
@@ -31,20 +33,24 @@ export function AiThinkingOverlay({
   const t = useTranslations('workflow.thinking');
   const [msgIndex, setMsgIndex] = useState(0);
   const messages = [
+    t('rotate.building'),
     t('rotate.market'),
     t('rotate.competitor'),
     t('rotate.workflow'),
     t('rotate.coach'),
     t('rotate.confidence'),
-    t('rotate.evidence'),
   ];
 
+  const pct =
+    progressPercent ?? Math.min(100, Math.round(((activeStep + 1) / stepCount) * 100));
+
   useEffect(() => {
+    if (failed) return undefined;
     const id = window.setInterval(() => {
       setMsgIndex((i) => (i + 1) % messages.length);
     }, ROTATE_MS);
     return () => clearInterval(id);
-  }, [messages.length]);
+  }, [failed, messages.length]);
 
   const steps = [
     t('steps.goalAnalysis'),
@@ -75,6 +81,9 @@ export function AiThinkingOverlay({
             </p>
             {goalLabel ? (
               <p className="text-sm text-muted-foreground">{t('goalContext', { goal: goalLabel })}</p>
+            ) : null}
+            {!failed ? (
+              <p className="mt-1 text-xs text-muted-foreground">{t('etaHint')}</p>
             ) : null}
           </div>
         </div>
@@ -120,10 +129,14 @@ export function AiThinkingOverlay({
             </ul>
 
             <div className="mt-6">
-              <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+              <div className="mb-2 flex items-center justify-between text-xs font-medium tabular-nums text-muted-foreground">
+                <span>{t('progressLabel')}</span>
+                <span>{pct}%</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
                 <div
                   className="h-full rounded-full bg-primary transition-all duration-500"
-                  style={{ width: `${Math.min(100, ((activeStep + 1) / stepCount) * 100)}%` }}
+                  style={{ width: `${pct}%` }}
                 />
               </div>
               <p className="mt-3 text-center text-xs text-muted-foreground">
