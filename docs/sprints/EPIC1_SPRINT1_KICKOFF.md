@@ -2,7 +2,7 @@
 
 **Epic:** Goal & Workflow Experience  
 **Sprint:** 1 — First journey shell  
-**Status:** Implemented — pending Preview deploy + Product QA  
+**Status:** Implemented — commit `68359bb` · pending Preview deploy + Product QA  
 **PM approval:** ✅ Epic 1 Sprint 1 시작 (2026-07-24)
 
 ---

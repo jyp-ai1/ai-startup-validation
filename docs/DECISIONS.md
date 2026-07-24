@@ -316,6 +316,7 @@ Feature-unit sprints (modules, reports, frameworks) expanded the codebase but di
 4. Mandatory **4 kickoff questions** before any implementation sprint
 5. QA primary metric = **UX question per sprint**, not feature checklist alone
 6. Legacy L3.4 RC codebase **retained**; Epic sprints reshape entry UX and navigation
+7. **Product Constitution** ([PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)) is supreme product law — North Star, Principles, UX Laws, Out of Scope, 5-question Product QA
 
 ### Consequences
 

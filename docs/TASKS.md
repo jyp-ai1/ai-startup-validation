@@ -8,15 +8,15 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Epic 1 Sprint 1 (implementation)
+## 🟢 CURRENT — Epic 1 Sprint 1 (Product QA gate)
 
-**Status:** In progress — journey shell shipped locally  
+**Status:** Implemented locally — commit `68359bb` · pending Preview deploy + PM Product QA  
 **Kickoff:** [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)  
 **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
 
 **Flow:** `/` → `/goal` → `/workflow` → `/workspace` (no legacy sidebar on journey routes)
 
-**Verify:** `pnpm lint && pnpm build` · smoke includes `/goal`
+**Verify:** `pnpm lint && pnpm build` ✅ · Preview deploy · smoke `/goal`, `/demo/enter` · tag `epic1-sprint1` after prod
 
 ---
 
