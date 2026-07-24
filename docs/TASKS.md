@@ -150,16 +150,18 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 | EPIC | Scope | Status |
 |------|-------|--------|
-| E1 Google OAuth QA | 가입·로그인·로그아웃·세션·만료·에러 UX | 🔄 |
-| E2 Responsive QA | 390 / 430 / 768 / 1024 / 1440 / 1920 | 🔄 |
-| E3 Accessibility | Keyboard · Focus · aria · ESC · Contrast | 🔄 |
+| E1 Google OAuth QA | 가입·로그인·로그아웃·세션·만료·에러 UX | 🔄 batch1 deployed |
+| E2 Responsive QA | 390 / 430 / 768 / 1024 / 1440 / 1920 | 🔄 landing/login/shell done |
+| E3 Accessibility | Keyboard · Focus · aria · ESC · Contrast | 🔄 batch1 |
 | E4 Lighthouse | Perf ≥90 · SEO ≥95 · A11y ≥90 · BP ≥95 | ⏳ |
-| E5 Empty UX | Empty 화면 통일 | 🔄 |
-| E6 Loading UX | Skeleton 통일 | 🔄 |
-| E7 Error UX | 401/403/404/500/Timeout/Network/AI | 🔄 |
+| E5 Empty UX | Empty 화면 통일 | 🔄 i18n label |
+| E6 Loading UX | Skeleton 통일 | 🔄 +3 routes |
+| E7 Error UX | 401/403/404/500/Timeout/Network/AI | 🔄 ErrorPageView + /forbidden |
 | E8 Beta Feedback | Bug · Feature · Contact · Discord 확인 | ⏳ |
-| E9 SEO 최종 | robots · sitemap · canonical · og · manifest | 🔄 |
-| E10 Release Checklist | Beta v0.9 checklist | ⏳ |
+| E9 SEO 최종 | robots · sitemap · canonical · og · manifest | 🔄 robots/sitemap |
+| E10 Release Checklist | Beta v0.9 checklist | 🔄 template added |
+
+**Deploy batch 1:** prod https://ai-startup-validation-tau.vercel.app · commit `e3291fa` · `dpl_5t4fPZjDaGsHZ1HvBwJb8PSJjhom`
 
 **Deploy process:** Dev (build/lint/type) → QA (functional/regression/responsive/a11y/lighthouse) → DevOps (push/deploy/health/smoke) → PM Release Gate
 
