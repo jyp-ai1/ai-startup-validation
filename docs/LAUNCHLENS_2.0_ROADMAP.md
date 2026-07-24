@@ -38,8 +38,9 @@ See [SPRINT_PROCESS.md](./SPRINT_PROCESS.md): Epic → Sprint → **5 Product QA
 | **0** | Product Pivot | Constitution ratified | ✅ |
 | **1** | **Goal & Workflow Experience** | Goal → Workflow → Decision | ✅ **Alpha** |
 | **2** | **Intelligence Engine** | Evidence, Citation, Confidence, Why, Research | ✅ **Closed** |
-| **3** | **Project Intelligence Workspace** | AI Daily Coach, multi-project, timeline, memory | 🟢 **Alpha v2.0.5** |
-| **4** | **Decision Engine** | GO/HOLD/NO GO without full report | Planned |
+| **3** | **Project Intelligence Workspace** | AI Daily Coach, multi-project, timeline, memory | ✅ **Alpha v2.0.5** |
+| **4** | **Product Readiness** | Shareable product, perf 95+, Closed Beta | 🟢 **Phase 1** |
+| **5** | **Real Intelligence** | LLM, DB, real citations (design only) | 📋 Design |
 | **4** | **Execution Workspace** | PRD, roadmap, dev handoff | Planned |
 | **5** | **Living Strategy Platform** | Monitor, revisit, decision log | Planned |
 

@@ -1324,24 +1324,25 @@
       "roadmap": "Roadmap",
       "faq": "FAQ",
       "signIn": "로그인",
-      "startFree": "무료 시작",
+      "startFree": "무료로 시작하기",
       "menuLabel": "내비게이션 메뉴",
       "openMenu": "메뉴 열기",
       "closeMenu": "메뉴 닫기"
     },
     "hero": {
       "eyebrow": "AI Strategy Workspace",
-      "title": "사업 아이디어를 전략 프로젝트로 완성하세요",
-      "northStar": "LaunchLens는 AI가 보고서를 생성하는 서비스가 아니라, 전략적 의사결정을 완료하도록 프로젝트를 끝까지 이끄는 AI Strategy Workspace이다.",
+      "title": "사업 아이디어가 있으신가요?",
+      "subtitle": "AI가 시장성부터 실행계획까지 함께 만듭니다.",
+      "northStar": "보고서가 아닌, AI와 함께 끝까지 진행하는 전략 프로젝트입니다.",
       "journey": {
         "label": "이렇게 진행됩니다",
-        "goal": "Goal",
-        "workflow": "Workflow",
-        "decision": "Decision",
-        "execution": "Execution"
+        "goal": "목표",
+        "workflow": "워크플로",
+        "decision": "의사결정",
+        "execution": "실행"
       },
       "tagline": "보고서가 아니라, AI 프로젝트 매니저와 함께하는 전략 프로젝트.",
-      "ctaStart": "Goal 선택하고 시작하기",
+      "ctaStart": "무료로 시작하기",
       "ctaDemo": "데모 Workflow 체험하기",
       "ctaHint1": "신용카드 필요 없음",
       "ctaHint2": "3분 만에 시작",
@@ -3693,14 +3694,16 @@
       "steps": {
         "goalAnalysis": "목표 분석",
         "workflowBuild": "워크플로 생성",
-        "coachPrep": "AI Strategy Coach 준비",
+        "coachPrep": "AI 전략 코치 준비",
         "workspaceCreate": "워크스페이스 생성"
       },
       "rotate": {
-        "market": "시장 분석 준비 중...",
-        "workflow": "워크플로 구성 중...",
-        "coach": "AI Coach 준비 중...",
-        "confidence": "신뢰도 계산 중..."
+        "market": "시장 조사 중...",
+        "competitor": "경쟁사를 찾고 있습니다...",
+        "workflow": "프로젝트를 구성하는 중...",
+        "coach": "AI 전략 코치를 준비하는 중...",
+        "confidence": "신뢰도를 계산하는 중...",
+        "evidence": "근거를 정리하는 중..."
       }
     },
     "toast": {
@@ -3842,6 +3845,7 @@
       "nav": {
         "label": "워크스페이스 탐색",
         "today": "Today",
+        "project": "Project",
         "workflow": "Workflow",
         "decision": "Decision",
         "history": "History",
@@ -3851,6 +3855,7 @@
         "eyebrow": "AI Daily Coach",
         "greeting": "좋은 아침입니다.",
         "focusLine": "오늘은 VOC 2건만 추가하면 Confidence가 {current}% → {after}% 됩니다.",
+        "coachLine": "제가 다음 행동을 안내드릴게요. 15분이면 충분합니다.",
         "eta": "예상 시간 {minutes}분",
         "gainHint": "오늘 +{gain}% 가능",
         "exitSummary": "오늘 {gain}% 향상되었습니다.",
@@ -3902,6 +3907,30 @@
         "desc": "Epic 3 Alpha — mock 프로젝트와 AI Coach 설정입니다.",
         "mockNote": "다중 프로젝트·AI Memory는 mock 데이터입니다.",
         "locale": "언어는 상단 Locale Switcher에서 변경합니다."
+      }
+    },
+    "epic4": {
+      "nextAction": {
+        "eyebrow": "Next Action",
+        "title": "VOC 2건 추가하기",
+        "impact": "Confidence {current}% → {after}% · 예상 {minutes}분",
+        "cta": "지금 시작하기"
+      },
+      "project": {
+        "confidence": "Confidence",
+        "favorite": "즐겨찾기",
+        "unfavorite": "즐겨찾기 해제",
+        "create": "새 프로젝트",
+        "save": "저장",
+        "created": "프로젝트가 저장되었습니다 (mock)",
+        "namePlaceholder": "프로젝트 이름",
+        "recentTitle": "최근 프로젝트"
+      },
+      "feedback": {
+        "title": "Closed Beta 피드백",
+        "placeholder": "개선점이나 아이디어를 알려주세요 (선택)",
+        "submit": "피드백 보내기",
+        "close": "닫기"
       }
     },
     "workspace": {

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 
+import { BETA_VERSION } from '@/lib/site/beta-config';
 import { Button, toast } from '@repo/ui';
 
 import { getStrategyCoachState } from '../constants/decision-mock';
@@ -14,7 +15,7 @@ import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useJourneyProject } from '../hooks/use-journey-project';
 import { useWorkspaceExitCoach } from '../hooks/use-workspace-exit-coach';
 import type { WorkflowGoalId, WorkflowTemplate } from '../types';
-import { AlphaFeedbackWidget } from './alpha-feedback-widget';
+import { BetaFeedbackModal } from './beta-feedback-modal';
 import { CoachSkeleton } from './coach-skeleton';
 import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
@@ -23,6 +24,9 @@ import { WorkspaceSkeleton } from './workspace-skeleton';
 import { JourneyAchievementsPanel } from './intelligence-workspace/journey-achievements-panel';
 import { JourneyAiMemoryPanel } from './intelligence-workspace/journey-ai-memory-panel';
 import { JourneyDailyCoach } from './intelligence-workspace/journey-daily-coach';
+import { JourneyNextActionCta } from './intelligence-workspace/journey-next-action-cta';
+import { JourneyProgressRing } from './intelligence-workspace/journey-progress-ring';
+import { JourneyProjectPanel } from './intelligence-workspace/journey-project-panel';
 import { JourneyProjectSwitcher } from './intelligence-workspace/journey-project-switcher';
 import { JourneyTimelinePanel } from './intelligence-workspace/journey-timeline-panel';
 import {
@@ -80,13 +84,16 @@ export function StrategyWorkspaceShell({
         return (
           <div className="space-y-6">
             <JourneyDailyCoach confidence={project.confidence} />
-            <div className="grid gap-6 lg:grid-cols-2">
-              <JourneyAiMemoryPanel />
-              <JourneyAchievementsPanel />
-            </div>
+            <JourneyNextActionCta confidence={project.confidence} />
             <DecisionExperienceCoach goalId={goalId} className="w-full max-w-none" />
+            <div className="grid gap-6 lg:grid-cols-2">
+              <JourneyAchievementsPanel />
+              <JourneyAiMemoryPanel />
+            </div>
           </div>
         );
+      case 'project':
+        return <JourneyProjectPanel />;
       case 'workflow':
         return (
           <div className="space-y-6">
@@ -111,7 +118,7 @@ export function StrategyWorkspaceShell({
         return <DecisionExperienceCoach goalId={goalId} className="w-full max-w-none" />;
       case 'history':
         return (
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="space-y-6">
             <JourneyTimelinePanel />
             <JourneyAiMemoryPanel />
           </div>
@@ -121,6 +128,7 @@ export function StrategyWorkspaceShell({
           <section className="rounded-2xl border border-border/70 bg-card p-5 sm:p-6">
             <h3 className="text-sm font-semibold">{te('settings.title')}</h3>
             <p className="mt-2 text-sm text-muted-foreground">{te('settings.desc')}</p>
+            <p className="mt-4 text-xs font-medium text-muted-foreground">{BETA_VERSION}</p>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               <li>{te('settings.mockNote')}</li>
               <li>{te('settings.locale')}</li>
@@ -137,6 +145,7 @@ export function StrategyWorkspaceShell({
       phase="workspace"
       width="wide"
       variant="intelligence"
+      versionLabel={BETA_VERSION}
       navSlot={
         <JourneyWorkspaceNav
           active={tab}
@@ -147,7 +156,7 @@ export function StrategyWorkspaceShell({
         />
       }
     >
-      <AlphaFeedbackWidget />
+      <BetaFeedbackModal />
       {loading || !projectReady ? (
         <WorkspaceSkeleton />
       ) : (
@@ -162,12 +171,7 @@ export function StrategyWorkspaceShell({
                 </h1>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {t('progressLabel')}
-              </p>
-              <p className="text-lg font-semibold tabular-nums">{progress}%</p>
-            </div>
+            <JourneyProgressRing value={progress} label={t('progressLabel')} size={80} />
           </div>
 
           <div className="mt-6 h-2 overflow-hidden rounded-full bg-muted">

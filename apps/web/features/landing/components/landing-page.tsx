@@ -50,7 +50,6 @@ const LandingFooter = dynamic(
 export async function LandingPage() {
   return (
     <div className="min-h-full bg-background text-foreground">
-      <LandingTracker />
       <LandingHeader />
       <main id="main-content">
         <LandingHero />
@@ -85,6 +84,7 @@ export async function LandingPage() {
           <LandingFooter />
         </LandingLazySection>
       </main>
+      <LandingTracker />
     </div>
   );
 }

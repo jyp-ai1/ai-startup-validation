@@ -1331,8 +1331,9 @@
     },
     "hero": {
       "eyebrow": "AI Strategy Workspace",
-      "title": "Turn your business idea into a strategy project",
-      "northStar": "LaunchLens is not an AI report generator. It is an AI Strategy Workspace that guides your project through to a completed strategic decision.",
+      "title": "Have a business idea?",
+      "subtitle": "AI builds with you — from market fit to execution plan.",
+      "northStar": "Not a report — a strategy project you finish together with AI.",
       "journey": {
         "label": "How it works",
         "goal": "Goal",
@@ -1341,7 +1342,7 @@
         "execution": "Execution"
       },
       "tagline": "Not a report — a strategy project led by your AI coach.",
-      "ctaStart": "Choose a goal to start",
+      "ctaStart": "Start free",
       "ctaDemo": "Try demo workflow",
       "ctaHint1": "No credit card required",
       "ctaHint2": "Get started in 3 minutes",
@@ -3715,10 +3716,12 @@
         "workspaceCreate": "Workspace creation"
       },
       "rotate": {
-        "market": "Preparing market analysis...",
-        "workflow": "Building workflow...",
-        "coach": "Preparing AI Coach...",
-        "confidence": "Calculating confidence..."
+        "market": "Researching the market...",
+        "competitor": "Finding competitors...",
+        "workflow": "Building your project...",
+        "coach": "Preparing AI Strategy Coach...",
+        "confidence": "Calculating confidence...",
+        "evidence": "Organizing evidence..."
       }
     },
     "toast": {
@@ -3860,6 +3863,7 @@
       "nav": {
         "label": "Workspace navigation",
         "today": "Today",
+        "project": "Project",
         "workflow": "Workflow",
         "decision": "Decision",
         "history": "History",
@@ -3869,6 +3873,7 @@
         "eyebrow": "AI Daily Coach",
         "greeting": "Good morning.",
         "focusLine": "Add 2 VOC entries today to move Confidence from {current}% to {after}%.",
+        "coachLine": "I'll guide your next step — about 15 minutes.",
         "eta": "Estimated {minutes} min",
         "gainHint": "+{gain}% possible today",
         "exitSummary": "You improved {gain}% today.",
@@ -3920,6 +3925,30 @@
         "desc": "Epic 3 Alpha — mock projects and AI Coach preferences.",
         "mockNote": "Multi-project and AI Memory use mock data.",
         "locale": "Change language via the locale switcher above."
+      }
+    },
+    "epic4": {
+      "nextAction": {
+        "eyebrow": "Next Action",
+        "title": "Add 2 VOC entries",
+        "impact": "Confidence {current}% → {after}% · ~{minutes} min",
+        "cta": "Start now"
+      },
+      "project": {
+        "confidence": "Confidence",
+        "favorite": "Favorite",
+        "unfavorite": "Remove favorite",
+        "create": "New project",
+        "save": "Save",
+        "created": "Project saved (mock)",
+        "namePlaceholder": "Project name",
+        "recentTitle": "Recent projects"
+      },
+      "feedback": {
+        "title": "Closed Beta feedback",
+        "placeholder": "Share improvements or ideas (optional)",
+        "submit": "Send feedback",
+        "close": "Close"
       }
     },
     "workspace": {

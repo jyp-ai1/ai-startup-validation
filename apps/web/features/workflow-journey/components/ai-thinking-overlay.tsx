@@ -32,9 +32,11 @@ export function AiThinkingOverlay({
   const [msgIndex, setMsgIndex] = useState(0);
   const messages = [
     t('rotate.market'),
+    t('rotate.competitor'),
     t('rotate.workflow'),
     t('rotate.coach'),
     t('rotate.confidence'),
+    t('rotate.evidence'),
   ];
 
   useEffect(() => {

@@ -14,6 +14,7 @@ type JourneyLayoutProps = {
   width?: 'default' | 'wide';
   variant?: 'journey' | 'intelligence';
   navSlot?: React.ReactNode;
+  versionLabel?: string;
   children: React.ReactNode;
 };
 
@@ -25,6 +26,7 @@ export function JourneyLayout({
   width = 'default',
   variant = 'journey',
   navSlot,
+  versionLabel,
 }: JourneyLayoutProps) {
   const t = useTranslations('workflow.journey');
   const showJourneyPhases = variant === 'journey';
@@ -44,7 +46,14 @@ export function JourneyLayout({
             </span>
             LaunchLens
           </Link>
-          <LocaleSwitcher />
+          <div className="flex items-center gap-3">
+            {versionLabel ? (
+              <span className="hidden text-[11px] font-medium text-muted-foreground sm:inline">
+                {versionLabel}
+              </span>
+            ) : null}
+            <LocaleSwitcher />
+          </div>
         </div>
         {showJourneyPhases ? (
           <nav

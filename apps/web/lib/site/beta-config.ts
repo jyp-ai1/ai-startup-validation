@@ -1,6 +1,6 @@
-/** Open Beta site constants — L3.3 */
-export const BETA_VERSION = 'v0.9';
-export const BETA_LABEL = 'PRIVATE BETA';
+/** LaunchLens 2.0 Closed Beta — Epic 4 */
+export const BETA_VERSION = 'Alpha 2.0.6';
+export const BETA_LABEL = 'CLOSED BETA PREVIEW';
 
 export const SITE_LINKS = {
   email: 'hello@launchlens.ai',

@@ -17,23 +17,24 @@ export function JourneyDailyCoach({ confidence, className }: JourneyDailyCoachPr
   return (
     <section
       className={cn(
-        'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.06] to-background p-5 sm:p-6',
-        'motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500',
+        'rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/[0.08] via-primary/[0.04] to-background p-6 sm:p-8 lg:p-10',
+        'motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-700',
         className,
       )}
       aria-live="polite"
     >
-      <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-        <Sparkles className="size-3.5" aria-hidden />
+      <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-primary">
+        <Sparkles className="size-4" aria-hidden />
         {t('eyebrow')}
       </p>
-      <h2 className="mt-3 text-xl font-semibold tracking-tight sm:text-2xl">{t('greeting')}</h2>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+      <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">{t('greeting')}</h2>
+      <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
         {t('focusLine', {
           current: confidence,
           after: DAILY_COACH.confidenceAfter,
         })}
       </p>
+      <p className="mt-3 text-sm font-medium text-foreground/80">{t('coachLine')}</p>
       <div className="mt-4 flex flex-wrap items-center gap-4 text-sm">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-background/80 px-3 py-1.5 text-muted-foreground">
           <Clock className="size-3.5" aria-hidden />

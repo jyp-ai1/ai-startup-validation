@@ -7,7 +7,13 @@ import { CookieConsentBanner } from '@/components/analytics/cookie-consent-banne
 import { AnalyticsPageView } from '@/components/analytics/analytics-page-view';
 import { WebVitalsReporter } from '@/components/analytics/web-vitals-reporter';
 
+import { trackEvent } from '../client';
 import { hasAnalyticsConsent, hasConsentDecision } from '../consent';
+import {
+  registerProductAnalytics,
+  type ProductAnalyticsEvent,
+  type ProductAnalyticsParams,
+} from '../product-analytics';
 import { Ga4Script } from './ga4-script';
 
 type AnalyticsProviderProps = {
@@ -24,6 +30,14 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
   const [consented, setConsented] = useState(false);
   const [decided, setDecided] = useState(false);
   const [showConsent, setShowConsent] = useState(false);
+
+  useEffect(() => {
+    registerProductAnalytics({
+      track: (event: ProductAnalyticsEvent, params?: ProductAnalyticsParams) => {
+        trackEvent(event, params);
+      },
+    });
+  }, []);
 
   useEffect(() => {
     setConsented(hasAnalyticsConsent());

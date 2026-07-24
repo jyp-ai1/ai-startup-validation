@@ -4,9 +4,22 @@ import { useTranslations } from 'next-intl';
 
 import { cn } from '@repo/ui/lib/utils';
 
-export type JourneyWorkspaceTab = 'today' | 'workflow' | 'decision' | 'history' | 'settings';
+export type JourneyWorkspaceTab =
+  | 'today'
+  | 'project'
+  | 'workflow'
+  | 'decision'
+  | 'history'
+  | 'settings';
 
-const TABS: JourneyWorkspaceTab[] = ['today', 'workflow', 'decision', 'history', 'settings'];
+const TABS: JourneyWorkspaceTab[] = [
+  'today',
+  'project',
+  'workflow',
+  'decision',
+  'history',
+  'settings',
+];
 
 type JourneyWorkspaceNavProps = {
   active: JourneyWorkspaceTab;

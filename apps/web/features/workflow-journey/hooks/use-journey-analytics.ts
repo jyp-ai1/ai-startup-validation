@@ -4,6 +4,10 @@ import { useCallback } from 'react';
 import { useLocale } from 'next-intl';
 
 import { trackEvent } from '@/lib/analytics/client';
+import {
+  PRODUCT_ANALYTICS_EVENTS,
+  trackProductEvent,
+} from '@/lib/analytics/product-analytics';
 import { JOURNEY_ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import type { AnalyticsEventParams } from '@/lib/analytics/types';
 
@@ -32,29 +36,56 @@ export function useJourneyAnalytics(demoMode = false) {
   );
 
   return {
-    trackGoalSelected: (goalId: string) =>
-      track(JOURNEY_ANALYTICS_EVENTS.goalSelected, { goal_id: goalId }),
-    trackWorkflowCreated: (goalId: string, stepCount: number) =>
-      track(JOURNEY_ANALYTICS_EVENTS.workflowCreated, { goal_id: goalId, step_count: stepCount }),
-    trackWorkspaceLoaded: (goalId: string, verdict?: string) =>
-      track(JOURNEY_ANALYTICS_EVENTS.workspaceLoaded, { goal_id: goalId, verdict }),
-    trackCoachClicked: (section: string) =>
-      track(JOURNEY_ANALYTICS_EVENTS.coachClicked, { section }),
+    trackGoalSelected: (goalId: string) => {
+      track(JOURNEY_ANALYTICS_EVENTS.goalSelected, { goal_id: goalId });
+      trackProductEvent(PRODUCT_ANALYTICS_EVENTS.goalSelected, { goal_id: goalId });
+    },
+    trackWorkflowCreated: (goalId: string, stepCount: number) => {
+      track(JOURNEY_ANALYTICS_EVENTS.workflowCreated, { goal_id: goalId, step_count: stepCount });
+      trackProductEvent(PRODUCT_ANALYTICS_EVENTS.workflowStarted, { goal_id: goalId });
+    },
+    trackWorkspaceLoaded: (goalId: string, verdict?: string) => {
+      track(JOURNEY_ANALYTICS_EVENTS.workspaceLoaded, { goal_id: goalId, verdict });
+      trackProductEvent(PRODUCT_ANALYTICS_EVENTS.workspaceEntered, {
+        goal_id: goalId,
+        verdict,
+      });
+    },
+    trackCoachClicked: (section: string) => {
+      track(JOURNEY_ANALYTICS_EVENTS.coachClicked, { section });
+      trackProductEvent(PRODUCT_ANALYTICS_EVENTS.coachActionClicked, { action_key: section });
+    },
     trackConfidenceOpened: (confidenceValue: number) =>
       track(JOURNEY_ANALYTICS_EVENTS.confidenceOpened, { confidence_value: confidenceValue }),
     trackWhyOpened: (verdict: string) =>
       track(JOURNEY_ANALYTICS_EVENTS.whyOpened, { verdict }),
-    trackMockActionCompleted: (actionKey: string, newConfidence: number) =>
+    trackMockActionCompleted: (actionKey: string, newConfidence: number) => {
       track(JOURNEY_ANALYTICS_EVENTS.mockActionCompleted, {
         action_key: actionKey,
         new_confidence: newConfidence,
-      }),
-    trackFeedbackSent: (sentiment: 'up' | 'down') =>
-      track(JOURNEY_ANALYTICS_EVENTS.feedbackSent, { sentiment }),
+      });
+      if (actionKey.startsWith('decision_')) {
+        trackProductEvent(PRODUCT_ANALYTICS_EVENTS.decisionChanged, {
+          action_key: actionKey,
+          confidence: newConfidence,
+        });
+      }
+    },
+    trackMissingDataClicked: (itemKey: string) => {
+      track(JOURNEY_ANALYTICS_EVENTS.mockActionCompleted, { action_key: `missing_${itemKey}` });
+      trackProductEvent(PRODUCT_ANALYTICS_EVENTS.missingDataClicked, { action_key: itemKey });
+    },
+    trackFeedbackSent: (sentiment: 'up' | 'down') => {
+      track(JOURNEY_ANALYTICS_EVENTS.feedbackSent, { sentiment });
+      trackProductEvent(PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted, { sentiment });
+    },
     trackComposeFailed: (retryCount: number) =>
       track(JOURNEY_ANALYTICS_EVENTS.composeFailed, { retry_count: retryCount }),
     trackComposeRetried: (attempt: number) =>
       track(JOURNEY_ANALYTICS_EVENTS.composeRetried, { attempt }),
-    trackLandingViewed: () => track(JOURNEY_ANALYTICS_EVENTS.landingViewed),
+    trackLandingViewed: () => {
+      track(JOURNEY_ANALYTICS_EVENTS.landingViewed);
+      trackProductEvent(PRODUCT_ANALYTICS_EVENTS.landingViewed);
+    },
   };
 }

@@ -1,11 +1,10 @@
 import { getTranslations } from 'next-intl/server';
 
 import { LandingHeroActions } from './landing-hero-actions';
-import { LandingHeroPreviewLazy } from './landing-hero-preview-lazy';
-import { LandingJourneyStrip } from './landing-journey-strip';
-import { LandingLazySection } from './landing-lazy-section';
+import { LandingHeroPreviewStatic } from './landing-hero-preview-static';
+import { LandingJourneyStripAnimated } from './landing-journey-strip-animated';
 
-/** Server-rendered hero — h1 in initial HTML for LCP (Epic 2 perf). */
+/** Server-rendered hero — h1 in initial HTML for LCP (Epic 4 perf). */
 export async function LandingHero() {
   const t = await getTranslations('landing.hero');
 
@@ -16,27 +15,26 @@ export async function LandingHero() {
       <div className="mx-auto grid max-w-[1440px] gap-10 px-4 sm:gap-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10">
         <div className="max-w-xl">
           <p className="text-sm font-medium text-primary">{t('eyebrow')}</p>
-          <h1 className="mt-4 text-4xl font-semibold leading-[1.08] tracking-tight text-foreground md:text-5xl lg:text-[3.25rem]">
+          <h1 className="mt-4 text-4xl font-semibold leading-[1.12] tracking-tight text-foreground md:text-5xl lg:text-[3.25rem]">
             {t('title')}
           </h1>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">{t('northStar')}</p>
+          <p className="mt-5 text-lg font-medium leading-relaxed text-foreground/90 md:text-xl">
+            {t('subtitle')}
+          </p>
+          <p className="mt-3 text-base leading-relaxed text-muted-foreground">{t('northStar')}</p>
 
-          <LandingLazySection minHeight={120} rootMargin="200px 0px" className="mt-8">
-            <LandingJourneyStrip />
-          </LandingLazySection>
-
-          <p className="mt-6 text-lg font-medium text-foreground/90">{t('tagline')}</p>
+          <div className="mt-8">
+            <LandingJourneyStripAnimated />
+          </div>
 
           <LandingHeroActions
             ctaStart={t('ctaStart')}
-            ctaDemo={t('ctaDemo')}
             ctaHint1={t('ctaHint1')}
             ctaHint2={t('ctaHint2')}
-            ctaHint3={t('ctaHint3')}
           />
         </div>
 
-        <LandingHeroPreviewLazy />
+        <LandingHeroPreviewStatic />
       </div>
     </section>
   );

@@ -8,14 +8,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Epic 3 Project Intelligence Workspace
+## 🟢 CURRENT — Epic 4 Product Readiness Phase 1
 
-**Status:** 🟢 In Progress — `alpha-v2.0.5`  
-**Epic 2 close:** [sprints/EPIC2_CLOSE_REPORT.md](./sprints/EPIC2_CLOSE_REPORT.md)  
-**Epic 3 kickoff:** [sprints/EPIC3_KICKOFF.md](./sprints/EPIC3_KICKOFF.md)  
-**Autonomous report:** [sprints/LAUNCHLENS_AUTONOMOUS_REPORT.md](./sprints/LAUNCHLENS_AUTONOMOUS_REPORT.md)
+**Status:** 🟢 In Progress — `alpha-v2.0.6`  
+**Kickoff:** [sprints/EPIC4_KICKOFF.md](./sprints/EPIC4_KICKOFF.md)  
+**Report:** [sprints/PRODUCT_READINESS_REPORT.md](./sprints/PRODUCT_READINESS_REPORT.md)  
+**Epic 5 design:** [sprints/EPIC5_REAL_INTELLIGENCE_DESIGN.md](./sprints/EPIC5_REAL_INTELLIGENCE_DESIGN.md)
 
-**Delivered (v2.0.5):** Journey workspace — Daily Coach, project switcher, smart nav, timeline, AI memory, achievements, exit coach
+**Delivered:** Landing polish, onboarding copy, workspace UX, project mock save, analytics interface, Closed Beta feedback modal
+
+---
+
+## Epic 3 — Project Intelligence Workspace ✅
+
+**Status:** Kickoff complete — `alpha-v2.0.5`  
+**Kickoff:** [sprints/EPIC3_KICKOFF.md](./sprints/EPIC3_KICKOFF.md)
 
 ---
 
