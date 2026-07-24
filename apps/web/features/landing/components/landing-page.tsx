@@ -7,8 +7,9 @@ import { LandingFooter } from './landing-footer';
 import { LandingHeader } from './landing-header';
 import { LandingHero } from './landing-hero';
 import { LandingHowItWorks } from './landing-how-it-works';
-import { LandingTracker } from './landing-tracker';
 import { LandingTrustedBy } from './landing-trusted-by';
+
+const LandingTracker = dynamic(() => import('./landing-tracker').then((m) => m.LandingTracker));
 
 const LandingConsultantDemo = dynamic(
   () => import('./landing-consultant-demo').then((m) => m.LandingConsultantDemo),

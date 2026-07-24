@@ -1,10 +1,19 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { ArrowRight, Play } from 'lucide-react';
 
 import { LandingCtaLink } from './landing-cta-link';
-import { LandingHeroPreview } from './landing-hero-preview';
+
+const LandingHeroPreview = dynamic(
+  () => import('./landing-hero-preview').then((m) => m.LandingHeroPreview),
+  {
+    loading: () => (
+      <div className="aspect-[4/3] w-full animate-pulse rounded-[20px] border border-border/60 bg-muted/40" />
+    ),
+  },
+);
 
 export function LandingHero() {
   const t = useTranslations('landing.hero');

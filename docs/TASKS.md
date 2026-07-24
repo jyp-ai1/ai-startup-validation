@@ -162,9 +162,92 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E10 Release Checklist | Beta v0.9 checklist | 🔄 template added |
 
 **Deploy batch 1:** prod https://ai-startup-validation-tau.vercel.app · commit `e3291fa` · `dpl_5t4fPZjDaGsHZ1HvBwJb8PSJjhom`  
-**Deploy batch 2:** commit `d4eabff` · `dpl_GUFYq4tcmPkYhzTXFS7iLEdecgtG` · Lighthouse landing: Perf 64→TBD · A11y 92 · SEO 100 · BP 100
+**Deploy batch 2:** commit `d4eabff` · `dpl_GUFYq4tcmPkYhzTXFS7iLEdecgtG` · Lighthouse landing: Perf 64 · A11y 92 · SEO 100 · BP 100
 
-**Deploy process:** Dev (build/lint/type) → QA (functional/regression/responsive/a11y/lighthouse) → DevOps (push/deploy/health/smoke) → PM Release Gate
+**PM Gate (2026-07-24):** Batch 2 **PASS (conditional)** · Open Beta Gate **🔒 HOLD** until OAuth QA + Lighthouse ≥90
+
+---
+
+## Sprint L3.4 Batch 3 — Release Candidate (RC) 🔄
+
+**Status:** In progress — **Feature Freeze** continues  
+**Goal:** Beta v0.9 RC — Release Gate PASS → Open Beta
+
+| EPIC | Scope | Status |
+|------|-------|--------|
+| E1 Google OAuth | PM 실사용 QA (가입→로그아웃→재로그인→세션) | ⏳ checklist in `docs/templates/OAUTH_QA_CHECKLIST.md` |
+| E2 Lighthouse | Landing/Dashboard/Project · Perf ≥90 | 🔄 batch3 perf work |
+| E3 Responsive | Landing/Dashboard/Project/Wizard/Report + Mobile Safari | ⏳ |
+| E4 Error Recovery | AI/Network/401/403/404/500 UX | 🔄 |
+| E5 Feedback | Form/Contact/Discord 실제 제출 테스트 | ⏳ |
+| E6 SEO Final | robots/sitemap/canonical/JSON-LD/OG/manifest | 🔄 |
+| E7 Beta Analytics | landing→login→wizard→research→decision→report→feedback | 🔄 auth funnel |
+| E8 Release Note | `docs/templates/BETA_RC_RELEASE_NOTE.md` | 🔄 template |
+| E9 Known Issues | `docs/KNOWN_ISSUES.md` | ✅ |
+| E10 Release Gate | RC checklist PASS | ⏳ |
+
+**RC submission format:** see `docs/TASKS.md` L3.4 RC section below · **Do NOT open beta until PM Release Gate PASS**
+
+---
+
+## L3.4 RC completion report (Cursor submission format)
+
+```text
+Sprint L3.4 RC 완료
+
+================================
+
+Senior Developer
+
+Build PASS
+Lint PASS
+Type PASS
+
+Commit:
+Branch:
+PR:
+
+================================
+
+Senior QA
+
+Functional PASS
+Regression PASS
+Responsive PASS
+
+Lighthouse
+Landing: Perf / SEO / A11y / BP
+Dashboard: Perf / SEO / A11y / BP
+Project: Perf / SEO / A11y / BP
+
+Accessibility PASS
+Cross Browser PASS
+
+Known Issues: docs/KNOWN_ISSUES.md
+
+================================
+
+DevOps
+
+Git Push PASS
+PR PASS
+Production PASS
+Health PASS
+Smoke PASS
+Rollback PASS
+
+================================
+
+PM 확인 요청
+
+1.
+2.
+3.
+```
+
+---
+
+**Deploy process (L3.4):**
 
 **DoD:** MVP Gate 전 항목 PASS · QA 리포트 제출 · PM Release 승인 · prod deploy
 

@@ -31,7 +31,9 @@ export async function GET(request: Request) {
   }
 
   const cookieStore = await cookies();
-  const response = NextResponse.redirect(`${origin}${safeNext}`);
+  const redirectUrl = new URL(`${origin}${safeNext}`);
+  redirectUrl.searchParams.set('auth', 'complete');
+  const response = NextResponse.redirect(redirectUrl.toString());
 
   const supabase = createServerClient({
     cookies: {

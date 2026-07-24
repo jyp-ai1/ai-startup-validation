@@ -1,8 +1,10 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 
 import { ProjectWizard, DemoEntryTracker } from '@/features/activation';
+import { AuthCompleteTracker } from '@/features/auth';
 import { getLatestPlan } from '@/features/agents/orchestrator';
 import { generateProjectDecision } from '@/features/decision';
 import {
@@ -30,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type DashboardPageProps = {
-  searchParams: Promise<{ project?: string; demo?: string; onboarding?: string }>;
+  searchParams: Promise<{ project?: string; demo?: string; onboarding?: string; auth?: string }>;
 };
 
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
@@ -44,7 +46,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   }
 
   if (user && !demoMode && workspace.projectCount === 0) {
-    return <ProjectWizard />;
+    return (
+      <>
+        <Suspense fallback={null}>
+          <AuthCompleteTracker />
+        </Suspense>
+        <ProjectWizard />
+      </>
+    );
   }
 
   let executive = null;
@@ -105,6 +114,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   return (
     <>
+      <Suspense fallback={null}>
+        <AuthCompleteTracker />
+      </Suspense>
       <DemoEntryTracker enabled={Boolean(params.demo)} />
       <ExecutiveDashboard
         workspace={workspace}

@@ -93,7 +93,7 @@
 | L3.1 | Research pipeline + Evidence DB + Decision LLM | ★★★★★ | ✅ |
 | L3.2 | OpenAI adapter + fallback + Orchestrator RESEARCH | ★★★★ | ✅ |
 | L3.3 | Open Beta Ready (UX + ops + funnel) | ★★★★★ | ✅ |
-| **L3.4** | **Open Beta QA & Stabilization** | ★★★★★ | 🔄 In progress |
+| **L3.4** | **Open Beta QA → RC (Batch 1–3)** | ★★★★★ | 🔄 Batch 3 RC |
 | L3.5 | Browser Research Agent | ★★★★★ | Planned (post-beta) |
 | L3.6 | MCP Integration | ★★★★★ | Planned |
 | L3.7 | Scenario Planning (Best / Base / Worst) | ★★★★★ | Planned |
