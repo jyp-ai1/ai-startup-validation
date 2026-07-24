@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
-import { createBrowserClient, isSupabaseConfigured } from '@repo/db';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
 import { Button } from '@repo/ui';
@@ -13,6 +12,12 @@ type GoogleSignInButtonProps = {
   className?: string;
 };
 
+function isSupabaseReady(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  );
+}
+
 export function GoogleSignInButton({
   redirectTo = '/dashboard',
   className,
@@ -21,9 +26,10 @@ export function GoogleSignInButton({
   const { trackEvent } = useAnalytics();
   const [loading, setLoading] = useState(false);
   const [networkError, setNetworkError] = useState(false);
+  const supabaseReady = isSupabaseReady();
 
   async function handleSignIn() {
-    if (!isSupabaseConfigured()) {
+    if (!supabaseReady) {
       return;
     }
 
@@ -32,6 +38,7 @@ export function GoogleSignInButton({
     trackEvent(ANALYTICS_EVENTS.login, { provider: 'google', screen: '/auth/login' });
 
     try {
+      const { createBrowserClient } = await import('@repo/db');
       const supabase = createBrowserClient();
       if (!supabase) return;
 
@@ -64,7 +71,7 @@ export function GoogleSignInButton({
       <Button
         type="button"
         className={className}
-        disabled={loading || !isSupabaseConfigured()}
+        disabled={loading || !supabaseReady}
         aria-busy={loading}
         onClick={handleSignIn}
       >
