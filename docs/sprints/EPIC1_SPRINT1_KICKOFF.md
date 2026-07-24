@@ -2,8 +2,10 @@
 
 **Epic:** Goal & Workflow Experience  
 **Sprint:** 1 — First journey shell  
-**Status:** Implemented — commit `68359bb` · pending Preview deploy + Product QA  
-**PM approval:** ✅ Epic 1 Sprint 1 시작 (2026-07-24)
+**Status:** ✅ **Closed — PASS WITH REVISION** (Product QA 2026-07-24) · Production ⛔ HOLD  
+**Preview:** `dpl_3dEo22Ty2KX4oCeDDD2ayb8bMkau`  
+**QA report:** [EPIC1_SPRINT1_QA_REPORT.md](./EPIC1_SPRINT1_QA_REPORT.md)  
+**PM approval:** ✅ Epic 1 Sprint 1 시작 (2026-07-24) · ✅ Product QA Conditional PASS (2026-07-24)
 
 ---
 
@@ -78,7 +80,23 @@ Per Constitution + Sprint 0: AI models, analysis features, tools, prompt rewrite
 ## Completion
 
 ```text
-Preview → PM Product QA (5 questions) → Functional QA → Production → tag epic1-sprint1
+Preview ✅ → Product QA 🟡 PASS WITH REVISION → Production ⛔ HOLD → Sprint 2 kickoff
+```
+
+### Sprint 결과 (experience format)
+
+```text
+새 기능:
+❌ 작성하지 않음
+
+새로운 사용자 경험:
+✅ Goal 하나만 선택하면 AI가 프로젝트 Workflow를 자동 구성한다.
+
+이번에 해결한 문제:
+"무엇부터 해야 하지?"
+
+다음 Sprint에서 해결할 문제:
+"왜 지금 이 작업을 해야 하지?"
 ```
 
 ---

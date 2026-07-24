@@ -49,13 +49,14 @@ See [SPRINT_PROCESS.md](./SPRINT_PROCESS.md): Epic → Sprint → **5 Product QA
 
 > 사용자는 Goal 하나만 선택하면, AI가 Workflow를 자동 구성하고, 다음 행동을 고민하지 않아도 된다.
 
-| Sprint | Focus | Product QA |
-|--------|-------|------------|
-| **1** | Landing → Goal → Workflow → Workspace shell | 5 questions (Constitution) |
-| **2** | Progress, AI Guide, completion states | Guide-not-menu |
-| **3** | Quick Assessment, GO/HOLD/NO GO surface | Decide without full report |
+| Sprint | Focus | Product QA | Status |
+|--------|-------|------------|--------|
+| **1** | Landing → Goal → Workflow → Workspace shell | Journey 5 questions | ✅ PASS WITH REVISION · Prod ⛔ HOLD |
+| **2** | **Decision Panel** + AI Guide + Confidence + Next Action | Law3 + Workspace QA-04 | ⏳ Kickoff ready |
+| **3** | Quick Assessment, GO/HOLD/NO GO surface | Decide without full report | Planned |
 
-Kickoff: [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)
+Sprint 1 QA: [sprints/EPIC1_SPRINT1_QA_REPORT.md](./sprints/EPIC1_SPRINT1_QA_REPORT.md)  
+Sprint 2 kickoff: [sprints/EPIC1_SPRINT2_KICKOFF.md](./sprints/EPIC1_SPRINT2_KICKOFF.md)
 
 ---
 
