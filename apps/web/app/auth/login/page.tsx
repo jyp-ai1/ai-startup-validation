@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { Sparkles } from 'lucide-react';
 
-import { GoogleSignInButton } from '@/features/auth';
+import { GoogleSignInButton } from '@/features/auth/components/google-sign-in-button';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { getServerAuthUser } from '@/lib/auth/server-auth';
 
