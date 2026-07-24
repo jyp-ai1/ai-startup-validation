@@ -5,24 +5,15 @@ import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 
-function withPathnameHeader(response: NextResponse, pathname: string) {
-  response.headers.set('x-pathname', pathname);
-  return response;
-}
-
 export default function middleware(request: NextRequest) {
   const response = intlMiddleware(request);
   const projectId = request.nextUrl.searchParams.get('project');
-  const pathname = request.nextUrl.pathname;
 
   if (!projectId) {
-    return response instanceof NextResponse
-      ? withPathnameHeader(response, pathname)
-      : response;
+    return response;
   }
 
   if (response instanceof NextResponse) {
-    withPathnameHeader(response, pathname);
     response.cookies.set('ACTIVE_PROJECT_ID', projectId, {
       path: '/',
       maxAge: 60 * 60 * 24 * 365,
@@ -31,7 +22,7 @@ export default function middleware(request: NextRequest) {
     return response;
   }
 
-  const next = withPathnameHeader(NextResponse.next(), pathname);
+  const next = NextResponse.next();
   next.cookies.set('ACTIVE_PROJECT_ID', projectId, {
     path: '/',
     maxAge: 60 * 60 * 24 * 365,

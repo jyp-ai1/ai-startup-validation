@@ -1,7 +1,4 @@
-import { headers } from 'next/headers';
-
 import { getWorkspaceSession } from '@/lib/auth/workspace-session';
-import { isMarketingPath } from '@/lib/site/marketing-routes';
 import { loadWatchCenter } from '@/features/watch-center/server';
 
 import { AppShell } from './app-shell';
@@ -12,12 +9,6 @@ type AppShellWrapperProps = {
 };
 
 export async function AppShellWrapper({ children }: AppShellWrapperProps) {
-  const pathname = (await headers()).get('x-pathname') ?? '';
-
-  if (isMarketingPath(pathname)) {
-    return <>{children}</>;
-  }
-
   const session = await getWorkspaceSession();
 
   const activeProject = session.workspace.activeProject;

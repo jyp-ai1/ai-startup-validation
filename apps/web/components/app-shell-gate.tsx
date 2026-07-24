@@ -2,12 +2,14 @@
 
 import { usePathname } from 'next/navigation';
 
-import { isMarketingPath } from '@/lib/site/marketing-routes';
-
 type AppShellGateProps = {
   shell: React.ReactNode;
   children: React.ReactNode;
 };
+
+function isMarketingRoute(pathname: string): boolean {
+  return pathname === '/' || pathname === '';
+}
 
 function isAuthRoute(pathname: string): boolean {
   return pathname.startsWith('/auth');
@@ -16,7 +18,7 @@ function isAuthRoute(pathname: string): boolean {
 export function AppShellGate({ shell, children }: AppShellGateProps) {
   const pathname = usePathname();
 
-  if (isMarketingPath(pathname) || isAuthRoute(pathname)) {
+  if (isMarketingRoute(pathname) || isAuthRoute(pathname)) {
     return <>{children}</>;
   }
 
