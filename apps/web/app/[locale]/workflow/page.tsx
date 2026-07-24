@@ -1,14 +1,27 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
+import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
-import {
-  getWorkflowTemplate,
-  readJourneyGoal,
-  WorkflowComposeLoader,
-  WorkflowPlanView,
-} from '@/features/workflow-journey';
+import { JourneyPageSkeleton } from '@/features/workflow-journey/components/journey-page-skeleton';
+import { getWorkflowTemplate, readJourneyGoal } from '@/features/workflow-journey';
+
+const WorkflowComposeLoader = dynamic(
+  () =>
+    import('@/features/workflow-journey/components/workflow-compose-loader').then(
+      (m) => m.WorkflowComposeLoader,
+    ),
+  { loading: () => <JourneyPageSkeleton phase="workflow" /> },
+);
+
+const WorkflowPlanView = dynamic(
+  () =>
+    import('@/features/workflow-journey/components/workflow-plan-view').then(
+      (m) => m.WorkflowPlanView,
+    ),
+  { loading: () => <JourneyPageSkeleton phase="workflow" /> },
+);
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('workflow.plan');
@@ -24,7 +37,7 @@ type WorkflowPageProps = {
 };
 
 function ComposeFallback() {
-  return null;
+  return <JourneyPageSkeleton phase="workflow" />;
 }
 
 export default async function WorkflowPage({ searchParams }: WorkflowPageProps) {

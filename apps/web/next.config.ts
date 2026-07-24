@@ -8,6 +8,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const nextConfig: NextConfig = {
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@repo/ui'],
+  },
   outputFileTracingRoot: path.join(__dirname, '../../'),
   transpilePackages: [
     '@repo/ui',

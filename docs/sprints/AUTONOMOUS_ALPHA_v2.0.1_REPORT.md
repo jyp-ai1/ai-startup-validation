@@ -61,14 +61,15 @@
 | Regression | ✅ PASS (build + existing routes) |
 | Responsive | ✅ Manual — overlay + coach stack on mobile |
 | Accessibility | ✅ aria-live overlay · aria-expanded drawers · disabled states |
-| Lighthouse | ⏳ Not run in CI — target ≥90 landing (PM gate) |
-| Smoke | ✅ Landing/Goal/Workflow/Workspace/Demo redirect |
+| Lighthouse (landing `/ko`) | ⚠️ Performance 39 · Accessibility 91 · Best Practices 96 · SEO 91 — **Performance gate FAIL** (PM target ≥90) |
+| Smoke | ⚠️ Routes build OK; Preview URLs redirect to Vercel SSO (deployment protection) |
 
 ---
 
 ## Known Issues
 
-- Lighthouse score not captured this session — run manually on Preview landing
+- Lighthouse **Performance 39** on Preview landing (cold deploy + heavy JS bundle); Accessibility/BP/SEO ≥91
+- Preview deployment uses **Vercel Deployment Protection** — unauthenticated visitors redirect to Vercel login; PM/Vercel team can access via SSO
 - Analytics events designed but not wired (schema only)
 - `?simulateFail=1` for retry demo — not user-facing
 - Workspace route name unchanged per [WORKSPACE_NAMING.md](../WORKSPACE_NAMING.md)
@@ -77,13 +78,16 @@
 
 ## Git Commit
 
-(See commit after push — message: `feat(web): Alpha v2.0.1 autonomous polish and intelligence foundation`)
+`63ace5d` — `feat(web): Alpha v2.0.1 autonomous polish and intelligence foundation`
 
 ---
 
 ## Preview URL
 
-(Filled after `vercel deploy`)
+https://ai-startup-validation-lojbwfedi-jyp-ai1s-projects.vercel.app
+
+Deployment: `dpl_EMq6sSsBcYCmTLwWkEC689q49t75`  
+Inspect: https://vercel.com/jyp-ai1s-projects/ai-startup-validation/EMq6sSsBcYCmTLwWkEC689q49t75
 
 ---
 

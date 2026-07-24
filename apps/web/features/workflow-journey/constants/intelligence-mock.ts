@@ -3,6 +3,7 @@
 export type EvidenceSource = {
   id: string;
   name: string;
+  type: 'gov' | 'market' | 'database';
   url?: string;
 };
 
@@ -35,9 +36,9 @@ export const MOCK_EVIDENCE: EvidenceItem[] = [
     stars: 5,
     confidence: 92,
     sources: [
-      { id: 'kosis', name: 'KOSIS' },
-      { id: 'statista', name: 'Statista' },
-      { id: 'crunchbase', name: 'Crunchbase' },
+      { id: 'kosis', name: 'KOSIS', type: 'gov' },
+      { id: 'statista', name: 'Statista', type: 'market' },
+      { id: 'crunchbase', name: 'Crunchbase', type: 'database' },
     ],
   },
   {
@@ -47,8 +48,8 @@ export const MOCK_EVIDENCE: EvidenceItem[] = [
     stars: 4,
     confidence: 78,
     sources: [
-      { id: 'statista', name: 'Statista' },
-      { id: 'kosis', name: 'KOSIS' },
+      { id: 'statista', name: 'Statista', type: 'market' },
+      { id: 'kosis', name: 'KOSIS', type: 'gov' },
     ],
   },
 ];

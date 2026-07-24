@@ -1,9 +1,16 @@
 import dynamic from 'next/dynamic';
 
-import { LandingHeader } from './landing-header';
-import { LandingHero } from './landing-hero';
+import { LandingLazySection } from './landing-lazy-section';
 
 const LandingTracker = dynamic(() => import('./landing-tracker').then((m) => m.LandingTracker));
+
+const LandingHeader = dynamic(() => import('./landing-header').then((m) => m.LandingHeader), {
+  loading: () => <div className="h-16 border-b border-border/60 bg-background" aria-hidden />,
+});
+
+const LandingHero = dynamic(() => import('./landing-hero').then((m) => m.LandingHero), {
+  loading: () => <div className="min-h-[85vh] animate-pulse bg-muted/20 sm:min-h-[100vh]" aria-hidden />,
+});
 
 const LandingTrustedBy = dynamic(
   () => import('./landing-trusted-by').then((m) => m.LandingTrustedBy),
@@ -53,16 +60,36 @@ export function LandingPage() {
       <LandingHeader />
       <main id="main-content">
         <LandingHero />
-        <LandingTrustedBy />
-        <LandingHowItWorks />
-        <LandingFeatures />
-        <LandingConsultantDemo />
-        <LandingUseCases />
-        <LandingBuiltFor />
-        <LandingPricing />
-        <LandingRoadmap />
-        <LandingFaq />
-        <LandingFooter />
+        <LandingLazySection minHeight={120}>
+          <LandingTrustedBy />
+        </LandingLazySection>
+        <LandingLazySection minHeight={240}>
+          <LandingHowItWorks />
+        </LandingLazySection>
+        <LandingLazySection minHeight={240}>
+          <LandingFeatures />
+        </LandingLazySection>
+        <LandingLazySection minHeight={320}>
+          <LandingConsultantDemo />
+        </LandingLazySection>
+        <LandingLazySection minHeight={240}>
+          <LandingUseCases />
+        </LandingLazySection>
+        <LandingLazySection minHeight={200}>
+          <LandingBuiltFor />
+        </LandingLazySection>
+        <LandingLazySection minHeight={240}>
+          <LandingPricing />
+        </LandingLazySection>
+        <LandingLazySection minHeight={200}>
+          <LandingRoadmap />
+        </LandingLazySection>
+        <LandingLazySection minHeight={200}>
+          <LandingFaq />
+        </LandingLazySection>
+        <LandingLazySection minHeight={160}>
+          <LandingFooter />
+        </LandingLazySection>
       </main>
     </div>
   );

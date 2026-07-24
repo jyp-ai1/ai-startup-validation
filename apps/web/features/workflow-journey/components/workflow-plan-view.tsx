@@ -8,6 +8,7 @@ import { Button, toast } from '@repo/ui';
 
 import { confirmWorkflowAction } from '../actions/journey-actions';
 import { getStepGuideMeta } from '../constants/step-guides';
+import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useSubmitLock } from '../hooks/use-submit-lock';
 import type { WorkflowGoalId, WorkflowTemplate } from '../types';
 import { JourneyFade } from './journey-fade';
@@ -24,7 +25,13 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
   const tg = useTranslations('workflow.goal');
   const tt = useTranslations('workflow.toast');
   const { locked, lock } = useSubmitLock(1000);
+  const analytics = useJourneyAnalytics();
   const firstStep = template.steps[0];
+
+  useEffect(() => {
+    analytics.trackWorkflowCreated(goalId, template.stepCount);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fire once on plan mount
+  }, [goalId, template.stepCount]);
 
   useEffect(() => {
     if (sessionStorage.getItem('workflow_toast') === '1') {

@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from '@repo/ui';
 
 import type { WorkflowGoalId } from '../types';
+import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { AiThinkingOverlay } from './ai-thinking-overlay';
 
 const COMPOSE_MS = 3200;
@@ -23,6 +24,7 @@ export function WorkflowComposeLoader({ goalId }: WorkflowComposeLoaderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const simulateFail = searchParams.get('simulateFail') === '1';
+  const analytics = useJourneyAnalytics();
 
   const [activeStep, setActiveStep] = useState(0);
   const [failed, setFailed] = useState(false);
@@ -32,7 +34,10 @@ export function WorkflowComposeLoader({ goalId }: WorkflowComposeLoaderProps) {
     setActiveStep(0);
 
     if (simulateFail && attempt === 0) {
-      const failTimer = window.setTimeout(() => setFailed(true), 1200);
+      const failTimer = window.setTimeout(() => {
+        setFailed(true);
+        analytics.trackComposeFailed(attempt);
+      }, 1200);
       return () => clearTimeout(failTimer);
     }
 
@@ -46,7 +51,7 @@ export function WorkflowComposeLoader({ goalId }: WorkflowComposeLoaderProps) {
       }, COMPOSE_MS),
     ];
     return () => timers.forEach(clearTimeout);
-  }, [attempt, router, simulateFail]);
+  }, [attempt, router, simulateFail, analytics]);
 
   useEffect(() => {
     if (failed) return undefined;
@@ -56,6 +61,7 @@ export function WorkflowComposeLoader({ goalId }: WorkflowComposeLoaderProps) {
   const handleRetry = () => {
     setFailed(false);
     setAttempt((a) => a + 1);
+    analytics.trackComposeRetried(attempt + 1);
     toast.info(tt('retrying'));
   };
 

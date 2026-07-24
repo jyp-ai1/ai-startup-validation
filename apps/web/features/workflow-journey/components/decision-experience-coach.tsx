@@ -15,7 +15,9 @@ import {
   type DecisionStage,
 } from '../constants/decision-experience';
 import { HEALTH_DETAIL } from '../constants/intelligence-mock';
+import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import type { WorkflowGoalId } from '../types';
+import { ConfidenceMeter } from './confidence-meter';
 import { EvidenceIntelligencePanel } from './evidence-intelligence-panel';
 
 type DecisionExperienceCoachProps = {
@@ -39,6 +41,7 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
   const t = useTranslations('workflow.coach');
   const td = useTranslations('workflow.decisionExperience');
   const tp = useTranslations('workflow.plan.steps');
+  const analytics = useJourneyAnalytics();
 
   const stages = getDecisionStages(goalId);
   const [stageIndex, setStageIndex] = useState(0);
@@ -51,8 +54,27 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
 
   const advanceStage = () => {
     if (!isFinal) {
-      setStageIndex((i) => Math.min(i + 1, stages.length - 1));
+      const next = Math.min(stageIndex + 1, stages.length - 1);
+      const nextStage = stages[next]!;
+      setStageIndex(next);
+      analytics.trackMockActionCompleted(stage.mockActionKey, nextStage.confidence);
     }
+  };
+
+  const toggleHealth = () => {
+    setHealthOpen((o) => {
+      const next = !o;
+      if (next) analytics.trackCoachClicked('health');
+      return next;
+    });
+  };
+
+  const toggleWhy = () => {
+    setWhyOpen((o) => {
+      const next = !o;
+      if (next) analytics.trackWhyOpened(stage.verdict);
+      return next;
+    });
   };
 
   return (
@@ -99,16 +121,18 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
         </div>
 
         {/* Confidence + Health */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-border/60 bg-background/80 px-3 py-2.5">
-            <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-              {t('confidence')}
-            </p>
-            <p className="mt-0.5 text-2xl font-bold tabular-nums text-foreground">{stage.confidence}%</p>
+            <ConfidenceMeter
+              value={stage.confidence}
+              target={81}
+              label={t('confidence')}
+              className="confidence-gain-pop"
+            />
           </div>
           <button
             type="button"
-            onClick={() => setHealthOpen((o) => !o)}
+            onClick={toggleHealth}
             className="rounded-xl border border-border/60 bg-background/80 px-3 py-2.5 text-left transition-colors hover:border-primary/40"
             aria-expanded={healthOpen}
           >
@@ -258,7 +282,7 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
         <div className="rounded-xl border border-border/60 bg-background/90">
           <button
             type="button"
-            onClick={() => setWhyOpen((o) => !o)}
+            onClick={toggleWhy}
             className="flex w-full items-center justify-between px-4 py-3 text-left"
             aria-expanded={whyOpen}
           >
@@ -292,7 +316,12 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
           ) : null}
         </div>
 
-        <EvidenceIntelligencePanel evidenceOpen={whyOpen} completedRuleIds={[]} />
+        <EvidenceIntelligencePanel
+          evidenceOpen={whyOpen}
+          completedRuleIds={[]}
+          verdict={stage.verdict}
+          confidenceValue={stage.confidence}
+        />
 
         {/* Decision History */}
         <div>

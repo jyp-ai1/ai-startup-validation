@@ -7,6 +7,7 @@ import { ArrowRight, Target } from 'lucide-react';
 import { cn } from '@repo/ui/lib/utils';
 
 import { selectGoalAction } from '../actions/journey-actions';
+import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useSubmitLock } from '../hooks/use-submit-lock';
 import { WORKFLOW_GOAL_IDS, type WorkflowGoalId } from '../types';
 import { AiThinkingOverlay } from './ai-thinking-overlay';
@@ -29,6 +30,7 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
   const t = useTranslations('workflow.goal');
   const tc = useTranslations('workflow.compose.goals');
   const { locked, lock } = useSubmitLock(1200);
+  const analytics = useJourneyAnalytics(demoMode);
   const [overlayGoal, setOverlayGoal] = useState<WorkflowGoalId | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const pendingGoalRef = useRef<WorkflowGoalId | null>(null);
@@ -38,6 +40,7 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
     lock();
     pendingGoalRef.current = goalId;
     setOverlayGoal(goalId);
+    analytics.trackGoalSelected(goalId);
     window.setTimeout(() => {
       const form = formRef.current;
       if (!form) return;

@@ -1,12 +1,18 @@
 import type { Metadata } from 'next';
+import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
-import {
-  getWorkflowTemplate,
-  readJourneyGoal,
-  StrategyWorkspaceShell,
-} from '@/features/workflow-journey';
+import { JourneyPageSkeleton } from '@/features/workflow-journey/components/journey-page-skeleton';
+import { getWorkflowTemplate, readJourneyGoal } from '@/features/workflow-journey';
+
+const StrategyWorkspaceShell = dynamic(
+  () =>
+    import('@/features/workflow-journey/components/strategy-workspace-shell').then(
+      (m) => m.StrategyWorkspaceShell,
+    ),
+  { loading: () => <JourneyPageSkeleton phase="workspace" /> },
+);
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('workflow.workspace');

@@ -3568,14 +3568,14 @@
       "progressLabel": "진행 단계",
       "phases": {
         "goal": "목표",
-        "workflow": "Workflow",
-        "workspace": "Workspace"
+        "workflow": "워크플로",
+        "workspace": "워크스페이스"
       }
     },
     "goal": {
       "eyebrow": "Step 1 · 목표 선택",
       "title": "오늘 무엇을 하시겠습니까?",
-      "subtitle": "기능을 고르지 않아도 됩니다. 목표만 선택하면 AI가 Workflow를 구성합니다.",
+      "subtitle": "기능을 고르지 않아도 됩니다. 목표만 선택하면 AI가 워크플로를 구성합니다.",
       "demoBanner": "데모 모드 — Goal을 선택하면 샘플 Workflow를 체험할 수 있습니다.",
       "hint": "선택한 목표에 맞춰 AI가 다음 단계를 안내합니다.",
       "options": {
@@ -3602,7 +3602,7 @@
       }
     },
     "compose": {
-      "message": "AI가 Workflow를 구성하고 있습니다...",
+      "message": "AI가 워크플로를 구성하고 있습니다...",
       "goalContext": "선택한 목표: {goal}",
       "done": "구성 완료",
       "templates": {
@@ -3630,7 +3630,7 @@
       },
       "confidence": "Confidence",
       "projectHealth": "프로젝트 건강도",
-      "confidenceProgress": "Confidence Progress",
+      "confidenceProgress": "신뢰도 진행",
       "confidenceAfter": "완료 시 {value}%",
       "confidenceDelta": "작업 완료 예상 {delta}%",
       "nextActionLabel": "추천 작업",
@@ -3645,7 +3645,7 @@
       }
     },
     "decisionExperience": {
-      "decisionUpdated": "Decision이 업데이트되었습니다",
+      "decisionUpdated": "판단이 업데이트되었습니다",
       "healthDetailTitle": "건강도 상세",
       "health": {
         "market": "시장",
@@ -3654,14 +3654,14 @@
         "finance": "재무",
         "customer": "고객"
       },
-      "gainsPreviewTitle": "다음 추천 · Confidence",
-      "timelineTitle": "Confidence Timeline",
-      "timelineGoal": "목표 Confidence 81%",
+      "gainsPreviewTitle": "다음 추천 · 신뢰도",
+      "timelineTitle": "신뢰도 타임라인",
+      "timelineGoal": "목표 신뢰도 81%",
       "gainLabel": "+{gain}%",
-      "goReached": "축하합니다 — 1차 GO Decision에 도달했습니다.",
+      "goReached": "축하합니다 — 1차 GO 판단에 도달했습니다.",
       "whyAllClear": "주요 리스크가 해소되었습니다.",
-      "evidencePlaceholder": "근거 상세는 Epic 2 Evidence Engine에서 연결됩니다.",
-      "historyTitle": "Decision History",
+      "evidencePlaceholder": "근거 상세는 Evidence 패널에서 확인할 수 있습니다.",
+      "historyTitle": "판단 기록",
       "historyToday": "오늘",
       "actions": {
         "marketAnalysis": "시장 규모 분석",
@@ -3692,24 +3692,24 @@
       "retry": "다시 시도",
       "steps": {
         "goalAnalysis": "목표 분석",
-        "workflowBuild": "Workflow 생성",
+        "workflowBuild": "워크플로 생성",
         "coachPrep": "AI Strategy Coach 준비",
-        "workspaceCreate": "Workspace 생성"
+        "workspaceCreate": "워크스페이스 생성"
       },
       "rotate": {
         "market": "시장 분석 준비 중...",
-        "workflow": "Workflow 구성 중...",
+        "workflow": "워크플로 구성 중...",
         "coach": "AI Coach 준비 중...",
-        "confidence": "Confidence 계산 중..."
+        "confidence": "신뢰도 계산 중..."
       }
     },
     "toast": {
-      "workflowReady": "Workflow 생성이 완료되었습니다",
-      "workspaceReady": "Strategy Workspace가 준비되었습니다",
+      "workflowReady": "워크플로 생성이 완료되었습니다",
+      "workspaceReady": "AI 전략 워크스페이스가 준비되었습니다",
       "retrying": "다시 시도하는 중..."
     },
     "feedback": {
-      "label": "👍 Feedback",
+      "label": "피드백",
       "prompt": "이 경험이 도움이 되었나요?",
       "up": "좋아요",
       "down": "아쉬워요",
@@ -3722,27 +3722,28 @@
         "hold": "현재는 HOLD를 추천합니다. 시장 검증이 부족합니다. VOC 3건만 확보해도 GO 가능성이 높아집니다."
       },
       "stability": {
-        "title": "Decision Stability"
+        "title": "판단 안정성"
       },
       "futureGain": {
-        "title": "Future Gain",
+        "title": "향후 신뢰도 상승",
         "target": "목표 {value}%까지"
       },
       "actions": {
         "voc": "VOC 완료"
       },
       "evidence": {
-        "section": "Evidence",
+        "section": "근거",
         "confidence": "신뢰도",
         "sources": "출처",
         "sourceLink": "{name} 출처 보기",
+        "sourcePreview": "{name} 출처 (Mock 미리보기)",
         "items": {
           "marketSize": "시장 규모",
           "marketGrowth": "시장 성장률"
         }
       },
       "rules": {
-        "title": "Confidence Rules",
+        "title": "신뢰도 규칙",
         "calculated": "Rule Engine 계산값: {value}%",
         "marketResearch": "시장 조사",
         "voc": "VOC",
@@ -3760,7 +3761,7 @@
         }
       },
       "health": {
-        "title": "Project Health",
+        "title": "프로젝트 건강도",
         "market": "시장",
         "technology": "기술",
         "execution": "실행",
@@ -3769,14 +3770,14 @@
       }
     },
     "plan": {
-      "aiLabel": "AI Workflow",
-      "title": "맞춤 Workflow가 준비되었습니다",
+      "aiLabel": "AI 워크플로",
+      "title": "맞춤 워크플로가 준비되었습니다",
       "goalContext": "선택한 목표: {goal}",
       "intro": "아래 순서대로 진행하면 전략적 의사결정을 완료할 수 있습니다. 각 단계마다 AI Strategy Coach가 다음 행동을 안내합니다.",
       "currentStepLabel": "현재 단계",
       "upcomingLabel": "다음 단계",
       "readyHint": "총 {count}단계 · 예상 1–2주 내 1차 Decision",
-      "cta": "Workspace 시작하기",
+      "cta": "워크스페이스 시작하기",
       "guide": {
         "eta": "예상 {minutes}분",
         "requiredLabel": "필요한 정보",
@@ -3831,13 +3832,13 @@
       }
     },
     "workspace": {
-      "title": "Strategy Workspace",
+      "title": "AI 전략 워크스페이스",
       "progressLabel": "진행률",
       "currentStep": "Step {current} / {total}",
       "stepFallback": "첫 단계",
       "stepFallbackBody": "프로젝트 맥락을 정의합니다.",
       "inputPlaceholderLabel": "이 단계 입력",
-      "inputPlaceholder": "입력 UI는 다음 Sprint에서 연결됩니다. 지금은 AI Strategy Coach가 다음 행동을 안내합니다.",
+      "inputPlaceholder": "입력 UI는 다음 단계에서 연결됩니다. 지금은 AI Strategy Coach가 다음 행동을 안내합니다.",
       "ctaContinue": "로그인하고 계속하기",
       "ctaLogin": "계정 연결하고 계속하기",
       "legacyHint": "기존 Beta Workspace가 필요하면",

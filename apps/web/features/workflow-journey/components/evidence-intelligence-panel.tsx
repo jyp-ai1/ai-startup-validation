@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronDown, ChevronUp, Shield } from 'lucide-react';
 
@@ -14,28 +14,51 @@ import {
   MISSING_DATA,
   MOCK_EVIDENCE,
 } from '../constants/intelligence-mock';
+import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { calculateConfidence } from '../lib/confidence-rule-engine';
+import { ConfidenceMeter } from './confidence-meter';
 import { EvidenceCard } from './evidence-card';
+import { MissingDataProgress } from './missing-data-progress';
 
 type EvidenceIntelligencePanelProps = {
   evidenceOpen?: boolean;
   completedRuleIds?: string[];
+  verdict?: string;
+  confidenceValue?: number;
 };
 
 export function EvidenceIntelligencePanel({
   evidenceOpen: defaultOpen = false,
   completedRuleIds = [],
+  verdict = 'HOLD',
+  confidenceValue = FUTURE_GAIN.current,
 }: EvidenceIntelligencePanelProps) {
   const t = useTranslations('workflow.intelligence');
+  const analytics = useJourneyAnalytics();
   const [open, setOpen] = useState(defaultOpen);
 
   const breakdown = calculateConfidence(FUTURE_GAIN.current, completedRuleIds, CONFIDENCE_RULES, FUTURE_GAIN.target);
+
+  useEffect(() => {
+    setOpen(defaultOpen);
+  }, [defaultOpen]);
+
+  const toggle = () => {
+    setOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        analytics.trackWhyOpened(verdict);
+        analytics.trackConfidenceOpened(confidenceValue);
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="rounded-xl border border-border/60 bg-background/90">
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={toggle}
         className="flex w-full items-center justify-between px-4 py-3 text-left"
         aria-expanded={open}
       >
@@ -64,27 +87,24 @@ export function EvidenceIntelligencePanel({
             </p>
           </div>
 
-          <div>
+          <div className="rounded-xl border border-border/60 bg-background/80 p-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {t('futureGain.title')}
             </p>
-            <div className="mt-2 flex items-center justify-between text-sm">
-              <span className="font-bold tabular-nums">{FUTURE_GAIN.current}%</span>
-              <span className="text-muted-foreground">↓</span>
-              <span className="text-right">
-                <span className="block text-xs text-muted-foreground">{t(`actions.${FUTURE_GAIN.nextActionKey}`)}</span>
-                <span className="font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
-                  {FUTURE_GAIN.afterAction}%
-                </span>
+            <ConfidenceMeter value={FUTURE_GAIN.current} target={FUTURE_GAIN.target} animate className="mt-2" />
+            <p className="mt-2 text-sm">
+              <span className="text-muted-foreground">{t(`actions.${FUTURE_GAIN.nextActionKey}`)}</span>
+              {' → '}
+              <span className="font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
+                {FUTURE_GAIN.afterAction}%
               </span>
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t('futureGain.target', { value: FUTURE_GAIN.target })}
             </p>
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('evidence.section')}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {t('evidence.section')}
+            </p>
             {MOCK_EVIDENCE.map((item) => (
               <EvidenceCard key={item.id} item={item} />
             ))}
@@ -105,24 +125,12 @@ export function EvidenceIntelligencePanel({
             </p>
           </div>
 
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('missing.title')}</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t('missing.subtitle', { current: FUTURE_GAIN.current, target: FUTURE_GAIN.target })}
-            </p>
-            <ul className="mt-2 space-y-2" role="list">
-              {MISSING_DATA.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex items-center gap-2 rounded-lg border border-dashed border-border/70 px-3 py-2 text-sm"
-                >
-                  <span className="size-4 shrink-0 rounded border border-muted-foreground/50" aria-hidden />
-                  <span className="flex-1">{t(`missing.items.${item.labelKey}`)}</span>
-                  <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400">+{item.gain}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <MissingDataProgress
+            current={FUTURE_GAIN.current}
+            target={FUTURE_GAIN.target}
+            items={MISSING_DATA}
+            completedIds={completedRuleIds}
+          />
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('health.title')}</p>

@@ -3754,6 +3754,7 @@
         "confidence": "Confidence",
         "sources": "Sources",
         "sourceLink": "View source {name}",
+        "sourcePreview": "{name} source (mock preview)",
         "items": {
           "marketSize": "Market size",
           "marketGrowth": "Market growth"
@@ -3849,7 +3850,7 @@
       }
     },
     "workspace": {
-      "title": "Strategy Workspace",
+      "title": "AI Strategy Workspace",
       "progressLabel": "Progress",
       "currentStep": "Step {current} / {total}",
       "stepFallback": "First step",

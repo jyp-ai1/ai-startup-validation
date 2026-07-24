@@ -106,6 +106,21 @@ export const ANALYTICS_EVENTS = {
   webVital: 'web_vital',
 } as const;
 
+/** LaunchLens 2.0 journey funnel — see docs/EVENT_SCHEMA.md */
+export const JOURNEY_ANALYTICS_EVENTS = {
+  landingViewed: 'landing_viewed',
+  goalSelected: 'goal_selected',
+  workflowCreated: 'workflow_created',
+  workspaceLoaded: 'workspace_loaded',
+  coachClicked: 'coach_clicked',
+  confidenceOpened: 'confidence_opened',
+  whyOpened: 'why_opened',
+  mockActionCompleted: 'mock_action_completed',
+  feedbackSent: 'feedback_sent',
+  composeFailed: 'compose_failed',
+  composeRetried: 'compose_retried',
+} as const;
+
 export type AnalyticsEventName = (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS];
 
 export type AnalyticsEventParams = {
