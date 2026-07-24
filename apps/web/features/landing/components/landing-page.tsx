@@ -1,16 +1,10 @@
 import dynamic from 'next/dynamic';
 
+import { LandingHeader } from './landing-header';
+import { LandingHero } from './landing-hero';
 import { LandingLazySection } from './landing-lazy-section';
 
 const LandingTracker = dynamic(() => import('./landing-tracker').then((m) => m.LandingTracker));
-
-const LandingHeader = dynamic(() => import('./landing-header').then((m) => m.LandingHeader), {
-  loading: () => <div className="h-16 border-b border-border/60 bg-background" aria-hidden />,
-});
-
-const LandingHero = dynamic(() => import('./landing-hero').then((m) => m.LandingHero), {
-  loading: () => <div className="min-h-[85vh] animate-pulse bg-muted/20 sm:min-h-[100vh]" aria-hidden />,
-});
 
 const LandingTrustedBy = dynamic(
   () => import('./landing-trusted-by').then((m) => m.LandingTrustedBy),

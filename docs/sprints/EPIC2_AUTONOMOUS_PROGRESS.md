@@ -6,9 +6,54 @@
 
 ---
 
-## Commit 1 (pending)
+## Commit 1 — `a2b7903` ✅ pushed
 
-**Scope:** Performance foundation + Journey analytics + Intelligence UX + Korean unification
+**Tag:** `alpha-v2.0.2`
+
+Performance foundation + Journey analytics + Intelligence UX + Korean unification
+
+---
+
+## Commit 2 — `04e3290` (local — push pending)
+
+Skip workspace session/watch-center on landing, auth, journey routes
+
+---
+
+## Preview URL
+
+https://ai-startup-validation-oagfrglyx-jyp-ai1s-projects.vercel.app  
+(`dpl_BxG2GvZYgT2TFoCBxX7SDGYGCXHJ`)
+
+Prior: https://ai-startup-validation-nxbepconk-jyp-ai1s-projects.vercel.app (`dpl_DvzNepVgi1PgF4GRyTGJMi1kaoAM`)
+
+---
+
+## QA Summary
+
+| Gate | v2.0.1 | v2.0.2 batch | Target |
+|------|--------|--------------|--------|
+| Lint / Build | ✅ | ✅ | PASS |
+| Performance | 39 | **49** | 85+ |
+| Accessibility | 91 | **91** | 95+ |
+| Production | ⛔ | ⛔ | Gates not met |
+
+---
+
+## Known Issues
+
+- Lighthouse Performance still below PM auto-prod gate (49 vs 85)
+- Accessibility 91 vs 95 target
+- Preview Deployment Protection (Vercel SSO)
+- Commit `04e3290` push blocked by approval flow — retry on next cycle
+
+---
+
+## Next (autonomous, no PM stop)
+
+- Landing TTFB / JS weight reduction (hero server split, font strategy)
+- Accessibility pass (aria labels, contrast on coach badges)
+- Epic 2 Review doc draft for morning Product Review
 
 ### Performance & bundle
 - `optimizePackageImports` for lucide-react, @repo/ui

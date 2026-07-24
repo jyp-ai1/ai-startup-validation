@@ -6,12 +6,13 @@ import { ArrowRight, Play } from 'lucide-react';
 
 import { LandingCtaLink } from './landing-cta-link';
 import { LandingJourneyStrip } from './landing-journey-strip';
+import { LandingLazySection } from './landing-lazy-section';
 
 const LandingHeroPreview = dynamic(
   () => import('./landing-hero-preview').then((m) => m.LandingHeroPreview),
   {
     loading: () => (
-      <div className="aspect-[4/3] w-full animate-pulse rounded-[20px] border border-border/60 bg-muted/40" />
+      <div className="aspect-[4/3] w-full rounded-[20px] border border-border/60 bg-muted/40" aria-hidden />
     ),
   },
 );
@@ -59,13 +60,15 @@ export function LandingHero() {
             <li className="hidden sm:list-item">·</li>
             <li>{t('ctaHint2')}</li>
             <li className="hidden sm:list-item">·</li>
-            <li className="font-medium text-emerald-700">{t('ctaHint3')}</li>
+            <li className="font-medium text-emerald-700 dark:text-emerald-400">{t('ctaHint3')}</li>
           </ul>
         </div>
 
         <div className="relative lg:pl-4">
           <div className="pointer-events-none absolute -inset-4 rounded-[28px] bg-gradient-to-br from-violet-100/40 to-transparent blur-2xl" />
-          <LandingHeroPreview className="relative" />
+          <LandingLazySection minHeight={320} rootMargin="120px 0px">
+            <LandingHeroPreview className="relative" />
+          </LandingLazySection>
         </div>
       </div>
     </section>

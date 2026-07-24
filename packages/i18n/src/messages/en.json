@@ -3755,6 +3755,7 @@
         "sources": "Sources",
         "sourceLink": "View source {name}",
         "sourcePreview": "{name} source (mock preview)",
+        "starRating": "{count} out of 5 stars",
         "items": {
           "marketSize": "Market size",
           "marketGrowth": "Market growth"

@@ -9,8 +9,18 @@ export function LandingTracker() {
   const { trackEvent } = useAnalytics();
 
   useEffect(() => {
-    trackEvent(ANALYTICS_EVENTS.landingView, { screen: '/' });
-    trackEvent(JOURNEY_ANALYTICS_EVENTS.landingViewed, { screen: '/' });
+    const fire = () => {
+      trackEvent(ANALYTICS_EVENTS.landingView, { screen: '/' });
+      trackEvent(JOURNEY_ANALYTICS_EVENTS.landingViewed, { screen: '/' });
+    };
+
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(fire, { timeout: 2500 });
+      return () => window.cancelIdleCallback(id);
+    }
+
+    const id = globalThis.setTimeout(fire, 1200);
+    return () => globalThis.clearTimeout(id);
   }, [trackEvent]);
 
   return null;

@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
-import { Button } from '@repo/ui';
+import { buttonVariants } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 type LandingCtaLinkProps = {
@@ -37,8 +37,13 @@ export function LandingCtaLink({
   }
 
   return (
-    <Button variant={variant} size={size} className={cn(className)} asChild onClick={handleClick}>
-      <Link href={href} prefetch={false}>{children}</Link>
-    </Button>
+    <Link
+      href={href}
+      prefetch={false}
+      onClick={handleClick}
+      className={cn(buttonVariants({ variant, size }), 'inline-flex items-center gap-2', className)}
+    >
+      {children}
+    </Link>
   );
 }

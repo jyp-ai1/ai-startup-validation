@@ -3737,6 +3737,7 @@
         "sources": "출처",
         "sourceLink": "{name} 출처 보기",
         "sourcePreview": "{name} 출처 (Mock 미리보기)",
+        "starRating": "신뢰도 {count}점 만점 중 {count}점",
         "items": {
           "marketSize": "시장 규모",
           "marketGrowth": "시장 성장률"

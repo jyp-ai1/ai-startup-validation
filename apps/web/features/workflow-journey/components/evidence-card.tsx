@@ -13,9 +13,9 @@ type EvidenceCardProps = {
   className?: string;
 };
 
-function StarRow({ count }: { count: number }) {
+function StarRow({ count, label }: { count: number; label: string }) {
   return (
-    <span className="text-amber-500" aria-label={`${count} stars`}>
+    <span className="text-amber-500" aria-label={label} role="img">
       {'★'.repeat(count)}
       {'☆'.repeat(Math.max(0, 5 - count))}
     </span>
@@ -43,7 +43,7 @@ export function EvidenceCard({ item, className }: EvidenceCardProps) {
           </p>
           <p className="mt-1 text-xl font-bold tabular-nums text-foreground sm:text-2xl">{item.value}</p>
         </div>
-        <StarRow count={item.stars} />
+        <StarRow count={item.stars} label={t('starRating', { count: item.stars })} />
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
         {t('confidence')}: <span className="font-semibold tabular-nums text-foreground">{item.confidence}%</span>
