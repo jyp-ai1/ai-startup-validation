@@ -8,40 +8,56 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Epic 1 Sprint 3 (Decision Experience)
+## 🟢 CURRENT — Epic 2 Sprint 1 (Intelligence Engine)
 
-**Status:** 🟢 In progress — Preview only (PM approved 2026-07-24)  
-**Kickoff:** [sprints/EPIC1_SPRINT3_KICKOFF.md](./sprints/EPIC1_SPRINT3_KICKOFF.md)  
-**Prior QA:** [sprints/EPIC1_SPRINT2_QA_REPORT.md](./sprints/EPIC1_SPRINT2_QA_REPORT.md)  
+**Status:** ⏳ Kickoff ready — await PM **"Epic 2 시작"** · Preview only  
+**Kickoff:** [sprints/EPIC2_SPRINT1_KICKOFF.md](./sprints/EPIC2_SPRINT1_KICKOFF.md)  
+**Epic 1 close:** [sprints/EPIC1_CLOSE_REPORT.md](./sprints/EPIC1_CLOSE_REPORT.md)  
 **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
 
-**Sprint 3 focus:** Dynamic Decision · Confidence Timeline · Decision History · Health Detail · Why Drawer
+**Sprint 1 focus:** Evidence Card · Why→Evidence · Confidence Rule Engine v0 · Citation · Missing Data
 
-**Release:** Private Preview until Epic 1 complete — ⛔ Production HOLD (PM strategy)
+**Alpha (Epic 1):** `alpha-v2.0.0` · LaunchLens 2.0 Alpha on prod after tag
 
 ---
 
-## Epic 1 Sprint 2 — Decision Workspace MVP ✅ (Release HOLD)
+## Epic 1 — Goal & Workflow Experience ✅ (LaunchLens 2.0 Alpha)
+
+**Status:** **COMPLETE** — PM approved 2026-07-24  
+**Close report:** [sprints/EPIC1_CLOSE_REPORT.md](./sprints/EPIC1_CLOSE_REPORT.md)  
+**Tag:** `alpha-v2.0.0`
+
+| Sprint | Theme | QA |
+|--------|-------|-----|
+| 1 Journey | Goal→Workflow→Workspace | 🟡 PASS WITH REVISION |
+| 2 AI Coach | AI Strategy Coach | 🟢 PASS |
+| 3 Decision | Living Decision Experience | 🟢 PASS (95) |
+
+**Experience:** Goal → AI Workflow → Strategy Workspace → AI Strategy Coach → Dynamic Decision
+
+---
+
+## Epic 1 Sprint 3 — Decision Experience ✅
+
+**Status:** Closed — 🟢 Product QA PASS (95) · Preview `dpl_4dujMAxPzVjwbDbc4hqqZsQpbDFd`  
+**Kickoff:** [sprints/EPIC1_SPRINT3_KICKOFF.md](./sprints/EPIC1_SPRINT3_KICKOFF.md)  
+**QA report:** [sprints/EPIC1_SPRINT3_QA_REPORT.md](./sprints/EPIC1_SPRINT3_QA_REPORT.md)
+
+---
+
+## Epic 1 Sprint 2 — Decision Workspace MVP ✅
 
 **Status:** Closed — 🟢 Product QA PASS (~92) · Preview `dpl_4TWRqqZnMdR9ouukab8NdyAzrmBm`  
 **Kickoff:** [sprints/EPIC1_SPRINT2_KICKOFF.md](./sprints/EPIC1_SPRINT2_KICKOFF.md)  
 **QA report:** [sprints/EPIC1_SPRINT2_QA_REPORT.md](./sprints/EPIC1_SPRINT2_QA_REPORT.md)
 
-**Experience delivered:** AI Strategy Coach — HOLD, Why, Next Action, Confidence mock (`6659537`)
-
-**Not deployed to Production** — strategic HOLD until Epic 1 Sprint 3+
-
 ---
 
-## Epic 1 Sprint 1 — Journey shell ✅ (Production HOLD)
+## Epic 1 Sprint 1 — Journey shell ✅
 
 **Status:** Closed — 🟡 Product QA Conditional PASS (~85) · Preview `dpl_3dEo22Ty2KX4oCeDDD2ayb8bMkau`  
 **Kickoff:** [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)  
 **QA report:** [sprints/EPIC1_SPRINT1_QA_REPORT.md](./sprints/EPIC1_SPRINT1_QA_REPORT.md)
-
-**Experience delivered:** Goal 선택 → AI Workflow 구성 → Workspace shell (`68359bb`)
-
-**Not deployed to Production** — tag `epic1-sprint1` withheld per PM gate
 
 ---
 

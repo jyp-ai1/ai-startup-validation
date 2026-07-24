@@ -2,8 +2,8 @@
 
 **Epic:** Goal & Workflow Experience  
 **Sprint:** 3 — Decision Experience  
-**Status:** 🟢 In progress — Preview only  
-**PM approval:** ✅ Sprint 3 시작 (2026-07-24)  
+**Status:** ✅ **Closed — PASS (95)** · Epic 1 Alpha  
+**QA report:** [EPIC1_SPRINT3_QA_REPORT.md](./EPIC1_SPRINT3_QA_REPORT.md)  
 **Prior QA:** [EPIC1_SPRINT2_QA_REPORT.md](./EPIC1_SPRINT2_QA_REPORT.md)
 
 ---

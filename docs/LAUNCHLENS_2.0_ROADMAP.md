@@ -1,6 +1,7 @@
 # LaunchLens 2.0 — Product Roadmap
 
 **Status:** Active (2026-07-24)  
+**Stage:** **LaunchLens 2.0 Alpha** (`alpha-v2.0.0`) — Epic 1 complete  
 **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md) — **supreme law**  
 **PM:** GPT · **Engineering:** Cursor (Senior Engineer roles)
 
@@ -14,13 +15,13 @@ Feature-unit sprints blurred product concept. LaunchLens 2.0 is **workflow-first
 
 > LaunchLens는 AI가 보고서를 생성하는 서비스가 아니라, 전략적 의사결정을 완료하도록 프로젝트를 끝까지 이끄는 AI Strategy Workspace이다.
 
-*(Canonical wording in Constitution — use that exact sentence in product copy.)*
+**Product definition (Alpha+):** AI Strategy Workspace — not AI Startup Validator.
 
 ---
 
 ## Process
 
-See [SPRINT_PROCESS.md](./SPRINT_PROCESS.md): Epic → Sprint → **5 Product QA questions** → Preview → Production → Tag → Feedback
+See [SPRINT_PROCESS.md](./SPRINT_PROCESS.md): Epic → Sprint → **5 Product QA questions** → Preview → Release gate → Tag
 
 ---
 
@@ -32,38 +33,38 @@ See [SPRINT_PROCESS.md](./SPRINT_PROCESS.md): Epic → Sprint → **5 Product QA
 
 ## Epic roadmap
 
-| Phase | Epic | Goal |
-|-------|------|------|
-| **0** | Product Pivot | Constitution ratified ✅ |
-| **1** | **Goal & Workflow Experience** | Goal → AI workflow → guided workspace |
-| **2** | **Confidence & Evidence Engine** | Citation, Confidence, Why, Assumption |
-| **3** | **Decision Engine** | GO/HOLD/NO GO without full report |
-| **4** | **Execution Workspace** | PRD, roadmap, dev handoff |
-| **5** | **Living Strategy Platform** | Monitor, revisit, decision log |
+| Phase | Epic | Goal | Status |
+|-------|------|------|--------|
+| **0** | Product Pivot | Constitution ratified | ✅ |
+| **1** | **Goal & Workflow Experience** | Goal → Workflow → Decision | ✅ **Alpha** |
+| **2** | **Intelligence Engine** | Evidence, Citation, Confidence, Why, Research | 🟢 Sprint 1 kickoff |
+| **3** | **Decision Engine** | GO/HOLD/NO GO without full report | Planned |
+| **4** | **Execution Workspace** | PRD, roadmap, dev handoff | Planned |
+| **5** | **Living Strategy Platform** | Monitor, revisit, decision log | Planned |
 
 ---
 
-## Epic 1 — Goal & Workflow Experience
+## Epic 1 — Goal & Workflow Experience ✅
 
-**Success sentence:**
+**Close:** [sprints/EPIC1_CLOSE_REPORT.md](./sprints/EPIC1_CLOSE_REPORT.md)
 
-> 사용자는 Goal 하나만 선택하면, AI가 Workflow를 자동 구성하고, 다음 행동을 고민하지 않아도 된다.
-
-| Sprint | Focus | Product QA | Status |
-|--------|-------|------------|--------|
-| **1** | Landing → Goal → Workflow → Workspace shell | Journey 5 questions | ✅ PASS WITH REVISION · Prod ⛔ HOLD |
-| **2** | Decision Panel + AI Strategy Coach | Law3 + Workspace | ✅ PASS · Release ⛔ HOLD |
-| **3** | **Decision Experience** (living mock) | Dynamic decision QA | 🟢 In progress |
-| **3** | Quick Assessment, GO/HOLD/NO GO surface | Decide without full report | Planned |
-
-Sprint 1 QA: [sprints/EPIC1_SPRINT1_QA_REPORT.md](./sprints/EPIC1_SPRINT1_QA_REPORT.md)  
-Sprint 2 kickoff: [sprints/EPIC1_SPRINT2_KICKOFF.md](./sprints/EPIC1_SPRINT2_KICKOFF.md)
+| Sprint | Focus | Status |
+|--------|-------|--------|
+| **1** | Journey shell | ✅ |
+| **2** | AI Strategy Coach | ✅ |
+| **3** | Decision Experience | ✅ |
 
 ---
 
-## Epic 2 — Confidence & Evidence Engine
+## Epic 2 — Intelligence Engine
 
-Evidence, Citation, Confidence → Why → Assumption tracking
+*(Renamed from Confidence & Evidence Engine — Evidence is one pillar.)*
+
+**Pillars:** Evidence · Citation · Confidence · Source · Why · Research
+
+**Sprint 1 kickoff:** [sprints/EPIC2_SPRINT1_KICKOFF.md](./sprints/EPIC2_SPRINT1_KICKOFF.md)
+
+Mission: **Mock → Real Intelligence** (Preview until Epic 2 QA gate)
 
 ---
 
@@ -85,15 +86,20 @@ Ongoing strategy, monitoring, decision history
 
 ---
 
-## Out of Scope
+## Release stages (PM)
 
-See Constitution — Pitch Deck, Landing Builder, Slack/Jira, Enterprise Admin, etc. **Epic 5+ unless PM reopens**
+| Stage | When |
+|-------|------|
+| Private Preview | Epic 1 Sprints 1–3 |
+| **LaunchLens 2.0 Alpha** | Epic 1 complete ✅ |
+| Public Beta | Epic 2 complete (target) |
+| Open Beta | Epic 3 complete (target) |
 
 ---
 
-## Legacy technical foundation
+## Out of Scope
 
-L3.4 RC on `ai-startup-validation-tau.vercel.app` — backend retained; Epic 1 reshapes **entry UX**
+See Constitution — Pitch Deck, Landing Builder, Slack/Jira, Enterprise Admin, etc.
 
 ---
 
@@ -101,4 +107,4 @@ L3.4 RC on `ai-startup-validation-tau.vercel.app` — backend retained; Epic 1 r
 
 - [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
 - [TASKS.md](./TASKS.md)
-- [templates/UX_QA_TEMPLATE.md](./templates/UX_QA_TEMPLATE.md)
+- [RELEASES.md](./RELEASES.md)

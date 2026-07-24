@@ -107,6 +107,5 @@ See [DEPLOY_QUICKSTART.md](./DEPLOY_QUICKSTART.md), [DEPLOY_SMOKE.md](./DEPLOY_S
 ## Current pointer
 
 **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)  
-**Sprint 0:** ✅ Complete (PASS WITH REVISIONS)  
-**Epic 1 Sprint 2:** ✅ Product QA PASS · Release ⛔ strategic HOLD — [QA report](./sprints/EPIC1_SPRINT2_QA_REPORT.md)  
-**Next:** [Epic 1 Sprint 3 kickoff](./sprints/EPIC1_SPRINT3_KICKOFF.md) — Decision Experience (Preview only)
+**Stage:** LaunchLens 2.0 Alpha — Epic 1 ✅ [close report](./sprints/EPIC1_CLOSE_REPORT.md)  
+**Next:** [Epic 2 Sprint 1 kickoff](./sprints/EPIC2_SPRINT1_KICKOFF.md) — Intelligence Engine (Preview only)

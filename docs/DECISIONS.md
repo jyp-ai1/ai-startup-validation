@@ -327,6 +327,32 @@ Feature-unit sprints (modules, reports, frameworks) expanded the codebase but di
 
 ---
 
+## ADR-013: LaunchLens 2.0 Alpha — Epic 1 Complete & Intelligence Engine
+
+**Status:** Accepted  
+**Date:** 2026-07-24  
+**Sprint:** Epic 1 close · Epic 2 kickoff
+
+### Context
+
+Epic 1 delivered Goal → Workflow → Decision Experience with Product QA PASS across three sprints. PM approved ending Private Preview and shipping **LaunchLens 2.0 Alpha** while Epic 2 begins real Intelligence (Evidence, Citation, Confidence rules).
+
+### Decision
+
+1. Tag **`alpha-v2.0.0`** on Epic 1 complete commit — supersedes withheld `epic1-sprint*` tags
+2. **Production deploy** approved for Alpha stage (journey entry + Strategy Workspace)
+3. Rename Epic 2 to **Intelligence Engine** (Evidence is one pillar among Citation, Confidence, Source, Why, Research)
+4. Epic 2 Sprint 1 scope: Mock → Rule-based Intelligence — **Preview only** until Epic 2 QA gate
+5. Product label: **AI Strategy Workspace** — not AI Startup Validator
+
+### Consequences
+
+- [EPIC1_CLOSE_REPORT.md](./sprints/EPIC1_CLOSE_REPORT.md) is Epic 1 record
+- [EPIC2_SPRINT1_KICKOFF.md](./sprints/EPIC2_SPRINT1_KICKOFF.md) starts Intelligence work
+- L3.4 legacy routes remain; primary entry is `/goal` journey
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
