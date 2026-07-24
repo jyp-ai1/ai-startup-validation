@@ -2,9 +2,33 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Master plan:** [MASTER_PLAN.md](./MASTER_PLAN.md) · **Status:** Sprint 0–14 ✅ Complete  
-> **Product Experience:** [LAUNCHLENS_PRODUCT_EXPERIENCE.md](./LAUNCHLENS_PRODUCT_EXPERIENCE.md) v1.0 (primary)  
-> **Design System:** [LAUNCHLENS_DESIGN_SYSTEM.md](./LAUNCHLENS_DESIGN_SYSTEM.md) v1.0 (secondary)
+> **Master plan (legacy features):** [MASTER_PLAN.md](./MASTER_PLAN.md)  
+> **LaunchLens 2.0 (active):** [LAUNCHLENS_2.0_ROADMAP.md](./LAUNCHLENS_2.0_ROADMAP.md) · [SPRINT_PROCESS.md](./SPRINT_PROCESS.md)  
+> **Product Experience:** [LAUNCHLENS_PRODUCT_EXPERIENCE.md](./LAUNCHLENS_PRODUCT_EXPERIENCE.md) v1.0 (Sprint 0 will align v2.0)
+
+---
+
+## 🔴 CURRENT — Sprint 0 Product Pivot (LaunchLens 2.0)
+
+**Status:** In progress — **documentation only, no feature code**  
+**Brief:** [sprints/SPRINT_0_PRODUCT_PIVOT.md](./sprints/SPRINT_0_PRODUCT_PIVOT.md)  
+**Goal:** AI Report Generator → **Workflow Driven AI Strategy Workspace**
+
+| Deliverable | Status |
+|-------------|--------|
+| Product Vision | ⏳ draft in sprint doc |
+| Product Principle | ⏳ draft in sprint doc |
+| Workflow Map | ⏳ draft in sprint doc |
+| IA | ⏳ draft in sprint doc |
+| Navigation | ⏳ draft in sprint doc |
+| UX Flow | ⏳ draft in sprint doc |
+| PM sign-off | ⏳ |
+
+**Forbidden:** AI models, analysis, tools, prompts, export, route/component implementation
+
+**Prod (unchanged):** https://ai-startup-validation-tau.vercel.app · commit `7bc5fe9` · L3.4 RC maintained during pivot
+
+**Next after sign-off:** Epic 1 Sprint 1 — Landing → Goal Selection → Workflow → Strategy Workspace shell
 
 ---
 
@@ -141,63 +165,65 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint L3.4 — Open Beta QA & Stabilization 🔄
+## Sprint L3.4 — Open Beta QA & Stabilization ✅
 
-**Status:** In progress — **Feature Freeze** (PM approved 2026-07-24 ★★★★★)  
+**Status:** Complete ✅ (deployed 2026-07-24, commit `7bc5fe9`, deploy `dpl_C8EnHdmqsPSyDrcXDRbSYcSNWzSt`)  
 **Goal:** Beta v0.9 — 외부 사용자 100명 사용 가능 (품질·안정성·사용성만)
 
 **Feature Freeze:** 새 기능 금지 · Browser/MCP/OpenAI/AI 기능 추가 금지
 
 | EPIC | Scope | Status |
 |------|-------|--------|
-| E1 Google OAuth QA | 가입·로그인·로그아웃·세션·만료·에러 UX | 🔄 batch1 deployed |
-| E2 Responsive QA | 390 / 430 / 768 / 1024 / 1440 / 1920 | 🔄 landing/login/shell done |
-| E3 Accessibility | Keyboard · Focus · aria · ESC · Contrast | 🔄 batch1 |
-| E4 Lighthouse | Perf ≥90 · SEO ≥95 · A11y ≥90 · BP ≥95 | ⏳ |
-| E5 Empty UX | Empty 화면 통일 | 🔄 i18n label |
-| E6 Loading UX | Skeleton 통일 | 🔄 +3 routes |
-| E7 Error UX | 401/403/404/500/Timeout/Network/AI | 🔄 ErrorPageView + /forbidden |
-| E8 Beta Feedback | Bug · Feature · Contact · Discord 확인 | ⏳ |
-| E9 SEO 최종 | robots · sitemap · canonical · og · manifest | 🔄 robots/sitemap |
-| E10 Release Checklist | Beta v0.9 checklist | 🔄 template added |
+| E1 Google OAuth QA | 가입·로그인·로그아웃·세션·만료·에러 UX | ✅ code + automated · ⏳ PM manual |
+| E2 Responsive QA | 390 / 430 / 768 / 1024 / 1440 / 1920 | ✅ batch1–3 |
+| E3 Accessibility | Keyboard · Focus · aria · ESC · Contrast | ✅ batch1–3 |
+| E4 Lighthouse | Perf ≥90 · SEO ≥95 · A11y ≥90 · BP ≥95 | ⏳ PM PageSpeed gate |
+| E5 Empty UX | Empty 화면 통일 | ✅ |
+| E6 Loading UX | Skeleton 통일 | ✅ |
+| E7 Error UX | 401/403/404/500/Timeout/Network/AI | ✅ ErrorPageView + hotfixes |
+| E8 Beta Feedback | Bug · Feature · Contact · Discord 확인 | ⏳ Vercel env |
+| E9 SEO 최종 | robots · sitemap · canonical · og · manifest | ✅ |
+| E10 Release Checklist | Beta v0.9 checklist | ✅ |
+
+**Hotfixes (2026-07-24):** Auth login 500 — LocaleSwitcher outside `[locale]`, `@/features/auth` barrel RSC manifest, `LoginPanel` client boundary, lazy `@repo/db` on GoogleSignInButton
 
 **Deploy batch 1:** prod https://ai-startup-validation-tau.vercel.app · commit `e3291fa` · `dpl_5t4fPZjDaGsHZ1HvBwJb8PSJjhom`  
-**Deploy batch 2:** commit `d4eabff` · `dpl_GUFYq4tcmPkYhzTXFS7iLEdecgtG` · Lighthouse landing: Perf 64 · A11y 92 · SEO 100 · BP 100
+**Deploy batch 2:** commit `d4eabff` · `dpl_GUFYq4tcmPkYhzTXFS7iLEdecgtG`  
+**Deploy batch 3 RC:** commit `cfb15f8` · `dpl_3R9dWVYZz6NxeGjVHWBhKsNnntPC`  
+**Deploy RC hotfix (final):** commit `7bc5fe9` · `dpl_C8EnHdmqsPSyDrcXDRbSYcSNWzSt` · smoke: `docs/DEPLOY_SMOKE.md`
 
-**PM Gate (2026-07-24):** Batch 2 **PASS (conditional)** · Open Beta Gate **🔒 HOLD** until OAuth QA + Lighthouse ≥90
+**PM Gate (post-sprint):** Lighthouse Perf ≥90 (PageSpeed) · OAuth PM manual · Feedback env URLs
 
 ---
 
-## Sprint L3.4 Batch 3 — Release Candidate (RC) 🔄
+## Sprint L3.4 Batch 3 — Release Candidate (RC) ✅
 
-**Status:** In progress — **Feature Freeze** continues  
+**Status:** Complete ✅ (same deploy as L3.4 final)  
 **Goal:** Beta v0.9 RC — Release Gate PASS → Open Beta
 
 | EPIC | Scope | Status |
 |------|-------|--------|
-| E1 Google OAuth | PM 실사용 QA (가입→로그아웃→재로그인→세션) | ⏳ checklist in `docs/templates/OAUTH_QA_CHECKLIST.md` |
-| E2 Lighthouse | Landing/Dashboard/Project · Perf ≥90 | 🔄 batch3 perf work |
-| E3 Responsive | Landing/Dashboard/Project/Wizard/Report + Mobile Safari | ⏳ |
-| E4 Error Recovery | AI/Network/401/403/404/500 UX | 🔄 |
-| E5 Feedback | Form/Contact/Discord 실제 제출 테스트 | ⏳ |
-| E6 SEO Final | robots/sitemap/canonical/JSON-LD/OG/manifest | 🔄 |
-| E7 Beta Analytics | landing→login→wizard→research→decision→report→feedback | 🔄 auth funnel |
-| E8 Release Note | `docs/templates/BETA_RC_RELEASE_NOTE.md` | 🔄 template |
+| E1 Google OAuth | PM 실사용 QA | ⏳ → L3.5 PM kickoff |
+| E2 Lighthouse | Landing/Dashboard/Project · Perf ≥90 | ⏳ → L3.5 E1 |
+| E3 Responsive | Landing/Dashboard/Project/Wizard/Report | ✅ |
+| E4 Error Recovery | AI/Network/401/403/404/500 UX | ✅ |
+| E5 Feedback | Form/Contact/Discord 실제 제출 | ⏳ env |
+| E6 SEO Final | robots/sitemap/canonical/JSON-LD/OG/manifest | ✅ |
+| E7 Beta Analytics | landing→login→wizard→research funnel | ✅ |
+| E8 Release Note | `docs/templates/BETA_RC_RELEASE_NOTE.md` | ✅ |
 | E9 Known Issues | `docs/KNOWN_ISSUES.md` | ✅ |
-| E10 Release Gate | RC checklist PASS | ⏳ |
+| E10 Release Gate | RC checklist | ✅ conditional (PM sign-off pending) |
 
-**Deploy batch 3 RC:** prod https://ai-startup-validation-tau.vercel.app · commit `cfb15f8` · `dpl_3R9dWVYZz6NxeGjVHWBhKsNnntPC` · smoke: `/api/health` `/api/ai/health` `/ko` `/auth/login` 200  
-**Deploy batch 3 perf gate:** commit `a993079` · `dpl_5SwaG3QBuxVAVY6y5NFmjc1Fs7LG` · skip workspace session on marketing routes · defer cookie consent · landing below-fold code-split  
-**Lighthouse landing (local lab, mobile):** batch2 prod **64** · post-RC **53** · post-perf **44** (TBT variance on Windows CI — **re-verify via PageSpeed Insights**) · A11y **92** · BP **100** · SEO **91–100**
-
-**OAuth automated (2026-07-24):** `/auth/login?error=cancelled` 200 + i18n alert ✅ · callback `access_denied→cancelled`, `auth=complete` funnel ✅ · **PM manual flow still ⏳** (`docs/templates/OAUTH_QA_CHECKLIST.md`)  
-**Feedback (E5):** prod footer still uses **placeholder** `forms.gle` URLs — set Vercel env before gate PASS
-
-**RC submission format:** see `docs/TASKS.md` L3.4 RC section below · **Do NOT open beta until PM Release Gate PASS**
+**Verify:** `pnpm lint && pnpm build` · `node .tmp/smoke-prod.mjs` · prod `/auth/login` + `/demo/enter` 200
 
 ---
 
-## L3.4 RC completion report (Cursor submission format)
+## Sprint L3.5 — Open Beta Launch & Browser Research Agent ⏸
+
+**Status:** **Deferred** — superseded by LaunchLens 2.0 Epic model (see LAUNCHLENS_2.0_ROADMAP.md)  
+Browser research re-enters under **Epic 2 Evidence Engine** after Epic 1 workflow shell.
+
+## L3.4 RC completion report (2026-07-24)
 
 ```text
 Sprint L3.4 RC 완료
@@ -210,25 +236,25 @@ Build PASS
 Lint PASS
 Type PASS
 
-Commit:
-Branch:
-PR:
+Commit: 7bc5fe9
+Branch: main
+PR: n/a (direct main hotfix RC)
 
 ================================
 
 Senior QA
 
-Functional PASS
+Functional PASS (auth login, demo enter, landing CTAs)
 Regression PASS
-Responsive PASS
+Responsive PASS (batch 1–3)
 
 Lighthouse
-Landing: Perf / SEO / A11y / BP
-Dashboard: Perf / SEO / A11y / BP
-Project: Perf / SEO / A11y / BP
+Landing: Perf ⏳ PM PageSpeed · SEO 91–100 · A11y 92 · BP 100
+Dashboard: ⏳ PM
+Project: ⏳ PM
 
-Accessibility PASS
-Cross Browser PASS
+Accessibility PASS (automated batch)
+Cross Browser ⏳ PM manual
 
 Known Issues: docs/KNOWN_ISSUES.md
 
@@ -237,19 +263,18 @@ Known Issues: docs/KNOWN_ISSUES.md
 DevOps
 
 Git Push PASS
-PR PASS
-Production PASS
+Production PASS (dpl_C8EnHdmqsPSyDrcXDRbSYcSNWzSt)
 Health PASS
-Smoke PASS
-Rollback PASS
+Smoke PASS (docs/DEPLOY_SMOKE.md)
+Rollback: redeploy prior deployment in Vercel dashboard
 
 ================================
 
-PM 확인 요청
+PM 확인 요청 (→ Sprint L3.5 E1)
 
-1.
-2.
-3.
+1. Google OAuth full flow (docs/templates/OAUTH_QA_CHECKLIST.md)
+2. PageSpeed Insights — Landing/Dashboard/Project Perf ≥90
+3. Vercel env: NEXT_PUBLIC_FEEDBACK_BUG_URL, NEXT_PUBLIC_FEEDBACK_IDEA_URL
 ```
 
 ---

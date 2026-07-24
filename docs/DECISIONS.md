@@ -298,6 +298,34 @@ Application → automation.browser.crawl → @repo/browser crawlPages() → Chro
 
 ---
 
+## ADR-012: LaunchLens 2.0 — Workflow-Driven Product Pivot
+
+**Status:** Accepted  
+**Date:** 2026-07-24  
+**Sprint:** 2.0 Sprint 0 (Product Pivot)
+
+### Context
+
+Feature-unit sprints (modules, reports, frameworks) expanded the codebase but diluted product concept. Users faced a menu-heavy workspace rather than a guided decision journey.
+
+### Decision
+
+1. Adopt **Epic → Sprint → Product QA → Production → Feedback** process ([SPRINT_PROCESS.md](./SPRINT_PROCESS.md))
+2. Reposition product: **Workflow Driven AI Strategy Workspace** (not report generator)
+3. **Sprint 0 = documentation only** — Vision, IA, Workflow, UX before Epic 1 code
+4. Mandatory **4 kickoff questions** before any implementation sprint
+5. QA primary metric = **UX question per sprint**, not feature checklist alone
+6. Legacy L3.4 RC codebase **retained**; Epic sprints reshape entry UX and navigation
+
+### Consequences
+
+- [LAUNCHLENS_2.0_ROADMAP.md](./LAUNCHLENS_2.0_ROADMAP.md) is primary product roadmap
+- L3.5 browser agent deferred to Epic 2
+- PM (GPT) owns sign-off; Cursor uses role-separated execution
+- Git tags per shipped Epic sprint (starting Epic 1 Sprint 1)
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

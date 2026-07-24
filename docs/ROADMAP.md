@@ -1,7 +1,7 @@
 # Roadmap
 
-> **Product track (Validation Framework Sprints 0–14):** see [MASTER_PLAN.md](./MASTER_PLAN.md)  
-> **Status:** Sprints 0–13 ✅ complete · Sprint 14 (AI Validation Agent) next
+> **Active product track:** [LAUNCHLENS_2.0_ROADMAP.md](./LAUNCHLENS_2.0_ROADMAP.md) (Epic → Sprint → Product QA)  
+> **Legacy feature track:** [MASTER_PLAN.md](./MASTER_PLAN.md) (Sprints 0–14, L2–L3.4 ✅)
 
 ## Foundation (Sprint 0–6) ✅
 
@@ -83,9 +83,10 @@
 
 ## LaunchLens Product Phase — AI Strategy Consultant (L3.x)
 
-> **PM principle (2026-07-24):** **Feature Freeze** — L3.4는 품질·안정성만. 새 기능은 L3.5+ (사용자 피드백 후).  
-> **Deploy target:** `jyp-ai1s-projects/ai-startup-validation` → https://ai-startup-validation-tau.vercel.app  
-> **Process:** Dev → QA PASS → DevOps Deploy → PM Release Gate (see [TASKS.md](./TASKS.md))
+> **Superseded by LaunchLens 2.0 (2026-07-24).** See [LAUNCHLENS_2.0_ROADMAP.md](./LAUNCHLENS_2.0_ROADMAP.md).  
+> L3.4 RC shipped; technical foundation retained. UX pivot starts Sprint 0.
+
+> **PM principle (2026-07-24):** **User journey over feature list** — Epic → Sprint → Product QA → Production.
 
 | Sprint | Focus | Priority | Status |
 |--------|-------|----------|--------|
@@ -93,8 +94,9 @@
 | L3.1 | Research pipeline + Evidence DB + Decision LLM | ★★★★★ | ✅ |
 | L3.2 | OpenAI adapter + fallback + Orchestrator RESEARCH | ★★★★ | ✅ |
 | L3.3 | Open Beta Ready (UX + ops + funnel) | ★★★★★ | ✅ |
-| **L3.4** | **Open Beta QA → RC (Batch 1–3)** | ★★★★★ | 🔄 Batch 3 RC |
-| L3.5 | Browser Research Agent | ★★★★★ | Planned (post-beta) |
+| **L3.4** | **Open Beta QA → RC** | ★★★★★ | ✅ |
+| **2.0 Sprint 0** | **Product Pivot (docs only)** | ★★★★★ | 🔄 **Current** |
+| **Epic 1** | **Workflow Experience** | ★★★★★ | Planned |
 | L3.6 | MCP Integration | ★★★★★ | Planned |
 | L3.7 | Scenario Planning (Best / Base / Worst) | ★★★★★ | Planned |
 | L3.8 | Financial Model (ROI, NPV, IRR) | ★★★★★ | Planned |

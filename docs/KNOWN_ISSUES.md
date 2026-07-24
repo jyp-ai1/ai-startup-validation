@@ -11,12 +11,13 @@
 | OpenAI direct fallback | Not configured | OpenRouter + Gemini Flash only; OpenAI → **v1.1** |
 | Research evidence | Partially synthetic | Orchestrator uses Gemini; browser crawl pending |
 
-## UX / Quality (in progress — L3.4 RC)
+## UX / Quality (L3.5 PM gate)
 
 | Item | Status | Target |
 |------|--------|--------|
-| Lighthouse Performance (Landing) | ⏳ | ≥90 (Batch 3) |
-| Google OAuth E2E | ⏳ PM manual QA | Batch 3 Gate |
+| Auth login / demo CTA 500 | ✅ Fixed (`7bc5fe9`) | — |
+| Lighthouse Performance (Landing) | ⏳ | ≥90 — PM PageSpeed |
+| Google OAuth E2E | ⏳ PM manual QA | L3.5 E1 |
 | i18n non-ko/en locales | ~70–80% | Post-beta polish |
 | AI response quality | Variable | Prompt tuning post-beta |
 

@@ -11,10 +11,13 @@ Dashboard: https://vercel.com/jyp-ai1s-projects/ai-startup-validation
 vercel logout
 vercel login
 
-cd "C:\Users\김성길\Documents\GitHub\cursor-project\apps\web"
+cd "C:\Users\김성길\Documents\GitHub\cursor-project"
 vercel link --yes --scope jyp-ai1s-projects --project ai-startup-validation
 vercel --prod --yes
 ```
+
+> **Important:** Dashboard Root Directory is already `apps/web`. Deploy from **repo root**.
+> Running `vercel --prod` inside `apps/web` doubles the path (`apps/web/apps/web`) and fails.
 
 Or run: `powershell -ExecutionPolicy Bypass -File scripts/deploy-jyp-ai1.ps1`
 

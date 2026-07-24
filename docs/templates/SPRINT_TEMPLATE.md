@@ -1,6 +1,8 @@
-# Sprint Template
+# Sprint Template — LaunchLens 2.0
 
-> Copy to `docs/TASKS.md` or create `docs/sprints/SPRINT_N.md`.
+> Copy to `docs/sprints/SPRINT_*.md` or extend `docs/TASKS.md`.  
+> **Before coding:** complete [SPRINT_KICKOFF_TEMPLATE.md](./SPRINT_KICKOFF_TEMPLATE.md) (4 questions, PM approval).  
+> **Process:** [SPRINT_PROCESS.md](../SPRINT_PROCESS.md)
 
 ---
 
@@ -55,7 +57,13 @@ Expected file tree or checklist
 ```bash
 pnpm lint
 pnpm build
-# pnpm test (when available)
+node .tmp/smoke-prod.mjs   # when deployable
+```
+
+## Completion (2.0)
+
+```text
+Preview Deploy → PM QA → UX QA (templates/UX_QA_TEMPLATE.md) → Production → Git Tag
 ```
 
 ---

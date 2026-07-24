@@ -8,6 +8,10 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ### Added
 
+- **Beta v0.9 RC** (Sprint L3.4) — Open Beta QA & stabilization
+  - Auth login hotfix: LocaleSwitcher, LoginPanel, lazy Supabase client
+  - Error UX, SEO, analytics funnel, RC templates
+  - Deploy smoke guide: `docs/DEPLOY_SMOKE.md`
 - Sprint 2-2: AI Project Operating System
   - `.cursor/rules/` (10 rule files)
   - Operational docs: DECISIONS, BACKLOG, TASKS, CODING_GUIDE, AI_GUIDE, etc.
