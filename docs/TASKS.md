@@ -186,7 +186,12 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E9 Known Issues | `docs/KNOWN_ISSUES.md` | ✅ |
 | E10 Release Gate | RC checklist PASS | ⏳ |
 
-**Deploy batch 3 RC:** prod https://ai-startup-validation-tau.vercel.app · commit `cfb15f8` · `dpl_3R9dWVYZz6NxeGjVHWBhKsNnntPC` · smoke: `/api/health` `/api/ai/health` `/ko` `/auth/login` 200 · Lighthouse: ⏳ re-measure post-deploy
+**Deploy batch 3 RC:** prod https://ai-startup-validation-tau.vercel.app · commit `cfb15f8` · `dpl_3R9dWVYZz6NxeGjVHWBhKsNnntPC` · smoke: `/api/health` `/api/ai/health` `/ko` `/auth/login` 200  
+**Deploy batch 3 perf gate:** commit `a993079` · `dpl_5SwaG3QBuxVAVY6y5NFmjc1Fs7LG` · skip workspace session on marketing routes · defer cookie consent · landing below-fold code-split  
+**Lighthouse landing (local lab, mobile):** batch2 prod **64** · post-RC **53** · post-perf **44** (TBT variance on Windows CI — **re-verify via PageSpeed Insights**) · A11y **92** · BP **100** · SEO **91–100**
+
+**OAuth automated (2026-07-24):** `/auth/login?error=cancelled` 200 + i18n alert ✅ · callback `access_denied→cancelled`, `auth=complete` funnel ✅ · **PM manual flow still ⏳** (`docs/templates/OAUTH_QA_CHECKLIST.md`)  
+**Feedback (E5):** prod footer still uses **placeholder** `forms.gle` URLs — set Vercel env before gate PASS
 
 **RC submission format:** see `docs/TASKS.md` L3.4 RC section below · **Do NOT open beta until PM Release Gate PASS**
 

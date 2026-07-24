@@ -2,7 +2,13 @@
 
 Prod: https://ai-startup-validation-tau.vercel.app
 
-## Flow
+## Automated pre-checks (Cursor 2026-07-24)
+
+- [x] `/auth/login?error=cancelled` → 200 + cancelled i18n alert
+- [x] `/auth/login?error=session` → 200 + session error alert
+- [x] `/auth/callback` routes: `access_denied` → `cancelled`, success → `?auth=complete`
+
+## Flow (PM manual)
 
 - [ ] Landing → Sign in → Google consent → Dashboard
 - [ ] New user: first login creates session
