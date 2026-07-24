@@ -94,9 +94,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint L3.2 — OpenAI Provider + Fallback (Phase 3) 🔄
+## Sprint L3.2 — OpenAI Provider + Fallback (Phase 3) ✅
 
-**Status:** In progress  
+**Status:** Complete ✅ (commit `b21bb77`, deploy pending push)  
 **Goal:** Direct OpenAI adapter + OpenRouter→OpenAI fallback + Orchestrator RESEARCH real worker
 
 | EPIC | Status |
@@ -105,7 +105,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | E2 Provider fallback chain (consultant + decision) | ✅ Done |
 | E3 Orchestrator RESEARCH real worker | ✅ Done |
 | E4 Health API + ops dashboard + env docs | ✅ Done |
-| E5 Build/test/deploy + smoke | 🔄 In progress |
+| E5 Build/test/deploy + smoke | ✅ Tests/build · ⏳ push/deploy |
 
 **Env:** `OPENAI_API_KEY` (fallback), optional `AI_FALLBACK_MODEL=gpt-4o-mini`  
 **Verify:** `/api/ai/health` shows `openaiConfigured` · Orchestrator RESEARCH uses Gemini · fallback on 429/5xx
