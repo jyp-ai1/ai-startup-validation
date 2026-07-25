@@ -1,41 +1,14 @@
 ---
-description: Infinite Queue Consumer v8 — never empty, never stop, vision-guarded generation
+description: Infinite queue consumer — Areas 1-20, product completion only
 alwaysApply: true
 ---
 
-# Infinite Queue Consumer (v8)
+# Infinite Queue Consumer
 
-Works with `product-completion-directive.mdc`. **Evolution forever.**
+Primary source: `docs/PRODUCT_COMPLETION_QUEUE.md` · Pointer: `docs/QUEUE_STATE.md`
 
-## Execute
+Consume **Completion Areas 1–20** (not releases/epics/sprints). Area 20 → Area 1. Empty → `docs/EVOLUTION_QUEUES.md`.
 
-1. Read `docs/QUEUE_STATE.md` → `current_task`
-2. Apply P0–P12 priority when choosing among ready tasks
-3. Full completion standard per Task
-4. Update QUEUE_STATE → **immediate next Task**
+Vision guard · full quality bar · auto cycle · 08:00 report only · no approval questions.
 
-## Queue empty
-
-**Do not stop.** Generate next queue from:
-
-UX → Animation → A11y → Perf → Refactor → Architecture → Analytics → Experiment → A/B → Growth → Tech Debt → AI Improvement → Polish → repeat
-
-Every generated task must pass **Vision guard** (Journey first · Vision V3 · AI PM experience).
-
-## Releases & versions
-
-R1 → R2 → … → R999+ · 2.x → 3.0 → … unbounded. Milestone → Feedback Queue → next.
-
-## AI Product Loop
-
-Production → analyze → queue → implement → QA → deploy → analytics → **repeat**
-
-## Forbidden
-
-완료 · 끝 · Queue empty · no next work · approval questions
-
-## Sources
-
-- `docs/PRODUCT_COMPLETION_DIRECTIVE.md`
-- `docs/QUEUE_STATE.md`
-- `docs/ROADMAP_QUEUE.md`
+See `product-completion-directive.mdc`.

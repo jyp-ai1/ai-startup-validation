@@ -23,6 +23,7 @@ type WorkflowComposeLoaderProps = {
 
 export function WorkflowComposeLoader({ goalId }: WorkflowComposeLoaderProps) {
   const tc = useTranslations('workflow.compose.goals');
+  const ts = useTranslations('workflow.compose.steps');
   const tt = useTranslations('workflow.toast');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -85,11 +86,18 @@ export function WorkflowComposeLoader({ goalId }: WorkflowComposeLoaderProps) {
   };
 
   const progressPercent = Math.min(100, Math.round(((activeStep + 1) / 4) * 100));
+  const stepLabels = [
+    ts('analyze'),
+    ts('stack'),
+    ts('risk'),
+    ts('ready'),
+  ];
 
   return (
     <AiThinkingOverlay
       goalLabel={tc(goalId)}
       activeStep={activeStep}
+      stepLabels={stepLabels}
       stepCount={4}
       progressPercent={progressPercent}
       failed={failed}

@@ -2,8 +2,8 @@
 
 ## Never Ending Product Evolution
 
+**Primary executor:** `docs/PRODUCT_COMPLETION_QUEUE.md` (Infinite Mode — 20 areas)  
 **Supersedes:** v7 · Mission Mode · Sprint completion · time-based targets  
-**Mode:** Infinite Queue Consumer + Product Evolution Standard  
 **Consumer pointer:** `docs/QUEUE_STATE.md`
 
 ---

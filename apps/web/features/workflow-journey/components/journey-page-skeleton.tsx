@@ -25,9 +25,14 @@ export function JourneyPageSkeleton({ phase = 'goal' }: JourneyPageSkeletonProps
           </div>
         ) : null}
         {phase === 'workflow' ? (
-          <div className="mt-6 space-y-4">
-            <Skeleton className="h-32 w-full rounded-2xl" />
-            <Skeleton className="h-48 w-full rounded-2xl" />
+          <div className="mt-6 space-y-4" aria-hidden>
+            <Skeleton className="h-36 w-full rounded-2xl" />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Skeleton className="h-24 rounded-xl" />
+              <Skeleton className="h-24 rounded-xl" />
+            </div>
+            <Skeleton className="h-40 w-full rounded-2xl" />
+            <Skeleton className="h-14 w-full rounded-xl" />
           </div>
         ) : null}
       </div>

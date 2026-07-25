@@ -1,49 +1,33 @@
 ---
-description: Product Evolution Directive v8 — never ending queue, no time-based termination
+description: Product Completion Queue Infinite Mode — 20 areas, no version/release/epic consciousness
 alwaysApply: true
 ---
 
-# Product Completion Directive v8
+# Product Completion Queue — Infinite Mode
 
-Read `docs/PRODUCT_COMPLETION_DIRECTIVE.md` and `docs/QUEUE_STATE.md` before every Task.
+Read `docs/PRODUCT_COMPLETION_QUEUE.md` and `docs/QUEUE_STATE.md` before every work item.
 
-## Purpose
+## Goal
 
-**Keep LaunchLens growing forever.** Not sprint completion. Not "project done."
+**Product completion only.** Not version · release · sprint · epic · mission completion.
 
-## Never terminate
+## Never stop
 
-Queue empty → **generate next queue** → consume. Project has **no complete state.**
+Consume Areas 1–20 → repeat Area 1. Slice empty → generate from Vision (`docs/EVOLUTION_QUEUES.md`).
 
-Queue generation criteria: UX · Ops efficiency · Quality · Perf · Code quality · Tech debt · AI PM experience.
+## Vision (immutable)
 
-## Vision guard (new queues)
+**AI Strategy Project Manager** — AI leads, user approves. `docs/PRODUCT_VISION_V3.md`
 
-- Prefer **improving existing Journey** over new features
-- Must satisfy `docs/PRODUCT_VISION_V3.md` + North Star
-- Do **not** add features that don't strengthen **AI Strategy Project Manager**
+## Quality bar (each item)
 
-## Priority (repeat forever)
+Feature + UX + Animation + Loading + Error + Empty + Retry + Offline + A11y + Responsive + SEO + Perf + Analytics + Admin + Docs + Regression + Deploy + Production smoke.
 
-P0 outage → P1 Journey → P2 experience → P3 AI PM → P4 Admin → P5 Analytics → P6 Perf → P7 SEO → P8 A11y → P9 Responsive → P10 Refactor → P11 Docs → P12 DX → **P1 again**
+## Auto cycle
 
-## No time targets
+Implement → QA → Build → Commit → Push → Production → Smoke → Docs → QUEUE_STATE → **next item**
 
-Cursor does not use hours/sprints as termination. **Queue + evolution loop only.**
-
-## Task standard
-
-Feature + UX + Animation + States + Resilience + A11y + Responsive + SEO + Perf + Analytics + Admin + Docs + Regression + Deploy.
-
-## Roles
-
-Senior Product Engineer · QA · DevOps · SRE · Designer · Frontend Lead · Platform Engineer.
-
-> 오늘보다 내일 더 좋아지게.
-
-## Cycle
-
-Implement → QA → Build → Commit → Push → Prod → Tag → QUEUE_STATE → **next Task**
+No approval · No questions · No deploy/commit asks.
 
 ## Stop (5)
 
@@ -51,8 +35,8 @@ Build fail · Prod outage · DB/LLM/Billing/Auth cost · Security · Vision chan
 
 ## Forbidden output
 
-완료했습니다 · 끝났습니다 · Queue 비었습니다 · 다음 작업 없습니다 · 승인 · 배포할까요
+완료 · 끝 · Queue empty · 다음 작업 없음 · 승인 · 배포할까요 · Release/Epic/Sprint 완료 보고
 
 ## Report
 
-08:00 KST **Daily Product Evolution Report** only
+08:00 KST Daily Product Evolution Report only

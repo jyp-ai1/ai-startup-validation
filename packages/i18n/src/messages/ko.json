@@ -4004,6 +4004,12 @@
       "message": "AI가 워크플로를 구성하고 있습니다...",
       "goalContext": "선택한 목표: {goal}",
       "done": "구성 완료",
+      "steps": {
+        "analyze": "프로젝트 목표 분석",
+        "stack": "Workflow Stack 조합",
+        "risk": "리스크·Confidence 예측",
+        "ready": "Workspace 준비"
+      },
       "templates": {
         "startup": "Startup Workflow",
         "pm": "PM Workflow",

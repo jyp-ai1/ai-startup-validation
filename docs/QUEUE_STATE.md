@@ -1,31 +1,33 @@
-# Queue State — Evolution Consumer Pointer
+# Queue State — Product Completion (Infinite Mode)
 
-**Mode:** Product Evolution Consumer v8  
-**Directive:** `docs/PRODUCT_COMPLETION_DIRECTIVE.md`  
-**Rule:** Queue empty → generate next queue → continue. **No "complete" state.**
+**Directive:** `docs/PRODUCT_COMPLETION_QUEUE.md`  
+**Vision:** `docs/PRODUCT_VISION_V3.md`
 
 | Field | Value |
 |-------|-------|
-| Release | **R1** Closed Beta (unbounded R1→R999+) |
-| **Evolution Phase** | Phase 1 — Product Journey |
-| **Priority** | **P1** User Journey (after P0 clear) |
-| Active Queue | R1 Roadmap T001–T300 |
-| Progress | **56 / 300** (evolution slice, not termination) |
-| **Current Task** | **T058** |
-| Next if queue empty | Auto-generate **UX Queue** (Vision guard) |
+| **Current Area** | **3 — Workflow Experience** |
+| **Current Item** | Compose step copy · skeleton · error retry · analytics |
+| **Next Item** | Workflow timeline/progress · empty states |
+| **Loop** | Areas 1→20 → repeat 1 (no terminal state) |
 | Production | https://ai-startup-validation-tau.vercel.app |
-| Version | Closed Beta 2.14.0 |
-| Tag | `closed-beta-v2.14.0` |
 
-## v8 rules
+## Area progress (quality slices, not "done")
 
-- **Never** report "완료" / "Queue 비음" / "다음 작업 없음"
-- **Never** use hour budgets as stop condition
-- New work must strengthen **AI Strategy PM** (`docs/PRODUCT_VISION_V3.md`)
-- Prefer Journey polish over new unrelated features
+| Area | Surface | Status |
+|------|---------|--------|
+| 1 | Landing | in progress — perf · responsive |
+| 2 | Goal | intake interactive ✅ · thinking a11y ✅ |
+| **3** | **Workflow** | **recommendation ✅ · compose UX 🔄** |
+| 4 | Workspace | Today · coach · decision ✅ partial |
+| 5 | Decision | undo · evidence ✅ partial |
+| 6 | Execution | board toggle ✅ partial |
+| 7–20 | See completion queue | queued |
 
-## AI Product Loop status
+## Rules
 
-`Analyze → Queue → Implement → Deploy → Analytics` — **continuous**
+- Do **not** wait for next assignment
+- Do **not** use version/release/sprint as completion metrics
+- Auto commit · push · deploy · smoke after each item passes QA
+- Queue slice empty → Vision-based regeneration (`docs/EVOLUTION_QUEUES.md`)
 
-Full queue: `docs/ROADMAP_QUEUE.md`
+Full queue: `docs/PRODUCT_COMPLETION_QUEUE.md`

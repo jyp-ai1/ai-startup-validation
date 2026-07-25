@@ -4022,6 +4022,12 @@
       "message": "AI is building your workflow...",
       "goalContext": "Selected goal: {goal}",
       "done": "Ready",
+      "steps": {
+        "analyze": "Analyzing project goal",
+        "stack": "Composing Workflow Stack",
+        "risk": "Predicting risk & Confidence",
+        "ready": "Preparing Workspace"
+      },
       "templates": {
         "startup": "Startup Workflow",
         "pm": "PM Workflow",
