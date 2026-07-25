@@ -25,7 +25,7 @@ const LOCALE_COOKIE = 'NEXT_LOCALE';
 const LOCALE_MAX_AGE = 60 * 60 * 24 * 365;
 
 const LOCALE_MENU_CLASS =
-  'z-[200] border border-border bg-white text-foreground shadow-xl dark:border-gray-800 dark:bg-gray-950 dark:text-gray-50';
+  'z-[300] border border-border bg-popover text-popover-foreground shadow-xl';
 
 export function LocaleSwitcher() {
   const locale = useLocale() as AppLocale;
@@ -61,7 +61,14 @@ export function LocaleSwitcher() {
           {localeToShortCode(activeLocale)}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent position="popper" className={LOCALE_MENU_CLASS}>
+      <SelectContent
+        position="popper"
+        side="bottom"
+        align="end"
+        sideOffset={6}
+        collisionPadding={12}
+        className={LOCALE_MENU_CLASS}
+      >
         {LAUNCH_LOCALES.map((code) => (
           <SelectItem key={code} value={code} className="cursor-pointer py-2">
             {LOCALE_DROPDOWN_LABELS[code]}

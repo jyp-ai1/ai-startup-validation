@@ -1374,12 +1374,12 @@
       "badge4": "Explainable AI"
     },
     "howItWorks": {
-      "title": "이렇게 진행됩니다",
-      "desc": "Goal → Workflow → Decision. 5분 안에 시작할 수 있습니다.",
-      "step1": { "title": "① 목표 선택", "desc": "오늘 무엇을 할지 Goal만 선택합니다." },
-      "step2": { "title": "② AI Workflow 생성", "desc": "AI가 맞춤 Workflow를 자동 구성합니다." },
-      "step3": { "title": "③ AI Strategy Coach", "desc": "Coach가 다음 행동과 Evidence를 안내합니다." },
-      "step4": { "title": "④ GO / HOLD / Next Action", "desc": "Decision과 실행 계획까지 한 Workspace에서." }
+      "title": "3분 안에 전략 프로젝트 시작",
+      "desc": "프로젝트 시작 → AI 전략 수립 → GO/HOLD → 실행",
+      "step1": { "title": "프로젝트 시작", "desc": "Goal을 선택하면 AI가 Workflow를 자동 구성합니다." },
+      "step2": { "title": "AI가 전략 수립", "desc": "시장·경쟁·고객 분석으로 전략 프로젝트를 진행합니다." },
+      "step3": { "title": "GO / HOLD", "desc": "근거 기반으로 첫 Decision을 제시합니다." },
+      "step4": { "title": "실행", "desc": "Next Action부터 Workspace에서 함께 진행합니다." }
     },
     "features": {
       "title": "의사결정에 필요한 모든 것",
@@ -1728,7 +1728,17 @@
     "recentErrors": "최근 오류",
     "noErrors": "기록된 오류 없음",
     "webVitals": "Core Web Vitals",
-    "futureGaNote": "GA API 연동 전까지 Mock 지표가 표시됩니다. 이벤트 저장 구조는 GA 연동 준비 완료."
+    "futureGaNote": "GA API 연동 전까지 Mock 지표가 표시됩니다. 이벤트 저장 구조는 GA 연동 준비 완료.",
+    "productJourneyFunnel": "Product Journey Funnel",
+    "funnelSteps": {
+      "landing": "Landing",
+      "goal": "Goal",
+      "workflow": "Workflow",
+      "workspace": "Workspace",
+      "project": "Project",
+      "analysis": "AI 분석",
+      "decision": "Decision"
+    }
   },
   "decision": {
     "centerTitle": "의사결정 센터",
@@ -3573,6 +3583,53 @@
         "workspace": "워크스페이스"
       }
     },
+    "confirmation": {
+      "eyebrow": "Step 2 · AI 워크플로",
+      "title": "AI가 프로젝트를 분석했습니다",
+      "goalContext": "선택한 목표: {goal}",
+      "subtitle": "당신에게 추천하는 Workflow",
+      "steps": {
+        "market": "시장 조사",
+        "competition": "경쟁사",
+        "customer": "고객",
+        "strategy": "전략"
+      },
+      "eta": "예상 {minutes}분",
+      "cta": "프로젝트 시작",
+      "ctaHint": "다음 단계에서 프로젝트 정보를 입력합니다"
+    },
+    "registration": {
+      "eyebrow": "Step 3 · 프로젝트 등록",
+      "title": "이제 실제 전략 프로젝트를 시작합니다",
+      "desc": "프로젝트 정보를 입력하면 AI가 첫 분석을 시작합니다.",
+      "fields": {
+        "projectName": "프로젝트 이름",
+        "ideaOneLiner": "아이디어 한 줄",
+        "websiteUrl": "홈페이지 (URL)",
+        "targetMarket": "목표 시장",
+        "optionalNote": "추가 메모 (선택)"
+      },
+      "placeholders": {
+        "projectName": "예: LaunchLens Beta",
+        "ideaOneLiner": "예: AI가 스타트업 전략 프로젝트를 이끄는 플랫폼",
+        "websiteUrl": "https://",
+        "targetMarket": "예: B2B SaaS, 한국",
+        "optionalNote": "팀 규모, 예산 등"
+      },
+      "cta": "AI 전략 프로젝트 시작"
+    },
+    "journeyGuide": {
+      "label": "프로젝트 진행 가이드",
+      "title": "Workflow",
+      "steps": {
+        "goal": "목표",
+        "workflow": "Workflow",
+        "project": "프로젝트 등록",
+        "research": "AI 분석",
+        "decision": "Decision",
+        "report": "Report"
+      }
+    },
     "goal": {
       "eyebrow": "Step 1 · 목표 선택",
       "title": "오늘 무엇을 하시겠습니까?",
@@ -3712,6 +3769,7 @@
     "toast": {
       "workflowReady": "워크플로 생성이 완료되었습니다",
       "workspaceReady": "AI 전략 워크스페이스가 준비되었습니다",
+      "analysisReady": "첫 AI 분석이 완료되었습니다",
       "retrying": "다시 시도하는 중..."
     },
     "feedback": {

@@ -15,7 +15,7 @@ export async function LandingHeader() {
   const t = await getTranslations('landing');
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-[100] border-b border-border/60 bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-3 px-4 sm:gap-4 sm:px-6 lg:h-[72px] lg:px-10">
         <Link href="/" className="flex min-w-0 shrink items-center gap-2.5 transition-opacity hover:opacity-80">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">

@@ -6,6 +6,51 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### Epic 4.5 Sprint 2 — Journey polish (planned)
+
+---
+
+## [2.0.8-alpha] — 2026-07-25 — Product Journey Completion (Sprint 1)
+
+**Tag:** `alpha-v2.0.8-journey`  
+**Stage:** LaunchLens Alpha — Epic 4.5  
+**Prod:** https://ai-startup-validation-tau.vercel.app
+
+> **이번 Release에서 사용자가 새롭게 얻게 되는 경험:** Workflow는 선택이 아니라 AI 추천 확인. Workspace는 분석 결과 전에 프로젝트 등록 → AI Thinking → 첫 GO/HOLD.
+
+### Epic 4.5 — Product Journey
+
+- Workflow confirmation (checklist + single CTA)
+- Project Registration panel + session persistence
+- Workspace 3-phase: registration → thinking → active
+- Left Journey Guide sidebar
+- Landing journey-first (features/pricing removed from page)
+- Product Journey Funnel on Operations dashboard
+- Select/Theme z-index hotfix (P0)
+
+### Docs
+
+- [EPIC4_5_PRODUCT_JOURNEY_REPORT.md](./sprints/EPIC4_5_PRODUCT_JOURNEY_REPORT.md)
+- [AUTONOMOUS_REPORT_v2.0.8.md](./sprints/AUTONOMOUS_REPORT_v2.0.8.md)
+
+---
+
+## [2.0.7-alpha] — 2026-07-25 — P0 Hotfix
+
+**Tag:** `alpha-v2.0.7-hotfix`  
+**Fix:** Goal → Workflow infinite loading (analytics ref loop)
+
+---
+
+## [2.0.6-alpha] — 2026-07-25 — Epic 4 Phase 1
+
+**Tag:** `alpha-v2.0.6`  
+**Delivered:** Landing polish, workspace UX, analytics interface, Closed Beta feedback
+
+---
+
+## [Unreleased — legacy note]
+
 ### Epic 2 — Intelligence Engine (in progress)
 
 See [sprints/EPIC2_SPRINT1_KICKOFF.md](./sprints/EPIC2_SPRINT1_KICKOFF.md)

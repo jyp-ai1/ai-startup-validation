@@ -8,14 +8,23 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Epic 4 Product Readiness Phase 1
+## 🟢 CURRENT — Epic 4.5 Product Journey Completion
 
-**Status:** 🟢 In Progress — `alpha-v2.0.6`  
+**Status:** 🟢 Sprint 1 Complete — `alpha-v2.0.8-journey`  
+**Report:** [sprints/EPIC4_5_PRODUCT_JOURNEY_REPORT.md](./sprints/EPIC4_5_PRODUCT_JOURNEY_REPORT.md) · [sprints/AUTONOMOUS_REPORT_v2.0.8.md](./sprints/AUTONOMOUS_REPORT_v2.0.8.md)  
+**Epic 5 design:** [sprints/EPIC5_REAL_INTELLIGENCE_DESIGN.md](./sprints/EPIC5_REAL_INTELLIGENCE_DESIGN.md) *(deferred)*
+
+**Delivered (Sprint 1):** Workflow confirmation UI, Project Registration, AI Thinking → Workspace, Journey Guide, Landing journey-first, Select UI hotfix, Product Journey Funnel analytics
+
+**Next:** Sprint 2 — Journey polish, funnel validation, performance trim
+
+---
+
+## Epic 4 Product Readiness Phase 1 ✅
+
+**Status:** Complete — `alpha-v2.0.6` · P0 hotfix `alpha-v2.0.7-hotfix`  
 **Kickoff:** [sprints/EPIC4_KICKOFF.md](./sprints/EPIC4_KICKOFF.md)  
-**Report:** [sprints/PRODUCT_READINESS_REPORT.md](./sprints/PRODUCT_READINESS_REPORT.md)  
-**Epic 5 design:** [sprints/EPIC5_REAL_INTELLIGENCE_DESIGN.md](./sprints/EPIC5_REAL_INTELLIGENCE_DESIGN.md)
-
-**Delivered:** Landing polish, onboarding copy, workspace UX, project mock save, analytics interface, Closed Beta feedback modal
+**Report:** [sprints/PRODUCT_READINESS_REPORT.md](./sprints/PRODUCT_READINESS_REPORT.md)
 
 ---
 

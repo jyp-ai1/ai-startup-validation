@@ -42,7 +42,7 @@ export function LandingHeaderControls({ navLinks, labels }: LandingHeaderControl
 
   return (
     <>
-      <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
+      <div className="relative isolate flex shrink-0 items-center gap-2 sm:gap-2.5">
         <Button
           variant="ghost"
           size="icon-sm"

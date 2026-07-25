@@ -60,7 +60,9 @@ export function ThemeToggle({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="z-[200] min-w-[9rem] border border-border bg-white shadow-xl dark:border-gray-800 dark:bg-gray-950"
+        sideOffset={6}
+        collisionPadding={12}
+        className="z-[300] min-w-[9rem] border border-border bg-popover shadow-xl"
       >
         {themes.map(({ value, icon: Icon }) => (
           <DropdownMenuItem

@@ -7,7 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.8-alpha] — 2026-07-25
+
 ### Added
+
+- Epic 4.5 Product Journey: Workflow confirmation, Project Registration, AI Thinking overlay, Workspace Journey Guide
+- Product Journey Funnel analytics + Operations dashboard funnel UI
+- Landing journey-first layout (feature sections removed from main page)
+
+### Fixed
+
+- Select/Theme/Locale dropdown z-index and portal collision (P0)
+- Label import in project registration (native label element)
+
+### Changed
+
+- Beta version label: Alpha 2.0.8-journey
+- Landing how-it-works copy: Start → AI strategy → GO/HOLD → Execute
+
+---
 
 - Sprint 9: Naver Commerce MVP — first production feature
 - `apps/web/modules/naver-commerce` — product import pipeline

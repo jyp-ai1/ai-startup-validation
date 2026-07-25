@@ -1374,12 +1374,12 @@
       "badge4": "Explainable AI"
     },
     "howItWorks": {
-      "title": "How it works",
-      "desc": "Goal → Workflow → Decision. Start in under 5 minutes.",
-      "step1": { "title": "① Pick a Goal", "desc": "Choose what you want to accomplish today." },
-      "step2": { "title": "② AI builds Workflow", "desc": "AI composes a tailored workflow automatically." },
-      "step3": { "title": "③ AI Strategy Coach", "desc": "Coach guides next actions and evidence." },
-      "step4": { "title": "④ GO / HOLD / Next Action", "desc": "Decision and execution in one workspace." }
+      "title": "Start your strategy project in 3 minutes",
+      "desc": "Start → AI strategy → GO/HOLD → Execute",
+      "step1": { "title": "Start project", "desc": "Pick a Goal — AI builds your Workflow automatically." },
+      "step2": { "title": "AI builds strategy", "desc": "Market, competition, and customer analysis in one flow." },
+      "step3": { "title": "GO / HOLD", "desc": "Evidence-based first decision in minutes." },
+      "step4": { "title": "Execute", "desc": "Next Actions and coaching in your Workspace." }
     },
     "features": {
       "title": "Everything you need to decide",
@@ -1728,7 +1728,17 @@
     "recentErrors": "Recent errors",
     "noErrors": "No errors recorded",
     "webVitals": "Core Web Vitals",
-    "futureGaNote": "Mock metrics shown until GA API integration. Event store is GA-ready."
+    "futureGaNote": "Mock metrics shown until GA API integration. Event store is GA-ready.",
+    "productJourneyFunnel": "Product Journey Funnel",
+    "funnelSteps": {
+      "landing": "Landing",
+      "goal": "Goal",
+      "workflow": "Workflow",
+      "workspace": "Workspace",
+      "project": "Project",
+      "analysis": "AI analysis",
+      "decision": "Decision"
+    }
   },
   "decision": {
     "centerTitle": "Decision Center",
@@ -3591,6 +3601,53 @@
         "workspace": "Workspace"
       }
     },
+    "confirmation": {
+      "eyebrow": "Step 2 · AI Workflow",
+      "title": "AI analyzed your project",
+      "goalContext": "Selected goal: {goal}",
+      "subtitle": "Recommended workflow for you",
+      "steps": {
+        "market": "Market research",
+        "competition": "Competition",
+        "customer": "Customer",
+        "strategy": "Strategy"
+      },
+      "eta": "About {minutes} min",
+      "cta": "Start project",
+      "ctaHint": "You'll enter project details on the next step"
+    },
+    "registration": {
+      "eyebrow": "Step 3 · Project registration",
+      "title": "Start your real strategy project",
+      "desc": "Enter project details and AI will run the first analysis.",
+      "fields": {
+        "projectName": "Project name",
+        "ideaOneLiner": "One-line idea",
+        "websiteUrl": "Website (URL)",
+        "targetMarket": "Target market",
+        "optionalNote": "Notes (optional)"
+      },
+      "placeholders": {
+        "projectName": "e.g. LaunchLens Beta",
+        "ideaOneLiner": "e.g. AI-led strategy workspace for startups",
+        "websiteUrl": "https://",
+        "targetMarket": "e.g. B2B SaaS, Korea",
+        "optionalNote": "Team size, budget, etc."
+      },
+      "cta": "Start AI strategy project"
+    },
+    "journeyGuide": {
+      "label": "Project progress guide",
+      "title": "Workflow",
+      "steps": {
+        "goal": "Goal",
+        "workflow": "Workflow",
+        "project": "Project",
+        "research": "AI analysis",
+        "decision": "Decision",
+        "report": "Report"
+      }
+    },
     "goal": {
       "eyebrow": "Step 1 · Choose goal",
       "title": "What would you like to do today?",
@@ -3730,6 +3787,7 @@
     "toast": {
       "workflowReady": "Workflow is ready",
       "workspaceReady": "Strategy Workspace is ready",
+      "analysisReady": "First AI analysis is ready",
       "retrying": "Retrying..."
     },
     "feedback": {

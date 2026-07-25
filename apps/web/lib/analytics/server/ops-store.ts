@@ -1,5 +1,6 @@
 import { env } from '@repo/core/env';
 
+import { PRODUCT_ANALYTICS_EVENTS } from '../product-analytics';
 import type { AnalyticsEventPayload, OpsDashboardStats } from '../types';
 import { ANALYTICS_EVENTS } from '../types';
 
@@ -118,6 +119,15 @@ const MOCK_STATS: OpsDashboardStats = {
     decisionGenerate: 0,
     reportGenerate: 0,
   },
+  productJourneyFunnel: {
+    landing: 100,
+    goal: 72,
+    workflow: 58,
+    workspace: 43,
+    project: 17,
+    analysis: 15,
+    decision: 9,
+  },
 };
 
 export function recordAnalyticsEvent(payload: AnalyticsEventPayload): void {
@@ -163,6 +173,15 @@ export function getOpsDashboardStats(): OpsDashboardStats {
       researchExecute: countEvents(ANALYTICS_EVENTS.researchExecute),
       decisionGenerate: countEvents(ANALYTICS_EVENTS.decisionGenerate),
       reportGenerate: countEvents(ANALYTICS_EVENTS.reportGenerate),
+    },
+    productJourneyFunnel: {
+      landing: countEvents(PRODUCT_ANALYTICS_EVENTS.landingViewed),
+      goal: countEvents(PRODUCT_ANALYTICS_EVENTS.goalSelected),
+      workflow: countEvents(PRODUCT_ANALYTICS_EVENTS.workflowStarted),
+      workspace: countEvents(PRODUCT_ANALYTICS_EVENTS.workspaceEntered),
+      project: countEvents(PRODUCT_ANALYTICS_EVENTS.projectCreated),
+      analysis: countEvents(PRODUCT_ANALYTICS_EVENTS.analysisStarted),
+      decision: countEvents(PRODUCT_ANALYTICS_EVENTS.decisionGenerated),
     },
   };
 }

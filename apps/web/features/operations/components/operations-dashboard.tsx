@@ -189,6 +189,49 @@ export function OperationsDashboard() {
             <StatCard title={t('totalEvents')} value={stats.totalEvents} icon={Activity} />
           </div>
 
+          {stats.productJourneyFunnel ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">{t('productJourneyFunnel')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm">
+                  {(
+                    [
+                      ['landing', stats.productJourneyFunnel.landing],
+                      ['goal', stats.productJourneyFunnel.goal],
+                      ['workflow', stats.productJourneyFunnel.workflow],
+                      ['workspace', stats.productJourneyFunnel.workspace],
+                      ['project', stats.productJourneyFunnel.project],
+                      ['analysis', stats.productJourneyFunnel.analysis],
+                      ['decision', stats.productJourneyFunnel.decision],
+                    ] as const
+                  ).map(([key, count], index, arr) => {
+                    const prev = index > 0 ? arr[index - 1][1] : null;
+                    const dropRate =
+                      prev && prev > 0 ? Math.round((1 - count / prev) * 100) : null;
+                    return (
+                      <li
+                        key={key}
+                        className="flex justify-between gap-4 border-b border-border/40 py-2 last:border-0"
+                      >
+                        <span className="capitalize">{t(`funnelSteps.${key}`)}</span>
+                        <span className="text-right">
+                          <span className="font-semibold tabular-nums">{count}</span>
+                          {dropRate != null && dropRate > 0 ? (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              −{dropRate}%
+                            </span>
+                          ) : null}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </CardContent>
+            </Card>
+          ) : null}
+
           {stats.activationFunnel ? (
             <Card>
               <CardHeader>

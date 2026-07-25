@@ -1,5 +1,5 @@
-/** LaunchLens Alpha — P0 hotfix v2.0.7 */
-export const BETA_VERSION = 'Alpha 2.0.7-hotfix';
+/** LaunchLens Alpha — Epic 4.5 Product Journey */
+export const BETA_VERSION = 'Alpha 2.0.8-journey';
 export const BETA_LABEL = 'CLOSED BETA PREVIEW';
 
 export const SITE_LINKS = {

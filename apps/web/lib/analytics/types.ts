@@ -179,6 +179,16 @@ export type OpsDashboardStats = {
     decisionGenerate: number;
     reportGenerate: number;
   };
+  /** Epic 4.5 product journey funnel — Goal → WOW */
+  productJourneyFunnel?: {
+    landing: number;
+    goal: number;
+    workflow: number;
+    workspace: number;
+    project: number;
+    analysis: number;
+    decision: number;
+  };
 };
 
 declare global {
