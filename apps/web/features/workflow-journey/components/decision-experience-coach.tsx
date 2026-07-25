@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronDown, ChevronUp, History, Sparkles } from 'lucide-react';
 
@@ -19,10 +19,12 @@ import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import type { WorkflowGoalId } from '../types';
 import { ConfidenceMeter } from './confidence-meter';
 import { EvidenceIntelligencePanel } from './evidence-intelligence-panel';
+import { GoCelebrationOverlay } from './go-celebration-overlay';
 
 type DecisionExperienceCoachProps = {
   goalId: WorkflowGoalId;
   className?: string;
+  id?: string;
 };
 
 const VERDICT_STYLES = {
@@ -37,7 +39,7 @@ function verdictEmoji(verdict: DecisionStage['verdict']) {
   return '🟡';
 }
 
-export function DecisionExperienceCoach({ goalId, className }: DecisionExperienceCoachProps) {
+export function DecisionExperienceCoach({ goalId, className, id }: DecisionExperienceCoachProps) {
   const t = useTranslations('workflow.coach');
   const td = useTranslations('workflow.decisionExperience');
   const tp = useTranslations('workflow.plan.steps');
@@ -47,17 +49,30 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
   const [stageIndex, setStageIndex] = useState(0);
   const [healthOpen, setHealthOpen] = useState(false);
   const [whyOpen, setWhyOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [verdictTransition, setVerdictTransition] = useState(false);
+  const celebratedRef = useRef(false);
 
   const stage = stages[stageIndex] ?? stages[0]!;
   const isFinal = stageIndex >= stages.length - 1;
   const completedTimelineCount = stageIndex;
 
+  useEffect(() => {
+    if (!isFinal || stage.verdict !== 'GO' || celebratedRef.current) return;
+    celebratedRef.current = true;
+    const timer = window.setTimeout(() => setShowCelebration(true), 400);
+    analytics.trackMockActionCompleted('go_reached', stage.confidence);
+    return () => clearTimeout(timer);
+  }, [analytics, isFinal, stage.confidence, stage.verdict]);
+
   const advanceStage = () => {
     if (!isFinal) {
       const next = Math.min(stageIndex + 1, stages.length - 1);
       const nextStage = stages[next]!;
+      setVerdictTransition(true);
       setStageIndex(next);
       analytics.trackMockActionCompleted(stage.mockActionKey, nextStage.confidence);
+      window.setTimeout(() => setVerdictTransition(false), 500);
     }
   };
 
@@ -78,14 +93,17 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
   };
 
   return (
-    <aside
-      className={cn(
-        'rounded-2xl border border-primary/25 bg-gradient-to-b from-primary/8 to-card p-5 shadow-sm',
-        'lg:sticky lg:top-6 lg:self-start',
-        className,
-      )}
-      aria-label={t('panelLabel')}
-    >
+    <>
+      <GoCelebrationOverlay open={showCelebration} onDismiss={() => setShowCelebration(false)} />
+      <aside
+        id={id}
+        className={cn(
+          'rounded-2xl border border-primary/25 bg-gradient-to-b from-primary/8 to-card p-5 shadow-sm',
+          'lg:sticky lg:top-6 lg:self-start',
+          className,
+        )}
+        aria-label={t('panelLabel')}
+      >
       <div className="flex items-center gap-2 border-b border-border/60 pb-4">
         <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
           <Sparkles className="size-4" aria-hidden />
@@ -110,6 +128,7 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
             className={cn(
               'mt-2 inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors',
               VERDICT_STYLES[stage.verdict],
+              verdictTransition && 'confidence-gain-pop',
             )}
           >
             <span aria-hidden>{verdictEmoji(stage.verdict)}</span>
@@ -273,8 +292,16 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
             </Button>
           </div>
         ) : (
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900 dark:bg-emerald-950/40">
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 dark:border-emerald-900 dark:bg-emerald-950/40">
             <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">{td('goReached')}</p>
+            <Button
+              type="button"
+              size="sm"
+              className="mt-3 w-full rounded-xl"
+              onClick={() => setShowCelebration(true)}
+            >
+              {td('viewCelebration')}
+            </Button>
           </div>
         )}
 
@@ -351,5 +378,6 @@ export function DecisionExperienceCoach({ goalId, className }: DecisionExperienc
         </div>
       </div>
     </aside>
+    </>
   );
 }

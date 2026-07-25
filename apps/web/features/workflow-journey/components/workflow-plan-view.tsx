@@ -68,6 +68,11 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t('rationale2')}</p>
             </div>
 
+            <div className="mt-4 rounded-xl border border-emerald-200/80 bg-emerald-50/80 px-4 py-3 dark:border-emerald-900/60 dark:bg-emerald-950/30">
+              <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">{t('expectedResult')}</p>
+              <p className="mt-1 text-sm text-emerald-800/90 dark:text-emerald-300/90">{t('expectedResultDetail')}</p>
+            </div>
+
             <ul className="mt-4 space-y-2" role="list">
               {RECOMMENDED_LABEL_KEYS.map((key, index) => (
                 <li

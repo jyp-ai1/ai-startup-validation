@@ -115,7 +115,13 @@ export function AiThinkingOverlay({
                 const done = index < activeStep;
                 const active = index === activeStep;
                 return (
-                  <li key={label} className="flex items-center gap-3 text-sm">
+                  <li
+                    key={label}
+                    className={cn(
+                      'flex items-center gap-3 text-sm motion-safe:transition-all motion-safe:duration-300',
+                      active && 'thinking-step-active rounded-lg bg-primary/5 px-2 py-1',
+                    )}
+                  >
                     {done ? (
                       <Check className="size-4 shrink-0 text-emerald-600" aria-hidden />
                     ) : active ? (
@@ -144,11 +150,14 @@ export function AiThinkingOverlay({
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full bg-primary transition-all duration-500"
+                  className="h-full rounded-full bg-primary transition-all duration-700 ease-out motion-safe:animate-pulse"
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <p className="mt-3 text-center text-xs text-muted-foreground">
+              <p
+                key={msgIndex}
+                className="mt-3 text-center text-xs text-muted-foreground motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300"
+              >
                 {loadingMessage ?? messages[msgIndex]}
               </p>
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@repo/ui/lib/utils';
 
@@ -12,6 +12,8 @@ type ConfidenceMeterProps = {
   animate?: boolean;
 };
 
+const DURATION_MS = 900;
+
 export function ConfidenceMeter({
   value,
   target,
@@ -20,22 +22,51 @@ export function ConfidenceMeter({
   animate = true,
 }: ConfidenceMeterProps) {
   const [display, setDisplay] = useState(animate ? 0 : value);
+  const [pulse, setPulse] = useState(false);
+  const prevValue = useRef(value);
 
   useEffect(() => {
     if (!animate) {
       setDisplay(value);
+      prevValue.current = value;
       return undefined;
     }
-    const id = window.requestAnimationFrame(() => setDisplay(value));
-    return () => cancelAnimationFrame(id);
+
+    const from = prevValue.current;
+    const to = value;
+    prevValue.current = value;
+
+    if (from !== to) {
+      setPulse(true);
+      const pulseTimer = window.setTimeout(() => setPulse(false), 600);
+      const start = performance.now();
+
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - start) / DURATION_MS);
+        const eased = 1 - (1 - progress) ** 3;
+        setDisplay(Math.round(from + (to - from) * eased));
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        }
+      };
+
+      const frame = requestAnimationFrame(tick);
+      return () => {
+        cancelAnimationFrame(frame);
+        clearTimeout(pulseTimer);
+      };
+    }
+
+    setDisplay(to);
+    return undefined;
   }, [animate, value]);
 
   return (
-    <div className={cn('space-y-1.5', className)}>
+    <div className={cn('space-y-1.5', pulse && 'confidence-gain-pop', className)}>
       {label ? (
         <div className="flex items-center justify-between gap-2">
           <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-          <p className="text-2xl font-bold tabular-nums text-foreground">{display}%</p>
+          <p className="text-2xl font-bold tabular-nums text-foreground transition-colors">{display}%</p>
         </div>
       ) : (
         <p className="text-2xl font-bold tabular-nums text-foreground">{display}%</p>

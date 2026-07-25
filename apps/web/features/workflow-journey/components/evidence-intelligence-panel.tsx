@@ -106,8 +106,8 @@ export function EvidenceIntelligencePanel({
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {t('evidence.section')}
             </p>
-            {MOCK_EVIDENCE.map((item) => (
-              <EvidenceCard key={item.id} item={item} />
+            {MOCK_EVIDENCE.map((item, index) => (
+              <EvidenceCard key={item.id} item={item} animationIndex={index} />
             ))}
           </div>
 

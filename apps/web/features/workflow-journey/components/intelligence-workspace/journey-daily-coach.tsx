@@ -4,18 +4,21 @@ import { Clock, Sparkles, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { DAILY_COACH } from '@/features/project-intelligence/constants/daily-coach';
+import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 type JourneyDailyCoachProps = {
   confidence: number;
   className?: string;
   variant?: 'default' | 'hero';
+  onStart?: () => void;
 };
 
 export function JourneyDailyCoach({
   confidence,
   className,
   variant = 'default',
+  onStart,
 }: JourneyDailyCoachProps) {
   const t = useTranslations('workflow.epic3.coach');
   const isHero = variant === 'hero';
@@ -81,6 +84,19 @@ export function JourneyDailyCoach({
           {t('gainHint', { gain: DAILY_COACH.todayGain })}
         </span>
       </div>
+      {onStart ? (
+        <Button
+          type="button"
+          size="lg"
+          className={cn(
+            'mt-8 h-14 rounded-xl px-10 text-base font-semibold shadow-lg shadow-primary/20',
+            isHero && 'mx-auto w-full max-w-xs sm:w-auto',
+          )}
+          onClick={onStart}
+        >
+          {t('startCta')}
+        </Button>
+      ) : null}
     </section>
   );
 }

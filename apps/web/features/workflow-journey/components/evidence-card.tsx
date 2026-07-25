@@ -11,6 +11,7 @@ import type { EvidenceItem } from '../constants/intelligence-mock';
 type EvidenceCardProps = {
   item: EvidenceItem;
   className?: string;
+  animationIndex?: number;
 };
 
 function StarRow({ count, label }: { count: number; label: string }) {
@@ -22,7 +23,7 @@ function StarRow({ count, label }: { count: number; label: string }) {
   );
 }
 
-export function EvidenceCard({ item, className }: EvidenceCardProps) {
+export function EvidenceCard({ item, className, animationIndex = 0 }: EvidenceCardProps) {
   const t = useTranslations('workflow.intelligence.evidence');
 
   const openSource = (name: string) => {
@@ -32,9 +33,10 @@ export function EvidenceCard({ item, className }: EvidenceCardProps) {
   return (
     <article
       className={cn(
-        'rounded-xl border border-border/70 bg-background/90 p-4 transition-colors hover:border-primary/30',
+        'evidence-card-enter rounded-xl border border-border/70 bg-background/90 p-4 transition-colors hover:border-primary/30',
         className,
       )}
+      style={{ animationDelay: `${animationIndex * 90}ms` }}
     >
       <div className="flex items-start justify-between gap-2">
         <div>

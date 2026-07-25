@@ -3628,7 +3628,9 @@
       "aiNote": "AI analyzed your goal and built this workflow — no selection needed.",
       "recommendationLabel": "AI Recommendation",
       "rationale1": "Market validation matters most for this project.",
-      "rationale2": "We recommend competitor analysis next."
+      "rationale2": "We recommend competitor analysis next.",
+      "expectedResult": "Complete this order and",
+      "expectedResultDetail": "Confidence is expected to rise by about 28%."
     },
     "registration": {
       "eyebrow": "Step 3 · Project registration",
@@ -3758,6 +3760,7 @@
       "timelineGoal": "Target confidence 81%",
       "gainLabel": "+{gain}%",
       "goReached": "Congratulations — first GO decision reached.",
+      "viewCelebration": "View next projects",
       "whyAllClear": "Major risks have been addressed.",
       "evidencePlaceholder": "Evidence details connect in Epic 2 Evidence Engine.",
       "historyTitle": "Decision history",
@@ -3783,6 +3786,18 @@
         "hold": "I recommend HOLD for now. Market validation is thin. Even 3 VOC interviews could raise GO likelihood.",
         "go": "Congratulations — enough evidence for GO. You're ready to move into execution."
       }
+    },
+    "goCelebration": {
+      "title": "Congratulations.",
+      "subtitle": "Your idea received a GO decision.",
+      "stackTitle": "Next project",
+      "stackDesc": "GO isn't the end. Choose your next Workflow Stack.",
+      "stack": {
+        "mvp": "Build MVP",
+        "investor": "Investor deck prep",
+        "grant": "Government grant program"
+      },
+      "continue": "Continue in workspace"
     },
     "thinking": {
       "title": "LaunchLens is preparing your strategy project",
@@ -3972,11 +3987,12 @@
       },
       "coach": {
         "eyebrow": "AI Project Manager",
-        "greeting": "Hello.",
-        "focusLine": "Add 2 VOC entries today and Confidence moves from {current}% to {after}%.",
-        "coachLine": "About 15 minutes. Shall we start together?",
+        "greeting": "Good morning.",
+        "focusLine": "Add 2 VOC entries today and GO likelihood rises to {after}%.",
+        "coachLine": "Shall we start?",
         "eta": "Estimated {minutes} min",
         "gainHint": "+{gain}% possible today",
+        "startCta": "Start",
         "exitSummary": "You improved {gain}% today.",
         "exitNext": "Tomorrow we recommend {topic}.",
         "exitTopics": {

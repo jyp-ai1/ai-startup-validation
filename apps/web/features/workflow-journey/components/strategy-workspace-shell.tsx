@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 
 import { BETA_VERSION } from '@/lib/site/beta-config';
+import { DAILY_COACH } from '@/features/project-intelligence/constants/daily-coach';
 import { Button, toast } from '@repo/ui';
 
 import { getStrategyCoachState } from '../constants/decision-mock';
@@ -25,7 +26,6 @@ import { WorkspaceSkeleton } from './workspace-skeleton';
 import { JourneyAchievementsPanel } from './intelligence-workspace/journey-achievements-panel';
 import { JourneyAiMemoryPanel } from './intelligence-workspace/journey-ai-memory-panel';
 import { JourneyDailyCoach } from './intelligence-workspace/journey-daily-coach';
-import { JourneyNextActionCta } from './intelligence-workspace/journey-next-action-cta';
 import { JourneyProjectPanel } from './intelligence-workspace/journey-project-panel';
 import { JourneyProgressRing } from './intelligence-workspace/journey-progress-ring';
 import { JourneyProjectSwitcher } from './intelligence-workspace/journey-project-switcher';
@@ -163,9 +163,22 @@ export function StrategyWorkspaceShell({
       case 'today':
         return (
           <div className="space-y-8">
-            <JourneyDailyCoach confidence={project.confidence} variant="hero" />
-            <JourneyNextActionCta confidence={project.confidence} />
-            <DecisionExperienceCoach goalId={goalId} className="w-full max-w-none" />
+            <JourneyDailyCoach
+              confidence={project.confidence}
+              variant="hero"
+              onStart={() => {
+                analytics.trackMockActionCompleted('today_start', DAILY_COACH.confidenceAfter);
+                document.getElementById('journey-decision-coach')?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start',
+                });
+              }}
+            />
+            <DecisionExperienceCoach
+              id="journey-decision-coach"
+              goalId={goalId}
+              className="w-full max-w-none scroll-mt-6"
+            />
           </div>
         );
       case 'project':

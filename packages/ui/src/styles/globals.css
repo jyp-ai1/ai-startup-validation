@@ -239,4 +239,49 @@
       transform: scale(1);
     }
   }
+
+  .evidence-card-enter {
+    animation: evidenceCardEnter 0.45s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes evidenceCardEnter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .go-celebration-panel {
+    animation: goCelebrationPanel 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes goCelebrationPanel {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .thinking-step-active {
+    animation: thinkingStepPulse 1.2s ease-in-out infinite;
+  }
+
+  @keyframes thinkingStepPulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.65;
+    }
+  }
 }
