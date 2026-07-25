@@ -5,7 +5,9 @@ import { LandingHero } from './landing-hero';
 import { LandingLazySection } from './landing-lazy-section';
 import { LandingAiPmSection } from './landing-ai-pm-section';
 import { LandingBeforeAfter } from './landing-before-after';
+import { LandingJourneySection } from './landing-journey-section';
 import { LandingStorySection } from './landing-story-section';
+import { LandingWhySection } from './landing-why-section';
 
 const LandingTracker = dynamic(() => import('./landing-tracker').then((m) => m.LandingTracker));
 
@@ -41,6 +43,8 @@ export async function LandingPage() {
         </LandingLazySection>
         <LandingStorySection />
         <LandingBeforeAfter />
+        <LandingJourneySection />
+        <LandingWhySection />
         <LandingAiPmSection />
         <LandingLazySection minHeight={240}>
           <LandingHowItWorks />

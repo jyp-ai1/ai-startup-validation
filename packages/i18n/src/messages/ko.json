@@ -1437,6 +1437,26 @@
         "Evidence 기반 GO/HOLD 판단"
       ]
     },
+    "journeySection": {
+      "title": "Goal → GO 여정",
+      "desc": "4단계로 자연스럽게 이어지는 Closed Beta Journey입니다."
+    },
+    "why": {
+      "title": "왜 LaunchLens인가",
+      "subtitle": "분석 도구가 아니라, AI PM과 함께 실행하는 이유",
+      "marketFirst": {
+        "title": "시장 검증이 먼저",
+        "desc": "아이디어가 통하는지 확인하지 않으면 이후 전략이 모두 흔들립니다."
+      },
+      "competitionSecond": {
+        "title": "Evidence가 쌓이면 Decision",
+        "desc": "Confidence · Risk · Tradeoff가 연결되어 GO/HOLD가 명확해집니다."
+      },
+      "decisionLast": {
+        "title": "Workspace에서 실행",
+        "desc": "Decision 이후 MVP·투자·정부지원 Workflow까지 한 흐름으로 이어집니다."
+      }
+    },
     "aiPm": {
       "eyebrow": "AI Project Manager",
       "title": "분석 도구가 아닙니다. 함께 일하는 AI PM입니다.",
@@ -3337,6 +3357,25 @@
     "startJourney": "전략 프로젝트 시작하기",
     "offline": {
       "banner": "오프라인 상태입니다. 연결되면 자동으로 동기화됩니다."
+    },
+    "async": {
+      "retry": "다시 시도",
+      "loading": {
+        "title": "불러오는 중",
+        "description": "잠시만 기다려 주세요."
+      },
+      "timeout": {
+        "title": "요청 시간 초과",
+        "description": "응답이 지연되고 있습니다. 다시 시도해 주세요."
+      },
+      "network": {
+        "title": "네트워크 오류",
+        "description": "연결을 확인한 뒤 다시 시도해 주세요."
+      },
+      "empty": {
+        "title": "표시할 항목 없음",
+        "description": "아직 데이터가 없습니다."
+      }
     }
   },
   "pages": {
@@ -4024,6 +4063,13 @@
         "speedValue": "VOC 우선 (20분)",
         "evidence": "Evidence",
         "evidenceValue": "품질 우선 (+28%)"
+      },
+      "changeLog": {
+        "eyebrow": "Change History",
+        "title": "Decision Log",
+        "undo": "Undo",
+        "redo": "Redo",
+        "empty": "되돌릴 변경 이력이 없습니다."
       }
     },
     "goCelebration": {

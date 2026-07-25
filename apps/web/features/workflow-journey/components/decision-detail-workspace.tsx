@@ -15,6 +15,7 @@ import {
 import { cn } from '@repo/ui/lib/utils';
 
 import { getDecisionStages } from '../constants/decision-experience';
+import { DecisionChangeLog } from './decision-change-log';
 import { CONFIDENCE_RULES, MISSING_DATA, MOCK_EVIDENCE } from '../constants/intelligence-mock';
 import type { WorkflowGoalId } from '../types';
 import { ConfidenceMeter } from './confidence-meter';
@@ -166,6 +167,8 @@ export function DecisionDetailWorkspace({ goalId, className }: DecisionDetailWor
           </dl>
         </DetailCard>
       </div>
+
+      <DecisionChangeLog />
     </section>
   );
 }

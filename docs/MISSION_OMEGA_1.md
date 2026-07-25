@@ -41,6 +41,7 @@
 
 | Tag | Notes |
 |-----|-------|
+| `closed-beta-v2.9.0` | Omega batch — Landing Journey/Why, Decision undo/redo log, Error UX polish |
 | `closed-beta-v2.8.0` | Omega batch — Coach Evening/Weekly, Evidence Drawer, Admin ops, History JSON export, Offline banner |
 | `closed-beta-v2.7.0` | A-3 Decision Detail Workspace |
 | `closed-beta-v2.6.0` | A-2 History |

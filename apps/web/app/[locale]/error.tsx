@@ -25,6 +25,7 @@ export default function LocaleError({ error, reset }: ErrorProps) {
   return (
     <ErrorPageView
       code="500"
+      variant="500"
       title={t('somethingWrong')}
       description={t('tryAgain')}
       actionLabel={t('retry')}

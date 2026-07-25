@@ -1,5 +1,5 @@
-/** LaunchLens Closed Beta — Mission Omega-1 Coach · Evidence · Admin · History export */
-export const BETA_VERSION = 'Closed Beta 2.8.0';
+/** LaunchLens Closed Beta — Mission Omega-1 Landing · Error UX · Decision Log */
+export const BETA_VERSION = 'Closed Beta 2.9.0';
 export const BETA_LABEL = 'CLOSED BETA';
 
 export const SITE_LINKS = {

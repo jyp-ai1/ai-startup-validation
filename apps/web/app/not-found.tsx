@@ -12,6 +12,7 @@ export default async function NotFound() {
   return (
     <ErrorPageView
       code="404"
+      variant="404"
       title={copy.title}
       description={copy.description}
       actionLabel={copy.action}

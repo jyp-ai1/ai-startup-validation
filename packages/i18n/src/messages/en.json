@@ -1437,6 +1437,26 @@
         "Evidence-based GO/HOLD"
       ]
     },
+    "journeySection": {
+      "title": "Goal → GO Journey",
+      "desc": "Four steps that flow naturally through Closed Beta."
+    },
+    "why": {
+      "title": "Why LaunchLens",
+      "subtitle": "Not an analysis tool — an AI PM you execute with",
+      "marketFirst": {
+        "title": "Market validation first",
+        "desc": "Without proof the idea works, every later strategy wobbles."
+      },
+      "competitionSecond": {
+        "title": "Evidence leads to Decision",
+        "desc": "Confidence, Risk, and Tradeoffs connect into a clear GO/HOLD."
+      },
+      "decisionLast": {
+        "title": "Execute in Workspace",
+        "desc": "After Decision, MVP, funding, and grant workflows stay in one flow."
+      }
+    },
     "aiPm": {
       "eyebrow": "AI Project Manager",
       "title": "Not an analysis tool. An AI PM who works with you.",
@@ -3355,6 +3375,25 @@
     "startJourney": "Start strategy project",
     "offline": {
       "banner": "You are offline. Changes sync automatically when reconnected."
+    },
+    "async": {
+      "retry": "Try again",
+      "loading": {
+        "title": "Loading",
+        "description": "Please wait a moment."
+      },
+      "timeout": {
+        "title": "Request timed out",
+        "description": "The response is taking too long. Please try again."
+      },
+      "network": {
+        "title": "Network error",
+        "description": "Check your connection and try again."
+      },
+      "empty": {
+        "title": "Nothing here yet",
+        "description": "No data to display."
+      }
     }
   },
   "pages": {
@@ -4042,6 +4081,13 @@
         "speedValue": "VOC first (~20 min)",
         "evidence": "Evidence",
         "evidenceValue": "Quality first (+28%)"
+      },
+      "changeLog": {
+        "eyebrow": "Change History",
+        "title": "Decision Log",
+        "undo": "Undo",
+        "redo": "Redo",
+        "empty": "No changes to revert."
       }
     },
     "goCelebration": {
