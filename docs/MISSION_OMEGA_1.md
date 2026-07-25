@@ -31,7 +31,7 @@
 | 13 | Responsive Complete | pending |
 | 14 | Performance Complete | pending |
 | 15 | SEO Complete | pending |
-| 16 | Error UX Complete | shipped `2.8.0` (offline banner) |
+| 16 | Error UX Complete | in_progress (`2.8.0` offline · `2.9.0` async/error polish) |
 | 17 | Animation Polish | in_progress |
 | 18 | Component Refactoring | pending |
 | 19 | Design System | pending |
