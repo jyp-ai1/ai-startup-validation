@@ -96,5 +96,7 @@ See [DEPLOY_QUICKSTART.md](./DEPLOY_QUICKSTART.md), [DEPLOY_SMOKE.md](./DEPLOY_S
 ## Current pointer
 
 **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)  
-**Stage:** LaunchLens 2.0 Alpha — Epic 1 ✅ [close report](./sprints/EPIC1_CLOSE_REPORT.md)  
-**Next:** [Epic 2 Sprint 1 kickoff](./sprints/EPIC2_SPRINT1_KICKOFF.md) — Intelligence Engine (Preview only)
+**PM Review:** [PM_REVIEW_POLICY.md](./PM_REVIEW_POLICY.md)  
+**Stage:** LaunchLens Closed Beta 2.1.0 — [Day 1 report](./sprints/AUTONOMOUS_REPORT_v2.1.0.md)  
+**Production:** https://ai-startup-validation-tau.vercel.app  
+**Next:** Day 2 — Analytics & Admin Operations

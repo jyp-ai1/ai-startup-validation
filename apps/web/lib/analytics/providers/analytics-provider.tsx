@@ -15,6 +15,8 @@ import {
   type ProductAnalyticsParams,
 } from '../product-analytics';
 import { Ga4Script } from './ga4-script';
+import { ClarityScript } from './clarity-script';
+import { PostHogScript } from './posthog-script';
 
 type AnalyticsProviderProps = {
   children: React.ReactNode;
@@ -70,6 +72,8 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
       {children}
       {showConsent && !decided ? <CookieConsentBanner /> : null}
       <Ga4Script enabled={consented} />
+      <PostHogScript enabled={consented} />
+      <ClarityScript enabled={consented} />
       {consented ? (
         <>
           <AnalyticsPageView />

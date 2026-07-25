@@ -195,11 +195,27 @@ export type OpsDashboardStats = {
     goDecisions: number;
     feedbackSubmitted: number;
   };
+  dropOffRates?: { step: string; from: number; to: number; dropPercent: number }[];
+  recentFeedback?: {
+    sentiment: 'up' | 'down';
+    message?: string;
+    screen?: string;
+    timestamp: string;
+  }[];
+  analyticsProviders?: {
+    ga: boolean;
+    posthog: boolean;
+    clarity: boolean;
+  };
 };
 
 declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
     dataLayer?: unknown[];
+    posthog?: {
+      capture: (event: string, properties?: Record<string, unknown>) => void;
+      identify?: (id: string, properties?: Record<string, unknown>) => void;
+    };
   }
 }

@@ -260,6 +260,85 @@ export function OperationsDashboard() {
             </Card>
           ) : null}
 
+          {stats.dropOffRates && stats.dropOffRates.length > 0 ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">{t('dropOffAnalysis')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3 text-sm">
+                  {stats.dropOffRates.map((row) => (
+                    <li key={row.step}>
+                      <div className="mb-1 flex justify-between gap-4">
+                        <span>{row.step}</span>
+                        <span className="font-semibold tabular-nums text-destructive">
+                          −{row.dropPercent}%
+                        </span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-destructive/70"
+                          style={{ width: `${row.dropPercent}%` }}
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {row.from} → {row.to}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {stats.recentFeedback && stats.recentFeedback.length > 0 ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">{t('recentFeedback')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3 text-sm">
+                  {stats.recentFeedback.map((item) => (
+                    <li key={`${item.timestamp}-${item.sentiment}`} className="rounded-lg border p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-medium">{item.sentiment === 'up' ? '👍' : '👎'}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(item.timestamp).toLocaleString()}
+                        </span>
+                      </div>
+                      {item.message ? (
+                        <p className="mt-2 text-muted-foreground">{item.message}</p>
+                      ) : null}
+                      {item.screen ? (
+                        <p className="mt-1 font-mono text-xs text-muted-foreground">{item.screen}</p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {stats.analyticsProviders ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">{t('analyticsProviders')}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-3 text-sm">
+                <Badge variant={stats.analyticsProviders.ga ? 'default' : 'secondary'}>
+                  GA4 {stats.analyticsProviders.ga ? '✓' : '—'}
+                </Badge>
+                <Badge variant={stats.analyticsProviders.posthog ? 'default' : 'secondary'}>
+                  PostHog {stats.analyticsProviders.posthog ? '✓' : '—'}
+                </Badge>
+                <Badge variant={stats.analyticsProviders.clarity ? 'default' : 'secondary'}>
+                  Clarity {stats.analyticsProviders.clarity ? '✓' : '—'}
+                </Badge>
+                <p className="w-full text-xs text-muted-foreground">{t('analyticsProvidersHint')}</p>
+              </CardContent>
+            </Card>
+          ) : null}
+
           {stats.activationFunnel ? (
             <Card>
               <CardHeader>

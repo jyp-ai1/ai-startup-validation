@@ -93,9 +93,9 @@ export function useJourneyAnalytics(demoMode = false) {
       track(JOURNEY_ANALYTICS_EVENTS.mockActionCompleted, { action_key: `missing_${itemKey}` });
       funnel(PRODUCT_ANALYTICS_EVENTS.missingDataClicked, { action_key: itemKey });
     },
-    trackFeedbackSent: (sentiment: 'up' | 'down') => {
-      track(JOURNEY_ANALYTICS_EVENTS.feedbackSent, { sentiment });
-      funnel(PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted, { sentiment });
+    trackFeedbackSent: (sentiment: 'up' | 'down', message?: string) => {
+      track(JOURNEY_ANALYTICS_EVENTS.feedbackSent, { sentiment, message });
+      funnel(PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted, { sentiment, message });
     },
     trackComposeFailed: (retryCount: number) =>
       track(JOURNEY_ANALYTICS_EVENTS.composeFailed, { retry_count: retryCount }),

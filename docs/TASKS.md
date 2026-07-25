@@ -8,12 +8,19 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Day 2 Analytics & Admin Operations
+## 🟢 CURRENT — Day 3 Intelligence (Mock 100%)
 
-**Status:** 📋 Next — after `closed-beta-v2.1.0`  
-**Report:** [sprints/AUTONOMOUS_REPORT_v2.1.0.md](./sprints/AUTONOMOUS_REPORT_v2.1.0.md)
+**Status:** 📋 Next — after `closed-beta-v2.1.1`  
+**Focus:** Living Evidence, Confidence animation, WOW moment (experience-visible only)
 
-**Scope:** Session replay, feedback export, feature flags, drop-off heatmap
+---
+
+## Day 2 — Analytics & Admin + CPO UX ✅
+
+**Status:** Complete — `closed-beta-v2.1.1`  
+**Report:** [sprints/AUTONOMOUS_REPORT_v2.1.1.md](./sprints/AUTONOMOUS_REPORT_v2.1.1.md)
+
+**Delivered:** PostHog/Clarity hooks, drop-off admin, feedback collection, CPO copy polish (Landing/Goal/Workflow/Coach)
 
 ---
 

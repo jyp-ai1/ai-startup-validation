@@ -29,7 +29,7 @@ export function BetaFeedbackModal({ className }: BetaFeedbackModalProps) {
 
   const submit = () => {
     if (!sentiment) return;
-    analytics.trackFeedbackSent(sentiment);
+    analytics.trackFeedbackSent(sentiment, message.trim() || undefined);
     trackProductEvent(PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted, {
       sentiment,
       message: message.trim() || undefined,

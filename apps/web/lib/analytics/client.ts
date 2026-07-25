@@ -18,6 +18,11 @@ function sendToGa4(name: string, params?: AnalyticsEventParams) {
   window.gtag('event', name, params);
 }
 
+function sendToPostHog(name: string, params?: AnalyticsEventParams) {
+  if (typeof window === 'undefined' || !window.posthog?.capture) return;
+  window.posthog.capture(name, params ?? {});
+}
+
 async function sendToOpsStore(name: string, params?: AnalyticsEventParams) {
   if (typeof window === 'undefined') return;
   try {
@@ -40,6 +45,7 @@ function dispatch(name: string, params?: AnalyticsEventParams) {
   if (!hasAnalyticsConsent()) return;
   logDevEvent(name, params);
   sendToGa4(name, params);
+  sendToPostHog(name, params);
   void sendToOpsStore(name, params);
 }
 

@@ -31,6 +31,7 @@ type GoalSelectionViewProps = {
 
 export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) {
   const t = useTranslations('workflow.goal');
+  const tg = useTranslations('workflow.goal.thinking');
   const tc = useTranslations('workflow.compose.goals');
   const router = useRouter();
   const { locked, lock, resetLock } = useSubmitLock(12_000);
@@ -108,6 +109,8 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
       {overlayGoal ? (
         <AiThinkingOverlay
           goalLabel={tc(overlayGoal)}
+          titleOverride={tg('title')}
+          stepLabels={[tg('steps.market'), tg('steps.coach'), tg('steps.build'), tg('steps.ready')]}
           activeStep={activeStep}
           stepCount={4}
           progressPercent={progressPercent}

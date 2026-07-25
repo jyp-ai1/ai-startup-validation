@@ -105,6 +105,51 @@ function latestWebVitals() {
   return vitals;
 }
 
+const FUNNEL_STEPS: { key: keyof NonNullable<OpsDashboardStats['productJourneyFunnel']>; label: string }[] = [
+  { key: 'landing', label: 'landing → goal' },
+  { key: 'goal', label: 'goal → workflow' },
+  { key: 'workflow', label: 'workflow → workspace' },
+  { key: 'workspace', label: 'workspace → project' },
+  { key: 'project', label: 'project → analysis' },
+  { key: 'analysis', label: 'analysis → decision' },
+];
+
+function computeDropOffRates(
+  funnel: NonNullable<OpsDashboardStats['productJourneyFunnel']>,
+): NonNullable<OpsDashboardStats['dropOffRates']> {
+  const values = FUNNEL_STEPS.map((s) => funnel[s.key]);
+  return FUNNEL_STEPS.slice(0, -1).map((step, index) => {
+    const from = values[index] ?? 0;
+    const to = values[index + 1] ?? 0;
+    const dropPercent = from > 0 ? Math.round((1 - to / from) * 100) : 0;
+    return { step: step.label, from, to, dropPercent };
+  });
+}
+
+function recentFeedback(limit = 20) {
+  return events
+    .filter((event) => event.name === PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted)
+    .slice(-limit)
+    .reverse()
+    .map((event) => ({
+      sentiment: (event.params?.sentiment === 'down' ? 'down' : 'up') as 'up' | 'down',
+      message:
+        typeof event.params?.message === 'string' && event.params.message.length > 0
+          ? event.params.message
+          : undefined,
+      screen: typeof event.params?.screen === 'string' ? event.params.screen : undefined,
+      timestamp: event.timestamp,
+    }));
+}
+
+function analyticsProviders() {
+  return {
+    ga: Boolean(env.NEXT_PUBLIC_GA_MEASUREMENT_ID),
+    posthog: Boolean(env.NEXT_PUBLIC_POSTHOG_KEY),
+    clarity: Boolean(env.NEXT_PUBLIC_CLARITY_PROJECT_ID),
+  };
+}
+
 const MOCK_STATS: OpsDashboardStats = {
   source: 'mock',
   todayVisitors: 24,
@@ -147,6 +192,18 @@ const MOCK_STATS: OpsDashboardStats = {
     goDecisions: 3,
     feedbackSubmitted: 5,
   },
+  dropOffRates: [
+    { step: 'landing → goal', from: 100, to: 72, dropPercent: 28 },
+    { step: 'goal → workflow', from: 72, to: 58, dropPercent: 19 },
+    { step: 'workflow → workspace', from: 58, to: 43, dropPercent: 26 },
+    { step: 'workspace → project', from: 43, to: 17, dropPercent: 60 },
+  ],
+  recentFeedback: [],
+  analyticsProviders: {
+    ga: Boolean(env.NEXT_PUBLIC_GA_MEASUREMENT_ID),
+    posthog: Boolean(env.NEXT_PUBLIC_POSTHOG_KEY),
+    clarity: Boolean(env.NEXT_PUBLIC_CLARITY_PROJECT_ID),
+  },
 };
 
 export function recordAnalyticsEvent(payload: AnalyticsEventPayload): void {
@@ -162,7 +219,11 @@ export function getOpsDashboardStats(): OpsDashboardStats {
   const weekStart = startOfWeek(now);
 
   if (events.length === 0) {
-    return { ...MOCK_STATS, gaConnected: Boolean(env.NEXT_PUBLIC_GA_MEASUREMENT_ID) };
+    return {
+      ...MOCK_STATS,
+      gaConnected: Boolean(env.NEXT_PUBLIC_GA_MEASUREMENT_ID),
+      analyticsProviders: analyticsProviders(),
+    };
   }
 
   const aiGenerations =
@@ -208,5 +269,16 @@ export function getOpsDashboardStats(): OpsDashboardStats {
       goDecisions: countGoDecisionsToday(todayStart),
       feedbackSubmitted: countEventsSince(PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted, todayStart),
     },
+    dropOffRates: computeDropOffRates({
+      landing: countEvents(PRODUCT_ANALYTICS_EVENTS.landingViewed),
+      goal: countEvents(PRODUCT_ANALYTICS_EVENTS.goalSelected),
+      workflow: countEvents(PRODUCT_ANALYTICS_EVENTS.workflowStarted),
+      workspace: countEvents(PRODUCT_ANALYTICS_EVENTS.workspaceEntered),
+      project: countEvents(PRODUCT_ANALYTICS_EVENTS.projectCreated),
+      analysis: countEvents(PRODUCT_ANALYTICS_EVENTS.analysisStarted),
+      decision: countEvents(PRODUCT_ANALYTICS_EVENTS.decisionGenerated),
+    }),
+    recentFeedback: recentFeedback(),
+    analyticsProviders: analyticsProviders(),
   };
 }

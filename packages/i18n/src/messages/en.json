@@ -1330,10 +1330,10 @@
       "closeMenu": "Close menu"
     },
     "hero": {
-      "eyebrow": "Closed Beta · AI Strategy Workspace",
-      "title": "Start your strategy project\nin 3 minutes.",
-      "subtitle": "Register your idea — AI guides market, competition, and your first Decision.",
-      "northStar": "Goal → Workflow → Workspace → GO/HOLD. A strategy project with AI, not another report.",
+      "eyebrow": "Closed Beta · AI Project Manager",
+      "title": "Turn your idea into\nan executable project\nwith AI.",
+      "subtitle": "Your AI project manager guides market, competition, and your first Decision.",
+      "northStar": "Not another report — a strategy project you execute together. Start in 3 minutes.",
       "journey": {
         "label": "How it works",
         "goal": "Goal",
@@ -1743,7 +1743,11 @@
       "project": "Project",
       "analysis": "AI analysis",
       "decision": "Decision"
-    }
+    },
+    "dropOffAnalysis": "Drop-off analysis",
+    "recentFeedback": "Recent feedback",
+    "analyticsProviders": "Analytics providers",
+    "analyticsProvidersHint": "Set NEXT_PUBLIC_POSTHOG_KEY and NEXT_PUBLIC_CLARITY_PROJECT_ID to enable"
   },
   "decision": {
     "centerTitle": "Decision Center",
@@ -3621,7 +3625,10 @@
       "eta": "About {minutes} min",
       "cta": "Start project",
       "ctaHint": "You'll enter project details on the next step",
-      "aiNote": "AI analyzed your goal and built this workflow — no selection needed."
+      "aiNote": "AI analyzed your goal and built this workflow — no selection needed.",
+      "recommendationLabel": "AI Recommendation",
+      "rationale1": "Market validation matters most for this project.",
+      "rationale2": "We recommend competitor analysis next."
     },
     "registration": {
       "eyebrow": "Step 3 · Project registration",
@@ -3661,6 +3668,15 @@
       "subtitle": "Don't pick features — pick a goal. AI will build your workflow.",
       "demoBanner": "Demo mode — select a goal to preview a sample workflow.",
       "hint": "AI will guide your next steps based on your goal.",
+      "thinking": {
+        "title": "AI is starting to understand your project",
+        "steps": {
+          "market": "Finding market and competitors...",
+          "coach": "Preparing your AI strategy coach...",
+          "build": "Building your project...",
+          "ready": "Preparing your workspace..."
+        }
+      },
       "options": {
         "business-viability": {
           "title": "Business viability review",
@@ -3955,10 +3971,10 @@
         "settings": "Settings"
       },
       "coach": {
-        "eyebrow": "AI Daily Coach",
-        "greeting": "Good morning.",
-        "focusLine": "Add 2 VOC entries today to move Confidence from {current}% to {after}%.",
-        "coachLine": "I'll guide your next step — about 15 minutes.",
+        "eyebrow": "AI Project Manager",
+        "greeting": "Hello.",
+        "focusLine": "Add 2 VOC entries today and Confidence moves from {current}% to {after}%.",
+        "coachLine": "About 15 minutes. Shall we start together?",
         "eta": "Estimated {minutes} min",
         "gainHint": "+{gain}% possible today",
         "exitSummary": "You improved {gain}% today.",
@@ -4014,8 +4030,8 @@
     },
     "epic4": {
       "nextAction": {
-        "eyebrow": "Next Action",
-        "title": "Add 2 VOC entries",
+        "eyebrow": "Today's pick",
+        "title": "How about adding 2 VOC interviews today?",
         "impact": "Confidence {current}% → {after}% · ~{minutes} min",
         "cta": "Start now"
       },

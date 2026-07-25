@@ -39,8 +39,13 @@ See [ALPHA_VALIDATION.md](./ALPHA_VALIDATION.md) for validation criteria.
 | Item | Status |
 |------|--------|
 | Event schema | [EVENT_SCHEMA.md](./EVENT_SCHEMA.md) |
-| Existing `AnalyticsProvider` | Legacy — extend for journey events in Epic 2+ |
-| Feedback widget | Mock UI on Workspace (Alpha v2.0.1) |
+| Ops store funnel | ✅ Live (Day 2) |
+| PostHog SDK | ✅ Script + capture (env key) |
+| Clarity replay | ✅ Script (env project id) |
+| Feedback widget | ✅ Auto-collect to ops store |
+| Drop-off dashboard | ✅ Admin `/admin/operations` |
+
+Set in Vercel: `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`, `NEXT_PUBLIC_CLARITY_PROJECT_ID`
 
 ---
 

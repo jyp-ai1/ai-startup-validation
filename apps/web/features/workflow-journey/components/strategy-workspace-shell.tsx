@@ -39,9 +39,7 @@ import {
   JourneyWorkspaceNav,
   type JourneyWorkspaceTab,
 } from './intelligence-workspace/journey-workspace-nav';
-import { WorkspaceIntelligenceSummary } from './workspace-intelligence-summary';
 import { WorkspaceJourneyGuide } from './workspace-journey-guide';
-import { WorkspaceWelcomeBanner } from './workspace-welcome-banner';
 
 const DecisionExperienceCoach = dynamic(
   () => import('./decision-experience-coach').then((m) => m.DecisionExperienceCoach),
@@ -89,7 +87,6 @@ export function StrategyWorkspaceShell({
   const [phase, setPhase] = useState<WorkspacePhase>('registration');
   const [thinkingStep, setThinkingStep] = useState(0);
   const [thinkingFailed, setThinkingFailed] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
   const { project, setProjectId, ready: projectReady } = useJourneyProject();
   const [tab, setTab] = useState<JourneyWorkspaceTab>('today');
   const [registration, setRegistration] = useState<ProjectRegistrationData | null>(null);
@@ -102,7 +99,6 @@ export function StrategyWorkspaceShell({
     if (saved) setRegistration(saved);
     if (sessionStorage.getItem('ll_project_started') === '1') {
       setPhase('active');
-      setShowWelcome(sessionStorage.getItem('ll_analysis_welcome') !== '1');
     }
     if (sessionStorage.getItem('workspace_toast') === '1') {
       sessionStorage.removeItem('workspace_toast');
@@ -133,8 +129,6 @@ export function StrategyWorkspaceShell({
         completed = true;
         clearTimeout(timeoutTimer);
         setPhase('active');
-        setShowWelcome(true);
-        sessionStorage.setItem('ll_analysis_welcome', '1');
         analytics.trackAnalysisStarted(goalId);
         analytics.trackDecisionGenerated(coachState.verdict, goalId);
         toast.success(tt('analysisReady'));
@@ -164,29 +158,12 @@ export function StrategyWorkspaceShell({
   const projectDisplayName =
     registration?.projectName ?? project.name ?? tg(`options.${goalId}.title`);
 
-  const dismissWelcome = () => setShowWelcome(false);
-
   const renderActiveTab = () => {
     switch (tab) {
       case 'today':
         return (
-          <div className="space-y-6">
-            {showWelcome ? (
-              <WorkspaceWelcomeBanner
-                projectName={projectDisplayName}
-                verdict={coachState.verdict}
-              />
-            ) : null}
-            <JourneyDailyCoach confidence={project.confidence} />
-            <WorkspaceIntelligenceSummary
-              confidence={project.confidence}
-              verdict={coachState.verdict}
-              onNavigate={(next) => {
-                if (showWelcome) dismissWelcome();
-                setTab(next);
-                analytics.trackMockActionCompleted(`summary_${next}`, project.confidence);
-              }}
-            />
+          <div className="space-y-8">
+            <JourneyDailyCoach confidence={project.confidence} variant="hero" />
             <JourneyNextActionCta confidence={project.confidence} />
             <DecisionExperienceCoach goalId={goalId} className="w-full max-w-none" />
           </div>
@@ -289,22 +266,24 @@ export function StrategyWorkspaceShell({
           <div className="grid gap-6 lg:grid-cols-[minmax(200px,260px)_1fr] lg:items-start lg:gap-8">
             <WorkspaceJourneyGuide activeStep={guideStep} className="hidden lg:block" />
             <div className="min-w-0 space-y-6">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="min-w-0 flex-1 space-y-2">
-                  <JourneyProjectSwitcher project={project} onSelect={setProjectId} />
-                  <div>
-                    <p className="text-sm text-muted-foreground">{projectDisplayName}</p>
-                    <h1 className="text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl">
-                      {t('title')}
-                    </h1>
+              {tab !== 'today' ? (
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <JourneyProjectSwitcher project={project} onSelect={setProjectId} />
+                    <div>
+                      <p className="text-sm text-muted-foreground">{projectDisplayName}</p>
+                      <h1 className="text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl">
+                        {t('title')}
+                      </h1>
+                    </div>
                   </div>
+                  <JourneyProgressRing
+                    value={project.confidence}
+                    label={t('progressLabel')}
+                    size={72}
+                  />
                 </div>
-                <JourneyProgressRing
-                  value={project.confidence}
-                  label={t('progressLabel')}
-                  size={72}
-                />
-              </div>
+              ) : null}
               {renderActiveTab()}
               {tab !== 'today' ? (
                 <div className="pt-2">

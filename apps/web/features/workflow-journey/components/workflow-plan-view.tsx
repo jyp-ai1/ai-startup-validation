@@ -60,6 +60,14 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
             <p className="mt-6 text-base font-medium text-foreground">{t('subtitle')}</p>
             <p className="mt-2 text-sm text-muted-foreground">{t('aiNote')}</p>
 
+            <div className="mt-5 rounded-xl border border-primary/20 bg-primary/[0.04] p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+                {t('recommendationLabel')}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-foreground">{t('rationale1')}</p>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t('rationale2')}</p>
+            </div>
+
             <ul className="mt-4 space-y-2" role="list">
               {RECOMMENDED_LABEL_KEYS.map((key, index) => (
                 <li
