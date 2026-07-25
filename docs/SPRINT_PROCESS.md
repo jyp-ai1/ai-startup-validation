@@ -50,43 +50,32 @@ Functional QA (login, API, build) is **necessary but not sufficient**.
 
 ---
 
-## Sprint completion checklist
+## Sprint completion checklist (Autonomous Mode — Closed Beta)
 
 ```text
-[ ] Sprint kickoff 4 questions answered (PM sign-off)
-[ ] Implementation complete (scope only — no drive-by features)
-[ ] Functional QA PASS (lint, build, smoke)
-[ ] Preview Deploy (never skip before Product QA)
-[ ] PM Product QA PASS (5 questions + UX Laws)
-[ ] Sprint close report (experience format — see below)
-[ ] Fixes merged (if PASS WITH REVISION)
-[ ] Production Deploy — only if PM approves (not automatic)
-[ ] Git Tag (e.g. epic1-sprint2)
-[ ] TASKS.md + ROADMAP updated
-[ ] User feedback captured → next sprint input
+[ ] Day Epic scope = user experience delta (1 Day = 1 Epic)
+[ ] Implementation complete (experience-first — no invisible features)
+[ ] Functional QA PASS (lint, build, smoke on Preview — internal)
+[ ] Production Deploy + Git Tag
+[ ] Morning Autonomous Report (Production URL — no Preview URL)
+[ ] TASKS.md + RELEASES updated
+[ ] PM reviews Production only (~5 min checklist — docs/PM_REVIEW_POLICY.md)
 ```
 
-### Sprint close report (mandatory — experience, not features)
+**PM Review Policy:** [PM_REVIEW_POLICY.md](./PM_REVIEW_POLICY.md)
 
-Template: [templates/SPRINT_CLOSE_TEMPLATE.md](./templates/SPRINT_CLOSE_TEMPLATE.md)
+- **Standard sprints:** Cursor → Preview (internal QA) → **Production** → Report. PM checks Production only.
+- **Pivot / Auth / Real AI / Billing / DB:** Preview → **PM approval** → Production blocked until approved.
+
+### Morning Autonomous Report (mandatory)
+
+Template: [sprints/AUTONOMOUS_REPORT_v2.1.0.md](./sprints/AUTONOMOUS_REPORT_v2.1.0.md)
 
 ```text
-Sprint 결과
-
-새 기능:
-❌ 작성하지 않음
-
-새로운 사용자 경험:
-✅ (what changed for the user)
-
-이번에 해결한 문제:
-"(quoted user problem)"
-
-다음 Sprint에서 해결할 문제:
-"(quoted user problem)"
+Version · Production · Commit · Tag · QA · 새로운 사용자 경험 · Known Issues · 다음 Epic · 진행률
 ```
 
-Sprints are defined by **new user experience**, not feature lists.
+No Preview URL unless PM approval category applies.
 
 **Deploy target:** repo root · `vercel --prod --yes` · prod `https://ai-startup-validation-tau.vercel.app`  
 See [DEPLOY_QUICKSTART.md](./DEPLOY_QUICKSTART.md), [DEPLOY_SMOKE.md](./DEPLOY_SMOKE.md)

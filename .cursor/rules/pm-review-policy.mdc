@@ -1,0 +1,38 @@
+---
+description: PM Review Policy — Production-only review for standard sprints; Preview only for pivots and high-risk changes
+alwaysApply: true
+---
+
+# PM Review Policy (Closed Beta)
+
+## Standard Sprint (Autonomous)
+
+Pipeline without PM gate:
+
+```
+Develop → QA → Build → Smoke → Production → Tag → Morning Report
+```
+
+- Preview deploy is **internal QA only** — do not wait for PM.
+- **Morning Report must NOT include Preview URL.**
+- Report **must include Production URL**: https://ai-startup-validation-tau.vercel.app
+
+## PM checks Production only (~5 min)
+
+Landing · Goal · Workflow · Workspace · Today · WOW (3-min journey)
+
+PM role: **CPO** (experience PASS/FAIL + next Day Epic), not QA PM.
+
+## Preview + PM approval required before Production
+
+Only for: Product Pivot, navigation/UX overhaul, Auth, Billing, Real AI, DB schema, cost-bearing APIs, full design change.
+
+Then: Preview URL in report → **Production BLOCKED** → await PM approval.
+
+## Experience rule
+
+> 사용자가 체감하지 못하는 기능은 만들지 않는다.
+
+Epic order: Journey → Intelligence → Analytics → Performance → Real AI
+
+Full policy: `docs/PM_REVIEW_POLICY.md`
