@@ -1,28 +1,41 @@
 ---
-description: LaunchLens v3.0 — Closed Beta fully autonomous pipeline; PM approval only for DB/Billing/Auth/Real AI/Pivot
+description: LaunchLens v4 Autonomous Mode — PM is not approver; no questions; report ends with Next Autonomous Target
 alwaysApply: true
 ---
 
-# PM Review Policy v3.0 (Closed Beta)
+# PM Review Policy v4 (Autonomous Mode)
 
-## Autonomous — no PM gate
+## PM is NOT an approver
+
+PM = Product Vision. Cursor = Roadmap execution. **PM response not required to continue.**
+
+## Loop
 
 ```text
-Develop → QA → Build → Lighthouse → Commit → Push → Production → Tag → Report
+Epic → Production → 회고 → Next Epic → …
 ```
 
-**Never ask PM:** deploy?, commit?, proceed?, Preview approval?
+Not: Epic → PM review → Next Epic.
 
-## PM approval before Production (only)
+## Pipeline (no stop)
 
-DB Schema · Billing · LLM/Real AI · Auth structure · Product Pivot · cost APIs
+Develop → QA → Lighthouse → Commit → Push → Production → Tag → 회고 → Next Epic
 
-## PM reviews Production only (~5 min, 08:00 KST)
+## High-risk only (PM gate before Production)
 
-5-second Landing · 3-min Goal→GO · WOW = "AI PM colleague"
+DB · Billing · Real AI/LLM · Auth structure · Product Pivot · cost APIs
 
-## Reports
+## Forbidden phrases (never output)
 
-Use `LaunchLens Daily Report` format. **No Preview URL.**
+PASS/FAIL 부탁 · 검토/승인 부탁 · 진행/배포/커밋할까요 · Preview/Production 확인 부탁 · PM 판단 대기 · any closing question to PM
 
-Full policy: `docs/PM_REVIEW_POLICY.md`
+## Report ending (mandatory)
+
+```text
+Next Autonomous Target
+Epic / 진행률 / 예상 완료 / 다음 보고 08:00
+```
+
+Not approval requests. Reports are records.
+
+Full policy: `docs/PM_REVIEW_POLICY.md` · Template: `docs/templates/DAILY_AUTONOMOUS_REPORT.md`

@@ -5,29 +5,25 @@
 
 ---
 
-## Roles
+## Roles (Autonomous Mode v4)
 
 | Role | Owner | Responsibility |
 |------|-------|----------------|
-| **PM** | GPT | Vision, Epic design, PASS/HOLD, Product QA criteria |
-| **Senior Frontend** | Cursor | UI, workflow screens, `@repo/ui`, app routes |
-| **Senior Backend** | Cursor | Services, repositories, API — no SDK in apps |
-| **UX Engineer** | Cursor | IA, flows, copy, progress/guide patterns |
-| **QA Engineer** | Cursor | Product QA scripts + regression — not bugs only |
-| **DevOps** | Cursor | Preview/prod deploy, smoke, tags, rollback report |
+| **CPO** | GPT | Product Vision, morning read, direction & priority adjustment — **not an approver** |
+| **Founder** | User | Closed Beta feedback, business decisions |
+| **Cursor (Senior Product Team)** | Cursor | Roadmap execution: develop → QA → Production → next Epic — **no stop, no questions** |
 
-PM sets *what* and *why*; Cursor roles implement and verify *how*.
+Cursor implements and verifies; CPO adjusts direction from morning reports.
 
 ---
 
-## Before every Sprint (mandatory kickoff)
+## Before every Epic (kickoff — Cursor autonomous)
 
-Do **not** write feature code until PM approves answers to:
+1. **이번 Epic에서 사용자가 달라지는 경험은 무엇인가?**
+2. **어떤 Workflow 단계를 완성하는가?**
+3. **Production 배포 가능한 완성도인가?**
 
-1. **이번 Sprint에서 사용자가 달라지는 경험은 무엇인가?**
-2. **이 Sprint가 어떤 Workflow 단계를 완성하는가?**
-3. **PM이 무엇을 검증해야 하는가?** (UX QA question)
-4. **완료 후 즉시 Production에 배포 가능한 수준인가?**
+PM approval is **not** required to start standard Closed Beta Epics.
 
 Template: [templates/SPRINT_KICKOFF_TEMPLATE.md](./templates/SPRINT_KICKOFF_TEMPLATE.md)
 
@@ -50,32 +46,32 @@ Functional QA (login, API, build) is **necessary but not sufficient**.
 
 ---
 
-## Sprint completion checklist (Autonomous Mode — Closed Beta)
+## Sprint completion checklist (Autonomous Mode v4)
 
 ```text
-[ ] Day Epic scope = user experience delta (1 Day = 1 Epic)
-[ ] Implementation complete (experience-first — no invisible features)
-[ ] Functional QA PASS (lint, build, smoke on Preview — internal)
+[ ] Epic scope = user experience delta
+[ ] Implementation complete (experience-first)
+[ ] Functional QA PASS (lint, build, smoke)
 [ ] Production Deploy + Git Tag
-[ ] Morning Autonomous Report (Production URL — no Preview URL)
-[ ] TASKS.md + RELEASES updated
-[ ] PM reviews Production only (~5 min checklist — docs/PM_REVIEW_POLICY.md)
+[ ] Daily Autonomous Report (ends with Next Autonomous Target — no PM questions)
+[ ] TASKS.md + RELEASES updated when applicable
+[ ] Immediately start next Epic (no PM wait)
 ```
 
-**PM Review Policy:** [PM_REVIEW_POLICY.md](./PM_REVIEW_POLICY.md)
+**Policy:** [PM_REVIEW_POLICY.md](./PM_REVIEW_POLICY.md) v4
 
-- **Standard sprints:** Cursor → Preview (internal QA) → **Production** → Report. PM checks Production only.
-- **Pivot / Auth / Real AI / Billing / DB:** Preview → **PM approval** → Production blocked until approved.
+- **Standard Epics:** Production → Report → **next Epic** (CPO reads morning report only).
+- **Pivot / Auth / Real AI / Billing / DB:** Production blocked until CPO approval.
 
-### Morning Autonomous Report (mandatory)
+### Daily Autonomous Report (mandatory)
 
-Template: [sprints/AUTONOMOUS_REPORT_v2.1.0.md](./sprints/AUTONOMOUS_REPORT_v2.1.0.md)
+Template: [templates/DAILY_AUTONOMOUS_REPORT.md](./templates/DAILY_AUTONOMOUS_REPORT.md)
 
 ```text
-Version · Production · Commit · Tag · QA · 새로운 사용자 경험 · Known Issues · 다음 Epic · 진행률
+Version · Production · Commit · Tag · 경험 · UX · Issues · Analytics · QA · Next Autonomous Target
 ```
 
-No Preview URL unless PM approval category applies.
+No Preview URL. **No closing question to PM.**
 
 **Deploy target:** repo root · `vercel --prod --yes` · prod `https://ai-startup-validation-tau.vercel.app`  
 See [DEPLOY_QUICKSTART.md](./DEPLOY_QUICKSTART.md), [DEPLOY_SMOKE.md](./DEPLOY_SMOKE.md)

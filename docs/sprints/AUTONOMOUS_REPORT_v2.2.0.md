@@ -71,7 +71,13 @@ https://ai-startup-validation-tau.vercel.app
 
 ---
 
-## 내일 작업 계획
+```text
+=========================
+Next Autonomous Target
+=========================
 
-PM/CPO Production 검토 (08:00 KST) → Day 2 Epic 설계  
-잔여 P3 Performance (Lighthouse 90+) · P5 locale polish · Real AI 준비
+Epic:       Performance 90+ (Lighthouse · Bundle · LCP · CLS · TTFB)
+현재 진행률:  8%
+예상 완료:    2026-07-25 18:00 KST
+다음 보고:    내일 08:00
+```
