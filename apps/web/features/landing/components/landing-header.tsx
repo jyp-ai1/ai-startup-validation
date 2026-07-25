@@ -5,7 +5,7 @@ import { Sparkles } from 'lucide-react';
 import { LandingHeaderControls } from './landing-header-controls';
 
 const NAV_LINKS = [
-  { href: '#how-it-works', key: 'howItWorks' as const },
+  { href: '#journey', key: 'howItWorks' as const },
   { href: '#ai-pm', key: 'aiPm' as const },
   { href: '#stories', key: 'stories' as const },
   { href: '#faq', key: 'faq' as const },
