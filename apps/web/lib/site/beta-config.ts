@@ -1,6 +1,6 @@
-/** LaunchLens Alpha — Epic 4.5 Product Journey */
-export const BETA_VERSION = 'Alpha 2.0.8-journey';
-export const BETA_LABEL = 'CLOSED BETA PREVIEW';
+/** LaunchLens Closed Beta — Day 1 Core Completion */
+export const BETA_VERSION = 'Closed Beta 2.1.0';
+export const BETA_LABEL = 'CLOSED BETA';
 
 export const SITE_LINKS = {
   email: 'hello@launchlens.ai',

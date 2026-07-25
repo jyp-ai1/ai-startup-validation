@@ -1330,10 +1330,10 @@
       "closeMenu": "Close menu"
     },
     "hero": {
-      "eyebrow": "AI Strategy Workspace",
-      "title": "Start your strategy project\nwith AI.",
-      "subtitle": "Validate your idea with AI and carry it through to execution.",
-      "northStar": "Pick a Goal — AI builds your Workflow and guides the project to completion.",
+      "eyebrow": "Closed Beta · AI Strategy Workspace",
+      "title": "Start your strategy project\nin 3 minutes.",
+      "subtitle": "Register your idea — AI guides market, competition, and your first Decision.",
+      "northStar": "Goal → Workflow → Workspace → GO/HOLD. A strategy project with AI, not another report.",
       "journey": {
         "label": "How it works",
         "goal": "Goal",
@@ -1342,7 +1342,7 @@
         "execution": "Execution"
       },
       "tagline": "Not a report — a strategy project led by your AI coach.",
-      "ctaStart": "Start free",
+      "ctaStart": "Start strategy project",
       "ctaDemo": "Try demo workflow",
       "ctaHint1": "No credit card required",
       "ctaHint2": "Get started in 3 minutes",
@@ -1730,6 +1730,11 @@
     "webVitals": "Core Web Vitals",
     "futureGaNote": "Mock metrics shown until GA API integration. Event store is GA-ready.",
     "productJourneyFunnel": "Product Journey Funnel",
+    "todaySummary": "Today's journey",
+    "todayGoal": "Goal selected",
+    "todayWorkspace": "Workspace reached",
+    "todayGo": "GO decisions",
+    "todayFeedback": "Feedback",
     "funnelSteps": {
       "landing": "Landing",
       "goal": "Goal",
@@ -3202,7 +3207,8 @@
     "unauthorizedDescription": "You need to sign in to access this page.",
     "forbiddenTitle": "Access denied",
     "forbiddenDescription": "You do not have permission to view this page.",
-    "backToHome": "Back to home"
+    "backToHome": "Back to home",
+    "startJourney": "Start strategy project"
   },
   "pages": {
     "newVoc": "New VOC",
@@ -3614,7 +3620,8 @@
       },
       "eta": "About {minutes} min",
       "cta": "Start project",
-      "ctaHint": "You'll enter project details on the next step"
+      "ctaHint": "You'll enter project details on the next step",
+      "aiNote": "AI analyzed your goal and built this workflow — no selection needed."
     },
     "registration": {
       "eyebrow": "Step 3 · Project registration",
@@ -3777,12 +3784,29 @@
       "rotate": {
         "building": "AI is building your strategy project.",
         "market": "Researching the market...",
-        "competitor": "Finding competitors...",
+        "competitor": "Analyzing competitors...",
+        "vcReview": "Reviewing from a VC perspective...",
         "workflow": "Building your project...",
         "coach": "Preparing AI Strategy Coach...",
         "confidence": "Calculating confidence...",
         "evidence": "Organizing evidence..."
       }
+    },
+    "analysis": {
+      "title": "AI is running your first strategy analysis",
+      "steps": {
+        "market": "Researching the market...",
+        "competitor": "Analyzing competitors...",
+        "decision": "Calculating GO/HOLD...",
+        "evidence": "Organizing evidence..."
+      }
+    },
+    "empty": {
+      "title": "No project yet",
+      "desc": "Pick a Goal and AI builds your workflow — first Decision in about 3 minutes.",
+      "ctaCreate": "Start project",
+      "ctaGoal": "Choose a Goal",
+      "ctaExample": "Try with an example"
     },
     "toast": {
       "workflowReady": "Workflow is ready",
@@ -4014,7 +4038,7 @@
     },
     "workspace": {
       "title": "AI Strategy Workspace",
-      "progressLabel": "Progress",
+      "progressLabel": "Confidence",
       "currentStep": "Step {current} / {total}",
       "stepFallback": "First step",
       "stepFallbackBody": "Define project context.",
@@ -4024,6 +4048,39 @@
       "ctaLogin": "Connect account to continue",
       "legacyHint": "Need the legacy beta workspace?",
       "legacyLink": "Go to dashboard",
+      "welcome": {
+        "eyebrow": "First analysis complete",
+        "title": "{project} — your strategy project has started",
+        "desc": "First verdict: {verdict}. Explore Evidence, Decision, and Next Action below."
+      },
+      "summary": {
+        "label": "Strategy project status",
+        "title": "Today's strategy snapshot",
+        "confidence": "Confidence {value}%",
+        "cards": {
+          "evidence": {
+            "title": "Evidence",
+            "desc": "Market & competition sources"
+          },
+          "decision": {
+            "title": "Decision",
+            "value": "Current {verdict}",
+            "desc": "GO/HOLD verdict"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "desc": "Score & missing data"
+          },
+          "nextAction": {
+            "title": "Next Action",
+            "desc": "One thing to do today"
+          }
+        }
+      },
+      "settings": {
+        "projectName": "Project name",
+        "idea": "Idea"
+      },
       "steps": {
         "context": {
           "title": "Define project context",

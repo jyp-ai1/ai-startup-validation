@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 
@@ -26,18 +26,22 @@ import { JourneyAchievementsPanel } from './intelligence-workspace/journey-achie
 import { JourneyAiMemoryPanel } from './intelligence-workspace/journey-ai-memory-panel';
 import { JourneyDailyCoach } from './intelligence-workspace/journey-daily-coach';
 import { JourneyNextActionCta } from './intelligence-workspace/journey-next-action-cta';
+import { JourneyProjectPanel } from './intelligence-workspace/journey-project-panel';
 import { JourneyProgressRing } from './intelligence-workspace/journey-progress-ring';
 import { JourneyProjectSwitcher } from './intelligence-workspace/journey-project-switcher';
 import { JourneyTimelinePanel } from './intelligence-workspace/journey-timeline-panel';
 import {
   ProjectRegistrationPanel,
+  loadProjectRegistration,
   type ProjectRegistrationData,
 } from './project-registration-panel';
 import {
   JourneyWorkspaceNav,
   type JourneyWorkspaceTab,
 } from './intelligence-workspace/journey-workspace-nav';
+import { WorkspaceIntelligenceSummary } from './workspace-intelligence-summary';
 import { WorkspaceJourneyGuide } from './workspace-journey-guide';
+import { WorkspaceWelcomeBanner } from './workspace-welcome-banner';
 
 const DecisionExperienceCoach = dynamic(
   () => import('./decision-experience-coach').then((m) => m.DecisionExperienceCoach),
@@ -52,7 +56,8 @@ type StrategyWorkspaceShellProps = {
   demoMode?: boolean;
 };
 
-const ANALYSIS_MS = 2400;
+const ANALYSIS_MS = 2800;
+const ANALYSIS_STEPS = 4;
 
 export function StrategyWorkspaceShell({
   goalId,
@@ -60,6 +65,7 @@ export function StrategyWorkspaceShell({
   demoMode = false,
 }: StrategyWorkspaceShellProps) {
   const t = useTranslations('workflow.workspace');
+  const ta = useTranslations('workflow.analysis');
   const te = useTranslations('workflow.epic3');
   const tg = useTranslations('workflow.goal');
   const tc = useTranslations('workflow.compose.goals');
@@ -67,13 +73,23 @@ export function StrategyWorkspaceShell({
   const activeStepId = coachState.nextActionStepId;
   const activeStep = template.steps.find((s) => s.id === activeStepId) ?? template.steps[0];
   const stepMeta = getStepGuideMeta(activeStep?.id ?? 'context');
-  const progress = Math.round((1 / template.stepCount) * 100);
   const tt = useTranslations('workflow.toast');
   const analytics = useJourneyAnalytics(demoMode);
+
+  const analysisStepLabels = useMemo(
+    () => [
+      ta('steps.market'),
+      ta('steps.competitor'),
+      ta('steps.decision'),
+      ta('steps.evidence'),
+    ],
+    [ta],
+  );
 
   const [phase, setPhase] = useState<WorkspacePhase>('registration');
   const [thinkingStep, setThinkingStep] = useState(0);
   const [thinkingFailed, setThinkingFailed] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
   const { project, setProjectId, ready: projectReady } = useJourneyProject();
   const [tab, setTab] = useState<JourneyWorkspaceTab>('today');
   const [registration, setRegistration] = useState<ProjectRegistrationData | null>(null);
@@ -82,8 +98,11 @@ export function StrategyWorkspaceShell({
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    const saved = loadProjectRegistration();
+    if (saved) setRegistration(saved);
     if (sessionStorage.getItem('ll_project_started') === '1') {
       setPhase('active');
+      setShowWelcome(sessionStorage.getItem('ll_analysis_welcome') !== '1');
     }
     if (sessionStorage.getItem('workspace_toast') === '1') {
       sessionStorage.removeItem('workspace_toast');
@@ -105,14 +124,17 @@ export function StrategyWorkspaceShell({
       if (!completed) setThinkingFailed(true);
     }, 10_000);
 
+    const stepDelay = ANALYSIS_MS / ANALYSIS_STEPS;
     const timers = [
-      window.setTimeout(() => setThinkingStep(1), 500),
-      window.setTimeout(() => setThinkingStep(2), 1000),
-      window.setTimeout(() => setThinkingStep(3), 1500),
+      window.setTimeout(() => setThinkingStep(1), stepDelay * 0.25),
+      window.setTimeout(() => setThinkingStep(2), stepDelay * 0.5),
+      window.setTimeout(() => setThinkingStep(3), stepDelay * 0.75),
       window.setTimeout(() => {
         completed = true;
         clearTimeout(timeoutTimer);
         setPhase('active');
+        setShowWelcome(true);
+        sessionStorage.setItem('ll_analysis_welcome', '1');
         analytics.trackAnalysisStarted(goalId);
         analytics.trackDecisionGenerated(coachState.verdict, goalId);
         toast.success(tt('analysisReady'));
@@ -139,23 +161,38 @@ export function StrategyWorkspaceShell({
   const guideStep =
     phase === 'registration' ? 'project' : phase === 'thinking' ? 'research' : 'decision';
 
+  const projectDisplayName =
+    registration?.projectName ?? project.name ?? tg(`options.${goalId}.title`);
+
+  const dismissWelcome = () => setShowWelcome(false);
+
   const renderActiveTab = () => {
     switch (tab) {
       case 'today':
         return (
           <div className="space-y-6">
+            {showWelcome ? (
+              <WorkspaceWelcomeBanner
+                projectName={projectDisplayName}
+                verdict={coachState.verdict}
+              />
+            ) : null}
             <JourneyDailyCoach confidence={project.confidence} />
+            <WorkspaceIntelligenceSummary
+              confidence={project.confidence}
+              verdict={coachState.verdict}
+              onNavigate={(next) => {
+                if (showWelcome) dismissWelcome();
+                setTab(next);
+                analytics.trackMockActionCompleted(`summary_${next}`, project.confidence);
+              }}
+            />
             <JourneyNextActionCta confidence={project.confidence} />
             <DecisionExperienceCoach goalId={goalId} className="w-full max-w-none" />
           </div>
         );
       case 'project':
-        return (
-          <ProjectRegistrationPanel
-            onStart={handleRegistrationStart}
-            disabled={phase === 'thinking'}
-          />
-        );
+        return <JourneyProjectPanel />;
       case 'workflow':
         return activeStep ? (
           <WorkflowGuideCard
@@ -172,6 +209,7 @@ export function StrategyWorkspaceShell({
           <div className="space-y-6">
             <JourneyTimelinePanel />
             <JourneyAiMemoryPanel />
+            <JourneyAchievementsPanel />
           </div>
         );
       case 'settings':
@@ -180,7 +218,18 @@ export function StrategyWorkspaceShell({
             <h3 className="text-sm font-semibold">{te('settings.title')}</h3>
             <p className="mt-2 text-sm text-muted-foreground">{te('settings.desc')}</p>
             {registration ? (
-              <p className="mt-4 text-sm font-medium">{registration.projectName}</p>
+              <dl className="mt-4 space-y-2 text-sm">
+                <div>
+                  <dt className="text-muted-foreground">{t('settings.projectName')}</dt>
+                  <dd className="font-medium">{registration.projectName}</dd>
+                </div>
+                {registration.ideaOneLiner ? (
+                  <div>
+                    <dt className="text-muted-foreground">{t('settings.idea')}</dt>
+                    <dd>{registration.ideaOneLiner}</dd>
+                  </div>
+                ) : null}
+              </dl>
             ) : null}
           </section>
         );
@@ -193,9 +242,11 @@ export function StrategyWorkspaceShell({
     return (
       <AiThinkingOverlay
         goalLabel={registration?.projectName ?? tc(goalId)}
+        titleOverride={ta('title')}
+        stepLabels={analysisStepLabels}
         activeStep={thinkingStep}
-        stepCount={4}
-        progressPercent={Math.min(100, ((thinkingStep + 1) / 4) * 100)}
+        stepCount={ANALYSIS_STEPS}
+        progressPercent={Math.min(100, ((thinkingStep + 1) / ANALYSIS_STEPS) * 100)}
         failed={thinkingFailed}
         onRetry={() => {
           setThinkingFailed(false);
@@ -226,8 +277,8 @@ export function StrategyWorkspaceShell({
       <BetaFeedbackModal />
       {phase === 'registration' ? (
         <JourneyFade>
-          <div className="grid gap-8 lg:grid-cols-[minmax(220px,280px)_1fr] lg:items-start">
-            <WorkspaceJourneyGuide activeStep={guideStep} />
+          <div className="grid gap-6 lg:grid-cols-[minmax(200px,260px)_1fr] lg:items-start lg:gap-8">
+            <WorkspaceJourneyGuide activeStep={guideStep} className="hidden sm:block" />
             <ProjectRegistrationPanel onStart={handleRegistrationStart} />
           </div>
         </JourneyFade>
@@ -235,32 +286,36 @@ export function StrategyWorkspaceShell({
         <WorkspaceSkeleton />
       ) : (
         <JourneyFade>
-          <div className="grid gap-8 lg:grid-cols-[minmax(220px,280px)_1fr] lg:items-start">
-            <WorkspaceJourneyGuide activeStep={guideStep} />
+          <div className="grid gap-6 lg:grid-cols-[minmax(200px,260px)_1fr] lg:items-start lg:gap-8">
+            <WorkspaceJourneyGuide activeStep={guideStep} className="hidden lg:block" />
             <div className="min-w-0 space-y-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="min-w-0 space-y-3">
+                <div className="min-w-0 flex-1 space-y-2">
                   <JourneyProjectSwitcher project={project} onSelect={setProjectId} />
                   <div>
-                    <p className="text-sm text-muted-foreground">
-                      {registration?.projectName ?? tg(`options.${goalId}.title`)}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{projectDisplayName}</p>
                     <h1 className="text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl">
                       {t('title')}
                     </h1>
                   </div>
                 </div>
-                <JourneyProgressRing value={project.confidence} label={t('progressLabel')} size={80} />
+                <JourneyProgressRing
+                  value={project.confidence}
+                  label={t('progressLabel')}
+                  size={72}
+                />
               </div>
               {renderActiveTab()}
-              <div className="pt-4">
-                <Button asChild size="lg" className="h-12 w-full rounded-xl sm:max-w-md">
-                  <Link href="/auth/login?next=/workspace">
-                    {demoMode ? t('ctaLogin') : t('ctaContinue')}
-                    <ArrowRight className="size-4" />
-                  </Link>
-                </Button>
-              </div>
+              {tab !== 'today' ? (
+                <div className="pt-2">
+                  <Button asChild size="lg" className="h-12 w-full rounded-xl sm:max-w-md">
+                    <Link href="/auth/login?next=/workspace">
+                      {demoMode ? t('ctaLogin') : t('ctaContinue')}
+                      <ArrowRight className="size-4" />
+                    </Link>
+                  </Button>
+                </div>
+              ) : null}
             </div>
           </div>
         </JourneyFade>

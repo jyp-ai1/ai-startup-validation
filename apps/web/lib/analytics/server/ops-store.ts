@@ -24,10 +24,23 @@ function startOfWeek(date: Date): Date {
 }
 
 function countEvents(name: string, since?: Date): number {
+  if (since) return countEventsSince(name, since);
+  return events.filter((event) => event.name === name).length;
+}
+
+function countEventsSince(name: string, since: Date): number {
   return events.filter((event) => {
     if (event.name !== name) return false;
-    if (!since) return true;
     return new Date(event.timestamp) >= since;
+  }).length;
+}
+
+function countGoDecisionsToday(since: Date): number {
+  return events.filter((event) => {
+    if (event.name !== PRODUCT_ANALYTICS_EVENTS.decisionGenerated) return false;
+    if (new Date(event.timestamp) < since) return false;
+    const verdict = event.params?.verdict;
+    return typeof verdict === 'string' && verdict.toUpperCase().includes('GO');
   }).length;
 }
 
@@ -128,6 +141,12 @@ const MOCK_STATS: OpsDashboardStats = {
     analysis: 15,
     decision: 9,
   },
+  todaySummary: {
+    goalSelected: 12,
+    workspaceEntered: 8,
+    goDecisions: 3,
+    feedbackSubmitted: 5,
+  },
 };
 
 export function recordAnalyticsEvent(payload: AnalyticsEventPayload): void {
@@ -182,6 +201,12 @@ export function getOpsDashboardStats(): OpsDashboardStats {
       project: countEvents(PRODUCT_ANALYTICS_EVENTS.projectCreated),
       analysis: countEvents(PRODUCT_ANALYTICS_EVENTS.analysisStarted),
       decision: countEvents(PRODUCT_ANALYTICS_EVENTS.decisionGenerated),
+    },
+    todaySummary: {
+      goalSelected: countEventsSince(PRODUCT_ANALYTICS_EVENTS.goalSelected, todayStart),
+      workspaceEntered: countEventsSince(PRODUCT_ANALYTICS_EVENTS.workspaceEntered, todayStart),
+      goDecisions: countGoDecisionsToday(todayStart),
+      feedbackSubmitted: countEventsSince(PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted, todayStart),
     },
   };
 }

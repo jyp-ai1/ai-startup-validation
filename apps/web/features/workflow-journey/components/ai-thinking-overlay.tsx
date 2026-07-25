@@ -15,6 +15,8 @@ type AiThinkingOverlayProps = {
   activeStep?: number;
   progressPercent?: number;
   loadingMessage?: string;
+  stepLabels?: string[];
+  titleOverride?: string;
   failed?: boolean;
   onRetry?: () => void;
   className?: string;
@@ -26,6 +28,8 @@ export function AiThinkingOverlay({
   activeStep = 0,
   progressPercent,
   loadingMessage,
+  stepLabels,
+  titleOverride,
   failed = false,
   onRetry,
   className,
@@ -36,13 +40,25 @@ export function AiThinkingOverlay({
     t('rotate.building'),
     t('rotate.market'),
     t('rotate.competitor'),
+    t('rotate.vcReview'),
     t('rotate.workflow'),
     t('rotate.coach'),
     t('rotate.confidence'),
+    t('rotate.evidence'),
   ];
 
+  const defaultSteps = [
+    t('steps.goalAnalysis'),
+    t('steps.workflowBuild'),
+    t('steps.coachPrep'),
+    t('steps.workspaceCreate'),
+  ];
+  const steps = stepLabels ?? defaultSteps;
+  const displayStepCount = stepLabels?.length ?? stepCount;
+
   const pct =
-    progressPercent ?? Math.min(100, Math.round(((activeStep + 1) / stepCount) * 100));
+    progressPercent ??
+    Math.min(100, Math.round(((activeStep + 1) / displayStepCount) * 100));
 
   useEffect(() => {
     if (failed) return undefined;
@@ -51,13 +67,6 @@ export function AiThinkingOverlay({
     }, ROTATE_MS);
     return () => clearInterval(id);
   }, [failed, messages.length]);
-
-  const steps = [
-    t('steps.goalAnalysis'),
-    t('steps.workflowBuild'),
-    t('steps.coachPrep'),
-    t('steps.workspaceCreate'),
-  ];
 
   return (
     <div
@@ -77,7 +86,7 @@ export function AiThinkingOverlay({
           </span>
           <div>
             <p id="ai-thinking-title" className="text-lg font-semibold text-foreground">
-              {t('title')}
+              {titleOverride ?? t('title')}
             </p>
             {goalLabel ? (
               <p className="text-sm text-muted-foreground">{t('goalContext', { goal: goalLabel })}</p>

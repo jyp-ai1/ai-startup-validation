@@ -1330,10 +1330,10 @@
       "closeMenu": "메뉴 닫기"
     },
     "hero": {
-      "eyebrow": "AI Strategy Workspace",
-      "title": "AI와 함께\n전략 프로젝트를 시작하세요.",
-      "subtitle": "사업 아이디어를 AI와 함께 검증하고 실행까지 이어갑니다.",
-      "northStar": "Goal을 선택하면 AI가 Workflow를 만들고, 전략 프로젝트를 끝까지 안내합니다.",
+      "eyebrow": "Closed Beta · AI Strategy Workspace",
+      "title": "3분 안에\n전략 프로젝트를 시작하세요.",
+      "subtitle": "사업 아이디어를 등록하면 AI가 시장·경쟁·Decision까지 함께 진행합니다.",
+      "northStar": "Goal → Workflow → Workspace → GO/HOLD. 보고서가 아니라 AI와 함께하는 전략 프로젝트.",
       "journey": {
         "label": "이렇게 진행됩니다",
         "goal": "목표",
@@ -1342,7 +1342,7 @@
         "execution": "실행"
       },
       "tagline": "보고서가 아니라, AI 프로젝트 매니저와 함께하는 전략 프로젝트.",
-      "ctaStart": "무료로 시작하기",
+      "ctaStart": "전략 프로젝트 시작",
       "ctaDemo": "데모 Workflow 체험하기",
       "ctaHint1": "신용카드 필요 없음",
       "ctaHint2": "3분 만에 시작",
@@ -1730,6 +1730,11 @@
     "webVitals": "Core Web Vitals",
     "futureGaNote": "GA API 연동 전까지 Mock 지표가 표시됩니다. 이벤트 저장 구조는 GA 연동 준비 완료.",
     "productJourneyFunnel": "Product Journey Funnel",
+    "todaySummary": "오늘의 여정",
+    "todayGoal": "Goal 선택",
+    "todayWorkspace": "Workspace 도달",
+    "todayGo": "GO 판단",
+    "todayFeedback": "피드백",
     "funnelSteps": {
       "landing": "Landing",
       "goal": "Goal",
@@ -3184,7 +3189,8 @@
     "unauthorizedDescription": "이 페이지를 보려면 로그인이 필요합니다.",
     "forbiddenTitle": "접근이 거부되었습니다",
     "forbiddenDescription": "이 페이지를 볼 권한이 없습니다.",
-    "backToHome": "홈으로 돌아가기"
+    "backToHome": "홈으로 돌아가기",
+    "startJourney": "전략 프로젝트 시작하기"
   },
   "pages": {
     "newVoc": "VOC 추가",
@@ -3596,7 +3602,8 @@
       },
       "eta": "예상 {minutes}분",
       "cta": "프로젝트 시작",
-      "ctaHint": "다음 단계에서 프로젝트 정보를 입력합니다"
+      "ctaHint": "다음 단계에서 프로젝트 정보를 입력합니다",
+      "aiNote": "AI가 목표를 분석해 아래 순서로 진행합니다. 선택할 필요 없습니다."
     },
     "registration": {
       "eyebrow": "Step 3 · 프로젝트 등록",
@@ -3758,13 +3765,30 @@
       },
       "rotate": {
         "building": "AI가 전략 프로젝트를 구성하고 있습니다.",
-        "market": "시장 조사 중...",
-        "competitor": "경쟁사를 찾고 있습니다...",
+        "market": "AI가 시장을 조사하는 중...",
+        "competitor": "경쟁사를 분석하는 중...",
+        "vcReview": "VC 관점에서 검토 중...",
         "workflow": "프로젝트를 구성하는 중...",
         "coach": "AI 전략 코치를 준비하는 중...",
         "confidence": "신뢰도를 계산하는 중...",
         "evidence": "근거를 정리하는 중..."
       }
+    },
+    "analysis": {
+      "title": "AI가 첫 전략 분석을 진행합니다",
+      "steps": {
+        "market": "시장 조사 중...",
+        "competitor": "경쟁사 분석 중...",
+        "decision": "GO/HOLD 계산 중...",
+        "evidence": "근거를 정리하는 중..."
+      }
+    },
+    "empty": {
+      "title": "아직 프로젝트가 없습니다",
+      "desc": "Goal을 선택하면 AI가 Workflow를 만들고, 3분 안에 첫 Decision까지 안내합니다.",
+      "ctaCreate": "프로젝트 시작하기",
+      "ctaGoal": "Goal 선택하기",
+      "ctaExample": "예시로 체험하기"
     },
     "toast": {
       "workflowReady": "워크플로 생성이 완료되었습니다",
@@ -3996,7 +4020,7 @@
     },
     "workspace": {
       "title": "AI 전략 워크스페이스",
-      "progressLabel": "진행률",
+      "progressLabel": "Confidence",
       "currentStep": "Step {current} / {total}",
       "stepFallback": "첫 단계",
       "stepFallbackBody": "프로젝트 맥락을 정의합니다.",
@@ -4006,6 +4030,39 @@
       "ctaLogin": "계정 연결하고 계속하기",
       "legacyHint": "기존 Beta Workspace가 필요하면",
       "legacyLink": "대시보드로 이동",
+      "welcome": {
+        "eyebrow": "첫 분석 완료",
+        "title": "{project} — AI 전략 프로젝트가 시작되었습니다",
+        "desc": "첫 판단은 {verdict}입니다. 아래에서 Evidence·Decision·Next Action을 확인하세요."
+      },
+      "summary": {
+        "label": "전략 프로젝트 현황",
+        "title": "오늘의 전략 현황",
+        "confidence": "Confidence {value}%",
+        "cards": {
+          "evidence": {
+            "title": "Evidence",
+            "desc": "시장·경쟁 근거 확인"
+          },
+          "decision": {
+            "title": "Decision",
+            "value": "현재 {verdict}",
+            "desc": "GO/HOLD 판단"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "desc": "신뢰도와 부족 데이터"
+          },
+          "nextAction": {
+            "title": "Next Action",
+            "desc": "오늘 할 일 1가지"
+          }
+        }
+      },
+      "settings": {
+        "projectName": "프로젝트 이름",
+        "idea": "아이디어"
+      },
       "steps": {
         "context": {
           "title": "프로젝트 맥락 정의",

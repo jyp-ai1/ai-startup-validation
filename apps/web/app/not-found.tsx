@@ -6,6 +6,7 @@ export default async function NotFound() {
     title: 'errors.notFoundTitle',
     description: 'errors.notFoundDescription',
     action: 'errors.backToHome',
+    secondary: 'errors.startJourney',
   });
 
   return (
@@ -15,6 +16,8 @@ export default async function NotFound() {
       description={copy.description}
       actionLabel={copy.action}
       actionHref="/"
+      secondaryLabel={copy.secondary}
+      secondaryHref="/goal"
     />
   );
 }

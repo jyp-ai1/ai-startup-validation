@@ -151,6 +151,34 @@ export function OperationsDashboard() {
             />
           </div>
 
+          {stats.todaySummary ? (
+            <div>
+              <h2 className="mb-3 text-sm font-semibold">{t('todaySummary')}</h2>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard
+                  title={t('todayGoal')}
+                  value={stats.todaySummary.goalSelected}
+                  icon={Users}
+                />
+                <StatCard
+                  title={t('todayWorkspace')}
+                  value={stats.todaySummary.workspaceEntered}
+                  icon={Globe}
+                />
+                <StatCard
+                  title={t('todayGo')}
+                  value={stats.todaySummary.goDecisions}
+                  icon={Sparkles}
+                />
+                <StatCard
+                  title={t('todayFeedback')}
+                  value={stats.todaySummary.feedbackSubmitted}
+                  icon={Activity}
+                />
+              </div>
+            </div>
+          ) : null}
+
           {aiStats ? (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
               <StatCard

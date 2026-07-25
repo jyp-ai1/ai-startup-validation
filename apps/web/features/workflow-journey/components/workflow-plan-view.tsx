@@ -58,12 +58,14 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
             </div>
 
             <p className="mt-6 text-base font-medium text-foreground">{t('subtitle')}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t('aiNote')}</p>
 
             <ul className="mt-4 space-y-2" role="list">
-              {RECOMMENDED_LABEL_KEYS.map((key) => (
+              {RECOMMENDED_LABEL_KEYS.map((key, index) => (
                 <li
                   key={key}
-                  className="flex items-center gap-3 rounded-xl border border-border/60 bg-background px-4 py-3"
+                  className="flex items-center gap-3 rounded-xl border border-border/60 bg-background px-4 py-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2"
+                  style={{ animationDelay: `${index * 80}ms` }}
                 >
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600">
                     <Check className="size-4" aria-hidden />

@@ -29,8 +29,8 @@ export default function LocaleError({ error, reset }: ErrorProps) {
       description={t('tryAgain')}
       actionLabel={t('retry')}
       onRetry={reset}
-      secondaryLabel={t('backToDashboard')}
-      secondaryHref="/dashboard"
+      secondaryLabel={t('startJourney')}
+      secondaryHref="/goal"
     />
   );
 }

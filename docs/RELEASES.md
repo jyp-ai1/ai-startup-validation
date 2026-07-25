@@ -6,7 +6,32 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
-### Epic 4.5 Sprint 2 — Journey polish (planned)
+### Day 2 — Analytics & Admin (planned)
+
+---
+
+## [2.1.0-closed-beta] — 2026-07-25 — Closed Beta Core Completion (Day 1)
+
+**Tag:** `closed-beta-v2.1.0`  
+**Stage:** LaunchLens Closed Beta  
+**Prod:** https://ai-startup-validation-tau.vercel.app
+
+> **이번 Release:** Workspace에서 Evidence·Decision·Confidence·Next Action을 한 화면에서 체감. Admin에서 오늘 Goal/Workspace/GO/Feedback 확인.
+
+### Day 1 Epic
+
+- Workspace Welcome + Intelligence Summary cards
+- Analysis Thinking (market → GO/HOLD → evidence)
+- Project tab → project management panel
+- History → Achievements wired
+- Admin today summary (Goal, Workspace, GO, Feedback)
+- Landing Closed Beta copy
+- Error pages → journey CTA
+- Loading messages (VC perspective)
+
+### Docs
+
+- [AUTONOMOUS_REPORT_v2.1.0.md](./sprints/AUTONOMOUS_REPORT_v2.1.0.md)
 
 ---
 

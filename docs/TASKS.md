@@ -8,15 +8,28 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Epic 4.5 Product Journey Completion
+## 🟢 CURRENT — Day 2 Analytics & Admin Operations
 
-**Status:** 🟢 Sprint 1 Complete — `alpha-v2.0.8-journey`  
-**Report:** [sprints/EPIC4_5_PRODUCT_JOURNEY_REPORT.md](./sprints/EPIC4_5_PRODUCT_JOURNEY_REPORT.md) · [sprints/AUTONOMOUS_REPORT_v2.0.8.md](./sprints/AUTONOMOUS_REPORT_v2.0.8.md)  
-**Epic 5 design:** [sprints/EPIC5_REAL_INTELLIGENCE_DESIGN.md](./sprints/EPIC5_REAL_INTELLIGENCE_DESIGN.md) *(deferred)*
+**Status:** 📋 Next — after `closed-beta-v2.1.0`  
+**Report:** [sprints/AUTONOMOUS_REPORT_v2.1.0.md](./sprints/AUTONOMOUS_REPORT_v2.1.0.md)
 
-**Delivered (Sprint 1):** Workflow confirmation UI, Project Registration, AI Thinking → Workspace, Journey Guide, Landing journey-first, Select UI hotfix, Product Journey Funnel analytics
+**Scope:** Session replay, feedback export, feature flags, drop-off heatmap
 
-**Next:** Sprint 2 — Journey polish, funnel validation, performance trim
+---
+
+## Day 1 — Closed Beta Core Completion ✅
+
+**Status:** Complete — `closed-beta-v2.1.0`  
+**Report:** [sprints/AUTONOMOUS_REPORT_v2.1.0.md](./sprints/AUTONOMOUS_REPORT_v2.1.0.md)
+
+**Delivered:** Workspace WOW flow, Intelligence Summary, Admin today stats, Loading/Error UX, Closed Beta branding
+
+---
+
+## Epic 4.5 Product Journey Completion ✅
+
+**Status:** Complete — `alpha-v2.0.8-journey`  
+**Report:** [sprints/EPIC4_5_PRODUCT_JOURNEY_REPORT.md](./sprints/EPIC4_5_PRODUCT_JOURNEY_REPORT.md) · [sprints/AUTONOMOUS_REPORT_v2.0.8.md](./sprints/AUTONOMOUS_REPORT_v2.0.8.md)
 
 ---
 

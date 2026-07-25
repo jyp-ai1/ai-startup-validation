@@ -189,6 +189,12 @@ export type OpsDashboardStats = {
     analysis: number;
     decision: number;
   };
+  todaySummary?: {
+    goalSelected: number;
+    workspaceEntered: number;
+    goDecisions: number;
+    feedbackSubmitted: number;
+  };
 };
 
 declare global {
