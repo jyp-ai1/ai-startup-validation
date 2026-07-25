@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.4.0] — 2026-07-25
+## [2.5.0] — 2026-07-25
+
+### Added — Mission A-1 Project CRUD
+
+- Search, filter, sort toolbar on `/projects`
+- Pin, duplicate, archive, soft-delete with undo banner
+- Project thumbnail (type gradient + initials)
+- Edit form autosave (title/summary)
+- Migration `020_project_crud_extras.sql` (deleted_at, is_pinned, thumbnail_color)
+
+---
 
 ### Added — Mission A (batch 1)
 

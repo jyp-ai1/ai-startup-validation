@@ -1,4 +1,17 @@
-export { createProject, deleteProject, getProject, getProjects, updateProject } from './actions/project-actions';
+export {
+  archiveProject,
+  createProject,
+  deleteProject,
+  duplicateProject,
+  getProject,
+  getProjects,
+  patchProjectFields,
+  permanentlyDeleteProject,
+  restoreProject,
+  toggleProjectPin,
+  unarchiveProject,
+  updateProject,
+} from './actions/project-actions';
 export type { ProjectActionState } from './actions/project-actions';
 export { ProjectCard } from './components/project-card';
 export { ProjectWorkspaceOverview } from './components/project-workspace-overview';

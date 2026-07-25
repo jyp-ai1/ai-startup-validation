@@ -2,12 +2,20 @@
 
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import type { ProjectOverviewCard } from '@/features/dashboard/services/dashboard-service';
 import { Button } from '@repo/ui';
 
+import { ProjectUndoBanner } from './project-card-menu';
+import { ProjectListToolbar } from './project-list-toolbar';
 import { ProjectWorkspaceCard } from './project-workspace-card';
+import {
+  DEFAULT_PROJECT_LIST_FILTERS,
+  filterAndSortProjects,
+  type ProjectListFilters,
+} from '../utils/project-list-utils';
 import { WorkspaceEmpty, WorkspaceHeader } from '@/components/workspace';
 
 type ProjectListProps = {
@@ -16,6 +24,17 @@ type ProjectListProps = {
 
 export function ProjectList({ overviews }: ProjectListProps) {
   const t = useTranslations();
+  const [filters, setFilters] = useState<ProjectListFilters>(DEFAULT_PROJECT_LIST_FILTERS);
+  const [undoDelete, setUndoDelete] = useState<{ id: string; title: string } | null>(null);
+
+  const filtered = useMemo(
+    () => filterAndSortProjects(overviews, filters),
+    [filters, overviews],
+  );
+
+  function updateFilters(next: Partial<ProjectListFilters>) {
+    setFilters((prev) => ({ ...prev, ...next }));
+  }
 
   return (
     <>
@@ -33,6 +52,15 @@ export function ProjectList({ overviews }: ProjectListProps) {
         }
       />
 
+      {overviews.length > 0 ? (
+        <ProjectListToolbar
+          filters={filters}
+          onChange={updateFilters}
+          resultCount={filtered.length}
+          totalCount={overviews.length}
+        />
+      ) : null}
+
       {overviews.length === 0 ? (
         <WorkspaceEmpty
           title={t('projects.emptyTitle')}
@@ -45,13 +73,29 @@ export function ProjectList({ overviews }: ProjectListProps) {
             t('projects.recommendations.research'),
           ]}
         />
+      ) : filtered.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border/80 bg-muted/20 px-6 py-12 text-center text-sm text-muted-foreground">
+          {t('projects.list.noResults')}
+        </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-2">
-          {overviews.map((overview) => (
-            <ProjectWorkspaceCard key={overview.project.id} overview={overview} />
+          {filtered.map((overview) => (
+            <ProjectWorkspaceCard
+              key={overview.project.id}
+              overview={overview}
+              onUndoDelete={(id, title) => setUndoDelete({ id, title })}
+            />
           ))}
         </div>
       )}
+
+      {undoDelete ? (
+        <ProjectUndoBanner
+          projectId={undoDelete.id}
+          title={undoDelete.title}
+          onDismiss={() => setUndoDelete(null)}
+        />
+      ) : null}
     </>
   );
 }

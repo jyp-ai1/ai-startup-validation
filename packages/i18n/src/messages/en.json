@@ -353,7 +353,36 @@
     "industryNotSet": "Industry not set",
     "created": "Created",
     "deleteConfirm": "Delete project?",
-    "deleteWarning": "This action cannot be undone.",
+    "deleteWarning": "Moves to trash. You can undo within 30 seconds.",
+    "list": {
+      "searchPlaceholder": "Search projects…",
+      "sort": "Sort",
+      "sortOptions": {
+        "updated": "Recently updated",
+        "created": "Created date",
+        "title": "Name",
+        "score": "Validation score"
+      },
+      "status": "Status",
+      "type": "Type",
+      "all": "All",
+      "showArchived": "Show archived",
+      "pinnedOnly": "Pinned only",
+      "noResults": "No projects match your filters.",
+      "resultCount": "Showing {shown} of {total}"
+    },
+    "actions": {
+      "menuLabel": "Project menu",
+      "pin": "Pin",
+      "unpin": "Unpin",
+      "duplicate": "Duplicate",
+      "archive": "Archive",
+      "unarchive": "Unarchive",
+      "delete": "Delete",
+      "undo": "Undo",
+      "dismiss": "Dismiss",
+      "deletedToast": "Deleted \"{title}\""
+    },
     "recommendations": {
       "label": "Recommended",
       "sample": "Start with a demo project to explore the flow",
@@ -386,7 +415,10 @@
         "problem": "Lack of social connection among seniors",
         "solution": "AI-powered relationship matching",
         "targetCustomer": "Ages 60+"
-      }
+      },
+      "autosaving": "Autosaving…",
+      "autosaved": "Autosaved",
+      "autosaveError": "Autosave failed — please try again"
     },
     "validation": {
       "titleRequired": "Please enter a project name",

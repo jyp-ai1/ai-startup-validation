@@ -18,6 +18,7 @@ import {
   updateProject,
   type ProjectActionState,
 } from '../actions/project-actions';
+import { useProjectAutosave } from '../hooks/use-project-autosave';
 
 const initialState: ProjectActionState = {};
 
@@ -61,9 +62,14 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
       : updateProject.bind(null, project!.id);
 
   const [state, formAction, pending] = useActionState(action, initialState);
+  const autosaveStatus = useProjectAutosave({
+    projectId: project?.id ?? '',
+    enabled: mode === 'edit' && Boolean(project?.id),
+  });
 
   return (
     <form
+      id="project-form"
       action={formAction}
       onSubmit={() =>
         trackEvent(
@@ -185,7 +191,8 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
         </div>
       </div>
 
-      <div className={cn('flex items-center gap-3')}>
+      <div className={cn('flex flex-wrap items-center gap-3')}>
+        {autosaveStatus}
         <Button type="submit" disabled={pending}>
           {pending
             ? labels.saving

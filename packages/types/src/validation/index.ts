@@ -53,6 +53,9 @@ export type StartupProject = {
   isDemo: boolean;
   onboardingContext: Record<string, unknown> | null;
   status: StartupProjectStatus;
+  isPinned: boolean;
+  deletedAt: ISODateString | null;
+  thumbnailColor: string | null;
   createdAt: ISODateString;
   updatedAt: ISODateString;
 };
@@ -71,6 +74,8 @@ export type CreateStartupProjectInput = {
   userId?: ID | null;
   isDemo?: boolean;
   status?: StartupProjectStatus;
+  isPinned?: boolean;
+  thumbnailColor?: string | null;
 };
 
 export type UpdateStartupProjectInput = {
@@ -86,6 +91,8 @@ export type UpdateStartupProjectInput = {
   projectType?: ProjectType;
   onboardingContext?: Record<string, unknown> | null;
   status?: StartupProjectStatus;
+  isPinned?: boolean;
+  thumbnailColor?: string | null;
 };
 
 /** @deprecated Use ResearchPlan — kept for Sprint 3+ migration reference */

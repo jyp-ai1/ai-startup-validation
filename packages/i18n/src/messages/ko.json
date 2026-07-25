@@ -353,7 +353,36 @@
     "industryNotSet": "산업군 미입력",
     "created": "생성일",
     "deleteConfirm": "프로젝트를 삭제하시겠습니까?",
-    "deleteWarning": "영구 삭제되며 되돌릴 수 없습니다.",
+    "deleteWarning": "휴지통으로 이동합니다. 30초 안에 실행 취소할 수 있습니다.",
+    "list": {
+      "searchPlaceholder": "프로젝트 검색…",
+      "sort": "정렬",
+      "sortOptions": {
+        "updated": "최근 수정",
+        "created": "생성일",
+        "title": "이름",
+        "score": "Validation Score"
+      },
+      "status": "상태",
+      "type": "유형",
+      "all": "전체",
+      "showArchived": "보관함 표시",
+      "pinnedOnly": "고정만",
+      "noResults": "조건에 맞는 프로젝트가 없습니다.",
+      "resultCount": "{shown} / {total}개 표시"
+    },
+    "actions": {
+      "menuLabel": "프로젝트 메뉴",
+      "pin": "고정",
+      "unpin": "고정 해제",
+      "duplicate": "복제",
+      "archive": "보관",
+      "unarchive": "보관 해제",
+      "delete": "삭제",
+      "undo": "실행 취소",
+      "dismiss": "닫기",
+      "deletedToast": "\"{title}\" 삭제됨"
+    },
     "recommendations": {
       "label": "추천",
       "sample": "데모 프로젝트로 UI 흐름을 먼저 확인하세요",
@@ -386,7 +415,10 @@
         "problem": "고령층 사회적 연결 부족",
         "solution": "AI 기반 관계 매칭",
         "targetCustomer": "60대 이상"
-      }
+      },
+      "autosaving": "자동 저장 중…",
+      "autosaved": "자동 저장됨",
+      "autosaveError": "자동 저장 실패 — 다시 시도해 주세요"
     },
     "validation": {
       "titleRequired": "프로젝트명을 입력해주세요",

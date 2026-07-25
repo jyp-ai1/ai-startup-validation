@@ -8,6 +8,8 @@ import type { ProjectOverviewCard } from '@/features/dashboard/services/dashboar
 import { getDecisionTone } from '@/features/dashboard/types';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import { ProjectTypeBadge } from '@/features/projects/components/project-type-badge';
+import { ProjectCardMenu } from '@/features/projects/components/project-card-menu';
+import { ProjectThumbnail } from '@/features/projects/components/project-thumbnail';
 import { VALIDATION_DECISION_LABELS } from '@/features/validation/utils/score-calculator';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
@@ -15,9 +17,10 @@ import { useLocalizedFormatters } from '@/lib/i18n/use-localized-formatters';
 
 type ProjectWorkspaceCardProps = {
   overview: ProjectOverviewCard;
+  onUndoDelete?: (projectId: string, title: string) => void;
 };
 
-export function ProjectWorkspaceCard({ overview }: ProjectWorkspaceCardProps) {
+export function ProjectWorkspaceCard({ overview, onUndoDelete }: ProjectWorkspaceCardProps) {
   const t = useTranslations();
   const { formatRelative } = useLocalizedFormatters();
   const { project, validationScore, researchProgress, evidenceCount, vocCount, competitorCount } =
@@ -29,23 +32,30 @@ export function ProjectWorkspaceCard({ overview }: ProjectWorkspaceCardProps) {
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm transition-all hover:border-primary/25 hover:shadow-md">
       <div className="border-b border-border/60 bg-gradient-to-br from-primary/[0.04] to-transparent px-5 py-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <Link
-              href={`/projects/${project.id}`}
-              className="truncate text-lg font-semibold tracking-tight hover:text-primary"
-            >
-              {project.title}
-            </Link>
+        <div className="flex items-start gap-3">
+          <ProjectThumbnail project={project} />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2">
+              <Link
+                href={`/projects/${project.id}`}
+                className="truncate text-lg font-semibold tracking-tight hover:text-primary"
+              >
+                {project.title}
+              </Link>
+              <ProjectCardMenu project={project} onUndoDelete={onUndoDelete} />
+            </div>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <ProjectTypeBadge projectType={project.projectType} />
               <ProjectStatusBadge status={project.status} />
+              {project.isPinned ? (
+                <Star className="size-3.5 fill-amber-400 text-amber-400" aria-label="Pinned" />
+              ) : null}
               <span className="text-xs text-muted-foreground">
                 {formatRelative(new Date(project.updatedAt))}
               </span>
             </div>
           </div>
-          <div className="text-right">
+          <div className="hidden shrink-0 text-right sm:block">
             <p className={cn('text-xl font-bold', getDecisionTone(decision))}>
               {decision ? VALIDATION_DECISION_LABELS[decision] : '—'}
             </p>

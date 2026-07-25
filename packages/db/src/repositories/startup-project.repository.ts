@@ -32,6 +32,9 @@ type StartupProjectRow = {
   is_demo: boolean;
   onboarding_context: Record<string, unknown> | null;
   status: StartupProject['status'];
+  deleted_at?: string | null;
+  is_pinned?: boolean;
+  thumbnail_color?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -53,6 +56,9 @@ function toStartupProject(row: StartupProjectRow): StartupProject {
     isDemo: row.is_demo ?? false,
     onboardingContext: row.onboarding_context ?? null,
     status: row.status,
+    isPinned: row.is_pinned ?? false,
+    deletedAt: row.deleted_at ?? null,
+    thumbnailColor: row.thumbnail_color ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -73,6 +79,8 @@ function toInsertRow(input: CreateStartupProjectInput) {
     user_id: input.userId ?? null,
     is_demo: input.isDemo ?? false,
     status: input.status ?? 'DRAFT',
+    is_pinned: input.isPinned ?? false,
+    thumbnail_color: input.thumbnailColor ?? null,
   };
 }
 
@@ -96,6 +104,8 @@ function toUpdateRow(input: UpdateStartupProjectInput) {
       ? { onboarding_context: input.onboardingContext }
       : {}),
     ...(input.status !== undefined ? { status: input.status } : {}),
+    ...(input.isPinned !== undefined ? { is_pinned: input.isPinned } : {}),
+    ...(input.thumbnailColor !== undefined ? { thumbnail_color: input.thumbnailColor } : {}),
     updated_at: new Date().toISOString(),
   };
 }
@@ -132,10 +142,14 @@ export class SupabaseStartupProjectRepository implements StartupProjectRepositor
   }
 
   async findAll(filter?: Record<string, unknown>): Promise<StartupProject[]> {
-    const query = applyEqFilters(
-      this.client.from(TABLE).select('*').order('created_at', { ascending: false }),
-      filter,
-    );
+    let query = this.client.from(TABLE).select('*').order('created_at', { ascending: false });
+
+    if (!filter?.includeDeleted) {
+      query = query.is('deleted_at', null);
+    }
+    delete filter?.includeDeleted;
+
+    query = applyEqFilters(query, filter);
     const { data, error } = await query;
     assertNoError(error);
     return ((data ?? []) as StartupProjectRow[]).map(toStartupProject);
@@ -167,6 +181,67 @@ export class SupabaseStartupProjectRepository implements StartupProjectRepositor
   async delete(id: ID): Promise<void> {
     const { error } = await this.client.from(TABLE).delete().eq('id', id);
     assertNoError(error);
+  }
+
+  async softDelete(id: ID): Promise<StartupProject> {
+    const { data, error } = await this.client
+      .from(TABLE)
+      .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select('*')
+      .single();
+    assertNoError(error);
+    return toStartupProject(assertRow(data as StartupProjectRow, 'StartupProject'));
+  }
+
+  async restore(id: ID): Promise<StartupProject> {
+    const { data, error } = await this.client
+      .from(TABLE)
+      .update({ deleted_at: null, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select('*')
+      .single();
+    assertNoError(error);
+    return toStartupProject(assertRow(data as StartupProjectRow, 'StartupProject'));
+  }
+
+  async duplicate(id: ID): Promise<StartupProject> {
+    const source = await this.findById(id);
+    if (!source) {
+      throw new Error(`Startup project not found: ${id}`);
+    }
+    return this.create({
+      title: `${source.title} (copy)`,
+      summary: source.summary,
+      problem: source.problem,
+      solution: source.solution,
+      targetCustomer: source.targetCustomer,
+      industry: source.industry,
+      businessModel: source.businessModel,
+      country: source.country,
+      projectGoal: source.projectGoal,
+      projectType: source.projectType,
+      userId: source.userId,
+      isDemo: source.isDemo,
+      status: 'DRAFT',
+      thumbnailColor: source.thumbnailColor,
+    });
+  }
+
+  async togglePin(id: ID): Promise<StartupProject> {
+    const existing = await this.findById(id);
+    if (!existing) {
+      throw new Error(`Startup project not found: ${id}`);
+    }
+    return this.update(id, { isPinned: !existing.isPinned });
+  }
+
+  async archive(id: ID): Promise<StartupProject> {
+    return this.update(id, { status: 'ARCHIVED' });
+  }
+
+  async unarchive(id: ID): Promise<StartupProject> {
+    return this.update(id, { status: 'DRAFT' });
   }
 
   async exists(id: ID): Promise<boolean> {
