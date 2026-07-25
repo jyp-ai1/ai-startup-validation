@@ -16,11 +16,11 @@
 
 | # | Area | Status |
 |---|------|--------|
-| 1 | Landing Complete | in_progress |
+| 1 | Landing Complete | in_progress (`2.9.0` Journey + Why) |
 | 2 | Goal Experience Complete | in_progress |
 | 3 | Workflow Complete | in_progress |
 | 4 | Workspace Complete | in_progress |
-| 5 | Decision Workspace Complete | in_progress |
+| 5 | Decision Workspace Complete | in_progress (`2.9.0` undo/redo log) |
 | 6 | Project Management Complete | shipped `2.5.0` |
 | 7 | History Complete | shipped `2.8.0` (JSON export) |
 | 8 | Coach Complete | shipped `2.8.0` (Evening/Weekly mock) |
