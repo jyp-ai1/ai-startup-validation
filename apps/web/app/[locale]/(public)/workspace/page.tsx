@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
 
 import { JourneyPageSkeleton } from '@/features/workflow-journey/components/journey-page-skeleton';
 import { getWorkflowTemplate, readJourneyGoal } from '@/features/workflow-journey';
+import { buildPageMetadata } from '@/lib/site/page-metadata';
 
 const StrategyWorkspaceShell = dynamic(
   () =>
@@ -15,12 +15,11 @@ const StrategyWorkspaceShell = dynamic(
 );
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('workflow.workspace');
-  const tm = await getTranslations('meta');
-  return {
-    title: `${t('title')} | ${tm('titleSuffix')}`,
-    robots: { index: false, follow: false },
-  };
+  return buildPageMetadata({
+    titleKey: 'title',
+    namespace: 'workflow.workspace',
+    path: '/workspace',
+  });
 }
 
 type WorkspacePageProps = {

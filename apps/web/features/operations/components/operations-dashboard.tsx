@@ -15,6 +15,7 @@ import {
 
 import type { OpsDashboardStats } from '@/lib/analytics/types';
 import { AdminOpsTools } from './admin-ops-tools';
+import { AdminFeedbackInbox } from './admin-feedback-inbox';
 import { Badge, Card, CardContent, CardHeader, CardTitle, PageHeader } from '@repo/ui';
 
 function StatCard({
@@ -540,6 +541,7 @@ export function OperationsDashboard() {
           </Card>
 
           <AdminOpsTools stats={stats} />
+          <AdminFeedbackInbox stats={stats} />
 
           <p className="flex items-center gap-2 text-xs text-muted-foreground">
             <Languages className="size-3.5" />

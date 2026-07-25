@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { LandingHeroActions } from './landing-hero-actions';
 import { LandingHeroPreviewStatic } from './landing-hero-preview-static';
-import { LandingJourneyStripAnimated } from './landing-journey-strip-animated';
+import { LandingJourneyStrip } from './landing-journey-strip';
 
 /** Server-rendered hero — h1 in initial HTML for LCP (Epic 4 perf). */
 export async function LandingHero() {
@@ -24,7 +24,7 @@ export async function LandingHero() {
           <p className="mt-3 text-base leading-relaxed text-muted-foreground">{t('northStar')}</p>
 
           <div className="mt-8">
-            <LandingJourneyStripAnimated />
+            <LandingJourneyStrip />
           </div>
 
           <LandingHeroActions

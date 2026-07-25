@@ -1,29 +1,37 @@
-# Mission Queue — Omega-1
+# Mission Queue — Omega-1 Batch 3–10
 
-**Active:** Mission Omega-1 — Closed Beta Complete  
+**Active:** Mission Omega-1 — Product Completion  
 **Report:** 08:00 KST only · See `docs/MISSION_OMEGA_1.md`
 
 ## Priority Order (consume top → bottom)
 
-| P | Omega # | Focus | Status |
-|---|---------|-------|--------|
-| 1 | 4 | Workspace polish (Today/Coach/Activity) | in_progress |
-| 2 | 16 | Error UX (404/500/timeout/retry/empty) | in_progress |
-| 3 | 1 | Landing final polish | in_progress |
-| 4 | 2 | Goal immersion | in_progress |
-| 5 | 3 | Workflow stack UX | in_progress |
-| 6 | 5 | Decision undo/redo log | in_progress |
-| 7 | 12–15 | A11y, Responsive, Perf, SEO | pending |
-| 8 | 17–19 | Animation, refactor, design system | pending |
-| 9 | 10 | Analytics dashboard polish | in_progress |
-| 10 | 20 | Docs sync | in_progress |
+| P | Focus | Status |
+|---|-------|--------|
+| 1 | Performance 95+ (Landing, Goal, Workflow, Workspace, Admin) | in_progress (`2.10.0` route split + ISR) |
+| 2 | Full Responsive audit (390–1920) | pending |
+| 3 | Accessibility 100 (Tab, SR, contrast, reduced motion) | in_progress (`2.10.0` focus-visible) |
+| 4 | SEO all pages (OG, JSON-LD, canonical) | in_progress (`2.10.0` journey metadata) |
+| 5 | UI/UX audit — remove friction, single CTA | pending |
+| 6 | Admin ops (Feedback Inbox, retention, export) | in_progress (`2.10.0` inbox) |
+| 7 | Design System 100% component unify | pending |
+| 8 | Project Intelligence polish (Notion/Linear feel) | pending |
+| 9 | Cleanup (dead code, console, TODO) | pending |
+| 10 | Docs sync (Roadmap, ADR, QA, Release) | in_progress |
 
-## Shipped This Session
+## Shipped Tags
 
-| Tag | Omega areas |
-|-----|-------------|
-| `closed-beta-v2.8.0` | #7 History export · #8 Coach · #9 Evidence · #11 Admin · #16 offline |
+| Tag | Batch |
+|-----|-------|
+| `closed-beta-v2.10.0` | Batch 3 — Performance route split, ISR landing, SEO metadata, A11y base, Admin Feedback Inbox |
+| `closed-beta-v2.9.0` | Landing Journey/Why, Decision log, Error UX |
+| `closed-beta-v2.8.0` | Coach, Evidence, Admin, History export, Offline |
 
-## Tags
+## Targets
 
-`2.8.0` → `2.9.0+` incremental per Omega batch
+| Metric | Goal |
+|--------|------|
+| Product Completion | 98% |
+| Lighthouse | 95+ |
+| Accessibility | 100 |
+| Responsive | 100 |
+| Critical Bug | 0 |

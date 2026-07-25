@@ -2,10 +2,10 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
 
 import { JourneyPageSkeleton } from '@/features/workflow-journey/components/journey-page-skeleton';
 import { getWorkflowTemplate, readJourneyGoal } from '@/features/workflow-journey';
+import { buildPageMetadata } from '@/lib/site/page-metadata';
 
 const WorkflowComposeLoader = dynamic(
   () =>
@@ -24,12 +24,12 @@ const WorkflowPlanView = dynamic(
 );
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('workflow.plan');
-  const tm = await getTranslations('meta');
-  return {
-    title: `${t('title')} | ${tm('titleSuffix')}`,
-    robots: { index: false, follow: false },
-  };
+  return buildPageMetadata({
+    titleKey: 'title',
+    descriptionKey: 'intro',
+    namespace: 'workflow.plan',
+    path: '/workflow',
+  });
 }
 
 type WorkflowPageProps = {

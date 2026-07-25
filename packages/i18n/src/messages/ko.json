@@ -1902,11 +1902,18 @@
       "featureFlags": "Feature Flags",
       "featureFlagsHint": "Mock 플래그 — Production 연동 전까지 UI 미리보기용입니다.",
       "notice": "공지 · Banner",
-      "noticeActive": "Closed Beta 2.8.0",
-      "noticeBody": "Mission Omega-1 진행 중 — Coach · Evidence · Admin 도구가 추가되었습니다.",
+      "noticeActive": "Closed Beta 2.10.0",
+      "noticeBody": "Mission Omega-1 Batch 3 — Performance route split, SEO metadata, Admin Feedback Inbox.",
       "export": "데이터 Export",
       "exportCsv": "CSV 다운로드",
-      "exportHint": "운영 지표를 CSV로 내보냅니다 (Mock 데이터 포함)."
+      "exportHint": "운영 지표를 CSV로 내보냅니다 (Mock 데이터 포함).",
+      "feedbackInbox": {
+        "title": "Feedback Inbox",
+        "positive": "Positive",
+        "negative": "Needs work",
+        "emptyMessage": "피드백 내용 없음",
+        "recent": "방금"
+      }
     }
   },
   "decision": {

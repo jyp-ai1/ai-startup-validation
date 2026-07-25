@@ -1902,11 +1902,18 @@
       "featureFlags": "Feature Flags",
       "featureFlagsHint": "Mock flags — UI preview until production wiring.",
       "notice": "Notice · Banner",
-      "noticeActive": "Closed Beta 2.8.0",
-      "noticeBody": "Mission Omega-1 in progress — Coach, Evidence, and Admin tools added.",
+      "noticeActive": "Closed Beta 2.10.0",
+      "noticeBody": "Mission Omega-1 Batch 3 — Performance route split, SEO metadata, Admin Feedback Inbox.",
       "export": "Data Export",
       "exportCsv": "Download CSV",
-      "exportHint": "Export operational metrics as CSV (includes mock data)."
+      "exportHint": "Export operational metrics as CSV (includes mock data).",
+      "feedbackInbox": {
+        "title": "Feedback Inbox",
+        "positive": "Positive",
+        "negative": "Needs work",
+        "emptyMessage": "No message",
+        "recent": "Just now"
+      }
     }
   },
   "decision": {

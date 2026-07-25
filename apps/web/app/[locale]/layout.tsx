@@ -1,13 +1,12 @@
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages, setRequestLocale } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 
-import { OfflineStatusBanner } from '@/components/offline-status-banner';
+import { ClientChrome } from '@/components/client-chrome';
 import { SkipToMainLink } from '@/components/skip-to-main';
 import { AnalyticsProvider } from '@/lib/analytics/providers/analytics-provider';
-import { AppShellWrapper } from '@/components/app-shell-wrapper';
 import { routing } from '@/i18n/routing';
-import { ThemeProvider, Toaster } from '@repo/ui';
+import { ThemeProvider } from '@repo/ui';
 
 type LocaleLayoutProps = {
   children: React.ReactNode;
@@ -18,9 +17,6 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-/** Cookie-based locale must resolve per request — avoid stale SSG bundles. */
-export const dynamic = 'force-dynamic';
-
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
   const { locale } = await params;
 
@@ -28,18 +24,16 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     notFound();
   }
 
-  const resolvedLocale = await getLocale();
-  setRequestLocale(resolvedLocale);
+  setRequestLocale(locale);
   const messages = await getMessages();
 
   return (
-    <NextIntlClientProvider locale={resolvedLocale} messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       <ThemeProvider>
         <SkipToMainLink />
         <AnalyticsProvider>
-          <AppShellWrapper>{children}</AppShellWrapper>
-          <OfflineStatusBanner />
-          <Toaster position="top-right" richColors closeButton />
+          {children}
+          <ClientChrome />
         </AnalyticsProvider>
       </ThemeProvider>
     </NextIntlClientProvider>

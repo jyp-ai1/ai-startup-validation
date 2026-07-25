@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
-import { getTranslations } from 'next-intl/server';
 
 import { JourneyPageSkeleton } from '@/features/workflow-journey/components/journey-page-skeleton';
+import { buildPageMetadata } from '@/lib/site/page-metadata';
 
 const GoalSelectionView = dynamic(
   () =>
@@ -13,12 +13,11 @@ const GoalSelectionView = dynamic(
 );
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('workflow.goal');
-  const tm = await getTranslations('meta');
-  return {
-    title: `${t('title')} | ${tm('titleSuffix')}`,
-    robots: { index: false, follow: false },
-  };
+  return buildPageMetadata({
+    titleKey: 'title',
+    descriptionKey: 'subtitle',
+    namespace: 'workflow.goal',
+  });
 }
 
 type GoalPageProps = {
