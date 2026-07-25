@@ -5,7 +5,11 @@ alwaysApply: true
 
 # Product Vision
 
-Read `docs/PRODUCT_VISION_V3.md` and `docs/PRODUCT_COMPLETION_DIRECTIVE.md` before work.
+Read `docs/PRODUCT_VISION_V3.md` and `docs/PRODUCT_COMPLETION_DIRECTIVE.md` (v8) before work.
+
+## Evolution guard
+
+Prefer **Journey improvement** over new features. No Vision-external features. Queue empty → generate evolution queue — **never stop**.
 
 ## What LaunchLens is
 

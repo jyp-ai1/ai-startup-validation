@@ -1,10 +1,10 @@
-# LaunchLens Daily Report — Template (v7)
+# Daily Product Evolution Report — Template (v8)
 
-Copy at **08:00 KST only**. No questions. No approval requests.
+**08:00 KST only.** Evolution report — not completion report.
 
 ```text
 ========================
-LaunchLens Daily Report
+Daily Product Evolution Report
 ========================
 
 Production:   https://ai-startup-validation-tau.vercel.app
@@ -13,7 +13,7 @@ Commit:       (hash)
 Tag:          closed-beta-vx.x.x
 
 -------------------------
-오늘 추가된 사용자 경험
+오늘 더 좋아진 사용자 경험
 (bullets)
 
 -------------------------
@@ -21,28 +21,31 @@ Tag:          closed-beta-vx.x.x
 (bullets)
 
 -------------------------
-QA 결과
-Lint / Build / Type / Regression / Smoke — PASS table
+QA
+Lint / Build / Type / Regression / Smoke
 
 -------------------------
 Known Issues
 (bullets)
 
 -------------------------
-Roadmap Progress
-T0xx / T300  (+N today)
+Evolution Progress
+Active Queue:    R1 Roadmap / UX Queue / …
+Task:            T0xx (not "done")
+Slice progress:  N / 300 (evolution metric)
+Current Priority: P1 Journey / P6 Perf / …
+Release:         R1
 
-Current Phase:     Phase N — (name)
-Current Release:   R1
-Current Mission:   Mx
-Current Task:      T0xx
-
-전체 진행률:       xx%
-
-다음 24시간 완료 예정 Task
-T0xx – T0yy
+다음 evolution cycle에서 다룰 영역
+(bullets — not "next approval")
 
 ========================
 ```
 
-**Forbidden closing lines:** 질문 · 승인 요청 · "진행할까요?" · "배포할까요?"
+## Forbidden phrases
+
+완료했습니다 · 끝났습니다 · 다음 작업이 없습니다 · Queue가 비었습니다 · 진행할까요 · 배포할까요 · 승인
+
+## Philosophy line (internal)
+
+> 오늘보다 내일 LaunchLens를 더 좋게.

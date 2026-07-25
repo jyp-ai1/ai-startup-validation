@@ -1,38 +1,31 @@
-# Queue State — Consumer Pointer
+# Queue State — Evolution Consumer Pointer
 
-**Mode:** Product Completion Consumer v7  
+**Mode:** Product Evolution Consumer v8  
 **Directive:** `docs/PRODUCT_COMPLETION_DIRECTIVE.md`  
-**Updated:** 2026-07-25 v7 rollout
+**Rule:** Queue empty → generate next queue → continue. **No "complete" state.**
 
 | Field | Value |
 |-------|-------|
-| Release | **R1** Closed Beta |
-| **Current Phase** | **Phase 1 — Product Journey Complete** |
-| Progress | **56 / 300** (19%) |
-| Current Mission | M3 Workflow (Phase 1 recommendation UX) |
-| **Current Task** | **T057** ✅ → **T058** |
+| Release | **R1** Closed Beta (unbounded R1→R999+) |
+| **Evolution Phase** | Phase 1 — Product Journey |
+| **Priority** | **P1** User Journey (after P0 clear) |
+| Active Queue | R1 Roadmap T001–T300 |
+| Progress | **56 / 300** (evolution slice, not termination) |
+| **Current Task** | **T058** |
+| Next if queue empty | Auto-generate **UX Queue** (Vision guard) |
 | Production | https://ai-startup-validation-tau.vercel.app |
 | Version | Closed Beta 2.14.0 |
 | Tag | `closed-beta-v2.14.0` |
-| Commit | `d12cd70` |
 
-## Completion standard (v7)
+## v8 rules
 
-Task ✅ only when: Feature + UX + States + A11y + Responsive + SEO + Perf + Analytics + Admin + Docs + Regression + Deploy.
+- **Never** report "완료" / "Queue 비음" / "다음 작업 없음"
+- **Never** use hour budgets as stop condition
+- New work must strengthen **AI Strategy PM** (`docs/PRODUCT_VISION_V3.md`)
+- Prefer Journey polish over new unrelated features
 
-## Consumer rule
+## AI Product Loop status
 
-Task ✅ → increment → **immediate next**. T300 ✅ → R2 T301. Empty queue → **generate next**.
-
-## Phase map
-
-| Phase | Name | Task range |
-|-------|------|------------|
-| 1 | Product Journey | T001–T080 |
-| 2 | Intelligence | T081–T140 |
-| 3 | Admin | T141–T180 |
-| 4 | Closed Beta ops | T181–T210 |
-| 5 | Open Beta perf | T211–T250 |
-| 6–16 | Experience → v1.0 | cross-cut + R2+ |
+`Analyze → Queue → Implement → Deploy → Analytics` — **continuous**
 
 Full queue: `docs/ROADMAP_QUEUE.md`

@@ -1,44 +1,38 @@
-# Roadmap Queue — Infinite Consumer (v7)
+# Roadmap Queue — Evolution Consumer (v8)
 
-**Directive:** `docs/PRODUCT_COMPLETION_DIRECTIVE.md` · **State:** `docs/QUEUE_STATE.md`
+**Directive:** `docs/PRODUCT_COMPLETION_DIRECTIVE.md`  
+**State:** `docs/QUEUE_STATE.md`
 
-Tasks must pass **full completion standard** (not feature-only). Phases = quality bars.
+Numbered tasks are **one evolution slice**, not project end. When T300+ done → generate **Evolution Queues** below.
 
-## Phase 1 — Product Journey (T001–T080) **active**
+## R1 slice (T001–T300) — active
 
-| ID | Surface | Task | Status |
-|----|---------|------|--------|
-| T001–T017 | Landing | Hero · Story · Journey · SEO · lazy · defer analytics | ✅ |
-| T018 | Landing | Lighthouse ≥95 | 🔄 T056 |
-| T019–T027 | Landing | Responsive · A11y · 5s QA | ⏳ |
-| T051–T055 | Goal | Intake interactive · analytics | ✅ |
-| T056–T060 | Goal | Thinking context · perf | ⏳ |
-| T061–T075 | Workflow | Recommendation · Why · Result · Risk · Duration | ⏳ |
-| T076–T085 | Workspace | Timeline · Memory polish | ⏳ |
-| T166–T175 | Execution | Board · toggle · coach | ✅ partial |
+| Range | Dimension | Status |
+|-------|-----------|--------|
+| T001–T017 | Landing core | ✅ |
+| T018–T027 | Landing perf · responsive · a11y | ⏳ T056+ |
+| T043–T055 | Goal intake · Execution board | ✅ |
+| T057 | Workflow AI recommendation summary | ✅ |
+| **T058** | Workflow loading skeleton + error retry | 🔄 |
+| T059–T080 | Workspace timeline · Journey polish | ⏳ |
+| T081–T300 | Intelligence · Admin · Phases 2–16 | ⏳ |
 
-## Phases 2–16
+## When R1 slice consumed → auto-generate
 
-| Phase | Range | Release |
-|-------|-------|---------|
-| 2 Intelligence | T081–T140 | R1–R2 |
-| 3 Admin | T141–T180 | R1 |
-| 4 Closed Beta ops | T181–T210 | R1 |
-| 5 Open Beta perf | T211–T250 | R2 |
-| 6–13 Experience/Polish | cross-cut | R1–R5 |
-| 14–16 Beta→v1.0 | gates | R2–R5 |
+```text
+UX Queue → Animation → A11y → Performance → Refactoring → Architecture
+→ Analytics → Experiment → A/B Test → Growth → Tech Debt
+→ AI Improvement → Product Polish → (repeat)
+```
 
-## Active: T056–T065 (Phase 1 batch 2.15.0)
+Each item: Vision guard · P1–P12 priority · full Task completion standard.
 
-| ID | Completion scope |
-|----|------------------|
-| T056 | Landing Lighthouse ≥95 (`/` not `/ko`) |
-| T057 | Workflow AI recommendation panel — Why · Expected result · Confidence · Risk · Duration |
-| T058 | Workflow loading skeleton + error retry |
-| T059 | Workspace timeline strip (mock memory) |
-| T060 | Journey 3-min smoke script in docs |
-| T061–T065 | Responsive Landing 390/768 · A11y pass · tag 2.15.0 |
+## Post-milestone Feedback Queues
 
-After T065 → T019 Responsive Landing 390.
+Closed Beta → Feedback Queue → Open Beta → Feedback Queue → RC → v1.0 → v1.1 → …
+
+## Vision guard (all new tasks)
+
+Journey improvement first · Vision V3 · AI PM experience only
 
 Production: https://ai-startup-validation-tau.vercel.app

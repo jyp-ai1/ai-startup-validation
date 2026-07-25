@@ -1,49 +1,34 @@
-# Release Queue — LaunchLens
+# Release Queue — Unbounded Evolution (v8)
 
-**Mode:** Product Completion Consumer v7  
 **Directive:** `docs/PRODUCT_COMPLETION_DIRECTIVE.md`  
 **Pointer:** `docs/QUEUE_STATE.md`
 
-Goal = **service completion** (Closed Beta → v1.0), not Epic/Sprint/Mission completion.
+Releases do not end at v1.0. **R1 → R2 → … → R999+** with Feedback Queues between milestones.
 
-## Hierarchy
+## Active stack
 
-```
-Release → Product → Mission → Epic → Sprint → Feature → Task → Sub-task
-```
+| Release | Focus | Status |
+|---------|-------|--------|
+| **R1** | Closed Beta | **active** — consume T001–T300 |
+| R2 | Open Beta | queued → auto-start at T301 |
+| R3+ | RC · v1.0 · v1.1 · … | queued — **no final release** |
 
-## Completion phases (16)
+After each milestone: **Feedback Queue** → next release tasks.
 
-See `docs/PRODUCT_COMPLETION_DIRECTIVE.md` — Phase 1 Journey active on R1.
+## Version line
 
-## Releases (auto-chain)
+`2.14.0 → 2.15.0 → … → 3.0 → …` (unbounded)
 
-| # | Release | Tasks | Status |
-|---|---------|-------|--------|
-| R1 | **Closed Beta** | 300 | **active** 55/300 Phase 1 |
-| R2 | Open Beta | 280 | queued |
-| R3 | RC1 | 240 | queued |
-| R4 | RC2 | 200 | queued |
-| R5 | v1.0 | 500 | queued |
-| R6 | Real Intelligence | 1000+ | PM gate |
-| R7 | Commercial | TBD | queued |
+## Queue empty rule
 
-Queue empty → **generate next queue** → continue.
+Generate evolution queue (UX → Animation → … → Polish → repeat). Vision guard required.
 
-## Task completion (v7)
+## Priority
 
-Feature + UX + Animation + Loading + Error + Empty + Retry + A11y + Responsive + SEO + Perf + Analytics + Admin + History + Docs + Regression + Deploy = **done**.
+P0 outage → P1 Journey → … → P12 DX → P1 again
 
-## Stop (5)
+## Stop (5 only)
 
-Build fail · Prod outage · DB/LLM/Billing/Auth cost · Security · Vision change
-
-## Cycle
-
-Implement → QA → Build → Commit → Push → Tag → QUEUE_STATE → next Task
-
-## Report
-
-08:00 KST Daily — `docs/templates/DAILY_AUTONOMOUS_REPORT.md`
+Build fail · Prod outage · DB/LLM/Billing/Auth · Security · Vision change
 
 Production: https://ai-startup-validation-tau.vercel.app

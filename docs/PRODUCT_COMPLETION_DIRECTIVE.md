@@ -1,164 +1,191 @@
-# LaunchLens Product Completion Directive v7
+# LaunchLens Product Completion Directive v8
 
-**Supersedes:** Mission Mode · Epic/Sprint completion targets  
-**Mode:** Release Queue Consumer + **Product Completion Standard**  
+## Never Ending Product Evolution
+
+**Supersedes:** v7 · Mission Mode · Sprint completion · time-based targets  
+**Mode:** Infinite Queue Consumer + Product Evolution Standard  
 **Consumer pointer:** `docs/QUEUE_STATE.md`
 
 ---
 
-## Operating principle (immutable)
+## Purpose
 
-LaunchLens is completed through **Closed Beta → Open Beta → RC → v1.0**.
+LaunchLens is **not** a sprint-based project. It is a **continuously growing SaaS product**.
 
-- Do **not** target Epic, Sprint, or Mission completion as goals.
-- Goal = **service completion** at defined quality bar.
-- Consume `ROADMAP_QUEUE` (T001–T300+) to end; when empty, **generate next queue** and continue.
-- No mid-stream approval, questions, or confirmation.
+Cursor's purpose is not to implement features — it is to **keep the product growing**.
 
----
-
-## Development principle
-
-A Task is **done** only when **all** completion criteria pass:
-
-| Layer | Required |
-|-------|----------|
-| Core | Feature implementation |
-| UX | UX improvement |
-| Motion | Animation |
-| States | Loading · Error · Empty · Retry |
-| Resilience | Offline · Reconnect · Autosave · Restore |
-| Access | Accessibility · Responsive |
-| Discovery | SEO |
-| Speed | Performance |
-| Ops | Analytics · Admin monitoring · History |
-| Ship | Documentation · Regression QA · Production deploy |
-
-**Feature-only delivery is not completion.**
+**Roadmap finishing does not end work.**
 
 ---
 
-## Product vision (do not change)
+## Absolute rule — never terminate
 
-LaunchLens is **not**:
+```text
+Roadmap Queue가 모두 완료되어도 작업을 종료하지 않는다.
 
-- AI Chat
-- Report generator
-- Business plan writer
+Queue가 비어있으면 Cursor는 스스로 다음 Queue를 생성한다.
 
-LaunchLens **is**:
+Queue 생성 기준은
 
-> **AI Strategy Project Manager**
+1. 사용자 경험 개선
+2. 운영 효율 개선
+3. 제품 품질 향상
+4. 성능 개선
+5. 코드 품질 개선
+6. 기술 부채 제거
+7. AI Strategy PM 경험 강화
 
-User does not ask questions. AI understands the project, builds Workflow, makes Decisions, and continuously proposes next actions. User **approves**.
+이다.
 
-Every implementation must match this vision. Read `docs/PRODUCT_VISION_V3.md`.
+Queue가 비는 순간 새 Queue를 생성하고 계속 소비한다.
+
+프로젝트는 "완료" 상태가 존재하지 않는다.
+```
+
+**Cursor does not understand time.** Do not use hour budgets, sprint durations, or time-based termination. Queue consumption + evolution loops govern progress.
 
 ---
 
-## Completion phases (16)
+## Vision guard (mandatory for new queues)
 
-Phases are **quality bars**, not stop points. Queue consumer runs Tasks; Tasks map to Phases.
+```text
+새로운 기능을 만드는 것보다 기존 Journey를 더 좋게 만드는 것을 우선한다.
 
-### Phase 1 — Product Journey Complete
+제품 Vision에 없는 기능은 추가하지 않는다.
 
-**Goal:** Landing → Goal → Workflow → Workspace → first GO/HOLD → Execution in **~3 minutes**.
+새 Queue를 생성할 때는 반드시 Product Vision V3와 North Star를 만족해야 한다.
 
-| Surface | Completion scope |
-|---------|------------------|
-| Landing | Hero · Story · Trust · Social proof · FAQ · CTA |
-| Goal | AI Intake · Thinking · Progress · Context |
-| Workflow | AI Recommendation · Why · Expected result · Confidence · Risk · Duration |
-| Workspace | Today · Coach · Decision · Confidence · Timeline · History · Memory |
-| Execution | MVP · Interview · Pricing · GTM · Government · Investment |
+"AI Strategy Project Manager" 경험을 강화하지 않는 기능은 생성하지 않는다.
+```
 
-**R1 Tasks:** T001–T080 · **Active**
+Read `docs/PRODUCT_VISION_V3.md` before generating any queue.
 
-### Phase 2 — Intelligence Complete
+---
 
-Mock aligned with real architecture: Evidence · Citation · Confidence · Rule · Risk · Decision · Recommendation · Memory · Timeline · Execution · Reasoning · Tradeoff · Missing data · Health · Stability.
+## Product philosophy
 
-**R1–R2 Tasks:** T081–T140
+Cursor is not a code-writing AI.
 
-### Phase 3 — Admin Complete
+Cursor performs:
 
-Dashboard · Funnels · Dropoff · Sessions · Goals · Projects · Retention · DAU/WAU/MAU · GO/HOLD rates · Completion · Errors · Flags · Release notes · Feedback · CSV · Analytics · Heatmap · Clarity · PostHog.
+**Senior Product Engineer · Senior QA · DevOps · SRE · Product Designer · Frontend Lead · Platform Engineer**
 
-**Tasks:** T141–T180
+Always:
 
-### Phase 4 — Closed Beta Complete
+> **"이 제품을 오늘보다 내일 더 좋아지게 만든다."**
 
-Feedback widget · Beta notice · Announcements · User guide · Help · Onboarding · Email templates · Error guide · Recovery · Offline · Reconnect · Autosave · Restore.
+LaunchLens is **not** AI Chat · report generator · business-plan writer.
 
-**Tasks:** T181–T210
+LaunchLens **is** **AI Strategy Project Manager** — AI leads; user approves.
 
-### Phase 5 — Open Beta Complete
+---
 
-Performance · Caching · Bundle split · SSR · ISR · Streaming · Images · Fonts · LCP · CLS · TBT · Memory · Monitoring · Logging · Alerts.
+## Work priority (always follow, then repeat from P1)
 
-**Tasks:** T211–T250
+```text
+P0  서비스 장애
+P1  사용자 Journey
+P2  제품 경험
+P3  AI PM 경험
+P4  운영 (Admin)
+P5  Analytics
+P6  Performance
+P7  SEO
+P8  Accessibility
+P9  Responsive
+P10 Refactoring
+P11 Documentation
+P12 Developer Experience
+→ 다시 P1부터 반복
+```
 
-### Phase 6 — Experience Complete
+When P12 finishes → return to **P1 Journey improvement**, not "project done."
 
-Animation · Transition · Skeleton · Loading copy · Celebration · Micro-interaction · Empty · Hover · Keyboard · Focus · (optional sound) on all core surfaces.
+---
 
-**Tasks:** cross-cutting per Task checklist
+## Task completion standard (per Task)
 
-### Phase 7 — Responsive Complete
+Feature + UX + Animation + Loading + Error + Empty + Retry + Offline + A11y + Responsive + SEO + Perf + Analytics + Admin + History + Docs + Regression QA + Production deploy.
 
-390 · 430 · 768 · 1024 · 1440 · 1920 — all pages QA ✅
+Feature-only = not accepted.
 
-### Phase 8 — Accessibility Complete
+---
 
-Keyboard · ESC · Focus · ARIA · Contrast · Screen reader · Dialog · Skip nav — **100** target
+## Queue generation (when current queue empty)
 
-### Phase 9 — Performance Complete
+Auto-generate in cycle:
 
-Landing · Goal · Workflow · Workspace · Execution · Admin:
+```text
+UX Queue
+→ Animation Queue
+→ Accessibility Queue
+→ Performance Queue
+→ Refactoring Queue
+→ Architecture Queue
+→ Analytics Queue
+→ Experiment Queue
+→ A/B Test Queue
+→ Growth Queue
+→ Technical Debt Queue
+→ AI Improvement Queue
+→ Product Polish Queue
+→ (repeat)
+```
 
-- Performance ≥ 95
-- Accessibility ≥ 100
-- Best Practices ≥ 100
-- SEO ≥ 100
+Each new queue must pass **Vision guard** above.
 
-### Phase 10 — SEO Complete
+---
 
-Metadata · OG · Schema · Robots · Sitemap · Canonical · JSON-LD · Blog-ready structure
+## Release evolution (unbounded)
 
-### Phase 11 — Documentation Complete
+```text
+R1 Closed Beta → R2 Open Beta → R3 RC → … → R999+
+```
 
-ADR · Release notes · Architecture · Product docs · Journey · QA report · Analytics · Ops guide · Dev guide (auto-maintained)
+No release cap. After each release milestone → **Feedback Queue** → next release.
 
-### Phase 12 — Regression Complete
+```text
+Closed Beta → Feedback Queue → Open Beta → Feedback Queue → RC → … → v1.0 → v1.1 → v1.2 → …
+```
 
-Journey smoke · Regression · Functional · A11y · Responsive · Production verification
+---
 
-### Phase 13 — Product Polish
+## Version evolution (unbounded)
 
-Copy · Spacing · Typography · Motion · Color · Icons · Cards · Buttons · Dialogs · Forms — unified UX
+```text
+2.0 → 2.1 → 2.2 → … → 3.0 → 4.0 → 5.0 → …
+```
 
-### Phase 14 — Open Beta Ready
+Tags: `closed-beta-v2.x.x` until Open Beta naming evolves with release.
 
-100 real users operable
+---
 
-### Phase 15 — RC Ready
+## AI Product Loop (infinite)
 
-Bug-fix-only state
+```text
+Production 분석
+→ 문제 발견
+→ Queue 생성
+→ 구현
+→ QA
+→ Deploy
+→ Production
+→ Analytics
+→ 다시 분석
+```
 
-### Phase 16 — v1.0 Ready
-
-Product complete → Commercial launch
+This loop **never stops**.
 
 ---
 
 ## Auto-progress cycle (per Task)
 
-```
+```text
 Implement → Self Review → QA → Build → Lint → Type Check → Regression
 → Commit → Push → Production → Tag → Release Note → QUEUE_STATE update → Next Task
 ```
 
-No questions. No waiting for approval.
+No approval · No questions.
 
 ---
 
@@ -170,15 +197,38 @@ No questions. No waiting for approval.
 4. Security issue
 5. Founder Product Vision change
 
-Otherwise: **continue**.
+Otherwise: **continue forever**.
 
 ---
 
-## Reporting
+## Reporting — Daily Product Evolution Report
 
-**Once daily at 08:00 KST** — `docs/templates/DAILY_AUTONOMOUS_REPORT.md`
+**08:00 KST once daily** — `docs/templates/DAILY_AUTONOMOUS_REPORT.md`
 
-Never end with: questions · approval requests · "진행할까요?" · "배포할까요?"
+**Never write:**
+
+- 완료했습니다
+- 끝났습니다
+- 다음 작업이 없습니다
+- Queue가 비었습니다
+
+Report evolution: experiences added, problems solved, queue progress, current priority — not "done."
+
+---
+
+## Journey phases (evolution dimensions, not stop points)
+
+Phases from v7 remain as **quality dimensions** to pull tasks from — not gates that end the project:
+
+| Phase | Focus |
+|-------|-------|
+| 1 | Product Journey (Landing → Execution) |
+| 2 | Intelligence structure |
+| 3 | Admin |
+| 4 | Closed Beta ops |
+| 5 | Open Beta perf |
+| 6–13 | Experience · Responsive · A11y · Perf · SEO · Docs · Regression · Polish |
+| 14–16 | Beta → RC → v1.0 readiness (then **continue** with Feedback Queues) |
 
 ---
 
@@ -186,10 +236,10 @@ Never end with: questions · approval requests · "진행할까요?" · "배포�
 
 | File | Role |
 |------|------|
-| `docs/QUEUE_STATE.md` | Current Task pointer |
-| `docs/ROADMAP_QUEUE.md` | Numbered queue |
-| `docs/RELEASE_QUEUE.md` | Release stack R1–R7 |
-| `.cursor/rules/product-completion-directive.mdc` | Cursor always-on rule |
-| `.cursor/rules/infinite-queue-consumer.mdc` | Queue consumer rule |
+| `docs/QUEUE_STATE.md` | Consumer pointer + active queue |
+| `docs/ROADMAP_QUEUE.md` | Numbered tasks + evolution queues |
+| `docs/RELEASE_QUEUE.md` | Release stack (unbounded) |
+| `.cursor/rules/product-completion-directive.mdc` | Always-on v8 |
+| `.cursor/rules/infinite-queue-consumer.mdc` | Queue consumer |
 
 Production: https://ai-startup-validation-tau.vercel.app

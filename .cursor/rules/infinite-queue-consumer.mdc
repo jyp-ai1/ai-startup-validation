@@ -1,36 +1,41 @@
 ---
-description: Release Queue Consumer v7 — consume roadmap with product completion standard
+description: Infinite Queue Consumer v8 — never empty, never stop, vision-guarded generation
 alwaysApply: true
 ---
 
-# Infinite Queue Consumer (v7)
+# Infinite Queue Consumer (v8)
 
-Works with `product-completion-directive.mdc`. **Completion standard governs quality; queue governs sequence.**
+Works with `product-completion-directive.mdc`. **Evolution forever.**
 
 ## Execute
 
 1. Read `docs/QUEUE_STATE.md` → `current_task`
-2. Read phase scope in `docs/PRODUCT_COMPLETION_DIRECTIVE.md`
-3. Implement until **all completion layers** pass
-4. Update QUEUE_STATE → start next Task **without pause**
+2. Apply P0–P12 priority when choosing among ready tasks
+3. Full completion standard per Task
+4. Update QUEUE_STATE → **immediate next Task**
 
-Queue T300 done → R2 T301 auto. Queue empty → **generate next queue**.
+## Queue empty
 
-## Hierarchy
+**Do not stop.** Generate next queue from:
 
-Release → Product → Mission → Epic → Sprint → Feature → Task → Sub-task
+UX → Animation → A11y → Perf → Refactor → Architecture → Analytics → Experiment → A/B → Growth → Tech Debt → AI Improvement → Polish → repeat
+
+Every generated task must pass **Vision guard** (Journey first · Vision V3 · AI PM experience).
+
+## Releases & versions
+
+R1 → R2 → … → R999+ · 2.x → 3.0 → … unbounded. Milestone → Feedback Queue → next.
+
+## AI Product Loop
+
+Production → analyze → queue → implement → QA → deploy → analytics → **repeat**
 
 ## Forbidden
 
-다음 작업은… · 승인 · 배포할까요 · Release/Epic/Sprint 완료 보고
-
-## Stop (5)
-
-Build fail · Prod outage · DB/LLM/Billing/Auth cost · Security · CPO vision change
+완료 · 끝 · Queue empty · no next work · approval questions
 
 ## Sources
 
 - `docs/PRODUCT_COMPLETION_DIRECTIVE.md`
-- `docs/ROADMAP_QUEUE.md`
 - `docs/QUEUE_STATE.md`
-- `docs/RELEASE_QUEUE.md`
+- `docs/ROADMAP_QUEUE.md`
