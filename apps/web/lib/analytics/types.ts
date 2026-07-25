@@ -217,6 +217,16 @@ export type OpsDashboardStats = {
     holdCount: number;
     workspaceProgressAvg: number;
   };
+  /** KPI-first metrics — CPO dashboard */
+  productKpis?: {
+    goalSelectionRate: number;
+    activationRate: number;
+    workflowCompletionRate: number;
+    decisionUnderstandingRate: number;
+    executionStartRate: number;
+    goConversionRate: number;
+    aiTrustRate: number;
+  };
   operationalMetrics?: {
     users: number;
     sessions: number;

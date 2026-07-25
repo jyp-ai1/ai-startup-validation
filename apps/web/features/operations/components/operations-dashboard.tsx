@@ -182,6 +182,51 @@ export function OperationsDashboard() {
             </div>
           ) : null}
 
+          {stats.productKpis ? (
+            <div>
+              <h2 className="mb-3 text-sm font-semibold">{t('productKpis')}</h2>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard
+                  title={t('kpiGoalSelectionRate')}
+                  value={`${stats.productKpis.goalSelectionRate}%`}
+                  icon={Users}
+                  hint={t('kpiGoalSelectionHint')}
+                />
+                <StatCard
+                  title={t('kpiActivationRate')}
+                  value={`${stats.productKpis.activationRate}%`}
+                  icon={Sparkles}
+                />
+                <StatCard
+                  title={t('kpiDecisionUnderstanding')}
+                  value={`${stats.productKpis.decisionUnderstandingRate}%`}
+                  icon={BarChart3}
+                />
+                <StatCard
+                  title={t('kpiGoConversion')}
+                  value={`${stats.productKpis.goConversionRate}%`}
+                  icon={Activity}
+                />
+                <StatCard
+                  title={t('kpiExecutionStart')}
+                  value={`${stats.productKpis.executionStartRate}%`}
+                  icon={Globe}
+                />
+                <StatCard
+                  title={t('kpiAiTrust')}
+                  value={`${stats.productKpis.aiTrustRate}%`}
+                  icon={Sparkles}
+                  hint={t('kpiAiTrustHint')}
+                />
+                <StatCard
+                  title={t('kpiWorkflowCompletion')}
+                  value={`${stats.productKpis.workflowCompletionRate}%`}
+                  icon={BarChart3}
+                />
+              </div>
+            </div>
+          ) : null}
+
           {stats.closedBetaMetrics ? (
             <div>
               <h2 className="mb-3 text-sm font-semibold">{t('closedBetaMetrics')}</h2>

@@ -24,9 +24,15 @@ Cursor **improves user behaviors on Production forever**.
 
 ## Cursor KPIs (every change must move one)
 
-Service Understanding → Goal Selection Rate → Workflow Completion → Workspace Entry → Project Registration → AI Trust → Decision Understanding → Execution Start → Return Rate → Feedback Score
+Read `docs/PRODUCT_KPI_REGISTRY.md`. Pick **one primary KPI** per loop from funnel data (Admin `/admin/operations`).
 
-**Pre-implementation gate:** 이 변경이 사용자를 **어느 KPI에서 얼마나** 개선하는가? — No answer → **do not implement**.
+Service Understanding → Goal Selection Rate → Activation → Decision Understanding → GO Conversion → Execution Start → Retention → Feedback
+
+**PM loop:** KPI 분석 → Drop-off → 원인 → 행동 → 개선 → Analytics → Production → **다음 KPI**
+
+**Reports name KPIs only** — never "Landing 개선", "Workflow 개선".
+
+**Pre-implementation gate:** 이 변경이 **어느 KPI**를 **얼마나** 올리는가? — No answer → do not implement.
 
 ## Thinking priority
 

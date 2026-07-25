@@ -1,30 +1,34 @@
 # Product Loop State
 
-**Authority:** `docs/PRODUCT_EVOLUTION_DIRECTIVE.md` · Constitution Part II (frozen)
+**Mode:** KPI-driven Product Manager — not screen developer.
 
-**Mode:** Whole-product evolution — all surfaces in flight, no Stage termination.
+Production: https://ai-startup-validation-tau.vercel.app  
+Registry: [PRODUCT_KPI_REGISTRY.md](./PRODUCT_KPI_REGISTRY.md)
 
-Production: https://ai-startup-validation-tau.vercel.app
+---
 
-## Active behavior improvements (parallel)
+## Today's primary KPI
 
-| Surface | KPI | Current focus |
-|---------|-----|---------------|
-| Landing | Service Understanding | Hero · mobile · perf |
-| Goal | Goal Selection | One-tap · optional intake |
-| Workflow | Workflow Completion | Stack · why · skeleton/error |
-| Workspace | Project Start | One-line registration · faster thinking |
-| **Decision** | **AI Trust · Decision Understanding** | **HOLD path → GO gain · evidence visible** |
-| Execution | Execution Start | Task board · coach |
-| Admin | Operations Visibility | Funnel · feedback |
-| Perf/A11y | Performance | Lighthouse 95+ journey |
+| Field | Value |
+|-------|-------|
+| **KPI** | **Goal Selection Rate** |
+| **Current (ops funnel)** | landing → goal conversion (see Admin Product KPIs) |
+| **Target** | Maximize landing→goal; reduce drop at first funnel step |
+| **Biggest drop-off** | landing → goal (Service Understanding + CTA friction) |
+| **Hypothesis** | Speed promise + outcome copy on Landing increases Goal taps without extra screens |
 
-## Pre-implementation gate (every change)
+## Secondary KPIs (same loop — parallel)
 
-이 변경이 사용자를 **어느 KPI에서 얼마나** 개선하는가?
+| KPI | Lever |
+|-----|-------|
+| Activation | One-line project registration (shipped) |
+| Decision Understanding | HOLD path + Intelligence auto-open (shipped) |
+| Execution Start | First task completion tracking (instrumented) |
 
-## Loop
+## PM loop step
 
-기획 → 구현 → QA → Production → **다음 개선** (no end)
+```text
+KPI 분석 → Drop-off → 원인 → 행동 → 개선 → Analytics → Production → 다음 KPI
+```
 
-**No Stage complete. No approval prompts.**
+**Forbidden in reports:** Landing 개선 · Workflow 개선 · Stage complete · approval prompts

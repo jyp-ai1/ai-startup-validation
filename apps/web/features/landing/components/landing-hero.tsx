@@ -31,6 +31,7 @@ export async function LandingHero() {
             ctaStart={t('ctaStart')}
             ctaHint1={t('ctaHint1')}
             ctaHint2={t('ctaHint2')}
+            speedPromise={t('speedPromise')}
           />
         </div>
 

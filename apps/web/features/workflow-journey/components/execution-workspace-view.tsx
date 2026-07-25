@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { CheckCircle2, Circle, Kanban } from 'lucide-react';
 
@@ -9,17 +10,24 @@ import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { useExecutionTasks } from '../hooks/use-execution-tasks';
+import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { getExecutionProgress, type ExecutionTaskKey } from '../lib/journey-execution-store';
 import { JourneyLayout } from './journey-layout';
 
 export function ExecutionWorkspaceView() {
   const t = useTranslations('workflow.execution');
+  const analytics = useJourneyAnalytics();
+  const executionStartedRef = useRef(false);
   const { tasks, toggle, progress } = useExecutionTasks();
 
   const handleToggle = (key: ExecutionTaskKey) => {
     const next = toggle(key);
     const task = next.find((item) => item.key === key);
     if (task?.done) {
+      if (!executionStartedRef.current) {
+        executionStartedRef.current = true;
+        analytics.trackExecutionStarted(key);
+      }
       const { percent } = getExecutionProgress(next);
       trackProductEvent(PRODUCT_ANALYTICS_EVENTS.executionTaskCompleted, {
         action_key: key,

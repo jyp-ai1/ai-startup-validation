@@ -45,9 +45,15 @@ export function useJourneyAnalytics(demoMode = false) {
   );
 
   return {
-    trackGoalSelected: (goalId: string) => {
-      track(JOURNEY_ANALYTICS_EVENTS.goalSelected, { goal_id: goalId });
+    trackGoalSelected: (goalId: string, options?: { recommended?: boolean }) => {
+      track(JOURNEY_ANALYTICS_EVENTS.goalSelected, {
+        goal_id: goalId,
+        recommended: options?.recommended,
+      });
       funnel(PRODUCT_ANALYTICS_EVENTS.goalSelected, { goal_id: goalId });
+      if (options?.recommended) {
+        funnel(PRODUCT_ANALYTICS_EVENTS.recommendedGoalSelected, { goal_id: goalId });
+      }
     },
     trackWorkflowCreated: (goalId: string, stepCount: number) => {
       track(JOURNEY_ANALYTICS_EVENTS.workflowCreated, { goal_id: goalId, step_count: stepCount });
@@ -104,6 +110,13 @@ export function useJourneyAnalytics(demoMode = false) {
         goal_id: goalId,
       });
       funnel(PRODUCT_ANALYTICS_EVENTS.goReached, { goal_id: goalId, confidence });
+    },
+    trackHoldPathViewed: (verdict: string, confidence: number) => {
+      track(JOURNEY_ANALYTICS_EVENTS.whyOpened, { verdict, confidence_value: confidence });
+      funnel(PRODUCT_ANALYTICS_EVENTS.holdPathViewed, { verdict, confidence });
+    },
+    trackExecutionStarted: (taskKey: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.executionStarted, { action_key: taskKey });
     },
     trackComposeFailed: (retryCount: number) =>
       track(JOURNEY_ANALYTICS_EVENTS.composeFailed, { retry_count: retryCount }),

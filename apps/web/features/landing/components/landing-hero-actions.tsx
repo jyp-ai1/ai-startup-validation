@@ -8,12 +8,19 @@ type LandingHeroActionsProps = {
   ctaStart: string;
   ctaHint1: string;
   ctaHint2: string;
+  speedPromise: string;
 };
 
-export function LandingHeroActions({ ctaStart, ctaHint1, ctaHint2 }: LandingHeroActionsProps) {
+export function LandingHeroActions({
+  ctaStart,
+  ctaHint1,
+  ctaHint2,
+  speedPromise,
+}: LandingHeroActionsProps) {
   return (
     <>
-      <div className="mt-10">
+      <p className="mt-6 text-sm font-medium text-primary">{speedPromise}</p>
+      <div className="mt-4">
         <LandingCtaLink
           href="/goal"
           event="cta_start"

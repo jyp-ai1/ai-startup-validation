@@ -56,7 +56,8 @@ Template: [templates/DAILY_AUTONOMOUS_REPORT.md](./templates/DAILY_AUTONOMOUS_RE
 
 ## State pointer
 
-Current loop focus: [PRODUCT_LOOP_STATE.md](./PRODUCT_LOOP_STATE.md)
+Current loop focus: [PRODUCT_LOOP_STATE.md](./PRODUCT_LOOP_STATE.md)  
+KPI definitions: [PRODUCT_KPI_REGISTRY.md](./PRODUCT_KPI_REGISTRY.md)
 
 ## Cursor rule
 

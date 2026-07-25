@@ -59,6 +59,7 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
   const [showCelebration, setShowCelebration] = useState(false);
   const [verdictTransition, setVerdictTransition] = useState(false);
   const celebratedRef = useRef(false);
+  const holdPathTrackedRef = useRef(-1);
 
   const stage = stages[stageIndex] ?? stages[0]!;
   const isFinal = stageIndex >= stages.length - 1;
@@ -72,6 +73,20 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
     analytics.trackGoReached(goalId, stage.confidence);
     return () => clearTimeout(timer);
   }, [analytics, goalId, isFinal, stage.confidence, stage.verdict]);
+
+  useEffect(() => {
+    if (stage.verdict === 'GO' || !stage.primaryHoldReasonKey || isFinal) return;
+    if (holdPathTrackedRef.current === stageIndex) return;
+    holdPathTrackedRef.current = stageIndex;
+    analytics.trackHoldPathViewed(stage.verdict, stage.confidence);
+  }, [
+    analytics,
+    isFinal,
+    stage.confidence,
+    stage.primaryHoldReasonKey,
+    stage.verdict,
+    stageIndex,
+  ]);
 
   const advanceStage = () => {
     if (!isFinal) {

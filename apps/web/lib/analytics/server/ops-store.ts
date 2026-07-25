@@ -209,6 +209,31 @@ function computeClosedBetaMetrics(
   };
 }
 
+function computeProductKpis(
+  funnel: NonNullable<OpsDashboardStats['productJourneyFunnel']>,
+  todaySummary: NonNullable<OpsDashboardStats['todaySummary']>,
+): NonNullable<OpsDashboardStats['productKpis']> {
+  const landing = Math.max(1, funnel.landing);
+  const decision = funnel.decision;
+  const goCount = todaySummary.goDecisions;
+  const holdPathViews = countEvents(PRODUCT_ANALYTICS_EVENTS.holdPathViewed);
+  const executionStarts = countEvents(PRODUCT_ANALYTICS_EVENTS.executionStarted);
+
+  return {
+    goalSelectionRate: Math.round((funnel.goal / landing) * 100),
+    activationRate: Math.round((funnel.project / landing) * 100),
+    workflowCompletionRate:
+      funnel.goal > 0 ? Math.round((funnel.workflow / funnel.goal) * 100) : 0,
+    decisionUnderstandingRate:
+      funnel.project > 0 ? Math.round((decision / funnel.project) * 100) : 0,
+    executionStartRate:
+      goCount > 0 ? Math.round((executionStarts / goCount) * 100) : 0,
+    goConversionRate: decision > 0 ? Math.round((goCount / decision) * 100) : 0,
+    aiTrustRate:
+      decision > 0 ? Math.round((holdPathViews / decision) * 100) : 0,
+  };
+}
+
 const MOCK_STATS: OpsDashboardStats = {
   source: 'mock',
   todayVisitors: 24,
@@ -277,6 +302,15 @@ const MOCK_STATS: OpsDashboardStats = {
     },
     holdCount: 6,
     workspaceProgressAvg: 15,
+  },
+  productKpis: {
+    goalSelectionRate: 72,
+    activationRate: 17,
+    workflowCompletionRate: 81,
+    decisionUnderstandingRate: 53,
+    executionStartRate: 33,
+    goConversionRate: 33,
+    aiTrustRate: 67,
   },
   operationalMetrics: {
     users: 72,
@@ -362,6 +396,7 @@ export function getOpsDashboardStats(): OpsDashboardStats {
     recentFeedback: recentFeedback(),
     analyticsProviders: analyticsProviders(),
     closedBetaMetrics: computeClosedBetaMetrics(productJourneyFunnel, todaySummary),
+    productKpis: computeProductKpis(productJourneyFunnel, todaySummary),
     operationalMetrics: computeOperationalMetrics(productJourneyFunnel, todaySummary),
   };
 }

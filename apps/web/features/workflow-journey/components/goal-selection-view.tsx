@@ -60,13 +60,13 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
   }, []);
 
   const handleSelect = useCallback(
-    async (goalId: WorkflowGoalId) => {
+    async (goalId: WorkflowGoalId, options?: { recommended?: boolean }) => {
       if (locked) return;
       lock();
       setFailed(false);
       setActiveStep(0);
       setOverlayGoal(goalId);
-      analyticsRef.current.trackGoalSelected(goalId);
+      analyticsRef.current.trackGoalSelected(goalId, options);
 
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('ll_goal_immersion', '1');
@@ -185,7 +185,7 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
               type="button"
               className="mt-4 w-full rounded-xl sm:w-auto"
               disabled={locked}
-              onClick={() => void handleSelect(RECOMMENDED_GOAL)}
+              onClick={() => void handleSelect(RECOMMENDED_GOAL, { recommended: true })}
             >
               {t('recommended.cta')}
               <ArrowRight className="size-4" aria-hidden />
