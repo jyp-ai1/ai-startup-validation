@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.5.0] — 2026-07-25
+## [2.6.0] — 2026-07-25
+
+### Added — Mission A-2 History Complete
+
+- Unified `JourneyHistoryPanel` with filters (Decision/Coach/Evidence/Workflow/Activity)
+- localStorage journey history store with seed timeline + undo restore
+- Decision coach writes live history on stage advance
+- Coach/Workflow events on Today start and project registration
+- Daily activity bucket + time grouping
+
+---
 
 ### Added — Mission A-1 Project CRUD
 

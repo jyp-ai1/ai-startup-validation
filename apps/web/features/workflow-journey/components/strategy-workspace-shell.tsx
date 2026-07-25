@@ -13,6 +13,7 @@ import { Button, toast } from '@repo/ui';
 import { getStrategyCoachState } from '../constants/decision-mock';
 import { getStepGuideMeta } from '../constants/step-guides';
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
+import { useJourneyHistory } from '../hooks/use-journey-history';
 import { useJourneyProject } from '../hooks/use-journey-project';
 import { useWorkspaceExitCoach } from '../hooks/use-workspace-exit-coach';
 import type { WorkflowGoalId, WorkflowTemplate } from '../types';
@@ -23,8 +24,6 @@ import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 import { WorkflowGuideCard } from './workflow-guide-card';
 import { WorkspaceSkeleton } from './workspace-skeleton';
-import { JourneyAchievementsPanel } from './intelligence-workspace/journey-achievements-panel';
-import { JourneyAiMemoryPanel } from './intelligence-workspace/journey-ai-memory-panel';
 import { JourneyDailyCoach } from './intelligence-workspace/journey-daily-coach';
 import { WorkspaceMorningBrief } from './intelligence-workspace/workspace-morning-brief';
 import { WorkspaceReportPreview } from './intelligence-workspace/workspace-report-preview';
@@ -33,7 +32,7 @@ import { WorkspaceWorkflowRecommendation } from './intelligence-workspace/worksp
 import { JourneyProjectPanel } from './intelligence-workspace/journey-project-panel';
 import { JourneyProgressRing } from './intelligence-workspace/journey-progress-ring';
 import { JourneyProjectSwitcher } from './intelligence-workspace/journey-project-switcher';
-import { JourneyTimelinePanel } from './intelligence-workspace/journey-timeline-panel';
+import { JourneyHistoryPanel } from './intelligence-workspace/journey-history-panel';
 import {
   ProjectRegistrationPanel,
   loadProjectRegistration,
@@ -91,7 +90,8 @@ export function StrategyWorkspaceShell({
   const [phase, setPhase] = useState<WorkspacePhase>('registration');
   const [thinkingStep, setThinkingStep] = useState(0);
   const [thinkingFailed, setThinkingFailed] = useState(false);
-  const { project, setProjectId, ready: projectReady } = useJourneyProject();
+  const { project, projectId, setProjectId, ready: projectReady } = useJourneyProject();
+  const { append: appendHistory } = useJourneyHistory(projectId);
   const [tab, setTab] = useState<JourneyWorkspaceTab>('today');
   const [registration, setRegistration] = useState<ProjectRegistrationData | null>(null);
 
@@ -153,6 +153,11 @@ export function StrategyWorkspaceShell({
   const handleRegistrationStart = (data: ProjectRegistrationData) => {
     setRegistration(data);
     analytics.trackProjectCreated(data.projectName, goalId);
+    appendHistory({
+      category: 'workflow',
+      title: 'projectStart',
+      summary: data.projectName,
+    });
     setPhase('thinking');
   };
 
@@ -176,6 +181,13 @@ export function StrategyWorkspaceShell({
               variant="hero"
               onStart={() => {
                 analytics.trackMockActionCompleted('today_start', DAILY_COACH.confidenceAfter);
+                appendHistory({
+                  category: 'coach',
+                  title: te('coach.startCta'),
+                  summary: te('coach.focusLine', {
+                    after: DAILY_COACH.confidenceAfter,
+                  }),
+                });
                 document.getElementById('journey-decision-coach')?.scrollIntoView({
                   behavior: 'smooth',
                   block: 'start',
@@ -185,6 +197,7 @@ export function StrategyWorkspaceShell({
             <DecisionExperienceCoach
               id="journey-decision-coach"
               goalId={goalId}
+              projectId={projectId}
               className="w-full max-w-none scroll-mt-6"
             />
             <WorkspaceWorkflowRecommendation goalId={goalId} />
@@ -206,15 +219,11 @@ export function StrategyWorkspaceShell({
           />
         ) : null;
       case 'decision':
-        return <DecisionExperienceCoach goalId={goalId} className="w-full max-w-none" />;
-      case 'history':
         return (
-          <div className="space-y-6">
-            <JourneyTimelinePanel />
-            <JourneyAiMemoryPanel />
-            <JourneyAchievementsPanel />
-          </div>
+          <DecisionExperienceCoach goalId={goalId} projectId={projectId} className="w-full max-w-none" />
         );
+      case 'history':
+        return <JourneyHistoryPanel projectId={projectId} />;
       case 'settings':
         return (
           <WorkspaceSettingsPanel

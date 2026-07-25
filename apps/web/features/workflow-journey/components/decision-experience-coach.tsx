@@ -15,6 +15,7 @@ import {
   type DecisionStage,
 } from '../constants/decision-experience';
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
+import { useJourneyHistory } from '../hooks/use-journey-history';
 import type { WorkflowGoalId } from '../types';
 import { ConfidenceMeter } from './confidence-meter';
 import { EvidenceIntelligencePanel } from './evidence-intelligence-panel';
@@ -23,6 +24,7 @@ import { ProjectHealthVisual } from './project-health-visual';
 
 type DecisionExperienceCoachProps = {
   goalId: WorkflowGoalId;
+  projectId: string;
   className?: string;
   id?: string;
 };
@@ -39,11 +41,14 @@ function verdictEmoji(verdict: DecisionStage['verdict']) {
   return '🟡';
 }
 
-export function DecisionExperienceCoach({ goalId, className, id }: DecisionExperienceCoachProps) {
+export function DecisionExperienceCoach({ goalId, projectId, className, id }: DecisionExperienceCoachProps) {
   const t = useTranslations('workflow.coach');
   const td = useTranslations('workflow.decisionExperience');
   const tp = useTranslations('workflow.plan.steps');
   const analytics = useJourneyAnalytics();
+  const { entries, append } = useJourneyHistory(projectId);
+
+  const decisionHistory = entries.filter((entry) => entry.category === 'decision').slice(0, 6);
 
   const stages = getDecisionStages(goalId);
   const [stageIndex, setStageIndex] = useState(0);
@@ -69,6 +74,26 @@ export function DecisionExperienceCoach({ goalId, className, id }: DecisionExper
     if (!isFinal) {
       const next = Math.min(stageIndex + 1, stages.length - 1);
       const nextStage = stages[next]!;
+      const historySeed = DECISION_HISTORY[next];
+      if (historySeed) {
+        append({
+          category: 'decision',
+          title: historySeed.eventKey,
+          value: historySeed.verdict ?? nextStage.verdict,
+          summary: `${nextStage.confidence}%`,
+        });
+      }
+      const actionCategory =
+        stage.mockActionKey === 'completeVoc'
+          ? 'evidence'
+          : stage.mockActionKey === 'done'
+            ? 'decision'
+            : 'workflow';
+      append({
+        category: actionCategory,
+        title: stage.mockActionKey,
+        summary: tp(stage.nextActionStepId as 'market'),
+      });
       setVerdictTransition(true);
       setStageIndex(next);
       analytics.trackMockActionCompleted(stage.mockActionKey, nextStage.confidence);
@@ -339,20 +364,20 @@ export function DecisionExperienceCoach({ goalId, className, id }: DecisionExper
             {td('historyTitle')}
           </p>
           <ol className="mt-2 space-y-2" role="list">
-            {DECISION_HISTORY.slice(0, stage.historyCount).map((entry) => (
+            {decisionHistory.map((entry) => (
               <li
                 key={entry.id}
                 className="flex items-start gap-2 rounded-lg border border-border/50 bg-muted/20 px-3 py-2 text-sm"
               >
                 <span className="shrink-0 text-xs text-muted-foreground">{td('historyToday')}</span>
                 <span className="text-foreground">
-                  {entry.verdict ? (
+                  {entry.value ? (
                     <>
-                      <span className="font-semibold">{t(`verdict.${entry.verdict}`)}</span>
+                      <span className="font-semibold">{t(`verdict.${entry.value}` as 'verdict.GO')}</span>
                       {' · '}
                     </>
                   ) : null}
-                  {td(`historyEvents.${entry.eventKey}`)}
+                  {td(`historyEvents.${entry.title}` as 'historyEvents.startedHold')}
                 </span>
               </li>
             ))}

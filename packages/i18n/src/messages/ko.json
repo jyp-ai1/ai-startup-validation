@@ -4243,6 +4243,28 @@
         "feedback": "피드백",
         "feedbackDesc": "우측 하단 피드백 위젯으로 Beta 의견을 보내주세요."
       },
+      "historyPanel": {
+        "title": "프로젝트 History",
+        "desc": "Decision · Coach · Evidence · Workflow · Activity를 시간순으로 확인합니다.",
+        "filterLabel": "History 필터",
+        "dailyActivity": "오늘의 Activity",
+        "empty": "아직 기록된 History가 없습니다.",
+        "remove": "항목 삭제",
+        "filters": {
+          "all": "전체",
+          "decision": "Decision",
+          "coach": "Coach",
+          "evidence": "Evidence",
+          "workflow": "Workflow",
+          "activity": "Activity"
+        },
+        "buckets": {
+          "today": "오늘",
+          "yesterday": "어제",
+          "thisWeek": "이번 주",
+          "earlier": "이전"
+        }
+      },
       "timeline": {
         "title": "Decision Timeline",
         "desc": "의사결정과 Confidence 변화를 시간순으로 추적합니다.",

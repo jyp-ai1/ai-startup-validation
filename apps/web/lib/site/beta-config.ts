@@ -1,5 +1,5 @@
-/** LaunchLens Closed Beta — Mission A-1 Project CRUD */
-export const BETA_VERSION = 'Closed Beta 2.5.0';
+/** LaunchLens Closed Beta — Mission A-2 History Complete */
+export const BETA_VERSION = 'Closed Beta 2.6.0';
 export const BETA_LABEL = 'CLOSED BETA';
 
 export const SITE_LINKS = {

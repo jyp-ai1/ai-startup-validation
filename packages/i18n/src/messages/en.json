@@ -4261,6 +4261,28 @@
         "feedback": "Feedback",
         "feedbackDesc": "Send Beta feedback via the widget in the bottom-right corner."
       },
+      "historyPanel": {
+        "title": "Project History",
+        "desc": "Decision · Coach · Evidence · Workflow · Activity in chronological order.",
+        "filterLabel": "History filters",
+        "dailyActivity": "Today's activity",
+        "empty": "No history entries yet.",
+        "remove": "Remove entry",
+        "filters": {
+          "all": "All",
+          "decision": "Decision",
+          "coach": "Coach",
+          "evidence": "Evidence",
+          "workflow": "Workflow",
+          "activity": "Activity"
+        },
+        "buckets": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "thisWeek": "This week",
+          "earlier": "Earlier"
+        }
+      },
       "timeline": {
         "title": "Decision Timeline",
         "desc": "Track decisions and confidence changes over time.",
