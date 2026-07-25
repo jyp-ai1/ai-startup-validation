@@ -3805,7 +3805,7 @@
       },
       "eta": "예상 {minutes}분",
       "cta": "프로젝트 시작",
-      "ctaHint": "다음 단계에서 프로젝트 정보를 입력합니다",
+      "ctaHint": "다음 단계에서 아이디어 한 줄만 입력합니다",
       "aiNote": "AI PM이 Startup × PM × Investment 관점에서 Workflow Stack을 생성했습니다.",
       "recommendationLabel": "AI Recommendation",
       "rationale1": "이 프로젝트는 시장 검증이 가장 중요합니다.",
@@ -3892,14 +3892,22 @@
     },
     "registration": {
       "eyebrow": "Step 3 · 프로젝트 등록",
-      "title": "이제 실제 전략 프로젝트를 시작합니다",
-      "desc": "프로젝트 정보를 입력하면 AI가 첫 분석을 시작합니다.",
+      "title": "아이디어 한 줄로 프로젝트를 시작하세요",
+      "desc": "한 줄만 입력하면 AI가 프로젝트 이름과 첫 분석을 자동으로 시작합니다.",
+      "quickHint": "목표는 이미 선택되었습니다 — 아이디어만 적으면 30초 안에 시작할 수 있어요.",
+      "autoNameHint": "AI 프로젝트 이름: {name}",
+      "optionalDetails": "추가 정보 (선택)",
+      "ctaHint": "입력 내용은 자동 저장됩니다.",
       "fields": {
         "projectName": "프로젝트 이름",
+        "projectNameOptional": "프로젝트 이름 (선택 — 비워두면 AI가 생성)",
         "ideaOneLiner": "아이디어 한 줄",
         "websiteUrl": "홈페이지 (URL)",
         "targetMarket": "목표 시장",
         "optionalNote": "추가 메모 (선택)"
+      },
+      "defaults": {
+        "targetMarket": "{goal} · 한국 시장"
       },
       "placeholders": {
         "projectName": "예: LaunchLens Beta",

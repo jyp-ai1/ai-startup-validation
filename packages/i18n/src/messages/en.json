@@ -3823,7 +3823,7 @@
       },
       "eta": "About {minutes} min",
       "cta": "Start project",
-      "ctaHint": "You'll enter project details on the next step",
+      "ctaHint": "Next step: one line about your idea",
       "aiNote": "AI PM generated a Workflow Stack from Startup × PM × Investment perspectives.",
       "recommendationLabel": "AI Recommendation",
       "rationale1": "Market validation matters most for this project.",
@@ -3910,14 +3910,22 @@
     },
     "registration": {
       "eyebrow": "Step 3 · Project registration",
-      "title": "Start your real strategy project",
-      "desc": "Enter project details and AI will run the first analysis.",
+      "title": "Start with one line about your idea",
+      "desc": "One line is enough — AI names the project and starts the first analysis.",
+      "quickHint": "You already picked a Goal — add your idea to start in about 30 seconds.",
+      "autoNameHint": "AI project name: {name}",
+      "optionalDetails": "Additional details (optional)",
+      "ctaHint": "Your input is saved automatically.",
       "fields": {
         "projectName": "Project name",
+        "projectNameOptional": "Project name (optional — AI generates if empty)",
         "ideaOneLiner": "One-line idea",
         "websiteUrl": "Website (URL)",
         "targetMarket": "Target market",
         "optionalNote": "Notes (optional)"
+      },
+      "defaults": {
+        "targetMarket": "{goal} · Korea market"
       },
       "placeholders": {
         "projectName": "e.g. LaunchLens Beta",

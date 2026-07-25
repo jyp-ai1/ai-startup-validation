@@ -62,7 +62,7 @@ type StrategyWorkspaceShellProps = {
   demoMode?: boolean;
 };
 
-const ANALYSIS_MS = 2800;
+const ANALYSIS_MS = 1800;
 const ANALYSIS_STEPS = 4;
 
 export function StrategyWorkspaceShell({
@@ -292,7 +292,10 @@ export function StrategyWorkspaceShell({
         <JourneyFade>
           <div className="grid gap-6 lg:grid-cols-[minmax(200px,260px)_1fr] lg:items-start lg:gap-8">
             <WorkspaceJourneyGuide activeStep={guideStep} className="hidden sm:block" />
-            <ProjectRegistrationPanel onStart={handleRegistrationStart} />
+            <ProjectRegistrationPanel
+              goalLabel={tg(`options.${goalId}.title`)}
+              onStart={handleRegistrationStart}
+            />
           </div>
         </JourneyFade>
       ) : !projectReady ? (

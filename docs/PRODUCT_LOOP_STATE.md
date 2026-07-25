@@ -1,32 +1,27 @@
 # Product Loop State
 
-**Authority:** `docs/PRODUCT_CONSTITUTION.md` Part II (frozen — do not edit constitution)
-
-Tracks **which behavior/KPI the loop is moving** — not screens, not completion.
+**Authority:** `docs/PRODUCT_CONSTITUTION.md` Part II (frozen)
 
 | Field | Value |
 |-------|-------|
-| **Loop phase** | Implement → Production |
-| **Evolution stage** | **1–2** Service Understanding + Project Start |
-| **Target KPI** | Service Understanding · Goal Selection Rate · Workflow Completion |
-| **Target behavior** | 5s service understanding · 30s Goal→Thinking · skip redundant waits |
-| **Pre-implementation answer** | Drop-off from negation-first hero, false-required intake, double thinking overlay |
+| **Evolution stage** | **2 — Project Start** |
+| **Target KPI** | Project Start Rate |
+| **Target behavior** | 30s Goal → one-line project → Thinking → Workspace |
+| **Pre-implementation answer** | 5-field registration blocked start; intake unused; analysis wait too long |
 | Production | https://ai-startup-validation-tau.vercel.app |
 
-## Active behavior focus
+## Stage focus (Product Evolution)
 
-| KPI | Behavior improvement (in flight) |
-|-----|----------------------------------|
-| **Service Understanding** | Positive hero copy · copy before preview on mobile · unified CTA label |
-| **Goal Selection Rate** | One-tap recommended Goal · intake demoted to optional |
-| **Workflow Completion** | Skip compose overlay on happy path · honest thinking step labels |
-| Decision Understanding | HOLD reason headline (shipped) |
-| Execution Start | GO → first task in 10s (next) |
+| Stage | KPI | Status |
+|-------|-----|--------|
+| 1 Service Understanding | Service Understanding | shipped (hero, CTA, goal fast-path) |
+| **2 Project Start** | **Project Start Rate** | **in flight — 1-line registration, auto-name, auto-save, faster analysis** |
+| 3 AI Trust | Decision Understanding | next |
+| 4 Decision | GO Conversion | HOLD panel shipped |
+| 5 Execution | Execution Start | queued |
 
-## Product Loop (never ends)
+## Product Loop
 
-```
-Behavior analysis → KPI → remove blockers → UX → implement → QA → Production → analytics → repeat
-```
+Behavior → KPI → implement → QA → Production → repeat
 
-**No constitution edits. No screen goals. No queue completion.**
+**No constitution edits. No approval prompts.**

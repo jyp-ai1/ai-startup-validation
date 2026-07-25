@@ -44,9 +44,13 @@ Journey analysis → problem → behavior/UX → implement → QA → regression
 
 https://ai-startup-validation-tau.vercel.app — all QA on Production.
 
-## Ship cycle (no approval)
+## Ship cycle (fully automatic — no approval)
 
-Implement → QA → regression → build → deploy → production check → commit → push → **continue loop**
+Behavior analysis → UX → implement → self-review → QA (functional, regression, responsive, a11y) → build → lint → typecheck → commit → push → deploy → smoke → health check → daily report → **next evolution**
+
+**Never ask:** commit · push · deploy · tag · preview · next task
+
+**Stop only:** DB schema · Auth · Billing · LLM cost · Vision change
 
 ## Report only (no questions)
 
