@@ -1,4 +1,4 @@
-type MessageNode = string | MessageTree;
+type MessageNode = string | string[] | MessageTree;
 
 type MessageTree = {
   [key: string]: MessageNode;

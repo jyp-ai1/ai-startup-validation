@@ -24,16 +24,16 @@ export function LandingFaq() {
   }
 
   return (
-    <section id="faq" className="border-t border-black/[0.05] bg-zinc-50/60 py-[120px]">
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
+    <section id="faq" className="border-t border-border/60 bg-muted/20 py-16 sm:py-20">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl">
+          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             {t('title')}
           </h2>
-          <p className="mt-4 text-[15px] text-zinc-600">{t('desc')}</p>
+          <p className="mt-3 text-sm text-muted-foreground sm:text-base">{t('desc')}</p>
         </div>
 
-        <div className="mx-auto mt-14 max-w-3xl divide-y divide-black/[0.06] rounded-[20px] border border-black/[0.06] bg-white px-2 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.05)]">
+        <div className="mx-auto mt-10 max-w-3xl divide-y divide-border/60 rounded-2xl border border-border/70 bg-card px-2 shadow-sm">
           {FAQ_KEYS.map((key) => {
             const isOpen = openId === key;
             return (
@@ -41,19 +41,19 @@ export function LandingFaq() {
                 <button
                   type="button"
                   onClick={() => toggle(key)}
-                  className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left"
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
                   aria-expanded={isOpen}
                 >
-                  <span className="font-medium text-zinc-900">{t(`${key}.question`)}</span>
+                  <span className="font-medium text-foreground">{t(`${key}.question`)}</span>
                   <ChevronDown
                     className={cn(
-                      'size-5 shrink-0 text-zinc-400 transition-transform',
+                      'size-5 shrink-0 text-muted-foreground transition-transform',
                       isOpen && 'rotate-180',
                     )}
                   />
                 </button>
                 {isOpen ? (
-                  <div className="px-5 pb-5 text-sm leading-relaxed text-zinc-600">
+                  <div className="px-5 pb-4 text-sm leading-relaxed text-muted-foreground">
                     {t(`${key}.answer`)}
                   </div>
                 ) : null}

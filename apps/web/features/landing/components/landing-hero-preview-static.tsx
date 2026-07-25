@@ -20,7 +20,7 @@ export async function LandingHeroPreviewStatic({ className }: LandingHeroPreview
   return (
     <div
       className={cn(
-        'hidden overflow-hidden rounded-[20px] border border-border/60 bg-card/80 shadow-lg lg:block',
+        'overflow-hidden rounded-[20px] border border-border/60 bg-card/80 shadow-lg',
         className,
       )}
       aria-hidden

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowRight, Sparkles } from 'lucide-react';
 
@@ -17,6 +17,7 @@ import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 
 const GOAL_TIMEOUT_MS = 10_000;
+const RECOMMENDED_GOAL: WorkflowGoalId = 'business-viability';
 
 type GoalSelectionViewProps = {
   demoMode?: boolean;
@@ -33,9 +34,11 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
   analyticsRef.current = analytics;
 
   const [overlayGoal, setOverlayGoal] = useState<WorkflowGoalId | null>(null);
+  const [focusedIndex, setFocusedIndex] = useState(0);
   const [failed, setFailed] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const timeoutRef = useRef<number | null>(null);
+  const goalButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const clearGoalTimeout = useCallback(() => {
     if (timeoutRef.current !== null) {
@@ -97,6 +100,39 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
     void handleSelect(overlayGoal);
   };
 
+  useEffect(() => {
+    if (overlayGoal) return;
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (locked) return;
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setFocusedIndex((index) => {
+          const next = Math.min(WORKFLOW_GOAL_IDS.length - 1, index + 1);
+          goalButtonRefs.current[next]?.focus();
+          return next;
+        });
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setFocusedIndex((index) => {
+          const next = Math.max(0, index - 1);
+          goalButtonRefs.current[next]?.focus();
+          return next;
+        });
+      } else if (event.key === 'Enter') {
+        const active = document.activeElement;
+        const isGoalButton = goalButtonRefs.current.some((button) => button === active);
+        if (!isGoalButton) {
+          event.preventDefault();
+          void handleSelect(WORKFLOW_GOAL_IDS[focusedIndex]!);
+        }
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [focusedIndex, handleSelect, locked, overlayGoal]);
+
   const progressPercent = overlayGoal
     ? Math.min(100, Math.round(((activeStep + 1) / 4) * 100))
     : 0;
@@ -134,16 +170,32 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
 
           <p className="mt-6 text-sm font-medium text-foreground">{t('intake.question')}</p>
 
+          <div className="mt-4 rounded-2xl border border-primary/30 bg-primary/[0.05] p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">{t('recommended.label')}</p>
+            <p className="mt-1 font-semibold text-foreground">{t('recommended.title')}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t('recommended.desc')}</p>
+          </div>
+
           <ul className="mt-4 space-y-3" role="list">
             {WORKFLOW_GOAL_IDS.map((goalId, index) => {
               const isSelected = overlayGoal === goalId;
               const isDisabled = locked;
+              const isRecommended = goalId === RECOMMENDED_GOAL;
               return (
                 <li key={goalId}>
                   <button
+                    ref={(node) => {
+                      goalButtonRefs.current[index] = node;
+                    }}
                     type="button"
                     disabled={isDisabled}
                     aria-disabled={isDisabled}
+                    aria-label={
+                      isRecommended
+                        ? `${t('recommended.label')}: ${t(`options.${goalId}.title`)}`
+                        : t(`options.${goalId}.title`)
+                    }
+                    onFocus={() => setFocusedIndex(index)}
                     onClick={() => void handleSelect(goalId)}
                     className={cn(
                       'group flex w-full items-start gap-4 rounded-2xl border border-border/70 bg-card p-4 text-left',
@@ -152,6 +204,8 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
                       'disabled:pointer-events-none disabled:opacity-50',
                       'motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500',
                       isSelected && 'scale-[0.98] border-primary/50 ring-2 ring-primary/20',
+                      isRecommended && !isSelected && 'border-primary/25',
+                      focusedIndex === index && !isSelected && 'ring-2 ring-ring/40',
                     )}
                     style={{ animationDelay: `${index * 60}ms` }}
                   >
@@ -180,7 +234,7 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
             })}
           </ul>
 
-          <p className="mt-8 text-center text-xs text-muted-foreground">{t('hint')}</p>
+          <p className="mt-8 text-center text-xs text-muted-foreground">{t('keyboardHint')}</p>
         </JourneyFade>
       </JourneyLayout>
     </>

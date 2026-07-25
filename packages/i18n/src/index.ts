@@ -62,9 +62,9 @@ export async function loadMessages(locale: AppLocale): Promise<Messages> {
   const en = (await import('./messages/en.json')).default;
 
   if (locale === 'en') {
-    return en;
+    return en as unknown as Messages;
   }
 
   const localeMessages = await importLocaleFile(locale);
-  return mergeMessages(en, localeMessages) as Messages;
+  return mergeMessages(en, localeMessages) as unknown as Messages;
 }

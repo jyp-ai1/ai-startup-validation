@@ -3,6 +3,9 @@ import dynamic from 'next/dynamic';
 import { LandingHeader } from './landing-header';
 import { LandingHero } from './landing-hero';
 import { LandingLazySection } from './landing-lazy-section';
+import { LandingAiPmSection } from './landing-ai-pm-section';
+import { LandingBeforeAfter } from './landing-before-after';
+import { LandingStorySection } from './landing-story-section';
 
 const LandingTracker = dynamic(() => import('./landing-tracker').then((m) => m.LandingTracker));
 
@@ -18,12 +21,15 @@ const LandingTestimonials = dynamic(
   () => import('./landing-testimonials').then((m) => m.LandingTestimonials),
   { loading: () => <div className="min-h-[200px]" aria-hidden /> },
 );
+const LandingFaq = dynamic(
+  () => import('./landing-faq').then((m) => m.LandingFaq),
+  { loading: () => <div className="min-h-[280px]" aria-hidden /> },
+);
 const LandingFooter = dynamic(
   () => import('./landing-footer').then((m) => m.LandingFooter),
   { loading: () => <div className="min-h-[160px]" aria-hidden /> },
 );
 
-/** Journey-first landing — below-fold sections lazy-loaded for LCP. */
 export async function LandingPage() {
   return (
     <div className="min-h-full bg-background text-foreground">
@@ -33,11 +39,17 @@ export async function LandingPage() {
         <LandingLazySection minHeight={120}>
           <LandingTrustedBy />
         </LandingLazySection>
+        <LandingStorySection />
+        <LandingBeforeAfter />
+        <LandingAiPmSection />
         <LandingLazySection minHeight={240}>
           <LandingHowItWorks />
         </LandingLazySection>
         <LandingLazySection minHeight={200}>
           <LandingTestimonials />
+        </LandingLazySection>
+        <LandingLazySection minHeight={280}>
+          <LandingFaq />
         </LandingLazySection>
         <LandingLazySection minHeight={160}>
           <LandingFooter />

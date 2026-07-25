@@ -7,7 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.0.8-alpha] — 2026-07-25
+## [2.4.0] — 2026-07-25
+
+### Added — Mission A (batch 1)
+
+- Landing: Story, Before/After, AI PM sections; mobile hero reorder; FAQ theme tokens
+- Workflow: Roadmap panel (confidence, risk, duration, checklist)
+- Workspace: Workflow recommendation, report preview, settings panel (theme)
+- Goal: AI recommended banner, keyboard navigation (↑↓ Enter)
+- Admin: Heatmap placeholder (Clarity pending)
+- Accessibility: Skip-to-main link (ko/en)
+
+### Changed
+
+- Beta version: Closed Beta 2.4.0
+- `@repo/i18n`: merge-messages supports string arrays
+
+---
 
 ### Added
 

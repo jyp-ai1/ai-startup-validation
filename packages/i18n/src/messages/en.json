@@ -28,6 +28,7 @@
     "backToProject": "Back to project",
     "backToList": "Back to list",
     "loading": "Loading...",
+    "skipToMain": "Skip to main content",
     "generating": "Generating...",
     "processing": "Processing...",
     "search": "Search",
@@ -1323,6 +1324,7 @@
       "pricing": "Pricing",
       "roadmap": "Roadmap",
       "faq": "FAQ",
+      "aiPm": "AI PM",
       "stories": "Stories",
       "signIn": "Sign in",
       "startFree": "Start Free",
@@ -1366,6 +1368,63 @@
           "role": "Strategy Lead"
         }
       }
+    },
+    "story": {
+      "title": "How strategy projects change",
+      "desc": "From solo guessing to executing with your AI PM.",
+      "steps": {
+        "problem": {
+          "title": "Before — solo guessing",
+          "desc": "Market, competition, and customers researched separately — you chose every next step."
+        },
+        "shift": {
+          "title": "Shift — AI PM arrives",
+          "desc": "Share your Goal and AI builds Workflow, Decision, and Next Action automatically."
+        },
+        "outcome": {
+          "title": "After — execute together",
+          "desc": "Workspace to GO in 3 minutes — a project, not a report."
+        }
+      }
+    },
+    "beforeAfter": {
+      "title": "Before / After",
+      "desc": "Not another analysis tool — an AI project manager at your side",
+      "beforeLabel": "Before",
+      "afterLabel": "After · LaunchLens",
+      "beforeItems": [
+        "No clear starting point",
+        "Hours on research and decks",
+        "You decide every next action",
+        "GO/HOLD rationale scattered"
+      ],
+      "afterItems": [
+        "Pick a Goal — AI builds Workflow",
+        "Workspace in 3 minutes",
+        "AI PM suggests Next Action",
+        "Evidence-based GO/HOLD"
+      ]
+    },
+    "aiPm": {
+      "eyebrow": "AI Project Manager",
+      "title": "Not an analysis tool. An AI PM who works with you.",
+      "desc": "LaunchLens is not a chat UI. It is a colleague running your strategy project from Goal to GO.",
+      "points": {
+        "lead": {
+          "title": "Lead — picks next actions",
+          "desc": "Your AI PM tells you what to do today and why."
+        },
+        "decide": {
+          "title": "Decide — judgment with evidence",
+          "desc": "Connects Confidence, Evidence, and Risk to explain GO/HOLD."
+        },
+        "execute": {
+          "title": "Execute — in Workspace",
+          "desc": "After Decision, MVP, funding, and grant workflows flow naturally."
+        }
+      },
+      "quote": "It felt like running a strategy project with an AI PM — not reading a report.",
+      "quoteRole": "Closed Beta Founder"
     },
     "preview": {
       "windowTitle": "Strategy Workspace",
@@ -1784,7 +1843,9 @@
     "dropRate": "Drop",
     "goCount": "GO",
     "feedbackCount": "Feedback",
-    "deployVersion": "Version"
+    "deployVersion": "Version",
+    "heatmapPlaceholder": "Heatmap (Clarity integration pending)",
+    "heatmapPlaceholderHint": "Session replay and click heatmaps activate after Clarity project ID is configured."
   },
   "decision": {
     "centerTitle": "Decision Center",
@@ -3706,6 +3767,20 @@
           "title": "3. Decision last",
           "desc": "When evidence stacks up, reach GO/HOLD and execute."
         }
+      },
+      "roadmap": {
+        "confidence": "Confidence",
+        "risk": "Risk",
+        "duration": "Duration",
+        "success": "Success Rate",
+        "checklistTitle": "Execution checklist",
+        "checklist": {
+          "market": "Confirm market size and growth",
+          "competition": "Analyze competitor positioning",
+          "voc": "Collect 2+ customer VOC items",
+          "decision": "First GO/HOLD Decision"
+        },
+        "outcome": "On completion: +28% Confidence, −35% Risk, ~20 min to first GO"
       }
     },
     "registration": {
@@ -3752,6 +3827,12 @@
       "subtitle": "This isn't a menu — AI is learning your project type.",
       "demoBanner": "Demo mode — select a goal to preview a sample workflow.",
       "hint": "Your answer lets AI compose a tailored workflow automatically.",
+      "recommended": {
+        "label": "AI pick",
+        "title": "New here? Start with business viability",
+        "desc": "Most Closed Beta users reach Workspace in 3 minutes with this Goal."
+      },
+      "keyboardHint": "↑↓ to move · Enter to select",
       "intake": {
         "eyebrow": "AI Project Manager",
         "prompt": "Tell me about your project. I'll understand your goal and prepare the workflow.",
@@ -4122,6 +4203,31 @@
         "decision": "Decision",
         "decisionValue": "HOLD → GO in progress",
         "decisionValueNamed": "{name} · HOLD → GO"
+      },
+      "workflowRec": {
+        "eyebrow": "Workflow Recommendation",
+        "title": "Post-GO MVP design workflow",
+        "desc": "Flows naturally into execution after Decision.",
+        "cta": "View MVP workflow"
+      },
+      "reportPreview": {
+        "eyebrow": "Report Preview",
+        "title": "Executive Report preview",
+        "project": "Project",
+        "confidence": "Confidence",
+        "verdict": "Verdict",
+        "verdictValue": "HOLD → GO path",
+        "unnamed": "Untitled",
+        "hint": "PDF export unlocks as Evidence accumulates."
+      },
+      "settingsPanel": {
+        "profile": "Profile",
+        "projectName": "Project name",
+        "idea": "Idea",
+        "appearance": "Theme",
+        "themeDesc": "Light · Dark · System",
+        "feedback": "Feedback",
+        "feedbackDesc": "Send Beta feedback via the widget in the bottom-right corner."
       },
       "timeline": {
         "title": "Decision Timeline",

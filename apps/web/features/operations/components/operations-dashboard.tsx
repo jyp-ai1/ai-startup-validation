@@ -520,6 +520,24 @@ export function OperationsDashboard() {
             </CardContent>
           </Card>
 
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <BarChart3 className="size-4" />
+                {t('heatmapPlaceholder')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div
+                className="flex min-h-[160px] items-center justify-center rounded-xl border border-dashed border-border/80 bg-muted/30 px-4 text-center text-sm text-muted-foreground"
+                role="img"
+                aria-label={t('heatmapPlaceholder')}
+              >
+                {t('heatmapPlaceholderHint')}
+              </div>
+            </CardContent>
+          </Card>
+
           <p className="flex items-center gap-2 text-xs text-muted-foreground">
             <Languages className="size-3.5" />
             {t('futureGaNote')}

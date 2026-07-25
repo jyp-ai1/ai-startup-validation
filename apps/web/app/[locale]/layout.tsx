@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, setRequestLocale } from 'next-intl/server';
 
+import { SkipToMainLink } from '@/components/skip-to-main';
 import { AnalyticsProvider } from '@/lib/analytics/providers/analytics-provider';
 import { AppShellWrapper } from '@/components/app-shell-wrapper';
 import { routing } from '@/i18n/routing';
@@ -33,6 +34,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   return (
     <NextIntlClientProvider locale={resolvedLocale} messages={messages}>
       <ThemeProvider>
+        <SkipToMainLink />
         <AnalyticsProvider>
           <AppShellWrapper>{children}</AppShellWrapper>
           <Toaster position="top-right" richColors closeButton />

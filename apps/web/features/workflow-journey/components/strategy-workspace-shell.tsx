@@ -27,6 +27,9 @@ import { JourneyAchievementsPanel } from './intelligence-workspace/journey-achie
 import { JourneyAiMemoryPanel } from './intelligence-workspace/journey-ai-memory-panel';
 import { JourneyDailyCoach } from './intelligence-workspace/journey-daily-coach';
 import { WorkspaceMorningBrief } from './intelligence-workspace/workspace-morning-brief';
+import { WorkspaceReportPreview } from './intelligence-workspace/workspace-report-preview';
+import { WorkspaceSettingsPanel } from './intelligence-workspace/workspace-settings-panel';
+import { WorkspaceWorkflowRecommendation } from './intelligence-workspace/workspace-workflow-recommendation';
 import { JourneyProjectPanel } from './intelligence-workspace/journey-project-panel';
 import { JourneyProgressRing } from './intelligence-workspace/journey-progress-ring';
 import { JourneyProjectSwitcher } from './intelligence-workspace/journey-project-switcher';
@@ -184,6 +187,11 @@ export function StrategyWorkspaceShell({
               goalId={goalId}
               className="w-full max-w-none scroll-mt-6"
             />
+            <WorkspaceWorkflowRecommendation goalId={goalId} />
+            <WorkspaceReportPreview
+              projectName={projectDisplayName}
+              confidence={project.confidence}
+            />
           </div>
         );
       case 'project':
@@ -209,24 +217,10 @@ export function StrategyWorkspaceShell({
         );
       case 'settings':
         return (
-          <section className="rounded-2xl border border-border/70 bg-card p-5 sm:p-6">
-            <h3 className="text-sm font-semibold">{te('settings.title')}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{te('settings.desc')}</p>
-            {registration ? (
-              <dl className="mt-4 space-y-2 text-sm">
-                <div>
-                  <dt className="text-muted-foreground">{t('settings.projectName')}</dt>
-                  <dd className="font-medium">{registration.projectName}</dd>
-                </div>
-                {registration.ideaOneLiner ? (
-                  <div>
-                    <dt className="text-muted-foreground">{t('settings.idea')}</dt>
-                    <dd>{registration.ideaOneLiner}</dd>
-                  </div>
-                ) : null}
-              </dl>
-            ) : null}
-          </section>
+          <WorkspaceSettingsPanel
+            projectName={registration?.projectName}
+            idea={registration?.ideaOneLiner}
+          />
         );
       default:
         return null;

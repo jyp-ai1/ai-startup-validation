@@ -15,8 +15,8 @@ export function LandingHowItWorks() {
   const t = useTranslations('landing.howItWorks');
 
   return (
-    <section id="how-it-works" className="py-[120px]">
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
+    <section id="how-it-works" className="py-16 sm:py-20">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
             {t('title')}

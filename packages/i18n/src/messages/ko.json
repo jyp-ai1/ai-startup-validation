@@ -28,6 +28,7 @@
     "backToProject": "프로젝트로 돌아가기",
     "backToList": "목록으로",
     "loading": "로딩 중...",
+    "skipToMain": "본문으로 건너뛰기",
     "generating": "생성 중...",
     "processing": "처리 중...",
     "search": "검색",
@@ -1323,6 +1324,7 @@
       "pricing": "요금",
       "roadmap": "Roadmap",
       "faq": "FAQ",
+      "aiPm": "AI PM",
       "stories": "후기",
       "signIn": "로그인",
       "startFree": "무료로 시작하기",
@@ -1366,6 +1368,63 @@
           "role": "Strategy Lead"
         }
       }
+    },
+    "story": {
+      "title": "전략 프로젝트, 이렇게 바뀝니다",
+      "desc": "혼자 고민하던 순간에서 AI PM과 함께 실행하는 여정으로.",
+      "steps": {
+        "problem": {
+          "title": "Before — 혼자 고민",
+          "desc": "시장·경쟁·고객을 각각 조사하고, 다음 액션을 스스로 정해야 했습니다."
+        },
+        "shift": {
+          "title": "Shift — AI PM 등장",
+          "desc": "Goal만 알려주면 Workflow·Decision·Next Action을 AI가 자동 구성합니다."
+        },
+        "outcome": {
+          "title": "After — 함께 실행",
+          "desc": "3분 안에 Workspace에서 GO까지 — 보고서가 아니라 프로젝트를 진행합니다."
+        }
+      }
+    },
+    "beforeAfter": {
+      "title": "Before / After",
+      "desc": "분석 도구가 아닌, AI 프로젝트 매니저와 함께하는 차이",
+      "beforeLabel": "Before",
+      "afterLabel": "After · LaunchLens",
+      "beforeItems": [
+        "어디서부터 시작할지 모름",
+        "조사·분석·보고서에 시간 소모",
+        "다음 액션을 스스로 결정",
+        "GO/HOLD 근거가 흩어짐"
+      ],
+      "afterItems": [
+        "Goal만 선택하면 AI가 Workflow 구성",
+        "3분 안에 Workspace 진입",
+        "AI PM이 Next Action 제안",
+        "Evidence 기반 GO/HOLD 판단"
+      ]
+    },
+    "aiPm": {
+      "eyebrow": "AI Project Manager",
+      "title": "분석 도구가 아닙니다. 함께 일하는 AI PM입니다.",
+      "desc": "LaunchLens는 Chat UI가 아닙니다. Goal부터 GO까지 전략 프로젝트를 함께 진행하는 동료입니다.",
+      "points": {
+        "lead": {
+          "title": "Lead — 다음 액션을 정합니다",
+          "desc": "오늘 무엇을 할지, 왜 해야 하는지 AI PM이 먼저 말합니다."
+        },
+        "decide": {
+          "title": "Decide — 근거와 함께 판단",
+          "desc": "Confidence, Evidence, Risk를 연결해 GO/HOLD를 설명합니다."
+        },
+        "execute": {
+          "title": "Execute — Workspace에서 실행",
+          "desc": "Decision 이후 MVP·투자·정부지원 Workflow까지 자연스럽게 이어집니다."
+        }
+      },
+      "quote": "보고서를 읽는 게 아니라, AI PM과 전략 프로젝트를 함께 진행하는 느낌이었습니다.",
+      "quoteRole": "Closed Beta Founder"
     },
     "preview": {
       "windowTitle": "Strategy Workspace",
@@ -1784,7 +1843,9 @@
     "dropRate": "Drop",
     "goCount": "GO",
     "feedbackCount": "Feedback",
-    "deployVersion": "Version"
+    "deployVersion": "Version",
+    "heatmapPlaceholder": "Heatmap (Clarity 연동 예정)",
+    "heatmapPlaceholderHint": "Session replay와 클릭 히트맵은 Clarity 프로젝트 ID 설정 후 활성화됩니다."
   },
   "decision": {
     "centerTitle": "의사결정 센터",
@@ -3688,6 +3749,20 @@
           "title": "3. Decision으로 마무리",
           "desc": "근거가 모이면 GO/HOLD를 내리고 실행으로 넘어갑니다."
         }
+      },
+      "roadmap": {
+        "confidence": "Confidence",
+        "risk": "Risk",
+        "duration": "Duration",
+        "success": "Success Rate",
+        "checklistTitle": "실행 체크리스트",
+        "checklist": {
+          "market": "시장 규모·성장률 확인",
+          "competition": "경쟁사 포지셔닝 분석",
+          "voc": "고객 VOC 2건 이상",
+          "decision": "GO/HOLD 첫 Decision"
+        },
+        "outcome": "완료 시 Confidence +28%, Risk −35%, 첫 GO까지 약 20분 예상"
       }
     },
     "registration": {
@@ -3734,6 +3809,12 @@
       "subtitle": "선택 화면이 아닙니다. AI가 프로젝트 유형을 파악하는 단계입니다.",
       "demoBanner": "데모 모드 — Goal을 선택하면 샘플 Workflow를 체험할 수 있습니다.",
       "hint": "답변하면 AI가 맞춤 Workflow를 자동 구성합니다.",
+      "recommended": {
+        "label": "AI 추천",
+        "title": "처음이시라면 사업 가능성 검토부터",
+        "desc": "대부분의 Closed Beta 사용자가 이 Goal로 3분 안에 Workspace에 도달했습니다."
+      },
+      "keyboardHint": "↑↓ 화살표로 이동 · Enter로 선택",
       "intake": {
         "eyebrow": "AI Project Manager",
         "prompt": "프로젝트에 대해 알려주세요. AI가 목표를 이해하고 Workflow를 준비합니다.",
@@ -4104,6 +4185,31 @@
         "decision": "Decision",
         "decisionValue": "HOLD → GO 경로 진행 중",
         "decisionValueNamed": "{name} · HOLD → GO"
+      },
+      "workflowRec": {
+        "eyebrow": "Workflow Recommendation",
+        "title": "GO 이후 MVP 설계 Workflow",
+        "desc": "Decision 이후 실행 단계로 자연스럽게 이어집니다.",
+        "cta": "MVP Workflow 보기"
+      },
+      "reportPreview": {
+        "eyebrow": "Report Preview",
+        "title": "Executive Report 미리보기",
+        "project": "프로젝트",
+        "confidence": "Confidence",
+        "verdict": "판정",
+        "verdictValue": "HOLD → GO 경로",
+        "unnamed": "이름 없음",
+        "hint": "Evidence가 쌓이면 PDF Export가 활성화됩니다."
+      },
+      "settingsPanel": {
+        "profile": "프로필",
+        "projectName": "프로젝트 이름",
+        "idea": "아이디어",
+        "appearance": "테마",
+        "themeDesc": "라이트 · 다크 · 시스템",
+        "feedback": "피드백",
+        "feedbackDesc": "우측 하단 피드백 위젯으로 Beta 의견을 보내주세요."
       },
       "timeline": {
         "title": "Decision Timeline",

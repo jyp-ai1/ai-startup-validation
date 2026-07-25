@@ -1,5 +1,5 @@
-/** LaunchLens Closed Beta — Mission Mode v5 batch */
-export const BETA_VERSION = 'Closed Beta 2.3.0';
+/** LaunchLens Closed Beta — Mission A Project Completion */
+export const BETA_VERSION = 'Closed Beta 2.4.0';
 export const BETA_LABEL = 'CLOSED BETA';
 
 export const SITE_LINKS = {

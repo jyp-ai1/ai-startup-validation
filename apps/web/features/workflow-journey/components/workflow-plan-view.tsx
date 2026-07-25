@@ -13,6 +13,7 @@ import type { WorkflowGoalId, WorkflowTemplate } from '../types';
 import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 import { WorkflowOutcomesPanel } from './workflow-outcomes-panel';
+import { WorkflowRoadmapPanel } from './workflow-roadmap-panel';
 import { WorkflowStackBadges } from './workflow-stack-badges';
 import { WorkflowWhyPanel } from './workflow-why-panel';
 
@@ -79,6 +80,8 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('outcomesTitle')}</p>
               <WorkflowOutcomesPanel className="mt-3" />
             </div>
+
+            <WorkflowRoadmapPanel className="mt-5" />
 
             <ol className="mt-6 space-y-3" role="list">
               {STRATEGY_PHASES.map((key, index) => (
