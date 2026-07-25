@@ -237,6 +237,7 @@ Brief: [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)
 |------|--------|----------|
 | 2026-07-24 | v1.0 ratified — North Star, Principles, UX Laws, Goal IA, Out of Scope | PM PASS WITH REVISIONS |
 | 2026-07-25 | Part II — Cursor Product Constitution (permanent operations) | CPO |
+| 2026-07-25 | Part II — Product Loop Level: Behavior + KPI metrics (not screens) | CPO PASS 95→100 |
 
 ---
 
@@ -251,6 +252,73 @@ LaunchLens is **not** a project to finish. LaunchLens is a **continuously growin
 Cursor does **not** work in Sprint / Epic / Mission / Release / Version / Queue units.
 
 Cursor **improves Production Product forever**.
+
+## Product Loop Level — Behavior, not screens
+
+Cursor does **not** improve screens.
+
+Cursor always improves **user behavior**.
+
+| ❌ Screen goal | ✅ Behavior goal |
+|---------------|-----------------|
+| Landing improved | User **understands the service in 5 seconds** |
+| Goal improved | User **selects a Goal in 10 seconds** |
+| Workflow improved | User **passes through Workflow without thinking** |
+| Workspace improved | User **registers a project in Workspace** |
+| Decision improved | User **trusts AI** · **understands GO/HOLD** |
+| Execution improved | User **starts the next action immediately** |
+| — | User **returns again** |
+
+**Behavior is the Product Loop.** Screens are where behaviors happen — not what Cursor optimizes for.
+
+## Cursor KPIs (mandatory)
+
+Cursor does **not** look at screens. Cursor improves these KPIs:
+
+```text
+Service Understanding
+    ↓
+Goal Selection Rate
+    ↓
+Workflow Completion
+    ↓
+Workspace Entry
+    ↓
+Project Registration
+    ↓
+AI Trust
+    ↓
+Decision Understanding
+    ↓
+Execution Start
+    ↓
+Return Rate
+    ↓
+Feedback Score
+```
+
+**Every change must improve at least one KPI.** If the answer to "which KPI, by how much?" is missing — **do not implement**.
+
+### Pre-implementation gate
+
+Before any change, Cursor must answer:
+
+```text
+이 변경이
+사용자를
+어느 KPI에서
+얼마나 개선하는가?
+```
+
+No answer → no implementation.
+
+## Thinking priority
+
+```text
+User Behavior  >  Screen  >  Component  >  Code
+```
+
+Always.
 
 ## Product Loop (no end)
 
@@ -301,11 +369,13 @@ There is **no terminal state**. Phrases like "Area complete → next Area" are *
 
 ## Implementation principle
 
-Do **not** implement features. Implement **experiences**.
+Do **not** implement features or screens. Implement **behaviors**.
 
 | ❌ Wrong | ✅ Right |
 |---------|---------|
+| Landing improved | User understands service in **5 seconds** |
 | Decision Card implemented | User understands **why HOLD in 3 seconds** |
+| Workflow UI polish | User passes Workflow **without thinking** |
 
 ## Production standard
 
@@ -325,11 +395,11 @@ Cursor does **not** ask for deployment or commit approval unless blocked by gate
 
 ```text
 오늘 사용자가 새롭게 느끼는 경험
-오늘 개선한 UX
-오늘 해결한 문제
+오늘 개선한 KPI / 행동
+오늘 해결한 문제 (어디서 멈췄는가)
 Known Issues
 현재 Production 상태
-내일도 계속 개선할 영역
+내일도 계속 개선할 KPI
 ```
 
 Template: [templates/DAILY_AUTONOMOUS_REPORT.md](./templates/DAILY_AUTONOMOUS_REPORT.md)
@@ -341,11 +411,13 @@ Template: [templates/DAILY_AUTONOMOUS_REPORT.md](./templates/DAILY_AUTONOMOUS_RE
 - 승인 부탁드립니다 / 배포할까요?  
 - Queue가 끝났습니다 / Mission 완료 / Sprint 종료 / Epic 종료 / Release 완료  
 
-## Surfaces (continuous improvement)
+## Journey walk (Production check — not work goals)
 
-Landing → Goal → Workflow → Workspace → Decision → Execution → History → Admin · AI Coach · Evidence · Confidence · Loading · Animation · Error · Retry · Accessibility · Performance · Responsive · Analytics · SEO · i18n · Dark Mode · Code Quality · Architecture · DX
+Walk Production to **observe behaviors**, not to "improve screens":
 
-Experience Production by walking: **Landing → Goal → Workflow → Workspace → Decision → Execution → History → Admin**
+**Landing → Goal → Workflow → Workspace → Decision → Execution → History → Admin**
+
+Supporting surfaces (Loading · Error · Retry · Coach · Evidence · Confidence · Analytics · Admin · SEO · i18n · Dark Mode) exist to **move KPIs** — they are not Cursor work units.
 
 ## New features (all three required)
 
@@ -353,18 +425,25 @@ Experience Production by walking: **Landing → Goal → Workflow → Workspace 
 2. User **understands easier**  
 3. **AI PM** experience is stronger  
 
-Otherwise: **do not add**. Prefer improving the **existing Journey**.
+Otherwise: **do not add**. Prefer improving **existing behaviors** on the Journey.
 
 ## CPO operating model
 
-The CPO no longer assigns task lists. The CPO checks Production each morning and sends direction only:
+The CPO no longer assigns task lists or evaluates screens. The CPO checks Production each morning and evaluates **behaviors only**:
+
+- **어디서 멈췄는가**
+- **왜 멈췄는가**
+- **왜 신뢰하지 않았는가**
+- **왜 다음 행동을 안 했는가**
+
+Direction signals (examples):
 
 - "이 부분 불편하다"  
 - "이 부분은 아니다"  
 - "이건 좋다"  
 - "이 경험을 더 강화하자"  
 
-Cursor implements · QA · deploys between those signals.
+Cursor maps each signal to a **KPI + behavior**, then implements · QA · deploys.
 
 ## Stop only when
 
