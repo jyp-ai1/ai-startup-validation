@@ -1,54 +1,29 @@
-# Mission Queue — Project Completion v6
+# Mission Queue — Omega-1
 
-**Mode:** Product Consumption (not human Sprint)  
-**Started:** 2026-07-25 KST  
-**Report:** 08:00 KST Daily Autonomous Report only
+**Active:** Mission Omega-1 — Closed Beta Complete  
+**Report:** 08:00 KST only · See `docs/MISSION_OMEGA_1.md`
 
-## Mission A — Closed Beta Complete (A-1 … A-20)
+## Priority Order (consume top → bottom)
 
-| ID | Focus | Status |
-|----|-------|--------|
-| A-1 | Project CRUD Complete | shipped → `2.5.0` |
-| A-2 | History Complete | shipped → `2.6.0` |
-| A-3 | Decision Workspace Complete | shipped → `2.7.0` |
-| A-4 | Workspace Polish | in_progress |
-| A-5 | AI Coach Complete | pending |
-| A-6 | Workflow Stack Complete | pending |
-| A-7 | Evidence Engine Complete | pending |
-| A-8 | Project Dashboard | pending |
-| A-9 | Admin Complete | pending |
-| A-10 | Closed Beta Feedback | pending |
-| A-11 | Analytics | pending |
-| A-12 | Journey Polish | pending |
-| A-13 | Localization | pending |
-| A-14 | Accessibility | pending |
-| A-15 | Mobile | pending |
-| A-16 | Performance | pending |
-| A-17 | SEO | pending |
-| A-18 | Error System | pending |
-| A-19 | Design System | pending |
-| A-20 | Closed Beta Release Candidate | pending |
+| P | Omega # | Focus | Status |
+|---|---------|-------|--------|
+| 1 | 4 | Workspace polish (Today/Coach/Activity) | in_progress |
+| 2 | 16 | Error UX (404/500/timeout/retry/empty) | in_progress |
+| 3 | 1 | Landing final polish | in_progress |
+| 4 | 2 | Goal immersion | in_progress |
+| 5 | 3 | Workflow stack UX | in_progress |
+| 6 | 5 | Decision undo/redo log | in_progress |
+| 7 | 12–15 | A11y, Responsive, Perf, SEO | pending |
+| 8 | 17–19 | Animation, refactor, design system | pending |
+| 9 | 10 | Analytics dashboard polish | in_progress |
+| 10 | 20 | Docs sync | in_progress |
 
-## Mission B–E (after A)
+## Shipped This Session
 
-| ID | Mission | Status |
-|----|---------|--------|
-| B | Intelligence Foundation | pending |
-| C | Analytics Platform | pending |
-| D | User System | pending |
-| E | Real AI Preparation | pending |
+| Tag | Omega areas |
+|-----|-------------|
+| `closed-beta-v2.8.0` | #7 History export · #8 Coach · #9 Evidence · #11 Admin · #16 offline |
 
-## Shipped
+## Tags
 
-| Tag | Notes |
-|-----|-------|
-| `closed-beta-v2.4.0` | Mission A batch 1 — Landing/Workflow/Workspace |
-| `closed-beta-v2.3.0` | Mission v5 batch |
-
-## Autonomous loop
-
-Build → Lint → Type → QA → Commit → Push → Production → Tag → Next sub-mission
-
-## Forbidden
-
-승인해주세요 · 진행할까요 · Preview 확인 · 중간 보고
+`2.8.0` → `2.9.0+` incremental per Omega batch

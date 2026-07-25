@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
+  Download,
   GitBranch,
   Layers,
   MessageCircle,
@@ -73,7 +74,8 @@ export function JourneyHistoryPanel({ projectId }: JourneyHistoryPanelProps) {
         <h3 className="text-base font-semibold tracking-tight sm:text-lg">{t('title')}</h3>
         <p className="mt-1 text-sm text-muted-foreground">{t('desc')}</p>
 
-        <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label={t('filterLabel')}>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-2" role="tablist" aria-label={t('filterLabel')}>
           {FILTER_KEYS.map((key) => (
             <button
               key={key}
@@ -91,6 +93,33 @@ export function JourneyHistoryPanel({ projectId }: JourneyHistoryPanelProps) {
               {t(`filters.${key}`)}
             </button>
           ))}
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              const payload = {
+                projectId,
+                exportedAt: new Date().toISOString(),
+                filter,
+                entries: filtered,
+              };
+              const blob = new Blob([JSON.stringify(payload, null, 2)], {
+                type: 'application/json;charset=utf-8',
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `launchlens-history-${projectId.slice(0, 8)}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            disabled={filtered.length === 0}
+          >
+            <Download className="size-4" aria-hidden />
+            {t('export')}
+          </Button>
         </div>
 
         {dailyActivity.length > 0 ? (

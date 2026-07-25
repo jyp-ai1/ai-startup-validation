@@ -25,7 +25,9 @@ import { JourneyLayout } from './journey-layout';
 import { WorkflowGuideCard } from './workflow-guide-card';
 import { WorkspaceSkeleton } from './workspace-skeleton';
 import { JourneyDailyCoach } from './intelligence-workspace/journey-daily-coach';
+import { WorkspaceEveningSummary } from './intelligence-workspace/workspace-evening-summary';
 import { WorkspaceMorningBrief } from './intelligence-workspace/workspace-morning-brief';
+import { WorkspaceWeeklySummary } from './intelligence-workspace/workspace-weekly-summary';
 import { WorkspaceReportPreview } from './intelligence-workspace/workspace-report-preview';
 import { WorkspaceSettingsPanel } from './intelligence-workspace/workspace-settings-panel';
 import { WorkspaceWorkflowRecommendation } from './intelligence-workspace/workspace-workflow-recommendation';
@@ -207,6 +209,8 @@ export function StrategyWorkspaceShell({
               projectName={projectDisplayName}
               confidence={project.confidence}
             />
+            <WorkspaceEveningSummary gain={12} />
+            <WorkspaceWeeklySummary />
           </div>
         );
       case 'project':

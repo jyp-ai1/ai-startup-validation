@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, setRequestLocale } from 'next-intl/server';
 
+import { OfflineStatusBanner } from '@/components/offline-status-banner';
 import { SkipToMainLink } from '@/components/skip-to-main';
 import { AnalyticsProvider } from '@/lib/analytics/providers/analytics-provider';
 import { AppShellWrapper } from '@/components/app-shell-wrapper';
@@ -37,6 +38,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         <SkipToMainLink />
         <AnalyticsProvider>
           <AppShellWrapper>{children}</AppShellWrapper>
+          <OfflineStatusBanner />
           <Toaster position="top-right" richColors closeButton />
         </AnalyticsProvider>
       </ThemeProvider>

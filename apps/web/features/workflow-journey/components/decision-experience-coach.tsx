@@ -18,6 +18,7 @@ import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useJourneyHistory } from '../hooks/use-journey-history';
 import type { WorkflowGoalId } from '../types';
 import { ConfidenceMeter } from './confidence-meter';
+import { EvidenceEngineDrawer } from './evidence-engine-drawer';
 import { EvidenceIntelligencePanel } from './evidence-intelligence-panel';
 import { GoCelebrationOverlay } from './go-celebration-overlay';
 import { ProjectHealthVisual } from './project-health-visual';
@@ -350,12 +351,19 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
           ) : null}
         </div>
 
-        <EvidenceIntelligencePanel
-          evidenceOpen={whyOpen}
-          completedRuleIds={[]}
-          verdict={stage.verdict}
-          confidenceValue={stage.confidence}
-        />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <EvidenceIntelligencePanel
+            evidenceOpen={whyOpen}
+            completedRuleIds={[]}
+            verdict={stage.verdict}
+            confidenceValue={stage.confidence}
+          />
+          <EvidenceEngineDrawer
+            verdict={stage.verdict}
+            confidenceValue={stage.confidence}
+            completedRuleIds={[]}
+          />
+        </div>
 
         {/* Decision History */}
         <div>

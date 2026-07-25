@@ -1877,7 +1877,17 @@
     "feedbackCount": "Feedback",
     "deployVersion": "Version",
     "heatmapPlaceholder": "Heatmap (Clarity integration pending)",
-    "heatmapPlaceholderHint": "Session replay and click heatmaps activate after Clarity project ID is configured."
+    "heatmapPlaceholderHint": "Session replay and click heatmaps activate after Clarity project ID is configured.",
+    "adminTools": {
+      "featureFlags": "Feature Flags",
+      "featureFlagsHint": "Mock flags — UI preview until production wiring.",
+      "notice": "Notice · Banner",
+      "noticeActive": "Closed Beta 2.8.0",
+      "noticeBody": "Mission Omega-1 in progress — Coach, Evidence, and Admin tools added.",
+      "export": "Data Export",
+      "exportCsv": "Download CSV",
+      "exportHint": "Export operational metrics as CSV (includes mock data)."
+    }
   },
   "decision": {
     "centerTitle": "Decision Center",
@@ -3342,7 +3352,10 @@
     "forbiddenTitle": "Access denied",
     "forbiddenDescription": "You do not have permission to view this page.",
     "backToHome": "Back to home",
-    "startJourney": "Start strategy project"
+    "startJourney": "Start strategy project",
+    "offline": {
+      "banner": "You are offline. Changes sync automatically when reconnected."
+    }
   },
   "pages": {
     "newVoc": "New VOC",
@@ -4109,6 +4122,10 @@
       "sent": "Sent"
     },
     "intelligence": {
+      "drawer": {
+        "open": "Evidence Drawer",
+        "title": "Evidence Engine"
+      },
       "drawerTitle": "Why · Evidence · Intelligence",
       "flow": {
         "why": "Why",
@@ -4278,6 +4295,22 @@
         "decisionValue": "HOLD → GO in progress",
         "decisionValueNamed": "{name} · HOLD → GO"
       },
+      "eveningBrief": {
+        "label": "Evening Summary",
+        "title": "Today's wrap-up",
+        "summary": "Confidence rose {gain}% today.",
+        "done1": "Added 1 market research Evidence item",
+        "done2": "Maintained HOLD → GO decision path",
+        "encourage": "Tomorrow's Morning Brief will recommend your next action."
+      },
+      "weeklyBrief": {
+        "label": "Weekly Summary",
+        "title": "This week at a glance",
+        "decisions": "Decisions",
+        "confidence": "Confidence",
+        "goRate": "GO",
+        "nextWeek": "Next week we recommend the Pricing validation workflow."
+      },
       "workflowRec": {
         "eyebrow": "Workflow Recommendation",
         "title": "Post-GO MVP design workflow",
@@ -4310,6 +4343,7 @@
         "dailyActivity": "Today's activity",
         "empty": "No history entries yet.",
         "remove": "Remove entry",
+        "export": "Export JSON",
         "filters": {
           "all": "All",
           "decision": "Decision",
