@@ -153,6 +153,46 @@ export type AnalyticsConsent = {
   updatedAt: string;
 };
 
+export type AiPmRecommendation = {
+  priority: 'P0' | 'P1' | 'P2';
+  todayProblem: string;
+  whyImportant: string;
+  recommendedExperiment: string;
+  expectedLift: string;
+  estimatedHours: string;
+  risk: 'low' | 'medium' | 'high';
+};
+
+export type ProductOsBrief = {
+  primaryKpiKey: string;
+  primaryKpiLabel: string;
+  currentValue: number;
+  unit: '%' | 'count';
+  biggestDropStep: string;
+  dropPercent: number;
+  rootCause: string;
+  hypothesis: string;
+  experiment: string;
+  measureBy: string;
+  nextKpiKey: string;
+  deployVersion: string;
+  recommendation: string;
+  impact: {
+    baselineValue: number;
+    currentValue: number;
+    delta: number;
+    deltaLabel: string;
+    expectedLift: number;
+    experimentName: string;
+    status: 'measuring' | 'adopted' | 'rolled_back' | 'active';
+    adopt: boolean;
+    rollback: boolean;
+  } | null;
+  aiPm: AiPmRecommendation;
+  nextExperiment: string;
+  productHealthScore: number;
+};
+
 export type OpsDashboardStats = {
   source: 'live' | 'mock';
   todayVisitors: number;
@@ -232,21 +272,12 @@ export type OpsDashboardStats = {
     feedbackScore: number;
     recommendedGoalRate: number;
   };
-  /** AI PM Product OS — KPI → cause → hypothesis → experiment */
-  productOs?: {
-    primaryKpiKey: string;
-    primaryKpiLabel: string;
-    currentValue: number;
-    unit: '%' | 'count';
-    biggestDropStep: string;
-    dropPercent: number;
-    rootCause: string;
-    hypothesis: string;
-    experiment: string;
-    measureBy: string;
-    nextKpiKey: string;
-    deployVersion: string;
-    recommendation: string;
+  /** Product OS v2 — KPI → impact → adopt/rollback → AI PM recommendation */
+  productOs?: ProductOsBrief;
+  productBrain?: {
+    healthScore: number;
+    experimentBacklog: number;
+    rollbackCount: number;
   };
   operationalMetrics?: {
     users: number;

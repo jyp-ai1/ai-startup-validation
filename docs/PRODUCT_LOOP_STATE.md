@@ -1,38 +1,35 @@
 # Product Loop State
 
-**Mode:** KPI PM — measure → cause → hypothesis → experiment → re-measure
-
-Production: https://ai-startup-validation-tau.vercel.app  
-Registry: [PRODUCT_KPI_REGISTRY.md](./PRODUCT_KPI_REGISTRY.md)  
-Product OS: `/admin/operations`
+**Mode:** Autonomous Product — Level 5  
+Production: https://ai-startup-validation-tau.vercel.app/admin/operations
 
 ---
 
-## Active experiment (from Product OS)
+## PM loop (v2)
 
-| Step | Value |
-|------|-------|
-| **Primary KPI** | Project Start Rate (mock funnel: workspace→project −60%) |
-| **Root cause** | Activation blocked — registration friction |
-| **Hypothesis** | One-line + auto-name reduces drop |
-| **Experiment** | Shipped — verify `project_created / workspace_entered` |
-| **Measure** | `project_created / workspace_entered` |
-| **Next KPI** | Decision Understanding Rate |
-
-## PM loop (this iteration)
-
-```
-KPI 40% (Project Start)
-  → Drop workspace→project 60%
-  → Cause: form friction
-  → Hypothesis: one-line registration
-  → Experiment: shipped (5e32e04)
-  → Re-measure: Admin Product OS live data
-  → Next: Decision Understanding if Activation rises
+```text
+KPI 수집 → Drop-off → 원인 → 가설 → 실험 → 영향도 → Adopt 또는 Rollback → 다음 실험
 ```
 
-## Parallel KPIs instrumented
+## Active experiment (Product OS)
 
-Goal Selection · Landing CTA · Workflow Completion · AI Trust · GO · Execution Start · Feedback Score
+| Field | Value |
+|-------|-------|
+| **KPI** | Project Start Rate |
+| **Impact** | 23% → 40% (**+17%**) |
+| **Verdict** | **Adopt** (one-line registration) |
+| **Next** | Decision Understanding Rate |
 
-**Reports: KPI names only. Product OS drives next experiment.**
+## AI PM today (P0)
+
+**Problem:** Project Start · −60% at workspace→project  
+**Recommend:** One-line idea · auto-name · auto-save  
+**Expected:** +12% target · 4–6h · medium risk
+
+## Rollback history
+
+Hero negation-first copy → rolled back (Goal Selection hurt)
+
+---
+
+Registry: [PRODUCT_KPI_REGISTRY.md](./PRODUCT_KPI_REGISTRY.md)

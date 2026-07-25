@@ -1,20 +1,7 @@
-import type { OpsDashboardStats } from './types';
+import { resolveExperimentImpact } from './experiment-tracker';
+import type { AiPmRecommendation, OpsDashboardStats, ProductOsBrief } from './types';
 
-export type ProductOsBrief = {
-  primaryKpiKey: string;
-  primaryKpiLabel: string;
-  currentValue: number;
-  unit: '%' | 'count';
-  biggestDropStep: string;
-  dropPercent: number;
-  rootCause: string;
-  hypothesis: string;
-  experiment: string;
-  measureBy: string;
-  nextKpiKey: string;
-  deployVersion: string;
-  recommendation: string;
-};
+export type { ProductOsBrief, AiPmRecommendation };
 
 type DropPlaybookEntry = {
   kpiKey: string;
@@ -25,6 +12,10 @@ type DropPlaybookEntry = {
   experiment: string;
   measureBy: string;
   nextKpiKey: string;
+  expectedLift: number;
+  estimatedHours: string;
+  risk: 'low' | 'medium' | 'high';
+  whyImportant: string;
 };
 
 const DROP_PLAYBOOK: Record<string, DropPlaybookEntry> = {
@@ -32,63 +23,106 @@ const DROP_PLAYBOOK: Record<string, DropPlaybookEntry> = {
     kpiKey: 'goalSelectionRate',
     kpiLabel: 'Goal Selection Rate',
     getValue: (k) => k.goalSelectionRate,
-    rootCause: 'Service Understanding — Founder does not grasp AI PM value in 5 seconds',
-    hypothesis: 'Hero copy and speed promise do not connect outcome to one-tap Goal',
-    experiment: 'Strengthen outcome line + recommended Goal one-tap path on Landing/Goal',
+    rootCause: 'Service Understanding — Founder does not grasp AI PM in 5 seconds',
+    hypothesis: 'Outcome line before CTA is weak',
+    experiment: 'Speed promise + recommended Goal one-tap',
     measureBy: 'goal_selected / landing_viewed',
     nextKpiKey: 'workflowCompletionRate',
+    expectedLift: 10,
+    estimatedHours: '2-3h',
+    risk: 'low',
+    whyImportant: 'Without Goal selection, no Workflow or Decision exists',
   },
   'goal → workflow': {
     kpiKey: 'workflowCompletionRate',
     kpiLabel: 'Workflow Completion',
     getValue: (k) => k.workflowCompletionRate,
-    rootCause: 'Thinking fatigue or unclear AI-designed workflow',
-    hypothesis: 'Double thinking overlay or dense plan blocks "AI designed my project"',
-    experiment: 'Skip redundant compose · surface Strategy Stack + Why above fold',
+    rootCause: 'Thinking fatigue after Goal',
+    hypothesis: 'Double overlay blocks "AI designed my project"',
+    experiment: 'Remove redundant compose · tighten plan CTA',
     measureBy: 'workflow_started / goal_selected',
     nextKpiKey: 'activationRate',
+    expectedLift: 8,
+    estimatedHours: '3-4h',
+    risk: 'low',
+    whyImportant: 'Workflow is the trust moment that AI composed a strategy',
   },
   'workflow → workspace': {
     kpiKey: 'workflowCompletionRate',
     kpiLabel: 'Workflow Completion',
     getValue: (k) => k.workflowCompletionRate,
-    rootCause: 'Workflow confirmation feels like homework before progress',
-    hypothesis: 'Too much roadmap text before "start project" CTA',
-    experiment: 'Single primary CTA · expected Confidence gain headline',
+    rootCause: 'Confirmation screen feels like homework',
+    hypothesis: 'Too much text before start',
+    experiment: 'Single CTA · Confidence gain headline only',
     measureBy: 'workspace_entered / workflow_started',
     nextKpiKey: 'projectStartRate',
+    expectedLift: 6,
+    estimatedHours: '2h',
+    risk: 'low',
+    whyImportant: 'Workspace entry unlocks daily Founder OS',
   },
   'workspace → project': {
     kpiKey: 'projectStartRate',
     kpiLabel: 'Project Start Rate',
     getValue: (k) => k.projectStartRate,
-    rootCause: 'Activation blocked — registration feels required and long',
-    hypothesis: 'Multi-field form kills 30-second project start',
-    experiment: 'One-line idea + AI auto-name + auto-save (verify drop falls)',
+    rootCause: 'Activation blocked at registration',
+    hypothesis: 'Multi-field form kills 30-second start',
+    experiment: 'One-line idea · AI auto-name · auto-save',
     measureBy: 'project_created / workspace_entered',
     nextKpiKey: 'decisionUnderstandingRate',
+    expectedLift: 12,
+    estimatedHours: '4-6h',
+    risk: 'medium',
+    whyImportant: 'No project = no Decision, GO, or Execution',
   },
   'project → analysis': {
     kpiKey: 'activationRate',
     kpiLabel: 'Activation',
     getValue: (k) => k.activationRate,
-    rootCause: 'Wait after submit — analysis overlay without clear progress',
-    hypothesis: 'Analysis duration feels like a black box',
-    experiment: 'Shorter analysis steps · show Evidence preview during thinking',
+    rootCause: 'Analysis wait feels like black box',
+    hypothesis: 'Long overlay without Evidence preview',
+    experiment: 'Shorter analysis · Evidence teaser during thinking',
     measureBy: 'analysis_started / project_created',
     nextKpiKey: 'decisionUnderstandingRate',
+    expectedLift: 7,
+    estimatedHours: '3h',
+    risk: 'low',
+    whyImportant: 'Activation is first proof AI is working on their business',
   },
   'analysis → decision': {
     kpiKey: 'decisionUnderstandingRate',
     kpiLabel: 'Decision Understanding',
     getValue: (k) => k.decisionUnderstandingRate,
-    rootCause: 'AI Trust — HOLD without visible Evidence path',
-    hypothesis: 'User does not see Why/Evidence before leaving',
-    experiment: 'HOLD path + Intelligence auto-open + Missing Data chips',
+    rootCause: 'HOLD without visible Evidence path',
+    hypothesis: 'User leaves before trusting AI verdict',
+    experiment: 'HOLD path · Intelligence open · Missing Data chips',
     measureBy: 'decision_generated / project_created',
     nextKpiKey: 'goConversionRate',
+    expectedLift: 15,
+    estimatedHours: '4h',
+    risk: 'low',
+    whyImportant: 'Decision is the North Star — GO/HOLD must land',
   },
 };
+
+function computeHealthScore(kpis: NonNullable<OpsDashboardStats['productKpis']>): number {
+  const weights = [
+    kpis.goalSelectionRate * 0.15,
+    kpis.activationRate * 0.2,
+    kpis.decisionUnderstandingRate * 0.2,
+    kpis.goConversionRate * 0.15,
+    kpis.executionStartRate * 0.1,
+    kpis.aiTrustRate * 0.1,
+    kpis.feedbackScore * 0.1,
+  ];
+  return Math.min(100, Math.round(weights.reduce((a, b) => a + b, 0)));
+}
+
+function priorityFromDrop(dropPercent: number): 'P0' | 'P1' | 'P2' {
+  if (dropPercent >= 50) return 'P0';
+  if (dropPercent >= 25) return 'P1';
+  return 'P2';
+}
 
 export function computeProductOsBrief(
   stats: Pick<
@@ -103,11 +137,58 @@ export function computeProductOsBrief(
   const worst = drops.reduce((max, row) => (row.dropPercent > max.dropPercent ? row : max), drops[0]!);
   const playbook = DROP_PLAYBOOK[worst.step] ?? DROP_PLAYBOOK['landing → goal']!;
   const version = stats.operationalMetrics?.version ?? 'local';
+  const currentValue = playbook.getValue(kpis);
+  const impactRaw = resolveExperimentImpact(playbook.kpiKey, currentValue);
+
+  const nextPlaybook =
+    DROP_PLAYBOOK[
+      Object.keys(DROP_PLAYBOOK).find((step) => {
+        const entry = DROP_PLAYBOOK[step]!;
+        return entry.kpiKey === playbook.nextKpiKey;
+      }) ?? worst.step
+    ] ?? playbook;
+
+  const impact = impactRaw
+    ? {
+        baselineValue: impactRaw.baselineValue,
+        currentValue: impactRaw.currentValue,
+        delta: impactRaw.delta,
+        deltaLabel: impactRaw.deltaLabel,
+        expectedLift: impactRaw.expectedLift,
+        experimentName: impactRaw.experimentName,
+        status: impactRaw.status,
+        adopt: impactRaw.adopt,
+        rollback: impactRaw.rollback,
+      }
+    : null;
+
+  const aiPm: AiPmRecommendation = {
+    priority: priorityFromDrop(worst.dropPercent),
+    todayProblem: `${playbook.kpiLabel} · −${worst.dropPercent}% at ${worst.step}`,
+    whyImportant: playbook.whyImportant,
+    recommendedExperiment: impact?.rollback
+      ? `Rollback ${impact.experimentName} · retry: ${playbook.experiment}`
+      : playbook.experiment,
+    expectedLift: impact?.rollback
+      ? 'Revert and re-test'
+      : `+${playbook.expectedLift}% (target)`,
+    estimatedHours: playbook.estimatedHours,
+    risk: playbook.risk,
+  };
+
+  let recommendation = `Drop ${worst.dropPercent}% at ${worst.step} — experiment on ${playbook.kpiLabel}.`;
+  if (impact?.adopt) {
+    recommendation = `${impact.experimentName} adopted — impact ${impact.deltaLabel}. Next: ${playbook.nextKpiKey}.`;
+  } else if (impact?.rollback) {
+    recommendation = `${impact.experimentName} hurt KPI (${impact.deltaLabel}) — rollback and run: ${playbook.experiment}.`;
+  } else if (impact) {
+    recommendation = `${impact.experimentName} measuring — ${impact.baselineValue}% → ${impact.currentValue}% (${impact.deltaLabel}). Keep watching ${playbook.measureBy}.`;
+  }
 
   return {
     primaryKpiKey: playbook.kpiKey,
     primaryKpiLabel: playbook.kpiLabel,
-    currentValue: playbook.getValue(kpis),
+    currentValue,
     unit: '%',
     biggestDropStep: worst.step,
     dropPercent: worst.dropPercent,
@@ -117,6 +198,10 @@ export function computeProductOsBrief(
     measureBy: playbook.measureBy,
     nextKpiKey: playbook.nextKpiKey,
     deployVersion: version,
-    recommendation: `Drop ${worst.dropPercent}% at ${worst.step} — run experiment on ${playbook.kpiLabel}, then re-measure ${playbook.measureBy}.`,
+    recommendation,
+    impact,
+    aiPm,
+    nextExperiment: nextPlaybook.experiment,
+    productHealthScore: computeHealthScore(kpis),
   };
 }

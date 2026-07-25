@@ -143,7 +143,9 @@ export function OperationsDashboard() {
         <p className="mt-6 text-sm text-muted-foreground">{t('loading')}</p>
       ) : (
         <div className="mt-8 space-y-8">
-          {stats.productOs ? <AdminProductOsPanel brief={stats.productOs} /> : null}
+          {stats.productOs ? (
+            <AdminProductOsPanel brief={stats.productOs} brain={stats.productBrain} />
+          ) : null}
 
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard title={t('todayVisitors')} value={stats.todayVisitors} icon={Users} />

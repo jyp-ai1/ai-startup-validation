@@ -2,6 +2,7 @@ import { env } from '@repo/core/env';
 
 import { PRODUCT_ANALYTICS_EVENTS } from '../product-analytics';
 import { computeProductOsBrief } from '../product-os-engine';
+import { getExperimentBacklog, getRollbackHistory } from '../experiment-tracker';
 import type { AnalyticsEventPayload, OpsDashboardStats } from '../types';
 import { ANALYTICS_EVENTS } from '../types';
 
@@ -344,7 +345,34 @@ const MOCK_STATS: OpsDashboardStats = {
     nextKpiKey: 'decisionUnderstandingRate',
     deployVersion: 'mock',
     recommendation:
-      'Drop 60% at workspace → project — run experiment on Project Start Rate, then re-measure project_created / workspace_entered.',
+      'One-line idea + AI auto-name measuring — 23% → 40% (+17%). Adopted. Next: decisionUnderstandingRate.',
+    impact: {
+      baselineValue: 23,
+      currentValue: 40,
+      delta: 17,
+      deltaLabel: '+17%',
+      expectedLift: 12,
+      experimentName: 'One-line idea + AI auto-name',
+      status: 'adopted',
+      adopt: true,
+      rollback: false,
+    },
+    aiPm: {
+      priority: 'P0',
+      todayProblem: 'Project Start Rate · −60% at workspace → project',
+      whyImportant: 'No project = no Decision, GO, or Execution',
+      recommendedExperiment: 'One-line idea · AI auto-name · auto-save',
+      expectedLift: '+12% (target)',
+      estimatedHours: '4-6h',
+      risk: 'medium',
+    },
+    nextExperiment: 'HOLD path · Intelligence open · Missing Data chips',
+    productHealthScore: 38,
+  },
+  productBrain: {
+    healthScore: 38,
+    experimentBacklog: 1,
+    rollbackCount: 1,
   },
   operationalMetrics: {
     users: 72,
@@ -405,6 +433,12 @@ export function getOpsDashboardStats(): OpsDashboardStats {
   const dropOffRates = computeDropOffRates(productJourneyFunnel);
   const productKpis = computeProductKpis(productJourneyFunnel, todaySummary);
   const operationalMetrics = computeOperationalMetrics(productJourneyFunnel, todaySummary);
+  const productOs = computeProductOsBrief({
+    productKpis,
+    dropOffRates,
+    operationalMetrics,
+    productJourneyFunnel,
+  });
 
   return {
     source: 'live',
@@ -435,12 +469,12 @@ export function getOpsDashboardStats(): OpsDashboardStats {
     analyticsProviders: analyticsProviders(),
     closedBetaMetrics: computeClosedBetaMetrics(productJourneyFunnel, todaySummary),
     productKpis,
-    productOs: computeProductOsBrief({
-      productKpis,
-      dropOffRates,
-      operationalMetrics,
-      productJourneyFunnel,
-    }) ?? undefined,
+    productOs: productOs ?? undefined,
+    productBrain: {
+      healthScore: productOs?.productHealthScore ?? 0,
+      experimentBacklog: getExperimentBacklog().length,
+      rollbackCount: getRollbackHistory().length,
+    },
     operationalMetrics,
   };
 }

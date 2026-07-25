@@ -1,16 +1,16 @@
 # Product KPI Registry
 
 **Authority:** `docs/PRODUCT_EVOLUTION_DIRECTIVE.md`  
-**Rule:** KPI → Cause → Hypothesis → Experiment → Measure → Next KPI
+**Rule:** KPI → Cause → Hypothesis → Experiment → **Impact → Adopt/Rollback** → Next experiment
 
-Engine: `apps/web/lib/analytics/product-os-engine.ts` · Admin **Product OS** panel
+Engine: `product-os-engine.ts` · `experiment-tracker.ts` · Admin **Product OS v2**
 
 ---
 
 ## PM loop (automatic)
 
 ```text
-KPI 수집 → Drop-off 발견 → 원인 → 가설 → Product 개선 → Analytics → Production → 재측정 → 다음 KPI
+KPI 수집 → Drop-off → 원인 → 가설 → 실험 → 영향도(Impact) → Adopt / Rollback → 재측정 → 다음 실험
 ```
 
 ---
@@ -87,14 +87,23 @@ KPI 수집 → Drop-off 발견 → 원인 → 가설 → Product 개선 → Anal
 
 ---
 
-## Product OS (Admin)
+## Product OS v2 (Admin)
 
-`/admin/operations` → **Product OS** shows:
+`/admin/operations` → **Autonomous Product**
 
-1. Primary KPI + current %
-2. Biggest funnel drop
-3. Root cause · Hypothesis · Experiment
-4. Deploy version · Measure formula · Next KPI
+1. **AI PM** — 오늘 무엇을 개선해야 하는가 (P0/P1, expected lift, risk)
+2. Primary KPI + biggest drop
+3. **Impact** — baseline → current → delta · **Adopt** / **Rollback** / Measuring
+4. Cause · Hypothesis · Experiment · **Next experiment**
+5. **Product Health Score**
+
+## Impact rules
+
+| Delta | Action |
+|-------|--------|
+| ≥ +3% | **Adopt** |
+| ≤ −2% | **Rollback** |
+| else | Measuring |
 
 ---
 
