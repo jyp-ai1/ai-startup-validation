@@ -1,0 +1,34 @@
+---
+description: LaunchLens Product Vision v3 — experience over features
+alwaysApply: true
+---
+
+# Product Vision
+
+Read `docs/PRODUCT_VISION_V3.md` before any Mission work.
+
+## Rule
+
+> **기능을 구현하지 말고, 사용자의 경험을 구현하라.**
+
+## When It Applies
+
+Every implementation, polish, and QA pass in Mission Mode (M1–M13).
+
+## Requirements
+
+- North Star: 3-minute first project · daily reopen (Morning Brief, Confidence, Decision)
+- Landing: storytelling only — no feature lists, tech specs, or card grids
+- Journey: single primary CTA per screen · AI leads · Thinking UX on wait
+- Workspace: AI PM tone — Today, Coach, Decision — not dashboard widgets
+- Ship: build → QA → commit → push → tag → next Mission (no approval questions)
+
+## Examples
+
+```tsx
+// ✅ One CTA, AI recommendation copy
+<Button>프로젝트 시작</Button>
+
+// ❌ Feature grid on Landing
+<LandingFeatures cards={[...12 items]} />
+```

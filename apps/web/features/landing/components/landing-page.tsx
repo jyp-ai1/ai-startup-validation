@@ -15,10 +15,6 @@ const LandingTrustedBy = dynamic(
   () => import('./landing-trusted-by').then((m) => m.LandingTrustedBy),
   { loading: () => <div className="min-h-[120px]" aria-hidden /> },
 );
-const LandingHowItWorks = dynamic(
-  () => import('./landing-how-it-works').then((m) => m.LandingHowItWorks),
-  { loading: () => <div className="min-h-[240px]" aria-hidden /> },
-);
 const LandingTestimonials = dynamic(
   () => import('./landing-testimonials').then((m) => m.LandingTestimonials),
   { loading: () => <div className="min-h-[200px]" aria-hidden /> },
@@ -46,9 +42,6 @@ export async function LandingPage() {
         <LandingJourneySection />
         <LandingWhySection />
         <LandingAiPmSection />
-        <LandingLazySection minHeight={240}>
-          <LandingHowItWorks />
-        </LandingLazySection>
         <LandingLazySection minHeight={200}>
           <LandingTestimonials />
         </LandingLazySection>

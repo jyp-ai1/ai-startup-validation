@@ -1,5 +1,5 @@
-/** LaunchLens Closed Beta — Mission Omega-1 Batch 3 Performance + SEO + A11y */
-export const BETA_VERSION = 'Closed Beta 2.10.0';
+/** LaunchLens Closed Beta — Product Vision v3 M1–M4 experience batch */
+export const BETA_VERSION = 'Closed Beta 2.11.0';
 export const BETA_LABEL = 'CLOSED BETA';
 
 export const SITE_LINKS = {

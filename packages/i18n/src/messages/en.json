@@ -1365,10 +1365,10 @@
       "closeMenu": "Close menu"
     },
     "hero": {
-      "eyebrow": "Closed Beta · AI Project Manager",
+      "eyebrow": "AI Strategy Project Manager",
       "title": "Start your strategy project\nin 3 minutes.",
-      "subtitle": "Your AI PM guides Goal through GO — not another analysis tool.",
-      "northStar": "A project start screen — execute together in 3 minutes.",
+      "subtitle": "Your AI PM from Goal to GO — not chat, not reports, not research tools.",
+      "northStar": "AI runs your strategy project with you — start in 3 minutes.",
       "journey": {
         "label": "How it works",
         "goal": "Goal",
@@ -3937,7 +3937,14 @@
           "market": "Finding market and competitors...",
           "coach": "Preparing your AI strategy coach...",
           "build": "Building your project...",
-          "ready": "Preparing your workspace..."
+          "ready": "Preparing your workspace...",
+          "marketResearch": "Market research",
+          "competitorAnalysis": "Competitor analysis",
+          "customerAnalysis": "Customer analysis",
+          "businessModel": "Business model",
+          "risk": "Risk",
+          "strategy": "Strategy synthesis",
+          "projectCreate": "Project creation"
         }
       },
       "options": {
@@ -4347,6 +4354,19 @@
         "decision": "Decision",
         "decisionValue": "HOLD → GO in progress",
         "decisionValueNamed": "{name} · HOLD → GO"
+      },
+      "todayPm": {
+        "label": "Today · AI PM",
+        "title": "Your AI PM leads today",
+        "risk": "Today's risk",
+        "riskValue": "Missing 2 VOC items — GO evidence is thin",
+        "recommendation": "Today's pick",
+        "recommendationValue": "2 customer interviews → +12% Confidence",
+        "schedule": "Today's schedule",
+        "scheduleValue": "VOC collection · Evidence review",
+        "scheduleEta": "~20 min · finish today",
+        "confidenceGain": "Confidence today",
+        "confidenceGainHint": "Unlocks the GO path when done"
       },
       "eveningBrief": {
         "label": "Evening Summary",

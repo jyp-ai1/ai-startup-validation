@@ -27,6 +27,7 @@ import { WorkspaceSkeleton } from './workspace-skeleton';
 import { JourneyDailyCoach } from './intelligence-workspace/journey-daily-coach';
 import { WorkspaceEveningSummary } from './intelligence-workspace/workspace-evening-summary';
 import { WorkspaceMorningBrief } from './intelligence-workspace/workspace-morning-brief';
+import { WorkspaceTodayPmPanel } from './intelligence-workspace/workspace-today-pm-panel';
 import { WorkspaceWeeklySummary } from './intelligence-workspace/workspace-weekly-summary';
 import { WorkspaceReportPreview } from './intelligence-workspace/workspace-report-preview';
 import { WorkspaceSettingsPanel } from './intelligence-workspace/workspace-settings-panel';
@@ -180,6 +181,7 @@ export function StrategyWorkspaceShell({
               confidence={project.confidence}
               projectName={projectDisplayName}
             />
+            <WorkspaceTodayPmPanel confidenceGain={12} />
             <JourneyDailyCoach
               confidence={project.confidence}
               variant="hero"

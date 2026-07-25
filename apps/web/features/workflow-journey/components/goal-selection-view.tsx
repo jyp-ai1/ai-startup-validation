@@ -17,7 +17,18 @@ import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 
 const GOAL_TIMEOUT_MS = 10_000;
+const THINKING_STEP_COUNT = 7;
 const RECOMMENDED_GOAL: WorkflowGoalId = 'business-viability';
+
+const GOAL_THINKING_STEP_KEYS = [
+  'marketResearch',
+  'competitorAnalysis',
+  'customerAnalysis',
+  'businessModel',
+  'risk',
+  'strategy',
+  'projectCreate',
+] as const;
 
 type GoalSelectionViewProps = {
   demoMode?: boolean;
@@ -66,8 +77,8 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
       }, GOAL_TIMEOUT_MS);
 
       const stepTimer = window.setInterval(() => {
-        setActiveStep((s) => Math.min(3, s + 1));
-      }, 450);
+        setActiveStep((s) => Math.min(THINKING_STEP_COUNT - 1, s + 1));
+      }, 380);
 
       try {
         const result = await saveGoalAction(goalId);
@@ -79,7 +90,7 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
           return;
         }
 
-        setActiveStep(3);
+        setActiveStep(THINKING_STEP_COUNT - 1);
         router.push('/workflow?compose=1');
       } catch (error) {
         window.clearInterval(stepTimer);
@@ -133,8 +144,10 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [focusedIndex, handleSelect, locked, overlayGoal]);
 
+  const thinkingStepLabels = GOAL_THINKING_STEP_KEYS.map((key) => tg(`steps.${key}`));
+
   const progressPercent = overlayGoal
-    ? Math.min(100, Math.round(((activeStep + 1) / 4) * 100))
+    ? Math.min(100, Math.round(((activeStep + 1) / THINKING_STEP_COUNT) * 100))
     : 0;
 
   return (
@@ -143,9 +156,9 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
         <AiThinkingOverlay
           goalLabel={tc(overlayGoal)}
           titleOverride={tg('title')}
-          stepLabels={[tg('steps.market'), tg('steps.coach'), tg('steps.build'), tg('steps.ready')]}
+          stepLabels={thinkingStepLabels}
           activeStep={activeStep}
-          stepCount={4}
+          stepCount={THINKING_STEP_COUNT}
           progressPercent={progressPercent}
           failed={failed}
           onRetry={handleRetry}

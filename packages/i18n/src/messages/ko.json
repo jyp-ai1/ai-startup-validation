@@ -1365,10 +1365,10 @@
       "closeMenu": "메뉴 닫기"
     },
     "hero": {
-      "eyebrow": "Closed Beta · AI Project Manager",
+      "eyebrow": "AI Strategy Project Manager",
       "title": "3분 안에\n전략 프로젝트를\n시작하세요.",
-      "subtitle": "AI PM이 Goal부터 GO까지 함께합니다. 분석 도구가 아닙니다.",
-      "northStar": "프로젝트를 시작하는 화면입니다. 카드 없이 3분 안에 실행.",
+      "subtitle": "AI PM이 Goal부터 GO까지 함께합니다. 채팅도, 보고서도, 조사 도구도 아닙니다.",
+      "northStar": "AI가 내 사업을 함께 진행하는 서비스 — 3분 안에 첫 프로젝트 시작.",
       "journey": {
         "label": "이렇게 진행됩니다",
         "goal": "목표",
@@ -3919,7 +3919,14 @@
           "market": "시장과 경쟁사를 찾고 있습니다...",
           "coach": "AI 전략 코치를 준비하고 있습니다...",
           "build": "프로젝트를 구성하는 중입니다...",
-          "ready": "워크스페이스를 준비하고 있습니다..."
+          "ready": "워크스페이스를 준비하고 있습니다...",
+          "marketResearch": "시장 조사",
+          "competitorAnalysis": "경쟁사 분석",
+          "customerAnalysis": "고객 분석",
+          "businessModel": "비즈니스 모델",
+          "risk": "리스크",
+          "strategy": "전략 생성",
+          "projectCreate": "프로젝트 생성"
         }
       },
       "options": {
@@ -4329,6 +4336,19 @@
         "decision": "Decision",
         "decisionValue": "HOLD → GO 경로 진행 중",
         "decisionValueNamed": "{name} · HOLD → GO"
+      },
+      "todayPm": {
+        "label": "Today · AI PM",
+        "title": "오늘 AI PM이 리드합니다",
+        "risk": "오늘의 리스크",
+        "riskValue": "VOC 2건 부족 — GO 근거가 약합니다",
+        "recommendation": "오늘 추천",
+        "recommendationValue": "고객 인터뷰 2건 → Confidence +12%",
+        "schedule": "오늘 일정",
+        "scheduleValue": "VOC 수집 · Evidence 정리",
+        "scheduleEta": "예상 20분 · 오늘 안에 완료",
+        "confidenceGain": "오늘 얻을 Confidence",
+        "confidenceGainHint": "완료 시 GO 경로 진입"
       },
       "eveningBrief": {
         "label": "Evening Summary",

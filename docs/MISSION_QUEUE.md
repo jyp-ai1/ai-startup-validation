@@ -1,37 +1,37 @@
-# Mission Queue — Omega-1 Batch 3–10
+# Mission Queue — Product Vision v3.0
 
-**Active:** Mission Omega-1 — Product Completion  
-**Report:** 08:00 KST only · See `docs/MISSION_OMEGA_1.md`
+**Source:** `docs/PRODUCT_VISION_V3.md`  
+**Rule:** 기능을 구현하지 말고, 사용자의 경험을 구현하라.  
+**Report:** 08:00 KST only
 
-## Priority Order (consume top → bottom)
+## Mission Progress (M1–M13)
 
-| P | Focus | Status |
-|---|-------|--------|
-| 1 | Performance 95+ (Landing, Goal, Workflow, Workspace, Admin) | in_progress (`2.10.0` route split + ISR) |
-| 2 | Full Responsive audit (390–1920) | pending |
-| 3 | Accessibility 100 (Tab, SR, contrast, reduced motion) | in_progress (`2.10.0` focus-visible) |
-| 4 | SEO all pages (OG, JSON-LD, canonical) | in_progress (`2.10.0` journey metadata) |
-| 5 | UI/UX audit — remove friction, single CTA | pending |
-| 6 | Admin ops (Feedback Inbox, retention, export) | in_progress (`2.10.0` inbox) |
-| 7 | Design System 100% component unify | pending |
-| 8 | Project Intelligence polish (Notion/Linear feel) | pending |
-| 9 | Cleanup (dead code, console, TODO) | pending |
-| 10 | Docs sync (Roadmap, ADR, QA, Release) | in_progress |
+| Mission | Focus | Status |
+|---------|-------|--------|
+| M1 | Landing 5s clarity · storytelling | in_progress (`2.11.0` hero copy, removed feature grid) |
+| M2 | Goal · 7-step Thinking | in_progress (`2.11.0` 7-step overlay) |
+| M3 | Workflow · single CTA | shipped (프로젝트 시작) |
+| M4 | Workspace AI PM · Today | in_progress (`2.11.0` Today PM panel) |
+| M5 | Living project · Decision/Evidence | in_progress |
+| M6 | GO → Execution | pending |
+| M7 | Daily loop · Achievements | in_progress |
+| M8 | Project intelligence · Report | in_progress (`2.5.0` CRUD) |
+| M9 | Admin · Analytics | in_progress (`2.10.0` perf split) |
+| M10 | Performance 95+ | in_progress (`2.10.0` SSG) |
+| M11 | Responsive · A11y · i18n | in_progress |
+| M12 | Closed Beta ops | in_progress |
+| M13 | Real Intelligence architecture | pending (design only) |
+
+## Active Batch
+
+**Batch 4:** M10 Lighthouse prod audit → M11 responsive → M1 polish → M7 daily loop
 
 ## Shipped Tags
 
-| Tag | Batch |
-|-----|-------|
-| `closed-beta-v2.10.0` | Batch 3 — Performance route split, ISR landing, SEO metadata, A11y base, Admin Feedback Inbox |
-| `closed-beta-v2.9.0` | Landing Journey/Why, Decision log, Error UX |
-| `closed-beta-v2.8.0` | Coach, Evidence, Admin, History export, Offline |
+| Tag | Missions |
+|-----|----------|
+| `closed-beta-v2.11.0` | M1 hero · M2 7-step · M4 Today PM |
+| `closed-beta-v2.10.0` | M10 route split · M9 admin inbox |
+| `closed-beta-v2.9.0` | M5 Decision log · M1 Journey |
 
-## Targets
-
-| Metric | Goal |
-|--------|------|
-| Product Completion | 98% |
-| Lighthouse | 95+ |
-| Accessibility | 100 |
-| Responsive | 100 |
-| Critical Bug | 0 |
+Production: https://ai-startup-validation-tau.vercel.app
