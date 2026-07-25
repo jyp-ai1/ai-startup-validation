@@ -74,4 +74,12 @@ Build fail · prod outage · DB/LLM/Billing/Auth cost · security · CPO vision 
 
 ## Do NOT use as work goals
 
-Epic · Sprint · Mission · Release · Queue · Screen · Area · Task complete
+Epic · Sprint · Mission · Release · Queue · **Stage complete** · Screen · Area · Task complete
+
+## Whole product (parallel — not sequential stages)
+
+Read `docs/PRODUCT_EVOLUTION_DIRECTIVE.md`. All surfaces (Landing → Admin → Perf → Beta) are **always in flight**. Never stop after one area.
+
+## Auto pipeline (never ask)
+
+Build → lint → typecheck → regression → commit → push → deploy → production QA → tag → doc update → **next improvement**

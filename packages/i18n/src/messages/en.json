@@ -3964,7 +3964,8 @@
         "label": "AI pick",
         "title": "New here? Start with business viability",
         "desc": "Most Closed Beta users reach Workspace in 3 minutes with this Goal.",
-        "cta": "Start with business viability"
+        "cta": "Start with business viability",
+        "outcome": "Expected: AI Workflow auto-built → first Decision in ~20 min"
       },
       "keyboardHint": "↑↓ to move · Enter to select",
       "intake": {
@@ -4081,6 +4082,10 @@
       "decisionUpdated": "Decision updated",
       "holdWhyHeadline": "Why HOLD",
       "holdWhyHint": "Complete the recommended task below to update this verdict.",
+      "holdPathTitle": "Path to GO",
+      "holdNextAction": "Next: {action}",
+      "holdExpectedGain": "After completion: +{gain}% Confidence · ~{minutes} min",
+      "holdTrustNote": "Evidence and Confidence details are in the Intelligence panel below.",
       "holdWhySummary": {
         "noCompetitorAnalysis": "No competitor analysis yet — your market position is unconfirmed.",
         "insufficientInterviews": "Not enough customer interviews — demand is not validated.",

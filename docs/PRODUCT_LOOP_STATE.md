@@ -1,27 +1,30 @@
 # Product Loop State
 
-**Authority:** `docs/PRODUCT_CONSTITUTION.md` Part II (frozen)
+**Authority:** `docs/PRODUCT_EVOLUTION_DIRECTIVE.md` · Constitution Part II (frozen)
 
-| Field | Value |
-|-------|-------|
-| **Evolution stage** | **2 — Project Start** |
-| **Target KPI** | Project Start Rate |
-| **Target behavior** | 30s Goal → one-line project → Thinking → Workspace |
-| **Pre-implementation answer** | 5-field registration blocked start; intake unused; analysis wait too long |
-| Production | https://ai-startup-validation-tau.vercel.app |
+**Mode:** Whole-product evolution — all surfaces in flight, no Stage termination.
 
-## Stage focus (Product Evolution)
+Production: https://ai-startup-validation-tau.vercel.app
 
-| Stage | KPI | Status |
-|-------|-----|--------|
-| 1 Service Understanding | Service Understanding | shipped (hero, CTA, goal fast-path) |
-| **2 Project Start** | **Project Start Rate** | **in flight — 1-line registration, auto-name, auto-save, faster analysis** |
-| 3 AI Trust | Decision Understanding | next |
-| 4 Decision | GO Conversion | HOLD panel shipped |
-| 5 Execution | Execution Start | queued |
+## Active behavior improvements (parallel)
 
-## Product Loop
+| Surface | KPI | Current focus |
+|---------|-----|---------------|
+| Landing | Service Understanding | Hero · mobile · perf |
+| Goal | Goal Selection | One-tap · optional intake |
+| Workflow | Workflow Completion | Stack · why · skeleton/error |
+| Workspace | Project Start | One-line registration · faster thinking |
+| **Decision** | **AI Trust · Decision Understanding** | **HOLD path → GO gain · evidence visible** |
+| Execution | Execution Start | Task board · coach |
+| Admin | Operations Visibility | Funnel · feedback |
+| Perf/A11y | Performance | Lighthouse 95+ journey |
 
-Behavior → KPI → implement → QA → Production → repeat
+## Pre-implementation gate (every change)
 
-**No constitution edits. No approval prompts.**
+이 변경이 사용자를 **어느 KPI에서 얼마나** 개선하는가?
+
+## Loop
+
+기획 → 구현 → QA → Production → **다음 개선** (no end)
+
+**No Stage complete. No approval prompts.**

@@ -1,55 +1,44 @@
-# Daily Product Report — Template (Constitution)
+# Daily Product Evolution Report
 
-**Authority:** `docs/PRODUCT_CONSTITUTION.md` Part II  
-**When:** Daily (e.g. 08:00 KST). **Report only — no questions.**
+**When:** 08:00 KST only · **Report only — no questions**
 
 ```text
-========================
-Daily Product Report
-========================
+=========================
+LaunchLens Daily Product Evolution Report
+=========================
 
-Production:   https://ai-startup-validation-tau.vercel.app
-Commit:       (hash)
-
--------------------------
-오늘 사용자가 새롭게 느끼는 경험
-(bullets — behavior outcomes, not screen names)
+Production URL:  https://ai-startup-validation-tau.vercel.app
+Commit:          (hash)
+Build:           pass / fail
+QA:              functional · regression · responsive · a11y · smoke
 
 -------------------------
-오늘 개선한 KPI / 행동
-KPI: (e.g. Decision Understanding)
-Behavior: (e.g. HOLD reason in 3 seconds)
-Expected movement: (qualitative or metric if tracked)
+오늘 사용자가 새롭게 얻게 된 경험
+(bullets — behaviors, not screen names)
+
+-------------------------
+오늘 개선한 KPI
+(KPI name + behavior movement)
 
 -------------------------
 오늘 해결한 문제
-(bullets — 어디서 멈췄는가 / 왜 멈췄는가)
+(어디서 멈췄는가 / 왜)
 
 -------------------------
 Known Issues
 (bullets)
 
 -------------------------
-현재 Production 상태
-Lint / Build / Smoke / journey behavior spot-check
+Production 상태
+(deploy · health · spot-check)
 
 -------------------------
-내일도 계속 개선할 KPI
-(bullets — which KPI + target behavior)
+다음 Product Evolution 진행 내용
+(which surfaces + behaviors — loop continues)
 
-========================
+=========================
 ```
 
-## Pre-implementation gate (every change)
+## Forbidden closing lines
 
-```text
-이 변경이 사용자를 어느 KPI에서 얼마나 개선하는가?
-```
-
-## Forbidden phrases
-
-완료했습니다 · 끝났습니다 · 다음 작업은 무엇인가요 · 승인 부탁드립니다 · Queue/Mission/Sprint/Epic/Release 완료 · Landing/Workflow 개선 (screen-only framing)
-
-## Philosophy
-
-> 화면이 아니라 행동이 Product Loop다. LaunchLens는 끝나는 프로젝트가 아니라 계속 성장하는 AI Product이다.
+진행할까요 · 배포할까요 · 다음 작업은 · 승인 부탁드립니다 · Stage 완료 · Epic 완료

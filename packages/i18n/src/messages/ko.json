@@ -3946,7 +3946,8 @@
         "label": "AI 추천",
         "title": "처음이시라면 사업 가능성 검토부터",
         "desc": "대부분의 Closed Beta 사용자가 이 Goal로 3분 안에 Workspace에 도달했습니다.",
-        "cta": "사업 가능성 검토로 바로 시작"
+        "cta": "사업 가능성 검토로 바로 시작",
+        "outcome": "예상: AI Workflow 자동 구성 → 첫 Decision까지 약 20분"
       },
       "keyboardHint": "↑↓ 화살표로 이동 · Enter로 선택",
       "intake": {
@@ -4063,6 +4064,10 @@
       "decisionUpdated": "판단이 업데이트되었습니다",
       "holdWhyHeadline": "HOLD 이유",
       "holdWhyHint": "아래 추천 작업을 완료하면 판단이 업데이트됩니다.",
+      "holdPathTitle": "GO까지 경로",
+      "holdNextAction": "다음: {action}",
+      "holdExpectedGain": "완료 시 Confidence +{gain}% · 약 {minutes}분",
+      "holdTrustNote": "근거·Confidence는 아래 Intelligence 패널에서 확인할 수 있습니다.",
       "holdWhySummary": {
         "noCompetitorAnalysis": "경쟁사 분석이 없어 시장에서의 위치를 확인할 수 없습니다.",
         "insufficientInterviews": "고객 인터뷰가 부족해 실제 수요가 검증되지 않았습니다.",

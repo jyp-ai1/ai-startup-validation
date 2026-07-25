@@ -180,6 +180,7 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
             </p>
             <p className="mt-1 font-semibold text-foreground">{t('recommended.title')}</p>
             <p className="mt-1 text-sm text-muted-foreground">{t('recommended.desc')}</p>
+            <p className="mt-2 text-xs font-medium text-primary">{t('recommended.outcome')}</p>
             <Button
               type="button"
               className="mt-4 w-full rounded-xl sm:w-auto"

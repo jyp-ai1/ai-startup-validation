@@ -191,6 +191,25 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
               </ul>
             ) : null}
             <p className="mt-2 text-xs text-amber-800/90 dark:text-amber-200/80">{td('holdWhyHint')}</p>
+            {!isFinal ? (
+              <div className="mt-3 border-t border-amber-300/60 pt-3 dark:border-amber-700">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-900 dark:text-amber-200">
+                  {td('holdPathTitle')}
+                </p>
+                <p className="mt-1.5 text-sm font-medium text-amber-950 dark:text-amber-50">
+                  {td('holdNextAction', { action: tp(`${stage.nextActionStepId}.title`) })}
+                </p>
+                <p className="mt-1 text-sm text-amber-900/90 dark:text-amber-100/90">
+                  {td('holdExpectedGain', {
+                    gain: CONFIDENCE_TIMELINE[completedTimelineCount]?.gain ?? 8,
+                    minutes: stage.nextActionDurationMinutes,
+                  })}
+                </p>
+                <p className="mt-1 text-xs text-amber-800/80 dark:text-amber-200/70">
+                  {td('holdTrustNote')}
+                </p>
+              </div>
+            ) : null}
           </div>
         ) : null}
 
@@ -382,7 +401,7 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <EvidenceIntelligencePanel
-            evidenceOpen={whyOpen}
+            evidenceOpen={stage.verdict !== 'GO' || whyOpen}
             completedRuleIds={[]}
             verdict={stage.verdict}
             confidenceValue={stage.confidence}
