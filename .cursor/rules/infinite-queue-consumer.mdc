@@ -1,0 +1,62 @@
+---
+description: Release Queue Consumer Mode v6 — never stop, never ask, consume roadmap to end
+alwaysApply: true
+---
+
+# Infinite Queue Consumer (Directive v6)
+
+Read `docs/QUEUE_STATE.md` → pick **current_task** → execute → update state → **immediately start next task**.
+
+## Mode
+
+**Release Queue Consumer.** Not Mission Mode. Not batch-complete mode.
+
+- Never wait for "다음 작업"
+- Never wait for "다음 Release"
+- Never mid-report "완료"
+- Consume Roadmap until last task or PM gate
+
+## Hierarchy
+
+```
+Release → Product → Mission → Epic → Sprint → Feature → Task → Sub-task
+```
+
+Task done ≠ Mission done. Mission done ≠ Release done. Release done ≠ project done.
+
+## Cycle (per Task, no approval)
+
+Implement → QA → Commit → Push → Production → Tag → Release Note → ROADMAP update → **next Task auto-start**
+
+No PM approval · No CPO approval · No questions.
+
+## Stop only when
+
+1. Roadmap last task complete
+2. PM gate: LLM · DB · Billing · Auth · external cost
+3. Build failure (fix and resume)
+4. Production outage (fix and resume)
+5. CPO direct stop order
+
+## Forbidden output
+
+다음 작업은… · 승인해 주세요 · 배포할까요 · 진행할까요 · Release N 완료 · Mission N 완료
+
+## Reporting
+
+**08:00 KST Daily Production Report only** — template: `docs/templates/DAILY_AUTONOMOUS_REPORT.md`
+
+## Task quality (every Task)
+
+UX · Animation · Responsive · A11y · Analytics · Admin · Error · Loading · Empty · Offline · Retry · SEO · Perf · Telemetry · History · Docs · Tests · Release note
+
+## Product north star
+
+Not a feature factory — **AI Strategy PM**: user thinks less, project progresses itself.
+
+## Sources
+
+- `docs/RELEASE_QUEUE.md` — Release stack
+- `docs/ROADMAP_QUEUE.md` — T001–T300+ numbered queue
+- `docs/QUEUE_STATE.md` — consumer pointer (authoritative progress)
+- `docs/releases/CLOSED_BETA_RELEASE.md` — R1 task tree detail

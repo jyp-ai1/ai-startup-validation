@@ -1,75 +1,44 @@
-# LaunchLens Daily Autonomous Report — Template
-
-Copy for each Epic completion. **Do not end with questions to PM.**
-
----
-
 ```text
-=========================
-LaunchLens Daily Report
-=========================
+=======================
+Daily Production Report
+=======================
 
-Version:    Closed Beta x.x.x
-Commit:     (hash)
-Production: https://ai-startup-validation-tau.vercel.app
-Tag:        closed-beta-vx.x.x
-
--------------------------
-
-오늘 사용자가 새롭게 느끼는 경험
-
-(3–5 bullets)
+Production:   https://ai-startup-validation-tau.vercel.app
+Version:      Closed Beta x.x.x
+Commit:       (hash)
+Tag:          closed-beta-vx.x.x
 
 -------------------------
-
-오늘 개선한 UX
-
-(bullets or table)
+오늘 추가된 경험
+(bullets)
 
 -------------------------
-
 오늘 해결한 문제
-
 (bullets)
 
 -------------------------
-
-Analytics
-
-(key metrics or funnel notes)
+QA
+Lint / Build / Type / Smoke — PASS table
 
 -------------------------
-
-Known Issues
-
+Known Issue
 (bullets)
 
 -------------------------
+Roadmap
+현재:     N / 300 완료
+오늘:     +M
+남은:     (300-N)
+Release:  R1
+Mission:  Mx
+Epic:     (name)
+Sprint:   Sx
+Task:     Tx
 
-QA 결과
+예상 전체 완료율:  N%
+다음 24h:          Task (N+1)–(N+K)
 
-Lint / Build / Type / Regression / Smoke — PASS/FAIL table
-
--------------------------
-
-Production URL
-
-https://ai-startup-validation-tau.vercel.app
-
-=========================
-Next Autonomous Target
-=========================
-
-Epic:       (next epic name)
-현재 진행률:  (n)%
-예상 완료:    (YYYY-MM-DD HH:00 KST)
-다음 보고:    내일 08:00
+=======================
 ```
 
----
-
-## Rules
-
-- No Preview URL in standard reports.
-- No closing line asking PM for PASS/FAIL, approval, or review.
-- CPO reads Production at 08:00; Cursor does not wait for reply.
+Rules: no questions · no approval requests · no "다음 작업은"

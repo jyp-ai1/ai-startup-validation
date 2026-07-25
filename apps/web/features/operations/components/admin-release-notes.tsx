@@ -7,9 +7,10 @@ import { BETA_VERSION } from '@/lib/site/beta-config';
 import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui';
 
 const RELEASE_NOTES = [
+  { version: '2.14.0', noteKey: 'v214' },
+  { version: '2.13.0', noteKey: 'v213' },
   { version: '2.12.0', noteKey: 'v212' },
   { version: '2.11.0', noteKey: 'v211' },
-  { version: '2.10.0', noteKey: 'v210' },
 ] as const;
 
 export function AdminReleaseNotes() {

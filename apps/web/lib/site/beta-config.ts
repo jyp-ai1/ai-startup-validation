@@ -1,5 +1,5 @@
-/** LaunchLens Closed Beta Release — Deferred analytics on Landing for TBT */
-export const BETA_VERSION = 'Closed Beta 2.13.0';
+/** LaunchLens R1 — Goal intake interactive · Execution task board · Queue v6 */
+export const BETA_VERSION = 'Closed Beta 2.14.0';
 export const BETA_LABEL = 'CLOSED BETA';
 
 export const SITE_LINKS = {

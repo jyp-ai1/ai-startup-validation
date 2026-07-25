@@ -1902,8 +1902,8 @@
       "featureFlags": "Feature Flags",
       "featureFlagsHint": "localStorage에 저장됩니다 — 이 브라우저에서 Beta 배지·여정 플래그를 즉시 반영합니다.",
       "notice": "공지 · Banner",
-      "noticeActive": "Closed Beta 2.13.0",
-      "noticeBody": "Landing perf — deferred analytics until idle, below-fold lazy sections.",
+      "noticeActive": "Closed Beta 2.14.0",
+      "noticeBody": "Goal intake interactive · Execution task board · Infinite Queue consumer v6.",
       "export": "데이터 Export",
       "exportCsv": "CSV 다운로드",
       "exportHint": "운영 지표를 CSV로 내보냅니다 (Mock 데이터 포함).",
@@ -1918,9 +1918,10 @@
         "title": "Release Notes",
         "current": "Production",
         "items": {
+          "v214": "Goal intake 인터랙티브 mock, Execution Task toggle·진행률, Infinite Queue v6",
+          "v213": "Landing analytics idle defer",
           "v212": "Execution Workspace, GO→실행 흐름, History CSV, Achievement unlock, Modal a11y",
-          "v211": "7-step Thinking, Today PM panel, Landing storytelling",
-          "v210": "Performance route split, SSG Landing, Admin Feedback Inbox"
+          "v211": "7-step Thinking, Today PM panel, Landing storytelling"
         }
       }
     }
@@ -3918,9 +3919,23 @@
       "intake": {
         "eyebrow": "AI Project Manager",
         "prompt": "프로젝트에 대해 알려주세요. AI가 목표를 이해하고 Workflow를 준비합니다.",
-        "hint": "아래에서 가장 가까운 프로젝트 유형을 알려주세요.",
+        "hint": "아이디어와 초점을 입력하면 AI가 프로젝트를 정리합니다.",
         "question": "지금 어떤 프로젝트를 진행 중인가요?",
-        "optionLabel": "유형 {n}"
+        "optionLabel": "유형 {n}",
+        "ideaLabel": "프로젝트 한 줄 설명",
+        "ideaPlaceholder": "예: B2B SaaS로 중소 제조사 품질 검사를 자동화하고 싶습니다.",
+        "chipLabel": "AI가 집중할 영역 (복수 선택)",
+        "chips": {
+          "problem": "문제 정의",
+          "customer": "고객",
+          "market": "시장"
+        },
+        "refinement": {
+          "problem": "핵심 문제",
+          "customer": "타깃 고객",
+          "market": "시장 기회"
+        },
+        "refinedPreview": "「{idea}」— AI PM이 {focus} 관점에서 Workflow를 준비합니다."
       },
       "thinking": {
         "title": "AI가 프로젝트를 이해하기 시작했습니다",
@@ -4102,7 +4117,17 @@
       "boardLabel": "실행 보드",
       "coachTitle": "AI PM 추천",
       "coachBody": "다음은 VOC 2건입니다. 완료하면 Confidence가 GO 경로에 더 가까워집니다.",
+      "coachComplete": "실행 보드가 비었습니다. Workspace에서 다음 Decision을 확인하세요.",
+      "progressLabel": "진행 {done}/{total}",
+      "progressHint": "{done}/{total} 실행 Task 완료",
       "backWorkspace": "Workspace로 돌아가기",
+      "coachNext": {
+        "voc": "다음: 고객 인터뷰 2건. VOC가 GO 근거를 강화합니다.",
+        "mvp": "다음: MVP 범위 정의. 실행 가능한 첫 버전을 정합니다.",
+        "pricing": "다음: 가격 가설. WTP 검증을 시작합니다.",
+        "grant": "다음: 정부지원 탐색. 적합 프로그램을 Shortlist합니다.",
+        "market": "다음: 시장 조사 마무리. TAM/SAM Evidence를 정리합니다."
+      },
       "tasks": {
         "market": { "title": "시장 조사 마무리", "desc": "TAM/SAM 검증 Evidence 정리" },
         "voc": { "title": "고객 인터뷰 2건", "desc": "GO 근거를 위한 VOC 수집" },

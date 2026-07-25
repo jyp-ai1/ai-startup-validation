@@ -1,49 +1,46 @@
 # Release Queue — LaunchLens
 
-**North star:** Commercial Launch (v1.0)까지 모든 Release를 순차 완료한다.  
-**Rule:** Mission 완료 ≠ Feature 완료. Mission 내 모든 Task·QA·배포·문서가 끝날 때만 Mission 종료.
+**Mode:** Release Queue Consumer v6 — read `docs/QUEUE_STATE.md` → execute → repeat until roadmap end.
+
+**North star:** Commercial Launch (v1.0)까지 모든 Release 순차 완료. **Never stop at Release boundary.**
 
 ## Hierarchy
 
 ```
-Release → Product → Mission → Feature → Task → Sub-task
+Release → Product → Mission → Epic → Sprint → Feature → Task → Sub-task
 ```
 
-## Releases (consume top → bottom)
+## Releases (auto-chain)
 
-| # | Release | Est. Tasks | Status |
-|---|---------|------------|--------|
-| R1 | **Closed Beta** | 300–500 | **active** |
-| R2 | Open Beta | 300–500 | queued |
-| R3 | RC1 | 300–500 | queued |
-| R4 | RC2 | 200–400 | queued |
-| R5 | v1.0 Commercial | 500–1000 | queued |
-| R6 | Real Intelligence | 1000+ | queued (PM gate: LLM/DB) |
-| R7 | Commercial Scale | TBD | queued |
+| # | Release | Tasks | IDs | Status |
+|---|---------|-------|-----|--------|
+| R1 | **Closed Beta** | 300 | T001–T300 | **active** 55/300 |
+| R2 | Open Beta | 280 | T301–T580 | queued |
+| R3 | RC1 | 240 | T581–T820 | queued |
+| R4 | RC2 | 200 | T821–T1020 | queued |
+| R5 | v1.0 | 500 | T1021–T1520 | queued |
+| R6 | Real Intelligence | 1000+ | T1521+ | PM gate |
+| R7 | Commercial Scale | TBD | — | queued |
 
-## Active: Closed Beta Release (R1)
+## Consumer cycle (per Task)
 
-**Exit criteria (experience, not feature):**
+Implement → QA → Commit → Push → Production → Tag → Release Note → ROADMAP update → **next Task**
 
-- Founder opens Landing → 5s内 "AI PM이 내 사업을 함께한다"
-- Goal → Workflow → Workspace → GO in ~3 min (mock intelligence OK)
-- Daily reopen: Morning Brief · Confidence · Decision feel real
-- Lighthouse 95+ on Landing, Goal, Workflow, Workspace, Admin
-- A11y 100 · Responsive 390–1920 · Critical bug 0
+No approval · No questions · No mid-report "완료"
 
-**Task tree:** `docs/releases/CLOSED_BETA_RELEASE.md`
+## Stop only
 
-## PM Gates (stop & escalate only)
+Roadmap end · PM gate (LLM/DB/Billing/Auth/cost) · Build fail · Prod outage · CPO stop
 
-DB schema · Auth · Billing · External API cost · LLM provider · Product pivot
+## Sources
 
-## Cursor Cycle (per batch, not per task)
-
-Implement → Self Review → Build → Lint → QA → Responsive → A11y → Perf → Commit → Push → Tag → **continue same Mission until all Tasks ✅**
+- `docs/ROADMAP_QUEUE.md` — numbered tasks
+- `docs/releases/CLOSED_BETA_RELEASE.md` — R1 detail tree
+- `.cursor/rules/infinite-queue-consumer.mdc` — v6 directive
 
 ## Reporting
 
-08:00 KST Daily Autonomous Report only. No mid-batch "완료" messages.
+08:00 KST Daily Production Report — `docs/templates/DAILY_AUTONOMOUS_REPORT.md`
 
 ## Production
 

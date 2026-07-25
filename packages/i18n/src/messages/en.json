@@ -1902,8 +1902,8 @@
       "featureFlags": "Feature Flags",
       "featureFlagsHint": "Saved to localStorage — toggles Beta badge and journey flags in this browser.",
       "notice": "Notice · Banner",
-      "noticeActive": "Closed Beta 2.13.0",
-      "noticeBody": "Landing perf — deferred analytics until idle, below-fold lazy sections.",
+      "noticeActive": "Closed Beta 2.14.0",
+      "noticeBody": "Goal intake interactive · Execution task board · Infinite Queue consumer v6.",
       "export": "Data Export",
       "exportCsv": "Download CSV",
       "exportHint": "Export operational metrics as CSV (includes mock data).",
@@ -1918,9 +1918,10 @@
         "title": "Release Notes",
         "current": "Production",
         "items": {
+          "v214": "Goal intake interactive mock, Execution task toggle + progress, Infinite Queue v6",
+          "v213": "Landing deferred analytics until idle",
           "v212": "Execution Workspace, GO flow, History CSV, Achievement unlock, Modal a11y",
-          "v211": "7-step Thinking, Today PM panel, Landing storytelling",
-          "v210": "Performance route split, SSG Landing, Admin Feedback Inbox"
+          "v211": "7-step Thinking, Today PM panel, Landing storytelling"
         }
       }
     }
@@ -3936,9 +3937,23 @@
       "intake": {
         "eyebrow": "AI Project Manager",
         "prompt": "Tell me about your project. I'll understand your goal and prepare the workflow.",
-        "hint": "Pick the project type closest to what you're working on.",
+        "hint": "Describe your idea and focus areas — AI will shape your project.",
         "question": "What project are you running right now?",
-        "optionLabel": "Type {n}"
+        "optionLabel": "Type {n}",
+        "ideaLabel": "One-line project description",
+        "ideaPlaceholder": "e.g. B2B SaaS to automate quality inspection for small manufacturers.",
+        "chipLabel": "Where should AI focus? (multi-select)",
+        "chips": {
+          "problem": "Problem",
+          "customer": "Customer",
+          "market": "Market"
+        },
+        "refinement": {
+          "problem": "core problem",
+          "customer": "target customer",
+          "market": "market opportunity"
+        },
+        "refinedPreview": "「{idea}」— Your AI PM will prepare the workflow through {focus}."
       },
       "thinking": {
         "title": "AI is starting to understand your project",
@@ -4120,7 +4135,17 @@
       "boardLabel": "Execution board",
       "coachTitle": "AI PM recommendation",
       "coachBody": "Next: 2 VOC interviews. Completing them moves Confidence toward GO.",
+      "coachComplete": "All execution tasks done. Return to Workspace for your next decision.",
+      "progressLabel": "Progress {done}/{total}",
+      "progressHint": "{done}/{total} execution tasks complete",
       "backWorkspace": "Back to Workspace",
+      "coachNext": {
+        "voc": "Next: 2 customer interviews — VOC strengthens your GO case.",
+        "mvp": "Next: define MVP scope — lock the first shippable version.",
+        "pricing": "Next: pricing hypothesis — start WTP validation.",
+        "grant": "Next: grant exploration — shortlist matching programs.",
+        "market": "Next: finish market research — consolidate TAM/SAM evidence."
+      },
       "tasks": {
         "market": { "title": "Finish market research", "desc": "Consolidate TAM/SAM evidence" },
         "voc": { "title": "2 customer interviews", "desc": "VOC for GO rationale" },
