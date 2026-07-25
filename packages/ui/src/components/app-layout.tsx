@@ -24,7 +24,7 @@ export function AppLayout({
             {sidebar}
           </aside>
         ) : null}
-        <main className="flex flex-1 flex-col">{children}</main>
+        <main id="main-content" className="flex flex-1 flex-col">{children}</main>
       </div>
       {footer}
     </div>

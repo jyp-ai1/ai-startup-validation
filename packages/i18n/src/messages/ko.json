@@ -1900,10 +1900,10 @@
     "heatmapPlaceholderHint": "Session replay와 클릭 히트맵은 Clarity 프로젝트 ID 설정 후 활성화됩니다.",
     "adminTools": {
       "featureFlags": "Feature Flags",
-      "featureFlagsHint": "Mock 플래그 — Production 연동 전까지 UI 미리보기용입니다.",
+      "featureFlagsHint": "localStorage에 저장됩니다 — 이 브라우저에서 Beta 배지·여정 플래그를 즉시 반영합니다.",
       "notice": "공지 · Banner",
-      "noticeActive": "Closed Beta 2.10.0",
-      "noticeBody": "Mission Omega-1 Batch 3 — Performance route split, SEO metadata, Admin Feedback Inbox.",
+      "noticeActive": "Closed Beta 2.12.0",
+      "noticeBody": "Closed Beta Release — Execution flow, History CSV, GO achievements, modal a11y.",
       "export": "데이터 Export",
       "exportCsv": "CSV 다운로드",
       "exportHint": "운영 지표를 CSV로 내보냅니다 (Mock 데이터 포함).",
@@ -1913,6 +1913,15 @@
         "negative": "Needs work",
         "emptyMessage": "피드백 내용 없음",
         "recent": "방금"
+      },
+      "releaseNotes": {
+        "title": "Release Notes",
+        "current": "Production",
+        "items": {
+          "v212": "Execution Workspace, GO→실행 흐름, History CSV, Achievement unlock, Modal a11y",
+          "v211": "7-step Thinking, Today PM panel, Landing storytelling",
+          "v210": "Performance route split, SSG Landing, Admin Feedback Inbox"
+        }
       }
     }
   },
@@ -4086,6 +4095,22 @@
         "empty": "되돌릴 변경 이력이 없습니다."
       }
     },
+    "execution": {
+      "eyebrow": "GO · Execution",
+      "title": "실행 Workspace",
+      "subtitle": "GO는 시작입니다. AI PM과 MVP·시장·고객 실행을 이어갑니다.",
+      "boardLabel": "실행 보드",
+      "coachTitle": "AI PM 추천",
+      "coachBody": "다음은 VOC 2건입니다. 완료하면 Confidence가 GO 경로에 더 가까워집니다.",
+      "backWorkspace": "Workspace로 돌아가기",
+      "tasks": {
+        "market": { "title": "시장 조사 마무리", "desc": "TAM/SAM 검증 Evidence 정리" },
+        "voc": { "title": "고객 인터뷰 2건", "desc": "GO 근거를 위한 VOC 수집" },
+        "mvp": { "title": "MVP 범위 정의", "desc": "실행 가능한 첫 버전 범위" },
+        "pricing": { "title": "가격 가설", "desc": "WTP 검증" },
+        "grant": { "title": "정부지원 탐색", "desc": "적합 프로그램 Shortlist" }
+      }
+    },
     "goCelebration": {
       "title": "축하합니다.",
       "subtitle": "현재 아이디어는 GO 판정을 받았습니다.",
@@ -4094,7 +4119,7 @@
       "aiRecommendTitle": "AI가 다음 Workflow를 추천합니다",
       "aiRecommendDesc": "GO는 시작입니다. 가장 먼저 MVP 설계부터 함께할 것을 추천합니다.",
       "primaryLabel": "1순위 추천",
-      "startPrimary": "MVP 설계 시작하기",
+      "startPrimary": "실행 Workspace 시작",
       "stack": {
         "mvp": "MVP 설계",
         "mvpDesc": "아이디어를 실행 가능한 MVP 범위로 정의합니다.",
@@ -4399,6 +4424,7 @@
         "empty": "아직 기록된 History가 없습니다.",
         "remove": "항목 삭제",
         "export": "JSON 내보내기",
+        "exportCsv": "CSV 내보내기",
         "filters": {
           "all": "전체",
           "decision": "Decision",

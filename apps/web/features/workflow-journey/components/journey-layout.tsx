@@ -98,6 +98,7 @@ export function JourneyLayout({
         ) : null}
       </header>
       <main
+        id="main-content"
         className={cn(
           'journey-fade-in mx-auto px-4 py-8 sm:px-6 sm:py-12',
           width === 'wide' ? 'max-w-6xl 2xl:max-w-7xl' : 'max-w-3xl lg:max-w-4xl',

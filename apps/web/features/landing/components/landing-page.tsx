@@ -3,11 +3,6 @@ import dynamic from 'next/dynamic';
 import { LandingHeader } from './landing-header';
 import { LandingHero } from './landing-hero';
 import { LandingLazySection } from './landing-lazy-section';
-import { LandingAiPmSection } from './landing-ai-pm-section';
-import { LandingBeforeAfter } from './landing-before-after';
-import { LandingJourneySection } from './landing-journey-section';
-import { LandingStorySection } from './landing-story-section';
-import { LandingWhySection } from './landing-why-section';
 
 const LandingTracker = dynamic(() => import('./landing-tracker').then((m) => m.LandingTracker));
 
@@ -27,6 +22,26 @@ const LandingFooter = dynamic(
   () => import('./landing-footer').then((m) => m.LandingFooter),
   { loading: () => <div className="min-h-[160px]" aria-hidden /> },
 );
+const LandingStorySection = dynamic(
+  () => import('./landing-story-section').then((m) => m.LandingStorySection),
+  { loading: () => <div className="min-h-[240px]" aria-hidden /> },
+);
+const LandingBeforeAfter = dynamic(
+  () => import('./landing-before-after').then((m) => m.LandingBeforeAfter),
+  { loading: () => <div className="min-h-[280px]" aria-hidden /> },
+);
+const LandingJourneySection = dynamic(
+  () => import('./landing-journey-section').then((m) => m.LandingJourneySection),
+  { loading: () => <div className="min-h-[320px]" aria-hidden /> },
+);
+const LandingWhySection = dynamic(
+  () => import('./landing-why-section').then((m) => m.LandingWhySection),
+  { loading: () => <div className="min-h-[240px]" aria-hidden /> },
+);
+const LandingAiPmSection = dynamic(
+  () => import('./landing-ai-pm-section').then((m) => m.LandingAiPmSection),
+  { loading: () => <div className="min-h-[280px]" aria-hidden /> },
+);
 
 export async function LandingPage() {
   return (
@@ -37,11 +52,21 @@ export async function LandingPage() {
         <LandingLazySection minHeight={120}>
           <LandingTrustedBy />
         </LandingLazySection>
-        <LandingStorySection />
-        <LandingBeforeAfter />
-        <LandingJourneySection />
-        <LandingWhySection />
-        <LandingAiPmSection />
+        <LandingLazySection minHeight={240}>
+          <LandingStorySection />
+        </LandingLazySection>
+        <LandingLazySection minHeight={280}>
+          <LandingBeforeAfter />
+        </LandingLazySection>
+        <LandingLazySection minHeight={320}>
+          <LandingJourneySection />
+        </LandingLazySection>
+        <LandingLazySection minHeight={240}>
+          <LandingWhySection />
+        </LandingLazySection>
+        <LandingLazySection minHeight={280}>
+          <LandingAiPmSection />
+        </LandingLazySection>
         <LandingLazySection minHeight={200}>
           <LandingTestimonials />
         </LandingLazySection>

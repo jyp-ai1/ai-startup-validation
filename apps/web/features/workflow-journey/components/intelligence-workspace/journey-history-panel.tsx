@@ -94,6 +94,7 @@ export function JourneyHistoryPanel({ projectId }: JourneyHistoryPanelProps) {
             </button>
           ))}
           </div>
+          <div className="flex flex-wrap gap-2">
           <Button
             type="button"
             size="sm"
@@ -120,6 +121,39 @@ export function JourneyHistoryPanel({ projectId }: JourneyHistoryPanelProps) {
             <Download className="size-4" aria-hidden />
             {t('export')}
           </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              const header = ['id', 'category', 'title', 'summary', 'value', 'occurredAt'];
+              const rows = filtered.map((entry) =>
+                [
+                  entry.id,
+                  entry.category,
+                  titleFor(entry).replace(/"/g, '""'),
+                  (entry.summary ?? '').replace(/"/g, '""'),
+                  entry.value ?? '',
+                  entry.occurredAt,
+                ]
+                  .map((cell) => `"${cell}"`)
+                  .join(','),
+              );
+              const csv = [header.join(','), ...rows].join('\n');
+              const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `launchlens-history-${projectId.slice(0, 8)}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            disabled={filtered.length === 0}
+          >
+            <Download className="size-4" aria-hidden />
+            {t('exportCsv')}
+          </Button>
+          </div>
         </div>
 
         {dailyActivity.length > 0 ? (

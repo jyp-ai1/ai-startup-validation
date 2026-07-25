@@ -16,6 +16,7 @@ import {
 } from '../constants/decision-experience';
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useJourneyHistory } from '../hooks/use-journey-history';
+import { unlockAchievement } from '../lib/journey-achievements-store';
 import type { WorkflowGoalId } from '../types';
 import { ConfidenceMeter } from './confidence-meter';
 import { EvidenceEngineDrawer } from './evidence-engine-drawer';
@@ -66,6 +67,7 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
   useEffect(() => {
     if (!isFinal || stage.verdict !== 'GO' || celebratedRef.current) return;
     celebratedRef.current = true;
+    unlockAchievement('first-go');
     const timer = window.setTimeout(() => setShowCelebration(true), 400);
     analytics.trackGoReached(goalId, stage.confidence);
     return () => clearTimeout(timer);

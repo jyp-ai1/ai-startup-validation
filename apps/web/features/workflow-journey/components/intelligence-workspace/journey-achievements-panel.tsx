@@ -6,8 +6,11 @@ import { useTranslations } from 'next-intl';
 import { ACHIEVEMENTS } from '@/features/project-intelligence/constants/achievements-mock';
 import { cn } from '@repo/ui/lib/utils';
 
+import { useAchievements } from '../../hooks/use-achievements';
+
 export function JourneyAchievementsPanel() {
   const t = useTranslations('workflow.epic3.achievements');
+  const badges = useAchievements();
 
   return (
     <section className="rounded-2xl border border-border/70 bg-card p-5 sm:p-6">
@@ -16,7 +19,7 @@ export function JourneyAchievementsPanel() {
         <h3 className="text-sm font-semibold">{t('title')}</h3>
       </div>
       <ul className="mt-4 space-y-3">
-        {ACHIEVEMENTS.map((badge) => {
+        {badges.map((badge) => {
           const pct = Math.min(100, Math.round((badge.progress / badge.target) * 100));
           return (
             <li key={badge.id} className="space-y-1.5">

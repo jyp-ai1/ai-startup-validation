@@ -181,7 +181,7 @@ export function StrategyWorkspaceShell({
               confidence={project.confidence}
               projectName={projectDisplayName}
             />
-            <WorkspaceTodayPmPanel confidenceGain={12} />
+            <WorkspaceTodayPmPanel confidenceGain={Math.max(8, 81 - project.confidence)} />
             <JourneyDailyCoach
               confidence={project.confidence}
               variant="hero"
@@ -302,24 +302,30 @@ export function StrategyWorkspaceShell({
           <div className="grid gap-6 lg:grid-cols-[minmax(200px,260px)_1fr] lg:items-start lg:gap-8">
             <WorkspaceJourneyGuide activeStep={guideStep} className="hidden lg:block" />
             <div className="min-w-0 space-y-6">
-              {tab !== 'today' ? (
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div className="min-w-0 flex-1 space-y-2">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0 flex-1 space-y-2">
+                  {tab === 'today' ? (
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+                      {projectDisplayName}
+                    </p>
+                  ) : (
                     <JourneyProjectSwitcher project={project} onSelect={setProjectId} />
-                    <div>
+                  )}
+                  <div>
+                    {tab !== 'today' ? (
                       <p className="text-sm text-muted-foreground">{projectDisplayName}</p>
-                      <h1 className="text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl">
-                        {t('title')}
-                      </h1>
-                    </div>
+                    ) : null}
+                    <h1 className="text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl">
+                      {t('title')}
+                    </h1>
                   </div>
-                  <JourneyProgressRing
-                    value={project.confidence}
-                    label={t('progressLabel')}
-                    size={72}
-                  />
                 </div>
-              ) : null}
+                <JourneyProgressRing
+                  value={project.confidence}
+                  label={t('progressLabel')}
+                  size={72}
+                />
+              </div>
               {renderActiveTab()}
               {tab !== 'today' ? (
                 <div className="pt-2">

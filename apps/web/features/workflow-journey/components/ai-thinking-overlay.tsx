@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Brain, Check, Loader2 } from 'lucide-react';
 
+import { useDialogA11y } from '@/hooks/use-dialog-a11y';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
@@ -35,6 +36,7 @@ export function AiThinkingOverlay({
   className,
 }: AiThinkingOverlayProps) {
   const t = useTranslations('workflow.thinking');
+  const panelRef = useDialogA11y({ open: true });
   const [msgIndex, setMsgIndex] = useState(0);
   const messages = [
     t('rotate.building'),
@@ -79,7 +81,10 @@ export function AiThinkingOverlay({
       aria-labelledby="ai-thinking-title"
       aria-busy={!failed}
     >
-      <div className="w-full max-w-md rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
+      <div
+        ref={panelRef}
+        className="w-full max-w-md rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8"
+      >
         <div className="flex items-center gap-3">
           <span className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-2xl">
             <Brain className="size-7 text-primary" aria-hidden />

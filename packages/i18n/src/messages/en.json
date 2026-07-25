@@ -1900,10 +1900,10 @@
     "heatmapPlaceholderHint": "Session replay and click heatmaps activate after Clarity project ID is configured.",
     "adminTools": {
       "featureFlags": "Feature Flags",
-      "featureFlagsHint": "Mock flags — UI preview until production wiring.",
+      "featureFlagsHint": "Saved to localStorage — toggles Beta badge and journey flags in this browser.",
       "notice": "Notice · Banner",
-      "noticeActive": "Closed Beta 2.10.0",
-      "noticeBody": "Mission Omega-1 Batch 3 — Performance route split, SEO metadata, Admin Feedback Inbox.",
+      "noticeActive": "Closed Beta 2.12.0",
+      "noticeBody": "Closed Beta Release — Execution flow, History CSV, GO achievements, modal a11y.",
       "export": "Data Export",
       "exportCsv": "Download CSV",
       "exportHint": "Export operational metrics as CSV (includes mock data).",
@@ -1913,6 +1913,15 @@
         "negative": "Needs work",
         "emptyMessage": "No message",
         "recent": "Just now"
+      },
+      "releaseNotes": {
+        "title": "Release Notes",
+        "current": "Production",
+        "items": {
+          "v212": "Execution Workspace, GO flow, History CSV, Achievement unlock, Modal a11y",
+          "v211": "7-step Thinking, Today PM panel, Landing storytelling",
+          "v210": "Performance route split, SSG Landing, Admin Feedback Inbox"
+        }
       }
     }
   },
@@ -4104,6 +4113,22 @@
         "empty": "No changes to revert."
       }
     },
+    "execution": {
+      "eyebrow": "GO · Execution",
+      "title": "Execution Workspace",
+      "subtitle": "GO is the beginning. Continue MVP, market, and customer execution with your AI PM.",
+      "boardLabel": "Execution board",
+      "coachTitle": "AI PM recommendation",
+      "coachBody": "Next: 2 VOC interviews. Completing them moves Confidence toward GO.",
+      "backWorkspace": "Back to Workspace",
+      "tasks": {
+        "market": { "title": "Finish market research", "desc": "Consolidate TAM/SAM evidence" },
+        "voc": { "title": "2 customer interviews", "desc": "VOC for GO rationale" },
+        "mvp": { "title": "Define MVP scope", "desc": "First shippable version" },
+        "pricing": { "title": "Pricing hypothesis", "desc": "WTP validation" },
+        "grant": { "title": "Grant exploration", "desc": "Shortlist matching programs" }
+      }
+    },
     "goCelebration": {
       "title": "Congratulations.",
       "subtitle": "Your idea received a GO decision.",
@@ -4112,7 +4137,7 @@
       "aiRecommendTitle": "AI recommends your next workflow",
       "aiRecommendDesc": "GO is a beginning. We recommend starting with MVP design.",
       "primaryLabel": "Top recommendation",
-      "startPrimary": "Start MVP design",
+      "startPrimary": "Open Execution Workspace",
       "stack": {
         "mvp": "MVP design",
         "mvpDesc": "Define an executable MVP scope from your idea.",
@@ -4417,6 +4442,7 @@
         "empty": "No history entries yet.",
         "remove": "Remove entry",
         "export": "Export JSON",
+        "exportCsv": "Export CSV",
         "filters": {
           "all": "All",
           "decision": "Decision",

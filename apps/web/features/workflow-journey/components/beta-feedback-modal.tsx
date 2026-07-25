@@ -9,6 +9,7 @@ import {
   trackProductEvent,
 } from '@/lib/analytics/product-analytics';
 import { BETA_VERSION } from '@/lib/site/beta-config';
+import { useDialogA11y } from '@/hooks/use-dialog-a11y';
 import { Button, Textarea, toast } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
@@ -26,6 +27,7 @@ export function BetaFeedbackModal({ className }: BetaFeedbackModalProps) {
   const [sentiment, setSentiment] = useState<'up' | 'down' | null>(null);
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
+  const panelRef = useDialogA11y({ open, onDismiss: () => setOpen(false) });
 
   const submit = () => {
     if (!sentiment) return;
@@ -49,8 +51,10 @@ export function BetaFeedbackModal({ className }: BetaFeedbackModalProps) {
     >
       {open ? (
         <div
+          ref={panelRef}
           className="w-[min(320px,calc(100vw-2rem))] rounded-2xl border border-border/70 bg-card p-4 shadow-xl"
           role="dialog"
+          aria-modal="true"
           aria-labelledby="feedback-title"
         >
           <div className="mb-3 flex items-start justify-between gap-2">

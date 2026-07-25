@@ -1,19 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Download, Flag, Megaphone } from 'lucide-react';
 
 import type { OpsDashboardStats } from '@/lib/analytics/types';
+import { useFeatureFlags, type FeatureFlagKey } from '@/lib/site/feature-flags';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@repo/ui';
-
-type MockFlag = { key: string; enabled: boolean };
-
-const MOCK_FLAGS: MockFlag[] = [
-  { key: 'closed_beta_banner', enabled: true },
-  { key: 'journey_immersion', enabled: true },
-  { key: 'go_celebration_v2', enabled: false },
-];
 
 type AdminOpsToolsProps = {
   stats: OpsDashboardStats | null;
@@ -21,7 +13,7 @@ type AdminOpsToolsProps = {
 
 export function AdminOpsTools({ stats }: AdminOpsToolsProps) {
   const t = useTranslations('operations.adminTools');
-  const [flags, setFlags] = useState(MOCK_FLAGS);
+  const [flags, updateFlag] = useFeatureFlags();
 
   function exportCsv() {
     if (!stats) return;
@@ -60,11 +52,7 @@ export function AdminOpsTools({ stats }: AdminOpsToolsProps) {
               <input
                 type="checkbox"
                 checked={flag.enabled}
-                onChange={() =>
-                  setFlags((prev) =>
-                    prev.map((f) => (f.key === flag.key ? { ...f, enabled: !f.enabled } : f)),
-                  )
-                }
+                onChange={() => updateFlag(flag.key as FeatureFlagKey, !flag.enabled)}
                 className="size-4 rounded border-input"
               />
             </label>

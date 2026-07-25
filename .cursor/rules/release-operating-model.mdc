@@ -1,0 +1,37 @@
+---
+description: Release-based product completion — never stop at single feature
+alwaysApply: true
+---
+
+# Release Operating Model
+
+Read `docs/RELEASE_QUEUE.md` and active release task tree before work.
+
+## Mission completion rule
+
+Mission 완료는 Feature 완료가 아니다. Mission에 속한 **모든 Feature, Task, QA, UX, 문서, Analytics, 성능, 접근성, 반응형, 배포**가 끝났을 때만 종료한다.
+
+Mission 내부 Task가 **하나라도 남아있으면** 절대 다음 Mission으로 이동하지 않는다.
+
+## Hierarchy
+
+Release → Product → Mission → Feature → Task → Sub-task
+
+## Scope
+
+Cursor goal: **Commercial Launch (v1.0)까지** 모든 Release 순차 완료. Closed Beta만 끝내고 멈추지 않는다.
+
+## Experience exit (not code exit)
+
+Mission 종료 = 사용자 경험 기준. Example M1 Landing:
+
+- ❌ Hero 컴포넌트 구현
+- ✅ 대표가 Landing만 보고 5초 안에 AI PM 서비스라고 이해
+
+## Forbidden
+
+배포할까요 · 커밋할까요 · 진행할까요 · 승인 부탁 · Mission N 완료했습니다 (mid-report)
+
+## PM gates only
+
+DB · Auth · Billing · External API cost · LLM provider · Product pivot

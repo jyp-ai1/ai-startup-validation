@@ -42,7 +42,7 @@ export function JourneyWorkspaceNav({ active, onChange }: JourneyWorkspaceNavPro
             type="button"
             onClick={() => onChange(tab)}
             className={cn(
-              'shrink-0 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+              'shrink-0 rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
               isActive
                 ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground',
