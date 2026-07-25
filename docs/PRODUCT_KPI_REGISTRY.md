@@ -1,59 +1,107 @@
 # Product KPI Registry
 
 **Authority:** `docs/PRODUCT_EVOLUTION_DIRECTIVE.md`  
-**Rule:** Cursor thinks in **KPI**, never in screen names. Reports name KPIs only.
+**Rule:** KPI → Cause → Hypothesis → Experiment → Measure → Next KPI
+
+Engine: `apps/web/lib/analytics/product-os-engine.ts` · Admin **Product OS** panel
 
 ---
 
-## PM loop (every iteration)
+## PM loop (automatic)
 
 ```text
-현재 KPI 분석 → Drop-off 분석 → 원인 → 행동 분석
-→ 가장 큰 KPI 하나 선택 → Product 개선 → Analytics 추가
-→ Production → 다음 KPI
+KPI 수집 → Drop-off 발견 → 원인 → 가설 → Product 개선 → Analytics → Production → 재측정 → 다음 KPI
 ```
 
 ---
 
-## North-star funnel KPIs
+## Acquisition
 
-| KPI | Definition | Funnel |
-|-----|------------|--------|
-| **Service Understanding** | Landing → Goal intent (proxy: landing CTA / time on hero) | landing_viewed → cta_start |
-| **Goal Selection Rate** | % landing sessions that select a Goal | goal_selected / landing_viewed |
-| **Workflow Completion** | Goal → Workflow confirmed | workflow_started / goal_selected |
-| **Activation** | Landing → Project created | project_created / landing_viewed |
-| **Project Start Rate** | Workspace → one-line project submit | project_created / workspace_entered |
-| **AI Trust** | Decision viewed with evidence (proxy: hold_path_viewed, intelligence open) | hold_path_viewed / decision_generated |
-| **Decision Understanding** | Project → first Decision | decision_generated / project_created |
-| **GO Conversion** | GO / all decisions | go_reached / decision_generated |
-| **Execution Start** | GO → first execution task | execution_started / go_reached |
-| **Execution Completion** | All execution tasks done | execution_task_completed rate |
-| **Retention / Daily Return** | Return within 24h | session replay / cohort |
-| **Feedback Score** | Positive feedback ratio | feedback up / total |
-| **NPS / WOW / Habit** | Post-beta instrumentation | TBD |
-
-Extended: Weekly Return · Project Completion · Confidence Increase · Referral · Habit Formation
+| KPI | Measure | Event proxy |
+|-----|---------|-------------|
+| Landing CTR | CTA / landing | `landing_start_click` / `landing_viewed` |
+| CTA CTR | Hero CTA | `cta_start` |
+| Scroll Depth | Hero engagement | Clarity / PostHog |
+| First Impression | 5s comprehension | Service Understanding proxy |
+| **Goal Selection Rate** | goal / landing | `goal_selected` / `landing_viewed` |
 
 ---
 
-## Data sources
+## Activation
 
-| Source | Role |
-|--------|------|
-| `/api/analytics/events` + ops store | Product funnel (Admin `/admin/operations`) |
-| PostHog | `NEXT_PUBLIC_POSTHOG_KEY` |
-| Clarity | `NEXT_PUBLIC_CLARITY_PROJECT_ID` |
-| Google Form / Feedback modal | Qualitative |
+| KPI | Measure |
+|-----|---------|
+| Goal Selection | goal / landing |
+| Workflow Completion | workflow / goal |
+| **Project Start Rate** | project / workspace |
+| **Activation** | project / landing |
+| Recommended Goal Rate | recommended / goal |
 
 ---
 
-## Current loop pointer
+## Trust
+
+| KPI | Measure |
+|-----|---------|
+| HOLD Understanding | `hold_path_viewed` / decision |
+| **AI Trust** | Intelligence engagement / decision |
+| Evidence Engagement | evidence panel open |
+| Citation Click | citation events (TBD) |
+| Confidence Change | confidence delta events (TBD) |
+
+---
+
+## Decision & Success
+
+| KPI | Measure |
+|-----|---------|
+| **Decision Understanding** | decision / project |
+| **GO Conversion** | go / decision |
+| **Execution Start** | execution_started / go |
+| **Execution Completion** | task_completed / execution_started |
+| Project Completion | TBD cohort |
+
+---
+
+## Habit & Retention
+
+| KPI | Measure |
+|-----|---------|
+| Daily Return | 24h return session |
+| Weekly Return | 7d cohort |
+| Session Length | PostHog |
+| Next Action Completion | coach action / recommendation |
+| Habit Formation | streak (TBD) |
+
+---
+
+## Feedback & Business
+
+| KPI | Measure |
+|-----|---------|
+| **Feedback Score** | positive / total feedback |
+| NPS | survey (TBD) |
+| WOW Moment | go_reached + celebration |
+| Beta Retention | workspace return |
+| Invite / Referral / Waitlist / Paid Interest | TBD |
+
+---
+
+## Product OS (Admin)
+
+`/admin/operations` → **Product OS** shows:
+
+1. Primary KPI + current %
+2. Biggest funnel drop
+3. Root cause · Hypothesis · Experiment
+4. Deploy version · Measure formula · Next KPI
+
+---
+
+## Loop pointer
 
 [PRODUCT_LOOP_STATE.md](./PRODUCT_LOOP_STATE.md)
 
-## Pre-implementation gate
+## Gate
 
-> 이 변경이 **어느 KPI**를 **얼마나** 올리는가?
-
-No answer → do not implement.
+> 이 실험이 **어느 KPI**를 **얼마나** 올리는가? → 재측정 이벤트는?

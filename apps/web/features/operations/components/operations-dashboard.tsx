@@ -15,6 +15,7 @@ import {
 
 import type { OpsDashboardStats } from '@/lib/analytics/types';
 import { AdminOpsTools } from './admin-ops-tools';
+import { AdminProductOsPanel } from './admin-product-os-panel';
 import { AdminFeedbackInbox } from './admin-feedback-inbox';
 import { AdminReleaseNotes } from './admin-release-notes';
 import { Badge, Card, CardContent, CardHeader, CardTitle, PageHeader } from '@repo/ui';
@@ -142,6 +143,8 @@ export function OperationsDashboard() {
         <p className="mt-6 text-sm text-muted-foreground">{t('loading')}</p>
       ) : (
         <div className="mt-8 space-y-8">
+          {stats.productOs ? <AdminProductOsPanel brief={stats.productOs} /> : null}
+
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard title={t('todayVisitors')} value={stats.todayVisitors} icon={Users} />
             <StatCard title={t('weekVisitors')} value={stats.weekVisitors} icon={Globe} />
@@ -222,6 +225,22 @@ export function OperationsDashboard() {
                   title={t('kpiWorkflowCompletion')}
                   value={`${stats.productKpis.workflowCompletionRate}%`}
                   icon={BarChart3}
+                />
+                <StatCard
+                  title={t('kpiProjectStartRate')}
+                  value={`${stats.productKpis.projectStartRate}%`}
+                  icon={Users}
+                  hint={t('kpiProjectStartHint')}
+                />
+                <StatCard
+                  title={t('kpiLandingCta')}
+                  value={`${stats.productKpis.landingCtaRate}%`}
+                  icon={Globe}
+                />
+                <StatCard
+                  title={t('kpiFeedbackScore')}
+                  value={`${stats.productKpis.feedbackScore}%`}
+                  icon={Activity}
                 />
               </div>
             </div>

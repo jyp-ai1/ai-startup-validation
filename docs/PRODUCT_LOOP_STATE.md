@@ -1,34 +1,38 @@
 # Product Loop State
 
-**Mode:** KPI-driven Product Manager — not screen developer.
+**Mode:** KPI PM — measure → cause → hypothesis → experiment → re-measure
 
 Production: https://ai-startup-validation-tau.vercel.app  
-Registry: [PRODUCT_KPI_REGISTRY.md](./PRODUCT_KPI_REGISTRY.md)
+Registry: [PRODUCT_KPI_REGISTRY.md](./PRODUCT_KPI_REGISTRY.md)  
+Product OS: `/admin/operations`
 
 ---
 
-## Today's primary KPI
+## Active experiment (from Product OS)
 
-| Field | Value |
-|-------|-------|
-| **KPI** | **Goal Selection Rate** |
-| **Current (ops funnel)** | landing → goal conversion (see Admin Product KPIs) |
-| **Target** | Maximize landing→goal; reduce drop at first funnel step |
-| **Biggest drop-off** | landing → goal (Service Understanding + CTA friction) |
-| **Hypothesis** | Speed promise + outcome copy on Landing increases Goal taps without extra screens |
+| Step | Value |
+|------|-------|
+| **Primary KPI** | Project Start Rate (mock funnel: workspace→project −60%) |
+| **Root cause** | Activation blocked — registration friction |
+| **Hypothesis** | One-line + auto-name reduces drop |
+| **Experiment** | Shipped — verify `project_created / workspace_entered` |
+| **Measure** | `project_created / workspace_entered` |
+| **Next KPI** | Decision Understanding Rate |
 
-## Secondary KPIs (same loop — parallel)
+## PM loop (this iteration)
 
-| KPI | Lever |
-|-----|-------|
-| Activation | One-line project registration (shipped) |
-| Decision Understanding | HOLD path + Intelligence auto-open (shipped) |
-| Execution Start | First task completion tracking (instrumented) |
-
-## PM loop step
-
-```text
-KPI 분석 → Drop-off → 원인 → 행동 → 개선 → Analytics → Production → 다음 KPI
+```
+KPI 40% (Project Start)
+  → Drop workspace→project 60%
+  → Cause: form friction
+  → Hypothesis: one-line registration
+  → Experiment: shipped (5e32e04)
+  → Re-measure: Admin Product OS live data
+  → Next: Decision Understanding if Activation rises
 ```
 
-**Forbidden in reports:** Landing 개선 · Workflow 개선 · Stage complete · approval prompts
+## Parallel KPIs instrumented
+
+Goal Selection · Landing CTA · Workflow Completion · AI Trust · GO · Execution Start · Feedback Score
+
+**Reports: KPI names only. Product OS drives next experiment.**

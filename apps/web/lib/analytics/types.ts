@@ -222,10 +222,31 @@ export type OpsDashboardStats = {
     goalSelectionRate: number;
     activationRate: number;
     workflowCompletionRate: number;
+    projectStartRate: number;
     decisionUnderstandingRate: number;
     executionStartRate: number;
+    executionCompletionRate: number;
     goConversionRate: number;
     aiTrustRate: number;
+    landingCtaRate: number;
+    feedbackScore: number;
+    recommendedGoalRate: number;
+  };
+  /** AI PM Product OS — KPI → cause → hypothesis → experiment */
+  productOs?: {
+    primaryKpiKey: string;
+    primaryKpiLabel: string;
+    currentValue: number;
+    unit: '%' | 'count';
+    biggestDropStep: string;
+    dropPercent: number;
+    rootCause: string;
+    hypothesis: string;
+    experiment: string;
+    measureBy: string;
+    nextKpiKey: string;
+    deployVersion: string;
+    recommendation: string;
   };
   operationalMetrics?: {
     users: number;

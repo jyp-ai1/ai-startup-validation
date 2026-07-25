@@ -1,6 +1,7 @@
 import { env } from '@repo/core/env';
 
 import { PRODUCT_ANALYTICS_EVENTS } from '../product-analytics';
+import { computeProductOsBrief } from '../product-os-engine';
 import type { AnalyticsEventPayload, OpsDashboardStats } from '../types';
 import { ANALYTICS_EVENTS } from '../types';
 
@@ -218,19 +219,31 @@ function computeProductKpis(
   const goCount = todaySummary.goDecisions;
   const holdPathViews = countEvents(PRODUCT_ANALYTICS_EVENTS.holdPathViewed);
   const executionStarts = countEvents(PRODUCT_ANALYTICS_EVENTS.executionStarted);
+  const executionTasks = countEvents(PRODUCT_ANALYTICS_EVENTS.executionTaskCompleted);
+  const goalSelected = Math.max(1, funnel.goal);
+  const workspaceEntered = Math.max(1, funnel.workspace);
+  const ctaClicks =
+    countEvents(ANALYTICS_EVENTS.landingStartClick) + countEvents(ANALYTICS_EVENTS.ctaStart);
+  const recommendedGoals = countEvents(PRODUCT_ANALYTICS_EVENTS.recommendedGoalSelected);
+  const feedbackEvents = events.filter((e) => e.name === PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted);
+  const feedbackUp = feedbackEvents.filter((e) => e.params?.sentiment !== 'down').length;
+  const feedbackTotal = Math.max(1, feedbackEvents.length);
 
   return {
     goalSelectionRate: Math.round((funnel.goal / landing) * 100),
     activationRate: Math.round((funnel.project / landing) * 100),
-    workflowCompletionRate:
-      funnel.goal > 0 ? Math.round((funnel.workflow / funnel.goal) * 100) : 0,
+    workflowCompletionRate: Math.round((funnel.workflow / goalSelected) * 100),
+    projectStartRate: Math.round((funnel.project / workspaceEntered) * 100),
     decisionUnderstandingRate:
       funnel.project > 0 ? Math.round((decision / funnel.project) * 100) : 0,
-    executionStartRate:
-      goCount > 0 ? Math.round((executionStarts / goCount) * 100) : 0,
+    executionStartRate: goCount > 0 ? Math.round((executionStarts / goCount) * 100) : 0,
+    executionCompletionRate:
+      executionStarts > 0 ? Math.round((executionTasks / executionStarts) * 100) : 0,
     goConversionRate: decision > 0 ? Math.round((goCount / decision) * 100) : 0,
-    aiTrustRate:
-      decision > 0 ? Math.round((holdPathViews / decision) * 100) : 0,
+    aiTrustRate: decision > 0 ? Math.round((holdPathViews / decision) * 100) : 0,
+    landingCtaRate: Math.round((ctaClicks / landing) * 100),
+    feedbackScore: Math.round((feedbackUp / feedbackTotal) * 100),
+    recommendedGoalRate: Math.round((recommendedGoals / goalSelected) * 100),
   };
 }
 
@@ -307,10 +320,31 @@ const MOCK_STATS: OpsDashboardStats = {
     goalSelectionRate: 72,
     activationRate: 17,
     workflowCompletionRate: 81,
+    projectStartRate: 40,
     decisionUnderstandingRate: 53,
     executionStartRate: 33,
+    executionCompletionRate: 25,
     goConversionRate: 33,
     aiTrustRate: 67,
+    landingCtaRate: 38,
+    feedbackScore: 80,
+    recommendedGoalRate: 55,
+  },
+  productOs: {
+    primaryKpiKey: 'projectStartRate',
+    primaryKpiLabel: 'Project Start Rate',
+    currentValue: 40,
+    unit: '%',
+    biggestDropStep: 'workspace → project',
+    dropPercent: 60,
+    rootCause: 'Activation blocked — registration feels required and long',
+    hypothesis: 'Multi-field form kills 30-second project start',
+    experiment: 'One-line idea + AI auto-name + auto-save (verify drop falls)',
+    measureBy: 'project_created / workspace_entered',
+    nextKpiKey: 'decisionUnderstandingRate',
+    deployVersion: 'mock',
+    recommendation:
+      'Drop 60% at workspace → project — run experiment on Project Start Rate, then re-measure project_created / workspace_entered.',
   },
   operationalMetrics: {
     users: 72,
@@ -368,6 +402,10 @@ export function getOpsDashboardStats(): OpsDashboardStats {
     countEvents(ANALYTICS_EVENTS.businessPlanGenerate) +
     countEvents(ANALYTICS_EVENTS.reportGenerate);
 
+  const dropOffRates = computeDropOffRates(productJourneyFunnel);
+  const productKpis = computeProductKpis(productJourneyFunnel, todaySummary);
+  const operationalMetrics = computeOperationalMetrics(productJourneyFunnel, todaySummary);
+
   return {
     source: 'live',
     todayVisitors: countPageViews(todayStart),
@@ -392,11 +430,17 @@ export function getOpsDashboardStats(): OpsDashboardStats {
     },
     productJourneyFunnel,
     todaySummary,
-    dropOffRates: computeDropOffRates(productJourneyFunnel),
+    dropOffRates,
     recentFeedback: recentFeedback(),
     analyticsProviders: analyticsProviders(),
     closedBetaMetrics: computeClosedBetaMetrics(productJourneyFunnel, todaySummary),
-    productKpis: computeProductKpis(productJourneyFunnel, todaySummary),
-    operationalMetrics: computeOperationalMetrics(productJourneyFunnel, todaySummary),
+    productKpis,
+    productOs: computeProductOsBrief({
+      productKpis,
+      dropOffRates,
+      operationalMetrics,
+      productJourneyFunnel,
+    }) ?? undefined,
+    operationalMetrics,
   };
 }

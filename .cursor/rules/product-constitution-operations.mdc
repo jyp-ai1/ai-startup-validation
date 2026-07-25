@@ -28,7 +28,9 @@ Read `docs/PRODUCT_KPI_REGISTRY.md`. Pick **one primary KPI** per loop from funn
 
 Service Understanding → Goal Selection Rate → Activation → Decision Understanding → GO Conversion → Execution Start → Retention → Feedback
 
-**PM loop:** KPI 분석 → Drop-off → 원인 → 행동 → 개선 → Analytics → Production → **다음 KPI**
+**PM loop:** KPI 수집 → Drop-off → **원인 → 가설 → 실험** → Production → **재측정** → 다음 KPI
+
+Use Admin **Product OS** (`/admin/operations`) for auto recommendation. Engine: `product-os-engine.ts`
 
 **Reports name KPIs only** — never "Landing 개선", "Workflow 개선".
 
