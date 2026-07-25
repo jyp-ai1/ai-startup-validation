@@ -1,5 +1,5 @@
-/** LaunchLens Closed Beta Release — Execution · History CSV · GO flow · A11y */
-export const BETA_VERSION = 'Closed Beta 2.12.0';
+/** LaunchLens Closed Beta Release — Deferred analytics on Landing for TBT */
+export const BETA_VERSION = 'Closed Beta 2.13.0';
 export const BETA_LABEL = 'CLOSED BETA';
 
 export const SITE_LINKS = {

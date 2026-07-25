@@ -2,9 +2,8 @@ import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 
-import { ClientChrome } from '@/components/client-chrome';
+import { DeferredAppShell } from '@/components/deferred-app-shell';
 import { SkipToMainLink } from '@/components/skip-to-main';
-import { AnalyticsProvider } from '@/lib/analytics/providers/analytics-provider';
 import { routing } from '@/i18n/routing';
 import { ThemeProvider } from '@repo/ui';
 
@@ -31,10 +30,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <NextIntlClientProvider locale={locale} messages={messages}>
       <ThemeProvider>
         <SkipToMainLink />
-        <AnalyticsProvider>
-          {children}
-          <ClientChrome />
-        </AnalyticsProvider>
+        <DeferredAppShell>{children}</DeferredAppShell>
       </ThemeProvider>
     </NextIntlClientProvider>
   );
