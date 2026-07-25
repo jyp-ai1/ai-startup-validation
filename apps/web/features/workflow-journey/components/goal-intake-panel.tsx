@@ -14,6 +14,8 @@ type RefinementKey = (typeof REFINEMENT_KEYS)[number];
 
 type GoalIntakePanelProps = {
   className?: string;
+  /** Demote visual weight — goal selection works without intake */
+  optional?: boolean;
 };
 
 type IntakeState = {
@@ -45,7 +47,7 @@ function writeIntake(state: IntakeState) {
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-export function GoalIntakePanel({ className }: GoalIntakePanelProps) {
+export function GoalIntakePanel({ className, optional = false }: GoalIntakePanelProps) {
   const t = useTranslations('workflow.goal.intake');
   const [idea, setIdea] = useState('');
   const [chips, setChips] = useState<RefinementKey[]>([]);
@@ -90,17 +92,34 @@ export function GoalIntakePanel({ className }: GoalIntakePanelProps) {
   return (
     <div
       className={cn(
-        'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.06] to-background p-5 sm:p-6',
+        'rounded-2xl border p-5 sm:p-6',
+        optional
+          ? 'border-border/60 bg-muted/20'
+          : 'border-primary/25 bg-gradient-to-br from-primary/[0.06] to-background',
         'motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500',
         className,
       )}
     >
       <div className="flex items-start gap-3">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+        <span
+          className={cn(
+            'flex size-11 shrink-0 items-center justify-center rounded-2xl',
+            optional ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground',
+          )}
+        >
           <Brain className="size-5" aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-primary">{t('eyebrow')}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className={cn('text-sm font-medium', optional ? 'text-muted-foreground' : 'text-primary')}>
+              {t('eyebrow')}
+            </p>
+            {optional ? (
+              <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                {t('optionalLabel')}
+              </span>
+            ) : null}
+          </div>
           <p className="mt-1 text-base font-semibold leading-relaxed text-foreground">{t('prompt')}</p>
         </div>
       </div>

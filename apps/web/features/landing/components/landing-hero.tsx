@@ -13,7 +13,7 @@ export async function LandingHero() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(120,119,198,0.08),transparent)] dark:bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(120,119,198,0.16),transparent)]" />
 
       <div className="mx-auto grid max-w-[1440px] gap-10 px-4 sm:gap-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10">
-        <div className="order-2 max-w-xl lg:order-1">
+        <div className="order-1 max-w-xl lg:order-1">
           <p className="text-sm font-medium text-primary">{t('eyebrow')}</p>
           <h1 className="mt-4 whitespace-pre-line text-4xl font-semibold leading-[1.12] tracking-tight text-foreground md:text-5xl lg:text-[3.25rem]">
             {t('title')}
@@ -34,7 +34,7 @@ export async function LandingHero() {
           />
         </div>
 
-        <div className="order-1 lg:order-2">
+        <div className="order-2 lg:order-2">
           <LandingHeroPreviewStatic className="mx-auto max-w-md lg:max-w-none lg:block" />
         </div>
       </div>

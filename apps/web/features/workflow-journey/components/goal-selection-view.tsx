@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { ArrowRight, Sparkles } from 'lucide-react';
 
 import { useRouter } from '@/i18n/navigation';
+import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { saveGoalAction } from '../actions/journey-actions';
@@ -91,7 +92,7 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
         }
 
         setActiveStep(THINKING_STEP_COUNT - 1);
-        router.push('/workflow?compose=1');
+        router.push('/workflow');
       } catch (error) {
         window.clearInterval(stepTimer);
         clearGoalTimeout();
@@ -173,21 +174,24 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
             <p className="text-sm leading-relaxed text-muted-foreground">{t('subtitle')}</p>
           </div>
 
-          <GoalIntakePanel className="mt-6" />
-
-          {demoMode ? (
-            <p className="mt-4 rounded-lg bg-violet-50 px-3 py-2 text-sm text-violet-900 dark:bg-violet-950/40 dark:text-violet-200">
-              {t('demoBanner')}
+          <div className="mt-6 rounded-2xl border border-primary/30 bg-primary/[0.06] p-4 sm:p-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+              {t('recommended.label')}
             </p>
-          ) : null}
-
-          <p className="mt-6 text-sm font-medium text-foreground">{t('intake.question')}</p>
-
-          <div className="mt-4 rounded-2xl border border-primary/30 bg-primary/[0.05] p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">{t('recommended.label')}</p>
             <p className="mt-1 font-semibold text-foreground">{t('recommended.title')}</p>
             <p className="mt-1 text-sm text-muted-foreground">{t('recommended.desc')}</p>
+            <Button
+              type="button"
+              className="mt-4 w-full rounded-xl sm:w-auto"
+              disabled={locked}
+              onClick={() => void handleSelect(RECOMMENDED_GOAL)}
+            >
+              {t('recommended.cta')}
+              <ArrowRight className="size-4" aria-hidden />
+            </Button>
           </div>
+
+          <p className="mt-8 text-sm font-medium text-foreground">{t('intake.question')}</p>
 
           <ul className="mt-4 space-y-3" role="list">
             {WORKFLOW_GOAL_IDS.map((goalId, index) => {
@@ -246,6 +250,14 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
               );
             })}
           </ul>
+
+          {demoMode ? (
+            <p className="mt-4 rounded-lg bg-violet-50 px-3 py-2 text-sm text-violet-900 dark:bg-violet-950/40 dark:text-violet-200">
+              {t('demoBanner')}
+            </p>
+          ) : null}
+
+          <GoalIntakePanel optional className="mt-8" />
 
           <p className="mt-8 text-center text-xs text-muted-foreground">{t('keyboardHint')}</p>
         </JourneyFade>

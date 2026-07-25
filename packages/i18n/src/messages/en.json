@@ -1359,7 +1359,7 @@
       "aiPm": "AI PM",
       "stories": "Stories",
       "signIn": "Sign in",
-      "startFree": "Start Free",
+      "startFree": "Start strategy project",
       "menuLabel": "Navigation menu",
       "openMenu": "Open menu",
       "closeMenu": "Close menu"
@@ -1367,8 +1367,8 @@
     "hero": {
       "eyebrow": "AI Strategy Project Manager",
       "title": "Start your strategy project\nin 3 minutes.",
-      "subtitle": "Your AI PM from Goal to GO — not chat, not reports, not research tools.",
-      "northStar": "AI runs your strategy project with you — start in 3 minutes.",
+      "subtitle": "Pick a Goal — your AI PM guides Workflow → GO/HOLD → your next action automatically.",
+      "northStar": "AI reviews your business with you — understand in 5 seconds, start in 3 minutes.",
       "journey": {
         "label": "How it works",
         "goal": "Goal",
@@ -3949,19 +3949,21 @@
     "goal": {
       "eyebrow": "Step 1 · AI understands your project",
       "title": "What strategy project are we building together?",
-      "subtitle": "This isn't a menu — AI is learning your project type.",
+      "subtitle": "Pick one Goal — your AI PM prepares the Workflow.",
       "demoBanner": "Demo mode — select a goal to preview a sample workflow.",
       "hint": "Your answer lets AI compose a tailored workflow automatically.",
       "recommended": {
         "label": "AI pick",
         "title": "New here? Start with business viability",
-        "desc": "Most Closed Beta users reach Workspace in 3 minutes with this Goal."
+        "desc": "Most Closed Beta users reach Workspace in 3 minutes with this Goal.",
+        "cta": "Start with business viability"
       },
       "keyboardHint": "↑↓ to move · Enter to select",
       "intake": {
         "eyebrow": "AI Project Manager",
         "prompt": "Tell me about your project. I'll understand your goal and prepare the workflow.",
-        "hint": "Describe your idea and focus areas — AI will shape your project.",
+        "hint": "You can start with a Goal only — the fields below are optional.",
+        "optionalLabel": "Optional",
         "question": "What project are you running right now?",
         "optionLabel": "Type {n}",
         "ideaLabel": "One-line project description",
@@ -3992,7 +3994,7 @@
           "businessModel": "Business model",
           "risk": "Risk",
           "strategy": "Strategy synthesis",
-          "projectCreate": "Project creation"
+          "projectCreate": "Preparing workflow"
         }
       },
       "options": {

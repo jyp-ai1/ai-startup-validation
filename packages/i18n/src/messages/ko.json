@@ -1359,7 +1359,7 @@
       "aiPm": "AI PM",
       "stories": "후기",
       "signIn": "로그인",
-      "startFree": "무료로 시작하기",
+      "startFree": "전략 프로젝트 시작",
       "menuLabel": "내비게이션 메뉴",
       "openMenu": "메뉴 열기",
       "closeMenu": "메뉴 닫기"
@@ -1367,8 +1367,8 @@
     "hero": {
       "eyebrow": "AI Strategy Project Manager",
       "title": "3분 안에\n전략 프로젝트를\n시작하세요.",
-      "subtitle": "AI PM이 Goal부터 GO까지 함께합니다. 채팅도, 보고서도, 조사 도구도 아닙니다.",
-      "northStar": "AI가 내 사업을 함께 진행하는 서비스 — 3분 안에 첫 프로젝트 시작.",
+      "subtitle": "Goal만 고르면 AI PM이 Workflow → GO/HOLD → 다음 액션까지 자동으로 안내합니다.",
+      "northStar": "AI가 내 사업을 함께 검토하는 서비스 — 5초 안에 이해, 3분 안에 시작.",
       "journey": {
         "label": "이렇게 진행됩니다",
         "goal": "목표",
@@ -3931,19 +3931,21 @@
     "goal": {
       "eyebrow": "Step 1 · AI가 프로젝트를 이해합니다",
       "title": "어떤 전략 프로젝트를 함께할까요?",
-      "subtitle": "선택 화면이 아닙니다. AI가 프로젝트 유형을 파악하는 단계입니다.",
+      "subtitle": "목표 하나만 고르면 AI PM이 Workflow를 준비합니다.",
       "demoBanner": "데모 모드 — Goal을 선택하면 샘플 Workflow를 체험할 수 있습니다.",
       "hint": "답변하면 AI가 맞춤 Workflow를 자동 구성합니다.",
       "recommended": {
         "label": "AI 추천",
         "title": "처음이시라면 사업 가능성 검토부터",
-        "desc": "대부분의 Closed Beta 사용자가 이 Goal로 3분 안에 Workspace에 도달했습니다."
+        "desc": "대부분의 Closed Beta 사용자가 이 Goal로 3분 안에 Workspace에 도달했습니다.",
+        "cta": "사업 가능성 검토로 바로 시작"
       },
       "keyboardHint": "↑↓ 화살표로 이동 · Enter로 선택",
       "intake": {
         "eyebrow": "AI Project Manager",
         "prompt": "프로젝트에 대해 알려주세요. AI가 목표를 이해하고 Workflow를 준비합니다.",
-        "hint": "아이디어와 초점을 입력하면 AI가 프로젝트를 정리합니다.",
+        "hint": "목표만 골라도 바로 시작할 수 있어요. 아래 입력은 선택 사항입니다.",
+        "optionalLabel": "선택 사항",
         "question": "지금 어떤 프로젝트를 진행 중인가요?",
         "optionLabel": "유형 {n}",
         "ideaLabel": "프로젝트 한 줄 설명",
@@ -3974,7 +3976,7 @@
           "businessModel": "비즈니스 모델",
           "risk": "리스크",
           "strategy": "전략 생성",
-          "projectCreate": "프로젝트 생성"
+          "projectCreate": "Workflow 준비"
         }
       },
       "options": {
