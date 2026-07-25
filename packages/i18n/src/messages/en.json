@@ -3989,6 +3989,48 @@
         "go": "Congratulations — enough evidence for GO. You're ready to move into execution."
       }
     },
+    "decisionDetail": {
+      "eyebrow": "Decision Workspace",
+      "title": "Decision Detail",
+      "desc": "Evidence · Confidence · Risk · Recommendation in one workspace view.",
+      "confidenceLabel": "Confidence",
+      "expectedGainHint": "Expected lift toward first GO after 2 VOC items",
+      "recommendationTitle": "AI PM recommendation",
+      "recommendationBody": "Add 2 VOC interviews today to significantly raise GO probability.",
+      "alternativeBody": "Alternative path: finish market sizing first, then competitor analysis.",
+      "views": {
+        "founder": "Founder",
+        "pm": "PM",
+        "vc": "VC"
+      },
+      "perspectives": {
+        "founder": "Execution lens — focus on one next action. Two VOC items is the shortest path to GO.",
+        "pm": "PM lens — Evidence gaps and confidence rules are prioritized.",
+        "vc": "VC lens — market, execution, and finance risks as explicit tradeoffs."
+      },
+      "sections": {
+        "evidence": "Evidence",
+        "confidence": "Confidence",
+        "health": "Health",
+        "rules": "Rules",
+        "missing": "Missing Data",
+        "expectedGain": "Expected Gain",
+        "recommendation": "Recommendation",
+        "alternative": "Alternative",
+        "risk": "Risk",
+        "tradeoff": "Tradeoff"
+      },
+      "risks": {
+        "market": "Market growth not fully validated",
+        "execution": "Execution capacity gap"
+      },
+      "tradeoff": {
+        "speed": "Speed",
+        "speedValue": "VOC first (~20 min)",
+        "evidence": "Evidence",
+        "evidenceValue": "Quality first (+28%)"
+      }
+    },
     "goCelebration": {
       "title": "Congratulations.",
       "subtitle": "Your idea received a GO decision.",

@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.6.0] — 2026-07-25
+## [2.7.0] — 2026-07-25
+
+### Added — Mission A-3 Decision Workspace
+
+- `DecisionDetailWorkspace` with Founder/PM/VC perspectives
+- Evidence, Confidence, Health, Rules, Missing Data, Risk, Tradeoff sections
+- Decision tab: Coach + full detail workspace stack
+
+---
 
 ### Added — Mission A-2 History Complete
 

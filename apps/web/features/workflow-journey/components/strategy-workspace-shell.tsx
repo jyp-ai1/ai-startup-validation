@@ -44,6 +44,8 @@ import {
 } from './intelligence-workspace/journey-workspace-nav';
 import { WorkspaceJourneyGuide } from './workspace-journey-guide';
 
+import { DecisionDetailWorkspace } from './decision-detail-workspace';
+
 const DecisionExperienceCoach = dynamic(
   () => import('./decision-experience-coach').then((m) => m.DecisionExperienceCoach),
   { loading: () => <CoachSkeleton /> },
@@ -220,7 +222,14 @@ export function StrategyWorkspaceShell({
         ) : null;
       case 'decision':
         return (
-          <DecisionExperienceCoach goalId={goalId} projectId={projectId} className="w-full max-w-none" />
+          <div className="space-y-8">
+            <DecisionExperienceCoach
+              goalId={goalId}
+              projectId={projectId}
+              className="w-full max-w-none"
+            />
+            <DecisionDetailWorkspace goalId={goalId} />
+          </div>
         );
       case 'history':
         return <JourneyHistoryPanel projectId={projectId} />;

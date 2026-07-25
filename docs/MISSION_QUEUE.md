@@ -10,8 +10,8 @@
 |----|-------|--------|
 | A-1 | Project CRUD Complete | shipped → `2.5.0` |
 | A-2 | History Complete | shipped → `2.6.0` |
-| A-3 | Decision Workspace Complete | in_progress |
-| A-4 | Workspace Polish | pending |
+| A-3 | Decision Workspace Complete | shipped → `2.7.0` |
+| A-4 | Workspace Polish | in_progress |
 | A-5 | AI Coach Complete | pending |
 | A-6 | Workflow Stack Complete | pending |
 | A-7 | Evidence Engine Complete | pending |

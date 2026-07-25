@@ -3971,6 +3971,48 @@
         "movedToGo": "GO Decision 달성"
       }
     },
+    "decisionDetail": {
+      "eyebrow": "Decision Workspace",
+      "title": "Decision Detail",
+      "desc": "Evidence · Confidence · Risk · Recommendation을 한 화면에서 확인합니다.",
+      "confidenceLabel": "Confidence",
+      "expectedGainHint": "VOC 2건 추가 시 첫 GO까지 예상 상승",
+      "recommendationTitle": "AI PM 추천",
+      "recommendationBody": "오늘 VOC 인터뷰 2건만 추가하면 GO 가능성이 크게 올라갑니다.",
+      "alternativeBody": "시장 규모 검증을 먼저 완료한 뒤 경쟁사 분석으로 넘어가는 대안 경로도 있습니다.",
+      "views": {
+        "founder": "Founder",
+        "pm": "PM",
+        "vc": "VC"
+      },
+      "perspectives": {
+        "founder": "실행 관점 — 다음 액션 하나에 집중하세요. VOC 2건이 GO까지 가장 짧은 경로입니다.",
+        "pm": "PM 관점 — Evidence gap과 Confidence 규칙을 우선순위로 정렬했습니다.",
+        "vc": "VC 관점 — 시장·실행·재무 리스크를 Tradeoff로 정리했습니다."
+      },
+      "sections": {
+        "evidence": "Evidence",
+        "confidence": "Confidence",
+        "health": "Health",
+        "rules": "Rules",
+        "missing": "Missing Data",
+        "expectedGain": "Expected Gain",
+        "recommendation": "Recommendation",
+        "alternative": "Alternative",
+        "risk": "Risk",
+        "tradeoff": "Tradeoff"
+      },
+      "risks": {
+        "market": "시장 성장률 검증 미완료",
+        "execution": "실행 리소스 부족"
+      },
+      "tradeoff": {
+        "speed": "속도",
+        "speedValue": "VOC 우선 (20분)",
+        "evidence": "Evidence",
+        "evidenceValue": "품질 우선 (+28%)"
+      }
+    },
     "goCelebration": {
       "title": "축하합니다.",
       "subtitle": "현재 아이디어는 GO 판정을 받았습니다.",
