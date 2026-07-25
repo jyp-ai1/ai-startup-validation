@@ -1,19 +1,22 @@
-# Daily Product Evolution Report — Template (v8)
+# Daily Product Report — Template (Constitution)
 
-**08:00 KST only.** Evolution report — not completion report.
+**Authority:** `docs/PRODUCT_CONSTITUTION.md` Part II  
+**When:** Daily (e.g. 08:00 KST). **Report only — no questions.**
 
 ```text
 ========================
-Daily Product Evolution Report
+Daily Product Report
 ========================
 
 Production:   https://ai-startup-validation-tau.vercel.app
-Version:      Closed Beta x.x.x
 Commit:       (hash)
-Tag:          closed-beta-vx.x.x
 
 -------------------------
-오늘 더 좋아진 사용자 경험
+오늘 사용자가 새롭게 느끼는 경험
+(bullets)
+
+-------------------------
+오늘 개선한 UX
 (bullets)
 
 -------------------------
@@ -21,31 +24,24 @@ Tag:          closed-beta-vx.x.x
 (bullets)
 
 -------------------------
-QA
-Lint / Build / Type / Regression / Smoke
-
--------------------------
 Known Issues
 (bullets)
 
 -------------------------
-Evolution Progress
-Active Queue:    R1 Roadmap / UX Queue / …
-Task:            T0xx (not "done")
-Slice progress:  N / 300 (evolution metric)
-Current Priority: P1 Journey / P6 Perf / …
-Release:         R1
+현재 Production 상태
+Lint / Build / Smoke / journey spot-check summary
 
-다음 evolution cycle에서 다룰 영역
-(bullets — not "next approval")
+-------------------------
+내일도 계속 개선할 영역
+(bullets — loop continues, not "next approval")
 
 ========================
 ```
 
 ## Forbidden phrases
 
-완료했습니다 · 끝났습니다 · 다음 작업이 없습니다 · Queue가 비었습니다 · 진행할까요 · 배포할까요 · 승인
+완료했습니다 · 끝났습니다 · 다음 작업은 무엇인가요 · 승인 부탁드립니다 · Queue/Mission/Sprint/Epic/Release 완료 · Queue가 끝났습니다 · 배포할까요
 
-## Philosophy line (internal)
+## Philosophy
 
-> 오늘보다 내일 LaunchLens를 더 좋게.
+> LaunchLens는 끝나는 프로젝트가 아니라 계속 성장하는 AI Product이다.

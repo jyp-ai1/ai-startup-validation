@@ -1,42 +1,10 @@
 ---
-description: Product Completion Queue Infinite Mode — 20 areas, no version/release/epic consciousness
-alwaysApply: true
+description: Superseded — use product-constitution-operations.mdc
+alwaysApply: false
 ---
 
-# Product Completion Queue — Infinite Mode
+# Deprecated
 
-Read `docs/PRODUCT_COMPLETION_QUEUE.md` and `docs/QUEUE_STATE.md` before every work item.
+Superseded by `.cursor/rules/product-constitution-operations.mdc` and `docs/PRODUCT_CONSTITUTION.md` Part II.
 
-## Goal
-
-**Product completion only.** Not version · release · sprint · epic · mission completion.
-
-## Never stop
-
-Consume Areas 1–20 → repeat Area 1. Slice empty → generate from Vision (`docs/EVOLUTION_QUEUES.md`).
-
-## Vision (immutable)
-
-**AI Strategy Project Manager** — AI leads, user approves. `docs/PRODUCT_VISION_V3.md`
-
-## Quality bar (each item)
-
-Feature + UX + Animation + Loading + Error + Empty + Retry + Offline + A11y + Responsive + SEO + Perf + Analytics + Admin + Docs + Regression + Deploy + Production smoke.
-
-## Auto cycle
-
-Implement → QA → Build → Commit → Push → Production → Smoke → Docs → QUEUE_STATE → **next item**
-
-No approval · No questions · No deploy/commit asks.
-
-## Stop (5)
-
-Build fail · Prod outage · DB/LLM/Billing/Auth cost · Security · Vision change
-
-## Forbidden output
-
-완료 · 끝 · Queue empty · 다음 작업 없음 · 승인 · 배포할까요 · Release/Epic/Sprint 완료 보고
-
-## Report
-
-08:00 KST Daily Product Evolution Report only
+Do not use Queue/Area completion as termination. Product Loop has no end.

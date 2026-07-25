@@ -1,10 +1,8 @@
 ---
-description: Product Evolution v8 — see product-completion-directive.mdc
-alwaysApply: true
+description: Superseded — use product-constitution-operations.mdc
+alwaysApply: false
 ---
 
-# Release Operating Model (v8)
+# Deprecated
 
-Superseded by **Product Completion Directive v8 — Never Ending Product Evolution**.
-
-Read `docs/PRODUCT_COMPLETION_DIRECTIVE.md`. Queue empty → generate → continue. No complete state.
+Release/version are production traceability only — not Cursor work goals. See Product Constitution Part II.

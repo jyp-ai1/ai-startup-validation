@@ -1,14 +1,8 @@
 ---
-description: Infinite queue consumer — Areas 1-20, product completion only
-alwaysApply: true
+description: Superseded — use product-constitution-operations.mdc
+alwaysApply: false
 ---
 
-# Infinite Queue Consumer
+# Deprecated
 
-Primary source: `docs/PRODUCT_COMPLETION_QUEUE.md` · Pointer: `docs/QUEUE_STATE.md`
-
-Consume **Completion Areas 1–20** (not releases/epics/sprints). Area 20 → Area 1. Empty → `docs/EVOLUTION_QUEUES.md`.
-
-Vision guard · full quality bar · auto cycle · 08:00 report only · no approval questions.
-
-See `product-completion-directive.mdc`.
+Superseded by Product Constitution Product Loop. No queue consumption termination.

@@ -167,6 +167,33 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
           ) : null}
         </div>
 
+        {stage.verdict !== 'GO' && stage.primaryHoldReasonKey ? (
+          <div
+            role="status"
+            aria-live="polite"
+            className="rounded-xl border border-amber-300/80 bg-amber-50 px-4 py-3 dark:border-amber-800 dark:bg-amber-950/40"
+          >
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-300">
+              {td('holdWhyHeadline')}
+            </p>
+            <p className="mt-1.5 text-base font-semibold leading-snug text-amber-950 dark:text-amber-50">
+              {td(`holdWhySummary.${stage.primaryHoldReasonKey}`)}
+            </p>
+            {stage.whyReasonKeys.length > 1 ? (
+              <ul className="mt-2 space-y-1" role="list">
+                {stage.whyReasonKeys
+                  .filter((key) => key !== stage.primaryHoldReasonKey)
+                  .map((key) => (
+                    <li key={key} className="text-sm text-amber-900/90 dark:text-amber-100/90">
+                      · {t(`whyReasons.${key}`)}
+                    </li>
+                  ))}
+              </ul>
+            ) : null}
+            <p className="mt-2 text-xs text-amber-800/90 dark:text-amber-200/80">{td('holdWhyHint')}</p>
+          </div>
+        ) : null}
+
         {/* Confidence + Health */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-border/60 bg-background/80 px-3 py-2.5">

@@ -4069,6 +4069,13 @@
     },
     "decisionExperience": {
       "decisionUpdated": "Decision updated",
+      "holdWhyHeadline": "Why HOLD",
+      "holdWhyHint": "Complete the recommended task below to update this verdict.",
+      "holdWhySummary": {
+        "noCompetitorAnalysis": "No competitor analysis yet — your market position is unconfirmed.",
+        "insufficientInterviews": "Not enough customer interviews — demand is not validated.",
+        "marketSizeUnknown": "Market size is unconfirmed — revenue potential cannot be judged."
+      },
       "healthDetailTitle": "Health breakdown",
       "health": {
         "market": "Market",

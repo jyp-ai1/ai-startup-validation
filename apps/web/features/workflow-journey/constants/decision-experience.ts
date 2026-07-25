@@ -28,6 +28,8 @@ export type DecisionStage = {
   projectHealth: number;
   nextActionStepId: string;
   nextActionDurationMinutes: number;
+  /** Primary HOLD reason shown above the fold (3-second clarity) */
+  primaryHoldReasonKey?: string;
   whyReasonKeys: string[];
   historyCount: number;
   mockActionKey: string;
@@ -60,7 +62,8 @@ const BASE_STAGES: DecisionStage[] = [
     projectHealth: 72,
     nextActionStepId: 'market',
     nextActionDurationMinutes: 4,
-    whyReasonKeys: ['noCompetitorAnalysis', 'insufficientInterviews', 'marketSizeUnknown'],
+    primaryHoldReasonKey: 'marketSizeUnknown',
+    whyReasonKeys: ['marketSizeUnknown', 'noCompetitorAnalysis', 'insufficientInterviews'],
     historyCount: 1,
     mockActionKey: 'completeMarket',
   },
@@ -70,7 +73,8 @@ const BASE_STAGES: DecisionStage[] = [
     projectHealth: 76,
     nextActionStepId: 'competition',
     nextActionDurationMinutes: 6,
-    whyReasonKeys: ['insufficientInterviews', 'marketSizeUnknown'],
+    primaryHoldReasonKey: 'noCompetitorAnalysis',
+    whyReasonKeys: ['noCompetitorAnalysis', 'insufficientInterviews'],
     historyCount: 2,
     mockActionKey: 'completeCompetitor',
   },
@@ -80,6 +84,7 @@ const BASE_STAGES: DecisionStage[] = [
     projectHealth: 80,
     nextActionStepId: 'evidence',
     nextActionDurationMinutes: 5,
+    primaryHoldReasonKey: 'insufficientInterviews',
     whyReasonKeys: ['insufficientInterviews'],
     historyCount: 3,
     mockActionKey: 'completeVoc',

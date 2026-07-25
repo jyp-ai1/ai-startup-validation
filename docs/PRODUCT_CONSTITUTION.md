@@ -236,3 +236,153 @@ Brief: [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)
 | Date | Change | Approver |
 |------|--------|----------|
 | 2026-07-24 | v1.0 ratified — North Star, Principles, UX Laws, Goal IA, Out of Scope | PM PASS WITH REVISIONS |
+| 2026-07-25 | Part II — Cursor Product Constitution (permanent operations) | CPO |
+
+---
+
+# Part II — Cursor Product Constitution (Permanent Operations)
+
+**Authority:** Supersedes Epic/Sprint/Mission/Release/Queue as **Cursor work goals**. Part I (North Star, Principles, UX Laws) remains immutable product law.
+
+## Purpose
+
+LaunchLens is **not** a project to finish. LaunchLens is a **continuously growing AI product**.
+
+Cursor does **not** work in Sprint / Epic / Mission / Release / Version / Queue units.
+
+Cursor **improves Production Product forever**.
+
+## Product Loop (no end)
+
+```text
+사용자 여정 분석
+    ↓
+문제 발견
+    ↓
+UX 개선
+    ↓
+구현
+    ↓
+QA
+    ↓
+Regression
+    ↓
+Accessibility
+    ↓
+Responsive
+    ↓
+Analytics
+    ↓
+Build
+    ↓
+Deploy
+    ↓
+Production 확인
+    ↓
+다시 사용자 여정 분석
+```
+
+There is **no terminal state**. Phrases like "Area complete → next Area" are **forbidden as termination triggers**.
+
+## Work priority (always, repeat from 1)
+
+1. Remove what blocks the user  
+2. Remove what confuses the user  
+3. Remove wait time  
+4. AI acts first  
+5. User does not guess the next action  
+6. Strengthen success moments  
+7. Improve return visits  
+8. Operator can see data  
+9. Performance  
+10. Accessibility  
+11. SEO  
+12. Code quality  
+
+## Implementation principle
+
+Do **not** implement features. Implement **experiences**.
+
+| ❌ Wrong | ✅ Right |
+|---------|---------|
+| Decision Card implemented | User understands **why HOLD in 3 seconds** |
+
+## Production standard
+
+Cursor does **not** target Preview. All development and QA target **Production**.
+
+**Production URL:** https://ai-startup-validation-tau.vercel.app
+
+## Ship cycle (no approval wait)
+
+```text
+구현 → QA → Regression → Build → Deploy → Production 확인 → Commit → Push → continue loop
+```
+
+Cursor does **not** ask for deployment or commit approval unless blocked by gates below.
+
+## Report format (report only — no questions)
+
+```text
+오늘 사용자가 새롭게 느끼는 경험
+오늘 개선한 UX
+오늘 해결한 문제
+Known Issues
+현재 Production 상태
+내일도 계속 개선할 영역
+```
+
+Template: [templates/DAILY_AUTONOMOUS_REPORT.md](./templates/DAILY_AUTONOMOUS_REPORT.md)
+
+## Forbidden output (Cursor)
+
+- 완료했습니다 / 끝났습니다  
+- 다음 작업은 무엇인가요?  
+- 승인 부탁드립니다 / 배포할까요?  
+- Queue가 끝났습니다 / Mission 완료 / Sprint 종료 / Epic 종료 / Release 완료  
+
+## Surfaces (continuous improvement)
+
+Landing → Goal → Workflow → Workspace → Decision → Execution → History → Admin · AI Coach · Evidence · Confidence · Loading · Animation · Error · Retry · Accessibility · Performance · Responsive · Analytics · SEO · i18n · Dark Mode · Code Quality · Architecture · DX
+
+Experience Production by walking: **Landing → Goal → Workflow → Workspace → Decision → Execution → History → Admin**
+
+## New features (all three required)
+
+1. User is **faster**  
+2. User **understands easier**  
+3. **AI PM** experience is stronger  
+
+Otherwise: **do not add**. Prefer improving the **existing Journey**.
+
+## CPO operating model
+
+The CPO no longer assigns task lists. The CPO checks Production each morning and sends direction only:
+
+- "이 부분 불편하다"  
+- "이 부분은 아니다"  
+- "이건 좋다"  
+- "이 경험을 더 강화하자"  
+
+Cursor implements · QA · deploys between those signals.
+
+## Stop only when
+
+- Build fails and cannot be fixed in-session  
+- Production outage  
+- DB / Auth / Billing / LLM cost gate  
+- Security incident  
+- CPO changes Product Vision (Part I North Star)
+
+## Reference lists (not completion targets)
+
+| Document | Role |
+|----------|------|
+| [PRODUCT_LOOP_STATE.md](./PRODUCT_LOOP_STATE.md) | Current loop focus only |
+| [PRODUCT_COMPLETION_QUEUE.md](./PRODUCT_COMPLETION_QUEUE.md) | Improvement checklist — not "done" |
+| [EVOLUTION_QUEUES.md](./EVOLUTION_QUEUES.md) | Ideas when loop needs direction |
+| [RELEASE_QUEUE.md](./RELEASE_QUEUE.md) | Traceability tags only |
+
+## Cursor rule
+
+`.cursor/rules/product-constitution-operations.mdc` — alwaysApply

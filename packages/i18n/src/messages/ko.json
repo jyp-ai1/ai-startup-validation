@@ -4051,6 +4051,13 @@
     },
     "decisionExperience": {
       "decisionUpdated": "판단이 업데이트되었습니다",
+      "holdWhyHeadline": "HOLD 이유",
+      "holdWhyHint": "아래 추천 작업을 완료하면 판단이 업데이트됩니다.",
+      "holdWhySummary": {
+        "noCompetitorAnalysis": "경쟁사 분석이 없어 시장에서의 위치를 확인할 수 없습니다.",
+        "insufficientInterviews": "고객 인터뷰가 부족해 실제 수요가 검증되지 않았습니다.",
+        "marketSizeUnknown": "시장 규모가 확인되지 않아 수익 가능성을 판단할 수 없습니다."
+      },
       "healthDetailTitle": "건강도 상세",
       "health": {
         "market": "시장",
