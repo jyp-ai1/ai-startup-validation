@@ -53,6 +53,10 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
       setOverlayGoal(goalId);
       analyticsRef.current.trackGoalSelected(goalId);
 
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('ll_goal_immersion', '1');
+      }
+
       clearGoalTimeout();
       timeoutRef.current = window.setTimeout(() => {
         setFailed(true);

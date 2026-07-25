@@ -228,6 +228,34 @@ export function OperationsDashboard() {
             </div>
           ) : null}
 
+          {stats.operationalMetrics ? (
+            <div>
+              <h2 className="mb-3 text-sm font-semibold">{t('operationalMetrics')}</h2>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard title={t('users')} value={stats.operationalMetrics.users} icon={Users} />
+                <StatCard title={t('sessions')} value={stats.operationalMetrics.sessions} icon={Globe} />
+                <StatCard title={t('projects')} value={stats.operationalMetrics.projects} icon={Sparkles} />
+                <StatCard
+                  title={t('activeWorkspaces')}
+                  value={stats.operationalMetrics.activeWorkspaces}
+                  icon={Activity}
+                />
+                <StatCard
+                  title={t('dropRate')}
+                  value={`${stats.operationalMetrics.dropRatePercent}%`}
+                  icon={AlertTriangle}
+                />
+                <StatCard title={t('goCount')} value={stats.operationalMetrics.goCount} icon={Sparkles} />
+                <StatCard
+                  title={t('feedbackCount')}
+                  value={stats.operationalMetrics.feedbackCount}
+                  icon={Activity}
+                />
+                <StatCard title={t('deployVersion')} value={stats.operationalMetrics.version} icon={BarChart3} />
+              </div>
+            </div>
+          ) : null}
+
           {aiStats ? (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
               <StatCard

@@ -26,6 +26,7 @@ import { WorkspaceSkeleton } from './workspace-skeleton';
 import { JourneyAchievementsPanel } from './intelligence-workspace/journey-achievements-panel';
 import { JourneyAiMemoryPanel } from './intelligence-workspace/journey-ai-memory-panel';
 import { JourneyDailyCoach } from './intelligence-workspace/journey-daily-coach';
+import { WorkspaceMorningBrief } from './intelligence-workspace/workspace-morning-brief';
 import { JourneyProjectPanel } from './intelligence-workspace/journey-project-panel';
 import { JourneyProgressRing } from './intelligence-workspace/journey-progress-ring';
 import { JourneyProjectSwitcher } from './intelligence-workspace/journey-project-switcher';
@@ -163,6 +164,10 @@ export function StrategyWorkspaceShell({
       case 'today':
         return (
           <div className="space-y-8">
+            <WorkspaceMorningBrief
+              confidence={project.confidence}
+              projectName={projectDisplayName}
+            />
             <JourneyDailyCoach
               confidence={project.confidence}
               variant="hero"

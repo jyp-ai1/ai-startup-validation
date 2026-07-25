@@ -1,5 +1,5 @@
-/** LaunchLens Closed Beta — Product Completion Epic */
-export const BETA_VERSION = 'Closed Beta 2.2.0';
+/** LaunchLens Closed Beta — Mission Mode v5 batch */
+export const BETA_VERSION = 'Closed Beta 2.3.0';
 export const BETA_LABEL = 'CLOSED BETA';
 
 export const SITE_LINKS = {

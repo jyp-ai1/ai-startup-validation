@@ -161,6 +161,23 @@ function goalDistributionBreakdown(): Record<string, number> {
   }, {});
 }
 
+function computeOperationalMetrics(
+  funnel: NonNullable<OpsDashboardStats['productJourneyFunnel']>,
+  todaySummary: NonNullable<OpsDashboardStats['todaySummary']>,
+): NonNullable<OpsDashboardStats['operationalMetrics']> {
+  const landing = Math.max(1, funnel.landing);
+  return {
+    users: funnel.goal,
+    sessions: funnel.landing,
+    projects: funnel.project,
+    activeWorkspaces: funnel.workspace,
+    dropRatePercent: Math.round((1 - funnel.workspace / landing) * 100),
+    completionRate: Math.round((funnel.decision / landing) * 100),
+    goCount: todaySummary.goDecisions,
+    feedbackCount: todaySummary.feedbackSubmitted,
+    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? 'local',
+  };
+}
 function computeClosedBetaMetrics(
   funnel: NonNullable<OpsDashboardStats['productJourneyFunnel']>,
   todaySummary: NonNullable<OpsDashboardStats['todaySummary']>,
@@ -261,6 +278,17 @@ const MOCK_STATS: OpsDashboardStats = {
     holdCount: 6,
     workspaceProgressAvg: 15,
   },
+  operationalMetrics: {
+    users: 72,
+    sessions: 100,
+    projects: 17,
+    activeWorkspaces: 43,
+    dropRatePercent: 57,
+    completionRate: 9,
+    goCount: 3,
+    feedbackCount: 5,
+    version: 'mock',
+  },
 };
 
 export function recordAnalyticsEvent(payload: AnalyticsEventPayload): void {
@@ -334,5 +362,6 @@ export function getOpsDashboardStats(): OpsDashboardStats {
     recentFeedback: recentFeedback(),
     analyticsProviders: analyticsProviders(),
     closedBetaMetrics: computeClosedBetaMetrics(productJourneyFunnel, todaySummary),
+    operationalMetrics: computeOperationalMetrics(productJourneyFunnel, todaySummary),
   };
 }

@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 
+import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 import { ANALYTICS_EVENTS, JOURNEY_ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
 
@@ -12,6 +13,7 @@ export function LandingTracker() {
     const fire = () => {
       trackEvent(ANALYTICS_EVENTS.landingView, { screen: '/' });
       trackEvent(JOURNEY_ANALYTICS_EVENTS.landingViewed, { screen: '/' });
+      void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.landingViewed, { screen: '/' });
     };
 
     if (typeof window.requestIdleCallback === 'function') {

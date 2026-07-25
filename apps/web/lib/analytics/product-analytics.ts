@@ -14,6 +14,7 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   missingDataClicked: 'missing_data_clicked',
   coachActionClicked: 'coach_action_clicked',
   feedbackSubmitted: 'feedback_submitted',
+  goReached: 'go_reached',
 } as const;
 
 export type ProductAnalyticsEvent =

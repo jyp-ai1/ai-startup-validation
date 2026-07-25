@@ -217,6 +217,17 @@ export type OpsDashboardStats = {
     holdCount: number;
     workspaceProgressAvg: number;
   };
+  operationalMetrics?: {
+    users: number;
+    sessions: number;
+    projects: number;
+    activeWorkspaces: number;
+    dropRatePercent: number;
+    completionRate: number;
+    goCount: number;
+    feedbackCount: number;
+    version: string;
+  };
 };
 
 declare global {

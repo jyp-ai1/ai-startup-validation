@@ -44,7 +44,6 @@ export function LandingLazySection({
       ref={ref}
       className={cn(className)}
       style={visible ? undefined : { minHeight }}
-      aria-hidden={!visible}
     >
       {visible ? children : null}
     </div>

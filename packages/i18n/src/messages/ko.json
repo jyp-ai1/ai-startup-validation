@@ -1323,6 +1323,7 @@
       "pricing": "요금",
       "roadmap": "Roadmap",
       "faq": "FAQ",
+      "stories": "후기",
       "signIn": "로그인",
       "startFree": "무료로 시작하기",
       "menuLabel": "내비게이션 메뉴",
@@ -1331,9 +1332,9 @@
     },
     "hero": {
       "eyebrow": "Closed Beta · AI Project Manager",
-      "title": "AI와 함께\n전략 프로젝트를\n만드세요.",
-      "subtitle": "LaunchLens AI PM이 시장·전략·Decision까지 함께합니다.",
-      "northStar": "분석 도구가 아닙니다. 3분 안에 함께 실행하는 프로젝트.",
+      "title": "3분 안에\n전략 프로젝트를\n시작하세요.",
+      "subtitle": "AI PM이 Goal부터 GO까지 함께합니다. 분석 도구가 아닙니다.",
+      "northStar": "프로젝트를 시작하는 화면입니다. 카드 없이 3분 안에 실행.",
       "journey": {
         "label": "이렇게 진행됩니다",
         "goal": "목표",
@@ -1347,6 +1348,24 @@
       "ctaHint1": "신용카드 필요 없음",
       "ctaHint2": "3분 만에 시작",
       "ctaHint3": "Beta 무료"
+    },
+    "testimonials": {
+      "title": "함께 실행하는 팀",
+      "desc": "보고서가 아니라 프로젝트를 함께 진행했다는 후기",
+      "items": {
+        "one": {
+          "quote": "3분 만에 Goal부터 Workspace까지 갔습니다. AI PM이 다음 액션을 정해줘서 생각할 필요가 없었어요.",
+          "role": "Pre-seed Founder"
+        },
+        "two": {
+          "quote": "선택 화면이 아니라 AI가 프로젝트를 이해하는 느낌이었습니다.",
+          "role": "New Business PM"
+        },
+        "three": {
+          "quote": "GO 이후 MVP 설계 Workflow까지 자연스럽게 이어졌습니다.",
+          "role": "Strategy Lead"
+        }
+      }
     },
     "preview": {
       "windowTitle": "Strategy Workspace",
@@ -1756,7 +1775,16 @@
     "workflowCompletion": "Workflow 완료율",
     "goalDistribution": "Goal 분포",
     "holdDecisions": "HOLD 판단",
-    "workspaceProgress": "Workspace 진행률"
+    "workspaceProgress": "Workspace 진행률",
+    "operationalMetrics": "실시간 운영",
+    "users": "Users",
+    "sessions": "Sessions",
+    "projects": "Projects",
+    "activeWorkspaces": "Workspace",
+    "dropRate": "Drop",
+    "goCount": "GO",
+    "feedbackCount": "Feedback",
+    "deployVersion": "Version"
   },
   "decision": {
     "centerTitle": "의사결정 센터",
@@ -3644,6 +3672,22 @@
         "validate": { "title": "경쟁·검증", "desc": "경쟁사와 VOC로 가설을 검증합니다." },
         "decide": { "title": "Decision", "desc": "GO/HOLD 판단과 근거를 정리합니다." },
         "execute": { "title": "실행", "desc": "Next Action부터 Workspace에서 함께 진행합니다." }
+      },
+      "why": {
+        "title": "왜 이 순서인가",
+        "subtitle": "생각하지 않아도 됩니다. AI PM이 이유를 설명합니다.",
+        "marketFirst": {
+          "title": "1. 시장 검증이 먼저",
+          "desc": "아이디어가 통하는지 확인하지 않으면 이후 전략이 모두 흔들립니다."
+        },
+        "competitionSecond": {
+          "title": "2. 경쟁사는 그 다음",
+          "desc": "시장이 확인된 뒤 차별점과 포지셔닝을 잡습니다."
+        },
+        "decisionLast": {
+          "title": "3. Decision으로 마무리",
+          "desc": "근거가 모이면 GO/HOLD를 내리고 실행으로 넘어갑니다."
+        }
       }
     },
     "registration": {
@@ -3833,7 +3877,9 @@
         "investor": "투자자료",
         "investorDesc": "IR 덱과 재무 스토리를 구성합니다."
       },
-      "continue": "워크스페이스 계속하기"
+      "continue": "워크스페이스 계속하기",
+      "growthTitle": "프로젝트 성장",
+      "growthDesc": "Confidence가 올라가며 GO에 도달했습니다."
     },
     "thinking": {
       "title": "LaunchLens가 전략 프로젝트를 준비하고 있습니다",
@@ -4049,6 +4095,15 @@
         "exitTopics": {
           "pricing": "Pricing"
         }
+      },
+      "morningBrief": {
+        "label": "Morning Brief",
+        "todayGoal": "Today's Goal",
+        "todayGoalValue": "VOC 2건 추가 → GO 준비",
+        "progress": "Progress",
+        "decision": "Decision",
+        "decisionValue": "HOLD → GO 경로 진행 중",
+        "decisionValueNamed": "{name} · HOLD → GO"
       },
       "timeline": {
         "title": "Decision Timeline",

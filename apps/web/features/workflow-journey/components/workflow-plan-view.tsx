@@ -14,6 +14,7 @@ import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 import { WorkflowOutcomesPanel } from './workflow-outcomes-panel';
 import { WorkflowStackBadges } from './workflow-stack-badges';
+import { WorkflowWhyPanel } from './workflow-why-panel';
 
 const STRATEGY_PHASES = ['discover', 'validate', 'decide', 'execute'] as const;
 
@@ -63,6 +64,8 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t('aiNote')}</p>
 
             <WorkflowStackBadges className="mt-5" />
+
+            <WorkflowWhyPanel className="mt-5" />
 
             <div className="mt-5 rounded-xl border border-primary/20 bg-primary/[0.04] p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">

@@ -8,6 +8,7 @@ import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { WorkflowGoalId } from '../types';
+import { GoProjectGrowth } from './go-project-growth';
 
 const AI_RECOMMENDATIONS: {
   goalId: WorkflowGoalId;
@@ -57,6 +58,8 @@ export function GoCelebrationOverlay({ open, onDismiss, className }: GoCelebrati
           {t('title')}
         </h2>
         <p className="mt-3 text-center text-base leading-relaxed text-muted-foreground">{t('subtitle')}</p>
+
+        <GoProjectGrowth className="mt-6" />
 
         <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/[0.04] px-4 py-3 text-sm leading-relaxed text-foreground">
           <p className="flex items-center gap-2 font-medium text-primary">

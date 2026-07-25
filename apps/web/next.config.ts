@@ -9,7 +9,21 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const nextConfig: NextConfig = {
   experimental: {
-    optimizePackageImports: ['lucide-react', '@repo/ui'],
+    optimizePackageImports: ['lucide-react', '@repo/ui', 'next-intl'],
+  },
+  poweredByHeader: false,
+  compress: true,
+  async headers() {
+    return [
+      {
+        source: '/(.*\\.(?:svg|ico|webp|png|jpg|jpeg|woff2))',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        source: '/:path*',
+        headers: [{ key: 'X-DNS-Prefetch-Control', value: 'on' }],
+      },
+    ];
   },
   outputFileTracingRoot: path.join(__dirname, '../../'),
   transpilePackages: [

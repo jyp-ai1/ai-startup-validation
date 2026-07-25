@@ -61,9 +61,9 @@ export function DecisionExperienceCoach({ goalId, className, id }: DecisionExper
     if (!isFinal || stage.verdict !== 'GO' || celebratedRef.current) return;
     celebratedRef.current = true;
     const timer = window.setTimeout(() => setShowCelebration(true), 400);
-    analytics.trackMockActionCompleted('go_reached', stage.confidence);
+    analytics.trackGoReached(goalId, stage.confidence);
     return () => clearTimeout(timer);
-  }, [analytics, isFinal, stage.confidence, stage.verdict]);
+  }, [analytics, goalId, isFinal, stage.confidence, stage.verdict]);
 
   const advanceStage = () => {
     if (!isFinal) {

@@ -39,7 +39,7 @@ export function LandingCtaLink({
   return (
     <Link
       href={href}
-      prefetch={false}
+      prefetch={href === '/goal' || href.startsWith('/goal')}
       onClick={handleClick}
       className={cn(buttonVariants({ variant, size }), 'inline-flex items-center gap-2', className)}
     >

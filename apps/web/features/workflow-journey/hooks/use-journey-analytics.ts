@@ -97,6 +97,14 @@ export function useJourneyAnalytics(demoMode = false) {
       track(JOURNEY_ANALYTICS_EVENTS.feedbackSent, { sentiment, message });
       funnel(PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted, { sentiment, message });
     },
+    trackGoReached: (goalId: string, confidence: number) => {
+      track(JOURNEY_ANALYTICS_EVENTS.mockActionCompleted, {
+        action_key: 'go_reached',
+        new_confidence: confidence,
+        goal_id: goalId,
+      });
+      funnel(PRODUCT_ANALYTICS_EVENTS.goReached, { goal_id: goalId, confidence });
+    },
     trackComposeFailed: (retryCount: number) =>
       track(JOURNEY_ANALYTICS_EVENTS.composeFailed, { retry_count: retryCount }),
     trackComposeRetried: (attempt: number) =>

@@ -1323,6 +1323,7 @@
       "pricing": "Pricing",
       "roadmap": "Roadmap",
       "faq": "FAQ",
+      "stories": "Stories",
       "signIn": "Sign in",
       "startFree": "Start Free",
       "menuLabel": "Navigation menu",
@@ -1331,9 +1332,9 @@
     },
     "hero": {
       "eyebrow": "Closed Beta · AI Project Manager",
-      "title": "Build your strategy project\nwith AI\nas your PM.",
-      "subtitle": "LaunchLens AI PM guides market, strategy, and your first Decision with you.",
-      "northStar": "Not an analysis tool — a project you execute together in 3 minutes.",
+      "title": "Start your strategy project\nin 3 minutes.",
+      "subtitle": "Your AI PM guides Goal through GO — not another analysis tool.",
+      "northStar": "A project start screen — execute together in 3 minutes.",
       "journey": {
         "label": "How it works",
         "goal": "Goal",
@@ -1347,6 +1348,24 @@
       "ctaHint1": "No credit card required",
       "ctaHint2": "Get started in 3 minutes",
       "ctaHint3": "Free during Beta"
+    },
+    "testimonials": {
+      "title": "Teams executing together",
+      "desc": "Not reports — running strategy projects with AI PM",
+      "items": {
+        "one": {
+          "quote": "Goal to Workspace in 3 minutes. AI PM picked the next action — I didn't have to think.",
+          "role": "Pre-seed Founder"
+        },
+        "two": {
+          "quote": "Felt like AI understanding my project, not picking from a menu.",
+          "role": "New Business PM"
+        },
+        "three": {
+          "quote": "After GO, MVP design workflow started naturally.",
+          "role": "Strategy Lead"
+        }
+      }
     },
     "preview": {
       "windowTitle": "Strategy Workspace",
@@ -1756,7 +1775,16 @@
     "workflowCompletion": "Workflow completion",
     "goalDistribution": "Goal distribution",
     "holdDecisions": "HOLD decisions",
-    "workspaceProgress": "Workspace progress"
+    "workspaceProgress": "Workspace progress",
+    "operationalMetrics": "Live operations",
+    "users": "Users",
+    "sessions": "Sessions",
+    "projects": "Projects",
+    "activeWorkspaces": "Workspace",
+    "dropRate": "Drop",
+    "goCount": "GO",
+    "feedbackCount": "Feedback",
+    "deployVersion": "Version"
   },
   "decision": {
     "centerTitle": "Decision Center",
@@ -3662,6 +3690,22 @@
         "validate": { "title": "Validate & compete", "desc": "Test hypotheses with competitors and VOC." },
         "decide": { "title": "Decision", "desc": "Reach GO/HOLD with evidence." },
         "execute": { "title": "Execute", "desc": "Continue together in Workspace from Next Action." }
+      },
+      "why": {
+        "title": "Why this order",
+        "subtitle": "Don't think — your AI PM explains the strategy.",
+        "marketFirst": {
+          "title": "1. Market validation first",
+          "desc": "Without market proof, every later strategy wobbles."
+        },
+        "competitionSecond": {
+          "title": "2. Competition second",
+          "desc": "After the market is clear, define positioning."
+        },
+        "decisionLast": {
+          "title": "3. Decision last",
+          "desc": "When evidence stacks up, reach GO/HOLD and execute."
+        }
       }
     },
     "registration": {
@@ -3851,7 +3895,9 @@
         "investor": "Investor deck",
         "investorDesc": "Build your IR deck and financial story."
       },
-      "continue": "Continue in workspace"
+      "continue": "Continue in workspace",
+      "growthTitle": "Project growth",
+      "growthDesc": "Confidence rose to reach GO."
     },
     "thinking": {
       "title": "LaunchLens is preparing your strategy project",
@@ -4067,6 +4113,15 @@
         "exitTopics": {
           "pricing": "Pricing"
         }
+      },
+      "morningBrief": {
+        "label": "Morning Brief",
+        "todayGoal": "Today's Goal",
+        "todayGoalValue": "Add 2 VOC → GO ready",
+        "progress": "Progress",
+        "decision": "Decision",
+        "decisionValue": "HOLD → GO in progress",
+        "decisionValueNamed": "{name} · HOLD → GO"
       },
       "timeline": {
         "title": "Decision Timeline",
