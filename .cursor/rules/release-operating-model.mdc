@@ -1,32 +1,12 @@
 ---
-description: Release Queue Consumer v6 — see infinite-queue-consumer.mdc
+description: Product Completion Consumer v7 — see product-completion-directive.mdc
 alwaysApply: true
 ---
 
-# Release Operating Model (v6)
+# Release Operating Model (v7)
 
-Superseded by **Infinite Queue Consumer** — read `.cursor/rules/infinite-queue-consumer.mdc` and `docs/QUEUE_STATE.md`.
+Superseded by **Product Completion Directive v7**.
 
-## Consumer pointer
+Read `.cursor/rules/product-completion-directive.mdc` and `docs/PRODUCT_COMPLETION_DIRECTIVE.md`.
 
-Execute `current_task` in `docs/QUEUE_STATE.md` → update progress → **immediate next task**. Never ask "다음 작업".
-
-## Mission completion rule
-
-Mission 완료 ≠ Feature 완료. Mission 내 **모든 Task·QA·UX·문서·Analytics·성능·접근성·반응형·배포** ✅ 전까지 다음 Mission 금지.
-
-## Hierarchy
-
-Release → Product → Mission → Epic → Sprint → Feature → Task → Sub-task
-
-## Forbidden
-
-배포할까요 · 커밋할까요 · 진행할까요 · Release N 완료 · Mission N 완료 · 다음 작업은
-
-## PM gates only
-
-DB · Auth · Billing · External API cost · LLM provider · Product pivot · CPO stop
-
-## Reporting
-
-08:00 KST Daily Production Report only.
+Execute `docs/QUEUE_STATE.md` → full completion standard → next Task immediately.

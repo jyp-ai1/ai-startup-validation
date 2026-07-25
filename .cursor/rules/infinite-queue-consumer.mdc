@@ -1,62 +1,36 @@
 ---
-description: Release Queue Consumer Mode v6 — never stop, never ask, consume roadmap to end
+description: Release Queue Consumer v7 — consume roadmap with product completion standard
 alwaysApply: true
 ---
 
-# Infinite Queue Consumer (Directive v6)
+# Infinite Queue Consumer (v7)
 
-Read `docs/QUEUE_STATE.md` → pick **current_task** → execute → update state → **immediately start next task**.
+Works with `product-completion-directive.mdc`. **Completion standard governs quality; queue governs sequence.**
 
-## Mode
+## Execute
 
-**Release Queue Consumer.** Not Mission Mode. Not batch-complete mode.
+1. Read `docs/QUEUE_STATE.md` → `current_task`
+2. Read phase scope in `docs/PRODUCT_COMPLETION_DIRECTIVE.md`
+3. Implement until **all completion layers** pass
+4. Update QUEUE_STATE → start next Task **without pause**
 
-- Never wait for "다음 작업"
-- Never wait for "다음 Release"
-- Never mid-report "완료"
-- Consume Roadmap until last task or PM gate
+Queue T300 done → R2 T301 auto. Queue empty → **generate next queue**.
 
 ## Hierarchy
 
-```
 Release → Product → Mission → Epic → Sprint → Feature → Task → Sub-task
-```
 
-Task done ≠ Mission done. Mission done ≠ Release done. Release done ≠ project done.
+## Forbidden
 
-## Cycle (per Task, no approval)
+다음 작업은… · 승인 · 배포할까요 · Release/Epic/Sprint 완료 보고
 
-Implement → QA → Commit → Push → Production → Tag → Release Note → ROADMAP update → **next Task auto-start**
+## Stop (5)
 
-No PM approval · No CPO approval · No questions.
-
-## Stop only when
-
-1. Roadmap last task complete
-2. PM gate: LLM · DB · Billing · Auth · external cost
-3. Build failure (fix and resume)
-4. Production outage (fix and resume)
-5. CPO direct stop order
-
-## Forbidden output
-
-다음 작업은… · 승인해 주세요 · 배포할까요 · 진행할까요 · Release N 완료 · Mission N 완료
-
-## Reporting
-
-**08:00 KST Daily Production Report only** — template: `docs/templates/DAILY_AUTONOMOUS_REPORT.md`
-
-## Task quality (every Task)
-
-UX · Animation · Responsive · A11y · Analytics · Admin · Error · Loading · Empty · Offline · Retry · SEO · Perf · Telemetry · History · Docs · Tests · Release note
-
-## Product north star
-
-Not a feature factory — **AI Strategy PM**: user thinks less, project progresses itself.
+Build fail · Prod outage · DB/LLM/Billing/Auth cost · Security · CPO vision change
 
 ## Sources
 
-- `docs/RELEASE_QUEUE.md` — Release stack
-- `docs/ROADMAP_QUEUE.md` — T001–T300+ numbered queue
-- `docs/QUEUE_STATE.md` — consumer pointer (authoritative progress)
-- `docs/releases/CLOSED_BETA_RELEASE.md` — R1 task tree detail
+- `docs/PRODUCT_COMPLETION_DIRECTIVE.md`
+- `docs/ROADMAP_QUEUE.md`
+- `docs/QUEUE_STATE.md`
+- `docs/RELEASE_QUEUE.md`

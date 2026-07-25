@@ -13,6 +13,7 @@ import type { WorkflowGoalId, WorkflowTemplate } from '../types';
 import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 import { WorkflowOutcomesPanel } from './workflow-outcomes-panel';
+import { WorkflowRecommendationSummary } from './workflow-recommendation-summary';
 import { WorkflowRoadmapPanel } from './workflow-roadmap-panel';
 import { WorkflowStackBadges } from './workflow-stack-badges';
 import { WorkflowWhyPanel } from './workflow-why-panel';
@@ -67,6 +68,11 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
             <WorkflowStackBadges className="mt-5" />
 
             <WorkflowWhyPanel className="mt-5" />
+
+            <WorkflowRecommendationSummary
+              className="mt-5"
+              goalLabel={tg(`options.${goalId}.title`)}
+            />
 
             <div className="mt-5 rounded-xl border border-primary/20 bg-primary/[0.04] p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">

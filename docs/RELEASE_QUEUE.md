@@ -1,8 +1,10 @@
 # Release Queue — LaunchLens
 
-**Mode:** Release Queue Consumer v6 — read `docs/QUEUE_STATE.md` → execute → repeat until roadmap end.
+**Mode:** Product Completion Consumer v7  
+**Directive:** `docs/PRODUCT_COMPLETION_DIRECTIVE.md`  
+**Pointer:** `docs/QUEUE_STATE.md`
 
-**North star:** Commercial Launch (v1.0)까지 모든 Release 순차 완료. **Never stop at Release boundary.**
+Goal = **service completion** (Closed Beta → v1.0), not Epic/Sprint/Mission completion.
 
 ## Hierarchy
 
@@ -10,38 +12,38 @@
 Release → Product → Mission → Epic → Sprint → Feature → Task → Sub-task
 ```
 
+## Completion phases (16)
+
+See `docs/PRODUCT_COMPLETION_DIRECTIVE.md` — Phase 1 Journey active on R1.
+
 ## Releases (auto-chain)
 
-| # | Release | Tasks | IDs | Status |
-|---|---------|-------|-----|--------|
-| R1 | **Closed Beta** | 300 | T001–T300 | **active** 55/300 |
-| R2 | Open Beta | 280 | T301–T580 | queued |
-| R3 | RC1 | 240 | T581–T820 | queued |
-| R4 | RC2 | 200 | T821–T1020 | queued |
-| R5 | v1.0 | 500 | T1021–T1520 | queued |
-| R6 | Real Intelligence | 1000+ | T1521+ | PM gate |
-| R7 | Commercial Scale | TBD | — | queued |
+| # | Release | Tasks | Status |
+|---|---------|-------|--------|
+| R1 | **Closed Beta** | 300 | **active** 55/300 Phase 1 |
+| R2 | Open Beta | 280 | queued |
+| R3 | RC1 | 240 | queued |
+| R4 | RC2 | 200 | queued |
+| R5 | v1.0 | 500 | queued |
+| R6 | Real Intelligence | 1000+ | PM gate |
+| R7 | Commercial | TBD | queued |
 
-## Consumer cycle (per Task)
+Queue empty → **generate next queue** → continue.
 
-Implement → QA → Commit → Push → Production → Tag → Release Note → ROADMAP update → **next Task**
+## Task completion (v7)
 
-No approval · No questions · No mid-report "완료"
+Feature + UX + Animation + Loading + Error + Empty + Retry + A11y + Responsive + SEO + Perf + Analytics + Admin + History + Docs + Regression + Deploy = **done**.
 
-## Stop only
+## Stop (5)
 
-Roadmap end · PM gate (LLM/DB/Billing/Auth/cost) · Build fail · Prod outage · CPO stop
+Build fail · Prod outage · DB/LLM/Billing/Auth cost · Security · Vision change
 
-## Sources
+## Cycle
 
-- `docs/ROADMAP_QUEUE.md` — numbered tasks
-- `docs/releases/CLOSED_BETA_RELEASE.md` — R1 detail tree
-- `.cursor/rules/infinite-queue-consumer.mdc` — v6 directive
+Implement → QA → Build → Commit → Push → Tag → QUEUE_STATE → next Task
 
-## Reporting
+## Report
 
-08:00 KST Daily Production Report — `docs/templates/DAILY_AUTONOMOUS_REPORT.md`
+08:00 KST Daily — `docs/templates/DAILY_AUTONOMOUS_REPORT.md`
 
-## Production
-
-https://ai-startup-validation-tau.vercel.app
+Production: https://ai-startup-validation-tau.vercel.app

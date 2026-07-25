@@ -3864,6 +3864,30 @@
           "decision": "GO/HOLD 첫 Decision"
         },
         "outcome": "완료 시 Confidence +28%, Risk −35%, 첫 GO까지 약 20분 예상"
+      },
+      "recommendation": {
+        "title": "AI PM 추천 요약",
+        "lead": "「{goal}」프로젝트에 AI PM이 제안하는 전략 순서입니다.",
+        "expected": {
+          "label": "예상 결과",
+          "value": "첫 GO Decision + 실행 Workspace 진입",
+          "hint": "Workflow 완료 후 Confidence 약 +28%"
+        },
+        "confidence": {
+          "label": "Confidence",
+          "value": "62% → 90% 경로",
+          "hint": "Evidence 4건 충족 시 GO 가능"
+        },
+        "risk": {
+          "label": "Risk",
+          "value": "중간 — VOC 공백",
+          "hint": "고객 인터뷰 2건으로 −35% 예상"
+        },
+        "duration": {
+          "label": "Duration",
+          "value": "약 20분",
+          "hint": "첫 Decision까지 예상 소요"
+        }
       }
     },
     "registration": {

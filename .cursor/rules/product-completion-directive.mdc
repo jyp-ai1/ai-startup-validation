@@ -1,0 +1,50 @@
+---
+description: Product Completion Directive v7 — completion standard, not feature checklist
+alwaysApply: true
+---
+
+# Product Completion Directive v7
+
+Read `docs/PRODUCT_COMPLETION_DIRECTIVE.md` and `docs/QUEUE_STATE.md` before every Task.
+
+## Goal
+
+**Service completion** — Closed Beta → Open Beta → RC → v1.0.  
+Not Epic/Sprint/Mission completion.
+
+## Consumer
+
+Read `current_task` in `docs/QUEUE_STATE.md` → execute at **completion standard** → update → next Task immediately.  
+Queue empty → generate next queue → continue.
+
+## Task done = all layers
+
+Feature + UX + Animation + Loading + Error + Empty + Retry + A11y + Responsive + SEO + Perf + Analytics + Admin + History + Docs + Regression QA + Production deploy.
+
+Feature-only = **not done**.
+
+## Vision (immutable)
+
+**AI Strategy Project Manager** — not chat, not reports, not business-plan writer.  
+AI leads; user approves. See `docs/PRODUCT_VISION_V3.md`.
+
+## Phases (quality bars)
+
+Phase 1 Journey → Phase 2 Intelligence → … → Phase 16 v1.0 Ready.  
+See `docs/PRODUCT_COMPLETION_DIRECTIVE.md` for full scope.
+
+## Cycle
+
+Implement → Self Review → QA → Build → Lint → Types → Regression → Commit → Push → Prod → Tag → Release Note → QUEUE_STATE → **next Task**
+
+## Stop only
+
+Build fail · Prod outage · External cost (DB/LLM/Billing/Auth) · Security · Founder vision change
+
+## Forbidden
+
+승인 · 질문 · 배포할까요 · 진행할까요 · Mission/Release 완료 mid-report
+
+## Report
+
+08:00 KST Daily only — `docs/templates/DAILY_AUTONOMOUS_REPORT.md`

@@ -1,32 +1,38 @@
 # Queue State — Consumer Pointer
 
-**Mode:** Release Queue Consumer v6  
-**Updated:** 2026-07-25 batch 2.14.0
+**Mode:** Product Completion Consumer v7  
+**Directive:** `docs/PRODUCT_COMPLETION_DIRECTIVE.md`  
+**Updated:** 2026-07-25 v7 rollout
 
 | Field | Value |
 |-------|-------|
 | Release | **R1** Closed Beta |
-| Progress | **55 / 300** (18%) |
-| Current Mission | M6 Execution |
-| Current Epic | Execution Workspace |
-| Current Sprint | S3 |
-| **Current Task** | **T056** |
-| Next auto | T056 Lighthouse Landing 95+ |
+| **Current Phase** | **Phase 1 — Product Journey Complete** |
+| Progress | **56 / 300** (19%) |
+| Current Mission | M3 Workflow (Phase 1 recommendation UX) |
+| **Current Task** | **T057** ✅ → **T058** |
 | Production | https://ai-startup-validation-tau.vercel.app |
 | Version | Closed Beta 2.14.0 |
 | Tag | `closed-beta-v2.14.0` |
+| Commit | `d12cd70` |
+
+## Completion standard (v7)
+
+Task ✅ only when: Feature + UX + States + A11y + Responsive + SEO + Perf + Analytics + Admin + Docs + Regression + Deploy.
 
 ## Consumer rule
 
-Task ✅ → increment → next Task **immediate start**. R1 T300 ✅ → R2 T301 **no pause**.
+Task ✅ → increment → **immediate next**. T300 ✅ → R2 T301. Empty queue → **generate next**.
 
-## Task log (T043–T055 ✅)
+## Phase map
 
-| Task | Description |
-|------|-------------|
-| T043–T045 | Goal intake textarea · chips · sessionStorage |
-| T046 | `goal_intake_refined` analytics |
-| T047–T050 | Execution toggle · progress · dynamic coach · analytics |
-| T051–T055 | i18n · admin notes · queue docs · tag 2.14.0 |
+| Phase | Name | Task range |
+|-------|------|------------|
+| 1 | Product Journey | T001–T080 |
+| 2 | Intelligence | T081–T140 |
+| 3 | Admin | T141–T180 |
+| 4 | Closed Beta ops | T181–T210 |
+| 5 | Open Beta perf | T211–T250 |
+| 6–16 | Experience → v1.0 | cross-cut + R2+ |
 
 Full queue: `docs/ROADMAP_QUEUE.md`

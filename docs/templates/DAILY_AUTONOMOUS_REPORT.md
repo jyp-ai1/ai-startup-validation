@@ -1,7 +1,11 @@
+# LaunchLens Daily Report — Template (v7)
+
+Copy at **08:00 KST only**. No questions. No approval requests.
+
 ```text
-=======================
-Daily Production Report
-=======================
+========================
+LaunchLens Daily Report
+========================
 
 Production:   https://ai-startup-validation-tau.vercel.app
 Version:      Closed Beta x.x.x
@@ -9,7 +13,7 @@ Commit:       (hash)
 Tag:          closed-beta-vx.x.x
 
 -------------------------
-오늘 추가된 경험
+오늘 추가된 사용자 경험
 (bullets)
 
 -------------------------
@@ -17,28 +21,28 @@ Tag:          closed-beta-vx.x.x
 (bullets)
 
 -------------------------
-QA
-Lint / Build / Type / Smoke — PASS table
+QA 결과
+Lint / Build / Type / Regression / Smoke — PASS table
 
 -------------------------
-Known Issue
+Known Issues
 (bullets)
 
 -------------------------
-Roadmap
-현재:     N / 300 완료
-오늘:     +M
-남은:     (300-N)
-Release:  R1
-Mission:  Mx
-Epic:     (name)
-Sprint:   Sx
-Task:     Tx
+Roadmap Progress
+T0xx / T300  (+N today)
 
-예상 전체 완료율:  N%
-다음 24h:          Task (N+1)–(N+K)
+Current Phase:     Phase N — (name)
+Current Release:   R1
+Current Mission:   Mx
+Current Task:      T0xx
 
-=======================
+전체 진행률:       xx%
+
+다음 24시간 완료 예정 Task
+T0xx – T0yy
+
+========================
 ```
 
-Rules: no questions · no approval requests · no "다음 작업은"
+**Forbidden closing lines:** 질문 · 승인 요청 · "진행할까요?" · "배포할까요?"

@@ -1,27 +1,34 @@
 ---
-description: LaunchLens Product Vision v3 — experience over features
+description: LaunchLens Product Vision — AI Strategy PM, experience over features
 alwaysApply: true
 ---
 
 # Product Vision
 
-Read `docs/PRODUCT_VISION_V3.md` before any Mission work.
+Read `docs/PRODUCT_VISION_V3.md` and `docs/PRODUCT_COMPLETION_DIRECTIVE.md` before work.
+
+## What LaunchLens is
+
+**AI Strategy Project Manager** — not chat, not report tool, not business-plan writer.
+
+AI understands project → builds Workflow → makes Decision → proposes next action. User **approves**.
 
 ## Rule
 
 > **기능을 구현하지 말고, 사용자의 경험을 구현하라.**
 
-## When It Applies
+Completion = full quality bar in Directive v7 (UX through Production deploy).
 
-Every implementation, polish, and QA pass in Mission Mode (M1–M13).
+## Journey north star
 
-## Requirements
+~3 min: Landing → Goal → Workflow → Workspace → GO/HOLD → Execution  
+Daily reopen: Morning Brief · Confidence · Decision · Progress
 
-- North Star: 3-minute first project · daily reopen (Morning Brief, Confidence, Decision)
-- Landing: storytelling only — no feature lists, tech specs, or card grids
-- Journey: single primary CTA per screen · AI leads · Thinking UX on wait
-- Workspace: AI PM tone — Today, Coach, Decision — not dashboard widgets
-- Ship: build → QA → commit → push → tag → next Mission (no approval questions)
+## UX requirements
+
+- Landing: storytelling — no feature grids or tech spec lists
+- Single primary CTA per screen · AI leads · Thinking UX on wait
+- Workspace: AI PM tone (Today, Coach, Decision) — not dashboard widgets
 
 ## Examples
 

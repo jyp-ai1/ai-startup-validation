@@ -3882,6 +3882,30 @@
           "decision": "First GO/HOLD Decision"
         },
         "outcome": "On completion: +28% Confidence, −35% Risk, ~20 min to first GO"
+      },
+      "recommendation": {
+        "title": "AI PM recommendation summary",
+        "lead": "For 「{goal}」, your AI PM proposes this strategy sequence.",
+        "expected": {
+          "label": "Expected result",
+          "value": "First GO Decision + Execution Workspace",
+          "hint": "~+28% Confidence after Workflow completion"
+        },
+        "confidence": {
+          "label": "Confidence",
+          "value": "62% → 90% path",
+          "hint": "GO possible with 4 evidence items"
+        },
+        "risk": {
+          "label": "Risk",
+          "value": "Medium — VOC gap",
+          "hint": "2 interviews expected −35% risk"
+        },
+        "duration": {
+          "label": "Duration",
+          "value": "~20 minutes",
+          "hint": "Estimated to first Decision"
+        }
       }
     },
     "registration": {
