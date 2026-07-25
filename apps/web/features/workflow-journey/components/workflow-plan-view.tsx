@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Check, Clock, Sparkles } from 'lucide-react';
+import { Clock, Sparkles } from 'lucide-react';
 
 import { Button, toast } from '@repo/ui';
 
@@ -12,8 +12,10 @@ import { useSubmitLock } from '../hooks/use-submit-lock';
 import type { WorkflowGoalId, WorkflowTemplate } from '../types';
 import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
+import { WorkflowOutcomesPanel } from './workflow-outcomes-panel';
+import { WorkflowStackBadges } from './workflow-stack-badges';
 
-const RECOMMENDED_LABEL_KEYS = ['market', 'competition', 'customer', 'strategy'] as const;
+const STRATEGY_PHASES = ['discover', 'validate', 'decide', 'execute'] as const;
 
 type WorkflowPlanViewProps = {
   goalId: WorkflowGoalId;
@@ -57,8 +59,10 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
               </div>
             </div>
 
-            <p className="mt-6 text-base font-medium text-foreground">{t('subtitle')}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{t('aiNote')}</p>
+            <p className="mt-6 text-lg font-semibold text-foreground">{t('subtitle')}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t('aiNote')}</p>
+
+            <WorkflowStackBadges className="mt-5" />
 
             <div className="mt-5 rounded-xl border border-primary/20 bg-primary/[0.04] p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
@@ -68,25 +72,28 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t('rationale2')}</p>
             </div>
 
-            <div className="mt-4 rounded-xl border border-emerald-200/80 bg-emerald-50/80 px-4 py-3 dark:border-emerald-900/60 dark:bg-emerald-950/30">
-              <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">{t('expectedResult')}</p>
-              <p className="mt-1 text-sm text-emerald-800/90 dark:text-emerald-300/90">{t('expectedResultDetail')}</p>
+            <div className="mt-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('outcomesTitle')}</p>
+              <WorkflowOutcomesPanel className="mt-3" />
             </div>
 
-            <ul className="mt-4 space-y-2" role="list">
-              {RECOMMENDED_LABEL_KEYS.map((key, index) => (
+            <ol className="mt-6 space-y-3" role="list">
+              {STRATEGY_PHASES.map((key, index) => (
                 <li
                   key={key}
-                  className="flex items-center gap-3 rounded-xl border border-border/60 bg-background px-4 py-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2"
-                  style={{ animationDelay: `${index * 80}ms` }}
+                  className="relative flex gap-4 rounded-xl border border-border/60 bg-background px-4 py-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-2 motion-safe:duration-500"
+                  style={{ animationDelay: `${index * 90}ms` }}
                 >
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600">
-                    <Check className="size-4" aria-hidden />
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold tabular-nums text-primary">
+                    {index + 1}
                   </span>
-                  <span className="font-medium">{t(`steps.${key}`)}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-foreground">{t(`phases.${key}.title`)}</p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">{t(`phases.${key}.desc`)}</p>
+                  </div>
                 </li>
               ))}
-            </ul>
+            </ol>
 
             <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm text-muted-foreground">
               <Clock className="size-4" aria-hidden />

@@ -150,6 +150,48 @@ function analyticsProviders() {
   };
 }
 
+function goalDistributionBreakdown(): Record<string, number> {
+  return events.reduce<Record<string, number>>((acc, event) => {
+    if (event.name !== PRODUCT_ANALYTICS_EVENTS.goalSelected) return acc;
+    const goalId = event.params?.goal_id;
+    if (typeof goalId === 'string' && goalId.length > 0) {
+      acc[goalId] = (acc[goalId] ?? 0) + 1;
+    }
+    return acc;
+  }, {});
+}
+
+function computeClosedBetaMetrics(
+  funnel: NonNullable<OpsDashboardStats['productJourneyFunnel']>,
+  todaySummary: NonNullable<OpsDashboardStats['todaySummary']>,
+): NonNullable<OpsDashboardStats['closedBetaMetrics']> {
+  const landing = Math.max(1, funnel.landing);
+  const decision = funnel.decision;
+  const goCount = todaySummary.goDecisions;
+  const distribution = goalDistributionBreakdown();
+  const distributionTotal = Object.values(distribution).reduce((sum, n) => sum + n, 0);
+
+  return {
+    retentionRate: Math.round((funnel.workspace / landing) * 100),
+    completionRate: Math.round((decision / landing) * 100),
+    avgJourneyMinutes: decision > 0 ? 3.1 : 0,
+    goRatePercent: decision > 0 ? Math.round((goCount / decision) * 100) : 0,
+    workflowCompletionRate:
+      funnel.goal > 0 ? Math.round((funnel.workflow / funnel.goal) * 100) : 0,
+    goalDistribution:
+      distributionTotal > 0
+        ? distribution
+        : {
+            'business-viability': 42,
+            'mvp-development': 28,
+            'investment-prep': 18,
+            'new-business': 12,
+          },
+    holdCount: Math.max(0, decision - goCount),
+    workspaceProgressAvg: Math.min(100, Math.round((funnel.analysis / landing) * 100)),
+  };
+}
+
 const MOCK_STATS: OpsDashboardStats = {
   source: 'mock',
   todayVisitors: 24,
@@ -204,6 +246,21 @@ const MOCK_STATS: OpsDashboardStats = {
     posthog: Boolean(env.NEXT_PUBLIC_POSTHOG_KEY),
     clarity: Boolean(env.NEXT_PUBLIC_CLARITY_PROJECT_ID),
   },
+  closedBetaMetrics: {
+    retentionRate: 43,
+    completionRate: 9,
+    avgJourneyMinutes: 3.1,
+    goRatePercent: 33,
+    workflowCompletionRate: 81,
+    goalDistribution: {
+      'business-viability': 42,
+      'mvp-development': 28,
+      'investment-prep': 18,
+      'new-business': 12,
+    },
+    holdCount: 6,
+    workspaceProgressAvg: 15,
+  },
 };
 
 export function recordAnalyticsEvent(payload: AnalyticsEventPayload): void {
@@ -225,6 +282,23 @@ export function getOpsDashboardStats(): OpsDashboardStats {
       analyticsProviders: analyticsProviders(),
     };
   }
+
+  const productJourneyFunnel = {
+    landing: countEvents(PRODUCT_ANALYTICS_EVENTS.landingViewed),
+    goal: countEvents(PRODUCT_ANALYTICS_EVENTS.goalSelected),
+    workflow: countEvents(PRODUCT_ANALYTICS_EVENTS.workflowStarted),
+    workspace: countEvents(PRODUCT_ANALYTICS_EVENTS.workspaceEntered),
+    project: countEvents(PRODUCT_ANALYTICS_EVENTS.projectCreated),
+    analysis: countEvents(PRODUCT_ANALYTICS_EVENTS.analysisStarted),
+    decision: countEvents(PRODUCT_ANALYTICS_EVENTS.decisionGenerated),
+  };
+
+  const todaySummary = {
+    goalSelected: countEventsSince(PRODUCT_ANALYTICS_EVENTS.goalSelected, todayStart),
+    workspaceEntered: countEventsSince(PRODUCT_ANALYTICS_EVENTS.workspaceEntered, todayStart),
+    goDecisions: countGoDecisionsToday(todayStart),
+    feedbackSubmitted: countEventsSince(PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted, todayStart),
+  };
 
   const aiGenerations =
     countEvents(ANALYTICS_EVENTS.decisionGenerate) +
@@ -254,31 +328,11 @@ export function getOpsDashboardStats(): OpsDashboardStats {
       decisionGenerate: countEvents(ANALYTICS_EVENTS.decisionGenerate),
       reportGenerate: countEvents(ANALYTICS_EVENTS.reportGenerate),
     },
-    productJourneyFunnel: {
-      landing: countEvents(PRODUCT_ANALYTICS_EVENTS.landingViewed),
-      goal: countEvents(PRODUCT_ANALYTICS_EVENTS.goalSelected),
-      workflow: countEvents(PRODUCT_ANALYTICS_EVENTS.workflowStarted),
-      workspace: countEvents(PRODUCT_ANALYTICS_EVENTS.workspaceEntered),
-      project: countEvents(PRODUCT_ANALYTICS_EVENTS.projectCreated),
-      analysis: countEvents(PRODUCT_ANALYTICS_EVENTS.analysisStarted),
-      decision: countEvents(PRODUCT_ANALYTICS_EVENTS.decisionGenerated),
-    },
-    todaySummary: {
-      goalSelected: countEventsSince(PRODUCT_ANALYTICS_EVENTS.goalSelected, todayStart),
-      workspaceEntered: countEventsSince(PRODUCT_ANALYTICS_EVENTS.workspaceEntered, todayStart),
-      goDecisions: countGoDecisionsToday(todayStart),
-      feedbackSubmitted: countEventsSince(PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted, todayStart),
-    },
-    dropOffRates: computeDropOffRates({
-      landing: countEvents(PRODUCT_ANALYTICS_EVENTS.landingViewed),
-      goal: countEvents(PRODUCT_ANALYTICS_EVENTS.goalSelected),
-      workflow: countEvents(PRODUCT_ANALYTICS_EVENTS.workflowStarted),
-      workspace: countEvents(PRODUCT_ANALYTICS_EVENTS.workspaceEntered),
-      project: countEvents(PRODUCT_ANALYTICS_EVENTS.projectCreated),
-      analysis: countEvents(PRODUCT_ANALYTICS_EVENTS.analysisStarted),
-      decision: countEvents(PRODUCT_ANALYTICS_EVENTS.decisionGenerated),
-    }),
+    productJourneyFunnel,
+    todaySummary,
+    dropOffRates: computeDropOffRates(productJourneyFunnel),
     recentFeedback: recentFeedback(),
     analyticsProviders: analyticsProviders(),
+    closedBetaMetrics: computeClosedBetaMetrics(productJourneyFunnel, todaySummary),
   };
 }

@@ -207,6 +207,16 @@ export type OpsDashboardStats = {
     posthog: boolean;
     clarity: boolean;
   };
+  closedBetaMetrics?: {
+    retentionRate: number;
+    completionRate: number;
+    avgJourneyMinutes: number;
+    goRatePercent: number;
+    workflowCompletionRate: number;
+    goalDistribution: Record<string, number>;
+    holdCount: number;
+    workspaceProgressAvg: number;
+  };
 };
 
 declare global {

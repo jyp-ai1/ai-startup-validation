@@ -1,126 +1,97 @@
-# PM Review Policy
+# LaunchLens Operating Policy v3.0
 
-**Effective:** 2026-07-25  
-**Stage:** LaunchLens Closed Beta · Autonomous Development Mode  
+**Effective:** 2026-07-25 (KST)  
+**Stage:** Closed Beta · Fully Autonomous Development  
 **Production:** https://ai-startup-validation-tau.vercel.app
 
 ---
 
 ## Principle
 
-PM is **CPO**, not QA PM.
+PM/CPO sets **product direction and PASS/FAIL** on Production only.
 
-Cursor owns: develop → QA → build → smoke → **Production deploy** → tag → morning report.
+Cursor executes the full pipeline **without approval gates** except high-risk categories below.
 
-PM owns: **Product Vision**, experience PASS/FAIL, next Day Epic direction.
-
----
-
-## Daily (every morning)
-
-PM reviews **Production only** — not Preview.
-
-| Check | Time |
-|-------|------|
-| Landing — service understood in 5s | ~1 min |
-| Goal — frictionless selection | ~1 min |
-| Workflow — no selection UI, one CTA | ~1 min |
-| Workspace — register → thinking → coach → GO/HOLD | ~1 min |
-| Today — AI speaks first | ~30 s |
-| WOW — "오 괜찮다" in ~3 min | ~30 s |
-
-**Total:** ~5 minutes on Production.
-
-Preview URL is **not** included in Autonomous Reports.
+> **금지:** "배포할까요?", "커밋할까요?", "승인 부탁드립니다", Preview URL in standard reports.
 
 ---
 
-## Standard Sprint pipeline (Cursor autonomous)
+## Autonomous Pipeline (every Epic)
 
 ```text
-Develop
-  ↓
-Internal QA (functional + product smoke)
-  ↓
-Build PASS
-  ↓
-Preview Deploy (internal — Cursor QA only)
-  ↓
-Smoke PASS
-  ↓
-Production Deploy
-  ↓
-Git Tag
-  ↓
-Morning Report (Production URL + Tag + QA + Known Issues + Next Epic)
+기획 → 개발 → Self Review → QA → Regression → Responsive → Accessibility
+→ Lighthouse → Commit → Push → Production Deploy → Smoke Test → Tag → 다음 Epic
 ```
 
-PM does **not** block on Preview for standard sprints.
+Cursor does **not** stop to ask PM unless a high-risk gate applies.
 
 ---
 
-## When Preview requires PM approval
-
-Production deploy is **forbidden** until PM approves Preview for:
+## PM Approval Required (only these)
 
 | Category | Examples |
 |----------|----------|
-| **Product Pivot** | IA change, navigation overhaul, workflow redesign |
-| **UX overhaul** | Landing full redesign, workspace re-architecture |
-| **Auth** | Login/session architecture change |
-| **Billing** | Pricing, payments, plans |
-| **Real AI** | LLM provider, prompts, cost-bearing APIs |
-| **Database** | Schema migration, persistence model change |
-| **Cost** | OpenAI, Gemini, Claude, Perplexity integration |
-| **Design system** | Full visual rebrand |
+| DB Schema | Migrations, persistence model |
+| Billing | Payments, plans |
+| LLM Provider | Real AI, cost-bearing APIs |
+| Auth structure | Session/login architecture |
+| Product Pivot | Full IA / navigation overhaul |
+| Cost | OpenAI, Gemini, Claude, Perplexity |
 
-Report format for these cases:
-
-```text
-Preview URL: (required)
-Production: BLOCKED — awaiting PM approval
-```
+Everything else: **automatic deploy to Production**.
 
 ---
 
-## Autonomous Report format (standard)
+## PM Review (Production only, ~5 min)
+
+Morning window: **08:00–09:00 KST**
+
+| Check | Criterion |
+|-------|-----------|
+| Landing | 5-second test — "여기가 뭐하는 서비스죠?" must NOT appear |
+| Goal → GO | First visit reaches GO in ~3 min |
+| WOW | "AI와 함께 전략 프로젝트를 진행했다" memory |
+
+Preview URL: **not reported** in standard Daily Reports.
+
+---
+
+## Daily Report Format
 
 ```text
-========================
-LaunchLens Autonomous Report
-========================
+=========================
+LaunchLens Daily Report
+=========================
 
-Version
-Production          ← PM checks this only
-Commit
-Tag
-QA
-새로운 사용자 경험
+Version / Commit / Production / Tag
+
+오늘 사용자가 새롭게 느끼는 경험
+오늘 개선한 UX
+오늘 해결한 문제
+Analytics
 Known Issues
-다음 Epic
-현재 진행률
-========================
+QA 결과
+Production URL
+내일 작업 계획
 ```
 
-**Do not include Preview URL** unless PM approval is required (see above).
+---
+
+## Current Goal
+
+**Closed Beta 2.2 — Product Completion**
+
+Not feature addition. **Users feel WOW** — AI PM as colleague, not dashboard.
 
 ---
 
-## Operating cadence
+## Experience Rule
 
-| Who | When | Action |
-|-----|------|--------|
-| Cursor | 24h cycle | Dev → QA → Prod → Tag → Report |
-| PM | Morning | Production 5-min checklist → PASS/FAIL → next Day Epic |
-| PM | As needed | Product Vision / pivot only |
-
-**Rule:** *사용자가 체감하지 못하는 기능은 만들지 않는다.*
-
-**Epic priority:** Journey → Intelligence → Analytics → Performance → Real AI
+> 사용자가 체감하지 못하는 기능은 만들지 않는다.
 
 ---
 
-## Related docs
+## Related
 
-- [SPRINT_PROCESS.md](./SPRINT_PROCESS.md) — updated for autonomous mode
-- [AUTONOMOUS_REPORT_v2.1.0.md](./sprints/AUTONOMOUS_REPORT_v2.1.0.md) — Day 1 example
+- `docs/SPRINT_PROCESS.md`
+- `.cursor/rules/pm-review-policy.mdc`

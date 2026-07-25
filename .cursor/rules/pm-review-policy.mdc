@@ -1,38 +1,28 @@
 ---
-description: PM Review Policy — Production-only review for standard sprints; Preview only for pivots and high-risk changes
+description: LaunchLens v3.0 — Closed Beta fully autonomous pipeline; PM approval only for DB/Billing/Auth/Real AI/Pivot
 alwaysApply: true
 ---
 
-# PM Review Policy (Closed Beta)
+# PM Review Policy v3.0 (Closed Beta)
 
-## Standard Sprint (Autonomous)
+## Autonomous — no PM gate
 
-Pipeline without PM gate:
-
-```
-Develop → QA → Build → Smoke → Production → Tag → Morning Report
+```text
+Develop → QA → Build → Lighthouse → Commit → Push → Production → Tag → Report
 ```
 
-- Preview deploy is **internal QA only** — do not wait for PM.
-- **Morning Report must NOT include Preview URL.**
-- Report **must include Production URL**: https://ai-startup-validation-tau.vercel.app
+**Never ask PM:** deploy?, commit?, proceed?, Preview approval?
 
-## PM checks Production only (~5 min)
+## PM approval before Production (only)
 
-Landing · Goal · Workflow · Workspace · Today · WOW (3-min journey)
+DB Schema · Billing · LLM/Real AI · Auth structure · Product Pivot · cost APIs
 
-PM role: **CPO** (experience PASS/FAIL + next Day Epic), not QA PM.
+## PM reviews Production only (~5 min, 08:00 KST)
 
-## Preview + PM approval required before Production
+5-second Landing · 3-min Goal→GO · WOW = "AI PM colleague"
 
-Only for: Product Pivot, navigation/UX overhaul, Auth, Billing, Real AI, DB schema, cost-bearing APIs, full design change.
+## Reports
 
-Then: Preview URL in report → **Production BLOCKED** → await PM approval.
-
-## Experience rule
-
-> 사용자가 체감하지 못하는 기능은 만들지 않는다.
-
-Epic order: Journey → Intelligence → Analytics → Performance → Real AI
+Use `LaunchLens Daily Report` format. **No Preview URL.**
 
 Full policy: `docs/PM_REVIEW_POLICY.md`

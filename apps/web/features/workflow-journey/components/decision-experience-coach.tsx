@@ -14,12 +14,12 @@ import {
   getDecisionStages,
   type DecisionStage,
 } from '../constants/decision-experience';
-import { HEALTH_DETAIL } from '../constants/intelligence-mock';
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import type { WorkflowGoalId } from '../types';
 import { ConfidenceMeter } from './confidence-meter';
 import { EvidenceIntelligencePanel } from './evidence-intelligence-panel';
 import { GoCelebrationOverlay } from './go-celebration-overlay';
+import { ProjectHealthVisual } from './project-health-visual';
 
 type DecisionExperienceCoachProps = {
   goalId: WorkflowGoalId;
@@ -146,6 +146,7 @@ export function DecisionExperienceCoach({ goalId, className, id }: DecisionExper
               value={stage.confidence}
               target={81}
               label={t('confidence')}
+              gamified
               className="confidence-gain-pop"
             />
           </div>
@@ -174,26 +175,7 @@ export function DecisionExperienceCoach({ goalId, className, id }: DecisionExper
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {td('healthDetailTitle')}
             </p>
-            <ul className="mt-2 space-y-2" role="list">
-              {(Object.keys(HEALTH_DETAIL) as (keyof typeof HEALTH_DETAIL)[]).map((key) => {
-                const value = HEALTH_DETAIL[key];
-                const warn = value < 60;
-                return (
-                  <li key={key} className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{td(`health.${key}`)}</span>
-                    <span
-                      className={cn(
-                        'font-semibold tabular-nums',
-                        warn ? 'text-amber-700 dark:text-amber-400' : 'text-foreground',
-                      )}
-                    >
-                      {value}
-                      {warn ? ' ⚠' : ''}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
+            <ProjectHealthVisual className="mt-3" />
           </div>
         ) : null}
 

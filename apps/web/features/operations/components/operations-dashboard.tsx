@@ -179,6 +179,55 @@ export function OperationsDashboard() {
             </div>
           ) : null}
 
+          {stats.closedBetaMetrics ? (
+            <div>
+              <h2 className="mb-3 text-sm font-semibold">{t('closedBetaMetrics')}</h2>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard
+                  title={t('retentionRate')}
+                  value={`${stats.closedBetaMetrics.retentionRate}%`}
+                  icon={Users}
+                />
+                <StatCard
+                  title={t('completionRate')}
+                  value={`${stats.closedBetaMetrics.completionRate}%`}
+                  icon={BarChart3}
+                />
+                <StatCard
+                  title={t('avgJourneyMinutes')}
+                  value={stats.closedBetaMetrics.avgJourneyMinutes}
+                  icon={Activity}
+                />
+                <StatCard
+                  title={t('goRatePercent')}
+                  value={`${stats.closedBetaMetrics.goRatePercent}%`}
+                  icon={Sparkles}
+                />
+                <StatCard
+                  title={t('workflowCompletion')}
+                  value={`${stats.closedBetaMetrics.workflowCompletionRate}%`}
+                  icon={Globe}
+                />
+                <StatCard
+                  title={t('holdDecisions')}
+                  value={stats.closedBetaMetrics.holdCount}
+                  icon={AlertTriangle}
+                />
+                <StatCard
+                  title={t('workspaceProgress')}
+                  value={`${stats.closedBetaMetrics.workspaceProgressAvg}%`}
+                  icon={Activity}
+                />
+              </div>
+              <div className="mt-4">
+                <BreakdownList
+                  title={t('goalDistribution')}
+                  data={stats.closedBetaMetrics.goalDistribution}
+                />
+              </div>
+            </div>
+          ) : null}
+
           {aiStats ? (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
               <StatCard

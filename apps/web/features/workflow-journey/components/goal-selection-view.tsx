@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ArrowRight, Target } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 import { useRouter } from '@/i18n/navigation';
 import { cn } from '@repo/ui/lib/utils';
@@ -12,18 +12,11 @@ import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useSubmitLock } from '../hooks/use-submit-lock';
 import { WORKFLOW_GOAL_IDS, type WorkflowGoalId } from '../types';
 import { AiThinkingOverlay } from './ai-thinking-overlay';
+import { GoalIntakePanel } from './goal-intake-panel';
 import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 
 const GOAL_TIMEOUT_MS = 10_000;
-
-const GOAL_ICONS: Record<WorkflowGoalId, typeof Target> = {
-  'business-viability': Target,
-  'new-business': Target,
-  'mvp-development': Target,
-  'investment-prep': Target,
-  'market-research': Target,
-};
 
 type GoalSelectionViewProps = {
   demoMode?: boolean;
@@ -127,15 +120,18 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
             <p className="text-sm leading-relaxed text-muted-foreground">{t('subtitle')}</p>
           </div>
 
+          <GoalIntakePanel className="mt-6" />
+
           {demoMode ? (
             <p className="mt-4 rounded-lg bg-violet-50 px-3 py-2 text-sm text-violet-900 dark:bg-violet-950/40 dark:text-violet-200">
               {t('demoBanner')}
             </p>
           ) : null}
 
-          <ul className="mt-8 space-y-3" role="list">
-            {WORKFLOW_GOAL_IDS.map((goalId) => {
-              const Icon = GOAL_ICONS[goalId];
+          <p className="mt-6 text-sm font-medium text-foreground">{t('intake.question')}</p>
+
+          <ul className="mt-4 space-y-3" role="list">
+            {WORKFLOW_GOAL_IDS.map((goalId, index) => {
               const isSelected = overlayGoal === goalId;
               const isDisabled = locked;
               return (
@@ -150,14 +146,19 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
                       'transition-all duration-200 hover:border-primary/40 hover:bg-muted/30',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                       'disabled:pointer-events-none disabled:opacity-50',
+                      'motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500',
                       isSelected && 'scale-[0.98] border-primary/50 ring-2 ring-primary/20',
                     )}
+                    style={{ animationDelay: `${index * 60}ms` }}
                   >
                     <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                      <Icon className="size-5" aria-hidden />
+                      <Sparkles className="size-5" aria-hidden />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block font-medium text-foreground">{t(`options.${goalId}.title`)}</span>
+                      <span className="block text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        {t('intake.optionLabel', { n: index + 1 })}
+                      </span>
+                      <span className="mt-0.5 block font-medium text-foreground">{t(`options.${goalId}.title`)}</span>
                       <span className="mt-1 block text-sm text-muted-foreground">
                         {t(`options.${goalId}.description`)}
                       </span>

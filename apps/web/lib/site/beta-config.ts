@@ -1,5 +1,5 @@
-/** LaunchLens Closed Beta — Day 3 Intelligence UX */
-export const BETA_VERSION = 'Closed Beta 2.1.2';
+/** LaunchLens Closed Beta — Product Completion Epic */
+export const BETA_VERSION = 'Closed Beta 2.2.0';
 export const BETA_LABEL = 'CLOSED BETA';
 
 export const SITE_LINKS = {
