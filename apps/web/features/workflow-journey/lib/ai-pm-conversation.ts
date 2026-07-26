@@ -57,7 +57,7 @@ export function getAiPmConversationMessageKey(agentIndex: number, failed = false
 }
 
 export function getMicroQuestionId(agentIndex: number): 'targetCustomer' | null {
-  if (agentIndex === 1) return 'targetCustomer';
+  if (agentIndex === 0 || agentIndex === 1) return 'targetCustomer';
   return null;
 }
 

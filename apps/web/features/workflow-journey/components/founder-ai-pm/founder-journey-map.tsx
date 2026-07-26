@@ -7,13 +7,12 @@ import { cn } from '@repo/ui/lib/utils';
 import { resolveStageIndex } from '../../lib/founder-ai-pm-engine';
 
 const STAGES = [
-  'start',
+  'idea',
   'marketValidation',
-  'strategy',
-  'go',
+  'customerValidation',
+  'strategyLock',
   'execution',
   'growth',
-  'investment',
 ] as const;
 
 type FounderJourneyMapProps = {

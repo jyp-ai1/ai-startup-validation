@@ -3992,7 +3992,11 @@
       "subtitle": "오늘부터 제가 전략 PM이 되어드리겠습니다.",
       "officeLabel": "지금 AI PM이 하는 일",
       "reasoningLabel": "AI PM의 생각",
-      "stepEta": "예상 {seconds}초",
+      "progressLabel": "전체 진행",
+      "liveHero": "대표님,\n이제는 AI PM이 일합니다.\n\n지금은 기다려주세요.",
+      "waitInstruction": "지금은 아무것도 하지 않아도 됩니다.\n\n분석이 끝나면\n자동으로 결과를 보여드립니다.",
+      "cancelAnalysis": "분석 취소",
+      "stepEta": "약 {seconds}초",
       "remaining": "예상 남은 시간 {seconds}초",
       "failedHint": "연결이 불안정합니다. 다시 시도하거나 오늘 화면으로 바로 이동할 수 있습니다.",
       "retry": "다시 분석하기",
@@ -4018,6 +4022,12 @@
       "completion": {
         "title": "분석 완료",
         "subtitle": "AI PM이 사업 검토를 마쳤습니다.",
+        "doneHero": "대표님,\n시장 조사가 끝났습니다.",
+        "conclusionLead": "결론부터 말씀드리면",
+        "riskLine": "다만\n\n{gap}",
+        "todayLead": "오늘은",
+        "todayMeta": "약 {minutes}분",
+        "defaultAction": "잠재고객 3명 인터뷰",
         "greeting": "대표님.\n\n좋은 소식입니다.",
         "resultIntro": "시장 검토 결과",
         "investmentLabel": "오늘 투자 시간",
@@ -4027,18 +4037,18 @@
         "intro": "시장 검토가 끝났습니다.",
         "todayTogether": "오늘은 {action}부터 같이 해보겠습니다.",
         "todayTogetherDefault": "오늘 할 일을 준비했습니다. 함께 시작해 볼까요?",
-        "cta": "시작"
+        "cta": "오늘 할 일 시작"
       },
       "reasoning": {
-        "marketResearch": "비슷한 서비스가 이미 있는지 확인합니다.",
-        "competitorAnalysis": "차별화 포인트를 찾고 있습니다.",
-        "strategyWriting": "돈을 벌 수 있는 구조인지 계산합니다.",
-        "todayPlan": "오늘 바로 시작할 수 있는 일을 준비합니다."
+        "marketResearch": "비슷한 서비스를 찾고 있습니다.",
+        "competitorAnalysis": "주 고객과 경쟁 환경을 파악하고 있습니다.",
+        "strategyWriting": "실행 가능한 전략을 작성하고 있습니다.",
+        "todayPlan": "투자·수익 가능성을 계산하고 있습니다."
       },
       "microQuestion": {
-        "hint": "답하지 않아도 분석은 계속됩니다. 답변하면 결과가 더 정확해집니다.",
+        "hint": "안 눌러도 계속 진행됩니다.",
         "targetCustomer": {
-          "prompt": "시장 조사를 진행 중입니다.\n\n그동안 하나만 알려주세요.\n\n주 고객은 누구인가요?",
+          "prompt": "시장 조사중...\n\n혹시 알려주시면 더 정확합니다.\n\n주 고객은?",
           "options": {
             "office": "직장인",
             "student": "학생",
@@ -4049,33 +4059,33 @@
       },
       "work": {
         "ideaUnderstood": {
-          "done": "아이디어 이해 완료",
-          "running": "아이디어 이해 중",
-          "waiting": "아이디어 이해 대기",
+          "done": "아이디어 저장 완료",
+          "running": "아이디어 저장 중",
+          "waiting": "아이디어 저장 대기",
           "failed": "재시도 필요"
         },
         "marketResearch": {
           "done": "시장 조사 완료",
           "running": "시장 조사중",
-          "waiting": "시장 조사 대기",
+          "waiting": "시장 조사 예정",
           "failed": "재시도 필요"
         },
         "competitorAnalysis": {
-          "done": "경쟁사 분석 완료",
-          "running": "경쟁사 분석중",
-          "waiting": "경쟁사 분석 대기",
+          "done": "고객 조사 완료",
+          "running": "고객 조사중",
+          "waiting": "고객 조사 예정",
           "failed": "재시도 필요"
         },
         "strategyWriting": {
           "done": "전략 작성 완료",
           "running": "전략 작성중",
-          "waiting": "전략 작성 대기",
+          "waiting": "전략 작성 예정",
           "failed": "재시도 필요"
         },
         "todayPlan": {
-          "done": "오늘 할 일 준비 완료",
-          "running": "오늘 할 일 준비중",
-          "waiting": "오늘 할 일 준비 대기",
+          "done": "투자 가능성 계산 완료",
+          "running": "투자 가능성 계산중",
+          "waiting": "투자 가능성 계산 예정",
           "failed": "재시도 필요"
         },
         "strategyPlan": {
@@ -4204,12 +4214,15 @@
       "journeyMap": {
         "label": "지금 어디?",
         "stages": {
-          "start": "사업 시작",
+          "idea": "사업 아이디어",
           "marketValidation": "시장 검증",
-          "strategy": "전략 수립",
-          "go": "GO",
+          "customerValidation": "고객 검증",
+          "strategyLock": "전략 확정",
           "execution": "실행",
           "growth": "성장",
+          "start": "사업 시작",
+          "strategy": "전략 수립",
+          "go": "GO",
           "investment": "투자"
         }
       },
@@ -4260,7 +4273,8 @@
       "quickHint": "목표는 이미 선택되었습니다 — 아이디어만 적으면 10초 안에 시작할 수 있어요.",
       "autoNameHint": "AI 프로젝트 이름: {name}",
       "optionalDetails": "추가 정보 (선택)",
-      "ctaHint": "약 10초 후 사업 검토가 시작됩니다.",
+      "ctaHint": "약 10초 소요 · 추가 입력 없음",
+      "savedHint": "✓ 자동 저장됨",
       "fields": {
         "projectName": "프로젝트 이름",
         "projectNameOptional": "프로젝트 이름 (선택 — 비워두면 AI가 생성)",
@@ -4532,6 +4546,20 @@
         "minutes": "{count}분",
         "confidenceGain": "Confidence",
         "goGain": "GO 가능성"
+      },
+      "todayFirst": {
+        "label": "오늘의 일",
+        "greeting": "대표님, 좋은 아침입니다.",
+        "investmentLead": "오늘은",
+        "investmentMid": "투자하면",
+        "investmentTail": "까지 올라갑니다.",
+        "minutes": "{count}분",
+        "tasksTitle": "오늘 해야 할 일",
+        "taskNumber": "①",
+        "taskMeta": "{minutes}분 · +{impact}%",
+        "startCta": "시작",
+        "fallbackAction": "오늘의 핵심 액션",
+        "moreDetails": "더 자세한 분석 · Decision · Memory · Timeline"
       },
       "todayHero": {
         "label": "오늘의 투자",

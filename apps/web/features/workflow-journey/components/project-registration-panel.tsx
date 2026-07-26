@@ -64,6 +64,7 @@ export function ProjectRegistrationPanel({
     existing?.ideaOneLiner ?? intakeIdea ?? '',
   );
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [savedHint, setSavedHint] = useState(false);
 
   const autosaveRef = useRef<number | null>(null);
 
@@ -88,6 +89,7 @@ export function ProjectRegistrationPanel({
         optionalNote: existing?.optionalNote ?? '',
       };
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+      setSavedHint(true);
     }, AUTOSAVE_MS);
     return () => {
       if (autosaveRef.current !== null) window.clearTimeout(autosaveRef.current);
@@ -148,7 +150,9 @@ export function ProjectRegistrationPanel({
               minLength={4}
               autoFocus
             />
-            <p className="text-xs text-muted-foreground">{t('inputLabel')}</p>
+            <p className="text-xs text-muted-foreground">
+              {savedHint && ideaOneLiner.trim().length >= 4 ? t('savedHint') : t('inputLabel')}
+            </p>
           </div>
 
           <div className="rounded-xl bg-muted/30 px-4 py-3">

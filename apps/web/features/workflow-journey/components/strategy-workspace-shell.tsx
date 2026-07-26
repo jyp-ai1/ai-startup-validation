@@ -43,7 +43,6 @@ import {
   JourneyWorkspaceNav,
   type JourneyWorkspaceTab,
 } from './intelligence-workspace/journey-workspace-nav';
-import { PIPELINE_AGENT_COUNT } from '../lib/ai-state-engine';
 import { AI_PM_WORK_COUNT } from '../lib/ai-pm-conversation';
 import { WorkspaceJourneyGuide } from './workspace-journey-guide';
 
@@ -71,7 +70,6 @@ export function StrategyWorkspaceShell({
 }: StrategyWorkspaceShellProps) {
   const t = useTranslations('workflow.workspace');
   const tg = useTranslations('workflow.goal');
-  const tc = useTranslations('workflow.compose.goals');
   const coachState = getStrategyCoachState(goalId);
   const activeStepId = coachState.nextActionStepId;
   const activeStep = template.steps.find((s) => s.id === activeStepId) ?? template.steps[0];
@@ -268,19 +266,17 @@ export function StrategyWorkspaceShell({
   };
 
   if (phase === 'thinking') {
-    const progressPercent = Math.min(
-      100,
-      Math.round(((Math.min(pipelineAgentIndex, PIPELINE_AGENT_COUNT) + 1) / (PIPELINE_AGENT_COUNT + 1)) * 100),
-    );
     return (
       <AiPmLiveWorkspace
-        projectName={registration?.projectName ?? tc(goalId)}
         agentIndex={Math.min(pipelineAgentIndex, AI_PM_WORK_COUNT - 1)}
-        progressPercent={progressPercent}
         failed={thinkingFailed}
         onRetry={() => {
           setThinkingFailed(false);
           setPhase('thinking');
+        }}
+        onCancel={() => {
+          setThinkingFailed(false);
+          setPhase('registration');
         }}
         onSkipToToday={showCompletionHandoff}
       />

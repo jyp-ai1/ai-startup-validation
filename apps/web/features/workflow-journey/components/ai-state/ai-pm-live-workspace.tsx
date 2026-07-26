@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Sparkles, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@repo/ui';
@@ -10,7 +10,6 @@ import { cn } from '@repo/ui/lib/utils';
 import {
   buildAiPmWorkItems,
   estimateRemainingSeconds,
-  getAiPmConversationMessageKey,
   getMicroQuestionId,
   getStepEtaSeconds,
 } from '../../lib/ai-pm-conversation';
@@ -18,15 +17,13 @@ import {
   loadFounderMicroAnswers,
   saveFounderMicroAnswer,
 } from '../../lib/founder-micro-interaction-store';
-import { AiPmConversation } from './ai-pm-conversation';
 import { AiPmMicroQuestion } from './ai-pm-micro-question';
 
 type AiPmLiveWorkspaceProps = {
-  projectName?: string;
   agentIndex: number;
-  progressPercent: number;
   failed?: boolean;
   onRetry?: () => void;
+  onCancel?: () => void;
   onSkipToToday?: () => void;
   className?: string;
 };
@@ -42,10 +39,10 @@ function WorkStatusIcon({ status }: { status: 'done' | 'running' | 'waiting' | '
 }
 
 export function AiPmLiveWorkspace({
-  projectName,
   agentIndex,
   failed = false,
   onRetry,
+  onCancel,
   onSkipToToday,
   className,
 }: AiPmLiveWorkspaceProps) {
@@ -54,19 +51,12 @@ export function AiPmLiveWorkspace({
   const tr = useTranslations('workflow.aiPm.reasoning');
   const remaining = estimateRemainingSeconds(agentIndex);
   const workItems = buildAiPmWorkItems(agentIndex, failed);
-  const messageKey = getAiPmConversationMessageKey(agentIndex, failed);
-  const conversationMessage = t(messageKey, { seconds: remaining, project: projectName ?? '' });
   const microQuestionId = getMicroQuestionId(agentIndex);
   const [microAnswers, setMicroAnswers] = useState(loadFounderMicroAnswers);
-
-  const priorMessages: string[] = [];
-  if (agentIndex >= 1 && !failed) {
-    priorMessages.push(
-      t('conversation.confirmedIdea', { seconds: remaining + 6, project: projectName ?? '' }),
-    );
-  }
-  if (agentIndex >= 2 && !failed) priorMessages.push(t('conversation.afterMarket'));
-  if (agentIndex >= 3 && !failed) priorMessages.push(t('conversation.competitorAnalysis'));
+  const progressPercent = Math.min(
+    100,
+    Math.round(((agentIndex + 1) / 5) * 100),
+  );
 
   const handleMicroSelect = (value: NonNullable<(typeof microAnswers)['targetCustomer']>) => {
     saveFounderMicroAnswer('targetCustomer', value);
@@ -76,7 +66,7 @@ export function AiPmLiveWorkspace({
   return (
     <div
       className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center bg-background/92 p-4 backdrop-blur-sm',
+        'fixed inset-0 z-50 flex items-center justify-center bg-background/95 p-4 backdrop-blur-sm',
         className,
       )}
       role="dialog"
@@ -85,68 +75,70 @@ export function AiPmLiveWorkspace({
       aria-busy={!failed}
     >
       <div className="max-h-[92vh] w-full max-w-lg space-y-5 overflow-y-auto rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
-        <div className="flex items-start gap-3">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
-            <Sparkles className="size-5 text-primary" aria-hidden />
-          </span>
-          <div>
-            <p id="ai-pm-live-title" className="text-lg font-semibold">
-              {t('title')}
+        <div className="rounded-2xl border border-primary/20 bg-primary/[0.06] px-5 py-4 text-center">
+          <p id="ai-pm-live-title" className="whitespace-pre-line text-base font-semibold leading-relaxed sm:text-lg">
+            {t('liveHero')}
+          </p>
+          {!failed ? (
+            <p className="mt-3 text-sm tabular-nums text-muted-foreground">
+              {t('remaining', { seconds: remaining })}
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
-          </div>
+          ) : null}
         </div>
 
-        <AiPmConversation messages={[...priorMessages.slice(-2), conversationMessage]} />
-
-        <div>
-          <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
-            <span>{t('reasoningLabel')}</span>
-            {!failed ? (
-              <span className="font-medium tabular-nums text-foreground">
-                {t('remaining', { seconds: remaining })}
-              </span>
-            ) : null}
+        {!failed ? (
+          <div>
+            <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+              <span>{t('progressLabel')}</span>
+              <span className="font-medium tabular-nums">{progressPercent}%</span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary transition-all duration-700"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
-          <ul className="space-y-2.5" role="list" aria-live="polite">
-            {workItems.map((item) => {
-              const isRunning = item.status === 'running';
-              const stepEta = isRunning ? getStepEtaSeconds(item.id) : null;
+        ) : null}
 
-              return (
-                <li
-                  key={item.id}
-                  className={cn(
-                    'rounded-xl border border-border/60 px-4 py-3',
-                    isRunning && 'border-amber-300/50 bg-amber-50/40 dark:bg-amber-950/20',
-                    item.status === 'done' && 'text-muted-foreground',
-                  )}
-                >
-                  <div className="flex items-start gap-3">
-                    <WorkStatusIcon status={item.status} />
-                    <div className="min-w-0 flex-1">
-                      <p className={cn('text-sm font-medium', isRunning && 'text-foreground')}>
-                        {tw(`${item.id}.${item.status}`)}
-                      </p>
-                      {isRunning && item.id !== 'ideaUnderstood' ? (
-                        <>
-                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                            {tr(item.id)}
+        <ul className="space-y-2.5" role="list" aria-live="polite">
+          {workItems.map((item) => {
+            const isRunning = item.status === 'running';
+            const stepEta = isRunning ? getStepEtaSeconds(item.id) : null;
+
+            return (
+              <li
+                key={item.id}
+                className={cn(
+                  'rounded-xl border border-border/60 px-4 py-3',
+                  isRunning && 'border-amber-300/50 bg-amber-50/40 dark:bg-amber-950/20',
+                  item.status === 'done' && 'text-muted-foreground',
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  <WorkStatusIcon status={item.status} />
+                  <div className="min-w-0 flex-1">
+                    <p className={cn('text-sm font-medium', isRunning && 'text-foreground')}>
+                      {tw(`${item.id}.${item.status}`)}
+                    </p>
+                    {isRunning && item.id !== 'ideaUnderstood' ? (
+                      <>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                          {tr(item.id)}
+                        </p>
+                        {stepEta != null ? (
+                          <p className="mt-1 text-xs font-medium tabular-nums text-primary">
+                            {t('stepEta', { seconds: stepEta })}
                           </p>
-                          {stepEta != null ? (
-                            <p className="mt-1 text-xs font-medium tabular-nums text-primary">
-                              {t('stepEta', { seconds: stepEta })}
-                            </p>
-                          ) : null}
-                        </>
-                      ) : null}
-                    </div>
+                        ) : null}
+                      </>
+                    ) : null}
                   </div>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
 
         {microQuestionId && !failed ? (
           <AiPmMicroQuestion
@@ -171,7 +163,16 @@ export function AiPmLiveWorkspace({
             ) : null}
           </div>
         ) : (
-          <p className="text-center text-xs text-muted-foreground">{t('stayOnPage')}</p>
+          <div className="space-y-4 border-t border-border/60 pt-4">
+            <p className="whitespace-pre-line text-center text-sm leading-relaxed text-muted-foreground">
+              {t('waitInstruction')}
+            </p>
+            {onCancel ? (
+              <Button type="button" variant="ghost" className="w-full rounded-xl text-muted-foreground" onClick={onCancel}>
+                {t('cancelAnalysis')}
+              </Button>
+            ) : null}
+          </div>
         )}
       </div>
     </div>

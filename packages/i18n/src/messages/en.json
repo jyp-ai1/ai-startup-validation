@@ -4010,6 +4010,10 @@
       "subtitle": "I'll be your strategy PM starting today.",
       "officeLabel": "What your AI PM is doing now",
       "reasoningLabel": "AI PM is thinking",
+      "progressLabel": "Overall progress",
+      "liveHero": "Founder,\nyour AI PM is working now.\n\nPlease wait.",
+      "waitInstruction": "You don't need to do anything right now.\n\nWhen analysis finishes,\nwe'll show the result automatically.",
+      "cancelAnalysis": "Cancel analysis",
       "stepEta": "Est. {seconds}s",
       "remaining": "Est. {seconds}s remaining",
       "failedHint": "Connection was unstable. Retry or go straight to today's actions.",
@@ -4036,6 +4040,12 @@
       "completion": {
         "title": "Analysis complete",
         "subtitle": "Your AI PM finished the business review.",
+        "doneHero": "Founder,\nmarket research is done.",
+        "conclusionLead": "Bottom line",
+        "riskLine": "However,\n\n{gap}",
+        "todayLead": "Today",
+        "todayMeta": "About {minutes} min",
+        "defaultAction": "Interview 3 potential customers",
         "greeting": "Founder,\n\ngood news.",
         "resultIntro": "Market review result",
         "investmentLabel": "Today's investment",
@@ -4045,7 +4055,7 @@
         "intro": "Market review is complete.",
         "todayTogether": "Let's start today with {action}.",
         "todayTogetherDefault": "Today's actions are ready. Shall we begin?",
-        "cta": "Start"
+        "cta": "Start today's actions"
       },
       "reasoning": {
         "marketResearch": "Checking whether similar services already exist.",
@@ -4054,9 +4064,9 @@
         "todayPlan": "Preparing what you can start today."
       },
       "microQuestion": {
-        "hint": "Analysis continues even if you skip. Answers improve result quality.",
+        "hint": "You can skip — analysis continues.",
         "targetCustomer": {
-          "prompt": "Market research is in progress.\n\nWhile I work, one quick question:\n\nWho is your main customer?",
+          "prompt": "Researching the market...\n\nIf you share this, results get sharper.\n\nMain customer?",
           "options": {
             "office": "Office workers",
             "student": "Students",
@@ -4067,33 +4077,33 @@
       },
       "work": {
         "ideaUnderstood": {
-          "done": "Idea understood",
-          "running": "Understanding idea",
-          "waiting": "Idea review pending",
+          "done": "Idea saved",
+          "running": "Saving idea",
+          "waiting": "Idea save pending",
           "failed": "Retry needed"
         },
         "marketResearch": {
           "done": "Market research complete",
           "running": "Researching market",
-          "waiting": "Market research pending",
+          "waiting": "Market research next",
           "failed": "Retry needed"
         },
         "competitorAnalysis": {
-          "done": "Competitive analysis complete",
-          "running": "Analyzing competitors",
-          "waiting": "Competitive analysis pending",
+          "done": "Customer research complete",
+          "running": "Customer research",
+          "waiting": "Customer research next",
           "failed": "Retry needed"
         },
         "strategyWriting": {
           "done": "Strategy complete",
           "running": "Writing strategy",
-          "waiting": "Strategy pending",
+          "waiting": "Strategy next",
           "failed": "Retry needed"
         },
         "todayPlan": {
-          "done": "Today's plan ready",
-          "running": "Preparing today's plan",
-          "waiting": "Today's plan pending",
+          "done": "Viability calculated",
+          "running": "Calculating viability",
+          "waiting": "Viability check next",
           "failed": "Retry needed"
         },
         "strategyPlan": {
@@ -4222,12 +4232,15 @@
       "journeyMap": {
         "label": "Where am I?",
         "stages": {
-          "start": "Start",
+          "idea": "Business idea",
           "marketValidation": "Market validation",
-          "strategy": "Strategy",
-          "go": "GO",
+          "customerValidation": "Customer validation",
+          "strategyLock": "Strategy lock",
           "execution": "Execution",
           "growth": "Growth",
+          "start": "Start",
+          "strategy": "Strategy",
+          "go": "GO",
           "investment": "Investment"
         }
       },
@@ -4278,7 +4291,8 @@
       "quickHint": "You already picked a Goal — add your idea to start in about 10 seconds.",
       "autoNameHint": "AI project name: {name}",
       "optionalDetails": "Additional details (optional)",
-      "ctaHint": "Business review starts in about 10 seconds.",
+      "ctaHint": "About 10 seconds · no extra input needed",
+      "savedHint": "✓ Saved automatically",
       "fields": {
         "projectName": "Project name",
         "projectNameOptional": "Project name (optional — AI generates if empty)",
@@ -4550,6 +4564,20 @@
         "minutes": "{count} min",
         "confidenceGain": "Confidence",
         "goGain": "GO probability"
+      },
+      "todayFirst": {
+        "label": "Today's work",
+        "greeting": "Good morning, Founder.",
+        "investmentLead": "Today",
+        "investmentMid": "minutes can move success odds to",
+        "investmentTail": ".",
+        "minutes": "{count} min",
+        "tasksTitle": "Today's actions",
+        "taskNumber": "1",
+        "taskMeta": "{minutes} min · +{impact}%",
+        "startCta": "Start",
+        "fallbackAction": "Today's core action",
+        "moreDetails": "More analysis · Decision · Memory · Timeline"
       },
       "todayHero": {
         "label": "Today's investment",
