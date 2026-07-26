@@ -42,6 +42,11 @@ const LandingAiPmSection = dynamic(
   () => import('./landing-ai-pm-section').then((m) => m.LandingAiPmSection),
   { loading: () => <div className="min-h-[280px]" aria-hidden /> },
 );
+const LandingWorkspacePreviewSection = dynamic(
+  () =>
+    import('./landing-workspace-preview-section').then((m) => m.LandingWorkspacePreviewSection),
+  { loading: () => <div className="min-h-[320px]" aria-hidden /> },
+);
 
 export async function LandingPage() {
   return (
@@ -49,6 +54,9 @@ export async function LandingPage() {
       <LandingHeader />
       <main id="main-content">
         <LandingHero />
+        <LandingLazySection minHeight={320}>
+          <LandingWorkspacePreviewSection />
+        </LandingLazySection>
         <LandingLazySection minHeight={120}>
           <LandingTrustedBy />
         </LandingLazySection>

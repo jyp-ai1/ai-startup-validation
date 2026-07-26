@@ -25,7 +25,11 @@ import {
   FounderActionWorkspace,
   type ActionWorkspaceResult,
 } from './founder-ai-pm/founder-action-workspace';
-import { FounderAiPmApprovalCard } from './founder-ai-pm/founder-ai-pm-approval-card';
+import {
+  FounderAiPmMorningConsole,
+  FounderAiPmPreparedTasks,
+  FounderAiPmWorkingNow,
+} from './founder-ai-pm/founder-ai-pm-work-console';
 import { FounderAiPmInbox } from './founder-ai-pm/founder-ai-pm-inbox';
 import { FounderAiPmProactiveQuestion } from './founder-ai-pm/founder-ai-pm-proactive-question';
 import { FounderAiPmWorkLog } from './founder-ai-pm/founder-ai-pm-work-log';
@@ -189,23 +193,10 @@ export function FounderTodayWorkspace({
       ) : null}
 
       <div className="space-y-6">
-        <FounderAiPmInbox
-          projectId={projectId}
-          deltas={intelligence.businessDeltas}
-          evidence={evidence}
-          todayActions={intelligence.todayActions}
-          onReviewAction={(actionId) => handleStartById(`inbox_${actionId}`, actionId)}
-        />
-
-        <FounderAiPmProactiveQuestion />
-
-        <FounderDailyGoalPanel
+        <FounderAiPmMorningConsole
           score={intelligence.successScore}
           primaryAction={primaryAction}
-        />
-
-        <FounderAiPmApprovalCard
-          primaryAction={primaryAction}
+          taskCount={3}
           onApprove={() =>
             handleStartById(
               primaryAction ? `approve_${primaryAction.id}` : 'approve_primary',
@@ -214,12 +205,38 @@ export function FounderTodayWorkspace({
           }
         />
 
+        <FounderAiPmPreparedTasks />
+
+        <FounderAiPmWorkingNow />
+
+        <FounderAiPmWorkLog evidence={evidence} history={historyEntries} />
+
         <FounderTodayOutcomeStrip
           score={intelligence.successScore}
           primaryAction={primaryAction}
         />
 
-        <FounderAiPmWorkLog evidence={evidence} history={historyEntries} />
+        <FounderAiPmProactiveQuestion />
+
+        <details className="rounded-2xl border border-border/60 bg-muted/10">
+          <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
+            {t('moreDetails')}
+          </summary>
+          <div className="space-y-6 border-t border-border/60 px-5 py-6">
+            <FounderAiPmInbox
+              projectId={projectId}
+              deltas={intelligence.businessDeltas}
+              evidence={evidence}
+              todayActions={intelligence.todayActions}
+              onReviewAction={(actionId) => handleStartById(`inbox_${actionId}`, actionId)}
+            />
+
+            <FounderDailyGoalPanel
+              score={intelligence.successScore}
+              primaryAction={primaryAction}
+            />
+          </div>
+        </details>
 
         <details className="rounded-2xl border border-border/60 bg-muted/10">
           <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">

@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { ArrowRight } from 'lucide-react';
 
 import { cn } from '@repo/ui/lib/utils';
 
@@ -6,21 +7,14 @@ type LandingHeroPreviewStaticProps = {
   className?: string;
 };
 
-/** Server-rendered hero preview — zero client JS for LCP (Epic 4 perf). */
+/** Server-rendered hero preview — Morning Brief workspace card (zero client JS for LCP). */
 export async function LandingHeroPreviewStatic({ className }: LandingHeroPreviewStaticProps) {
-  const t = await getTranslations('landing.preview');
-
-  const modules = [
-    { label: t('research'), width: '85%' },
-    { label: t('competitor'), width: '40%' },
-    { label: t('voc'), width: '20%' },
-    { label: t('government'), width: '90%' },
-  ];
+  const t = await getTranslations('landing.workspacePreview.morningBrief');
 
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-[20px] border border-border/60 bg-card/80 shadow-lg',
+        'overflow-hidden rounded-[20px] border-2 border-primary/25 bg-gradient-to-br from-primary/[0.06] to-card shadow-xl',
         className,
       )}
       aria-hidden
@@ -33,38 +27,24 @@ export async function LandingHeroPreviewStatic({ className }: LandingHeroPreview
           <span className="ml-2 text-xs text-muted-foreground">{t('windowTitle')}</span>
         </div>
       </div>
-      <div className="space-y-5 p-5 md:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {t('verdictLabel')}
-            </p>
-            <p className="mt-1 text-3xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">GO</p>
-            <p className="mt-0.5 text-sm text-muted-foreground">{t('score', { score: 84 })}</p>
-          </div>
-          <div className="rounded-2xl border border-border/60 bg-muted/50 px-4 py-3 text-right">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {t('confidence')}
-            </p>
-            <p className="text-2xl font-bold tabular-nums text-foreground">92%</p>
-          </div>
+      <div className="space-y-4 p-5 md:p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">
+          {t('label')}
+        </p>
+        <div className="space-y-2 text-sm leading-relaxed">
+          <p className="font-medium">{t('greeting')}</p>
+          <p className="text-muted-foreground">{t('body')}</p>
         </div>
-        <div className="space-y-2.5">
-          {modules.map((mod) => (
-            <div key={mod.label}>
-              <div className="mb-1 flex justify-between text-xs">
-                <span className="text-muted-foreground">{mod.label}</span>
-                <span className="font-medium tabular-nums">{mod.width}</span>
-              </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-primary/80" style={{ width: mod.width }} />
-              </div>
-            </div>
-          ))}
+        <div className="flex items-end gap-3 border-t border-border/60 pt-4">
+          <p className="text-3xl font-bold tabular-nums">72%</p>
+          <ArrowRight className="mb-2 size-5 text-muted-foreground" aria-hidden />
+          <p className="text-3xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+            76%
+          </p>
         </div>
-        <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">{t('nextAction')}</p>
-          <p className="mt-1 text-sm font-medium">{t('nextActionText')}</p>
+        <p className="text-xs text-muted-foreground">{t('eta')}</p>
+        <div className="rounded-xl bg-primary px-4 py-3 text-center text-sm font-semibold text-primary-foreground">
+          {t('cta')}
         </div>
       </div>
     </div>

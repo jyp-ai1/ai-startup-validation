@@ -1342,13 +1342,13 @@
   },
   "landing": {
     "meta": {
-      "title": "LaunchLens — AI Strategy Consultant",
-      "description": "시장조사, 경쟁사 분석, 사업성 검증, Executive Report를 AI가 자동 수행하는 AI Strategy Consultant. 스타트업과 전략기획팀을 위한 Evidence 기반 GO / NO GO 의사결정.",
-      "keywords": "AI Strategy Consultant, AI Startup Validation, Business Strategy, Enterprise Strategy, Market Research, Competitive Analysis, Executive Report, GO NO GO, Private Beta, AI 전략 컨설팅"
+      "title": "LaunchLens — CEO를 위한 AI PM Company",
+      "description": "대표님은 결정만, AI PM이 시장조사·경쟁분석·전략수립·실행관리를 대신합니다. CEO와 함께 회사를 운영하는 AI Strategy Company.",
+      "keywords": "AI PM, AI Strategy Company, CEO, 스타트업 운영, 시장조사, 경쟁분석, 사업 전략, 실행관리, GO HOLD, Private Beta"
     },
     "nav": {
       "brand": "LaunchLens",
-      "tagline": "AI Strategy Consultant",
+      "tagline": "AI PM Company",
       "features": "기능",
       "howItWorks": "How it Works",
       "demo": "데모",
@@ -1359,52 +1359,104 @@
       "aiPm": "AI PM",
       "stories": "후기",
       "signIn": "로그인",
-      "startFree": "전략 프로젝트 시작",
+      "startFree": "AI PM과 회사 운영 시작하기",
       "menuLabel": "내비게이션 메뉴",
       "openMenu": "메뉴 열기",
       "closeMenu": "메뉴 닫기"
     },
     "hero": {
-      "eyebrow": "AI Strategy Project Manager",
-      "title": "3분 안에\n전략 프로젝트를\n시작하세요.",
-      "subtitle": "Goal만 고르면 AI PM이 Workflow → GO/HOLD → 다음 액션까지 자동으로 안내합니다.",
-      "northStar": "AI가 내 사업을 함께 검토하는 서비스 — 5초 안에 이해, 3분 안에 시작.",
+      "eyebrow": "CEO + AI PM Company",
+      "title": "당신은 CEO입니다.",
+      "subtitle": "사업의 방향을 결정하는 것은 대표님의 역할입니다.\nAI PM이 시장조사, 경쟁분석, 전략수립, 실행계획까지 대신 수행합니다.",
+      "northStar": "대표님은 중요한 결정만 내리시면 됩니다.",
       "journey": {
-        "label": "이렇게 진행됩니다",
-        "goal": "목표",
-        "workflow": "워크플로",
-        "decision": "의사결정",
+        "label": "AI PM 업무 루프",
+        "goal": "보고",
+        "workflow": "제안",
+        "decision": "승인",
         "execution": "실행"
       },
-      "tagline": "보고서가 아니라, AI 프로젝트 매니저와 함께하는 전략 프로젝트.",
-      "ctaStart": "전략 프로젝트 시작",
-      "ctaDemo": "데모 Workflow 체험하기",
+      "tagline": "사업성 분석 SaaS가 아닙니다. CEO와 함께 회사를 운영하는 AI PM Company입니다.",
+      "ctaStart": "AI PM과 회사 운영 시작하기",
+      "ctaDemo": "AI PM Workspace 체험하기",
       "ctaHint1": "신용카드 필요 없음",
       "ctaHint2": "3분 만에 시작",
-      "speedPromise": "10초 안에 Goal 선택 → AI PM이 Workflow부터 GO까지 안내",
+      "speedPromise": "AI PM이 매일 아침 업무를 준비합니다 — 대표님은 승인만 하세요",
       "ctaHint3": "Beta 무료"
     },
+    "roleCards": {
+      "title": "AI PM이 대신 하는 일",
+      "items": {
+        "research": {
+          "icon": "🔍",
+          "title": "시장 조사",
+          "desc": "실시간 시장 규모\n경쟁사\n트렌드 조사"
+        },
+        "strategy": {
+          "icon": "📊",
+          "title": "사업 전략",
+          "desc": "BM\n가격\n수익성\n우선순위"
+        },
+        "judgment": {
+          "icon": "✅",
+          "title": "사업 판단",
+          "desc": "GO / HOLD\n리스크\n판단 근거"
+        },
+        "execution": {
+          "icon": "🚀",
+          "title": "실행 관리",
+          "desc": "오늘 해야 할 일\n주간 목표\n투자 준비"
+        }
+      }
+    },
+    "workspacePreview": {
+      "sectionTitle": "AI PM이 이미 일하고 있습니다",
+      "sectionDesc": "보고서가 아닙니다. 매일 아침 AI PM이 업무를 준비하고, 대표님은 결정만 내립니다.",
+      "morningBrief": {
+        "label": "AI PM Morning Brief",
+        "windowTitle": "AI PM Workspace",
+        "greeting": "대표님.",
+        "body": "오늘은 고객 인터뷰 3명만 진행하면\n사업 가능성이 72%에서 76%까지 올라갈 것으로 예상합니다.",
+        "eta": "예상 시간 · 15분",
+        "cta": "같이 시작하기"
+      },
+      "workLog": {
+        "title": "AI PM Work Log",
+        "entries": {
+          "one": { "time": "09:10", "text": "시장 조사 완료" },
+          "two": { "time": "09:14", "text": "경쟁사 8개 분석" },
+          "three": { "time": "09:18", "text": "가격 전략 작성" },
+          "four": { "time": "09:21", "text": "오늘 해야 할 일 생성" }
+        }
+      },
+      "testimonial": {
+        "label": "Founder 후기",
+        "ratingLabel": "5점 만점",
+        "quote": "매일 아침 AI PM이\n무엇을 해야 하는지 알려줘서\n대표인 저는 결정만 하면 됩니다.",
+        "role": "SaaS Founder"
+      }
+    },
     "testimonials": {
-      "title": "함께 실행하는 팀",
-      "desc": "보고서가 아니라 프로젝트를 함께 진행했다는 후기",
+      "title": "CEO와 함께 일하는 Founders",
+      "desc": "AI PM이 업무를 수행하고, 대표님은 결정만 내린다는 후기",
       "items": {
         "one": {
-          "quote": "3분 만에 Goal부터 Workspace까지 갔습니다. AI PM이 다음 액션을 정해줘서 생각할 필요가 없었어요.",
-          "role": "Pre-seed Founder"
+          "quote": "매일 아침 AI PM이 무엇을 해야 하는지 알려줘서 대표인 저는 결정만 하면 됩니다.",
+          "role": "SaaS Founder"
         },
         "two": {
-          "quote": "선택 화면이 아니라 AI가 프로젝트를 이해하는 느낌이었습니다.",
-          "role": "New Business PM"
+          "quote": "분석 도구가 아니라 AI 직원이 일하는 느낌이었습니다. 시장조사부터 실행까지 AI PM이 대신합니다.",
+          "role": "Pre-seed Founder"
         },
         "three": {
-          "quote": "GO 이후 MVP 설계 Workflow까지 자연스럽게 이어졌습니다.",
+          "quote": "보고 → 승인 → 실행 루프가 하루 종일 자연스럽게 이어집니다.",
           "role": "Strategy Lead"
         }
       }
     },
     "story": {
-      "title": "전략 프로젝트, 이렇게 바뀝니다",
-      "desc": "혼자 고민하던 순간에서 AI PM과 함께 실행하는 여정으로.",
+      "title": "혼자 운영하던 회사, AI PM과 함께",
+      "desc": "대표님이 모든 일을 해야 하는 서비스가 아닙니다. AI 직원이 일하는 서비스입니다.",
       "steps": {
         "problem": {
           "title": "Before — 혼자 고민",
@@ -1422,20 +1474,20 @@
     },
     "beforeAfter": {
       "title": "Before / After",
-      "desc": "분석 도구가 아닌, AI 프로젝트 매니저와 함께하는 차이",
+      "desc": "사업성 분석 SaaS가 아닌, CEO를 위해 일하는 AI PM Company",
       "beforeLabel": "Before",
       "afterLabel": "After · LaunchLens",
       "beforeItems": [
-        "어디서부터 시작할지 모름",
-        "조사·분석·보고서에 시간 소모",
+        "대표님이 시장조사부터 실행까지 직접",
+        "분석·보고서에 시간 소모",
         "다음 액션을 스스로 결정",
         "GO/HOLD 근거가 흩어짐"
       ],
       "afterItems": [
-        "Goal만 선택하면 AI가 Workflow 구성",
-        "3분 안에 Workspace 진입",
-        "AI PM이 Next Action 제안",
-        "Evidence 기반 GO/HOLD 판단"
+        "AI PM이 시장조사·전략·실행 업무 수행",
+        "매일 아침 Morning Brief로 시작",
+        "대표님은 승인과 결정만",
+        "AI PM Work Log로 투명하게 확인"
       ]
     },
     "journeySection": {
@@ -1444,7 +1496,7 @@
     },
     "why": {
       "title": "왜 LaunchLens인가",
-      "subtitle": "분석 도구가 아니라, AI PM과 함께 실행하는 이유",
+      "subtitle": "사업성 분석이 아닌, CEO와 함께 회사를 운영하는 AI PM Company",
       "marketFirst": {
         "title": "시장 검증이 먼저",
         "desc": "아이디어가 통하는지 확인하지 않으면 이후 전략이 모두 흔들립니다."
@@ -1459,25 +1511,25 @@
       }
     },
     "aiPm": {
-      "eyebrow": "AI Project Manager",
-      "title": "분석 도구가 아닙니다. 함께 일하는 AI PM입니다.",
-      "desc": "LaunchLens는 Chat UI가 아닙니다. Goal부터 GO까지 전략 프로젝트를 함께 진행하는 동료입니다.",
+      "eyebrow": "AI PM Company",
+      "title": "분석 도구가 아닙니다. CEO를 위해 일하는 AI PM입니다.",
+      "desc": "LaunchLens는 GPT Wrapper가 아닙니다. 매일 출근해서 시장조사, 전략수립, 실행관리를 대신하는 AI PM Company입니다.",
       "points": {
         "lead": {
-          "title": "Lead — 다음 액션을 정합니다",
-          "desc": "오늘 무엇을 할지, 왜 해야 하는지 AI PM이 먼저 말합니다."
+          "title": "Report — 매일 아침 보고",
+          "desc": "AI PM이 오늘의 업무와 예상 효과를 Morning Brief로 보고합니다."
         },
         "decide": {
-          "title": "Decide — 근거와 함께 판단",
-          "desc": "Confidence, Evidence, Risk를 연결해 GO/HOLD를 설명합니다."
+          "title": "Approve — 대표님이 승인",
+          "desc": "중요한 결정만 내리시면 됩니다. AI PM이 나머지를 수행합니다."
         },
         "execute": {
-          "title": "Execute — Workspace에서 실행",
-          "desc": "Decision 이후 MVP·투자·정부지원 Workflow까지 자연스럽게 이어집니다."
+          "title": "Execute — AI PM이 업무 수행",
+          "desc": "시장조사, 경쟁분석, 실행계획까지 Work Log로 투명하게 확인합니다."
         }
       },
-      "quote": "보고서를 읽는 게 아니라, AI PM과 전략 프로젝트를 함께 진행하는 느낌이었습니다.",
-      "quoteRole": "Closed Beta Founder"
+      "quote": "매일 아침 AI PM이 무엇을 해야 하는지 알려줘서 대표인 저는 결정만 하면 됩니다.",
+      "quoteRole": "SaaS Founder"
     },
     "preview": {
       "windowTitle": "Strategy Workspace",
@@ -1505,12 +1557,12 @@
       "badge4": "Explainable AI"
     },
     "howItWorks": {
-      "title": "3분 안에 전략 프로젝트 시작",
-      "desc": "프로젝트 시작 → AI 전략 수립 → GO/HOLD → 실행",
-      "step1": { "title": "프로젝트 시작", "desc": "Goal을 선택하면 AI가 Workflow를 자동 구성합니다." },
-      "step2": { "title": "AI가 전략 수립", "desc": "시장·경쟁·고객 분석으로 전략 프로젝트를 진행합니다." },
-      "step3": { "title": "GO / HOLD", "desc": "근거 기반으로 첫 Decision을 제시합니다." },
-      "step4": { "title": "실행", "desc": "Next Action부터 Workspace에서 함께 진행합니다." }
+      "title": "AI PM과 회사 운영 시작하기",
+      "desc": "보고 → 제안 → 승인 → 실행 — AI PM Company 경험",
+      "step1": { "title": "AI PM 보고", "desc": "매일 아침 Morning Brief로 오늘 업무와 예상 효과를 보고합니다." },
+      "step2": { "title": "AI PM 제안", "desc": "시장조사, 경쟁분석, 전략수립을 AI PM이 대신 수행합니다." },
+      "step3": { "title": "대표님 승인", "desc": "중요한 결정만 내리시면 됩니다. GO/HOLD도 AI PM이 근거와 함께 제안합니다." },
+      "step4": { "title": "AI PM 실행", "desc": "승인된 업무를 AI PM이 수행하고 Work Log로 보고합니다." }
     },
     "features": {
       "title": "의사결정에 필요한 모든 것",
@@ -1632,10 +1684,10 @@
       "q11": { "question": "Private Beta란?", "answer": "Private Beta 기간 동안 LaunchLens의 모든 기능을 무료로 이용할 수 있습니다. Early Adopter 피드백이 Roadmap에 반영됩니다." }
     },
     "footer": {
-      "ctaTitle": "다음 Big Bet을 검증할 준비가 되셨나요?",
-      "ctaDesc": "Google로 무료 시작 — 신용카드 필요 없음",
-      "ctaButton": "무료 시작하기",
-      "copyright": "LaunchLens · AI Strategy Consultant",
+      "ctaTitle": "AI PM과 함께 회사를 운영할 준비가 되셨나요?",
+      "ctaDesc": "대표님은 결정만 — AI PM이 나머지를 수행합니다",
+      "ctaButton": "AI PM과 회사 운영 시작하기",
+      "copyright": "LaunchLens · AI PM Company",
       "privacy": "Privacy",
       "terms": "Terms",
       "contact": "문의하기",
@@ -4699,7 +4751,33 @@
       "todayOutcome": {
         "label": "오늘 끝나면",
         "defaultAction": "오늘의 핵심 액션",
-        "lead": "{action}을 끝내면 사업 가능성 {before}% → {after}% · 약 {minutes}분 · {focus}이 한 단계 진행됩니다."
+        "lead": "{action} · 약 {minutes}분 · {focus} 진행",
+        "outcomes": {
+          "validation": "{focus} 완료",
+          "scoreGain": "사업 가능성 +{delta}%",
+          "nextTasks": "다음 업무 생성"
+        }
+      },
+      "workConsole": {
+        "label": "AI PM Work Console",
+        "aiPmLabel": "AI PM",
+        "greeting": "대표님. 좋은 아침입니다.",
+        "preparedLead": "오늘 AI PM이 {count}개의 업무를 준비했습니다.",
+        "todayGoal": "오늘 목표",
+        "defaultAction": "고객 인터뷰 3명",
+        "eta": "예상 {minutes}분 · {action}",
+        "approveCta": "승인하고 시작",
+        "inboxLabel": "AI PM 업무함",
+        "inboxTitle": "AI PM 업무함",
+        "preparedTasks": {
+          "interview": "고객 인터뷰 준비 완료",
+          "competitor": "경쟁사 분석 완료",
+          "pricing": "가격 전략 초안 작성"
+        },
+        "workingLabel": "AI PM 작업중",
+        "workingTitle": "AI PM 작업중",
+        "workingTask": "시장 조사 업데이트",
+        "workingRemaining": "남음 2분"
       },
       "workLog": {
         "label": "AI PM 작업 로그",
@@ -4746,7 +4824,7 @@
         "effectLead": "예상 효과",
         "timeLead": "예상 시간",
         "minutes": "{count}분",
-        "approveCta": "승인"
+        "approveCta": "승인하고 시작"
       },
       "dailyGoal": {
         "label": "오늘 목표",

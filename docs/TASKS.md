@@ -15,6 +15,25 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint — AI PM Company Experience ✅
+
+**Status:** Complete — `main` (2026-07-26)  
+**Goal:** Founder가 처음 방문한 순간부터 "나는 CEO이고, AI PM과 함께 회사를 운영하는구나" 감정 전달
+
+**Delivered (P0):**
+- Landing Hero → "당신은 CEO입니다" + CTA "AI PM과 회사 운영 시작하기"
+- AI PM 역할 카드 4개 (시장조사 · 전략 · 판단 · 실행)
+- Workspace preview — Morning Brief / Work Log / Founder 후기
+- 전역 메시지: AI Strategy Consultant → AI PM Company
+
+**Delivered (P1):**
+- Today Work Console — Morning greeting, 목표 72%→76%, `[승인하고 시작]`
+- AI PM 업무함 체크리스트, 작업중 progress bar, Work Log, 오늘 끝나면 outcomes
+
+**Out of scope (P2):** OpenRouter Research Provider, real market-data Morning Brief
+
+---
+
 ## Day 2 — Analytics & Admin + CPO UX ✅
 
 **Status:** Complete — `closed-beta-v2.1.1`  

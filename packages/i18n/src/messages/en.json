@@ -1342,13 +1342,13 @@
   },
   "landing": {
     "meta": {
-      "title": "LaunchLens — AI Strategy Consultant",
-      "description": "AI Strategy Consultant for market research, competitive analysis, business validation, and executive reports. Evidence-based GO / NO GO decisions for startups and strategy teams.",
-      "keywords": "AI Strategy Consultant, AI Startup Validation, Business Strategy, Enterprise Strategy, Market Research, Competitive Analysis, Executive Report, GO NO GO, Private Beta"
+      "title": "LaunchLens — AI PM Company for CEOs",
+      "description": "You decide. Your AI PM handles market research, competitive analysis, strategy, and execution. An AI Strategy Company you run as CEO.",
+      "keywords": "AI PM, AI Strategy Company, CEO, startup operations, market research, competitive analysis, business strategy, execution management, GO HOLD, Private Beta"
     },
     "nav": {
       "brand": "LaunchLens",
-      "tagline": "AI Strategy Consultant",
+      "tagline": "AI PM Company",
       "features": "Features",
       "howItWorks": "How it Works",
       "demo": "Demo",
@@ -1359,52 +1359,104 @@
       "aiPm": "AI PM",
       "stories": "Stories",
       "signIn": "Sign in",
-      "startFree": "Start strategy project",
+      "startFree": "Start running your company with AI PM",
       "menuLabel": "Navigation menu",
       "openMenu": "Open menu",
       "closeMenu": "Close menu"
     },
     "hero": {
-      "eyebrow": "AI Strategy Project Manager",
-      "title": "Start your strategy project\nin 3 minutes.",
-      "subtitle": "Pick a Goal — your AI PM guides Workflow → GO/HOLD → your next action automatically.",
-      "northStar": "AI reviews your business with you — understand in 5 seconds, start in 3 minutes.",
+      "eyebrow": "CEO + AI PM Company",
+      "title": "You are the CEO.",
+      "subtitle": "Setting direction is your role.\nYour AI PM handles market research, competitive analysis, strategy, and execution plans.",
+      "northStar": "You only need to make the important decisions.",
       "journey": {
-        "label": "How it works",
-        "goal": "Goal",
-        "workflow": "Workflow",
-        "decision": "Decision",
-        "execution": "Execution"
+        "label": "AI PM work loop",
+        "goal": "Report",
+        "workflow": "Recommend",
+        "decision": "Approve",
+        "execution": "Execute"
       },
-      "tagline": "Not a report — a strategy project led by your AI coach.",
-      "ctaStart": "Start strategy project",
-      "ctaDemo": "Try demo workflow",
+      "tagline": "Not a viability analysis SaaS — an AI PM Company you run as CEO.",
+      "ctaStart": "Start running your company with AI PM",
+      "ctaDemo": "Try AI PM Workspace",
       "ctaHint1": "No credit card required",
       "ctaHint2": "Get started in 3 minutes",
-      "speedPromise": "Pick a Goal in 10 seconds → AI PM guides you to GO",
+      "speedPromise": "Your AI PM prepares daily work — you just approve",
       "ctaHint3": "Free during Beta"
     },
+    "roleCards": {
+      "title": "What your AI PM handles",
+      "items": {
+        "research": {
+          "icon": "🔍",
+          "title": "Market research",
+          "desc": "Real-time market size\nCompetitors\nTrend analysis"
+        },
+        "strategy": {
+          "icon": "📊",
+          "title": "Business strategy",
+          "desc": "Business model\nPricing\nProfitability\nPriorities"
+        },
+        "judgment": {
+          "icon": "✅",
+          "title": "Business judgment",
+          "desc": "GO / HOLD\nRisk\nDecision rationale"
+        },
+        "execution": {
+          "icon": "🚀",
+          "title": "Execution management",
+          "desc": "Today's tasks\nWeekly goals\nFundraising prep"
+        }
+      }
+    },
+    "workspacePreview": {
+      "sectionTitle": "Your AI PM is already working",
+      "sectionDesc": "Not a report generator. Every morning your AI PM prepares work — you decide.",
+      "morningBrief": {
+        "label": "AI PM Morning Brief",
+        "windowTitle": "AI PM Workspace",
+        "greeting": "Good morning.",
+        "body": "Complete 3 customer interviews today and viability is expected to rise from 72% to 76%.",
+        "eta": "Estimated time · 15 min",
+        "cta": "Start together"
+      },
+      "workLog": {
+        "title": "AI PM Work Log",
+        "entries": {
+          "one": { "time": "09:10", "text": "Market research complete" },
+          "two": { "time": "09:14", "text": "8 competitors analyzed" },
+          "three": { "time": "09:18", "text": "Pricing strategy drafted" },
+          "four": { "time": "09:21", "text": "Today's tasks generated" }
+        }
+      },
+      "testimonial": {
+        "label": "Founder review",
+        "ratingLabel": "5 out of 5 stars",
+        "quote": "Every morning my AI PM tells me what to do — as CEO I just decide.",
+        "role": "SaaS Founder"
+      }
+    },
     "testimonials": {
-      "title": "Teams executing together",
-      "desc": "Not reports — running strategy projects with AI PM",
+      "title": "Founders working with their AI PM",
+      "desc": "Reviews from CEOs whose AI PM does the work — they decide",
       "items": {
         "one": {
-          "quote": "Goal to Workspace in 3 minutes. AI PM picked the next action — I didn't have to think.",
-          "role": "Pre-seed Founder"
+          "quote": "Every morning my AI PM tells me what to do — as CEO I just decide.",
+          "role": "SaaS Founder"
         },
         "two": {
-          "quote": "Felt like AI understanding my project, not picking from a menu.",
-          "role": "New Business PM"
+          "quote": "Not an analysis tool — it feels like AI employees doing the work. Market research to execution.",
+          "role": "Pre-seed Founder"
         },
         "three": {
-          "quote": "After GO, MVP design workflow started naturally.",
+          "quote": "The report → approve → execute loop runs naturally all day.",
           "role": "Strategy Lead"
         }
       }
     },
     "story": {
-      "title": "How strategy projects change",
-      "desc": "From solo guessing to executing with your AI PM.",
+      "title": "From solo operator to CEO with AI PM",
+      "desc": "Not a service where you do everything — a service where AI employees work.",
       "steps": {
         "problem": {
           "title": "Before — solo guessing",
@@ -1422,20 +1474,20 @@
     },
     "beforeAfter": {
       "title": "Before / After",
-      "desc": "Not another analysis tool — an AI project manager at your side",
+      "desc": "Not a viability analysis SaaS — an AI PM Company working for the CEO",
       "beforeLabel": "Before",
       "afterLabel": "After · LaunchLens",
       "beforeItems": [
-        "No clear starting point",
-        "Hours on research and decks",
+        "CEO handles research through execution alone",
+        "Hours lost to analysis and decks",
         "You decide every next action",
         "GO/HOLD rationale scattered"
       ],
       "afterItems": [
-        "Pick a Goal — AI builds Workflow",
-        "Workspace in 3 minutes",
-        "AI PM suggests Next Action",
-        "Evidence-based GO/HOLD"
+        "AI PM handles research, strategy, and execution",
+        "Start every day with a Morning Brief",
+        "CEO approves and decides only",
+        "Track everything in AI PM Work Log"
       ]
     },
     "journeySection": {
@@ -1444,7 +1496,7 @@
     },
     "why": {
       "title": "Why LaunchLens",
-      "subtitle": "Not an analysis tool — an AI PM you execute with",
+      "subtitle": "Not viability analysis — an AI PM Company you run as CEO",
       "marketFirst": {
         "title": "Market validation first",
         "desc": "Without proof the idea works, every later strategy wobbles."
@@ -1459,25 +1511,25 @@
       }
     },
     "aiPm": {
-      "eyebrow": "AI Project Manager",
-      "title": "Not an analysis tool. An AI PM who works with you.",
-      "desc": "LaunchLens is not a chat UI. It is a colleague running your strategy project from Goal to GO.",
+      "eyebrow": "AI PM Company",
+      "title": "Not an analysis tool. An AI PM working for the CEO.",
+      "desc": "LaunchLens is not a GPT wrapper. It's an AI PM Company that shows up daily to handle research, strategy, and execution.",
       "points": {
         "lead": {
-          "title": "Lead — picks next actions",
-          "desc": "Your AI PM tells you what to do today and why."
+          "title": "Report — daily morning brief",
+          "desc": "Your AI PM reports today's work and expected impact every morning."
         },
         "decide": {
-          "title": "Decide — judgment with evidence",
-          "desc": "Connects Confidence, Evidence, and Risk to explain GO/HOLD."
+          "title": "Approve — you decide",
+          "desc": "You only make important decisions. Your AI PM handles the rest."
         },
         "execute": {
-          "title": "Execute — in Workspace",
-          "desc": "After Decision, MVP, funding, and grant workflows flow naturally."
+          "title": "Execute — AI PM does the work",
+          "desc": "From market research to execution plans — transparent in Work Log."
         }
       },
-      "quote": "It felt like running a strategy project with an AI PM — not reading a report.",
-      "quoteRole": "Closed Beta Founder"
+      "quote": "Every morning my AI PM tells me what to do — as CEO I just decide.",
+      "quoteRole": "SaaS Founder"
     },
     "preview": {
       "windowTitle": "Strategy Workspace",
@@ -1505,12 +1557,12 @@
       "badge4": "Explainable AI"
     },
     "howItWorks": {
-      "title": "Start your strategy project in 3 minutes",
-      "desc": "Start → AI strategy → GO/HOLD → Execute",
-      "step1": { "title": "Start project", "desc": "Pick a Goal — AI builds your Workflow automatically." },
-      "step2": { "title": "AI builds strategy", "desc": "Market, competition, and customer analysis in one flow." },
-      "step3": { "title": "GO / HOLD", "desc": "Evidence-based first decision in minutes." },
-      "step4": { "title": "Execute", "desc": "Next Actions and coaching in your Workspace." }
+      "title": "Start running your company with AI PM",
+      "desc": "Report → Recommend → Approve → Execute — the AI PM Company experience",
+      "step1": { "title": "AI PM reports", "desc": "Every morning, Morning Brief covers today's work and expected impact." },
+      "step2": { "title": "AI PM recommends", "desc": "Market research, competitive analysis, and strategy — handled by AI PM." },
+      "step3": { "title": "CEO approves", "desc": "You only decide. GO/HOLD comes with rationale from your AI PM." },
+      "step4": { "title": "AI PM executes", "desc": "Approved work gets done — reported in Work Log." }
     },
     "features": {
       "title": "Everything you need to decide",
@@ -1632,10 +1684,10 @@
       "q11": { "question": "What is Private Beta?", "answer": "Private Beta gives you unlimited access to every LaunchLens feature at no cost while we refine the product with early adopters. Your feedback shapes the roadmap." }
     },
     "footer": {
-      "ctaTitle": "Ready to validate your next big bet?",
-      "ctaDesc": "Start free with Google — no credit card required.",
-      "ctaButton": "Start free",
-      "copyright": "LaunchLens · AI Strategy Consultant",
+      "ctaTitle": "Ready to run your company with AI PM?",
+      "ctaDesc": "You decide — your AI PM handles the rest",
+      "ctaButton": "Start running your company with AI PM",
+      "copyright": "LaunchLens · AI PM Company",
       "privacy": "Privacy",
       "terms": "Terms",
       "contact": "Contact",
@@ -4717,7 +4769,33 @@
       "todayOutcome": {
         "label": "When you finish today",
         "defaultAction": "Today's core action",
-        "lead": "Finish {action} to move {before}% → {after}% · ~{minutes} min · {focus} advances one step."
+        "lead": "{action} · ~{minutes} min · {focus} progress",
+        "outcomes": {
+          "validation": "{focus} complete",
+          "scoreGain": "Viability +{delta}%",
+          "nextTasks": "Next tasks generated"
+        }
+      },
+      "workConsole": {
+        "label": "AI PM Work Console",
+        "aiPmLabel": "AI PM",
+        "greeting": "Good morning.",
+        "preparedLead": "Your AI PM prepared {count} tasks for today.",
+        "todayGoal": "Today's goal",
+        "defaultAction": "3 customer interviews",
+        "eta": "Est. {minutes} min · {action}",
+        "approveCta": "Approve and start",
+        "inboxLabel": "AI PM inbox",
+        "inboxTitle": "AI PM inbox",
+        "preparedTasks": {
+          "interview": "Customer interview prep complete",
+          "competitor": "Competitor analysis complete",
+          "pricing": "Pricing strategy draft ready"
+        },
+        "workingLabel": "AI PM working",
+        "workingTitle": "AI PM working",
+        "workingTask": "Updating market research",
+        "workingRemaining": "2 min left"
       },
       "workLog": {
         "label": "AI PM work log",
@@ -4764,7 +4842,7 @@
         "effectLead": "Expected effect",
         "timeLead": "Estimated time",
         "minutes": "{count} min",
-        "approveCta": "Approve"
+        "approveCta": "Approve and start"
       },
       "dailyGoal": {
         "label": "Today's goal",

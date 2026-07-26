@@ -1,6 +1,5 @@
 'use client';
 
-import { ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@repo/ui/lib/utils';
@@ -37,6 +36,12 @@ export function FounderTodayOutcomeStrip({
       ? 'interview'
       : 'generic';
 
+  const outcomes = [
+    t('outcomes.validation', { focus: tk(kindKey) }),
+    t('outcomes.scoreGain', { delta: afterScore - score.percent }),
+    t('outcomes.nextTasks'),
+  ];
+
   return (
     <aside
       className={cn(
@@ -48,7 +53,17 @@ export function FounderTodayOutcomeStrip({
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         {t('label')}
       </p>
-      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+      <ul className="mt-3 space-y-2" role="list">
+        {outcomes.map((outcome) => (
+          <li key={outcome} className="flex items-start gap-2 text-sm text-muted-foreground">
+            <span className="text-emerald-600 dark:text-emerald-400" aria-hidden>
+              ✔
+            </span>
+            <span>{outcome}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-xs text-muted-foreground">
         {t('lead', {
           action: actionTitle,
           minutes: primaryAction.etaMinutes,
