@@ -4264,6 +4264,7 @@
       "reasoningLabel": "AI PM의 생각",
       "progressLabel": "전체 진행",
       "liveHero": "대표님,\n이제는 AI PM이 일합니다.\n\n지금은 기다려주세요.",
+      "liveStrategyBuilding": "AI PM이 조사하는 동안 전략실이 실시간으로 채워집니다.",
       "waitInstruction": "지금은 아무것도 하지 않아도 됩니다.\n\n분석이 끝나면\n자동으로 결과를 보여드립니다.",
       "waitInstructionSticky": "대표님은\n\n지금 아무것도 하지 않으셔도 됩니다.\n\nAI PM이 대신 조사하고 있습니다.",
       "liveStep": {
@@ -4944,6 +4945,59 @@
         "minutes": "{count}분",
         "confidenceGain": "사업 가능성",
         "goGain": "GO 가능성"
+      },
+      "executiveWorkspace": {
+        "dashboard": {
+          "label": "CEO 전략실",
+          "roomLabel": "현재 프로젝트 · 전략실",
+          "viability": "사업 가능성",
+          "viabilityBreakdown": "왜 이 점수인가요?",
+          "swot": "SWOT",
+          "competitors": "경쟁사 비교",
+          "positioning": "포지셔닝",
+          "pricing": "추천 가격",
+          "pricingAvg": "시장 평균 {avg}",
+          "recommendedBm": "추천 BM",
+          "marketSize": "시장 규모 · {size}",
+          "validation": "검증 진행",
+          "topRisks": "핵심 리스크 Top 3",
+          "recommendedStrategies": "추천 전략",
+          "todayActions": "오늘 실행"
+        },
+        "flow": {
+          "situationLabel": "지금 상황",
+          "situationFallback": "사업 가능성 {score}% · AI PM이 오늘의 판단을 준비했습니다.",
+          "whyLabel": "왜?",
+          "pipelineLabel": "조사 → 발견 → 판단 → 전략 → 실행",
+          "researchTitle": "조사 결과",
+          "discoveryTitle": "AI 발견",
+          "judgmentTitle": "판단 근거",
+          "strategyTitle": "추천 전략",
+          "actionTitle": "오늘 실행",
+          "actionFallback": "오늘의 핵심 액션을 시작하세요",
+          "actionNowLabel": "그래서 뭘 해야 함?",
+          "actionMeta": "{minutes}분 · +{impact}%"
+        },
+        "charts": {
+          "why": "왜?",
+          "automation": "자동화 ↑",
+          "price": "가격 →",
+          "dimensions": {
+            "market": "시장성",
+            "customer": "고객문제",
+            "pricing": "가격",
+            "mvp": "MVP",
+            "market_size": "시장",
+            "customerProblem": "고객문제",
+            "competitiveness": "경쟁력"
+          },
+          "swot": {
+            "strength": "Strength",
+            "weakness": "Weakness",
+            "opportunity": "Opportunity",
+            "threat": "Threat"
+          }
+        }
       },
       "todayFirst": {
         "label": "오늘의 일",

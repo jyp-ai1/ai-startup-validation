@@ -8,6 +8,27 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint — Executive Workspace Sprints A–E ✅
+
+**Status:** Complete — pending commit  
+**Goal:** IA 통일 + CEO 전략실 — *"지금 상황 · 왜? · 그래서 뭘 해야 함?"*
+
+| Sprint | Focus | Status |
+|--------|-------|--------|
+| A | `WorkspaceShell` 35/65 통일 (Registration/Live/Completion/Today/Action/Debrief) | ✅ |
+| B | `FounderStrategyDashboard` — SWOT · 경쟁사 · 포지셔닝 · 가격 · BM | ✅ |
+| C | `FounderExplainableWorkspaceFlow` — 조사→발견→판단→전략→실행 | ✅ |
+| D | `founder-strategy-charts` — 막대·SWOT·포지셔닝·추이 차트 | ✅ |
+| E | Today = CEO 전략실 (좌 AI PM / 우 전략 대시보드) | ✅ |
+
+**Key files:**
+- `workspace-shell.tsx` — unified layout
+- `founder-strategy-dashboard.ts` + panels
+- `founder-today-workspace.tsx` — executive split
+- All journey phases wired (live, completion, action, debrief)
+
+---
+
 ## Platform Phase — Intelligence Platform (Active)
 
 **Status:** In progress — local (pending commit + push)  

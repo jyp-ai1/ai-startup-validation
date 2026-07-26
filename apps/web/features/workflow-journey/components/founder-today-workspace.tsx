@@ -47,6 +47,7 @@ import {
   type TodayApprovalChoice,
 } from '../lib/founder-daily-ceo-store';
 import { buildCompetitiveIntelligence } from '../lib/founder-competitive-intelligence';
+import { buildStrategyDashboardData } from '../lib/founder-strategy-dashboard';
 import { buildExplainableJudgment } from '../lib/founder-explainable-judgment';
 import { computeFounderIntelligenceBrief } from '../lib/founder-intelligence-engine';
 import type { GeneratedTodayAction } from '../lib/founder-intelligence-engine';
@@ -63,6 +64,7 @@ import {
 } from '../lib/founder-research-sources';
 import type { WorkflowGoalId } from '../types';
 import { DecisionExperienceCoach } from './decision-experience-coach';
+import { WorkspaceShell } from './workspace-shell';
 import { BusinessDeltaBrief } from './founder-ai-pm/business-delta-brief';
 import { BusinessProgressPanel } from './founder-ai-pm/business-progress-panel';
 import { DecisionIntelligencePathPanel } from './founder-ai-pm/decision-intelligence-path-panel';
@@ -128,6 +130,8 @@ import { FounderProjectHealthDashboard } from './founder-ai-pm/founder-project-h
 import { FounderSuccessScoreExplained } from './founder-ai-pm/founder-success-score-explained';
 import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionFirst } from './founder-ai-pm/founder-today-action-first';
+import { FounderExplainableWorkspaceFlow } from './founder-ai-pm/founder-explainable-workspace-flow';
+import { FounderStrategyDashboard } from './founder-ai-pm/founder-strategy-dashboard';
 import { FounderTodayOutcomeStrip } from './founder-ai-pm/founder-today-outcome-strip';
 const DAILY_VISIT_KEY = 'll_daily_visit';
 const WEEKLY_VISIT_KEY = 'll_weekly_visit';
@@ -460,6 +464,41 @@ export function FounderTodayWorkspace({
     };
   }, [habitBriefBase, overnightSnapshot]);
 
+  const strategyDashboard = useMemo(
+    () =>
+      buildStrategyDashboardData({
+        projectName,
+        scorePercent: intelligence.successScore.percent,
+        businessProgress: intelligence.businessProgress,
+        explainableJudgment,
+        competitiveIntelligence,
+        pipeline,
+        behavior: intelligence.behavior,
+        todayActions: intelligence.todayActions,
+        resolveTitle: resolveActionTitle,
+      }),
+    [
+      competitiveIntelligence,
+      explainableJudgment,
+      intelligence.behavior,
+      intelligence.businessProgress,
+      intelligence.successScore.percent,
+      intelligence.todayActions,
+      pipeline,
+      projectName,
+      td,
+      tDaily,
+    ],
+  );
+
+  const whyItems = useMemo(
+    () =>
+      habitBrief.whatChanged.map((item) =>
+        tDaily(`whatChanged.items.${item.messageKey}` as 'whatChanged.items.scoreUp', item.params),
+      ),
+    [habitBrief.whatChanged, tDaily],
+  );
+
   useEffect(() => {
     trackReturnVisits(analytics, goalId);
     analytics.trackDecisionViewed(goalId);
@@ -561,6 +600,10 @@ export function FounderTodayWorkspace({
           scoreBefore={intelligence.successScore.percent}
           onComplete={handleActionComplete}
           onClose={() => setActiveAction(null)}
+          projectId={projectId}
+          projectName={projectName}
+          goalId={goalId}
+          confidence={confidence}
         />
       ) : null}
 
@@ -568,269 +611,106 @@ export function FounderTodayWorkspace({
         <FounderActionDebrief
           debrief={completionUpdate.debrief}
           onContinue={handleDebriefContinue}
+          projectId={projectId}
+          projectName={projectName}
+          goalId={goalId}
+          confidence={confidence}
         />
       ) : null}
 
-      <div className="space-y-6">
-        <FounderAiPmOfficeHeader />
-
-        <FounderOvernightInvestigationPanel
-          snapshot={overnightSnapshot}
-          syncing={overnightSyncing}
-        />
-
-        <FounderLivingMilestoneCelebrationPanel celebration={livingBrief.milestoneCelebration} />
-
-        {showWeeklyReview ? (
-          <FounderLivingWeeklyStoryPanel story={livingBrief.weeklyStory} />
-        ) : null}
-
-        <FounderCeoMorningBriefPanel
-          habit={habitBrief}
-          livingContext={livingBrief.morningContext}
-        />
-
-        <FounderWhatChangedPanel items={habitBrief.whatChanged} />
-
-        <FounderAiPmOvernightReportPanel
-          items={habitBrief.overnightReport}
-          onViewReport={handleOvernightView}
-        />
-
-        <FounderTodayFocusPanel
-          focus={habitBrief.todayFocus}
-          approved={
-            habitBrief.todayFocus
-              ? approvedActionIds.includes(habitBrief.todayFocus.actionId)
-              : false
-          }
-          onApprove={handleApproveQueueItem}
-        />
-
-        <FounderLivingStuckAlertPanel
-          alert={livingBrief.stuckAlert}
-          onStart={(actionId) => handleStartById(`living_stuck_${actionId}`, actionId)}
-        />
-
-        {liveWorkActionId ? (
-          <FounderAiPmLiveWorkPanel
-            key={liveWorkActionId}
-            actionTitle={liveWorkTitle}
-            onComplete={handleLiveWorkComplete}
-          />
-        ) : null}
-
-        {approvedActionIds.length > 0 && !liveWorkActionId ? (
-          <FounderAiPmPreparedTasks />
-        ) : null}
-
-        <FounderCeoInboxPanel
-          items={inboxItems}
-          pendingCount={dailyCeoBrief.pendingInboxCount}
-          onReview={(actionId) => handleStartById(`ceo_inbox_${actionId ?? 'primary'}`, actionId)}
-        />
-
-        <FounderLivingMomentumPanel momentum={livingBrief.momentum} />
-
-        <FounderLivingDailyJournalPanel journal={livingBrief.dailyJournal} />
-
-        <FounderLivingFounderPatternPanel
-          pattern={livingBrief.founderPattern}
-          onStart={() =>
-            handleStartById(
-              livingBrief.founderPattern.recommendedActionId
-                ? `pattern_${livingBrief.founderPattern.recommendedActionId}`
-                : 'pattern_primary',
-              livingBrief.founderPattern.recommendedActionId ?? primaryAction?.id,
-            )
-          }
-        />
-
-        <FounderAiPmMemoryBriefPanel
-          memory={memoryBrief}
-          onStart={() =>
-            handleStartById(
-              memoryBrief.recommendedActionId
-                ? `memory_${memoryBrief.recommendedActionId}`
-                : 'memory_primary',
-              memoryBrief.recommendedActionId ?? primaryAction?.id,
-            )
-          }
-        />
-
-        <FounderLivingProjectHistoryPanel entries={livingBrief.history} />
-
-        <FounderAiPmDailyReportPanel report={dailyReport} />
-
-        <FounderAiOperatingSystemSection
-          brief={osBrief}
-          onApprove={handleApproveQueueItem}
-        />
-
-        <details
-          className="rounded-2xl border border-border/60 bg-muted/10"
-          open={showAnalysisDetails}
-          onToggle={(event) => setShowAnalysisDetails((event.target as HTMLDetailsElement).open)}
-        >
-          <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
-            {tDaily('analysisDetails')}
-          </summary>
-          <div className="space-y-6 border-t border-border/60 px-5 py-6">
-            <FounderResearchCompletePanel brief={researchComplete} />
-
-            <FounderAiPmDiscoveryPanel findings={surpriseFindings} />
-
-            <FounderResearchSourcePanel
-              items={researchSources}
-              totalCount={researchMaterialCount}
-              providerId={pipeline?.research.providerId}
+      <WorkspaceShell
+        embedded
+        rail={
+          <>
+            <FounderAiPmOfficeHeader />
+            <FounderOvernightInvestigationPanel
+              snapshot={overnightSnapshot}
+              syncing={overnightSyncing}
             />
-
-            <FounderCompetitorComparePanel
-              brief={competitiveIntelligence}
-              verification={competitorVerification}
+            <FounderCeoMorningBriefPanel
+              habit={habitBrief}
+              livingContext={livingBrief.morningContext}
             />
-
-            <FounderMarketGapPanel brief={competitiveIntelligence} />
-
-            <FounderWinStrategyPanel brief={competitiveIntelligence} />
-
-            <FounderAiPmStrategyPanel brief={competitiveIntelligence} />
-
-            <FounderAiPmMeetingPanel meeting={meetingBrief} judgment={explainableJudgment} />
-
-            <FounderAiRecommendationPanel recommendation={recommendationBrief} />
-
-            <FounderDecisionBoxPanel
-              decision={decisionBox}
-              onSelect={(actionId, source) => handleStartById(source ?? 'decision_box', actionId)}
+            <FounderWhatChangedPanel items={habitBrief.whatChanged} />
+            <FounderExplainableWorkspaceFlow
+              data={strategyDashboard}
+              whyItems={whyItems}
             />
-
-            <FounderAiPmMeetingClose
-              messages={meetingCloseMessages}
-              onStart={() =>
-                handleStartById(
-                  primaryAction ? `meeting_close_${primaryAction.id}` : 'meeting_close',
-                  primaryAction?.id,
-                )
+            <FounderTodayFocusPanel
+              focus={habitBrief.todayFocus}
+              approved={
+                habitBrief.todayFocus
+                  ? approvedActionIds.includes(habitBrief.todayFocus.actionId)
+                  : false
               }
+              onApprove={handleApproveQueueItem}
             />
-          </div>
-        </details>
-
-        <FounderValidationAccuracyPanel refreshKey={infoRefreshKey} />
-
-        <FounderInformationBuilder onUpdated={() => setInfoRefreshKey((key) => key + 1)} />
-
-        {intelligence.businessDeltas.length > 0 ? (
-          <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />
-        ) : null}
-
-        <FounderCompetitiveGapMap businessProgress={intelligence.businessProgress} />
-
-        <FounderAiPmCalendar
-          roadmap={intelligence.executionRoadmap}
-          primaryAction={primaryAction}
-        />
-
-        <FounderAiPmWorkLog evidence={evidence} history={historyEntries} />
-
-        <FounderTodayOutcomeStrip
-          score={intelligence.successScore}
-          primaryAction={primaryAction}
-        />
-
-        <FounderAiPmProactiveQuestion />
-
-        <details className="rounded-2xl border border-border/60 bg-muted/10">
-          <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
-            {t('moreDetails')}
-          </summary>
-          <div className="space-y-6 border-t border-border/60 px-5 py-6">
-            <FounderAiPmInbox
-              projectId={projectId}
-              deltas={intelligence.businessDeltas}
-              evidence={evidence}
-              todayActions={intelligence.todayActions}
-              onReviewAction={(actionId) => handleStartById(`inbox_${actionId}`, actionId)}
-            />
-
-            <FounderDailyGoalPanel
-              score={intelligence.successScore}
-              primaryAction={primaryAction}
-            />
-          </div>
-        </details>
-
-        <details className="rounded-2xl border border-border/60 bg-muted/10">
-          <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
-            {t('projectStateSummary')}
-          </summary>
-          <div className="space-y-8 border-t border-border/60 px-5 py-6">
-            <FounderProjectHealthDashboard
-              successScore={intelligence.successScore.percent}
-              businessProgress={intelligence.businessProgress}
-              behavior={intelligence.behavior}
-            />
-
-            <FounderJourneyMap
-              businessProgress={intelligence.businessProgress}
-              nextAction={primaryAction}
-            />
-
-            {operatingState?.timeline ? (
-              <FounderOperatingTimelinePanel timeline={operatingState.timeline} />
+            {liveWorkActionId ? (
+              <FounderAiPmLiveWorkPanel
+                key={liveWorkActionId}
+                actionTitle={liveWorkTitle}
+                onComplete={handleLiveWorkComplete}
+              />
             ) : null}
-
-            <DecisionOneLinePanel fallbackConfidence={confidence} />
-
-            <FounderSuccessScoreExplained
-              score={intelligence.successScore}
-              factors={intelligence.successScoreFactors}
-              primaryAction={primaryAction}
-            />
-
-            <FounderTodayActionFirst
-              score={intelligence.successScore}
-              actions={intelligence.todayActions}
-              totalMinutes={intelligence.totalEtaMinutes}
-              onStartAction={(actionId) => handleStartById(`action_${actionId}`, actionId)}
-            />
-
-            <FounderEvidenceAutoPanel evidence={evidence} />
-
-            <FounderActionHistoryPanel history={actionHistory} />
-
-            {operatingState?.lastDebrief ? (
-              <FounderDailyReviewPanel review={intelligence.dailyReview} />
+            {approvedActionIds.length > 0 && !liveWorkActionId ? (
+              <FounderAiPmPreparedTasks />
             ) : null}
-
-            <FounderSuccessScorePanel
-              score={intelligence.successScore}
-              factors={intelligence.successScoreFactors}
+            <FounderCeoInboxPanel
+              items={inboxItems}
+              pendingCount={dailyCeoBrief.pendingInboxCount}
+              onReview={(actionId) => handleStartById(`ceo_inbox_${actionId ?? 'primary'}`, actionId)}
             />
-
-            <FounderGrowthTimelinePanel behavior={intelligence.behavior} />
-
-            <div className="grid gap-6 lg:grid-cols-2">
-              <BusinessProgressPanel dimensions={intelligence.businessProgress} />
-            </div>
-
-            <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />
-
-            <DecisionIntelligencePathPanel path={intelligence.decisionPath} />
-
-            <DecisionExperienceCoach
-              id="journey-decision-coach"
-              goalId={goalId}
-              projectId={projectId}
-              layout="action-first"
-              className="w-full max-w-none scroll-mt-6"
-              onNextActionStarted={() => analytics.trackNextActionStarted(goalId, 'coach_action')}
-            />
-          </div>
-        </details>
-      </div>
+            <FounderAiPmWorkLog evidence={evidence} history={historyEntries} />
+            <details className="rounded-2xl border border-border/60 bg-muted/10">
+              <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
+                {tDaily('analysisDetails')}
+              </summary>
+              <div className="space-y-6 border-t border-border/60 px-5 py-6">
+                <FounderLivingMilestoneCelebrationPanel celebration={livingBrief.milestoneCelebration} />
+                {showWeeklyReview ? (
+                  <FounderLivingWeeklyStoryPanel story={livingBrief.weeklyStory} />
+                ) : null}
+                <FounderAiPmOvernightReportPanel
+                  items={habitBrief.overnightReport}
+                  onViewReport={handleOvernightView}
+                />
+                <FounderLivingStuckAlertPanel
+                  alert={livingBrief.stuckAlert}
+                  onStart={(actionId) => handleStartById(`living_stuck_${actionId}`, actionId)}
+                />
+                <FounderLivingMomentumPanel momentum={livingBrief.momentum} />
+                <FounderLivingDailyJournalPanel journal={livingBrief.dailyJournal} />
+                <FounderAiPmMemoryBriefPanel
+                  memory={memoryBrief}
+                  onStart={() =>
+                    handleStartById(
+                      memoryBrief.recommendedActionId
+                        ? `memory_${memoryBrief.recommendedActionId}`
+                        : 'memory_primary',
+                      memoryBrief.recommendedActionId ?? primaryAction?.id,
+                    )
+                  }
+                />
+                <FounderAiPmDailyReportPanel report={dailyReport} />
+                <FounderAiOperatingSystemSection brief={osBrief} onApprove={handleApproveQueueItem} />
+                <FounderResearchCompletePanel brief={researchComplete} />
+                <FounderAiPmDiscoveryPanel findings={surpriseFindings} />
+                <FounderAiPmMeetingPanel meeting={meetingBrief} judgment={explainableJudgment} />
+                <FounderDecisionBoxPanel
+                  decision={decisionBox}
+                  onSelect={(actionId, source) => handleStartById(source ?? 'decision_box', actionId)}
+                />
+              </div>
+            </details>
+          </>
+        }
+        main={
+          <FounderStrategyDashboard
+            data={strategyDashboard}
+            onStartAction={(actionId) => handleStartById(`strategy_${actionId}`, actionId)}
+          />
+        }
+      />
     </>
   );
 }

@@ -45,6 +45,7 @@ import {
 } from './intelligence-workspace/journey-workspace-nav';
 import { AI_PM_WORK_COUNT } from '../lib/ai-pm-conversation';
 import { WorkspaceJourneyGuide } from './workspace-journey-guide';
+import { WorkspaceShell } from './workspace-shell';
 
 import { DecisionDetailWorkspace } from './decision-detail-workspace';
 
@@ -270,6 +271,10 @@ export function StrategyWorkspaceShell({
       <AiPmLiveWorkspace
         agentIndex={Math.min(pipelineAgentIndex, AI_PM_WORK_COUNT - 1)}
         failed={thinkingFailed}
+        projectId={projectId}
+        projectName={registration?.projectName ?? projectDisplayName}
+        goalId={goalId}
+        confidence={project.confidence}
         onRetry={() => {
           setThinkingFailed(false);
           setPhase('thinking');
@@ -291,7 +296,14 @@ export function StrategyWorkspaceShell({
         variant="intelligence"
         versionLabel={BETA_VERSION}
       >
-        <AiPmCompletionHandoff onStartToday={enterTodayWorkspace} embedded />
+        <AiPmCompletionHandoff
+          onStartToday={enterTodayWorkspace}
+          embedded
+          projectId={projectId}
+          projectName={registration?.projectName ?? projectDisplayName}
+          goalId={goalId}
+          confidence={project.confidence}
+        />
       </JourneyLayout>
     );
   }
@@ -317,49 +329,52 @@ export function StrategyWorkspaceShell({
       <BetaFeedbackModal />
       {phase === 'registration' ? (
         <JourneyFade>
-          <div className="grid gap-6 lg:grid-cols-[minmax(200px,260px)_1fr] lg:items-start lg:gap-8">
-            <WorkspaceJourneyGuide activeStep={guideStep} className="hidden sm:block" />
-            <div className="space-y-6">
+          <WorkspaceShell
+            embedded
+            rail={<WorkspaceJourneyGuide activeStep={guideStep} />}
+            main={
               <ProjectRegistrationPanel
                 goalLabel={tg(`options.${goalId}.title`)}
                 onStart={handleRegistrationStart}
               />
-            </div>
-          </div>
+            }
+          />
         </JourneyFade>
       ) : !projectReady ? (
         <WorkspaceSkeleton />
+      ) : tab === 'today' ? (
+        <JourneyFade>
+          <FounderTodayWorkspace
+            goalId={goalId}
+            projectId={projectId}
+            projectName={projectDisplayName}
+            confidence={project.confidence}
+          />
+        </JourneyFade>
       ) : (
         <JourneyFade>
-          <div className="grid gap-6 lg:grid-cols-[minmax(200px,260px)_1fr] lg:items-start lg:gap-8">
-            <WorkspaceJourneyGuide activeStep={guideStep} className="hidden lg:block" />
-            <div className="min-w-0 space-y-6">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="min-w-0 flex-1 space-y-2">
-                  {tab === 'today' ? (
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-                      {projectDisplayName}
-                    </p>
-                  ) : (
+          <WorkspaceShell
+            embedded
+            rail={<WorkspaceJourneyGuide activeStep={guideStep} />}
+            main={
+              <>
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1 space-y-2">
                     <JourneyProjectSwitcher project={project} onSelect={setProjectId} />
-                  )}
-                  <div>
-                    {tab !== 'today' ? (
+                    <div>
                       <p className="text-sm text-muted-foreground">{projectDisplayName}</p>
-                    ) : null}
-                    <h1 className="text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl">
-                      {t('title')}
-                    </h1>
+                      <h1 className="text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl">
+                        {t('title')}
+                      </h1>
+                    </div>
                   </div>
+                  <JourneyProgressRing
+                    value={project.confidence}
+                    label={t('progressLabel')}
+                    size={72}
+                  />
                 </div>
-                <JourneyProgressRing
-                  value={project.confidence}
-                  label={t('progressLabel')}
-                  size={72}
-                />
-              </div>
-              {renderActiveTab()}
-              {tab !== 'today' ? (
+                {renderActiveTab()}
                 <div className="pt-2">
                   <Button asChild size="lg" className="h-12 w-full rounded-xl sm:max-w-md">
                     <Link href="/auth/login?next=/workspace">
@@ -368,9 +383,9 @@ export function StrategyWorkspaceShell({
                     </Link>
                   </Button>
                 </div>
-              ) : null}
-            </div>
-          </div>
+              </>
+            }
+          />
         </JourneyFade>
       )}
     </JourneyLayout>

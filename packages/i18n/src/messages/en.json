@@ -4105,6 +4105,7 @@
       "reasoningLabel": "AI PM is thinking",
       "progressLabel": "Overall progress",
       "liveHero": "Founder,\nyour AI PM is working now.\n\nPlease wait.",
+      "liveStrategyBuilding": "While your AI PM researches, the strategy room fills in real time.",
       "waitInstruction": "You don't need to do anything right now.\n\nWhen analysis finishes,\nwe'll show the result automatically.",
       "waitInstructionSticky": "Founder,\n\nyou don't need to do anything right now.\n\nYour AI PM is researching for you.",
       "liveStep": {
@@ -4798,6 +4799,59 @@
         "minutes": "{count} min",
         "confidenceGain": "Confidence",
         "goGain": "GO probability"
+      },
+      "executiveWorkspace": {
+        "dashboard": {
+          "label": "CEO Strategy Room",
+          "roomLabel": "Current project · Strategy room",
+          "viability": "Viability score",
+          "viabilityBreakdown": "Why this score?",
+          "swot": "SWOT",
+          "competitors": "Competitor comparison",
+          "positioning": "Positioning",
+          "pricing": "Recommended price",
+          "pricingAvg": "Market avg {avg}",
+          "recommendedBm": "Recommended business model",
+          "marketSize": "Market size · {size}",
+          "validation": "Validation progress",
+          "topRisks": "Top 3 risks",
+          "recommendedStrategies": "Recommended strategies",
+          "todayActions": "Today's execution"
+        },
+        "flow": {
+          "situationLabel": "Current situation",
+          "situationFallback": "Viability {score}% · Your AI PM prepared today's judgment.",
+          "whyLabel": "Why?",
+          "pipelineLabel": "Research → Discovery → Judgment → Strategy → Action",
+          "researchTitle": "Research result",
+          "discoveryTitle": "AI discovery",
+          "judgmentTitle": "Judgment basis",
+          "strategyTitle": "Recommended strategy",
+          "actionTitle": "Today's action",
+          "actionFallback": "Start today's key action",
+          "actionNowLabel": "So what should I do?",
+          "actionMeta": "{minutes} min · +{impact}%"
+        },
+        "charts": {
+          "why": "Why?",
+          "automation": "Automation ↑",
+          "price": "Price →",
+          "dimensions": {
+            "market": "Market fit",
+            "customer": "Customer problem",
+            "pricing": "Pricing",
+            "mvp": "MVP",
+            "market_size": "Market",
+            "customerProblem": "Customer problem",
+            "competitiveness": "Competitive edge"
+          },
+          "swot": {
+            "strength": "Strength",
+            "weakness": "Weakness",
+            "opportunity": "Opportunity",
+            "threat": "Threat"
+          }
+        }
       },
       "todayFirst": {
         "label": "Today's work",

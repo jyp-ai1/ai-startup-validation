@@ -13,6 +13,8 @@ import { resolveFounderActionTitle } from '../../lib/founder-action-display';
 import { resolveActionAnswerInsightKey } from '../../lib/founder-action-insights';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
 import { JourneyFocusedShell } from '../journey-focused-shell';
+import { FounderStrategyDashboardLoader } from './founder-strategy-dashboard-loader';
+import type { WorkflowGoalId } from '../../types';
 
 export type ActionWorkspaceResult = {
   actionId: string;
@@ -28,6 +30,10 @@ type FounderActionWorkspaceProps = {
   onComplete: (result: ActionWorkspaceResult) => void;
   onClose: () => void;
   className?: string;
+  projectId?: string;
+  projectName?: string;
+  goalId?: WorkflowGoalId;
+  confidence?: number;
 };
 
 function resolveQuestionText(
@@ -48,6 +54,10 @@ export function FounderActionWorkspace({
   onComplete,
   onClose,
   className,
+  projectId,
+  projectName,
+  goalId,
+  confidence,
 }: FounderActionWorkspaceProps) {
   const t = useTranslations('workflow.founderAiPm.actionWorkspace');
   const ti = useTranslations('workflow.founderAiPm.actionWorkspace.insights');
@@ -126,6 +136,16 @@ export function FounderActionWorkspace({
     });
   };
 
+  const strategyPanel =
+    projectId && projectName && goalId && confidence != null ? (
+      <FounderStrategyDashboardLoader
+        projectId={projectId}
+        projectName={projectName}
+        goalId={goalId}
+        confidence={confidence}
+      />
+    ) : null;
+
   if (phase === 'complete') {
     const summaryMessages = [
       t('completeLead'),
@@ -134,98 +154,108 @@ export function FounderActionWorkspace({
       t('completeNext'),
     ];
 
-    return (
-      <JourneyFocusedShell ariaLabel={t('completeCta')}>
+    const completeRail = (
+      <>
         <AiPmConversation messages={summaryMessages} />
-
-          <div className="rounded-2xl border border-emerald-300/40 bg-emerald-50/50 p-5 text-center dark:bg-emerald-950/20">
-            <p className="text-sm text-muted-foreground">{t('scoreLabel')}</p>
-            <div className="mt-2 flex items-center justify-center gap-2">
-              <TrendingUp className="size-4 text-emerald-600" aria-hidden />
-              <p className="text-2xl font-bold tabular-nums">
-                {scoreBefore}% → {scoreAfter}%
-              </p>
-            </div>
-            <p className="mt-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">
-              +{workspace.goImpact}%
+        <div className="rounded-2xl border border-emerald-300/40 bg-emerald-50/50 p-5 text-center dark:bg-emerald-950/20">
+          <p className="text-sm text-muted-foreground">{t('scoreLabel')}</p>
+          <div className="mt-2 flex items-center justify-center gap-2">
+            <TrendingUp className="size-4 text-emerald-600" aria-hidden />
+            <p className="text-2xl font-bold tabular-nums">
+              {scoreBefore}% → {scoreAfter}%
             </p>
           </div>
+          <p className="mt-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">
+            +{workspace.goImpact}%
+          </p>
+        </div>
+        <Button type="button" size="lg" className="h-14 w-full rounded-xl" onClick={handleFinish}>
+          {t('completeCta')}
+          <ArrowRight className="ml-2 size-4" aria-hidden />
+        </Button>
+      </>
+    );
 
-          <Button type="button" size="lg" className="h-14 w-full rounded-xl" onClick={handleFinish}>
-            {t('completeCta')}
-            <ArrowRight className="ml-2 size-4" aria-hidden />
-          </Button>
+    return (
+      <JourneyFocusedShell ariaLabel={t('completeCta')} rail={strategyPanel ? completeRail : undefined}>
+        {strategyPanel ?? completeRail}
       </JourneyFocusedShell>
     );
   }
 
-  return (
-    <JourneyFocusedShell ariaLabel={t('label')} className={className}>
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
-              AI PM · {tk(workspace.kind)}
-            </p>
-            <h2 id="action-workspace-title" className="mt-1 text-lg font-semibold leading-snug">
-              {actionTitle}
-            </h2>
-            {workspace.kind === 'interview' ? (
-              <p className="mt-1 text-sm text-muted-foreground">{t('interviewSubtitle')}</p>
-            ) : null}
-            <p className="mt-1 text-sm tabular-nums text-muted-foreground">
-              {t('meta', { minutes: workspace.etaMinutes, impact: workspace.goImpact })}
-            </p>
-          </div>
-          <Button type="button" variant="ghost" size="icon" className="shrink-0 rounded-full" onClick={onClose}>
-            <X className="size-4" aria-hidden />
-          </Button>
-        </div>
-
-        <AiPmConversation messages={introMessages} />
-
-        {saveFeedback ? <AiPmConversation messages={saveFeedback} className="-mt-2" /> : null}
-
-        <div className="rounded-2xl border border-primary/25 bg-primary/[0.04] p-5">
-          <p className="text-sm font-semibold text-primary">
-            {t('questionPrefix', { ordinal: questionOrdinal(step + 1) })}
+  const actionRail = (
+    <>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
+            AI PM · {tk(workspace.kind)}
           </p>
-          <p className="mt-2 text-base leading-relaxed">{currentQuestion}</p>
-
-          <Textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder={t('answerPlaceholder')}
-            className="mt-4 min-h-24 rounded-xl"
-            autoFocus
-          />
-
-          <Button
-            type="button"
-            className="mt-4 w-full rounded-xl"
-            disabled={!draft.trim()}
-            onClick={handleRecord}
-          >
-            {isLastStep ? t('recordFinal') : t('record')}
-          </Button>
+          <h2 id="action-workspace-title" className="mt-1 text-lg font-semibold leading-snug">
+            {actionTitle}
+          </h2>
+          {workspace.kind === 'interview' ? (
+            <p className="mt-1 text-sm text-muted-foreground">{t('interviewSubtitle')}</p>
+          ) : null}
+          <p className="mt-1 text-sm tabular-nums text-muted-foreground">
+            {t('meta', { minutes: workspace.etaMinutes, impact: workspace.goImpact })}
+          </p>
         </div>
+        <Button type="button" variant="ghost" size="icon" className="shrink-0 rounded-full" onClick={onClose}>
+          <X className="size-4" aria-hidden />
+        </Button>
+      </div>
 
-        {answers.length > 0 ? (
-          <ul className="space-y-2" role="list">
-            {answers.map((answer, index) => (
-              <li
-                key={`${index}-${answer.slice(0, 12)}`}
-                className="flex items-start gap-2 rounded-xl bg-muted/40 px-3 py-2 text-sm"
-              >
-                <Check className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-hidden />
-                <span className="text-muted-foreground">{answer}</span>
-              </li>
-            ))}
-          </ul>
-        ) : null}
+      <AiPmConversation messages={introMessages} />
 
-        <p className="text-center text-xs text-muted-foreground">
-          {t('progress', { current: step + 1, total: totalSteps })}
+      {saveFeedback ? <AiPmConversation messages={saveFeedback} className="-mt-2" /> : null}
+
+      <div className="rounded-2xl border border-primary/25 bg-primary/[0.04] p-5">
+        <p className="text-sm font-semibold text-primary">
+          {t('questionPrefix', { ordinal: questionOrdinal(step + 1) })}
         </p>
+        <p className="mt-2 text-base leading-relaxed">{currentQuestion}</p>
+
+        <Textarea
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder={t('answerPlaceholder')}
+          className="mt-4 min-h-24 rounded-xl"
+          autoFocus
+        />
+
+        <Button
+          type="button"
+          className="mt-4 w-full rounded-xl"
+          disabled={!draft.trim()}
+          onClick={handleRecord}
+        >
+          {isLastStep ? t('recordFinal') : t('record')}
+        </Button>
+      </div>
+
+      {answers.length > 0 ? (
+        <ul className="space-y-2" role="list">
+          {answers.map((answer, index) => (
+            <li
+              key={`${index}-${answer.slice(0, 12)}`}
+              className="flex items-start gap-2 rounded-xl bg-muted/40 px-3 py-2 text-sm"
+            >
+              <Check className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-hidden />
+              <span className="text-muted-foreground">{answer}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      <p className="text-center text-xs text-muted-foreground">
+        {t('progress', { current: step + 1, total: totalSteps })}
+      </p>
+    </>
+  );
+
+  return (
+    <JourneyFocusedShell ariaLabel={t('label')} className={className} rail={strategyPanel ? actionRail : undefined}>
+      {strategyPanel ?? actionRail}
     </JourneyFocusedShell>
   );
 }
