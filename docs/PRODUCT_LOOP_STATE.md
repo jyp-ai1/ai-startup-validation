@@ -1,35 +1,52 @@
 # Product Loop State
 
 **Mode:** Autonomous Product — Level 5  
-Production: https://ai-startup-validation-tau.vercel.app/admin/operations
+Production: https://ai-startup-validation-tau.vercel.app/workspace
 
 ---
+
+## Priority stack
+
+```text
+① Founder AI PM  →  ② Product OS  →  ③ Analytics  →  ④ Performance
+```
 
 ## PM loop (v2)
 
 ```text
-KPI 수집 → Drop-off → 원인 → 가설 → 실험 → 영향도 → Adopt 또는 Rollback → 다음 실험
+KPI → Drop-off → 원인 → 가설 → 실험 → Impact → Adopt/Rollback → 다음 실험
 ```
 
-## Active experiment (Product OS)
+## Active experiment
 
 | Field | Value |
 |-------|-------|
-| **KPI** | Project Start Rate |
-| **Impact** | 23% → 40% (**+17%**) |
-| **Verdict** | **Adopt** (one-line registration) |
-| **Next** | Decision Understanding Rate |
+| **KPI** | Decision Understanding Rate |
+| **Drop** | analysis → decision −45% |
+| **Experiment** | Founder AI PM — Summary · Evidence Timeline · Breakdown · What If · Next Action rewards |
+| **Baseline** | 35% → measuring 38% (+3%) |
+| **Target** | +15% · Adopt at ≥ +3% sustained |
 
-## AI PM today (P0)
+## Founder AI PM (P0)
 
-**Problem:** Project Start · −60% at workspace→project  
-**Recommend:** One-line idea · auto-name · auto-save  
-**Expected:** +12% target · 4–6h · medium risk
+**3-second HOLD clarity:**
 
-## Rollback history
+1. AI Summary (top)
+2. Evidence Timeline (market → verdict)
+3. Confidence Breakdown
+4. What If (VOC 3건 → 68→81)
+5. Next Action rewards (15분 · +13% Confidence · +24% GO)
 
-Hero negation-first copy → rolled back (Goal Selection hurt)
+Engine: `founder-ai-pm-engine.ts` · Surface: `/workspace` DecisionExperienceCoach
+
+## Adopted (previous)
+
+Project Start Rate — one-line registration (+17%)
+
+## Next (Product OS)
+
+GO Conversion — execution bridge after Decision Understanding
 
 ---
 
-Registry: [PRODUCT_KPI_REGISTRY.md](./PRODUCT_KPI_REGISTRY.md)
+PR template: [PRODUCT_LOOP_PR_TEMPLATE.md](./PRODUCT_LOOP_PR_TEMPLATE.md)

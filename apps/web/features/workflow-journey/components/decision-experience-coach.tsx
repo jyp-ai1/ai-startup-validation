@@ -9,7 +9,6 @@ import { cn } from '@repo/ui/lib/utils';
 
 import {
   CONFIDENCE_GAINS_PREVIEW,
-  CONFIDENCE_TIMELINE,
   DECISION_HISTORY,
   getDecisionStages,
   type DecisionStage,
@@ -17,7 +16,13 @@ import {
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useJourneyHistory } from '../hooks/use-journey-history';
 import { unlockAchievement } from '../lib/journey-achievements-store';
+import { computeFounderAiPmBrief } from '../lib/founder-ai-pm-engine';
 import type { WorkflowGoalId } from '../types';
+import { ConfidenceBreakdownPanel } from './founder-ai-pm/confidence-breakdown-panel';
+import { EvidenceThoughtTimeline } from './founder-ai-pm/evidence-thought-timeline';
+import { FounderAiSummary } from './founder-ai-pm/founder-ai-summary';
+import { NextActionRewardPanel } from './founder-ai-pm/next-action-reward-panel';
+import { WhatIfScenarioPanel } from './founder-ai-pm/what-if-scenario-panel';
 import { ConfidenceMeter } from './confidence-meter';
 import { EvidenceEngineDrawer } from './evidence-engine-drawer';
 import { EvidenceIntelligencePanel } from './evidence-intelligence-panel';
@@ -62,6 +67,7 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
   const holdPathTrackedRef = useRef(-1);
 
   const stage = stages[stageIndex] ?? stages[0]!;
+  const founderBrief = computeFounderAiPmBrief(stage, stageIndex);
   const isFinal = stageIndex >= stages.length - 1;
   const completedTimelineCount = stageIndex;
 
@@ -158,9 +164,7 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
       </div>
 
       <div className="mt-4 space-y-4">
-        <div className="rounded-lg bg-muted/40 px-3 py-2.5 text-sm leading-relaxed text-foreground/90">
-          {stage.verdict === 'GO' ? td('coachTone.go') : td('coachTone.hold')}
-        </div>
+        <FounderAiSummary brief={founderBrief} />
 
         {/* Dynamic Decision */}
         <div>
@@ -216,7 +220,7 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
                 </p>
                 <p className="mt-1 text-sm text-amber-900/90 dark:text-amber-100/90">
                   {td('holdExpectedGain', {
-                    gain: CONFIDENCE_TIMELINE[completedTimelineCount]?.gain ?? 8,
+                    gain: founderBrief.nextAction.confidenceGain,
                     minutes: stage.nextActionDurationMinutes,
                   })}
                 </p>
@@ -228,7 +232,7 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
           </div>
         ) : null}
 
-        {/* Confidence + Health */}
+        {/* Confidence + Breakdown */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-border/60 bg-background/80 px-3 py-2.5">
             <ConfidenceMeter
@@ -239,25 +243,27 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
               className="confidence-gain-pop"
             />
           </div>
-          <button
-            type="button"
-            onClick={toggleHealth}
-            className="rounded-xl border border-border/60 bg-background/80 px-3 py-2.5 text-left transition-colors hover:border-primary/40"
-            aria-expanded={healthOpen}
-          >
-            <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-              {t('projectHealth')}
-            </p>
-            <p className="mt-0.5 flex items-center justify-between text-2xl font-bold tabular-nums text-foreground">
-              {stage.projectHealth}
-              {healthOpen ? (
-                <ChevronUp className="size-4 text-muted-foreground" aria-hidden />
-              ) : (
-                <ChevronDown className="size-4 text-muted-foreground" aria-hidden />
-              )}
-            </p>
-          </button>
+          <ConfidenceBreakdownPanel items={founderBrief.confidenceBreakdown} total={stage.confidence} />
         </div>
+
+        <button
+          type="button"
+          onClick={toggleHealth}
+          className="w-full rounded-xl border border-border/60 bg-background/80 px-3 py-2.5 text-left transition-colors hover:border-primary/40"
+          aria-expanded={healthOpen}
+        >
+          <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+            {t('projectHealth')}
+          </p>
+          <p className="mt-0.5 flex items-center justify-between text-2xl font-bold tabular-nums text-foreground">
+            {stage.projectHealth}
+            {healthOpen ? (
+              <ChevronUp className="size-4 text-muted-foreground" aria-hidden />
+            ) : (
+              <ChevronDown className="size-4 text-muted-foreground" aria-hidden />
+            )}
+          </p>
+        </button>
 
         {healthOpen ? (
           <div className="rounded-xl border border-border/60 bg-background/90 p-3">
@@ -294,74 +300,25 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
           </ul>
         </div>
 
-        {/* Confidence Timeline */}
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {td('timelineTitle')}
-          </p>
-          <ol className="mt-3 space-y-0" role="list">
-            {CONFIDENCE_TIMELINE.map((step, index) => {
-              const reached = index < completedTimelineCount;
-              const active = index === completedTimelineCount && !isFinal;
-              return (
-                <li key={step.id} className="relative flex gap-3 pb-4 last:pb-0">
-                  {index < CONFIDENCE_TIMELINE.length - 1 ? (
-                    <span
-                      className={cn(
-                        'absolute left-[11px] top-6 h-full w-px',
-                        reached ? 'bg-primary' : 'bg-border',
-                      )}
-                      aria-hidden
-                    />
-                  ) : null}
-                  <span
-                    className={cn(
-                      'relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold tabular-nums',
-                      reached
-                        ? 'bg-primary text-primary-foreground'
-                        : active
-                          ? 'bg-primary/20 text-primary ring-2 ring-primary'
-                          : 'bg-muted text-muted-foreground',
-                    )}
-                  >
-                    {step.to}
-                  </span>
-                  <div className="min-w-0 flex-1 pt-0.5">
-                    <p className={cn('text-sm font-medium', active ? 'text-primary' : 'text-foreground')}>
-                      {td(`actions.${step.labelKey}`)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {step.from}% → {step.to}% ({td('gainLabel', { gain: step.gain })})
-                    </p>
-                  </div>
-                </li>
-              );
-            })}
-            <li className="relative flex gap-3">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
-                81
-              </span>
-              <p className="pt-0.5 text-sm font-medium text-emerald-700 dark:text-emerald-400">
-                {td('timelineGoal')}
-              </p>
-            </li>
-          </ol>
-        </div>
+        {/* Evidence thought timeline — AI reasoning flow */}
+        <EvidenceThoughtTimeline steps={founderBrief.evidenceThoughtSteps} />
 
-        {/* Next Action */}
+        {/* What If scenario */}
+        {founderBrief.whatIf && !isFinal ? (
+          <WhatIfScenarioPanel
+            scenario={founderBrief.whatIf}
+            onSimulate={() => analytics.trackCoachClicked('what_if')}
+          />
+        ) : null}
+
+        {/* Next Action with rewards */}
         {!isFinal ? (
-          <div className="rounded-xl border border-border/70 bg-background/90 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">{t('nextActionLabel')}</p>
-            <p className="mt-2 text-base font-semibold text-foreground">
-              {tp(`${stage.nextActionStepId}.title`)}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t('etaMinutes', { minutes: stage.nextActionDurationMinutes })}
-            </p>
-            <Button type="button" className="mt-4 w-full rounded-xl" size="sm" onClick={advanceStage}>
-              {td(`mockActions.${stage.mockActionKey}`)}
-            </Button>
-          </div>
+          <NextActionRewardPanel
+            actionTitle={tp(`${stage.nextActionStepId}.title`)}
+            brief={founderBrief}
+            actionLabel={td(`mockActions.${stage.mockActionKey}`)}
+            onAction={advanceStage}
+          />
         ) : (
           <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 dark:border-emerald-900 dark:bg-emerald-950/40">
             <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">{td('goReached')}</p>

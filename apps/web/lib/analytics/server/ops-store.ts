@@ -2,7 +2,15 @@ import { env } from '@repo/core/env';
 
 import { PRODUCT_ANALYTICS_EVENTS } from '../product-analytics';
 import { computeProductOsBrief } from '../product-os-engine';
-import { getExperimentBacklog, getRollbackHistory } from '../experiment-tracker';
+import {
+  getActiveExperiments,
+  getAiPriorityQueue,
+  getCompletedExperiments,
+  getExperimentBacklog,
+  getFailedExperiments,
+  getKpiTrends,
+  getRollbackHistory,
+} from '../experiment-tracker';
 import type { AnalyticsEventPayload, OpsDashboardStats } from '../types';
 import { ANALYTICS_EVENTS } from '../types';
 
@@ -35,6 +43,24 @@ function countEventsSince(name: string, since: Date): number {
     if (event.name !== name) return false;
     return new Date(event.timestamp) >= since;
   }).length;
+}
+
+function buildProductBrain(healthScore: number): NonNullable<OpsDashboardStats['productBrain']> {
+  const mapExp = (list: ReturnType<typeof getActiveExperiments>) =>
+    list.map((e) => ({ id: e.id, name: e.name, kpiLabel: e.kpiLabel, status: e.status }));
+
+  return {
+    healthScore,
+    experimentBacklog: getExperimentBacklog().length,
+    rollbackCount: getRollbackHistory().length,
+    experiments: {
+      active: mapExp(getActiveExperiments()),
+      completed: mapExp(getCompletedExperiments()),
+      failed: mapExp(getFailedExperiments()),
+    },
+    kpiTrend: getKpiTrends(),
+    aiPriorityQueue: getAiPriorityQueue(),
+  };
 }
 
 function countGoDecisionsToday(since: Date): number {
@@ -332,48 +358,44 @@ const MOCK_STATS: OpsDashboardStats = {
     recommendedGoalRate: 55,
   },
   productOs: {
-    primaryKpiKey: 'projectStartRate',
-    primaryKpiLabel: 'Project Start Rate',
-    currentValue: 40,
+    primaryKpiKey: 'decisionUnderstandingRate',
+    primaryKpiLabel: 'Decision Understanding',
+    currentValue: 38,
     unit: '%',
-    biggestDropStep: 'workspace → project',
-    dropPercent: 60,
-    rootCause: 'Activation blocked — registration feels required and long',
-    hypothesis: 'Multi-field form kills 30-second project start',
-    experiment: 'One-line idea + AI auto-name + auto-save (verify drop falls)',
-    measureBy: 'project_created / workspace_entered',
-    nextKpiKey: 'decisionUnderstandingRate',
+    biggestDropStep: 'analysis → decision',
+    dropPercent: 45,
+    rootCause: 'HOLD without 3-second clarity — Founder does not see why or what to do next',
+    hypothesis: 'AI Summary + Confidence Breakdown + What If + action rewards increase trust',
+    experiment: 'Founder AI PM — Summary · Evidence Timeline · Breakdown · What If · Next Action rewards',
+    measureBy: 'hold_path_viewed / decision_generated',
+    nextKpiKey: 'goConversionRate',
     deployVersion: 'mock',
     recommendation:
-      'One-line idea + AI auto-name measuring — 23% → 40% (+17%). Adopted. Next: decisionUnderstandingRate.',
+      'Founder AI PM active — baseline 35%. Target +15% Decision Understanding via 3-second HOLD clarity.',
     impact: {
-      baselineValue: 23,
-      currentValue: 40,
-      delta: 17,
-      deltaLabel: '+17%',
-      expectedLift: 12,
-      experimentName: 'One-line idea + AI auto-name',
-      status: 'adopted',
-      adopt: true,
+      baselineValue: 35,
+      currentValue: 38,
+      delta: 3,
+      deltaLabel: '+3%',
+      expectedLift: 15,
+      experimentName: 'Founder AI PM — Summary · Breakdown · What If',
+      status: 'active',
+      adopt: false,
       rollback: false,
     },
     aiPm: {
       priority: 'P0',
-      todayProblem: 'Project Start Rate · −60% at workspace → project',
-      whyImportant: 'No project = no Decision, GO, or Execution',
-      recommendedExperiment: 'One-line idea · AI auto-name · auto-save',
-      expectedLift: '+12% (target)',
+      todayProblem: 'Decision Understanding · −45% at analysis → decision',
+      whyImportant: 'Decision is the North Star — GO/HOLD must land in 3 seconds',
+      recommendedExperiment: 'Founder AI PM — Summary · Breakdown · What If · Next Action rewards',
+      expectedLift: '+15% (target)',
       estimatedHours: '4-6h',
-      risk: 'medium',
+      risk: 'low',
     },
-    nextExperiment: 'HOLD path · Intelligence open · Missing Data chips',
-    productHealthScore: 38,
+    nextExperiment: 'GO Conversion — execution bridge after Decision Understanding',
+    productHealthScore: 42,
   },
-  productBrain: {
-    healthScore: 38,
-    experimentBacklog: 1,
-    rollbackCount: 1,
-  },
+  productBrain: buildProductBrain(42),
   operationalMetrics: {
     users: 72,
     sessions: 100,
@@ -470,11 +492,7 @@ export function getOpsDashboardStats(): OpsDashboardStats {
     closedBetaMetrics: computeClosedBetaMetrics(productJourneyFunnel, todaySummary),
     productKpis,
     productOs: productOs ?? undefined,
-    productBrain: {
-      healthScore: productOs?.productHealthScore ?? 0,
-      experimentBacklog: getExperimentBacklog().length,
-      rollbackCount: getRollbackHistory().length,
-    },
+    productBrain: buildProductBrain(productOs?.productHealthScore ?? 0),
     operationalMetrics,
   };
 }

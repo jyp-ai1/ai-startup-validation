@@ -26,8 +26,20 @@ export const SHIPPED_EXPERIMENTS: ExperimentRecord[] = [
     baselineValue: 23,
     expectedLift: 12,
     deployVersion: '5e32e04',
-    status: 'measuring',
+    status: 'adopted',
     startedAt: '2026-07-26T00:00:00.000Z',
+  },
+  {
+    id: 'exp-founder-ai-pm',
+    kpiKey: 'decisionUnderstandingRate',
+    kpiLabel: 'Decision Understanding',
+    name: 'Founder AI PM — Summary · Breakdown · What If · Next Action rewards',
+    hypothesis: 'HOLD without 3-second clarity and action rewards causes drop-off',
+    baselineValue: 35,
+    expectedLift: 15,
+    deployVersion: 'pending',
+    status: 'active',
+    startedAt: '2026-07-26T03:00:00.000Z',
   },
   {
     id: 'exp-hold-path',
@@ -141,4 +153,61 @@ export function getRollbackHistory(): ExperimentRecord[] {
 
 export function getExperimentBacklog(): ExperimentRecord[] {
   return SHIPPED_EXPERIMENTS.filter((e) => e.status === 'measuring' || e.status === 'active');
+}
+
+export function getActiveExperiments(): ExperimentRecord[] {
+  return SHIPPED_EXPERIMENTS.filter((e) => e.status === 'active' || e.status === 'measuring');
+}
+
+export function getCompletedExperiments(): ExperimentRecord[] {
+  return SHIPPED_EXPERIMENTS.filter((e) => e.status === 'adopted');
+}
+
+export function getFailedExperiments(): ExperimentRecord[] {
+  return SHIPPED_EXPERIMENTS.filter((e) => e.status === 'rolled_back');
+}
+
+export type KpiTrendPoint = {
+  kpiLabel: string;
+  days7: number;
+  days30: number;
+};
+
+export type AiPriorityItem = {
+  priority: 'P0' | 'P1' | 'P2';
+  kpi: string;
+  action: string;
+};
+
+const KPI_TREND_MOCK: KpiTrendPoint[] = [
+  { kpiLabel: 'Decision Understanding', days7: 38, days30: 35 },
+  { kpiLabel: 'Project Start Rate', days7: 40, days30: 23 },
+  { kpiLabel: 'Goal Selection Rate', days7: 58, days30: 42 },
+  { kpiLabel: 'GO Conversion', days7: 12, days30: 8 },
+];
+
+const AI_PRIORITY_QUEUE: AiPriorityItem[] = [
+  {
+    priority: 'P0',
+    kpi: 'Decision Understanding',
+    action: 'Founder AI PM — 3-second HOLD clarity + What If + action rewards',
+  },
+  {
+    priority: 'P1',
+    kpi: 'GO Conversion',
+    action: 'Next Action execution bridge after Decision Understanding',
+  },
+  {
+    priority: 'P2',
+    kpi: 'Retention',
+    action: 'Daily AI PM brief on workspace Today tab',
+  },
+];
+
+export function getKpiTrends(): KpiTrendPoint[] {
+  return KPI_TREND_MOCK;
+}
+
+export function getAiPriorityQueue(): AiPriorityItem[] {
+  return AI_PRIORITY_QUEUE;
 }

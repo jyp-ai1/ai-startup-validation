@@ -16,6 +16,7 @@ import {
 import type { OpsDashboardStats } from '@/lib/analytics/types';
 import { AdminOpsTools } from './admin-ops-tools';
 import { AdminProductOsPanel } from './admin-product-os-panel';
+import { AdminProductBrainPanel } from './admin-product-brain-panel';
 import { AdminFeedbackInbox } from './admin-feedback-inbox';
 import { AdminReleaseNotes } from './admin-release-notes';
 import { Badge, Card, CardContent, CardHeader, CardTitle, PageHeader } from '@repo/ui';
@@ -145,6 +146,10 @@ export function OperationsDashboard() {
         <div className="mt-8 space-y-8">
           {stats.productOs ? (
             <AdminProductOsPanel brief={stats.productOs} brain={stats.productBrain} />
+          ) : null}
+
+          {stats.productBrain?.experiments ? (
+            <AdminProductBrainPanel brain={stats.productBrain} />
           ) : null}
 
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

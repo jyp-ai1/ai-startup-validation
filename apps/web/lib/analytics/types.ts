@@ -278,6 +278,13 @@ export type OpsDashboardStats = {
     healthScore: number;
     experimentBacklog: number;
     rollbackCount: number;
+    experiments?: {
+      active: { id: string; name: string; kpiLabel: string; status: string }[];
+      completed: { id: string; name: string; kpiLabel: string; status: string }[];
+      failed: { id: string; name: string; kpiLabel: string; status: string }[];
+    };
+    kpiTrend?: { kpiLabel: string; days7: number; days30: number }[];
+    aiPriorityQueue?: { priority: 'P0' | 'P1' | 'P2'; kpi: string; action: string }[];
   };
   operationalMetrics?: {
     users: number;

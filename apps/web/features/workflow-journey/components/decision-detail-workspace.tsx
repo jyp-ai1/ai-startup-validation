@@ -15,9 +15,14 @@ import {
 import { cn } from '@repo/ui/lib/utils';
 
 import { getDecisionStages } from '../constants/decision-experience';
+import { computeFounderAiPmBrief } from '../lib/founder-ai-pm-engine';
 import { DecisionChangeLog } from './decision-change-log';
 import { CONFIDENCE_RULES, MISSING_DATA, MOCK_EVIDENCE } from '../constants/intelligence-mock';
 import type { WorkflowGoalId } from '../types';
+import { ConfidenceBreakdownPanel } from './founder-ai-pm/confidence-breakdown-panel';
+import { EvidenceThoughtTimeline } from './founder-ai-pm/evidence-thought-timeline';
+import { FounderAiSummary } from './founder-ai-pm/founder-ai-summary';
+import { WhatIfScenarioPanel } from './founder-ai-pm/what-if-scenario-panel';
 import { ConfidenceMeter } from './confidence-meter';
 import { EvidenceCard } from './evidence-card';
 import { ProjectHealthVisual } from './project-health-visual';
@@ -32,7 +37,9 @@ type DecisionDetailWorkspaceProps = {
 export function DecisionDetailWorkspace({ goalId, className }: DecisionDetailWorkspaceProps) {
   const t = useTranslations('workflow.decisionDetail');
   const ti = useTranslations('workflow.intelligence');
-  const stage = getDecisionStages(goalId)[2]!;
+  const stageIndex = 2;
+  const stage = getDecisionStages(goalId)[stageIndex]!;
+  const founderBrief = computeFounderAiPmBrief(stage, stageIndex);
   const [perspective, setPerspective] = useState<Perspective>('founder');
 
   const perspectives: Perspective[] = ['founder', 'pm', 'vc'];
@@ -67,6 +74,15 @@ export function DecisionDetailWorkspace({ goalId, className }: DecisionDetailWor
           ))}
         </div>
       </div>
+
+      <FounderAiSummary brief={founderBrief} />
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <EvidenceThoughtTimeline steps={founderBrief.evidenceThoughtSteps} />
+        <ConfidenceBreakdownPanel items={founderBrief.confidenceBreakdown} total={stage.confidence} />
+      </div>
+
+      {founderBrief.whatIf ? <WhatIfScenarioPanel scenario={founderBrief.whatIf} /> : null}
 
       <div className="rounded-2xl border border-border/70 bg-card p-5">
         <p className="text-sm leading-relaxed text-foreground/90">
@@ -144,7 +160,11 @@ export function DecisionDetailWorkspace({ goalId, className }: DecisionDetailWor
         </DetailCard>
 
         <DetailCard icon={ArrowRightLeft} title={t('sections.alternative')}>
-          <p className="text-sm text-muted-foreground">{t('alternativeBody')}</p>
+          {founderBrief.whatIf ? (
+            <WhatIfScenarioPanel scenario={founderBrief.whatIf} className="border-0 bg-transparent p-0" />
+          ) : (
+            <p className="text-sm text-muted-foreground">{t('alternativeBody')}</p>
+          )}
         </DetailCard>
 
         <DetailCard icon={AlertTriangle} title={t('sections.risk')}>

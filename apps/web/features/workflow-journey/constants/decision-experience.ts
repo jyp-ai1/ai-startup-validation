@@ -22,6 +22,26 @@ export type DecisionHistoryEntry = {
   verdict?: DecisionVerdict;
 };
 
+export type ConfidenceBreakdownItem = {
+  categoryKey: 'market' | 'competition' | 'customer' | 'revenue' | 'risk';
+  delta: number;
+};
+
+export type EvidenceThoughtStep = {
+  id: string;
+  categoryKey: 'market' | 'competition' | 'customer' | 'revenue' | 'risk' | 'verdict';
+  status: 'done' | 'current' | 'pending';
+};
+
+export type WhatIfScenario = {
+  id: string;
+  actionKey: string;
+  labelKey: string;
+  confidenceBefore: number;
+  confidenceAfter: number;
+  goProbabilityAfter: number;
+};
+
 export type DecisionStage = {
   verdict: DecisionVerdict;
   confidence: number;
@@ -34,6 +54,100 @@ export type DecisionStage = {
   historyCount: number;
   mockActionKey: string;
 };
+
+const CONFIDENCE_BREAKDOWN_BY_STAGE: ConfidenceBreakdownItem[][] = [
+  [
+    { categoryKey: 'market', delta: 12 },
+    { categoryKey: 'competition', delta: 0 },
+    { categoryKey: 'customer', delta: 8 },
+    { categoryKey: 'revenue', delta: 2 },
+    { categoryKey: 'risk', delta: -19 },
+  ],
+  [
+    { categoryKey: 'market', delta: 20 },
+    { categoryKey: 'competition', delta: 8 },
+    { categoryKey: 'customer', delta: 10 },
+    { categoryKey: 'revenue', delta: 5 },
+    { categoryKey: 'risk', delta: -13 },
+  ],
+  [
+    { categoryKey: 'market', delta: 20 },
+    { categoryKey: 'competition', delta: 18 },
+    { categoryKey: 'customer', delta: 10 },
+    { categoryKey: 'revenue', delta: 5 },
+    { categoryKey: 'risk', delta: -13 },
+  ],
+  [
+    { categoryKey: 'market', delta: 20 },
+    { categoryKey: 'competition', delta: 18 },
+    { categoryKey: 'customer', delta: 18 },
+    { categoryKey: 'revenue', delta: 8 },
+    { categoryKey: 'risk', delta: -8 },
+  ],
+];
+
+const EVIDENCE_CATEGORIES: EvidenceThoughtStep['categoryKey'][] = [
+  'market',
+  'competition',
+  'customer',
+  'revenue',
+  'risk',
+  'verdict',
+];
+
+export function getStageConfidenceBreakdown(stageIndex: number): ConfidenceBreakdownItem[] {
+  return CONFIDENCE_BREAKDOWN_BY_STAGE[stageIndex] ?? CONFIDENCE_BREAKDOWN_BY_STAGE[2]!;
+}
+
+export function getEvidenceThoughtSteps(
+  stageIndex: number,
+  verdict: DecisionVerdict,
+): EvidenceThoughtStep[] {
+  const progressIndex = verdict === 'GO' ? EVIDENCE_CATEGORIES.length : stageIndex + 1;
+  return EVIDENCE_CATEGORIES.map((categoryKey, index) => ({
+    id: categoryKey,
+    categoryKey,
+    status:
+      index < progressIndex - 1 ? 'done' : index === progressIndex - 1 ? 'current' : 'pending',
+  }));
+}
+
+export function getStageWhatIf(
+  stageIndex: number,
+  currentConfidence: number,
+): WhatIfScenario | null {
+  if (stageIndex === 2) {
+    return {
+      id: 'what-if-voc-3',
+      actionKey: 'addVoc3',
+      labelKey: 'vocThree',
+      confidenceBefore: currentConfidence,
+      confidenceAfter: 81,
+      goProbabilityAfter: 78,
+    };
+  }
+  if (stageIndex === 1) {
+    return {
+      id: 'what-if-voc-2',
+      actionKey: 'addVoc2',
+      labelKey: 'vocTwo',
+      confidenceBefore: currentConfidence,
+      confidenceAfter: 68,
+      goProbabilityAfter: 55,
+    };
+  }
+  if (stageIndex === 0) {
+    return {
+      id: 'what-if-market',
+      actionKey: 'completeMarket',
+      labelKey: 'marketSize',
+      confidenceBefore: currentConfidence,
+      confidenceAfter: 50,
+      goProbabilityAfter: 38,
+    };
+  }
+  return null;
+}
 
 export const CONFIDENCE_TIMELINE: ConfidenceTimelineStep[] = [
   { id: 'market', labelKey: 'marketAnalysis', gain: 8, from: 42, to: 50 },
@@ -83,7 +197,7 @@ const BASE_STAGES: DecisionStage[] = [
     confidence: 68,
     projectHealth: 80,
     nextActionStepId: 'evidence',
-    nextActionDurationMinutes: 5,
+    nextActionDurationMinutes: 15,
     primaryHoldReasonKey: 'insufficientInterviews',
     whyReasonKeys: ['insufficientInterviews'],
     historyCount: 3,

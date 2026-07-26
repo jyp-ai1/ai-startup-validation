@@ -36,6 +36,12 @@ Admin **Product OS v2** — AI PM recommendation + Impact. Engine: `product-os-e
 
 **Pre-implementation gate:** 이 변경이 **어느 KPI**를 **얼마나** 올리는가? — No answer → do not implement.
 
+**Forbidden:** 기능이 있어서 만드는 기능. **Required:** KPI가 떨어져서 만드는 기능.
+
+**PR template:** `docs/PRODUCT_LOOP_PR_TEMPLATE.md` — Primary KPI through Rollback conditions. Missing → do not ship.
+
+**Priority:** ① Founder AI PM → ② Product OS → ③ Analytics. Admin never before Founder.
+
 ## Thinking priority
 
 **Behavior > Screen > Component > Code**

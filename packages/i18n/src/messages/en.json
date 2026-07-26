@@ -1919,6 +1919,19 @@
       "estimatedHours": "Est. time",
       "risk": "Risk"
     },
+    "productBrain": {
+      "title": "Product Brain — Experiment Management",
+      "subtitle": "Active · Completed · Failed experiments · KPI trend · AI priority queue",
+      "active": "Active",
+      "completed": "Completed",
+      "failed": "Failed",
+      "empty": "None",
+      "kpiTrend": "KPI Trend",
+      "kpi": "KPI",
+      "days7": "7 days",
+      "days30": "30 days",
+      "priorityQueue": "AI Priority Queue"
+    },
     "retentionRate": "Retention",
     "completionRate": "Journey completion",
     "avgJourneyMinutes": "Avg. time (min)",
@@ -4169,6 +4182,57 @@
       "coachTone": {
         "hold": "Good progress. We're almost there — secure VOC and I can recommend GO.",
         "go": "Congratulations — enough evidence for GO. You're ready to move into execution."
+      }
+    },
+    "founderAiPm": {
+      "summary": {
+        "label": "AI PM · Today's focus",
+        "marketGap": "The biggest gap is unverified market size. Completing market analysis should lift Confidence from {current}% → {after}%.",
+        "competitorGap": "Without competitor analysis we can't place you in the market. Finish it for +{gain}% Confidence and higher GO odds.",
+        "vocGap": "The biggest gap is customer validation. {interviews} interviews should lift Confidence from {current}% → {after}%.",
+        "goReady": "Evidence is sufficient for GO. You're ready to move into execution."
+      },
+      "breakdown": {
+        "title": "Confidence Breakdown",
+        "categories": {
+          "market": "Market",
+          "competition": "Competition",
+          "customer": "Customer",
+          "revenue": "Revenue",
+          "risk": "Risk"
+        }
+      },
+      "evidenceTimeline": {
+        "title": "Evidence Timeline",
+        "subtitle": "How AI reasoned through your decision",
+        "currentStep": "Analyzing now",
+        "doneStep": "Complete",
+        "steps": {
+          "market": "Market",
+          "competition": "Competition",
+          "customer": "Customer",
+          "revenue": "Revenue",
+          "risk": "Risk",
+          "verdict": "Final verdict"
+        }
+      },
+      "whatIf": {
+        "title": "What If",
+        "confidence": "Confidence",
+        "goProbability": "GO probability",
+        "hint": "Tap to simulate",
+        "actions": {
+          "vocThree": "Add 3 VOC interviews",
+          "vocTwo": "Add 2 VOC interviews",
+          "marketSize": "Verify market size"
+        }
+      },
+      "nextAction": {
+        "label": "Next Action",
+        "duration": "Est. time",
+        "minutes": "{count} min",
+        "confidenceGain": "Confidence",
+        "goGain": "GO probability"
       }
     },
     "decisionDetail": {
