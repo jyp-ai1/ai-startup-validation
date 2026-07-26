@@ -32,10 +32,12 @@ import { FounderJourneyMap } from './founder-ai-pm/founder-journey-map';
 import { FounderMemoryRecallPanel } from './founder-ai-pm/founder-memory-recall-panel';
 import { FounderOperatingTimelinePanel } from './founder-ai-pm/founder-operating-timeline-panel';
 import { FounderProjectHealthDashboard } from './founder-ai-pm/founder-project-health-dashboard';
+import { FounderScoreUpdateBanner } from './founder-ai-pm/founder-score-update-banner';
 import { FounderSuccessScoreExplained } from './founder-ai-pm/founder-success-score-explained';
 import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionFirst } from './founder-ai-pm/founder-today-action-first';
 import { FounderTodayDailyBrief } from './founder-ai-pm/founder-today-daily-brief';
+import { FounderTodayHero } from './founder-ai-pm/founder-today-hero';
 import { FounderWeeklyCeoReviewPanel } from './founder-ai-pm/founder-weekly-ceo-review-panel';
 
 const DAILY_VISIT_KEY = 'll_daily_visit';
@@ -86,6 +88,7 @@ export function FounderTodayWorkspace({
   const [completionUpdate, setCompletionUpdate] = useState<ActionCompletionUpdateResult | null>(
     null,
   );
+  const [scoreBanner, setScoreBanner] = useState<{ delta: number; after: number } | null>(null);
 
   const intelligence = useMemo(
     () => computeFounderIntelligenceBrief(projectId, goalId, confidence),
@@ -153,6 +156,12 @@ export function FounderTodayWorkspace({
   };
 
   const handleDebriefContinue = () => {
+    if (completionUpdate) {
+      setScoreBanner({
+        delta: completionUpdate.scoreDelta,
+        after: completionUpdate.scoreAfter,
+      });
+    }
     setCompletionUpdate(null);
     setRefreshKey((key) => key + 1);
   };
@@ -184,63 +193,84 @@ export function FounderTodayWorkspace({
         />
       ) : null}
 
-      <div className="space-y-8">
-        <FounderProjectHealthDashboard
-          successScore={intelligence.successScore.percent}
-          businessProgress={intelligence.businessProgress}
-          behavior={intelligence.behavior}
-        />
-
-        <FounderJourneyMap businessProgress={intelligence.businessProgress} />
-
-        {operatingState?.timeline ? (
-          <FounderOperatingTimelinePanel timeline={operatingState.timeline} />
+      <div className="space-y-6">
+        {scoreBanner ? (
+          <FounderScoreUpdateBanner
+            scoreDelta={scoreBanner.delta}
+            scoreAfter={scoreBanner.after}
+          />
         ) : null}
 
-        <FounderTodayDailyBrief
+        <FounderTodayHero
           score={intelligence.successScore}
           primaryAction={primaryAction}
-          deltaReason={deltaReason}
-          onStartPrimary={() =>
+          onStart={() =>
             handleStartById(
-              primaryAction ? `daily_${primaryAction.id}` : 'daily_primary',
+              primaryAction ? `hero_${primaryAction.id}` : 'hero_primary',
               primaryAction?.id,
             )
           }
         />
-
-        <DecisionOneLinePanel fallbackConfidence={confidence} />
-
-        <FounderSuccessScoreExplained
-          score={intelligence.successScore}
-          factors={intelligence.successScoreFactors}
-          primaryAction={primaryAction}
-        />
-
-        <FounderTodayActionFirst
-          score={intelligence.successScore}
-          actions={intelligence.todayActions}
-          totalMinutes={intelligence.totalEtaMinutes}
-          onStartAction={(actionId) => handleStartById(`action_${actionId}`, actionId)}
-        />
-
-        <FounderEvidenceAutoPanel evidence={evidence} />
-
-        <FounderActionHistoryPanel history={actionHistory} />
-
-        {operatingState?.lastDebrief ? (
-          <FounderDailyReviewPanel review={intelligence.dailyReview} />
-        ) : null}
-
-        {showWeeklyReview ? (
-          <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
-        ) : null}
 
         <details className="rounded-2xl border border-border/60 bg-muted/10">
           <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
             {t('moreDetails')}
           </summary>
           <div className="space-y-8 border-t border-border/60 px-5 py-6">
+            <FounderProjectHealthDashboard
+              successScore={intelligence.successScore.percent}
+              businessProgress={intelligence.businessProgress}
+              behavior={intelligence.behavior}
+            />
+
+            <FounderJourneyMap
+              businessProgress={intelligence.businessProgress}
+              nextAction={primaryAction}
+            />
+
+            {operatingState?.timeline ? (
+              <FounderOperatingTimelinePanel timeline={operatingState.timeline} />
+            ) : null}
+
+            <FounderTodayDailyBrief
+              score={intelligence.successScore}
+              primaryAction={primaryAction}
+              deltaReason={deltaReason}
+              onStartPrimary={() =>
+                handleStartById(
+                  primaryAction ? `daily_${primaryAction.id}` : 'daily_primary',
+                  primaryAction?.id,
+                )
+              }
+            />
+
+            <DecisionOneLinePanel fallbackConfidence={confidence} />
+
+            <FounderSuccessScoreExplained
+              score={intelligence.successScore}
+              factors={intelligence.successScoreFactors}
+              primaryAction={primaryAction}
+            />
+
+            <FounderTodayActionFirst
+              score={intelligence.successScore}
+              actions={intelligence.todayActions}
+              totalMinutes={intelligence.totalEtaMinutes}
+              onStartAction={(actionId) => handleStartById(`action_${actionId}`, actionId)}
+            />
+
+            <FounderEvidenceAutoPanel evidence={evidence} />
+
+            <FounderActionHistoryPanel history={actionHistory} />
+
+            {operatingState?.lastDebrief ? (
+              <FounderDailyReviewPanel review={intelligence.dailyReview} />
+            ) : null}
+
+            {showWeeklyReview ? (
+              <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
+            ) : null}
+
             <FounderSuccessScorePanel
               score={intelligence.successScore}
               factors={intelligence.successScoreFactors}

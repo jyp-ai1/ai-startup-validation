@@ -59,6 +59,7 @@ export function FounderActionWorkspace({
   const [completedAnswers, setCompletedAnswers] = useState<string[]>([]);
   const [draft, setDraft] = useState('');
   const [phase, setPhase] = useState<'guide' | 'complete'>('guide');
+  const [saveFeedback, setSaveFeedback] = useState<string[] | null>(null);
 
   const totalSteps = workspace.questionKeys.length;
   const isLastStep = step >= totalSteps - 1;
@@ -89,6 +90,8 @@ export function FounderActionWorkspace({
       setPhase('complete');
       return;
     }
+
+    setSaveFeedback([t('savedFeedback'), t('nextQuestionFeedback')]);
     setStep((prev) => prev + 1);
   };
 
@@ -172,6 +175,8 @@ export function FounderActionWorkspace({
         </div>
 
         <AiPmConversation messages={introMessages} />
+
+        {saveFeedback ? <AiPmConversation messages={saveFeedback} className="-mt-2" /> : null}
 
         <div className="rounded-2xl border border-primary/25 bg-primary/[0.04] p-5">
           <p className="text-sm font-medium text-primary">

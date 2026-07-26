@@ -71,3 +71,20 @@ export function getAiPmPreparedItemKeys(agentIndex: number): string[] {
 }
 
 export const AI_PM_WORK_COUNT = PIPELINE_WORK_ORDER.length;
+
+export const LIVE_WORKSPACE_TOTAL_STEPS = 5;
+
+export function getLiveWorkspaceStepProgress(agentIndex: number): {
+  current: number;
+  total: number;
+  workId: AiPmWorkItemId;
+} {
+  const clampedIndex = Math.max(0, Math.min(agentIndex, PIPELINE_WORK_ORDER.length - 1));
+  const workId = PIPELINE_WORK_ORDER[clampedIndex] ?? 'todayPlan';
+
+  return {
+    current: clampedIndex + 2,
+    total: LIVE_WORKSPACE_TOTAL_STEPS,
+    workId,
+  };
+}

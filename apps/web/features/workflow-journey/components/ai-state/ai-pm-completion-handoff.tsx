@@ -27,7 +27,6 @@ function resolveCtaKey(action?: { id: string; title: string }): 'ctaDefault' | '
 
 export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletionHandoffProps) {
   const t = useTranslations('workflow.aiPm.completion');
-  const td = useTranslations('workflow.aiPm.decision');
 
   const pipeline = loadAgentPipelineResult();
   const gap = pipeline?.decision?.intelligence?.gap ?? pipeline?.decision?.missingData?.[0];
@@ -41,10 +40,10 @@ export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletio
   const narrativeMessages = [
     t('greeting'),
     t('goodNews'),
-    gap ? t('gapIntro', { gap }) : td('riskDefault'),
-    t('recommendIntro'),
-    `${t('todayIntro')}\n\n${actionTitle}\n\n${t('todayMeta', { minutes })}`,
-  ];
+    t('todayIntroLead'),
+    `${actionTitle}\n\n${t('todayMeta', { minutes })}`,
+    gap ? t('gapIntro', { gap }) : null,
+  ].filter(Boolean) as string[];
 
   return (
     <div
@@ -80,6 +79,10 @@ export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletio
           {t(ctaKey)}
           <ArrowRight className="ml-2 size-4" aria-hidden />
         </Button>
+
+        <p className="whitespace-pre-line text-center text-sm leading-relaxed text-muted-foreground">
+          {t('operatingHandoff')}
+        </p>
       </div>
     </div>
   );

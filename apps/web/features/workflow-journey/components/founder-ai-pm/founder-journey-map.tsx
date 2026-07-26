@@ -4,86 +4,60 @@ import { useTranslations } from 'next-intl';
 
 import { cn } from '@repo/ui/lib/utils';
 
-import type { BusinessProgressDimension } from '../../lib/founder-intelligence-engine';
-
-const STAGES = [
-  { key: 'marketValidation', progressKey: 'market', threshold: 60 },
-  { key: 'customerValidation', progressKey: 'customer', threshold: 40 },
-  { key: 'pricingValidation', progressKey: 'pricing', threshold: 50 },
-  { key: 'mvp', progressKey: 'customer', threshold: 70 },
-  { key: 'investmentPrep', progressKey: 'investment', threshold: 50 },
-] as const;
-
-export type JourneyStageStatus = 'done' | 'running' | 'upcoming';
-
-export function resolveJourneyStageStatuses(
-  businessProgress: BusinessProgressDimension[],
-): JourneyStageStatus[] {
-  let runningAssigned = false;
-
-  return STAGES.map((stage) => {
-    const percent =
-      businessProgress.find((dim) => dim.key === stage.progressKey)?.percent ?? 0;
-
-    if (percent >= stage.threshold) return 'done';
-    if (!runningAssigned) {
-      runningAssigned = true;
-      return 'running';
-    }
-    return 'upcoming';
-  });
-}
+import type { BusinessProgressDimension, GeneratedTodayAction } from '../../lib/founder-intelligence-engine';
+import { resolveJourneyStageStatuses, STAGES } from './founder-journey-stages';
 
 type FounderJourneyMapProps = {
   businessProgress: BusinessProgressDimension[];
+  nextAction?: GeneratedTodayAction;
   className?: string;
 };
 
-const STATUS_ICON: Record<JourneyStageStatus, string> = {
-  done: '✔',
-  running: '●',
-  upcoming: '○',
-};
-
-export function FounderJourneyMap({ businessProgress, className }: FounderJourneyMapProps) {
+export function FounderJourneyMap({
+  businessProgress,
+  nextAction,
+  className,
+}: FounderJourneyMapProps) {
   const t = useTranslations('workflow.aiState.journeyMap');
   const statuses = resolveJourneyStageStatuses(businessProgress);
 
+  const currentIndex = statuses.findIndex((status) => status === 'running');
+  const nextIndex = statuses.findIndex((status, index) => status === 'upcoming' && index > currentIndex);
+
+  const currentStage = currentIndex >= 0 ? STAGES[currentIndex] : STAGES[0];
+  const nextStage = nextIndex >= 0 ? STAGES[nextIndex] : STAGES[currentIndex + 1];
+
+  if (!currentStage) return null;
+
   return (
     <nav
-      className={cn(
-        'overflow-x-auto rounded-2xl border border-border/70 bg-muted/20 p-4',
-        className,
-      )}
+      className={cn('rounded-2xl border border-border/70 bg-muted/20 p-5', className)}
       aria-label={t('label')}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-        {t('label')}
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {t('currentLabel')}
       </p>
-      <ol className="mt-3 space-y-2" role="list">
-        {STAGES.map((stage, index) => {
-          const status = statuses[index] ?? 'upcoming';
-          const isRunning = status === 'running';
-          const isDone = status === 'done';
+      <p className="mt-2 flex items-center gap-2 text-lg font-semibold">
+        <span aria-hidden>●</span>
+        {t(`dynamicStages.${currentStage.key}.running`)}
+      </p>
 
-          return (
-            <li
-              key={stage.key}
-              className={cn(
-                'flex items-center gap-3 rounded-xl px-3 py-2 text-sm',
-                isRunning && 'bg-primary/10 font-medium',
-                isDone && 'text-emerald-700 dark:text-emerald-400',
-                !isDone && !isRunning && 'text-muted-foreground',
-              )}
-            >
-              <span aria-hidden className="w-4 shrink-0 text-center">
-                {STATUS_ICON[status]}
-              </span>
-              <span>{t(`dynamicStages.${stage.key}.${status}`)}</span>
-            </li>
-          );
-        })}
-      </ol>
+      {nextStage ? (
+        <>
+          <div className="my-4 border-t border-border/60" aria-hidden />
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {t('nextLabel')}
+          </p>
+          <p className="mt-2 text-base font-medium">
+            {t(`dynamicStages.${nextStage.key}.upcoming`)}
+          </p>
+          <p className="mt-1 text-sm tabular-nums text-muted-foreground">
+            {t('nextMeta', {
+              minutes: nextAction?.etaMinutes ?? 15,
+            })}
+          </p>
+        </>
+      ) : null}
     </nav>
   );
 }

@@ -4013,6 +4013,46 @@
       "progressLabel": "Overall progress",
       "liveHero": "Founder,\nyour AI PM is working now.\n\nPlease wait.",
       "waitInstruction": "You don't need to do anything right now.\n\nWhen analysis finishes,\nwe'll show the result automatically.",
+      "waitInstructionSticky": "Founder,\n\nyou don't need to do anything right now.\n\nYour AI PM is researching for you.",
+      "liveStep": {
+        "label": "Current step",
+        "progress": "{current} / {total}",
+        "phases": {
+          "ideaUnderstood": "Idea confirmed",
+          "marketResearch": "Market research",
+          "competitorAnalysis": "Competitor analysis",
+          "strategyWriting": "Strategy design",
+          "todayPlan": "Today's plan"
+        }
+      },
+      "liveTeam": {
+        "roles": {
+          "aiPm": {
+            "title": "AI PM",
+            "done": "Market sizing complete",
+            "running": "Sizing the market",
+            "waiting": "Waiting"
+          },
+          "researcher": {
+            "title": "Market analysis",
+            "done": "Competitor scan complete",
+            "running": "Analyzing 12 competitors",
+            "waiting": "Waiting"
+          },
+          "strategist": {
+            "title": "Strategy design",
+            "done": "Business model ready",
+            "running": "Designing business model",
+            "waiting": "Waiting"
+          },
+          "consultant": {
+            "title": "Business verdict",
+            "done": "Verdict complete",
+            "running": "Preparing verdict",
+            "waiting": "Preparing"
+          }
+        }
+      },
       "cancelAnalysis": "Cancel analysis",
       "stepEta": "Est. {seconds}s",
       "remaining": "Est. {seconds}s remaining",
@@ -4049,13 +4089,15 @@
         "todayLead": "Today",
         "todayMeta": "About {minutes} min",
         "defaultAction": "Interview 3 potential customers",
-        "greeting": "Founder,\n\ngood news.",
-        "goodNews": "There's real potential here.",
+        "greeting": "Founder,\n\nthe review is complete.",
+        "goodNews": "Bottom line first:\n\nthere is real potential.",
         "gapIntro": "However,\n\n{gap}\n\nOne more step will\nmake your pitch much stronger.",
         "recommendIntro": "Here's what I recommend.",
         "todayIntro": "Today",
+        "todayIntroLead": "Today, just do this one thing.",
+        "operatingHandoff": "From now on, you'll run the project together with your AI PM.",
         "successScoreLabel": "Success probability",
-        "ctaDefault": "Start today's actions",
+        "ctaDefault": "Start today",
         "ctaInterview": "Start customer interviews",
         "ctaPricing": "Start price validation",
         "resultIntro": "Market review result",
@@ -4257,6 +4299,9 @@
       },
       "journeyMap": {
         "label": "Where am I?",
+        "currentLabel": "You are here",
+        "nextLabel": "Next",
+        "nextMeta": "{minutes} min",
         "stages": {
           "idea": "Business idea",
           "marketValidation": "Market validation",
@@ -4330,16 +4375,35 @@
       "taskTitle": "Write your idea in one line.",
       "inputLabel": "Type your one-line idea here",
       "examples": {
-        "1": "Neighborhood PT booking platform",
-        "2": "AI English conversation service",
-        "3": "Pet health management app"
+        "1": "AI travel itinerary generator",
+        "2": "Online PT platform",
+        "3": "Used-car diagnostic AI"
+      },
+      "wizard": {
+        "greeting": "Hello.\nI'm your AI PM.",
+        "askIdea": "Tell me your business idea in one line.",
+        "examplesDivider": "Examples",
+        "nextStep": "Next",
+        "customerThanks": "Great.",
+        "customerQuestion": "Who is this service for?\n\n(You can skip if you're not sure.)",
+        "customerOptions": {
+          "office": "Office workers",
+          "student": "Students",
+          "enterprise": "Enterprises",
+          "unknown": "Not sure yet"
+        },
+        "customerSkip": "Skip",
+        "readyThanks": "Thank you.",
+        "readyStartLead": "I'll start market research now.",
+        "readyDuration": "This takes about 10 seconds.",
+        "readyNoMoreInput": "You don't need to enter anything else.\n\nYour AI PM will research for you from here."
       },
       "aiWillDo": {
         "label": "Your AI PM will",
-        "market": "Research the market.",
-        "competitor": "Analyze competitors.",
-        "viability": "Review success potential.",
-        "today": "Create today's action plan."
+        "market": "Market research",
+        "competitor": "Competitors",
+        "viability": "Profitability",
+        "today": "Execution plan"
       },
       "quickHint": "You already picked a Goal — add your idea to start in about 10 seconds.",
       "autoNameHint": "AI project name: {name}",
@@ -4370,7 +4434,7 @@
         "optionalNote": "Team size, budget, etc."
       },
       "cta": "Start analysis",
-      "ctaTitle": "Your AI PM analyzes business viability",
+      "ctaTitle": "Your AI PM is starting the business review",
       "ctaDuration": "About 10 seconds",
       "ctaSub": "From market research to execution plan —\nall automatic."
     },
@@ -4635,6 +4699,18 @@
         "fallbackAction": "Today's core action",
         "moreDetails": "More analysis · evidence · history"
       },
+      "todayHeroCompact": {
+        "label": "Today",
+        "todayLabel": "Today",
+        "investmentLead": "15-minute investment",
+        "minutes": "{count} min",
+        "scoreLead": "Success probability",
+        "startCta": "Start now"
+      },
+      "scoreUpdate": {
+        "lead": "Thanks to your AI PM,\n\nsuccess probability",
+        "after": "now {score}%"
+      },
       "todayDaily": {
         "label": "AI PM daily brief",
         "greeting": "Good morning, Founder.",
@@ -4731,6 +4807,8 @@
         "answerPlaceholder": "Record the customer's answer or your notes",
         "record": "Save answer",
         "recordFinal": "Save final answer",
+        "savedFeedback": "✓ Saved.",
+        "nextQuestionFeedback": "Great.\n\nNext question.",
         "progress": "{current} / {total} done",
         "meta": "{minutes} min · +{impact}%",
         "completeLead": "Well done, Founder.",
