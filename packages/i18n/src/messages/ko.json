@@ -3997,20 +3997,62 @@
       "continueAnyway": "오늘 할 일 보기",
       "stayOnPage": "AI PM이 분석 중입니다. 잠시만 기다려 주세요.",
       "registration": {
-        "greeting": "안녕하세요. 오늘부터 제가 전략 PM이 되어드리겠습니다.",
-        "askIdea": "아이디어를 한 줄만 알려주세요."
+        "greeting": "안녕하세요.\n\n오늘부터 제가 대표님의 AI PM입니다.",
+        "intro": "사업 아이디어를 같이 검토하고 실행계획까지 만들어드리겠습니다.",
+        "askIdea": "지금 해야 할 일 — 딱 한 줄로 아이디어만 적어주세요."
       },
       "conversation": {
+        "confirmedIdea": "좋습니다.\n\n아이디어를 확인했습니다.\n\n이제 제가 시장과 경쟁사를 조사하겠습니다.\n\n대표님은 잠시만 기다려주세요.",
         "startResearch": "좋습니다. 이제 시장을 조사합니다. 약 {seconds}초 걸립니다.",
-        "afterMarket": "시장 조사가 끝났습니다. 생각보다 경쟁사가 많네요. 이제 전략을 정리합니다.",
+        "afterMarket": "시장 조사가 끝났습니다. 경쟁사를 분석하고 있습니다.",
+        "competitorAnalysis": "경쟁 분석이 끝났습니다. 전략을 작성하고 있습니다.",
+        "strategyWriting": "전략 수립이 끝났습니다. 오늘 할 일을 준비하고 있습니다.",
         "profitability": "수익성을 계산하고 있습니다.",
         "decisionReview": "사업 가능성을 검토하고 있습니다.",
         "preparingToday": "오늘 하실 일을 준비하고 있습니다.",
         "complete": "준비가 끝났습니다. 오늘 할 일을 보여드릴게요.",
         "retry": "다시 시도합니다. 잠시만 기다려 주세요."
       },
+      "completion": {
+        "title": "분석 완료",
+        "subtitle": "AI PM이 사업 검토를 마쳤습니다.",
+        "intro": "시장 검토가 끝났습니다.",
+        "todayTogether": "오늘은 {action}부터 같이 해보겠습니다.",
+        "todayTogetherDefault": "오늘 할 일을 준비했습니다. 함께 시작해 볼까요?",
+        "cta": "오늘 할 일 시작하기"
+      },
       "work": {
+        "ideaUnderstood": {
+          "done": "아이디어 이해 완료",
+          "running": "아이디어 이해 중",
+          "waiting": "아이디어 이해 대기",
+          "failed": "재시도 필요"
+        },
         "marketResearch": {
+          "done": "시장 조사 완료",
+          "running": "시장 조사중",
+          "waiting": "시장 조사 대기",
+          "failed": "재시도 필요"
+        },
+        "competitorAnalysis": {
+          "done": "경쟁사 분석 완료",
+          "running": "경쟁사 분석중",
+          "waiting": "경쟁사 분석 대기",
+          "failed": "재시도 필요"
+        },
+        "strategyWriting": {
+          "done": "전략 작성 완료",
+          "running": "전략 작성중",
+          "waiting": "전략 작성 대기",
+          "failed": "재시도 필요"
+        },
+        "todayPlan": {
+          "done": "오늘 할 일 준비 완료",
+          "running": "오늘 할 일 준비중",
+          "waiting": "오늘 할 일 준비 대기",
+          "failed": "재시도 필요"
+        },
+        "strategyPlan": {
           "label": "시장 조사",
           "done": "완료",
           "running": "진행 중",
@@ -4169,10 +4211,25 @@
       "eyebrow": "Step 3 · 프로젝트 등록",
       "title": "아이디어 한 줄로 프로젝트를 시작하세요",
       "desc": "한 줄만 입력하면 AI가 프로젝트 이름과 첫 분석을 자동으로 시작합니다.",
-      "quickHint": "목표는 이미 선택되었습니다 — 아이디어만 적으면 30초 안에 시작할 수 있어요.",
+      "taskLabel": "지금 해야 할 일",
+      "taskTitle": "딱 한 줄로 아이디어만 적어주세요.",
+      "inputLabel": "여기에 한 줄로 입력하세요",
+      "examples": {
+        "1": "동네 PT 예약 플랫폼",
+        "2": "AI 영어회화 서비스",
+        "3": "반려동물 건강관리 앱"
+      },
+      "aiWillDo": {
+        "label": "AI PM은",
+        "market": "시장을 조사합니다.",
+        "competitor": "경쟁사를 분석합니다.",
+        "viability": "성공 가능성을 검토합니다.",
+        "today": "오늘 해야 할 일을 만듭니다."
+      },
+      "quickHint": "목표는 이미 선택되었습니다 — 아이디어만 적으면 10초 안에 시작할 수 있어요.",
       "autoNameHint": "AI 프로젝트 이름: {name}",
       "optionalDetails": "추가 정보 (선택)",
-      "ctaHint": "입력 내용은 자동 저장됩니다.",
+      "ctaHint": "약 10초 후 사업 검토가 시작됩니다.",
       "fields": {
         "projectName": "프로젝트 이름",
         "projectNameOptional": "프로젝트 이름 (선택 — 비워두면 AI가 생성)",
@@ -4185,13 +4242,18 @@
         "targetMarket": "{goal} · 한국 시장"
       },
       "placeholders": {
+        "1": "예) 퇴근 후 헬스장을 찾기 어려운 직장인을 위한 PT 예약 플랫폼",
+        "2": "예) AI가 사업 아이디어를 검토해주는 서비스",
+        "3": "예) 동네 PT 예약 플랫폼",
+        "4": "예) AI 영어회화 서비스",
+        "5": "예) 반려동물 건강관리 앱",
         "projectName": "예: LaunchLens Beta",
         "ideaOneLiner": "예: AI가 스타트업 전략 프로젝트를 이끄는 플랫폼",
         "websiteUrl": "https://",
         "targetMarket": "예: B2B SaaS, 한국",
         "optionalNote": "팀 규모, 예산 등"
       },
-      "cta": "AI 전략 프로젝트 시작"
+      "cta": "AI PM에게 사업 검토 맡기기"
     },
     "journeyGuide": {
       "label": "프로젝트 진행 가이드",

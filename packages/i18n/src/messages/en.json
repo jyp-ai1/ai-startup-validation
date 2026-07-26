@@ -4015,20 +4015,62 @@
       "continueAnyway": "View today's actions",
       "stayOnPage": "Your AI PM is analyzing. Please stay on this screen.",
       "registration": {
-        "greeting": "Hello. I'll be your strategy PM starting today.",
-        "askIdea": "Tell me your idea in one line."
+        "greeting": "Hello.\n\nI'll be your AI PM starting today.",
+        "intro": "We'll review your business idea together and build an execution plan.",
+        "askIdea": "Your task now — tell me your idea in one line."
       },
       "conversation": {
+        "confirmedIdea": "Great.\n\nI've got your idea.\n\nI'm researching the market and competitors now.\n\nPlease wait a moment.",
         "startResearch": "Great. I'm researching the market now — about {seconds} seconds.",
-        "afterMarket": "Market research is done. More competitors than expected. Now shaping strategy.",
+        "afterMarket": "Market research is done. Analyzing competitors.",
+        "competitorAnalysis": "Competitive analysis is done. Writing strategy.",
+        "strategyWriting": "Strategy is ready. Preparing today's actions.",
         "profitability": "Calculating profitability.",
         "decisionReview": "Reviewing business viability.",
         "preparingToday": "Preparing today's actions.",
         "complete": "All set. Here's what to do today.",
         "retry": "Trying again — one moment."
       },
+      "completion": {
+        "title": "Analysis complete",
+        "subtitle": "Your AI PM finished the business review.",
+        "intro": "Market review is complete.",
+        "todayTogether": "Let's start today with {action}.",
+        "todayTogetherDefault": "Today's actions are ready. Shall we begin?",
+        "cta": "Start today's actions"
+      },
       "work": {
+        "ideaUnderstood": {
+          "done": "Idea understood",
+          "running": "Understanding idea",
+          "waiting": "Idea review pending",
+          "failed": "Retry needed"
+        },
         "marketResearch": {
+          "done": "Market research complete",
+          "running": "Researching market",
+          "waiting": "Market research pending",
+          "failed": "Retry needed"
+        },
+        "competitorAnalysis": {
+          "done": "Competitive analysis complete",
+          "running": "Analyzing competitors",
+          "waiting": "Competitive analysis pending",
+          "failed": "Retry needed"
+        },
+        "strategyWriting": {
+          "done": "Strategy complete",
+          "running": "Writing strategy",
+          "waiting": "Strategy pending",
+          "failed": "Retry needed"
+        },
+        "todayPlan": {
+          "done": "Today's plan ready",
+          "running": "Preparing today's plan",
+          "waiting": "Today's plan pending",
+          "failed": "Retry needed"
+        },
+        "strategyPlan": {
           "label": "Market research",
           "done": "Complete",
           "running": "In progress",
@@ -4187,10 +4229,25 @@
       "eyebrow": "Step 3 · Project registration",
       "title": "Start with one line about your idea",
       "desc": "One line is enough — AI names the project and starts the first analysis.",
-      "quickHint": "You already picked a Goal — add your idea to start in about 30 seconds.",
+      "taskLabel": "Your task now",
+      "taskTitle": "Write your idea in one line.",
+      "inputLabel": "Type your one-line idea here",
+      "examples": {
+        "1": "Neighborhood PT booking platform",
+        "2": "AI English conversation service",
+        "3": "Pet health management app"
+      },
+      "aiWillDo": {
+        "label": "Your AI PM will",
+        "market": "Research the market.",
+        "competitor": "Analyze competitors.",
+        "viability": "Review success potential.",
+        "today": "Create today's action plan."
+      },
+      "quickHint": "You already picked a Goal — add your idea to start in about 10 seconds.",
       "autoNameHint": "AI project name: {name}",
       "optionalDetails": "Additional details (optional)",
-      "ctaHint": "Your input is saved automatically.",
+      "ctaHint": "Business review starts in about 10 seconds.",
       "fields": {
         "projectName": "Project name",
         "projectNameOptional": "Project name (optional — AI generates if empty)",
@@ -4203,13 +4260,18 @@
         "targetMarket": "{goal} · Korea market"
       },
       "placeholders": {
+        "1": "e.g. PT booking platform for busy office workers after work",
+        "2": "e.g. AI service that reviews startup business ideas",
+        "3": "e.g. Neighborhood PT booking platform",
+        "4": "e.g. AI English conversation service",
+        "5": "e.g. Pet health management app",
         "projectName": "e.g. LaunchLens Beta",
         "ideaOneLiner": "e.g. AI-led strategy workspace for startups",
         "websiteUrl": "https://",
         "targetMarket": "e.g. B2B SaaS, Korea",
         "optionalNote": "Team size, budget, etc."
       },
-      "cta": "Start AI strategy project"
+      "cta": "Hand business review to AI PM"
     },
     "journeyGuide": {
       "label": "Project progress guide",

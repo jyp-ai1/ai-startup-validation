@@ -19,9 +19,8 @@ import { useJourneyHistory } from '../hooks/use-journey-history';
 import { useJourneyProject } from '../hooks/use-journey-project';
 import { useWorkspaceExitCoach } from '../hooks/use-workspace-exit-coach';
 import type { WorkflowGoalId, WorkflowTemplate } from '../types';
+import { AiPmCompletionHandoff } from './ai-state/ai-pm-completion-handoff';
 import { AiPmLiveWorkspace } from './ai-state/ai-pm-live-workspace';
-import { AiPmConversation } from './ai-state/ai-pm-conversation';
-import { AiStateHero } from './ai-state/ai-state-hero';
 import { DecisionOneLinePanel } from './founder-ai-pm/decision-one-line-panel';
 import { BetaFeedbackModal } from './beta-feedback-modal';
 import { CoachSkeleton } from './coach-skeleton';
@@ -55,7 +54,7 @@ const DecisionExperienceCoach = dynamic(
   { loading: () => <CoachSkeleton /> },
 );
 
-type WorkspacePhase = 'registration' | 'thinking' | 'active';
+type WorkspacePhase = 'registration' | 'thinking' | 'complete' | 'active';
 
 type StrategyWorkspaceShellProps = {
   goalId: WorkflowGoalId;
@@ -73,7 +72,6 @@ export function StrategyWorkspaceShell({
   const t = useTranslations('workflow.workspace');
   const tg = useTranslations('workflow.goal');
   const tc = useTranslations('workflow.compose.goals');
-  const tpm = useTranslations('workflow.aiPm');
   const coachState = getStrategyCoachState(goalId);
   const activeStepId = coachState.nextActionStepId;
   const activeStep = template.steps.find((s) => s.id === activeStepId) ?? template.steps[0];
@@ -109,8 +107,12 @@ export function StrategyWorkspaceShell({
     analytics.trackWorkspaceLoaded(goalId, coachState.verdict);
   }, [analytics, coachState.verdict, goalId, phase, projectReady]);
 
-  const completeActivation = useCallback(() => {
+  const showCompletionHandoff = useCallback(() => {
     setPipelineAgentIndex(AI_PM_WORK_COUNT);
+    setPhase('complete');
+  }, []);
+
+  const enterTodayWorkspace = useCallback(() => {
     sessionStorage.setItem('ll_project_started', '1');
     setTab('today');
     setPhase('active');
@@ -166,7 +168,7 @@ export function StrategyWorkspaceShell({
     ).then((outcome) => {
       window.clearInterval(agentTimer);
       if (outcome.ok) {
-        completeActivation();
+        showCompletionHandoff();
         return;
       }
       setThinkingFailed(true);
@@ -183,7 +185,7 @@ export function StrategyWorkspaceShell({
       ).then((retry) => {
         if (retry.ok) {
           saveAgentPipelineResult(retry.data);
-          completeActivation();
+          showCompletionHandoff();
         }
       });
     });
@@ -191,7 +193,7 @@ export function StrategyWorkspaceShell({
     return () => {
       window.clearInterval(agentTimer);
     };
-  }, [analytics, coachState.verdict, completeActivation, goalId, projectId, registration]);
+  }, [analytics, coachState.verdict, goalId, projectId, registration, showCompletionHandoff]);
 
   useEffect(() => {
     if (phase !== 'thinking') return undefined;
@@ -280,9 +282,13 @@ export function StrategyWorkspaceShell({
           setThinkingFailed(false);
           setPhase('thinking');
         }}
-        onSkipToToday={completeActivation}
+        onSkipToToday={showCompletionHandoff}
       />
     );
+  }
+
+  if (phase === 'complete') {
+    return <AiPmCompletionHandoff onStartToday={enterTodayWorkspace} />;
   }
 
   return (
@@ -309,10 +315,6 @@ export function StrategyWorkspaceShell({
           <div className="grid gap-6 lg:grid-cols-[minmax(200px,260px)_1fr] lg:items-start lg:gap-8">
             <WorkspaceJourneyGuide activeStep={guideStep} className="hidden sm:block" />
             <div className="space-y-6">
-              <AiPmConversation
-                messages={[tpm('registration.greeting'), tpm('registration.askIdea')]}
-              />
-              <AiStateHero context={{ surface: 'registration' }} />
               <ProjectRegistrationPanel
                 goalLabel={tg(`options.${goalId}.title`)}
                 onStart={handleRegistrationStart}

@@ -12,7 +12,7 @@ export function AiPmMessage({ children, variant = 'pm', className }: AiPmMessage
   return (
     <div
       className={cn(
-        'rounded-2xl px-4 py-3 text-sm leading-relaxed sm:text-base',
+        'whitespace-pre-line rounded-2xl px-4 py-3 text-sm leading-relaxed sm:text-base',
         variant === 'pm'
           ? 'bg-primary/10 text-foreground'
           : 'bg-muted/40 text-muted-foreground',

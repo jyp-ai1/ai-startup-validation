@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Loader2, Sparkles, X } from 'lucide-react';
+import { Check, Sparkles, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@repo/ui';
@@ -11,8 +11,7 @@ import {
   estimateRemainingSeconds,
   getAiPmConversationMessageKey,
 } from '../../lib/ai-pm-conversation';
-import { AiPmConversation, AiPmMessage } from './ai-pm-conversation';
-import { AiStateHero } from './ai-state-hero';
+import { AiPmConversation } from './ai-pm-conversation';
 
 type AiPmLiveWorkspaceProps = {
   projectName?: string;
@@ -27,15 +26,18 @@ type AiPmLiveWorkspaceProps = {
 function WorkStatusIcon({ status }: { status: 'done' | 'running' | 'waiting' | 'failed' }) {
   if (status === 'done') return <Check className="size-4 shrink-0 text-emerald-600" aria-hidden />;
   if (status === 'running')
-    return <Loader2 className="size-4 shrink-0 animate-spin text-amber-600" aria-hidden />;
+    return (
+      <span className="size-2.5 shrink-0 rounded-full bg-amber-500" aria-hidden />
+    );
   if (status === 'failed') return <X className="size-4 shrink-0 text-destructive" aria-hidden />;
-  return <span className="size-4 shrink-0 rounded-full border border-muted-foreground/40" aria-hidden />;
+  return (
+    <span className="size-2.5 shrink-0 rounded-full border border-muted-foreground/50" aria-hidden />
+  );
 }
 
 export function AiPmLiveWorkspace({
   projectName,
   agentIndex,
-  progressPercent,
   failed = false,
   onRetry,
   onSkipToToday,
@@ -48,12 +50,12 @@ export function AiPmLiveWorkspace({
   const messageKey = getAiPmConversationMessageKey(agentIndex, failed);
   const conversationMessage = t(messageKey, { seconds: remaining, project: projectName ?? '' });
 
-  const priorMessages =
-    agentIndex >= 1 && !failed
-      ? [t('conversation.startResearch', { seconds: remaining + 4, project: projectName ?? '' })]
-      : [];
+  const priorMessages: string[] = [];
+  if (agentIndex >= 1 && !failed) {
+    priorMessages.push(t('conversation.confirmedIdea', { seconds: remaining + 6, project: projectName ?? '' }));
+  }
   if (agentIndex >= 2 && !failed) priorMessages.push(t('conversation.afterMarket'));
-  if (agentIndex >= 3 && !failed) priorMessages.push(t('conversation.profitability'));
+  if (agentIndex >= 3 && !failed) priorMessages.push(t('conversation.competitorAnalysis'));
 
   return (
     <div
@@ -81,15 +83,6 @@ export function AiPmLiveWorkspace({
 
         <AiPmConversation messages={[...priorMessages.slice(-2), conversationMessage]} />
 
-        <AiStateHero
-          context={{
-            surface: 'pipeline',
-            pipelineAgentIndex: agentIndex,
-            pipelineProgress: progressPercent,
-            pipelineFailed: failed,
-          }}
-        />
-
         <div>
           <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
             <span>{t('officeLabel')}</span>
@@ -99,30 +92,20 @@ export function AiPmLiveWorkspace({
               </span>
             ) : null}
           </div>
-          <ul className="space-y-3" role="list" aria-live="polite">
+          <ul className="space-y-2.5" role="list" aria-live="polite">
             {workItems.map((item) => (
               <li
                 key={item.id}
                 className={cn(
-                  'rounded-xl border border-border/60 px-4 py-3',
+                  'flex items-center gap-3 rounded-xl border border-border/60 px-4 py-3 text-sm',
                   item.status === 'running' && 'border-amber-300/50 bg-amber-50/40 dark:bg-amber-950/20',
+                  item.status === 'done' && 'text-muted-foreground',
                 )}
               >
-                <div className="flex items-center gap-3">
-                  <WorkStatusIcon status={item.status} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium">{tw(`${item.id}.label`)}</p>
-                    <p className="text-xs text-muted-foreground">{tw(`${item.id}.${item.status}`)}</p>
-                  </div>
-                </div>
-                {item.status === 'running' && item.progress != null ? (
-                  <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-amber-500 transition-all duration-700"
-                      style={{ width: `${item.progress}%` }}
-                    />
-                  </div>
-                ) : null}
+                <WorkStatusIcon status={item.status} />
+                <span className={cn('font-medium', item.status === 'running' && 'text-foreground')}>
+                  {tw(`${item.id}.${item.status}`)}
+                </span>
               </li>
             ))}
           </ul>
@@ -130,7 +113,9 @@ export function AiPmLiveWorkspace({
 
         {failed ? (
           <div className="space-y-3">
-            <AiPmMessage variant="system">{t('failedHint')}</AiPmMessage>
+            <p className="rounded-2xl bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+              {t('failedHint')}
+            </p>
             <Button type="button" className="w-full rounded-xl" onClick={onRetry}>
               {t('retry')}
             </Button>
