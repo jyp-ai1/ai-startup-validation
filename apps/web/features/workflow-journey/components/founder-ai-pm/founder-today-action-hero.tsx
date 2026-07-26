@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, Sparkles, Target, TrendingUp } from 'lucide-react';
+import { ArrowRight, Clock, Sparkles, TrendingUp } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -23,16 +23,14 @@ type FounderTodayActionHeroProps = {
 export function FounderTodayActionHero({
   goalId,
   confidence,
-  whyText,
   onStart,
   className,
 }: FounderTodayActionHeroProps) {
   const t = useTranslations('workflow.founderAiPm.todayHero');
-  const tw = useTranslations('workflow.aiState.why');
+  const td = useTranslations('workflow.aiPm.decision');
   const tp = useTranslations('workflow.plan.steps');
-  const td = useTranslations('workflow.decisionExperience');
 
-  const { actionTitle, brief, stage } = useMemo(() => {
+  const { actionTitle, minutes, impact, successScore, afterScore } = useMemo(() => {
     const pipeline = loadAgentPipelineResult();
     const stages = getDecisionStages(goalId);
     const stageIndex =
@@ -40,18 +38,22 @@ export function FounderTodayActionHero({
     const currentStage = stages[stageIndex] ?? stages[0]!;
     const founderBrief = computeFounderAiPmBrief(currentStage, stageIndex);
 
-    const pipelineAction = pipeline?.decision?.nextAction?.title;
+    const pipelineAction = pipeline?.founderOs?.todayActions?.[0];
     const stepTitle = tp(`${currentStage.nextActionStepId}.title`);
+    const action = pipelineAction?.title ?? pipeline?.decision?.nextAction?.title ?? stepTitle;
+    const score =
+      pipeline?.founderOs?.successScore?.percent ?? pipeline?.decision?.confidence ?? confidence;
+    const eta = pipelineAction?.etaMinutes ?? currentStage.nextActionDurationMinutes;
+    const gain = pipelineAction?.goImpact ?? founderBrief.nextAction.goProbabilityGain;
 
     return {
-      actionTitle: pipelineAction ?? stepTitle,
-      brief: founderBrief,
-      stage: currentStage,
+      actionTitle: action,
+      successScore: score,
+      afterScore: Math.min(100, score + gain),
+      minutes: eta,
+      impact: gain,
     };
   }, [confidence, goalId, tp]);
-
-  const { nextAction } = brief;
-  const afterConfidence = Math.min(100, confidence + nextAction.confidenceGain);
 
   return (
     <section
@@ -65,51 +67,45 @@ export function FounderTodayActionHero({
         <Sparkles className="size-4" aria-hidden />
         {t('eyebrow')}
       </p>
-      <h2 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">{actionTitle}</h2>
 
-      {whyText ? (
-        <div className="mt-4 rounded-xl border border-border/60 bg-muted/30 px-4 py-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            {tw('label')}
-          </p>
-          <p className="mt-1 text-sm leading-relaxed">{whyText}</p>
-          <p className="mt-2 text-xs font-medium text-primary">
-            {tw('impact', {
-              minutes: stage.nextActionDurationMinutes,
-              go: nextAction.goProbabilityGain,
-            })}
-          </p>
-        </div>
-      ) : (
-        <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('subtitle')}</p>
-      )}
+      <div className="mt-4 space-y-1">
+        <p className="text-lg font-medium text-muted-foreground sm:text-xl">{t('investmentLead')}</p>
+        <p className="text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">
+          {t('minutes', { count: minutes })}
+        </p>
+        <p className="text-lg font-medium text-muted-foreground sm:text-xl">{t('investmentMid')}</p>
+        <p className="flex flex-wrap items-baseline gap-2 text-3xl font-bold tabular-nums sm:text-4xl">
+          <span>{successScore}%</span>
+          <ArrowRight className="size-6 text-muted-foreground" aria-hidden />
+          <span className="text-emerald-600 dark:text-emerald-400">{afterScore}%</span>
+        </p>
+        <p className="text-base text-muted-foreground sm:text-lg">{t('investmentTail')}</p>
+      </div>
 
-      <dl className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="mt-6 rounded-2xl border border-border/60 bg-background/90 p-4 sm:p-5">
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+          {td('recommendLabel')}
+        </p>
+        <p className="mt-2 whitespace-pre-line text-sm leading-relaxed sm:text-base">
+          {td('recommendAction', { action: actionTitle, minutes, impact })}
+        </p>
+      </div>
+
+      <dl className="mt-5 grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-border/60 bg-background/90 px-4 py-3">
           <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Clock className="size-3.5" aria-hidden />
             {t('eta')}
           </dt>
-          <dd className="mt-1 text-xl font-bold tabular-nums">
-            {t('minutes', { count: stage.nextActionDurationMinutes })}
-          </dd>
+          <dd className="mt-1 text-xl font-bold tabular-nums">{t('minutes', { count: minutes })}</dd>
         </div>
         <div className="rounded-xl border border-emerald-300/50 bg-emerald-50/60 px-4 py-3 dark:border-emerald-900 dark:bg-emerald-950/40">
           <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <TrendingUp className="size-3.5" aria-hidden />
-            {t('confidenceEffect')}
+            {t('successScoreEffect')}
           </dt>
           <dd className="mt-1 text-xl font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
-            {confidence}% → {afterConfidence}%
-          </dd>
-        </div>
-        <div className="rounded-xl border border-primary/30 bg-primary/[0.06] px-4 py-3">
-          <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Target className="size-3.5" aria-hidden />
-            {t('goEffect')}
-          </dt>
-          <dd className="mt-1 text-xl font-bold tabular-nums text-primary">
-            +{nextAction.goProbabilityGain}%
+            +{impact}%
           </dd>
         </div>
       </dl>
@@ -120,7 +116,7 @@ export function FounderTodayActionHero({
         className="mt-8 h-14 w-full rounded-2xl text-base font-semibold sm:max-w-md"
         onClick={onStart}
       >
-        {td(`mockActions.${stage.mockActionKey}`)}
+        {t('startCta')}
       </Button>
     </section>
   );

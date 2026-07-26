@@ -10,12 +10,15 @@ type DecisionOneLinePanelProps = {
   fallbackConfidence?: number;
 };
 
-export function DecisionOneLinePanel({ className, fallbackConfidence = 62 }: DecisionOneLinePanelProps) {
+export function DecisionOneLinePanel({ className }: DecisionOneLinePanelProps) {
   const t = useTranslations('workflow.aiPm.decision');
   const pipeline = loadAgentPipelineResult();
   const verdict = pipeline?.decision?.verdict ?? 'HOLD';
-  const intel = pipeline?.decision?.intelligence;
-  const gap = intel?.gap ?? pipeline?.decision?.missingData?.[0];
+  const gap = pipeline?.decision?.intelligence?.gap ?? pipeline?.decision?.missingData?.[0];
+  const primaryAction = pipeline?.founderOs?.todayActions?.[0];
+  const minutes = primaryAction?.etaMinutes ?? 15;
+  const impact = primaryAction?.goImpact ?? 4;
+  const actionTitle = primaryAction?.title;
 
   const headlineKey =
     verdict === 'GO' ? 'headlineGo' : verdict === 'NO_GO' ? 'headlineNoGo' : 'headlineHold';
@@ -34,11 +37,20 @@ export function DecisionOneLinePanel({ className, fallbackConfidence = 62 }: Dec
       <p className="mt-3 text-xl font-semibold leading-snug sm:text-2xl">{t(headlineKey)}</p>
       {gap ? (
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
-          {t('followUp', { gap })}
+          {t('riskFollowUp', { gap })}
         </p>
       ) : (
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          {t('followUpDefault', { confidence: pipeline?.decision?.confidence ?? fallbackConfidence })}
+          {t('riskDefault')}
+        </p>
+      )}
+      {actionTitle ? (
+        <p className="mt-4 whitespace-pre-line rounded-xl bg-primary/[0.06] px-4 py-3 text-sm leading-relaxed">
+          {t('recommendAction', { action: actionTitle, minutes, impact })}
+        </p>
+      ) : (
+        <p className="mt-4 whitespace-pre-line rounded-xl bg-primary/[0.06] px-4 py-3 text-sm leading-relaxed">
+          {t('recommendDefault', { minutes, impact })}
         </p>
       )}
     </section>

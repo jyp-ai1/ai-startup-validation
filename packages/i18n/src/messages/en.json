@@ -4009,6 +4009,8 @@
       "title": "AI PM",
       "subtitle": "I'll be your strategy PM starting today.",
       "officeLabel": "What your AI PM is doing now",
+      "reasoningLabel": "AI PM is thinking",
+      "stepEta": "Est. {seconds}s",
       "remaining": "Est. {seconds}s remaining",
       "failedHint": "Connection was unstable. Retry or go straight to today's actions.",
       "retry": "Analyze again",
@@ -4034,10 +4036,34 @@
       "completion": {
         "title": "Analysis complete",
         "subtitle": "Your AI PM finished the business review.",
+        "greeting": "Founder,\n\ngood news.",
+        "resultIntro": "Market review result",
+        "investmentLabel": "Today's investment",
+        "investmentMinutes": "Just {minutes} minutes today.",
+        "successScore": "Success probability",
+        "expectedGain": "Expected gain",
         "intro": "Market review is complete.",
         "todayTogether": "Let's start today with {action}.",
         "todayTogetherDefault": "Today's actions are ready. Shall we begin?",
-        "cta": "Start today's actions"
+        "cta": "Start"
+      },
+      "reasoning": {
+        "marketResearch": "Checking whether similar services already exist.",
+        "competitorAnalysis": "Finding your differentiation points.",
+        "strategyWriting": "Calculating whether the business can make money.",
+        "todayPlan": "Preparing what you can start today."
+      },
+      "microQuestion": {
+        "hint": "Analysis continues even if you skip. Answers improve result quality.",
+        "targetCustomer": {
+          "prompt": "Market research is in progress.\n\nWhile I work, one quick question:\n\nWho is your main customer?",
+          "options": {
+            "office": "Office workers",
+            "student": "Students",
+            "enterprise": "Enterprises",
+            "unknown": "Not sure yet"
+          }
+        }
       },
       "work": {
         "ideaUnderstood": {
@@ -4118,9 +4144,14 @@
       },
       "decision": {
         "label": "AI PM one-line verdict",
+        "recommendLabel": "AI PM recommendation",
         "headlineGo": "You can start now.",
-        "headlineHold": "Direction looks good — a few checks left.",
+        "headlineHold": "There is business potential.",
         "headlineNoGo": "Validation before speed.",
+        "riskFollowUp": "However,\n\n{gap}\n\nwill raise success odds significantly.",
+        "riskDefault": "A few more checks will raise success odds further.",
+        "recommendAction": "I recommend:\n\nToday,\n\n{action}\n\nEst. {minutes} min · success odds +{impact}%",
+        "recommendDefault": "I recommend investing {minutes} minutes today for an expected +{impact}% success gain.",
         "followUp": "Finish {gap} and success odds rise sharply.",
         "followUpDefault": "Confidence {confidence}% — your AI PM prepared the next action."
       },
@@ -4521,13 +4552,18 @@
         "goGain": "GO probability"
       },
       "todayHero": {
-        "label": "Today's action",
-        "eyebrow": "Today's Action",
+        "label": "Today's investment",
+        "eyebrow": "Today's Investment",
+        "investmentLead": "Today",
+        "investmentMid": "minutes invested can move success odds to",
+        "investmentTail": ".",
         "subtitle": "Complete this one task to raise GO probability and Confidence together.",
         "eta": "Est. time",
         "minutes": "{count} min",
         "confidenceEffect": "Confidence",
-        "goEffect": "GO probability"
+        "successScoreEffect": "Success gain",
+        "goEffect": "GO probability",
+        "startCta": "Start"
       },
       "intelligence": {
         "successScore": {
@@ -4564,6 +4600,7 @@
           "primaryStep": "Today's core action · {step}",
           "vocInterview": "{count} customer interviews",
           "actionMeta": "{minutes} min · GO +{go}%",
+          "recommendation": "I recommend:\n\nToday: {action}\n\nEst. {minutes} min · success odds +{impact}%",
           "startCta": "Start now"
         },
         "dailyReview": {

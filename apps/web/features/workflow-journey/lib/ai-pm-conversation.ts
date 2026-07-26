@@ -31,6 +31,17 @@ export function buildAiPmWorkItems(agentIndex: number, failed = false): AiPmWork
   return [{ id: 'ideaUnderstood', status: 'done' }, ...pipelineItems];
 }
 
+export function getRunningWorkItemId(agentIndex: number): AiPmWorkItemId | null {
+  if (agentIndex < 0 || agentIndex >= PIPELINE_WORK_ORDER.length) return null;
+  return PIPELINE_WORK_ORDER[agentIndex] ?? null;
+}
+
+export function getStepEtaSeconds(workId: AiPmWorkItemId): number {
+  const index = PIPELINE_WORK_ORDER.indexOf(workId as (typeof PIPELINE_WORK_ORDER)[number]);
+  if (index < 0) return 0;
+  return Math.max(1, (PIPELINE_WORK_ORDER.length - index) * 2);
+}
+
 export function estimateRemainingSeconds(agentIndex: number): number {
   const remaining = Math.max(0, PIPELINE_WORK_ORDER.length - agentIndex);
   return Math.max(3, remaining * 2);
@@ -43,6 +54,11 @@ export function getAiPmConversationMessageKey(agentIndex: number, failed = false
   if (agentIndex === 2) return 'conversation.competitorAnalysis';
   if (agentIndex === 3) return 'conversation.strategyWriting';
   return 'conversation.preparingToday';
+}
+
+export function getMicroQuestionId(agentIndex: number): 'targetCustomer' | null {
+  if (agentIndex === 1) return 'targetCustomer';
+  return null;
 }
 
 export function getAiPmPreparedItemKeys(agentIndex: number): string[] {

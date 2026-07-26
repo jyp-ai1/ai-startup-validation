@@ -22,7 +22,6 @@ export function AiActionGeneratorPanel({
   className,
 }: AiActionGeneratorPanelProps) {
   const t = useTranslations('workflow.founderAiPm.intelligence.actionGenerator');
-  const tw = useTranslations('workflow.aiState.why');
   const td = useTranslations('workflow.founderAiPm.intelligence.decision.howActions');
 
   return (
@@ -65,15 +64,19 @@ export function AiActionGeneratorPanel({
                             ? td(action.titleKey)
                             : '')}
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {t('actionMeta', { minutes: action.etaMinutes, go: action.goImpact })}
+                <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+                  {t('recommendation', {
+                    action:
+                      action.title ??
+                      (action.titleKey === 'vocInterview'
+                        ? t('vocInterview', action.titleParams ?? {})
+                        : action.titleKey
+                          ? td(action.titleKey)
+                          : t('primaryStep', action.titleParams ?? {})),
+                    minutes: action.etaMinutes,
+                    impact: action.goImpact,
+                  })}
                 </p>
-                {action.whyText ? (
-                  <p className="mt-2 rounded-lg bg-muted/40 px-2 py-1.5 text-xs leading-relaxed">
-                    <span className="font-semibold">{tw('label')}: </span>
-                    {action.whyText}
-                  </p>
-                ) : null}
               </div>
             </div>
             <Button
