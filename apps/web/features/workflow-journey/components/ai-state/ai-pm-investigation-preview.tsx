@@ -6,14 +6,11 @@ import { cn } from '@repo/ui/lib/utils';
 
 import { AiPmConversation } from './ai-pm-conversation';
 
-const INVESTIGATION_KEYS = [
-  'market',
-  'competitor',
-  'pricing',
-  'grant',
-  'investment',
-  'bm',
-  'differentiation',
+const INVESTIGATION_FEED = [
+  'kmongDone',
+  'soomgoRunning',
+  'grantRunning',
+  'pricingRunning',
 ] as const;
 
 type AiPmInvestigationPreviewProps = {
@@ -27,32 +24,40 @@ export function AiPmInvestigationPreview({
 }: AiPmInvestigationPreviewProps) {
   const t = useTranslations('workflow.aiPm.investigation');
 
-  const messages = [t('lead')];
+  const messages = [t('feedLead')];
+  const visibleCount = Math.min(INVESTIGATION_FEED.length, Math.max(1, completedCount + 1));
 
   return (
     <div className={cn('rounded-2xl border border-primary/25 bg-primary/[0.04] p-5', className)}>
       <AiPmConversation messages={messages} />
-      <ul className="mt-4 space-y-2" role="list">
-        {INVESTIGATION_KEYS.map((key, index) => {
+      <ol className="mt-4 space-y-1" role="list">
+        {INVESTIGATION_FEED.slice(0, visibleCount).map((key, index) => {
           const done = index < completedCount;
+          const running = index === completedCount;
           return (
-            <li key={key} className="flex items-center gap-2 text-sm">
-              <span
+            <li key={key}>
+              <p
                 className={cn(
-                  'font-medium',
-                  done ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground',
+                  'text-sm',
+                  done
+                    ? 'font-medium text-emerald-700 dark:text-emerald-400'
+                    : running
+                      ? 'font-medium text-primary'
+                      : 'text-muted-foreground',
                 )}
-                aria-hidden
               >
-                {done ? '✓' : '○'}
-              </span>
-              <span className={done ? 'text-foreground' : 'text-muted-foreground'}>
-                {t(`items.${key}`)}
-              </span>
+                {done ? '✓ ' : running ? '→ ' : '○ '}
+                {t(`feed.${key}`)}
+              </p>
+              {index < visibleCount - 1 ? (
+                <p className="py-1 text-center text-xs text-muted-foreground" aria-hidden>
+                  ↓
+                </p>
+              ) : null}
             </li>
           );
         })}
-      </ul>
+      </ol>
     </div>
   );
 }

@@ -4149,6 +4149,13 @@
       "cancelAnalysis": "Cancel analysis",
       "investigation": {
         "lead": "AI PM\n\nI'll investigate\n\nyour business now.",
+        "feedLead": "AI PM\n\nInvestigation in progress.",
+        "feed": {
+          "kmongDone": "Kmong research complete",
+          "soomgoRunning": "Researching Soomgo",
+          "grantRunning": "Checking government programs",
+          "pricingRunning": "Researching pricing"
+        },
         "items": {
           "market": "Market",
           "competitor": "Competitors",
@@ -4203,6 +4210,7 @@
         "operatingHandoff": "From now on, you'll run the project together with your AI PM.",
         "readingWait": "Summarizing results…",
         "successScoreLabel": "Success probability",
+        "scoreBasisLabel": "Based on information collected so far",
         "ctaDefault": "Start today",
         "ctaInterview": "Start customer interviews",
         "ctaPricing": "Start price validation",
@@ -4891,8 +4899,13 @@
       "informationBuilder": {
         "label": "Additional information",
         "aiPmLabel": "AI PM",
-        "lead": "Tell me more\nand I can judge more accurately.",
-        "optionalTag": "(optional)",
+        "lead": "I can analyze with what we have.\n\nShare the items below\nfor stronger judgment.",
+        "optionalTag": "(Optional)",
+        "proactiveCustomerLead": "Founder,\n\npricing can wait.\n\nJust one thing for now:\n\nWho is your customer?",
+        "singleQuestionLead": "One answer at a time is fine.\n\n{field}",
+        "answerCta": "Answer",
+        "boostLead": "Each item improves accuracy.",
+        "boost": "+{value}%",
         "placeholder": "Brief answer",
         "saveCta": "Save",
         "cancelCta": "Cancel",
@@ -4911,6 +4924,48 @@
           "progress": "How far have you gotten?",
           "advantage": "What is your edge vs competitors?",
           "pricing": "What price range do you expect?"
+        }
+      },
+      "meeting": {
+        "label": "AI PM meeting",
+        "verdictLead": "Current verdict",
+        "scoreBasisNote": "Based on info collected so far · viability",
+        "expandCta": "See why AI judged this way",
+        "verdicts": {
+          "GO": "GO",
+          "GO_CONDITIONAL": "GO (conditional)",
+          "WAIT": "WAIT",
+          "PIVOT": "PIVOT",
+          "NO_GO": "NO GO"
+        },
+        "decisionBox": {
+          "label": "Your decision",
+          "title": "What you decide today",
+          "question": "Should we start with\n\nprice validation?\n\nOr\n\ncustomer interviews first?",
+          "recommendedCta": "Follow AI recommendation",
+          "options": {
+            "pricing": "Price validation",
+            "interview": "Customer interviews"
+          }
+        },
+        "recommendation": {
+          "label": "AI recommendation",
+          "reasonTitle": "Why",
+          "factors": {
+            "marketViability": "Market viability",
+            "differentiation": "Differentiation",
+            "executionDifficulty": "Execution difficulty",
+            "marketRisk": "Market risk"
+          },
+          "levels": {
+            "high": "High",
+            "medium": "Medium",
+            "low": "Low"
+          }
+        },
+        "close": {
+          "label": "AI PM wrap-up",
+          "cta": "Start together"
         }
       },
       "strategyDiscovery": {
@@ -4943,6 +4998,114 @@
           "differentiation": "Differentiation",
           "pricing": "Pricing",
           "branding": "Branding"
+        }
+      },
+      "explainableJudgment": {
+        "label": "AI PM judgment",
+        "scoreBasisLabel": "Based on information collected so far",
+        "scoreAccuracyNote": "Accuracy improves as you add more information.",
+        "verdictLabel": "Current verdict",
+        "scoreLabel": "Business viability",
+        "validationCoverageTitle": "Judgment basis",
+        "dataCoverageLabel": "Data confidence",
+        "strengthsTitle": "Strengths",
+        "gapsTitle": "Gaps",
+        "strengthsEmpty": "No clear strengths yet.",
+        "gapsEmpty": "All core areas look sufficient.",
+        "expandCta": "See why AI judged this way",
+        "validationCoverage": {
+          "market": "Market",
+          "customerProblem": "Customer problem",
+          "pricing": "Pricing",
+          "competitiveness": "Competitive edge",
+          "mvp": "MVP"
+        },
+        "dimensions": {
+          "market": "Market",
+          "customer": "Customer",
+          "pricing": "Pricing",
+          "competitor": "Competition",
+          "government": "Grants"
+        }
+      },
+      "researchSources": {
+        "label": "What AI found",
+        "subtitle": "Actual research results from your AI PM.",
+        "totalCount": "{count} findings analyzed",
+        "liveResearch": "Live OpenRouter research is reflected here.",
+        "categories": {
+          "competitor": "Competitor research",
+          "market": "Market research",
+          "customer": "Customer research",
+          "pricing": "Pricing research",
+          "government": "Government programs",
+          "trend": "Trends",
+          "investment": "Investment landscape"
+        }
+      },
+      "researchTrust": {
+        "complete": {
+          "label": "AI PM research",
+          "title": "AI PM research complete",
+          "subtitle": "{count} materials · analyzed {domains} and more.",
+          "liveResearch": "Live OpenRouter research is included."
+        },
+        "discovery": {
+          "label": "AI PM discovery",
+          "title": "Unexpected findings",
+          "subtitle": "Key surprises your AI PM noticed during research.",
+          "lead": "This was unexpected."
+        },
+        "verification": {
+          "evidenceLabel": "Evidence",
+          "trustLabel": "Confidence"
+        }
+      },
+      "competitiveIntelligence": {
+        "label": "Competitive intelligence",
+        "title": "Competitors AI found",
+        "subtitle": "TOP 5 analysis · market gap · positioning · pricing strategy",
+        "competitors": {
+          "title": "Competitive services discovered",
+          "whyConclusion": "AI PM verified this conclusion against the competitors above.",
+          "price": "Price",
+          "features": "Key features",
+          "target": "Target",
+          "pros": "Strengths",
+          "cons": "Weaknesses"
+        },
+        "strategy": {
+          "title": "AI PM strategy proposal"
+        },
+        "winStrategy": {
+          "title": "AI PM opinion",
+          "competitorLead": "Competitors compete on",
+          "weLead": "You should compete on",
+          "positionLabel": "Market position"
+        },
+        "marketGap": {
+          "title": "Market gap",
+          "saturated": "Saturated"
+        },
+        "differentiation": {
+          "title": "Your idea differentiation",
+          "subtitle": "Auto strategy · AI PM vs competitors",
+          "stars": "{count} out of 5"
+        },
+        "positionMap": {
+          "title": "Position map",
+          "priceHigh": "Price ↑",
+          "priceLow": "Price ↓",
+          "automation": "Automation →",
+          "automationLow": "← Manual",
+          "us": "AI PM"
+        },
+        "pricing": {
+          "title": "Pricing intelligence",
+          "entry": "Entry",
+          "recommended": "Recommended",
+          "average": "Competitor avg",
+          "reasonLabel": "Why:"
         }
       },
       "workLog": {

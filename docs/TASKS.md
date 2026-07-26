@@ -8,20 +8,52 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint — OpenRouter Research (Active)
+## Sprint — AI PM Meeting Experience P2 (Active)
 
-**Status:** In progress — `main`  
-**Goal:** Research만 OpenRouter로 교체 → Business Delta · Morning Brief에 실조사 반영 (Strategy Engine은 mock 유지)
+**Status:** In progress — local (pending commit)  
+**Goal:** Founder가 **결정만** 내리면 되도록 — 5분 AI PM 회의
 
 **Delivered:**
-- `OpenRouterResearchProvider` in `@repo/agents` (mock fallback)
-- `resolveAgentProviders('openrouter')` — research only swap
-- `founder-os-composer` — ko locale Business Delta copy
-- `strategy-run` API — AI platform init before pipeline
+- AI PM Meeting Mode (브리핑 → GO/WAIT → 펼치면 판단 근거)
+- Decision Box · AI 추천도 ★ · Completion [같이 시작]
+- 정보 입력: 한 번에 하나 · (선택 사항) · 고객 빠른 선택
+- 조사 피드: 크몽 → 숨고 → 정부지원 → 가격
 
-**Next:**
-- Explainable AI breakdown
-- 경쟁사/차별화 Intelligence 고도화
+**Next:** P3 Validation Breakdown · P4 Confidence Evolution · P5 Strategy Generator
+
+---
+
+## Sprint — AI Trust Layer P1.5 ✅
+
+**Status:** Complete — local (pending commit)  
+**Goal:** Founder가 "진짜?" → "믿을 수 있겠다"로 전환
+
+**Delivered:**
+- AI PM 발견 → 검증(Verification) · 경쟁사 검증 · 데이터 신뢰도
+
+---
+
+## Sprint — Research Trust + Competitive Intelligence ✅
+
+**Status:** Complete — local (pending commit)
+
+---
+
+## Sprint — Explainable AI + Research Sources ✅
+
+**Status:** Complete — local (pending commit)  
+**Goal:** Founder가 "왜?"와 "AI가 무엇을 조사했는지"를 5초 안에 이해
+
+**Delivered:**
+- Explainable Judgment Panel (판단 · 사업 가능성 · 좋은 점/부족한 점 · 항목별 ★ + 설명)
+- Research Source Panel (조사 출처 · 펼쳐보기 요약 · OpenRouter 표시)
+- Today + Completion handoff 연결
+
+---
+
+## Sprint — OpenRouter Research ✅
+
+**Status:** Complete — `main` (`82d2cc9`)
 
 ---
 

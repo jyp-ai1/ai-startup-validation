@@ -11,8 +11,27 @@ import { applyActionCompletionUpdate } from '../lib/apply-action-completion-upda
 import type { ActionCompletionUpdateResult } from '../lib/apply-action-completion-update';
 import { recordFounderActionStarted } from '../lib/founder-behavior-store';
 import { resolveActionById, resolveActionWorkspace } from '../lib/founder-action-resolver';
+import {
+  buildAiPmDecisionBox,
+  buildAiPmMeetingBrief,
+  buildAiPmRecommendationBrief,
+  buildMeetingCloseNarrative,
+} from '../lib/founder-ai-pm-meeting';
+import { buildCompetitiveIntelligence } from '../lib/founder-competitive-intelligence';
+import { buildExplainableJudgment } from '../lib/founder-explainable-judgment';
 import { computeFounderIntelligenceBrief } from '../lib/founder-intelligence-engine';
 import type { GeneratedTodayAction } from '../lib/founder-intelligence-engine';
+import {
+  buildAiPmSurpriseFindings,
+  buildCompetitorCompareVerification,
+  buildResearchCompleteBrief,
+} from '../lib/founder-research-trust';
+import {
+  buildResearchInsightItems,
+} from '../lib/founder-research-insights';
+import {
+  countResearchMaterials,
+} from '../lib/founder-research-sources';
 import type { WorkflowGoalId } from '../types';
 import { DecisionExperienceCoach } from './decision-experience-coach';
 import { BusinessDeltaBrief } from './founder-ai-pm/business-delta-brief';
@@ -30,9 +49,22 @@ import {
   FounderAiPmPreparedTasks,
   FounderAiPmWorkingNow,
 } from './founder-ai-pm/founder-ai-pm-work-console';
+import { FounderAiPmDiscoveryPanel } from './founder-ai-pm/founder-ai-pm-discovery-panel';
 import { FounderAiPmCalendar } from './founder-ai-pm/founder-ai-pm-calendar';
+import {
+  FounderAiPmStrategyPanel,
+  FounderCompetitorComparePanel,
+  FounderMarketGapPanel,
+  FounderWinStrategyPanel,
+} from './founder-ai-pm/founder-competitive-intelligence-panels';
+import { FounderAiPmMeetingClose } from './founder-ai-pm/founder-ai-pm-meeting-close';
+import { FounderAiPmMeetingPanel } from './founder-ai-pm/founder-ai-pm-meeting-panel';
+import { FounderAiRecommendationPanel } from './founder-ai-pm/founder-ai-recommendation-panel';
+import { FounderDecisionBoxPanel } from './founder-ai-pm/founder-decision-box-panel';
 import { FounderCompetitiveGapMap } from './founder-ai-pm/founder-competitive-gap-map';
 import { FounderInformationBuilder } from './founder-ai-pm/founder-information-builder';
+import { FounderResearchCompletePanel } from './founder-ai-pm/founder-research-complete-panel';
+import { FounderResearchSourcePanel } from './founder-ai-pm/founder-research-source-panel';
 import { FounderValidationAccuracyPanel } from './founder-ai-pm/founder-validation-accuracy-panel';
 import { FounderAiPmInbox } from './founder-ai-pm/founder-ai-pm-inbox';
 import { FounderAiPmProactiveQuestion } from './founder-ai-pm/founder-ai-pm-proactive-question';
@@ -106,7 +138,68 @@ export function FounderTodayWorkspace({
     [confidence, goalId, projectId, refreshKey],
   );
 
-  useMemo(() => loadAgentPipelineResult(), [intelligence.fromAgentPipeline, refreshKey]);
+  const pipeline = useMemo(
+    () => loadAgentPipelineResult(),
+    [intelligence.fromAgentPipeline, refreshKey],
+  );
+
+  const explainableJudgment = useMemo(
+    () =>
+      buildExplainableJudgment(
+        pipeline,
+        intelligence.successScore.percent,
+        intelligence.businessProgress,
+        intelligence.successScoreFactors,
+      ),
+    [intelligence.businessProgress, intelligence.successScore.percent, intelligence.successScoreFactors, pipeline],
+  );
+
+  const researchSources = useMemo(() => buildResearchInsightItems(pipeline), [pipeline]);
+  const researchMaterialCount = useMemo(() => countResearchMaterials(pipeline), [pipeline]);
+
+  const competitiveIntelligence = useMemo(
+    () => buildCompetitiveIntelligence(pipeline, intelligence.businessProgress),
+    [intelligence.businessProgress, pipeline],
+  );
+
+  const researchComplete = useMemo(
+    () => buildResearchCompleteBrief(pipeline, researchMaterialCount),
+    [pipeline, researchMaterialCount],
+  );
+
+  const surpriseFindings = useMemo(
+    () => buildAiPmSurpriseFindings(pipeline, intelligence.businessProgress),
+    [intelligence.businessProgress, pipeline],
+  );
+
+  const competitorVerification = useMemo(
+    () =>
+      buildCompetitorCompareVerification(
+        pipeline,
+        competitiveIntelligence.competitors.map((item) => item.name),
+      ),
+    [competitiveIntelligence.competitors, pipeline],
+  );
+
+  const meetingBrief = useMemo(
+    () => buildAiPmMeetingBrief(pipeline, explainableJudgment, intelligence.businessProgress),
+    [explainableJudgment, intelligence.businessProgress, pipeline],
+  );
+
+  const decisionBox = useMemo(
+    () => buildAiPmDecisionBox(pipeline, intelligence.businessProgress, intelligence.todayActions[0]),
+    [intelligence.businessProgress, intelligence.todayActions, pipeline],
+  );
+
+  const recommendationBrief = useMemo(
+    () => buildAiPmRecommendationBrief(pipeline, explainableJudgment, intelligence.businessProgress),
+    [explainableJudgment, intelligence.businessProgress, pipeline],
+  );
+
+  const meetingCloseMessages = useMemo(
+    () => buildMeetingCloseNarrative(meetingBrief, decisionBox),
+    [decisionBox, meetingBrief],
+  );
 
   useEffect(() => {
     trackReturnVisits(analytics, goalId);
@@ -198,6 +291,46 @@ export function FounderTodayWorkspace({
       ) : null}
 
       <div className="space-y-6">
+        <FounderResearchCompletePanel brief={researchComplete} />
+
+        <FounderAiPmDiscoveryPanel findings={surpriseFindings} />
+
+        <FounderResearchSourcePanel
+          items={researchSources}
+          totalCount={researchMaterialCount}
+          providerId={pipeline?.research.providerId}
+        />
+
+        <FounderCompetitorComparePanel
+          brief={competitiveIntelligence}
+          verification={competitorVerification}
+        />
+
+        <FounderMarketGapPanel brief={competitiveIntelligence} />
+
+        <FounderWinStrategyPanel brief={competitiveIntelligence} />
+
+        <FounderAiPmStrategyPanel brief={competitiveIntelligence} />
+
+        <FounderAiPmMeetingPanel meeting={meetingBrief} judgment={explainableJudgment} />
+
+        <FounderAiRecommendationPanel recommendation={recommendationBrief} />
+
+        <FounderDecisionBoxPanel
+          decision={decisionBox}
+          onSelect={(actionId, source) => handleStartById(source ?? 'decision_box', actionId)}
+        />
+
+        <FounderAiPmMeetingClose
+          messages={meetingCloseMessages}
+          onStart={() =>
+            handleStartById(
+              primaryAction ? `meeting_close_${primaryAction.id}` : 'meeting_close',
+              primaryAction?.id,
+            )
+          }
+        />
+
         <FounderAiPmMorningConsole
           score={intelligence.successScore}
           primaryAction={primaryAction}
@@ -212,6 +345,10 @@ export function FounderTodayWorkspace({
         <FounderValidationAccuracyPanel refreshKey={infoRefreshKey} />
 
         <FounderInformationBuilder onUpdated={() => setInfoRefreshKey((key) => key + 1)} />
+
+        {intelligence.businessDeltas.length > 0 ? (
+          <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />
+        ) : null}
 
         <FounderCompetitiveGapMap businessProgress={intelligence.businessProgress} />
 

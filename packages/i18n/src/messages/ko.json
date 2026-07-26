@@ -4308,6 +4308,13 @@
       "cancelAnalysis": "분석 취소",
       "investigation": {
         "lead": "AI PM\n\n대표님의 사업을\n\n이제부터 조사합니다.",
+        "feedLead": "AI PM\n\n지금 조사 중입니다.",
+        "feed": {
+          "kmongDone": "크몽 조사 완료",
+          "soomgoRunning": "숨고 조사 중",
+          "grantRunning": "정부지원사업 확인 중",
+          "pricingRunning": "가격 조사 중"
+        },
         "items": {
           "market": "시장",
           "competitor": "경쟁사",
@@ -4362,6 +4369,7 @@
         "operatingHandoff": "이제부터는 AI PM과 함께 프로젝트를 운영합니다.",
         "readingWait": "결과를 정리하고 있습니다…",
         "successScoreLabel": "사업 가능성",
+        "scoreBasisLabel": "현재까지 수집된 정보 기준",
         "ctaDefault": "오늘 시작하기",
         "ctaInterview": "고객 인터뷰 시작하기",
         "ctaPricing": "가격 검증 시작하기",
@@ -5037,8 +5045,13 @@
       "informationBuilder": {
         "label": "추가 정보 입력",
         "aiPmLabel": "AI PM",
-        "lead": "추가로 알려주시면\n더 정확하게 판단할 수 있습니다.",
-        "optionalTag": "(선택)",
+        "lead": "지금도 분석은 가능합니다.\n\n하지만 아래 내용을 알려주시면\n판단 근거가 더 탄탄해집니다.",
+        "optionalTag": "(선택 사항)",
+        "proactiveCustomerLead": "대표님\n\n가격은 나중에도 괜찮습니다.\n\n지금은 하나만 알려주세요.\n\n고객은 누구입니까?",
+        "singleQuestionLead": "한 번에 하나만 답해주셔도 됩니다.\n\n{field}",
+        "answerCta": "답하기",
+        "boostLead": "알려주시면 정확도가 올라갑니다.",
+        "boost": "+{value}%",
         "placeholder": "간단히 적어주세요",
         "saveCta": "저장",
         "cancelCta": "취소",
@@ -5057,6 +5070,48 @@
           "progress": "지금까지 어디까지 진행하셨나요?",
           "advantage": "경쟁사 대비 강점은?",
           "pricing": "예상 가격대는?"
+        }
+      },
+      "meeting": {
+        "label": "AI PM 회의",
+        "verdictLead": "현재 판단은",
+        "scoreBasisNote": "현재까지 수집된 정보 기준 · 사업 가능성",
+        "expandCta": "왜 그렇게 판단했는지 보기",
+        "verdicts": {
+          "GO": "GO",
+          "GO_CONDITIONAL": "GO (조건부)",
+          "WAIT": "WAIT",
+          "PIVOT": "PIVOT",
+          "NO_GO": "NO GO"
+        },
+        "decisionBox": {
+          "label": "대표님 결정",
+          "title": "대표님이 결정해야 할 것",
+          "question": "오늘은\n\n가격 검증을 먼저 하시겠습니까?\n\n아니면\n\n고객 인터뷰를 먼저 진행하시겠습니까?",
+          "recommendedCta": "AI 추천대로 진행",
+          "options": {
+            "pricing": "가격 검증",
+            "interview": "고객 인터뷰"
+          }
+        },
+        "recommendation": {
+          "label": "AI 추천도",
+          "reasonTitle": "추천 이유",
+          "factors": {
+            "marketViability": "시장성",
+            "differentiation": "차별성",
+            "executionDifficulty": "실행 난이도",
+            "marketRisk": "시장 위험"
+          },
+          "levels": {
+            "high": "높음",
+            "medium": "보통",
+            "low": "낮음"
+          }
+        },
+        "close": {
+          "label": "AI PM 마무리",
+          "cta": "같이 시작"
         }
       },
       "strategyDiscovery": {
@@ -5089,6 +5144,114 @@
           "differentiation": "차별성",
           "pricing": "가격",
           "branding": "브랜딩"
+        }
+      },
+      "explainableJudgment": {
+        "label": "AI PM 판단",
+        "scoreBasisLabel": "현재까지 수집된 정보 기준",
+        "scoreAccuracyNote": "정보가 더 많아질수록 정확도가 올라갑니다.",
+        "verdictLabel": "현재 판단",
+        "scoreLabel": "사업 가능성",
+        "validationCoverageTitle": "판단 근거",
+        "dataCoverageLabel": "데이터 신뢰도",
+        "strengthsTitle": "좋은 점",
+        "gapsTitle": "부족한 점",
+        "strengthsEmpty": "아직 강점으로 표시할 항목이 없습니다.",
+        "gapsEmpty": "모든 핵심 항목이 충분합니다.",
+        "expandCta": "AI가 이렇게 판단한 이유 보기",
+        "validationCoverage": {
+          "market": "시장",
+          "customerProblem": "고객 문제",
+          "pricing": "가격",
+          "competitiveness": "경쟁력",
+          "mvp": "MVP"
+        },
+        "dimensions": {
+          "market": "시장",
+          "customer": "고객",
+          "pricing": "가격",
+          "competitor": "경쟁",
+          "government": "정부지원"
+        }
+      },
+      "researchSources": {
+        "label": "AI가 찾은 내용",
+        "subtitle": "AI PM이 실제로 조사한 결과입니다.",
+        "totalCount": "총 {count}개 조사 결과",
+        "liveResearch": "OpenRouter 실시간 조사 결과가 반영되었습니다.",
+        "categories": {
+          "competitor": "경쟁사 조사",
+          "market": "시장 조사",
+          "customer": "고객 조사",
+          "pricing": "가격 조사",
+          "government": "정부지원",
+          "trend": "트렌드",
+          "investment": "투자 환경"
+        }
+      },
+      "researchTrust": {
+        "complete": {
+          "label": "AI PM 조사",
+          "title": "AI PM 조사 완료",
+          "subtitle": "총 {count}개 자료 · {domains} 등 분석했습니다.",
+          "liveResearch": "OpenRouter 실시간 조사가 반영되었습니다."
+        },
+        "discovery": {
+          "label": "AI PM 발견",
+          "title": "예상과 다른 점",
+          "subtitle": "조사 중 AI PM이 주목한 핵심 발견입니다.",
+          "lead": "예상과 달랐습니다."
+        },
+        "verification": {
+          "evidenceLabel": "근거",
+          "trustLabel": "신뢰도"
+        }
+      },
+      "competitiveIntelligence": {
+        "label": "경쟁 인텔리전스",
+        "title": "AI가 찾은 경쟁사",
+        "subtitle": "TOP 5 경쟁사 분석 · 시장 공백 · 포지셔닝 · 가격 전략",
+        "competitors": {
+          "title": "AI가 발견한 경쟁 서비스",
+          "whyConclusion": "위 경쟁사를 기준으로 AI PM이 결론을 검증했습니다.",
+          "price": "가격",
+          "features": "주요 기능",
+          "target": "타겟",
+          "pros": "장점",
+          "cons": "약점"
+        },
+        "strategy": {
+          "title": "AI PM 전략 제안"
+        },
+        "winStrategy": {
+          "title": "AI PM 의견",
+          "competitorLead": "현재 경쟁사는",
+          "weLead": "대표님은",
+          "positionLabel": "시장 포지션"
+        },
+        "marketGap": {
+          "title": "시장 공백",
+          "saturated": "포화"
+        },
+        "differentiation": {
+          "title": "우리 아이디어 차별성",
+          "subtitle": "자동 전략 · AI PM 대비 경쟁 우위",
+          "stars": "{count}점 만점"
+        },
+        "positionMap": {
+          "title": "포지셔닝 맵",
+          "priceHigh": "가격 ↑",
+          "priceLow": "가격 ↓",
+          "automation": "자동화 →",
+          "automationLow": "← 수동",
+          "us": "AI PM"
+        },
+        "pricing": {
+          "title": "가격 인텔리전스",
+          "entry": "초기 진입",
+          "recommended": "추천",
+          "average": "경쟁사 평균",
+          "reasonLabel": "추천 이유:"
         }
       },
       "workLog": {

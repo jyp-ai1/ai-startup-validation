@@ -63,8 +63,9 @@ function findingForDomain(domain: ResearchDomain, context: AgentProjectContext):
     },
     competitor: {
       domain,
-      title: 'Competitive landscape',
-      summary: '4 direct competitors identified; differentiation via AI PM operating loop is plausible.',
+      title: '경쟁사 조사',
+      summary:
+        '크몽: 서비스 자동화·외주 마켓플레이스. 숨고: AI PM 기능 없음. 노션: 문서·협업 중심, 창업 검증 부재. 아이디어스: 메이커 커뮤니티, AI PM 없음.',
       confidence: 65,
       sourceIds: ['src-db-1'],
     },
@@ -77,15 +78,15 @@ function findingForDomain(domain: ResearchDomain, context: AgentProjectContext):
     },
     pricing: {
       domain,
-      title: 'Pricing benchmarks',
-      summary: 'Comparable SaaS $29–99/mo; willingness-to-pay interviews still needed.',
+      title: '가격 벤치마크',
+      summary: '경쟁사 평균 19,000원. 진입가 9,900원, 추천 14,900원. 고객 인터뷰로 검증 필요.',
       confidence: 52,
       sourceIds: ['src-market-1'],
     },
     government: {
       domain,
-      title: 'Government programs',
-      summary: '2 relevant R&D and early-stage grants identified for AI/software ventures.',
+      title: '정부지원',
+      summary: '예비창업패키지 신청 가능. 초기창업패키지 일정 확인 필요.',
       confidence: 68,
       sourceIds: ['src-gov-1'],
     },
