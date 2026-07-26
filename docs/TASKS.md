@@ -10,7 +10,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## Sprint — Daily CEO Habit (Active)
 
-**Status:** Complete — local (pending commit + push)  
+**Status:** Complete — `main` (`6079154`)  
 **Goal:** 대표가 **아침에 LaunchLens를 여는 이유** — 변화·AI 보고·오늘 1건
 
 **Founder-first roadmap (locked):**
