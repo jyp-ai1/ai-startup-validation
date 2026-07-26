@@ -4554,8 +4554,8 @@
       "ctaSub": "From market research to execution plan —\nall automatic."
     },
     "journeyGuide": {
-      "label": "Project progress guide",
-      "title": "Workflow",
+      "label": "AI PM progress",
+      "title": "AI PM workflow",
       "status": {
         "done": "Done",
         "current": "Now",
@@ -4564,11 +4564,13 @@
       },
       "steps": {
         "goal": "Goal",
-        "workflow": "Workflow",
         "project": "Project",
-        "research": "AI analysis",
-        "decision": "Decision",
-        "report": "Report"
+        "research": "Research",
+        "analysis": "Analysis",
+        "judgment": "Judgment",
+        "strategy": "Strategy",
+        "execution": "Execution",
+        "complete": "Complete"
       }
     },
     "goal": {
@@ -4802,6 +4804,23 @@
       },
       "executiveDecisionBoard": {
         "label": "Executive Decision Board",
+        "placeholder": "AI PM judgment appears after project registration.",
+        "tabs": {
+          "label": "Decision tabs",
+          "conclusion": "Conclusion",
+          "swot": "SWOT",
+          "evidence": "Evidence",
+          "competitor": "Competition",
+          "market": "Market",
+          "pricing": "Pricing",
+          "execution": "Execution"
+        },
+        "conclusionPanel": {
+          "headline": "AI PM conclusion",
+          "conditionalGo": "Conditional go",
+          "founderLead": "Today, focus only on \"{action}\".",
+          "expectedScore": "Expected viability"
+        },
         "summary": {
           "boardLabel": "Decision board",
           "aiJudgment": "AI PM judgment",
@@ -4925,6 +4944,7 @@
           "label": "Competitor comparison",
           "company": "Company",
           "price": "Price",
+          "ai": "AI",
           "ops": "Ops"
         },
         "swot": {
@@ -5946,6 +5966,7 @@
         }
       },
       "actionWorkspace": {
+        "actionKindLabel": "AI PM · {kind}",
         "intro": "AI PM\n\nSounds good.",
         "introInterview": "AI PM\n\nSounds good.\n\nLet's talk with\npotential customers.",
         "interviewSubtitle": "We'll speak with 3 potential customers.",

@@ -14,6 +14,7 @@ import { useSubmitLock } from '../hooks/use-submit-lock';
 import { WORKFLOW_GOAL_IDS, type WorkflowGoalId } from '../types';
 import { AiThinkingOverlay } from './ai-thinking-overlay';
 import { GoalIntakePanel } from './goal-intake-panel';
+import { DecisionBoardPlaceholder, FounderWorkspaceLayout } from './founder-workspace-layout';
 import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 
@@ -168,6 +169,10 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
 
       <JourneyLayout phase="goal">
         <JourneyFade>
+          <FounderWorkspaceLayout
+            activeStep="goal"
+            center={
+              <>
           <div className="space-y-2">
             <p className="text-sm font-medium text-primary">{t('eyebrow')}</p>
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t('title')}</h1>
@@ -261,6 +266,10 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
           <GoalIntakePanel optional className="mt-8" />
 
           <p className="mt-8 text-center text-xs text-muted-foreground">{t('keyboardHint')}</p>
+              </>
+            }
+            right={<DecisionBoardPlaceholder />}
+          />
         </JourneyFade>
       </JourneyLayout>
     </>

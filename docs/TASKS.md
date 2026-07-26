@@ -8,7 +8,27 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint 21–25 — Executive Decision Engine (CEO Strategy Room) 🚧
+## Sprint P0 — Unified Workspace IA 🚧
+
+**Status:** In progress  
+**Goal:** 하나의 Shell · 영구 좌측 워크플로 · 탭 기반 의사결정 보드 · Founder 한국어
+
+| Priority | Focus | Status |
+|----------|-------|--------|
+| P0-1 | `WorkspaceShell` 30/40/30 (좌 워크플로 / 중 업무 / 우 Decision Board) | ✅ |
+| P0-2 | 8단계 AI PM Workflow 좌측 영구 고정 (Goal→Complete) | ✅ |
+| P0-3 | Executive Decision Board 탭 UI (결론·SWOT·근거·경쟁·시장·가격·실행) | ✅ |
+| P0-4 | 영어 Founder 문구 제거 (mock pipeline 질문·액션 타이틀) | ✅ |
+
+**Key files:**
+- `workspace-shell.tsx` — 3-column grid
+- `founder-workspace-layout.tsx` — permanent left guide
+- `founder-executive-decision-board.tsx` — tab panels
+- All phases wired: Goal, Workflow, Registration, Live, Completion, Today, Action, Debrief
+
+---
+
+## Sprint 21–25 — Executive Decision Engine (CEO Strategy Room) ✅
 
 **Status:** In progress — Sprint 21–25 shipped in this branch  
 **Goal:** *"예쁜 리포트"* → **대표가 매일 결정하는 AI 전략실** — *결정 → 근거 확인 → 승인 → 실행*

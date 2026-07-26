@@ -125,8 +125,14 @@ export function AiPmCompletionHandoff({
     ) : null;
 
   return (
-    <JourneyFocusedShell embedded={embedded} ariaLabel={t('title')} className={className} rail={handoffRail}>
-      {decisionBoard ?? handoffRail}
+    <JourneyFocusedShell
+      embedded={embedded}
+      ariaLabel={t('title')}
+      className={className}
+      activeStep="judgment"
+      right={decisionBoard ?? undefined}
+    >
+      {handoffRail}
     </JourneyFocusedShell>
   );
 }

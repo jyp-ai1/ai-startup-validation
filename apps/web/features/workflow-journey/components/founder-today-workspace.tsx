@@ -63,7 +63,7 @@ import {
 } from '../lib/founder-research-sources';
 import type { WorkflowGoalId } from '../types';
 import { DecisionExperienceCoach } from './decision-experience-coach';
-import { WorkspaceShell } from './workspace-shell';
+import { FounderWorkspaceLayout } from './founder-workspace-layout';
 import { BusinessDeltaBrief } from './founder-ai-pm/business-delta-brief';
 import { BusinessProgressPanel } from './founder-ai-pm/business-progress-panel';
 import { DecisionIntelligencePathPanel } from './founder-ai-pm/decision-intelligence-path-panel';
@@ -582,9 +582,10 @@ export function FounderTodayWorkspace({
         />
       ) : null}
 
-      <WorkspaceShell
+      <FounderWorkspaceLayout
         embedded
-        rail={
+        activeStep="execution"
+        center={
           <>
             <FounderExecutiveOperatingRail
               habit={habitBrief}
@@ -617,7 +618,7 @@ export function FounderTodayWorkspace({
             </details>
           </>
         }
-        main={
+        right={
           <FounderExecutiveDecisionBoardLoader
             projectId={projectId}
             projectName={projectName}

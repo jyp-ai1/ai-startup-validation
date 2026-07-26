@@ -44,8 +44,9 @@ import {
   type JourneyWorkspaceTab,
 } from './intelligence-workspace/journey-workspace-nav';
 import { AI_PM_WORK_COUNT } from '../lib/ai-pm-conversation';
-import { WorkspaceJourneyGuide } from './workspace-journey-guide';
-import { WorkspaceShell } from './workspace-shell';
+import { FounderExecutiveDecisionBoardLoader } from './founder-ai-pm/founder-executive-decision-board-loader';
+import { FounderWorkspaceLayout, DecisionBoardPlaceholder } from './founder-workspace-layout';
+import type { WorkspaceJourneyStepId } from './workspace-journey-guide';
 
 import { DecisionDetailWorkspace } from './decision-detail-workspace';
 
@@ -211,11 +212,31 @@ export function StrategyWorkspaceShell({
     setPhase('thinking');
   };
 
-  const guideStep =
-    phase === 'registration' ? 'project' : phase === 'thinking' ? 'research' : 'decision';
-
   const projectDisplayName =
     registration?.projectName ?? project.name ?? tg(`options.${goalId}.title`);
+
+  const guideStep: WorkspaceJourneyStepId =
+    phase === 'registration'
+      ? 'project'
+      : phase === 'thinking'
+        ? 'analysis'
+        : phase === 'complete'
+          ? 'judgment'
+          : tab === 'today'
+            ? 'execution'
+            : 'strategy';
+
+  const decisionBoardRight =
+    projectId && goalId ? (
+      <FounderExecutiveDecisionBoardLoader
+        projectId={projectId}
+        projectName={projectDisplayName}
+        goalId={goalId}
+        confidence={project.confidence}
+      />
+    ) : (
+      <DecisionBoardPlaceholder />
+    );
 
   const renderActiveTab = () => {
     switch (tab) {
@@ -329,15 +350,16 @@ export function StrategyWorkspaceShell({
       <BetaFeedbackModal />
       {phase === 'registration' ? (
         <JourneyFade>
-          <WorkspaceShell
+          <FounderWorkspaceLayout
             embedded
-            rail={<WorkspaceJourneyGuide activeStep={guideStep} />}
-            main={
+            activeStep={guideStep}
+            center={
               <ProjectRegistrationPanel
                 goalLabel={tg(`options.${goalId}.title`)}
                 onStart={handleRegistrationStart}
               />
             }
+            right={decisionBoardRight}
           />
         </JourneyFade>
       ) : !projectReady ? (
@@ -353,10 +375,10 @@ export function StrategyWorkspaceShell({
         </JourneyFade>
       ) : (
         <JourneyFade>
-          <WorkspaceShell
+          <FounderWorkspaceLayout
             embedded
-            rail={<WorkspaceJourneyGuide activeStep={guideStep} />}
-            main={
+            activeStep={guideStep}
+            center={
               <>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="min-w-0 flex-1 space-y-2">
@@ -385,6 +407,7 @@ export function StrategyWorkspaceShell({
                 </div>
               </>
             }
+            right={decisionBoardRight}
           />
         </JourneyFade>
       )}

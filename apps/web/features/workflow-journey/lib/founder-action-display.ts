@@ -9,12 +9,16 @@ type ActionTitleSource = Pick<GeneratedTodayAction, 'title' | 'titleKey' | 'titl
 
 const FOUNDER_PIPELINE_TITLE_MAP: Record<string, string> = {
   'Complete 3 customer interviews': '고객 인터뷰 3명 진행하기',
+  'Complete customer interviews': '고객 인터뷰 3명 진행하기',
+  'Customer interviews (VOC 3+)': '고객 인터뷰 3명 진행하기',
   'Customer interviews': '고객 인터뷰 진행하기',
   'Customer interview': '고객 인터뷰 진행하기',
   'Price validation': '가격 검증하기',
   'Pricing validation': '가격 검증하기',
+  'Pricing validation interviews': '가격 검증 인터뷰 진행하기',
   'Market research': '시장 조사하기',
   'Competitor analysis': '경쟁사 분석하기',
+  'Competitor differentiation evidence': '경쟁 차별화 근거 수집하기',
 };
 
 function normalizePipelineTitle(title: string): string {

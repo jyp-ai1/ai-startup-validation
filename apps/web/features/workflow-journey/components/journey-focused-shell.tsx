@@ -2,7 +2,11 @@
 
 import { cn } from '@repo/ui/lib/utils';
 
-import { WorkspaceShell } from './workspace-shell';
+import {
+  DecisionBoardPlaceholder,
+  FounderWorkspaceLayout,
+} from './founder-workspace-layout';
+import type { WorkspaceJourneyStepId } from './workspace-journey-guide';
 
 /** Matches `JourneyLayout` wide main column — one width token for all journey phases. */
 export const JOURNEY_WIDE_MAIN =
@@ -10,8 +14,8 @@ export const JOURNEY_WIDE_MAIN =
 
 type JourneyFocusedShellProps = {
   children: React.ReactNode;
-  /** Optional left rail for unified 35/65 executive layout */
-  rail?: React.ReactNode;
+  activeStep?: WorkspaceJourneyStepId;
+  right?: React.ReactNode;
   className?: string;
   embedded?: boolean;
   ariaLabel?: string;
@@ -19,17 +23,21 @@ type JourneyFocusedShellProps = {
 
 export function JourneyFocusedShell({
   children,
-  rail,
+  activeStep = 'execution',
+  right,
   className,
   embedded = false,
   ariaLabel,
 }: JourneyFocusedShellProps) {
-  const body =
-    rail != null ? (
-      <WorkspaceShell embedded rail={rail} main={children} className={className} />
-    ) : (
-      <div className={cn('space-y-6', className)}>{children}</div>
-    );
+  const body = (
+    <FounderWorkspaceLayout
+      embedded
+      activeStep={activeStep}
+      center={children}
+      right={right ?? <DecisionBoardPlaceholder />}
+      className={className}
+    />
+  );
 
   if (embedded) {
     return body;

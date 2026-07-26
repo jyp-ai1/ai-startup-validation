@@ -177,8 +177,12 @@ export function FounderActionWorkspace({
     );
 
     return (
-      <JourneyFocusedShell ariaLabel={t('completeCta')} rail={strategyPanel ? completeRail : undefined}>
-        {strategyPanel ?? completeRail}
+      <JourneyFocusedShell
+        ariaLabel={t('completeCta')}
+        activeStep="execution"
+        right={strategyPanel ?? undefined}
+      >
+        {completeRail}
       </JourneyFocusedShell>
     );
   }
@@ -188,7 +192,7 @@ export function FounderActionWorkspace({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
-            AI PM · {tk(workspace.kind)}
+            {t('actionKindLabel', { kind: tk(workspace.kind) })}
           </p>
           <h2 id="action-workspace-title" className="mt-1 text-lg font-semibold leading-snug">
             {actionTitle}
@@ -254,8 +258,13 @@ export function FounderActionWorkspace({
   );
 
   return (
-    <JourneyFocusedShell ariaLabel={t('label')} className={className} rail={strategyPanel ? actionRail : undefined}>
-      {strategyPanel ?? actionRail}
+    <JourneyFocusedShell
+      ariaLabel={t('label')}
+      className={className}
+      activeStep="execution"
+      right={strategyPanel ?? undefined}
+    >
+      {actionRail}
     </JourneyFocusedShell>
   );
 }

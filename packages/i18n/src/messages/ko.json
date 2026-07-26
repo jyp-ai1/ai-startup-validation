@@ -4700,7 +4700,7 @@
       "ctaSub": "시장조사부터 실행계획까지\n자동으로 진행됩니다."
     },
     "journeyGuide": {
-      "label": "프로젝트 진행 가이드",
+      "label": "AI PM 진행상황",
       "title": "AI PM 업무",
       "status": {
         "done": "완료",
@@ -4710,11 +4710,13 @@
       },
       "steps": {
         "goal": "목표",
-        "workflow": "AI PM 업무",
-        "project": "프로젝트 등록",
-        "research": "AI 분석",
-        "decision": "AI PM 판단",
-        "report": "Report"
+        "project": "프로젝트",
+        "research": "조사",
+        "analysis": "분석",
+        "judgment": "판단",
+        "strategy": "전략",
+        "execution": "실행",
+        "complete": "완료"
       }
     },
     "goal": {
@@ -4947,7 +4949,24 @@
         "goGain": "GO 가능성"
       },
       "executiveDecisionBoard": {
-        "label": "Executive Decision Board",
+        "label": "의사결정 보드",
+        "placeholder": "프로젝트 등록 후 AI PM 판단이 표시됩니다.",
+        "tabs": {
+          "label": "의사결정 탭",
+          "conclusion": "결론",
+          "swot": "SWOT",
+          "evidence": "근거",
+          "competitor": "경쟁",
+          "market": "시장",
+          "pricing": "가격",
+          "execution": "실행"
+        },
+        "conclusionPanel": {
+          "headline": "AI PM 결론",
+          "conditionalGo": "조건부 진행",
+          "founderLead": "대표님은 오늘 \"{action}\"만 하시면 됩니다.",
+          "expectedScore": "예상 사업가능성"
+        },
         "summary": {
           "boardLabel": "의사결정 보드",
           "aiJudgment": "AI PM 판단",
@@ -5071,14 +5090,15 @@
           "label": "경쟁사 비교",
           "company": "회사",
           "price": "가격",
+          "ai": "AI",
           "ops": "운영"
         },
         "swot": {
           "label": "SWOT (우선순위)",
-          "strengths": "Strength",
-          "weaknesses": "Weakness",
-          "opportunities": "Opportunity",
-          "threats": "Threat",
+          "strengths": "강점",
+          "weaknesses": "약점",
+          "opportunities": "기회",
+          "threats": "위협",
           "items": {
             "aiPm": "AI PM",
             "market": "시장",
@@ -6125,6 +6145,7 @@
         }
       },
       "actionWorkspace": {
+        "actionKindLabel": "AI PM · {kind}",
         "intro": "AI PM\n\n좋습니다.",
         "introInterview": "AI PM\n\n좋습니다.\n\n잠재 고객과\n이야기를 나눠보겠습니다.",
         "interviewSubtitle": "잠재 고객 3명과 이야기를 나눠보겠습니다.",

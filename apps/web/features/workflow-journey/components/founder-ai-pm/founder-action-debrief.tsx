@@ -89,8 +89,13 @@ export function FounderActionDebrief({
     ) : null;
 
   return (
-    <JourneyFocusedShell ariaLabel={t('scoreLabel')} className={className} rail={strategyPanel ? debriefRail : undefined}>
-      {strategyPanel ?? debriefRail}
+    <JourneyFocusedShell
+      ariaLabel={t('scoreLabel')}
+      className={className}
+      activeStep="execution"
+      right={strategyPanel ?? undefined}
+    >
+      {debriefRail}
     </JourneyFocusedShell>
   );
 }

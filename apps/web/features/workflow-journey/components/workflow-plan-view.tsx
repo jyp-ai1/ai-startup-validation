@@ -17,6 +17,7 @@ import { WorkflowRecommendationSummary } from './workflow-recommendation-summary
 import { WorkflowRoadmapPanel } from './workflow-roadmap-panel';
 import { WorkflowStackBadges } from './workflow-stack-badges';
 import { WorkflowWhyPanel } from './workflow-why-panel';
+import { DecisionBoardPlaceholder, FounderWorkspaceLayout } from './founder-workspace-layout';
 
 const STRATEGY_PHASES = ['discover', 'validate', 'decide', 'execute'] as const;
 
@@ -47,6 +48,9 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
   return (
     <JourneyLayout phase="workflow" width="wide">
       <JourneyFade>
+        <FounderWorkspaceLayout
+          activeStep="project"
+          center={
         <div className="mx-auto max-w-2xl">
           <div className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.06] to-background p-6 sm:p-8">
             <div className="flex items-start gap-3">
@@ -134,6 +138,9 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
             <p className="mt-3 text-center text-xs text-muted-foreground">{t('ctaHint')}</p>
           </form>
         </div>
+          }
+          right={<DecisionBoardPlaceholder />}
+        />
       </JourneyFade>
     </JourneyLayout>
   );

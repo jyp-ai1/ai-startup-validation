@@ -17,8 +17,8 @@ import {
 } from '../../lib/founder-micro-interaction-store';
 import type { WorkflowGoalId } from '../../types';
 import { FounderExecutiveDecisionBoardLoader } from '../founder-ai-pm/founder-executive-decision-board-loader';
+import { FounderWorkspaceLayout } from '../founder-workspace-layout';
 import { JOURNEY_WIDE_MAIN } from '../journey-focused-shell';
-import { WorkspaceShell } from '../workspace-shell';
 import { AiPmInvestigationPreview } from './ai-pm-investigation-preview';
 import { AiPmLiveConversation } from './ai-pm-live-conversation';
 import { AiPmLiveTeamPanel } from './ai-pm-live-team-panel';
@@ -159,7 +159,12 @@ export function AiPmLiveWorkspace({
       aria-busy={!failed}
     >
       <div className={cn(JOURNEY_WIDE_MAIN, 'min-h-full py-8 sm:py-12')}>
-        <WorkspaceShell embedded rail={liveRail} main={strategyPanel} />
+        <FounderWorkspaceLayout
+          embedded
+          activeStep="analysis"
+          center={liveRail}
+          right={strategyPanel}
+        />
       </div>
     </div>
   );
