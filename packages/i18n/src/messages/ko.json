@@ -3987,6 +3987,85 @@
         }
       }
     },
+    "aiPm": {
+      "title": "AI PM",
+      "subtitle": "오늘부터 제가 전략 PM이 되어드리겠습니다.",
+      "officeLabel": "지금 AI PM이 하는 일",
+      "remaining": "예상 남은 시간 {seconds}초",
+      "failedHint": "연결이 불안정합니다. 다시 시도하거나 오늘 화면으로 바로 이동할 수 있습니다.",
+      "retry": "다시 분석하기",
+      "continueAnyway": "오늘 할 일 보기",
+      "stayOnPage": "AI PM이 분석 중입니다. 잠시만 기다려 주세요.",
+      "registration": {
+        "greeting": "안녕하세요. 오늘부터 제가 전략 PM이 되어드리겠습니다.",
+        "askIdea": "아이디어를 한 줄만 알려주세요."
+      },
+      "conversation": {
+        "startResearch": "좋습니다. 이제 시장을 조사합니다. 약 {seconds}초 걸립니다.",
+        "afterMarket": "시장 조사가 끝났습니다. 생각보다 경쟁사가 많네요. 이제 전략을 정리합니다.",
+        "profitability": "수익성을 계산하고 있습니다.",
+        "decisionReview": "사업 가능성을 검토하고 있습니다.",
+        "preparingToday": "오늘 하실 일을 준비하고 있습니다.",
+        "complete": "준비가 끝났습니다. 오늘 할 일을 보여드릴게요.",
+        "retry": "다시 시도합니다. 잠시만 기다려 주세요."
+      },
+      "work": {
+        "marketResearch": {
+          "label": "시장 조사",
+          "done": "완료",
+          "running": "진행 중",
+          "waiting": "대기",
+          "failed": "재시도 필요"
+        },
+        "strategyPlan": {
+          "label": "전략 정리",
+          "done": "완료",
+          "running": "작성 중",
+          "waiting": "대기",
+          "failed": "재시도 필요"
+        },
+        "profitability": {
+          "label": "수익성 계산",
+          "done": "완료",
+          "running": "계산 중",
+          "waiting": "대기",
+          "failed": "재시도 필요"
+        },
+        "decisionReview": {
+          "label": "사업 가능성 검토",
+          "done": "완료",
+          "running": "검토 중",
+          "waiting": "대기",
+          "failed": "재시도 필요"
+        },
+        "todayPlan": {
+          "label": "오늘 할 일 준비",
+          "done": "완료",
+          "running": "준비 중",
+          "waiting": "대기",
+          "failed": "재시도 필요"
+        }
+      },
+      "prepared": {
+        "label": "AI PM 준비 완료",
+        "title": "오늘 AI PM이 준비한 내용",
+        "items": {
+          "marketDone": "시장 분석 완료",
+          "competitorDone": "경쟁 분석 완료",
+          "viabilityDone": "사업 가능성 검토 완료",
+          "todayReady": "오늘 할 일 생성 완료"
+        }
+      },
+      "decision": {
+        "label": "AI PM 한 줄 결론",
+        "headlineGo": "지금 시작해도 됩니다.",
+        "headlineHold": "방향은 좋습니다. 몇 가지만 더 확인하면 됩니다.",
+        "headlineNoGo": "지금은 속도보다 검증이 우선입니다.",
+        "followUp": "다만 {gap}만 끝나면 성공 가능성이 크게 올라갑니다.",
+        "followUpDefault": "Confidence {confidence}% — AI PM이 다음 행동을 준비했습니다."
+      },
+      "todayFirstAction": "오늘 가장 먼저: {action}"
+    },
     "aiState": {
       "consoleTitle": "AI Strategy Team",
       "milestonesLabel": "진행 단계",
@@ -4980,12 +5059,12 @@
       },
       "nav": {
         "label": "워크스페이스 탐색",
-        "today": "Today",
-        "project": "Project",
-        "workflow": "Workflow",
-        "decision": "Decision",
-        "history": "History",
-        "settings": "Settings"
+        "today": "오늘",
+        "project": "프로젝트",
+        "workflow": "AI 전략",
+        "decision": "AI 판단",
+        "history": "기록",
+        "settings": "설정"
       },
       "coach": {
         "eyebrow": "AI Project Manager",

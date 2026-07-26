@@ -2,22 +2,26 @@
 
 import { useEffect, useMemo } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import { loadAgentPipelineResult } from '@/lib/agents/agent-run-store';
 
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useJourneyHistory } from '../hooks/use-journey-history';
 import { computeFounderIntelligenceBrief } from '../lib/founder-intelligence-engine';
 import type { WorkflowGoalId } from '../types';
+import { AiPmConversation } from './ai-state/ai-pm-conversation';
 import { AiStateHero } from './ai-state/ai-state-hero';
 import { DecisionExperienceCoach } from './decision-experience-coach';
 import { AiActionGeneratorPanel } from './founder-ai-pm/ai-action-generator-panel';
 import { BusinessDeltaBrief } from './founder-ai-pm/business-delta-brief';
 import { BusinessProgressPanel } from './founder-ai-pm/business-progress-panel';
 import { DecisionIntelligencePathPanel } from './founder-ai-pm/decision-intelligence-path-panel';
+import { DecisionOneLinePanel } from './founder-ai-pm/decision-one-line-panel';
+import { FounderAiPreparedPanel } from './founder-ai-pm/founder-ai-prepared-panel';
 import { FounderDailyReviewPanel } from './founder-ai-pm/founder-daily-review-panel';
 import { FounderJourneyMap } from './founder-ai-pm/founder-journey-map';
 import { FounderMemoryRecallPanel } from './founder-ai-pm/founder-memory-recall-panel';
-import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionHero } from './founder-ai-pm/founder-today-action-hero';
 
 const DAILY_VISIT_KEY = 'll_daily_visit';
@@ -55,6 +59,7 @@ export function FounderTodayWorkspace({
   confidence,
 }: FounderTodayWorkspaceProps) {
   const analytics = useJourneyAnalytics();
+  const tpm = useTranslations('workflow.aiPm');
   const { append } = useJourneyHistory(projectId);
 
   const intelligence = useMemo(
@@ -62,12 +67,21 @@ export function FounderTodayWorkspace({
     [confidence, goalId, projectId],
   );
 
+  const pipeline = useMemo(() => loadAgentPipelineResult(), [intelligence.fromAgentPipeline]);
   const primaryAction = intelligence.todayActions[0];
-  const pipeline = loadAgentPipelineResult();
   const primaryWhy =
     primaryAction?.whyText ??
     pipeline?.decision?.intelligence?.gap ??
     pipeline?.decision?.missingData?.[0];
+
+  const pmMessages = useMemo(() => {
+    const lines: string[] = [];
+    if (intelligence.morningBrief) lines.push(intelligence.morningBrief);
+    if (primaryAction?.title) {
+      lines.push(tpm('todayFirstAction', { action: primaryAction.title }));
+    }
+    return lines;
+  }, [intelligence.morningBrief, primaryAction?.title, tpm]);
 
   useEffect(() => {
     trackReturnVisits(analytics, goalId);
@@ -88,6 +102,8 @@ export function FounderTodayWorkspace({
     <div className="space-y-8">
       <FounderJourneyMap confidence={confidence} verdict={pipeline?.decision?.verdict} />
 
+      {pmMessages.length > 0 ? <AiPmConversation messages={pmMessages} /> : null}
+
       <AiStateHero
         context={{
           surface: 'today',
@@ -107,6 +123,14 @@ export function FounderTodayWorkspace({
         onStart={() => handleStartAction('today_hero')}
       />
 
+      <FounderAiPreparedPanel
+        items={
+          intelligence.fromAgentPipeline
+            ? ['marketDone', 'competitorDone', 'viabilityDone']
+            : []
+        }
+      />
+
       <AiActionGeneratorPanel
         actions={intelligence.todayActions}
         totalEtaMinutes={intelligence.totalEtaMinutes}
@@ -114,8 +138,8 @@ export function FounderTodayWorkspace({
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <FounderSuccessScorePanel score={intelligence.successScore} />
         <BusinessProgressPanel dimensions={intelligence.businessProgress} />
+        <DecisionOneLinePanel fallbackConfidence={confidence} />
       </div>
 
       <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />

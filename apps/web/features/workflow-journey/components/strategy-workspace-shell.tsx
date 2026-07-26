@@ -19,8 +19,10 @@ import { useJourneyHistory } from '../hooks/use-journey-history';
 import { useJourneyProject } from '../hooks/use-journey-project';
 import { useWorkspaceExitCoach } from '../hooks/use-workspace-exit-coach';
 import type { WorkflowGoalId, WorkflowTemplate } from '../types';
-import { AgentLiveConsole } from './ai-state/agent-live-console';
+import { AiPmLiveWorkspace } from './ai-state/ai-pm-live-workspace';
+import { AiPmConversation } from './ai-state/ai-pm-conversation';
 import { AiStateHero } from './ai-state/ai-state-hero';
+import { DecisionOneLinePanel } from './founder-ai-pm/decision-one-line-panel';
 import { BetaFeedbackModal } from './beta-feedback-modal';
 import { CoachSkeleton } from './coach-skeleton';
 import { JourneyFade } from './journey-fade';
@@ -43,6 +45,7 @@ import {
   type JourneyWorkspaceTab,
 } from './intelligence-workspace/journey-workspace-nav';
 import { PIPELINE_AGENT_COUNT } from '../lib/ai-state-engine';
+import { AI_PM_WORK_COUNT } from '../lib/ai-pm-conversation';
 import { WorkspaceJourneyGuide } from './workspace-journey-guide';
 
 import { DecisionDetailWorkspace } from './decision-detail-workspace';
@@ -70,6 +73,7 @@ export function StrategyWorkspaceShell({
   const t = useTranslations('workflow.workspace');
   const tg = useTranslations('workflow.goal');
   const tc = useTranslations('workflow.compose.goals');
+  const tpm = useTranslations('workflow.aiPm');
   const coachState = getStrategyCoachState(goalId);
   const activeStepId = coachState.nextActionStepId;
   const activeStep = template.steps.find((s) => s.id === activeStepId) ?? template.steps[0];
@@ -105,6 +109,15 @@ export function StrategyWorkspaceShell({
     analytics.trackWorkspaceLoaded(goalId, coachState.verdict);
   }, [analytics, coachState.verdict, goalId, phase, projectReady]);
 
+  const completeActivation = useCallback(() => {
+    setPipelineAgentIndex(AI_PM_WORK_COUNT);
+    sessionStorage.setItem('ll_project_started', '1');
+    setTab('today');
+    setPhase('active');
+    analytics.trackAnalysisStarted(goalId);
+    toast.success(tt('analysisReady'));
+  }, [analytics, goalId, tt]);
+
   const runAnalysis = useCallback(() => {
     setThinkingFailed(false);
     setPipelineAgentIndex(0);
@@ -118,7 +131,7 @@ export function StrategyWorkspaceShell({
     analytics.trackAgentPipelineStarted(goalId, projectId);
 
     const agentTimer = window.setInterval(() => {
-      setPipelineAgentIndex((prev) => Math.min(prev + 1, PIPELINE_AGENT_COUNT - 1));
+      setPipelineAgentIndex((prev) => Math.min(prev + 1, AI_PM_WORK_COUNT - 1));
     }, PIPELINE_AGENT_INTERVAL_MS);
 
     void runStrategyPipeline(
@@ -153,20 +166,32 @@ export function StrategyWorkspaceShell({
     ).then((outcome) => {
       window.clearInterval(agentTimer);
       if (outcome.ok) {
-        setPipelineAgentIndex(PIPELINE_AGENT_COUNT);
-        sessionStorage.setItem('ll_project_started', '1');
-        setPhase('active');
-        analytics.trackAnalysisStarted(goalId);
-        toast.success(tt('analysisReady'));
+        completeActivation();
         return;
       }
       setThinkingFailed(true);
+      void runStrategyPipeline(
+        {
+          projectId,
+          projectTitle: reg.projectName,
+          ideaSummary: reg.ideaOneLiner ?? reg.projectName,
+          goalId,
+          locale: typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'ko',
+          previousSuccessScore: getPreviousSuccessScore(projectId),
+        },
+        { maxAttempts: 1, timeoutMs: 20_000 },
+      ).then((retry) => {
+        if (retry.ok) {
+          saveAgentPipelineResult(retry.data);
+          completeActivation();
+        }
+      });
     });
 
     return () => {
       window.clearInterval(agentTimer);
     };
-  }, [analytics, coachState.verdict, goalId, projectId, registration, tt]);
+  }, [analytics, coachState.verdict, completeActivation, goalId, projectId, registration]);
 
   useEffect(() => {
     if (phase !== 'thinking') return undefined;
@@ -216,10 +241,12 @@ export function StrategyWorkspaceShell({
       case 'decision':
         return (
           <div className="space-y-8">
+            <DecisionOneLinePanel fallbackConfidence={project.confidence} />
             <DecisionExperienceCoach
               goalId={goalId}
               projectId={projectId}
               className="w-full max-w-none"
+              layout="action-first"
             />
             <DecisionDetailWorkspace goalId={goalId} />
           </div>
@@ -244,15 +271,16 @@ export function StrategyWorkspaceShell({
       Math.round(((Math.min(pipelineAgentIndex, PIPELINE_AGENT_COUNT) + 1) / (PIPELINE_AGENT_COUNT + 1)) * 100),
     );
     return (
-      <AgentLiveConsole
+      <AiPmLiveWorkspace
         projectName={registration?.projectName ?? tc(goalId)}
-        agentIndex={Math.min(pipelineAgentIndex, PIPELINE_AGENT_COUNT - 1)}
+        agentIndex={Math.min(pipelineAgentIndex, AI_PM_WORK_COUNT - 1)}
         progressPercent={progressPercent}
         failed={thinkingFailed}
         onRetry={() => {
           setThinkingFailed(false);
           setPhase('thinking');
         }}
+        onSkipToToday={completeActivation}
       />
     );
   }
@@ -281,6 +309,9 @@ export function StrategyWorkspaceShell({
           <div className="grid gap-6 lg:grid-cols-[minmax(200px,260px)_1fr] lg:items-start lg:gap-8">
             <WorkspaceJourneyGuide activeStep={guideStep} className="hidden sm:block" />
             <div className="space-y-6">
+              <AiPmConversation
+                messages={[tpm('registration.greeting'), tpm('registration.askIdea')]}
+              />
               <AiStateHero context={{ surface: 'registration' }} />
               <ProjectRegistrationPanel
                 goalLabel={tg(`options.${goalId}.title`)}

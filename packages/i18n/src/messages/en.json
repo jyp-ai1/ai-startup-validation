@@ -4005,6 +4005,85 @@
         }
       }
     },
+    "aiPm": {
+      "title": "AI PM",
+      "subtitle": "I'll be your strategy PM starting today.",
+      "officeLabel": "What your AI PM is doing now",
+      "remaining": "Est. {seconds}s remaining",
+      "failedHint": "Connection was unstable. Retry or go straight to today's actions.",
+      "retry": "Analyze again",
+      "continueAnyway": "View today's actions",
+      "stayOnPage": "Your AI PM is analyzing. Please stay on this screen.",
+      "registration": {
+        "greeting": "Hello. I'll be your strategy PM starting today.",
+        "askIdea": "Tell me your idea in one line."
+      },
+      "conversation": {
+        "startResearch": "Great. I'm researching the market now — about {seconds} seconds.",
+        "afterMarket": "Market research is done. More competitors than expected. Now shaping strategy.",
+        "profitability": "Calculating profitability.",
+        "decisionReview": "Reviewing business viability.",
+        "preparingToday": "Preparing today's actions.",
+        "complete": "All set. Here's what to do today.",
+        "retry": "Trying again — one moment."
+      },
+      "work": {
+        "marketResearch": {
+          "label": "Market research",
+          "done": "Complete",
+          "running": "In progress",
+          "waiting": "Waiting",
+          "failed": "Retry needed"
+        },
+        "strategyPlan": {
+          "label": "Strategy plan",
+          "done": "Complete",
+          "running": "Drafting",
+          "waiting": "Waiting",
+          "failed": "Retry needed"
+        },
+        "profitability": {
+          "label": "Profitability",
+          "done": "Complete",
+          "running": "Calculating",
+          "waiting": "Waiting",
+          "failed": "Retry needed"
+        },
+        "decisionReview": {
+          "label": "Viability review",
+          "done": "Complete",
+          "running": "Reviewing",
+          "waiting": "Waiting",
+          "failed": "Retry needed"
+        },
+        "todayPlan": {
+          "label": "Today's plan",
+          "done": "Complete",
+          "running": "Preparing",
+          "waiting": "Waiting",
+          "failed": "Retry needed"
+        }
+      },
+      "prepared": {
+        "label": "AI PM ready",
+        "title": "What your AI PM prepared today",
+        "items": {
+          "marketDone": "Market analysis complete",
+          "competitorDone": "Competitive analysis complete",
+          "viabilityDone": "Viability review complete",
+          "todayReady": "Today's actions ready"
+        }
+      },
+      "decision": {
+        "label": "AI PM one-line verdict",
+        "headlineGo": "You can start now.",
+        "headlineHold": "Direction looks good — a few checks left.",
+        "headlineNoGo": "Validation before speed.",
+        "followUp": "Finish {gap} and success odds rise sharply.",
+        "followUpDefault": "Confidence {confidence}% — your AI PM prepared the next action."
+      },
+      "todayFirstAction": "First today: {action}"
+    },
     "aiState": {
       "consoleTitle": "AI Strategy Team",
       "milestonesLabel": "Progress",
@@ -5000,8 +5079,8 @@
         "label": "Workspace navigation",
         "today": "Today",
         "project": "Project",
-        "workflow": "Workflow",
-        "decision": "Decision",
+        "workflow": "AI strategy",
+        "decision": "AI judgment",
         "history": "History",
         "settings": "Settings"
       },
