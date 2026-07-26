@@ -4814,6 +4814,57 @@
         "moreDetails": "More analysis · evidence · history",
         "projectStateSummary": "Project state · decision evidence"
       },
+      "dailyCeo": {
+        "analysisDetails": "AI PM analysis · research · meeting · decision",
+        "overnight": {
+          "label": "Overnight research",
+          "firstLead": "Founder, overnight research is ready.",
+          "returningLead": "Founder, I kept researching overnight.",
+          "changeCount": "{count} things changed.",
+          "viewCta": "View"
+        },
+        "morning": {
+          "label": "AI PM morning brief",
+          "greeting": "Good morning, Founder.",
+          "changesLead": "Since yesterday, a few things changed.",
+          "todayLead": "Today you only need to approve this one task.",
+          "todayMeta": "~{minutes} min · viability {before}% → {after}%"
+        },
+        "inbox": {
+          "label": "CEO Inbox",
+          "title": "Incoming work",
+          "pending": "{count} awaiting approval",
+          "reviewCta": "Review"
+        },
+        "approval": {
+          "label": "Today's approval",
+          "question": "AI PM\n\nMay I proceed with\n\nthis task today?",
+          "approve": "Approve",
+          "tomorrowCta": "Tomorrow",
+          "holdCta": "Hold",
+          "approved": "Approved. AI PM is on it.",
+          "tomorrow": "I'll suggest it again tomorrow.",
+          "hold": "On hold. Tell me when you're ready."
+        },
+        "evening": {
+          "label": "End of day",
+          "summary": "Today your business moved\n\n+{delta}%\n\nforward.\n\nWell done.",
+          "tomorrow": "Tomorrow, finish {focus} and you're set."
+        },
+        "weekly": {
+          "label": "Weekly review",
+          "title": "This week's progress",
+          "subtitle": "Next week's goal: finish what you approved today."
+        },
+        "changes": {
+          "competitorPriceChange": "Competitor {name} changed pricing.",
+          "grantPosted": "A new government grant was posted.",
+          "interviewAnalyzed": "Yesterday's interviews were analyzed.",
+          "marketSignal": "Market trend shift detected.",
+          "investmentSignal": "Investment climate shift detected.",
+          "analysisReady": "New analysis is ready."
+        }
+      },
       "todayHeroWorkspace": {
         "label": "AI PM daily plan",
         "aiPmLabel": "AI PM",

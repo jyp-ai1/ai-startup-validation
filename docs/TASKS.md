@@ -8,9 +8,29 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint — AI PM Meeting Experience P2 (Active)
+## Sprint — Daily CEO Operating System (Active)
 
 **Status:** In progress — local (pending commit)  
+**Goal:** Founder가 아침에 커피 마시며 **가장 먼저 열 화면** — 매일 루프
+
+**North star:** *"대표가 아침에 커피를 마시면서 가장 먼저 열어볼 화면인가?"*
+
+**Delivered (local):**
+- Overnight brief → [보기] (AI PM이 먼저 보고)
+- Morning brief (어제 이후 변경 + 오늘 1건)
+- CEO Inbox + 승인 대기
+- Today Approval (승인 / 내일 / 보류) → 승인 시 액션 시작
+- Evening review (+N% 전진)
+- Weekly loop (금요일 점수 arc)
+- 분석·회의·결정은 접힌 `AI PM 분석 상세`로 이동
+
+**Next:** Background AI PM (밤새 조사) → Validation Breakdown → Confidence Evolution → Strategy Generator
+
+---
+
+## Sprint — AI PM Meeting Experience P2 ✅
+
+**Status:** Complete — `main` (`75a5c01`)  
 **Goal:** Founder가 **결정만** 내리면 되도록 — 5분 AI PM 회의
 
 **Delivered:**
@@ -18,8 +38,6 @@ Current and recent sprint tasks. Update at sprint start and completion.
 - Decision Box · AI 추천도 ★ · Completion [같이 시작]
 - 정보 입력: 한 번에 하나 · (선택 사항) · 고객 빠른 선택
 - 조사 피드: 크몽 → 숨고 → 정부지원 → 가격
-
-**Next:** P3 Validation Breakdown · P4 Confidence Evolution · P5 Strategy Generator
 
 ---
 

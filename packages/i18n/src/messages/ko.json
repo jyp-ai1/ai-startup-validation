@@ -4960,6 +4960,57 @@
         "moreDetails": "더 자세한 분석 · 판단 근거 · 지난 기록",
         "projectStateSummary": "프로젝트 상태 · 판단 근거"
       },
+      "dailyCeo": {
+        "analysisDetails": "AI PM 분석 상세 · 조사 · 회의 · 결정",
+        "overnight": {
+          "label": "어젯밤 조사",
+          "firstLead": "대표님. 어젯밤 조사 결과가 나왔습니다.",
+          "returningLead": "대표님. 어젯밤에도 조사를 이어갔습니다.",
+          "changeCount": "{count}가지 바뀌었습니다.",
+          "viewCta": "보기"
+        },
+        "morning": {
+          "label": "AI PM 아침 브리핑",
+          "greeting": "좋은 아침입니다 대표님.",
+          "changesLead": "어제 이후 변경된 내용이 있습니다.",
+          "todayLead": "오늘은 이것 하나만 승인해주시면 됩니다.",
+          "todayMeta": "약 {minutes}분 · 사업 가능성 {before}% → {after}%"
+        },
+        "inbox": {
+          "label": "CEO Inbox",
+          "title": "받은 업무",
+          "pending": "승인 대기 {count}건",
+          "reviewCta": "확인하기"
+        },
+        "approval": {
+          "label": "오늘 승인",
+          "question": "AI PM\n\n오늘\n\n이 작업을 진행해도 될까요?",
+          "approve": "승인",
+          "tomorrowCta": "내일",
+          "holdCta": "보류",
+          "approved": "승인되었습니다. AI PM이 진행합니다.",
+          "tomorrow": "내일 다시 제안드리겠습니다.",
+          "hold": "보류했습니다. 필요하시면 언제든 말씀해주세요."
+        },
+        "evening": {
+          "label": "오늘 마무리",
+          "summary": "오늘\n\n사업이\n\n+{delta}%\n\n전진했습니다.\n\n좋았습니다.",
+          "tomorrow": "내일은 {focus}만 끝내면 됩니다."
+        },
+        "weekly": {
+          "label": "주간 리뷰",
+          "title": "이번 주 사업 전진",
+          "subtitle": "다음 주 목표는 오늘 승인한 업무를 끝내는 것입니다."
+        },
+        "changes": {
+          "competitorPriceChange": "경쟁사 {name}가 가격을 변경했습니다.",
+          "grantPosted": "정부지원사업 공고가 올라왔습니다.",
+          "interviewAnalyzed": "어제 진행한 인터뷰를 분석했습니다.",
+          "marketSignal": "시장 트렌드 변화를 감지했습니다.",
+          "investmentSignal": "투자 환경 변화를 감지했습니다.",
+          "analysisReady": "새 분석 결과가 준비되었습니다."
+        }
+      },
       "todayHeroWorkspace": {
         "label": "AI PM 오늘 계획",
         "aiPmLabel": "AI PM",

@@ -11,12 +11,21 @@ import { applyActionCompletionUpdate } from '../lib/apply-action-completion-upda
 import type { ActionCompletionUpdateResult } from '../lib/apply-action-completion-update';
 import { recordFounderActionStarted } from '../lib/founder-behavior-store';
 import { resolveActionById, resolveActionWorkspace } from '../lib/founder-action-resolver';
+import { buildAiPmInboxItems } from '../lib/founder-ai-pm-inbox';
 import {
   buildAiPmDecisionBox,
   buildAiPmMeetingBrief,
   buildAiPmRecommendationBrief,
   buildMeetingCloseNarrative,
 } from '../lib/founder-ai-pm-meeting';
+import { buildDailyCeoOperatingBrief } from '../lib/founder-daily-ceo-loop';
+import {
+  loadOvernightViewed,
+  loadTodayApproval,
+  markOvernightViewed,
+  saveTodayApproval,
+  type TodayApprovalChoice,
+} from '../lib/founder-daily-ceo-store';
 import { buildCompetitiveIntelligence } from '../lib/founder-competitive-intelligence';
 import { buildExplainableJudgment } from '../lib/founder-explainable-judgment';
 import { computeFounderIntelligenceBrief } from '../lib/founder-intelligence-engine';
@@ -45,10 +54,14 @@ import {
   type ActionWorkspaceResult,
 } from './founder-ai-pm/founder-action-workspace';
 import {
-  FounderAiPmMorningConsole,
-  FounderAiPmPreparedTasks,
-  FounderAiPmWorkingNow,
-} from './founder-ai-pm/founder-ai-pm-work-console';
+  FounderCeoInboxPanel,
+  FounderDailyCeoEveningPanel,
+  FounderDailyCeoMorningPanel,
+  FounderOvernightBriefPanel,
+  FounderTodayApprovalPanel,
+  FounderWeeklyCeoLoopPanel,
+} from './founder-ai-pm/founder-daily-ceo-panels';
+import { FounderCompetitiveGapMap } from './founder-ai-pm/founder-competitive-gap-map';
 import { FounderAiPmDiscoveryPanel } from './founder-ai-pm/founder-ai-pm-discovery-panel';
 import { FounderAiPmCalendar } from './founder-ai-pm/founder-ai-pm-calendar';
 import {
@@ -61,7 +74,10 @@ import { FounderAiPmMeetingClose } from './founder-ai-pm/founder-ai-pm-meeting-c
 import { FounderAiPmMeetingPanel } from './founder-ai-pm/founder-ai-pm-meeting-panel';
 import { FounderAiRecommendationPanel } from './founder-ai-pm/founder-ai-recommendation-panel';
 import { FounderDecisionBoxPanel } from './founder-ai-pm/founder-decision-box-panel';
-import { FounderCompetitiveGapMap } from './founder-ai-pm/founder-competitive-gap-map';
+import {
+  FounderAiPmPreparedTasks,
+  FounderAiPmWorkingNow,
+} from './founder-ai-pm/founder-ai-pm-work-console';
 import { FounderInformationBuilder } from './founder-ai-pm/founder-information-builder';
 import { FounderResearchCompletePanel } from './founder-ai-pm/founder-research-complete-panel';
 import { FounderResearchSourcePanel } from './founder-ai-pm/founder-research-source-panel';
@@ -132,6 +148,14 @@ export function FounderTodayWorkspace({
   const [completionUpdate, setCompletionUpdate] = useState<ActionCompletionUpdateResult | null>(
     null,
   );
+  const [approvalChoice, setApprovalChoice] = useState<TodayApprovalChoice>('pending');
+  const [overnightViewed, setOvernightViewed] = useState(false);
+  const [showAnalysisDetails, setShowAnalysisDetails] = useState(false);
+
+  useEffect(() => {
+    setApprovalChoice(loadTodayApproval(projectId));
+    setOvernightViewed(loadOvernightViewed(projectId));
+  }, [projectId, refreshKey]);
 
   const intelligence = useMemo(
     () => computeFounderIntelligenceBrief(projectId, goalId, confidence),
@@ -201,6 +225,44 @@ export function FounderTodayWorkspace({
     [decisionBox, meetingBrief],
   );
 
+  const primaryAction = intelligence.todayActions[0];
+  const actionHistory = intelligence.behavior?.actionHistory ?? [];
+  const operatingState = intelligence.operatingState;
+  const evidence = operatingState?.evidence ?? [];
+
+  const inboxItems = useMemo(
+    () => buildAiPmInboxItems(intelligence.businessDeltas, evidence, intelligence.todayActions),
+    [evidence, intelligence.businessDeltas, intelligence.todayActions],
+  );
+
+  const dailyCeoBrief = useMemo(
+    () =>
+      buildDailyCeoOperatingBrief({
+        projectId,
+        behavior: intelligence.behavior,
+        scorePercent: intelligence.successScore.percent,
+        primaryAction,
+        businessDeltas: intelligence.businessDeltas,
+        evidence,
+        todayActions: intelligence.todayActions,
+        dailyReview: intelligence.dailyReview,
+        weeklyReview: intelligence.weeklyCeoReview,
+        pipeline,
+      }),
+    [
+      evidence,
+      intelligence.behavior,
+      intelligence.businessDeltas,
+      intelligence.dailyReview,
+      intelligence.successScore.percent,
+      intelligence.todayActions,
+      intelligence.weeklyCeoReview,
+      pipeline,
+      primaryAction,
+      projectId,
+    ],
+  );
+
   useEffect(() => {
     trackReturnVisits(analytics, goalId);
     analytics.trackDecisionViewed(goalId);
@@ -267,10 +329,30 @@ export function FounderTodayWorkspace({
   const showWeeklyReview =
     (intelligence.behavior && intelligence.behavior.visitCount >= 2) || isFriday();
 
-  const primaryAction = intelligence.todayActions[0];
-  const actionHistory = intelligence.behavior?.actionHistory ?? [];
-  const operatingState = intelligence.operatingState;
-  const evidence = operatingState?.evidence ?? [];
+  const handleOvernightView = () => {
+    markOvernightViewed(projectId);
+    setOvernightViewed(true);
+    setShowAnalysisDetails(true);
+  };
+
+  const handleApproveToday = () => {
+    saveTodayApproval(projectId, 'approved');
+    setApprovalChoice('approved');
+    handleStartById(
+      dailyCeoBrief.todayActionId ? `ceo_approve_${dailyCeoBrief.todayActionId}` : 'ceo_approve',
+      dailyCeoBrief.todayActionId,
+    );
+  };
+
+  const handleDeferToday = () => {
+    saveTodayApproval(projectId, 'tomorrow');
+    setApprovalChoice('tomorrow');
+  };
+
+  const handleHoldToday = () => {
+    saveTodayApproval(projectId, 'hold');
+    setApprovalChoice('hold');
+  };
 
   return (
     <>
@@ -291,56 +373,101 @@ export function FounderTodayWorkspace({
       ) : null}
 
       <div className="space-y-6">
-        <FounderResearchCompletePanel brief={researchComplete} />
+        {showWeeklyReview && isFriday() && dailyCeoBrief.weeklyScoreFrom != null ? (
+          <FounderWeeklyCeoLoopPanel
+            scoreFrom={dailyCeoBrief.weeklyScoreFrom}
+            scoreTo={dailyCeoBrief.weeklyScoreTo ?? intelligence.successScore.percent}
+          />
+        ) : showWeeklyReview ? (
+          <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
+        ) : null}
 
-        <FounderAiPmDiscoveryPanel findings={surpriseFindings} />
-
-        <FounderResearchSourcePanel
-          items={researchSources}
-          totalCount={researchMaterialCount}
-          providerId={pipeline?.research.providerId}
+        <FounderOvernightBriefPanel
+          brief={dailyCeoBrief}
+          viewed={overnightViewed}
+          onView={handleOvernightView}
         />
 
-        <FounderCompetitorComparePanel
-          brief={competitiveIntelligence}
-          verification={competitorVerification}
+        <FounderDailyCeoMorningPanel brief={dailyCeoBrief} />
+
+        <FounderCeoInboxPanel
+          items={inboxItems}
+          pendingCount={dailyCeoBrief.pendingInboxCount}
+          onReview={(actionId) => handleStartById(`ceo_inbox_${actionId ?? 'primary'}`, actionId)}
         />
 
-        <FounderMarketGapPanel brief={competitiveIntelligence} />
-
-        <FounderWinStrategyPanel brief={competitiveIntelligence} />
-
-        <FounderAiPmStrategyPanel brief={competitiveIntelligence} />
-
-        <FounderAiPmMeetingPanel meeting={meetingBrief} judgment={explainableJudgment} />
-
-        <FounderAiRecommendationPanel recommendation={recommendationBrief} />
-
-        <FounderDecisionBoxPanel
-          decision={decisionBox}
-          onSelect={(actionId, source) => handleStartById(source ?? 'decision_box', actionId)}
+        <FounderTodayApprovalPanel
+          brief={dailyCeoBrief}
+          approvalChoice={approvalChoice}
+          onApprove={handleApproveToday}
+          onTomorrow={handleDeferToday}
+          onHold={handleHoldToday}
         />
 
-        <FounderAiPmMeetingClose
-          messages={meetingCloseMessages}
-          onStart={() =>
-            handleStartById(
-              primaryAction ? `meeting_close_${primaryAction.id}` : 'meeting_close',
-              primaryAction?.id,
-            )
-          }
-        />
+        {approvalChoice === 'approved' ? (
+          <>
+            <FounderAiPmPreparedTasks />
+            <FounderAiPmWorkingNow />
+          </>
+        ) : null}
 
-        <FounderAiPmMorningConsole
-          score={intelligence.successScore}
-          primaryAction={primaryAction}
-          onStart={() =>
-            handleStartById(
-              primaryAction ? `approve_${primaryAction.id}` : 'approve_primary',
-              primaryAction?.id,
-            )
-          }
-        />
+        {dailyCeoBrief.showEveningReview ? (
+          <FounderDailyCeoEveningPanel
+            delta={dailyCeoBrief.eveningDelta}
+            tomorrowFocus={dailyCeoBrief.todayActionTitle}
+          />
+        ) : null}
+
+        <details
+          className="rounded-2xl border border-border/60 bg-muted/10"
+          open={showAnalysisDetails}
+          onToggle={(event) => setShowAnalysisDetails((event.target as HTMLDetailsElement).open)}
+        >
+          <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
+            {t('dailyCeo.analysisDetails')}
+          </summary>
+          <div className="space-y-6 border-t border-border/60 px-5 py-6">
+            <FounderResearchCompletePanel brief={researchComplete} />
+
+            <FounderAiPmDiscoveryPanel findings={surpriseFindings} />
+
+            <FounderResearchSourcePanel
+              items={researchSources}
+              totalCount={researchMaterialCount}
+              providerId={pipeline?.research.providerId}
+            />
+
+            <FounderCompetitorComparePanel
+              brief={competitiveIntelligence}
+              verification={competitorVerification}
+            />
+
+            <FounderMarketGapPanel brief={competitiveIntelligence} />
+
+            <FounderWinStrategyPanel brief={competitiveIntelligence} />
+
+            <FounderAiPmStrategyPanel brief={competitiveIntelligence} />
+
+            <FounderAiPmMeetingPanel meeting={meetingBrief} judgment={explainableJudgment} />
+
+            <FounderAiRecommendationPanel recommendation={recommendationBrief} />
+
+            <FounderDecisionBoxPanel
+              decision={decisionBox}
+              onSelect={(actionId, source) => handleStartById(source ?? 'decision_box', actionId)}
+            />
+
+            <FounderAiPmMeetingClose
+              messages={meetingCloseMessages}
+              onStart={() =>
+                handleStartById(
+                  primaryAction ? `meeting_close_${primaryAction.id}` : 'meeting_close',
+                  primaryAction?.id,
+                )
+              }
+            />
+          </div>
+        </details>
 
         <FounderValidationAccuracyPanel refreshKey={infoRefreshKey} />
 
@@ -357,10 +484,6 @@ export function FounderTodayWorkspace({
           primaryAction={primaryAction}
         />
 
-        <FounderAiPmPreparedTasks />
-
-        <FounderAiPmWorkingNow />
-
         <FounderAiPmWorkLog evidence={evidence} history={historyEntries} />
 
         <FounderTodayOutcomeStrip
@@ -375,10 +498,6 @@ export function FounderTodayWorkspace({
             handleStartById('memory_action', intelligence.todayActions[0]?.id)
           }
         />
-
-        {showWeeklyReview ? (
-          <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
-        ) : null}
 
         <FounderAiPmProactiveQuestion />
 
