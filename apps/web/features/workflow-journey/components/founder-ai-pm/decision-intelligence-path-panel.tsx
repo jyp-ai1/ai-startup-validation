@@ -28,13 +28,13 @@ export function DecisionIntelligencePathPanel({ path }: DecisionIntelligencePath
             {t('why')}
           </p>
           <p className="mt-1.5 text-sm leading-relaxed sm:text-base">
-            {t(`whyReasons.${path.whyKey}`, path.whyParams)}
+            {path.whyText ?? t(`whyReasons.${path.whyKey}`, path.whyParams)}
           </p>
         </li>
         <li className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3">
           <p className="text-xs font-semibold uppercase text-muted-foreground">{t('how')}</p>
           <p className="mt-1.5 text-sm leading-relaxed sm:text-base">
-            {t(`howActions.${path.howKey}`, path.howParams)}
+            {path.howText ?? t(`howActions.${path.howKey}`, path.howParams)}
           </p>
         </li>
         <li className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3">

@@ -1,18 +1,28 @@
 'use client';
 
-import { Brain } from 'lucide-react';
+import { Brain, Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { FounderMemoryRecall } from '../../lib/founder-memory-store';
+import { Button } from '@repo/ui';
+
+import type { MemoryGeneratedAction } from '../../lib/founder-memory-store';
 
 type FounderMemoryRecallPanelProps = {
-  recall: FounderMemoryRecall;
+  memoryAction: MemoryGeneratedAction;
+  onStart: () => void;
 };
 
-export function FounderMemoryRecallPanel({ recall }: FounderMemoryRecallPanelProps) {
+export function FounderMemoryRecallPanel({ memoryAction, onStart }: FounderMemoryRecallPanelProps) {
   const t = useTranslations('workflow.founderAiPm.intelligence.memory');
+  const { recall, pipelineAction } = memoryAction;
 
   if (!recall.isReturning) return null;
+
+  const questions = pipelineAction?.questions ?? memoryAction.questionKeys.map((key) => t(`questions.${key}`));
+  const actionTitle =
+    pipelineAction?.actionTitle ??
+    t(`actions.${memoryAction.actionTitleKey}`, { count: memoryAction.questionKeys.length });
+  const etaMinutes = pipelineAction?.etaMinutes ?? memoryAction.etaMinutes;
 
   return (
     <section
@@ -30,6 +40,28 @@ export function FounderMemoryRecallPanel({ recall }: FounderMemoryRecallPanelPro
           thisFocus: t(`focus.${recall.thisWeekFocusKey}`),
         })}
       </p>
+
+      <div className="mt-5 rounded-xl border border-violet-200/60 bg-background/80 p-4 dark:border-violet-900">
+        <p className="text-sm font-semibold">{t('actionReady')}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{actionTitle}</p>
+        <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Clock className="size-3.5" aria-hidden />
+          {t('eta', { minutes: etaMinutes })}
+        </p>
+        <ol className="mt-3 space-y-1.5 text-sm" role="list">
+          {questions.map((question, index) => (
+            <li key={`${index}-${question.slice(0, 12)}`} className="flex gap-2 rounded-lg bg-muted/30 px-3 py-2">
+              <span className="shrink-0 font-semibold text-violet-700 dark:text-violet-300">
+                {index + 1}.
+              </span>
+              <span>{question}</span>
+            </li>
+          ))}
+        </ol>
+        <Button type="button" className="mt-4 w-full rounded-xl sm:w-auto" onClick={onStart}>
+          {t('startCta')}
+        </Button>
+      </div>
     </section>
   );
 }

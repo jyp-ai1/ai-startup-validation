@@ -37,7 +37,7 @@ Package: `@repo/agents`
 | 7 | **Memory** — project decision history snapshot | Mock ✅ |
 | 8 | **Mentor** — founder coaching | Mock ✅ |
 | 9 | **Growth** — post-GO roadmap (MVP, IR, grants) | Mock ✅ |
-| 10 | **Real Intelligence** — swap mock → LLM/RAG/citations | Ports ready |
+| 10 | **Real Intelligence** — swap mock → openrouter → rag → hybrid | Ports ready (engines frozen) |
 
 ---
 
@@ -46,9 +46,13 @@ Package: `@repo/agents`
 ```text
 POST /api/agents/strategy-run
   → StrategyPlatform.run()
-  → Research → Strategy → Decision → Execution
+  → Research → Planner → Strategy → Decision → Execution
   → Growth + Memory + Mentor + Knowledge + Learning
 ```
+
+Type contracts: [AGENT_CONTRACTS.md](./AGENT_CONTRACTS.md)
+
+Client resilience: `runStrategyPipeline()` — timeout 12s, retry 3×, server recovery.
 
 Workspace analysis overlay calls this API on project start. Result stored in `sessionStorage` via `agent-run-store.ts`.
 

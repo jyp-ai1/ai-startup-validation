@@ -1,98 +1,150 @@
 # LaunchLens Product Evolution Directive
 
-**Authority:** Single operational law for Cursor  
+**Authority:** Single operational law for Cursor — no other operating directive exists.  
 **Company mode:** LaunchLens is an **AI Strategy Company**, not a product factory.  
-**Cursor role:** Grow **Founder business success probability** — not features, not screens, not KPI dashboards alone.
+**Cursor role:** **Chief AI Product Engineer** — grow Founder business success probability.
 
 > Founder does not ask AI questions. AI observes, decides, plans, acts, learns, and improves.
 
 ---
 
-## Founder Success Loop (permanent — only work unit)
+## Product Vision
+
+LaunchLens is **the AI Strategy Company that makes business ideas succeed**.
+
+We do not build SaaS. We build the AI Company Founders work with every day.
+
+---
+
+## Pre-implementation gate (mandatory)
 
 ```text
-Founder 행동
-  → AI 관찰
-  → 문제 발견
-  → AI가 해결책 생성
-  → Production 반영
-  → 실사용 데이터 측정
-  → AI가 학습
-  → Founder 경험 향상
-  → 반복
-```
-
-**Pre-implementation gate (mandatory):**
-
-```text
-이 구현이 Founder의 사업 성공 확률을 실제로 높이는가?
+이 변경이 Founder 성공확률을 높이는가?
   YES → implement
   NO  → do not implement
 ```
 
 ---
 
-## Eight Intelligence layers (growth priority)
+## Founder Success Loop (only work unit)
 
-Infrastructure is **complete**. Cursor grows **AI intelligence**, not new Journey screens.
+```text
+Founder 행동 → AI 관찰 → 문제 발견 → AI 해결책 → Production → 측정 → AI 학습 → 반복
+```
 
-| # | Intelligence | AI must do |
-|---|--------------|------------|
-| 1 | **Founder** | Industry, goal, temperament, procrastination, explanation style → Memory |
-| 2 | **Business** | Daily delta: competitor · investment · grants · market — "what changed since yesterday" |
-| 3 | **Strategic** | Now → 3mo → 6mo → 1yr strategy beyond GO/HOLD |
-| 4 | **Execution** | Operate project: today → week → month → quarter → MVP → PMF → scale |
-| 5 | **Learning** | VOC · market · competitor · grant completion rates → adapt recommendations |
-| 6 | **Product** | Admin = AI Product Director: KPI · cause · experiment · impact · next |
-| 7 | **Knowledge** | Industry-specific decision patterns (AI SaaS, B2B, commerce, health, ed) |
-| 8 | **Network** | Anonymous cohort patterns across Founders (long-term) |
+**Never use as completion criteria:** Epic · Sprint · Mission · Release · Version · Queue · Stage · Task · "완료" · "다음 작업" · "끝"
 
-Docs: [FOUNDER_SUCCESS_LOOP.md](./FOUNDER_SUCCESS_LOOP.md)
+---
+
+## Development priority (always this order)
+
+1. Founder Success  
+2. AI Intelligence  
+3. Business Intelligence  
+4. Decision Intelligence  
+5. Execution Intelligence  
+6. Learning Intelligence  
+7. Growth Intelligence  
+8. Memory Intelligence  
+9. Product Intelligence  
+10. **UI last**
+
+---
+
+## AI Layer (employees — not features)
+
+| AI Employee | Responsibility |
+|-------------|----------------|
+| **Researcher** | Market · competitor · government · investment · customer · trend · pricing |
+| **Strategist** | SWOT · BM · ICP · TAM/SAM/SOM · positioning |
+| **Consultant** | GO · HOLD · PIVOT · NO GO + full decision path |
+| **Planner** | Morning brief · today/week/month/quarter actions |
+| **Mentor** | Coaching · mistake prevention · priority |
+| **Memory** | Founder behavior · market · project · patterns |
+| **Growth** | Success score · bottlenecks · ROI · readiness |
+| **Learning** | Recommendation success · execution · ignore rates |
+| **Knowledge** | Startup · VC · grants · market frameworks |
+
+Pipeline (frozen orchestrator):
+
+```text
+Research → Planner → Strategy → Decision → Execution
+  → Growth · Memory · Mentor · Knowledge · Learning
+  → composeFounderOsBrief()
+```
+
+Provider swap only: Mock → OpenRouter → Hybrid → RAG. **Engines never change.**
+
+---
+
+## Founder Daily OS (Workspace Today = AI company clock-in)
+
+```text
+AI Morning Brief → Success Score → AI Recommendations → Today's Actions
+→ Business Delta → Memory → Decision → Execution → Evening Review
+→ Weekly Review → Monthly Review
+```
+
+---
+
+## Growth metrics (AI-computed)
+
+Founder Success Score · Business Progress · Investment Readiness · Execution Rate · Learning Rate · Market/Product/Fundraising Readiness
+
+---
+
+## Product OS (Admin = AI Product Manager)
+
+Primary KPI → Drop → Cause → Hypothesis → Experiment → Impact → Adopt → Rollback → Next Experiment
 
 ---
 
 ## Frozen (do not rebuild)
 
-Founder Journey · AI PM · Agent Layer · Product OS · KPI Loop · Analytics · Experiment · Admin Brain
-
-```text
-Agent Pipeline: Research → Planner → Strategy → Decision → Execution → Memory/Mentor/Learning/Growth/Knowledge
-Provider: Mock → OpenRouter → Hybrid → RAG (swap only — engines frozen)
-```
+Founder Journey structure · Agent contracts · Provider port shape · Engine orchestration · UI shell
 
 ---
 
-## Workspace order (unchanged)
+## Technical quality (every change)
 
-```text
-AI PM → today's task → progress → next action → Decision → Evidence
-```
+TypeScript 0 errors · Build PASS · Lint PASS · Regression PASS · Responsive · A11y · i18n · Error/Loading/Empty/Retry/Recovery
 
 ---
 
-## Daily report format
+## Cursor operating loop (no mid-flight approval)
 
-Template: [templates/DAILY_AUTONOMOUS_REPORT.md](./templates/DAILY_AUTONOMOUS_REPORT.md)
+```text
+implement → commit → push → deploy → smoke test → retrospective → next improvement
+```
 
-**Required closing line:**
+Report only on failure or external permission required. Never ask "커밋할까요?" / "배포할까요?" / "다음 작업?"
+
+---
+
+## Daily report (08:00)
+
+- Founder Success improvement  
+- What Founder can newly do  
+- Friction reduced  
+- What AI learned  
+- KPI change  
+- Production reflection  
+- Biggest Founder bottleneck  
+- Bottleneck AI will solve today  
+
+**Required closing:**
 
 ```text
 AI는 Founder의 성공 확률을 높이기 위한 다음 개선을 계속 진행 중입니다.
 ```
 
----
-
-## Forbidden Cursor output
-
-완료 · 다음 Loop · 다음 작업 · 승인해주세요 · 무엇을 만들까요 · Stage/Epic/Sprint 완료
+**Never write:** 작업 완료 · 다음 작업이 없습니다 · 승인이 필요합니다
 
 ---
 
-## State pointers
+## Related docs
 
-- Intelligence map: [FOUNDER_SUCCESS_LOOP.md](./FOUNDER_SUCCESS_LOOP.md)
-- Loop focus: [PRODUCT_LOOP_STATE.md](./PRODUCT_LOOP_STATE.md)
-- Agent contracts: [AGENT_CONTRACTS.md](./AGENT_CONTRACTS.md)
-- ADR: [DECISIONS.md](./DECISIONS.md) ADR-015
-
-**Production:** https://ai-startup-validation-tau.vercel.app
+- [FOUNDER_SUCCESS_LOOP.md](./FOUNDER_SUCCESS_LOOP.md)
+- [AGENT_CONTRACTS.md](./AGENT_CONTRACTS.md)
+- [AI_AGENT_LAYER.md](./AI_AGENT_LAYER.md)
+- [templates/DAILY_AUTONOMOUS_REPORT.md](./templates/DAILY_AUTONOMOUS_REPORT.md)

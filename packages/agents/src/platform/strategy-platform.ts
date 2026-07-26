@@ -2,6 +2,8 @@ import { Logger } from '@repo/core/logger';
 import { BaseService } from '@repo/core/service';
 
 import { resolveAgentProviders } from '../adapters/registry';
+import { composeFounderOsBrief } from '../intelligence/founder-os-composer';
+import { computeFounderGrowthMetrics } from '../intelligence/growth-metrics';
 import type { StrategyPipelineRequest, StrategyPipelineResult } from '../types';
 import { DecisionEngine } from '../engines/decision-engine';
 import { ExecutionEngine } from '../engines/execution-engine';
@@ -47,7 +49,7 @@ export class StrategyPlatform extends BaseService {
     const decision = await this.decisionEngine.decide({ project, research, strategy, plan });
     const execution = await this.executionEngine.plan(project, decision);
 
-    const [growth, memory, mentor, knowledge, learning] = await Promise.all([
+    const [growthBase, memory, mentor, knowledge, learning] = await Promise.all([
       providers.growth.roadmap(project, decision),
       providers.memory.snapshot(project, decision),
       providers.mentor.coach(project, decision),
@@ -55,7 +57,16 @@ export class StrategyPlatform extends BaseService {
       providers.learning.extract(project, decision),
     ]);
 
-    const result: StrategyPipelineResult = {
+    const growth = {
+      ...growthBase,
+      metrics: computeFounderGrowthMetrics(
+        research,
+        decision,
+        request.previousSuccessScore,
+      ),
+    };
+
+    const partial: StrategyPipelineResult = {
       runId,
       project,
       plan,
@@ -70,6 +81,12 @@ export class StrategyPlatform extends BaseService {
       learning,
       completedAt: new Date().toISOString(),
     };
+
+    const founderOs = composeFounderOsBrief(partial, {
+      previousSuccessScore: request.previousSuccessScore,
+    });
+
+    const result: StrategyPipelineResult = { ...partial, founderOs };
 
     this.logInfo('StrategyPlatform.run.complete', {
       runId,

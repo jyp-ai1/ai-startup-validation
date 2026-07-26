@@ -107,6 +107,18 @@ export type DecisionNextAction = {
   priority: 'P0' | 'P1' | 'P2';
 };
 
+/** Full Decision Engine output — why → gap → how → effect → GO lift → next action */
+export type DecisionIntelligence = {
+  why: string;
+  gap: string;
+  gapSeverity: number;
+  how: string;
+  etaMinutes: number;
+  expectedEffect: string;
+  goLift: number;
+  nextActionTitle: string;
+};
+
 export type AgentDecisionResult = {
   verdict: StrategyVerdict;
   confidence: number;
@@ -115,6 +127,7 @@ export type AgentDecisionResult = {
   risks: string[];
   tradeoffs: DecisionTradeoff[];
   nextAction: DecisionNextAction;
+  intelligence?: DecisionIntelligence;
   completedAt: string;
   providerId: AgentProviderId;
 };
@@ -139,6 +152,15 @@ export type ExecutionPlan = {
 export type LearningSignal = {
   signal: string;
   weight: number;
+  recommendation?: string;
+  ignoreRate?: number;
+  successRate?: number;
+};
+
+export type MemoryGeneratedAction = {
+  actionTitle: string;
+  questions: string[];
+  etaMinutes: number;
 };
 
 export type FounderMemorySnapshot = {
@@ -146,6 +168,8 @@ export type FounderMemorySnapshot = {
   topGap: string;
   completedActions: string[];
   weekInsight: string;
+  recallInsight?: string;
+  generatedAction?: MemoryGeneratedAction;
 };
 
 export type GrowthMilestone = {
@@ -155,8 +179,25 @@ export type GrowthMilestone = {
   etaWeeks: number;
 };
 
+export type FounderGrowthMetrics = {
+  successScore: number;
+  successDelta: number;
+  businessProgress: {
+    market: number;
+    customer: number;
+    pricing: number;
+    investment: number;
+  };
+  executionRate: number;
+  learningRate: number;
+  marketReadiness: number;
+  productReadiness: number;
+  fundraisingReadiness: number;
+};
+
 export type GrowthRoadmap = {
   milestones: GrowthMilestone[];
+  metrics?: FounderGrowthMetrics;
   providerId: AgentProviderId;
 };
 
@@ -174,6 +215,34 @@ export type KnowledgeRef = {
   relevance: number;
 };
 
+export type BusinessDeltaJudgment = {
+  id: string;
+  category: 'market' | 'competitor' | 'investment' | 'government';
+  change: string;
+  recommendation: string;
+  reason: string;
+  goImpact: number;
+};
+
+export type FounderDailyReviewSnapshot = {
+  scoreDelta: number;
+  advances: string[];
+  pending: string[];
+  tomorrowFocus: string;
+  totalMinutesInvested: number;
+};
+
+/** Composed Founder Daily OS — synthesized from all AI agents */
+export type FounderOsBrief = {
+  morningBrief: string;
+  successScore: { percent: number; delta: number; reasons: string[] };
+  businessProgress: Array<{ key: 'market' | 'customer' | 'pricing' | 'investment'; percent: number }>;
+  todayActions: Array<{ id: string; title: string; etaMinutes: number; goImpact: number; order: number }>;
+  totalEtaMinutes: number;
+  businessDeltas: BusinessDeltaJudgment[];
+  dailyReview: FounderDailyReviewSnapshot;
+};
+
 export type StrategyPipelineResult = {
   runId: string;
   project: AgentProjectContext;
@@ -187,10 +256,13 @@ export type StrategyPipelineResult = {
   mentor: MentorProfile;
   knowledge: KnowledgeRef[];
   learning: LearningSignal[];
+  founderOs?: FounderOsBrief;
   completedAt: string;
 };
 
 export type StrategyPipelineRequest = {
   project: AgentProjectContext;
   providerId?: AgentProviderId;
+  /** Prior run success score — enables Growth agent delta calculation */
+  previousSuccessScore?: number;
 };

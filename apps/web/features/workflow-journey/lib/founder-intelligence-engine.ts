@@ -7,20 +7,68 @@ import {
   resolveStageIndex,
   type FounderOperatingBrief,
 } from './founder-ai-pm-engine';
-import { syncFounderMemoryOnVisit, type FounderMemoryRecall } from './founder-memory-store';
+import {
+  buildMemoryGeneratedAction,
+  syncFounderMemoryOnVisit,
+  type FounderMemoryRecall,
+  type MemoryGeneratedAction,
+} from './founder-memory-store';
 
-export type BusinessDeltaItem = {
+export type FounderSuccessScore = {
+  percent: number;
+  delta: number;
+  reasonKeys: string[];
+  reasons?: string[];
+};
+
+export type BusinessProgressDimension = {
+  key: 'market' | 'customer' | 'pricing' | 'investment';
+  percent: number;
+};
+
+export type GeneratedTodayAction = {
+  id: string;
+  title?: string;
+  titleKey?: string;
+  titleParams?: Record<string, string | number>;
+  etaMinutes: number;
+  goImpact: number;
+  order: number;
+};
+
+export type BusinessDeltaJudgment = {
   id: string;
   category: 'market' | 'competitor' | 'investment' | 'government';
-  textKey: string;
-  params?: Record<string, string | number>;
+  changeKey?: string;
+  changeParams?: Record<string, string | number>;
+  changeText?: string;
+  recommendationKey?: string;
+  recommendationText?: string;
+  reasonKey?: string;
+  reasonText?: string;
+  goImpact: number;
 };
+
+export type FounderDailyReview = {
+  scoreDelta: number;
+  advanceKeys: string[];
+  pendingKeys: string[];
+  advances?: string[];
+  pending?: string[];
+  tomorrowFocusKey: string;
+  tomorrowFocus?: string;
+  totalMinutesInvested: number;
+};
+
+export type BusinessDeltaItem = BusinessDeltaJudgment;
 
 export type DecisionIntelligencePath = {
   whyKey: string;
   whyParams: Record<string, string | number>;
+  whyText?: string;
   howKey: string;
   howParams: Record<string, string | number>;
+  howText?: string;
   whenKey: string;
   whenParams: Record<string, string | number>;
   confidenceFrom: number;
@@ -49,107 +97,175 @@ export type GrowthPathItem = {
 export type FounderIntelligenceBrief = {
   operating: FounderOperatingBrief;
   memoryRecall: FounderMemoryRecall;
-  businessDeltas: BusinessDeltaItem[];
+  memoryAction: MemoryGeneratedAction;
+  morningBrief?: string;
+  successScore: FounderSuccessScore;
+  businessProgress: BusinessProgressDimension[];
+  todayActions: GeneratedTodayAction[];
+  totalEtaMinutes: number;
+  businessDeltas: BusinessDeltaJudgment[];
   decisionPath: DecisionIntelligencePath;
   executionRoadmap: ExecutionRoadmapItem[];
   growthPath: GrowthPathItem[];
+  dailyReview: FounderDailyReview;
   showGrowth: boolean;
+  fromAgentPipeline: boolean;
 };
 
 const WHY_KEYS = ['marketGap', 'competitorGap', 'vocGap', 'goReady'] as const;
 const HOW_KEYS = ['marketResearch', 'competitorDeepDive', 'pricingInterview', 'mvpLaunch'] as const;
 const WHEN_DAYS = [7, 10, 14, 21] as const;
 
-function buildBusinessDeltas(stageIndex: number): BusinessDeltaItem[] {
-  const pipeline = loadAgentPipelineResult();
-  const deltas: BusinessDeltaItem[] = [];
+const PROGRESS_BY_STAGE: BusinessProgressDimension[][] = [
+  [
+    { key: 'market', percent: 30 },
+    { key: 'customer', percent: 15 },
+    { key: 'pricing', percent: 0 },
+    { key: 'investment', percent: 5 },
+  ],
+  [
+    { key: 'market', percent: 70 },
+    { key: 'customer', percent: 35 },
+    { key: 'pricing', percent: 8 },
+    { key: 'investment', percent: 12 },
+  ],
+  [
+    { key: 'market', percent: 82 },
+    { key: 'customer', percent: 41 },
+    { key: 'pricing', percent: 63 },
+    { key: 'investment', percent: 18 },
+  ],
+  [
+    { key: 'market', percent: 95 },
+    { key: 'customer', percent: 72 },
+    { key: 'pricing', percent: 78 },
+    { key: 'investment', percent: 35 },
+  ],
+];
 
-  if (pipeline?.research) {
-    const trend = pipeline.research.findings.find((f) => f.domain === 'trend');
-    const competitor = pipeline.research.findings.find((f) => f.domain === 'competitor');
-    const investment = pipeline.research.findings.find((f) => f.domain === 'investment');
-    const government = pipeline.research.findings.find((f) => f.domain === 'government');
+const SUCCESS_REASONS_BY_STAGE = [
+  ['marketEvidence', 'competitorScan'],
+  ['marketValidated', 'competitorMatrix'],
+  ['vocStarted', 'pricingHypothesis', 'competitorDone'],
+  ['vocComplete', 'pricingStrategy', 'goPathOpen'],
+] as const;
 
-    if (trend) {
-      deltas.push({
-        id: 'market-trend',
-        category: 'market',
-        textKey: 'aiMarketInvestment',
-        params: { count: 3 },
-      });
-    }
-    if (competitor) {
-      deltas.push({
-        id: 'competitor-price',
-        category: 'competitor',
-        textKey: 'competitorPricing',
-        params: { name: 'Notion AI' },
-      });
-    }
-    if (investment) {
-      deltas.push({
-        id: 'investment-flow',
-        category: 'investment',
-        textKey: 'seedActivity',
-        params: { count: 2 },
-      });
-    }
-    if (government) {
-      deltas.push({
-        id: 'grant-new',
-        category: 'government',
-        textKey: 'grantPosted',
-        params: { program: 'TIPS' },
-      });
-    }
+function mapPipelineMemoryAction(
+  pipeline: NonNullable<ReturnType<typeof loadAgentPipelineResult>>,
+  recall: FounderMemoryRecall,
+  gapKey: string,
+): MemoryGeneratedAction {
+  const agentAction = pipeline.memory.generatedAction;
+  if (agentAction) {
+    return {
+      recall,
+      actionTitleKey: 'pipelineAction',
+      questionKeys: agentAction.questions.map((_, i) => `p${i + 1}`),
+      etaMinutes: agentAction.etaMinutes,
+      pipelineAction: agentAction,
+    };
   }
-
-  if (deltas.length > 0) return deltas.slice(0, 4);
-
-  const fallback: BusinessDeltaItem[] = [
-    { id: 'm1', category: 'market', textKey: 'aiMarketInvestment', params: { count: 3 } },
-    { id: 'm2', category: 'competitor', textKey: 'competitorPricing', params: { name: 'Notion AI' } },
-    { id: 'm3', category: 'investment', textKey: 'seedActivity', params: { count: 2 } },
-  ];
-  if (stageIndex >= 2) {
-    fallback.push({ id: 'm4', category: 'government', textKey: 'grantPosted', params: { program: 'TIPS' } });
-  }
-  return fallback;
+  return buildMemoryGeneratedAction(recall, gapKey);
 }
 
-function buildDecisionPath(
+function buildFromAgentPipeline(
+  pipeline: NonNullable<ReturnType<typeof loadAgentPipelineResult>>,
   goalId: WorkflowGoalId,
-  stageIndex: number,
   confidence: number,
-): DecisionIntelligencePath {
+  operating: FounderOperatingBrief,
+  memoryRecall: FounderMemoryRecall,
+  gapKey: string,
+  stageIndex: number,
+): FounderIntelligenceBrief {
+  const os = pipeline.founderOs;
+  const decisionIntel = pipeline.decision.intelligence;
   const stages = getDecisionStages(goalId);
   const stage = stages[stageIndex] ?? stages[0]!;
-  const pipeline = loadAgentPipelineResult();
   const gain = stageIndex === 2 ? 13 : 10;
   const goGain = stageIndex === 2 ? 22 : 15;
-  const after = Math.min(100, confidence + gain);
-  const goAfter = Math.min(100, confidence + goGain);
 
-  return {
-    whyKey: WHY_KEYS[stageIndex] ?? 'vocGap',
-    whyParams: {
-      verdict: pipeline?.decision?.verdict ?? stage.verdict,
-      gap: pipeline?.decision?.missingData?.[0] ?? stage.primaryHoldReasonKey ?? 'voc',
-    },
-    howKey: HOW_KEYS[stageIndex] ?? 'pricingInterview',
-    howParams: { action: stage.nextActionStepId },
-    whenKey: stageIndex >= 3 ? 'goNow' : 'beforeGo',
-    whenParams: { days: WHEN_DAYS[stageIndex] ?? 14 },
-    confidenceFrom: confidence,
-    confidenceTo: after,
-    goFrom: confidence,
-    goTo: goAfter,
-    etaDays: WHEN_DAYS[stageIndex] ?? 14,
-  };
+  const memoryAction = mapPipelineMemoryAction(pipeline, memoryRecall, gapKey);
+
+  if (os) {
+    return {
+      operating,
+      memoryRecall,
+      memoryAction,
+      morningBrief: os.morningBrief,
+      successScore: {
+        percent: os.successScore.percent,
+        delta: os.successScore.delta,
+        reasonKeys: [],
+        reasons: os.successScore.reasons,
+      },
+      businessProgress: os.businessProgress,
+      todayActions: os.todayActions.map((a) => ({
+        id: a.id,
+        title: a.title,
+        etaMinutes: a.etaMinutes,
+        goImpact: a.goImpact,
+        order: a.order,
+      })),
+      totalEtaMinutes: os.totalEtaMinutes,
+      businessDeltas: os.businessDeltas.map((d) => ({
+        id: d.id,
+        category: d.category,
+        changeText: d.change,
+        recommendationText: d.recommendation,
+        reasonText: d.reason,
+        goImpact: d.goImpact,
+      })),
+      decisionPath: {
+        whyKey: WHY_KEYS[stageIndex] ?? 'vocGap',
+        whyParams: {
+          verdict: pipeline.decision.verdict,
+          gap: pipeline.decision.missingData[0] ?? stage.primaryHoldReasonKey ?? 'voc',
+        },
+        whyText: decisionIntel?.why,
+        howKey: HOW_KEYS[stageIndex] ?? 'pricingInterview',
+        howParams: { action: stage.nextActionStepId },
+        howText: decisionIntel?.how,
+        whenKey: stageIndex >= 3 ? 'goNow' : 'beforeGo',
+        whenParams: { days: WHEN_DAYS[stageIndex] ?? 14 },
+        confidenceFrom: confidence,
+        confidenceTo: Math.min(100, confidence + gain),
+        goFrom: confidence,
+        goTo: Math.min(100, confidence + goGain),
+        etaDays: WHEN_DAYS[stageIndex] ?? 14,
+      },
+      executionRoadmap: buildExecutionRoadmap(stageIndex, pipeline),
+      growthPath: buildGrowthPath(stageIndex, pipeline),
+      dailyReview: {
+        scoreDelta: os.dailyReview.scoreDelta,
+        advanceKeys: [],
+        pendingKeys: [],
+        advances: os.dailyReview.advances,
+        pending: os.dailyReview.pending,
+        tomorrowFocusKey: 'pipeline',
+        tomorrowFocus: os.dailyReview.tomorrowFocus,
+        totalMinutesInvested: os.dailyReview.totalMinutesInvested,
+      },
+      showGrowth: stageIndex >= 2 || pipeline.decision.verdict === 'GO',
+      fromAgentPipeline: true,
+    };
+  }
+
+  return buildFallbackBrief(
+    goalId,
+    confidence,
+    operating,
+    memoryRecall,
+    gapKey,
+    stageIndex,
+    pipeline,
+    true,
+  );
 }
 
-function buildExecutionRoadmap(stageIndex: number): ExecutionRoadmapItem[] {
-  const pipeline = loadAgentPipelineResult();
+function buildExecutionRoadmap(
+  stageIndex: number,
+  pipeline?: ReturnType<typeof loadAgentPipelineResult>,
+): ExecutionRoadmapItem[] {
   const horizonMap: Record<string, ExecutionRoadmapItem['horizon']> = {
     today: 'today',
     week: 'week',
@@ -187,10 +303,11 @@ function buildExecutionRoadmap(stageIndex: number): ExecutionRoadmapItem[] {
   return [...fromPipeline, quarter, investment];
 }
 
-function buildGrowthPath(stageIndex: number): GrowthPathItem[] {
-  const pipeline = loadAgentPipelineResult();
+function buildGrowthPath(
+  stageIndex: number,
+  pipeline?: ReturnType<typeof loadAgentPipelineResult>,
+): GrowthPathItem[] {
   const milestones = pipeline?.growth?.milestones ?? [];
-
   const titles =
     milestones.length > 0
       ? milestones.map((m) => ({ phase: m.phase, title: m.title, etaWeeks: m.etaWeeks }))
@@ -211,6 +328,94 @@ function buildGrowthPath(stageIndex: number): GrowthPathItem[] {
   }));
 }
 
+function buildFallbackBrief(
+  goalId: WorkflowGoalId,
+  confidence: number,
+  operating: FounderOperatingBrief,
+  memoryRecall: FounderMemoryRecall,
+  gapKey: string,
+  stageIndex: number,
+  pipeline: ReturnType<typeof loadAgentPipelineResult>,
+  fromAgentPipeline: boolean,
+): FounderIntelligenceBrief {
+  const stages = getDecisionStages(goalId);
+  const stage = stages[stageIndex] ?? stages[0]!;
+  const gain = stageIndex === 2 ? 13 : 10;
+  const goGain = stageIndex === 2 ? 22 : 15;
+
+  const todayActions: GeneratedTodayAction[] = [
+    {
+      id: 'action-1',
+      titleKey: stageIndex === 2 ? 'vocInterview' : 'primaryStep',
+      titleParams: { step: operating.daily.actionKey, count: operating.daily.actionCount },
+      etaMinutes: operating.daily.etaMinutes,
+      goImpact: operating.daily.goProbabilityGain,
+      order: 1,
+    },
+    {
+      id: 'action-2',
+      titleKey: HOW_KEYS[stageIndex] ?? 'pricingInterview',
+      etaMinutes: Math.max(10, Math.round(operating.daily.etaMinutes * 0.6)),
+      goImpact: Math.max(2, Math.round(operating.daily.goProbabilityGain * 0.4)),
+      order: 2,
+    },
+    {
+      id: 'action-3',
+      titleKey: 'pipelineTask',
+      titleParams: pipeline?.execution?.tasks[0]
+        ? { title: pipeline.execution.tasks[0].title }
+        : undefined,
+      etaMinutes: pipeline?.execution?.tasks[0]?.etaMinutes ?? 8,
+      goImpact: pipeline?.execution?.tasks[0]?.confidenceImpact ?? 2,
+      order: 3,
+    },
+  ];
+
+  const totalEtaMinutes = todayActions.reduce((sum, a) => sum + a.etaMinutes, 0);
+
+  return {
+    operating,
+    memoryRecall,
+    memoryAction: buildMemoryGeneratedAction(memoryRecall, gapKey),
+    successScore: {
+      percent: confidence,
+      delta: 3,
+      reasonKeys: [...(SUCCESS_REASONS_BY_STAGE[stageIndex] ?? SUCCESS_REASONS_BY_STAGE[2]!)],
+    },
+    businessProgress: PROGRESS_BY_STAGE[stageIndex] ?? PROGRESS_BY_STAGE[2]!,
+    todayActions,
+    totalEtaMinutes,
+    businessDeltas: [],
+    decisionPath: {
+      whyKey: WHY_KEYS[stageIndex] ?? 'vocGap',
+      whyParams: {
+        verdict: pipeline?.decision?.verdict ?? stage.verdict,
+        gap: pipeline?.decision?.missingData?.[0] ?? stage.primaryHoldReasonKey ?? 'voc',
+      },
+      howKey: HOW_KEYS[stageIndex] ?? 'pricingInterview',
+      howParams: { action: stage.nextActionStepId },
+      whenKey: stageIndex >= 3 ? 'goNow' : 'beforeGo',
+      whenParams: { days: WHEN_DAYS[stageIndex] ?? 14 },
+      confidenceFrom: confidence,
+      confidenceTo: Math.min(100, confidence + gain),
+      goFrom: confidence,
+      goTo: Math.min(100, confidence + goGain),
+      etaDays: WHEN_DAYS[stageIndex] ?? 14,
+    },
+    executionRoadmap: buildExecutionRoadmap(stageIndex, pipeline),
+    growthPath: buildGrowthPath(stageIndex, pipeline),
+    dailyReview: {
+      scoreDelta: 3,
+      advanceKeys: ['marketScanStarted'],
+      pendingKeys: ['vocPrep'],
+      tomorrowFocusKey: 'pricingValidation',
+      totalMinutesInvested: totalEtaMinutes,
+    },
+    showGrowth: stageIndex >= 2 || pipeline?.decision?.verdict === 'GO',
+    fromAgentPipeline,
+  };
+}
+
 export function computeFounderIntelligenceBrief(
   projectId: string,
   goalId: WorkflowGoalId,
@@ -219,17 +424,21 @@ export function computeFounderIntelligenceBrief(
   const stageIndex = resolveStageIndex(confidence);
   const operating = computeFounderOperatingBrief(goalId, confidence);
   const memoryRecall = syncFounderMemoryOnVisit(projectId, stageIndex, confidence);
+  const gapKey = ['marketGap', 'competitorGap', 'vocGap', 'goReady'][stageIndex] ?? 'vocGap';
   const pipeline = loadAgentPipelineResult();
-  const verdict = pipeline?.decision?.verdict;
-  const showGrowth = stageIndex >= 2 || verdict === 'GO';
 
-  return {
+  if (pipeline?.founderOs || pipeline?.decision) {
+    return buildFromAgentPipeline(pipeline, goalId, confidence, operating, memoryRecall, gapKey, stageIndex);
+  }
+
+  return buildFallbackBrief(
+    goalId,
+    confidence,
     operating,
     memoryRecall,
-    businessDeltas: buildBusinessDeltas(stageIndex),
-    decisionPath: buildDecisionPath(goalId, stageIndex, confidence),
-    executionRoadmap: buildExecutionRoadmap(stageIndex),
-    growthPath: buildGrowthPath(stageIndex),
-    showGrowth,
-  };
+    gapKey,
+    stageIndex,
+    pipeline,
+    false,
+  );
 }

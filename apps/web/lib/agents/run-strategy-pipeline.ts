@@ -7,6 +7,7 @@ export type StrategyPipelineRequestBody = {
   goalId: string;
   industry?: string;
   locale?: string;
+  previousSuccessScore?: number;
 };
 
 export type StrategyPipelineRunOutcome = {

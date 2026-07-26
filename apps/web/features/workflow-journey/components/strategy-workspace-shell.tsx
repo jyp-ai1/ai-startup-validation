@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 
 import { saveAgentPipelineResult } from '@/lib/agents/agent-run-store';
+import { getPreviousSuccessScore, syncLearningFromPipeline } from '@/lib/agents/learning-store';
 import { runStrategyPipeline } from '@/lib/agents/run-strategy-pipeline';
 import { BETA_VERSION } from '@/lib/site/beta-config';
 import { Button, toast } from '@repo/ui';
@@ -140,6 +141,7 @@ export function StrategyWorkspaceShell({
         ideaSummary: reg.ideaOneLiner ?? reg.projectName,
         goalId,
         locale: typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'ko',
+        previousSuccessScore: getPreviousSuccessScore(projectId),
       },
       {
         onRetry: (attempt, error) => {
@@ -150,6 +152,8 @@ export function StrategyWorkspaceShell({
         },
         onSuccess: (data, recovered) => {
           saveAgentPipelineResult(data);
+          const score = data.founderOs?.successScore.percent ?? data.growth.metrics?.successScore ?? 0;
+          syncLearningFromPipeline(projectId, data.learning, score);
           const verdict = data.decision?.verdict ?? coachState.verdict;
           analytics.trackAgentPipelineSuccess(goalId, verdict, { recovered });
           analytics.trackAnalysisCompleted(goalId, verdict);

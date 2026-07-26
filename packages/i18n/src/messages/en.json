@@ -4290,9 +4290,81 @@
         "goEffect": "GO probability"
       },
       "intelligence": {
+        "successScore": {
+          "label": "Business success probability",
+          "subtitle": "How far your business can move forward today.",
+          "delta": "+{delta}%",
+          "reasons": {
+            "marketEvidence": "Market evidence in progress",
+            "competitorScan": "Competitor scan started",
+            "marketValidated": "Market validated",
+            "competitorMatrix": "Competitive matrix drafted",
+            "vocStarted": "VOC interviews underway",
+            "pricingHypothesis": "Pricing hypothesis defined",
+            "competitorDone": "Competitor analysis complete",
+            "vocComplete": "VOC complete",
+            "pricingStrategy": "Pricing strategy improved",
+            "goPathOpen": "GO path open"
+          }
+        },
+        "businessProgress": {
+          "label": "Business Progress",
+          "title": "Business momentum",
+          "dimensions": {
+            "market": "Market",
+            "customer": "Customer",
+            "pricing": "Pricing",
+            "investment": "Investment"
+          }
+        },
+        "actionGenerator": {
+          "label": "AI Action Generator",
+          "title": "Today's actions",
+          "totalEta": "Est. {minutes} min total",
+          "primaryStep": "Today's core action · {step}",
+          "vocInterview": "{count} customer interviews",
+          "actionMeta": "{minutes} min · GO +{go}%",
+          "startCta": "Start now"
+        },
+        "dailyReview": {
+          "label": "Founder Daily Review",
+          "title": "How far did your business move today?",
+          "summary": "Business success probability +{delta}%. ~{minutes} min invested today.",
+          "advanced": "Moved forward",
+          "stillPending": "Still missing",
+          "tomorrow": "Tomorrow start with {focus}.",
+          "advances": {
+            "marketScanStarted": "Market scan started",
+            "competitorMatrix": "Competitive matrix draft",
+            "vocPrep": "VOC questions prepared",
+            "marketValidated": "Market size validated",
+            "competitorStarted": "Competitor analysis started",
+            "vocProgress": "2 VOC interviews done",
+            "pricingHypothesis": "Pricing hypothesis set",
+            "goEvidence": "GO evidence strengthened",
+            "goPathOpen": "GO path opened",
+            "executionStarted": "Execution kickoff",
+            "betaMetrics": "Beta metrics tracked"
+          },
+          "pending": {
+            "competitorMatrix": "Differentiation one-pager",
+            "vocPrep": "VOC question set",
+            "goEvidence": "3 GO evidence items",
+            "betaMetrics": "Paid conversion metrics"
+          },
+          "tomorrowFocus": {
+            "marketValidation": "market validation",
+            "competitorAnalysis": "competitor analysis",
+            "pricingValidation": "pricing validation",
+            "executionScale": "execution & scale"
+          }
+        },
         "memory": {
           "label": "Founder Memory",
           "recall": "Last week we focused on {lastFocus}, but {lastGap} was still weak. This week we'll start with {thisFocus}.",
+          "actionReady": "AI prepared an action you can finish today.",
+          "eta": "Est. {minutes} min",
+          "startCta": "Start now",
           "focus": {
             "marketValidation": "market validation",
             "competitorAnalysis": "competitor analysis",
@@ -4304,11 +4376,57 @@
             "competitorGap": "competitive differentiation",
             "vocGap": "customer interviews (VOC)",
             "goReady": "GO execution readiness"
+          },
+          "actions": {
+            "marketSizingInterview": "{count} market sizing interview questions",
+            "competitorMatrix": "{count} differentiation interview questions",
+            "pricingInterview": "{count} interview questions · done in 15 min",
+            "executionKickoff": "{count} execution kickoff checklist items"
+          },
+          "questions": {
+            "q1": "What do you use today to solve this problem?",
+            "q2": "How much do you spend on this problem annually?",
+            "q3": "How do you estimate market size?",
+            "q4": "What matters most in a purchase decision?",
+            "q5": "What would you pay for our solution?",
+            "c1": "What alternatives do you use today?",
+            "c2": "Biggest gap vs competitors?",
+            "c3": "Our one differentiation point?",
+            "c4": "What's the switching cost?",
+            "c5": "Why would you still use us in 6 months?",
+            "v1": "Are you happy with current pricing?",
+            "v2": "Is trust more important than price?",
+            "v3": "Monthly vs annual preference?",
+            "v4": "What triggers paid conversion after trial?",
+            "v5": "Who would you refer?",
+            "e1": "Top 3 MVP scope items this week?",
+            "e2": "Definition of first paying customer?",
+            "e3": "One metric to track?"
           }
         },
         "business": {
           "label": "Business Intelligence",
           "sinceYesterday": "Since yesterday",
+          "reasonLabel": "Why",
+          "goImpact": "Expected impact GO +{impact}%",
+          "changes": {
+            "aiMarketInvestment": "AI market funding +{count} deals (+{pct}%)",
+            "competitorPriceCut": "Competitor {name} cut price {pct}%",
+            "seedActivity": "{count} seed rounds closed",
+            "grantPosted": "New grant posted: {program}"
+          },
+          "recommendations": {
+            "investigateTrend": "Scan 3 trends today",
+            "keepPrice": "You should keep your price",
+            "deferIr": "Defer IR 4 weeks — validate first",
+            "applyGrant": "Check TIPS eligibility today"
+          },
+          "reasons": {
+            "founderOsTailwind": "Capital is flowing into founder OS",
+            "trustOverPrice": "Your customers value trust over price",
+            "validateFirst": "Pre-PMF IR only adds dilution",
+            "nonDilutiveRunway": "Non-dilutive runway buys validation time"
+          },
           "items": {
             "aiMarketInvestment": "AI market funding +{count} deals — capital flowing into founder OS",
             "competitorPricing": "Competitor {name} changed pricing — revisit differentiation",

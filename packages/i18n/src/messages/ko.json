@@ -4272,9 +4272,81 @@
         "goEffect": "GO 가능성"
       },
       "intelligence": {
+        "successScore": {
+          "label": "사업 성공 확률",
+          "subtitle": "오늘 Founder가 사업을 앞으로 전진시킬 수 있는 정도입니다.",
+          "delta": "+{delta}%",
+          "reasons": {
+            "marketEvidence": "시장 근거 확보 진행 중",
+            "competitorScan": "경쟁 스캔 시작",
+            "marketValidated": "시장 검증 완료",
+            "competitorMatrix": "경쟁 매트릭스 작성",
+            "vocStarted": "VOC 인터뷰 진행",
+            "pricingHypothesis": "가격 가설 정리",
+            "competitorDone": "경쟁 분석 완료",
+            "vocComplete": "VOC 완료",
+            "pricingStrategy": "가격 전략 개선",
+            "goPathOpen": "GO 경로 개방"
+          }
+        },
+        "businessProgress": {
+          "label": "Business Progress",
+          "title": "사업 진행도",
+          "dimensions": {
+            "market": "시장",
+            "customer": "고객",
+            "pricing": "가격",
+            "investment": "투자"
+          }
+        },
+        "actionGenerator": {
+          "label": "AI Action Generator",
+          "title": "오늘 해야 할 일",
+          "totalEta": "예상 소요 {minutes}분",
+          "primaryStep": "오늘 핵심 액션 · {step}",
+          "vocInterview": "고객 인터뷰 {count}건",
+          "actionMeta": "{minutes}분 · GO +{go}%",
+          "startCta": "바로 시작"
+        },
+        "dailyReview": {
+          "label": "Founder Daily Review",
+          "title": "오늘 사업이 얼마나 전진했는가",
+          "summary": "오늘 사업 성공 확률 +{delta}%. 약 {minutes}분 투자로 전진했습니다.",
+          "advanced": "오늘 전진한 것",
+          "stillPending": "아직 부족한 것",
+          "tomorrow": "내일은 {focus}부터 시작하세요.",
+          "advances": {
+            "marketScanStarted": "시장 스캔 시작",
+            "competitorMatrix": "경쟁 매트릭스 초안",
+            "vocPrep": "VOC 질문 준비",
+            "marketValidated": "시장 규모 검증",
+            "competitorStarted": "경쟁 분석 착수",
+            "vocProgress": "VOC 2건 진행",
+            "pricingHypothesis": "가격 가설 정리",
+            "goEvidence": "GO 근거 보강",
+            "goPathOpen": "GO 경로 개방",
+            "executionStarted": "실행 킥오프",
+            "betaMetrics": "Beta 지표 수집"
+          },
+          "pending": {
+            "competitorMatrix": "경쟁 차별화 1-pager",
+            "vocPrep": "VOC 질문 세트",
+            "goEvidence": "GO 근거 3건",
+            "betaMetrics": "유료 전환 지표"
+          },
+          "tomorrowFocus": {
+            "marketValidation": "시장 검증",
+            "competitorAnalysis": "경쟁 분석",
+            "pricingValidation": "가격 검증",
+            "executionScale": "실행·스케일"
+          }
+        },
         "memory": {
           "label": "Founder Memory",
           "recall": "지난주에는 {lastFocus}에 집중했지만 {lastGap}이 부족했습니다. 이번 주는 {thisFocus}부터 진행하겠습니다.",
+          "actionReady": "AI가 오늘 끝낼 수 있는 액션을 준비했습니다.",
+          "eta": "예상 {minutes}분",
+          "startCta": "바로 시작",
           "focus": {
             "marketValidation": "시장 검증",
             "competitorAnalysis": "경쟁 분석",
@@ -4286,11 +4358,57 @@
             "competitorGap": "경쟁 차별화",
             "vocGap": "고객 인터뷰(VOC)",
             "goReady": "GO 실행 준비"
+          },
+          "actions": {
+            "marketSizingInterview": "시장 규모 검증 인터뷰 질문 {count}개",
+            "competitorMatrix": "경쟁 차별화 인터뷰 질문 {count}개",
+            "pricingInterview": "15분이면 끝나는 인터뷰 질문 {count}개",
+            "executionKickoff": "실행 킥오프 체크리스트 {count}항목"
+          },
+          "questions": {
+            "q1": "이 문제를 해결하기 위해 지금 무엇을 쓰고 있나요?",
+            "q2": "연간 이 문제에 얼마를 지출하나요?",
+            "q3": "시장 규모를 어떻게 추정하시나요?",
+            "q4": "구매 결정에 가장 중요한 기준은?",
+            "q5": "우리 솔루션을 쓴다면 얼마를 지불할 의향이 있나요?",
+            "c1": "현재 사용 중인 대안은 무엇인가요?",
+            "c2": "경쟁사 대비 가장 아쉬운 점은?",
+            "c3": "우리만의 차별점 1가지는?",
+            "c4": "전환 비용은 얼마나 되나요?",
+            "c5": "6개월 후에도 우리를 쓸 이유는?",
+            "v1": "현재 가격에 만족하시나요?",
+            "v2": "가격보다 신뢰가 더 중요한가요?",
+            "v3": "월 구독 vs 연간 중 선호는?",
+            "v4": "무료 체험 후 유료 전환 기준은?",
+            "v5": "추천해줄 동료가 있나요?",
+            "e1": "이번 주 MVP 범위 3가지는?",
+            "e2": "첫 유료 고객 정의는?",
+            "e3": "측정할 핵심 지표 1가지는?"
           }
         },
         "business": {
           "label": "Business Intelligence",
           "sinceYesterday": "어제 이후 변화",
+          "reasonLabel": "이유",
+          "goImpact": "예상 영향 GO +{impact}%",
+          "changes": {
+            "aiMarketInvestment": "AI 시장 투자 {count}건 증가 (+{pct}%) — Founder OS 카테고리 자금 유입",
+            "competitorPriceCut": "경쟁사 {name} 가격 {pct}% 인하",
+            "seedActivity": "Seed 라운드 {count}건 클로징",
+            "grantPosted": "정부지원 {program} 공고 신규 등록"
+          },
+          "recommendations": {
+            "investigateTrend": "트렌드 3건을 오늘 스캔하세요",
+            "keepPrice": "당신은 가격을 유지하는 것이 좋습니다",
+            "deferIr": "IR은 4주 미루고 검증에 집중하세요",
+            "applyGrant": "TIPS 적합도를 오늘 확인하세요"
+          },
+          "reasons": {
+            "founderOsTailwind": "Founder OS 카테고리에 자금이 유입 중입니다",
+            "trustOverPrice": "현재 고객층은 가격보다 신뢰를 중요하게 봅니다",
+            "validateFirst": "PMF 전 IR은 dilution만 늘립니다",
+            "nonDilutiveRunway": "비희석 런웨이로 검증 시간을 확보할 수 있습니다"
+          },
           "items": {
             "aiMarketInvestment": "AI 시장 투자 {count}건 증가 — Founder OS 카테고리 자금 유입",
             "competitorPricing": "경쟁사 {name} 가격 변경 — 차별화 포인트 재검토 필요",

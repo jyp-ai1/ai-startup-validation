@@ -24,6 +24,14 @@ export type PlannerResearchStep = {
   reason: string;
 };
 
+export type PlannerTodayAction = {
+  id: string;
+  title: string;
+  etaMinutes: number;
+  goImpact: number;
+  priority: 'P0' | 'P1' | 'P2';
+};
+
 /** Planner output — sits between Research and Strategy */
 export type PlannerOutput = {
   researchOrder: PlannerResearchStep[];
@@ -32,6 +40,10 @@ export type PlannerOutput = {
     'research' | 'planner' | 'strategy' | 'decision' | 'execution'
   >;
   rationale: string;
+  /** AI Morning Brief — first thing Founder sees */
+  morningBrief?: string;
+  /** AI-generated today actions (max 3) */
+  todayActions?: PlannerTodayAction[];
   completedAt: string;
   providerId: AgentProviderId;
 };

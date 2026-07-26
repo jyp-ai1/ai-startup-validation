@@ -2,21 +2,22 @@
 
 import { useEffect, useMemo } from 'react';
 
-import { DAILY_COACH } from '@/features/project-intelligence/constants/daily-coach';
-
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useJourneyHistory } from '../hooks/use-journey-history';
 import { computeFounderIntelligenceBrief } from '../lib/founder-intelligence-engine';
 import type { WorkflowGoalId } from '../types';
 import { DecisionExperienceCoach } from './decision-experience-coach';
+import { AiActionGeneratorPanel } from './founder-ai-pm/ai-action-generator-panel';
 import { BusinessDeltaBrief } from './founder-ai-pm/business-delta-brief';
+import { BusinessProgressPanel } from './founder-ai-pm/business-progress-panel';
 import { DecisionIntelligencePathPanel } from './founder-ai-pm/decision-intelligence-path-panel';
 import { ExecutionRoadmapPanel } from './founder-ai-pm/execution-roadmap-panel';
 import { FounderAiPmOperatingPanel } from './founder-ai-pm/founder-ai-pm-operating-panel';
+import { FounderDailyReviewPanel } from './founder-ai-pm/founder-daily-review-panel';
 import { FounderMemoryRecallPanel } from './founder-ai-pm/founder-memory-recall-panel';
+import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionHero } from './founder-ai-pm/founder-today-action-hero';
 import { GrowthIntelligencePanel } from './founder-ai-pm/growth-intelligence-panel';
-import { WorkspaceEveningSummary } from './intelligence-workspace/workspace-evening-summary';
 
 const DAILY_VISIT_KEY = 'll_daily_visit';
 const WEEKLY_VISIT_KEY = 'll_weekly_visit';
@@ -65,8 +66,8 @@ export function FounderTodayWorkspace({
     analytics.trackDecisionViewed(goalId);
   }, [analytics, goalId]);
 
-  const handleStartAction = () => {
-    analytics.trackNextActionStarted(goalId, 'today_hero');
+  const handleStartAction = (source = 'today_hero') => {
+    analytics.trackNextActionStarted(goalId, source);
     append({
       category: 'coach',
       title: 'todayHeroStart',
@@ -77,7 +78,20 @@ export function FounderTodayWorkspace({
 
   return (
     <div className="space-y-8">
-      <FounderMemoryRecallPanel recall={intelligence.memoryRecall} />
+      <FounderSuccessScorePanel score={intelligence.successScore} />
+
+      <BusinessProgressPanel dimensions={intelligence.businessProgress} />
+
+      <AiActionGeneratorPanel
+        actions={intelligence.todayActions}
+        totalEtaMinutes={intelligence.totalEtaMinutes}
+        onStartAction={(actionId) => handleStartAction(`action_${actionId}`)}
+      />
+
+      <FounderMemoryRecallPanel
+        memoryAction={intelligence.memoryAction}
+        onStart={() => handleStartAction('memory_action')}
+      />
 
       <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />
 
@@ -92,7 +106,7 @@ export function FounderTodayWorkspace({
       <FounderTodayActionHero
         goalId={goalId}
         confidence={confidence}
-        onStart={handleStartAction}
+        onStart={() => handleStartAction('today_hero')}
       />
 
       <DecisionIntelligencePathPanel path={intelligence.decisionPath} />
@@ -112,7 +126,7 @@ export function FounderTodayWorkspace({
         onNextActionStarted={() => analytics.trackNextActionStarted(goalId, 'coach_action')}
       />
 
-      <WorkspaceEveningSummary gain={DAILY_COACH.confidenceAfter - confidence} />
+      <FounderDailyReviewPanel review={intelligence.dailyReview} />
     </div>
   );
 }

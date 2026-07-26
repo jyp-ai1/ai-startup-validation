@@ -31,6 +31,16 @@ export class MockDecisionProvider implements DecisionProviderPort {
     }
 
     const confidence = Math.round((overall + customerConf) / 2);
+    const topGap = missingData[0] ?? 'Execution consistency';
+    const gapSeverity = Math.max(0, 100 - customerConf);
+    const goLift = verdict === 'GO' ? 8 : 22;
+
+    const nextTitle =
+      verdict === 'GO'
+        ? 'Start MVP execution workflow'
+        : topGap.includes('VOC')
+          ? 'Complete 3 customer interviews'
+          : 'Run pricing validation interviews';
 
     return {
       verdict,
@@ -67,16 +77,27 @@ export class MockDecisionProvider implements DecisionProviderPort {
         },
       ],
       nextAction: {
-        title:
-          verdict === 'GO'
-            ? 'Start MVP execution workflow'
-            : missingData[0]?.includes('VOC')
-              ? 'Complete 3 customer interviews'
-              : 'Run pricing validation interviews',
+        title: nextTitle,
         etaMinutes: verdict === 'GO' ? 30 : 45,
         confidenceGain: verdict === 'GO' ? 8 : 13,
-        goProbabilityGain: verdict === 'GO' ? 0 : 22,
+        goProbabilityGain: goLift,
         priority: 'P0',
+      },
+      intelligence: {
+        why:
+          verdict === 'GO'
+            ? 'Evidence sufficient — speed is now the variable'
+            : `Top gap: ${topGap} blocks GO at ${confidence}% confidence`,
+        gap: topGap,
+        gapSeverity,
+        how:
+          plan.missingDomains.includes('customer')
+            ? '5 pricing validation interviews with prepared question set'
+            : `Strengthen ${plan.missingDomains[0] ?? 'market'} evidence this week`,
+        etaMinutes: verdict === 'GO' ? 30 : 45,
+        expectedEffect: `Confidence +${verdict === 'GO' ? 8 : 13}% after completion`,
+        goLift,
+        nextActionTitle: nextTitle,
       },
       completedAt: new Date().toISOString(),
       providerId: this.id,
