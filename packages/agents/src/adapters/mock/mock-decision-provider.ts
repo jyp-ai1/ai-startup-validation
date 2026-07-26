@@ -1,26 +1,18 @@
-import type {
-  AgentDecisionResult,
-  AgentProjectContext,
-  ResearchResult,
-  StrategyResult,
-} from '../../types';
+import type { DecisionInput, DecisionOutput } from '../../types/contracts';
 import type { DecisionProviderPort } from '../../ports';
 
 export class MockDecisionProvider implements DecisionProviderPort {
   readonly id = 'mock' as const;
 
-  async decide(
-    context: AgentProjectContext,
-    research: ResearchResult,
-    strategy: StrategyResult,
-  ): Promise<AgentDecisionResult> {
+  async decide(input: DecisionInput): Promise<DecisionOutput> {
+    const { project: context, research, strategy, plan } = input;
     const customerConf =
       research.findings.find((f) => f.domain === 'customer')?.confidence ?? 50;
     const pricingConf =
       research.findings.find((f) => f.domain === 'pricing')?.confidence ?? 50;
     const overall = research.overallConfidence;
 
-    let verdict: AgentDecisionResult['verdict'] = 'HOLD';
+    let verdict: DecisionOutput['verdict'] = 'HOLD';
     if (overall >= 75 && customerConf >= 65) verdict = 'GO';
     else if (overall < 45 || strategy.swot.threats.length > 4) verdict = 'NO_GO';
     else if (pricingConf < 55 && customerConf < 60) verdict = 'PIVOT';
@@ -30,6 +22,12 @@ export class MockDecisionProvider implements DecisionProviderPort {
     if (pricingConf < 60) missingData.push('Pricing validation interviews');
     if (research.findings.find((f) => f.domain === 'competitor')!.confidence < 70) {
       missingData.push('Competitor differentiation evidence');
+    }
+    for (const domain of plan.missingDomains) {
+      const label = `${domain} evidence (planner priority)`;
+      if (!missingData.some((m) => m.toLowerCase().includes(domain))) {
+        missingData.push(label);
+      }
     }
 
     const confidence = Math.round((overall + customerConf) / 2);
@@ -56,14 +54,17 @@ export class MockDecisionProvider implements DecisionProviderPort {
                 ]
               : [
                   `Customer validation at ${customerConf}% — below GO threshold`,
-                  'AI Research complete; VOC gap is primary blocker',
+                  plan.rationale,
                   `${context.projectTitle}: HOLD with clear path to GO`,
                 ],
       missingData,
       risks: strategy.risks,
       tradeoffs: [
         { dimension: 'Speed vs Evidence', choice: 'VOC sprint this week before GO' },
-        { dimension: 'Scope vs Focus', choice: verdict === 'PIVOT' ? 'Narrow ICP' : 'Keep current goal' },
+        {
+          dimension: 'Scope vs Focus',
+          choice: verdict === 'PIVOT' ? 'Narrow ICP' : 'Keep current goal',
+        },
       ],
       nextAction: {
         title:

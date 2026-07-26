@@ -4247,6 +4247,37 @@
           "confidencePath": "Confidence {current}% → {after}%",
           "startCta": "오늘 시작하기"
         },
+        "dailyLoop": {
+          "title": "Founder Daily Loop",
+          "phases": {
+            "morning": "Morning",
+            "working": "Working",
+            "evening": "Evening",
+            "weekly": "Weekly",
+            "monthly": "Monthly"
+          },
+          "focus": {
+            "marketReview": "시장 리뷰",
+            "competitorScan": "경쟁 스캔",
+            "confidenceCheck": "Confidence 점검",
+            "marketValidation": "시장 검증",
+            "preInvestor": "투자 전 준비",
+            "competitorDeepDive": "경쟁 심층 분석",
+            "gapReview": "갭 리뷰",
+            "competitorAnalysis": "경쟁 분석",
+            "preLaunch": "출시 전",
+            "vocPrep": "VOC 준비",
+            "vocInterviews": "VOC 인터뷰",
+            "goReadiness": "GO 준비도",
+            "goPath": "GO 경로",
+            "launchPrep": "출시 준비",
+            "executionKickoff": "실행 킥오프",
+            "mvpBuild": "MVP 빌드",
+            "progressReview": "진행 리뷰",
+            "betaLaunch": "Beta 출시",
+            "growthLoop": "성장 루프"
+          }
+        },
         "calendar": {
           "title": "Strategy Calendar",
           "horizons": {

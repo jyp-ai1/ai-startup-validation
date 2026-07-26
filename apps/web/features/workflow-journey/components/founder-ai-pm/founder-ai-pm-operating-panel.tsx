@@ -30,13 +30,38 @@ export function FounderAiPmOperatingPanel({
     () => computeFounderOperatingBrief(goalId, confidence),
     [confidence, goalId],
   );
-  const { daily, weekly, memory, mentor, calendar } = operating;
+  const { daily, dailyLoop, weekly, memory, mentor, calendar } = operating;
 
   return (
     <section
       className={cn('space-y-6', className)}
       aria-label={t('label')}
     >
+      {/* Daily Loop — Morning → Working → Evening → Weekly → Monthly */}
+      <div className="rounded-2xl border border-border/70 bg-card p-5">
+        <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <Clock className="size-3.5" aria-hidden />
+          {t('dailyLoop.title')}
+        </p>
+        <ol className="mt-4 flex flex-wrap gap-2" role="list">
+          {dailyLoop.map((item) => (
+            <li
+              key={item.phase}
+              className={cn(
+                'rounded-full border px-3 py-1.5 text-xs font-medium',
+                item.status === 'current'
+                  ? 'border-primary/50 bg-primary/10 text-primary'
+                  : item.status === 'done'
+                    ? 'border-emerald-300/50 bg-emerald-50/60 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300'
+                    : 'border-border/60 bg-muted/30 text-muted-foreground',
+              )}
+            >
+              {t(`dailyLoop.phases.${item.phase}`)} · {t(`dailyLoop.focus.${item.focusKey}`)}
+            </li>
+          ))}
+        </ol>
+      </div>
+
       {/* Daily Brief */}
       <div className="rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/[0.1] via-primary/[0.04] to-background p-6 sm:p-8">
         <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">

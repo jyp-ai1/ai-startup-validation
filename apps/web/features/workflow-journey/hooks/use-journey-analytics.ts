@@ -118,6 +118,41 @@ export function useJourneyAnalytics(demoMode = false) {
     trackExecutionStarted: (taskKey: string) => {
       funnel(PRODUCT_ANALYTICS_EVENTS.executionStarted, { action_key: taskKey });
     },
+    trackAgentPipelineStarted: (goalId: string, projectId: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.agentPipelineStarted, {
+        goal_id: goalId,
+        project_id: projectId,
+      });
+    },
+    trackAgentPipelineSuccess: (
+      goalId: string,
+      verdict: string,
+      options?: { recovered?: boolean; attempts?: number },
+    ) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.agentPipelineSuccess, {
+        goal_id: goalId,
+        verdict,
+        recovered: options?.recovered,
+        attempt: options?.attempts,
+      });
+    },
+    trackAgentPipelineFailed: (goalId: string, error: string, attempts: number) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.agentPipelineFailed, {
+        goal_id: goalId,
+        error,
+        attempt: attempts,
+      });
+    },
+    trackAgentPipelineRetry: (goalId: string, attempt: number, error: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.agentPipelineRetry, {
+        goal_id: goalId,
+        attempt,
+        error,
+      });
+    },
+    trackAgentPipelineRecovery: (goalId: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.agentPipelineRecovery, { goal_id: goalId });
+    },
     trackComposeFailed: (retryCount: number) =>
       track(JOURNEY_ANALYTICS_EVENTS.composeFailed, { retry_count: retryCount }),
     trackComposeRetried: (attempt: number) =>

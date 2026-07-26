@@ -40,11 +40,13 @@ Admin **Product OS v2** — AI PM recommendation + Impact. Engine: `product-os-e
 
 **PR template:** `docs/PRODUCT_LOOP_PR_TEMPLATE.md` — Primary KPI through Rollback conditions. Missing → do not ship.
 
-**Priority:** ① `@repo/agents` Real Intelligence → ② Founder wiring → ③ Product OS. **No Journey UI changes** unless engine-driven.
+**Priority:** ① Pipeline stability (Thinking→Decision) → ② Agent contracts → ③ Provider swap → ④ Founder Daily Loop → ⑤ Beta OS. **UI Frozen · UX Never Frozen.**
 
-**Forbidden:** Landing/Workflow/Workspace UI polish. **Required:** Engine · Service · Domain · Interface first.
+**Forbidden:** New Landing/Workflow/Workspace screens. **Required:** Stability · UX fixes · Engine · Service · Domain · Interface.
 
-Docs: `docs/AI_AGENT_LAYER.md`
+**UX always in scope:** Thinking hang · registration flow · decision trust · retry/recovery.
+
+Docs: `docs/AI_AGENT_LAYER.md` · `docs/AGENT_CONTRACTS.md`
 
 ## Thinking priority
 

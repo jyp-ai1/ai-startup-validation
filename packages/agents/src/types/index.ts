@@ -1,6 +1,27 @@
 /** Shared agent layer types — domain only, no UI or SDK imports. */
 
-export type AgentProviderId = 'mock' | 'openrouter' | 'openai' | 'anthropic';
+export type {
+  ResearchOutput,
+  PlannerOutput,
+  PlannerResearchStep,
+  StrategyInput,
+  StrategyOutput,
+  DecisionInput,
+  DecisionOutput,
+  ExecutionInput,
+  ExecutionOutput,
+  AgentPipelineOutput,
+} from './contracts';
+
+import type {
+  DecisionOutput,
+  ExecutionOutput,
+  PlannerOutput,
+  ResearchOutput,
+  StrategyOutput,
+} from './contracts';
+
+export type AgentProviderId = 'mock' | 'openrouter' | 'rag' | 'hybrid' | 'openai' | 'anthropic';
 
 export type AgentProjectContext = {
   projectId: string;
@@ -146,10 +167,11 @@ export type KnowledgeRef = {
 export type StrategyPipelineResult = {
   runId: string;
   project: AgentProjectContext;
-  research: ResearchResult;
-  strategy: StrategyResult;
-  decision: AgentDecisionResult;
-  execution: ExecutionPlan;
+  plan: PlannerOutput;
+  research: ResearchOutput;
+  strategy: StrategyOutput;
+  decision: DecisionOutput;
+  execution: ExecutionOutput;
   growth: GrowthRoadmap;
   memory: FounderMemorySnapshot;
   mentor: MentorProfile;

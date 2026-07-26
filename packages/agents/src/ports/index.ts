@@ -11,6 +11,18 @@ import type {
   ResearchResult,
   StrategyResult,
 } from '../types';
+import type {
+  DecisionInput,
+  PlannerOutput,
+  ResearchOutput,
+  StrategyInput,
+  StrategyOutput,
+} from '../types/contracts';
+
+export interface PlannerProviderPort {
+  readonly id: AgentProviderId;
+  plan(context: AgentProjectContext, research: ResearchOutput): Promise<PlannerOutput>;
+}
 
 export interface ResearchProviderPort {
   readonly id: AgentProviderId;
@@ -19,16 +31,12 @@ export interface ResearchProviderPort {
 
 export interface StrategyProviderPort {
   readonly id: AgentProviderId;
-  synthesize(context: AgentProjectContext, research: ResearchResult): Promise<StrategyResult>;
+  synthesize(input: StrategyInput): Promise<StrategyResult>;
 }
 
 export interface DecisionProviderPort {
   readonly id: AgentProviderId;
-  decide(
-    context: AgentProjectContext,
-    research: ResearchResult,
-    strategy: StrategyResult,
-  ): Promise<AgentDecisionResult>;
+  decide(input: DecisionInput): Promise<AgentDecisionResult>;
 }
 
 export interface ExecutionProviderPort {

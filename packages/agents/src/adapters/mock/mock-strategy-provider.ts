@@ -1,12 +1,17 @@
-import type { AgentProjectContext, ResearchResult, StrategyResult } from '../../types';
+import type { StrategyInput, StrategyOutput } from '../../types/contracts';
 import type { StrategyProviderPort } from '../../ports';
 
 export class MockStrategyProvider implements StrategyProviderPort {
   readonly id = 'mock' as const;
 
-  async synthesize(context: AgentProjectContext, research: ResearchResult): Promise<StrategyResult> {
+  async synthesize(input: StrategyInput): Promise<StrategyOutput> {
+    const { project: context, research, plan } = input;
     const customerFinding = research.findings.find((f) => f.domain === 'customer');
     const marketFinding = research.findings.find((f) => f.domain === 'market');
+    const plannerHint =
+      plan.missingDomains[0] === 'customer'
+        ? 'Customer validation incomplete'
+        : `Strengthen ${plan.missingDomains[0] ?? 'market'} per planner`;
 
     return {
       swot: {
@@ -19,7 +24,7 @@ export class MockStrategyProvider implements StrategyProviderPort {
           'Limited real VOC depth',
           customerFinding && customerFinding.confidence < 65
             ? 'Customer validation incomplete'
-            : 'Pricing not validated',
+            : plannerHint,
         ],
         opportunities: [
           marketFinding?.summary ?? 'Growing founder OS category',
@@ -41,7 +46,9 @@ export class MockStrategyProvider implements StrategyProviderPort {
       risks: [
         'VOC depth below GO threshold',
         'Competitive positioning not fully evidenced',
-        'Real intelligence gap vs platform polish',
+        plan.missingDomains.length > 0
+          ? `Planner flagged: ${plan.missingDomains.join(', ')}`
+          : 'Real intelligence gap vs platform polish',
       ],
       opportunities: [
         'First mover in AI Project OS category',

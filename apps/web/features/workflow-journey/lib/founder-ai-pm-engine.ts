@@ -60,11 +60,20 @@ export type StrategyCalendarItem = {
   status: 'current' | 'upcoming' | 'done';
 };
 
+export type FounderDailyLoopPhase = 'morning' | 'working' | 'evening' | 'weekly' | 'monthly';
+
+export type FounderDailyLoopItem = {
+  phase: FounderDailyLoopPhase;
+  status: 'current' | 'upcoming' | 'done';
+  focusKey: string;
+};
+
 /** Founder Project Operating System — daily → monthly horizon. */
 export type FounderOperatingBrief = {
   stageIndex: number;
   decision: FounderAiPmBrief;
   daily: FounderDailyBrief;
+  dailyLoop: FounderDailyLoopItem[];
   weekly: FounderWeeklyStrategy;
   memory: FounderAiMemory;
   mentor: FounderMentorNote;
@@ -156,6 +165,37 @@ const CALENDAR_BY_STAGE: StrategyCalendarItem[][] = [
   ],
 ];
 
+const DAILY_LOOP_BY_STAGE: FounderDailyLoopItem[][] = [
+  [
+    { phase: 'morning', status: 'current', focusKey: 'marketReview' },
+    { phase: 'working', status: 'upcoming', focusKey: 'competitorScan' },
+    { phase: 'evening', status: 'upcoming', focusKey: 'confidenceCheck' },
+    { phase: 'weekly', status: 'upcoming', focusKey: 'marketValidation' },
+    { phase: 'monthly', status: 'upcoming', focusKey: 'preInvestor' },
+  ],
+  [
+    { phase: 'morning', status: 'done', focusKey: 'marketReview' },
+    { phase: 'working', status: 'current', focusKey: 'competitorDeepDive' },
+    { phase: 'evening', status: 'upcoming', focusKey: 'gapReview' },
+    { phase: 'weekly', status: 'current', focusKey: 'competitorAnalysis' },
+    { phase: 'monthly', status: 'upcoming', focusKey: 'preLaunch' },
+  ],
+  [
+    { phase: 'morning', status: 'done', focusKey: 'vocPrep' },
+    { phase: 'working', status: 'current', focusKey: 'vocInterviews' },
+    { phase: 'evening', status: 'upcoming', focusKey: 'goReadiness' },
+    { phase: 'weekly', status: 'current', focusKey: 'goPath' },
+    { phase: 'monthly', status: 'upcoming', focusKey: 'launchPrep' },
+  ],
+  [
+    { phase: 'morning', status: 'done', focusKey: 'executionKickoff' },
+    { phase: 'working', status: 'current', focusKey: 'mvpBuild' },
+    { phase: 'evening', status: 'current', focusKey: 'progressReview' },
+    { phase: 'weekly', status: 'current', focusKey: 'betaLaunch' },
+    { phase: 'monthly', status: 'current', focusKey: 'growthLoop' },
+  ],
+];
+
 export function resolveStageIndex(confidence: number): number {
   if (confidence >= 81) return 3;
   if (confidence >= 68) return 2;
@@ -220,6 +260,7 @@ export function computeFounderOperatingBrief(
       confidenceCurrent: stage.confidence,
       confidenceAfter: timelineStep?.to ?? stage.confidence,
     },
+    dailyLoop: DAILY_LOOP_BY_STAGE[stageIndex] ?? DAILY_LOOP_BY_STAGE[2]!,
     weekly: WEEKLY_BY_STAGE[stageIndex] ?? WEEKLY_BY_STAGE[2]!,
     memory: MEMORY_BY_STAGE[stageIndex] ?? MEMORY_BY_STAGE[2]!,
     mentor: MENTOR_BY_STAGE[stageIndex] ?? MENTOR_BY_STAGE[2]!,

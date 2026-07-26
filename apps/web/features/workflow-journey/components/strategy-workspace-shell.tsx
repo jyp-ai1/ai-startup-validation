@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 
 import { saveAgentPipelineResult } from '@/lib/agents/agent-run-store';
+import { runStrategyPipeline } from '@/lib/agents/run-strategy-pipeline';
 import { BETA_VERSION } from '@/lib/site/beta-config';
 import { DAILY_COACH } from '@/features/project-intelligence/constants/daily-coach';
 import { Button, toast } from '@repo/ui';
@@ -121,37 +122,14 @@ export function StrategyWorkspaceShell({
   const runAnalysis = useCallback(() => {
     setThinkingFailed(false);
     setThinkingStep(0);
-    let completed = false;
-
-    const timeoutTimer = window.setTimeout(() => {
-      if (!completed) setThinkingFailed(true);
-    }, 15_000);
 
     const reg = registration ?? loadProjectRegistration();
-    const pipelinePromise = reg
-      ? fetch('/api/agents/strategy-run', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            projectId,
-            projectTitle: reg.projectName,
-            ideaSummary: reg.ideaOneLiner ?? reg.projectName,
-            goalId,
-            locale: typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'ko',
-          }),
-        })
-          .then((res) => res.json())
-          .then((payload) => {
-            if (payload?.success && payload.data) {
-              saveAgentPipelineResult(payload.data);
-              const verdict = payload.data.decision?.verdict ?? coachState.verdict;
-              analytics.trackDecisionGenerated(verdict, goalId);
-            }
-          })
-          .catch(() => {
-            /* overlay still completes — mock fallback in coach */
-          })
-      : Promise.resolve();
+    if (!reg) {
+      setThinkingFailed(true);
+      return undefined;
+    }
+
+    analytics.trackAgentPipelineStarted(goalId, projectId);
 
     const stepDelay = ANALYSIS_MS / ANALYSIS_STEPS;
     const timers = [
@@ -160,20 +138,44 @@ export function StrategyWorkspaceShell({
       window.setTimeout(() => setThinkingStep(3), stepDelay * 0.75),
     ];
 
-    void pipelinePromise.finally(() => {
-      completed = true;
-      clearTimeout(timeoutTimer);
+    void runStrategyPipeline(
+      {
+        projectId,
+        projectTitle: reg.projectName,
+        ideaSummary: reg.ideaOneLiner ?? reg.projectName,
+        goalId,
+        locale: typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'ko',
+      },
+      {
+        onRetry: (attempt, error) => {
+          analytics.trackAgentPipelineRetry(goalId, attempt, error);
+        },
+        onRecovery: () => {
+          analytics.trackAgentPipelineRecovery(goalId);
+        },
+        onSuccess: (data, recovered) => {
+          saveAgentPipelineResult(data);
+          const verdict = data.decision?.verdict ?? coachState.verdict;
+          analytics.trackAgentPipelineSuccess(goalId, verdict, { recovered });
+          analytics.trackDecisionGenerated(verdict, goalId);
+        },
+        onFailure: (error, attempts) => {
+          analytics.trackAgentPipelineFailed(goalId, error, attempts);
+        },
+      },
+    ).then((outcome) => {
       timers.forEach(clearTimeout);
-      setPhase('active');
-      analytics.trackAnalysisStarted(goalId);
-      if (!reg) {
-        analytics.trackDecisionGenerated(coachState.verdict, goalId);
+      if (outcome.ok) {
+        sessionStorage.setItem('ll_project_started', '1');
+        setPhase('active');
+        analytics.trackAnalysisStarted(goalId);
+        toast.success(tt('analysisReady'));
+        return;
       }
-      toast.success(tt('analysisReady'));
+      setThinkingFailed(true);
     });
 
     return () => {
-      clearTimeout(timeoutTimer);
       timers.forEach(clearTimeout);
     };
   }, [analytics, coachState.verdict, goalId, projectId, registration, tt]);

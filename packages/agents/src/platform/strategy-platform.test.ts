@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createStrategyPlatform } from '../platform/strategy-platform';
 
 describe('StrategyPlatform', () => {
-  it('runs full mock pipeline: research → strategy → decision → execution', async () => {
+  it('runs full mock pipeline: research → planner → strategy → decision → execution', async () => {
     const platform = createStrategyPlatform('mock');
     const result = await platform.run({
       project: {
@@ -17,6 +17,8 @@ describe('StrategyPlatform', () => {
     });
 
     expect(result.research.findings.length).toBe(7);
+    expect(result.plan.agentSequence).toContain('planner');
+    expect(result.plan.researchOrder.length).toBeGreaterThan(0);
     expect(result.strategy.swot.strengths.length).toBeGreaterThan(0);
     expect(['GO', 'HOLD', 'PIVOT', 'NO_GO']).toContain(result.decision.verdict);
     expect(result.execution.tasks.length).toBeGreaterThan(0);

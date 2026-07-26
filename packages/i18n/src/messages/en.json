@@ -4265,6 +4265,37 @@
           "confidencePath": "Confidence {current}% → {after}%",
           "startCta": "Start today"
         },
+        "dailyLoop": {
+          "title": "Founder Daily Loop",
+          "phases": {
+            "morning": "Morning",
+            "working": "Working",
+            "evening": "Evening",
+            "weekly": "Weekly",
+            "monthly": "Monthly"
+          },
+          "focus": {
+            "marketReview": "Market review",
+            "competitorScan": "Competitor scan",
+            "confidenceCheck": "Confidence check",
+            "marketValidation": "Market validation",
+            "preInvestor": "Pre-investor prep",
+            "competitorDeepDive": "Competitor deep dive",
+            "gapReview": "Gap review",
+            "competitorAnalysis": "Competitor analysis",
+            "preLaunch": "Pre-launch",
+            "vocPrep": "VOC prep",
+            "vocInterviews": "VOC interviews",
+            "goReadiness": "GO readiness",
+            "goPath": "GO path",
+            "launchPrep": "Launch prep",
+            "executionKickoff": "Execution kickoff",
+            "mvpBuild": "MVP build",
+            "progressReview": "Progress review",
+            "betaLaunch": "Beta launch",
+            "growthLoop": "Growth loop"
+          }
+        },
         "calendar": {
           "title": "Strategy Calendar",
           "horizons": {

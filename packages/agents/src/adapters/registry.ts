@@ -7,6 +7,7 @@ import type {
   LearningProviderPort,
   MemoryProviderPort,
   MentorProviderPort,
+  PlannerProviderPort,
   ResearchProviderPort,
   StrategyProviderPort,
 } from '../ports';
@@ -19,10 +20,12 @@ import {
   mockMemoryProvider,
   mockMentorProvider,
 } from './mock/mock-intelligence-providers';
+import { mockPlannerProvider } from './mock/mock-planner-provider';
 import { mockResearchProvider } from './mock/mock-research-provider';
 import { mockStrategyProvider } from './mock/mock-strategy-provider';
 
 export type AgentProviderBundle = {
+  planner: PlannerProviderPort;
   research: ResearchProviderPort;
   strategy: StrategyProviderPort;
   decision: DecisionProviderPort;
@@ -35,6 +38,7 @@ export type AgentProviderBundle = {
 };
 
 const MOCK_BUNDLE: AgentProviderBundle = {
+  planner: mockPlannerProvider,
   research: mockResearchProvider,
   strategy: mockStrategyProvider,
   decision: mockDecisionProvider,
@@ -46,8 +50,18 @@ const MOCK_BUNDLE: AgentProviderBundle = {
   learning: mockLearningProvider,
 };
 
+/** P2 — swap provider tier without changing engines. Non-mock tiers fall back to mock until adapters ship. */
 export function resolveAgentProviders(providerId: AgentProviderId = 'mock'): AgentProviderBundle {
-  if (providerId === 'mock') return MOCK_BUNDLE;
-  // Phase 10 — openrouter/openai adapters plug in here without changing engines
-  return MOCK_BUNDLE;
+  switch (providerId) {
+    case 'mock':
+      return MOCK_BUNDLE;
+    case 'openrouter':
+    case 'rag':
+    case 'hybrid':
+    case 'openai':
+    case 'anthropic':
+      return MOCK_BUNDLE;
+    default:
+      return MOCK_BUNDLE;
+  }
 }

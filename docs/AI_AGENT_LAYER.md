@@ -12,7 +12,7 @@ Application (apps/web API + thin wiring)
         ↓
 StrategyPlatform (orchestrator)
         ↓
-Engines (Research · Strategy · Decision · Execution)
+Engines (Research · Planner · Strategy · Decision · Execution)
         ↓
 Provider Ports (interfaces)
         ↓
@@ -28,6 +28,7 @@ Package: `@repo/agents`
 | Phase | Engine | Status |
 |-------|--------|--------|
 | 1 | **Research** — market, customer, competitor, trend, pricing, government, investment | Mock ✅ |
+| 1.5 | **Planner** — research order, missing data, agent sequence | Mock ✅ |
 | 2 | **Strategy** — SWOT, BM, market size, ICP, risk, opportunity | Mock ✅ |
 | 3 | **Decision** — GO/HOLD/PIVOT/NO_GO + confidence + next action | Mock ✅ |
 | 4 | **Execution** — today / week / month tasks | Mock ✅ |

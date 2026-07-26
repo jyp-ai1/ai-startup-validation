@@ -20,6 +20,11 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   recommendedGoalSelected: 'recommended_goal_selected',
   holdPathViewed: 'hold_path_viewed',
   executionStarted: 'execution_started',
+  agentPipelineStarted: 'agent_pipeline_started',
+  agentPipelineSuccess: 'agent_pipeline_success',
+  agentPipelineFailed: 'agent_pipeline_failed',
+  agentPipelineRetry: 'agent_pipeline_retry',
+  agentPipelineRecovery: 'agent_pipeline_recovery',
 } as const;
 
 export type ProductAnalyticsEvent =
@@ -35,6 +40,9 @@ export type ProductAnalyticsParams = {
   sentiment?: 'up' | 'down';
   message?: string;
   confidence?: number;
+  attempt?: number;
+  error?: string;
+  recovered?: boolean;
 };
 
 export type ProductAnalyticsAdapter = {
