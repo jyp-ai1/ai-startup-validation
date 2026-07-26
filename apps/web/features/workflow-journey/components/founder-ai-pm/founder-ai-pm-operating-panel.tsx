@@ -15,6 +15,7 @@ type FounderAiPmOperatingPanelProps = {
   confidence: number;
   projectName?: string;
   className?: string;
+  variant?: 'full' | 'morning';
   onStartToday?: () => void;
 };
 
@@ -23,6 +24,7 @@ export function FounderAiPmOperatingPanel({
   confidence,
   projectName,
   className,
+  variant = 'full',
   onStartToday,
 }: FounderAiPmOperatingPanelProps) {
   const t = useTranslations('workflow.founderAiPm.operating');
@@ -31,6 +33,7 @@ export function FounderAiPmOperatingPanel({
     [confidence, goalId],
   );
   const { daily, dailyLoop, weekly, memory, mentor, calendar } = operating;
+  const isMorning = variant === 'morning';
 
   return (
     <section
@@ -91,13 +94,15 @@ export function FounderAiPmOperatingPanel({
             })}
           </span>
         </div>
-        {onStartToday ? (
+        {onStartToday && !isMorning ? (
           <Button type="button" size="lg" className="mt-6 rounded-xl" onClick={onStartToday}>
             {t('daily.startCta')}
           </Button>
         ) : null}
       </div>
 
+      {isMorning ? null : (
+        <>
       {/* Strategy Calendar */}
       <div className="rounded-2xl border border-border/70 bg-card p-5">
         <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
@@ -178,6 +183,8 @@ export function FounderAiPmOperatingPanel({
           </p>
         </div>
       </div>
+        </>
+      )}
     </section>
   );
 }

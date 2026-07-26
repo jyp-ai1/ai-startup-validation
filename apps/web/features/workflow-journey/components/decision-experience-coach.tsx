@@ -34,6 +34,8 @@ type DecisionExperienceCoachProps = {
   projectId: string;
   className?: string;
   id?: string;
+  layout?: 'default' | 'action-first';
+  onNextActionStarted?: () => void;
 };
 
 const VERDICT_STYLES = {
@@ -48,7 +50,14 @@ function verdictEmoji(verdict: DecisionStage['verdict']) {
   return '🟡';
 }
 
-export function DecisionExperienceCoach({ goalId, projectId, className, id }: DecisionExperienceCoachProps) {
+export function DecisionExperienceCoach({
+  goalId,
+  projectId,
+  className,
+  id,
+  layout = 'default',
+  onNextActionStarted,
+}: DecisionExperienceCoachProps) {
   const t = useTranslations('workflow.coach');
   const td = useTranslations('workflow.decisionExperience');
   const tp = useTranslations('workflow.plan.steps');
@@ -61,6 +70,8 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
   const [stageIndex, setStageIndex] = useState(0);
   const [healthOpen, setHealthOpen] = useState(false);
   const [whyOpen, setWhyOpen] = useState(false);
+  const [decisionOpen, setDecisionOpen] = useState(layout !== 'action-first');
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [verdictTransition, setVerdictTransition] = useState(false);
   const celebratedRef = useRef(false);
@@ -96,6 +107,7 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
 
   const advanceStage = () => {
     if (!isFinal) {
+      onNextActionStarted?.();
       const next = Math.min(stageIndex + 1, stages.length - 1);
       const nextStage = stages[next]!;
       const historySeed = DECISION_HISTORY[next];
@@ -120,6 +132,7 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
       });
       setVerdictTransition(true);
       setStageIndex(next);
+      analytics.trackTaskCompleted(stage.mockActionKey);
       analytics.trackMockActionCompleted(stage.mockActionKey, nextStage.confidence);
       window.setTimeout(() => setVerdictTransition(false), 500);
     }
@@ -132,6 +145,30 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
       return next;
     });
   };
+
+  const toggleDecision = () => {
+    setDecisionOpen((open) => {
+      const next = !open;
+      if (next) {
+        analytics.trackDecisionViewed(goalId);
+        if (stage.verdict !== 'GO' && stage.primaryHoldReasonKey) {
+          analytics.trackHoldReasonViewed(stage.primaryHoldReasonKey, goalId);
+        }
+      }
+      return next;
+    });
+  };
+
+  const toggleEvidence = () => {
+    setEvidenceOpen((open) => !open);
+  };
+
+  useEffect(() => {
+    if (layout !== 'action-first') return undefined;
+    const handler = () => advanceStage();
+    window.addEventListener('ll:start-today-action', handler);
+    return () => window.removeEventListener('ll:start-today-action', handler);
+  });
 
   const toggleWhy = () => {
     setWhyOpen((o) => {
@@ -164,6 +201,87 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
       </div>
 
       <div className="mt-4 space-y-4">
+        {layout === 'action-first' ? (
+          <>
+            <div className="rounded-xl border border-border/60 bg-background/80 px-4 py-3">
+              <ConfidenceMeter
+                value={stage.confidence}
+                target={81}
+                label={t('confidence')}
+                gamified
+              />
+            </div>
+
+            <div className="rounded-xl border border-border/60 bg-background/90">
+              <button
+                type="button"
+                onClick={toggleDecision}
+                className="flex w-full items-center justify-between px-4 py-3 text-left"
+                aria-expanded={decisionOpen}
+              >
+                <span className="text-sm font-semibold">{td('decisionSectionTitle')}</span>
+                <span
+                  className={cn(
+                    'rounded-lg px-2.5 py-1 text-xs font-semibold',
+                    VERDICT_STYLES[stage.verdict],
+                  )}
+                >
+                  {t(`verdict.${stage.verdict}`)}
+                </span>
+              </button>
+              {decisionOpen ? (
+                <div className="space-y-3 border-t border-border/60 px-4 pb-4 pt-3">
+                  {stage.verdict !== 'GO' && stage.primaryHoldReasonKey ? (
+                    <p className="text-base font-semibold leading-snug">
+                      {td(`holdWhySummary.${stage.primaryHoldReasonKey}`)}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-emerald-700 dark:text-emerald-400">{td('whyAllClear')}</p>
+                  )}
+                  <ConfidenceBreakdownPanel
+                    items={founderBrief.confidenceBreakdown}
+                    total={stage.confidence}
+                  />
+                </div>
+              ) : null}
+            </div>
+
+            <div className="rounded-xl border border-border/60 bg-background/90">
+              <button
+                type="button"
+                onClick={toggleEvidence}
+                className="flex w-full items-center justify-between px-4 py-3 text-left"
+                aria-expanded={evidenceOpen}
+              >
+                <span className="text-sm font-semibold">{td('evidenceSectionTitle')}</span>
+                {evidenceOpen ? (
+                  <ChevronUp className="size-4 text-muted-foreground" aria-hidden />
+                ) : (
+                  <ChevronDown className="size-4 text-muted-foreground" aria-hidden />
+                )}
+              </button>
+              {evidenceOpen ? (
+                <div className="space-y-3 border-t border-border/60 px-4 pb-4 pt-3">
+                  <EvidenceThoughtTimeline steps={founderBrief.evidenceThoughtSteps} />
+                  <div className="flex flex-wrap gap-3">
+                    <EvidenceIntelligencePanel
+                      evidenceOpen
+                      completedRuleIds={[]}
+                      verdict={stage.verdict}
+                      confidenceValue={stage.confidence}
+                    />
+                    <EvidenceEngineDrawer
+                      verdict={stage.verdict}
+                      confidenceValue={stage.confidence}
+                      completedRuleIds={[]}
+                    />
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </>
+        ) : (
+          <>
         <FounderAiSummary brief={founderBrief} />
 
         {/* Dynamic Decision */}
@@ -411,6 +529,8 @@ export function DecisionExperienceCoach({ goalId, projectId, className, id }: De
             ))}
           </ol>
         </div>
+          </>
+        )}
       </div>
     </aside>
     </>

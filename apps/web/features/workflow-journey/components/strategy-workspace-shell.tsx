@@ -9,7 +9,6 @@ import { ArrowRight } from 'lucide-react';
 import { saveAgentPipelineResult } from '@/lib/agents/agent-run-store';
 import { runStrategyPipeline } from '@/lib/agents/run-strategy-pipeline';
 import { BETA_VERSION } from '@/lib/site/beta-config';
-import { DAILY_COACH } from '@/features/project-intelligence/constants/daily-coach';
 import { Button, toast } from '@repo/ui';
 
 import { getStrategyCoachState } from '../constants/decision-mock';
@@ -26,11 +25,8 @@ import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 import { WorkflowGuideCard } from './workflow-guide-card';
 import { WorkspaceSkeleton } from './workspace-skeleton';
-import { WorkspaceEveningSummary } from './intelligence-workspace/workspace-evening-summary';
-import { FounderAiPmOperatingPanel } from './founder-ai-pm/founder-ai-pm-operating-panel';
-import { WorkspaceReportPreview } from './intelligence-workspace/workspace-report-preview';
+import { FounderTodayWorkspace } from './founder-today-workspace';
 import { WorkspaceSettingsPanel } from './intelligence-workspace/workspace-settings-panel';
-import { WorkspaceWorkflowRecommendation } from './intelligence-workspace/workspace-workflow-recommendation';
 import { JourneyProjectPanel } from './intelligence-workspace/journey-project-panel';
 import { JourneyProgressRing } from './intelligence-workspace/journey-progress-ring';
 import { JourneyProjectSwitcher } from './intelligence-workspace/journey-project-switcher';
@@ -71,7 +67,6 @@ export function StrategyWorkspaceShell({
 }: StrategyWorkspaceShellProps) {
   const t = useTranslations('workflow.workspace');
   const ta = useTranslations('workflow.analysis');
-  const te = useTranslations('workflow.epic3');
   const tg = useTranslations('workflow.goal');
   const tc = useTranslations('workflow.compose.goals');
   const coachState = getStrategyCoachState(goalId);
@@ -157,6 +152,7 @@ export function StrategyWorkspaceShell({
           saveAgentPipelineResult(data);
           const verdict = data.decision?.verdict ?? coachState.verdict;
           analytics.trackAgentPipelineSuccess(goalId, verdict, { recovered });
+          analytics.trackAnalysisCompleted(goalId, verdict);
           analytics.trackDecisionGenerated(verdict, goalId);
         },
         onFailure: (error, attempts) => {
@@ -187,6 +183,7 @@ export function StrategyWorkspaceShell({
 
   const handleRegistrationStart = (data: ProjectRegistrationData) => {
     setRegistration(data);
+    analytics.trackProjectStarted(data.projectName, goalId);
     analytics.trackProjectCreated(data.projectName, goalId);
     appendHistory({
       category: 'workflow',
@@ -206,37 +203,12 @@ export function StrategyWorkspaceShell({
     switch (tab) {
       case 'today':
         return (
-          <div className="space-y-8">
-            <FounderAiPmOperatingPanel
-              goalId={goalId}
-              confidence={project.confidence}
-              projectName={projectDisplayName}
-              onStartToday={() => {
-                analytics.trackMockActionCompleted('today_start', DAILY_COACH.confidenceAfter);
-                appendHistory({
-                  category: 'coach',
-                  title: te('coach.startCta'),
-                  summary: te('coach.focusLine', { after: DAILY_COACH.confidenceAfter }),
-                });
-                document.getElementById('journey-decision-coach')?.scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'start',
-                });
-              }}
-            />
-            <DecisionExperienceCoach
-              id="journey-decision-coach"
-              goalId={goalId}
-              projectId={projectId}
-              className="w-full max-w-none scroll-mt-6"
-            />
-            <WorkspaceWorkflowRecommendation goalId={goalId} />
-            <WorkspaceReportPreview
-              projectName={projectDisplayName}
-              confidence={project.confidence}
-            />
-            <WorkspaceEveningSummary gain={12} />
-          </div>
+          <FounderTodayWorkspace
+            goalId={goalId}
+            projectId={projectId}
+            projectName={projectDisplayName}
+            confidence={project.confidence}
+          />
         );
       case 'project':
         return <JourneyProjectPanel />;

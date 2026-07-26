@@ -25,6 +25,14 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   agentPipelineFailed: 'agent_pipeline_failed',
   agentPipelineRetry: 'agent_pipeline_retry',
   agentPipelineRecovery: 'agent_pipeline_recovery',
+  analysisCompleted: 'analysis_completed',
+  decisionViewed: 'decision_viewed',
+  holdReasonViewed: 'hold_reason_viewed',
+  nextActionStarted: 'next_action_started',
+  taskCompleted: 'task_completed',
+  dailyReturn: 'daily_return',
+  weeklyReturn: 'weekly_return',
+  projectStarted: 'project_started',
 } as const;
 
 export type ProductAnalyticsEvent =

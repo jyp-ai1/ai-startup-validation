@@ -153,6 +153,39 @@ export function useJourneyAnalytics(demoMode = false) {
     trackAgentPipelineRecovery: (goalId: string) => {
       funnel(PRODUCT_ANALYTICS_EVENTS.agentPipelineRecovery, { goal_id: goalId });
     },
+    trackAnalysisCompleted: (goalId: string, verdict: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.analysisCompleted, { goal_id: goalId, verdict });
+    },
+    trackDecisionViewed: (goalId: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.decisionViewed, { goal_id: goalId });
+    },
+    trackHoldReasonViewed: (reasonKey: string, goalId: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.holdReasonViewed, {
+        goal_id: goalId,
+        action_key: reasonKey,
+      });
+    },
+    trackNextActionStarted: (goalId: string, actionKey: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.nextActionStarted, {
+        goal_id: goalId,
+        action_key: actionKey,
+      });
+    },
+    trackTaskCompleted: (taskKey: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.taskCompleted, { action_key: taskKey });
+    },
+    trackProjectStarted: (projectName: string, goalId: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.projectStarted, {
+        project_name: projectName,
+        goal_id: goalId,
+      });
+    },
+    trackDailyReturn: (goalId: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.dailyReturn, { goal_id: goalId });
+    },
+    trackWeeklyReturn: (goalId: string) => {
+      funnel(PRODUCT_ANALYTICS_EVENTS.weeklyReturn, { goal_id: goalId });
+    },
     trackComposeFailed: (retryCount: number) =>
       track(JOURNEY_ANALYTICS_EVENTS.composeFailed, { retry_count: retryCount }),
     trackComposeRetried: (attempt: number) =>

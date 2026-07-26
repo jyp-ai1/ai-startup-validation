@@ -4134,7 +4134,9 @@
         "marketSizeUnknown": "시장 규모 미확인"
       }
     },
-    "decisionExperience": {
+      "decisionExperience": {
+      "decisionSectionTitle": "Decision · 판단",
+      "evidenceSectionTitle": "Evidence · 근거",
       "decisionUpdated": "판단이 업데이트되었습니다",
       "holdWhyHeadline": "HOLD 이유",
       "holdWhyHint": "아래 추천 작업을 완료하면 판단이 업데이트됩니다.",
@@ -4236,6 +4238,15 @@
         "minutes": "{count}분",
         "confidenceGain": "Confidence",
         "goGain": "GO 가능성"
+      },
+      "todayHero": {
+        "label": "오늘 해야 할 일",
+        "eyebrow": "Today's Action",
+        "subtitle": "이 작업만 완료하면 GO 가능성과 Confidence가 함께 올라갑니다.",
+        "eta": "예상 시간",
+        "minutes": "{count}분",
+        "confidenceEffect": "Confidence",
+        "goEffect": "GO 가능성"
       },
       "operating": {
         "label": "Founder AI PM · Project OS",

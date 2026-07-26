@@ -4153,6 +4153,8 @@
       }
     },
     "decisionExperience": {
+      "decisionSectionTitle": "Decision",
+      "evidenceSectionTitle": "Evidence",
       "decisionUpdated": "Decision updated",
       "holdWhyHeadline": "Why HOLD",
       "holdWhyHint": "Complete the recommended task below to update this verdict.",
@@ -4254,6 +4256,15 @@
         "minutes": "{count} min",
         "confidenceGain": "Confidence",
         "goGain": "GO probability"
+      },
+      "todayHero": {
+        "label": "Today's action",
+        "eyebrow": "Today's Action",
+        "subtitle": "Complete this one task to raise GO probability and Confidence together.",
+        "eta": "Est. time",
+        "minutes": "{count} min",
+        "confidenceEffect": "Confidence",
+        "goEffect": "GO probability"
       },
       "operating": {
         "label": "Founder AI PM · Project OS",
