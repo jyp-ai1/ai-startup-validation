@@ -274,7 +274,7 @@ export type OpsDashboardStats = {
   };
   /** Product OS v2 — KPI → impact → adopt/rollback → AI PM recommendation */
   productOs?: ProductOsBrief;
-  productBrain?: {
+    productBrain?: {
     healthScore: number;
     experimentBacklog: number;
     rollbackCount: number;
@@ -285,6 +285,23 @@ export type OpsDashboardStats = {
     };
     kpiTrend?: { kpiLabel: string; days7: number; days30: number }[];
     aiPriorityQueue?: { priority: 'P0' | 'P1' | 'P2'; kpi: string; action: string }[];
+    productIntelligence?: {
+      successCount: number;
+      failedCount: number;
+      recommendedCount: number;
+    };
+    userIntelligence?: {
+      topFrictionStep: string;
+      topFrictionKpi: string;
+      recommendedFix: string;
+    };
+    releaseIntelligence?: {
+      version: string;
+      kpiLabel: string;
+      impactLabel: string;
+      success: boolean;
+      rollback: boolean;
+    };
   };
   operationalMetrics?: {
     users: number;

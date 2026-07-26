@@ -9,7 +9,10 @@ import {
   getExperimentBacklog,
   getFailedExperiments,
   getKpiTrends,
+  getProductIntelligence,
+  getReleaseIntelligence,
   getRollbackHistory,
+  getUserIntelligence,
 } from '../experiment-tracker';
 import type { AnalyticsEventPayload, OpsDashboardStats } from '../types';
 import { ANALYTICS_EVENTS } from '../types';
@@ -60,6 +63,9 @@ function buildProductBrain(healthScore: number): NonNullable<OpsDashboardStats['
     },
     kpiTrend: getKpiTrends(),
     aiPriorityQueue: getAiPriorityQueue(),
+    productIntelligence: getProductIntelligence(),
+    userIntelligence: getUserIntelligence(),
+    releaseIntelligence: getReleaseIntelligence(),
   };
 }
 

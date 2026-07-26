@@ -211,3 +211,29 @@ export function getKpiTrends(): KpiTrendPoint[] {
 export function getAiPriorityQueue(): AiPriorityItem[] {
   return AI_PRIORITY_QUEUE;
 }
+
+export function getProductIntelligence() {
+  return {
+    successCount: getCompletedExperiments().length,
+    failedCount: getFailedExperiments().length,
+    recommendedCount: getExperimentBacklog().length + 2,
+  };
+}
+
+export function getUserIntelligence() {
+  return {
+    topFrictionStep: 'Workspace → Decision',
+    topFrictionKpi: 'Decision Understanding',
+    recommendedFix: 'Founder AI PM Daily Brief + 3-second HOLD clarity',
+  };
+}
+
+export function getReleaseIntelligence() {
+  return {
+    version: '9d64bb4',
+    kpiLabel: 'Decision Understanding',
+    impactLabel: '+3% (measuring)',
+    success: false,
+    rollback: false,
+  };
+}

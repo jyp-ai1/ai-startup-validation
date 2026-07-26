@@ -1930,7 +1930,28 @@
       "kpi": "KPI",
       "days7": "7 days",
       "days30": "30 days",
-      "priorityQueue": "AI Priority Queue"
+      "priorityQueue": "AI Priority Queue",
+      "titleV3": "Product Brain v3 — Operating AI",
+      "subtitleV3": "Product · User · Release Intelligence + experiment management",
+      "productIntel": {
+        "success": "Success (this month)",
+        "failed": "Failed",
+        "recommended": "Recommended"
+      },
+      "userIntel": {
+        "title": "User Intelligence",
+        "recommend": "Recommend"
+      },
+      "releaseIntel": {
+        "title": "Release Intelligence",
+        "version": "Deploy",
+        "kpi": "KPI",
+        "impact": "Impact",
+        "status": "Status",
+        "success": "Success",
+        "measuring": "Measuring",
+        "rollback": "Rollback"
+      }
     },
     "retentionRate": "Retention",
     "completionRate": "Journey completion",
@@ -4233,6 +4254,80 @@
         "minutes": "{count} min",
         "confidenceGain": "Confidence",
         "goGain": "GO probability"
+      },
+      "operating": {
+        "label": "Founder AI PM · Project OS",
+        "daily": {
+          "label": "Daily Brief",
+          "greeting": "Good morning.",
+          "body": "Today, {count} VOC interviews should raise GO probability by {gain}%.",
+          "eta": "Est. {minutes} min",
+          "confidencePath": "Confidence {current}% → {after}%",
+          "startCta": "Start today"
+        },
+        "calendar": {
+          "title": "Strategy Calendar",
+          "horizons": {
+            "today": "Today",
+            "thisWeek": "This week",
+            "nextWeek": "Next week",
+            "roadmap": "Roadmap"
+          },
+          "items": {
+            "marketSizing": "Market sizing",
+            "competitorScan": "Competitor scan",
+            "competitorAnalysis": "Competitor analysis",
+            "vocSprint": "VOC sprint",
+            "vocCollection": "VOC collection",
+            "pricingTest": "Pricing validation",
+            "goDecision": "GO decision",
+            "goPath": "Complete GO path",
+            "mvpLaunch": "MVP launch prep",
+            "executionStart": "Start execution",
+            "mvpScope": "Lock MVP scope",
+            "betaLaunch": "Beta launch",
+            "growth": "Growth experiments"
+          }
+        },
+        "weekly": {
+          "title": "Weekly Strategy",
+          "recommend": "Recommend",
+          "pillars": {
+            "marketValidation": "Market validation",
+            "competitorAnalysis": "Competitor analysis",
+            "pricingValidation": "Pricing validation"
+          },
+          "recommendations": {
+            "marketResearch": "Market research deep dive",
+            "competitorDeepDive": "Competitor comparison",
+            "pricingInterview": "Pricing interview",
+            "launchPrep": "Launch prep workflow"
+          }
+        },
+        "memory": {
+          "title": "AI Memory",
+          "insights": {
+            "marketFirst": "Last week you started market research but customer validation is still thin.",
+            "competitorGap": "Last week you started competitor work but differentiation evidence is weak.",
+            "vocGapLastWeek": "Last week you were stronger on market than on customer interviews.",
+            "goMomentum": "You reached GO last week — this week focus on execution."
+          }
+        },
+        "mentor": {
+          "title": "AI Mentor",
+          "context": {
+            "earlyStage": "Early validation",
+            "competition": "Competitive positioning",
+            "preInvestor": "Before investor meetings",
+            "postGo": "After GO"
+          },
+          "advice": {
+            "marketFirst": "Confirm market size first, then VOC — Confidence rises faster.",
+            "differentiate": "Capture differentiation in Evidence to speed up GO.",
+            "pricingBeforeInvestor": "Finish pricing validation before investor meetings.",
+            "executionFocus": "Decision is done. Narrow MVP scope and execute."
+          }
+        }
       }
     },
     "decisionDetail": {

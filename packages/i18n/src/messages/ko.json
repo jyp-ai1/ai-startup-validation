@@ -1930,7 +1930,28 @@
       "kpi": "KPI",
       "days7": "7 days",
       "days30": "30 days",
-      "priorityQueue": "AI Priority Queue"
+      "priorityQueue": "AI Priority Queue",
+      "titleV3": "Product Brain v3 — Operating AI",
+      "subtitleV3": "Product · User · Release Intelligence + experiment management",
+      "productIntel": {
+        "success": "Success (this month)",
+        "failed": "Failed",
+        "recommended": "Recommended"
+      },
+      "userIntel": {
+        "title": "User Intelligence",
+        "recommend": "Recommend"
+      },
+      "releaseIntel": {
+        "title": "Release Intelligence",
+        "version": "Deploy",
+        "kpi": "KPI",
+        "impact": "Impact",
+        "status": "Status",
+        "success": "Success",
+        "measuring": "Measuring",
+        "rollback": "Rollback"
+      }
     },
     "retentionRate": "Retention",
     "completionRate": "Journey Completion",
@@ -4215,6 +4236,80 @@
         "minutes": "{count}분",
         "confidenceGain": "Confidence",
         "goGain": "GO 가능성"
+      },
+      "operating": {
+        "label": "Founder AI PM · Project OS",
+        "daily": {
+          "label": "Daily Brief",
+          "greeting": "좋은 아침입니다.",
+          "body": "오늘은 VOC {count}건만 확보하면 GO 가능성이 {gain}% 상승합니다.",
+          "eta": "예상 시간 {minutes}분",
+          "confidencePath": "Confidence {current}% → {after}%",
+          "startCta": "오늘 시작하기"
+        },
+        "calendar": {
+          "title": "Strategy Calendar",
+          "horizons": {
+            "today": "오늘",
+            "thisWeek": "이번 주",
+            "nextWeek": "다음 주",
+            "roadmap": "로드맵"
+          },
+          "items": {
+            "marketSizing": "시장 규모 검증",
+            "competitorScan": "경쟁사 스캔",
+            "competitorAnalysis": "경쟁사 분석",
+            "vocSprint": "VOC 스프린트",
+            "vocCollection": "VOC 수집",
+            "pricingTest": "Pricing 검증",
+            "goDecision": "GO Decision",
+            "goPath": "GO 경로 완료",
+            "mvpLaunch": "MVP 출시 준비",
+            "executionStart": "실행 시작",
+            "mvpScope": "MVP 범위 확정",
+            "betaLaunch": "Beta 출시",
+            "growth": "성장 실험"
+          }
+        },
+        "weekly": {
+          "title": "Weekly Strategy",
+          "recommend": "추천",
+          "pillars": {
+            "marketValidation": "시장 검증",
+            "competitorAnalysis": "경쟁 분석",
+            "pricingValidation": "가격 검증"
+          },
+          "recommendations": {
+            "marketResearch": "시장 조사 Deep Dive",
+            "competitorDeepDive": "경쟁사 비교 분석",
+            "pricingInterview": "Pricing Interview",
+            "launchPrep": "출시 준비 Workflow"
+          }
+        },
+        "memory": {
+          "title": "AI Memory",
+          "insights": {
+            "marketFirst": "지난주 시장 조사는 시작했지만, 고객 검증은 아직 부족했습니다.",
+            "competitorGap": "지난주 경쟁 분석을 시작했지만, 차별화 근거가 아직 약합니다.",
+            "vocGapLastWeek": "지난주 당신은 시장보다 고객 인터뷰가 부족했습니다.",
+            "goMomentum": "지난주 GO Decision에 도달 — 이번 주는 실행에 집중하세요."
+          }
+        },
+        "mentor": {
+          "title": "AI Mentor",
+          "context": {
+            "earlyStage": "초기 검증 단계",
+            "competition": "경쟁 포지셔닝",
+            "preInvestor": "투자 미팅 전",
+            "postGo": "GO 이후"
+          },
+          "advice": {
+            "marketFirst": "시장 규모를 먼저 확인한 뒤 VOC로 넘어가면 Confidence가 더 빨리 오릅니다.",
+            "differentiate": "경쟁사와의 차별점을 Evidence로 남기면 GO 판단이 빨라집니다.",
+            "pricingBeforeInvestor": "투자자를 만나기 전에 Pricing 검증부터 끝내는 것이 좋겠습니다.",
+            "executionFocus": "판단은 끝났습니다. 이제 MVP 범위를 좁히고 실행에 집중하세요."
+          }
+        }
       }
     },
     "decisionDetail": {

@@ -24,11 +24,8 @@ import { JourneyFade } from './journey-fade';
 import { JourneyLayout } from './journey-layout';
 import { WorkflowGuideCard } from './workflow-guide-card';
 import { WorkspaceSkeleton } from './workspace-skeleton';
-import { JourneyDailyCoach } from './intelligence-workspace/journey-daily-coach';
 import { WorkspaceEveningSummary } from './intelligence-workspace/workspace-evening-summary';
-import { WorkspaceMorningBrief } from './intelligence-workspace/workspace-morning-brief';
-import { WorkspaceTodayPmPanel } from './intelligence-workspace/workspace-today-pm-panel';
-import { WorkspaceWeeklySummary } from './intelligence-workspace/workspace-weekly-summary';
+import { FounderAiPmOperatingPanel } from './founder-ai-pm/founder-ai-pm-operating-panel';
 import { WorkspaceReportPreview } from './intelligence-workspace/workspace-report-preview';
 import { WorkspaceSettingsPanel } from './intelligence-workspace/workspace-settings-panel';
 import { WorkspaceWorkflowRecommendation } from './intelligence-workspace/workspace-workflow-recommendation';
@@ -177,22 +174,16 @@ export function StrategyWorkspaceShell({
       case 'today':
         return (
           <div className="space-y-8">
-            <WorkspaceMorningBrief
+            <FounderAiPmOperatingPanel
+              goalId={goalId}
               confidence={project.confidence}
               projectName={projectDisplayName}
-            />
-            <WorkspaceTodayPmPanel confidenceGain={Math.max(8, 81 - project.confidence)} />
-            <JourneyDailyCoach
-              confidence={project.confidence}
-              variant="hero"
-              onStart={() => {
+              onStartToday={() => {
                 analytics.trackMockActionCompleted('today_start', DAILY_COACH.confidenceAfter);
                 appendHistory({
                   category: 'coach',
                   title: te('coach.startCta'),
-                  summary: te('coach.focusLine', {
-                    after: DAILY_COACH.confidenceAfter,
-                  }),
+                  summary: te('coach.focusLine', { after: DAILY_COACH.confidenceAfter }),
                 });
                 document.getElementById('journey-decision-coach')?.scrollIntoView({
                   behavior: 'smooth',
@@ -212,7 +203,6 @@ export function StrategyWorkspaceShell({
               confidence={project.confidence}
             />
             <WorkspaceEveningSummary gain={12} />
-            <WorkspaceWeeklySummary />
           </div>
         );
       case 'project':

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { CheckCircle2, FlaskConical, ListOrdered, RotateCcw, TrendingUp } from 'lucide-react';
+import { CheckCircle2, FlaskConical, ListOrdered, RotateCcw, TrendingUp, Users, Rocket } from 'lucide-react';
 
 import type { OpsDashboardStats } from '@/lib/analytics/types';
 import { Badge, Card, CardContent, CardHeader, CardTitle } from '@repo/ui';
@@ -16,17 +16,75 @@ export function AdminProductBrainPanel({ brain }: AdminProductBrainPanelProps) {
   const experiments = brain.experiments;
   const kpiTrend = brain.kpiTrend ?? [];
   const queue = brain.aiPriorityQueue ?? [];
+  const productIntel = brain.productIntelligence;
+  const userIntel = brain.userIntelligence;
+  const releaseIntel = brain.releaseIntelligence;
 
   return (
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
           <FlaskConical className="size-4 text-primary" aria-hidden />
-          {t('title')}
+          {t('titleV3')}
         </CardTitle>
-        <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
+        <p className="text-sm text-muted-foreground">{t('subtitleV3')}</p>
       </CardHeader>
       <CardContent className="space-y-5">
+        {productIntel ? (
+          <div className="grid gap-3 sm:grid-cols-3">
+            <IntelStat label={t('productIntel.success')} value={productIntel.successCount} />
+            <IntelStat label={t('productIntel.failed')} value={productIntel.failedCount} />
+            <IntelStat label={t('productIntel.recommended')} value={productIntel.recommendedCount} />
+          </div>
+        ) : null}
+
+        {userIntel ? (
+          <div className="rounded-xl border border-amber-300/50 bg-amber-50/40 p-4 dark:border-amber-900 dark:bg-amber-950/30">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-300">
+              <Users className="size-3.5" aria-hidden />
+              {t('userIntel.title')}
+            </p>
+            <p className="mt-2 text-sm font-medium">{userIntel.topFrictionStep}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{userIntel.topFrictionKpi}</p>
+            <p className="mt-3 text-sm">{t('userIntel.recommend')}: {userIntel.recommendedFix}</p>
+          </div>
+        ) : null}
+
+        {releaseIntel ? (
+          <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <Rocket className="size-3.5" aria-hidden />
+              {t('releaseIntel.title')}
+            </p>
+            <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+              <div>
+                <dt className="text-xs text-muted-foreground">{t('releaseIntel.version')}</dt>
+                <dd className="font-mono text-xs">{releaseIntel.version}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted-foreground">{t('releaseIntel.kpi')}</dt>
+                <dd>{releaseIntel.kpiLabel}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted-foreground">{t('releaseIntel.impact')}</dt>
+                <dd className="font-medium">{releaseIntel.impactLabel}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted-foreground">{t('releaseIntel.status')}</dt>
+                <dd>
+                  {releaseIntel.rollback ? (
+                    <Badge variant="destructive">{t('releaseIntel.rollback')}</Badge>
+                  ) : releaseIntel.success ? (
+                    <Badge className="bg-emerald-600">{t('releaseIntel.success')}</Badge>
+                  ) : (
+                    <Badge variant="secondary">{t('releaseIntel.measuring')}</Badge>
+                  )}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        ) : null}
+
         {experiments ? (
           <div className="grid gap-4 lg:grid-cols-3">
             <ExperimentList
@@ -147,6 +205,15 @@ function ExperimentList({
           ))}
         </ul>
       )}
+    </div>
+  );
+}
+
+function IntelStat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl border border-border/60 bg-background/80 px-3 py-3 text-center">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="mt-1 text-2xl font-bold tabular-nums">{value}</p>
     </div>
   );
 }

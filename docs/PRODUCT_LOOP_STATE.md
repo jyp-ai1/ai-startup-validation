@@ -1,51 +1,45 @@
 # Product Loop State
 
-**Mode:** Autonomous Product — Level 5  
+**Mode:** Founder Project OS — Level 5  
 Production: https://ai-startup-validation-tau.vercel.app/workspace
 
 ---
 
-## Priority stack
+## Architecture split
 
 ```text
-① Founder AI PM  →  ② Product OS  →  ③ Analytics  →  ④ Performance
+Founder → Founder AI PM → 사업 성공 확률
+CPO/운영 → Product OS → 제품 성공 확률
 ```
 
-## PM loop (v2)
+## Founder AI PM (Project OS)
 
-```text
-KPI → Drop-off → 원인 → 가설 → 실험 → Impact → Adopt/Rollback → 다음 실험
-```
+| Layer | Surface |
+|-------|---------|
+| Daily Brief | `/workspace` Today |
+| Weekly Strategy | Operating panel |
+| AI Memory | Operating panel |
+| AI Mentor | Operating panel |
+| Strategy Calendar | Operating panel |
+| Decision depth | DecisionExperienceCoach |
+
+Engine: `founder-ai-pm-engine.ts` · `computeFounderOperatingBrief()`
+
+**Gate:** "Founder가 AI PM과 매일 일하는 경험을 더 강하게 만드는가?"
 
 ## Active experiment
 
 | Field | Value |
 |-------|-------|
 | **KPI** | Decision Understanding Rate |
-| **Drop** | analysis → decision −45% |
-| **Experiment** | Founder AI PM — Summary · Evidence Timeline · Breakdown · What If · Next Action rewards |
-| **Baseline** | 35% → measuring 38% (+3%) |
-| **Target** | +15% · Adopt at ≥ +3% sustained |
+| **Founder OS** | Daily Brief + Calendar + Memory + Mentor |
+| **Admin OS** | Product Brain v3 (Product/User/Release Intelligence) |
 
-## Founder AI PM (P0)
+## Product Brain v3 (Admin)
 
-**3-second HOLD clarity:**
-
-1. AI Summary (top)
-2. Evidence Timeline (market → verdict)
-3. Confidence Breakdown
-4. What If (VOC 3건 → 68→81)
-5. Next Action rewards (15분 · +13% Confidence · +24% GO)
-
-Engine: `founder-ai-pm-engine.ts` · Surface: `/workspace` DecisionExperienceCoach
-
-## Adopted (previous)
-
-Project Start Rate — one-line registration (+17%)
-
-## Next (Product OS)
-
-GO Conversion — execution bridge after Decision Understanding
+- Product Intelligence — success / failed / recommended experiments
+- User Intelligence — top friction + fix
+- Release Intelligence — deploy impact + rollback
 
 ---
 
