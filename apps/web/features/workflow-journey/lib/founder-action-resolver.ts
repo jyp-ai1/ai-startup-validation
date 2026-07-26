@@ -8,6 +8,8 @@ export type ActionWorkspaceKind = 'interview' | 'pricing' | 'competitor' | 'land
 export type ResolvedActionWorkspace = {
   actionId: string;
   title: string;
+  titleKey?: string;
+  titleParams?: Record<string, string | number>;
   kind: ActionWorkspaceKind;
   questionKeys: string[];
   goImpact: number;
@@ -57,9 +59,9 @@ export function resolveActionWorkspace(
   memoryAction?: MemoryGeneratedAction,
 ): ResolvedActionWorkspace {
   const pipeline = loadAgentPipelineResult();
-  const title =
-    action.title ??
-    (action.titleKey ? action.titleKey : 'todayAction');
+  const title = action.title ?? '';
+  const titleKey = action.titleKey;
+  const titleParams = action.titleParams;
 
   const haystack = `${action.id} ${title} ${action.titleKey ?? ''}`;
   let kind = inferKind(haystack);
@@ -69,6 +71,8 @@ export function resolveActionWorkspace(
     return {
       actionId: action.id,
       title: pipeline.memory!.generatedAction!.actionTitle || title,
+      titleKey,
+      titleParams,
       kind: 'interview',
       questionKeys: pipelineQuestions.map((_, index) => `pipeline_${index + 1}`),
       goImpact: action.goImpact,
@@ -80,6 +84,8 @@ export function resolveActionWorkspace(
     return {
       actionId: action.id,
       title: memoryAction.pipelineAction.actionTitle || title,
+      titleKey,
+      titleParams,
       kind: 'interview',
       questionKeys: memoryAction.pipelineAction.questions.map((_, index) => `pipeline_${index + 1}`),
       goImpact: action.goImpact,
@@ -94,6 +100,8 @@ export function resolveActionWorkspace(
   return {
     actionId: action.id,
     title,
+    titleKey,
+    titleParams,
     kind,
     questionKeys: questionKeysForKind(kind),
     goImpact: action.goImpact,

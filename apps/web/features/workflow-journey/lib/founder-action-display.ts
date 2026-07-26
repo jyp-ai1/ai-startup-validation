@@ -5,8 +5,10 @@ type ActionTitleTranslator = (
   params?: Record<string, string | number>,
 ) => string;
 
+type ActionTitleSource = Pick<GeneratedTodayAction, 'title' | 'titleKey' | 'titleParams'>;
+
 export function resolveFounderActionTitle(
-  action: GeneratedTodayAction | undefined,
+  action: ActionTitleSource | undefined,
   td: ActionTitleTranslator,
   fallback: string,
 ): string {

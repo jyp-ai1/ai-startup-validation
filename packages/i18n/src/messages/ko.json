@@ -1464,10 +1464,22 @@
       "workLog": {
         "title": "AI PM Work Log",
         "entries": {
-          "one": { "time": "09:10", "text": "시장 조사 완료" },
-          "two": { "time": "09:14", "text": "경쟁사 8개 분석" },
-          "three": { "time": "09:18", "text": "가격 전략 작성" },
-          "four": { "time": "09:21", "text": "오늘 해야 할 일 생성" }
+          "one": {
+            "time": "09:10",
+            "text": "시장 조사 완료"
+          },
+          "two": {
+            "time": "09:14",
+            "text": "경쟁사 8개 분석"
+          },
+          "three": {
+            "time": "09:18",
+            "text": "가격 전략 작성"
+          },
+          "four": {
+            "time": "09:21",
+            "text": "오늘 해야 할 일 생성"
+          }
         }
       },
       "testimonial": {
@@ -1600,20 +1612,50 @@
     "howItWorks": {
       "title": "AI PM과 회사 운영 시작하기",
       "desc": "보고 → 제안 → 승인 → 실행 — AI PM Company 경험",
-      "step1": { "title": "AI PM 보고", "desc": "매일 아침 Morning Brief로 오늘 업무와 예상 효과를 보고합니다." },
-      "step2": { "title": "AI PM 제안", "desc": "시장조사, 경쟁분석, 전략수립을 AI PM이 대신 수행합니다." },
-      "step3": { "title": "대표님 승인", "desc": "중요한 결정만 내리시면 됩니다. GO/HOLD도 AI PM이 근거와 함께 제안합니다." },
-      "step4": { "title": "AI PM 실행", "desc": "승인된 업무를 AI PM이 수행하고 Work Log로 보고합니다." }
+      "step1": {
+        "title": "AI PM 보고",
+        "desc": "매일 아침 Morning Brief로 오늘 업무와 예상 효과를 보고합니다."
+      },
+      "step2": {
+        "title": "AI PM 제안",
+        "desc": "시장조사, 경쟁분석, 전략수립을 AI PM이 대신 수행합니다."
+      },
+      "step3": {
+        "title": "대표님 승인",
+        "desc": "중요한 결정만 내리시면 됩니다. GO/HOLD도 AI PM이 근거와 함께 제안합니다."
+      },
+      "step4": {
+        "title": "AI PM 실행",
+        "desc": "승인된 업무를 AI PM이 수행하고 Work Log로 보고합니다."
+      }
     },
     "features": {
       "title": "의사결정에 필요한 모든 것",
       "desc": "6개 모듈 — 하나의 Strategy Workspace.",
-      "market": { "title": "Market Intelligence", "desc": "TAM, 성장률, Industry Signal을 한눈에." },
-      "competition": { "title": "Competition Analysis", "desc": "포지셔닝 매트릭스, Pricing Gap, 경쟁사 벤치마크." },
-      "evidence": { "title": "Evidence Builder", "desc": "Confidence Score와 Source Lineage가 있는 Evidence Library." },
-      "framework": { "title": "Strategy Framework", "desc": "SWOT, Porter 등 컨설팅 Framework 자동 구조화." },
-      "decision": { "title": "Decision Center", "desc": "Explainable GO / NO GO, Drivers, Missing Data." },
-      "report": { "title": "Executive Report", "desc": "투자자·이사회용 Story-driven Report." }
+      "market": {
+        "title": "Market Intelligence",
+        "desc": "TAM, 성장률, Industry Signal을 한눈에."
+      },
+      "competition": {
+        "title": "Competition Analysis",
+        "desc": "포지셔닝 매트릭스, Pricing Gap, 경쟁사 벤치마크."
+      },
+      "evidence": {
+        "title": "Evidence Builder",
+        "desc": "Confidence Score와 Source Lineage가 있는 Evidence Library."
+      },
+      "framework": {
+        "title": "Strategy Framework",
+        "desc": "SWOT, Porter 등 컨설팅 Framework 자동 구조화."
+      },
+      "decision": {
+        "title": "Decision Center",
+        "desc": "Explainable GO / NO GO, Drivers, Missing Data."
+      },
+      "report": {
+        "title": "Executive Report",
+        "desc": "투자자·이사회용 Story-driven Report."
+      }
     },
     "demo": {
       "eyebrow": "Workspace Preview",
@@ -1627,12 +1669,30 @@
     "useCases": {
       "title": "모든 전략팀을 위해",
       "desc": "1인 스타트업부터 기업 전략기획팀까지.",
-      "startup": { "title": "Startup", "desc": "Build·Fundraising 전에 아이디어를 검증합니다." },
-      "enterprise": { "title": "기업 전략기획", "desc": "신사업·Innovation Bet을 구조화합니다." },
-      "newBiz": { "title": "신사업", "desc": "Corporate Venture와 Spin-off 리스크를 줄입니다." },
-      "vc": { "title": "VC", "desc": "Evidence 기반 Score로 Due Diligence를 표준화합니다." },
-      "consulting": { "title": "컨설팅", "desc": "Research를 가속하고 Executive-ready Output을 제공합니다." },
-      "public": { "title": "공공기관", "desc": "Grant Fit Analysis와 Policy-aware Strategy." }
+      "startup": {
+        "title": "Startup",
+        "desc": "Build·Fundraising 전에 아이디어를 검증합니다."
+      },
+      "enterprise": {
+        "title": "기업 전략기획",
+        "desc": "신사업·Innovation Bet을 구조화합니다."
+      },
+      "newBiz": {
+        "title": "신사업",
+        "desc": "Corporate Venture와 Spin-off 리스크를 줄입니다."
+      },
+      "vc": {
+        "title": "VC",
+        "desc": "Evidence 기반 Score로 Due Diligence를 표준화합니다."
+      },
+      "consulting": {
+        "title": "컨설팅",
+        "desc": "Research를 가속하고 Executive-ready Output을 제공합니다."
+      },
+      "public": {
+        "title": "공공기관",
+        "desc": "Grant Fit Analysis와 Policy-aware Strategy."
+      }
     },
     "builtFor": {
       "title": "Built for",
@@ -1650,12 +1710,30 @@
       "title": "LaunchLens Roadmap",
       "year": "2026",
       "desc": "지금과 앞으로의 LaunchLens.",
-      "beta": { "title": "Private Beta", "desc": "전체 Workspace, AI Consultant, Decision Engine — 지금 이용 가능." },
-      "aiResearch": { "title": "AI Research", "desc": "Browser Agent와 심화 Market Intelligence." },
-      "realAi": { "title": "Real AI", "desc": "Production LLM 연동과 Explainable Output." },
-      "collaboration": { "title": "Collaboration", "desc": "팀 Workspace와 공유 Strategy Board." },
-      "enterprise": { "title": "Enterprise", "desc": "SSO, Audit Log, Custom Deployment." },
-      "marketplace": { "title": "Marketplace", "desc": "Strategy Template, Plugin, Partner Integration." }
+      "beta": {
+        "title": "Private Beta",
+        "desc": "전체 Workspace, AI Consultant, Decision Engine — 지금 이용 가능."
+      },
+      "aiResearch": {
+        "title": "AI Research",
+        "desc": "Browser Agent와 심화 Market Intelligence."
+      },
+      "realAi": {
+        "title": "Real AI",
+        "desc": "Production LLM 연동과 Explainable Output."
+      },
+      "collaboration": {
+        "title": "Collaboration",
+        "desc": "팀 Workspace와 공유 Strategy Board."
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "desc": "SSO, Audit Log, Custom Deployment."
+      },
+      "marketplace": {
+        "title": "Marketplace",
+        "desc": "Strategy Template, Plugin, Partner Integration."
+      }
     },
     "pricing": {
       "title": "Simple Pricing",
@@ -1712,17 +1790,50 @@
     "faq": {
       "title": "자주 묻는 질문",
       "desc": "LaunchLens에 대해 궁금한 점을 확인하세요.",
-      "q1": { "question": "AI Strategy Consultant란?", "answer": "LaunchLens는 시장조사, 경쟁사 분석, Evidence 수집, Executive Report를 AI가 자동 수행하고 GO / NO GO Decision까지 안내하는 AI 전략 플랫폼입니다." },
-      "q2": { "question": "시장조사는 어떻게 하나요?", "answer": "AI Orchestrator가 Market Sizing, Trend, Customer Segment Research를 구조화하여 실행하고, 결과는 Confidence Score와 함께 Evidence Library에 저장됩니다." },
-      "q3": { "question": "SWOT은 자동 생성되나요?", "answer": "네. Framework Engine이 프로젝트 데이터와 Market Analysis를 기반으로 SWOT, Porter's Five Forces 등을 자동 적용합니다." },
-      "q4": { "question": "정부지원사업도 분석하나요?", "answer": "네. Government Module이 K-Startup, 중기부 프로그램 등 Grant Fit Score를 프로젝트 Profile에 매핑합니다." },
-      "q5": { "question": "보고서는 PPT로 출력되나요?", "answer": "Executive Report Preview와 Export Queue를 통해 PDF, PPT, DOCX 내보내기를 지원합니다." },
-      "q6": { "question": "로그인 없이 사용할 수 있나요?", "answer": "본인 프로젝트 저장은 Google 로그인이 필요합니다. '실제 데모 체험하기'로 로그인 없이 둘러볼 수 있습니다." },
-      "q7": { "question": "GO / NO GO는 어떻게 계산되나요?", "answer": "Decision Engine이 Research, Evidence, VOC, Competitor, Grant를 Score하고 Explainable Drivers와 Missing Data Checklist를 제공합니다." },
-      "q8": { "question": "내 데이터가 AI 학습에 사용되나요?", "answer": "프로젝트 데이터는 Workspace에 보관됩니다. Real LLM 연동(Sprint 9.0+) 시 Enterprise Privacy Standard를 따릅니다." },
-      "q9": { "question": "누가 사용하나요?", "answer": "Startup, 기업 전략기획팀, Consultant, VC, 공공 Innovation 담당자 등 새 Initiative를 검증하는 모든 팀." },
-      "q10": { "question": "유료 플랜은 언제 출시되나요?", "answer": "Pro와 Enterprise는 Coming Soon입니다. Free Plan으로 지금 전체 Workspace를 이용할 수 있습니다." },
-      "q11": { "question": "Private Beta란?", "answer": "Private Beta 기간 동안 LaunchLens의 모든 기능을 무료로 이용할 수 있습니다. Early Adopter 피드백이 Roadmap에 반영됩니다." }
+      "q1": {
+        "question": "AI Strategy Consultant란?",
+        "answer": "LaunchLens는 시장조사, 경쟁사 분석, Evidence 수집, Executive Report를 AI가 자동 수행하고 GO / NO GO Decision까지 안내하는 AI 전략 플랫폼입니다."
+      },
+      "q2": {
+        "question": "시장조사는 어떻게 하나요?",
+        "answer": "AI Orchestrator가 Market Sizing, Trend, Customer Segment Research를 구조화하여 실행하고, 결과는 Confidence Score와 함께 Evidence Library에 저장됩니다."
+      },
+      "q3": {
+        "question": "SWOT은 자동 생성되나요?",
+        "answer": "네. Framework Engine이 프로젝트 데이터와 Market Analysis를 기반으로 SWOT, Porter's Five Forces 등을 자동 적용합니다."
+      },
+      "q4": {
+        "question": "정부지원사업도 분석하나요?",
+        "answer": "네. Government Module이 K-Startup, 중기부 프로그램 등 Grant Fit Score를 프로젝트 Profile에 매핑합니다."
+      },
+      "q5": {
+        "question": "보고서는 PPT로 출력되나요?",
+        "answer": "Executive Report Preview와 Export Queue를 통해 PDF, PPT, DOCX 내보내기를 지원합니다."
+      },
+      "q6": {
+        "question": "로그인 없이 사용할 수 있나요?",
+        "answer": "본인 프로젝트 저장은 Google 로그인이 필요합니다. '실제 데모 체험하기'로 로그인 없이 둘러볼 수 있습니다."
+      },
+      "q7": {
+        "question": "GO / NO GO는 어떻게 계산되나요?",
+        "answer": "Decision Engine이 Research, Evidence, VOC, Competitor, Grant를 Score하고 Explainable Drivers와 Missing Data Checklist를 제공합니다."
+      },
+      "q8": {
+        "question": "내 데이터가 AI 학습에 사용되나요?",
+        "answer": "프로젝트 데이터는 Workspace에 보관됩니다. Real LLM 연동(Sprint 9.0+) 시 Enterprise Privacy Standard를 따릅니다."
+      },
+      "q9": {
+        "question": "누가 사용하나요?",
+        "answer": "Startup, 기업 전략기획팀, Consultant, VC, 공공 Innovation 담당자 등 새 Initiative를 검증하는 모든 팀."
+      },
+      "q10": {
+        "question": "유료 플랜은 언제 출시되나요?",
+        "answer": "Pro와 Enterprise는 Coming Soon입니다. Free Plan으로 지금 전체 Workspace를 이용할 수 있습니다."
+      },
+      "q11": {
+        "question": "Private Beta란?",
+        "answer": "Private Beta 기간 동안 LaunchLens의 모든 기능을 무료로 이용할 수 있습니다. Early Adopter 피드백이 Roadmap에 반영됩니다."
+      }
     },
     "footer": {
       "ctaTitle": "AI PM과 함께 회사를 운영할 준비가 되셨나요?",
@@ -2577,15 +2688,51 @@
       "crossRef": "에이전트 간 지식 참조"
     },
     "evidence": {
-      "research": { "title": "리서치 Evidence", "summary": "자율 리서치 결과", "knowledge": "리서치 지식 노드" },
-      "market": { "title": "시장 Evidence", "summary": "TAM/SAM·성장 신호", "knowledge": "시장 지식 노드" },
-      "competitor": { "title": "경쟁사 Evidence", "summary": "경쟁 포지셔닝 데이터", "knowledge": "경쟁사 지식 노드" },
-      "government": { "title": "정부 Evidence", "summary": "정책·지원 신호", "knowledge": "정부 지식 노드" },
-      "technology": { "title": "기술 Evidence", "summary": "기술 채택 패턴", "knowledge": "기술 지식 노드" },
-      "investment": { "title": "투자 Evidence", "summary": "ROI·펀딩 맥락", "knowledge": "투자 지식 노드" },
-      "framework": { "title": "프레임워크 Evidence", "summary": "SWOT/PESTEL/Porter 출력", "knowledge": "프레임워크 지식 노드" },
-      "voc": { "title": "VOC Evidence", "summary": "고객 수요 신호", "knowledge": "VOC 지식 노드" },
-      "decision": { "title": "Decision Evidence", "summary": "최종 전략 판정", "knowledge": "Decision 지식 노드" }
+      "research": {
+        "title": "리서치 Evidence",
+        "summary": "자율 리서치 결과",
+        "knowledge": "리서치 지식 노드"
+      },
+      "market": {
+        "title": "시장 Evidence",
+        "summary": "TAM/SAM·성장 신호",
+        "knowledge": "시장 지식 노드"
+      },
+      "competitor": {
+        "title": "경쟁사 Evidence",
+        "summary": "경쟁 포지셔닝 데이터",
+        "knowledge": "경쟁사 지식 노드"
+      },
+      "government": {
+        "title": "정부 Evidence",
+        "summary": "정책·지원 신호",
+        "knowledge": "정부 지식 노드"
+      },
+      "technology": {
+        "title": "기술 Evidence",
+        "summary": "기술 채택 패턴",
+        "knowledge": "기술 지식 노드"
+      },
+      "investment": {
+        "title": "투자 Evidence",
+        "summary": "ROI·펀딩 맥락",
+        "knowledge": "투자 지식 노드"
+      },
+      "framework": {
+        "title": "프레임워크 Evidence",
+        "summary": "SWOT/PESTEL/Porter 출력",
+        "knowledge": "프레임워크 지식 노드"
+      },
+      "voc": {
+        "title": "VOC Evidence",
+        "summary": "고객 수요 신호",
+        "knowledge": "VOC 지식 노드"
+      },
+      "decision": {
+        "title": "Decision Evidence",
+        "summary": "최종 전략 판정",
+        "knowledge": "Decision 지식 노드"
+      }
     }
   },
   "executive": {
@@ -3449,12 +3596,30 @@
       "starting": "AI 시작 중…"
     },
     "plans": {
-      "market": { "title": "시장 분석", "category": "Market" },
-      "competitor": { "title": "경쟁사 조사", "category": "Competitor" },
-      "voc": { "title": "고객 VOC", "category": "VOC" },
-      "government": { "title": "정부 지원", "category": "Government" },
-      "technology": { "title": "기술 검토", "category": "Technology" },
-      "investment": { "title": "사업·투자", "category": "Investment" }
+      "market": {
+        "title": "시장 분석",
+        "category": "Market"
+      },
+      "competitor": {
+        "title": "경쟁사 조사",
+        "category": "Competitor"
+      },
+      "voc": {
+        "title": "고객 VOC",
+        "category": "VOC"
+      },
+      "government": {
+        "title": "정부 지원",
+        "category": "Government"
+      },
+      "technology": {
+        "title": "기술 검토",
+        "category": "Technology"
+      },
+      "investment": {
+        "title": "사업·투자",
+        "category": "Investment"
+      }
     }
   },
   "auth": {
@@ -3978,7 +4143,7 @@
       "progressLabel": "진행 단계",
       "phases": {
         "goal": "목표",
-        "workflow": "워크플로",
+        "workflow": "AI PM 업무",
         "workspace": "AI PM Office"
       }
     },
@@ -3996,15 +4161,15 @@
       "eta": "예상 {minutes}분",
       "cta": "프로젝트 시작",
       "ctaHint": "다음 단계에서 아이디어 한 줄만 입력합니다",
-      "aiNote": "AI PM이 Startup × PM × Investment 관점에서 Workflow Stack을 생성했습니다.",
-      "recommendationLabel": "AI Recommendation",
+      "aiNote": "AI PM이 Startup × PM × Investment 관점에서 AI PM 업무 순서를 생성했습니다.",
+      "recommendationLabel": "AI PM 추천",
       "rationale1": "이 프로젝트는 시장 검증이 가장 중요합니다.",
       "rationale2": "그 다음 경쟁사 분석을 추천합니다.",
       "expectedResult": "이 순서를 완료하면",
-      "expectedResultDetail": "Confidence 약 28% 상승이 예상됩니다.",
+      "expectedResultDetail": "사업 가능성 약 28% 상승이 예상됩니다.",
       "outcomesTitle": "예상 결과",
       "stack": {
-        "label": "Workflow Stack",
+        "label": "AI PM 업무 순서",
         "desc": "자동 생성된 전략 조합",
         "startup": "Startup",
         "pm": "PM",
@@ -4012,18 +4177,30 @@
         "autoGenerated": "AI가 프로젝트 목표에 맞게 자동 조합했습니다."
       },
       "outcomes": {
-        "confidence": "Confidence",
-        "confidenceHint": "첫 Decision까지",
+        "confidence": "사업 가능성",
+        "confidenceHint": "첫 AI PM 판단까지",
         "timeSaved": "시간 절약",
         "timeSavedHint": "수동 기획 대비",
         "riskReduced": "리스크 감소",
         "riskReducedHint": "검증 공백 축소"
       },
       "phases": {
-        "discover": { "title": "시장·고객 발견", "desc": "시장 규모와 고객 니즈를 확인합니다." },
-        "validate": { "title": "경쟁·검증", "desc": "경쟁사와 VOC로 가설을 검증합니다." },
-        "decide": { "title": "Decision", "desc": "GO/HOLD 판단과 근거를 정리합니다." },
-        "execute": { "title": "실행", "desc": "Next Action부터 Workspace에서 함께 진행합니다." }
+        "discover": {
+          "title": "시장·고객 발견",
+          "desc": "시장 규모와 고객 니즈를 확인합니다."
+        },
+        "validate": {
+          "title": "경쟁·검증",
+          "desc": "경쟁사와 VOC로 가설을 검증합니다."
+        },
+        "decide": {
+          "title": "AI PM 판단",
+          "desc": "GO/HOLD 판단과 근거를 정리합니다."
+        },
+        "execute": {
+          "title": "실행",
+          "desc": "오늘 할 일부터 Workspace에서 함께 진행합니다."
+        }
       },
       "why": {
         "title": "왜 이 순서인가",
@@ -4037,12 +4214,12 @@
           "desc": "시장이 확인된 뒤 차별점과 포지셔닝을 잡습니다."
         },
         "decisionLast": {
-          "title": "3. Decision으로 마무리",
+          "title": "3. AI PM 판단으로 마무리",
           "desc": "근거가 모이면 GO/HOLD를 내리고 실행으로 넘어갑니다."
         }
       },
       "roadmap": {
-        "confidence": "Confidence",
+        "confidence": "사업 가능성",
         "risk": "Risk",
         "duration": "Duration",
         "success": "Success Rate",
@@ -4051,22 +4228,22 @@
           "market": "시장 규모·성장률 확인",
           "competition": "경쟁사 포지셔닝 분석",
           "voc": "고객 VOC 2건 이상",
-          "decision": "GO/HOLD 첫 Decision"
+          "decision": "GO/HOLD 첫 AI PM 판단"
         },
-        "outcome": "완료 시 Confidence +28%, Risk −35%, 첫 GO까지 약 20분 예상"
+        "outcome": "완료 시 사업 가능성 +28%, Risk −35%, 첫 GO까지 약 20분 예상"
       },
       "recommendation": {
         "title": "AI PM 추천 요약",
         "lead": "「{goal}」프로젝트에 AI PM이 제안하는 전략 순서입니다.",
         "expected": {
           "label": "예상 결과",
-          "value": "첫 GO Decision + 실행 Workspace 진입",
-          "hint": "Workflow 완료 후 Confidence 약 +28%"
+          "value": "첫 GO AI PM 판단 + 실행 Workspace 진입",
+          "hint": "AI PM 업무 완료 후 사업 가능성 약 +28%"
         },
         "confidence": {
-          "label": "Confidence",
+          "label": "사업 가능성",
           "value": "62% → 90% 경로",
-          "hint": "Evidence 4건 충족 시 GO 가능"
+          "hint": "AI 판단 근거 4건 충족 시 GO 가능"
         },
         "risk": {
           "label": "Risk",
@@ -4076,7 +4253,7 @@
         "duration": {
           "label": "Duration",
           "value": "약 20분",
-          "hint": "첫 Decision까지 예상 소요"
+          "hint": "첫 AI PM 판단까지 예상 소요"
         }
       }
     },
@@ -4184,14 +4361,14 @@
         "todayIntroLead": "오늘은 이것 하나만 하시면 됩니다.",
         "operatingHandoff": "이제부터는 AI PM과 함께 프로젝트를 운영합니다.",
         "readingWait": "결과를 정리하고 있습니다…",
-        "successScoreLabel": "사업 성공 확률",
+        "successScoreLabel": "사업 가능성",
         "ctaDefault": "오늘 시작하기",
         "ctaInterview": "고객 인터뷰 시작하기",
         "ctaPricing": "가격 검증 시작하기",
         "resultIntro": "시장 검토 결과",
         "investmentLabel": "오늘 투자 시간",
         "investmentMinutes": "{minutes}분만 투자하면 됩니다.",
-        "successScore": "사업 성공 확률",
+        "successScore": "사업 가능성",
         "expectedGain": "예상 상승",
         "intro": "시장 검토가 끝났습니다.",
         "todayTogether": "오늘은 {action}부터 같이 해보겠습니다.",
@@ -4257,15 +4434,9 @@
           "failed": "재시도 필요"
         },
         "todayPlan": {
-          "done": "투자 가능성 계산 완료",
-          "running": "투자 가능성 계산중",
-          "waiting": "투자 가능성 계산 예정",
-          "failed": "재시도 필요"
-        },
-        "strategyPlan": {
-          "label": "시장 조사",
+          "label": "오늘 할 일 준비",
           "done": "완료",
-          "running": "진행 중",
+          "running": "준비 중",
           "waiting": "대기",
           "failed": "재시도 필요"
         },
@@ -4287,13 +4458,6 @@
           "label": "사업 가능성 검토",
           "done": "완료",
           "running": "검토 중",
-          "waiting": "대기",
-          "failed": "재시도 필요"
-        },
-        "todayPlan": {
-          "label": "오늘 할 일 준비",
-          "done": "완료",
-          "running": "준비 중",
           "waiting": "대기",
           "failed": "재시도 필요"
         }
@@ -4324,7 +4488,7 @@
       "todayFirstAction": "오늘 가장 먼저: {action}"
     },
     "aiState": {
-      "consoleTitle": "AI Strategy Team",
+      "consoleTitle": "AI 사업 전략 Team",
       "milestonesLabel": "진행 단계",
       "teamLabel": "AI 팀 작업 현황",
       "failed": "AI 분석에 실패했습니다. 다시 시도해 주세요.",
@@ -4357,14 +4521,14 @@
           "failed": "분석 실패"
         },
         "strategyPlanner": {
-          "name": "Strategy Planner",
+          "name": "사업 전략 Planner",
           "done": "주간·일간 계획 완료",
           "running": "오늘 할 일 우선순위 정리 중…",
           "waiting": "대기 중",
           "failed": "계획 실패"
         },
         "strategyConsultant": {
-          "name": "Strategy Consultant",
+          "name": "사업 전략 Consultant",
           "done": "사업 전략 생성 완료",
           "running": "사업 전략 생성 중…",
           "waiting": "대기 중",
@@ -4378,7 +4542,7 @@
           "failed": "판단 실패"
         },
         "executionPm": {
-          "name": "Execution PM",
+          "name": "실행 계획 PM",
           "done": "오늘 실행 계획 준비 완료",
           "running": "오늘 할 일·로드맵 생성 중…",
           "waiting": "대기 중",
@@ -4440,16 +4604,16 @@
         "waitingForInput": "입력을 기다리고 있습니다. 아이디어를 저장하면 AI 팀이 출근합니다.",
         "agents": {
           "marketResearcher": "Market Researcher — 시장·경쟁사·트렌드를 조사하고 있습니다.",
-          "strategyPlanner": "Strategy Planner — 오늘 우선순위와 3가지 액션을 준비하고 있습니다.",
-          "strategyConsultant": "Strategy Consultant — SWOT·BM·ICP 전략을 생성하고 있습니다.",
+          "strategyPlanner": "사업 전략 Planner — 오늘 우선순위와 3가지 액션을 준비하고 있습니다.",
+          "strategyConsultant": "사업 전략 Consultant — SWOT·BM·ICP 전략을 생성하고 있습니다.",
           "investmentAdvisor": "Investment Advisor — GO/HOLD 판단과 투자 적합도를 검토하고 있습니다.",
-          "executionPm": "Execution PM — 오늘 실행 계획과 로드맵을 생성하고 있습니다."
+          "executionPm": "실행 계획 PM — 오늘 실행 계획과 로드맵을 생성하고 있습니다."
         },
         "monitoring": "시장 변화를 모니터링 중입니다. {brief}…",
         "ready": "분석 완료 — 오늘 할 일을 추천할 준비가 되었습니다."
       },
       "next": {
-        "pipelineStarts": "저장하면 AI Strategy Team이 시장 조사부터 시작합니다.",
+        "pipelineStarts": "저장하면 AI 사업 전략 Team이 시장 조사부터 시작합니다.",
         "todayActionsReady": "분석이 끝나면 AI가 오늘 할 일 3가지를 추천합니다.",
         "retryPipeline": "다시 시작하면 AI 팀이 처음부터 분석합니다.",
         "afterAction": "완료하면 GO +{go}% · 예상 {minutes}분"
@@ -4528,7 +4692,7 @@
     },
     "journeyGuide": {
       "label": "프로젝트 진행 가이드",
-      "title": "Workflow",
+      "title": "AI PM 업무",
       "status": {
         "done": "완료",
         "current": "현재",
@@ -4537,30 +4701,30 @@
       },
       "steps": {
         "goal": "목표",
-        "workflow": "Workflow",
+        "workflow": "AI PM 업무",
         "project": "프로젝트 등록",
         "research": "AI 분석",
-        "decision": "Decision",
+        "decision": "AI PM 판단",
         "report": "Report"
       }
     },
     "goal": {
       "eyebrow": "Step 1 · AI가 프로젝트를 이해합니다",
       "title": "어떤 전략 프로젝트를 함께할까요?",
-      "subtitle": "목표 하나만 고르면 AI PM이 Workflow를 준비합니다.",
-      "demoBanner": "데모 모드 — Goal을 선택하면 샘플 Workflow를 체험할 수 있습니다.",
-      "hint": "답변하면 AI가 맞춤 Workflow를 자동 구성합니다.",
+      "subtitle": "목표 하나만 고르면 AI PM이 업무를 준비합니다.",
+      "demoBanner": "데모 모드 — Goal을 선택하면 샘플 AI PM 업무를 체험할 수 있습니다.",
+      "hint": "답변하면 AI가 맞춤 AI PM 업무를 자동 구성합니다.",
       "recommended": {
         "label": "AI 추천",
         "title": "처음이시라면 사업 가능성 검토부터",
         "desc": "대부분의 Closed Beta 사용자가 이 Goal로 3분 안에 Workspace에 도달했습니다.",
         "cta": "사업 가능성 검토로 바로 시작",
-        "outcome": "예상: AI Workflow 자동 구성 → 첫 Decision까지 약 20분"
+        "outcome": "예상: AI AI PM 업무 자동 구성 → 첫 AI PM 판단까지 약 20분"
       },
       "keyboardHint": "↑↓ 화살표로 이동 · Enter로 선택",
       "intake": {
-        "eyebrow": "AI Project Manager",
-        "prompt": "프로젝트에 대해 알려주세요. AI가 목표를 이해하고 Workflow를 준비합니다.",
+        "eyebrow": "AI PM",
+        "prompt": "프로젝트에 대해 알려주세요. AI가 목표를 이해하고 AI PM 업무를 준비합니다.",
         "hint": "목표만 골라도 바로 시작할 수 있어요. 아래 입력은 선택 사항입니다.",
         "optionalLabel": "선택 사항",
         "question": "지금 어떤 프로젝트를 진행 중인가요?",
@@ -4578,7 +4742,7 @@
           "customer": "타깃 고객",
           "market": "시장 기회"
         },
-        "refinedPreview": "「{idea}」— AI PM이 {focus} 관점에서 Workflow를 준비합니다."
+        "refinedPreview": "「{idea}」— AI PM이 {focus} 관점에서 AI PM 업무를 준비합니다."
       },
       "thinking": {
         "title": "AI가 프로젝트를 이해하기 시작했습니다",
@@ -4593,7 +4757,7 @@
           "businessModel": "비즈니스 모델",
           "risk": "리스크",
           "strategy": "전략 생성",
-          "projectCreate": "Workflow 준비"
+          "projectCreate": "AI PM 업무 준비"
         }
       },
       "options": {
@@ -4625,14 +4789,14 @@
       "done": "구성 완료",
       "steps": {
         "analyze": "프로젝트 목표 분석",
-        "stack": "Workflow Stack 조합",
-        "risk": "리스크·Confidence 예측",
+        "stack": "AI PM 업무 순서 조합",
+        "risk": "리스크·사업 가능성 예측",
         "ready": "Workspace 준비"
       },
       "templates": {
-        "startup": "Startup Workflow",
-        "pm": "PM Workflow",
-        "investor": "Investor Workflow"
+        "startup": "Startup AI PM 업무",
+        "pm": "PM AI PM 업무",
+        "investor": "Investor AI PM 업무"
       },
       "goals": {
         "business-viability": "사업 가능성 검토",
@@ -4643,8 +4807,8 @@
       }
     },
     "coach": {
-      "panelLabel": "AI Strategy Coach",
-      "title": "AI Strategy Coach",
+      "panelLabel": "AI PM 코치",
+      "title": "AI PM 코치",
       "subtitle": "다음 행동을 안내합니다",
       "currentDecision": "현재 판단",
       "verdict": {
@@ -4652,7 +4816,7 @@
         "HOLD": "HOLD",
         "NO GO": "NO GO"
       },
-      "confidence": "Confidence",
+      "confidence": "사업 가능성",
       "projectHealth": "프로젝트 건강도",
       "confidenceProgress": "신뢰도 진행",
       "confidenceAfter": "완료 시 {value}%",
@@ -4668,16 +4832,16 @@
         "marketSizeUnknown": "시장 규모 미확인"
       }
     },
-      "decisionExperience": {
-      "decisionSectionTitle": "Decision · 판단",
-      "evidenceSectionTitle": "Evidence · 근거",
+    "decisionExperience": {
+      "decisionSectionTitle": "AI PM 판단",
+      "evidenceSectionTitle": "AI 판단 근거",
       "decisionUpdated": "판단이 업데이트되었습니다",
       "holdWhyHeadline": "HOLD 이유",
       "holdWhyHint": "아래 추천 작업을 완료하면 판단이 업데이트됩니다.",
       "holdPathTitle": "GO까지 경로",
       "holdNextAction": "다음: {action}",
-      "holdExpectedGain": "완료 시 Confidence +{gain}% · 약 {minutes}분",
-      "holdTrustNote": "근거·Confidence는 아래 Intelligence 패널에서 확인할 수 있습니다.",
+      "holdExpectedGain": "완료 시 사업 가능성 +{gain}% · 약 {minutes}분",
+      "holdTrustNote": "근거·사업 가능성는 아래 Intelligence 패널에서 확인할 수 있습니다.",
       "holdWhySummary": {
         "noCompetitorAnalysis": "경쟁사 분석이 없어 시장에서의 위치를 확인할 수 없습니다.",
         "insufficientInterviews": "고객 인터뷰가 부족해 실제 수요가 검증되지 않았습니다.",
@@ -4714,25 +4878,25 @@
       },
       "coachTone": {
         "hold": "좋습니다. 이제 거의 준비되었습니다. VOC만 확보하면 GO를 추천할 수 있습니다.",
-        "go": "축하합니다. 근거가 충분해 GO Decision에 도달했습니다. 실행 단계로 넘어갈 준비가 되었습니다."
+        "go": "축하합니다. 근거가 충분해 GO AI PM 판단에 도달했습니다. 실행 단계로 넘어갈 준비가 되었습니다."
       },
       "historyEvents": {
         "startedHold": "프로젝트 시작 — 1차 판단",
         "marketResearchDone": "시장 조사 완료",
         "competitorDone": "경쟁사 분석 완료",
-        "movedToGo": "GO Decision 달성"
+        "movedToGo": "GO AI PM 판단 달성"
       }
     },
     "founderAiPm": {
       "summary": {
         "label": "AI PM · 오늘의 핵심",
-        "marketGap": "현재 가장 큰 문제는 시장 규모가 확인되지 않았습니다. 시장 분석을 완료하면 Confidence가 {current}% → {after}%까지 상승할 것으로 예상됩니다.",
-        "competitorGap": "경쟁사 분석이 없어 시장에서의 위치를 확인할 수 없습니다. 분석 완료 시 Confidence +{gain}% · GO 가능성이 올라갑니다.",
-        "vocGap": "현재 가장 큰 문제는 고객 검증 데이터가 부족합니다. 인터뷰 {interviews}건만 진행하면 Confidence가 {current}% → {after}%까지 상승할 것으로 예상됩니다.",
-        "goReady": "근거가 충분합니다. GO Decision에 도달했으니 실행 단계로 넘어갈 준비가 되었습니다."
+        "marketGap": "현재 가장 큰 문제는 시장 규모가 확인되지 않았습니다. 시장 분석을 완료하면 사업 가능성가 {current}% → {after}%까지 상승할 것으로 예상됩니다.",
+        "competitorGap": "경쟁사 분석이 없어 시장에서의 위치를 확인할 수 없습니다. 분석 완료 시 사업 가능성 +{gain}% · GO 가능성이 올라갑니다.",
+        "vocGap": "현재 가장 큰 문제는 고객 검증 데이터가 부족합니다. 인터뷰 {interviews}건만 진행하면 사업 가능성가 {current}% → {after}%까지 상승할 것으로 예상됩니다.",
+        "goReady": "근거가 충분합니다. GO AI PM 판단에 도달했으니 실행 단계로 넘어갈 준비가 되었습니다."
       },
       "breakdown": {
-        "title": "Confidence Breakdown",
+        "title": "사업 가능성 분석",
         "categories": {
           "market": "시장",
           "competition": "경쟁",
@@ -4742,7 +4906,7 @@
         }
       },
       "evidenceTimeline": {
-        "title": "Evidence Timeline",
+        "title": "AI 판단 근거 기록",
         "subtitle": "AI가 판단에 사용한 사고 흐름",
         "currentStep": "현재 분석 중",
         "doneStep": "분석 완료",
@@ -4757,7 +4921,7 @@
       },
       "whatIf": {
         "title": "What If",
-        "confidence": "Confidence",
+        "confidence": "사업 가능성",
         "goProbability": "GO 가능성",
         "hint": "버튼을 눌러 시뮬레이션하세요",
         "actions": {
@@ -4767,10 +4931,10 @@
         }
       },
       "nextAction": {
-        "label": "Next Action",
+        "label": "오늘 할 일",
         "duration": "예상 소요",
         "minutes": "{count}분",
-        "confidenceGain": "Confidence",
+        "confidenceGain": "사업 가능성",
         "goGain": "GO 가능성"
       },
       "todayFirst": {
@@ -4812,8 +4976,8 @@
         }
       },
       "workConsole": {
-        "label": "AI PM Workday",
-        "morningBriefLabel": "AI PM Morning Brief",
+        "label": "AI PM 업무일",
+        "morningBriefLabel": "AI PM 아침 브리핑",
         "aiPmLabel": "AI PM",
         "greeting": "대표님.\n\n좋은 아침입니다.",
         "yesterdayDone": "어제 시장조사를 완료했습니다.",
@@ -4837,13 +5001,13 @@
         "approveCta": "AI PM에게 맡기기"
       },
       "calendar": {
-        "label": "AI PM Calendar",
-        "title": "AI PM Calendar",
+        "label": "AI PM 일정",
+        "title": "AI PM 일정",
         "minutes": "{count}분",
         "todayFallback": "고객 인터뷰",
         "weekFallback": "가격 검증",
         "monthFallback": "랜딩 공개",
-        "quarterFallback": "GO Decision + MVP 확정",
+        "quarterFallback": "GO AI PM 판단 + MVP 확정",
         "investmentFallback": "투자 미팅",
         "horizons": {
           "today": "오늘",
@@ -5000,7 +5164,7 @@
       "todayDaily": {
         "label": "AI PM 일일 브리핑",
         "greeting": "좋은 아침입니다 대표님.",
-        "deltaLead": "어제보다\n\n사업 성공 확률이",
+        "deltaLead": "어제보다\n\n사업 가능성이",
         "deltaValue": "{delta}% 올랐습니다.",
         "deltaReasonLead": "이유는",
         "deltaReasonDefault": "시장 검증을 끝냈기 때문입니다.",
@@ -5010,103 +5174,149 @@
         "startCta": "같이 시작하기"
       },
       "operating": {
-        "debrief": {
-          "lead": "대표님.\n\n오늘 {action} 덕분에",
-          "scoreNarrative": "사업 가능성이\n\n{before}% → {after}%\n\n으로 상승했습니다.",
-          "evidenceLine": "새로운 판단 근거:\n\n{summary}",
-          "verdictChange": "AI 판단이\n\n{before}\n\n에서\n\n{after}\n\n(으)로 변경되었습니다.",
-          "tomorrowLine": "내일은\n\n{action}\n\n만 하면 됩니다.\n\n예상 {minutes}분",
-          "tomorrowDefault": "가격 검증",
-          "scoreLabel": "사업 가능성",
-          "projectUpdated": "AI PM이\n\n프로젝트를 다시 업데이트했습니다.",
-          "todayRefreshLead": "이제 Today에서\n\n새 전략을 확인해보겠습니다.",
-          "continueCta": "내일 계획 보기"
+        "label": "AI PM · 프로젝트 운영",
+        "daily": {
+          "label": "아침 브리핑",
+          "greeting": "좋은 아침입니다.",
+          "body": "오늘은 VOC {count}건만 확보하면 GO 가능성이 {gain}% 상승합니다.",
+          "eta": "예상 시간 {minutes}분",
+          "confidencePath": "사업 가능성 {current}% → {after}%",
+          "startCta": "오늘 시작하기"
         },
-        "health": {
-          "label": "사업 진행 상황",
-          "scoreLabel": "사업 성공 확률",
-          "weekDelta": "이번 주 {delta}%",
-          "dimensions": {
-            "market": "시장",
-            "customer": "고객",
-            "pricing": "가격",
-            "investment": "투자",
-            "mvp": "MVP"
+        "morningAlerts": {
+          "competitorQuiet": "어제 이후 시장 신호는 안정적입니다. 오늘은 시장 규모 검증부터 시작하면 사업 가능성 {current}% → {after}%까지 올라갑니다.",
+          "competitorPriceChange": "어제 이후 경쟁사가 가격을 변경했습니다. 고객 인터뷰 {gain}% 상승을 위해 오늘 경쟁 분석을 먼저 하세요. 예상 {minutes}분.",
+          "vocGapReminder": "고객 인터뷰 2건만 진행하면 GO 가능성이 {current}% → {after}%로 올라갑니다. 예상 {minutes}분.",
+          "executionMomentum": "GO 경로가 열렸습니다. 오늘 실행을 시작하면 사업 가능성 {current}% → {after}%까지 상승합니다."
+        },
+        "dailyLoop": {
+          "title": "대표님 하루 루프",
+          "phases": {
+            "morning": "Morning",
+            "working": "Working",
+            "evening": "Evening",
+            "weekly": "Weekly",
+            "monthly": "Monthly"
+          },
+          "focus": {
+            "marketReview": "시장 리뷰",
+            "competitorScan": "경쟁 스캔",
+            "confidenceCheck": "사업 가능성 점검",
+            "marketValidation": "시장 검증",
+            "preInvestor": "투자 전 준비",
+            "competitorDeepDive": "경쟁 심층 분석",
+            "gapReview": "갭 리뷰",
+            "competitorAnalysis": "경쟁 분석",
+            "preLaunch": "출시 전",
+            "vocPrep": "VOC 준비",
+            "vocInterviews": "VOC 인터뷰",
+            "goReadiness": "GO 준비도",
+            "goPath": "GO 경로",
+            "launchPrep": "출시 준비",
+            "executionKickoff": "실행 킥오프",
+            "mvpBuild": "MVP 빌드",
+            "progressReview": "진행 리뷰",
+            "betaLaunch": "Beta 출시",
+            "growthLoop": "성장 루프"
           }
         },
-        "timeline": {
-          "label": "프로젝트 성장 기록",
-          "title": "프로젝트 성장 기록",
-          "milestones": {
-            "idea": {
-              "done": "아이디어 확정",
-              "running": "아이디어 정리중",
-              "upcoming": "아이디어"
-            },
-            "market": {
-              "done": "시장 검증 완료",
-              "running": "시장 검증 진행중",
-              "upcoming": "시장 검증 예정"
-            },
-            "customer": {
-              "done": "고객 검증 완료",
-              "running": "고객 검증 진행중",
-              "upcoming": "고객 검증 예정"
-            },
-            "pricing": {
-              "done": "가격 검증 완료",
-              "running": "가격 검증 진행중",
-              "upcoming": "가격 검증 예정"
-            },
-            "go": {
-              "done": "GO 판단",
-              "running": "GO 준비중",
-              "upcoming": "GO 예정"
-            },
-            "mvp": {
-              "done": "MVP 완료",
-              "running": "MVP 진행중",
-              "upcoming": "MVP 예정"
-            },
-            "investment": {
-              "done": "투자 준비 완료",
-              "running": "투자 준비 진행중",
-              "upcoming": "투자 준비 예정"
-            }
+        "calendar": {
+          "title": "사업 전략 일정",
+          "horizons": {
+            "today": "오늘",
+            "thisWeek": "이번 주",
+            "nextWeek": "다음 주",
+            "roadmap": "로드맵"
+          },
+          "items": {
+            "marketSizing": "시장 규모 검증",
+            "competitorScan": "경쟁사 스캔",
+            "competitorAnalysis": "경쟁사 분석",
+            "vocSprint": "VOC 스프린트",
+            "vocCollection": "VOC 수집",
+            "pricingTest": "Pricing 검증",
+            "goDecision": "GO AI PM 판단",
+            "goPath": "GO 경로 완료",
+            "mvpLaunch": "MVP 출시 준비",
+            "executionStart": "실행 시작",
+            "mvpScope": "MVP 범위 확정",
+            "betaLaunch": "Beta 출시",
+            "growth": "성장 실험"
           }
         },
-        "evidence": {
-          "label": "판단 근거",
-          "title": "AI PM이 기록한 판단 근거",
-          "impact": "사업 가능성 +{impact}%",
-          "categories": {
-            "customer": "고객 검증",
-            "pricing": "가격 검증",
-            "market": "시장 검증",
-            "competitor": "경쟁 분석"
+        "weekly": {
+          "title": "주간 사업 전략",
+          "recommend": "추천",
+          "pillars": {
+            "marketValidation": "시장 검증",
+            "competitorAnalysis": "경쟁 분석",
+            "pricingValidation": "가격 검증"
+          },
+          "recommendations": {
+            "marketResearch": "시장 조사 Deep Dive",
+            "competitorDeepDive": "경쟁사 비교 분석",
+            "pricingInterview": "가격 검증 인터뷰",
+            "launchPrep": "출시 준비 AI PM 업무"
+          }
+        },
+        "memory": {
+          "title": "AI 기억",
+          "insights": {
+            "marketFirst": "지난주 시장 조사는 시작했지만, 고객 검증은 아직 부족했습니다.",
+            "competitorGap": "지난주 경쟁 분석을 시작했지만, 차별화 근거가 아직 약합니다.",
+            "vocGapLastWeek": "지난주 당신은 시장보다 고객 인터뷰가 부족했습니다.",
+            "goMomentum": "지난주 GO AI PM 판단에 도달 — 이번 주는 실행에 집중하세요."
+          }
+        },
+        "mentor": {
+          "title": "AI 멘토",
+          "context": {
+            "earlyStage": "초기 검증 단계",
+            "competition": "경쟁 포지셔닝",
+            "preInvestor": "투자 미팅 전",
+            "postGo": "GO 이후"
+          },
+          "advice": {
+            "marketFirst": "시장 규모를 먼저 확인한 뒤 VOC로 넘어가면 사업 가능성가 더 빨리 오릅니다.",
+            "differentiate": "경쟁사와의 차별점을 AI 판단 근거로 남기면 GO 판단이 빨라집니다.",
+            "pricingBeforeInvestor": "투자자를 만나기 전에 Pricing 검증부터 끝내는 것이 좋겠습니다.",
+            "executionFocus": "판단은 끝났습니다. 이제 MVP 범위를 좁히고 실행에 집중하세요."
           }
         }
       },
       "actionWorkspace": {
         "intro": "AI PM\n\n좋습니다.",
-        "introInterview": "AI PM\n\n좋습니다.\n\n첫 번째 고객에게\n이 질문을 해보겠습니다.",
-        "questionLead": "Q{num}.",
-        "questionPrefix": "Q{num}.",
+        "introInterview": "AI PM\n\n좋습니다.\n\n잠재 고객과\n이야기를 나눠보겠습니다.",
+        "interviewSubtitle": "잠재 고객 3명과 이야기를 나눠보겠습니다.",
+        "questionLead": "{ordinal} 번째 질문입니다.",
+        "questionPrefix": "{ordinal} 번째 질문",
         "stepIntro": "총 {total}개 중 {current}번째 질문입니다.",
         "questionLabel": "질문",
         "answerPlaceholder": "고객 답변 또는 메모를 적어주세요",
-        "record": "기록하기",
-        "recordFinal": "마지막 기록하기",
+        "record": "답변 저장",
+        "recordFinal": "답변 저장하고 완료",
         "savedFeedback": "감사합니다.\n\n이 내용을 프로젝트에 반영했습니다.",
         "nextQuestionFeedback": "다음 질문입니다.",
         "projectUpdated": "오늘 프로젝트 상태를 갱신했습니다.",
-        "progress": "{current} / {total} 완료",
+        "progress": "총 {total}개 중 {current}번째입니다.",
         "meta": "{minutes}분 · +{impact}%",
         "completeLead": "수고하셨습니다 대표님.",
         "completeSummary": "오늘 {count}개의 답변을 기록했습니다.",
-        "completeNext": "AI PM이 결과를 반영했습니다.\n\n사업 성공 확률이 올랐습니다.",
-        "scoreLabel": "사업 성공 확률",
+        "completeNext": "AI PM이 결과를 반영했습니다.\n\n사업 가능성이 올랐습니다.",
+        "scoreLabel": "사업 가능성",
         "completeCta": "확인하기",
+        "ordinals": {
+          "1": "첫",
+          "2": "두",
+          "3": "세",
+          "4": "네",
+          "5": "다섯",
+          "6": "여섯",
+          "7": "일곱",
+          "8": "여덟",
+          "9": "아홉",
+          "10": "열"
+        },
         "insights": {
           "insightInterviewPain": "좋습니다.\n\n첫 번째 답변에서\n\n고객 불편이 분명해졌습니다.",
           "insightInterviewPricing": "좋습니다.\n\n첫 번째 답변에서\n\n가격 민감도가 보입니다.",
@@ -5169,21 +5379,21 @@
       },
       "todayHero": {
         "label": "오늘의 투자",
-        "eyebrow": "Today's Investment",
+        "eyebrow": "오늘의 투자",
         "investmentLead": "오늘",
-        "investmentMid": "투자하면 사업 성공 확률이",
+        "investmentMid": "투자하면 사업 가능성이",
         "investmentTail": "가 됩니다.",
-        "subtitle": "이 작업만 완료하면 GO 가능성과 Confidence가 함께 올라갑니다.",
+        "subtitle": "이 작업만 완료하면 GO 가능성과 사업 가능성가 함께 올라갑니다.",
         "eta": "예상 시간",
         "minutes": "{count}분",
-        "confidenceEffect": "Confidence",
+        "confidenceEffect": "사업 가능성",
         "successScoreEffect": "성공 확률 상승",
         "goEffect": "GO 가능성",
         "startCta": "시작"
       },
       "intelligence": {
         "successScore": {
-          "label": "사업 성공 확률",
+          "label": "사업 가능성",
           "subtitle": "오늘 Founder가 사업을 앞으로 전진시킬 수 있는 정도입니다.",
           "whyTitle": "왜 {percent}%인가?",
           "delta": "+{delta}%",
@@ -5212,7 +5422,7 @@
           }
         },
         "businessProgress": {
-          "label": "Business Progress",
+          "label": "사업 준비 현황",
           "title": "사업 진행도",
           "dimensions": {
             "market": "시장",
@@ -5222,19 +5432,19 @@
           }
         },
         "actionGenerator": {
-          "label": "AI Action Generator",
+          "label": "오늘 할 일",
           "title": "오늘 해야 할 일",
           "totalEta": "예상 소요 {minutes}분",
           "primaryStep": "오늘 핵심 액션 · {step}",
-          "vocInterview": "고객 인터뷰 {count}건",
+          "vocInterview": "고객 인터뷰 진행",
           "actionMeta": "{minutes}분 · GO +{go}%",
           "recommendation": "제가 추천드립니다.\n\n오늘은 {action}\n\n예상 {minutes}분 · 사업 성공확률 +{impact}%",
           "startCta": "바로 시작"
         },
         "dailyReview": {
-          "label": "Founder Daily Review",
+          "label": "오늘 하루 리뷰",
           "title": "오늘 사업이 얼마나 전진했는가",
-          "summary": "오늘 사업 성공 확률 +{delta}%. 약 {minutes}분 투자로 전진했습니다.",
+          "summary": "오늘 사업 가능성 +{delta}%. 약 {minutes}분 투자로 전진했습니다.",
           "advanced": "오늘 전진한 것",
           "stillPending": "아직 부족한 것",
           "tomorrow": "내일은 {focus}부터 시작하세요.",
@@ -5265,7 +5475,7 @@
           }
         },
         "memory": {
-          "label": "Founder Memory",
+          "label": "대표님 기억",
           "recall": "지난주에는 {lastFocus}에 집중했지만 {lastGap}이 부족했습니다. 이번 주는 {thisFocus}부터 진행하겠습니다.",
           "deferredRecall": "지난주에도 {gap}을 미뤘습니다. 이번에는 오늘 끝내겠습니다.",
           "interviewDeferRecall": "대표님은\n\n항상 고객 인터뷰를\n\n미루는 경향이 있습니다.\n\n그래서\n\n오늘은\n\n인터뷰부터 추천드립니다.",
@@ -5312,7 +5522,7 @@
           }
         },
         "timeline": {
-          "label": "Founder Timeline",
+          "label": "사업 성장 기록",
           "title": "사업 성장 기록",
           "milestones": {
             "start": "첫 아이디어 검토 시작",
@@ -5320,7 +5530,7 @@
           }
         },
         "weeklyCeoReview": {
-          "label": "Weekly CEO Review",
+          "label": "주간 CEO 리뷰",
           "title": "이번 주를 정리했습니다.",
           "winsTitle": "잘한 점",
           "wins": {
@@ -5330,7 +5540,7 @@
           "riskTitle": "위험",
           "nextWeekTitle": "다음주 목표",
           "scoreProjectionTitle": "예상 성공확률",
-          "scoreChange": "이번 주 사업 성공 확률",
+          "scoreChange": "이번 주 사업 가능성",
           "bestDecision": "이번 주 가장 잘한 결정",
           "biggestRisk": "가장 큰 리스크",
           "missedOpportunity": "놓친 기회",
@@ -5343,7 +5553,7 @@
           }
         },
         "business": {
-          "label": "Business Intelligence",
+          "label": "사업 인사이트",
           "sinceYesterday": "어제 이후 변화",
           "reasonLabel": "이유",
           "goImpact": "예상 영향 GO +{impact}%",
@@ -5373,12 +5583,12 @@
           }
         },
         "decision": {
-          "label": "Decision Intelligence",
+          "label": "AI PM 판단",
           "why": "왜",
           "how": "어떻게",
           "when": "언제",
           "improvement": "얼마나 좋아지는가",
-          "confidencePath": "Confidence {from}% → {to}%",
+          "confidencePath": "사업 가능성 {from}% → {to}%",
           "goPath": "GO {from}% → {to}%",
           "etaDays": "약 {days}일 내 가능",
           "whyReasons": {
@@ -5399,7 +5609,7 @@
           }
         },
         "execution": {
-          "label": "Execution Intelligence",
+          "label": "실행 계획",
           "horizons": {
             "today": "오늘",
             "week": "이번 주",
@@ -5408,7 +5618,7 @@
             "investment": "투자 준비"
           },
           "minutes": "{count}분",
-          "confidenceImpact": "Confidence +{gain}%",
+          "confidenceImpact": "사업 가능성 +{gain}%",
           "criteria": {
             "evidenceLogged": "근거·VOC 로그 완료",
             "reviewComplete": "리뷰·검증 완료",
@@ -5417,7 +5627,7 @@
           }
         },
         "growth": {
-          "label": "Growth Intelligence",
+          "label": "성장 계획",
           "weeks": "{count}주",
           "phases": {
             "mvp": "MVP",
@@ -5428,124 +5638,13 @@
             "government": "정부지원"
           }
         }
-      },
-      "operating": {
-        "label": "Founder AI PM · Project OS",
-        "daily": {
-          "label": "Daily Brief",
-          "greeting": "좋은 아침입니다.",
-          "body": "오늘은 VOC {count}건만 확보하면 GO 가능성이 {gain}% 상승합니다.",
-          "eta": "예상 시간 {minutes}분",
-          "confidencePath": "Confidence {current}% → {after}%",
-          "startCta": "오늘 시작하기"
-        },
-        "morningAlerts": {
-          "competitorQuiet": "어제 이후 시장 신호는 안정적입니다. 오늘은 시장 규모 검증부터 시작하면 Confidence {current}% → {after}%까지 올라갑니다.",
-          "competitorPriceChange": "어제 이후 경쟁사가 가격을 변경했습니다. 고객 인터뷰 {gain}% 상승을 위해 오늘 경쟁 분석을 먼저 하세요. 예상 {minutes}분.",
-          "vocGapReminder": "고객 인터뷰 2건만 진행하면 GO 가능성이 {current}% → {after}%로 올라갑니다. 예상 {minutes}분.",
-          "executionMomentum": "GO 경로가 열렸습니다. 오늘 실행을 시작하면 Confidence {current}% → {after}%까지 상승합니다."
-        },
-        "dailyLoop": {
-          "title": "Founder Daily Loop",
-          "phases": {
-            "morning": "Morning",
-            "working": "Working",
-            "evening": "Evening",
-            "weekly": "Weekly",
-            "monthly": "Monthly"
-          },
-          "focus": {
-            "marketReview": "시장 리뷰",
-            "competitorScan": "경쟁 스캔",
-            "confidenceCheck": "Confidence 점검",
-            "marketValidation": "시장 검증",
-            "preInvestor": "투자 전 준비",
-            "competitorDeepDive": "경쟁 심층 분석",
-            "gapReview": "갭 리뷰",
-            "competitorAnalysis": "경쟁 분석",
-            "preLaunch": "출시 전",
-            "vocPrep": "VOC 준비",
-            "vocInterviews": "VOC 인터뷰",
-            "goReadiness": "GO 준비도",
-            "goPath": "GO 경로",
-            "launchPrep": "출시 준비",
-            "executionKickoff": "실행 킥오프",
-            "mvpBuild": "MVP 빌드",
-            "progressReview": "진행 리뷰",
-            "betaLaunch": "Beta 출시",
-            "growthLoop": "성장 루프"
-          }
-        },
-        "calendar": {
-          "title": "Strategy Calendar",
-          "horizons": {
-            "today": "오늘",
-            "thisWeek": "이번 주",
-            "nextWeek": "다음 주",
-            "roadmap": "로드맵"
-          },
-          "items": {
-            "marketSizing": "시장 규모 검증",
-            "competitorScan": "경쟁사 스캔",
-            "competitorAnalysis": "경쟁사 분석",
-            "vocSprint": "VOC 스프린트",
-            "vocCollection": "VOC 수집",
-            "pricingTest": "Pricing 검증",
-            "goDecision": "GO Decision",
-            "goPath": "GO 경로 완료",
-            "mvpLaunch": "MVP 출시 준비",
-            "executionStart": "실행 시작",
-            "mvpScope": "MVP 범위 확정",
-            "betaLaunch": "Beta 출시",
-            "growth": "성장 실험"
-          }
-        },
-        "weekly": {
-          "title": "Weekly Strategy",
-          "recommend": "추천",
-          "pillars": {
-            "marketValidation": "시장 검증",
-            "competitorAnalysis": "경쟁 분석",
-            "pricingValidation": "가격 검증"
-          },
-          "recommendations": {
-            "marketResearch": "시장 조사 Deep Dive",
-            "competitorDeepDive": "경쟁사 비교 분석",
-            "pricingInterview": "Pricing Interview",
-            "launchPrep": "출시 준비 Workflow"
-          }
-        },
-        "memory": {
-          "title": "AI Memory",
-          "insights": {
-            "marketFirst": "지난주 시장 조사는 시작했지만, 고객 검증은 아직 부족했습니다.",
-            "competitorGap": "지난주 경쟁 분석을 시작했지만, 차별화 근거가 아직 약합니다.",
-            "vocGapLastWeek": "지난주 당신은 시장보다 고객 인터뷰가 부족했습니다.",
-            "goMomentum": "지난주 GO Decision에 도달 — 이번 주는 실행에 집중하세요."
-          }
-        },
-        "mentor": {
-          "title": "AI Mentor",
-          "context": {
-            "earlyStage": "초기 검증 단계",
-            "competition": "경쟁 포지셔닝",
-            "preInvestor": "투자 미팅 전",
-            "postGo": "GO 이후"
-          },
-          "advice": {
-            "marketFirst": "시장 규모를 먼저 확인한 뒤 VOC로 넘어가면 Confidence가 더 빨리 오릅니다.",
-            "differentiate": "경쟁사와의 차별점을 Evidence로 남기면 GO 판단이 빨라집니다.",
-            "pricingBeforeInvestor": "투자자를 만나기 전에 Pricing 검증부터 끝내는 것이 좋겠습니다.",
-            "executionFocus": "판단은 끝났습니다. 이제 MVP 범위를 좁히고 실행에 집중하세요."
-          }
-        }
       }
     },
     "decisionDetail": {
-      "eyebrow": "Decision Workspace",
-      "title": "Decision Detail",
-      "desc": "Evidence · Confidence · Risk · Recommendation을 한 화면에서 확인합니다.",
-      "confidenceLabel": "Confidence",
+      "eyebrow": "AI PM 판단 공간",
+      "title": "AI PM 판단 상세",
+      "desc": "AI 판단 근거 · 사업 가능성 · Risk · Recommendation을 한 화면에서 확인합니다.",
+      "confidenceLabel": "사업 가능성",
       "expectedGainHint": "VOC 2건 추가 시 첫 GO까지 예상 상승",
       "recommendationTitle": "AI PM 추천",
       "recommendationBody": "오늘 VOC 인터뷰 2건만 추가하면 GO 가능성이 크게 올라갑니다.",
@@ -5557,16 +5656,16 @@
       },
       "perspectives": {
         "founder": "실행 관점 — 다음 액션 하나에 집중하세요. VOC 2건이 GO까지 가장 짧은 경로입니다.",
-        "pm": "PM 관점 — Evidence gap과 Confidence 규칙을 우선순위로 정렬했습니다.",
+        "pm": "PM 관점 — AI 판단 근거 gap과 사업 가능성 규칙을 우선순위로 정렬했습니다.",
         "vc": "VC 관점 — 시장·실행·재무 리스크를 Tradeoff로 정리했습니다."
       },
       "sections": {
-        "evidence": "Evidence",
-        "confidence": "Confidence",
+        "evidence": "AI 판단 근거",
+        "confidence": "사업 가능성",
         "health": "Health",
         "rules": "Rules",
         "missing": "Missing Data",
-        "expectedGain": "Expected Gain",
+        "expectedGain": "예상 상승",
         "recommendation": "Recommendation",
         "alternative": "Alternative",
         "risk": "Risk",
@@ -5579,25 +5678,25 @@
       "tradeoff": {
         "speed": "속도",
         "speedValue": "VOC 우선 (20분)",
-        "evidence": "Evidence",
+        "evidence": "AI 판단 근거",
         "evidenceValue": "품질 우선 (+28%)"
       },
       "changeLog": {
-        "eyebrow": "Change History",
-        "title": "Decision Log",
+        "eyebrow": "변경 기록",
+        "title": "판단 기록",
         "undo": "Undo",
         "redo": "Redo",
         "empty": "되돌릴 변경 이력이 없습니다."
       }
     },
     "execution": {
-      "eyebrow": "GO · Execution",
+      "eyebrow": "GO · 실행 계획",
       "title": "실행 Workspace",
       "subtitle": "GO는 시작입니다. AI PM과 MVP·시장·고객 실행을 이어갑니다.",
       "boardLabel": "실행 보드",
       "coachTitle": "AI PM 추천",
-      "coachBody": "다음은 VOC 2건입니다. 완료하면 Confidence가 GO 경로에 더 가까워집니다.",
-      "coachComplete": "실행 보드가 비었습니다. Workspace에서 다음 Decision을 확인하세요.",
+      "coachBody": "다음은 VOC 2건입니다. 완료하면 사업 가능성가 GO 경로에 더 가까워집니다.",
+      "coachComplete": "실행 보드가 비었습니다. Workspace에서 다음 AI PM 판단을 확인하세요.",
       "progressLabel": "진행 {done}/{total}",
       "progressHint": "{done}/{total} 실행 Task 완료",
       "backWorkspace": "Workspace로 돌아가기",
@@ -5606,22 +5705,37 @@
         "mvp": "다음: MVP 범위 정의. 실행 가능한 첫 버전을 정합니다.",
         "pricing": "다음: 가격 가설. WTP 검증을 시작합니다.",
         "grant": "다음: 정부지원 탐색. 적합 프로그램을 Shortlist합니다.",
-        "market": "다음: 시장 조사 마무리. TAM/SAM Evidence를 정리합니다."
+        "market": "다음: 시장 조사 마무리. TAM/SAM AI 판단 근거를 정리합니다."
       },
       "tasks": {
-        "market": { "title": "시장 조사 마무리", "desc": "TAM/SAM 검증 Evidence 정리" },
-        "voc": { "title": "고객 인터뷰 2건", "desc": "GO 근거를 위한 VOC 수집" },
-        "mvp": { "title": "MVP 범위 정의", "desc": "실행 가능한 첫 버전 범위" },
-        "pricing": { "title": "가격 가설", "desc": "WTP 검증" },
-        "grant": { "title": "정부지원 탐색", "desc": "적합 프로그램 Shortlist" }
+        "market": {
+          "title": "시장 조사 마무리",
+          "desc": "TAM/SAM 검증 AI 판단 근거 정리"
+        },
+        "voc": {
+          "title": "고객 인터뷰 2건",
+          "desc": "GO 근거를 위한 VOC 수집"
+        },
+        "mvp": {
+          "title": "MVP 범위 정의",
+          "desc": "실행 가능한 첫 버전 범위"
+        },
+        "pricing": {
+          "title": "가격 가설",
+          "desc": "WTP 검증"
+        },
+        "grant": {
+          "title": "정부지원 탐색",
+          "desc": "적합 프로그램 Shortlist"
+        }
       }
     },
     "goCelebration": {
       "title": "축하합니다.",
       "subtitle": "현재 아이디어는 GO 판정을 받았습니다.",
       "stackTitle": "다음 프로젝트",
-      "stackDesc": "GO는 끝이 아닙니다. 다음 Workflow Stack을 선택하세요.",
-      "aiRecommendTitle": "AI가 다음 Workflow를 추천합니다",
+      "stackDesc": "GO는 끝이 아닙니다. 다음 AI PM 업무를 선택하세요.",
+      "aiRecommendTitle": "AI가 다음 AI PM 업무를 추천합니다",
       "aiRecommendDesc": "GO는 시작입니다. 가장 먼저 MVP 설계부터 함께할 것을 추천합니다.",
       "primaryLabel": "1순위 추천",
       "startPrimary": "실행 Workspace 시작",
@@ -5637,7 +5751,7 @@
       },
       "continue": "워크스페이스 계속하기",
       "growthTitle": "프로젝트 성장",
-      "growthDesc": "Confidence가 올라가며 GO에 도달했습니다."
+      "growthDesc": "사업 가능성가 올라가며 GO에 도달했습니다."
     },
     "thinking": {
       "title": "LaunchLens가 전략 프로젝트를 준비하고 있습니다",
@@ -5674,7 +5788,7 @@
     },
     "empty": {
       "title": "아직 프로젝트가 없습니다",
-      "desc": "Goal을 선택하면 AI가 Workflow를 만들고, 3분 안에 첫 Decision까지 안내합니다.",
+      "desc": "Goal을 선택하면 AI가 AI PM 업무를 만들고, 3분 안에 첫 AI PM 판단까지 안내합니다.",
       "ctaCreate": "프로젝트 시작하기",
       "ctaGoal": "Goal 선택하기",
       "ctaExample": "예시로 체험하기"
@@ -5695,15 +5809,15 @@
     },
     "intelligence": {
       "drawer": {
-        "open": "Evidence Drawer",
-        "title": "Evidence Engine"
+        "open": "AI 판단 근거",
+        "title": "AI 판단 근거"
       },
-      "drawerTitle": "Why · Evidence · Intelligence",
+      "drawerTitle": "이유 · AI 판단 근거 · 인사이트",
       "flow": {
         "why": "Why",
-        "evidence": "Evidence",
+        "evidence": "AI 판단 근거",
         "citation": "Citation",
-        "confidence": "Confidence",
+        "confidence": "사업 가능성",
         "missing": "Missing Data",
         "futureGain": "Future Gain"
       },
@@ -5770,10 +5884,10 @@
       "aiLabel": "AI 워크플로",
       "title": "맞춤 워크플로가 준비되었습니다",
       "goalContext": "선택한 목표: {goal}",
-      "intro": "아래 순서대로 진행하면 전략적 의사결정을 완료할 수 있습니다. 각 단계마다 AI Strategy Coach가 다음 행동을 안내합니다.",
+      "intro": "아래 순서대로 진행하면 전략적 의사결정을 완료할 수 있습니다. 각 단계마다 AI PM 코치가 다음 행동을 안내합니다.",
       "currentStepLabel": "현재 단계",
       "upcomingLabel": "다음 단계",
-      "readyHint": "총 {count}단계 · 예상 1–2주 내 1차 Decision",
+      "readyHint": "총 {count}단계 · 예상 1–2주 내 1차 AI PM 판단",
       "cta": "워크스페이스 시작하기",
       "guide": {
         "eta": "예상 {minutes}분",
@@ -5816,7 +5930,7 @@
         },
         "evidence": {
           "title": "근거 정리",
-          "description": "주장마다 출처와 Confidence를 붙입니다."
+          "description": "주장마다 출처와 사업 가능성를 붙입니다."
         },
         "decision": {
           "title": "GO / HOLD / NO GO",
@@ -5833,7 +5947,7 @@
         "switchLabel": "프로젝트 전환",
         "recent": "최근 프로젝트",
         "archived": "보관됨",
-        "confidence": "Confidence {value}%"
+        "confidence": "사업 가능성 {value}%"
       },
       "nav": {
         "label": "워크스페이스 탐색",
@@ -5845,7 +5959,7 @@
         "settings": "설정"
       },
       "coach": {
-        "eyebrow": "AI Project Manager",
+        "eyebrow": "AI PM",
         "greeting": "좋은 아침입니다.",
         "focusLine": "오늘은 VOC 2건만 추가하면 GO 가능성이 {after}%까지 올라갑니다.",
         "coachLine": "시작해 볼까요?",
@@ -5859,58 +5973,58 @@
         }
       },
       "morningBrief": {
-        "label": "Morning Brief",
-        "todayGoal": "Today's Goal",
+        "label": "아침 브리핑",
+        "todayGoal": "오늘 목표",
         "todayGoalValue": "VOC 2건 추가 → GO 준비",
-        "progress": "Progress",
-        "decision": "Decision",
+        "progress": "진행률",
+        "decision": "AI PM 판단",
         "decisionValue": "HOLD → GO 경로 진행 중",
         "decisionValueNamed": "{name} · HOLD → GO"
       },
       "todayPm": {
-        "label": "Today · AI PM",
+        "label": "오늘 · AI PM",
         "title": "오늘 AI PM이 리드합니다",
         "risk": "오늘의 리스크",
         "riskValue": "VOC 2건 부족 — GO 근거가 약합니다",
         "recommendation": "오늘 추천",
-        "recommendationValue": "고객 인터뷰 2건 → Confidence +12%",
+        "recommendationValue": "고객 인터뷰 2건 → 사업 가능성 +12%",
         "schedule": "오늘 일정",
-        "scheduleValue": "VOC 수집 · Evidence 정리",
+        "scheduleValue": "VOC 수집 · AI 판단 근거 정리",
         "scheduleEta": "예상 20분 · 오늘 안에 완료",
-        "confidenceGain": "오늘 얻을 Confidence",
+        "confidenceGain": "오늘 얻을 사업 가능성",
         "confidenceGainHint": "완료 시 GO 경로 진입"
       },
       "eveningBrief": {
-        "label": "Evening Summary",
+        "label": "오늘 마무리",
         "title": "오늘의 마무리",
-        "summary": "오늘 Confidence가 {gain}% 상승했습니다.",
-        "done1": "시장 조사 Evidence 1건 추가",
-        "done2": "Decision HOLD → GO 경로 유지",
+        "summary": "오늘 사업 가능성가 {gain}% 상승했습니다.",
+        "done1": "시장 조사 AI 판단 근거 1건 추가",
+        "done2": "AI PM 판단 HOLD → GO 경로 유지",
         "encourage": "내일 아침 Brief에서 다음 액션을 추천드립니다."
       },
       "weeklyBrief": {
-        "label": "Weekly Summary",
+        "label": "주간 요약",
         "title": "이번 주 요약",
-        "decisions": "Decision",
-        "confidence": "Confidence",
+        "decisions": "AI PM 판단",
+        "confidence": "사업 가능성",
         "goRate": "GO",
-        "nextWeek": "다음 주는 Pricing 검증 Workflow를 추천합니다."
+        "nextWeek": "다음 주는 Pricing 검증 AI PM 업무를 추천합니다."
       },
       "workflowRec": {
-        "eyebrow": "Workflow Recommendation",
-        "title": "GO 이후 MVP 설계 Workflow",
-        "desc": "Decision 이후 실행 단계로 자연스럽게 이어집니다.",
-        "cta": "MVP Workflow 보기"
+        "eyebrow": "AI PM 업무 Recommendation",
+        "title": "GO 이후 MVP 설계 AI PM 업무",
+        "desc": "AI PM 판단 이후 실행 단계로 자연스럽게 이어집니다.",
+        "cta": "MVP AI PM 업무 보기"
       },
       "reportPreview": {
-        "eyebrow": "Report Preview",
+        "eyebrow": "보고서 미리보기",
         "title": "Executive Report 미리보기",
         "project": "프로젝트",
-        "confidence": "Confidence",
+        "confidence": "사업 가능성",
         "verdict": "판정",
         "verdictValue": "HOLD → GO 경로",
         "unnamed": "이름 없음",
-        "hint": "Evidence가 쌓이면 PDF Export가 활성화됩니다."
+        "hint": "AI 판단 근거가 쌓이면 PDF Export가 활성화됩니다."
       },
       "settingsPanel": {
         "profile": "프로필",
@@ -5923,7 +6037,7 @@
       },
       "historyPanel": {
         "title": "프로젝트 History",
-        "desc": "Decision · Coach · Evidence · Workflow · Activity를 시간순으로 확인합니다.",
+        "desc": "AI PM 판단 · Coach · AI 판단 근거 · AI PM 업무 · Activity를 시간순으로 확인합니다.",
         "filterLabel": "History 필터",
         "dailyActivity": "오늘의 Activity",
         "empty": "아직 기록된 History가 없습니다.",
@@ -5932,10 +6046,10 @@
         "exportCsv": "CSV 내보내기",
         "filters": {
           "all": "전체",
-          "decision": "Decision",
+          "decision": "AI PM 판단",
           "coach": "Coach",
-          "evidence": "Evidence",
-          "workflow": "Workflow",
+          "evidence": "AI 판단 근거",
+          "workflow": "AI PM 업무",
           "activity": "Activity"
         },
         "buckets": {
@@ -5946,25 +6060,25 @@
         }
       },
       "timeline": {
-        "title": "Decision Timeline",
-        "desc": "의사결정과 Confidence 변화를 시간순으로 추적합니다.",
+        "title": "AI PM 판단 Timeline",
+        "desc": "의사결정과 사업 가능성 변화를 시간순으로 추적합니다.",
         "entries": {
           "projectStart": "프로젝트 시작 — Goal 설정",
           "marketDone": "시장 조사 완료",
-          "confidenceUp": "Confidence 상승",
+          "confidenceUp": "사업 가능성 상승",
           "holdConfirmed": "HOLD 판단 확정",
           "competitorAdded": "경쟁사 분석 추가"
         }
       },
       "memory": {
-        "eyebrow": "AI Memory",
+        "eyebrow": "AI 기억",
         "title": "AI가 기억하는 맥락",
         "labels": {
-          "lastDecision": "이전 Decision",
+          "lastDecision": "이전 AI PM 판단",
           "primaryGoal": "이전 Goal",
           "topRisk": "이전 Risk",
-          "lastProgress": "이전 Progress",
-          "activeStep": "이전 Workflow"
+          "lastProgress": "이전 진행률",
+          "activeStep": "이전 AI PM 업무"
         },
         "values": {
           "holdJul23": "7/23 HOLD — VOC 부족",
@@ -5976,17 +6090,17 @@
       },
       "achievements": {
         "title": "다음 배지",
-        "nextBadge": "VOC 3건 달성 시 Confidence Master 배지",
+        "nextBadge": "VOC 3건 달성 시 사업 가능성 Master 배지",
         "badges": {
           "voc3": "VOC Master (3건)",
-          "conf80": "Confidence 80%",
+          "conf80": "사업 가능성 80%",
           "firstGo": "첫 GO 달성"
         }
       },
       "settings": {
         "title": "워크스페이스 설정",
         "desc": "Epic 3 Alpha — mock 프로젝트와 AI Coach 설정입니다.",
-        "mockNote": "다중 프로젝트·AI Memory는 mock 데이터입니다.",
+        "mockNote": "다중 프로젝트·AI 기억는 mock 데이터입니다.",
         "locale": "언어는 상단 Locale Switcher에서 변경합니다."
       }
     },
@@ -5994,11 +6108,11 @@
       "nextAction": {
         "eyebrow": "오늘의 추천",
         "title": "오늘은 VOC 인터뷰 2건만 추가해 볼까요?",
-        "impact": "Confidence {current}% → {after}% · 예상 {minutes}분",
+        "impact": "사업 가능성 {current}% → {after}% · 예상 {minutes}분",
         "cta": "지금 시작하기"
       },
       "project": {
-        "confidence": "Confidence",
+        "confidence": "사업 가능성",
         "favorite": "즐겨찾기",
         "unfavorite": "즐겨찾기 해제",
         "create": "새 프로젝트",
@@ -6016,12 +6130,12 @@
     },
     "workspace": {
       "title": "대표님 사무실",
-      "progressLabel": "Confidence",
+      "progressLabel": "사업 가능성",
       "currentStep": "Step {current} / {total}",
       "stepFallback": "첫 단계",
       "stepFallbackBody": "프로젝트 맥락을 정의합니다.",
       "inputPlaceholderLabel": "이 단계 입력",
-      "inputPlaceholder": "입력 UI는 다음 단계에서 연결됩니다. 지금은 AI Strategy Coach가 다음 행동을 안내합니다.",
+      "inputPlaceholder": "입력 UI는 다음 단계에서 연결됩니다. 지금은 AI PM 코치가 다음 행동을 안내합니다.",
       "ctaContinue": "로그인하고 계속하기",
       "ctaLogin": "계정 연결하고 계속하기",
       "legacyHint": "기존 Beta Workspace가 필요하면",
@@ -6029,28 +6143,28 @@
       "welcome": {
         "eyebrow": "첫 분석 완료",
         "title": "{project} — AI 전략 프로젝트가 시작되었습니다",
-        "desc": "첫 판단은 {verdict}입니다. 아래에서 Evidence·Decision·Next Action을 확인하세요."
+        "desc": "첫 판단은 {verdict}입니다. 아래에서 AI 판단 근거·AI PM 판단·오늘 할 일을 확인하세요."
       },
       "summary": {
         "label": "전략 프로젝트 현황",
         "title": "오늘의 전략 현황",
-        "confidence": "Confidence {value}%",
+        "confidence": "사업 가능성 {value}%",
         "cards": {
           "evidence": {
-            "title": "Evidence",
+            "title": "AI 판단 근거",
             "desc": "시장·경쟁 근거 확인"
           },
           "decision": {
-            "title": "Decision",
+            "title": "AI PM 판단",
             "value": "현재 {verdict}",
             "desc": "GO/HOLD 판단"
           },
           "confidence": {
-            "title": "Confidence",
+            "title": "사업 가능성",
             "desc": "신뢰도와 부족 데이터"
           },
           "nextAction": {
-            "title": "Next Action",
+            "title": "오늘 할 일",
             "desc": "오늘 할 일 1가지"
           }
         }

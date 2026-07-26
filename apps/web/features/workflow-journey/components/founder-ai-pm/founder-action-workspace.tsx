@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { ArrowRight, Check, TrendingUp, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -9,6 +9,7 @@ import { Button, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { ResolvedActionWorkspace } from '../../lib/founder-action-resolver';
+import { resolveFounderActionTitle } from '../../lib/founder-action-display';
 import { resolveActionAnswerInsightKey } from '../../lib/founder-action-insights';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
 
@@ -51,9 +52,20 @@ export function FounderActionWorkspace({
   const ti = useTranslations('workflow.founderAiPm.actionWorkspace.insights');
   const tk = useTranslations('workflow.founderAiPm.actionWorkspace.kinds');
   const tq = useTranslations('workflow.founderAiPm.actionWorkspace.questions');
+  const td = useTranslations('workflow.founderAiPm.intelligence.actionGenerator');
 
   const pipeline = loadAgentPipelineResult();
   const pipelineQuestions = pipeline?.memory?.generatedAction?.questions;
+
+  const actionTitle = resolveFounderActionTitle(
+    {
+      title: workspace.title,
+      titleKey: workspace.titleKey,
+      titleParams: workspace.titleParams,
+    },
+    (key, params) => td(key, params),
+    workspace.title || td('primaryStep', { step: '1' }),
+  );
 
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
@@ -66,14 +78,15 @@ export function FounderActionWorkspace({
   const isLastStep = step >= totalSteps - 1;
   const scoreAfter = Math.min(100, scoreBefore + workspace.goImpact);
 
-  const introMessages = useMemo(() => {
-    if (step === 0) {
-      return workspace.kind === 'interview'
+  const questionOrdinal = (num: number) =>
+    t(`ordinals.${num}` as 'ordinals.1' | 'ordinals.2' | 'ordinals.3' | 'ordinals.4' | 'ordinals.5');
+
+  const introMessages =
+    step === 0
+      ? workspace.kind === 'interview'
         ? [t('introInterview')]
-        : [t('intro'), t('questionLead', { num: step + 1 })];
-    }
-    return [t('questionLead', { num: step + 1 })];
-  }, [step, t, workspace.kind]);
+        : [t('intro'), t('questionLead', { ordinal: questionOrdinal(step + 1) })]
+      : [t('questionLead', { ordinal: questionOrdinal(step + 1) })];
 
   const currentQuestion = resolveQuestionText(
     workspace.questionKeys[step] ?? 'q1',
@@ -105,7 +118,7 @@ export function FounderActionWorkspace({
   const handleFinish = () => {
     onComplete({
       actionId: workspace.actionId,
-      title: workspace.title,
+      title: actionTitle,
       kind: workspace.kind,
       goImpact: workspace.goImpact,
       answers: completedAnswers,
@@ -171,8 +184,11 @@ export function FounderActionWorkspace({
               AI PM · {tk(workspace.kind)}
             </p>
             <h2 id="action-workspace-title" className="mt-1 text-lg font-semibold leading-snug">
-              {workspace.title}
+              {actionTitle}
             </h2>
+            {workspace.kind === 'interview' ? (
+              <p className="mt-1 text-sm text-muted-foreground">{t('interviewSubtitle')}</p>
+            ) : null}
             <p className="mt-1 text-sm tabular-nums text-muted-foreground">
               {t('meta', { minutes: workspace.etaMinutes, impact: workspace.goImpact })}
             </p>
@@ -188,7 +204,7 @@ export function FounderActionWorkspace({
 
         <div className="rounded-2xl border border-primary/25 bg-primary/[0.04] p-5">
           <p className="text-sm font-semibold text-primary">
-            {t('questionPrefix', { num: step + 1 })}
+            {t('questionPrefix', { ordinal: questionOrdinal(step + 1) })}
           </p>
           <p className="mt-2 text-base leading-relaxed">{currentQuestion}</p>
 

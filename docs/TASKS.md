@@ -8,30 +8,31 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint — AI Intelligence (Active)
+## Sprint — Founder Language (Active)
 
 **Status:** In progress — `main`  
+**Goal:** Founder가 개발자 용어(Workflow, Confidence, Evidence 등)를 단 한 번도 보지 않게 만들기
+
+**Scope:**
+- Workflow journey `ko.json` 전역 용어 통일
+- Action Workspace: 질문/진행/답변 저장 UX 한글화
+- Intelligence engine fallback copy 한글화
+
+**Next after this sprint:**
+- OpenRouter Research Provider → Morning Brief / Business Delta
+
+---
+
+## Sprint — AI Intelligence ✅
+
+**Status:** Complete — `main` (2026-07-26)  
 **Goal:** Founder가 5초 안에 "왜 우리 AI가 다른 AI보다 좋은가"를 이해
 
-**P0 (this sprint):**
+**Delivered:**
 - Business Validation Score (판단 정확도 + missing info + boost)
 - Founder Information Builder (optional 6 fields)
 - Investigation Preview (live analysis checklist)
-
-**P1:**
-- Strategy Discovery cards (market/pricing/differentiation)
-- Competitive Gap Map
-
-**P2 (next):**
-- OpenRouter Research Provider → Morning Brief / Business Delta
-- Founder Language global cleanup
-
-**Gate checklist:**
-1. Judgment accuracy % visible
-2. Optional info boosts visible
-3. Investigation checklist during analysis
-4. Strategy differentiation recommendation
-5. Why AI recommends it
+- Strategy Discovery cards + Competitive Gap Map
 
 ---
 

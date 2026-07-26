@@ -413,21 +413,21 @@ function buildExecutionRoadmap(
       : [
           {
             horizon: 'today',
-            title: 'Customer interviews',
+            title: '고객 인터뷰 진행',
             etaMinutes: 15,
             confidenceImpact: 4,
             completionCriteriaKey: 'evidenceLogged',
           },
           {
             horizon: 'week',
-            title: 'Pricing validation',
+            title: '가격 검증',
             etaMinutes: 45,
             confidenceImpact: 6,
             completionCriteriaKey: 'reviewComplete',
           },
           {
             horizon: 'month',
-            title: 'Landing launch',
+            title: '랜딩 공개',
             etaMinutes: 120,
             confidenceImpact: 10,
             completionCriteriaKey: 'milestoneComplete',
@@ -438,8 +438,8 @@ function buildExecutionRoadmap(
     horizon: 'quarter',
     title:
       stageIndex >= 3
-        ? 'Beta launch + first paying customers'
-        : 'GO decision + MVP scope lock',
+        ? '베타 출시 + 첫 유료 고객'
+        : 'GO 판단 + MVP 범위 확정',
     etaMinutes: 2400,
     confidenceImpact: 18,
     completionCriteriaKey: 'milestoneComplete',
@@ -447,7 +447,7 @@ function buildExecutionRoadmap(
 
   const investment: ExecutionRoadmapItem = {
     horizon: 'investment',
-    title: 'Seed deck + IR narrative from validated metrics',
+    title: '검증 지표 기반 IR·투자 자료',
     etaMinutes: 3600,
     confidenceImpact: 12,
     completionCriteriaKey: 'investorReady',
@@ -465,11 +465,11 @@ function buildGrowthPath(
     milestones.length > 0
       ? milestones.map((m) => ({ phase: m.phase, title: m.title, etaWeeks: m.etaWeeks }))
       : [
-          { phase: 'mvp' as const, title: 'MVP scope lock + build', etaWeeks: 2 },
-          { phase: 'interview' as const, title: '10 ICP customer interviews', etaWeeks: 3 },
-          { phase: 'landing' as const, title: 'Landing + waitlist launch', etaWeeks: 4 },
-          { phase: 'marketing' as const, title: 'Founder community GTM', etaWeeks: 5 },
-          { phase: 'funding' as const, title: 'Seed round preparation', etaWeeks: 8 },
+          { phase: 'mvp' as const, title: 'MVP 범위 확정 + 개발', etaWeeks: 2 },
+          { phase: 'interview' as const, title: '핵심 고객 인터뷰 10건', etaWeeks: 3 },
+          { phase: 'landing' as const, title: '랜딩 + 웨이트리스트 공개', etaWeeks: 4 },
+          { phase: 'marketing' as const, title: '창업자 커뮤니티 GTM', etaWeeks: 5 },
+          { phase: 'funding' as const, title: 'Seed 투자 준비', etaWeeks: 8 },
         ];
 
   return titles.map((item, index) => ({
