@@ -4979,10 +4979,54 @@
         "morning": {
           "label": "AI PM 아침 브리핑",
           "greeting": "좋은 아침입니다 대표님.",
+          "sinceYesterdayLead": "어제 이후",
           "approvalLead": "오늘 승인만 해주시면 됩니다.",
           "changesLead": "어제 이후 변경된 내용이 있습니다.",
-          "todayLead": "오늘은 이것 하나만 승인해주시면 됩니다.",
+          "todayLead": "오늘은",
           "todayMeta": "약 {minutes}분 · 사업 가능성 {before}% → {after}%"
+        },
+        "morningChanges": {
+          "grantAdded": "정부지원 1건 추가",
+          "competitorPriceChanged": "경쟁사 가격 변경",
+          "interviewCompleted": "고객 인터뷰 완료",
+          "searchVolumeUp": "시장 검색량 증가",
+          "competitorDiscovered": "새 경쟁사 발견",
+          "grantApplicationOpen": "정부지원 접수 시작"
+        },
+        "whatChanged": {
+          "label": "어제와 달라진 것",
+          "lead": "사람은 변화에 반응합니다.",
+          "confirmLead": "대표님 확인만 해주세요.",
+          "items": {
+            "competitorAdded": "경쟁사 1곳 추가",
+            "searchVolumeUp": "시장 검색량 증가",
+            "grantAdded": "정부지원 1건 추가",
+            "interviewInsight": "고객 인터뷰에서 새 Pain Point",
+            "grantDeadlineSoon": "정부지원 마감 D-{days}",
+            "competitorPriceDrop": "경쟁사 가격 인하",
+            "marketNoiseUp": "시장 불확실성 증가"
+          }
+        },
+        "overnightReport": {
+          "label": "밤새 AI PM 보고",
+          "title": "밤새 AI PM이 한 일",
+          "viewCta": "보고서 보기",
+          "marketResearch": "시장조사",
+          "grantCheck": "정부지원 확인",
+          "competitorPriceCollect": "경쟁사 가격 수집",
+          "newsAnalysis": "뉴스 분석"
+        },
+        "todayFocus": {
+          "label": "오늘 이것 하나만",
+          "oneThingLead": "오늘 이것 하나만"
+        },
+        "habit": {
+          "focusHints": {
+            "pricingOnly": "가격만 확정하면 됩니다.",
+            "interviewOnly": "고객 인터뷰만 끝내면 됩니다.",
+            "competitorOnly": "경쟁 비교만 확인하면 됩니다.",
+            "oneApproval": "승인 한 번이면 충분합니다."
+          }
         },
         "inbox": {
           "label": "CEO Inbox",

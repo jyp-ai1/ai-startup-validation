@@ -14,6 +14,7 @@ import type {
   BusinessTimelineMilestone,
   DailyReportBrief,
 } from '../../lib/founder-autonomous-ai-pm';
+import type { DailyCeoHabitBrief, WhatChangedItem } from '../../lib/founder-daily-ceo-habit';
 import type { TodayApprovalChoice } from '../../lib/founder-daily-ceo-store';
 import type { AiPmInboxItem } from '../../lib/founder-ai-pm-inbox';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
@@ -25,7 +26,7 @@ function ChangeList({
 }: {
   items: DailyChangeItem[];
   t: ReturnType<typeof useTranslations<'workflow.founderAiPm.dailyCeo'>>;
-  namespace?: 'changes' | 'overnightWork' | 'dailyReport';
+  namespace?: 'changes' | 'overnightWork' | 'overnightReport' | 'dailyReport' | 'morningChanges';
 }) {
   return (
     <ul className="mt-3 space-y-2" role="list">
@@ -125,6 +126,157 @@ export function FounderOvernightBriefPanel({
         {t('overnight.viewCta')}
         <ArrowRight className="ml-2 size-4" aria-hidden />
       </Button>
+    </section>
+  );
+}
+
+export function FounderCeoMorningBriefPanel({
+  habit,
+  className,
+}: {
+  habit: DailyCeoHabitBrief;
+  className?: string;
+}) {
+  const t = useTranslations('workflow.founderAiPm.dailyCeo');
+
+  return (
+    <section
+      className={cn(
+        'rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/[0.08] to-background p-5 sm:p-6',
+        className,
+      )}
+      aria-label={t('morning.label')}
+    >
+      <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+        <Sun className="size-3.5" aria-hidden />
+        {t('morning.label')}
+      </p>
+      <AiPmConversation messages={[t('morning.greeting'), t('morning.sinceYesterdayLead')]} />
+      <ChangeList items={habit.morningChanges} t={t} namespace="morningChanges" />
+      <div className="mt-5 rounded-xl border border-primary/25 bg-background/90 px-4 py-4">
+        <p className="text-sm text-muted-foreground">{t('morning.todayLead')}</p>
+        <p className="mt-2 text-base font-semibold">
+          {t(`habit.focusHints.${habit.todayFocusHintKey}`, habit.todayFocusHintParams ?? {})}
+        </p>
+      </div>
+    </section>
+  );
+}
+
+export function FounderWhatChangedPanel({
+  items,
+  className,
+}: {
+  items: WhatChangedItem[];
+  className?: string;
+}) {
+  const t = useTranslations('workflow.founderAiPm.dailyCeo');
+
+  if (items.length === 0) return null;
+
+  return (
+    <section
+      className={cn('rounded-2xl border border-amber-300/40 bg-amber-500/[0.05] p-5 sm:p-6', className)}
+      aria-label={t('whatChanged.label')}
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-amber-800 dark:text-amber-300">
+        {t('whatChanged.label')}
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground">{t('whatChanged.lead')}</p>
+      <ul className="mt-3 space-y-2" role="list">
+        {items.map((item) => (
+          <li key={item.id} className="flex items-start gap-2 text-sm">
+            <span
+              className={cn(
+                'mt-0.5 font-bold tabular-nums',
+                item.tone === 'positive' ? 'text-emerald-600' : 'text-rose-600',
+              )}
+              aria-hidden
+            >
+              {item.tone === 'positive' ? '+' : '−'}
+            </span>
+            <span>{t(`whatChanged.items.${item.messageKey}`, item.params ?? {})}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-4 text-sm font-medium">{t('whatChanged.confirmLead')}</p>
+    </section>
+  );
+}
+
+export function FounderAiPmOvernightReportPanel({
+  items,
+  onViewReport,
+  className,
+}: {
+  items: DailyChangeItem[];
+  onViewReport?: () => void;
+  className?: string;
+}) {
+  const t = useTranslations('workflow.founderAiPm.dailyCeo');
+
+  return (
+    <section
+      className={cn(
+        'rounded-2xl border-2 border-indigo-300/40 bg-gradient-to-br from-indigo-500/[0.08] to-background p-5 sm:p-6',
+        className,
+      )}
+      aria-label={t('overnightReport.label')}
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-indigo-700 dark:text-indigo-300">
+        {t('overnightReport.title')}
+      </p>
+      <ChangeList items={items} t={t} namespace="overnightReport" />
+      {onViewReport ? (
+        <Button type="button" variant="outline" className="mt-5 w-full rounded-xl" onClick={onViewReport}>
+          {t('overnightReport.viewCta')}
+          <ArrowRight className="ml-2 size-4" aria-hidden />
+        </Button>
+      ) : null}
+    </section>
+  );
+}
+
+export function FounderTodayFocusPanel({
+  focus,
+  approved,
+  onApprove,
+  className,
+}: {
+  focus: ApprovalQueueItem | null;
+  approved: boolean;
+  onApprove: (actionId: string) => void;
+  className?: string;
+}) {
+  const t = useTranslations('workflow.founderAiPm.dailyCeo');
+
+  if (!focus) return null;
+
+  return (
+    <section
+      className={cn(
+        'rounded-2xl border-2 border-emerald-300/40 bg-gradient-to-br from-emerald-500/[0.07] to-background p-5 sm:p-6',
+        className,
+      )}
+      aria-label={t('todayFocus.label')}
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-emerald-800 dark:text-emerald-300">
+        {t('todayFocus.label')}
+      </p>
+      <p className="mt-3 text-sm text-muted-foreground">{t('todayFocus.oneThingLead')}</p>
+      <p className="mt-2 text-xl font-semibold">{focus.title}</p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        {t('approvalQueue.expectedEffect', { impact: focus.goImpact })}
+      </p>
+      {approved ? (
+        <p className="mt-4 text-sm font-medium text-emerald-700 dark:text-emerald-300">
+          {t('approvalQueue.approvedBadge')}
+        </p>
+      ) : (
+        <Button type="button" size="lg" className="mt-5 w-full rounded-xl" onClick={() => onApprove(focus.actionId)}>
+          {t('approval.approve')}
+        </Button>
+      )}
     </section>
   );
 }

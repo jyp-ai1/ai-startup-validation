@@ -18,8 +18,6 @@ import {
   buildAiPmDailyReport,
   buildAiPmMemoryBrief,
   buildBusinessTimeline,
-  buildCeoApprovalQueue,
-  buildOvernightResearchWork,
 } from '../lib/founder-autonomous-ai-pm';
 import {
   buildAiPmDecisionBox,
@@ -28,6 +26,7 @@ import {
   buildMeetingCloseNarrative,
 } from '../lib/founder-ai-pm-meeting';
 import { buildDailyCeoOperatingBrief } from '../lib/founder-daily-ceo-loop';
+import { buildDailyCeoHabitBrief } from '../lib/founder-daily-ceo-habit';
 import {
   approveActionId,
   loadApprovedActionIds,
@@ -65,14 +64,15 @@ import {
 } from './founder-ai-pm/founder-action-workspace';
 import {
   FounderAiPmOfficeHeader,
+  FounderAiPmOvernightReportPanel,
   FounderAiPmDailyReportPanel,
   FounderAiPmMemoryBriefPanel,
   FounderBusinessTimelinePanel,
-  FounderCeoApprovalQueuePanel,
   FounderCeoInboxPanel,
-  FounderDailyCeoMorningPanel,
-  FounderOvernightResearchPanel,
+  FounderCeoMorningBriefPanel,
+  FounderTodayFocusPanel,
   FounderWeeklyCeoLoopPanel,
+  FounderWhatChangedPanel,
 } from './founder-ai-pm/founder-daily-ceo-panels';
 import { FounderAiPmLiveWorkPanel } from './founder-ai-pm/founder-ai-pm-live-work-panel';
 import { FounderInformationBuilder } from './founder-ai-pm/founder-information-builder';
@@ -284,16 +284,6 @@ export function FounderTodayWorkspace({
   const resolveActionTitle = (action: GeneratedTodayAction) =>
     resolveFounderActionTitle(action, td, tDaily('approvalQueue.fallbackAction'));
 
-  const overnightWork = useMemo(
-    () => buildOvernightResearchWork(intelligence.businessDeltas, evidence.length),
-    [evidence.length, intelligence.businessDeltas],
-  );
-
-  const approvalQueue = useMemo(
-    () => buildCeoApprovalQueue(intelligence.todayActions, resolveActionTitle),
-    [intelligence.todayActions, td, tDaily],
-  );
-
   const dailyReport = useMemo(
     () =>
       buildAiPmDailyReport({
@@ -330,6 +320,25 @@ export function FounderTodayWorkspace({
         resolveTitle: resolveActionTitle,
       }),
     [intelligence.behavior, intelligence.memoryAction, intelligence.todayActions, td, tDaily],
+  );
+
+  const habitBrief = useMemo(
+    () =>
+      buildDailyCeoHabitBrief({
+        projectId,
+        behavior: intelligence.behavior,
+        businessDeltas: intelligence.businessDeltas,
+        todayActions: intelligence.todayActions,
+        resolveTitle: resolveActionTitle,
+      }),
+    [
+      intelligence.behavior,
+      intelligence.businessDeltas,
+      intelligence.todayActions,
+      projectId,
+      td,
+      tDaily,
+    ],
   );
 
   useEffect(() => {
@@ -408,11 +417,11 @@ export function FounderTodayWorkspace({
   };
 
   const handleApproveQueueItem = (actionId: string) => {
-    const item = approvalQueue.find((entry) => entry.actionId === actionId);
+    const action = intelligence.todayActions.find((entry) => entry.id === actionId);
     const approved = approveActionId(projectId, actionId);
     setApprovedActionIds(approved);
     setApprovalChoice('approved');
-    setLiveWorkTitle(item?.title ?? resolveActionTitle(primaryAction!));
+    setLiveWorkTitle(action ? resolveActionTitle(action) : tDaily('approvalQueue.fallbackAction'));
     setLiveWorkActionId(actionId);
   };
 
@@ -455,23 +464,22 @@ export function FounderTodayWorkspace({
           <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
         ) : null}
 
-        <FounderOvernightResearchPanel
-          items={overnightWork}
-          viewed={overnightViewed}
-          onView={handleOvernightView}
+        <FounderCeoMorningBriefPanel habit={habitBrief} />
+
+        <FounderWhatChangedPanel items={habitBrief.whatChanged} />
+
+        <FounderAiPmOvernightReportPanel
+          items={habitBrief.overnightReport}
+          onViewReport={handleOvernightView}
         />
 
-        <FounderDailyCeoMorningPanel brief={dailyCeoBrief} />
-
-        <FounderCeoInboxPanel
-          items={inboxItems}
-          pendingCount={dailyCeoBrief.pendingInboxCount}
-          onReview={(actionId) => handleStartById(`ceo_inbox_${actionId ?? 'primary'}`, actionId)}
-        />
-
-        <FounderCeoApprovalQueuePanel
-          items={approvalQueue}
-          approvedIds={approvedActionIds}
+        <FounderTodayFocusPanel
+          focus={habitBrief.todayFocus}
+          approved={
+            habitBrief.todayFocus
+              ? approvedActionIds.includes(habitBrief.todayFocus.actionId)
+              : false
+          }
           onApprove={handleApproveQueueItem}
         />
 
@@ -486,6 +494,12 @@ export function FounderTodayWorkspace({
         {approvedActionIds.length > 0 && !liveWorkActionId ? (
           <FounderAiPmPreparedTasks />
         ) : null}
+
+        <FounderCeoInboxPanel
+          items={inboxItems}
+          pendingCount={dailyCeoBrief.pendingInboxCount}
+          onReview={(actionId) => handleStartById(`ceo_inbox_${actionId ?? 'primary'}`, actionId)}
+        />
 
         <FounderAiPmMemoryBriefPanel
           memory={memoryBrief}

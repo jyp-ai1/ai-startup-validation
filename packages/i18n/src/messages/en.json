@@ -4833,10 +4833,54 @@
         "morning": {
           "label": "AI PM morning brief",
           "greeting": "Good morning, Founder.",
+          "sinceYesterdayLead": "Since yesterday",
           "approvalLead": "Today you only need to approve.",
           "changesLead": "Since yesterday, a few things changed.",
-          "todayLead": "Today you only need to approve this one task.",
+          "todayLead": "Today",
           "todayMeta": "~{minutes} min · viability {before}% → {after}%"
+        },
+        "morningChanges": {
+          "grantAdded": "1 new government grant",
+          "competitorPriceChanged": "Competitor changed pricing",
+          "interviewCompleted": "Customer interview completed",
+          "searchVolumeUp": "Market search volume up",
+          "competitorDiscovered": "New competitor discovered",
+          "grantApplicationOpen": "Grant applications opened"
+        },
+        "whatChanged": {
+          "label": "What changed since yesterday",
+          "lead": "People react to change.",
+          "confirmLead": "Founder, just confirm when ready.",
+          "items": {
+            "competitorAdded": "1 competitor added",
+            "searchVolumeUp": "Market search volume up",
+            "grantAdded": "1 grant added",
+            "interviewInsight": "New pain point from interviews",
+            "grantDeadlineSoon": "Grant deadline in {days} days",
+            "competitorPriceDrop": "Competitor cut prices",
+            "marketNoiseUp": "Market uncertainty rising"
+          }
+        },
+        "overnightReport": {
+          "label": "Overnight AI PM report",
+          "title": "What AI PM did overnight",
+          "viewCta": "View report",
+          "marketResearch": "Market research",
+          "grantCheck": "Grant check",
+          "competitorPriceCollect": "Competitor pricing collected",
+          "newsAnalysis": "News analysis"
+        },
+        "todayFocus": {
+          "label": "Just this one today",
+          "oneThingLead": "Just this one today"
+        },
+        "habit": {
+          "focusHints": {
+            "pricingOnly": "Just lock in pricing.",
+            "interviewOnly": "Just finish the customer interview.",
+            "competitorOnly": "Just confirm competitor positioning.",
+            "oneApproval": "One approval is enough today."
+          }
         },
         "inbox": {
           "label": "CEO Inbox",

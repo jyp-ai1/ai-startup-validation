@@ -8,22 +8,35 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint — Autonomous AI PM Office P5 ✅
+## Sprint — Daily CEO Habit (Active)
 
 **Status:** Complete — local (pending commit + push)  
-**Goal:** LaunchLens = **대표가 매일 출근하는 AI PM Office** — AI가 먼저 일하고 Founder는 승인만
+**Goal:** 대표가 **아침에 LaunchLens를 여는 이유** — 변화·AI 보고·오늘 1건
+
+**Founder-first roadmap (locked):**
+| Sprint | Focus |
+|--------|--------|
+| **6 (NOW)** | Daily CEO Habit — Morning Brief · What Changed · Overnight Report · Today 1 Focus |
+| 7 | Living Project — 어제/이번주/누적 일지 |
+| 8 | Real Background AI — Scheduler · OpenRouter |
+| 9 | CEO Dashboard — 회사 상태 🟢🟡🔴 |
+| 10 | Company Memory — 6개월 연대기 |
 
 **Delivered:**
-- P0 AI PM Office 헤더 + Overnight 4건 + [보고서 보기]
-- P1 Approval Queue ①②③ + 예상 효과 + 개별 [승인]
-- P2 Live Work Log (승인 → AI 작업 로그 → Action)
-- P3 Daily CEO Report (완료 · 사업 가능성 arc · 내일)
-- P4 Founder Memory (인터뷰/가격 미루기 패턴)
-- P5 Business Timeline (7단계 사업 역사)
-- Layout: `JourneyFocusedShell` wide — Completion/Action/Debrief/Today 동일 폭
-- Founder Language: pipeline 영문 제목 매핑 · workspace = AI PM Office
+- P0-1 Morning Brief — 날짜+프로젝트별 매일 다른 3건
+- P0-2 What Changed — +/- 변화 카드 (72% 대신)
+- P0-3 Overnight Report — 밤새 AI PM 4건 + [보고서 보기]
+- P0-4 Today Focus — 승인 1건만 (Inbox는 아래)
 
-**Next:** Background AI PM → OpenRouter Scheduler → 실시간 변경 감지
+**Deferred:** Validation Breakdown (Founder는 "밤새 뭘 했는지"가 우선)
+
+**Next:** Sprint 7 Living Project
+
+---
+
+## Sprint — Autonomous AI PM Office P5 ✅
+
+**Status:** Complete — `main` (`1e3f90a`)
 
 ---
 
