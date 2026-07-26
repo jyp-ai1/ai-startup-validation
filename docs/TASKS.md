@@ -10,7 +10,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## Sprint — Living Project (Active)
 
-**Status:** Complete — local (pending commit + push)  
+**Status:** Complete — `main` (`3d78641`)  
 **Goal:** **AI PM과 함께 회사를 운영** — 프로젝트가 살아있다는 느낌
 
 **Founder-first roadmap (locked):**
