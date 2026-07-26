@@ -5242,6 +5242,177 @@
           "areaPaused": "다만\n\n핵심 업무가\n\n{days}일째 멈춰 있습니다."
         }
       },
+      "aiOs": {
+        "header": {
+          "label": "AI PM 회사 운영",
+          "lead": "분석 도구가 아니라, AI PM과 함께 회사를 운영합니다."
+        },
+        "ceoDashboard": {
+          "label": "회사 건강도",
+          "healthTitle": "회사 상태",
+          "weeklyProgressLabel": "이번주 전진",
+          "riskLabel": "가장 위험",
+          "dimensions": {
+            "market": "시장",
+            "customer": "고객",
+            "product": "제품",
+            "pricing": "가격",
+            "investment": "투자"
+          },
+          "risks": {
+            "marketValidation": "시장 검증",
+            "customerValidation": "고객 검증",
+            "pricingValidation": "가격 검증",
+            "investmentPrep": "투자 준비"
+          }
+        },
+        "companyMemory": {
+          "label": "회사 기억",
+          "monthLine": "{month}월",
+          "events": {
+            "ideaStart": "아이디어",
+            "firstInterview": "첫 인터뷰",
+            "mvp": "MVP",
+            "firstCustomer": "첫 고객"
+          },
+          "recall": {
+            "samePricingConcern": "지난달에도 같은 고민을 하셨습니다.",
+            "sameMarketConcern": "지난달에도 시장 검증을 우선하셨습니다."
+          }
+        },
+        "decisionCenter": {
+          "label": "AI PM 회의 결과",
+          "resultLabel": "AI PM 회의 결과",
+          "flow": {
+            "research": "Research",
+            "marketing": "Marketing",
+            "finance": "Finance",
+            "strategy": "Strategy",
+            "ceo": "CEO"
+          },
+          "notes": {
+            "marketSignal": "시장 신호는 긍정적입니다.",
+            "customerGap": "고객 검증은 아직 부족합니다.",
+            "pricingNext": "다음은 가격 검증입니다."
+          }
+        },
+        "simulator": {
+          "label": "사업 시뮬레이션",
+          "priceLead": "가격 {price}원 기준",
+          "scenarioA": "A",
+          "scenarioB": "B",
+          "scenarioC": "C",
+          "customers": "예상 고객 {count}명",
+          "revenue": "예상 매출 {amount}원",
+          "risks": {
+            "lowRisk": "위험도 낮음",
+            "mediumRisk": "위험도 중간",
+            "highVolumeRisk": "볼륨은 높지만 마진 낮음"
+          }
+        },
+        "board": {
+          "label": "AI 이사회",
+          "roles": {
+            "ceo": "CEO",
+            "cto": "CTO",
+            "cmo": "CMO",
+            "cfo": "CFO",
+            "coo": "COO",
+            "investor": "투자자",
+            "customer": "고객"
+          },
+          "opinions": {
+            "ceoGo": "지금 실행할 때입니다.",
+            "ctoHold": "MVP 범위를 더 좁히세요.",
+            "cmoGo": "시장 타이밍이 좋습니다.",
+            "cfoHold": "가격 검증이 먼저입니다.",
+            "cooGo": "운영 준비는 됐습니다.",
+            "investorGo": "PMF 신호가 보입니다.",
+            "customerGo": "속도가 더 중요합니다."
+          }
+        },
+        "customerIntel": {
+          "label": "고객 인텔리전스",
+          "sources": {
+            "voc": "VOC",
+            "reviews": "리뷰",
+            "interviews": "인터뷰",
+            "search": "검색",
+            "sns": "SNS"
+          },
+          "insights": {
+            "speedOverPrice": "이번주 고객은 가격보다 속도를 원합니다.",
+            "priceSensitivity": "이번주 고객은 가격 민감도가 높습니다."
+          }
+        },
+        "growth": {
+          "label": "성장 엔진",
+          "recommend": "이번주는 {channel} {count}{unit} 추천드립니다.",
+          "channels": {
+            "blog": "블로그",
+            "sns": "SNS",
+            "email": "이메일"
+          },
+          "units": {
+            "posts": "개",
+            "campaigns": "건"
+          }
+        },
+        "fundraising": {
+          "label": "투자 준비",
+          "readiness": "투자 준비도 {percent}%",
+          "items": {
+            "irDeck": "IR Deck",
+            "financials": "재무",
+            "marketStory": "시장",
+            "competitorMap": "경쟁사"
+          },
+          "investor": {
+            "investorReadySoon": "투자자 관점: 곧 미팅 가능 수준입니다.",
+            "investorNeedsProof": "투자자 관점: PMF 근거가 더 필요합니다."
+          }
+        },
+        "companyOs": {
+          "label": "회사 운영",
+          "horizons": {
+            "today": "Today",
+            "week": "Week",
+            "month": "Month",
+            "quarter": "Quarter",
+            "year": "Year"
+          },
+          "quarterGoal": "이번 분기 목표 {percent}% 달성"
+        },
+        "autonomous": {
+          "label": "자율 운영",
+          "approvalLead": "대표님은 승인만 해주세요.",
+          "approveCta": "승인",
+          "steps": {
+            "research": "조사",
+            "analysis": "분석",
+            "plan": "계획",
+            "executionPrep": "실행 준비"
+          }
+        },
+        "predictive": {
+          "label": "미래 예측",
+          "insights": {
+            "competitionIntensifies": "3개월 후 경쟁 심화 예상",
+            "grantProbability": "정부지원 확률 {percent}%",
+            "priceIncreaseRecommend": "가격 인상 추천",
+            "priceHoldRecommend": "가격 유지 추천"
+          }
+        },
+        "founderTwin": {
+          "label": "대표님 AI 트윈",
+          "learned": "과거 의사결정 {count}건 학습 완료",
+          "question": "대표라면 어떻게 결정했을까?",
+          "recommendations": {
+            "likelyGo": "대표님의 성향이라면 GO를 선택하실 가능성이 {percent}%입니다.",
+            "likelyHold": "대표님의 성향이라면 HOLD를 선택하실 가능성이 {percent}%입니다."
+          }
+        }
+      },
       "todayHeroWorkspace": {
         "label": "AI PM 오늘 계획",
         "aiPmLabel": "AI PM",

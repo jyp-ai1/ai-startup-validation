@@ -19,6 +19,7 @@ import {
   buildAiPmMemoryBrief,
 } from '../lib/founder-autonomous-ai-pm';
 import { buildLivingProjectBrief } from '../lib/founder-living-project';
+import { buildAiOperatingSystemBrief } from '../lib/founder-ai-operating-system';
 import {
   buildAiPmDecisionBox,
   buildAiPmMeetingBrief,
@@ -92,6 +93,7 @@ import {
   FounderLivingWeeklyStoryPanel,
   FounderOvernightInvestigationPanel,
 } from './founder-ai-pm/founder-living-project-panels';
+import { FounderAiOperatingSystemSection } from './founder-ai-pm/founder-ai-os-panels';
 import { FounderAiPmLiveWorkPanel } from './founder-ai-pm/founder-ai-pm-live-work-panel';
 import { FounderInformationBuilder } from './founder-ai-pm/founder-information-builder';
 import { FounderCompetitiveGapMap } from './founder-ai-pm/founder-competitive-gap-map';
@@ -388,6 +390,31 @@ export function FounderTodayWorkspace({
     ],
   );
 
+  const osBrief = useMemo(
+    () =>
+      buildAiOperatingSystemBrief({
+        behavior: intelligence.behavior,
+        progress: intelligence.businessProgress,
+        weeklyReview: intelligence.weeklyCeoReview,
+        dailyReview: intelligence.dailyReview,
+        scorePercent: intelligence.successScore.percent,
+        stuck: livingBrief.stuckAlert,
+        todayActions: intelligence.todayActions,
+        resolveTitle: resolveActionTitle,
+      }),
+    [
+      intelligence.behavior,
+      intelligence.businessProgress,
+      intelligence.dailyReview,
+      intelligence.successScore.percent,
+      intelligence.todayActions,
+      intelligence.weeklyCeoReview,
+      livingBrief.stuckAlert,
+      td,
+      tDaily,
+    ],
+  );
+
   const memoryBrief = useMemo(
     () =>
       buildAiPmMemoryBrief({
@@ -634,6 +661,11 @@ export function FounderTodayWorkspace({
         <FounderLivingProjectHistoryPanel entries={livingBrief.history} />
 
         <FounderAiPmDailyReportPanel report={dailyReport} />
+
+        <FounderAiOperatingSystemSection
+          brief={osBrief}
+          onApprove={handleApproveQueueItem}
+        />
 
         <details
           className="rounded-2xl border border-border/60 bg-muted/10"

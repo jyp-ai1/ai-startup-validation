@@ -1,10 +1,10 @@
 # Founder OS Roadmap — Sprint 6–20
 
-**Status:** Active (2026-07-26)  
+**Status:** Complete (2026-07-26)  
 **North Star:** *대표가 LaunchLens를 열면, AI PM이 어제보다 회사를 더 앞으로 움직여 놓았다는 확신을 준다.*
 
-Sprint 1–7 = **AI PM과 함께 일하는 경험**  
-Sprint 8+ = **실제 회사를 운영하는 AI Operating System**
+Sprint 1–7 = **AI PM과 함께 일하는 경험** ✅  
+Sprint 8–20 = **AI Operating System** ✅
 
 ---
 
@@ -12,7 +12,7 @@ Sprint 8+ = **실제 회사를 운영하는 AI Operating System**
 
 Every sprint follows:
 
-1. 기능 구현 → 2. `pnpm build` → 3. Test → 4. Commit → 5. Push → 6. Production → 7. Founder 검증 → 8. Success Report → 9. Next Sprint
+1. 기능 구현 → 2. `pnpm build` → 3. Test → 4. Commit → 5. Push → 6. Production → 7. Founder 검증 → 8. Success Report
 
 ### Quality gates
 
@@ -28,23 +28,25 @@ Every sprint follows:
 
 ## Roadmap
 
-| Sprint | Theme | Founder 가치 |
-|--------|-------|----------------|
-| 6 ✅ | Daily CEO Habit | 아침에 다시 들어올 이유 |
-| 7 ✅ | Living Project | 프로젝트가 살아 움직인다 |
-| **8** | **Real Background AI** | AI가 밤새 실제 조사 |
-| 9 | CEO Dashboard | 회사 상태를 한눈에 |
-| 10 | Company Memory | 6개월 연대기·맥락 기억 |
-| 11 | CEO Decision Center | AI 임원 회의 → GO/HOLD |
-| 12 | Business Simulator | 선택 → 미래 시뮬레이션 |
-| 13 | AI Board Members | 다관점 이사회 |
-| 14 | Customer Intelligence | VOC·리뷰·SNS 통합 |
-| 15 | Growth Engine | SEO·콘텐츠·광고 자동 제안 |
-| 16 | Fundraising OS | IR·Pitch Deck 자동화 |
-| 17 | Company Operating System | Today→Year 연결 |
-| 18 | Autonomous Company | AI 준비 → 대표 승인만 |
-| 19 | Predictive Company | 3개월 후 리스크 예측 |
-| 20 | AI Founder Twin | 대표 의사결정 스타일 학습 |
+| Sprint | Theme | Status |
+|--------|-------|--------|
+| 6 | Daily CEO Habit | ✅ |
+| 7 | Living Project | ✅ |
+| 8 | Real Background AI | ✅ |
+| 9 | CEO Dashboard | ✅ |
+| 10 | Company Memory | ✅ |
+| 11 | CEO Decision Center | ✅ |
+| 12 | Business Simulator | ✅ |
+| 13 | AI Board Members | ✅ |
+| 14 | Customer Intelligence | ✅ |
+| 15 | Growth Engine | ✅ |
+| 16 | Fundraising OS | ✅ |
+| 17 | Company Operating System | ✅ |
+| 18 | Autonomous Company | ✅ |
+| 19 | Predictive Company | ✅ |
+| 20 | AI Founder Twin | ✅ |
+
+**UI surface:** `FounderAiOperatingSystemSection` — Today workspace 하단 **AI PM 회사 운영**
 
 ---
 

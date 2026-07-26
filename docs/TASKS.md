@@ -8,30 +8,32 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint — Real Background AI (Active)
+## Sprint — AI Operating System Sprints 9–20 ✅
 
-**Status:** Complete — `main` (`2931461`)  
-**Goal:** AI PM이 **밤새 실제로 회사를 조사** — 출근하면 이미 끝난 상태
+**Status:** Complete — local (pending commit + push)  
+**Goal:** Sprint 8 이후 **AI Operating System** — CEO Dashboard → Founder Twin
 
-**Founder OS roadmap:** [FOUNDER_OS_ROADMAP.md](./FOUNDER_OS_ROADMAP.md) (Sprint 6–20)
+**Delivered (single `FounderAiOperatingSystemSection`):**
+- Sprint 9 CEO Dashboard — 🟢🟡🔴 회사 건강도 · 이번주 전진 · Top Risk
+- Sprint 10 Company Memory — 6개월 연대기 · 맥락 회상
+- Sprint 11 CEO Decision Center — AI 임원 회의 · GO/HOLD · 회의록
+- Sprint 12 Business Simulator — A/B/C 가격 시나리오
+- Sprint 13 AI Board — 7관점 이사회 · 투표
+- Sprint 14 Customer Intelligence — VOC·리뷰·SNS 통합 요약
+- Sprint 15 Growth Engine — 블로그·SNS·이메일 추천
+- Sprint 16 Fundraising OS — IR·재무·투자자 관점
+- Sprint 17 Company OS — Today→Year 진행률
+- Sprint 18 Autonomous Company — AI 준비 → [승인]
+- Sprint 19 Predictive Company — 3개월 예측·정부지원 확률
+- Sprint 20 AI Founder Twin — 의사결정 {N}건 학습 · GO 확률
 
-| Sprint | Focus |
-|--------|--------|
-| 6–7 ✅ | Daily CEO Habit · Living Project |
-| **8 (NOW)** | Real Background AI |
-| 9 | CEO Dashboard |
-| 10–20 | Company Memory → AI Founder Twin |
+**Next:** Production hardening — server persistence · Vercel cron · real data feeds
 
-**Delivered:**
-- P0 Overnight API — `/api/background-ai/overnight` (OpenRouter strategy pipeline)
-- P0 Daily scheduler — 첫 방문 시 자동 overnight sync
-- P0 Investigation summary — "17건 조사 · 중요 3건" Morning Brief
-- P0 7-domain scan — 경쟁사·정부지원·시장·뉴스·트렌드·가격·투자
-- Morning Brief / What Changed — snapshot 기반 (mock fallback)
+---
 
-**Success Gate:** "AI가 진짜 일했네"
+## Sprint — Real Background AI ✅
 
-**Next:** Sprint 9 CEO Dashboard
+**Status:** Complete — `main` (`2931461`)
 
 ---
 

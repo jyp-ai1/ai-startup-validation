@@ -5096,6 +5096,177 @@
           "areaPaused": "However,\n\na key task\n\nhas been paused for {days} days."
         }
       },
+      "aiOs": {
+        "header": {
+          "label": "AI PM company operations",
+          "lead": "Not an analysis tool — run the company with your AI PM."
+        },
+        "ceoDashboard": {
+          "label": "Company health",
+          "healthTitle": "Company status",
+          "weeklyProgressLabel": "This week's progress",
+          "riskLabel": "Top risk",
+          "dimensions": {
+            "market": "Market",
+            "customer": "Customer",
+            "product": "Product",
+            "pricing": "Pricing",
+            "investment": "Investment"
+          },
+          "risks": {
+            "marketValidation": "Market validation",
+            "customerValidation": "Customer validation",
+            "pricingValidation": "Pricing validation",
+            "investmentPrep": "Investment prep"
+          }
+        },
+        "companyMemory": {
+          "label": "Company memory",
+          "monthLine": "Month {month}",
+          "events": {
+            "ideaStart": "Idea",
+            "firstInterview": "First interview",
+            "mvp": "MVP",
+            "firstCustomer": "First customer"
+          },
+          "recall": {
+            "samePricingConcern": "You had the same pricing concern last month.",
+            "sameMarketConcern": "You prioritized market validation last month too."
+          }
+        },
+        "decisionCenter": {
+          "label": "AI PM meeting result",
+          "resultLabel": "AI PM meeting result",
+          "flow": {
+            "research": "Research",
+            "marketing": "Marketing",
+            "finance": "Finance",
+            "strategy": "Strategy",
+            "ceo": "CEO"
+          },
+          "notes": {
+            "marketSignal": "Market signals look positive.",
+            "customerGap": "Customer validation is still thin.",
+            "pricingNext": "Pricing validation is next."
+          }
+        },
+        "simulator": {
+          "label": "Business simulator",
+          "priceLead": "At price {price}",
+          "scenarioA": "A",
+          "scenarioB": "B",
+          "scenarioC": "C",
+          "customers": "Est. customers {count}",
+          "revenue": "Est. revenue {amount}",
+          "risks": {
+            "lowRisk": "Low risk",
+            "mediumRisk": "Medium risk",
+            "highVolumeRisk": "High volume, lower margin"
+          }
+        },
+        "board": {
+          "label": "AI board",
+          "roles": {
+            "ceo": "CEO",
+            "cto": "CTO",
+            "cmo": "CMO",
+            "cfo": "CFO",
+            "coo": "COO",
+            "investor": "Investor",
+            "customer": "Customer"
+          },
+          "opinions": {
+            "ceoGo": "Time to execute.",
+            "ctoHold": "Narrow MVP scope first.",
+            "cmoGo": "Market timing is good.",
+            "cfoHold": "Pricing validation first.",
+            "cooGo": "Ops is ready.",
+            "investorGo": "PMF signals emerging.",
+            "customerGo": "Speed matters more."
+          }
+        },
+        "customerIntel": {
+          "label": "Customer intelligence",
+          "sources": {
+            "voc": "VOC",
+            "reviews": "Reviews",
+            "interviews": "Interviews",
+            "search": "Search",
+            "sns": "SNS"
+          },
+          "insights": {
+            "speedOverPrice": "This week customers want speed over price.",
+            "priceSensitivity": "This week customers are price-sensitive."
+          }
+        },
+        "growth": {
+          "label": "Growth engine",
+          "recommend": "This week: {count} {unit} of {channel}.",
+          "channels": {
+            "blog": "blog posts",
+            "sns": "SNS posts",
+            "email": "email"
+          },
+          "units": {
+            "posts": "",
+            "campaigns": " campaigns"
+          }
+        },
+        "fundraising": {
+          "label": "Fundraising OS",
+          "readiness": "Fundraising readiness {percent}%",
+          "items": {
+            "irDeck": "IR deck",
+            "financials": "Financials",
+            "marketStory": "Market story",
+            "competitorMap": "Competitors"
+          },
+          "investor": {
+            "investorReadySoon": "Investor view: meeting-ready soon.",
+            "investorNeedsProof": "Investor view: needs more PMF proof."
+          }
+        },
+        "companyOs": {
+          "label": "Company OS",
+          "horizons": {
+            "today": "Today",
+            "week": "Week",
+            "month": "Month",
+            "quarter": "Quarter",
+            "year": "Year"
+          },
+          "quarterGoal": "Quarter goal {percent}% achieved"
+        },
+        "autonomous": {
+          "label": "Autonomous ops",
+          "approvalLead": "Founder, just approve.",
+          "approveCta": "Approve",
+          "steps": {
+            "research": "Research",
+            "analysis": "Analysis",
+            "plan": "Plan",
+            "executionPrep": "Execution prep"
+          }
+        },
+        "predictive": {
+          "label": "Predictive insights",
+          "insights": {
+            "competitionIntensifies": "Competition intensifies in {months} months",
+            "grantProbability": "Grant probability {percent}%",
+            "priceIncreaseRecommend": "Price increase recommended",
+            "priceHoldRecommend": "Hold pricing recommended"
+          }
+        },
+        "founderTwin": {
+          "label": "Founder AI twin",
+          "learned": "{count} past decisions learned",
+          "question": "How would the Founder decide?",
+          "recommendations": {
+            "likelyGo": "Based on your style, {percent}% chance you'd choose GO.",
+            "likelyHold": "Based on your style, {percent}% chance you'd choose HOLD."
+          }
+        }
+      },
       "todayHeroWorkspace": {
         "label": "AI PM daily plan",
         "aiPmLabel": "AI PM",
