@@ -4271,6 +4271,90 @@
         "confidenceEffect": "Confidence",
         "goEffect": "GO 가능성"
       },
+      "intelligence": {
+        "memory": {
+          "label": "Founder Memory",
+          "recall": "지난주에는 {lastFocus}에 집중했지만 {lastGap}이 부족했습니다. 이번 주는 {thisFocus}부터 진행하겠습니다.",
+          "focus": {
+            "marketValidation": "시장 검증",
+            "competitorAnalysis": "경쟁 분석",
+            "pricingValidation": "가격 검증",
+            "executionScale": "실행·스케일"
+          },
+          "gap": {
+            "marketGap": "시장 규모 근거",
+            "competitorGap": "경쟁 차별화",
+            "vocGap": "고객 인터뷰(VOC)",
+            "goReady": "GO 실행 준비"
+          }
+        },
+        "business": {
+          "label": "Business Intelligence",
+          "sinceYesterday": "어제 이후 변화",
+          "items": {
+            "aiMarketInvestment": "AI 시장 투자 {count}건 증가 — Founder OS 카테고리 자금 유입",
+            "competitorPricing": "경쟁사 {name} 가격 변경 — 차별화 포인트 재검토 필요",
+            "seedActivity": "Seed 라운드 {count}건 클로징 — IR 타이밍 검토",
+            "grantPosted": "정부지원 {program} 공고 신규 등록 — 신청 적합도 확인"
+          }
+        },
+        "decision": {
+          "label": "Decision Intelligence",
+          "why": "왜",
+          "how": "어떻게",
+          "when": "언제",
+          "improvement": "얼마나 좋아지는가",
+          "confidencePath": "Confidence {from}% → {to}%",
+          "goPath": "GO {from}% → {to}%",
+          "etaDays": "약 {days}일 내 가능",
+          "whyReasons": {
+            "marketGap": "시장 규모가 아직 검증되지 않아 {verdict}입니다. {gap}이 핵심 격차입니다.",
+            "competitorGap": "경쟁 차별화 근거가 약해 {verdict}입니다. {gap}을 먼저 확보해야 합니다.",
+            "vocGap": "고객 인터뷰(VOC) 깊이가 GO 기준에 미달합니다. {gap}이 우선입니다.",
+            "goReady": "핵심 근거가 충분합니다. 실행 속도가 다음 변수입니다."
+          },
+          "howActions": {
+            "marketResearch": "시장 규모·TAM/SAM 검증 인터뷰 3건",
+            "competitorDeepDive": "경쟁사 매트릭스 + 차별화 1-pager 작성",
+            "pricingInterview": "Pricing 가설 검증 인터뷰 5건",
+            "mvpLaunch": "MVP 범위 확정 후 2주 스프린트"
+          },
+          "whenHorizons": {
+            "beforeGo": "GO 전 {days}일 내 — 이번 주 마감",
+            "goNow": "지금 GO — 오늘 실행 시작"
+          }
+        },
+        "execution": {
+          "label": "Execution Intelligence",
+          "horizons": {
+            "today": "오늘",
+            "week": "이번 주",
+            "month": "이번 달",
+            "quarter": "분기",
+            "investment": "투자 준비"
+          },
+          "minutes": "{count}분",
+          "confidenceImpact": "Confidence +{gain}%",
+          "criteria": {
+            "evidenceLogged": "근거·VOC 로그 완료",
+            "reviewComplete": "리뷰·검증 완료",
+            "milestoneComplete": "마일스톤 달성",
+            "investorReady": "IR 덱 초안 완료"
+          }
+        },
+        "growth": {
+          "label": "Growth Intelligence",
+          "weeks": "{count}주",
+          "phases": {
+            "mvp": "MVP",
+            "interview": "고객 인터뷰",
+            "landing": "랜딩·출시",
+            "marketing": "마케팅",
+            "funding": "투자",
+            "government": "정부지원"
+          }
+        }
+      },
       "operating": {
         "label": "Founder AI PM · Project OS",
         "daily": {

@@ -4289,6 +4289,90 @@
         "confidenceEffect": "Confidence",
         "goEffect": "GO probability"
       },
+      "intelligence": {
+        "memory": {
+          "label": "Founder Memory",
+          "recall": "Last week we focused on {lastFocus}, but {lastGap} was still weak. This week we'll start with {thisFocus}.",
+          "focus": {
+            "marketValidation": "market validation",
+            "competitorAnalysis": "competitor analysis",
+            "pricingValidation": "pricing validation",
+            "executionScale": "execution & scale"
+          },
+          "gap": {
+            "marketGap": "market size evidence",
+            "competitorGap": "competitive differentiation",
+            "vocGap": "customer interviews (VOC)",
+            "goReady": "GO execution readiness"
+          }
+        },
+        "business": {
+          "label": "Business Intelligence",
+          "sinceYesterday": "Since yesterday",
+          "items": {
+            "aiMarketInvestment": "AI market funding +{count} deals — capital flowing into founder OS",
+            "competitorPricing": "Competitor {name} changed pricing — revisit differentiation",
+            "seedActivity": "{count} seed rounds closed — review IR timing",
+            "grantPosted": "New grant posted: {program} — check eligibility"
+          }
+        },
+        "decision": {
+          "label": "Decision Intelligence",
+          "why": "Why",
+          "how": "How",
+          "when": "When",
+          "improvement": "Expected lift",
+          "confidencePath": "Confidence {from}% → {to}%",
+          "goPath": "GO {from}% → {to}%",
+          "etaDays": "Within ~{days} days",
+          "whyReasons": {
+            "marketGap": "Market size not validated — {verdict}. {gap} is the key gap.",
+            "competitorGap": "Weak differentiation — {verdict}. Secure {gap} first.",
+            "vocGap": "VOC depth below GO threshold. {gap} is priority.",
+            "goReady": "Core evidence is sufficient. Execution speed is the variable."
+          },
+          "howActions": {
+            "marketResearch": "3 market sizing / TAM-SAM validation interviews",
+            "competitorDeepDive": "Competitive matrix + differentiation one-pager",
+            "pricingInterview": "5 pricing validation interviews",
+            "mvpLaunch": "Lock MVP scope → 2-week sprint"
+          },
+          "whenHorizons": {
+            "beforeGo": "Within {days} days before GO — finish this week",
+            "goNow": "GO now — start execution today"
+          }
+        },
+        "execution": {
+          "label": "Execution Intelligence",
+          "horizons": {
+            "today": "Today",
+            "week": "This week",
+            "month": "This month",
+            "quarter": "Quarter",
+            "investment": "Investor prep"
+          },
+          "minutes": "{count} min",
+          "confidenceImpact": "Confidence +{gain}%",
+          "criteria": {
+            "evidenceLogged": "Evidence / VOC logged",
+            "reviewComplete": "Review complete",
+            "milestoneComplete": "Milestone hit",
+            "investorReady": "IR deck draft ready"
+          }
+        },
+        "growth": {
+          "label": "Growth Intelligence",
+          "weeks": "{count} wk",
+          "phases": {
+            "mvp": "MVP",
+            "interview": "Customer interviews",
+            "landing": "Launch",
+            "marketing": "Marketing",
+            "funding": "Funding",
+            "government": "Grants"
+          }
+        }
+      },
       "operating": {
         "label": "Founder AI PM · Project OS",
         "daily": {

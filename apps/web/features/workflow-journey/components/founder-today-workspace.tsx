@@ -1,15 +1,21 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { DAILY_COACH } from '@/features/project-intelligence/constants/daily-coach';
 
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useJourneyHistory } from '../hooks/use-journey-history';
+import { computeFounderIntelligenceBrief } from '../lib/founder-intelligence-engine';
 import type { WorkflowGoalId } from '../types';
 import { DecisionExperienceCoach } from './decision-experience-coach';
+import { BusinessDeltaBrief } from './founder-ai-pm/business-delta-brief';
+import { DecisionIntelligencePathPanel } from './founder-ai-pm/decision-intelligence-path-panel';
+import { ExecutionRoadmapPanel } from './founder-ai-pm/execution-roadmap-panel';
 import { FounderAiPmOperatingPanel } from './founder-ai-pm/founder-ai-pm-operating-panel';
+import { FounderMemoryRecallPanel } from './founder-ai-pm/founder-memory-recall-panel';
 import { FounderTodayActionHero } from './founder-ai-pm/founder-today-action-hero';
+import { GrowthIntelligencePanel } from './founder-ai-pm/growth-intelligence-panel';
 import { WorkspaceEveningSummary } from './intelligence-workspace/workspace-evening-summary';
 
 const DAILY_VISIT_KEY = 'll_daily_visit';
@@ -49,6 +55,11 @@ export function FounderTodayWorkspace({
   const analytics = useJourneyAnalytics();
   const { append } = useJourneyHistory(projectId);
 
+  const intelligence = useMemo(
+    () => computeFounderIntelligenceBrief(projectId, goalId, confidence),
+    [confidence, goalId, projectId],
+  );
+
   useEffect(() => {
     trackReturnVisits(analytics, goalId);
     analytics.trackDecisionViewed(goalId);
@@ -66,11 +77,16 @@ export function FounderTodayWorkspace({
 
   return (
     <div className="space-y-8">
+      <FounderMemoryRecallPanel recall={intelligence.memoryRecall} />
+
+      <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />
+
       <FounderAiPmOperatingPanel
         variant="morning"
         goalId={goalId}
         confidence={confidence}
         projectName={projectName}
+        hideMorningAlert
       />
 
       <FounderTodayActionHero
@@ -78,6 +94,14 @@ export function FounderTodayWorkspace({
         confidence={confidence}
         onStart={handleStartAction}
       />
+
+      <DecisionIntelligencePathPanel path={intelligence.decisionPath} />
+
+      <ExecutionRoadmapPanel items={intelligence.executionRoadmap} />
+
+      {intelligence.showGrowth ? (
+        <GrowthIntelligencePanel items={intelligence.growthPath} />
+      ) : null}
 
       <DecisionExperienceCoach
         id="journey-decision-coach"

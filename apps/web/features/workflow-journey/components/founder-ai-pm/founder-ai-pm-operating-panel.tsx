@@ -16,6 +16,7 @@ type FounderAiPmOperatingPanelProps = {
   projectName?: string;
   className?: string;
   variant?: 'full' | 'morning';
+  hideMorningAlert?: boolean;
   onStartToday?: () => void;
 };
 
@@ -25,6 +26,7 @@ export function FounderAiPmOperatingPanel({
   projectName,
   className,
   variant = 'full',
+  hideMorningAlert = false,
   onStartToday,
 }: FounderAiPmOperatingPanelProps) {
   const t = useTranslations('workflow.founderAiPm.operating');
@@ -65,7 +67,8 @@ export function FounderAiPmOperatingPanel({
         </ol>
       </div>
 
-      {/* Daily Brief */}
+      {/* Daily Brief — hidden when Business Delta Brief leads */}
+      {!isMorning || !hideMorningAlert ? (
       <div className="rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/[0.1] via-primary/[0.04] to-background p-6 sm:p-8">
         <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
           <Sparkles className="size-4" aria-hidden />
@@ -75,7 +78,7 @@ export function FounderAiPmOperatingPanel({
         {projectName ? (
           <p className="mt-1 text-sm text-muted-foreground">{projectName}</p>
         ) : null}
-        {isMorning ? (
+        {isMorning && !hideMorningAlert ? (
           <p className="mt-4 rounded-xl border border-amber-300/50 bg-amber-50/60 px-4 py-3 text-sm leading-relaxed text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-50">
             {t(`morningAlerts.${morningAlertKey}`, {
               current: daily.confidenceCurrent,
@@ -110,6 +113,7 @@ export function FounderAiPmOperatingPanel({
           </Button>
         ) : null}
       </div>
+      ) : null}
 
       {isMorning ? null : (
         <>
