@@ -2,6 +2,7 @@ const STORAGE_KEY = 'll_founder_micro_answers';
 
 export type FounderMicroAnswers = {
   targetCustomer?: 'office' | 'student' | 'enterprise' | 'unknown';
+  hasMvp?: 'yes' | 'no';
 };
 
 export function loadFounderMicroAnswers(): FounderMicroAnswers {

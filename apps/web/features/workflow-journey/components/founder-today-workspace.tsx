@@ -25,7 +25,11 @@ import {
   FounderActionWorkspace,
   type ActionWorkspaceResult,
 } from './founder-ai-pm/founder-action-workspace';
+import { FounderAiPmApprovalCard } from './founder-ai-pm/founder-ai-pm-approval-card';
+import { FounderAiPmInbox } from './founder-ai-pm/founder-ai-pm-inbox';
+import { FounderAiPmProactiveQuestion } from './founder-ai-pm/founder-ai-pm-proactive-question';
 import { FounderAiPmWorkLog } from './founder-ai-pm/founder-ai-pm-work-log';
+import { FounderDailyGoalPanel } from './founder-ai-pm/founder-daily-goal-panel';
 import { FounderDailyReviewPanel } from './founder-ai-pm/founder-daily-review-panel';
 import { FounderEvidenceAutoPanel } from './founder-ai-pm/founder-evidence-auto-panel';
 import { FounderGrowthTimelinePanel } from './founder-ai-pm/founder-growth-timeline-panel';
@@ -36,7 +40,6 @@ import { FounderProjectHealthDashboard } from './founder-ai-pm/founder-project-h
 import { FounderSuccessScoreExplained } from './founder-ai-pm/founder-success-score-explained';
 import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionFirst } from './founder-ai-pm/founder-today-action-first';
-import { FounderTodayHero } from './founder-ai-pm/founder-today-hero';
 import { FounderTodayOutcomeStrip } from './founder-ai-pm/founder-today-outcome-strip';
 import { FounderWeeklyCeoReviewPanel } from './founder-ai-pm/founder-weekly-ceo-review-panel';
 
@@ -80,7 +83,7 @@ export function FounderTodayWorkspace({
 }: FounderTodayWorkspaceProps) {
   const t = useTranslations('workflow.founderAiPm.todayFirst');
   const analytics = useJourneyAnalytics();
-  const { append } = useJourneyHistory(projectId);
+  const { entries: historyEntries, append } = useJourneyHistory(projectId);
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeAction, setActiveAction] = useState<ReturnType<typeof resolveActionWorkspace> | null>(
     null,
@@ -88,11 +91,6 @@ export function FounderTodayWorkspace({
   const [completionUpdate, setCompletionUpdate] = useState<ActionCompletionUpdateResult | null>(
     null,
   );
-  const [recentScoreUpdate, setRecentScoreUpdate] = useState<{
-    delta: number;
-    after: number;
-    actionTitle?: string;
-  } | null>(null);
 
   const intelligence = useMemo(
     () => computeFounderIntelligenceBrief(projectId, goalId, confidence),
@@ -160,13 +158,6 @@ export function FounderTodayWorkspace({
   };
 
   const handleDebriefContinue = () => {
-    if (completionUpdate) {
-      setRecentScoreUpdate({
-        delta: completionUpdate.scoreDelta,
-        after: completionUpdate.scoreAfter,
-        actionTitle: completionUpdate.debrief.actionTitle,
-      });
-    }
     setCompletionUpdate(null);
     setRefreshKey((key) => key + 1);
   };
@@ -198,30 +189,37 @@ export function FounderTodayWorkspace({
       ) : null}
 
       <div className="space-y-6">
-        <FounderTodayHero
+        <FounderAiPmInbox
+          projectId={projectId}
+          deltas={intelligence.businessDeltas}
+          evidence={evidence}
+          todayActions={intelligence.todayActions}
+          onReviewAction={(actionId) => handleStartById(`inbox_${actionId}`, actionId)}
+        />
+
+        <FounderAiPmProactiveQuestion />
+
+        <FounderDailyGoalPanel
           score={intelligence.successScore}
           primaryAction={primaryAction}
-          recentScoreUpdate={recentScoreUpdate}
-          onStart={() =>
+        />
+
+        <FounderAiPmApprovalCard
+          primaryAction={primaryAction}
+          onApprove={() =>
             handleStartById(
-              primaryAction ? `hero_${primaryAction.id}` : 'hero_primary',
+              primaryAction ? `approve_${primaryAction.id}` : 'approve_primary',
               primaryAction?.id,
             )
           }
         />
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(240px,300px)]">
-          <FounderTodayOutcomeStrip
-            score={intelligence.successScore}
-            primaryAction={primaryAction}
-          />
-          {operatingState?.timeline ? (
-            <FounderAiPmWorkLog
-              timeline={operatingState.timeline}
-              evidence={evidence}
-            />
-          ) : null}
-        </div>
+        <FounderTodayOutcomeStrip
+          score={intelligence.successScore}
+          primaryAction={primaryAction}
+        />
+
+        <FounderAiPmWorkLog evidence={evidence} history={historyEntries} />
 
         <details className="rounded-2xl border border-border/60 bg-muted/10">
           <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">

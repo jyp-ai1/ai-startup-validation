@@ -4721,7 +4721,69 @@
       },
       "workLog": {
         "label": "AI PM work log",
-        "runningLead": "What your AI PM is doing now"
+        "title": "AI PM activity log",
+        "runningLead": "What your AI PM is doing now",
+        "entries": {
+          "marketResearchDone": "Market research complete",
+          "competitorScan": "Analyzed 18 competitors",
+          "strategyDraft": "Pricing strategy draft ready",
+          "riskFound": "Risk identified",
+          "evidenceLogged": "Evidence logged",
+          "founderActivity": "{summary}",
+          "monitoring": "Monitoring market changes"
+        }
+      },
+      "inbox": {
+        "label": "AI PM inbox",
+        "title": "AI PM inbox",
+        "subtitle": "{count} items to review today",
+        "reviewCta": "Review",
+        "reviewed": "✓ Reviewed",
+        "items": {
+          "competitorPrice": "Competitor price change detected",
+          "competitorPriceSuggest": "Pricing strategy update proposed",
+          "marketSignal": "Market trend shift detected",
+          "marketSignalSuggest": "Market strategy update proposed",
+          "investmentSignal": "Investment environment shift detected",
+          "investmentSignalSuggest": "Review fundraising timeline",
+          "grantDeadline": "Government grant deadline D-{days}",
+          "grantDeadlineSuggest": "Start application prep",
+          "interviewAnalysis": "Customer interview analysis complete",
+          "interviewAnalysisSuggest": "3 shared pain points found",
+          "evidenceAnalysis": "New evidence summarized",
+          "evidenceAnalysisSuggest": "Recommend updating strategy",
+          "todayAction": "Today's priority work is ready",
+          "todayActionSuggest": "~{minutes} min · +{impact}%"
+        }
+      },
+      "approval": {
+        "label": "AI PM work proposal",
+        "aiPmLabel": "AI PM",
+        "lead": "I recommend starting with\n\n{action}\n\ntoday.",
+        "defaultAction": "Interview 3 potential customers",
+        "effectLead": "Expected effect",
+        "timeLead": "Estimated time",
+        "minutes": "{count} min",
+        "approveCta": "Approve"
+      },
+      "dailyGoal": {
+        "label": "Today's goal",
+        "title": "Today's goal",
+        "defaultAction": "Interview 3 customers",
+        "completeLead": "When done,",
+        "scoreLead": "Success probability",
+        "completeHint": "expected"
+      },
+      "proactiveQuestion": {
+        "label": "AI PM question",
+        "lead": "Founder,",
+        "question": "One quick question.\n\nDo you have an MVP today?",
+        "options": {
+          "yes": "Yes",
+          "no": "Not yet"
+        },
+        "thanks": "Thank you.",
+        "savedFeedback": "✓ Saved.\n\nI'll refine the strategy."
       },
       "scoreUpdate": {
         "lead": "Thanks to your AI PM,\n\nsuccess probability",

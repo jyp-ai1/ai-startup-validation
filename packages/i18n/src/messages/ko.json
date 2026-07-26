@@ -4703,7 +4703,69 @@
       },
       "workLog": {
         "label": "AI PM 작업 로그",
-        "runningLead": "지금 AI PM이 하는 일"
+        "title": "AI PM 업무 기록",
+        "runningLead": "지금 AI PM이 하는 일",
+        "entries": {
+          "marketResearchDone": "시장 조사 완료",
+          "competitorScan": "경쟁사 18개 분석",
+          "strategyDraft": "가격 전략 초안 생성",
+          "riskFound": "리스크 발견",
+          "evidenceLogged": "판단 근거 기록",
+          "founderActivity": "{summary}",
+          "monitoring": "시장 변화 모니터링 중"
+        }
+      },
+      "inbox": {
+        "label": "AI PM 업무함",
+        "title": "AI PM 업무함",
+        "subtitle": "오늘 확인할 내용 {count}건",
+        "reviewCta": "확인",
+        "reviewed": "✓ 확인함",
+        "items": {
+          "competitorPrice": "경쟁사 가격 변경 발견",
+          "competitorPriceSuggest": "가격 전략 수정 제안",
+          "marketSignal": "시장 트렌드 변화 감지",
+          "marketSignalSuggest": "시장 전략 업데이트 제안",
+          "investmentSignal": "투자 환경 변화 감지",
+          "investmentSignalSuggest": "투자 일정 재검토 제안",
+          "grantDeadline": "정부지원사업 마감 D-{days}",
+          "grantDeadlineSuggest": "신청 준비 시작",
+          "interviewAnalysis": "고객 인터뷰 분석 완료",
+          "interviewAnalysisSuggest": "공통 Pain Point 3개 발견",
+          "evidenceAnalysis": "새 판단 근거 정리 완료",
+          "evidenceAnalysisSuggest": "전략에 반영 제안",
+          "todayAction": "오늘 우선 업무 준비 완료",
+          "todayActionSuggest": "약 {minutes}분 · +{impact}%"
+        }
+      },
+      "approval": {
+        "label": "AI PM 업무 제안",
+        "aiPmLabel": "AI PM",
+        "lead": "오늘\n\n{action}\n\n을 먼저 진행하는 것을 추천드립니다.",
+        "defaultAction": "고객 인터뷰 3명",
+        "effectLead": "예상 효과",
+        "timeLead": "예상 시간",
+        "minutes": "{count}분",
+        "approveCta": "승인"
+      },
+      "dailyGoal": {
+        "label": "오늘 목표",
+        "title": "오늘 목표",
+        "defaultAction": "고객 인터뷰 3명",
+        "completeLead": "완료되면",
+        "scoreLead": "사업 가능성",
+        "completeHint": "도달 예정"
+      },
+      "proactiveQuestion": {
+        "label": "AI PM 질문",
+        "lead": "대표님,",
+        "question": "한 가지만 여쭤보겠습니다.\n\n현재 MVP가 있습니까?",
+        "options": {
+          "yes": "있다",
+          "no": "없다"
+        },
+        "thanks": "감사합니다.",
+        "savedFeedback": "✓ 저장되었습니다.\n\n전략을 더 정확히 조정하겠습니다."
       },
       "scoreUpdate": {
         "lead": "AI PM\n\n덕분에\n\n사업 성공확률이",
