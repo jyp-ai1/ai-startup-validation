@@ -46,7 +46,7 @@ export function WorkflowPlanView({ goalId, template }: WorkflowPlanViewProps) {
   }, [tt]);
 
   return (
-    <JourneyLayout phase="workflow" width="wide">
+    <JourneyLayout phase="workflow" width="wide" variant="intelligence">
       <JourneyFade>
         <FounderWorkspaceLayout
           activeStep="project"

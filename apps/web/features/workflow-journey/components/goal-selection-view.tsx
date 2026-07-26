@@ -167,7 +167,7 @@ export function GoalSelectionView({ demoMode = false }: GoalSelectionViewProps) 
         />
       ) : null}
 
-      <JourneyLayout phase="goal">
+      <JourneyLayout phase="goal" variant="intelligence">
         <JourneyFade>
           <FounderWorkspaceLayout
             activeStep="goal"

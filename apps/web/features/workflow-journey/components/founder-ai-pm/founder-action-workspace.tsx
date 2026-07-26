@@ -9,7 +9,7 @@ import { Button, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { ResolvedActionWorkspace } from '../../lib/founder-action-resolver';
-import { resolveFounderActionTitle } from '../../lib/founder-action-display';
+import { resolveFounderActionTitle, normalizeFounderPipelineText } from '../../lib/founder-action-display';
 import { resolveActionAnswerInsightKey } from '../../lib/founder-action-insights';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
 import { JourneyFocusedShell } from '../journey-focused-shell';
@@ -43,7 +43,8 @@ function resolveQuestionText(
 ): string {
   if (key.startsWith('pipeline_') && pipelineQuestions) {
     const pipelineIndex = Number(key.replace('pipeline_', '')) - 1;
-    return pipelineQuestions[pipelineIndex] ?? tq('generic.q1');
+    const question = pipelineQuestions[pipelineIndex];
+    return question ? normalizeFounderPipelineText(question) : tq('generic.q1');
   }
   return tq(`${key}`);
 }

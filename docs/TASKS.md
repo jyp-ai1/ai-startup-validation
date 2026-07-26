@@ -8,17 +8,19 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint P0 — Unified Workspace IA 🚧
+## Sprint P0 — Unified Workspace IA ✅
 
-**Status:** In progress  
-**Goal:** 하나의 Shell · 영구 좌측 워크플로 · 탭 기반 의사결정 보드 · Founder 한국어
+**Status:** Complete — shipped follow-up polish  
+**Goal:** 하나의 Shell · 영구 좌측 워크플로 · 탭 기반 의사결정 보드 · Founder 한국어 · 중앙 채팅 전용
 
 | Priority | Focus | Status |
 |----------|-------|--------|
 | P0-1 | `WorkspaceShell` 30/40/30 (좌 워크플로 / 중 업무 / 우 Decision Board) | ✅ |
-| P0-2 | 8단계 AI PM Workflow 좌측 영구 고정 (Goal→Complete) | ✅ |
-| P0-3 | Executive Decision Board 탭 UI (결론·SWOT·근거·경쟁·시장·가격·실행) | ✅ |
-| P0-4 | 영어 Founder 문구 제거 (mock pipeline 질문·액션 타이틀) | ✅ |
+| P0-2 | 8단계 회사 진행상황 좌측 영구 고정 — AI 분석 중에도 ▶ AI 분석 | ✅ |
+| P0-3 | Decision Board: GO+승인 고정 + 탭 (결론·SWOT·근거·경쟁·시장·가격·실행) | ✅ |
+| P0-4 | 영어 Founder 문구 제거 + pipeline 질문 한국어 | ✅ |
+| P0-5 | 중앙 AI PM Office = 채팅 전용 (`AiPmOfficeChat`) | ✅ |
+| P0-6 | 상단 Goal/Workflow Stepper 제거 · Workspace 탭 nav 제거 | ✅ |
 
 **Key files:**
 - `workspace-shell.tsx` — 3-column grid

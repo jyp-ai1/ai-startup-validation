@@ -67,9 +67,44 @@ export function FounderExecutiveDecisionBoard({
       )}
       aria-label={t('label')}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-        {t('label')}
-      </p>
+      {/* Pinned executive summary — always visible */}
+      <div className="space-y-3 border-b border-border/60 pb-4">
+        <div className="flex flex-wrap items-baseline gap-2">
+          <span
+            className={cn(
+              'text-2xl font-bold',
+              decisionEngine.verdict === 'GO'
+                ? 'text-emerald-600'
+                : decisionEngine.verdict === 'HOLD'
+                  ? 'text-amber-600'
+                  : 'text-red-600',
+            )}
+          >
+            {decisionEngine.verdict === 'HOLD'
+              ? t('conclusionPanel.conditionalGo')
+              : t(`summary.verdict.${decisionEngine.verdict}`)}
+          </span>
+          <span className="text-2xl font-bold tabular-nums">{decisionEngine.scorePercent}%</span>
+        </div>
+
+        {decisionEngine.approval ? (
+          <>
+            <p className="text-sm text-muted-foreground">{t('pinned.todayOnly')}</p>
+            <p className="text-base font-semibold">{decisionEngine.approval.title}</p>
+            <Button
+              type="button"
+              size="lg"
+              className="h-11 w-full rounded-xl font-semibold"
+              onClick={() => {
+                if (onApproveAction) onApproveAction(decisionEngine.approval!.actionId);
+                else onStartAction?.(decisionEngine.approval!.actionId);
+              }}
+            >
+              {t('decisionEngine.approveCta')}
+            </Button>
+          </>
+        ) : null}
+      </div>
 
       <div
         className="mt-4 flex flex-wrap gap-1 border-b border-border/60 pb-3"
@@ -97,59 +132,7 @@ export function FounderExecutiveDecisionBoard({
 
       <div className="mt-4 min-h-[240px]" role="tabpanel">
         {activeTab === 'conclusion' ? (
-          <div className="space-y-4">
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground">{t('conclusionPanel.headline')}</p>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <span
-                  className={cn(
-                    'text-2xl font-bold',
-                    decisionEngine.verdict === 'GO'
-                      ? 'text-emerald-600'
-                      : decisionEngine.verdict === 'HOLD'
-                        ? 'text-amber-600'
-                        : 'text-red-600',
-                  )}
-                >
-                  {decisionEngine.verdict === 'HOLD'
-                    ? t('conclusionPanel.conditionalGo')
-                    : t(`summary.verdict.${decisionEngine.verdict}`)}
-                </span>
-                <span className="text-xl font-bold tabular-nums">{decisionEngine.scorePercent}%</span>
-                <span className="tracking-widest text-amber-500">{starsDisplay(decisionEngine.stars)}</span>
-              </div>
-            </div>
-
-            {decisionEngine.approval ? (
-              <div className="rounded-xl border border-primary/30 bg-primary/[0.06] p-4">
-                <p className="text-base font-semibold leading-relaxed">
-                  {t('conclusionPanel.founderLead', { action: decisionEngine.approval.title })}
-                </p>
-                <p className="mt-3 text-sm text-muted-foreground">{t('conclusionPanel.expectedScore')}</p>
-                <p className="text-xl font-bold tabular-nums">
-                  {decisionEngine.approval.scoreBefore}% → {decisionEngine.approval.scoreAfter}%
-                  <span className="ml-2 text-base font-semibold text-emerald-600">
-                    +{decisionEngine.approval.impact}%
-                  </span>
-                </p>
-                <Button
-                  type="button"
-                  size="lg"
-                  className="mt-4 h-11 w-full rounded-xl font-semibold"
-                  onClick={() => {
-                    if (onApproveAction) onApproveAction(decisionEngine.approval!.actionId);
-                    else onStartAction?.(decisionEngine.approval!.actionId);
-                  }}
-                >
-                  {t('decisionEngine.approveCta')}
-                </Button>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                {t(`decisionEngine.recommendation.${decisionEngine.recommendation}`)}
-              </p>
-            )}
-
+          <div className="space-y-3">
             <ul className="space-y-1.5" role="list">
               {decisionEngine.todayReasons.map((reason) => (
                 <li key={reason.key} className="flex items-center gap-2 text-sm">
@@ -160,6 +143,16 @@ export function FounderExecutiveDecisionBoard({
                 </li>
               ))}
             </ul>
+            {decisionEngine.approval ? (
+              <p className="text-sm tabular-nums text-muted-foreground">
+                {t('conclusionPanel.expectedScore')}{' '}
+                {decisionEngine.approval.scoreBefore}% → {decisionEngine.approval.scoreAfter}%
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {t(`decisionEngine.recommendation.${decisionEngine.recommendation}`)}
+              </p>
+            )}
           </div>
         ) : null}
 

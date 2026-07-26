@@ -4805,6 +4805,9 @@
       "executiveDecisionBoard": {
         "label": "Executive Decision Board",
         "placeholder": "AI PM judgment appears after project registration.",
+        "pinned": {
+          "todayOnly": "Do only this today"
+        },
         "tabs": {
           "label": "Decision tabs",
           "conclusion": "Conclusion",
@@ -4979,6 +4982,14 @@
           }
         },
         "autonomous": { "label": "Overnight AI PM briefing (data-backed)" }
+      },
+      "officeChat": {
+        "morningChanges": "Since yesterday:\n{changes}",
+        "overnightDone": "Overnight research is done.\n{report}",
+        "todayFocus": "Approve \"{action}\" today. (+{impact}%)",
+        "resultUpdate": "\"{action}\" done. Viability {before}% → {after}%",
+        "decisionHint": "See the Decision Board on the right for evidence.",
+        "approveCta": "Approve {action}"
       },
       "executiveOperatingRail": {
         "label": "Company operations",

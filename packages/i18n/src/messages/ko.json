@@ -4700,8 +4700,8 @@
       "ctaSub": "시장조사부터 실행계획까지\n자동으로 진행됩니다."
     },
     "journeyGuide": {
-      "label": "AI PM 진행상황",
-      "title": "AI PM 업무",
+      "label": "회사 진행상황",
+      "title": "회사 진행상황",
       "status": {
         "done": "완료",
         "current": "현재",
@@ -4710,10 +4710,10 @@
       },
       "steps": {
         "goal": "목표",
-        "project": "프로젝트",
-        "research": "조사",
-        "analysis": "분석",
-        "judgment": "판단",
+        "project": "프로젝트 등록",
+        "research": "AI 조사",
+        "analysis": "AI 분석",
+        "judgment": "AI 판단",
         "strategy": "전략",
         "execution": "실행",
         "complete": "완료"
@@ -4951,6 +4951,9 @@
       "executiveDecisionBoard": {
         "label": "의사결정 보드",
         "placeholder": "프로젝트 등록 후 AI PM 판단이 표시됩니다.",
+        "pinned": {
+          "todayOnly": "오늘 해야할 것"
+        },
         "tabs": {
           "label": "의사결정 탭",
           "conclusion": "결론",
@@ -5125,6 +5128,14 @@
           }
         },
         "autonomous": { "label": "AI PM 밤새 브리핑 (데이터 기반)" }
+      },
+      "officeChat": {
+        "morningChanges": "어제 이후 변경:\n{changes}",
+        "overnightDone": "밤새 AI PM이 조사를 마쳤습니다.\n{report}",
+        "todayFocus": "오늘은 \"{action}\"만 승인해 주시면 됩니다. (+{impact}%)",
+        "resultUpdate": "\"{action}\" 완료. 사업 가능성 {before}% → {after}%",
+        "decisionHint": "근거는 오른쪽 Decision Board에서 확인하실 수 있습니다.",
+        "approveCta": "{action} 승인"
       },
       "executiveOperatingRail": {
         "label": "회사 운영",

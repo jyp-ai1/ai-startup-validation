@@ -130,7 +130,7 @@ import { FounderSuccessScoreExplained } from './founder-ai-pm/founder-success-sc
 import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionFirst } from './founder-ai-pm/founder-today-action-first';
 import { FounderExecutiveDecisionBoardLoader } from './founder-ai-pm/founder-executive-decision-board-loader';
-import { FounderExecutiveOperatingRail } from './founder-ai-pm/founder-executive-operating-rail';
+import { FounderAiPmOfficeCenter } from './founder-ai-pm/founder-ai-pm-office-center';
 import { FounderTodayOutcomeStrip } from './founder-ai-pm/founder-today-outcome-strip';
 const DAILY_VISIT_KEY = 'll_daily_visit';
 const WEEKLY_VISIT_KEY = 'll_weekly_visit';
@@ -586,37 +586,17 @@ export function FounderTodayWorkspace({
         embedded
         activeStep="execution"
         center={
-          <>
-            <FounderExecutiveOperatingRail
-              habit={habitBrief}
-              livingMorningContext={livingBrief.morningContext}
-              overnightSnapshot={overnightSnapshot}
-              overnightSyncing={overnightSyncing}
-              approvedActionIds={approvedActionIds}
-              liveWorkActionId={liveWorkActionId}
-              liveWorkTitle={liveWorkTitle}
-              onApprove={handleApproveQueueItem}
-              onLiveWorkComplete={handleLiveWorkComplete}
-              onOvernightView={handleOvernightView}
-              scoreBefore={completionUpdate?.scoreBefore}
-              scoreAfter={completionUpdate?.scoreAfter}
-              lastActionTitle={completionUpdate?.debrief.actionTitle}
-            />
-            <details className="rounded-2xl border border-border/60 bg-muted/10">
-              <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
-                {tDaily('analysisDetails')}
-              </summary>
-              <div className="space-y-6 border-t border-border/60 px-5 py-6">
-                <FounderAiPmWorkLog evidence={evidence} history={historyEntries} />
-                <FounderCeoInboxPanel
-                  items={inboxItems}
-                  pendingCount={dailyCeoBrief.pendingInboxCount}
-                  onReview={(actionId) => handleStartById(`ceo_inbox_${actionId ?? 'primary'}`, actionId)}
-                />
-                <FounderAiOperatingSystemSection brief={osBrief} onApprove={handleApproveQueueItem} />
-              </div>
-            </details>
-          </>
+          <FounderAiPmOfficeCenter
+            habit={habitBrief}
+            livingMorningContext={livingBrief.morningContext}
+            overnightSnapshot={overnightSnapshot}
+            approvedActionIds={approvedActionIds}
+            onApprove={handleApproveQueueItem}
+            onOvernightView={handleOvernightView}
+            scoreBefore={completionUpdate?.scoreBefore}
+            scoreAfter={completionUpdate?.scoreAfter}
+            lastActionTitle={completionUpdate?.debrief.actionTitle}
+          />
         }
         right={
           <FounderExecutiveDecisionBoardLoader

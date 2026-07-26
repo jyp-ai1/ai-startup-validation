@@ -40,7 +40,6 @@ import {
   type ProjectRegistrationData,
 } from './project-registration-panel';
 import {
-  JourneyWorkspaceNav,
   type JourneyWorkspaceTab,
 } from './intelligence-workspace/journey-workspace-nav';
 import { AI_PM_WORK_COUNT } from '../lib/ai-pm-conversation';
@@ -289,23 +288,25 @@ export function StrategyWorkspaceShell({
 
   if (phase === 'thinking') {
     return (
-      <AiPmLiveWorkspace
-        agentIndex={Math.min(pipelineAgentIndex, AI_PM_WORK_COUNT - 1)}
-        failed={thinkingFailed}
-        projectId={projectId}
-        projectName={registration?.projectName ?? projectDisplayName}
-        goalId={goalId}
-        confidence={project.confidence}
-        onRetry={() => {
-          setThinkingFailed(false);
-          setPhase('thinking');
-        }}
-        onCancel={() => {
-          setThinkingFailed(false);
-          setPhase('registration');
-        }}
-        onSkipToToday={showCompletionHandoff}
-      />
+      <JourneyLayout phase="workspace" width="wide" variant="intelligence" versionLabel={BETA_VERSION}>
+        <AiPmLiveWorkspace
+          agentIndex={Math.min(pipelineAgentIndex, AI_PM_WORK_COUNT - 1)}
+          failed={thinkingFailed}
+          projectId={projectId}
+          projectName={registration?.projectName ?? projectDisplayName}
+          goalId={goalId}
+          confidence={project.confidence}
+          onRetry={() => {
+            setThinkingFailed(false);
+            setPhase('thinking');
+          }}
+          onCancel={() => {
+            setThinkingFailed(false);
+            setPhase('registration');
+          }}
+          onSkipToToday={showCompletionHandoff}
+        />
+      </JourneyLayout>
     );
   }
 
@@ -335,17 +336,6 @@ export function StrategyWorkspaceShell({
       width="wide"
       variant="intelligence"
       versionLabel={BETA_VERSION}
-      navSlot={
-        phase === 'active' ? (
-          <JourneyWorkspaceNav
-            active={tab}
-            onChange={(next) => {
-              setTab(next);
-              analytics.trackMockActionCompleted(`tab_${next}`, project.confidence);
-            }}
-          />
-        ) : null
-      }
     >
       <BetaFeedbackModal />
       {phase === 'registration' ? (
