@@ -6,7 +6,7 @@
 **Authority:** [SPRINT_0_4_V2_UX_QA.md](./sprints/SPRINT_0_4_V2_UX_QA.md) · ADR-019  
 **Date started:** 2026-07-27  
 **Tester:** PM + AI  
-**Preview URL:** _(fill during session)_
+**Preview URL:** https://ai-startup-validation-tau.vercel.app/ko (deploy `main` @ `bca68e0`)
 
 ---
 
@@ -41,9 +41,14 @@ Landing → Who → Workflow → Validation → Investigate → Conclusion → W
 ## How to run this QA
 
 1. **처음 사용하는 대표**처럼 진행 — 버튼만 눌러보는 smoke test 금지
-2. 각 STEP마다 PM이 질문 → YES/NO + Friction Score 기록
+2. 각 STEP마다 PM이 **Q0 → Q1 → Q2** → YES/NO + score (≥ **9.5** to PASS)
 3. **멈춘 지점**이 있으면 즉시 기록 (이유 1줄)
-4. FAIL이어도 Legacy 삭제 금지 — V2만 수정 후 재검증
+4. FAIL 또는 score &lt; 9.5 → fix → commit → push → redeploy → **re-test**; next STEP 금지
+5. **One STEP per deploy cycle** (ADR-021): develop 30–60min → build → commit → push main → PM URL test
+
+```text
+Develop → pnpm build → commit → push → Vercel → PM test → PASS (≥9.5) → next STEP
+```
 
 ---
 
@@ -166,17 +171,20 @@ Landing → Who → Workflow → Validation → Investigate → Conclusion → W
 
 ### STEP 3 — Workflow (`/workflow`)
 
-**Story fit:** 지금 이 Workflow가 **내 이야기**처럼 느껴지는가?
+**Goal:** 검토 과정 안내만 — AI PM · 채팅 · 보고서 없음
 
-| Check | Answer | Notes |
-|-------|--------|-------|
-| "내가 지금 이 단계" 느낌 | ☐ YES · ☐ NO | |
-| 다음 행동이 한 문장으로 명확 | ☐ YES · ☐ NO | |
-| 다음으로 망설임 없이 진행 | ☐ YES · ☐ NO | |
+| # | Question | Answer | Score | Notes |
+|---|----------|--------|------:|-------|
+| Q0 | 왜 다음을 눌러야 하는가? | ☐ YES · ☐ NO | | |
+| Q1 | 무엇을 하는 단계인가? (5초) | ☐ YES · ☐ NO | | |
+| Q2 | 다음 단계가 명확한가? | ☐ YES · ☐ NO | | |
+
+**DoD:** 5초 안에 무엇/왜/부담 없음 · **PASS ≥ 9.5**
+
+**Deployed:** `feat(v2): simplify workflow to review process guide` — pending PM test
 
 **Friction:** ☐ 🙂 · ☐ 😐 · ☐ 😫  
-**멈춘 지점:**  
-**Fix action (1 line):**  
+**Fix action (if FAIL):**  
 
 ---
 

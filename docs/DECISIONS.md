@@ -558,6 +558,61 @@ Sprint 0-4 Product Validation showed Landing failed when Hero sold **AI PM** bef
 
 ---
 
+## ADR-021: Step-by-step deploy QA — one STEP per cycle
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 0 shipped too much at once without PM product validation between steps. Product risk returned: structure complexity and message drift (e.g. Landing selling AI PM first).
+
+### Decision
+
+**Fixed loop per STEP (30–60 min dev max):**
+
+```text
+Develop → pnpm build → commit → push main → Vercel deploy → PM test → PASS/FAIL → next STEP only if PASS
+```
+
+**Never:**
+
+- Multiple sprints in one batch
+- Many features without PM sign-off between steps
+- Next STEP while score &lt; 9.5
+
+**PASS gate (every STEP):**
+
+| # | Question |
+|---|----------|
+| Q0 | 왜 눌러야 하는가? |
+| Q1 | 무엇을 해야 하는가? |
+| Q2 | 다음 단계가 명확한가? |
+
+All YES · **Score ≥ 9.5** → proceed. Otherwise fix and redeploy; do not start next STEP.
+
+**`main` rule:** only push testable, build-passing states.
+
+**Commit format:** `feat(v2): <step scope>` — e.g. `feat(v2): improve workflow selection UX`
+
+**V2 QA STEP order (Sprint 0-4):**
+
+1. Landing ✅  
+2. Who ✅  
+3. Workflow ← current  
+4. Validation · 5. Investigate · 6. Conclusion · 7. Workspace
+
+PM receives production URL after each push; Legacy removal (0-5) remains gated on full flow PASS.
+
+### Consequences
+
+- [QA_REPORT_V2.md](./QA_REPORT_V2.md) — universal Q0/Q1/Q2 per STEP
+- [TASKS.md](./TASKS.md) — one STEP in flight at a time
+- AI/engineering: no parallel STEP implementation without PM PASS
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

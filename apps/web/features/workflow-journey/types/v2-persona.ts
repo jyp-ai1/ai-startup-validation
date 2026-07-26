@@ -31,5 +31,5 @@ export function getPersonaNextRoute(personaId: V2PersonaId): string {
   if (PERSONA_SKIP_VALIDATION.has(personaId)) {
     return '/workspaces';
   }
-  return '/workflow?compose=1';
+  return '/workflow';
 }

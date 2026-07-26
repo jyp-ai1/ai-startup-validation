@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 
 import { JourneyPageSkeleton } from '@/features/workflow-journey/components/journey-page-skeleton';
 import { getWorkflowTemplate, readJourneyGoal } from '@/features/workflow-journey';
+import { readJourneyPersona } from '@/features/workflow-journey/lib/v2-journey-cookies';
 import { buildPageMetadata } from '@/lib/site/page-metadata';
 
 const WorkflowComposeLoader = dynamic(
@@ -19,6 +20,14 @@ const WorkflowPlanView = dynamic(
   () =>
     import('@/features/workflow-journey/components/workflow-plan-view').then(
       (m) => m.WorkflowPlanView,
+    ),
+  { loading: () => <JourneyPageSkeleton phase="workflow" /> },
+);
+
+const V2WorkflowGuideView = dynamic(
+  () =>
+    import('@/features/workflow-journey/components/v2/v2-workflow-guide-view').then(
+      (m) => m.V2WorkflowGuideView,
     ),
   { loading: () => <JourneyPageSkeleton phase="workflow" /> },
 );
@@ -42,7 +51,17 @@ function ComposeFallback() {
 
 export default async function WorkflowPage({ searchParams }: WorkflowPageProps) {
   const params = await searchParams;
+  const personaId = await readJourneyPersona();
   const goalId = await readJourneyGoal();
+
+  if (!goalId && !personaId) {
+    redirect('/who');
+  }
+
+  if (personaId) {
+    return <V2WorkflowGuideView />;
+  }
+
   if (!goalId) {
     redirect('/who');
   }

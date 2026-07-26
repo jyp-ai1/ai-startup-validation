@@ -69,9 +69,21 @@ Landing → Who → Workflow → Validation → Investigate → Conclusion → W
 
 ---
 
-## Sprint 0-4 — V2 UX QA + User Flow Validation 📋 NEXT
+## Sprint 0-4 — V2 UX QA + User Flow Validation 📋 ACTIVE
 
-**Goal:** V2가 정답인지 검증 — Legacy 삭제 **전**에 WOW moment·persona·6-step flow 확인
+**Process (ADR-021):** one STEP → deploy → PM PASS (≥9.5) → next STEP only
+
+| STEP | Screen | QA status |
+|------|--------|-----------|
+| 1 | Landing | ✅ PASS 9.3 |
+| 2 | Who | ✅ PASS 8.7 (조건부) · fix deployed |
+| 3 | **Workflow** | ⬅ **NEXT** |
+| 4 | Validation | ⬜ |
+| 5 | Investigate | ⬜ |
+| 6 | Conclusion | ⬜ |
+| 7 | Workspace | ⬜ |
+
+**Goal:** V2가 정답인지 검증 — Legacy 삭제 **전**에 WOW moment·flow 확인
 
 **Gate:** PASS → Sprint 0-5 (Legacy removal) · FAIL → V2만 수정, Legacy 유지
 

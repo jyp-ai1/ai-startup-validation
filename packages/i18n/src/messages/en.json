@@ -4031,6 +4031,32 @@
           }
         }
       },
+      "workflowGuide": {
+        "title": "How your viability review works",
+        "lead": "Your path from here",
+        "subtitle": "Add details when you want — accuracy goes up. Start light.",
+        "youAreHere": "Up next",
+        "steps": {
+          "basic": {
+            "title": "Basic info",
+            "desc": "Enter your business idea in one line."
+          },
+          "optional": {
+            "title": "Optional details",
+            "desc": "Add customer, MVP, or pricing to raise accuracy. (optional)"
+          },
+          "investigate": {
+            "title": "AI research",
+            "desc": "Market, competition, and pricing review."
+          },
+          "result": {
+            "title": "See the result",
+            "desc": "GO / HOLD and what to do next."
+          }
+        },
+        "cta": "Start review",
+        "ctaHint": "Next: enter your idea in one line"
+      },
       "validation": {
         "title": "Business review",
         "nextHint": "Next: enter your business idea in one line.",

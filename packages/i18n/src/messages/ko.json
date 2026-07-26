@@ -4178,6 +4178,32 @@
           }
         }
       },
+      "workflowGuide": {
+        "title": "사업성 검토는 이렇게 진행됩니다",
+        "lead": "지금부터의 순서",
+        "subtitle": "입력할수록 정확도가 올라갑니다. 부담 없이 시작하세요.",
+        "youAreHere": "다음 단계",
+        "steps": {
+          "basic": {
+            "title": "기본정보 입력",
+            "desc": "사업 아이디어 한 줄만 입력합니다."
+          },
+          "optional": {
+            "title": "선택정보 입력",
+            "desc": "고객 · MVP · 가격을 추가하면 정확도가 올라갑니다. (선택)"
+          },
+          "investigate": {
+            "title": "AI 조사",
+            "desc": "시장 · 경쟁 · 가격을 조사합니다."
+          },
+          "result": {
+            "title": "결과 확인",
+            "desc": "GO / HOLD와 다음 행동을 확인합니다."
+          }
+        },
+        "cta": "검토 시작하기",
+        "ctaHint": "다음: 사업 아이디어 한 줄 입력"
+      },
       "validation": {
         "title": "사업 검토",
         "nextHint": "다음: 사업 아이디어를 한 줄 입력하세요.",
