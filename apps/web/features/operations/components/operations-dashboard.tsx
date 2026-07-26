@@ -16,6 +16,7 @@ import {
 import type { OpsDashboardStats } from '@/lib/analytics/types';
 import { AdminOpsTools } from './admin-ops-tools';
 import { AdminProductOsPanel } from './admin-product-os-panel';
+import { AdminActivationFunnelPanel } from './admin-activation-funnel-panel';
 import { AdminProductBrainPanel } from './admin-product-brain-panel';
 import { AdminFeedbackInbox } from './admin-feedback-inbox';
 import { AdminReleaseNotes } from './admin-release-notes';
@@ -147,6 +148,8 @@ export function OperationsDashboard() {
           {stats.productOs ? (
             <AdminProductOsPanel brief={stats.productOs} brain={stats.productBrain} />
           ) : null}
+
+          <AdminActivationFunnelPanel stats={stats} />
 
           {stats.productBrain?.experiments ? (
             <AdminProductBrainPanel brain={stats.productBrain} />

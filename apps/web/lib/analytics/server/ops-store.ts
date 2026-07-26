@@ -48,7 +48,10 @@ function countEventsSince(name: string, since: Date): number {
   }).length;
 }
 
-function buildProductBrain(healthScore: number): NonNullable<OpsDashboardStats['productBrain']> {
+function buildProductBrain(
+  healthScore: number,
+  worstDrop?: { step: string; dropPercent: number; kpiLabel?: string },
+): NonNullable<OpsDashboardStats['productBrain']> {
   const mapExp = (list: ReturnType<typeof getActiveExperiments>) =>
     list.map((e) => ({ id: e.id, name: e.name, kpiLabel: e.kpiLabel, status: e.status }));
 
@@ -64,7 +67,13 @@ function buildProductBrain(healthScore: number): NonNullable<OpsDashboardStats['
     kpiTrend: getKpiTrends(),
     aiPriorityQueue: getAiPriorityQueue(),
     productIntelligence: getProductIntelligence(),
-    userIntelligence: getUserIntelligence(),
+    userIntelligence: worstDrop
+      ? {
+          topFrictionStep: worstDrop.step,
+          topFrictionKpi: worstDrop.kpiLabel ?? 'Activation',
+          recommendedFix: `Fix ${worstDrop.step} (−${worstDrop.dropPercent}%)`,
+        }
+      : getUserIntelligence(),
     releaseIntelligence: getReleaseIntelligence(),
   };
 }
@@ -137,6 +146,43 @@ function latestWebVitals() {
     if (vitals.lcp !== undefined && vitals.cls !== undefined && vitals.inp !== undefined) break;
   }
   return vitals;
+}
+
+const ACTIVATION_LOOP_STEPS: {
+  key: keyof NonNullable<OpsDashboardStats['activationLoopFunnel']>;
+  label: string;
+}[] = [
+  { key: 'landing', label: 'landing → goal' },
+  { key: 'goal', label: 'goal → workflow' },
+  { key: 'workflow', label: 'workflow → project' },
+  { key: 'project', label: 'project → analysis completed' },
+  { key: 'analysisCompleted', label: 'analysis → today hero' },
+  { key: 'nextActionStarted', label: 'hero → first action' },
+];
+
+function computeActivationLoopFunnel(
+  productJourneyFunnel: NonNullable<OpsDashboardStats['productJourneyFunnel']>,
+): NonNullable<OpsDashboardStats['activationLoopFunnel']> {
+  return {
+    landing: productJourneyFunnel.landing,
+    goal: productJourneyFunnel.goal,
+    workflow: productJourneyFunnel.workflow,
+    project: productJourneyFunnel.project,
+    analysisCompleted: countEvents(PRODUCT_ANALYTICS_EVENTS.analysisCompleted),
+    nextActionStarted: countEvents(PRODUCT_ANALYTICS_EVENTS.nextActionStarted),
+  };
+}
+
+function computeActivationLoopDropOff(
+  funnel: NonNullable<OpsDashboardStats['activationLoopFunnel']>,
+): NonNullable<OpsDashboardStats['activationLoopDropOff']> {
+  const values = ACTIVATION_LOOP_STEPS.map((s) => funnel[s.key]);
+  return ACTIVATION_LOOP_STEPS.slice(0, -1).map((step, index) => {
+    const from = values[index] ?? 0;
+    const to = values[index + 1] ?? 0;
+    const dropPercent = from > 0 ? Math.round((1 - to / from) * 100) : 0;
+    return { step: step.label, from, to, dropPercent };
+  });
 }
 
 const FUNNEL_STEPS: { key: keyof NonNullable<OpsDashboardStats['productJourneyFunnel']>; label: string }[] = [
@@ -261,6 +307,10 @@ function computeProductKpis(
   const feedbackEvents = events.filter((e) => e.name === PRODUCT_ANALYTICS_EVENTS.feedbackSubmitted);
   const feedbackUp = feedbackEvents.filter((e) => e.params?.sentiment !== 'down').length;
   const feedbackTotal = Math.max(1, feedbackEvents.length);
+  const analysisStarted = Math.max(1, funnel.analysis);
+  const analysisCompleted = countEvents(PRODUCT_ANALYTICS_EVENTS.analysisCompleted);
+  const nextActionStarted = countEvents(PRODUCT_ANALYTICS_EVENTS.nextActionStarted);
+  const projectCount = Math.max(1, funnel.project);
 
   return {
     goalSelectionRate: Math.round((funnel.goal / landing) * 100),
@@ -277,6 +327,8 @@ function computeProductKpis(
     landingCtaRate: Math.round((ctaClicks / landing) * 100),
     feedbackScore: Math.round((feedbackUp / feedbackTotal) * 100),
     recommendedGoalRate: Math.round((recommendedGoals / goalSelected) * 100),
+    analysisCompletionRate: Math.round((analysisCompleted / analysisStarted) * 100),
+    firstActionRate: Math.round((nextActionStarted / projectCount) * 100),
   };
 }
 
@@ -316,6 +368,23 @@ const MOCK_STATS: OpsDashboardStats = {
     analysis: 15,
     decision: 9,
   },
+  activationLoopFunnel: {
+    landing: 100,
+    goal: 72,
+    workflow: 58,
+    project: 17,
+    analysisCompleted: 13,
+    nextActionStarted: 7,
+  },
+  activationLoopDropOff: [
+    { step: 'landing → goal', from: 100, to: 72, dropPercent: 28 },
+    { step: 'goal → workflow', from: 72, to: 58, dropPercent: 19 },
+    { step: 'workflow → project', from: 58, to: 17, dropPercent: 71 },
+    { step: 'project → analysis completed', from: 17, to: 13, dropPercent: 24 },
+    { step: 'analysis → today hero', from: 13, to: 7, dropPercent: 46 },
+    { step: 'hero → first action', from: 7, to: 7, dropPercent: 0 },
+  ],
+  activationLoopConversion: 7,
   todaySummary: {
     goalSelected: 12,
     workspaceEntered: 8,
@@ -362,6 +431,8 @@ const MOCK_STATS: OpsDashboardStats = {
     landingCtaRate: 38,
     feedbackScore: 80,
     recommendedGoalRate: 55,
+    analysisCompletionRate: 87,
+    firstActionRate: 41,
   },
   productOs: {
     primaryKpiKey: 'decisionUnderstandingRate',
@@ -459,11 +530,24 @@ export function getOpsDashboardStats(): OpsDashboardStats {
     countEvents(ANALYTICS_EVENTS.reportGenerate);
 
   const dropOffRates = computeDropOffRates(productJourneyFunnel);
+  const activationLoopFunnel = computeActivationLoopFunnel(productJourneyFunnel);
+  const activationLoopDropOff = computeActivationLoopDropOff(activationLoopFunnel);
+  const activationLoopConversion =
+    activationLoopFunnel.landing > 0
+      ? Math.round(
+          (activationLoopFunnel.nextActionStarted / activationLoopFunnel.landing) * 100,
+        )
+      : 0;
   const productKpis = computeProductKpis(productJourneyFunnel, todaySummary);
   const operationalMetrics = computeOperationalMetrics(productJourneyFunnel, todaySummary);
+  const allDrops = [...dropOffRates, ...activationLoopDropOff];
+  const worstDrop = allDrops.reduce(
+    (max, row) => (row.dropPercent > max.dropPercent ? row : max),
+    allDrops[0] ?? { step: 'landing → goal', dropPercent: 0, from: 0, to: 0 },
+  );
   const productOs = computeProductOsBrief({
     productKpis,
-    dropOffRates,
+    dropOffRates: allDrops,
     operationalMetrics,
     productJourneyFunnel,
   });
@@ -491,6 +575,9 @@ export function getOpsDashboardStats(): OpsDashboardStats {
       reportGenerate: countEvents(ANALYTICS_EVENTS.reportGenerate),
     },
     productJourneyFunnel,
+    activationLoopFunnel,
+    activationLoopDropOff,
+    activationLoopConversion,
     todaySummary,
     dropOffRates,
     recentFeedback: recentFeedback(),
@@ -498,7 +585,7 @@ export function getOpsDashboardStats(): OpsDashboardStats {
     closedBetaMetrics: computeClosedBetaMetrics(productJourneyFunnel, todaySummary),
     productKpis,
     productOs: productOs ?? undefined,
-    productBrain: buildProductBrain(productOs?.productHealthScore ?? 0),
+    productBrain: buildProductBrain(productOs?.productHealthScore ?? 0, worstDrop),
     operationalMetrics,
   };
 }

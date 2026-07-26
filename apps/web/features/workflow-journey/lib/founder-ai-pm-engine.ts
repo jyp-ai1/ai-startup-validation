@@ -74,6 +74,7 @@ export type FounderOperatingBrief = {
   decision: FounderAiPmBrief;
   daily: FounderDailyBrief;
   dailyLoop: FounderDailyLoopItem[];
+  morningAlertKey: string;
   weekly: FounderWeeklyStrategy;
   memory: FounderAiMemory;
   mentor: FounderMentorNote;
@@ -196,6 +197,13 @@ const DAILY_LOOP_BY_STAGE: FounderDailyLoopItem[][] = [
   ],
 ];
 
+const MORNING_ALERT_BY_STAGE = [
+  'competitorQuiet',
+  'competitorPriceChange',
+  'vocGapReminder',
+  'executionMomentum',
+] as const;
+
 export function resolveStageIndex(confidence: number): number {
   if (confidence >= 81) return 3;
   if (confidence >= 68) return 2;
@@ -261,6 +269,7 @@ export function computeFounderOperatingBrief(
       confidenceAfter: timelineStep?.to ?? stage.confidence,
     },
     dailyLoop: DAILY_LOOP_BY_STAGE[stageIndex] ?? DAILY_LOOP_BY_STAGE[2]!,
+    morningAlertKey: MORNING_ALERT_BY_STAGE[stageIndex] ?? MORNING_ALERT_BY_STAGE[2]!,
     weekly: WEEKLY_BY_STAGE[stageIndex] ?? WEEKLY_BY_STAGE[2]!,
     memory: MEMORY_BY_STAGE[stageIndex] ?? MEMORY_BY_STAGE[2]!,
     mentor: MENTOR_BY_STAGE[stageIndex] ?? MENTOR_BY_STAGE[2]!,

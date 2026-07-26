@@ -32,7 +32,7 @@ export function FounderAiPmOperatingPanel({
     () => computeFounderOperatingBrief(goalId, confidence),
     [confidence, goalId],
   );
-  const { daily, dailyLoop, weekly, memory, mentor, calendar } = operating;
+  const { daily, dailyLoop, morningAlertKey, weekly, memory, mentor, calendar } = operating;
   const isMorning = variant === 'morning';
 
   return (
@@ -74,6 +74,16 @@ export function FounderAiPmOperatingPanel({
         <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">{t('daily.greeting')}</h2>
         {projectName ? (
           <p className="mt-1 text-sm text-muted-foreground">{projectName}</p>
+        ) : null}
+        {isMorning ? (
+          <p className="mt-4 rounded-xl border border-amber-300/50 bg-amber-50/60 px-4 py-3 text-sm leading-relaxed text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-50">
+            {t(`morningAlerts.${morningAlertKey}`, {
+              current: daily.confidenceCurrent,
+              after: daily.confidenceAfter,
+              gain: daily.goProbabilityGain,
+              minutes: daily.etaMinutes,
+            })}
+          </p>
         ) : null}
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground/90 sm:text-lg">
           {t('daily.body', {

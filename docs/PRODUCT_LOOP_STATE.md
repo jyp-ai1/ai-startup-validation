@@ -1,57 +1,46 @@
 # Product Loop State
 
 **Directive:** [PRODUCT_EVOLUTION_DIRECTIVE.md](./PRODUCT_EVOLUTION_DIRECTIVE.md)  
-**Production:** https://ai-startup-validation-tau.vercel.app/workspace
+**Production:** https://ai-startup-validation-tau.vercel.app
 
 ---
 
-## Mode
+## Cursor role
 
-**Founder Operating Experience** — architecture frozen; improve behavior only.
-
-**UI Frozen · UX Never Frozen**
+**Product Manager** — grow the product via KPI loop, not feature lists.
 
 ---
 
-## Active loop (this cycle)
+## Active loop: Loop 1 — Activation Funnel (in flight)
 
-### P0 — Pipeline stability ✓ shipped `8898c51`
+**Target:** `project_started → analysis_completed → next_action_started` ≥ 95%
 
-Verify on Production:
+| Deliverable | Status |
+|-------------|--------|
+| Admin Activation Loop visualization | ✅ |
+| Drop-off auto calculation (live events) | ✅ |
+| AI PM priority from worst drop | ✅ |
+| PostHog/Clarity heatmap hints | ✅ |
+| Thinking hang regression | ongoing |
 
-- [ ] `agent_pipeline_success` / `agent_pipeline_failed` ratio
-- [ ] Overlay hang = 0 (refresh · back · slow network)
-- [ ] `analysis_completed` fires on every success
-
-### P1 — Today = action first (in flight)
-
-- [ ] Hero next-action panel (biggest CTA)
-- [ ] Decision / Evidence secondary (collapsed)
-- [ ] Morning brief → Working action → Evening summary
-
-### P2 — Mock intelligence depth
-
-- [ ] Planner missing-data priority from pipeline
-- [ ] Decision reason → next action link
-- [ ] Task complete → confidence update
-
-### P3 — Product OS live data
-
-- [ ] Analytics → Product OS funnel (not mock KPI)
-- [ ] Auto hypothesis recommendation
+**Admin:** `/admin/operations` → Activation Loop panel
 
 ---
 
-## Frozen (do not change)
+## Next loops (queued)
 
-Journey structure · Agent contracts · Provider port shape · Engine orchestration
+2. **Decision Intelligence** — GO 62% → path to 81% with reason · gap · timeline · evidence  
+3. **Founder Daily OS** — AI morning brief leads action (competitor/VOC alerts)  
+4. **Execution Intelligence** — today/week/month/quarter roadmap tasks  
+5. **Memory** — return visit continuity  
+6. **Learning** — Founder behavior adaptation  
+7. **Product Intelligence** — Admin auto hypothesis from live KPI delta  
+8. **Real Intelligence** — provider swap only  
+9. **Closed Beta** — feedback → experiment loop  
+10. **Autonomous Company** — full stack operating loop
 
 ---
 
-## KPI focus
+## Frozen
 
-1. Activation (Landing → Decision)
-2. Decision Understanding (3s HOLD/GO)
-3. Execution Start
-4. Daily Retention
-5. Trust
+Journey · Agent contracts · Provider ports · Engine orchestration

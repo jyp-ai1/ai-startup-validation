@@ -1894,6 +1894,29 @@
     "kpiProjectStartHint": "workspace → project",
     "kpiLandingCta": "Landing CTA Rate",
     "kpiFeedbackScore": "Feedback Score",
+    "activationFunnel": {
+      "title": "Activation Loop — Landing → First Action",
+      "subtitle": "Conversion from Landing to Today Hero and first action start",
+      "conversion": "End-to-end",
+      "drop": "−{percent}% · {step}",
+      "worst": "Worst drop",
+      "aiPmRecommend": "AI PM priority",
+      "expectedLift": "Expected lift",
+      "measure": "Measure",
+      "priority": "Priority",
+      "posthog": "PostHog",
+      "clarity": "Clarity",
+      "heatmapHint": "Cross-check Thinking, Registration, and Hero CTA with PostHog/Clarity heatmaps.",
+      "heatmapMissing": "Heatmap not connected — set NEXT_PUBLIC_POSTHOG_KEY or CLARITY_PROJECT_ID",
+      "steps": {
+        "landing": "Landing",
+        "goal": "Goal",
+        "workflow": "Workflow",
+        "project": "Project",
+        "analysisCompleted": "Analysis complete",
+        "nextActionStarted": "First action"
+      }
+    },
     "productOs": {
       "title": "Product OS",
       "titleV2": "Product OS — Autonomous Product",
@@ -4275,6 +4298,12 @@
           "eta": "Est. {minutes} min",
           "confidencePath": "Confidence {current}% → {after}%",
           "startCta": "Start today"
+        },
+        "morningAlerts": {
+          "competitorQuiet": "Market signals are stable since yesterday. Start with market sizing today — Confidence {current}% → {after}%.",
+          "competitorPriceChange": "A competitor changed pricing since yesterday. Run competitor analysis first — +{gain}% GO path in ~{minutes} min.",
+          "vocGapReminder": "Two customer interviews today raise GO probability {current}% → {after}%. Est. {minutes} min.",
+          "executionMomentum": "GO path is open. Start execution today — Confidence {current}% → {after}%."
         },
         "dailyLoop": {
           "title": "Founder Daily Loop",

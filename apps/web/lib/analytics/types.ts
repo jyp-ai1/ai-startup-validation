@@ -229,6 +229,17 @@ export type OpsDashboardStats = {
     analysis: number;
     decision: number;
   };
+  /** Activation Loop — Landing → First Action (PM primary funnel) */
+  activationLoopFunnel?: {
+    landing: number;
+    goal: number;
+    workflow: number;
+    project: number;
+    analysisCompleted: number;
+    nextActionStarted: number;
+  };
+  activationLoopDropOff?: { step: string; from: number; to: number; dropPercent: number }[];
+  activationLoopConversion?: number;
   todaySummary?: {
     goalSelected: number;
     workspaceEntered: number;
@@ -271,6 +282,8 @@ export type OpsDashboardStats = {
     landingCtaRate: number;
     feedbackScore: number;
     recommendedGoalRate: number;
+    analysisCompletionRate: number;
+    firstActionRate: number;
   };
   /** Product OS v2 — KPI → impact → adopt/rollback → AI PM recommendation */
   productOs?: ProductOsBrief;
