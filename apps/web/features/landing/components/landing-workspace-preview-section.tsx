@@ -48,7 +48,7 @@ export async function LandingWorkspacePreviewSection({
             </div>
             <p className="mt-2 text-xs text-muted-foreground">{t('morningBrief.eta')}</p>
             <LandingCtaLink
-              href="/goal"
+              href="/who"
               event="cta_start"
               className="mt-5 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-semibold text-primary-foreground hover:bg-primary/90"
             >

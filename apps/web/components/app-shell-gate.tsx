@@ -9,12 +9,24 @@ type AppShellGateProps = {
 
 function isJourneyRoute(pathname: string): boolean {
   return (
+    pathname === '/who' ||
+    pathname.startsWith('/who/') ||
     pathname === '/goal' ||
     pathname.startsWith('/goal/') ||
     pathname === '/workflow' ||
     pathname.startsWith('/workflow/') ||
+    pathname === '/validation' ||
+    pathname.startsWith('/validation/') ||
+    pathname === '/investigate' ||
+    pathname.startsWith('/investigate/') ||
+    pathname === '/conclusion' ||
+    pathname.startsWith('/conclusion/') ||
+    pathname === '/workspaces' ||
+    pathname.startsWith('/workspaces/') ||
     pathname === '/workspace' ||
-    pathname.startsWith('/workspace/')
+    pathname.startsWith('/workspace/') ||
+    pathname === '/execution' ||
+    pathname.startsWith('/execution/')
   );
 }
 

@@ -44,7 +44,7 @@ export default async function WorkflowPage({ searchParams }: WorkflowPageProps) 
   const params = await searchParams;
   const goalId = await readJourneyGoal();
   if (!goalId) {
-    redirect('/goal');
+    redirect('/who');
   }
 
   if (params.compose === '1') {

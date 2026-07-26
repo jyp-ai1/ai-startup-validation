@@ -431,6 +431,133 @@ Sprint 6–20 delivered Founder Experience (Daily Habit, Living Project, AI OS s
 
 ---
 
+## ADR-017: AI PM North Star — UI Freeze & Intelligence-First Sprints 21–26
+
+**Status:** Accepted  
+**Date:** 2026-07-26  
+**Approver:** CPO
+
+### Context
+
+Layer 1 Experience (30/40/30 shell, conclusion-first Executive Decision, chat-only AI PM Office) is complete. Further UI work has diminishing returns. LaunchLens must reposition from "business analysis tool" to **AI PM that runs the company on behalf of the founder**.
+
+### Decision
+
+1. **North Star:** LaunchLens is **not** an AI business analysis tool — it is an **AI PM that operates the company for the founder**
+2. **Feature gate:** Every feature must answer *"Does this prepare the founder's decision on their behalf?"* — NO → do not build
+3. **UI Freeze:** No new Dashboard, Panel, Tab, Card, Layout, or IA changes. Allowed: intelligence, data quality, reasoning, AI PM memory, CEO Decision quality
+4. **Three product layers:** Layer 1 Experience ✅ · Layer 2 Intelligence (next ~2 months) · Layer 3 Autonomous Company (final)
+5. **Sprint reorder (21–26):** Company Brain → Real Intelligence → Morning Meeting → Executive Meeting → Founder Twin → Self Improvement
+6. **Signature morning copy:** Four fixed lines in AI PM Office center chat; content below varies from overnight data
+
+### Consequences
+
+- [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md) v1.1 — North Star, UI Freeze, Layers, signature copy
+- [TASKS.md](./TASKS.md) Sprint 21–26 track replaces prior P1–P4 ordering
+- Sprint 21 starts **backend only** — Background AI + Knowledge Graph + Company Memory
+- Center chat opens with signature greeting via `founder-morning-signature.ts`
+
+---
+
+## ADR-018: LaunchLens V2 — Sprint 0 UX Reset (not IA polish)
+
+**Status:** Accepted  
+**Date:** 2026-07-26  
+**Approver:** CPO
+
+### Context
+
+Dozens of sprints added features, but the product problem was **IA**, not capability. Users encountered AI PM Workspace before understanding validation. The 3-column shell, 8-step rail, and tabbed decision board created dashboard fatigue.
+
+### Decision
+
+1. **Declare Reset** — not feature addition; delete UI, keep engines
+2. **New flow:** Landing → Who (4 cards) → Workflow → Validation → AI research → Conclusion → Workspace list → Workspace (2-col)
+3. **UX philosophy:** Start as **Validation Tool**; grow into **AI PM** — never start as AI PM
+4. **Layout:** Single column for onboarding; **2-col (AI PM | Decision) only in Workspace** — no 3-col shell
+5. **Delete:** Left 8-step rail, right 9 tabs, 3-col shell, Sprint 9–20 UI panels
+6. **Keep:** Validation Score, AI pipeline, Strategy Engine, OpenRouter, KG, Memory
+7. **Entry route:** `/who` replaces `/goal`; legacy `/goal` redirects
+8. **Sprint 21–26 intelligence track** resumes **after** Sprint 0 DoD
+
+### Consequences
+
+- [SPRINT_0_V2_UX_RESET.md](./sprints/SPRINT_0_V2_UX_RESET.md) is active sprint law
+- ADR-017 UI freeze superseded for Sprint 0 only
+- V2 shells: `V2JourneyStack`, `V2WorkspaceShell`, `V2WorkspaceLayout`
+- Product success = 3 user sentences (viability · why · what's next)
+
+---
+
+## ADR-019: V2 UX QA before Legacy deletion (Sprint 0-4 reorder)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 0-1 through 0-3 rebuilt the V2 journey (Validation → Investigate → Conclusion → Workspace). The original plan scheduled Legacy UI removal as Sprint 0-4. Product pivot clarified that LaunchLens sells **사업성 검토** first, not AI PM — and the WOW moment (*"좋습니다. 제가 조사하겠습니다."*) is unvalidated.
+
+Deleting Legacy before confirming V2 is correct creates **product risk** (irreversible rebuild cost) greater than **tech debt** (keeping duplicate shells temporarily).
+
+### Decision
+
+1. **Sprint 0-4** becomes **V2 UX QA + user flow validation** — not Legacy removal
+2. **Sprint 0-5** becomes Legacy Journey UI removal — **only after 0-4 QA PASS**
+3. **Sprint 0-6–0-8:** Landing trim · OpenRouter real data · Background AI
+4. **Philosophy locked:** Validation Tool entry → AI PM Workspace continuation; never sell AI PM first
+5. Legacy shells remain as rollback until QA sign-off
+
+### Consequences
+
+- [SPRINT_0_4_V2_UX_QA.md](./sprints/SPRINT_0_4_V2_UX_QA.md) is the active QA gate
+- [QA_REPORT_V2.md](./QA_REPORT_V2.md) is the **evidence document** for Legacy removal (0-5)
+- [TASKS.md](./TASKS.md) sprint table 0-4 through 0-8 updated
+- FAIL on QA → fix V2 only; do not delete Legacy
+
+---
+
+## ADR-020: LaunchLens Writing Rule — reveal only what the user has experienced
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 0-4 Product Validation showed Landing failed when Hero sold **AI PM** before the user understood **사업성 검토**. Copy fixes passed Q0/Q1/Q2, but the pattern will recur without a explicit writing law.
+
+### Decision
+
+**LaunchLens Writing Rule:**
+
+> **사용자가 아직 경험하지 않은 것은 먼저 말하지 않는다.**
+
+| Stage | Speak | Do not speak (yet) |
+|-------|-------|---------------------|
+| **Landing** | 사업 · 아이디어 · 시장 · 될까요? | AI PM · CEO · Workspace · Dashboard · Operating System |
+| **Validation** | 사업성 검토 · 정확도 | AI PM · Workspace |
+| **Investigate** | AI 등장 — *"좋습니다. 제가 조사하겠습니다."* (first WOW) | AI PM as product name |
+| **Conclusion** | GO/HOLD · 왜 · 오늘 · *AI PM이 계속 관리해드릴까요?* (offer) | Full workspace pitch |
+| **Workspace** | AI PM is protagonist | Validation onboarding copy |
+
+**Landing banned words (hero + above-fold):** CEO · AI PM · Operating · Workspace · Dashboard · Operating System
+
+**Product sentence (canonical):**
+
+> 사업을 검토해드립니다. 검토가 끝나면 AI PM이 계속 관리해드립니다.
+
+### Consequences
+
+- [QA_REPORT_V2.md](./QA_REPORT_V2.md) STEP 1 PASS gated on this rule
+- Landing Hero: minimal copy + flow preview (사업성 → 시장 → 경쟁 → 가격 → GO/HOLD)
+- Sprint 0-6 Landing trim must audit full page against banned words
+- i18n and marketing copy follow stage table before ship
+- **Question-first UI:** questions beat nouns on Landing and Who (STEP 2 QA)
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

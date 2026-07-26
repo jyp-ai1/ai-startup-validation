@@ -11,7 +11,29 @@
 
 ## Product North Star
 
-> **LaunchLens는 AI가 보고서를 생성하는 서비스가 아니라, 전략적 의사결정을 완료하도록 프로젝트를 끝까지 이끄는 AI Strategy Workspace이다.**
+> **LaunchLens는 AI가 사업을 분석하는 툴이 아닙니다. 대표 대신 회사를 운영하는 AI PM입니다.**
+
+Every feature must pass one gate:
+
+> **"이 기능이 대표의 의사결정을 대신 준비하는가?"**
+
+Prepares the founder's decision → ship. Does not → do not build.
+
+**Experience North Star (Layer 1):** In 30 seconds — understand **why to keep going** + approve **one decision**.
+
+**Signature morning copy (immutable):**
+
+```text
+좋은 아침입니다, 대표님.
+
+밤새 회사를 검토했습니다.
+
+결론은 그대로입니다.
+
+오늘은 이것만 승인해 주시면 됩니다.
+```
+
+Same four lines every day. Content **below** the signature varies from real overnight data.
 
 This sentence is **canonical**. Use identically in:
 
@@ -20,7 +42,7 @@ This sentence is **canonical**. Use identically in:
 - Vision / investor one-pager
 - Sprint kickoff documents
 
-Any feature that does not serve **decision completion** is out of constitution.
+Any feature that does not serve **decision preparation** is out of constitution.
 
 ---
 
@@ -141,6 +163,49 @@ Violations require PM exception or redesign — not “quick ship.”
 
 ---
 
+## UI Freeze (2026-07-26 — Layer 1 Experience complete)
+
+> **Amended 2026-07-26:** Sprint 0 **V2 UX Reset** supersedes this freeze — full IA delete + rebuild. See [SPRINT_0_V2_UX_RESET.md](./sprints/SPRINT_0_V2_UX_RESET.md).
+
+Layer 1 **Experience** is **FROZEN**. No new UI patterns until intelligence layers ship.
+
+### ❌ Forbidden
+
+- New Dashboard
+- New Panel
+- New Tab
+- New Card
+- New Layout
+- New IA change
+
+### ✅ Allowed
+
+- Intelligence improvement
+- Data quality improvement
+- Reasoning improvement
+- AI PM memory improvement
+- CEO Decision improvement
+
+**Fixed shell (30 / 40 / 30):**
+
+```text
+Left 30%   — 회사 진행상황 (8 steps, never hide)
+Center 40% — AI PM Office (chat only)
+Right 30%  — Executive Decision (conclusion-first)
+```
+
+---
+
+## Product Layers
+
+| Layer | Name | Status | Scope |
+|-------|------|--------|-------|
+| **1** | **Experience** | ✅ Complete | CEO → AI PM Office → Decision → Approve |
+| **2** | **Intelligence** | 🟢 Next ~2 months | Market · Competitor · Pricing · Grants · News · VOC · SNS · Investment → Knowledge Graph → Hypothesis → Decision |
+| **3** | **Autonomous Company** | 📋 Final | Overnight research → Meeting → Strategy update → CEO report → Approve → Execute |
+
+---
+
 ## Out of Scope (LaunchLens 2.0 — Epic 5+ unless PM reopens)
 
 Explicit **not now** list to prevent feature creep:
@@ -238,6 +303,8 @@ Brief: [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)
 | 2026-07-24 | v1.0 ratified — North Star, Principles, UX Laws, Goal IA, Out of Scope | PM PASS WITH REVISIONS |
 | 2026-07-25 | Part II — Cursor Product Constitution (permanent operations) | CPO |
 | 2026-07-25 | Part II — Product Loop Level: Behavior + KPI metrics (not screens) | CPO PASS 95→100 |
+| 2026-07-26 | v1.1 — AI PM North Star, 3 Layers, UI Freeze, signature morning copy | CPO |
+| 2026-07-26 | v2.0 pivot — Sprint 0 UX Reset supersedes UI freeze; Validation → AI PM flow | CPO |
 
 ---
 

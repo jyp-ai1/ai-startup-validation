@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import { LandingHeader } from './landing-header';
 import { LandingHero } from './landing-hero';
 import { LandingLazySection } from './landing-lazy-section';
+import { LandingReturningGate } from './landing-returning-gate';
 
 const LandingTracker = dynamic(() => import('./landing-tracker').then((m) => m.LandingTracker));
 
@@ -55,6 +56,7 @@ const LandingAiTeamSection = dynamic(
 export async function LandingPage() {
   return (
     <div className="min-h-full bg-background text-foreground">
+      <LandingReturningGate />
       <LandingHeader />
       <main id="main-content">
         <LandingHero />

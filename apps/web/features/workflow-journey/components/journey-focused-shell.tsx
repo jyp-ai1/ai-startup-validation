@@ -16,6 +16,8 @@ type JourneyFocusedShellProps = {
   children: React.ReactNode;
   activeStep?: WorkspaceJourneyStepId;
   right?: React.ReactNode;
+  companyProgressPercent?: number;
+  weeklyGrowthPercent?: number;
   className?: string;
   embedded?: boolean;
   ariaLabel?: string;
@@ -25,6 +27,8 @@ export function JourneyFocusedShell({
   children,
   activeStep = 'execution',
   right,
+  companyProgressPercent,
+  weeklyGrowthPercent,
   className,
   embedded = false,
   ariaLabel,
@@ -33,6 +37,8 @@ export function JourneyFocusedShell({
     <FounderWorkspaceLayout
       embedded
       activeStep={activeStep}
+      companyProgressPercent={companyProgressPercent}
+      weeklyGrowthPercent={weeklyGrowthPercent}
       center={children}
       right={right ?? <DecisionBoardPlaceholder />}
       className={className}

@@ -2,7 +2,11 @@
 
 **Status:** Active (2026-07-26)  
 **Phase:** Post-Sprint — **Platform**, not UX  
-**North Star:** *대표는 매일 10분만 LaunchLens를 열면 되고, AI PM은 나머지 시간 동안 회사를 계속 운영하고 있다.*
+**North Star:** *LaunchLens는 대표 대신 회사를 운영하는 AI PM이다. 대표는 매일 10분만 열면 되고, AI PM은 나머지 시간 동안 회사를 계속 운영한다.*
+
+**Feature gate:** *"이 기능이 대표의 의사결정을 대신 준비하는가?"*
+
+**UI:** Layer 1 **FROZEN** — no new Dashboard · Panel · Tab · Card · Layout · IA (see [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md))
 
 ---
 
@@ -35,6 +39,19 @@ Sprint 1–20 **Founder Experience / UX** is substantially complete. **AI Compan
 | **Platform Phase** | Real intelligence + production | **NOW** |
 
 Founder UX track: [FOUNDER_OS_ROADMAP.md](./FOUNDER_OS_ROADMAP.md)
+
+---
+
+## Sprint 21–26 (CPO — intelligence track)
+
+| Sprint | Name | Platform mapping |
+|--------|------|------------------|
+| **21** | Company Brain | Phase 2 KG + Phase 3 overnight shell + Company Memory |
+| **22** | Real Intelligence | Phase 1 domains → Company Brain storage |
+| **23** | Morning Meeting | Phase 3 autonomous briefing (signature copy + data below) |
+| **24** | Executive Meeting | Phase 5 operating system — multi-agent inference pipeline |
+| **25** | Founder Twin | Phase 4 decision-style learning |
+| **26** | Self Improvement | Learning loop — prediction failure → model update |
 
 ---
 

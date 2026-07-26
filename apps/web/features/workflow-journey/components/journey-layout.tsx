@@ -40,7 +40,7 @@ export function JourneyLayout({
             width === 'wide' ? 'max-w-6xl' : 'max-w-3xl',
           )}
         >
-          <Link href="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+          <Link href="/workspaces" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
             <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Sparkles className="size-4" aria-hidden />
             </span>

@@ -115,7 +115,7 @@ export function LandingPricing() {
                 <div className="mt-8">
                   {plan === 'free' ? (
                     <LandingCtaLink
-                      href="/goal"
+                      href="/who"
                       event="cta_start"
                       className={cn(
                         'h-11 w-full rounded-xl',

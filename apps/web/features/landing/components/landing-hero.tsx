@@ -2,7 +2,6 @@ import { getTranslations } from 'next-intl/server';
 
 import { LandingHeroActions } from './landing-hero-actions';
 import { LandingHeroPreviewStatic } from './landing-hero-preview-static';
-import { LandingHeroRoleCards } from './landing-hero-role-cards';
 
 /** Server-rendered hero — h1 in initial HTML for LCP (Epic 4 perf). */
 export async function LandingHero() {
@@ -15,27 +14,17 @@ export async function LandingHero() {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10">
         <div className="grid gap-10 sm:gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
           <div className="max-w-xl">
-            <p className="text-sm font-medium text-primary">{t('eyebrow')}</p>
-            <h1 className="mt-4 whitespace-pre-line text-4xl font-semibold leading-[1.12] tracking-tight text-foreground md:text-5xl lg:text-[3.25rem]">
+            <h1 className="whitespace-pre-line text-5xl font-semibold leading-[1.08] tracking-tight text-foreground md:text-6xl lg:text-7xl">
               {t('title')}
             </h1>
-            <p className="mt-5 text-lg font-medium leading-relaxed text-foreground/90 md:text-xl">
+            <p className="mt-6 text-sm leading-relaxed text-muted-foreground md:text-base">
               {t('subtitle')}
             </p>
-            <p className="mt-3 text-base leading-relaxed text-muted-foreground">{t('northStar')}</p>
 
             <LandingHeroActions
               ctaStart={t('ctaStart')}
               ctaHint1={t('ctaHint1')}
               ctaHint2={t('ctaHint2')}
-              speedPromise={t('speedPromise')}
-              bullets={[
-                t('bullets.research'),
-                t('bullets.competitor'),
-                t('bullets.viability'),
-                t('bullets.tasks'),
-                t('bullets.operations'),
-              ]}
             />
           </div>
 
@@ -43,8 +32,6 @@ export async function LandingHero() {
             <LandingHeroPreviewStatic className="mx-auto max-w-md lg:max-w-none" />
           </div>
         </div>
-
-        <LandingHeroRoleCards />
       </div>
     </section>
   );

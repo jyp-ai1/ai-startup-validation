@@ -63,7 +63,7 @@ import {
 } from '../lib/founder-research-sources';
 import type { WorkflowGoalId } from '../types';
 import { DecisionExperienceCoach } from './decision-experience-coach';
-import { FounderWorkspaceLayout } from './founder-workspace-layout';
+import { V2WorkspaceLayout } from './v2/v2-workspace-layout';
 import { BusinessDeltaBrief } from './founder-ai-pm/business-delta-brief';
 import { BusinessProgressPanel } from './founder-ai-pm/business-progress-panel';
 import { DecisionIntelligencePathPanel } from './founder-ai-pm/decision-intelligence-path-panel';
@@ -582,23 +582,21 @@ export function FounderTodayWorkspace({
         />
       ) : null}
 
-      <FounderWorkspaceLayout
+      <V2WorkspaceLayout
         embedded
-        activeStep="execution"
-        center={
+        aiPm={
           <FounderAiPmOfficeCenter
             habit={habitBrief}
             livingMorningContext={livingBrief.morningContext}
             overnightSnapshot={overnightSnapshot}
             approvedActionIds={approvedActionIds}
             onApprove={handleApproveQueueItem}
-            onOvernightView={handleOvernightView}
             scoreBefore={completionUpdate?.scoreBefore}
             scoreAfter={completionUpdate?.scoreAfter}
             lastActionTitle={completionUpdate?.debrief.actionTitle}
           />
         }
-        right={
+        decision={
           <FounderExecutiveDecisionBoardLoader
             projectId={projectId}
             projectName={projectName}

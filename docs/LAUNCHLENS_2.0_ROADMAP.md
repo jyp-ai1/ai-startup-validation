@@ -13,9 +13,15 @@ Feature-unit sprints blurred product concept. LaunchLens 2.0 is **workflow-first
 
 **North Star:**
 
-> LaunchLens는 AI가 보고서를 생성하는 서비스가 아니라, 전략적 의사결정을 완료하도록 프로젝트를 끝까지 이끄는 AI Strategy Workspace이다.
+> LaunchLens는 AI가 사업을 분석하는 툴이 아닙니다. **대표 대신 회사를 운영하는 AI PM**입니다.
 
-**Product definition (Alpha+):** AI Strategy Workspace — not AI Startup Validator.
+**Feature gate:** *"이 기능이 대표의 의사결정을 대신 준비하는가?"*
+
+**Experience North Star:** 30 seconds — **why to keep going** + **one approval**.
+
+**Product definition (Alpha+):** AI PM Office — not AI Startup Validator or report generator.
+
+**UI:** Layer 1 Experience **FROZEN** — see [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md) UI Freeze section.
 
 ---
 

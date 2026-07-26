@@ -6,7 +6,17 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { ClientChrome } from '@/components/client-chrome';
 import { AnalyticsProvider } from '@/lib/analytics/providers/analytics-provider';
 
-const JOURNEY_PREFIXES = ['/goal', '/workflow', '/workspace', '/execution'];
+const JOURNEY_PREFIXES = [
+  '/who',
+  '/goal',
+  '/workflow',
+  '/validation',
+  '/investigate',
+  '/conclusion',
+  '/workspaces',
+  '/workspace',
+  '/execution',
+];
 
 function isMarketingLanding(pathname: string): boolean {
   if (pathname === '/' || pathname === '') return true;

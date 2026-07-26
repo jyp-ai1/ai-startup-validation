@@ -15,6 +15,8 @@ export type WorkspaceJourneyStepId =
   | 'execution'
   | 'complete';
 
+const STEP_NUMBERS = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'] as const;
+
 const STEPS: WorkspaceJourneyStepId[] = [
   'goal',
   'project',
@@ -28,6 +30,8 @@ const STEPS: WorkspaceJourneyStepId[] = [
 
 type WorkspaceJourneyGuideProps = {
   activeStep: WorkspaceJourneyStepId;
+  companyProgressPercent?: number;
+  weeklyGrowthPercent?: number;
   className?: string;
 };
 
@@ -42,8 +46,21 @@ function stepStatus(
   return 'upcoming';
 }
 
-export function WorkspaceJourneyGuide({ activeStep, className }: WorkspaceJourneyGuideProps) {
+export function WorkspaceJourneyGuide({
+  activeStep,
+  companyProgressPercent,
+  weeklyGrowthPercent,
+  className,
+}: WorkspaceJourneyGuideProps) {
   const t = useTranslations('workflow.journeyGuide');
+  const activeIndex = STEPS.indexOf(activeStep);
+  const stepProgress = Math.round((activeIndex / Math.max(1, STEPS.length - 1)) * 100);
+  const progressPercent =
+    companyProgressPercent != null
+      ? Math.max(0, Math.min(100, Math.round(companyProgressPercent)))
+      : stepProgress;
+  const filledBlocks = Math.round((progressPercent / 100) * 8);
+  const weeklyDelta = weeklyGrowthPercent != null ? Math.round(weeklyGrowthPercent) : null;
 
   return (
     <nav
@@ -56,8 +73,29 @@ export function WorkspaceJourneyGuide({ activeStep, className }: WorkspaceJourne
       <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
         {t('title')}
       </p>
+
+      <div className="mt-3">
+        <p className="text-xs text-muted-foreground">{t('growth.label')}</p>
+        <p className="mt-1 text-2xl font-bold tabular-nums">{progressPercent}%</p>
+        {weeklyDelta != null && weeklyDelta > 0 ? (
+          <p className="mt-0.5 text-xs font-semibold text-emerald-600">
+            {t('growth.weekly', { delta: weeklyDelta })}
+          </p>
+        ) : null}
+        <div className="mt-2 flex gap-0.5" aria-hidden>
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div
+              key={index}
+              className={cn(
+                'h-1.5 flex-1 rounded-sm',
+                index < filledBlocks ? 'bg-primary' : 'bg-muted',
+              )}
+            />
+          ))}
+        </div>
+      </div>
       <ol className="mt-4 space-y-0.5" role="list">
-        {STEPS.map((step) => {
+        {STEPS.map((step, index) => {
           const status = stepStatus(step, activeStep);
           return (
             <li
@@ -76,7 +114,9 @@ export function WorkspaceJourneyGuide({ activeStep, className }: WorkspaceJourne
               ) : (
                 <Circle className="size-4 shrink-0" aria-hidden />
               )}
-              <span className="min-w-0 flex-1 truncate">{t(`steps.${step}`)}</span>
+              <span className="min-w-0 flex-1 truncate">
+                {STEP_NUMBERS[index]} {t(`steps.${step}`)}
+              </span>
             </li>
           );
         })}

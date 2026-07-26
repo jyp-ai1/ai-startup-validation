@@ -8,7 +8,15 @@ import { Button } from '@repo/ui';
 import type { DailyCeoHabitBrief } from '../../lib/founder-daily-ceo-habit';
 import type { LivingMorningContext } from '../../lib/founder-living-project';
 import type { OvernightInvestigationSnapshot } from '../../lib/founder-background-ai';
+import { buildSignatureMorningGreeting } from '../../lib/founder-morning-signature';
 import { AiPmOfficeChat, type AiPmChatMessage } from '../ai-state/ai-pm-office-chat';
+
+const THINKING_FEED = [
+  { time: '09:12', key: 'marketDone' },
+  { time: '09:18', key: 'grantsDone' },
+  { time: '09:22', key: 'pricingNote' },
+  { time: '09:25', key: 'recommendHold' },
+] as const;
 
 type FounderAiPmOfficeCenterProps = {
   habit: DailyCeoHabitBrief;
@@ -16,7 +24,6 @@ type FounderAiPmOfficeCenterProps = {
   overnightSnapshot: OvernightInvestigationSnapshot | null;
   approvedActionIds: string[];
   onApprove: (actionId: string) => void;
-  onOvernightView?: () => void;
   scoreBefore?: number;
   scoreAfter?: number;
   lastActionTitle?: string;
@@ -29,7 +36,6 @@ export function FounderAiPmOfficeCenter({
   overnightSnapshot,
   approvedActionIds,
   onApprove,
-  onOvernightView,
   scoreBefore,
   scoreAfter,
   lastActionTitle,
@@ -41,19 +47,53 @@ export function FounderAiPmOfficeCenter({
 
   const messages = useMemo(() => {
     const list: AiPmChatMessage[] = [
-      { role: 'ai', text: t('morning.greeting') },
+      { role: 'ai', text: buildSignatureMorningGreeting(t) },
     ];
 
-    if (livingMorningContext?.weeklyProgressKey) {
-      list.push({
-        role: 'ai',
-        text: tLiving(livingMorningContext.weeklyProgressKey as 'weekMarketAdvanced'),
-      });
+    const overnightItems = overnightSnapshot?.reportItems ?? habit.overnightReport;
+
+    if (overnightItems.length > 0) {
+      const startMinutes = 9 * 60 + 12;
+      for (const [index, item] of overnightItems.slice(0, 4).entries()) {
+        const minutes = startMinutes + index * 6;
+        const time = `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+        list.push({
+          role: 'ai',
+          time,
+          text: t(`overnightReport.${item.messageKey}`),
+        });
+      }
+    } else {
+      for (const entry of THINKING_FEED) {
+        list.push({
+          role: 'ai',
+          time: entry.time,
+          text: tOffice(`thinkingFeed.${entry.key}`),
+        });
+      }
+    }
+
+    const changeCount =
+      overnightSnapshot?.importantCount ??
+      overnightSnapshot?.whatChanged?.length ??
+      habit.whatChanged.length;
+
+    if (changeCount > 0) {
+      const changes =
+        overnightSnapshot?.whatChanged ??
+        habit.whatChanged.slice(0, Math.min(changeCount, 3));
+      for (const item of changes.slice(0, 3)) {
+        list.push({
+          role: 'ai',
+          text: t(`whatChanged.items.${item.messageKey}`, item.params ?? {}),
+        });
+      }
     }
 
     if (livingMorningContext?.stuckWarningKey) {
       list.push({
         role: 'ai',
+        time: '09:26',
         text: tLiving(
           livingMorningContext.stuckWarningKey as 'pricingPaused',
           livingMorningContext.stuckWarningParams ?? {},
@@ -61,32 +101,11 @@ export function FounderAiPmOfficeCenter({
       });
     }
 
-    if (habit.morningChanges.length > 0) {
-      const changes = habit.morningChanges
-        .slice(0, 3)
-        .map((item) => t(`morningChanges.${item.messageKey}`, item.params ?? {}))
-        .join('\n');
-      list.push({ role: 'ai', text: tOffice('morningChanges', { changes }) });
-    }
-
-    if (overnightSnapshot?.reportItems.length) {
-      const report = overnightSnapshot.reportItems
-        .slice(0, 3)
-        .map((item) => t(`overnightReport.${item.messageKey}`, item.params ?? {}))
-        .join('\n');
-      list.push({ role: 'ai', text: tOffice('overnightDone', { report }) });
-    } else if (habit.overnightReport.length > 0) {
-      const report = habit.overnightReport
-        .slice(0, 3)
-        .map((item) => t(`overnightReport.${item.messageKey}`, item.params ?? {}))
-        .join('\n');
-      list.push({ role: 'ai', text: tOffice('overnightDone', { report }) });
-    }
-
     if (habit.todayFocus) {
       list.push({
         role: 'ai',
-        text: tOffice('todayFocus', {
+        time: '09:28',
+        text: tOffice('todayProposal', {
           action: habit.todayFocus.title,
           impact: habit.todayFocus.goImpact,
         }),
@@ -108,16 +127,17 @@ export function FounderAiPmOfficeCenter({
 
     return list;
   }, [
-    habit,
+    habit.overnightReport,
+    habit.todayFocus,
+    habit.whatChanged,
     lastActionTitle,
-    tLiving,
-    livingMorningContext?.weeklyProgressKey,
     livingMorningContext?.stuckWarningKey,
     livingMorningContext?.stuckWarningParams,
-    overnightSnapshot?.reportItems,
+    overnightSnapshot,
     scoreAfter,
     scoreBefore,
     t,
+    tLiving,
     tOffice,
   ]);
 
@@ -126,24 +146,13 @@ export function FounderAiPmOfficeCenter({
 
   const footer =
     focus && !approved ? (
-      <div className="space-y-3">
-        <Button
-          type="button"
-          size="lg"
-          className="h-12 w-full rounded-xl font-semibold"
-          onClick={() => onApprove(focus.actionId)}
-        >
-          {tOffice('approveCta', { action: focus.title })}
-        </Button>
-        {onOvernightView ? (
-          <Button type="button" variant="outline" className="w-full rounded-xl" onClick={onOvernightView}>
-            {t('overnightReport.viewCta')}
-          </Button>
-        ) : null}
-      </div>
-    ) : onOvernightView ? (
-      <Button type="button" variant="outline" className="w-full rounded-xl" onClick={onOvernightView}>
-        {t('overnightReport.viewCta')}
+      <Button
+        type="button"
+        size="lg"
+        className="h-12 w-full rounded-xl font-semibold"
+        onClick={() => onApprove(focus.actionId)}
+      >
+        {tOffice('approveCta', { action: focus.title })}
       </Button>
     ) : null;
 

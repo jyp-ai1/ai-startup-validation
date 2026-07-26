@@ -68,7 +68,7 @@ export function LandingHeaderControls({ navLinks, labels }: LandingHeaderControl
           <Link href="/auth/login?next=/goal">{labels.signIn}</Link>
         </Button>
         <LandingCtaLink
-          href="/goal"
+          href="/who"
           event="cta_start"
           size="sm"
           className="h-9 rounded-xl bg-primary px-3 text-primary-foreground hover:bg-primary/90 sm:px-4"

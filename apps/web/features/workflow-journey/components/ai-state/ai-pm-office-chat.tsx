@@ -9,6 +9,8 @@ import { AiPmMessage } from './ai-pm-conversation';
 export type AiPmChatMessage = {
   role: 'ai' | 'founder';
   text: string;
+  /** Optional HH:mm — Cursor-style thinking feed */
+  time?: string;
 };
 
 type AiPmOfficeChatProps = {
@@ -40,6 +42,11 @@ export function AiPmOfficeChat({ messages, footer, children, className }: AiPmOf
                 message.role === 'founder' && 'bg-muted text-foreground',
               )}
             >
+              {message.time ? (
+                <span className="mb-1 block text-[10px] font-medium tabular-nums text-muted-foreground">
+                  {message.time}
+                </span>
+              ) : null}
               {message.text}
             </AiPmMessage>
           </div>

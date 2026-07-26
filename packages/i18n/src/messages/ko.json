@@ -1348,27 +1348,27 @@
     },
     "nav": {
       "brand": "LaunchLens",
-      "tagline": "AI PM Company",
+      "tagline": "사업성 검토",
       "features": "기능",
-      "howItWorks": "How it Works",
+      "howItWorks": "이용 방법",
       "demo": "데모",
       "builtFor": "Built For",
       "pricing": "요금",
       "roadmap": "Roadmap",
       "faq": "FAQ",
-      "aiPm": "AI PM",
+      "aiPm": "검토 과정",
       "stories": "후기",
       "signIn": "로그인",
-      "startFree": "AI PM과 회사 시작하기",
+      "startFree": "사업성 검토 시작하기",
       "menuLabel": "내비게이션 메뉴",
       "openMenu": "메뉴 열기",
       "closeMenu": "메뉴 닫기"
     },
     "hero": {
-      "eyebrow": "CEO + AI PM Company",
-      "title": "당신은 CEO입니다.",
-      "subtitle": "AI PM이 시장조사, 전략수립, 사업검토를 대신 수행합니다.",
-      "northStar": "대표님은 중요한 의사결정만 하시면 됩니다.",
+      "eyebrow": "5분 사업성 검토",
+      "title": "당신의 사업,\n될까요?",
+      "subtitle": "AI가 시장성, 경쟁, 가격을 분석해드립니다.",
+      "northStar": "검토가 끝나면 AI PM이 계속 관리해드립니다.",
       "journey": {
         "label": "AI PM 업무 루프",
         "goal": "보고",
@@ -1376,17 +1376,27 @@
         "decision": "승인",
         "execution": "실행"
       },
-      "tagline": "사업성 분석 SaaS가 아닙니다. CEO와 함께 회사를 운영하는 AI PM Company입니다.",
-      "ctaStart": "AI PM과 회사 시작하기",
+      "tagline": "사업을 검토해드립니다. 검토가 끝나면 AI PM이 계속 관리해드립니다.",
+      "ctaStart": "사업성 검토 시작하기",
       "ctaDemo": "AI PM Workspace 체험하기",
       "ctaHint1": "신용카드 필요 없음",
-      "ctaHint2": "3분 만에 시작",
-      "speedPromise": "AI PM이 매일 아침 업무를 준비합니다 — 대표님은 승인만 하세요",
+      "ctaHint2": "5분 만에 시작",
+      "speedPromise": "내 사업이 될지 — 지금 바로 확인하세요",
       "ctaHint3": "Beta 무료",
+      "flowPreview": {
+        "steps": {
+          "viability": "사업성",
+          "market": "시장",
+          "competition": "경쟁",
+          "pricing": "가격"
+        },
+        "outcome": "GO / HOLD"
+      },
       "bullets": {
-        "research": "시장조사",
-        "competitor": "경쟁사 분석",
         "viability": "사업 가능성 검토",
+        "research": "시장·경쟁 분석",
+        "decision": "GO / HOLD 결론",
+        "competitor": "경쟁사 분석",
         "tasks": "오늘 해야 할 일 생성",
         "operations": "프로젝트 운영"
       }
@@ -4139,6 +4149,190 @@
     }
   },
   "workflow": {
+    "v2": {
+      "persona": {
+        "title": "어떤 상황이신가요?",
+        "lead": "목적에 맞게 검토 순서를 안내해 드립니다.",
+        "selectCta": "이 상황으로 시작",
+        "nextHint": "다음: 지금 단계에 맞는 검토 순서를 안내합니다.",
+        "cards": {
+          "idea-review": {
+            "question": "아이디어를 검토하고 싶어요",
+            "context": "예비창업",
+            "hint": "아이디어 한 줄로 사업 가능성을 확인합니다."
+          },
+          "startup-prep": {
+            "question": "내 사업을 성장시키고 싶어요",
+            "context": "사업자",
+            "hint": "시장 · 경쟁 · 가격 순으로 성장 가능성을 봅니다."
+          },
+          "company-ops": {
+            "question": "회사의 신규사업을 검토합니다",
+            "context": "사내기획",
+            "hint": "신규사업 아이디어의 사업성을 팀과 함께 검토합니다."
+          },
+          "investment-prep": {
+            "question": "고객의 사업을 검토합니다",
+            "context": "컨설턴트",
+            "hint": "고객 사업의 시장성과 GO/HOLD를 정리합니다."
+          }
+        }
+      },
+      "validation": {
+        "title": "사업 검토",
+        "nextHint": "다음: 사업 아이디어를 한 줄 입력하세요.",
+        "ideaLabel": "사업 아이디어",
+        "ideaPlaceholder": "예: AI로 중소기업 ERP를 자동화하는 SaaS",
+        "scoreLabel": "사업 가능성",
+        "optionalLead": "정확도를 높일 수 있습니다. (선택)",
+        "optional": {
+          "problem": "문제",
+          "customer": "고객",
+          "mvp": "MVP",
+          "pricing": "가격"
+        },
+        "keepOptionalHint": "선택 입력을 추가하면 AI 조사를 시작할 수 있습니다.",
+        "aiIntro": "좋습니다.\n\n이제부터는\n\n제가 조사하겠습니다.",
+        "aiStartCta": "AI 조사 시작"
+      },
+      "conclusion": {
+        "title": "결론",
+        "scoreLabel": "사업 가능성",
+        "verdictGo": "GO",
+        "verdictHold": "HOLD",
+        "opinionLabel": "AI PM 의견",
+        "opinion": {
+          "marketOk": "시장성 충분",
+          "pricingGap": "가격검증 필요",
+          "grantsOk": "정부지원 가능"
+        },
+        "detailsSummary": "시장 · 경쟁 · 가격 · 정부지원",
+        "details": {
+          "market": "시장조사",
+          "competitor": "경쟁사",
+          "pricing": "가격",
+          "grants": "정부지원"
+        },
+        "createWorkspaceCta": "AI PM Workspace 생성"
+      },
+      "research": {
+        "title": "AI 조사",
+        "intro": "좋습니다.\n\n이제부터는\n\n제가 조사하겠습니다.",
+        "progress": "조사 진행 {current}/{total}",
+        "stepsLabel": "진행 중",
+        "stepItems": {
+          "market": "시장조사",
+          "competitor": "경쟁사",
+          "pricing": "가격",
+          "grants": "정부지원"
+        },
+        "waitHint": "조사가 끝나면 결론 화면으로 이동합니다.",
+        "failedHint": "조사 중 문제가 발생했습니다.",
+        "retryCta": "다시 조사"
+      },
+      "workspaces": {
+        "title": "Workspace",
+        "subtitle": "프로젝트를 선택하면 AI PM Office가 열립니다.",
+        "newCta": "+ 새 Workspace",
+        "nextHint": "Workspace를 선택하면 AI PM Office가 열립니다.",
+        "updates": "● 업데이트 {count}건",
+        "noUpdates": "업데이트 없음",
+        "cards": {
+          "startup": { "name": "AI Startup" },
+          "erp": { "name": "AI ERP" }
+        }
+      },
+      "home": {
+        "title": "Workspace",
+        "lead": "AI PM이 관리 중인 프로젝트",
+        "newProjectCta": "새 프로젝트 검토하기",
+        "emptyHint": "아직 프로젝트가 없습니다. 새 프로젝트 검토를 시작하세요.",
+        "kpi": "AI PM이 오늘 {count}개의 프로젝트를 관리하고 있습니다.",
+        "viabilityLabel": "사업 가능성",
+        "aiPmLabel": "AI PM",
+        "noChanges": "변경 없음",
+        "changesBadge": "변경사항 {count}건",
+        "changesTitle": "변경사항",
+        "nav": {
+          "workspace": "Workspace",
+          "newProject": "새 프로젝트",
+          "settings": "설정",
+          "aria": "Workspace 홈"
+        },
+        "summary": {
+          "pricingOnly": "가격검증만 하면 됩니다.",
+          "grantAvailable": "정부지원 신청 가능합니다.",
+          "recommendation": "AI PM 추천이 있습니다.",
+          "interviewNeeded": "이번주는 인터뷰가 필요합니다.",
+          "holdReview": "검토가 필요합니다.",
+          "investigating": "AI 조사를 진행 중입니다."
+        },
+        "changeItems": {
+          "grantAdded": "정부지원 추가",
+          "competitorAdded": "경쟁사 추가",
+          "pricingChanged": "가격 변경",
+          "grantAvailable": "정부지원 신청 가능"
+        }
+      },
+      "detail": {
+        "backToHome": "Workspace",
+        "changeBadge": "변경 {count}",
+        "nav": {
+          "settings": "설정",
+          "share": "공유"
+        },
+        "phase": {
+          "ideaValidation": "아이디어 검증 단계",
+          "startupPrep": "창업 준비 단계",
+          "mvpValidation": "MVP 검증 단계",
+          "investmentPrep": "투자 준비 단계",
+          "marketResearch": "시장 조사 단계",
+          "companyOps": "회사 운영 단계"
+        },
+        "aiPm": {
+          "label": "AI PM",
+          "statusLabel": "AI PM ·",
+          "status": {
+            "investigating": "조사중",
+            "analyzing": "분석중",
+            "awaitingApproval": "대표님 승인 대기",
+            "executing": "실행중"
+          },
+          "greeting": "대표님.",
+          "lead": "좋습니다.",
+          "overnightLead": "밤새 조사했습니다.",
+          "recommendationHold": "추천은 유지합니다.",
+          "todayLead": "오늘은",
+          "approveCta": "승인",
+          "approved": "승인되었습니다. AI PM이 실행을 준비합니다.",
+          "approveToast": "「{action}」을 승인했습니다.",
+          "optionalLead": "추가로 알려주시면 더 정확해집니다.",
+          "optional": {
+            "customer": "고객",
+            "mvp": "MVP",
+            "pricing": "가격"
+          }
+        },
+        "decision": {
+          "label": "AI PM 판단",
+          "whyLabel": "왜?",
+          "gapsLabel": "부족",
+          "todayLabel": "오늘",
+          "todayFallback": "가격 인터뷰"
+        },
+        "evidence": {
+          "toggle": "상세 보기 ▼",
+          "hide": "상세 접기 ▲",
+          "view": "보기",
+          "sections": {
+            "market": "시장조사",
+            "competitor": "경쟁사",
+            "pricing": "가격",
+            "grants": "정부지원"
+          }
+        }
+      }
+    },
     "journey": {
       "progressLabel": "진행 단계",
       "phases": {
@@ -4161,6 +4355,13 @@
       "eta": "예상 {minutes}분",
       "cta": "프로젝트 시작",
       "ctaHint": "다음 단계에서 아이디어 한 줄만 입력합니다",
+      "officeChat": {
+        "greeting": "대표님 안녕하세요.\n\nAI PM입니다.",
+        "planReady": "목표 \"{goal}\"에 맞는 전략 순서를 준비했습니다.",
+        "rationale": "이 프로젝트는 시장 검증이 가장 중요합니다.\n\n그 다음 경쟁사 분석을 추천합니다.",
+        "phasesIntro": "진행 순서는 다음과 같습니다.",
+        "eta": "예상 소요 시간은 약 {minutes}분입니다.\n\n준비되시면 프로젝트를 시작해 주세요."
+      },
       "aiNote": "AI PM이 Startup × PM × Investment 관점에서 AI PM 업무 순서를 생성했습니다.",
       "recommendationLabel": "AI PM 추천",
       "rationale1": "이 프로젝트는 시장 검증이 가장 중요합니다.",
@@ -4713,6 +4914,13 @@
         "next": "다음",
         "nextUp": "다음 단계"
       },
+      "progress": {
+        "label": "회사 진행률"
+      },
+      "growth": {
+        "label": "회사 성장",
+        "weekly": "이번주 +{delta}%"
+      },
       "steps": {
         "goal": "목표",
         "project": "프로젝트 등록",
@@ -4738,6 +4946,12 @@
         "outcome": "예상: AI AI PM 업무 자동 구성 → 첫 AI PM 판단까지 약 20분"
       },
       "keyboardHint": "↑↓ 화살표로 이동 · Enter로 선택",
+      "officeChat": {
+        "greeting": "대표님 안녕하세요.\n\nLaunchLens AI PM입니다.",
+        "prompt": "어떤 전략 프로젝트를 함께할까요?\n\n목표 하나만 고르시면 업무를 준비하겠습니다.",
+        "recommendedHint": "많은 대표님이 \"사업 가능성 검토\"부터 시작합니다.",
+        "chooseLabel": "목표 선택"
+      },
       "intake": {
         "eyebrow": "AI PM",
         "prompt": "프로젝트에 대해 알려주세요. AI가 목표를 이해하고 AI PM 업무를 준비합니다.",
@@ -4956,19 +5170,59 @@
       "executiveDecisionBoard": {
         "label": "AI PM 판단",
         "placeholder": "프로젝트 등록 후 AI PM 판단이 표시됩니다.",
+        "executive": {
+          "title": "Executive Decision",
+          "heroHeadline": {
+            "go": "계속 진행하십시오.",
+            "hold": "조건을 충족하면 진행하십시오.",
+            "noGo": "재검토가 필요합니다."
+          },
+          "conclusionLabel": "AI PM 결론",
+          "reasonsLabel": "이유",
+          "gapsLabel": "부족한 것",
+          "todayLabel": "오늘 해야 하는 것",
+          "proposalLabel": "AI PM 제안",
+          "proposalBody": "오늘 {action}만 하시면 사업 가능성이 +{impact}% 올라갑니다.",
+          "detailsToggle": "상세 보기",
+          "detailsHide": "접기",
+          "customer": "고객"
+        },
         "pinned": {
-          "todayOnly": "오늘 해야하는 것",
+          "todayOnly": "오늘 해야할 것",
           "reasonLabel": "이유"
         },
         "tabs": {
-          "label": "의사결정 탭",
-          "conclusion": "결론",
-          "swot": "SWOT",
+          "label": "판단 탭",
+          "judgment": "판단",
+          "gaps": "부족",
+          "solution": "해결",
           "evidence": "근거",
-          "competitor": "경쟁",
           "market": "시장",
+          "competitor": "경쟁",
           "pricing": "가격",
+          "swot": "SWOT",
           "execution": "실행"
+        },
+        "charts": {
+          "confidence": "신뢰도",
+          "recommendedPrice": "권장 가격"
+        },
+        "gapsPanel": {
+          "empty": "현재 부족한 항목이 없습니다.",
+          "items": {
+            "pricing": "가격",
+            "pricingValidation": "가격검증",
+            "interview": "인터뷰",
+            "mvp": "MVP",
+            "mvpBuild": "MVP 제작",
+            "competitive": "경쟁우위"
+          },
+          "hints": {
+            "pricingValidation": "고객 반응 데이터 부족",
+            "interview": "고객 인터뷰 기록 부족",
+            "mvpBuild": "실사용 데이터 없음",
+            "competitive": "경쟁 차별화 근거 부족"
+          }
         },
         "conclusionPanel": {
           "headline": "AI PM 결론",
@@ -5001,7 +5255,7 @@
           }
         },
         "decisionTree": {
-          "label": "Decision Tree",
+          "label": "판단 흐름",
           "nodes": {
             "whyBranch": "왜?",
             "market": "시장",
@@ -5012,7 +5266,7 @@
           }
         },
         "why": {
-          "label": "Why?",
+          "label": "근거",
           "whyHigh": "{dim} — 왜 이렇게 판단했나?",
           "dimensions": {
             "market": "시장",
@@ -5077,7 +5331,7 @@
           }
         },
         "canvas": {
-          "label": "Business Canvas",
+          "label": "사업 구조",
           "customer": "고객",
           "problem": "문제",
           "solution": "솔루션",
@@ -5138,9 +5392,22 @@
       "officeChat": {
         "morningChanges": "어제 이후 변경:\n{changes}",
         "overnightDone": "밤새 AI PM이 조사를 마쳤습니다.\n{report}",
-        "todayFocus": "오늘은 \"{action}\"만 승인해 주시면 됩니다. (+{impact}%)",
+        "overnightThinkingLead": "오늘 밤 조사했습니다.",
+        "overnightChecks": {
+          "competitors": "경쟁사 4곳",
+          "grants": "정부지원",
+          "pricing": "가격",
+          "market": "시장"
+        },
+        "thinkingFeed": {
+          "marketDone": "시장조사 끝났습니다.",
+          "grantsDone": "정부지원 확인했습니다.",
+          "pricingNote": "가격은 조금 높은 것 같습니다.",
+          "recommendHold": "추천은 유지하겠습니다."
+        },
+        "todayProposal": "오늘 {action}만 진행하시면 사업 가능성이 +{impact}% 올라갑니다.",
         "resultUpdate": "\"{action}\" 완료. 사업 가능성 {before}% → {after}%",
-        "decisionHint": "근거는 오른쪽 Decision Board에서 확인하실 수 있습니다.",
+        "decisionHint": "자세한 분석은 오른쪽 [상세 보기]에서 확인하세요.",
         "approveCta": "{action} 승인"
       },
       "executiveOperatingRail": {
@@ -5239,7 +5506,11 @@
         },
         "morning": {
           "label": "AI PM 아침 브리핑",
-          "greeting": "좋은 아침입니다 대표님.",
+          "greeting": "좋은 아침입니다, 대표님.",
+          "signatureLine1": "좋은 아침입니다, 대표님.",
+          "signatureLine2": "밤새 회사를 검토했습니다.",
+          "signatureLine3": "결론은 그대로입니다.",
+          "signatureLine4": "오늘은 이것만 승인해 주시면 됩니다.",
           "sinceYesterdayLead": "어제 이후",
           "approvalLead": "오늘 승인만 해주시면 됩니다.",
           "changesLead": "어제 이후 변경된 내용이 있습니다.",
@@ -6243,6 +6514,14 @@
           "l2": "CTA 버튼이 눈에 띄나요?",
           "l3": "가격/혜택이 명확한가요?",
           "l4": "신뢰 요소(후기·수치)가 있나요?",
+          "v1": "현재 가격에 만족하시나요?",
+          "v2": "가격보다 신뢰가 더 중요한가요?",
+          "v3": "월 구독 vs 연간 중 선호는?",
+          "v4": "무료 체험 후 유료 전환 기준은?",
+          "v5": "추천해줄 동료가 있나요?",
+          "e1": "이번 주 MVP 범위 3가지는?",
+          "e2": "첫 유료 고객 정의는?",
+          "e3": "측정할 핵심 지표 1가지는?",
           "generic": {
             "q1": "오늘 검증하고 싶은 핵심 질문은?"
           }

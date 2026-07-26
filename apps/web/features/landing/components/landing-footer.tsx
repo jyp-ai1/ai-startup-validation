@@ -30,7 +30,7 @@ export function LandingFooter() {
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-[15px] text-muted-foreground">{t('ctaDesc')}</p>
           <LandingCtaLink
-            href="/goal"
+            href="/who"
             event="cta_start"
             className="mt-10 h-12 rounded-xl bg-primary px-10 text-primary-foreground hover:bg-primary/90"
           >

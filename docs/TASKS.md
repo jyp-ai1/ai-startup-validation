@@ -8,9 +8,153 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint P0 — Unified Workspace IA ✅ (IA FREEZE)
+## Sprint 0-1 — Validation Flow Complete ✅
 
-**Status:** Locked — no new UI patterns until P1 data layer  
+**Goal:** 7-screen V2 chain at **100% new UX** — no legacy phase mixing
+
+```text
+Landing → Who → Workflow → Validation → Investigate → Conclusion → Workspace
+```
+
+| Route | View | Status |
+|-------|------|--------|
+| `/` | Landing | ✅ (trim in 0-5) |
+| `/who` | Persona 4 cards | ✅ |
+| `/workflow` | V2JourneyStack plan | ✅ |
+| `/validation` | Score + optional inputs | ✅ |
+| `/investigate` | Pipeline + step list (V2 research) | ✅ |
+| `/conclusion` | GO/HOLD + pipeline score | ✅ |
+| `/workspace` | V2WorkspaceDetail (2-col AI PM) | ✅ |
+
+**Legacy untouched until 0-5:** `StrategyWorkspaceShell` phases only if no V2 persona cookie.
+
+---
+
+## Sprint 0-2 — Workspace Home Reset ✅
+
+**Goal:** `/workspaces` = LaunchLens Home · Validation은 **새 프로젝트**일 때만
+
+| Item | Status |
+|------|--------|
+| Workspace Home (`V2WorkspaceHomeView`) | ✅ |
+| Workspace Card (GO/HOLD · % · ● badge · AI PM 한줄) | ✅ |
+| 변경사항 Badge 펼침 | ✅ |
+| Header: Workspace · 새 프로젝트 · 설정 | ✅ |
+| 재방문 `/` → `/workspaces` redirect | ✅ |
+| 새 프로젝트 → `/who` | ✅ |
+| 카드 클릭 → `/workspace` detail | ✅ |
+
+**First visit:** Landing → Who → … → Workspace detail  
+**Return visit:** LaunchLens → `/workspaces` → AI PM
+
+---
+
+## Sprint 0-3 — AI PM Workspace Polish ✅
+
+**Goal:** Detail opens → *"AI PM이 진짜 일하고 있구나"* — not UI polish alone
+
+| Block | Status |
+|-------|--------|
+| Detail header (name · phase · GO · % · ● changes · 설정/공유) | ✅ |
+| AI PM briefing (short tone · overnight · today · 승인) | ✅ |
+| AI PM Status (조사중/분석중/승인 대기/실행중) | ✅ |
+| Optional inputs (고객 · MVP · 가격) | ✅ |
+| Decision panel (결론 · 왜 · 부족 · 오늘) — no tabs | ✅ |
+| 상세 보기 — inline expand per domain | ✅ |
+| Legacy panels hidden (Timeline, OS, Living, …) | ✅ |
+
+**Layout:** single column · max-w-2xl · no FounderTodayWorkspace
+
+**DoD (5s):** GO/HOLD · 어제 AI work · 오늘 한 가지 · 왜 그 판단
+
+---
+
+## Sprint 0-4 — V2 UX QA + User Flow Validation 📋 NEXT
+
+**Goal:** V2가 정답인지 검증 — Legacy 삭제 **전**에 WOW moment·persona·6-step flow 확인
+
+**Gate:** PASS → Sprint 0-5 (Legacy removal) · FAIL → V2만 수정, Legacy 유지
+
+| Validate | Question |
+|----------|----------|
+| Landing | 5초 안에 "사업성 검토" 이해? |
+| Who / Workflow | "내가 지금 이 단계" 느낌? |
+| Validation | 41→82% progression engaging? 입력 부담 없음? |
+| Investigate | *"좋습니다. 제가 조사하겠습니다."* = WOW? |
+| Conclusion | 30초: GO · 왜 · 오늘 뭘? |
+| Workspace | AI PM이 진짜 PM? 매일 들어오고 싶음? |
+
+**Personas:** 예비창업자 · 기존사업자 · 사내기획자 · 컨설턴트
+
+**Checklist:** [sprints/SPRINT_0_4_V2_UX_QA.md](./sprints/SPRINT_0_4_V2_UX_QA.md) · **Live report:** [QA_REPORT_V2.md](./QA_REPORT_V2.md) · ADR-019
+
+**QA type:** Product Validation — *"대표가 자연스럽게 다음 단계로 넘어가는가?"* (not bug smoke)
+
+**Philosophy (locked):** 사업성 검토를 판다 → 끝나면 AI PM이 자연스럽게 이어진다
+
+---
+
+## Sprint 0-5 — Legacy Journey UI removal
+
+Delete: Goal · Registration · Live · Completion · Today shell · 3-col · Rail · Tabs
+
+**Prerequisite:** Sprint 0-4 QA PASS
+
+---
+
+## Sprint 0-6 — Landing trim
+
+Hero · feature grid 정리 · "사업성 검토" 메시지 5초 전달
+
+---
+
+## Sprint 0-7 — OpenRouter real data
+
+Mock → OpenRouter 실데이터 연결 (Validation · Investigate · Conclusion)
+
+---
+
+## Sprint 0-8 — Background AI
+
+Overnight intelligence · morning briefing · workspace change detection
+
+---
+
+## Sprint 0 — V2 UX Reset 🔄 (parent)
+
+**Status:** In progress — **Reset**, not feature addition  
+**Kickoff:** [sprints/SPRINT_0_V2_UX_RESET.md](./sprints/SPRINT_0_V2_UX_RESET.md) · ADR-018  
+**Supersedes:** Sprint P0 IA Freeze · Sprint 21–26 UI freeze (for this sprint)
+
+> **Pivot:** AI PM Workspace를 만드는 것이 아니라 — **사업성 검토 → AI PM Workspace**로 자연스럽게 이어지는 경험
+
+**North Star:** 3초 이해 · 30초 결과 · 매일 재방문 AI PM Workspace
+
+**Philosophy:** Validation Tool로 시작 → AI PM으로 성장 (절대 AI PM으로 시작하지 않음)
+
+| Step | Route | Status |
+|------|-------|--------|
+| 0 Who | `/who` — 4 persona cards | ✅ |
+| 1 Workflow | `/workflow` | ✅ |
+| 2 Validation | `/validation` — score + optional inputs | ✅ |
+| 3 Investigate | `/investigate` — AI research pipeline | ✅ |
+| 4 Conclusion | `/conclusion` | ✅ |
+| 5 Home | `/workspaces` — project cards | ✅ |
+| 6 Detail | `/workspace` — single-col AI PM | ✅ |
+| **0-4 QA** | User flow + WOW validation | 📋 NEXT |
+| **0-5** | Legacy removal (after QA PASS) | ⬜ |
+| **0-6–0-8** | Landing · OpenRouter · Background AI | ⬜ |
+
+**Delete (UI):** 3-col shell · 8-step rail · 9 tabs · Report/Decision card stacks · Sprint 9–20 panels  
+**Keep (engine):** Validation Score · AI pipeline · Strategy · OpenRouter · KG · Memory
+
+**Shells:** `V2JourneyStack` (1-col) · `V2WorkspaceShell` (2-col)
+
+---
+
+## Sprint P0 — Unified Workspace IA ✅ (SUPERSEDED by V2 Reset)
+
+**Status:** ~~Locked~~ — replaced by Sprint 0 V2 UX Reset (2026-07-26)  
 **North Star:** *하나의 AI PM Office — 레이아웃·좌·중·우 역할 고정, 내용만 상태별 변경*
 
 | Zone | Rule |
@@ -38,9 +182,39 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 21–26 — Company Brain → Autonomous AI PM
+
+**Status:** Sprint 21 next — **backend / intelligence only** (UI frozen)  
+**North Star:** *대표 대신 회사를 운영하는 AI PM — 모든 기능은 "대표의 의사결정을 대신 준비하는가?" 통과*  
+**Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md) — UI Freeze active
+
+| Sprint | Name | Focus | Status |
+|--------|------|-------|--------|
+| **21** | **Company Brain** | Background AI → Knowledge Graph → Company Memory | 📋 Next |
+| **22** | **Real Intelligence** | 시장 · 경쟁사 · 정부지원 · 뉴스 · 가격 · VOC → Company Brain 저장 | Planned |
+| **23** | **Morning Meeting** | 어젯밤 → 무엇이 변했는가 → 왜 → 대표는 무엇을 승인하면 되는가 | Planned |
+| **24** | **Executive Meeting** | Research → Strategy → Finance → Marketing → CEO → Decision (AI 이사회 → 추론 파이프라인) | Planned |
+| **25** | **Founder Twin** | 승인 · 보류 · 거절 반복 → 대표 성향 학습 | Planned |
+| **26** | **Self Improvement** | 지난주 예측 실패 → 원인 → 모델 수정 | Planned |
+
+**Why Sprint 21 order:** Background AI without memory repeats the same briefing daily. Company Brain (KG + Memory) must ship first.
+
+**UI rule:** ❌ No new Dashboard · Panel · Tab · Card · Layout · IA. ✅ Intelligence · memory · reasoning · CEO Decision only.
+
+**Signature copy (center chat, fixed):**
+
+```text
+좋은 아침입니다, 대표님.
+밤새 회사를 검토했습니다.
+결론은 그대로입니다.
+오늘은 이것만 승인해 주시면 됩니다.
+```
+
+---
+
 ## Sprint 21–25 — Executive Decision Engine (CEO Strategy Room) ✅
 
-**Status:** In progress — Sprint 21–25 shipped in this branch  
+**Status:** Complete — UI track closed; superseded by Sprint 21–26 intelligence track above  
 **Goal:** *"예쁜 리포트"* → **대표가 매일 결정하는 AI 전략실** — *결정 → 근거 확인 → 승인 → 실행*
 
 | Sprint | Focus | Status |

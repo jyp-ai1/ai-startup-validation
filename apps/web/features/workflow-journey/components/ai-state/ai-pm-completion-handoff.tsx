@@ -130,6 +130,7 @@ export function AiPmCompletionHandoff({
       embedded={embedded}
       ariaLabel={t('title')}
       activeStep="judgment"
+      companyProgressPercent={successScore}
       right={decisionBoard ?? undefined}
     >
       {center}

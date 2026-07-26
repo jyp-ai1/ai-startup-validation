@@ -1348,27 +1348,27 @@
     },
     "nav": {
       "brand": "LaunchLens",
-      "tagline": "AI PM Company",
+      "tagline": "Viability review",
       "features": "Features",
-      "howItWorks": "How it Works",
+      "howItWorks": "How it works",
       "demo": "Demo",
       "builtFor": "Built For",
       "pricing": "Pricing",
       "roadmap": "Roadmap",
       "faq": "FAQ",
-      "aiPm": "AI PM",
+      "aiPm": "Review process",
       "stories": "Stories",
       "signIn": "Sign in",
-      "startFree": "Start your company with AI PM",
+      "startFree": "Start viability review",
       "menuLabel": "Navigation menu",
       "openMenu": "Open menu",
       "closeMenu": "Close menu"
     },
     "hero": {
-      "eyebrow": "CEO + AI PM Company",
-      "title": "You are the CEO.",
-      "subtitle": "Your AI PM handles market research, strategy, and business validation.",
-      "northStar": "You only need to make the important decisions.",
+      "eyebrow": "5-minute viability review",
+      "title": "Will your business\nwork?",
+      "subtitle": "AI analyzes market fit, competition, and pricing.",
+      "northStar": "When the review is done, your AI PM keeps managing it.",
       "journey": {
         "label": "AI PM work loop",
         "goal": "Report",
@@ -1376,17 +1376,27 @@
         "decision": "Approve",
         "execution": "Execute"
       },
-      "tagline": "Not a viability analysis SaaS — an AI PM Company you run as CEO.",
-      "ctaStart": "Start your company with AI PM",
+      "tagline": "We review your business. When the review is done, your AI PM keeps managing it.",
+      "ctaStart": "Start viability review",
       "ctaDemo": "Try AI PM Workspace",
       "ctaHint1": "No credit card required",
-      "ctaHint2": "Get started in 3 minutes",
-      "speedPromise": "Your AI PM prepares daily work — you just approve",
+      "ctaHint2": "Get started in 5 minutes",
+      "speedPromise": "Find out if your business will work — start now",
       "ctaHint3": "Free during Beta",
+      "flowPreview": {
+        "steps": {
+          "viability": "Viability",
+          "market": "Market",
+          "competition": "Competition",
+          "pricing": "Pricing"
+        },
+        "outcome": "GO / HOLD"
+      },
       "bullets": {
-        "research": "Market research",
-        "competitor": "Competitive analysis",
         "viability": "Business viability review",
+        "research": "Market & competitive analysis",
+        "decision": "GO / HOLD conclusion",
+        "competitor": "Competitive analysis",
         "tasks": "Today's tasks generated",
         "operations": "Project operations"
       }
@@ -3992,6 +4002,190 @@
     }
   },
   "workflow": {
+    "v2": {
+      "persona": {
+        "title": "What's your situation?",
+        "lead": "We'll guide the review in the order that fits your goal.",
+        "selectCta": "Start with this",
+        "nextHint": "Next: we'll show the review steps for where you are now.",
+        "cards": {
+          "idea-review": {
+            "question": "I want to review my idea",
+            "context": "Pre-founder",
+            "hint": "Check viability with a one-line idea."
+          },
+          "startup-prep": {
+            "question": "I want to grow my business",
+            "context": "Business owner",
+            "hint": "Review market, competition, and pricing for growth."
+          },
+          "company-ops": {
+            "question": "I'm reviewing a new venture at my company",
+            "context": "Corporate planning",
+            "hint": "Validate a new business line with your team."
+          },
+          "investment-prep": {
+            "question": "I'm reviewing a client's business",
+            "context": "Consultant",
+            "hint": "Summarize market fit and GO/HOLD for your client."
+          }
+        }
+      },
+      "validation": {
+        "title": "Business review",
+        "nextHint": "Next: enter your business idea in one line.",
+        "ideaLabel": "Business idea",
+        "ideaPlaceholder": "e.g. AI SaaS that automates ERP for SMBs",
+        "scoreLabel": "Viability",
+        "optionalLead": "You can improve accuracy. (optional)",
+        "optional": {
+          "problem": "Problem",
+          "customer": "Customer",
+          "mvp": "MVP",
+          "pricing": "Pricing"
+        },
+        "keepOptionalHint": "Add optional inputs to unlock AI research.",
+        "aiIntro": "Great.\n\nFrom now on,\n\nI'll investigate.",
+        "aiStartCta": "Start AI research"
+      },
+      "conclusion": {
+        "title": "Conclusion",
+        "scoreLabel": "Viability",
+        "verdictGo": "GO",
+        "verdictHold": "HOLD",
+        "opinionLabel": "AI PM opinion",
+        "opinion": {
+          "marketOk": "Market looks sufficient",
+          "pricingGap": "Pricing validation needed",
+          "grantsOk": "Grants available"
+        },
+        "detailsSummary": "Market · Competitors · Pricing · Grants",
+        "details": {
+          "market": "Market research",
+          "competitor": "Competitors",
+          "pricing": "Pricing",
+          "grants": "Grants"
+        },
+        "createWorkspaceCta": "Create AI PM Workspace"
+      },
+      "research": {
+        "title": "AI research",
+        "intro": "Great.\n\nFrom now on,\n\nI'll investigate.",
+        "progress": "Research {current}/{total}",
+        "stepsLabel": "In progress",
+        "stepItems": {
+          "market": "Market research",
+          "competitor": "Competitors",
+          "pricing": "Pricing",
+          "grants": "Grants"
+        },
+        "waitHint": "You'll see the conclusion when research completes.",
+        "failedHint": "Something went wrong during research.",
+        "retryCta": "Retry research"
+      },
+      "workspaces": {
+        "title": "Workspace",
+        "subtitle": "Select a project to open AI PM Office.",
+        "newCta": "+ New workspace",
+        "nextHint": "Select a workspace to open AI PM Office.",
+        "updates": "● {count} updates",
+        "noUpdates": "No updates",
+        "cards": {
+          "startup": { "name": "AI Startup" },
+          "erp": { "name": "AI ERP" }
+        }
+      },
+      "home": {
+        "title": "Workspace",
+        "lead": "Projects your AI PM is managing",
+        "newProjectCta": "Review a new project",
+        "emptyHint": "No projects yet. Start a new project review.",
+        "kpi": "Your AI PM is managing {count} projects today.",
+        "viabilityLabel": "Viability",
+        "aiPmLabel": "AI PM",
+        "noChanges": "No changes",
+        "changesBadge": "{count} changes",
+        "changesTitle": "Changes",
+        "nav": {
+          "workspace": "Workspace",
+          "newProject": "New project",
+          "settings": "Settings",
+          "aria": "Workspace home"
+        },
+        "summary": {
+          "pricingOnly": "Pricing validation is all you need.",
+          "grantAvailable": "A grant application is available.",
+          "recommendation": "AI PM has a recommendation.",
+          "interviewNeeded": "Customer interviews needed this week.",
+          "holdReview": "Review needed.",
+          "investigating": "AI research in progress."
+        },
+        "changeItems": {
+          "grantAdded": "Grant added",
+          "competitorAdded": "Competitor added",
+          "pricingChanged": "Pricing changed",
+          "grantAvailable": "Grant available"
+        }
+      },
+      "detail": {
+        "backToHome": "Workspace",
+        "changeBadge": "{count} changes",
+        "nav": {
+          "settings": "Settings",
+          "share": "Share"
+        },
+        "phase": {
+          "ideaValidation": "Idea validation stage",
+          "startupPrep": "Startup prep stage",
+          "mvpValidation": "MVP validation stage",
+          "investmentPrep": "Investment prep stage",
+          "marketResearch": "Market research stage",
+          "companyOps": "Company ops stage"
+        },
+        "aiPm": {
+          "label": "AI PM",
+          "statusLabel": "AI PM ·",
+          "status": {
+            "investigating": "Investigating",
+            "analyzing": "Analyzing",
+            "awaitingApproval": "Awaiting your approval",
+            "executing": "Executing"
+          },
+          "greeting": "Founder.",
+          "lead": "Good.",
+          "overnightLead": "I researched overnight.",
+          "recommendationHold": "Recommendation unchanged.",
+          "todayLead": "Today,",
+          "approveCta": "Approve",
+          "approved": "Approved. AI PM is preparing execution.",
+          "approveToast": "Approved: {action}",
+          "optionalLead": "Share more for higher accuracy.",
+          "optional": {
+            "customer": "Customer",
+            "mvp": "MVP",
+            "pricing": "Pricing"
+          }
+        },
+        "decision": {
+          "label": "AI PM judgment",
+          "whyLabel": "Why?",
+          "gapsLabel": "Gaps",
+          "todayLabel": "Today",
+          "todayFallback": "Pricing interview"
+        },
+        "evidence": {
+          "toggle": "View details ▼",
+          "hide": "Hide details ▲",
+          "view": "View",
+          "sections": {
+            "market": "Market",
+            "competitor": "Competitors",
+            "pricing": "Pricing",
+            "grants": "Grants"
+          }
+        }
+      }
+    },
     "journey": {
       "progressLabel": "Progress",
       "phases": {
@@ -4014,6 +4208,13 @@
       "eta": "About {minutes} min",
       "cta": "Start project",
       "ctaHint": "Next step: one line about your idea",
+      "officeChat": {
+        "greeting": "Hello, Founder.\n\nI'm your AI PM.",
+        "planReady": "I've prepared the strategy sequence for \"{goal}\".",
+        "rationale": "Market validation matters most for this project.\n\nCompetitor analysis comes next.",
+        "phasesIntro": "Here's the order we'll follow.",
+        "eta": "Estimated time: about {minutes} minutes.\n\nStart the project when you're ready."
+      },
       "aiNote": "AI PM generated a Workflow Stack from Startup × PM × Investment perspectives.",
       "recommendationLabel": "AI Recommendation",
       "rationale1": "Market validation matters most for this project.",
@@ -4567,6 +4768,13 @@
         "next": "Next",
         "nextUp": "Up next"
       },
+      "progress": {
+        "label": "Company progress"
+      },
+      "growth": {
+        "label": "Company growth",
+        "weekly": "This week +{delta}%"
+      },
       "steps": {
         "goal": "Goal",
         "project": "Project",
@@ -4592,6 +4800,12 @@
         "outcome": "Expected: AI Workflow auto-built → first Decision in ~20 min"
       },
       "keyboardHint": "↑↓ to move · Enter to select",
+      "officeChat": {
+        "greeting": "Hello, Founder.\n\nI'm your LaunchLens AI PM.",
+        "prompt": "Which strategy project should we work on together?\n\nPick one goal and I'll prepare your workflow.",
+        "recommendedHint": "Most founders start with business viability review.",
+        "chooseLabel": "Choose a goal"
+      },
       "intake": {
         "eyebrow": "AI Project Manager",
         "prompt": "Tell me about your project. I'll understand your goal and prepare the workflow.",
@@ -4810,19 +5024,59 @@
       "executiveDecisionBoard": {
         "label": "AI PM judgment",
         "placeholder": "AI PM judgment appears after project registration.",
+        "executive": {
+          "title": "Executive Decision",
+          "heroHeadline": {
+            "go": "Keep going.",
+            "hold": "Proceed once conditions are met.",
+            "noGo": "Revisit before continuing."
+          },
+          "conclusionLabel": "AI PM conclusion",
+          "reasonsLabel": "Why",
+          "gapsLabel": "What's missing",
+          "todayLabel": "Do only this today",
+          "proposalLabel": "AI PM proposal",
+          "proposalBody": "Complete \"{action}\" today to raise viability by +{impact}%.",
+          "detailsToggle": "View details",
+          "detailsHide": "Hide details",
+          "customer": "Customer"
+        },
         "pinned": {
           "todayOnly": "Do only this today",
           "reasonLabel": "Why"
         },
         "tabs": {
           "label": "Decision tabs",
-          "conclusion": "Conclusion",
-          "swot": "SWOT",
+          "judgment": "Judgment",
+          "gaps": "Gaps",
+          "solution": "Solution",
           "evidence": "Evidence",
-          "competitor": "Competition",
           "market": "Market",
+          "competitor": "Competition",
           "pricing": "Pricing",
+          "swot": "SWOT",
           "execution": "Execution"
+        },
+        "charts": {
+          "confidence": "Confidence",
+          "recommendedPrice": "Recommended price"
+        },
+        "gapsPanel": {
+          "empty": "No gaps identified right now.",
+          "items": {
+            "pricing": "Pricing",
+            "pricingValidation": "Price validation",
+            "interview": "Interviews",
+            "mvp": "MVP",
+            "mvpBuild": "MVP build",
+            "competitive": "Competitive edge"
+          },
+          "hints": {
+            "pricingValidation": "Not enough customer pricing feedback",
+            "interview": "Not enough customer interview data",
+            "mvpBuild": "No real usage data yet",
+            "competitive": "Competitive differentiation evidence missing"
+          }
         },
         "conclusionPanel": {
           "headline": "AI PM conclusion",
@@ -4992,9 +5246,22 @@
       "officeChat": {
         "morningChanges": "Since yesterday:\n{changes}",
         "overnightDone": "Overnight research is done.\n{report}",
-        "todayFocus": "Approve \"{action}\" today. (+{impact}%)",
+        "overnightThinkingLead": "I researched overnight.",
+        "overnightChecks": {
+          "competitors": "4 competitors",
+          "grants": "Government grants",
+          "pricing": "Pricing",
+          "market": "Market"
+        },
+        "thinkingFeed": {
+          "marketDone": "Market research is done.",
+          "grantsDone": "Government grants checked.",
+          "pricingNote": "Pricing looks a bit high.",
+          "recommendHold": "I'm keeping the same recommendation."
+        },
+        "todayProposal": "Complete \"{action}\" today to raise viability by +{impact}%.",
         "resultUpdate": "\"{action}\" done. Viability {before}% → {after}%",
-        "decisionHint": "See the Decision Board on the right for evidence.",
+        "decisionHint": "Open [View details] on the right for full analysis.",
         "approveCta": "Approve {action}"
       },
       "executiveOperatingRail": {
@@ -5094,6 +5361,10 @@
         "morning": {
           "label": "AI PM morning brief",
           "greeting": "Good morning, Founder.",
+          "signatureLine1": "Good morning, Founder.",
+          "signatureLine2": "I reviewed the company overnight.",
+          "signatureLine3": "The conclusion is unchanged.",
+          "signatureLine4": "Today, you only need to approve this one thing.",
           "sinceYesterdayLead": "Since yesterday",
           "approvalLead": "Today you only need to approve.",
           "changesLead": "Since yesterday, a few things changed.",
@@ -6064,6 +6335,14 @@
           "l2": "Is the CTA visible?",
           "l3": "Are pricing and benefits clear?",
           "l4": "Do you show trust signals (reviews, numbers)?",
+          "v1": "Are you happy with current pricing?",
+          "v2": "Is trust more important than price?",
+          "v3": "Monthly vs annual preference?",
+          "v4": "What triggers paid conversion?",
+          "v5": "Who would you refer?",
+          "e1": "What are the 3 MVP scope items this week?",
+          "e2": "Who is your first paying customer?",
+          "e3": "What is the one metric to track?",
           "generic": {
             "q1": "What is the key question to validate today?"
           }

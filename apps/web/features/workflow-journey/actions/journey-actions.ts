@@ -4,10 +4,32 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { isWorkflowGoalId } from '../types';
-import { journeyCookieOptions, WORKFLOW_GOAL_COOKIE, WORKFLOW_TEMPLATE_COOKIE } from '../lib/journey-cookies';
+import { getPersonaNextRoute, isV2PersonaId } from '../types/v2-persona';
+import {
+  journeyCookieOptions,
+  WORKFLOW_GOAL_COOKIE,
+  WORKFLOW_TEMPLATE_COOKIE,
+} from '../lib/journey-cookies';
+import { setJourneyPersonaCookies } from '../lib/v2-journey-cookies';
 import { getWorkflowTemplate } from '../constants/templates';
 
 export type SaveGoalResult = { ok: true } | { ok: false; error: 'invalid_goal' };
+export type SavePersonaResult = { ok: true; next: string } | { ok: false; error: 'invalid_persona' };
+
+/** V2 STEP 0 — persona selection (sets goal cookie for engine compatibility). */
+export async function savePersonaAction(personaId: string): Promise<SavePersonaResult> {
+  if (!isV2PersonaId(personaId)) {
+    return { ok: false, error: 'invalid_persona' };
+  }
+
+  const cookieStore = await cookies();
+  const opts = journeyCookieOptions();
+  setJourneyPersonaCookies((name, value, options) => {
+    cookieStore.set(name, value, options);
+  }, personaId);
+
+  return { ok: true, next: getPersonaNextRoute(personaId) };
+}
 
 /** Sets journey cookies without redirect — client navigates (P0 hotfix). */
 export async function saveGoalAction(goalId: string): Promise<SaveGoalResult> {
@@ -31,13 +53,13 @@ export async function selectGoalAction(formData: FormData) {
   const goalId = typeof raw === 'string' ? raw : '';
   const result = await saveGoalAction(goalId);
   if (!result.ok) {
-    redirect('/goal');
+    redirect('/who');
   }
   redirect('/workflow?compose=1');
 }
 
 export async function confirmWorkflowAction() {
-  redirect('/workspace');
+  redirect('/validation');
 }
 
 export async function startWorkspaceAction(demoMode: boolean) {

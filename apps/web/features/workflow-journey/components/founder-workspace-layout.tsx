@@ -12,6 +12,8 @@ type FounderWorkspaceLayoutProps = {
   center: React.ReactNode;
   right?: React.ReactNode;
   leftFooter?: React.ReactNode;
+  companyProgressPercent?: number;
+  weeklyGrowthPercent?: number;
   embedded?: boolean;
   className?: string;
   stackAt?: 'md' | 'lg';
@@ -38,6 +40,8 @@ export function FounderWorkspaceLayout({
   center,
   right,
   leftFooter,
+  companyProgressPercent,
+  weeklyGrowthPercent,
   embedded = false,
   className,
   stackAt,
@@ -49,7 +53,11 @@ export function FounderWorkspaceLayout({
       stackAt={stackAt}
       left={
         <>
-          <WorkspaceJourneyGuide activeStep={activeStep} />
+          <WorkspaceJourneyGuide
+            activeStep={activeStep}
+            companyProgressPercent={companyProgressPercent}
+            weeklyGrowthPercent={weeklyGrowthPercent}
+          />
           {leftFooter}
         </>
       }

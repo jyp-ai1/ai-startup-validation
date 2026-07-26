@@ -16,6 +16,7 @@ import type {
 } from '../../lib/founder-autonomous-ai-pm';
 import type { DailyCeoHabitBrief, WhatChangedItem } from '../../lib/founder-daily-ceo-habit';
 import type { LivingMorningContext } from '../../lib/founder-living-project';
+import { buildSignatureMorningGreeting } from '../../lib/founder-morning-signature';
 import { FounderLivingMorningContextBlock } from './founder-living-project-panels';
 import type { TodayApprovalChoice } from '../../lib/founder-daily-ceo-store';
 import type { AiPmInboxItem } from '../../lib/founder-ai-pm-inbox';
@@ -155,7 +156,7 @@ export function FounderCeoMorningBriefPanel({
         <Sun className="size-3.5" aria-hidden />
         {t('morning.label')}
       </p>
-      <AiPmConversation messages={[t('morning.greeting'), t('morning.sinceYesterdayLead')]} />
+      <AiPmConversation messages={buildSignatureMorningGreeting(t).split('\n\n')} />
       {livingContext ? (
         <FounderLivingMorningContextBlock context={livingContext} />
       ) : null}
@@ -309,12 +310,7 @@ export function FounderDailyCeoMorningPanel({
         <Sun className="size-3.5" aria-hidden />
         {t('morning.label')}
       </p>
-      <AiPmConversation
-        messages={[
-          t('morning.greeting'),
-          t('morning.approvalLead'),
-        ]}
-      />
+      <AiPmConversation messages={buildSignatureMorningGreeting(t).split('\n\n')} />
       <div className="mt-5 rounded-xl border border-primary/25 bg-background/90 px-4 py-4">
         <p className="text-sm text-muted-foreground">{t('morning.todayLead')}</p>
         <p className="mt-2 text-base font-semibold">{brief.todayActionTitle}</p>
