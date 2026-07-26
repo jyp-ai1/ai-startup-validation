@@ -4210,6 +4210,11 @@
         "todayIntroLead": "Today, just do this one thing.",
         "operatingHandoff": "From now on, you'll run the project together with your AI PM.",
         "readingWait": "Summarizing results…",
+        "verdictChat": "The conclusion is {verdict}.",
+        "verdictGo": "GO",
+        "verdictConditional": "Conditional GO",
+        "verdictHold": "HOLD",
+        "startTodayCta": "Start operating today",
         "successScoreLabel": "Success probability",
         "scoreBasisLabel": "Based on information collected so far",
         "ctaDefault": "Start today",
@@ -4803,10 +4808,11 @@
         "goGain": "GO probability"
       },
       "executiveDecisionBoard": {
-        "label": "Executive Decision Board",
+        "label": "AI PM judgment",
         "placeholder": "AI PM judgment appears after project registration.",
         "pinned": {
-          "todayOnly": "Do only this today"
+          "todayOnly": "Do only this today",
+          "reasonLabel": "Why"
         },
         "tabs": {
           "label": "Decision tabs",
@@ -5978,6 +5984,9 @@
       },
       "actionWorkspace": {
         "actionKindLabel": "AI PM · {kind}",
+        "actionStart": "Let's start with \"{action}\" today.",
+        "closeCta": "Close",
+        "scoreNarrative": "Viability {before}% → {after}%",
         "intro": "AI PM\n\nSounds good.",
         "introInterview": "AI PM\n\nSounds good.\n\nLet's talk with\npotential customers.",
         "interviewSubtitle": "We'll speak with 3 potential customers.",

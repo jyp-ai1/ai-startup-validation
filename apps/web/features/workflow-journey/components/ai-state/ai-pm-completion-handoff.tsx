@@ -4,24 +4,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { loadAgentPipelineResult } from '@/lib/agents/agent-run-store';
+import { Button } from '@repo/ui';
 
-import { AiPmConversation } from './ai-pm-conversation';
-import { FounderDecisionBoxPanel } from '../founder-ai-pm/founder-decision-box-panel';
 import { FounderExecutiveDecisionBoardLoader } from '../founder-ai-pm/founder-executive-decision-board-loader';
-import { FounderResearchCompletePanel } from '../founder-ai-pm/founder-research-complete-panel';
-import { FounderAiPmMeetingClose } from '../founder-ai-pm/founder-ai-pm-meeting-close';
-import { buildCompetitiveIntelligence } from '../../lib/founder-competitive-intelligence';
 import { buildExplainableJudgment } from '../../lib/founder-explainable-judgment';
 import {
   buildAiPmDecisionBox,
   buildAiPmMeetingBrief,
   buildMeetingCloseNarrative,
 } from '../../lib/founder-ai-pm-meeting';
-import { buildResearchCompleteBrief } from '../../lib/founder-research-trust';
-import { countResearchMaterials } from '../../lib/founder-research-sources';
 import { buildExplainableScoreFactors } from '../../lib/founder-personalization-engine';
 import type { WorkflowGoalId } from '../../types';
 import { JourneyFocusedShell } from '../journey-focused-shell';
+import { AiPmOfficeChat, type AiPmChatMessage } from './ai-pm-office-chat';
 
 type AiPmCompletionHandoffProps = {
   onStartToday: () => void;
@@ -72,12 +67,6 @@ export function AiPmCompletionHandoff({
     return buildExplainableJudgment(pipeline, successScore, businessProgress, factors);
   }, [businessProgress, pipeline, successScore]);
 
-  const researchMaterialCount = useMemo(() => countResearchMaterials(pipeline), [pipeline]);
-  const researchComplete = useMemo(
-    () => buildResearchCompleteBrief(pipeline, researchMaterialCount),
-    [pipeline, researchMaterialCount],
-  );
-
   const meetingBrief = useMemo(
     () => buildAiPmMeetingBrief(pipeline, explainableJudgment, businessProgress),
     [businessProgress, explainableJudgment, pipeline],
@@ -91,27 +80,39 @@ export function AiPmCompletionHandoff({
     [decisionBox, meetingBrief],
   );
 
-  const narrativeMessages = [t('greeting'), t('goodNews')];
+  const chatMessages = useMemo((): AiPmChatMessage[] => {
+    const messages: AiPmChatMessage[] = [
+      { role: 'ai', text: t('greeting') },
+      { role: 'ai', text: t('goodNews') },
+      ...meetingCloseMessages.map((text) => ({ role: 'ai' as const, text })),
+    ];
+    if (readyToContinue) {
+      const verdictText =
+        meetingBrief.verdictKey === 'GO_CONDITIONAL'
+          ? t('verdictConditional')
+          : meetingBrief.verdictKey === 'GO'
+            ? t('verdictGo')
+            : t('verdictHold');
+      messages.push({ role: 'ai', text: t('verdictChat', { verdict: verdictText }) });
+      messages.push({ role: 'ai', text: t('operatingHandoff') });
+    }
+    return messages;
+  }, [meetingBrief.verdictKey, meetingCloseMessages, readyToContinue, t]);
 
-  const handoffRail = (
-    <>
-      <AiPmConversation messages={narrativeMessages} />
-      <FounderResearchCompletePanel brief={researchComplete} />
-      <FounderDecisionBoxPanel
-        decision={decisionBox}
-        onSelect={readyToContinue ? () => onStartToday() : () => undefined}
-      />
-      {!readyToContinue ? (
-        <p className="text-center text-sm text-muted-foreground">{t('readingWait')}</p>
-      ) : (
-        <>
-          <FounderAiPmMeetingClose messages={meetingCloseMessages} onStart={onStartToday} />
-          <p className="whitespace-pre-line text-center text-sm leading-relaxed text-muted-foreground">
-            {t('operatingHandoff')}
-          </p>
-        </>
-      )}
-    </>
+  const center = (
+    <AiPmOfficeChat
+      className={className}
+      messages={chatMessages}
+      footer={
+        readyToContinue ? (
+          <Button type="button" size="lg" className="h-12 w-full rounded-xl font-semibold" onClick={onStartToday}>
+            {t('startTodayCta')}
+          </Button>
+        ) : (
+          <p className="text-center text-sm text-muted-foreground">{t('readingWait')}</p>
+        )
+      }
+    />
   );
 
   const decisionBoard =
@@ -128,11 +129,10 @@ export function AiPmCompletionHandoff({
     <JourneyFocusedShell
       embedded={embedded}
       ariaLabel={t('title')}
-      className={className}
       activeStep="judgment"
       right={decisionBoard ?? undefined}
     >
-      {handoffRail}
+      {center}
     </JourneyFocusedShell>
   );
 }

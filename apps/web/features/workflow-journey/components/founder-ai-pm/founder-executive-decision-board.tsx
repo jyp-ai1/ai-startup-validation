@@ -12,20 +12,20 @@ import { starsDisplay } from '../../lib/founder-executive-decision-board';
 
 type DecisionTabId =
   | 'conclusion'
-  | 'swot'
   | 'evidence'
-  | 'competitor'
   | 'market'
+  | 'competitor'
   | 'pricing'
+  | 'swot'
   | 'execution';
 
 const TAB_ORDER: DecisionTabId[] = [
   'conclusion',
-  'swot',
   'evidence',
-  'competitor',
   'market',
+  'competitor',
   'pricing',
+  'swot',
   'execution',
 ];
 
@@ -56,8 +56,12 @@ export function FounderExecutiveDecisionBoard({
   const pricingStrategy = data.strategy.find((s) => s.key === 'pricing');
 
   const visibleTabs = compact
-    ? (['conclusion', 'swot', 'evidence'] as DecisionTabId[])
+    ? (['conclusion', 'evidence', 'market', 'competitor'] as DecisionTabId[])
     : TAB_ORDER;
+
+  const primaryReason =
+    decisionEngine.todayReasons.find((r) => r.status === 'gap') ??
+    decisionEngine.todayReasons.find((r) => r.status === 'partial');
 
   return (
     <section
@@ -67,8 +71,11 @@ export function FounderExecutiveDecisionBoard({
       )}
       aria-label={t('label')}
     >
-      {/* Pinned executive summary — always visible */}
+      {/* Pinned — AI PM 판단 (never scrolls away) */}
       <div className="space-y-3 border-b border-border/60 pb-4">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+          {t('label')}
+        </p>
         <div className="flex flex-wrap items-baseline gap-2">
           <span
             className={cn(
@@ -87,10 +94,21 @@ export function FounderExecutiveDecisionBoard({
           <span className="text-2xl font-bold tabular-nums">{decisionEngine.scorePercent}%</span>
         </div>
 
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">{t('pinned.reasonLabel')}</p>
+          <p className="mt-1 text-sm leading-relaxed">
+            {primaryReason
+              ? t(`decisionEngine.reasons.${primaryReason.key}.${primaryReason.status}` as 'decisionEngine.reasons.market.gap')
+              : t(`decisionEngine.condition.${decisionEngine.condition}`)}
+          </p>
+        </div>
+
         {decisionEngine.approval ? (
           <>
-            <p className="text-sm text-muted-foreground">{t('pinned.todayOnly')}</p>
-            <p className="text-base font-semibold">{decisionEngine.approval.title}</p>
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground">{t('pinned.todayOnly')}</p>
+              <p className="mt-1 text-base font-semibold">{decisionEngine.approval.title}</p>
+            </div>
             <Button
               type="button"
               size="lg"

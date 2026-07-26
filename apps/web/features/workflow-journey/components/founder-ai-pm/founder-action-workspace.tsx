@@ -1,17 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { ArrowRight, Check, TrendingUp, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { loadAgentPipelineResult } from '@/lib/agents/agent-run-store';
 import { Button, Textarea } from '@repo/ui';
-import { cn } from '@repo/ui/lib/utils';
 
 import type { ResolvedActionWorkspace } from '../../lib/founder-action-resolver';
 import { resolveFounderActionTitle, normalizeFounderPipelineText } from '../../lib/founder-action-display';
 import { resolveActionAnswerInsightKey } from '../../lib/founder-action-insights';
-import { AiPmConversation } from '../ai-state/ai-pm-conversation';
+import { AiPmOfficeChat, type AiPmChatMessage } from '../ai-state/ai-pm-office-chat';
 import { JourneyFocusedShell } from '../journey-focused-shell';
 import { FounderExecutiveDecisionBoardLoader } from './founder-executive-decision-board-loader';
 import type { WorkflowGoalId } from '../../types';
@@ -62,7 +61,6 @@ export function FounderActionWorkspace({
 }: FounderActionWorkspaceProps) {
   const t = useTranslations('workflow.founderAiPm.actionWorkspace');
   const ti = useTranslations('workflow.founderAiPm.actionWorkspace.insights');
-  const tk = useTranslations('workflow.founderAiPm.actionWorkspace.kinds');
   const tq = useTranslations('workflow.founderAiPm.actionWorkspace.questions');
   const td = useTranslations('workflow.founderAiPm.intelligence.actionGenerator');
 
@@ -90,21 +88,63 @@ export function FounderActionWorkspace({
   const isLastStep = step >= totalSteps - 1;
   const scoreAfter = Math.min(100, scoreBefore + workspace.goImpact);
 
-  const questionOrdinal = (num: number) =>
-    t(`ordinals.${num}` as 'ordinals.1' | 'ordinals.2' | 'ordinals.3' | 'ordinals.4' | 'ordinals.5');
-
-  const introMessages =
-    step === 0
-      ? workspace.kind === 'interview'
-        ? [t('introInterview')]
-        : [t('intro'), t('questionLead', { ordinal: questionOrdinal(step + 1) })]
-      : [t('questionLead', { ordinal: questionOrdinal(step + 1) })];
-
   const currentQuestion = resolveQuestionText(
     workspace.questionKeys[step] ?? 'q1',
     tq,
     pipelineQuestions,
   );
+
+  const chatMessages = useMemo((): AiPmChatMessage[] => {
+    const messages: AiPmChatMessage[] = [
+      {
+        role: 'ai',
+        text: workspace.kind === 'interview' ? t('introInterview') : t('intro'),
+      },
+      { role: 'ai', text: t('actionStart', { action: actionTitle }) },
+    ];
+
+    for (let i = 0; i < answers.length; i += 1) {
+      const questionKey = workspace.questionKeys[i] ?? 'q1';
+      messages.push({
+        role: 'ai',
+        text: resolveQuestionText(questionKey, tq, pipelineQuestions),
+      });
+      messages.push({ role: 'founder', text: answers[i]! });
+    }
+
+    if (phase === 'guide') {
+      messages.push({ role: 'ai', text: currentQuestion });
+    }
+
+    if (saveFeedback) {
+      for (const line of saveFeedback) {
+        messages.push({ role: 'ai', text: line });
+      }
+    }
+
+    if (phase === 'complete') {
+      messages.push(
+        { role: 'ai', text: t('completeLead') },
+        { role: 'ai', text: t('scoreNarrative', { before: scoreBefore, after: scoreAfter }) },
+        { role: 'ai', text: t('completeNext') },
+      );
+    }
+
+    return messages;
+  }, [
+    actionTitle,
+    answers,
+    currentQuestion,
+    phase,
+    pipelineQuestions,
+    saveFeedback,
+    scoreAfter,
+    scoreBefore,
+    t,
+    tq,
+    workspace.kind,
+    workspace.questionKeys,
+  ]);
 
   const handleRecord = () => {
     const trimmed = draft.trim();
@@ -116,6 +156,7 @@ export function FounderActionWorkspace({
     if (isLastStep) {
       setCompletedAnswers(nextAnswers);
       setPhase('complete');
+      setSaveFeedback(null);
       return;
     }
 
@@ -147,116 +188,31 @@ export function FounderActionWorkspace({
       />
     ) : null;
 
-  if (phase === 'complete') {
-    const summaryMessages = [
-      t('completeLead'),
-      t('completeSummary', { count: completedAnswers.length }),
-      t('projectUpdated'),
-      t('completeNext'),
-    ];
-
-    const completeRail = (
-      <>
-        <AiPmConversation messages={summaryMessages} />
-        <div className="rounded-2xl border border-emerald-300/40 bg-emerald-50/50 p-5 text-center dark:bg-emerald-950/20">
-          <p className="text-sm text-muted-foreground">{t('scoreLabel')}</p>
-          <div className="mt-2 flex items-center justify-center gap-2">
-            <TrendingUp className="size-4 text-emerald-600" aria-hidden />
-            <p className="text-2xl font-bold tabular-nums">
-              {scoreBefore}% → {scoreAfter}%
-            </p>
-          </div>
-          <p className="mt-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">
-            +{workspace.goImpact}%
-          </p>
-        </div>
-        <Button type="button" size="lg" className="h-14 w-full rounded-xl" onClick={handleFinish}>
-          {t('completeCta')}
-          <ArrowRight className="ml-2 size-4" aria-hidden />
-        </Button>
-      </>
-    );
-
-    return (
-      <JourneyFocusedShell
-        ariaLabel={t('completeCta')}
-        activeStep="execution"
-        right={strategyPanel ?? undefined}
-      >
-        {completeRail}
-      </JourneyFocusedShell>
-    );
-  }
-
-  const actionRail = (
-    <>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
-            {t('actionKindLabel', { kind: tk(workspace.kind) })}
-          </p>
-          <h2 id="action-workspace-title" className="mt-1 text-lg font-semibold leading-snug">
-            {actionTitle}
-          </h2>
-          {workspace.kind === 'interview' ? (
-            <p className="mt-1 text-sm text-muted-foreground">{t('interviewSubtitle')}</p>
-          ) : null}
-          <p className="mt-1 text-sm tabular-nums text-muted-foreground">
-            {t('meta', { minutes: workspace.etaMinutes, impact: workspace.goImpact })}
-          </p>
-        </div>
-        <Button type="button" variant="ghost" size="icon" className="shrink-0 rounded-full" onClick={onClose}>
-          <X className="size-4" aria-hidden />
-        </Button>
-      </div>
-
-      <AiPmConversation messages={introMessages} />
-
-      {saveFeedback ? <AiPmConversation messages={saveFeedback} className="-mt-2" /> : null}
-
-      <div className="rounded-2xl border border-primary/25 bg-primary/[0.04] p-5">
-        <p className="text-sm font-semibold text-primary">
-          {t('questionPrefix', { ordinal: questionOrdinal(step + 1) })}
-        </p>
-        <p className="mt-2 text-base leading-relaxed">{currentQuestion}</p>
-
+  const chatFooter =
+    phase === 'complete' ? (
+      <Button type="button" size="lg" className="h-12 w-full rounded-xl font-semibold" onClick={handleFinish}>
+        {t('completeCta')}
+        <ArrowRight className="ml-2 size-4" aria-hidden />
+      </Button>
+    ) : (
+      <div className="space-y-3">
         <Textarea
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder={t('answerPlaceholder')}
-          className="mt-4 min-h-24 rounded-xl"
+          className="min-h-20 rounded-xl"
           autoFocus
         />
-
-        <Button
-          type="button"
-          className="mt-4 w-full rounded-xl"
-          disabled={!draft.trim()}
-          onClick={handleRecord}
-        >
-          {isLastStep ? t('recordFinal') : t('record')}
-        </Button>
+        <div className="flex gap-2">
+          <Button type="button" className="flex-1 rounded-xl" disabled={!draft.trim()} onClick={handleRecord}>
+            {isLastStep ? t('recordFinal') : t('record')}
+          </Button>
+          <Button type="button" variant="ghost" className="rounded-xl" onClick={onClose}>
+            {t('closeCta')}
+          </Button>
+        </div>
       </div>
-
-      {answers.length > 0 ? (
-        <ul className="space-y-2" role="list">
-          {answers.map((answer, index) => (
-            <li
-              key={`${index}-${answer.slice(0, 12)}`}
-              className="flex items-start gap-2 rounded-xl bg-muted/40 px-3 py-2 text-sm"
-            >
-              <Check className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-hidden />
-              <span className="text-muted-foreground">{answer}</span>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
-      <p className="text-center text-xs text-muted-foreground">
-        {t('progress', { current: step + 1, total: totalSteps })}
-      </p>
-    </>
-  );
+    );
 
   return (
     <JourneyFocusedShell
@@ -265,7 +221,7 @@ export function FounderActionWorkspace({
       activeStep="execution"
       right={strategyPanel ?? undefined}
     >
-      {actionRail}
+      <AiPmOfficeChat messages={chatMessages} footer={chatFooter} />
     </JourneyFocusedShell>
   );
 }

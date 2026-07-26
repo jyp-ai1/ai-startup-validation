@@ -8,10 +8,18 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint P0 — Unified Workspace IA ✅
+## Sprint P0 — Unified Workspace IA ✅ (IA FREEZE)
 
-**Status:** Complete — shipped follow-up polish  
-**Goal:** 하나의 Shell · 영구 좌측 워크플로 · 탭 기반 의사결정 보드 · Founder 한국어 · 중앙 채팅 전용
+**Status:** Locked — no new UI patterns until P1 data layer  
+**North Star:** *하나의 AI PM Office — 레이아웃·좌·중·우 역할 고정, 내용만 상태별 변경*
+
+| Zone | Rule |
+|------|------|
+| Left 30% | `회사 진행상황` 8단계 — 절대 변경/숨김 금지 |
+| Center 40% | `AiPmOfficeChat` only — 카드·리포트·Inbox 금지 |
+| Right 30% | `AI PM 판단` 고정 헤더 + 탭 (결론·근거·시장·경쟁·가격·SWOT·실행) |
+
+**Same shell:** Goal · Workflow · Registration · Analysis · Completion · Today · Action · Debrief
 
 | Priority | Focus | Status |
 |----------|-------|--------|

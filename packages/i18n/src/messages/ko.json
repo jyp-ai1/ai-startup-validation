@@ -4369,6 +4369,11 @@
         "todayIntroLead": "오늘은 이것 하나만 하시면 됩니다.",
         "operatingHandoff": "이제부터는 AI PM과 함께 프로젝트를 운영합니다.",
         "readingWait": "결과를 정리하고 있습니다…",
+        "verdictChat": "결론은 {verdict}입니다.",
+        "verdictGo": "GO",
+        "verdictConditional": "조건부 GO",
+        "verdictHold": "HOLD",
+        "startTodayCta": "오늘 운영 시작하기",
         "successScoreLabel": "사업 가능성",
         "scoreBasisLabel": "현재까지 수집된 정보 기준",
         "ctaDefault": "오늘 시작하기",
@@ -4949,10 +4954,11 @@
         "goGain": "GO 가능성"
       },
       "executiveDecisionBoard": {
-        "label": "의사결정 보드",
+        "label": "AI PM 판단",
         "placeholder": "프로젝트 등록 후 AI PM 판단이 표시됩니다.",
         "pinned": {
-          "todayOnly": "오늘 해야할 것"
+          "todayOnly": "오늘 해야하는 것",
+          "reasonLabel": "이유"
         },
         "tabs": {
           "label": "의사결정 탭",
@@ -6157,6 +6163,9 @@
       },
       "actionWorkspace": {
         "actionKindLabel": "AI PM · {kind}",
+        "actionStart": "오늘은 \"{action}\"부터 진행하겠습니다.",
+        "closeCta": "닫기",
+        "scoreNarrative": "사업 가능성 {before}% → {after}%",
         "intro": "AI PM\n\n좋습니다.",
         "introInterview": "AI PM\n\n좋습니다.\n\n잠재 고객과\n이야기를 나눠보겠습니다.",
         "interviewSubtitle": "잠재 고객 3명과 이야기를 나눠보겠습니다.",
