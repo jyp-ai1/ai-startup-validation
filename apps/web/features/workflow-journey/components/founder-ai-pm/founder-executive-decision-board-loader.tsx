@@ -27,6 +27,7 @@ type FounderExecutiveDecisionBoardLoaderProps = {
   todayActions?: GeneratedTodayAction[];
   compact?: boolean;
   onStartAction?: (actionId: string) => void;
+  onApproveAction?: (actionId: string) => void;
   className?: string;
 };
 
@@ -39,6 +40,7 @@ export function FounderExecutiveDecisionBoardLoader({
   todayActions: todayActionsOverride,
   compact = false,
   onStartAction,
+  onApproveAction,
   className,
 }: FounderExecutiveDecisionBoardLoaderProps) {
   const td = useTranslations('workflow.founderAiPm.intelligence.actionGenerator');
@@ -88,6 +90,7 @@ export function FounderExecutiveDecisionBoardLoader({
       data={data}
       compact={compact}
       onStartAction={onStartAction}
+      onApproveAction={onApproveAction}
       className={className}
     />
   );

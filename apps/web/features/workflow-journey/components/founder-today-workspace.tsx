@@ -624,6 +624,7 @@ export function FounderTodayWorkspace({
             goalId={goalId}
             confidence={confidence}
             onStartAction={(actionId) => handleStartById(`decision_${actionId}`, actionId)}
+            onApproveAction={handleApproveQueueItem}
           />
         }
       />

@@ -5020,7 +5020,91 @@
         },
         "execution": {
           "label": "오늘 실행"
-        }
+        },
+        "decisionEngine": {
+          "finalAdvice": "AI PM 최종 권고",
+          "conditionLabel": "조건:",
+          "todayReasons": "오늘 해야하는 이유",
+          "approvalLabel": "오늘 승인",
+          "expectedEffect": "예상 효과",
+          "approveCta": "승인",
+          "optionsLabel": "전략 선택지",
+          "recommended": "추천 ★★★★★",
+          "notRecommended": "비추천",
+          "recommendation": {
+            "startNow": "지금 시작하십시오.",
+            "conditionalGo": "조건 충족 시 GO 확정",
+            "revisit": "재검토 후 결정하십시오."
+          },
+          "condition": {
+            "priceValidationForGo": "가격검증 완료 시 GO 확정",
+            "keyValidationForGo": "핵심 검증 완료 시 GO 확정",
+            "readyForGo": "현재 근거로 GO 가능"
+          },
+          "reasons": {
+            "market": { "done": "시장 검증 완료", "partial": "시장 신호 확인 중", "gap": "시장 검증 필요" },
+            "competitor": { "done": "경쟁력 충분", "partial": "경쟁력 확인 중", "gap": "경쟁 분석 필요" },
+            "pricing": { "done": "가격 검증 완료", "partial": "가격만 확인하면 됨", "gap": "가격 검증 필요" },
+            "mvp": { "done": "MVP 준비됨", "partial": "MVP 진행 중", "gap": "MVP 검증 필요" }
+          }
+        },
+        "canvas": {
+          "label": "Business Canvas",
+          "customer": "고객",
+          "problem": "문제",
+          "solution": "솔루션",
+          "revenue": "수익",
+          "differentiation": "차별성",
+          "currentStage": "현재 상태",
+          "stages": { "marketValidation": "시장 검증" }
+        },
+        "evidence": { "label": "근거 · 분석 상세 (원하면 펼치기)" },
+        "market": {
+          "label": "시장 규모",
+          "marketSize": "시장규모",
+          "cagr": "CAGR",
+          "tam": "TAM",
+          "sam": "SAM",
+          "som": "SOM"
+        },
+        "competitorTable": {
+          "label": "경쟁사 비교",
+          "company": "회사",
+          "price": "가격",
+          "ops": "운영"
+        },
+        "swot": {
+          "label": "SWOT (우선순위)",
+          "strengths": "Strength",
+          "weaknesses": "Weakness",
+          "opportunities": "Opportunity",
+          "threats": "Threat",
+          "items": {
+            "aiPm": "AI PM",
+            "market": "시장",
+            "customer": "고객",
+            "pricing": "가격",
+            "competitor": "경쟁",
+            "government": "정부지원",
+            "marketGap": "시장 공백",
+            "kmong": "크몽",
+            "soomgo": "숨고",
+            "notion": "노션",
+            "idus": "아이디어스",
+            "startup-toolkit": "스타트업 툴킷"
+          }
+        },
+        "risk": { "label": "리스크", "high": "높음", "medium": "중간", "low": "낮음" },
+        "scenarios": {
+          "label": "시나리오 플래너",
+          "items": {
+            "priceDown": "가격 인하",
+            "b2bPivot": "B2B 전환",
+            "addFeature": "기능 추가",
+            "raiseSeed": "투자 유치"
+          }
+        },
+        "autonomous": { "label": "AI PM 밤새 브리핑 (데이터 기반)" }
       },
       "executiveOperatingRail": {
         "label": "회사 운영",

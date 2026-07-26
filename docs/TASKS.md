@@ -8,9 +8,44 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Sprint 21–25 — Executive Decision Engine (CEO Strategy Room) 🚧
+
+**Status:** In progress — Sprint 21–25 shipped in this branch  
+**Goal:** *"예쁜 리포트"* → **대표가 매일 결정하는 AI 전략실** — *결정 → 근거 확인 → 승인 → 실행*
+
+| Sprint | Focus | Status |
+|--------|-------|--------|
+| 21 | Executive Decision Engine — GO 권고 · 오늘 승인 1개 · A/B/C 옵션 | ✅ |
+| 22 | Business Model Canvas — 한 장 사업 조망 | ✅ |
+| 23 | Real Executive Dashboard — TAM/SAM/SOM · 경쟁사 표 · SWOT 우선순위 | ✅ |
+| 24 | Scenario Planner — 가격/B2B/기능/투자 시나리오 | ✅ |
+| 25 | Autonomous AI PM briefing scaffold (Platform Phase 연동 예정) | ✅ |
+
+**Key files:**
+- `founder-executive-decision-board.ts` — decisionEngine, canvas, marketMetrics, scenarios
+- `founder-executive-decision-board.tsx` — conclusion-first IA, evidence `<details>`
+- `founder-today-workspace.tsx` — `onApproveAction` wiring
+
+---
+
+## Sprint — Executive Decision Board Sprints A–E ✅
+
+**Status:** Complete — shipped `6df7ea6`  
+**Goal:** 정보 카드 → **의사결정 보드** — *"계속 해야 하나?" · "오늘 뭘 해야 하나?"*
+
+| Sprint | Focus | Status |
+|--------|-------|--------|
+| A | Executive Decision Board (결론→Why→실행 순) | ✅ |
+| B | Business Hypothesis Engine | ✅ |
+| C | Competitor Matrix (SWOT 대체) | ✅ |
+| D | Decision Tree | ✅ |
+| E | Operating Rail IA (오늘→밤새→승인→실행→결과) | ✅ |
+
+---
+
 ## Sprint — Executive Workspace Sprints A–E ✅
 
-**Status:** Complete — pending commit  
+**Status:** Complete — shipped `5b52566`  
 **Goal:** IA 통일 + CEO 전략실 — *"지금 상황 · 왜? · 그래서 뭘 해야 함?"*
 
 | Sprint | Focus | Status |

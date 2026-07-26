@@ -4874,7 +4874,91 @@
         },
         "execution": {
           "label": "Today's execution"
-        }
+        },
+        "decisionEngine": {
+          "finalAdvice": "AI PM final recommendation",
+          "conditionLabel": "Condition:",
+          "todayReasons": "Why today",
+          "approvalLabel": "Approve today",
+          "expectedEffect": "Expected effect",
+          "approveCta": "Approve",
+          "optionsLabel": "Strategy options",
+          "recommended": "Recommended ★★★★★",
+          "notRecommended": "Not recommended",
+          "recommendation": {
+            "startNow": "Start now.",
+            "conditionalGo": "GO confirmed when conditions are met",
+            "revisit": "Revisit and decide."
+          },
+          "condition": {
+            "priceValidationForGo": "GO confirmed after pricing validation",
+            "keyValidationForGo": "GO confirmed after key validation",
+            "readyForGo": "GO possible with current evidence"
+          },
+          "reasons": {
+            "market": { "done": "Market validated", "partial": "Market signals in progress", "gap": "Market validation needed" },
+            "competitor": { "done": "Competitive edge sufficient", "partial": "Competitive edge in review", "gap": "Competitive analysis needed" },
+            "pricing": { "done": "Pricing validated", "partial": "Pricing check remaining", "gap": "Pricing validation needed" },
+            "mvp": { "done": "MVP ready", "partial": "MVP in progress", "gap": "MVP validation needed" }
+          }
+        },
+        "canvas": {
+          "label": "Business Canvas",
+          "customer": "Customer",
+          "problem": "Problem",
+          "solution": "Solution",
+          "revenue": "Revenue",
+          "differentiation": "Differentiation",
+          "currentStage": "Current stage",
+          "stages": { "marketValidation": "Market validation" }
+        },
+        "evidence": { "label": "Evidence · analysis details (expand if needed)" },
+        "market": {
+          "label": "Market size",
+          "marketSize": "Market size",
+          "cagr": "CAGR",
+          "tam": "TAM",
+          "sam": "SAM",
+          "som": "SOM"
+        },
+        "competitorTable": {
+          "label": "Competitor comparison",
+          "company": "Company",
+          "price": "Price",
+          "ops": "Ops"
+        },
+        "swot": {
+          "label": "SWOT (prioritized)",
+          "strengths": "Strength",
+          "weaknesses": "Weakness",
+          "opportunities": "Opportunity",
+          "threats": "Threat",
+          "items": {
+            "aiPm": "AI PM",
+            "market": "Market",
+            "customer": "Customer",
+            "pricing": "Pricing",
+            "competitor": "Competition",
+            "government": "Government support",
+            "marketGap": "Market gap",
+            "kmong": "Kmong",
+            "soomgo": "Soomgo",
+            "notion": "Notion",
+            "idus": "Idus",
+            "startup-toolkit": "Startup toolkit"
+          }
+        },
+        "risk": { "label": "Risk", "high": "High", "medium": "Medium", "low": "Low" },
+        "scenarios": {
+          "label": "Scenario planner",
+          "items": {
+            "priceDown": "Price cut",
+            "b2bPivot": "B2B pivot",
+            "addFeature": "Add feature",
+            "raiseSeed": "Raise funding"
+          }
+        },
+        "autonomous": { "label": "Overnight AI PM briefing (data-backed)" }
       },
       "executiveOperatingRail": {
         "label": "Company operations",
