@@ -8,6 +8,32 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Platform Phase — Intelligence Platform (Active)
+
+**Status:** In progress — local (pending commit + push)  
+**Goal:** UX Sprint 종료 → **Real Intelligence + Production Architecture**
+
+**CPO lock:** UI 추가 중단 · [PLATFORM_ROADMAP.md](./PLATFORM_ROADMAP.md)
+
+| Priority | Focus | Status |
+|----------|-------|--------|
+| P1 ★★★★★ | Intelligence Platform (6 domains) | 🟡 scaffold shipped |
+| P1 ★★★★★ | Knowledge Graph builder | 🟡 scaffold shipped |
+| P2 ★★★★★ | BackgroundRunRepository + DB + Cron | ⏳ interface only |
+| P3 ★★★★☆ | Founder Twin learning | Planned |
+| P4 ★★★☆☆ | Fundraising · Growth · Board · Simulator (real) | Planned |
+
+**Delivered this phase:**
+- `runIntelligencePlatform()` — 6-domain OpenRouter + mock fallback
+- `buildCompanyKnowledgeGraph()` — Founder→Outcome graph
+- `BackgroundRunRepository` interface (`@repo/core`)
+- `POST /api/intelligence/platform-run`
+- Overnight API upgraded — intelligence + pipeline + graph
+
+**Next:** DB persistence · Vercel Cron · per-domain real data feeds
+
+---
+
 ## Sprint — AI Operating System Sprints 9–20 ✅
 
 **Status:** Complete — `main` (`9a884f6`)  

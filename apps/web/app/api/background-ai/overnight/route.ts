@@ -1,11 +1,15 @@
-import { runStrategyPipelineWithRecovery } from '@repo/agents';
+import {
+  buildCompanyKnowledgeGraph,
+  runIntelligencePlatform,
+  runStrategyPipelineWithRecovery,
+} from '@repo/agents';
 import { getAIPlatform } from '@repo/ai';
 import { isBaseError } from '@repo/core/errors';
 import { createSuccessResponse, handleUnknownError } from '@repo/core/response';
 import { parseRequest, z } from '@repo/core/validation';
 
 import { resolveAgentProviderId } from '@/lib/agents/config';
-import { buildSnapshotFromPipeline } from '@/features/workflow-journey/lib/founder-background-ai';
+import { buildSnapshotFromIntelligencePlatform } from '@/features/workflow-journey/lib/founder-background-ai';
 
 const bodySchema = z.object({
   projectId: z.string().min(1),
@@ -21,19 +25,26 @@ export async function POST(request: Request) {
     const json = await request.json();
     const body = parseRequest(bodySchema, json);
     getAIPlatform();
+    const providerId = resolveAgentProviderId();
+    const project = { ...body, locale: body.locale ?? 'ko' };
+
+    const intelligence = await runIntelligencePlatform({ context: project, providerId });
 
     const result = await runStrategyPipelineWithRecovery({
-      project: { ...body, locale: body.locale ?? 'ko' },
-      providerId: resolveAgentProviderId(),
+      project,
+      providerId,
       previousSuccessScore: body.previousSuccessScore,
     });
 
-    const snapshot = buildSnapshotFromPipeline(body.projectId, result);
+    const snapshot = buildSnapshotFromIntelligencePlatform(body.projectId, intelligence, result);
+    const knowledgeGraph = buildCompanyKnowledgeGraph(project, intelligence);
 
     return Response.json(
       createSuccessResponse({
         snapshot,
         pipeline: result,
+        intelligence,
+        knowledgeGraph,
       }),
     );
   } catch (error) {
@@ -52,6 +63,6 @@ export async function GET(request: Request) {
   }
   return Response.json({
     success: true,
-    message: 'Overnight research cron ready. POST with project context to run.',
+    message: 'Overnight intelligence cron ready. POST with project context to run.',
   });
 }

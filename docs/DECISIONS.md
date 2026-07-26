@@ -405,6 +405,32 @@ LaunchLens infrastructure is complete (Journey, AI PM, Agent Layer, Product OS, 
 
 ---
 
+## ADR-016: Platform Phase — Intelligence over UX Sprints
+
+**Status:** Accepted  
+**Date:** 2026-07-26
+
+### Context
+
+Sprint 6–20 delivered Founder Experience (Daily Habit, Living Project, AI OS surfaces). CPO assessment: UX ~90%, Real Intelligence ~35–40%, Production Architecture ~30%. Further UI panels have diminishing returns.
+
+### Decision
+
+1. **Stop** new Today-workspace UI sprints; Sprint 1–20 UX track is complete
+2. **Start Platform Phase** — five layers: Intelligence Platform → Knowledge Graph → Autonomous Engine → Founder Twin → Operating System
+3. **Priority 1:** `@repo/agents/intelligence/platform` — `runIntelligencePlatform()` for 6 domains (competitor, market, pricing, government, customer, investment)
+4. **Priority 2:** `BackgroundRunRepository` interface in `@repo/core`; DB adapter + Vercel Cron next
+5. Overnight API runs Intelligence Platform + Strategy Pipeline; returns `knowledgeGraph`
+6. New API: `POST /api/intelligence/platform-run`
+
+### Consequences
+
+- Competitive moat shifts from screens to real data collection + reasoning + evidence
+- UI consumes platform outputs; no mock-only "AI worked" without provider backing
+- See `docs/PLATFORM_ROADMAP.md`
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

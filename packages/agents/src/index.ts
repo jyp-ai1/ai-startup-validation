@@ -3,6 +3,19 @@ export * from './types/contracts';
 export { createStrategyPlatform, StrategyPlatform, runStrategyPipelineWithRecovery } from './platform/strategy-platform';
 export { composeFounderOsBrief } from './intelligence/founder-os-composer';
 export { computeFounderGrowthMetrics } from './intelligence/growth-metrics';
+export {
+  runIntelligencePlatform,
+  buildCompanyKnowledgeGraph,
+  INTELLIGENCE_DOMAINS,
+} from './intelligence/platform';
+export type {
+  IntelligenceDomain,
+  IntelligenceReport,
+  IntelligencePlatformResult,
+  CompanyKnowledgeGraph,
+  KnowledgeGraphNode,
+  KnowledgeGraphEdge,
+} from './intelligence/platform';
 export { ResearchEngine } from './engines/research-engine';
 export { PlannerEngine } from './engines/planner-engine';
 export { StrategyEngine } from './engines/strategy-engine';

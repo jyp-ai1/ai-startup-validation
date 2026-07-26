@@ -12,6 +12,7 @@
     "./response": "./src/response/index.ts",
     "./validation": "./src/validation/index.ts",
     "./repository": "./src/repository/base-repository.ts",
+    "./repository/background-run": "./src/repository/background-run-repository.ts",
     "./service": "./src/service/base-service.ts"
   },
   "dependencies": {

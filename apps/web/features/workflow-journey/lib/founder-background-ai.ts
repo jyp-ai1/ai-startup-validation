@@ -1,4 +1,4 @@
-import type { StrategyPipelineResult } from '@repo/agents';
+import type { IntelligencePlatformResult, StrategyPipelineResult } from '@repo/agents';
 
 import { saveAgentPipelineResult } from '@/lib/agents/agent-run-store';
 
@@ -97,6 +97,59 @@ function deltaToImportantItem(delta: BusinessDeltaJudgment): DailyChangeItem {
   return {
     id: `important-${delta.id}`,
     messageKey: keys[delta.category] ?? 'marketChangeImportant',
+  };
+}
+
+export function buildSnapshotFromIntelligencePlatform(
+  projectId: string,
+  intelligence: IntelligencePlatformResult,
+  pipeline?: StrategyPipelineResult | null,
+): OvernightInvestigationSnapshot {
+  if (pipeline) {
+    const base = buildSnapshotFromPipeline(projectId, pipeline);
+    return {
+      ...base,
+      investigationCount: Math.max(base.investigationCount, intelligence.investigationCount),
+      importantCount: Math.max(base.importantCount, intelligence.importantCount),
+      fromRealRun: intelligence.reports.some((report) => report.fromRealRun) || base.fromRealRun,
+      providerId: intelligence.providerId,
+      ranAt: intelligence.completedAt,
+    };
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const importantReports = intelligence.reports
+    .filter((report) => report.confidence >= 68)
+    .slice(0, 3);
+
+  return {
+    projectId,
+    runDate: today,
+    ranAt: intelligence.completedAt,
+    providerId: intelligence.providerId,
+    investigationCount: intelligence.investigationCount,
+    importantCount: intelligence.importantCount,
+    importantItems: importantReports.map((report) => ({
+      id: `important-${report.domain}`,
+      messageKey:
+        report.domain === 'competitor'
+          ? 'competitorChangeImportant'
+          : report.domain === 'government'
+            ? 'grantNewImportant'
+            : 'marketChangeImportant',
+    })),
+    reportItems: REPORT_KEYS,
+    morningChanges: intelligence.reports.slice(0, 3).map((report) => ({
+      id: `morning-${report.domain}`,
+      messageKey:
+        report.domain === 'competitor'
+          ? 'competitorPriceChanged'
+          : report.domain === 'government'
+            ? 'grantAdded'
+            : 'searchVolumeUp',
+    })),
+    whatChanged: buildSimulatedWhatChanged(projectId, today),
+    fromRealRun: intelligence.reports.some((report) => report.fromRealRun),
   };
 }
 

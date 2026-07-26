@@ -1,10 +1,10 @@
 # Founder OS Roadmap — Sprint 6–20
 
-**Status:** Complete (2026-07-26)  
-**North Star:** *대표가 LaunchLens를 열면, AI PM이 어제보다 회사를 더 앞으로 움직여 놓았다는 확신을 준다.*
+**Status:** Complete (2026-07-26) — **UX track closed; Platform Phase active**
 
 Sprint 1–7 = **AI PM과 함께 일하는 경험** ✅  
-Sprint 8–20 = **AI Operating System** ✅
+Sprint 8–20 = **AI OS UX surfaces** ✅  
+**Platform Phase** = Real Intelligence → see [PLATFORM_ROADMAP.md](./PLATFORM_ROADMAP.md)
 
 ---
 
