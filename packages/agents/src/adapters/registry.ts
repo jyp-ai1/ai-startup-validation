@@ -22,6 +22,7 @@ import {
 } from './mock/mock-intelligence-providers';
 import { mockPlannerProvider } from './mock/mock-planner-provider';
 import { mockResearchProvider } from './mock/mock-research-provider';
+import { openRouterResearchProvider } from './openrouter/openrouter-research-provider';
 import { mockStrategyProvider } from './mock/mock-strategy-provider';
 
 export type AgentProviderBundle = {
@@ -50,17 +51,24 @@ const MOCK_BUNDLE: AgentProviderBundle = {
   learning: mockLearningProvider,
 };
 
-/** P2 — swap provider tier without changing engines. Non-mock tiers fall back to mock until adapters ship. */
+/** P2 — swap provider tier without changing engines. Research uses OpenRouter when configured. */
 export function resolveAgentProviders(providerId: AgentProviderId = 'mock'): AgentProviderBundle {
   switch (providerId) {
     case 'mock':
       return MOCK_BUNDLE;
     case 'openrouter':
+      return {
+        ...MOCK_BUNDLE,
+        research: openRouterResearchProvider,
+      };
     case 'rag':
     case 'hybrid':
     case 'openai':
     case 'anthropic':
-      return MOCK_BUNDLE;
+      return {
+        ...MOCK_BUNDLE,
+        research: openRouterResearchProvider,
+      };
     default:
       return MOCK_BUNDLE;
   }

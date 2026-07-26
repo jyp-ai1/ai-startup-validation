@@ -14,6 +14,7 @@ function findingConfidence(
 
 function buildBusinessDeltas(result: StrategyPipelineResult): BusinessDeltaJudgment[] {
   const { research, decision } = result;
+  const isKo = (result.project.locale ?? 'ko').startsWith('ko');
   const deltas: BusinessDeltaJudgment[] = [];
 
   const trend = research.findings.find((f) => f.domain === 'trend');
@@ -22,8 +23,12 @@ function buildBusinessDeltas(result: StrategyPipelineResult): BusinessDeltaJudgm
       id: 'market-trend',
       category: 'market',
       change: trend.summary,
-      recommendation: 'Scan 3 trending signals in your category today',
-      reason: 'Founder OS category capital inflow creates timing advantage',
+      recommendation: isKo
+        ? '오늘 카테고리 트렌드 3건을 스캔하세요'
+        : 'Scan 3 trending signals in your category today',
+      reason: isKo
+        ? 'Founder OS 카테고리에 자금 유입 — 타이밍이 유리합니다'
+        : 'Founder OS category capital inflow creates timing advantage',
       goImpact: 2,
     });
   }
@@ -36,9 +41,15 @@ function buildBusinessDeltas(result: StrategyPipelineResult): BusinessDeltaJudgm
       change: `${competitor.title}: ${competitor.summary}`,
       recommendation:
         decision.verdict === 'GO'
-          ? 'Maintain price — differentiate on trust and speed'
-          : 'Keep price while completing VOC before any price change',
-      reason: 'Your ICP values trust over price at this stage',
+          ? isKo
+            ? '가격은 유지 — 신뢰와 속도로 차별화하세요'
+            : 'Maintain price — differentiate on trust and speed'
+          : isKo
+            ? 'VOC 완료 전까지 가격 변경은 보류하세요'
+            : 'Keep price while completing VOC before any price change',
+      reason: isKo
+        ? '현재 ICP는 이 단계에서 가격보다 신뢰를 중시합니다'
+        : 'Your ICP values trust over price at this stage',
       goImpact: 4,
     });
   }
@@ -49,8 +60,12 @@ function buildBusinessDeltas(result: StrategyPipelineResult): BusinessDeltaJudgm
       id: 'investment-flow',
       category: 'investment',
       change: investment.summary,
-      recommendation: 'Defer IR 4 weeks — validate PMF signals first',
-      reason: 'Pre-PMF fundraising increases dilution without traction proof',
+      recommendation: isKo
+        ? 'IR은 4주 미루고 PMF 신호부터 확보하세요'
+        : 'Defer IR 4 weeks — validate PMF signals first',
+      reason: isKo
+        ? 'PMF 전 IR은 희석만 늘리고 검증 시간을 줄입니다'
+        : 'Pre-PMF fundraising increases dilution without traction proof',
       goImpact: 1,
     });
   }
@@ -61,8 +76,12 @@ function buildBusinessDeltas(result: StrategyPipelineResult): BusinessDeltaJudgm
       id: 'grant-new',
       category: 'government',
       change: government.summary,
-      recommendation: 'Check TIPS eligibility today — 15 min fit assessment',
-      reason: 'Non-dilutive runway extends validation window',
+      recommendation: isKo
+        ? 'TIPS 적합도를 오늘 15분 안에 확인하세요'
+        : 'Check TIPS eligibility today — 15 min fit assessment',
+      reason: isKo
+        ? '비희석 런웨이로 검증 시간을 확보할 수 있습니다'
+        : 'Non-dilutive runway extends validation window',
       goImpact: 3,
     });
   }

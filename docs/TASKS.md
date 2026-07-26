@@ -8,18 +8,27 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint — Founder Language (Active)
+## Sprint — OpenRouter Research (Active)
 
 **Status:** In progress — `main`  
-**Goal:** Founder가 개발자 용어(Workflow, Confidence, Evidence 등)를 단 한 번도 보지 않게 만들기
+**Goal:** Research만 OpenRouter로 교체 → Business Delta · Morning Brief에 실조사 반영 (Strategy Engine은 mock 유지)
 
-**Scope:**
-- Workflow journey `ko.json` 전역 용어 통일
-- Action Workspace: 질문/진행/답변 저장 UX 한글화
-- Intelligence engine fallback copy 한글화
+**Delivered:**
+- `OpenRouterResearchProvider` in `@repo/agents` (mock fallback)
+- `resolveAgentProviders('openrouter')` — research only swap
+- `founder-os-composer` — ko locale Business Delta copy
+- `strategy-run` API — AI platform init before pipeline
 
-**Next after this sprint:**
-- OpenRouter Research Provider → Morning Brief / Business Delta
+**Next:**
+- Explainable AI breakdown
+- 경쟁사/차별화 Intelligence 고도화
+
+---
+
+## Sprint — Founder Language ✅
+
+**Status:** Complete — `main` (2026-07-26)  
+**Goal:** Founder-facing workflow journey에서 개발자 용어 제거
 
 ---
 

@@ -2,6 +2,7 @@ import { isBaseError } from '@repo/core/errors';
 import { createSuccessResponse, handleUnknownError } from '@repo/core/response';
 import { parseRequest, z } from '@repo/core/validation';
 import { runStrategyPipelineWithRecovery } from '@repo/agents';
+import { getAIPlatform } from '@repo/ai';
 
 import { resolveAgentProviderId } from '@/lib/agents/config';
 
@@ -19,6 +20,7 @@ export async function POST(request: Request) {
   try {
     const json = await request.json();
     const body = parseRequest(bodySchema, json);
+    getAIPlatform();
     const result = await runStrategyPipelineWithRecovery({
       project: { ...body, locale: body.locale ?? 'ko' },
       providerId: resolveAgentProviderId(),

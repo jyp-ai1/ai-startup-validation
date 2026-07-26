@@ -132,6 +132,9 @@ importers:
 
   packages/agents:
     dependencies:
+      '@repo/ai':
+        specifier: workspace:*
+        version: link:../ai
       '@repo/core':
         specifier: workspace:*
         version: link:../core

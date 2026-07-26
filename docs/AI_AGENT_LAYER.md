@@ -37,7 +37,7 @@ Package: `@repo/agents`
 | 7 | **Memory** — project decision history snapshot | Mock ✅ |
 | 8 | **Mentor** — founder coaching | Mock ✅ |
 | 9 | **Growth** — post-GO roadmap (MVP, IR, grants) | Mock ✅ |
-| 10 | **Real Intelligence** — swap mock → openrouter → rag → hybrid | Ports ready (engines frozen) |
+| 10 | **Real Intelligence** — Research via OpenRouter; other engines mock until adapters ship | Research ✅ (OpenRouter + mock fallback) |
 
 ---
 
