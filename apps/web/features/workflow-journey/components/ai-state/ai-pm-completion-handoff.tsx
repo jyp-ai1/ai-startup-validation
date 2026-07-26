@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { ArrowRight, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -14,6 +15,8 @@ type AiPmCompletionHandoffProps = {
   className?: string;
 };
 
+const HANDOFF_DWELL_MS = 2500;
+
 function resolveCtaKey(action?: { id: string; title: string }): 'ctaDefault' | 'ctaInterview' | 'ctaPricing' {
   const haystack = `${action?.id ?? ''} ${action?.title ?? ''}`.toLowerCase();
   if (haystack.includes('interview') || haystack.includes('voc') || haystack.includes('고객')) {
@@ -27,6 +30,12 @@ function resolveCtaKey(action?: { id: string; title: string }): 'ctaDefault' | '
 
 export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletionHandoffProps) {
   const t = useTranslations('workflow.aiPm.completion');
+  const [readyToContinue, setReadyToContinue] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setReadyToContinue(true), HANDOFF_DWELL_MS);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const pipeline = loadAgentPipelineResult();
   const gap = pipeline?.decision?.intelligence?.gap ?? pipeline?.decision?.missingData?.[0];
@@ -70,19 +79,25 @@ export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletio
           </div>
         </div>
 
-        <Button
-          type="button"
-          size="lg"
-          className="h-14 w-full rounded-xl text-base font-semibold"
-          onClick={onStartToday}
-        >
-          {t(ctaKey)}
-          <ArrowRight className="ml-2 size-4" aria-hidden />
-        </Button>
+        {!readyToContinue ? (
+          <p className="text-center text-sm text-muted-foreground">{t('readingWait')}</p>
+        ) : (
+          <>
+            <Button
+              type="button"
+              size="lg"
+              className="h-14 w-full rounded-xl text-base font-semibold"
+              onClick={onStartToday}
+            >
+              {t(ctaKey)}
+              <ArrowRight className="ml-2 size-4" aria-hidden />
+            </Button>
 
-        <p className="whitespace-pre-line text-center text-sm leading-relaxed text-muted-foreground">
-          {t('operatingHandoff')}
-        </p>
+            <p className="whitespace-pre-line text-center text-sm leading-relaxed text-muted-foreground">
+              {t('operatingHandoff')}
+            </p>
+          </>
+        )}
       </div>
     </div>
   );

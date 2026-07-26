@@ -6,11 +6,20 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
+import { resolveFounderActionTitle } from '../../lib/founder-action-display';
 import type { FounderSuccessScore, GeneratedTodayAction } from '../../lib/founder-intelligence-engine';
+import { AiPmConversation } from '../ai-state/ai-pm-conversation';
+
+type RecentScoreUpdate = {
+  delta: number;
+  after: number;
+  actionTitle?: string;
+};
 
 type FounderTodayHeroProps = {
   score: FounderSuccessScore;
   primaryAction?: GeneratedTodayAction;
+  recentScoreUpdate?: RecentScoreUpdate | null;
   onStart: () => void;
   className?: string;
 };
@@ -18,36 +27,59 @@ type FounderTodayHeroProps = {
 export function FounderTodayHero({
   score,
   primaryAction,
+  recentScoreUpdate,
   onStart,
   className,
 }: FounderTodayHeroProps) {
-  const t = useTranslations('workflow.founderAiPm.todayHeroCompact');
+  const t = useTranslations('workflow.founderAiPm.todayHeroWorkspace');
+  const td = useTranslations('workflow.founderAiPm.intelligence.actionGenerator');
+
   const minutes = primaryAction?.etaMinutes ?? 15;
   const afterScore = Math.min(100, score.percent + (primaryAction?.goImpact ?? 4));
+  const actionTitle = resolveFounderActionTitle(
+    primaryAction,
+    (key, params) => td(key as 'vocInterview', params),
+    t('defaultAction'),
+  );
+
+  const messages: string[] = [t('greeting')];
+
+  if (recentScoreUpdate && recentScoreUpdate.delta > 0) {
+    messages.push(
+      recentScoreUpdate.actionTitle
+        ? t('yesterdayAction', { action: recentScoreUpdate.actionTitle })
+        : t('yesterdayActionGeneric'),
+      t('yesterdayScore', { delta: recentScoreUpdate.delta }),
+    );
+  } else if (score.delta > 0) {
+    messages.push(t('yesterdayScore', { delta: score.delta }));
+  }
+
+  messages.push(
+    t('oneThingLead'),
+    actionTitle,
+    t('etaLead', { minutes }),
+    `${t('completeLead')}\n\n${score.percent}% → ${afterScore}%`,
+  );
 
   return (
     <section
       className={cn(
-        'rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/[0.1] to-background p-6 text-center shadow-sm sm:p-8',
+        'rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/[0.08] to-background p-5 shadow-sm sm:p-7',
         className,
       )}
       aria-label={t('label')}
     >
-      <p className="text-lg font-semibold">{t('todayLabel')}</p>
-      <p className="mt-4 text-base text-muted-foreground">{t('investmentLead')}</p>
-      <p className="mt-1 text-4xl font-bold tabular-nums sm:text-5xl">
-        {t('minutes', { count: minutes })}
+      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-primary">
+        {t('aiPmLabel')}
       </p>
-      <p className="mt-6 text-base text-muted-foreground">{t('scoreLead')}</p>
-      <p className="mt-2 flex items-center justify-center gap-3 text-3xl font-bold tabular-nums sm:text-4xl">
-        <span>{score.percent}%</span>
-        <ArrowRight className="size-6 text-muted-foreground" aria-hidden />
-        <span className="text-emerald-600 dark:text-emerald-400">{afterScore}%</span>
-      </p>
+
+      <AiPmConversation messages={messages} />
+
       <Button
         type="button"
         size="lg"
-        className="mt-8 h-14 w-full max-w-sm rounded-xl text-base font-semibold"
+        className="mt-6 h-14 w-full rounded-xl text-base font-semibold"
         onClick={onStart}
       >
         {t('startCta')}

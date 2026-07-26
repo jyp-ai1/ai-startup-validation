@@ -4096,6 +4096,7 @@
         "todayIntro": "Today",
         "todayIntroLead": "Today, just do this one thing.",
         "operatingHandoff": "From now on, you'll run the project together with your AI PM.",
+        "readingWait": "Summarizing results…",
         "successScoreLabel": "Success probability",
         "ctaDefault": "Start today",
         "ctaInterview": "Start customer interviews",
@@ -4695,17 +4696,32 @@
         "tasksTitle": "Today's actions",
         "taskNumber": "1",
         "taskMeta": "{minutes} min · +{impact}%",
-        "startCta": "Start",
+        "startCta": "Start together",
         "fallbackAction": "Today's core action",
-        "moreDetails": "More analysis · evidence · history"
+        "moreDetails": "More analysis · evidence · history",
+        "projectStateSummary": "Project state · decision evidence"
       },
-      "todayHeroCompact": {
-        "label": "Today",
-        "todayLabel": "Today",
-        "investmentLead": "15-minute investment",
-        "minutes": "{count} min",
-        "scoreLead": "Success probability",
-        "startCta": "Start now"
+      "todayHeroWorkspace": {
+        "label": "AI PM daily plan",
+        "aiPmLabel": "AI PM",
+        "greeting": "Founder,",
+        "yesterdayAction": "Yesterday you finished\n\n{action}.",
+        "yesterdayActionGeneric": "You made progress on yesterday's action.",
+        "yesterdayScore": "That raised success odds by\n\n{delta}%.",
+        "oneThingLead": "Today, just do this one thing.",
+        "defaultAction": "Interview 3 potential customers",
+        "etaLead": "About {minutes} minutes.",
+        "completeLead": "When done,",
+        "startCta": "Start together"
+      },
+      "todayOutcome": {
+        "label": "When you finish today",
+        "defaultAction": "Today's core action",
+        "lead": "Finish {action} to move {before}% → {after}% · ~{minutes} min · {focus} advances one step."
+      },
+      "workLog": {
+        "label": "AI PM work log",
+        "runningLead": "What your AI PM is doing now"
       },
       "scoreUpdate": {
         "lead": "Thanks to your AI PM,\n\nsuccess probability",
@@ -4721,7 +4737,7 @@
         "todayFocusLead": "Today",
         "todayFocusDefault": "price validation is all you need.",
         "etaLead": "About {minutes} minutes.",
-        "startCta": "Start now"
+        "startCta": "Start together"
       },
       "operating": {
         "debrief": {
@@ -4733,7 +4749,9 @@
           "tomorrowLine": "Tomorrow,\n\n{action}\n\nis all you need.\n\nAbout {minutes} min",
           "tomorrowDefault": "Your next actions are ready on Today.",
           "scoreLabel": "Success probability",
-          "continueCta": "View Today"
+          "projectUpdated": "Today's project state has been updated.",
+          "todayRefreshLead": "Let's review the new strategy\n\non Today.",
+          "continueCta": "Continue"
         },
         "health": {
           "label": "Business progress",
@@ -4808,14 +4826,29 @@
         "record": "Save answer",
         "recordFinal": "Save final answer",
         "savedFeedback": "✓ Saved.",
-        "nextQuestionFeedback": "Great.\n\nNext question.",
+        "nextQuestionFeedback": "Next question.",
+        "projectUpdated": "Today's project state has been updated.",
         "progress": "{current} / {total} done",
         "meta": "{minutes} min · +{impact}%",
         "completeLead": "Well done, Founder.",
         "completeSummary": "You recorded {count} answers today.",
         "completeNext": "Your AI PM applied the results.\n\nSuccess probability went up.",
         "scoreLabel": "Success probability",
-        "completeCta": "Back to Today",
+        "completeCta": "Continue",
+        "insights": {
+          "insightInterviewPain": "Great.\n\nThe first answer\n\nshows a clear pain point.",
+          "insightInterviewPricing": "Great.\n\nThe first answer\n\nshows price sensitivity.",
+          "insightInterviewAlt": "Great.\n\nThe alternative they use\n\nis now clear.",
+          "insightPricingSensitivity": "Great.\n\nPrice sensitivity\n\nis starting to show.",
+          "insightPricingTrust": "Great.\n\nTrust looks important\n\nto the buying decision.",
+          "insightPricingPayment": "Great.\n\nPayment preference\n\nis emerging.",
+          "insightCompetitorAlt": "Great.\n\nCompetitive alternatives\n\nare confirmed.",
+          "insightCompetitorGap": "Great.\n\nDifferentiation points\n\nare appearing.",
+          "insightCompetitorEdge": "Great.\n\nYour unique edge\n\nis getting sharper.",
+          "insightLandingValue": "Great.\n\nThe value proposition\n\nis clearer.",
+          "insightLandingCta": "Great.\n\nThe next action\n\nneeds improvement.",
+          "insightGenericSignal": "Great.\n\nAnother validation signal\n\nis captured."
+        },
         "kinds": {
           "interview": "Customer interview",
           "pricing": "Price validation",

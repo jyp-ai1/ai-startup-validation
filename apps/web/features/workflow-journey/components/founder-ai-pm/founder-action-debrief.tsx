@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -17,22 +18,23 @@ type FounderActionDebriefProps = {
 
 export function FounderActionDebrief({ debrief, onContinue, className }: FounderActionDebriefProps) {
   const t = useTranslations('workflow.founderAiPm.operating.debrief');
+  const [showScorePulse, setShowScorePulse] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowScorePulse(true), 200);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const verdictChanged = debrief.verdictBefore !== debrief.verdictAfter;
   const messages = [
     t('lead', { action: debrief.actionTitle }),
     t('praise'),
     t('scoreLine', { delta: debrief.scoreDelta }),
-    t('evidenceLine', { summary: debrief.evidenceSummary }),
+    t('projectUpdated'),
+    t('todayRefreshLead'),
     ...(verdictChanged
       ? [t('verdictChange', { before: debrief.verdictBefore, after: debrief.verdictAfter })]
       : []),
-    debrief.nextActionTitle
-      ? t('tomorrowLine', {
-          action: debrief.nextActionTitle,
-          minutes: debrief.nextActionMinutes ?? 15,
-        })
-      : t('tomorrowDefault'),
   ];
 
   return (
@@ -47,7 +49,12 @@ export function FounderActionDebrief({ debrief, onContinue, className }: Founder
       <div className="max-h-[92vh] w-full max-w-lg space-y-5 overflow-y-auto rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
         <AiPmConversation messages={messages} />
 
-        <div className="rounded-2xl border border-emerald-300/40 bg-emerald-50/50 p-5 text-center dark:bg-emerald-950/20">
+        <div
+          className={cn(
+            'rounded-2xl border border-emerald-300/40 bg-emerald-50/50 p-5 text-center transition-all duration-700 dark:bg-emerald-950/20',
+            showScorePulse ? 'scale-100 opacity-100' : 'scale-95 opacity-70',
+          )}
+        >
           <p className="text-sm text-muted-foreground">{t('scoreLabel')}</p>
           <div className="mt-2 flex items-center justify-center gap-2">
             <TrendingUp className="size-4 text-emerald-600" aria-hidden />

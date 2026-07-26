@@ -25,6 +25,7 @@ import {
   FounderActionWorkspace,
   type ActionWorkspaceResult,
 } from './founder-ai-pm/founder-action-workspace';
+import { FounderAiPmWorkLog } from './founder-ai-pm/founder-ai-pm-work-log';
 import { FounderDailyReviewPanel } from './founder-ai-pm/founder-daily-review-panel';
 import { FounderEvidenceAutoPanel } from './founder-ai-pm/founder-evidence-auto-panel';
 import { FounderGrowthTimelinePanel } from './founder-ai-pm/founder-growth-timeline-panel';
@@ -32,12 +33,11 @@ import { FounderJourneyMap } from './founder-ai-pm/founder-journey-map';
 import { FounderMemoryRecallPanel } from './founder-ai-pm/founder-memory-recall-panel';
 import { FounderOperatingTimelinePanel } from './founder-ai-pm/founder-operating-timeline-panel';
 import { FounderProjectHealthDashboard } from './founder-ai-pm/founder-project-health-dashboard';
-import { FounderScoreUpdateBanner } from './founder-ai-pm/founder-score-update-banner';
 import { FounderSuccessScoreExplained } from './founder-ai-pm/founder-success-score-explained';
 import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionFirst } from './founder-ai-pm/founder-today-action-first';
-import { FounderTodayDailyBrief } from './founder-ai-pm/founder-today-daily-brief';
 import { FounderTodayHero } from './founder-ai-pm/founder-today-hero';
+import { FounderTodayOutcomeStrip } from './founder-ai-pm/founder-today-outcome-strip';
 import { FounderWeeklyCeoReviewPanel } from './founder-ai-pm/founder-weekly-ceo-review-panel';
 
 const DAILY_VISIT_KEY = 'll_daily_visit';
@@ -88,7 +88,11 @@ export function FounderTodayWorkspace({
   const [completionUpdate, setCompletionUpdate] = useState<ActionCompletionUpdateResult | null>(
     null,
   );
-  const [scoreBanner, setScoreBanner] = useState<{ delta: number; after: number } | null>(null);
+  const [recentScoreUpdate, setRecentScoreUpdate] = useState<{
+    delta: number;
+    after: number;
+    actionTitle?: string;
+  } | null>(null);
 
   const intelligence = useMemo(
     () => computeFounderIntelligenceBrief(projectId, goalId, confidence),
@@ -157,9 +161,10 @@ export function FounderTodayWorkspace({
 
   const handleDebriefContinue = () => {
     if (completionUpdate) {
-      setScoreBanner({
+      setRecentScoreUpdate({
         delta: completionUpdate.scoreDelta,
         after: completionUpdate.scoreAfter,
+        actionTitle: completionUpdate.debrief.actionTitle,
       });
     }
     setCompletionUpdate(null);
@@ -170,7 +175,6 @@ export function FounderTodayWorkspace({
     (intelligence.behavior && intelligence.behavior.visitCount >= 2) || isFriday();
 
   const primaryAction = intelligence.todayActions[0];
-  const deltaReason = intelligence.successScore.reasons?.[0];
   const actionHistory = intelligence.behavior?.actionHistory ?? [];
   const operatingState = intelligence.operatingState;
   const evidence = operatingState?.evidence ?? [];
@@ -194,16 +198,10 @@ export function FounderTodayWorkspace({
       ) : null}
 
       <div className="space-y-6">
-        {scoreBanner ? (
-          <FounderScoreUpdateBanner
-            scoreDelta={scoreBanner.delta}
-            scoreAfter={scoreBanner.after}
-          />
-        ) : null}
-
         <FounderTodayHero
           score={intelligence.successScore}
           primaryAction={primaryAction}
+          recentScoreUpdate={recentScoreUpdate}
           onStart={() =>
             handleStartById(
               primaryAction ? `hero_${primaryAction.id}` : 'hero_primary',
@@ -212,9 +210,22 @@ export function FounderTodayWorkspace({
           }
         />
 
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(240px,300px)]">
+          <FounderTodayOutcomeStrip
+            score={intelligence.successScore}
+            primaryAction={primaryAction}
+          />
+          {operatingState?.timeline ? (
+            <FounderAiPmWorkLog
+              timeline={operatingState.timeline}
+              evidence={evidence}
+            />
+          ) : null}
+        </div>
+
         <details className="rounded-2xl border border-border/60 bg-muted/10">
           <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
-            {t('moreDetails')}
+            {t('projectStateSummary')}
           </summary>
           <div className="space-y-8 border-t border-border/60 px-5 py-6">
             <FounderProjectHealthDashboard
@@ -231,18 +242,6 @@ export function FounderTodayWorkspace({
             {operatingState?.timeline ? (
               <FounderOperatingTimelinePanel timeline={operatingState.timeline} />
             ) : null}
-
-            <FounderTodayDailyBrief
-              score={intelligence.successScore}
-              primaryAction={primaryAction}
-              deltaReason={deltaReason}
-              onStartPrimary={() =>
-                handleStartById(
-                  primaryAction ? `daily_${primaryAction.id}` : 'daily_primary',
-                  primaryAction?.id,
-                )
-              }
-            />
 
             <DecisionOneLinePanel fallbackConfidence={confidence} />
 

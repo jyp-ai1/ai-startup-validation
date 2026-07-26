@@ -4078,6 +4078,7 @@
         "todayIntro": "오늘은",
         "todayIntroLead": "오늘은 이것 하나만 하시면 됩니다.",
         "operatingHandoff": "이제부터는 AI PM과 함께 프로젝트를 운영합니다.",
+        "readingWait": "결과를 정리하고 있습니다…",
         "successScoreLabel": "사업 성공 확률",
         "ctaDefault": "오늘 시작하기",
         "ctaInterview": "고객 인터뷰 시작하기",
@@ -4677,17 +4678,32 @@
         "tasksTitle": "오늘 해야 할 일",
         "taskNumber": "①",
         "taskMeta": "{minutes}분 · +{impact}%",
-        "startCta": "바로 시작",
+        "startCta": "같이 시작하기",
         "fallbackAction": "오늘의 핵심 액션",
-        "moreDetails": "더 자세한 분석 · 판단 근거 · 지난 기록"
+        "moreDetails": "더 자세한 분석 · 판단 근거 · 지난 기록",
+        "projectStateSummary": "프로젝트 상태 · 판단 근거"
       },
-      "todayHeroCompact": {
-        "label": "오늘",
-        "todayLabel": "오늘",
-        "investmentLead": "15분 투자",
-        "minutes": "{count}분",
-        "scoreLead": "사업 성공확률",
-        "startCta": "바로 시작"
+      "todayHeroWorkspace": {
+        "label": "AI PM 오늘 계획",
+        "aiPmLabel": "AI PM",
+        "greeting": "대표님.",
+        "yesterdayAction": "어제\n\n{action}\n\n을 끝내셨습니다.",
+        "yesterdayActionGeneric": "어제 오늘 할 일을 진행하셨습니다.",
+        "yesterdayScore": "덕분에\n\n사업 가능성이\n\n{delta}%\n\n올랐습니다.",
+        "oneThingLead": "오늘은 딱 하나만 하면 됩니다.",
+        "defaultAction": "잠재 고객 3명 인터뷰",
+        "etaLead": "예상 {minutes}분입니다.",
+        "completeLead": "완료하면",
+        "startCta": "같이 시작하기"
+      },
+      "todayOutcome": {
+        "label": "오늘 끝나면",
+        "defaultAction": "오늘의 핵심 액션",
+        "lead": "{action}을 끝내면 사업 가능성 {before}% → {after}% · 약 {minutes}분 · {focus}이 한 단계 진행됩니다."
+      },
+      "workLog": {
+        "label": "AI PM 작업 로그",
+        "runningLead": "지금 AI PM이 하는 일"
       },
       "scoreUpdate": {
         "lead": "AI PM\n\n덕분에\n\n사업 성공확률이",
@@ -4703,7 +4719,7 @@
         "todayFocusLead": "오늘은",
         "todayFocusDefault": "가격 검증 하나만 하면 됩니다.",
         "etaLead": "{minutes}분 예상합니다.",
-        "startCta": "바로 시작"
+        "startCta": "같이 시작하기"
       },
       "operating": {
         "debrief": {
@@ -4715,7 +4731,9 @@
           "tomorrowLine": "내일은\n\n{action}\n\n만 하면 됩니다.\n\n예상 {minutes}분",
           "tomorrowDefault": "다음 할 일을 Today에 준비했습니다.",
           "scoreLabel": "사업 성공 확률",
-          "continueCta": "Today 확인하기"
+          "projectUpdated": "오늘 프로젝트 상태를 갱신했습니다.",
+          "todayRefreshLead": "이제 Today에서\n\n새 전략을 확인해보겠습니다.",
+          "continueCta": "확인하기"
         },
         "health": {
           "label": "사업 진행 상황",
@@ -4790,14 +4808,29 @@
         "record": "기록하기",
         "recordFinal": "마지막 기록하기",
         "savedFeedback": "✓ 저장되었습니다.",
-        "nextQuestionFeedback": "좋습니다.\n\n다음 질문입니다.",
+        "nextQuestionFeedback": "다음 질문입니다.",
+        "projectUpdated": "오늘 프로젝트 상태를 갱신했습니다.",
         "progress": "{current} / {total} 완료",
         "meta": "{minutes}분 · +{impact}%",
         "completeLead": "수고하셨습니다 대표님.",
         "completeSummary": "오늘 {count}개의 답변을 기록했습니다.",
         "completeNext": "AI PM이 결과를 반영했습니다.\n\n사업 성공 확률이 올랐습니다.",
         "scoreLabel": "사업 성공 확률",
-        "completeCta": "Today로 돌아가기",
+        "completeCta": "확인하기",
+        "insights": {
+          "insightInterviewPain": "좋습니다.\n\n첫 번째 답변에서\n\n고객 불편이 분명해졌습니다.",
+          "insightInterviewPricing": "좋습니다.\n\n첫 번째 답변에서\n\n가격 민감도가 보입니다.",
+          "insightInterviewAlt": "좋습니다.\n\n지금 쓰는 대안이\n\n명확해졌습니다.",
+          "insightPricingSensitivity": "좋습니다.\n\n가격 민감도가\n\n보이기 시작했습니다.",
+          "insightPricingTrust": "좋습니다.\n\n신뢰 요소가\n\n구매 결정에 중요해 보입니다.",
+          "insightPricingPayment": "좋습니다.\n\n결제 방식 선호가\n\n드러났습니다.",
+          "insightCompetitorAlt": "좋습니다.\n\n경쟁 대안이\n\n확인됐습니다.",
+          "insightCompetitorGap": "좋습니다.\n\n차별화 포인트가\n\n보이기 시작했습니다.",
+          "insightCompetitorEdge": "좋습니다.\n\n우리만의 강점이\n\n더 선명해졌습니다.",
+          "insightLandingValue": "좋습니다.\n\n가치 제안이\n\n더 분명해졌습니다.",
+          "insightLandingCta": "좋습니다.\n\n다음 행동 유도가\n\n개선 포인트입니다.",
+          "insightGenericSignal": "좋습니다.\n\n검증 신호가\n\n하나 더 쌓였습니다."
+        },
         "kinds": {
           "interview": "고객 인터뷰",
           "pricing": "가격 검증",

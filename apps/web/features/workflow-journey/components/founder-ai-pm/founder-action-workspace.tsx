@@ -9,6 +9,7 @@ import { Button, Textarea } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { ResolvedActionWorkspace } from '../../lib/founder-action-resolver';
+import { resolveActionAnswerInsightKey } from '../../lib/founder-action-insights';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
 
 export type ActionWorkspaceResult = {
@@ -48,6 +49,7 @@ export function FounderActionWorkspace({
   className,
 }: FounderActionWorkspaceProps) {
   const t = useTranslations('workflow.founderAiPm.actionWorkspace');
+  const ti = useTranslations('workflow.founderAiPm.actionWorkspace.insights');
   const tk = useTranslations('workflow.founderAiPm.actionWorkspace.kinds');
   const tq = useTranslations('workflow.founderAiPm.actionWorkspace.questions');
 
@@ -91,7 +93,11 @@ export function FounderActionWorkspace({
       return;
     }
 
-    setSaveFeedback([t('savedFeedback'), t('nextQuestionFeedback')]);
+    setSaveFeedback([
+      t('savedFeedback'),
+      ti(resolveActionAnswerInsightKey(workspace.kind, step)),
+      t('nextQuestionFeedback'),
+    ]);
     setStep((prev) => prev + 1);
   };
 
@@ -109,6 +115,7 @@ export function FounderActionWorkspace({
     const summaryMessages = [
       t('completeLead'),
       t('completeSummary', { count: completedAnswers.length }),
+      t('projectUpdated'),
       t('completeNext'),
     ];
 
