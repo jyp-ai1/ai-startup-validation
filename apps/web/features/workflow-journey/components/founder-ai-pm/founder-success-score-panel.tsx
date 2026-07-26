@@ -1,19 +1,24 @@
 'use client';
 
-import { Check, TrendingUp } from 'lucide-react';
+import { AlertTriangle, Check, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@repo/ui/lib/utils';
 
 import type { FounderSuccessScore } from '../../lib/founder-intelligence-engine';
+import type { SuccessScoreFactor } from '../../lib/founder-personalization-engine';
 
 type FounderSuccessScorePanelProps = {
   score: FounderSuccessScore;
+  factors?: SuccessScoreFactor[];
   className?: string;
 };
 
-export function FounderSuccessScorePanel({ score, className }: FounderSuccessScorePanelProps) {
+export function FounderSuccessScorePanel({ score, factors = [], className }: FounderSuccessScorePanelProps) {
   const t = useTranslations('workflow.founderAiPm.intelligence.successScore');
+
+  const strengths = factors.filter((f) => f.status === 'strong');
+  const gaps = factors.filter((f) => f.status === 'gap');
 
   return (
     <section
@@ -35,28 +40,60 @@ export function FounderSuccessScorePanel({ score, className }: FounderSuccessSco
           </p>
         ) : null}
       </div>
-      <p className="mt-2 text-sm text-muted-foreground">{t('subtitle')}</p>
-      <ul className="mt-5 space-y-2" role="list">
-        {score.reasons && score.reasons.length > 0
-          ? score.reasons.map((reason) => (
-              <li
-                key={reason}
-                className="flex items-center gap-2 rounded-lg bg-emerald-50/80 px-3 py-2 text-sm dark:bg-emerald-950/30"
-              >
-                <Check className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
-                {reason}
-              </li>
-            ))
-          : score.reasonKeys.map((key) => (
-              <li
-                key={key}
-                className="flex items-center gap-2 rounded-lg bg-emerald-50/80 px-3 py-2 text-sm dark:bg-emerald-950/30"
-              >
-                <Check className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
-                {t(`reasons.${key}`)}
-              </li>
-            ))}
-      </ul>
+      <p className="mt-2 text-sm font-medium">{t('whyTitle', { percent: score.percent })}</p>
+
+      {factors.length > 0 ? (
+        <div className="mt-4 space-y-4">
+          {strengths.length > 0 ? (
+            <ul className="space-y-2" role="list">
+              {strengths.map((factor) => (
+                <li
+                  key={factor.key}
+                  className="flex items-center gap-2 rounded-lg bg-emerald-50/80 px-3 py-2 text-sm dark:bg-emerald-950/30"
+                >
+                  <Check className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                  {t(`factors.${factor.key}`)}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {gaps.length > 0 ? (
+            <ul className="space-y-2" role="list">
+              {gaps.map((factor) => (
+                <li
+                  key={factor.key}
+                  className="flex items-start gap-2 rounded-lg bg-amber-50/80 px-3 py-2 text-sm dark:bg-amber-950/30"
+                >
+                  <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600" aria-hidden />
+                  <span>{t(`factors.${factor.key}`)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ) : (
+        <ul className="mt-5 space-y-2" role="list">
+          {score.reasons && score.reasons.length > 0
+            ? score.reasons.map((reason) => (
+                <li
+                  key={reason}
+                  className="flex items-center gap-2 rounded-lg bg-emerald-50/80 px-3 py-2 text-sm dark:bg-emerald-950/30"
+                >
+                  <Check className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                  {reason}
+                </li>
+              ))
+            : score.reasonKeys.map((key) => (
+                <li
+                  key={key}
+                  className="flex items-center gap-2 rounded-lg bg-emerald-50/80 px-3 py-2 text-sm dark:bg-emerald-950/30"
+                >
+                  <Check className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                  {t(`reasons.${key}`)}
+                </li>
+              ))}
+        </ul>
+      )}
     </section>
   );
 }

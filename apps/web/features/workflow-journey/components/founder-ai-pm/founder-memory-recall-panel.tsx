@@ -5,24 +5,45 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@repo/ui';
 
+import { hasRepeatedDeferral, type FounderBehaviorProfile } from '../../lib/founder-behavior-store';
 import type { MemoryGeneratedAction } from '../../lib/founder-memory-store';
 
 type FounderMemoryRecallPanelProps = {
   memoryAction: MemoryGeneratedAction;
+  behavior?: FounderBehaviorProfile | null;
   onStart: () => void;
 };
 
-export function FounderMemoryRecallPanel({ memoryAction, onStart }: FounderMemoryRecallPanelProps) {
+export function FounderMemoryRecallPanel({
+  memoryAction,
+  behavior,
+  onStart,
+}: FounderMemoryRecallPanelProps) {
   const t = useTranslations('workflow.founderAiPm.intelligence.memory');
   const { recall, pipelineAction } = memoryAction;
+  const gapKey = behavior?.currentGapKey ?? recall.lastWeekGapKey;
 
-  if (!recall.isReturning) return null;
+  const showPanel =
+    recall.isReturning ||
+    (behavior && hasRepeatedDeferral(behavior, gapKey)) ||
+    (behavior && behavior.visitCount > 1);
+
+  if (!showPanel) return null;
 
   const questions = pipelineAction?.questions ?? memoryAction.questionKeys.map((key) => t(`questions.${key}`));
   const actionTitle =
     pipelineAction?.actionTitle ??
     t(`actions.${memoryAction.actionTitleKey}`, { count: memoryAction.questionKeys.length });
   const etaMinutes = pipelineAction?.etaMinutes ?? memoryAction.etaMinutes;
+
+  const recallText =
+    behavior && hasRepeatedDeferral(behavior, gapKey)
+      ? t('deferredRecall', { gap: t(`gap.${gapKey}`) })
+      : t('recall', {
+          lastFocus: t(`focus.${recall.lastWeekFocusKey}`),
+          lastGap: t(`gap.${recall.lastWeekGapKey}`),
+          thisFocus: t(`focus.${recall.thisWeekFocusKey}`),
+        });
 
   return (
     <section
@@ -33,13 +54,7 @@ export function FounderMemoryRecallPanel({ memoryAction, onStart }: FounderMemor
         <Brain className="size-3.5" aria-hidden />
         {t('label')}
       </p>
-      <p className="mt-3 text-base leading-relaxed text-foreground">
-        {t('recall', {
-          lastFocus: t(`focus.${recall.lastWeekFocusKey}`),
-          lastGap: t(`gap.${recall.lastWeekGapKey}`),
-          thisFocus: t(`focus.${recall.thisWeekFocusKey}`),
-        })}
-      </p>
+      <p className="mt-3 text-base leading-relaxed text-foreground">{recallText}</p>
 
       <div className="mt-5 rounded-xl border border-violet-200/60 bg-background/80 p-4 dark:border-violet-900">
         <p className="text-sm font-semibold">{t('actionReady')}</p>

@@ -4551,7 +4551,19 @@
         "successScore": {
           "label": "사업 성공 확률",
           "subtitle": "오늘 Founder가 사업을 앞으로 전진시킬 수 있는 정도입니다.",
+          "whyTitle": "왜 {percent}%인가?",
           "delta": "+{delta}%",
+          "factors": {
+            "marketValidated": "시장 검증 완료",
+            "marketEvidence": "시장 근거 확보 진행 중",
+            "competitorDone": "경쟁 분석 완료",
+            "competitorEdge": "경쟁 차별화 부족",
+            "pricingValidated": "가격 검증 완료",
+            "pricingValidation": "가격 검증 부족",
+            "customerValidated": "고객 검증 진행",
+            "customerInterview": "고객 인터뷰 부족",
+            "investmentReady": "투자 준비 진행"
+          },
           "reasons": {
             "marketEvidence": "시장 근거 확보 진행 중",
             "competitorScan": "경쟁 스캔 시작",
@@ -4621,7 +4633,8 @@
         "memory": {
           "label": "Founder Memory",
           "recall": "지난주에는 {lastFocus}에 집중했지만 {lastGap}이 부족했습니다. 이번 주는 {thisFocus}부터 진행하겠습니다.",
-          "actionReady": "AI가 오늘 끝낼 수 있는 액션을 준비했습니다.",
+          "deferredRecall": "지난주에도 {gap}을 미뤘습니다. 이번에는 오늘 끝내겠습니다.",
+          "actionReady": "AI PM이 오늘 끝낼 수 있는 액션을 준비했습니다.",
           "eta": "예상 {minutes}분",
           "startCta": "바로 시작",
           "focus": {
@@ -4661,6 +4674,29 @@
             "e1": "이번 주 MVP 범위 3가지는?",
             "e2": "첫 유료 고객 정의는?",
             "e3": "측정할 핵심 지표 1가지는?"
+          }
+        },
+        "timeline": {
+          "label": "Founder Timeline",
+          "title": "사업 성장 기록",
+          "milestones": {
+            "start": "첫 아이디어 검토 시작",
+            "momentum": "사업 모멘텀 형성"
+          }
+        },
+        "weeklyCeoReview": {
+          "label": "Weekly CEO Review",
+          "title": "이번 주 AI PM 브리핑",
+          "scoreChange": "이번 주 사업 성공 확률",
+          "bestDecision": "이번 주 가장 잘한 결정",
+          "biggestRisk": "가장 큰 리스크",
+          "missedOpportunity": "놓친 기회",
+          "nextWeek": "다음 주 최우선 과제",
+          "risks": {
+            "customerInterview": "고객 인터뷰가 계속 미뤄지고 있습니다",
+            "pricingValidation": "가격 검증이 부족합니다",
+            "marketEvidence": "시장 근거가 더 필요합니다",
+            "competitorEdge": "경쟁 차별화가 불명확합니다"
           }
         },
         "business": {

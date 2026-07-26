@@ -13,6 +13,22 @@ import {
   type FounderMemoryRecall,
   type MemoryGeneratedAction,
 } from './founder-memory-store';
+import {
+  loadFounderBehavior,
+  syncFounderBehaviorOnVisit,
+  type FounderBehaviorProfile,
+} from './founder-behavior-store';
+import { loadProjectRegistration } from '../components/project-registration-panel';
+import {
+  buildExplainableScoreFactors,
+  buildPersonalizedAiPmBrief,
+  buildPersonalizedMorningLines,
+  buildWeeklyCeoReview,
+  type PersonalizedAiPmBrief,
+  type SuccessScoreFactor,
+  type WeeklyCeoReview,
+} from './founder-personalization-engine';
+import { loadFounderMicroAnswers } from './founder-micro-interaction-store';
 
 export type FounderSuccessScore = {
   percent: number;
@@ -101,6 +117,11 @@ export type FounderIntelligenceBrief = {
   memoryAction: MemoryGeneratedAction;
   morningBrief?: string;
   successScore: FounderSuccessScore;
+  successScoreFactors: SuccessScoreFactor[];
+  personalized: PersonalizedAiPmBrief;
+  personalizedMorningLines: string[];
+  weeklyCeoReview: WeeklyCeoReview;
+  behavior: FounderBehaviorProfile | null;
   businessProgress: BusinessProgressDimension[];
   todayActions: GeneratedTodayAction[];
   totalEtaMinutes: number;
@@ -169,8 +190,50 @@ function mapPipelineMemoryAction(
   return buildMemoryGeneratedAction(recall, gapKey);
 }
 
+type FounderIntelligenceCore = Omit<
+  FounderIntelligenceBrief,
+  'successScoreFactors' | 'personalized' | 'personalizedMorningLines' | 'weeklyCeoReview' | 'behavior'
+>;
+
+function attachPersonalization(
+  brief: FounderIntelligenceCore,
+  projectId: string,
+  goalId: WorkflowGoalId,
+  gapKey: string,
+  stageIndex: number,
+  confidence: number,
+): FounderIntelligenceBrief {
+  const registration = loadProjectRegistration();
+  const micro = loadFounderMicroAnswers();
+  const behavior = syncFounderBehaviorOnVisit(projectId, gapKey, brief.successScore.percent, {
+    ideaSummary: registration?.ideaOneLiner,
+    goalLabel: goalId,
+    targetCustomer: micro.targetCustomer,
+  });
+
+  const reasonKeys =
+    brief.successScore.reasonKeys.length > 0
+      ? brief.successScore.reasonKeys
+      : [...(SUCCESS_REASONS_BY_STAGE[stageIndex] ?? SUCCESS_REASONS_BY_STAGE[2]!)];
+  const successScoreFactors = buildExplainableScoreFactors(brief.businessProgress, reasonKeys);
+  const primaryAction = brief.todayActions[0];
+  const personalized = buildPersonalizedAiPmBrief(brief, behavior, goalId, primaryAction);
+  const personalizedMorningLines = buildPersonalizedMorningLines(personalized, brief.morningBrief);
+  const weeklyCeoReview = buildWeeklyCeoReview(brief, behavior);
+
+  return {
+    ...brief,
+    successScoreFactors,
+    personalized,
+    personalizedMorningLines,
+    weeklyCeoReview,
+    behavior: loadFounderBehavior(projectId),
+  };
+}
+
 function buildFromAgentPipeline(
   pipeline: NonNullable<ReturnType<typeof loadAgentPipelineResult>>,
+  projectId: string,
   goalId: WorkflowGoalId,
   confidence: number,
   operating: FounderOperatingBrief,
@@ -188,7 +251,8 @@ function buildFromAgentPipeline(
   const memoryAction = mapPipelineMemoryAction(pipeline, memoryRecall, gapKey);
 
   if (os) {
-    return {
+    return attachPersonalization(
+      {
       operating,
       memoryRecall,
       memoryAction,
@@ -252,10 +316,17 @@ function buildFromAgentPipeline(
       },
       showGrowth: stageIndex >= 2 || pipeline.decision.verdict === 'GO',
       fromAgentPipeline: true,
-    };
+    },
+      projectId,
+      goalId,
+      gapKey,
+      stageIndex,
+      confidence,
+    );
   }
 
-  return buildFallbackBrief(
+  return attachPersonalization(
+    buildFallbackBrief(
     goalId,
     confidence,
     operating,
@@ -264,6 +335,12 @@ function buildFromAgentPipeline(
     stageIndex,
     pipeline,
     true,
+  ),
+    projectId,
+    goalId,
+    gapKey,
+    stageIndex,
+    confidence,
   );
 }
 
@@ -342,7 +419,7 @@ function buildFallbackBrief(
   stageIndex: number,
   pipeline: ReturnType<typeof loadAgentPipelineResult>,
   fromAgentPipeline: boolean,
-): FounderIntelligenceBrief {
+): FounderIntelligenceCore {
   const stages = getDecisionStages(goalId);
   const stage = stages[stageIndex] ?? stages[0]!;
   const gain = stageIndex === 2 ? 13 : 10;
@@ -433,17 +510,33 @@ export function computeFounderIntelligenceBrief(
   const pipeline = loadAgentPipelineResult();
 
   if (pipeline?.founderOs || pipeline?.decision) {
-    return buildFromAgentPipeline(pipeline, goalId, confidence, operating, memoryRecall, gapKey, stageIndex);
+    return buildFromAgentPipeline(
+      pipeline,
+      projectId,
+      goalId,
+      confidence,
+      operating,
+      memoryRecall,
+      gapKey,
+      stageIndex,
+    );
   }
 
-  return buildFallbackBrief(
+  return attachPersonalization(
+    buildFallbackBrief(
+      goalId,
+      confidence,
+      operating,
+      memoryRecall,
+      gapKey,
+      stageIndex,
+      pipeline,
+      false,
+    ),
+    projectId,
     goalId,
-    confidence,
-    operating,
-    memoryRecall,
     gapKey,
     stageIndex,
-    pipeline,
-    false,
+    confidence,
   );
 }

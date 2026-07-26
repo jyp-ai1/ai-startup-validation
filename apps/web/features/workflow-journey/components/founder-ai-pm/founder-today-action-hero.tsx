@@ -15,7 +15,7 @@ import type { WorkflowGoalId } from '../../types';
 type FounderTodayActionHeroProps = {
   goalId: WorkflowGoalId;
   confidence: number;
-  whyText?: string;
+  recommendationWhy?: string;
   onStart: () => void;
   className?: string;
 };
@@ -23,6 +23,7 @@ type FounderTodayActionHeroProps = {
 export function FounderTodayActionHero({
   goalId,
   confidence,
+  recommendationWhy,
   onStart,
   className,
 }: FounderTodayActionHeroProps) {
@@ -87,7 +88,8 @@ export function FounderTodayActionHero({
           {td('recommendLabel')}
         </p>
         <p className="mt-2 whitespace-pre-line text-sm leading-relaxed sm:text-base">
-          {td('recommendAction', { action: actionTitle, minutes, impact })}
+          {recommendationWhy ??
+            td('recommendAction', { action: actionTitle, minutes, impact })}
         </p>
       </div>
 

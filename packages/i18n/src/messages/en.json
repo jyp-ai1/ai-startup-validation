@@ -4569,7 +4569,19 @@
         "successScore": {
           "label": "Business success probability",
           "subtitle": "How far your business can move forward today.",
+          "whyTitle": "Why {percent}%?",
           "delta": "+{delta}%",
+          "factors": {
+            "marketValidated": "Market validation complete",
+            "marketEvidence": "Market evidence in progress",
+            "competitorDone": "Competitive analysis complete",
+            "competitorEdge": "Differentiation unclear",
+            "pricingValidated": "Pricing validated",
+            "pricingValidation": "Pricing validation missing",
+            "customerValidated": "Customer validation underway",
+            "customerInterview": "Customer interviews missing",
+            "investmentReady": "Investment readiness progressing"
+          },
           "reasons": {
             "marketEvidence": "Market evidence in progress",
             "competitorScan": "Competitor scan started",
@@ -4639,7 +4651,8 @@
         "memory": {
           "label": "Founder Memory",
           "recall": "Last week we focused on {lastFocus}, but {lastGap} was still weak. This week we'll start with {thisFocus}.",
-          "actionReady": "AI prepared an action you can finish today.",
+          "deferredRecall": "You deferred {gap} again last week. Let's finish it today.",
+          "actionReady": "Your AI PM prepared an action you can finish today.",
           "eta": "Est. {minutes} min",
           "startCta": "Start now",
           "focus": {
@@ -4679,6 +4692,29 @@
             "e1": "Top 3 MVP scope items this week?",
             "e2": "Definition of first paying customer?",
             "e3": "One metric to track?"
+          }
+        },
+        "timeline": {
+          "label": "Founder Timeline",
+          "title": "Your business growth journal",
+          "milestones": {
+            "start": "First idea review started",
+            "momentum": "Business momentum building"
+          }
+        },
+        "weeklyCeoReview": {
+          "label": "Weekly CEO Review",
+          "title": "This week's AI PM briefing",
+          "scoreChange": "Success probability this week",
+          "bestDecision": "Best decision this week",
+          "biggestRisk": "Biggest risk",
+          "missedOpportunity": "Missed opportunity",
+          "nextWeek": "Next week's top priority",
+          "risks": {
+            "customerInterview": "Customer interviews keep getting deferred",
+            "pricingValidation": "Pricing validation is still weak",
+            "marketEvidence": "More market evidence needed",
+            "competitorEdge": "Competitive differentiation unclear"
           }
         },
         "business": {

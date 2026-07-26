@@ -2,16 +2,14 @@
 
 import { useEffect, useMemo } from 'react';
 
-import { useTranslations } from 'next-intl';
-
 import { loadAgentPipelineResult } from '@/lib/agents/agent-run-store';
 
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useJourneyHistory } from '../hooks/use-journey-history';
+import { recordFounderActionStarted } from '../lib/founder-behavior-store';
 import { computeFounderIntelligenceBrief } from '../lib/founder-intelligence-engine';
 import type { WorkflowGoalId } from '../types';
 import { AiPmConversation } from './ai-state/ai-pm-conversation';
-import { AiStateHero } from './ai-state/ai-state-hero';
 import { DecisionExperienceCoach } from './decision-experience-coach';
 import { AiActionGeneratorPanel } from './founder-ai-pm/ai-action-generator-panel';
 import { BusinessDeltaBrief } from './founder-ai-pm/business-delta-brief';
@@ -20,9 +18,12 @@ import { DecisionIntelligencePathPanel } from './founder-ai-pm/decision-intellig
 import { DecisionOneLinePanel } from './founder-ai-pm/decision-one-line-panel';
 import { FounderAiPreparedPanel } from './founder-ai-pm/founder-ai-prepared-panel';
 import { FounderDailyReviewPanel } from './founder-ai-pm/founder-daily-review-panel';
+import { FounderGrowthTimelinePanel } from './founder-ai-pm/founder-growth-timeline-panel';
 import { FounderJourneyMap } from './founder-ai-pm/founder-journey-map';
 import { FounderMemoryRecallPanel } from './founder-ai-pm/founder-memory-recall-panel';
+import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionHero } from './founder-ai-pm/founder-today-action-hero';
+import { FounderWeeklyCeoReviewPanel } from './founder-ai-pm/founder-weekly-ceo-review-panel';
 
 const DAILY_VISIT_KEY = 'll_daily_visit';
 const WEEKLY_VISIT_KEY = 'll_weekly_visit';
@@ -59,7 +60,6 @@ export function FounderTodayWorkspace({
   confidence,
 }: FounderTodayWorkspaceProps) {
   const analytics = useJourneyAnalytics();
-  const tpm = useTranslations('workflow.aiPm');
   const { append } = useJourneyHistory(projectId);
 
   const intelligence = useMemo(
@@ -69,27 +69,15 @@ export function FounderTodayWorkspace({
 
   const pipeline = useMemo(() => loadAgentPipelineResult(), [intelligence.fromAgentPipeline]);
   const primaryAction = intelligence.todayActions[0];
-  const primaryWhy =
-    primaryAction?.whyText ??
-    pipeline?.decision?.intelligence?.gap ??
-    pipeline?.decision?.missingData?.[0];
-
-  const pmMessages = useMemo(() => {
-    const lines: string[] = [];
-    if (intelligence.morningBrief) lines.push(intelligence.morningBrief);
-    if (primaryAction?.title) {
-      lines.push(tpm('todayFirstAction', { action: primaryAction.title }));
-    }
-    return lines;
-  }, [intelligence.morningBrief, primaryAction?.title, tpm]);
 
   useEffect(() => {
     trackReturnVisits(analytics, goalId);
     analytics.trackDecisionViewed(goalId);
   }, [analytics, goalId]);
 
-  const handleStartAction = (source = 'today_hero') => {
+  const handleStartAction = (source = 'today_hero', actionId?: string) => {
     analytics.trackNextActionStarted(goalId, source);
+    if (actionId) recordFounderActionStarted(projectId, actionId);
     append({
       category: 'coach',
       title: 'todayHeroStart',
@@ -98,30 +86,38 @@ export function FounderTodayWorkspace({
     window.dispatchEvent(new CustomEvent('ll:start-today-action'));
   };
 
+  const showWeeklyReview =
+    intelligence.behavior && intelligence.behavior.visitCount >= 2;
+
   return (
     <div className="space-y-8">
       <FounderJourneyMap confidence={confidence} verdict={pipeline?.decision?.verdict} />
 
-      {pmMessages.length > 0 ? <AiPmConversation messages={pmMessages} /> : null}
+      <AiPmConversation messages={intelligence.personalizedMorningLines} />
 
-      <AiStateHero
-        context={{
-          surface: 'today',
-          hasPipelineResult: intelligence.fromAgentPipeline,
-          primaryActionTitle: primaryAction?.title ?? primaryAction?.titleKey,
-          primaryActionWhy: primaryWhy,
-          primaryActionEta: primaryAction?.etaMinutes,
-          primaryActionGoImpact: primaryAction?.goImpact,
-          morningBrief: intelligence.morningBrief,
-        }}
+      <FounderSuccessScorePanel
+        score={intelligence.successScore}
+        factors={intelligence.successScoreFactors}
       />
 
       <FounderTodayActionHero
         goalId={goalId}
         confidence={confidence}
-        whyText={primaryWhy}
-        onStart={() => handleStartAction('today_hero')}
+        recommendationWhy={intelligence.personalized.recommendationWhy}
+        onStart={() => handleStartAction('today_hero', primaryAction?.id)}
       />
+
+      <FounderMemoryRecallPanel
+        memoryAction={intelligence.memoryAction}
+        behavior={intelligence.behavior}
+        onStart={() => handleStartAction('memory_action', intelligence.memoryAction.actionTitleKey)}
+      />
+
+      <FounderGrowthTimelinePanel behavior={intelligence.behavior} />
+
+      {showWeeklyReview ? (
+        <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
+      ) : null}
 
       <FounderAiPreparedPanel
         items={
@@ -134,7 +130,7 @@ export function FounderTodayWorkspace({
       <AiActionGeneratorPanel
         actions={intelligence.todayActions}
         totalEtaMinutes={intelligence.totalEtaMinutes}
-        onStartAction={(actionId) => handleStartAction(`action_${actionId}`)}
+        onStartAction={(actionId) => handleStartAction(`action_${actionId}`, actionId)}
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -143,11 +139,6 @@ export function FounderTodayWorkspace({
       </div>
 
       <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />
-
-      <FounderMemoryRecallPanel
-        memoryAction={intelligence.memoryAction}
-        onStart={() => handleStartAction('memory_action')}
-      />
 
       <DecisionIntelligencePathPanel path={intelligence.decisionPath} />
 
