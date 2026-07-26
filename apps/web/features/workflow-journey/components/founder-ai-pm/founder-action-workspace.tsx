@@ -12,6 +12,7 @@ import type { ResolvedActionWorkspace } from '../../lib/founder-action-resolver'
 import { resolveFounderActionTitle } from '../../lib/founder-action-display';
 import { resolveActionAnswerInsightKey } from '../../lib/founder-action-insights';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
+import { JourneyFocusedShell } from '../journey-focused-shell';
 
 export type ActionWorkspaceResult = {
   actionId: string;
@@ -134,16 +135,8 @@ export function FounderActionWorkspace({
     ];
 
     return (
-      <div
-        className={cn(
-          'fixed inset-0 z-50 flex items-center justify-center bg-background/95 p-4 backdrop-blur-sm',
-          className,
-        )}
-        role="dialog"
-        aria-modal="true"
-      >
-        <div className="max-h-[92vh] w-full max-w-lg space-y-5 overflow-y-auto rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
-          <AiPmConversation messages={summaryMessages} />
+      <JourneyFocusedShell ariaLabel={t('completeCta')}>
+        <AiPmConversation messages={summaryMessages} />
 
           <div className="rounded-2xl border border-emerald-300/40 bg-emerald-50/50 p-5 text-center dark:bg-emerald-950/20">
             <p className="text-sm text-muted-foreground">{t('scoreLabel')}</p>
@@ -162,22 +155,12 @@ export function FounderActionWorkspace({
             {t('completeCta')}
             <ArrowRight className="ml-2 size-4" aria-hidden />
           </Button>
-        </div>
-      </div>
+      </JourneyFocusedShell>
     );
   }
 
   return (
-    <div
-      className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center bg-background/95 p-4 backdrop-blur-sm',
-        className,
-      )}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="action-workspace-title"
-    >
-      <div className="max-h-[92vh] w-full max-w-lg space-y-5 overflow-y-auto rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
+    <JourneyFocusedShell ariaLabel={t('label')} className={className}>
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
@@ -243,7 +226,6 @@ export function FounderActionWorkspace({
         <p className="text-center text-xs text-muted-foreground">
           {t('progress', { current: step + 1, total: totalSteps })}
         </p>
-      </div>
-    </div>
+    </JourneyFocusedShell>
   );
 }

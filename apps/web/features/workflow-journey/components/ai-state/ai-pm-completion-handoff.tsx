@@ -36,15 +36,21 @@ import {
   buildResearchCompleteBrief,
 } from '../../lib/founder-research-trust';
 import { buildExplainableScoreFactors } from '../../lib/founder-personalization-engine';
+import { JourneyFocusedShell } from '../journey-focused-shell';
 
 type AiPmCompletionHandoffProps = {
   onStartToday: () => void;
   className?: string;
+  embedded?: boolean;
 };
 
 const HANDOFF_DWELL_MS = 2500;
 
-export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletionHandoffProps) {
+export function AiPmCompletionHandoff({
+  onStartToday,
+  className,
+  embedded = false,
+}: AiPmCompletionHandoffProps) {
   const t = useTranslations('workflow.aiPm.completion');
   const [readyToContinue, setReadyToContinue] = useState(false);
 
@@ -116,17 +122,8 @@ export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletio
   const narrativeMessages = [t('greeting'), t('goodNews')];
 
   return (
-    <div
-      className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center bg-background/95 p-4 backdrop-blur-sm',
-        className,
-      )}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="ai-pm-complete-title"
-    >
-      <div className="max-h-[92vh] w-full max-w-lg space-y-6 overflow-y-auto rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
-        <AiPmConversation messages={narrativeMessages} />
+    <JourneyFocusedShell embedded={embedded} ariaLabel={t('title')} className={className}>
+      <AiPmConversation messages={narrativeMessages} />
 
         <FounderResearchCompletePanel brief={researchComplete} />
 
@@ -168,7 +165,6 @@ export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletio
             </p>
           </>
         )}
-      </div>
-    </div>
+    </JourneyFocusedShell>
   );
 }

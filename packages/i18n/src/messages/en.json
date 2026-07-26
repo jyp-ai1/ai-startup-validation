@@ -4816,16 +4816,24 @@
       },
       "dailyCeo": {
         "analysisDetails": "AI PM analysis · research · meeting · decision",
+        "office": {
+          "label": "AI PM Office",
+          "title": "AI PM Office",
+          "subtitle": "Where the Founder shows up every morning."
+        },
         "overnight": {
           "label": "Overnight research",
+          "completedTitle": "🌙 Overnight work by AI PM",
           "firstLead": "Founder, overnight research is ready.",
           "returningLead": "Founder, I kept researching overnight.",
           "changeCount": "{count} things changed.",
-          "viewCta": "View"
+          "viewCta": "View",
+          "reportCta": "View report"
         },
         "morning": {
           "label": "AI PM morning brief",
           "greeting": "Good morning, Founder.",
+          "approvalLead": "Today you only need to approve.",
           "changesLead": "Since yesterday, a few things changed.",
           "todayLead": "Today you only need to approve this one task.",
           "todayMeta": "~{minutes} min · viability {before}% → {after}%"
@@ -4863,6 +4871,66 @@
           "marketSignal": "Market trend shift detected.",
           "investmentSignal": "Investment climate shift detected.",
           "analysisReady": "New analysis is ready."
+        },
+        "overnightWork": {
+          "competitorResearchDone": "Competitor research complete",
+          "marketChangeConfirmed": "Market changes confirmed",
+          "interviewAnalysisDone": "Customer interview analysis",
+          "grantCheckDone": "Government grant check",
+          "competitorPriceChecked": "Competitor pricing checked",
+          "grantDiscovered": "New government grant found",
+          "investmentTrendUpdate": "Investment trend updated",
+          "interviewSummaryDone": "Customer interview summary ready"
+        },
+        "approvalQueue": {
+          "label": "Awaiting approval",
+          "itemOrder": "{order}",
+          "expectedEffect": "Expected effect +{impact}%",
+          "approvedBadge": "Approved",
+          "allApproved": "All items for today are approved.",
+          "fallbackAction": "Run pricing validation"
+        },
+        "dailyReport": {
+          "label": "AI PM daily report",
+          "completedLead": "Completed today",
+          "scoreLead": "Viability today",
+          "tomorrow": "Tomorrow, finish {focus} and you're set.",
+          "competitorAnalysisDone": "Competitor analysis",
+          "competitorResearchDone": "Competitor research",
+          "customerInterviewDone": "Customer interviews",
+          "pricingDraftDone": "Pricing strategy draft",
+          "workCompleted": "{title} done"
+        },
+        "businessTimeline": {
+          "label": "Business timeline",
+          "milestones": {
+            "ideaRegistered": "Idea registered",
+            "marketResearchDone": "Market research done",
+            "competitorAnalysis": "Competitor analysis",
+            "firstCustomerInterview": "Customer interviews",
+            "pricingValidation": "Pricing validation",
+            "mvp": "MVP",
+            "investmentPrep": "Investment prep"
+          }
+        },
+        "liveWork": {
+          "label": "AI PM working",
+          "startLead": "Understood.\n\nStarting\n\n{action}.",
+          "completeLead": "Done.\n\nI've updated the strategy.",
+          "steps": {
+            "marketResearch": "Market research in progress",
+            "competitorCompare": "Comparing competitors",
+            "pricingDraft": "Drafting pricing strategy"
+          }
+        },
+        "memory": {
+          "label": "AI PM memory",
+          "recommendLead": "So today I recommend starting here.",
+          "startCta": "Approve and start",
+          "interviewDeferRecall": "Founder,\n\nyou often defer\n\ncustomer interviews.\n\nToday,\n\nlet's start with a 15-minute interview.",
+          "pricingDeferRecall": "Last week you\n\nskipped pricing validation.\n\nThis time,\n\nI recommend finishing it first.",
+          "deferredRecall": "You've deferred {gap} work before.\n\nLet's start with something short today.",
+          "patternRecall": "I'm seeing the same pattern again.\n\nFinish just one thing today."
         }
       },
       "todayHeroWorkspace": {
@@ -6260,8 +6328,8 @@
       }
     },
     "workspace": {
-      "title": "CEO Office",
-      "progressLabel": "Confidence",
+      "title": "AI PM Office",
+      "progressLabel": "Viability",
       "currentStep": "Step {current} / {total}",
       "stepFallback": "First step",
       "stepFallbackBody": "Define project context.",

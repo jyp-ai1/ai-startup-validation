@@ -8,23 +8,33 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint — Daily CEO Operating System (Active)
+## Sprint — Autonomous AI PM Office P5 ✅
 
-**Status:** In progress — local (pending commit)  
+**Status:** Complete — local (pending commit + push)  
+**Goal:** LaunchLens = **대표가 매일 출근하는 AI PM Office** — AI가 먼저 일하고 Founder는 승인만
+
+**Delivered:**
+- P0 AI PM Office 헤더 + Overnight 4건 + [보고서 보기]
+- P1 Approval Queue ①②③ + 예상 효과 + 개별 [승인]
+- P2 Live Work Log (승인 → AI 작업 로그 → Action)
+- P3 Daily CEO Report (완료 · 사업 가능성 arc · 내일)
+- P4 Founder Memory (인터뷰/가격 미루기 패턴)
+- P5 Business Timeline (7단계 사업 역사)
+- Layout: `JourneyFocusedShell` wide — Completion/Action/Debrief/Today 동일 폭
+- Founder Language: pipeline 영문 제목 매핑 · workspace = AI PM Office
+
+**Next:** Background AI PM → OpenRouter Scheduler → 실시간 변경 감지
+
+---
+
+## Sprint — Daily CEO Operating System ✅
+
+**Status:** Complete — `main` (`9c58151`)  
 **Goal:** Founder가 아침에 커피 마시며 **가장 먼저 열 화면** — 매일 루프
 
-**North star:** *"대표가 아침에 커피를 마시면서 가장 먼저 열어볼 화면인가?"*
-
-**Delivered (local):**
-- Overnight brief → [보기] (AI PM이 먼저 보고)
-- Morning brief (어제 이후 변경 + 오늘 1건)
-- CEO Inbox + 승인 대기
-- Today Approval (승인 / 내일 / 보류) → 승인 시 액션 시작
-- Evening review (+N% 전진)
-- Weekly loop (금요일 점수 arc)
-- 분석·회의·결정은 접힌 `AI PM 분석 상세`로 이동
-
-**Next:** Background AI PM (밤새 조사) → Validation Breakdown → Confidence Evolution → Strategy Generator
+**Delivered:**
+- Overnight brief → Morning → Inbox → Approval → Evening → Weekly
+- 분석·회의·결정은 접힌 `AI PM 분석 상세`
 
 ---
 

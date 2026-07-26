@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { loadAgentPipelineResult } from '@/lib/agents/agent-run-store';
@@ -11,7 +11,16 @@ import { applyActionCompletionUpdate } from '../lib/apply-action-completion-upda
 import type { ActionCompletionUpdateResult } from '../lib/apply-action-completion-update';
 import { recordFounderActionStarted } from '../lib/founder-behavior-store';
 import { resolveActionById, resolveActionWorkspace } from '../lib/founder-action-resolver';
+import { resolveFounderActionTitle } from '../lib/founder-action-display';
 import { buildAiPmInboxItems } from '../lib/founder-ai-pm-inbox';
+import { resolveStageIndex } from '../lib/founder-ai-pm-engine';
+import {
+  buildAiPmDailyReport,
+  buildAiPmMemoryBrief,
+  buildBusinessTimeline,
+  buildCeoApprovalQueue,
+  buildOvernightResearchWork,
+} from '../lib/founder-autonomous-ai-pm';
 import {
   buildAiPmDecisionBox,
   buildAiPmMeetingBrief,
@@ -20,10 +29,11 @@ import {
 } from '../lib/founder-ai-pm-meeting';
 import { buildDailyCeoOperatingBrief } from '../lib/founder-daily-ceo-loop';
 import {
+  approveActionId,
+  loadApprovedActionIds,
   loadOvernightViewed,
   loadTodayApproval,
   markOvernightViewed,
-  saveTodayApproval,
   type TodayApprovalChoice,
 } from '../lib/founder-daily-ceo-store';
 import { buildCompetitiveIntelligence } from '../lib/founder-competitive-intelligence';
@@ -54,13 +64,18 @@ import {
   type ActionWorkspaceResult,
 } from './founder-ai-pm/founder-action-workspace';
 import {
+  FounderAiPmOfficeHeader,
+  FounderAiPmDailyReportPanel,
+  FounderAiPmMemoryBriefPanel,
+  FounderBusinessTimelinePanel,
+  FounderCeoApprovalQueuePanel,
   FounderCeoInboxPanel,
-  FounderDailyCeoEveningPanel,
   FounderDailyCeoMorningPanel,
-  FounderOvernightBriefPanel,
-  FounderTodayApprovalPanel,
+  FounderOvernightResearchPanel,
   FounderWeeklyCeoLoopPanel,
 } from './founder-ai-pm/founder-daily-ceo-panels';
+import { FounderAiPmLiveWorkPanel } from './founder-ai-pm/founder-ai-pm-live-work-panel';
+import { FounderInformationBuilder } from './founder-ai-pm/founder-information-builder';
 import { FounderCompetitiveGapMap } from './founder-ai-pm/founder-competitive-gap-map';
 import { FounderAiPmDiscoveryPanel } from './founder-ai-pm/founder-ai-pm-discovery-panel';
 import { FounderAiPmCalendar } from './founder-ai-pm/founder-ai-pm-calendar';
@@ -76,9 +91,7 @@ import { FounderAiRecommendationPanel } from './founder-ai-pm/founder-ai-recomme
 import { FounderDecisionBoxPanel } from './founder-ai-pm/founder-decision-box-panel';
 import {
   FounderAiPmPreparedTasks,
-  FounderAiPmWorkingNow,
 } from './founder-ai-pm/founder-ai-pm-work-console';
-import { FounderInformationBuilder } from './founder-ai-pm/founder-information-builder';
 import { FounderResearchCompletePanel } from './founder-ai-pm/founder-research-complete-panel';
 import { FounderResearchSourcePanel } from './founder-ai-pm/founder-research-source-panel';
 import { FounderValidationAccuracyPanel } from './founder-ai-pm/founder-validation-accuracy-panel';
@@ -90,7 +103,6 @@ import { FounderDailyReviewPanel } from './founder-ai-pm/founder-daily-review-pa
 import { FounderEvidenceAutoPanel } from './founder-ai-pm/founder-evidence-auto-panel';
 import { FounderGrowthTimelinePanel } from './founder-ai-pm/founder-growth-timeline-panel';
 import { FounderJourneyMap } from './founder-ai-pm/founder-journey-map';
-import { FounderMemoryRecallPanel } from './founder-ai-pm/founder-memory-recall-panel';
 import { FounderOperatingTimelinePanel } from './founder-ai-pm/founder-operating-timeline-panel';
 import { FounderProjectHealthDashboard } from './founder-ai-pm/founder-project-health-dashboard';
 import { FounderSuccessScoreExplained } from './founder-ai-pm/founder-success-score-explained';
@@ -138,6 +150,8 @@ export function FounderTodayWorkspace({
   confidence,
 }: FounderTodayWorkspaceProps) {
   const t = useTranslations('workflow.founderAiPm.todayFirst');
+  const tDaily = useTranslations('workflow.founderAiPm.dailyCeo');
+  const td = useTranslations('workflow.founderAiPm.intelligence.actionGenerator');
   const analytics = useJourneyAnalytics();
   const { entries: historyEntries, append } = useJourneyHistory(projectId);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -149,11 +163,15 @@ export function FounderTodayWorkspace({
     null,
   );
   const [approvalChoice, setApprovalChoice] = useState<TodayApprovalChoice>('pending');
+  const [approvedActionIds, setApprovedActionIds] = useState<string[]>([]);
+  const [liveWorkActionId, setLiveWorkActionId] = useState<string | null>(null);
+  const [liveWorkTitle, setLiveWorkTitle] = useState('');
   const [overnightViewed, setOvernightViewed] = useState(false);
   const [showAnalysisDetails, setShowAnalysisDetails] = useState(false);
 
   useEffect(() => {
     setApprovalChoice(loadTodayApproval(projectId));
+    setApprovedActionIds(loadApprovedActionIds(projectId));
     setOvernightViewed(loadOvernightViewed(projectId));
   }, [projectId, refreshKey]);
 
@@ -263,6 +281,57 @@ export function FounderTodayWorkspace({
     ],
   );
 
+  const resolveActionTitle = (action: GeneratedTodayAction) =>
+    resolveFounderActionTitle(action, td, tDaily('approvalQueue.fallbackAction'));
+
+  const overnightWork = useMemo(
+    () => buildOvernightResearchWork(intelligence.businessDeltas, evidence.length),
+    [evidence.length, intelligence.businessDeltas],
+  );
+
+  const approvalQueue = useMemo(
+    () => buildCeoApprovalQueue(intelligence.todayActions, resolveActionTitle),
+    [intelligence.todayActions, td, tDaily],
+  );
+
+  const dailyReport = useMemo(
+    () =>
+      buildAiPmDailyReport({
+        behavior: intelligence.behavior,
+        scorePercent: intelligence.successScore.percent,
+        dailyReview: intelligence.dailyReview,
+        tomorrowFocus: resolveActionTitle(primaryAction ?? intelligence.todayActions[0]!),
+        goImpact: dailyCeoBrief.todayGoImpact,
+      }),
+    [
+      dailyCeoBrief.todayGoImpact,
+      intelligence.behavior,
+      intelligence.dailyReview,
+      intelligence.successScore.percent,
+      intelligence.todayActions,
+      primaryAction,
+      td,
+      tDaily,
+    ],
+  );
+
+  const businessTimeline = useMemo(
+    () =>
+      buildBusinessTimeline(resolveStageIndex(confidence), intelligence.businessProgress),
+    [confidence, intelligence.businessProgress],
+  );
+
+  const memoryBrief = useMemo(
+    () =>
+      buildAiPmMemoryBrief({
+        behavior: intelligence.behavior,
+        memoryAction: intelligence.memoryAction,
+        todayActions: intelligence.todayActions,
+        resolveTitle: resolveActionTitle,
+      }),
+    [intelligence.behavior, intelligence.memoryAction, intelligence.todayActions, td, tDaily],
+  );
+
   useEffect(() => {
     trackReturnVisits(analytics, goalId);
     analytics.trackDecisionViewed(goalId);
@@ -293,6 +362,9 @@ export function FounderTodayWorkspace({
     const resolved = resolveActionById(actionId, intelligence.todayActions, intelligence.memoryAction);
     if (resolved) setActiveAction(resolved);
   };
+
+  const startByIdRef = useRef(handleStartById);
+  startByIdRef.current = handleStartById;
 
   const handleActionComplete = (result: ActionWorkspaceResult) => {
     const update = applyActionCompletionUpdate(
@@ -335,24 +407,23 @@ export function FounderTodayWorkspace({
     setShowAnalysisDetails(true);
   };
 
-  const handleApproveToday = () => {
-    saveTodayApproval(projectId, 'approved');
+  const handleApproveQueueItem = (actionId: string) => {
+    const item = approvalQueue.find((entry) => entry.actionId === actionId);
+    const approved = approveActionId(projectId, actionId);
+    setApprovedActionIds(approved);
     setApprovalChoice('approved');
-    handleStartById(
-      dailyCeoBrief.todayActionId ? `ceo_approve_${dailyCeoBrief.todayActionId}` : 'ceo_approve',
-      dailyCeoBrief.todayActionId,
-    );
+    setLiveWorkTitle(item?.title ?? resolveActionTitle(primaryAction!));
+    setLiveWorkActionId(actionId);
   };
 
-  const handleDeferToday = () => {
-    saveTodayApproval(projectId, 'tomorrow');
-    setApprovalChoice('tomorrow');
-  };
-
-  const handleHoldToday = () => {
-    saveTodayApproval(projectId, 'hold');
-    setApprovalChoice('hold');
-  };
+  const handleLiveWorkComplete = useCallback(() => {
+    setLiveWorkActionId((currentId) => {
+      if (currentId) {
+        startByIdRef.current(`ceo_queue_${currentId}`, currentId);
+      }
+      return null;
+    });
+  }, []);
 
   return (
     <>
@@ -373,6 +444,8 @@ export function FounderTodayWorkspace({
       ) : null}
 
       <div className="space-y-6">
+        <FounderAiPmOfficeHeader />
+
         {showWeeklyReview && isFriday() && dailyCeoBrief.weeklyScoreFrom != null ? (
           <FounderWeeklyCeoLoopPanel
             scoreFrom={dailyCeoBrief.weeklyScoreFrom}
@@ -382,8 +455,8 @@ export function FounderTodayWorkspace({
           <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
         ) : null}
 
-        <FounderOvernightBriefPanel
-          brief={dailyCeoBrief}
+        <FounderOvernightResearchPanel
+          items={overnightWork}
           viewed={overnightViewed}
           onView={handleOvernightView}
         />
@@ -396,27 +469,39 @@ export function FounderTodayWorkspace({
           onReview={(actionId) => handleStartById(`ceo_inbox_${actionId ?? 'primary'}`, actionId)}
         />
 
-        <FounderTodayApprovalPanel
-          brief={dailyCeoBrief}
-          approvalChoice={approvalChoice}
-          onApprove={handleApproveToday}
-          onTomorrow={handleDeferToday}
-          onHold={handleHoldToday}
+        <FounderCeoApprovalQueuePanel
+          items={approvalQueue}
+          approvedIds={approvedActionIds}
+          onApprove={handleApproveQueueItem}
         />
 
-        {approvalChoice === 'approved' ? (
-          <>
-            <FounderAiPmPreparedTasks />
-            <FounderAiPmWorkingNow />
-          </>
-        ) : null}
-
-        {dailyCeoBrief.showEveningReview ? (
-          <FounderDailyCeoEveningPanel
-            delta={dailyCeoBrief.eveningDelta}
-            tomorrowFocus={dailyCeoBrief.todayActionTitle}
+        {liveWorkActionId ? (
+          <FounderAiPmLiveWorkPanel
+            key={liveWorkActionId}
+            actionTitle={liveWorkTitle}
+            onComplete={handleLiveWorkComplete}
           />
         ) : null}
+
+        {approvedActionIds.length > 0 && !liveWorkActionId ? (
+          <FounderAiPmPreparedTasks />
+        ) : null}
+
+        <FounderAiPmMemoryBriefPanel
+          memory={memoryBrief}
+          onStart={() =>
+            handleStartById(
+              memoryBrief.recommendedActionId
+                ? `memory_${memoryBrief.recommendedActionId}`
+                : 'memory_primary',
+              memoryBrief.recommendedActionId ?? primaryAction?.id,
+            )
+          }
+        />
+
+        <FounderBusinessTimelinePanel milestones={businessTimeline} />
+
+        <FounderAiPmDailyReportPanel report={dailyReport} />
 
         <details
           className="rounded-2xl border border-border/60 bg-muted/10"
@@ -424,7 +509,7 @@ export function FounderTodayWorkspace({
           onToggle={(event) => setShowAnalysisDetails((event.target as HTMLDetailsElement).open)}
         >
           <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
-            {t('dailyCeo.analysisDetails')}
+            {tDaily('analysisDetails')}
           </summary>
           <div className="space-y-6 border-t border-border/60 px-5 py-6">
             <FounderResearchCompletePanel brief={researchComplete} />
@@ -489,14 +574,6 @@ export function FounderTodayWorkspace({
         <FounderTodayOutcomeStrip
           score={intelligence.successScore}
           primaryAction={primaryAction}
-        />
-
-        <FounderMemoryRecallPanel
-          memoryAction={intelligence.memoryAction}
-          behavior={intelligence.behavior}
-          onStart={() =>
-            handleStartById('memory_action', intelligence.todayActions[0]?.id)
-          }
         />
 
         <FounderAiPmProactiveQuestion />

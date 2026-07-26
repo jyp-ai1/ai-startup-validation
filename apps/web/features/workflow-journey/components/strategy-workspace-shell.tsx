@@ -284,7 +284,16 @@ export function StrategyWorkspaceShell({
   }
 
   if (phase === 'complete') {
-    return <AiPmCompletionHandoff onStartToday={enterTodayWorkspace} />;
+    return (
+      <JourneyLayout
+        phase="workspace"
+        width="wide"
+        variant="intelligence"
+        versionLabel={BETA_VERSION}
+      >
+        <AiPmCompletionHandoff onStartToday={enterTodayWorkspace} embedded />
+      </JourneyLayout>
+    );
   }
 
   return (

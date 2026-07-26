@@ -9,6 +9,7 @@ import { cn } from '@repo/ui/lib/utils';
 
 import type { ActionDebriefSnapshot } from '../../lib/founder-project-state-store';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
+import { JourneyFocusedShell } from '../journey-focused-shell';
 
 type FounderActionDebriefProps = {
   debrief: ActionDebriefSnapshot;
@@ -40,16 +41,8 @@ export function FounderActionDebrief({ debrief, onContinue, className }: Founder
   ];
 
   return (
-    <div
-      className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center bg-background/95 p-4 backdrop-blur-sm',
-        className,
-      )}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className="max-h-[92vh] w-full max-w-lg space-y-5 overflow-y-auto rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
-        <AiPmConversation messages={messages} />
+    <JourneyFocusedShell ariaLabel={t('scoreLabel')} className={className}>
+      <AiPmConversation messages={messages} />
 
         <div
           className={cn(
@@ -70,7 +63,6 @@ export function FounderActionDebrief({ debrief, onContinue, className }: Founder
           {t('continueCta')}
           <ArrowRight className="ml-2 size-4" aria-hidden />
         </Button>
-      </div>
-    </div>
+    </JourneyFocusedShell>
   );
 }

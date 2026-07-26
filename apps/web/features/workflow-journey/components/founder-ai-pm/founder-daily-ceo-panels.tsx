@@ -8,6 +8,12 @@ import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { DailyCeoOperatingBrief, DailyChangeItem } from '../../lib/founder-daily-ceo-loop';
+import type {
+  AiPmMemoryBrief,
+  ApprovalQueueItem,
+  BusinessTimelineMilestone,
+  DailyReportBrief,
+} from '../../lib/founder-autonomous-ai-pm';
 import type { TodayApprovalChoice } from '../../lib/founder-daily-ceo-store';
 import type { AiPmInboxItem } from '../../lib/founder-ai-pm-inbox';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
@@ -15,19 +21,70 @@ import { AiPmConversation } from '../ai-state/ai-pm-conversation';
 function ChangeList({
   items,
   t,
+  namespace = 'changes',
 }: {
   items: DailyChangeItem[];
   t: ReturnType<typeof useTranslations<'workflow.founderAiPm.dailyCeo'>>;
+  namespace?: 'changes' | 'overnightWork' | 'dailyReport';
 }) {
   return (
     <ul className="mt-3 space-y-2" role="list">
       {items.map((item) => (
         <li key={item.id} className="flex items-start gap-2 text-sm">
           <Check className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-hidden />
-          <span>{t(`changes.${item.messageKey}`, item.params ?? {})}</span>
+          <span>{t(`${namespace}.${item.messageKey}`, item.params ?? {})}</span>
         </li>
       ))}
     </ul>
+  );
+}
+
+export function FounderAiPmOfficeHeader({ className }: { className?: string }) {
+  const t = useTranslations('workflow.founderAiPm.dailyCeo');
+
+  return (
+    <header className={cn('space-y-2 border-b border-border/60 pb-5', className)}>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-primary">
+        {t('office.label')}
+      </p>
+      <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t('office.title')}</h1>
+      <p className="text-sm text-muted-foreground">{t('office.subtitle')}</p>
+    </header>
+  );
+}
+
+export function FounderOvernightResearchPanel({
+  items,
+  viewed,
+  onView,
+  className,
+}: {
+  items: DailyChangeItem[];
+  viewed: boolean;
+  onView: () => void;
+  className?: string;
+}) {
+  const t = useTranslations('workflow.founderAiPm.dailyCeo');
+
+  if (viewed) return null;
+
+  return (
+    <section
+      className={cn(
+        'rounded-2xl border-2 border-indigo-300/40 bg-gradient-to-br from-indigo-500/[0.08] to-background p-5 sm:p-6',
+        className,
+      )}
+      aria-label={t('overnight.label')}
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-indigo-700 dark:text-indigo-300">
+        {t('overnight.completedTitle')}
+      </p>
+      <ChangeList items={items} t={t} namespace="overnightWork" />
+      <Button type="button" className="mt-5 w-full rounded-xl" onClick={onView}>
+        {t('overnight.reportCta')}
+        <ArrowRight className="ml-2 size-4" aria-hidden />
+      </Button>
+    </section>
   );
 }
 
@@ -96,10 +153,9 @@ export function FounderDailyCeoMorningPanel({
       <AiPmConversation
         messages={[
           t('morning.greeting'),
-          t('morning.changesLead'),
+          t('morning.approvalLead'),
         ]}
       />
-      <ChangeList items={brief.morningChanges} t={t} />
       <div className="mt-5 rounded-xl border border-primary/25 bg-background/90 px-4 py-4">
         <p className="text-sm text-muted-foreground">{t('morning.todayLead')}</p>
         <p className="mt-2 text-base font-semibold">{brief.todayActionTitle}</p>
@@ -173,6 +229,217 @@ export function FounderCeoInboxPanel({
           {t('inbox.reviewCta')}
         </Button>
       ) : null}
+    </section>
+  );
+}
+
+const APPROVAL_ORDER_MARKS = ['①', '②', '③'] as const;
+
+export function FounderCeoApprovalQueuePanel({
+  items,
+  approvedIds,
+  onApprove,
+  className,
+}: {
+  items: ApprovalQueueItem[];
+  approvedIds: string[];
+  onApprove: (actionId: string) => void;
+  className?: string;
+}) {
+  const t = useTranslations('workflow.founderAiPm.dailyCeo');
+
+  if (items.length === 0) return null;
+
+  const pending = items.filter((item) => !approvedIds.includes(item.actionId));
+
+  return (
+    <section
+      className={cn('rounded-2xl border border-border/70 bg-card p-5 sm:p-6', className)}
+      aria-label={t('approvalQueue.label')}
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">
+        {t('approvalQueue.label')}
+      </p>
+      <ul className="mt-4 space-y-0" role="list">
+        {items.map((item, index) => {
+          const approved = approvedIds.includes(item.actionId);
+          return (
+            <li key={item.id} className={index > 0 ? 'border-t border-border/60 pt-3 mt-3' : undefined}>
+              <div
+                className={cn(
+                  'rounded-xl border px-4 py-4',
+                  approved
+                    ? 'border-emerald-300/40 bg-emerald-500/[0.06]'
+                    : 'border-border/60 bg-muted/10',
+                )}
+              >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold">
+                    {APPROVAL_ORDER_MARKS[item.order - 1] ?? `${item.order}.`} {item.title}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {t('approvalQueue.expectedEffect', { impact: item.goImpact })}
+                  </p>
+                </div>
+                {approved ? (
+                  <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                    {t('approvalQueue.approvedBadge')}
+                  </span>
+                ) : (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="shrink-0 rounded-lg"
+                    onClick={() => onApprove(item.actionId)}
+                  >
+                    {t('approval.approve')}
+                  </Button>
+                )}
+              </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      {pending.length === 0 ? (
+        <p className="mt-4 text-sm text-muted-foreground">{t('approvalQueue.allApproved')}</p>
+      ) : null}
+    </section>
+  );
+}
+
+export function FounderAiPmDailyReportPanel({
+  report,
+  className,
+}: {
+  report: DailyReportBrief;
+  className?: string;
+}) {
+  const t = useTranslations('workflow.founderAiPm.dailyCeo');
+
+  if (!report.showReport) return null;
+
+  return (
+    <section
+      className={cn(
+        'rounded-2xl border border-indigo-300/40 bg-gradient-to-br from-indigo-500/[0.06] to-background p-5 sm:p-6',
+        className,
+      )}
+      aria-label={t('dailyReport.label')}
+    >
+      <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">
+        <Moon className="size-3.5" aria-hidden />
+        {t('dailyReport.label')}
+      </p>
+      <p className="mt-3 text-sm font-medium">{t('dailyReport.completedLead')}</p>
+      <ChangeList items={report.completedItems} t={t} namespace="dailyReport" />
+      <div className="mt-5 rounded-xl border border-indigo-200/50 bg-background/80 px-4 py-4">
+        <p className="text-sm text-muted-foreground">{t('dailyReport.scoreLead')}</p>
+        <p className="mt-2 text-3xl font-bold tabular-nums">
+          {report.scoreFrom}% → {report.scoreTo}%
+        </p>
+      </div>
+      <p className="mt-4 text-sm font-medium">
+        {t('dailyReport.tomorrow', { focus: report.tomorrowFocus })}
+      </p>
+    </section>
+  );
+}
+
+export function FounderBusinessTimelinePanel({
+  milestones,
+  className,
+}: {
+  milestones: BusinessTimelineMilestone[];
+  className?: string;
+}) {
+  const t = useTranslations('workflow.founderAiPm.dailyCeo');
+
+  if (milestones.length === 0) return null;
+
+  return (
+    <section
+      className={cn('rounded-2xl border border-border/70 bg-card p-5 sm:p-6', className)}
+      aria-label={t('businessTimeline.label')}
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">
+        {t('businessTimeline.label')}
+      </p>
+      <ol className="mt-4 space-y-0" role="list">
+        {milestones.map((milestone, index) => (
+          <li key={milestone.id} className="relative flex gap-3 pb-4 last:pb-0">
+            {index < milestones.length - 1 ? (
+              <span
+                className="absolute left-[7px] top-4 h-[calc(100%-4px)] w-px bg-border"
+                aria-hidden
+              />
+            ) : null}
+            <span
+              className={cn(
+                'mt-1 size-3.5 shrink-0 rounded-full border-2',
+                milestone.status === 'done'
+                  ? 'border-emerald-600 bg-emerald-600'
+                  : milestone.status === 'current'
+                    ? 'border-primary bg-primary'
+                    : 'border-border bg-background',
+              )}
+              aria-hidden
+            />
+            <div>
+              <p
+                className={cn(
+                  'text-sm',
+                  milestone.status === 'current' ? 'font-semibold text-primary' : 'text-muted-foreground',
+                  milestone.status === 'done' && 'font-medium text-foreground',
+                )}
+              >
+                {t(`businessTimeline.milestones.${milestone.labelKey}`)}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+export function FounderAiPmMemoryBriefPanel({
+  memory,
+  onStart,
+  className,
+}: {
+  memory: AiPmMemoryBrief;
+  onStart?: () => void;
+  className?: string;
+}) {
+  const t = useTranslations('workflow.founderAiPm.dailyCeo');
+
+  if (!memory.show) return null;
+
+  return (
+    <section
+      className={cn(
+        'rounded-2xl border border-violet-300/40 bg-gradient-to-br from-violet-500/[0.06] to-background p-5 sm:p-6',
+        className,
+      )}
+      aria-label={t('memory.label')}
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-violet-700 dark:text-violet-300">
+        {t('memory.label')}
+      </p>
+      <AiPmConversation
+        messages={[t(`memory.${memory.messageKey}`, memory.params ?? {})]}
+      />
+      <div className="mt-4 rounded-xl border border-violet-200/50 bg-background/80 px-4 py-3">
+        <p className="text-sm text-muted-foreground">{t('memory.recommendLead')}</p>
+        <p className="mt-1 text-sm font-semibold">{memory.recommendedTitle}</p>
+        {onStart ? (
+          <Button type="button" variant="outline" className="mt-3 rounded-xl" onClick={onStart}>
+            {t('memory.startCta')}
+          </Button>
+        ) : null}
+      </div>
     </section>
   );
 }
