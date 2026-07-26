@@ -18,6 +18,77 @@ import type {
 } from '../../lib/founder-living-project';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
 
+import type { OvernightInvestigationSnapshot } from '../../lib/founder-background-ai';
+
+export function FounderOvernightInvestigationPanel({
+  snapshot,
+  syncing,
+  className,
+}: {
+  snapshot: OvernightInvestigationSnapshot | null;
+  syncing?: boolean;
+  className?: string;
+}) {
+  const t = useTranslations('workflow.founderAiPm.dailyCeo.backgroundAi');
+
+  if (syncing) {
+    return (
+      <section
+        className={cn(
+          'rounded-2xl border-2 border-indigo-300/40 bg-gradient-to-br from-indigo-500/[0.08] to-background p-5 sm:p-6',
+          className,
+        )}
+        aria-label={t('label')}
+      >
+        <p className="text-sm text-muted-foreground">{t('syncing')}</p>
+      </section>
+    );
+  }
+
+  if (!snapshot) return null;
+
+  return (
+    <section
+      className={cn(
+        'rounded-2xl border-2 border-indigo-400/50 bg-gradient-to-br from-indigo-500/[0.12] to-background p-5 sm:p-6',
+        className,
+      )}
+      aria-label={t('label')}
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-indigo-700 dark:text-indigo-300">
+        {t('label')}
+      </p>
+      <AiPmConversation
+        messages={[
+          t('greeting'),
+          t('overnightLead'),
+          t('agentLead'),
+          t('investigationSummary', { total: snapshot.investigationCount }),
+          t('importantLead'),
+          t('importantSummary', { count: snapshot.importantCount }),
+        ]}
+      />
+      {snapshot.importantItems.length > 0 ? (
+        <ul className="mt-4 space-y-2" role="list">
+          {snapshot.importantItems.map((item) => (
+            <li key={item.id} className="flex items-start gap-2 text-sm font-medium">
+              <span className="text-indigo-600" aria-hidden>
+                •
+              </span>
+              <span>
+                {t(`importantItems.${item.messageKey}`, item.params ?? {})}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {snapshot.fromRealRun ? (
+        <p className="mt-4 text-xs text-muted-foreground">{t('realRunBadge')}</p>
+      ) : null}
+    </section>
+  );
+}
+
 function formatDate(
   t: ReturnType<typeof useTranslations<'workflow.founderAiPm.livingProject'>>,
   entry: { isToday?: boolean; month: number; day: number },

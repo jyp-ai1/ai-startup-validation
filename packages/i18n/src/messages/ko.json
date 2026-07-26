@@ -5014,7 +5014,27 @@
           "marketResearch": "시장조사",
           "grantCheck": "정부지원 확인",
           "competitorPriceCollect": "경쟁사 가격 수집",
-          "newsAnalysis": "뉴스 분석"
+          "newsAnalysis": "뉴스 분석",
+          "searchTrendCheck": "검색 트렌드 변화",
+          "pricingTrack": "가격 변화 추적",
+          "investmentNews": "투자 뉴스"
+        },
+        "backgroundAi": {
+          "label": "밤새 AI PM 조사",
+          "greeting": "대표님",
+          "overnightLead": "밤새",
+          "agentLead": "AI PM이",
+          "investigationSummary": "{total}건 조사했습니다.",
+          "importantLead": "중요한 변화는",
+          "importantSummary": "{count}건입니다.",
+          "syncing": "밤새 조사 결과를 불러오는 중…",
+          "realRunBadge": "OpenRouter 실제 조사 반영",
+          "importantItems": {
+            "competitorChangeImportant": "경쟁사 변화 감지",
+            "grantNewImportant": "정부지원 신규 공고",
+            "marketChangeImportant": "시장 뉴스 변화",
+            "investmentNewsImportant": "투자 환경 변화"
+          }
         },
         "todayFocus": {
           "label": "오늘 이것 하나만",

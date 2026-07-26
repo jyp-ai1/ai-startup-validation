@@ -107,6 +107,7 @@ See Constitution — Pitch Deck, Landing Builder, Slack/Jira, Enterprise Admin, 
 
 ## Related
 
+- [FOUNDER_OS_ROADMAP.md](./FOUNDER_OS_ROADMAP.md) — Sprint 6–20 AI PM Office track
 - [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
 - [TASKS.md](./TASKS.md)
 - [RELEASES.md](./RELEASES.md)

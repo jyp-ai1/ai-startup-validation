@@ -4868,7 +4868,27 @@
           "marketResearch": "Market research",
           "grantCheck": "Grant check",
           "competitorPriceCollect": "Competitor pricing collected",
-          "newsAnalysis": "News analysis"
+          "newsAnalysis": "News analysis",
+          "searchTrendCheck": "Search trend changes",
+          "pricingTrack": "Pricing changes tracked",
+          "investmentNews": "Investment news"
+        },
+        "backgroundAi": {
+          "label": "Overnight AI PM research",
+          "greeting": "Founder",
+          "overnightLead": "Overnight",
+          "agentLead": "AI PM",
+          "investigationSummary": "investigated {total} items.",
+          "importantLead": "Important changes",
+          "importantSummary": "{count} items.",
+          "syncing": "Loading overnight research…",
+          "realRunBadge": "Real OpenRouter research applied",
+          "importantItems": {
+            "competitorChangeImportant": "Competitor change detected",
+            "grantNewImportant": "New government grant posted",
+            "marketChangeImportant": "Market news shift",
+            "investmentNewsImportant": "Investment environment shift"
+          }
         },
         "todayFocus": {
           "label": "Just this one today",

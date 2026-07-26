@@ -28,6 +28,16 @@ import {
 import { buildDailyCeoOperatingBrief } from '../lib/founder-daily-ceo-loop';
 import { buildDailyCeoHabitBrief } from '../lib/founder-daily-ceo-habit';
 import {
+  mergeHabitWithOvernightSnapshot,
+  runOvernightInvestigation,
+  type OvernightInvestigationSnapshot,
+} from '../lib/founder-background-ai';
+import {
+  loadOvernightSnapshot,
+  saveOvernightSnapshot,
+  shouldRunOvernightSync,
+} from '../lib/founder-background-ai-store';
+import {
   approveActionId,
   loadApprovedActionIds,
   loadOvernightViewed,
@@ -80,6 +90,7 @@ import {
   FounderLivingProjectHistoryPanel,
   FounderLivingStuckAlertPanel,
   FounderLivingWeeklyStoryPanel,
+  FounderOvernightInvestigationPanel,
 } from './founder-ai-pm/founder-living-project-panels';
 import { FounderAiPmLiveWorkPanel } from './founder-ai-pm/founder-ai-pm-live-work-panel';
 import { FounderInformationBuilder } from './founder-ai-pm/founder-information-builder';
@@ -172,18 +183,58 @@ export function FounderTodayWorkspace({
   const [liveWorkActionId, setLiveWorkActionId] = useState<string | null>(null);
   const [liveWorkTitle, setLiveWorkTitle] = useState('');
   const [overnightViewed, setOvernightViewed] = useState(false);
+  const [overnightSnapshot, setOvernightSnapshot] = useState<OvernightInvestigationSnapshot | null>(
+    null,
+  );
+  const [overnightSyncing, setOvernightSyncing] = useState(false);
   const [showAnalysisDetails, setShowAnalysisDetails] = useState(false);
+  const overnightSyncStarted = useRef(false);
+
+  useEffect(() => {
+    overnightSyncStarted.current = false;
+  }, [projectId]);
 
   useEffect(() => {
     setApprovalChoice(loadTodayApproval(projectId));
     setApprovedActionIds(loadApprovedActionIds(projectId));
     setOvernightViewed(loadOvernightViewed(projectId));
+    setOvernightSnapshot(loadOvernightSnapshot(projectId));
   }, [projectId, refreshKey]);
 
   const intelligence = useMemo(
     () => computeFounderIntelligenceBrief(projectId, goalId, confidence),
     [confidence, goalId, projectId, refreshKey],
   );
+
+  useEffect(() => {
+    if (overnightSyncStarted.current) return;
+    if (!shouldRunOvernightSync(projectId)) return;
+    overnightSyncStarted.current = true;
+    setOvernightSyncing(true);
+
+    const ideaSummary = intelligence.behavior?.ideaSummary ?? projectName;
+    void runOvernightInvestigation({
+      projectId,
+      projectTitle: projectName,
+      ideaSummary,
+      goalId,
+      previousSuccessScore: intelligence.successScore.percent,
+    })
+      .then((snapshot) => {
+        saveOvernightSnapshot(snapshot);
+        setOvernightSnapshot(snapshot);
+        setRefreshKey((key) => key + 1);
+      })
+      .finally(() => {
+        setOvernightSyncing(false);
+      });
+  }, [
+    goalId,
+    intelligence.behavior?.ideaSummary,
+    intelligence.successScore.percent,
+    projectId,
+    projectName,
+  ]);
 
   const pipeline = useMemo(
     () => loadAgentPipelineResult(),
@@ -348,7 +399,7 @@ export function FounderTodayWorkspace({
     [intelligence.behavior, intelligence.memoryAction, intelligence.todayActions, td, tDaily],
   );
 
-  const habitBrief = useMemo(
+  const habitBriefBase = useMemo(
     () =>
       buildDailyCeoHabitBrief({
         projectId,
@@ -366,6 +417,21 @@ export function FounderTodayWorkspace({
       tDaily,
     ],
   );
+
+  const habitBrief = useMemo(() => {
+    const merged = mergeHabitWithOvernightSnapshot(
+      overnightSnapshot,
+      habitBriefBase.morningChanges,
+      habitBriefBase.whatChanged,
+      habitBriefBase.overnightReport,
+    );
+    return {
+      ...habitBriefBase,
+      morningChanges: merged.morningChanges,
+      whatChanged: merged.whatChanged,
+      overnightReport: merged.overnightReport,
+    };
+  }, [habitBriefBase, overnightSnapshot]);
 
   useEffect(() => {
     trackReturnVisits(analytics, goalId);
@@ -480,6 +546,11 @@ export function FounderTodayWorkspace({
 
       <div className="space-y-6">
         <FounderAiPmOfficeHeader />
+
+        <FounderOvernightInvestigationPanel
+          snapshot={overnightSnapshot}
+          syncing={overnightSyncing}
+        />
 
         <FounderLivingMilestoneCelebrationPanel celebration={livingBrief.milestoneCelebration} />
 

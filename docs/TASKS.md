@@ -8,31 +8,36 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint — Living Project (Active)
+## Sprint — Real Background AI (Active)
 
-**Status:** Complete — `main` (`3d78641`)  
-**Goal:** **AI PM과 함께 회사를 운영** — 프로젝트가 살아있다는 느낌
+**Status:** Complete — local (pending commit + push)  
+**Goal:** AI PM이 **밤새 실제로 회사를 조사** — 출근하면 이미 끝난 상태
 
-**Founder-first roadmap (locked):**
+**Founder OS roadmap:** [FOUNDER_OS_ROADMAP.md](./FOUNDER_OS_ROADMAP.md) (Sprint 6–20)
+
 | Sprint | Focus |
 |--------|--------|
-| 6 ✅ | Daily CEO Habit |
-| **7 (NOW)** | Living Project — 프로젝트 기록 · 주간 스토리 · 정체 감지 |
-| 8 | Real Background AI — Scheduler · OpenRouter |
-| 9 | CEO Dashboard — 회사 상태 🟢🟡🔴 |
-| 10 | Company Memory — 6개월 연대기 |
+| 6–7 ✅ | Daily CEO Habit · Living Project |
+| **8 (NOW)** | Real Background AI |
+| 9 | CEO Dashboard |
+| 10–20 | Company Memory → AI Founder Twin |
 
 **Delivered:**
-- P0 Living Project History — 날짜별 프로젝트 기록 (오늘 진행중)
-- P0 Weekly Story — 숫자 대신 이번주/다음주 스토리
-- P0 Stuck Detection — N일째 멈춤 + AI PM 추천
-- P1 Momentum — 스토리 먼저 + 전진률 바
-- P1 AI PM Daily Journal — AI가 쓰는 프로젝트 일지
-- P1 Milestone Celebration — 완료 시 🎉 축하
-- P2 Founder Pattern — 대표님 업무 패턴
-- P2 Living Morning Brief — 주간 진전 + 정체 경고
+- P0 Overnight API — `/api/background-ai/overnight` (OpenRouter strategy pipeline)
+- P0 Daily scheduler — 첫 방문 시 자동 overnight sync
+- P0 Investigation summary — "17건 조사 · 중요 3건" Morning Brief
+- P0 7-domain scan — 경쟁사·정부지원·시장·뉴스·트렌드·가격·투자
+- Morning Brief / What Changed — snapshot 기반 (mock fallback)
 
-**Next:** Sprint 8 Real Background AI
+**Success Gate:** "AI가 진짜 일했네"
+
+**Next:** Sprint 9 CEO Dashboard
+
+---
+
+## Sprint — Living Project ✅
+
+**Status:** Complete — `main` (`3d78641`)
 
 ---
 
