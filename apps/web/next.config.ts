@@ -31,6 +31,7 @@ const nextConfig: NextConfig = {
     '@repo/core',
     '@repo/db',
     '@repo/feature-auth',
+    '@repo/agents',
     '@repo/ai',
     '@repo/mcp',
     '@repo/i18n',

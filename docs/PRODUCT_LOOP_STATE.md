@@ -1,46 +1,42 @@
 # Product Loop State
 
-**Mode:** Founder Project OS — Level 5  
+**Mode:** AI Agent Layer — Real Intelligence  
 Production: https://ai-startup-validation-tau.vercel.app/workspace
 
 ---
 
-## Architecture split
+## CPO pivot (frozen)
 
-```text
-Founder → Founder AI PM → 사업 성공 확률
-CPO/운영 → Product OS → 제품 성공 확률
-```
+Journey UI **완료**. 더 이상 Landing/Workflow/Workspace UI 수정 없음.
 
-## Founder AI PM (Project OS)
-
-| Layer | Surface |
-|-------|---------|
-| Daily Brief | `/workspace` Today |
-| Weekly Strategy | Operating panel |
-| AI Memory | Operating panel |
-| AI Mentor | Operating panel |
-| Strategy Calendar | Operating panel |
-| Decision depth | DecisionExperienceCoach |
-
-Engine: `founder-ai-pm-engine.ts` · `computeFounderOperatingBrief()`
-
-**Gate:** "Founder가 AI PM과 매일 일하는 경험을 더 강하게 만드는가?"
-
-## Active experiment
-
-| Field | Value |
-|-------|-------|
-| **KPI** | Decision Understanding Rate |
-| **Founder OS** | Daily Brief + Calendar + Memory + Mentor |
-| **Admin OS** | Product Brain v3 (Product/User/Release Intelligence) |
-
-## Product Brain v3 (Admin)
-
-- Product Intelligence — success / failed / recommended experiments
-- User Intelligence — top friction + fix
-- Release Intelligence — deploy impact + rollback
+**다음 목표:** Founder가 "AI 공동창업자"라고 느끼게 — **AI가 실제 일을 한다.**
 
 ---
 
-PR template: [PRODUCT_LOOP_PR_TEMPLATE.md](./PRODUCT_LOOP_PR_TEMPLATE.md)
+## Active work: `@repo/agents`
+
+```text
+Research → Strategy → Decision → Execution → Growth/Memory/Mentor/Knowledge/Learning
+```
+
+API: `POST /api/agents/strategy-run`  
+Trigger: Workspace project registration → analysis overlay
+
+---
+
+## Engine status
+
+| Engine | Mock | Real LLM |
+|--------|------|----------|
+| Research (7 domains) | ✅ | Phase 10 |
+| Strategy (SWOT/BM/ICP) | ✅ | Phase 10 |
+| Decision (GO/HOLD/PIVOT) | ✅ | Phase 10 |
+| Execution (today/week/month) | ✅ | Phase 10 |
+
+---
+
+## Gate
+
+> "Founder가 AI PM과 함께 일하는 경험을 더 강하게 만드는가?" — Engine intelligence only.
+
+Docs: [AI_AGENT_LAYER.md](./AI_AGENT_LAYER.md)

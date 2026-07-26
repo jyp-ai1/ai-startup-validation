@@ -1,0 +1,30 @@
+import { isBaseError } from '@repo/core/errors';
+import { createSuccessResponse, handleUnknownError } from '@repo/core/response';
+import { parseRequest, z } from '@repo/core/validation';
+
+import { getStrategyPlatform } from '@/lib/agents/platform';
+
+const bodySchema = z.object({
+  projectId: z.string().min(1),
+  projectTitle: z.string().min(1),
+  ideaSummary: z.string().min(1),
+  goalId: z.string().min(1),
+  industry: z.string().optional(),
+  locale: z.string().default('ko'),
+});
+
+export async function POST(request: Request) {
+  try {
+    const json = await request.json();
+    const body = parseRequest(bodySchema, json);
+    const platform = getStrategyPlatform();
+    const result = await platform.run({
+      project: { ...body, locale: body.locale ?? 'ko' },
+    });
+    return Response.json(createSuccessResponse(result));
+  } catch (error) {
+    const apiError = handleUnknownError(error);
+    const status = isBaseError(error) ? error.statusCode : 500;
+    return Response.json(apiError, { status });
+  }
+}

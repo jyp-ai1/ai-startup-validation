@@ -353,6 +353,32 @@ Epic 1 delivered Goal → Workflow → Decision Experience with Product QA PASS 
 
 ---
 
+## ADR-014: AI Agent Layer — `@repo/agents` over Journey UI
+
+**Status:** Accepted  
+**Date:** 2026-07-26  
+**Sprint:** Real Intelligence pivot
+
+### Context
+
+LaunchLens reached AI Strategy Platform maturity (Vision 95%, UX 90%) but Real Intelligence ~20%. CPO directive: stop Journey UI work; AI must perform research → strategy → decision → execution.
+
+### Decision
+
+1. New package **`@repo/agents`** — Research, Strategy, Decision, Execution engines + Growth/Memory/Mentor/Knowledge/Learning
+2. **Provider ports + mock adapters** — swappable to LLM/RAG without engine changes
+3. **`StrategyPlatform`** orchestrates full pipeline; exposed via `POST /api/agents/strategy-run`
+4. Workspace analysis calls agent pipeline (not cosmetic timer only)
+5. **Freeze** Landing/Goal/Workflow/Workspace UI unless engine-driven
+
+### Consequences
+
+- See [AI_AGENT_LAYER.md](./AI_AGENT_LAYER.md)
+- Product OS (`product-os-engine`) remains ops-only; Founder intelligence in `@repo/agents`
+- Phase 10: openrouter adapters per engine port
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 
+import { saveAgentPipelineResult } from '@/lib/agents/agent-run-store';
 import { BETA_VERSION } from '@/lib/site/beta-config';
 import { DAILY_COACH } from '@/features/project-intelligence/constants/daily-coach';
 import { Button, toast } from '@repo/ui';
@@ -124,28 +125,58 @@ export function StrategyWorkspaceShell({
 
     const timeoutTimer = window.setTimeout(() => {
       if (!completed) setThinkingFailed(true);
-    }, 10_000);
+    }, 15_000);
+
+    const reg = registration ?? loadProjectRegistration();
+    const pipelinePromise = reg
+      ? fetch('/api/agents/strategy-run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId,
+            projectTitle: reg.projectName,
+            ideaSummary: reg.ideaOneLiner ?? reg.projectName,
+            goalId,
+            locale: typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'ko',
+          }),
+        })
+          .then((res) => res.json())
+          .then((payload) => {
+            if (payload?.success && payload.data) {
+              saveAgentPipelineResult(payload.data);
+              const verdict = payload.data.decision?.verdict ?? coachState.verdict;
+              analytics.trackDecisionGenerated(verdict, goalId);
+            }
+          })
+          .catch(() => {
+            /* overlay still completes — mock fallback in coach */
+          })
+      : Promise.resolve();
 
     const stepDelay = ANALYSIS_MS / ANALYSIS_STEPS;
     const timers = [
       window.setTimeout(() => setThinkingStep(1), stepDelay * 0.25),
       window.setTimeout(() => setThinkingStep(2), stepDelay * 0.5),
       window.setTimeout(() => setThinkingStep(3), stepDelay * 0.75),
-      window.setTimeout(() => {
-        completed = true;
-        clearTimeout(timeoutTimer);
-        setPhase('active');
-        analytics.trackAnalysisStarted(goalId);
-        analytics.trackDecisionGenerated(coachState.verdict, goalId);
-        toast.success(tt('analysisReady'));
-      }, ANALYSIS_MS),
     ];
+
+    void pipelinePromise.finally(() => {
+      completed = true;
+      clearTimeout(timeoutTimer);
+      timers.forEach(clearTimeout);
+      setPhase('active');
+      analytics.trackAnalysisStarted(goalId);
+      if (!reg) {
+        analytics.trackDecisionGenerated(coachState.verdict, goalId);
+      }
+      toast.success(tt('analysisReady'));
+    });
 
     return () => {
       clearTimeout(timeoutTimer);
       timers.forEach(clearTimeout);
     };
-  }, [analytics, coachState.verdict, goalId, tt]);
+  }, [analytics, coachState.verdict, goalId, projectId, registration, tt]);
 
   useEffect(() => {
     if (phase !== 'thinking') return undefined;
