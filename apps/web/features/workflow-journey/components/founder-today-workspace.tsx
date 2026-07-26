@@ -30,6 +30,7 @@ import {
   FounderAiPmPreparedTasks,
   FounderAiPmWorkingNow,
 } from './founder-ai-pm/founder-ai-pm-work-console';
+import { FounderAiPmCalendar } from './founder-ai-pm/founder-ai-pm-calendar';
 import { FounderAiPmInbox } from './founder-ai-pm/founder-ai-pm-inbox';
 import { FounderAiPmProactiveQuestion } from './founder-ai-pm/founder-ai-pm-proactive-question';
 import { FounderAiPmWorkLog } from './founder-ai-pm/founder-ai-pm-work-log';
@@ -196,13 +197,17 @@ export function FounderTodayWorkspace({
         <FounderAiPmMorningConsole
           score={intelligence.successScore}
           primaryAction={primaryAction}
-          taskCount={3}
-          onApprove={() =>
+          onStart={() =>
             handleStartById(
               primaryAction ? `approve_${primaryAction.id}` : 'approve_primary',
               primaryAction?.id,
             )
           }
+        />
+
+        <FounderAiPmCalendar
+          roadmap={intelligence.executionRoadmap}
+          primaryAction={primaryAction}
         />
 
         <FounderAiPmPreparedTasks />
@@ -215,6 +220,18 @@ export function FounderTodayWorkspace({
           score={intelligence.successScore}
           primaryAction={primaryAction}
         />
+
+        <FounderMemoryRecallPanel
+          memoryAction={intelligence.memoryAction}
+          behavior={intelligence.behavior}
+          onStart={() =>
+            handleStartById('memory_action', intelligence.todayActions[0]?.id)
+          }
+        />
+
+        {showWeeklyReview ? (
+          <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
+        ) : null}
 
         <FounderAiPmProactiveQuestion />
 
@@ -281,21 +298,9 @@ export function FounderTodayWorkspace({
               <FounderDailyReviewPanel review={intelligence.dailyReview} />
             ) : null}
 
-            {showWeeklyReview ? (
-              <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
-            ) : null}
-
             <FounderSuccessScorePanel
               score={intelligence.successScore}
               factors={intelligence.successScoreFactors}
-            />
-
-            <FounderMemoryRecallPanel
-              memoryAction={intelligence.memoryAction}
-              behavior={intelligence.behavior}
-              onStart={() =>
-                handleStartById('memory_action', intelligence.todayActions[0]?.id)
-              }
             />
 
             <FounderGrowthTimelinePanel behavior={intelligence.behavior} />

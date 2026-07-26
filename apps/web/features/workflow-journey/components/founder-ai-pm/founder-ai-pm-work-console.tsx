@@ -9,34 +9,38 @@ import { cn } from '@repo/ui/lib/utils';
 
 import { resolveFounderActionTitle } from '../../lib/founder-action-display';
 import type { FounderSuccessScore, GeneratedTodayAction } from '../../lib/founder-intelligence-engine';
+import { AiPmConversation } from '../ai-state/ai-pm-conversation';
 
 type FounderAiPmMorningConsoleProps = {
   score: FounderSuccessScore;
   primaryAction?: GeneratedTodayAction;
-  taskCount: number;
-  onApprove: () => void;
+  onStart: () => void;
   className?: string;
 };
 
 export function FounderAiPmMorningConsole({
   score,
   primaryAction,
-  taskCount,
-  onApprove,
+  onStart,
   className,
 }: FounderAiPmMorningConsoleProps) {
   const t = useTranslations('workflow.founderAiPm.workConsole');
   const td = useTranslations('workflow.founderAiPm.intelligence.actionGenerator');
 
-  const minutes = primaryAction?.etaMinutes ?? 18;
-  const afterScore = primaryAction
-    ? Math.min(100, score.percent + primaryAction.goImpact)
-    : Math.min(100, score.percent + 4);
+  const minutes = primaryAction?.etaMinutes ?? 15;
   const actionTitle = resolveFounderActionTitle(
     primaryAction,
     (key, params) => td(key as 'vocInterview', params),
     t('defaultAction'),
   );
+
+  const messages = [
+    t('greeting'),
+    t('yesterdayDone'),
+    t('todayFocus', { action: actionTitle }),
+    t('etaShort', { minutes }),
+    t('preparedLine'),
+  ];
 
   return (
     <section
@@ -46,42 +50,28 @@ export function FounderAiPmMorningConsole({
       )}
       aria-label={t('label')}
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">
-        {t('aiPmLabel')}
+      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-primary">
+        {t('morningBriefLabel')}
       </p>
 
-      <div className="mt-4 space-y-2">
-        <p className="text-lg font-semibold">{t('greeting')}</p>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          {t('preparedLead', { count: taskCount })}
-        </p>
-      </div>
-
-      <div className="my-6 border-t border-border/60" role="separator" />
-
-      <div>
-        <p className="text-sm font-semibold">{t('todayGoal')}</p>
-        <div className="mt-3 flex items-end gap-3">
-          <p className="text-3xl font-bold tabular-nums">{score.percent}%</p>
-          <ArrowRight className="mb-2 size-5 text-muted-foreground" aria-hidden />
-          <p className="text-3xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
-            {afterScore}%
-          </p>
-        </div>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t('eta', { minutes, action: actionTitle })}
-        </p>
-      </div>
+      <AiPmConversation messages={messages} />
 
       <Button
         type="button"
         size="lg"
         className="mt-6 h-14 w-full rounded-xl text-base font-semibold"
-        onClick={onApprove}
+        onClick={onStart}
       >
-        {t('approveCta')}
+        {t('startCta')}
         <ArrowRight className="ml-2 size-4" aria-hidden />
       </Button>
+
+      <p className="mt-3 text-center text-xs text-muted-foreground">
+        {t('scoreHint', {
+          before: score.percent,
+          after: Math.min(100, score.percent + (primaryAction?.goImpact ?? 4)),
+        })}
+      </p>
     </section>
   );
 }

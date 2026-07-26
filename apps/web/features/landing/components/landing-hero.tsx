@@ -29,6 +29,13 @@ export async function LandingHero() {
               ctaHint1={t('ctaHint1')}
               ctaHint2={t('ctaHint2')}
               speedPromise={t('speedPromise')}
+              bullets={[
+                t('bullets.research'),
+                t('bullets.competitor'),
+                t('bullets.viability'),
+                t('bullets.tasks'),
+                t('bullets.operations'),
+              ]}
             />
           </div>
 

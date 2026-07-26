@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Check, TrendingUp, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -30,7 +30,6 @@ type FounderActionWorkspaceProps = {
 
 function resolveQuestionText(
   key: string,
-  index: number,
   tq: ReturnType<typeof useTranslations>,
   pipelineQuestions?: string[],
 ): string {
@@ -67,14 +66,17 @@ export function FounderActionWorkspace({
   const isLastStep = step >= totalSteps - 1;
   const scoreAfter = Math.min(100, scoreBefore + workspace.goImpact);
 
-  const introMessages = useMemo(
-    () => [t('intro'), t('stepIntro', { current: step + 1, total: totalSteps })],
-    [step, t, totalSteps],
-  );
+  const introMessages = useMemo(() => {
+    if (step === 0) {
+      return workspace.kind === 'interview'
+        ? [t('introInterview')]
+        : [t('intro'), t('questionLead', { num: step + 1 })];
+    }
+    return [t('questionLead', { num: step + 1 })];
+  }, [step, t, workspace.kind]);
 
   const currentQuestion = resolveQuestionText(
     workspace.questionKeys[step] ?? 'q1',
-    step,
     tq,
     pipelineQuestions,
   );
@@ -87,7 +89,6 @@ export function FounderActionWorkspace({
     setDraft('');
 
     if (isLastStep) {
-      setAnswers(nextAnswers);
       setCompletedAnswers(nextAnswers);
       setPhase('complete');
       return;
@@ -167,7 +168,7 @@ export function FounderActionWorkspace({
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
-              {tk(workspace.kind)}
+              AI PM · {tk(workspace.kind)}
             </p>
             <h2 id="action-workspace-title" className="mt-1 text-lg font-semibold leading-snug">
               {workspace.title}
@@ -186,8 +187,8 @@ export function FounderActionWorkspace({
         {saveFeedback ? <AiPmConversation messages={saveFeedback} className="-mt-2" /> : null}
 
         <div className="rounded-2xl border border-primary/25 bg-primary/[0.04] p-5">
-          <p className="text-sm font-medium text-primary">
-            {step + 1}. {t('questionLabel')}
+          <p className="text-sm font-semibold text-primary">
+            {t('questionPrefix', { num: step + 1 })}
           </p>
           <p className="mt-2 text-base leading-relaxed">{currentQuestion}</p>
 

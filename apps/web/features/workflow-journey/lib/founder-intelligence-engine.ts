@@ -407,6 +407,33 @@ function buildExecutionRoadmap(
       completionCriteriaKey: task.priority === 'P0' ? 'evidenceLogged' : 'reviewComplete',
     })) ?? [];
 
+  const defaults: ExecutionRoadmapItem[] =
+    fromPipeline.length > 0
+      ? []
+      : [
+          {
+            horizon: 'today',
+            title: 'Customer interviews',
+            etaMinutes: 15,
+            confidenceImpact: 4,
+            completionCriteriaKey: 'evidenceLogged',
+          },
+          {
+            horizon: 'week',
+            title: 'Pricing validation',
+            etaMinutes: 45,
+            confidenceImpact: 6,
+            completionCriteriaKey: 'reviewComplete',
+          },
+          {
+            horizon: 'month',
+            title: 'Landing launch',
+            etaMinutes: 120,
+            confidenceImpact: 10,
+            completionCriteriaKey: 'milestoneComplete',
+          },
+        ];
+
   const quarter: ExecutionRoadmapItem = {
     horizon: 'quarter',
     title:
@@ -426,7 +453,7 @@ function buildExecutionRoadmap(
     completionCriteriaKey: 'investorReady',
   };
 
-  return [...fromPipeline, quarter, investment];
+  return [...defaults, ...fromPipeline, quarter, investment];
 }
 
 function buildGrowthPath(

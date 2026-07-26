@@ -1,6 +1,6 @@
 'use client';
 
-import { CalendarDays, Sparkles } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@repo/ui/lib/utils';
@@ -14,6 +14,12 @@ type FounderWeeklyCeoReviewPanelProps = {
 
 export function FounderWeeklyCeoReviewPanel({ review, className }: FounderWeeklyCeoReviewPanelProps) {
   const t = useTranslations('workflow.founderAiPm.intelligence.weeklyCeoReview');
+
+  const wins = [t('wins.market'), t('wins.interviews')];
+  const riskLabel = review.biggestRisk
+    ? t(`risks.${review.biggestRisk}` as 'risks.customerInterview')
+    : t('risks.pricingValidation');
+  const projectedScore = Math.min(100, review.scoreTo + 5);
 
   return (
     <section
@@ -29,47 +35,38 @@ export function FounderWeeklyCeoReviewPanel({ review, className }: FounderWeekly
       </p>
       <h3 className="mt-2 text-lg font-semibold">{t('title')}</h3>
 
-      <div className="mt-4 rounded-xl border border-border/60 bg-background/90 p-4">
-        <p className="text-sm text-muted-foreground">{t('scoreChange')}</p>
-        <p className="mt-1 text-2xl font-bold tabular-nums">
-          {review.scoreFrom}% → {review.scoreTo}%
-          {review.scoreDelta > 0 ? (
-            <span className="ml-2 text-base font-semibold text-emerald-600">
-              +{review.scoreDelta}%
-            </span>
-          ) : null}
-        </p>
-      </div>
+      <div className="mt-5 space-y-5 text-sm">
+        <div>
+          <p className="font-semibold">{t('winsTitle')}</p>
+          <ul className="mt-2 space-y-1.5" role="list">
+            {wins.map((win) => (
+              <li key={win} className="flex items-start gap-2 text-muted-foreground">
+                <span className="text-emerald-600 dark:text-emerald-400" aria-hidden>
+                  ✓
+                </span>
+                {win}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      <dl className="mt-4 space-y-3 text-sm">
         <div>
-          <dt className="font-semibold text-foreground">{t('bestDecision')}</dt>
-          <dd className="mt-1 text-muted-foreground">{review.bestDecision}</dd>
+          <p className="font-semibold">{t('riskTitle')}</p>
+          <p className="mt-2 text-muted-foreground">{riskLabel}</p>
         </div>
+
         <div>
-          <dt className="font-semibold text-foreground">{t('biggestRisk')}</dt>
-          <dd className="mt-1 text-muted-foreground">
-            {review.biggestRisk
-              ? t(`risks.${review.biggestRisk}` as 'risks.customerInterview')
-              : t('risks.marketEvidence')}
-          </dd>
+          <p className="font-semibold">{t('nextWeekTitle')}</p>
+          <p className="mt-2 text-muted-foreground">{review.nextWeekPriority}</p>
         </div>
-        {review.missedOpportunity ? (
-          <div>
-            <dt className="font-semibold text-foreground">{t('missedOpportunity')}</dt>
-            <dd className="mt-1 text-muted-foreground">
-              {t(`risks.${review.missedOpportunity}` as 'risks.customerInterview')}
-            </dd>
-          </div>
-        ) : null}
-        <div className="rounded-xl bg-primary/[0.06] px-4 py-3">
-          <dt className="flex items-center gap-1.5 font-semibold text-primary">
-            <Sparkles className="size-3.5" aria-hidden />
-            {t('nextWeek')}
-          </dt>
-          <dd className="mt-1 leading-relaxed">{review.nextWeekPriority}</dd>
+
+        <div className="rounded-xl border border-border/60 bg-background/90 p-4">
+          <p className="font-semibold">{t('scoreProjectionTitle')}</p>
+          <p className="mt-2 text-2xl font-bold tabular-nums">
+            {review.scoreTo}% → {projectedScore}%
+          </p>
         </div>
-      </dl>
+      </div>
     </section>
   );
 }

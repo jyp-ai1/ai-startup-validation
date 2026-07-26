@@ -173,7 +173,7 @@
     "dashboard": "대시보드"
   },
   "shell": {
-    "workspace": "워크스페이스",
+    "workspace": "AI PM Office",
     "navigation": "메뉴",
     "openMenu": "메뉴 열기",
     "singleUser": "단일 사용자 · 로컬 워크스페이스",
@@ -189,7 +189,7 @@
     "groupStrategy": "Strategy",
     "groupAnalysis": "Analysis",
     "groupSystem": "설정",
-    "groupWorkspace": "워크스페이스",
+    "groupWorkspace": "AI PM Office",
     "groupAi": "AI Studio",
     "groupKnowledge": "Knowledge",
     "groupAdmin": "Admin",
@@ -430,11 +430,11 @@
       "validation": "Validation",
       "aiStudio": "AI Studio",
       "knowledge": "Knowledge",
-      "workspace": "Workspace"
+      "workspace": "AI PM Office"
     },
     "breadcrumb": {
       "home": "Home",
-      "workspace": "Workspace"
+      "workspace": "AI PM Office"
     },
     "projectCard": {
       "research": "Research",
@@ -1359,7 +1359,7 @@
       "aiPm": "AI PM",
       "stories": "후기",
       "signIn": "로그인",
-      "startFree": "AI PM과 회사 운영 시작하기",
+      "startFree": "AI PM과 회사 시작하기",
       "menuLabel": "내비게이션 메뉴",
       "openMenu": "메뉴 열기",
       "closeMenu": "메뉴 닫기"
@@ -1367,8 +1367,8 @@
     "hero": {
       "eyebrow": "CEO + AI PM Company",
       "title": "당신은 CEO입니다.",
-      "subtitle": "사업의 방향을 결정하는 것은 대표님의 역할입니다.\nAI PM이 시장조사, 경쟁분석, 전략수립, 실행계획까지 대신 수행합니다.",
-      "northStar": "대표님은 중요한 결정만 내리시면 됩니다.",
+      "subtitle": "AI PM이 시장조사, 전략수립, 사업검토를 대신 수행합니다.",
+      "northStar": "대표님은 중요한 의사결정만 하시면 됩니다.",
       "journey": {
         "label": "AI PM 업무 루프",
         "goal": "보고",
@@ -1377,12 +1377,53 @@
         "execution": "실행"
       },
       "tagline": "사업성 분석 SaaS가 아닙니다. CEO와 함께 회사를 운영하는 AI PM Company입니다.",
-      "ctaStart": "AI PM과 회사 운영 시작하기",
+      "ctaStart": "AI PM과 회사 시작하기",
       "ctaDemo": "AI PM Workspace 체험하기",
       "ctaHint1": "신용카드 필요 없음",
       "ctaHint2": "3분 만에 시작",
       "speedPromise": "AI PM이 매일 아침 업무를 준비합니다 — 대표님은 승인만 하세요",
-      "ctaHint3": "Beta 무료"
+      "ctaHint3": "Beta 무료",
+      "bullets": {
+        "research": "시장조사",
+        "competitor": "경쟁사 분석",
+        "viability": "사업 가능성 검토",
+        "tasks": "오늘 해야 할 일 생성",
+        "operations": "프로젝트 운영"
+      }
+    },
+    "aiTeam": {
+      "title": "AI 직원 소개",
+      "desc": "대표님은 결정만 — AI PM과 팀이 회사를 운영합니다.",
+      "org": {
+        "ceo": "대표님",
+        "aiPm": "AI PM",
+        "aiPmRole": "회사 운영 총괄",
+        "departments": {
+          "market": "시장분석",
+          "strategy": "전략",
+          "customer": "고객",
+          "execution": "실행",
+          "investment": "투자"
+        }
+      },
+      "cards": {
+        "aiPm": {
+          "title": "AI PM",
+          "desc": "오늘 무엇을 해야 하는지 알려드립니다."
+        },
+        "market": {
+          "title": "시장분석",
+          "desc": "시장과 경쟁사를 조사합니다."
+        },
+        "strategy": {
+          "title": "전략",
+          "desc": "사업 방향을 설계합니다."
+        },
+        "execution": {
+          "title": "실행",
+          "desc": "오늘 해야 할 일을 관리합니다."
+        }
+      }
     },
     "roleCards": {
       "title": "AI PM이 대신 하는 일",
@@ -1414,7 +1455,7 @@
       "sectionDesc": "보고서가 아닙니다. 매일 아침 AI PM이 업무를 준비하고, 대표님은 결정만 내립니다.",
       "morningBrief": {
         "label": "AI PM Morning Brief",
-        "windowTitle": "AI PM Workspace",
+        "windowTitle": "AI PM Office",
         "greeting": "대표님.",
         "body": "오늘은 고객 인터뷰 3명만 진행하면\n사업 가능성이 72%에서 76%까지 올라갈 것으로 예상합니다.",
         "eta": "예상 시간 · 15분",
@@ -1686,7 +1727,7 @@
     "footer": {
       "ctaTitle": "AI PM과 함께 회사를 운영할 준비가 되셨나요?",
       "ctaDesc": "대표님은 결정만 — AI PM이 나머지를 수행합니다",
-      "ctaButton": "AI PM과 회사 운영 시작하기",
+      "ctaButton": "AI PM과 회사 시작하기",
       "copyright": "LaunchLens · AI PM Company",
       "privacy": "Privacy",
       "terms": "Terms",
@@ -3497,7 +3538,7 @@
       }
     },
     "workspace": {
-      "title": "워크스페이스",
+      "title": "대표님 사무실",
       "demoLabel": "Demo",
       "myProjects": "My Projects",
       "active": "활성",
@@ -3938,7 +3979,7 @@
       "phases": {
         "goal": "목표",
         "workflow": "워크플로",
-        "workspace": "워크스페이스"
+        "workspace": "AI PM Office"
       }
     },
     "confirmation": {
@@ -4759,16 +4800,19 @@
         }
       },
       "workConsole": {
-        "label": "AI PM Work Console",
+        "label": "AI PM Workday",
+        "morningBriefLabel": "AI PM Morning Brief",
         "aiPmLabel": "AI PM",
-        "greeting": "대표님. 좋은 아침입니다.",
-        "preparedLead": "오늘 AI PM이 {count}개의 업무를 준비했습니다.",
-        "todayGoal": "오늘 목표",
-        "defaultAction": "고객 인터뷰 3명",
-        "eta": "예상 {minutes}분 · {action}",
-        "approveCta": "승인하고 시작",
-        "inboxLabel": "AI PM 업무함",
-        "inboxTitle": "AI PM 업무함",
+        "greeting": "대표님.\n\n좋은 아침입니다.",
+        "yesterdayDone": "어제 시장조사를 완료했습니다.",
+        "todayFocus": "오늘은 {action} 하나만 하면 됩니다.",
+        "etaShort": "{minutes}분이면 됩니다.",
+        "preparedLine": "제가 준비했습니다.",
+        "startCta": "같이 시작하기",
+        "scoreHint": "완료 시 사업 가능성 {before}% → {after}%",
+        "defaultAction": "고객 인터뷰",
+        "inboxLabel": "오늘 AI PM이 준비한 업무",
+        "inboxTitle": "오늘 AI PM이 준비한 업무",
         "preparedTasks": {
           "interview": "고객 인터뷰 준비 완료",
           "competitor": "경쟁사 분석 완료",
@@ -4777,20 +4821,38 @@
         "workingLabel": "AI PM 작업중",
         "workingTitle": "AI PM 작업중",
         "workingTask": "시장 조사 업데이트",
-        "workingRemaining": "남음 2분"
+        "workingRemaining": "남음 2분",
+        "approveCta": "AI PM에게 맡기기"
+      },
+      "calendar": {
+        "label": "AI PM Calendar",
+        "title": "AI PM Calendar",
+        "minutes": "{count}분",
+        "todayFallback": "고객 인터뷰",
+        "weekFallback": "가격 검증",
+        "monthFallback": "랜딩 공개",
+        "quarterFallback": "GO Decision + MVP 확정",
+        "investmentFallback": "투자 미팅",
+        "horizons": {
+          "today": "오늘",
+          "week": "이번주",
+          "month": "이번달",
+          "quarter": "다음 분기",
+          "investment": "투자"
+        }
       },
       "workLog": {
         "label": "AI PM 작업 로그",
         "title": "AI PM 업무 기록",
         "runningLead": "지금 AI PM이 하는 일",
         "entries": {
-          "marketResearchDone": "시장 조사 완료",
-          "competitorScan": "경쟁사 18개 분석",
-          "strategyDraft": "가격 전략 초안 생성",
-          "riskFound": "리스크 발견",
-          "evidenceLogged": "판단 근거 기록",
+          "marketResearchDone": "시장조사를 마쳤습니다.",
+          "competitorScan": "경쟁사 분석을 완료했습니다.",
+          "strategyDraft": "가격 전략 초안을 작성했습니다.",
+          "riskFound": "가격 검증이 부족합니다.",
+          "evidenceLogged": "판단 근거를 기록했습니다.",
           "founderActivity": "{summary}",
-          "monitoring": "시장 변화 모니터링 중"
+          "monitoring": "시장 변화를 모니터링하고 있습니다."
         }
       },
       "inbox": {
@@ -4824,7 +4886,7 @@
         "effectLead": "예상 효과",
         "timeLead": "예상 시간",
         "minutes": "{count}분",
-        "approveCta": "승인하고 시작"
+        "approveCta": "좋습니다. 진행해주세요."
       },
       "dailyGoal": {
         "label": "오늘 목표",
@@ -4863,17 +4925,16 @@
       },
       "operating": {
         "debrief": {
-          "lead": "대표님.\n\n{action}을 완료했습니다.",
-          "praise": "좋았습니다.",
-          "scoreLine": "덕분에\n\n사업 성공 확률이\n\n{delta}%\n\n상승했습니다.",
+          "lead": "대표님.\n\n오늘 {action} 덕분에",
+          "scoreNarrative": "사업 가능성이\n\n{before}% → {after}%\n\n으로 상승했습니다.",
           "evidenceLine": "새로운 판단 근거:\n\n{summary}",
           "verdictChange": "AI 판단이\n\n{before}\n\n에서\n\n{after}\n\n(으)로 변경되었습니다.",
           "tomorrowLine": "내일은\n\n{action}\n\n만 하면 됩니다.\n\n예상 {minutes}분",
-          "tomorrowDefault": "다음 할 일을 Today에 준비했습니다.",
-          "scoreLabel": "사업 성공 확률",
-          "projectUpdated": "오늘 프로젝트 상태를 갱신했습니다.",
+          "tomorrowDefault": "가격 검증",
+          "scoreLabel": "사업 가능성",
+          "projectUpdated": "AI PM이\n\n프로젝트를 다시 업데이트했습니다.",
           "todayRefreshLead": "이제 Today에서\n\n새 전략을 확인해보겠습니다.",
-          "continueCta": "확인하기"
+          "continueCta": "내일 계획 보기"
         },
         "health": {
           "label": "사업 진행 상황",
@@ -4941,13 +5002,16 @@
         }
       },
       "actionWorkspace": {
-        "intro": "좋습니다.\n\n제가 질문을 하나씩 드리겠습니다.",
+        "intro": "AI PM\n\n좋습니다.",
+        "introInterview": "AI PM\n\n좋습니다.\n\n첫 번째 고객에게\n이 질문을 해보겠습니다.",
+        "questionLead": "Q{num}.",
+        "questionPrefix": "Q{num}.",
         "stepIntro": "총 {total}개 중 {current}번째 질문입니다.",
         "questionLabel": "질문",
         "answerPlaceholder": "고객 답변 또는 메모를 적어주세요",
         "record": "기록하기",
         "recordFinal": "마지막 기록하기",
-        "savedFeedback": "✓ 저장되었습니다.",
+        "savedFeedback": "감사합니다.\n\n이 내용을 프로젝트에 반영했습니다.",
         "nextQuestionFeedback": "다음 질문입니다.",
         "projectUpdated": "오늘 프로젝트 상태를 갱신했습니다.",
         "progress": "{current} / {total} 완료",
@@ -5118,9 +5182,10 @@
           "label": "Founder Memory",
           "recall": "지난주에는 {lastFocus}에 집중했지만 {lastGap}이 부족했습니다. 이번 주는 {thisFocus}부터 진행하겠습니다.",
           "deferredRecall": "지난주에도 {gap}을 미뤘습니다. 이번에는 오늘 끝내겠습니다.",
+          "interviewDeferRecall": "대표님은\n\n항상 고객 인터뷰를\n\n미루는 경향이 있습니다.\n\n그래서\n\n오늘은\n\n인터뷰부터 추천드립니다.",
           "actionReady": "AI PM이 오늘 끝낼 수 있는 액션을 준비했습니다.",
           "eta": "예상 {minutes}분",
-          "startCta": "바로 시작",
+          "startCta": "AI PM에게 맡기기",
           "focus": {
             "marketValidation": "시장 검증",
             "competitorAnalysis": "경쟁 분석",
@@ -5170,7 +5235,15 @@
         },
         "weeklyCeoReview": {
           "label": "Weekly CEO Review",
-          "title": "이번 주 AI PM 브리핑",
+          "title": "이번 주를 정리했습니다.",
+          "winsTitle": "잘한 점",
+          "wins": {
+            "market": "시장조사 완료",
+            "interviews": "고객 인터뷰 6건"
+          },
+          "riskTitle": "위험",
+          "nextWeekTitle": "다음주 목표",
+          "scoreProjectionTitle": "예상 성공확률",
           "scoreChange": "이번 주 사업 성공 확률",
           "bestDecision": "이번 주 가장 잘한 결정",
           "biggestRisk": "가장 큰 리스크",
@@ -5856,7 +5929,7 @@
       }
     },
     "workspace": {
-      "title": "AI 전략 워크스페이스",
+      "title": "대표님 사무실",
       "progressLabel": "Confidence",
       "currentStep": "Step {current} / {total}",
       "stepFallback": "첫 단계",

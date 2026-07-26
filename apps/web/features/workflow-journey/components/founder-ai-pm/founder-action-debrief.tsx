@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -25,16 +25,18 @@ export function FounderActionDebrief({ debrief, onContinue, className }: Founder
     return () => window.clearTimeout(timer);
   }, []);
 
-  const verdictChanged = debrief.verdictBefore !== debrief.verdictAfter;
+  const tomorrowAction = debrief.nextActionTitle ?? t('tomorrowDefault');
   const messages = [
     t('lead', { action: debrief.actionTitle }),
-    t('praise'),
-    t('scoreLine', { delta: debrief.scoreDelta }),
+    t('scoreNarrative', {
+      before: debrief.scoreBefore,
+      after: debrief.scoreAfter,
+    }),
     t('projectUpdated'),
-    t('todayRefreshLead'),
-    ...(verdictChanged
-      ? [t('verdictChange', { before: debrief.verdictBefore, after: debrief.verdictAfter })]
-      : []),
+    t('tomorrowLine', {
+      action: tomorrowAction,
+      minutes: debrief.nextActionMinutes ?? 15,
+    }),
   ];
 
   return (

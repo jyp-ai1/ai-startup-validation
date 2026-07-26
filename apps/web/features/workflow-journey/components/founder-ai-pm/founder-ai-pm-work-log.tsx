@@ -37,22 +37,20 @@ export function FounderAiPmWorkLog({
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         {t('title')}
       </p>
-      <ul className="mt-4 space-y-0 divide-y divide-border/50" role="list">
+      <ul className="mt-4 space-y-4" role="list">
         {entries.map((entry) => (
-          <li key={entry.id} className="flex gap-3 py-3 first:pt-0 last:pb-0">
+          <li key={entry.id} className="flex gap-3">
             <span className="w-11 shrink-0 text-sm tabular-nums text-muted-foreground">
               {entry.time}
             </span>
-            <div className="min-w-0 flex-1">
-              <p
-                className={cn(
-                  'text-sm leading-relaxed',
-                  entry.status === 'running' ? 'font-medium text-primary' : 'text-foreground',
-                )}
-              >
-                {t(`entries.${entry.labelKey}`, entry.labelParams ?? {})}
-              </p>
-            </div>
+            <p
+              className={cn(
+                'text-sm leading-relaxed',
+                entry.status === 'running' ? 'font-medium text-primary' : 'text-foreground',
+              )}
+            >
+              {t(`entries.${entry.labelKey}`, entry.labelParams ?? {})}
+            </p>
           </li>
         ))}
       </ul>

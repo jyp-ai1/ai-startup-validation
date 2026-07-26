@@ -21,16 +21,18 @@ Current and recent sprint tasks. Update at sprint start and completion.
 **Goal:** Founder가 처음 방문한 순간부터 "나는 CEO이고, AI PM과 함께 회사를 운영하는구나" 감정 전달
 
 **Delivered (P0):**
-- Landing Hero → "당신은 CEO입니다" + CTA "AI PM과 회사 운영 시작하기"
-- AI PM 역할 카드 4개 (시장조사 · 전략 · 판단 · 실행)
+- Landing Hero → "당신은 CEO입니다" + CTA "AI PM과 회사 시작하기" + 역할 체크리스트
+- AI PM 역할 카드 4개 + AI 직원 소개 섹션 (조직도 + 팀 카드)
 - Workspace preview — Morning Brief / Work Log / Founder 후기
-- 전역 메시지: AI Strategy Consultant → AI PM Company
+- Workspace → **AI PM Office** / **대표님 사무실**
 
-**Delivered (P1):**
-- Today Work Console — Morning greeting, 목표 72%→76%, `[승인하고 시작]`
-- AI PM 업무함 체크리스트, 작업중 progress bar, Work Log, 오늘 끝나면 outcomes
+**Delivered (P1/P2 UX):**
+- Today **AI PM Workday** — Morning Brief 대화형, Calendar (오늘/이번주/이번달)
+- Inbox → "오늘 AI PM이 준비한 업무" · Work Log 보고형 · 승인 → "AI PM에게 맡기기"
+- Action Workspace 코칭 대화 · Debrief "내일 계획 보기"
+- Weekly CEO Review · Founder Memory (인터뷰 미루기 패턴)
 
-**Out of scope (P2):** OpenRouter Research Provider, real market-data Morning Brief
+**Next (Real Intelligence):** OpenRouter Research Provider → Business Delta → Morning Brief
 
 ---
 

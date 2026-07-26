@@ -173,7 +173,7 @@
     "dashboard": "Dashboard"
   },
   "shell": {
-    "workspace": "Workspace",
+    "workspace": "AI PM Office",
     "navigation": "Navigation",
     "openMenu": "Open navigation menu",
     "singleUser": "Single User · Local Workspace",
@@ -189,7 +189,7 @@
     "groupStrategy": "Strategy",
     "groupAnalysis": "Analysis",
     "groupSystem": "Settings",
-    "groupWorkspace": "Workspace",
+    "groupWorkspace": "AI PM Office",
     "groupAi": "AI Studio",
     "groupKnowledge": "Knowledge",
     "groupAdmin": "Admin",
@@ -430,11 +430,11 @@
       "validation": "Validation",
       "aiStudio": "AI Studio",
       "knowledge": "Knowledge",
-      "workspace": "Workspace"
+      "workspace": "AI PM Office"
     },
     "breadcrumb": {
       "home": "Home",
-      "workspace": "Workspace"
+      "workspace": "AI PM Office"
     },
     "projectCard": {
       "research": "Research",
@@ -1359,7 +1359,7 @@
       "aiPm": "AI PM",
       "stories": "Stories",
       "signIn": "Sign in",
-      "startFree": "Start running your company with AI PM",
+      "startFree": "Start your company with AI PM",
       "menuLabel": "Navigation menu",
       "openMenu": "Open menu",
       "closeMenu": "Close menu"
@@ -1367,7 +1367,7 @@
     "hero": {
       "eyebrow": "CEO + AI PM Company",
       "title": "You are the CEO.",
-      "subtitle": "Setting direction is your role.\nYour AI PM handles market research, competitive analysis, strategy, and execution plans.",
+      "subtitle": "Your AI PM handles market research, strategy, and business validation.",
       "northStar": "You only need to make the important decisions.",
       "journey": {
         "label": "AI PM work loop",
@@ -1377,12 +1377,53 @@
         "execution": "Execute"
       },
       "tagline": "Not a viability analysis SaaS — an AI PM Company you run as CEO.",
-      "ctaStart": "Start running your company with AI PM",
+      "ctaStart": "Start your company with AI PM",
       "ctaDemo": "Try AI PM Workspace",
       "ctaHint1": "No credit card required",
       "ctaHint2": "Get started in 3 minutes",
       "speedPromise": "Your AI PM prepares daily work — you just approve",
-      "ctaHint3": "Free during Beta"
+      "ctaHint3": "Free during Beta",
+      "bullets": {
+        "research": "Market research",
+        "competitor": "Competitive analysis",
+        "viability": "Business viability review",
+        "tasks": "Today's tasks generated",
+        "operations": "Project operations"
+      }
+    },
+    "aiTeam": {
+      "title": "Meet your AI team",
+      "desc": "You decide — your AI PM and team run the company.",
+      "org": {
+        "ceo": "You (CEO)",
+        "aiPm": "AI PM",
+        "aiPmRole": "Company operations lead",
+        "departments": {
+          "market": "Market",
+          "strategy": "Strategy",
+          "customer": "Customer",
+          "execution": "Execution",
+          "investment": "Investment"
+        }
+      },
+      "cards": {
+        "aiPm": {
+          "title": "AI PM",
+          "desc": "Tells you what to do today."
+        },
+        "market": {
+          "title": "Market research",
+          "desc": "Researches market and competitors."
+        },
+        "strategy": {
+          "title": "Strategy",
+          "desc": "Designs business direction."
+        },
+        "execution": {
+          "title": "Execution",
+          "desc": "Manages today's tasks."
+        }
+      }
     },
     "roleCards": {
       "title": "What your AI PM handles",
@@ -1414,7 +1455,7 @@
       "sectionDesc": "Not a report generator. Every morning your AI PM prepares work — you decide.",
       "morningBrief": {
         "label": "AI PM Morning Brief",
-        "windowTitle": "AI PM Workspace",
+        "windowTitle": "AI PM Office",
         "greeting": "Good morning.",
         "body": "Complete 3 customer interviews today and viability is expected to rise from 72% to 76%.",
         "eta": "Estimated time · 15 min",
@@ -3515,7 +3556,7 @@
       }
     },
     "workspace": {
-      "title": "Workspace",
+      "title": "CEO Office",
       "demoLabel": "Demo",
       "myProjects": "My Projects",
       "active": "Active",
@@ -3956,7 +3997,7 @@
       "phases": {
         "goal": "Goal",
         "workflow": "Workflow",
-        "workspace": "Workspace"
+        "workspace": "AI PM Office"
       }
     },
     "confirmation": {
@@ -4777,16 +4818,19 @@
         }
       },
       "workConsole": {
-        "label": "AI PM Work Console",
+        "label": "AI PM Workday",
+        "morningBriefLabel": "AI PM Morning Brief",
         "aiPmLabel": "AI PM",
         "greeting": "Good morning.",
-        "preparedLead": "Your AI PM prepared {count} tasks for today.",
-        "todayGoal": "Today's goal",
-        "defaultAction": "3 customer interviews",
-        "eta": "Est. {minutes} min · {action}",
-        "approveCta": "Approve and start",
-        "inboxLabel": "AI PM inbox",
-        "inboxTitle": "AI PM inbox",
+        "yesterdayDone": "I finished market research yesterday.",
+        "todayFocus": "Today you only need to do {action}.",
+        "etaShort": "About {minutes} minutes.",
+        "preparedLine": "I've prepared everything.",
+        "startCta": "Start together",
+        "scoreHint": "Complete to move viability {before}% → {after}%",
+        "defaultAction": "customer interview",
+        "inboxLabel": "Tasks your AI PM prepared today",
+        "inboxTitle": "Tasks your AI PM prepared today",
         "preparedTasks": {
           "interview": "Customer interview prep complete",
           "competitor": "Competitor analysis complete",
@@ -4795,20 +4839,38 @@
         "workingLabel": "AI PM working",
         "workingTitle": "AI PM working",
         "workingTask": "Updating market research",
-        "workingRemaining": "2 min left"
+        "workingRemaining": "2 min left",
+        "approveCta": "Leave it to AI PM"
+      },
+      "calendar": {
+        "label": "AI PM Calendar",
+        "title": "AI PM Calendar",
+        "minutes": "{count} min",
+        "todayFallback": "Customer interviews",
+        "weekFallback": "Pricing validation",
+        "monthFallback": "Landing launch",
+        "quarterFallback": "GO decision + MVP scope",
+        "investmentFallback": "Investor meetings",
+        "horizons": {
+          "today": "Today",
+          "week": "This week",
+          "month": "This month",
+          "quarter": "Next quarter",
+          "investment": "Fundraising"
+        }
       },
       "workLog": {
         "label": "AI PM work log",
         "title": "AI PM activity log",
         "runningLead": "What your AI PM is doing now",
         "entries": {
-          "marketResearchDone": "Market research complete",
-          "competitorScan": "Analyzed 18 competitors",
-          "strategyDraft": "Pricing strategy draft ready",
-          "riskFound": "Risk identified",
-          "evidenceLogged": "Evidence logged",
+          "marketResearchDone": "Finished market research.",
+          "competitorScan": "Completed competitor analysis.",
+          "strategyDraft": "Drafted pricing strategy.",
+          "riskFound": "Pricing validation is still weak.",
+          "evidenceLogged": "Logged new decision evidence.",
           "founderActivity": "{summary}",
-          "monitoring": "Monitoring market changes"
+          "monitoring": "Monitoring market changes."
         }
       },
       "inbox": {
@@ -4842,7 +4904,7 @@
         "effectLead": "Expected effect",
         "timeLead": "Estimated time",
         "minutes": "{count} min",
-        "approveCta": "Approve and start"
+        "approveCta": "Sounds good. Please proceed."
       },
       "dailyGoal": {
         "label": "Today's goal",
@@ -4881,17 +4943,16 @@
       },
       "operating": {
         "debrief": {
-          "lead": "Founder,\n\nyou completed {action}.",
-          "praise": "Well done.",
-          "scoreLine": "Thanks to that,\n\nsuccess probability\n\nrose {delta}%.",
+          "lead": "Founder,\n\nthanks to today's {action}",
+          "scoreNarrative": "viability moved from\n\n{before}% → {after}%.",
           "evidenceLine": "New evidence:\n\n{summary}",
           "verdictChange": "AI judgment changed from\n\n{before}\n\nto\n\n{after}.",
           "tomorrowLine": "Tomorrow,\n\n{action}\n\nis all you need.\n\nAbout {minutes} min",
-          "tomorrowDefault": "Your next actions are ready on Today.",
-          "scoreLabel": "Success probability",
-          "projectUpdated": "Today's project state has been updated.",
+          "tomorrowDefault": "pricing validation",
+          "scoreLabel": "Viability",
+          "projectUpdated": "Your AI PM\n\nupdated the project again.",
           "todayRefreshLead": "Let's review the new strategy\n\non Today.",
-          "continueCta": "Continue"
+          "continueCta": "See tomorrow's plan"
         },
         "health": {
           "label": "Business progress",
@@ -4959,13 +5020,16 @@
         }
       },
       "actionWorkspace": {
-        "intro": "Great.\n\nI'll ask one question at a time.",
+        "intro": "AI PM\n\nSounds good.",
+        "introInterview": "AI PM\n\nSounds good.\n\nLet's ask your first customer\nthis question.",
+        "questionLead": "Q{num}.",
+        "questionPrefix": "Q{num}.",
         "stepIntro": "Question {current} of {total}.",
         "questionLabel": "Question",
         "answerPlaceholder": "Record the customer's answer or your notes",
         "record": "Save answer",
         "recordFinal": "Save final answer",
-        "savedFeedback": "✓ Saved.",
+        "savedFeedback": "Thank you.\n\nI've added this to the project.",
         "nextQuestionFeedback": "Next question.",
         "projectUpdated": "Today's project state has been updated.",
         "progress": "{current} / {total} done",
@@ -5136,9 +5200,10 @@
           "label": "Founder Memory",
           "recall": "Last week we focused on {lastFocus}, but {lastGap} was still weak. This week we'll start with {thisFocus}.",
           "deferredRecall": "You deferred {gap} again last week. Let's finish it today.",
+          "interviewDeferRecall": "Founder,\n\nyou tend to\n\ndefer customer interviews.\n\nSo today\n\nI recommend starting\n\nwith interviews.",
           "actionReady": "Your AI PM prepared an action you can finish today.",
           "eta": "Est. {minutes} min",
-          "startCta": "Start now",
+          "startCta": "Leave it to AI PM",
           "focus": {
             "marketValidation": "market validation",
             "competitorAnalysis": "competitor analysis",
@@ -5188,7 +5253,15 @@
         },
         "weeklyCeoReview": {
           "label": "Weekly CEO Review",
-          "title": "This week's AI PM briefing",
+          "title": "Here's your week in review.",
+          "winsTitle": "Wins",
+          "wins": {
+            "market": "Market research complete",
+            "interviews": "6 customer interviews"
+          },
+          "riskTitle": "Risk",
+          "nextWeekTitle": "Next week's goal",
+          "scoreProjectionTitle": "Projected viability",
           "scoreChange": "Success probability this week",
           "bestDecision": "Best decision this week",
           "biggestRisk": "Biggest risk",
@@ -5874,7 +5947,7 @@
       }
     },
     "workspace": {
-      "title": "AI Strategy Workspace",
+      "title": "CEO Office",
       "progressLabel": "Confidence",
       "currentStep": "Step {current} / {total}",
       "stepFallback": "First step",
