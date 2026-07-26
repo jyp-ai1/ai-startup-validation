@@ -31,6 +31,9 @@ import {
   FounderAiPmWorkingNow,
 } from './founder-ai-pm/founder-ai-pm-work-console';
 import { FounderAiPmCalendar } from './founder-ai-pm/founder-ai-pm-calendar';
+import { FounderCompetitiveGapMap } from './founder-ai-pm/founder-competitive-gap-map';
+import { FounderInformationBuilder } from './founder-ai-pm/founder-information-builder';
+import { FounderValidationAccuracyPanel } from './founder-ai-pm/founder-validation-accuracy-panel';
 import { FounderAiPmInbox } from './founder-ai-pm/founder-ai-pm-inbox';
 import { FounderAiPmProactiveQuestion } from './founder-ai-pm/founder-ai-pm-proactive-question';
 import { FounderAiPmWorkLog } from './founder-ai-pm/founder-ai-pm-work-log';
@@ -90,6 +93,7 @@ export function FounderTodayWorkspace({
   const analytics = useJourneyAnalytics();
   const { entries: historyEntries, append } = useJourneyHistory(projectId);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [infoRefreshKey, setInfoRefreshKey] = useState(0);
   const [activeAction, setActiveAction] = useState<ReturnType<typeof resolveActionWorkspace> | null>(
     null,
   );
@@ -204,6 +208,12 @@ export function FounderTodayWorkspace({
             )
           }
         />
+
+        <FounderValidationAccuracyPanel refreshKey={infoRefreshKey} />
+
+        <FounderInformationBuilder onUpdated={() => setInfoRefreshKey((key) => key + 1)} />
+
+        <FounderCompetitiveGapMap businessProgress={intelligence.businessProgress} />
 
         <FounderAiPmCalendar
           roadmap={intelligence.executionRoadmap}

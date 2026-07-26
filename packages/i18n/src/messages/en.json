@@ -4147,6 +4147,18 @@
         }
       },
       "cancelAnalysis": "Cancel analysis",
+      "investigation": {
+        "lead": "AI PM\n\nI'll investigate\n\nyour business now.",
+        "items": {
+          "market": "Market",
+          "competitor": "Competitors",
+          "pricing": "Pricing",
+          "grant": "Grants",
+          "investment": "Investment",
+          "bm": "Business model",
+          "differentiation": "Differentiation"
+        }
+      },
       "stepEta": "Est. {seconds}s",
       "remaining": "Est. {seconds}s remaining",
       "failedHint": "Connection was unstable. Retry or go straight to today's actions.",
@@ -4857,6 +4869,80 @@
           "month": "This month",
           "quarter": "Next quarter",
           "investment": "Fundraising"
+        }
+      },
+      "validationAccuracy": {
+        "label": "Judgment accuracy",
+        "title": "Business judgment accuracy",
+        "currentLabel": "Current",
+        "insufficientLead": "AI still needs the information below.",
+        "optionalHint": "Add optional details to improve judgment quality.",
+        "sufficient": "Enough information for a reliable judgment.",
+        "boost": "(+{value}%)",
+        "fields": {
+          "problem": "Problem",
+          "customer": "Customer",
+          "mvp": "MVP",
+          "progress": "Progress",
+          "advantage": "Advantage",
+          "pricing": "Pricing"
+        }
+      },
+      "informationBuilder": {
+        "label": "Additional information",
+        "aiPmLabel": "AI PM",
+        "lead": "Tell me more\nand I can judge more accurately.",
+        "optionalTag": "(optional)",
+        "placeholder": "Brief answer",
+        "saveCta": "Save",
+        "cancelCta": "Cancel",
+        "fields": {
+          "problem": "Problem to solve",
+          "customer": "Customer",
+          "mvp": "MVP",
+          "progress": "Progress",
+          "advantage": "Competitive edge",
+          "pricing": "Pricing"
+        },
+        "prompts": {
+          "problem": "What problem are you solving?",
+          "customer": "Who is your first customer?",
+          "mvp": "What is your MVP status?",
+          "progress": "How far have you gotten?",
+          "advantage": "What is your edge vs competitors?",
+          "pricing": "What price range do you expect?"
+        }
+      },
+      "strategyDiscovery": {
+        "label": "AI strategy proposal",
+        "title": "AI discovered this",
+        "subtitle": "AI PM recommendations from market, competition, and pricing signals.",
+        "insights": {
+          "market_landscape": {
+            "title": "Market structure",
+            "body": "There are about {count} similar services domestically.\n\nBut almost none are B2B.\n\nAI PM recommends starting with B2B SaaS."
+          },
+          "pricing": {
+            "title": "Pricing strategy",
+            "body": "Competitor average: {avg} KRW\n\nRecommended: {recommended} KRW\n\nReason: easier market entry."
+          },
+          "differentiation": {
+            "title": "Differentiation",
+            "body": "Competitors are feature-led.\n\nLead with time savings\nas your core value."
+          }
+        }
+      },
+      "competitiveGap": {
+        "label": "Competitive gap map",
+        "title": "Competitive gap map",
+        "subtitle": "AI PM prioritizes the weakest areas first.",
+        "recommendLead": "Next priority: strengthen {dimension}",
+        "dimensions": {
+          "market": "Market",
+          "competition": "Competition",
+          "differentiation": "Differentiation",
+          "pricing": "Pricing",
+          "branding": "Branding"
         }
       },
       "workLog": {

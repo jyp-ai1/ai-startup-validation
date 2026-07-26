@@ -9,6 +9,8 @@ import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { AiPmConversation } from './ai-pm-conversation';
+import { FounderCompetitiveGapMap } from '../founder-ai-pm/founder-competitive-gap-map';
+import { FounderStrategyDiscoveryPanel } from '../founder-ai-pm/founder-strategy-discovery-panel';
 
 type AiPmCompletionHandoffProps = {
   onStartToday: () => void;
@@ -66,6 +68,17 @@ export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletio
     >
       <div className="max-h-[92vh] w-full max-w-lg space-y-6 overflow-y-auto rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
         <AiPmConversation messages={narrativeMessages} />
+
+        <FounderStrategyDiscoveryPanel />
+
+        <FounderCompetitiveGapMap
+          businessProgress={[
+            { key: 'market', percent: Math.min(85, successScore + 10) },
+            { key: 'customer', percent: Math.max(30, successScore - 15) },
+            { key: 'pricing', percent: Math.max(20, successScore - 30) },
+            { key: 'investment', percent: Math.max(10, successScore - 45) },
+          ]}
+        />
 
         <div className="rounded-2xl border border-primary/25 bg-primary/[0.05] p-5 text-center">
           <p id="ai-pm-complete-title" className="text-sm text-muted-foreground">

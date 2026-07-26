@@ -15,6 +15,7 @@ import {
   loadFounderMicroAnswers,
   saveFounderMicroAnswer,
 } from '../../lib/founder-micro-interaction-store';
+import { AiPmInvestigationPreview } from './ai-pm-investigation-preview';
 import { AiPmLiveConversation } from './ai-pm-live-conversation';
 import { AiPmLiveTeamPanel } from './ai-pm-live-team-panel';
 import { AiPmMicroQuestion } from './ai-pm-micro-question';
@@ -74,6 +75,8 @@ export function AiPmLiveWorkspace({
               {t(`liveStep.phases.${stepProgress.workId}`)}
             </p>
           </div>
+
+          <AiPmInvestigationPreview completedCount={Math.max(0, stepProgress.current - 1)} />
 
           <div className="rounded-2xl border border-primary/20 bg-primary/[0.06] px-5 py-4 text-center">
             <p id="ai-pm-live-title" className="whitespace-pre-line text-base font-semibold leading-relaxed sm:text-lg">

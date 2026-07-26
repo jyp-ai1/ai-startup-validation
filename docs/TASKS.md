@@ -8,10 +8,30 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## 🟢 CURRENT — Day 3 Intelligence (Mock 100%)
+## Sprint — AI Intelligence (Active)
 
-**Status:** 📋 Next — after `closed-beta-v2.1.1`  
-**Focus:** Living Evidence, Confidence animation, WOW moment (experience-visible only)
+**Status:** In progress — `main`  
+**Goal:** Founder가 5초 안에 "왜 우리 AI가 다른 AI보다 좋은가"를 이해
+
+**P0 (this sprint):**
+- Business Validation Score (판단 정확도 + missing info + boost)
+- Founder Information Builder (optional 6 fields)
+- Investigation Preview (live analysis checklist)
+
+**P1:**
+- Strategy Discovery cards (market/pricing/differentiation)
+- Competitive Gap Map
+
+**P2 (next):**
+- OpenRouter Research Provider → Morning Brief / Business Delta
+- Founder Language global cleanup
+
+**Gate checklist:**
+1. Judgment accuracy % visible
+2. Optional info boosts visible
+3. Investigation checklist during analysis
+4. Strategy differentiation recommendation
+5. Why AI recommends it
 
 ---
 

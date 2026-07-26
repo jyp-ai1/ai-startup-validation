@@ -17,6 +17,7 @@ import {
   type FounderMicroAnswers,
 } from '../lib/founder-micro-interaction-store';
 import { AiPmConversation } from './ai-state/ai-pm-conversation';
+import { FounderInformationBuilder } from './founder-ai-pm/founder-information-builder';
 
 export type ProjectRegistrationData = {
   projectName: string;
@@ -213,6 +214,7 @@ export function ProjectRegistrationPanel({
             messages={[tw('readyThanks'), tw('readyStartLead'), tw('readyDuration')]}
             className="mb-6"
           />
+          <FounderInformationBuilder className="mb-6" />
           <div className="rounded-2xl border border-primary/25 bg-primary/[0.05] p-5 text-center">
             <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
               {tw('readyNoMoreInput')}
