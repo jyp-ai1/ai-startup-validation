@@ -10,7 +10,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## Sprint — AI Operating System Sprints 9–20 ✅
 
-**Status:** Complete — local (pending commit + push)  
+**Status:** Complete — `main` (`9a884f6`)  
 **Goal:** Sprint 8 이후 **AI Operating System** — CEO Dashboard → Founder Twin
 
 **Delivered (single `FounderAiOperatingSystemSection`):**
