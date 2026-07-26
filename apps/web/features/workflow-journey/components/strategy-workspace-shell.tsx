@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 
@@ -19,7 +19,8 @@ import { useJourneyHistory } from '../hooks/use-journey-history';
 import { useJourneyProject } from '../hooks/use-journey-project';
 import { useWorkspaceExitCoach } from '../hooks/use-workspace-exit-coach';
 import type { WorkflowGoalId, WorkflowTemplate } from '../types';
-import { AiThinkingOverlay } from './ai-thinking-overlay';
+import { AgentLiveConsole } from './ai-state/agent-live-console';
+import { AiStateHero } from './ai-state/ai-state-hero';
 import { BetaFeedbackModal } from './beta-feedback-modal';
 import { CoachSkeleton } from './coach-skeleton';
 import { JourneyFade } from './journey-fade';
@@ -41,6 +42,7 @@ import {
   JourneyWorkspaceNav,
   type JourneyWorkspaceTab,
 } from './intelligence-workspace/journey-workspace-nav';
+import { PIPELINE_AGENT_COUNT } from '../lib/ai-state-engine';
 import { WorkspaceJourneyGuide } from './workspace-journey-guide';
 
 import { DecisionDetailWorkspace } from './decision-detail-workspace';
@@ -58,8 +60,7 @@ type StrategyWorkspaceShellProps = {
   demoMode?: boolean;
 };
 
-const ANALYSIS_MS = 1800;
-const ANALYSIS_STEPS = 4;
+const PIPELINE_AGENT_INTERVAL_MS = 2200;
 
 export function StrategyWorkspaceShell({
   goalId,
@@ -67,7 +68,6 @@ export function StrategyWorkspaceShell({
   demoMode = false,
 }: StrategyWorkspaceShellProps) {
   const t = useTranslations('workflow.workspace');
-  const ta = useTranslations('workflow.analysis');
   const tg = useTranslations('workflow.goal');
   const tc = useTranslations('workflow.compose.goals');
   const coachState = getStrategyCoachState(goalId);
@@ -77,18 +77,8 @@ export function StrategyWorkspaceShell({
   const tt = useTranslations('workflow.toast');
   const analytics = useJourneyAnalytics(demoMode);
 
-  const analysisStepLabels = useMemo(
-    () => [
-      ta('steps.market'),
-      ta('steps.competitor'),
-      ta('steps.decision'),
-      ta('steps.evidence'),
-    ],
-    [ta],
-  );
-
   const [phase, setPhase] = useState<WorkspacePhase>('registration');
-  const [thinkingStep, setThinkingStep] = useState(0);
+  const [pipelineAgentIndex, setPipelineAgentIndex] = useState(0);
   const [thinkingFailed, setThinkingFailed] = useState(false);
   const { project, projectId, setProjectId, ready: projectReady } = useJourneyProject();
   const { append: appendHistory } = useJourneyHistory(projectId);
@@ -117,7 +107,7 @@ export function StrategyWorkspaceShell({
 
   const runAnalysis = useCallback(() => {
     setThinkingFailed(false);
-    setThinkingStep(0);
+    setPipelineAgentIndex(0);
 
     const reg = registration ?? loadProjectRegistration();
     if (!reg) {
@@ -127,12 +117,9 @@ export function StrategyWorkspaceShell({
 
     analytics.trackAgentPipelineStarted(goalId, projectId);
 
-    const stepDelay = ANALYSIS_MS / ANALYSIS_STEPS;
-    const timers = [
-      window.setTimeout(() => setThinkingStep(1), stepDelay * 0.25),
-      window.setTimeout(() => setThinkingStep(2), stepDelay * 0.5),
-      window.setTimeout(() => setThinkingStep(3), stepDelay * 0.75),
-    ];
+    const agentTimer = window.setInterval(() => {
+      setPipelineAgentIndex((prev) => Math.min(prev + 1, PIPELINE_AGENT_COUNT - 1));
+    }, PIPELINE_AGENT_INTERVAL_MS);
 
     void runStrategyPipeline(
       {
@@ -164,8 +151,9 @@ export function StrategyWorkspaceShell({
         },
       },
     ).then((outcome) => {
-      timers.forEach(clearTimeout);
+      window.clearInterval(agentTimer);
       if (outcome.ok) {
+        setPipelineAgentIndex(PIPELINE_AGENT_COUNT);
         sessionStorage.setItem('ll_project_started', '1');
         setPhase('active');
         analytics.trackAnalysisStarted(goalId);
@@ -176,7 +164,7 @@ export function StrategyWorkspaceShell({
     });
 
     return () => {
-      timers.forEach(clearTimeout);
+      window.clearInterval(agentTimer);
     };
   }, [analytics, coachState.verdict, goalId, projectId, registration, tt]);
 
@@ -251,14 +239,15 @@ export function StrategyWorkspaceShell({
   };
 
   if (phase === 'thinking') {
+    const progressPercent = Math.min(
+      100,
+      Math.round(((Math.min(pipelineAgentIndex, PIPELINE_AGENT_COUNT) + 1) / (PIPELINE_AGENT_COUNT + 1)) * 100),
+    );
     return (
-      <AiThinkingOverlay
-        goalLabel={registration?.projectName ?? tc(goalId)}
-        titleOverride={ta('title')}
-        stepLabels={analysisStepLabels}
-        activeStep={thinkingStep}
-        stepCount={ANALYSIS_STEPS}
-        progressPercent={Math.min(100, ((thinkingStep + 1) / ANALYSIS_STEPS) * 100)}
+      <AgentLiveConsole
+        projectName={registration?.projectName ?? tc(goalId)}
+        agentIndex={Math.min(pipelineAgentIndex, PIPELINE_AGENT_COUNT - 1)}
+        progressPercent={progressPercent}
         failed={thinkingFailed}
         onRetry={() => {
           setThinkingFailed(false);
@@ -291,10 +280,13 @@ export function StrategyWorkspaceShell({
         <JourneyFade>
           <div className="grid gap-6 lg:grid-cols-[minmax(200px,260px)_1fr] lg:items-start lg:gap-8">
             <WorkspaceJourneyGuide activeStep={guideStep} className="hidden sm:block" />
-            <ProjectRegistrationPanel
-              goalLabel={tg(`options.${goalId}.title`)}
-              onStart={handleRegistrationStart}
-            />
+            <div className="space-y-6">
+              <AiStateHero context={{ surface: 'registration' }} />
+              <ProjectRegistrationPanel
+                goalLabel={tg(`options.${goalId}.title`)}
+                onStart={handleRegistrationStart}
+              />
+            </div>
           </div>
         </JourneyFade>
       ) : !projectReady ? (

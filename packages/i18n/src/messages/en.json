@@ -4005,6 +4005,105 @@
         }
       }
     },
+    "aiState": {
+      "consoleTitle": "AI Strategy Team",
+      "milestonesLabel": "Progress",
+      "teamLabel": "AI team status",
+      "failed": "AI analysis failed. Please try again.",
+      "retry": "Try again",
+      "stayOnPage": "Your AI team is working. Please stay on this screen.",
+      "hero": {
+        "label": "AI state",
+        "founderLabel": "🟦 What you do now",
+        "aiLabel": "🟨 What AI is doing",
+        "nextLabel": "🟩 What happens next",
+        "eta": "~{seconds}s"
+      },
+      "why": {
+        "label": "Why?",
+        "impact": "Est. {minutes} min · GO +{go}%"
+      },
+      "milestones": {
+        "ideaSaved": "Idea saved",
+        "marketResearch": "Market research",
+        "strategyGeneration": "Strategy generation",
+        "investmentReview": "Investment & decision review",
+        "todayActions": "Today's actions ready"
+      },
+      "agents": {
+        "marketResearcher": {
+          "name": "Market Researcher",
+          "done": "Market analysis complete",
+          "running": "Analyzing market & competitors…",
+          "waiting": "Waiting",
+          "failed": "Analysis failed"
+        },
+        "strategyPlanner": {
+          "name": "Strategy Planner",
+          "done": "Daily plan ready",
+          "running": "Prioritizing today's actions…",
+          "waiting": "Waiting",
+          "failed": "Planning failed"
+        },
+        "strategyConsultant": {
+          "name": "Strategy Consultant",
+          "done": "Strategy synthesized",
+          "running": "Building business strategy…",
+          "waiting": "Waiting",
+          "failed": "Strategy failed"
+        },
+        "investmentAdvisor": {
+          "name": "Investment Advisor",
+          "done": "GO/HOLD verdict ready",
+          "running": "Reviewing decision & investment fit…",
+          "waiting": "Waiting",
+          "failed": "Review failed"
+        },
+        "executionPm": {
+          "name": "Execution PM",
+          "done": "Execution plan ready",
+          "running": "Generating today's plan & roadmap…",
+          "waiting": "Waiting",
+          "failed": "Execution plan failed"
+        }
+      },
+      "journeyMap": {
+        "label": "Where am I?",
+        "stages": {
+          "start": "Start",
+          "marketValidation": "Market validation",
+          "strategy": "Strategy",
+          "go": "GO",
+          "execution": "Execution",
+          "growth": "Growth",
+          "investment": "Investment"
+        }
+      },
+      "founder": {
+        "enterIdea": "Enter your business idea in one line.",
+        "waitForAi": "Your AI team is analyzing. Please wait ~{seconds}s.",
+        "doAction": "{action}",
+        "reviewProgress": "Review today's action and start."
+      },
+      "ai": {
+        "waitingForInput": "Waiting for your input. Save your idea and the AI team starts.",
+        "agents": {
+          "marketResearcher": "Market Researcher — researching market, competitors, and trends.",
+          "strategyPlanner": "Strategy Planner — preparing today's priorities and 3 actions.",
+          "strategyConsultant": "Strategy Consultant — synthesizing SWOT, BM, and ICP.",
+          "investmentAdvisor": "Investment Advisor — reviewing GO/HOLD and investment fit.",
+          "executionPm": "Execution PM — generating today's plan and roadmap."
+        },
+        "monitoring": "Monitoring market changes. {brief}…",
+        "ready": "Analysis complete — ready to recommend today's actions."
+      },
+      "next": {
+        "pipelineStarts": "After save, the AI Strategy Team starts with market research.",
+        "todayActionsReady": "When analysis finishes, AI recommends 3 actions for today.",
+        "retryPipeline": "Restart runs the full AI team analysis again.",
+        "afterAction": "Complete for GO +{go}% · est. {minutes} min"
+      }
+    },
     "registration": {
       "eyebrow": "Step 3 · Project registration",
       "title": "Start with one line about your idea",

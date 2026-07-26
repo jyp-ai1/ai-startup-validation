@@ -22,6 +22,7 @@ export function AiActionGeneratorPanel({
   className,
 }: AiActionGeneratorPanelProps) {
   const t = useTranslations('workflow.founderAiPm.intelligence.actionGenerator');
+  const tw = useTranslations('workflow.aiState.why');
   const td = useTranslations('workflow.founderAiPm.intelligence.decision.howActions');
 
   return (
@@ -67,6 +68,12 @@ export function AiActionGeneratorPanel({
                 <p className="mt-1 text-xs text-muted-foreground">
                   {t('actionMeta', { minutes: action.etaMinutes, go: action.goImpact })}
                 </p>
+                {action.whyText ? (
+                  <p className="mt-2 rounded-lg bg-muted/40 px-2 py-1.5 text-xs leading-relaxed">
+                    <span className="font-semibold">{tw('label')}: </span>
+                    {action.whyText}
+                  </p>
+                ) : null}
               </div>
             </div>
             <Button

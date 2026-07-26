@@ -31,6 +31,7 @@ export type GeneratedTodayAction = {
   title?: string;
   titleKey?: string;
   titleParams?: Record<string, string | number>;
+  whyText?: string;
   etaMinutes: number;
   goImpact: number;
   order: number;
@@ -199,9 +200,13 @@ function buildFromAgentPipeline(
         reasons: os.successScore.reasons,
       },
       businessProgress: os.businessProgress,
-      todayActions: os.todayActions.map((a) => ({
+      todayActions: os.todayActions.map((a, index) => ({
         id: a.id,
         title: a.title,
+        whyText:
+          index === 0
+            ? (decisionIntel?.gap ?? pipeline.decision.missingData[0] ?? decisionIntel?.why)
+            : undefined,
         etaMinutes: a.etaMinutes,
         goImpact: a.goImpact,
         order: a.order,

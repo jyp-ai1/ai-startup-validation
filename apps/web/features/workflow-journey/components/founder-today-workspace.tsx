@@ -2,22 +2,23 @@
 
 import { useEffect, useMemo } from 'react';
 
+import { loadAgentPipelineResult } from '@/lib/agents/agent-run-store';
+
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useJourneyHistory } from '../hooks/use-journey-history';
 import { computeFounderIntelligenceBrief } from '../lib/founder-intelligence-engine';
 import type { WorkflowGoalId } from '../types';
+import { AiStateHero } from './ai-state/ai-state-hero';
 import { DecisionExperienceCoach } from './decision-experience-coach';
 import { AiActionGeneratorPanel } from './founder-ai-pm/ai-action-generator-panel';
 import { BusinessDeltaBrief } from './founder-ai-pm/business-delta-brief';
 import { BusinessProgressPanel } from './founder-ai-pm/business-progress-panel';
 import { DecisionIntelligencePathPanel } from './founder-ai-pm/decision-intelligence-path-panel';
-import { ExecutionRoadmapPanel } from './founder-ai-pm/execution-roadmap-panel';
-import { FounderAiPmOperatingPanel } from './founder-ai-pm/founder-ai-pm-operating-panel';
 import { FounderDailyReviewPanel } from './founder-ai-pm/founder-daily-review-panel';
+import { FounderJourneyMap } from './founder-ai-pm/founder-journey-map';
 import { FounderMemoryRecallPanel } from './founder-ai-pm/founder-memory-recall-panel';
 import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionHero } from './founder-ai-pm/founder-today-action-hero';
-import { GrowthIntelligencePanel } from './founder-ai-pm/growth-intelligence-panel';
 
 const DAILY_VISIT_KEY = 'll_daily_visit';
 const WEEKLY_VISIT_KEY = 'll_weekly_visit';
@@ -61,6 +62,13 @@ export function FounderTodayWorkspace({
     [confidence, goalId, projectId],
   );
 
+  const primaryAction = intelligence.todayActions[0];
+  const pipeline = loadAgentPipelineResult();
+  const primaryWhy =
+    primaryAction?.whyText ??
+    pipeline?.decision?.intelligence?.gap ??
+    pipeline?.decision?.missingData?.[0];
+
   useEffect(() => {
     trackReturnVisits(analytics, goalId);
     analytics.trackDecisionViewed(goalId);
@@ -78,9 +86,26 @@ export function FounderTodayWorkspace({
 
   return (
     <div className="space-y-8">
-      <FounderSuccessScorePanel score={intelligence.successScore} />
+      <FounderJourneyMap confidence={confidence} verdict={pipeline?.decision?.verdict} />
 
-      <BusinessProgressPanel dimensions={intelligence.businessProgress} />
+      <AiStateHero
+        context={{
+          surface: 'today',
+          hasPipelineResult: intelligence.fromAgentPipeline,
+          primaryActionTitle: primaryAction?.title ?? primaryAction?.titleKey,
+          primaryActionWhy: primaryWhy,
+          primaryActionEta: primaryAction?.etaMinutes,
+          primaryActionGoImpact: primaryAction?.goImpact,
+          morningBrief: intelligence.morningBrief,
+        }}
+      />
+
+      <FounderTodayActionHero
+        goalId={goalId}
+        confidence={confidence}
+        whyText={primaryWhy}
+        onStart={() => handleStartAction('today_hero')}
+      />
 
       <AiActionGeneratorPanel
         actions={intelligence.todayActions}
@@ -88,34 +113,19 @@ export function FounderTodayWorkspace({
         onStartAction={(actionId) => handleStartAction(`action_${actionId}`)}
       />
 
+      <div className="grid gap-6 lg:grid-cols-2">
+        <FounderSuccessScorePanel score={intelligence.successScore} />
+        <BusinessProgressPanel dimensions={intelligence.businessProgress} />
+      </div>
+
+      <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />
+
       <FounderMemoryRecallPanel
         memoryAction={intelligence.memoryAction}
         onStart={() => handleStartAction('memory_action')}
       />
 
-      <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />
-
-      <FounderAiPmOperatingPanel
-        variant="morning"
-        goalId={goalId}
-        confidence={confidence}
-        projectName={projectName}
-        hideMorningAlert
-      />
-
-      <FounderTodayActionHero
-        goalId={goalId}
-        confidence={confidence}
-        onStart={() => handleStartAction('today_hero')}
-      />
-
       <DecisionIntelligencePathPanel path={intelligence.decisionPath} />
-
-      <ExecutionRoadmapPanel items={intelligence.executionRoadmap} />
-
-      {intelligence.showGrowth ? (
-        <GrowthIntelligencePanel items={intelligence.growthPath} />
-      ) : null}
 
       <DecisionExperienceCoach
         id="journey-decision-coach"

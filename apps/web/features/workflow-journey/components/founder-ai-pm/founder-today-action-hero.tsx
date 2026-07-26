@@ -15,6 +15,7 @@ import type { WorkflowGoalId } from '../../types';
 type FounderTodayActionHeroProps = {
   goalId: WorkflowGoalId;
   confidence: number;
+  whyText?: string;
   onStart: () => void;
   className?: string;
 };
@@ -22,10 +23,12 @@ type FounderTodayActionHeroProps = {
 export function FounderTodayActionHero({
   goalId,
   confidence,
+  whyText,
   onStart,
   className,
 }: FounderTodayActionHeroProps) {
   const t = useTranslations('workflow.founderAiPm.todayHero');
+  const tw = useTranslations('workflow.aiState.why');
   const tp = useTranslations('workflow.plan.steps');
   const td = useTranslations('workflow.decisionExperience');
 
@@ -63,7 +66,23 @@ export function FounderTodayActionHero({
         {t('eyebrow')}
       </p>
       <h2 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">{actionTitle}</h2>
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('subtitle')}</p>
+
+      {whyText ? (
+        <div className="mt-4 rounded-xl border border-border/60 bg-muted/30 px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {tw('label')}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed">{whyText}</p>
+          <p className="mt-2 text-xs font-medium text-primary">
+            {tw('impact', {
+              minutes: stage.nextActionDurationMinutes,
+              go: nextAction.goProbabilityGain,
+            })}
+          </p>
+        </div>
+      ) : (
+        <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('subtitle')}</p>
+      )}
 
       <dl className="mt-6 grid gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-border/60 bg-background/90 px-4 py-3">

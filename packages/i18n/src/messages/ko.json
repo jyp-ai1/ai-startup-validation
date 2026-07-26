@@ -3987,6 +3987,105 @@
         }
       }
     },
+    "aiState": {
+      "consoleTitle": "AI Strategy Team",
+      "milestonesLabel": "진행 단계",
+      "teamLabel": "AI 팀 작업 현황",
+      "failed": "AI 분석에 실패했습니다. 다시 시도해 주세요.",
+      "retry": "다시 시작",
+      "stayOnPage": "AI 팀이 작업 중입니다. 이 화면을 유지해 주세요.",
+      "hero": {
+        "label": "AI 상태",
+        "founderLabel": "🟦 지금 해야 하는 것",
+        "aiLabel": "🟨 AI가 하는 일",
+        "nextLabel": "🟩 다음 단계",
+        "eta": "약 {seconds}초"
+      },
+      "why": {
+        "label": "왜?",
+        "impact": "예상 {minutes}분 · GO +{go}%"
+      },
+      "milestones": {
+        "ideaSaved": "아이디어 저장",
+        "marketResearch": "시장 조사",
+        "strategyGeneration": "전략 생성",
+        "investmentReview": "투자·의사결정 검토",
+        "todayActions": "오늘 할 일 생성"
+      },
+      "agents": {
+        "marketResearcher": {
+          "name": "Market Researcher",
+          "done": "시장 분석 완료",
+          "running": "시장·경쟁사 분석 중…",
+          "waiting": "대기 중",
+          "failed": "분석 실패"
+        },
+        "strategyPlanner": {
+          "name": "Strategy Planner",
+          "done": "주간·일간 계획 완료",
+          "running": "오늘 할 일 우선순위 정리 중…",
+          "waiting": "대기 중",
+          "failed": "계획 실패"
+        },
+        "strategyConsultant": {
+          "name": "Strategy Consultant",
+          "done": "사업 전략 생성 완료",
+          "running": "사업 전략 생성 중…",
+          "waiting": "대기 중",
+          "failed": "전략 생성 실패"
+        },
+        "investmentAdvisor": {
+          "name": "Investment Advisor",
+          "done": "GO/HOLD 판단 완료",
+          "running": "의사결정·투자 적합도 검토 중…",
+          "waiting": "대기 중",
+          "failed": "판단 실패"
+        },
+        "executionPm": {
+          "name": "Execution PM",
+          "done": "오늘 실행 계획 준비 완료",
+          "running": "오늘 할 일·로드맵 생성 중…",
+          "waiting": "대기 중",
+          "failed": "실행 계획 실패"
+        }
+      },
+      "journeyMap": {
+        "label": "지금 어디?",
+        "stages": {
+          "start": "사업 시작",
+          "marketValidation": "시장 검증",
+          "strategy": "전략 수립",
+          "go": "GO",
+          "execution": "실행",
+          "growth": "성장",
+          "investment": "투자"
+        }
+      },
+      "founder": {
+        "enterIdea": "사업 아이디어를 한 줄 입력하세요.",
+        "waitForAi": "AI 팀이 분석 중입니다. 약 {seconds}초만 기다려 주세요.",
+        "doAction": "{action}",
+        "reviewProgress": "오늘 할 일을 확인하고 시작하세요."
+      },
+      "ai": {
+        "waitingForInput": "입력을 기다리고 있습니다. 아이디어를 저장하면 AI 팀이 출근합니다.",
+        "agents": {
+          "marketResearcher": "Market Researcher — 시장·경쟁사·트렌드를 조사하고 있습니다.",
+          "strategyPlanner": "Strategy Planner — 오늘 우선순위와 3가지 액션을 준비하고 있습니다.",
+          "strategyConsultant": "Strategy Consultant — SWOT·BM·ICP 전략을 생성하고 있습니다.",
+          "investmentAdvisor": "Investment Advisor — GO/HOLD 판단과 투자 적합도를 검토하고 있습니다.",
+          "executionPm": "Execution PM — 오늘 실행 계획과 로드맵을 생성하고 있습니다."
+        },
+        "monitoring": "시장 변화를 모니터링 중입니다. {brief}…",
+        "ready": "분석 완료 — 오늘 할 일을 추천할 준비가 되었습니다."
+      },
+      "next": {
+        "pipelineStarts": "저장하면 AI Strategy Team이 시장 조사부터 시작합니다.",
+        "todayActionsReady": "분석이 끝나면 AI가 오늘 할 일 3가지를 추천합니다.",
+        "retryPipeline": "다시 시작하면 AI 팀이 처음부터 분석합니다.",
+        "afterAction": "완료하면 GO +{go}% · 예상 {minutes}분"
+      }
+    },
     "registration": {
       "eyebrow": "Step 3 · 프로젝트 등록",
       "title": "아이디어 한 줄로 프로젝트를 시작하세요",
