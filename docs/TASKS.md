@@ -10,7 +10,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## Sprint — Real Background AI (Active)
 
-**Status:** Complete — local (pending commit + push)  
+**Status:** Complete — `main` (`2931461`)  
 **Goal:** AI PM이 **밤새 실제로 회사를 조사** — 출근하면 이미 끝난 상태
 
 **Founder OS roadmap:** [FOUNDER_OS_ROADMAP.md](./FOUNDER_OS_ROADMAP.md) (Sprint 6–20)
