@@ -4647,6 +4647,83 @@
         "etaLead": "About {minutes} minutes.",
         "startCta": "Start now"
       },
+      "operating": {
+        "debrief": {
+          "lead": "Founder,\n\nyou completed {action}.",
+          "praise": "Well done.",
+          "scoreLine": "Thanks to that,\n\nsuccess probability\n\nrose {delta}%.",
+          "evidenceLine": "New evidence:\n\n{summary}",
+          "verdictChange": "AI judgment changed from\n\n{before}\n\nto\n\n{after}.",
+          "tomorrowLine": "Tomorrow,\n\n{action}\n\nis all you need.\n\nAbout {minutes} min",
+          "tomorrowDefault": "Your next actions are ready on Today.",
+          "scoreLabel": "Success probability",
+          "continueCta": "View Today"
+        },
+        "health": {
+          "label": "Business progress",
+          "scoreLabel": "Success probability",
+          "weekDelta": "This week {delta}%",
+          "dimensions": {
+            "market": "Market",
+            "customer": "Customer",
+            "pricing": "Pricing",
+            "investment": "Investment",
+            "mvp": "MVP"
+          }
+        },
+        "timeline": {
+          "label": "Project growth record",
+          "title": "Project growth record",
+          "milestones": {
+            "idea": {
+              "done": "Idea locked",
+              "running": "Refining idea",
+              "upcoming": "Idea"
+            },
+            "market": {
+              "done": "Market validation done",
+              "running": "Market validation in progress",
+              "upcoming": "Market validation next"
+            },
+            "customer": {
+              "done": "Customer validation done",
+              "running": "Customer validation in progress",
+              "upcoming": "Customer validation next"
+            },
+            "pricing": {
+              "done": "Price validation done",
+              "running": "Price validation in progress",
+              "upcoming": "Price validation next"
+            },
+            "go": {
+              "done": "GO decision",
+              "running": "GO preparation",
+              "upcoming": "GO next"
+            },
+            "mvp": {
+              "done": "MVP done",
+              "running": "MVP in progress",
+              "upcoming": "MVP next"
+            },
+            "investment": {
+              "done": "Investment prep done",
+              "running": "Investment prep in progress",
+              "upcoming": "Investment prep next"
+            }
+          }
+        },
+        "evidence": {
+          "label": "Evidence",
+          "title": "Evidence recorded by your AI PM",
+          "impact": "Success probability +{impact}%",
+          "categories": {
+            "customer": "Customer validation",
+            "pricing": "Price validation",
+            "market": "Market validation",
+            "competitor": "Competitive analysis"
+          }
+        }
+      },
       "actionWorkspace": {
         "intro": "Great.\n\nI'll ask one question at a time.",
         "stepIntro": "Question {current} of {total}.",

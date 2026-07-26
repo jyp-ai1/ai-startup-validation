@@ -1,6 +1,10 @@
 import { loadAgentPipelineResult } from '@/lib/agents/agent-run-store';
 
 import { getDecisionStages } from '../constants/decision-experience';
+import {
+  loadProjectOperatingState,
+  type FounderProjectOperatingState,
+} from './founder-project-state-store';
 import type { WorkflowGoalId } from '../types';
 import {
   computeFounderOperatingBrief,
@@ -133,6 +137,7 @@ export type FounderIntelligenceBrief = {
   dailyReview: FounderDailyReview;
   showGrowth: boolean;
   fromAgentPipeline: boolean;
+  operatingState?: FounderProjectOperatingState | null;
 };
 
 const WHY_KEYS = ['marketGap', 'competitorGap', 'vocGap', 'goReady'] as const;
@@ -547,9 +552,12 @@ export function computeFounderIntelligenceBrief(
   const memoryRecall = syncFounderMemoryOnVisit(projectId, stageIndex, confidence);
   const gapKey = ['marketGap', 'competitorGap', 'vocGap', 'goReady'][stageIndex] ?? 'vocGap';
   const pipeline = loadAgentPipelineResult();
+  const projectOperating = loadProjectOperatingState(projectId);
+
+  let brief: FounderIntelligenceBrief;
 
   if (pipeline?.founderOs || pipeline?.decision) {
-    return buildFromAgentPipeline(
+    brief = buildFromAgentPipeline(
       pipeline,
       projectId,
       goalId,
@@ -559,23 +567,62 @@ export function computeFounderIntelligenceBrief(
       gapKey,
       stageIndex,
     );
-  }
-
-  return attachPersonalization(
-    buildFallbackBrief(
+  } else {
+    brief = attachPersonalization(
+      buildFallbackBrief(
+        goalId,
+        confidence,
+        operating,
+        memoryRecall,
+        gapKey,
+        stageIndex,
+        pipeline,
+        false,
+      ),
+      projectId,
       goalId,
-      confidence,
-      operating,
-      memoryRecall,
       gapKey,
       stageIndex,
-      pipeline,
-      false,
-    ),
-    projectId,
-    goalId,
-    gapKey,
-    stageIndex,
-    confidence,
+      confidence,
+    );
+  }
+
+  if (!projectOperating) {
+    return { ...brief, operatingState: null };
+  }
+
+  const totalEtaMinutes = projectOperating.todayActions.reduce(
+    (sum, action) => sum + action.etaMinutes,
+    0,
   );
+
+  return {
+    ...brief,
+    successScore: {
+      ...brief.successScore,
+      percent: projectOperating.successScore,
+    },
+    businessProgress: projectOperating.businessProgress,
+    todayActions:
+      projectOperating.todayActions.length > 0
+        ? projectOperating.todayActions
+        : brief.todayActions,
+    totalEtaMinutes: totalEtaMinutes || brief.totalEtaMinutes,
+    dailyReview: projectOperating.lastDebrief
+      ? {
+          ...brief.dailyReview,
+          scoreDelta: projectOperating.lastDebrief.scoreDelta,
+          advances: [projectOperating.lastDebrief.evidenceSummary],
+          pending:
+            projectOperating.verdict === 'GO'
+              ? []
+              : [projectOperating.lastDebrief.nextActionTitle ?? '다음 검증'],
+          tomorrowFocus:
+            projectOperating.lastDebrief.nextActionTitle ?? brief.dailyReview.tomorrowFocus,
+          totalMinutesInvested:
+            projectOperating.lastDebrief.nextActionMinutes ?? brief.dailyReview.totalMinutesInvested,
+        }
+      : brief.dailyReview,
+    operatingState: projectOperating,
+  };
 }

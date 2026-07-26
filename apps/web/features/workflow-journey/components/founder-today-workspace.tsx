@@ -7,10 +7,9 @@ import { loadAgentPipelineResult } from '@/lib/agents/agent-run-store';
 
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useJourneyHistory } from '../hooks/use-journey-history';
-import {
-  recordFounderActionCompleted,
-  recordFounderActionStarted,
-} from '../lib/founder-behavior-store';
+import { applyActionCompletionUpdate } from '../lib/apply-action-completion-update';
+import type { ActionCompletionUpdateResult } from '../lib/apply-action-completion-update';
+import { recordFounderActionStarted } from '../lib/founder-behavior-store';
 import { resolveActionById, resolveActionWorkspace } from '../lib/founder-action-resolver';
 import { computeFounderIntelligenceBrief } from '../lib/founder-intelligence-engine';
 import type { GeneratedTodayAction } from '../lib/founder-intelligence-engine';
@@ -20,15 +19,19 @@ import { BusinessDeltaBrief } from './founder-ai-pm/business-delta-brief';
 import { BusinessProgressPanel } from './founder-ai-pm/business-progress-panel';
 import { DecisionIntelligencePathPanel } from './founder-ai-pm/decision-intelligence-path-panel';
 import { DecisionOneLinePanel } from './founder-ai-pm/decision-one-line-panel';
+import { FounderActionDebrief } from './founder-ai-pm/founder-action-debrief';
 import { FounderActionHistoryPanel } from './founder-ai-pm/founder-action-history-panel';
 import {
   FounderActionWorkspace,
   type ActionWorkspaceResult,
 } from './founder-ai-pm/founder-action-workspace';
 import { FounderDailyReviewPanel } from './founder-ai-pm/founder-daily-review-panel';
+import { FounderEvidenceAutoPanel } from './founder-ai-pm/founder-evidence-auto-panel';
 import { FounderGrowthTimelinePanel } from './founder-ai-pm/founder-growth-timeline-panel';
 import { FounderJourneyMap } from './founder-ai-pm/founder-journey-map';
 import { FounderMemoryRecallPanel } from './founder-ai-pm/founder-memory-recall-panel';
+import { FounderOperatingTimelinePanel } from './founder-ai-pm/founder-operating-timeline-panel';
+import { FounderProjectHealthDashboard } from './founder-ai-pm/founder-project-health-dashboard';
 import { FounderSuccessScoreExplained } from './founder-ai-pm/founder-success-score-explained';
 import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionFirst } from './founder-ai-pm/founder-today-action-first';
@@ -56,6 +59,10 @@ function trackReturnVisits(analytics: ReturnType<typeof useJourneyAnalytics>, go
   sessionStorage.setItem(WEEKLY_VISIT_KEY, week);
 }
 
+function isFriday(): boolean {
+  return new Date().getDay() === 5;
+}
+
 type FounderTodayWorkspaceProps = {
   goalId: WorkflowGoalId;
   projectId: string;
@@ -76,13 +83,16 @@ export function FounderTodayWorkspace({
   const [activeAction, setActiveAction] = useState<ReturnType<typeof resolveActionWorkspace> | null>(
     null,
   );
+  const [completionUpdate, setCompletionUpdate] = useState<ActionCompletionUpdateResult | null>(
+    null,
+  );
 
   const intelligence = useMemo(
     () => computeFounderIntelligenceBrief(projectId, goalId, confidence),
     [confidence, goalId, projectId, refreshKey],
   );
 
-  const pipeline = useMemo(() => loadAgentPipelineResult(), [intelligence.fromAgentPipeline, refreshKey]);
+  useMemo(() => loadAgentPipelineResult(), [intelligence.fromAgentPipeline, refreshKey]);
 
   useEffect(() => {
     trackReturnVisits(analytics, goalId);
@@ -116,30 +126,45 @@ export function FounderTodayWorkspace({
   };
 
   const handleActionComplete = (result: ActionWorkspaceResult) => {
-    recordFounderActionCompleted(projectId, {
-      actionId: result.actionId,
-      title: result.title,
-      kind: result.kind,
-      completedAt: new Date().toISOString(),
-      goImpact: result.goImpact,
-      answerCount: result.answers.length,
+    const update = applyActionCompletionUpdate(
+      {
+        projectId,
+        goalId,
+        confidence,
+        scoreBefore: intelligence.successScore.percent,
+      },
+      result,
+    );
+
+    append({
+      category: 'evidence',
+      title: 'evidenceGenerated',
+      summary: update.evidenceSummary,
     });
     append({
       category: 'activity',
       title: 'actionCompleted',
       summary: result.title,
     });
-    analytics.trackMockActionCompleted(result.actionId, intelligence.successScore.percent + result.goImpact);
+
+    analytics.trackMockActionCompleted(result.actionId, update.scoreAfter);
     setActiveAction(null);
+    setCompletionUpdate(update);
+  };
+
+  const handleDebriefContinue = () => {
+    setCompletionUpdate(null);
     setRefreshKey((key) => key + 1);
   };
 
   const showWeeklyReview =
-    intelligence.behavior && intelligence.behavior.visitCount >= 2;
+    (intelligence.behavior && intelligence.behavior.visitCount >= 2) || isFriday();
 
   const primaryAction = intelligence.todayActions[0];
   const deltaReason = intelligence.successScore.reasons?.[0];
   const actionHistory = intelligence.behavior?.actionHistory ?? [];
+  const operatingState = intelligence.operatingState;
+  const evidence = operatingState?.evidence ?? [];
 
   return (
     <>
@@ -152,8 +177,25 @@ export function FounderTodayWorkspace({
         />
       ) : null}
 
+      {completionUpdate ? (
+        <FounderActionDebrief
+          debrief={completionUpdate.debrief}
+          onContinue={handleDebriefContinue}
+        />
+      ) : null}
+
       <div className="space-y-8">
+        <FounderProjectHealthDashboard
+          successScore={intelligence.successScore.percent}
+          businessProgress={intelligence.businessProgress}
+          behavior={intelligence.behavior}
+        />
+
         <FounderJourneyMap businessProgress={intelligence.businessProgress} />
+
+        {operatingState?.timeline ? (
+          <FounderOperatingTimelinePanel timeline={operatingState.timeline} />
+        ) : null}
 
         <FounderTodayDailyBrief
           score={intelligence.successScore}
@@ -166,6 +208,8 @@ export function FounderTodayWorkspace({
             )
           }
         />
+
+        <DecisionOneLinePanel fallbackConfidence={confidence} />
 
         <FounderSuccessScoreExplained
           score={intelligence.successScore}
@@ -180,7 +224,17 @@ export function FounderTodayWorkspace({
           onStartAction={(actionId) => handleStartById(`action_${actionId}`, actionId)}
         />
 
+        <FounderEvidenceAutoPanel evidence={evidence} />
+
         <FounderActionHistoryPanel history={actionHistory} />
+
+        {operatingState?.lastDebrief ? (
+          <FounderDailyReviewPanel review={intelligence.dailyReview} />
+        ) : null}
+
+        {showWeeklyReview ? (
+          <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
+        ) : null}
 
         <details className="rounded-2xl border border-border/60 bg-muted/10">
           <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
@@ -202,13 +256,8 @@ export function FounderTodayWorkspace({
 
             <FounderGrowthTimelinePanel behavior={intelligence.behavior} />
 
-            {showWeeklyReview ? (
-              <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
-            ) : null}
-
             <div className="grid gap-6 lg:grid-cols-2">
               <BusinessProgressPanel dimensions={intelligence.businessProgress} />
-              <DecisionOneLinePanel fallbackConfidence={confidence} />
             </div>
 
             <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />
@@ -223,8 +272,6 @@ export function FounderTodayWorkspace({
               className="w-full max-w-none scroll-mt-6"
               onNextActionStarted={() => analytics.trackNextActionStarted(goalId, 'coach_action')}
             />
-
-            <FounderDailyReviewPanel review={intelligence.dailyReview} />
           </div>
         </details>
       </div>
