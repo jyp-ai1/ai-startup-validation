@@ -11,7 +11,7 @@ import type { ActionDebriefSnapshot } from '../../lib/founder-project-state-stor
 import type { WorkflowGoalId } from '../../types';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
 import { JourneyFocusedShell } from '../journey-focused-shell';
-import { FounderStrategyDashboardLoader } from './founder-strategy-dashboard-loader';
+import { FounderExecutiveDecisionBoardLoader } from './founder-executive-decision-board-loader';
 
 type FounderActionDebriefProps = {
   debrief: ActionDebriefSnapshot;
@@ -80,7 +80,7 @@ export function FounderActionDebrief({
 
   const strategyPanel =
     projectId && projectName && goalId && confidence != null ? (
-      <FounderStrategyDashboardLoader
+      <FounderExecutiveDecisionBoardLoader
         projectId={projectId}
         projectName={projectName}
         goalId={goalId}

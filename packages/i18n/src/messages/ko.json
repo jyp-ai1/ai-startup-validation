@@ -4946,6 +4946,92 @@
         "confidenceGain": "사업 가능성",
         "goGain": "GO 가능성"
       },
+      "executiveDecisionBoard": {
+        "label": "Executive Decision Board",
+        "summary": {
+          "boardLabel": "의사결정 보드",
+          "aiJudgment": "AI PM 판단",
+          "confidenceStars": "신뢰도",
+          "caveatPrefix": "단,",
+          "todayOnly": "오늘 이것만 하십시오",
+          "actionMeta": "{minutes}분 · +{impact}%",
+          "verdict": {
+            "GO": "GO",
+            "HOLD": "HOLD",
+            "NO_GO": "NO GO"
+          }
+        },
+        "hypothesis": {
+          "label": "AI PM 가설",
+          "confidence": "신뢰도 {percent}%",
+          "reasons": "가설이 맞는 이유",
+          "falsify": "반증해야 하는 것",
+          "falsifyItems": {
+            "price": "가격",
+            "purchaseIntent": "구매의사",
+            "retention": "반복사용"
+          }
+        },
+        "decisionTree": {
+          "label": "Decision Tree",
+          "nodes": {
+            "whyBranch": "왜?",
+            "market": "시장",
+            "competitor": "경쟁",
+            "pricing": "가격",
+            "therefore": "그래서",
+            "validateNext": "다음 검증"
+          }
+        },
+        "why": {
+          "label": "Why?",
+          "whyHigh": "{dim} — 왜 이렇게 판단했나?",
+          "dimensions": {
+            "market": "시장",
+            "competitor": "경쟁력",
+            "pricing": "가격",
+            "mvp": "MVP"
+          }
+        },
+        "matrix": {
+          "label": "경쟁사 비교",
+          "feature": "항목",
+          "us": "우리",
+          "features": {
+            "aiPm": "AI PM",
+            "marketResearch": "시장조사",
+            "strategyRec": "전략추천",
+            "businessOps": "사업운영"
+          }
+        },
+        "position": {
+          "label": "시장 포지션",
+          "low": "Low Automation",
+          "high": "High Automation"
+        },
+        "strategy": {
+          "label": "AI PM 전략",
+          "items": {
+            "pricing": "가격",
+            "customer": "고객",
+            "bm": "BM",
+            "gtm": "GTM"
+          }
+        },
+        "execution": {
+          "label": "오늘 실행"
+        }
+      },
+      "executiveOperatingRail": {
+        "label": "회사 운영",
+        "today": "오늘",
+        "overnight": "AI PM이 밤새 한 일",
+        "approval": "오늘 승인",
+        "inProgress": "실행중",
+        "results": "결과",
+        "resultDefault": "액션 완료",
+        "resultHint": "사업 가능성이 업데이트되었습니다"
+      },
       "executiveWorkspace": {
         "dashboard": {
           "label": "CEO 전략실",

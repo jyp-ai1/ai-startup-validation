@@ -4800,6 +4800,92 @@
         "confidenceGain": "Confidence",
         "goGain": "GO probability"
       },
+      "executiveDecisionBoard": {
+        "label": "Executive Decision Board",
+        "summary": {
+          "boardLabel": "Decision board",
+          "aiJudgment": "AI PM judgment",
+          "confidenceStars": "Confidence",
+          "caveatPrefix": "However,",
+          "todayOnly": "Do only this today",
+          "actionMeta": "{minutes} min · +{impact}%",
+          "verdict": {
+            "GO": "GO",
+            "HOLD": "HOLD",
+            "NO_GO": "NO GO"
+          }
+        },
+        "hypothesis": {
+          "label": "AI PM hypothesis",
+          "confidence": "Confidence {percent}%",
+          "reasons": "Why we believe this",
+          "falsify": "What must be falsified",
+          "falsifyItems": {
+            "price": "Pricing",
+            "purchaseIntent": "Purchase intent",
+            "retention": "Repeat usage"
+          }
+        },
+        "decisionTree": {
+          "label": "Decision tree",
+          "nodes": {
+            "whyBranch": "Why?",
+            "market": "Market",
+            "competitor": "Competition",
+            "pricing": "Pricing",
+            "therefore": "Therefore",
+            "validateNext": "Next validation"
+          }
+        },
+        "why": {
+          "label": "Why?",
+          "whyHigh": "{dim} — why this score?",
+          "dimensions": {
+            "market": "Market",
+            "competitor": "Competitive edge",
+            "pricing": "Pricing",
+            "mvp": "MVP"
+          }
+        },
+        "matrix": {
+          "label": "Competitor matrix",
+          "feature": "Feature",
+          "us": "Us",
+          "features": {
+            "aiPm": "AI PM",
+            "marketResearch": "Market research",
+            "strategyRec": "Strategy rec.",
+            "businessOps": "Business ops"
+          }
+        },
+        "position": {
+          "label": "Market position",
+          "low": "Low automation",
+          "high": "High automation"
+        },
+        "strategy": {
+          "label": "AI PM strategy",
+          "items": {
+            "pricing": "Pricing",
+            "customer": "Customer",
+            "bm": "Business model",
+            "gtm": "GTM"
+          }
+        },
+        "execution": {
+          "label": "Today's execution"
+        }
+      },
+      "executiveOperatingRail": {
+        "label": "Company operations",
+        "today": "Today",
+        "overnight": "Overnight AI PM work",
+        "approval": "Today's approval",
+        "inProgress": "In progress",
+        "results": "Results",
+        "resultDefault": "Action completed",
+        "resultHint": "Viability score updated"
+      },
       "executiveWorkspace": {
         "dashboard": {
           "label": "CEO Strategy Room",

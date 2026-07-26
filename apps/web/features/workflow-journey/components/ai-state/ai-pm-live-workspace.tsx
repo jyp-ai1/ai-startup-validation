@@ -16,7 +16,7 @@ import {
   saveFounderMicroAnswer,
 } from '../../lib/founder-micro-interaction-store';
 import type { WorkflowGoalId } from '../../types';
-import { FounderStrategyDashboardLoader } from '../founder-ai-pm/founder-strategy-dashboard-loader';
+import { FounderExecutiveDecisionBoardLoader } from '../founder-ai-pm/founder-executive-decision-board-loader';
 import { JOURNEY_WIDE_MAIN } from '../journey-focused-shell';
 import { WorkspaceShell } from '../workspace-shell';
 import { AiPmInvestigationPreview } from './ai-pm-investigation-preview';
@@ -134,7 +134,7 @@ export function AiPmLiveWorkspace({
 
   const strategyPanel =
     projectId && projectName && goalId && confidence != null ? (
-      <FounderStrategyDashboardLoader
+      <FounderExecutiveDecisionBoardLoader
         projectId={projectId}
         projectName={projectName}
         goalId={goalId}

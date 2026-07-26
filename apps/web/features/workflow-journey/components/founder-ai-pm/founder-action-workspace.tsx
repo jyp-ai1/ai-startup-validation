@@ -13,7 +13,7 @@ import { resolveFounderActionTitle } from '../../lib/founder-action-display';
 import { resolveActionAnswerInsightKey } from '../../lib/founder-action-insights';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
 import { JourneyFocusedShell } from '../journey-focused-shell';
-import { FounderStrategyDashboardLoader } from './founder-strategy-dashboard-loader';
+import { FounderExecutiveDecisionBoardLoader } from './founder-executive-decision-board-loader';
 import type { WorkflowGoalId } from '../../types';
 
 export type ActionWorkspaceResult = {
@@ -138,7 +138,7 @@ export function FounderActionWorkspace({
 
   const strategyPanel =
     projectId && projectName && goalId && confidence != null ? (
-      <FounderStrategyDashboardLoader
+      <FounderExecutiveDecisionBoardLoader
         projectId={projectId}
         projectName={projectName}
         goalId={goalId}

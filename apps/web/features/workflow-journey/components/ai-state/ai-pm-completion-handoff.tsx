@@ -6,12 +6,10 @@ import { useTranslations } from 'next-intl';
 import { loadAgentPipelineResult } from '@/lib/agents/agent-run-store';
 
 import { AiPmConversation } from './ai-pm-conversation';
-import { FounderAiPmMeetingClose } from '../founder-ai-pm/founder-ai-pm-meeting-close';
 import { FounderDecisionBoxPanel } from '../founder-ai-pm/founder-decision-box-panel';
-import { FounderExplainableWorkspaceFlow } from '../founder-ai-pm/founder-explainable-workspace-flow';
+import { FounderExecutiveDecisionBoardLoader } from '../founder-ai-pm/founder-executive-decision-board-loader';
 import { FounderResearchCompletePanel } from '../founder-ai-pm/founder-research-complete-panel';
-import { FounderStrategyDashboard } from '../founder-ai-pm/founder-strategy-dashboard';
-import { FounderStrategyDashboardLoader } from '../founder-ai-pm/founder-strategy-dashboard-loader';
+import { FounderAiPmMeetingClose } from '../founder-ai-pm/founder-ai-pm-meeting-close';
 import { buildCompetitiveIntelligence } from '../../lib/founder-competitive-intelligence';
 import { buildExplainableJudgment } from '../../lib/founder-explainable-judgment';
 import {
@@ -21,7 +19,6 @@ import {
 } from '../../lib/founder-ai-pm-meeting';
 import { buildResearchCompleteBrief } from '../../lib/founder-research-trust';
 import { countResearchMaterials } from '../../lib/founder-research-sources';
-import { buildStrategyDashboardData } from '../../lib/founder-strategy-dashboard';
 import { buildExplainableScoreFactors } from '../../lib/founder-personalization-engine';
 import type { WorkflowGoalId } from '../../types';
 import { JourneyFocusedShell } from '../journey-focused-shell';
@@ -48,7 +45,6 @@ export function AiPmCompletionHandoff({
   confidence = 62,
 }: AiPmCompletionHandoffProps) {
   const t = useTranslations('workflow.aiPm.completion');
-  const td = useTranslations('workflow.founderAiPm.intelligence.actionGenerator');
   const [readyToContinue, setReadyToContinue] = useState(false);
 
   useEffect(() => {
@@ -77,10 +73,6 @@ export function AiPmCompletionHandoff({
   }, [businessProgress, pipeline, successScore]);
 
   const researchMaterialCount = useMemo(() => countResearchMaterials(pipeline), [pipeline]);
-  const competitiveIntelligence = useMemo(
-    () => buildCompetitiveIntelligence(pipeline, businessProgress),
-    [businessProgress, pipeline],
-  );
   const researchComplete = useMemo(
     () => buildResearchCompleteBrief(pipeline, researchMaterialCount),
     [pipeline, researchMaterialCount],
@@ -99,41 +91,12 @@ export function AiPmCompletionHandoff({
     [decisionBox, meetingBrief],
   );
 
-  const todayActions = pipeline?.founderOs?.todayActions ?? [];
-  const strategyDashboard = useMemo(
-    () =>
-      buildStrategyDashboardData({
-        projectName,
-        scorePercent: successScore,
-        businessProgress,
-        explainableJudgment,
-        competitiveIntelligence,
-        pipeline,
-        behavior: null,
-        todayActions,
-        resolveTitle: (action) =>
-          action.title ??
-          (action.titleKey ? td(action.titleKey, action.titleParams) : td('primaryStep', { step: '1' })),
-      }),
-    [
-      businessProgress,
-      competitiveIntelligence,
-      explainableJudgment,
-      pipeline,
-      projectName,
-      successScore,
-      td,
-      todayActions,
-    ],
-  );
-
   const narrativeMessages = [t('greeting'), t('goodNews')];
 
   const handoffRail = (
     <>
       <AiPmConversation messages={narrativeMessages} />
       <FounderResearchCompletePanel brief={researchComplete} />
-      <FounderExplainableWorkspaceFlow data={strategyDashboard} />
       <FounderDecisionBoxPanel
         decision={decisionBox}
         onSelect={readyToContinue ? () => onStartToday() : () => undefined}
@@ -151,21 +114,19 @@ export function AiPmCompletionHandoff({
     </>
   );
 
-  const strategyPanel =
+  const decisionBoard =
     projectId && goalId ? (
-      <FounderStrategyDashboardLoader
+      <FounderExecutiveDecisionBoardLoader
         projectId={projectId}
         projectName={projectName}
         goalId={goalId}
         confidence={successScore}
       />
-    ) : (
-      <FounderStrategyDashboard data={strategyDashboard} />
-    );
+    ) : null;
 
   return (
     <JourneyFocusedShell embedded={embedded} ariaLabel={t('title')} className={className} rail={handoffRail}>
-      {strategyPanel}
+      {decisionBoard ?? handoffRail}
     </JourneyFocusedShell>
   );
 }
