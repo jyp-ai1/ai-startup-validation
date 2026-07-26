@@ -8,29 +8,42 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint — Daily CEO Habit (Active)
+## Sprint — Living Project (Active)
 
-**Status:** Complete — `main` (`6079154`)  
-**Goal:** 대표가 **아침에 LaunchLens를 여는 이유** — 변화·AI 보고·오늘 1건
+**Status:** Complete — local (pending commit + push)  
+**Goal:** **AI PM과 함께 회사를 운영** — 프로젝트가 살아있다는 느낌
 
 **Founder-first roadmap (locked):**
 | Sprint | Focus |
 |--------|--------|
-| **6 (NOW)** | Daily CEO Habit — Morning Brief · What Changed · Overnight Report · Today 1 Focus |
-| 7 | Living Project — 어제/이번주/누적 일지 |
+| 6 ✅ | Daily CEO Habit |
+| **7 (NOW)** | Living Project — 프로젝트 기록 · 주간 스토리 · 정체 감지 |
 | 8 | Real Background AI — Scheduler · OpenRouter |
 | 9 | CEO Dashboard — 회사 상태 🟢🟡🔴 |
 | 10 | Company Memory — 6개월 연대기 |
 
 **Delivered:**
-- P0-1 Morning Brief — 날짜+프로젝트별 매일 다른 3건
-- P0-2 What Changed — +/- 변화 카드 (72% 대신)
-- P0-3 Overnight Report — 밤새 AI PM 4건 + [보고서 보기]
-- P0-4 Today Focus — 승인 1건만 (Inbox는 아래)
+- P0 Living Project History — 날짜별 프로젝트 기록 (오늘 진행중)
+- P0 Weekly Story — 숫자 대신 이번주/다음주 스토리
+- P0 Stuck Detection — N일째 멈춤 + AI PM 추천
+- P1 Momentum — 스토리 먼저 + 전진률 바
+- P1 AI PM Daily Journal — AI가 쓰는 프로젝트 일지
+- P1 Milestone Celebration — 완료 시 🎉 축하
+- P2 Founder Pattern — 대표님 업무 패턴
+- P2 Living Morning Brief — 주간 진전 + 정체 경고
 
-**Deferred:** Validation Breakdown (Founder는 "밤새 뭘 했는지"가 우선)
+**Next:** Sprint 8 Real Background AI
 
-**Next:** Sprint 7 Living Project
+---
+
+## Sprint — Daily CEO Habit ✅
+
+**Status:** Complete — `main` (`6079154`)  
+**Goal:** 대표가 **아침에 LaunchLens를 여는 이유** — 변화·AI 보고·오늘 1건
+
+**Delivered:** P0-1 Morning Brief · P0-2 What Changed · P0-3 Overnight Report · P0-4 Today Focus
+
+**Deferred:** Validation Breakdown
 
 ---
 

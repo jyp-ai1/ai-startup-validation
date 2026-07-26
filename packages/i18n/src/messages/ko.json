@@ -5123,6 +5123,105 @@
           "patternRecall": "지난번과 같은 패턴이 보입니다.\n\n오늘은 한 가지만 끝내는 것이 좋겠습니다."
         }
       },
+      "livingProject": {
+        "history": {
+          "label": "프로젝트 기록",
+          "today": "오늘",
+          "dateLine": "{month}월 {day}일",
+          "entries": {
+            "projectCreated": "프로젝트 생성",
+            "marketResearchDone": "시장조사 완료",
+            "aiPmCompetitorResearch": "경쟁사 {count}곳 조사",
+            "aiPmByline": "AI PM",
+            "firstInterviewDone": "첫 고객 인터뷰 완료",
+            "pricingStarted": "가격 검증 시작",
+            "pricingInProgress": "가격 검증 진행중",
+            "customerValidationInProgress": "고객 검증 진행중",
+            "marketValidationInProgress": "시장 검증 진행중",
+            "mvpInProgress": "MVP 작업 진행중",
+            "investmentPrepInProgress": "투자 준비 진행중"
+          }
+        },
+        "weeklyStory": {
+          "label": "이번주 진행상황",
+          "nextWeekLead": "다음주는",
+          "progress": {
+            "marketAdvanced": "시장 검증이 크게 진전되었습니다.",
+            "customerStarted": "고객 인터뷰도 시작되었습니다.",
+            "customerAdvanced": "고객 검증이 눈에 띄게 진행되었습니다.",
+            "steadyWeek": "이번 주에도 꾸준히 전진하고 있습니다."
+          },
+          "nextWeek": {
+            "pricingFocus": "가격 검증이 핵심입니다.",
+            "customerFocus": "고객 인터뷰를 더 진행하는 것이 핵심입니다.",
+            "marketFocus": "시장 검증을 마무리하는 것이 핵심입니다.",
+            "mvpFocus": "MVP 범위를 확정하는 것이 핵심입니다."
+          }
+        },
+        "stuck": {
+          "label": "AI PM 알림",
+          "daysLead": "{days}일째",
+          "recommendLead": "제가 추천드립니다.",
+          "todayLead": "오늘은",
+          "startCta": "시작하기",
+          "areas": {
+            "pricingStuck": "가격 검증이 진행되지 않았습니다.",
+            "interviewStuck": "고객 인터뷰가 진행되지 않았습니다.",
+            "mvpStuck": "MVP 작업이 없습니다.",
+            "genericStuck": "핵심 업무가 멈춰 있습니다."
+          }
+        },
+        "momentum": {
+          "label": "이번주 전진률",
+          "story": {
+            "fastWeek": "이번주는 시장 검증이 빠르게 진행되었습니다.",
+            "goodWeek": "이번주는 꾸준히 앞으로 나아갔습니다.",
+            "steadyWeek": "이번주는 차근차근 쌓아가고 있습니다."
+          }
+        },
+        "journal": {
+          "label": "AI PM 일지",
+          "dateLine": "{month}월 {day}일",
+          "todayLead": "오늘",
+          "founder": {
+            "founderCompletedAction": "대표님은 {action}을 완료했습니다.",
+            "founderReviewedBrief": "대표님은 아침 브리핑을 확인하셨습니다."
+          },
+          "aiPm": {
+            "aiPmProposedStrategy": "AI PM은 가격 전략을 새로 제안했습니다."
+          },
+          "score": {
+            "viabilityRose": "사업 가능성이 조금 높아졌습니다.",
+            "viabilityStable": "사업 가능성은 안정적으로 유지되고 있습니다."
+          }
+        },
+        "celebration": {
+          "label": "성취 축하",
+          "emoji": "🎉",
+          "messages": {
+            "firstInterview": "첫 고객 인터뷰를 완료했습니다.\n\n좋은 출발입니다.",
+            "interviewMilestone": "고객 인터뷰를 완료했습니다.\n\n한 걸음 더 앞으로 나아갔습니다.",
+            "pricingMilestone": "가격 검증을 진행했습니다.\n\n이제 실행만 남았습니다.",
+            "marketValidationDone": "시장 검증을 끝냈습니다.\n\n이제 가격 검증만 남았습니다."
+          }
+        },
+        "pattern": {
+          "label": "대표님 업무 패턴",
+          "recommendLead": "그래서 오늘은 이렇게 추천드립니다.",
+          "startCta": "시작하기",
+          "messages": {
+            "marketFastPricingSlow": "대표님은\n\n시장조사는 빠르지만\n\n가격 검증을 자주 미룹니다.",
+            "interviewDeferPattern": "대표님은\n\n고객 인터뷰를\n\n자주 미루는 편입니다.",
+            "afternoonInterviewPattern": "최근\n\n고객 인터뷰는\n\n오후에 완료하는 경우가 많았습니다."
+          }
+        },
+        "morningContext": {
+          "weekMarketAdvanced": "대표님.\n\n이번주는\n\n시장 검증이 크게 진전되었습니다.",
+          "weekCustomerStarted": "대표님.\n\n이번주는\n\n고객 인터뷰도 시작되었습니다.",
+          "pricingPaused": "다만\n\n가격 검증은\n\n{days}일째 멈춰 있습니다.",
+          "areaPaused": "다만\n\n핵심 업무가\n\n{days}일째 멈춰 있습니다."
+        }
+      },
       "todayHeroWorkspace": {
         "label": "AI PM 오늘 계획",
         "aiPmLabel": "AI PM",

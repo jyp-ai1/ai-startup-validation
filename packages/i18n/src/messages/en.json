@@ -4977,6 +4977,105 @@
           "patternRecall": "I'm seeing the same pattern again.\n\nFinish just one thing today."
         }
       },
+      "livingProject": {
+        "history": {
+          "label": "Project history",
+          "today": "Today",
+          "dateLine": "{month}/{day}",
+          "entries": {
+            "projectCreated": "Project created",
+            "marketResearchDone": "Market research completed",
+            "aiPmCompetitorResearch": "AI PM researched {count} competitors",
+            "aiPmByline": "AI PM",
+            "firstInterviewDone": "First customer interview completed",
+            "pricingStarted": "Pricing validation started",
+            "pricingInProgress": "Pricing validation in progress",
+            "customerValidationInProgress": "Customer validation in progress",
+            "marketValidationInProgress": "Market validation in progress",
+            "mvpInProgress": "MVP work in progress",
+            "investmentPrepInProgress": "Investment prep in progress"
+          }
+        },
+        "weeklyStory": {
+          "label": "This week's progress",
+          "nextWeekLead": "Next week",
+          "progress": {
+            "marketAdvanced": "Market validation advanced significantly this week.",
+            "customerStarted": "Customer interviews have started.",
+            "customerAdvanced": "Customer validation is clearly moving forward.",
+            "steadyWeek": "You kept moving forward steadily this week."
+          },
+          "nextWeek": {
+            "pricingFocus": "Pricing validation is the priority.",
+            "customerFocus": "More customer interviews are the priority.",
+            "marketFocus": "Finishing market validation is the priority.",
+            "mvpFocus": "Locking MVP scope is the priority."
+          }
+        },
+        "stuck": {
+          "label": "AI PM alert",
+          "daysLead": "Day {days}",
+          "recommendLead": "My recommendation.",
+          "todayLead": "Today",
+          "startCta": "Start",
+          "areas": {
+            "pricingStuck": "Pricing validation hasn't moved.",
+            "interviewStuck": "Customer interviews haven't moved.",
+            "mvpStuck": "No MVP work yet.",
+            "genericStuck": "A key task is stuck."
+          }
+        },
+        "momentum": {
+          "label": "This week's momentum",
+          "story": {
+            "fastWeek": "Market validation moved fast this week.",
+            "goodWeek": "You made steady progress this week.",
+            "steadyWeek": "You're building momentum step by step."
+          }
+        },
+        "journal": {
+          "label": "AI PM journal",
+          "dateLine": "{month}/{day}",
+          "todayLead": "Today",
+          "founder": {
+            "founderCompletedAction": "You completed {action}.",
+            "founderReviewedBrief": "You reviewed the morning brief."
+          },
+          "aiPm": {
+            "aiPmProposedStrategy": "AI PM proposed a new pricing strategy."
+          },
+          "score": {
+            "viabilityRose": "Viability improved slightly.",
+            "viabilityStable": "Viability is holding steady."
+          }
+        },
+        "celebration": {
+          "label": "Milestone",
+          "emoji": "🎉",
+          "messages": {
+            "firstInterview": "First customer interview done.\n\nGreat start.",
+            "interviewMilestone": "Customer interview completed.\n\nOne step further.",
+            "pricingMilestone": "Pricing validation progressed.\n\nExecution is next.",
+            "marketValidationDone": "Market validation complete.\n\nPricing validation is what's left."
+          }
+        },
+        "pattern": {
+          "label": "Your work patterns",
+          "recommendLead": "So today I recommend this.",
+          "startCta": "Start",
+          "messages": {
+            "marketFastPricingSlow": "You move fast on market research\n\nbut often defer pricing validation.",
+            "interviewDeferPattern": "You tend to\n\ndefer customer interviews.",
+            "afternoonInterviewPattern": "Lately,\n\ncustomer interviews\n\noften finish in the afternoon."
+          }
+        },
+        "morningContext": {
+          "weekMarketAdvanced": "Founder.\n\nThis week,\n\nmarket validation advanced significantly.",
+          "weekCustomerStarted": "Founder.\n\nThis week,\n\ncustomer interviews started.",
+          "pricingPaused": "However,\n\npricing validation\n\nhas been paused for {days} days.",
+          "areaPaused": "However,\n\na key task\n\nhas been paused for {days} days."
+        }
+      },
       "todayHeroWorkspace": {
         "label": "AI PM daily plan",
         "aiPmLabel": "AI PM",

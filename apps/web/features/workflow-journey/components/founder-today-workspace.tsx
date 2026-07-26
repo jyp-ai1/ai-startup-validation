@@ -17,8 +17,8 @@ import { resolveStageIndex } from '../lib/founder-ai-pm-engine';
 import {
   buildAiPmDailyReport,
   buildAiPmMemoryBrief,
-  buildBusinessTimeline,
 } from '../lib/founder-autonomous-ai-pm';
+import { buildLivingProjectBrief } from '../lib/founder-living-project';
 import {
   buildAiPmDecisionBox,
   buildAiPmMeetingBrief,
@@ -67,13 +67,20 @@ import {
   FounderAiPmOvernightReportPanel,
   FounderAiPmDailyReportPanel,
   FounderAiPmMemoryBriefPanel,
-  FounderBusinessTimelinePanel,
   FounderCeoInboxPanel,
   FounderCeoMorningBriefPanel,
   FounderTodayFocusPanel,
-  FounderWeeklyCeoLoopPanel,
   FounderWhatChangedPanel,
 } from './founder-ai-pm/founder-daily-ceo-panels';
+import {
+  FounderLivingDailyJournalPanel,
+  FounderLivingFounderPatternPanel,
+  FounderLivingMilestoneCelebrationPanel,
+  FounderLivingMomentumPanel,
+  FounderLivingProjectHistoryPanel,
+  FounderLivingStuckAlertPanel,
+  FounderLivingWeeklyStoryPanel,
+} from './founder-ai-pm/founder-living-project-panels';
 import { FounderAiPmLiveWorkPanel } from './founder-ai-pm/founder-ai-pm-live-work-panel';
 import { FounderInformationBuilder } from './founder-ai-pm/founder-information-builder';
 import { FounderCompetitiveGapMap } from './founder-ai-pm/founder-competitive-gap-map';
@@ -109,8 +116,6 @@ import { FounderSuccessScoreExplained } from './founder-ai-pm/founder-success-sc
 import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionFirst } from './founder-ai-pm/founder-today-action-first';
 import { FounderTodayOutcomeStrip } from './founder-ai-pm/founder-today-outcome-strip';
-import { FounderWeeklyCeoReviewPanel } from './founder-ai-pm/founder-weekly-ceo-review-panel';
-
 const DAILY_VISIT_KEY = 'll_daily_visit';
 const WEEKLY_VISIT_KEY = 'll_weekly_visit';
 
@@ -305,10 +310,31 @@ export function FounderTodayWorkspace({
     ],
   );
 
-  const businessTimeline = useMemo(
+  const livingBrief = useMemo(
     () =>
-      buildBusinessTimeline(resolveStageIndex(confidence), intelligence.businessProgress),
-    [confidence, intelligence.businessProgress],
+      buildLivingProjectBrief({
+        projectId,
+        behavior: intelligence.behavior,
+        progress: intelligence.businessProgress,
+        stageIndex: resolveStageIndex(confidence),
+        weeklyReview: intelligence.weeklyCeoReview,
+        dailyReview: intelligence.dailyReview,
+        scorePercent: intelligence.successScore.percent,
+        todayActions: intelligence.todayActions,
+        resolveTitle: resolveActionTitle,
+      }),
+    [
+      confidence,
+      intelligence.behavior,
+      intelligence.businessProgress,
+      intelligence.dailyReview,
+      intelligence.successScore.percent,
+      intelligence.todayActions,
+      intelligence.weeklyCeoReview,
+      projectId,
+      td,
+      tDaily,
+    ],
   );
 
   const memoryBrief = useMemo(
@@ -455,16 +481,16 @@ export function FounderTodayWorkspace({
       <div className="space-y-6">
         <FounderAiPmOfficeHeader />
 
-        {showWeeklyReview && isFriday() && dailyCeoBrief.weeklyScoreFrom != null ? (
-          <FounderWeeklyCeoLoopPanel
-            scoreFrom={dailyCeoBrief.weeklyScoreFrom}
-            scoreTo={dailyCeoBrief.weeklyScoreTo ?? intelligence.successScore.percent}
-          />
-        ) : showWeeklyReview ? (
-          <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
+        <FounderLivingMilestoneCelebrationPanel celebration={livingBrief.milestoneCelebration} />
+
+        {showWeeklyReview ? (
+          <FounderLivingWeeklyStoryPanel story={livingBrief.weeklyStory} />
         ) : null}
 
-        <FounderCeoMorningBriefPanel habit={habitBrief} />
+        <FounderCeoMorningBriefPanel
+          habit={habitBrief}
+          livingContext={livingBrief.morningContext}
+        />
 
         <FounderWhatChangedPanel items={habitBrief.whatChanged} />
 
@@ -481,6 +507,11 @@ export function FounderTodayWorkspace({
               : false
           }
           onApprove={handleApproveQueueItem}
+        />
+
+        <FounderLivingStuckAlertPanel
+          alert={livingBrief.stuckAlert}
+          onStart={(actionId) => handleStartById(`living_stuck_${actionId}`, actionId)}
         />
 
         {liveWorkActionId ? (
@@ -501,6 +532,22 @@ export function FounderTodayWorkspace({
           onReview={(actionId) => handleStartById(`ceo_inbox_${actionId ?? 'primary'}`, actionId)}
         />
 
+        <FounderLivingMomentumPanel momentum={livingBrief.momentum} />
+
+        <FounderLivingDailyJournalPanel journal={livingBrief.dailyJournal} />
+
+        <FounderLivingFounderPatternPanel
+          pattern={livingBrief.founderPattern}
+          onStart={() =>
+            handleStartById(
+              livingBrief.founderPattern.recommendedActionId
+                ? `pattern_${livingBrief.founderPattern.recommendedActionId}`
+                : 'pattern_primary',
+              livingBrief.founderPattern.recommendedActionId ?? primaryAction?.id,
+            )
+          }
+        />
+
         <FounderAiPmMemoryBriefPanel
           memory={memoryBrief}
           onStart={() =>
@@ -513,7 +560,7 @@ export function FounderTodayWorkspace({
           }
         />
 
-        <FounderBusinessTimelinePanel milestones={businessTimeline} />
+        <FounderLivingProjectHistoryPanel entries={livingBrief.history} />
 
         <FounderAiPmDailyReportPanel report={dailyReport} />
 

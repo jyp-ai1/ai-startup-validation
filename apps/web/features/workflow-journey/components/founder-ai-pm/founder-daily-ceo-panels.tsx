@@ -15,6 +15,8 @@ import type {
   DailyReportBrief,
 } from '../../lib/founder-autonomous-ai-pm';
 import type { DailyCeoHabitBrief, WhatChangedItem } from '../../lib/founder-daily-ceo-habit';
+import type { LivingMorningContext } from '../../lib/founder-living-project';
+import { FounderLivingMorningContextBlock } from './founder-living-project-panels';
 import type { TodayApprovalChoice } from '../../lib/founder-daily-ceo-store';
 import type { AiPmInboxItem } from '../../lib/founder-ai-pm-inbox';
 import { AiPmConversation } from '../ai-state/ai-pm-conversation';
@@ -132,9 +134,11 @@ export function FounderOvernightBriefPanel({
 
 export function FounderCeoMorningBriefPanel({
   habit,
+  livingContext,
   className,
 }: {
   habit: DailyCeoHabitBrief;
+  livingContext?: LivingMorningContext;
   className?: string;
 }) {
   const t = useTranslations('workflow.founderAiPm.dailyCeo');
@@ -152,6 +156,9 @@ export function FounderCeoMorningBriefPanel({
         {t('morning.label')}
       </p>
       <AiPmConversation messages={[t('morning.greeting'), t('morning.sinceYesterdayLead')]} />
+      {livingContext ? (
+        <FounderLivingMorningContextBlock context={livingContext} />
+      ) : null}
       <ChangeList items={habit.morningChanges} t={t} namespace="morningChanges" />
       <div className="mt-5 rounded-xl border border-primary/25 bg-background/90 px-4 py-4">
         <p className="text-sm text-muted-foreground">{t('morning.todayLead')}</p>
