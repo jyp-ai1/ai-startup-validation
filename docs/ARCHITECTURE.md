@@ -203,6 +203,7 @@ Apps import `@repo/db` for data access. Middleware in `apps/web/middleware.ts` h
 
 ```
 packages/
+├── agents/              # @repo/agents — Research, Strategy, Decision, Execution engines
 ├── ai/                  # @repo/ai — LLM providers, streaming, prompts
 ├── billing/             # @repo/billing — Stripe integration
 └── email/               # @repo/email — transactional email
