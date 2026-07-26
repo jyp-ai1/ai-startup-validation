@@ -4268,6 +4268,33 @@
           "strategy": "Strategy",
           "go": "GO",
           "investment": "Investment"
+        },
+        "dynamicStages": {
+          "marketValidation": {
+            "done": "Market validation done",
+            "running": "Market validation in progress",
+            "upcoming": "Market validation next"
+          },
+          "customerValidation": {
+            "done": "Customer validation done",
+            "running": "Customer validation in progress",
+            "upcoming": "Customer validation next"
+          },
+          "pricingValidation": {
+            "done": "Price validation done",
+            "running": "Price validation in progress",
+            "upcoming": "Price validation next"
+          },
+          "mvp": {
+            "done": "MVP done",
+            "running": "MVP in progress",
+            "upcoming": "MVP next"
+          },
+          "investmentPrep": {
+            "done": "Investment prep done",
+            "running": "Investment prep in progress",
+            "upcoming": "Investment prep next"
+          }
         }
       },
       "founder": {
@@ -4619,6 +4646,66 @@
         "todayFocusDefault": "price validation is all you need.",
         "etaLead": "About {minutes} minutes.",
         "startCta": "Start now"
+      },
+      "actionWorkspace": {
+        "intro": "Great.\n\nI'll ask one question at a time.",
+        "stepIntro": "Question {current} of {total}.",
+        "questionLabel": "Question",
+        "answerPlaceholder": "Record the customer's answer or your notes",
+        "record": "Save answer",
+        "recordFinal": "Save final answer",
+        "progress": "{current} / {total} done",
+        "meta": "{minutes} min · +{impact}%",
+        "completeLead": "Well done, Founder.",
+        "completeSummary": "You recorded {count} answers today.",
+        "completeNext": "Your AI PM applied the results.\n\nSuccess probability went up.",
+        "scoreLabel": "Success probability",
+        "completeCta": "Back to Today",
+        "kinds": {
+          "interview": "Customer interview",
+          "pricing": "Price validation",
+          "competitor": "Competitive analysis",
+          "landing": "Landing page",
+          "generic": "Today's action"
+        },
+        "scoreExplained": {
+          "todayLead": "If you complete today",
+          "defaultAction": "Today's core action"
+        },
+        "questions": {
+          "q1": "What has been most painful recently?",
+          "q2": "How much would you pay to solve it?",
+          "q3": "What alternative do you use today?",
+          "q4": "Would you refer us to a peer?",
+          "q5": "What should we improve first?",
+          "p1": "Are you happy with current pricing?",
+          "p2": "Is trust more important than price?",
+          "p3": "Monthly vs annual — which do you prefer?",
+          "p4": "What triggers a paid conversion?",
+          "p5": "At what price would you buy today?",
+          "c1": "Which competitor do you use today?",
+          "c2": "Biggest gap vs competitors?",
+          "c3": "Our one differentiation point?",
+          "c4": "How high is switching cost?",
+          "c5": "Why stay with us in 6 months?",
+          "l1": "Is there a one-line value prop above the fold?",
+          "l2": "Is the CTA visible?",
+          "l3": "Are pricing and benefits clear?",
+          "l4": "Do you show trust signals (reviews, numbers)?",
+          "generic": {
+            "q1": "What is the key question to validate today?"
+          }
+        }
+      },
+      "actionHistory": {
+        "label": "Recent actions",
+        "title": "Recent actions",
+        "days": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "twoDaysAgo": "2 days ago",
+          "earlier": "Earlier"
+        }
       },
       "todayHero": {
         "label": "Today's investment",

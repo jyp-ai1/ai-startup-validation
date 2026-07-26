@@ -1,24 +1,35 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { loadAgentPipelineResult } from '@/lib/agents/agent-run-store';
 
 import { useJourneyAnalytics } from '../hooks/use-journey-analytics';
 import { useJourneyHistory } from '../hooks/use-journey-history';
-import { recordFounderActionStarted } from '../lib/founder-behavior-store';
+import {
+  recordFounderActionCompleted,
+  recordFounderActionStarted,
+} from '../lib/founder-behavior-store';
+import { resolveActionById, resolveActionWorkspace } from '../lib/founder-action-resolver';
 import { computeFounderIntelligenceBrief } from '../lib/founder-intelligence-engine';
+import type { GeneratedTodayAction } from '../lib/founder-intelligence-engine';
 import type { WorkflowGoalId } from '../types';
 import { DecisionExperienceCoach } from './decision-experience-coach';
 import { BusinessDeltaBrief } from './founder-ai-pm/business-delta-brief';
 import { BusinessProgressPanel } from './founder-ai-pm/business-progress-panel';
 import { DecisionIntelligencePathPanel } from './founder-ai-pm/decision-intelligence-path-panel';
 import { DecisionOneLinePanel } from './founder-ai-pm/decision-one-line-panel';
+import { FounderActionHistoryPanel } from './founder-ai-pm/founder-action-history-panel';
+import {
+  FounderActionWorkspace,
+  type ActionWorkspaceResult,
+} from './founder-ai-pm/founder-action-workspace';
 import { FounderDailyReviewPanel } from './founder-ai-pm/founder-daily-review-panel';
 import { FounderGrowthTimelinePanel } from './founder-ai-pm/founder-growth-timeline-panel';
 import { FounderJourneyMap } from './founder-ai-pm/founder-journey-map';
 import { FounderMemoryRecallPanel } from './founder-ai-pm/founder-memory-recall-panel';
+import { FounderSuccessScoreExplained } from './founder-ai-pm/founder-success-score-explained';
 import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionFirst } from './founder-ai-pm/founder-today-action-first';
 import { FounderTodayDailyBrief } from './founder-ai-pm/founder-today-daily-brief';
@@ -61,28 +72,66 @@ export function FounderTodayWorkspace({
   const t = useTranslations('workflow.founderAiPm.todayFirst');
   const analytics = useJourneyAnalytics();
   const { append } = useJourneyHistory(projectId);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [activeAction, setActiveAction] = useState<ReturnType<typeof resolveActionWorkspace> | null>(
+    null,
+  );
 
   const intelligence = useMemo(
     () => computeFounderIntelligenceBrief(projectId, goalId, confidence),
-    [confidence, goalId, projectId],
+    [confidence, goalId, projectId, refreshKey],
   );
 
-  const pipeline = useMemo(() => loadAgentPipelineResult(), [intelligence.fromAgentPipeline]);
+  const pipeline = useMemo(() => loadAgentPipelineResult(), [intelligence.fromAgentPipeline, refreshKey]);
 
   useEffect(() => {
     trackReturnVisits(analytics, goalId);
     analytics.trackDecisionViewed(goalId);
   }, [analytics, goalId]);
 
-  const handleStartAction = (source: string, actionId?: string) => {
+  const openAction = (action: GeneratedTodayAction, source: string) => {
     analytics.trackNextActionStarted(goalId, source);
-    if (actionId) recordFounderActionStarted(projectId, actionId);
+    recordFounderActionStarted(projectId, action.id);
     append({
       category: 'coach',
       title: 'todayHeroStart',
-      summary: projectName,
+      summary: action.title ?? projectName,
     });
-    window.dispatchEvent(new CustomEvent('ll:start-today-action'));
+    setActiveAction(resolveActionWorkspace(action, intelligence.memoryAction));
+  };
+
+  const handleStartById = (source: string, actionId?: string) => {
+    if (!actionId) {
+      const fallback = intelligence.todayActions[0];
+      if (fallback) openAction(fallback, source);
+      return;
+    }
+    const action = intelligence.todayActions.find((item) => item.id === actionId);
+    if (action) {
+      openAction(action, source);
+      return;
+    }
+    const resolved = resolveActionById(actionId, intelligence.todayActions, intelligence.memoryAction);
+    if (resolved) setActiveAction(resolved);
+  };
+
+  const handleActionComplete = (result: ActionWorkspaceResult) => {
+    recordFounderActionCompleted(projectId, {
+      actionId: result.actionId,
+      title: result.title,
+      kind: result.kind,
+      completedAt: new Date().toISOString(),
+      goImpact: result.goImpact,
+      answerCount: result.answers.length,
+    });
+    append({
+      category: 'activity',
+      title: 'actionCompleted',
+      summary: result.title,
+    });
+    analytics.trackMockActionCompleted(result.actionId, intelligence.successScore.percent + result.goImpact);
+    setActiveAction(null);
+    setRefreshKey((key) => key + 1);
   };
 
   const showWeeklyReview =
@@ -90,73 +139,95 @@ export function FounderTodayWorkspace({
 
   const primaryAction = intelligence.todayActions[0];
   const deltaReason = intelligence.successScore.reasons?.[0];
+  const actionHistory = intelligence.behavior?.actionHistory ?? [];
 
   return (
-    <div className="space-y-8">
-      <FounderJourneyMap confidence={confidence} verdict={pipeline?.decision?.verdict} />
+    <>
+      {activeAction ? (
+        <FounderActionWorkspace
+          workspace={activeAction}
+          scoreBefore={intelligence.successScore.percent}
+          onComplete={handleActionComplete}
+          onClose={() => setActiveAction(null)}
+        />
+      ) : null}
 
-      <FounderTodayDailyBrief
-        score={intelligence.successScore}
-        primaryAction={primaryAction}
-        deltaReason={deltaReason}
-        onStartPrimary={() =>
-          handleStartAction(
-            primaryAction ? `daily_${primaryAction.id}` : 'daily_primary',
-            primaryAction?.id,
-          )
-        }
-      />
+      <div className="space-y-8">
+        <FounderJourneyMap businessProgress={intelligence.businessProgress} />
 
-      <FounderTodayActionFirst
-        score={intelligence.successScore}
-        actions={intelligence.todayActions}
-        totalMinutes={intelligence.totalEtaMinutes}
-        onStartAction={(actionId) => handleStartAction(`action_${actionId}`, actionId)}
-      />
+        <FounderTodayDailyBrief
+          score={intelligence.successScore}
+          primaryAction={primaryAction}
+          deltaReason={deltaReason}
+          onStartPrimary={() =>
+            handleStartById(
+              primaryAction ? `daily_${primaryAction.id}` : 'daily_primary',
+              primaryAction?.id,
+            )
+          }
+        />
 
-      <details className="rounded-2xl border border-border/60 bg-muted/10">
-        <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
-          {t('moreDetails')}
-        </summary>
-        <div className="space-y-8 border-t border-border/60 px-5 py-6">
-          <FounderSuccessScorePanel
-            score={intelligence.successScore}
-            factors={intelligence.successScoreFactors}
-          />
+        <FounderSuccessScoreExplained
+          score={intelligence.successScore}
+          factors={intelligence.successScoreFactors}
+          primaryAction={primaryAction}
+        />
 
-          <FounderMemoryRecallPanel
-            memoryAction={intelligence.memoryAction}
-            behavior={intelligence.behavior}
-            onStart={() => handleStartAction('memory_action', intelligence.memoryAction.actionTitleKey)}
-          />
+        <FounderTodayActionFirst
+          score={intelligence.successScore}
+          actions={intelligence.todayActions}
+          totalMinutes={intelligence.totalEtaMinutes}
+          onStartAction={(actionId) => handleStartById(`action_${actionId}`, actionId)}
+        />
 
-          <FounderGrowthTimelinePanel behavior={intelligence.behavior} />
+        <FounderActionHistoryPanel history={actionHistory} />
 
-          {showWeeklyReview ? (
-            <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
-          ) : null}
+        <details className="rounded-2xl border border-border/60 bg-muted/10">
+          <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-muted-foreground">
+            {t('moreDetails')}
+          </summary>
+          <div className="space-y-8 border-t border-border/60 px-5 py-6">
+            <FounderSuccessScorePanel
+              score={intelligence.successScore}
+              factors={intelligence.successScoreFactors}
+            />
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            <BusinessProgressPanel dimensions={intelligence.businessProgress} />
-            <DecisionOneLinePanel fallbackConfidence={confidence} />
+            <FounderMemoryRecallPanel
+              memoryAction={intelligence.memoryAction}
+              behavior={intelligence.behavior}
+              onStart={() =>
+                handleStartById('memory_action', intelligence.todayActions[0]?.id)
+              }
+            />
+
+            <FounderGrowthTimelinePanel behavior={intelligence.behavior} />
+
+            {showWeeklyReview ? (
+              <FounderWeeklyCeoReviewPanel review={intelligence.weeklyCeoReview} />
+            ) : null}
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              <BusinessProgressPanel dimensions={intelligence.businessProgress} />
+              <DecisionOneLinePanel fallbackConfidence={confidence} />
+            </div>
+
+            <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />
+
+            <DecisionIntelligencePathPanel path={intelligence.decisionPath} />
+
+            <DecisionExperienceCoach
+              id="journey-decision-coach"
+              goalId={goalId}
+              projectId={projectId}
+              layout="action-first"
+              className="w-full max-w-none scroll-mt-6"
+              onNextActionStarted={() => analytics.trackNextActionStarted(goalId, 'coach_action')}
+            />
+
+            <FounderDailyReviewPanel review={intelligence.dailyReview} />
           </div>
-
-          <BusinessDeltaBrief deltas={intelligence.businessDeltas} projectName={projectName} />
-
-          <DecisionIntelligencePathPanel path={intelligence.decisionPath} />
-
-          <DecisionExperienceCoach
-            id="journey-decision-coach"
-            goalId={goalId}
-            projectId={projectId}
-            layout="action-first"
-            className="w-full max-w-none scroll-mt-6"
-            onNextActionStarted={() => analytics.trackNextActionStarted(goalId, 'coach_action')}
-          />
-
-          <FounderDailyReviewPanel review={intelligence.dailyReview} />
-        </div>
-      </details>
-    </div>
+        </details>
+      </div>
+    </>
   );
 }

@@ -16,6 +16,7 @@ import {
 import {
   loadFounderBehavior,
   syncFounderBehaviorOnVisit,
+  type FounderActionRecord,
   type FounderBehaviorProfile,
 } from './founder-behavior-store';
 import { loadProjectRegistration } from '../components/project-registration-panel';
@@ -195,6 +196,22 @@ type FounderIntelligenceCore = Omit<
   'successScoreFactors' | 'personalized' | 'personalizedMorningLines' | 'weeklyCeoReview' | 'behavior'
 >;
 
+function boostProgressFromActions(
+  progress: BusinessProgressDimension[],
+  history: FounderActionRecord[],
+): BusinessProgressDimension[] {
+  const completedKinds = new Set(history.map((entry) => entry.kind));
+
+  return progress.map((dim) => {
+    let boost = 0;
+    if (dim.key === 'customer' && completedKinds.has('interview')) boost = 25;
+    if (dim.key === 'pricing' && completedKinds.has('pricing')) boost = 30;
+    if (dim.key === 'market' && completedKinds.has('competitor')) boost = 15;
+    if (dim.key === 'customer' && completedKinds.has('landing')) boost = 10;
+    return { ...dim, percent: Math.min(100, dim.percent + boost) };
+  });
+}
+
 function attachPersonalization(
   brief: FounderIntelligenceCore,
   projectId: string,
@@ -211,23 +228,45 @@ function attachPersonalization(
     targetCustomer: micro.targetCustomer,
   });
 
+  const profile = loadFounderBehavior(projectId) ?? behavior;
+  const actionBonus = profile.actionScoreBonus;
+  const latestSnapshot = profile.scoreSnapshots[profile.scoreSnapshots.length - 1];
+  const adjustedPercent = Math.min(
+    100,
+    Math.max(brief.successScore.percent + actionBonus, latestSnapshot?.score ?? 0),
+  );
+  const businessProgress = boostProgressFromActions(
+    brief.businessProgress,
+    profile.actionHistory,
+  );
+
   const reasonKeys =
     brief.successScore.reasonKeys.length > 0
       ? brief.successScore.reasonKeys
       : [...(SUCCESS_REASONS_BY_STAGE[stageIndex] ?? SUCCESS_REASONS_BY_STAGE[2]!)];
-  const successScoreFactors = buildExplainableScoreFactors(brief.businessProgress, reasonKeys);
+  const successScoreFactors = buildExplainableScoreFactors(businessProgress, reasonKeys);
   const primaryAction = brief.todayActions[0];
-  const personalized = buildPersonalizedAiPmBrief(brief, behavior, goalId, primaryAction);
+  const personalized = buildPersonalizedAiPmBrief(
+    { ...brief, businessProgress, successScore: { ...brief.successScore, percent: adjustedPercent } },
+    profile,
+    goalId,
+    primaryAction,
+  );
   const personalizedMorningLines = buildPersonalizedMorningLines(personalized, brief.morningBrief);
-  const weeklyCeoReview = buildWeeklyCeoReview(brief, behavior);
+  const weeklyCeoReview = buildWeeklyCeoReview(brief, profile);
 
   return {
     ...brief,
+    businessProgress,
+    successScore: {
+      ...brief.successScore,
+      percent: adjustedPercent,
+    },
     successScoreFactors,
     personalized,
     personalizedMorningLines,
     weeklyCeoReview,
-    behavior: loadFounderBehavior(projectId),
+    behavior: profile,
   };
 }
 

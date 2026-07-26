@@ -4250,6 +4250,33 @@
           "strategy": "전략 수립",
           "go": "GO",
           "investment": "투자"
+        },
+        "dynamicStages": {
+          "marketValidation": {
+            "done": "시장 검증 완료",
+            "running": "시장 검증 진행중",
+            "upcoming": "시장 검증 예정"
+          },
+          "customerValidation": {
+            "done": "고객 검증 완료",
+            "running": "고객 검증 진행중",
+            "upcoming": "고객 검증 예정"
+          },
+          "pricingValidation": {
+            "done": "가격 검증 완료",
+            "running": "가격 검증 진행중",
+            "upcoming": "가격 검증 예정"
+          },
+          "mvp": {
+            "done": "MVP 완료",
+            "running": "MVP 진행중",
+            "upcoming": "MVP 예정"
+          },
+          "investmentPrep": {
+            "done": "투자 준비 완료",
+            "running": "투자 준비 진행중",
+            "upcoming": "투자 준비 예정"
+          }
         }
       },
       "founder": {
@@ -4586,7 +4613,7 @@
         "tasksTitle": "오늘 해야 할 일",
         "taskNumber": "①",
         "taskMeta": "{minutes}분 · +{impact}%",
-        "startCta": "시작",
+        "startCta": "바로 시작",
         "fallbackAction": "오늘의 핵심 액션",
         "moreDetails": "더 자세한 분석 · 판단 근거 · 지난 기록"
       },
@@ -4601,6 +4628,66 @@
         "todayFocusDefault": "가격 검증 하나만 하면 됩니다.",
         "etaLead": "{minutes}분 예상합니다.",
         "startCta": "바로 시작"
+      },
+      "actionWorkspace": {
+        "intro": "좋습니다.\n\n제가 질문을 하나씩 드리겠습니다.",
+        "stepIntro": "총 {total}개 중 {current}번째 질문입니다.",
+        "questionLabel": "질문",
+        "answerPlaceholder": "고객 답변 또는 메모를 적어주세요",
+        "record": "기록하기",
+        "recordFinal": "마지막 기록하기",
+        "progress": "{current} / {total} 완료",
+        "meta": "{minutes}분 · +{impact}%",
+        "completeLead": "수고하셨습니다 대표님.",
+        "completeSummary": "오늘 {count}개의 답변을 기록했습니다.",
+        "completeNext": "AI PM이 결과를 반영했습니다.\n\n사업 성공 확률이 올랐습니다.",
+        "scoreLabel": "사업 성공 확률",
+        "completeCta": "Today로 돌아가기",
+        "kinds": {
+          "interview": "고객 인터뷰",
+          "pricing": "가격 검증",
+          "competitor": "경쟁 분석",
+          "landing": "랜딩 제작",
+          "generic": "오늘의 액션"
+        },
+        "scoreExplained": {
+          "todayLead": "오늘 실행하면",
+          "defaultAction": "오늘의 핵심 액션"
+        },
+        "questions": {
+          "q1": "최근 어떤 점이 가장 불편했나요?",
+          "q2": "그 문제를 해결하려면 얼마까지 지불할 의향이 있나요?",
+          "q3": "지금 쓰는 대안은 무엇인가요?",
+          "q4": "우리 서비스를 주변에 추천하시겠습니까?",
+          "q5": "가장 먼저 개선했으면 하는 점은?",
+          "p1": "현재 가격에 만족하시나요?",
+          "p2": "가격보다 신뢰가 더 중요한가요?",
+          "p3": "월간 vs 연간 중 어떤 결제를 선호하시나요?",
+          "p4": "유료 전환을 결정하는 순간은 언제인가요?",
+          "p5": "얼마면 바로 결제하시겠습니까?",
+          "c1": "지금 쓰는 경쟁 서비스는 무엇인가요?",
+          "c2": "경쟁사 대비 가장 큰 불편은?",
+          "c3": "우리만의 차별점 한 가지는?",
+          "c4": "전환 비용은 얼마나 되나요?",
+          "c5": "6개월 뒤에도 우리를 쓸 이유는?",
+          "l1": "랜딩 첫 화면에 한 줄 가치 제안이 있나요?",
+          "l2": "CTA 버튼이 눈에 띄나요?",
+          "l3": "가격/혜택이 명확한가요?",
+          "l4": "신뢰 요소(후기·수치)가 있나요?",
+          "generic": {
+            "q1": "오늘 검증하고 싶은 핵심 질문은?"
+          }
+        }
+      },
+      "actionHistory": {
+        "label": "최근 실행 기록",
+        "title": "최근 실행 기록",
+        "days": {
+          "today": "오늘",
+          "yesterday": "어제",
+          "twoDaysAgo": "2일 전",
+          "earlier": "이전"
+        }
       },
       "todayHero": {
         "label": "오늘의 투자",

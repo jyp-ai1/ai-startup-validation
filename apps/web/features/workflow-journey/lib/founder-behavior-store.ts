@@ -5,6 +5,16 @@ export type ScoreSnapshot = {
   score: number;
 };
 
+export type FounderActionRecord = {
+  id: string;
+  actionId: string;
+  title: string;
+  kind: string;
+  completedAt: string;
+  goImpact: number;
+  answerCount: number;
+};
+
 export type FounderBehaviorProfile = {
   projectId: string;
   visitCount: number;
@@ -16,6 +26,8 @@ export type FounderBehaviorProfile = {
   completedActionIds: string[];
   deferredGapKeys: string[];
   scoreSnapshots: ScoreSnapshot[];
+  actionHistory: FounderActionRecord[];
+  actionScoreBonus: number;
   ideaSummary?: string;
   goalLabel?: string;
   targetCustomer?: string;
@@ -97,6 +109,8 @@ export function syncFounderBehaviorOnVisit(
     completedActionIds: previous?.completedActionIds ?? [],
     deferredGapKeys,
     scoreSnapshots: scoreSnapshots.slice(-24),
+    actionHistory: previous?.actionHistory ?? [],
+    actionScoreBonus: previous?.actionScoreBonus ?? 0,
     ideaSummary: context?.ideaSummary ?? previous?.ideaSummary,
     goalLabel: context?.goalLabel ?? previous?.goalLabel,
     targetCustomer: context?.targetCustomer ?? previous?.targetCustomer,
@@ -113,6 +127,51 @@ export function recordFounderActionStarted(projectId: string, actionId: string):
     ? previous.completedActionIds
     : [...previous.completedActionIds, actionId];
   saveFounderBehavior({ ...previous, completedActionIds });
+}
+
+export function recordFounderActionCompleted(
+  projectId: string,
+  record: Omit<FounderActionRecord, 'id'>,
+): FounderBehaviorProfile | null {
+  const previous = loadFounderBehavior(projectId);
+  if (!previous) return null;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const entry: FounderActionRecord = {
+    id: `${record.actionId}-${Date.now()}`,
+    ...record,
+  };
+
+  const actionHistory = [entry, ...previous.actionHistory].slice(0, 12);
+  const actionScoreBonus = Math.min(24, previous.actionScoreBonus + record.goImpact);
+
+  const scoreSnapshots = [...previous.scoreSnapshots];
+  const lastSnapshot = scoreSnapshots[scoreSnapshots.length - 1];
+  const baseScore = lastSnapshot?.score ?? 0;
+  const newScore = Math.min(100, baseScore + record.goImpact);
+
+  if (!lastSnapshot || lastSnapshot.date !== today) {
+    scoreSnapshots.push({ date: today, score: newScore });
+  } else {
+    scoreSnapshots[scoreSnapshots.length - 1] = { date: today, score: newScore };
+  }
+
+  const profile: FounderBehaviorProfile = {
+    ...previous,
+    actionHistory,
+    actionScoreBonus,
+    scoreSnapshots: scoreSnapshots.slice(-24),
+    completedActionIds: previous.completedActionIds.includes(record.actionId)
+      ? previous.completedActionIds
+      : [...previous.completedActionIds, record.actionId],
+  };
+
+  saveFounderBehavior(profile);
+  return profile;
+}
+
+export function getActionScoreBonus(projectId: string): number {
+  return loadFounderBehavior(projectId)?.actionScoreBonus ?? 0;
 }
 
 export function getFounderTimeline(profile: FounderBehaviorProfile | null): Array<{
