@@ -1,107 +1,65 @@
 ---
-description: LaunchLens Product Constitution — behavior/KPI loop; no screen/queue/epic completion
+description: LaunchLens AI Strategy Company — Founder Success Loop; intelligence growth not feature factory
 alwaysApply: true
 ---
 
-# Cursor Product Constitution (Permanent)
+# Cursor Operating Law (AI Strategy Company)
 
-Read `docs/PRODUCT_CONSTITUTION.md` Part II before any work.
+Read `docs/PRODUCT_EVOLUTION_DIRECTIVE.md` and `docs/FOUNDER_SUCCESS_LOOP.md` before any work.
 
 ## Purpose
 
-LaunchLens is **not** a project to finish. It is a **continuously growing AI product**.
+LaunchLens is an **AI Strategy Company**, not a product to finish.
 
-Cursor does **not** work in Sprint/Epic/Mission/Release/Version/Queue/Screen units.
+Cursor **grows Founder business success probability** by growing **AI intelligence** — not by adding screens, menus, or KPI dashboards.
 
-Cursor **improves user behaviors on Production forever**.
+## Founder Success Loop (only work unit)
 
-## Product Loop Level — Behavior, not screens
+```text
+Founder 행동 → AI 관찰 → 문제 발견 → AI 해결책 → Production
+  → 실사용 측정 → AI 학습 → Founder 경험 향상 → 반복
+```
 
-❌ Landing / Goal / Workflow / Decision improved  
-✅ User understands in **5s** · selects Goal in **10s** · passes Workflow **without thinking** · trusts AI · understands GO/HOLD · starts next action · **returns**
+## Pre-implementation gate (mandatory)
 
-**Behavior is the Product Loop.**
+```text
+이 구현이 Founder의 사업 성공 확률을 실제로 높이는가?
+  YES → implement
+  NO  → do not implement
+```
 
-## Cursor KPIs (every change must move one)
+## Eight Intelligence layers (grow these)
 
-Read `docs/PRODUCT_KPI_REGISTRY.md`. Pick **one primary KPI** per loop from funnel data (Admin `/admin/operations`).
+Founder · Business · Strategic · Execution · Learning · Product · Knowledge · Network
 
-Service Understanding → Goal Selection Rate → Activation → Decision Understanding → GO Conversion → Execution Start → Retention → Feedback
+Map: `docs/FOUNDER_SUCCESS_LOOP.md` · types: `packages/agents/src/types/intelligence.ts`
 
-**PM loop:** KPI → 원인 → 가설 → 실험 → **영향도 → Adopt/Rollback** → 다음 실험
+**Infrastructure frozen:** Journey · Agent contracts · Provider ports · Engine orchestration.
 
-Admin **Product OS v2** — AI PM recommendation + Impact. Engine: `product-os-engine.ts`
+**UI Frozen · UX Never Frozen** — friction removal always in scope.
 
-**Reports name KPIs only** — never "Landing 개선", "Workflow 개선".
+## Forbidden
 
-**Pre-implementation gate:** 이 변경이 **어느 KPI**를 **얼마나** 올리는가? — No answer → do not implement.
+New screens/menus as goals · KPI-unrelated refactors · Journey/Agent contract changes · Real LLM before intelligence proves value on Mock
 
-**Forbidden:** 기능이 있어서 만드는 기능. **Required:** KPI가 떨어져서 만드는 기능.
+## Daily report (08:00 KST only)
 
-**PR template:** `docs/PRODUCT_LOOP_PR_TEMPLATE.md` — Primary KPI through Rollback conditions. Missing → do not ship.
+Template: `docs/templates/DAILY_AUTONOMOUS_REPORT.md`
 
-**Priority:** Activation → Decision Understanding → Execution Start → Daily Retention → Trust. **UI Frozen · UX Never Frozen.**
+**Required closing:**
 
-**Single directive:** `docs/PRODUCT_EVOLUTION_DIRECTIVE.md` — read before every loop.
-
-**Forbidden:** New screens/menus as goals. Journey/Agent contract changes. Real LLM before provider swap.
-
-**Required:** Action-first Workspace · full UX states · Analytics on every change.
-
-Docs: `docs/PRODUCT_EVOLUTION_DIRECTIVE.md` · `docs/AGENT_CONTRACTS.md`
-
-## Thinking priority
-
-**Behavior > Screen > Component > Code**
-
-## Product Loop (no end)
-
-Journey analysis → problem → behavior/UX → implement → QA → regression → a11y → responsive → analytics → build → deploy → production check → **Journey analysis**
-
-## Work priority (always)
-
-1. Remove blockers · 2. Remove confusion · 3. Remove wait · 4. AI acts first · 5. No next-action guessing · 6. Success · 7. Return · 8. Admin data · 9. Perf · 10. A11y · 11. SEO · 12. Code quality → **repeat**
-
-## Production only
-
-https://ai-startup-validation-tau.vercel.app — all QA on Production.
-
-## Ship cycle (fully automatic — no approval)
-
-Behavior analysis → UX → implement → self-review → QA (functional, regression, responsive, a11y) → build → lint → typecheck → commit → push → deploy → smoke → health check → daily report → **next evolution**
-
-**Never ask:** commit · push · deploy · tag · preview · next task
-
-**Stop only:** DB schema · Auth · Billing · LLM cost · Vision change
-
-## Report only (no questions)
-
-오늘 새 경험 · **개선 KPI/행동** · 멈춤 지점 · Known Issues · Production · **내일 KPI**
+```text
+AI는 Founder의 성공 확률을 높이기 위한 다음 개선을 계속 진행 중입니다.
+```
 
 ## Forbidden output
 
-완료 · 끝 · 다음 작업 · 승인 · Queue/Mission/Sprint/Epic/Release 완료
+완료 · 다음 Loop · 다음 작업 · 승인해주세요 · 무엇을 만들까요 · Stage/Epic/Sprint 완료
 
-## CPO evaluates behaviors only
+## Production
 
-어디서 멈췄는가 · 왜 멈췄는가 · 왜 신뢰 안 했는가 · 왜 다음 행동 안 했는가
-
-## Vision
-
-**AI Strategy Project Manager** — `docs/PRODUCT_VISION_V3.md`
+https://ai-startup-validation-tau.vercel.app — ship cycle automatic, never ask for commit/push/deploy approval.
 
 ## Stop only
 
-Build fail · prod outage · DB/LLM/Billing/Auth cost · security · CPO vision change
-
-## Do NOT use as work goals
-
-Epic · Sprint · Mission · Release · Queue · **Stage complete** · Screen · Area · Task complete
-
-## Whole product (parallel — not sequential stages)
-
-Read `docs/PRODUCT_EVOLUTION_DIRECTIVE.md`. All surfaces (Landing → Admin → Perf → Beta) are **always in flight**. Never stop after one area.
-
-## Auto pipeline (never ask)
-
-Build → lint → typecheck → regression → commit → push → deploy → production QA → tag → doc update → **next improvement**
+Build fail · prod outage · DB/Auth/Billing/LLM cost · CPO vision change

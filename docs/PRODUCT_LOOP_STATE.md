@@ -1,46 +1,48 @@
 # Product Loop State
 
 **Directive:** [PRODUCT_EVOLUTION_DIRECTIVE.md](./PRODUCT_EVOLUTION_DIRECTIVE.md)  
+**Loop:** [FOUNDER_SUCCESS_LOOP.md](./FOUNDER_SUCCESS_LOOP.md)  
 **Production:** https://ai-startup-validation-tau.vercel.app
 
 ---
 
-## Cursor role
+## Company mode
 
-**Product Manager** — grow the product via KPI loop, not feature lists.
+**AI Strategy Company** — Cursor grows **intelligence**, not product surface area.
 
----
-
-## Active loop: Loop 1 — Activation Funnel (in flight)
-
-**Target:** `project_started → analysis_completed → next_action_started` ≥ 95%
-
-| Deliverable | Status |
-|-------------|--------|
-| Admin Activation Loop visualization | ✅ |
-| Drop-off auto calculation (live events) | ✅ |
-| AI PM priority from worst drop | ✅ |
-| PostHog/Clarity heatmap hints | ✅ |
-| Thinking hang regression | ongoing |
-
-**Admin:** `/admin/operations` → Activation Loop panel
+Infrastructure **complete:** Journey · AI PM · Agent Layer · Product OS · KPI Loop · Analytics · Experiment · Admin Brain.
 
 ---
 
-## Next loops (queued)
+## Active intelligence growth (now)
 
-2. **Decision Intelligence** — GO 62% → path to 81% with reason · gap · timeline · evidence  
-3. **Founder Daily OS** — AI morning brief leads action (competitor/VOC alerts)  
-4. **Execution Intelligence** — today/week/month/quarter roadmap tasks  
-5. **Memory** — return visit continuity  
-6. **Learning** — Founder behavior adaptation  
-7. **Product Intelligence** — Admin auto hypothesis from live KPI delta  
-8. **Real Intelligence** — provider swap only  
-9. **Closed Beta** — feedback → experiment loop  
-10. **Autonomous Company** — full stack operating loop
+| Priority | Intelligence | Focus |
+|----------|--------------|-------|
+| P0 | **Founder** | Memory: industry, goal, behavior patterns from live events |
+| P0 | **Business** | Morning Brief: "since yesterday" competitor/market/grant delta |
+| P1 | **Product** | Live KPI delta → auto hypothesis; reduce mock in Product OS |
+| P1 | **Learning** | VOC/market/competitor completion rates → next recommendation |
+| P2 | **Strategic** | Now → 3mo → 6mo → 1yr in Decision experience |
+| P2 | **Execution** | Quarter roadmap with effect · time · GO delta per task |
+| P3 | **Knowledge** | Vertical playbooks (Provider/RAG) |
+| P4 | **Network** | Cohort patterns (post-beta) |
 
 ---
 
-## Frozen
+## Shipped foundation (frozen)
 
-Journey · Agent contracts · Provider ports · Engine orchestration
+Activation Loop Admin · Action-first Today · Agent contracts · Pipeline stability · Provider port tiers
+
+---
+
+## Gate
+
+```text
+Founder 사업 성공 확률 ↑ ?  →  YES only
+```
+
+---
+
+## Report
+
+[Daily Founder Success Report](./templates/DAILY_AUTONOMOUS_REPORT.md)

@@ -13,6 +13,16 @@ export type {
   AgentPipelineOutput,
 } from './contracts';
 
+export type {
+  IntelligenceLayer,
+  FounderProfileSignals,
+  BusinessDelta,
+  StrategicHorizon,
+  LearningPattern,
+  CohortInsight,
+} from './intelligence';
+export { INTELLIGENCE_AGENT_MAP, FOUNDER_SUCCESS_GATE } from './intelligence';
+
 import type {
   DecisionOutput,
   ExecutionOutput,

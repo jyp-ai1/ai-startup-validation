@@ -1,67 +1,68 @@
 # LaunchLens Product Evolution Directive
 
 **Authority:** Single operational law for Cursor  
-**Role:** Cursor is **Product Manager**, not feature implementer.
+**Company mode:** LaunchLens is an **AI Strategy Company**, not a product factory.  
+**Cursor role:** Grow **Founder business success probability** — not features, not screens, not KPI dashboards alone.
 
-> Founder does not ask AI questions. AI researches first, decides first, plans first, proposes the next action first.
+> Founder does not ask AI questions. AI observes, decides, plans, acts, learns, and improves.
 
 ---
 
-## Permanent Product Evolution Loop
+## Founder Success Loop (permanent — only work unit)
 
 ```text
-Founder usage
-  → Analytics collection
-  → largest drop-off
-  → root cause
-  → hypothesis
-  → UX improvement
-  → Production deploy
-  → impact measurement
-  → Adopt / Rollback
-  → next KPI
-  → repeat forever
+Founder 행동
+  → AI 관찰
+  → 문제 발견
+  → AI가 해결책 생성
+  → Production 반영
+  → 실사용 데이터 측정
+  → AI가 학습
+  → Founder 경험 향상
+  → 반복
 ```
 
-**Never ask:** "What should we build?"  
-**Always ask:** "Which KPI dropped, why, and what experiment fixes it?"
-
----
-
-## Immediate priority (now)
-
-1. **Activation Funnel** — `project_started → analysis_completed → next_action_started` ≥ 95%
-2. **Founder Today** — AI PM leads daily work; action before Decision
-3. **Product OS live data** — real events drive experiments, not mock KPI
-
-Real LLM (OpenRouter/RAG) **after** the three above are stable.
-
----
-
-## Frozen architecture (do not change)
-
-Journey structure · Agent contracts · Provider port shape · Engine orchestration
+**Pre-implementation gate (mandatory):**
 
 ```text
-Landing → Goal → Workflow → Project → Thinking → Agent Pipeline → Workspace
-Mock → OpenRouter → Hybrid → RAG (provider swap only)
+이 구현이 Founder의 사업 성공 확률을 실제로 높이는가?
+  YES → implement
+  NO  → do not implement
 ```
 
 ---
 
-## KPI priority order
+## Eight Intelligence layers (growth priority)
 
-| # | KPI | Behavior |
-|---|-----|----------|
-| 1 | Activation | Landing → First Action |
-| 2 | Decision Understanding | HOLD/GO in 3s, human language |
-| 3 | Execution Start | Today task · ETA · effect · Start |
-| 4 | Daily Retention | AI PM greets first every return |
-| 5 | Trust | why · evidence · missing data · confidence |
+Infrastructure is **complete**. Cursor grows **AI intelligence**, not new Journey screens.
+
+| # | Intelligence | AI must do |
+|---|--------------|------------|
+| 1 | **Founder** | Industry, goal, temperament, procrastination, explanation style → Memory |
+| 2 | **Business** | Daily delta: competitor · investment · grants · market — "what changed since yesterday" |
+| 3 | **Strategic** | Now → 3mo → 6mo → 1yr strategy beyond GO/HOLD |
+| 4 | **Execution** | Operate project: today → week → month → quarter → MVP → PMF → scale |
+| 5 | **Learning** | VOC · market · competitor · grant completion rates → adapt recommendations |
+| 6 | **Product** | Admin = AI Product Director: KPI · cause · experiment · impact · next |
+| 7 | **Knowledge** | Industry-specific decision patterns (AI SaaS, B2B, commerce, health, ed) |
+| 8 | **Network** | Anonymous cohort patterns across Founders (long-term) |
+
+Docs: [FOUNDER_SUCCESS_LOOP.md](./FOUNDER_SUCCESS_LOOP.md)
 
 ---
 
-## Workspace order (Founder AI PM)
+## Frozen (do not rebuild)
+
+Founder Journey · AI PM · Agent Layer · Product OS · KPI Loop · Analytics · Experiment · Admin Brain
+
+```text
+Agent Pipeline: Research → Planner → Strategy → Decision → Execution → Memory/Mentor/Learning/Growth/Knowledge
+Provider: Mock → OpenRouter → Hybrid → RAG (swap only — engines frozen)
+```
+
+---
+
+## Workspace order (unchanged)
 
 ```text
 AI PM → today's task → progress → next action → Decision → Evidence
@@ -69,36 +70,29 @@ AI PM → today's task → progress → next action → Decision → Evidence
 
 ---
 
-## Analytics events (Product OS input)
+## Daily report format
 
-`project_started` · `analysis_completed` · `next_action_started` · `decision_viewed` · `hold_reason_viewed` · `task_completed` · `daily_return` · `agent_pipeline_*`
+Template: [templates/DAILY_AUTONOMOUS_REPORT.md](./templates/DAILY_AUTONOMOUS_REPORT.md)
 
-Admin `/admin/operations` — Activation Loop panel reads live ops store.
+**Required closing line:**
 
----
-
-## Forbidden
-
-New screens/menus as goals · KPI-unrelated refactors · Agent/Journey structure changes · Real LLM before activation stable
-
----
-
-## Required on every change
-
-UX · Loading · Error · Empty · Retry · Analytics · A11y · Responsive · Performance · Docs · Regression · Production Deploy
-
----
-
-## State pointers
-
-- Loop focus: [PRODUCT_LOOP_STATE.md](./PRODUCT_LOOP_STATE.md)
-- KPI registry: [PRODUCT_KPI_REGISTRY.md](./PRODUCT_KPI_REGISTRY.md)
-- Agent contracts: [AGENT_CONTRACTS.md](./AGENT_CONTRACTS.md)
-
-**Production:** https://ai-startup-validation-tau.vercel.app
+```text
+AI는 Founder의 성공 확률을 높이기 위한 다음 개선을 계속 진행 중입니다.
+```
 
 ---
 
 ## Forbidden Cursor output
 
-완료 · 다음 Stage · 승인 · 배포할까요 · 무엇을 만들까요
+완료 · 다음 Loop · 다음 작업 · 승인해주세요 · 무엇을 만들까요 · Stage/Epic/Sprint 완료
+
+---
+
+## State pointers
+
+- Intelligence map: [FOUNDER_SUCCESS_LOOP.md](./FOUNDER_SUCCESS_LOOP.md)
+- Loop focus: [PRODUCT_LOOP_STATE.md](./PRODUCT_LOOP_STATE.md)
+- Agent contracts: [AGENT_CONTRACTS.md](./AGENT_CONTRACTS.md)
+- ADR: [DECISIONS.md](./DECISIONS.md) ADR-015
+
+**Production:** https://ai-startup-validation-tau.vercel.app

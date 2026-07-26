@@ -379,6 +379,32 @@ LaunchLens reached AI Strategy Platform maturity (Vision 95%, UX 90%) but Real I
 
 ---
 
+## ADR-015: AI Strategy Company — Founder Success Loop over Product PM
+
+**Status:** Accepted  
+**Date:** 2026-07-26
+
+### Context
+
+LaunchLens infrastructure is complete (Journey, AI PM, Agent Layer, Product OS, KPI Loop, Analytics, Experiment, Admin Brain). CPO directive: stop treating Cursor as Product Manager building features; LaunchLens becomes an **AI Strategy Company** that grows **intelligence** to raise Founder business success probability.
+
+### Decision
+
+1. **Work unit** = Founder Success Loop (observe → solve → measure → learn), not screens or KPI cards alone
+2. **Eight Intelligence layers** — Founder, Business, Strategic, Execution, Learning, Product, Knowledge, Network — documented in `docs/FOUNDER_SUCCESS_LOOP.md`
+3. **Implementation gate:** "Does this increase Founder business success probability?" — NO → do not ship
+4. **Daily report** format → Daily Founder Success Report (see `docs/templates/DAILY_AUTONOMOUS_REPORT.md`)
+5. **Type contracts** in `packages/agents/src/types/intelligence.ts` — map layers to existing Agents; no new Journey structure
+6. **Provider swap** remains the path to Real Intelligence; engines frozen
+
+### Consequences
+
+- Cursor role: grow AI intelligence via existing Agent Layer + UX that reduces Founder friction
+- Product OS evolves toward AI Product Director (live delta → hypothesis → Adopt/Rollback)
+- Network Intelligence deferred until Founder + Business + Learning stable on Production
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
