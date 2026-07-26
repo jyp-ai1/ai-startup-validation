@@ -17,6 +17,7 @@ import {
   loadFounderMicroAnswers,
   saveFounderMicroAnswer,
 } from '../../lib/founder-micro-interaction-store';
+import { AiPmLiveConversation } from './ai-pm-live-conversation';
 import { AiPmMicroQuestion } from './ai-pm-micro-question';
 
 type AiPmLiveWorkspaceProps = {
@@ -100,6 +101,8 @@ export function AiPmLiveWorkspace({
             </div>
           </div>
         ) : null}
+
+        <AiPmLiveConversation agentIndex={agentIndex} failed={failed} />
 
         <ul className="space-y-2.5" role="list" aria-live="polite">
           {workItems.map((item) => {

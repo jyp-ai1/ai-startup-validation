@@ -7,10 +7,23 @@ import { loadAgentPipelineResult } from '@/lib/agents/agent-run-store';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
+import { AiPmConversation } from './ai-pm-conversation';
+
 type AiPmCompletionHandoffProps = {
   onStartToday: () => void;
   className?: string;
 };
+
+function resolveCtaKey(action?: { id: string; title: string }): 'ctaDefault' | 'ctaInterview' | 'ctaPricing' {
+  const haystack = `${action?.id ?? ''} ${action?.title ?? ''}`.toLowerCase();
+  if (haystack.includes('interview') || haystack.includes('voc') || haystack.includes('고객')) {
+    return 'ctaInterview';
+  }
+  if (haystack.includes('pric') || haystack.includes('가격')) {
+    return 'ctaPricing';
+  }
+  return 'ctaDefault';
+}
 
 export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletionHandoffProps) {
   const t = useTranslations('workflow.aiPm.completion');
@@ -23,6 +36,15 @@ export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletio
   const afterScore = Math.min(100, successScore + (primaryAction?.goImpact ?? 4));
   const minutes = primaryAction?.etaMinutes ?? 15;
   const actionTitle = primaryAction?.title ?? t('defaultAction');
+  const ctaKey = resolveCtaKey(primaryAction);
+
+  const narrativeMessages = [
+    t('greeting'),
+    t('goodNews'),
+    gap ? t('gapIntro', { gap }) : td('riskDefault'),
+    t('recommendIntro'),
+    `${t('todayIntro')}\n\n${actionTitle}\n\n${t('todayMeta', { minutes })}`,
+  ];
 
   return (
     <div
@@ -34,31 +56,16 @@ export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletio
       aria-modal="true"
       aria-labelledby="ai-pm-complete-title"
     >
-      <div className="w-full max-w-lg space-y-6 rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
-        <div className="space-y-4 text-center">
-          <p id="ai-pm-complete-title" className="whitespace-pre-line text-lg font-semibold leading-relaxed">
-            {t('doneHero')}
-          </p>
-          <p className="text-sm font-medium text-muted-foreground">{t('conclusionLead')}</p>
-          <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{td('headlineHold')}</p>
-          {gap ? (
-            <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-              {t('riskLine', { gap })}
-            </p>
-          ) : (
-            <p className="text-sm leading-relaxed text-muted-foreground">{td('riskDefault')}</p>
-          )}
-        </div>
+      <div className="max-h-[92vh] w-full max-w-lg space-y-6 overflow-y-auto rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
+        <AiPmConversation messages={narrativeMessages} />
 
         <div className="rounded-2xl border border-primary/25 bg-primary/[0.05] p-5 text-center">
-          <p className="text-sm text-muted-foreground">{t('todayLead')}</p>
-          <p className="mt-2 text-lg font-semibold leading-snug">{actionTitle}</p>
-          <p className="mt-3 text-sm text-muted-foreground">
-            {t('todayMeta', { minutes })}
+          <p id="ai-pm-complete-title" className="text-sm text-muted-foreground">
+            {t('successScoreLabel')}
           </p>
-          <div className="mt-4 flex items-center justify-center gap-2">
+          <div className="mt-3 flex items-center justify-center gap-2">
             <TrendingUp className="size-4 text-emerald-600" aria-hidden />
-            <p className="text-xl font-bold tabular-nums">
+            <p className="text-2xl font-bold tabular-nums sm:text-3xl">
               {successScore}% → {afterScore}%
             </p>
           </div>
@@ -70,7 +77,7 @@ export function AiPmCompletionHandoff({ onStartToday, className }: AiPmCompletio
           className="h-14 w-full rounded-xl text-base font-semibold"
           onClick={onStartToday}
         >
-          {t('cta')}
+          {t(ctaKey)}
           <ArrowRight className="ml-2 size-4" aria-hidden />
         </Button>
       </div>

@@ -21,6 +21,7 @@ import { FounderJourneyMap } from './founder-ai-pm/founder-journey-map';
 import { FounderMemoryRecallPanel } from './founder-ai-pm/founder-memory-recall-panel';
 import { FounderSuccessScorePanel } from './founder-ai-pm/founder-success-score-panel';
 import { FounderTodayActionFirst } from './founder-ai-pm/founder-today-action-first';
+import { FounderTodayDailyBrief } from './founder-ai-pm/founder-today-daily-brief';
 import { FounderWeeklyCeoReviewPanel } from './founder-ai-pm/founder-weekly-ceo-review-panel';
 
 const DAILY_VISIT_KEY = 'll_daily_visit';
@@ -87,9 +88,24 @@ export function FounderTodayWorkspace({
   const showWeeklyReview =
     intelligence.behavior && intelligence.behavior.visitCount >= 2;
 
+  const primaryAction = intelligence.todayActions[0];
+  const deltaReason = intelligence.successScore.reasons?.[0];
+
   return (
     <div className="space-y-8">
       <FounderJourneyMap confidence={confidence} verdict={pipeline?.decision?.verdict} />
+
+      <FounderTodayDailyBrief
+        score={intelligence.successScore}
+        primaryAction={primaryAction}
+        deltaReason={deltaReason}
+        onStartPrimary={() =>
+          handleStartAction(
+            primaryAction ? `daily_${primaryAction.id}` : 'daily_primary',
+            primaryAction?.id,
+          )
+        }
+      />
 
       <FounderTodayActionFirst
         score={intelligence.successScore}

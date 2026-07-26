@@ -4021,9 +4021,12 @@
       "continueAnyway": "View today's actions",
       "stayOnPage": "Your AI PM is analyzing. Please stay on this screen.",
       "registration": {
-        "greeting": "Hello.\n\nI'll be your AI PM starting today.",
-        "intro": "We'll review your business idea together and build an execution plan.",
-        "askIdea": "Your task now — tell me your idea in one line."
+        "greeting": "Hello, Founder.",
+        "askIdea": "Tell me your business idea\n\nin just one line.",
+        "examplesIntro": "Examples",
+        "oneLineEnough": "One line is enough —\nI'll research the rest.",
+        "typingFeedback": "Great.\n\nKeep going.",
+        "readyFeedback": "Great.\n\nThat's enough.\n\nHand it to your AI PM now."
       },
       "conversation": {
         "confirmedIdea": "Great.\n\nI've got your idea.\n\nI'm researching the market and competitors now.\n\nPlease wait a moment.",
@@ -4047,6 +4050,14 @@
         "todayMeta": "About {minutes} min",
         "defaultAction": "Interview 3 potential customers",
         "greeting": "Founder,\n\ngood news.",
+        "goodNews": "There's real potential here.",
+        "gapIntro": "However,\n\n{gap}\n\nOne more step will\nmake your pitch much stronger.",
+        "recommendIntro": "Here's what I recommend.",
+        "todayIntro": "Today",
+        "successScoreLabel": "Success probability",
+        "ctaDefault": "Start today's actions",
+        "ctaInterview": "Start customer interviews",
+        "ctaPricing": "Start price validation",
         "resultIntro": "Market review result",
         "investmentLabel": "Today's investment",
         "investmentMinutes": "Just {minutes} minutes today.",
@@ -4056,6 +4067,21 @@
         "todayTogether": "Let's start today with {action}.",
         "todayTogetherDefault": "Today's actions are ready. Shall we begin?",
         "cta": "Start today's actions"
+      },
+      "liveStream": {
+        "marketResearch.1": "Founder,\n\nthe market size looks sufficient.",
+        "marketResearch.2": "Checking competitors now.",
+        "marketResearch.3": "There are many similar services.\n\nFinding your differentiation.",
+        "marketResearch.4": "Wrapping up market research.",
+        "competitorAnalysis.1": "Identifying your main customers.",
+        "competitorAnalysis.2": "Mapping the competitive landscape.",
+        "competitorAnalysis.3": "Found your differentiation points.",
+        "strategyWriting.1": "Great.\n\nBuilding your execution strategy.",
+        "strategyWriting.2": "Reviewing the revenue model.",
+        "strategyWriting.3": "Finalizing the strategy draft.",
+        "todayPlan.1": "Calculating business viability.",
+        "todayPlan.2": "Choosing what you should do today.",
+        "todayPlan.3": "Almost done.\n\nJust a moment."
       },
       "reasoning": {
         "marketResearch": "Checking whether similar services already exist.",
@@ -4316,7 +4342,10 @@
         "targetMarket": "e.g. B2B SaaS, Korea",
         "optionalNote": "Team size, budget, etc."
       },
-      "cta": "Hand business review to AI PM"
+      "cta": "Start analysis",
+      "ctaTitle": "Your AI PM analyzes business viability",
+      "ctaDuration": "About 10 seconds",
+      "ctaSub": "From market research to execution plan —\nall automatic."
     },
     "journeyGuide": {
       "label": "Project progress guide",
@@ -4577,7 +4606,19 @@
         "taskMeta": "{minutes} min · +{impact}%",
         "startCta": "Start",
         "fallbackAction": "Today's core action",
-        "moreDetails": "More analysis · Decision · Memory · Timeline"
+        "moreDetails": "More analysis · evidence · history"
+      },
+      "todayDaily": {
+        "label": "AI PM daily brief",
+        "greeting": "Good morning, Founder.",
+        "deltaLead": "Since yesterday,\n\nyour success probability",
+        "deltaValue": "rose {delta}%.",
+        "deltaReasonLead": "Because",
+        "deltaReasonDefault": "you finished market validation.",
+        "todayFocusLead": "Today",
+        "todayFocusDefault": "price validation is all you need.",
+        "etaLead": "About {minutes} minutes.",
+        "startCta": "Start now"
       },
       "todayHero": {
         "label": "Today's investment",

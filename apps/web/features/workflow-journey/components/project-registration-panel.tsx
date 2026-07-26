@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Check, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 import { Button, Input } from '@repo/ui';
 
 import { readGoalIntakeIdea } from '../lib/goal-intake-store';
+import {
+  buildOnboardingMessageKeys,
+  getOnboardingFeedbackPhase,
+} from '../lib/ai-pm-onboarding-feedback';
 import { AiPmConversation } from './ai-state/ai-pm-conversation';
 
 export type ProjectRegistrationData = {
@@ -69,6 +73,20 @@ export function ProjectRegistrationPanel({
   const autosaveRef = useRef<number | null>(null);
 
   const canSubmit = ideaOneLiner.trim().length >= 4;
+  const feedbackPhase = getOnboardingFeedbackPhase(ideaOneLiner.trim().length);
+
+  const onboardingMessages = useMemo(() => {
+    const keys = buildOnboardingMessageKeys(feedbackPhase);
+    const exampleKeys = ['1', '2', '3'] as const;
+    const examples = exampleKeys.map((key) => `› ${t(`examples.${key}`)}`).join('\n');
+
+    return keys.map((key) => {
+      if (key === 'askIdea') {
+        return `${tpm('askIdea')}\n\n${tpm('examplesIntro')}\n\n${examples}`;
+      }
+      return tpm(key);
+    });
+  }, [feedbackPhase, t, tpm]);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -110,75 +128,47 @@ export function ProjectRegistrationPanel({
     onStart(data);
   };
 
-  const exampleKeys = ['1', '2', '3'] as const;
-  const aiWillDoKeys = ['market', 'competitor', 'viability', 'today'] as const;
-
   return (
     <section className="rounded-2xl border border-border/70 bg-card p-5 sm:p-8">
-      <AiPmConversation
-        messages={[tpm('greeting'), tpm('intro'), tpm('askIdea')]}
-        className="mb-6"
-      />
+      <AiPmConversation messages={onboardingMessages} className="mb-6" />
 
-      <div className="rounded-xl border border-primary/20 bg-primary/[0.04] p-4 sm:p-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">
-          {t('taskLabel')}
-        </p>
-        <p className="mt-2 text-base font-semibold sm:text-lg">{t('taskTitle')}</p>
+      <form className="space-y-5" onSubmit={handleSubmit}>
+        <div className="space-y-2">
+          <label htmlFor="idea-one-liner" className="sr-only">
+            {t('inputLabel')}
+          </label>
+          <Input
+            id="idea-one-liner"
+            value={ideaOneLiner}
+            onChange={(e) => setIdeaOneLiner(e.target.value)}
+            placeholder={t(`placeholders.${placeholderIndex + 1}`)}
+            className="h-12 rounded-xl border-dashed text-base"
+            required
+            minLength={4}
+            autoFocus
+          />
+          <p className="text-xs text-muted-foreground">
+            {savedHint && ideaOneLiner.trim().length >= 4 ? t('savedHint') : t('inputLabel')}
+          </p>
+        </div>
 
-        <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground" role="list">
-          {exampleKeys.map((key) => (
-            <li key={key} className="flex gap-2">
-              <span aria-hidden>›</span>
-              <span>{t(`examples.${key}`)}</span>
-            </li>
-          ))}
-        </ul>
-
-        <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <label htmlFor="idea-one-liner" className="sr-only">
-              {t('inputLabel')}
-            </label>
-            <Input
-              id="idea-one-liner"
-              value={ideaOneLiner}
-              onChange={(e) => setIdeaOneLiner(e.target.value)}
-              placeholder={t(`placeholders.${placeholderIndex + 1}`)}
-              className="h-12 rounded-xl border-dashed text-base"
-              required
-              minLength={4}
-              autoFocus
-            />
-            <p className="text-xs text-muted-foreground">
-              {savedHint && ideaOneLiner.trim().length >= 4 ? t('savedHint') : t('inputLabel')}
-            </p>
-          </div>
-
-          <div className="rounded-xl bg-muted/30 px-4 py-3">
-            <p className="text-xs font-medium text-muted-foreground">{t('aiWillDo.label')}</p>
-            <ul className="mt-2 space-y-1.5" role="list">
-              {aiWillDoKeys.map((key) => (
-                <li key={key} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <Check className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
-                  {t(`aiWillDo.${key}`)}
-                </li>
-              ))}
-            </ul>
-          </div>
-
+        <div className="rounded-2xl border border-primary/25 bg-primary/[0.05] p-5 text-center">
+          <p className="text-base font-semibold sm:text-lg">{t('ctaTitle')}</p>
+          <p className="mt-1 text-sm font-medium tabular-nums text-primary">{t('ctaDuration')}</p>
           <Button
             type="submit"
             size="lg"
             disabled={!canSubmit || disabled}
-            className="h-14 w-full rounded-xl text-base font-semibold"
+            className="mt-4 h-14 w-full rounded-xl text-base font-semibold"
           >
             <Sparkles className="mr-2 size-4" aria-hidden />
             {t('cta')}
           </Button>
-          <p className="text-center text-xs text-muted-foreground">{t('ctaHint')}</p>
-        </form>
-      </div>
+          <p className="mt-3 whitespace-pre-line text-xs leading-relaxed text-muted-foreground">
+            {t('ctaSub')}
+          </p>
+        </div>
+      </form>
     </section>
   );
 }
