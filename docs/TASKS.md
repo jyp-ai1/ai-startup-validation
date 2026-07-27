@@ -18,10 +18,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 | # | Deliverable | Status |
 |---|-------------|--------|
-| 1.1 | **Project Foundation** — Google Login · 내 프로젝트 · CRUD · empty workspace | ⬜ IN PROGRESS |
-| 1.2 | Project structure (userId-scoped service) | ⬜ |
-| 1.3 | 내 프로젝트 — list / create / enter | ⬜ |
-| 1.4 | 전략 인터뷰 ↔ Project | ⬜ |
+| 1.1 | **Project Foundation** — Google Login · 내 프로젝트 · CRUD · empty workspace | ✅ SHIPPED (`1da48a7`) |
+| 1.2 | **Adaptive Interview** — guided entry · mock Q1/Q2 · journey · context · decision | ⬜ IN PROGRESS |
+| 1.3 | Adaptive Thinking Engine (AI) | ⬜ |
 | 1.5 | 한국어 UI 통일 | ⬜ |
 | 1.6 | i18n structure only (ko maintained) | ⬜ |
 

@@ -346,8 +346,17 @@
     "pageTitle": "My projects",
     "greeting": "Hello, {name}.",
     "lead": "What strategy will you continue today?",
-    "newProjectLabel": "New project name",
+    "newProjectLabel": "Project name",
     "newProjectPlaceholder": "Project name",
+    "reviewTypeLabel": "What are you reviewing?",
+    "reviewTypes": {
+      "startup-idea": "Startup idea",
+      "new-business": "New business",
+      "existing-strategy": "Existing business strategy",
+      "investment-prep": "Investment preparation"
+    },
+    "descriptionLabel": "One-line description (optional)",
+    "descriptionPlaceholder": "Summarize in one line",
     "newProjectCta": "New project",
     "recentProjects": "Recent projects",
     "lastEdited": "Edited {when}",
@@ -357,6 +366,48 @@
       "backToList": "My projects",
       "emptyTitle": "Nothing here yet.",
       "emptyDesc": "Strategy interview starts in the next sprint."
+    }
+  },
+  "interview": {
+    "entry": {
+      "backToList": "My projects",
+      "title": "Start your strategy interview.",
+      "duration": "About 10 minutes.",
+      "promise": "AI does not write answers for you — it helps structure your thinking.",
+      "startCta": "Start interview",
+      "continueCta": "Continue interview",
+      "viewResult": "View interview result"
+    },
+    "workspace": {
+      "backToProject": "Project",
+      "mobileJourneyHint": "Progress {completed}/2 · Journey appears on wider screens."
+    },
+    "question": {
+      "answerLabel": "Answer",
+      "answerPlaceholder": "Write what comes to mind.",
+      "nextCta": "Next",
+      "saving": "Saving…"
+    },
+    "context": {
+      "title": "Project understanding",
+      "problem": "Problem",
+      "customer": "Customer",
+      "value": "Value",
+      "hypothesis": "Hypothesis",
+      "empty": "Filled automatically as you answer.",
+      "autoSaved": "Auto-saved"
+    },
+    "journey": {
+      "title": "Journey",
+      "problem": "Problem definition",
+      "customer": "Customer",
+      "market": "Market",
+      "business": "Business",
+      "decision": "Decision"
+    },
+    "decision": {
+      "expand": "View details",
+      "collapse": "Collapse"
     }
   },
   "projects": {

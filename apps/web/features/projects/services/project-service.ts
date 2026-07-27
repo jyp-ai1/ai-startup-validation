@@ -80,7 +80,7 @@ export async function getOwnedProject(
 /** Create project scoped to user (Sprint 1.1). */
 export async function createOwnedProject(
   userId: string,
-  input: Pick<CreateStartupProjectInput, 'title' | 'summary'>,
+  input: Pick<CreateStartupProjectInput, 'title' | 'summary' | 'onboardingContext'>,
 ): Promise<StartupProject> {
   if (!isSupabaseConfigured()) {
     throw new Error('Database not configured');
@@ -90,6 +90,7 @@ export async function createOwnedProject(
   return repo.create({
     title: input.title,
     summary: input.summary,
+    onboardingContext: input.onboardingContext,
     userId,
     isDemo: false,
     status: 'DRAFT',

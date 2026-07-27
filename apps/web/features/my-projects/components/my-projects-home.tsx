@@ -8,6 +8,8 @@ import { Plus } from 'lucide-react';
 import type { StartupProject } from '@repo/types/validation';
 import { Button } from '@repo/ui';
 
+import { REVIEW_TYPES } from '@/features/interview/types/interview-state';
+
 import {
   createMyProjectAction,
   type CreateMyProjectState,
@@ -47,12 +49,12 @@ export function MyProjectsHome({ userName, userEmail, projects, dbReady }: MyPro
         </p>
       ) : null}
 
-      <div className="border-t border-border/60 pt-6">
-        <form action={formAction} className="space-y-3">
-          <label className="sr-only" htmlFor="new-project-title">
-            {t('newProjectLabel')}
-          </label>
-          <div className="flex gap-2">
+      <div className="rounded-2xl border border-border/70 bg-card p-5">
+        <form action={formAction} className="space-y-5">
+          <div className="space-y-2">
+            <label htmlFor="new-project-title" className="text-sm font-medium">
+              {t('newProjectLabel')}
+            </label>
             <input
               id="new-project-title"
               name="title"
@@ -61,14 +63,52 @@ export function MyProjectsHome({ userName, userEmail, projects, dbReady }: MyPro
               minLength={2}
               maxLength={80}
               placeholder={t('newProjectPlaceholder')}
-              className="h-11 flex-1 rounded-xl border border-border/70 bg-background px-4 text-sm outline-none ring-primary/30 focus:ring-2"
+              className="h-11 w-full rounded-xl border border-border/70 bg-background px-4 text-sm outline-none ring-primary/30 focus:ring-2"
               disabled={!dbReady || pending}
             />
-            <Button type="submit" disabled={!dbReady || pending} className="h-11 shrink-0 gap-1">
-              <Plus className="size-4" aria-hidden />
-              {t('newProjectCta')}
-            </Button>
           </div>
+
+          <fieldset className="space-y-3" disabled={!dbReady || pending}>
+            <legend className="text-sm font-medium">{t('reviewTypeLabel')}</legend>
+            <div className="space-y-2">
+              {REVIEW_TYPES.map((type) => (
+                <label
+                  key={type}
+                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 px-4 py-3 text-sm transition-colors has-[:checked]:border-primary/50 has-[:checked]:bg-primary/5"
+                >
+                  <input
+                    type="radio"
+                    name="reviewType"
+                    value={type}
+                    required
+                    className="size-4 accent-primary"
+                  />
+                  <span>{t(`reviewTypes.${type}`)}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="space-y-2">
+            <label htmlFor="project-description" className="text-sm font-medium">
+              {t('descriptionLabel')}
+            </label>
+            <input
+              id="project-description"
+              name="description"
+              type="text"
+              maxLength={160}
+              placeholder={t('descriptionPlaceholder')}
+              className="h-11 w-full rounded-xl border border-border/70 bg-background px-4 text-sm outline-none ring-primary/30 focus:ring-2"
+              disabled={!dbReady || pending}
+            />
+          </div>
+
+          <Button type="submit" disabled={!dbReady || pending} className="h-11 w-full gap-1">
+            <Plus className="size-4" aria-hidden />
+            {t('newProjectCta')}
+          </Button>
+
           {state.error ? (
             <p className="text-sm text-destructive" role="alert">
               {state.error}

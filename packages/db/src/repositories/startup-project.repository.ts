@@ -83,6 +83,7 @@ function toInsertRow(input: CreateStartupProjectInput) {
     status: input.status ?? 'DRAFT',
     is_pinned: input.isPinned ?? false,
     thumbnail_color: input.thumbnailColor ?? null,
+    onboarding_context: input.onboardingContext ?? null,
   };
 }
 

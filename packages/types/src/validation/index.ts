@@ -77,6 +77,7 @@ export type CreateStartupProjectInput = {
   status?: StartupProjectStatus;
   isPinned?: boolean;
   thumbnailColor?: string | null;
+  onboardingContext?: Record<string, unknown> | null;
 };
 
 export type UpdateStartupProjectInput = {

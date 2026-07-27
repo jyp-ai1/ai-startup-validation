@@ -9,6 +9,10 @@ import {
   createOwnedProject,
   listOwnedProjects,
 } from '@/features/projects/services/project-service';
+import {
+  buildInitialInterviewState,
+  isReviewType,
+} from '@/features/interview/types/interview-state';
 import { requireAuthUser } from '@/lib/auth/server-auth';
 
 export type CreateMyProjectState = {
@@ -39,9 +43,19 @@ export async function createMyProjectAction(
     return { error: '프로젝트 이름을 2자 이상 입력해 주세요.' };
   }
 
+  const reviewTypeRaw = formData.get('reviewType')?.toString() ?? '';
+  if (!isReviewType(reviewTypeRaw)) {
+    return { error: '검토 유형을 선택해 주세요.' };
+  }
+
+  const description = formData.get('description')?.toString().trim() ?? '';
+
   const project = await createOwnedProject(user.id, {
     title,
-    summary: title,
+    summary: description || title,
+    onboardingContext: {
+      sprint12: buildInitialInterviewState(reviewTypeRaw, description),
+    },
   });
 
   revalidatePath('/my-projects');

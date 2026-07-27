@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
-import { EmptyProjectWorkspace } from '@/features/my-projects';
+import { GuidedInterviewEntry } from '@/features/interview';
 import { getOwnedProject } from '@/features/projects/services/project-service';
 import { requireAuthUser } from '@/lib/auth/server-auth';
 
@@ -31,5 +31,5 @@ export default async function ProjectWorkspacePage({ params }: ProjectWorkspaceP
     notFound();
   }
 
-  return <EmptyProjectWorkspace project={project} />;
+  return <GuidedInterviewEntry project={project} />;
 }
