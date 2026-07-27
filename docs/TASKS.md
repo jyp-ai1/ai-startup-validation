@@ -23,7 +23,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 1.3 | **Evidence-driven Validation Loop** — evidence accordion · no fake scores · improve loop | ✅ SHIPPED (`2b2d1c2`) |
 | 1.3.1 | **Review Board** — process vocabulary · 4-section board · evidence strength | ✅ SHIPPED (`69d543a`) |
 | 1.3.2 | **Intuitive Review UX** — premium SaaS UI · editable board · Design Constitution | ✅ SHIPPED (`54a4609`) |
-| 1.4 | **Continuous Strategy Loop** — one workspace · chip input · meeting board · follow-up loop | ⬜ IN PROGRESS |
+| 1.4 | **Continuous Strategy Loop** — one workspace · chip input · meeting board · follow-up loop | ✅ SHIPPED (`c0a835f`) — CPO QA pending |
 | 1.5 | 한국어 UI 통일 | ⬜ |
 | 1.6 | i18n structure only (ko maintained) | ⬜ |
 
