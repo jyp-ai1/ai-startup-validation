@@ -50,7 +50,7 @@ LaunchLens is **not** an AI Startup Validation Tool.
 
 ## Sprint 0 — Foundation ✅
 
-로그인 · 프로젝트 · DB
+로그인 · 프로젝트 · DB · **Design Language**
 
 | Item | Status |
 |------|--------|
@@ -58,10 +58,11 @@ LaunchLens is **not** an AI Startup Validation Tool.
 | Project | ✅ |
 | Context / DB | ✅ partial |
 | Workspace entry | ✅ |
+| **Design Language** | ✅ [DESIGN_LANGUAGE.md](./DESIGN_LANGUAGE.md) |
 
 ---
 
-## Sprint 1 — Thinking Workspace 📋 ACTIVE
+## Sprint 1 — Thinking Workspace ✅ SHIPPED
 
 ### Sprint question
 
@@ -73,7 +74,21 @@ LaunchLens is **not** an AI Startup Validation Tool.
 |------------|--------|
 | **Thinking Flow** (loop · nav · no page hop) | ✅ 1.4–1.5 |
 | **Review Board** (회의 요약 · vocabulary) | ✅ 1.3–1.5 |
-| **Decision Memory** | ⬜ **1.6 only remaining** |
+| **Summary Navigation** | ✅ 1.5 |
+| **Continuous Strategy Loop** | ✅ 1.4 |
+| **Decision Memory** | ✅ 1.6 |
+
+```text
+Sprint 1
+──────────────
+✅ Thinking Workspace
+✅ Review Board
+✅ Summary Navigation
+✅ Continuous Strategy Loop
+✅ Decision Memory
+──────────────
+Status: SHIPPED
+```
 
 Mock AI PM / mock review timer = OK for Sprint 1. Real AI → **Sprint 3**.
 
@@ -81,11 +96,13 @@ Mock AI PM / mock review timer = OK for Sprint 1. Real AI → **Sprint 3**.
 
 ---
 
-## Sprint 2 — Landing (Product begins)
+## Sprint 2 — Landing (Product begins) 📋 NEXT
 
 ### Sprint question
 
 > 처음 보는 사람도 30초 안에 서비스를 이해할까?
+
+**Principles:** [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · **Design:** [DESIGN_LANGUAGE.md](./DESIGN_LANGUAGE.md)
 
 ### User journey
 

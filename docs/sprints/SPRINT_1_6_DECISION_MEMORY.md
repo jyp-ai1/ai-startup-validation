@@ -1,6 +1,6 @@
 # Sprint 1.6 — Decision Memory
 
-**Status:** 📋 ACTIVE  
+**Status:** ✅ SHIPPED · `97e8bd1` · 2026-07-27  
 **Authority:** [LAUNCHLENS_ROADMAP_V1.md](../LAUNCHLENS_ROADMAP_V1.md) v1.1 · ADR-029
 
 ---

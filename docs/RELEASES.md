@@ -6,6 +6,17 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### Sprint 1.6 — Decision Memory (2026-07-27)
+
+**Commit:** `97e8bd1` · **Route:** `/validation`
+
+- Decision Memory nav below Workflow (no new top menu)
+- AI PM confirm-to-save flow (저장 / 나중에)
+- Main detail: Decision → Reason → Evidence → Date → Status
+- localStorage project-scoped persistence (demo path)
+
+See [releases/sprint-1-6/RELEASE.md](./releases/sprint-1-6/RELEASE.md)
+
 ### Day 2 — Analytics & Admin (planned)
 
 ---

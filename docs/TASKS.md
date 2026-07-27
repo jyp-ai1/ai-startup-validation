@@ -2,22 +2,23 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **1.6 Decision Memory** · [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) v1.1 · ADR-029  
+> **Active sprint:** Sprint **2 Landing** · [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) v1.1 · ADR-029  
+> **Sprint 1 exit:** Decision Memory ✅ 1.6 · [SPRINT_1_6_DECISION_MEMORY.md](./sprints/SPRINT_1_6_DECISION_MEMORY.md)  
 > **Next:** Sprint 2 Landing — [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md)  
 > **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
 
 ---
 
-## Sprint 1 — Thinking Workspace 📋 ACTIVE
+## Sprint 1 — Thinking Workspace ✅ COMPLETE
 
 **Sprint question:** 어떻게 하면 사용자가 **생각**하게 만들까?
 
-**Exit (AI 고도화 아님):** Thinking Flow ✅ · Review Board ✅ · **Decision Memory ⬜ 1.6**
+**Exit (AI 고도화 아님):** Thinking Flow ✅ · Review Board ✅ · **Decision Memory ✅ 1.6**
 
 | # | Deliverable | Status |
 |---|-------------|--------|
 | 1.1–1.5 | Foundation · Loop · Workspace IA | ✅ |
-| **1.6** | **Decision Memory** — confirm save · project-scoped · nav + Main detail | ⬜ SHIP pending |
+| **1.6** | **Decision Memory** — confirm save · project-scoped · nav + Main detail | ✅ SHIPPED `97e8bd1` |
 | 1.7 | 한국어 UI 통일 | ⬜ deferred |
 | 1.8 | i18n structure (ko maintained) | ⬜ deferred |
 
