@@ -2,7 +2,8 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **2.2.3 Signature Finale** · [SPRINT_2_2_3_SIGNATURE_FINALE.md](./sprints/SPRINT_2_2_3_SIGNATURE_FINALE.md)  
+> **Active sprint:** Sprint **2.3 First Value Experience** ✅ · [SPRINT_2_3_FIRST_VALUE.md](./sprints/SPRINT_2_3_FIRST_VALUE.md)  
+> **Shipped:** `819e92a` → Production  
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
@@ -69,7 +70,28 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 
 ---
 
-## Sprint 2.2.3 — Signature Finale ✅ READY
+## Sprint 2.3 — First Value Experience ✅ SHIPPED
+
+**Goal:** 5분 안에 *"LaunchLens는 내 의사결정을 도와주는 AI"* — `819e92a`
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| P0-1 | Google Login — middleware session refresh | ✅ |
+| P0-2 | Interactive Demo (`?demo=guided`) | ✅ |
+| P0-3/8 | Evidence Library (browse + detail) | ✅ |
+| P0-4 | Decision Story (narrative beats) | ✅ |
+| P0-5/9 | Sticky Next Action (never disappears) | ✅ |
+| P0-6 | Workspace Philosophy banner | ✅ |
+| P0-7 | Review Board 3-line (learned/why/do) | ✅ |
+| P0-10 | No dead ends — single CTA | ✅ |
+
+**Kickoff:** [SPRINT_2_3_FIRST_VALUE.md](./sprints/SPRINT_2_3_FIRST_VALUE.md)
+
+**Next:** Sprint 3 — Evidence Engine (real data)
+
+---
+
+## Sprint 2.2.3 — Signature Finale ✅ COMPLETE
 
 **Goal:** Workspace 진입 3초 — Project Health + Review 결론 + Story 그룹
 
@@ -82,8 +104,6 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 | 5 | Next Action Why 강화 | ✅ |
 
 **Kickoff:** [SPRINT_2_2_3_SIGNATURE_FINALE.md](./sprints/SPRINT_2_2_3_SIGNATURE_FINALE.md)
-
-**Next:** Sprint 3 — Evidence Engine (real data)
 
 ---
 
