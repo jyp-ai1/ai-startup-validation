@@ -51,8 +51,8 @@ export async function bootstrapFirstProject(userId: string, promoteDemo = false)
     if (draft) {
       title = draft.serviceName.trim();
       summary = draft.tagline.trim();
-      problem = draft.problem.trim();
-      customer = draft.customer.trim();
+      problem = draft.problem?.trim() ?? '';
+      customer = draft.customer?.trim() ?? '';
     } else {
       title = 'LaunchLens';
       summary = '창업자의 전략적 사고를 축적하는 Workspace';

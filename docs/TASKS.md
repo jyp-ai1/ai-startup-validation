@@ -2,7 +2,7 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **4.3 — Demo Experience 2.0** 🔄  
+> **Active sprint:** Sprint **4.4 — Smart Intake & First Working Experience** 🔄  
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
@@ -130,7 +130,27 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 
 ---
 
-## Sprint 4.3 — Demo Experience 2.0 🔄 IN PROGRESS
+## Sprint 4.4 — Smart Intake & First Working Experience 🔄 IN PROGRESS
+
+**Mission:** Paste First — AI PM understands, asks only what's missing
+
+| # | P0 | Status |
+|---|-----|--------|
+| 1 | Smart Intake (Paste + PDF/DOCX/TXT/MD) | ✅ |
+| 2 | 500-char textarea + counter | ✅ |
+| 3 | AI PM Working Animation (9s) | ✅ |
+| 4 | Document understanding + quality score | ✅ |
+| 5 | Selection-based first question | ✅ |
+| 6 | Evidence-first recommendation | ✅ |
+| 7 | Resources accordion | ✅ |
+| 8 | Before/After improvement | ✅ |
+| 9 | Daily monitoring preview | ✅ |
+
+**Kickoff:** [SPRINT_4_4_SMART_INTAKE.md](./sprints/SPRINT_4_4_SMART_INTAKE.md)
+
+---
+
+## Sprint 4.3 — Demo Experience 2.0 ✅ SHIPPED
 
 **CPO:** Demo = product value, not feature tutorial
 

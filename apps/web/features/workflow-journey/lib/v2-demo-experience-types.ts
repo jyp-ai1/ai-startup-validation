@@ -9,9 +9,13 @@ export type DemoExperienceStep =
   | 'strategyImprovement'
   | 'continuousManagement'
   | 'tryMyProject'
-  | 'myProjectForm'
-  | 'myProjectReviewing'
-  | 'myProjectResults'
+  | 'smartIntake'
+  | 'smartIntakeWorking'
+  | 'documentUnderstanding'
+  | 'firstQuestion'
+  | 'evidenceFirstReview'
+  | 'myProjectImprovement'
+  | 'dailyMonitoringPreview'
   | 'savePrompt'
   | 'loginCta';
 
@@ -47,13 +51,6 @@ export type DemoEvidenceSourceId =
   | 'yc';
 export type DemoDecisionChoice = 'proceed' | 'hold' | 'compare';
 
-export type DemoMyProjectResultId =
-  | 'market'
-  | 'competition'
-  | 'differentiation'
-  | 'recommendation'
-  | 'nextAction';
-
 export const DEMO_EXPERIENCE_STEP_ORDER: DemoExperienceStep[] = [
   'greeting',
   'sampleProject',
@@ -65,9 +62,13 @@ export const DEMO_EXPERIENCE_STEP_ORDER: DemoExperienceStep[] = [
   'strategyImprovement',
   'continuousManagement',
   'tryMyProject',
-  'myProjectForm',
-  'myProjectReviewing',
-  'myProjectResults',
+  'smartIntake',
+  'smartIntakeWorking',
+  'documentUnderstanding',
+  'firstQuestion',
+  'evidenceFirstReview',
+  'myProjectImprovement',
+  'dailyMonitoringPreview',
   'savePrompt',
   'loginCta',
 ];
@@ -76,4 +77,18 @@ export function getNextDemoStep(step: DemoExperienceStep): DemoExperienceStep | 
   const index = DEMO_EXPERIENCE_STEP_ORDER.indexOf(step);
   if (index < 0 || index >= DEMO_EXPERIENCE_STEP_ORDER.length - 1) return null;
   return DEMO_EXPERIENCE_STEP_ORDER[index + 1] ?? null;
+}
+
+export const SMART_INTAKE_STEPS: DemoExperienceStep[] = [
+  'smartIntake',
+  'smartIntakeWorking',
+  'documentUnderstanding',
+  'firstQuestion',
+  'evidenceFirstReview',
+  'myProjectImprovement',
+  'dailyMonitoringPreview',
+];
+
+export function isSmartIntakeStep(step: DemoExperienceStep): boolean {
+  return SMART_INTAKE_STEPS.includes(step);
 }

@@ -5462,6 +5462,123 @@
                   "hint": "Google 로그인으로 프로젝트를 저장하고 이어서 진행하세요."
                 }
               }
+            },
+            "smartIntake": {
+              "fallbackName": "내 프로젝트",
+              "title": "AI PM과 프로젝트 시작",
+              "lead": "어떤 자료든 가져올 수 있습니다. 붙여넣기부터 시작하세요.",
+              "supportedFormats": {
+                "businessPlan": "사업계획서",
+                "notion": "Notion",
+                "confluence": "Confluence",
+                "googleDocs": "Google Docs 복사본",
+                "chatgpt": "ChatGPT 초안",
+                "word": "Word"
+              },
+              "pasteLabel": "Ctrl + V 붙여넣기",
+              "pastePlaceholder": "현재 어떤 문제가 가장 심각합니까?\n\n누가 어떤 상황에서 불편함을 느끼나요?\n\n사업계획서, Notion, ChatGPT 초안 등을 그대로 붙여넣으세요.",
+              "charCount": "{count} / {max}",
+              "fileFormats": {
+                "pdf": "PDF",
+                "docx": "DOCX",
+                "txt": "TXT",
+                "md": "Markdown"
+              },
+              "analyzeCta": "AI PM이 이해하기",
+              "working": {
+                "title": "AI PM이 프로젝트를 이해하고 있습니다.",
+                "signatureTitle": "LaunchLens Evidence Engine",
+                "signatureBody": "여러 출처를 교차 검증하여 신뢰도를 높이고, 환각을 줄인 근거를 우선 제공합니다.",
+                "steps": {
+                  "problemAnalysis": "문제 정의 분석",
+                  "customerAnalysis": "고객 분석",
+                  "marketResearch": "시장 조사",
+                  "competitionResearch": "경쟁 조사",
+                  "pricingAnalysis": "가격 분석",
+                  "documentCompare": "기존 자료 비교",
+                  "strategySummary": "전략 정리"
+                },
+                "status": {
+                  "googleTrends": "Google Trends 분석 중",
+                  "searchVolume": "시장 검색량 비교 중",
+                  "competitorStrategy": "경쟁사 전략 비교 중",
+                  "understandingDoc": "대표님의 문서를 이해하는 중"
+                }
+              },
+              "understanding": {
+                "lead1": "대표님. 이미 상당히 잘 작성하셨습니다.",
+                "lead2": "제가 이해한 내용입니다.",
+                "extractedTitle": "자동 추출",
+                "fields": {
+                  "problem": "문제 정의",
+                  "customer": "고객",
+                  "market": "시장",
+                  "bm": "BM",
+                  "competition": "경쟁"
+                },
+                "missingTitle": "부족한 정보",
+                "missing": {
+                  "pricing": "가격",
+                  "customerInterview": "고객 인터뷰",
+                  "gtm": "GTM"
+                },
+                "qualityLabel": "전략 완성도",
+                "cta": "다음"
+              },
+              "firstQuestion": {
+                "lead": "이 부분만 보완하면 됩니다.",
+                "focus": "현재 가장 부족한 부분은 가격 전략입니다.",
+                "pricingLabel": "가격은?",
+                "pricing": {
+                  "free": "무료",
+                  "subscription": "구독",
+                  "oneTime": "일회성",
+                  "undecided": "아직 미정"
+                },
+                "cta": "검토 계속"
+              },
+              "evidenceReview": {
+                "recommendationLabel": "추천",
+                "recommendation": "B2B보다 B2C가 적합합니다.",
+                "whyLabel": "왜?",
+                "evidence": {
+                  "googleTrends": { "label": "Google Trends", "value": "▲18%" },
+                  "productHunt": { "label": "Product Hunt", "value": "유사 제품 증가" },
+                  "yc": { "label": "YC", "value": "최근 투자 증가" }
+                },
+                "reasonLead": "그래서 왜 B2C인가?",
+                "reasonBody": "{name}의 고객은 개인 창업자이고, 검색량 증가 속도가 B2C 진입에 유리합니다.",
+                "cta": "다음"
+              },
+              "resources": {
+                "toggle": "▼ 참고자료 보기",
+                "items": {
+                  "businessPlanGuide": "사업계획서 작성 가이드",
+                  "marketReport": "시장조사 보고서",
+                  "governmentSupport": "정부 창업지원사업",
+                  "investorDeck": "투자자료",
+                  "interviewTemplate": "인터뷰 템플릿"
+                }
+              },
+              "improvement": {
+                "lead": "{name} — 가격 전략을 보완한 결과입니다.",
+                "marketFit": "시장성",
+                "reason": "가격 모델이 명확해지면서 시장 적합성 판단 근거가 강화되었습니다.",
+                "cta": "다음"
+              },
+              "dailyPreview": {
+                "line1": "오늘 검토 완료",
+                "line2": "앞으로는 매일 시장 변화를 확인합니다.",
+                "items": {
+                  "competitorPricing": "경쟁사 가격 변경",
+                  "newLaunch": "신규 서비스 출시",
+                  "fundingNews": "투자 뉴스",
+                  "searchVolume": "검색량 변화",
+                  "userReaction": "사용자 반응"
+                },
+                "closing": "변화가 생기면 대표님께 먼저 알려드리겠습니다.",
+                "cta": "이 프로젝트 저장하기"
+              }
             }
           },
           "summary": {

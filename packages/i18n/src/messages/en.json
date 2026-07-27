@@ -5315,6 +5315,123 @@
                   "hint": "Sign in with Google to save your project and continue."
                 }
               }
+            },
+            "smartIntake": {
+              "fallbackName": "My project",
+              "title": "Start your project with AI PM",
+              "lead": "Bring any material. Start with paste.",
+              "supportedFormats": {
+                "businessPlan": "Business plan",
+                "notion": "Notion",
+                "confluence": "Confluence",
+                "googleDocs": "Google Docs copy",
+                "chatgpt": "ChatGPT draft",
+                "word": "Word"
+              },
+              "pasteLabel": "Ctrl + V to paste",
+              "pastePlaceholder": "What problem hurts most right now?\n\nWho feels it, and when?\n\nPaste your business plan, Notion page, or ChatGPT draft here.",
+              "charCount": "{count} / {max}",
+              "fileFormats": {
+                "pdf": "PDF",
+                "docx": "DOCX",
+                "txt": "TXT",
+                "md": "Markdown"
+              },
+              "analyzeCta": "Let AI PM understand",
+              "working": {
+                "title": "AI PM is understanding your project.",
+                "signatureTitle": "LaunchLens Evidence Engine",
+                "signatureBody": "Cross-validates multiple sources to raise confidence and prioritize trustworthy evidence over hallucination.",
+                "steps": {
+                  "problemAnalysis": "Problem definition analysis",
+                  "customerAnalysis": "Customer analysis",
+                  "marketResearch": "Market research",
+                  "competitionResearch": "Competition research",
+                  "pricingAnalysis": "Pricing analysis",
+                  "documentCompare": "Document comparison",
+                  "strategySummary": "Strategy synthesis"
+                },
+                "status": {
+                  "googleTrends": "Analyzing Google Trends",
+                  "searchVolume": "Comparing search volume",
+                  "competitorStrategy": "Comparing competitor strategy",
+                  "understandingDoc": "Understanding your document"
+                }
+              },
+              "understanding": {
+                "lead1": "Founder — you've already done solid work.",
+                "lead2": "Here's what I understood.",
+                "extractedTitle": "Auto-extracted",
+                "fields": {
+                  "problem": "Problem",
+                  "customer": "Customer",
+                  "market": "Market",
+                  "bm": "Business model",
+                  "competition": "Competition"
+                },
+                "missingTitle": "Still missing",
+                "missing": {
+                  "pricing": "Pricing",
+                  "customerInterview": "Customer interviews",
+                  "gtm": "GTM"
+                },
+                "qualityLabel": "Strategy completeness",
+                "cta": "Continue"
+              },
+              "firstQuestion": {
+                "lead": "You only need to fill this gap.",
+                "focus": "The biggest gap right now is pricing strategy.",
+                "pricingLabel": "Pricing model?",
+                "pricing": {
+                  "free": "Free",
+                  "subscription": "Subscription",
+                  "oneTime": "One-time",
+                  "undecided": "Not decided yet"
+                },
+                "cta": "Continue review"
+              },
+              "evidenceReview": {
+                "recommendationLabel": "Recommendation",
+                "recommendation": "B2C fits better than B2B.",
+                "whyLabel": "Why?",
+                "evidence": {
+                  "googleTrends": { "label": "Google Trends", "value": "▲18%" },
+                  "productHunt": { "label": "Product Hunt", "value": "Similar products rising" },
+                  "yc": { "label": "YC", "value": "Recent investment uptick" }
+                },
+                "reasonLead": "So why B2C?",
+                "reasonBody": "{name}'s customers are individual founders — search growth favors a B2C entry.",
+                "cta": "Continue"
+              },
+              "resources": {
+                "toggle": "▼ View reference materials",
+                "items": {
+                  "businessPlanGuide": "Business plan guide",
+                  "marketReport": "Market research report",
+                  "governmentSupport": "Government startup programs",
+                  "investorDeck": "Investor deck template",
+                  "interviewTemplate": "Interview template"
+                }
+              },
+              "improvement": {
+                "lead": "{name} — after clarifying pricing.",
+                "marketFit": "Market fit",
+                "reason": "A clearer pricing model strengthened the market-fit rationale.",
+                "cta": "Continue"
+              },
+              "dailyPreview": {
+                "line1": "Today's review complete",
+                "line2": "From now on, I check market changes daily.",
+                "items": {
+                  "competitorPricing": "Competitor pricing changes",
+                  "newLaunch": "New product launches",
+                  "fundingNews": "Funding news",
+                  "searchVolume": "Search volume shifts",
+                  "userReaction": "User sentiment"
+                },
+                "closing": "When something changes, I'll tell you first.",
+                "cta": "Save this project"
+              }
             }
           },
           "summary": {

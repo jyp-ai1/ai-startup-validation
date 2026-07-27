@@ -1,11 +1,24 @@
 export const DEMO_PROJECT_DRAFT_KEY = 'll_demo_project_draft';
 export const DEMO_PROJECT_DRAFT_COOKIE = 'll_demo_project_draft';
 
+import type {
+  SmartIntakeFieldId,
+  SmartIntakeImportSource,
+  SmartIntakeMissingId,
+  SmartIntakePricingChoice,
+} from './v2-smart-intake-types';
+
 export type DemoProjectDraft = {
   serviceName: string;
   tagline: string;
   customer: string;
   problem: string;
+  pastedContent?: string;
+  importSource?: SmartIntakeImportSource;
+  pricingModel?: SmartIntakePricingChoice;
+  completenessScore?: number;
+  extracted?: Partial<Record<SmartIntakeFieldId, boolean>>;
+  missing?: SmartIntakeMissingId[];
 };
 
 export function createEmptyDemoProjectDraft(): DemoProjectDraft {
@@ -13,12 +26,7 @@ export function createEmptyDemoProjectDraft(): DemoProjectDraft {
 }
 
 export function isDemoProjectDraftValid(draft: DemoProjectDraft): boolean {
-  return (
-    draft.serviceName.trim().length >= 2 &&
-    draft.tagline.trim().length >= 4 &&
-    draft.customer.trim().length >= 2 &&
-    draft.problem.trim().length >= 4
-  );
+  return draft.serviceName.trim().length >= 2 && draft.tagline.trim().length >= 4;
 }
 
 export function saveDemoProjectDraft(draft: DemoProjectDraft): void {
@@ -32,14 +40,13 @@ export function loadDemoProjectDraft(): DemoProjectDraft | null {
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw) as DemoProjectDraft;
-    if (!parsed.serviceName || !parsed.tagline) return null;
+    if (!parsed.serviceName) return null;
     return parsed;
   } catch {
     return null;
   }
 }
 
-/** Persist draft for server-side promotion after Google Login. */
 export function persistDemoProjectDraftForLogin(draft: DemoProjectDraft): void {
   saveDemoProjectDraft(draft);
   if (typeof document === 'undefined') return;

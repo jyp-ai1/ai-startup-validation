@@ -16,7 +16,6 @@ import {
   DEMO_EVIDENCE_SOURCES,
   DEMO_INBOX_ITEMS,
   DEMO_MONITORING_ITEMS,
-  DEMO_MY_PROJECT_RESULTS,
   DEMO_RECOMMENDATION_EVIDENCE,
   DEMO_RECOMMENDATION_WHY,
   DEMO_SAMPLE_PROJECT,
@@ -26,20 +25,17 @@ import {
   createEmptyDemoProjectDraft,
   isDemoProjectDraftValid,
   persistDemoProjectDraftForLogin,
-  saveDemoProjectDraft,
   type DemoProjectDraft,
 } from '../../lib/v2-demo-project-store';
+import { V2SmartIntakeFlow } from './v2-smart-intake-flow';
 import {
   getNextDemoStep,
+  isSmartIntakeStep,
   type DemoDecisionChoice,
   type DemoExperienceStep,
 } from '../../lib/v2-demo-experience-types';
 
 const INVESTIGATING_MS = 3000;
-const MY_PROJECT_REVIEW_MS = 3200;
-
-const INPUT_CLASS =
-  'h-11 w-full rounded-xl border border-border/70 bg-background px-4 text-sm outline-none ring-primary/30 focus:ring-2';
 
 type V2DemoExperienceProps = {
   className?: string;
@@ -85,10 +81,8 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
   const [loginDraftReady, setLoginDraftReady] = useState(false);
 
   useEffect(() => {
-    if (step !== 'investigating' && step !== 'myProjectReviewing') return;
-    const ms = step === 'investigating' ? INVESTIGATING_MS : MY_PROJECT_REVIEW_MS;
-    const nextStep = step === 'investigating' ? 'inbox' : 'myProjectResults';
-    const timer = window.setTimeout(() => setStep(nextStep), ms);
+    if (step !== 'investigating') return;
+    const timer = window.setTimeout(() => setStep('inbox'), INVESTIGATING_MS);
     return () => window.clearTimeout(timer);
   }, [step]);
 
@@ -103,17 +97,9 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
     if (next) setStep(next);
   };
 
-  const handleProjectFormSubmit = () => {
-    if (!isDemoProjectDraftValid(projectDraft)) return;
-    saveDemoProjectDraft(projectDraft);
-    setStep('myProjectReviewing');
+  const updateDraft = (draft: DemoProjectDraft) => {
+    setProjectDraft(draft);
   };
-
-  const updateDraft = (field: keyof DemoProjectDraft, value: string) => {
-    setProjectDraft((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const projectName = projectDraft.serviceName.trim() || t('steps.myProjectResults.fallbackName');
 
   return (
     <div className={cn('space-y-6', className)}>
@@ -463,118 +449,16 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
         </div>
       ) : null}
 
-      {step === 'myProjectForm' ? (
-        <div className="space-y-4">
-          <AiPmBubble>
-            <p className="font-medium">{t('steps.myProjectForm.lead')}</p>
-            <p className="text-muted-foreground">{t('steps.myProjectForm.hint')}</p>
-          </AiPmBubble>
-          <div className="space-y-4 rounded-xl border border-border/60 bg-muted/10 p-5">
-            <div className="space-y-2">
-              <label htmlFor="demo-service-name" className="text-sm font-medium">
-                {t('steps.myProjectForm.fields.serviceName')}
-              </label>
-              <input
-                id="demo-service-name"
-                type="text"
-                value={projectDraft.serviceName}
-                onChange={(e) => updateDraft('serviceName', e.target.value)}
-                placeholder={t('steps.myProjectForm.placeholders.serviceName')}
-                className={INPUT_CLASS}
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="demo-tagline" className="text-sm font-medium">
-                {t('steps.myProjectForm.fields.tagline')}
-              </label>
-              <input
-                id="demo-tagline"
-                type="text"
-                value={projectDraft.tagline}
-                onChange={(e) => updateDraft('tagline', e.target.value)}
-                placeholder={t('steps.myProjectForm.placeholders.tagline')}
-                className={INPUT_CLASS}
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="demo-customer" className="text-sm font-medium">
-                {t('steps.myProjectForm.fields.customer')}
-              </label>
-              <input
-                id="demo-customer"
-                type="text"
-                value={projectDraft.customer}
-                onChange={(e) => updateDraft('customer', e.target.value)}
-                placeholder={t('steps.myProjectForm.placeholders.customer')}
-                className={INPUT_CLASS}
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="demo-problem" className="text-sm font-medium">
-                {t('steps.myProjectForm.fields.problem')}
-              </label>
-              <input
-                id="demo-problem"
-                type="text"
-                value={projectDraft.problem}
-                onChange={(e) => updateDraft('problem', e.target.value)}
-                placeholder={t('steps.myProjectForm.placeholders.problem')}
-                className={INPUT_CLASS}
-              />
-            </div>
-          </div>
-          <Button
-            type="button"
-            className="w-full rounded-lg"
-            disabled={!isDemoProjectDraftValid(projectDraft)}
-            onClick={handleProjectFormSubmit}
-          >
-            {t('steps.myProjectForm.cta')}
-          </Button>
-        </div>
-      ) : null}
-
-      {step === 'myProjectReviewing' ? (
-        <AiPmBubble className="text-center">
-          <p className="font-medium">{t('steps.myProjectReviewing.line1', { name: projectName })}</p>
-          <p>{t('steps.myProjectReviewing.line2')}</p>
-          <div className="mt-4 flex items-center justify-center gap-2 text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" aria-hidden />
-            <span className="text-xs">{t('steps.myProjectReviewing.loading')}</span>
-          </div>
-        </AiPmBubble>
-      ) : null}
-
-      {step === 'myProjectResults' ? (
-        <div className="space-y-4">
-          <AiPmBubble>
-            <p className="font-medium">{t('steps.myProjectResults.lead', { name: projectName })}</p>
-          </AiPmBubble>
-
-          <div className="space-y-3">
-            {DEMO_MY_PROJECT_RESULTS.map((item) => (
-              <div
-                key={item}
-                className="rounded-lg border border-border/40 bg-muted/5 px-4 py-3"
-              >
-                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  {t(`steps.myProjectResults.items.${item}.label`)}
-                </p>
-                <p className="mt-1 text-sm font-medium leading-relaxed">
-                  {t(`steps.myProjectResults.items.${item}.value`, { name: projectName })}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="rounded-lg border border-primary/25 bg-primary/[0.04] px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-            {t('steps.myProjectResults.evidenceBasis', { count: DEMO_EVIDENCE_COUNT })}
-          </div>
-
-          <Button type="button" className="w-full rounded-lg" onClick={advance}>
-            {t('steps.myProjectResults.cta')}
-          </Button>
-        </div>
+      {isSmartIntakeStep(step) ? (
+        <V2SmartIntakeFlow
+          step={step}
+          projectDraft={projectDraft}
+          onDraftChange={updateDraft}
+          onStepChange={setStep}
+          onAdvance={advance}
+          AiPmBubble={AiPmBubble}
+          StarRating={StarRating}
+        />
       ) : null}
 
       {step === 'savePrompt' ? (
