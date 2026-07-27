@@ -1,11 +1,17 @@
 # Sprint 2 — Go To Market Foundation
 
 **Former name:** Landing Experience  
-**Status:** ⬜ PLANNED (Sprint 1 ✅ SHIPPED)  
-**Authority:** [LAUNCHLENS_ROADMAP_V1.md](../LAUNCHLENS_ROADMAP_V1.md) · ADR-031 · Rule #0  
+**Status:** 📋 ACTIVE — Sprint 2 started  
+**Authority:** [LAUNCHLENS_ROADMAP_V1.md](../LAUNCHLENS_ROADMAP_V1.md) · ADR-031/032 · Rule #0  
 **Principles:** [SPRINT_2_PRINCIPLES.md](../SPRINT_2_PRINCIPLES.md)
 
-> Landing은 회원가입 페이지가 아니다. **생각을 팔아야 한다.**
+> `/validation` — bug fix only until Sprint 3.
+
+---
+
+## Epics & KPIs
+
+See [SPRINT_2_PRINCIPLES.md](../SPRINT_2_PRINCIPLES.md) · Release: Lighthouse 90+ · Desktop/Tablet/Mobile screenshots
 
 ---
 

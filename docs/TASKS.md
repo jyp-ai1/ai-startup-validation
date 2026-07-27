@@ -28,11 +28,18 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint 2 — Go To Market Foundation ⬜ NEXT
+## Sprint 2 — Go To Market Foundation 🔄 ACTIVE
 
 **Single goal:** 30초 안에 *"이거 그냥 AI가 문서 써주는 게 아니네."*
 
 **Priority:** GTM · Live Demo first — **`/validation` feature work ✗** (readonly demo only)
+
+| Epic | Status |
+|------|--------|
+| 1 Landing GTM sections | 🔄 |
+| 2 Live Demo readonly | 🔄 |
+| 3 Auth flow | ⬜ |
+| 4 Workspace entry | ⬜ |
 
 See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md)
 

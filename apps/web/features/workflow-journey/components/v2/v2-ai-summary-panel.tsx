@@ -20,6 +20,7 @@ type V2AiSummaryPanelProps = {
   onGoToStep: (step: WorkflowStepId) => void;
   onReview: () => void;
   hasIdea: boolean;
+  readOnly?: boolean;
   className?: string;
 };
 
@@ -31,6 +32,7 @@ export function V2AiSummaryPanel({
   onGoToStep,
   onReview,
   hasIdea,
+  readOnly = false,
   className,
 }: V2AiSummaryPanelProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.ia.summary');
@@ -95,7 +97,7 @@ export function V2AiSummaryPanel({
           size="sm"
           className="mt-4 w-full rounded-lg"
           onClick={() => {
-            if (nextStep === 'market' && hasIdea && reviewCount === 0) {
+            if (!readOnly && nextStep === 'market' && hasIdea && reviewCount === 0) {
               onReview();
               return;
             }

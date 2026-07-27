@@ -23,11 +23,20 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function ValidationPage() {
-  const persona = await readJourneyPersona();
-  if (!persona) {
-    redirect('/who');
+type ValidationPageProps = {
+  searchParams: Promise<{ demo?: string }>;
+};
+
+export default async function ValidationPage({ searchParams }: ValidationPageProps) {
+  const params = await searchParams;
+  const isDemoReadonly = params.demo === 'readonly';
+
+  if (!isDemoReadonly) {
+    const persona = await readJourneyPersona();
+    if (!persona) {
+      redirect('/who');
+    }
   }
 
-  return <V2StrategyWorkspaceView />;
+  return <V2StrategyWorkspaceView mode={isDemoReadonly ? 'demo-readonly' : 'default'} />;
 }

@@ -45,6 +45,7 @@ type V2MainWorkspacePanelProps = {
   onFollowUpSubmit: () => void;
   onGoToStep: (step: WorkflowStepId) => void;
   hasIdea: boolean;
+  readOnly?: boolean;
 };
 
 const PANEL = 'min-h-[420px] rounded-2xl bg-muted/20 p-6 sm:p-8 lg:min-h-[480px]';
@@ -69,6 +70,7 @@ export function V2MainWorkspacePanel({
   onFollowUpSubmit,
   onGoToStep,
   hasIdea,
+  readOnly = false,
 }: V2MainWorkspacePanelProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.ia.main');
   const tv = useTranslations('workflow.v2.validation');
@@ -101,7 +103,9 @@ export function V2MainWorkspacePanel({
     );
   }
 
-  const renderFieldActions = (field: V2EvidenceField, value: string) => (
+  const renderFieldActions = (field: V2EvidenceField, value: string) => {
+    if (readOnly) return null;
+    return (
     <div className="mt-6 flex flex-wrap gap-2">
       <Button
         type="button"
@@ -134,7 +138,8 @@ export function V2MainWorkspacePanel({
         {t('actions.reinput')}
       </Button>
     </div>
-  );
+    );
+  };
 
   const renderInputStep = (step: WorkflowStepId) => {
     const field = getStepField(step);
@@ -151,6 +156,8 @@ export function V2MainWorkspacePanel({
             <p className="mt-6 text-[15px] leading-relaxed">{value}</p>
             {renderFieldActions(field, value)}
           </>
+        ) : readOnly ? (
+          <p className="mt-6 text-sm text-muted-foreground">{t(`empty.${field}`)}</p>
         ) : (
           <>
             <p className="mt-3 text-sm text-muted-foreground">{t(`empty.${field}`)}</p>
@@ -181,6 +188,7 @@ export function V2MainWorkspacePanel({
           <textarea
             value={idea}
             onChange={(event) => onIdeaChange(event.target.value)}
+            readOnly={readOnly}
             placeholder={tv('ideaPlaceholder')}
             rows={4}
             className="mt-6 w-full resize-none rounded-xl bg-background px-4 py-3.5 text-[15px] leading-relaxed outline-none ring-1 ring-border/50 focus:ring-primary/30"
@@ -244,7 +252,7 @@ export function V2MainWorkspacePanel({
       content = (
         <section className={PANEL}>
           <V2MeetingSummary evidence={evidence} reviewCount={reviewCount} />
-          {reviewCount > 0 && !followUpDone ? (
+          {reviewCount > 0 && !followUpDone && !readOnly ? (
             <div className="mt-8 space-y-4 border-t border-border/40 pt-8">
               <p className="text-sm text-muted-foreground">{tf('lead')}</p>
               <p className="text-sm font-medium">{tf('question')}</p>
@@ -282,7 +290,7 @@ export function V2MainWorkspacePanel({
     <>
       {content}
 
-      {activeStep !== 'review' ? (
+      {activeStep !== 'review' && !readOnly ? (
         <div className="mt-6 flex items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
             {tb('ctaHint', { count: countStrongFields(evidence) })}

@@ -4,16 +4,17 @@ import { LandingHeader } from './landing-header';
 import { LandingHero } from './landing-hero';
 import { LandingLazySection } from './landing-lazy-section';
 import { LandingReturningGate } from './landing-returning-gate';
+import { LandingGtmWhyNarrative } from './landing-gtm-why-narrative';
+import { LandingLiveDemoSection } from './landing-live-demo-section';
+import { LandingGtmFinalCta } from './landing-gtm-final-cta';
 
-const LandingTracker = dynamic(() => import('./landing-tracker').then((m) => m.LandingTracker));
-
-const LandingTrustedBy = dynamic(
-  () => import('./landing-trusted-by').then((m) => m.LandingTrustedBy),
-  { loading: () => <div className="min-h-[120px]" aria-hidden /> },
+const LandingHowItWorks = dynamic(
+  () => import('./landing-how-it-works').then((m) => m.LandingHowItWorks),
+  { loading: () => <div className="min-h-[320px]" aria-hidden /> },
 );
-const LandingTestimonials = dynamic(
-  () => import('./landing-testimonials').then((m) => m.LandingTestimonials),
-  { loading: () => <div className="min-h-[200px]" aria-hidden /> },
+const LandingPricing = dynamic(
+  () => import('./landing-pricing').then((m) => m.LandingPricing),
+  { loading: () => <div className="min-h-[400px]" aria-hidden /> },
 );
 const LandingFaq = dynamic(
   () => import('./landing-faq').then((m) => m.LandingFaq),
@@ -23,36 +24,9 @@ const LandingFooter = dynamic(
   () => import('./landing-footer').then((m) => m.LandingFooter),
   { loading: () => <div className="min-h-[160px]" aria-hidden /> },
 );
-const LandingStorySection = dynamic(
-  () => import('./landing-story-section').then((m) => m.LandingStorySection),
-  { loading: () => <div className="min-h-[240px]" aria-hidden /> },
-);
-const LandingBeforeAfter = dynamic(
-  () => import('./landing-before-after').then((m) => m.LandingBeforeAfter),
-  { loading: () => <div className="min-h-[280px]" aria-hidden /> },
-);
-const LandingJourneySection = dynamic(
-  () => import('./landing-journey-section').then((m) => m.LandingJourneySection),
-  { loading: () => <div className="min-h-[320px]" aria-hidden /> },
-);
-const LandingWhySection = dynamic(
-  () => import('./landing-why-section').then((m) => m.LandingWhySection),
-  { loading: () => <div className="min-h-[240px]" aria-hidden /> },
-);
-const LandingAiPmSection = dynamic(
-  () => import('./landing-ai-pm-section').then((m) => m.LandingAiPmSection),
-  { loading: () => <div className="min-h-[280px]" aria-hidden /> },
-);
-const LandingWorkspacePreviewSection = dynamic(
-  () =>
-    import('./landing-workspace-preview-section').then((m) => m.LandingWorkspacePreviewSection),
-  { loading: () => <div className="min-h-[320px]" aria-hidden /> },
-);
-const LandingAiTeamSection = dynamic(
-  () => import('./landing-ai-team-section').then((m) => m.LandingAiTeamSection),
-  { loading: () => <div className="min-h-[320px]" aria-hidden /> },
-);
+const LandingTracker = dynamic(() => import('./landing-tracker').then((m) => m.LandingTracker));
 
+/** Sprint 2 — Go To Market Foundation: Hero → Why → How → Demo → Pricing → FAQ → CTA */
 export async function LandingPage() {
   return (
     <div className="min-h-full bg-background text-foreground">
@@ -60,36 +34,18 @@ export async function LandingPage() {
       <LandingHeader />
       <main id="main-content">
         <LandingHero />
+        <LandingGtmWhyNarrative />
         <LandingLazySection minHeight={320}>
-          <LandingWorkspacePreviewSection />
+          <LandingHowItWorks />
         </LandingLazySection>
-        <LandingLazySection minHeight={320}>
-          <LandingAiTeamSection />
-        </LandingLazySection>
-        <LandingLazySection minHeight={120}>
-          <LandingTrustedBy />
-        </LandingLazySection>
-        <LandingLazySection minHeight={240}>
-          <LandingStorySection />
-        </LandingLazySection>
-        <LandingLazySection minHeight={280}>
-          <LandingBeforeAfter />
-        </LandingLazySection>
-        <LandingLazySection minHeight={320}>
-          <LandingJourneySection />
-        </LandingLazySection>
-        <LandingLazySection minHeight={240}>
-          <LandingWhySection />
-        </LandingLazySection>
-        <LandingLazySection minHeight={280}>
-          <LandingAiPmSection />
-        </LandingLazySection>
-        <LandingLazySection minHeight={200}>
-          <LandingTestimonials />
+        <LandingLiveDemoSection />
+        <LandingLazySection minHeight={400}>
+          <LandingPricing />
         </LandingLazySection>
         <LandingLazySection minHeight={280}>
           <LandingFaq />
         </LandingLazySection>
+        <LandingGtmFinalCta />
         <LandingLazySection minHeight={160}>
           <LandingFooter />
         </LandingLazySection>

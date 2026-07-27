@@ -1416,7 +1416,10 @@
     },
     "nav": {
       "brand": "LaunchLens",
-      "tagline": "Viability review",
+      "tagline": "Thinking Workspace",
+      "product": "Product",
+      "whyLaunchLens": "Why LaunchLens",
+      "resources": "Demo",
       "features": "Features",
       "howItWorks": "How it works",
       "demo": "Demo",
@@ -1426,16 +1429,16 @@
       "faq": "FAQ",
       "aiPm": "Review process",
       "stories": "Stories",
-      "signIn": "Sign in",
-      "startFree": "Start viability review",
+      "signIn": "Login",
+      "startFree": "Start Free",
       "menuLabel": "Navigation menu",
       "openMenu": "Open menu",
       "closeMenu": "Close menu"
     },
     "hero": {
-      "eyebrow": "5-minute viability review",
-      "title": "Will your business\nwork?",
-      "subtitle": "AI analyzes market fit, competition, and pricing.",
+      "eyebrow": "Think Better. Decide Better.",
+      "title": "LaunchLens is not\nan AI that writes business plans",
+      "subtitle": "It is a Thinking Workspace for founders — where thinking, decisions, and memory connect.",
       "northStar": "When the review is done, your AI PM keeps managing it.",
       "journey": {
         "label": "AI PM work loop",
@@ -1445,10 +1448,10 @@
         "execution": "Execute"
       },
       "tagline": "We review your business. When the review is done, your AI PM keeps managing it.",
-      "ctaStart": "Start viability review",
-      "ctaDemo": "Try AI PM Workspace",
+      "ctaStart": "Start Free",
+      "ctaDemo": "Open Demo",
       "ctaHint1": "No credit card required",
-      "ctaHint2": "Get started in 5 minutes",
+      "ctaHint2": "Understand in 30 seconds",
       "speedPromise": "Find out if your business will work — start now",
       "ctaHint3": "Free during Beta",
       "flowPreview": {
@@ -1467,6 +1470,55 @@
         "competitor": "Competitive analysis",
         "tasks": "Today's tasks generated",
         "operations": "Project operations"
+      }
+    },
+    "gtm": {
+      "why": {
+        "title": "Why LaunchLens",
+        "problem1": "You have a business idea but don't know where to start reviewing it.",
+        "problem2": "Ask ChatGPT and you get a different answer every time.",
+        "problem3": "Decisions from meetings disappear by the next session.",
+        "resolution": "LaunchLens keeps your thinking going."
+      },
+      "howItWorks": {
+        "title": "How it Works",
+        "desc": "We don't generate documents. You think, decide, and remember.",
+        "step1": {
+          "title": "Enter your idea",
+          "desc": "Write what you're exploring right now."
+        },
+        "step2": {
+          "title": "Think with AI",
+          "desc": "Questions and evidence go deeper."
+        },
+        "step3": {
+          "title": "Decision Memory",
+          "desc": "Your project remembers why you decided."
+        }
+      },
+      "demo": {
+        "sectionTitle": "Live Demo",
+        "sectionDesc": "Try the real Workspace without logging in.",
+        "cardLabel": "Open Demo",
+        "cardTitle": "AI SaaS review example",
+        "openDemo": "Open Demo",
+        "bannerTitle": "Demo mode — read only",
+        "bannerDesc": "Start free to continue with your own project.",
+        "bannerCta": "Start Free",
+        "steps": {
+          "problem": "Problem",
+          "customer": "Customer",
+          "market": "Market",
+          "review": "Review Board",
+          "decision": "Decision",
+          "memory": "Memory"
+        }
+      },
+      "finalCta": {
+        "title": "Ready to continue your thinking?",
+        "desc": "LaunchLens is not an AI that writes documents. It is a Thinking Workspace for founders.",
+        "primary": "Start Free",
+        "secondary": "Open Demo"
       }
     },
     "aiTeam": {

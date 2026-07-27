@@ -65,10 +65,10 @@ export function LandingHeaderControls({ navLinks, labels }: LandingHeaderControl
           </>
         )}
         <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
-          <Link href="/auth/login?next=/goal">{labels.signIn}</Link>
+          <Link href="/auth/login?next=/workspaces">{labels.signIn}</Link>
         </Button>
         <LandingCtaLink
-          href="/who"
+          href="/auth/login?next=/workspaces"
           event="cta_start"
           size="sm"
           className="h-9 rounded-xl bg-primary px-3 text-primary-foreground hover:bg-primary/90 sm:px-4"
@@ -97,7 +97,7 @@ export function LandingHeaderControls({ navLinks, labels }: LandingHeaderControl
               </a>
             ))}
             <Link
-              href="/auth/login?next=/goal"
+              href="/auth/login?next=/workspaces"
               className="mt-2 rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-muted"
               onClick={() => setMobileOpen(false)}
             >

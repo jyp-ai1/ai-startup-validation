@@ -13,6 +13,11 @@ import {
   loadDecisionMemory,
 } from '../../lib/v2-decision-memory-store';
 import {
+  GTM_DEMO_EVIDENCE,
+  GTM_DEMO_MEMORY,
+  GTM_DEMO_OPTIONAL,
+} from '../../lib/v2-gtm-demo';
+import {
   type V2EvidenceField,
   type V2ValidationEvidence,
   isEvidenceFieldFilled,
@@ -24,6 +29,7 @@ import { JourneyLayout } from '../journey-layout';
 import { V2AiSummaryPanel } from './v2-ai-summary-panel';
 import { V2DecisionMemoryDetail } from './v2-decision-memory-detail';
 import { V2DecisionSavePrompt } from './v2-decision-save-prompt';
+import { V2DemoReadonlyBanner } from './v2-demo-readonly-banner';
 import { V2MainWorkspacePanel } from './v2-main-workspace-panel';
 import { V2WorkflowNav } from './v2-workflow-nav';
 
@@ -32,7 +38,14 @@ type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
 const REVIEW_MS = 3200;
 const PANEL = 'min-h-[420px] rounded-2xl bg-muted/20 p-6 sm:p-8 lg:min-h-[480px]';
 
-export function V2StrategyWorkspaceView() {
+type V2StrategyWorkspaceMode = 'default' | 'demo-readonly';
+
+type V2StrategyWorkspaceViewProps = {
+  mode?: V2StrategyWorkspaceMode;
+};
+
+export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspaceViewProps) {
+  const isDemoReadonly = mode === 'demo-readonly';
   const tb = useTranslations('workflow.v2.reviewBoard');
   const td = useTranslations('workflow.v2.strategyWorkspace.decisionMemory');
   const tDraft = useTranslations('workflow.v2.strategyWorkspace.decisionMemory.draft');
@@ -61,6 +74,17 @@ export function V2StrategyWorkspaceView() {
   }, []);
 
   useEffect(() => {
+    if (isDemoReadonly) {
+      setIdea(GTM_DEMO_EVIDENCE.idea);
+      setOptional({ ...GTM_DEMO_OPTIONAL });
+      setReviewCount(1);
+      setPhase('board');
+      setActiveStep('review');
+      setFollowUpDone(true);
+      setMemoryEntries(GTM_DEMO_MEMORY);
+      return;
+    }
+
     refreshMemory();
     const saved = loadV2Validation();
     if (!saved) return;
@@ -71,7 +95,7 @@ export function V2StrategyWorkspaceView() {
       mvp: saved.evidence.mvp ?? '',
       pricing: saved.evidence.pricing ?? '',
     });
-  }, [refreshMemory]);
+  }, [isDemoReadonly, refreshMemory]);
 
   const evidence = useMemo(
     (): V2ValidationEvidence => ({
@@ -96,6 +120,7 @@ export function V2StrategyWorkspaceView() {
   );
 
   const showSavePrompt =
+    !isDemoReadonly &&
     reviewCount > 0 &&
     phase !== 'reviewing' &&
     activeMemoryId == null &&
@@ -142,6 +167,7 @@ export function V2StrategyWorkspaceView() {
   }, []);
 
   const handleFieldConfirm = (field: V2EvidenceField, value: string) => {
+    if (isDemoReadonly) return;
     setOptional((prev) => {
       const next = { ...prev, [field]: value };
       persist({ ...evidence, [field]: value });
@@ -152,6 +178,7 @@ export function V2StrategyWorkspaceView() {
   };
 
   const handleFieldDelete = (field: V2EvidenceField) => {
+    if (isDemoReadonly) return;
     setOptional((prev) => {
       const next = { ...prev, [field]: '' };
       persist({ ...evidence, [field]: undefined });
@@ -161,7 +188,7 @@ export function V2StrategyWorkspaceView() {
   };
 
   const runReview = useCallback(() => {
-    if (!hasIdea) return;
+    if (isDemoReadonly || !hasIdea) return;
     persist(evidence);
     setPhase('reviewing');
     setReviewCount((c) => c + 1);
@@ -173,9 +200,10 @@ export function V2StrategyWorkspaceView() {
       setActiveStep('review');
       window.setTimeout(() => setPhase('followUp'), 400);
     }, REVIEW_MS);
-  }, [evidence, hasIdea, persist]);
+  }, [evidence, hasIdea, isDemoReadonly, persist]);
 
   const handleFollowUpSubmit = () => {
+    if (isDemoReadonly) return;
     const trimmed = followUpAnswer.trim();
     if (trimmed.length < 2) return;
     const enriched = optional.customer.trim()
@@ -200,6 +228,7 @@ export function V2StrategyWorkspaceView() {
   };
 
   const handleSaveMemory = () => {
+    if (isDemoReadonly) return;
     if (!memoryDraft) return;
     const entry = commitDecisionEntry(
       memoryDraft.decision,
@@ -232,6 +261,7 @@ export function V2StrategyWorkspaceView() {
         </div>
 
         <div className="order-1 min-w-0 space-y-6 lg:order-2">
+          {isDemoReadonly ? <V2DemoReadonlyBanner /> : null}
           {activeMemory ? (
             <section className={cn(PANEL, 'animate-in fade-in duration-300')}>
               <V2DecisionMemoryDetail entry={activeMemory} />
@@ -246,6 +276,7 @@ export function V2StrategyWorkspaceView() {
               phase={phase}
               followUpAnswer={followUpAnswer}
               followUpDone={followUpDone}
+              readOnly={isDemoReadonly}
               onIdeaChange={setIdea}
               onFieldConfirm={handleFieldConfirm}
               onFieldDelete={handleFieldDelete}
@@ -278,6 +309,7 @@ export function V2StrategyWorkspaceView() {
             onGoToStep={handleGoToStep}
             onReview={runReview}
             hasIdea={hasIdea}
+            readOnly={isDemoReadonly}
           />
         </div>
       </div>
@@ -289,6 +321,7 @@ export function V2StrategyWorkspaceView() {
           onGoToStep={handleGoToStep}
           onReview={runReview}
           hasIdea={hasIdea}
+          readOnly={isDemoReadonly}
         />
       </div>
     </JourneyLayout>
