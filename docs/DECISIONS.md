@@ -945,6 +945,34 @@ Sprint 1 SHIPPED. Product identity crystallized: **Thinking Workspace**, not Sta
 
 ---
 
+## ADR-033: Evidence Engine Foundation & Rule #1 (Sprint 3.1)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 2 QA (8.8/10): MVP-level features exist but product is still a "good prototype." Users watch AI, they don't think *with* AI. CPO direction: Sprint 3 competitive moat is **Evidence quality**, not LLM choice.
+
+### Decision
+
+1. **Rule #1:** LaunchLens never answers first — `Evidence → Thinking → Decision`
+2. **`@repo/evidence` pipeline:** Collector → Store → Interpreter (strict separation)
+3. **LLM role:** Interpret stored evidence only — never generate evidence signals
+4. **Judgment contract:** `JudgmentWithEvidence.evidenceIds` required — enforced by `assertJudgmentHasEvidence()`
+5. **Sprint 3 sub-phases:** 3.1 Evidence · 3.2 Thinking · 3.3 Decision · 3.4 Memory · 3.5 Consulting
+6. **Sprint 3.1 scope:** Foundation + mock providers — no new UI, no real API keys yet
+
+### Consequences
+
+- [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md) v2.4 — Rule #1
+- [EVIDENCE_ENGINE.md](./EVIDENCE_ENGINE.md) — pipeline architecture
+- [SPRINT_3_1_EVIDENCE_ENGINE.md](./sprints/SPRINT_3_1_EVIDENCE_ENGINE.md)
+- `packages/evidence/` — interfaces, mock sources, pipeline, tests
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

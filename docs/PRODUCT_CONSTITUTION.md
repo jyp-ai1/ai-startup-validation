@@ -1,6 +1,6 @@
 # LaunchLens Product Constitution
 
-**Version:** 2.3 (CPO Rule #0 — 2026-07-27)  
+**Version:** 2.4 (CPO Rule #1 — 2026-07-27)  
 **Ratified:** 2026-07-24 (Sprint 0 — PM Sign-Off: PASS WITH REVISIONS)  
 **Authority:** This document is the **supreme product law**. Epic이 20개가 되어도 흔들리지 않는 기준.  
 **Supersedes:** Ad-hoc feature decisions · menu-first IA · report-generator positioning · **AI Startup Validation Tool** framing
@@ -109,6 +109,31 @@ Every feature, screen, and AI behavior must pass this rule before any other gate
 **One-sentence identity (CPO):**
 
 > 우리는 Startup Validation Tool을 만드는 것이 아니라, **창업자의 Thinking Workspace**를 만드는 것이다.
+
+---
+
+## Rule #1 — LaunchLens never answers first
+
+> **LaunchLens never answers first.**
+
+LaunchLens는 절대 먼저 답하지 않는다. 항상 아래 순서를 따른다:
+
+```text
+Evidence → Thinking → Decision
+```
+
+| Engine | Role |
+|--------|------|
+| **GPT** | Answer Engine — responds immediately |
+| **LaunchLens** | Thinking Engine — collects evidence, then interprets, then supports decision |
+
+**Implementation law:**
+
+- LLM은 **Evidence를 해석만** 한다 — 근거 생성 금지
+- 모든 AI 판단은 **연결된 Evidence ID** 필수
+- Evidence 없이 Judgment 생성 시 `EvidenceRequiredError`
+
+See [EVIDENCE_ENGINE.md](./EVIDENCE_ENGINE.md) · ADR-033
 
 ---
 
@@ -384,6 +409,7 @@ Brief: [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)
 | 2026-07-25 | Part II — Product Loop Level: Behavior + KPI metrics (not screens) | CPO PASS 95→100 |
 | 2026-07-26 | v1.1 — AI PM North Star, 3 Layers, UI Freeze, signature morning copy | CPO |
 | 2026-07-26 | v2.0 pivot — Sprint 0 UX Reset supersedes UI freeze; Validation → AI PM flow | CPO |
+| 2026-07-27 | v2.4 — Rule #1: LaunchLens never answers first; Evidence → Thinking → Decision | CPO |
 | 2026-07-27 | v2.3 — Rule #0, implementation gate (3 Q), Thinking Workspace identity lock | CPO |
 
 # Part II — Cursor Product Constitution (Permanent Operations)

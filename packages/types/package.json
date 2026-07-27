@@ -13,7 +13,8 @@
     "./theme": "./src/theme.ts",
     "./organization": "./src/organization.ts",
     "./project": "./src/project.ts",
-    "./validation": "./src/validation/index.ts"
+    "./validation": "./src/validation/index.ts",
+    "./evidence-engine": "./src/evidence-engine.ts"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",

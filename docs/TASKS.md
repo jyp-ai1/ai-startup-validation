@@ -2,8 +2,8 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **2.3 First Value Experience** ✅ · [SPRINT_2_3_FIRST_VALUE.md](./sprints/SPRINT_2_3_FIRST_VALUE.md)  
-> **Shipped:** `819e92a` → Production  
+> **Active sprint:** Sprint **3.1 Evidence Engine Foundation** 🔄 · [SPRINT_3_1_EVIDENCE_ENGINE.md](./sprints/SPRINT_3_1_EVIDENCE_ENGINE.md)  
+> **Sprint 2.3:** First Value Experience ✅ · [SPRINT_2_3_FIRST_VALUE.md](./sprints/SPRINT_2_3_FIRST_VALUE.md)  
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
@@ -87,7 +87,23 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 
 **Kickoff:** [SPRINT_2_3_FIRST_VALUE.md](./sprints/SPRINT_2_3_FIRST_VALUE.md)
 
-**Next:** Sprint 3 — Evidence Engine (real data)
+---
+
+## Sprint 3.1 — Evidence Engine Foundation ✅ SHIPPED
+
+**Goal:** Collector → Store → Interpreter pipeline · Rule #1 enforced
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | Rule #1 in Product Constitution + ADR-033 | ✅ |
+| 2 | `@repo/types/evidence-engine` types | ✅ |
+| 3 | `@repo/evidence` pipeline + mock providers | ✅ |
+| 4 | `assertJudgmentHasEvidence` guard | ✅ |
+| 5 | Vitest pipeline tests | ✅ |
+
+**Kickoff:** [SPRINT_3_1_EVIDENCE_ENGINE.md](./sprints/SPRINT_3_1_EVIDENCE_ENGINE.md)
+
+**Next:** Sprint 3.2 — Thinking Engine
 
 ---
 

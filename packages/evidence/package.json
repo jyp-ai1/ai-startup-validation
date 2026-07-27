@@ -2,14 +2,26 @@
   "name": "@repo/evidence",
   "version": "0.1.0",
   "private": true,
-  "description": "Evidence database domain — Sprint 3+",
+  "description": "Evidence Engine — Collector → Store → Interpreter pipeline (Sprint 3.1+)",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./pipeline": "./src/pipeline/evidence-pipeline.ts",
+    "./sources": "./src/sources/evidence-source.ts",
+    "./store": "./src/store/evidence-store.ts",
+    "./interpreter": "./src/interpreter/evidence-interpreter.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*",
+    "@repo/types": "workspace:*"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",
-    "@repo/types": "workspace:*",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

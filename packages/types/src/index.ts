@@ -40,6 +40,18 @@ export type { Theme, ResolvedTheme } from './theme';
 export { THEMES } from './theme';
 
 export type {
+  EvidenceSourceProvider,
+  RawEvidenceSignal,
+  EvidenceInterpretation,
+  JudgmentWithEvidence,
+  EvidenceCollectQuery,
+  EvidenceCollectionResult,
+  EvidenceInterpretationResult,
+} from './evidence-engine';
+
+export { EVIDENCE_SOURCE_PROVIDERS } from './evidence-engine';
+
+export type {
   Organization,
   CreateOrganizationInput,
   UpdateOrganizationInput,
