@@ -46,7 +46,7 @@ export function V2ConclusionView() {
     const name =
       evidence.idea.length <= 36 ? evidence.idea : `${evidence.idea.slice(0, 33).trim()}…`;
     createV2Workspace(name, validation?.filledCount ?? 1);
-    router.push('/workspace');
+    router.push('/validation');
   };
 
   if (!evidence) return null;

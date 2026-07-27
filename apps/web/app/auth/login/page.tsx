@@ -33,8 +33,8 @@ type LoginPageProps = {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
-  const next = params.next ?? '/my-projects';
-  const safeNext = next.startsWith('/') ? next : '/my-projects';
+  const next = params.next ?? '/workspace';
+  const safeNext = next.startsWith('/') ? next : '/workspace';
   const user = await getServerAuthUser();
 
   if (user) {

@@ -35,7 +35,7 @@ export function V2WorkspaceListView() {
             {activeProjects.map((workspace) => (
               <li key={workspace.id}>
                 <Link
-                  href="/workspace"
+                  href="/validation"
                   onClick={() => sessionStorage.setItem('ll_journey_project_id', workspace.id)}
                   className="group flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card p-5 transition-colors hover:border-primary/30"
                 >

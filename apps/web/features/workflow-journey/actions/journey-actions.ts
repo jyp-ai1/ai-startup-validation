@@ -64,7 +64,7 @@ export async function confirmWorkflowAction() {
 
 export async function startWorkspaceAction(demoMode: boolean) {
   if (demoMode) {
-    redirect('/workspace?demo=1');
+    redirect('/validation?demo=readonly');
   }
   redirect('/auth/login?next=/workspace');
 }

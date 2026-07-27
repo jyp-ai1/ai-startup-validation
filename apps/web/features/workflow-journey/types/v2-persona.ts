@@ -29,7 +29,7 @@ export const PERSONA_SKIP_VALIDATION: ReadonlySet<V2PersonaId> = new Set([]);
 
 export function getPersonaNextRoute(personaId: V2PersonaId): string {
   if (PERSONA_SKIP_VALIDATION.has(personaId)) {
-    return '/workspaces';
+    return '/workspace';
   }
   return '/workflow';
 }

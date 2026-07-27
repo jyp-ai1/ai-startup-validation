@@ -28,7 +28,7 @@ export function V2WorkspaceCard({ project, onSelect }: V2WorkspaceCardProps) {
   return (
     <article className="rounded-2xl border border-border/70 bg-card transition-colors hover:border-primary/30">
       <Link
-        href="/workspace"
+        href="/validation"
         onClick={() => {
           sessionStorage.setItem('ll_journey_project_id', project.id);
           onSelect?.(project.id);

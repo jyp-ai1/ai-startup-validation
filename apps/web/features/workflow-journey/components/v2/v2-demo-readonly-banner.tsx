@@ -16,7 +16,7 @@ export function V2DemoReadonlyBanner() {
         <p className="text-xs text-muted-foreground">{t('bannerDesc')}</p>
       </div>
       <Button asChild size="sm" className="shrink-0 gap-1.5">
-        <Link href="/auth/login?next=/workspaces">
+        <Link href="/auth/login?next=/workspace">
           {t('bannerCta')}
           <ArrowRight className="size-3.5" aria-hidden />
         </Link>

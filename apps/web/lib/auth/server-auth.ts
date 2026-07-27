@@ -74,7 +74,7 @@ export async function requireAuthUser(nextPath?: string): Promise<AppAuthUser> {
   if (user) return user;
 
   const { redirect } = await import('next/navigation');
-  const next = nextPath ?? '/my-projects';
+  const next = nextPath ?? '/workspace';
   redirect(`/auth/login?next=${encodeURIComponent(next)}`);
   throw new Error('Unreachable');
 }

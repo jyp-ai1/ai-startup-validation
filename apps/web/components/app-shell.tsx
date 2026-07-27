@@ -64,13 +64,19 @@ type AppShellProps = {
   watchCenter?: WatchCenterViewModel | null;
 };
 
-function SidebarBrand({ onNavigate }: { onNavigate?: (target: string) => void }) {
+function SidebarBrand({
+  onNavigate,
+  homeHref = '/',
+}: {
+  onNavigate?: (target: string) => void;
+  homeHref?: string;
+}) {
   const t = useTranslations();
 
   return (
     <Link
-      href="/"
-      onClick={() => onNavigate?.('/')}
+      href={homeHref}
+      onClick={() => onNavigate?.(homeHref)}
       className="flex items-center gap-3 px-1 py-2 transition-opacity hover:opacity-80"
     >
       <div className="flex size-10 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
@@ -249,7 +255,7 @@ export function AppShell({
       }
       sidebar={
         <AppSidebar className="gap-6 bg-sidebar text-sidebar-foreground">
-          <SidebarBrand onNavigate={trackHomeNavigation} />
+          <SidebarBrand onNavigate={trackHomeNavigation} homeHref={user ? '/workspace' : '/'} />
           <WorkspaceSwitcher
             demoMode={demoMode}
             isAuthenticated={Boolean(user)}

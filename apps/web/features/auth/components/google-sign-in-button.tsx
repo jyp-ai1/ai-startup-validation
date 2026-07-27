@@ -20,7 +20,7 @@ function isSupabaseReady(): boolean {
 }
 
 export function GoogleSignInButton({
-  redirectTo = '/my-projects',
+  redirectTo = '/workspace',
   className,
 }: GoogleSignInButtonProps) {
   const t = useTranslations('auth');

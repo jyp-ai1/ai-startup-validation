@@ -14,7 +14,6 @@ const JOURNEY_PREFIXES = [
   '/investigate',
   '/conclusion',
   '/workspaces',
-  '/workspace',
   '/execution',
 ];
 

@@ -27,10 +27,6 @@ function shouldSkipAppShellData(pathname: string): boolean {
     pathname.startsWith('/investigate/') ||
     pathname === '/conclusion' ||
     pathname.startsWith('/conclusion/') ||
-    pathname === '/workspaces' ||
-    pathname.startsWith('/workspaces/') ||
-    pathname === '/workspace' ||
-    pathname.startsWith('/workspace/') ||
     pathname === '/execution' ||
     pathname.startsWith('/execution/')
   );

@@ -19,7 +19,7 @@ export function LandingGtmFinalCta() {
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <LandingCtaLink
-            href="/auth/login?next=/workspaces"
+            href="/auth/login?next=/workspace"
             event="cta_start"
             className="inline-flex h-11 min-w-[200px] items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
           >

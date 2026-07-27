@@ -20,7 +20,7 @@ export type CreateMyProjectState = {
 };
 
 export async function listMyProjectsForPage() {
-  const user = await requireAuthUser('/my-projects');
+  const user = await requireAuthUser('/workspace');
   if (!isSupabaseConfigured()) {
     return { user, projects: [], dbReady: false as const };
   }
@@ -32,7 +32,7 @@ export async function createMyProjectAction(
   _prev: CreateMyProjectState,
   formData: FormData,
 ): Promise<CreateMyProjectState> {
-  const user = await requireAuthUser('/my-projects');
+  const user = await requireAuthUser('/workspace');
 
   if (!isSupabaseConfigured()) {
     return { error: '데이터베이스가 연결되지 않았습니다.' };
