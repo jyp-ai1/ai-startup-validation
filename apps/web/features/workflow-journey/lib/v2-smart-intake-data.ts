@@ -59,6 +59,7 @@ export const SMART_INTAKE_PRICING_CHOICES: SmartIntakePricingChoice[] = [
 
 export const SMART_INTAKE_EVIDENCE_ITEMS = [
   'googleTrends',
+  'searchVolume',
   'productHunt',
   'yc',
 ] as const;

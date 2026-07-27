@@ -5364,7 +5364,7 @@
                 "extractedTitle": "Auto-extracted",
                 "fields": {
                   "problem": "Problem",
-                  "customer": "Customer",
+                  "customer": "Target users",
                   "market": "Market",
                   "bm": "Business model",
                   "competition": "Competition"
@@ -5400,10 +5400,11 @@
                   "yc": { "label": "YC", "value": "Recent investment uptick" }
                 },
                 "reasonLead": "So why B2C?",
-                "reasonBody": "{name}'s customers are individual founders — search growth favors a B2C entry.",
+                "reasonBody": "{name}'s expected service users are individual founders — search growth favors a B2C entry.",
                 "cta": "Continue"
               },
               "resources": {
+                "intro": "Market validation was thin in this review. These references may help.",
                 "toggle": "▼ View reference materials",
                 "items": {
                   "businessPlanGuide": "Business plan guide",
@@ -5411,10 +5412,16 @@
                   "governmentSupport": "Government startup programs",
                   "investorDeck": "Investor deck template",
                   "interviewTemplate": "Interview template"
+                },
+                "reasons": {
+                  "businessPlanGuide": "(Market validation examples)",
+                  "governmentSupport": "(Market-fit evaluation criteria)",
+                  "marketReport": "(Sample market research report)"
                 }
               },
               "improvement": {
                 "lead": "{name} — after clarifying pricing.",
+                "chainLead": "After adding pricing, market fit moved from ★★★★ → ★★★★★.",
                 "marketFit": "Market fit",
                 "reason": "A clearer pricing model strengthened the market-fit rationale.",
                 "cta": "Continue"
@@ -5431,6 +5438,143 @@
                 },
                 "closing": "When something changes, I'll tell you first.",
                 "cta": "Save this project"
+              }
+            },
+            "reasonChain": {
+              "documentIntro": {
+                "withDoc": "First, I analyzed the {name} business plan."
+              },
+              "terminology": {
+                "targetUsers": "The expected users of this service match the targets described in your document.",
+                "serviceUsers": "'Service users' here means founders who will use this product — not you as the founder."
+              },
+              "steps": {
+                "documentAnalyzed": "Document analyzed.",
+                "reviewFocus": "First, I reviewed market fit.",
+                "evidenceTrends": "Checked Google Trends, search volume, and market data.",
+                "thereforeMarket": "Therefore, the market looks sufficient.",
+                "butGap": "However, pricing model is missing from the document.",
+                "thereforePricing": "So I reviewed pricing strategy first.",
+                "thereforeImprovement": "After pricing was clarified, market fit improved."
+              },
+              "documentProfile": {
+                "analyzed": "Analyzed {name} business plan.",
+                "pages": "Total pages",
+                "strategies": "Key strategies",
+                "bm": "Business models",
+                "kpi": "KPIs",
+                "risks": "Risks",
+                "risksFound": "{count} found"
+              },
+              "citations": {
+                "title": "Document evidence",
+                "source": "Business plan",
+                "page": "Page {page}",
+                "findings": {
+                  "pricingMissing": "Pricing section exists but no concrete pricing policy is stated.",
+                  "bmVague": "B2B revenue validation is mentioned but pricing policy is not specified.",
+                  "marketStrategy": "MAU and search acquisition plans exist but market validation metrics are thin."
+                }
+              }
+            },
+            "reasonChainSample": {
+              "steps": {
+                "reviewFocus": "From the research, I reviewed market fit first.",
+                "evidenceTrends": "Checked Google Trends, search volume, and Product Hunt data.",
+                "thereforeMarket": "Therefore, the market looks sufficient.",
+                "butGap": "However, competitors increased — differentiation needs review.",
+                "thereforePricing": "So I revisited differentiation strategy.",
+                "thereforeImprovement": "After refining strategy, market fit and AI confidence improved."
+              }
+            },
+            "evidenceMeta": {
+              "badges": {
+                "data": "DATA",
+                "search": "SEARCH",
+                "news": "NEWS",
+                "competitor": "COMPETITOR",
+                "startup": "STARTUP",
+                "community": "COMMUNITY",
+                "report": "REPORT"
+              },
+              "items": {
+                "googleTrends": {
+                  "label": "Google Trends",
+                  "headline": "Last 3 months +18%",
+                  "period": "(Apr–Jul 2026)",
+                  "why": "Related keyword interest rose 18% over the last 3 months — a B2C entry timing signal."
+                },
+                "searchVolume": {
+                  "label": "Search volume",
+                  "headline": "Monthly 4,800 → 5,670 (+18%)",
+                  "period": "Last 30 days",
+                  "why": "Monthly search volume rose 18% in the last 30 days — demand is actually growing."
+                },
+                "productHunt": {
+                  "label": "Product Hunt",
+                  "headline": "Similar products rising",
+                  "why": "Similar AI startup launches increased in the last 90 days — active market, differentiation needed."
+                },
+                "yc": {
+                  "label": "YC",
+                  "headline": "Recent investment uptick",
+                  "why": "YC portfolio investment in this space is rising — capital is moving here."
+                }
+              }
+            },
+            "evidenceMetaSample": {
+              "badges": {
+                "data": "DATA",
+                "search": "SEARCH",
+                "news": "NEWS",
+                "competitor": "COMPETITOR",
+                "startup": "STARTUP",
+                "community": "COMMUNITY",
+                "report": "REPORT"
+              },
+              "items": {
+                "googleTrends": {
+                  "label": "Google Trends",
+                  "headline": "Last 3 months +28%",
+                  "period": "(Apr–Jul 2026)",
+                  "why": "Interest in 'AI startup validation' rose 28% over the last 3 months."
+                },
+                "searchVolume": {
+                  "label": "Search volume",
+                  "headline": "Monthly 4,200 → 4,960 (+18%)",
+                  "period": "Last 30 days",
+                  "why": "Monthly search volume rose 18% in the last 30 days — good timing to enter."
+                },
+                "productHunt": {
+                  "label": "Product Hunt",
+                  "headline": "AI Startup Top 3",
+                  "why": "More products reached top ranks in Product Hunt's AI Startup category recently."
+                },
+                "ycInvestments": {
+                  "label": "YC",
+                  "headline": "12 recent investments",
+                  "why": "12 AI productivity/startup tool investments in recent YC batches."
+                },
+                "cursor": {
+                  "label": "Cursor",
+                  "headline": "Developer productivity tool",
+                  "why": "Cursor focuses on developer productivity — different positioning from strategy workspace."
+                },
+                "lovable": {
+                  "label": "Lovable",
+                  "headline": "No-code builder",
+                  "why": "Lovable focuses on no-code app building — different from founder strategy workspace."
+                },
+                "reddit": {
+                  "label": "Reddit",
+                  "headline": "Founder community signals",
+                  "why": "r/startups repeatedly mentions AI PM and strategy tool needs."
+                },
+                "yc": {
+                  "label": "YC",
+                  "headline": "Startup investment trend",
+                  "why": "Recent YC batches show rising AI co-founder tool investment."
+                }
               }
             }
           },

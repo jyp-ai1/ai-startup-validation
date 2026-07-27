@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Check, ChevronDown, ChevronUp, ClipboardPaste, Loader2, Star, TrendingUp } from 'lucide-react';
 
@@ -10,12 +10,10 @@ import { cn } from '@repo/ui/lib/utils';
 import {
   SMART_INTAKE_ACCEPTED_EXTENSIONS,
   SMART_INTAKE_DAILY_MONITORING,
-  SMART_INTAKE_EVIDENCE_ITEMS,
   SMART_INTAKE_EXTRACTED_FIELDS,
   SMART_INTAKE_MAX_CHARS,
   SMART_INTAKE_MISSING_FIELDS,
   SMART_INTAKE_PRICING_CHOICES,
-  SMART_INTAKE_RESOURCES,
   SMART_INTAKE_STATUS_MESSAGES,
   SMART_INTAKE_SUPPORTED_FORMATS,
   SMART_INTAKE_WORKING_MS,
@@ -36,6 +34,13 @@ import {
   type DemoProjectDraft,
 } from '../../lib/v2-demo-project-store';
 import type { DemoExperienceStep } from '../../lib/v2-demo-experience-types';
+import {
+  buildSmartIntakeReasonChain,
+  getChainStepsUpTo,
+} from '../../lib/v2-reason-chain-engine';
+import { V2DocumentCitationBlock, V2DocumentProfileSummary } from './v2-document-citation-block';
+import { V2EvidenceMetadataCard } from './v2-evidence-metadata-card';
+import { V2ReasonChainBridge } from './v2-reason-chain-bridge';
 
 type V2SmartIntakeFlowProps = {
   step: DemoExperienceStep;
@@ -57,8 +62,10 @@ export function V2SmartIntakeFlow({
   StarRating,
 }: V2SmartIntakeFlowProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.smartIntake');
+  const tChain = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.reasonChain');
   const [pasteContent, setPasteContent] = useState('');
   const [analysis, setAnalysis] = useState<SmartIntakeAnalysis | null>(null);
+  const [importFileName, setImportFileName] = useState<string | undefined>();
   const [pricingChoice, setPricingChoice] = useState<SmartIntakePricingChoice | null>(null);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [workingProgress, setWorkingProgress] = useState(0);
@@ -68,6 +75,15 @@ export function V2SmartIntakeFlow({
 
   const projectName = projectDraft.serviceName.trim() || t('fallbackName');
   const charCount = pasteContent.length;
+
+  const reasonChain = useMemo(() => {
+    if (!analysis) return null;
+    return buildSmartIntakeReasonChain(
+      analysis,
+      projectDraft.importSource ?? 'paste',
+      projectDraft.fileName ?? importFileName,
+    );
+  }, [analysis, projectDraft.importSource, projectDraft.fileName, importFileName]);
 
   useEffect(() => {
     if (step !== 'smartIntakeWorking') return;
@@ -104,6 +120,7 @@ export function V2SmartIntakeFlow({
     if (!isSmartIntakeContentValid(pasteContent)) return;
     const result = analyzeSmartIntakeDocument(pasteContent, 'paste');
     setAnalysis(result);
+    setImportFileName(undefined);
     const draft = buildDraftFromAnalysis(result, pasteContent, 'paste');
     onDraftChange(draft);
     saveDemoProjectDraft(draft);
@@ -111,11 +128,12 @@ export function V2SmartIntakeFlow({
   };
 
   const handleFileUpload = async (file: File) => {
-    const { text, source } = await readSmartIntakeFile(file);
+    const { text, source, fileName } = await readSmartIntakeFile(file);
+    setImportFileName(fileName);
     setPasteContent(text.slice(0, SMART_INTAKE_MAX_CHARS));
     const result = analyzeSmartIntakeDocument(text, source);
     setAnalysis(result);
-    const draft = buildDraftFromAnalysis(result, text, source);
+    const draft = buildDraftFromAnalysis(result, text, source, undefined, fileName);
     onDraftChange(draft);
     saveDemoProjectDraft(draft);
     onStepChange('smartIntakeWorking');
@@ -124,7 +142,13 @@ export function V2SmartIntakeFlow({
   const handlePricingSelect = (choice: SmartIntakePricingChoice) => {
     setPricingChoice(choice);
     if (!analysis) return;
-    const draft = buildDraftFromAnalysis(analysis, pasteContent, projectDraft.importSource ?? 'paste', choice);
+    const draft = buildDraftFromAnalysis(
+      analysis,
+      pasteContent,
+      projectDraft.importSource ?? 'paste',
+      choice,
+      projectDraft.fileName ?? importFileName,
+    );
     onDraftChange(draft);
     saveDemoProjectDraft(draft);
   };
@@ -242,12 +266,26 @@ export function V2SmartIntakeFlow({
     );
   }
 
-  if (step === 'documentUnderstanding' && analysis) {
+  if (step === 'documentUnderstanding' && analysis && reasonChain) {
     return (
       <div className="space-y-4">
+        {reasonChain.documentProfile ? (
+          <V2DocumentProfileSummary profile={reasonChain.documentProfile} />
+        ) : null}
+
+        <V2ReasonChainBridge
+          steps={getChainStepsUpTo(reasonChain, 'reviewFocus')}
+          activeStep="reviewFocus"
+        />
+
         <AiPmBubble>
-          <p className="font-medium">{t('understanding.lead1')}</p>
+          <p className="font-medium">
+            {reasonChain.documentProfile
+              ? tChain('documentIntro.withDoc', { name: reasonChain.documentProfile.fileName })
+              : t('understanding.lead1')}
+          </p>
           <p>{t('understanding.lead2')}</p>
+          <p className="mt-2 text-muted-foreground">{tChain('terminology.targetUsers')}</p>
         </AiPmBubble>
 
         <div className="rounded-xl border border-border/40 bg-muted/5 p-4">
@@ -297,13 +335,23 @@ export function V2SmartIntakeFlow({
     );
   }
 
-  if (step === 'firstQuestion') {
+  if (step === 'firstQuestion' && reasonChain) {
     return (
       <div className="space-y-4">
+        <V2ReasonChainBridge
+          steps={getChainStepsUpTo(reasonChain, 'butGap')}
+          activeStep="butGap"
+        />
+
         <AiPmBubble>
           <p className="font-medium">{t('firstQuestion.lead')}</p>
           <p>{t('firstQuestion.focus')}</p>
         </AiPmBubble>
+
+        <V2DocumentCitationBlock
+          citations={reasonChain.citations}
+          highlightId={reasonChain.pricingGapCitationId}
+        />
 
         <fieldset className="space-y-2">
           <legend className="mb-2 text-sm font-medium">{t('firstQuestion.pricingLabel')}</legend>
@@ -339,9 +387,14 @@ export function V2SmartIntakeFlow({
     );
   }
 
-  if (step === 'evidenceFirstReview') {
+  if (step === 'evidenceFirstReview' && reasonChain) {
     return (
       <div className="space-y-4">
+        <V2ReasonChainBridge
+          steps={getChainStepsUpTo(reasonChain, 'thereforeMarket')}
+          activeStep="thereforeMarket"
+        />
+
         <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/[0.06] to-background p-5">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
             {t('evidenceReview.recommendationLabel')}
@@ -351,24 +404,21 @@ export function V2SmartIntakeFlow({
 
         <div>
           <p className="text-sm font-semibold">{t('evidenceReview.whyLabel')}</p>
-          <ul className="mt-2 space-y-2">
-            {SMART_INTAKE_EVIDENCE_ITEMS.map((item) => (
-              <li
-                key={item}
-                className="rounded-lg border border-border/40 bg-muted/5 px-4 py-3 text-sm"
-              >
-                <p className="font-medium">{t(`evidenceReview.evidence.${item}.label`)}</p>
-                <p className="mt-0.5 text-muted-foreground">
-                  {t(`evidenceReview.evidence.${item}.value`)}
-                </p>
-              </li>
+          <div className="mt-2 space-y-2">
+            {reasonChain.evidence.map((item) => (
+              <V2EvidenceMetadataCard key={item.id} item={item} />
             ))}
-          </ul>
+          </div>
         </div>
 
         <AiPmBubble>
           <p className="font-medium">{t('evidenceReview.reasonLead')}</p>
           <p>{t('evidenceReview.reasonBody', { name: projectName })}</p>
+          <p className="mt-2 text-muted-foreground">{tChain('terminology.serviceUsers')}</p>
+        </AiPmBubble>
+
+        <AiPmBubble>
+          <p className="font-medium">{t('resources.intro')}</p>
         </AiPmBubble>
 
         <div className="rounded-xl border border-border/40 bg-muted/5">
@@ -385,10 +435,13 @@ export function V2SmartIntakeFlow({
             )}
           </button>
           {resourcesOpen ? (
-            <ul className="space-y-2 border-t border-border/40 px-4 py-3">
-              {SMART_INTAKE_RESOURCES.map((item) => (
-                <li key={item} className="text-sm text-muted-foreground">
-                  {t(`resources.items.${item}`)}
+            <ul className="space-y-3 border-t border-border/40 px-4 py-3">
+              {reasonChain.resources.map((item) => (
+                <li key={item.id} className="text-sm">
+                  <p className="font-medium">{t(`resources.items.${item.id}`)}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {t(`resources.reasons.${item.id}`)}
+                  </p>
                 </li>
               ))}
             </ul>
@@ -402,11 +455,17 @@ export function V2SmartIntakeFlow({
     );
   }
 
-  if (step === 'myProjectImprovement') {
+  if (step === 'myProjectImprovement' && reasonChain) {
     return (
       <div className="space-y-4">
+        <V2ReasonChainBridge
+          steps={getChainStepsUpTo(reasonChain, 'thereforeImprovement')}
+          activeStep="thereforeImprovement"
+        />
+
         <AiPmBubble>
           <p className="font-medium">{t('improvement.lead', { name: projectName })}</p>
+          <p className="mt-2 text-muted-foreground">{t('improvement.chainLead')}</p>
         </AiPmBubble>
 
         <div className="space-y-3 rounded-xl border border-border/40 bg-muted/5 p-4">

@@ -5511,7 +5511,7 @@
                 "extractedTitle": "자동 추출",
                 "fields": {
                   "problem": "문제 정의",
-                  "customer": "고객",
+                  "customer": "타겟 사용자",
                   "market": "시장",
                   "bm": "BM",
                   "competition": "경쟁"
@@ -5547,10 +5547,11 @@
                   "yc": { "label": "YC", "value": "최근 투자 증가" }
                 },
                 "reasonLead": "그래서 왜 B2C인가?",
-                "reasonBody": "{name}의 고객은 개인 창업자이고, 검색량 증가 속도가 B2C 진입에 유리합니다.",
+                "reasonBody": "{name}의 예상 서비스 사용자는 개인 창업자이고, 검색량 증가 속도가 B2C 진입에 유리합니다.",
                 "cta": "다음"
               },
               "resources": {
+                "intro": "이번 검토에서 시장 검증 부분이 부족했습니다. 도움이 될 자료입니다.",
                 "toggle": "▼ 참고자료 보기",
                 "items": {
                   "businessPlanGuide": "사업계획서 작성 가이드",
@@ -5558,10 +5559,16 @@
                   "governmentSupport": "정부 창업지원사업",
                   "investorDeck": "투자자료",
                   "interviewTemplate": "인터뷰 템플릿"
+                },
+                "reasons": {
+                  "businessPlanGuide": "(시장 검증 예시)",
+                  "governmentSupport": "(시장성 평가 기준)",
+                  "marketReport": "(시장조사 보고서 샘플)"
                 }
               },
               "improvement": {
                 "lead": "{name} — 가격 전략을 보완한 결과입니다.",
+                "chainLead": "가격 전략을 추가한 결과, 시장 판단이 ★★★★ → ★★★★★로 변경되었습니다.",
                 "marketFit": "시장성",
                 "reason": "가격 모델이 명확해지면서 시장 적합성 판단 근거가 강화되었습니다.",
                 "cta": "다음"
@@ -5578,6 +5585,143 @@
                 },
                 "closing": "변화가 생기면 대표님께 먼저 알려드리겠습니다.",
                 "cta": "이 프로젝트 저장하기"
+              }
+            },
+            "reasonChain": {
+              "documentIntro": {
+                "withDoc": "가장 먼저 {name} 사업계획서를 분석했습니다."
+              },
+              "terminology": {
+                "targetUsers": "이 서비스의 예상 사용자(User)는 문서에 적힌 타겟과 일치합니다.",
+                "serviceUsers": "여기서 말하는 '서비스 사용자'는 대표님이 아니라, 실제로 이 서비스를 쓸 창업자입니다."
+              },
+              "steps": {
+                "documentAnalyzed": "문서를 분석했습니다.",
+                "reviewFocus": "이번에는 시장성을 먼저 검토했습니다.",
+                "evidenceTrends": "Google Trends · 검색량 등 시장 데이터를 확인했습니다.",
+                "thereforeMarket": "그래서 시장은 충분하다고 판단했습니다.",
+                "butGap": "하지만 가격 모델이 문서에 없습니다.",
+                "thereforePricing": "그래서 가격 전략을 먼저 보완했습니다.",
+                "thereforeImprovement": "가격을 보완하니 시장 판단이 상승했습니다."
+              },
+              "documentProfile": {
+                "analyzed": "{name} 사업계획서를 분석했습니다.",
+                "pages": "총 페이지",
+                "strategies": "핵심 전략",
+                "bm": "BM",
+                "kpi": "KPI",
+                "risks": "위험요소",
+                "risksFound": "{count}개 발견"
+              },
+              "citations": {
+                "title": "문서 근거",
+                "source": "사업계획서",
+                "page": "{page}페이지",
+                "findings": {
+                  "pricingMissing": "가격 모델 섹션이 있으나 구체적인 가격 정책은 미기재되어 있습니다.",
+                  "bmVague": "B2B 수익모델 검증은 언급되어 있으나, 구체적인 가격 정책은 없습니다.",
+                  "marketStrategy": "MAU 확보 전략과 검색 유입 계획은 있으나, 시장 검증 수치가 부족합니다."
+                }
+              }
+            },
+            "reasonChainSample": {
+              "steps": {
+                "reviewFocus": "조사 결과, 시장성을 먼저 검토했습니다.",
+                "evidenceTrends": "Google Trends · 검색량 · Product Hunt 데이터를 확인했습니다.",
+                "thereforeMarket": "그래서 시장은 충분하다고 판단했습니다.",
+                "butGap": "하지만 경쟁사가 늘어나 차별성 검토가 필요합니다.",
+                "thereforePricing": "그래서 차별 전략을 다시 검토했습니다.",
+                "thereforeImprovement": "전략을 보완하니 시장 적합성과 AI Confidence가 상승했습니다."
+              }
+            },
+            "evidenceMeta": {
+              "badges": {
+                "data": "DATA",
+                "search": "SEARCH",
+                "news": "NEWS",
+                "competitor": "COMPETITOR",
+                "startup": "STARTUP",
+                "community": "COMMUNITY",
+                "report": "REPORT"
+              },
+              "items": {
+                "googleTrends": {
+                  "label": "Google Trends",
+                  "headline": "최근 3개월 +18%",
+                  "period": "(2026.04~2026.07)",
+                  "why": "최근 3개월간 관련 키워드 검색 관심도가 18% 증가했습니다. B2C 진입 타이밍 판단 근거입니다."
+                },
+                "searchVolume": {
+                  "label": "검색량",
+                  "headline": "월 검색량 4,800 → 5,670 (+18%)",
+                  "period": "최근 30일 기준",
+                  "why": "월간 검색량이 최근 30일 기준 18% 증가했습니다. 시장 수요가 실제로 늘고 있음을 보여줍니다."
+                },
+                "productHunt": {
+                  "label": "Product Hunt",
+                  "headline": "유사 제품 증가",
+                  "why": "최근 90일간 유사 AI Startup 제품 출시가 늘었습니다. 시장은 활성화되었으나 차별성이 필요합니다."
+                },
+                "yc": {
+                  "label": "YC",
+                  "headline": "최근 투자 증가",
+                  "why": "YC 포트폴리오에서 유사 영역 투자가 증가했습니다. 시장 자금 흐름이 이 영역으로 이동 중입니다."
+                }
+              }
+            },
+            "evidenceMetaSample": {
+              "badges": {
+                "data": "DATA",
+                "search": "SEARCH",
+                "news": "NEWS",
+                "competitor": "COMPETITOR",
+                "startup": "STARTUP",
+                "community": "COMMUNITY",
+                "report": "REPORT"
+              },
+              "items": {
+                "googleTrends": {
+                  "label": "Google Trends",
+                  "headline": "최근 3개월 +28%",
+                  "period": "(2026.04~2026.07)",
+                  "why": "최근 3개월간 'AI startup validation' 관련 검색 관심도가 28% 증가했습니다."
+                },
+                "searchVolume": {
+                  "label": "검색량",
+                  "headline": "월 검색량 4,200 → 4,960 (+18%)",
+                  "period": "최근 30일 기준",
+                  "why": "월간 검색량이 최근 30일 기준 18% 증가했습니다. 지금 진입하기 좋은 타이밍입니다."
+                },
+                "productHunt": {
+                  "label": "Product Hunt",
+                  "headline": "AI Startup Top3",
+                  "why": "최근 Product Hunt AI Startup 카테고리 상위권 진입 제품이 증가했습니다."
+                },
+                "ycInvestments": {
+                  "label": "YC",
+                  "headline": "최근 투자 12건",
+                  "why": "최근 6개월 YC 배치에서 AI productivity/startup 도구 투자가 12건 확인되었습니다."
+                },
+                "cursor": {
+                  "label": "Cursor",
+                  "headline": "개발 생산성 도구",
+                  "why": "Cursor는 개발자 생산성에 집중합니다. 전략 기획 영역과는 다른 포지션입니다."
+                },
+                "lovable": {
+                  "label": "Lovable",
+                  "headline": "노코드 빌더",
+                  "why": "Lovable은 노코드 앱 빌드에 집중합니다. 창업자 전략 Workspace와는 결이 다릅니다."
+                },
+                "reddit": {
+                  "label": "Reddit",
+                  "headline": "창업자 커뮤니티 반응",
+                  "why": "r/startups 등에서 AI PM·전략 도구 니즈가 반복적으로 언급됩니다."
+                },
+                "yc": {
+                  "label": "YC",
+                  "headline": "Startup 투자 트렌드",
+                  "why": "YC 최근 배치에서 AI co-founder 도구 투자가 증가했습니다."
+                }
               }
             }
           },

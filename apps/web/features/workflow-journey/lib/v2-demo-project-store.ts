@@ -15,6 +15,7 @@ export type DemoProjectDraft = {
   problem: string;
   pastedContent?: string;
   importSource?: SmartIntakeImportSource;
+  fileName?: string;
   pricingModel?: SmartIntakePricingChoice;
   completenessScore?: number;
   extracted?: Partial<Record<SmartIntakeFieldId, boolean>>;

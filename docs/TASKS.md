@@ -2,7 +2,7 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **4.4 — Smart Intake & First Working Experience** 🔄  
+> **Active sprint:** Sprint **4.5 — Reason Chain & AI PM Thinking Flow** ✅  
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
@@ -130,7 +130,23 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 
 ---
 
-## Sprint 4.4 — Smart Intake & First Working Experience 🔄 IN PROGRESS
+## Sprint 4.5 — Reason Chain & AI PM Thinking Flow ✅ SHIPPED
+
+**Mission:** AI PM 사고 흐름 연결 — `왜 → 그래서 → 다음`
+
+| # | P0 | Status |
+|---|-----|--------|
+| 1 | Reason Chain Engine (step bridge UI) | ✅ |
+| 2 | Evidence Metadata (period + badge + why) | ✅ |
+| 3 | Document Citation (PDF page + finding) | ✅ |
+| 4 | Terminology refactor (founder vs service users) | ✅ |
+| 5 | Contextual reference reasons | ✅ |
+
+**Kickoff:** [SPRINT_4_5_REASON_CHAIN.md](./sprints/SPRINT_4_5_REASON_CHAIN.md)
+
+---
+
+## Sprint 4.4 — Smart Intake & First Working Experience ✅ SHIPPED
 
 **Mission:** Paste First — AI PM understands, asks only what's missing
 

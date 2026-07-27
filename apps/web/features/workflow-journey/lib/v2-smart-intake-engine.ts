@@ -109,6 +109,7 @@ export function buildDraftFromAnalysis(
   pastedContent: string,
   source: SmartIntakeImportSource,
   pricingModel?: SmartIntakePricingChoice,
+  fileName?: string,
 ): DemoProjectDraft {
   return {
     serviceName: analysis.serviceName,
@@ -117,6 +118,7 @@ export function buildDraftFromAnalysis(
     problem: analysis.problem,
     pastedContent,
     importSource: source,
+    fileName,
     pricingModel,
     completenessScore: analysis.completenessScore,
     extracted: analysis.extracted,
@@ -124,20 +126,23 @@ export function buildDraftFromAnalysis(
   };
 }
 
-export async function readSmartIntakeFile(file: File): Promise<{ text: string; source: SmartIntakeImportSource }> {
-  const ext = file.name.split('.').pop()?.toLowerCase() ?? 'txt';
+export async function readSmartIntakeFile(
+  file: File,
+): Promise<{ text: string; source: SmartIntakeImportSource; fileName: string }> {
+  const fileName = file.name;
+  const ext = fileName.split('.').pop()?.toLowerCase() ?? 'txt';
   if (ext === 'pdf') {
-    const demoText = `[${file.name}]\n\nPDF 문서를 불러왔습니다. AI PM이 문서 구조를 분석합니다.`;
-    return { text: demoText, source: 'pdf' };
+    const demoText = `[${fileName}]\n\nPDF 문서를 불러왔습니다. AI PM이 문서 구조를 분석합니다.`;
+    return { text: demoText, source: 'pdf', fileName };
   }
   if (ext === 'docx') {
-    const demoText = `[${file.name}]\n\nWord 문서를 불러왔습니다. AI PM이 핵심 섹션을 추출합니다.`;
-    return { text: demoText, source: 'docx' };
+    const demoText = `[${fileName}]\n\nWord 문서를 불러왔습니다. AI PM이 핵심 섹션을 추출합니다.`;
+    return { text: demoText, source: 'docx', fileName };
   }
   if (ext === 'md' || ext === 'markdown') {
-    return { text: await file.text(), source: 'md' };
+    return { text: await file.text(), source: 'md', fileName };
   }
-  return { text: await file.text(), source: 'txt' };
+  return { text: await file.text(), source: 'txt', fileName };
 }
 
 export function isSmartIntakeContentValid(content: string): boolean {

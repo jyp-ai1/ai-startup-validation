@@ -12,7 +12,6 @@ import {
   DEMO_COMPETITORS,
   DEMO_EVIDENCE_BASE,
   DEMO_EVIDENCE_COUNT,
-  DEMO_EVIDENCE_ITEMS,
   DEMO_EVIDENCE_SOURCES,
   DEMO_INBOX_ITEMS,
   DEMO_MONITORING_ITEMS,
@@ -22,11 +21,18 @@ import {
   DEMO_STRATEGY_METRICS,
 } from '../../lib/v2-demo-experience-data';
 import {
+  EVIDENCE_SOURCE_BADGES,
+  SAMPLE_EVIDENCE_MARKET,
+  SAMPLE_REASON_CHAIN_STEPS,
+} from '../../lib/v2-reason-chain-engine';
+import {
   createEmptyDemoProjectDraft,
   isDemoProjectDraftValid,
   persistDemoProjectDraftForLogin,
   type DemoProjectDraft,
 } from '../../lib/v2-demo-project-store';
+import { V2EvidenceMetadataCard } from './v2-evidence-metadata-card';
+import { V2ReasonChainBridge } from './v2-reason-chain-bridge';
 import { V2SmartIntakeFlow } from './v2-smart-intake-flow';
 import {
   getNextDemoStep,
@@ -178,6 +184,12 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
 
       {step === 'opinion' ? (
         <div className="space-y-4">
+          <V2ReasonChainBridge
+            steps={SAMPLE_REASON_CHAIN_STEPS.slice(0, 2)}
+            activeStep="reviewFocus"
+            namespace="demoSample"
+          />
+
           <AiPmBubble>
             <p>{t('steps.opinion.line1')}</p>
             <p className="font-medium">{t('steps.opinion.line2')}</p>
@@ -199,6 +211,12 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
 
       {step === 'evidence' ? (
         <div className="space-y-4">
+          <V2ReasonChainBridge
+            steps={SAMPLE_REASON_CHAIN_STEPS.slice(0, 4)}
+            activeStep="thereforeMarket"
+            namespace="demoSample"
+          />
+
           <div>
             <h3 className="text-sm font-semibold">{t('steps.evidence.sectionTitle')}</h3>
             <div className="mt-1 flex items-center gap-2">
@@ -210,18 +228,12 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
           </div>
 
           <div className="space-y-3">
-            {DEMO_EVIDENCE_ITEMS.map((item) => (
-              <div
-                key={item}
-                className="rounded-lg border border-border/40 bg-muted/5 px-4 py-3"
-              >
-                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  {t(`steps.evidence.items.${item}.label`)}
-                </p>
-                <p className="mt-1 text-sm font-semibold">
-                  {t(`steps.evidence.items.${item}.value`)}
-                </p>
-              </div>
+            {SAMPLE_EVIDENCE_MARKET.map((item) => (
+              <V2EvidenceMetadataCard
+                key={item.id}
+                item={item}
+                namespace="evidenceMetaSample"
+              />
             ))}
           </div>
 
@@ -239,6 +251,12 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
 
       {step === 'changeDetected' ? (
         <div className="space-y-4">
+          <V2ReasonChainBridge
+            steps={SAMPLE_REASON_CHAIN_STEPS.slice(0, 5)}
+            activeStep="butGap"
+            namespace="demoSample"
+          />
+
           <AiPmBubble>
             <p className="font-medium">{t('steps.changeDetected.line1')}</p>
             <p>{t('steps.changeDetected.line2')}</p>
@@ -255,6 +273,12 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
 
       {step === 'strategyImprovement' ? (
         <div className="space-y-4">
+          <V2ReasonChainBridge
+            steps={SAMPLE_REASON_CHAIN_STEPS}
+            activeStep="thereforeImprovement"
+            namespace="demoSample"
+          />
+
           <AiPmBubble>
             <p className="font-medium">{t('steps.strategyImprovement.line1')}</p>
           </AiPmBubble>
@@ -353,13 +377,15 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
               </Button>
 
               {evidenceOpen ? (
-                <ul className="grid grid-cols-2 gap-2 rounded-lg border border-border/40 bg-muted/5 p-3 text-xs">
+                <div className="space-y-2 rounded-lg border border-border/40 bg-muted/5 p-3">
                   {DEMO_EVIDENCE_SOURCES.map((source) => (
-                    <li key={source} className="font-medium">
-                      {t(`steps.strategyImprovement.recommendationCard.sources.${source}`)}
-                    </li>
+                    <V2EvidenceMetadataCard
+                      key={source}
+                      item={{ id: source, badge: EVIDENCE_SOURCE_BADGES[source] }}
+                      namespace="evidenceMetaSample"
+                    />
                   ))}
-                </ul>
+                </div>
               ) : null}
             </div>
 

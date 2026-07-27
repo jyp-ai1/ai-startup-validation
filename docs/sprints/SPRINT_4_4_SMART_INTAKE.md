@@ -1,6 +1,6 @@
 # Sprint 4.4 — AI PM Smart Intake & First Working Experience
 
-**Status:** 🔄 IN PROGRESS  
+**Status:** ✅ SHIPPED  
 **Mission:** 사용자는 새로 작성하지 않는다. AI PM은 먼저 이해하고, 부족한 부분만 질문한다.
 
 ---
