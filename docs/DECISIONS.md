@@ -686,6 +686,44 @@ Sprint 1.3 originally targeted "Adaptive Thinking Engine." CPO **cancelled score
 
 ---
 
+## ADR-024: Review Board — process over event, no "Result" vocabulary
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 1.3 removed fake scores but still framed research as a one-click **event** ("AI 조사 시작" → "결과"). CPO QA: users ask "AI가 뭘 조사하는데?" — trust requires **review of current input**, not omniscient market scan.
+
+LaunchLens core screen becomes **Review Board**, not validation report.
+
+### Decision
+
+1. **Process flow:** Input → AI understands → what's known → what's missing → review → evidence → judgment → next question
+2. **User-facing vocabulary (immutable in MVP flows):**
+
+| Section | Label |
+|---------|--------|
+| Understanding | AI가 현재 이해한 내용 |
+| Confirmed | 이번 검토에서 확인한 내용 |
+| Status | 검토 현황 |
+| Judgment | 현재 판단 |
+| Next | 다음으로 확인하면 좋은 내용 |
+
+3. **Banned in user UI:** "결과", GO/HOLD as verdict, "AI 조사 시작" as primary CTA
+4. **Primary CTA:** "현재 내용으로 검토하기" — scopes AI to **current input**
+5. **Evidence Strength:** progress + 🟢/🟡/⚪ — not AI quality scores
+6. **Research step:** renamed to process language ("검토 진행"), not one-shot investigation event
+
+### Consequences
+
+- [SPRINT_1_3_1_REVIEW_BOARD.md](./sprints/SPRINT_1_3_1_REVIEW_BOARD.md)
+- Shared `v2-review-board` components for validation + conclusion routes
+- Constitution "Recommendation, Never Judgment" reinforced in copy
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

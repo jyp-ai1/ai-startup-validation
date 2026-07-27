@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ArrowRight, ChevronDown, Sparkles } from 'lucide-react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 
 import { useRouter } from '@/i18n/navigation';
 import { Button } from '@repo/ui';
@@ -12,14 +12,15 @@ import {
   V2_EVIDENCE_OPTIONAL_FIELDS,
   type V2EvidenceField,
   type V2ValidationEvidence,
-  countFilledEvidence,
   isEvidenceFieldFilled,
   saveV2Validation,
 } from '../../lib/v2-validation-store';
 import { JourneyLayout } from '../journey-layout';
+import {
+  V2ReviewStatusPanel,
+  V2ReviewUnderstandingPanel,
+} from './v2-review-board-panels';
 import { V2JourneyStack } from './v2-journey-stack';
-
-const CHECKLIST_FIELDS = ['idea', ...V2_EVIDENCE_OPTIONAL_FIELDS] as const;
 
 export function V2ValidationView() {
   const t = useTranslations('workflow.v2.validation');
@@ -44,7 +45,6 @@ export function V2ValidationView() {
     [idea, optional],
   );
 
-  const filledCount = useMemo(() => countFilledEvidence(evidence), [evidence]);
   const hasIdea = isEvidenceFieldFilled('idea', evidence);
 
   const toggleSection = (field: V2EvidenceField) => {
@@ -63,7 +63,7 @@ export function V2ValidationView() {
     }
   };
 
-  const handleStartAi = () => {
+  const handleStartReview = () => {
     if (!hasIdea) return;
     saveV2Validation(evidence);
     router.push('/investigate');
@@ -74,7 +74,7 @@ export function V2ValidationView() {
       <V2JourneyStack
         embedded
         main={
-          <div className="space-y-8">
+          <div className="space-y-6">
             <div>
               <h1 className="text-xl font-semibold">{t('ideaLabel')}</h1>
               <textarea
@@ -85,6 +85,8 @@ export function V2ValidationView() {
                 className="mt-3 w-full resize-none rounded-xl border border-border/70 bg-background px-4 py-3 text-base outline-none ring-primary/30 focus:ring-2"
               />
             </div>
+
+            <V2ReviewUnderstandingPanel evidence={evidence} />
 
             <div className="border-t border-border/60 pt-6">
               <p className="text-sm leading-relaxed text-muted-foreground">{t('evidenceLead')}</p>
@@ -143,37 +145,18 @@ export function V2ValidationView() {
         }
         result={
           <div className="space-y-5">
-            <div className="rounded-2xl border border-border/70 bg-muted/20 p-5">
-              <p className="text-sm font-medium">{t('understandingTitle')}</p>
-              <ul className="mt-3 space-y-2 text-sm">
-                {CHECKLIST_FIELDS.map((field) => {
-                  const done = isEvidenceFieldFilled(field, evidence);
-                  return (
-                    <li key={field} className="flex items-center gap-2">
-                      <span aria-hidden>{done ? '✅' : '⬜'}</span>
-                      <span className={done ? 'text-foreground' : 'text-muted-foreground'}>
-                        {t(`checklist.${field}`)}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-              <p className="mt-4 text-xs text-muted-foreground">
-                {t('infoCount', { filled: filledCount, total: CHECKLIST_FIELDS.length })}
-              </p>
-            </div>
+            <V2ReviewStatusPanel evidence={evidence} phase="beforeReview" />
 
-            <p className="text-sm leading-relaxed text-muted-foreground">{t('aiDisclaimer')}</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">{t('reviewDisclaimer')}</p>
 
             <Button
               type="button"
               size="lg"
               className="h-12 w-full rounded-xl font-semibold"
               disabled={!hasIdea}
-              onClick={handleStartAi}
+              onClick={handleStartReview}
             >
-              <Sparkles className="mr-2 size-4" aria-hidden />
-              {t('aiStartCta')}
+              {t('reviewStartCta')}
               <ArrowRight className="ml-2 size-4" aria-hidden />
             </Button>
           </div>

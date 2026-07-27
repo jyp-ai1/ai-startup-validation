@@ -4154,43 +4154,50 @@
           "pricing": "Pricing"
         },
         "infoCount": "Information collected {filled} / {total}",
-        "aiDisclaimer": "Research can start with what you have.\n\nProblem and customer inputs\nimprove accuracy.",
-        "aiStartCta": "Start AI research"
+        "reviewDisclaimer": "We review only what you've entered.\nAdding problem and customer enables deeper checks.",
+        "reviewStartCta": "Review with current input"
+      },
+      "reviewBoard": {
+        "understandingTitle": "What AI understands so far",
+        "confirmedTitle": "Confirmed in this review",
+        "judgmentTitle": "Current judgment",
+        "nextTitle": "Good to confirm next",
+        "nextCta": "Add more input",
+        "continueCta": "Continue to review board",
+        "statusTitle": "Review status",
+        "statusBeforeReview": "{filled}/{total} fields ready · you can start the review.",
+        "statusAfterReview": "Additional information is needed.",
+        "stageLabel": "Stage: idea review done · market review not started",
+        "emptyField": "Not yet provided.",
+        "missingTitle": "What's missing",
+        "strengthTitle": "Evidence coverage",
+        "strengthCount": "{filled} / {total} fields covered",
+        "fields": {
+          "idea": "Business idea",
+          "problem": "Problem to solve",
+          "customer": "Target customer",
+          "pricing": "Revenue model",
+          "mvp": "Differentiation"
+        },
+        "confirmed": {
+          "similarServices": "7 similar services",
+          "productHunt": "Product Hunt examples",
+          "localCompetitors": "3 local competitors",
+          "marketSize": "Market size data"
+        },
+        "judgment": {
+          "ideaOnly": "With current input alone, market fit is hard to judge.",
+          "basicEvidence": "Direction is clearer, but market fit still needs confirmation.",
+          "partialEvidence": "With this evidence, we can suggest the next checks."
+        }
       },
       "conclusion": {
-        "title": "Conclusion",
-        "findingsTitle": "Research findings",
-        "findings": {
-          "similarServices": "Similar services exist in the market.",
-          "competition": "Competition is present.",
-          "marketInterest": "Market interest signals were found."
-        },
-        "opinionLabel": "AI opinion",
-        "basedOnInput": "Summarized from your current inputs.",
-        "judgment": {
-          "ideaOnly": "With only the idea, market fit and differentiation are hard to judge.",
-          "basicEvidence": "Problem and customer hints help, but more validation is needed.",
-          "partialEvidence": "With this evidence, we can suggest the next validation steps."
-        },
-        "whySummary": "Why this judgment?",
-        "opinion": {
-          "needsValidation": "Additional validation is needed with current information."
-        },
-        "detailsSummary": "Market · Competitors · Pricing · Grants",
-        "details": {
-          "market": "Market research",
-          "competitor": "Competitors",
-          "pricing": "Pricing",
-          "grants": "Grants"
-        },
-        "improveTitle": "To improve accuracy",
-        "improveCta": "Add more input",
-        "createWorkspaceCta": "Continue in workspace"
+        "title": "Review board"
       },
       "research": {
-        "title": "AI research",
-        "intro": "Based on your inputs,\nwe'll organize market signals.",
-        "progress": "Research {current}/{total}",
+        "title": "Review in progress",
+        "intro": "Checking market signals\nbased on your input.",
+        "progress": "Review {current}/{total}",
         "stepsLabel": "In progress",
         "stepItems": {
           "market": "Market research",
@@ -4198,9 +4205,9 @@
           "pricing": "Pricing",
           "grants": "Grants"
         },
-        "waitHint": "You'll see the conclusion when research completes.",
-        "failedHint": "Something went wrong during research.",
-        "retryCta": "Retry research"
+        "waitHint": "You'll see the review board when this step completes.",
+        "failedHint": "Something went wrong during the review.",
+        "retryCta": "Retry review"
       },
       "workspaces": {
         "title": "Workspace",
