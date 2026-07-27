@@ -1,5 +1,6 @@
+import { ForbiddenError, NotFoundError } from '@repo/core/errors';
 import { isSupabaseConfigured } from '@repo/db';
-import type { StartupProject } from '@repo/types/validation';
+import type { CreateStartupProjectInput, StartupProject } from '@repo/types/validation';
 
 import { getStartupProjectRepository } from '@/lib/db/platform';
 
@@ -52,4 +53,53 @@ export async function findStartupProject(id: string): Promise<StartupProject | n
 
 export function isStartupProjectsDbReady(): boolean {
   return isSupabaseConfigured();
+}
+
+function assertOwned(project: StartupProject, userId: string): void {
+  if (project.isDemo || project.userId !== userId) {
+    throw new ForbiddenError('Project access denied');
+  }
+}
+
+/** List projects for authenticated user (Sprint 1.1). */
+export async function listOwnedProjects(userId: string): Promise<StartupProject[]> {
+  return listUserProjects(userId);
+}
+
+/** Get project if owned by user. */
+export async function getOwnedProject(
+  userId: string,
+  projectId: string,
+): Promise<StartupProject | null> {
+  const project = await findStartupProject(projectId);
+  if (!project) return null;
+  if (project.isDemo || project.userId !== userId) return null;
+  return project;
+}
+
+/** Create project scoped to user (Sprint 1.1). */
+export async function createOwnedProject(
+  userId: string,
+  input: Pick<CreateStartupProjectInput, 'title' | 'summary'>,
+): Promise<StartupProject> {
+  if (!isSupabaseConfigured()) {
+    throw new Error('Database not configured');
+  }
+
+  const repo = getStartupProjectRepository();
+  return repo.create({
+    title: input.title,
+    summary: input.summary,
+    userId,
+    isDemo: false,
+    status: 'DRAFT',
+  });
+}
+
+export async function assertProjectOwner(userId: string, projectId: string): Promise<StartupProject> {
+  const project = await getOwnedProject(userId, projectId);
+  if (!project) {
+    throw new NotFoundError(`Project not found: ${projectId}`);
+  }
+  return project;
 }

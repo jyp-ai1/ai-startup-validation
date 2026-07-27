@@ -342,6 +342,23 @@
     "emptyDescription": "Local workspace configuration. Authentication coming soon.",
     "localizationTestLink": "Localization test page"
   },
+  "myProjects": {
+    "pageTitle": "My projects",
+    "greeting": "Hello, {name}.",
+    "lead": "What strategy will you continue today?",
+    "newProjectLabel": "New project name",
+    "newProjectPlaceholder": "Project name",
+    "newProjectCta": "New project",
+    "recentProjects": "Recent projects",
+    "lastEdited": "Edited {when}",
+    "emptyHint": "Create your first project.",
+    "dbNotReady": "Supabase is not configured.",
+    "workspace": {
+      "backToList": "My projects",
+      "emptyTitle": "Nothing here yet.",
+      "emptyDesc": "Strategy interview starts in the next sprint."
+    }
+  },
   "projects": {
     "title": "Projects",
     "description": "Manage strategy and validation projects",

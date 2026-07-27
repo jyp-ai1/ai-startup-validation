@@ -11,6 +11,7 @@ import type {
   AuthSession,
   AuthUser,
   LoginCredentials,
+  OAuthSignInInput,
   ResetPasswordInput,
   SignUpInput,
   VerifyEmailInput,
@@ -151,6 +152,27 @@ export class SupabaseAuthAdapter implements AuthPort {
     });
     if (error) {
       throw new InternalServerError(error.message);
+    }
+  }
+
+  async signInWithOAuth(input: OAuthSignInInput): Promise<void> {
+    if (input.provider !== 'google') {
+      throw new InternalServerError(`Unsupported OAuth provider: ${input.provider}`);
+    }
+
+    const { error } = await this.getClient().auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: input.redirectTo,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    });
+
+    if (error) {
+      throw new UnauthorizedError(error.message);
     }
   }
 }

@@ -2,6 +2,7 @@ import type {
   AuthSession,
   AuthUser,
   LoginCredentials,
+  OAuthSignInInput,
   ResetPasswordInput,
   SignUpInput,
   VerifyEmailInput,
@@ -17,6 +18,7 @@ export interface AuthPort {
   createUser(input: SignUpInput): Promise<AuthUser>;
   resetPassword(input: ResetPasswordInput): Promise<void>;
   verifyEmail(input: VerifyEmailInput): Promise<void>;
+  signInWithOAuth(input: OAuthSignInInput): Promise<void>;
 }
 
 export type { AuthSession, AuthUser, LoginCredentials, SignUpInput };

@@ -35,6 +35,7 @@ type StartupProjectRow = {
   deleted_at?: string | null;
   is_pinned?: boolean;
   thumbnail_color?: string | null;
+  last_activity_at?: string;
   created_at: string;
   updated_at: string;
 };
@@ -59,6 +60,7 @@ function toStartupProject(row: StartupProjectRow): StartupProject {
     isPinned: row.is_pinned ?? false,
     deletedAt: row.deleted_at ?? null,
     thumbnailColor: row.thumbnail_color ?? null,
+    lastActivityAt: row.last_activity_at ?? row.updated_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -107,6 +109,7 @@ function toUpdateRow(input: UpdateStartupProjectInput) {
     ...(input.isPinned !== undefined ? { is_pinned: input.isPinned } : {}),
     ...(input.thumbnailColor !== undefined ? { thumbnail_color: input.thumbnailColor } : {}),
     updated_at: new Date().toISOString(),
+    last_activity_at: new Date().toISOString(),
   };
 }
 

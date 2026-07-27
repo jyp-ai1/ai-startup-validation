@@ -613,6 +613,49 @@ PM receives production URL after each push; Legacy removal (0-5) remains gated o
 
 ---
 
+## ADR-022: LaunchLens V2 Pivot — Project-based foundation (Sprint 1)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+V2 UX validation (Sprint 0-4) proved messaging and question-first onboarding, but the product cannot deliver **Memory** without authenticated **Project** persistence. LaunchLens is not session/chat AI — it is **생각 → 결정 → 기억 → 다음날 → 계속**.
+
+Payment, teams, export, and advanced AI are out of scope until foundation ships.
+
+### Decision
+
+1. **Priority pivot:** Sprint 1 Foundation over Sprint 0-4 STEP 4–7 and Legacy removal
+2. **Product principle (Project-Centric AI):**
+
+```text
+LaunchLens is Project-Centric AI.
+
+Every conversation belongs to a project.
+Every project owns its context.
+Every decision belongs to its history.
+```
+
+3. **Architecture:** User → Google Login → **내 프로젝트** → Project → Thinking / Decision / Memory / Journey
+4. **Login:** Google only via Supabase Auth
+5. **MVP language:** Korean UI only · i18n keys in code · `ko.json` maintained
+6. **Sprint 1.1 (Project Foundation):** Login + session + userId-scoped projects + 내 프로젝트 home + empty workspace — **no AI**
+7. **Out of Sprint 1:** Payment · Teams · Export · AI Engine polish
+
+**Prior wording:** *LaunchLens는 세션 기반 AI가 아니라 프로젝트 기반 AI다.* — superseded by English canonical above; same meaning.
+
+### Consequences
+
+- [SPRINT_1_FOUNDATION.md](./sprints/SPRINT_1_FOUNDATION.md) is active sprint law
+- [QA_REPORT_V2.md](./QA_REPORT_V2.md) V2 flow QA **paused** at STEP 3 (resume after foundation)
+- ADR-020/021 still apply to any shipped UX; deploy QA loop unchanged
+- Constitution v2.1 — project-based AI principle
+- Harden existing auth/project code — do not duplicate login UI
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

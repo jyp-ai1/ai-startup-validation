@@ -1,17 +1,43 @@
 # LaunchLens Product Constitution
 
-**Version:** 1.0  
+**Version:** 2.1 (Sprint 1 Pivot — 2026-07-27)  
 **Ratified:** 2026-07-24 (Sprint 0 — PM Sign-Off: PASS WITH REVISIONS)  
 **Authority:** This document is the **supreme product law**. Epic이 20개가 되어도 흔들리지 않는 기준.  
 **Supersedes:** Ad-hoc feature decisions · menu-first IA · report-generator positioning
 
-> **Read order:** Constitution → [LAUNCHLENS_2.0_ROADMAP.md](./LAUNCHLENS_2.0_ROADMAP.md) → Sprint kickoff → implement
+> **Read order:** Constitution → [SPRINT_1_FOUNDATION.md](./sprints/SPRINT_1_FOUNDATION.md) → Sprint kickoff → implement
 
 ---
 
-## Product North Star
+## Product North Star (v2.1 — Sprint 1 Pivot)
 
-> **LaunchLens는 AI가 사업을 분석하는 툴이 아닙니다. 대표 대신 회사를 운영하는 AI PM입니다.**
+> **LaunchLens는 세션(Session) 기반 AI가 아니라 프로젝트(Project) 기반 AI다.**
+
+Users do not save conversations — they **evolve strategy projects** across days.
+
+**Canonical (ADR-022):**
+
+```text
+LaunchLens is Project-Centric AI.
+
+Every conversation belongs to a project.
+Every project owns its context.
+Every decision belongs to its history.
+```
+
+```text
+생각 → 결정 → 기억 → 다음날 → 계속
+```
+
+**Memory requires login.** MVP ships: Google Login · **내 프로젝트** · Project CRUD · Korean UI.
+
+**Prior North Star (Layer 1 — still valid inside a project):**
+
+> LaunchLens prepares the founder's decision — not a one-shot chat.
+
+---
+
+## Product North Star (v1 — reference)
 
 Every feature must pass one gate:
 

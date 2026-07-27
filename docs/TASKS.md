@@ -2,9 +2,30 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Master plan (legacy features):** [MASTER_PLAN.md](./MASTER_PLAN.md)  
-> **LaunchLens 2.0:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md) · [LAUNCHLENS_2.0_ROADMAP.md](./LAUNCHLENS_2.0_ROADMAP.md) · [SPRINT_PROCESS.md](./SPRINT_PROCESS.md)  
-> **Legacy features:** [MASTER_PLAN.md](./MASTER_PLAN.md)
+> **Active sprint:** [Sprint 1 Foundation](./sprints/SPRINT_1_FOUNDATION.md) · ADR-022  
+> **Paused:** Sprint 0-4 V2 UX QA (STEP 3 deployed — frozen for pivot)  
+> **Master plan (legacy):** [MASTER_PLAN.md](./MASTER_PLAN.md) · **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
+
+---
+
+## Sprint 1 — Foundation 📋 ACTIVE
+
+**Goal:** 로그인 + 프로젝트 저장 + 한국어
+
+**Kickoff:** [sprints/SPRINT_1_FOUNDATION.md](./sprints/SPRINT_1_FOUNDATION.md) · ADR-022 · Constitution v2.1
+
+**Process:** ADR-021 — build → commit → push → deploy → PM PASS (≥9.5) → next
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1.1 | **Project Foundation** — Google Login · 내 프로젝트 · CRUD · empty workspace | ⬜ IN PROGRESS |
+| 1.2 | Project structure (userId-scoped service) | ⬜ |
+| 1.3 | 내 프로젝트 — list / create / enter | ⬜ |
+| 1.4 | 전략 인터뷰 ↔ Project | ⬜ |
+| 1.5 | 한국어 UI 통일 | ⬜ |
+| 1.6 | i18n structure only (ko maintained) | ⬜ |
+
+**NOT Sprint 1:** 결제 · 팀 · Export · AI Engine · Language switch
 
 ---
 
@@ -18,15 +39,13 @@ Landing → Who → Workflow → Validation → Investigate → Conclusion → W
 
 | Route | View | Status |
 |-------|------|--------|
-| `/` | Landing | ✅ (trim in 0-5) |
-| `/who` | Persona 4 cards | ✅ |
-| `/workflow` | V2JourneyStack plan | ✅ |
+| `/` | Landing | ✅ |
+| `/who` | Purpose selection | ✅ |
+| `/workflow` | Review process guide | ✅ |
 | `/validation` | Score + optional inputs | ✅ |
-| `/investigate` | Pipeline + step list (V2 research) | ✅ |
+| `/investigate` | Pipeline + step list | ✅ |
 | `/conclusion` | GO/HOLD + pipeline score | ✅ |
-| `/workspace` | V2WorkspaceDetail (2-col AI PM) | ✅ |
-
-**Legacy untouched until 0-5:** `StrategyWorkspaceShell` phases only if no V2 persona cookie.
+| `/workspace` | V2 detail | ✅ |
 
 ---
 
@@ -69,7 +88,7 @@ Landing → Who → Workflow → Validation → Investigate → Conclusion → W
 
 ---
 
-## Sprint 0-4 — V2 UX QA + User Flow Validation 📋 ACTIVE
+## Sprint 0-4 — V2 UX QA ⏸ PAUSED (ADR-022)
 
 **Process (ADR-021):** one STEP → deploy → PM PASS (≥9.5) → next STEP only
 
@@ -77,11 +96,8 @@ Landing → Who → Workflow → Validation → Investigate → Conclusion → W
 |------|--------|-----------|
 | 1 | Landing | ✅ PASS 9.3 |
 | 2 | Who | ✅ PASS 8.7 (조건부) · fix deployed |
-| 3 | **Workflow** | ⬅ **NEXT** |
-| 4 | Validation | ⬜ |
-| 5 | Investigate | ⬜ |
-| 6 | Conclusion | ⬜ |
-| 7 | Workspace | ⬜ |
+| 3 | **Workflow** | ✅ deployed · PM test pending · **frozen** |
+| 4–7 | Validation … Workspace | ⏸ frozen — Sprint 1 pivot |
 
 **Goal:** V2가 정답인지 검증 — Legacy 삭제 **전**에 WOW moment·flow 확인
 
@@ -110,7 +126,7 @@ Landing → Who → Workflow → Validation → Investigate → Conclusion → W
 
 Delete: Goal · Registration · Live · Completion · Today shell · 3-col · Rail · Tabs
 
-**Prerequisite:** Sprint 0-4 QA PASS
+**Prerequisite:** Sprint 0-4 QA PASS (paused — after Sprint 1)
 
 ---
 

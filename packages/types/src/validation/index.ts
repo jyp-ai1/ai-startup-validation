@@ -56,6 +56,7 @@ export type StartupProject = {
   isPinned: boolean;
   deletedAt: ISODateString | null;
   thumbnailColor: string | null;
+  lastActivityAt?: ISODateString;
   createdAt: ISODateString;
   updatedAt: ISODateString;
 };

@@ -32,6 +32,12 @@ export type VerifyEmailInput = {
   type: 'signup' | 'recovery' | 'email_change';
 };
 
+/** OAuth sign-in (Google only in Sprint 1.1). */
+export type OAuthSignInInput = {
+  provider: 'google';
+  redirectTo: string;
+};
+
 /** Auth user snapshot (adapter-level, may differ from domain User). */
 export type AuthUser = {
   id: ID;

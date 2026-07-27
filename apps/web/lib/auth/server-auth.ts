@@ -67,3 +67,14 @@ export async function getWorkspaceMode(): Promise<WorkspaceMode> {
 export async function isDemoWorkspace(): Promise<boolean> {
   return (await getWorkspaceMode()) === 'demo';
 }
+
+/** Redirect to login when unauthenticated (Sprint 1.1 protected routes). */
+export async function requireAuthUser(nextPath?: string): Promise<AppAuthUser> {
+  const user = await getServerAuthUser();
+  if (user) return user;
+
+  const { redirect } = await import('next/navigation');
+  const next = nextPath ?? '/my-projects';
+  redirect(`/auth/login?next=${encodeURIComponent(next)}`);
+  throw new Error('Unreachable');
+}

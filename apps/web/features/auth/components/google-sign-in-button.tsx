@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
+import { SupabaseAuthAdapter } from '@repo/db';
 import { Button } from '@repo/ui';
 
 type GoogleSignInButtonProps = {
@@ -19,7 +20,7 @@ function isSupabaseReady(): boolean {
 }
 
 export function GoogleSignInButton({
-  redirectTo = '/dashboard',
+  redirectTo = '/my-projects',
   className,
 }: GoogleSignInButtonProps) {
   const t = useTranslations('auth');
@@ -38,27 +39,10 @@ export function GoogleSignInButton({
     trackEvent(ANALYTICS_EVENTS.login, { provider: 'google', screen: '/auth/login' });
 
     try {
-      const { createBrowserClient } = await import('@repo/db');
-      const supabase = createBrowserClient();
-      if (!supabase) return;
-
       const origin = window.location.origin;
       const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`;
-
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: callbackUrl,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
-      });
-
-      if (error) {
-        setNetworkError(true);
-      }
+      const auth = new SupabaseAuthAdapter();
+      await auth.signInWithOAuth({ provider: 'google', redirectTo: callbackUrl });
     } catch {
       setNetworkError(true);
     } finally {
@@ -73,7 +57,7 @@ export function GoogleSignInButton({
         className={className}
         disabled={loading || !supabaseReady}
         aria-busy={loading}
-        onClick={handleSignIn}
+        onClick={() => void handleSignIn()}
       >
         <svg className="mr-2 size-4" viewBox="0 0 24 24" aria-hidden>
           <path

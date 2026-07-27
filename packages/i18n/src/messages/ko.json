@@ -342,6 +342,23 @@
     "emptyDescription": "로컬 워크스페이스 설정입니다. 인증 기능은 추후 추가됩니다.",
     "localizationTestLink": "다국어 테스트 페이지"
   },
+  "myProjects": {
+    "pageTitle": "내 프로젝트",
+    "greeting": "안녕하세요, {name}님.",
+    "lead": "오늘 어떤 전략을 이어가시겠어요?",
+    "newProjectLabel": "새 프로젝트 이름",
+    "newProjectPlaceholder": "프로젝트 이름",
+    "newProjectCta": "새 프로젝트",
+    "recentProjects": "최근 프로젝트",
+    "lastEdited": "최근 수정 {when}",
+    "emptyHint": "첫 프로젝트를 만들어 보세요.",
+    "dbNotReady": "Supabase 연결이 필요합니다. .env.local 설정 후 migration 021까지 적용해 주세요.",
+    "workspace": {
+      "backToList": "내 프로젝트",
+      "emptyTitle": "아직 내용이 없습니다.",
+      "emptyDesc": "전략 인터뷰는 다음 Sprint에서 시작합니다. 지금은 프로젝트가 저장되어 있습니다."
+    }
+  },
   "projects": {
     "title": "Projects",
     "description": "전략 및 검증 프로젝트 관리",
