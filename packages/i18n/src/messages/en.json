@@ -4158,26 +4158,37 @@
         "reviewStartCta": "Review with current input"
       },
       "reviewBoard": {
-        "understandingTitle": "What AI understands so far",
+        "understandingTitle": "What AI understands",
         "confirmedTitle": "Confirmed in this review",
         "judgmentTitle": "Current judgment",
         "nextTitle": "Good to confirm next",
-        "nextCta": "Add more input",
-        "continueCta": "Continue to review board",
+        "nextCta": "Add input",
+        "continueCta": "Continue",
         "statusTitle": "Review status",
-        "statusBeforeReview": "{filled}/{total} fields ready · you can start the review.",
-        "statusAfterReview": "Additional information is needed.",
-        "stageLabel": "Stage: idea review done · market review not started",
-        "emptyField": "Not yet provided.",
-        "missingTitle": "What's missing",
-        "strengthTitle": "Evidence coverage",
-        "strengthCount": "{filled} / {total} fields covered",
+        "statusBeforeReview": "{filled}/{total} ready",
+        "statusAfterReview": "More input needed.",
+        "stageLabel": "Idea review done · market review pending",
+        "emptyField": "Not yet.",
+        "editCta": "Edit",
+        "addCta": "+ Add",
+        "saveCta": "Save",
+        "cancelCta": "Cancel",
+        "step": {
+          "idea": "① Do this first"
+        },
+        "ctaHint": "{count} fields filled.",
+        "ctaQualityHint": "More input improves review quality.",
+        "toast": {
+          "saved": "{field} updated.",
+          "reviewAgainHint": "You can review again.",
+          "reviewAgain": "Review again"
+        },
         "fields": {
           "idea": "Business idea",
-          "problem": "Problem to solve",
-          "customer": "Target customer",
-          "pricing": "Revenue model",
-          "mvp": "Differentiation"
+          "problem": "Problem",
+          "customer": "Customer",
+          "pricing": "Pricing",
+          "mvp": "MVP"
         },
         "confirmed": {
           "similarServices": "7 similar services",

@@ -7,8 +7,8 @@ export const UNDERSTANDING_FIELDS: UnderstandingFieldKey[] = [
   'idea',
   'problem',
   'customer',
-  'pricing',
   'mvp',
+  'pricing',
 ];
 
 export type EvidenceStrength = 'strong' | 'partial' | 'none';

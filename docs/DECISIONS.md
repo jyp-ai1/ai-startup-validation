@@ -724,6 +724,32 @@ LaunchLens core screen becomes **Review Board**, not validation report.
 
 ---
 
+## ADR-025: UI Quality First — Design Constitution (Sprint 1.3.2)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Features improved but UI polish regressed — temporary layouts, border-heavy cards, AI-wrapper feel. LaunchLens is no longer "demo MVP"; it must read as **premium B2B SaaS** (Notion / Linear / Stripe tier).
+
+### Decision
+
+1. **[DESIGN_CONSTITUTION.md](./DESIGN_CONSTITUTION.md)** is supreme UI law — above sprint scope docs
+2. **UI Quality First:** UI Self Review must pass before ship; one NO = block release
+3. **Visual hierarchy:** Do now → AI understands → Review → Next action
+4. **Editable Review Board:** understanding rows are clickable; save → toast → optional re-review
+5. **Ship artifacts:** Before/After screenshots + UI Self Review required (no screenshot = no accept)
+
+### Consequences
+
+- [SPRINT_1_3_2_INTUITIVE_REVIEW_UX.md](./sprints/SPRINT_1_3_2_INTUITIVE_REVIEW_UX.md)
+- `V2ReviewBoardWorkspace` replaces split-panel validation layout
+- Feature velocity subordinate to UI completion on user-facing flows
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

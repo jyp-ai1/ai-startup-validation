@@ -4301,7 +4301,7 @@
           "pricing": "가격"
         },
         "infoCount": "현재 확보한 정보 {filled} / {total}",
-        "reviewDisclaimer": "입력하신 내용만을 기준으로 검토합니다.\n문제와 고객을 추가하면 더 구체적으로 확인할 수 있습니다.",
+        "reviewDisclaimer": "입력하신 내용만 기준으로 검토합니다.",
         "reviewStartCta": "현재 내용으로 검토하기"
       },
       "reviewBoard": {
@@ -4309,22 +4309,33 @@
         "confirmedTitle": "이번 검토에서 확인한 내용",
         "judgmentTitle": "현재 판단",
         "nextTitle": "다음으로 확인하면 좋은 내용",
-        "nextCta": "추가 입력하기",
+        "nextCta": "추가 입력",
         "continueCta": "검토 보드로 계속",
         "statusTitle": "검토 현황",
-        "statusBeforeReview": "확보된 정보 {filled}/{total} · 검토를 시작할 수 있습니다.",
+        "statusBeforeReview": "확보 {filled}/{total} · 검토 가능",
         "statusAfterReview": "추가 정보가 필요합니다.",
-        "stageLabel": "현재 단계: 아이디어 검토 완료 · 시장 검토 진행 전",
+        "stageLabel": "아이디어 검토 완료 · 시장 검토 전",
         "emptyField": "아직 없습니다.",
-        "missingTitle": "무엇이 부족한가",
-        "strengthTitle": "근거 확보 현황",
-        "strengthCount": "{filled} / {total} 항목 확보",
+        "editCta": "✏ 수정",
+        "addCta": "+ 입력하기",
+        "saveCta": "저장",
+        "cancelCta": "취소",
+        "step": {
+          "idea": "① 지금 할 일"
+        },
+        "ctaHint": "현재 {count}개의 정보가 입력되었습니다.",
+        "ctaQualityHint": "정보가 많을수록 검토 품질이 좋아집니다.",
+        "toast": {
+          "saved": "{field} 정보가 변경되었습니다.",
+          "reviewAgainHint": "다시 검토할 수 있습니다.",
+          "reviewAgain": "다시 검토"
+        },
         "fields": {
           "idea": "사업 아이디어",
-          "problem": "해결하려는 문제",
-          "customer": "타깃 고객",
-          "pricing": "수익 모델",
-          "mvp": "차별성"
+          "problem": "문제",
+          "customer": "고객",
+          "pricing": "가격",
+          "mvp": "MVP"
         },
         "confirmed": {
           "similarServices": "유사 서비스 7개",

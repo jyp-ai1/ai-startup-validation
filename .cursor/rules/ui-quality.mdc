@@ -1,0 +1,26 @@
+---
+description: UI Quality First — premium SaaS standards before ship
+globs:
+  - apps/web/**/*.tsx
+  - packages/ui/**/*.tsx
+---
+
+# UI Quality First
+
+Read `docs/DESIGN_CONSTITUTION.md` before any user-facing UI work.
+
+## Requirements
+
+- Less but better: whitespace, one primary CTA, short copy
+- Visual hierarchy: do now → AI understands → review → next action
+- Card-first; no border spam
+- Review Board vocabulary only (no "결과", GO/HOLD, fake scores)
+- Editable understanding rows with save + toast feedback
+- UI Self Review must pass before ship; include Before/After screenshots in release report
+
+## Bad Examples
+
+- Split panels with redundant status cards
+- Decorative icons and emoji progress bars
+- Long disclaimer paragraphs
+- Multiple equal-weight CTAs

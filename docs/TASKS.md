@@ -21,7 +21,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 1.1 | **Project Foundation** — Google Login · 내 프로젝트 · CRUD · empty workspace | ✅ SHIPPED (`1da48a7`) |
 | 1.2 | **Adaptive Interview** — guided entry · mock Q1/Q2 · journey · context · decision | ✅ SHIPPED (`074dd00`) — PM QA pending |
 | 1.3 | **Evidence-driven Validation Loop** — evidence accordion · no fake scores · improve loop | ✅ SHIPPED (`2b2d1c2`) |
-| 1.3.1 | **Review Board** — process vocabulary · 4-section board · evidence strength | ⬜ IN PROGRESS |
+| 1.3.1 | **Review Board** — process vocabulary · 4-section board · evidence strength | ✅ SHIPPED (`69d543a`) |
+| 1.3.2 | **Intuitive Review UX** — premium SaaS UI · editable board · Design Constitution | ⬜ IN PROGRESS |
 | 1.5 | 한국어 UI 통일 | ⬜ |
 | 1.6 | i18n structure only (ko maintained) | ⬜ |
 
