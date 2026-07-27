@@ -4547,10 +4547,49 @@
               }
             }
           }
+        },
+        "decisionMemory": {
+          "nav": {
+            "title": "Decision Memory",
+            "empty": "검토 후 저장된 결정이 여기에 표시됩니다."
+          },
+          "toast": {
+            "saved": "Decision Memory에 저장되었습니다."
+          },
+          "savePrompt": {
+            "aiLabel": "AI PM",
+            "lead": "대표님. 이번 결정을 Decision Memory에 저장할까요?",
+            "previewDecision": "Decision",
+            "previewReason": "Reason",
+            "previewEvidence": "Evidence",
+            "saveCta": "저장",
+            "laterCta": "나중에"
+          },
+          "detail": {
+            "decisionLabel": "Decision",
+            "reasonLabel": "왜?",
+            "evidenceLabel": "근거",
+            "dateLabel": "언제",
+            "statusLabel": "현재 상태",
+            "statusCurrent": "Current",
+            "statusSuperseded": "Superseded"
+          },
+          "draft": {
+            "reason": {
+              "initialReview": "초기 검토에서 방향을 정리했습니다.",
+              "problem": "해결하려는 문제가 명확합니다.",
+              "customer": "핵심 고객이 정리되었습니다.",
+              "market": "시장 검토를 완료했습니다."
+            },
+            "evidence": {
+              "marketResearch": "시장 조사",
+              "interviews": "인터뷰",
+              "competitors": "경쟁사",
+              "problemInput": "문제 정의",
+              "pricingInput": "가격 입력"
+            }
+          }
         }
-      },
-      "conclusion": {
-        "title": "검토 보드"
       },
       "research": {
         "title": "검토 진행",

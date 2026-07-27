@@ -1,11 +1,23 @@
 # LaunchLens Product Constitution
 
-**Version:** 2.1 (Sprint 1 Pivot — 2026-07-27)  
+**Version:** 2.2 (Roadmap v1.1 — 2026-07-27)  
 **Ratified:** 2026-07-24 (Sprint 0 — PM Sign-Off: PASS WITH REVISIONS)  
 **Authority:** This document is the **supreme product law**. Epic이 20개가 되어도 흔들리지 않는 기준.  
-**Supersedes:** Ad-hoc feature decisions · menu-first IA · report-generator positioning
+**Supersedes:** Ad-hoc feature decisions · menu-first IA · report-generator positioning · **AI Startup Validation Tool** framing
 
-> **Read order:** Constitution → [SPRINT_1_FOUNDATION.md](./sprints/SPRINT_1_FOUNDATION.md) → Sprint kickoff → implement
+> **Read order:** Constitution → [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) → Sprint kickoff → implement
+
+---
+
+## Product North Star (v2.2 — Thinking Workspace)
+
+> **LaunchLens is a Thinking Workspace for Founders — not an AI Startup Validation Tool.**
+
+**Sprint success metric:** 기능 개수 ✗ → **대표가 생각하기 얼마나 쉬운가** ✓
+
+**CTO implementation law:**
+
+> 기능을 추가하지 마십시오. 사용자가 "다음에 무엇을 해야 하는지" **3초** 안에 이해하지 못한다면 실패입니다. 디자인보다 **사고 흐름**을 우선하십시오.
 
 ---
 
@@ -122,6 +134,18 @@ Any feature that does not serve **decision preparation** is out of constitution.
 | **NO** | UX 수정 — 기능 추가 금지 |
 
 Ship report must lead with **User Scenario** (step-by-step), not feature list.
+
+### Sprint success gates (Roadmap v1.0 — immutable)
+
+| Horizon | Question |
+|---------|----------|
+| **Landing** | 30초 안에 서비스 가치를 이해할 수 있는가? |
+| **Workspace** | 5분 안에 첫 전략 검토를 완료할 수 있는가? |
+| **Project & Context** | 일주일 후에도 이전 의사결정을 이어 쓸 수 있는가? |
+
+**Team identity:** 기능을 만드는 팀이 아니라 **제품 경험**을 만드는 팀.
+
+**Active roadmap:** [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) — Sprint 0–7 순서 외 개발 금지.
 
 ---
 

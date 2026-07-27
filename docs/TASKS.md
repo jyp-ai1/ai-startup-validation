@@ -2,33 +2,48 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** [Sprint 1 Foundation](./sprints/SPRINT_1_FOUNDATION.md) · ADR-022  
-> **Paused:** Sprint 0-4 V2 UX QA (STEP 3 deployed — frozen for pivot)  
-> **Master plan (legacy):** [MASTER_PLAN.md](./MASTER_PLAN.md) · **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
+> **Active sprint:** Sprint **1.6 Decision Memory** · [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) v1.1 · ADR-029  
+> **Next:** Sprint 2 Landing — [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md)  
+> **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
 
 ---
 
-## Sprint 1 — Foundation 📋 ACTIVE
+## Sprint 1 — Thinking Workspace 📋 ACTIVE
 
-**Goal:** 로그인 + 프로젝트 저장 + 한국어
+**Sprint question:** 어떻게 하면 사용자가 **생각**하게 만들까?
 
-**Kickoff:** [sprints/SPRINT_1_FOUNDATION.md](./sprints/SPRINT_1_FOUNDATION.md) · ADR-022 · Constitution v2.1
-
-**Process:** ADR-021 — build → commit → push → deploy → PM PASS (≥9.5) → next
+**Exit (AI 고도화 아님):** Thinking Flow ✅ · Review Board ✅ · **Decision Memory ⬜ 1.6**
 
 | # | Deliverable | Status |
 |---|-------------|--------|
-| 1.1 | **Project Foundation** — Google Login · 내 프로젝트 · CRUD · empty workspace | ✅ SHIPPED (`1da48a7`) |
-| 1.2 | **Adaptive Interview** — guided entry · mock Q1/Q2 · journey · context · decision | ✅ SHIPPED (`074dd00`) — PM QA pending |
-| 1.3 | **Evidence-driven Validation Loop** — evidence accordion · no fake scores · improve loop | ✅ SHIPPED (`2b2d1c2`) |
-| 1.3.1 | **Review Board** — process vocabulary · 4-section board · evidence strength | ✅ SHIPPED (`69d543a`) |
-| 1.3.2 | **Intuitive Review UX** — premium SaaS UI · editable board · Design Constitution | ✅ SHIPPED (`54a4609`) |
-| 1.4 | **Continuous Strategy Loop** — one workspace · chip input · meeting board · follow-up loop | ✅ SHIPPED (`c0a835f`) — CPO QA pending |
-| 1.5 | **Strategy Workspace IA** — 3-column nav · max-w-7xl · meeting summary · delete field | ✅ SHIPPED (`bbdb1b8`) — CPO QA pending |
-| 1.5 | 한국어 UI 통일 | ⬜ |
-| 1.6 | i18n structure only (ko maintained) | ⬜ |
+| 1.1–1.5 | Foundation · Loop · Workspace IA | ✅ |
+| **1.6** | **Decision Memory** — confirm save · project-scoped · nav + Main detail | ⬜ SHIP pending |
+| 1.7 | 한국어 UI 통일 | ⬜ deferred |
+| 1.8 | i18n structure (ko maintained) | ⬜ deferred |
 
-**NOT Sprint 1:** 결제 · 팀 · Export · AI Engine · Language switch
+**NOT Sprint 1:** Real AI Engine (→ Sprint 3) · Landing (→ Sprint 2) · Artifacts menu
+
+**Kickoff:** [SPRINT_1_6_DECISION_MEMORY.md](./sprints/SPRINT_1_6_DECISION_MEMORY.md)
+
+---
+
+## Sprint 2 — Landing ⬜ NEXT
+
+**Sprint question:** 30초 안에 서비스 이해?
+
+See [sprints/SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md)
+
+---
+
+## Sprint 3–7 (v1.1 order)
+
+| Sprint | Focus | Kickoff |
+|--------|-------|---------|
+| 3 | Thinking Engine (real AI) | [SPRINT_3_THINKING_ENGINE.md](./sprints/SPRINT_3_THINKING_ENGINE.md) |
+| 4 | Artifacts (propose, not menu) | [SPRINT_4_ARTIFACTS.md](./sprints/SPRINT_4_ARTIFACTS.md) |
+| 5 | Collaboration | — |
+| 6 | Billing | — |
+| 7 | Admin (ops tool only) | — |
 
 ---
 

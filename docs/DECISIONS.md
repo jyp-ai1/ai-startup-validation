@@ -806,6 +806,88 @@ Sprint 1.4 unified the review loop on one screen but CPO QA found: duplicated in
 
 ---
 
+## ADR-028: LaunchLens Roadmap v1.0 — Sprint Reboot (Product over features)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 1.5 proved Workspace IA can expand (Landing, Admin, Project mgmt) without breaking product philosophy — if sequenced correctly. CPO: adding **SaaS IA** is not feature sprawl; it is minimum structure to test MVP. Multiple roadmap docs caused drift.
+
+### Decision
+
+1. **[LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md)** is the **only active product sequence** — Sprint 0–7
+2. **Sprint order (immutable):** 0 Foundation → 1 Core Experience → 2 Landing → 3 Projects → 4 Context → 5 Team → 6 Billing → 7 Admin
+3. **Sprint 1 exit** = product philosophy complete (Workspace · Loop · Review · AI PM · Decision Memory)
+4. **IA separation:** 비로그인 (Product/Pricing/Resources) vs 로그인 (Workspace/Projects/Profile) — never mix headers
+5. **Success gates:** 30s Landing · 5min first review · 1-week decision continuity
+6. **Admin (Sprint 7)** is operations tooling, not user product — may start early for Closed Beta
+7. **Release Rule** unchanged — no "done" report without Preview + CPO QA
+
+### Consequences
+
+- [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) queued after Sprint 1 CPO PASS
+- [ROADMAP.md](./ROADMAP.md) · [TASKS.md](./TASKS.md) point to v1.0 track
+- LAUNCHLENS_2.0_ROADMAP · MASTER_PLAN infra track frozen for product priority
+
+---
+
+## ADR-029: Roadmap v1.1 — Sprint reorder & identity lock
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Roadmap v1.0 sequenced Project Management (S3) and Context Intelligence (S4) before real AI and Landing product polish. CPO v1.1: identity is **Thinking Workspace for Founders**; Sprint 1 ends with Decision Memory only; real AI moves to Sprint 3; Artifacts (menu-free propose UX) to Sprint 4.
+
+### Decision
+
+1. **Sprint 1 exit:** Thinking Flow + Review Board + Decision Memory — mock AI acceptable; no AI engine sprint work in S1
+2. **Sprint 2:** Landing product (Hero copy locked · 3-card Product · 3-step How · Demo)
+3. **Sprint 3:** Thinking Engine — Adaptive Question · Evidence · Reasoning · Recommendation
+4. **Sprint 4:** Artifacts — PRD/SWOT/etc. via **"지금 생성하시겠습니까?"** — never menu-first
+5. **Sprint 5–7:** Collaboration · Billing · Admin (ops dashboard, not Workspace clone)
+6. **One sprint question** per sprint — documented in [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md)
+7. **3-second next-action rule** added to Constitution v2.2
+
+### Consequences
+
+- [SPRINT_1_6_DECISION_MEMORY.md](./sprints/SPRINT_1_6_DECISION_MEMORY.md) is sole active Sprint 1 work
+- [SPRINT_3_THINKING_ENGINE.md](./sprints/SPRINT_3_THINKING_ENGINE.md) · [SPRINT_4_ARTIFACTS.md](./sprints/SPRINT_4_ARTIFACTS.md) replace old S3/S4 scope
+- Project Management features fold into existing Projects + future sprints as needed — not a standalone sprint gate
+
+---
+
+## ADR-030: Decision Memory — project remembers, user confirms (Sprint 1.6)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 1.5 completed Workspace IA but LaunchLens still felt like session AI without persistent **project context**. CPO: largest asset is not AI but **project memory**. Sprint 1.6 is not AI engine work — it is Decision Memory with explicit user save.
+
+### Decision
+
+1. **Structure:** Decision → Reason → Evidence → Date → Status (`current` | `superseded`, never delete)
+2. **UI:** Decision Memory section below Workflow nav — click shows Main detail (not timeline, not new top menu)
+3. **Save flow:** AI asks "저장할까요?" — user confirms — **no auto-save**
+4. **Storage:** Project-scoped `localStorage` for V2 demo path (`ll_journey_project_id`); server wiring follows project CRUD
+5. **Sprint 1.6 Principle:** Memory continues **thinking context**, not history browsing
+
+### Consequences
+
+- [SPRINT_1_6_DECISION_MEMORY.md](./sprints/SPRINT_1_6_DECISION_MEMORY.md)
+- `v2-decision-memory-store.ts` + nav/detail/save-prompt components
+- [LAUNCHLENS_DESIGN_SYSTEM_1_0.md](./LAUNCHLENS_DESIGN_SYSTEM_1_0.md) mandated pre-Sprint 2
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

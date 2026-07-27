@@ -4391,6 +4391,48 @@
               "pricing": { "ok": "Pricing entered", "warn": "Pricing needs validation" }
             }
           }
+        },
+        "decisionMemory": {
+          "nav": {
+            "title": "Decision Memory",
+            "empty": "Saved decisions appear here after review."
+          },
+          "toast": {
+            "saved": "Saved to Decision Memory."
+          },
+          "savePrompt": {
+            "aiLabel": "AI PM",
+            "lead": "Would you like to save this decision to Decision Memory?",
+            "previewDecision": "Decision",
+            "previewReason": "Reason",
+            "previewEvidence": "Evidence",
+            "saveCta": "Save",
+            "laterCta": "Later"
+          },
+          "detail": {
+            "decisionLabel": "Decision",
+            "reasonLabel": "Why?",
+            "evidenceLabel": "Evidence",
+            "dateLabel": "When",
+            "statusLabel": "Status",
+            "statusCurrent": "Current",
+            "statusSuperseded": "Superseded"
+          },
+          "draft": {
+            "reason": {
+              "initialReview": "Direction set in the initial review.",
+              "problem": "Problem is defined.",
+              "customer": "Core customer is defined.",
+              "market": "Market review completed."
+            },
+            "evidence": {
+              "marketResearch": "Market research",
+              "interviews": "Interviews",
+              "competitors": "Competitors",
+              "problemInput": "Problem definition",
+              "pricingInput": "Pricing input"
+            }
+          }
         }
       },
       "conclusion": {

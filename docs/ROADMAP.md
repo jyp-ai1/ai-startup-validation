@@ -1,9 +1,25 @@
 # Roadmap
 
-> **Active product track:** [LAUNCHLENS_2.0_ROADMAP.md](./LAUNCHLENS_2.0_ROADMAP.md) (Epic → Sprint → Product QA)  
-> **Legacy feature track:** [MASTER_PLAN.md](./MASTER_PLAN.md) (Sprints 0–14, L2–L3.4 ✅)
+> **Active product track:** [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) (CPO v1.1)  
+> **Identity:** Thinking Workspace for Founders  
+> **Active work:** Sprint 1.6 Decision Memory
 
-## Foundation (Sprint 0–6) ✅
+## LaunchLens v1.1 (CPO — active)
+
+| Sprint | Question (one) | Focus | Status |
+|--------|------------------|-------|--------|
+| **0** | — | Foundation | ✅ |
+| **1** | 사용자가 생각하게? | Thinking Flow · Review Board · **Decision Memory** | 📋 1.6 |
+| **2** | 30초 이해? | Landing · Demo · Auth IA | ⬜ |
+| **3** | AI가 깊게 생각하게? | Thinking Engine (real AI) | ⬜ |
+| **4** | 언제 문서 생성? | Artifacts (propose only) | ⬜ |
+| **5** | 팀 자산으로? | Collaboration | ⬜ |
+| **6** | 언제 과금? | Billing | ⬜ |
+| **7** | 운영자 매일 뭐? | Admin (ops tool) | ⬜ |
+
+---
+
+## Foundation (Sprint 0–6) ✅ — infra monorepo
 
 | Sprint | Focus | Status |
 |--------|-------|--------|
