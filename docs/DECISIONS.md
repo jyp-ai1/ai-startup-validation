@@ -888,6 +888,63 @@ Sprint 1.5 completed Workspace IA but LaunchLens still felt like session AI with
 
 ---
 
+## ADR-031: Sprint 2 GTM Foundation & Evidence-driven Engine (CPO direction)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 1 SHIPPED with clear product identity: Thinking → Decision → Memory. CPO review: direction refined from "AI startup validation" to **Thinking Workspace**. Sprint 2+ must shift from **product features** to **business, brand, and experience**.
+
+### Decision
+
+1. **Sprint 2 rename:** Landing → **Go To Market Foundation** — brand · first impression · signup · first project (Landing is one piece)
+2. **Sprint 2 question:** "Why should someone use LaunchLens?" — not just 30-second comprehension
+3. **Sprint 2 North Star KPI:** Visitor thinks *"나도 한번 써봐야겠다"* **before login**
+4. **Why LaunchLens** narrative before Hero — problem empathy over feature list
+5. **Live Demo:** readonly Workspace on click — not video/GIF
+6. **Tagline:** *Think Better. Decide Better.*
+7. **Sprint 3 rename:** Real AI → **Evidence-driven Thinking Engine**
+8. **Evidence Engine** foundation doc before Sprint 3 — AI must not judge without evidence; ChatGPT ✗ · Thinking Workspace ✓
+9. **Sprint nature:** S1 = product · S2 = brand · S3 = competitive moat
+
+### Consequences
+
+- [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) updated
+- [EVIDENCE_ENGINE.md](./EVIDENCE_ENGINE.md) · [SPRINT_3_THINKING_ENGINE.md](./sprints/SPRINT_3_THINKING_ENGINE.md) updated
+- [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) · [TASKS.md](./TASKS.md) · [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
+
+---
+
+## ADR-032: Rule #0 & Implementation gate (CPO final)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 1 SHIPPED. Product identity crystallized: **Thinking Workspace**, not Startup Validation Tool. CPO final review locks supreme rule and implementation gate for Sprint 2+.
+
+### Decision
+
+1. **Rule #0:** LaunchLens는 사용자의 생각을 대신하지 않는다. 더 좋은 생각을 하도록 돕는다. — above all features
+2. **Implementation gate (3 questions):** deeper thinking · better decisions · context accumulation — fail any → do not build
+3. **Sprint 2 single goal:** *"이거 그냥 AI가 문서 써주는 게 아니네"* in 30 seconds
+4. **Live Demo P0:** readonly Workspace with full flow visible — not video
+5. **Header IA:** Why LaunchLens in nav; logged-in = Workspace · Projects · Profile only; Admin separate
+6. **Priority:** Sprint 2 GTM before `/validation` feature work
+7. **Canonical flow:** Landing → Demo → Login → Workspace → Question → Evidence → Decision → Memory → Artifact (last)
+
+### Consequences
+
+- [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md) v2.3
+- [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md)
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

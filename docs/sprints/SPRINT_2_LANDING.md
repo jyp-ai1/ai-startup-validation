@@ -1,70 +1,82 @@
-# Sprint 2 — Landing Experience
+# Sprint 2 — Go To Market Foundation
 
-**Status:** ⬜ PLANNED (after Sprint 1.6 CPO PASS)  
-**Authority:** [LAUNCHLENS_ROADMAP_V1.md](../LAUNCHLENS_ROADMAP_V1.md) v1.1 · ADR-029
+**Former name:** Landing Experience  
+**Status:** ⬜ PLANNED (Sprint 1 ✅ SHIPPED)  
+**Authority:** [LAUNCHLENS_ROADMAP_V1.md](../LAUNCHLENS_ROADMAP_V1.md) · ADR-031 · Rule #0  
+**Principles:** [SPRINT_2_PRINCIPLES.md](../SPRINT_2_PRINCIPLES.md)
+
+> Landing은 회원가입 페이지가 아니다. **생각을 팔아야 한다.**
 
 ---
 
-## Sprint question
+## Single goal
 
-> 처음 보는 사람도 **30초** 안에 서비스를 이해할까?
+30초 안에 방문자가 말하게 만들 것:
+
+> **"이거 그냥 AI가 문서 써주는 게 아니네."**
 
 ---
 
 ## User journey
 
 ```text
-Landing → 서비스 이해 → Demo → 로그인 → Workspace
+Landing → "아 이거 내가 필요했던 서비스인데?" → Demo → Login → Workspace
 ```
 
 ---
 
-## Header IA (비로그인)
+## Header IA
+
+**비로그인**
 
 ```text
-LaunchLens | Product · Pricing · Resources | Login · Start Free
+Product · Why LaunchLens · Pricing · Resources · Login · Start Free
 ```
 
-## Header IA (로그인 — Landing 메뉴 제거)
+**로그인** — GTM nav **제거**
 
 ```text
 Workspace · Projects · Profile
 ```
 
-Post-login redirect: `/workspace`
+Post-login: `/workspace` · Workspace = Home · Dashboard/Analytics/Settings ✗
+
+**관리자** — [별도 IA](../LAUNCHLENS_ROADMAP_V1.md#관리자-별도--사용자-ia와-분리)
 
 ---
 
 ## Sections (order)
 
-### Hero (P0)
+### Why LaunchLens (P0)
 
-```text
-사업계획서를 만들어주는 AI는 많습니다.
-
-당신의 의사결정을
-끝까지 함께 고민하는 AI는 드뭅니다.
-```
-
-**CTA:** `무료로 시작하기` · `데모 보기`
+Problem narrative — [SPRINT_2_PRINCIPLES.md](../SPRINT_2_PRINCIPLES.md)
 
 ---
 
-### Product (P0)
+### Hero (P0)
 
-"LaunchLens는 무엇인가" — 3 cards
+```text
+Think Better. Decide Better.
+```
 
-| Card | |
-|------|---|
-| Thinking Engine | |
-| Decision Memory | |
-| Evidence Review | |
+**CTA:** `Start Free` · `Open Demo`
+
+---
+
+### Live Demo (P0)
+
+```text
+Open Demo
+────────────
+AI SaaS 검토 예시
+✓ 문제 · ✓ 고객 · ✓ 시장 · ✓ Review Board · ✓ Decision · ✓ Memory
+```
+
+Route: `/validation?demo=readonly` — **실제 동작**, 로그인 불필요
 
 ---
 
 ### How it Works (P0)
-
-3 steps only:
 
 ```text
 아이디어 입력 → AI와 함께 생각 → Decision Memory 저장
@@ -72,43 +84,31 @@ Post-login redirect: `/workspace`
 
 ---
 
-### Demo (P1)
+### Pricing · FAQ · Footer (P2)
 
-Workspace GIF or scroll demo (real `/validation` capture)
-
----
-
-### Pricing (P2)
-
-Free · Pro · Business — copy later, structure now
-
----
-
-### FAQ (P2)
-
-5 questions
-
----
-
-### Footer (P1)
+Structure now, copy later.
 
 ---
 
 ## Out of scope
 
-- Real AI (Sprint 3)
-- Artifacts menu (Sprint 4)
-- Billing logic (Sprint 6)
-- Admin (Sprint 7)
+- `/validation` feature work (Demo readonly only)
+- Evidence Engine / Real AI (Sprint 3)
+- Artifacts menu (Sprint 4 — AI proposes)
+- Billing (Sprint 6) · Admin product UI (Sprint 7)
 
 ---
 
 ## Ship
 
-Release Rule — Preview URL · Before/After · QA · User Scenario
+Release Rule · North Star · Live Demo click-through QA
 
 ---
 
 ## Success
 
-30초 가치 이해 — YES on Preview without login
+| Check | Target |
+|-------|--------|
+| 30초 | "문서 써주는 AI가 아니네" |
+| North Star | 로그인 전 "나도 써봐야겠다" |
+| Live Demo | Readonly workspace — 실제 동작 |

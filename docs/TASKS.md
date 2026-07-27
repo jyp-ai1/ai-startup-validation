@@ -2,9 +2,9 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **2 Landing** · [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) v1.1 · ADR-029  
+> **Active sprint:** Sprint **2 Go To Market Foundation** · [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) v1.1 · ADR-031  
 > **Sprint 1 exit:** Decision Memory ✅ 1.6 · [SPRINT_1_6_DECISION_MEMORY.md](./sprints/SPRINT_1_6_DECISION_MEMORY.md)  
-> **Next:** Sprint 2 Landing — [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md)  
+> **Next:** [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md)  
 > **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
 
 ---
@@ -22,17 +22,19 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 1.7 | 한국어 UI 통일 | ⬜ deferred |
 | 1.8 | i18n structure (ko maintained) | ⬜ deferred |
 
-**NOT Sprint 1:** Real AI Engine (→ Sprint 3) · Landing (→ Sprint 2) · Artifacts menu
+**NOT Sprint 1:** Evidence Engine / Real AI (→ Sprint 3) · GTM (→ Sprint 2) · Artifacts menu
 
 **Kickoff:** [SPRINT_1_6_DECISION_MEMORY.md](./sprints/SPRINT_1_6_DECISION_MEMORY.md)
 
 ---
 
-## Sprint 2 — Landing ⬜ NEXT
+## Sprint 2 — Go To Market Foundation ⬜ NEXT
 
-**Sprint question:** 30초 안에 서비스 이해?
+**Single goal:** 30초 안에 *"이거 그냥 AI가 문서 써주는 게 아니네."*
 
-See [sprints/SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md)
+**Priority:** GTM · Live Demo first — **`/validation` feature work ✗** (readonly demo only)
+
+See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md)
 
 ---
 
@@ -40,7 +42,7 @@ See [sprints/SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md)
 
 | Sprint | Focus | Kickoff |
 |--------|-------|---------|
-| 3 | Thinking Engine (real AI) | [SPRINT_3_THINKING_ENGINE.md](./sprints/SPRINT_3_THINKING_ENGINE.md) |
+| 3 | Evidence-driven Thinking Engine | [SPRINT_3_THINKING_ENGINE.md](./sprints/SPRINT_3_THINKING_ENGINE.md) · [EVIDENCE_ENGINE.md](./EVIDENCE_ENGINE.md) |
 | 4 | Artifacts (propose, not menu) | [SPRINT_4_ARTIFACTS.md](./sprints/SPRINT_4_ARTIFACTS.md) |
 | 5 | Collaboration | — |
 | 6 | Billing | — |

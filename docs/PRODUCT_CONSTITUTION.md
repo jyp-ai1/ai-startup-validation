@@ -1,6 +1,6 @@
 # LaunchLens Product Constitution
 
-**Version:** 2.2 (Roadmap v1.1 — 2026-07-27)  
+**Version:** 2.3 (CPO Rule #0 — 2026-07-27)  
 **Ratified:** 2026-07-24 (Sprint 0 — PM Sign-Off: PASS WITH REVISIONS)  
 **Authority:** This document is the **supreme product law**. Epic이 20개가 되어도 흔들리지 않는 기준.  
 **Supersedes:** Ad-hoc feature decisions · menu-first IA · report-generator positioning · **AI Startup Validation Tool** framing
@@ -12,6 +12,10 @@
 ## Product North Star (v2.2 — Thinking Workspace)
 
 > **LaunchLens is a Thinking Workspace for Founders — not an AI Startup Validation Tool.**
+
+**Tagline:** *Think Better. Decide Better.*
+
+**Category:** 창업자의 전략적 사고를 축적하는 AI Workspace
 
 **Sprint success metric:** 기능 개수 ✗ → **대표가 생각하기 얼마나 쉬운가** ✓
 
@@ -93,6 +97,18 @@ Any feature that does not serve **decision preparation** is out of constitution.
 | AI recommends next action | User hunts menus |
 | Evidence-backed confidence | Black-box scores |
 | Project **completion** | PDF delivery as end state |
+
+---
+
+## Rule #0 (supreme — above all features)
+
+> **LaunchLens는 사용자의 생각을 대신하지 않는다. 더 좋은 생각을 하도록 돕는다.**
+
+Every feature, screen, and AI behavior must pass this rule before any other gate.
+
+**One-sentence identity (CPO):**
+
+> 우리는 Startup Validation Tool을 만드는 것이 아니라, **창업자의 Thinking Workspace**를 만드는 것이다.
 
 ---
 
@@ -368,8 +384,7 @@ Brief: [sprints/EPIC1_SPRINT1_KICKOFF.md](./sprints/EPIC1_SPRINT1_KICKOFF.md)
 | 2026-07-25 | Part II — Product Loop Level: Behavior + KPI metrics (not screens) | CPO PASS 95→100 |
 | 2026-07-26 | v1.1 — AI PM North Star, 3 Layers, UI Freeze, signature morning copy | CPO |
 | 2026-07-26 | v2.0 pivot — Sprint 0 UX Reset supersedes UI freeze; Validation → AI PM flow | CPO |
-
----
+| 2026-07-27 | v2.3 — Rule #0, implementation gate (3 Q), Thinking Workspace identity lock | CPO |
 
 # Part II — Cursor Product Constitution (Permanent Operations)
 
@@ -498,6 +513,26 @@ There is **no terminal state**. Phrases like "Area complete → next Area" are *
 12. Code quality  
 
 ## Implementation principle
+
+**Sprint focus (CPO — 2026-07-27):**
+
+```text
+Sprint 1 — 제품을 만들었다 ✅
+Sprint 2 — 브랜드를 만든다
+Sprint 3 — 경쟁력을 만든다
+```
+
+**절대로 기능을 만들지 않는다.** 모든 구현은 아래 질문을 통과해야 한다:
+
+1. 사용자가 **더 깊게 생각**하게 만드는가?
+2. **더 나은 의사결정**을 돕는가?
+3. 프로젝트의 **맥락(Context)을 축적**하는가?
+
+**하나라도 아니면 만들지 않는다.**
+
+LaunchLens는 AI Wrapper가 아니다. **Thinking Workspace**다.
+
+**Current priority:** `/validation` Workspace 고도화보다 **Sprint 2 GTM**(Landing · Live Demo)을 먼저. Workspace 방향은 Sprint 1에서 충분히 잡혔음. 병목은 *"왜 이 서비스를 써야 하는가"*.
 
 Do **not** implement features or screens. Implement **behaviors**.
 
