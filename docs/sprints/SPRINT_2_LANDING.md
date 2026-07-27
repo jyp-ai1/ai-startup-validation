@@ -118,3 +118,23 @@ Release Rule · North Star · Live Demo click-through QA
 | 30초 | "문서 써주는 AI가 아니네" |
 | North Star | 로그인 전 "나도 써봐야겠다" |
 | Live Demo | Readonly workspace — 실제 동작 |
+
+---
+
+## P0 Hotfix — Routing & IA ✅
+
+| Rule | Status |
+|------|--------|
+| `/` always Landing (no auto-redirect) | ✅ `cef5c97` |
+| `/workspace` protected | ✅ login required |
+| `/workspaces` → `/workspace` | ✅ legacy redirect |
+| Login default → `/workspace` | ✅ |
+| Demo public | ✅ `/validation?demo=readonly` |
+
+### QA checklist
+
+- [ ] `/` → Landing (logged out & logged in)
+- [ ] Live Demo without login
+- [ ] Start Free → Login → `/workspace`
+- [ ] `/workspace` logged out → login required
+- [ ] Logo logged-in → `/workspace`
