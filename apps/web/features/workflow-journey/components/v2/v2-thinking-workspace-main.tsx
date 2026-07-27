@@ -11,9 +11,10 @@ import { getReviewFreshness, isReviewStale } from '../../lib/v2-review-dirty-sta
 import { type WorkflowStepId } from '../../lib/v2-workflow-steps';
 import type { DecisionMemoryEntry } from '../../lib/v2-decision-memory-store';
 import type { V2EvidenceField, V2ValidationEvidence } from '../../lib/v2-validation-store';
+import { V2AiPmDailyBrief } from './v2-ai-pm-daily-brief';
 import { V2AiEvidenceSummary } from './v2-ai-evidence-summary';
 import { V2AiUnderstandingChips } from './v2-ai-understanding-chips';
-import { V2DecisionMemoryStory } from './v2-decision-memory-story';
+import { V2ProjectGrowthStory } from './v2-project-growth-story';
 import { V2EvidenceDetailDrawer } from './v2-evidence-detail-drawer';
 import { V2EvidenceLibraryPanel } from './v2-evidence-library-panel';
 import { V2EvidenceSummaryStrip } from './v2-evidence-summary-strip';
@@ -22,7 +23,6 @@ import { V2GuidedDemoCoach, type GuidedDemoStep } from './v2-guided-demo-coach';
 import { getNextAction } from '../../lib/v2-next-action-engine';
 import { V2ImpactAnalysisPanel } from './v2-impact-analysis-panel';
 import { V2InvestigationBoard } from './v2-investigation-board';
-import { V2NextActionBlock } from './v2-next-action-block';
 import { V2ProjectHealthCard } from './v2-project-health-card';
 import { V2RecentChangesFlow } from './v2-recent-changes-flow';
 import { V2ReviewStaleBanner } from './v2-review-stale-banner';
@@ -168,24 +168,18 @@ export function V2ThinkingWorkspaceMain({
       <div className={cn(SECTION, 'pb-24 py-2 sm:py-4')}>
         <V2WorkspaceProjectHeader projectName={projectName} lastReviewAt={lastReviewAt} />
 
-        {showPhilosophy ? (
-          <V2WorkspacePhilosophyBanner activePhase={loopPhase} />
-        ) : null}
-
-        {guidedDemoStep && onGuidedDemoAdvance ? (
-          <V2GuidedDemoCoach step={guidedDemoStep} onAdvance={onGuidedDemoAdvance} />
-        ) : null}
-
-        <V2ProjectHealthCard
+        <V2AiPmDailyBrief
           evidence={evidence}
           reviewCount={reviewCount}
           hasIdea={hasIdea}
           investigationViewed={investigationViewed}
           readOnly={readOnly}
-          onAction={handleHealthAction}
+          onContinue={handleStickyAction}
         />
 
-        <V2ThinkingLoopHeader activePhase={loopPhase} reviewFreshness={freshness} />
+        {guidedDemoStep && onGuidedDemoAdvance ? (
+          <V2GuidedDemoCoach step={guidedDemoStep} onAdvance={onGuidedDemoAdvance} />
+        ) : null}
 
         {stale ? (
           <>
@@ -201,30 +195,6 @@ export function V2ThinkingWorkspaceMain({
           </>
         ) : null}
 
-        <V2ThinkingMapStatus
-          activeStep={activeStep}
-          evidence={evidence}
-          reviewCount={reviewCount}
-          onSelect={onGoToStep}
-        />
-
-        <V2AiUnderstandingChips
-          evidence={evidence}
-          readOnly={readOnly}
-          highlightField={dirtyHighlightField}
-          onIdeaChange={onIdeaChange}
-          onFieldConfirm={onFieldConfirm}
-          onFieldDelete={onFieldDelete}
-        />
-
-        {reviewCount > 0 ? (
-          <V2EvidenceSummaryStrip reviewCount={reviewCount} onOpenTopic={setDrawerTopic} />
-        ) : null}
-
-        <V2RecentChangesFlow reviewCount={reviewCount} />
-
-        <V2EvidenceLibraryPanel reviewCount={reviewCount} />
-
         <V2InvestigationBoard
           evidence={evidence}
           reviewCount={reviewCount}
@@ -237,28 +207,59 @@ export function V2ThinkingWorkspaceMain({
         />
 
         {reviewCount > 0 ? (
-          <V2DecisionMemoryStory
+          <V2EvidenceSummaryStrip reviewCount={reviewCount} onOpenTopic={setDrawerTopic} />
+        ) : null}
+
+        <V2EvidenceLibraryPanel reviewCount={reviewCount} />
+
+        {reviewCount > 0 ? (
+          <V2ProjectGrowthStory
             entries={memoryEntries}
-            lastReviewAt={lastReviewAt}
             reviewCount={reviewCount}
             activeMemoryId={activeMemoryId}
             onSelect={onSelectMemory}
           />
         ) : null}
 
-        <V2NextActionBlock
-          evidence={evidence}
-          reviewCount={reviewCount}
-          hasIdea={hasIdea}
-          investigationViewed={investigationViewed}
-          readOnly={readOnly}
-          onStartReview={onReview}
-          onReReview={onReview}
-          onFillPricing={handleFillPricing}
-          onFillIdea={handleFillIdea}
-          onViewInvestigation={handleViewInvestigation}
-          onCustomerValidation={handleCustomerValidation}
-        />
+        <details className="rounded-lg border border-border/40">
+          <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-muted-foreground">
+            {tReview('advancedSection')}
+          </summary>
+          <div className="space-y-10 border-t border-border/40 px-4 py-4">
+            {showPhilosophy ? (
+              <V2WorkspacePhilosophyBanner activePhase={loopPhase} />
+            ) : null}
+
+            <V2ProjectHealthCard
+              evidence={evidence}
+              reviewCount={reviewCount}
+              hasIdea={hasIdea}
+              investigationViewed={investigationViewed}
+              readOnly={readOnly}
+              onAction={handleHealthAction}
+            />
+
+            <V2ThinkingLoopHeader activePhase={loopPhase} reviewFreshness={freshness} />
+
+            <V2ThinkingMapStatus
+              activeStep={activeStep}
+              evidence={evidence}
+              reviewCount={reviewCount}
+              onSelect={onGoToStep}
+            />
+
+            <V2AiUnderstandingChips
+              evidence={evidence}
+              readOnly={readOnly}
+              highlightField={dirtyHighlightField}
+              onIdeaChange={onIdeaChange}
+              onFieldConfirm={onFieldConfirm}
+              onFieldDelete={onFieldDelete}
+            />
+
+            <V2RecentChangesFlow reviewCount={reviewCount} />
+          </div>
+        </details>
 
         <div className="xl:hidden">
           <V2AiEvidenceSummary

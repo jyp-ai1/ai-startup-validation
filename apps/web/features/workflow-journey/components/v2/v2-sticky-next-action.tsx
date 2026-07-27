@@ -62,7 +62,7 @@ export function V2StickyNextAction({
         </div>
         {!readOnly ? (
           <Button type="button" size="sm" className="shrink-0 rounded-lg" onClick={onAction}>
-            {t(`cta.${action.kind}`)}
+            {t('ctaContinue')}
           </Button>
         ) : null}
       </div>

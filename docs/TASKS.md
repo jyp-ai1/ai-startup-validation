@@ -2,8 +2,7 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **3.1 Evidence Engine Foundation** 🔄 · [SPRINT_3_1_EVIDENCE_ENGINE.md](./sprints/SPRINT_3_1_EVIDENCE_ENGINE.md)  
-> **Sprint 2.3:** First Value Experience ✅ · [SPRINT_2_3_FIRST_VALUE.md](./sprints/SPRINT_2_3_FIRST_VALUE.md)  
+> **Active sprint:** Sprint **3.2 AI PM OS** ✅ · [SPRINT_3_2_AI_PM_OS.md](./sprints/SPRINT_3_2_AI_PM_OS.md)  
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
@@ -91,7 +90,7 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 
 ## Sprint 3.1 — Evidence Engine Foundation ✅ SHIPPED
 
-**Goal:** Collector → Store → Interpreter pipeline · Rule #1 enforced
+**Goal:** Collector → Store → Interpreter pipeline · Rule #1 enforced — `ca6535c`
 
 | # | Deliverable | Status |
 |---|-------------|--------|
@@ -103,7 +102,23 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 
 **Kickoff:** [SPRINT_3_1_EVIDENCE_ENGINE.md](./sprints/SPRINT_3_1_EVIDENCE_ENGINE.md)
 
-**Next:** Sprint 3.2 — Thinking Engine
+---
+
+## Sprint 3.2 — AI PM Operating System ✅ SHIPPED
+
+**Goal:** 사용자가 보는 것은 AI PM 하나 — Daily Brief · Review Summary · Growth Story
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | AI PM Daily Brief (Workspace 첫 화면) | ✅ |
+| 2 | Review Board — 요약 우선, 세부 2차 | ✅ |
+| 3 | Evidence Drawer — AI → 왜 → 근거 → 상세 | ✅ |
+| 4 | Sticky CTA "계속 검토하기" | ✅ |
+| 5 | 프로젝트 성장기 (Timeline → Growth) | ✅ |
+
+**Kickoff:** [SPRINT_3_2_AI_PM_OS.md](./sprints/SPRINT_3_2_AI_PM_OS.md)
+
+**Next:** Sprint 3.3 — Evidence Engine UI + real data
 
 ---
 

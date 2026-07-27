@@ -4265,6 +4265,7 @@
           "pricing": "+ Pricing"
         },
         "reviewAgainCta": "Review again",
+        "advancedSection": "Advanced · edit inputs",
         "reviewing": {
           "title": "Reviewing your input",
           "hint": "Stay on this screen"
@@ -4445,6 +4446,7 @@
                 "customer-validation": "Start customer interviews"
               },
               "whyLabel": "Why this action?",
+              "ctaContinue": "Continue review",
               "priorityLabel": "Priority",
               "timeLabel": "Est. time",
               "timeValue": "{minutes} min",
@@ -4495,6 +4497,9 @@
             },
             "investigation": {
               "title": "Review Board",
+              "titleOs": "Today's review",
+              "subtitleOs": "Meeting record with your AI PM",
+              "detailsToggle": "View details (market · competition · pricing · differentiation)",
               "subtitle": "Meeting minutes — judgment · evidence · next action",
               "subtitleThreeLine": "Learned today → why it matters → your next move",
               "empty": "Run a review to see the Review Board.",
@@ -4556,7 +4561,10 @@
             "evidenceDrawer": {
               "close": "Close",
               "sections": {
-                "judgment": "AI current judgment",
+                "judgment": "AI opinion",
+                "evidence": "Evidence",
+                "detailData": "Detail data",
+                "askAi": "Ask AI",
                 "data": "Data",
                 "interpretation": "AI interpretation",
                 "founderActions": "What you should confirm"
@@ -4691,12 +4699,60 @@
               }
             },
             "reviewSummary": {
-              "title": "Review conclusion",
+              "title": "Review summary",
+              "goodTitle": "What went well",
+              "goodBody": "Market demand is confirmed and B2B search volume keeps rising.",
+              "riskTitle": "Risks",
+              "riskBody": "More competitors are entering; pricing is not validated yet.",
+              "needsTitle": "Still to verify",
+              "needsBody": "Need 3 customer interviews and competitor pricing evidence.",
+              "aiRecommendTitle": "AI recommendation",
+              "aiRecommendBody": "Today, reviewing pricing alone will significantly improve overall judgment accuracy.",
               "lines": {
                 "entryRecommended": "Market entry is recommended at this stage.",
                 "pricingWeak": "However, pricing strategy is still weak.",
                 "reReviewAfterPricing": "Re-run review after pricing validation."
               }
+            },
+            "aiPmBrief": {
+              "role": "AI PM",
+              "greetingFirst": "Hello.",
+              "greetingReturn": "I reviewed your project again today.",
+              "introReviewed": "Here's what's new since your last review.",
+              "newFindingsTitle": "Newly confirmed",
+              "warningsTitle": "Watch out",
+              "todayFocusTitle": "Today's focus",
+              "itemMarker": "{n}.",
+              "ctaContinue": "Continue review",
+              "findings": {
+                "competitorsUp": "Two more competitors appeared.",
+                "searchVolumeUp": "Search volume increased.",
+                "customerChanged": "Customer definition changed."
+              },
+              "warnings": {
+                "pricingUnverified": "Pricing strategy is not validated yet.",
+                "reviewStale": "Inputs changed — review results are outdated.",
+                "weakTopics": "Some judgments lack sufficient evidence."
+              },
+              "todayFocus": {
+                "pricingOnly": "Today, focus on pricing strategy only.",
+                "reReviewFirst": "Re-run review to reflect your latest inputs.",
+                "continueReview": "Continue on the Review Board.",
+                "startReview": "Your idea is ready — start the first review.",
+                "enterIdea": "Enter your idea and your AI PM will start the review."
+              },
+              "intro": {
+                "pricingOnly": "Market and competition evidence updated since last review.",
+                "reReviewFirst": "Inputs changed — AI judgments need to be refreshed.",
+                "continueReview": "Review in progress — pick up where you left off.",
+                "startReview": "We can generate market and competition evidence from current inputs.",
+                "enterIdea": "LaunchLens AI PM will review your venture with you."
+              }
+            },
+            "growthStory": {
+              "title": "Project growth story",
+              "subtitle": "How judgments accumulated — by month",
+              "empty": "Run a review to see your project growth story."
             },
             "recentChanges": {
               "title": "Recent changes"

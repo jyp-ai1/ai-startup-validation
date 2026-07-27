@@ -30,11 +30,13 @@ export function V2EvidenceDetailDrawer({
   onFillPricing,
 }: V2EvidenceDetailDrawerProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.evidenceDrawer');
-  const [showWhy, setShowWhy] = useState(true);
+  const [showEvidence, setShowEvidence] = useState(true);
+  const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
     if (!topic) return;
-    setShowWhy(true);
+    setShowEvidence(true);
+    setShowDetails(false);
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
@@ -66,7 +68,7 @@ export function V2EvidenceDetailDrawer({
         </header>
 
         <div className="flex-1 space-y-6 overflow-y-auto p-5">
-          {/* 1. AI 현재 판단 */}
+          {/* 1. AI 의견 */}
           <section className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">
               {t('sections.judgment')}
@@ -97,17 +99,35 @@ export function V2EvidenceDetailDrawer({
 
           {/* 2. 왜 그렇게 판단했나요? */}
           <section className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              {t('why.title')}
+            </p>
+            <p className="text-sm leading-relaxed">{judgment.aiInsight}</p>
+            <ul className="space-y-1.5 text-sm text-muted-foreground">
+              {judgment.evidenceBullets.map((bullet) => (
+                <li key={bullet} className="flex gap-2">
+                  <span aria-hidden>·</span>
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <div className="border-t border-border/40" />
+
+          {/* 3. 근거 (Evidence) */}
+          <section className="space-y-3">
             <button
               type="button"
               className="flex w-full items-center justify-between text-left"
-              onClick={() => setShowWhy((v) => !v)}
+              onClick={() => setShowEvidence((v) => !v)}
             >
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                {t('why.title')}
+                {t('sections.evidence')}
               </p>
-              <span className="text-xs text-primary">{showWhy ? t('why.hide') : t('why.show')}</span>
+              <span className="text-xs text-primary">{showEvidence ? t('why.hide') : t('why.show')}</span>
             </button>
-            {showWhy ? (
+            {showEvidence ? (
               <ul className="space-y-2 motion-safe:animate-in motion-safe:fade-in">
                 {data.whySources.map((s) => (
                   <li key={s.id} className="rounded-lg border border-border/40 px-3 py-2.5 text-sm">
@@ -115,6 +135,26 @@ export function V2EvidenceDetailDrawer({
                     <p className="mt-0.5 text-xs text-muted-foreground">{s.detail}</p>
                   </li>
                 ))}
+              </ul>
+            ) : null}
+          </section>
+
+          <div className="border-t border-border/40" />
+
+          {/* 4. 상세 데이터 */}
+          <section className="space-y-3">
+            <button
+              type="button"
+              className="flex w-full items-center justify-between text-left"
+              onClick={() => setShowDetails((v) => !v)}
+            >
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                {t('sections.detailData')}
+              </p>
+              <span className="text-xs text-primary">{showDetails ? t('why.hide') : t('why.show')}</span>
+            </button>
+            {showDetails ? (
+              <ul className="space-y-2 motion-safe:animate-in motion-safe:fade-in">
                 {'startupCases' in data
                   ? data.startupCases.map((c) => (
                       <li key={c.name} className="rounded-lg bg-muted/20 px-3 py-2.5 text-sm">
@@ -154,30 +194,18 @@ export function V2EvidenceDetailDrawer({
 
           <div className="border-t border-border/40" />
 
-          {/* 3. 대표가 확인해야 하는 것 */}
+          {/* 5. AI에게 질문하기 */}
           <section className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              {t('sections.founderActions')}
+              {t('sections.askAi')}
             </p>
-            <ul className="space-y-2">
-              {judgment.actionChecklist.map((item) => (
-                <li key={item} className="flex items-center gap-2 text-sm">
-                  <span className="text-muted-foreground">□</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <V2EvidenceQaBlock presets={data.qaPresets} readOnly={readOnly} />
             {topic === 'pricing' && !readOnly && onFillPricing ? (
               <Button type="button" size="sm" className="rounded-lg" onClick={onFillPricing}>
                 {t('pricing.inputCta')}
               </Button>
             ) : null}
           </section>
-
-          <div className="border-t border-border/40" />
-
-          {/* 4. AI Q&A */}
-          <V2EvidenceQaBlock presets={data.qaPresets} readOnly={readOnly} />
         </div>
       </aside>
     </div>
