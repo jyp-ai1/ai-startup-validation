@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 
 import { createServerClient, isSupabaseConfigured } from '@repo/db';
 
+import { WORKSPACE_MODE_COOKIE } from '@/lib/auth/server-auth';
+
 function loginRedirect(origin: string, next: string, errorCode = 'auth') {
   const params = new URLSearchParams();
   params.set('error', errorCode);
@@ -53,6 +55,9 @@ export async function GET(request: Request) {
   if (error) {
     return NextResponse.redirect(loginRedirect(origin, safeNext, 'session'));
   }
+
+  response.cookies.delete(WORKSPACE_MODE_COOKIE);
+  response.cookies.delete('ACTIVE_PROJECT_ID');
 
   return response;
 }

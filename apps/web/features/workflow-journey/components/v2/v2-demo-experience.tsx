@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
-import { Check, Loader2, Sparkles, Star, TrendingUp } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Loader2, Sparkles, Star, TrendingUp } from 'lucide-react';
 
 import { GoogleSignInButton } from '@/features/auth/components/google-sign-in-button';
 import { Button } from '@repo/ui';
@@ -10,14 +10,20 @@ import { cn } from '@repo/ui/lib/utils';
 
 import {
   DEMO_COMPETITORS,
+  DEMO_EVIDENCE_BASE,
+  DEMO_EVIDENCE_COUNT,
   DEMO_EVIDENCE_ITEMS,
+  DEMO_EVIDENCE_SOURCES,
   DEMO_INBOX_ITEMS,
   DEMO_MONITORING_ITEMS,
+  DEMO_RECOMMENDATION_EVIDENCE,
+  DEMO_RECOMMENDATION_WHY,
   DEMO_SAMPLE_PROJECT,
   DEMO_STRATEGY_METRICS,
 } from '../../lib/v2-demo-experience-data';
 import {
   getNextDemoStep,
+  type DemoDecisionChoice,
   type DemoExperienceStep,
 } from '../../lib/v2-demo-experience-types';
 
@@ -61,6 +67,8 @@ function AiPmBubble({ children, className }: { children: ReactNode; className?: 
 export function V2DemoExperience({ className }: V2DemoExperienceProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.demoExperienceV2');
   const [step, setStep] = useState<DemoExperienceStep>('greeting');
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
+  const [decision, setDecision] = useState<DemoDecisionChoice | null>(null);
 
   useEffect(() => {
     if (step !== 'investigating') return;
@@ -252,19 +260,134 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
             ))}
           </div>
 
-          <div className="rounded-xl border border-primary/30 bg-primary/[0.04] p-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-              {t('steps.strategyImprovement.recommendationLabel')}
-            </p>
-            <p className="mt-2 text-sm font-medium">{t('steps.strategyImprovement.recommendation')}</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t('steps.strategyImprovement.positioning')}
-            </p>
+          <div className="overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-primary/[0.06] to-background shadow-sm">
+            <div className="border-b border-border/40 px-5 py-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+                {t('steps.strategyImprovement.recommendationCard.title')}
+              </p>
+              <p className="mt-2 text-lg font-semibold">
+                {t('steps.strategyImprovement.recommendationCard.headline')}
+              </p>
+            </div>
+
+            <div className="space-y-4 px-5 py-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {t('steps.strategyImprovement.recommendationCard.whyLabel')}
+                </p>
+                <ul className="mt-2 space-y-1.5 text-sm">
+                  {DEMO_RECOMMENDATION_WHY.map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <Check className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
+                      <span>{t(`steps.strategyImprovement.recommendationCard.why.${item}`)}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-3 text-sm font-medium leading-relaxed">
+                  {t('steps.strategyImprovement.recommendationCard.conclusion')}
+                </p>
+              </div>
+
+              <div className="space-y-2 border-t border-border/40 pt-4">
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {t('steps.strategyImprovement.recommendationCard.evidenceLabel')}
+                </p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {DEMO_RECOMMENDATION_EVIDENCE.map((item) => (
+                    <li key={item}>{t(`steps.strategyImprovement.recommendationCard.evidence.${item}`)}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="flex items-center justify-between border-t border-border/40 pt-4 text-sm">
+                <span className="text-muted-foreground">
+                  {t('steps.strategyImprovement.recommendationCard.confidenceLabel')}
+                </span>
+                <span className="font-semibold text-primary">84%</span>
+              </div>
+
+              <p className="rounded-lg bg-muted/30 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+                {t('steps.strategyImprovement.recommendationCard.evidenceBasis', {
+                  count: DEMO_EVIDENCE_COUNT,
+                })}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {DEMO_EVIDENCE_BASE.map((item) =>
+                  t(`steps.strategyImprovement.recommendationCard.evidenceBase.${item}`),
+                ).join(' · ')}
+              </p>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-full rounded-lg"
+                onClick={() => setEvidenceOpen((open) => !open)}
+              >
+                {evidenceOpen
+                  ? t('steps.strategyImprovement.recommendationCard.hideEvidence')
+                  : t('steps.strategyImprovement.recommendationCard.viewEvidence')}
+                {evidenceOpen ? (
+                  <ChevronUp className="ml-1 size-4" aria-hidden />
+                ) : (
+                  <ChevronDown className="ml-1 size-4" aria-hidden />
+                )}
+              </Button>
+
+              {evidenceOpen ? (
+                <ul className="grid grid-cols-2 gap-2 rounded-lg border border-border/40 bg-muted/5 p-3 text-xs">
+                  {DEMO_EVIDENCE_SOURCES.map((source) => (
+                    <li key={source} className="font-medium">
+                      {t(`steps.strategyImprovement.recommendationCard.sources.${source}`)}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+
+            <div className="space-y-3 border-t border-border/40 bg-muted/10 px-5 py-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                {t('steps.strategyImprovement.recommendationCard.decisionLabel')}
+              </p>
+              {decision ? (
+                <p className="text-sm font-medium text-primary">
+                  {t(`steps.strategyImprovement.recommendationCard.decisions.${decision}`)}
+                </p>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Button
+                    type="button"
+                    className="rounded-lg"
+                    onClick={() => setDecision('proceed')}
+                  >
+                    {t('steps.strategyImprovement.recommendationCard.ctaProceed')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-lg"
+                    onClick={() => setDecision('hold')}
+                  >
+                    {t('steps.strategyImprovement.recommendationCard.ctaHold')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="rounded-lg"
+                    onClick={() => setDecision('compare')}
+                  >
+                    {t('steps.strategyImprovement.recommendationCard.ctaCompare')}
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
 
-          <Button type="button" className="w-full rounded-lg" onClick={advance}>
-            {t('steps.strategyImprovement.cta')}
-          </Button>
+          {decision ? (
+            <Button type="button" className="w-full rounded-lg" onClick={advance}>
+              {t('steps.strategyImprovement.cta')}
+            </Button>
+          ) : null}
         </div>
       ) : null}
 
@@ -302,7 +425,7 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
             <p className="text-lg font-semibold">{t('steps.cta.title')}</p>
             <p className="mt-2 text-sm text-muted-foreground">{t('steps.cta.body')}</p>
           </div>
-          <GoogleSignInButton redirectTo="/workspace" className="w-full rounded-lg" />
+          <GoogleSignInButton redirectTo="/workspace?from=demo" className="w-full rounded-lg" />
           <p className="text-xs text-muted-foreground">{t('steps.cta.hint')}</p>
         </div>
       ) : null}

@@ -5172,6 +5172,51 @@
                   "recommendationLabel": "Recommended strategy",
                   "recommendation": "AI doc generation → Thinking Workspace",
                   "positioning": "Positioning recommendation",
+                  "recommendationCard": {
+                    "title": "AI recommended strategy",
+                    "headline": "Thinking Workspace",
+                    "whyLabel": "Why this recommendation?",
+                    "why": {
+                      "cursorFocus": "Cursor focuses on dev productivity",
+                      "lovableFocus": "Lovable on no-code",
+                      "replitFocus": "Replit on instant execution",
+                      "gapOpportunity": "→ But the 'founder strategic thinking' space is still open."
+                    },
+                    "conclusion": "Therefore Thinking Workspace has the highest differentiation potential.",
+                    "evidenceLabel": "Recommendation rationale",
+                    "evidence": {
+                      "searchVolume": "Market search volume +18%",
+                      "competitorDevTools": "Competitors focus on dev tools",
+                      "strategyGap": "Strategy planning space is empty"
+                    },
+                    "confidenceLabel": "Confidence",
+                    "evidenceBasis": "This recommendation is based on {count} pieces of Evidence gathered so far.",
+                    "evidenceBase": {
+                      "googleTrends": "Google Trends",
+                      "productHunt": "Product Hunt",
+                      "reddit": "Reddit",
+                      "crunchbase": "Crunchbase"
+                    },
+                    "viewEvidence": "View evidence",
+                    "hideEvidence": "Hide evidence",
+                    "sources": {
+                      "googleTrends": "Google Trends",
+                      "cursor": "Cursor",
+                      "lovable": "Lovable",
+                      "productHunt": "Product Hunt",
+                      "reddit": "Reddit",
+                      "yc": "YC"
+                    },
+                    "decisionLabel": "Founder decision",
+                    "ctaProceed": "Proceed with this strategy",
+                    "ctaHold": "Hold",
+                    "ctaCompare": "Compare other strategies",
+                    "decisions": {
+                      "proceed": "You decided to proceed with this strategy.",
+                      "hold": "You decided to hold and review further.",
+                      "compare": "You decided to compare with other strategies."
+                    }
+                  },
                   "cta": "Continue"
                 },
                 "continuousManagement": {

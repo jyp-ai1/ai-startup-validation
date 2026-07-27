@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { GuidedInterviewEntry } from '@/features/interview';
 import { getOwnedProject } from '@/features/projects/services/project-service';
+import { WorkspaceAuthCompleteTracker } from '@/features/workspace/components/workspace-auth-complete-tracker';
 import { requireAuthUser } from '@/lib/auth/server-auth';
 
 export const dynamic = 'force-dynamic';
@@ -31,5 +32,10 @@ export default async function ProjectWorkspacePage({ params }: ProjectWorkspaceP
     notFound();
   }
 
-  return <GuidedInterviewEntry project={project} />;
+  return (
+    <>
+      <WorkspaceAuthCompleteTracker />
+      <GuidedInterviewEntry project={project} />
+    </>
+  );
 }

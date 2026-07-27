@@ -6,8 +6,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
 
+type AuthCompleteTrackerProps = {
+  screen?: string;
+};
+
 /** Tracks successful OAuth return once — L3.4 RC analytics funnel */
-export function AuthCompleteTracker() {
+export function AuthCompleteTracker({ screen = '/dashboard' }: AuthCompleteTrackerProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { trackEvent } = useAnalytics();
@@ -15,9 +19,9 @@ export function AuthCompleteTracker() {
   useEffect(() => {
     if (searchParams.get('auth') !== 'complete') return;
 
-    trackEvent(ANALYTICS_EVENTS.login, { provider: 'google', screen: '/dashboard' });
-    trackEvent(ANALYTICS_EVENTS.signup, { provider: 'google', screen: '/dashboard' });
-    trackEvent(ANALYTICS_EVENTS.funnelStep, { step: 'login_complete', screen: '/dashboard' });
+    trackEvent(ANALYTICS_EVENTS.login, { provider: 'google', screen });
+    trackEvent(ANALYTICS_EVENTS.signup, { provider: 'google', screen });
+    trackEvent(ANALYTICS_EVENTS.funnelStep, { step: 'login_complete', screen });
 
     const url = new URL(window.location.href);
     url.searchParams.delete('auth');

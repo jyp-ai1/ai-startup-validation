@@ -144,6 +144,8 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 | 4 | Change detection mid-demo | ✅ |
 | 5 | Before/After strategy improvement | ✅ |
 | 6 | Continuous management + Google Login CTA | ✅ |
+| 7 | Recommendation Card (why · evidence · decision CTAs) | ✅ |
+| 8 | Google Login bootstrap — first project auto-create | ✅ |
 
 **Kickoff:** [SPRINT_4_3_DEMO_EXPERIENCE_2.md](./sprints/SPRINT_4_3_DEMO_EXPERIENCE_2.md)
 

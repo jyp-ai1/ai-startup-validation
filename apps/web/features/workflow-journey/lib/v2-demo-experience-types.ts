@@ -27,6 +27,21 @@ export type DemoMonitoringItemId =
   | 'reddit'
   | 'news';
 
+export type DemoRecommendationWhyId =
+  | 'cursorFocus'
+  | 'lovableFocus'
+  | 'replitFocus'
+  | 'gapOpportunity';
+export type DemoRecommendationEvidenceId = 'searchVolume' | 'competitorDevTools' | 'strategyGap';
+export type DemoEvidenceSourceId =
+  | 'googleTrends'
+  | 'cursor'
+  | 'lovable'
+  | 'productHunt'
+  | 'reddit'
+  | 'yc';
+export type DemoDecisionChoice = 'proceed' | 'hold' | 'compare';
+
 export const DEMO_EXPERIENCE_STEP_ORDER: DemoExperienceStep[] = [
   'greeting',
   'sampleProject',

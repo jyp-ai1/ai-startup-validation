@@ -32,6 +32,37 @@ export const DEMO_STRATEGY_METRICS: DemoMetricId[] = [
   'aiConfidence',
 ];
 
+export const DEMO_EVIDENCE_COUNT = 14;
+
+export const DEMO_RECOMMENDATION_WHY = [
+  'cursorFocus',
+  'lovableFocus',
+  'replitFocus',
+  'gapOpportunity',
+] as const;
+
+export const DEMO_RECOMMENDATION_EVIDENCE = [
+  'searchVolume',
+  'competitorDevTools',
+  'strategyGap',
+] as const;
+
+export const DEMO_EVIDENCE_SOURCES = [
+  'googleTrends',
+  'cursor',
+  'lovable',
+  'productHunt',
+  'reddit',
+  'yc',
+] as const;
+
+export const DEMO_EVIDENCE_BASE = [
+  'googleTrends',
+  'productHunt',
+  'reddit',
+  'crunchbase',
+] as const;
+
 export const DEMO_MONITORING_ITEMS: DemoMonitoringItemId[] = [
   'competitorPricing',
   'funding',

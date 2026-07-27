@@ -5319,6 +5319,51 @@
                   "recommendationLabel": "추천 전략",
                   "recommendation": "AI 문서 생성 → Thinking Workspace",
                   "positioning": "포지셔닝 추천",
+                  "recommendationCard": {
+                    "title": "AI 추천 전략",
+                    "headline": "Thinking Workspace",
+                    "whyLabel": "왜 추천했나요?",
+                    "why": {
+                      "cursorFocus": "Cursor는 개발 생산성",
+                      "lovableFocus": "Lovable은 노코드",
+                      "replitFocus": "Replit은 즉시 실행",
+                      "gapOpportunity": "→ 하지만 '창업자의 전략적 사고' 영역은 아직 비어 있습니다."
+                    },
+                    "conclusion": "따라서 Thinking Workspace가 차별화 가능성이 가장 높습니다.",
+                    "evidenceLabel": "추천 근거",
+                    "evidence": {
+                      "searchVolume": "시장 검색량 +18%",
+                      "competitorDevTools": "경쟁사는 개발도구에 집중",
+                      "strategyGap": "전략기획 영역은 공백"
+                    },
+                    "confidenceLabel": "신뢰도",
+                    "evidenceBasis": "이 추천은 현재 조사된 {count}개의 Evidence를 기반으로 생성되었습니다.",
+                    "evidenceBase": {
+                      "googleTrends": "Google Trends",
+                      "productHunt": "Product Hunt",
+                      "reddit": "Reddit",
+                      "crunchbase": "Crunchbase"
+                    },
+                    "viewEvidence": "근거 보기",
+                    "hideEvidence": "근거 닫기",
+                    "sources": {
+                      "googleTrends": "Google Trends",
+                      "cursor": "Cursor",
+                      "lovable": "Lovable",
+                      "productHunt": "Product Hunt",
+                      "reddit": "Reddit",
+                      "yc": "YC"
+                    },
+                    "decisionLabel": "대표 판단",
+                    "ctaProceed": "이 전략으로 진행",
+                    "ctaHold": "보류",
+                    "ctaCompare": "다른 전략 비교",
+                    "decisions": {
+                      "proceed": "이 전략으로 진행하기로 결정했습니다.",
+                      "hold": "전략을 보류하고 추가 검토하기로 결정했습니다.",
+                      "compare": "다른 전략과 비교 검토하기로 결정했습니다."
+                    }
+                  },
                   "cta": "계속"
                 },
                 "continuousManagement": {

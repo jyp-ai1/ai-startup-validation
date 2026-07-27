@@ -28,6 +28,27 @@ export async function listMyProjectsForPage() {
   return { user, projects, dbReady: true as const };
 }
 
+/** Bootstrap first project for new users (Sprint 4.3 — Demo → Login → Workspace). */
+export async function bootstrapFirstProject(userId: string, fromDemo = false) {
+  const existing = await listOwnedProjects(userId);
+  if (existing.length > 0) {
+    return existing[0]!;
+  }
+
+  const title = fromDemo ? 'LaunchLens' : '내 첫 프로젝트';
+  const summary = fromDemo
+    ? '창업자의 전략적 사고를 축적하는 Workspace'
+    : 'LaunchLens에서 시작한 첫 프로젝트';
+
+  return createOwnedProject(userId, {
+    title,
+    summary,
+    onboardingContext: {
+      sprint12: buildInitialInterviewState('startup-idea', summary),
+    },
+  });
+}
+
 export async function createMyProjectAction(
   _prev: CreateMyProjectState,
   formData: FormData,

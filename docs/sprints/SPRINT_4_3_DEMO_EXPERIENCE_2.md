@@ -59,6 +59,8 @@ AI PM 인사 → 샘플 프로젝트 선택 → AI 조사 → Inbox
 | P0-2.4 | Change detection mid-demo | ✅ |
 | P0-2.5 | Before/After strategy metrics | ✅ |
 | P0-2.6 | Continuous management closing | ✅ |
+| P0-2.7 | Recommendation Card — why + evidence + confidence + founder decision | ✅ |
+| P0-2.8 | Google Login → auto first project → `/my-projects/{id}` | ✅ |
 
 ---
 
