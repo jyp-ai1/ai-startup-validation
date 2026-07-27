@@ -4130,28 +4130,51 @@
         "nextHint": "Next: enter your business idea in one line.",
         "ideaLabel": "Business idea",
         "ideaPlaceholder": "e.g. AI SaaS that automates ERP for SMBs",
-        "scoreLabel": "Viability",
-        "optionalLead": "You can improve accuracy. (optional)",
+        "evidenceLead": "To understand this idea,\nplease share a bit more.",
+        "answerPlaceholder": "Write what comes to mind.",
+        "filledBadge": "Added",
         "optional": {
           "problem": "Problem",
           "customer": "Customer",
           "mvp": "MVP",
           "pricing": "Pricing"
         },
-        "keepOptionalHint": "Add optional inputs to unlock AI research.",
-        "aiIntro": "Great.\n\nFrom now on,\n\nI'll investigate.",
+        "questions": {
+          "problem": "What problem are you solving?",
+          "customer": "Who feels this pain most?",
+          "mvp": "What is the first product you'll build?",
+          "pricing": "What price are you considering?"
+        },
+        "understandingTitle": "What AI understands so far",
+        "checklist": {
+          "idea": "Idea",
+          "problem": "Problem",
+          "customer": "Customer",
+          "mvp": "MVP",
+          "pricing": "Pricing"
+        },
+        "infoCount": "Information collected {filled} / {total}",
+        "aiDisclaimer": "Research can start with what you have.\n\nProblem and customer inputs\nimprove accuracy.",
         "aiStartCta": "Start AI research"
       },
       "conclusion": {
         "title": "Conclusion",
-        "scoreLabel": "Viability",
-        "verdictGo": "GO",
-        "verdictHold": "HOLD",
-        "opinionLabel": "AI PM opinion",
+        "findingsTitle": "Research findings",
+        "findings": {
+          "similarServices": "Similar services exist in the market.",
+          "competition": "Competition is present.",
+          "marketInterest": "Market interest signals were found."
+        },
+        "opinionLabel": "AI opinion",
+        "basedOnInput": "Summarized from your current inputs.",
+        "judgment": {
+          "ideaOnly": "With only the idea, market fit and differentiation are hard to judge.",
+          "basicEvidence": "Problem and customer hints help, but more validation is needed.",
+          "partialEvidence": "With this evidence, we can suggest the next validation steps."
+        },
+        "whySummary": "Why this judgment?",
         "opinion": {
-          "marketOk": "Market looks sufficient",
-          "pricingGap": "Pricing validation needed",
-          "grantsOk": "Grants available"
+          "needsValidation": "Additional validation is needed with current information."
         },
         "detailsSummary": "Market · Competitors · Pricing · Grants",
         "details": {
@@ -4160,11 +4183,13 @@
           "pricing": "Pricing",
           "grants": "Grants"
         },
-        "createWorkspaceCta": "Create AI PM Workspace"
+        "improveTitle": "To improve accuracy",
+        "improveCta": "Add more input",
+        "createWorkspaceCta": "Continue in workspace"
       },
       "research": {
         "title": "AI research",
-        "intro": "Great.\n\nFrom now on,\n\nI'll investigate.",
+        "intro": "Based on your inputs,\nwe'll organize market signals.",
         "progress": "Research {current}/{total}",
         "stepsLabel": "In progress",
         "stepItems": {
@@ -4245,9 +4270,9 @@
             "awaitingApproval": "Awaiting your approval",
             "executing": "Executing"
           },
-          "greeting": "Founder.",
-          "lead": "Good.",
-          "overnightLead": "I researched overnight.",
+          "greeting": "Here's what we've confirmed so far.",
+          "lead": "Research based on your inputs.",
+          "overnightLead": "",
           "recommendationHold": "Recommendation unchanged.",
           "todayLead": "Today,",
           "approveCta": "Approve",

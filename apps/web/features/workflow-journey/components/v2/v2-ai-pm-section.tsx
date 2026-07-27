@@ -37,7 +37,7 @@ export function V2AiPmSection({
   const [microAnswers, setMicroAnswers] = useState(loadFounderMicroAnswers);
 
   const briefingLines = useMemo(() => {
-    const lines = [t('greeting'), t('lead'), t('overnightLead')];
+    const lines = [t('greeting'), t('lead'), t('overnightLead')].filter(Boolean);
     for (const item of habit.whatChanged.slice(0, 3)) {
       lines.push(`• ${tChanges(item.messageKey, item.params ?? {})}`);
     }

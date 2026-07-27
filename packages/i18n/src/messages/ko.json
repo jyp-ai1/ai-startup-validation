@@ -4277,28 +4277,51 @@
         "nextHint": "다음: 사업 아이디어를 한 줄 입력하세요.",
         "ideaLabel": "사업 아이디어",
         "ideaPlaceholder": "예: AI로 중소기업 ERP를 자동화하는 SaaS",
-        "scoreLabel": "사업 가능성",
-        "optionalLead": "정확도를 높일 수 있습니다. (선택)",
+        "evidenceLead": "이 아이디어를 이해하기 위해\n몇 가지 정보를 더 알려주세요.",
+        "answerPlaceholder": "생각나는 대로 적어 주세요.",
+        "filledBadge": "입력됨",
         "optional": {
           "problem": "문제",
           "customer": "고객",
           "mvp": "MVP",
           "pricing": "가격"
         },
-        "keepOptionalHint": "선택 입력을 추가하면 AI 조사를 시작할 수 있습니다.",
-        "aiIntro": "좋습니다.\n\n이제부터는\n\n제가 조사하겠습니다.",
+        "questions": {
+          "problem": "어떤 문제가 있나요?",
+          "customer": "누가 가장 불편해하나요?",
+          "mvp": "처음 만들 제품은 무엇인가요?",
+          "pricing": "얼마를 받을 생각인가요?"
+        },
+        "understandingTitle": "현재 AI가 이해한 정보",
+        "checklist": {
+          "idea": "아이디어",
+          "problem": "문제",
+          "customer": "고객",
+          "mvp": "MVP",
+          "pricing": "가격"
+        },
+        "infoCount": "현재 확보한 정보 {filled} / {total}",
+        "aiDisclaimer": "현재 정보만으로도 조사할 수 있습니다.\n\n하지만 문제와 고객을 입력하면\n더 정확한 결과를 제공합니다.",
         "aiStartCta": "AI 조사 시작"
       },
       "conclusion": {
         "title": "결론",
-        "scoreLabel": "사업 가능성",
-        "verdictGo": "GO",
-        "verdictHold": "HOLD",
-        "opinionLabel": "AI PM 의견",
+        "findingsTitle": "조사 결과",
+        "findings": {
+          "similarServices": "시장에서 유사한 서비스가 있습니다.",
+          "competition": "경쟁은 존재합니다.",
+          "marketInterest": "시장 관심도는 확인됩니다."
+        },
+        "opinionLabel": "AI 의견",
+        "basedOnInput": "현재 입력된 내용을 기준으로 정리했습니다.",
+        "judgment": {
+          "ideaOnly": "현재 아이디어만으로는 시장성과 차별성을 판단하기 어렵습니다.",
+          "basicEvidence": "문제와 고객 정보가 있어 방향은 보이지만, 추가 검증이 필요합니다.",
+          "partialEvidence": "확보된 정보를 바탕으로 다음 검증 단계를 제안할 수 있습니다."
+        },
+        "whySummary": "왜 그렇게 판단했나요?",
         "opinion": {
-          "marketOk": "시장성 충분",
-          "pricingGap": "가격검증 필요",
-          "grantsOk": "정부지원 가능"
+          "needsValidation": "현재 정보 기준으로는 추가 검증이 필요합니다."
         },
         "detailsSummary": "시장 · 경쟁 · 가격 · 정부지원",
         "details": {
@@ -4307,11 +4330,13 @@
           "pricing": "가격",
           "grants": "정부지원"
         },
-        "createWorkspaceCta": "AI PM Workspace 생성"
+        "improveTitle": "정확도를 높이려면",
+        "improveCta": "추가 입력",
+        "createWorkspaceCta": "워크스페이스로 계속"
       },
       "research": {
         "title": "AI 조사",
-        "intro": "좋습니다.\n\n이제부터는\n\n제가 조사하겠습니다.",
+        "intro": "현재 입력된 내용을 바탕으로\n시장 정보를 정리합니다.",
         "progress": "조사 진행 {current}/{total}",
         "stepsLabel": "진행 중",
         "stepItems": {
@@ -4392,9 +4417,9 @@
             "awaitingApproval": "대표님 승인 대기",
             "executing": "실행중"
           },
-          "greeting": "대표님.",
-          "lead": "좋습니다.",
-          "overnightLead": "밤새 조사했습니다.",
+          "greeting": "현재까지 확인한 내용입니다.",
+          "lead": "입력하신 내용을 바탕으로 조사했습니다.",
+          "overnightLead": "",
           "recommendationHold": "추천은 유지합니다.",
           "todayLead": "오늘은",
           "approveCta": "승인",

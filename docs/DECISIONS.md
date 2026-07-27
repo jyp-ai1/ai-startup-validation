@@ -656,6 +656,36 @@ Every decision belongs to its history.
 
 ---
 
+## ADR-023: Evidence-driven Validation Loop — no score without evidence
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+CPO QA on V2 validation (`/validation`) exposed a **trust-breaking flow**: one-line idea → fake 41% → AI research → 60% HOLD. Users ask "뭘 보고?" Optional + chips toggled without inputs felt like bugs. "밤새 조사" after immediate click breaks credibility.
+
+Sprint 1.3 originally targeted "Adaptive Thinking Engine." CPO **cancelled score-first AI** in favor of evidence-first loop.
+
+### Decision
+
+1. **Flow order:** Idea → **Evidence collection** → AI research → **Findings** → Opinion → Improve → (loop)
+2. **Remove from user-facing validation/conclusion:** arbitrary % scores, GO/HOLD without rationale
+3. **Replace with:** information checklist (e.g. 1/5), evidence-aware judgment copy, always-visible research CTA
+4. **Evidence UI:** Accordion — each + field opens question + textarea immediately
+5. **Copy rule:** describe **actual** action ("현재 입력 내용을 바탕으로") — no fictional overnight narrative in immediate flows
+6. **Results order:** findings → AI opinion → why → next input guidance
+
+### Consequences
+
+- [SPRINT_1_3_EVIDENCE_LOOP.md](./sprints/SPRINT_1_3_EVIDENCE_LOOP.md) replaces Adaptive Thinking Engine as Sprint 1.3
+- [CPO_REVIEW_EVIDENCE_FLOW.md](./sprints/CPO_REVIEW_EVIDENCE_FLOW.md) is QA authority for this pivot
+- Sprint 1.2 interview path remains compatible (question-first, no scores)
+- Workspace cards may still show legacy % internally until P1 cleanup
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

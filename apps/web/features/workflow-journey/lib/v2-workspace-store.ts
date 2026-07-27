@@ -21,14 +21,13 @@ function saveCustomProjects(projects: MockProject[]): void {
 }
 
 /** Creates a workspace from the V2 validation flow and selects it as active. */
-export function createV2Workspace(name: string, score: number): string {
-  const verdict = score >= 70 ? 'GO' : 'HOLD';
+export function createV2Workspace(name: string, evidenceFilled: number): string {
   const created: MockProject = {
     id: `proj-v2-${Date.now()}`,
     name,
     goalLabel: '사업 가능성 검토',
-    confidence: score,
-    verdict,
+    confidence: Math.min(Math.max(evidenceFilled * 20, 20), 100),
+    verdict: 'HOLD',
     status: 'active' as MockProjectStatus,
     updatedAt: new Date().toISOString(),
   };

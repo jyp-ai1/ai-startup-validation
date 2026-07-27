@@ -2,7 +2,7 @@
 
 **Sprint:** 0-4  
 **Type:** Product Validation (not bug QA)  
-**Gate:** Sprint 0-5 Legacy removal runs **only if** this report ends PASS  
+**Status:** ⏸ **PAUSED** — Sprint 1 Foundation pivot (ADR-022). STEP 1–2 ✅ · STEP 3 deployed · STEP 4–7 frozen.  
 **Authority:** [SPRINT_0_4_V2_UX_QA.md](./sprints/SPRINT_0_4_V2_UX_QA.md) · ADR-019  
 **Date started:** 2026-07-27  
 **Tester:** PM + AI  
