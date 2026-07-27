@@ -14,7 +14,7 @@ type V2GuidedDemoCoachProps = {
 };
 
 export function V2GuidedDemoCoach({ step, onAdvance, className }: V2GuidedDemoCoachProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.guidedDemo');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.guidedDemo');
 
   if (step === 'complete') return null;
 

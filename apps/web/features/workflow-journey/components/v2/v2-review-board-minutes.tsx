@@ -20,7 +20,7 @@ export function V2ReviewBoardMinutes({
   reviewCount,
   className,
 }: V2ReviewBoardMinutesProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.reviewBoard');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.reviewBoard');
   const tm = useTranslations('workflow.v2.strategyWorkspace.meetingBoard');
   const ts = useTranslations('workflow.v2.strategyWorkspace.ia.steps');
 

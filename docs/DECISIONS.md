@@ -973,6 +973,109 @@ Sprint 2 QA (8.8/10): MVP-level features exist but product is still a "good prot
 
 ---
 
+## ADR-034: AI PM Personality & Consulting Experience (Sprint 4)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 3 closed with fixed Product DNA: LaunchLens is a Thinking Workspace, not an answer engine. Users still perceive AI PM as a reporter ("보고 → 회의록") rather than a colleague who **leads the meeting**.
+
+### Decision
+
+1. **Sprint 4 is an experience sprint** — no new dashboard UI; content and dialogue only.
+2. **AI PM Personality rules:** brief-first · question-before-answer · evidence-before-confidence · founder-decides · one-CTA.
+3. **Consulting conversation** lives inside existing Inbox — not a new page or panel.
+4. **Artifacts** are offered by AI PM at the right moment — never from a menu.
+5. **Resume flow** must include a new lead topic (e.g. new competitor) after founder memo recall.
+
+### Consequences
+
+- [SPRINT_4_AI_PM_EXPERIENCE.md](./sprints/SPRINT_4_AI_PM_EXPERIENCE.md)
+- `v2-ai-pm-personality.ts` · `v2-ai-pm-consulting-dialogue.ts`
+- Inbox embeds consulting thread; artifact offers keyed by dialogue context
+
+---
+
+## ADR-035: Sprint 4 Reset — AI PM Working Experience
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 4 kickoff (Consulting Experience) improved dialogue copy but CPO validation found the core gap unchanged: AI PM **reports** like GPT sections (market · price · evidence · next action) instead of feeling like a PM who **works, reports completed tasks, gives opinion, and pulls the founder to the next decision**.
+
+### Decision
+
+1. **Pause feature expansion** — validate product experience before Real Evidence / LLM layers.
+2. **Rename Sprint 4** to **AI PM Working Experience**.
+3. **P0 = six Inbox blocks:** task status · completed work · opinion · why · founder decision · next work (single CTA).
+4. **Post-review loop** must answer "이제 뭐하지?" — AI PM proposes next work with ETA.
+5. **No new UI sections** — restructure existing Inbox content only.
+
+### Consequences
+
+- [SPRINT_4_AI_PM_EXPERIENCE.md](./sprints/SPRINT_4_AI_PM_EXPERIENCE.md) rewritten
+- `v2-ai-pm-work-engine.ts` · `v2-ai-pm-working-experience.tsx`
+- Standalone artifact trigger removed from workspace main — offer lives in block ⑥
+
+---
+
+## ADR-036: Decision Workspace — Morning Brief First (Sprint 4.1)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 4.0 six-block Inbox was HOLD: still AI-centric information consumption. CEO asks *"오늘 뭐 결정하지?"* not *"what did AI research?"*
+
+### Decision
+
+1. **Inbox = Morning Brief first** — one approval item, recommendation, confidence, ETA, single `[결정 시작]`.
+2. **Decision Session** opens only after CTA — activity summary (collapsed details), AI PM 권고, proceed/hold/re-research.
+3. **Meeting Closed** ends every session — today's decision ✓, next meeting scheduled.
+4. **One Agenda Rule** — one meeting topic at a time.
+5. **Language shift (P1):** 회의 · 업무 · 권고 · 승인 · 결정 — not 검토/Review/Evidence in user-facing copy.
+
+### Consequences
+
+- [SPRINT_4_1_DECISION_WORKSPACE.md](./sprints/SPRINT_4_1_DECISION_WORKSPACE.md)
+- `v2-ai-pm-decision-session-store.ts` — brief → session → closed
+- Inbox title → **AI PM Morning Brief**
+
+---
+
+## ADR-037: Decision First & Morning Brief v2 (Sprint 4.2)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO (PASS WITH CHANGES on 4.1)
+
+### Context
+
+4.1 moved the axis to "what must the founder decide?" but Morning Brief still lacked *why today*, Decision Session was explanation-heavy, and Meeting Closed didn't answer *what changed today*.
+
+### Decision
+
+1. **Morning Brief v2** — one paragraph why this agenda now + checkmarks linking to next step unlock.
+2. **Decision First** — session order: recommendation → proceed/hold/re-research → rationale after choice.
+3. **Discoveries over task completion** — PM reports what was newly learned.
+4. **Meeting Closed** — "오늘 변경된 내용" + "다음 회의는 ○○ 이후".
+5. **Sprint 5 frame:** Workspace = meeting room (Agenda → Discussion → Decision → Action → Minutes).
+
+### Consequences
+
+- [SPRINT_4_2_MEETING_UX_POLISH.md](./sprints/SPRINT_4_2_MEETING_UX_POLISH.md)
+- Session store: `saveDecisionChoice` → rationale → `finalizeMeetingClosed`
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

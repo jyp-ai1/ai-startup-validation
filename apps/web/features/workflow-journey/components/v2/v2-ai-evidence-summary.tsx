@@ -33,7 +33,7 @@ export function V2AiEvidenceSummary({
   memoryEntries,
   className,
 }: V2AiEvidenceSummaryProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.aiSummary');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.aiSummary');
   const locale = useLocale();
   const action = getNextAction({ evidence, reviewCount, hasIdea, investigationViewed });
   const freshness = getReviewFreshness(evidence, reviewCount);

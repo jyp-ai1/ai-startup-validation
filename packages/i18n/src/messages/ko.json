@@ -4922,8 +4922,8 @@
               }
             },
             "aiPmInbox": {
-              "title": "AI PM Inbox",
-              "deliveryLead": "오늘 AI PM이 대표님께 전달할 내용입니다.",
+              "title": "AI PM Morning Brief",
+              "deliveryLead": "",
               "readBadge": "읽음",
               "headline": {
                 "reviewComplete": "오늘 검토를 완료했습니다.",
@@ -4961,6 +4961,187 @@
               "ctaContinue": "계속 검토하기",
               "ctaResume": "이어서 진행"
             },
+            "aiPmWorking": {
+              "morningBrief": {
+                "greeting": "좋은 아침입니다.",
+                "researchSoFar": "어제까지 조사한 결과",
+                "whyNow": "왜 지금인가?",
+                "decisionNeeded": "오늘은 결정해야 할 것이 {count}개 있습니다.",
+                "noDecisionYet": "오늘 회의를 시작할 준비가 되었습니다.",
+                "decisionEta": "예상 시간",
+                "decisionEtaValue": "{minutes}분",
+                "whyTodayLead": {
+                  "pricingOnlyToday": "오늘은 가격 전략만 결정하면 됩니다.",
+                  "customerOnlyToday": "오늘은 고객 검증만 결정하면 됩니다.",
+                  "refreshOnlyToday": "오늘은 변경 내용을 반영한 뒤 다시 결정하면 됩니다.",
+                  "firstMeetingToday": "오늘은 첫 회의를 시작하면 됩니다.",
+                  "enterIdeaToday": "오늘은 사업 아이디어부터 정리하면 됩니다."
+                },
+                "whyToday": {
+                  "marketDone": "시장은 충분히 확인되었습니다.",
+                  "competitorPricingReady": "경쟁사 가격도 확보되었습니다.",
+                  "unlockInterviews": "가격만 결정하면 고객 인터뷰를 시작할 수 있습니다.",
+                  "pricingDecided": "가격 전략은 정리되었습니다.",
+                  "unlockMvp": "고객 검증만 결정하면 MVP 정의를 시작할 수 있습니다.",
+                  "inputsChanged": "입력이 바뀌어 다시 확인이 필요합니다.",
+                  "decisionBlocked": "최신 상태로 맞춘 뒤 결정을 이어가야 합니다.",
+                  "needBaseline": "아이디어를 기준으로 첫 회의를 시작합니다.",
+                  "needIdea": "아이디어를 입력하면 AI PM 업무가 시작됩니다."
+                }
+              },
+              "approvalQueue": {
+                "label": "대표 승인 필요"
+              },
+              "agenda": {
+                "todayTag": "(오늘)",
+                "enterIdea": "사업 아이디어 정리",
+                "firstMeeting": "첫 회의",
+                "pricingStrategy": "가격 전략",
+                "customerValidation": "고객 검증",
+                "reinvestigate": "입력 변경 반영",
+                "sessionComplete": "오늘 회의"
+              },
+              "recommendation": {
+                "label": "AI PM 권고",
+                "pricing29": "월 29달러",
+                "interviewsFirst": "고객 인터뷰 우선",
+                "refreshInputs": "재조사 후 결정",
+                "startMeeting": "첫 회의 시작",
+                "enterIdeaFirst": "아이디어 입력",
+                "short": {
+                  "pricing29Short": "29달러",
+                  "interviewsFirstShort": "인터뷰 우선",
+                  "refreshInputsShort": "재조사",
+                  "startMeetingShort": "첫 회의",
+                  "enterIdeaShort": "아이디어"
+                },
+                "session": {
+                  "startAt29": "가격을 29달러부터 시작하는 것이 좋겠습니다.",
+                  "interviewsBeforeScale": "규모를 키우기 전에 고객 인터뷰가 필요합니다.",
+                  "refreshBeforeDecide": "입력이 바뀌었습니다. 다시 조사한 뒤 결정하겠습니다.",
+                  "alignOnIdea": "사업 아이디어를 함께 정리하겠습니다.",
+                  "needIdea": "회의를 시작하려면 사업 아이디어가 필요합니다."
+                },
+                "sessionDetails": {
+                  "competitorBenchmark": "경쟁사는 대부분 월 29달러입니다.",
+                  "founderGap": "대표님은 100달러를 검토 중입니다.",
+                  "noInterviews": "아직 고객 인터뷰가 없습니다.",
+                  "viabilityGap": "여기까지는 사업성 판단이 어렵습니다.",
+                  "inputsChanged": "최신 입력을 반영해야 합니다.",
+                  "needBaseline": "아이디어를 기준으로 업무를 시작합니다.",
+                  "needIdea": "아이디어를 입력해 주세요."
+                }
+              },
+              "discoveries": {
+                "marketTrendChecked": "시장 동향을 확인했습니다.",
+                "competitorsRaisedPrice": "경쟁사 2곳이 가격을 인상했습니다.",
+                "newAiServiceFound": "새로운 AI 서비스 1개를 발견했습니다.",
+                "pricingGapFound": "현재 가격 가설과 시장 가격 사이에 간격이 있습니다.",
+                "noCustomerInterviews": "아직 고객 인터뷰 데이터가 없습니다.",
+                "inputsChangedNotice": "입력 변경으로 이전 결론을 다시 확인해야 합니다."
+              },
+              "activity": {
+                "details": {
+                  "googleTrends": "Google Trends",
+                  "redditAnalysis": "Reddit",
+                  "productHunt": "Product Hunt",
+                  "competitorCompare": "경쟁사 8개 비교",
+                  "searchVolume": "검색량",
+                  "ycCases": "YC 사례",
+                  "crunchbase": "Crunchbase"
+                }
+              },
+              "rationale": {
+                "title": "제가 조사한 이유입니다.",
+                "detailsToggle": "세부 조사 데이터 보기",
+                "closeMeeting": "회의 종료"
+              },
+              "decisionSession": {
+                "label": "오늘 회의 안건",
+                "question": "대표님은 어떻게 하시겠습니까?"
+              },
+              "choices": {
+                "proceed": "진행",
+                "hold": "보류",
+                "reinvestigate": "다시 조사",
+                "proceedRecorded": "진행 — 회의록에 기록",
+                "holdRecorded": "보류 — 회의록에 기록",
+                "reinvestigateRecorded": "재조사 — 회의록에 기록"
+              },
+              "meetingClosed": {
+                "title": "회의 종료",
+                "todayComplete": "오늘 결정 완료",
+                "changesTitle": "오늘 변경된 내용",
+                "changes": {
+                  "pricingConfirmed": "가격 전략 확정",
+                  "recommendationApplied": "AI PM 권고 반영",
+                  "customerValidationStarted": "고객 검증 시작",
+                  "firstMeetingHeld": "첫 회의 완료",
+                  "agendaSet": "다음 안건 설정",
+                  "sessionComplete": "오늘 회의 완료"
+                },
+                "nextMeeting": "다음 회의",
+                "dismiss": "확인"
+              },
+              "nextMeeting": {
+                "customerInterviews": "고객 인터뷰",
+                "mvpDefinition": "MVP 정의",
+                "pricingStrategy": "가격 전략",
+                "firstMeeting": "첫 회의",
+                "afterCustomerInterviews": "고객 인터뷰 이후",
+                "afterMvpDefinition": "MVP 정의 이후",
+                "afterPricingStrategy": "가격 전략 이후",
+                "afterReinvestigate": "재조사 완료 이후",
+                "afterFirstMeeting": "첫 회의 이후"
+              },
+              "cta": {
+                "enterIdea": "아이디어 입력",
+                "startMeeting": "회의 시작",
+                "startDecision": "결정 시작",
+                "reinvestigate": "재조사 시작"
+              }
+            },
+            "aiPmDialogue": {
+              "aiLabel": "AI PM",
+              "founderLabel": "대표",
+              "whyButton": "왜 그렇게 생각하나요?",
+              "founderReplyButton": "그럼 가격을 바꾸자",
+              "founderSampleReply": "그럼 가격을 바꾸자.",
+              "recordedInMeetingNote": "좋습니다. 회의록에 기록했습니다.",
+              "evidenceLinked": "근거는 아래 ‘왜 그렇게 생각했나요?’에서 확인할 수 있습니다. 근거가 부족하면 추가 확인이 필요합니다.",
+              "turns": {
+                "firstBriefing": "대표님. LaunchLens에 오신 것을 환영합니다.",
+                "resumeBriefing": "대표님. 어제 가격 전략을 다시 보기로 했습니다. 오늘은 그 부분부터 이어가겠습니다.",
+                "staleBriefing": "대표님. 입력이 바뀌어 검토 결과가 최신이 아닙니다.",
+                "pricingPriorityBriefing": "대표님. 오늘은 시장보다 가격이 더 중요합니다.",
+                "marketDoneBriefing": "대표님. 시장 검토는 충분히 진행했습니다.",
+                "continueBriefing": "대표님. 지난 검토를 이어서 진행하겠습니다.",
+                "priority": {
+                  "enterIdea": "먼저 사업 아이디어를 함께 정리하면, 검토 방향을 잡을 수 있습니다.",
+                  "pricingOverMarket": "시장 규모보다, 지금은 가격 가설을 검증하는 것이 우선입니다.",
+                  "reReview": "변경된 입력을 반영해 다시 검토해야 합니다.",
+                  "marketDone": "다음은 의사결정에 필요한 남은 가정을 확인할 차례입니다.",
+                  "continueReview": "아직 확인하지 않은 검토 항목이 남아 있습니다."
+                },
+                "pricingEvidenceGap": "가격에 대한 근거가 아직 부족합니다. 추가 확인이 필요합니다.",
+                "firstQuestion": "어떤 사업을 검토하고 싶으신가요?",
+                "newCompetitorLead": "조사하다 보니 새로운 경쟁사가 하나 생겼습니다. 이 부분부터 같이 보시겠습니까?",
+                "pricingLead": "가격 전략부터 같이 검토해 보시겠습니까?",
+                "continueLead": "지난 검토 내용부터 이어서 보시겠습니까?",
+                "staleLead": "변경 내용을 반영해 다시 검토부터 진행할까요?"
+              }
+            },
+            "consultingQuestions": {
+              "whyThink": "왜 그렇게 생각하시나요?",
+              "assumptionImpact": "이 가정이 맞다면 어떤 영향이 있을까요?",
+              "whatToVerify": "먼저 무엇을 확인하면 좋을까요?",
+              "pricingChange": "가격을 바꾸면 고객 반응은 어떻게 달라질까요?",
+              "newCompetitorLead": "새 경쟁사가 우리 포지셔닝에 어떤 영향을 줄까요?",
+              "pricingLead": "현재 가격 가설에서 가장 불확실한 부분은 무엇일까요?",
+              "continueLead": "지난 회의에서 남긴 메모 중, 오늘 먼저 다룰 주제는 무엇일까요?",
+              "staleLead": "바뀐 입력 중 의사결정에 가장 큰 영향을 주는 것은 무엇일까요?",
+              "firstQuestion": "이 사업에서 가장 먼저 검증하고 싶은 가정은 무엇인가요?"
+            },
             "meetingNote": {
               "title": "AI PM 회의록",
               "header": "AI PM 회의록",
@@ -4983,8 +5164,14 @@
               }
             },
             "artifactTrigger": {
-              "body": "대표님. 시장 검토가 충분합니다. 이제 Lean Canvas를 생성하시겠습니까?",
-              "cta": "Lean Canvas 생성",
+              "offers": {
+                "leanCanvasOffer": "대표님. 시장 검토가 충분합니다. Lean Canvas를 생성하시겠습니까?",
+                "interviewOffer": "대표님. 고객 검토가 충분합니다. 인터뷰 질문을 생성하시겠습니까?"
+              },
+              "cta": {
+                "leanCanvasOffer": "Lean Canvas 생성",
+                "interviewOffer": "인터뷰 질문 생성"
+              },
               "mockHint": "Sprint 4에서 실제 생성으로 연결됩니다."
             },
             "recentChanges": {

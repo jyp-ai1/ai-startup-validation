@@ -40,8 +40,8 @@ export function V2NextActionBlock({
   onCustomerValidation,
   className,
 }: V2NextActionBlockProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.nextAction');
-  const ts = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.nextAction.status');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.nextAction');
+  const ts = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.nextAction.status');
 
   const action = getNextAction({ evidence, reviewCount, hasIdea, investigationViewed });
   const meta = getNextActionMeta(action.kind);

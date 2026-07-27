@@ -2,7 +2,7 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **3.4 AI PM Inbox** ✅ · Sprint 3 COMPLETE  
+> **Active sprint:** Sprint **4.2 — Meeting UX Polish** 🔄  
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
@@ -126,7 +126,44 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 
 **Kickoff:** [SPRINT_3_4_AI_PM_INBOX.md](./sprints/SPRINT_3_4_AI_PM_INBOX.md)
 
-**Next:** Sprint 4 — Real Evidence Engine (UI freeze)
+**Next:** Sprint 4 — AI PM Experience (Consulting Experience)
+
+---
+
+## Sprint 4.2 — Meeting UX Polish 🔄 IN PROGRESS
+
+**CPO:** PASS WITH CHANGES on 4.1
+
+| # | P0 | Status |
+|---|-----|--------|
+| 1 | Morning Brief v2 (why today · next unlock) | 🔄 |
+| 2 | Decision First (권고 → 결정 → 근거) | 🔄 |
+| 3 | Discoveries (PM findings, not task checklist) | 🔄 |
+| 4 | Meeting Closed + "오늘 변경된 내용" | 🔄 |
+
+**Kickoff:** [SPRINT_4_2_MEETING_UX_POLISH.md](./sprints/SPRINT_4_2_MEETING_UX_POLISH.md)
+
+---
+
+## Sprint 4.1 — Decision Workspace ✅ PASS WITH CHANGES
+
+**CPO HOLD on 4.0** — six-block inbox was still information-consumption UI.
+
+**Goal:** CEO opens app → **"오늘 뭐 결정하지?"** → Morning Brief → Decision Session → Meeting Closed
+
+| # | P0 | Status |
+|---|-----|--------|
+| 1 | AI PM Approval Queue (1 agenda · 1 CTA) | 🔄 |
+| 2 | AI PM Activity (high-level; details collapsed) | 🔄 |
+| 3 | AI PM 권고 (not "의견") | 🔄 |
+| 4 | 진행 / 보류 / 재조사 | 🔄 |
+| 5 | Meeting Closed screen | 🔄 |
+
+**Kickoff:** [SPRINT_4_1_DECISION_WORKSPACE.md](./sprints/SPRINT_4_1_DECISION_WORKSPACE.md)
+
+---
+
+## Sprint 4 — AI PM Working Experience (4.0) ⏸ HOLD
 
 ---
 

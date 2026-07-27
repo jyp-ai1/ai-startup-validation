@@ -29,7 +29,7 @@ export function V2EvidenceDetailDrawer({
   readOnly = false,
   onFillPricing,
 }: V2EvidenceDetailDrawerProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.evidenceDrawer');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.evidenceDrawer');
   const [showEvidence, setShowEvidence] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
 

@@ -55,7 +55,7 @@ export function V2WorkflowNav({
   className,
 }: V2WorkflowNavProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.ia');
-  const tm = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.memoryStory');
+  const tm = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.memoryStory');
   const ts = useTranslations('workflow.v2.strategyWorkspace.ia.steps');
 
   return (

@@ -26,7 +26,7 @@ export function V2ImpactAnalysisPanel({
   isStale,
   className,
 }: V2ImpactAnalysisPanelProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.impactAnalysis');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.impactAnalysis');
   const impacts = getImpactAnalysis(changedField, isStale);
 
   if (!isStale || !hasAnyImpact(impacts)) return null;

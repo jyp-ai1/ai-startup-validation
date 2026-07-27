@@ -7,7 +7,6 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { InvestigationTopic, NextActionKind } from '../../lib/v2-next-action-engine';
-import { shouldShowArtifactTrigger } from '../../lib/v2-ai-pm-inbox-data';
 import { isReviewStale } from '../../lib/v2-review-dirty-state';
 import { type WorkflowStepId } from '../../lib/v2-workflow-steps';
 import type { V2EvidenceField, V2ValidationEvidence } from '../../lib/v2-validation-store';
@@ -16,7 +15,6 @@ import { getNextAction } from '../../lib/v2-next-action-engine';
 import { V2AiPmInbox } from './v2-ai-pm-inbox';
 import { V2AiPmMeetingNote } from './v2-ai-pm-meeting-note';
 import { V2AiUnderstandingChips } from './v2-ai-understanding-chips';
-import { V2ArtifactTrigger } from './v2-artifact-trigger';
 import { V2EvidenceDetailDrawer } from './v2-evidence-detail-drawer';
 import { V2GuidedDemoCoach, type GuidedDemoStep } from './v2-guided-demo-coach';
 import { V2WhySourcesSection } from './v2-why-sources-section';
@@ -124,6 +122,9 @@ export function V2ThinkingWorkspaceMain({
           stale={stale}
           readOnly={readOnly}
           onContinue={handleContinue}
+          onShowEvidence={() => {
+            document.getElementById('why-sources')?.scrollIntoView({ behavior: 'smooth' });
+          }}
         />
 
         {guidedDemoStep && onGuidedDemoAdvance ? (
@@ -144,8 +145,6 @@ export function V2ThinkingWorkspaceMain({
         <V2WhySourcesSection reviewCount={reviewCount} onOpenTopic={setDrawerTopic} />
 
         <V2AiPmMeetingNote reviewCount={reviewCount} readOnly={readOnly} />
-
-        <V2ArtifactTrigger visible={shouldShowArtifactTrigger(ctx)} readOnly={readOnly} />
       </div>
 
       <V2EvidenceDetailDrawer

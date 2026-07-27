@@ -16,7 +16,7 @@ type V2EvidenceQaBlockProps = {
 };
 
 export function V2EvidenceQaBlock({ presets, readOnly = false, className }: V2EvidenceQaBlockProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.evidenceDrawer.qa');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.evidenceDrawer.qa');
   const [activeQuestion, setActiveQuestion] = useState<string | null>(null);
   const [customQuestion, setCustomQuestion] = useState('');
 

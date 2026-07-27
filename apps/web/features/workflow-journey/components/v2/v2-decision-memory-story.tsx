@@ -32,7 +32,7 @@ export function V2DecisionMemoryStory({
   className,
   compact = false,
 }: V2DecisionMemoryStoryProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.memoryStory');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.memoryStory');
   const locale = useLocale();
   const beats = buildDecisionStory(entries, lastReviewAt, locale, reviewCount);
   const groups = groupStoryByPeriod(beats);

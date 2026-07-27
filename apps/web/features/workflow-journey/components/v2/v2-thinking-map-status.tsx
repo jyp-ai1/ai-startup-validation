@@ -43,7 +43,7 @@ export function V2ThinkingMapStatus({
   onSelect,
   className,
 }: V2ThinkingMapStatusProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.thinkingMap');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.thinkingMap');
   const ts = useTranslations('workflow.v2.strategyWorkspace.ia.steps');
 
   return (

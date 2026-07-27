@@ -29,7 +29,7 @@ export function V2StickyNextAction({
   onAction,
   className,
 }: V2StickyNextActionProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.nextAction');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.nextAction');
 
   const action = getNextAction({ evidence, reviewCount, hasIdea, investigationViewed });
   const meta = getNextActionMeta(action.kind);

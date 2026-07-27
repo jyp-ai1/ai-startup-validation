@@ -18,7 +18,7 @@ type V2EvidenceLibraryPanelProps = {
 };
 
 export function V2EvidenceLibraryPanel({ reviewCount, className }: V2EvidenceLibraryPanelProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.evidenceLibrary');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.evidenceLibrary');
   const items = useMemo(() => buildEvidenceLibrary(), []);
   const [category, setCategory] = useState<EvidenceLibraryCategory>('market');
   const [selectedId, setSelectedId] = useState<string | null>(null);

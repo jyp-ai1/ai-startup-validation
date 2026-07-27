@@ -23,7 +23,7 @@ export function V2AiPmMeetingNote({
   readOnly = false,
   className,
 }: V2AiPmMeetingNoteProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.meetingNote');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.meetingNote');
   const [note, setNote] = useState<AiPmMeetingNote | null>(null);
   const [founderMemo, setFounderMemo] = useState('');
 

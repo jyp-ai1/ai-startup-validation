@@ -23,7 +23,7 @@ export function V2ProjectGrowthStory({
   onSelect,
   className,
 }: V2ProjectGrowthStoryProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.growthStory');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.growthStory');
   const chapters = buildProjectGrowthStory(entries, reviewCount);
 
   if (chapters.length === 0) {

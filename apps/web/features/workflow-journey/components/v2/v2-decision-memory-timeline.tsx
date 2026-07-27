@@ -22,7 +22,7 @@ export function V2DecisionMemoryTimeline({
   onSelect,
   className,
 }: V2DecisionMemoryTimelineProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.memoryTimeline');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.memoryTimeline');
   const locale = useLocale();
   const events = buildMemoryTimeline(entries, lastReviewAt, locale);
 

@@ -29,8 +29,8 @@ export function V2ProjectHealthCard({
   onAction,
   className,
 }: V2ProjectHealthCardProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.projectHealth');
-  const tn = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.nextAction');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.projectHealth');
+  const tn = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.nextAction');
 
   const health = computeProjectHealth({
     evidence,

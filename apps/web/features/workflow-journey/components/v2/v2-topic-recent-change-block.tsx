@@ -21,7 +21,7 @@ export function V2TopicRecentChangeBlock({
   trend,
   className,
 }: V2TopicRecentChangeBlockProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.recentChange');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.recentChange');
 
   return (
     <div className={cn('rounded-lg border border-border/40 bg-muted/10 p-3', className)}>

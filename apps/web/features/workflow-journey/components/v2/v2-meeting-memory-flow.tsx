@@ -13,7 +13,7 @@ type V2MeetingMemoryFlowProps = {
 };
 
 export function V2MeetingMemoryFlow({ reviewCount, className }: V2MeetingMemoryFlowProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.meetingFlow');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.meetingFlow');
 
   if (reviewCount < 1) return null;
 

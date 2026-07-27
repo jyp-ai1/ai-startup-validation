@@ -37,7 +37,7 @@ export function V2AiUnderstandingChips({
   onFieldDelete,
   className,
 }: V2AiUnderstandingChipsProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.understanding');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.understanding');
   const tb = useTranslations('workflow.v2.reviewBoard');
   const [editingField, setEditingField] = useState<ChipField | null>(null);
   const [draft, setDraft] = useState('');

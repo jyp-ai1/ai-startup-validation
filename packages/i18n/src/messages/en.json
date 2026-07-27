@@ -4775,8 +4775,8 @@
               }
             },
             "aiPmInbox": {
-              "title": "AI PM Inbox",
-              "deliveryLead": "What your AI PM is reporting to you today.",
+              "title": "AI PM Morning Brief",
+              "deliveryLead": "",
               "readBadge": "Read",
               "headline": {
                 "reviewComplete": "Today's review is complete.",
@@ -4814,6 +4814,187 @@
               "ctaContinue": "Continue review",
               "ctaResume": "Continue session"
             },
+            "aiPmWorking": {
+              "morningBrief": {
+                "greeting": "Good morning.",
+                "researchSoFar": "Based on research so far",
+                "whyNow": "Why now?",
+                "decisionNeeded": "You have {count} decision today.",
+                "noDecisionYet": "Ready to start today's meeting.",
+                "decisionEta": "Est. time",
+                "decisionEtaValue": "{minutes} min",
+                "whyTodayLead": {
+                  "pricingOnlyToday": "Today you only need to decide pricing strategy.",
+                  "customerOnlyToday": "Today you only need to decide customer validation.",
+                  "refreshOnlyToday": "Today we'll refresh inputs, then decide.",
+                  "firstMeetingToday": "Today we'll start the first meeting.",
+                  "enterIdeaToday": "Today we'll align on your business idea."
+                },
+                "whyToday": {
+                  "marketDone": "Market is sufficiently validated.",
+                  "competitorPricingReady": "Competitor pricing is in hand.",
+                  "unlockInterviews": "Once pricing is set, customer interviews can start.",
+                  "pricingDecided": "Pricing strategy is aligned.",
+                  "unlockMvp": "Once customer validation is set, MVP definition can start.",
+                  "inputsChanged": "Inputs changed — we need a fresh check.",
+                  "decisionBlocked": "Sync to latest before continuing.",
+                  "needBaseline": "We'll start the first meeting from your idea.",
+                  "needIdea": "Enter your idea to start AI PM work."
+                }
+              },
+              "approvalQueue": {
+                "label": "Founder approval needed"
+              },
+              "agenda": {
+                "todayTag": "(today)",
+                "enterIdea": "Business idea alignment",
+                "firstMeeting": "First meeting",
+                "pricingStrategy": "Pricing strategy",
+                "customerValidation": "Customer validation",
+                "reinvestigate": "Refresh inputs",
+                "sessionComplete": "Today's meeting"
+              },
+              "recommendation": {
+                "label": "AI PM recommendation",
+                "pricing29": "$29/month",
+                "interviewsFirst": "Interviews first",
+                "refreshInputs": "Re-research then decide",
+                "startMeeting": "Start first meeting",
+                "enterIdeaFirst": "Enter your idea",
+                "short": {
+                  "pricing29Short": "$29",
+                  "interviewsFirstShort": "Interviews",
+                  "refreshInputsShort": "Re-research",
+                  "startMeetingShort": "First meeting",
+                  "enterIdeaShort": "Idea"
+                },
+                "session": {
+                  "startAt29": "I'd start pricing at $29/month.",
+                  "interviewsBeforeScale": "Customer interviews before scaling.",
+                  "refreshBeforeDecide": "Inputs changed — let's re-research before deciding.",
+                  "alignOnIdea": "Let's align on the business idea.",
+                  "needIdea": "We need your business idea to begin."
+                },
+                "sessionDetails": {
+                  "competitorBenchmark": "Most competitors are at $29/month.",
+                  "founderGap": "You're considering $100.",
+                  "noInterviews": "No customer interviews yet.",
+                  "viabilityGap": "Hard to judge viability without them.",
+                  "inputsChanged": "We need to sync to your latest inputs.",
+                  "needBaseline": "We'll start work from your idea.",
+                  "needIdea": "Please enter your idea."
+                }
+              },
+              "discoveries": {
+                "marketTrendChecked": "I checked market trends.",
+                "competitorsRaisedPrice": "Two competitors raised their prices.",
+                "newAiServiceFound": "I found one new AI competitor.",
+                "pricingGapFound": "There's a gap between your price hypothesis and the market.",
+                "noCustomerInterviews": "No customer interview data yet.",
+                "inputsChangedNotice": "Input changes require revisiting our conclusions."
+              },
+              "activity": {
+                "details": {
+                  "googleTrends": "Google Trends",
+                  "redditAnalysis": "Reddit",
+                  "productHunt": "Product Hunt",
+                  "competitorCompare": "8 competitors compared",
+                  "searchVolume": "Search volume",
+                  "ycCases": "YC cases",
+                  "crunchbase": "Crunchbase"
+                }
+              },
+              "rationale": {
+                "title": "Here's why I recommend this.",
+                "detailsToggle": "Show research data",
+                "closeMeeting": "Close meeting"
+              },
+              "decisionSession": {
+                "label": "Today's agenda",
+                "question": "How would you like to proceed?"
+              },
+              "choices": {
+                "proceed": "Proceed",
+                "hold": "Hold",
+                "reinvestigate": "Re-research",
+                "proceedRecorded": "Proceed — recorded in minutes",
+                "holdRecorded": "Hold — recorded in minutes",
+                "reinvestigateRecorded": "Re-research — recorded in minutes"
+              },
+              "meetingClosed": {
+                "title": "Meeting closed",
+                "todayComplete": "Today's decision complete",
+                "changesTitle": "What changed today",
+                "changes": {
+                  "pricingConfirmed": "Pricing strategy confirmed",
+                  "recommendationApplied": "AI PM recommendation applied",
+                  "customerValidationStarted": "Customer validation started",
+                  "firstMeetingHeld": "First meeting complete",
+                  "agendaSet": "Next agenda set",
+                  "sessionComplete": "Today's meeting complete"
+                },
+                "nextMeeting": "Next meeting",
+                "dismiss": "OK"
+              },
+              "nextMeeting": {
+                "customerInterviews": "Customer interviews",
+                "mvpDefinition": "MVP definition",
+                "pricingStrategy": "Pricing strategy",
+                "firstMeeting": "First meeting",
+                "afterCustomerInterviews": "After customer interviews",
+                "afterMvpDefinition": "After MVP definition",
+                "afterPricingStrategy": "After pricing strategy",
+                "afterReinvestigate": "After re-research",
+                "afterFirstMeeting": "After first meeting"
+              },
+              "cta": {
+                "enterIdea": "Enter idea",
+                "startMeeting": "Start meeting",
+                "startDecision": "Start decision",
+                "reinvestigate": "Start re-research"
+              }
+            },
+            "aiPmDialogue": {
+              "aiLabel": "AI PM",
+              "founderLabel": "Founder",
+              "whyButton": "Why do you think that?",
+              "founderReplyButton": "Let's change pricing",
+              "founderSampleReply": "Let's change pricing.",
+              "recordedInMeetingNote": "Noted — I've recorded this in the meeting minutes.",
+              "evidenceLinked": "See supporting evidence below under “Why we think this.” If evidence is thin, we'll flag what still needs verification.",
+              "turns": {
+                "firstBriefing": "Welcome — I'm your AI PM for this venture.",
+                "resumeBriefing": "Yesterday we agreed to revisit pricing. We'll pick up from there today.",
+                "staleBriefing": "Your inputs changed — the last review is no longer current.",
+                "pricingPriorityBriefing": "Today pricing matters more than market size.",
+                "marketDoneBriefing": "Market review looks sufficient for now.",
+                "continueBriefing": "Let's continue from your last review.",
+                "priority": {
+                  "enterIdea": "First we'll align on the business idea so we know what to review.",
+                  "pricingOverMarket": "Validating the pricing hypothesis comes before expanding market analysis.",
+                  "reReview": "We should re-run review with your latest inputs.",
+                  "marketDone": "Next we'll check remaining assumptions that block a decision.",
+                  "continueReview": "There are review items we haven't walked through yet."
+                },
+                "pricingEvidenceGap": "Pricing evidence is still thin — we need more verification.",
+                "firstQuestion": "What venture would you like to review together?",
+                "newCompetitorLead": "While researching I found a new competitor. Shall we look at that together first?",
+                "pricingLead": "Shall we start with pricing strategy?",
+                "continueLead": "Shall we continue from the last review?",
+                "staleLead": "Shall we re-run review with your changes first?"
+              }
+            },
+            "consultingQuestions": {
+              "whyThink": "Why do you think that?",
+              "assumptionImpact": "If that assumption holds, what changes?",
+              "whatToVerify": "What should we verify first?",
+              "pricingChange": "If we change pricing, how might customers react?",
+              "newCompetitorLead": "How might this new competitor affect our positioning?",
+              "pricingLead": "What's the weakest part of our current pricing hypothesis?",
+              "continueLead": "From your last note, what should we tackle first today?",
+              "staleLead": "Which input change matters most for the decision?",
+              "firstQuestion": "Which assumption do you want to validate first?"
+            },
             "meetingNote": {
               "title": "AI PM meeting minutes",
               "header": "AI PM Meeting Note",
@@ -4836,8 +5017,14 @@
               }
             },
             "artifactTrigger": {
-              "body": "Market review looks sufficient. Would you like to generate a Lean Canvas now?",
-              "cta": "Generate Lean Canvas",
+              "offers": {
+                "leanCanvasOffer": "Market review looks sufficient. Would you like to generate a Lean Canvas now?",
+                "interviewOffer": "Customer review looks sufficient. Would you like to generate interview questions?"
+              },
+              "cta": {
+                "leanCanvasOffer": "Generate Lean Canvas",
+                "interviewOffer": "Generate interview questions"
+              },
               "mockHint": "Real generation connects in Sprint 4."
             },
             "recentChanges": {

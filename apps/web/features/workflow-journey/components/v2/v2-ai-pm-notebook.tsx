@@ -23,7 +23,7 @@ export function V2AiPmNotebook({
   readOnly = false,
   className,
 }: V2AiPmNotebookProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.aiPmNotebook');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.aiPmNotebook');
   const [entry, setEntry] = useState<AiPmNotebookEntry | null>(null);
   const [founderMemo, setFounderMemo] = useState('');
 

@@ -13,7 +13,7 @@ type V2RecentChangesFlowProps = {
 };
 
 export function V2RecentChangesFlow({ reviewCount, className }: V2RecentChangesFlowProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.recentChanges');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.recentChanges');
 
   if (reviewCount === 0) return null;
 

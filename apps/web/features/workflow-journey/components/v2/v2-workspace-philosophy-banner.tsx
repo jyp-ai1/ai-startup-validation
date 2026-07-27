@@ -17,7 +17,7 @@ export function V2WorkspacePhilosophyBanner({
   activePhase,
   className,
 }: V2WorkspacePhilosophyBannerProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.philosophy');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.philosophy');
 
   return (
     <header className={cn('space-y-2 border-b border-border/40 pb-4', className)}>

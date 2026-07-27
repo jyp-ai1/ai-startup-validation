@@ -10,7 +10,7 @@ type V2ReviewSummaryProps = {
 };
 
 export function V2ReviewSummary({ reviewCount, className }: V2ReviewSummaryProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.reviewSummary');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.reviewSummary');
 
   if (reviewCount === 0) return null;
 

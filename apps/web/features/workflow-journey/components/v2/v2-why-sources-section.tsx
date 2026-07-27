@@ -19,7 +19,7 @@ export function V2WhySourcesSection({
   onOpenTopic,
   className,
 }: V2WhySourcesSectionProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.whySources');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.whySources');
 
   if (reviewCount < 1) return null;
 

@@ -31,7 +31,7 @@ export function V2AiPmDailyBrief({
   onContinue,
   className,
 }: V2AiPmDailyBriefProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.aiPmBrief');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.aiPmBrief');
 
   const brief = buildAiPmDailyBrief({
     evidence,

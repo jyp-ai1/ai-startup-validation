@@ -30,7 +30,7 @@ export function V2NextQuestion({
   onReview,
   className,
 }: V2NextQuestionProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.nextQuestion');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.nextQuestion');
   const nextStep = getNextRecommendedStep(evidence, reviewCount);
 
   const handleAction = () => {

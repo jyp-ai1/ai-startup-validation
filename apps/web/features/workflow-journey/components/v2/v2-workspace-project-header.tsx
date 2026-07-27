@@ -24,7 +24,7 @@ export function V2WorkspaceProjectHeader({
   lastReviewAt,
   className,
 }: V2WorkspaceProjectHeaderProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.header');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.header');
 
   return (
     <header className={cn('space-y-1', className)}>

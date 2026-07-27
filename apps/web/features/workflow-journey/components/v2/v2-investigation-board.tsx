@@ -45,7 +45,7 @@ export function V2InvestigationBoard({
   onOpenEvidenceLibrary,
   className,
 }: V2InvestigationBoardProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.investigation');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.investigation');
   const [detailsOpen, setDetailsOpen] = useState(false);
 
   if (reviewCount === 0) {

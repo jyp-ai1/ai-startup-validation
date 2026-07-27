@@ -13,7 +13,7 @@ type V2DirtyStateFlowProps = {
 const STEPS = ['inputChanged', 'thinkingChanged', 'reviewStale', 'reReviewNeeded'] as const;
 
 export function V2DirtyStateFlow({ changedFieldLabel, className }: V2DirtyStateFlowProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.dirtyState.flow');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.dirtyState.flow');
 
   return (
     <div className={cn('space-y-2', className)}>

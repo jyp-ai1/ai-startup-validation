@@ -22,7 +22,7 @@ export function V2EvidenceSummaryStrip({
   onOpenTopic,
   className,
 }: V2EvidenceSummaryStripProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.evidenceStrip');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.evidenceStrip');
 
   if (reviewCount === 0) return null;
 

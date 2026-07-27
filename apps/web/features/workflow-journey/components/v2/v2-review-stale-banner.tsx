@@ -21,7 +21,7 @@ export function V2ReviewStaleBanner({
   readOnly = false,
   className,
 }: V2ReviewStaleBannerProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.dirtyState');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.dirtyState');
 
   return (
     <div

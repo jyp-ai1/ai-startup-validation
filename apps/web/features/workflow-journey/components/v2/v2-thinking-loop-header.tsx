@@ -21,7 +21,7 @@ export function V2ThinkingLoopHeader({
   reviewFreshness,
   className,
 }: V2ThinkingLoopHeaderProps) {
-  const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.thinkingLoop');
+  const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.thinkingLoop');
 
   return (
     <div className={cn('space-y-3', className)}>
