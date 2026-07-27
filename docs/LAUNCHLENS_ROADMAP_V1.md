@@ -147,7 +147,7 @@ Mock AI PM / mock review timer = OK for Sprint 1. Real AI → **Sprint 3**.
 
 ---
 
-## Sprint 2 — Go To Market Foundation 📋 NEXT
+## Sprint 2 — Go To Market Foundation 🔄 PARTIAL
 
 **Former name:** Landing · **Nature:** 브랜드를 만드는 Sprint
 
@@ -198,6 +198,57 @@ Landing → "아 이거 내가 필요했던 서비스인데?" → Demo → Login
 | 로그인 | **Workspace · Projects · Profile** — GTM 메뉴 **제거** · Dashboard ✗ · Analytics ✗ · Settings ✗ |
 
 Workspace = Home.
+
+---
+
+## Sprint 2.1 — Thinking Workspace UX 🔄 ACTIVE
+
+**Former name:** Workspace IA  
+**Nature:** 제품 다듬기 — 기능 추가 없음
+
+### Sprint question
+
+> **대표가 생각하기 쉬운 Workspace를 만드는가?**
+
+### Single goal (3–5 seconds)
+
+화면을 본 순간:
+
+1. 지금 어디까지 검토했는가?
+2. AI는 현재 무엇을 이해하고 있는가?
+3. 다음으로 무엇을 하면 되는가?
+
+### Must ship
+
+| Item | Priority |
+|------|----------|
+| State-first layout (현재 상태 → AI 이해 → 다음 질문 → Review Board) | P0 |
+| Workflow → **Thinking Map** | P0 |
+| Editable understanding chips (no form dialogs) | P0 |
+| One next question + one CTA | P0 |
+| Review Board meeting-minutes + mock Evidence | P0 |
+
+**Do NOT:** Evidence Engine · Real AI · new routes · Artifacts
+
+**Kickoff:** [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)
+
+---
+
+## Sprint 2.2 — Review Board & Evidence Workspace 🔄 ACTIVE
+
+**Nature:** LaunchLens 경쟁력의 핵심 — **"왜 그렇게 판단했는가"**
+
+### Must ship
+
+| Item | Priority |
+|------|----------|
+| Next Action Engine (항상 CTA 1개) | P0 |
+| Dirty State → re-review | P0 |
+| Investigation Board (Action) | P0 |
+| Evidence Dashboard + Drawer | P0 |
+| Thinking Loop · Memory Timeline | P0 |
+
+**Kickoff:** [SPRINT_2_2_REVIEW_BOARD_EVIDENCE.md](./sprints/SPRINT_2_2_REVIEW_BOARD_EVIDENCE.md)
 
 ---
 

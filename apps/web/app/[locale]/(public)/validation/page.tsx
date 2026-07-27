@@ -27,16 +27,23 @@ type ValidationPageProps = {
   searchParams: Promise<{ demo?: string }>;
 };
 
+function resolveDemoMode(demo: string | undefined): 'demo-readonly' | 'demo-guided' | 'default' {
+  if (demo === 'readonly') return 'demo-readonly';
+  if (demo === 'guided' || demo === '1') return 'demo-guided';
+  return 'default';
+}
+
 export default async function ValidationPage({ searchParams }: ValidationPageProps) {
   const params = await searchParams;
-  const isDemoReadonly = params.demo === 'readonly';
+  const demoMode = resolveDemoMode(params.demo);
+  const isPublicDemo = demoMode === 'demo-readonly' || demoMode === 'demo-guided';
 
-  if (!isDemoReadonly) {
+  if (!isPublicDemo) {
     const persona = await readJourneyPersona();
     if (!persona) {
       redirect('/who');
     }
   }
 
-  return <V2StrategyWorkspaceView mode={isDemoReadonly ? 'demo-readonly' : 'default'} />;
+  return <V2StrategyWorkspaceView mode={demoMode === 'default' ? 'default' : demoMode} />;
 }

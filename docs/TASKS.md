@@ -2,9 +2,11 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **2 Go To Market Foundation** · [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) v1.1 · ADR-031  
-> **Sprint 1 exit:** Decision Memory ✅ 1.6 · [SPRINT_1_6_DECISION_MEMORY.md](./sprints/SPRINT_1_6_DECISION_MEMORY.md)  
-> **Next:** [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md)  
+> **Active sprint:** Sprint **2.2.3 Signature Finale** · [SPRINT_2_2_3_SIGNATURE_FINALE.md](./sprints/SPRINT_2_2_3_SIGNATURE_FINALE.md)  
+> **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
+> **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
+> **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
+> **Roadmap:** [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) v1.1 · ADR-031  
 > **Constitution:** [PRODUCT_CONSTITUTION.md](./PRODUCT_CONSTITUTION.md)
 
 ---
@@ -28,20 +30,82 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Sprint 2 — Go To Market Foundation 🔄 ACTIVE
+## Sprint 2 — Go To Market Foundation 🔄 PARTIAL
 
 **Single goal:** 30초 안에 *"이거 그냥 AI가 문서 써주는 게 아니네."*
 
-**Priority:** GTM · Live Demo first — **`/validation` feature work ✗** (readonly demo only)
-
 | Epic | Status |
 |------|--------|
-| 1 Landing GTM sections | 🔄 |
-| 2 Live Demo readonly | 🔄 |
+| 1 Landing GTM sections | ✅ |
+| 2 Live Demo readonly | ✅ |
 | 3 Auth flow | ⬜ |
 | 4 Workspace entry | ⬜ |
 
 See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md)
+
+---
+
+## Sprint 2.1 — Thinking Workspace UX 🔄 PARTIAL
+
+**Kickoff:** [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)
+
+---
+
+## Sprint 2.2 — Review Board & Evidence Workspace 🔄 HELD
+
+**Goal:** **근거를 검토하며 의사결정을 만드는 Workspace** — Next Action + Evidence Dashboard
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | Next Action Engine (CTA 1개) | 🔄 |
+| 2 | Dirty State → [다시 검토하기] | 🔄 |
+| 3 | Investigation Board (Action 중심) | 🔄 |
+| 4 | Evidence Dashboard + Detail Drawer | 🔄 |
+| 5 | Thinking Loop Header | 🔄 |
+| 6 | Decision Memory Timeline | 🔄 |
+| 7 | AI Summary panel (Summary → Evidence → Insight → Next Action) | 🔄 |
+
+**Kickoff:** [SPRINT_2_2_REVIEW_BOARD_EVIDENCE.md](./sprints/SPRINT_2_2_REVIEW_BOARD_EVIDENCE.md)
+
+---
+
+## Sprint 2.2.3 — Signature Finale ✅ READY
+
+**Goal:** Workspace 진입 3초 — Project Health + Review 결론 + Story 그룹
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | AI Project Health Card | ✅ |
+| 2 | Review Summary (회의 결론) | ✅ |
+| 3 | Memory Story Today/Yesterday/Last Week | ✅ |
+| 4 | Evidence Confidence + Count | ✅ |
+| 5 | Next Action Why 강화 | ✅ |
+
+**Kickoff:** [SPRINT_2_2_3_SIGNATURE_FINALE.md](./sprints/SPRINT_2_2_3_SIGNATURE_FINALE.md)
+
+**Next:** Sprint 3 — Evidence Engine (real data)
+
+---
+
+## Sprint 2.2.2 — Decision-first Workspace ✅ COMPLETE
+
+**Goal:** Review Board를 **의사결정 Workspace**로 — 판단 → 근거 → Action
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | Evidence Drawer judgment-first | ✅ |
+| 2 | Review Board meeting minutes (판단·근거·다음 행동) | ✅ |
+| 3 | Impact Analysis Engine | ✅ |
+| 4 | Evidence Summary Strip (★ ratings) | ✅ |
+| 5 | Next Action with "why" | ✅ |
+| 6 | **P0.9** Decision Memory Story | 🔄 |
+| 7 | **P0.9** Review change history + trends | 🔄 |
+| 8 | **P0.9** Next Action priority/time/effect | 🔄 |
+| 9 | **P0.9** AI Confidence | 🔄 |
+
+**Kickoff:** [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)
+
+**CPO:** Direction approved — P0.9 signature experience in progress
 
 ---
 

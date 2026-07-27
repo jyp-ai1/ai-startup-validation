@@ -1,13 +1,13 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { updateSession } from './lib/auth/update-session';
 import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 
-export default function middleware(request: NextRequest) {
-  const response = intlMiddleware(request);
-  const projectId = request.nextUrl.searchParams.get('project');
+export default async function middleware(request: NextRequest) {
+  const intlResponse = intlMiddleware(request);
   const pathname = request.nextUrl.pathname;
 
   const applyPathHeader = (res: NextResponse) => {
@@ -15,27 +15,23 @@ export default function middleware(request: NextRequest) {
     return res;
   };
 
-  if (!projectId) {
-    return response instanceof NextResponse ? applyPathHeader(response) : response;
-  }
+  let response =
+    intlResponse instanceof NextResponse ? intlResponse : NextResponse.next({ request });
 
-  if (response instanceof NextResponse) {
-    response.cookies.set('ACTIVE_PROJECT_ID', projectId, {
-      path: '/',
-      maxAge: 60 * 60 * 24 * 365,
-      sameSite: 'lax',
-    });
+  response = await updateSession(request, response);
+
+  const projectId = request.nextUrl.searchParams.get('project');
+
+  if (!projectId) {
     return applyPathHeader(response);
   }
 
-  const next = NextResponse.next();
-  next.headers.set('x-pathname', pathname);
-  next.cookies.set('ACTIVE_PROJECT_ID', projectId, {
+  response.cookies.set('ACTIVE_PROJECT_ID', projectId, {
     path: '/',
     maxAge: 60 * 60 * 24 * 365,
     sameSite: 'lax',
   });
-  return next;
+  return applyPathHeader(response);
 }
 
 export const config = {

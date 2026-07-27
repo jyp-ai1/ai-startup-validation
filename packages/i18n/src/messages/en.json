@@ -4320,8 +4320,8 @@
           "differentiationEmpty": "No info"
         },
         "ia": {
-          "navLabel": "Strategy workflow",
-          "navTitle": "Workflow",
+          "navLabel": "Thinking Map",
+          "navTitle": "Thinking Map",
           "snippetTitle": "AI summary",
           "snippet": {
             "market": "Market",
@@ -4342,7 +4342,434 @@
             "competition": "Competition",
             "bm": "BM",
             "mvp": "MVP",
-            "review": "Meeting summary"
+            "review": "Review Board"
+          },
+          "thinkingUx": {
+            "header": {
+              "projectLabel": "Project",
+              "defaultProject": "New project",
+              "lastReview": "Last review · {time}"
+            },
+            "thinkingMap": {
+              "title": "This review"
+            },
+            "understanding": {
+              "title": "What AI understands now",
+              "empty": "Nothing captured yet.",
+              "add": "Add detail",
+              "delete": "Remove {field}"
+            },
+            "nextQuestion": {
+              "title": "Next question",
+              "lead": "Founder,",
+              "question": {
+                "idea": "Shall we start by framing your business idea?",
+                "problem": "Shall we clarify the problem you solve next?",
+                "customer": "Shall we learn a bit more about your customer next?",
+                "market": "Shall we look at market size together next?",
+                "competition": "Shall we review the competitive landscape next?",
+                "bm": "Shall we review pricing and BM next?",
+                "mvp": "Shall we define your first MVP next?",
+                "review": "Shall we walk through what this review confirmed?"
+              },
+              "cta": {
+                "idea": "Start with idea",
+                "problem": "Start with problem",
+                "customer": "Start customer review",
+                "market": "Start market review",
+                "competition": "Start competition review",
+                "bm": "Start pricing review",
+                "mvp": "Start MVP review",
+                "review": "Open Review Board"
+              }
+            },
+            "reviewBoard": {
+              "title": "Review Board",
+              "empty": "Run a review to see the Review Board.",
+              "confirmedTitle": "Confirmed in this review",
+              "evidenceTitle": "Evidence",
+              "unconfirmedTitle": "Not yet confirmed",
+              "recommendationTitle": "AI Recommendation",
+              "recommendationBody": "The market exists, but stronger customer and pricing validation will sharpen your decision.",
+              "evidence": {
+                "searchGrowth": "Search volume rising",
+                "grants": "Government grant programs",
+                "marketGrowth": "Market growth rate"
+              }
+            },
+            "thinkingLoop": {
+              "phases": {
+                "thinking": "Thinking",
+                "evidence": "Evidence",
+                "decision": "Decision",
+                "memory": "Memory"
+              },
+              "reviewStale": "⚠ Review · not current",
+              "reviewCurrent": "Review current"
+            },
+            "dirtyState": {
+              "title": "Review results are out of date",
+              "body": "Re-run review to reflect new inputs.",
+              "cta": "Re-run review",
+              "flow": {
+                "fieldChanged": "{field} updated",
+                "inputChanged": "Input changed",
+                "thinkingChanged": "Thinking changed",
+                "reviewStale": "Review stale",
+                "reReviewNeeded": "Re-review needed"
+              }
+            },
+            "nextAction": {
+              "currentStateTitle": "Current state",
+              "nextActionTitle": "Next action",
+              "status": {
+                "market": { "done": "Market reviewed", "pending": "Market pending" },
+                "competition": { "done": "Competition reviewed", "pending": "Competition pending" },
+                "pricing": { "done": "Pricing entered", "pending": "Pricing missing" },
+                "differentiation": { "done": "Differentiation set", "pending": "Differentiation weak" }
+              },
+              "body": {
+                "fill-idea": "Frame your business idea first so AI can start the review.",
+                "start-review": "Generate market and competition evidence from current inputs.",
+                "re-review": "New information was added. Update the AI judgment.",
+                "fill-pricing": "Enter pricing so AI can re-check revenue fit.",
+                "view-investigation": "New evidence is ready. Open the Investigation Board.",
+                "customer-validation": "Market review is done. Continue with customer validation."
+              },
+              "cta": {
+                "fill-idea": "Enter idea",
+                "start-review": "Start review",
+                "re-review": "Re-run review",
+                "fill-pricing": "Enter pricing",
+                "view-investigation": "Open Review Board",
+                "customer-validation": "Start customer interviews"
+              },
+              "whyLabel": "Why this action?",
+              "priorityLabel": "Priority",
+              "timeLabel": "Est. time",
+              "timeValue": "{minutes} min",
+              "effectLabel": "If you do this",
+              "effect": {
+                "fill-idea": "AI can start the review",
+                "start-review": "Market and competition evidence will generate",
+                "re-review": "Updated inputs refresh AI judgments",
+                "fill-pricing": "Market judgment accuracy +28%",
+                "view-investigation": "See judgment, sources, and actions at once",
+                "customer-validation": "Higher confidence on GO/WAIT",
+                "fill-customer": "Customer hypothesis feeds evidence"
+              },
+              "why": {
+                "fill-idea": "Without an idea, AI cannot generate market and competition evidence.",
+                "start-review": "Starts market and competition judgment from your inputs. GO/WAIT comes after review.",
+                "re-review": "Inputs changed. Previous judgments may no longer apply.",
+                "fill-pricing": "Without pricing, revenue and competitiveness judgments stay low-confidence. AI needs pricing to recalculate ROI.",
+                "view-investigation": "Evidence is ready. Review judgment → sources → next action on the Review Board.",
+                "customer-validation": "Market and competition are reviewed. The next risk is customer validation."
+              }
+            },
+            "evidenceStrip": {
+              "title": "Evidence summary",
+              "todayLabel": "Today's AI judgment",
+              "evidenceCount": "{count} Evidence",
+              "hint": "Tap a topic to see AI judgment, sources, and actions.",
+              "topics": {
+                "market": "Market",
+                "competition": "Competition",
+                "pricing": "Pricing",
+                "differentiation": "Differentiation"
+              }
+            },
+            "impactAnalysis": {
+              "title": "Input change impact",
+              "topics": {
+                "market": "Market",
+                "competition": "Competition",
+                "pricing": "Pricing",
+                "differentiation": "Differentiation"
+              },
+              "levels": {
+                "stale": "Re-review needed",
+                "reevaluate": "Re-evaluate",
+                "none": "No impact"
+              }
+            },
+            "investigation": {
+              "title": "Review Board",
+              "subtitle": "Meeting minutes — judgment · evidence · next action",
+              "subtitleThreeLine": "Learned today → why it matters → your next move",
+              "empty": "Run a review to see the Review Board.",
+              "sections": {
+                "market": "Market",
+                "competition": "Competition",
+                "pricing": "Pricing",
+                "differentiation": "Differentiation"
+              },
+              "cardStatus": {
+                "ready": "Confirmed",
+                "needsInput": "Input needed",
+                "weak": "Needs work"
+              },
+              "market": {
+                "competitorsFound": "{count} similar services found",
+                "size": "Market size {value}",
+                "searchTrend": "Search trend captured",
+                "investment": "{count} recent Seed rounds",
+                "cardSummary": "{count} services found"
+              },
+              "competition": {
+                "direct": "{count} direct competitors",
+                "indirect": "{count} indirect competitors",
+                "diffAnalysis": "Differentiation analysis ready",
+                "cardSummary": "{count} direct competitors"
+              },
+              "pricing": {
+                "needsInput": "Review needed",
+                "ready": "Ready for revenue analysis"
+              },
+              "differentiation": {
+                "weak": "Differentiation weak",
+                "suggestions": "{count} AI suggestions",
+                "cardSummary": "AI suggestions available"
+              },
+              "actions": {
+                "viewDetail": "View",
+                "compare": "Compare",
+                "input": "Input",
+                "aiSuggestions": "AI suggestions",
+                "viewJudgment": "View judgment & sources",
+                "openLibrary": "Evidence Library"
+              },
+              "card": {
+                "judgment": "Judgment",
+                "evidence": "Evidence",
+                "nextAction": "Next action",
+                "learned": "Learned today",
+                "why": "Why?",
+                "do": "So do this"
+              },
+              "impact": {
+                "stale": "Re-review needed",
+                "reevaluate": "Re-evaluate",
+                "none": ""
+              }
+            },
+            "evidenceDrawer": {
+              "close": "Close",
+              "sections": {
+                "judgment": "AI current judgment",
+                "data": "Data",
+                "interpretation": "AI interpretation",
+                "founderActions": "What you should confirm"
+              },
+              "why": {
+                "title": "Why this judgment?",
+                "show": "View sources",
+                "hide": "Hide sources"
+              },
+              "qa": {
+                "title": "Ask AI about this evidence",
+                "hint": "Follow-up questions grounded in this evidence.",
+                "placeholder": "e.g. Too many competitors — is it still viable?",
+                "aiLabel": "AI"
+              },
+              "title": {
+                "market": "Market analysis",
+                "competition": "Competition analysis",
+                "pricing": "Pricing analysis",
+                "differentiation": "Differentiation analysis"
+              },
+              "market": {
+                "size": "Market size",
+                "growth": "Growth rate",
+                "searchTrend": "Search volume",
+                "news": "Related news",
+                "startups": "Similar startups",
+                "startupsCount": "{count} similar startups",
+                "seedCount": "{count} Seed rounds",
+                "caseStudies": "Related startup cases",
+                "whySuccess": "Why they succeeded",
+                "relevance": "How this relates to us"
+              },
+              "competition": {
+                "direct": "Direct",
+                "indirect": "Indirect",
+                "unit": "",
+                "compareTable": "Competitor comparison",
+                "colName": "Service",
+                "pricing": "Pricing",
+                "strength": "Strength",
+                "weakness": "Weakness",
+                "diff": "Differentiation",
+                "strategy": "Recommended strategy"
+              },
+              "pricing": {
+                "arpu": "ARPU",
+                "cac": "CAC",
+                "ltv": "LTV",
+                "roi": "ROI",
+                "breakeven": "Break-even",
+                "inputCta": "Enter pricing"
+              },
+              "differentiation": {
+                "usp": "USP",
+                "aiScore": "AI score",
+                "positioning": "Recommended position"
+              }
+            },
+            "aiSummary": {
+              "summaryTitle": "Summary",
+              "evidenceTitle": "Evidence",
+              "insightTitle": "Insight",
+              "nextActionTitle": "Next Action",
+              "marketSize": "Market size",
+              "growth": "Growth",
+              "searchTrend": "Google Trends",
+              "newsCount": "{count} news items",
+              "startups": "{count} similar startups",
+              "insightEmpty": "AI insight appears after review.",
+              "topics": {
+                "market": "Market",
+                "competition": "Competition",
+                "pricing": "Pricing",
+                "differentiation": "Differentiation"
+              },
+              "reviewStale": "⚠ Review stale",
+              "reviewCurrent": "Review current",
+              "reviewNone": "Not reviewed yet",
+              "timelineTitle": "Decision Timeline",
+              "status": {
+                "market": { "done": "Market ✓", "pending": "Market ○" },
+                "competition": { "done": "Competition ✓", "pending": "Competition ○" },
+                "pricing": { "done": "Pricing ✓", "pending": "Pricing ○" },
+                "differentiation": { "done": "Diff ✓", "pending": "Diff ○" }
+              },
+              "nextBody": {
+                "fill-idea": "Enter idea",
+                "start-review": "Start review",
+                "re-review": "Re-run review",
+                "fill-pricing": "Enter pricing",
+                "view-investigation": "Open Investigation Board",
+                "customer-validation": "Start customer validation"
+              }
+            },
+            "memoryTimeline": {
+              "title": "Decision Timeline",
+              "empty": "Review and decision events appear here.",
+              "view": "View",
+              "events": {
+                "marketReview": "Market review",
+                "evidenceGenerated": "Evidence generated"
+              }
+            },
+            "memoryStory": {
+              "title": "Decision Memory Story",
+              "subtitle": "How thinking changed — AI and founder causality",
+              "empty": "Judgment change story appears after review.",
+              "aiLabel": "AI PM",
+              "founderLabel": "Founder",
+              "founderShort": "Me",
+              "periods": {
+                "today": "Today",
+                "yesterday": "Yesterday",
+                "lastWeek": "Last Week"
+              }
+            },
+            "projectHealth": {
+              "title": "AI Project Health",
+              "confidenceLabel": "AI Confidence",
+              "biggestChangeLabel": "Biggest recent change",
+              "topActionLabel": "Most important action now",
+              "startCta": "Start",
+              "status": {
+                "good": "Good",
+                "caution": "Caution",
+                "needs-attention": "Needs review"
+              },
+              "biggestChange": {
+                "customerRefined": "Market fit improved as customer definition became clearer.",
+                "marketImproved": "Entry likelihood rose as market evidence strengthened."
+              }
+            },
+            "reviewSummary": {
+              "title": "Review conclusion",
+              "lines": {
+                "entryRecommended": "Market entry is recommended at this stage.",
+                "pricingWeak": "However, pricing strategy is still weak.",
+                "reReviewAfterPricing": "Re-run review after pricing validation."
+              }
+            },
+            "recentChanges": {
+              "title": "Recent changes"
+            },
+            "recentChange": {
+              "title": "Recent change",
+              "today": "Today",
+              "reason": "Why"
+            },
+            "confidence": {
+              "label": "AI Confidence",
+              "levels": {
+                "high": "High",
+                "medium": "Medium",
+                "low": "Low"
+              }
+            },
+            "philosophy": {
+              "tagline": "Think Better. Decide Better.",
+              "subtitle": "LaunchLens — founder Thinking Workspace",
+              "accumulating": "Currently building:",
+              "phases": {
+                "thinking": "Thinking",
+                "evidence": "Evidence",
+                "decision": "Decision",
+                "memory": "Memory"
+              }
+            },
+            "evidenceLibrary": {
+              "title": "Evidence Library",
+              "subtitle": "What AI researched — click to explore",
+              "categories": {
+                "market": "Market",
+                "competition": "Competition",
+                "pricing": "Pricing",
+                "customer": "Customer",
+                "technology": "Technology",
+                "funding": "Funding",
+                "trend": "Trend",
+                "news": "News"
+              },
+              "sections": {
+                "interpretation": "AI interpretation",
+                "meaning": "What this means for us",
+                "whyImportant": "Why it matters"
+              }
+            },
+            "guidedDemo": {
+              "label": "Live Demo",
+              "startCta": "Start experience",
+              "steps": {
+                "welcome": {
+                  "title": "Founder — experience AI business review hands-on today.",
+                  "body": "Feel the Thinking Loop in 5 minutes. This is not a read-only demo."
+                },
+                "idea": {
+                  "title": "STEP 1 — Enter your business idea.",
+                  "body": "Fill the idea chip so AI can start the review."
+                },
+                "review": {
+                  "title": "STEP 2 — Start market review.",
+                  "body": "Press Start review in Next Action to generate Evidence."
+                },
+                "customer": {
+                  "title": "STEP 3 — Change the customer segment.",
+                  "body": "Switch customer to startup PM — watch AI judgment update."
+                },
+                "complete": {
+                  "title": "Experience complete",
+                  "body": "You felt judgment change and Evidence firsthand."
+                }
+              }
+            }
           },
           "summary": {
             "reviewStatusTitle": "Review status",

@@ -25,12 +25,17 @@ import {
   saveV2Validation,
 } from '../../lib/v2-validation-store';
 import { type WorkflowStepId } from '../../lib/v2-workflow-steps';
+import { saveReviewSnapshot } from '../../lib/v2-review-dirty-state';
 import { JourneyLayout } from '../journey-layout';
-import { V2AiSummaryPanel } from './v2-ai-summary-panel';
+import { V2AiEvidenceSummary } from './v2-ai-evidence-summary';
 import { V2DecisionMemoryDetail } from './v2-decision-memory-detail';
 import { V2DecisionSavePrompt } from './v2-decision-save-prompt';
 import { V2DemoReadonlyBanner } from './v2-demo-readonly-banner';
-import { V2MainWorkspacePanel } from './v2-main-workspace-panel';
+import {
+  resolveGuidedDemoStep,
+  type GuidedDemoStep,
+} from './v2-guided-demo-coach';
+import { V2ThinkingWorkspaceMain } from './v2-thinking-workspace-main';
 import { V2WorkflowNav } from './v2-workflow-nav';
 
 type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
@@ -38,7 +43,29 @@ type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
 const REVIEW_MS = 3200;
 const PANEL = 'min-h-[420px] rounded-2xl bg-muted/20 p-6 sm:p-8 lg:min-h-[480px]';
 
-type V2StrategyWorkspaceMode = 'default' | 'demo-readonly';
+const STEP_SECTION_ID: Partial<Record<WorkflowStepId, string>> = {
+  idea: 'ai-understanding',
+  problem: 'ai-understanding',
+  customer: 'ai-understanding',
+  bm: 'ai-understanding',
+  mvp: 'ai-understanding',
+  market: 'review-board',
+  competition: 'review-board',
+  review: 'review-board',
+};
+
+function deriveProjectName(idea: string): string {
+  const trimmed = idea.trim();
+  if (!trimmed) return '';
+  if (trimmed.length <= 36) return trimmed;
+  return `${trimmed.slice(0, 33).trim()}…`;
+}
+
+const GUIDED_DEMO_IDEA = 'AI가 사업 아이디어를 검증해주는 SaaS';
+const GUIDED_DEMO_CUSTOMER_BEFORE = '예비창업자';
+const GUIDED_DEMO_CUSTOMER_AFTER = '스타트업 대표 · PM';
+
+type V2StrategyWorkspaceMode = 'default' | 'demo-readonly' | 'demo-guided';
 
 type V2StrategyWorkspaceViewProps = {
   mode?: V2StrategyWorkspaceMode;
@@ -46,6 +73,8 @@ type V2StrategyWorkspaceViewProps = {
 
 export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspaceViewProps) {
   const isDemoReadonly = mode === 'demo-readonly';
+  const isDemoGuided = mode === 'demo-guided';
+  const isDemoNoPersist = isDemoReadonly || isDemoGuided;
   const tb = useTranslations('workflow.v2.reviewBoard');
   const td = useTranslations('workflow.v2.strategyWorkspace.decisionMemory');
   const tDraft = useTranslations('workflow.v2.strategyWorkspace.decisionMemory.draft');
@@ -64,10 +93,18 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
     mvp: '',
     pricing: '',
   });
-  const [activeField, setActiveField] = useState<V2EvidenceField | null>(null);
   const [reviewCount, setReviewCount] = useState(0);
-  const [followUpAnswer, setFollowUpAnswer] = useState('');
   const [followUpDone, setFollowUpDone] = useState(false);
+  const [lastReviewAt, setLastReviewAt] = useState<Date | null>(
+    isDemoReadonly ? new Date('2026-07-27T00:00:00.000Z') : null,
+  );
+  const [investigationViewed, setInvestigationViewed] = useState(isDemoReadonly);
+  const [dirtyHighlightField, setDirtyHighlightField] = useState<
+    'idea' | V2EvidenceField | null
+  >(null);
+  const [dirtyFieldLabel, setDirtyFieldLabel] = useState<string | null>(null);
+  const [guidedStarted, setGuidedStarted] = useState(false);
+  const [guidedCustomerChanged, setGuidedCustomerChanged] = useState(false);
 
   const refreshMemory = useCallback(() => {
     setMemoryEntries(loadDecisionMemory());
@@ -82,6 +119,17 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
       setActiveStep('review');
       setFollowUpDone(true);
       setMemoryEntries(GTM_DEMO_MEMORY);
+      saveReviewSnapshot(GTM_DEMO_EVIDENCE);
+      return;
+    }
+
+    if (isDemoGuided) {
+      setOptional({
+        problem: '창업자가 어디서부터 사업을 검토해야 할지 모름',
+        customer: GUIDED_DEMO_CUSTOMER_BEFORE,
+        mvp: '',
+        pricing: '',
+      });
       return;
     }
 
@@ -95,7 +143,7 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
       mvp: saved.evidence.mvp ?? '',
       pricing: saved.evidence.pricing ?? '',
     });
-  }, [isDemoReadonly, refreshMemory]);
+  }, [isDemoReadonly, isDemoGuided, refreshMemory]);
 
   const evidence = useMemo(
     (): V2ValidationEvidence => ({
@@ -120,11 +168,10 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
   );
 
   const showSavePrompt =
-    !isDemoReadonly &&
+    !isDemoNoPersist &&
     reviewCount > 0 &&
     phase !== 'reviewing' &&
     activeMemoryId == null &&
-    activeStep === 'review' &&
     memoryDraft != null &&
     savedReviewRound < reviewCount &&
     dismissedReviewRound < reviewCount &&
@@ -163,8 +210,15 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
   );
 
   const persist = useCallback((next: V2ValidationEvidence) => {
+    if (isDemoNoPersist) return;
     saveV2Validation(next);
-  }, []);
+  }, [isDemoNoPersist]);
+
+  const markDirty = (field: 'idea' | V2EvidenceField) => {
+    if (reviewCount < 1) return;
+    setDirtyHighlightField(field);
+    setDirtyFieldLabel(tb(field === 'idea' ? 'step.idea' : `fields.${field}`));
+  };
 
   const handleFieldConfirm = (field: V2EvidenceField, value: string) => {
     if (isDemoReadonly) return;
@@ -173,8 +227,23 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
       persist({ ...evidence, [field]: value });
       return next;
     });
-    setActiveField(null);
-    appToast.success(tb('toast.saved', { field: tb(`fields.${field}`) }));
+    if (isDemoGuided && field === 'customer' && value.includes('스타트업')) {
+      setGuidedCustomerChanged(true);
+    }
+    markDirty(field);
+    if (!isDemoGuided) {
+      appToast.success(tb('toast.saved', { field: tb(`fields.${field}`) }));
+    }
+  };
+
+  const handleIdeaChange = (value: string) => {
+    if (isDemoReadonly) return;
+    setIdea(value);
+    persist({
+      ...evidence,
+      idea: value.trim(),
+    });
+    markDirty('idea');
   };
 
   const handleFieldDelete = (field: V2EvidenceField) => {
@@ -184,6 +253,7 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
       persist({ ...evidence, [field]: undefined });
       return next;
     });
+    markDirty(field);
     appToast.success(tb('toast.deleted', { field: tb(`fields.${field}`) }));
   };
 
@@ -194,36 +264,29 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
     setReviewCount((c) => c + 1);
     setFollowUpDone(false);
     setActiveMemoryId(null);
+    setLastReviewAt(new Date());
 
     window.setTimeout(() => {
       setPhase('board');
       setActiveStep('review');
+      saveReviewSnapshot(evidence);
+      setInvestigationViewed(false);
+      setDirtyHighlightField(null);
+      setDirtyFieldLabel(null);
       window.setTimeout(() => setPhase('followUp'), 400);
     }, REVIEW_MS);
   }, [evidence, hasIdea, isDemoReadonly, persist]);
 
-  const handleFollowUpSubmit = () => {
-    if (isDemoReadonly) return;
-    const trimmed = followUpAnswer.trim();
-    if (trimmed.length < 2) return;
-    const enriched = optional.customer.trim()
-      ? `${optional.customer}\n\n[결제 주체] ${trimmed}`
-      : trimmed;
-    setOptional((prev) => ({ ...prev, customer: enriched }));
-    persist({ ...evidence, customer: enriched });
-    setFollowUpDone(true);
-    setFollowUpAnswer('');
-    appToast.success(tb('toast.updated'));
-  };
-
   const handleGoToStep = (step: WorkflowStepId) => {
-    setActiveField(null);
     setActiveMemoryId(null);
     setActiveStep(step);
+    const sectionId = STEP_SECTION_ID[step] ?? 'thinking-map-status';
+    window.requestAnimationFrame(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   };
 
   const handleSelectMemory = (entryId: string) => {
-    setActiveField(null);
     setActiveMemoryId(entryId);
   };
 
@@ -245,14 +308,43 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
     setDismissedReviewRound(reviewCount);
   };
 
+  const projectName = isDemoReadonly
+    ? 'AI SaaS 검토'
+    : isDemoGuided
+      ? '데모 체험'
+      : deriveProjectName(idea) || deriveProjectName(evidence.idea);
+
+  const guidedDemoStep: GuidedDemoStep | null = isDemoGuided
+    ? resolveGuidedDemoStep({
+        step: !guidedStarted ? 'welcome' : 'idea',
+        hasIdea,
+        reviewCount,
+        customerChanged: guidedCustomerChanged,
+      })
+    : null;
+
+  const handleGuidedAdvance = () => {
+    if (!isDemoGuided) return;
+    if (!guidedStarted) {
+      setGuidedStarted(true);
+      setIdea(GUIDED_DEMO_IDEA);
+      return;
+    }
+    if (guidedDemoStep === 'customer') {
+      handleFieldConfirm('customer', GUIDED_DEMO_CUSTOMER_AFTER);
+      markDirty('customer');
+    }
+  };
+
   return (
     <JourneyLayout phase="workflow" width="workspace" versionLabel="V2">
       <div className="flex flex-col gap-10 lg:grid lg:grid-cols-[minmax(0,220px)_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[minmax(0,240px)_minmax(0,1fr)_minmax(0,280px)] xl:gap-12">
-        <div className="order-2 lg:order-1">
+        <div className="order-2 lg:order-1 lg:sticky lg:top-24 lg:self-start">
           <V2WorkflowNav
             activeStep={activeStep}
             activeMemoryId={activeMemoryId}
             memoryEntries={memoryEntries}
+            lastReviewAt={lastReviewAt}
             evidence={evidence}
             reviewCount={reviewCount}
             onSelect={handleGoToStep}
@@ -260,34 +352,45 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
           />
         </div>
 
-        <div className="order-1 min-w-0 space-y-6 lg:order-2">
+        <div className="order-1 min-w-0 lg:order-2">
           {isDemoReadonly ? <V2DemoReadonlyBanner /> : null}
+          {isDemoGuided && guidedDemoStep === 'complete' ? (
+            <div className="mb-4 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+              <p className="font-medium">체험 완료 — Thinking Loop를 경험하셨습니다.</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                로그인하면 프로젝트를 저장하고 이어서 진행할 수 있습니다.
+              </p>
+            </div>
+          ) : null}
           {activeMemory ? (
             <section className={cn(PANEL, 'animate-in fade-in duration-300')}>
               <V2DecisionMemoryDetail entry={activeMemory} />
             </section>
           ) : (
-            <V2MainWorkspacePanel
+            <V2ThinkingWorkspaceMain
               activeStep={activeStep}
               evidence={evidence}
-              idea={idea}
-              optional={optional}
+              projectName={projectName}
+              lastReviewAt={lastReviewAt}
               reviewCount={reviewCount}
               phase={phase}
-              followUpAnswer={followUpAnswer}
-              followUpDone={followUpDone}
+              hasIdea={hasIdea}
+              investigationViewed={investigationViewed}
+              memoryEntries={memoryEntries}
+              activeMemoryId={activeMemoryId}
               readOnly={isDemoReadonly}
-              onIdeaChange={setIdea}
+              dirtyHighlightField={dirtyHighlightField}
+              dirtyFieldLabel={dirtyFieldLabel}
+              onIdeaChange={handleIdeaChange}
               onFieldConfirm={handleFieldConfirm}
               onFieldDelete={handleFieldDelete}
-              onOpenField={setActiveField}
-              activeField={activeField}
-              onCloseField={() => setActiveField(null)}
-              onReview={runReview}
-              onFollowUpChange={setFollowUpAnswer}
-              onFollowUpSubmit={handleFollowUpSubmit}
               onGoToStep={handleGoToStep}
-              hasIdea={hasIdea}
+              onReview={runReview}
+              onInvestigationViewed={() => setInvestigationViewed(true)}
+              onSelectMemory={handleSelectMemory}
+              guidedDemoStep={guidedDemoStep === 'complete' ? null : guidedDemoStep}
+              onGuidedDemoAdvance={isDemoGuided ? handleGuidedAdvance : undefined}
+              showPhilosophy
             />
           )}
 
@@ -303,26 +406,17 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
         </div>
 
         <div className="order-3 hidden xl:block">
-          <V2AiSummaryPanel
-            evidence={evidence}
-            reviewCount={reviewCount}
-            onGoToStep={handleGoToStep}
-            onReview={runReview}
-            hasIdea={hasIdea}
-            readOnly={isDemoReadonly}
-          />
+          {!activeMemory ? (
+            <V2AiEvidenceSummary
+              evidence={evidence}
+              reviewCount={reviewCount}
+              hasIdea={hasIdea}
+              investigationViewed={investigationViewed}
+              lastReviewAt={lastReviewAt}
+              memoryEntries={memoryEntries}
+            />
+          ) : null}
         </div>
-      </div>
-
-      <div className="mt-10 border-t border-border/40 pt-8 xl:hidden">
-        <V2AiSummaryPanel
-          evidence={evidence}
-          reviewCount={reviewCount}
-          onGoToStep={handleGoToStep}
-          onReview={runReview}
-          hasIdea={hasIdea}
-          readOnly={isDemoReadonly}
-        />
       </div>
     </JourneyLayout>
   );

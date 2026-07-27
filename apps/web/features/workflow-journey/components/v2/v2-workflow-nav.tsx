@@ -13,14 +13,15 @@ import {
 } from '../../lib/v2-workflow-steps';
 import {
   type DecisionMemoryEntry,
-  decisionNavLabel,
 } from '../../lib/v2-decision-memory-store';
 import type { V2ValidationEvidence } from '../../lib/v2-validation-store';
+import { V2DecisionMemoryStory } from './v2-decision-memory-story';
 
 type V2WorkflowNavProps = {
   activeStep: WorkflowStepId;
   activeMemoryId: string | null;
   memoryEntries: DecisionMemoryEntry[];
+  lastReviewAt: Date | null;
   evidence: V2ValidationEvidence;
   reviewCount: number;
   onSelect: (step: WorkflowStepId) => void;
@@ -46,6 +47,7 @@ export function V2WorkflowNav({
   activeStep,
   activeMemoryId,
   memoryEntries,
+  lastReviewAt,
   evidence,
   reviewCount,
   onSelect,
@@ -53,7 +55,7 @@ export function V2WorkflowNav({
   className,
 }: V2WorkflowNavProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.ia');
-  const tm = useTranslations('workflow.v2.strategyWorkspace.decisionMemory.nav');
+  const tm = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.memoryStory');
   const ts = useTranslations('workflow.v2.strategyWorkspace.ia.steps');
 
   return (
@@ -105,68 +107,18 @@ export function V2WorkflowNav({
 
       <div className="border-t border-border/40 pt-6">
         <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-          {t('snippetTitle')}
-        </p>
-        <dl className="mt-3 space-y-2 text-sm">
-          <div className="flex justify-between gap-3">
-            <dt className="text-muted-foreground">{t('snippet.market')}</dt>
-            <dd className="text-right font-medium">
-              {reviewCount > 0 ? t('snippet.marketGrowing') : t('snippet.marketUnknown')}
-            </dd>
-          </div>
-          <div className="flex justify-between gap-3">
-            <dt className="text-muted-foreground">{t('snippet.competition')}</dt>
-            <dd className="text-right font-medium">
-              {reviewCount > 0 ? t('snippet.competitionHigh') : t('snippet.competitionUnknown')}
-            </dd>
-          </div>
-          <div className="flex justify-between gap-3">
-            <dt className="text-muted-foreground">{t('snippet.differentiation')}</dt>
-            <dd className="text-right font-medium">
-              {evidence.mvp?.trim()
-                ? t('snippet.differentiationPartial')
-                : t('snippet.differentiationNeeded')}
-            </dd>
-          </div>
-        </dl>
-      </div>
-
-      <div className="border-t border-border/40 pt-6">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
           {tm('title')}
         </p>
-        {memoryEntries.length === 0 ? (
-          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{tm('empty')}</p>
-        ) : (
-          <ul className="mt-3 space-y-1">
-            {memoryEntries.map((entry) => {
-              const active = activeMemoryId === entry.id;
-              return (
-                <li key={entry.id}>
-                  <button
-                    type="button"
-                    onClick={() => onSelectMemory(entry.id)}
-                    className={cn(
-                      'flex w-full items-start gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors',
-                      active
-                        ? 'bg-muted/60 font-medium text-foreground'
-                        : 'text-muted-foreground hover:bg-muted/30 hover:text-foreground',
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        'mt-1.5 size-1.5 shrink-0 rounded-full',
-                        entry.status === 'current' ? 'bg-primary' : 'bg-muted-foreground/40',
-                      )}
-                      aria-hidden
-                    />
-                    <span className="leading-snug">{decisionNavLabel(entry)}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+        <div className="mt-3">
+          <V2DecisionMemoryStory
+            entries={memoryEntries}
+            lastReviewAt={lastReviewAt}
+            reviewCount={reviewCount}
+            activeMemoryId={activeMemoryId}
+            onSelect={onSelectMemory}
+            compact
+          />
+        </div>
       </div>
     </aside>
   );

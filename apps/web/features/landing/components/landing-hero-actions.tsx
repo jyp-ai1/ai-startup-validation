@@ -24,7 +24,7 @@ export function LandingHeroActions({ ctaStart, ctaDemo, ctaHint1, ctaHint2 }: La
           <ArrowRight className="size-4" aria-hidden />
         </LandingCtaLink>
         <LandingCtaLink
-          href="/validation?demo=readonly"
+          href="/validation?demo=guided"
           event="cta_demo"
           variant="outline"
           size="default"
