@@ -2,7 +2,7 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **4.2 — Meeting UX Polish** 🔄  
+> **Active sprint:** Sprint **4.3 — Demo Experience 2.0** 🔄  
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
@@ -130,16 +130,35 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 
 ---
 
-## Sprint 4.2 — Meeting UX Polish 🔄 IN PROGRESS
+## Sprint 4.3 — Demo Experience 2.0 🔄 IN PROGRESS
+
+**CPO:** Demo = product value, not feature tutorial
+
+**Goal:** User finishes demo understanding *"AI PM manages my business daily"*
+
+| # | P0 | Status |
+|---|-----|--------|
+| 1 | Sample project — select only (LaunchLens) | ✅ |
+| 2 | 9-step AI PM consulting scenario | ✅ |
+| 3 | Evidence as decision rationale | ✅ |
+| 4 | Change detection mid-demo | ✅ |
+| 5 | Before/After strategy improvement | ✅ |
+| 6 | Continuous management + Google Login CTA | ✅ |
+
+**Kickoff:** [SPRINT_4_3_DEMO_EXPERIENCE_2.md](./sprints/SPRINT_4_3_DEMO_EXPERIENCE_2.md)
+
+---
+
+## Sprint 4.2 — Meeting UX Polish ✅ SHIPPED
 
 **CPO:** PASS WITH CHANGES on 4.1
 
 | # | P0 | Status |
 |---|-----|--------|
-| 1 | Morning Brief v2 (why today · next unlock) | 🔄 |
-| 2 | Decision First (권고 → 결정 → 근거) | 🔄 |
-| 3 | Discoveries (PM findings, not task checklist) | 🔄 |
-| 4 | Meeting Closed + "오늘 변경된 내용" | 🔄 |
+| 1 | Morning Brief v2 (why today · next unlock) | ✅ |
+| 2 | Decision First (권고 → 결정 → 근거) | ✅ |
+| 3 | Discoveries (PM findings, not task checklist) | ✅ |
+| 4 | Meeting Closed + "오늘 변경된 내용" | ✅ |
 
 **Kickoff:** [SPRINT_4_2_MEETING_UX_POLISH.md](./sprints/SPRINT_4_2_MEETING_UX_POLISH.md)
 

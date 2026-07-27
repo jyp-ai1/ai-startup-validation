@@ -1076,6 +1076,32 @@ Sprint 4.0 six-block Inbox was HOLD: still AI-centric information consumption. C
 
 ---
 
+## ADR-038: Demo Experience 2.0 — Value Not Features (Sprint 4.3)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Guided demo (`?demo=guided`) walked users through idea input → review → customer change — a **feature tutorial**. CPO: *"그래서?"* remains. LaunchLens sells **AI PM continuously managing the founder's business**, not one-shot analysis.
+
+### Decision
+
+1. **Rename demo:** "Live Demo" → **"AI PM과 함께하는 첫 번째 전략 검토 (약 3분)"**
+2. **Sample project only** — LaunchLens pre-filled; user selects, never types.
+3. **Scripted 9-step narrative:** AI works → founder judges → evidence → change detected → strategy improved → continuous monitoring → Google Login.
+4. **Evidence in demo** = data → AI interpretation → impact (not source list).
+5. **Demo replaces guided workspace UI** — dedicated `V2DemoExperience` component, not coach overlay on full workspace.
+
+### Consequences
+
+- [SPRINT_4_3_DEMO_EXPERIENCE_2.md](./sprints/SPRINT_4_3_DEMO_EXPERIENCE_2.md)
+- `v2-demo-experience.tsx` · `v2-demo-experience-types.ts`
+- Legacy `V2GuidedDemoCoach` retained for reference; no longer shown in guided mode
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

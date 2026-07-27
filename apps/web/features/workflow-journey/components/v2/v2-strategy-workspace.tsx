@@ -35,6 +35,7 @@ import {
   type GuidedDemoStep,
 } from './v2-guided-demo-coach';
 import { createMeetingNoteFromReview } from '../../lib/v2-ai-pm-meeting-store';
+import { V2DemoExperience } from './v2-demo-experience';
 import { V2ThinkingWorkspaceMain } from './v2-thinking-workspace-main';
 
 type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
@@ -341,15 +342,9 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
     <JourneyLayout phase="workflow" width="workspace" versionLabel="V2">
       <div className="mx-auto max-w-2xl">
         {isDemoReadonly ? <V2DemoReadonlyBanner /> : null}
-        {isDemoGuided && guidedDemoStep === 'complete' ? (
-          <div className="mb-4 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
-            <p className="font-medium">체험 완료 — AI PM과 함께 검토를 마쳤습니다.</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              로그인하면 프로젝트를 저장하고 이어서 진행할 수 있습니다.
-            </p>
-          </div>
-        ) : null}
-        {activeMemory ? (
+        {isDemoGuided ? (
+          <V2DemoExperience className="py-4 sm:py-6" />
+        ) : activeMemory ? (
           <section className={cn(PANEL, 'animate-in fade-in duration-300')}>
             <V2DecisionMemoryDetail entry={activeMemory} />
           </section>

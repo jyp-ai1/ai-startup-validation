@@ -5098,6 +5098,104 @@
                   "body": "You felt judgment change and Evidence firsthand."
                 }
               }
+            },
+            "demoExperienceV2": {
+              "label": "Your first strategy review with AI PM",
+              "duration": "~3 min",
+              "steps": {
+                "greeting": {
+                  "line1": "Hello.",
+                  "line2": "I'm your LaunchLens AI PM.",
+                  "line3": "Today we'll review one real project together.",
+                  "cta": "Start AI meeting"
+                },
+                "sampleProject": {
+                  "projectLabel": "Project",
+                  "service": "Service",
+                  "taglineLabel": "One-liner",
+                  "tagline": "A workspace that accumulates founders' strategic thinking",
+                  "hint": "No typing — just choose. In the real product you'll enter your own project.",
+                  "cta": "Try with this project"
+                },
+                "investigating": {
+                  "line1": "Great.",
+                  "line2": "I'll start by researching market, competition, and pricing data.",
+                  "loading": "Researching…"
+                },
+                "inbox": {
+                  "title": "Here's what I researched today.",
+                  "items": {
+                    "googleTrends": "Google Trends",
+                    "productHunt": "Product Hunt",
+                    "reddit": "Reddit",
+                    "competitors": "8 competitors"
+                  },
+                  "cta": "See AI PM opinion"
+                },
+                "opinion": {
+                  "line1": "Founder —",
+                  "line2": "The market is large enough.",
+                  "line3": "But",
+                  "line4": "are growing very fast.",
+                  "cta": "Why do you think so?"
+                },
+                "evidence": {
+                  "sectionTitle": "Market",
+                  "marketStatus": "Growing",
+                  "items": {
+                    "googleTrends": { "label": "Google Trends", "value": "+28%" },
+                    "searchVolume": { "label": "Search volume", "value": "+18%" },
+                    "productHunt": { "label": "Product Hunt", "value": "AI Startup Top3" },
+                    "ycInvestments": { "label": "YC", "value": "12 recent investments" }
+                  },
+                  "interpretation": {
+                    "line1": "Search growth velocity",
+                    "line2": "is outpacing market size estimates.",
+                    "line3": "Entering now is favorable."
+                  },
+                  "cta": "Continue"
+                },
+                "changeDetected": {
+                  "line1": "But a new issue emerged.",
+                  "line2": "Competitors",
+                  "line3": "increased by 2 vs last month.",
+                  "line4": "We should revisit our differentiation.",
+                  "cta": "Review differentiation"
+                },
+                "strategyImprovement": {
+                  "line1": "I've revisited differentiation.",
+                  "metrics": {
+                    "marketFit": { "label": "Market fit", "before": "★★★★", "after": "★★★★★" },
+                    "differentiation": { "label": "Differentiation", "before": "★★★", "after": "★★★★" },
+                    "aiConfidence": { "label": "AI Confidence", "before": "68%", "after": "84%" }
+                  },
+                  "recommendationLabel": "Recommended strategy",
+                  "recommendation": "AI doc generation → Thinking Workspace",
+                  "positioning": "Positioning recommendation",
+                  "cta": "Continue"
+                },
+                "continuousManagement": {
+                  "line1": "That's all for today.",
+                  "line2": "But this project doesn't end here.",
+                  "line3": "Every day I check new data.",
+                  "items": {
+                    "competitorPricing": "Competitor pricing changes",
+                    "funding": "Funding rounds",
+                    "productHuntRank": "Product Hunt rankings",
+                    "googleTrends": "Google Trends shifts",
+                    "searchVolume": "Search volume changes",
+                    "reddit": "Reddit sentiment",
+                    "news": "News"
+                  },
+                  "closing": "When something changes, your AI PM will tell you first.",
+                  "cta": "Start my project"
+                },
+                "cta": {
+                  "title": "Start my project",
+                  "body": "Your AI PM monitors market and competition daily — and alerts you when strategy needs a refresh.",
+                  "hint": "Sign in with Google to save your project and continue."
+                }
+              }
             }
           },
           "summary": {
