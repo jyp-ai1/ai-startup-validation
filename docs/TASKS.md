@@ -2,7 +2,7 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **3.2 AI PM OS** ✅ · [SPRINT_3_2_AI_PM_OS.md](./sprints/SPRINT_3_2_AI_PM_OS.md)  
+> **Active sprint:** Sprint **3.3 AI PM Experience** ✅ · [SPRINT_3_3_AI_PM_EXPERIENCE.md](./sprints/SPRINT_3_3_AI_PM_EXPERIENCE.md)  
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  

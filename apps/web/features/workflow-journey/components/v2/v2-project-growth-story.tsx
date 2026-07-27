@@ -33,13 +33,10 @@ export function V2ProjectGrowthStory({
   }
 
   return (
-    <section className={cn('space-y-4', className)}>
-      <div>
-        <h2 className="text-sm font-semibold tracking-tight">{t('title')}</h2>
-        <p className="mt-1 text-xs text-muted-foreground">{t('subtitle')}</p>
-      </div>
+    <section id="growth-story" className={cn('space-y-4', className)}>
+      <h2 className="text-sm font-semibold tracking-tight">{t('title')}</h2>
 
-      <ol className="space-y-0 border-t border-border/40 pt-4">
+      <ol className="space-y-2 border-t border-border/40 pt-4">
         {chapters.map((chapter, index) => {
           const memoryId = chapter.id.startsWith('memory-')
             ? chapter.id.replace('memory-', '')
@@ -48,41 +45,39 @@ export function V2ProjectGrowthStory({
           const isLast = index === chapters.length - 1;
 
           return (
-            <li key={chapter.id} className="relative flex gap-4 pb-6 last:pb-0">
-              {!isLast ? (
-                <span
-                  className="absolute left-[1.125rem] top-8 h-[calc(100%-1rem)] w-px bg-border/60"
-                  aria-hidden
-                />
-              ) : null}
-              <div className="flex size-9 shrink-0 flex-col items-center">
-                <span className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-xs font-bold">
+            <li key={chapter.id}>
+              <div className="text-center">
+                <p
+                  className={cn(
+                    'text-xs font-semibold',
+                    chapter.isToday ? 'text-primary' : 'text-muted-foreground',
+                  )}
+                >
                   {chapter.monthLabel}
-                </span>
-              </div>
-              <div className="min-w-0 flex-1 pt-0.5">
+                </p>
                 {memoryId && onSelect ? (
                   <button
                     type="button"
                     onClick={() => onSelect(memoryId)}
                     className={cn(
-                      'text-left text-sm font-semibold',
+                      'mt-1 text-sm font-semibold',
                       active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
                     )}
                   >
                     {chapter.headline}
                   </button>
                 ) : (
-                  <p className="text-sm font-semibold">{chapter.headline}</p>
+                  <p className="mt-1 text-sm font-semibold">{chapter.headline}</p>
                 )}
                 {chapter.outcome ? (
-                  <p className="mt-1 flex items-center gap-1 text-xs font-medium text-primary">
-                    <ArrowDown className="size-3 rotate-[-90deg]" aria-hidden />
-                    {chapter.outcome}
-                  </p>
+                  <p className="mt-1 text-xs text-primary">{chapter.outcome}</p>
                 ) : null}
-                <p className="mt-1 text-xs text-muted-foreground">{chapter.detail}</p>
               </div>
+              {!isLast ? (
+                <div className="flex justify-center py-2 text-muted-foreground" aria-hidden>
+                  <ArrowDown className="size-4" />
+                </div>
+              ) : null}
             </li>
           );
         })}

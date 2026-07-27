@@ -7,7 +7,7 @@ import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { buildAiPmDailyBrief } from '../../lib/v2-ai-pm-daily-brief';
-import { getNextAction } from '../../lib/v2-next-action-engine';
+import { getLatestFounderMemo } from '../../lib/v2-ai-pm-notebook-store';
 import type { V2ValidationEvidence } from '../../lib/v2-validation-store';
 
 type V2AiPmDailyBriefProps = {
@@ -15,6 +15,7 @@ type V2AiPmDailyBriefProps = {
   reviewCount: number;
   hasIdea: boolean;
   investigationViewed: boolean;
+  stale?: boolean;
   readOnly?: boolean;
   onContinue: () => void;
   className?: string;
@@ -25,12 +26,12 @@ export function V2AiPmDailyBrief({
   reviewCount,
   hasIdea,
   investigationViewed,
+  stale = false,
   readOnly = false,
   onContinue,
   className,
 }: V2AiPmDailyBriefProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.aiPmBrief');
-  const tAction = useTranslations('workflow.v2.strategyWorkspace.thinkingUx.nextAction');
 
   const brief = buildAiPmDailyBrief({
     evidence,
@@ -39,8 +40,7 @@ export function V2AiPmDailyBrief({
     investigationViewed,
   });
 
-  if (!brief.showBrief) return null;
-
+  const founderMemo = reviewCount > 0 ? getLatestFounderMemo() : null;
   const isFirstVisit = reviewCount === 0;
 
   return (
@@ -56,7 +56,7 @@ export function V2AiPmDailyBrief({
           <Sparkles className="size-4" aria-hidden />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary">{t('role')}</p>
+          <p className="text-xs font-semibold text-primary">{t('role')}</p>
           <h2 className="mt-1 text-base font-semibold tracking-tight">
             {isFirstVisit ? t('greetingFirst') : t('greetingReturn')}
           </h2>
@@ -66,56 +66,41 @@ export function V2AiPmDailyBrief({
         </div>
       </div>
 
+      {founderMemo ? (
+        <div className="mt-4 rounded-lg border border-border/40 bg-background/80 px-3 py-2.5 text-sm">
+          <p className="text-muted-foreground">{t('founderMemoRecall')}</p>
+          <p className="mt-1 font-medium">&ldquo;{founderMemo}&rdquo;</p>
+          <p className="mt-2 text-xs text-muted-foreground">{t('founderMemoContinue')}</p>
+        </div>
+      ) : null}
+
+      {stale ? (
+        <p className="mt-4 text-sm font-medium text-amber-800 dark:text-amber-200">{t('staleHint')}</p>
+      ) : null}
+
       {!isFirstVisit && brief.newFindings.length > 0 ? (
-        <div className="mt-5 space-y-3">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-              {t('newFindingsTitle')}
-            </p>
-            <ol className="mt-2 space-y-1.5 text-sm">
-              {brief.newFindings.map((item, index) => (
+        <div className="mt-5 space-y-4">
+          <div className="border-t border-border/40 pt-4">
+            <ul className="space-y-2 text-sm">
+              {brief.newFindings.map((item) => (
                 <li key={item.id} className="flex gap-2">
-                  <span className="shrink-0 font-medium text-primary">
-                    {t('itemMarker', { n: index + 1 })}
+                  <span className="text-emerald-600 dark:text-emerald-400" aria-hidden>
+                    ✔
                   </span>
                   <span>{t(`findings.${item.textKey}`)}</span>
                 </li>
               ))}
-            </ol>
+            </ul>
           </div>
 
-          {brief.warnings.length > 0 ? (
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-700 dark:text-amber-400">
-                {t('warningsTitle')}
-              </p>
-              <ul className="mt-2 space-y-1 text-sm text-amber-800 dark:text-amber-200">
-                {brief.warnings.map((item) => (
-                  <li key={item.id}>· {t(`warnings.${item.textKey}`)}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          <div className="rounded-lg border border-border/40 bg-background/80 px-3 py-2.5">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-              {t('todayFocusTitle')}
-            </p>
-            <p className="mt-1 text-sm font-medium">{t(`todayFocus.${brief.todayFocusKey}`)}</p>
-          </div>
+          <p className="text-sm font-medium">{t(`todayFocus.${brief.todayFocusKey}`)}</p>
         </div>
       ) : null}
 
-        {!readOnly ? (
-          <Button type="button" className="mt-5 w-full rounded-lg sm:w-auto" onClick={onContinue}>
-            {t('ctaContinue')}
-          </Button>
-        ) : null}
-
-      {!isFirstVisit ? (
-        <p className="mt-3 text-xs text-muted-foreground">
-          {tAction('whyLabel')} {tAction(`why.${getNextAction({ evidence, reviewCount, hasIdea, investigationViewed }).kind}`)}
-        </p>
+      {!readOnly ? (
+        <Button type="button" className="mt-5 w-full rounded-lg sm:w-auto" onClick={onContinue}>
+          {t('ctaContinue')}
+        </Button>
       ) : null}
     </section>
   );

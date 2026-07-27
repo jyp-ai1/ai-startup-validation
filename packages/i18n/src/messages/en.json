@@ -4699,14 +4699,14 @@
               }
             },
             "reviewSummary": {
-              "title": "Review summary",
-              "goodTitle": "What went well",
+              "title": "This review",
+              "goodTitle": "👍 What went well",
               "goodBody": "Market demand is confirmed and B2B search volume keeps rising.",
-              "riskTitle": "Risks",
+              "riskTitle": "⚠ Risks",
               "riskBody": "More competitors are entering; pricing is not validated yet.",
-              "needsTitle": "Still to verify",
-              "needsBody": "Need 3 customer interviews and competitor pricing evidence.",
-              "aiRecommendTitle": "AI recommendation",
+              "needsTitle": "📌 Still to verify",
+              "needsBody": "Need 3 customer interviews and competitor pricing research.",
+              "aiRecommendTitle": "💡 AI opinion",
               "aiRecommendBody": "Today, reviewing pricing alone will significantly improve overall judgment accuracy.",
               "lines": {
                 "entryRecommended": "Market entry is recommended at this stage.",
@@ -4715,10 +4715,13 @@
               }
             },
             "aiPmBrief": {
-              "role": "AI PM",
+              "role": "Your AI PM.",
               "greetingFirst": "Hello.",
-              "greetingReturn": "I reviewed your project again today.",
+              "greetingReturn": "Hello.",
               "introReviewed": "Here's what's new since your last review.",
+              "founderMemoRecall": "Last time you noted:",
+              "founderMemoContinue": "Continue from where you left off?",
+              "staleHint": "Inputs changed — re-run review to refresh AI PM judgments.",
               "newFindingsTitle": "Newly confirmed",
               "warningsTitle": "Watch out",
               "todayFocusTitle": "Today's focus",
@@ -4751,8 +4754,38 @@
             },
             "growthStory": {
               "title": "Project growth story",
-              "subtitle": "How judgments accumulated — by month",
-              "empty": "Run a review to see your project growth story."
+              "empty": "Run a review to see how your project evolved."
+            },
+            "whySources": {
+              "title": "Why do we think that?",
+              "subtitle": "Sources you can verify behind the judgment.",
+              "sources": {
+                "googleTrends": "Google Trends",
+                "news": "Recent news",
+                "productHunt": "Product Hunt",
+                "crunchbase": "Crunchbase",
+                "competitors": "Competitor analysis"
+              },
+              "trust": {
+                "googleTrendsTrust": "Google Trends · search volume +18%",
+                "newsTrust": "Recent news · 14 articles",
+                "productHuntTrust": "Product Hunt · 8 launches",
+                "crunchbaseTrust": "Crunchbase · 4 seed rounds",
+                "competitorsTrust": "4 competitors analyzed"
+              }
+            },
+            "aiPmNotebook": {
+              "title": "AI PM Notebook",
+              "learnedTitle": "What we learned today",
+              "aiMemoTitle": "AI PM notes",
+              "founderMemoTitle": "Your thoughts",
+              "founderMemoPlaceholder": "e.g. I need to rethink pricing…",
+              "itemMarker": "{n}.",
+              "findings": {
+                "competitorsUp": "Two more competitors appeared.",
+                "searchVolumeUp": "Search volume increased.",
+                "customerChanged": "Customer definition changed."
+              }
             },
             "recentChanges": {
               "title": "Recent changes"

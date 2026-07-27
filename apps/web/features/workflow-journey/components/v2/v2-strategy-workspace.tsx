@@ -27,7 +27,6 @@ import {
 import { type WorkflowStepId } from '../../lib/v2-workflow-steps';
 import { saveReviewSnapshot } from '../../lib/v2-review-dirty-state';
 import { JourneyLayout } from '../journey-layout';
-import { V2AiEvidenceSummary } from './v2-ai-evidence-summary';
 import { V2DecisionMemoryDetail } from './v2-decision-memory-detail';
 import { V2DecisionSavePrompt } from './v2-decision-save-prompt';
 import { V2DemoReadonlyBanner } from './v2-demo-readonly-banner';
@@ -35,8 +34,14 @@ import {
   resolveGuidedDemoStep,
   type GuidedDemoStep,
 } from './v2-guided-demo-coach';
+import {
+  createNotebookFromReview,
+} from '../../lib/v2-ai-pm-notebook-store';
+import {
+  NOTEBOOK_DEFAULT_AI_MEMO,
+  NOTEBOOK_DEFAULT_FINDINGS,
+} from '../../lib/v2-why-sources-data';
 import { V2ThinkingWorkspaceMain } from './v2-thinking-workspace-main';
-import { V2WorkflowNav } from './v2-workflow-nav';
 
 type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
 
@@ -120,6 +125,7 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
       setFollowUpDone(true);
       setMemoryEntries(GTM_DEMO_MEMORY);
       saveReviewSnapshot(GTM_DEMO_EVIDENCE);
+      createNotebookFromReview(1, [...NOTEBOOK_DEFAULT_FINDINGS], NOTEBOOK_DEFAULT_AI_MEMO);
       return;
     }
 
@@ -273,9 +279,14 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
       setInvestigationViewed(false);
       setDirtyHighlightField(null);
       setDirtyFieldLabel(null);
+      createNotebookFromReview(
+        reviewCount + 1,
+        [...NOTEBOOK_DEFAULT_FINDINGS],
+        NOTEBOOK_DEFAULT_AI_MEMO,
+      );
       window.setTimeout(() => setPhase('followUp'), 400);
     }, REVIEW_MS);
-  }, [evidence, hasIdea, isDemoReadonly, persist]);
+  }, [evidence, hasIdea, isDemoReadonly, persist, reviewCount]);
 
   const handleGoToStep = (step: WorkflowStepId) => {
     setActiveMemoryId(null);
@@ -338,36 +349,22 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
 
   return (
     <JourneyLayout phase="workflow" width="workspace" versionLabel="V2">
-      <div className="flex flex-col gap-10 lg:grid lg:grid-cols-[minmax(0,220px)_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[minmax(0,240px)_minmax(0,1fr)_minmax(0,280px)] xl:gap-12">
-        <div className="order-2 lg:order-1 lg:sticky lg:top-24 lg:self-start">
-          <V2WorkflowNav
-            activeStep={activeStep}
-            activeMemoryId={activeMemoryId}
-            memoryEntries={memoryEntries}
-            lastReviewAt={lastReviewAt}
-            evidence={evidence}
-            reviewCount={reviewCount}
-            onSelect={handleGoToStep}
-            onSelectMemory={handleSelectMemory}
-          />
-        </div>
-
-        <div className="order-1 min-w-0 lg:order-2">
-          {isDemoReadonly ? <V2DemoReadonlyBanner /> : null}
-          {isDemoGuided && guidedDemoStep === 'complete' ? (
-            <div className="mb-4 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
-              <p className="font-medium">체험 완료 — Thinking Loop를 경험하셨습니다.</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                로그인하면 프로젝트를 저장하고 이어서 진행할 수 있습니다.
-              </p>
-            </div>
-          ) : null}
-          {activeMemory ? (
-            <section className={cn(PANEL, 'animate-in fade-in duration-300')}>
-              <V2DecisionMemoryDetail entry={activeMemory} />
-            </section>
-          ) : (
-            <V2ThinkingWorkspaceMain
+      <div className="mx-auto max-w-2xl">
+        {isDemoReadonly ? <V2DemoReadonlyBanner /> : null}
+        {isDemoGuided && guidedDemoStep === 'complete' ? (
+          <div className="mb-4 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+            <p className="font-medium">체험 완료 — AI PM과 함께 검토를 마쳤습니다.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              로그인하면 프로젝트를 저장하고 이어서 진행할 수 있습니다.
+            </p>
+          </div>
+        ) : null}
+        {activeMemory ? (
+          <section className={cn(PANEL, 'animate-in fade-in duration-300')}>
+            <V2DecisionMemoryDetail entry={activeMemory} />
+          </section>
+        ) : (
+          <V2ThinkingWorkspaceMain
               activeStep={activeStep}
               evidence={evidence}
               projectName={projectName}
@@ -403,20 +400,6 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
               onLater={handleLaterMemory}
             />
           ) : null}
-        </div>
-
-        <div className="order-3 hidden xl:block">
-          {!activeMemory ? (
-            <V2AiEvidenceSummary
-              evidence={evidence}
-              reviewCount={reviewCount}
-              hasIdea={hasIdea}
-              investigationViewed={investigationViewed}
-              lastReviewAt={lastReviewAt}
-              memoryEntries={memoryEntries}
-            />
-          ) : null}
-        </div>
       </div>
     </JourneyLayout>
   );

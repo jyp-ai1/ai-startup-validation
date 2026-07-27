@@ -9,7 +9,6 @@ import { cn } from '@repo/ui/lib/utils';
 import { getNextActionMeta } from '../../lib/v2-next-action-meta';
 import { getNextAction } from '../../lib/v2-next-action-engine';
 import type { V2ValidationEvidence } from '../../lib/v2-validation-store';
-import { StarRating } from './v2-star-rating';
 
 type V2StickyNextActionProps = {
   evidence: V2ValidationEvidence;
@@ -34,7 +33,6 @@ export function V2StickyNextAction({
 
   const action = getNextAction({ evidence, reviewCount, hasIdea, investigationViewed });
   const meta = getNextActionMeta(action.kind);
-  const why = t(`why.${action.kind}`);
 
   return (
     <div
@@ -45,20 +43,22 @@ export function V2StickyNextAction({
     >
       <div className="mx-auto flex max-w-3xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-            {t('nextActionTitle')}
-          </p>
           <p className="truncate text-sm font-medium">{t(`body.${action.kind}`)}</p>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <StarRating stars={meta.priorityStars} className="text-xs" />
-            <span className="flex items-center gap-1">
-              <Clock className="size-3" aria-hidden />
-              {t('timeValue', { minutes: meta.estimatedMinutes })}
-            </span>
+          <div className="mt-1.5 space-y-0.5 text-xs text-muted-foreground">
+            <p>
+              <span className="font-medium text-foreground">{t('whyLabel')}</span>{' '}
+              {t(`why.${action.kind}`)}
+            </p>
+            <p className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
+              <span className="flex items-center gap-1">
+                <Clock className="size-3" aria-hidden />
+                {t('timeLabel')} {t('timeValue', { minutes: meta.estimatedMinutes })}
+              </span>
+              <span>
+                {t('effectLabel')} {t(`effect.${meta.expectedEffectKey}`)}
+              </span>
+            </p>
           </div>
-          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">{t('whyLabel')}</span> {why}
-          </p>
         </div>
         {!readOnly ? (
           <Button type="button" size="sm" className="shrink-0 rounded-lg" onClick={onAction}>
