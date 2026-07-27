@@ -4180,6 +4180,8 @@
         "ctaQualityHint": "More input improves review quality.",
         "toast": {
           "saved": "{field} updated.",
+          "deleted": "{field} removed.",
+          "updated": "Review board updated.",
           "reviewAgainHint": "You can review again.",
           "reviewAgain": "Review again"
         },
@@ -4264,6 +4266,131 @@
           "pricingEmpty": "No info",
           "differentiationSummary": "「{value}」",
           "differentiationEmpty": "No info"
+        },
+        "ia": {
+          "navLabel": "Strategy workflow",
+          "navTitle": "Workflow",
+          "snippetTitle": "AI summary",
+          "snippet": {
+            "market": "Market",
+            "marketGrowing": "Growing",
+            "marketUnknown": "Unknown",
+            "competition": "Competition",
+            "competitionHigh": "High",
+            "competitionUnknown": "Unknown",
+            "differentiation": "Differentiation",
+            "differentiationPartial": "Partial",
+            "differentiationNeeded": "Needs work"
+          },
+          "steps": {
+            "idea": "Idea",
+            "problem": "Problem",
+            "customer": "Customer",
+            "market": "Market",
+            "competition": "Competition",
+            "bm": "BM",
+            "mvp": "MVP",
+            "review": "Meeting summary"
+          },
+          "summary": {
+            "reviewStatusTitle": "Review status",
+            "opinionTitle": "AI key takeaways",
+            "nextTitle": "Next recommendation",
+            "status": {
+              "done": "Done",
+              "inProgress": "In progress",
+              "pending": "Pending"
+            },
+            "opinion": {
+              "marketExists": "Market exists",
+              "marketUnknown": "Market unknown",
+              "competitionHigh": "High competition",
+              "competitionUnknown": "Competition unknown",
+              "pricingSet": "Pricing entered",
+              "pricingNeeded": "Pricing needs validation"
+            },
+            "nextHint": {
+              "idea": "Start with your business idea.",
+              "problem": "Add the problem you solve for a sharper review.",
+              "customer": "More customer depth strengthens your case.",
+              "market": "Run a review to check market signals.",
+              "competition": "Review competition to clarify differentiation.",
+              "bm": "Add pricing/BM to assess revenue fit.",
+              "mvp": "Define MVP to clarify differentiation.",
+              "review": "Open meeting summary for today's confirmations."
+            },
+            "nextCta": {
+              "idea": "Enter idea",
+              "problem": "Add problem",
+              "customer": "Start customer review",
+              "market": "Start review",
+              "competition": "Check competition",
+              "bm": "Add pricing",
+              "mvp": "Add MVP",
+              "review": "View summary"
+            }
+          },
+          "main": {
+            "actions": {
+              "edit": "Edit",
+              "delete": "Delete",
+              "reinput": "Re-enter",
+              "add": "Add input"
+            },
+            "empty": {
+              "problem": "Problem not captured yet. Explain to AI.",
+              "customer": "Customer not captured yet. Explain to AI.",
+              "mvp": "MVP not captured yet. Explain to AI.",
+              "pricing": "Pricing not captured yet. Explain to AI."
+            },
+            "delete": {
+              "title": "Delete this input?",
+              "description": "This removes the field from your workspace and review board.",
+              "cancel": "Cancel",
+              "confirm": "Delete"
+            },
+            "market": {
+              "title": "Market",
+              "locked": "Run a review to unlock market details.",
+              "sizeLabel": "Market size",
+              "sizeValue": "Domestic SaaS validation — mid-size (Mock)",
+              "growthLabel": "Growth",
+              "growthValue": "~12% YoY (Mock)",
+              "searchLabel": "Search volume",
+              "searchValue": "「startup validation」 ~2.4k/mo (Mock)",
+              "similarLabel": "Similar services",
+              "similarValue": "8 found",
+              "opinionLabel": "AI opinion",
+              "opinionValue": "Market exists; positioning differentiation is key."
+            },
+            "competition": {
+              "title": "Competition",
+              "locked": "Run a review to unlock competition details.",
+              "competitorsLabel": "Competitors",
+              "competitorsValue": "8 similar AI validation tools (Mock)",
+              "strengthLabel": "Strengths",
+              "strengthValue": "Fast market scan · templates",
+              "weaknessLabel": "Weaknesses",
+              "weaknessValue": "No strategy meeting UX · one-shot reports",
+              "diffLabel": "Differentiation",
+              "diffValue": "Workspace strategy loop — LaunchLens position"
+            },
+            "nextAction": {
+              "eyebrow": "Next recommendation",
+              "body": "More customer interviews will strengthen your judgment.",
+              "cta": "Start customer review"
+            }
+          },
+          "meetingSummary": {
+            "title": "Confirmed today",
+            "empty": "Run a review to see the meeting summary.",
+            "items": {
+              "market": { "ok": "Market exists" },
+              "competition": { "ok": "Strong competition" },
+              "customer": { "ok": "Customer clear" },
+              "pricing": { "ok": "Pricing entered", "warn": "Pricing needs validation" }
+            }
+          }
         }
       },
       "conclusion": {

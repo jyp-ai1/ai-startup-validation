@@ -778,6 +778,34 @@ Sprint 1.3.x improved evidence and Review Board vocabulary but flow still split 
 
 ---
 
+## ADR-027: Strategy Workspace IA — Navigation-first 3-column layout (Sprint 1.5)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 1.4 unified the review loop on one screen but CPO QA found: duplicated input display, vertical report feel, no navigation role for review sections, narrow desktop width, and no clear next action after review. LaunchLens must feel like an **AI strategy meeting workspace**, not a form + report generator.
+
+### Decision
+
+1. **Width unification:** Home + Workspace use `max-w-7xl` via `JourneyLayout width="workspace"`
+2. **3-column IA:** Workflow (nav) · Main (selected step only) · AI Summary (status + one next CTA)
+3. **No duplicate content:** Input appears once in Main when step selected; nav shows status only; snippet shows 3-line AI summary
+4. **Review = meeting bullets:** Compact summary on Review step; detail via nav (market, competition, etc.)
+5. **Field actions:** Edit · Delete (confirm dialog) · Re-input
+6. **One next recommendation** always visible in AI Summary panel
+7. **No new AI features** in this sprint — layout and IA only
+
+### Consequences
+
+- [SPRINT_1_5_WORKSPACE_IA.md](./sprints/SPRINT_1_5_WORKSPACE_IA.md)
+- `V2WorkflowNav`, `V2MainWorkspacePanel`, `V2AiSummaryPanel` replace single-column stack
+- Legacy `V2ReviewMeetingBoard` retained but not used in primary flow
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

@@ -11,12 +11,24 @@ type JourneyPhase = 'goal' | 'workflow' | 'workspace';
 
 type JourneyLayoutProps = {
   phase: JourneyPhase;
-  width?: 'default' | 'wide';
+  width?: 'default' | 'wide' | 'workspace';
   variant?: 'journey' | 'intelligence';
   navSlot?: React.ReactNode;
   versionLabel?: string;
   children: React.ReactNode;
 };
+
+const WIDTH_CLASS = {
+  default: 'max-w-3xl lg:max-w-4xl',
+  wide: 'max-w-6xl 2xl:max-w-7xl',
+  workspace: 'max-w-7xl',
+} as const;
+
+const HEADER_WIDTH_CLASS = {
+  default: 'max-w-3xl',
+  wide: 'max-w-6xl',
+  workspace: 'max-w-7xl',
+} as const;
 
 const PHASES: JourneyPhase[] = ['goal', 'workflow', 'workspace'];
 
@@ -37,7 +49,7 @@ export function JourneyLayout({
         <div
           className={cn(
             'mx-auto flex h-14 items-center justify-between px-4 sm:px-6',
-            width === 'wide' ? 'max-w-6xl' : 'max-w-3xl',
+            HEADER_WIDTH_CLASS[width],
           )}
         >
           <Link href="/workspaces" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
@@ -59,7 +71,7 @@ export function JourneyLayout({
           <nav
             className={cn(
               'mx-auto flex gap-1 px-4 pb-3 sm:px-6',
-              width === 'wide' ? 'max-w-6xl' : 'max-w-3xl',
+              HEADER_WIDTH_CLASS[width],
             )}
             aria-label={t('progressLabel')}
           >
@@ -90,7 +102,7 @@ export function JourneyLayout({
           <div
             className={cn(
               'mx-auto px-4 pb-3 sm:px-6',
-              width === 'wide' ? 'max-w-6xl' : 'max-w-3xl',
+              HEADER_WIDTH_CLASS[width],
             )}
           >
             {navSlot}
@@ -100,8 +112,8 @@ export function JourneyLayout({
       <main
         id="main-content"
         className={cn(
-          'journey-fade-in mx-auto px-4 py-8 sm:px-6 sm:py-12',
-          width === 'wide' ? 'max-w-6xl 2xl:max-w-7xl' : 'max-w-3xl lg:max-w-4xl',
+          'journey-fade-in mx-auto px-4 py-8 sm:px-6 sm:py-10',
+          WIDTH_CLASS[width],
         )}
       >
         {children}

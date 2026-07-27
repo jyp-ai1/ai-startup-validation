@@ -15,7 +15,7 @@ export function V2WorkspaceHomeHeader({ className }: V2WorkspaceHomeHeaderProps)
 
   return (
     <header className={cn('border-b border-border/60 bg-background/95 backdrop-blur', className)}>
-      <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link href="/workspaces" className="text-sm font-semibold tracking-tight">
           {t('nav.workspace')}
         </Link>
