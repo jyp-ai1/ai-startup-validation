@@ -8,7 +8,12 @@ export type DemoExperienceStep =
   | 'changeDetected'
   | 'strategyImprovement'
   | 'continuousManagement'
-  | 'cta';
+  | 'tryMyProject'
+  | 'myProjectForm'
+  | 'myProjectReviewing'
+  | 'myProjectResults'
+  | 'savePrompt'
+  | 'loginCta';
 
 export type DemoEvidenceItemId =
   | 'googleTrends'
@@ -42,6 +47,13 @@ export type DemoEvidenceSourceId =
   | 'yc';
 export type DemoDecisionChoice = 'proceed' | 'hold' | 'compare';
 
+export type DemoMyProjectResultId =
+  | 'market'
+  | 'competition'
+  | 'differentiation'
+  | 'recommendation'
+  | 'nextAction';
+
 export const DEMO_EXPERIENCE_STEP_ORDER: DemoExperienceStep[] = [
   'greeting',
   'sampleProject',
@@ -52,7 +64,12 @@ export const DEMO_EXPERIENCE_STEP_ORDER: DemoExperienceStep[] = [
   'changeDetected',
   'strategyImprovement',
   'continuousManagement',
-  'cta',
+  'tryMyProject',
+  'myProjectForm',
+  'myProjectReviewing',
+  'myProjectResults',
+  'savePrompt',
+  'loginCta',
 ];
 
 export function getNextDemoStep(step: DemoExperienceStep): DemoExperienceStep | null {

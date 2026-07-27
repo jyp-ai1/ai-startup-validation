@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
 import { GuidedInterviewEntry } from '@/features/interview';
+import { DemoProjectPromotedTracker } from '@/features/my-projects/components/demo-project-promoted-tracker';
 import { getOwnedProject } from '@/features/projects/services/project-service';
 import { WorkspaceAuthCompleteTracker } from '@/features/workspace/components/workspace-auth-complete-tracker';
 import { requireAuthUser } from '@/lib/auth/server-auth';
@@ -11,6 +12,7 @@ export const dynamic = 'force-dynamic';
 
 type ProjectWorkspacePageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ promoted?: string }>;
 };
 
 export async function generateMetadata({ params }: ProjectWorkspacePageProps): Promise<Metadata> {
@@ -23,8 +25,12 @@ export async function generateMetadata({ params }: ProjectWorkspacePageProps): P
   };
 }
 
-export default async function ProjectWorkspacePage({ params }: ProjectWorkspacePageProps) {
+export default async function ProjectWorkspacePage({
+  params,
+  searchParams,
+}: ProjectWorkspacePageProps) {
   const { id } = await params;
+  const { promoted } = await searchParams;
   const user = await requireAuthUser('/my-projects');
   const project = await getOwnedProject(user.id, id);
 
@@ -35,6 +41,7 @@ export default async function ProjectWorkspacePage({ params }: ProjectWorkspaceP
   return (
     <>
       <WorkspaceAuthCompleteTracker />
+      {promoted === '1' ? <DemoProjectPromotedTracker /> : null}
       <GuidedInterviewEntry project={project} />
     </>
   );

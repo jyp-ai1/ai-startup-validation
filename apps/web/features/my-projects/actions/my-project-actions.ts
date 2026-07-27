@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { isSupabaseConfigured } from '@repo/db';
@@ -13,6 +14,10 @@ import {
   buildInitialInterviewState,
   isReviewType,
 } from '@/features/interview/types/interview-state';
+import {
+  DEMO_PROJECT_DRAFT_COOKIE,
+  parseDemoProjectDraftCookie,
+} from '@/features/workflow-journey/lib/v2-demo-project-store';
 import { requireAuthUser } from '@/lib/auth/server-auth';
 
 export type CreateMyProjectState = {
@@ -28,24 +33,42 @@ export async function listMyProjectsForPage() {
   return { user, projects, dbReady: true as const };
 }
 
-/** Bootstrap first project for new users (Sprint 4.3 — Demo → Login → Workspace). */
-export async function bootstrapFirstProject(userId: string, fromDemo = false) {
+/** Bootstrap first project — promotes demo draft when present (Sprint 4.3). */
+export async function bootstrapFirstProject(userId: string, promoteDemo = false) {
   const existing = await listOwnedProjects(userId);
   if (existing.length > 0) {
     return existing[0]!;
   }
 
-  const title = fromDemo ? 'LaunchLens' : '내 첫 프로젝트';
-  const summary = fromDemo
-    ? '창업자의 전략적 사고를 축적하는 Workspace'
-    : 'LaunchLens에서 시작한 첫 프로젝트';
+  let title = '내 첫 프로젝트';
+  let summary = 'LaunchLens에서 시작한 첫 프로젝트';
+  let problem = '';
+  let customer = '';
+
+  if (promoteDemo) {
+    const cookieStore = await cookies();
+    const draft = parseDemoProjectDraftCookie(cookieStore.get(DEMO_PROJECT_DRAFT_COOKIE)?.value);
+    if (draft) {
+      title = draft.serviceName.trim();
+      summary = draft.tagline.trim();
+      problem = draft.problem.trim();
+      customer = draft.customer.trim();
+    } else {
+      title = 'LaunchLens';
+      summary = '창업자의 전략적 사고를 축적하는 Workspace';
+    }
+  }
+
+  const sprint12 = buildInitialInterviewState('startup-idea', summary);
+  if (problem || customer) {
+    sprint12.context = { problem, customer };
+    sprint12.description = summary;
+  }
 
   return createOwnedProject(userId, {
     title,
     summary,
-    onboardingContext: {
-      sprint12: buildInitialInterviewState('startup-idea', summary),
-    },
+    onboardingContext: { sprint12 },
   });
 }
 

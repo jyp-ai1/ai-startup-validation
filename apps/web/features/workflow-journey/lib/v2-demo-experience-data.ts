@@ -63,6 +63,14 @@ export const DEMO_EVIDENCE_BASE = [
   'crunchbase',
 ] as const;
 
+export const DEMO_MY_PROJECT_RESULTS = [
+  'market',
+  'competition',
+  'differentiation',
+  'recommendation',
+  'nextAction',
+] as const;
+
 export const DEMO_MONITORING_ITEMS: DemoMonitoringItemId[] = [
   'competitorPricing',
   'funding',

@@ -19,19 +19,21 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type WorkspaceHomePageProps = {
-  searchParams: Promise<{ from?: string; auth?: string }>;
+  searchParams: Promise<{ from?: string; auth?: string; promote?: string }>;
 };
 
 /** Protected Workspace home — login required (Sprint 2 P0 IA). */
 export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomePageProps) {
   const params = await searchParams;
   const { user, projects, dbReady } = await listMyProjectsForPage();
+  const promoteDemo = params.from === 'demo' && params.promote === '1';
 
   if (dbReady && projects.length === 0) {
-    const project = await bootstrapFirstProject(user.id, params.from === 'demo');
+    const project = await bootstrapFirstProject(user.id, promoteDemo);
     const { redirect } = await import('next/navigation');
     const qs = new URLSearchParams({ welcome: '1' });
     if (params.auth === 'complete') qs.set('auth', 'complete');
+    if (promoteDemo) qs.set('promoted', '1');
     redirect(`/my-projects/${project.id}?${qs.toString()}`);
   }
 

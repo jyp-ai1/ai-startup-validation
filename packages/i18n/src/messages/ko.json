@@ -5380,7 +5380,81 @@
                     "news": "뉴스"
                   },
                   "closing": "변화가 생기면 AI PM이 먼저 알려드립니다.",
-                  "cta": "내 프로젝트 시작하기"
+                  "cta": "내 아이디어로 체험하기"
+                },
+                "tryMyProject": {
+                  "title": "이제 대표님 아이디어로도 확인해보세요",
+                  "body": "LaunchLens는 샘플이 아니라, 실제 내 사업에 어떻게 적용되는지 보여줘야 합니다. 로그인 없이 간단히 입력하고 첫 검토를 받아보세요.",
+                  "cta": "데모로 내 프로젝트 시작하기"
+                },
+                "myProjectForm": {
+                  "lead": "좋습니다. 대표님 프로젝트로 첫 검토를 시작하겠습니다.",
+                  "hint": "4가지만 입력해 주세요. 로그인은 나중에, 저장이 필요할 때만 합니다.",
+                  "fields": {
+                    "serviceName": "서비스 이름",
+                    "tagline": "한 줄 소개",
+                    "customer": "고객",
+                    "problem": "해결하려는 문제"
+                  },
+                  "placeholders": {
+                    "serviceName": "예: FitTrack",
+                    "tagline": "예: 1인 창업자를 위한 AI 전략 Workspace",
+                    "customer": "예: 예비창업자 · 1인 SaaS 창업자",
+                    "problem": "예: 사업 검토를 어디서부터 해야 할지 모름"
+                  },
+                  "cta": "AI PM 첫 검토 시작"
+                },
+                "myProjectReviewing": {
+                  "line1": "{name} 프로젝트를 검토하고 있습니다.",
+                  "line2": "시장 · 경쟁 · 차별성 관련 데이터를 확인 중입니다.",
+                  "loading": "첫 검토 진행 중…"
+                },
+                "myProjectResults": {
+                  "fallbackName": "내 프로젝트",
+                  "lead": "{name} — 첫 번째 전략 검토 결과입니다.",
+                  "evidenceBasis": "이 추천은 현재 조사된 {count}개의 Evidence를 기반으로 생성되었습니다.",
+                  "cta": "다음",
+                  "items": {
+                    "market": {
+                      "label": "시장",
+                      "value": "검색량이 꾸준히 증가하고 있습니다. {name}이 다루는 영역은 지금 진입하기 좋은 타이밍입니다."
+                    },
+                    "competition": {
+                      "label": "경쟁",
+                      "value": "유사 서비스는 있지만, {name}이 겨냥하는 고객의 전략 기획 니즈는 아직 충분히 해결되지 않았습니다."
+                    },
+                    "differentiation": {
+                      "label": "차별성",
+                      "value": "AI PM이 매일 시장을 모니터링하고, 변화가 생기면 먼저 알려주는 점이 {name}의 차별점입니다."
+                    },
+                    "recommendation": {
+                      "label": "추천 전략",
+                      "value": "Thinking Workspace 포지셔닝 — {name}은 '분석 도구'가 아니라 '함께 운영하는 AI PM'으로 시작하세요."
+                    },
+                    "nextAction": {
+                      "label": "다음 Action",
+                      "value": "고객 3명 인터뷰로 {name}의 핵심 가치를 검증하세요. AI PM이 질문지를 준비해 드립니다."
+                    }
+                  }
+                },
+                "savePrompt": {
+                  "line1": "오늘 첫 번째 전략 검토를 완료했습니다.",
+                  "line2": "이 프로젝트는 현재 Demo 상태입니다.",
+                  "line3": "로그인하면 아래 내용을 이어서 관리할 수 있습니다.",
+                  "benefits": {
+                    "todayReview": "오늘 검토 내용",
+                    "evidence": "Evidence",
+                    "decisionHistory": "Decision History",
+                    "meetingNotes": "AI PM 회의록",
+                    "alerts": "이후 시장 변화 알림"
+                  },
+                  "closing": "지금까지 진행한 전략 검토를 저장하고, AI PM이 앞으로도 시장 변화와 경쟁사 변화를 지속적으로 추적해드리겠습니다.",
+                  "cta": "내 프로젝트로 계속하기"
+                },
+                "loginCta": {
+                  "title": "내 프로젝트로 계속하기",
+                  "body": "방금 체험한 Demo 프로젝트가 그대로 Workspace로 이어집니다. 로그인은 저장을 위한 마지막 단계입니다.",
+                  "hint": "Google 로그인 후 AI PM과 이어서 진행하세요."
                 },
                 "cta": {
                   "title": "내 프로젝트 시작하기",

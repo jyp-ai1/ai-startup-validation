@@ -5233,7 +5233,81 @@
                     "news": "News"
                   },
                   "closing": "When something changes, your AI PM will tell you first.",
-                  "cta": "Start my project"
+                  "cta": "Try with my idea"
+                },
+                "tryMyProject": {
+                  "title": "Now try it with your own idea",
+                  "body": "LaunchLens must show how it applies to your business — not just a sample. Enter a few details without logging in and get your first review.",
+                  "cta": "Start my demo project"
+                },
+                "myProjectForm": {
+                  "lead": "Great. I'll start the first review for your project.",
+                  "hint": "Just 4 fields. Login comes later — only when you're ready to save.",
+                  "fields": {
+                    "serviceName": "Service name",
+                    "tagline": "One-liner",
+                    "customer": "Customer",
+                    "problem": "Problem you solve"
+                  },
+                  "placeholders": {
+                    "serviceName": "e.g. FitTrack",
+                    "tagline": "e.g. AI strategy workspace for solo founders",
+                    "customer": "e.g. Pre-founders · solo SaaS builders",
+                    "problem": "e.g. Don't know where to start validating the business"
+                  },
+                  "cta": "Start AI PM first review"
+                },
+                "myProjectReviewing": {
+                  "line1": "Reviewing {name}.",
+                  "line2": "Checking market, competition, and differentiation signals.",
+                  "loading": "First review in progress…"
+                },
+                "myProjectResults": {
+                  "fallbackName": "My project",
+                  "lead": "{name} — your first strategy review.",
+                  "evidenceBasis": "This recommendation is based on {count} pieces of Evidence gathered so far.",
+                  "cta": "Continue",
+                  "items": {
+                    "market": {
+                      "label": "Market",
+                      "value": "Search volume is growing steadily. Now is a favorable time to enter the space {name} targets."
+                    },
+                    "competition": {
+                      "label": "Competition",
+                      "value": "Similar tools exist, but strategic planning needs for {name}'s customer segment remain underserved."
+                    },
+                    "differentiation": {
+                      "label": "Differentiation",
+                      "value": "Daily market monitoring and proactive alerts are {name}'s clearest edge."
+                    },
+                    "recommendation": {
+                      "label": "Recommended strategy",
+                      "value": "Thinking Workspace positioning — launch {name} as an AI PM you operate with, not a one-shot analysis tool."
+                    },
+                    "nextAction": {
+                      "label": "Next action",
+                      "value": "Validate {name}'s core value with 3 customer interviews. Your AI PM will prepare the questions."
+                    }
+                  }
+                },
+                "savePrompt": {
+                  "line1": "Today's first strategy review is complete.",
+                  "line2": "This project is currently in Demo mode.",
+                  "line3": "Sign in to continue managing:",
+                  "benefits": {
+                    "todayReview": "Today's review",
+                    "evidence": "Evidence",
+                    "decisionHistory": "Decision History",
+                    "meetingNotes": "AI PM meeting notes",
+                    "alerts": "Future market change alerts"
+                  },
+                  "closing": "Save today's strategy review and let your AI PM keep tracking market and competitor shifts.",
+                  "cta": "Continue with my project"
+                },
+                "loginCta": {
+                  "title": "Continue with my project",
+                  "body": "Your demo project carries straight into Workspace. Login is the final step to save — not to start.",
+                  "hint": "Sign in with Google to pick up where your AI PM left off."
                 },
                 "cta": {
                   "title": "Start my project",

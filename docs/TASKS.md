@@ -146,6 +146,8 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 | 6 | Continuous management + Google Login CTA | ✅ |
 | 7 | Recommendation Card (why · evidence · decision CTAs) | ✅ |
 | 8 | Google Login bootstrap — first project auto-create | ✅ |
+| 9 | Demo My Project — no-login idea input + first review | ✅ |
+| 10 | Login as save — demo draft promoted to workspace | ✅ |
 
 **Kickoff:** [SPRINT_4_3_DEMO_EXPERIENCE_2.md](./sprints/SPRINT_4_3_DEMO_EXPERIENCE_2.md)
 

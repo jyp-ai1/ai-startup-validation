@@ -61,6 +61,8 @@ AI PM 인사 → 샘플 프로젝트 선택 → AI 조사 → Inbox
 | P0-2.6 | Continuous management closing | ✅ |
 | P0-2.7 | Recommendation Card — why + evidence + confidence + founder decision | ✅ |
 | P0-2.8 | Google Login → auto first project → `/my-projects/{id}` | ✅ |
+| P0-2.9 | Demo My Project — idea form without login | ✅ |
+| P0-2.10 | Login as save step — demo project promotion | ✅ |
 
 ---
 

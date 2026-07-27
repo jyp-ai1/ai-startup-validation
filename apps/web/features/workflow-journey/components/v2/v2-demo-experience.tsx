@@ -16,11 +16,19 @@ import {
   DEMO_EVIDENCE_SOURCES,
   DEMO_INBOX_ITEMS,
   DEMO_MONITORING_ITEMS,
+  DEMO_MY_PROJECT_RESULTS,
   DEMO_RECOMMENDATION_EVIDENCE,
   DEMO_RECOMMENDATION_WHY,
   DEMO_SAMPLE_PROJECT,
   DEMO_STRATEGY_METRICS,
 } from '../../lib/v2-demo-experience-data';
+import {
+  createEmptyDemoProjectDraft,
+  isDemoProjectDraftValid,
+  persistDemoProjectDraftForLogin,
+  saveDemoProjectDraft,
+  type DemoProjectDraft,
+} from '../../lib/v2-demo-project-store';
 import {
   getNextDemoStep,
   type DemoDecisionChoice,
@@ -28,6 +36,10 @@ import {
 } from '../../lib/v2-demo-experience-types';
 
 const INVESTIGATING_MS = 3000;
+const MY_PROJECT_REVIEW_MS = 3200;
+
+const INPUT_CLASS =
+  'h-11 w-full rounded-xl border border-border/70 bg-background px-4 text-sm outline-none ring-primary/30 focus:ring-2';
 
 type V2DemoExperienceProps = {
   className?: string;
@@ -69,19 +81,39 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
   const [step, setStep] = useState<DemoExperienceStep>('greeting');
   const [evidenceOpen, setEvidenceOpen] = useState(false);
   const [decision, setDecision] = useState<DemoDecisionChoice | null>(null);
+  const [projectDraft, setProjectDraft] = useState<DemoProjectDraft>(createEmptyDemoProjectDraft);
+  const [loginDraftReady, setLoginDraftReady] = useState(false);
 
   useEffect(() => {
-    if (step !== 'investigating') return;
-    const timer = window.setTimeout(() => {
-      setStep('inbox');
-    }, INVESTIGATING_MS);
+    if (step !== 'investigating' && step !== 'myProjectReviewing') return;
+    const ms = step === 'investigating' ? INVESTIGATING_MS : MY_PROJECT_REVIEW_MS;
+    const nextStep = step === 'investigating' ? 'inbox' : 'myProjectResults';
+    const timer = window.setTimeout(() => setStep(nextStep), ms);
     return () => window.clearTimeout(timer);
   }, [step]);
+
+  useEffect(() => {
+    if (step !== 'loginCta' || !isDemoProjectDraftValid(projectDraft) || loginDraftReady) return;
+    persistDemoProjectDraftForLogin(projectDraft);
+    setLoginDraftReady(true);
+  }, [step, projectDraft, loginDraftReady]);
 
   const advance = () => {
     const next = getNextDemoStep(step);
     if (next) setStep(next);
   };
+
+  const handleProjectFormSubmit = () => {
+    if (!isDemoProjectDraftValid(projectDraft)) return;
+    saveDemoProjectDraft(projectDraft);
+    setStep('myProjectReviewing');
+  };
+
+  const updateDraft = (field: keyof DemoProjectDraft, value: string) => {
+    setProjectDraft((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const projectName = projectDraft.serviceName.trim() || t('steps.myProjectResults.fallbackName');
 
   return (
     <div className={cn('space-y-6', className)}>
@@ -418,15 +450,176 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
         </div>
       ) : null}
 
-      {step === 'cta' ? (
+      {step === 'tryMyProject' ? (
+        <div className="space-y-4 rounded-xl border border-primary/30 bg-gradient-to-br from-primary/[0.06] to-background px-6 py-8 text-center">
+          <Sparkles className="mx-auto size-8 text-primary" aria-hidden />
+          <div>
+            <p className="text-lg font-semibold">{t('steps.tryMyProject.title')}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t('steps.tryMyProject.body')}</p>
+          </div>
+          <Button type="button" className="w-full rounded-lg" onClick={advance}>
+            {t('steps.tryMyProject.cta')}
+          </Button>
+        </div>
+      ) : null}
+
+      {step === 'myProjectForm' ? (
+        <div className="space-y-4">
+          <AiPmBubble>
+            <p className="font-medium">{t('steps.myProjectForm.lead')}</p>
+            <p className="text-muted-foreground">{t('steps.myProjectForm.hint')}</p>
+          </AiPmBubble>
+          <div className="space-y-4 rounded-xl border border-border/60 bg-muted/10 p-5">
+            <div className="space-y-2">
+              <label htmlFor="demo-service-name" className="text-sm font-medium">
+                {t('steps.myProjectForm.fields.serviceName')}
+              </label>
+              <input
+                id="demo-service-name"
+                type="text"
+                value={projectDraft.serviceName}
+                onChange={(e) => updateDraft('serviceName', e.target.value)}
+                placeholder={t('steps.myProjectForm.placeholders.serviceName')}
+                className={INPUT_CLASS}
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="demo-tagline" className="text-sm font-medium">
+                {t('steps.myProjectForm.fields.tagline')}
+              </label>
+              <input
+                id="demo-tagline"
+                type="text"
+                value={projectDraft.tagline}
+                onChange={(e) => updateDraft('tagline', e.target.value)}
+                placeholder={t('steps.myProjectForm.placeholders.tagline')}
+                className={INPUT_CLASS}
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="demo-customer" className="text-sm font-medium">
+                {t('steps.myProjectForm.fields.customer')}
+              </label>
+              <input
+                id="demo-customer"
+                type="text"
+                value={projectDraft.customer}
+                onChange={(e) => updateDraft('customer', e.target.value)}
+                placeholder={t('steps.myProjectForm.placeholders.customer')}
+                className={INPUT_CLASS}
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="demo-problem" className="text-sm font-medium">
+                {t('steps.myProjectForm.fields.problem')}
+              </label>
+              <input
+                id="demo-problem"
+                type="text"
+                value={projectDraft.problem}
+                onChange={(e) => updateDraft('problem', e.target.value)}
+                placeholder={t('steps.myProjectForm.placeholders.problem')}
+                className={INPUT_CLASS}
+              />
+            </div>
+          </div>
+          <Button
+            type="button"
+            className="w-full rounded-lg"
+            disabled={!isDemoProjectDraftValid(projectDraft)}
+            onClick={handleProjectFormSubmit}
+          >
+            {t('steps.myProjectForm.cta')}
+          </Button>
+        </div>
+      ) : null}
+
+      {step === 'myProjectReviewing' ? (
+        <AiPmBubble className="text-center">
+          <p className="font-medium">{t('steps.myProjectReviewing.line1', { name: projectName })}</p>
+          <p>{t('steps.myProjectReviewing.line2')}</p>
+          <div className="mt-4 flex items-center justify-center gap-2 text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+            <span className="text-xs">{t('steps.myProjectReviewing.loading')}</span>
+          </div>
+        </AiPmBubble>
+      ) : null}
+
+      {step === 'myProjectResults' ? (
+        <div className="space-y-4">
+          <AiPmBubble>
+            <p className="font-medium">{t('steps.myProjectResults.lead', { name: projectName })}</p>
+          </AiPmBubble>
+
+          <div className="space-y-3">
+            {DEMO_MY_PROJECT_RESULTS.map((item) => (
+              <div
+                key={item}
+                className="rounded-lg border border-border/40 bg-muted/5 px-4 py-3"
+              >
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {t(`steps.myProjectResults.items.${item}.label`)}
+                </p>
+                <p className="mt-1 text-sm font-medium leading-relaxed">
+                  {t(`steps.myProjectResults.items.${item}.value`, { name: projectName })}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-lg border border-primary/25 bg-primary/[0.04] px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+            {t('steps.myProjectResults.evidenceBasis', { count: DEMO_EVIDENCE_COUNT })}
+          </div>
+
+          <Button type="button" className="w-full rounded-lg" onClick={advance}>
+            {t('steps.myProjectResults.cta')}
+          </Button>
+        </div>
+      ) : null}
+
+      {step === 'savePrompt' ? (
+        <div className="space-y-4">
+          <AiPmBubble>
+            <p className="font-medium">{t('steps.savePrompt.line1')}</p>
+            <p>{t('steps.savePrompt.line2')}</p>
+            <p className="font-medium text-amber-600 dark:text-amber-400">
+              {t('steps.savePrompt.line3')}
+            </p>
+          </AiPmBubble>
+
+          <ul className="space-y-2 rounded-xl border border-border/40 bg-muted/5 p-4">
+            {(['todayReview', 'evidence', 'decisionHistory', 'meetingNotes', 'alerts'] as const).map(
+              (item) => (
+                <li key={item} className="flex items-center gap-2 text-sm">
+                  <Check className="size-3.5 shrink-0 text-primary" aria-hidden />
+                  {t(`steps.savePrompt.benefits.${item}`)}
+                </li>
+              ),
+            )}
+          </ul>
+
+          <AiPmBubble>
+            <p>{t('steps.savePrompt.closing')}</p>
+          </AiPmBubble>
+
+          <Button type="button" className="w-full rounded-lg" onClick={advance}>
+            {t('steps.savePrompt.cta')}
+          </Button>
+        </div>
+      ) : null}
+
+      {step === 'loginCta' ? (
         <div className="space-y-6 rounded-xl border border-primary/30 bg-gradient-to-br from-primary/[0.08] to-background px-6 py-8 text-center">
           <Sparkles className="mx-auto size-8 text-primary" aria-hidden />
           <div>
-            <p className="text-lg font-semibold">{t('steps.cta.title')}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{t('steps.cta.body')}</p>
+            <p className="text-lg font-semibold">{t('steps.loginCta.title')}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t('steps.loginCta.body')}</p>
           </div>
-          <GoogleSignInButton redirectTo="/workspace?from=demo" className="w-full rounded-lg" />
-          <p className="text-xs text-muted-foreground">{t('steps.cta.hint')}</p>
+          <GoogleSignInButton
+            redirectTo="/workspace?from=demo&promote=1"
+            className="w-full rounded-lg"
+          />
+          <p className="text-xs text-muted-foreground">{t('steps.loginCta.hint')}</p>
         </div>
       ) : null}
     </div>
