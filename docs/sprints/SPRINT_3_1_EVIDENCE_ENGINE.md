@@ -1,6 +1,6 @@
 # Sprint 3.1 — Evidence Engine Foundation
 
-**Status:** 🔄 IN PROGRESS  
+**Status:** ✅ SHIPPED (Sprint 3.1 Foundation)  
 **Authority:** CPO Sprint 3 Kickoff · ADR-033 · Rule #1  
 **Prerequisite:** Sprint 2.3 ✅ SHIPPED
 

@@ -7,20 +7,18 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { InvestigationTopic, NextActionKind } from '../../lib/v2-next-action-engine';
+import { shouldShowArtifactTrigger } from '../../lib/v2-ai-pm-inbox-data';
 import { isReviewStale } from '../../lib/v2-review-dirty-state';
 import { type WorkflowStepId } from '../../lib/v2-workflow-steps';
-import type { DecisionMemoryEntry } from '../../lib/v2-decision-memory-store';
 import type { V2EvidenceField, V2ValidationEvidence } from '../../lib/v2-validation-store';
 import { isEvidenceFieldFilled } from '../../lib/v2-validation-store';
 import { getNextAction } from '../../lib/v2-next-action-engine';
-import { V2AiPmDailyBrief } from './v2-ai-pm-daily-brief';
-import { V2AiPmNotebook } from './v2-ai-pm-notebook';
+import { V2AiPmInbox } from './v2-ai-pm-inbox';
+import { V2AiPmMeetingNote } from './v2-ai-pm-meeting-note';
 import { V2AiUnderstandingChips } from './v2-ai-understanding-chips';
+import { V2ArtifactTrigger } from './v2-artifact-trigger';
 import { V2EvidenceDetailDrawer } from './v2-evidence-detail-drawer';
 import { V2GuidedDemoCoach, type GuidedDemoStep } from './v2-guided-demo-coach';
-import { V2ProjectGrowthStory } from './v2-project-growth-story';
-import { V2ReviewSummary } from './v2-review-summary';
-import { V2StickyNextAction } from './v2-sticky-next-action';
 import { V2WhySourcesSection } from './v2-why-sources-section';
 import { V2WorkspaceProjectHeader } from './v2-workspace-project-header';
 
@@ -33,21 +31,16 @@ type V2ThinkingWorkspaceMainProps = {
   phase: 'compose' | 'reviewing' | 'board' | 'followUp';
   hasIdea: boolean;
   investigationViewed: boolean;
-  memoryEntries: DecisionMemoryEntry[];
-  activeMemoryId?: string | null;
   readOnly?: boolean;
   dirtyHighlightField?: 'idea' | V2EvidenceField | null;
-  dirtyFieldLabel?: string | null;
   onIdeaChange: (value: string) => void;
   onFieldConfirm: (field: V2EvidenceField, value: string) => void;
   onFieldDelete: (field: V2EvidenceField) => void;
   onGoToStep: (step: WorkflowStepId) => void;
   onReview: () => void;
   onInvestigationViewed: () => void;
-  onSelectMemory?: (entryId: string) => void;
   guidedDemoStep?: GuidedDemoStep | null;
   onGuidedDemoAdvance?: () => void;
-  showPhilosophy?: boolean;
 };
 
 const SECTION = 'space-y-10';
@@ -60,8 +53,6 @@ export function V2ThinkingWorkspaceMain({
   phase,
   hasIdea,
   investigationViewed,
-  memoryEntries,
-  activeMemoryId = null,
   readOnly = false,
   dirtyHighlightField = null,
   onIdeaChange,
@@ -70,7 +61,6 @@ export function V2ThinkingWorkspaceMain({
   onGoToStep,
   onReview,
   onInvestigationViewed,
-  onSelectMemory,
   guidedDemoStep = null,
   onGuidedDemoAdvance,
 }: V2ThinkingWorkspaceMainProps) {
@@ -81,29 +71,23 @@ export function V2ThinkingWorkspaceMain({
   const needsInput =
     !hasIdea || !isEvidenceFieldFilled('pricing', evidence) || !isEvidenceFieldFilled('customer', evidence);
 
-  const handleFillPricing = () => {
-    onGoToStep('bm');
-  };
+  const ctx = { evidence, reviewCount, hasIdea, investigationViewed };
 
-  const handleFillIdea = () => {
-    onGoToStep('idea');
-  };
-
-  const handleHealthAction = (kind: NextActionKind) => {
+  const handleAction = (kind: NextActionKind) => {
     switch (kind) {
       case 'fill-idea':
-        handleFillIdea();
+        onGoToStep('idea');
         break;
       case 'start-review':
       case 're-review':
         onReview();
         break;
       case 'fill-pricing':
-        handleFillPricing();
+        onGoToStep('bm');
         break;
       case 'view-investigation':
         onInvestigationViewed();
-        document.getElementById('review-summary')?.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('why-sources')?.scrollIntoView({ behavior: 'smooth' });
         break;
       case 'customer-validation':
         onGoToStep('customer');
@@ -113,10 +97,8 @@ export function V2ThinkingWorkspaceMain({
     }
   };
 
-  const handleStickyAction = () => {
-    handleHealthAction(
-      getNextAction({ evidence, reviewCount, hasIdea, investigationViewed }).kind,
-    );
+  const handleContinue = () => {
+    handleAction(getNextAction(ctx).kind);
   };
 
   if (phase === 'reviewing') {
@@ -131,17 +113,17 @@ export function V2ThinkingWorkspaceMain({
 
   return (
     <>
-      <div className={cn(SECTION, 'pb-24 py-2 sm:py-4')}>
+      <div className={cn(SECTION, 'pb-8 py-2 sm:py-4')}>
         <V2WorkspaceProjectHeader projectName={projectName} lastReviewAt={lastReviewAt} />
 
-        <V2AiPmDailyBrief
+        <V2AiPmInbox
           evidence={evidence}
           reviewCount={reviewCount}
           hasIdea={hasIdea}
           investigationViewed={investigationViewed}
           stale={stale}
           readOnly={readOnly}
-          onContinue={handleStickyAction}
+          onContinue={handleContinue}
         />
 
         {guidedDemoStep && onGuidedDemoAdvance ? (
@@ -159,30 +141,12 @@ export function V2ThinkingWorkspaceMain({
           />
         ) : null}
 
-        <V2ReviewSummary reviewCount={reviewCount} />
-
         <V2WhySourcesSection reviewCount={reviewCount} onOpenTopic={setDrawerTopic} />
 
-        {reviewCount > 0 ? (
-          <V2ProjectGrowthStory
-            entries={memoryEntries}
-            reviewCount={reviewCount}
-            activeMemoryId={activeMemoryId}
-            onSelect={onSelectMemory}
-          />
-        ) : null}
+        <V2AiPmMeetingNote reviewCount={reviewCount} readOnly={readOnly} />
 
-        <V2AiPmNotebook reviewCount={reviewCount} readOnly={readOnly} />
+        <V2ArtifactTrigger visible={shouldShowArtifactTrigger(ctx)} readOnly={readOnly} />
       </div>
-
-      <V2StickyNextAction
-        evidence={evidence}
-        reviewCount={reviewCount}
-        hasIdea={hasIdea}
-        investigationViewed={investigationViewed}
-        readOnly={readOnly}
-        onAction={handleStickyAction}
-      />
 
       <V2EvidenceDetailDrawer
         topic={drawerTopic}
@@ -190,7 +154,7 @@ export function V2ThinkingWorkspaceMain({
         readOnly={readOnly}
         onFillPricing={() => {
           setDrawerTopic(null);
-          handleFillPricing();
+          onGoToStep('bm');
         }}
       />
     </>

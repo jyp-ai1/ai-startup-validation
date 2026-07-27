@@ -34,13 +34,7 @@ import {
   resolveGuidedDemoStep,
   type GuidedDemoStep,
 } from './v2-guided-demo-coach';
-import {
-  createNotebookFromReview,
-} from '../../lib/v2-ai-pm-notebook-store';
-import {
-  NOTEBOOK_DEFAULT_AI_MEMO,
-  NOTEBOOK_DEFAULT_FINDINGS,
-} from '../../lib/v2-why-sources-data';
+import { createMeetingNoteFromReview } from '../../lib/v2-ai-pm-meeting-store';
 import { V2ThinkingWorkspaceMain } from './v2-thinking-workspace-main';
 
 type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
@@ -125,7 +119,7 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
       setFollowUpDone(true);
       setMemoryEntries(GTM_DEMO_MEMORY);
       saveReviewSnapshot(GTM_DEMO_EVIDENCE);
-      createNotebookFromReview(1, [...NOTEBOOK_DEFAULT_FINDINGS], NOTEBOOK_DEFAULT_AI_MEMO);
+      createMeetingNoteFromReview(1);
       return;
     }
 
@@ -279,11 +273,7 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
       setInvestigationViewed(false);
       setDirtyHighlightField(null);
       setDirtyFieldLabel(null);
-      createNotebookFromReview(
-        reviewCount + 1,
-        [...NOTEBOOK_DEFAULT_FINDINGS],
-        NOTEBOOK_DEFAULT_AI_MEMO,
-      );
+      createMeetingNoteFromReview(reviewCount + 1);
       window.setTimeout(() => setPhase('followUp'), 400);
     }, REVIEW_MS);
   }, [evidence, hasIdea, isDemoReadonly, persist, reviewCount]);
@@ -373,21 +363,16 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
               phase={phase}
               hasIdea={hasIdea}
               investigationViewed={investigationViewed}
-              memoryEntries={memoryEntries}
-              activeMemoryId={activeMemoryId}
               readOnly={isDemoReadonly}
               dirtyHighlightField={dirtyHighlightField}
-              dirtyFieldLabel={dirtyFieldLabel}
               onIdeaChange={handleIdeaChange}
               onFieldConfirm={handleFieldConfirm}
               onFieldDelete={handleFieldDelete}
               onGoToStep={handleGoToStep}
               onReview={runReview}
               onInvestigationViewed={() => setInvestigationViewed(true)}
-              onSelectMemory={handleSelectMemory}
               guidedDemoStep={guidedDemoStep === 'complete' ? null : guidedDemoStep}
               onGuidedDemoAdvance={isDemoGuided ? handleGuidedAdvance : undefined}
-              showPhilosophy
             />
           )}
 

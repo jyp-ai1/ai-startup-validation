@@ -4921,18 +4921,71 @@
                 "competitorsTrust": "경쟁사 4개 분석"
               }
             },
-            "aiPmNotebook": {
-              "title": "AI PM Notebook",
-              "learnedTitle": "오늘 우리가 새롭게 알게 된 것",
-              "aiMemoTitle": "AI PM 메모",
-              "founderMemoTitle": "대표님의 생각",
-              "founderMemoPlaceholder": "예: 가격을 다시 생각해야겠다…",
-              "itemMarker": "{n}.",
+            "aiPmInbox": {
+              "title": "AI PM Inbox",
+              "deliveryLead": "오늘 AI PM이 대표님께 전달할 내용입니다.",
+              "readBadge": "읽음",
+              "headline": {
+                "reviewComplete": "오늘 검토를 완료했습니다.",
+                "readyToReview": "검토 준비가 되었습니다.",
+                "enterIdea": "아이디어부터 시작합니다."
+              },
+              "findingsTitle": "이번 검토에서 새롭게 발견한 내용",
+              "riskTitle": "위험한 내용",
+              "staleHint": "입력이 바뀌었습니다. 다시 검토하면 AI PM 보고가 최신 상태로 맞춰집니다.",
               "findings": {
                 "competitorsUp": "경쟁사가 2개 늘었습니다.",
                 "searchVolumeUp": "검색량이 증가했습니다.",
                 "customerChanged": "고객 정의가 변경되었습니다."
+              },
+              "risks": {
+                "pricingUnverified": "가격 전략이 아직 검증되지 않았습니다.",
+                "reviewStale": "검토 결과가 최신이 아닙니다."
+              },
+              "todayTask": {
+                "pricingOnly": "오늘 해야 할 일 — 가격 전략만 검토하면 됩니다.",
+                "reReviewFirst": "오늘 해야 할 일 — 변경 내용을 반영해 다시 검토하세요.",
+                "continueReview": "오늘 해야 할 일 — 검토 내용을 이어서 확인하세요.",
+                "startReview": "오늘 해야 할 일 — 첫 검토를 시작하세요.",
+                "enterIdea": "오늘 해야 할 일 — 사업 아이디어를 입력하세요."
+              },
+              "firstVisit": {
+                "readyToReview": "AI PM이 대표님과 함께 사업을 검토할 준비가 되었습니다.",
+                "enterIdea": "AI PM이 검토를 시작하려면 사업 아이디어가 필요합니다."
+              },
+              "resumeGreeting": "좋습니다.",
+              "resumeBody": "지난 회의에서 대표님은 아래와 같이 남기셨습니다. 이번 검토에서는 이어서 진행하겠습니다.",
+              "resumeFocus": {
+                "pricingContinue": "이번 검토에서는 가격 전략부터 이어서 검토하겠습니다."
+              },
+              "ctaContinue": "계속 검토하기",
+              "ctaResume": "이어서 진행"
+            },
+            "meetingNote": {
+              "title": "AI PM 회의록",
+              "header": "AI PM 회의록",
+              "discussedTitle": "오늘 논의한 내용",
+              "decisionsTitle": "결정한 내용",
+              "nextAgendaTitle": "다음 회의에서 확인할 내용",
+              "founderMemoTitle": "대표 메모",
+              "founderMemoPlaceholder": "예: 가격을 다시 고민해야겠다…",
+              "discussed": {
+                "marketDemand": "B2B 시장 수요가 확인되었습니다.",
+                "competitorLandscape": "경쟁사 4곳의 포지셔닝을 비교했습니다.",
+                "customerShift": "고객 정의가 스타트업 대표로 구체화되었습니다."
+              },
+              "decisions": {
+                "continuePricingReview": "가격 전략 검토를 다음 회의 안건으로 확정했습니다."
+              },
+              "nextAgenda": {
+                "pricingStrategy": "가격 전략 및 수익성 가설 검증",
+                "customerInterviews": "고객 인터뷰 3명 일정"
               }
+            },
+            "artifactTrigger": {
+              "body": "대표님. 시장 검토가 충분합니다. 이제 Lean Canvas를 생성하시겠습니까?",
+              "cta": "Lean Canvas 생성",
+              "mockHint": "Sprint 4에서 실제 생성으로 연결됩니다."
             },
             "recentChanges": {
               "title": "최근 변경"

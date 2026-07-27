@@ -4774,18 +4774,71 @@
                 "competitorsTrust": "4 competitors analyzed"
               }
             },
-            "aiPmNotebook": {
-              "title": "AI PM Notebook",
-              "learnedTitle": "What we learned today",
-              "aiMemoTitle": "AI PM notes",
-              "founderMemoTitle": "Your thoughts",
-              "founderMemoPlaceholder": "e.g. I need to rethink pricing…",
-              "itemMarker": "{n}.",
+            "aiPmInbox": {
+              "title": "AI PM Inbox",
+              "deliveryLead": "What your AI PM is reporting to you today.",
+              "readBadge": "Read",
+              "headline": {
+                "reviewComplete": "Today's review is complete.",
+                "readyToReview": "Ready to review.",
+                "enterIdea": "Start with your idea."
+              },
+              "findingsTitle": "Newly discovered in this review",
+              "riskTitle": "Risk",
+              "staleHint": "Inputs changed — re-run review to refresh the AI PM report.",
               "findings": {
                 "competitorsUp": "Two more competitors appeared.",
                 "searchVolumeUp": "Search volume increased.",
                 "customerChanged": "Customer definition changed."
+              },
+              "risks": {
+                "pricingUnverified": "Pricing strategy is not validated yet.",
+                "reviewStale": "Review results are outdated."
+              },
+              "todayTask": {
+                "pricingOnly": "Today's task — focus on pricing strategy only.",
+                "reReviewFirst": "Today's task — re-run review with your latest inputs.",
+                "continueReview": "Today's task — continue reviewing findings.",
+                "startReview": "Today's task — start the first review.",
+                "enterIdea": "Today's task — enter your business idea."
+              },
+              "firstVisit": {
+                "readyToReview": "Your AI PM is ready to review the venture with you.",
+                "enterIdea": "Your AI PM needs a business idea to begin."
+              },
+              "resumeGreeting": "Welcome back.",
+              "resumeBody": "In your last meeting you noted the following. We'll continue from there.",
+              "resumeFocus": {
+                "pricingContinue": "This session we'll continue with pricing strategy."
+              },
+              "ctaContinue": "Continue review",
+              "ctaResume": "Continue session"
+            },
+            "meetingNote": {
+              "title": "AI PM meeting minutes",
+              "header": "AI PM Meeting Note",
+              "discussedTitle": "Discussed today",
+              "decisionsTitle": "Decisions made",
+              "nextAgendaTitle": "Next meeting agenda",
+              "founderMemoTitle": "Founder notes",
+              "founderMemoPlaceholder": "e.g. I need to rethink pricing…",
+              "discussed": {
+                "marketDemand": "B2B market demand confirmed.",
+                "competitorLandscape": "Compared positioning of 4 competitors.",
+                "customerShift": "Customer refined to startup founders."
+              },
+              "decisions": {
+                "continuePricingReview": "Pricing review set as next meeting focus."
+              },
+              "nextAgenda": {
+                "pricingStrategy": "Pricing strategy and revenue hypothesis",
+                "customerInterviews": "Schedule 3 customer interviews"
               }
+            },
+            "artifactTrigger": {
+              "body": "Market review looks sufficient. Would you like to generate a Lean Canvas now?",
+              "cta": "Generate Lean Canvas",
+              "mockHint": "Real generation connects in Sprint 4."
             },
             "recentChanges": {
               "title": "Recent changes"

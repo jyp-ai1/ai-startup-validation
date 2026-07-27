@@ -2,7 +2,7 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **3.3 AI PM Experience** ✅ · [SPRINT_3_3_AI_PM_EXPERIENCE.md](./sprints/SPRINT_3_3_AI_PM_EXPERIENCE.md)  
+> **Active sprint:** Sprint **3.4 AI PM Inbox** ✅ · Sprint 3 COMPLETE  
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
@@ -104,7 +104,49 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 
 ---
 
-## Sprint 3.2 — AI PM Operating System ✅ SHIPPED
+## Sprint 3.2 — AI PM Operating System ⏸ HOLD (CPO)
+
+**Note:** CPO HOLD — philosophy not fully in UI. Superseded by 3.3 polish.
+
+**Kickoff:** [SPRINT_3_2_AI_PM_OS.md](./sprints/SPRINT_3_2_AI_PM_OS.md)
+
+---
+
+## Sprint 3.4 — AI PM Inbox & Meeting Flow ✅ SHIPPED
+
+**Goal:** AI PM이 먼저 보고 · 회의록 · Resume Brief — Sprint 3 finale
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | AI PM Inbox (report-first) | ✅ |
+| 2 | AI PM 회의록 | ✅ |
+| 3 | Resume Brief (founder memo) | ✅ |
+| 4 | Meeting flow (no timeline UI) | ✅ |
+| 5 | Artifact Trigger mock | ✅ |
+
+**Kickoff:** [SPRINT_3_4_AI_PM_INBOX.md](./sprints/SPRINT_3_4_AI_PM_INBOX.md)
+
+**Next:** Sprint 4 — Real Evidence Engine (UI freeze)
+
+---
+
+## Sprint 3.3 — AI PM Experience Polish ✅ SHIPPED
+
+**Goal:** 3초 — *"내 사업을 같이 검토해주는 AI PM"* · 4섹션 + Notebook
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | AI PM Notebook (review auto + founder memo) | ✅ |
+| 2 | Hide internal terms — 4-section workspace only | ✅ |
+| 3 | Source trust labels (Google Trends 기반, …) | ✅ |
+| 4 | Next Action why + time + effect | ✅ |
+| 5 | Founder memo re-entry brief | ✅ |
+
+**Kickoff:** [SPRINT_3_3_AI_PM_EXPERIENCE.md](./sprints/SPRINT_3_3_AI_PM_EXPERIENCE.md)
+
+---
+
+## Sprint 3.2 — AI PM Operating System ✅ SHIPPED (base)
 
 **Goal:** 사용자가 보는 것은 AI PM 하나 — Daily Brief · Review Summary · Growth Story
 
