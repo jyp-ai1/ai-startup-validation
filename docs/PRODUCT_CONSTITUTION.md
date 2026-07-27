@@ -110,6 +110,19 @@ Any feature that does not serve **decision preparation** is out of constitution.
 
 모든 UI · 라벨 · 설명 · 워크플로우의 **기본 언어는 한국어**. (EN 등은 secondary)
 
+### Principle 12 — Demo First (Product Rule)
+
+매 Sprint마다 아래 질문에 답할 수 있어야 한다.
+
+> **"대표에게 3분 안에 이 기능을 보여주면, 아무 설명 없이도 이해할 수 있는가?"**
+
+| Answer | Action |
+|--------|--------|
+| **YES** | Ship |
+| **NO** | UX 수정 — 기능 추가 금지 |
+
+Ship report must lead with **User Scenario** (step-by-step), not feature list.
+
 ---
 
 ## Workflow philosophy
@@ -470,29 +483,28 @@ Do **not** implement features or screens. Implement **behaviors**.
 | Decision Card implemented | User understands **why HOLD in 3 seconds** |
 | Workflow UI polish | User passes Workflow **without thinking** |
 
-## Production standard
+## Ship cycle (Release Rule — mandatory)
 
-Cursor does **not** target Preview. All development and QA target **Production**.
+```text
+구현 → Build PASS → Lint PASS → Type PASS → Commit → Push → Preview Deploy → Preview URL → QA Checklist → Before/After → User Scenario → Self Review → CPO Review
+```
+
+Cursor reports **only after** Commit · Push · Preview URL are complete. Never ask "커밋할까요?"
 
 **Production URL:** https://ai-startup-validation-tau.vercel.app
 
-## Ship cycle (no approval wait)
+## Report format (Release Rule — mandatory)
 
 ```text
-구현 → QA → Regression → Build → Deploy → Production 확인 → Commit → Push → continue loop
-```
-
-Cursor does **not** ask for deployment or commit approval unless blocked by gates below.
-
-## Report format (report only — no questions)
-
-```text
-오늘 사용자가 새롭게 느끼는 경험
-오늘 개선한 KPI / 행동
-오늘 해결한 문제 (어디서 멈췄는가)
-Known Issues
-현재 Production 상태
-내일도 계속 개선할 KPI
+1. Build / Type / Lint — PASS
+2. Commit hash
+3. Push — origin/main
+4. Preview Deploy — 완료
+5. Preview URL
+6. User Scenario (step-by-step — 끊김 없이 동작 확인)
+7. QA Checklist
+8. Before / After screenshots
+9. Self Review (UI · UX · Known Issues)
 ```
 
 Template: [templates/DAILY_AUTONOMOUS_REPORT.md](./templates/DAILY_AUTONOMOUS_REPORT.md)
@@ -501,7 +513,8 @@ Template: [templates/DAILY_AUTONOMOUS_REPORT.md](./templates/DAILY_AUTONOMOUS_RE
 
 - 완료했습니다 / 끝났습니다  
 - 다음 작업은 무엇인가요?  
-- 승인 부탁드립니다 / 배포할까요?  
+- 승인 부탁드립니다 / 배포할까요? / **커밋할까요?**
+- 구현했습니다 → (승인 대기)
 - Queue가 끝났습니다 / Mission 완료 / Sprint 종료 / Epic 종료 / Release 완료  
 
 ## Journey walk (Production check — not work goals)

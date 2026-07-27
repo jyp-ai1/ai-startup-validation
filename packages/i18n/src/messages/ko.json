@@ -4349,6 +4349,70 @@
           "partialEvidence": "확보된 정보를 바탕으로 다음 확인 단계를 제안할 수 있습니다."
         }
       },
+      "strategyWorkspace": {
+        "addPrompt": "무엇을 더 알려주실까요?",
+        "addChips": {
+          "problem": "+ 해결하려는 문제",
+          "customer": "+ 고객",
+          "mvp": "+ MVP",
+          "pricing": "+ 가격"
+        },
+        "reviewAgainCta": "다시 검토하기",
+        "reviewing": {
+          "title": "입력하신 내용을 검토하고 있습니다",
+          "hint": "화면을 이동하지 않습니다"
+        },
+        "followUp": {
+          "lead": "시장은 어느 정도 확인했습니다. 가격과 고객 정보가 부족합니다. 질문 하나만 더 드려도 될까요?",
+          "question": "고객은 돈을 지불하는 사람인가요?",
+          "placeholder": "생각나는 대로 적어 주세요",
+          "submit": "답변 저장",
+          "saved": "답변이 반영되었습니다",
+          "done": "Review Board가 업데이트되었습니다. 필요하면 다시 검토하세요."
+        },
+        "aiDialog": {
+          "aiLabel": "AI PM",
+          "inputPlaceholder": "AI에게 설명해 주세요",
+          "nextCta": "다음",
+          "cancelCta": "취소",
+          "confirmCta": "확인",
+          "reviseCta": "수정",
+          "questions": {
+            "problem": "어떤 문제를 해결하려고 하나요?",
+            "customer": "누가 가장 불편해하나요?",
+            "mvp": "처음 만들 제품은 무엇인가요?",
+            "pricing": "얼마를 받을 생각인가요?"
+          },
+          "confirmSummary": {
+            "problem": "「{value}」을(를) 해결하려는 문제로 이해했습니다. 맞나요?",
+            "customer": "「{value}」이(가) 핵심 고객으로 이해했습니다. 맞나요?",
+            "mvp": "「{value}」을(를) 첫 MVP로 이해했습니다. 맞나요?",
+            "pricing": "「{value}」 수준의 가격으로 이해했습니다. 맞나요?"
+          }
+        },
+        "meetingBoard": {
+          "title": "이번 검토에서 확인한 내용",
+          "reviewRound": "검토 {count}회차",
+          "expand": "더보기",
+          "collapse": "접기",
+          "addInput": "입력하기",
+          "sections": {
+            "market": "시장",
+            "customer": "고객",
+            "pricing": "가격",
+            "differentiation": "차별성"
+          },
+          "marketSummary": "유사 서비스 8개",
+          "marketDetail": "Product Hunt·국내 SaaS 범주에서 유사 포지셔닝 서비스가 확인되었습니다. (Mock)",
+          "customerSummary": "「{value}」",
+          "customerDetail": "입력하신 고객 기준으로 타깃을 정리했습니다.",
+          "customerEmpty": "인터뷰 부족",
+          "pricingSummary": "「{value}」",
+          "pricingEmpty": "정보 없음",
+          "differentiationSummary": "「{value}」",
+          "differentiationEmpty": "정보 없음"
+        }
+      },
       "conclusion": {
         "title": "검토 보드"
       },

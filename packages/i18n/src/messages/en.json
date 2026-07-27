@@ -4202,6 +4202,70 @@
           "partialEvidence": "With this evidence, we can suggest the next checks."
         }
       },
+      "strategyWorkspace": {
+        "addPrompt": "What else would you like to share?",
+        "addChips": {
+          "problem": "+ Problem to solve",
+          "customer": "+ Customer",
+          "mvp": "+ MVP",
+          "pricing": "+ Pricing"
+        },
+        "reviewAgainCta": "Review again",
+        "reviewing": {
+          "title": "Reviewing your input",
+          "hint": "Stay on this screen"
+        },
+        "followUp": {
+          "lead": "Market looks partially clear. Pricing and customer depth are thin. May I ask one more question?",
+          "question": "Is your customer the one who pays?",
+          "placeholder": "Write what comes to mind",
+          "submit": "Save answer",
+          "saved": "Answer saved",
+          "done": "Review board updated. Run review again if needed."
+        },
+        "aiDialog": {
+          "aiLabel": "AI PM",
+          "inputPlaceholder": "Explain to AI",
+          "nextCta": "Next",
+          "cancelCta": "Cancel",
+          "confirmCta": "Confirm",
+          "reviseCta": "Revise",
+          "questions": {
+            "problem": "What problem are you solving?",
+            "customer": "Who feels this pain most?",
+            "mvp": "What is the first product?",
+            "pricing": "What price are you considering?"
+          },
+          "confirmSummary": {
+            "problem": "I understand the problem as 「{value}」. Correct?",
+            "customer": "I understand the core customer as 「{value}」. Correct?",
+            "mvp": "I understand the first MVP as 「{value}」. Correct?",
+            "pricing": "I understand pricing around 「{value}」. Correct?"
+          }
+        },
+        "meetingBoard": {
+          "title": "Confirmed in this review",
+          "reviewRound": "Review round {count}",
+          "expand": "More",
+          "collapse": "Less",
+          "addInput": "Add input",
+          "sections": {
+            "market": "Market",
+            "customer": "Customer",
+            "pricing": "Pricing",
+            "differentiation": "Differentiation"
+          },
+          "marketSummary": "8 similar services",
+          "marketDetail": "Similar positioning found on Product Hunt and local SaaS. (Mock)",
+          "customerSummary": "「{value}」",
+          "customerDetail": "Target framed from your customer input.",
+          "customerEmpty": "Needs interviews",
+          "pricingSummary": "「{value}」",
+          "pricingEmpty": "No info",
+          "differentiationSummary": "「{value}」",
+          "differentiationEmpty": "No info"
+        }
+      },
       "conclusion": {
         "title": "Review board"
       },

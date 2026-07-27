@@ -750,6 +750,34 @@ Features improved but UI polish regressed — temporary layouts, border-heavy ca
 
 ---
 
+## ADR-026: Continuous Strategy Loop — One Workspace, One Thought (Sprint 1.4)
+
+**Status:** Accepted  
+**Date:** 2026-07-27  
+**Approver:** CPO
+
+### Context
+
+Sprint 1.3.x improved evidence and Review Board vocabulary but flow still split across `/validation`, `/investigate`, `/conclusion`. Users experience page hops and form-filling. CPO: LaunchLens is not a validation report tool — it is an **AI Strategy Workspace** where thinking continues after the first review.
+
+### Decision
+
+1. **Single workspace route:** `/validation` hosts the full loop; legacy investigate/conclusion routes redirect (no removal yet for bookmarks)
+2. **Continuous loop:** Input → Review → Follow-up question → Input → Board update → Review again — not a terminal "result" screen
+3. **Conversational input:** Idea first; optional context via chips (+ 문제, + 고객, …) and AI PM confirm dialog — not a vertical form list
+4. **Meeting-notes board:** "이번 검토에서 확인한 내용" renders as scannable sections (시장 · 고객 · 가격 · 차별성) with 더보기 / 입력하기 — not report cards
+5. **Product Rule — One Screen, One Thought:** At any moment the user has one cognitive job — input OR review loading OR board reading OR answering follow-up OR field dialog. Mixed-purpose layouts are blocked in P0 flows.
+6. **Motion baseline:** State changes use subtle fade/slide + toast + scroll-to-board — polish without decoration
+
+### Consequences
+
+- [SPRINT_1_4_CONTINUOUS_LOOP.md](./sprints/SPRINT_1_4_CONTINUOUS_LOOP.md)
+- `V2StrategyWorkspaceView` replaces split validation/investigate/conclusion journey for V2 demo path
+- DESIGN_CONSTITUTION gains One Screen, One Thought rule
+- Real AI pipeline + Context Memory wiring deferred to P1 within Sprint 1.x
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

@@ -6,10 +6,10 @@ import { JourneyPageSkeleton } from '@/features/workflow-journey/components/jour
 import { readJourneyPersona } from '@/features/workflow-journey/lib/v2-journey-cookies';
 import { buildPageMetadata } from '@/lib/site/page-metadata';
 
-const V2ValidationView = dynamic(
+const V2StrategyWorkspaceView = dynamic(
   () =>
-    import('@/features/workflow-journey/components/v2/v2-validation-view').then(
-      (m) => m.V2ValidationView,
+    import('@/features/workflow-journey/components/v2/v2-strategy-workspace').then(
+      (m) => m.V2StrategyWorkspaceView,
     ),
   { loading: () => <JourneyPageSkeleton phase="workflow" /> },
 );
@@ -29,5 +29,5 @@ export default async function ValidationPage() {
     redirect('/who');
   }
 
-  return <V2ValidationView />;
+  return <V2StrategyWorkspaceView />;
 }

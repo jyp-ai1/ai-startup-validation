@@ -68,6 +68,22 @@ Before every release, pass [UI Self Review](#ui-self-review). **One NO = do not 
 2. Every click gets a response
 3. AI recommends — never judges
 4. No scores — evidence only
+5. **One Screen, One Thought** — one cognitive job per moment; never mix input, review, board, and choice on the same view
+
+---
+
+## One Screen, One Thought (Product Rule)
+
+| Moment | User thinks |
+|--------|-------------|
+| Typing idea / chip | "What am I building?" |
+| AI PM dialog | "Did AI understand me?" |
+| Review loading | "What's happening now?" |
+| Meeting board | "What did we confirm?" |
+| Follow-up question | "One more thing to clarify" |
+| CTA choice | "What next?" |
+
+If two rows compete for attention, split by phase — do not stack on one screen.
 
 ---
 
