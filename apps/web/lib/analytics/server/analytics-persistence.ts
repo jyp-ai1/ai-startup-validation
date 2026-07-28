@@ -19,8 +19,11 @@ export async function persistAnalyticsEvent(payload: AnalyticsEventPayload): Pro
       sessionId: typeof params.session_id === 'string' ? params.session_id : null,
       timestamp: payload.timestamp,
     });
-  } catch {
-    /* log in dev if insert fails — migration 022 should be applied */
+  } catch (error) {
+    console.error('[analytics] persist failed — apply migration 022_analytics_events.sql', {
+      event: payload.name,
+      message: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 

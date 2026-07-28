@@ -34,8 +34,19 @@ export function AuthCompleteTracker({
     trackEvent(ANALYTICS_EVENTS.login, { provider: 'google', screen, browser });
     trackEvent(ANALYTICS_EVENTS.funnelStep, { step: 'login_complete', screen, browser });
 
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.oauthSuccess, {
+      provider: 'google',
+      screen,
+      browser,
+      project_id: projectId,
+    });
     void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.googleLoginSuccess, {
       provider: 'google',
+      screen,
+      browser,
+      project_id: projectId,
+    });
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.workspaceOpen, {
       screen,
       browser,
       project_id: projectId,

@@ -1,6 +1,9 @@
 import { PRODUCT_ANALYTICS_EVENTS } from '@/lib/analytics/product-analytics';
 import type { AnalyticsEventPayload } from '@/lib/analytics/types';
-import { recordAnalyticsEvent } from '@/lib/analytics/server/ops-store';
+import {
+  recordAnalyticsEvent,
+  recordAnalyticsEventAndPersist,
+} from '@/lib/analytics/server/ops-store';
 
 export const OAUTH_ANALYTICS_EVENTS = {
   loginClicked: PRODUCT_ANALYTICS_EVENTS.loginClicked,
@@ -52,20 +55,53 @@ export function recordOAuthAnalyticsEvent(
   recordAnalyticsEvent(payload);
 }
 
-/** Server-side — OAuth callback success */
+function buildOAuthSuccessPayloads(params: {
+  next: string;
+  durationMs?: number;
+  promoted?: boolean;
+}): AnalyticsEventPayload[] {
+  const at = new Date().toISOString();
+  return [
+    {
+      name: OAUTH_ANALYTICS_EVENTS.oauthSuccess,
+      params: { ...params, oauth: true },
+      timestamp: at,
+    },
+    {
+      name: PRODUCT_ANALYTICS_EVENTS.googleLoginSuccess,
+      params: {
+        provider: 'google',
+        screen: params.next,
+        status: 'success',
+        duration_ms: params.durationMs,
+        promoted: params.promoted,
+        oauth: true,
+      },
+      timestamp: at,
+    },
+  ];
+}
+
+/** Server-side — OAuth callback success (in-memory only). */
 export function recordOAuthSuccess(params: {
   next: string;
   durationMs?: number;
   promoted?: boolean;
 }): void {
-  recordOAuthAnalyticsEvent(OAUTH_ANALYTICS_EVENTS.oauthSuccess, params);
-  recordOAuthAnalyticsEvent(PRODUCT_ANALYTICS_EVENTS.googleLoginSuccess, {
-    provider: 'google',
-    screen: params.next,
-    status: 'success',
-    duration_ms: params.durationMs,
-    promoted: params.promoted,
-  });
+  for (const payload of buildOAuthSuccessPayloads(params)) {
+    recordAnalyticsEvent(payload);
+  }
+}
+
+/** Server-side — OAuth callback success with awaited DB persist. */
+export async function recordOAuthSuccessAndPersist(params: {
+  next: string;
+  durationMs?: number;
+  promoted?: boolean;
+}): Promise<void> {
+  for (const payload of buildOAuthSuccessPayloads(params)) {
+    await recordAnalyticsEventAndPersist(payload);
+  }
 }
 
 /** Server-side — OAuth callback failure */

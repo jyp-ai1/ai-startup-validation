@@ -28,8 +28,10 @@ export function useAlphaFunnelTracking() {
       track(PRODUCT_ANALYTICS_EVENTS.strategyChanged, { category }),
     trackMyProjectStarted: () => track(PRODUCT_ANALYTICS_EVENTS.myProjectStarted),
     trackLoginStarted: () => track(PRODUCT_ANALYTICS_EVENTS.loginStarted),
-    trackMorningReportView: (projectId?: string) =>
-      track(PRODUCT_ANALYTICS_EVENTS.morningReportView, { project_id: projectId }),
+    trackMorningReportView: (projectId?: string) => {
+      track(PRODUCT_ANALYTICS_EVENTS.morningReportView, { project_id: projectId });
+      track(PRODUCT_ANALYTICS_EVENTS.morningReportOpen, { project_id: projectId });
+    },
     trackFounderMemoWritten: (projectId?: string) =>
       track(PRODUCT_ANALYTICS_EVENTS.founderMemoWritten, { project_id: projectId }),
   };

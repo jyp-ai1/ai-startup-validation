@@ -611,17 +611,42 @@ function eventCheckStatus(
   return passes.length >= Math.ceil(matched.length * 0.5) ? 'PASS' : 'PENDING';
 }
 
+function eventCountStatus(eventName: string, minCount = 1): 'PASS' | 'PENDING' | 'FAIL' {
+  return countEvents(eventName) >= minCount ? 'PASS' : 'PENDING';
+}
+
 function computeReleaseReadiness(
   oauth: NonNullable<OpsDashboardStats['oauthAnalytics']>,
 ): NonNullable<OpsDashboardStats['releaseReadiness']> {
+  const oauthSuccessCount = Math.max(
+    countEvents(PRODUCT_ANALYTICS_EVENTS.oauthSuccess),
+    countEvents(PRODUCT_ANALYTICS_EVENTS.googleLoginSuccess),
+  );
+
   const checks = [
     {
       id: 'oauth',
       label: 'OAuth',
-      status: (oauth.successRate >= 95 ? 'PASS' : oauth.successes > 0 ? 'FAIL' : 'PENDING') as
-        | 'PASS'
-        | 'PENDING'
-        | 'FAIL',
+      status: (oauthSuccessCount >= 1
+        ? 'PASS'
+        : oauth.attempts > 0 && oauth.successes === 0
+          ? 'FAIL'
+          : 'PENDING') as 'PASS' | 'PENDING' | 'FAIL',
+    },
+    {
+      id: 'workspace_open',
+      label: 'Workspace Open',
+      status: eventCountStatus(PRODUCT_ANALYTICS_EVENTS.workspaceOpen),
+    },
+    {
+      id: 'validation_open',
+      label: 'Validation Open',
+      status: eventCountStatus(PRODUCT_ANALYTICS_EVENTS.validationOpen),
+    },
+    {
+      id: 'morning_report',
+      label: 'Morning Report',
+      status: eventCountStatus(PRODUCT_ANALYTICS_EVENTS.morningReportOpen),
     },
     {
       id: 'workspace_restore',
@@ -632,11 +657,6 @@ function computeReleaseReadiness(
       id: 'project_recovery',
       label: 'Project Restore',
       status: eventCheckStatus(PRODUCT_ANALYTICS_EVENTS.projectRecoveryValidated),
-    },
-    {
-      id: 'morning_report',
-      label: 'Morning Report',
-      status: eventCheckStatus(PRODUCT_ANALYTICS_EVENTS.morningReportView),
     },
     {
       id: 'admin_analytics',
@@ -655,9 +675,11 @@ function computeReleaseReadiness(
     },
   ];
 
-  const overallPass =
-    checks.filter((c) => c.status === 'PASS').length >= 5 &&
-    checks.find((c) => c.id === 'oauth')?.status === 'PASS';
+  const coreChecks = ['oauth', 'workspace_open', 'validation_open', 'morning_report', 'admin_analytics'];
+  const corePassed = coreChecks.filter(
+    (id) => checks.find((c) => c.id === id)?.status === 'PASS',
+  ).length;
+  const overallPass = corePassed >= 4 && checks.find((c) => c.id === 'oauth')?.status === 'PASS';
 
   return { checks, overallPass };
 }
@@ -1071,29 +1093,57 @@ const MOCK_STATS: OpsDashboardStats = {
   releaseReadiness: computeReleaseReadiness(computeOAuthAnalytics()),
 };
 
-export function recordAnalyticsEvent(payload: AnalyticsEventPayload): void {
-  events.push(payload);
+function eventDedupeKey(event: AnalyticsEventPayload): string {
+  const sessionId =
+    typeof event.params?.session_id === 'string' ? event.params.session_id : '';
+  return `${event.name}|${event.timestamp}|${sessionId}`;
+}
+
+function trimEventsBuffer(): void {
   if (events.length > MAX_EVENTS) {
     events.splice(0, events.length - MAX_EVENTS);
   }
+}
+
+function mergePersistedEvents(persisted: AnalyticsEventPayload[]): void {
+  const existing = new Set(events.map(eventDedupeKey));
+  for (const event of persisted) {
+    const key = eventDedupeKey(event);
+    if (existing.has(key)) continue;
+    events.push(event);
+    existing.add(key);
+  }
+  trimEventsBuffer();
+}
+
+export function recordAnalyticsEvent(payload: AnalyticsEventPayload): void {
+  events.push(payload);
+  trimEventsBuffer();
   void import('./analytics-persistence').then(({ persistAnalyticsEvent }) =>
     persistAnalyticsEvent(payload),
   );
 }
 
+/** Await DB write — use on OAuth callback before redirect (serverless-safe). */
+export async function recordAnalyticsEventAndPersist(
+  payload: AnalyticsEventPayload,
+): Promise<void> {
+  events.push(payload);
+  trimEventsBuffer();
+  const { persistAnalyticsEvent } = await import('./analytics-persistence');
+  await persistAnalyticsEvent(payload);
+}
+
 let hydratedFromDb = false;
 
-/** Load persisted events once per server instance — Sprint 4.8. */
+/** Load persisted events once per server instance — Sprint 4.8 / 5.1.2. */
 export async function ensureAnalyticsHydrated(): Promise<void> {
   if (hydratedFromDb) return;
   hydratedFromDb = true;
   const { loadPersistedAnalyticsEvents } = await import('./analytics-persistence');
   const persisted = await loadPersistedAnalyticsEvents();
-  if (persisted.length > 0 && events.length === 0) {
-    events.push(...persisted);
-    if (events.length > MAX_EVENTS) {
-      events.splice(0, events.length - MAX_EVENTS);
-    }
+  if (persisted.length > 0) {
+    mergePersistedEvents(persisted);
   }
 }
 

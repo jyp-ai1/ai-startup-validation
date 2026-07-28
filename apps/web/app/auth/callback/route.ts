@@ -6,7 +6,7 @@ import { createServerClient, isSupabaseConfigured } from '@repo/db';
 import {
   mapCallbackErrorToOAuthCode,
   recordOAuthFailure,
-  recordOAuthSuccess,
+  recordOAuthSuccessAndPersist,
 } from '@/lib/auth/oauth-analytics';
 import { WORKSPACE_MODE_COOKIE } from '@/lib/auth/server-auth';
 
@@ -129,7 +129,7 @@ export async function GET(request: Request) {
     response.cookies.delete('ACTIVE_PROJECT_ID');
 
     try {
-      recordOAuthSuccess({
+      await recordOAuthSuccessAndPersist({
         next: safeNext,
         durationMs: Date.now() - startedAt,
         promoted: promoteDemo,
