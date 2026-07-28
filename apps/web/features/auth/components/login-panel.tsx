@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
+import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import { isSupabaseBrowserConfigured } from '@repo/db';
 
 import { GoogleSignInButton } from './google-sign-in-button';
 
@@ -17,6 +19,14 @@ type LoginPanelProps = {
 export function LoginPanel({ redirectTo, errorKey, supabaseReady }: LoginPanelProps) {
   const t = useTranslations('auth');
   const tm = useTranslations('meta');
+
+  useEffect(() => {
+    console.log({
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.slice(0, 20),
+      isConfigured: isSupabaseBrowserConfigured(),
+    });
+  }, []);
 
   return (
     <main className="relative flex min-h-screen items-center justify-center bg-background px-4 sm:px-6">
