@@ -8,6 +8,15 @@ import type {
   SmartIntakePricingChoice,
 } from './v2-smart-intake-types';
 
+export type DemoWorkflowSnapshot = {
+  lastDemoStep?: string;
+  founderMemo?: string;
+  strategySummary?: string;
+  smartAnswers?: Record<string, string>;
+  reasonChainSummary?: string;
+  artifactDraft?: string;
+};
+
 export type DemoProjectDraft = {
   serviceName: string;
   tagline: string;
@@ -21,7 +30,10 @@ export type DemoProjectDraft = {
   completenessScore?: number;
   extracted?: Partial<Record<SmartIntakeFieldId, boolean>>;
   missing?: SmartIntakeMissingId[];
+  workflow?: DemoWorkflowSnapshot;
 };
+
+export const DEMO_WORKFLOW_SNAPSHOT_KEY = 'll_demo_workflow_snapshot';
 
 export function createEmptyDemoProjectDraft(): DemoProjectDraft {
   return { serviceName: '', tagline: '', customer: '', problem: '' };
@@ -54,6 +66,27 @@ export function persistDemoProjectDraftForLogin(draft: DemoProjectDraft): void {
   if (typeof document === 'undefined') return;
   const value = encodeURIComponent(JSON.stringify(draft));
   document.cookie = `${DEMO_PROJECT_DRAFT_COOKIE}=${value}; path=/; max-age=3600; SameSite=Lax`;
+}
+
+export function saveDemoWorkflowSnapshot(snapshot: DemoWorkflowSnapshot): void {
+  if (typeof window === 'undefined') return;
+  sessionStorage.setItem(DEMO_WORKFLOW_SNAPSHOT_KEY, JSON.stringify(snapshot));
+}
+
+export function loadDemoWorkflowSnapshot(): DemoWorkflowSnapshot | null {
+  if (typeof window === 'undefined') return null;
+  const raw = sessionStorage.getItem(DEMO_WORKFLOW_SNAPSHOT_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as DemoWorkflowSnapshot;
+  } catch {
+    return null;
+  }
+}
+
+export function clearDemoWorkflowSnapshot(): void {
+  if (typeof window === 'undefined') return;
+  sessionStorage.removeItem(DEMO_WORKFLOW_SNAPSHOT_KEY);
 }
 
 export function clearDemoProjectDraftCookie(): void {

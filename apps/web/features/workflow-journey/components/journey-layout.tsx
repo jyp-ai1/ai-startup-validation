@@ -5,7 +5,10 @@ import { useTranslations } from 'next-intl';
 import { Sparkles } from 'lucide-react';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { cn } from '@repo/ui/lib/utils';
+
+import { JourneyGlobalNav } from './journey-global-nav';
 
 type JourneyPhase = 'goal' | 'workflow' | 'workspace';
 
@@ -15,6 +18,7 @@ type JourneyLayoutProps = {
   variant?: 'journey' | 'intelligence';
   navSlot?: React.ReactNode;
   versionLabel?: string;
+  user?: AppAuthUser | null;
   children: React.ReactNode;
 };
 
@@ -39,6 +43,7 @@ export function JourneyLayout({
   variant = 'journey',
   navSlot,
   versionLabel,
+  user = null,
 }: JourneyLayoutProps) {
   const t = useTranslations('workflow.journey');
   const showJourneyPhases = variant === 'journey';
@@ -58,12 +63,13 @@ export function JourneyLayout({
             </span>
             LaunchLens
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {versionLabel ? (
               <span className="hidden text-[11px] font-medium text-muted-foreground sm:inline">
                 {versionLabel}
               </span>
             ) : null}
+            <JourneyGlobalNav user={user} />
             <LocaleSwitcher />
           </div>
         </div>

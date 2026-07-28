@@ -364,6 +364,27 @@
     "lastEdited": "Edited {when}",
     "emptyHint": "Create your first project.",
     "dbNotReady": "Supabase is not configured.",
+    "v2Workspace": {
+      "label": "AI PM Workspace",
+      "welcomeHeadline": "Welcome, {name}.",
+      "returnHeadline": "Welcome back, {name}.",
+      "returnContinuityHeadline": "{name}",
+      "returnContinuityLead": "Since yesterday's investigation, {competitors} new competitors were found. Search volume {searchDelta}.",
+      "returnActionNeeded": "Pricing review is needed. Continue where you left off?",
+      "lastWorkLabel": "Last work",
+      "restoreStatus": "Restore validation {passed}/{total} passed",
+      "welcomeLead": "Your demo project is saved. AI PM finished this morning's investigation.",
+      "returnLead": "Your saved project 「{project}」. New findings are in today's Inbox.",
+      "projectLabel": "My project",
+      "continuePrompt": "Two new competitors appeared. Review pricing strategy again?",
+      "continueCta": "Continue review with AI PM",
+      "backToInbox": "Back to Inbox",
+      "welcomeLeadFirstDay": "Your project is saved. AI PM's first morning investigation arrives in Workspace Inbox tomorrow.",
+      "morningPendingTitle": "Morning investigation scheduled",
+      "morningPendingLead": "Focus on setup and your first review today. Morning Report appears from day two.",
+      "continuePromptFirstDay": "Complete your document and start your first review with AI PM.",
+      "lifecycleLabel": "Investigation state"
+    },
     "workspace": {
       "backToList": "My projects",
       "emptyTitle": "Nothing here yet.",
@@ -1433,6 +1454,7 @@
       "stories": "Stories",
       "signIn": "Login",
       "startFree": "Start Free",
+      "workspace": "Workspace",
       "menuLabel": "Navigation menu",
       "openMenu": "Open menu",
       "closeMenu": "Close menu"
@@ -1472,6 +1494,38 @@
         "competitor": "Competitive analysis",
         "tasks": "Today's tasks generated",
         "operations": "Project operations"
+      }
+    },
+    "liveMetrics": {
+      "ariaLabel": "Live activity metrics",
+      "todayLabel": "Today",
+      "weeklyLabel": "This week",
+      "newUsers": "New users",
+      "projectsCreated": "Projects created",
+      "reviewsCompleted": "{count} AI reviews completed",
+      "returns": "{count} return visits",
+      "humanToday": "Today {count} founders started their first strategy review with AI PM.",
+      "humanImpact": "{count} founders updated their business strategy based on AI PM insights.",
+      "aiPmImpact": "AI PM changed founder decisions {count} times",
+      "aiPmImpactShort": "AI PM decision changes",
+      "foundersReviewing": "{count} founders reviewed with AI PM today",
+      "strategyImprovements": "AI PM suggested {count} strategy improvements",
+      "mockHint": "Initial mock data"
+    },
+    "testimonials": {
+      "ariaLabel": "User testimonials",
+      "dotLabel": "Testimonial {index}",
+      "one": {
+        "quote": "Market review got much easier before writing a business plan.",
+        "role": "Aspiring founder"
+      },
+      "two": {
+        "quote": "Investor questions are easier to answer now.",
+        "role": "Startup CEO"
+      },
+      "three": {
+        "quote": "AI PM researches overnight — I review when I arrive.",
+        "role": "Solo founder"
       }
     },
     "gtm": {
@@ -2119,6 +2173,162 @@
     "kpiProjectStartHint": "workspace → project",
     "kpiLandingCta": "Landing CTA Rate",
     "kpiFeedbackScore": "Feedback Score",
+    "todayProductKpis": "Today's Product KPI",
+    "kpiNewUsers": "New users",
+    "kpiProjectsCreated": "Projects created",
+    "kpiFirstReviews": "First AI reviews",
+    "kpiReReviews": "Re-reviews",
+    "kpiArtifacts": "Artifacts",
+    "kpiReturns": "Return visits",
+    "oauth": {
+      "title": "Google Login (Release Blocker)",
+      "releaseReady": "Release Ready",
+      "releaseBlocked": "Blocked",
+      "successRate": "Success rate",
+      "avgLoginTime": "Avg login time",
+      "attempts": "Success / attempts",
+      "browserRates": "Success by browser",
+      "errorTracking": "OAuth Error Tracking",
+      "qaReport": "OAuth QA Report",
+      "recentLogins": "Recent logins (today)",
+      "recentSuccess": "Success",
+      "recentFailure": "Failed",
+      "recentErrors": "Latest error"
+    },
+    "releaseReadiness": {
+      "title": "Release Readiness — Epic A Exit",
+      "subtitle": "OAuth → Workspace Restore → Project → Morning Report → Admin → Returning User",
+      "alphaReady": "Closed Alpha Ready",
+      "notReady": "Not Ready",
+      "docHint": "Full checklist: docs/RELEASE_CHECKLIST.md"
+    },
+    "closedAlphaFunnel": {
+      "title": "Closed Alpha Funnel",
+      "subtitle": "Full 16-step journey",
+      "drop": "−{percent}% drop",
+      "steps": {
+        "landing": "Landing",
+        "demoStart": "Demo start",
+        "sampleSelected": "Sample project",
+        "investigationFinished": "Investigation done",
+        "evidenceOpened": "Evidence opened",
+        "smartQuestionAnswered": "First question",
+        "reviewCompleted": "First review",
+        "strategyChanged": "Strategy improved",
+        "myProjectStarted": "My project start",
+        "login": "Login",
+        "workspace": "Workspace",
+        "secondReview": "2nd review",
+        "artifact": "Artifact",
+        "returnVisit": "Return visit",
+        "morningReportView": "Morning report",
+        "founderMemoWritten": "Founder memo"
+      }
+    },
+    "funnelHeatmap": {
+      "title": "Funnel Heatmap",
+      "subtitle": "Retention vs landing — spot drop-offs at a glance"
+    },
+    "alphaAnalytics": {
+      "retention": { "title": "Retention (D1 / D3 / D7 / D14)" },
+      "time": { "title": "Average time between steps" },
+      "dropReason": {
+        "title": "Drop Reason",
+        "login": "Login",
+        "question": "Question",
+        "review": "Review",
+        "evidence": "Evidence",
+        "other": "Other"
+      },
+      "questions": {
+        "title": "Most stuck questions",
+        "pricing": "Pricing",
+        "usp": "USP",
+        "market": "Market",
+        "target": "Target",
+        "bm": "BM"
+      },
+      "aiPmWorking": {
+        "title": "AI PM Working Loop",
+        "subtitle": "Investigate → Evidence → Review → Edit → Re-review → Decision",
+        "avgLoop": "Avg loops",
+        "investigations": "Investigations today",
+        "evidence": "New evidence",
+        "founderEdits": "Founder edits",
+        "aiReReviews": "AI re-reviews"
+      }
+    },
+    "journeyAnalytics": {
+      "title": "Journey Analytics",
+      "subtitle": "Dwell · drop-off · return · completion by step",
+      "columns": {
+        "step": "Step",
+        "dwell": "Dwell time",
+        "dropOff": "Drop-off",
+        "return": "Return",
+        "completion": "Completion"
+      }
+    },
+    "aiPmKpi": {
+      "title": "AI PM KPI",
+      "subtitle": "Value AI PM created today",
+      "totalLabel": "Strategy improvements",
+      "metrics": {
+        "investigationsToday": "Investigations today",
+        "newEvidenceToday": "New evidence",
+        "totalDecisionChanges": "Decision changes",
+        "priceChanges": "Pricing changes",
+        "targetChanges": "Target changes",
+        "uspChanges": "USP changes",
+        "artifactsToday": "Artifacts created"
+      },
+      "categories": {
+        "market": "Market",
+        "pricing": "Pricing",
+        "usp": "USP",
+        "target": "Target",
+        "bm": "BM"
+      }
+    },
+    "journeyReplay": {
+      "title": "User Journey Replay",
+      "subtitle": "Per-session event timeline",
+      "loading": "Loading…",
+      "empty": "No sessions yet. Apply migration 022 to persist events.",
+      "selectSession": "Select a session on the left.",
+      "sessionLabel": "Session · {count} events"
+    },
+    "blindSpot": {
+      "title": "Blind Spot Analytics",
+      "subtitle": "What founders miss most often",
+      "insightsTitle": "LaunchLens-only KPIs",
+      "clarityQuestions": "Questions that clarified thinking",
+      "blindSpotsFound": "Blind spots AI PM found",
+      "spots": {
+        "pricing": "Pricing undefined",
+        "target": "Target unclear",
+        "competition": "Competition gap",
+        "usp": "Weak differentiation",
+        "bm": "Business model gap"
+      }
+    },
+    "questionDetail": {
+      "title": "Question Analytics (detail)",
+      "columns": {
+        "question": "Question",
+        "avgTime": "Avg time",
+        "dropOff": "Drop-off",
+        "skipped": "Skipped",
+        "aiHelp": "AI help"
+      },
+      "questions": {
+        "pricing": "Pricing",
+        "usp": "USP",
+        "market": "Market",
+        "target": "Target",
+        "bm": "BM"
+      }
+    },
     "activationFunnel": {
       "title": "Activation Loop — Landing → First Action",
       "subtitle": "Conversion from Landing to Today Hero and first action start",
@@ -3621,7 +3831,17 @@
     "demoHint": "Just exploring?",
     "demoLink": "Try Demo Workspace",
     "continueWithGoogle": "Continue with Google",
-    "signingIn": "Signing in…"
+    "signingIn": "Signing in…",
+    "signedOutSuccess": "You have been signed out. Sign in again to continue.",
+    "loginErrorReason": "Google authentication did not complete or a temporary error occurred.",
+    "loginCancelledReason": "You cancelled in the Google sign-in window. You can continue the demo without linking an account.",
+    "loginSessionErrorReason": "We could not save your session. Check if cookies are blocked in your browser.",
+    "supabaseNotConfiguredReason": "Authentication is not fully configured yet. Try the demo to explore features first.",
+    "failureDemoCta": "Continue demo",
+    "failureHelp": "If this keeps happening,",
+    "failureContact": "contact us",
+    "failureRetryHint": "Use the button above to retry, or continue with the demo.",
+    "demoRecoveryHint": "Your demo project is saved. Sign in with Google to restore it in Workspace."
   },
   "activation": {
     "wizard": {
@@ -4778,6 +4998,8 @@
             },
             "aiPmInbox": {
               "title": "AI PM Morning Brief",
+              "deliveryLeadFirst": "Your AI PM analyzed the project.",
+              "deliveryLeadReturn": "I finished today's research before you arrived.",
               "deliveryLead": "",
               "readBadge": "Read",
               "headline": {
@@ -5750,6 +5972,7 @@
                 },
                 "timezone": "Timezone",
                 "timezoneValue": "KST",
+                "weekdaysOnly": "Weekdays only",
                 "autoScan": "After login, Morning Report arrives in your Inbox each day."
               },
               "reportFirst": {
@@ -5909,7 +6132,9 @@
                 }
               },
               "inbox": {
-                "reportLabel": "Today {time} · AI PM Report"
+                "investigationComplete": "Investigation Complete",
+                "reportLabel": "Today {time} · AI PM Report",
+                "reportLabelLive": "Investigation complete · AI PM Report"
               },
               "reportFirst": {
                 "lead": "Here's what I investigated today.",
@@ -5928,6 +6153,24 @@
                 "dataPointsValue": "{count} items",
                 "opinionsValue": "{count}",
                 "decisionsValue": "{count}"
+              }
+            },
+            "firstInvestigation": {
+              "morningBrief": {
+                "label": "Initial Investigation",
+                "headline": "Your AI PM analyzed the project.",
+                "meta": "",
+                "highlights": {
+                  "market": "Market",
+                  "competition": "Competitors",
+                  "searchVolume": "Search volume",
+                  "governmentGrant": "Government programs",
+                  "pricing": "Pricing",
+                  "revenueModel": "Revenue model"
+                },
+                "focus": {
+                  "complete": "Investigation complete."
+                }
               }
             }
           },
@@ -6201,6 +6444,25 @@
         "goal": "Goal",
         "workflow": "Workflow",
         "workspace": "AI PM Office"
+      },
+      "globalNav": {
+        "label": "Site navigation",
+        "home": "Home",
+        "workspace": "Workspace",
+        "demo": "Demo"
+      },
+      "journeyMiniNav": {
+        "label": "Journey sections",
+        "title": "Progress",
+        "actionBadge": "Action",
+        "steps": {
+          "investigation": "Investigation",
+          "aiOpinion": "AI opinion",
+          "evidence": "Evidence",
+          "changes": "Changes",
+          "strategy": "Strategy",
+          "nextAction": "Next action"
+        }
       }
     },
     "confirmation": {

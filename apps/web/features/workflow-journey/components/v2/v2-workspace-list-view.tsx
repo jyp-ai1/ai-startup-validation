@@ -6,6 +6,7 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@repo/ui/lib/utils';
 
+import { setActiveProjectId } from '@/lib/project/project-context-store';
 import { useJourneyProject } from '../../hooks/use-journey-project';
 import { JourneyLayout } from '../journey-layout';
 
@@ -36,7 +37,7 @@ export function V2WorkspaceListView() {
               <li key={workspace.id}>
                 <Link
                   href="/validation"
-                  onClick={() => sessionStorage.setItem('ll_journey_project_id', workspace.id)}
+                  onClick={() => setActiveProjectId(workspace.id)}
                   className="group flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card p-5 transition-colors hover:border-primary/30"
                 >
                   <div>

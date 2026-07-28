@@ -13,10 +13,11 @@ import { GoogleSignInButton } from './google-sign-in-button';
 type LoginPanelProps = {
   redirectTo: string;
   errorKey: string | null;
+  signedOut?: boolean;
   supabaseReady: boolean;
 };
 
-export function LoginPanel({ redirectTo, errorKey, supabaseReady }: LoginPanelProps) {
+export function LoginPanel({ redirectTo, errorKey, signedOut = false, supabaseReady }: LoginPanelProps) {
   const t = useTranslations('auth');
   const tm = useTranslations('meta');
 
@@ -45,6 +46,12 @@ export function LoginPanel({ redirectTo, errorKey, supabaseReady }: LoginPanelPr
         </div>
 
         <p className="mt-8 text-sm leading-relaxed text-muted-foreground">{t('loginDesc')}</p>
+
+        {signedOut ? (
+          <p className="mt-4 rounded-lg border border-border/60 bg-muted/40 px-3 py-2 text-sm text-muted-foreground" role="status">
+            {t('signedOutSuccess')}
+          </p>
+        ) : null}
 
         {errorKey ? (
           <p

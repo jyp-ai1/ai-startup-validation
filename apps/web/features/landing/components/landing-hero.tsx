@@ -1,8 +1,9 @@
 import { getTranslations } from 'next-intl/server';
 
 import { LandingHeroActions } from './landing-hero-actions';
+import { LandingLiveMetrics } from './landing-live-metrics';
 
-/** GTM Hero — message over UI (Sprint 2). */
+/** GTM Hero — message over UI (Sprint 2). Sprint 4.8 — live KPI strip below CTAs. */
 export async function LandingHero() {
   const t = await getTranslations('landing.hero');
 
@@ -23,6 +24,7 @@ export async function LandingHero() {
             ctaHint1={t('ctaHint1')}
             ctaHint2={t('ctaHint2')}
           />
+          <LandingLiveMetrics variant="hero" />
         </div>
       </div>
     </section>

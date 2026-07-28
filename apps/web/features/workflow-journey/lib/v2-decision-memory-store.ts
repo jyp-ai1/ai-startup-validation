@@ -1,7 +1,7 @@
+import { getActiveProjectId, legacyDecisionMemoryKey } from '@/lib/project/project-context-store';
+
 import type { V2ValidationEvidence } from './v2-validation-store';
 import { isEvidenceFieldFilled } from './v2-validation-store';
-
-const STORAGE_PREFIX = 'll_v2_decision_memory';
 
 export type DecisionMemoryStatus = 'current' | 'superseded';
 
@@ -20,13 +20,17 @@ export type DecisionMemoryDraft = {
   evidence: string[];
 };
 
-function getProjectScopeId(): string {
-  if (typeof window === 'undefined') return 'demo';
-  return sessionStorage.getItem('ll_journey_project_id') ?? 'demo';
+function resolveProjectId(projectId?: string): string {
+  if (projectId) return projectId;
+  const active = getActiveProjectId();
+  if (!active) {
+    throw new Error('Decision memory requires active projectId');
+  }
+  return active;
 }
 
 function storageKey(projectId?: string): string {
-  return `${STORAGE_PREFIX}_${projectId ?? getProjectScopeId()}`;
+  return legacyDecisionMemoryKey(resolveProjectId(projectId));
 }
 
 export function loadDecisionMemory(projectId?: string): DecisionMemoryEntry[] {

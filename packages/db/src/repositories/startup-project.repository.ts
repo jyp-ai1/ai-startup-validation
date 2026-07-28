@@ -16,6 +16,28 @@ import {
 
 const TABLE = 'startup_projects';
 
+function isMissingColumnError(message: string, column: string): boolean {
+  const lower = message.toLowerCase();
+  const col = column.toLowerCase();
+  return (
+    lower.includes(col) &&
+    (lower.includes('does not exist') ||
+      lower.includes('schema cache') ||
+      lower.includes('could not find'))
+  );
+}
+
+function stripOptionalInsertColumns(
+  row: ReturnType<typeof toInsertRow>,
+  columns: Array<keyof ReturnType<typeof toInsertRow>>,
+) {
+  const next = { ...row };
+  for (const column of columns) {
+    delete next[column];
+  }
+  return next;
+}
+
 type StartupProjectRow = {
   id: string;
   title: string;
@@ -146,25 +168,37 @@ export class SupabaseStartupProjectRepository implements StartupProjectRepositor
   }
 
   async findAll(filter?: Record<string, unknown>): Promise<StartupProject[]> {
+    const includeDeleted = filter?.includeDeleted;
+    const eqFilter = { ...filter };
+    delete eqFilter.includeDeleted;
+
     let query = this.client.from(TABLE).select('*').order('created_at', { ascending: false });
 
-    if (!filter?.includeDeleted) {
+    if (!includeDeleted) {
       query = query.is('deleted_at', null);
     }
-    delete filter?.includeDeleted;
 
-    query = applyEqFilters(query, filter);
-    const { data, error } = await query;
+    query = applyEqFilters(query, eqFilter);
+    let { data, error } = await query;
+
+    if (error && !includeDeleted && isMissingColumnError(error.message, 'deleted_at')) {
+      query = this.client.from(TABLE).select('*').order('created_at', { ascending: false });
+      query = applyEqFilters(query, eqFilter);
+      ({ data, error } = await query);
+    }
+
     assertNoError(error);
     return ((data ?? []) as StartupProjectRow[]).map(toStartupProject);
   }
 
   async create(input: CreateStartupProjectInput): Promise<StartupProject> {
-    const { data, error } = await this.client
-      .from(TABLE)
-      .insert(toInsertRow(input))
-      .select('*')
-      .single();
+    let insertRow = toInsertRow(input);
+    let { data, error } = await this.client.from(TABLE).insert(insertRow).select('*').single();
+
+    if (error && isMissingColumnError(error.message, 'is_pinned')) {
+      insertRow = stripOptionalInsertColumns(insertRow, ['is_pinned', 'thumbnail_color']);
+      ({ data, error } = await this.client.from(TABLE).insert(insertRow).select('*').single());
+    }
 
     assertNoError(error);
     return toStartupProject(assertRow(data as StartupProjectRow, 'StartupProject'));

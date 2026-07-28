@@ -6,6 +6,7 @@ import { Inbox } from 'lucide-react';
 
 import { cn } from '@repo/ui/lib/utils';
 
+import { resolveMorningBriefNamespace } from '@/lib/project/morning-brief-namespace';
 import {
   getLatestMeetingNote,
   markMeetingNoteRead,
@@ -38,7 +39,11 @@ export function V2AiPmInbox({
   className,
 }: V2AiPmInboxProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.aiPmInbox');
-  const deliveryLead = t('deliveryLead');
+  const briefNamespace = resolveMorningBriefNamespace();
+  const deliveryLead =
+    briefNamespace === 'firstInvestigation'
+      ? t('deliveryLeadFirst')
+      : t('deliveryLeadReturn');
   const [read, setRead] = useState(false);
 
   useEffect(() => {
@@ -57,7 +62,7 @@ export function V2AiPmInbox({
 
   return (
     <section
-      id="ai-pm-inbox"
+      id="journey-section-investigation"
       className={cn(
         'rounded-xl border border-primary/25 bg-gradient-to-br from-primary/[0.07] to-background shadow-sm',
         className,
@@ -80,7 +85,7 @@ export function V2AiPmInbox({
         ) : null}
       </div>
 
-      <div className="px-5 py-5">
+      <div id="ai-pm-inbox" className="px-5 py-5">
         {stale ? (
           <p className="mb-4 text-sm text-amber-800 dark:text-amber-200">{t('staleHint')}</p>
         ) : null}

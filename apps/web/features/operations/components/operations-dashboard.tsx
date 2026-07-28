@@ -17,6 +17,16 @@ import type { OpsDashboardStats } from '@/lib/analytics/types';
 import { AdminOpsTools } from './admin-ops-tools';
 import { AdminProductOsPanel } from './admin-product-os-panel';
 import { AdminActivationFunnelPanel } from './admin-activation-funnel-panel';
+import { AdminOAuthPanel } from './admin-oauth-panel';
+import { AdminReleaseReadinessPanel } from './admin-release-readiness-panel';
+import { AdminClosedAlphaFunnelPanel } from './admin-closed-alpha-funnel-panel';
+import { AdminFunnelHeatmapPanel } from './admin-funnel-heatmap-panel';
+import { AdminAlphaAnalyticsPanels } from './admin-alpha-analytics-panels';
+import { AdminBlindSpotPanel } from './admin-blind-spot-panel';
+import { AdminJourneyReplayPanel } from './admin-journey-replay-panel';
+import { AdminQuestionDetailPanel } from './admin-question-detail-panel';
+import { AdminJourneyAnalyticsPanel } from './admin-journey-analytics-panel';
+import { AdminAiPmKpiPanel } from './admin-ai-pm-kpi-panel';
 import { AdminProductBrainPanel } from './admin-product-brain-panel';
 import { AdminFeedbackInbox } from './admin-feedback-inbox';
 import { AdminReleaseNotes } from './admin-release-notes';
@@ -148,6 +158,60 @@ export function OperationsDashboard() {
           {stats.productOs ? (
             <AdminProductOsPanel brief={stats.productOs} brain={stats.productBrain} />
           ) : null}
+
+          <AdminOAuthPanel stats={stats} />
+
+          <AdminReleaseReadinessPanel stats={stats} />
+
+          <AdminClosedAlphaFunnelPanel stats={stats} />
+
+          <AdminFunnelHeatmapPanel stats={stats} />
+
+          <AdminAlphaAnalyticsPanels stats={stats} />
+
+          {stats.todayProductKpis ? (
+            <div>
+              <h2 className="mb-3 text-sm font-semibold">{t('todayProductKpis')}</h2>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <StatCard title={t('kpiNewUsers')} value={stats.todayProductKpis.newUsers} icon={Users} />
+                <StatCard
+                  title={t('kpiProjectsCreated')}
+                  value={stats.todayProductKpis.projectsCreated}
+                  icon={Sparkles}
+                />
+                <StatCard
+                  title={t('kpiFirstReviews')}
+                  value={stats.todayProductKpis.firstReviews}
+                  icon={Activity}
+                />
+                <StatCard
+                  title={t('kpiReReviews')}
+                  value={stats.todayProductKpis.reReviews}
+                  icon={BarChart3}
+                />
+                <StatCard
+                  title={t('kpiArtifacts')}
+                  value={stats.todayProductKpis.artifacts}
+                  icon={Globe}
+                />
+                <StatCard
+                  title={t('kpiReturns')}
+                  value={stats.todayProductKpis.returns}
+                  icon={Moon}
+                />
+              </div>
+            </div>
+          ) : null}
+
+          <AdminJourneyAnalyticsPanel stats={stats} />
+
+          <AdminAiPmKpiPanel stats={stats} />
+
+          <AdminJourneyReplayPanel />
+
+          <AdminBlindSpotPanel stats={stats} />
+
+          <AdminQuestionDetailPanel stats={stats} />
 
           <AdminActivationFunnelPanel stats={stats} />
 

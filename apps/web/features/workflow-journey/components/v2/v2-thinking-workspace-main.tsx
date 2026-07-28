@@ -131,20 +131,26 @@ export function V2ThinkingWorkspaceMain({
           <V2GuidedDemoCoach step={guidedDemoStep} onAdvance={onGuidedDemoAdvance} />
         ) : null}
 
-        {needsInput ? (
-          <V2AiUnderstandingChips
-            evidence={evidence}
-            readOnly={readOnly}
-            highlightField={dirtyHighlightField}
-            onIdeaChange={onIdeaChange}
-            onFieldConfirm={onFieldConfirm}
-            onFieldDelete={onFieldDelete}
-          />
-        ) : null}
+        <div id="journey-section-strategy">
+          {needsInput ? (
+            <V2AiUnderstandingChips
+              evidence={evidence}
+              readOnly={readOnly}
+              highlightField={dirtyHighlightField}
+              onIdeaChange={onIdeaChange}
+              onFieldConfirm={onFieldConfirm}
+              onFieldDelete={onFieldDelete}
+            />
+          ) : null}
+        </div>
 
-        <V2WhySourcesSection reviewCount={reviewCount} onOpenTopic={setDrawerTopic} />
+        <div id="journey-section-evidence">
+          <V2WhySourcesSection reviewCount={reviewCount} onOpenTopic={setDrawerTopic} />
+        </div>
 
-        <V2AiPmMeetingNote reviewCount={reviewCount} readOnly={readOnly} />
+        <div id="journey-section-changes">
+          <V2AiPmMeetingNote reviewCount={reviewCount} readOnly={readOnly} />
+        </div>
       </div>
 
       <V2EvidenceDetailDrawer

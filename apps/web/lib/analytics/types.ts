@@ -327,6 +327,97 @@ export type OpsDashboardStats = {
     feedbackCount: number;
     version: string;
   };
+  /** Sprint 4.8 — Full Closed Alpha funnel (16 steps) */
+  closedAlphaFunnel?: import('./closed-alpha-funnel').ClosedAlphaFunnelCounts;
+  closedAlphaDropOff?: { step: string; from: number; to: number; dropPercent: number; percentOfLanding: number }[];
+  /** Sprint 4.8 — Heatmap bars (% of landing) */
+  funnelHeatmap?: { step: string; label: string; percent: number; count: number }[];
+  /** Sprint 4.8 — D1/D3/D7/D14 retention */
+  retentionRates?: { day: 'D1' | 'D3' | 'D7' | 'D14'; rate: number }[];
+  /** Sprint 4.8 — Avg time between funnel steps (minutes) */
+  timeAnalytics?: { from: string; to: string; avgMinutes: number }[];
+  /** Sprint 4.8 — Top drop reasons */
+  dropReasons?: { reason: string; percent: number }[];
+  /** Sprint 4.8 — Questions where users stall */
+  questionAnalytics?: { question: string; stuckPercent: number }[];
+  /** Sprint 4.8 — AI PM working loop */
+  aiPmWorking?: {
+    avgLoopCount: number;
+    investigationsToday: number;
+    evidenceCreatedToday: number;
+    founderEditsToday: number;
+    aiReReviewsToday: number;
+  };
+  /** Sprint 4.7/4.8 — Today's product KPI for admin + landing */
+  todayProductKpis?: {
+    newUsers: number;
+    projectsCreated: number;
+    firstReviews: number;
+    reReviews: number;
+    artifacts: number;
+    returns: number;
+    aiReviewsCompleted?: number;
+  };
+  /** Sprint 4.7 — Journey step analytics */
+  journeyAnalytics?: {
+    step: string;
+    avgDwellSeconds: number;
+    dropOffPercent: number;
+    returnRate: number;
+    completionRate: number;
+  }[];
+  /** Sprint 4.8 — AI PM operational KPI */
+  aiPmKpis?: {
+    investigationsToday: number;
+    newEvidenceToday: number;
+    totalDecisionChanges: number;
+    priceChanges: number;
+    targetChanges: number;
+    uspChanges: number;
+    marketChanges: number;
+    bmChanges: number;
+    artifactsToday: number;
+    byCategory: Record<string, number>;
+  };
+  /** Sprint 4.8 P0-10 — Blind spot aggregation */
+  blindSpotAnalytics?: { spot: string; count: number; percent: number }[];
+  aiPmInsightKpis?: {
+    clarityQuestionsRaised: number;
+    blindSpotsFound: number;
+  };
+  /** Sprint 4.8 P4 — Question detail metrics */
+  questionAnalyticsDetail?: {
+    questionId: string;
+    avgMinutes: number;
+    dropOffPercent: number;
+    skipPercent: number;
+    aiHelpClickPercent: number;
+  }[];
+  /** Sprint 5 Epic A — OAuth release blocker metrics */
+  oauthAnalytics?: {
+    successRate: number;
+    failureRate: number;
+    avgLoginSeconds: number;
+    attempts: number;
+    successes: number;
+    failures: number;
+    browserSuccessRates: { browser: string; rate: number; attempts: number }[];
+    errorBreakdown: { code: string; count: number }[];
+    qaReport: { browser: string; status: 'PASS' | 'PENDING' | 'FAIL' }[];
+    /** P0-6 — daily smoke test summary for operators */
+    recentLogins?: {
+      successes: number;
+      failures: number;
+      successRate: number;
+      avgLoginSeconds: number;
+      recentErrors: { code: string; timestamp: string }[];
+    };
+  };
+  /** Sprint 5 Epic A — release validation chain */
+  releaseReadiness?: {
+    checks: { id: string; label: string; status: 'PASS' | 'PENDING' | 'FAIL' }[];
+    overallPass: boolean;
+  };
 };
 
 declare global {

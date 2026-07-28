@@ -8,6 +8,8 @@ import { Plus } from 'lucide-react';
 import type { StartupProject } from '@repo/types/validation';
 import { Button } from '@repo/ui';
 
+import { buildProjectCanvasUrl } from '@/lib/auth/journey-routes';
+
 import { REVIEW_TYPES } from '@/features/interview/types/interview-state';
 
 import {
@@ -124,7 +126,7 @@ export function MyProjectsHome({ userName, userEmail, projects, dbReady }: MyPro
             {projects.map((project) => (
               <li key={project.id}>
                 <Link
-                  href={`/my-projects/${project.id}`}
+                  href={buildProjectCanvasUrl(project.id)}
                   className="block px-5 py-4 transition-colors hover:bg-muted/40"
                 >
                   <p className="font-semibold">{project.title}</p>

@@ -12,6 +12,7 @@ import {
   getLifecycleDot,
   type V2WorkspaceCardData,
 } from '../../lib/v2-workspace-home';
+import { setActiveProjectId } from '@/lib/project/project-context-store';
 import type { MockProject } from '@/features/project-intelligence/constants/mock-projects';
 
 type V2WorkspaceCardProps = {
@@ -30,7 +31,7 @@ export function V2WorkspaceCard({ project, onSelect }: V2WorkspaceCardProps) {
       <Link
         href="/validation"
         onClick={() => {
-          sessionStorage.setItem('ll_journey_project_id', project.id);
+          setActiveProjectId(project.id);
           onSelect?.(project.id);
         }}
         className="block p-5"

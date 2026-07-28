@@ -26,6 +26,7 @@ import {
 import { cn } from '@repo/ui/lib/utils';
 
 import { TrackedThemeToggle } from '@/components/analytics/tracked-theme-toggle';
+import { AlphaFeedbackWidget } from '@/features/workflow-journey/components/alpha-feedback-widget';
 import { AppFooterLinks } from '@/components/app-footer-links';
 import { BetaBadge } from '@/components/beta-badge';
 import { LocaleSwitcher } from '@/components/locale-switcher';
@@ -163,6 +164,11 @@ export function AppShell({
   const tAuth = useTranslations('auth');
   const { trackEvent } = useAnalytics();
   const appName = t('meta.appName');
+  const showWorkspaceFeedback =
+    Boolean(user) &&
+    (pathname.startsWith('/workspace') ||
+      pathname.startsWith('/my-projects') ||
+      pathname.includes('/validation'));
   const routeProjectId = pathname.match(/\/projects\/([^/]+)/)?.[1] ?? null;
   const projectId = routeProjectId ?? activeProject?.id ?? null;
   const showOnboardingProgress =
@@ -188,17 +194,20 @@ export function AppShell({
               >
                 <Menu className="size-5" />
               </Button>
-              <Button variant="ghost" size="icon-sm" className="shrink-0 lg:hidden" asChild>
-                <Link href="/" aria-label={t('onboarding.home')} onClick={() => trackHomeNavigation('/')}>
-                  <ArrowLeft className="size-4" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="sm" className="hidden shrink-0 gap-1.5 text-muted-foreground lg:inline-flex" asChild>
-                <Link href="/" onClick={() => trackHomeNavigation('/')}>
-                  <ArrowLeft className="size-4" />
-                  {t('onboarding.home')}
-                </Link>
-              </Button>
+              <div className="hidden items-center gap-1 lg:flex">
+                <Button variant="ghost" size="sm" className="shrink-0 gap-1.5 text-muted-foreground" asChild>
+                  <Link href="/" onClick={() => trackHomeNavigation('/')}>
+                    <ArrowLeft className="size-4" />
+                    {t('onboarding.home')}
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="sm" className="text-muted-foreground" asChild>
+                  <Link href="/validation">{t('nav.validation')}</Link>
+                </Button>
+                <Button variant="ghost" size="sm" className="text-muted-foreground" asChild>
+                  <Link href="/demo/enter">{t('landing.nav.demo')}</Link>
+                </Button>
+              </div>
               <div className="hidden min-w-0 lg:block">
                 <ShellBreadcrumb projectTitle={activeProject?.title} projectId={projectId} />
               </div>
@@ -262,7 +271,7 @@ export function AppShell({
             activeProjectId={projectId}
             userProjects={userProjects}
             demoProjects={demoProjects}
-            className="w-full"
+            className="hidden w-full lg:flex"
           />
           <FavoritesList favorites={favorites} activeProjectId={projectId} />
           {projectId && activeProject ? (
@@ -317,6 +326,17 @@ export function AppShell({
             <DialogTitle className="text-left text-sm font-semibold">{t('shell.navigation')}</DialogTitle>
           </DialogHeader>
           <nav className="max-h-[70vh] overflow-y-auto p-4">
+            <Link
+              href="/"
+              className="mb-3 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/60"
+              onClick={() => {
+                trackHomeNavigation('/');
+                setMobileOpen(false);
+              }}
+            >
+              <ArrowLeft className="size-4" />
+              {t('onboarding.home')}
+            </Link>
             <NavLinks pathname={pathname} projectId={projectId} onNavigate={() => setMobileOpen(false)} />
           </nav>
         </DialogContent>
@@ -335,6 +355,7 @@ export function AppShell({
         stats={stats}
         recentProjects={recentProjects}
       />
+      {showWorkspaceFeedback ? <AlphaFeedbackWidget /> : null}
     </AppLayout>
   );
 }

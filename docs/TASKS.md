@@ -2,7 +2,21 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **4.6.1 — Morning Investigation & Smart Questions** ✅  
+> **Active sprint:** Sprint **5.1 — OAuth UX & Workspace Beta** 🔄 · Sprint **5 — Closed Alpha Launch** 📋
+
+## Sprint 5.1 — OAuth 후 UX 개선 (in progress)
+
+| Priority | Item | Status |
+|----------|------|--------|
+| P0 | Logout — browser + SSR cookie purge, auth state sync | ✅ |
+| P1 | Post-login → Demo journey (`/who` → `/validation`) | ✅ |
+| P1 | Beta sidebar (Workspace · Projects · Settings) | ✅ |
+| P1 | GNB Home / Workspace / Demo (landing + journey + shell) | ✅ |
+| P1 | Mobile nav — single drawer, no duplicate back button | ✅ |
+| P2 | Draft auto-save + resume | ⬜ deferred |
+
+> **Active sprint (previous):** Sprint **5 — Closed Alpha Launch** 📋 (2–3 weeks) · [SPRINT_5_CLOSED_ALPHA_LAUNCH.md](./sprints/SPRINT_5_CLOSED_ALPHA_LAUNCH.md)  
+> **Previous:** Sprint **4.8 — Closed Alpha Analytics** 🔄 · [SPRINT_4_8_CLOSED_ALPHA_ANALYTICS.md](./sprints/SPRINT_4_8_CLOSED_ALPHA_ANALYTICS.md) · Sprint **4.7** · [SPRINT_4_7_CLOSED_ALPHA.md](./sprints/SPRINT_4_7_CLOSED_ALPHA.md)
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
@@ -146,6 +160,86 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 | 8 | Discoveries since yesterday | ✅ |
 
 **Kickoff:** [SPRINT_4_6_1_MORNING_INVESTIGATION.md](./sprints/SPRINT_4_6_1_MORNING_INVESTIGATION.md)
+
+---
+
+## Sprint 5 — Closed Alpha Launch 📋 ACTIVE (2–3 weeks)
+
+**Mission:** Closed Alpha **30명** 오픈 — *AI PM가 실제 대표 대신 일하는 제품*
+
+**Gate:** *"30명의 실제 사용자가 오늘부터 써도 운영할 수 있는가?"*
+
+| Epic | Focus | P |
+|------|-------|---|
+| **A** | Authentication & User Lifecycle — OAuth, draft promote, refresh, returning user, routing | P0 ★ |
+| **B** | AI PM Working Experience — Morning Investigation real, log, report, decision→memory, artifacts | P0 |
+| **C** | Workspace — Overview, History, Artifact Center, Project Health | P0 |
+| **D** | Admin Dashboard v1 — Funnel, Heatmap, Retention, Replay, Drop, KPI, Impact, User Detail | P0 |
+| **E** | Analytics — Supabase persistence, daily summary cron, taxonomy 100% | P0 |
+| **F** | Product Stabilization — skeleton, errors, dead ends, 404, perf | P0 |
+| **G** | AI PM Intelligence — gap detection, max 2 questions, choice-first | P1 (last) |
+
+**Autonomous rule:** `.cursor/rules/sprint-5-closed-alpha.mdc`  
+**Kickoff:** [SPRINT_5_CLOSED_ALPHA_LAUNCH.md](./sprints/SPRINT_5_CLOSED_ALPHA_LAUNCH.md)  
+**Events:** [EVENT_TAXONOMY.md](./EVENT_TAXONOMY.md)  
+**OAuth QA:** [OAUTH_QA_CHECKLIST.md](./templates/OAUTH_QA_CHECKLIST.md)
+
+### Sprint 5 exit — Release Checklist driven
+
+**Doc:** [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md) · Admin **Release Readiness** panel
+
+Epic A chain (all PASS):
+
+- [ ] OAuth ≥95%
+- [ ] Workspace Restore (`workspace_restore_validated`)
+- [ ] Project Restore (`project_recovery_validated`)
+- [ ] Morning Report (`morning_report_view`)
+- [ ] Admin Analytics (events persisted)
+- [ ] Returning User (`returning_user`)
+- [ ] Demo Recovery (`demo_recovery_validated`)
+
+Implementation done · **real user validation pending**
+- [ ] Artifact real generation
+- [ ] Admin all events
+- [ ] Analytics persistence
+- [ ] Heatmap · Retention · User Replay
+
+---
+
+## Sprint 4.7 — Closed Alpha Foundation ✅ SHIPPED (carryover → Sprint 5)
+
+**Mission:** LaunchLens를 개발하는 것이 아니라 **운영을 시작한다.**
+
+| # | Epic | Status |
+|---|------|--------|
+| P0-1 | Google OAuth + funnel events | ✅ |
+| P0-2 | Workspace Persistence (V2 authenticated inbox) | ✅ |
+| P1-1 | Admin Dashboard — Closed Alpha Funnel + KPI | ✅ |
+| P1-2 | Landing Live Metrics | ✅ |
+| P1-3 | Workspace Feedback widget | ✅ |
+| P2-1 | Investigation schedule weekdays only | 🔄 → Sprint 5 B-1 |
+| P3-1 | Google OAuth QA checklist | ⬜ → Sprint 5 A-1 |
+
+**Kickoff:** [SPRINT_4_7_CLOSED_ALPHA.md](./sprints/SPRINT_4_7_CLOSED_ALPHA.md)
+
+---
+
+## Sprint 4.8 — Closed Alpha Analytics 🔄 PARTIAL (carryover → Sprint 5)
+
+**Mission:** 5분 안에 이탈 구간 파악 — Funnel · Heatmap · AI PM KPI · Landing live metrics
+
+| Epic | Status |
+|------|--------|
+| Analytics persistence (022 migration + repo) | ✅ applied in Supabase (2026-07-28) |
+| 16-step funnel + event taxonomy | ✅ |
+| Admin heatmap / retention / questions / AI PM loop | ✅ |
+| Journey Replay | ✅ |
+| Blind Spot + Question analytics | ✅ |
+| Landing Hero KPI + testimonials | ✅ |
+| OAuth session fix | ✅ · ⬜ QA → Sprint 5 A-1 |
+| ADMIN_EMAIL guard | ✅ |
+
+**Kickoff:** [SPRINT_4_8_CLOSED_ALPHA_ANALYTICS.md](./sprints/SPRINT_4_8_CLOSED_ALPHA_ANALYTICS.md)
 
 ---
 

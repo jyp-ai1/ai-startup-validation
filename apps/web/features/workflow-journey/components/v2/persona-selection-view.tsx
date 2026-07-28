@@ -10,14 +10,16 @@ import { cn } from '@repo/ui/lib/utils';
 import { savePersonaAction } from '../../actions/journey-actions';
 import { useSubmitLock } from '../../hooks/use-submit-lock';
 import { V2_PERSONA_IDS, type V2PersonaId } from '../../types/v2-persona';
+import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { JourneyLayout } from '../journey-layout';
 import { V2JourneyStack } from './v2-journey-stack';
 
 type PersonaSelectionViewProps = {
   demoMode?: boolean;
+  user?: AppAuthUser | null;
 };
 
-export function PersonaSelectionView({ demoMode: _demoMode = false }: PersonaSelectionViewProps) {
+export function PersonaSelectionView({ demoMode: _demoMode = false, user = null }: PersonaSelectionViewProps) {
   const t = useTranslations('workflow.v2.persona');
   const router = useRouter();
   const { locked, lock, resetLock } = useSubmitLock(12_000);
@@ -39,7 +41,7 @@ export function PersonaSelectionView({ demoMode: _demoMode = false }: PersonaSel
   );
 
   return (
-    <JourneyLayout phase="goal" width="default" versionLabel="V2">
+    <JourneyLayout phase="goal" width="default" versionLabel="V2" user={user}>
       <V2JourneyStack
         embedded
         main={

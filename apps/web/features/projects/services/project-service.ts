@@ -104,3 +104,18 @@ export async function assertProjectOwner(userId: string, projectId: string): Pro
   }
   return project;
 }
+
+/** Merge onboarding context for owned project (Sprint 5 demo promotion). */
+export async function updateOwnedProjectContext(
+  userId: string,
+  projectId: string,
+  onboardingContext: Record<string, unknown>,
+): Promise<StartupProject> {
+  if (!isSupabaseConfigured()) {
+    throw new Error('Database not configured');
+  }
+
+  await assertProjectOwner(userId, projectId);
+  const repo = getStartupProjectRepository();
+  return repo.update(projectId, { onboardingContext });
+}

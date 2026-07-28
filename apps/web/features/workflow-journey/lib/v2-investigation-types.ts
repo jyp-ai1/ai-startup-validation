@@ -27,6 +27,11 @@ export type SmartQuestionId =
 
 export type InvestigationScheduleHour = '6' | '8' | '9';
 
+export type InvestigationSchedule = {
+  hour: InvestigationScheduleHour;
+  weekdaysOnly: boolean;
+};
+
 export type DailyReportTimelineId =
   | 'started'
   | 'googleTrends'
@@ -93,10 +98,14 @@ export type InvestigationContext = {
   smartQuestions: SmartQuestion[];
   report: PmReportStats;
   hasDocument: boolean;
-  morningBriefing: MorningBriefing;
-  dailyReport: DailyReportEntry[];
+  /** Workspace-only — absent in Demo flow (P0-1). */
+  morningBriefing?: MorningBriefing;
+  /** Workspace-only — absent in Demo flow (P0-1). */
+  dailyReport?: DailyReportEntry[];
   workProgress: WorkProgressItem[];
   discoveries: DiscoveryItem[];
   scheduleHour: InvestigationScheduleHour;
   reportDate: string;
+  /** demo = live session investigation; workspace = morning/returning */
+  surface?: 'demo' | 'workspace';
 };

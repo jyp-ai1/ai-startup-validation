@@ -1,8 +1,10 @@
-const VALIDATION_EVIDENCE_KEY = 'll_v2_validation_evidence';
+import { getActiveProjectId } from '@/lib/project/project-context-store';
 
-/** Legacy boolean toggles — migrated on read. */
-const VALIDATION_OPTIONS_KEY = 'll_v2_validation_options';
-const VALIDATION_IDEA_KEY = 'll_v2_validation_idea';
+/** Legacy global keys — migrated on read, cleared on project reset. */
+const LEGACY_EVIDENCE_KEY = 'll_v2_validation_evidence';
+const LEGACY_OPTIONS_KEY = 'll_v2_validation_options';
+const LEGACY_IDEA_KEY = 'll_v2_validation_idea';
+const LEGACY_REGISTRATION_KEY = 'll_project_registration';
 
 export type V2EvidenceField = 'problem' | 'customer' | 'mvp' | 'pricing';
 
@@ -29,6 +31,18 @@ export type V2ValidationSnapshot = {
 
 const TOTAL_FIELDS = 5;
 
+function resolveScopeId(projectId?: string): string {
+  return projectId ?? getActiveProjectId() ?? 'demo';
+}
+
+function evidenceKey(projectId?: string): string {
+  return `launchlens.evidence.${resolveScopeId(projectId)}.validation`;
+}
+
+function registrationKey(projectId?: string): string {
+  return `launchlens.project.${resolveScopeId(projectId)}.registration`;
+}
+
 function deriveProjectName(idea: string): string {
   const trimmed = idea.trim();
   if (trimmed.length <= 36) return trimmed;
@@ -52,15 +66,15 @@ export function countFilledEvidence(evidence: V2ValidationEvidence): number {
   return count;
 }
 
-export function saveV2Validation(evidence: V2ValidationEvidence): void {
+export function saveV2Validation(evidence: V2ValidationEvidence, projectId?: string): void {
   if (typeof window === 'undefined') return;
 
-  sessionStorage.setItem(VALIDATION_EVIDENCE_KEY, JSON.stringify(evidence));
-  sessionStorage.setItem(VALIDATION_IDEA_KEY, evidence.idea.trim());
+  const key = evidenceKey(projectId);
+  sessionStorage.setItem(key, JSON.stringify(evidence));
   sessionStorage.removeItem('ll_v2_validation_score');
 
   sessionStorage.setItem(
-    'll_project_registration',
+    registrationKey(projectId),
     JSON.stringify({
       projectName: deriveProjectName(evidence.idea),
       ideaOneLiner: evidence.idea.trim(),
@@ -72,10 +86,10 @@ export function saveV2Validation(evidence: V2ValidationEvidence): void {
 }
 
 function migrateLegacyEvidence(): V2ValidationEvidence | null {
-  const idea = sessionStorage.getItem(VALIDATION_IDEA_KEY);
+  const idea = sessionStorage.getItem(LEGACY_IDEA_KEY);
   if (!idea?.trim()) return null;
 
-  const optionsRaw = sessionStorage.getItem(VALIDATION_OPTIONS_KEY);
+  const optionsRaw = sessionStorage.getItem(LEGACY_OPTIONS_KEY);
   const evidence: V2ValidationEvidence = { idea: idea.trim() };
 
   if (optionsRaw) {
@@ -93,14 +107,26 @@ function migrateLegacyEvidence(): V2ValidationEvidence | null {
   return evidence;
 }
 
-export function loadV2Validation(): V2ValidationSnapshot | null {
+export function loadV2Validation(projectId?: string): V2ValidationSnapshot | null {
   if (typeof window === 'undefined') return null;
 
   try {
-    const raw = sessionStorage.getItem(VALIDATION_EVIDENCE_KEY);
-    if (raw) {
-      const evidence = JSON.parse(raw) as V2ValidationEvidence;
+    const scopedRaw = sessionStorage.getItem(evidenceKey(projectId));
+    if (scopedRaw) {
+      const evidence = JSON.parse(scopedRaw) as V2ValidationEvidence;
       if (!evidence.idea?.trim()) return null;
+      return {
+        evidence,
+        filledCount: countFilledEvidence(evidence),
+        totalCount: TOTAL_FIELDS,
+      };
+    }
+
+    const legacyRaw = sessionStorage.getItem(LEGACY_EVIDENCE_KEY);
+    if (legacyRaw) {
+      const evidence = JSON.parse(legacyRaw) as V2ValidationEvidence;
+      if (!evidence.idea?.trim()) return null;
+      saveV2Validation(evidence, projectId);
       return {
         evidence,
         filledCount: countFilledEvidence(evidence),
@@ -111,6 +137,7 @@ export function loadV2Validation(): V2ValidationSnapshot | null {
     const legacy = migrateLegacyEvidence();
     if (!legacy) return null;
 
+    saveV2Validation(legacy, projectId);
     return {
       evidence: legacy,
       filledCount: countFilledEvidence(legacy),

@@ -6,11 +6,22 @@ import { cn } from '@repo/ui/lib/utils';
 
 import type { MorningBriefing } from '../../lib/v2-investigation-types';
 
+type MorningBriefNamespace = 'investigation' | 'investigationSample' | 'firstInvestigation';
+
 type V2MorningInvestigationBriefProps = {
   briefing: MorningBriefing;
-  namespace?: 'investigation' | 'investigationSample';
+  namespace?: MorningBriefNamespace;
   className?: string;
 };
+
+const FIRST_INVESTIGATION_HIGHLIGHTS = [
+  'market',
+  'competition',
+  'searchVolume',
+  'governmentGrant',
+  'pricing',
+  'revenueModel',
+] as const;
 
 export function V2MorningInvestigationBrief({
   briefing,
@@ -18,6 +29,8 @@ export function V2MorningInvestigationBrief({
   className,
 }: V2MorningInvestigationBriefProps) {
   const t = useTranslations(`workflow.v2.strategyWorkspace.ia.thinkingUx.${namespace}.morningBrief`);
+  const isFirst = namespace === 'firstInvestigation';
+  const highlightKeys = isFirst ? FIRST_INVESTIGATION_HIGHLIGHTS : briefing.highlightKeys;
 
   return (
     <div
@@ -28,22 +41,24 @@ export function V2MorningInvestigationBrief({
     >
       <p className="text-xs font-semibold uppercase tracking-widest text-primary">{t('label')}</p>
       <p className="mt-2 text-sm font-semibold leading-relaxed">{t('headline')}</p>
-      <p className="mt-1 text-xs text-muted-foreground">
-        {t('meta', {
-          scheduled: briefing.scheduledTime,
-          completed: briefing.completedTime,
-          minutes: briefing.durationMinutes,
-        })}
-      </p>
+      {!isFirst ? (
+        <p className="mt-1 text-xs text-muted-foreground">
+          {t('meta', {
+            scheduled: briefing.scheduledTime,
+            completed: briefing.completedTime,
+            minutes: briefing.durationMinutes,
+          })}
+        </p>
+      ) : null}
       <ul className="mt-3 space-y-1.5">
-        {briefing.highlightKeys.map((key) => (
+        {highlightKeys.map((key) => (
           <li key={key} className="text-sm leading-relaxed">
             {t(`highlights.${key}`)}
           </li>
         ))}
       </ul>
       <p className="mt-3 rounded-lg bg-amber-500/10 px-3 py-2 text-sm font-medium text-amber-800 dark:text-amber-200">
-        {t(`focus.${briefing.focusKey}`)}
+        {t(isFirst ? 'focus.complete' : `focus.${briefing.focusKey}`)}
       </p>
     </div>
   );

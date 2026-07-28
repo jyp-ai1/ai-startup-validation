@@ -1,10 +1,9 @@
 import type { MockProject, MockProjectStatus } from '@/features/project-intelligence/constants/mock-projects';
+import { setActiveProjectId } from '@/lib/project/project-context-store';
 
 import { markV2ReturningUser } from './v2-workspace-home';
 
 const CUSTOM_KEY = 'll_journey_custom_projects';
-const ID_KEY = 'll_journey_project_id';
-
 function loadCustomProjects(): MockProject[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -33,7 +32,7 @@ export function createV2Workspace(name: string, evidenceFilled: number): string 
   };
   const next = [created, ...loadCustomProjects()];
   saveCustomProjects(next);
-  sessionStorage.setItem(ID_KEY, created.id);
+  setActiveProjectId(created.id);
   sessionStorage.setItem('ll_project_started', '1');
   markV2ReturningUser();
   return created.id;

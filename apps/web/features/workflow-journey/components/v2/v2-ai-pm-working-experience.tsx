@@ -180,7 +180,12 @@ export function V2AiPmWorkingExperience({
               </div>
 
               {!readOnly ? (
-                <Button type="button" className="mt-4 w-full rounded-lg" onClick={handleStartDecision}>
+                <Button
+                  type="button"
+                  id="journey-section-next-action"
+                  className="mt-4 w-full rounded-lg"
+                  onClick={handleStartDecision}
+                >
                   {t(`cta.${brief.primaryCtaKey}`)}
                 </Button>
               ) : null}

@@ -1,133 +1,18 @@
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 
-import { ProjectWizard, DemoEntryTracker } from '@/features/activation';
-import { AuthCompleteTracker } from '@/features/auth';
-import { getLatestPlan } from '@/features/agents/orchestrator';
-import { generateProjectDecision } from '@/features/decision';
-import {
-  buildExecutiveWorkspace,
-  ExecutiveDashboard,
-} from '@/features/executive';
-import { getExecutiveReport } from '@/features/report-engine';
-import { buildStrategyWorkspace } from '@/features/strategy-workspace';
-import { buildConsultantViewModel } from '@/features/ai-consultant';
-import {
-  getProjectOnboardingContext,
-  isOnboardingComplete,
-  parseOnboardingContext,
-} from '@/features/onboarding-consultant';
-import { loadProjectIntelligence } from '@/features/project-intelligence/server';
-import { loadWatchCenter } from '@/features/watch-center/server';
-import { getWorkspaceSession } from '@/lib/auth/workspace-session';
-
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations();
-  return {
-    title: `${t('nav.dashboard')} | ${t('meta.titleSuffix')}`,
-    robots: { index: false, follow: false },
-  };
-}
+import { legacyProjectCanvasRedirect } from '@/lib/legacy-routes';
 
 type DashboardPageProps = {
-  searchParams: Promise<{ project?: string; demo?: string; onboarding?: string; auth?: string }>;
+  searchParams: Promise<{ project?: string; demo?: string; auth?: string }>;
 };
 
+/** Legacy dashboard — redirect to Validation Canvas (Sprint 5.1.1 Epic K). */
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const params = await searchParams;
-
-  const session = await getWorkspaceSession(params.project ?? null);
-  const { user, demoMode, workspace } = session;
-
-  if (!user && !demoMode) {
-    redirect('/auth/login?next=/dashboard');
-  }
-
-  if (user && !demoMode && workspace.projectCount === 0) {
-    return (
-      <>
-        <Suspense fallback={null}>
-          <AuthCompleteTracker />
-        </Suspense>
-        <ProjectWizard />
-      </>
-    );
-  }
-
-  let executive = null;
-  let strategy = null;
-  let consultant = null;
-  let intelligence = null;
-  let watchCenter = null;
-  let onboardingComplete = false;
-
-  if (workspace.activeProject && workspace.stats) {
-    const projectId = workspace.activeProject.id;
-    const onboardingContext =
-      parseOnboardingContext(workspace.activeProject.onboardingContext) ??
-      (await getProjectOnboardingContext(projectId));
-    onboardingComplete = isOnboardingComplete(onboardingContext);
-
-    const decision = await generateProjectDecision(projectId);
-    const orchestratorPlan = await getLatestPlan(projectId);
-    const executiveReport = await getExecutiveReport(projectId);
-    if (decision) {
-      executive = buildExecutiveWorkspace(
-        workspace.activeProject,
-        workspace.stats,
-        decision,
-        orchestratorPlan,
-      );
-    }
-    strategy = buildStrategyWorkspace({
-      stats: workspace.stats,
-      executive,
-      hasExecutiveReport: Boolean(executiveReport),
-    });
-    consultant = buildConsultantViewModel({
-      stats: workspace.stats,
-      executive,
-      strategy,
-      hasExecutiveReport: Boolean(executiveReport),
-      orchestratorPlan,
-      onboardingContext,
-    });
-    intelligence = await loadProjectIntelligence({
-      project: workspace.activeProject,
-      stats: workspace.stats,
-      executive,
-      strategy,
-      onboardingContext,
-      hasExecutiveReport: Boolean(executiveReport),
-      orchestratorPlan,
-    });
-    watchCenter = await loadWatchCenter({
-      projectId,
-      userId: user?.id ?? null,
-      stats: workspace.stats,
-      executive,
-      hasExecutiveReport: Boolean(executiveReport),
-    });
-  }
-
-  return (
-    <>
-      <Suspense fallback={null}>
-        <AuthCompleteTracker />
-      </Suspense>
-      <DemoEntryTracker enabled={Boolean(params.demo)} />
-      <ExecutiveDashboard
-        workspace={workspace}
-        executive={executive}
-        strategy={strategy}
-        consultant={consultant}
-        intelligence={intelligence}
-        watchCenter={watchCenter}
-        demoMode={demoMode}
-        onboardingComplete={onboardingComplete}
-      />
-    </>
+  redirect(
+    legacyProjectCanvasRedirect(params.project ?? null, {
+      ...(params.demo ? { demo: params.demo } : {}),
+      ...(params.auth ? { auth: params.auth } : {}),
+    }),
   );
 }

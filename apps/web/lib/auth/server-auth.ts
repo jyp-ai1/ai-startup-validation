@@ -78,3 +78,24 @@ export async function requireAuthUser(nextPath?: string): Promise<AppAuthUser> {
   redirect(`/auth/login?next=${encodeURIComponent(next)}`);
   throw new Error('Unreachable');
 }
+
+/** Admin ops — ADMIN_EMAIL allowlist (Sprint 4.8). Never hardcode credentials. */
+export async function requireAdminUser(): Promise<AppAuthUser> {
+  const user = await requireAuthUser('/admin/operations');
+  const { env } = await import('@repo/core/env');
+  const adminEmail = env.ADMIN_EMAIL?.trim().toLowerCase();
+
+  if (!adminEmail) {
+    const { redirect } = await import('next/navigation');
+    redirect('/forbidden');
+    throw new Error('Unreachable');
+  }
+
+  if (user.email.trim().toLowerCase() !== adminEmail) {
+    const { redirect } = await import('next/navigation');
+    redirect('/forbidden');
+    throw new Error('Unreachable');
+  }
+
+  return user;
+}

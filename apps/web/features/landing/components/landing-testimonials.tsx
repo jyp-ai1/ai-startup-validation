@@ -1,28 +1,70 @@
-import { getTranslations } from 'next-intl/server';
+'use client';
 
-export async function LandingTestimonials() {
-  const t = await getTranslations('landing.testimonials');
+import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Star } from 'lucide-react';
 
-  const items = ['one', 'two', 'three'] as const;
+import { cn } from '@repo/ui/lib/utils';
+
+const TESTIMONIAL_KEYS = ['one', 'two', 'three'] as const;
+
+type LandingTestimonialsProps = {
+  className?: string;
+};
+
+export function LandingTestimonials({ className }: LandingTestimonialsProps) {
+  const t = useTranslations('landing.testimonials');
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActive((i) => (i + 1) % TESTIMONIAL_KEYS.length);
+    }, 6000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   return (
-    <section id="stories" className="border-t border-border/60 bg-muted/20 py-16 sm:py-20">
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t('title')}</h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">{t('desc')}</p>
-        </div>
-        <ul className="mt-10 grid gap-4 md:grid-cols-3" role="list">
-          {items.map((key) => (
-            <li
+    <section className={cn('mx-auto max-w-2xl px-4', className)} aria-label={t('ariaLabel')}>
+      <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 shadow-sm">
+        {TESTIMONIAL_KEYS.map((key, index) => (
+          <blockquote
+            key={key}
+            className={cn(
+              'transition-opacity duration-500',
+              index === active ? 'opacity-100' : 'pointer-events-none absolute inset-6 opacity-0',
+            )}
+          >
+            <div className="mb-3 flex gap-0.5" aria-hidden>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  className={cn(
+                    'size-4',
+                    i < (key === 'two' ? 4 : 5)
+                      ? 'fill-amber-400 text-amber-400'
+                      : 'text-muted-foreground/30',
+                  )}
+                />
+              ))}
+            </div>
+            <p className="text-sm leading-relaxed">{t(`${key}.quote`)}</p>
+            <footer className="mt-3 text-xs text-muted-foreground">{t(`${key}.role`)}</footer>
+          </blockquote>
+        ))}
+        <div className="mt-6 flex justify-center gap-2">
+          {TESTIMONIAL_KEYS.map((key, index) => (
+            <button
               key={key}
-              className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm"
-            >
-              <p className="text-sm leading-relaxed text-foreground">&ldquo;{t(`items.${key}.quote`)}&rdquo;</p>
-              <p className="mt-4 text-xs font-medium text-muted-foreground">{t(`items.${key}.role`)}</p>
-            </li>
+              type="button"
+              aria-label={t('dotLabel', { index: index + 1 })}
+              onClick={() => setActive(index)}
+              className={cn(
+                'size-2 rounded-full transition-colors',
+                index === active ? 'bg-primary' : 'bg-muted-foreground/30',
+              )}
+            />
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );

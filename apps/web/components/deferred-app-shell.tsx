@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState, type ReactNode } from 'react';
 
 import { ClientChrome } from '@/components/client-chrome';
+import { AuthSessionSync } from '@/components/auth-session-sync';
 import { AnalyticsProvider } from '@/lib/analytics/providers/analytics-provider';
 
 const JOURNEY_PREFIXES = [
@@ -62,6 +63,7 @@ export function DeferredAppShell({ children }: DeferredAppShellProps) {
 
   return (
     <AnalyticsProvider>
+      <AuthSessionSync />
       {children}
       <ClientChrome />
     </AnalyticsProvider>

@@ -14,8 +14,24 @@ import type {
   SmartIntakeImportSource,
   SmartIntakeMissingId,
 } from './v2-smart-intake-types';
+import { getActiveProjectId } from '@/lib/project/project-context-store';
 
+/** @deprecated Use project-scoped keys via scheduleHourKey(). */
 export const INVESTIGATION_SCHEDULE_KEY = 'll_investigation_schedule_hour';
+/** @deprecated Use project-scoped keys via scheduleWeekdaysKey(). */
+export const INVESTIGATION_SCHEDULE_WEEKDAYS_KEY = 'll_investigation_schedule_weekdays';
+
+function resolveScheduleScope(projectId?: string): string {
+  return projectId ?? getActiveProjectId() ?? 'demo';
+}
+
+function scheduleHourKey(projectId?: string): string {
+  return `launchlens.workflow.${resolveScheduleScope(projectId)}.scheduleHour`;
+}
+
+function scheduleWeekdaysKey(projectId?: string): string {
+  return `launchlens.workflow.${resolveScheduleScope(projectId)}.scheduleWeekdays`;
+}
 
 export const DEFAULT_SCHEDULE_HOUR: InvestigationScheduleHour = '8';
 
@@ -174,6 +190,26 @@ export function buildSampleInvestigationContext(): InvestigationContext {
     discoveries: SAMPLE_DISCOVERIES,
     scheduleHour: DEFAULT_SCHEDULE_HOUR,
     reportDate: '2026.08.01',
+    surface: 'workspace',
+  };
+}
+
+/** Demo flow — no Morning Report / Daily Report (P0-1). */
+export function buildDemoInvestigationContext(): InvestigationContext {
+  return {
+    logEntries: SAMPLE_WORK_LOG.map((entry) => ({
+      ...entry,
+      time: entry.time.replace(/^08:/, '14:'),
+    })),
+    liveSteps: SAMPLE_LIVE_STEPS,
+    smartQuestions: [],
+    report: SAMPLE_REPORT,
+    hasDocument: false,
+    workProgress: SAMPLE_WORK_PROGRESS,
+    discoveries: SAMPLE_DISCOVERIES,
+    scheduleHour: DEFAULT_SCHEDULE_HOUR,
+    reportDate: new Date().toISOString().slice(0, 10).replace(/-/g, '.'),
+    surface: 'demo',
   };
 }
 
@@ -199,18 +235,11 @@ export function buildSmartIntakeInvestigationContext(
       decisions: 1,
     },
     hasDocument,
-    morningBriefing: buildMorningBriefing(
-      analysis.missing.includes('pricing') ? 'pricingStrategy' : 'customerInterview',
-      hasDocument ? 12 : 11,
-      hasDocument
-        ? ['documentAnalyzed', 'searchVolume', 'pricingGap']
-        : ['searchVolume', 'competitionSignal'],
-    ),
-    dailyReport: buildDailyReport(),
     workProgress: buildWorkProgress(analysis.missing),
     discoveries: buildDiscoveries(hasDocument),
     scheduleHour: DEFAULT_SCHEDULE_HOUR,
-    reportDate: '2026.08.01',
+    reportDate: new Date().toISOString().slice(0, 10).replace(/-/g, '.'),
+    surface: 'demo',
   };
 }
 
@@ -224,16 +253,47 @@ export function mapWorkingStepsToLiveProgress(
   return Math.min(liveSteps.length, Math.ceil(ratio * liveSteps.length));
 }
 
-export function loadInvestigationScheduleHour(): InvestigationScheduleHour {
+export function loadInvestigationScheduleHour(projectId?: string): InvestigationScheduleHour {
   if (typeof window === 'undefined') return DEFAULT_SCHEDULE_HOUR;
-  const raw = localStorage.getItem(INVESTIGATION_SCHEDULE_KEY);
+  const scoped = localStorage.getItem(scheduleHourKey(projectId));
+  const raw = scoped ?? localStorage.getItem(INVESTIGATION_SCHEDULE_KEY);
   if (raw === '6' || raw === '8' || raw === '9') return raw;
   return DEFAULT_SCHEDULE_HOUR;
 }
 
-export function saveInvestigationScheduleHour(hour: InvestigationScheduleHour): void {
+export function saveInvestigationScheduleHour(
+  hour: InvestigationScheduleHour,
+  projectId?: string,
+): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(INVESTIGATION_SCHEDULE_KEY, hour);
+  localStorage.setItem(scheduleHourKey(projectId), hour);
+}
+
+export function loadInvestigationScheduleWeekdaysOnly(projectId?: string): boolean {
+  if (typeof window === 'undefined') return true;
+  const scoped = localStorage.getItem(scheduleWeekdaysKey(projectId));
+  const raw = scoped ?? localStorage.getItem(INVESTIGATION_SCHEDULE_WEEKDAYS_KEY);
+  if (raw === '0') return false;
+  if (raw === '1') return true;
+  return true;
+}
+
+export function saveInvestigationScheduleWeekdaysOnly(
+  weekdaysOnly: boolean,
+  projectId?: string,
+): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(scheduleWeekdaysKey(projectId), weekdaysOnly ? '1' : '0');
+}
+
+export function loadInvestigationSchedule(projectId?: string): {
+  hour: InvestigationScheduleHour;
+  weekdaysOnly: boolean;
+} {
+  return {
+    hour: loadInvestigationScheduleHour(projectId),
+    weekdaysOnly: loadInvestigationScheduleWeekdaysOnly(projectId),
+  };
 }
 
 export function countWorkProgressDone(items: WorkProgressItem[]): { done: number; total: number } {

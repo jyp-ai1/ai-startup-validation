@@ -1,6 +1,14 @@
+import { getActiveProjectId } from '@/lib/project/project-context-store';
+
 import type { V2ValidationEvidence } from './v2-validation-store';
 
-const REVIEW_SNAPSHOT_KEY = 'll_v2_review_snapshot';
+function resolveProjectId(projectId?: string): string {
+  return projectId ?? getActiveProjectId() ?? 'demo';
+}
+
+function reviewSnapshotKey(projectId?: string): string {
+  return `launchlens.reason.${resolveProjectId(projectId)}.reviewSnapshot`;
+}
 
 export function serializeEvidenceSnapshot(evidence: V2ValidationEvidence): string {
   return JSON.stringify({
@@ -12,22 +20,23 @@ export function serializeEvidenceSnapshot(evidence: V2ValidationEvidence): strin
   });
 }
 
-export function saveReviewSnapshot(evidence: V2ValidationEvidence): void {
+export function saveReviewSnapshot(evidence: V2ValidationEvidence, projectId?: string): void {
   if (typeof window === 'undefined') return;
-  sessionStorage.setItem(REVIEW_SNAPSHOT_KEY, serializeEvidenceSnapshot(evidence));
+  sessionStorage.setItem(reviewSnapshotKey(projectId), serializeEvidenceSnapshot(evidence));
 }
 
-export function loadReviewSnapshot(): string | null {
+export function loadReviewSnapshot(projectId?: string): string | null {
   if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem(REVIEW_SNAPSHOT_KEY);
+  return sessionStorage.getItem(reviewSnapshotKey(projectId));
 }
 
 export function isReviewStale(
   evidence: V2ValidationEvidence,
   reviewCount: number,
+  projectId?: string,
 ): boolean {
   if (reviewCount < 1) return false;
-  const snapshot = loadReviewSnapshot();
+  const snapshot = loadReviewSnapshot(projectId);
   if (!snapshot) return true;
   return snapshot !== serializeEvidenceSnapshot(evidence);
 }
@@ -37,7 +46,8 @@ export type ReviewFreshness = 'none' | 'current' | 'stale';
 export function getReviewFreshness(
   evidence: V2ValidationEvidence,
   reviewCount: number,
+  projectId?: string,
 ): ReviewFreshness {
   if (reviewCount < 1) return 'none';
-  return isReviewStale(evidence, reviewCount) ? 'stale' : 'current';
+  return isReviewStale(evidence, reviewCount, projectId) ? 'stale' : 'current';
 }

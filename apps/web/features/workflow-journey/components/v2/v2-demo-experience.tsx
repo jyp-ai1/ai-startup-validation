@@ -26,26 +26,27 @@ import {
   SAMPLE_REASON_CHAIN_STEPS,
 } from '../../lib/v2-reason-chain-engine';
 import {
-  buildSampleInvestigationContext,
+  buildDemoInvestigationContext,
   SAMPLE_LIVE_STEPS,
 } from '../../lib/v2-investigation-engine';
 import {
   createEmptyDemoProjectDraft,
   isDemoProjectDraftValid,
   persistDemoProjectDraftForLogin,
+  saveDemoWorkflowSnapshot,
   type DemoProjectDraft,
 } from '../../lib/v2-demo-project-store';
-import { V2DailyReportTimeline } from './v2-daily-report-timeline';
 import { V2EvidenceMetadataCard } from './v2-evidence-metadata-card';
 import { V2InvestigationDiscoveries } from './v2-investigation-discoveries';
 import { V2InvestigationLog } from './v2-investigation-log';
 import { V2InvestigationProgress } from './v2-investigation-progress';
 import { V2InvestigationScheduleSettings } from './v2-investigation-schedule-settings';
 import { V2LiveInvestigation } from './v2-live-investigation';
-import { V2MorningInvestigationBrief } from './v2-morning-investigation-brief';
+import { resetDemoSessionContext } from '@/lib/project/project-context-store';
 import { V2PmReport } from './v2-pm-report';
 import { V2ReasonChainBridge } from './v2-reason-chain-bridge';
 import { V2SmartIntakeFlow } from './v2-smart-intake-flow';
+import { useAlphaFunnelTracking } from '../../hooks/use-alpha-funnel-tracking';
 import {
   getNextDemoStep,
   isSmartIntakeStep,
@@ -53,9 +54,14 @@ import {
   type DemoExperienceStep,
 } from '../../lib/v2-demo-experience-types';
 
+import {
+  PRODUCT_ANALYTICS_EVENTS,
+  recordFunnelEvent,
+} from '@/lib/analytics/product-analytics';
+
 const INVESTIGATING_MS = 12000;
 
-const sampleInvestigation = buildSampleInvestigationContext();
+const sampleInvestigation = buildDemoInvestigationContext();
 
 type V2DemoExperienceProps = {
   className?: string;
@@ -101,6 +107,46 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
   const [investigationProgress, setInvestigationProgress] = useState(0);
   const [projectDraft, setProjectDraft] = useState<DemoProjectDraft>(createEmptyDemoProjectDraft);
   const [loginDraftReady, setLoginDraftReady] = useState(false);
+  const alpha = useAlphaFunnelTracking();
+
+  useEffect(() => {
+    resetDemoSessionContext();
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.demoStarted, {
+      screen: '/validation',
+    });
+    alpha.trackDemoStart();
+  }, [alpha]);
+
+  useEffect(() => {
+    switch (step) {
+      case 'sampleProject':
+        alpha.trackSampleSelected();
+        break;
+      case 'investigating':
+        alpha.trackInvestigationStarted();
+        break;
+      case 'inbox':
+        alpha.trackInvestigationFinished();
+        break;
+      case 'evidence':
+        alpha.trackEvidenceOpened();
+        break;
+      case 'opinion':
+        alpha.trackReviewCompleted();
+        break;
+      case 'strategyImprovement':
+        alpha.trackStrategyChanged();
+        break;
+      case 'tryMyProject':
+        alpha.trackMyProjectStarted();
+        break;
+      case 'loginCta':
+        alpha.trackLoginStarted();
+        break;
+      default:
+        break;
+    }
+  }, [alpha, step]);
 
   useEffect(() => {
     if (step !== 'investigating') return;
@@ -121,6 +167,17 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
   useEffect(() => {
     if (step !== 'loginCta' || !isDemoProjectDraftValid(projectDraft) || loginDraftReady) return;
     persistDemoProjectDraftForLogin(projectDraft);
+    saveDemoWorkflowSnapshot({
+      lastDemoStep: step,
+      smartAnswers: {
+        pricingModel: projectDraft.pricingModel ?? '',
+        priceLevel: projectDraft.priceLevel ?? '',
+        customer: projectDraft.customer,
+        problem: projectDraft.problem,
+      },
+      reasonChainSummary: 'demo_evidence_to_decision',
+      strategySummary: projectDraft.tagline,
+    });
     setLoginDraftReady(true);
   }, [step, projectDraft, loginDraftReady]);
 
@@ -194,21 +251,12 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
 
       {step === 'inbox' ? (
         <div className="space-y-4">
-          <V2MorningInvestigationBrief
-            briefing={sampleInvestigation.morningBriefing}
-            namespace="investigationSample"
-          />
-
-          <V2InvestigationProgress
-            items={sampleInvestigation.workProgress}
-            namespace="investigationSample"
-          />
-
-          <V2DailyReportTimeline
-            entries={sampleInvestigation.dailyReport}
-            reportDate={sampleInvestigation.reportDate}
-            namespace="investigationSample"
-          />
+          <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+              {tInv('inbox.investigationComplete')}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">{t('steps.inbox.title')}</p>
+          </div>
 
           <V2InvestigationLog
             entries={sampleInvestigation.logEntries}
@@ -218,8 +266,13 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
 
           <V2InvestigationDiscoveries items={sampleInvestigation.discoveries} />
 
+          <V2InvestigationProgress
+            items={sampleInvestigation.workProgress}
+            namespace="investigationSample"
+          />
+
           <AiPmBubble>
-            <p className="font-medium">{tInv('inbox.reportLabel', { time: sampleInvestigation.morningBriefing.completedTime })}</p>
+            <p className="font-medium">{tInv('inbox.reportLabelLive')}</p>
             <p>{t('steps.inbox.title')}</p>
           </AiPmBubble>
           <ul className="space-y-2 rounded-xl border border-border/40 bg-muted/5 p-4">

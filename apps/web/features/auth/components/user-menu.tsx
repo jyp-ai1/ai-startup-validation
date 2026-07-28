@@ -5,7 +5,7 @@ import { LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { AppAuthUser } from '@/lib/auth/server-auth';
-import { signOutAction } from '@/features/auth/actions/auth-actions';
+import { signOutAndRedirect } from '@/lib/auth/client-sign-out';
 import {
   Button,
   DropdownMenu,
@@ -55,13 +55,12 @@ export function UserMenu({ user }: UserMenuProps) {
           <p className="truncate text-xs text-muted-foreground">{user.email}</p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <form action={signOutAction}>
-            <button type="submit" className="flex w-full items-center gap-2">
-              <LogOut className="size-4" />
-              {t('signOut')}
-            </button>
-          </form>
+        <DropdownMenuItem
+          className="flex cursor-pointer items-center gap-2"
+          onSelect={() => void signOutAndRedirect()}
+        >
+          <LogOut className="size-4" />
+          {t('signOut')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

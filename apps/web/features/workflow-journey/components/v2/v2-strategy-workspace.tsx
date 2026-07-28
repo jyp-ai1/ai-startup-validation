@@ -28,6 +28,7 @@ import { type WorkflowStepId } from '../../lib/v2-workflow-steps';
 import { saveReviewSnapshot } from '../../lib/v2-review-dirty-state';
 import { JourneyLayout } from '../journey-layout';
 import { V2DecisionMemoryDetail } from './v2-decision-memory-detail';
+import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { V2DecisionSavePrompt } from './v2-decision-save-prompt';
 import { V2DemoReadonlyBanner } from './v2-demo-readonly-banner';
 import {
@@ -36,6 +37,7 @@ import {
 } from './v2-guided-demo-coach';
 import { createMeetingNoteFromReview } from '../../lib/v2-ai-pm-meeting-store';
 import { V2DemoExperience } from './v2-demo-experience';
+import { V2JourneyMiniNav } from './v2-journey-mini-nav';
 import { V2ThinkingWorkspaceMain } from './v2-thinking-workspace-main';
 
 type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
@@ -69,9 +71,10 @@ type V2StrategyWorkspaceMode = 'default' | 'demo-readonly' | 'demo-guided';
 
 type V2StrategyWorkspaceViewProps = {
   mode?: V2StrategyWorkspaceMode;
+  user?: AppAuthUser | null;
 };
 
-export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspaceViewProps) {
+export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2StrategyWorkspaceViewProps) {
   const isDemoReadonly = mode === 'demo-readonly';
   const isDemoGuided = mode === 'demo-guided';
   const isDemoNoPersist = isDemoReadonly || isDemoGuided;
@@ -119,7 +122,7 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
       setActiveStep('review');
       setFollowUpDone(true);
       setMemoryEntries(GTM_DEMO_MEMORY);
-      saveReviewSnapshot(GTM_DEMO_EVIDENCE);
+      saveReviewSnapshot(GTM_DEMO_EVIDENCE, 'demo');
       createMeetingNoteFromReview(1);
       return;
     }
@@ -339,8 +342,9 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
   };
 
   return (
-    <JourneyLayout phase="workflow" width="workspace" versionLabel="V2">
-      <div className="mx-auto max-w-2xl">
+    <JourneyLayout phase="workflow" width="workspace" versionLabel="V2" user={user}>
+      <div className="mx-auto flex max-w-6xl gap-8">
+        <div className="min-w-0 flex-1 max-w-2xl">
         {isDemoReadonly ? <V2DemoReadonlyBanner /> : null}
         {isDemoGuided ? (
           <V2DemoExperience className="py-4 sm:py-6" />
@@ -380,6 +384,8 @@ export function V2StrategyWorkspaceView({ mode = 'default' }: V2StrategyWorkspac
               onLater={handleLaterMemory}
             />
           ) : null}
+        </div>
+        {!isDemoGuided && !isDemoReadonly ? <V2JourneyMiniNav /> : null}
       </div>
     </JourneyLayout>
   );

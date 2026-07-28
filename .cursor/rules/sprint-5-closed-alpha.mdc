@@ -1,0 +1,44 @@
+---
+description: Sprint 5 Closed Alpha — autonomous execution rules (2–3 weeks)
+alwaysApply: true
+---
+
+# Sprint 5 — Closed Alpha Launch
+
+**Full spec:** `docs/sprints/SPRINT_5_CLOSED_ALPHA_LAUNCH.md`
+
+## Mission
+
+Closed Alpha **30 users** operable. UI minimal. Focus: **Login · Workspace · AI PM · Admin · Analytics · Stability**.
+
+## Non-negotiable order
+
+1. **Epic A** (Google OAuth + P0-6~9 validation)
+2. **Release Checklist** — `docs/RELEASE_CHECKLIST.md` all PASS
+3. **Epic E** verify (analytics persistence)
+4. **Epic B + C** (Real AI PM + Workspace)
+5. **Epic D + F** (Admin ops center + stabilization)
+6. **Epic G** (Smart questions) — last only
+
+## CPO gates (every change)
+
+- Workspace user always knows **what to do next** — no dead ends
+- AI PM **works & reports** — not generic chat praise
+- **No silent mock** — real pipeline or visible `[Sample]` label
+- **Unmeasured = unfinished** — `recordFunnelEvent()` for new behavior
+- Exit = **alpha openable**, not just green build
+
+## Do NOT
+
+- Add landing redesign or unrelated UI polish
+- Import Supabase/OpenAI SDK in `apps/` or `packages/core`
+- Skip OAuth regression after auth changes
+- Commit unless user explicitly requests
+
+## Key files
+
+- Auth: `apps/web/lib/auth/update-session.ts`
+- Workspace: `apps/web/features/my-projects/components/v2-authenticated-workspace.tsx`
+- Mock to replace: `buildSampleInvestigationContext()` in authenticated path
+- Analytics: `apps/web/lib/analytics/server/analytics-persistence.ts`, migration `022_analytics_events.sql`
+- Admin: `apps/web/features/operations/components/admin-*`

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { UserMenu } from '@/features/auth';
+import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '@repo/ui';
 
 import { LandingCtaLink } from './landing-cta-link';
@@ -22,6 +24,7 @@ const TrackedThemeToggle = dynamic(
 type NavLink = { href: string; label: string; key: string };
 
 type LandingHeaderControlsProps = {
+  user: AppAuthUser | null;
   navLinks: NavLink[];
   labels: {
     menuLabel: string;
@@ -29,10 +32,12 @@ type LandingHeaderControlsProps = {
     closeMenu: string;
     signIn: string;
     startFree: string;
+    workspace: string;
+    demo: string;
   };
 };
 
-export function LandingHeaderControls({ navLinks, labels }: LandingHeaderControlsProps) {
+export function LandingHeaderControls({ user, navLinks, labels }: LandingHeaderControlsProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -64,17 +69,28 @@ export function LandingHeaderControls({ navLinks, labels }: LandingHeaderControl
             <span className="inline-block size-8 rounded-md bg-muted/60" aria-hidden />
           </>
         )}
-        <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
-          <Link href="/auth/login?next=/workspace">{labels.signIn}</Link>
-        </Button>
-        <LandingCtaLink
-          href="/auth/login?next=/workspace"
-          event="cta_start"
-          size="sm"
-          className="h-9 rounded-xl bg-primary px-3 text-primary-foreground hover:bg-primary/90 sm:px-4"
-        >
-          {labels.startFree}
-        </LandingCtaLink>
+        {user ? (
+          <>
+            <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+              <Link href="/validation">{labels.workspace}</Link>
+            </Button>
+            <UserMenu user={user} />
+          </>
+        ) : (
+          <>
+            <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+              <Link href="/auth/login?next=/workspace">{labels.signIn}</Link>
+            </Button>
+            <LandingCtaLink
+              href="/auth/login?next=/workspace"
+              event="cta_start"
+              size="sm"
+              className="h-9 rounded-xl bg-primary px-3 text-primary-foreground hover:bg-primary/90 sm:px-4"
+            >
+              {labels.startFree}
+            </LandingCtaLink>
+          </>
+        )}
       </div>
 
       <Dialog open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -97,12 +113,28 @@ export function LandingHeaderControls({ navLinks, labels }: LandingHeaderControl
               </a>
             ))}
             <Link
-              href="/auth/login?next=/workspace"
-              className="mt-2 rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-muted"
+              href="/validation"
+              className="rounded-lg px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
               onClick={() => setMobileOpen(false)}
             >
-              {labels.signIn}
+              {labels.workspace}
             </Link>
+            <Link
+              href="/demo/enter"
+              className="rounded-lg px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
+              onClick={() => setMobileOpen(false)}
+            >
+              {labels.demo}
+            </Link>
+            {user ? null : (
+              <Link
+                href="/auth/login?next=/workspace"
+                className="mt-2 rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-muted"
+                onClick={() => setMobileOpen(false)}
+              >
+                {labels.signIn}
+              </Link>
+            )}
           </nav>
         </DialogContent>
       </Dialog>

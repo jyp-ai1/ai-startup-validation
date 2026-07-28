@@ -8,7 +8,9 @@ import { cn } from '@repo/ui/lib/utils';
 import {
   DEFAULT_SCHEDULE_HOUR,
   loadInvestigationScheduleHour,
+  loadInvestigationScheduleWeekdaysOnly,
   saveInvestigationScheduleHour,
+  saveInvestigationScheduleWeekdaysOnly,
 } from '../../lib/v2-investigation-engine';
 import type { InvestigationScheduleHour } from '../../lib/v2-investigation-types';
 
@@ -25,14 +27,21 @@ export function V2InvestigationScheduleSettings({
 }: V2InvestigationScheduleSettingsProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.investigation.schedule');
   const [hour, setHour] = useState<InvestigationScheduleHour>(DEFAULT_SCHEDULE_HOUR);
+  const [weekdaysOnly, setWeekdaysOnly] = useState(true);
 
   useEffect(() => {
     setHour(loadInvestigationScheduleHour());
+    setWeekdaysOnly(loadInvestigationScheduleWeekdaysOnly());
   }, []);
 
   const handleChange = (next: InvestigationScheduleHour) => {
     setHour(next);
     saveInvestigationScheduleHour(next);
+  };
+
+  const handleWeekdaysChange = (next: boolean) => {
+    setWeekdaysOnly(next);
+    saveInvestigationScheduleWeekdaysOnly(next);
   };
 
   return (
@@ -63,6 +72,15 @@ export function V2InvestigationScheduleSettings({
           </label>
         ))}
       </fieldset>
+      <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-lg border border-border/60 px-3 py-2 text-sm">
+        <input
+          type="checkbox"
+          checked={weekdaysOnly}
+          onChange={(event) => handleWeekdaysChange(event.target.checked)}
+          className="size-4 accent-primary"
+        />
+        {t('weekdaysOnly')}
+      </label>
       <p className="mt-3 text-xs text-muted-foreground">
         {t('timezone')}: {t('timezoneValue')}
       </p>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 
 import { JourneyPageSkeleton } from '@/features/workflow-journey/components/journey-page-skeleton';
+import { getServerAuthUser } from '@/lib/auth/server-auth';
 import { buildPageMetadata } from '@/lib/site/page-metadata';
 
 const PersonaSelectionView = dynamic(
@@ -27,5 +28,7 @@ type WhoPageProps = {
 
 export default async function WhoPage({ searchParams }: WhoPageProps) {
   const params = await searchParams;
-  return <PersonaSelectionView demoMode={params.demo === '1'} />;
+  const user = await getServerAuthUser();
+
+  return <PersonaSelectionView demoMode={params.demo === '1'} user={user} />;
 }

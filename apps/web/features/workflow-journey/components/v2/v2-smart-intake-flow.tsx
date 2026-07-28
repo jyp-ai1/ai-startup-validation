@@ -45,13 +45,10 @@ import {
   mapWorkingStepsToLiveProgress,
 } from '../../lib/v2-investigation-engine';
 import { V2DocumentCitationBlock, V2DocumentProfileSummary } from './v2-document-citation-block';
-import { V2DailyReportTimeline } from './v2-daily-report-timeline';
 import { V2EvidenceMetadataCard } from './v2-evidence-metadata-card';
 import { V2InvestigationDiscoveries } from './v2-investigation-discoveries';
 import { V2InvestigationLog } from './v2-investigation-log';
-import { V2InvestigationProgress } from './v2-investigation-progress';
 import { V2LiveInvestigation } from './v2-live-investigation';
-import { V2MorningInvestigationBrief } from './v2-morning-investigation-brief';
 import { V2PmReport } from './v2-pm-report';
 import { V2ReasonChainBridge } from './v2-reason-chain-bridge';
 import { V2SmartQuestionBlock } from './v2-smart-question-block';
@@ -334,10 +331,6 @@ export function V2SmartIntakeFlow({
   if (step === 'documentUnderstanding' && analysis && reasonChain && investigation) {
     return (
       <div className="space-y-4">
-        <V2MorningInvestigationBrief briefing={investigation.morningBriefing} />
-
-        <V2InvestigationProgress items={investigation.workProgress} />
-
         <V2InvestigationLog entries={investigation.logEntries} compact variant="workJournal" />
 
         {reasonChain.documentProfile ? (
@@ -633,10 +626,13 @@ export function V2SmartIntakeFlow({
   if (step === 'dailyMonitoringPreview' && investigation) {
     return (
       <div className="space-y-4">
-        <V2DailyReportTimeline
-          entries={investigation.dailyReport}
-          reportDate={investigation.reportDate}
+        <V2InvestigationLog
+          entries={investigation.logEntries}
+          namespace="investigationSample"
+          variant="workJournal"
         />
+
+        <V2InvestigationDiscoveries items={investigation.discoveries} />
 
         <V2PmReport stats={investigation.report} />
 

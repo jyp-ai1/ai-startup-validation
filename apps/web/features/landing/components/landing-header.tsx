@@ -2,6 +2,9 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { Sparkles } from 'lucide-react';
 
+import { UserMenu } from '@/features/auth';
+import { getServerAuthUser } from '@/lib/auth/server-auth';
+
 import { LandingHeaderControls } from './landing-header-controls';
 
 const NAV_LINKS = [
@@ -13,6 +16,7 @@ const NAV_LINKS = [
 
 export async function LandingHeader() {
   const t = await getTranslations('landing');
+  const user = await getServerAuthUser();
 
   return (
     <header className="sticky top-0 z-[100] border-b border-border/60 bg-background/95 backdrop-blur-sm">
@@ -39,9 +43,16 @@ export async function LandingHeader() {
               {t(`nav.${key}`)}
             </a>
           ))}
+          <Link href="/validation" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+            {t('nav.workspace')}
+          </Link>
+          <Link href="/demo/enter" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+            {t('nav.demo')}
+          </Link>
         </nav>
 
         <LandingHeaderControls
+          user={user}
           navLinks={NAV_LINKS.map(({ href, key }) => ({ href, label: t(`nav.${key}`), key }))}
           labels={{
             menuLabel: t('nav.menuLabel'),
@@ -49,6 +60,8 @@ export async function LandingHeader() {
             closeMenu: t('nav.closeMenu'),
             signIn: t('nav.signIn'),
             startFree: t('nav.startFree'),
+            workspace: t('nav.workspace'),
+            demo: t('nav.demo'),
           }}
         />
       </div>
