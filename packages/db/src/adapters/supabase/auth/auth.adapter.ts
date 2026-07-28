@@ -160,7 +160,7 @@ export class SupabaseAuthAdapter implements AuthPort {
       throw new InternalServerError(`Unsupported OAuth provider: ${input.provider}`);
     }
 
-    const { error } = await this.getClient().auth.signInWithOAuth({
+    const { data, error } = await this.getClient().auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: input.redirectTo,
@@ -173,6 +173,10 @@ export class SupabaseAuthAdapter implements AuthPort {
 
     if (error) {
       throw new UnauthorizedError(error.message);
+    }
+
+    if (typeof window !== 'undefined' && data.url) {
+      window.location.assign(data.url);
     }
   }
 }

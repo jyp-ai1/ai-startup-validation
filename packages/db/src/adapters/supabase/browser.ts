@@ -1,12 +1,12 @@
 import { createBrowserClient as createSupabaseBrowserClient } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { isSupabaseConfigured } from '../../env/env';
+import { isSupabaseBrowserConfigured } from '../../env/env';
 import { getSupabaseClientFactory } from './client';
 
 /** Create a Supabase browser client (anon key, cookie-aware). */
 export function createBrowserClient(): SupabaseClient | null {
-  if (!isSupabaseConfigured()) return null;
+  if (!isSupabaseBrowserConfigured()) return null;
 
   const factory = getSupabaseClientFactory();
   const config = factory.getConfig();

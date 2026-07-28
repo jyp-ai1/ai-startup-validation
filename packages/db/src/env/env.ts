@@ -30,13 +30,19 @@ export const dbEnv = createEnv({
 
 export type DbEnv = typeof dbEnv;
 
-/** Returns true when minimum Supabase config is present. */
+/** Minimum config for browser OAuth (NEXT_PUBLIC_* only — available in client bundle). */
+export function isSupabaseBrowserConfigured(): boolean {
+  return Boolean(dbEnv.NEXT_PUBLIC_SUPABASE_URL && dbEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+}
+
+/** Returns true when Supabase can be used in the current runtime. */
 export function isSupabaseConfigured(): boolean {
+  if (!isSupabaseBrowserConfigured()) return false;
+  // Client bundle only inlines NEXT_PUBLIC_* — server-only vars are undefined in browser.
+  if (typeof window !== 'undefined') return true;
+  // Server routes: dedicated server vars, or public vars as fallback (common on Vercel).
   return Boolean(
-    dbEnv.SUPABASE_URL &&
-      dbEnv.SUPABASE_ANON_KEY &&
-      dbEnv.NEXT_PUBLIC_SUPABASE_URL &&
-      dbEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    (dbEnv.SUPABASE_URL && dbEnv.SUPABASE_ANON_KEY) || isSupabaseBrowserConfigured(),
   );
 }
 

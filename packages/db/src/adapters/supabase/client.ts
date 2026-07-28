@@ -32,12 +32,14 @@ export class SupabaseClientFactory {
   }
 
   getConfig() {
+    const publicUrl = dbEnv.NEXT_PUBLIC_SUPABASE_URL!;
+    const publicAnonKey = dbEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
     return {
-      url: dbEnv.SUPABASE_URL!,
-      anonKey: dbEnv.SUPABASE_ANON_KEY!,
+      url: dbEnv.SUPABASE_URL ?? publicUrl,
+      anonKey: dbEnv.SUPABASE_ANON_KEY ?? publicAnonKey,
       serviceRoleKey: dbEnv.SUPABASE_SERVICE_ROLE_KEY,
-      publicUrl: dbEnv.NEXT_PUBLIC_SUPABASE_URL!,
-      publicAnonKey: dbEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      publicUrl,
+      publicAnonKey,
     };
   }
 

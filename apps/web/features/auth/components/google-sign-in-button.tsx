@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
+import { getBrowserFamily } from '@/lib/analytics/browser-context';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
+import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
-import { SupabaseAuthAdapter } from '@repo/db';
+import { isSupabaseBrowserConfigured, SupabaseAuthAdapter } from '@repo/db';
 import { Button } from '@repo/ui';
 
 type GoogleSignInButtonProps = {
@@ -13,10 +15,10 @@ type GoogleSignInButtonProps = {
   className?: string;
 };
 
-function isSupabaseReady(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
+function maskEnv(value: string | undefined): string {
+  if (!value) return '(missing)';
+  if (value.length <= 12) return `${value.slice(0, 4)}…`;
+  return `${value.slice(0, 8)}…${value.slice(-4)}`;
 }
 
 export function GoogleSignInButton({
@@ -26,25 +28,76 @@ export function GoogleSignInButton({
   const t = useTranslations('auth');
   const { trackEvent } = useAnalytics();
   const [loading, setLoading] = useState(false);
-  const [networkError, setNetworkError] = useState(false);
-  const supabaseReady = isSupabaseReady();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const supabaseReady = isSupabaseBrowserConfigured();
 
   async function handleSignIn() {
+    setErrorMessage(null);
+
     if (!supabaseReady) {
+      const detail = 'Supabase public env missing (NEXT_PUBLIC_SUPABASE_URL / ANON_KEY)';
+      console.error('[OAuth]', detail);
+      setErrorMessage(detail);
       return;
     }
 
-    setNetworkError(false);
     setLoading(true);
-    trackEvent(ANALYTICS_EVENTS.login, { provider: 'google', screen: '/auth/login' });
+    const browser = getBrowserFamily();
+
+    console.log('[OAuth] Start', {
+      supabaseUrl: maskEnv(process.env.NEXT_PUBLIC_SUPABASE_URL),
+      anonKey: maskEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+      redirectTo,
+    });
+
+    trackEvent(ANALYTICS_EVENTS.login, { provider: 'google', screen: '/auth/login', browser });
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.loginStarted, {
+      provider: 'google',
+      screen: '/auth/login',
+      status: 'attempt',
+      browser,
+    });
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.loginClicked, {
+      provider: 'google',
+      screen: '/auth/login',
+      browser,
+    });
 
     try {
       const origin = window.location.origin;
       const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`;
+
+      console.log('[OAuth] redirectTo', callbackUrl);
+
+      void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.oauthRedirect, {
+        provider: 'google',
+        screen: '/auth/login',
+        browser,
+      });
+
       const auth = new SupabaseAuthAdapter();
       await auth.signInWithOAuth({ provider: 'google', redirectTo: callbackUrl });
-    } catch {
-      setNetworkError(true);
+
+      console.log('[OAuth] Redirect — signInWithOAuth completed (navigation pending)');
+    } catch (error) {
+      console.error('[OAuth] signInWithOAuth failed', error);
+
+      const detail =
+        error instanceof Error ? error.message : typeof error === 'string' ? error : 'Unknown error';
+      setErrorMessage(detail);
+
+      void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.oauthFailed, {
+        provider: 'google',
+        screen: '/auth/login',
+        error: detail,
+        browser,
+      });
+      void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.loginFailed, {
+        provider: 'google',
+        screen: '/auth/login',
+        error: detail,
+        browser,
+      });
     } finally {
       setLoading(false);
     }
@@ -79,10 +132,16 @@ export function GoogleSignInButton({
         </svg>
         {loading ? t('signingIn') : t('continueWithGoogle')}
       </Button>
-      {networkError ? (
-        <p className="text-sm text-destructive" role="alert">
-          {t('loginNetworkError')}
+      {!supabaseReady ? (
+        <p className="text-sm text-amber-700 dark:text-amber-300" role="status">
+          {t('supabaseNotConfigured')}
         </p>
+      ) : null}
+      {errorMessage ? (
+        <div className="space-y-1" role="alert">
+          <p className="text-sm text-destructive">{t('loginNetworkError')}</p>
+          <p className="break-all text-xs text-muted-foreground">{errorMessage}</p>
+        </div>
       ) : null}
     </div>
   );

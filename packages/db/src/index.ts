@@ -1,5 +1,5 @@
 // Environment
-export { dbEnv, isSupabaseConfigured, isSupabaseAdminConfigured } from './env/env';
+export { dbEnv, isSupabaseBrowserConfigured, isSupabaseConfigured, isSupabaseAdminConfigured } from './env/env';
 export type { DbEnv } from './env/env';
 
 // DI Container
@@ -102,7 +102,18 @@ export type {
   NotificationSettingsRecord,
   UpsertNotificationSettingsInput,
 } from './repositories/notification-settings.repository';
-export { SupabaseNotificationSettingsRepository } from './repositories/notification-settings.repository';
+export {
+  SupabaseNotificationSettingsRepository,
+} from './repositories/notification-settings.repository';
+export type {
+  AnalyticsEventRecord,
+  InsertAnalyticsEventInput,
+  JourneyReplayEntry,
+} from './repositories/analytics-event.repository';
+export {
+  SupabaseAnalyticsEventRepository,
+  analyticsEventRepository,
+} from './repositories/analytics-event.repository';
 
 // Adapters (use via container — avoid direct imports in apps when possible)
 export { SupabaseAuthAdapter } from './adapters/supabase/auth/auth.adapter';
