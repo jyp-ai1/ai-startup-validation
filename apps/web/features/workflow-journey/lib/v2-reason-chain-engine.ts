@@ -11,7 +11,7 @@ export const SAMPLE_EVIDENCE_MARKET: EvidenceMetadata[] = [
   { id: 'googleTrends', badge: 'data' },
   { id: 'searchVolume', badge: 'search' },
   { id: 'productHunt', badge: 'startup' },
-  { id: 'yc', badge: 'startup' },
+  { id: 'ycInvestments', badge: 'startup' },
 ];
 
 export const SMART_INTAKE_EVIDENCE: EvidenceMetadata[] = [

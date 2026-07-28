@@ -2,7 +2,7 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **4.5 — Reason Chain & AI PM Thinking Flow** ✅  
+> **Active sprint:** Sprint **4.6 — AI PM Investigation Experience** ✅  
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
@@ -127,6 +127,22 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 **Kickoff:** [SPRINT_3_4_AI_PM_INBOX.md](./sprints/SPRINT_3_4_AI_PM_INBOX.md)
 
 **Next:** Sprint 4 — AI PM Experience (Consulting Experience)
+
+---
+
+## Sprint 4.6 — AI PM Investigation Experience ✅ SHIPPED
+
+**Mission:** 조사 → 보고 → 종합 — AI PM이 "일한 흔적"을 먼저 보여준다
+
+| # | P0 | Status |
+|---|-----|--------|
+| 1 | Investigation Log (timestamped work) | ✅ |
+| 2 | Live Investigation (12s source scan) | ✅ |
+| 3 | Evidence Deep Link (keywords · trend · source) | ✅ |
+| 4 | Smart Question Engine (document gaps) | ✅ |
+| 5 | PM Report (time · data · opinions · decisions) | ✅ |
+
+**Kickoff:** [SPRINT_4_6_INVESTIGATION.md](./sprints/SPRINT_4_6_INVESTIGATION.md)
 
 ---
 

@@ -5635,6 +5635,8 @@
               }
             },
             "evidenceMeta": {
+              "keywordsLabel": "주요 검색어",
+              "sourceDetailHint": "Demo에서는 원본 데이터 요약을 표시합니다. 실제 서비스에서는 Evidence Library로 연결됩니다.",
               "badges": {
                 "data": "DATA",
                 "search": "SEARCH",
@@ -5649,12 +5651,19 @@
                   "label": "Google Trends",
                   "headline": "최근 3개월 +18%",
                   "period": "(2026.04~2026.07)",
+                  "keywords": "AI 사업검증 · AI 창업 · 사업성 검토",
+                  "trendBefore": "100",
+                  "trendAfter": "118",
+                  "sourceLink": "원본 보기",
                   "why": "최근 3개월간 관련 키워드 검색 관심도가 18% 증가했습니다. B2C 진입 타이밍 판단 근거입니다."
                 },
                 "searchVolume": {
                   "label": "검색량",
                   "headline": "월 검색량 4,800 → 5,670 (+18%)",
                   "period": "최근 30일 기준",
+                  "trendBefore": "4,800",
+                  "trendAfter": "5,670",
+                  "sourceLink": "원본 보기",
                   "why": "월간 검색량이 최근 30일 기준 18% 증가했습니다. 시장 수요가 실제로 늘고 있음을 보여줍니다."
                 },
                 "productHunt": {
@@ -5670,6 +5679,8 @@
               }
             },
             "evidenceMetaSample": {
+              "keywordsLabel": "주요 검색어",
+              "sourceDetailHint": "Demo에서는 원본 데이터 요약을 표시합니다. 실제 서비스에서는 Evidence Library로 연결됩니다.",
               "badges": {
                 "data": "DATA",
                 "search": "SEARCH",
@@ -5684,12 +5695,19 @@
                   "label": "Google Trends",
                   "headline": "최근 3개월 +28%",
                   "period": "(2026.04~2026.07)",
+                  "keywords": "AI startup validation · AI founder tools · strategy workspace",
+                  "trendBefore": "100",
+                  "trendAfter": "128",
+                  "sourceLink": "원본 보기",
                   "why": "최근 3개월간 'AI startup validation' 관련 검색 관심도가 28% 증가했습니다."
                 },
                 "searchVolume": {
                   "label": "검색량",
                   "headline": "월 검색량 4,200 → 4,960 (+18%)",
                   "period": "최근 30일 기준",
+                  "trendBefore": "4,200",
+                  "trendAfter": "4,960",
+                  "sourceLink": "원본 보기",
                   "why": "월간 검색량이 최근 30일 기준 18% 증가했습니다. 지금 진입하기 좋은 타이밍입니다."
                 },
                 "productHunt": {
@@ -5705,11 +5723,15 @@
                 "cursor": {
                   "label": "Cursor",
                   "headline": "개발 생산성 도구",
+                  "insight": "최근 2개월 · AI Planning 기능 추가",
+                  "sourceLink": "원본 보기",
                   "why": "Cursor는 개발자 생산성에 집중합니다. 전략 기획 영역과는 다른 포지션입니다."
                 },
                 "lovable": {
                   "label": "Lovable",
                   "headline": "노코드 빌더",
+                  "insight": "최근 3개월 · Startup 템플릿 확대",
+                  "sourceLink": "원본 보기",
                   "why": "Lovable은 노코드 앱 빌드에 집중합니다. 창업자 전략 Workspace와는 결이 다릅니다."
                 },
                 "reddit": {
@@ -5722,6 +5744,115 @@
                   "headline": "Startup 투자 트렌드",
                   "why": "YC 최근 배치에서 AI co-founder 도구 투자가 증가했습니다."
                 }
+              }
+            },
+            "investigation": {
+              "log": {
+                "title": "오늘 AI PM 업무",
+                "entries": {
+                  "googleTrends": "Google Trends 조사 완료",
+                  "competitors": "경쟁사 12개 비교",
+                  "reddit": "Reddit 183건 분석",
+                  "productHunt": "Product Hunt 22개 분석",
+                  "documentAnalysis": "사업계획서 분석",
+                  "governmentSupport": "정부지원사업 확인",
+                  "tourismCases": "관광벤처 사례 17건 비교",
+                  "reportGenerated": "보고서 생성"
+                }
+              },
+              "live": {
+                "title": "조사 중…",
+                "steps": {
+                  "googleTrends": "Google Trends",
+                  "productHunt": "Product Hunt",
+                  "crunchbase": "Crunchbase",
+                  "reddit": "Reddit",
+                  "competitors": "경쟁사 비교",
+                  "documentAnalysis": "사업계획서 분석",
+                  "governmentSupport": "정부지원사업"
+                }
+              },
+              "reportFirst": {
+                "lead": "오늘 조사한 결과입니다.",
+                "summary": "Google Trends 검색량 증가 + 경쟁사 동향 + 문서 분석을 확인했습니다.",
+                "synthesis": "이를 종합하면…"
+              },
+              "smartQuestion": {
+                "label": "AI PM 질문",
+                "citationSource": "사업계획서",
+                "citationPage": "{page}페이지",
+                "items": {
+                  "paidConversionTiming": {
+                    "lead": "현재 계획은 B2B 수익모델 검증까지 정의되어 있습니다.",
+                    "question": "유료 전환 시점은 언제라고 생각하시나요?"
+                  },
+                  "paidConversionKpi": {
+                    "lead": "현재 KPI에는 MAU 3,000명이 있습니다.",
+                    "question": "유료 전환 목표도 같이 설정하시겠습니까?"
+                  },
+                  "pricingModelGap": {
+                    "lead": "문서에는 시장·BM 전략은 있으나 가격 정책이 없습니다.",
+                    "question": "어떤 가격 모델로 시작할 계획인가요?"
+                  }
+                }
+              },
+              "report": {
+                "title": "오늘 조사 완료",
+                "fields": {
+                  "duration": "조사 시간",
+                  "dataPoints": "조사한 데이터",
+                  "opinions": "AI 의견",
+                  "decisions": "대표 결정"
+                },
+                "durationValue": "{minutes}분",
+                "dataPointsValue": "{count}건",
+                "opinionsValue": "{count}건",
+                "decisionsValue": "{count}건"
+              }
+            },
+            "investigationSample": {
+              "log": {
+                "title": "오늘 AI PM 업무",
+                "entries": {
+                  "googleTrends": "Google Trends 조사 완료",
+                  "competitors": "경쟁사 12개 비교",
+                  "reddit": "Reddit 183건 분석",
+                  "productHunt": "Product Hunt 22개 분석",
+                  "documentAnalysis": "사업계획서 분석",
+                  "governmentSupport": "정부지원사업 확인",
+                  "tourismCases": "관광벤처 사례 17건 비교",
+                  "reportGenerated": "보고서 생성"
+                }
+              },
+              "live": {
+                "title": "조사 중…",
+                "steps": {
+                  "googleTrends": "Google Trends",
+                  "productHunt": "Product Hunt",
+                  "crunchbase": "Crunchbase",
+                  "reddit": "Reddit",
+                  "competitors": "경쟁사 비교",
+                  "documentAnalysis": "사업계획서 분석",
+                  "governmentSupport": "정부지원사업"
+                }
+              },
+              "reportFirst": {
+                "lead": "오늘 조사한 결과입니다.",
+                "summary": "Google Trends +28% · 검색량 +18% · 경쟁사 2곳 증가 · Product Hunt Top3",
+                "synthesis": "이를 종합하면, 시장은 충분하나 차별성 검토가 필요합니다."
+              },
+              "report": {
+                "title": "오늘 조사 완료",
+                "fields": {
+                  "duration": "조사 시간",
+                  "dataPoints": "조사한 데이터",
+                  "opinions": "AI 의견",
+                  "decisions": "대표 결정"
+                },
+                "durationValue": "{minutes}분",
+                "dataPointsValue": "{count}건",
+                "opinionsValue": "{count}건",
+                "decisionsValue": "{count}건"
               }
             }
           },

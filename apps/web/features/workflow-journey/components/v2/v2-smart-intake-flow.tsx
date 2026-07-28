@@ -38,9 +38,17 @@ import {
   buildSmartIntakeReasonChain,
   getChainStepsUpTo,
 } from '../../lib/v2-reason-chain-engine';
+import {
+  buildSmartIntakeInvestigationContext,
+  mapWorkingStepsToLiveProgress,
+} from '../../lib/v2-investigation-engine';
 import { V2DocumentCitationBlock, V2DocumentProfileSummary } from './v2-document-citation-block';
 import { V2EvidenceMetadataCard } from './v2-evidence-metadata-card';
+import { V2InvestigationLog } from './v2-investigation-log';
+import { V2LiveInvestigation } from './v2-live-investigation';
+import { V2PmReport } from './v2-pm-report';
 import { V2ReasonChainBridge } from './v2-reason-chain-bridge';
+import { V2SmartQuestionBlock } from './v2-smart-question-block';
 
 type V2SmartIntakeFlowProps = {
   step: DemoExperienceStep;
@@ -63,6 +71,7 @@ export function V2SmartIntakeFlow({
 }: V2SmartIntakeFlowProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.smartIntake');
   const tChain = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.reasonChain');
+  const tInv = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.investigation');
   const [pasteContent, setPasteContent] = useState('');
   const [analysis, setAnalysis] = useState<SmartIntakeAnalysis | null>(null);
   const [importFileName, setImportFileName] = useState<string | undefined>();
@@ -84,6 +93,22 @@ export function V2SmartIntakeFlow({
       projectDraft.fileName ?? importFileName,
     );
   }, [analysis, projectDraft.importSource, projectDraft.fileName, importFileName]);
+
+  const investigation = useMemo(() => {
+    if (!analysis) return null;
+    return buildSmartIntakeInvestigationContext(
+      analysis,
+      projectDraft.importSource ?? 'paste',
+      projectDraft.fileName ?? importFileName,
+    );
+  }, [analysis, projectDraft.importSource, projectDraft.fileName, importFileName]);
+
+  const liveInvestigationProgress = mapWorkingStepsToLiveProgress(
+    completedSteps,
+    SMART_INTAKE_WORKING_STEPS.length,
+    investigation?.liveSteps ?? [],
+  );
+  const smartQuestion = investigation?.smartQuestions[0] ?? null;
 
   useEffect(() => {
     if (step !== 'smartIntakeWorking') return;
@@ -226,10 +251,15 @@ export function V2SmartIntakeFlow({
     );
   }
 
-  if (step === 'smartIntakeWorking') {
+  if (step === 'smartIntakeWorking' && investigation) {
     const statusKey = SMART_INTAKE_STATUS_MESSAGES[statusIndex] ?? 'understandingDoc';
     return (
       <div className="space-y-4">
+        <V2LiveInvestigation
+          steps={investigation.liveSteps}
+          completedCount={liveInvestigationProgress}
+        />
+
         <div className="rounded-xl border border-border/60 bg-muted/10 px-5 py-6">
           <div className="h-2 overflow-hidden rounded-full bg-muted">
             <div
@@ -266,9 +296,11 @@ export function V2SmartIntakeFlow({
     );
   }
 
-  if (step === 'documentUnderstanding' && analysis && reasonChain) {
+  if (step === 'documentUnderstanding' && analysis && reasonChain && investigation) {
     return (
       <div className="space-y-4">
+        <V2InvestigationLog entries={investigation.logEntries} compact />
+
         {reasonChain.documentProfile ? (
           <V2DocumentProfileSummary profile={reasonChain.documentProfile} />
         ) : null}
@@ -335,7 +367,7 @@ export function V2SmartIntakeFlow({
     );
   }
 
-  if (step === 'firstQuestion' && reasonChain) {
+  if (step === 'firstQuestion' && reasonChain && investigation && smartQuestion) {
     return (
       <div className="space-y-4">
         <V2ReasonChainBridge
@@ -343,10 +375,10 @@ export function V2SmartIntakeFlow({
           activeStep="butGap"
         />
 
-        <AiPmBubble>
-          <p className="font-medium">{t('firstQuestion.lead')}</p>
-          <p>{t('firstQuestion.focus')}</p>
-        </AiPmBubble>
+        <V2SmartQuestionBlock
+          question={smartQuestion}
+          citations={reasonChain.citations}
+        />
 
         <V2DocumentCitationBlock
           citations={reasonChain.citations}
@@ -387,9 +419,20 @@ export function V2SmartIntakeFlow({
     );
   }
 
-  if (step === 'evidenceFirstReview' && reasonChain) {
+  if (step === 'evidenceFirstReview' && reasonChain && investigation) {
     return (
       <div className="space-y-4">
+        <AiPmBubble>
+          <p className="font-medium">{tInv('reportFirst.lead')}</p>
+          <p>{tInv('reportFirst.summary')}</p>
+        </AiPmBubble>
+
+        <V2InvestigationLog entries={investigation.logEntries} compact />
+
+        <AiPmBubble>
+          <p className="font-medium">{tInv('reportFirst.synthesis')}</p>
+        </AiPmBubble>
+
         <V2ReasonChainBridge
           steps={getChainStepsUpTo(reasonChain, 'thereforeMarket')}
           activeStep="thereforeMarket"
@@ -455,7 +498,7 @@ export function V2SmartIntakeFlow({
     );
   }
 
-  if (step === 'myProjectImprovement' && reasonChain) {
+  if (step === 'myProjectImprovement' && reasonChain && investigation) {
     return (
       <div className="space-y-4">
         <V2ReasonChainBridge
@@ -467,6 +510,13 @@ export function V2SmartIntakeFlow({
           <p className="font-medium">{t('improvement.lead', { name: projectName })}</p>
           <p className="mt-2 text-muted-foreground">{t('improvement.chainLead')}</p>
         </AiPmBubble>
+
+        {investigation.hasDocument && reasonChain.citations.length > 0 ? (
+          <V2DocumentCitationBlock
+            citations={reasonChain.citations}
+            highlightId={reasonChain.pricingGapCitationId}
+          />
+        ) : null}
 
         <div className="space-y-3 rounded-xl border border-border/40 bg-muted/5 p-4">
           <div className="flex items-center justify-between text-sm">
@@ -487,9 +537,11 @@ export function V2SmartIntakeFlow({
     );
   }
 
-  if (step === 'dailyMonitoringPreview') {
+  if (step === 'dailyMonitoringPreview' && investigation) {
     return (
       <div className="space-y-4">
+        <V2PmReport stats={investigation.report} />
+
         <AiPmBubble>
           <p className="font-medium">{t('dailyPreview.line1')}</p>
           <p>{t('dailyPreview.line2')}</p>

@@ -26,12 +26,19 @@ import {
   SAMPLE_REASON_CHAIN_STEPS,
 } from '../../lib/v2-reason-chain-engine';
 import {
+  buildSampleInvestigationContext,
+  SAMPLE_LIVE_STEPS,
+} from '../../lib/v2-investigation-engine';
+import {
   createEmptyDemoProjectDraft,
   isDemoProjectDraftValid,
   persistDemoProjectDraftForLogin,
   type DemoProjectDraft,
 } from '../../lib/v2-demo-project-store';
 import { V2EvidenceMetadataCard } from './v2-evidence-metadata-card';
+import { V2InvestigationLog } from './v2-investigation-log';
+import { V2LiveInvestigation } from './v2-live-investigation';
+import { V2PmReport } from './v2-pm-report';
 import { V2ReasonChainBridge } from './v2-reason-chain-bridge';
 import { V2SmartIntakeFlow } from './v2-smart-intake-flow';
 import {
@@ -41,7 +48,9 @@ import {
   type DemoExperienceStep,
 } from '../../lib/v2-demo-experience-types';
 
-const INVESTIGATING_MS = 3000;
+const INVESTIGATING_MS = 12000;
+
+const sampleInvestigation = buildSampleInvestigationContext();
 
 type V2DemoExperienceProps = {
   className?: string;
@@ -80,16 +89,28 @@ function AiPmBubble({ children, className }: { children: ReactNode; className?: 
 
 export function V2DemoExperience({ className }: V2DemoExperienceProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.demoExperienceV2');
+  const tInv = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.investigationSample');
   const [step, setStep] = useState<DemoExperienceStep>('greeting');
   const [evidenceOpen, setEvidenceOpen] = useState(false);
   const [decision, setDecision] = useState<DemoDecisionChoice | null>(null);
+  const [investigationProgress, setInvestigationProgress] = useState(0);
   const [projectDraft, setProjectDraft] = useState<DemoProjectDraft>(createEmptyDemoProjectDraft);
   const [loginDraftReady, setLoginDraftReady] = useState(false);
 
   useEffect(() => {
     if (step !== 'investigating') return;
+
+    setInvestigationProgress(0);
+    const stepMs = INVESTIGATING_MS / SAMPLE_LIVE_STEPS.length;
+    const interval = window.setInterval(() => {
+      setInvestigationProgress((prev) => Math.min(prev + 1, SAMPLE_LIVE_STEPS.length));
+    }, stepMs);
     const timer = window.setTimeout(() => setStep('inbox'), INVESTIGATING_MS);
-    return () => window.clearTimeout(timer);
+
+    return () => {
+      window.clearInterval(interval);
+      window.clearTimeout(timer);
+    };
   }, [step]);
 
   useEffect(() => {
@@ -153,20 +174,29 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
       ) : null}
 
       {step === 'investigating' ? (
-        <AiPmBubble className="text-center">
-          <p>{t('steps.investigating.line1')}</p>
-          <p className="font-medium">{t('steps.investigating.line2')}</p>
-          <div className="mt-4 flex items-center justify-center gap-2 text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" aria-hidden />
-            <span className="text-xs">{t('steps.investigating.loading')}</span>
-          </div>
-        </AiPmBubble>
+        <div className="space-y-4">
+          <AiPmBubble>
+            <p>{t('steps.investigating.line1')}</p>
+            <p className="font-medium">{t('steps.investigating.line2')}</p>
+          </AiPmBubble>
+          <V2LiveInvestigation
+            steps={SAMPLE_LIVE_STEPS}
+            completedCount={investigationProgress}
+            namespace="investigationSample"
+          />
+        </div>
       ) : null}
 
       {step === 'inbox' ? (
         <div className="space-y-4">
+          <V2InvestigationLog
+            entries={sampleInvestigation.logEntries}
+            namespace="investigationSample"
+          />
+
           <AiPmBubble>
-            <p className="font-medium">{t('steps.inbox.title')}</p>
+            <p className="font-medium">{tInv('reportFirst.lead')}</p>
+            <p>{t('steps.inbox.title')}</p>
           </AiPmBubble>
           <ul className="space-y-2 rounded-xl border border-border/40 bg-muted/5 p-4">
             {DEMO_INBOX_ITEMS.map((item) => (
@@ -184,6 +214,12 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
 
       {step === 'opinion' ? (
         <div className="space-y-4">
+          <AiPmBubble>
+            <p className="font-medium">{tInv('reportFirst.lead')}</p>
+            <p>{tInv('reportFirst.summary')}</p>
+            <p className="mt-2 font-medium">{tInv('reportFirst.synthesis')}</p>
+          </AiPmBubble>
+
           <V2ReasonChainBridge
             steps={SAMPLE_REASON_CHAIN_STEPS.slice(0, 2)}
             activeStep="reviewFocus"
@@ -437,6 +473,8 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
 
       {step === 'continuousManagement' ? (
         <div className="space-y-4">
+          <V2PmReport stats={sampleInvestigation.report} />
+
           <AiPmBubble>
             <p className="font-medium">{t('steps.continuousManagement.line1')}</p>
             <p>{t('steps.continuousManagement.line2')}</p>

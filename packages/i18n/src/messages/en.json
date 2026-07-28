@@ -5488,6 +5488,8 @@
               }
             },
             "evidenceMeta": {
+              "keywordsLabel": "Top keywords",
+              "sourceDetailHint": "Demo shows a data summary. In production this links to the Evidence Library.",
               "badges": {
                 "data": "DATA",
                 "search": "SEARCH",
@@ -5502,12 +5504,19 @@
                   "label": "Google Trends",
                   "headline": "Last 3 months +18%",
                   "period": "(Apr–Jul 2026)",
+                  "keywords": "AI startup validation · AI founder · business review",
+                  "trendBefore": "100",
+                  "trendAfter": "118",
+                  "sourceLink": "View source",
                   "why": "Related keyword interest rose 18% over the last 3 months — a B2C entry timing signal."
                 },
                 "searchVolume": {
                   "label": "Search volume",
                   "headline": "Monthly 4,800 → 5,670 (+18%)",
                   "period": "Last 30 days",
+                  "trendBefore": "4,800",
+                  "trendAfter": "5,670",
+                  "sourceLink": "View source",
                   "why": "Monthly search volume rose 18% in the last 30 days — demand is actually growing."
                 },
                 "productHunt": {
@@ -5523,6 +5532,8 @@
               }
             },
             "evidenceMetaSample": {
+              "keywordsLabel": "Top keywords",
+              "sourceDetailHint": "Demo shows a data summary. In production this links to the Evidence Library.",
               "badges": {
                 "data": "DATA",
                 "search": "SEARCH",
@@ -5537,12 +5548,19 @@
                   "label": "Google Trends",
                   "headline": "Last 3 months +28%",
                   "period": "(Apr–Jul 2026)",
+                  "keywords": "AI startup validation · AI founder tools · strategy workspace",
+                  "trendBefore": "100",
+                  "trendAfter": "128",
+                  "sourceLink": "View source",
                   "why": "Interest in 'AI startup validation' rose 28% over the last 3 months."
                 },
                 "searchVolume": {
                   "label": "Search volume",
                   "headline": "Monthly 4,200 → 4,960 (+18%)",
                   "period": "Last 30 days",
+                  "trendBefore": "4,200",
+                  "trendAfter": "4,960",
+                  "sourceLink": "View source",
                   "why": "Monthly search volume rose 18% in the last 30 days — good timing to enter."
                 },
                 "productHunt": {
@@ -5558,11 +5576,15 @@
                 "cursor": {
                   "label": "Cursor",
                   "headline": "Developer productivity tool",
+                  "insight": "Last 2 months · AI Planning feature added",
+                  "sourceLink": "View source",
                   "why": "Cursor focuses on developer productivity — different positioning from strategy workspace."
                 },
                 "lovable": {
                   "label": "Lovable",
                   "headline": "No-code builder",
+                  "insight": "Last 3 months · Startup template expansion",
+                  "sourceLink": "View source",
                   "why": "Lovable focuses on no-code app building — different from founder strategy workspace."
                 },
                 "reddit": {
@@ -5575,6 +5597,115 @@
                   "headline": "Startup investment trend",
                   "why": "Recent YC batches show rising AI co-founder tool investment."
                 }
+              }
+            },
+            "investigation": {
+              "log": {
+                "title": "Today's AI PM work",
+                "entries": {
+                  "googleTrends": "Google Trends research complete",
+                  "competitors": "Compared 12 competitors",
+                  "reddit": "Analyzed 183 Reddit posts",
+                  "productHunt": "Reviewed 22 Product Hunt launches",
+                  "documentAnalysis": "Business plan analyzed",
+                  "governmentSupport": "Government programs checked",
+                  "tourismCases": "Compared 17 tourism venture cases",
+                  "reportGenerated": "Report generated"
+                }
+              },
+              "live": {
+                "title": "Investigating…",
+                "steps": {
+                  "googleTrends": "Google Trends",
+                  "productHunt": "Product Hunt",
+                  "crunchbase": "Crunchbase",
+                  "reddit": "Reddit",
+                  "competitors": "Competitor scan",
+                  "documentAnalysis": "Business plan",
+                  "governmentSupport": "Government programs"
+                }
+              },
+              "reportFirst": {
+                "lead": "Here's what I investigated today.",
+                "summary": "Google Trends growth + competitor signals + document analysis reviewed.",
+                "synthesis": "Putting this together…"
+              },
+              "smartQuestion": {
+                "label": "AI PM question",
+                "citationSource": "Business plan",
+                "citationPage": "Page {page}",
+                "items": {
+                  "paidConversionTiming": {
+                    "lead": "Your plan defines B2B revenue validation.",
+                    "question": "When do you expect the first paid conversion?"
+                  },
+                  "paidConversionKpi": {
+                    "lead": "Your KPI targets MAU 3,000.",
+                    "question": "Should we set a paid conversion target alongside it?"
+                  },
+                  "pricingModelGap": {
+                    "lead": "Market and BM strategy exist, but pricing policy is missing.",
+                    "question": "Which pricing model do you plan to start with?"
+                  }
+                }
+              },
+              "report": {
+                "title": "Today's investigation complete",
+                "fields": {
+                  "duration": "Investigation time",
+                  "dataPoints": "Data reviewed",
+                  "opinions": "AI opinions",
+                  "decisions": "Founder decisions"
+                },
+                "durationValue": "{minutes} min",
+                "dataPointsValue": "{count} items",
+                "opinionsValue": "{count}",
+                "decisionsValue": "{count}"
+              }
+            },
+            "investigationSample": {
+              "log": {
+                "title": "Today's AI PM work",
+                "entries": {
+                  "googleTrends": "Google Trends research complete",
+                  "competitors": "Compared 12 competitors",
+                  "reddit": "Analyzed 183 Reddit posts",
+                  "productHunt": "Reviewed 22 Product Hunt launches",
+                  "documentAnalysis": "Business plan analyzed",
+                  "governmentSupport": "Government programs checked",
+                  "tourismCases": "Compared 17 tourism venture cases",
+                  "reportGenerated": "Report generated"
+                }
+              },
+              "live": {
+                "title": "Investigating…",
+                "steps": {
+                  "googleTrends": "Google Trends",
+                  "productHunt": "Product Hunt",
+                  "crunchbase": "Crunchbase",
+                  "reddit": "Reddit",
+                  "competitors": "Competitor scan",
+                  "documentAnalysis": "Business plan",
+                  "governmentSupport": "Government programs"
+                }
+              },
+              "reportFirst": {
+                "lead": "Here's what I investigated today.",
+                "summary": "Google Trends +28% · search +18% · 2 new competitors · Product Hunt Top 3",
+                "synthesis": "Putting this together — market is sufficient but differentiation needs review."
+              },
+              "report": {
+                "title": "Today's investigation complete",
+                "fields": {
+                  "duration": "Investigation time",
+                  "dataPoints": "Data reviewed",
+                  "opinions": "AI opinions",
+                  "decisions": "Founder decisions"
+                },
+                "durationValue": "{minutes} min",
+                "dataPointsValue": "{count} items",
+                "opinionsValue": "{count}",
+                "decisionsValue": "{count}"
               }
             }
           },
