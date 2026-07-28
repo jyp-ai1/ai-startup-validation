@@ -33,6 +33,42 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   dailyReturn: 'daily_return',
   weeklyReturn: 'weekly_return',
   projectStarted: 'project_started',
+  demoStarted: 'demo_started',
+  sampleSelected: 'sample_selected',
+  investigationStarted: 'investigation_started',
+  investigationFinished: 'investigation_finished',
+  evidenceOpened: 'evidence_opened',
+  smartQuestionAnswered: 'smart_question_answered',
+  reviewCompleted: 'review_completed',
+  strategyChanged: 'strategy_changed',
+  myProjectStarted: 'my_project_started',
+  loginStarted: 'login_started',
+  loginFailed: 'login_failed',
+  loginClicked: 'login_clicked',
+  oauthRedirect: 'oauth_redirect',
+  oauthSuccess: 'oauth_success',
+  oauthFailed: 'oauth_failed',
+  loginCancelled: 'login_cancelled',
+  workspaceRestored: 'workspace_restored',
+  returningUser: 'returning_user',
+  draftPromoted: 'draft_promoted',
+  workspaceRestoreValidated: 'workspace_restore_validated',
+  projectRecoveryValidated: 'project_recovery_validated',
+  demoRecoveryAvailable: 'demo_recovery_available',
+  demoRecoveryValidated: 'demo_recovery_validated',
+  firstReviewCompleted: 'first_review_completed',
+  googleLoginSuccess: 'google_login_success',
+  workspaceReturned: 'workspace_returned',
+  morningReportView: 'morning_report_view',
+  founderMemoWritten: 'founder_memo_written',
+  artifactGenerated: 'artifact_generated',
+  priceChanged: 'price_changed',
+  targetChanged: 'target_changed',
+  uspChanged: 'usp_changed',
+  marketChanged: 'market_changed',
+  bmChanged: 'bm_changed',
+  blindSpotDetected: 'blind_spot_detected',
+  clarityQuestionRaised: 'clarity_question_raised',
 } as const;
 
 export type ProductAnalyticsEvent =
@@ -51,6 +87,23 @@ export type ProductAnalyticsParams = {
   attempt?: number;
   error?: string;
   recovered?: boolean;
+  category?: string;
+  provider?: string;
+  status?: string;
+  session_id?: string;
+  user_id?: string;
+  blind_spot?: string;
+  question_id?: string;
+  browser?: string;
+  duration_ms?: number;
+  error_code?: string;
+  promoted?: boolean;
+  pass?: boolean;
+  last_work?: string;
+  last_stage?: string;
+  checks_passed?: number;
+  checks_total?: number;
+  is_returning?: boolean;
 };
 
 export type ProductAnalyticsAdapter = {
@@ -71,18 +124,36 @@ export function trackProductEvent(
 }
 
 /** Always records to ops store — product funnel, not marketing cookies. */
+const SESSION_KEY = 'll_analytics_session';
+
+function getOrCreateSessionId(): string {
+  if (typeof window === 'undefined') return 'server';
+  let id = localStorage.getItem(SESSION_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(SESSION_KEY, id);
+  }
+  return id;
+}
+
 export async function recordFunnelEvent(
   event: ProductAnalyticsEvent,
   params?: ProductAnalyticsParams,
 ): Promise<void> {
   if (typeof window === 'undefined') return;
   try {
+    const { getBrowserFamily } = await import('./browser-context');
     await fetch('/api/analytics/events', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: event,
-        params: { ...params, funnel: true },
+        params: {
+          ...params,
+          funnel: true,
+          session_id: getOrCreateSessionId(),
+          browser: params?.browser ?? getBrowserFamily(),
+        },
         timestamp: new Date().toISOString(),
       }),
       keepalive: true,
