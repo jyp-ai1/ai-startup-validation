@@ -2313,6 +2313,16 @@
       "notReady": "Not Ready",
       "docHint": "전체 체크리스트: docs/RELEASE_CHECKLIST.md"
     },
+    "releaseHealth": {
+      "title": "Release Health",
+      "subtitle": "검증된 여정 이벤트 — Closed Alpha 목표 3회/단계",
+      "overallPass": "Overall PASS",
+      "overallPending": "Overall PENDING"
+    },
+    "conversionFunnel": {
+      "title": "Conversion Dashboard",
+      "subtitle": "Landing → Demo → Login → Workspace → Validation → Morning Investigation → Artifact"
+    },
     "closedAlphaFunnel": {
       "title": "Closed Alpha Funnel",
       "subtitle": "16단계 전체 여정",
@@ -2385,13 +2395,14 @@
       "subtitle": "오늘 AI PM이 만든 가치",
       "totalLabel": "전략 개선 제안",
       "metrics": {
+        "strategyChangesToday": "오늘 전략 변경",
+        "priceChanges": "오늘 가격 수정",
+        "competitorAddsToday": "오늘 경쟁사 추가",
+        "suggestionAdoptionRate": "AI PM 제안 채택률",
         "investigationsToday": "오늘 조사",
         "newEvidenceToday": "새 Evidence",
-        "totalDecisionChanges": "대표 결정 변경",
-        "priceChanges": "가격 전략 변경",
-        "targetChanges": "타겟 변경",
-        "uspChanges": "USP 변경",
-        "artifactsToday": "Artifact 생성"
+        "artifactsToday": "Artifact 생성",
+        "totalDecisionChanges": "대표 결정 변경"
       },
       "categories": {
         "market": "시장",

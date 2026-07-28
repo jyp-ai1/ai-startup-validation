@@ -7,16 +7,18 @@ import { AuthCompleteTracker } from '@/features/auth/components/auth-complete-tr
 type WorkspaceAuthCompleteTrackerProps = {
   projectId?: string;
   promoted?: boolean;
+  screen?: string;
 };
 
 /** Tracks OAuth return on workspace routes and strips ?auth=complete from URL. */
 export function WorkspaceAuthCompleteTracker({
   projectId,
   promoted,
+  screen = '/workspace',
 }: WorkspaceAuthCompleteTrackerProps) {
   return (
     <Suspense fallback={null}>
-      <AuthCompleteTracker screen="/workspace" projectId={projectId} promoted={promoted} />
+      <AuthCompleteTracker screen={screen} projectId={projectId} promoted={promoted} />
     </Suspense>
   );
 }

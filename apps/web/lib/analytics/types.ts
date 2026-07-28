@@ -377,7 +377,14 @@ export type OpsDashboardStats = {
     marketChanges: number;
     bmChanges: number;
     artifactsToday: number;
-    byCategory: Record<string, number>;
+    suggestionAdoptionRate: number;
+    competitorAddsToday: number;
+    strategyChangesToday: number;
+  };
+  /** Sprint 5 Epic A — release validation chain */
+  releaseReadiness?: {
+    checks: { id: string; label: string; status: 'PASS' | 'PENDING' | 'FAIL' }[];
+    overallPass: boolean;
   };
   /** Sprint 4.8 P0-10 — Blind spot aggregation */
   blindSpotAnalytics?: { spot: string; count: number; percent: number }[];
@@ -413,11 +420,26 @@ export type OpsDashboardStats = {
       recentErrors: { code: string; timestamp: string }[];
     };
   };
-  /** Sprint 5 Epic A — release validation chain */
-  releaseReadiness?: {
-    checks: { id: string; label: string; status: 'PASS' | 'PENDING' | 'FAIL' }[];
+  /** Sprint 5.1.3 — release health with count/target */
+  releaseHealth?: {
+    target: number;
     overallPass: boolean;
+    checks: {
+      id: string;
+      label: string;
+      current: number;
+      target: number;
+      status: 'PASS' | 'PENDING' | 'FAIL';
+    }[];
   };
+  /** Sprint 5.1.3 — conversion funnel with step-over-step rates */
+  conversionFunnel?: {
+    step: string;
+    label: string;
+    count: number;
+    rateFromPrevious: number;
+    rateFromLanding: number;
+  }[];
 };
 
 declare global {

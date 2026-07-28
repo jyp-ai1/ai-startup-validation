@@ -2202,6 +2202,16 @@
       "notReady": "Not Ready",
       "docHint": "Full checklist: docs/RELEASE_CHECKLIST.md"
     },
+    "releaseHealth": {
+      "title": "Release Health",
+      "subtitle": "Verified journey events — target 3 per step for Closed Alpha",
+      "overallPass": "Overall PASS",
+      "overallPending": "Overall PENDING"
+    },
+    "conversionFunnel": {
+      "title": "Conversion Dashboard",
+      "subtitle": "Landing → Demo → Login → Workspace → Validation → Morning Investigation → Artifact"
+    },
     "closedAlphaFunnel": {
       "title": "Closed Alpha Funnel",
       "subtitle": "Full 16-step journey",
@@ -2274,13 +2284,14 @@
       "subtitle": "Value AI PM created today",
       "totalLabel": "Strategy improvements",
       "metrics": {
+        "strategyChangesToday": "Strategy changes today",
+        "priceChanges": "Pricing changes today",
+        "competitorAddsToday": "Competitor adds today",
+        "suggestionAdoptionRate": "AI PM suggestion adoption",
         "investigationsToday": "Investigations today",
         "newEvidenceToday": "New evidence",
-        "totalDecisionChanges": "Decision changes",
-        "priceChanges": "Pricing changes",
-        "targetChanges": "Target changes",
-        "uspChanges": "USP changes",
-        "artifactsToday": "Artifacts created"
+        "artifactsToday": "Artifacts created",
+        "totalDecisionChanges": "Decision changes"
       },
       "categories": {
         "market": "Market",

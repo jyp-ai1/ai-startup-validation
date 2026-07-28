@@ -8,6 +8,7 @@ import {
   promoteDemoProject,
 } from '@/features/my-projects/actions/my-project-actions';
 import { WorkspaceAuthCompleteTracker } from '@/features/workspace/components/workspace-auth-complete-tracker';
+import { WorkspaceJourneyTracker } from '@/features/workspace/components/journey-page-tracker';
 import { buildAuthenticatedJourneyUrl } from '@/lib/auth/journey-routes';
 
 export const dynamic = 'force-dynamic';
@@ -80,6 +81,7 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
 
   return (
     <>
+      <WorkspaceJourneyTracker />
       <WorkspaceAuthCompleteTracker promoted={false} />
       <MyProjectsHome
         userName={user.fullName}

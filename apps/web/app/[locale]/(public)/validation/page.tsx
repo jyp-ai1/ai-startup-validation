@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { JourneyPageSkeleton } from '@/features/workflow-journey/components/journey-page-skeleton';
 import { readJourneyPersona } from '@/features/workflow-journey/lib/v2-journey-cookies';
 import { ValidationProjectScopeTracker } from '@/features/workspace/components/validation-project-scope-tracker';
+import { ValidationJourneyTracker } from '@/features/workspace/components/journey-page-tracker';
 import { WorkspaceAuthCompleteTracker } from '@/features/workspace/components/workspace-auth-complete-tracker';
 import { getServerAuthUser } from '@/lib/auth/server-auth';
 import { buildPageMetadata } from '@/lib/site/page-metadata';
@@ -55,6 +56,11 @@ export default async function ValidationPage({ searchParams }: ValidationPagePro
       <Suspense fallback={null}>
         <ValidationProjectScopeTracker />
       </Suspense>
+      {!isPublicDemo ? (
+        <Suspense fallback={null}>
+          <ValidationJourneyTracker projectId={params.project} enabled />
+        </Suspense>
+      ) : null}
       {params.auth === 'complete' ? (
         <WorkspaceAuthCompleteTracker promoted={params.welcome === '1'} />
       ) : null}

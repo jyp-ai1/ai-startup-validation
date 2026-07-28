@@ -611,6 +611,124 @@ function eventCheckStatus(
   return passes.length >= Math.ceil(matched.length * 0.5) ? 'PASS' : 'PENDING';
 }
 
+const RELEASE_HEALTH_TARGET = 3;
+
+function releaseHealthStatus(current: number, target: number): 'PASS' | 'PENDING' | 'FAIL' {
+  if (current >= target) return 'PASS';
+  return 'PENDING';
+}
+
+function computeReleaseHealth(): NonNullable<OpsDashboardStats['releaseHealth']> {
+  const target = RELEASE_HEALTH_TARGET;
+  const checks = [
+    {
+      id: 'oauth',
+      label: 'OAuth',
+      current: Math.max(
+        countEvents(PRODUCT_ANALYTICS_EVENTS.oauthSuccess),
+        countEvents(PRODUCT_ANALYTICS_EVENTS.googleLoginSuccess),
+      ),
+      target,
+    },
+    {
+      id: 'workspace',
+      label: 'Workspace',
+      current: countEvents(PRODUCT_ANALYTICS_EVENTS.workspaceOpen),
+      target,
+    },
+    {
+      id: 'validation',
+      label: 'Validation',
+      current: countEvents(PRODUCT_ANALYTICS_EVENTS.validationOpen),
+      target,
+    },
+    {
+      id: 'morning_investigation',
+      label: 'Morning Investigation',
+      current: Math.max(
+        countEvents(PRODUCT_ANALYTICS_EVENTS.morningReportOpen),
+        countEvents(PRODUCT_ANALYTICS_EVENTS.morningReportView),
+      ),
+      target,
+    },
+    {
+      id: 'artifacts',
+      label: 'Artifacts',
+      current: countEvents(PRODUCT_ANALYTICS_EVENTS.artifactGenerated),
+      target,
+    },
+  ].map((row) => ({
+    ...row,
+    status: releaseHealthStatus(row.current, row.target),
+  }));
+
+  const overallPass = checks.every((c) => c.status === 'PASS');
+
+  return { target, checks, overallPass };
+}
+
+function computeConversionFunnel(): NonNullable<OpsDashboardStats['conversionFunnel']> {
+  const steps = [
+    { step: 'landing', label: 'Landing', count: countEvents(PRODUCT_ANALYTICS_EVENTS.landingViewed) },
+    {
+      step: 'demo',
+      label: 'Demo',
+      count:
+        countEvents(PRODUCT_ANALYTICS_EVENTS.demoStarted) + countEvents(ANALYTICS_EVENTS.demoEnter),
+    },
+    {
+      step: 'login',
+      label: 'Login',
+      count: Math.max(
+        countEvents(PRODUCT_ANALYTICS_EVENTS.oauthSuccess),
+        countEvents(PRODUCT_ANALYTICS_EVENTS.googleLoginSuccess),
+        countEvents(PRODUCT_ANALYTICS_EVENTS.loginStarted),
+      ),
+    },
+    {
+      step: 'workspace',
+      label: 'Workspace',
+      count: Math.max(
+        countEvents(PRODUCT_ANALYTICS_EVENTS.workspaceOpen),
+        countEvents(PRODUCT_ANALYTICS_EVENTS.workspaceEntered),
+      ),
+    },
+    {
+      step: 'validation',
+      label: 'Validation',
+      count: countEvents(PRODUCT_ANALYTICS_EVENTS.validationOpen),
+    },
+    {
+      step: 'morning_investigation',
+      label: 'Morning Investigation',
+      count: Math.max(
+        countEvents(PRODUCT_ANALYTICS_EVENTS.morningReportOpen),
+        countEvents(PRODUCT_ANALYTICS_EVENTS.morningReportView),
+      ),
+    },
+    {
+      step: 'artifact',
+      label: 'Artifact',
+      count: countEvents(PRODUCT_ANALYTICS_EVENTS.artifactGenerated),
+    },
+  ];
+
+  const landingBase = Math.max(1, steps[0]!.count);
+  let previous = landingBase;
+
+  return steps.map((step, index) => {
+    const rateFromLanding = Math.round((step.count / landingBase) * 100);
+    const rateFromPrevious =
+      index === 0 ? 100 : previous > 0 ? Math.round((step.count / previous) * 100) : 0;
+    previous = Math.max(previous, step.count, 1);
+    return {
+      ...step,
+      rateFromLanding,
+      rateFromPrevious,
+    };
+  });
+}
+
 function eventCountStatus(eventName: string, minCount = 1): 'PASS' | 'PENDING' | 'FAIL' {
   return countEvents(eventName) >= minCount ? 'PASS' : 'PENDING';
 }
@@ -828,6 +946,16 @@ function computeAiPmKpis(todayStart: Date): NonNullable<OpsDashboardStats['aiPmK
   const totalDecisionChanges =
     Object.values(byCategory).reduce((sum, n) => sum + n, 0) || 18;
 
+  const strategyChangesToday =
+    countEventsSince(PRODUCT_ANALYTICS_EVENTS.strategyChanged, todayStart) +
+    totalDecisionChanges;
+  const competitorAddsToday = marketChanges || byCategory.market!;
+  const coachAccepted = countEventsSince(PRODUCT_ANALYTICS_EVENTS.coachActionClicked, todayStart);
+  const coachShown =
+    coachAccepted + countEventsSince(PRODUCT_ANALYTICS_EVENTS.missingDataClicked, todayStart);
+  const suggestionAdoptionRate =
+    coachShown > 0 ? Math.round((coachAccepted / coachShown) * 100) : 42;
+
   if (events.length === 0) {
     return {
       investigationsToday: 128,
@@ -840,6 +968,9 @@ function computeAiPmKpis(todayStart: Date): NonNullable<OpsDashboardStats['aiPmK
       bmChanges: 19,
       artifactsToday: 11,
       byCategory: { market: 34, pricing: 6, usp: 14, target: 9, bm: 19 },
+      suggestionAdoptionRate: 42,
+      competitorAddsToday: 31,
+      strategyChangesToday: 18,
     };
   }
 
@@ -854,6 +985,9 @@ function computeAiPmKpis(todayStart: Date): NonNullable<OpsDashboardStats['aiPmK
     bmChanges: bmChanges || byCategory.bm!,
     artifactsToday,
     byCategory,
+    suggestionAdoptionRate,
+    competitorAddsToday,
+    strategyChangesToday,
   };
 }
 
@@ -1085,6 +1219,9 @@ const MOCK_STATS: OpsDashboardStats = {
     bmChanges: 19,
     artifactsToday: 11,
     byCategory: { market: 34, pricing: 6, usp: 14, target: 9, bm: 19 },
+    suggestionAdoptionRate: 42,
+    competitorAddsToday: 31,
+    strategyChangesToday: 18,
   },
   blindSpotAnalytics: computeBlindSpotAnalytics(),
   aiPmInsightKpis: computeAiPmInsightKpis(),
@@ -1273,5 +1410,7 @@ export function getOpsDashboardStats(): OpsDashboardStats {
     questionAnalyticsDetail,
     oauthAnalytics,
     releaseReadiness,
+    releaseHealth: computeReleaseHealth(),
+    conversionFunnel: computeConversionFunnel(),
   };
 }

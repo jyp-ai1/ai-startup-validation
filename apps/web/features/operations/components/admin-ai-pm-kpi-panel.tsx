@@ -17,13 +17,14 @@ export function AdminAiPmKpiPanel({ stats }: AdminAiPmKpiPanelProps) {
   if (!kpis) return null;
 
   const rows = [
+    { key: 'strategyChangesToday', value: kpis.strategyChangesToday },
+    { key: 'priceChanges', value: kpis.priceChanges },
+    { key: 'competitorAddsToday', value: kpis.competitorAddsToday },
+    { key: 'suggestionAdoptionRate', value: `${kpis.suggestionAdoptionRate}%` },
     { key: 'investigationsToday', value: kpis.investigationsToday },
     { key: 'newEvidenceToday', value: kpis.newEvidenceToday },
-    { key: 'totalDecisionChanges', value: kpis.totalDecisionChanges },
-    { key: 'priceChanges', value: kpis.priceChanges },
-    { key: 'targetChanges', value: kpis.targetChanges },
-    { key: 'uspChanges', value: kpis.uspChanges },
     { key: 'artifactsToday', value: kpis.artifactsToday },
+    { key: 'totalDecisionChanges', value: kpis.totalDecisionChanges },
   ] as const;
 
   return (

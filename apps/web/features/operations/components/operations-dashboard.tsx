@@ -19,6 +19,8 @@ import { AdminProductOsPanel } from './admin-product-os-panel';
 import { AdminActivationFunnelPanel } from './admin-activation-funnel-panel';
 import { AdminOAuthPanel } from './admin-oauth-panel';
 import { AdminReleaseReadinessPanel } from './admin-release-readiness-panel';
+import { AdminReleaseHealthPanel } from './admin-release-health-panel';
+import { AdminConversionFunnelPanel } from './admin-conversion-funnel-panel';
 import { AdminClosedAlphaFunnelPanel } from './admin-closed-alpha-funnel-panel';
 import { AdminFunnelHeatmapPanel } from './admin-funnel-heatmap-panel';
 import { AdminAlphaAnalyticsPanels } from './admin-alpha-analytics-panels';
@@ -160,6 +162,10 @@ export function OperationsDashboard() {
           ) : null}
 
           <AdminOAuthPanel stats={stats} />
+
+          <AdminReleaseHealthPanel stats={stats} />
+
+          <AdminConversionFunnelPanel stats={stats} />
 
           <AdminReleaseReadinessPanel stats={stats} />
 
