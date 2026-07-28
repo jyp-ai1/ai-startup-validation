@@ -67,13 +67,7 @@ export class SupabaseClientFactory {
   }
 
   getClient(kind: SupabaseClientKind): unknown {
-    const client = {
-      browser: this.browserClient,
-      server: this.serverClient,
-      admin: this.adminClient,
-      service: this.serviceClient,
-    }[kind];
-
+    const client = this.peekClient(kind);
     if (!client) {
       throw new InternalServerError(
         `Supabase ${kind} client not initialized. Call create${kind.charAt(0).toUpperCase()}${kind.slice(1)}Client() first.`,
@@ -81,6 +75,18 @@ export class SupabaseClientFactory {
     }
 
     return client;
+  }
+
+  /** Returns cached client without throwing — used by lazy browser init. */
+  peekClient(kind: SupabaseClientKind): unknown | null {
+    return (
+      {
+        browser: this.browserClient,
+        server: this.serverClient,
+        admin: this.adminClient,
+        service: this.serviceClient,
+      }[kind] ?? null
+    );
   }
 }
 

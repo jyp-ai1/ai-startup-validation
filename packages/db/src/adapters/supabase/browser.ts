@@ -23,7 +23,7 @@ export function createBrowserClient(): SupabaseClient | null {
 /** Get cached browser client or create one. */
 export function getBrowserClient(): SupabaseClient {
   const factory = getSupabaseClientFactory();
-  const existing = factory.getClient('browser') as SupabaseClient | undefined;
+  const existing = factory.peekClient('browser') as SupabaseClient | null;
   if (existing) return existing;
 
   const client = createBrowserClient();
