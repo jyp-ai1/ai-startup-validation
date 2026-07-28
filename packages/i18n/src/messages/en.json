@@ -340,6 +340,8 @@
   "settings": {
     "emptyTitle": "Workspace settings",
     "emptyDescription": "Local workspace configuration. Authentication coming soon.",
+    "investigationTitle": "AI PM investigation schedule",
+    "investigationDescription": "Set when AI PM auto-scans the market each morning.",
     "localizationTestLink": "Localization test page"
   },
   "myProjects": {
@@ -5307,6 +5309,7 @@
                 "loginCta": {
                   "title": "Continue with my project",
                   "body": "Your demo project carries straight into Workspace. Login is the final step to save — not to start.",
+                  "morningValue": "After login, AI PM delivers a Morning Report before you start each day.",
                   "hint": "Sign in with Google to pick up where your AI PM left off."
                 },
                 "cta": {
@@ -5379,14 +5382,37 @@
                 "cta": "Continue"
               },
               "firstQuestion": {
-                "lead": "You only need to fill this gap.",
-                "focus": "The biggest gap right now is pricing strategy.",
-                "pricingLabel": "Pricing model?",
+                "gapReviewTitle": "Document analysis complete",
+                "gapReviewCta": "Review what's missing",
+                "gapFields": {
+                  "problem": "Problem",
+                  "customer": "Target users",
+                  "market": "Market",
+                  "bm": "BM",
+                  "competition": "Competition"
+                },
+                "gapMissing": {
+                  "pricing": "No pricing strategy",
+                  "customerInterview": "No customer interviews",
+                  "gtm": "No GTM"
+                },
+                "lead": "First, I want to confirm something.",
+                "focus": "Pricing strategy is missing.",
+                "pricingLabel": "Which model are you considering?",
+                "priceLevelLabel": "What monthly price are you thinking?",
                 "pricing": {
                   "free": "Free",
                   "subscription": "Subscription",
                   "oneTime": "One-time",
+                  "usageBased": "Usage-based",
+                  "enterprise": "Enterprise",
                   "undecided": "Not decided yet"
+                },
+                "priceLevels": {
+                  "29": "$29 / mo",
+                  "49": "$49 / mo",
+                  "99": "$99 / mo",
+                  "custom": "Custom"
                 },
                 "cta": "Continue review"
               },
@@ -5602,15 +5628,51 @@
             "investigation": {
               "log": {
                 "title": "Today's AI PM work",
+                "duration": "({minutes} min)",
                 "entries": {
                   "googleTrends": "Google Trends research complete",
                   "competitors": "Compared 12 competitors",
-                  "reddit": "Analyzed 183 Reddit posts",
+                  "reddit": "Reddit analysis",
                   "productHunt": "Reviewed 22 Product Hunt launches",
                   "documentAnalysis": "Business plan analyzed",
                   "governmentSupport": "Government programs checked",
+                  "investmentTrend": "Investment trends checked",
                   "tourismCases": "Compared 17 tourism venture cases",
-                  "reportGenerated": "Report generated"
+                  "reportGenerated": "Founder report delivered"
+                },
+                "findings": {
+                  "googleTrends": {
+                    "summary": "AI SaaS search interest +18%",
+                    "insight": "B2C entry timing signal over last 3 months"
+                  },
+                  "reddit": {
+                    "summary": "Analyzed 128 AI SaaS discussions",
+                    "insight": "Pricing-related opinions increasing"
+                  },
+                  "governmentSupport": {
+                    "summary": "1 eligible grant program found",
+                    "insight": "Matches market-fit evaluation criteria"
+                  },
+                  "competitors": {
+                    "summary": "Compared 12 competitors",
+                    "insight": "2 new competitors since last review"
+                  },
+                  "productHunt": {
+                    "summary": "Reviewed 22 similar AI startups",
+                    "insight": "Thinking Workspace gap confirmed"
+                  },
+                  "investmentTrend": {
+                    "summary": "12 YC · Crunchbase investments",
+                    "insight": "Capital flowing into AI productivity"
+                  },
+                  "documentAnalysis": {
+                    "summary": "18-page business plan analyzed",
+                    "insight": "No pricing policy stated"
+                  },
+                  "reportGenerated": {
+                    "summary": "AI PM Morning Report generated",
+                    "insight": "Today's focus: pricing strategy"
+                  }
                 }
               },
               "live": {
@@ -5622,8 +5684,73 @@
                   "reddit": "Reddit",
                   "competitors": "Competitor scan",
                   "documentAnalysis": "Business plan",
-                  "governmentSupport": "Government programs"
+                  "governmentSupport": "Government programs",
+                  "investmentTrend": "Investment trends"
                 }
+              },
+              "morningBrief": {
+                "label": "Morning Investigation",
+                "headline": "I finished today's research before you arrived.",
+                "meta": "Auto-scan at {scheduled} · done {completed} · {minutes} min",
+                "highlights": {
+                  "newCompetitors": "· 2 new competitors",
+                  "searchVolume": "· Search volume +18%",
+                  "governmentGrant": "· 1 government program found",
+                  "documentAnalyzed": "· Business plan analyzed",
+                  "pricingGap": "· Pricing strategy missing",
+                  "competitionSignal": "· Competitor signals reviewed"
+                },
+                "focus": {
+                  "pricingStrategy": "Today's priority: pricing strategy.",
+                  "customerInterview": "Today's priority: customer interviews."
+                }
+              },
+              "dailyReport": {
+                "title": "📅 {date} Morning Report",
+                "steps": {
+                  "started": "Investigation started",
+                  "googleTrends": "Google Trends complete",
+                  "reddit": "Reddit complete",
+                  "governmentSupport": "Government programs searched",
+                  "competitors": "Competitor comparison",
+                  "aiAnalysis": "AI analysis complete",
+                  "founderReport": "Founder report delivered"
+                }
+              },
+              "workProgress": {
+                "title": "Today's investigation",
+                "count": "{done} / {total} complete",
+                "statusDone": "✓",
+                "statusInProgress": "in progress",
+                "items": {
+                  "market": "Market",
+                  "competition": "Competition",
+                  "pricing": "Pricing",
+                  "government": "Government programs",
+                  "news": "News"
+                }
+              },
+              "discoveries": {
+                "title": "New since yesterday",
+                "items": {
+                  "newCompetitor": "🚨 1 new competitor found",
+                  "searchVolume": "📈 Search volume +12% vs last week",
+                  "governmentGrant": "🏛️ 2 new eligible grant programs",
+                  "opinionChange": "💡 AI PM opinion shift: pricing strategy priority up"
+                }
+              },
+              "schedule": {
+                "title": "Investigation time",
+                "description": "Every day at your chosen time, AI PM auto-scans market · competitors · news · investment · government programs.",
+                "hourLabel": "Choose investigation time",
+                "hours": {
+                  "6": "6:00 AM",
+                  "8": "8:00 AM",
+                  "9": "9:00 AM"
+                },
+                "timezone": "Timezone",
+                "timezoneValue": "KST",
+                "autoScan": "After login, Morning Report arrives in your Inbox each day."
               },
               "reportFirst": {
                 "lead": "Here's what I investigated today.",
@@ -5644,8 +5771,12 @@
                     "question": "Should we set a paid conversion target alongside it?"
                   },
                   "pricingModelGap": {
-                    "lead": "Market and BM strategy exist, but pricing policy is missing.",
-                    "question": "Which pricing model do you plan to start with?"
+                    "lead": "First, I want to confirm this. Pricing strategy is missing.",
+                    "question": "Which model are you considering?"
+                  },
+                  "customerInterviewGap": {
+                    "lead": "Market and BM exist, but no customer interview plan.",
+                    "question": "How many interviews do you plan first?"
                   }
                 }
               },
@@ -5666,15 +5797,51 @@
             "investigationSample": {
               "log": {
                 "title": "Today's AI PM work",
+                "duration": "({minutes} min)",
                 "entries": {
                   "googleTrends": "Google Trends research complete",
                   "competitors": "Compared 12 competitors",
-                  "reddit": "Analyzed 183 Reddit posts",
+                  "reddit": "Reddit analysis",
                   "productHunt": "Reviewed 22 Product Hunt launches",
                   "documentAnalysis": "Business plan analyzed",
                   "governmentSupport": "Government programs checked",
+                  "investmentTrend": "Investment trends checked",
                   "tourismCases": "Compared 17 tourism venture cases",
-                  "reportGenerated": "Report generated"
+                  "reportGenerated": "Founder report delivered"
+                },
+                "findings": {
+                  "googleTrends": {
+                    "summary": "AI startup validation search +28%",
+                    "insight": "Good entry timing over last 3 months"
+                  },
+                  "reddit": {
+                    "summary": "Analyzed 128 AI SaaS discussions",
+                    "insight": "Pricing-related opinions increasing"
+                  },
+                  "governmentSupport": {
+                    "summary": "1 eligible grant program found",
+                    "insight": "Matches market-fit evaluation criteria"
+                  },
+                  "competitors": {
+                    "summary": "Compared 12 competitors",
+                    "insight": "2 new competitors since last review"
+                  },
+                  "productHunt": {
+                    "summary": "Reviewed 22 similar AI startups",
+                    "insight": "Thinking Workspace gap confirmed"
+                  },
+                  "investmentTrend": {
+                    "summary": "12 YC · Crunchbase investments",
+                    "insight": "Capital flowing into AI productivity"
+                  },
+                  "documentAnalysis": {
+                    "summary": "Business plan analyzed",
+                    "insight": "No pricing policy stated"
+                  },
+                  "reportGenerated": {
+                    "summary": "AI PM Morning Report generated",
+                    "insight": "Today's focus: differentiation"
+                  }
                 }
               },
               "live": {
@@ -5686,8 +5853,63 @@
                   "reddit": "Reddit",
                   "competitors": "Competitor scan",
                   "documentAnalysis": "Business plan",
-                  "governmentSupport": "Government programs"
+                  "governmentSupport": "Government programs",
+                  "investmentTrend": "Investment trends"
                 }
+              },
+              "morningBrief": {
+                "label": "Morning Investigation",
+                "headline": "I finished today's research before you arrived.",
+                "meta": "Auto-scan at {scheduled} · done {completed} · {minutes} min",
+                "highlights": {
+                  "newCompetitors": "· 2 new competitors",
+                  "searchVolume": "· Search volume +18%",
+                  "governmentGrant": "· 1 government program found",
+                  "documentAnalyzed": "· Business plan analyzed",
+                  "pricingGap": "· Pricing strategy missing",
+                  "competitionSignal": "· Competitor signals reviewed"
+                },
+                "focus": {
+                  "pricingStrategy": "Today's priority: pricing strategy.",
+                  "customerInterview": "Today's priority: customer interviews."
+                }
+              },
+              "dailyReport": {
+                "title": "📅 {date} Morning Report",
+                "steps": {
+                  "started": "Investigation started",
+                  "googleTrends": "Google Trends complete",
+                  "reddit": "Reddit complete",
+                  "governmentSupport": "Government programs searched",
+                  "competitors": "Competitor comparison",
+                  "aiAnalysis": "AI analysis complete",
+                  "founderReport": "Founder report delivered"
+                }
+              },
+              "workProgress": {
+                "title": "Today's investigation",
+                "count": "{done} / {total} complete",
+                "statusDone": "✓",
+                "statusInProgress": "in progress",
+                "items": {
+                  "market": "Market",
+                  "competition": "Competition",
+                  "pricing": "Pricing",
+                  "government": "Government programs",
+                  "news": "News"
+                }
+              },
+              "discoveries": {
+                "title": "New since yesterday",
+                "items": {
+                  "newCompetitor": "🚨 1 new competitor found",
+                  "searchVolume": "📈 Search volume +12% vs last week",
+                  "governmentGrant": "🏛️ 2 new eligible grant programs",
+                  "opinionChange": "💡 AI PM opinion shift: pricing strategy priority up"
+                }
+              },
+              "inbox": {
+                "reportLabel": "Today {time} · AI PM Report"
               },
               "reportFirst": {
                 "lead": "Here's what I investigated today.",

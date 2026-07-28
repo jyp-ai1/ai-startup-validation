@@ -17,6 +17,7 @@ export type DemoProjectDraft = {
   importSource?: SmartIntakeImportSource;
   fileName?: string;
   pricingModel?: SmartIntakePricingChoice;
+  priceLevel?: string;
   completenessScore?: number;
   extracted?: Partial<Record<SmartIntakeFieldId, boolean>>;
   missing?: SmartIntakeMissingId[];

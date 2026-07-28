@@ -5,6 +5,7 @@ export type InvestigationLogEntryId =
   | 'productHunt'
   | 'documentAnalysis'
   | 'governmentSupport'
+  | 'investmentTrend'
   | 'tourismCases'
   | 'reportGenerated';
 
@@ -15,16 +16,55 @@ export type LiveInvestigationStepId =
   | 'reddit'
   | 'competitors'
   | 'documentAnalysis'
-  | 'governmentSupport';
+  | 'governmentSupport'
+  | 'investmentTrend';
 
 export type SmartQuestionId =
   | 'paidConversionTiming'
   | 'paidConversionKpi'
-  | 'pricingModelGap';
+  | 'pricingModelGap'
+  | 'customerInterviewGap';
+
+export type InvestigationScheduleHour = '6' | '8' | '9';
+
+export type DailyReportTimelineId =
+  | 'started'
+  | 'googleTrends'
+  | 'reddit'
+  | 'governmentSupport'
+  | 'competitors'
+  | 'aiAnalysis'
+  | 'founderReport';
+
+export type WorkProgressItemId = 'market' | 'competition' | 'pricing' | 'government' | 'news';
+
+export type WorkProgressStatus = 'done' | 'inProgress' | 'pending';
+
+export type DiscoveryId =
+  | 'newCompetitor'
+  | 'searchVolume'
+  | 'governmentGrant'
+  | 'opinionChange';
 
 export type InvestigationLogEntry = {
   id: InvestigationLogEntryId;
   time: string;
+  findingKey?: string;
+  durationMinutes?: number;
+};
+
+export type DailyReportEntry = {
+  id: DailyReportTimelineId;
+  time: string;
+};
+
+export type WorkProgressItem = {
+  id: WorkProgressItemId;
+  status: WorkProgressStatus;
+};
+
+export type DiscoveryItem = {
+  id: DiscoveryId;
 };
 
 export type SmartQuestion = {
@@ -39,10 +79,24 @@ export type PmReportStats = {
   decisions: number;
 };
 
+export type MorningBriefing = {
+  scheduledTime: string;
+  completedTime: string;
+  durationMinutes: number;
+  highlightKeys: string[];
+  focusKey: string;
+};
+
 export type InvestigationContext = {
   logEntries: InvestigationLogEntry[];
   liveSteps: LiveInvestigationStepId[];
   smartQuestions: SmartQuestion[];
   report: PmReportStats;
   hasDocument: boolean;
+  morningBriefing: MorningBriefing;
+  dailyReport: DailyReportEntry[];
+  workProgress: WorkProgressItem[];
+  discoveries: DiscoveryItem[];
+  scheduleHour: InvestigationScheduleHour;
+  reportDate: string;
 };

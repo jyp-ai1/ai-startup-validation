@@ -13,6 +13,7 @@ import {
   SMART_INTAKE_EXTRACTED_FIELDS,
   SMART_INTAKE_MAX_CHARS,
   SMART_INTAKE_MISSING_FIELDS,
+  SMART_INTAKE_PRICE_LEVELS,
   SMART_INTAKE_PRICING_CHOICES,
   SMART_INTAKE_STATUS_MESSAGES,
   SMART_INTAKE_SUPPORTED_FORMATS,
@@ -27,6 +28,7 @@ import {
 } from '../../lib/v2-smart-intake-engine';
 import type {
   SmartIntakeAnalysis,
+  SmartIntakePriceLevelChoice,
   SmartIntakePricingChoice,
 } from '../../lib/v2-smart-intake-types';
 import {
@@ -43,12 +45,27 @@ import {
   mapWorkingStepsToLiveProgress,
 } from '../../lib/v2-investigation-engine';
 import { V2DocumentCitationBlock, V2DocumentProfileSummary } from './v2-document-citation-block';
+import { V2DailyReportTimeline } from './v2-daily-report-timeline';
 import { V2EvidenceMetadataCard } from './v2-evidence-metadata-card';
+import { V2InvestigationDiscoveries } from './v2-investigation-discoveries';
 import { V2InvestigationLog } from './v2-investigation-log';
+import { V2InvestigationProgress } from './v2-investigation-progress';
 import { V2LiveInvestigation } from './v2-live-investigation';
+import { V2MorningInvestigationBrief } from './v2-morning-investigation-brief';
 import { V2PmReport } from './v2-pm-report';
 import { V2ReasonChainBridge } from './v2-reason-chain-bridge';
 import { V2SmartQuestionBlock } from './v2-smart-question-block';
+
+type QuestionPhase = 'gapReview' | 'pricingModel' | 'priceLevel';
+
+function needsPriceLevel(choice: SmartIntakePricingChoice | null): boolean {
+  return (
+    choice === 'subscription' ||
+    choice === 'oneTime' ||
+    choice === 'usageBased' ||
+    choice === 'enterprise'
+  );
+}
 
 type V2SmartIntakeFlowProps = {
   step: DemoExperienceStep;
@@ -76,6 +93,8 @@ export function V2SmartIntakeFlow({
   const [analysis, setAnalysis] = useState<SmartIntakeAnalysis | null>(null);
   const [importFileName, setImportFileName] = useState<string | undefined>();
   const [pricingChoice, setPricingChoice] = useState<SmartIntakePricingChoice | null>(null);
+  const [priceLevelChoice, setPriceLevelChoice] = useState<SmartIntakePriceLevelChoice | null>(null);
+  const [questionPhase, setQuestionPhase] = useState<QuestionPhase>('gapReview');
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [workingProgress, setWorkingProgress] = useState(0);
   const [completedSteps, setCompletedSteps] = useState(0);
@@ -109,6 +128,36 @@ export function V2SmartIntakeFlow({
     investigation?.liveSteps ?? [],
   );
   const smartQuestion = investigation?.smartQuestions[0] ?? null;
+
+  const persistDraft = (
+    pricingModel?: SmartIntakePricingChoice,
+    priceLevel?: string,
+  ) => {
+    if (!analysis) return;
+    const draft = buildDraftFromAnalysis(
+      analysis,
+      pasteContent,
+      projectDraft.importSource ?? 'paste',
+      pricingModel ?? pricingChoice ?? undefined,
+      projectDraft.fileName ?? importFileName,
+      priceLevel ?? priceLevelChoice ?? undefined,
+    );
+    onDraftChange(draft);
+    saveDemoProjectDraft(draft);
+  };
+
+  const handlePricingSelect = (choice: SmartIntakePricingChoice) => {
+    setPricingChoice(choice);
+    persistDraft(choice);
+    if (needsPriceLevel(choice)) {
+      setQuestionPhase('priceLevel');
+    }
+  };
+
+  const handlePriceLevelSelect = (level: SmartIntakePriceLevelChoice) => {
+    setPriceLevelChoice(level);
+    persistDraft(undefined, level);
+  };
 
   useEffect(() => {
     if (step !== 'smartIntakeWorking') return;
@@ -162,20 +211,6 @@ export function V2SmartIntakeFlow({
     onDraftChange(draft);
     saveDemoProjectDraft(draft);
     onStepChange('smartIntakeWorking');
-  };
-
-  const handlePricingSelect = (choice: SmartIntakePricingChoice) => {
-    setPricingChoice(choice);
-    if (!analysis) return;
-    const draft = buildDraftFromAnalysis(
-      analysis,
-      pasteContent,
-      projectDraft.importSource ?? 'paste',
-      choice,
-      projectDraft.fileName ?? importFileName,
-    );
-    onDraftChange(draft);
-    saveDemoProjectDraft(draft);
   };
 
   if (step === 'smartIntake') {
@@ -299,7 +334,11 @@ export function V2SmartIntakeFlow({
   if (step === 'documentUnderstanding' && analysis && reasonChain && investigation) {
     return (
       <div className="space-y-4">
-        <V2InvestigationLog entries={investigation.logEntries} compact />
+        <V2MorningInvestigationBrief briefing={investigation.morningBriefing} />
+
+        <V2InvestigationProgress items={investigation.workProgress} />
+
+        <V2InvestigationLog entries={investigation.logEntries} compact variant="workJournal" />
 
         {reasonChain.documentProfile ? (
           <V2DocumentProfileSummary profile={reasonChain.documentProfile} />
@@ -367,7 +406,11 @@ export function V2SmartIntakeFlow({
     );
   }
 
-  if (step === 'firstQuestion' && reasonChain && investigation && smartQuestion) {
+  if (step === 'firstQuestion' && reasonChain && investigation) {
+    const canContinue =
+      pricingChoice &&
+      (!needsPriceLevel(pricingChoice) || priceLevelChoice);
+
     return (
       <div className="space-y-4">
         <V2ReasonChainBridge
@@ -375,42 +418,90 @@ export function V2SmartIntakeFlow({
           activeStep="butGap"
         />
 
-        <V2SmartQuestionBlock
-          question={smartQuestion}
-          citations={reasonChain.citations}
-        />
-
-        <V2DocumentCitationBlock
-          citations={reasonChain.citations}
-          highlightId={reasonChain.pricingGapCitationId}
-        />
-
-        <fieldset className="space-y-2">
-          <legend className="mb-2 text-sm font-medium">{t('firstQuestion.pricingLabel')}</legend>
-          {SMART_INTAKE_PRICING_CHOICES.map((choice) => (
-            <label
-              key={choice}
-              className={cn(
-                'flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-colors',
-                pricingChoice === choice
-                  ? 'border-primary/50 bg-primary/5'
-                  : 'border-border/60 hover:bg-muted/20',
-              )}
+        {questionPhase === 'gapReview' ? (
+          <>
+            <div className="rounded-xl border border-border/40 bg-muted/5 p-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                {t('firstQuestion.gapReviewTitle')}
+              </p>
+              <ul className="mt-3 space-y-1.5 text-sm">
+                {SMART_INTAKE_EXTRACTED_FIELDS.map((field) => (
+                  <li key={field} className="flex items-center gap-2">
+                    {analysis?.extracted[field] ? (
+                      <Check className="size-4 shrink-0 text-primary" aria-hidden />
+                    ) : (
+                      <span className="size-4 shrink-0 text-muted-foreground">□</span>
+                    )}
+                    {t(`firstQuestion.gapFields.${field}`)}
+                  </li>
+                ))}
+                {analysis?.missing.map((field) => (
+                  <li key={field} className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
+                    <span className="size-4 shrink-0">□</span>
+                    {t(`firstQuestion.gapMissing.${field}`)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Button
+              type="button"
+              className="w-full rounded-lg"
+              onClick={() => setQuestionPhase('pricingModel')}
             >
-              <input
-                type="radio"
-                name="pricing"
-                value={choice}
-                checked={pricingChoice === choice}
-                onChange={() => handlePricingSelect(choice)}
-                className="size-4 accent-primary"
-              />
-              {t(`firstQuestion.pricing.${choice}`)}
-            </label>
-          ))}
-        </fieldset>
+              {t('firstQuestion.gapReviewCta')}
+            </Button>
+          </>
+        ) : null}
 
-        {pricingChoice ? (
+        {questionPhase !== 'gapReview' && smartQuestion ? (
+          <V2SmartQuestionBlock
+            question={smartQuestion}
+            citations={reasonChain.citations}
+          />
+        ) : null}
+
+        {questionPhase !== 'gapReview' ? (
+          <V2DocumentCitationBlock
+            citations={reasonChain.citations}
+            highlightId={reasonChain.pricingGapCitationId}
+          />
+        ) : null}
+
+        {questionPhase === 'pricingModel' ? (
+          <fieldset className="grid grid-cols-2 gap-2">
+            <legend className="mb-2 w-full text-sm font-medium">{t('firstQuestion.pricingLabel')}</legend>
+            {SMART_INTAKE_PRICING_CHOICES.map((choice) => (
+              <Button
+                key={choice}
+                type="button"
+                variant={pricingChoice === choice ? 'default' : 'outline'}
+                className="h-auto min-h-10 rounded-xl px-3 py-2 text-sm"
+                onClick={() => handlePricingSelect(choice)}
+              >
+                {t(`firstQuestion.pricing.${choice}`)}
+              </Button>
+            ))}
+          </fieldset>
+        ) : null}
+
+        {questionPhase === 'priceLevel' && pricingChoice && needsPriceLevel(pricingChoice) ? (
+          <fieldset className="grid grid-cols-2 gap-2">
+            <legend className="mb-2 w-full text-sm font-medium">{t('firstQuestion.priceLevelLabel')}</legend>
+            {SMART_INTAKE_PRICE_LEVELS.map((level) => (
+              <Button
+                key={level}
+                type="button"
+                variant={priceLevelChoice === level ? 'default' : 'outline'}
+                className="h-auto min-h-10 rounded-xl px-3 py-2 text-sm"
+                onClick={() => handlePriceLevelSelect(level)}
+              >
+                {t(`firstQuestion.priceLevels.${level}`)}
+              </Button>
+            ))}
+          </fieldset>
+        ) : null}
+
+        {canContinue ? (
           <Button type="button" className="w-full rounded-lg" onClick={onAdvance}>
             {t('firstQuestion.cta')}
           </Button>
@@ -427,7 +518,9 @@ export function V2SmartIntakeFlow({
           <p>{tInv('reportFirst.summary')}</p>
         </AiPmBubble>
 
-        <V2InvestigationLog entries={investigation.logEntries} compact />
+        <V2InvestigationLog entries={investigation.logEntries} compact variant="workJournal" />
+
+        <V2InvestigationDiscoveries items={investigation.discoveries} />
 
         <AiPmBubble>
           <p className="font-medium">{tInv('reportFirst.synthesis')}</p>
@@ -540,6 +633,11 @@ export function V2SmartIntakeFlow({
   if (step === 'dailyMonitoringPreview' && investigation) {
     return (
       <div className="space-y-4">
+        <V2DailyReportTimeline
+          entries={investigation.dailyReport}
+          reportDate={investigation.reportDate}
+        />
+
         <V2PmReport stats={investigation.report} />
 
         <AiPmBubble>

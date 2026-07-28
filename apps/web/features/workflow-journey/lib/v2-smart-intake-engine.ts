@@ -110,6 +110,7 @@ export function buildDraftFromAnalysis(
   source: SmartIntakeImportSource,
   pricingModel?: SmartIntakePricingChoice,
   fileName?: string,
+  priceLevel?: string,
 ): DemoProjectDraft {
   return {
     serviceName: analysis.serviceName,
@@ -120,6 +121,7 @@ export function buildDraftFromAnalysis(
     importSource: source,
     fileName,
     pricingModel,
+    priceLevel,
     completenessScore: analysis.completenessScore,
     extracted: analysis.extracted,
     missing: analysis.missing,

@@ -2,7 +2,7 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **4.6 — AI PM Investigation Experience** ✅  
+> **Active sprint:** Sprint **4.6.1 — Morning Investigation & Smart Questions** ✅  
 > **Sprint 2.2.2:** Decision-first Workspace ✅ · [SPRINT_2_2_2_DECISION_WORKSPACE.md](./sprints/SPRINT_2_2_2_DECISION_WORKSPACE.md)  
 > **Sprint 2.1:** Thinking Workspace UX 🔄 · [SPRINT_2_1_THINKING_WORKSPACE_UX.md](./sprints/SPRINT_2_1_THINKING_WORKSPACE_UX.md)  
 > **Sprint 2 GTM:** Epic 1–2 ✅ · [SPRINT_2_LANDING.md](./sprints/SPRINT_2_LANDING.md) · [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md)  
@@ -127,6 +127,25 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 **Kickoff:** [SPRINT_3_4_AI_PM_INBOX.md](./sprints/SPRINT_3_4_AI_PM_INBOX.md)
 
 **Next:** Sprint 4 — AI PM Experience (Consulting Experience)
+
+---
+
+## Sprint 4.6.1 — Morning Investigation & Smart Questions ✅ SHIPPED
+
+**Mission:** 출근 전 AI PM이 조사를 끝내 놓았다 — Morning Report + 업무일지
+
+| # | P0 | Status |
+|---|-----|--------|
+| 1 | Morning Investigation brief | ✅ |
+| 2 | Investigation schedule (Settings) | ✅ |
+| 3 | Daily Report timeline | ✅ |
+| 4 | Smart Question 2.0 + price flow | ✅ |
+| 5 | Investigation Log 2.0 | ✅ |
+| 6 | Login + Morning Report hook | ✅ |
+| 7 | Work progress bar | ✅ |
+| 8 | Discoveries since yesterday | ✅ |
+
+**Kickoff:** [SPRINT_4_6_1_MORNING_INVESTIGATION.md](./sprints/SPRINT_4_6_1_MORNING_INVESTIGATION.md)
 
 ---
 

@@ -35,9 +35,14 @@ import {
   persistDemoProjectDraftForLogin,
   type DemoProjectDraft,
 } from '../../lib/v2-demo-project-store';
+import { V2DailyReportTimeline } from './v2-daily-report-timeline';
 import { V2EvidenceMetadataCard } from './v2-evidence-metadata-card';
+import { V2InvestigationDiscoveries } from './v2-investigation-discoveries';
 import { V2InvestigationLog } from './v2-investigation-log';
+import { V2InvestigationProgress } from './v2-investigation-progress';
+import { V2InvestigationScheduleSettings } from './v2-investigation-schedule-settings';
 import { V2LiveInvestigation } from './v2-live-investigation';
+import { V2MorningInvestigationBrief } from './v2-morning-investigation-brief';
 import { V2PmReport } from './v2-pm-report';
 import { V2ReasonChainBridge } from './v2-reason-chain-bridge';
 import { V2SmartIntakeFlow } from './v2-smart-intake-flow';
@@ -189,13 +194,32 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
 
       {step === 'inbox' ? (
         <div className="space-y-4">
-          <V2InvestigationLog
-            entries={sampleInvestigation.logEntries}
+          <V2MorningInvestigationBrief
+            briefing={sampleInvestigation.morningBriefing}
             namespace="investigationSample"
           />
 
+          <V2InvestigationProgress
+            items={sampleInvestigation.workProgress}
+            namespace="investigationSample"
+          />
+
+          <V2DailyReportTimeline
+            entries={sampleInvestigation.dailyReport}
+            reportDate={sampleInvestigation.reportDate}
+            namespace="investigationSample"
+          />
+
+          <V2InvestigationLog
+            entries={sampleInvestigation.logEntries}
+            namespace="investigationSample"
+            variant="workJournal"
+          />
+
+          <V2InvestigationDiscoveries items={sampleInvestigation.discoveries} />
+
           <AiPmBubble>
-            <p className="font-medium">{tInv('reportFirst.lead')}</p>
+            <p className="font-medium">{tInv('inbox.reportLabel', { time: sampleInvestigation.morningBriefing.completedTime })}</p>
             <p>{t('steps.inbox.title')}</p>
           </AiPmBubble>
           <ul className="space-y-2 rounded-xl border border-border/40 bg-muted/5 p-4">
@@ -557,17 +581,21 @@ export function V2DemoExperience({ className }: V2DemoExperienceProps) {
       ) : null}
 
       {step === 'loginCta' ? (
-        <div className="space-y-6 rounded-xl border border-primary/30 bg-gradient-to-br from-primary/[0.08] to-background px-6 py-8 text-center">
-          <Sparkles className="mx-auto size-8 text-primary" aria-hidden />
-          <div>
-            <p className="text-lg font-semibold">{t('steps.loginCta.title')}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{t('steps.loginCta.body')}</p>
+        <div className="space-y-6">
+          <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/[0.08] to-background px-6 py-8 text-center">
+            <Sparkles className="mx-auto size-8 text-primary" aria-hidden />
+            <div>
+              <p className="text-lg font-semibold">{t('steps.loginCta.title')}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{t('steps.loginCta.body')}</p>
+              <p className="mt-2 text-sm font-medium text-primary">{t('steps.loginCta.morningValue')}</p>
+            </div>
+            <GoogleSignInButton
+              redirectTo="/workspace?from=demo&promote=1"
+              className="w-full rounded-lg"
+            />
+            <p className="text-xs text-muted-foreground">{t('steps.loginCta.hint')}</p>
           </div>
-          <GoogleSignInButton
-            redirectTo="/workspace?from=demo&promote=1"
-            className="w-full rounded-lg"
-          />
-          <p className="text-xs text-muted-foreground">{t('steps.loginCta.hint')}</p>
+          <V2InvestigationScheduleSettings compact />
         </div>
       ) : null}
     </div>

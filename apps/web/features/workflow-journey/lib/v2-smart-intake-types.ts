@@ -4,7 +4,15 @@ export type SmartIntakeFieldId = 'problem' | 'customer' | 'market' | 'bm' | 'com
 
 export type SmartIntakeMissingId = 'pricing' | 'customerInterview' | 'gtm';
 
-export type SmartIntakePricingChoice = 'free' | 'subscription' | 'oneTime' | 'undecided';
+export type SmartIntakePricingChoice =
+  | 'free'
+  | 'subscription'
+  | 'oneTime'
+  | 'usageBased'
+  | 'enterprise'
+  | 'undecided';
+
+export type SmartIntakePriceLevelChoice = '29' | '49' | '99' | 'custom';
 
 export type SmartIntakeAnalysis = {
   serviceName: string;

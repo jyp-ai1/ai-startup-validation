@@ -340,6 +340,8 @@
   "settings": {
     "emptyTitle": "워크스페이스 설정",
     "emptyDescription": "로컬 워크스페이스 설정입니다. 인증 기능은 추후 추가됩니다.",
+    "investigationTitle": "AI PM 조사 설정",
+    "investigationDescription": "매일 아침 AI PM이 자동으로 시장을 조사하는 시간을 설정합니다.",
     "localizationTestLink": "다국어 테스트 페이지"
   },
   "myProjects": {
@@ -5454,6 +5456,7 @@
                 "loginCta": {
                   "title": "내 프로젝트로 계속하기",
                   "body": "방금 체험한 Demo 프로젝트가 그대로 Workspace로 이어집니다. 로그인은 저장을 위한 마지막 단계입니다.",
+                  "morningValue": "로그인하면 매일 아침 AI PM이 먼저 조사한 Morning Report를 받습니다.",
                   "hint": "Google 로그인 후 AI PM과 이어서 진행하세요."
                 },
                 "cta": {
@@ -5526,14 +5529,37 @@
                 "cta": "다음"
               },
               "firstQuestion": {
-                "lead": "이 부분만 보완하면 됩니다.",
-                "focus": "현재 가장 부족한 부분은 가격 전략입니다.",
-                "pricingLabel": "가격은?",
+                "gapReviewTitle": "사업계획서 분석 완료",
+                "gapReviewCta": "부족한 부분 확인하기",
+                "gapFields": {
+                  "problem": "문제 정의",
+                  "customer": "타겟 사용자",
+                  "market": "시장",
+                  "bm": "BM",
+                  "competition": "경쟁"
+                },
+                "gapMissing": {
+                  "pricing": "가격 전략 없음",
+                  "customerInterview": "고객 인터뷰 없음",
+                  "gtm": "GTM 없음"
+                },
+                "lead": "가장 먼저 확인하고 싶은 것이 있습니다.",
+                "focus": "현재 가격 전략이 없습니다.",
+                "pricingLabel": "어떤 형태를 생각 중이신가요?",
+                "priceLevelLabel": "월 얼마를 생각하시나요?",
                 "pricing": {
                   "free": "무료",
                   "subscription": "구독",
                   "oneTime": "일회성",
+                  "usageBased": "사용량 기반",
+                  "enterprise": "기업 계약",
                   "undecided": "아직 미정"
+                },
+                "priceLevels": {
+                  "29": "$29 / 월",
+                  "49": "$49 / 월",
+                  "99": "$99 / 월",
+                  "custom": "직접 입력"
                 },
                 "cta": "검토 계속"
               },
@@ -5749,15 +5775,51 @@
             "investigation": {
               "log": {
                 "title": "오늘 AI PM 업무",
+                "duration": "({minutes}분 소요)",
                 "entries": {
                   "googleTrends": "Google Trends 조사 완료",
                   "competitors": "경쟁사 12개 비교",
-                  "reddit": "Reddit 183건 분석",
+                  "reddit": "Reddit 분석",
                   "productHunt": "Product Hunt 22개 분석",
                   "documentAnalysis": "사업계획서 분석",
                   "governmentSupport": "정부지원사업 확인",
+                  "investmentTrend": "투자동향 확인",
                   "tourismCases": "관광벤처 사례 17건 비교",
-                  "reportGenerated": "보고서 생성"
+                  "reportGenerated": "대표 보고 완료"
+                },
+                "findings": {
+                  "googleTrends": {
+                    "summary": "AI SaaS 관련 검색 관심도 +18%",
+                    "insight": "최근 3개월 기준 B2C 진입 타이밍 신호"
+                  },
+                  "reddit": {
+                    "summary": "AI SaaS 관련 토론 128건 분석",
+                    "insight": "가격 관련 의견 증가 확인"
+                  },
+                  "governmentSupport": {
+                    "summary": "신청 가능 지원사업 1건 발견",
+                    "insight": "시장성 평가 항목과 일치"
+                  },
+                  "competitors": {
+                    "summary": "경쟁사 12개 비교 완료",
+                    "insight": "새로운 경쟁사 2곳 추가 확인"
+                  },
+                  "productHunt": {
+                    "summary": "유사 AI Startup 22개 분석",
+                    "insight": "Thinking Workspace 공백 확인"
+                  },
+                  "investmentTrend": {
+                    "summary": "YC · Crunchbase 투자 12건",
+                    "insight": "AI productivity 영역 자금 유입"
+                  },
+                  "documentAnalysis": {
+                    "summary": "사업계획서 18페이지 분석",
+                    "insight": "가격 정책 미기재 확인"
+                  },
+                  "reportGenerated": {
+                    "summary": "AI PM Morning Report 생성",
+                    "insight": "오늘 확인 필요: 가격 전략"
+                  }
                 }
               },
               "live": {
@@ -5769,8 +5831,73 @@
                   "reddit": "Reddit",
                   "competitors": "경쟁사 비교",
                   "documentAnalysis": "사업계획서 분석",
-                  "governmentSupport": "정부지원사업"
+                  "governmentSupport": "정부지원사업",
+                  "investmentTrend": "투자동향"
                 }
+              },
+              "morningBrief": {
+                "label": "Morning Investigation",
+                "headline": "대표님 출근 전에 오늘 조사했습니다.",
+                "meta": "오늘 {scheduled} 자동 조사 완료 · {completed} · {minutes}분",
+                "highlights": {
+                  "newCompetitors": "· 새로운 경쟁사 2개",
+                  "searchVolume": "· 검색량 +18%",
+                  "governmentGrant": "· 정부지원사업 1건 발견",
+                  "documentAnalyzed": "· 사업계획서 분석 완료",
+                  "pricingGap": "· 가격 전략 미기재 확인",
+                  "competitionSignal": "· 경쟁사 동향 확인"
+                },
+                "focus": {
+                  "pricingStrategy": "오늘 확인이 필요한 것은 가격 전략입니다.",
+                  "customerInterview": "오늘 확인이 필요한 것은 고객 인터뷰입니다."
+                }
+              },
+              "dailyReport": {
+                "title": "📅 {date} Morning Report",
+                "steps": {
+                  "started": "조사 시작",
+                  "googleTrends": "Google Trends 완료",
+                  "reddit": "Reddit 완료",
+                  "governmentSupport": "정부지원사업 검색",
+                  "competitors": "경쟁사 비교",
+                  "aiAnalysis": "AI 분석 완료",
+                  "founderReport": "대표 보고 완료"
+                }
+              },
+              "workProgress": {
+                "title": "오늘 조사",
+                "count": "{done} / {total} 완료",
+                "statusDone": "✓",
+                "statusInProgress": "진행중",
+                "items": {
+                  "market": "시장",
+                  "competition": "경쟁",
+                  "pricing": "가격",
+                  "government": "정부지원사업",
+                  "news": "뉴스"
+                }
+              },
+              "discoveries": {
+                "title": "오늘 AI PM이 새롭게 발견한 것",
+                "items": {
+                  "newCompetitor": "🚨 새로운 경쟁사 1개 발견",
+                  "searchVolume": "📈 검색량 지난주 대비 +12%",
+                  "governmentGrant": "🏛️ 신청 가능한 정부지원사업 2건 추가",
+                  "opinionChange": "💡 AI PM 의견 변경: 가격 전략 우선순위 상승"
+                }
+              },
+              "schedule": {
+                "title": "조사 시간",
+                "description": "매일 설정한 시간에 AI PM이 시장 · 경쟁 · 뉴스 · 투자 · 정부사업을 자동 조사합니다.",
+                "hourLabel": "조사 시간 선택",
+                "hours": {
+                  "6": "오전 6시",
+                  "8": "오전 8시",
+                  "9": "오전 9시"
+                },
+                "timezone": "Timezone",
+                "timezoneValue": "KST",
+                "autoScan": "로그인 후 매일 아침 Inbox에 Morning Report가 도착합니다."
               },
               "reportFirst": {
                 "lead": "오늘 조사한 결과입니다.",
@@ -5791,8 +5918,12 @@
                     "question": "유료 전환 목표도 같이 설정하시겠습니까?"
                   },
                   "pricingModelGap": {
-                    "lead": "문서에는 시장·BM 전략은 있으나 가격 정책이 없습니다.",
-                    "question": "어떤 가격 모델로 시작할 계획인가요?"
+                    "lead": "가장 먼저 확인하고 싶은 것이 있습니다. 현재 가격 전략이 없습니다.",
+                    "question": "어떤 형태를 생각 중이신가요?"
+                  },
+                  "customerInterviewGap": {
+                    "lead": "문서에는 시장·BM은 있으나 고객 인터뷰 계획이 없습니다.",
+                    "question": "먼저 몇 명과 인터뷰할 계획인가요?"
                   }
                 }
               },
@@ -5813,15 +5944,51 @@
             "investigationSample": {
               "log": {
                 "title": "오늘 AI PM 업무",
+                "duration": "({minutes}분 소요)",
                 "entries": {
                   "googleTrends": "Google Trends 조사 완료",
                   "competitors": "경쟁사 12개 비교",
-                  "reddit": "Reddit 183건 분석",
+                  "reddit": "Reddit 분석",
                   "productHunt": "Product Hunt 22개 분석",
                   "documentAnalysis": "사업계획서 분석",
                   "governmentSupport": "정부지원사업 확인",
+                  "investmentTrend": "투자동향 확인",
                   "tourismCases": "관광벤처 사례 17건 비교",
-                  "reportGenerated": "보고서 생성"
+                  "reportGenerated": "대표 보고 완료"
+                },
+                "findings": {
+                  "googleTrends": {
+                    "summary": "AI startup validation 검색 +28%",
+                    "insight": "최근 3개월 기준 진입 타이밍 양호"
+                  },
+                  "reddit": {
+                    "summary": "AI SaaS 관련 토론 128건 분석",
+                    "insight": "가격 관련 의견 증가 확인"
+                  },
+                  "governmentSupport": {
+                    "summary": "신청 가능 지원사업 1건 발견",
+                    "insight": "시장성 평가 항목과 일치"
+                  },
+                  "competitors": {
+                    "summary": "경쟁사 12개 비교 완료",
+                    "insight": "새로운 경쟁사 2곳 추가 확인"
+                  },
+                  "productHunt": {
+                    "summary": "유사 AI Startup 22개 분석",
+                    "insight": "Thinking Workspace 공백 확인"
+                  },
+                  "investmentTrend": {
+                    "summary": "YC · Crunchbase 투자 12건",
+                    "insight": "AI productivity 영역 자금 유입"
+                  },
+                  "documentAnalysis": {
+                    "summary": "사업계획서 분석",
+                    "insight": "가격 정책 미기재 확인"
+                  },
+                  "reportGenerated": {
+                    "summary": "AI PM Morning Report 생성",
+                    "insight": "오늘 확인 필요: 차별 전략"
+                  }
                 }
               },
               "live": {
@@ -5833,8 +6000,63 @@
                   "reddit": "Reddit",
                   "competitors": "경쟁사 비교",
                   "documentAnalysis": "사업계획서 분석",
-                  "governmentSupport": "정부지원사업"
+                  "governmentSupport": "정부지원사업",
+                  "investmentTrend": "투자동향"
                 }
+              },
+              "morningBrief": {
+                "label": "Morning Investigation",
+                "headline": "대표님 출근 전에 오늘 조사했습니다.",
+                "meta": "오늘 {scheduled} 자동 조사 완료 · {completed} · {minutes}분",
+                "highlights": {
+                  "newCompetitors": "· 새로운 경쟁사 2개",
+                  "searchVolume": "· 검색량 +18%",
+                  "governmentGrant": "· 정부지원사업 1건 발견",
+                  "documentAnalyzed": "· 사업계획서 분석 완료",
+                  "pricingGap": "· 가격 전략 미기재 확인",
+                  "competitionSignal": "· 경쟁사 동향 확인"
+                },
+                "focus": {
+                  "pricingStrategy": "오늘 확인이 필요한 것은 가격 전략입니다.",
+                  "customerInterview": "오늘 확인이 필요한 것은 고객 인터뷰입니다."
+                }
+              },
+              "dailyReport": {
+                "title": "📅 {date} Morning Report",
+                "steps": {
+                  "started": "조사 시작",
+                  "googleTrends": "Google Trends 완료",
+                  "reddit": "Reddit 완료",
+                  "governmentSupport": "정부지원사업 검색",
+                  "competitors": "경쟁사 비교",
+                  "aiAnalysis": "AI 분석 완료",
+                  "founderReport": "대표 보고 완료"
+                }
+              },
+              "workProgress": {
+                "title": "오늘 조사",
+                "count": "{done} / {total} 완료",
+                "statusDone": "✓",
+                "statusInProgress": "진행중",
+                "items": {
+                  "market": "시장",
+                  "competition": "경쟁",
+                  "pricing": "가격",
+                  "government": "정부지원사업",
+                  "news": "뉴스"
+                }
+              },
+              "discoveries": {
+                "title": "오늘 AI PM이 새롭게 발견한 것",
+                "items": {
+                  "newCompetitor": "🚨 새로운 경쟁사 1개 발견",
+                  "searchVolume": "📈 검색량 지난주 대비 +12%",
+                  "governmentGrant": "🏛️ 신청 가능한 정부지원사업 2건 추가",
+                  "opinionChange": "💡 AI PM 의견 변경: 가격 전략 우선순위 상승"
+                }
+              },
+              "inbox": {
+                "reportLabel": "오늘 {time} · AI PM Report"
               },
               "reportFirst": {
                 "lead": "오늘 조사한 결과입니다.",

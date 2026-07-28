@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 
 import { FeatureEmptyPage } from '@/components/feature-empty-page';
+import { SettingsInvestigationSection } from '@/features/settings/components/settings-investigation-section';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();
@@ -19,9 +20,10 @@ export default async function SettingsPage() {
       <FeatureEmptyPage
         title={t('nav.settings')}
         description={t('nav.settingsDesc')}
-        emptyTitle={t('settings.emptyTitle')}
-        emptyDescription={t('settings.emptyDescription')}
+        emptyTitle={t('settings.investigationTitle')}
+        emptyDescription={t('settings.investigationDescription')}
       />
+      <SettingsInvestigationSection />
       <div className="mt-4">
         <Link
           href="/dev/localization"

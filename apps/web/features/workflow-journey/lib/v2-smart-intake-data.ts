@@ -54,8 +54,12 @@ export const SMART_INTAKE_PRICING_CHOICES: SmartIntakePricingChoice[] = [
   'free',
   'subscription',
   'oneTime',
+  'usageBased',
+  'enterprise',
   'undecided',
 ];
+
+export const SMART_INTAKE_PRICE_LEVELS = ['29', '49', '99', 'custom'] as const;
 
 export const SMART_INTAKE_EVIDENCE_ITEMS = [
   'googleTrends',
