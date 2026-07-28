@@ -39,6 +39,17 @@ export class SupabaseClientFactory {
       );
     }
 
+    // Browser — never touch server-only dbEnv (t3 env throws on client).
+    if (typeof window !== 'undefined') {
+      return {
+        url: pub.url,
+        anonKey: pub.anonKey,
+        serviceRoleKey: undefined,
+        publicUrl: pub.url,
+        publicAnonKey: pub.anonKey,
+      };
+    }
+
     return {
       url: dbEnv.SUPABASE_URL ?? pub.url,
       anonKey: dbEnv.SUPABASE_ANON_KEY ?? pub.anonKey,
