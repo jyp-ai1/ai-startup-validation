@@ -1,6 +1,6 @@
 import { InternalServerError } from '@repo/core/errors';
 
-import { dbEnv, isSupabaseConfigured } from '../../env/env';
+import { dbEnv, isSupabaseConfigured, resolvePublicSupabaseEnv } from '../../env/env';
 
 export type SupabaseClientKind = 'browser' | 'server' | 'admin' | 'service';
 
@@ -32,14 +32,19 @@ export class SupabaseClientFactory {
   }
 
   getConfig() {
-    const publicUrl = dbEnv.NEXT_PUBLIC_SUPABASE_URL!;
-    const publicAnonKey = dbEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const pub = resolvePublicSupabaseEnv();
+    if (!pub) {
+      throw new InternalServerError(
+        'Supabase public env not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.',
+      );
+    }
+
     return {
-      url: dbEnv.SUPABASE_URL ?? publicUrl,
-      anonKey: dbEnv.SUPABASE_ANON_KEY ?? publicAnonKey,
+      url: dbEnv.SUPABASE_URL ?? pub.url,
+      anonKey: dbEnv.SUPABASE_ANON_KEY ?? pub.anonKey,
       serviceRoleKey: dbEnv.SUPABASE_SERVICE_ROLE_KEY,
-      publicUrl,
-      publicAnonKey,
+      publicUrl: pub.url,
+      publicAnonKey: pub.anonKey,
     };
   }
 

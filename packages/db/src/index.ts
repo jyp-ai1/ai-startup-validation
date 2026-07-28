@@ -1,5 +1,5 @@
 // Environment
-export { dbEnv, isSupabaseBrowserConfigured, isSupabaseConfigured, isSupabaseAdminConfigured } from './env/env';
+export { dbEnv, isSupabaseBrowserConfigured, isSupabaseConfigured, isSupabaseAdminConfigured, readPublicSupabaseEnv, resolvePublicSupabaseEnv } from './env/env';
 export type { DbEnv } from './env/env';
 
 // DI Container

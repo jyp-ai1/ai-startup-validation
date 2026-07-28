@@ -30,19 +30,53 @@ export const dbEnv = createEnv({
 
 export type DbEnv = typeof dbEnv;
 
-/** Minimum config for browser OAuth (NEXT_PUBLIC_* only — available in client bundle). */
+/**
+ * Read NEXT_PUBLIC Supabase vars directly from process.env.
+ * Next.js inlines these in client bundles; dbEnv may be empty in browser.
+ */
+export function readPublicSupabaseEnv(): {
+  url: string | undefined;
+  anonKey: string | undefined;
+} {
+  return {
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  };
+}
+
+/**
+ * Resolve public Supabase env — process.env first, dbEnv fallback for server-only bundles.
+ */
+export function resolvePublicSupabaseEnv(): { url: string; anonKey: string } | null {
+  const direct = readPublicSupabaseEnv();
+  const url = direct.url ?? dbEnv.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = direct.anonKey ?? dbEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) return null;
+  return { url, anonKey };
+}
+
+/** Browser OAuth gate — NEXT_PUBLIC_* only; never requires server env. */
 export function isSupabaseBrowserConfigured(): boolean {
-  return Boolean(dbEnv.NEXT_PUBLIC_SUPABASE_URL && dbEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  const { url, anonKey } = readPublicSupabaseEnv();
+  return Boolean(url && anonKey);
 }
 
 /** Returns true when Supabase can be used in the current runtime. */
 export function isSupabaseConfigured(): boolean {
-  if (!isSupabaseBrowserConfigured()) return false;
-  // Client bundle only inlines NEXT_PUBLIC_* — server-only vars are undefined in browser.
+  if (isSupabaseBrowserConfigured()) {
+    if (typeof window !== 'undefined') return true;
+    return Boolean(
+      (dbEnv.SUPABASE_URL && dbEnv.SUPABASE_ANON_KEY) || isSupabaseBrowserConfigured(),
+    );
+  }
+
+  const resolved = resolvePublicSupabaseEnv();
+  if (!resolved) return false;
+
   if (typeof window !== 'undefined') return true;
-  // Server routes: dedicated server vars, or public vars as fallback (common on Vercel).
+
   return Boolean(
-    (dbEnv.SUPABASE_URL && dbEnv.SUPABASE_ANON_KEY) || isSupabaseBrowserConfigured(),
+    (dbEnv.SUPABASE_URL && dbEnv.SUPABASE_ANON_KEY) || resolved,
   );
 }
 
