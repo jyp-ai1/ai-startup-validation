@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 
 import { legacyProjectCanvasRedirect } from '@/lib/legacy-routes';
 
+export const dynamic = 'force-dynamic';
+
 type InterviewPageProps = {
   params: Promise<{ id: string }>;
 };

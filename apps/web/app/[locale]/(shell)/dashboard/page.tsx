@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 
 import { legacyProjectCanvasRedirect } from '@/lib/legacy-routes';
 
+export const dynamic = 'force-dynamic';
+
 type DashboardPageProps = {
   searchParams: Promise<{ project?: string; demo?: string; auth?: string }>;
 };
