@@ -54,6 +54,25 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/dashboard',
+        destination: '/validation',
+        permanent: false,
+      },
+      {
+        source: '/decision-center',
+        destination: '/validation',
+        permanent: false,
+      },
+      {
+        source: '/my-projects/:id/interview',
+        destination: '/validation?project=:id',
+        permanent: false,
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals = [
