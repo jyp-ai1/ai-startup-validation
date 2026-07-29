@@ -5,7 +5,8 @@
 
 const FILE_EXT_PATTERN = /\.(pdf|docx|doc|txt|md|markdown|hwp|pptx|xlsx)$/i;
 
-/** `[[filename.pdf]]`, `[filename]`, markdown links/images */
+/** `[[name] foo.pdf]]`, `[[filename.pdf]]`, `[filename]` */
+const NESTED_BRACKET_FILE_PATTERN = /\[\[[\s\S]*?\.(?:pdf|docx|doc|txt|md|hwp|pptx|xlsx)[\s\S]*?\]\]/gi;
 const BRACKET_FILE_PATTERN = /\[\[?\s*[^\]\n]{1,120}\.(pdf|docx|doc|txt|md|hwp|pptx|xlsx)\s*\]?\]?/gi;
 const DOUBLE_BRACKET_PATTERN = /\[\[[^\]]{1,200}\]\]/g;
 const MARKDOWN_LINK_PATTERN = /!?\[[^\]]*\]\([^)]*\)/g;
@@ -28,6 +29,7 @@ export function sanitizeAiPmResponse(raw: string): string {
 
   let text = raw.trim();
   text = stripKnownPlaceholders(text);
+  text = text.replace(NESTED_BRACKET_FILE_PATTERN, '');
   text = text.replace(BRACKET_FILE_PATTERN, '');
   text = text.replace(DOUBLE_BRACKET_PATTERN, '');
   text = text.replace(MARKDOWN_LINK_PATTERN, '');
@@ -54,7 +56,11 @@ export function sanitizeDocumentLabel(fileName?: string | null): string {
     return '사업계획서';
   }
 
-  if (/^(제\d+회|doc|document|untitled|새\s*문서)/i.test(label)) {
+  if (/제\d+회|\.pdf|\.docx|\[\[/i.test(label)) {
+    return '사업계획서';
+  }
+
+  if (/^(doc|document|untitled|새\s*문서)/i.test(label)) {
     return '사업계획서';
   }
 

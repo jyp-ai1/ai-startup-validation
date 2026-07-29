@@ -52,16 +52,18 @@ function detectBusinessModel(text: string): BusinessModel | null {
 }
 
 function extractFounder(text: string): DomainEntityField {
-  const section = findSection(text, [
-    '대표',
-    '창업자',
-    '예비창업',
-    'founder',
-    'ceo',
-    '팀 소개',
-  ]);
-  if (section) {
-    return { value: section.slice(0, 80), basis: 'document' };
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  for (const line of lines) {
+    const lower = line.toLowerCase();
+    if (lower.includes('타겟') || lower.includes('고객') || lower.includes('customer')) {
+      continue;
+    }
+    if (['대표', '창업자', '예비창업', 'founder', 'ceo'].some((k) => lower.includes(k))) {
+      if (hasKeyword(line, ['예비창업'])) {
+        return { value: '예비창업자', basis: 'document' };
+      }
+      return { value: line.slice(0, 60), basis: 'document' };
+    }
   }
   if (hasKeyword(text, ['예비창업자', '예비 창업'])) {
     return { value: '예비창업자', basis: 'document' };
@@ -85,20 +87,20 @@ function extractCustomer(
   model: BusinessModel | null,
   founder: DomainEntityField,
 ): DomainEntityField {
-  const raw =
-    findSection(text, [
-      '타겟',
-      '타깃',
-      '고객',
-      'customer',
-      'target',
-      '주요 고객',
-      '사용자',
-      'user',
-      '구매',
-    ]) || '';
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  let raw = '';
+  for (const line of lines) {
+    const lower = line.toLowerCase();
+    if (['타겟', '타깃', '고객', 'customer', 'target', '주요 고객'].some((k) => lower.includes(k))) {
+      raw = line;
+      break;
+    }
+  }
+  if (!raw) {
+    raw = findSection(text, ['타겟', '타깃', '고객', 'customer', 'target', '주요 고객', '사용자', 'user', '구매']) || '';
+  }
 
-  const candidate = raw.replace(/^(고객|customer|target)[\s:：]*/i, '').trim();
+  const candidate = raw.replace(/^(.*?)(타겟\s*고객|타겟|타깃|고객|customer|target)[\s:：]*/i, '').trim();
 
   if (!candidate) {
     if (model === 'B2C' && hasKeyword(text, ['일반인', '소비자', '대중', '외국인', '여행객'])) {
