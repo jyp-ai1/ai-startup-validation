@@ -60,15 +60,12 @@ function extractFounder(text: string): DomainEntityField {
     }
     if (['대표', '창업자', '예비창업', 'founder', 'ceo'].some((k) => lower.includes(k))) {
       if (hasKeyword(line, ['예비창업'])) {
-        return { value: '예비창업자', basis: 'document' };
+        return { value: '예비창업자', basis: 'document', excerpt: line.slice(0, 120) };
       }
-      return { value: line.slice(0, 60), basis: 'document' };
+      return { value: line.slice(0, 60), basis: 'document', excerpt: line.slice(0, 120) };
     }
   }
-  if (hasKeyword(text, ['예비창업자', '예비 창업'])) {
-    return { value: '예비창업자', basis: 'document' };
-  }
-  return { value: null, basis: 'unknown' };
+  return { value: null, basis: 'unknown', excerpt: null };
 }
 
 function extractBusinessName(text: string): DomainEntityField {
@@ -77,9 +74,9 @@ function extractBusinessName(text: string): DomainEntityField {
     lines[0]?.replace(/^[#\-\*]\s*/, '').slice(0, 48) ||
     findSection(text, ['서비스', 'service', '프로젝트', 'product', '사업명', '회사']);
   if (title.length >= 2) {
-    return { value: title, basis: 'document' };
+    return { value: title, basis: 'document', excerpt: title.slice(0, 120) };
   }
-  return { value: null, basis: 'unknown' };
+  return { value: null, basis: 'unknown', excerpt: null };
 }
 
 function extractCustomer(
@@ -89,54 +86,57 @@ function extractCustomer(
 ): DomainEntityField {
   const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
   let raw = '';
+  let rawLine = '';
   for (const line of lines) {
     const lower = line.toLowerCase();
     if (['타겟', '타깃', '고객', 'customer', 'target', '주요 고객'].some((k) => lower.includes(k))) {
       raw = line;
+      rawLine = line;
       break;
     }
   }
-  if (!raw) {
-    raw = findSection(text, ['타겟', '타깃', '고객', 'customer', 'target', '주요 고객', '사용자', 'user', '구매']) || '';
-  }
 
-  const candidate = raw.replace(/^(.*?)(타겟\s*고객|타겟|타깃|고객|customer|target)[\s:：]*/i, '').trim();
+  const candidate = raw
+    .replace(/^(.*?)(타겟\s*고객|타겟|타깃|고객|customer|target)[\s:：]*/i, '')
+    .trim();
 
+  // P0 — no customer section → never guess from keywords alone
   if (!candidate) {
-    if (model === 'B2C' && hasKeyword(text, ['일반인', '소비자', '대중', '외국인', '여행객'])) {
-      return { value: '일반인 (B2C)', basis: 'document' };
-    }
-    return { value: null, basis: 'unknown' };
+    return { value: null, basis: 'unknown', excerpt: null };
   }
 
   if (isFounderArchetypeOnly(candidate)) {
-    return { value: null, basis: 'needs_confirmation' };
+    return { value: null, basis: 'needs_confirmation', excerpt: rawLine.slice(0, 120) };
   }
 
-  if (
-    model === 'B2C' &&
-    founder.value &&
-    candidate.includes(founder.value.slice(0, 6))
-  ) {
-    return { value: null, basis: 'needs_confirmation' };
+  if (model === 'B2C' && founder.value && candidate.includes(founder.value.slice(0, 6))) {
+    return { value: null, basis: 'needs_confirmation', excerpt: rawLine.slice(0, 120) };
   }
 
+  // P0 — founder language in customer line is never asserted; require user confirmation
   if (hasKeyword(candidate, ['예비창업', '창업자', '대표', 'startup founder'])) {
-    if (model === 'B2C') {
-      return { value: null, basis: 'needs_confirmation' };
-    }
-    return { value: candidate.slice(0, 80), basis: 'inferred' };
+    return { value: null, basis: 'needs_confirmation', excerpt: rawLine.slice(0, 120) };
   }
 
-  return { value: candidate.slice(0, 80), basis: 'document' };
+  return {
+    value: candidate.slice(0, 80),
+    basis: 'document',
+    excerpt: rawLine.slice(0, 120),
+  };
 }
 
 function fieldFromSection(text: string, keywords: string[]): DomainEntityField {
-  const value = findSection(text, keywords);
-  if (value.length >= 4) {
-    return { value: value.slice(0, 120), basis: 'document' };
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i]?.toLowerCase() ?? '';
+    if (keywords.some((k) => line.includes(k))) {
+      const chunk = lines.slice(i, i + 4).join(' ').trim();
+      if (chunk.length >= 4) {
+        return { value: chunk.slice(0, 120), basis: 'document', excerpt: chunk.slice(0, 120) };
+      }
+    }
   }
-  return { value: null, basis: 'unknown' };
+  return { value: null, basis: 'unknown', excerpt: null };
 }
 
 /**
@@ -165,7 +165,11 @@ export function extractDocumentEntities(raw: string): LaunchLensDomainContext {
 }
 
 export function mapEntitiesToLegacyCustomer(entities: LaunchLensDomainContext): string {
-  if (entities.customer.basis === 'needs_confirmation' || entities.customer.basis === 'unknown') {
+  if (
+    entities.customer.basis === 'needs_confirmation' ||
+    entities.customer.basis === 'unknown' ||
+    entities.customer.basis === 'inferred'
+  ) {
     return '';
   }
   return entities.customer.value ?? '';

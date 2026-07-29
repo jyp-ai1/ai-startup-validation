@@ -4,6 +4,8 @@ export type EntityBasis = 'document' | 'inferred' | 'unknown' | 'needs_confirmat
 export type DomainEntityField<T = string> = {
   value: T | null;
   basis: EntityBasis;
+  /** Source line or snippet from document — shown as evidence */
+  excerpt?: string | null;
 };
 
 export type BusinessModel = 'B2B' | 'B2C' | 'B2G';

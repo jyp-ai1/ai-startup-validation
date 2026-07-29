@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
-import { sanitizeAiPmParagraphs } from '@/lib/ai/ai-response-sanitizer';
+import { sanitizeAiPmParagraphs, sanitizeAiPmResponse } from '@/lib/ai/ai-response-sanitizer';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
@@ -22,6 +22,7 @@ type WorkspaceAiPmMainProps = {
   entities?: LaunchLensDomainContext | null;
   reviewCount: number;
   businessScore: number | null;
+  completedTopics?: number;
   phase: 'compose' | 'reviewing' | 'board' | 'followUp';
   readOnly?: boolean;
   onDomainChange: (field: WorkspaceDomainFieldId, value: string) => void;
@@ -34,6 +35,7 @@ export function WorkspaceAiPmMain({
   entities = null,
   reviewCount,
   businessScore,
+  completedTopics = 0,
   phase,
   readOnly = false,
   onDomainChange,
@@ -41,9 +43,9 @@ export function WorkspaceAiPmMain({
   className,
 }: WorkspaceAiPmMainProps) {
   const t = useTranslations('workflow.v2.workspaceShell.aiPmMain');
-  const message = buildAiPmPrimaryMessage(domain, reviewCount);
+  const message = buildAiPmPrimaryMessage(domain, reviewCount, entities);
   const paragraphs = sanitizeAiPmParagraphs(message.paragraphs);
-  const canReview = canProceedWorkspaceReview(domain);
+  const canReview = canProceedWorkspaceReview(domain, entities);
 
   if (phase === 'reviewing') {
     return (
@@ -66,11 +68,40 @@ export function WorkspaceAiPmMain({
         <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
           {t('label')}
         </p>
-        <div className="mt-4 space-y-3 text-[15px] leading-relaxed">
-          {paragraphs.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
-        </div>
+        {message.ordA ? (
+          <dl className="mt-4 space-y-3 text-[14px] leading-relaxed">
+            <div>
+              <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                {t('ordA.observation')}
+              </dt>
+              <dd className="mt-1">{sanitizeAiPmResponse(message.ordA.observation)}</dd>
+            </div>
+            <div>
+              <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                {t('ordA.reasoning')}
+              </dt>
+              <dd className="mt-1">{sanitizeAiPmResponse(message.ordA.reasoning)}</dd>
+            </div>
+            <div>
+              <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                {t('ordA.decision')}
+              </dt>
+              <dd className="mt-1">{sanitizeAiPmResponse(message.ordA.decision)}</dd>
+            </div>
+            <div>
+              <dt className="text-[11px] font-semibold uppercase tracking-wide text-primary">
+                {t('ordA.nextAction')}
+              </dt>
+              <dd className="mt-1 font-medium">{sanitizeAiPmResponse(message.ordA.nextAction)}</dd>
+            </div>
+          </dl>
+        ) : (
+          <div className="mt-4 space-y-3 text-[15px] leading-relaxed">
+            {paragraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        )}
       </section>
 
       <WorkspaceDomainFields
@@ -94,8 +125,12 @@ export function WorkspaceAiPmMain({
         </div>
       ) : null}
 
-      {reviewCount > 0 ? (
-        <WorkspaceProgressiveOverview businessScore={businessScore} reviewCount={reviewCount} />
+      {reviewCount > 0 || completedTopics >= 2 ? (
+        <WorkspaceProgressiveOverview
+          businessScore={businessScore}
+          reviewCount={reviewCount}
+          completedTopics={completedTopics}
+        />
       ) : null}
     </div>
   );

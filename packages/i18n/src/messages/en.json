@@ -6515,7 +6515,13 @@
           "label": "AI PM",
           "reviewingTitle": "AI PM is reviewing your project",
           "reviewingHint": "Analyzing by Founder · Business · Customer.",
-          "reviewCta": "Start AI PM review"
+          "reviewCta": "Start AI PM review",
+          "ordA": {
+            "observation": "Observation",
+            "reasoning": "Reasoning",
+            "decision": "Decision",
+            "nextAction": "Next Action"
+          }
         },
         "domainFields": {
           "title": "Domain (Founder → Business → Customer → Market → Competitor)",
@@ -6538,7 +6544,8 @@
             "inferred": "⚠ Inferred",
             "unknown": "? Unknown",
             "needs_confirmation": "⚠ Needs confirmation"
-          }
+          },
+          "evidence": "Evidence"
         }
       },
       "journeyMiniNav": {

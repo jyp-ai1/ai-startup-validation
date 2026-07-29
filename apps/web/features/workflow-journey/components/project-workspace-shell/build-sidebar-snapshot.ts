@@ -1,4 +1,7 @@
+import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
+
 import type { WorkspaceDomainEvidence } from '../../lib/workspace-ai-pm-messages';
+import { getDomainFieldMeta } from '../../lib/workspace-ai-pm-messages';
 
 import type {
   NavNodeLifecycle,
@@ -15,20 +18,33 @@ const DOMAIN_ORDER: WorkspaceNavNodeId[] = [
   'competitor',
 ];
 
-function fieldFilled(domain: WorkspaceDomainEvidence, id: WorkspaceNavNodeId): boolean {
+function fieldFilled(
+  domain: WorkspaceDomainEvidence,
+  id: WorkspaceNavNodeId,
+  entities?: LaunchLensDomainContext | null,
+): boolean {
   const value = domain[id]?.trim() ?? '';
-  return value.length >= 2;
+  if (value.length < 2) return false;
+
+  // P0 — founder/customer only count when document-backed
+  if (id === 'founder' || id === 'customer') {
+    const basis = getDomainFieldMeta(id, entities);
+    return basis === 'document';
+  }
+
+  return true;
 }
 
 function lifecycleForDomainNode(
   id: WorkspaceNavNodeId,
   domain: WorkspaceDomainEvidence,
   reviewCount: number,
+  entities?: LaunchLensDomainContext | null,
 ): NavNodeLifecycle {
   const index = DOMAIN_ORDER.indexOf(id);
   const prevId = index > 0 ? DOMAIN_ORDER[index - 1] : null;
-  const prevDone = prevId ? fieldFilled(domain, prevId) : true;
-  const selfDone = fieldFilled(domain, id);
+  const prevDone = prevId ? fieldFilled(domain, prevId, entities) : true;
+  const selfDone = fieldFilled(domain, id, entities);
 
   if (selfDone) return 'completed';
   if (prevDone) return 'in_progress';
@@ -38,11 +54,12 @@ function lifecycleForDomainNode(
 export function buildWorkspaceSidebarSnapshot(
   domain: WorkspaceDomainEvidence,
   reviewCount: number,
+  entities?: LaunchLensDomainContext | null,
 ): WorkspaceSidebarSnapshot {
   const nodes: WorkspaceNavNode[] = DOMAIN_ORDER.map((id) => ({
     id,
     labelKey: id,
-    lifecycle: lifecycleForDomainNode(id, domain, reviewCount),
+    lifecycle: lifecycleForDomainNode(id, domain, reviewCount, entities),
   }));
 
   const completedTopics = nodes.filter((n) => n.lifecycle === 'completed').length;

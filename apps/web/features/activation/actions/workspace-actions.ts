@@ -31,8 +31,8 @@ export async function switchToDemoWorkspace() {
     cookieStore.delete('ACTIVE_PROJECT_ID');
   }
 
-  revalidatePath('/dashboard');
-  redirect('/dashboard?demo=1');
+  revalidatePath('/workspace');
+  redirect('/workspace?demo=1');
 }
 
 export async function switchToPersonalWorkspace(projectId?: string) {
@@ -49,8 +49,8 @@ export async function switchToPersonalWorkspace(projectId?: string) {
     cookieStore.delete('ACTIVE_PROJECT_ID');
   }
 
-  revalidatePath('/dashboard');
-  redirect('/dashboard');
+  revalidatePath('/workspace');
+  redirect(projectId ? `/workspace?project=${projectId}` : '/workspace');
 }
 
 export async function switchActiveProject(projectId: string) {
@@ -61,6 +61,6 @@ export async function switchActiveProject(projectId: string) {
     sameSite: 'lax',
   });
 
-  revalidatePath('/dashboard');
-  redirect(`/dashboard?project=${projectId}`);
+  revalidatePath('/workspace');
+  redirect(`/workspace?project=${projectId}`);
 }

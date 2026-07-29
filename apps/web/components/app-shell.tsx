@@ -251,7 +251,7 @@ export function AppShell({
                 <UserMenu user={user} />
               ) : (
                 <Button variant="outline" size="sm" className="inline-flex gap-1.5 px-2 sm:px-3" asChild>
-                  <Link href={`/auth/login?next=${encodeURIComponent(pathname || '/dashboard')}`}>
+                  <Link href={`/auth/login?next=${encodeURIComponent(pathname || '/workspace')}`}>
                     <LogIn className="size-4 sm:hidden" aria-hidden />
                     <span className="hidden sm:inline">{tAuth('signIn')}</span>
                     <span className="sr-only sm:hidden">{tAuth('signIn')}</span>

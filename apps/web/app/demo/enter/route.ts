@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const demoProjects = await listDemoProjects();
     const demoProject = demoProjects[0];
 
-    const destination = '/who?demo=1';
+    const destination = '/workspace?demo=1';
 
     const response = NextResponse.redirect(`${origin}${destination}`);
 
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     return response;
   } catch {
     const { origin } = new URL(request.url);
-    const response = NextResponse.redirect(`${origin}/who?demo=1`);
+    const response = NextResponse.redirect(`${origin}/workspace?demo=1`);
     response.cookies.set(WORKSPACE_MODE_COOKIE, DEMO_MODE_VALUE, {
       path: '/',
       maxAge: 60 * 60 * 24 * 30,

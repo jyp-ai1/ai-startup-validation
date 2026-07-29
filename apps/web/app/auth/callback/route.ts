@@ -8,6 +8,7 @@ import {
   recordOAuthFailure,
   recordOAuthSuccessAndPersist,
 } from '@/lib/auth/oauth-analytics';
+import { resolvePostLoginWorkspaceUrl } from '@/lib/auth/post-login-redirect';
 import { WORKSPACE_MODE_COOKIE } from '@/lib/auth/server-auth';
 
 function loginRedirect(origin: string, next: string, errorCode = 'auth') {
@@ -73,9 +74,11 @@ export async function GET(request: Request) {
       throw error;
     }
 
-    const redirectUrl = new URL(`${origin}${safeNext}`);
-    redirectUrl.searchParams.set('auth', 'complete');
-    const response = NextResponse.redirect(redirectUrl.toString());
+    const pendingCookies: Array<{
+      name: string;
+      value: string;
+      options?: Parameters<NextResponse['cookies']['set']>[2];
+    }> = [];
 
     let supabase: ReturnType<typeof createServerClient>;
     try {
@@ -83,7 +86,7 @@ export async function GET(request: Request) {
         cookies: {
           getAll: () => cookieStore.getAll(),
           set: (name, value, options) => {
-            response.cookies.set(name, value, options);
+            pendingCookies.push({ name, value, options });
           },
         },
       });
@@ -125,12 +128,39 @@ export async function GET(request: Request) {
       return NextResponse.redirect(loginRedirect(origin, safeNext, 'session'));
     }
 
+    let redirectPath = safeNext;
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user?.id) {
+        redirectPath = await resolvePostLoginWorkspaceUrl(user.id, {
+          authComplete: true,
+          promoteDemo,
+          safeNext,
+        });
+      } else {
+        const fallback = new URL(safeNext, 'http://local');
+        fallback.searchParams.set('auth', 'complete');
+        redirectPath = `${fallback.pathname}${fallback.search}`;
+      }
+    } catch (error) {
+      logCallbackError('resolvePostLogin', error, { safeNext });
+      const fallback = new URL(safeNext, 'http://local');
+      fallback.searchParams.set('auth', 'complete');
+      redirectPath = `${fallback.pathname}${fallback.search}`;
+    }
+
+    const response = NextResponse.redirect(`${origin}${redirectPath}`);
+    for (const cookie of pendingCookies) {
+      response.cookies.set(cookie.name, cookie.value, cookie.options);
+    }
     response.cookies.delete(WORKSPACE_MODE_COOKIE);
     response.cookies.delete('ACTIVE_PROJECT_ID');
 
     try {
       await recordOAuthSuccessAndPersist({
-        next: safeNext,
+        next: redirectPath,
         durationMs: Date.now() - startedAt,
         promoted: promoteDemo,
       });
@@ -141,6 +171,7 @@ export async function GET(request: Request) {
 
     console.info('[auth/callback] session established', {
       safeNext,
+      redirectPath,
       durationMs: Date.now() - startedAt,
       promoted: promoteDemo,
     });

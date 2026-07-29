@@ -30,10 +30,8 @@ export function evaluateDomainTrust(entities: LaunchLensDomainContext): DomainTr
     issues.push('business_model_unknown');
   }
 
-  if (
-    entities.customer.basis === 'inferred' &&
-    !entities.customer.value
-  ) {
+  // P0 — any inferred customer (with or without value) must be confirmed
+  if (entities.customer.basis === 'inferred') {
     issues.push('customer_inferred_without_basis');
   }
 
@@ -44,7 +42,8 @@ export function evaluateDomainTrust(entities: LaunchLensDomainContext): DomainTr
   const mustConfirmCustomer =
     issues.includes('founder_equals_customer') ||
     issues.includes('customer_missing_b2c') ||
-    entities.customer.basis === 'needs_confirmation';
+    entities.customer.basis === 'needs_confirmation' ||
+    entities.customer.basis === 'inferred';
 
   return {
     ok: issues.length === 0,

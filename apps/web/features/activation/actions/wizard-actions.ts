@@ -79,7 +79,7 @@ export async function createProjectFromWizard(
 
     const user = await getServerAuthUser();
     if (!user) {
-      redirect('/auth/login?next=/dashboard');
+      redirect('/auth/login?next=/workspace');
     }
 
     const input = parseWizardInput(formData);
@@ -106,9 +106,9 @@ export async function createProjectFromWizard(
       sameSite: 'lax',
     });
 
-    revalidatePath('/dashboard');
+    revalidatePath('/workspace');
     revalidatePath('/projects');
-    redirect(`/dashboard?project=${project.id}&onboarding=1`);
+    redirect(`/workspace?project=${project.id}&welcome=1`);
   } catch (error) {
     if (error instanceof ValidationError) {
       return {

@@ -6,6 +6,7 @@ import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-doma
 import { cn } from '@repo/ui/lib/utils';
 
 import {
+  getDomainFieldExcerpt,
   getDomainFieldMeta,
   type WorkspaceDomainEvidence,
   type WorkspaceDomainFieldId,
@@ -53,6 +54,7 @@ export function WorkspaceDomainFields({
       <ol className="space-y-3">
         {FIELD_ORDER.map((fieldId) => {
           const basis = getDomainFieldMeta(fieldId, entities);
+          const excerpt = getDomainFieldExcerpt(fieldId, entities);
           const isActive = activeField === fieldId;
           return (
             <li key={fieldId}>
@@ -78,6 +80,11 @@ export function WorkspaceDomainFields({
                     : 'border-border/70 focus:border-primary/40 focus:ring-2 focus:ring-primary/15',
                 )}
               />
+              {excerpt && basis === 'document' ? (
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  {t('evidence')}: &ldquo;{excerpt}&rdquo;
+                </p>
+              ) : null}
             </li>
           );
         })}

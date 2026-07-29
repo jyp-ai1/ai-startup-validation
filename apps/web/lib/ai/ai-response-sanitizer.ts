@@ -14,6 +14,8 @@ const MARKDOWN_HEADER_PATTERN = /^#{1,6}\s+/gm;
 const WINDOWS_PATH_PATTERN = /[A-Za-z]:\\[^\s\n]+/g;
 const UNIX_PATH_PATTERN = /(?:\/(?:usr|var|tmp|home|Users|Documents|GitHub)[^\s\n]*)/g;
 const OCR_PAGE_PATTERN = /(?:^|\s)(?:p\.?\s*)?\d+\s*\/\s*\d+(?:\s|$)/gi;
+const UUID_PATTERN =
+  /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/gi;
 
 function stripKnownPlaceholders(text: string): string {
   return text
@@ -37,6 +39,7 @@ export function sanitizeAiPmResponse(raw: string): string {
   text = text.replace(WINDOWS_PATH_PATTERN, '');
   text = text.replace(UNIX_PATH_PATTERN, '');
   text = text.replace(OCR_PAGE_PATTERN, ' ');
+  text = text.replace(UUID_PATTERN, '');
   text = text.replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1');
   text = text.replace(/\s{2,}/g, ' ').trim();
 

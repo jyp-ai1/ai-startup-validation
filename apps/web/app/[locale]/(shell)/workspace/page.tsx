@@ -91,6 +91,22 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   const resolvedProjectId =
     params.project ?? (dbReady && projects.length === 1 ? projects[0]!.id : undefined);
 
+  // P0 — post-login: never render MyProjectsHome; land on project canvas in one hop
+  if (authComplete && dbReady && projects.length > 0 && !params.project) {
+    logJourneyRedirect({
+      layer: 'server',
+      from: '/workspace',
+      to: buildAuthenticatedJourneyUrl({ projectId: projects[0]!.id, authComplete: true }),
+      reason: 'auth_complete_auto_project',
+    });
+    redirect(
+      buildAuthenticatedJourneyUrl({
+        projectId: projects[0]!.id,
+        authComplete: true,
+      }),
+    );
+  }
+
   if (resolvedProjectId && dbReady) {
     if (isSupabaseConfigured()) {
       const owned = await getOwnedProject(user.id, resolvedProjectId);

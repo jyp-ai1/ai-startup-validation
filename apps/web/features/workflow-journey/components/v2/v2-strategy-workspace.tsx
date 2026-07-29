@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
+import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 import { appToast } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
@@ -51,7 +52,9 @@ import {
   canProceedWorkspaceReview,
   emptyWorkspaceDomain,
   loadWorkspaceDomain,
+  loadWorkspaceEntities,
   saveWorkspaceDomain,
+  saveWorkspaceEntities,
   validationToWorkspaceDomain,
   workspaceDomainToValidation,
   type WorkspaceDomainEvidence,
@@ -129,6 +132,42 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
   const [mainView, setMainView] = useState<WorkspaceMainView>('ai-pm');
   const [activeNavNodeId, setActiveNavNodeId] = useState<WorkspaceNavNodeId | null>('founder');
   const [domain, setDomain] = useState<WorkspaceDomainEvidence>(() => emptyWorkspaceDomain());
+  const [entities, setEntities] = useState<LaunchLensDomainContext | null>(null);
+
+  function markFieldUserConfirmed(
+    prev: LaunchLensDomainContext | null,
+    field: WorkspaceDomainFieldId,
+    value: string,
+  ): LaunchLensDomainContext {
+    const base =
+      prev ??
+      ({
+        founder: { value: null, basis: 'unknown' },
+        business: { value: null, basis: 'unknown', model: null, name: null },
+        customer: { value: null, basis: 'unknown' },
+        product: { value: null, basis: 'unknown' },
+        market: { value: null, basis: 'unknown' },
+        competitor: { value: null, basis: 'unknown' },
+      } satisfies LaunchLensDomainContext);
+
+    if (field === 'business') {
+      return {
+        ...base,
+        business: {
+          ...base.business,
+          value,
+          name: value,
+          basis: 'document',
+          excerpt: null,
+        },
+      };
+    }
+
+    return {
+      ...base,
+      [field]: { ...base[field], value, basis: 'document', excerpt: null },
+    };
+  }
 
   const refreshMemory = useCallback(() => {
     setMemoryEntries(loadDecisionMemory());
@@ -161,8 +200,12 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
     refreshMemory();
     const saved = loadV2Validation();
     const storedDomain = loadWorkspaceDomain();
+    const storedEntities = loadWorkspaceEntities();
     if (storedDomain) {
       setDomain(storedDomain);
+    }
+    if (storedEntities) {
+      setEntities(storedEntities);
     }
     if (!saved) return;
     setIdea(saved.evidence.idea);
@@ -177,6 +220,11 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
     }
   }, [isDemoReadonly, isDemoGuided, refreshMemory]);
 
+  const aiPmMessage = useMemo(
+    () => buildAiPmPrimaryMessage(domain, reviewCount, entities),
+    [domain, reviewCount, entities],
+  );
+
   const evidence = useMemo(
     (): V2ValidationEvidence => ({
       idea: domain.business.trim() || idea.trim(),
@@ -186,11 +234,6 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
       pricing: optional.pricing.trim() || undefined,
     }),
     [domain, idea, optional],
-  );
-
-  const aiPmMessage = useMemo(
-    () => buildAiPmPrimaryMessage(domain, reviewCount),
-    [domain, reviewCount],
   );
 
   const hasIdea = isEvidenceFieldFilled('idea', evidence);
@@ -270,6 +313,11 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
       });
       if (field === 'business') markDirty('idea');
       if (field === 'customer') markDirty('customer');
+      return next;
+    });
+    setEntities((prev) => {
+      const next = markFieldUserConfirmed(prev, field, value);
+      saveWorkspaceEntities(next);
       return next;
     });
   };
@@ -398,8 +446,8 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
   };
 
   const sidebarSnapshot = useMemo(
-    () => buildWorkspaceSidebarSnapshot(domain, reviewCount),
-    [domain, reviewCount],
+    () => buildWorkspaceSidebarSnapshot(domain, reviewCount, entities),
+    [domain, reviewCount, entities],
   );
 
   const stripMessage = sanitizeAiPmResponse(aiPmMessage.paragraphs.join(' '));
@@ -413,6 +461,7 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
         <WorkspaceProgressiveOverview
           businessScore={sidebarSnapshot.businessScore}
           reviewCount={reviewCount}
+          completedTopics={sidebarSnapshot.completedTopics}
         />
       ) : activeMemory ? (
         <section className={cn(PANEL, 'animate-in fade-in duration-300')}>
@@ -421,8 +470,10 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
       ) : (
         <WorkspaceAiPmMain
           domain={domain}
+          entities={entities}
           reviewCount={reviewCount}
           businessScore={sidebarSnapshot.businessScore}
+          completedTopics={sidebarSnapshot.completedTopics}
           phase={phase}
           readOnly={isDemoReadonly}
           onDomainChange={handleDomainChange}

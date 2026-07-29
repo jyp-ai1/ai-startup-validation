@@ -6668,7 +6668,13 @@
           "label": "AI PM",
           "reviewingTitle": "AI PM이 검토 중입니다",
           "reviewingHint": "Founder · Business · Customer 기준으로 분석합니다.",
-          "reviewCta": "AI PM 검토 시작"
+          "reviewCta": "AI PM 검토 시작",
+          "ordA": {
+            "observation": "관찰",
+            "reasoning": "근거",
+            "decision": "판단",
+            "nextAction": "다음 행동"
+          }
         },
         "domainFields": {
           "title": "도메인 정의 (Founder → Business → Customer → Market → Competitor)",
@@ -6691,7 +6697,8 @@
             "inferred": "⚠ 추론",
             "unknown": "? 확인 필요",
             "needs_confirmation": "⚠ 확인 필요"
-          }
+          },
+          "evidence": "근거"
         }
       },
       "journeyMiniNav": {

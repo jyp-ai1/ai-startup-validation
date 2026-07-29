@@ -19,19 +19,30 @@ const BLOCK_ORDER: OverviewBlockId[] = [
 type WorkspaceProgressiveOverviewProps = {
   businessScore: number | null;
   reviewCount: number;
+  /** Domain lifecycle progress — drives progressive reveal (P1) */
+  completedTopics?: number;
   className?: string;
 };
+
+function resolveVisibleBlockCount(reviewCount: number, completedTopics: number): number {
+  if (reviewCount > 0) return BLOCK_ORDER.length;
+  if (completedTopics >= 5) return 4;
+  if (completedTopics >= 4) return 3;
+  if (completedTopics >= 3) return 2;
+  if (completedTopics >= 2) return 1;
+  return 0;
+}
 
 export function WorkspaceProgressiveOverview({
   businessScore,
   reviewCount,
+  completedTopics = 0,
   className,
 }: WorkspaceProgressiveOverviewProps) {
   const t = useTranslations('workflow.v2.workspaceShell.overview');
   const [visibleCount, setVisibleCount] = useState(0);
 
-  const targetCount =
-    reviewCount > 0 ? BLOCK_ORDER.length : businessScore != null ? 2 : 0;
+  const targetCount = resolveVisibleBlockCount(reviewCount, completedTopics);
 
   useEffect(() => {
     setVisibleCount(0);
@@ -46,7 +57,7 @@ export function WorkspaceProgressiveOverview({
       );
     }
     return () => timers.forEach((id) => window.clearTimeout(id));
-  }, [targetCount, reviewCount]);
+  }, [targetCount, reviewCount, completedTopics]);
 
   const isVisible = (id: OverviewBlockId) =>
     BLOCK_ORDER.indexOf(id) < visibleCount;

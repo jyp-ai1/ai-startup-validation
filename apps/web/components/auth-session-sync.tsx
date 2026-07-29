@@ -20,6 +20,10 @@ export function AuthSessionSync() {
         router.refresh();
       }
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        // OAuth callback already resolves final /workspace?project= — skip mid-flow refresh flash
+        if (event === 'SIGNED_IN' && window.location.search.includes('auth=complete')) {
+          return;
+        }
         router.refresh();
       }
     });
