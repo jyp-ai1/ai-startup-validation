@@ -15,6 +15,19 @@ export type WorkspaceMode = 'demo' | 'personal';
 export const WORKSPACE_MODE_COOKIE = 'WORKSPACE_MODE';
 export const DEMO_MODE_VALUE = 'demo';
 
+/** Placeholder for unauthenticated demo workspace (no Supabase session). */
+export const DEMO_GUEST_USER: AppAuthUser = {
+  id: 'demo-guest',
+  email: '',
+  fullName: 'Demo',
+  avatarUrl: null,
+  emailVerified: false,
+};
+
+export function isDemoQueryParam(value: string | null | undefined): boolean {
+  return value === '1' || value === 'guided' || value === 'readonly';
+}
+
 export async function getServerAuthUser(): Promise<AppAuthUser | null> {
   if (!isSupabaseConfigured()) return null;
 

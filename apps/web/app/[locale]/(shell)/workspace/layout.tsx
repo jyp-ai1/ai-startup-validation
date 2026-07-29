@@ -1,11 +1,14 @@
-import { requireAuthUser } from '@/lib/auth/server-auth';
+import { isDemoWorkspace, requireAuthUser } from '@/lib/auth/server-auth';
 
 type WorkspaceLayoutProps = {
   children: React.ReactNode;
 };
 
-/** Protected — login required (Sprint 2 P0 IA). */
+/** Personal workspace requires login; demo cookie bypasses auth (Stabilization P0). */
 export default async function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
-  await requireAuthUser('/workspace');
+  const demoMode = await isDemoWorkspace();
+  if (!demoMode) {
+    await requireAuthUser('/workspace');
+  }
   return children;
 }

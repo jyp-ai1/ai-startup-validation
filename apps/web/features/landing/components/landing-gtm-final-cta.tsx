@@ -27,7 +27,7 @@ export function LandingGtmFinalCta() {
             <ArrowRight className="size-4" aria-hidden />
           </LandingCtaLink>
           <LandingCtaLink
-            href="/validation?demo=guided"
+            href="/demo/enter"
             event="cta_demo"
             variant="outline"
             size="default"

@@ -1,6 +1,7 @@
 import { headers } from 'next/headers';
 
 import { getWorkspaceSession } from '@/lib/auth/workspace-session';
+import { isDemoWorkspace } from '@/lib/auth/server-auth';
 import { loadWatchCenter } from '@/features/watch-center/server';
 
 import { AppShell } from './app-shell';
@@ -34,8 +35,9 @@ function shouldSkipAppShellData(pathname: string): boolean {
 
 export async function AppShellWrapper({ children }: AppShellWrapperProps) {
   const pathname = (await headers()).get('x-pathname') ?? '/';
+  const demoMode = await isDemoWorkspace();
 
-  if (shouldSkipAppShellData(pathname)) {
+  if (shouldSkipAppShellData(pathname) || (pathname.startsWith('/workspace') && demoMode)) {
     return <AppShellGate shell={null}>{children}</AppShellGate>;
   }
 

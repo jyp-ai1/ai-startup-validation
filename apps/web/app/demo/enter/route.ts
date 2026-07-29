@@ -8,8 +8,9 @@ export async function GET(request: Request) {
     const { origin } = new URL(request.url);
     const demoProjects = await listDemoProjects();
     const demoProject = demoProjects[0];
-
-    const destination = '/workspace?demo=1';
+    const destination = demoProject
+      ? `/workspace?demo=guided&project=${encodeURIComponent(demoProject.id)}`
+      : '/workspace?demo=guided';
 
     const response = NextResponse.redirect(`${origin}${destination}`);
 
@@ -30,7 +31,7 @@ export async function GET(request: Request) {
     return response;
   } catch {
     const { origin } = new URL(request.url);
-    const response = NextResponse.redirect(`${origin}/workspace?demo=1`);
+    const response = NextResponse.redirect(`${origin}/workspace?demo=guided`);
     response.cookies.set(WORKSPACE_MODE_COOKIE, DEMO_MODE_VALUE, {
       path: '/',
       maxAge: 60 * 60 * 24 * 30,

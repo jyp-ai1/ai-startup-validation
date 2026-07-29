@@ -165,7 +165,12 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
 
     return {
       ...base,
-      [field]: { ...base[field], value, basis: 'document', excerpt: null },
+      [field]: {
+        ...(base[field] as { value: string | null; basis: string; excerpt?: string | null }),
+        value,
+        basis: 'document',
+        excerpt: null,
+      },
     };
   }
 

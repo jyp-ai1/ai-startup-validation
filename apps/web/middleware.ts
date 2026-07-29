@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { updateSession } from './lib/auth/update-session';
 import { resolveLegacyRedirect } from './lib/legacy-route-redirects';
+import { DEMO_MODE_VALUE, WORKSPACE_MODE_COOKIE } from './lib/auth/server-auth';
 import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
@@ -25,6 +26,19 @@ export default async function middleware(request: NextRequest) {
     intlResponse instanceof NextResponse ? intlResponse : NextResponse.next({ request });
 
   response = await updateSession(request, response);
+
+  const demoParam = request.nextUrl.searchParams.get('demo');
+  if (
+    request.nextUrl.pathname === '/workspace' &&
+    demoParam &&
+    (demoParam === '1' || demoParam === 'guided' || demoParam === 'readonly')
+  ) {
+    response.cookies.set(WORKSPACE_MODE_COOKIE, DEMO_MODE_VALUE, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: 'lax',
+    });
+  }
 
   const projectId = request.nextUrl.searchParams.get('project');
 

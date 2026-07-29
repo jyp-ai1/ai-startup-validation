@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
@@ -8,13 +9,19 @@ import {
   listMyProjectsForPage,
   promoteDemoProject,
 } from '@/features/my-projects/actions/my-project-actions';
-import { getOwnedProject } from '@/features/projects/services/project-service';
+import { listDemoProjects, getOwnedProject } from '@/features/projects/services/project-service';
 import { readJourneyPersona } from '@/features/workflow-journey/lib/v2-journey-cookies';
 import { WorkspaceProjectCanvas } from '@/features/workspace/components/workspace-project-canvas';
 import { WorkspaceAuthCompleteTracker } from '@/features/workspace/components/workspace-auth-complete-tracker';
 import { WorkspaceJourneyTracker } from '@/features/workspace/components/journey-page-tracker';
 import { buildAuthenticatedJourneyUrl } from '@/lib/auth/journey-routes';
 import { logJourneyRedirect } from '@/lib/auth/journey-redirect-audit';
+import {
+  DEMO_GUEST_USER,
+  getServerAuthUser,
+  isDemoQueryParam,
+  isDemoWorkspace,
+} from '@/lib/auth/server-auth';
 import { isSupabaseConfigured } from '@repo/db';
 
 export const dynamic = 'force-dynamic';
@@ -42,6 +49,32 @@ type WorkspaceHomePageProps = {
 /** Protected Workspace — canonical entry: /workspace?project= */
 export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomePageProps) {
   const params = await searchParams;
+  const demoCookie = await isDemoWorkspace();
+  const demoEntry = demoCookie || isDemoQueryParam(params.demo);
+
+  if (demoEntry) {
+    const cookieStore = await cookies();
+    let projectId = params.project ?? cookieStore.get('ACTIVE_PROJECT_ID')?.value;
+    if (!projectId) {
+      const demos = await listDemoProjects();
+      projectId = demos[0]?.id ?? 'demo';
+    }
+    const user = (await getServerAuthUser()) ?? DEMO_GUEST_USER;
+    const demoMode =
+      params.demo === 'readonly'
+        ? 'demo-readonly'
+        : params.demo === 'guided' || params.demo === '1' || demoCookie
+          ? 'demo-guided'
+          : 'demo-guided';
+
+    return (
+      <>
+        <WorkspaceJourneyTracker />
+        <WorkspaceProjectCanvas projectId={projectId} user={user} demoMode={demoMode} />
+      </>
+    );
+  }
+
   const { user, projects, dbReady } = await listMyProjectsForPage();
   const promoteDemo = params.from === 'demo' && params.promote === '1';
   const authComplete = params.auth === 'complete';
