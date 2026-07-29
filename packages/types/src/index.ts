@@ -31,6 +31,15 @@ export {
   MAX_LIMIT,
 } from './pagination';
 
+export type {
+  EntityBasis,
+  DomainEntityField,
+  BusinessModel,
+  LaunchLensDomainContext,
+  DomainTrustIssue,
+  DomainTrustReport,
+} from './domain/launchlens-domain';
+
 export type { User, UserProfile, CreateUserInput, UpdateUserInput } from './user';
 
 export type { Role } from './role';

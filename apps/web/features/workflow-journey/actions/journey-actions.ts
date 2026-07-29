@@ -59,12 +59,12 @@ export async function selectGoalAction(formData: FormData) {
 }
 
 export async function confirmWorkflowAction() {
-  redirect('/validation');
+  redirect('/workspace');
 }
 
 export async function startWorkspaceAction(demoMode: boolean) {
   if (demoMode) {
-    redirect('/validation?demo=guided');
+    redirect('/workspace?demo=guided');
   }
   redirect('/auth/login?next=/workspace');
 }

@@ -23,7 +23,7 @@ export function V2AiConfidenceBadge({
   confidence,
   level,
   className,
-  showPercent = true,
+  showPercent = false,
 }: V2AiConfidenceBadgeProps) {
   const t = useTranslations('workflow.v2.strategyWorkspace.ia.thinkingUx.confidence');
 

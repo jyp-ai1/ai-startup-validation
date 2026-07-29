@@ -14,7 +14,8 @@
     "./organization": "./src/organization.ts",
     "./project": "./src/project.ts",
     "./validation": "./src/validation/index.ts",
-    "./evidence-engine": "./src/evidence-engine.ts"
+    "./evidence-engine": "./src/evidence-engine.ts",
+    "./domain/launchlens-domain": "./src/domain/launchlens-domain.ts"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",

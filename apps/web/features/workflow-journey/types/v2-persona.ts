@@ -27,9 +27,9 @@ export const PERSONA_TO_GOAL: Record<V2PersonaId, WorkflowGoalId> = {
 /** Personas that skip validation and go straight to workspace list. */
 export const PERSONA_SKIP_VALIDATION: ReadonlySet<V2PersonaId> = new Set([]);
 
-export function getPersonaNextRoute(personaId: V2PersonaId): string {
-  if (PERSONA_SKIP_VALIDATION.has(personaId)) {
-    return '/workspace';
+export function getPersonaNextRoute(_personaId: V2PersonaId, projectId?: string): string {
+  if (projectId) {
+    return `/workspace?project=${encodeURIComponent(projectId)}`;
   }
-  return '/workflow';
+  return '/workspace';
 }

@@ -39,10 +39,11 @@ export const EVIDENCE_SOURCE_BADGES: Record<(typeof EVIDENCE_SOURCE_IDS)[number]
   yc: 'startup',
 };
 
+import { sanitizeDocumentLabel } from '@/lib/ai/ai-response-sanitizer';
+
 export function buildDocumentProfile(fileName: string): DocumentProfile {
-  const base = fileName.replace(/\.[^.]+$/, '') || '사업계획서';
   return {
-    fileName: base,
+    fileName: sanitizeDocumentLabel(fileName),
     pageCount: 18,
     strategyCount: 12,
     bmCount: 4,

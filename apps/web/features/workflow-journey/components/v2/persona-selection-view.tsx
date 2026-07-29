@@ -17,9 +17,14 @@ import { V2JourneyStack } from './v2-journey-stack';
 type PersonaSelectionViewProps = {
   demoMode?: boolean;
   user?: AppAuthUser | null;
+  projectId?: string;
 };
 
-export function PersonaSelectionView({ demoMode: _demoMode = false, user = null }: PersonaSelectionViewProps) {
+export function PersonaSelectionView({
+  demoMode: _demoMode = false,
+  user = null,
+  projectId,
+}: PersonaSelectionViewProps) {
   const t = useTranslations('workflow.v2.persona');
   const router = useRouter();
   const { locked, lock, resetLock } = useSubmitLock(12_000);
@@ -35,9 +40,12 @@ export function PersonaSelectionView({ demoMode: _demoMode = false, user = null 
         resetLock();
         return;
       }
-      router.push(result.next);
+      const next = projectId
+        ? `/workspace?project=${encodeURIComponent(projectId)}`
+        : '/workspace';
+      router.push(next);
     },
-    [lock, locked, resetLock, router],
+    [lock, locked, projectId, resetLock, router],
   );
 
   return (

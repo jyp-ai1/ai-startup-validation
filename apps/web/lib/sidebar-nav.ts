@@ -23,7 +23,7 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
         key: 'workspaceCanvas',
         icon: LayoutDashboard,
         labelKey: 'nav.validation',
-        globalHref: '/validation',
+        globalHref: '/workspace',
       },
       {
         key: 'projects',
@@ -55,6 +55,5 @@ export function isSidebarItemActive(pathname: string, href: string): boolean {
   if (href !== '/workspace' && pathname.startsWith(`${href}/`)) return true;
   if (href === '/workspace' && (pathname === '/workspace' || pathname.startsWith('/workspace/')))
     return true;
-  if (href === '/validation' && pathname.startsWith('/validation')) return true;
   return false;
 }

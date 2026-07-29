@@ -5,7 +5,7 @@ type JourneyRedirectOptions = {
   promoted?: boolean;
 };
 
-/** Post-login journey entry — matches Demo UX (/who → /workflow → /validation). */
+/** Canonical authenticated project URL — always /workspace. */
 export function buildAuthenticatedJourneyUrl({
   projectId,
   welcome = false,
@@ -17,17 +17,26 @@ export function buildAuthenticatedJourneyUrl({
   if (welcome) qs.set('welcome', '1');
   if (authComplete) qs.set('auth', 'complete');
   if (promoted) qs.set('promoted', '1');
-
-  const query = qs.toString();
-  const suffix = query ? `?${query}` : '';
-
-  if (welcome || promoted) {
-    return `/who${suffix}`;
-  }
-
-  return `/validation${suffix}`;
+  return `/workspace?${qs.toString()}`;
 }
 
 export function buildProjectCanvasUrl(projectId: string): string {
-  return `/validation?project=${encodeURIComponent(projectId)}`;
+  return `/workspace?project=${encodeURIComponent(projectId)}`;
+}
+
+export function buildWorkspaceProjectQuery(params: {
+  project?: string;
+  welcome?: string;
+  promoted?: string;
+  auth?: string;
+  demo?: string;
+}): string {
+  const qs = new URLSearchParams();
+  if (params.project) qs.set('project', params.project);
+  if (params.welcome === '1') qs.set('welcome', '1');
+  if (params.promoted === '1') qs.set('promoted', '1');
+  if (params.auth === 'complete') qs.set('auth', 'complete');
+  if (params.demo) qs.set('demo', params.demo);
+  const query = qs.toString();
+  return query ? `?${query}` : '';
 }

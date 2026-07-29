@@ -5594,7 +5594,29 @@
                   "gtm": "GTM"
                 },
                 "qualityLabel": "Strategy completeness",
-                "cta": "Continue"
+                "basisLabel": "Document-backed fields",
+                "trustConfirmLead": "I've read your business plan first.",
+                "trustConfirmBody": "Customer definition still looks mixed up. We need to separate you (founder) from your actual customers.",
+                "entityBasis": {
+                  "title": "Domain understanding (by basis)",
+                  "unknown": "Needs confirmation",
+                  "confirmCustomer": "Founder ≠ Customer: please confirm who actually uses the service. I won't guess — pausing here.",
+                  "entities": {
+                    "founder": "Founder",
+                    "business": "Business",
+                    "customer": "Customer",
+                    "market": "Market",
+                    "competitor": "Competitor"
+                  },
+                  "basis": {
+                    "document": "✔ Document",
+                    "inferred": "⚠ Inferred",
+                    "unknown": "? Unknown",
+                    "needs_confirmation": "⚠ Needs confirmation"
+                  }
+                },
+                "cta": "Continue",
+                "confirmCustomerCta": "Confirm customer definition first"
               },
               "firstQuestion": {
                 "gapReviewTitle": "Document analysis complete",
@@ -6443,6 +6465,81 @@
         "home": "Home",
         "workspace": "Workspace",
         "demo": "Demo"
+      },
+      "workspaceShell": {
+        "strip": {
+          "label": "AI PM"
+        },
+        "sidebar": {
+          "label": "Project progress",
+          "summaryLabel": "Summary",
+          "progressLabel": "Progress",
+          "progress": "{percent}% complete",
+          "aiUpdated": "AI Updated",
+          "lastUpdated": "{minutes} min ago",
+          "stages": {
+            "founder": "● Founder",
+            "business": "● Business",
+            "customer": "● Customer",
+            "market": "○ Market",
+            "competitor": "○ Competitor"
+          }
+        },
+        "sections": {
+          "overview": "Overview",
+          "insights": "Insights",
+          "recommendations": "Recommendations",
+          "actions": "Actions"
+        },
+        "nodes": {
+          "founder": "Founder",
+          "business": "Business",
+          "customer": "Customer",
+          "market": "Market",
+          "competitor": "Competitor"
+        },
+        "overview": {
+          "empty": "Complete a review with AI PM to generate your Overview.",
+          "scoreLabel": "Business Score",
+          "summaryLabel": "Summary",
+          "summaryBody": "Differentiation in B2B SaaS is clear. Customer validation data is still thin, so confidence is limited. Next: target customer interviews.",
+          "nextStepLabel": "Recommended Next Step",
+          "nextStepAction": "Run 3 customer interviews",
+          "nextStepCta": "Start",
+          "riskLabel": "Risk",
+          "riskBody": "Two competitors share similar positioning — refine differentiation messaging.",
+          "recommendationLabel": "Recommendation",
+          "recommendationBody": "Consider narrowing initial target from startup PM to Series A CEOs."
+        },
+        "aiPmMain": {
+          "label": "AI PM",
+          "reviewingTitle": "AI PM is reviewing your project",
+          "reviewingHint": "Analyzing by Founder · Business · Customer.",
+          "reviewCta": "Start AI PM review"
+        },
+        "domainFields": {
+          "title": "Domain (Founder → Business → Customer → Market → Competitor)",
+          "fields": {
+            "founder": "Founder",
+            "business": "Business",
+            "customer": "Customer",
+            "market": "Market",
+            "competitor": "Competitor"
+          },
+          "placeholders": {
+            "founder": "e.g. aspiring founder, CEO",
+            "business": "e.g. TasteHit Co. — B2C service",
+            "customer": "e.g. general consumers (incl. foreigners)",
+            "market": "e.g. B2C travel / taste curation market",
+            "competitor": "e.g. similar curation apps"
+          },
+          "basis": {
+            "document": "✔ Document",
+            "inferred": "⚠ Inferred",
+            "unknown": "? Unknown",
+            "needs_confirmation": "⚠ Needs confirmation"
+          }
+        }
       },
       "journeyMiniNav": {
         "label": "Journey sections",

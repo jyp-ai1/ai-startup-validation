@@ -1,29 +1,7 @@
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
+import { redirect } from 'next/navigation';
 
-import { JourneyPageSkeleton } from '@/features/workflow-journey/components/journey-page-skeleton';
-import { WhoJourneyTracker } from '@/features/workspace/components/journey-page-tracker';
-import { WorkspaceAuthCompleteTracker } from '@/features/workspace/components/workspace-auth-complete-tracker';
-import { getServerAuthUser } from '@/lib/auth/server-auth';
-import { buildPageMetadata } from '@/lib/site/page-metadata';
-
-const PersonaSelectionView = dynamic(
-  () =>
-    import('@/features/workflow-journey/components/v2/persona-selection-view').then(
-      (m) => m.PersonaSelectionView,
-    ),
-  { loading: () => <JourneyPageSkeleton phase="goal" /> },
-);
-
-export async function generateMetadata(): Promise<Metadata> {
-  return buildPageMetadata({
-    titleKey: 'title',
-    descriptionKey: 'lead',
-    namespace: 'workflow.v2.persona',
-    path: '/who',
-  });
-}
+import { readJourneyPersona } from '@/features/workflow-journey/lib/v2-journey-cookies';
+import { buildWorkspaceProjectQuery } from '@/lib/auth/journey-routes';
 
 type WhoPageProps = {
   searchParams: Promise<{
@@ -35,26 +13,15 @@ type WhoPageProps = {
   }>;
 };
 
+/** Legacy /who — persona gate lives on /workspace?welcome=1 */
 export default async function WhoPage({ searchParams }: WhoPageProps) {
   const params = await searchParams;
-  const user = await getServerAuthUser();
-  const authComplete = params.auth === 'complete';
+  const persona = await readJourneyPersona();
+  const destination = `/workspace${buildWorkspaceProjectQuery(params)}`;
 
-  return (
-    <>
-      <Suspense fallback={null}>
-        <WhoJourneyTracker projectId={params.project} />
-      </Suspense>
-      {authComplete ? (
-        <Suspense fallback={null}>
-          <WorkspaceAuthCompleteTracker
-            screen="/who"
-            projectId={params.project}
-            promoted={params.promoted === '1'}
-          />
-        </Suspense>
-      ) : null}
-      <PersonaSelectionView demoMode={params.demo === '1'} user={user} />
-    </>
-  );
+  if (persona && params.project) {
+    redirect(destination);
+  }
+
+  redirect(destination);
 }

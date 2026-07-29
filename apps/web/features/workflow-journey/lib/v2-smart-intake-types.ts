@@ -1,3 +1,8 @@
+import type {
+  DomainTrustReport,
+  LaunchLensDomainContext,
+} from '@repo/types/domain/launchlens-domain';
+
 export type SmartIntakeImportSource = 'paste' | 'txt' | 'md' | 'pdf' | 'docx';
 
 export type SmartIntakeFieldId = 'problem' | 'customer' | 'market' | 'bm' | 'competition';
@@ -26,6 +31,8 @@ export type SmartIntakeAnalysis = {
   missing: SmartIntakeMissingId[];
   completenessScore: number;
   completenessStars: number;
+  entities: LaunchLensDomainContext;
+  domainTrust: DomainTrustReport;
 };
 
 export type SmartIntakeWorkingStepId =

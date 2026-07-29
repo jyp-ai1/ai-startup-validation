@@ -1,8 +1,7 @@
-/** Legacy route redirects — Sprint 5.1.1 Epic K. Do not add features here. */
-
+/** Legacy route redirects — canonical /workspace?project= */
 export function legacyProjectCanvasRedirect(projectId?: string | null, extra?: Record<string, string>): string {
   const qs = new URLSearchParams(extra ?? {});
   if (projectId) qs.set('project', projectId);
   const query = qs.toString();
-  return `/validation${query ? `?${query}` : ''}`;
+  return `/workspace${query ? `?${query}` : ''}`;
 }

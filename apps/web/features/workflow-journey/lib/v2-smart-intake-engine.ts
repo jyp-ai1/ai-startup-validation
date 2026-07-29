@@ -1,4 +1,13 @@
-import type { DemoProjectDraft } from './v2-demo-project-store';
+import type {
+  LaunchLensDomainContext,
+} from '@repo/types/domain/launchlens-domain';
+
+import { evaluateDomainTrust } from './domain/domain-trust-rules';
+import {
+  extractDocumentEntities,
+  mapEntitiesToLegacyCustomer,
+  mapEntitiesToLegacyIdea,
+} from './domain/extract-document-entities';
 import type {
   SmartIntakeAnalysis,
   SmartIntakeFieldId,
@@ -6,9 +15,24 @@ import type {
   SmartIntakeMissingId,
   SmartIntakePricingChoice,
 } from './v2-smart-intake-types';
+import type { DemoProjectDraft } from './v2-demo-project-store';
 
-function firstLine(text: string): string {
-  return text.split('\n').find((l) => l.trim().length > 0)?.trim() ?? '';
+function isBinaryPlaceholder(text: string, source: SmartIntakeImportSource): boolean {
+  if (source === 'pdf') return text.includes('PDF 문서를 불러왔습니다');
+  if (source === 'docx') return text.includes('Word 문서를 불러왔습니다');
+  return false;
+}
+
+function createUnknownEntities(): LaunchLensDomainContext {
+  const unknown = { value: null, basis: 'unknown' as const };
+  return {
+    founder: unknown,
+    business: { ...unknown, model: null, name: null },
+    customer: unknown,
+    product: unknown,
+    market: unknown,
+    competitor: unknown,
+  };
 }
 
 function findSection(text: string, keywords: string[]): string {
@@ -35,7 +59,13 @@ export function analyzeSmartIntakeDocument(
   const text = raw.trim();
   const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
 
+  const entities = isBinaryPlaceholder(text, source)
+    ? createUnknownEntities()
+    : extractDocumentEntities(text);
+  const domainTrust = evaluateDomainTrust(entities);
+
   const serviceName =
+    mapEntitiesToLegacyIdea(entities, text) ||
     lines[0]?.replace(/^[#\-\*]\s*/, '').slice(0, 40) ||
     findSection(text, ['서비스', 'service', '프로젝트', 'product']) ||
     '내 프로젝트';
@@ -48,35 +78,41 @@ export function analyzeSmartIntakeDocument(
 
   const problem =
     findSection(text, ['문제', 'problem', 'pain', '불편', '과제']) ||
-    (text.length > 20 ? text.slice(0, 160) : '');
+    (text.length > 20 && !isBinaryPlaceholder(text, source) ? text.slice(0, 160) : '');
 
-  const customer =
-    findSection(text, ['고객', 'customer', 'target', '사용자', 'user']) ||
-    (hasKeyword(text, ['창업', 'startup', 'pm', '대표']) ? '예비창업자 · 스타트업 대표' : '');
+  const customer = mapEntitiesToLegacyCustomer(entities);
 
   const market =
-    findSection(text, ['시장', 'market', 'tam', 'sam']) ||
-    (hasKeyword(text, ['saas', 'b2b', 'b2c', '플랫폼']) ? '성장 중인 SaaS 시장' : '');
+    (entities.market.value ??
+      findSection(text, ['시장', 'market', 'tam', 'sam'])) ||
+    (entities.business.model === 'B2C' ? 'B2C 시장' : '');
 
   const bm =
     findSection(text, ['bm', '비즈니스', 'business model', '수익', 'pricing', '가격']) ||
-    (hasKeyword(text, ['구독', 'subscription']) ? '구독 모델 검토 중' : '');
+    (entities.business.model ? `${entities.business.model} 모델` : '');
 
   const competition =
-    findSection(text, ['경쟁', 'competitor', 'competition', '대안']) ||
-    (hasKeyword(text, ['cursor', 'notion', 'chatgpt']) ? 'AI 도구 · 생산성 도구 경쟁' : '');
+    (entities.competitor.value ??
+      findSection(text, ['경쟁', 'competitor', 'competition', '대안'])) || '';
 
   const extracted: Record<SmartIntakeFieldId, boolean> = {
     problem: problem.length >= 8,
-    customer: customer.length >= 4,
+    customer: customer.length >= 4 && entities.customer.basis === 'document',
     market: market.length >= 4,
     bm: bm.length >= 4,
     competition: competition.length >= 4,
   };
 
-  const filledCount = Object.values(extracted).filter(Boolean).length;
-  const completenessScore = Math.min(95, 52 + filledCount * 9 + (text.length > 120 ? 8 : 0));
-  const completenessStars = completenessScore >= 85 ? 5 : completenessScore >= 75 ? 4 : 3;
+  const documentBackedCount = [
+    entities.founder.basis === 'document',
+    entities.business.basis === 'document',
+    entities.customer.basis === 'document',
+    entities.market.basis === 'document',
+    entities.competitor.basis === 'document',
+  ].filter(Boolean).length;
+
+  const completenessScore = Math.min(95, 40 + documentBackedCount * 11);
+  const completenessStars = documentBackedCount >= 4 ? 5 : documentBackedCount >= 3 ? 4 : 3;
 
   const missing: SmartIntakeMissingId[] = [];
   if (!hasKeyword(text, ['가격', 'pricing', '구독', 'subscription', '무료', 'free'])) {
@@ -88,19 +124,24 @@ export function analyzeSmartIntakeDocument(
   if (!hasKeyword(text, ['gtm', 'go-to-market', '출시', 'launch'])) {
     missing.push('gtm');
   }
+  if (domainTrust.mustConfirmCustomer) {
+    missing.push('customerInterview');
+  }
 
   return {
     serviceName,
     tagline,
     problem: problem || tagline,
-    customer: customer || '예비창업자',
-    market: market || '시장 정보 보완 필요',
-    bm: bm || 'BM 정보 보완 필요',
-    competition: competition || '경쟁 정보 보완 필요',
+    customer,
+    market: market || '',
+    bm: bm || '',
+    competition: competition || '',
     extracted,
     missing,
     completenessScore,
     completenessStars,
+    entities,
+    domainTrust,
   };
 }
 
@@ -134,11 +175,11 @@ export async function readSmartIntakeFile(
   const fileName = file.name;
   const ext = fileName.split('.').pop()?.toLowerCase() ?? 'txt';
   if (ext === 'pdf') {
-    const demoText = `[${fileName}]\n\nPDF 문서를 불러왔습니다. AI PM이 문서 구조를 분석합니다.`;
+    const demoText = 'PDF 사업계획서를 불러왔습니다. AI PM이 문서 구조를 분석합니다.';
     return { text: demoText, source: 'pdf', fileName };
   }
   if (ext === 'docx') {
-    const demoText = `[${fileName}]\n\nWord 문서를 불러왔습니다. AI PM이 핵심 섹션을 추출합니다.`;
+    const demoText = 'Word 사업계획서를 불러왔습니다. AI PM이 핵심 섹션을 추출합니다.';
     return { text: demoText, source: 'docx', fileName };
   }
   if (ext === 'md' || ext === 'markdown') {

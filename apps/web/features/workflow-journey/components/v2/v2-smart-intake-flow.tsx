@@ -44,7 +44,9 @@ import {
   buildSmartIntakeInvestigationContext,
   mapWorkingStepsToLiveProgress,
 } from '../../lib/v2-investigation-engine';
+import { buildDocumentReviewIntro } from '@/lib/ai/ai-response-sanitizer';
 import { V2DocumentCitationBlock, V2DocumentProfileSummary } from './v2-document-citation-block';
+import { V2DomainEntityBasisPanel } from './v2-domain-entity-basis-panel';
 import { V2EvidenceMetadataCard } from './v2-evidence-metadata-card';
 import { V2InvestigationDiscoveries } from './v2-investigation-discoveries';
 import { V2InvestigationLog } from './v2-investigation-log';
@@ -344,13 +346,23 @@ export function V2SmartIntakeFlow({
 
         <AiPmBubble>
           <p className="font-medium">
-            {reasonChain.documentProfile
-              ? tChain('documentIntro.withDoc', { name: reasonChain.documentProfile.fileName })
-              : t('understanding.lead1')}
+            {analysis.domainTrust.mustConfirmCustomer
+              ? t('understanding.trustConfirmLead')
+              : reasonChain.documentProfile
+                ? buildDocumentReviewIntro()
+                : t('understanding.lead1')}
           </p>
-          <p>{t('understanding.lead2')}</p>
-          <p className="mt-2 text-muted-foreground">{tChain('terminology.targetUsers')}</p>
+          <p>
+            {analysis.domainTrust.mustConfirmCustomer
+              ? t('understanding.trustConfirmBody')
+              : t('understanding.lead2')}
+          </p>
+          {!analysis.domainTrust.mustConfirmCustomer ? (
+            <p className="mt-2 text-muted-foreground">{tChain('terminology.targetUsers')}</p>
+          ) : null}
         </AiPmBubble>
+
+        <V2DomainEntityBasisPanel entities={analysis.entities} trust={analysis.domainTrust} />
 
         <div className="rounded-xl border border-border/40 bg-muted/5 p-4">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
@@ -385,15 +397,14 @@ export function V2SmartIntakeFlow({
         </div>
 
         <div className="flex items-center justify-between rounded-xl border border-primary/25 bg-primary/[0.04] px-4 py-3">
-          <span className="text-sm text-muted-foreground">{t('understanding.qualityLabel')}</span>
-          <div className="flex items-center gap-2">
-            <StarRating count={analysis.completenessStars} />
-            <span className="text-sm font-semibold">{analysis.completenessScore}%</span>
-          </div>
+          <span className="text-sm text-muted-foreground">{t('understanding.basisLabel')}</span>
+          <StarRating count={analysis.completenessStars} />
         </div>
 
         <Button type="button" className="w-full rounded-lg" onClick={onAdvance}>
-          {t('understanding.cta')}
+          {analysis.domainTrust.mustConfirmCustomer
+            ? t('understanding.confirmCustomerCta')
+            : t('understanding.cta')}
         </Button>
       </div>
     );

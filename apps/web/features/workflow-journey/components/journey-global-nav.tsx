@@ -15,7 +15,7 @@ type JourneyGlobalNavProps = {
 
 const LINKS = [
   { href: '/', key: 'home' as const },
-  { href: '/validation', key: 'workspace' as const },
+  { href: '/workspace', key: 'workspace' as const },
   { href: '/demo/enter', key: 'demo' as const },
 ] as const;
 
@@ -58,7 +58,7 @@ export function JourneyGlobalNav({ user = null }: JourneyGlobalNavProps) {
         </Button>
       ) : (
         <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs sm:text-sm" asChild>
-          <Link href="/auth/login?next=/validation">{tAuth('signIn')}</Link>
+          <Link href="/auth/login?next=/workspace">{tAuth('signIn')}</Link>
         </Button>
       )}
     </nav>

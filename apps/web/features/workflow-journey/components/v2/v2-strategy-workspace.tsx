@@ -27,7 +27,16 @@ import {
 import { type WorkflowStepId } from '../../lib/v2-workflow-steps';
 import { saveReviewSnapshot } from '../../lib/v2-review-dirty-state';
 import { JourneyLayout } from '../journey-layout';
+import {
+  ProjectWorkspaceShell,
+  WorkspaceAiPmMain,
+  WorkspaceProgressiveOverview,
+  buildWorkspaceSidebarSnapshot,
+  type WorkspaceMainView,
+  type WorkspaceNavNodeId,
+} from '../project-workspace-shell';
 import { V2DecisionMemoryDetail } from './v2-decision-memory-detail';
+import { sanitizeAiPmResponse, sanitizeDocumentLabel, sanitizeAiPmParagraphs } from '@/lib/ai/ai-response-sanitizer';
 import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { V2DecisionSavePrompt } from './v2-decision-save-prompt';
 import { V2DemoReadonlyBanner } from './v2-demo-readonly-banner';
@@ -37,8 +46,17 @@ import {
 } from './v2-guided-demo-coach';
 import { createMeetingNoteFromReview } from '../../lib/v2-ai-pm-meeting-store';
 import { V2DemoExperience } from './v2-demo-experience';
-import { V2JourneyMiniNav } from './v2-journey-mini-nav';
-import { V2ThinkingWorkspaceMain } from './v2-thinking-workspace-main';
+import {
+  buildAiPmPrimaryMessage,
+  canProceedWorkspaceReview,
+  emptyWorkspaceDomain,
+  loadWorkspaceDomain,
+  saveWorkspaceDomain,
+  validationToWorkspaceDomain,
+  workspaceDomainToValidation,
+  type WorkspaceDomainEvidence,
+  type WorkspaceDomainFieldId,
+} from '../../lib/workspace-ai-pm-messages';
 
 type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
 
@@ -108,6 +126,9 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
   const [dirtyFieldLabel, setDirtyFieldLabel] = useState<string | null>(null);
   const [guidedStarted, setGuidedStarted] = useState(false);
   const [guidedCustomerChanged, setGuidedCustomerChanged] = useState(false);
+  const [mainView, setMainView] = useState<WorkspaceMainView>('ai-pm');
+  const [activeNavNodeId, setActiveNavNodeId] = useState<WorkspaceNavNodeId | null>('founder');
+  const [domain, setDomain] = useState<WorkspaceDomainEvidence>(() => emptyWorkspaceDomain());
 
   const refreshMemory = useCallback(() => {
     setMemoryEntries(loadDecisionMemory());
@@ -139,6 +160,10 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
 
     refreshMemory();
     const saved = loadV2Validation();
+    const storedDomain = loadWorkspaceDomain();
+    if (storedDomain) {
+      setDomain(storedDomain);
+    }
     if (!saved) return;
     setIdea(saved.evidence.idea);
     setOptional({
@@ -147,17 +172,25 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
       mvp: saved.evidence.mvp ?? '',
       pricing: saved.evidence.pricing ?? '',
     });
+    if (!storedDomain) {
+      setDomain(validationToWorkspaceDomain(saved.evidence));
+    }
   }, [isDemoReadonly, isDemoGuided, refreshMemory]);
 
   const evidence = useMemo(
     (): V2ValidationEvidence => ({
-      idea: idea.trim(),
+      idea: domain.business.trim() || idea.trim(),
       problem: optional.problem.trim() || undefined,
-      customer: optional.customer.trim() || undefined,
+      customer: domain.customer.trim() || optional.customer.trim() || undefined,
       mvp: optional.mvp.trim() || undefined,
       pricing: optional.pricing.trim() || undefined,
     }),
-    [idea, optional],
+    [domain, idea, optional],
+  );
+
+  const aiPmMessage = useMemo(
+    () => buildAiPmPrimaryMessage(domain, reviewCount),
+    [domain, reviewCount],
   );
 
   const hasIdea = isEvidenceFieldFilled('idea', evidence);
@@ -218,6 +251,29 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
     saveV2Validation(next);
   }, [isDemoNoPersist]);
 
+  const handleDomainChange = (field: WorkspaceDomainFieldId, value: string) => {
+    if (isDemoReadonly) return;
+    setDomain((prev) => {
+      const next = { ...prev, [field]: value };
+      saveWorkspaceDomain(next);
+      const mapped = workspaceDomainToValidation(next);
+      if (field === 'business') {
+        setIdea(mapped.idea);
+      }
+      if (field === 'customer') {
+        setOptional((o) => ({ ...o, customer: value }));
+      }
+      persist({
+        ...evidence,
+        idea: mapped.idea,
+        customer: mapped.customer,
+      });
+      if (field === 'business') markDirty('idea');
+      if (field === 'customer') markDirty('customer');
+      return next;
+    });
+  };
+
   const markDirty = (field: 'idea' | V2EvidenceField) => {
     if (reviewCount < 1) return;
     setDirtyHighlightField(field);
@@ -262,7 +318,7 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
   };
 
   const runReview = useCallback(() => {
-    if (isDemoReadonly || !hasIdea) return;
+    if (isDemoReadonly || !canProceedWorkspaceReview(domain)) return;
     persist(evidence);
     setPhase('reviewing');
     setReviewCount((c) => c + 1);
@@ -280,7 +336,7 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
       createMeetingNoteFromReview(reviewCount + 1);
       window.setTimeout(() => setPhase('followUp'), 400);
     }, REVIEW_MS);
-  }, [evidence, hasIdea, isDemoReadonly, persist, reviewCount]);
+  }, [domain, evidence, isDemoReadonly, persist, reviewCount]);
 
   const handleGoToStep = (step: WorkflowStepId) => {
     setActiveMemoryId(null);
@@ -317,7 +373,7 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
     ? 'AI SaaS 검토'
     : isDemoGuided
       ? '데모 체험'
-      : deriveProjectName(idea) || deriveProjectName(evidence.idea);
+      : domain.business.trim() || deriveProjectName(idea) || deriveProjectName(evidence.idea);
 
   const guidedDemoStep: GuidedDemoStep | null = isDemoGuided
     ? resolveGuidedDemoStep({
@@ -341,52 +397,74 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
     }
   };
 
-  return (
-    <JourneyLayout phase="workflow" width="workspace" versionLabel="V2" user={user}>
-      <div className="mx-auto flex max-w-6xl gap-8">
-        <div className="min-w-0 flex-1 max-w-2xl">
-        {isDemoReadonly ? <V2DemoReadonlyBanner /> : null}
-        {isDemoGuided ? (
-          <V2DemoExperience className="py-4 sm:py-6" />
-        ) : activeMemory ? (
-          <section className={cn(PANEL, 'animate-in fade-in duration-300')}>
-            <V2DecisionMemoryDetail entry={activeMemory} />
-          </section>
-        ) : (
-          <V2ThinkingWorkspaceMain
-              activeStep={activeStep}
-              evidence={evidence}
-              projectName={projectName}
-              lastReviewAt={lastReviewAt}
-              reviewCount={reviewCount}
-              phase={phase}
-              hasIdea={hasIdea}
-              investigationViewed={investigationViewed}
-              readOnly={isDemoReadonly}
-              dirtyHighlightField={dirtyHighlightField}
-              onIdeaChange={handleIdeaChange}
-              onFieldConfirm={handleFieldConfirm}
-              onFieldDelete={handleFieldDelete}
-              onGoToStep={handleGoToStep}
-              onReview={runReview}
-              onInvestigationViewed={() => setInvestigationViewed(true)}
-              guidedDemoStep={guidedDemoStep === 'complete' ? null : guidedDemoStep}
-              onGuidedDemoAdvance={isDemoGuided ? handleGuidedAdvance : undefined}
-            />
-          )}
+  const sidebarSnapshot = useMemo(
+    () => buildWorkspaceSidebarSnapshot(domain, reviewCount),
+    [domain, reviewCount],
+  );
 
-          {showSavePrompt && memoryDraft ? (
-            <V2DecisionSavePrompt
-              draft={memoryDraft}
-              evidenceLabels={evidenceLabelMap}
-              reasonLabels={reasonLabelMap}
-              onSave={handleSaveMemory}
-              onLater={handleLaterMemory}
-            />
-          ) : null}
+  const stripMessage = sanitizeAiPmResponse(aiPmMessage.paragraphs.join(' '));
+
+  const useLegacyDemoLayout = isDemoGuided;
+
+  const workspaceMain = (
+    <>
+      {isDemoReadonly ? <V2DemoReadonlyBanner /> : null}
+      {mainView === 'overview' ? (
+        <WorkspaceProgressiveOverview
+          businessScore={sidebarSnapshot.businessScore}
+          reviewCount={reviewCount}
+        />
+      ) : activeMemory ? (
+        <section className={cn(PANEL, 'animate-in fade-in duration-300')}>
+          <V2DecisionMemoryDetail entry={activeMemory} />
+        </section>
+      ) : (
+        <WorkspaceAiPmMain
+          domain={domain}
+          reviewCount={reviewCount}
+          businessScore={sidebarSnapshot.businessScore}
+          phase={phase}
+          readOnly={isDemoReadonly}
+          onDomainChange={handleDomainChange}
+          onReview={runReview}
+        />
+      )}
+
+      {showSavePrompt && memoryDraft ? (
+        <V2DecisionSavePrompt
+          draft={memoryDraft}
+          evidenceLabels={evidenceLabelMap}
+          reasonLabels={reasonLabelMap}
+          onSave={handleSaveMemory}
+          onLater={handleLaterMemory}
+        />
+      ) : null}
+    </>
+  );
+
+  if (useLegacyDemoLayout) {
+    return (
+      <JourneyLayout phase="workflow" width="workspace" versionLabel="V2" user={user}>
+        <div className="mx-auto max-w-2xl">
+          <V2DemoExperience className="py-4 sm:py-6" />
         </div>
-        {!isDemoGuided && !isDemoReadonly ? <V2JourneyMiniNav /> : null}
-      </div>
-    </JourneyLayout>
+      </JourneyLayout>
+    );
+  }
+
+  return (
+    <ProjectWorkspaceShell
+      projectName={projectName}
+      user={user}
+      sidebar={sidebarSnapshot}
+      mainView={mainView}
+      activeNodeId={activeNavNodeId}
+      stripMessage={stripMessage}
+      onMainViewChange={setMainView}
+      onSelectNode={setActiveNavNodeId}
+      onSelectAiPm={() => setMainView('ai-pm')}
+    >
+      {workspaceMain}
+    </ProjectWorkspaceShell>
   );
 }

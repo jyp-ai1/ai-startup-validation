@@ -56,117 +56,48 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      {
-        source: '/dashboard',
-        destination: '/validation',
-        permanent: false,
-      },
-      {
-        source: '/decision-center',
-        destination: '/validation',
-        permanent: false,
-      },
+      /** Sprint Product Trust — canonical entry /workspace (CPO sign-off) */
+      { source: '/validation', destination: '/workspace', permanent: false },
+      { source: '/who', destination: '/workspace', permanent: false },
+      { source: '/workflow', destination: '/workspace', permanent: false },
+      { source: '/dashboard', destination: '/workspace', permanent: false },
+      { source: '/decision-center', destination: '/workspace', permanent: false },
+      { source: '/execution', destination: '/workspace', permanent: false },
+      { source: '/goal', destination: '/workspace', permanent: false },
+      { source: '/investigate', destination: '/workspace', permanent: false },
+      { source: '/conclusion', destination: '/workspace', permanent: false },
+      { source: '/my-projects', destination: '/workspace', permanent: false },
       {
         source: '/my-projects/:id/interview',
-        destination: '/validation?project=:id',
-        permanent: false,
-      },
-      /** Sprint 5.1.3 P0 — single workspace entry + legacy block (CPO sign-off) */
-      {
-        source: '/my-projects',
-        destination: '/workspace',
+        destination: '/workspace?project=:id',
         permanent: false,
       },
       {
         source: '/my-projects/:id',
-        destination: '/validation?project=:id',
+        destination: '/workspace?project=:id',
         permanent: false,
       },
-      {
-        source: '/projects/new',
-        destination: '/workspace',
-        permanent: false,
-      },
+      { source: '/projects/new', destination: '/workspace', permanent: false },
+      { source: '/projects', destination: '/workspace', permanent: false },
       {
         source: '/projects/:id/:path*',
-        destination: '/validation?project=:id',
+        destination: '/workspace?project=:id',
         permanent: false,
       },
       {
         source: '/projects/:id',
-        destination: '/validation?project=:id',
+        destination: '/workspace?project=:id',
         permanent: false,
       },
-      {
-        source: '/projects',
-        destination: '/workspace',
-        permanent: false,
-      },
-      {
-        source: '/execution',
-        destination: '/validation',
-        permanent: false,
-      },
-      {
-        source: '/goal',
-        destination: '/who',
-        permanent: false,
-      },
-      {
-        source: '/workspaces',
-        destination: '/workspace',
-        permanent: false,
-      },
-      {
-        source: '/investigate',
-        destination: '/who',
-        permanent: false,
-      },
-      {
-        source: '/conclusion',
-        destination: '/validation',
-        permanent: false,
-      },
-      {
-        source: '/reports',
-        destination: '/workspace',
-        permanent: false,
-      },
-      {
-        source: '/evidence',
-        destination: '/workspace',
-        permanent: false,
-      },
-      {
-        source: '/research',
-        destination: '/workspace',
-        permanent: false,
-      },
-      {
-        source: '/voc',
-        destination: '/workspace',
-        permanent: false,
-      },
-      {
-        source: '/competitors',
-        destination: '/workspace',
-        permanent: false,
-      },
-      {
-        source: '/validation-score',
-        destination: '/workspace',
-        permanent: false,
-      },
-      {
-        source: '/government-grants',
-        destination: '/workspace',
-        permanent: false,
-      },
-      {
-        source: '/naver-commerce',
-        destination: '/workspace',
-        permanent: false,
-      },
+      { source: '/workspaces', destination: '/workspace', permanent: false },
+      { source: '/reports', destination: '/workspace', permanent: false },
+      { source: '/evidence', destination: '/workspace', permanent: false },
+      { source: '/research', destination: '/workspace', permanent: false },
+      { source: '/voc', destination: '/workspace', permanent: false },
+      { source: '/competitors', destination: '/workspace', permanent: false },
+      { source: '/validation-score', destination: '/workspace', permanent: false },
+      { source: '/government-grants', destination: '/workspace', permanent: false },
+      { source: '/naver-commerce', destination: '/workspace', permanent: false },
     ];
   },
   webpack: (config, { isServer }) => {
