@@ -52,17 +52,7 @@
 
 ## Layout freeze (Epic 7)
 
-```
-┌─────────────────────────────────────────┐
-│ GNB (top)                               │
-├─────────────┬───────────────────────────┤
-│ Navigation  │ Main                      │
-│ (tree)      │ (single active section)   │
-└─────────────┴───────────────────────────┘
-```
-
-**Frozen:** GNB + Navigation column + Main column structure.  
-**Mutable:** Main content only (per section).
+See **`docs/DESIGN_SYSTEM.md` Part 1** for the frozen GNB + Navigation + Main shell.
 
 ---
 

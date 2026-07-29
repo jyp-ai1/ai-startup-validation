@@ -1,142 +1,220 @@
 # Workspace Information Architecture
 
-> **Sprint P1 Epic 2** — CPO sign-off target  
-> **Status:** IA fixed · Layout implementation = Step 2 (Thu)
+> **Sprint P1 — P1 (최우선)** · CPO sign-off  
+> **Status:** ✅ Design fixed · Implementation forbidden until Thu Step 2  
+> **User-facing name:** **Project Workspace** (internal route: `/validation?project=:id`)
 
 ---
 
-## Principle
+## 1. One sentence
 
-One **Project Workspace** per project. Four **sections**, not four **pages**.
-
-```
-Project Workspace (/validation?project=:id)
-
-├── Review      ← default entry, Summary + Action above fold
-├── Evidence    ← auxiliary (drawer / expand)
-├── Strategy    ← in-workspace panel
-└ Execution     ← flows from Review Action, not a separate route
-```
-
-User mental model: *"I'm in my Workspace. I pick Review / Evidence / … on the left."*
+**Project Workspace** is where the founder talks with AI PM and reviews strategy — Review, Evidence, Strategy, and Execution are **sections inside one room**, not separate products.
 
 ---
 
-## Layout (frozen)
+## 2. Product hierarchy
 
 ```
-┌──────────────────────────────────────────────────┐
-│ GNB — project name · locale · account            │
-├──────────────┬───────────────────────────────────┤
-│ Navigation   │ Main                              │
-│              │                                   │
-│ Review    ▼  │  [Current section content]        │
-│  Summary  ✔  │                                   │
-│  Market      │  Action (sticky / top when Review)│
-│  Risk        │                                   │
-│ Evidence     │                                   │
-│ Strategy     │                                   │
-│ Execution    │                                   │
-└──────────────┴───────────────────────────────────┘
+LaunchLens
+├── Home (Landing)
+├── Login
+├── Workspace List (/workspace)     ← "내 프로젝트들"
+└── Project Workspace (/validation) ← ★ 본체
+    ├── Review
+    ├── Evidence
+    ├── Strategy
+    └── Execution
 ```
 
-| Zone | Responsibility |
-|------|----------------|
-| **GNB** | Brand, project context, global actions |
-| **Navigation** | Section tree; expands with AI PM progress |
-| **Main** | Exactly one active section view |
-
-**Not allowed:** third column, full-page hops to `/execution`, separate Evidence page.
+**Not in user vocabulary:** Validation, Dashboard, Decision Center, Projects shell.
 
 ---
 
-## Navigation behavior
+## 3. Physical layout (fixed)
 
-### Top-level sections (fixed order)
+```
+┌─────────────────────────────────────────────────────────┐
+│ GNB                                                     │
+├──────────────┬──────────────────────────────────────────┤
+│ Sidebar      │ Main                                     │
+│ (= Navigation│ (= current section content)              │
+│   tree)      │                                          │
+└──────────────┴──────────────────────────────────────────┘
+```
 
-1. **Review** — primary; always available
-2. **Evidence** — secondary
-3. **Strategy** — secondary
-4. **Execution** — secondary (linked from Review Action)
+| Area | Role | User question it answers |
+|------|------|--------------------------|
+| **GNB** | Global context | "Which project am I in?" |
+| **Sidebar** | Progress + sections | "Where am I in the review?" |
+| **Main** | Focus | "What do I need to read/do now?" |
 
-### Review subtree (grows with AI PM — Epic 3)
+**CPO:** No third column. No enterprise SaaS layout.
 
-Initial:
+---
+
+## 4. Sidebar (Navigation) — structure
+
+### 4.1 Top-level (fixed order, always visible)
+
+```
+Review
+Evidence
+Strategy
+Execution
+```
+
+Clicking a top-level item switches **Main** only — **no route change**, no new page.
+
+### 4.2 Review subtree (dynamic — Epic 3)
+
+Starts collapsed or minimal:
 
 ```
 Review
 ```
 
-After AI PM questions:
+As AI PM asks questions, tree **grows**:
 
 ```
 Review
- ├ Summary ✔
- ├ Problem ✔
- ├ Customer
+ ├ Summary        ✔
+ ├ Problem        ✔
+ ├ Customer       ●  ← in progress
  ├ Competitor
  └ Pricing
 ```
 
-- ✔ = completed / answered
-- Click leaf → Main shows that slice (no route change)
-- Tree state = **AI PM progress UX** (not a separate progress page)
+| Symbol | Meaning |
+|--------|---------|
+| ✔ | Complete |
+| ● | Active |
+| (none) | Not started |
+
+**Source of truth:** AI PM session state → drives nav children.  
+**User feeling:** "I'm building my review with AI" — not "endless scroll of questions."
+
+### 4.3 Sidebar vs old UI
+
+| Old | New |
+|-----|-----|
+| AppShell sidebar (Validation/Projects/Settings) | Only on **Workspace List** & settings — **not** on Project Workspace |
+| V2JourneyMiniNav (right rail, scroll anchors) | **Replaced** by left tree |
+| Phase pills (goal/workflow/workspace) | Pre-workspace only (`/who`, `/workflow`) |
 
 ---
 
-## Main content by section
+## 5. Main — by section
 
-| Section | Main shows | Evidence |
-|---------|--------------|----------|
-| **Review** | Summary + **Action** (above fold) | Expand/drawer for detail |
-| **Evidence** | List / cards of supporting data | Inline or drawer |
-| **Strategy** | Strategy canvas / edits | — |
-| **Execution** | Tasks from accepted Action | — |
+### Review (default entry)
 
-### Review rules (Epic 5)
+**Order in Main (top → bottom):**
 
-- First paint: **Summary + Action only**
-- Metrics, Risk, long Evidence lists → collapsed or drawer
-- **Action always visible** when on Review
+1. **Action** — recommended next step (always visible above fold)
+2. **Summary** — short verdict / state
+3. Collapsed: Metrics, Risk, detail blocks
+4. Evidence teaser → opens drawer
 
----
+**Epic 5 rule:** User sees **current state + Action** without scrolling.
 
-## Routing vs IA
+### Evidence
 
-| User action | URL | Page navigation? |
-|-------------|-----|------------------|
-| Open project | `/validation?project=id` | Once from hub |
-| Switch section | `?section=review` or in-memory state | **No** full page load |
-| Switch Review leaf | hash or `?focus=market` | **No** |
-| Open Evidence drawer | overlay | **No** |
+- Supporting data, sources, cards
+- **Auxiliary** — opened from Review or Sidebar
+- Prefer drawer / expand over full Main scroll
 
-Legacy `/execution`, `/projects/[id]/evidence`, etc. → **redirect** to Project Workspace (see `legacy-route-redirects.ts`).
+### Strategy
 
----
+- Edits AI PM proposes (price, target, USP, market, BM)
+- Lives in Main when Sidebar → Strategy selected
 
-## Implementation map (Step 2 — no UI yet in Step 1)
+### Execution
 
-| Current file | Role today | Target |
-|--------------|------------|--------|
-| `v2-strategy-workspace.tsx` | Monolithic canvas | Shell: Nav + Main router |
-| `v2-journey-mini-nav.tsx` | Phase pills | Replace with **section tree** |
-| `journey-layout.tsx` | GNB + width | **Workspace layout freeze** |
-| `v2-thinking-workspace-main.tsx` | Main compose | Main: Review compose |
-| `execution-workspace-view.tsx` | Separate page | **Delete** — absorb into Main |
-| `/execution` route | Page | **Blocked** → `/validation` |
+- **Not a page** — tasks flowing from accepted Action
+- Sidebar item for overview; detail in Main
+- No `/execution` route (blocked)
 
 ---
 
-## Completion criteria (Epic 2)
+## 6. AI PM flow (UX, not implementation)
 
-- [ ] Single URL `/validation?project=` hosts all four sections
-- [ ] Clicking Nav item changes **Main only**
-- [ ] No user-facing navigation to legacy `/projects/*`
-- [ ] `docs/UX_RULES.md` referenced in PR template / Cursor rules
+```
+Loading (labeled steps)
+    ↓
+Review / Summary appears in Main
+    ↓
+AI PM asks question (inline or thread — Main)
+    ↓
+Sidebar Review tree gains child + ✔
+    ↓
+Action updates in Main
+    ↓
+User accepts Action → Execution section activates
+```
+
+**Anti-pattern (delete):** Question → question → question → infinite scroll with no nav growth.
 
 ---
 
-## Related docs
+## 7. Routing vs IA
 
-- `docs/SCREEN_MAP.md` — routes & journey
-- `docs/UX_RULES.md` — non-negotiable UX law
+| User action | URL change? |
+|-------------|-------------|
+| Login → open project | Yes → `/validation?project=id` (once) |
+| Switch Review / Evidence / … | No (state or `?section=`) |
+| Switch Review leaf (Market, …) | No (`?focus=` optional) |
+| Open Evidence drawer | No (overlay) |
+
+All legacy URLs → redirect (see `ROUTE_QA.md`).
+
+---
+
+## 8. Onboarding path (new user)
+
+```
+/workspace → bootstrap
+    ↓
+/who (persona)
+    ↓
+/workflow (AI PM interview — pre-Workspace)
+    ↓
+/validation?project=id&welcome=1  → Project Workspace
+```
+
+Multi-project returning user:
+
+```
+/workspace → pick project → /validation?project=id
+```
+
+---
+
+## 9. Mapping from current code (reference only)
+
+| Today | Target |
+|-------|--------|
+| `v2-strategy-workspace.tsx` | Workspace shell |
+| `v2-journey-mini-nav.tsx` | **Replace** → Navigation tree |
+| `journey-layout.tsx` | GNB |
+| `v2-thinking-workspace-main.tsx` | Main (Review) |
+| `v2-ai-pm-inbox.tsx` | AI PM entry in Main |
+| `execution-workspace-view.tsx` | **Delete** — Execution section |
+
+---
+
+## 10. Sign-off checklist
+
+- [x] Workspace = one Project Workspace per project
+- [x] Four sections, not four pages
+- [x] Sidebar = Navigation tree (AI PM grows Review)
+- [x] Main = single focus + Action first on Review
+- [ ] CPO explicit approval
+- [ ] Implementation sprint (Thu+) — **no code before approval**
+
+---
+
+## Related
+
+- `docs/DESIGN_SYSTEM.md` — layout + components + visual rules
+- `docs/UX_RULES.md` — 8 laws
+- `docs/UI_CONSISTENCY.md` — what to delete
+- `docs/SCREEN_MAP.md` — routes
