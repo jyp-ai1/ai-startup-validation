@@ -377,6 +377,7 @@ export type OpsDashboardStats = {
     marketChanges: number;
     bmChanges: number;
     artifactsToday: number;
+    byCategory: Record<string, number>;
     suggestionAdoptionRate: number;
     competitorAddsToday: number;
     strategyChangesToday: number;
