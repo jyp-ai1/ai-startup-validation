@@ -4,6 +4,7 @@
 import { sanitizeAiPmResponse, sanitizeDocumentLabel } from '../apps/web/lib/ai/ai-response-sanitizer.ts';
 import { extractDocumentEntities, mapEntitiesToLegacyCustomer } from '../apps/web/features/workflow-journey/lib/domain/extract-document-entities.ts';
 import { evaluateDomainTrust } from '../apps/web/features/workflow-journey/lib/domain/domain-trust-rules.ts';
+import { buildAiPmPrimaryMessage } from '../apps/web/features/workflow-journey/lib/workspace-ai-pm-messages.ts';
 
 const sample = `취향저격컴퍼니
 예비창업자 대표
@@ -13,6 +14,15 @@ B2C
 const entities = extractDocumentEntities(sample);
 const trust = evaluateDomainTrust(entities);
 const legacyCustomer = mapEntitiesToLegacyCustomer(entities);
+const domain = {
+  founder: entities.founder.value ?? '',
+  business: entities.business.name ?? entities.business.value ?? '',
+  customer: legacyCustomer,
+  market: entities.market.value ?? '',
+  competitor: entities.competitor.value ?? '',
+};
+const aiMessage = buildAiPmPrimaryMessage(domain, 0, entities);
+const aiCopy = aiMessage.paragraphs.join(' ') + (aiMessage.ordA ? Object.values(aiMessage.ordA).join(' ') : '');
 const dirty = '[[취향저격컴퍼니] 제17회.pdf]]\n고객은 예비창업자입니다.';
 const cleaned = sanitizeAiPmResponse(dirty);
 const label = sanitizeDocumentLabel('취향저격컴퍼니 제17회.pdf');
@@ -26,7 +36,8 @@ const checks = [
   ['No founder=customer', !trust.issues.includes('founder_equals_customer')],
   ['Label is 사업계획서', label === '사업계획서'],
   ['No pdf/brackets in sanitized', !cleaned.includes('pdf') && !cleaned.includes('[[')],
-  ['No forbidden customer sentence', !cleaned.includes('예비창업자')],
+  ['AI never says Customer=예비창업자', !aiCopy.includes('고객은 예비창업자') && !aiCopy.includes('Customer는 예비창업자')],
+  ['Customer not founder archetype', !legacyCustomer.includes('예비창업')],
 ];
 
 console.log('\nProduct Trust QA');
