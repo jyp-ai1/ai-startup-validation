@@ -1675,24 +1675,6 @@
         "role": "SaaS Founder"
       }
     },
-    "testimonials": {
-      "title": "CEO와 함께 일하는 Founders",
-      "desc": "AI PM이 업무를 수행하고, 대표님은 결정만 내린다는 후기",
-      "items": {
-        "one": {
-          "quote": "매일 아침 AI PM이 무엇을 해야 하는지 알려줘서 대표인 저는 결정만 하면 됩니다.",
-          "role": "SaaS Founder"
-        },
-        "two": {
-          "quote": "분석 도구가 아니라 AI 직원이 일하는 느낌이었습니다. 시장조사부터 실행까지 AI PM이 대신합니다.",
-          "role": "Pre-seed Founder"
-        },
-        "three": {
-          "quote": "보고 → 승인 → 실행 루프가 하루 종일 자연스럽게 이어집니다.",
-          "role": "Strategy Lead"
-        }
-      }
-    },
     "story": {
       "title": "혼자 운영하던 회사, AI PM과 함께",
       "desc": "대표님이 모든 일을 해야 하는 서비스가 아닙니다. AI 직원이 일하는 서비스입니다.",

@@ -1663,24 +1663,6 @@
         "role": "SaaS Founder"
       }
     },
-    "testimonials": {
-      "title": "Founders working with their AI PM",
-      "desc": "Reviews from CEOs whose AI PM does the work — they decide",
-      "items": {
-        "one": {
-          "quote": "Every morning my AI PM tells me what to do — as CEO I just decide.",
-          "role": "SaaS Founder"
-        },
-        "two": {
-          "quote": "Not an analysis tool — it feels like AI employees doing the work. Market research to execution.",
-          "role": "Pre-seed Founder"
-        },
-        "three": {
-          "quote": "The report → approve → execute loop runs naturally all day.",
-          "role": "Strategy Lead"
-        }
-      }
-    },
     "story": {
       "title": "From solo operator to CEO with AI PM",
       "desc": "Not a service where you do everything — a service where AI employees work.",

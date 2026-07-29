@@ -16,7 +16,7 @@ export async function EmptyProjectWorkspace({ project }: EmptyProjectWorkspacePr
     <div className="mx-auto flex min-h-[50vh] max-w-lg flex-col justify-center space-y-6 py-8">
       <div>
         <Button variant="ghost" size="sm" asChild className="-ml-2 mb-4">
-          <Link href="/my-projects">
+          <Link href="/workspace">
             <ArrowLeft className="mr-1 size-4" aria-hidden />
             {t('backToList')}
           </Link>

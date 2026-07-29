@@ -194,6 +194,7 @@ export async function createMyProjectAction(
     },
   });
 
+  revalidatePath('/workspace');
   revalidatePath('/my-projects');
-  redirect(`/my-projects/${project.id}`);
+  redirect(`/validation?project=${encodeURIComponent(project.id)}`);
 }

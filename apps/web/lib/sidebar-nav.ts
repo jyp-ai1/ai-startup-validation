@@ -29,7 +29,7 @@ export const SIDEBAR_NAV_GROUPS: SidebarNavGroup[] = [
         key: 'projects',
         icon: FlaskConical,
         labelKey: 'nav.projects',
-        globalHref: '/my-projects',
+        globalHref: '/workspace',
       },
     ],
   },
@@ -52,8 +52,9 @@ export function resolveSidebarHref(item: SidebarNavItem, _projectId?: string | n
 
 export function isSidebarItemActive(pathname: string, href: string): boolean {
   if (pathname === href) return true;
-  if (href !== '/my-projects' && pathname.startsWith(`${href}/`)) return true;
-  if (href === '/my-projects' && pathname.startsWith('/my-projects')) return true;
+  if (href !== '/workspace' && pathname.startsWith(`${href}/`)) return true;
+  if (href === '/workspace' && (pathname === '/workspace' || pathname.startsWith('/workspace/')))
+    return true;
   if (href === '/validation' && pathname.startsWith('/validation')) return true;
   return false;
 }
