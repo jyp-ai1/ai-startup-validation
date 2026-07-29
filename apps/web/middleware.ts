@@ -2,11 +2,17 @@ import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { updateSession } from './lib/auth/update-session';
+import { resolveLegacyRedirect } from './lib/legacy-route-redirects';
 import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 
 export default async function middleware(request: NextRequest) {
+  const legacyRedirect = resolveLegacyRedirect(request);
+  if (legacyRedirect) {
+    return legacyRedirect;
+  }
+
   const intlResponse = intlMiddleware(request);
   const pathname = request.nextUrl.pathname;
 

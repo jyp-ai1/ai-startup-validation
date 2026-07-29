@@ -112,7 +112,15 @@ Project Workspace (/validation?project=:id) ★★★★★
 
 ## Blocked routes (edge redirects)
 
-See `apps/web/next.config.ts` — all legacy URLs redirect to `/workspace` or `/validation?project=:id`.
+- **Middleware:** `apps/web/lib/legacy-route-redirects.ts` (runs first — reliable on Vercel)
+- **next.config:** `apps/web/next.config.ts` — duplicate rules for static edge
+
+See `docs/ROUTE_QA.md` for verification checklist.
+
+## Related docs
+
+- `docs/UX_RULES.md` — non-negotiable UX law (Epic 9)
+- `docs/WORKSPACE_IA.md` — Navigation + Main IA (Epic 2)
 
 ---
 
