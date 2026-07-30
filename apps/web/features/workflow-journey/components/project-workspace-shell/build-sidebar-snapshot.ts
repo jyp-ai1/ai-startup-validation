@@ -73,7 +73,7 @@ export function buildWorkspaceSidebarSnapshot(
     completedTopics,
     totalTopics,
     activeStageKey: activeNode.labelKey,
-    lastUpdatedMinutesAgo: reviewCount > 0 ? 12 : 0,
+    lastUpdatedMinutesAgo: reviewCount > 0 ? 0 : -1,
     nodes,
   };
 }

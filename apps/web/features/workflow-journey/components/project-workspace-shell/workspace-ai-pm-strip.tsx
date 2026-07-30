@@ -14,7 +14,7 @@ type WorkspaceAiPmStripProps = {
 };
 
 export function WorkspaceAiPmStrip({ className, message = null }: WorkspaceAiPmStripProps) {
-  const t = useTranslations('workflow.v2.workspaceShell');
+  const t = useTranslations('workflow.journey.workspaceShell');
   const [index, setIndex] = useState(0);
 
   useEffect(() => {

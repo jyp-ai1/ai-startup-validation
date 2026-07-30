@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { DailyReportEntry } from '../../lib/v2-investigation-types';
+import { formatRelativeMinutesAgo } from '../../lib/format-relative-time';
 
 type V2DailyReportTimelineProps = {
   entries: DailyReportEntry[];
@@ -20,6 +21,12 @@ export function V2DailyReportTimeline({
   className,
 }: V2DailyReportTimelineProps) {
   const t = useTranslations(`workflow.v2.strategyWorkspace.ia.thinkingUx.${namespace}.dailyReport`);
+  const tRelative = useTranslations(`workflow.v2.strategyWorkspace.ia.thinkingUx.${namespace}`);
+
+  const relativeLabels = {
+    justNow: tRelative('relative.justNow'),
+    minutesAgo: (minutes: number) => tRelative('relative.minutesAgo', { minutes }),
+  };
 
   return (
     <div className={cn('rounded-xl border border-border/40 bg-muted/5 p-4', className)}>
@@ -30,7 +37,9 @@ export function V2DailyReportTimeline({
         {entries.map((entry) => (
           <li key={entry.id} className="relative text-sm">
             <span className="absolute -left-[1.35rem] top-1.5 size-2 rounded-full bg-primary" />
-            <span className="font-mono text-[11px] text-muted-foreground">{entry.time}</span>
+            <span className="text-[11px] text-muted-foreground">
+              {formatRelativeMinutesAgo(entry.minutesAgo, relativeLabels)}
+            </span>
             <p className="font-medium">{t(`steps.${entry.id}`)}</p>
           </li>
         ))}

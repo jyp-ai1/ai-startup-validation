@@ -1454,7 +1454,9 @@
       "stories": "Stories",
       "signIn": "Login",
       "startFree": "Start Free",
+      "openDemo": "Open Demo",
       "workspace": "Workspace",
+      "settings": "Settings",
       "menuLabel": "Navigation menu",
       "openMenu": "Open menu",
       "closeMenu": "Close menu"
@@ -5662,8 +5664,8 @@
                   "productHunt": { "label": "Product Hunt", "value": "Similar products rising" },
                   "yc": { "label": "YC", "value": "Recent investment uptick" }
                 },
-                "reasonLead": "So why B2C?",
-                "reasonBody": "{name}'s expected service users are individual founders — search growth favors a B2C entry.",
+                "reasonLead": "Evidence",
+                "reasonBody": "The document indicates a B2C model. We cannot confirm the core customer from the document alone — please confirm.",
                 "cta": "Continue"
               },
               "resources": {
@@ -5708,8 +5710,8 @@
                 "withDoc": "First, I analyzed the {name} business plan."
               },
               "terminology": {
-                "targetUsers": "The expected users of this service match the targets described in your document.",
-                "serviceUsers": "'Service users' here means founders who will use this product — not you as the founder."
+                "targetUsers": "Please confirm whether the target customer in the document is accurate.",
+                "serviceUsers": "Let's confirm together who the actual service customer is."
               },
               "steps": {
                 "documentAnalyzed": "Document analyzed.",
@@ -5863,6 +5865,11 @@
               }
             },
             "investigation": {
+              "relative": {
+                "justNow": "Just now",
+                "minutesAgo": "{minutes} min ago",
+                "analyzing": "Analyzing now"
+              },
               "log": {
                 "title": "Today's AI PM work",
                 "duration": "({minutes} min)",
@@ -5928,7 +5935,7 @@
               "morningBrief": {
                 "label": "Morning Investigation",
                 "headline": "I finished today's research before you arrived.",
-                "meta": "Auto-scan at {scheduled} · done {completed} · {minutes} min",
+                "meta": "Completed just now · {minutes} min",
                 "highlights": {
                   "newCompetitors": "· 2 new competitors",
                   "searchVolume": "· Search volume +18%",
@@ -6033,6 +6040,11 @@
               }
             },
             "investigationSample": {
+              "relative": {
+                "justNow": "Just now",
+                "minutesAgo": "{minutes} min ago",
+                "analyzing": "Analyzing now"
+              },
               "log": {
                 "title": "Today's AI PM work",
                 "duration": "({minutes} min)",
@@ -6098,7 +6110,7 @@
               "morningBrief": {
                 "label": "Morning Investigation",
                 "headline": "I finished today's research before you arrived.",
-                "meta": "Auto-scan at {scheduled} · done {completed} · {minutes} min",
+                "meta": "Completed just now · {minutes} min",
                 "highlights": {
                   "newCompetitors": "· 2 new competitors",
                   "searchVolume": "· Search volume +18%",
@@ -6462,9 +6474,15 @@
       },
       "globalNav": {
         "label": "Site navigation",
-        "home": "Home",
+        "product": "Product",
+        "pricing": "Pricing",
+        "whyLaunchLens": "Why LaunchLens",
+        "openDemo": "Open Demo",
+        "login": "Login",
+        "start": "Start",
         "workspace": "Workspace",
-        "demo": "Demo"
+        "settings": "Settings",
+        "logout": "Logout"
       },
       "workspaceShell": {
         "strip": {
@@ -6476,6 +6494,8 @@
           "progressLabel": "Progress",
           "progress": "{percent}% complete",
           "aiUpdated": "AI Updated",
+          "lastUpdatedJustNow": "Updated just now",
+          "lastUpdatedAnalyzing": "Analyzing now",
           "lastUpdated": "{minutes} min ago",
           "stages": {
             "founder": "● Founder",

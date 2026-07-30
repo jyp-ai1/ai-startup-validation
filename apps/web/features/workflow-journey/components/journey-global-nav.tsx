@@ -13,24 +13,30 @@ type JourneyGlobalNavProps = {
   user?: AppAuthUser | null;
 };
 
-const LINKS = [
-  { href: '/', key: 'home' as const },
+const PUBLIC_LINKS = [
+  { href: '/#how-it-works', key: 'product' as const },
+  { href: '/#pricing', key: 'pricing' as const },
+  { href: '/#why-launchlens', key: 'whyLaunchLens' as const },
+] as const;
+
+const AUTH_LINKS = [
   { href: '/workspace', key: 'workspace' as const },
-  { href: '/demo/enter', key: 'demo' as const },
+  { href: '/settings', key: 'settings' as const },
 ] as const;
 
 export function JourneyGlobalNav({ user = null }: JourneyGlobalNavProps) {
   const pathname = usePathname();
   const t = useTranslations('workflow.journey.globalNav');
-  const tAuth = useTranslations('auth');
+
+  const links = user ? AUTH_LINKS : PUBLIC_LINKS;
 
   return (
     <nav
       className="flex flex-wrap items-center justify-end gap-1 sm:gap-2"
       aria-label={t('label')}
     >
-      {LINKS.map(({ href, key }) => {
-        const active = href === '/' ? pathname === '/' : pathname.startsWith(href);
+      {links.map(({ href, key }) => {
+        const active = href.startsWith('/#') ? false : pathname.startsWith(href);
         return (
           <Link
             key={key}
@@ -46,7 +52,19 @@ export function JourneyGlobalNav({ user = null }: JourneyGlobalNavProps) {
           </Link>
         );
       })}
-      {user ? (
+      {!user ? (
+        <>
+          <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs sm:text-sm" asChild>
+            <Link href="/demo/enter">{t('openDemo')}</Link>
+          </Button>
+          <Button variant="ghost" size="sm" className="h-8 px-2.5 text-xs sm:text-sm" asChild>
+            <Link href="/auth/login?next=/workspace">{t('login')}</Link>
+          </Button>
+          <Button size="sm" className="h-8 px-2.5 text-xs sm:text-sm" asChild>
+            <Link href="/auth/login?next=/workspace">{t('start')}</Link>
+          </Button>
+        </>
+      ) : (
         <Button
           type="button"
           variant="ghost"
@@ -54,11 +72,7 @@ export function JourneyGlobalNav({ user = null }: JourneyGlobalNavProps) {
           className="h-8 px-2.5 text-xs sm:text-sm"
           onClick={() => void signOutAndRedirect()}
         >
-          {tAuth('signOut')}
-        </Button>
-      ) : (
-        <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs sm:text-sm" asChild>
-          <Link href="/auth/login?next=/workspace">{tAuth('signIn')}</Link>
+          {t('logout')}
         </Button>
       )}
     </nav>

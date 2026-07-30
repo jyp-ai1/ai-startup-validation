@@ -41,7 +41,7 @@ export function WorkspaceSidebar({
   onSelectAiPm,
   className,
 }: WorkspaceSidebarProps) {
-  const t = useTranslations('workflow.v2.workspaceShell');
+  const t = useTranslations('workflow.journey.workspaceShell');
 
   return (
     <aside
@@ -81,7 +81,11 @@ export function WorkspaceSidebar({
           <p className="mt-2 border-t border-border/60 pt-2 text-[11px] text-muted-foreground">
             <span className="font-semibold text-emerald-600">{t('sidebar.aiUpdated')}</span>
             {' · '}
-            {t('sidebar.lastUpdated', { minutes: snapshot.lastUpdatedMinutesAgo })}
+            {snapshot.lastUpdatedMinutesAgo < 0
+              ? t('sidebar.lastUpdatedAnalyzing')
+              : snapshot.lastUpdatedMinutesAgo <= 0
+                ? t('sidebar.lastUpdatedJustNow')
+                : t('sidebar.lastUpdated', { minutes: snapshot.lastUpdatedMinutesAgo })}
           </p>
         </button>
       </div>

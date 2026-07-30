@@ -56,23 +56,23 @@ export const SMART_INTAKE_LIVE_STEPS: LiveInvestigationStepId[] = [
 ];
 
 const SAMPLE_WORK_LOG: InvestigationLogEntry[] = [
-  { id: 'googleTrends', time: '08:03', findingKey: 'googleTrends', durationMinutes: 2 },
-  { id: 'reddit', time: '08:05', findingKey: 'reddit', durationMinutes: 2 },
-  { id: 'governmentSupport', time: '08:06', findingKey: 'governmentSupport', durationMinutes: 1 },
-  { id: 'competitors', time: '08:09', findingKey: 'competitors', durationMinutes: 3 },
-  { id: 'productHunt', time: '08:10', findingKey: 'productHunt', durationMinutes: 1 },
-  { id: 'investmentTrend', time: '08:11', findingKey: 'investmentTrend', durationMinutes: 1 },
-  { id: 'reportGenerated', time: '08:12', findingKey: 'reportGenerated', durationMinutes: 1 },
+  { id: 'googleTrends', minutesAgo: 9, findingKey: 'googleTrends', durationMinutes: 2 },
+  { id: 'reddit', minutesAgo: 7, findingKey: 'reddit', durationMinutes: 2 },
+  { id: 'governmentSupport', minutesAgo: 6, findingKey: 'governmentSupport', durationMinutes: 1 },
+  { id: 'competitors', minutesAgo: 3, findingKey: 'competitors', durationMinutes: 3 },
+  { id: 'productHunt', minutesAgo: 2, findingKey: 'productHunt', durationMinutes: 1 },
+  { id: 'investmentTrend', minutesAgo: 1, findingKey: 'investmentTrend', durationMinutes: 1 },
+  { id: 'reportGenerated', minutesAgo: 0, findingKey: 'reportGenerated', durationMinutes: 1 },
 ];
 
 const SAMPLE_DAILY_REPORT: DailyReportEntry[] = [
-  { id: 'started', time: '08:00' },
-  { id: 'googleTrends', time: '08:03' },
-  { id: 'reddit', time: '08:05' },
-  { id: 'governmentSupport', time: '08:06' },
-  { id: 'competitors', time: '08:09' },
-  { id: 'aiAnalysis', time: '08:11' },
-  { id: 'founderReport', time: '08:12' },
+  { id: 'started', minutesAgo: 12 },
+  { id: 'googleTrends', minutesAgo: 9 },
+  { id: 'reddit', minutesAgo: 7 },
+  { id: 'governmentSupport', minutesAgo: 6 },
+  { id: 'competitors', minutesAgo: 3 },
+  { id: 'aiAnalysis', minutesAgo: 1 },
+  { id: 'founderReport', minutesAgo: 0 },
 ];
 
 const SAMPLE_WORK_PROGRESS: WorkProgressItem[] = [
@@ -91,8 +91,6 @@ const SAMPLE_DISCOVERIES: DiscoveryItem[] = [
 ];
 
 const SAMPLE_MORNING: MorningBriefing = {
-  scheduledTime: '08:00',
-  completedTime: '08:12',
   durationMinutes: 11,
   highlightKeys: ['newCompetitors', 'searchVolume', 'governmentGrant'],
   focusKey: 'pricingStrategy',
@@ -111,8 +109,6 @@ function buildMorningBriefing(
   highlightKeys: string[],
 ): MorningBriefing {
   return {
-    scheduledTime: '08:00',
-    completedTime: '08:12',
     durationMinutes,
     highlightKeys,
     focusKey,
@@ -126,12 +122,12 @@ function buildDailyReport(): DailyReportEntry[] {
 function buildWorkLog(hasDocument: boolean): InvestigationLogEntry[] {
   if (hasDocument) {
     return [
-      { id: 'googleTrends', time: '08:03', findingKey: 'googleTrends', durationMinutes: 2 },
-      { id: 'reddit', time: '08:05', findingKey: 'reddit', durationMinutes: 2 },
-      { id: 'documentAnalysis', time: '08:07', findingKey: 'documentAnalysis', durationMinutes: 3 },
-      { id: 'competitors', time: '08:09', findingKey: 'competitors', durationMinutes: 2 },
-      { id: 'governmentSupport', time: '08:10', findingKey: 'governmentSupport', durationMinutes: 1 },
-      { id: 'reportGenerated', time: '08:12', findingKey: 'reportGenerated', durationMinutes: 1 },
+      { id: 'googleTrends', minutesAgo: 9, findingKey: 'googleTrends', durationMinutes: 2 },
+      { id: 'reddit', minutesAgo: 7, findingKey: 'reddit', durationMinutes: 2 },
+      { id: 'documentAnalysis', minutesAgo: 5, findingKey: 'documentAnalysis', durationMinutes: 3 },
+      { id: 'competitors', minutesAgo: 3, findingKey: 'competitors', durationMinutes: 2 },
+      { id: 'governmentSupport', minutesAgo: 2, findingKey: 'governmentSupport', durationMinutes: 1 },
+      { id: 'reportGenerated', minutesAgo: 0, findingKey: 'reportGenerated', durationMinutes: 1 },
     ];
   }
   return SAMPLE_WORK_LOG;
@@ -197,10 +193,7 @@ export function buildSampleInvestigationContext(): InvestigationContext {
 /** Demo flow — no Morning Report / Daily Report (P0-1). */
 export function buildDemoInvestigationContext(): InvestigationContext {
   return {
-    logEntries: SAMPLE_WORK_LOG.map((entry) => ({
-      ...entry,
-      time: entry.time.replace(/^08:/, '14:'),
-    })),
+    logEntries: SAMPLE_WORK_LOG,
     liveSteps: SAMPLE_LIVE_STEPS,
     smartQuestions: [],
     report: SAMPLE_REPORT,

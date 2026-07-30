@@ -216,13 +216,13 @@ export function buildAiPmPrimaryMessage(
       blocked: true,
       activeField: 'founder',
       ordA: {
-        observation: '사업계획서를 모두 읽었습니다.',
-        reasoning: `${domain.business} — Business는 확인했습니다. Founder ≠ Customer 입니다.`,
-        decision: 'Founder 정보를 문서 근거로 먼저 정리합니다.',
+        observation: `${domain.business} — Business는 확인했습니다.`,
+        reasoning: 'Founder ≠ Customer 입니다. Founder는 문서 근거 없이 단정하지 않습니다.',
+        decision: 'Founder 정보를 먼저 확인합니다.',
         nextAction: 'Founder(대표/창업자) 정보를 입력해 주세요.',
       },
       paragraphs: [
-        '대표님, 사업계획서를 모두 읽었습니다.',
+        '대표님,',
         `${domain.business} — Business는 확인했습니다.`,
         'Founder(대표/창업자) 정보를 먼저 정리해 주세요. Founder ≠ Customer 입니다.',
       ],
@@ -230,23 +230,44 @@ export function buildAiPmPrimaryMessage(
   }
 
   if (!hasCustomer || !customerConfirmed) {
-    const founderLine = hasFounder
-      ? `현재 문서에서는 '${domain.founder}'는 대표님(Founder)으로 보입니다.`
-      : '현재 사업계획서에서는 실제 고객을 명확히 확인하지 못했습니다.';
+    const ctx = resolveEntitiesForReview(domain, entities);
+    const confirmed: string[] = [];
+    if (ctx.business.model === 'B2C') confirmed.push('B2C');
+    if (ctx.business.model === 'B2B') confirmed.push('B2B');
+    if (ctx.business.basis === 'document' && domain.business.trim()) {
+      confirmed.push(`Business: ${domain.business}`);
+    }
+
+    const needsCheck = [
+      '일반 소비자',
+      '외국인 관광객',
+      '전통주 관심 고객',
+    ];
+
+    const reasoningConfirmed =
+      confirmed.length > 0 ? `확인한 내용: ${confirmed.join(', ')}` : '문서에 고객 정의가 명확하지 않습니다.';
+    const reasoningNeeds = `확인 필요: ${needsCheck.join(', ')}`;
+
     return {
       blocked: true,
       activeField: 'customer',
       ordA: {
-        observation: '사업계획서를 모두 읽었습니다.',
-        reasoning: `${founderLine} Customer는 문서 근거 없이 단정할 수 없습니다.`,
+        observation: '현재 문서에서는 실제 서비스 고객을 확정할 수 없습니다.',
+        reasoning: `${reasoningConfirmed}. ${reasoningNeeds}`,
         decision: 'Customer는 추측하지 않고 확인 필요 상태로 유지합니다.',
-        nextAction: '실제 서비스를 사용할 Customer가 누구인지 알려주세요.',
+        nextAction: '실제 서비스 고객이 누구인지 알려주세요.',
       },
       paragraphs: [
         '대표님,',
-        '먼저 고객 정의부터 같이 맞추겠습니다.',
-        founderLine,
-        '실제 고객이 누구인지 확인 부탁드립니다. 문서에 없는 내용은 추측하지 않습니다.',
+        '현재 문서에서는 실제 서비스 고객을 확정할 수 없습니다.',
+        '',
+        '확인한 내용',
+        ...(confirmed.length > 0 ? confirmed.map((line) => `✓ ${line}`) : ['✓ (문서 근거 없음)']),
+        '',
+        '확인이 필요한 내용',
+        ...needsCheck.map((line) => `□ ${line}`),
+        '',
+        '실제 고객이 누구인지 같이 확인하겠습니다.',
       ],
     };
   }
@@ -261,7 +282,7 @@ export function buildAiPmPrimaryMessage(
       blocked: false,
       activeField: null,
       ordA: {
-        observation: '사업계획서를 모두 읽었습니다.',
+        observation: '문서에서 확인한 Business·Customer 정보입니다.',
         reasoning: `Business ${domain.business}, Customer ${domain.customer} ${evidenceLine}`,
         decision: 'Founder · Business · Customer를 문서 기반으로 확인했습니다.',
         nextAction: 'Market과 Competitor를 정리한 뒤 Overview를 생성하겠습니다.',
@@ -280,20 +301,19 @@ export function buildAiPmPrimaryMessage(
   return {
     blocked: false,
     activeField: null,
-    ordA: {
-      observation: '사업계획서를 검토했습니다.',
-      reasoning: domain.market
-        ? `Market: ${domain.market}`
-        : 'Market 정의가 아직 부족합니다.',
-      decision: '도메인 검토를 이어갑니다.',
-      nextAction: 'Sidebar에서 Insight를 이어가겠습니다.',
-    },
-    paragraphs: [
-      '대표님,',
-      '사업계획서를 검토했습니다.',
-      domain.market
-        ? `Market: ${domain.market}. Sidebar에서 Insight를 이어가겠습니다.`
-        : '다음으로 Market 정의를 보완하겠습니다.',
-    ],
+      ordA: {
+        observation: '문서 기반 검토를 이어갑니다.',
+        reasoning: domain.market
+          ? `Market: ${domain.market}`
+          : 'Market 정의가 아직 부족합니다.',
+        decision: '도메인 검토를 이어갑니다.',
+        nextAction: 'Sidebar에서 Insight를 이어가겠습니다.',
+      },
+      paragraphs: [
+        '대표님,',
+        domain.market
+          ? `Market: ${domain.market}. Sidebar에서 Insight를 이어가겠습니다.`
+          : '다음으로 Market 정의를 보완하겠습니다.',
+      ],
   };
 }

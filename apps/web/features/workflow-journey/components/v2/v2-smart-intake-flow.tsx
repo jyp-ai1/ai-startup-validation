@@ -357,9 +357,6 @@ export function V2SmartIntakeFlow({
               ? t('understanding.trustConfirmBody')
               : t('understanding.lead2')}
           </p>
-          {!analysis.domainTrust.mustConfirmCustomer ? (
-            <p className="mt-2 text-muted-foreground">{tChain('terminology.targetUsers')}</p>
-          ) : null}
         </AiPmBubble>
 
         <V2DomainEntityBasisPanel entities={analysis.entities} trust={analysis.domainTrust} />
@@ -554,7 +551,6 @@ export function V2SmartIntakeFlow({
         <AiPmBubble>
           <p className="font-medium">{t('evidenceReview.reasonLead')}</p>
           <p>{t('evidenceReview.reasonBody', { name: projectName })}</p>
-          <p className="mt-2 text-muted-foreground">{tChain('terminology.serviceUsers')}</p>
         </AiPmBubble>
 
         <AiPmBubble>

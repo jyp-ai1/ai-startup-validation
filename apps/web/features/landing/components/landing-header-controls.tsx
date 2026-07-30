@@ -32,8 +32,9 @@ type LandingHeaderControlsProps = {
     closeMenu: string;
     signIn: string;
     startFree: string;
+    openDemo: string;
     workspace: string;
-    demo: string;
+    settings: string;
   };
 };
 
@@ -72,12 +73,18 @@ export function LandingHeaderControls({ user, navLinks, labels }: LandingHeaderC
         {user ? (
           <>
             <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
-              <Link href="/validation">{labels.workspace}</Link>
+              <Link href="/workspace">{labels.workspace}</Link>
+            </Button>
+            <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+              <Link href="/settings">{labels.settings}</Link>
             </Button>
             <UserMenu user={user} />
           </>
         ) : (
           <>
+            <Button variant="outline" size="sm" className="hidden md:inline-flex" asChild>
+              <Link href="/demo/enter">{labels.openDemo}</Link>
+            </Button>
             <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
               <Link href="/auth/login?next=/workspace">{labels.signIn}</Link>
             </Button>
@@ -112,28 +119,40 @@ export function LandingHeaderControls({ user, navLinks, labels }: LandingHeaderC
                 {label}
               </a>
             ))}
-            <Link
-              href="/validation"
-              className="rounded-lg px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
-              onClick={() => setMobileOpen(false)}
-            >
-              {labels.workspace}
-            </Link>
-            <Link
-              href="/demo/enter"
-              className="rounded-lg px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
-              onClick={() => setMobileOpen(false)}
-            >
-              {labels.demo}
-            </Link>
-            {user ? null : (
-              <Link
-                href="/auth/login?next=/workspace"
-                className="mt-2 rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-muted"
-                onClick={() => setMobileOpen(false)}
-              >
-                {labels.signIn}
-              </Link>
+            {user ? (
+              <>
+                <Link
+                  href="/workspace"
+                  className="rounded-lg px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {labels.workspace}
+                </Link>
+                <Link
+                  href="/settings"
+                  className="rounded-lg px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {labels.settings}
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/demo/enter"
+                  className="rounded-lg px-3 py-3 text-sm font-medium text-foreground hover:bg-muted"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {labels.openDemo}
+                </Link>
+                <Link
+                  href="/auth/login?next=/workspace"
+                  className="mt-2 rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-muted"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {labels.signIn}
+                </Link>
+              </>
             )}
           </nav>
         </DialogContent>

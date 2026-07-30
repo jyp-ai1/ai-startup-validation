@@ -43,11 +43,7 @@ export function V2MorningInvestigationBrief({
       <p className="mt-2 text-sm font-semibold leading-relaxed">{t('headline')}</p>
       {!isFirst ? (
         <p className="mt-1 text-xs text-muted-foreground">
-          {t('meta', {
-            scheduled: briefing.scheduledTime,
-            completed: briefing.completedTime,
-            minutes: briefing.durationMinutes,
-          })}
+          {t('meta', { minutes: briefing.durationMinutes })}
         </p>
       ) : null}
       <ul className="mt-3 space-y-1.5">

@@ -19,7 +19,8 @@ const UUID_PATTERN =
 
 function stripKnownPlaceholders(text: string): string {
   return text
-    .replace(/PDF 문서를 불러왔습니다[^\n]*/gi, '')
+    .replace(/PDF 본문은 아직 추출되지 않았습니다[^\n]*/gi, '')
+    .replace(/PDF 사업계획서를 불러왔습니다[^\n]*/gi, '')
     .replace(/Word 문서를 불러왔습니다[^\n]*/gi, '')
     .replace(/AI PM이 문서 구조를 분석합니다[^\n]*/gi, '')
     .replace(/AI PM이 핵심 섹션을 추출합니다[^\n]*/gi, '');

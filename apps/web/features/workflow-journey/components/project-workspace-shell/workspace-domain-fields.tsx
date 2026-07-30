@@ -44,7 +44,7 @@ export function WorkspaceDomainFields({
   onChange,
   className,
 }: WorkspaceDomainFieldsProps) {
-  const t = useTranslations('workflow.v2.workspaceShell.domainFields');
+  const t = useTranslations('workflow.journey.workspaceShell.domainFields');
 
   return (
     <section className={cn('space-y-4', className)}>

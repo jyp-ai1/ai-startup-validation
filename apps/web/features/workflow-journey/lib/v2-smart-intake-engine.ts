@@ -18,7 +18,13 @@ import type {
 import type { DemoProjectDraft } from './v2-demo-project-store';
 
 function isBinaryPlaceholder(text: string, source: SmartIntakeImportSource): boolean {
-  if (source === 'pdf') return text.includes('PDF 문서를 불러왔습니다');
+  if (source === 'pdf') {
+    return (
+      text.includes('PDF 본문은 아직 추출되지 않았습니다') ||
+      text.includes('PDF 문서를 불러왔습니다') ||
+      text.includes('PDF 사업계획서를 불러왔습니다')
+    );
+  }
   if (source === 'docx') return text.includes('Word 문서를 불러왔습니다');
   return false;
 }
@@ -175,7 +181,7 @@ export async function readSmartIntakeFile(
   const fileName = file.name;
   const ext = fileName.split('.').pop()?.toLowerCase() ?? 'txt';
   if (ext === 'pdf') {
-    const demoText = 'PDF 사업계획서를 불러왔습니다. AI PM이 문서 구조를 분석합니다.';
+    const demoText = `# ${fileName}\n\nPDF 본문은 아직 추출되지 않았습니다. Business·Customer는 직접 확인이 필요합니다.`;
     return { text: demoText, source: 'pdf', fileName };
   }
   if (ext === 'docx') {

@@ -42,7 +42,7 @@ export function WorkspaceAiPmMain({
   onReview,
   className,
 }: WorkspaceAiPmMainProps) {
-  const t = useTranslations('workflow.v2.workspaceShell.aiPmMain');
+  const t = useTranslations('workflow.journey.workspaceShell.aiPmMain');
   const message = buildAiPmPrimaryMessage(domain, reviewCount, entities);
   const paragraphs = sanitizeAiPmParagraphs(message.paragraphs);
   const canReview = canProceedWorkspaceReview(domain, entities);

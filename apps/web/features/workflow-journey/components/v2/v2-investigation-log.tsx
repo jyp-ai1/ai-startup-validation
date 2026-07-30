@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { InvestigationLogEntry } from '../../lib/v2-investigation-types';
+import { formatRelativeMinutesAgo } from '../../lib/format-relative-time';
 
 type V2InvestigationLogProps = {
   entries: InvestigationLogEntry[];
@@ -24,6 +25,12 @@ export function V2InvestigationLog({
 }: V2InvestigationLogProps) {
   const t = useTranslations(`workflow.v2.strategyWorkspace.ia.thinkingUx.${namespace}`);
 
+  const relativeLabels = {
+    justNow: t('relative.justNow'),
+    minutesAgo: (minutes: number) => t('relative.minutesAgo', { minutes }),
+    analyzing: t('relative.analyzing'),
+  };
+
   return (
     <div
       className={cn(
@@ -37,10 +44,10 @@ export function V2InvestigationLog({
       </p>
       <ul className={cn('space-y-3', compact ? 'mt-2' : 'mt-3')}>
         {entries.map((entry) => (
-          <li key={`${entry.id}-${entry.time}`} className="text-sm">
+          <li key={`${entry.id}-${entry.minutesAgo}`} className="text-sm">
             <div className="flex items-start gap-3">
-              <span className="mt-0.5 shrink-0 font-mono text-[11px] text-muted-foreground">
-                {entry.time}
+              <span className="mt-0.5 shrink-0 text-[11px] text-muted-foreground">
+                {formatRelativeMinutesAgo(entry.minutesAgo, relativeLabels)}
               </span>
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{t(`log.entries.${entry.id}`)}</p>

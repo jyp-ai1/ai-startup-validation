@@ -39,7 +39,7 @@ export function WorkspaceProgressiveOverview({
   completedTopics = 0,
   className,
 }: WorkspaceProgressiveOverviewProps) {
-  const t = useTranslations('workflow.v2.workspaceShell.overview');
+  const t = useTranslations('workflow.journey.workspaceShell.overview');
   const [visibleCount, setVisibleCount] = useState(0);
 
   const targetCount = resolveVisibleBlockCount(reviewCount, completedTopics);

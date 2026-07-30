@@ -43,12 +43,6 @@ export async function LandingHeader() {
               {t(`nav.${key}`)}
             </a>
           ))}
-          <Link href="/validation" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-            {t('nav.workspace')}
-          </Link>
-          <Link href="/demo/enter" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-            {t('nav.demo')}
-          </Link>
         </nav>
 
         <LandingHeaderControls
@@ -60,8 +54,9 @@ export async function LandingHeader() {
             closeMenu: t('nav.closeMenu'),
             signIn: t('nav.signIn'),
             startFree: t('nav.startFree'),
+            openDemo: t('nav.openDemo'),
             workspace: t('nav.workspace'),
-            demo: t('nav.demo'),
+            settings: t('nav.settings'),
           }}
         />
       </div>

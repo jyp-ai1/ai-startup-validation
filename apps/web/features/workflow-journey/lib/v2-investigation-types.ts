@@ -53,14 +53,16 @@ export type DiscoveryId =
 
 export type InvestigationLogEntry = {
   id: InvestigationLogEntryId;
-  time: string;
+  /** Minutes before now when this step completed; -1 = in progress */
+  minutesAgo: number;
   findingKey?: string;
   durationMinutes?: number;
 };
 
 export type DailyReportEntry = {
   id: DailyReportTimelineId;
-  time: string;
+  /** Minutes before now when this step completed */
+  minutesAgo: number;
 };
 
 export type WorkProgressItem = {
@@ -85,8 +87,6 @@ export type PmReportStats = {
 };
 
 export type MorningBriefing = {
-  scheduledTime: string;
-  completedTime: string;
   durationMinutes: number;
   highlightKeys: string[];
   focusKey: string;
