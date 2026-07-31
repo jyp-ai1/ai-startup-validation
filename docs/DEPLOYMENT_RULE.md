@@ -8,9 +8,31 @@
 ## Definition of done
 
 **"Merge complete" is NOT done.**  
-**"Production QA passed" IS done.**
+**"Production QA passed" IS done** — only after **Experience Gate PASS** and **PM Test Ready**.
 
 Local and Production must be the **same product** before any UX sprint continues.
+
+---
+
+## Release pipeline
+
+```text
+Code Complete
+      ↓
+Production Deploy  (Commit → Push → SHA)
+      ↓
+E2E                (2 Production videos)
+      ↓
+Experience Gate    (CTO Self Review — see RELEASE_PIPELINE.md)
+      ↓
+PM Test
+      ↓
+CEO Test
+```
+
+**CEO is never the first person to walk a broken flow.**
+
+Full checklist: `docs/sprints/RELEASE_PIPELINE.md`
 
 ---
 
@@ -68,6 +90,8 @@ Two **Production** screen recordings (~5 min each):
 Submit QA table from `E2E_VERIFICATION_GATE.md` with recording links.
 
 **Do not write "반영 완료" if either flow is unfinished.**
+
+Experience Gate + Self Review: **`docs/sprints/RELEASE_PIPELINE.md`**
 
 ---
 

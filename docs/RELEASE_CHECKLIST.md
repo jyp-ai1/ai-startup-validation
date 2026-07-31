@@ -2,11 +2,35 @@
 
 **Purpose:** Sprint 5 종료 시 이 문서 하나로 **Closed Alpha 오픈 가능 여부**를 판단합니다.
 
-> **빌드 성공 ≠ 릴리즈 가능.** 실제 사용자 검증 = 완료.
+> **빌드 성공 ≠ 릴리즈 가능.**  
+> **Experience Gate PASS + PM Test Ready** = 릴리즈 가능.
+
+**Primary gate (2026-07):** `docs/sprints/RELEASE_PIPELINE.md` — Code → Production → E2E → Experience → PM → CEO
 
 **Admin mirror:** `/admin/operations` → **Release Readiness** 패널 (실시간 이벤트 기반)
 
-**Last updated:** Sprint 5 P0 Hotfix
+**Last updated:** Experience Gate added to release pipeline
+
+---
+
+## Release Checklist (mandatory before PM Test)
+
+```text
+□ Commit
+□ Push
+□ Production
+□ SHA
+
+□ E2E Video 1 — Start Free → Insight
+□ E2E Video 2 — Demo → Login → Continue
+
+□ CTO Self Review
+□ Experience Gate PASS
+
+□ PM Test Ready
+```
+
+Details: `docs/sprints/RELEASE_PIPELINE.md`
 
 ---
 

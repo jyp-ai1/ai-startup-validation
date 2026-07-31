@@ -1,9 +1,19 @@
 # E2E Verification Gate
 
 > **Rule:** Commit / push / SHA ≠ done.  
-> **Done** = two Production screen recordings pass end-to-end, plus QA table below.
+> **Done** = E2E videos + **CTO Self Review** + **Experience Gate PASS** → then **PM Test Ready**.
 
-PM / CEO must **not** be asked to test until CTO submits this package.
+PM / CEO must **not** be asked to test until CTO submits the full pipeline (see `RELEASE_PIPELINE.md`).
+
+---
+
+## Pipeline position
+
+```text
+Code Complete → Production → E2E (this doc) → Experience Gate → PM Test → CEO Test
+```
+
+Experience Gate checklist: `docs/sprints/RELEASE_PIPELINE.md`
 
 ---
 
@@ -67,19 +77,23 @@ Deployment
 ✅ SHA: ______
 
 E2E (Production recordings attached)
-⬜ Start Free → Review → Insight
-⬜ Demo → Review → Insight → Login → Continue
+⬜ Video 1 — Start Free → Insight
+⬜ Video 2 — Demo → Login → Continue
 
-Known blockers (if any E2E ⬜)
-- Flow: ______
-- Step where it stops: ______
-- Root cause (file / behavior): ______
+CTO Self Review (after each video)
+Flow 1: PASS | FAIL — Why? — Fix: P0|P1|skip
+Flow 2: PASS | FAIL — Why? — Fix: P0|P1|skip
 
-Known Issues (non-blocker)
-- ...
+Experience Gate
+⬜ Flow 1 — progress / no stall / AI first
+⬜ Flow 2 — feels demo / continues / save intent
+⬜ Experience Gate PASS
+
+Handoff
+⬜ PM Test Ready
 ```
 
-**Do not write "반영 완료" if either E2E row is ⬜.**
+**Do not write "반영 완료" or "PM Test Ready" if any E2E ⬜ or Experience Gate FAIL.**
 
 ---
 
@@ -111,5 +125,6 @@ Use this when explaining why E2E cannot be claimed yet.
 
 ## Related
 
+- `docs/sprints/RELEASE_PIPELINE.md` — Experience Gate + Release Checklist
 - `docs/sprints/CTO_WORKSPACE_EXPERIENCE_FIXES.md`
 - `docs/DEPLOYMENT_RULE.md`

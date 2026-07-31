@@ -4,70 +4,90 @@
 
 ---
 
-## ⚠️ Definition of done (read first)
+## Release pipeline (operating rule)
 
-| CTO says | Actually means |
-|----------|----------------|
-| Commit / push / SHA | Deploy only — **not** product done |
-| "반영 완료" | **Forbidden** until E2E gate passes |
-| Done | Two Production screen recordings + QA table in `docs/sprints/E2E_VERIFICATION_GATE.md` |
+```text
+Code Complete → Production → E2E → Experience Gate → PM Test → CEO Test
+```
 
-**PM test handoff requires E2E, not SHA.**
+Full checklist: **`docs/sprints/RELEASE_PIPELINE.md`**
 
----
+| Gate | CTO delivers |
+|------|----------------|
+| Production | Commit / Push / SHA |
+| E2E | 2 Production videos |
+| **Experience Gate** | Self Review + 6 experience checks |
+| PM Test Ready | Only when all above PASS |
 
-## 🔴 P0 — Blockers (not "Known Issues")
-
-### P0-E2E-A — Start Free → Review → Insight
-
-Must complete on Production with recording. See Flow A in `E2E_VERIFICATION_GATE.md`.
-
-### P0-E2E-B — Demo → Review → Insight → Login → Continue
-
-**LaunchLens first impression is Demo.** If this stops before Login→Continue, the product is not demonstrable.
-
-Legacy `V2DemoExperience` had login CTA; unified `demo-guided` shell **does not** — this is the main code gap.
+**CEO must not be the first person to hit a broken flow.**
 
 ---
 
-## Supporting P0 (necessary, not sufficient)
+## Release Checklist (every handoff)
 
-| # | Item | Status (7ab4cc7) |
-|---|------|------------------|
-| P0-1 | Hero `today ≤ total` | ✅ |
-| P0-2 | Landing width unified | ✅ |
-| P0-3 | Workspace never frozen (CTA) | ✅ partial |
-| P0-4 | Demo shell + sample read | ✅ partial — **Review→Insight→Login not E2E** |
-| P0-5 | Start Free ≠ Demo routes | ✅ |
-| P0-6 | Project list after login | ✅ |
+```text
+□ Commit
+□ Push
+□ Production
+□ SHA
 
----
+□ E2E Video 1 — Start Free → Insight
+□ E2E Video 2 — Demo → Login → Continue
 
-## CTO handoff checklist
+□ CTO Self Review (PASS/FAIL + Why + fix priority)
+□ Experience Gate PASS
 
-### 1. Deployment
-
-- Commit / Push / Production / URL / SHA
-
-### 2. E2E (mandatory)
-
-- [ ] Recording: Start Free → Insight
-- [ ] Recording: Demo → Login → Continue
-
-### 3. QA report
-
-Use template in `E2E_VERIFICATION_GATE.md` section 3.
+□ PM Test Ready
+```
 
 ---
 
-## P1+ (after both E2E pass)
+## Experience Gate (CTO Self Review)
 
-- PDF upload on authenticated workspace
-- Real PDF extraction
-- UI polish / copy / score from pipeline
+Attach **after each E2E video** — video without Self Review is not evidence.
+
+```text
+Flow: ______
+Result: PASS | FAIL
+Why? (user perception)
+Fix priority: P0 | P1 | skip
+PM Test Ready? YES | NO
+```
+
+**Flow 1 checks:** 끝까지 가능 · 막히지 않음 · AI가 먼저 일함  
+**Flow 2 checks:** Demo 같음 · 내 프로젝트로 이어짐 · 저장하고 싶어짐
+
+Example FAIL:
+
+```text
+Flow 2 — FAIL
+Insight 이후 Login CTA 없음. 사용자는 끝났다고 생각함. → P0
+```
+
+---
+
+## P0 blockers (experience, not code)
+
+| ID | Blocker |
+|----|---------|
+| P0-E2E-A | Start Free → Insight not completable on Production |
+| P0-E2E-B | Demo → Insight → Login → Continue not completable |
+| P0-EXP | Experience Gate FAIL (Form-first, stall, no save intent) |
+
+Supporting fixes (metrics, width, CTA panel, routes): see git history `7ab4cc7` — **necessary, not sufficient**.
 
 ---
 
 ## PM one-liner to CTO
 
-> 코드 설명 말고, Production에서 실제 동작하는 **2개 E2E 영상**을 보내주세요.
+> E2E 영상 2개 + **CTO Self Review** + **Experience Gate PASS** 없이 PM 테스트 요청하지 마세요.
+
+---
+
+## P1+ (after pipeline PASS)
+
+- PDF upload on auth workspace
+- Real PDF extraction
+- UI polish
+
+See `docs/sprints/E2E_VERIFICATION_GATE.md` for code gap table.
