@@ -54,6 +54,21 @@ CTO must attach **all** of the following — not optional:
 
 Without 1–4, do not ask for product testing.
 
+**SHA alone is not a handoff.** See `docs/sprints/E2E_VERIFICATION_GATE.md`.
+
+---
+
+## E2E gate (required before PM / CEO test)
+
+Two **Production** screen recordings (~5 min each):
+
+1. **Start Free** → Login → Project → PDF/paste → AI Read → Align → Review → Insight  
+2. **Open Demo** → Review → Insight → Login → project promote → continue
+
+Submit QA table from `E2E_VERIFICATION_GATE.md` with recording links.
+
+**Do not write "반영 완료" if either flow is unfinished.**
+
 ---
 
 ## Step 4 — Build info

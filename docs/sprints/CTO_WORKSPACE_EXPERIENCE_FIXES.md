@@ -4,99 +4,70 @@
 
 ---
 
-## 🔴 P0 — This sprint only (6 items)
+## ⚠️ Definition of done (read first)
 
-| # | Item | Pass criteria |
-|---|------|----------------|
-| **P0-1** | Hero metrics `today` / `total` | **Always** `오늘 ≤ 지금까지`. Same event family; server + client clamp. |
-| **P0-2** | Landing width | Hero → FAQ use `LANDING_CONTAINER` (`max-w-7xl px-6`). No per-section width drift. |
-| **P0-3** | Workspace never “frozen” | At least one of: CTA / progress / “대표님 확인 필요” — never blank stall. |
-| **P0-4** | Demo flow alive | Demo → read → discover → align → review (not sample → stop). |
-| **P0-5** | Start Free ≠ Demo | Start Free → login → new project. Demo → `/demo/enter` → sample workspace. |
-| **P0-6** | Project picker after login | `/workspace` without `?project=` → **My Projects** list, not auto-first-project. |
+| CTO says | Actually means |
+|----------|----------------|
+| Commit / push / SHA | Deploy only — **not** product done |
+| "반영 완료" | **Forbidden** until E2E gate passes |
+| Done | Two Production screen recordings + QA table in `docs/sprints/E2E_VERIFICATION_GATE.md` |
 
-**Rule:** No new features until all six pass on **Production**.
+**PM test handoff requires E2E, not SHA.**
 
 ---
 
-## P0-1 — Metrics bug
+## 🔴 P0 — Blockers (not "Known Issues")
 
-**Symptom:** 오늘 54 / 지금까지 5 (impossible).
+### P0-E2E-A — Start Free → Review → Insight
 
-**Cause:** `today` counted broad events (workspace enter, demo enter…); `total` used narrow `funnel.reviewCompleted` only.
+Must complete on Production with recording. See Flow A in `E2E_VERIFICATION_GATE.md`.
 
-**Fix:** `countAllTimeReviewStarts()` + `Math.max(total, today)` in `ops-store.ts` and client guard in `landing-live-metrics.tsx`.
+### P0-E2E-B — Demo → Review → Insight → Login → Continue
 
----
+**LaunchLens first impression is Demo.** If this stops before Login→Continue, the product is not demonstrable.
 
-## P0-2 — Width
-
-**Files:** `apps/web/features/landing/lib/landing-layout.ts`, all GTM section components.
-
-```ts
-LANDING_CONTAINER = 'mx-auto w-full max-w-7xl px-6'
-LANDING_CONTENT   = 'mx-auto w-full max-w-3xl' // inner copy column — same everywhere
-```
+Legacy `V2DemoExperience` had login CTA; unified `demo-guided` shell **does not** — this is the main code gap.
 
 ---
 
-## P0-3 — Workspace stall
+## Supporting P0 (necessary, not sufficient)
 
-**Symptom:** Sidebar shows 🟡 고객 확인 중; main area empty; no button.
-
-**Fix:** `WorkspaceNextStepPanel` — loading / 확인하기 / 고객 확인하기 / 검토 시작.  
-Migrate legacy phase `accepted` → `aligning`. Force `mainView='ai-pm'` when `reviewCount === 0`.
-
----
-
-## P0-4 — Demo
-
-**Was:** Legacy `V2DemoExperience` or sample → stop.
-
-**Now:** `demo-guided` → `ProjectWorkspaceShell` + `TASTE_COMPANY_FULL_SAMPLE` + understanding card.
-
-**Still TODO:** Login gate after review + insight; full Review→Insight path in guest mode.
+| # | Item | Status (7ab4cc7) |
+|---|------|------------------|
+| P0-1 | Hero `today ≤ total` | ✅ |
+| P0-2 | Landing width unified | ✅ |
+| P0-3 | Workspace never frozen (CTA) | ✅ partial |
+| P0-4 | Demo shell + sample read | ✅ partial — **Review→Insight→Login not E2E** |
+| P0-5 | Start Free ≠ Demo routes | ✅ |
+| P0-6 | Project list after login | ✅ |
 
 ---
 
-## P0-5 — Journeys
+## CTO handoff checklist
 
-| CTA | Path |
-|-----|------|
-| Start Free | `/auth/login?next=/workspace?intent=new` → bootstrap new project |
-| Open Demo | `/demo/enter` → guest workspace + sample doc |
+### 1. Deployment
 
----
+- Commit / Push / Production / URL / SHA
 
-## P0-6 — Project list
+### 2. E2E (mandatory)
 
-**Was:** Auto-redirect to first project on login.
+- [ ] Recording: Start Free → Insight
+- [ ] Recording: Demo → Login → Continue
 
-**Now:** Only `?project=` opens canvas; else `MyProjectsHome`.
+### 3. QA report
 
----
-
-## Pre-test delivery checklist (mandatory before “반영했습니다”)
-
-Before asking PM/CEO to test, CTO must provide:
-
-1. **Commit** SHA  
-2. **Push** to `origin/main`  
-3. **Production deploy** complete (Vercel green)  
-4. **Production URL** + `/api/build-info` SHA match  
-5. **Preview URL** (if applicable)  
-6. **Test scenario** (step-by-step)  
-7. **Known issues** (honest list)
-
-No test request without items 1–4.
-
-See also: `docs/DEPLOYMENT_RULE.md`
+Use template in `E2E_VERIFICATION_GATE.md` section 3.
 
 ---
 
-## P1+ (not this sprint)
+## P1+ (after both E2E pass)
 
-- Real PDF extraction  
-- Demo login at review boundary + phase restore  
-- Full Insight workshop in demo guest path  
-- Score from pipeline (not placeholder 74)
+- PDF upload on authenticated workspace
+- Real PDF extraction
+- UI polish / copy / score from pipeline
+
+---
+
+## PM one-liner to CTO
+
+> 코드 설명 말고, Production에서 실제 동작하는 **2개 E2E 영상**을 보내주세요.
