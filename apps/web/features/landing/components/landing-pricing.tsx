@@ -10,7 +10,7 @@ import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { LandingCtaLink } from './landing-cta-link';
-import { LANDING_CONTAINER } from '../lib/landing-layout';
+import { LANDING_CONTAINER, LANDING_CONTENT } from '../lib/landing-layout';
 
 const PLANS = ['free', 'pro', 'enterprise'] as const;
 const PLAN_FEATURES: Record<(typeof PLANS)[number], string[]> = {
@@ -48,7 +48,7 @@ export function LandingPricing() {
   return (
     <section id="pricing" ref={sectionRef} className="py-[120px]">
       <div className={LANDING_CONTAINER}>
-        <div className="mx-auto max-w-2xl text-center">
+        <div className={`${LANDING_CONTENT} text-center`}>
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-1.5 text-xs font-semibold text-foreground/80">
             <Star className="size-3.5 fill-amber-400 text-amber-400" />
             {t('betaBadge')}

@@ -6573,6 +6573,19 @@
             "nextAction": "Next Action"
           }
         },
+        "nextStep": {
+          "aiLabel": "AI PM",
+          "loadingDocument": "Loading your document",
+          "loadingDocumentHint": "Just a moment.",
+          "understandingLead": "Let's align on what I read in your document.",
+          "understandingSub": "Review what AI PM found below.",
+          "continueUnderstandingCta": "Continue",
+          "customerAlignLead": "Customer is not confirmed yet.",
+          "customerAlignSub": "Next we'll define the customer together.",
+          "confirmCustomerCta": "Confirm customer",
+          "reviewReadyLead": "You're ready to start the viability review.",
+          "startReviewCta": "Start review"
+        },
         "decisionWorkshop": {
           "aiLabel": "AI PM",
           "insightLead": "What stood out most in this review",

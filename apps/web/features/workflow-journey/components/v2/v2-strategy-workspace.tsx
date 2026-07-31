@@ -57,7 +57,7 @@ import {
   type WorkspaceDomainEvidence,
   type WorkspaceDomainFieldId,
 } from '../../lib/workspace-ai-pm-messages';
-import { loadUnderstandingPhase } from '../../lib/business-understanding/business-understanding-store';
+import { loadUnderstandingPhase, clearBusinessUnderstandingConfirmed } from '../../lib/business-understanding/business-understanding-store';
 import { allowsOpenReview, loadMarketAlignment } from '../../lib/business-understanding/workspace-alignment';
 import { buildBusinessUnderstandingIntro, buildReviewTransitionMessage, buildBusinessUnderstanding, TASTE_COMPANY_FULL_SAMPLE } from '../../lib/business-understanding/build-business-understanding';
 import { loadDemoProjectDraft } from '../../lib/v2-demo-project-store';
@@ -137,6 +137,12 @@ export function V2StrategyWorkspaceView({
     ReturnType<typeof loadUnderstandingPhase>
   >('pending');
 
+  useEffect(() => {
+    if (reviewCount === 0) {
+      setMainView('ai-pm');
+    }
+  }, [projectId, isDemoGuided, reviewCount]);
+
   const refreshUnderstandingState = useCallback(() => {
     setUnderstandingPhase(loadUnderstandingPhase(projectId));
   }, [projectId]);
@@ -200,6 +206,7 @@ export function V2StrategyWorkspaceView({
     }
 
     if (isDemoGuided) {
+      clearBusinessUnderstandingConfirmed(projectId);
       const sample = TASTE_COMPANY_FULL_SAMPLE;
       saveWorkspaceDocumentText(sample, projectId);
       const inferred = inferDomainFromPaste(sample, projectId);

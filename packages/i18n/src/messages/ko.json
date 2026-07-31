@@ -6726,6 +6726,19 @@
             "nextAction": "다음 행동"
           }
         },
+        "nextStep": {
+          "aiLabel": "AI PM",
+          "loadingDocument": "문서를 불러오는 중입니다",
+          "loadingDocumentHint": "잠시만 기다려 주세요.",
+          "understandingLead": "문서에서 확인한 내용을 함께 맞춰 보겠습니다.",
+          "understandingSub": "아래에서 AI PM이 읽은 내용을 확인해 주세요.",
+          "continueUnderstandingCta": "확인하기",
+          "customerAlignLead": "고객을 아직 확인하지 못했습니다.",
+          "customerAlignSub": "다음으로 고객을 같이 정의하겠습니다.",
+          "confirmCustomerCta": "고객 확인하기",
+          "reviewReadyLead": "확인해 주신 기준으로 사업성 검토를 시작할 수 있습니다.",
+          "startReviewCta": "검토 시작"
+        },
         "decisionWorkshop": {
           "aiLabel": "AI PM",
           "insightLead": "이번 검토에서 가장 크게 보인 점",

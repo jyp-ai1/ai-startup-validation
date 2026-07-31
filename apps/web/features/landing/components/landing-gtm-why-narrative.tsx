@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { LANDING_CONTAINER } from '../lib/landing-layout';
+import { LANDING_CONTAINER, LANDING_CONTENT } from '../lib/landing-layout';
 
 const STEPS = ['problem1', 'problem2', 'problem3', 'resolution'] as const;
 
@@ -12,7 +12,7 @@ export function LandingGtmWhyNarrative() {
   return (
     <section id="why-launchlens" className="border-y border-border/50 bg-muted/10 py-20 sm:py-24">
       <div className={LANDING_CONTAINER}>
-        <div className="mx-auto max-w-3xl">
+        <div className={LANDING_CONTENT}>
         <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           {t('title')}
         </h2>

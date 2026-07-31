@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import type { OpsDashboardStats } from '@/lib/analytics/types';
 import { cn } from '@repo/ui/lib/utils';
 
+import { LANDING_CONTENT } from '../lib/landing-layout';
+
 import { LandingTestimonials } from './landing-testimonials';
 
 type LandingLiveMetricsProps = {
@@ -74,12 +76,14 @@ export function LandingLiveMetrics({ className, variant = 'section' }: LandingLi
   }, []);
 
   const socialProof = stats?.landingSocialProof ?? MOCK_SOCIAL_PROOF;
-  const todayCount = socialProof.todayReviewsStarted;
-  const allTimeCount = socialProof.allTimeReviewsCompleted;
+  const todayRaw = socialProof.todayReviewsStarted;
+  const allTimeRaw = socialProof.allTimeReviewsCompleted;
+  const allTimeCount = Math.max(allTimeRaw, todayRaw);
+  const todayCount = Math.min(todayRaw, allTimeCount);
 
   if (variant === 'hero') {
     return (
-      <div className={cn('mx-auto mt-8 max-w-3xl space-y-6', className)} aria-label={t('ariaLabel')}>
+      <div className={cn(LANDING_CONTENT, 'mt-8 space-y-6', className)} aria-label={t('ariaLabel')}>
         <SocialProofGrid todayCount={todayCount} allTimeCount={allTimeCount} />
         {stats?.source === 'mock' ? (
           <p className="text-center text-[10px] uppercase tracking-wide text-muted-foreground/70">
@@ -92,7 +96,7 @@ export function LandingLiveMetrics({ className, variant = 'section' }: LandingLi
   }
 
   return (
-    <section className={cn('mx-auto max-w-4xl px-4', className)} aria-label={t('ariaLabel')}>
+    <section className={cn(LANDING_CONTENT, className)} aria-label={t('ariaLabel')}>
       <SocialProofGrid todayCount={todayCount} allTimeCount={allTimeCount} />
     </section>
   );

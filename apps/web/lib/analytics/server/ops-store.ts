@@ -861,13 +861,29 @@ function countTodayReviewStarts(todayStart: Date): number {
   );
 }
 
+function countAllTimeReviewStarts(): number {
+  return (
+    countEvents(PRODUCT_ANALYTICS_EVENTS.firstReviewCompleted) +
+    countEvents(PRODUCT_ANALYTICS_EVENTS.reviewCompleted) +
+    countEvents(PRODUCT_ANALYTICS_EVENTS.demoStarted) +
+    countEvents(ANALYTICS_EVENTS.demoEnter) +
+    countEvents(PRODUCT_ANALYTICS_EVENTS.myProjectStarted) +
+    countEvents(PRODUCT_ANALYTICS_EVENTS.investigationFinished)
+  );
+}
+
 function computeLandingSocialProof(
   funnel: ClosedAlphaFunnelCounts,
   todayStart: Date,
 ): NonNullable<OpsDashboardStats['landingSocialProof']> {
+  const todayRaw = countTodayReviewStarts(todayStart);
+  const allTimeRaw = Math.max(countAllTimeReviewStarts(), funnel.reviewCompleted);
+  const allTime = Math.max(allTimeRaw, todayRaw);
+  const today = Math.min(todayRaw, allTime);
+
   return {
-    todayReviewsStarted: countTodayReviewStarts(todayStart),
-    allTimeReviewsCompleted: funnel.reviewCompleted,
+    todayReviewsStarted: today,
+    allTimeReviewsCompleted: allTime,
   };
 }
 

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { ArrowRight, Check } from 'lucide-react';
 
 import { LandingCtaLink } from './landing-cta-link';
-import { LANDING_CONTAINER } from '../lib/landing-layout';
+import { LANDING_CONTAINER, LANDING_CONTENT } from '../lib/landing-layout';
 
 const DEMO_STEPS = ['problem', 'customer', 'market', 'review', 'decision', 'memory'] as const;
 
@@ -14,7 +14,7 @@ export function LandingLiveDemoSection() {
   return (
     <section id="live-demo" className="py-20 sm:py-24">
       <div className={LANDING_CONTAINER}>
-        <div className="mx-auto max-w-2xl text-center">
+        <div className={`${LANDING_CONTENT} text-center`}>
           <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             {t('sectionTitle')}
           </h2>
@@ -23,7 +23,7 @@ export function LandingLiveDemoSection() {
           </p>
         </div>
 
-        <div className="mx-auto mt-12 max-w-lg">
+        <div className={`${LANDING_CONTENT} mt-12`}>
           <article className="rounded-2xl border border-border bg-card p-6 shadow-sm transition-colors hover:border-primary/40">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               {t('cardLabel')}

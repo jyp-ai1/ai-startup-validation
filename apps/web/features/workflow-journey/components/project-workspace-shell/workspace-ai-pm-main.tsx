@@ -37,6 +37,7 @@ import {
 import { WorkspaceBusinessAlignmentBlock } from './workspace-business-alignment-block';
 import { WorkspaceBusinessUnderstandingCard } from './workspace-business-understanding-card';
 import { WorkspaceDecisionWorkshopBlock } from './workspace-decision-workshop-block';
+import { WorkspaceNextStepPanel } from './workspace-next-step-panel';
 import { WorkspaceProgressiveOverview } from './workspace-progressive-overview';
 
 type WorkspaceAiPmMainProps = {
@@ -97,7 +98,13 @@ export function WorkspaceAiPmMain({
   const [workshopAgreement, setWorkshopAgreement] = useState(() => loadWorkshopAgreement(projectId));
 
   useEffect(() => {
-    setUnderstandingPhase(loadUnderstandingPhase(projectId));
+    const loaded = loadUnderstandingPhase(projectId);
+    if (loaded === 'accepted') {
+      saveUnderstandingPhase('aligning', projectId);
+      setUnderstandingPhase('aligning');
+    } else {
+      setUnderstandingPhase(loaded);
+    }
     setSavedAlignment(loadMarketAlignment(projectId));
     setWorkshopAgreement(loadWorkshopAgreement(projectId));
   }, [projectId, reviewCount]);
@@ -124,10 +131,22 @@ export function WorkspaceAiPmMain({
   );
 
   const showUnderstandingCard =
-    Boolean(understanding) && reviewCount === 0 && understandingPhase === 'pending';
+    Boolean(understanding) &&
+    reviewCount === 0 &&
+    (understandingPhase === 'pending' ||
+      understandingPhase === 'edit' ||
+      understandingPhase === 'together');
 
   const showMarketAlignment =
-    Boolean(understanding) && reviewCount === 0 && understandingPhase === 'aligning';
+    Boolean(understanding) &&
+    reviewCount === 0 &&
+    (understandingPhase === 'aligning' || understandingPhase === 'accepted');
+
+  const showNextStepPanel =
+    reviewCount === 0 &&
+    phase === 'compose' &&
+    !showUnderstandingCard &&
+    !showMarketAlignment;
 
   const showPostReviewWorkshop =
     Boolean(understanding) && shouldShowPostReviewWorkshop(reviewCount, workshopAgreement);
@@ -194,7 +213,26 @@ export function WorkspaceAiPmMain({
         />
       ) : null}
 
-      {!showUnderstandingCard && !showMarketAlignment && understandingPhase !== 'aligning' ? (
+      {showNextStepPanel ? (
+        <WorkspaceNextStepPanel
+          phase={understandingPhase}
+          hasDocument={documentContext.trim().length >= 8}
+          onContinueUnderstanding={() => {
+            saveUnderstandingPhase('pending', projectId);
+            setUnderstandingPhase('pending');
+          }}
+          onContinueAlignment={() => {
+            saveUnderstandingPhase('aligning', projectId);
+            setUnderstandingPhase('aligning');
+          }}
+          onStartReview={onReview}
+        />
+      ) : null}
+
+      {!showUnderstandingCard &&
+      !showMarketAlignment &&
+      !showNextStepPanel &&
+      understandingPhase !== 'aligning' ? (
         <>
           {!showPostReviewWorkshop || workshopAgreed ? (
             <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.05] to-background px-6 py-6 sm:px-8">

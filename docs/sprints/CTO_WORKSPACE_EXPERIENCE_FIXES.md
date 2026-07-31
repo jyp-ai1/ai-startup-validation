@@ -1,126 +1,102 @@
 # CTO Workspace Experience Fixes
 
-> **Status:** Sprint 5 — compressed P0 (first 3 minutes)  
-> **North star:** User feels *"AI is reading my business"* within 3 minutes — not *"I must fill a form"*.
+> **North star:** First 3 minutes — user feels *"AI is reading my business"*, never *"I must fill a form"*.
 
 ---
 
-## This sprint — 4 items only
+## 🔴 P0 — This sprint only (6 items)
 
-| # | P0 | User should feel | Done when |
-|---|-----|------------------|-----------|
-| **1** | AI read evidence first | "AI already read my doc" | Checklist: ✓ 창업자 · ✓ 사업 · ✓ 고객 후보 … + unconfirmed list **before** any input |
-| **2** | Minimize direct input | "I confirm / tweak, not type from zero" | AI-filled drafts (✓ values), not empty fields; edit is secondary |
-| **3** | Review start works or explains | Never "?? bug?" | Start runs **or** Korean reason e.g. *"고객만 하나 더 확인하면 검토를 시작할 수 있습니다"* |
-| **4** | Demo = Workspace | Same shell, sample project, promote on login | `/demo/enter` → workspace shell + sample doc → login → project continues |
+| # | Item | Pass criteria |
+|---|------|----------------|
+| **P0-1** | Hero metrics `today` / `total` | **Always** `오늘 ≤ 지금까지`. Same event family; server + client clamp. |
+| **P0-2** | Landing width | Hero → FAQ use `LANDING_CONTAINER` (`max-w-7xl px-6`). No per-section width drift. |
+| **P0-3** | Workspace never “frozen” | At least one of: CTA / progress / “대표님 확인 필요” — never blank stall. |
+| **P0-4** | Demo flow alive | Demo → read → discover → align → review (not sample → stop). |
+| **P0-5** | Start Free ≠ Demo | Start Free → login → new project. Demo → `/demo/enter` → sample workspace. |
+| **P0-6** | Project picker after login | `/workspace` without `?project=` → **My Projects** list, not auto-first-project. |
 
-Everything else (full PDF extraction, all-domain Unknown, score from pipeline) is **P1+**.
-
----
-
-## Philosophy vs current UI
-
-```
-Sprint 1–4:  Unknown → Read Before Speak → Align → Review
-Current bad: Form → Form → Form → dead Start
-Target:      Read → Discover → Confirm → Align → Review
-```
+**Rule:** No new features until all six pass on **Production**.
 
 ---
 
-## P0-1 — AI read evidence (first screen)
+## P0-1 — Metrics bug
 
-**Bad:** Sidebar shows Founder / Business / Customer labels only — looks like CRM.
+**Symptom:** 오늘 54 / 지금까지 5 (impossible).
 
-**Good:**
+**Cause:** `today` counted broad events (workspace enter, demo enter…); `total` used narrow `funnel.reviewCompleted` only.
 
-```
-AI PM — 문서를 읽었습니다.
+**Fix:** `countAllTimeReviewStarts()` + `Math.max(total, today)` in `ops-store.ts` and client guard in `landing-live-metrics.tsx`.
 
-✓ 창업자 — …
-✓ 사업 — …
-🟡 고객 후보 — …
-○ 시장 — …
-○ 경쟁 — …
+---
 
-현재 확인하지 못한 내용
-• …
+## P0-2 — Width
+
+**Files:** `apps/web/features/landing/lib/landing-layout.ts`, all GTM section components.
+
+```ts
+LANDING_CONTAINER = 'mx-auto w-full max-w-7xl px-6'
+LANDING_CONTENT   = 'mx-auto w-full max-w-3xl' // inner copy column — same everywhere
 ```
 
-**Implementation:** `WorkspaceBusinessUnderstandingCard` + `discovery-summary.ts`  
-**Sidebar presence:** `nodeStatus.*` — ✓ 창업자 확인 / 🟡 고객 확인 중 / ○ 시장 분석 대기
+---
+
+## P0-3 — Workspace stall
+
+**Symptom:** Sidebar shows 🟡 고객 확인 중; main area empty; no button.
+
+**Fix:** `WorkspaceNextStepPanel` — loading / 확인하기 / 고객 확인하기 / 검토 시작.  
+Migrate legacy phase `accepted` → `aligning`. Force `mainView='ai-pm'` when `reviewCount === 0`.
 
 ---
 
-## P0-2 — No empty forms first
+## P0-4 — Demo
 
-**Bad:** Blank inputs + `+` buttons before AI voice.
+**Was:** Legacy `V2DemoExperience` or sample → stop.
 
-**Good:** Confirmed expressions as ✓ chips; withhold zone for customer; Accept / Edit / Together.
+**Now:** `demo-guided` → `ProjectWorkspaceShell` + `TASTE_COMPANY_FULL_SAMPLE` + understanding card.
 
-**Remaining CTO work:** Wire `edit` / `together` to guided correction (not raw grid). Hide any legacy domain field editors on first path.
-
-**Files:** `workspace-business-understanding-card.tsx`, `workspace-domain-fields.tsx` (wire or delete from path)
+**Still TODO:** Login gate after review + insight; full Review→Insight path in guest mode.
 
 ---
 
-## P0-3 — Review start
+## P0-5 — Journeys
 
-**Bad:** Decorative overview "Start" with no handler; alignment Start disabled silently.
-
-**Fixed in branch:** Overview dead button removed; alignment shows conversational block reason.
-
-**Files:** `workspace-business-alignment-block.tsx`, `workspace-progressive-overview.tsx`
-
----
-
-## P0-4 — Demo = Workspace
-
-**Bad:** `V2DemoExperience` separate linear mock.
-
-**Fixed in branch:** `demo-guided` uses `ProjectWorkspaceShell` + `TASTE_COMPANY_FULL_SAMPLE` document seed.
-
-**Remaining:** Login CTA at review boundary; phase restore after promote (sessionStorage keys).
-
-**Files:** `v2-strategy-workspace.tsx`, `demo/enter/route.ts`, `demo-project-promoted-tracker.tsx`
+| CTA | Path |
+|-----|------|
+| Start Free | `/auth/login?next=/workspace?intent=new` → bootstrap new project |
+| Open Demo | `/demo/enter` → guest workspace + sample doc |
 
 ---
 
-## Product language (not literal translation)
+## P0-6 — Project list
 
-| Avoid | Use |
-|-------|-----|
-| Business Score | 사업성 검토 결과 |
-| Summary | AI PM 요약 |
-| Recommended Next Step | AI PM이 제안하는 다음 단계 |
-| Start | 검토 시작 |
+**Was:** Auto-redirect to first project on login.
 
-Keys: `workflow.journey.workspaceShell` in `packages/i18n/src/messages/ko.json`
+**Now:** Only `?project=` opens canvas; else `MyProjectsHome`.
+
+---
+
+## Pre-test delivery checklist (mandatory before “반영했습니다”)
+
+Before asking PM/CEO to test, CTO must provide:
+
+1. **Commit** SHA  
+2. **Push** to `origin/main`  
+3. **Production deploy** complete (Vercel green)  
+4. **Production URL** + `/api/build-info` SHA match  
+5. **Preview URL** (if applicable)  
+6. **Test scenario** (step-by-step)  
+7. **Known issues** (honest list)
+
+No test request without items 1–4.
+
+See also: `docs/DEPLOYMENT_RULE.md`
 
 ---
 
 ## P1+ (not this sprint)
 
-- Real PDF text extraction (placeholder today)
-- PDF upload on authenticated workspace
-- Per-node overview content (not mock B2B paragraph)
-- Score from review pipeline (not hardcoded 74)
-- Full Unknown pattern on all domains
-
----
-
-## CEO acceptance (3-minute test)
-
-1. Open demo → within 10s see **문서를 읽었습니다** checklist (Korean).
-2. No empty primary form before confirming understanding card.
-3. Sidebar shows **🟡 고객 확인 중** (or similar), not English node names.
-4. Start review or see **why not** in Korean.
-5. Login after demo → same project text, no re-upload.
-
----
-
-## Related docs
-
-- `docs/WORKSPACE_FLOW.md`
-- `docs/sprints/BUSINESS_UNDERSTANDING_VALIDATION.md`
-- `docs/first-trust/ZERO_LIE_CORPUS.md`
+- Real PDF extraction  
+- Demo login at review boundary + phase restore  
+- Full Insight workshop in demo guest path  
+- Score from pipeline (not placeholder 74)

@@ -38,6 +38,24 @@ Every change that affects user-facing behavior:
 
 ---
 
+## Before requesting PM / CEO test (“반영했습니다”)
+
+CTO must attach **all** of the following — not optional:
+
+| # | Deliverable |
+|---|-------------|
+| 1 | Git **commit** SHA |
+| 2 | **Push** to `origin/main` confirmed |
+| 3 | **Production deploy** green (Vercel) |
+| 4 | **Production URL** + `/api/build-info` SHA matches commit |
+| 5 | **Preview URL** (when using preview) |
+| 6 | **Test scenario** — numbered steps |
+| 7 | **Known issues** — what is not fixed yet |
+
+Without 1–4, do not ask for product testing.
+
+---
+
 ## Step 4 — Build info
 
 ```bash

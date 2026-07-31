@@ -7,6 +7,8 @@ import { Bug, Lightbulb } from 'lucide-react';
 import { BetaBadge } from '@/components/beta-badge';
 import { SITE_LINKS } from '@/lib/site/beta-config';
 
+import { LANDING_CONTAINER } from '../lib/landing-layout';
+
 export function LandingFooter() {
   const t = useTranslations('landing.footer');
 
@@ -23,7 +25,7 @@ export function LandingFooter() {
   return (
     <>
       <footer className="border-t border-border/60 bg-card py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className={LANDING_CONTAINER}>
           <div className="mb-6 flex justify-center">
             <BetaBadge />
           </div>

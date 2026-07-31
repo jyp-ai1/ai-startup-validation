@@ -43,6 +43,7 @@ type WorkspaceHomePageProps = {
     welcome?: string;
     promoted?: string;
     demo?: string;
+    intent?: string;
   }>;
 };
 
@@ -93,52 +94,18 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
     );
   }
 
-  if (dbReady && projects.length === 0) {
-    try {
-      const project = await bootstrapFirstProject(user.id, false);
-      logJourneyRedirect({
-        layer: 'server',
-        from: '/workspace',
-        to: buildAuthenticatedJourneyUrl({ projectId: project.id, welcome: true, authComplete }),
-        reason: 'bootstrap_first_project',
-      });
-      redirect(
-        buildAuthenticatedJourneyUrl({
-          projectId: project.id,
-          welcome: true,
-          authComplete,
-        }),
-      );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      console.error('[workspace] bootstrapFirstProject failed', {
-        userId: user.id,
-        message: err.message,
-        stack: err.stack,
-        authComplete,
-      });
-      throw error;
-    }
-  }
-
-  const resolvedProjectId =
-    params.project ?? (dbReady && projects.length === 1 ? projects[0]!.id : undefined);
-
-  // P0 — post-login: never render MyProjectsHome; land on project canvas in one hop
-  if (authComplete && dbReady && projects.length > 0 && !params.project) {
-    logJourneyRedirect({
-      layer: 'server',
-      from: '/workspace',
-      to: buildAuthenticatedJourneyUrl({ projectId: projects[0]!.id, authComplete: true }),
-      reason: 'auth_complete_auto_project',
-    });
+  if (dbReady && params.intent === 'new') {
+    const project = await bootstrapFirstProject(user.id, false);
     redirect(
       buildAuthenticatedJourneyUrl({
-        projectId: projects[0]!.id,
-        authComplete: true,
+        projectId: project.id,
+        welcome: true,
+        authComplete,
       }),
     );
   }
+
+  const resolvedProjectId = params.project;
 
   if (resolvedProjectId && dbReady) {
     if (isSupabaseConfigured()) {

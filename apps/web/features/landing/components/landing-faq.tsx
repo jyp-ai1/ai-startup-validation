@@ -8,7 +8,7 @@ import { ANALYTICS_EVENTS } from '@/lib/analytics/types';
 import { useAnalytics } from '@/lib/analytics/use-analytics';
 import { cn } from '@repo/ui/lib/utils';
 
-import { LANDING_CONTAINER } from '../lib/landing-layout';
+import { LANDING_CONTAINER, LANDING_CONTENT } from '../lib/landing-layout';
 
 const FAQ_KEYS = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q11'] as const;
 
@@ -28,7 +28,7 @@ export function LandingFaq() {
   return (
     <section id="faq" className="border-t border-border/60 bg-muted/20 py-16 sm:py-20">
       <div className={LANDING_CONTAINER}>
-        <div className="mx-auto max-w-2xl text-center">
+        <div className={`${LANDING_CONTENT} text-center`}>
           <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             {t('title')}
           </h2>
