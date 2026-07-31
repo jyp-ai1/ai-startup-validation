@@ -18,6 +18,7 @@ import type {
 
 type ProjectWorkspaceShellProps = {
   projectName: string;
+  demoBadge?: boolean;
   user?: AppAuthUser | null;
   sidebar: WorkspaceSidebarSnapshot;
   mainView: WorkspaceMainView;
@@ -32,6 +33,7 @@ type ProjectWorkspaceShellProps = {
 
 export function ProjectWorkspaceShell({
   projectName,
+  demoBadge = false,
   user = null,
   sidebar,
   mainView,
@@ -57,6 +59,11 @@ export function ProjectWorkspaceShell({
               </span>
               LaunchLens
             </Link>
+            {demoBadge ? (
+              <span className="shrink-0 rounded-md bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
+                DEMO
+              </span>
+            ) : null}
             {projectName ? (
               <p className="truncate text-sm text-muted-foreground">{projectName}</p>
             ) : null}

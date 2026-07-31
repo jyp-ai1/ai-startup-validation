@@ -37,7 +37,9 @@ import {
 import { WorkspaceBusinessAlignmentBlock } from './workspace-business-alignment-block';
 import { WorkspaceBusinessUnderstandingCard } from './workspace-business-understanding-card';
 import { WorkspaceDecisionWorkshopBlock } from './workspace-decision-workshop-block';
+import { WorkspaceDemoLoginCta } from './workspace-demo-login-cta';
 import { WorkspaceNextStepPanel } from './workspace-next-step-panel';
+import { WorkspacePostReviewRoadmap } from './workspace-post-review-roadmap';
 import { WorkspaceProgressiveOverview } from './workspace-progressive-overview';
 
 type WorkspaceAiPmMainProps = {
@@ -56,6 +58,7 @@ type WorkspaceAiPmMainProps = {
   ) => void;
   onReview: () => void;
   onUnderstandingConfirmed?: () => void;
+  showDemoLoginCta?: boolean;
   className?: string;
 };
 
@@ -90,9 +93,11 @@ export function WorkspaceAiPmMain({
   onAlignmentApplied,
   onReview,
   onUnderstandingConfirmed,
+  showDemoLoginCta = false,
   className,
 }: WorkspaceAiPmMainProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmMain');
+  const tPostReview = useTranslations('workflow.journey.workspaceShell.postReview');
   const [understandingPhase, setUnderstandingPhase] = useState<UnderstandingPhase>('pending');
   const [savedAlignment, setSavedAlignment] = useState<MarketAlignmentState | null>(null);
   const [workshopAgreement, setWorkshopAgreement] = useState(() => loadWorkshopAgreement(projectId));
@@ -151,8 +156,11 @@ export function WorkspaceAiPmMain({
   const showPostReviewWorkshop =
     Boolean(understanding) && shouldShowPostReviewWorkshop(reviewCount, workshopAgreement);
 
-  const workshopAgreed =
-    workshopAgreement?.agreed && workshopAgreement.reviewRound === reviewCount;
+  const workshopAgreed = Boolean(
+    workshopAgreement?.agreed && workshopAgreement.reviewRound === reviewCount,
+  );
+
+  const isPostReview = reviewCount >= 1;
 
   const message = buildAiPmPrimaryMessage(domain, reviewCount, entities);
   const paragraphs = sanitizeAiPmParagraphs(message.paragraphs);
@@ -229,23 +237,32 @@ export function WorkspaceAiPmMain({
         />
       ) : null}
 
-      {!showUnderstandingCard &&
+      {!isPostReview &&
+      !showUnderstandingCard &&
       !showMarketAlignment &&
       !showNextStepPanel &&
       understandingPhase !== 'aligning' ? (
-        <>
-          {!showPostReviewWorkshop || workshopAgreed ? (
-            <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.05] to-background px-6 py-6 sm:px-8">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
-                {t('label')}
-              </p>
-              <div className="mt-4 space-y-3 text-[15px] leading-relaxed">
-                {paragraphs.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </div>
-            </section>
-          ) : null}
+        <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.05] to-background px-6 py-6 sm:px-8">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
+            {t('label')}
+          </p>
+          <div className="mt-4 space-y-3 text-[15px] leading-relaxed">
+            {paragraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {isPostReview ? (
+        <div className="space-y-6">
+          <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
+              {tPostReview('completeLabel')}
+            </p>
+            <p className="mt-3 text-[15px] font-medium leading-relaxed">{tPostReview('completeLead')}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{tPostReview('completeSub')}</p>
+          </section>
 
           {showPostReviewWorkshop && understanding ? (
             <WorkspaceDecisionWorkshopBlock
@@ -259,16 +276,21 @@ export function WorkspaceAiPmMain({
             />
           ) : null}
 
-          {(understandingPhase === 'review-ready' || reviewCount > 0) &&
-          (reviewCount > 0 || completedTopics >= 2) &&
-          (!showPostReviewWorkshop || workshopAgreed) ? (
+          <WorkspacePostReviewRoadmap
+            workshopAgreement={workshopAgreement}
+            workshopAgreed={workshopAgreed}
+          />
+
+          {showDemoLoginCta ? <WorkspaceDemoLoginCta /> : null}
+
+          {reviewCount > 0 || completedTopics >= 2 ? (
             <WorkspaceProgressiveOverview
               businessScore={businessScore}
               reviewCount={reviewCount}
               completedTopics={completedTopics}
             />
           ) : null}
-        </>
+        </div>
       ) : null}
     </div>
   );

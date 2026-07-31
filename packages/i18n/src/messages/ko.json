@@ -6642,7 +6642,8 @@
       },
       "workspaceShell": {
         "strip": {
-          "label": "AI PM"
+          "label": "AI PM",
+          "reviewComplete": "검토가 완료되었습니다. 다음으로 함께 볼 주제를 정리해 보겠습니다."
         },
         "sidebar": {
           "label": "프로젝트 진행",
@@ -6748,7 +6749,7 @@
             "multiple_directions": "문서에서는 여러 시장 진입 방향이 보였지만, 어느 방향을 우선할지는 아직 결정되지 않았습니다."
           },
           "candidateInvite": "그래서 다음은 {topic}을 함께 정리해보는 것이 가장 도움이 될 것 같습니다.",
-          "agreeTopic": "이 주제로 같이 보기",
+          "agreeTopic": "같이 보기",
           "chooseOtherTopic": "다른 주제 선택",
           "customInput": "직접 입력",
           "otherTopicLead": "다른 주제를 선택해 주세요",
@@ -6760,6 +6761,36 @@
             "customer_acquisition": "고객 확보",
             "partnership": "파트너십"
           }
+        },
+        "postReview": {
+          "completeLabel": "검토 완료",
+          "completeLead": "확인해 주신 기준으로 첫 검토를 마쳤습니다.",
+          "completeSub": "다음으로 같이 보면 가장 도움이 되는 주제부터 이어가겠습니다.",
+          "roadmapLabel": "다음 단계",
+          "roadmapLead": "현재는 여기까지 검토했습니다. 앞으로 함께 정리할 흐름입니다.",
+          "comingSoon": "준비 중",
+          "workshopActiveHint": "이 주제로 함께 정리를 시작합니다",
+          "steps": {
+            "workshop": "다음으로 같이 볼 주제 정리",
+            "strategyCompare": "시장 진입 전략 정리",
+            "decisionMemory": "고객 우선순위 검토"
+          },
+          "topics": {
+            "market_entry": "시장 진입 전략",
+            "revenue_model": "수익 모델",
+            "customer_acquisition": "고객 확보",
+            "partnership": "파트너십"
+          }
+        },
+        "demo": {
+          "badge": "DEMO",
+          "sampleProjectName": "LaunchLens Sample",
+          "guidedBannerTitle": "Demo Workspace",
+          "guidedBannerDesc": "체험용 프로젝트입니다. 로그인하면 이 방식 그대로 내 프로젝트를 관리할 수 있습니다.",
+          "loginCtaLabel": "내 프로젝트로 이어가기",
+          "loginCtaTitle": "여기서 멈추지 않고, 내 사업으로 계속할 수 있습니다",
+          "loginCtaBody": "Google 로그인 후 같은 위치에서 이어집니다. Demo에서 확인한 흐름 그대로 내 프로젝트를 관리할 수 있습니다.",
+          "loginCtaHint": "로그인하면 Demo 진행 상황이 Workspace로 복원됩니다."
         },
         "businessUnderstanding": {
           "aiLabel": "AI PM",

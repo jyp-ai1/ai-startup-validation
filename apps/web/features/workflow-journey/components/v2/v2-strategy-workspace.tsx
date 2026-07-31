@@ -41,6 +41,7 @@ import { sanitizeAiPmResponse, sanitizeDocumentLabel, sanitizeAiPmParagraphs } f
 import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { V2DecisionSavePrompt } from './v2-decision-save-prompt';
 import { V2DemoReadonlyBanner } from './v2-demo-readonly-banner';
+import { V2DemoGuidedBanner } from './v2-demo-guided-banner';
 import {
   buildAiPmPrimaryMessage,
   canProceedWorkspaceReview,
@@ -104,6 +105,8 @@ export function V2StrategyWorkspaceView({
   const tb = useTranslations('workflow.v2.reviewBoard');
   const td = useTranslations('workflow.v2.strategyWorkspace.decisionMemory');
   const tDraft = useTranslations('workflow.v2.strategyWorkspace.decisionMemory.draft');
+  const tDemo = useTranslations('workflow.journey.workspaceShell.demo');
+  const tStrip = useTranslations('workflow.journey.workspaceShell.strip');
 
   const [phase, setPhase] = useState<WorkspacePhase>('compose');
   const [activeStep, setActiveStep] = useState<WorkflowStepId>('idea');
@@ -142,6 +145,12 @@ export function V2StrategyWorkspaceView({
       setMainView('ai-pm');
     }
   }, [projectId, isDemoGuided, reviewCount]);
+
+  useEffect(() => {
+    if (reviewCount > 0) {
+      setMainView('ai-pm');
+    }
+  }, [reviewCount]);
 
   const refreshUnderstandingState = useCallback(() => {
     setUnderstandingPhase(loadUnderstandingPhase(projectId));
@@ -502,8 +511,11 @@ export function V2StrategyWorkspaceView({
   const projectName = isDemoReadonly
     ? 'AI SaaS 검토'
     : isDemoGuided
-      ? domain.business.trim() || '샘플 프로젝트'
+      ? tDemo('sampleProjectName')
       : domain.business.trim() || deriveProjectName(idea) || deriveProjectName(evidence.idea);
+
+  const showDemoLoginCta =
+    isDemoGuided && (!user?.email?.trim() || user.id === 'demo-guest');
 
   const understandingAligned = understandingPhase === 'review-ready';
 
@@ -535,7 +547,7 @@ export function V2StrategyWorkspaceView({
 
   const stripMessage = useMemo(() => {
     if (reviewCount > 0) {
-      return sanitizeAiPmResponse(aiPmMessage.paragraphs.join(' '));
+      return sanitizeAiPmResponse(tStrip('reviewComplete'));
     }
     if (understandingPhase === 'pending') {
       return sanitizeAiPmResponse(buildBusinessUnderstandingIntro());
@@ -550,11 +562,12 @@ export function V2StrategyWorkspaceView({
       return sanitizeAiPmResponse(buildBusinessUnderstandingIntro());
     }
     return sanitizeAiPmResponse(aiPmMessage.paragraphs.join(' '));
-  }, [understandingPhase, reviewCount, aiPmMessage]);
+  }, [understandingPhase, reviewCount, aiPmMessage, tStrip]);
 
   const workspaceMain = (
     <>
       {isDemoReadonly ? <V2DemoReadonlyBanner /> : null}
+      {isDemoGuided ? <V2DemoGuidedBanner /> : null}
       {mainView === 'overview' ? (
         <WorkspaceProgressiveOverview
           businessScore={sidebarSnapshot.businessScore}
@@ -575,6 +588,7 @@ export function V2StrategyWorkspaceView({
           phase={phase}
           readOnly={isDemoReadonly}
           projectId={projectId}
+          showDemoLoginCta={showDemoLoginCta}
           onAlignmentApplied={handleAlignmentApplied}
           onReview={runReview}
           onUnderstandingConfirmed={refreshUnderstandingState}
@@ -596,6 +610,7 @@ export function V2StrategyWorkspaceView({
   return (
     <ProjectWorkspaceShell
       projectName={projectName}
+      demoBadge={isDemoGuided}
       user={user}
       sidebar={sidebarSnapshot}
       mainView={mainView}

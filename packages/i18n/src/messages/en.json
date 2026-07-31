@@ -6489,7 +6489,8 @@
       },
       "workspaceShell": {
         "strip": {
-          "label": "AI PM"
+          "label": "AI PM",
+          "reviewComplete": "Review complete. Let's pick the next topic to explore together."
         },
         "sidebar": {
           "label": "Project progress",
@@ -6595,7 +6596,7 @@
             "multiple_directions": "The document shows several market-entry directions, but which to prioritize has not been decided yet."
           },
           "candidateInvite": "So next, working through {topic} together would likely be most helpful.",
-          "agreeTopic": "Explore this topic together",
+          "agreeTopic": "Explore together",
           "chooseOtherTopic": "Choose another topic",
           "customInput": "Enter your own",
           "otherTopicLead": "Choose another topic",
@@ -6607,6 +6608,36 @@
             "customer_acquisition": "customer acquisition",
             "partnership": "partnership"
           }
+        },
+        "postReview": {
+          "completeLabel": "Review complete",
+          "completeLead": "We've finished the first review based on what you confirmed.",
+          "completeSub": "Next we'll continue with the topic that helps most right now.",
+          "roadmapLabel": "What's next",
+          "roadmapLead": "Here's where we are — and what we'll work through together.",
+          "comingSoon": "Coming soon",
+          "workshopActiveHint": "Starting here together",
+          "steps": {
+            "workshop": "Pick the next topic to explore",
+            "strategyCompare": "Clarify market entry strategy",
+            "decisionMemory": "Review customer priorities"
+          },
+          "topics": {
+            "market_entry": "market entry strategy",
+            "revenue_model": "revenue model",
+            "customer_acquisition": "customer acquisition",
+            "partnership": "partnership"
+          }
+        },
+        "demo": {
+          "badge": "DEMO",
+          "sampleProjectName": "LaunchLens Sample",
+          "guidedBannerTitle": "Demo Workspace",
+          "guidedBannerDesc": "This is a sample project. Sign in to manage your own project the same way.",
+          "loginCtaLabel": "Continue with your project",
+          "loginCtaTitle": "Don't stop here — keep going with your business",
+          "loginCtaBody": "After Google sign-in, you continue from the same point. The Demo flow becomes your workspace.",
+          "loginCtaHint": "Your Demo progress is restored in Workspace after sign-in."
         },
         "businessUnderstanding": {
           "aiLabel": "AI PM",
