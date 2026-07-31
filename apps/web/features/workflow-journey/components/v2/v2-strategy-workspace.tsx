@@ -239,19 +239,34 @@ export function V2StrategyWorkspaceView({
     }
 
     if (isDemoGuided) {
+      const preservedCustomDocument =
+        demoSampleId === 'custom'
+          ? (typeof window !== 'undefined'
+              ? sessionStorage.getItem(DEMO_CUSTOM_DOCUMENT_KEY)?.trim()
+              : '')
+          : '';
+
       if (demoFresh) {
         clearAllDemoClientState(DEMO_SESSION_PROJECT_ID);
+        if (preservedCustomDocument) {
+          sessionStorage.setItem(DEMO_CUSTOM_DOCUMENT_KEY, preservedCustomDocument);
+        }
       }
 
       const customDocument =
-        typeof window !== 'undefined'
-          ? sessionStorage.getItem(DEMO_CUSTOM_DOCUMENT_KEY)?.trim() ?? ''
+        demoSampleId === 'custom'
+          ? (preservedCustomDocument ||
+              (typeof window !== 'undefined'
+                ? sessionStorage.getItem(DEMO_CUSTOM_DOCUMENT_KEY)?.trim()
+                : '') ||
+              '')
           : '';
+
       const sample =
         demoSampleId === 'custom'
           ? {
               projectName: customDocument.split('\n')[0]?.trim() || '내 사업 Demo',
-              document: customDocument,
+              document: customDocument ?? '',
             }
           : getDemoSample(demoSampleId);
 
