@@ -1102,6 +1102,194 @@ Guided demo (`?demo=guided`) walked users through idea input → review → cust
 
 ---
 
+## ADR-039: Epic 2 Workspace IA + Product Principles (CPO Sign-off)
+
+**Status:** Accepted  
+**Date:** 2026-07-29  
+**Approver:** CPO
+
+### Context
+
+Epic 1 fixed routes and redirects. Epic 2 defined Workspace structure but initial blueprint read as **report IA** (static Overview / Insights / Recommendations / Next Actions). CPO required **process-first IA**: AI PM leads; Overview is generated output; Sidebar shows ○ ● ✔ lifecycle.
+
+### Decision
+
+1. **Epic 2 Blueprint APPROVED** — [`WORKSPACE_IA.md`](./WORKSPACE_IA.md), [`WORKSPACE_FLOW.md`](./WORKSPACE_FLOW.md).
+2. **User-facing section names:** Overview · Insights · Recommendations · Next Actions (internal: review / evidence / strategy / execution).
+3. **Entry flow:** Workspace → **AI PM first** → Overview emerges (not Overview-first).
+4. **Overview blocks:** Business Score → Summary → Recommended Next Step (inline) → Risk → Recommendation; progressive reveal.
+5. **Product Principles ratified** — [`PRODUCT_PRINCIPLES.md`](./PRODUCT_PRINCIPLES.md): AI PM > Report; alive reports; one screen; action as behavior; 3-second rule; four implementation rules (no empty screens, dead ends, long reports; everything alive).
+6. **Epic 3 scope:** Layout shell (Phases 0–5) — **Phase 0 HTML prototype mandatory** before React; dummy progressive Overview; no real LLM. See [`sprints/EPIC3_WORKSPACE_LAYOUT.md`](./sprints/EPIC3_WORKSPACE_LAYOUT.md).
+7. **Stop Rule:** cramped layout → stop implementation, screenshot, fix prototype first.
+8. **Pre-implementation review:** Legacy root cause + Founder/Business/Customer separation — [`EPIC3_PRE_IMPLEMENTATION_REVIEW.md`](./sprints/EPIC3_PRE_IMPLEMENTATION_REVIEW.md).
+
+### Consequences
+
+- UI implementation gate **open for Phase 0 prototype only**; Phase 1 React blocked until P0 domain plan + founder prototype re-review
+- Cursor must read PRODUCT_PRINCIPLES + EPIC3_PRE_IMPLEMENTATION_REVIEW before Workspace PR
+- Old tab-based Epic 3 kickoff ([`EPIC3_KICKOFF.md`](./sprints/EPIC3_KICKOFF.md)) superseded for layout work — do not extend intelligence tabs for this sprint
+
+---
+
+## ADR-040: Core Domain + AI PM Personality (Epic 2.5)
+
+**Status:** Accepted  
+**Date:** 2026-07-29  
+**Approver:** Co-founder direction
+
+### Context
+
+AI PM conflates Founder, Business, and Customer (e.g. B2C "취향저격컴퍼니" with 대표 treated as customer). Status Strip read as ticket labels, not PM dialogue — product drift toward ChatGPT report bot.
+
+### Decision
+
+1. **Core Domain chain:** Founder → Business → Customer → Market → Competitor — canonical in [`DOMAIN_MODEL.md`](./DOMAIN_MODEL.md).
+2. **Epic 2.5:** [`AI_PM_PERSONALITY.md`](./AI_PM_PERSONALITY.md) — PM not analyst; **ORDA** (Observation → Reasoning → Decision → Next Action); conversational Status Strip; Sidebar "AI Updated" freshness.
+3. **React Layout demoted to P2** — after Epic 2.5 sign-off + prototype r3 review.
+4. **B2C rule:** Founder ≠ Customer unless Business sells to founders.
+
+### Consequences
+
+- [`sprints/EPIC2_5_AI_PM_PERSONALITY.md`](./sprints/EPIC2_5_AI_PM_PERSONALITY.md)
+- Prompt + store migration sprint before accuracy claims
+- Prototype r3: rotating dialogue Strip (~10s)
+
+---
+
+## ADR-041: First Trust Experience — Baseline `9f267b7` (CPO)
+
+**Status:** Accepted  
+**Date:** 2026-07-30  
+**Approver:** CPO  
+**Baseline commit:** `9f267b7` — `fix(trust): Zero Lie stabilization`
+
+### Context
+
+Architecture and route structure are strong, but Product Trust (~4/10) and real UX (~5/10) lag. Auto QA PASS does not mean the CEO trusts AI PM in the first five minutes. Unsupported claims (e.g. "예상 서비스 사용자는 개인 창업자") destroy trust faster than any feature adds value.
+
+### Decision
+
+1. **Fix `9f267b7` as the trust-recovery baseline.** No new features until Sprint A completes.
+2. **Sprint A name:** **First Trust Experience** (not "Trust Polish") — scope is the **first 5 minutes**, not UI polish.
+3. **Merge gate question:** *Does the user trust AI PM within the first 5 minutes?* If no → do not implement.
+4. **Sprint A scope (copy only):** shorter first message · evidence on every claim · questions over monologue · no unsupported conclusions · customer definition flow. **Not in scope:** Sidebar design, animation, ORDA expansion, AI Agent, new cards/scores/screens.
+5. **Sprint B (after A PASS):** AI PM Presence — Strip, Sidebar, Overview, Next Action.
+6. **Acceptance:** CEO/representative criteria — never "why did AI say that?" / never "what's the evidence?" — not technical QA alone.
+
+### Consequences
+
+- PR review adds trust checks (see `.cursor/rules/review-checklist.mdc`).
+- Epic 3 React layout, new agents, dashboards remain **STOP** until Sprint A PASS.
+- CTO reviews **sentences** before code in Sprint A PRs.
+
+---
+
+## ADR-042: Shared Understanding — internal term, simple UI (CPO)
+
+**Status:** Accepted  
+**Date:** 2026-07-30  
+**Approver:** CPO
+
+### Context
+
+Product philosophy (understand → align → review) is clear internally, but too many concepts (Trust, Shared Understanding, Business Understanding) leak into UX. Founders need a **30-second** read, not vocabulary.
+
+### Decision
+
+1. **Shared Understanding** — team/ADR/sprint name only. **Never in product UI.**
+2. User copy examples: *"검토 전에 사업 이해를 함께 확인하겠습니다."* · Card zones: **문서에서 확인한 내용** → **함께 결정해야 할 내용** → **대표님의 판단**.
+3. **Validation:** one question — *"평가하려는 것 같나요, 이해하려는 것 같나요?"* Ladder: CEO (1) → pre-founders (3) → users (10).
+4. **Sprint sequence (user-facing):** (1) Business Understanding → (2) Business Review → (3) AI PM Presence.
+5. **Stop:** no new philosophy docs; post-validation work = **sentence polish only**.
+
+### Consequences
+
+- [`SHARED_UNDERSTANDING.md`](./sprints/SHARED_UNDERSTANDING.md) — internal validation playbook
+- Vision one-liner: evaluate-after-shared-understanding, not report generator
+- UI Review CTA: **검토 시작** after founder-confirmed context
+
+---
+
+## ADR-043: Product Freeze v1 + Product Fit Sprint (CPO)
+
+**Status:** Accepted  
+**Date:** 2026-07-30  
+**Approver:** CPO
+
+### Context
+
+Two–three weeks of internal concepts (ORDA, Zero Lie, Shared Understanding, Domain Model, …) — **users perceive <5%.** LaunchLens enters **polish / product-fit**, not build.
+
+### Decision
+
+1. **Product Freeze v1** — locked: Architecture, Route, Workspace IA, AI PM Concept, Business Flow.
+2. **Allowed changes:** copy, spacing, interaction polish only — in order: Observation → Copy (≤5 lines) → Interaction → Presence.
+3. **Sprint 1 name:** **Product Fit Observation** — observe only, **no fixes** in session. Facilitator: *"PDF 올려보세요."*
+4. **KPI:** unprompted *"평가부터 하지 않고 먼저 이해하려고 하네"* vs *"잠깐."* — not technical PASS/FAIL.
+5. **Forbidden until Sprint 2+:** new screens, components, domains, AI, prompts, flows.
+6. **Validation sheet:** time-bucket observation (0–5s / 5–15s / 15–30s / 30s+) — see [`PRODUCT_FIT_OBSERVATION.md`](./sprints/PRODUCT_FIT_OBSERVATION.md).
+
+### Consequences
+
+- CTO work unit: **Observation → hypothesis → copy delete/edit** — not feature tickets.
+- Sprint 2: Copy Polish (max 5 jarring sentences). Sprint 3: Interaction. Sprint 4: AI PM Presence.
+- No new philosophy docs. Internal terms stay in ADR only.
+
+---
+
+## ADR-044: Sprint 3 Align Before Review — Product identity lock (CPO)
+
+**Status:** Accepted  
+**Date:** 2026-07-30  
+**Approver:** CPO
+
+### Context
+
+Sprint 3 completes the pre-review trust loop. LaunchLens identity shifts from *"AI understands your business"* to **structuring founder thinking so they can choose better strategy**.
+
+### Decision
+
+1. **Product one-liner:** *대표가 더 좋은 전략을 결정할 수 있도록 사고를 구조화하는 AI PM*
+2. **Internal spine:** `Understand Reality → Evaluate → Explore Options → Decide` (not Read/Understand/Align/Review user-facing labels alone).
+3. **Align Before Review:** max 1–2 questions; no strategy completion pre-review; three low-pressure direction options.
+4. **Review-ready copy (Zero Lie):** AI must **not** claim document is *sufficient* — only *start review on current document* and flag gaps / unknowns without guessing.
+5. **Sprint 4 name:** **Strategic Options** — PM presents Option A/B/C with trade-offs; founder decides; AI re-evaluates.
+6. **Principle (immutable):** **AI does not decide for the founder** — reads, structures, proposes options; founder decides.
+
+### Consequences
+
+- Review is the start of the loop, not the end.
+- Sprint 4 builds Strategic Options (trade-off workshop), not recommendation dumps or score-only reports.
+- Copy gate: any "충분히 확인" / "예상됩니다" phrasing in pre-review UI is a regression.
+
+---
+
+## ADR-045: Sprint 4 P0 Validation gate — no P1 until Insight → Candidate proven (CPO)
+
+**Status:** Accepted  
+**Date:** 2026-07-31  
+**Approver:** CPO
+
+### Context
+
+Sprint 4 P0 ships Insight → Candidate → Agreement after Review. Product identity is now **"AI PM that structures founder decisions"** — not score-only analysis. CPO observed founders after Review ask *"왜 이런 결과?"* (**Review Debrief**) before wanting Workshop. Building Option A/B/C before validating the Insight → Candidate connection risks Workshop feeling like AI instruction.
+
+### Decision
+
+1. **P1 Workshop blocked** until Validation yields CPO **Product Response** consensus (not PASS/FAIL).
+2. **LaunchLens Validation methodology (rev. 4):** Observation (Pause · Sentence · Question) → **Thinking Shift** (what changed in founder's mind) → **Product Response** (AI PM's next move matched to thinking stage).
+3. **Thinking Shift** is the core layer — not UI interpretation. Example: Insight success = founder holds new thought (*"시장 진입이 중요하구나"*) before *"그럼 어떻게?"*
+4. **Product Response mapping:** importance not yet accepted → Insight/Debrief · accepted + solution-seeking → Workshop · comparison wanted → Option compare · execution wanted → Action Plan (later).
+5. **Differentiation:** measures **founder thinking change** and designs **PM's next action** — not generic UX PASS/FAIL.
+
+### Consequences
+
+- [`sprints/SPRINT_4_P0_VALIDATION.md`](./sprints/SPRINT_4_P0_VALIDATION.md) — Thinking Shift validation methodology (rev. 4)
+- CTO: no P1 implementation tickets until CPO records PASS
+- LaunchLens core: **show thinking connections**, not deliver answers
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

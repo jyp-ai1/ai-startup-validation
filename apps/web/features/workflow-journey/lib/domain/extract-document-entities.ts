@@ -55,10 +55,20 @@ function extractFounder(text: string): DomainEntityField {
   const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
   for (const line of lines) {
     const lower = line.toLowerCase();
-    if (lower.includes('타겟') || lower.includes('고객') || lower.includes('customer')) {
+    if (
+      ['타겟', '고객', 'customer', '양조장', '제휴', 'mz', 'fit', '수익'].some((k) =>
+        lower.includes(k),
+      )
+    ) {
       continue;
     }
+    if (lower.includes('관광') && (lower.includes('창업') || lower.includes('벤처'))) {
+      return { value: '관광벤처 예비창업자', basis: 'document', excerpt: line.slice(0, 120) };
+    }
     if (['대표', '창업자', '예비창업', 'founder', 'ceo'].some((k) => lower.includes(k))) {
+      if (hasKeyword(line, ['예비창업']) && hasKeyword(text, ['관광'])) {
+        return { value: '관광벤처 예비창업자', basis: 'document', excerpt: line.slice(0, 120) };
+      }
       if (hasKeyword(line, ['예비창업'])) {
         return { value: '예비창업자', basis: 'document', excerpt: line.slice(0, 120) };
       }
@@ -84,6 +94,11 @@ function extractCustomer(
   model: BusinessModel | null,
   founder: DomainEntityField,
 ): DomainEntityField {
+  const lower = text.toLowerCase();
+  if (lower.includes('양조장') && !lower.includes('타겟') && !lower.includes('관광객')) {
+    return { value: null, basis: 'unknown', excerpt: null };
+  }
+
   const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
   let raw = '';
   let rawLine = '';
@@ -115,6 +130,14 @@ function extractCustomer(
 
   // P0 — founder language in customer line is never asserted; require user confirmation
   if (hasKeyword(candidate, ['예비창업', '창업자', '대표', 'startup founder'])) {
+    return { value: null, basis: 'needs_confirmation', excerpt: rawLine.slice(0, 120) };
+  }
+
+  const segments = candidate
+    .split(/[·•|,/\u00b7]/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 1);
+  if (segments.length >= 2) {
     return { value: null, basis: 'needs_confirmation', excerpt: rawLine.slice(0, 120) };
   }
 

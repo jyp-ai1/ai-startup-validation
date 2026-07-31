@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LaunchLens — Workspace Layout Prototype (Phase 0)</title>
+  <style>
+    /* ── Reset & tokens (Figma-inspired breathing room — not rigid 280/980) ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --border: rgba(0, 0, 0, 0.08);
+      --text: #171717;
+      --muted: #737373;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --success: #16a34a;
+      --warning: #ca8a04;
+      --radius: 16px;
+      --gnb-h: 52px;
+      --sidebar-w: clamp(240px, 24vw, 288px);
+      --main-pad-x: clamp(40px, 6vw, 80px);
+      --main-pad-y: clamp(32px, 4vh, 52px);
+      --content-max: 640px;
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── Prototype chrome (review helper — not product UI) ── */
+    .proto-banner {
+      background: #fef3c7;
+      border-bottom: 1px solid #fcd34d;
+      padding: 10px 20px;
+      font-size: 12px;
+      color: #92400e;
+      text-align: center;
+    }
+    .proto-banner strong { font-weight: 600; }
+
+    .proto-tabs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      padding: 12px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .proto-tabs button {
+      font: inherit;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .proto-tabs button.active {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text);
+    }
+
+    /* ── Shell ── */
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 90px);
+    }
+
+    .gnb {
+      height: var(--gnb-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(20px, 3vw, 40px);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .gnb-logo {
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+    .gnb-project {
+      font-size: 13px;
+      color: var(--muted);
+      margin-left: 24px;
+      flex: 1;
+    }
+    .gnb-actions {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      padding: 28px 20px 28px 28px;
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      overflow-y: auto;
+    }
+    .sidebar-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .nav-section {
+      margin-bottom: 24px;
+    }
+    .nav-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      margin: 2px 0;
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: default;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font: inherit;
+    }
+    .nav-item:hover { background: rgba(0,0,0,0.03); }
+    .nav-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .nav-item.done { color: var(--text); }
+    .nav-item .sym { width: 16px; text-align: center; font-size: 12px; flex-shrink: 0; }
+    .nav-item .sym.wait { color: #a3a3a3; }
+    .nav-item .sym.progress { color: var(--accent); }
+    .nav-item .sym.done { color: var(--success); }
+
+    .nav-section.locked .nav-section-title { color: var(--muted); }
+    .nav-section.locked .nav-item { opacity: 0.45; pointer-events: none; }
+
+    /* ── Main ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--main-pad-y) var(--main-pad-x);
+    }
+    .main-inner {
+      max-width: var(--content-max);
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* AI PM view */
+    .ai-pm-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .ai-pm-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .ai-question {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.35;
+      margin-bottom: 28px;
+      max-width: 520px;
+    }
+    .ai-input-fake {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      background: var(--text);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: default;
+    }
+
+    /* Overview view */
+    .score-block {
+      margin-bottom: 36px;
+    }
+    .score-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .score-value {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .score-value span { font-size: 20px; color: var(--muted); font-weight: 500; }
+
+    .summary-block {
+      margin-bottom: 28px;
+    }
+    .summary-block h2 {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+    .summary-block p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    /* Recommended Next Step — inline, NOT a card */
+    .next-step {
+      margin-bottom: 40px;
+      padding-top: 4px;
+    }
+    .next-step-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .next-step-action {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .next-step-action .arrow { color: var(--muted); font-weight: 400; }
+
+    .collapsible {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      margin-top: 8px;
+    }
+    .collapsible summary {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .collapsible summary::-webkit-details-marker { display: none; }
+    .collapsible summary::before { content: "▸"; font-size: 10px; }
+    .collapsible[open] summary::before { content: "▾"; }
+    .collapsible-body {
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* Review checklist footer */
+    .review-footer {
+      margin-top: 48px;
+      padding: 20px 24px;
+      background: #f5f5f5;
+      border-radius: var(--radius);
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .review-footer h3 {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .review-footer ul { padding-left: 18px; }
+
+    /* P1 preview: AI PM Status Strip */
+    .ai-pm-strip {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px clamp(20px, 3vw, 40px);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text);
+      flex-shrink: 0;
+      min-height: 48px;
+    }
+    .ai-pm-strip .pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 6px;
+      animation: pulse 2s ease infinite;
+    }
+    .ai-pm-strip .strip-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .ai-pm-strip .strip-message {
+      color: var(--text);
+      max-width: 720px;
+    }
+    .ai-pm-strip .strip-message em {
+      font-style: normal;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .thinking-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 20px;
+      max-width: 280px;
+      overflow: hidden;
+    }
+    .thinking-bar-fill {
+      height: 100%;
+      width: 62%;
+      background: linear-gradient(90deg, var(--accent), #93c5fd);
+      border-radius: 2px;
+    }
+    .thinking-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* P1 preview: Sidebar Summary zone */
+    .sidebar-summary {
+      padding: 16px;
+      margin-bottom: 24px;
+      background: var(--bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .sidebar-summary-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .sidebar-summary-score {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .sidebar-progress-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-bottom: 6px;
+      overflow: hidden;
+    }
+    .sidebar-progress-fill {
+      height: 100%;
+      width: 67%;
+      background: var(--success);
+      border-radius: 2px;
+    }
+    .sidebar-progress-meta {
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+    .sidebar-stage {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .sidebar-freshness {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .sidebar-freshness strong {
+      color: var(--success);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="proto-banner">
+    <strong>Epic 3 · Phase 0</strong> — Workspace Layout Prototype · HTML/CSS only · No AI · No API · No React
+  </div>
+
+  <div class="proto-tabs" role="tablist">
+    <button type="button" class="active" data-view="ai-pm" role="tab">① AI PM (첫 진입)</button>
+    <button type="button" data-view="overview" role="tab">② Overview (생성 후)</button>
+  </div>
+
+  <div class="workspace">
+    <header class="gnb">
+      <div style="display:flex;align-items:center;">
+        <span class="gnb-logo">LaunchLens</span>
+        <span class="gnb-project">AI 사업 검증 SaaS</span>
+      </div>
+      <nav class="gnb-actions">
+        <span>한국어</span>
+        <span>대표님</span>
+      </nav>
+    </header>
+
+    <div class="ai-pm-strip" aria-live="polite" id="ai-pm-strip">
+      <span class="pulse" aria-hidden="true"></span>
+      <div>
+        <div class="strip-label">AI PM</div>
+        <p class="strip-message" id="strip-message">시장 규모를 검토했습니다. <em>다음은 핵심 고객을 정의하겠습니다.</em></p>
+      </div>
+    </div>
+
+    <div class="body">
+      <aside class="sidebar" aria-label="AI PM progress">
+        <div class="sidebar-summary">
+          <p class="sidebar-summary-label">Summary</p>
+          <p class="sidebar-summary-score">74</p>
+          <div class="sidebar-progress-track"><div class="sidebar-progress-fill"></div></div>
+          <div class="sidebar-progress-meta">
+            <span>67% complete</span>
+            <span>4/6 topics</span>
+          </div>
+          <p class="sidebar-stage">● Customer</p>
+          <p class="sidebar-freshness"><strong>AI Updated</strong> · 12 min ago</p>
+        </div>
+
+        <p class="sidebar-label">Progress</p>
+
+        <div class="nav-section">
+          <p class="nav-section-title">Overview</p>
+          <button type="button" class="nav-item done" data-nav="summary">
+            <span class="sym done">✔</span> Summary
+          </button>
+          <button type="button" class="nav-item active" data-nav="customer">
+            <span class="sym progress">●</span> Customer
+          </button>
+          <button type="button" class="nav-item" data-nav="market">
+            <span class="sym wait">○</span> Market
+          </button>
+        </div>
+
+        <div class="nav-section locked">
+          <p class="nav-section-title">Insights</p>
+          <button type="button" class="nav-item"><span class="sym wait">○</span> Sources</button>
+        </div>
+
+        <div class="nav-section locked">
+          <p class="nav-section-title">Recommendations</p>
+        </div>
+
+        <div class="nav-section locked">
+          <p class="nav-section-title">Actions</p>
+        </div>
+      </aside>
+
+      <main class="main">
+        <!-- View 1: AI PM first entry -->
+        <div class="main-inner view active" id="view-ai-pm">
+          <div class="ai-pm-badge">AI PM</div>
+          <h1 class="ai-question">이 서비스의 <strong>고객</strong>은 누구인가요?<br /><span style="font-size:15px;font-weight:400;color:var(--muted)">대표님 본인은 고객이 아닙니다 — 돈을 내는 사람을 적어 주세요.</span></h1>
+          <div class="ai-input-fake">예: 20–30대 일반 소비자, 취향 저격 쇼핑몰 이용자</div>
+          <button type="button" class="btn-primary">Continue</button>
+          <div class="thinking-bar" aria-hidden="true"><div class="thinking-bar-fill"></div></div>
+          <p class="thinking-label">AI PM · 고객 세분화 준비 중</p>
+
+          <footer class="review-footer">
+            <h3>대표 리뷰 체크 (AI PM view)</h3>
+            <ul>
+              <li>Sidebar 폭 — 답답한가?</li>
+              <li>Main 여백 — 숨 쉴 공간 있는가?</li>
+              <li>GNB — 너무 큰가?</li>
+              <li>AI PM Status Strip — 살아있는 느낌?</li>
+              <li>Sidebar Summary — 74점 · 진행률 보이나?</li>
+            </ul>
+          </footer>
+        </div>
+
+        <!-- View 2: Overview after AI PM generates -->
+        <div class="main-inner view" id="view-overview">
+          <div class="score-block">
+            <p class="score-label">Business Score</p>
+            <p class="score-value">74<span>/100</span></p>
+          </div>
+
+          <section class="summary-block">
+            <h2>Summary</h2>
+            <p>
+              B2B SaaS 시장에서 차별화 포인트는 명확합니다. 다만 고객 검증 데이터가 부족해
+              Confidence가 제한적입니다. 다음 단계는 타깃 고객 인터뷰입니다.
+            </p>
+          </section>
+
+          <section class="next-step">
+            <p class="next-step-label">Recommended Next Step</p>
+            <p class="next-step-action">
+              <span class="arrow">→</span> 고객 인터뷰 3건 진행
+            </p>
+            <button type="button" class="btn-primary">Start</button>
+          </section>
+
+          <details class="collapsible">
+            <summary>Risk</summary>
+            <p class="collapsible-body">경쟁사 2곳이 유사 포지셔닝 — 차별화 메시지 재정립 필요.</p>
+          </details>
+
+          <details class="collapsible" style="margin-top:16px;">
+            <summary>Recommendation</summary>
+            <p class="collapsible-body">초기 타깃을 스타트업 PM → Series A CEO로 좁히는 것을 검토하세요.</p>
+          </details>
+
+          <footer class="review-footer">
+            <h3>대표 리뷰 체크 (Overview view)</h3>
+            <ul>
+              <li>Business Score 위치 — 브랜드 앵커로 자연스러운가?</li>
+              <li>Summary → Next Step — 카드 없이 이어지는가?</li>
+              <li>Action(Start) — 스크롤 없이 보이는가?</li>
+              <li>전체 — Figma 호흡감 vs 답답함?</li>
+            </ul>
+          </footer>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Prototype-only: conversational Status Strip rotation (~10s)
+    const stripMessages = [
+      '시장 규모를 검토했습니다. <em>다음은 핵심 고객을 정의하겠습니다.</em>',
+      'B2C 사업이므로, <em>대표님은 고객이 아닙니다.</em> 구매자를 먼저 정리할게요.',
+      '경쟁사 5곳을 찾았습니다. <em>차별점을 함께 정리해볼까요?</em>',
+    ];
+    let stripIdx = 0;
+    const stripEl = document.getElementById('strip-message');
+    setInterval(() => {
+      stripIdx = (stripIdx + 1) % stripMessages.length;
+      if (stripEl) stripEl.innerHTML = stripMessages[stripIdx];
+    }, 10000);
+
+    // Tab switch
+    document.querySelectorAll('.proto-tabs button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.proto-tabs button').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const view = btn.dataset.view;
+        document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
+        document.getElementById('view-' + view).classList.add('active');
+      });
+    });
+    document.querySelectorAll('.nav-item:not(.locked *)').forEach((item) => {
+      item.addEventListener('click', () => {
+        if (item.closest('.locked')) return;
+        document.querySelectorAll('.nav-item').forEach((i) => i.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

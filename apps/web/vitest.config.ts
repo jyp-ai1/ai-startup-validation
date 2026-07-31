@@ -4,7 +4,11 @@ import path from 'node:path';
 export default defineConfig({
   test: {
     environment: 'node',
-    include: ['modules/**/__tests__/**/*.test.ts'],
+    include: [
+      'modules/**/__tests__/**/*.test.ts',
+      'features/**/first-trust/__tests__/**/*.test.ts',
+      'features/**/business-understanding/**/__tests__/**/*.test.ts',
+    ],
     testTimeout: 120_000,
   },
   resolve: {

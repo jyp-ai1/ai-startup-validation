@@ -360,6 +360,11 @@ export type OpsDashboardStats = {
     /** Landing hero — founders who started first strategy review today */
     foundersStartingReview?: number;
   };
+  /** Landing hero — today vs all-time social proof */
+  landingSocialProof?: {
+    todayReviewsStarted: number;
+    allTimeReviewsCompleted: number;
+  };
   /** Sprint 4.7 — Journey step analytics */
   journeyAnalytics?: {
     step: string;

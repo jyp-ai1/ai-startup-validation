@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 
 import { JourneyPageSkeleton } from '@/features/workflow-journey/components/journey-page-skeleton';
 import { ProjectScopeTracker } from '@/features/my-projects/components/project-scope-tracker';
+import { DemoProjectPromotedTracker } from '@/features/my-projects/components/demo-project-promoted-tracker';
 import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { WorkspaceAuthCompleteTracker } from './workspace-auth-complete-tracker';
 import { WorkspaceJourneyTracker } from './journey-page-tracker';
@@ -80,7 +81,13 @@ export function WorkspaceProjectCanvas({
           />
         </Suspense>
       ) : null}
+      {promoted ? (
+        <Suspense fallback={null}>
+          <DemoProjectPromotedTracker projectId={projectId} />
+        </Suspense>
+      ) : null}
       <V2StrategyWorkspaceView
+        projectId={projectId}
         mode={demoMode === 'default' ? 'default' : demoMode}
         user={user}
       />

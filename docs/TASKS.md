@@ -2,9 +2,44 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
-> **Active sprint:** Sprint **5.1 — OAuth UX & Workspace Beta** 🔄 · Sprint **5 — Closed Alpha Launch** 📋
+> **Product Freeze v1** 🔒 · **Sprint 1 — Product Fit Observation** (관찰만)  
+> **Doc:** [PRODUCT_FIT_OBSERVATION.md](./sprints/PRODUCT_FIT_OBSERVATION.md)
 
-## Sprint 5.1 — OAuth 후 UX 개선 (in progress)
+## 🔒 Product Freeze v1 (locked)
+
+Architecture · Route · Workspace IA · AI PM Concept · Business Flow — **no changes.**
+
+Only allowed until further notice: **copy · spacing · interaction polish** (Sprint 2+).
+
+---
+
+## Sprint 1 — Product Fit Observation (active)
+
+**Goal:** **관찰** — 수정하지 않음.
+
+**Facilitator:** *"PDF 올려보세요."* — 설명 · 시연 · 힌트 금지.
+
+**KPI:** *"오?"* vs *"잠깐."* — unprompted *"평가부터 하지 않고 먼저 이해하려고 하네."*
+
+| Stage | Who | Status |
+|-------|-----|--------|
+| Observation sheet | 대표 1명 | ⬜ |
+
+**Forbidden this sprint:** 새 화면 · 컴포넌트 · Domain · AI · Prompt · Flow
+
+---
+
+## Sprint queue (after freeze)
+
+| Sprint | Focus | Action |
+|--------|-------|--------|
+| 2 | Copy Polish | 거슬린 문장 ≤5 |
+| 3 | Interaction Polish | 버튼 · spacing · animation |
+| 4 | AI PM Presence | blocked until 2–3 |
+
+---
+
+## Sprint 5.1 — OAuth 후 UX 개선 (paused — superseded by Sprint A gate)
 
 | Priority | Item | Status |
 |----------|------|--------|
@@ -14,6 +49,47 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | P1 | GNB Home / Workspace / Demo (landing + journey + shell) | ✅ |
 | P1 | Mobile nav — single drawer, no duplicate back button | ✅ |
 | P2 | Draft auto-save + resume | ⬜ deferred |
+
+---
+
+---
+
+## Epic 2 — Workspace IA Blueprint ✅ COMPLETE
+
+**CPO sign-off:** 2026-07-29 **APPROVED**  
+**Docs:** [WORKSPACE_IA.md](./WORKSPACE_IA.md) · [WORKSPACE_FLOW.md](./WORKSPACE_FLOW.md) · [PRODUCT_PRINCIPLES.md](./PRODUCT_PRINCIPLES.md)
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1–8 | Blueprint + revision 2 (AI PM-first, lifecycle, Business Score) | ✅ |
+| 9 | CPO sign-off | ✅ |
+
+---
+
+## Epic 2.5 — AI PM Personality 🟡
+
+**Docs:** [AI_PM_PERSONALITY.md](./AI_PM_PERSONALITY.md) · [DOMAIN_MODEL.md](./DOMAIN_MODEL.md) · [sprints/EPIC2_5_AI_PM_PERSONALITY.md](./sprints/EPIC2_5_AI_PM_PERSONALITY.md)
+
+| Priority | Item | Status |
+|----------|------|--------|
+| 🔴 P0 | Core Domain — Founder / Business / Customer / Market / Competitor | ✅ doc + ADR-040 |
+| 🔴 P0 | AI PM Personality — ORDA, tone, domain thinking | ✅ doc |
+| 🟠 P1 | Status Strip — dialogue not labels | ✅ prototype r3 |
+| 🟠 P1 | Sidebar — AI Updated / freshness | ✅ prototype r3 |
+| ⬜ | Co-founder sign-off | pending |
+
+---
+
+## Epic 3 — Workspace Layout 🟡 (React blocked → P2)
+
+**Gate:** Epic 2.5 sign-off + prototype r3 founder review → **then** Phase 1 React
+
+| Phase | Deliverable | Status |
+|-------|-------------|--------|
+| 0 | Prototype r3 — conversational Strip | 🟡 review |
+| 1–5 | React shell … animation | ⛔ P2 — after Epic 2.5 |
+
+---
 
 > **Active sprint (previous):** Sprint **5 — Closed Alpha Launch** 📋 (2–3 weeks) · [SPRINT_5_CLOSED_ALPHA_LAUNCH.md](./sprints/SPRINT_5_CLOSED_ALPHA_LAUNCH.md)  
 > **Previous:** Sprint **4.8 — Closed Alpha Analytics** 🔄 · [SPRINT_4_8_CLOSED_ALPHA_ANALYTICS.md](./sprints/SPRINT_4_8_CLOSED_ALPHA_ANALYTICS.md) · Sprint **4.7** · [SPRINT_4_7_CLOSED_ALPHA.md](./sprints/SPRINT_4_7_CLOSED_ALPHA.md)

@@ -13,7 +13,45 @@ type LandingLiveMetricsProps = {
   variant?: 'hero' | 'section';
 };
 
-type PublicStats = Pick<OpsDashboardStats, 'source' | 'todayProductKpis' | 'aiPmKpis'>;
+type PublicStats = Pick<OpsDashboardStats, 'source' | 'landingSocialProof'>;
+
+const MOCK_SOCIAL_PROOF = {
+  todayReviewsStarted: 18,
+  allTimeReviewsCompleted: 38,
+} as const;
+
+function SocialProofGrid({
+  todayCount,
+  allTimeCount,
+  className,
+}: {
+  todayCount: number;
+  allTimeCount: number;
+  className?: string;
+}) {
+  const t = useTranslations('landing.liveMetrics');
+
+  return (
+    <div className={cn('grid gap-3 sm:grid-cols-2', className)}>
+      <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-primary/[0.06] to-background p-5 text-center">
+        <p className="text-xs font-medium uppercase tracking-wide text-primary">{t('todayLabel')}</p>
+        <p className="mt-2 text-3xl font-semibold tabular-nums">{todayCount}</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {t('todayReviewsStarted', { count: todayCount })}
+        </p>
+      </div>
+      <div className="rounded-xl border border-border/60 bg-muted/10 p-5 text-center">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {t('allTimeLabel')}
+        </p>
+        <p className="mt-2 text-3xl font-semibold tabular-nums">{allTimeCount}</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {t('allTimeReviews', { count: allTimeCount })}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export function LandingLiveMetrics({ className, variant = 'section' }: LandingLiveMetricsProps) {
   const t = useTranslations('landing.liveMetrics');
@@ -26,8 +64,7 @@ export function LandingLiveMetrics({ className, variant = 'section' }: LandingLi
         if (json.success) {
           setStats({
             source: json.data.source,
-            todayProductKpis: json.data.todayProductKpis,
-            aiPmKpis: json.data.aiPmKpis,
+            landingSocialProof: json.data.landingSocialProof,
           });
         }
       })
@@ -36,34 +73,14 @@ export function LandingLiveMetrics({ className, variant = 'section' }: LandingLi
       });
   }, []);
 
-  const today = stats?.todayProductKpis;
-  const aiPm = stats?.aiPmKpis;
-  const foundersStartingReview = today?.foundersStartingReview ?? 18;
-  const projects = today?.projectsCreated ?? 11;
-  const reviews = today?.aiReviewsCompleted ?? today?.firstReviews ?? 8;
-  const returns = today?.returns ?? 5;
-  const decisions = aiPm?.totalDecisionChanges ?? 127;
+  const socialProof = stats?.landingSocialProof ?? MOCK_SOCIAL_PROOF;
+  const todayCount = socialProof.todayReviewsStarted;
+  const allTimeCount = socialProof.allTimeReviewsCompleted;
 
   if (variant === 'hero') {
     return (
       <div className={cn('mx-auto mt-8 max-w-3xl space-y-6', className)} aria-label={t('ariaLabel')}>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-primary/[0.06] to-background p-5 text-center">
-            <p className="text-3xl font-semibold tabular-nums">{foundersStartingReview}</p>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {t('humanToday', { count: foundersStartingReview })}
-            </p>
-          </div>
-          <div className="rounded-xl border border-border/60 bg-muted/10 p-5 text-center">
-            <p className="text-sm text-muted-foreground">{t('projectsCreated')}</p>
-            <p className="mt-1 text-2xl font-semibold tabular-nums">{projects}</p>
-            <p className="mt-2 text-xs text-muted-foreground">{t('reviewsCompleted', { count: reviews })}</p>
-            <p className="text-xs text-muted-foreground">{t('returns', { count: returns })}</p>
-          </div>
-        </div>
-        <p className="text-center text-base font-medium leading-relaxed text-violet-800 dark:text-violet-200">
-          {t('humanImpact', { count: decisions })}
-        </p>
+        <SocialProofGrid todayCount={todayCount} allTimeCount={allTimeCount} />
         {stats?.source === 'mock' ? (
           <p className="text-center text-[10px] uppercase tracking-wide text-muted-foreground/70">
             {t('mockHint')}
@@ -76,7 +93,7 @@ export function LandingLiveMetrics({ className, variant = 'section' }: LandingLi
 
   return (
     <section className={cn('mx-auto max-w-4xl px-4', className)} aria-label={t('ariaLabel')}>
-      <p className="text-center text-lg">{t('humanToday', { count: foundersStartingReview })}</p>
+      <SocialProofGrid todayCount={todayCount} allTimeCount={allTimeCount} />
     </section>
   );
 }

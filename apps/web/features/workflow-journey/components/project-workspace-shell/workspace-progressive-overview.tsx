@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { OverviewBlockId } from './workspace-shell-types';
@@ -98,9 +97,6 @@ export function WorkspaceProgressiveOverview({
             <span className="text-muted-foreground">→</span>
             {t('nextStepAction')}
           </p>
-          <Button type="button" size="sm" className="mt-4">
-            {t('nextStepCta')}
-          </Button>
         </section>
       ) : null}
 

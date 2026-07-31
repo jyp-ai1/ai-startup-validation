@@ -51,8 +51,11 @@ import {
   buildAiPmPrimaryMessage,
   canProceedWorkspaceReview,
   emptyWorkspaceDomain,
+  inferDomainFromPaste,
+  loadWorkspaceDocumentText,
   loadWorkspaceDomain,
   loadWorkspaceEntities,
+  saveWorkspaceDocumentText,
   saveWorkspaceDomain,
   saveWorkspaceEntities,
   validationToWorkspaceDomain,
@@ -60,6 +63,10 @@ import {
   type WorkspaceDomainEvidence,
   type WorkspaceDomainFieldId,
 } from '../../lib/workspace-ai-pm-messages';
+import { loadUnderstandingPhase } from '../../lib/business-understanding/business-understanding-store';
+import { allowsOpenReview, loadMarketAlignment } from '../../lib/business-understanding/workspace-alignment';
+import { buildBusinessUnderstandingIntro, buildReviewTransitionMessage } from '../../lib/business-understanding/build-business-understanding';
+import { loadDemoProjectDraft } from '../../lib/v2-demo-project-store';
 
 type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
 
@@ -93,9 +100,14 @@ type V2StrategyWorkspaceMode = 'default' | 'demo-readonly' | 'demo-guided';
 type V2StrategyWorkspaceViewProps = {
   mode?: V2StrategyWorkspaceMode;
   user?: AppAuthUser | null;
+  projectId?: string;
 };
 
-export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2StrategyWorkspaceViewProps) {
+export function V2StrategyWorkspaceView({
+  mode = 'default',
+  user = null,
+  projectId,
+}: V2StrategyWorkspaceViewProps) {
   const isDemoReadonly = mode === 'demo-readonly';
   const isDemoGuided = mode === 'demo-guided';
   const isDemoNoPersist = isDemoReadonly || isDemoGuided;
@@ -133,6 +145,13 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
   const [activeNavNodeId, setActiveNavNodeId] = useState<WorkspaceNavNodeId | null>('founder');
   const [domain, setDomain] = useState<WorkspaceDomainEvidence>(() => emptyWorkspaceDomain());
   const [entities, setEntities] = useState<LaunchLensDomainContext | null>(null);
+  const [understandingPhase, setUnderstandingPhase] = useState<
+    ReturnType<typeof loadUnderstandingPhase>
+  >('pending');
+
+  const refreshUnderstandingState = useCallback(() => {
+    setUnderstandingPhase(loadUnderstandingPhase(projectId));
+  }, [projectId]);
 
   function markFieldUserConfirmed(
     prev: LaunchLensDomainContext | null,
@@ -203,9 +222,38 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
     }
 
     refreshMemory();
+    refreshUnderstandingState();
     const saved = loadV2Validation();
-    const storedDomain = loadWorkspaceDomain();
-    const storedEntities = loadWorkspaceEntities();
+    const storedDomain = loadWorkspaceDomain(projectId);
+    const storedEntities = loadWorkspaceEntities(projectId);
+
+    const demoDraft = loadDemoProjectDraft();
+    const pastedContent = demoDraft?.pastedContent?.trim();
+    if (!loadWorkspaceDocumentText(projectId)) {
+      if (pastedContent && pastedContent.length >= 8) {
+        const inferred = inferDomainFromPaste(pastedContent, projectId);
+        if (!storedDomain) {
+          setDomain(inferred.domain);
+        }
+        if (!storedEntities) {
+          setEntities(inferred.entities);
+        }
+      } else if (saved) {
+        const combined = [
+          saved.evidence.idea,
+          saved.evidence.problem,
+          saved.evidence.customer,
+          saved.evidence.mvp,
+          saved.evidence.pricing,
+        ]
+          .filter(Boolean)
+          .join('\n');
+        if (combined.length >= 8) {
+          saveWorkspaceDocumentText(combined, projectId);
+        }
+      }
+    }
+
     if (storedDomain) {
       setDomain(storedDomain);
     }
@@ -223,7 +271,7 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
     if (!storedDomain) {
       setDomain(validationToWorkspaceDomain(saved.evidence));
     }
-  }, [isDemoReadonly, isDemoGuided, refreshMemory]);
+  }, [isDemoReadonly, isDemoGuided, refreshMemory, projectId, refreshUnderstandingState]);
 
   const aiPmMessage = useMemo(
     () => buildAiPmPrimaryMessage(domain, reviewCount, entities),
@@ -299,11 +347,32 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
     saveV2Validation(next);
   }, [isDemoNoPersist]);
 
+  const handleAlignmentApplied = useCallback(
+    (
+      nextDomain: WorkspaceDomainEvidence,
+      nextEntities: LaunchLensDomainContext,
+      customer: string,
+    ) => {
+      if (isDemoReadonly) return;
+      setDomain(nextDomain);
+      setEntities(nextEntities);
+      saveWorkspaceDomain(nextDomain, projectId);
+      saveWorkspaceEntities(nextEntities, projectId);
+      setOptional((prev) => ({ ...prev, customer }));
+      persist({
+        ...evidence,
+        idea: nextDomain.business.trim(),
+        customer: customer.trim() || undefined,
+      });
+    },
+    [evidence, isDemoReadonly, persist, projectId],
+  );
+
   const handleDomainChange = (field: WorkspaceDomainFieldId, value: string) => {
     if (isDemoReadonly) return;
     setDomain((prev) => {
       const next = { ...prev, [field]: value };
-      saveWorkspaceDomain(next);
+      saveWorkspaceDomain(next, projectId);
       const mapped = workspaceDomainToValidation(next);
       if (field === 'business') {
         setIdea(mapped.idea);
@@ -322,7 +391,7 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
     });
     setEntities((prev) => {
       const next = markFieldUserConfirmed(prev, field, value);
-      saveWorkspaceEntities(next);
+      saveWorkspaceEntities(next, projectId);
       return next;
     });
   };
@@ -371,7 +440,16 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
   };
 
   const runReview = useCallback(() => {
-    if (isDemoReadonly || !canProceedWorkspaceReview(domain)) return;
+    const canStartReview = understandingPhase === 'review-ready';
+    const alignment = loadMarketAlignment(projectId);
+    const openReview = allowsOpenReview(alignment);
+    if (
+      isDemoReadonly ||
+      !canStartReview ||
+      (!openReview && !canProceedWorkspaceReview(domain, entities))
+    ) {
+      return;
+    }
     persist(evidence);
     setPhase('reviewing');
     setReviewCount((c) => c + 1);
@@ -389,7 +467,7 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
       createMeetingNoteFromReview(reviewCount + 1);
       window.setTimeout(() => setPhase('followUp'), 400);
     }, REVIEW_MS);
-  }, [domain, evidence, isDemoReadonly, persist, reviewCount]);
+  }, [domain, entities, evidence, isDemoReadonly, persist, projectId, reviewCount, understandingPhase]);
 
   const handleGoToStep = (step: WorkflowStepId) => {
     setActiveMemoryId(null);
@@ -450,12 +528,31 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
     }
   };
 
+  const understandingAligned = understandingPhase === 'review-ready';
+
   const sidebarSnapshot = useMemo(
-    () => buildWorkspaceSidebarSnapshot(domain, reviewCount, entities),
-    [domain, reviewCount, entities],
+    () => buildWorkspaceSidebarSnapshot(domain, reviewCount, entities, understandingAligned),
+    [domain, reviewCount, entities, understandingAligned],
   );
 
-  const stripMessage = sanitizeAiPmResponse(aiPmMessage.paragraphs.join(' '));
+  const stripMessage = useMemo(() => {
+    if (reviewCount > 0) {
+      return sanitizeAiPmResponse(aiPmMessage.paragraphs.join(' '));
+    }
+    if (understandingPhase === 'pending') {
+      return sanitizeAiPmResponse(buildBusinessUnderstandingIntro());
+    }
+    if (understandingPhase === 'aligning') {
+      return sanitizeAiPmResponse('같은 그림을 보고 있는지 확인하겠습니다.');
+    }
+    if (understandingPhase === 'review-ready') {
+      return sanitizeAiPmResponse(buildReviewTransitionMessage());
+    }
+    if (understandingPhase === 'edit' || understandingPhase === 'together') {
+      return sanitizeAiPmResponse(buildBusinessUnderstandingIntro());
+    }
+    return sanitizeAiPmResponse(aiPmMessage.paragraphs.join(' '));
+  }, [understandingPhase, reviewCount, aiPmMessage]);
 
   const useLegacyDemoLayout = isDemoGuided;
 
@@ -481,8 +578,10 @@ export function V2StrategyWorkspaceView({ mode = 'default', user = null }: V2Str
           completedTopics={sidebarSnapshot.completedTopics}
           phase={phase}
           readOnly={isDemoReadonly}
-          onDomainChange={handleDomainChange}
+          projectId={projectId}
+          onAlignmentApplied={handleAlignmentApplied}
           onReview={runReview}
+          onUnderstandingConfirmed={refreshUnderstandingState}
         />
       )}
 

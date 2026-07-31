@@ -1,20 +1,42 @@
 'use client';
 
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
-import { sanitizeAiPmParagraphs, sanitizeAiPmResponse } from '@/lib/ai/ai-response-sanitizer';
-import { Button } from '@repo/ui';
+import type { UnderstandingConfirmMode } from '@repo/types/domain/business-understanding';
+import { sanitizeAiPmParagraphs } from '@/lib/ai/ai-response-sanitizer';
 import { cn } from '@repo/ui/lib/utils';
 
+import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
+import {
+  loadUnderstandingPhase,
+  saveUnderstandingConfirmMode,
+  saveUnderstandingPhase,
+  type UnderstandingPhase,
+} from '../../lib/business-understanding/business-understanding-store';
+import {
+  loadWorkshopAgreement,
+  shouldShowPostReviewWorkshop,
+} from '../../lib/business-understanding/workspace-decision-workshop';
+import {
+  applyMarketAlignmentToWorkspace,
+  buildMarketCandidates,
+  loadMarketAlignment,
+  resolvePrimaryCustomerLabel,
+  saveMarketAlignment,
+  type MarketAlignmentState,
+  type MarketCandidate,
+} from '../../lib/business-understanding/workspace-alignment';
 import {
   buildAiPmPrimaryMessage,
-  canProceedWorkspaceReview,
+  loadWorkspaceDocumentText,
   type WorkspaceDomainEvidence,
-  type WorkspaceDomainFieldId,
 } from '../../lib/workspace-ai-pm-messages';
-import { WorkspaceDomainFields } from './workspace-domain-fields';
+import { WorkspaceBusinessAlignmentBlock } from './workspace-business-alignment-block';
+import { WorkspaceBusinessUnderstandingCard } from './workspace-business-understanding-card';
+import { WorkspaceDecisionWorkshopBlock } from './workspace-decision-workshop-block';
 import { WorkspaceProgressiveOverview } from './workspace-progressive-overview';
 
 type WorkspaceAiPmMainProps = {
@@ -25,10 +47,35 @@ type WorkspaceAiPmMainProps = {
   completedTopics?: number;
   phase: 'compose' | 'reviewing' | 'board' | 'followUp';
   readOnly?: boolean;
-  onDomainChange: (field: WorkspaceDomainFieldId, value: string) => void;
+  projectId?: string;
+  onAlignmentApplied: (
+    domain: WorkspaceDomainEvidence,
+    entities: LaunchLensDomainContext,
+    customer: string,
+  ) => void;
   onReview: () => void;
+  onUnderstandingConfirmed?: () => void;
   className?: string;
 };
+
+function buildDocumentContext(
+  domain: WorkspaceDomainEvidence,
+  entities: LaunchLensDomainContext | null | undefined,
+  projectId?: string,
+): string {
+  const stored = loadWorkspaceDocumentText(projectId);
+  if (stored?.trim()) return stored;
+  return [
+    domain.business,
+    domain.founder,
+    domain.customer,
+    domain.market,
+    entities?.business.model ?? '',
+    entities?.customer.excerpt ?? '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
 
 export function WorkspaceAiPmMain({
   domain,
@@ -38,14 +85,80 @@ export function WorkspaceAiPmMain({
   completedTopics = 0,
   phase,
   readOnly = false,
-  onDomainChange,
+  projectId,
+  onAlignmentApplied,
   onReview,
+  onUnderstandingConfirmed,
   className,
 }: WorkspaceAiPmMainProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmMain');
+  const [understandingPhase, setUnderstandingPhase] = useState<UnderstandingPhase>('pending');
+  const [savedAlignment, setSavedAlignment] = useState<MarketAlignmentState | null>(null);
+  const [workshopAgreement, setWorkshopAgreement] = useState(() => loadWorkshopAgreement(projectId));
+
+  useEffect(() => {
+    setUnderstandingPhase(loadUnderstandingPhase(projectId));
+    setSavedAlignment(loadMarketAlignment(projectId));
+    setWorkshopAgreement(loadWorkshopAgreement(projectId));
+  }, [projectId, reviewCount]);
+
+  const goToMarketAlignment = useCallback(() => {
+    saveUnderstandingPhase('aligning', projectId);
+    setUnderstandingPhase('aligning');
+    onUnderstandingConfirmed?.();
+  }, [projectId, onUnderstandingConfirmed]);
+
+  const documentContext = useMemo(
+    () => buildDocumentContext(domain, entities, projectId),
+    [domain, entities, projectId],
+  );
+
+  const understanding = useMemo(
+    () => (documentContext.trim().length >= 8 ? buildBusinessUnderstanding(documentContext) : null),
+    [documentContext],
+  );
+
+  const marketCandidates = useMemo(
+    () => (understanding ? buildMarketCandidates(understanding) : []),
+    [understanding],
+  );
+
+  const showUnderstandingCard =
+    Boolean(understanding) && reviewCount === 0 && understandingPhase === 'pending';
+
+  const showMarketAlignment =
+    Boolean(understanding) && reviewCount === 0 && understandingPhase === 'aligning';
+
+  const showPostReviewWorkshop =
+    Boolean(understanding) && shouldShowPostReviewWorkshop(reviewCount, workshopAgreement);
+
+  const workshopAgreed =
+    workshopAgreement?.agreed && workshopAgreement.reviewRound === reviewCount;
+
   const message = buildAiPmPrimaryMessage(domain, reviewCount, entities);
   const paragraphs = sanitizeAiPmParagraphs(message.paragraphs);
-  const canReview = canProceedWorkspaceReview(domain, entities);
+
+  const handleConfirmMode = (mode: UnderstandingConfirmMode) => {
+    saveUnderstandingConfirmMode(mode, projectId);
+    goToMarketAlignment();
+  };
+
+  const handleMarketAligned = (state: MarketAlignmentState, candidates: MarketCandidate[]) => {
+    const { domain: nextDomain, entities: nextEntities } = applyMarketAlignmentToWorkspace(
+      state,
+      candidates,
+      domain,
+      entities,
+    );
+    const customer = resolvePrimaryCustomerLabel(state);
+    saveMarketAlignment(state, projectId);
+    saveUnderstandingPhase('review-ready', projectId);
+    setUnderstandingPhase('review-ready');
+    setSavedAlignment(state);
+    onAlignmentApplied(nextDomain, nextEntities, customer);
+    onUnderstandingConfirmed?.();
+    onReview();
+  };
 
   if (phase === 'reviewing') {
     return (
@@ -63,74 +176,60 @@ export function WorkspaceAiPmMain({
   }
 
   return (
-    <div className={cn('mx-auto max-w-[720px] space-y-10 py-2', className)}>
-      <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.05] to-background px-6 py-6 sm:px-8">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
-          {t('label')}
-        </p>
-        {message.ordA ? (
-          <dl className="mt-4 space-y-3 text-[14px] leading-relaxed">
-            <div>
-              <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                {t('ordA.observation')}
-              </dt>
-              <dd className="mt-1">{sanitizeAiPmResponse(message.ordA.observation)}</dd>
-            </div>
-            <div>
-              <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                {t('ordA.reasoning')}
-              </dt>
-              <dd className="mt-1">{sanitizeAiPmResponse(message.ordA.reasoning)}</dd>
-            </div>
-            <div>
-              <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                {t('ordA.decision')}
-              </dt>
-              <dd className="mt-1">{sanitizeAiPmResponse(message.ordA.decision)}</dd>
-            </div>
-            <div>
-              <dt className="text-[11px] font-semibold uppercase tracking-wide text-primary">
-                {t('ordA.nextAction')}
-              </dt>
-              <dd className="mt-1 font-medium">{sanitizeAiPmResponse(message.ordA.nextAction)}</dd>
-            </div>
-          </dl>
-        ) : (
-          <div className="mt-4 space-y-3 text-[15px] leading-relaxed">
-            {paragraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <WorkspaceDomainFields
-        domain={domain}
-        entities={entities}
-        activeField={message.activeField}
-        readOnly={readOnly}
-        onChange={onDomainChange}
-      />
-
-      {!message.blocked && reviewCount === 0 ? (
-        <div className="flex flex-wrap gap-3">
-          <Button
-            type="button"
-            className="rounded-xl"
-            disabled={!canReview || readOnly}
-            onClick={onReview}
-          >
-            {t('reviewCta')}
-          </Button>
-        </div>
+    <div className={cn('mx-auto max-w-[720px] space-y-6 py-2', className)}>
+      {showUnderstandingCard && understanding ? (
+        <WorkspaceBusinessUnderstandingCard
+          understanding={understanding}
+          onConfirm={handleConfirmMode}
+        />
       ) : null}
 
-      {reviewCount > 0 || completedTopics >= 2 ? (
-        <WorkspaceProgressiveOverview
-          businessScore={businessScore}
-          reviewCount={reviewCount}
-          completedTopics={completedTopics}
+      {showMarketAlignment && understanding ? (
+        <WorkspaceBusinessAlignmentBlock
+          understanding={understanding}
+          initialState={savedAlignment}
+          readOnly={readOnly}
+          onConfirm={handleMarketAligned}
         />
+      ) : null}
+
+      {!showUnderstandingCard && !showMarketAlignment && understandingPhase !== 'aligning' ? (
+        <>
+          {!showPostReviewWorkshop || workshopAgreed ? (
+            <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.05] to-background px-6 py-6 sm:px-8">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
+                {t('label')}
+              </p>
+              <div className="mt-4 space-y-3 text-[15px] leading-relaxed">
+                {paragraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {showPostReviewWorkshop && understanding ? (
+            <WorkspaceDecisionWorkshopBlock
+              understanding={understanding}
+              alignment={savedAlignment}
+              candidates={marketCandidates}
+              reviewCount={reviewCount}
+              projectId={projectId}
+              readOnly={readOnly}
+              onAgreed={() => setWorkshopAgreement(loadWorkshopAgreement(projectId))}
+            />
+          ) : null}
+
+          {(understandingPhase === 'review-ready' || reviewCount > 0) &&
+          (reviewCount > 0 || completedTopics >= 2) &&
+          (!showPostReviewWorkshop || workshopAgreed) ? (
+            <WorkspaceProgressiveOverview
+              businessScore={businessScore}
+              reviewCount={reviewCount}
+              completedTopics={completedTopics}
+            />
+          ) : null}
+        </>
       ) : null}
     </div>
   );

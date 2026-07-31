@@ -848,6 +848,29 @@ function computeClosedAlphaDropOff(
   });
 }
 
+function countTodayReviewStarts(todayStart: Date): number {
+  return (
+    countEventsSince(PRODUCT_ANALYTICS_EVENTS.firstReviewCompleted, todayStart) +
+    countEventsSince(PRODUCT_ANALYTICS_EVENTS.reviewCompleted, todayStart) +
+    countEventsSince(PRODUCT_ANALYTICS_EVENTS.demoStarted, todayStart) +
+    countEventsSince(ANALYTICS_EVENTS.demoEnter, todayStart) +
+    countEventsSince(PRODUCT_ANALYTICS_EVENTS.myProjectStarted, todayStart) +
+    countEventsSince(PRODUCT_ANALYTICS_EVENTS.investigationFinished, todayStart) +
+    countEventsSince(PRODUCT_ANALYTICS_EVENTS.validationOpen, todayStart) +
+    countEventsSince(PRODUCT_ANALYTICS_EVENTS.workspaceEntered, todayStart)
+  );
+}
+
+function computeLandingSocialProof(
+  funnel: ClosedAlphaFunnelCounts,
+  todayStart: Date,
+): NonNullable<OpsDashboardStats['landingSocialProof']> {
+  return {
+    todayReviewsStarted: countTodayReviewStarts(todayStart),
+    allTimeReviewsCompleted: funnel.reviewCompleted,
+  };
+}
+
 function computeTodayProductKpis(
   funnel: NonNullable<OpsDashboardStats['productJourneyFunnel']>,
   todayStart: Date,
@@ -866,11 +889,7 @@ function computeTodayProductKpis(
     aiReviewsCompleted:
       countEventsSince(PRODUCT_ANALYTICS_EVENTS.reviewCompleted, todayStart) +
       countEventsSince(PRODUCT_ANALYTICS_EVENTS.firstReviewCompleted, todayStart),
-    foundersStartingReview:
-      countEventsSince(PRODUCT_ANALYTICS_EVENTS.firstReviewCompleted, todayStart) +
-      countEventsSince(PRODUCT_ANALYTICS_EVENTS.reviewCompleted, todayStart) +
-      countEventsSince(PRODUCT_ANALYTICS_EVENTS.demoStarted, todayStart) +
-      countEventsSince(ANALYTICS_EVENTS.demoEnter, todayStart),
+    foundersStartingReview: countTodayReviewStarts(todayStart),
   };
 }
 
@@ -1210,6 +1229,10 @@ const MOCK_STATS: OpsDashboardStats = {
     aiReviewsCompleted: 8,
     foundersStartingReview: 18,
   },
+  landingSocialProof: {
+    todayReviewsStarted: 18,
+    allTimeReviewsCompleted: MOCK_CLOSED_ALPHA_FUNNEL.reviewCompleted,
+  },
   journeyAnalytics: computeJourneyAnalytics(
     MOCK_CLOSED_ALPHA_FUNNEL,
     computeClosedAlphaDropOff(MOCK_CLOSED_ALPHA_FUNNEL),
@@ -1403,6 +1426,7 @@ export function getOpsDashboardStats(): OpsDashboardStats {
     closedAlphaFunnel,
     closedAlphaDropOff,
     todayProductKpis,
+    landingSocialProof: computeLandingSocialProof(closedAlphaFunnel, todayStart),
     journeyAnalytics,
     aiPmKpis,
     funnelHeatmap,

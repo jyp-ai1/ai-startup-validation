@@ -1,7 +1,8 @@
 # LaunchLens UX Rules
 
-> **CPO Sign-off:** Sprint P1 — UX 구조 고정  
-> **Authority:** This document overrides ad-hoc layout changes. Cursor must read before any UI work.
+> **CPO Sign-off:** Sprint P1 — UX 구조 고정 · Epic 2 Blueprint ✅ 2026-07-29  
+> **Authority:** This document overrides ad-hoc layout changes. Cursor must read before any UI work.  
+> **Product law:** [`PRODUCT_PRINCIPLES.md`](./PRODUCT_PRINCIPLES.md) — AI PM > Report · 3-second rule · Epic 3 implementation rules
 
 ---
 
@@ -22,21 +23,22 @@
 - Review, Evidence, Strategy, Execution live **inside** one canvas.
 - Page navigation is minimized; **Main content swaps**, URL may use hash or query for section only.
 
-## 4. 좌측은 Navigation이다
+## 4. 좌측은 AI PM 진행상황이다
 
-- Left column = **tree navigation** (Review → sub-items).
-- Tree **grows as AI PM progresses** (Summary ✔, Market ✔, …).
-- Not a permanent app sidebar with unrelated modules.
+- Left column = **AI PM progress tree** (Overview → ○ ● ✔ nodes).
+- Tree **grows as AI PM progresses** — process-first, not document TOC.
+- Node lifecycle: Waiting → In Progress → Completed → Collapsed.
 
 ## 5. 우측(Main)은 현재 작업만 보여준다
 
 - Main shows **one focus** at a time (current section content).
 - No three-column enterprise layout (Left | Center | Right).
 
-## 6. Action은 항상 첫 화면에서 보인다
+## 6. Action은 Summary 바로 아래 이어진다
 
-- Recommended **Action** appears above the fold on Review.
-- User sees **current state → recommended Action** without scrolling.
+- Recommended **Next Step** appears **inline after Summary** — not as a bordered Action card.
+- User reads Summary → immediately sees next step + `[ Start ]`.
+- Risk and Recommendation are collapsible below — within 2–3 scrolls total.
 
 ## 7. Evidence는 보조 정보다
 
@@ -58,19 +60,24 @@ See **`docs/DESIGN_SYSTEM.md` Part 1** for the frozen GNB + Navigation + Main sh
 
 ## Terminology (user-facing)
 
-| Say | Don't say |
-|-----|-----------|
-| Workspace | Validation (to users) |
-| Review | Dashboard, Decision Center |
-| Project Workspace | Old projects shell |
+See **`docs/WORKSPACE_IA.md` §2** for full mapping.
 
-Internal route `/validation` is fine in code; docs and UI copy use **Workspace**.
+| User sees | Internal (code/docs) | Don't say to users |
+|-----------|----------------------|-------------------|
+| Project Workspace | `/validation` | Validation, Dashboard |
+| **Overview** | `review` | Review |
+| **Insights** | `evidence` | Evidence (as nav label) |
+| **Recommendations** | `strategy` | Strategy |
+| **Next Actions** | `execution` | Execution, Decision Center |
+
+Internal route `/validation` and section keys (`review`, `evidence`, …) stay in code until a rename sprint; **UI copy uses user terms only**.
 
 ---
 
 ## Before any UI PR
 
-- [ ] Read `docs/SCREEN_MAP.md` and this file
+- [ ] Read `docs/PRODUCT_PRINCIPLES.md`, `docs/SCREEN_MAP.md`, and this file
+- [ ] Read `docs/WORKSPACE_IA.md` + `docs/sprints/EPIC3_WORKSPACE_LAYOUT.md` for Epic 3
 - [ ] No new routes without CPO approval
 - [ ] No layout column changes without CPO approval
-- [ ] QA by **user journey**, not single screen
+- [ ] QA by **user journey** + **3-second rule** (progress + next action)

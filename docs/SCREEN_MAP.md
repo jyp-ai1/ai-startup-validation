@@ -12,11 +12,11 @@
 | **Workspace List** | `/workspace` | Project hub — **single entry after login** |
 | Who | `/who` | Persona — new users only |
 | Workflow | `/workflow` | AI PM interview — new users only |
-| **Project Workspace** | `/validation` | ★ Core product (Review · Evidence · Strategy · Execution live here) |
+| **Project Workspace** | `/validation` | ★ Core product (Overview · Insights · Recommendations · Next Actions) |
 | Settings | `/settings` | Account |
 | Demo | `/demo/enter` → `/who?demo=1` | No login |
 
-**Do not say "Validation" to users.** `/validation` is the **Project Workspace** — one canvas where Review, Evidence, Strategy, and Execution unfold (not separate pages).
+**Do not say "Validation" to users.** `/validation` is the **Project Workspace** — one canvas where Overview, Insights, Recommendations, and Next Actions unfold (not separate pages). Internal names: Review / Evidence / Strategy / Execution — see `WORKSPACE_IA.md` §2.
 
 ---
 
@@ -47,8 +47,8 @@ Workflow (/workflow) — AI PM interview
     ↓
 
 Project Workspace (/validation?project=:id) ★★★★★
-    Navigation (tree, grows with AI PM)
-    └── Main content (Review → Action → …)
+    AI PM (first entry)
+    └── Overview emerges → Insights → Recommendations → Next Actions
 ```
 
 ---
@@ -60,16 +60,16 @@ Project Workspace (/validation?project=:id) ★★★★★
 │ Navigation  │ Main                 │
 │  (tree)     │  (current section)   │
 │             │                      │
-│ Review ▼    │  Summary             │
-│  Summary ✔  │                      │
+│ Overview ▼  │  Summary             │
+│  Summary ✔  │  Action (≤3 scrolls) │
 │  Market     │                      │
-│  Risk       │                      │
-│  Action     │                      │
+│  Insights   │                      │
+│  Next Act.  │                      │
 └─────────────┴──────────────────────┘
 ```
 
 - **Not** Left | Center | Right (enterprise SaaS).
-- **Not** separate pages for Execution / Strategy / Evidence — they are sections inside Project Workspace.
+- **Not** separate pages for Next Actions / Recommendations / Insights — they are sections inside Project Workspace.
 - Navigation **expands as AI PM asks questions** (tree grows).
 
 ---
@@ -120,7 +120,8 @@ See `docs/ROUTE_QA.md` for verification checklist.
 ## Related docs
 
 - `docs/UX_RULES.md` — non-negotiable UX law (Epic 9)
-- `docs/WORKSPACE_IA.md` — Navigation + Main IA (Epic 2)
+- `docs/WORKSPACE_IA.md` — Navigation + Main IA (Epic 2 Blueprint)
+- `docs/WORKSPACE_FLOW.md` — Journeys + AI PM progression (Epic 2 Blueprint)
 
 ---
 

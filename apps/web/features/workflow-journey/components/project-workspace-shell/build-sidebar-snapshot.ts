@@ -55,6 +55,7 @@ export function buildWorkspaceSidebarSnapshot(
   domain: WorkspaceDomainEvidence,
   reviewCount: number,
   entities?: LaunchLensDomainContext | null,
+  understandingConfirmed = true,
 ): WorkspaceSidebarSnapshot {
   const nodes: WorkspaceNavNode[] = DOMAIN_ORDER.map((id) => ({
     id,
@@ -68,7 +69,7 @@ export function buildWorkspaceSidebarSnapshot(
   const activeNode = nodes.find((n) => n.lifecycle === 'in_progress') ?? nodes[0]!;
 
   return {
-    businessScore: reviewCount > 0 ? 74 : null,
+    businessScore: understandingConfirmed && reviewCount > 0 ? 74 : null,
     progressPercent: reviewCount > 0 ? Math.max(progressPercent, 20) : progressPercent,
     completedTopics,
     totalTopics,

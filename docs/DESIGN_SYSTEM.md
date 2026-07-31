@@ -20,12 +20,12 @@
 │ (tree, fixed   │ (single active section — one job       │
 │  width)        │  at a time)                            │
 │                │                                        │
-│ Review      ▼  │  ┌─────────────────────────────────┐   │
-│  Summary    ✔  │  │ Action (top when Review)        │   │
+│ Overview    ▼  │  ┌─────────────────────────────────┐   │
+│  Summary    ✔  │  │ Action (top when Overview)      │   │
 │  Market        │  ├─────────────────────────────────┤   │
-│ Evidence       │  │ Section body                    │   │
-│ Strategy       │  └─────────────────────────────────┘   │
-│ Execution      │                                        │
+│ Insights       │  │ Section body                    │   │
+│ Recommendations│  └─────────────────────────────────┘   │
+│ Next Actions   │                                        │
 └────────────────┴────────────────────────────────────────┘
 ```
 
@@ -185,7 +185,9 @@ Before any UI PR:
 | Doc | Purpose |
 |-----|---------|
 | `SCREEN_MAP.md` | Routes |
-| `WORKSPACE_IA.md` | Product IA |
+| `WORKSPACE_IA.md` | Product IA + user terminology |
+| `WORKSPACE_FLOW.md` | Journeys + AI PM state |
+| `PRODUCT_PRINCIPLES.md` | Epic 3 law — AI PM > Report · 3-second rule |
 | `UX_RULES.md` | 8 laws |
 | `UI_CONSISTENCY.md` | Legacy debt + DELETE list |
 | `ROUTE_QA.md` | Production redirect checklist |

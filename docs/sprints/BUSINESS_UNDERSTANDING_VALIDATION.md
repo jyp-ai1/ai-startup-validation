@@ -1,0 +1,3 @@
+# Deprecated
+
+→ **[SHARED_UNDERSTANDING.md](./SHARED_UNDERSTANDING.md)**

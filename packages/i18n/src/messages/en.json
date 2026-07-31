@@ -1501,6 +1501,9 @@
     "liveMetrics": {
       "ariaLabel": "Live activity metrics",
       "todayLabel": "Today",
+      "allTimeLabel": "All time",
+      "todayReviewsStarted": "founders started their first strategy review with AI PM",
+      "allTimeReviews": "founders completed strategy reviews with AI PM",
       "weeklyLabel": "This week",
       "newUsers": "New users",
       "projectsCreated": "Projects created",
@@ -5579,8 +5582,8 @@
                 }
               },
               "understanding": {
-                "lead1": "Founder — you've already done solid work.",
-                "lead2": "Here's what I understood.",
+                "lead1": "Founder,",
+                "lead2": "Here is what the document confirms so far.",
                 "extractedTitle": "Auto-extracted",
                 "fields": {
                   "problem": "Problem",
@@ -5597,8 +5600,8 @@
                 },
                 "qualityLabel": "Strategy completeness",
                 "basisLabel": "Document-backed fields",
-                "trustConfirmLead": "I've read your business plan first.",
-                "trustConfirmBody": "Customer definition still looks mixed up. We need to separate you (founder) from your actual customers.",
+                "trustConfirmLead": "Founder,",
+                "trustConfirmBody": "We cannot confirm the actual customer from the document alone. Founder and Customer need separate confirmation.",
                 "entityBasis": {
                   "title": "Domain understanding (by basis)",
                   "unknown": "Needs confirmation",
@@ -5621,7 +5624,7 @@
                 "confirmCustomerCta": "Confirm customer definition first"
               },
               "firstQuestion": {
-                "gapReviewTitle": "Document analysis complete",
+                "gapReviewTitle": "Document review complete",
                 "gapReviewCta": "Review what's missing",
                 "gapFields": {
                   "problem": "Problem",
@@ -5657,7 +5660,7 @@
               },
               "evidenceReview": {
                 "recommendationLabel": "Recommendation",
-                "recommendation": "B2C fits better than B2B.",
+                "recommendation": "The document mentions B2C.",
                 "whyLabel": "Why?",
                 "evidence": {
                   "googleTrends": { "label": "Google Trends", "value": "▲18%" },
@@ -5707,15 +5710,15 @@
             },
             "reasonChain": {
               "documentIntro": {
-                "withDoc": "First, I analyzed the {name} business plan."
+                "withDoc": "Founder, I reviewed the {name} document."
               },
               "terminology": {
                 "targetUsers": "Please confirm whether the target customer in the document is accurate.",
                 "serviceUsers": "Let's confirm together who the actual service customer is."
               },
               "steps": {
-                "documentAnalyzed": "Document analyzed.",
-                "reviewFocus": "First, I reviewed market fit.",
+                "documentAnalyzed": "Document reviewed.",
+                "reviewFocus": "Summarized confirmed items only.",
                 "evidenceTrends": "Checked Google Trends, search volume, and market data.",
                 "thereforeMarket": "Therefore, the market looks sufficient.",
                 "butGap": "However, pricing model is missing from the document.",
@@ -5723,7 +5726,7 @@
                 "thereforeImprovement": "After pricing was clarified, market fit improved."
               },
               "documentProfile": {
-                "analyzed": "Analyzed {name} business plan.",
+                "analyzed": "Reviewed the {name} document.",
                 "pages": "Total pages",
                 "strategies": "Key strategies",
                 "bm": "Business models",
@@ -6533,14 +6536,94 @@
         },
         "aiPmMain": {
           "label": "AI PM",
-          "reviewingTitle": "AI PM is reviewing your project",
-          "reviewingHint": "Analyzing by Founder · Business · Customer.",
-          "reviewCta": "Start AI PM review",
+          "reviewingTitle": "Reviewing viability",
+          "reviewingHint": "Analyzing against the baseline you confirmed.",
+          "reviewCta": "Start viability review",
           "ordA": {
             "observation": "Observation",
             "reasoning": "Reasoning",
             "decision": "Decision",
             "nextAction": "Next Action"
+          }
+        },
+        "decisionWorkshop": {
+          "aiLabel": "AI PM",
+          "insightLead": "What stood out most in this review",
+          "insights": {
+            "market_entry_unclear": "In this review, assumptions about market entry were not yet clear — and that appeared to have the largest impact on the viability assessment.",
+            "revenue_unclear": "The document mentions revenue in several directions, but which model to use as the baseline still looks unsettled.",
+            "multiple_directions": "The document shows several market-entry directions, but which to prioritize has not been decided yet."
+          },
+          "candidateInvite": "So next, working through {topic} together would likely be most helpful.",
+          "agreeTopic": "Explore this topic together",
+          "chooseOtherTopic": "Choose another topic",
+          "customInput": "Enter your own",
+          "otherTopicLead": "Choose another topic",
+          "customPlaceholder": "Enter a topic to explore together",
+          "workshopStartAck": "Great — let's start with {topic}.",
+          "topics": {
+            "market_entry": "market entry strategy",
+            "revenue_model": "revenue model",
+            "customer_acquisition": "customer acquisition",
+            "partnership": "partnership"
+          }
+        },
+        "businessUnderstanding": {
+          "title": "Let's align on your business first",
+          "intro": "Before review — only what we read in your document.",
+          "zoneConfirmed": "Confirmed from the document",
+          "zoneConfirmedEmpty": "Nothing confirmed from the document yet.",
+          "zoneDecideTogether": "Still to decide together",
+          "zoneDecideTogetherEmpty": "Nothing to decide together for now.",
+          "zoneFounderJudgment": "Your call",
+          "confirmLead": "How would you like to proceed?",
+          "docReadLead": "From the document",
+          "docReadSuffix": "— we confirmed these expressions.",
+          "docReadSingle": "From the document — we confirmed '{expression}'.",
+          "butLead": "However,",
+          "notDecided": "Not decided yet.",
+          "confirmYes": "✓ That's right",
+          "confirmEdit": "✎ I'll edit",
+          "confirmTogether": "🤝 Check one by one",
+          "reviewTransition": "I'll review viability based on what you confirmed.",
+          "reviewStartCta": "Start viability review",
+          "viabilityTitle": "Viability review",
+          "viabilityLead": "I'll review viability based on the baseline you confirmed.",
+          "viabilityStartCta": "Start viability review",
+          "editHint": "Edit any incorrect fields below.",
+          "togetherHint": "Set each field to your baseline below.",
+          "editComplete": "Apply edits — align baseline",
+          "togetherComplete": "Done — align baseline",
+          "editAcknowledgment": "Updated. We'll continue from your changes.",
+          "alignment": {
+            "aiLabel": "AI PM",
+            "readLead": "From your document, several key parties stand out.",
+            "withholdLine": "I won't decide who to pursue first from the document alone.",
+            "pmLead": "At this stage, teams often choose between",
+            "strategyPath": "Starting with {target}",
+            "pmUnderstanding1": "You may already have a direction in mind,",
+            "pmUnderstanding2": "or you may prefer to shape it together after the review.",
+            "pmUnderstanding3": "Both are fine.",
+            "directionTitle": "Your current strategy direction",
+            "optionHasDirection": "I already have a direction in mind",
+            "optionThinking": "Still thinking it through",
+            "optionDecideAfterReview": "I'd like to decide together after the review",
+            "whichDirection": "Which direction?",
+            "customOption": "Other",
+            "customPlaceholder": "Type here",
+            "startReview": "Review with this baseline",
+            "startBlockedDirection": "Choose a strategy direction first.",
+            "startBlockedPrimary": "Select a direction or enter your own target."
+          },
+          "evidenceLabel": "Evidence",
+          "evidence": "Evidence",
+          "fields": {
+            "founder": "Founder",
+            "business": "Business",
+            "valueProposition": "Value proposition",
+            "customer": "Customer",
+            "partner": "Partner",
+            "revenue": "Revenue"
           }
         },
         "domainFields": {
@@ -6560,10 +6643,10 @@
             "competitor": "e.g. similar curation apps"
           },
           "basis": {
-            "document": "✔ Document",
-            "inferred": "⚠ Inferred",
-            "unknown": "? Unknown",
-            "needs_confirmation": "⚠ Needs confirmation"
+            "document": "✔ From document",
+            "inferred": "Not in document — decide together",
+            "unknown": "Not confirmed from document yet",
+            "needs_confirmation": "Not decided together yet"
           },
           "evidence": "Evidence"
         }

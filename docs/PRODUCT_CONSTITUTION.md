@@ -5,7 +5,7 @@
 **Authority:** This document is the **supreme product law**. Epic이 20개가 되어도 흔들리지 않는 기준.  
 **Supersedes:** Ad-hoc feature decisions · menu-first IA · report-generator positioning · **AI Startup Validation Tool** framing
 
-> **Read order:** Constitution → [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) → Sprint kickoff → implement
+> **Read order:** Constitution → [PRODUCT_PRINCIPLES.md](./PRODUCT_PRINCIPLES.md) → [DOMAIN_MODEL.md](./DOMAIN_MODEL.md) → [AI_PM_PERSONALITY.md](./AI_PM_PERSONALITY.md) → [LAUNCHLENS_ROADMAP_V1.md](./LAUNCHLENS_ROADMAP_V1.md) → Sprint kickoff → implement
 
 ---
 
