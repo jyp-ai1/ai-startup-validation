@@ -10,6 +10,8 @@
 
 **Status:** 🔄 Evidence collection (5 founder sessions) · Product **FROZEN**
 
+**Evidence store:** [`evidence/SPRINT4_H1/`](./evidence/SPRINT4_H1/README.md) — session-01 … session-05 · synthesis.md
+
 ### Sprint
 
 Sprint 4 P0 Validation
@@ -40,7 +42,8 @@ Review 이후 founder shows acceptance — e.g. *"아 그렇구나."* (Pause · 
 | 4 | | | | | |
 | 5 | | | | | |
 
-*Sheet:* [`sprints/SPRINT_4_P0_OBSERVATION_SHEET.md`](./sprints/SPRINT_4_P0_OBSERVATION_SHEET.md)
+*Sheet:* [`sprints/SPRINT_4_P0_OBSERVATION_SHEET.md`](./sprints/SPRINT_4_P0_OBSERVATION_SHEET.md)  
+*Live capture:* [`evidence/SPRINT4_H1/`](./evidence/SPRINT4_H1/README.md)
 
 ### Evidence
 

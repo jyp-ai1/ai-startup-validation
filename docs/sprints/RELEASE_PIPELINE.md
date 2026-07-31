@@ -5,7 +5,9 @@
 
 ---
 
-## Pipeline (fixed order)
+## Pipeline (fixed order) — Evidence Release
+
+LaunchLens is a **Learning Product**. Deploy is not the end.
 
 ```text
 Code Complete
@@ -19,6 +21,10 @@ Experience Gate + CTO Self Review
 PM Test
       ↓
 CEO Test
+      ↓
+Evidence Accepted
+      ↓
+Release Complete
 ```
 
 | Stage | Owner | Pass means |
@@ -26,9 +32,11 @@ CEO Test
 | Code Complete | CTO | Merged on `main`, build green |
 | Production | CTO | Push + Vercel + SHA match |
 | E2E | CTO | 2 Production recordings attached |
-| **Experience Gate** | CTO | Self Review PASS on both flows |
-| PM Test | PM | Evidence / observation sheet |
-| CEO Test | CEO | First external product judgment |
+| Experience Gate | CTO | Self Review PASS on both flows |
+| PM Test | PM | Founder sessions · fill `docs/evidence/` |
+| CEO Test | CEO | Market-level feedback on flow |
+| **Evidence Accepted** | PM + CPO | 5 sessions + synthesis · H1 decision |
+| **Release Complete** | CPO | Keep/Kill/Refine recorded · sprint closed |
 
 **Do not skip stages.** PM Test before Experience Gate = wasted observation.
 
@@ -43,19 +51,24 @@ Deployment
 □ Production
 □ SHA
 
-E2E
+Experience
 □ E2E Video 1 — Start Free → Insight
 □ E2E Video 2 — Demo → Login → Continue
-
-Experience
-□ CTO Self Review (both flows)
 □ Experience Gate PASS
+□ CTO Self Review
+
+Validation
+□ Evidence Collected (docs/evidence/SPRINT4_H1/)
+□ Evidence Review (synthesis.md)
+□ Hypothesis Decision (Keep / Kill / Refine)
 
 Handoff
-□ PM Test Ready
+□ PM Test Ready          ← after Experience PASS
+□ Evidence Accepted      ← after 5 sessions + synthesis
+□ Release Complete       ← after CPO sign-off
 ```
 
-Only when **all boxes checked** may CTO say **"PM Test Ready"**.
+**Goal is not "배포 완료" — it is "가설 검증 완료".**
 
 ---
 
@@ -155,11 +168,16 @@ See step lists in `docs/sprints/E2E_VERIFICATION_GATE.md` (same flows).
 
 ## Role split
 
-| Role | Focus |
-|------|--------|
-| **CTO** | Flow connects · Experience Gate · Self Review · Production truth |
-| **PM** | User observation · Evidence · Keep/Kill/Refine (after PM Test Ready) |
-| **CEO** | First impression · strategic judgment (after PM Test) |
+| Role | Responsibility |
+|------|----------------|
+| **CTO** | Experience가 끊기지 않는 제품 · Production · E2E · Experience Gate |
+| **PM** | Evidence 수집 및 해석 · `docs/evidence/` session files |
+| **CPO** | Hypothesis 유지/기각 결정 · synthesis · Keep/Kill/Refine |
+| **CEO** | 실제 시장 관점의 최종 피드백 · CEO Test |
+
+Roles do not overlap: CTO does not interpret Evidence; PM does not ship without Experience PASS.
+
+**Evidence store:** [`docs/evidence/`](../evidence/README.md)
 
 ---
 

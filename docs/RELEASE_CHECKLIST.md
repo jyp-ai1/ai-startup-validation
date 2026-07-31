@@ -16,21 +16,21 @@
 ## Release Checklist (mandatory before PM Test)
 
 ```text
-□ Commit
-□ Push
-□ Production
-□ SHA
+Deployment
+□ Commit · □ Push · □ Production · □ SHA
 
-□ E2E Video 1 — Start Free → Insight
-□ E2E Video 2 — Demo → Login → Continue
+Experience
+□ E2E Video 1 · □ E2E Video 2
+□ Experience Gate · □ CTO Self Review
 
-□ CTO Self Review
-□ Experience Gate PASS
+Validation
+□ Evidence Collected · □ Evidence Review · □ Hypothesis Decision
 
-□ PM Test Ready
+Handoff
+□ PM Test Ready · □ Evidence Accepted · □ Release Complete
 ```
 
-Details: `docs/sprints/RELEASE_PIPELINE.md`
+Details: `docs/sprints/RELEASE_PIPELINE.md` · Evidence: `docs/evidence/SPRINT4_H1/`
 
 ---
 
