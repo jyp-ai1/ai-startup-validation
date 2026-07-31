@@ -12,6 +12,7 @@ import {
 import { listDemoProjects, getOwnedProject } from '@/features/projects/services/project-service';
 import { WorkspaceProjectCanvas } from '@/features/workspace/components/workspace-project-canvas';
 import { WorkspaceAuthCompleteTracker } from '@/features/workspace/components/workspace-auth-complete-tracker';
+import { WorkspaceListCookieCleanup } from '@/features/workspace/components/workspace-list-cookie-cleanup';
 import { WorkspaceJourneyTracker } from '@/features/workspace/components/journey-page-tracker';
 import { buildAuthenticatedJourneyUrl } from '@/lib/auth/journey-routes';
 import { logJourneyRedirect } from '@/lib/auth/journey-redirect-audit';
@@ -20,7 +21,6 @@ import {
   getServerAuthUser,
   isDemoQueryParam,
   isDemoWorkspace,
-  WORKSPACE_MODE_COOKIE,
 } from '@/lib/auth/server-auth';
 import { isDemoSampleId } from '@/features/workflow-journey/lib/demo-samples';
 import { extractProjectSeedDocument } from '@/lib/project/project-seed-document';
@@ -101,14 +101,8 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   const welcome = params.welcome === '1';
   const promoted = params.promoted === '1';
 
-  if (authUser && demoCookie && !demoQuery && !promoteDemo) {
-    cookieStore.delete(WORKSPACE_MODE_COOKIE);
-  }
-
   if (dbReady && promoteDemo) {
     await promoteDemoProject(user.id);
-    cookieStore.delete(WORKSPACE_MODE_COOKIE);
-    cookieStore.delete('ACTIVE_PROJECT_ID');
     redirect(`/workspace?promoted=1${authComplete ? '&auth=complete' : ''}`);
   }
 
@@ -124,10 +118,7 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   }
 
   const resolvedProjectId = params.project;
-
-  if (!resolvedProjectId && dbReady) {
-    cookieStore.delete('ACTIVE_PROJECT_ID');
-  }
+  const clearStaleDemoMode = Boolean(authUser && demoCookie && !demoQuery && !promoteDemo);
 
   if (resolvedProjectId && dbReady) {
     if (authComplete && !welcome && !promoted) {
@@ -174,6 +165,7 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   return (
     <>
       <WorkspaceJourneyTracker />
+      <WorkspaceListCookieCleanup clearStaleDemoMode={clearStaleDemoMode} />
       <WorkspaceAuthCompleteTracker promoted={false} />
       <MyProjectsHome
         userName={user.fullName}
