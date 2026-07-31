@@ -36,6 +36,7 @@ type WorkspaceProjectCanvasProps = {
   demoMode?: 'default' | 'demo-readonly' | 'demo-guided';
   demoSampleId?: import('@/features/workflow-journey/lib/demo-samples').DemoSampleId;
   demoFresh?: boolean;
+  seedDocument?: string;
 };
 
 /** Single project workspace — AI PM canvas on /workspace?project= */
@@ -49,6 +50,7 @@ export function WorkspaceProjectCanvas({
   demoMode = 'default',
   demoSampleId = 'launchlens',
   demoFresh = false,
+  seedDocument,
 }: WorkspaceProjectCanvasProps) {
   if (needsPersona) {
     return (
@@ -97,6 +99,7 @@ export function WorkspaceProjectCanvas({
         user={user}
         demoSampleId={demoSampleId}
         demoFresh={demoFresh}
+        seedDocument={seedDocument}
       />
     </>
   );

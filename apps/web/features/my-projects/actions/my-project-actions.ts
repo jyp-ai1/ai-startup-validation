@@ -191,6 +191,9 @@ export async function createMyProjectAction(
     summary: description || title,
     onboardingContext: {
       sprint12: buildInitialInterviewState(reviewTypeRaw, description),
+      ...(description.trim().length >= 8
+        ? { v2Demo: { pastedContent: description.trim() } }
+        : {}),
     },
   });
 

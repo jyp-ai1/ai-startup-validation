@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { GoogleSignInButton } from '@/features/auth/components/google-sign-in-button';
+import { persistDemoSessionForLogin } from '@/features/workflow-journey/lib/demo-guided-session';
 import { cn } from '@repo/ui/lib/utils';
 
 type WorkspaceDemoLoginCtaProps = {
@@ -27,6 +28,7 @@ export function WorkspaceDemoLoginCta({ className }: WorkspaceDemoLoginCtaProps)
       <div className="mt-4 max-w-sm">
         <GoogleSignInButton
           redirectTo="/workspace?from=demo&promote=1"
+          onBeforeSignIn={() => persistDemoSessionForLogin()}
           className="h-11 w-full rounded-xl"
         />
       </div>

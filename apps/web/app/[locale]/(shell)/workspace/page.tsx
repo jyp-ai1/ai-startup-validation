@@ -10,7 +10,6 @@ import {
   promoteDemoProject,
 } from '@/features/my-projects/actions/my-project-actions';
 import { listDemoProjects, getOwnedProject } from '@/features/projects/services/project-service';
-import { readJourneyPersona } from '@/features/workflow-journey/lib/v2-journey-cookies';
 import { WorkspaceProjectCanvas } from '@/features/workspace/components/workspace-project-canvas';
 import { WorkspaceAuthCompleteTracker } from '@/features/workspace/components/workspace-auth-complete-tracker';
 import { WorkspaceJourneyTracker } from '@/features/workspace/components/journey-page-tracker';
@@ -22,6 +21,7 @@ import {
   isDemoWorkspace,
 } from '@/lib/auth/server-auth';
 import { isDemoSampleId } from '@/features/workflow-journey/lib/demo-samples';
+import { extractProjectSeedDocument } from '@/lib/project/project-seed-document';
 import { isSupabaseConfigured } from '@repo/db';
 
 export const dynamic = 'force-dynamic';
@@ -96,15 +96,8 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   const promoted = params.promoted === '1';
 
   if (dbReady && promoteDemo) {
-    const project = await promoteDemoProject(user.id);
-    redirect(
-      buildAuthenticatedJourneyUrl({
-        projectId: project.id,
-        welcome: true,
-        promoted: true,
-        authComplete,
-      }),
-    );
+    await promoteDemoProject(user.id);
+    redirect(`/workspace?promoted=1${authComplete ? '&auth=complete' : ''}`);
   }
 
   if (dbReady && params.intent === 'new') {
@@ -121,8 +114,9 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   const resolvedProjectId = params.project;
 
   if (resolvedProjectId && dbReady) {
+    let owned = null;
     if (isSupabaseConfigured()) {
-      const owned = await getOwnedProject(user.id, resolvedProjectId);
+      owned = await getOwnedProject(user.id, resolvedProjectId);
       if (!owned) {
         logJourneyRedirect({
           layer: 'server',
@@ -134,7 +128,7 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
       }
     }
 
-    const needsPersona = (welcome || promoted) && !(await readJourneyPersona());
+    const seedDocument = owned ? extractProjectSeedDocument(owned) : undefined;
 
     return (
       <WorkspaceProjectCanvas
@@ -143,7 +137,8 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
         welcome={welcome}
         promoted={promoted}
         authComplete={authComplete}
-        needsPersona={needsPersona}
+        needsPersona={false}
+        seedDocument={seedDocument}
         demoMode={
           params.demo === 'readonly'
             ? 'demo-readonly'

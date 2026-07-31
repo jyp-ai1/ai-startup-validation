@@ -58,7 +58,7 @@ import {
   type WorkspaceDomainEvidence,
   type WorkspaceDomainFieldId,
 } from '../../lib/workspace-ai-pm-messages';
-import { loadUnderstandingPhase, clearBusinessUnderstandingConfirmed } from '../../lib/business-understanding/business-understanding-store';
+import { loadUnderstandingPhase, clearBusinessUnderstandingConfirmed, saveUnderstandingPhase } from '../../lib/business-understanding/business-understanding-store';
 import { allowsOpenReview, loadMarketAlignment } from '../../lib/business-understanding/workspace-alignment';
 import { buildBusinessUnderstandingIntro, buildReviewTransitionMessage, buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import {
@@ -104,6 +104,7 @@ type V2StrategyWorkspaceViewProps = {
   projectId?: string;
   demoSampleId?: DemoSampleId;
   demoFresh?: boolean;
+  seedDocument?: string;
 };
 
 export function V2StrategyWorkspaceView({
@@ -112,6 +113,7 @@ export function V2StrategyWorkspaceView({
   projectId,
   demoSampleId = 'launchlens',
   demoFresh = false,
+  seedDocument,
 }: V2StrategyWorkspaceViewProps) {
   const isDemoReadonly = mode === 'demo-readonly';
   const isDemoGuided = mode === 'demo-guided';
@@ -283,8 +285,15 @@ export function V2StrategyWorkspaceView({
     const saved = loadV2Validation(storageProjectId);
     const storedDomain = loadWorkspaceDomain(storageProjectId);
     const storedEntities = loadWorkspaceEntities(storageProjectId);
+    const existingDocument = loadWorkspaceDocumentText(storageProjectId);
 
-    if (!loadWorkspaceDocumentText(storageProjectId) && saved) {
+    if (!existingDocument && seedDocument && seedDocument.trim().length >= 8) {
+      saveWorkspaceDocumentText(seedDocument, storageProjectId);
+      const inferred = inferDomainFromPaste(seedDocument, storageProjectId);
+      setDomain(inferred.domain);
+      setEntities(inferred.entities);
+      setIdea(inferred.domain.business.trim() || deriveProjectName(seedDocument));
+    } else if (!existingDocument && saved) {
       const combined = [
         saved.evidence.idea,
         saved.evidence.problem,
@@ -317,6 +326,7 @@ export function V2StrategyWorkspaceView({
       setDomain(validationToWorkspaceDomain(saved.evidence));
     }
   }, [
+    seedDocument,
     demoFresh,
     demoSampleId,
     isDemoReadonly,
@@ -325,6 +335,20 @@ export function V2StrategyWorkspaceView({
     storageProjectId,
     refreshUnderstandingState,
   ]);
+
+  const handleDocumentIntake = useCallback(
+    (content: string) => {
+      if (isDemoReadonly) return;
+      const inferred = inferDomainFromPaste(content, storageProjectId);
+      setDomain(inferred.domain);
+      setEntities(inferred.entities);
+      setIdea(inferred.domain.business.trim() || deriveProjectName(content));
+      saveUnderstandingPhase('pending', storageProjectId);
+      setUnderstandingPhase('pending');
+      refreshUnderstandingState();
+    },
+    [isDemoReadonly, refreshUnderstandingState, storageProjectId],
+  );
 
   const aiPmMessage = useMemo(
     () => buildAiPmPrimaryMessage(domain, reviewCount, entities),
@@ -642,6 +666,7 @@ export function V2StrategyWorkspaceView({
           projectId={storageProjectId}
           showDemoLoginCta={showDemoLoginCta}
           hasCompletedReview={hasCompletedReview}
+          onDocumentIntake={handleDocumentIntake}
           onAlignmentApplied={handleAlignmentApplied}
           onReview={runReview}
           onUnderstandingConfirmed={refreshUnderstandingState}

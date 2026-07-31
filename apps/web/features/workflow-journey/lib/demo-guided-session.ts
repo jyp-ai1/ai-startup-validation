@@ -3,6 +3,12 @@ import {
   DEMO_SESSION_PROJECT_ID,
 } from './demo-samples';
 import { clearBusinessUnderstandingConfirmed } from './business-understanding/business-understanding-store';
+import { loadWorkspaceDocumentText } from './workspace-ai-pm-messages';
+import {
+  persistDemoProjectDraftForLogin,
+  type DemoProjectDraft,
+} from './v2-demo-project-store';
+import { extractDocumentEntities } from './domain/extract-document-entities';
 import { loadReviewSnapshot } from './v2-review-dirty-state';
 import { loadMeetingNotes } from './v2-ai-pm-meeting-store';
 import {
@@ -94,4 +100,32 @@ export function loadPersistedReviewCount(projectId?: string): number {
   if (meetings > 0) return meetings;
 
   return loadReviewSnapshot(projectId) ? 1 : 0;
+}
+
+function buildDraftFromDocument(content: string): DemoProjectDraft {
+  const entities = extractDocumentEntities(content);
+  const serviceName =
+    entities.business.name?.trim() ||
+    entities.business.value?.trim() ||
+    content.split('\n')[0]?.trim() ||
+    '내 프로젝트';
+
+  return {
+    serviceName,
+    tagline:
+      entities.business.value?.trim() ||
+      entities.product.value?.trim() ||
+      'LaunchLens Demo에서 시작한 프로젝트',
+    customer: entities.customer.value?.trim() ?? '',
+    problem: '',
+    pastedContent: content,
+    importSource: 'paste',
+  };
+}
+
+/** Persist current demo session document before OAuth promote. */
+export function persistDemoSessionForLogin(projectId = DEMO_SESSION_PROJECT_ID): void {
+  const content = loadWorkspaceDocumentText(projectId)?.trim();
+  if (!content || content.length < 8) return;
+  persistDemoProjectDraftForLogin(buildDraftFromDocument(content));
 }

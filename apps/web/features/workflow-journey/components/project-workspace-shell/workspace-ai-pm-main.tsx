@@ -38,6 +38,7 @@ import {
 import { WorkspaceBusinessAlignmentBlock } from './workspace-business-alignment-block';
 import { WorkspaceBusinessUnderstandingCard } from './workspace-business-understanding-card';
 import { WorkspaceDecisionWorkshopBlock } from './workspace-decision-workshop-block';
+import { WorkspaceDocumentIntake } from './workspace-document-intake';
 import { WorkspaceDemoLoginCta } from './workspace-demo-login-cta';
 import { WorkspaceNextStepPanel } from './workspace-next-step-panel';
 import { WorkspacePostReviewRoadmap } from './workspace-post-review-roadmap';
@@ -61,6 +62,7 @@ type WorkspaceAiPmMainProps = {
   onUnderstandingConfirmed?: () => void;
   showDemoLoginCta?: boolean;
   hasCompletedReview?: boolean;
+  onDocumentIntake?: (content: string) => void;
   className?: string;
 };
 
@@ -97,6 +99,7 @@ export function WorkspaceAiPmMain({
   onUnderstandingConfirmed,
   showDemoLoginCta = false,
   hasCompletedReview = false,
+  onDocumentIntake,
   className,
 }: WorkspaceAiPmMainProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmMain');
@@ -205,6 +208,16 @@ export function WorkspaceAiPmMain({
     );
   }
 
+  const hasDocument = documentContext.trim().length >= 8;
+
+  if (reviewCount === 0 && !hasDocument && onDocumentIntake) {
+    return (
+      <div className={cn('mx-auto max-w-[720px] py-2', className)}>
+        <WorkspaceDocumentIntake onSubmit={onDocumentIntake} />
+      </div>
+    );
+  }
+
   return (
     <div className={cn('mx-auto max-w-[720px] space-y-6 py-2', className)}>
       {showUnderstandingCard && understanding ? (
@@ -227,7 +240,7 @@ export function WorkspaceAiPmMain({
       {showNextStepPanel ? (
         <WorkspaceNextStepPanel
           phase={understandingPhase}
-          hasDocument={documentContext.trim().length >= 8}
+          hasDocument={hasDocument}
           onContinueUnderstanding={() => {
             saveUnderstandingPhase('pending', projectId);
             setUnderstandingPhase('pending');

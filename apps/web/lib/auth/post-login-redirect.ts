@@ -14,7 +14,14 @@ type ResolvePostLoginOptions = {
   safeNext: string;
 };
 
-/** Single-hop destination after OAuth — never bare `/workspace?auth=complete`. */
+function buildWorkspaceListUrl(authComplete: boolean): string {
+  const qs = new URLSearchParams();
+  if (authComplete) qs.set('auth', 'complete');
+  const query = qs.toString();
+  return query ? `/workspace?${query}` : '/workspace';
+}
+
+/** Single-hop destination after OAuth — project list unless ?project= is explicit. */
 export async function resolvePostLoginWorkspaceUrl(
   userId: string,
   { authComplete = true, promoteDemo = false, safeNext }: ResolvePostLoginOptions,
@@ -33,10 +40,7 @@ export async function resolvePostLoginWorkspaceUrl(
   }
 
   if (!isSupabaseConfigured()) {
-    const qs = new URLSearchParams(parsed.searchParams);
-    if (authComplete) qs.set('auth', 'complete');
-    const query = qs.toString();
-    return query ? `/workspace?${query}` : '/workspace?auth=complete';
+    return buildWorkspaceListUrl(authComplete);
   }
 
   if (projectFromNext) {
@@ -52,17 +56,10 @@ export async function resolvePostLoginWorkspaceUrl(
   }
 
   const projects = await listOwnedProjects(userId);
-  if (projects.length === 0) {
-    const project = await bootstrapFirstProject(userId, promoteDemo);
-    return buildAuthenticatedJourneyUrl({
-      projectId: project.id,
-      welcome: true,
-      authComplete,
-    });
+  if (projects.length === 0 && promoteDemo) {
+    await bootstrapFirstProject(userId, true);
+    return `/workspace?promoted=1${authComplete ? '&auth=complete' : ''}`;
   }
 
-  return buildAuthenticatedJourneyUrl({
-    projectId: projects[0]!.id,
-    authComplete,
-  });
+  return buildWorkspaceListUrl(authComplete);
 }

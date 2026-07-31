@@ -13,6 +13,7 @@ import { Button } from '@repo/ui';
 type GoogleSignInButtonProps = {
   redirectTo?: string;
   className?: string;
+  onBeforeSignIn?: () => void;
 };
 
 function maskEnv(value: string | undefined): string {
@@ -24,6 +25,7 @@ function maskEnv(value: string | undefined): string {
 export function GoogleSignInButton({
   redirectTo = '/workspace',
   className,
+  onBeforeSignIn,
 }: GoogleSignInButtonProps) {
   const t = useTranslations('auth');
   const { trackEvent } = useAnalytics();
@@ -33,6 +35,7 @@ export function GoogleSignInButton({
 
   async function handleSignIn() {
     setErrorMessage(null);
+    onBeforeSignIn?.();
 
     if (!supabaseReady) {
       const detail = 'Supabase public env missing (NEXT_PUBLIC_SUPABASE_URL / ANON_KEY)';

@@ -6740,6 +6740,16 @@
           "reviewReadyLead": "확인해 주신 기준으로 사업성 검토를 시작할 수 있습니다.",
           "startReviewCta": "검토 시작"
         },
+        "documentIntake": {
+          "label": "문서 입력",
+          "title": "사업 문서를 붙여넣거나 업로드해 주세요.",
+          "hint": "서비스명, 창업자, 사업 설명, 타깃 고객, 수익 모델 등이 있으면 AI Read가 바로 시작됩니다.",
+          "pasteLabel": "문서 붙여넣기",
+          "pastePlaceholder": "사업계획서, IR deck, 메모 등을 붙여넣으세요.",
+          "uploadCta": "파일 업로드",
+          "startReadCta": "AI Read 시작",
+          "invalidFile": "문서를 읽을 수 없습니다. 텍스트 파일 또는 PDF/DOCX를 사용해 주세요."
+        },
         "decisionWorkshop": {
           "aiLabel": "AI PM",
           "insightLead": "이번 검토에서 가장 크게 보인 점",

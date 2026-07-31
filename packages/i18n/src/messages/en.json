@@ -6587,6 +6587,16 @@
           "reviewReadyLead": "You're ready to start the viability review.",
           "startReviewCta": "Start review"
         },
+        "documentIntake": {
+          "label": "Document",
+          "title": "Paste or upload your business document.",
+          "hint": "Include service, founder, customer, and revenue model so AI Read can start.",
+          "pasteLabel": "Paste document",
+          "pastePlaceholder": "Paste a business plan, IR deck, or notes.",
+          "uploadCta": "Upload file",
+          "startReadCta": "Start AI Read",
+          "invalidFile": "Could not read the file. Use text, PDF, or DOCX."
+        },
         "decisionWorkshop": {
           "aiLabel": "AI PM",
           "insightLead": "What stood out most in this review",
