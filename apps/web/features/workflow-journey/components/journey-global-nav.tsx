@@ -83,7 +83,7 @@ export function JourneyGlobalNav({ user = null, guestDemoMode = false }: Journey
           variant="ghost"
           size="sm"
           className="h-8 px-2.5 text-xs sm:text-sm"
-          onClick={() => void signOutAndRedirect()}
+          onClick={() => void signOutAndRedirect('/')}
         >
           {t('logout')}
         </Button>

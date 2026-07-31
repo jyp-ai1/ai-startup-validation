@@ -57,7 +57,7 @@ export function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="flex cursor-pointer items-center gap-2"
-          onSelect={() => void signOutAndRedirect()}
+          onSelect={() => void signOutAndRedirect('/')}
         >
           <LogOut className="size-4" />
           {t('signOut')}

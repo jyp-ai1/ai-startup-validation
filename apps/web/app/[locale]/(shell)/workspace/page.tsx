@@ -21,6 +21,7 @@ import {
   isDemoQueryParam,
   isDemoWorkspace,
 } from '@/lib/auth/server-auth';
+import { isDemoSampleId } from '@/features/workflow-journey/lib/demo-samples';
 import { isSupabaseConfigured } from '@repo/db';
 
 export const dynamic = 'force-dynamic';
@@ -43,6 +44,8 @@ type WorkspaceHomePageProps = {
     promoted?: string;
     demo?: string;
     intent?: string;
+    sample?: string;
+    fresh?: string;
   }>;
 };
 
@@ -53,6 +56,10 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   const demoEntry = demoCookie || isDemoQueryParam(params.demo);
 
   if (demoEntry) {
+    if (!params.sample || params.fresh !== '1') {
+      redirect('/demo/start');
+    }
+
     const cookieStore = await cookies();
     let projectId = params.project ?? cookieStore.get('ACTIVE_PROJECT_ID')?.value;
     if (!projectId) {
@@ -66,11 +73,18 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
         : params.demo === 'guided' || params.demo === '1' || demoCookie
           ? 'demo-guided'
           : 'demo-guided';
+    const demoSampleId = isDemoSampleId(params.sample) ? params.sample : 'launchlens';
 
     return (
       <>
         <WorkspaceJourneyTracker />
-        <WorkspaceProjectCanvas projectId={projectId} user={user} demoMode={demoMode} />
+        <WorkspaceProjectCanvas
+          projectId={projectId}
+          user={user}
+          demoMode={demoMode}
+          demoSampleId={demoSampleId}
+          demoFresh
+        />
       </>
     );
   }

@@ -34,6 +34,8 @@ type WorkspaceProjectCanvasProps = {
   authComplete?: boolean;
   needsPersona?: boolean;
   demoMode?: 'default' | 'demo-readonly' | 'demo-guided';
+  demoSampleId?: import('@/features/workflow-journey/lib/demo-samples').DemoSampleId;
+  demoFresh?: boolean;
 };
 
 /** Single project workspace — AI PM canvas on /workspace?project= */
@@ -45,6 +47,8 @@ export function WorkspaceProjectCanvas({
   authComplete = false,
   needsPersona = false,
   demoMode = 'default',
+  demoSampleId = 'launchlens',
+  demoFresh = false,
 }: WorkspaceProjectCanvasProps) {
   if (needsPersona) {
     return (
@@ -87,9 +91,12 @@ export function WorkspaceProjectCanvas({
         </Suspense>
       ) : null}
       <V2StrategyWorkspaceView
+        key={demoMode === 'demo-guided' ? `demo-${demoSampleId}-${demoFresh ? 'fresh' : 'resume'}` : projectId}
         projectId={projectId}
         mode={demoMode === 'default' ? 'default' : demoMode}
         user={user}
+        demoSampleId={demoSampleId}
+        demoFresh={demoFresh}
       />
     </>
   );

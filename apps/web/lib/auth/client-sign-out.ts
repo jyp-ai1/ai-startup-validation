@@ -15,7 +15,7 @@ export async function signOutBrowserSession(): Promise<void> {
 }
 
 /** Full logout — browser cache first, then server cookie purge via route handler. */
-export async function signOutAndRedirect(next = '/auth/login?signed_out=1'): Promise<void> {
+export async function signOutAndRedirect(next = '/'): Promise<void> {
   await signOutBrowserSession();
   window.location.assign(`/auth/logout?next=${encodeURIComponent(next)}`);
 }

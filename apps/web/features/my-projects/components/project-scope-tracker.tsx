@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import {
   getActiveProjectId,
@@ -13,14 +13,9 @@ type ProjectScopeTrackerProps = {
   isNewProject?: boolean;
 };
 
-/** P0-2 / P0-3 — enforce activeProjectId and reset context for new projects. */
+/** Enforce activeProjectId on every project change; reset cache for new projects. */
 export function ProjectScopeTracker({ projectId, isNewProject = false }: ProjectScopeTrackerProps) {
-  const initialized = useRef(false);
-
   useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
-
     if (isNewProject) {
       resetProjectContext(projectId);
       return;
