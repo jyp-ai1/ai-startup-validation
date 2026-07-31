@@ -7,11 +7,19 @@ import type {
   UnderstandingConfirmMode,
   UnderstandingField,
 } from '@repo/types/domain/business-understanding';
+import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
+import {
+  buildDiscoveryItems,
+  collectUnconfirmedLines,
+  type DiscoveryItem,
+} from '../../lib/business-understanding/discovery-summary';
+
 type WorkspaceBusinessUnderstandingCardProps = {
   understanding: BusinessUnderstanding;
+  entities?: LaunchLensDomainContext | null;
   onConfirm: (mode: UnderstandingConfirmMode) => void;
   className?: string;
 };
@@ -21,6 +29,63 @@ type ReadField = {
   labelKey: string;
   field: UnderstandingField;
 };
+
+function statusSymbol(status: DiscoveryItem['status']): string {
+  switch (status) {
+    case 'confirmed':
+      return '✓';
+    case 'partial':
+      return '🟡';
+    default:
+      return '○';
+  }
+}
+
+function DiscoverySummary({
+  items,
+  unconfirmed,
+  t,
+}: {
+  items: DiscoveryItem[];
+  unconfirmed: string[];
+  t: (key: string, values?: Record<string, string>) => string;
+}) {
+  return (
+    <div className="rounded-xl border border-primary/25 bg-gradient-to-br from-primary/[0.06] to-background px-4 py-4">
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{t('aiLabel')}</p>
+      <p className="mt-2 text-[15px] font-medium leading-snug">{t('readCompleteLead')}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{t('readCompleteSub')}</p>
+      <ul className="mt-4 space-y-2">
+        {items.map((item) => (
+          <li key={item.id} className="flex items-start gap-2 text-sm leading-relaxed">
+            <span className="mt-0.5 shrink-0" aria-hidden>
+              {statusSymbol(item.status)}
+            </span>
+            <span>
+              <span className="font-medium">{t(item.labelKey)}</span>
+              {item.detail ? (
+                <span className="text-muted-foreground"> — {item.detail}</span>
+              ) : null}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {unconfirmed.length > 0 ? (
+        <div className="mt-4 border-t border-border/50 pt-4">
+          <p className="text-sm font-medium">{t('unconfirmedTitle')}</p>
+          <ul className="mt-2 space-y-1.5">
+            {unconfirmed.map((line) => (
+              <li key={line} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span aria-hidden>•</span>
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 function ZoneHeader({ step, children }: { step?: string; children: React.ReactNode }) {
   return (
@@ -95,23 +160,17 @@ function WithholdBlock({
         <p className="mt-0.5 text-muted-foreground">{t('notDecided')}</p>
       </div>
 
-      {expressions.length === 1 ? (
-        <p className="text-muted-foreground">
-          {t('docReadSingle', { expression: expressions[0]! })}
-        </p>
-      ) : expressions.length > 1 ? (
-        <div>
-          <p className="text-muted-foreground">{t('docReadLead')}</p>
-          <ul className="my-1.5 space-y-0.5 pl-1">
-            {expressions.map((expr) => (
-              <li key={expr} className="flex items-start gap-2 text-muted-foreground">
-                <span aria-hidden>•</span>
-                <span>{expr}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="text-muted-foreground">{t('docReadSuffix')}</p>
-        </div>
+      {expressions.length >= 1 ? (
+        <ul className="space-y-1">
+          {expressions.map((expr) => (
+            <li key={expr} className="flex items-center gap-2 text-foreground">
+              <span className="text-emerald-600" aria-hidden>
+                ✓
+              </span>
+              <span>{expr}</span>
+            </li>
+          ))}
+        </ul>
       ) : null}
 
       {field.missingLine ? (
@@ -141,7 +200,10 @@ function collectReadFields(u: BusinessUnderstanding): ReadField[] {
     { id: 'partner', labelKey: 'fields.partner', field: u.partner },
   ].filter(({ field, id }) => {
     if (!field.confirmedExpressions?.length) return false;
-    if (id === 'valueProposition' && field.value === u.business.value?.replace(/\s*·\s*B2C|\s*·\s*B2B/gi, '').trim()) {
+    if (
+      id === 'valueProposition' &&
+      field.value === u.business.value?.replace(/\s*·\s*B2C|\s*·\s*B2B/gi, '').trim()
+    ) {
       return false;
     }
     return true;
@@ -150,12 +212,15 @@ function collectReadFields(u: BusinessUnderstanding): ReadField[] {
 
 export function WorkspaceBusinessUnderstandingCard({
   understanding,
+  entities = null,
   onConfirm,
   className,
 }: WorkspaceBusinessUnderstandingCardProps) {
   const t = useTranslations('workflow.journey.workspaceShell.businessUnderstanding');
   const readFields = collectReadFields(understanding);
   const customerWithheld = isWithheld(understanding.customer);
+  const discoveryItems = buildDiscoveryItems(understanding, entities);
+  const unconfirmedLines = collectUnconfirmedLines(understanding, entities);
 
   return (
     <section
@@ -164,10 +229,13 @@ export function WorkspaceBusinessUnderstandingCard({
         className,
       )}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{t('title')}</p>
+      <DiscoverySummary items={discoveryItems} unconfirmed={unconfirmedLines} t={t} />
+
+      <p className="mt-5 text-[11px] font-semibold uppercase tracking-widest text-primary">
+        {t('title')}
+      </p>
       <p className="mt-1.5 text-[15px] leading-snug">{t('intro')}</p>
 
-      {/* ① Read Before Speak — confirmed from document */}
       <div className="mt-5 rounded-xl border border-primary/15 bg-primary/[0.03] px-4 py-4">
         <ZoneHeader step="①">{t('zoneConfirmed')}</ZoneHeader>
         {readFields.length > 0 ? (
@@ -181,7 +249,6 @@ export function WorkspaceBusinessUnderstandingCard({
         )}
       </div>
 
-      {/* ② Withhold — decide together */}
       <div className="mt-3 rounded-xl border border-border/60 px-4 py-4">
         <ZoneHeader step="②">{t('zoneDecideTogether')}</ZoneHeader>
         {customerWithheld ? (
@@ -193,7 +260,6 @@ export function WorkspaceBusinessUnderstandingCard({
         )}
       </div>
 
-      {/* ③ Founder judgment */}
       <div className="mt-3 rounded-xl border border-amber-200/70 bg-amber-50/40 px-4 py-4 dark:border-amber-900/40 dark:bg-amber-950/20">
         <ZoneHeader step="③">{t('zoneFounderJudgment')}</ZoneHeader>
         <p className="mt-2 text-sm text-muted-foreground">{t('confirmLead')}</p>

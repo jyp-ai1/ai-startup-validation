@@ -6521,6 +6521,33 @@
           "market": "Market",
           "competitor": "Competitor"
         },
+        "nodeStatus": {
+          "founder": {
+            "completed": "✓ Founder confirmed",
+            "in_progress": "🟡 Confirming founder",
+            "waiting": "○ Founder pending"
+          },
+          "business": {
+            "completed": "✓ Business understood",
+            "in_progress": "🟡 Understanding business",
+            "waiting": "○ Business pending"
+          },
+          "customer": {
+            "completed": "✓ Customer confirmed",
+            "in_progress": "🟡 Confirming customer",
+            "waiting": "○ Customer pending"
+          },
+          "market": {
+            "completed": "✓ Market analyzed",
+            "in_progress": "🟡 Analyzing market",
+            "waiting": "○ Market pending"
+          },
+          "competitor": {
+            "completed": "✓ Competition analyzed",
+            "in_progress": "🟡 Analyzing competition",
+            "waiting": "○ Competition pending"
+          }
+        },
         "overview": {
           "empty": "Complete a review with AI PM to generate your Overview.",
           "scoreLabel": "Business Score",
@@ -6569,6 +6596,17 @@
           }
         },
         "businessUnderstanding": {
+          "aiLabel": "AI PM",
+          "readCompleteLead": "I've read your document.",
+          "readCompleteSub": "Here's what I confirmed:",
+          "unconfirmedTitle": "Not confirmed yet",
+          "discovery": {
+            "founder": "Founder",
+            "business": "Business",
+            "customerCandidates": "Customer candidates",
+            "market": "Market",
+            "competitor": "Competition"
+          },
           "title": "Let's align on your business first",
           "intro": "Before review — only what we read in your document.",
           "zoneConfirmed": "Confirmed from the document",

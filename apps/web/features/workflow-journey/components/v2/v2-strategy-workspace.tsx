@@ -27,7 +27,7 @@ import {
 } from '../../lib/v2-validation-store';
 import { type WorkflowStepId } from '../../lib/v2-workflow-steps';
 import { saveReviewSnapshot } from '../../lib/v2-review-dirty-state';
-import { JourneyLayout } from '../journey-layout';
+import { createMeetingNoteFromReview } from '../../lib/v2-ai-pm-meeting-store';
 import {
   ProjectWorkspaceShell,
   WorkspaceAiPmMain,
@@ -41,12 +41,6 @@ import { sanitizeAiPmResponse, sanitizeDocumentLabel, sanitizeAiPmParagraphs } f
 import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { V2DecisionSavePrompt } from './v2-decision-save-prompt';
 import { V2DemoReadonlyBanner } from './v2-demo-readonly-banner';
-import {
-  resolveGuidedDemoStep,
-  type GuidedDemoStep,
-} from './v2-guided-demo-coach';
-import { createMeetingNoteFromReview } from '../../lib/v2-ai-pm-meeting-store';
-import { V2DemoExperience } from './v2-demo-experience';
 import {
   buildAiPmPrimaryMessage,
   canProceedWorkspaceReview,
@@ -65,7 +59,7 @@ import {
 } from '../../lib/workspace-ai-pm-messages';
 import { loadUnderstandingPhase } from '../../lib/business-understanding/business-understanding-store';
 import { allowsOpenReview, loadMarketAlignment } from '../../lib/business-understanding/workspace-alignment';
-import { buildBusinessUnderstandingIntro, buildReviewTransitionMessage } from '../../lib/business-understanding/build-business-understanding';
+import { buildBusinessUnderstandingIntro, buildReviewTransitionMessage, buildBusinessUnderstanding, TASTE_COMPANY_FULL_SAMPLE } from '../../lib/business-understanding/build-business-understanding';
 import { loadDemoProjectDraft } from '../../lib/v2-demo-project-store';
 
 type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
@@ -90,10 +84,6 @@ function deriveProjectName(idea: string): string {
   if (trimmed.length <= 36) return trimmed;
   return `${trimmed.slice(0, 33).trim()}…`;
 }
-
-const GUIDED_DEMO_IDEA = 'AI가 사업 아이디어를 검증해주는 SaaS';
-const GUIDED_DEMO_CUSTOMER_BEFORE = '예비창업자';
-const GUIDED_DEMO_CUSTOMER_AFTER = '스타트업 대표 · PM';
 
 type V2StrategyWorkspaceMode = 'default' | 'demo-readonly' | 'demo-guided';
 
@@ -139,8 +129,6 @@ export function V2StrategyWorkspaceView({
     'idea' | V2EvidenceField | null
   >(null);
   const [dirtyFieldLabel, setDirtyFieldLabel] = useState<string | null>(null);
-  const [guidedStarted, setGuidedStarted] = useState(false);
-  const [guidedCustomerChanged, setGuidedCustomerChanged] = useState(false);
   const [mainView, setMainView] = useState<WorkspaceMainView>('ai-pm');
   const [activeNavNodeId, setActiveNavNodeId] = useState<WorkspaceNavNodeId | null>('founder');
   const [domain, setDomain] = useState<WorkspaceDomainEvidence>(() => emptyWorkspaceDomain());
@@ -212,12 +200,19 @@ export function V2StrategyWorkspaceView({
     }
 
     if (isDemoGuided) {
+      const sample = TASTE_COMPANY_FULL_SAMPLE;
+      saveWorkspaceDocumentText(sample, projectId);
+      const inferred = inferDomainFromPaste(sample, projectId);
+      setDomain(inferred.domain);
+      setEntities(inferred.entities);
+      setIdea(inferred.domain.business);
       setOptional({
-        problem: '창업자가 어디서부터 사업을 검토해야 할지 모름',
-        customer: GUIDED_DEMO_CUSTOMER_BEFORE,
+        problem: '전통주 관광 시장에서 고객·파트너 정의가 아직 분산되어 있음',
+        customer: '',
         mvp: '',
         pricing: '',
       });
+      refreshUnderstandingState();
       return;
     }
 
@@ -409,9 +404,6 @@ export function V2StrategyWorkspaceView({
       persist({ ...evidence, [field]: value });
       return next;
     });
-    if (isDemoGuided && field === 'customer' && value.includes('스타트업')) {
-      setGuidedCustomerChanged(true);
-    }
     markDirty(field);
     if (!isDemoGuided) {
       appToast.success(tb('toast.saved', { field: tb(`fields.${field}`) }));
@@ -503,36 +495,35 @@ export function V2StrategyWorkspaceView({
   const projectName = isDemoReadonly
     ? 'AI SaaS 검토'
     : isDemoGuided
-      ? '데모 체험'
+      ? domain.business.trim() || '샘플 프로젝트'
       : domain.business.trim() || deriveProjectName(idea) || deriveProjectName(evidence.idea);
-
-  const guidedDemoStep: GuidedDemoStep | null = isDemoGuided
-    ? resolveGuidedDemoStep({
-        step: !guidedStarted ? 'welcome' : 'idea',
-        hasIdea,
-        reviewCount,
-        customerChanged: guidedCustomerChanged,
-      })
-    : null;
-
-  const handleGuidedAdvance = () => {
-    if (!isDemoGuided) return;
-    if (!guidedStarted) {
-      setGuidedStarted(true);
-      setIdea(GUIDED_DEMO_IDEA);
-      return;
-    }
-    if (guidedDemoStep === 'customer') {
-      handleFieldConfirm('customer', GUIDED_DEMO_CUSTOMER_AFTER);
-      markDirty('customer');
-    }
-  };
 
   const understandingAligned = understandingPhase === 'review-ready';
 
+  const documentContext = useMemo(() => {
+    const stored = loadWorkspaceDocumentText(projectId);
+    if (stored?.trim()) return stored;
+    return [domain.business, domain.founder, domain.customer, domain.market]
+      .filter(Boolean)
+      .join('\n');
+  }, [domain, projectId]);
+
+  const businessUnderstanding = useMemo(
+    () => (documentContext.trim().length >= 8 ? buildBusinessUnderstanding(documentContext) : null),
+    [documentContext],
+  );
+
   const sidebarSnapshot = useMemo(
-    () => buildWorkspaceSidebarSnapshot(domain, reviewCount, entities, understandingAligned),
-    [domain, reviewCount, entities, understandingAligned],
+    () =>
+      buildWorkspaceSidebarSnapshot(
+        domain,
+        reviewCount,
+        entities,
+        understandingAligned,
+        businessUnderstanding,
+        understandingPhase,
+      ),
+    [domain, reviewCount, entities, understandingAligned, businessUnderstanding, understandingPhase],
   );
 
   const stripMessage = useMemo(() => {
@@ -553,8 +544,6 @@ export function V2StrategyWorkspaceView({
     }
     return sanitizeAiPmResponse(aiPmMessage.paragraphs.join(' '));
   }, [understandingPhase, reviewCount, aiPmMessage]);
-
-  const useLegacyDemoLayout = isDemoGuided;
 
   const workspaceMain = (
     <>
@@ -596,16 +585,6 @@ export function V2StrategyWorkspaceView({
       ) : null}
     </>
   );
-
-  if (useLegacyDemoLayout) {
-    return (
-      <JourneyLayout phase="workflow" width="workspace" versionLabel="V2" user={user}>
-        <div className="mx-auto max-w-2xl">
-          <V2DemoExperience className="py-4 sm:py-6" />
-        </div>
-      </JourneyLayout>
-    );
-  }
 
   return (
     <ProjectWorkspaceShell

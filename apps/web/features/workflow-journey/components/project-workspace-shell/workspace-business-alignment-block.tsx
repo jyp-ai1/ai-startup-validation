@@ -88,10 +88,8 @@ export function WorkspaceBusinessAlignmentBlock({
   const startBlockedHint =
     readOnly || canStart
       ? null
-      : state.direction === 'unset' || state.direction === 'has_direction'
-        ? state.direction === 'has_direction'
-          ? ta('startBlockedPrimary')
-          : ta('startBlockedDirection')
+      : state.direction === 'has_direction'
+        ? ta('startBlockedPrimary')
         : ta('startBlockedDirection');
 
   return (

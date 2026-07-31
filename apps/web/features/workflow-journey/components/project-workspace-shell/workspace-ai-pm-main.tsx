@@ -180,6 +180,7 @@ export function WorkspaceAiPmMain({
       {showUnderstandingCard && understanding ? (
         <WorkspaceBusinessUnderstandingCard
           understanding={understanding}
+          entities={entities}
           onConfirm={handleConfirmMode}
         />
       ) : null}

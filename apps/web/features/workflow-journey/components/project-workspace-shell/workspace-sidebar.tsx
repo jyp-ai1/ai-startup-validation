@@ -140,7 +140,7 @@ export function WorkspaceSidebar({
                     >
                       {symbol}
                     </span>
-                    {t(`nodes.${node.labelKey}`)}
+                    {t(`nodeStatus.${node.id}.${node.lifecycle}`)}
                   </button>
                 </li>
               );

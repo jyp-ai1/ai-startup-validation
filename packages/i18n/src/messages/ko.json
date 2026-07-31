@@ -6674,12 +6674,39 @@
           "market": "시장",
           "competitor": "경쟁"
         },
+        "nodeStatus": {
+          "founder": {
+            "completed": "✓ 창업자 확인",
+            "in_progress": "🟡 창업자 확인 중",
+            "waiting": "○ 창업자 분석 대기"
+          },
+          "business": {
+            "completed": "✓ 사업 이해",
+            "in_progress": "🟡 사업 이해 중",
+            "waiting": "○ 사업 분석 대기"
+          },
+          "customer": {
+            "completed": "✓ 고객 확인",
+            "in_progress": "🟡 고객 확인 중",
+            "waiting": "○ 고객 분석 대기"
+          },
+          "market": {
+            "completed": "✓ 시장 분석",
+            "in_progress": "🟡 시장 분석 중",
+            "waiting": "○ 시장 분석 대기"
+          },
+          "competitor": {
+            "completed": "✓ 경쟁 분석",
+            "in_progress": "🟡 경쟁 분석 중",
+            "waiting": "○ 경쟁 분석 대기"
+          }
+        },
         "overview": {
           "empty": "AI PM과 함께 검토를 진행하면 개요가 생성됩니다.",
-          "scoreLabel": "사업성 점수",
+          "scoreLabel": "사업성 검토 결과",
           "summaryLabel": "AI PM 요약",
           "summaryBody": "B2B SaaS 시장에서 차별화 포인트는 명확합니다. 다만 고객 검증 데이터가 부족해 Confidence가 제한적입니다. 다음 단계는 타깃 고객 인터뷰입니다.",
-          "nextStepLabel": "다음 단계",
+          "nextStepLabel": "AI PM이 제안하는 다음 단계",
           "nextStepAction": "고객 인터뷰 3건 진행",
           "nextStepCta": "검토 시작",
           "riskLabel": "Risk",
@@ -6722,6 +6749,17 @@
           }
         },
         "businessUnderstanding": {
+          "aiLabel": "AI PM",
+          "readCompleteLead": "문서를 읽었습니다.",
+          "readCompleteSub": "다음 내용을 확인했습니다.",
+          "unconfirmedTitle": "현재 확인하지 못한 내용",
+          "discovery": {
+            "founder": "창업자",
+            "business": "사업",
+            "customerCandidates": "고객 후보",
+            "market": "시장",
+            "competitor": "경쟁"
+          },
           "title": "사업 이해를 먼저 맞춰보겠습니다",
           "intro": "검토 전에, 문서에서 확인한 내용만 정리했습니다.",
           "zoneConfirmed": "문서에서 확인한 내용",
@@ -6765,8 +6803,8 @@
             "customOption": "기타",
             "customPlaceholder": "직접 입력",
             "startReview": "이 기준으로 검토하기",
-            "startBlockedDirection": "먼저 전략 방향을 선택해 주세요.",
-            "startBlockedPrimary": "어떤 방향인지 하나를 선택하거나 직접 입력해 주세요."
+            "startBlockedDirection": "대표님, 전략 방향을 먼저 선택해 주시면 검토를 시작할 수 있습니다.",
+            "startBlockedPrimary": "대표님, 고객(타깃)을 하나만 더 확인하면 검토를 시작할 수 있습니다."
           },
           "evidenceLabel": "근거",
           "evidence": "근거",
