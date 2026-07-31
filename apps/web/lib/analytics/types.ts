@@ -357,6 +357,8 @@ export type OpsDashboardStats = {
     artifacts: number;
     returns: number;
     aiReviewsCompleted?: number;
+    /** Landing hero — founders who started first strategy review today */
+    foundersStartingReview?: number;
   };
   /** Sprint 4.7 — Journey step analytics */
   journeyAnalytics?: {

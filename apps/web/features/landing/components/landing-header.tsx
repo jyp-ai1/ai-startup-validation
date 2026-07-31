@@ -6,12 +6,12 @@ import { UserMenu } from '@/features/auth';
 import { getServerAuthUser } from '@/lib/auth/server-auth';
 
 import { LandingHeaderControls } from './landing-header-controls';
+import { LANDING_CONTAINER } from '../lib/landing-layout';
 
 const NAV_LINKS = [
   { href: '#how-it-works', key: 'product' as const },
   { href: '#why-launchlens', key: 'whyLaunchLens' as const },
   { href: '#pricing', key: 'pricing' as const },
-  { href: '#live-demo', key: 'resources' as const },
 ] as const;
 
 export async function LandingHeader() {
@@ -20,7 +20,7 @@ export async function LandingHeader() {
 
   return (
     <header className="sticky top-0 z-[100] border-b border-border/60 bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:gap-4 sm:px-6 lg:h-[72px] lg:px-8">
+      <div className={`${LANDING_CONTAINER} flex h-16 items-center justify-between gap-3 sm:gap-4 lg:h-[72px]`}>
         <Link
           href="/"
           className="flex min-w-0 shrink items-center gap-2.5 transition-opacity hover:opacity-80"

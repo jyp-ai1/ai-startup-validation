@@ -5,6 +5,8 @@ import { ArrowRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Brain, Layers, Save } from 'lucide-react';
 
+import { LANDING_CONTAINER } from '../lib/landing-layout';
+
 const STEPS: { key: string; icon: LucideIcon }[] = [
   { key: 'step1', icon: Brain },
   { key: 'step2', icon: Layers },
@@ -16,7 +18,7 @@ export function LandingHowItWorks() {
 
   return (
     <section id="how-it-works" className="py-20 sm:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className={LANDING_CONTAINER}>
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             {t('title')}

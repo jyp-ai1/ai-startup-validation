@@ -10,6 +10,7 @@ import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { LandingCtaLink } from './landing-cta-link';
+import { LANDING_CONTAINER } from '../lib/landing-layout';
 
 const PLANS = ['free', 'pro', 'enterprise'] as const;
 const PLAN_FEATURES: Record<(typeof PLANS)[number], string[]> = {
@@ -46,7 +47,7 @@ export function LandingPricing() {
 
   return (
     <section id="pricing" ref={sectionRef} className="py-[120px]">
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
+      <div className={LANDING_CONTAINER}>
         <div className="mx-auto max-w-2xl text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-1.5 text-xs font-semibold text-foreground/80">
             <Star className="size-3.5 fill-amber-400 text-amber-400" />
@@ -141,7 +142,7 @@ export function LandingPricing() {
           })}
         </div>
 
-        <div className="mx-auto mt-16 max-w-3xl rounded-[24px] border border-border/60 bg-muted/30 p-8 md:p-10">
+        <div className="mt-16 rounded-[24px] border border-border/60 bg-muted/30 p-8 md:p-10">
           <h3 className="text-lg font-semibold text-foreground">{t('betaBenefitsTitle')}</h3>
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
             {BETA_BENEFITS.map((key) => (

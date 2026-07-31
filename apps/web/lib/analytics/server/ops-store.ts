@@ -866,6 +866,11 @@ function computeTodayProductKpis(
     aiReviewsCompleted:
       countEventsSince(PRODUCT_ANALYTICS_EVENTS.reviewCompleted, todayStart) +
       countEventsSince(PRODUCT_ANALYTICS_EVENTS.firstReviewCompleted, todayStart),
+    foundersStartingReview:
+      countEventsSince(PRODUCT_ANALYTICS_EVENTS.firstReviewCompleted, todayStart) +
+      countEventsSince(PRODUCT_ANALYTICS_EVENTS.reviewCompleted, todayStart) +
+      countEventsSince(PRODUCT_ANALYTICS_EVENTS.demoStarted, todayStart) +
+      countEventsSince(ANALYTICS_EVENTS.demoEnter, todayStart),
   };
 }
 
@@ -1203,6 +1208,7 @@ const MOCK_STATS: OpsDashboardStats = {
     artifacts: 3,
     returns: 5,
     aiReviewsCompleted: 8,
+    foundersStartingReview: 18,
   },
   journeyAnalytics: computeJourneyAnalytics(
     MOCK_CLOSED_ALPHA_FUNNEL,

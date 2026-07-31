@@ -2,11 +2,10 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { ArrowRight, Bug, Lightbulb } from 'lucide-react';
+import { Bug, Lightbulb } from 'lucide-react';
 
 import { BetaBadge } from '@/components/beta-badge';
 import { SITE_LINKS } from '@/lib/site/beta-config';
-import { LandingCtaLink } from './landing-cta-link';
 
 export function LandingFooter() {
   const t = useTranslations('landing.footer');
@@ -23,25 +22,8 @@ export function LandingFooter() {
 
   return (
     <>
-      <section className="py-[120px]">
-        <div className="mx-auto max-w-[1440px] px-6 text-center lg:px-10">
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-            {t('ctaTitle')}
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-[15px] text-muted-foreground">{t('ctaDesc')}</p>
-          <LandingCtaLink
-            href="/who"
-            event="cta_start"
-            className="mt-10 h-12 rounded-xl bg-primary px-10 text-primary-foreground hover:bg-primary/90"
-          >
-            {t('ctaButton')}
-            <ArrowRight className="size-4" />
-          </LandingCtaLink>
-        </div>
-      </section>
-
       <footer className="border-t border-border/60 bg-card py-12">
-        <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex justify-center">
             <BetaBadge />
           </div>

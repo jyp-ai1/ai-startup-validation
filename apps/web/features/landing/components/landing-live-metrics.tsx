@@ -38,7 +38,7 @@ export function LandingLiveMetrics({ className, variant = 'section' }: LandingLi
 
   const today = stats?.todayProductKpis;
   const aiPm = stats?.aiPmKpis;
-  const newUsers = today?.newUsers ?? 18;
+  const foundersStartingReview = today?.foundersStartingReview ?? 18;
   const projects = today?.projectsCreated ?? 11;
   const reviews = today?.aiReviewsCompleted ?? today?.firstReviews ?? 8;
   const returns = today?.returns ?? 5;
@@ -49,9 +49,9 @@ export function LandingLiveMetrics({ className, variant = 'section' }: LandingLi
       <div className={cn('mx-auto mt-8 max-w-3xl space-y-6', className)} aria-label={t('ariaLabel')}>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-primary/[0.06] to-background p-5 text-center">
-            <p className="text-3xl font-semibold tabular-nums">{newUsers}</p>
+            <p className="text-3xl font-semibold tabular-nums">{foundersStartingReview}</p>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {t('humanToday', { count: newUsers })}
+              {t('humanToday', { count: foundersStartingReview })}
             </p>
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/10 p-5 text-center">
@@ -76,7 +76,7 @@ export function LandingLiveMetrics({ className, variant = 'section' }: LandingLi
 
   return (
     <section className={cn('mx-auto max-w-4xl px-4', className)} aria-label={t('ariaLabel')}>
-      <p className="text-center text-lg">{t('humanToday', { count: newUsers })}</p>
+      <p className="text-center text-lg">{t('humanToday', { count: foundersStartingReview })}</p>
     </section>
   );
 }

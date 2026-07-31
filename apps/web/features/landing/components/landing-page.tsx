@@ -5,7 +5,6 @@ import { LandingHero } from './landing-hero';
 import { LandingLazySection } from './landing-lazy-section';
 import { LandingGtmWhyNarrative } from './landing-gtm-why-narrative';
 import { LandingLiveDemoSection } from './landing-live-demo-section';
-import { LandingGtmFinalCta } from './landing-gtm-final-cta';
 
 const LandingHowItWorks = dynamic(
   () => import('./landing-how-it-works').then((m) => m.LandingHowItWorks),
@@ -43,7 +42,6 @@ export async function LandingPage() {
         <LandingLazySection minHeight={280}>
           <LandingFaq />
         </LandingLazySection>
-        <LandingGtmFinalCta />
         <LandingLazySection minHeight={160}>
           <LandingFooter />
         </LandingLazySection>
