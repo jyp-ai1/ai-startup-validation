@@ -5,12 +5,14 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import type { AppAuthUser } from '@/lib/auth/server-auth';
+import { isAuthenticatedAppUser } from '@/lib/auth/app-auth';
 import { signOutAndRedirect } from '@/lib/auth/client-sign-out';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 type JourneyGlobalNavProps = {
   user?: AppAuthUser | null;
+  guestDemoMode?: boolean;
 };
 
 const PUBLIC_LINKS = [
@@ -24,17 +26,24 @@ const AUTH_LINKS = [
   { href: '/settings', key: 'settings' as const },
 ] as const;
 
-export function JourneyGlobalNav({ user = null }: JourneyGlobalNavProps) {
+export function JourneyGlobalNav({ user = null, guestDemoMode = false }: JourneyGlobalNavProps) {
   const pathname = usePathname();
   const t = useTranslations('workflow.journey.globalNav');
+  const tDemo = useTranslations('workflow.journey.workspaceShell.demo');
 
-  const links = user ? AUTH_LINKS : PUBLIC_LINKS;
+  const authenticated = isAuthenticatedAppUser(user);
+  const links = guestDemoMode ? [] : authenticated ? AUTH_LINKS : PUBLIC_LINKS;
 
   return (
     <nav
       className="flex flex-wrap items-center justify-end gap-1 sm:gap-2"
       aria-label={t('label')}
     >
+      {guestDemoMode ? (
+        <span className="rounded-lg bg-primary/10 px-2.5 py-1.5 text-xs font-semibold text-primary sm:text-sm">
+          {tDemo('guidedBannerTitle')}
+        </span>
+      ) : null}
       {links.map(({ href, key }) => {
         const active = href.startsWith('/#') ? false : pathname.startsWith(href);
         return (
@@ -52,7 +61,11 @@ export function JourneyGlobalNav({ user = null }: JourneyGlobalNavProps) {
           </Link>
         );
       })}
-      {!user ? (
+      {guestDemoMode ? (
+        <Button size="sm" className="h-8 px-2.5 text-xs sm:text-sm" asChild>
+          <Link href="/auth/login?next=%2Fworkspace%3Ffrom%3Ddemo%26promote%3D1">{t('login')}</Link>
+        </Button>
+      ) : !authenticated ? (
         <>
           <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs sm:text-sm" asChild>
             <Link href="/demo/enter">{t('openDemo')}</Link>

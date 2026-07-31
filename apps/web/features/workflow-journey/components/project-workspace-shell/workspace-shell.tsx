@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect } from 'react';
 import { Sparkles } from 'lucide-react';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
@@ -19,6 +20,7 @@ import type {
 type ProjectWorkspaceShellProps = {
   projectName: string;
   demoBadge?: boolean;
+  guestDemoMode?: boolean;
   user?: AppAuthUser | null;
   sidebar: WorkspaceSidebarSnapshot;
   mainView: WorkspaceMainView;
@@ -34,6 +36,7 @@ type ProjectWorkspaceShellProps = {
 export function ProjectWorkspaceShell({
   projectName,
   demoBadge = false,
+  guestDemoMode = false,
   user = null,
   sidebar,
   mainView,
@@ -45,6 +48,11 @@ export function ProjectWorkspaceShell({
   children,
   className,
 }: ProjectWorkspaceShellProps) {
+  useEffect(() => {
+    if (!guestDemoMode) return;
+    document.title = `Demo Workspace | LaunchLens`;
+  }, [guestDemoMode]);
+
   return (
     <div className={cn('flex min-h-screen flex-col bg-background', className)}>
       <header className="shrink-0 border-b border-border/60 bg-background/95 backdrop-blur">
@@ -69,7 +77,7 @@ export function ProjectWorkspaceShell({
             ) : null}
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <JourneyGlobalNav user={user} />
+            <JourneyGlobalNav user={user} guestDemoMode={guestDemoMode} />
             <LocaleSwitcher />
           </div>
         </div>

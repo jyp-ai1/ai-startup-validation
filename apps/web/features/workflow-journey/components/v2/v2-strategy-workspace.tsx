@@ -62,6 +62,11 @@ import { loadUnderstandingPhase, clearBusinessUnderstandingConfirmed } from '../
 import { allowsOpenReview, loadMarketAlignment } from '../../lib/business-understanding/workspace-alignment';
 import { buildBusinessUnderstandingIntro, buildReviewTransitionMessage, buildBusinessUnderstanding, TASTE_COMPANY_FULL_SAMPLE } from '../../lib/business-understanding/build-business-understanding';
 import { loadDemoProjectDraft } from '../../lib/v2-demo-project-store';
+import {
+  clearDemoGuidedWorkspaceSession,
+  loadPersistedReviewCount,
+  savePersistedReviewCount,
+} from '../../lib/demo-guided-session';
 
 type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
 
@@ -122,7 +127,7 @@ export function V2StrategyWorkspaceView({
     mvp: '',
     pricing: '',
   });
-  const [reviewCount, setReviewCount] = useState(0);
+  const [reviewCount, setReviewCount] = useState(() => (isDemoReadonly ? 1 : 0));
   const [followUpDone, setFollowUpDone] = useState(false);
   const [lastReviewAt, setLastReviewAt] = useState<Date | null>(
     isDemoReadonly ? new Date('2026-07-27T00:00:00.000Z') : null,
@@ -139,6 +144,12 @@ export function V2StrategyWorkspaceView({
   const [understandingPhase, setUnderstandingPhase] = useState<
     ReturnType<typeof loadUnderstandingPhase>
   >('pending');
+
+  useEffect(() => {
+    if (isDemoReadonly || isDemoGuided) return;
+    const persisted = loadPersistedReviewCount(projectId);
+    if (persisted > 0) setReviewCount(persisted);
+  }, [projectId, isDemoGuided, isDemoReadonly]);
 
   useEffect(() => {
     if (reviewCount === 0) {
@@ -215,19 +226,20 @@ export function V2StrategyWorkspaceView({
     }
 
     if (isDemoGuided) {
-      clearBusinessUnderstandingConfirmed(projectId);
+      clearDemoGuidedWorkspaceSession(projectId ?? 'demo');
       const sample = TASTE_COMPANY_FULL_SAMPLE;
       saveWorkspaceDocumentText(sample, projectId);
       const inferred = inferDomainFromPaste(sample, projectId);
       setDomain(inferred.domain);
       setEntities(inferred.entities);
-      setIdea(inferred.domain.business);
+      setIdea('LaunchLens Sample');
       setOptional({
         problem: '전통주 관광 시장에서 고객·파트너 정의가 아직 분산되어 있음',
         customer: '',
         mvp: '',
         pricing: '',
       });
+      setReviewCount(0);
       refreshUnderstandingState();
       return;
     }
@@ -460,7 +472,11 @@ export function V2StrategyWorkspaceView({
     }
     persist(evidence);
     setPhase('reviewing');
-    setReviewCount((c) => c + 1);
+    setReviewCount((c) => {
+      const next = c + 1;
+      savePersistedReviewCount(next, projectId);
+      return next;
+    });
     setFollowUpDone(false);
     setActiveMemoryId(null);
     setLastReviewAt(new Date());
@@ -514,8 +530,11 @@ export function V2StrategyWorkspaceView({
       ? tDemo('sampleProjectName')
       : domain.business.trim() || deriveProjectName(idea) || deriveProjectName(evidence.idea);
 
-  const showDemoLoginCta =
-    isDemoGuided && (!user?.email?.trim() || user.id === 'demo-guest');
+  const showDemoLoginCta = isDemoGuided;
+
+  const hasCompletedReview = isDemoGuided
+    ? reviewCount >= 1
+    : reviewCount >= 1 || loadPersistedReviewCount(projectId) > 0;
 
   const understandingAligned = understandingPhase === 'review-ready';
 
@@ -589,6 +608,7 @@ export function V2StrategyWorkspaceView({
           readOnly={isDemoReadonly}
           projectId={projectId}
           showDemoLoginCta={showDemoLoginCta}
+          hasCompletedReview={hasCompletedReview}
           onAlignmentApplied={handleAlignmentApplied}
           onReview={runReview}
           onUnderstandingConfirmed={refreshUnderstandingState}
@@ -611,7 +631,8 @@ export function V2StrategyWorkspaceView({
     <ProjectWorkspaceShell
       projectName={projectName}
       demoBadge={isDemoGuided}
-      user={user}
+      guestDemoMode={isDemoGuided}
+      user={isDemoGuided ? null : user}
       sidebar={sidebarSnapshot}
       mainView={mainView}
       activeNodeId={activeNavNodeId}

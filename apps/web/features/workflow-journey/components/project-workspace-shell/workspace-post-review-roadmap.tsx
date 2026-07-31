@@ -4,17 +4,22 @@ import { CheckCircle2, Circle, Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { WorkshopAgreementState } from '../../lib/business-understanding/workspace-decision-workshop';
+import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 type WorkspacePostReviewRoadmapProps = {
   workshopAgreement: WorkshopAgreementState | null;
   workshopAgreed: boolean;
+  showPrimaryAction?: boolean;
+  primaryActionLabel?: string;
   className?: string;
 };
 
 export function WorkspacePostReviewRoadmap({
   workshopAgreement,
   workshopAgreed,
+  showPrimaryAction = false,
+  primaryActionLabel,
   className,
 }: WorkspacePostReviewRoadmapProps) {
   const t = useTranslations('workflow.journey.workspaceShell.postReview');
@@ -77,6 +82,17 @@ export function WorkspacePostReviewRoadmap({
           </li>
         ))}
       </ul>
+      {showPrimaryAction && primaryActionLabel ? (
+        <Button
+          type="button"
+          className="mt-5 w-full rounded-xl sm:w-auto"
+          onClick={() => {
+            document.getElementById('post-review-workshop')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        >
+          {primaryActionLabel}
+        </Button>
+      ) : null}
     </section>
   );
 }

@@ -18,7 +18,6 @@ import { buildAuthenticatedJourneyUrl } from '@/lib/auth/journey-routes';
 import { logJourneyRedirect } from '@/lib/auth/journey-redirect-audit';
 import {
   DEMO_GUEST_USER,
-  getServerAuthUser,
   isDemoQueryParam,
   isDemoWorkspace,
 } from '@/lib/auth/server-auth';
@@ -60,7 +59,7 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
       const demos = await listDemoProjects();
       projectId = demos[0]?.id ?? 'demo';
     }
-    const user = (await getServerAuthUser()) ?? DEMO_GUEST_USER;
+    const user = DEMO_GUEST_USER;
     const demoMode =
       params.demo === 'readonly'
         ? 'demo-readonly'

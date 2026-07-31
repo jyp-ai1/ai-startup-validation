@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 import type { UnderstandingConfirmMode } from '@repo/types/domain/business-understanding';
 import { sanitizeAiPmParagraphs } from '@/lib/ai/ai-response-sanitizer';
+import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
@@ -59,6 +60,7 @@ type WorkspaceAiPmMainProps = {
   onReview: () => void;
   onUnderstandingConfirmed?: () => void;
   showDemoLoginCta?: boolean;
+  hasCompletedReview?: boolean;
   className?: string;
 };
 
@@ -94,6 +96,7 @@ export function WorkspaceAiPmMain({
   onReview,
   onUnderstandingConfirmed,
   showDemoLoginCta = false,
+  hasCompletedReview = false,
   className,
 }: WorkspaceAiPmMainProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmMain');
@@ -160,7 +163,7 @@ export function WorkspaceAiPmMain({
     workshopAgreement?.agreed && workshopAgreement.reviewRound === reviewCount,
   );
 
-  const isPostReview = reviewCount >= 1;
+  const isPostReview = reviewCount >= 1 || hasCompletedReview;
 
   const message = buildAiPmPrimaryMessage(domain, reviewCount, entities);
   const paragraphs = sanitizeAiPmParagraphs(message.paragraphs);
@@ -265,20 +268,36 @@ export function WorkspaceAiPmMain({
           </section>
 
           {showPostReviewWorkshop && understanding ? (
-            <WorkspaceDecisionWorkshopBlock
-              understanding={understanding}
-              alignment={savedAlignment}
-              candidates={marketCandidates}
-              reviewCount={reviewCount}
-              projectId={projectId}
-              readOnly={readOnly}
-              onAgreed={() => setWorkshopAgreement(loadWorkshopAgreement(projectId))}
-            />
-          ) : null}
+            <div id="post-review-workshop">
+              <WorkspaceDecisionWorkshopBlock
+                understanding={understanding}
+                alignment={savedAlignment}
+                candidates={marketCandidates}
+                reviewCount={reviewCount}
+                projectId={projectId}
+                readOnly={readOnly}
+                onAgreed={() => setWorkshopAgreement(loadWorkshopAgreement(projectId))}
+              />
+            </div>
+          ) : (
+            <section className="rounded-2xl border border-primary/25 bg-primary/[0.03] px-5 py-5 sm:px-7">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
+                {tPostReview('insightLabel')}
+              </p>
+              <p className="mt-3 text-[15px] leading-relaxed">{tPostReview('fallbackInsight')}</p>
+              <Button type="button" className="mt-4 rounded-xl" disabled={readOnly}>
+                {tPostReview('primaryAction')}
+              </Button>
+            </section>
+          )}
 
           <WorkspacePostReviewRoadmap
             workshopAgreement={workshopAgreement}
             workshopAgreed={workshopAgreed}
+            showPrimaryAction={
+              !workshopAgreed && !(showPostReviewWorkshop && Boolean(understanding))
+            }
+            primaryActionLabel={tPostReview('primaryAction')}
           />
 
           {showDemoLoginCta ? <WorkspaceDemoLoginCta /> : null}
