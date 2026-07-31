@@ -43,6 +43,10 @@ export async function resolvePostLoginWorkspaceUrl(
     return buildWorkspaceListUrl(authComplete);
   }
 
+  if (projectFromNext && !fromDemo && parsed.searchParams.get('welcome') !== '1') {
+    return buildWorkspaceListUrl(authComplete);
+  }
+
   if (projectFromNext) {
     const owned = await getOwnedProject(userId, projectFromNext);
     if (owned) {

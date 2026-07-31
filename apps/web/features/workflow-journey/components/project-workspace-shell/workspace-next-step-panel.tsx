@@ -1,6 +1,5 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@repo/ui';
@@ -31,13 +30,12 @@ export function WorkspaceNextStepPanel({
     return (
       <section
         className={cn(
-          'flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-border/60 bg-muted/10 px-6 py-10 text-center',
+          'flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-primary/30 bg-primary/[0.03] px-6 py-10 text-center',
           className,
         )}
       >
-        <Loader2 className="size-7 animate-spin text-primary" aria-hidden />
-        <p className="mt-4 text-sm font-medium">{t('loadingDocument')}</p>
-        <p className="mt-1 text-xs text-muted-foreground">{t('loadingDocumentHint')}</p>
+        <p className="text-sm font-medium">{t('missingDocument')}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{t('missingDocumentHint')}</p>
       </section>
     );
   }

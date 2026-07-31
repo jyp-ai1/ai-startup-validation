@@ -6731,6 +6731,8 @@
           "aiLabel": "AI PM",
           "loadingDocument": "문서를 불러오는 중입니다",
           "loadingDocumentHint": "잠시만 기다려 주세요.",
+          "missingDocument": "문서를 먼저 붙여넣거나 업로드해 주세요",
+          "missingDocumentHint": "위 영역에서 사업 문서를 입력하면 AI Read를 시작할 수 있습니다.",
           "understandingLead": "문서에서 확인한 내용을 함께 맞춰 보겠습니다.",
           "understandingSub": "아래에서 AI PM이 읽은 내용을 확인해 주세요.",
           "continueUnderstandingCta": "확인하기",

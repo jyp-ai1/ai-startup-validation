@@ -1,6 +1,6 @@
 import type { StartupProject } from '@repo/types/validation';
 
-/** Extract pasted demo/onboarding document for workspace seeding. */
+/** Extract pasted onboarding document only — never title/summary (P0 new-project intake). */
 export function extractProjectSeedDocument(project: StartupProject): string | undefined {
   const ctx = project.onboardingContext;
   if (!ctx || typeof ctx !== 'object') return undefined;
@@ -11,11 +11,6 @@ export function extractProjectSeedDocument(project: StartupProject): string | un
     if (typeof pasted === 'string' && pasted.trim().length >= 8) {
       return pasted.trim();
     }
-  }
-
-  const summary = project.summary?.trim();
-  if (summary && summary.length >= 8) {
-    return summary;
   }
 
   return undefined;

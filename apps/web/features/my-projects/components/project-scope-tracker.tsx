@@ -3,7 +3,9 @@
 import { useEffect, useRef } from 'react';
 
 import {
+  clearLegacyGlobalKeys,
   resetProjectContext,
+  setActiveProjectId,
   switchProjectContext,
 } from '@/lib/project/project-context-store';
 
@@ -19,9 +21,10 @@ export function ProjectScopeTracker({ projectId, isNewProject = false }: Project
   useEffect(() => {
     if (isNewProject) {
       resetProjectContext(projectId);
-    } else if (previousProjectId.current && previousProjectId.current !== projectId) {
-      switchProjectContext(projectId);
-    } else {
+    } else if (!previousProjectId.current) {
+      setActiveProjectId(projectId);
+      clearLegacyGlobalKeys();
+    } else if (previousProjectId.current !== projectId) {
       switchProjectContext(projectId);
     }
 

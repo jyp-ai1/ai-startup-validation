@@ -58,9 +58,11 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   const demoCookie = await isDemoWorkspace();
   const demoQuery = isDemoQueryParam(params.demo);
   const authUser = await getServerAuthUser();
-  const guestDemoEntry = (demoQuery || demoCookie) && !authUser;
+  const explicitDemoSession = demoQuery && Boolean(params.sample) && params.fresh === '1';
+  const guestDemoEntry = (demoQuery || demoCookie) && !authUser && !explicitDemoSession;
+  const showDemoWorkspace = explicitDemoSession || guestDemoEntry;
 
-  if (guestDemoEntry) {
+  if (showDemoWorkspace) {
     if (!params.sample || params.fresh !== '1') {
       redirect('/demo/start');
     }
@@ -128,6 +130,10 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   }
 
   if (resolvedProjectId && dbReady) {
+    if (authComplete && !welcome && !promoted) {
+      redirect('/workspace?auth=complete');
+    }
+
     let owned = null;
     if (isSupabaseConfigured()) {
       owned = await getOwnedProject(user.id, resolvedProjectId);
@@ -142,7 +148,8 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
       }
     }
 
-    const seedDocument = owned ? extractProjectSeedDocument(owned) : undefined;
+    const seedDocument =
+      owned && !welcome ? extractProjectSeedDocument(owned) : undefined;
 
     return (
       <WorkspaceProjectCanvas

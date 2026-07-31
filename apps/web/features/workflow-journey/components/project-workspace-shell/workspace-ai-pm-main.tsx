@@ -165,7 +165,9 @@ export function WorkspaceAiPmMain({
     !showMarketAlignment;
 
   const showPostReviewWorkshop =
-    Boolean(understanding) && shouldShowPostReviewWorkshop(reviewCount, workshopAgreement);
+    Boolean(understanding) &&
+    shouldShowPostReviewWorkshop(reviewCount, workshopAgreement) &&
+    !showDemoLoginCta;
 
   const workshopAgreed = Boolean(
     workshopAgreement?.agreed && workshopAgreement.reviewRound === reviewCount,
@@ -303,9 +305,11 @@ export function WorkspaceAiPmMain({
                 {tPostReview('insightLabel')}
               </p>
               <p className="mt-3 text-[15px] leading-relaxed">{tPostReview('fallbackInsight')}</p>
-              <Button type="button" className="mt-4 rounded-xl" disabled={readOnly}>
-                {tPostReview('primaryAction')}
-              </Button>
+              {!showDemoLoginCta ? (
+                <Button type="button" className="mt-4 rounded-xl" disabled={readOnly}>
+                  {tPostReview('primaryAction')}
+                </Button>
+              ) : null}
             </section>
           )}
 
@@ -313,7 +317,8 @@ export function WorkspaceAiPmMain({
             workshopAgreement={workshopAgreement}
             workshopAgreed={workshopAgreed}
             showPrimaryAction={
-              !workshopAgreed && !(showPostReviewWorkshop && Boolean(understanding))
+              showDemoLoginCta ||
+              (!workshopAgreed && !(showPostReviewWorkshop && Boolean(understanding)))
             }
             primaryActionLabel={tPostReview('primaryAction')}
           />
