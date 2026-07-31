@@ -93,13 +93,18 @@ export function WorkspaceProjectCanvas({
         </Suspense>
       ) : null}
       <V2StrategyWorkspaceView
-        key={demoMode === 'demo-guided' ? `demo-${demoSampleId}-${demoFresh ? 'fresh' : 'resume'}` : projectId}
+        key={
+          demoMode === 'demo-guided'
+            ? `demo-${demoSampleId}-${demoFresh ? 'fresh' : 'resume'}`
+            : `${projectId}-${welcome ? 'new' : 'open'}`
+        }
         projectId={projectId}
         mode={demoMode === 'default' ? 'default' : demoMode}
         user={user}
         demoSampleId={demoSampleId}
         demoFresh={demoFresh}
         seedDocument={seedDocument}
+        isNewProject={welcome}
       />
     </>
   );

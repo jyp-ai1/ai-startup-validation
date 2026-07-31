@@ -14,8 +14,8 @@ import {
  */
 async function handleLogout(request: Request) {
   const { origin, searchParams } = new URL(request.url);
-  const next = searchParams.get('next') ?? '/auth/login?signed_out=1';
-  const safeNext = next.startsWith('/') ? next : '/auth/login?signed_out=1';
+  const next = searchParams.get('next') ?? '/';
+  const safeNext = next.startsWith('/') ? next : '/';
 
   const cookieStore = await cookies();
   const response = NextResponse.redirect(`${origin}${safeNext}`);

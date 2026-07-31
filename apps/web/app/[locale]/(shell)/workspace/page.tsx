@@ -17,8 +17,10 @@ import { buildAuthenticatedJourneyUrl } from '@/lib/auth/journey-routes';
 import { logJourneyRedirect } from '@/lib/auth/journey-redirect-audit';
 import {
   DEMO_GUEST_USER,
+  getServerAuthUser,
   isDemoQueryParam,
   isDemoWorkspace,
+  WORKSPACE_MODE_COOKIE,
 } from '@/lib/auth/server-auth';
 import { isDemoSampleId } from '@/features/workflow-journey/lib/demo-samples';
 import { extractProjectSeedDocument } from '@/lib/project/project-seed-document';
@@ -52,15 +54,17 @@ type WorkspaceHomePageProps = {
 /** Protected Workspace — canonical entry: /workspace?project= */
 export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomePageProps) {
   const params = await searchParams;
+  const cookieStore = await cookies();
   const demoCookie = await isDemoWorkspace();
-  const demoEntry = demoCookie || isDemoQueryParam(params.demo);
+  const demoQuery = isDemoQueryParam(params.demo);
+  const authUser = await getServerAuthUser();
+  const guestDemoEntry = (demoQuery || demoCookie) && !authUser;
 
-  if (demoEntry) {
+  if (guestDemoEntry) {
     if (!params.sample || params.fresh !== '1') {
       redirect('/demo/start');
     }
 
-    const cookieStore = await cookies();
     let projectId = params.project ?? cookieStore.get('ACTIVE_PROJECT_ID')?.value;
     if (!projectId) {
       const demos = await listDemoProjects();
@@ -95,8 +99,14 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   const welcome = params.welcome === '1';
   const promoted = params.promoted === '1';
 
+  if (authUser && demoCookie && !demoQuery && !promoteDemo) {
+    cookieStore.delete(WORKSPACE_MODE_COOKIE);
+  }
+
   if (dbReady && promoteDemo) {
     await promoteDemoProject(user.id);
+    cookieStore.delete(WORKSPACE_MODE_COOKIE);
+    cookieStore.delete('ACTIVE_PROJECT_ID');
     redirect(`/workspace?promoted=1${authComplete ? '&auth=complete' : ''}`);
   }
 
@@ -112,6 +122,10 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   }
 
   const resolvedProjectId = params.project;
+
+  if (!resolvedProjectId && dbReady) {
+    cookieStore.delete('ACTIVE_PROJECT_ID');
+  }
 
   if (resolvedProjectId && dbReady) {
     let owned = null;

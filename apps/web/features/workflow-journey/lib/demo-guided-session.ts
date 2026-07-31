@@ -45,6 +45,7 @@ export function clearAllDemoClientState(projectId = DEMO_SESSION_PROJECT_ID): vo
   removeKeysContaining(localStorage, '.demo');
 
   document.cookie = 'll_demo_project_draft=; path=/; max-age=0; SameSite=Lax';
+  document.cookie = 'WORKSPACE_MODE=; path=/; max-age=0; SameSite=Lax';
 }
 
 export function clearDemoGuidedWorkspaceSession(projectId: string): void {

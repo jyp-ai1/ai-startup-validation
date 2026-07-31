@@ -87,7 +87,7 @@ function clearKeysForProject(storage: Storage, projectId: string): void {
   toRemove.forEach((key) => storage.removeItem(key));
 }
 
-function clearLegacyGlobalKeys(): void {
+export function clearLegacyGlobalKeys(): void {
   if (typeof window === 'undefined') return;
   for (const key of LEGACY_GLOBAL_SESSION_KEYS) {
     sessionStorage.removeItem(key);
@@ -95,6 +95,31 @@ function clearLegacyGlobalKeys(): void {
   for (const key of LEGACY_GLOBAL_LOCAL_KEYS) {
     localStorage.removeItem(key);
   }
+}
+
+function clearLaunchLensScopedKeys(storage: Storage): void {
+  const toRemove: string[] = [];
+  for (let i = 0; i < storage.length; i += 1) {
+    const key = storage.key(i);
+    if (!key) continue;
+    if (key.startsWith('launchlens.') || key.startsWith('ll_')) {
+      toRemove.push(key);
+    }
+  }
+  toRemove.forEach((key) => storage.removeItem(key));
+}
+
+/** Full client purge on logout — guest/demo/auth must not leak. */
+export function clearAllLaunchLensClientState(): void {
+  if (typeof window === 'undefined') return;
+  clearLegacyGlobalKeys();
+  clearLaunchLensScopedKeys(sessionStorage);
+  clearLaunchLensScopedKeys(localStorage);
+  sessionStorage.removeItem(ACTIVE_PROJECT_SESSION_KEY);
+  sessionStorage.removeItem(LEGACY_JOURNEY_PROJECT_KEY);
+  document.cookie = 'ACTIVE_PROJECT_ID=; path=/; max-age=0; SameSite=Lax';
+  document.cookie = 'WORKSPACE_MODE=; path=/; max-age=0; SameSite=Lax';
+  document.cookie = 'll_demo_project_draft=; path=/; max-age=0; SameSite=Lax';
 }
 
 /** Reset all client-side context for a new project — P0-2. */
@@ -113,4 +138,12 @@ export function resetDemoSessionContext(): void {
   clearLegacyGlobalKeys();
   sessionStorage.removeItem(LEGACY_JOURNEY_PROJECT_KEY);
   sessionStorage.removeItem(ACTIVE_PROJECT_SESSION_KEY);
+  document.cookie = 'WORKSPACE_MODE=; path=/; max-age=0; SameSite=Lax';
+}
+
+/** Switching between owned projects — drop legacy globals, bind active id. */
+export function switchProjectContext(projectId: string): void {
+  if (typeof window === 'undefined') return;
+  clearLegacyGlobalKeys();
+  setActiveProjectId(projectId);
 }

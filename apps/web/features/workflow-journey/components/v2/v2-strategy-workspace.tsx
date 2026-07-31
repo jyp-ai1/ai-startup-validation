@@ -105,6 +105,7 @@ type V2StrategyWorkspaceViewProps = {
   demoSampleId?: DemoSampleId;
   demoFresh?: boolean;
   seedDocument?: string;
+  isNewProject?: boolean;
 };
 
 export function V2StrategyWorkspaceView({
@@ -114,6 +115,7 @@ export function V2StrategyWorkspaceView({
   demoSampleId = 'launchlens',
   demoFresh = false,
   seedDocument,
+  isNewProject = false,
 }: V2StrategyWorkspaceViewProps) {
   const isDemoReadonly = mode === 'demo-readonly';
   const isDemoGuided = mode === 'demo-guided';
@@ -297,6 +299,18 @@ export function V2StrategyWorkspaceView({
 
     refreshMemory();
     refreshUnderstandingState();
+
+    if (isNewProject) {
+      if (seedDocument && seedDocument.trim().length >= 8) {
+        saveWorkspaceDocumentText(seedDocument, storageProjectId);
+        const inferred = inferDomainFromPaste(seedDocument, storageProjectId);
+        setDomain(inferred.domain);
+        setEntities(inferred.entities);
+        setIdea(inferred.domain.business.trim() || deriveProjectName(seedDocument));
+      }
+      return;
+    }
+
     const saved = loadV2Validation(storageProjectId);
     const storedDomain = loadWorkspaceDomain(storageProjectId);
     const storedEntities = loadWorkspaceEntities(storageProjectId);
@@ -342,6 +356,7 @@ export function V2StrategyWorkspaceView({
     }
   }, [
     seedDocument,
+    isNewProject,
     demoFresh,
     demoSampleId,
     isDemoReadonly,

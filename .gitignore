@@ -35,6 +35,8 @@ Thumbs.db
 # Testing
 coverage/
 .browser-temp/
+apps/web/.qa-chrome-profile/
+apps/web/.qa-auth/
 .naver-commerce/
 .naver-commerce-test/
 

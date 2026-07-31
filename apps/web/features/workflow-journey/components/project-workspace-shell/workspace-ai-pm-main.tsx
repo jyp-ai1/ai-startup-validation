@@ -85,6 +85,11 @@ function buildDocumentContext(
     .join('\n');
 }
 
+function hasStoredWorkspaceDocument(projectId?: string): boolean {
+  const stored = loadWorkspaceDocumentText(projectId);
+  return (stored?.trim().length ?? 0) >= 8;
+}
+
 export function WorkspaceAiPmMain({
   domain,
   entities = null,
@@ -208,7 +213,7 @@ export function WorkspaceAiPmMain({
     );
   }
 
-  const hasDocument = documentContext.trim().length >= 8;
+  const hasDocument = hasStoredWorkspaceDocument(projectId);
 
   if (reviewCount === 0 && !hasDocument && onDocumentIntake) {
     return (

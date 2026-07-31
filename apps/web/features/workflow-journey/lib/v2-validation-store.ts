@@ -1,5 +1,7 @@
 import { getActiveProjectId } from '@/lib/project/project-context-store';
 
+import { DEMO_SESSION_PROJECT_ID } from './demo-samples';
+
 /** Legacy global keys — migrated on read, cleared on project reset. */
 const LEGACY_EVIDENCE_KEY = 'll_v2_validation_evidence';
 const LEGACY_OPTIONS_KEY = 'll_v2_validation_options';
@@ -32,7 +34,13 @@ export type V2ValidationSnapshot = {
 const TOTAL_FIELDS = 5;
 
 function resolveScopeId(projectId?: string): string {
-  return projectId ?? getActiveProjectId() ?? 'demo';
+  if (projectId) return projectId;
+  return getActiveProjectId() ?? 'demo';
+}
+
+function allowsLegacyMigration(projectId?: string): boolean {
+  if (!projectId) return true;
+  return projectId === 'demo' || projectId === DEMO_SESSION_PROJECT_ID;
 }
 
 function evidenceKey(projectId?: string): string {
@@ -120,6 +128,10 @@ export function loadV2Validation(projectId?: string): V2ValidationSnapshot | nul
         filledCount: countFilledEvidence(evidence),
         totalCount: TOTAL_FIELDS,
       };
+    }
+
+    if (!allowsLegacyMigration(projectId)) {
+      return null;
     }
 
     const legacyRaw = sessionStorage.getItem(LEGACY_EVIDENCE_KEY);
