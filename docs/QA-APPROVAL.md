@@ -147,7 +147,23 @@ Not Requested
 
 ## 3. CEO report format (fixed)
 
-**Only after CPO `CEO Test Approved`.**
+**Only after CPO `CEO Test Approved`.**  
+CEO validates **user experience**, not feature QA (CTO/CPO already covered flows).
+
+### CEO Smoke checklist (~5–10 min, Production)
+
+| # | UX question |
+|---|-------------|
+| 1 | Landing — is it immediately clear what to do? |
+| 2 | Start Free vs Open Demo — is the difference obvious? |
+| 3 | After Review — does “what next” feel natural (Next Action)? |
+| 4 | Login before/after — does the user stay oriented? |
+| 5 | Demo → my project (Promote) — does the handoff feel natural? |
+| 6 | Any dead-ends or confusing back-navigation? |
+
+Record **Confusing Point** count (0 = ideal). Do not re-test Flow1/Flow2 mechanics unless smoke reveals a new issue.
+
+### CEO report template
 
 ```text
 Smoke Test
