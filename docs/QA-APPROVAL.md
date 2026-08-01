@@ -1,163 +1,235 @@
-# LaunchLens QA Approval Process
+# LaunchLens QA Gate
 
-> **Purpose:** Separate CTO submission from CPO judgment from CEO verification.  
-> **Rule:** Never skip a step in the chain below.
+> **Purpose:** Break the loop — CTO declares PASS without CPO seeing evidence → CEO tests → Production bugs again.  
+> **Rule:** Never skip a gate. Each role only declares within its authority.
 
 ---
 
-## Approval chain (fixed order)
+## Release gate (recommended fixed chain)
 
 ```
-Code
-  ↓
-Deploy
-  ↓
-Production QA (CTO)
-  ↓
-Evidence Package
-  ↓
-CPO Review
-  ↓
-CEO Smoke Test
-  ↓
+Developer
+    ↓
+CTO — Technical QA
+    (implement, deploy, Production QA, Evidence Package, Evidence Submitted)
+    ↓
+CPO — Product QA
+    (evidence review, PASS/FAIL, regression, CEO Test approval)
+    ↓
+CEO — User Experience
+    (Production smoke, UX, release approval)
+    ↓
+Customer — Beta Validation
+    (real founder/customer reaction)
+    ↓
+Release
+```
+
+| Gate | Question | Who declares |
+|------|----------|--------------|
+| **Technical QA** | Does it work in Production? | CTO → Evidence Submitted |
+| **Product QA** | Are flows correct? | CPO → PASS / FAIL |
+| **User Experience** | Can a founder understand it? | CEO → Smoke PASS |
+| **Beta Validation** | Do customers react the same? | Customer program → Beta sign-off |
+| **Release** | Ship? | CEO after all gates |
+
+---
+
+## Fixed pipeline (minimum before Release)
+
+```
+Developer
+    ↓
+CTO
+    ↓  Evidence Package
+CPO
+    ↓  CEO Test Approved
+CEO
+    ↓  Release Approved
 Release Close
 ```
 
 ---
 
-## 1. CTO (Cursor)
+## 1. CTO report format (fixed)
 
-**Role:** Fix + Production QA + **evidence submission only.**
-
-### Deliverables
-
-| Item | Required |
-|------|----------|
-| Commit / SHA | Yes |
-| Production URL | Yes |
-| `/api/build-info` match | Yes |
-| `EVIDENCE-PACKAGE.html` | Yes |
-| Screenshots + repro steps | Yes |
-| Known Issues (P1+) | If any |
-
-### CTO report language (mandatory)
-
-Do **not** write Flow PASS or “CEO test ready” in CTO reports.
+**Authority ends here.** Do not write PASS, FAIL, or “CEO test ready.”
 
 ```text
+Commit
+46f5a81
+
+Production
+https://ai-startup-validation-tau.vercel.app
+
+Evidence
+Submitted
+
 Flow1
-Evidence Submitted
+Pending Review
 
 Flow2
-Evidence Submitted
+Pending Review
 
-CPO Review
-Pending
+Regression
+Pending Review
 
 CEO Test
 Not Requested
 ```
 
+### CTO deliverables
+
+- Commit / SHA, Production URL, `/api/build-info` match
+- `EVIDENCE-PACKAGE.html` + screenshots + repro steps
+- Known Issues (P1+) if any
+
 ### CTO must never
 
-- Declare Flow PASS / FAIL (product quality)
-- Declare “CEO test possible” or release approval
+- Declare Flow PASS / FAIL
+- Approve CEO Test or Release
 - Override CPO judgment
 
 ---
 
-## 2. CPO (GPT)
+## 2. CPO report format (fixed)
 
-**Role:** Product quality judgment **after** evidence review.
+**Only CPO declares PASS/FAIL.** Judgment from **attached evidence (screens)** only; CTO narrative is reference.
 
-### Input
-
-- `EVIDENCE-PACKAGE.html` **or** required PNG set (attached to CPO chat)
-- CTO machine log = reference only; **screens are primary**
-
-### Output template
+### After evidence review (pass example)
 
 ```text
 Evidence
-☐ 확인  ☐ 미확인
+Reviewed
 
 Flow1
-PASS / FAIL
-근거: (attached evidence only)
+PASS
 
 Flow2
-PASS / FAIL
-근거: (attached evidence only)
+PASS
 
 Regression
-있음 / 없음
-근거:
+None
 
 CEO Test
-☐ 시작  ☐ 보류
-근거:
+Approved
 ```
 
-### CPO rules
-
-| State | Action |
-|-------|--------|
-| Evidence not attached | **판정 보류** (not FAIL) |
-| Evidence attached | PASS/FAIL from **screens only** |
-| CEO Test | **시작** only when Flow1 + Flow2 acceptable |
-
----
-
-## 3. CEO
-
-**Role:** Production experience verification.
-
-- Run CEO Smoke Test **only after** CPO marks `CEO Test ☑ 시작`
-- Final release close = CEO sign-off after smoke
-
----
-
-## P0-2 current status (example)
-
-| Field | Value |
-|-------|-------|
-| Fix commit | `46f5a8114fd6940be514313cba5be23ff387592f` |
-| Production | https://ai-startup-validation-tau.vercel.app |
-| Evidence | `docs/evidence/P0-QA-46f5a81/EVIDENCE-PACKAGE.html` |
-| Desktop copy | `Desktop/LaunchLens-CPO-Evidence/` |
+### Fail example
 
 ```text
+Evidence
+Reviewed
+
 Flow1
-Evidence Submitted
+FAIL
 
-Flow2
-Evidence Submitted
+근거
+(attached screen only)
+```
 
-CPO Review
-Pending
+### Before evidence attached
+
+```text
+Evidence
+Not Reviewed
+
+Flow1 / Flow2 / Regression
+Pending Review
 
 CEO Test
 Not Requested
 ```
 
+*(Pending Review is not FAIL.)*
+
 ---
 
-## Evidence package location
+## 3. CEO report format (fixed)
+
+**Only after CPO `CEO Test Approved`.**
+
+```text
+Smoke Test
+
+UX
+PASS
+
+Dead-end
+없음
+
+Confusing Point
+(optional count)
+
+Release
+Approved
+```
+
+---
+
+## 4. Customer — Beta Validation (future gate)
+
+After CEO Release Approved, selected beta users validate founder-facing flows.  
+Beta sign-off is required before broad Release for AI strategy products where functional QA alone is insufficient.
+
+*(Process TBD — track in ROADMAP when beta program starts.)*
+
+---
+
+## Status board (single source of truth)
+
+Use this vocabulary across Slack, docs, and handoffs:
+
+```text
+Commit
+46f5a81
+
+Production
+배포 완료
+
+Technical QA (CTO)
+Evidence Submitted
+
+Product QA (CPO)
+Pending Review
+
+CEO Smoke
+Not Requested
+
+Release
+Pending
+```
+
+When CPO completes review, update **Product QA** and **CEO Smoke** only — not Release until CEO smoke.
+
+---
+
+## P0-2 snapshot (2026-08-01)
+
+| Item | Value |
+|------|-------|
+| Commit | `46f5a8114fd6940be514313cba5be23ff387592f` |
+| Evidence | `docs/evidence/P0-QA-46f5a81/EVIDENCE-PACKAGE.html` |
+| Desktop handoff | `Desktop/LaunchLens-CPO-Evidence/` |
+
+**Next:** CPO attaches/reviews HTML → Product QA → CEO Smoke → Release.
+
+---
+
+## Evidence package layout
 
 ```
 docs/evidence/P0-QA-{commit-short}/
-├── EVIDENCE-PACKAGE.html   ← CPO attachment (single file)
+├── EVIDENCE-PACKAGE.html   ← attach to CPO chat
 ├── EVIDENCE-SUBMISSION.md
 ├── CPO-HANDOFF.md
 └── final/
-    ├── p0-2-final-batch-report.json
-    └── flow*/…png
+    ├── *-report.json
+    └── **/*.png
 ```
 
-Regenerate HTML after new QA:
+Regenerate HTML:
 
 ```bash
 cd apps/web && node scripts/build-evidence-html-pack.mjs
 ```
-
-(Adjust script paths if evidence folder name changes.)
