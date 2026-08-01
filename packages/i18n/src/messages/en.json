@@ -357,9 +357,12 @@
       "existing-strategy": "Existing business strategy",
       "investment-prep": "Investment preparation"
     },
-    "descriptionLabel": "One-line description (optional)",
-    "descriptionPlaceholder": "Summarize in one line",
-    "newProjectCta": "New project",
+    "descriptionLabel": "Business description or document",
+    "descriptionPlaceholder": "Paste your plan, IR deck, or notes (8+ characters)",
+    "newProjectCta": "Create new project",
+    "newProjectSectionTitle": "Create new project",
+    "continueCta": "Continue",
+    "createFlowHint": "Enter a project name and business description to start AI Read.",
     "recentProjects": "Recent projects",
     "lastEdited": "Edited {when}",
     "emptyHint": "Create your first project.",
@@ -6497,11 +6500,14 @@
           "summaryLabel": "Summary",
           "progressLabel": "Progress",
           "progress": "{percent}% complete",
+          "loopSummaryTitle": "With AI PM",
+          "loopSummaryHint": "For now, the conversation matters more than scores or progress bars.",
           "aiUpdated": "AI Updated",
           "lastUpdatedJustNow": "Updated just now",
           "lastUpdatedAnalyzing": "Analyzing now",
           "lastUpdated": "{minutes} min ago",
           "stages": {
+            "aiPmLoop": "● AI PM dialogue",
             "founder": "● Founder",
             "business": "● Business",
             "customer": "● Customer",
@@ -6551,7 +6557,16 @@
         },
         "overview": {
           "empty": "Complete a review with AI PM to generate your Overview.",
-          "scoreLabel": "Business Score",
+          "scoreLabel": "Current business readiness (AI)",
+          "scoreBasisLead": "Scored from your document and confirmed inputs.",
+          "scoreBreakdownToggle": "View rationale",
+          "scoreDimensions": {
+            "marketFit": "Market fit",
+            "problemDefinition": "Problem definition",
+            "customerClarity": "Customer clarity",
+            "revenueModel": "Revenue model",
+            "execution": "Execution"
+          },
           "summaryLabel": "Summary",
           "summaryBody": "Differentiation in B2B SaaS is clear. Customer validation data is still thin, so confidence is limited. Next: target customer interviews.",
           "nextStepLabel": "Recommended Next Step",
@@ -6564,6 +6579,8 @@
         },
         "aiPmMain": {
           "label": "AI PM",
+          "insufficientDocumentTitle": "Not enough information to analyze.",
+          "insufficientDocumentHint": "Add a business description or document. AI Read does not start from a project name alone.",
           "reviewingTitle": "Reviewing viability",
           "reviewingHint": "Analyzing against the baseline you confirmed.",
           "reviewCta": "Start viability review",
@@ -6590,14 +6607,179 @@
           "startReviewCta": "Start review"
         },
         "documentIntake": {
-          "label": "Document",
+          "label": "Start",
+          "headline": "Upload your business plan",
           "title": "Paste or upload your business document.",
-          "hint": "Include service, founder, customer, and revenue model so AI Read can start.",
+          "hint": "PDF · Word · Notion export · paste — your AI PM reads it with you.",
+          "uploadPrimary": "Drag & drop or click to upload",
+          "uploadFormats": "PDF, Word, TXT, Markdown",
+          "orPaste": "or paste",
           "pasteLabel": "Paste document",
-          "pastePlaceholder": "Paste a business plan, IR deck, or notes.",
+          "pastePlaceholder": "Business plan, IR deck, Notion notes…",
           "uploadCta": "Upload file",
-          "startReadCta": "Start AI Read",
+          "startReadCta": "Start with AI PM",
+          "insufficientPasteHint": "Not enough to analyze. Add at least two lines (founder, business, customer…) or a fuller business description.",
           "invalidFile": "Could not read the file. Use text, PDF, or DOCX."
+        },
+        "aiPmLoop": {
+          "aiLabel": "AI PM",
+          "readAckLead": "I've read your document.",
+          "readAckSub": "Based on what I found, we'll start with the most important gap first.",
+          "readAckCta": "Continue",
+          "diagnosisBridge": "Initial analysis confidence {confidence}% — the question below follows from this read.",
+          "hypothesisLead": "I found \"{phrase}\" in your document, but it still needs clarification.",
+          "firstQuestionLead": "Let's start with {issue} together.",
+          "reading": {
+            "aiLabel": "AI PM",
+            "lead": "AI PM is reading your document…",
+            "hint": "Checking founder, problem, customer, market, competition, business model, risks, and investor lens.",
+            "steps": {
+              "founder": "Founder check",
+              "problem": "Problem check",
+              "customer": "Customer candidates",
+              "market": "Market research",
+              "competitor": "Competitor scan",
+              "businessModel": "Business model extraction",
+              "risk": "Risk scan",
+              "investorView": "Investor lens"
+            },
+            "insights": {
+              "phraseMarketCheck": "\"{phrase}\" — checking related market context.",
+              "domainCompare": "Comparing with {domain} cases…",
+              "buyerUserSplit": "User and buyer may be different — verifying."
+            },
+            "summary": {
+              "founder": "Founder",
+              "problem": "Problem",
+              "customer": "Customer",
+              "market": "Market",
+              "competitor": "Competition",
+              "businessModel": "Business model",
+              "risk": "Risk",
+              "investorView": "Investor view"
+            }
+          },
+          "diagnosis": {
+            "aiLabel": "AI PM",
+            "title": "Initial AI analysis complete",
+            "readItemsTitle": "What I read",
+            "confidenceLabel": "AI Confidence",
+            "risksTitle": "Highest-risk areas now",
+            "firstFocusLead": "The first thing to clarify is \"{issue}\".",
+            "cta": "Continue together",
+            "ctaWithIssue": "Start with {issue}"
+          },
+          "priorityLead": "The biggest risk in this document is \"{issue}\".",
+          "turnProgress": "AI PM dialogue turn {current}/{min}",
+          "startIssueCta": "Start {issue}",
+          "submitAnswerCta": "Apply answer",
+          "backCta": "Back",
+          "reanalyzeTitle": "Got it — your document is updated.",
+          "reanalyzeHint": "Re-analyzing now.",
+          "turnAck": "Good — {resolved} is clearer now. Next we'll look at {next}.",
+          "completeLead": "You and AI PM updated the plan in {count} turns.",
+          "completeSub": "You're ready to start the viability review.",
+          "sessionPauseCta": "Done for today",
+          "sessionEndTodayDone": "Today we wrapped up {topic}.",
+          "sessionEndTomorrowTogether": "Tomorrow we'll continue with {topic} together.",
+          "sessionEndLead": "Wrapped up for today.",
+          "sessionEndToday": "Today: {summary}",
+          "sessionEndTodayEmpty": "Document read · AI PM dialogue started",
+          "sessionEndTomorrow": "Tomorrow we'll continue with {next}.",
+          "sessionEndTomorrowFallback": "the next topic",
+          "memoryLabel": "Conversation memory",
+          "currentPhaseLabel": "Current phase",
+          "nextQuestionLabel": "Next question",
+          "reasonLabel": "Why",
+          "phases": {
+            "intake": "Document intake",
+            "ai_read": "AI Read",
+            "customer_validation": "Customer definition",
+            "problem_validation": "Problem definition",
+            "bm_design": "Revenue model",
+            "competitor_analysis": "Competitor analysis",
+            "market_validation": "Market validation",
+            "review": "Viability review",
+            "strategy": "Strategy",
+            "roadmap": "Roadmap"
+          },
+          "issues": {
+            "customer_definition": {
+              "riskLabel": "customer definition",
+              "insight": "Who uses the product and who pays is still too broad.",
+              "timeHint": "We can finish this together in about 15 minutes.",
+              "actionLabel": "customer definition",
+              "question": "Who actually uses it, and who pays?",
+              "placeholder": "e.g. Primary user: … · Payer: …"
+            },
+            "problem_definition": {
+              "riskLabel": "problem definition",
+              "insight": "The core problem isn't stated in one clear sentence yet.",
+              "timeHint": "About 10 minutes together.",
+              "actionLabel": "problem definition",
+              "question": "Describe the core customer problem in one sentence.",
+              "placeholder": "e.g. Because of X, customers repeatedly face Y."
+            },
+            "bm_design": {
+              "riskLabel": "revenue model",
+              "insight": "Revenue appears in several directions without a baseline.",
+              "timeHint": "About 15 minutes together.",
+              "actionLabel": "business model",
+              "question": "How do you plan to make money?",
+              "placeholder": "e.g. B2B subscription, transaction fee, etc."
+            },
+            "competitor_analysis": {
+              "riskLabel": "competitive landscape",
+              "insight": "Competitors and differentiation aren't clear yet.",
+              "timeHint": "About 15 minutes together.",
+              "actionLabel": "competitor analysis",
+              "question": "Name direct competitors and substitutes.",
+              "placeholder": "e.g. A (direct), B (substitute) — we differ by …"
+            },
+            "market_validation": {
+              "riskLabel": "market validation",
+              "insight": "There's a market hypothesis but little validation signal.",
+              "timeHint": "About 10 minutes together.",
+              "actionLabel": "market validation",
+              "question": "What evidence makes you believe this market exists?",
+              "placeholder": "e.g. interviews, search volume, pilot results"
+            }
+          }
+        },
+        "aiPmScore": {
+          "label": "AI PM assessment",
+          "whyTitle": "Why this score?",
+          "potentialLead": "Fix the {count} items below to reach {target}+.",
+          "breakdownToggle": "View dimension scores",
+          "fixPrimaryCta": "Fix the first issue — {issue}",
+          "dimensions": {
+            "marketFit": "Market fit",
+            "problemDefinition": "Problem definition",
+            "customerClarity": "Customer clarity",
+            "revenueModel": "Revenue model",
+            "execution": "Execution"
+          },
+          "strengths": {
+            "marketFit": "The market looks reasonable.",
+            "problemDefinition": "Problem definition is fairly clear.",
+            "customerClarity": "Customer direction is taking shape.",
+            "revenueModel": "Revenue direction exists.",
+            "execution": "Execution path is visible."
+          },
+          "gaps": {
+            "customer_definition": "Customer definition is too broad.",
+            "problem_definition": "Problem definition is still weak.",
+            "bm_design": "Business model validation is missing.",
+            "competitor_analysis": "Competitive differentiation is unclear.",
+            "market_validation": "Market validation signals are thin."
+          },
+          "actions": {
+            "customer_definition": "Define customer",
+            "problem_definition": "Define problem",
+            "bm_design": "Design business model",
+            "competitor_analysis": "Analyze competitors",
+            "market_validation": "Validate market"
+          }
         },
         "decisionWorkshop": {
           "aiLabel": "AI PM",
@@ -6609,6 +6791,7 @@
           },
           "candidateInvite": "So next, working through {topic} together would likely be most helpful.",
           "agreeTopic": "Explore together",
+          "startTopic": "Start {topic}",
           "chooseOtherTopic": "Choose another topic",
           "customInput": "Enter your own",
           "otherTopicLead": "Choose another topic",
@@ -6621,13 +6804,37 @@
             "partnership": "partnership"
           }
         },
+        "recommendedTasks": {
+          "aiLabel": "AI PM",
+          "lead": "Here's what to do next.",
+          "sub": "Starting with these tasks will speed up your next decision.",
+          "primaryCta": "Start {task}",
+          "tasks": {
+            "customer_definition": {
+              "title": "Define your customer",
+              "hint": "Clarify who uses the product and who pays."
+            },
+            "competitor_analysis": {
+              "title": "Analyze competitors",
+              "hint": "Separate direct rivals from substitutes."
+            },
+            "bm_design": {
+              "title": "Design your business model",
+              "hint": "Align revenue structure and pricing hypothesis."
+            },
+            "market_validation": {
+              "title": "Validate the market",
+              "hint": "Test hypotheses with real market signals."
+            }
+          }
+        },
         "postReview": {
           "completeLabel": "Review complete",
           "completeLead": "We've finished the first review based on what you confirmed.",
           "completeSub": "Next we'll continue with the topic that helps most right now.",
           "insightLabel": "Insight",
           "fallbackInsight": "Starting from what stood out in the review makes the next decision easier.",
-          "primaryAction": "Explore next topic together",
+          "primaryAction": "View recommended next tasks",
           "roadmapLabel": "What's next",
           "roadmapLead": "Here's where we are — and what we'll work through together.",
           "comingSoon": "Coming soon",

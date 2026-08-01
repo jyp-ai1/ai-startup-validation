@@ -1,0 +1,27 @@
+{
+  "sprint": "P1-1",
+  "title": "Document Eligibility & Upload-first",
+  "generatedAt": "2026-08-01T15:21:49.600Z",
+  "checks": [
+    {
+      "id": "1-title-only-blocked",
+      "ok": true,
+      "detail": "Start disabled for title-only"
+    },
+    {
+      "id": "2-valid-enables",
+      "ok": true,
+      "detail": "Start enabled after valid document"
+    },
+    {
+      "id": "3-reading-starts",
+      "ok": true,
+      "detail": "AI Reading visible after upload-first demo"
+    },
+    {
+      "id": "4-diagnosis-reached",
+      "ok": true,
+      "detail": "Diagnosis summary after Reading sequence"
+    }
+  ]
+}

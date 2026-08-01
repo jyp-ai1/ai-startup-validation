@@ -5,7 +5,8 @@ import { useTranslations } from 'next-intl';
 
 import { cn } from '@repo/ui/lib/utils';
 
-import type { OverviewBlockId } from './workspace-shell-types';
+import type { OverviewBlockId, WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
+import { WorkspaceScoreBreakdown } from './workspace-score-breakdown';
 
 const BLOCK_ORDER: OverviewBlockId[] = [
   'score',
@@ -17,6 +18,7 @@ const BLOCK_ORDER: OverviewBlockId[] = [
 
 type WorkspaceProgressiveOverviewProps = {
   businessScore: number | null;
+  scoreDimensions?: WorkspaceScoreDimensionSnapshot[];
   reviewCount: number;
   /** Domain lifecycle progress — drives progressive reveal (P1) */
   completedTopics?: number;
@@ -34,6 +36,7 @@ function resolveVisibleBlockCount(reviewCount: number, completedTopics: number):
 
 export function WorkspaceProgressiveOverview({
   businessScore,
+  scoreDimensions = [],
   reviewCount,
   completedTopics = 0,
   className,
@@ -71,14 +74,12 @@ export function WorkspaceProgressiveOverview({
 
   return (
     <div className={cn('max-w-[640px] space-y-10 py-2', className)}>
-      {isVisible('score') ? (
-        <section className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <p className="text-xs font-medium text-muted-foreground">{t('scoreLabel')}</p>
-          <p className="mt-2 text-5xl font-bold tracking-tight tabular-nums">
-            {businessScore ?? '…'}
-            <span className="ml-1 text-xl font-medium text-muted-foreground">/100</span>
-          </p>
-        </section>
+      {isVisible('score') && businessScore != null ? (
+        <WorkspaceScoreBreakdown
+          total={businessScore}
+          dimensions={scoreDimensions}
+          className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+        />
       ) : null}
 
       {isVisible('summary') ? (

@@ -357,9 +357,12 @@
       "existing-strategy": "기존 사업 전략",
       "investment-prep": "투자 준비"
     },
-    "descriptionLabel": "프로젝트 한 줄 설명(선택)",
-    "descriptionPlaceholder": "한 줄로 요약해 주세요",
-    "newProjectCta": "새 프로젝트",
+    "descriptionLabel": "사업 설명 또는 문서 내용",
+    "descriptionPlaceholder": "사업계획서, IR deck, Notion 메모 등 8자 이상 붙여넣기",
+    "newProjectCta": "새 프로젝트 만들기",
+    "newProjectSectionTitle": "새 프로젝트 만들기",
+    "continueCta": "계속하기",
+    "createFlowHint": "프로젝트 이름과 사업 설명을 입력하면 AI Read 화면으로 이동합니다.",
     "recentProjects": "최근 프로젝트",
     "lastEdited": "최근 수정 {when}",
     "emptyHint": "첫 프로젝트를 만들어 보세요.",
@@ -6650,11 +6653,14 @@
           "summaryLabel": "요약",
           "progressLabel": "진행률",
           "progress": "{percent}% 완료",
+          "loopSummaryTitle": "AI PM과 함께",
+          "loopSummaryHint": "지금은 점수나 진행률보다, 함께 정리하는 대화가 우선입니다.",
           "aiUpdated": "AI 업데이트",
           "lastUpdatedJustNow": "방금 업데이트",
           "lastUpdatedAnalyzing": "지금 분석 중",
           "lastUpdated": "{minutes}분 전",
           "stages": {
+            "aiPmLoop": "● AI PM 대화 중",
             "founder": "● 창업자",
             "business": "● 사업",
             "customer": "● 고객",
@@ -6704,7 +6710,16 @@
         },
         "overview": {
           "empty": "AI PM과 함께 검토를 진행하면 개요가 생성됩니다.",
-          "scoreLabel": "사업성 검토 결과",
+          "scoreLabel": "현재 AI가 판단한 사업 준비도",
+          "scoreBasisLead": "문서와 확인한 내용을 기준으로 산정했습니다.",
+          "scoreBreakdownToggle": "근거 보기",
+          "scoreDimensions": {
+            "marketFit": "시장성",
+            "problemDefinition": "문제 정의",
+            "customerClarity": "고객 명확성",
+            "revenueModel": "수익 모델",
+            "execution": "실행력"
+          },
           "summaryLabel": "AI PM 요약",
           "summaryBody": "B2B SaaS 시장에서 차별화 포인트는 명확합니다. 다만 고객 검증 데이터가 부족해 Confidence가 제한적입니다. 다음 단계는 타깃 고객 인터뷰입니다.",
           "nextStepLabel": "AI PM이 제안하는 다음 단계",
@@ -6717,6 +6732,8 @@
         },
         "aiPmMain": {
           "label": "AI PM",
+          "insufficientDocumentTitle": "분석할 정보가 부족합니다.",
+          "insufficientDocumentHint": "사업 설명 또는 문서를 추가해 주세요. 프로젝트 이름만으로는 AI 분석을 시작하지 않습니다.",
           "reviewingTitle": "사업성을 검토하고 있습니다",
           "reviewingHint": "확인해 주신 기준으로 분석합니다.",
           "reviewCta": "사업성 검토 시작",
@@ -6743,14 +6760,179 @@
           "startReviewCta": "검토 시작"
         },
         "documentIntake": {
-          "label": "문서 입력",
+          "label": "시작",
+          "headline": "사업계획서를 올려 주세요",
           "title": "사업 문서를 붙여넣거나 업로드해 주세요.",
-          "hint": "서비스명, 창업자, 사업 설명, 타깃 고객, 수익 모델 등이 있으면 AI Read가 바로 시작됩니다.",
+          "hint": "PDF · Word · Notion 내보내기 · 붙여넣기 — AI PM이 함께 읽습니다.",
+          "uploadPrimary": "파일을 끌어다 놓거나 클릭하세요",
+          "uploadFormats": "PDF, Word, TXT, Markdown",
+          "orPaste": "또는 붙여넣기",
           "pasteLabel": "문서 붙여넣기",
-          "pastePlaceholder": "사업계획서, IR deck, 메모 등을 붙여넣으세요.",
+          "pastePlaceholder": "사업계획서, IR deck, Notion 메모 등",
           "uploadCta": "파일 업로드",
-          "startReadCta": "AI Read 시작",
+          "startReadCta": "AI PM과 시작하기",
+          "insufficientPasteHint": "분석할 정보가 부족합니다. 창업자·사업·고객 등 두 줄 이상, 또는 충분한 사업 설명을 입력해 주세요.",
           "invalidFile": "문서를 읽을 수 없습니다. 텍스트 파일 또는 PDF/DOCX를 사용해 주세요."
+        },
+        "aiPmLoop": {
+          "aiLabel": "AI PM",
+          "readAckLead": "제가 문서를 읽었습니다.",
+          "readAckSub": "확인한 내용을 바탕으로, 가장 먼저 같이 정리할 부분부터 시작하겠습니다.",
+          "readAckCta": "다음으로",
+          "diagnosisBridge": "초기 분석 Confidence {confidence}% — 아래 질문은 이 분석을 바탕으로 합니다.",
+          "hypothesisLead": "문서에서 \"{phrase}\"을(를) 확인했지만, 아직 더 정리가 필요합니다.",
+          "firstQuestionLead": "먼저 {issue}부터 같이 정리해보겠습니다.",
+          "reading": {
+            "aiLabel": "AI PM",
+            "lead": "AI PM이 문서를 읽고 있습니다…",
+            "hint": "창업자 · 문제 · 고객 · 시장 · 경쟁 · BM · 리스크 · 투자 관점을 순서대로 확인합니다.",
+            "steps": {
+              "founder": "창업자 확인",
+              "problem": "문제 확인",
+              "customer": "고객 후보 추출",
+              "market": "시장 조사",
+              "competitor": "경쟁사 조사",
+              "businessModel": "사업모델 추출",
+              "risk": "리스크 탐색",
+              "investorView": "투자 관점 분석"
+            },
+            "insights": {
+              "phraseMarketCheck": "\"{phrase}\" — 잠시 관련 시장을 확인하고 있습니다.",
+              "domainCompare": "{domain} 사례와 비교 중…",
+              "buyerUserSplit": "사용자와 구매자가 다를 가능성을 확인했습니다."
+            },
+            "summary": {
+              "founder": "창업자",
+              "problem": "문제",
+              "customer": "고객",
+              "market": "시장",
+              "competitor": "경쟁",
+              "businessModel": "BM",
+              "risk": "리스크",
+              "investorView": "투자 관점"
+            }
+          },
+          "diagnosis": {
+            "aiLabel": "AI PM",
+            "title": "초기 AI 분석 완료",
+            "readItemsTitle": "읽은 내용",
+            "confidenceLabel": "AI Confidence",
+            "risksTitle": "현재 가장 위험한 부분",
+            "firstFocusLead": "가장 먼저 정리해야 하는 것은 \"{issue}\"입니다.",
+            "cta": "함께 확인하기",
+            "ctaWithIssue": "{issue}부터 확인하기"
+          },
+          "priorityLead": "이번 문서에서 가장 위험한 부분은 \"{issue}\"입니다.",
+          "turnProgress": "AI PM 대화 {current}/{min}회차",
+          "startIssueCta": "{issue} 시작",
+          "submitAnswerCta": "답변 반영하기",
+          "backCta": "돌아가기",
+          "reanalyzeTitle": "좋습니다. 문서를 업데이트했습니다.",
+          "reanalyzeHint": "다시 분석합니다.",
+          "turnAck": "좋습니다. {resolved}가 명확해졌습니다. 이제 {next}를 같이 보겠습니다.",
+          "completeLead": "AI PM과 {count}번 대화하며 사업 문서를 업데이트했습니다.",
+          "completeSub": "이제 확인하신 기준으로 사업성 검토를 시작할 수 있습니다.",
+          "sessionPauseCta": "오늘은 여기까지",
+          "sessionEndTodayDone": "오늘 {topic}까지 정리했습니다.",
+          "sessionEndTomorrowTogether": "내일 {topic}부터 같이 보겠습니다.",
+          "sessionEndLead": "오늘 정리했습니다.",
+          "sessionEndToday": "오늘: {summary}",
+          "sessionEndTodayEmpty": "문서 읽기 · AI PM 대화 시작",
+          "sessionEndTomorrow": "내일 {next}부터 이어가겠습니다.",
+          "sessionEndTomorrowFallback": "다음 주제",
+          "memoryLabel": "대화 기억",
+          "currentPhaseLabel": "현재 단계",
+          "nextQuestionLabel": "다음 질문",
+          "reasonLabel": "이유",
+          "phases": {
+            "intake": "문서 입력",
+            "ai_read": "AI Read",
+            "customer_validation": "고객 정의",
+            "problem_validation": "문제 정의",
+            "bm_design": "수익 모델",
+            "competitor_analysis": "경쟁사 분석",
+            "market_validation": "시장 검증",
+            "review": "사업성 검토",
+            "strategy": "전략",
+            "roadmap": "로드맵"
+          },
+          "issues": {
+            "customer_definition": {
+              "riskLabel": "고객 정의",
+              "insight": "실제로 쓰는 사람과 돈을 내는 사람이 아직 넓게 잡혀 있습니다.",
+              "timeHint": "15분이면 같이 끝낼 수 있습니다.",
+              "actionLabel": "고객 정의",
+              "question": "누가 실제로 쓰고, 누가 돈을 내는지 알려주세요.",
+              "placeholder": "예: 1차 타깃은 ○○, 결제 주체는 △△입니다."
+            },
+            "problem_definition": {
+              "riskLabel": "문제 정의",
+              "insight": "해결하려는 문제가 아직 한 문장으로 정리되지 않았습니다.",
+              "timeHint": "10분이면 같이 끝낼 수 있습니다.",
+              "actionLabel": "문제 정의",
+              "question": "고객이 겪는 핵심 문제를 한 문장으로 적어 주세요.",
+              "placeholder": "예: ○○ 때문에 △△이 반복됩니다."
+            },
+            "bm_design": {
+              "riskLabel": "수익 모델",
+              "insight": "수익 구조가 여러 방향으로 보이지만 기준이 없습니다.",
+              "timeHint": "15분이면 같이 끝낼 수 있습니다.",
+              "actionLabel": "BM 설계",
+              "question": "어떤 방식으로 돈을 벌 계획인지 알려주세요.",
+              "placeholder": "예: B2B 월 구독, 건당 수수료 등"
+            },
+            "competitor_analysis": {
+              "riskLabel": "경쟁 구도",
+              "insight": "경쟁사와 차별점이 아직 명확하지 않습니다.",
+              "timeHint": "15분이면 같이 끝낼 수 있습니다.",
+              "actionLabel": "경쟁사 분석",
+              "question": "직접 경쟁사와 대체재를 알려주세요.",
+              "placeholder": "예: A사(직접), B(대체재) — 차별점은 …"
+            },
+            "market_validation": {
+              "riskLabel": "시장 검증",
+              "insight": "시장 가설은 있지만 검증 신호가 부족합니다.",
+              "timeHint": "10분이면 같이 끝낼 수 있습니다.",
+              "actionLabel": "시장 검증",
+              "question": "시장이 있다고 믿는 근거를 알려주세요.",
+              "placeholder": "예: 인터뷰 N건, 검색량, 파일럿 결과 등"
+            }
+          }
+        },
+        "aiPmScore": {
+          "label": "AI PM 평가",
+          "whyTitle": "왜 이 점수인가?",
+          "potentialLead": "아래 {count}가지만 해결하면 {target}점 이상 가능합니다.",
+          "breakdownToggle": "항목별 점수 보기",
+          "fixPrimaryCta": "첫 번째 문제 해결하기 — {issue}",
+          "dimensions": {
+            "marketFit": "시장성",
+            "problemDefinition": "문제 정의",
+            "customerClarity": "고객 명확성",
+            "revenueModel": "수익 모델",
+            "execution": "실행력"
+          },
+          "strengths": {
+            "marketFit": "시장은 괜찮습니다.",
+            "problemDefinition": "문제 정의는 비교적 분명합니다.",
+            "customerClarity": "고객 방향이 잡혀 있습니다.",
+            "revenueModel": "수익 모델 방향이 있습니다.",
+            "execution": "실행 주체와 방법이 보입니다."
+          },
+          "gaps": {
+            "customer_definition": "고객 정의가 너무 넓습니다.",
+            "problem_definition": "문제 정의가 아직 약합니다.",
+            "bm_design": "BM 검증이 부족합니다.",
+            "competitor_analysis": "경쟁 차별점이 불명확합니다.",
+            "market_validation": "시장 검증 신호가 부족합니다."
+          },
+          "actions": {
+            "customer_definition": "고객 정의",
+            "problem_definition": "문제 정의",
+            "bm_design": "BM 설계",
+            "competitor_analysis": "경쟁사 분석",
+            "market_validation": "시장 검증"
+          }
         },
         "decisionWorkshop": {
           "aiLabel": "AI PM",
@@ -6762,6 +6944,7 @@
           },
           "candidateInvite": "그래서 다음은 {topic}을 함께 정리해보는 것이 가장 도움이 될 것 같습니다.",
           "agreeTopic": "같이 보기",
+          "startTopic": "{topic} 시작하기",
           "chooseOtherTopic": "다른 주제 선택",
           "customInput": "직접 입력",
           "otherTopicLead": "다른 주제를 선택해 주세요",
@@ -6774,13 +6957,37 @@
             "partnership": "파트너십"
           }
         },
+        "recommendedTasks": {
+          "aiLabel": "AI PM",
+          "lead": "다음으로 무엇을 할지 추천드립니다.",
+          "sub": "아래 작업부터 함께 진행하면 사업 판단이 빨라집니다.",
+          "primaryCta": "{task} 시작하기",
+          "tasks": {
+            "customer_definition": {
+              "title": "고객 정의하기",
+              "hint": "누가 실제로 쓰고, 누가 돈을 내는지 같이 정리합니다."
+            },
+            "competitor_analysis": {
+              "title": "경쟁사 분석하기",
+              "hint": "직접 경쟁과 대체재를 구분해 포지션을 잡습니다."
+            },
+            "bm_design": {
+              "title": "BM 설계하기",
+              "hint": "수익 구조와 가격 가설을 하나로 맞춥니다."
+            },
+            "market_validation": {
+              "title": "시장 검증하기",
+              "hint": "가설을 시장 신호로 빠르게 확인합니다."
+            }
+          }
+        },
         "postReview": {
           "completeLabel": "검토 완료",
           "completeLead": "확인해 주신 기준으로 첫 검토를 마쳤습니다.",
-          "completeSub": "다음으로 같이 보면 가장 도움이 되는 주제부터 이어가겠습니다.",
+          "completeSub": "아래 추천 작업부터 AI PM과 함께 이어가면 됩니다.",
           "insightLabel": "Insight",
           "fallbackInsight": "검토에서 보인 핵심 주제부터 함께 정리하면 다음 판단이 쉬워집니다.",
-          "primaryAction": "다음 주제 함께 보기",
+          "primaryAction": "다음 추천 작업 보기",
           "roadmapLabel": "다음 단계",
           "roadmapLead": "현재는 여기까지 검토했습니다. 앞으로 함께 정리할 흐름입니다.",
           "comingSoon": "준비 중",

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
@@ -42,6 +42,9 @@ import { sanitizeAiPmResponse, sanitizeDocumentLabel, sanitizeAiPmParagraphs } f
 import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { hasWorkspaceJourneyState } from '@/lib/project/workspace-journey-state';
 import { stripWelcomeParamFromUrl } from '@/features/workspace/components/workspace-welcome-param-cleanup';
+import { bootstrapWorkspaceFromDb } from '@/features/workspace/lib/bootstrap-workspace-from-db';
+import { persistWorkspaceStateDbFirst } from '@/features/workspace/lib/sync-workspace-persistence';
+import type { WorkspacePersistedSnapshot } from '@/lib/project/workspace-persisted-state';
 import { V2DecisionSavePrompt } from './v2-decision-save-prompt';
 import { V2DemoReadonlyBanner } from './v2-demo-readonly-banner';
 import { V2DemoGuidedBanner } from './v2-demo-guided-banner';
@@ -62,8 +65,14 @@ import {
   type WorkspaceDomainFieldId,
 } from '../../lib/workspace-ai-pm-messages';
 import { loadUnderstandingPhase, clearBusinessUnderstandingConfirmed, saveUnderstandingPhase } from '../../lib/business-understanding/business-understanding-store';
+import {
+  clearAiPmLoopState,
+  isAiPmLoopComplete,
+  loadAiPmLoopState,
+} from '../../lib/business-understanding/workspace-ai-pm-loop-store';
 import { allowsOpenReview, loadMarketAlignment } from '../../lib/business-understanding/workspace-alignment';
 import { buildBusinessUnderstandingIntro, buildReviewTransitionMessage, buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
+import { isWorkspaceDocumentAnalyzable } from '../../lib/business-understanding/workspace-document-eligibility';
 import {
   clearAllDemoClientState,
   loadPersistedReviewCount,
@@ -109,6 +118,8 @@ type V2StrategyWorkspaceViewProps = {
   demoFresh?: boolean;
   seedDocument?: string;
   isNewProject?: boolean;
+  /** DB snapshot — authoritative workspace state on entry. */
+  initialWorkspaceSnapshot?: WorkspacePersistedSnapshot | null;
 };
 
 export function V2StrategyWorkspaceView({
@@ -119,6 +130,7 @@ export function V2StrategyWorkspaceView({
   demoFresh = false,
   seedDocument,
   isNewProject = false,
+  initialWorkspaceSnapshot = null,
 }: V2StrategyWorkspaceViewProps) {
   const router = useRouter();
   const isDemoReadonly = mode === 'demo-readonly';
@@ -146,7 +158,11 @@ export function V2StrategyWorkspaceView({
     mvp: '',
     pricing: '',
   });
-  const [reviewCount, setReviewCount] = useState(() => (isDemoReadonly ? 1 : 0));
+  const [reviewCount, setReviewCount] = useState(() => {
+    if (isDemoReadonly) return 1;
+    if (initialWorkspaceSnapshot?.reviewCount != null) return initialWorkspaceSnapshot.reviewCount;
+    return 0;
+  });
   const [followUpDone, setFollowUpDone] = useState(false);
   const [lastReviewAt, setLastReviewAt] = useState<Date | null>(
     isDemoReadonly ? new Date('2026-07-27T00:00:00.000Z') : null,
@@ -162,13 +178,20 @@ export function V2StrategyWorkspaceView({
   const [entities, setEntities] = useState<LaunchLensDomainContext | null>(null);
   const [understandingPhase, setUnderstandingPhase] = useState<
     ReturnType<typeof loadUnderstandingPhase>
-  >('pending');
+  >(() => initialWorkspaceSnapshot?.understandingPhase ?? 'pending');
+
+  useLayoutEffect(() => {
+    if (isDemoNoPersist || !storageProjectId || !initialWorkspaceSnapshot) return;
+    const boot = bootstrapWorkspaceFromDb(storageProjectId, initialWorkspaceSnapshot);
+    setUnderstandingPhase(boot.understandingPhase);
+    if (boot.reviewCount > 0) setReviewCount(boot.reviewCount);
+  }, [initialWorkspaceSnapshot, isDemoNoPersist, storageProjectId]);
 
   useEffect(() => {
-    if (isDemoReadonly || isDemoGuided) return;
+    if (isDemoReadonly || isDemoGuided || initialWorkspaceSnapshot) return;
     const persisted = loadPersistedReviewCount(storageProjectId);
     if (persisted > 0) setReviewCount(persisted);
-  }, [storageProjectId, isDemoGuided, isDemoReadonly]);
+  }, [storageProjectId, isDemoGuided, isDemoReadonly, initialWorkspaceSnapshot]);
 
   useEffect(() => {
     if (reviewCount === 0) {
@@ -265,6 +288,7 @@ export function V2StrategyWorkspaceView({
               (typeof window !== 'undefined'
                 ? sessionStorage.getItem(DEMO_CUSTOM_DOCUMENT_KEY)?.trim()
                 : '') ||
+              loadWorkspaceDocumentText(storageProjectId)?.trim() ||
               '')
           : '';
 
@@ -277,6 +301,15 @@ export function V2StrategyWorkspaceView({
           : getDemoSample(demoSampleId);
 
       if (sample.document.trim().length < 8) {
+        if (demoSampleId === 'custom') {
+          setDemoProjectName('내 사업 Demo');
+          setReviewCount(0);
+          setPhase('compose');
+          setFollowUpDone(false);
+          setLastReviewAt(null);
+          refreshUnderstandingState();
+          return;
+        }
         window.location.assign('/demo/start');
         return;
       }
@@ -339,7 +372,6 @@ export function V2StrategyWorkspaceView({
       setIdea(inferred.domain.business.trim() || deriveProjectName(seedDocument));
     } else if (!existingDocument && saved) {
       const combined = [
-        saved.evidence.idea,
         saved.evidence.problem,
         saved.evidence.customer,
         saved.evidence.mvp,
@@ -347,7 +379,7 @@ export function V2StrategyWorkspaceView({
       ]
         .filter(Boolean)
         .join('\n');
-      if (combined.length >= 8) {
+      if (combined.trim().length >= 8) {
         saveWorkspaceDocumentText(combined, storageProjectId);
       }
     }
@@ -385,19 +417,52 @@ export function V2StrategyWorkspaceView({
   const handleDocumentIntake = useCallback(
     (content: string) => {
       if (isDemoReadonly) return;
-      const inferred = inferDomainFromPaste(content, storageProjectId);
+      const trimmed = content.trim();
+      if (!isWorkspaceDocumentAnalyzable(trimmed)) return;
+      const inferred = inferDomainFromPaste(trimmed, storageProjectId);
       setDomain(inferred.domain);
       setEntities(inferred.entities);
-      setIdea(inferred.domain.business.trim() || deriveProjectName(content));
+      setIdea(inferred.domain.business.trim() || deriveProjectName(trimmed));
+      if (isDemoGuided && typeof window !== 'undefined') {
+        sessionStorage.setItem(DEMO_CUSTOM_DOCUMENT_KEY, trimmed);
+      }
+      clearAiPmLoopState(storageProjectId);
       saveUnderstandingPhase('pending', storageProjectId);
       setUnderstandingPhase('pending');
       refreshUnderstandingState();
-      if (!isDemoGuided) {
+      if (!isDemoGuided && !isDemoReadonly && storageProjectId) {
+        void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
         stripWelcomeParamFromUrl(router);
       }
     },
     [isDemoGuided, isDemoReadonly, refreshUnderstandingState, router, storageProjectId],
   );
+
+  const handleLoopDocumentUpdated = useCallback(() => {
+    if (isDemoReadonly || isDemoGuided || !storageProjectId) return;
+    const content = loadWorkspaceDocumentText(storageProjectId);
+    if (!content?.trim()) return;
+    const inferred = inferDomainFromPaste(content, storageProjectId);
+    setDomain(inferred.domain);
+    setEntities(inferred.entities);
+    setIdea(inferred.domain.business.trim() || deriveProjectName(content));
+    refreshUnderstandingState();
+    void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
+  }, [isDemoGuided, isDemoReadonly, refreshUnderstandingState, storageProjectId]);
+
+  const handleLoopComplete = useCallback(() => {
+    saveUnderstandingPhase('review-ready', storageProjectId);
+    setUnderstandingPhase('review-ready');
+    refreshUnderstandingState();
+    if (!isDemoGuided && !isDemoReadonly && storageProjectId) {
+      void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
+    }
+  }, [isDemoGuided, isDemoReadonly, refreshUnderstandingState, storageProjectId]);
+
+  const handleSessionPause = useCallback(() => {
+    if (isDemoGuided || isDemoReadonly || !storageProjectId) return;
+    void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
+  }, [isDemoGuided, isDemoReadonly, storageProjectId]);
 
   const aiPmMessage = useMemo(
     () => buildAiPmPrimaryMessage(domain, reviewCount, entities),
@@ -581,7 +646,8 @@ export function V2StrategyWorkspaceView({
     setReviewCount((c) => {
       const next = c + 1;
       savePersistedReviewCount(next, storageProjectId);
-      if (!isDemoGuided && !isDemoReadonly) {
+      if (!isDemoGuided && !isDemoReadonly && storageProjectId) {
+        void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
         stripWelcomeParamFromUrl(router);
       }
       return next;
@@ -656,9 +722,17 @@ export function V2StrategyWorkspaceView({
   }, [domain, storageProjectId]);
 
   const businessUnderstanding = useMemo(
-    () => (documentContext.trim().length >= 8 ? buildBusinessUnderstanding(documentContext) : null),
+    () =>
+      isWorkspaceDocumentAnalyzable(documentContext)
+        ? buildBusinessUnderstanding(documentContext)
+        : null,
     [documentContext],
   );
+
+  const aiPmLoopInProgress = useMemo(() => {
+    if (reviewCount > 0) return false;
+    return !isAiPmLoopComplete(loadAiPmLoopState(storageProjectId));
+  }, [reviewCount, storageProjectId, domain, understandingPhase]);
 
   const sidebarSnapshot = useMemo(
     () =>
@@ -669,8 +743,17 @@ export function V2StrategyWorkspaceView({
         understandingAligned,
         businessUnderstanding,
         understandingPhase,
+        aiPmLoopInProgress,
       ),
-    [domain, reviewCount, entities, understandingAligned, businessUnderstanding, understandingPhase],
+    [
+      domain,
+      reviewCount,
+      entities,
+      understandingAligned,
+      businessUnderstanding,
+      understandingPhase,
+      aiPmLoopInProgress,
+    ],
   );
 
   const stripMessage = useMemo(() => {
@@ -699,6 +782,7 @@ export function V2StrategyWorkspaceView({
       {mainView === 'overview' ? (
         <WorkspaceProgressiveOverview
           businessScore={sidebarSnapshot.businessScore}
+          scoreDimensions={sidebarSnapshot.scoreDimensions}
           reviewCount={reviewCount}
           completedTopics={sidebarSnapshot.completedTopics}
         />
@@ -712,6 +796,7 @@ export function V2StrategyWorkspaceView({
           entities={entities}
           reviewCount={reviewCount}
           businessScore={sidebarSnapshot.businessScore}
+          scoreDimensions={sidebarSnapshot.scoreDimensions}
           completedTopics={sidebarSnapshot.completedTopics}
           phase={phase}
           readOnly={isDemoReadonly}
@@ -719,6 +804,10 @@ export function V2StrategyWorkspaceView({
           showDemoLoginCta={showDemoLoginCta}
           hasCompletedReview={hasCompletedReview}
           onDocumentIntake={handleDocumentIntake}
+          onLoopDocumentUpdated={handleLoopDocumentUpdated}
+          onLoopComplete={handleLoopComplete}
+          onSessionPause={handleSessionPause}
+          workspaceFacts={initialWorkspaceSnapshot?.workspaceFacts ?? null}
           onAlignmentApplied={handleAlignmentApplied}
           onReview={runReview}
           onUnderstandingConfirmed={refreshUnderstandingState}

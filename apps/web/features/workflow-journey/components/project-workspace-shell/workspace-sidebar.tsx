@@ -60,33 +60,49 @@ export function WorkspaceSidebar({
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
             {t('sidebar.summaryLabel')}
           </p>
-          <p className="mt-2 text-3xl font-bold tracking-tight tabular-nums">
-            {snapshot.businessScore ?? '—'}
-          </p>
-          <div className="mt-3 h-1 overflow-hidden rounded-full bg-border">
-            <div
-              className="h-full rounded-full bg-emerald-600 transition-all duration-500"
-              style={{ width: `${snapshot.progressPercent}%` }}
-            />
-          </div>
-          <div className="mt-1.5 flex justify-between text-[11px] text-muted-foreground">
-            <span>{t('sidebar.progress', { percent: snapshot.progressPercent })}</span>
-            <span>
-              {snapshot.completedTopics}/{snapshot.totalTopics}
-            </span>
-          </div>
-          <p className="mt-2 text-xs font-medium text-primary">
-            {t(`sidebar.stages.${snapshot.activeStageKey}`)}
-          </p>
-          <p className="mt-2 border-t border-border/60 pt-2 text-[11px] text-muted-foreground">
-            <span className="font-semibold text-emerald-600">{t('sidebar.aiUpdated')}</span>
-            {' · '}
-            {snapshot.lastUpdatedMinutesAgo < 0
-              ? t('sidebar.lastUpdatedAnalyzing')
-              : snapshot.lastUpdatedMinutesAgo <= 0
-                ? t('sidebar.lastUpdatedJustNow')
-                : t('sidebar.lastUpdated', { minutes: snapshot.lastUpdatedMinutesAgo })}
-          </p>
+          {snapshot.hideProgressMetrics ? (
+            <>
+              <p className="mt-3 text-base font-semibold leading-snug text-foreground">
+                {t('sidebar.loopSummaryTitle')}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {t('sidebar.loopSummaryHint')}
+              </p>
+              <p className="mt-3 text-xs font-medium text-primary">
+                {t(`sidebar.stages.${snapshot.activeStageKey}`)}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="mt-2 text-3xl font-bold tracking-tight tabular-nums">
+                {snapshot.businessScore ?? '—'}
+              </p>
+              <div className="mt-3 h-1 overflow-hidden rounded-full bg-border">
+                <div
+                  className="h-full rounded-full bg-emerald-600 transition-all duration-500"
+                  style={{ width: `${snapshot.progressPercent}%` }}
+                />
+              </div>
+              <div className="mt-1.5 flex justify-between text-[11px] text-muted-foreground">
+                <span>{t('sidebar.progress', { percent: snapshot.progressPercent })}</span>
+                <span>
+                  {snapshot.completedTopics}/{snapshot.totalTopics}
+                </span>
+              </div>
+              <p className="mt-2 text-xs font-medium text-primary">
+                {t(`sidebar.stages.${snapshot.activeStageKey}`)}
+              </p>
+              <p className="mt-2 border-t border-border/60 pt-2 text-[11px] text-muted-foreground">
+                <span className="font-semibold text-emerald-600">{t('sidebar.aiUpdated')}</span>
+                {' · '}
+                {snapshot.lastUpdatedMinutesAgo < 0
+                  ? t('sidebar.lastUpdatedAnalyzing')
+                  : snapshot.lastUpdatedMinutesAgo <= 0
+                    ? t('sidebar.lastUpdatedJustNow')
+                    : t('sidebar.lastUpdated', { minutes: snapshot.lastUpdatedMinutesAgo })}
+              </p>
+            </>
+          )}
         </button>
       </div>
 

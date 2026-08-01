@@ -7,10 +7,17 @@ import { useTranslations } from 'next-intl';
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 import type { UnderstandingConfirmMode } from '@repo/types/domain/business-understanding';
 import { sanitizeAiPmParagraphs } from '@/lib/ai/ai-response-sanitizer';
-import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
+import { isWorkspaceDocumentAnalyzable } from '../../lib/business-understanding/workspace-document-eligibility';
+import {
+  getResolvedIssueIds,
+  isAiPmLoopComplete,
+  loadAiPmLoopState,
+} from '../../lib/business-understanding/workspace-ai-pm-loop-store';
+import type { AiPmLoopIssueId } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
+import { buildAiPmScoreNarrative } from '../../lib/build-ai-pm-score-narrative';
 import {
   loadUnderstandingPhase,
   saveUnderstandingConfirmMode,
@@ -35,6 +42,8 @@ import {
   loadWorkspaceDocumentText,
   type WorkspaceDomainEvidence,
 } from '../../lib/workspace-ai-pm-messages';
+import { WorkspaceAiPmLoopPanel } from './workspace-ai-pm-loop-panel';
+import { WorkspaceAiPmScorePanel } from './workspace-ai-pm-score-panel';
 import { WorkspaceBusinessAlignmentBlock } from './workspace-business-alignment-block';
 import { WorkspaceBusinessUnderstandingCard } from './workspace-business-understanding-card';
 import { WorkspaceDecisionWorkshopBlock } from './workspace-decision-workshop-block';
@@ -44,11 +53,14 @@ import { WorkspaceNextStepPanel } from './workspace-next-step-panel';
 import { WorkspacePostReviewRoadmap } from './workspace-post-review-roadmap';
 import { WorkspaceProgressiveOverview } from './workspace-progressive-overview';
 
+import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
+
 type WorkspaceAiPmMainProps = {
   domain: WorkspaceDomainEvidence;
   entities?: LaunchLensDomainContext | null;
   reviewCount: number;
   businessScore: number | null;
+  scoreDimensions?: WorkspaceScoreDimensionSnapshot[];
   completedTopics?: number;
   phase: 'compose' | 'reviewing' | 'board' | 'followUp';
   readOnly?: boolean;
@@ -63,6 +75,10 @@ type WorkspaceAiPmMainProps = {
   showDemoLoginCta?: boolean;
   hasCompletedReview?: boolean;
   onDocumentIntake?: (content: string) => void;
+  onLoopDocumentUpdated?: () => void;
+  onLoopComplete?: () => void;
+  onSessionPause?: () => void;
+  workspaceFacts?: import('@/lib/project/workspace-persisted-facts').WorkspacePersistedFacts | null;
   className?: string;
 };
 
@@ -87,7 +103,7 @@ function buildDocumentContext(
 
 function hasStoredWorkspaceDocument(projectId?: string): boolean {
   const stored = loadWorkspaceDocumentText(projectId);
-  return (stored?.trim().length ?? 0) >= 8;
+  return isWorkspaceDocumentAnalyzable(stored);
 }
 
 export function WorkspaceAiPmMain({
@@ -95,6 +111,7 @@ export function WorkspaceAiPmMain({
   entities = null,
   reviewCount,
   businessScore,
+  scoreDimensions = [],
   completedTopics = 0,
   phase,
   readOnly = false,
@@ -105,6 +122,10 @@ export function WorkspaceAiPmMain({
   showDemoLoginCta = false,
   hasCompletedReview = false,
   onDocumentIntake,
+  onLoopDocumentUpdated,
+  onLoopComplete,
+  onSessionPause,
+  workspaceFacts = null,
   className,
 }: WorkspaceAiPmMainProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmMain');
@@ -112,6 +133,7 @@ export function WorkspaceAiPmMain({
   const [understandingPhase, setUnderstandingPhase] = useState<UnderstandingPhase>('pending');
   const [savedAlignment, setSavedAlignment] = useState<MarketAlignmentState | null>(null);
   const [workshopAgreement, setWorkshopAgreement] = useState(() => loadWorkshopAgreement(projectId));
+  const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));
 
   useEffect(() => {
     const loaded = loadUnderstandingPhase(projectId);
@@ -123,6 +145,7 @@ export function WorkspaceAiPmMain({
     }
     setSavedAlignment(loadMarketAlignment(projectId));
     setWorkshopAgreement(loadWorkshopAgreement(projectId));
+    setLoopState(loadAiPmLoopState(projectId));
   }, [projectId, reviewCount]);
 
   const goToMarketAlignment = useCallback(() => {
@@ -136,9 +159,21 @@ export function WorkspaceAiPmMain({
     [domain, entities, projectId],
   );
 
+  const documentAnalyzable = isWorkspaceDocumentAnalyzable(documentContext);
+
   const understanding = useMemo(
-    () => (documentContext.trim().length >= 8 ? buildBusinessUnderstanding(documentContext) : null),
-    [documentContext],
+    () => (documentAnalyzable ? buildBusinessUnderstanding(documentContext) : null),
+    [documentAnalyzable, documentContext],
+  );
+
+  const loopComplete = isAiPmLoopComplete(loopState);
+
+  const scoreNarrative = useMemo(
+    () =>
+      understanding
+        ? buildAiPmScoreNarrative(understanding, reviewCount, getResolvedIssueIds(loopState))
+        : null,
+    [understanding, loopState, reviewCount],
   );
 
   const marketCandidates = useMemo(
@@ -146,9 +181,17 @@ export function WorkspaceAiPmMain({
     [understanding],
   );
 
+  const showAiPmLoop =
+    documentAnalyzable &&
+    Boolean(understanding) &&
+    reviewCount === 0 &&
+    phase === 'compose' &&
+    !loopComplete;
+
   const showUnderstandingCard =
     Boolean(understanding) &&
     reviewCount === 0 &&
+    loopComplete &&
     (understandingPhase === 'pending' ||
       understandingPhase === 'edit' ||
       understandingPhase === 'together');
@@ -156,11 +199,13 @@ export function WorkspaceAiPmMain({
   const showMarketAlignment =
     Boolean(understanding) &&
     reviewCount === 0 &&
+    loopComplete &&
     (understandingPhase === 'aligning' || understandingPhase === 'accepted');
 
   const showNextStepPanel =
     reviewCount === 0 &&
     phase === 'compose' &&
+    loopComplete &&
     !showUnderstandingCard &&
     !showMarketAlignment;
 
@@ -182,6 +227,28 @@ export function WorkspaceAiPmMain({
     saveUnderstandingConfirmMode(mode, projectId);
     goToMarketAlignment();
   };
+
+  const handleLoopDocumentUpdated = useCallback(() => {
+    onLoopDocumentUpdated?.();
+    setLoopState(loadAiPmLoopState(projectId));
+  }, [onLoopDocumentUpdated, projectId]);
+
+  const handleLoopComplete = useCallback(() => {
+    saveUnderstandingPhase('review-ready', projectId);
+    setUnderstandingPhase('review-ready');
+    setLoopState(loadAiPmLoopState(projectId));
+    onLoopComplete?.();
+    onUnderstandingConfirmed?.();
+  }, [onLoopComplete, onUnderstandingConfirmed, projectId]);
+
+  const handleFixPrimaryIssue = useCallback((_issueId: AiPmLoopIssueId) => {
+    window.requestAnimationFrame(() => {
+      document.getElementById('post-review-workshop')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    });
+  }, []);
 
   const handleMarketAligned = (state: MarketAlignmentState, candidates: MarketCandidate[]) => {
     const { domain: nextDomain, entities: nextEntities } = applyMarketAlignmentToWorkspace(
@@ -216,10 +283,20 @@ export function WorkspaceAiPmMain({
   }
 
   const hasDocument = hasStoredWorkspaceDocument(projectId);
+  const rawDocumentText = loadWorkspaceDocumentText(projectId);
+  const hasWeakDocument = Boolean(rawDocumentText?.trim()) && !hasDocument;
 
   if (reviewCount === 0 && !hasDocument && onDocumentIntake) {
     return (
-      <div className={cn('mx-auto max-w-[720px] py-2', className)}>
+      <div className={cn('mx-auto max-w-[720px] space-y-4 py-2', className)}>
+        {hasWeakDocument ? (
+          <section className="rounded-2xl border border-amber-500/30 bg-amber-500/5 px-5 py-4">
+            <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+              {t('insufficientDocumentTitle')}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">{t('insufficientDocumentHint')}</p>
+          </section>
+        ) : null}
         <WorkspaceDocumentIntake onSubmit={onDocumentIntake} />
       </div>
     );
@@ -227,6 +304,21 @@ export function WorkspaceAiPmMain({
 
   return (
     <div className={cn('mx-auto max-w-[720px] space-y-6 py-2', className)}>
+      {showAiPmLoop && understanding ? (
+        <div id="ai-pm-loop">
+          <WorkspaceAiPmLoopPanel
+            understanding={understanding}
+            entities={entities}
+            projectId={projectId}
+            readOnly={readOnly}
+            workspaceFacts={workspaceFacts}
+            onDocumentUpdated={() => handleLoopDocumentUpdated()}
+            onLoopComplete={handleLoopComplete}
+            onSessionPause={onSessionPause}
+          />
+        </div>
+      ) : null}
+
       {showUnderstandingCard && understanding ? (
         <WorkspaceBusinessUnderstandingCard
           understanding={understanding}
@@ -261,6 +353,7 @@ export function WorkspaceAiPmMain({
       ) : null}
 
       {!isPostReview &&
+      !showAiPmLoop &&
       !showUnderstandingCard &&
       !showMarketAlignment &&
       !showNextStepPanel &&
@@ -287,6 +380,14 @@ export function WorkspaceAiPmMain({
             <p className="mt-2 text-sm text-muted-foreground">{tPostReview('completeSub')}</p>
           </section>
 
+          {scoreNarrative ? (
+            <WorkspaceAiPmScorePanel
+              narrative={scoreNarrative}
+              readOnly={readOnly}
+              onFixPrimary={handleFixPrimaryIssue}
+            />
+          ) : null}
+
           {showPostReviewWorkshop && understanding ? (
             <div id="post-review-workshop">
               <WorkspaceDecisionWorkshopBlock
@@ -299,28 +400,12 @@ export function WorkspaceAiPmMain({
                 onAgreed={() => setWorkshopAgreement(loadWorkshopAgreement(projectId))}
               />
             </div>
-          ) : (
-            <section className="rounded-2xl border border-primary/25 bg-primary/[0.03] px-5 py-5 sm:px-7">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
-                {tPostReview('insightLabel')}
-              </p>
-              <p className="mt-3 text-[15px] leading-relaxed">{tPostReview('fallbackInsight')}</p>
-              {!showDemoLoginCta ? (
-                <Button type="button" className="mt-4 rounded-xl" disabled={readOnly}>
-                  {tPostReview('primaryAction')}
-                </Button>
-              ) : null}
-            </section>
-          )}
+          ) : null}
 
           <WorkspacePostReviewRoadmap
             workshopAgreement={workshopAgreement}
             workshopAgreed={workshopAgreed}
-            showPrimaryAction={
-              showDemoLoginCta ||
-              (!workshopAgreed && !(showPostReviewWorkshop && Boolean(understanding)))
-            }
-            primaryActionLabel={tPostReview('primaryAction')}
+            showPrimaryAction={false}
           />
 
           {showDemoLoginCta ? <WorkspaceDemoLoginCta /> : null}
@@ -328,6 +413,7 @@ export function WorkspaceAiPmMain({
           {reviewCount > 0 || completedTopics >= 2 ? (
             <WorkspaceProgressiveOverview
               businessScore={businessScore}
+              scoreDimensions={scoreDimensions}
               reviewCount={reviewCount}
               completedTopics={completedTopics}
             />

@@ -107,7 +107,7 @@ export function WorkspaceDecisionWorkshopBlock({
         {!showAlternates && !showCustom ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button type="button" className="rounded-xl" disabled={readOnly} onClick={handleAgree}>
-              {tw('agreeTopic')}
+              {tw('startTopic', { topic: tw(`topics.${topicId}`) })}
             </Button>
             <Button
               type="button"
@@ -156,7 +156,7 @@ export function WorkspaceDecisionWorkshopBlock({
               disabled={readOnly}
               onClick={handleAgree}
             >
-              {tw('agreeTopic')}
+              {tw('startTopic', { topic: tw(`topics.${topicId}`) })}
             </Button>
           </div>
         ) : null}
@@ -176,7 +176,7 @@ export function WorkspaceDecisionWorkshopBlock({
               disabled={readOnly || customDraft.trim().length < 2}
               onClick={handleAgree}
             >
-              {tw('agreeTopic')}
+              {tw('startTopic', { topic: tw(`topics.${topicId}`) })}
             </Button>
           </div>
         ) : null}

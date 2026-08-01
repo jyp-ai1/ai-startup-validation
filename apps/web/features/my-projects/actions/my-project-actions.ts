@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+import type { StartupProject } from '@repo/types/validation';
 import { isSupabaseConfigured } from '@repo/db';
 
 import {
@@ -23,6 +24,7 @@ import {
 import { recordOAuthAnalyticsEvent } from '@/lib/auth/oauth-analytics';
 import { PRODUCT_ANALYTICS_EVENTS } from '@/lib/analytics/product-analytics';
 import { requireAuthUser } from '@/lib/auth/server-auth';
+import { isWorkspaceDocumentAnalyzable } from '@/features/workflow-journey/lib/business-understanding/workspace-document-eligibility';
 
 export type CreateMyProjectState = {
   error?: string;
@@ -105,8 +107,8 @@ export async function bootstrapFirstProject(userId: string, promoteDemo = false)
   return project;
 }
 
-/** Promote demo draft after login — always creates from cookie when present (Sprint 5 A-2). */
-export async function promoteDemoProject(userId: string) {
+/** Promote demo draft after login — creates project with document + workspace snapshot. */
+export async function promoteDemoProject(userId: string): Promise<StartupProject> {
   const cookieStore = await cookies();
   const draft = parseDemoProjectDraftCookie(cookieStore.get(DEMO_PROJECT_DRAFT_COOKIE)?.value);
 
@@ -185,15 +187,19 @@ export async function createMyProjectAction(
   }
 
   const description = formData.get('description')?.toString().trim() ?? '';
+  if (!isWorkspaceDocumentAnalyzable(description)) {
+    return { error: '사업 설명 또는 문서 내용을 8자 이상 입력해 주세요.' };
+  }
 
   const project = await createOwnedProject(user.id, {
     title,
-    summary: description || title,
+    summary: description,
     onboardingContext: {
       sprint12: buildInitialInterviewState(reviewTypeRaw, description),
-      ...(description.trim().length >= 8
-        ? { v2Demo: { pastedContent: description.trim() } }
-        : {}),
+      v2Demo: {
+        pastedContent: description,
+        importSource: 'paste',
+      },
     },
   });
 

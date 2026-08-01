@@ -2,6 +2,7 @@ import type { BusinessUnderstanding } from '@repo/types/domain/business-understa
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
 import type { UnderstandingPhase } from '../../lib/business-understanding/business-understanding-store';
+import { buildWorkspaceReviewScore } from '../../lib/build-workspace-review-score';
 import type { WorkspaceDomainEvidence } from '../../lib/workspace-ai-pm-messages';
 import { getDomainFieldMeta } from '../../lib/workspace-ai-pm-messages';
 
@@ -105,6 +106,7 @@ export function buildWorkspaceSidebarSnapshot(
   understandingConfirmed = true,
   understanding?: BusinessUnderstanding | null,
   understandingPhase: UnderstandingPhase = 'pending',
+  aiPmLoopInProgress = false,
 ): WorkspaceSidebarSnapshot {
   const useUnderstandingLifecycle =
     Boolean(understanding) && reviewCount === 0 && understandingPhase !== 'review-ready';
@@ -112,19 +114,36 @@ export function buildWorkspaceSidebarSnapshot(
   const nodes: WorkspaceNavNode[] = DOMAIN_ORDER.map((id) => ({
     id,
     labelKey: id,
-    lifecycle:
-      useUnderstandingLifecycle && understanding
+    lifecycle: aiPmLoopInProgress
+      ? 'waiting'
+      : useUnderstandingLifecycle && understanding
         ? lifecycleFromUnderstanding(id, understanding, entities)
         : lifecycleForDomainNode(id, domain, entities),
   }));
+
+  if (aiPmLoopInProgress) {
+    return {
+      businessScore: null,
+      scoreDimensions: [],
+      progressPercent: 0,
+      completedTopics: 0,
+      totalTopics: DOMAIN_ORDER.length,
+      activeStageKey: 'aiPmLoop',
+      lastUpdatedMinutesAgo: -1,
+      nodes,
+      hideProgressMetrics: true,
+    };
+  }
 
   const completedTopics = nodes.filter((n) => n.lifecycle === 'completed').length;
   const totalTopics = nodes.length;
   const progressPercent = Math.round((completedTopics / totalTopics) * 100);
   const activeNode = nodes.find((n) => n.lifecycle === 'in_progress') ?? nodes[0]!;
+  const reviewScore = buildWorkspaceReviewScore(understanding, reviewCount);
 
   return {
-    businessScore: understandingConfirmed && reviewCount > 0 ? 74 : null,
+    businessScore: understandingConfirmed && reviewCount > 0 ? reviewScore.total : null,
+    scoreDimensions: reviewScore.dimensions,
     progressPercent: reviewCount > 0 ? Math.max(progressPercent, 20) : progressPercent,
     completedTopics,
     totalTopics,
