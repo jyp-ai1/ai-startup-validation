@@ -1,0 +1,36 @@
+{
+  "commit": "46f5a81",
+  "productionUrl": "https://ai-startup-validation-tau.vercel.app",
+  "flow1": {
+    "result": "PASS",
+    "shots": [
+      "C:/Users/김성길/Documents/GitHub/cursor-project/docs/evidence/P0-QA-46f5a81/final/flow1-refresh/00-project-list-after-login.png",
+      "C:/Users/김성길/Documents/GitHub/cursor-project/docs/evidence/P0-QA-46f5a81/final/flow1-refresh/01-insight-before-refresh.png",
+      "C:/Users/김성길/Documents/GitHub/cursor-project/docs/evidence/P0-QA-46f5a81/final/flow1-refresh/02-insight-after-refresh.png",
+      "C:/Users/김성길/Documents/GitHub/cursor-project/docs/evidence/P0-QA-46f5a81/final/flow1-refresh/03-landing-after-logout.png"
+    ],
+    "urlBeforeRefresh": "https://ai-startup-validation-tau.vercel.app/workspace?project=42771152-5e23-42fc-a434-aa91c4660b44",
+    "urlAfterRefresh": "https://ai-startup-validation-tau.vercel.app/workspace?project=42771152-5e23-42fc-a434-aa91c4660b44",
+    "welcomeStripped": true,
+    "insightKept": true
+  },
+  "flow2": {
+    "result": "PASS",
+    "regression": "none",
+    "shots": [
+      "C:/Users/김성길/Documents/GitHub/cursor-project/docs/evidence/P0-QA-46f5a81/final/flow2-demo/01-demo-insight-before-login.png",
+      "C:/Users/김성길/Documents/GitHub/cursor-project/docs/evidence/P0-QA-46f5a81/final/flow2-demo/02-project-list-after-promote.png"
+    ],
+    "urlAfterPromote": "https://ai-startup-validation-tau.vercel.app/workspace?promoted=1"
+  },
+  "buildInfo": {
+    "version": "0.1.0",
+    "commit": "46f5a8114fd6940be514313cba5be23ff387592f",
+    "branch": "main",
+    "deployTime": "2026-08-01T01:42:53.186Z",
+    "nodeVersion": "v24.18.0",
+    "environment": "production",
+    "gaConfigured": false
+  },
+  "errors": []
+}
