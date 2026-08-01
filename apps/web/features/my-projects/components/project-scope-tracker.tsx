@@ -8,6 +8,7 @@ import {
   setActiveProjectId,
   switchProjectContext,
 } from '@/lib/project/project-context-store';
+import { hasWorkspaceJourneyState } from '@/lib/project/workspace-journey-state';
 
 type ProjectScopeTrackerProps = {
   projectId: string;
@@ -20,7 +21,12 @@ export function ProjectScopeTracker({ projectId, isNewProject = false }: Project
 
   useEffect(() => {
     if (isNewProject) {
-      resetProjectContext(projectId);
+      if (hasWorkspaceJourneyState(projectId)) {
+        setActiveProjectId(projectId);
+        clearLegacyGlobalKeys();
+      } else {
+        resetProjectContext(projectId);
+      }
     } else if (!previousProjectId.current) {
       setActiveProjectId(projectId);
       clearLegacyGlobalKeys();

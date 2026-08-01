@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
@@ -39,6 +40,8 @@ import {
 import { V2DecisionMemoryDetail } from './v2-decision-memory-detail';
 import { sanitizeAiPmResponse, sanitizeDocumentLabel, sanitizeAiPmParagraphs } from '@/lib/ai/ai-response-sanitizer';
 import type { AppAuthUser } from '@/lib/auth/server-auth';
+import { hasWorkspaceJourneyState } from '@/lib/project/workspace-journey-state';
+import { stripWelcomeParamFromUrl } from '@/features/workspace/components/workspace-welcome-param-cleanup';
 import { V2DecisionSavePrompt } from './v2-decision-save-prompt';
 import { V2DemoReadonlyBanner } from './v2-demo-readonly-banner';
 import { V2DemoGuidedBanner } from './v2-demo-guided-banner';
@@ -117,6 +120,7 @@ export function V2StrategyWorkspaceView({
   seedDocument,
   isNewProject = false,
 }: V2StrategyWorkspaceViewProps) {
+  const router = useRouter();
   const isDemoReadonly = mode === 'demo-readonly';
   const isDemoGuided = mode === 'demo-guided';
   const isDemoNoPersist = isDemoReadonly || isDemoGuided;
@@ -300,7 +304,14 @@ export function V2StrategyWorkspaceView({
     refreshMemory();
     refreshUnderstandingState();
 
-    if (isNewProject) {
+    const resumeExistingJourney =
+      !isDemoReadonly &&
+      !isDemoGuided &&
+      isNewProject &&
+      typeof storageProjectId === 'string' &&
+      hasWorkspaceJourneyState(storageProjectId);
+
+    if (isNewProject && !resumeExistingJourney) {
       if (seedDocument && seedDocument.trim().length >= 8) {
         saveWorkspaceDocumentText(seedDocument, storageProjectId);
         const inferred = inferDomainFromPaste(seedDocument, storageProjectId);
@@ -309,6 +320,10 @@ export function V2StrategyWorkspaceView({
         setIdea(inferred.domain.business.trim() || deriveProjectName(seedDocument));
       }
       return;
+    }
+
+    if (resumeExistingJourney) {
+      stripWelcomeParamFromUrl(router);
     }
 
     const saved = loadV2Validation(storageProjectId);
@@ -364,6 +379,7 @@ export function V2StrategyWorkspaceView({
     refreshMemory,
     storageProjectId,
     refreshUnderstandingState,
+    router,
   ]);
 
   const handleDocumentIntake = useCallback(
@@ -376,8 +392,11 @@ export function V2StrategyWorkspaceView({
       saveUnderstandingPhase('pending', storageProjectId);
       setUnderstandingPhase('pending');
       refreshUnderstandingState();
+      if (!isDemoGuided) {
+        stripWelcomeParamFromUrl(router);
+      }
     },
-    [isDemoReadonly, refreshUnderstandingState, storageProjectId],
+    [isDemoGuided, isDemoReadonly, refreshUnderstandingState, router, storageProjectId],
   );
 
   const aiPmMessage = useMemo(
@@ -562,6 +581,9 @@ export function V2StrategyWorkspaceView({
     setReviewCount((c) => {
       const next = c + 1;
       savePersistedReviewCount(next, storageProjectId);
+      if (!isDemoGuided && !isDemoReadonly) {
+        stripWelcomeParamFromUrl(router);
+      }
       return next;
     });
     setFollowUpDone(false);
@@ -578,7 +600,7 @@ export function V2StrategyWorkspaceView({
       createMeetingNoteFromReview(reviewCount + 1, storageProjectId);
       window.setTimeout(() => setPhase('followUp'), 400);
     }, REVIEW_MS);
-  }, [domain, entities, evidence, isDemoReadonly, persist, storageProjectId, reviewCount, understandingPhase]);
+  }, [domain, entities, evidence, isDemoGuided, isDemoReadonly, persist, router, storageProjectId, reviewCount, understandingPhase]);
 
   const handleGoToStep = (step: WorkflowStepId) => {
     setActiveMemoryId(null);

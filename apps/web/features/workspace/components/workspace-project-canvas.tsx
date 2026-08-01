@@ -9,6 +9,7 @@ import { DemoProjectPromotedTracker } from '@/features/my-projects/components/de
 import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { WorkspaceAuthCompleteTracker } from './workspace-auth-complete-tracker';
 import { WorkspaceJourneyTracker } from './journey-page-tracker';
+import { WorkspaceWelcomeParamCleanup } from './workspace-welcome-param-cleanup';
 
 const V2StrategyWorkspaceView = dynamic(
   () =>
@@ -77,6 +78,7 @@ export function WorkspaceProjectCanvas({
       <Suspense fallback={null}>
         <ProjectScopeTracker projectId={projectId} isNewProject={welcome} />
       </Suspense>
+      <WorkspaceWelcomeParamCleanup projectId={projectId} />
       <WorkspaceJourneyTracker projectId={projectId} />
       {authComplete ? (
         <Suspense fallback={null}>
