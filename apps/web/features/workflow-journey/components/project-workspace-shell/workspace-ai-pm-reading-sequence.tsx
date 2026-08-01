@@ -6,16 +6,44 @@ import { useTranslations } from 'next-intl';
 
 import { cn } from '@repo/ui/lib/utils';
 
-import type { AiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
-
-const STEP_MS = 520;
-const FINISH_PAUSE_MS = 600;
+import type { AiPmInitialDiagnosis, AiPmReadingInsight } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
 
 type WorkspaceAiPmReadingSequenceProps = {
   diagnosis: AiPmInitialDiagnosis;
   onComplete: () => void;
   className?: string;
 };
+
+function renderInsight(
+  insight: AiPmReadingInsight,
+  t: ReturnType<typeof useTranslations<'workflow.journey.workspaceShell.aiPmLoop.reading'>>,
+): string | null {
+  switch (insight.template) {
+    case 'phraseMarketCheck':
+      return insight.phrase ? t('insights.phraseMarketCheck', { phrase: insight.phrase }) : null;
+    case 'domainCompare':
+      return insight.domain ? t('insights.domainCompare', { domain: insight.domain }) : null;
+    case 'buyerUserSplit':
+      return t('insights.buyerUserSplit');
+    case 'documentScope':
+      return insight.sectionCount != null && insight.charCount != null
+        ? t('insights.documentScope', {
+            sections: insight.sectionCount,
+            chars: insight.charCount,
+          })
+        : null;
+    case 'competitorNamed':
+      return insight.competitor
+        ? t('insights.competitorNamed', { competitor: insight.competitor })
+        : null;
+    case 'revenueSignal':
+      return insight.revenueSignal
+        ? t('insights.revenueSignal', { signal: insight.revenueSignal })
+        : null;
+    default:
+      return null;
+  }
+}
 
 export function WorkspaceAiPmReadingSequence({
   diagnosis,
@@ -24,6 +52,7 @@ export function WorkspaceAiPmReadingSequence({
 }: WorkspaceAiPmReadingSequenceProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop.reading');
   const [completedSteps, setCompletedSteps] = useState(0);
+  const { stepMs, finishPauseMs } = diagnosis.readingTiming;
 
   const visibleInsights = useMemo(
     () => diagnosis.insights.filter((insight) => completedSteps > insight.afterStepIndex),
@@ -32,16 +61,16 @@ export function WorkspaceAiPmReadingSequence({
 
   useEffect(() => {
     if (completedSteps >= diagnosis.readingSteps.length) {
-      const timer = window.setTimeout(onComplete, FINISH_PAUSE_MS);
+      const timer = window.setTimeout(onComplete, finishPauseMs);
       return () => window.clearTimeout(timer);
     }
 
     const timer = window.setTimeout(() => {
       setCompletedSteps((prev) => Math.min(prev + 1, diagnosis.readingSteps.length));
-    }, STEP_MS);
+    }, stepMs);
 
     return () => window.clearTimeout(timer);
-  }, [completedSteps, diagnosis.readingSteps.length, onComplete]);
+  }, [completedSteps, diagnosis.readingSteps.length, finishPauseMs, onComplete, stepMs]);
 
   return (
     <section
@@ -54,7 +83,20 @@ export function WorkspaceAiPmReadingSequence({
         {t('aiLabel')}
       </p>
       <p className="mt-3 text-[15px] font-medium leading-relaxed">{t('lead')}</p>
+      {diagnosis.documentStats?.previewLine ? (
+        <p className="mt-2 text-sm text-foreground/90">
+          {t('documentPreview', { line: diagnosis.documentStats.previewLine })}
+        </p>
+      ) : null}
       <p className="mt-2 text-sm text-muted-foreground">{t('hint')}</p>
+      {diagnosis.documentStats ? (
+        <p className="mt-1 text-xs text-muted-foreground/90">
+          {t('documentScopeHint', {
+            sections: diagnosis.documentStats.sectionCount,
+            chars: diagnosis.documentStats.charCount,
+          })}
+        </p>
+      ) : null}
 
       <ul className="mt-5 space-y-2.5">
         {diagnosis.readingSteps.map((step, index) => {
@@ -93,20 +135,18 @@ export function WorkspaceAiPmReadingSequence({
 
       {visibleInsights.length > 0 ? (
         <div className="mt-5 space-y-2 border-t border-border/60 pt-4">
-          {visibleInsights.map((insight) => (
-            <p
-              key={`${insight.template}-${insight.afterStepIndex}`}
-              className="rounded-xl bg-muted/40 px-3 py-2 text-sm leading-relaxed text-muted-foreground"
-            >
-              {insight.template === 'phraseMarketCheck' && insight.phrase
-                ? t('insights.phraseMarketCheck', { phrase: insight.phrase })
-                : null}
-              {insight.template === 'domainCompare' && insight.domain
-                ? t('insights.domainCompare', { domain: insight.domain })
-                : null}
-              {insight.template === 'buyerUserSplit' ? t('insights.buyerUserSplit') : null}
-            </p>
-          ))}
+          {visibleInsights.map((insight) => {
+            const text = renderInsight(insight, t);
+            if (!text) return null;
+            return (
+              <p
+                key={`${insight.template}-${insight.afterStepIndex}`}
+                className="rounded-xl bg-muted/40 px-3 py-2 text-sm leading-relaxed text-muted-foreground"
+              >
+                {text}
+              </p>
+            );
+          })}
         </div>
       ) : null}
     </section>

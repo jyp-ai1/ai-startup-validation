@@ -6632,6 +6632,8 @@
           "reading": {
             "aiLabel": "AI PM",
             "lead": "AI PM is reading your document…",
+            "documentPreview": "Starting with: \"{line}\"",
+            "documentScopeHint": "{sections} sections · {chars} characters",
             "hint": "Checking founder, problem, customer, market, competition, business model, risks, and investor lens.",
             "steps": {
               "founder": "Founder check",
@@ -6646,7 +6648,10 @@
             "insights": {
               "phraseMarketCheck": "\"{phrase}\" — checking related market context.",
               "domainCompare": "Comparing with {domain} cases…",
-              "buyerUserSplit": "User and buyer may be different — verifying."
+              "buyerUserSplit": "User and buyer may be different — verifying.",
+              "documentScope": "{sections} sections · {chars} chars — reading in order.",
+              "competitorNamed": "Competitor candidate \"{competitor}\" — checking positioning…",
+              "revenueSignal": "Revenue signal \"{signal}\" — validating in the business-model step."
             },
             "summary": {
               "founder": "Founder",
@@ -6662,8 +6667,10 @@
           "diagnosis": {
             "aiLabel": "AI PM",
             "title": "Initial AI analysis complete",
+            "readItemsLead": "After reading your document, I confirmed the items below.",
             "readItemsTitle": "What I read",
             "confidenceLabel": "AI Confidence",
+            "confidenceHint": "Initial estimate from your document — updates as we talk.",
             "risksTitle": "Highest-risk areas now",
             "firstFocusLead": "The first thing to clarify is \"{issue}\".",
             "cta": "Continue together",

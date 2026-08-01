@@ -1,0 +1,32 @@
+{
+  "sprint": "P1-2",
+  "title": "AI Reading Experience",
+  "generatedAt": "2026-08-01T15:45:50.877Z",
+  "checks": [
+    {
+      "id": "1-timing-scales-with-document",
+      "ok": true,
+      "detail": "short stepMs=390, long stepMs=574"
+    },
+    {
+      "id": "2-document-scope-insight",
+      "ok": true,
+      "detail": "Document-specific scope hint during Reading"
+    },
+    {
+      "id": "3-confidence-delayed",
+      "ok": true,
+      "detail": "opacity=0"
+    },
+    {
+      "id": "4-first-question",
+      "ok": true,
+      "detail": "First question framing after Diagnosis"
+    },
+    {
+      "id": "5-longer-doc-longer-reading",
+      "ok": true,
+      "detail": "short=3889ms long=5428ms"
+    }
+  ]
+}

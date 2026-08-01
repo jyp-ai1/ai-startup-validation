@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@repo/ui';
@@ -7,6 +8,9 @@ import { cn } from '@repo/ui/lib/utils';
 
 import type { AiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
 import type { AiPmLoopIssueId } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
+
+const CONFIDENCE_REVEAL_MS = 1400;
+const RISKS_REVEAL_MS = 2300;
 
 type WorkspaceAiPmDiagnosisSummaryProps = {
   diagnosis: AiPmInitialDiagnosis;
@@ -27,6 +31,18 @@ export function WorkspaceAiPmDiagnosisSummary({
   const tIssues = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
   const tReading = useTranslations('workflow.journey.workspaceShell.aiPmLoop.reading');
 
+  const [showConfidence, setShowConfidence] = useState(false);
+  const [showRisks, setShowRisks] = useState(false);
+
+  useEffect(() => {
+    const confidenceTimer = window.setTimeout(() => setShowConfidence(true), CONFIDENCE_REVEAL_MS);
+    const risksTimer = window.setTimeout(() => setShowRisks(true), RISKS_REVEAL_MS);
+    return () => {
+      window.clearTimeout(confidenceTimer);
+      window.clearTimeout(risksTimer);
+    };
+  }, []);
+
   const primaryLabel = primaryIssueId ? tIssues(`issues.${primaryIssueId}.riskLabel`) : null;
 
   return (
@@ -40,6 +56,7 @@ export function WorkspaceAiPmDiagnosisSummary({
         {t('aiLabel')}
       </p>
       <p className="mt-3 text-xl font-semibold tracking-tight">{t('title')}</p>
+      <p className="mt-2 text-sm text-muted-foreground">{t('readItemsLead')}</p>
 
       <div className="mt-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
@@ -57,7 +74,13 @@ export function WorkspaceAiPmDiagnosisSummary({
         </ul>
       </div>
 
-      <div className="mt-6 border-t border-border/60 pt-5">
+      <div
+        className={cn(
+          'mt-6 border-t border-border/60 pt-5 transition-all duration-500',
+          showConfidence ? 'opacity-100 translate-y-0' : 'pointer-events-none opacity-0 translate-y-2',
+        )}
+        aria-hidden={!showConfidence}
+      >
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
           {t('confidenceLabel')}
         </p>
@@ -65,10 +88,17 @@ export function WorkspaceAiPmDiagnosisSummary({
           {diagnosis.confidencePercent}
           <span className="text-2xl">%</span>
         </p>
+        <p className="mt-1 text-xs text-muted-foreground">{t('confidenceHint')}</p>
       </div>
 
       {diagnosis.topRiskIssueIds.length > 0 ? (
-        <div className="mt-6">
+        <div
+          className={cn(
+            'mt-6 transition-all duration-500',
+            showRisks ? 'opacity-100 translate-y-0' : 'pointer-events-none opacity-0 translate-y-2',
+          )}
+          aria-hidden={!showRisks}
+        >
           <p className="text-sm font-semibold">{t('risksTitle')}</p>
           <ol className="mt-3 space-y-2">
             {diagnosis.topRiskIssueIds.map((issueId, index) => (
@@ -83,13 +113,21 @@ export function WorkspaceAiPmDiagnosisSummary({
         </div>
       ) : null}
 
-      {primaryLabel ? (
+      {primaryLabel && showRisks ? (
         <p className="mt-5 text-[15px] font-medium leading-relaxed">
           {t('firstFocusLead', { issue: primaryLabel })}
         </p>
       ) : null}
 
-      <Button type="button" className="mt-5 rounded-xl" disabled={readOnly} onClick={onContinue}>
+      <Button
+        type="button"
+        className={cn(
+          'mt-5 rounded-xl transition-all duration-500',
+          showRisks ? 'opacity-100' : 'pointer-events-none opacity-40',
+        )}
+        disabled={readOnly || !showRisks}
+        onClick={onContinue}
+      >
         {primaryLabel ? t('ctaWithIssue', { issue: primaryLabel }) : t('cta')}
       </Button>
     </section>

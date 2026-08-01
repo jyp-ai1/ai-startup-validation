@@ -31,15 +31,38 @@ export type AiPmReadingStep = {
 
 export type AiPmReadingInsight = {
   afterStepIndex: number;
-  template: 'phraseMarketCheck' | 'domainCompare' | 'buyerUserSplit';
+  template:
+    | 'phraseMarketCheck'
+    | 'domainCompare'
+    | 'buyerUserSplit'
+    | 'documentScope'
+    | 'competitorNamed'
+    | 'revenueSignal';
   phrase?: string;
   domain?: string;
+  sectionCount?: number;
+  charCount?: number;
+  competitor?: string;
+  revenueSignal?: string;
+};
+
+export type AiPmReadingTiming = {
+  stepMs: number;
+  finishPauseMs: number;
+};
+
+export type AiPmDocumentStats = {
+  sectionCount: number;
+  charCount: number;
+  previewLine: string | null;
 };
 
 export type AiPmInitialDiagnosis = {
   sufficientInput: boolean;
   readingSteps: AiPmReadingStep[];
   insights: AiPmReadingInsight[];
+  readingTiming: AiPmReadingTiming;
+  documentStats: AiPmDocumentStats | null;
   confidencePercent: number | null;
   readSummaryIds: AiPmReadingStepId[];
   topRiskIssueIds: AiPmLoopIssueId[];
@@ -52,6 +75,47 @@ function truncateDetail(value: string | null | undefined, max = 56): string | nu
   if (!trimmed) return null;
   if (trimmed.length <= max) return trimmed;
   return `${trimmed.slice(0, max - 1).trim()}…`;
+}
+
+/** Scale reading pace with document size — short titles feel rushed; long plans need more time. */
+export function computeReadingTiming(documentText: string | null | undefined): AiPmReadingTiming {
+  const trimmed = documentText?.trim() ?? '';
+  const charCount = trimmed.length;
+  const sectionCount = trimmed.split('\n').map((line) => line.trim()).filter(Boolean).length;
+  const stepMs = Math.min(900, Math.max(380, 300 + Math.floor(charCount / 70) + sectionCount * 30));
+  const finishPauseMs = Math.min(1100, Math.max(550, 450 + Math.floor(charCount / 100)));
+  return { stepMs, finishPauseMs };
+}
+
+function extractDocumentStats(documentText: string | null | undefined): AiPmDocumentStats | null {
+  const trimmed = documentText?.trim() ?? '';
+  if (!trimmed) return null;
+
+  const lines = trimmed.split('\n').map((line) => line.trim()).filter(Boolean);
+  const previewLine =
+    lines.find((line) => line.length >= 12 && !line.endsWith(':')) ??
+    lines.find((line) => line.length >= 8) ??
+    null;
+
+  return {
+    sectionCount: lines.length,
+    charCount: trimmed.length,
+    previewLine: truncateDetail(previewLine, 48),
+  };
+}
+
+function extractRevenueSignal(
+  documentText: string,
+  understanding: BusinessUnderstanding,
+): string | null {
+  const fromUnderstanding =
+    understanding.revenue.value ?? understanding.revenue.confirmedExpressions?.[0] ?? null;
+  if (fromUnderstanding?.trim()) return truncateDetail(fromUnderstanding, 28);
+
+  const keywordMatch = documentText.match(
+    /(?:구독|SaaS|수수료|라이선스|B2B|월\s*\d[\d,]*\s*원|연\s*\d[\d,]*\s*만원)/i,
+  );
+  return keywordMatch ? truncateDetail(keywordMatch[0], 28) : null;
 }
 
 function extractHighlightPhrase(understanding: BusinessUnderstanding): string | null {
@@ -144,13 +208,29 @@ function buildReadingSteps(
 function buildReadingInsights(
   understanding: BusinessUnderstanding,
   entities?: LaunchLensDomainContext | null,
+  documentText?: string | null,
 ): AiPmReadingInsight[] {
   const insights: AiPmReadingInsight[] = [];
   const phrase = extractHighlightPhrase(understanding);
   const domain = inferDomainLabel(understanding, entities);
+  const stats = extractDocumentStats(documentText);
+
+  if (stats && stats.sectionCount >= 2) {
+    insights.push({
+      afterStepIndex: 1,
+      template: 'documentScope',
+      sectionCount: stats.sectionCount,
+      charCount: stats.charCount,
+    });
+  }
 
   if (phrase) {
     insights.push({ afterStepIndex: 2, template: 'phraseMarketCheck', phrase });
+  }
+
+  const competitor = truncateDetail(entities?.competitor.value, 28);
+  if (competitor) {
+    insights.push({ afterStepIndex: 3, template: 'competitorNamed', competitor });
   }
 
   if (domain) {
@@ -163,6 +243,12 @@ function buildReadingInsights(
     understanding.customer.missingLine
   ) {
     insights.push({ afterStepIndex: 5, template: 'buyerUserSplit' });
+  }
+
+  const revenueSignal =
+    documentText?.trim() ? extractRevenueSignal(documentText, understanding) : null;
+  if (revenueSignal) {
+    insights.push({ afterStepIndex: 6, template: 'revenueSignal', revenueSignal });
   }
 
   return insights;
@@ -195,12 +281,16 @@ export function buildAiPmInitialDiagnosis(
   const sufficientInput = isWorkspaceDocumentAnalyzable(documentText);
   const issueQueue = rankIssueQueue(understanding);
   const readingSteps = buildReadingSteps(understanding, entities);
+  const readingTiming = computeReadingTiming(documentText);
+  const documentStats = extractDocumentStats(documentText);
 
   if (!sufficientInput) {
     return {
       sufficientInput: false,
       readingSteps,
       insights: [],
+      readingTiming,
+      documentStats,
       confidencePercent: null,
       readSummaryIds: [],
       topRiskIssueIds: [],
@@ -216,7 +306,9 @@ export function buildAiPmInitialDiagnosis(
   return {
     sufficientInput: true,
     readingSteps,
-    insights: buildReadingInsights(understanding, entities),
+    insights: buildReadingInsights(understanding, entities, documentText),
+    readingTiming,
+    documentStats,
     confidencePercent,
     readSummaryIds: [...AI_PM_READING_STEP_IDS],
     topRiskIssueIds: rankTopRisks(understanding),

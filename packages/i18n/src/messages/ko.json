@@ -6785,6 +6785,8 @@
           "reading": {
             "aiLabel": "AI PM",
             "lead": "AI PM이 문서를 읽고 있습니다…",
+            "documentPreview": "「{line}」부터 확인합니다.",
+            "documentScopeHint": "문서 {sections}개 섹션 · {chars}자",
             "hint": "창업자 · 문제 · 고객 · 시장 · 경쟁 · BM · 리스크 · 투자 관점을 순서대로 확인합니다.",
             "steps": {
               "founder": "창업자 확인",
@@ -6799,7 +6801,10 @@
             "insights": {
               "phraseMarketCheck": "\"{phrase}\" — 잠시 관련 시장을 확인하고 있습니다.",
               "domainCompare": "{domain} 사례와 비교 중…",
-              "buyerUserSplit": "사용자와 구매자가 다를 가능성을 확인했습니다."
+              "buyerUserSplit": "사용자와 구매자가 다를 가능성을 확인했습니다.",
+              "documentScope": "문서 {sections}개 섹션 · {chars}자 — 순서대로 읽고 있습니다.",
+              "competitorNamed": "경쟁 후보 \"{competitor}\" — 포지션을 확인 중…",
+              "revenueSignal": "수익 구조 단서 \"{signal}\" — BM 단계에서 검증합니다."
             },
             "summary": {
               "founder": "창업자",
@@ -6815,8 +6820,10 @@
           "diagnosis": {
             "aiLabel": "AI PM",
             "title": "초기 AI 분석 완료",
+            "readItemsLead": "문서를 읽은 뒤, 아래 항목을 확인했습니다.",
             "readItemsTitle": "읽은 내용",
             "confidenceLabel": "AI Confidence",
+            "confidenceHint": "문서 기반 초기 추정치입니다. 대화를 통해 업데이트됩니다.",
             "risksTitle": "현재 가장 위험한 부분",
             "firstFocusLead": "가장 먼저 정리해야 하는 것은 \"{issue}\"입니다.",
             "cta": "함께 확인하기",
