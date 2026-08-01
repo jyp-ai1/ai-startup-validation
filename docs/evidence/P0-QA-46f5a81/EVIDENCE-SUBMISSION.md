@@ -113,17 +113,32 @@ Open Demo → LaunchLens Sample → Review → Insight → Google Login (Promote
 
 ---
 
-## 6. CTO 결론 (CPO 확인 전 — 최종 아님)
+## 6. CTO status (not CPO PASS)
 
-CTO 자동 QA 결과: Flow1·Flow2 스크립트 exit 0.  
-**CPO가 §3 체크리스트와 증거 4건을 확인한 뒤** 대표 테스트 시작 여부를 결정한다.
+```text
+Flow1
+Evidence Submitted
+
+Flow2
+Evidence Submitted
+
+CPO Review
+Pending
+
+CEO Test
+Not Requested
+```
+
+Process: [docs/QA-APPROVAL.md](../../QA-APPROVAL.md)
+
+**CPO가 §3 체크리스트와 증거 4건(또는 EVIDENCE-PACKAGE.html)을 확인한 뒤** 대표 테스트 시작 여부를 결정한다.
 
 | 조건 | CTO | CPO (직접 확인) |
 |------|-----|-----------------|
-| Commit / Production / SHA | ✅ | ☐ |
-| Flow1 F5 Insight 유지 | 주장 PASS | ☐ |
-| Flow2 Promote → List | 주장 PASS | ☐ |
-| 대표 테스트 요청 | CTO 제안 | ☐ |
+| Commit / Production / SHA | Submitted | ☐ |
+| Flow1 evidence | Submitted | ☐ |
+| Flow2 evidence | Submitted | ☐ |
+| 대표 테스트 요청 | Not Requested | ☐ |
 
 ---
 
