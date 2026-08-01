@@ -60,11 +60,15 @@ export function WorkspaceAiPmLoopPanel({
   const [reanalyzing, setReanalyzing] = useState(false);
   const [sessionPaused, setSessionPaused] = useState(false);
 
-  const nextIssue = useMemo(
-    () => resolveNextLoopIssue(understanding, loopState),
-    [understanding, loopState],
-  );
   const documentText = useMemo(() => loadWorkspaceDocumentText(projectId), [projectId, understanding]);
+  const nextIssue = useMemo(
+    () =>
+      resolveNextLoopIssue(understanding, loopState, {
+        documentText: documentText ?? undefined,
+        entities,
+      }),
+    [understanding, loopState, documentText, entities],
+  );
   const initialDiagnosis = useMemo(
     () => buildAiPmInitialDiagnosis(understanding, entities, documentText),
     [understanding, entities, documentText],
@@ -163,7 +167,10 @@ export function WorkspaceAiPmLoopPanel({
         onLoopComplete?.();
         return;
       }
-      const plannedNext = resolveNextLoopIssue(freshUnderstanding, refreshed);
+      const plannedNext = resolveNextLoopIssue(freshUnderstanding, refreshed, {
+        documentText: doc ?? undefined,
+        entities,
+      });
       const next = patchAiPmLoopState(
         { phase: plannedNext ? 'issue' : 'complete', currentIssueId: plannedNext },
         projectId,

@@ -1,0 +1,140 @@
+{
+  "generatedAt": "2026-08-01T16:07:58.115Z",
+  "cases": [
+    {
+      "caseId": "A",
+      "primaryIssueId": "customer_definition",
+      "expectedPrimaryIssueId": "customer_definition",
+      "firstQuestionKey": "issues.customer_definition.question",
+      "confidencePercent": 62,
+      "confidenceRationale": "고객 Gap 점수 92 — 문서에 고객·타깃 섹션이 없습니다.",
+      "riskScores": [
+        {
+          "issueId": "customer_definition",
+          "label": "고객",
+          "score": 92,
+          "rationale": "문서에 고객·타깃 섹션이 없습니다.",
+          "documentSignal": "missing"
+        },
+        {
+          "issueId": "competitor_analysis",
+          "label": "경쟁사",
+          "score": 52,
+          "rationale": "경쟁 구도는 상대적으로 덜 급합니다.",
+          "documentSignal": "missing"
+        },
+        {
+          "issueId": "problem_definition",
+          "label": "문제",
+          "score": 24,
+          "rationale": "문서에 문제 표현이 있습니다.",
+          "documentSignal": "present"
+        },
+        {
+          "issueId": "market_validation",
+          "label": "시장",
+          "score": 22,
+          "rationale": "문서에 시장 규모·근거 표현이 있습니다.",
+          "documentSignal": "present"
+        },
+        {
+          "issueId": "bm_design",
+          "label": "수익모델",
+          "score": 20,
+          "rationale": "문서에 수익·BM 표현이 확인됩니다.",
+          "documentSignal": "present"
+        }
+      ]
+    },
+    {
+      "caseId": "B",
+      "primaryIssueId": "market_validation",
+      "expectedPrimaryIssueId": "market_validation",
+      "firstQuestionKey": "issues.market_validation.question",
+      "confidencePercent": 62,
+      "confidenceRationale": "시장 Gap 점수 86 — 고객·사업은 있지만 왜 지금 이 시장인지 근거가 없습니다.",
+      "riskScores": [
+        {
+          "issueId": "market_validation",
+          "label": "시장",
+          "score": 86,
+          "rationale": "고객·사업은 있지만 왜 지금 이 시장인지 근거가 없습니다.",
+          "documentSignal": "missing"
+        },
+        {
+          "issueId": "competitor_analysis",
+          "label": "경쟁사",
+          "score": 52,
+          "rationale": "경쟁 구도는 상대적으로 덜 급합니다.",
+          "documentSignal": "missing"
+        },
+        {
+          "issueId": "problem_definition",
+          "label": "문제",
+          "score": 24,
+          "rationale": "문서에 문제 표현이 있습니다.",
+          "documentSignal": "present"
+        },
+        {
+          "issueId": "bm_design",
+          "label": "수익모델",
+          "score": 20,
+          "rationale": "문서에 수익·BM 표현이 확인됩니다.",
+          "documentSignal": "present"
+        },
+        {
+          "issueId": "customer_definition",
+          "label": "고객",
+          "score": 18,
+          "rationale": "문서에 구체적인 고객 표현이 있습니다.",
+          "documentSignal": "present"
+        }
+      ]
+    },
+    {
+      "caseId": "C",
+      "primaryIssueId": "bm_design",
+      "expectedPrimaryIssueId": "bm_design",
+      "firstQuestionKey": "issues.bm_design.question",
+      "confidencePercent": 62,
+      "confidenceRationale": "수익모델 Gap 점수 91 — 문서에 수익모델·비용 지불 주체가 없습니다.",
+      "riskScores": [
+        {
+          "issueId": "bm_design",
+          "label": "수익모델",
+          "score": 91,
+          "rationale": "문서에 수익모델·비용 지불 주체가 없습니다.",
+          "documentSignal": "missing"
+        },
+        {
+          "issueId": "competitor_analysis",
+          "label": "경쟁사",
+          "score": 52,
+          "rationale": "경쟁 구도는 상대적으로 덜 급합니다.",
+          "documentSignal": "missing"
+        },
+        {
+          "issueId": "problem_definition",
+          "label": "문제",
+          "score": 24,
+          "rationale": "문서에 문제 표현이 있습니다.",
+          "documentSignal": "present"
+        },
+        {
+          "issueId": "market_validation",
+          "label": "시장",
+          "score": 22,
+          "rationale": "문서에 시장 규모·근거 표현이 있습니다.",
+          "documentSignal": "present"
+        },
+        {
+          "issueId": "customer_definition",
+          "label": "고객",
+          "score": 18,
+          "rationale": "문서에 구체적인 고객 표현이 있습니다.",
+          "documentSignal": "present"
+        }
+      ]
+    }
+  ]
+}

@@ -192,7 +192,7 @@ export function buildAiPmRuntimeJudgment(input: {
   if (!hasDocument) return null;
 
   const history = facts?.history ?? [];
-  const nextIssue = resolveNextLoopIssue(understanding, loop);
+  const nextIssue = resolveNextLoopIssue(understanding, loop, { documentText });
   const lastCompleted = lastCompletedIssueFromHistory(history, loop);
 
   const currentPhase: AiPmPhaseId = nextIssue

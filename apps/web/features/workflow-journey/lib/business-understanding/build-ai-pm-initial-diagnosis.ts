@@ -4,9 +4,11 @@ import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-doma
 import { buildAiPmScoreNarrative } from '../build-ai-pm-score-narrative';
 import { buildDiscoveryItems } from './discovery-summary';
 import {
-  estimatePrioritySeverity,
-  resolveAiPmPriorityIssue,
-} from './resolve-ai-pm-priority-issue';
+  buildAiPmDynamicDiagnosis,
+  type AiPmDynamicDiagnosis,
+  type AiPmRiskScore,
+} from './build-ai-pm-dynamic-diagnosis';
+import { resolveAiPmPriorityIssue } from './resolve-ai-pm-priority-issue';
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
 import { isWorkspaceDocumentAnalyzable } from './workspace-document-eligibility';
 
@@ -64,6 +66,9 @@ export type AiPmInitialDiagnosis = {
   readingTiming: AiPmReadingTiming;
   documentStats: AiPmDocumentStats | null;
   confidencePercent: number | null;
+  confidenceRationale: string | null;
+  dynamicDiagnosis: AiPmDynamicDiagnosis | null;
+  riskScores: AiPmRiskScore[];
   readSummaryIds: AiPmReadingStepId[];
   topRiskIssueIds: AiPmLoopIssueId[];
   primaryIssueId: AiPmLoopIssueId | null;
@@ -254,22 +259,22 @@ function buildReadingInsights(
   return insights;
 }
 
-function rankIssueQueue(understanding: BusinessUnderstanding): AiPmLoopIssueId[] {
-  const issueIds: AiPmLoopIssueId[] = [
-    'customer_definition',
-    'problem_definition',
-    'bm_design',
-    'competitor_analysis',
-    'market_validation',
-  ];
-
-  return [...issueIds].sort(
-    (a, b) => estimatePrioritySeverity(understanding, b) - estimatePrioritySeverity(understanding, a),
-  );
+function rankIssueQueue(
+  understanding: BusinessUnderstanding,
+  entities?: LaunchLensDomainContext | null,
+  documentText?: string | null,
+): AiPmLoopIssueId[] {
+  const diagnosis = buildAiPmDynamicDiagnosis(understanding, entities, documentText);
+  return diagnosis.riskScores.map((item) => item.issueId);
 }
 
-function rankTopRisks(understanding: BusinessUnderstanding): AiPmLoopIssueId[] {
-  return rankIssueQueue(understanding).slice(0, 3);
+function rankTopRisks(
+  understanding: BusinessUnderstanding,
+  entities?: LaunchLensDomainContext | null,
+  documentText?: string | null,
+): AiPmLoopIssueId[] {
+  const diagnosis = buildAiPmDynamicDiagnosis(understanding, entities, documentText);
+  return diagnosis.topRiskIssueIds;
 }
 
 /** Document-derived initial diagnosis — drives reading UX and first-question framing. */
@@ -279,10 +284,13 @@ export function buildAiPmInitialDiagnosis(
   documentText?: string | null,
 ): AiPmInitialDiagnosis {
   const sufficientInput = isWorkspaceDocumentAnalyzable(documentText);
-  const issueQueue = rankIssueQueue(understanding);
+  const issueQueue = rankIssueQueue(understanding, entities, documentText);
   const readingSteps = buildReadingSteps(understanding, entities);
   const readingTiming = computeReadingTiming(documentText);
   const documentStats = extractDocumentStats(documentText);
+  const dynamicDiagnosis = sufficientInput
+    ? buildAiPmDynamicDiagnosis(understanding, entities, documentText)
+    : null;
 
   if (!sufficientInput) {
     return {
@@ -292,6 +300,9 @@ export function buildAiPmInitialDiagnosis(
       readingTiming,
       documentStats,
       confidencePercent: null,
+      confidenceRationale: null,
+      dynamicDiagnosis: null,
+      riskScores: [],
       readSummaryIds: [],
       topRiskIssueIds: [],
       primaryIssueId: null,
@@ -300,8 +311,12 @@ export function buildAiPmInitialDiagnosis(
   }
 
   const narrative = buildAiPmScoreNarrative(understanding, 0);
-  const confidencePercent = narrative?.score.total ?? 62;
-  const primaryIssueId = resolveAiPmPriorityIssue(understanding);
+  const confidencePercent = dynamicDiagnosis?.confidencePercent ?? narrative?.score.total ?? 62;
+  const confidenceRationale = dynamicDiagnosis?.confidenceRationale ?? null;
+  const primaryIssueId = resolveAiPmPriorityIssue(understanding, [], {
+    documentText,
+    entities,
+  });
 
   return {
     sufficientInput: true,
@@ -310,8 +325,11 @@ export function buildAiPmInitialDiagnosis(
     readingTiming,
     documentStats,
     confidencePercent,
+    confidenceRationale,
+    dynamicDiagnosis,
+    riskScores: dynamicDiagnosis?.riskScores ?? [],
     readSummaryIds: [...AI_PM_READING_STEP_IDS],
-    topRiskIssueIds: rankTopRisks(understanding),
+    topRiskIssueIds: rankTopRisks(understanding, entities, documentText),
     primaryIssueId,
     issueQueue,
   };

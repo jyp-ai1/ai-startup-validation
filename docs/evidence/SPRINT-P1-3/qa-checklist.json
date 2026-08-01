@@ -1,0 +1,57 @@
+{
+  "sprint": "P1-3",
+  "title": "Dynamic Diagnosis",
+  "generatedAt": "2026-08-01T16:07:52.483Z",
+  "checks": [
+    {
+      "id": "1-engine-unit-tests",
+      "ok": true,
+      "detail": "vitest 5/5"
+    },
+    {
+      "id": "2a-risk-visible",
+      "ok": true,
+      "detail": "Case A Risk #1 block"
+    },
+    {
+      "id": "3a-primary-risk",
+      "ok": true,
+      "detail": "Case A primary=customer_definition"
+    },
+    {
+      "id": "4a-first-question",
+      "ok": true,
+      "detail": "Case A question matches risk"
+    },
+    {
+      "id": "2b-risk-visible",
+      "ok": true,
+      "detail": "Case B Risk #1 block"
+    },
+    {
+      "id": "3b-primary-risk",
+      "ok": true,
+      "detail": "Case B primary=market_validation"
+    },
+    {
+      "id": "4b-first-question",
+      "ok": true,
+      "detail": "Case B question matches risk"
+    },
+    {
+      "id": "2c-risk-visible",
+      "ok": true,
+      "detail": "Case C Risk #1 block"
+    },
+    {
+      "id": "3c-primary-risk",
+      "ok": true,
+      "detail": "Case C primary=bm_design"
+    },
+    {
+      "id": "4c-first-question",
+      "ok": true,
+      "detail": "Case C question matches risk"
+    }
+  ]
+}

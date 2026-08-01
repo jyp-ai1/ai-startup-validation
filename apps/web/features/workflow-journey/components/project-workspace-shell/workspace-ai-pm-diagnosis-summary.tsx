@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@repo/ui';
@@ -44,6 +44,10 @@ export function WorkspaceAiPmDiagnosisSummary({
   }, []);
 
   const primaryLabel = primaryIssueId ? tIssues(`issues.${primaryIssueId}.riskLabel`) : null;
+  const primaryRisk = useMemo(() => {
+    if (!primaryIssueId) return null;
+    return diagnosis.riskScores.find((item) => item.issueId === primaryIssueId) ?? null;
+  }, [diagnosis.riskScores, primaryIssueId]);
 
   return (
     <section
@@ -74,6 +78,23 @@ export function WorkspaceAiPmDiagnosisSummary({
         </ul>
       </div>
 
+      {primaryRisk && showRisks ? (
+        <div className="mt-6 rounded-xl border border-primary/20 bg-primary/[0.04] px-4 py-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+            {t('primaryRiskTitle')}
+          </p>
+          <p className="mt-2 text-base font-semibold">
+            {primaryLabel}
+            <span className="ml-2 text-sm font-medium text-muted-foreground">
+              {t('primaryRiskScore', { score: primaryRisk.score })}
+            </span>
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {primaryRisk.rationale}
+          </p>
+        </div>
+      ) : null}
+
       <div
         className={cn(
           'mt-6 border-t border-border/60 pt-5 transition-all duration-500',
@@ -88,7 +109,9 @@ export function WorkspaceAiPmDiagnosisSummary({
           {diagnosis.confidencePercent}
           <span className="text-2xl">%</span>
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">{t('confidenceHint')}</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {diagnosis.confidenceRationale ?? t('confidenceHint')}
+        </p>
       </div>
 
       {diagnosis.topRiskIssueIds.length > 0 ? (
