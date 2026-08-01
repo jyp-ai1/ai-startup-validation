@@ -176,6 +176,36 @@ Beta sign-off is required before broad Release for AI strategy products where fu
 
 ---
 
+## Gate exit criteria
+
+What must be true to **leave** each gate. Without this, PASS meaning varies by person.
+
+| Gate | Exit criteria | Deliverable |
+|------|---------------|-------------|
+| **Technical QA (CTO)** | Defined Production scenarios reproduced; Evidence Package generated; build SHA matches `/api/build-info` | `EVIDENCE-PACKAGE.html`, Commit, Build SHA |
+| **Product QA (CPO)** | Evidence attached and reviewed; Flow1/Flow2 PASS or FAIL; Regression judged | Product QA Review |
+| **CEO Smoke** | Core path completes without dead-ends (e.g. Landing → Review → Next Action); Experience Score recorded | CEO Review |
+| **Customer Beta** | Real users tested (e.g. 3–5 founders); no open P0 | Beta Report |
+| **Release** | All gates passed; no unresolved P0 | Release Note |
+
+### LaunchLens — CTO minimum scenarios (Technical QA)
+
+| Flow | Scenario |
+|------|----------|
+| Flow1 | Login → Project List → new project → AI Read → Review → Insight → **F5** → Insight persists |
+| Flow2 | Demo Sample → Review → Insight → Promote → Project List |
+
+### LaunchLens — CPO minimum (Product QA)
+
+| Check | Exit |
+|-------|------|
+| Flow1 | PASS on attached before/after refresh screens |
+| Flow2 | PASS on promote → list screen |
+| Regression | None on defined flows |
+| CEO Test | **Approved** only if Flow1 + Flow2 PASS and no P0 in evidence |
+
+---
+
 ## Status board (single source of truth)
 
 Use this vocabulary across Slack, docs, and handoffs:
@@ -188,13 +218,16 @@ Production
 배포 완료
 
 Technical QA (CTO)
-Evidence Submitted
+✔ Evidence Submitted
 
 Product QA (CPO)
-Pending Review
+⏳ Pending Review (Evidence 미첨부)
 
 CEO Smoke
 Not Requested
+
+Customer Beta
+Not Started
 
 Release
 Pending
