@@ -1,0 +1,81 @@
+{
+  "rc": "d2f7c4a",
+  "baseUrl": "http://localhost:3001",
+  "generatedAt": "2026-08-02T07:57:06.755Z",
+  "results": [
+    {
+      "scenario": 1,
+      "result": "PASS",
+      "observed": "trust=true, readClaim=false, readingAnim=false",
+      "evidence": [
+        "regression-01-pdf-placeholder.png"
+      ],
+      "exitCriteria": [
+        "Trust Block visible: true",
+        "Reading animation absent: true",
+        "No read claim: true"
+      ]
+    },
+    {
+      "scenario": 2,
+      "result": "PASS",
+      "observed": "sidebarCustomer=true, headerSynced=true",
+      "evidence": [
+        "regression-02-loop-sidebar-header.png"
+      ],
+      "exitCriteria": [
+        "Sidebar customer completed: true",
+        "Header contains segment: true",
+        "Same session (no reload): true"
+      ]
+    },
+    {
+      "scenario": 3,
+      "result": "PASS",
+      "observed": "disabled=true, reasonVisible=true",
+      "evidence": [
+        "regression-03-review-disabled.png"
+      ],
+      "exitCriteria": [
+        "Button disabled: true",
+        "Blocked reason visible: true",
+        "No silent no-op: true"
+      ]
+    },
+    {
+      "scenario": 4,
+      "result": "PASS",
+      "observed": "loopMatch=true, sidebarMatch=true",
+      "evidence": [
+        "regression-04-pause-resume.png"
+      ],
+      "exitCriteria": [
+        "Turn count identical: true",
+        "Sidebar matches: true",
+        "Header consistent: true"
+      ]
+    },
+    {
+      "scenario": 5,
+      "result": "PASS",
+      "observed": "tasteLoaded=true, tasteBleed=false, mfgLoaded=true",
+      "evidence": [
+        "regression-05-demo-switch.png"
+      ],
+      "exitCriteria": [
+        "Step 1 contains 취향저격: true",
+        "Step 2 no taste bleed: true",
+        "Step 2 manufacturing markers: true"
+      ]
+    },
+    {
+      "scenario": 6,
+      "result": "NOT EXECUTED",
+      "observed": "QA auth session unavailable in local regression environment (Abort: Auth unavailable)",
+      "evidence": [],
+      "exitCriteria": [
+        "Auth unavailable → NOT EXECUTED per Spec"
+      ]
+    }
+  ]
+}
