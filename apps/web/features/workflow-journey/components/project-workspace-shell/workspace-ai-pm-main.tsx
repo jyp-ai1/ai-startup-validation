@@ -10,7 +10,7 @@ import { sanitizeAiPmParagraphs } from '@/lib/ai/ai-response-sanitizer';
 import { cn } from '@repo/ui/lib/utils';
 
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
-import { isWorkspaceDocumentAnalyzable } from '../../lib/business-understanding/workspace-document-eligibility';
+import { isWorkspaceDocumentAnalyzable, isWorkspaceDocumentReadable } from '../../lib/business-understanding/workspace-document-eligibility';
 import {
   getResolvedIssueIds,
   isAiPmLoopComplete,
@@ -71,6 +71,8 @@ type WorkspaceAiPmMainProps = {
     customer: string,
   ) => void;
   onReview: () => void;
+  reviewCanStart?: boolean;
+  reviewBlockedReason?: import('../../lib/business-understanding/workspace-state').WorkspaceReviewBlockedReason | null;
   onUnderstandingConfirmed?: () => void;
   showDemoLoginCta?: boolean;
   hasCompletedReview?: boolean;
@@ -118,6 +120,8 @@ export function WorkspaceAiPmMain({
   projectId,
   onAlignmentApplied,
   onReview,
+  reviewCanStart = true,
+  reviewBlockedReason = null,
   onUnderstandingConfirmed,
   showDemoLoginCta = false,
   hasCompletedReview = false,
@@ -160,6 +164,8 @@ export function WorkspaceAiPmMain({
   );
 
   const documentAnalyzable = isWorkspaceDocumentAnalyzable(documentContext);
+  const storedDocumentText = loadWorkspaceDocumentText(projectId);
+  const documentReadable = isWorkspaceDocumentReadable(storedDocumentText ?? documentContext);
 
   const understanding = useMemo(
     () => (documentAnalyzable ? buildBusinessUnderstanding(documentContext) : null),
@@ -323,6 +329,7 @@ export function WorkspaceAiPmMain({
         <WorkspaceBusinessUnderstandingCard
           understanding={understanding}
           entities={entities}
+          documentReadable={documentReadable}
           onConfirm={handleConfirmMode}
         />
       ) : null}
@@ -331,6 +338,7 @@ export function WorkspaceAiPmMain({
         <WorkspaceBusinessAlignmentBlock
           understanding={understanding}
           initialState={savedAlignment}
+          documentReadable={documentReadable}
           readOnly={readOnly}
           onConfirm={handleMarketAligned}
         />
@@ -340,6 +348,8 @@ export function WorkspaceAiPmMain({
         <WorkspaceNextStepPanel
           phase={understandingPhase}
           hasDocument={hasDocument}
+          canStartReview={reviewCanStart}
+          reviewBlockedReason={reviewBlockedReason}
           onContinueUnderstanding={() => {
             saveUnderstandingPhase('pending', projectId);
             setUnderstandingPhase('pending');

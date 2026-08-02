@@ -33,7 +33,6 @@ import {
   ProjectWorkspaceShell,
   WorkspaceAiPmMain,
   WorkspaceProgressiveOverview,
-  buildWorkspaceSidebarSnapshot,
   type WorkspaceMainView,
   type WorkspaceNavNodeId,
 } from '../project-workspace-shell';
@@ -50,7 +49,6 @@ import { V2DemoReadonlyBanner } from './v2-demo-readonly-banner';
 import { V2DemoGuidedBanner } from './v2-demo-guided-banner';
 import {
   buildAiPmPrimaryMessage,
-  canProceedWorkspaceReview,
   emptyWorkspaceDomain,
   inferDomainFromPaste,
   loadWorkspaceDocumentText,
@@ -67,12 +65,18 @@ import {
 import { loadUnderstandingPhase, clearBusinessUnderstandingConfirmed, saveUnderstandingPhase } from '../../lib/business-understanding/business-understanding-store';
 import {
   clearAiPmLoopState,
-  isAiPmLoopComplete,
   loadAiPmLoopState,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
-import { allowsOpenReview, loadMarketAlignment } from '../../lib/business-understanding/workspace-alignment';
-import { buildBusinessUnderstandingIntro, buildReviewTransitionMessage, buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
+import { buildBusinessUnderstandingIntro, buildReviewTransitionMessage } from '../../lib/business-understanding/build-business-understanding';
 import { isWorkspaceDocumentAnalyzable } from '../../lib/business-understanding/workspace-document-eligibility';
+import {
+  deriveWorkspaceState,
+} from '../../lib/business-understanding/workspace-state';
+import {
+  presentWorkspaceHeader,
+  presentWorkspaceReviewGate,
+  presentWorkspaceSidebar,
+} from '../../lib/business-understanding/workspace-state-presenters';
 import {
   clearAllDemoClientState,
   loadPersistedReviewCount,
@@ -144,6 +148,7 @@ export function V2StrategyWorkspaceView({
   const tStrip = useTranslations('workflow.journey.workspaceShell.strip');
 
   const [phase, setPhase] = useState<WorkspacePhase>('compose');
+  const [businessStateRevision, setBusinessStateRevision] = useState(0);
   const [activeStep, setActiveStep] = useState<WorkflowStepId>('idea');
   const [activeMemoryId, setActiveMemoryId] = useState<string | null>(null);
   const [memoryEntries, setMemoryEntries] = useState<DecisionMemoryEntry[]>([]);
@@ -430,6 +435,7 @@ export function V2StrategyWorkspaceView({
       saveUnderstandingPhase('pending', storageProjectId);
       setUnderstandingPhase('pending');
       refreshUnderstandingState();
+      setBusinessStateRevision((value) => value + 1);
       if (!isDemoGuided && !isDemoReadonly && storageProjectId) {
         void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
         stripWelcomeParamFromUrl(router);
@@ -439,7 +445,7 @@ export function V2StrategyWorkspaceView({
   );
 
   const handleLoopDocumentUpdated = useCallback(() => {
-    if (isDemoReadonly || isDemoGuided || !storageProjectId) return;
+    if (isDemoReadonly || !storageProjectId) return;
     const content = loadWorkspaceDocumentText(storageProjectId);
     if (!content?.trim()) return;
     const inferred = inferDomainFromPaste(content, storageProjectId);
@@ -447,13 +453,17 @@ export function V2StrategyWorkspaceView({
     setEntities(inferred.entities);
     setIdea(inferred.domain.business.trim() || deriveProjectName(content));
     refreshUnderstandingState();
-    void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
+    setBusinessStateRevision((value) => value + 1);
+    if (!isDemoGuided && !isDemoReadonly && storageProjectId) {
+      void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
+    }
   }, [isDemoGuided, isDemoReadonly, refreshUnderstandingState, storageProjectId]);
 
   const handleLoopComplete = useCallback(() => {
     saveUnderstandingPhase('review-ready', storageProjectId);
     setUnderstandingPhase('review-ready');
     refreshUnderstandingState();
+    setBusinessStateRevision((value) => value + 1);
     if (!isDemoGuided && !isDemoReadonly && storageProjectId) {
       void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
     }
@@ -461,6 +471,7 @@ export function V2StrategyWorkspaceView({
 
   const handleSessionPause = useCallback(() => {
     if (isDemoGuided || isDemoReadonly || !storageProjectId) return;
+    setBusinessStateRevision((value) => value + 1);
     void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
   }, [isDemoGuided, isDemoReadonly, storageProjectId]);
 
@@ -630,17 +641,44 @@ export function V2StrategyWorkspaceView({
     appToast.success(tb('toast.deleted', { field: tb(`fields.${field}`) }));
   };
 
+  const documentContext = useMemo(() => {
+    const stored = loadWorkspaceDocumentText(storageProjectId);
+    if (stored?.trim()) return stored;
+    return [domain.business, domain.founder, domain.customer, domain.market]
+      .filter(Boolean)
+      .join('\n');
+  }, [domain, storageProjectId, businessStateRevision]);
+
+  const workspaceState = useMemo(
+    () =>
+      deriveWorkspaceState({
+        projectId: storageProjectId,
+        loop: loadAiPmLoopState(storageProjectId),
+        understandingPhase,
+        reviewCount,
+        isDemoReadonly,
+        domain,
+        entities,
+        documentText: documentContext,
+      }),
+    [
+      businessStateRevision,
+      documentContext,
+      domain,
+      entities,
+      isDemoReadonly,
+      reviewCount,
+      storageProjectId,
+      understandingPhase,
+    ],
+  );
+
+  const sidebarSnapshot = presentWorkspaceSidebar(workspaceState);
+  const workspaceBusinessState = presentWorkspaceHeader(workspaceState);
+  const reviewGate = presentWorkspaceReviewGate(workspaceState);
+
   const runReview = useCallback(() => {
-    const canStartReview = understandingPhase === 'review-ready';
-    const alignment = loadMarketAlignment(storageProjectId);
-    const openReview = allowsOpenReview(alignment);
-    if (
-      isDemoReadonly ||
-      !canStartReview ||
-      (!openReview && !canProceedWorkspaceReview(domain, entities))
-    ) {
-      return;
-    }
+    if (!reviewGate.canStart) return;
     persist(evidence);
     setPhase('reviewing');
     setReviewCount((c) => {
@@ -666,7 +704,16 @@ export function V2StrategyWorkspaceView({
       createMeetingNoteFromReview(reviewCount + 1, storageProjectId);
       window.setTimeout(() => setPhase('followUp'), 400);
     }, REVIEW_MS);
-  }, [domain, entities, evidence, isDemoGuided, isDemoReadonly, persist, router, storageProjectId, reviewCount, understandingPhase]);
+  }, [
+    evidence,
+    isDemoGuided,
+    isDemoReadonly,
+    persist,
+    reviewCount,
+    reviewGate.canStart,
+    router,
+    storageProjectId,
+  ]);
 
   const handleGoToStep = (step: WorkflowStepId) => {
     setActiveMemoryId(null);
@@ -710,51 +757,6 @@ export function V2StrategyWorkspaceView({
   const hasCompletedReview = isDemoGuided
     ? reviewCount >= 1
     : reviewCount >= 1 || loadPersistedReviewCount(storageProjectId) > 0;
-
-  const understandingAligned = understandingPhase === 'review-ready';
-
-  const documentContext = useMemo(() => {
-    const stored = loadWorkspaceDocumentText(storageProjectId);
-    if (stored?.trim()) return stored;
-    return [domain.business, domain.founder, domain.customer, domain.market]
-      .filter(Boolean)
-      .join('\n');
-  }, [domain, storageProjectId]);
-
-  const businessUnderstanding = useMemo(
-    () =>
-      isWorkspaceDocumentAnalyzable(documentContext)
-        ? buildBusinessUnderstanding(documentContext)
-        : null,
-    [documentContext],
-  );
-
-  const aiPmLoopInProgress = useMemo(() => {
-    if (reviewCount > 0) return false;
-    return !isAiPmLoopComplete(loadAiPmLoopState(storageProjectId));
-  }, [reviewCount, storageProjectId, domain, understandingPhase]);
-
-  const sidebarSnapshot = useMemo(
-    () =>
-      buildWorkspaceSidebarSnapshot(
-        domain,
-        reviewCount,
-        entities,
-        understandingAligned,
-        businessUnderstanding,
-        understandingPhase,
-        aiPmLoopInProgress,
-      ),
-    [
-      domain,
-      reviewCount,
-      entities,
-      understandingAligned,
-      businessUnderstanding,
-      understandingPhase,
-      aiPmLoopInProgress,
-    ],
-  );
 
   const stripMessage = useMemo(() => {
     if (reviewCount > 0) {
@@ -810,6 +812,8 @@ export function V2StrategyWorkspaceView({
           workspaceFacts={initialWorkspaceSnapshot?.workspaceFacts ?? null}
           onAlignmentApplied={handleAlignmentApplied}
           onReview={runReview}
+          reviewCanStart={reviewGate.canStart}
+          reviewBlockedReason={reviewGate.blockedReason}
           onUnderstandingConfirmed={refreshUnderstandingState}
         />
       )}
@@ -836,6 +840,7 @@ export function V2StrategyWorkspaceView({
       mainView={mainView}
       activeNodeId={activeNavNodeId}
       stripMessage={stripMessage}
+      businessState={workspaceBusinessState}
       onMainViewChange={setMainView}
       onSelectNode={setActiveNavNodeId}
       onSelectAiPm={() => setMainView('ai-pm')}

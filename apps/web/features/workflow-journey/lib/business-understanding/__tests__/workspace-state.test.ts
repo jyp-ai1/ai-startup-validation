@@ -1,0 +1,194 @@
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+
+import { inferDomainFromPaste } from '../../workspace-ai-pm-messages';
+import { createInitialAiPmLoopState } from '../workspace-ai-pm-loop-store';
+import { applyWorkspaceLoopAnswer } from '../workspace-state-update';
+import {
+  deriveWorkspaceState,
+  type WorkspaceState,
+} from '../workspace-state';
+import {
+  presentWorkspaceHeader,
+  presentWorkspaceReviewGate,
+  presentWorkspaceSidebar,
+} from '../workspace-state-presenters';
+
+const DEMO_DOC = `스마트팩토리 예지보전 SaaS
+창업자: 김대표
+사업: 30인 이하 제조기업 대상 설비 고장 예측
+문제: 예기치 않은 설비 고장으로 생산 중단
+시장: 국내 3만 개 중소 제조 공장 · 예지보전 SW 침투율 8%
+BM: 월 49만 원 구독 · 공장당 10대 센서 포함`;
+
+function derive(input: Partial<Parameters<typeof deriveWorkspaceState>[0]> = {}): WorkspaceState {
+  return deriveWorkspaceState({
+    loop: createInitialAiPmLoopState(),
+    understandingPhase: 'pending',
+    reviewCount: 0,
+    documentText: DEMO_DOC,
+    ...input,
+  });
+}
+
+describe('deriveWorkspaceState', () => {
+  it('marks customer sidebar completed after loop answers customer_definition', () => {
+    const state = derive({
+      loop: {
+        ...createInitialAiPmLoopState(),
+        turns: [
+          {
+            issueId: 'customer_definition',
+            answer: '30인 이하 제조기업. 사용자는 공장장, 구매자는 대표.',
+            appliedAt: new Date().toISOString(),
+          },
+        ],
+      },
+    });
+
+    const customer = state.sidebar.nodes.find((node) => node.id === 'customer');
+    expect(customer?.lifecycle).toBe('completed');
+  });
+
+  it('exposes review.canStart when review-ready and domain is complete', () => {
+    const state = derive({
+      understandingPhase: 'review-ready',
+      domain: {
+        founder: '김대표',
+        business: '스마트팩토리 예지보전 SaaS',
+        customer: '30인 이하 제조기업',
+        market: '국내 중소 제조 공장',
+        competitor: '',
+      },
+      entities: {
+        founder: { value: '김대표', basis: 'document' },
+        business: {
+          value: '스마트팩토리 예지보전 SaaS',
+          basis: 'document',
+          model: 'B2B',
+          name: null,
+        },
+        customer: { value: '30인 이하 제조기업', basis: 'document' },
+        product: { value: '예지보전 SaaS', basis: 'document' },
+        market: { value: '국내 중소 제조 공장', basis: 'document' },
+        competitor: { value: null, basis: 'unknown' },
+      },
+    });
+
+    expect(state.review.canStart).toBe(true);
+    expect(state.review.blockedReason).toBeNull();
+  });
+
+  it('blocks review with user-facing reason when customer is not confirmed', () => {
+    const state = derive({
+      understandingPhase: 'review-ready',
+      domain: {
+        founder: '김대표',
+        business: '스마트팩토리 예지보전 SaaS',
+        customer: '',
+        market: '국내 중소 제조 공장',
+        competitor: '',
+      },
+      entities: {
+        founder: { value: '김대표', basis: 'document' },
+        business: {
+          value: '스마트팩토리 예지보전 SaaS',
+          basis: 'document',
+          model: 'B2B',
+          name: null,
+        },
+        customer: { value: '중소기업', basis: 'needs_confirmation' },
+        product: { value: '예지보전 SaaS', basis: 'document' },
+        market: { value: '국내 중소 제조 공장', basis: 'document' },
+        competitor: { value: null, basis: 'unknown' },
+      },
+    });
+
+    expect(state.review.canStart).toBe(false);
+    expect(state.review.blockedReason).toBe('customer_missing');
+  });
+
+  it('blocks review when understanding phase is not review-ready', () => {
+    const state = derive({ understandingPhase: 'aligning' });
+    expect(state.review.canStart).toBe(false);
+    expect(state.review.blockedReason).toBe('customer_missing');
+  });
+
+  it('blocks review for unreadable documents', () => {
+    const state = derive({
+      understandingPhase: 'review-ready',
+      documentText: `# plan.pdf\n\nPDF 본문은 아직 추출되지 않았습니다. Business·Customer는 직접 확인이 필요합니다.`,
+    });
+
+    expect(state.review.canStart).toBe(false);
+    expect(state.review.blockedReason).toBe('document_unreadable');
+  });
+
+  it('blocks review in demo readonly mode without exposing internal keys', () => {
+    const state = derive({
+      understandingPhase: 'review-ready',
+      isDemoReadonly: true,
+    });
+    expect(state.review.canStart).toBe(false);
+    expect(state.review.blockedReason).toBeNull();
+  });
+});
+
+describe('workspace-state presenters', () => {
+  it('format header and sidebar from the same aggregate', () => {
+    const state = derive({
+      loop: {
+        ...createInitialAiPmLoopState(),
+        turns: [
+          {
+            issueId: 'customer_definition',
+            answer: '30인 이하 제조기업',
+            appliedAt: new Date().toISOString(),
+          },
+        ],
+      },
+    });
+
+    const sidebar = presentWorkspaceSidebar(state);
+    const header = presentWorkspaceHeader(state);
+    const review = presentWorkspaceReviewGate(state);
+
+    expect(sidebar.nodes.find((node) => node.id === 'customer')?.lifecycle).toBe('completed');
+    expect(header?.snapshot.fields.some((field) => field.label === '고객')).toBe(true);
+    expect(review.count).toBe(0);
+  });
+});
+
+describe('applyWorkspaceLoopAnswer', () => {
+  const store: Record<string, string> = {};
+
+  beforeEach(() => {
+    for (const key of Object.keys(store)) delete store[key];
+    const session = {
+      getItem(key: string) {
+        return store[key] ?? null;
+      },
+      setItem(key: string, value: string) {
+        store[key] = value;
+      },
+      removeItem(key: string) {
+        delete store[key];
+      },
+    };
+    vi.stubGlobal('sessionStorage', session);
+    vi.stubGlobal('window', { sessionStorage: session });
+  });
+
+  it('persists domain entities through the single loop write path', () => {
+    inferDomainFromPaste(DEMO_DOC, 'test');
+
+    const result = applyWorkspaceLoopAnswer(
+      'customer_definition',
+      '30인 이하 제조기업. 사용자는 공장장, 구매자는 대표.',
+      'test',
+    );
+
+    expect(result.documentText).toContain('[AI PM 확인 · 고객 정의]');
+    expect(result.domain.customer.length).toBeGreaterThan(2);
+    expect(result.entities.customer.value.length).toBeGreaterThan(2);
+  });
+});

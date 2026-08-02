@@ -1,0 +1,89 @@
+{
+  "sprint": "S7 Contract Recovery",
+  "environment": "local",
+  "baseUrl": "http://localhost:3001",
+  "generatedAt": "2026-08-02T07:16:53.838Z",
+  "scenarios": {
+    "0-preflight": {
+      "pass": true,
+      "detail": "Dev server reachable (http://localhost:3001)",
+      "evidence": []
+    },
+    "reg1-placeholder-pdf": {
+      "pass": false,
+      "detail": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea').first()\n",
+      "evidence": []
+    },
+    "reg2-loop-state-sync": {
+      "pass": false,
+      "detail": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#ai-pm-loop textarea').first()\n",
+      "evidence": []
+    },
+    "reg3-review-contract": {
+      "pass": false,
+      "detail": "disabled=false, reasonVisible=false",
+      "evidence": [
+        "docs\\evidence\\S7-REGRESSION\\reg3-review-blocked.png"
+      ]
+    },
+    "reg4-pause-resume": {
+      "pass": false,
+      "detail": "Loop state lost on reload",
+      "evidence": [
+        "docs\\evidence\\S7-REGRESSION\\reg4-resume.png"
+      ]
+    },
+    "reg5-demo-fresh-switch": {
+      "pass": true,
+      "detail": "tasteLoaded=true, tasteBleed=false, mfgLoaded=true",
+      "evidence": [
+        "docs\\evidence\\S7-REGRESSION\\reg5-demo-switch.png"
+      ]
+    },
+    "reg6-full-path-smoke": {
+      "pass": false,
+      "detail": "turns=0, reviewSurface=false",
+      "evidence": [
+        "docs\\evidence\\S7-REGRESSION\\reg6-full-path.png"
+      ]
+    }
+  },
+  "checks": [
+    {
+      "id": "0-preflight",
+      "pass": true,
+      "detail": "Dev server reachable (http://localhost:3001)"
+    },
+    {
+      "id": "reg1-placeholder-pdf",
+      "pass": false,
+      "detail": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea').first()\n"
+    },
+    {
+      "id": "reg2-loop-state-sync",
+      "pass": false,
+      "detail": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#ai-pm-loop textarea').first()\n"
+    },
+    {
+      "id": "reg3-review-contract",
+      "pass": false,
+      "detail": "disabled=false, reasonVisible=false"
+    },
+    {
+      "id": "reg4-pause-resume",
+      "pass": false,
+      "detail": "Loop state lost on reload"
+    },
+    {
+      "id": "reg5-demo-fresh-switch",
+      "pass": true,
+      "detail": "tasteLoaded=true, tasteBleed=false, mfgLoaded=true"
+    },
+    {
+      "id": "reg6-full-path-smoke",
+      "pass": false,
+      "detail": "turns=0, reviewSurface=false"
+    }
+  ],
+  "notes": []
+}

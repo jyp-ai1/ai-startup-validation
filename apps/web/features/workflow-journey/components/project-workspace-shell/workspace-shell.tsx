@@ -10,7 +10,9 @@ import { cn } from '@repo/ui/lib/utils';
 
 import { JourneyGlobalNav } from '../journey-global-nav';
 import { WorkspaceAiPmStrip } from './workspace-ai-pm-strip';
+import { WorkspaceBusinessStateHeader } from './workspace-business-state-header';
 import { WorkspaceSidebar } from './workspace-sidebar';
+import type { WorkspaceBusinessState } from '../../lib/business-understanding/build-ai-pm-business-clarity';
 import type {
   WorkspaceMainView,
   WorkspaceNavNodeId,
@@ -29,6 +31,7 @@ type ProjectWorkspaceShellProps = {
   onSelectNode: (nodeId: WorkspaceNavNodeId) => void;
   onSelectAiPm: () => void;
   stripMessage?: string | null;
+  businessState?: WorkspaceBusinessState | null;
   children: React.ReactNode;
   className?: string;
 };
@@ -45,6 +48,7 @@ export function ProjectWorkspaceShell({
   onSelectNode,
   onSelectAiPm,
   stripMessage = null,
+  businessState = null,
   children,
   className,
 }: ProjectWorkspaceShellProps) {
@@ -72,7 +76,7 @@ export function ProjectWorkspaceShell({
                 DEMO
               </span>
             ) : null}
-            {projectName ? (
+            {!businessState && projectName ? (
               <p className="truncate text-sm text-muted-foreground">{projectName}</p>
             ) : null}
           </div>
@@ -83,7 +87,9 @@ export function ProjectWorkspaceShell({
         </div>
       </header>
 
-      <WorkspaceAiPmStrip message={stripMessage} />
+      {businessState ? <WorkspaceBusinessStateHeader state={businessState} /> : null}
+
+      {!businessState ? <WorkspaceAiPmStrip message={stripMessage} /> : null}
 
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <WorkspaceSidebar

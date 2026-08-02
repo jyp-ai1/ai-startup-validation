@@ -20,6 +20,7 @@ import {
 type WorkspaceBusinessUnderstandingCardProps = {
   understanding: BusinessUnderstanding;
   entities?: LaunchLensDomainContext | null;
+  documentReadable?: boolean;
   onConfirm: (mode: UnderstandingConfirmMode) => void;
   className?: string;
 };
@@ -44,17 +45,23 @@ function statusSymbol(status: DiscoveryItem['status']): string {
 function DiscoverySummary({
   items,
   unconfirmed,
+  documentReadable,
   t,
 }: {
   items: DiscoveryItem[];
   unconfirmed: string[];
+  documentReadable: boolean;
   t: (key: string, values?: Record<string, string>) => string;
 }) {
   return (
     <div className="rounded-xl border border-primary/25 bg-gradient-to-br from-primary/[0.06] to-background px-4 py-4">
       <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{t('aiLabel')}</p>
-      <p className="mt-2 text-[15px] font-medium leading-snug">{t('readCompleteLead')}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{t('readCompleteSub')}</p>
+      <p className="mt-2 text-[15px] font-medium leading-snug">
+        {documentReadable ? t('readCompleteLead') : t('readCompleteLeadUnreadable')}
+      </p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        {documentReadable ? t('readCompleteSub') : t('readCompleteSubUnreadable')}
+      </p>
       <ul className="mt-4 space-y-2">
         {items.map((item) => (
           <li key={item.id} className="flex items-start gap-2 text-sm leading-relaxed">
@@ -213,6 +220,7 @@ function collectReadFields(u: BusinessUnderstanding): ReadField[] {
 export function WorkspaceBusinessUnderstandingCard({
   understanding,
   entities = null,
+  documentReadable = true,
   onConfirm,
   className,
 }: WorkspaceBusinessUnderstandingCardProps) {
@@ -229,7 +237,12 @@ export function WorkspaceBusinessUnderstandingCard({
         className,
       )}
     >
-      <DiscoverySummary items={discoveryItems} unconfirmed={unconfirmedLines} t={t} />
+      <DiscoverySummary
+        items={discoveryItems}
+        unconfirmed={unconfirmedLines}
+        documentReadable={documentReadable}
+        t={t}
+      />
 
       <p className="mt-5 text-[11px] font-semibold uppercase tracking-widest text-primary">
         {t('title')}

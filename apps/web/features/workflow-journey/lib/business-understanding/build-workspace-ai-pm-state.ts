@@ -9,6 +9,16 @@ import {
 } from '@/lib/project/workspace-persisted-facts';
 
 import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
+import { isWorkspaceDocumentReadable } from './workspace-document-eligibility';
+import {
+  buildAiPmBusinessClarity,
+  buildAiPmReturnWelcome,
+  buildWorkspaceBusinessState,
+  formatReturnWelcomeProse,
+  type AiPmBusinessClarity,
+  type AiPmReturnWelcome,
+  type WorkspaceBusinessState,
+} from './build-ai-pm-business-clarity';
 import type { AiPmLoopIssueId, AiPmLoopState } from './workspace-ai-pm-loop-types';
 
 function buildCompletedSteps(
@@ -17,7 +27,10 @@ function buildCompletedSteps(
 ): AiPmPhaseId[] {
   const completed: AiPmPhaseId[] = [];
   if ((documentText?.trim().length ?? 0) >= 8) completed.push('intake');
-  if (loop.readingCompleted || loop.dismissedReadAck || loop.turns.length > 0) {
+  if (
+    isWorkspaceDocumentReadable(documentText) &&
+    (loop.readingCompleted || loop.dismissedReadAck)
+  ) {
     completed.push('ai_read');
   }
 
@@ -41,7 +54,10 @@ function buildHistory(
   if ((documentText?.trim().length ?? 0) >= 8) {
     history.push('intake_completed');
   }
-  if (loop.readingCompleted || loop.dismissedReadAck || loop.turns.length > 0) {
+  if (
+    isWorkspaceDocumentReadable(documentText) &&
+    (loop.readingCompleted || loop.dismissedReadAck)
+  ) {
     history.push('ai_read_completed');
   }
 
@@ -90,6 +106,9 @@ export type AiPmRuntimeJudgment = {
   nextIssueId: AiPmLoopIssueId | null;
   lastCompletedIssueId: AiPmLoopIssueId | null;
   resumeBriefing: string;
+  returnWelcome: AiPmReturnWelcome | null;
+  businessClarity: AiPmBusinessClarity | null;
+  workspaceBusinessState: WorkspaceBusinessState | null;
   nextQuestion: string;
   reason: string;
   historyLabels: string[];
@@ -101,7 +120,7 @@ const ISSUE_COPY_KO: Record<
 > = {
   customer_definition: {
     phaseLabel: '고객 정의',
-    question: '누가 실제로 쓰고, 누가 돈을 내는지 알려주세요.',
+    question: '누가 실제 고객입니까?',
     reason: '고객 정의가 아직 불완전합니다.',
   },
   problem_definition: {
@@ -111,7 +130,7 @@ const ISSUE_COPY_KO: Record<
   },
   bm_design: {
     phaseLabel: '수익 모델',
-    question: '어떤 방식으로 돈을 벌 계획인지 알려주세요.',
+    question: '누가 비용을 지불합니까?',
     reason: '수익 구조 기준이 아직 없습니다.',
   },
   competitor_analysis: {
@@ -121,7 +140,7 @@ const ISSUE_COPY_KO: Record<
   },
   market_validation: {
     phaseLabel: '시장 검증',
-    question: '시장 규모나 검증 근거를 알려주세요.',
+    question: '왜 지금 이 시장입니까?',
     reason: '시장 가설이 아직 확인되지 않았습니다.',
   },
 };
@@ -165,16 +184,18 @@ function buildResumeBriefing(
 ): string {
   if (!lastCompleted && !nextIssue) return '';
 
-  const lines = ['안녕하세요.', ''];
-  if (lastCompleted) {
-    lines.push(`어제 ${ISSUE_COPY_KO[lastCompleted].phaseLabel}까지 정리했습니다.`);
+  const lastLabel = lastCompleted ? ISSUE_COPY_KO[lastCompleted].phaseLabel : null;
+  const nextLabel = nextIssue ? ISSUE_COPY_KO[nextIssue].phaseLabel : null;
+
+  if (lastLabel && nextLabel) {
+    return `방금 ${lastLabel}까지 같이 정리했습니다.\n이어서 ${nextLabel}를 같이 볼까요?`;
   }
-  if (nextIssue) {
-    lines.push(
-      `오늘은 ${ISSUE_COPY_KO[nextIssue].phaseLabel}를 같이 보면 사업 방향이 더 명확해질 것 같습니다.`,
-    );
+
+  if (nextLabel) {
+    return `이어서 ${nextLabel}부터 같이 보면 좋겠습니다.`;
   }
-  return lines.join('\n').trim();
+
+  return '안녕하세요. 이어서 같이 정리해 보겠습니다.';
 }
 
 /**
@@ -201,16 +222,52 @@ export function buildAiPmRuntimeJudgment(input: {
       ? 'review'
       : lastCompleted
         ? ISSUE_TO_AI_PM_PHASE[lastCompleted]
-        : 'ai_read';
+        : isWorkspaceDocumentReadable(documentText) &&
+            (loop.readingCompleted || loop.dismissedReadAck)
+          ? 'ai_read'
+          : 'intake';
 
   const nextCopy = nextIssue ? ISSUE_COPY_KO[nextIssue] : null;
   const historyLabels = history.map((event) => HISTORY_LABEL_KO[event]);
+
+  const businessClarity =
+    loop.turns.length > 0
+      ? buildAiPmBusinessClarity({
+          documentText: documentText ?? '',
+          turns: loop.turns,
+          understanding,
+        })
+      : null;
+
+  const returnWelcome =
+    loop.turns.length > 0 && nextIssue
+      ? buildAiPmReturnWelcome({
+          documentText: documentText ?? '',
+          turns: loop.turns,
+          understanding,
+          nextIssueId: nextIssue,
+        })
+      : null;
+
+  const workspaceBusinessState = buildWorkspaceBusinessState({
+    documentText: documentText ?? '',
+    turns: loop.turns,
+    understanding,
+    nextIssueId: nextIssue,
+  });
+
+  const resumeBriefing = returnWelcome
+    ? formatReturnWelcomeProse(returnWelcome)
+    : buildResumeBriefing(lastCompleted, nextIssue);
 
   return {
     currentPhase,
     nextIssueId: nextIssue,
     lastCompletedIssueId: lastCompleted,
-    resumeBriefing: buildResumeBriefing(lastCompleted, nextIssue),
+    resumeBriefing,
+    returnWelcome,
+    businessClarity,
+    workspaceBusinessState,
     nextQuestion: nextCopy?.question ?? '',
     reason: nextCopy?.reason ?? '',
     historyLabels,

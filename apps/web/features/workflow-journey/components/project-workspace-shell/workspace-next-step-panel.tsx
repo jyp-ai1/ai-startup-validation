@@ -6,10 +6,13 @@ import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { UnderstandingPhase } from '../../lib/business-understanding/business-understanding-store';
+import type { WorkspaceReviewBlockedReason } from '../../lib/business-understanding/workspace-state';
 
 type WorkspaceNextStepPanelProps = {
   phase: UnderstandingPhase;
   hasDocument: boolean;
+  canStartReview?: boolean;
+  reviewBlockedReason?: WorkspaceReviewBlockedReason | null;
   onContinueUnderstanding: () => void;
   onContinueAlignment: () => void;
   onStartReview: () => void;
@@ -19,6 +22,8 @@ type WorkspaceNextStepPanelProps = {
 export function WorkspaceNextStepPanel({
   phase,
   hasDocument,
+  canStartReview = true,
+  reviewBlockedReason = null,
   onContinueUnderstanding,
   onContinueAlignment,
   onStartReview,
@@ -52,9 +57,19 @@ export function WorkspaceNextStepPanel({
           {t('aiLabel')}
         </p>
         <p className="mt-3 text-[15px] leading-relaxed">{t('reviewReadyLead')}</p>
-        <Button type="button" className="mt-5 rounded-xl" onClick={onStartReview}>
+        <Button
+          type="button"
+          className="mt-5 rounded-xl"
+          disabled={!canStartReview}
+          onClick={onStartReview}
+        >
           {t('startReviewCta')}
         </Button>
+        {!canStartReview && reviewBlockedReason ? (
+          <p className="mt-3 text-sm text-muted-foreground" role="status">
+            {t(`reviewBlocked.${reviewBlockedReason}`)}
+          </p>
+        ) : null}
       </section>
     );
   }

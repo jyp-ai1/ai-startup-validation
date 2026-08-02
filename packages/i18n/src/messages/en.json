@@ -6604,7 +6604,13 @@
           "customerAlignSub": "Next we'll define the customer together.",
           "confirmCustomerCta": "Confirm customer",
           "reviewReadyLead": "You're ready to start the viability review.",
-          "startReviewCta": "Start review"
+          "startReviewCta": "Start review",
+          "reviewBlocked": {
+            "customer_missing": "We haven't confirmed who the customer is yet. The next question will clarify this.",
+            "payer_missing": "We haven't confirmed who pays yet. The next question will clarify this.",
+            "problem_missing": "We haven't confirmed which problem you're solving yet. The next question will clarify this.",
+            "document_unreadable": "We couldn't read the document body yet. Paste or upload content we can analyze."
+          }
         },
         "documentIntake": {
           "label": "Start",
@@ -6629,6 +6635,23 @@
           "diagnosisBridge": "Initial analysis confidence {confidence}% — the question below follows from this read.",
           "hypothesisLead": "I found \"{phrase}\" in your document, but it still needs clarification.",
           "firstQuestionLead": "Let's start with {issue} together.",
+          "sharedThinking": {
+            "aiLabel": "AI PM",
+            "thinkingLead": "As I read your document,",
+            "thinkingLeadUnreadable": "We only confirmed the file name. Based on your answers,",
+            "continuousLead": "Reflecting on your answer,",
+            "continueCta": "Let's check together"
+          },
+          "trustContract": {
+            "label": "Document check",
+            "title": "We cannot read this PDF body yet.",
+            "pdfBody": "We only confirmed the file name \"{fileName}\". The body has not been extracted.",
+            "docxBody": "We loaded \"{fileName}\" but the Word body has not been extracted.",
+            "insufficientBody": "There is not enough document text to analyze yet.",
+            "nextHint": "Paste your document text or answer the questions below to continue.",
+            "continueCta": "Continue with your answers",
+            "unknownFile": "uploaded file"
+          },
           "reading": {
             "aiLabel": "AI PM",
             "lead": "AI PM is reading your document…",
@@ -6683,8 +6706,8 @@
           "startIssueCta": "Start {issue}",
           "submitAnswerCta": "Apply answer",
           "backCta": "Back",
-          "reanalyzeTitle": "Got it — your document is updated.",
-          "reanalyzeHint": "Re-analyzing now.",
+          "reanalyzeTitle": "Good.",
+          "reanalyzeHint": "Organizing our next thinking from what we learned together.",
           "turnAck": "Good — {resolved} is clearer now. Next we'll look at {next}.",
           "completeLead": "You and AI PM updated the plan in {count} turns.",
           "completeSub": "You're ready to start the viability review.",
@@ -6874,6 +6897,8 @@
           "aiLabel": "AI PM",
           "readCompleteLead": "I've read your document.",
           "readCompleteSub": "Here's what I confirmed:",
+          "readCompleteLeadUnreadable": "We have not read the document body yet.",
+          "readCompleteSubUnreadable": "We'll organize from what we know and your answers.",
           "unconfirmedTitle": "Not confirmed yet",
           "discovery": {
             "founder": "Founder",
@@ -6911,6 +6936,7 @@
           "alignment": {
             "aiLabel": "AI PM",
             "readLead": "From your document, several key parties stand out.",
+            "readLeadUnreadable": "We have not read the document body yet. From what we know and your answers,",
             "withholdLine": "I won't decide who to pursue first from the document alone.",
             "pmLead": "At this stage, teams often choose between",
             "strategyPath": "Starting with {target}",

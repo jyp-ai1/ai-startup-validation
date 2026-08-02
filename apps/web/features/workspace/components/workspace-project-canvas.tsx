@@ -10,6 +10,9 @@ import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { WorkspaceAuthCompleteTracker } from './workspace-auth-complete-tracker';
 import { WorkspaceJourneyTracker } from './journey-page-tracker';
 import { WorkspaceWelcomeParamCleanup } from './workspace-welcome-param-cleanup';
+import { WorkspacePersistedHydrator } from './workspace-persisted-hydrator';
+import { usePromotedWorkspaceSnapshot } from '../hooks/use-promoted-workspace-snapshot';
+import type { WorkspacePersistedSnapshot } from '@/lib/project/workspace-persisted-state';
 
 const V2StrategyWorkspaceView = dynamic(
   () =>
@@ -38,6 +41,7 @@ type WorkspaceProjectCanvasProps = {
   demoSampleId?: import('@/features/workflow-journey/lib/demo-samples').DemoSampleId;
   demoFresh?: boolean;
   seedDocument?: string;
+  persistedWorkspace?: WorkspacePersistedSnapshot | null;
 };
 
 /** Single project workspace — AI PM canvas on /workspace?project= */
@@ -52,7 +56,11 @@ export function WorkspaceProjectCanvas({
   demoSampleId = 'launchlens',
   demoFresh = false,
   seedDocument,
+  persistedWorkspace = null,
 }: WorkspaceProjectCanvasProps) {
+  const effectiveSnapshot = usePromotedWorkspaceSnapshot(projectId, promoted, persistedWorkspace);
+  const resolvedSeedDocument = seedDocument ?? effectiveSnapshot?.documentText;
+
   if (needsPersona) {
     return (
       <>
@@ -79,6 +87,7 @@ export function WorkspaceProjectCanvas({
         <ProjectScopeTracker projectId={projectId} isNewProject={welcome} />
       </Suspense>
       <WorkspaceWelcomeParamCleanup projectId={projectId} />
+      <WorkspacePersistedHydrator projectId={projectId} snapshot={effectiveSnapshot} />
       <WorkspaceJourneyTracker projectId={projectId} />
       {authComplete ? (
         <Suspense fallback={null}>
@@ -98,15 +107,16 @@ export function WorkspaceProjectCanvas({
         key={
           demoMode === 'demo-guided'
             ? `demo-${demoSampleId}-${demoFresh ? 'fresh' : 'resume'}`
-            : `${projectId}-${welcome ? 'new' : 'open'}`
+            : `${projectId}-${effectiveSnapshot?.updatedAt ?? 'empty'}-${welcome ? 'new' : 'open'}`
         }
         projectId={projectId}
         mode={demoMode === 'default' ? 'default' : demoMode}
         user={user}
         demoSampleId={demoSampleId}
         demoFresh={demoFresh}
-        seedDocument={seedDocument}
+        seedDocument={resolvedSeedDocument}
         isNewProject={welcome}
+        initialWorkspaceSnapshot={effectiveSnapshot}
       />
     </>
   );

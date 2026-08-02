@@ -2,6 +2,262 @@
 
 Current and recent sprint tasks. Update at sprint start and completion.
 
+---
+
+## Sprint S0.5 — AI PM Core Loop Reconstruction ✅ 조건부 PASS
+
+**Status:** CPO **조건부 PASS** · gap = CEO 감정선 → **S0.6**
+
+**Goal:** Epic P1 기능 추가 중단. **"AI 분석기" → AI PM Co-Founder** 제품 재정렬.
+
+**CPO PASS:** Core Loop v2 · Constitution Rules 1–8 · Feature delete list (74점 · checklist · progress)
+
+**CPO gap:** *"왜 이 AI와 계속 이야기해야 하지?"* — emotion journey missing · Question AI drift
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | Current Experience Audit | [`CURRENT_EXPERIENCE_AUDIT.md`](./CURRENT_EXPERIENCE_AUDIT.md) | ✅ |
+| 2 | Product Constitution v3 | [`PRODUCT_CONSTITUTION.md`](./PRODUCT_CONSTITUTION.md) Part III | ✅ |
+| 3 | AI PM Core Loop v2 | [`AI_PM_CORE_LOOP_V2.md`](./AI_PM_CORE_LOOP_V2.md) | ✅ updated (Thinking 공개) |
+| 4 | Feature Inventory | [`FEATURE_INVENTORY.md`](./FEATURE_INVENTORY.md) | ✅ |
+| 5 | Sprint Restructure | [`SPRINT_RESTRUCTURE.md`](./SPRINT_RESTRUCTURE.md) | ✅ updated |
+
+---
+
+## Sprint S0.6 — CEO Emotion Journey ✅ PASS
+
+**Status:** CPO PASS · S1 implementation authorized
+
+| Deliverable | Path | Status |
+|-------------|------|--------|
+| CEO Emotion Journey | [`CEO_EMOTION_JOURNEY.md`](./CEO_EMOTION_JOURNEY.md) | ✅ PASS |
+
+**CPO highlights:** Thinking AI structure · Thinking 공개 emotion · Review = investor-ready feeling
+
+---
+
+## Sprint S1 — Shared Thinking Experience ✅ PASS
+
+**Status:** CPO PASS (2026-08-02)
+
+---
+
+## Sprint S2 — Continuous Shared Thinking ✅ PASS
+
+**Status:** CPO PASS (2026-08-02)
+
+**Goal:** CEO Answer → **Thinking B** → Question 2
+
+**Acceptance:** *"아, 내 답변 때문에 AI 생각이 바뀌었네."*
+
+| Item | Status |
+|------|--------|
+| `buildContinuousThinking` | ✅ |
+| Issue phase Thinking B (no turnAck-only) | ✅ |
+| Tests | ✅ PASS |
+
+---
+
+## Sprint S3 — Shared Memory & Understanding ✅ PASS
+
+**Status:** CPO PASS (2026-08-02)
+
+**Goal:** CEO Answer → **우리가 배운 것** → Collaborative Thinking → Question 2
+
+**Acceptance:** *"AI가 내 말을 기억한 것"* not — *"우리가 함께 이해한 것을 이어간다"*
+
+| Item | Status |
+|------|--------|
+| `buildAiPmSharedMemory` | ✅ |
+| S3 collaborative `buildContinuousThinking` | ✅ |
+| Shared memory UI block | ✅ |
+| Thinking reveal (learnedLead / priorityShift) | ✅ |
+| Reanalyze copy (no "document updated" lead) | ✅ |
+| Tests | ✅ PASS (8) |
+
+---
+
+## Sprint S4 — Business Clarity Progress ✅ PASS
+
+**Status:** CPO PASS (2026-08-02)
+
+**Goal:** Business Clarity = **Workspace central state** — 사업 상태가 대화를 이끈다
+
+**Acceptance:**
+- 로그인 후 3초 안에 *"지금 내 사업이 어디까지 왔는지 한 문장으로 이해된다"*
+- Workspace State → 모든 화면 (single source of truth)
+
+| Item | Status |
+|------|--------|
+| `buildWorkspaceBusinessState` | ✅ |
+| `WorkspaceBusinessStateHeader` | ✅ |
+| Header replaces project name | ✅ |
+| Tests | ✅ PASS |
+
+---
+
+## Sprint S5.1 — Conversation Rhythm ✅ Conditional PASS
+
+**Status:** ✅ Conditional PASS · superseded by S5.2 PASS
+
+**Goal:** 질문하는 AI → **함께 만드는 Co-Founder** (Conversation Rhythm)
+
+**CPO note:** 방향 맞음 · AI 발화량 아직 많음 → **S5.2로 이어감**
+
+| Rhythm step | Status |
+|-------------|--------|
+| Thinking → Agreement → Permission → Question | ✅ (internal) |
+| Answer → Recognition → Tiny Win → Thinking | ✅ (internal) |
+| `build-ai-pm-conversation-rhythm.ts` | ✅ |
+| `WorkspaceAiPmRecognitionBlock` | ✅ |
+
+---
+
+## Sprint S5.2 — Say Less, Mean More ✅ PASS
+
+**Status:** ✅ PASS (CPO) · **Conversation Sprint closed**
+
+**Goal:** AI 한 턴 총 발화량 **30~40% 감소** · CEO 만족도 유지/상승
+
+**CPO verdict:** *Thinking → Question → Recognition* — LaunchLens rhythm achieved.
+
+| Deliverable | Status |
+|-------------|--------|
+| `buildCompactRecognition` · `buildCompactQuestionInvite` | ✅ |
+| `formatCompactThinkingProse` (1-line thinking) | ✅ |
+| Reveal: Thinking + Question only | ✅ |
+| Recognition: 3-line confirm (no Tiny Win card) | ✅ |
+| Answer phase: compact invite only | ✅ |
+
+---
+
+## Sprint S6.1 — Business Learning Engine ✅ Conditional PASS
+
+**Status:** ✅ Conditional PASS (CPO) · **G1 next** · S6.2 ⏸
+
+**Goal:** CEO가 *"내 답변이 실제로 사업을 한 단계 선명하게 만들었네"*를 느낀다
+
+**Flow:** CEO 답변 → **Shared Learning (1줄)** → Recognition → (S6.2) Header 갱신
+
+**Principle:** AI Learning ❌ · **Shared Learning** ✅ — *"우리가 같이 이해하게 됐다"*
+
+| Deliverable | Status |
+|-------------|--------|
+| `LEARNING_EVENT` IDs (`CUSTOMER_BUYER_SPLIT`, `PROBLEM_REFINED`, …) | ✅ |
+| `buildBusinessLearningFromTurn` — shared voice | ✅ |
+| `buildSnapshotUpdateEvent` — pipeline event | ✅ |
+| `WorkspaceAiPmBusinessLearningBlock` (1줄 UI) | ✅ |
+| Loop: Learning → Recognition | ✅ |
+
+**Pipeline (S6.2 · S7 · Memory):**
+
+```text
+CEO 답변 → Learning Event → Learning 문장 → Header Update → Review 근거
+```
+
+**Acceptance:** Learning 한 줄 → *"내 답변 때문에 사업이 실제로 한 단계 선명해졌네."*
+
+**Forbidden (held):** Header · Snapshot UI · 새 카드 · 점수/%
+
+---
+
+## Sprint G1 — Founder Validation (active · execute, do not document)
+
+**Directive:** [`docs/sprints/CTO_DIRECTIVE_G1.md`](./sprints/CTO_DIRECTIVE_G1.md) — fixed scenarios · 2-Q flow · LaunchLens Moments KPI
+
+**Status:** Feature Freeze active — collect 3 walkthroughs, submit 7 artifacts only
+
+**Data folder:** `docs/evidence/G1-FOUNDER-WALKTHROUGH/` · Instrumentation already wired (`g1-loop-instrumentation.ts`)
+
+**After G1:** `CPO Review → S7 (max 3 trust fixes) → G2 → S6.2`
+
+---
+
+## Sprint S6.2 — Business Snapshot Evolution (on hold)
+
+**Status:** ⏸ **보류** — G1 결과 후 재개
+
+**Goal:** Learning Event 기반 Header 갱신 · **Narrative First, Structure Second**
+
+**Scope:** `buildBusinessEvolutionSnapshot` → Header · Turn 0/3/6 Evidence
+
+**Acceptance:** 3턴·6턴 Header 비교 시 *"사업이 더 선명해졌다"* (3초 이해)
+
+| Deliverable | Status |
+|-------------|--------|
+| Narrative headline + structured fields | ⬜ |
+| Learning Event → Header apply | ⬜ |
+| Business Snapshot evidence | ⬜ |
+
+---
+
+## Sprint S6 — Business Evolution (split → S6.1 + S6.2)
+
+**Status:** ⏸ Monolithic S6 paused per CPO — see S6.1 / S6.2 above
+
+---
+
+## Sprint S5 — Continue Building Together (superseded by S5.1 / S5.2)
+
+**Status:** ⏸ See S5.1 + S5.2 above
+
+---
+
+## Sprint S0 — AI PM Core Loop Reconstruction (superseded by S0.5)
+
+**Status:** ⏸ Superseded · see S0.5 deliverables above
+
+---
+
+## Epic P1 — LaunchLens Thinking & Continuity ⏸ PAUSED
+
+| Sprint | Focus | Status |
+|--------|-------|--------|
+| P1-1 | Document Eligibility | ✅ committed |
+| P1-2 | Reading Experience | ✅ committed |
+| P1-3 | Dynamic Diagnosis | ✅ committed |
+| P1-4 | Demo → Login Continuity | ⏸ design in S0 · implementation paused |
+
+---
+
+## Sprint — AI PM Co-Founder Loop (Experience · CPO Conditional PASS)
+
+**Status:** Design ✅ · Conversation ✅ · Experience **조건부 PASS** · CEO Smoke **허용(권장: UX 2~3건 후)**
+
+**Evidence:** [`PROTOTYPE-AI-PM-DAY/CPO-EVIDENCE-INDEX.md`](./evidence/PROTOTYPE-AI-PM-DAY/CPO-EVIDENCE-INDEX.md)
+
+| Gate | Status |
+|------|--------|
+| Technical QA | ✅ |
+| Product Design | ✅ PASS |
+| Conversation | ✅ PASS |
+| Experience | ✅ **Conditional PASS** (영상 확인 완료) |
+| CEO Smoke | 🟡 **진행 가능** (CPO) · 정식 베타 전 UX polish 권장 |
+| Production | ⛔ |
+
+**CPO UX backlog (Experience polish — copy/UI only, freeze v1 준수):**
+
+| P | Item |
+|---|------|
+| P1 | 질문 전 AI **가설 제시** ("공장장 / 대표 — 맞나요?") |
+| P1 | WHY **사업 맥락** 풍부화 (BM·시장·경쟁 연쇄 설명) |
+| P1 | Pause **성취감** (오늘 정리 checklist + 내일 한 줄) |
+| P2 | 문서 변화 **하이라이트** (고객 필드 before/after) |
+| P2 | 좌측 패널 **"함께 정리한 것"** 용어 |
+
+**Next (CPO 권장):** UX 2~3건 반영 → CEO Smoke → 창업자 5~10명 관찰
+
+| Sprint | CEO feeling |
+|--------|-------------|
+| 1 | "이 AI랑 계속 일하고 싶다." |
+| 2 | "어제 하던 일을 자연스럽게 이어간다." |
+| 3 | "계획서가 발전하는 게 눈에 보인다." |
+| 4 | "다음에 무엇을 해야 하는지 먼저 알려준다." |
+
+**Gates:** Philosophy v3 ⏳ · Implementation ⛔ · CEO report (CTO) ⛔
+
+---
+
 > **Product Freeze v1** 🔒 · **Sprint 1 — Product Fit Observation** (관찰만)  
 > **Doc:** [PRODUCT_FIT_OBSERVATION.md](./sprints/PRODUCT_FIT_OBSERVATION.md)
 

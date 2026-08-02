@@ -8,6 +8,7 @@ import {
   mapEntitiesToLegacyCustomer,
   mapEntitiesToLegacyIdea,
 } from './domain/extract-document-entities';
+import { detectWorkspaceDocumentPlaceholder } from './business-understanding/workspace-document-eligibility';
 import type {
   SmartIntakeAnalysis,
   SmartIntakeFieldId,
@@ -18,14 +19,9 @@ import type {
 import type { DemoProjectDraft } from './v2-demo-project-store';
 
 function isBinaryPlaceholder(text: string, source: SmartIntakeImportSource): boolean {
-  if (source === 'pdf') {
-    return (
-      text.includes('PDF 본문은 아직 추출되지 않았습니다') ||
-      text.includes('PDF 문서를 불러왔습니다') ||
-      text.includes('PDF 사업계획서를 불러왔습니다')
-    );
-  }
-  if (source === 'docx') return text.includes('Word 문서를 불러왔습니다');
+  const placeholder = detectWorkspaceDocumentPlaceholder(text);
+  if (source === 'pdf') return placeholder === 'pdf';
+  if (source === 'docx') return placeholder === 'docx';
   return false;
 }
 

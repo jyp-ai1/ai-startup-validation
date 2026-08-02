@@ -9,7 +9,7 @@ import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-doma
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
-import { applyAiPmLoopAnswer } from '../../lib/business-understanding/apply-ai-pm-loop-answer';
+import { applyWorkspaceLoopAnswer } from '../../lib/business-understanding/workspace-state-update';
 import { buildAiPmRuntimeJudgment } from '../../lib/business-understanding/build-workspace-ai-pm-state';
 import {
   appendAiPmLoopTurn,
@@ -22,10 +22,28 @@ import type { AiPmLoopIssueId } from '../../lib/business-understanding/workspace
 import { resolveNextLoopIssue } from '../../lib/business-understanding/resolve-ai-pm-priority-issue';
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import { buildAiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
-import { buildAiPmIssueFraming } from '../../lib/business-understanding/build-ai-pm-issue-framing';
+import {
+  buildAiPmSharedThinking,
+  formatCompactThinkingProse,
+} from '../../lib/business-understanding/build-ai-pm-shared-thinking';
+import {
+  buildCompactQuestionInvite,
+  buildCompactRecognition,
+} from '../../lib/business-understanding/build-ai-pm-conversation-rhythm';
+import { buildBusinessLearningFromTurn } from '../../lib/business-understanding/build-ai-pm-business-learning';
+import {
+  g1WorkspaceLabel,
+  logG1LoopEvent,
+} from '../../lib/business-understanding/g1-loop-instrumentation';
+import {
+  getWorkspaceDocumentTrust,
+} from '../../lib/business-understanding/workspace-document-eligibility';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
-import { WorkspaceAiPmMemoryBlock } from './workspace-ai-pm-memory-block';
-import { WorkspaceAiPmDiagnosisSummary } from './workspace-ai-pm-diagnosis-summary';
+import { WorkspaceAiPmBusinessLearningBlock } from './workspace-ai-pm-business-learning-block';
+import { WorkspaceDocumentTrustBlock } from './workspace-document-trust-block';
+import { WorkspaceAiPmRecognitionBlock } from './workspace-ai-pm-recognition-block';
+import { WorkspaceAiPmReturnWelcomeBlock } from './workspace-ai-pm-return-welcome-block';
+import { WorkspaceAiPmSharedThinkingReveal } from './workspace-ai-pm-shared-thinking-reveal';
 import { WorkspaceAiPmReadingSequence } from './workspace-ai-pm-reading-sequence';
 import type { WorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
 
@@ -59,8 +77,12 @@ export function WorkspaceAiPmLoopPanel({
   const [answerDraft, setAnswerDraft] = useState('');
   const [reanalyzing, setReanalyzing] = useState(false);
   const [sessionPaused, setSessionPaused] = useState(false);
+  const [returnWelcomeDismissed, setReturnWelcomeDismissed] = useState(false);
+  const [recognitionDismissed, setRecognitionDismissed] = useState(true);
 
   const documentText = useMemo(() => loadWorkspaceDocumentText(projectId), [projectId, understanding]);
+  const documentTrust = useMemo(() => getWorkspaceDocumentTrust(documentText), [documentText]);
+  const documentReadable = documentTrust.status === 'readable';
   const nextIssue = useMemo(
     () =>
       resolveNextLoopIssue(understanding, loopState, {
@@ -73,11 +95,28 @@ export function WorkspaceAiPmLoopPanel({
     () => buildAiPmInitialDiagnosis(understanding, entities, documentText),
     [understanding, entities, documentText],
   );
-  const activeIssueFraming = useMemo(() => {
-    const issueId = loopState.currentIssueId ?? nextIssue;
-    if (!issueId) return null;
-    return buildAiPmIssueFraming(understanding, issueId, initialDiagnosis);
-  }, [initialDiagnosis, loopState.currentIssueId, nextIssue, understanding]);
+  const activeIssueId = loopState.currentIssueId ?? nextIssue;
+  const lastTurn = loopState.turns.at(-1) ?? null;
+  const sharedThinking = useMemo(() => {
+    if (!activeIssueId) return null;
+    const useContinuous = loopState.phase === 'issue' && lastTurn != null;
+    return buildAiPmSharedThinking({
+      issueId: activeIssueId,
+      understanding,
+      documentText,
+      entities,
+      turns: loopState.turns,
+      lastTurn: useContinuous ? lastTurn : null,
+    });
+  }, [
+    activeIssueId,
+    understanding,
+    documentText,
+    entities,
+    loopState.phase,
+    loopState.turns,
+    lastTurn,
+  ]);
 
   const runtimeJudgment = useMemo(() => {
     return buildAiPmRuntimeJudgment({
@@ -89,12 +128,106 @@ export function WorkspaceAiPmLoopPanel({
   }, [loopState, projectId, understanding, workspaceFacts]);
 
   const showResumeBriefing = loopState.turns.length > 0;
+  const showReturnWelcome =
+    showResumeBriefing &&
+    Boolean(runtimeJudgment?.returnWelcome) &&
+    !returnWelcomeDismissed &&
+    loopState.phase === 'issue';
+
+  const dismissReturnWelcome = useCallback(() => {
+    setReturnWelcomeDismissed(true);
+  }, []);
+
+  const dismissRecognition = useCallback(() => {
+    setRecognitionDismissed(true);
+  }, []);
+
+  const showContinuousThinking =
+    Boolean(sharedThinking?.isContinuous) &&
+    lastTurn != null &&
+    lastTurn.issueId !== activeIssueId;
+
+  const showRecognition =
+    loopState.phase === 'issue' &&
+    showContinuousThinking &&
+    !recognitionDismissed &&
+    !showReturnWelcome;
+
+  const compactRecognition = useMemo(() => {
+    if (!lastTurn || !showContinuousThinking) return null;
+    return buildCompactRecognition(lastTurn, activeIssueId);
+  }, [lastTurn, showContinuousThinking, activeIssueId]);
+
+  const businessLearning = useMemo(() => {
+    if (!lastTurn || !showContinuousThinking) return null;
+    return buildBusinessLearningFromTurn(lastTurn);
+  }, [lastTurn, showContinuousThinking]);
+
+  const questionInvite = useMemo(() => {
+    if (!sharedThinking) return null;
+    return buildCompactQuestionInvite(sharedThinking.issueId, sharedThinking.question);
+  }, [sharedThinking]);
+
+  const workspaceLabel = useMemo(() => g1WorkspaceLabel(projectId), [projectId]);
+
+  useEffect(() => {
+    if (showRecognition && businessLearning) {
+      logG1LoopEvent({
+        event: 'learning_show',
+        workspace: workspaceLabel,
+        turn: loopState.turns.length,
+        issueId: lastTurn?.issueId ?? null,
+        phase: loopState.phase,
+      });
+    }
+  }, [showRecognition, businessLearning, workspaceLabel, loopState.turns.length, lastTurn?.issueId, loopState.phase]);
+
+  useEffect(() => {
+    if (showRecognition && compactRecognition) {
+      logG1LoopEvent({
+        event: 'recognition_show',
+        workspace: workspaceLabel,
+        turn: loopState.turns.length,
+        issueId: lastTurn?.issueId ?? null,
+        phase: loopState.phase,
+      });
+    }
+  }, [showRecognition, compactRecognition, workspaceLabel, loopState.turns.length, lastTurn?.issueId, loopState.phase]);
+
+  useEffect(() => {
+    if (loopState.phase === 'answer' && activeIssueId) {
+      logG1LoopEvent({
+        event: 'question_show',
+        workspace: workspaceLabel,
+        turn: loopState.turns.length + 1,
+        issueId: activeIssueId,
+        phase: 'answer',
+      });
+    }
+  }, [loopState.phase, activeIssueId, workspaceLabel, loopState.turns.length]);
+
+  useEffect(() => {
+    if (showReturnWelcome) {
+      logG1LoopEvent({
+        event: 'resume',
+        workspace: workspaceLabel,
+        turn: loopState.turns.length,
+        phase: 'issue',
+      });
+    }
+  }, [showReturnWelcome, workspaceLabel, loopState.turns.length]);
 
   const pauseSession = useCallback(() => {
     if (readOnly) return;
+    logG1LoopEvent({
+      event: 'pause',
+      workspace: workspaceLabel,
+      turn: loopState.turns.length,
+      phase: loopState.phase,
+    });
     setSessionPaused(true);
     onSessionPause?.();
-  }, [onSessionPause, readOnly]);
+  }, [loopState.phase, loopState.turns.length, onSessionPause, readOnly, workspaceLabel]);
 
   useEffect(() => {
     if (isAiPmLoopComplete(loopState)) {
@@ -110,13 +243,14 @@ export function WorkspaceAiPmLoopPanel({
   );
 
   const beginIssue = useCallback(() => {
-    if (!nextIssue || readOnly) return;
+    const issue = loopState.currentIssueId ?? nextIssue;
+    if (!issue || readOnly) return;
     const next = patchAiPmLoopState(
-      { phase: 'answer', currentIssueId: nextIssue, dismissedReadAck: true },
+      { phase: 'answer', currentIssueId: issue, dismissedReadAck: true },
       projectId,
     );
     syncState(next);
-  }, [nextIssue, projectId, readOnly, syncState]);
+  }, [loopState.currentIssueId, nextIssue, projectId, readOnly, syncState]);
 
   const completeReading = useCallback(() => {
     if (readOnly) return;
@@ -128,7 +262,7 @@ export function WorkspaceAiPmLoopPanel({
     const next = patchAiPmLoopState(
       {
         dismissedReadAck: true,
-        phase: nextIssue ? 'issue' : 'complete',
+        phase: nextIssue ? 'answer' : 'complete',
         currentIssueId: nextIssue,
       },
       projectId,
@@ -141,7 +275,15 @@ export function WorkspaceAiPmLoopPanel({
     const trimmed = answerDraft.trim();
     if (!issueId || trimmed.length < 4 || readOnly) return;
 
-    applyAiPmLoopAnswer(issueId, trimmed, projectId);
+    logG1LoopEvent({
+      event: 'answer_submit',
+      workspace: g1WorkspaceLabel(projectId),
+      turn: loopState.turns.length + 1,
+      issueId,
+      phase: 'answer',
+    });
+
+    applyWorkspaceLoopAnswer(issueId, trimmed, projectId);
     onDocumentUpdated?.(issueId, trimmed);
 
     appendAiPmLoopTurn(
@@ -150,6 +292,8 @@ export function WorkspaceAiPmLoopPanel({
     );
 
     setAnswerDraft('');
+    setReturnWelcomeDismissed(true);
+    setRecognitionDismissed(false);
     setReanalyzing(true);
     setAiPmLoopPhase('reanalyze', projectId);
 
@@ -248,6 +392,16 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   if (!loopState.readingCompleted && loopState.turns.length === 0) {
+    if (documentTrust.status === 'unreadable') {
+      return (
+        <WorkspaceDocumentTrustBlock
+          trust={documentTrust}
+          readOnly={readOnly}
+          onContinue={completeReading}
+          className={className}
+        />
+      );
+    }
     return (
       <WorkspaceAiPmReadingSequence
         diagnosis={initialDiagnosis}
@@ -258,20 +412,23 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   if (!loopState.dismissedReadAck || loopState.phase === 'read_ack') {
+    if (!sharedThinking) return null;
     return (
-      <WorkspaceAiPmDiagnosisSummary
-        diagnosis={initialDiagnosis}
-        primaryIssueId={nextIssue}
+      <WorkspaceAiPmSharedThinkingReveal
+        thinking={sharedThinking}
         readOnly={readOnly}
+        documentReadable={documentReadable}
+        workspace={workspaceLabel}
+        turn={loopState.turns.length + 1}
         onContinue={dismissReadAck}
         className={className}
       />
     );
   }
 
-  const activeIssue = loopState.currentIssueId ?? nextIssue;
+  const activeIssue = activeIssueId;
 
-  if (loopState.phase === 'answer' && activeIssue) {
+  if (loopState.phase === 'answer' && activeIssue && sharedThinking && questionInvite) {
     return (
       <section
         className={cn(
@@ -281,8 +438,28 @@ export function WorkspaceAiPmLoopPanel({
       >
         <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{t('aiLabel')}</p>
         <p className="mt-3 text-[15px] font-medium leading-relaxed">
-          {t(`issues.${activeIssue}.question`)}
+          {documentReadable ? t('sharedThinking.thinkingLead') : t('sharedThinking.thinkingLeadUnreadable')}
         </p>
+        <p className="mt-2 text-[15px] leading-relaxed text-foreground">
+          {formatCompactThinkingProse(sharedThinking)}
+        </p>
+        <div className="mt-5 space-y-2">
+          {questionInvite.lines.map((line, index) => (
+            <p
+              key={`answer-q-${index}`}
+              className={cn(
+                'text-[15px] leading-relaxed',
+                index === questionInvite.lines.length - 1
+                  ? 'font-medium text-foreground'
+                  : index === 0
+                    ? 'text-muted-foreground'
+                    : 'font-medium text-primary',
+              )}
+            >
+              {line}
+            </p>
+          ))}
+        </div>
         <textarea
           value={answerDraft}
           onChange={(event) => setAnswerDraft(event.target.value)}
@@ -319,81 +496,65 @@ export function WorkspaceAiPmLoopPanel({
     );
   }
 
-  if (!activeIssue) {
+  if (!activeIssue || !sharedThinking) {
     return null;
   }
 
-  const lastTurn = loopState.turns[loopState.turns.length - 1];
+  if (loopState.phase === 'issue') {
+    return (
+      <section className={cn('space-y-4', className)}>
+        {showReturnWelcome && runtimeJudgment?.returnWelcome ? (
+          <div className="space-y-4">
+            <WorkspaceAiPmReturnWelcomeBlock welcome={runtimeJudgment.returnWelcome} />
+            <Button
+              type="button"
+              className="rounded-xl"
+              disabled={readOnly}
+              onClick={dismissReturnWelcome}
+            >
+              {t('sharedThinking.continueCta')}
+            </Button>
+          </div>
+        ) : showRecognition && businessLearning && compactRecognition ? (
+          <div className="space-y-4">
+            <WorkspaceAiPmBusinessLearningBlock learning={businessLearning} />
+            <WorkspaceAiPmRecognitionBlock recognition={compactRecognition} />
+            <Button
+              type="button"
+              className="rounded-xl"
+              disabled={readOnly}
+              onClick={dismissRecognition}
+            >
+              {t('sharedThinking.continueCta')}
+            </Button>
+          </div>
+        ) : (
+          <>
+            <WorkspaceAiPmSharedThinkingReveal
+              thinking={sharedThinking}
+              readOnly={readOnly}
+              showQuestionPreview
+              documentReadable={documentReadable}
+              workspace={workspaceLabel}
+              turn={loopState.turns.length + 1}
+              onContinue={beginIssue}
+            />
+            {loopState.turns.length > 0 ? (
+              <Button
+                type="button"
+                variant="ghost"
+                className="rounded-xl"
+                disabled={readOnly}
+                onClick={pauseSession}
+              >
+                {t('sessionPauseCta')}
+              </Button>
+            ) : null}
+          </>
+        )}
+      </section>
+    );
+  }
 
-  return (
-    <section
-      className={cn(
-        'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.05] to-background px-5 py-5 sm:px-7',
-        className,
-      )}
-    >
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{t('aiLabel')}</p>
-      {showResumeBriefing && runtimeJudgment ? (
-        <WorkspaceAiPmMemoryBlock
-          judgment={runtimeJudgment}
-          showResumeBriefing
-          className="mt-4"
-        />
-      ) : null}
-      {lastTurn ? (
-        <p className="mt-4 text-[15px] font-medium leading-relaxed">
-          {t('turnAck', {
-            resolved: t(`issues.${lastTurn.issueId}.riskLabel`),
-            next: t(`issues.${activeIssue}.riskLabel`),
-          })}
-        </p>
-      ) : (
-        <>
-          <p className="mt-4 text-[15px] font-medium leading-relaxed">
-            {t('priorityLead', { issue: t(`issues.${activeIssue}.riskLabel`) })}
-          </p>
-          {initialDiagnosis.confidencePercent != null ? (
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {t('diagnosisBridge', {
-                confidence: initialDiagnosis.confidencePercent,
-              })}
-            </p>
-          ) : null}
-          {activeIssueFraming?.documentPhrase ? (
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {t('hypothesisLead', {
-                phrase: activeIssueFraming.documentPhrase,
-              })}
-            </p>
-          ) : null}
-          <p className="mt-3 text-[15px] font-medium leading-relaxed text-foreground">
-            {t('firstQuestionLead', { issue: t(`issues.${activeIssue}.riskLabel`) })}
-          </p>
-        </>
-      )}
-      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-        {t(`issues.${activeIssue}.insight`)}
-      </p>
-      {!showResumeBriefing ? (
-        <p className="mt-4 text-[15px] font-medium leading-relaxed text-foreground">
-          {t(`issues.${activeIssue}.question`)}
-        </p>
-      ) : null}
-      <p className="mt-3 text-sm font-medium text-foreground">{t(`issues.${activeIssue}.timeHint`)}</p>
-      <Button type="button" className="mt-5 rounded-xl" disabled={readOnly} onClick={beginIssue}>
-        {t('startIssueCta', { issue: t(`issues.${activeIssue}.actionLabel`) })}
-      </Button>
-      {loopState.turns.length > 0 ? (
-        <Button
-          type="button"
-          variant="ghost"
-          className="mt-3 rounded-xl"
-          disabled={readOnly}
-          onClick={pauseSession}
-        >
-          {t('sessionPauseCta')}
-        </Button>
-      ) : null}
-    </section>
-  );
+  return null;
 }

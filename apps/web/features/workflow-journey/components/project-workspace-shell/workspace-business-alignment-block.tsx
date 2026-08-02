@@ -21,6 +21,7 @@ type WorkspaceBusinessAlignmentBlockProps = {
   understanding: BusinessUnderstanding;
   initialState?: MarketAlignmentState | null;
   onConfirm: (state: MarketAlignmentState, candidates: MarketCandidate[]) => void;
+  documentReadable?: boolean;
   readOnly?: boolean;
   className?: string;
 };
@@ -65,6 +66,7 @@ export function WorkspaceBusinessAlignmentBlock({
   understanding,
   initialState,
   onConfirm,
+  documentReadable = true,
   readOnly = false,
   className,
 }: WorkspaceBusinessAlignmentBlockProps) {
@@ -104,7 +106,9 @@ export function WorkspaceBusinessAlignmentBlock({
           <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
             {ta('aiLabel')}
           </p>
-          <p className="mt-3">{ta('readLead')}</p>
+          <p className="mt-3">
+            {documentReadable ? ta('readLead') : ta('readLeadUnreadable')}
+          </p>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-sm">
             {candidates.map((c) => (
               <li key={c.id}>{c.label}</li>

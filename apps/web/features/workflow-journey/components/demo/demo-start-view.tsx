@@ -7,7 +7,7 @@ import { ArrowRight, ClipboardPaste, FileText, Loader2, Sparkles, Upload } from 
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
-import { isWorkspaceDocumentAnalyzable } from '../../lib/business-understanding/workspace-document-eligibility';
+import { isWorkspaceDocumentAnalyzable, isWorkspaceDocumentReadable } from '../../lib/business-understanding/workspace-document-eligibility';
 import { clearAllDemoClientState } from '../../lib/demo-guided-session';
 import {
   DEMO_CUSTOM_DOCUMENT_KEY,
@@ -75,7 +75,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const canStartCustom = isWorkspaceDocumentAnalyzable(customDocument);
+  const canStartCustom = isWorkspaceDocumentReadable(customDocument);
   const hasWeakPaste = customDocument.trim().length > 0 && !canStartCustom;
 
   const applyFileText = useCallback(async (file: File) => {
@@ -83,8 +83,12 @@ export function DemoStartView({ className }: DemoStartViewProps) {
     setError(null);
     try {
       const { text } = await readSmartIntakeFile(file);
-      if (!isWorkspaceDocumentAnalyzable(text)) {
-        setError('문서 내용이 부족합니다. 사업 설명을 더 추가해 주세요.');
+      if (!isWorkspaceDocumentReadable(text)) {
+        setError(
+          isWorkspaceDocumentAnalyzable(text)
+            ? 'PDF 본문을 아직 읽을 수 없습니다. 텍스트를 붙여넣거나 TXT/Markdown 파일을 사용해 주세요.'
+            : '문서 내용이 부족합니다. 사업 설명을 더 추가해 주세요.',
+        );
         setFileName(null);
         return;
       }

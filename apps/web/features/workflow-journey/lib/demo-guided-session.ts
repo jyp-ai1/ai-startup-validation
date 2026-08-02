@@ -6,9 +6,11 @@ import { clearBusinessUnderstandingConfirmed } from './business-understanding/bu
 import { loadWorkspaceDocumentText } from './workspace-ai-pm-messages';
 import {
   persistDemoProjectDraftForLogin,
+  saveDemoWorkflowSnapshot,
   type DemoProjectDraft,
 } from './v2-demo-project-store';
 import { extractDocumentEntities } from './domain/extract-document-entities';
+import { buildWorkspacePersistedSnapshot } from '@/features/workspace/lib/sync-workspace-persistence';
 import { loadReviewSnapshot } from './v2-review-dirty-state';
 import { loadMeetingNotes } from './v2-ai-pm-meeting-store';
 import {
@@ -129,4 +131,7 @@ export function persistDemoSessionForLogin(projectId = DEMO_SESSION_PROJECT_ID):
   const content = loadWorkspaceDocumentText(projectId)?.trim();
   if (!content || content.length < 8) return;
   persistDemoProjectDraftForLogin(buildDraftFromDocument(content));
+  saveDemoWorkflowSnapshot({
+    v2Workspace: buildWorkspacePersistedSnapshot(projectId),
+  });
 }

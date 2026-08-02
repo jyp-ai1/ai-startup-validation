@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@repo/ui/lib/utils';
 
 import type { AiPmInitialDiagnosis, AiPmReadingInsight } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
+import { logG1LoopEvent } from '../../lib/business-understanding/g1-loop-instrumentation';
 
 type WorkspaceAiPmReadingSequenceProps = {
   diagnosis: AiPmInitialDiagnosis;
@@ -53,6 +54,11 @@ export function WorkspaceAiPmReadingSequence({
   const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop.reading');
   const [completedSteps, setCompletedSteps] = useState(0);
   const { stepMs, finishPauseMs } = diagnosis.readingTiming;
+  const readingStartedAt = useMemo(() => Date.now(), []);
+
+  useEffect(() => {
+    logG1LoopEvent({ event: 'reading_start', workspace: 'demo' });
+  }, []);
 
   const visibleInsights = useMemo(
     () => diagnosis.insights.filter((insight) => completedSteps > insight.afterStepIndex),
@@ -61,7 +67,14 @@ export function WorkspaceAiPmReadingSequence({
 
   useEffect(() => {
     if (completedSteps >= diagnosis.readingSteps.length) {
-      const timer = window.setTimeout(onComplete, finishPauseMs);
+      const timer = window.setTimeout(() => {
+        logG1LoopEvent({
+          event: 'reading_end',
+          workspace: 'demo',
+          duration: Date.now() - readingStartedAt,
+        });
+        onComplete();
+      }, finishPauseMs);
       return () => window.clearTimeout(timer);
     }
 
@@ -70,7 +83,7 @@ export function WorkspaceAiPmReadingSequence({
     }, stepMs);
 
     return () => window.clearTimeout(timer);
-  }, [completedSteps, diagnosis.readingSteps.length, finishPauseMs, onComplete, stepMs]);
+  }, [completedSteps, diagnosis.readingSteps.length, finishPauseMs, onComplete, stepMs, readingStartedAt]);
 
   return (
     <section

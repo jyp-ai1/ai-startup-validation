@@ -10,7 +10,7 @@ import {
 } from './build-ai-pm-dynamic-diagnosis';
 import { resolveAiPmPriorityIssue } from './resolve-ai-pm-priority-issue';
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
-import { isWorkspaceDocumentAnalyzable } from './workspace-document-eligibility';
+import { isWorkspaceDocumentReadable } from './workspace-document-eligibility';
 
 export const AI_PM_READING_STEP_IDS = [
   'founder',
@@ -283,7 +283,7 @@ export function buildAiPmInitialDiagnosis(
   entities?: LaunchLensDomainContext | null,
   documentText?: string | null,
 ): AiPmInitialDiagnosis {
-  const sufficientInput = isWorkspaceDocumentAnalyzable(documentText);
+  const sufficientInput = isWorkspaceDocumentReadable(documentText);
   const issueQueue = rankIssueQueue(understanding, entities, documentText);
   const readingSteps = buildReadingSteps(understanding, entities);
   const readingTiming = computeReadingTiming(documentText);

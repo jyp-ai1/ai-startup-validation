@@ -7,6 +7,7 @@ import type {
   SmartIntakeMissingId,
   SmartIntakePricingChoice,
 } from './v2-smart-intake-types';
+import type { WorkspacePersistedSnapshot } from '@/lib/project/workspace-persisted-state';
 
 export type DemoWorkflowSnapshot = {
   lastDemoStep?: string;
@@ -15,6 +16,7 @@ export type DemoWorkflowSnapshot = {
   smartAnswers?: Record<string, string>;
   reasonChainSummary?: string;
   artifactDraft?: string;
+  v2Workspace?: WorkspacePersistedSnapshot;
 };
 
 export type DemoProjectDraft = {
@@ -40,7 +42,8 @@ export function createEmptyDemoProjectDraft(): DemoProjectDraft {
 }
 
 export function isDemoProjectDraftValid(draft: DemoProjectDraft): boolean {
-  return draft.serviceName.trim().length >= 2 && draft.tagline.trim().length >= 4;
+  const hasDocument = (draft.pastedContent?.trim().length ?? 0) >= 8;
+  return hasDocument && draft.serviceName.trim().length >= 2;
 }
 
 export function saveDemoProjectDraft(draft: DemoProjectDraft): void {

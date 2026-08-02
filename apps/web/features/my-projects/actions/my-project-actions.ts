@@ -24,6 +24,7 @@ import {
 import { recordOAuthAnalyticsEvent } from '@/lib/auth/oauth-analytics';
 import { PRODUCT_ANALYTICS_EVENTS } from '@/lib/analytics/product-analytics';
 import { requireAuthUser } from '@/lib/auth/server-auth';
+import { mergeWorkspacePersistedContext } from '@/lib/project/workspace-persisted-state';
 import { isWorkspaceDocumentAnalyzable } from '@/features/workflow-journey/lib/business-understanding/workspace-document-eligibility';
 
 export type CreateMyProjectState = {
@@ -150,19 +151,33 @@ export async function mergeDemoWorkflowSnapshotAction(
   const ctx = (project.onboardingContext ?? {}) as Record<string, unknown>;
   const v2Demo = (ctx.v2Demo ?? {}) as Record<string, unknown>;
 
-  await updateOwnedProjectContext(user.id, projectId, {
-    ...ctx,
-    v2Demo: {
-      ...v2Demo,
-      workflow: {
-        ...(v2Demo.workflow as Record<string, unknown> | undefined),
-        ...snapshot,
-        mergedAt: new Date().toISOString(),
+  if (snapshot.v2Workspace) {
+    await updateOwnedProjectContext(user.id, projectId, {
+      ...mergeWorkspacePersistedContext(ctx, snapshot.v2Workspace),
+      v2Demo: {
+        ...v2Demo,
+        workflow: {
+          ...(v2Demo.workflow as Record<string, unknown> | undefined),
+          mergedAt: new Date().toISOString(),
+        },
       },
-    },
-  });
+    });
+  } else {
+    await updateOwnedProjectContext(user.id, projectId, {
+      ...ctx,
+      v2Demo: {
+        ...v2Demo,
+        workflow: {
+          ...(v2Demo.workflow as Record<string, unknown> | undefined),
+          ...snapshot,
+          mergedAt: new Date().toISOString(),
+        },
+      },
+    });
+  }
 
   revalidatePath(`/my-projects/${projectId}`);
+  revalidatePath('/workspace');
   return { ok: true };
 }
 

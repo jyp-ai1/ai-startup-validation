@@ -24,6 +24,7 @@ import {
 } from '@/lib/auth/server-auth';
 import { isDemoSampleId } from '@/features/workflow-journey/lib/demo-samples';
 import { extractProjectSeedDocument } from '@/lib/project/project-seed-document';
+import { parseWorkspacePersistedSnapshot } from '@/lib/project/workspace-persisted-state';
 import { isSupabaseConfigured } from '@repo/db';
 
 export const dynamic = 'force-dynamic';
@@ -63,7 +64,7 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   const showDemoWorkspace = explicitDemoSession || guestDemoEntry;
 
   if (showDemoWorkspace) {
-    if (!params.sample || params.fresh !== '1') {
+    if (!params.sample) {
       redirect('/demo/start');
     }
 
@@ -89,7 +90,7 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
           user={user}
           demoMode={demoMode}
           demoSampleId={demoSampleId}
-          demoFresh
+          demoFresh={params.fresh === '1'}
         />
       </>
     );
@@ -102,8 +103,15 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
   const promoted = params.promoted === '1';
 
   if (dbReady && promoteDemo) {
-    await promoteDemoProject(user.id);
-    redirect(`/workspace?promoted=1${authComplete ? '&auth=complete' : ''}`);
+    const project = await promoteDemoProject(user.id);
+    redirect(
+      buildAuthenticatedJourneyUrl({
+        projectId: project.id,
+        promoted: true,
+        welcome: true,
+        authComplete,
+      }),
+    );
   }
 
   if (dbReady && params.intent === 'new') {
@@ -139,8 +147,8 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
       }
     }
 
-    const seedDocument =
-      owned && !welcome ? extractProjectSeedDocument(owned) : undefined;
+    const seedDocument = owned ? extractProjectSeedDocument(owned) : undefined;
+    const persistedWorkspace = owned ? parseWorkspacePersistedSnapshot(owned) : null;
 
     return (
       <WorkspaceProjectCanvas
@@ -151,6 +159,7 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
         authComplete={authComplete}
         needsPersona={false}
         seedDocument={seedDocument}
+        persistedWorkspace={persistedWorkspace}
         demoMode={
           params.demo === 'readonly'
             ? 'demo-readonly'
