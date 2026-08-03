@@ -10,8 +10,7 @@
 | Port | `http://127.0.0.1:3000` (single) |
 | Build | `pnpm --filter web build` PASS |
 | QA | S13 + S14 + Memory Append PASS |
-| RC SHA | `5c7b9b88a9c42bcc32f709ea182c50efb731b822` |
-| Code commit | `4da05a1` release(s14): engine output wiring RC + evidence |
+| RC SHA | `b09ebe5` (tip) · code `4da05a1` release(s14) |
 
 Stamp: `rc-localhost.json` · `00-localhost-alive.png`
 
