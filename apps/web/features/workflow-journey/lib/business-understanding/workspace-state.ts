@@ -22,9 +22,21 @@ import type {
 import { buildBusinessUnderstanding } from './build-business-understanding';
 import type { UnderstandingPhase } from './business-understanding-store';
 import { buildWorkspaceBusinessState, type WorkspaceBusinessState } from './build-ai-pm-business-clarity';
+import {
+  buildSharedUnderstanding,
+  type WorkspaceSharedUnderstanding,
+} from './build-shared-understanding';
 import { evaluateDomainTrust } from '../domain/domain-trust-rules';
 import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
+import { loadConversationMemory } from './conversation-memory-store';
+import {
+  deriveEvidenceStatusFromMemory,
+  firstReviewEvidenceGap,
+  isRequiredReviewEvidenceConfirmed,
+} from './evidence-status';
+import { buildConversationMemoryFromSources } from './build-conversation-memory';
 import { allowsOpenReview, loadMarketAlignment } from './workspace-alignment';
+import { hasAnalysisResult } from './analysis-result-store';
 import {
   isWorkspaceDocumentAnalyzable,
   isWorkspaceDocumentReadable,
@@ -72,6 +84,15 @@ export type WorkspaceState = {
   review: WorkspaceReviewGate;
   header: WorkspaceBusinessState | null;
   sidebar: WorkspaceSidebarSnapshot;
+  /** S8-1 — business · customer · problem spine (always when analyzable). */
+  sharedUnderstanding: WorkspaceSharedUnderstanding | null;
+};
+
+export type WorkspaceJourneyStepId = 'business' | 'customer' | 'market' | 'review';
+
+export type WorkspaceJourneyStep = {
+  id: WorkspaceJourneyStepId;
+  lifecycle: NavNodeLifecycle;
 };
 
 export type DeriveWorkspaceStateInput = {
@@ -189,10 +210,13 @@ function nextLoopBlockedReason(input: {
   loop: AiPmLoopState;
   documentText: string;
   entities: LaunchLensDomainContext | null;
+  projectId?: string;
 }): WorkspaceReviewBlockedReason | null {
   const nextIssue = resolveNextLoopIssue(input.understanding, input.loop, {
     documentText: input.documentText,
     entities: input.entities,
+    memory: loadConversationMemory(input.projectId),
+    analysisResultExists: hasAnalysisResult(input.projectId),
   });
   return nextIssue ? issueIdToBlockedReason(nextIssue) : null;
 }
@@ -209,51 +233,39 @@ function resolveReviewBlockedReason(input: {
 }): WorkspaceReviewBlockedReason {
   if (!input.documentReadable) return 'document_unreadable';
 
-  if (input.understandingPhase !== 'review-ready') {
-    if (
-      input.understandingPhase === 'aligning' ||
-      input.understandingPhase === 'accepted' ||
-      input.understandingPhase === 'edit' ||
-      input.understandingPhase === 'together'
-    ) {
-      return 'customer_missing';
-    }
-    if (input.understanding) {
-      return (
-        nextLoopBlockedReason({
-          understanding: input.understanding,
-          loop: input.loop,
-          documentText: input.documentText,
-          entities: input.entities,
-        }) ?? 'customer_missing'
-      );
-    }
-    return 'customer_missing';
-  }
-
-  if (input.domain.founder.trim().length < 2) return 'customer_missing';
+  // S14 Evidence Sync: Memory → Evidence Status → gap
+  const memory = buildConversationMemoryFromSources({
+    projectId: input.projectId ?? 'default',
+    documentText: input.documentText,
+    turns: input.loop.turns,
+    entities: input.entities,
+    previous: loadConversationMemory(input.projectId),
+  });
+  const evidence = deriveEvidenceStatusFromMemory({
+    memory,
+    entities: input.entities,
+  });
+  const gap = firstReviewEvidenceGap(evidence);
+  if (gap) return gap;
 
   if (input.entities) {
     const trust = evaluateDomainTrust(input.entities);
     if (trust.issues.includes('founder_equals_customer')) return 'customer_missing';
-    if (input.entities.customer.basis !== 'document' || !input.entities.customer.value?.trim()) {
-      return 'customer_missing';
-    }
-  } else if (input.domain.customer.trim().length < 2) {
-    return 'customer_missing';
   }
 
-  if (input.understanding) {
-    const fromLoop = nextLoopBlockedReason({
-      understanding: input.understanding,
-      loop: input.loop,
-      documentText: input.documentText,
-      entities: input.entities,
-    });
-    if (fromLoop) return fromLoop;
+  if (input.understanding && input.understandingPhase !== 'review-ready') {
+    return (
+      nextLoopBlockedReason({
+        understanding: input.understanding,
+        loop: input.loop,
+        documentText: input.documentText,
+        entities: input.entities,
+        projectId: input.projectId,
+      }) ?? 'problem_missing'
+    );
   }
 
-  return 'customer_missing';
+  return 'problem_missing';
 }
 
 function deriveReviewGate(input: {
@@ -289,8 +301,21 @@ function deriveReviewGate(input: {
   const alignmentOpen = allowsOpenReview(alignment);
   const domainReady = canProceedWorkspaceReview(domain, entities);
   const phaseReady = understandingPhase === 'review-ready';
+
+  // S14: Review Gate reads Evidence Status (from Memory), not Loop directly
+  const memory = buildConversationMemoryFromSources({
+    projectId: projectId ?? 'default',
+    documentText,
+    turns: loop.turns,
+    entities,
+    previous: loadConversationMemory(projectId),
+  });
+  const evidence = deriveEvidenceStatusFromMemory({ memory, entities });
+  const evidenceReady = isRequiredReviewEvidenceConfirmed(evidence);
   const canStart =
-    phaseReady && documentReadable && (alignmentOpen || domainReady);
+    documentReadable &&
+    evidenceReady &&
+    (phaseReady || alignmentOpen || domainReady || evidenceReady);
 
   if (canStart) {
     return { count: reviewCount, canStart: true, blockedReason: null };
@@ -310,6 +335,48 @@ function deriveReviewGate(input: {
       projectId,
     }),
   };
+}
+
+function mergeLifecycle(a: NavNodeLifecycle, b: NavNodeLifecycle): NavNodeLifecycle {
+  if (a === 'completed' || b === 'completed') return 'completed';
+  if (a === 'in_progress' || b === 'in_progress') return 'in_progress';
+  return 'waiting';
+}
+
+function deriveJourneySteps(
+  nodes: WorkspaceNavNode[],
+  understandingPhase: UnderstandingPhase,
+  reviewCount: number,
+  loopInProgress: boolean,
+): WorkspaceJourneyStep[] {
+  const byId = Object.fromEntries(nodes.map((node) => [node.id, node.lifecycle])) as Partial<
+    Record<WorkspaceNavNodeId, NavNodeLifecycle>
+  >;
+  const businessLifecycle = mergeLifecycle(
+    byId.founder ?? 'waiting',
+    byId.business ?? 'waiting',
+  );
+  const customerLifecycle = byId.customer ?? 'waiting';
+  const marketLifecycle = byId.market ?? 'waiting';
+
+  let reviewLifecycle: NavNodeLifecycle = 'waiting';
+  if (reviewCount > 0 || understandingPhase === 'review-ready') {
+    reviewLifecycle = 'completed';
+  } else if (
+    !loopInProgress &&
+    (customerLifecycle === 'completed' || marketLifecycle === 'completed')
+  ) {
+    reviewLifecycle = 'in_progress';
+  } else if (customerLifecycle === 'in_progress') {
+    reviewLifecycle = 'waiting';
+  }
+
+  return [
+    { id: 'business', lifecycle: businessLifecycle },
+    { id: 'customer', lifecycle: customerLifecycle },
+    { id: 'market', lifecycle: marketLifecycle },
+    { id: 'review', lifecycle: reviewLifecycle },
+  ];
 }
 
 function deriveSidebar(input: {
@@ -336,6 +403,14 @@ function deriveSidebar(input: {
         : lifecycleForDomainNode(id, domain, entities),
   }));
 
+  const journeySteps = deriveJourneySteps(
+    nodes,
+    understandingPhase,
+    reviewCount,
+    loopInProgress,
+  );
+  const stepFirstProgress = reviewCount === 0;
+
   if (loopInProgress) {
     return {
       businessScore: null,
@@ -347,6 +422,8 @@ function deriveSidebar(input: {
       lastUpdatedMinutesAgo: -1,
       nodes,
       hideProgressMetrics: true,
+      journeySteps,
+      stepFirstProgress,
     };
   }
 
@@ -366,6 +443,8 @@ function deriveSidebar(input: {
     activeStageKey: activeNode.labelKey,
     lastUpdatedMinutesAgo: reviewCount > 0 ? 0 : understanding ? -1 : 0,
     nodes,
+    journeySteps,
+    stepFirstProgress,
   };
 }
 
@@ -399,7 +478,12 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
 
   const nextIssueId =
     understanding != null
-      ? resolveNextLoopIssue(understanding, input.loop, { documentText, entities })
+      ? resolveNextLoopIssue(understanding, input.loop, {
+          documentText,
+          entities,
+          memory: loadConversationMemory(input.projectId),
+          analysisResultExists: hasAnalysisResult(input.projectId),
+        })
       : null;
 
   const header =
@@ -423,6 +507,17 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
     loopInProgress,
   });
 
+  const sharedUnderstanding =
+    understanding && input.reviewCount === 0
+      ? buildSharedUnderstanding({
+          documentText,
+          turns: input.loop.turns,
+          understanding,
+          entities,
+          understandingPhase: input.understandingPhase,
+        })
+      : null;
+
   return {
     version: 1,
     projectId: input.projectId,
@@ -436,5 +531,6 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
     review,
     header,
     sidebar,
+    sharedUnderstanding,
   };
 }

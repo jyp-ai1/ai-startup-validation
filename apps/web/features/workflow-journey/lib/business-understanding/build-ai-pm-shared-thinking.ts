@@ -15,11 +15,18 @@ import {
   buildPartnerThinkingBridge,
 } from './build-ai-pm-partner-voice';
 import type { AiPmLoopIssueId, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
+import {
+  problemFocusLine,
+  problemQuestionLine,
+  resolvePayerLabel,
+} from './resolve-payer-label';
+import { loadConversationMemory } from './conversation-memory-store';
+import { buildConversationMemoryFromSources } from './build-conversation-memory';
 
 /**
  * CEO-visible shared thinking — thought arc + collaborative memory (S3).
  * First turn:  제가 문서를 읽다 보니 → 처음에는 → 그런데 → 그래서
- * Next turns:  우리가 배운 것 → co-thinking → Question
+ * Next turns:  diversified openings (S14) → Question
  */
 export type AiPmSharedThinking = {
   issueId: AiPmLoopIssueId;
@@ -52,13 +59,30 @@ export function formatSharedThinkingProse(thinking: AiPmSharedThinking): string 
   return formatCompactThinkingProse(thinking);
 }
 
-const NEXT_FOCUS: Record<AiPmLoopIssueId, string> = {
+const NEXT_FOCUS_BASE: Record<AiPmLoopIssueId, string> = {
   customer_definition: '1차 고객',
-  problem_definition: '대표가 왜 돈을 낼 만큼 불편한가',
+  problem_definition: '문제',
   bm_design: '누가 얼마를 내는지',
   competitor_analysis: '고객이 지금 무엇을 대신 쓰는지',
   market_validation: '왜 지금 이 시장인지',
 };
+
+function nextFocusLabel(
+  issueId: AiPmLoopIssueId,
+  turns: AiPmLoopTurn[],
+  projectId?: string,
+): string {
+  if (issueId === 'problem_definition') {
+    const memory = buildConversationMemoryFromSources({
+      projectId: projectId ?? 'default',
+      documentText: '',
+      turns,
+      previous: loadConversationMemory(projectId),
+    });
+    return problemFocusLine(resolvePayerLabel({ turns, memory }));
+  }
+  return NEXT_FOCUS_BASE[issueId];
+}
 
 const PRIORITY_SHIFT: Partial<Record<AiPmLoopIssueId, Partial<Record<AiPmLoopIssueId, string>>>> = {
   customer_definition: {
@@ -137,7 +161,19 @@ function buildCustomerThinking(
   );
 }
 
-function buildProblemThinking(documentText: string): Omit<AiPmSharedThinking, 'issueId'> {
+function buildProblemThinking(
+  documentText: string,
+  turns: AiPmLoopTurn[] = [],
+  projectId?: string,
+): Omit<AiPmSharedThinking, 'issueId'> {
+  const memory = buildConversationMemoryFromSources({
+    projectId: projectId ?? 'default',
+    documentText,
+    turns,
+    previous: loadConversationMemory(projectId),
+  });
+  const payer = resolvePayerLabel({ turns, memory });
+  const question = problemQuestionLine(payer);
   const featureHeavy = /기능|제공|플랫폼|서비스|솔루션|앱|feature|platform/gi.test(
     documentText,
   );
@@ -146,16 +182,16 @@ function buildProblemThinking(documentText: string): Omit<AiPmSharedThinking, 'i
     return buildThinkingArc(
       'problem_definition',
       '처음에는 솔루션 설명이 충분한 줄 알았습니다.',
-      '그런데 다시 보니 고객이 겪는 pain 한 문장이 더 급해 보였습니다.',
-      '고객이 겪는 핵심 문제를 한 문장으로 적어 주세요.',
+      `그런데 다시 보니 ${payer}가 겪는 pain이 더 급해 보였습니다.`,
+      question,
     );
   }
 
   return buildThinkingArc(
     'problem_definition',
     '처음에는 여러 문제를 동시에 풀 수 있을 줄 알았습니다.',
-    '그런데 다시 보니 지금 가장 아픈 순간 하나를 먼저 맞추는 게 맞을 것 같습니다.',
-    '고객이 겪는 핵심 문제를 한 문장으로 적어 주세요.',
+    `그런데 다시 보니 ${payer}가 가장 아픈 순간 하나를 먼저 맞추는 게 맞을 것 같습니다.`,
+    question,
   );
 }
 
@@ -238,7 +274,7 @@ function buildMarketThinking(
   );
 }
 
-/** S3 — Collaborative thinking after CEO answer (we learned → we go next). */
+/** S3/S14 — Collaborative thinking after CEO answer. */
 function buildContinuousThinking(
   turns: AiPmLoopTurn[],
   lastTurn: AiPmLoopTurn,
@@ -246,9 +282,17 @@ function buildContinuousThinking(
   understanding: BusinessUnderstanding,
   documentText: string,
   entities: LaunchLensDomainContext | null | undefined,
+  projectId?: string,
 ): AiPmSharedThinking {
-  const nextFocus = NEXT_FOCUS[nextIssueId];
-  const nextBody = buildThinkingForIssue(nextIssueId, understanding, entities, documentText);
+  const nextFocus = nextFocusLabel(nextIssueId, turns, projectId);
+  const nextBody = buildThinkingForIssue(
+    nextIssueId,
+    understanding,
+    entities,
+    documentText,
+    turns,
+    projectId,
+  );
   const sharedMemory = buildAiPmSharedMemory(turns, nextIssueId);
   const businessClarity = buildAiPmBusinessClarity({
     documentText,
@@ -261,10 +305,26 @@ function buildContinuousThinking(
     PRIORITY_SHIFT[lastTurn.issueId]?.[nextIssueId] ??
     '방금 정리한 내용 덕분에, 다음 순서를 같이 맞춰 봤습니다.';
 
-  let rethink = `그러면 우리가 같이 볼 건 ${nextFocus}입니다.`;
+  // S14 — diversify openings; avoid repeating document opener / “그러면 우리가…”
+  const turnIndex = turns.length;
+  let rethink: string;
+  if (turnIndex <= 1) {
+    rethink = `좋습니다. 이제 ${nextFocus}를 같이 보겠습니다.`;
+  } else if (turnIndex === 2) {
+    rethink = `좋습니다. 이제 ${nextFocus}를 확인하겠습니다.`;
+  } else {
+    rethink = `이제 ${nextFocus}를 확인하겠습니다.`;
+  }
 
   if (lastTurn.issueId === 'customer_definition' && nextIssueId === 'problem_definition') {
-    rethink = '그러면 우리가 같이 볼 건, 대표가 왜 돈을 낼 만큼 불편한가입니다.';
+    const memory = buildConversationMemoryFromSources({
+      projectId: projectId ?? 'default',
+      documentText,
+      turns,
+      previous: loadConversationMemory(projectId),
+    });
+    const payer = resolvePayerLabel({ turns, memory });
+    rethink = `좋습니다. 이제 ${problemFocusLine(payer)}를 같이 보겠습니다.`;
   }
 
   const hypothesisBridge = buildPartnerContinuousBridge(nextIssueId);
@@ -292,12 +352,14 @@ function buildThinkingForIssue(
   understanding: BusinessUnderstanding,
   entities: LaunchLensDomainContext | null | undefined,
   documentText: string,
+  turns: AiPmLoopTurn[] = [],
+  projectId?: string,
 ): Omit<AiPmSharedThinking, 'issueId'> {
   switch (issueId) {
     case 'customer_definition':
       return buildCustomerThinking(understanding, documentText);
     case 'problem_definition':
-      return buildProblemThinking(documentText);
+      return buildProblemThinking(documentText, turns, projectId);
     case 'bm_design':
       return buildBmThinking(documentText);
     case 'competitor_analysis':
@@ -326,6 +388,7 @@ export function buildAiPmSharedThinking(input: {
   /** Completed turns — enables S3 collaborative memory + Thinking B. */
   turns?: AiPmLoopTurn[];
   lastTurn?: AiPmLoopTurn | null;
+  projectId?: string;
 }): AiPmSharedThinking | null {
   const text = input.documentText?.trim() ?? '';
   if (text.length < 8) return null;
@@ -342,10 +405,18 @@ export function buildAiPmSharedThinking(input: {
       input.understanding,
       text,
       entities,
+      input.projectId,
     );
   }
 
-  const body = buildThinkingForIssue(input.issueId, input.understanding, entities, text);
+  const body = buildThinkingForIssue(
+    input.issueId,
+    input.understanding,
+    entities,
+    text,
+    turns,
+    input.projectId,
+  );
 
   return {
     issueId: input.issueId,

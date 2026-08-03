@@ -18,7 +18,9 @@ import {
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
 import type { AiPmLoopIssueId } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { buildAiPmScoreNarrative } from '../../lib/build-ai-pm-score-narrative';
+import { buildEditUnderstandingSummary } from '../../lib/business-understanding/build-edit-understanding-summary';
 import {
+  loadUnderstandingConfirmMode,
   loadUnderstandingPhase,
   saveUnderstandingConfirmMode,
   saveUnderstandingPhase,
@@ -37,21 +39,28 @@ import {
   type MarketAlignmentState,
   type MarketCandidate,
 } from '../../lib/business-understanding/workspace-alignment';
+import type { WorkspaceDomainEvidence, WorkspaceDomainFieldId } from '../../lib/workspace-ai-pm-messages';
 import {
   buildAiPmPrimaryMessage,
   loadWorkspaceDocumentText,
-  type WorkspaceDomainEvidence,
 } from '../../lib/workspace-ai-pm-messages';
 import { WorkspaceAiPmLoopPanel } from './workspace-ai-pm-loop-panel';
 import { WorkspaceAiPmScorePanel } from './workspace-ai-pm-score-panel';
 import { WorkspaceBusinessAlignmentBlock } from './workspace-business-alignment-block';
 import { WorkspaceBusinessUnderstandingCard } from './workspace-business-understanding-card';
+import {
+  WorkspaceUnderstandingConfirmFlow,
+  WorkspaceUnderstandingEditFlow,
+} from './workspace-understanding-edit-flow';
 import { WorkspaceDecisionWorkshopBlock } from './workspace-decision-workshop-block';
 import { WorkspaceDocumentIntake } from './workspace-document-intake';
 import { WorkspaceDemoLoginCta } from './workspace-demo-login-cta';
 import { WorkspaceNextStepPanel } from './workspace-next-step-panel';
+import { WorkspaceAnalysisResultPanel } from './workspace-analysis-result-panel';
 import { WorkspacePostReviewRoadmap } from './workspace-post-review-roadmap';
 import { WorkspaceProgressiveOverview } from './workspace-progressive-overview';
+import { loadAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
+import { presentAnalysisScreen } from '../../lib/business-understanding/present-analysis-screen';
 
 import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
 
@@ -80,6 +89,7 @@ type WorkspaceAiPmMainProps = {
   onLoopDocumentUpdated?: () => void;
   onLoopComplete?: () => void;
   onSessionPause?: () => void;
+  onDomainChange?: (field: WorkspaceDomainFieldId, value: string) => void;
   workspaceFacts?: import('@/lib/project/workspace-persisted-facts').WorkspacePersistedFacts | null;
   className?: string;
 };
@@ -129,6 +139,7 @@ export function WorkspaceAiPmMain({
   onLoopDocumentUpdated,
   onLoopComplete,
   onSessionPause,
+  onDomainChange,
   workspaceFacts = null,
   className,
 }: WorkspaceAiPmMainProps) {
@@ -138,6 +149,10 @@ export function WorkspaceAiPmMain({
   const [savedAlignment, setSavedAlignment] = useState<MarketAlignmentState | null>(null);
   const [workshopAgreement, setWorkshopAgreement] = useState(() => loadWorkshopAgreement(projectId));
   const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));
+  const analysisPresenter = useMemo(() => {
+    const result = loadAnalysisResult(projectId);
+    return result ? presentAnalysisScreen(result) : null;
+  }, [projectId, reviewCount, phase]);
 
   useEffect(() => {
     const loaded = loadUnderstandingPhase(projectId);
@@ -198,9 +213,19 @@ export function WorkspaceAiPmMain({
     Boolean(understanding) &&
     reviewCount === 0 &&
     loopComplete &&
-    (understandingPhase === 'pending' ||
-      understandingPhase === 'edit' ||
-      understandingPhase === 'together');
+    understandingPhase === 'pending';
+
+  const showUnderstandingEdit =
+    Boolean(understanding) &&
+    reviewCount === 0 &&
+    loopComplete &&
+    (understandingPhase === 'edit' || understandingPhase === 'together');
+
+  const showUnderstandingEditConfirm =
+    Boolean(understanding) &&
+    reviewCount === 0 &&
+    loopComplete &&
+    understandingPhase === 'edit_confirm';
 
   const showMarketAlignment =
     Boolean(understanding) &&
@@ -213,12 +238,12 @@ export function WorkspaceAiPmMain({
     phase === 'compose' &&
     loopComplete &&
     !showUnderstandingCard &&
+    !showUnderstandingEdit &&
+    !showUnderstandingEditConfirm &&
     !showMarketAlignment;
 
   const showPostReviewWorkshop =
-    Boolean(understanding) &&
-    shouldShowPostReviewWorkshop(reviewCount, workshopAgreement) &&
-    !showDemoLoginCta;
+    Boolean(understanding) && shouldShowPostReviewWorkshop(reviewCount, workshopAgreement);
 
   const workshopAgreed = Boolean(
     workshopAgreement?.agreed && workshopAgreement.reviewRound === reviewCount,
@@ -231,8 +256,47 @@ export function WorkspaceAiPmMain({
 
   const handleConfirmMode = (mode: UnderstandingConfirmMode) => {
     saveUnderstandingConfirmMode(mode, projectId);
-    goToMarketAlignment();
+    if (mode === 'accepted') {
+      goToMarketAlignment();
+      return;
+    }
+    saveUnderstandingPhase(mode, projectId);
+    setUnderstandingPhase(mode);
   };
+
+  const editConfirmSummary = useMemo(() => {
+    if (understandingPhase !== 'edit_confirm') return null;
+    return buildEditUnderstandingSummary({
+      documentText: documentContext,
+      entities,
+      loop: loopState,
+    });
+  }, [documentContext, entities, loopState, understandingPhase]);
+
+  const handleApplyEdits = useCallback(() => {
+    saveUnderstandingPhase('edit_confirm', projectId);
+    setUnderstandingPhase('edit_confirm');
+    onLoopDocumentUpdated?.();
+    setLoopState(loadAiPmLoopState(projectId));
+  }, [onLoopDocumentUpdated, projectId]);
+
+  const handleEditConfirmYes = useCallback(() => {
+    goToMarketAlignment();
+  }, [goToMarketAlignment]);
+
+  const handleEditRevise = useCallback(() => {
+    const mode = loadUnderstandingConfirmMode(projectId) ?? 'edit';
+    saveUnderstandingPhase(mode, projectId);
+    setUnderstandingPhase(mode);
+  }, [projectId]);
+
+  const handleAlignmentDirectionChange = useCallback(
+    (state: MarketAlignmentState) => {
+      saveMarketAlignment(state, projectId);
+      setSavedAlignment(state);
+    },
+    [projectId],
+  );
 
   const handleLoopDocumentUpdated = useCallback(() => {
     onLoopDocumentUpdated?.();
@@ -275,16 +339,19 @@ export function WorkspaceAiPmMain({
 
   if (phase === 'reviewing') {
     return (
-      <section
-        className={cn(
-          'flex min-h-[420px] flex-col items-center justify-center py-16 text-center lg:min-h-[480px]',
-          className,
-        )}
-      >
-        <Loader2 className="size-8 animate-spin text-muted-foreground" aria-hidden />
-        <p className="mt-4 text-sm font-medium">{t('reviewingTitle')}</p>
-        <p className="mt-1 text-xs text-muted-foreground">{t('reviewingHint')}</p>
-      </section>
+      <div className={cn('mx-auto max-w-[720px] space-y-6 py-2', className)}>
+        <WorkspaceAnalysisResultPanel
+          presenter={
+            analysisPresenter ?? {
+              headline: '시장성 분석 결과',
+              decisions: [],
+              insights: [],
+              recommended: null,
+            }
+          }
+          analyzing
+        />
+      </div>
     );
   }
 
@@ -334,12 +401,32 @@ export function WorkspaceAiPmMain({
         />
       ) : null}
 
+      {showUnderstandingEdit && onDomainChange ? (
+        <WorkspaceUnderstandingEditFlow
+          mode={understandingPhase === 'together' ? 'together' : 'edit'}
+          domain={domain}
+          entities={entities}
+          readOnly={readOnly}
+          onDomainChange={onDomainChange}
+          onApplyEdits={handleApplyEdits}
+        />
+      ) : null}
+
+      {showUnderstandingEditConfirm && editConfirmSummary ? (
+        <WorkspaceUnderstandingConfirmFlow
+          summary={editConfirmSummary}
+          onConfirm={handleEditConfirmYes}
+          onRevise={handleEditRevise}
+        />
+      ) : null}
+
       {showMarketAlignment && understanding ? (
         <WorkspaceBusinessAlignmentBlock
           understanding={understanding}
           initialState={savedAlignment}
           documentReadable={documentReadable}
           readOnly={readOnly}
+          onDirectionChange={handleAlignmentDirectionChange}
           onConfirm={handleMarketAligned}
         />
       ) : null}
@@ -350,6 +437,7 @@ export function WorkspaceAiPmMain({
           hasDocument={hasDocument}
           canStartReview={reviewCanStart}
           reviewBlockedReason={reviewBlockedReason}
+          alignment={savedAlignment}
           onContinueUnderstanding={() => {
             saveUnderstandingPhase('pending', projectId);
             setUnderstandingPhase('pending');
@@ -365,6 +453,8 @@ export function WorkspaceAiPmMain({
       {!isPostReview &&
       !showAiPmLoop &&
       !showUnderstandingCard &&
+      !showUnderstandingEdit &&
+      !showUnderstandingEditConfirm &&
       !showMarketAlignment &&
       !showNextStepPanel &&
       understandingPhase !== 'aligning' ? (
@@ -382,23 +472,10 @@ export function WorkspaceAiPmMain({
 
       {isPostReview ? (
         <div className="space-y-6">
-          <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
-              {tPostReview('completeLabel')}
-            </p>
-            <p className="mt-3 text-[15px] font-medium leading-relaxed">{tPostReview('completeLead')}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{tPostReview('completeSub')}</p>
-          </section>
-
-          {scoreNarrative ? (
-            <WorkspaceAiPmScorePanel
-              narrative={scoreNarrative}
-              readOnly={readOnly}
-              onFixPrimary={handleFixPrimaryIssue}
-            />
+          {analysisPresenter ? (
+            <WorkspaceAnalysisResultPanel presenter={analysisPresenter} analyzing={false} />
           ) : null}
-
-          {showPostReviewWorkshop && understanding ? (
+          {showPostReviewWorkshop && understanding && !analysisPresenter ? (
             <div id="post-review-workshop">
               <WorkspaceDecisionWorkshopBlock
                 understanding={understanding}
@@ -407,15 +484,34 @@ export function WorkspaceAiPmMain({
                 reviewCount={reviewCount}
                 projectId={projectId}
                 readOnly={readOnly}
+                hero
                 onAgreed={() => setWorkshopAgreement(loadWorkshopAgreement(projectId))}
               />
             </div>
+          ) : !analysisPresenter ? (
+            <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
+                {tPostReview('completeLabel')}
+              </p>
+              <p className="mt-3 text-[15px] font-medium leading-relaxed">{tPostReview('completeLead')}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{tPostReview('completeSub')}</p>
+            </section>
+          ) : null}
+
+          {scoreNarrative ? (
+            <WorkspaceAiPmScorePanel
+              narrative={scoreNarrative}
+              readOnly={readOnly}
+              emphasis="supporting"
+              onFixPrimary={handleFixPrimaryIssue}
+            />
           ) : null}
 
           <WorkspacePostReviewRoadmap
             workshopAgreement={workshopAgreement}
             workshopAgreed={workshopAgreed}
-            showPrimaryAction={false}
+            showPrimaryAction
+            primaryActionLabel={tPostReview('primaryAction')}
           />
 
           {showDemoLoginCta ? <WorkspaceDemoLoginCta /> : null}

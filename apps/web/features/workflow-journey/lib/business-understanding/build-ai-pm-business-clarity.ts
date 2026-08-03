@@ -2,7 +2,11 @@ import type { BusinessUnderstanding } from '@repo/types/domain/business-understa
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
 import { extractDocumentEntities } from '../domain/extract-document-entities';
-import { isWorkspaceDocumentReadable } from './workspace-document-eligibility';
+import {
+  isWorkspaceDocumentReadable,
+  looksLikeDocumentFileName,
+} from './workspace-document-eligibility';
+import { SHARED_UNDERSTANDING_PENDING, SHARED_UNDERSTANDING_UNREADABLE_BUSINESS } from './build-shared-understanding';
 import { buildAiPmSharedMemory } from './build-ai-pm-shared-memory';
 import {
   buildPartnerNextStep,
@@ -52,7 +56,7 @@ export type AiPmReturnWelcome = {
 
 const TODAY_FOCUS: Record<AiPmLoopIssueId, string> = {
   customer_definition: '누가 실제 고객인지를 같이 보겠습니다.',
-  problem_definition: '대표가 왜 비용을 낼 만큼 불편한지를 같이 보겠습니다.',
+  problem_definition: '결제하는 사람이 왜 비용을 낼 만큼 불편한지를 같이 보겠습니다.',
   bm_design: '누가 얼마를 내는지를 같이 보겠습니다.',
   competitor_analysis: '고객이 지금 무엇을 대신 쓰는지를 같이 보겠습니다.',
   market_validation: '왜 지금 이 시장인지를 같이 보겠습니다.',
@@ -61,7 +65,7 @@ const TODAY_FOCUS: Record<AiPmLoopIssueId, string> = {
 /** @deprecated S5 — use buildPartnerNextStep */
 const TODAY_FOCUS_SHORT: Record<AiPmLoopIssueId, string> = {
   customer_definition: '누가 실제 고객인지',
-  problem_definition: '대표가 왜 비용을 낼 만큼 불편한지',
+  problem_definition: '결제하는 사람이 왜 비용을 낼 만큼 불편한지',
   bm_design: '누가 얼마를 내는지',
   competitor_analysis: '고객이 지금 무엇을 대신 쓰는지',
   market_validation: '왜 지금 이 시장인지',
@@ -75,15 +79,21 @@ function truncate(text: string, max = 56): string {
 
 function extractProductPhrase(documentText: string, entities: LaunchLensDomainContext | null): string | null {
   const fromEntity = entities?.product.value?.trim() || entities?.business.name?.trim();
-  if (fromEntity && fromEntity.length >= 2) return truncate(fromEntity, 40);
+  if (fromEntity && fromEntity.length >= 2 && !looksLikeDocumentFileName(fromEntity)) {
+    return truncate(fromEntity, 40);
+  }
 
   const solutionMatch = documentText.match(
     /(?:솔루션|서비스|제품|사업)[:\s]*([^\n#]{4,48})/i,
   );
-  if (solutionMatch?.[1]) return truncate(solutionMatch[1], 40);
+  if (solutionMatch?.[1] && !looksLikeDocumentFileName(solutionMatch[1])) {
+    return truncate(solutionMatch[1], 40);
+  }
 
   const saasMatch = documentText.match(/([^\n]{2,32}(?:SaaS|saas))/);
-  if (saasMatch?.[1]) return truncate(saasMatch[1], 40);
+  if (saasMatch?.[1] && !looksLikeDocumentFileName(saasMatch[1])) {
+    return truncate(saasMatch[1], 40);
+  }
 
   return null;
 }
@@ -92,6 +102,10 @@ function extractInitialBusinessSummary(
   understanding: BusinessUnderstanding,
   documentText: string,
 ): string {
+  if (!isWorkspaceDocumentReadable(documentText)) {
+    return SHARED_UNDERSTANDING_UNREADABLE_BUSINESS;
+  }
+
   if (understanding.customerMentions.length >= 2) {
     return understanding.customerMentions
       .slice(0, 3)
@@ -100,7 +114,10 @@ function extractInitialBusinessSummary(
   }
 
   if (understanding.customer.value?.trim()) {
-    return truncate(understanding.customer.value, 36);
+    const customer = understanding.customer.value.trim();
+    if (!looksLikeDocumentFileName(customer)) {
+      return truncate(customer, 36);
+    }
   }
 
   if (/중소|제조|기업|스타트업|공장/i.test(documentText)) {
@@ -110,9 +127,9 @@ function extractInitialBusinessSummary(
   const firstLine = documentText
     .split('\n')
     .map((line) => line.replace(/^#+\s*/, '').trim())
-    .find((line) => line.length >= 4);
+    .find((line) => line.length >= 4 && !looksLikeDocumentFileName(line));
 
-  return firstLine ? truncate(firstLine, 36) : '사업 초안';
+  return firstLine ? truncate(firstLine, 36) : SHARED_UNDERSTANDING_PENDING;
 }
 
 function normalizeRolePhrase(text: string): string {
@@ -253,6 +270,10 @@ function buildBusinessHeadlineLines(
   entities: LaunchLensDomainContext | null,
   understanding: BusinessUnderstanding,
 ): string[] {
+  if (!isWorkspaceDocumentReadable(documentText) && turns.length === 0) {
+    return [SHARED_UNDERSTANDING_UNREADABLE_BUSINESS];
+  }
+
   const lines: string[] = [];
   const customerTurn = turns.find((turn) => turn.issueId === 'customer_definition');
 

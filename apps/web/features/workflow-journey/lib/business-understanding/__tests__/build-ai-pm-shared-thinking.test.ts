@@ -102,8 +102,9 @@ A사, B사와 경쟁
     expect(thinking?.acknowledgment).toBeUndefined();
     expect(thinking?.learnedLead).toBe('이제 하나는 명확해졌습니다.');
     expect(thinking?.learnedFact).toBe('구매자는 대표입니다.');
-    expect(thinking?.rethink).toContain('우리가 같이 볼 건');
-    expect(thinking?.rethink).toContain('대표가 왜 돈을 낼 만큼 불편한가');
+    expect(thinking?.rethink).toContain('좋습니다');
+    expect(thinking?.rethink).toContain('구매자는 대표입니다.');
+    expect(thinking?.rethink).toContain('왜 돈을 낼 만큼 불편한가');
     expect(thinking?.priorityShift).toContain('시장보다 문제');
     expect(thinking?.hypothesisBridge).toContain('한 뼘 더 선명해질');
     expect(thinking?.agreement.invite).toBe('같이 확인해 볼까요?');
@@ -112,10 +113,10 @@ A사, B사와 경쟁
     expect(thinking?.sharedMemory?.lead).toBe('우리가 지금까지 정리한 내용입니다.');
     expect(thinking?.sharedMemory?.items[0]?.label).toBe('구매자');
     expect(thinking?.businessClarity?.evolutionLead).toMatch(/^이제 사업은 "/);
-    expect(thinking?.question).toContain('한 문장');
+    expect(thinking?.question).toContain('구매자는 대표입니다.');
 
     const prose = formatSharedThinkingProse(thinking!);
-    expect(prose).toContain('우리가 같이 볼 건');
+    expect(prose).toContain('좋습니다');
     expect(prose).not.toContain('처음에는');
     expect(prose).not.toContain('이제 하나는 명확해졌습니다.');
   });

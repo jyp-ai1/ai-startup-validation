@@ -49,7 +49,7 @@ describe('deriveWorkspaceState', () => {
     expect(customer?.lifecycle).toBe('completed');
   });
 
-  it('exposes review.canStart when review-ready and domain is complete', () => {
+  it('exposes review.canStart when Evidence Status pack is Confirmed', () => {
     const state = derive({
       understandingPhase: 'review-ready',
       domain: {
@@ -71,6 +71,21 @@ describe('deriveWorkspaceState', () => {
         product: { value: '예지보전 SaaS', basis: 'document' },
         market: { value: '국내 중소 제조 공장', basis: 'document' },
         competitor: { value: null, basis: 'unknown' },
+      },
+      loop: {
+        ...createInitialAiPmLoopState(),
+        turns: [
+          {
+            issueId: 'customer_definition',
+            answer: '30인 이하 제조기업 공장장 · 구매는 대표',
+            appliedAt: new Date().toISOString(),
+          },
+          {
+            issueId: 'problem_definition',
+            answer: '예기치 않은 설비 고장으로 생산 중단',
+            appliedAt: new Date().toISOString(),
+          },
+        ],
       },
     });
 
@@ -130,6 +145,25 @@ describe('deriveWorkspaceState', () => {
     });
     expect(state.review.canStart).toBe(false);
     expect(state.review.blockedReason).toBeNull();
+  });
+
+  it('exposes shared understanding spine with business · customer · problem', () => {
+    const state = derive();
+    expect(state.sharedUnderstanding).not.toBeNull();
+    expect(state.sharedUnderstanding?.business.length).toBeGreaterThan(2);
+    expect(state.sharedUnderstanding?.customer).toBeTruthy();
+    expect(state.sharedUnderstanding?.problem).toBeTruthy();
+  });
+
+  it('derives four journey steps for step-first sidebar', () => {
+    const state = derive();
+    expect(state.sidebar.stepFirstProgress).toBe(true);
+    expect(state.sidebar.journeySteps?.map((step) => step.id)).toEqual([
+      'business',
+      'customer',
+      'market',
+      'review',
+    ]);
   });
 });
 

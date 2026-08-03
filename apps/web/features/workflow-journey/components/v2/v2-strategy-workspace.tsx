@@ -29,6 +29,12 @@ import {
 import { type WorkflowStepId } from '../../lib/v2-workflow-steps';
 import { saveReviewSnapshot } from '../../lib/v2-review-dirty-state';
 import { createMeetingNoteFromReview } from '../../lib/v2-ai-pm-meeting-store';
+import { runAnalysis } from '@/lib/analysis-engine';
+import { buildConversationMemoryFromSources } from '../../lib/business-understanding/build-conversation-memory';
+import { deriveEvidenceStatusFromMemory } from '../../lib/business-understanding/evidence-status';
+import { mapEvidenceStatusToAnalysisInput } from '../../lib/business-understanding/map-evidence-to-analysis-input';
+import { saveAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
+import { loadConversationMemory } from '../../lib/business-understanding/conversation-memory-store';
 import {
   ProjectWorkspaceShell,
   WorkspaceAiPmMain,
@@ -76,6 +82,7 @@ import {
   presentWorkspaceHeader,
   presentWorkspaceReviewGate,
   presentWorkspaceSidebar,
+  presentSharedUnderstanding,
 } from '../../lib/business-understanding/workspace-state-presenters';
 import {
   clearAllDemoClientState,
@@ -675,10 +682,27 @@ export function V2StrategyWorkspaceView({
 
   const sidebarSnapshot = presentWorkspaceSidebar(workspaceState);
   const workspaceBusinessState = presentWorkspaceHeader(workspaceState);
+  const sharedUnderstanding = presentSharedUnderstanding(workspaceState);
   const reviewGate = presentWorkspaceReviewGate(workspaceState);
 
   const runReview = useCallback(() => {
     if (!reviewGate.canStart) return;
+
+    // S14 — Evidence Status → AnalysisInput → Engine (Loop-unaware)
+    const documentText = loadWorkspaceDocumentText(storageProjectId)?.trim() ?? '';
+    const loop = loadAiPmLoopState(storageProjectId);
+    const memory = buildConversationMemoryFromSources({
+      projectId: storageProjectId ?? 'default',
+      documentText,
+      turns: loop.turns,
+      entities,
+      previous: loadConversationMemory(storageProjectId),
+    });
+    const evidenceStatus = deriveEvidenceStatusFromMemory({ memory, entities });
+    const analysisInput = mapEvidenceStatusToAnalysisInput({ evidence: evidenceStatus });
+    const analysisResult = runAnalysis(analysisInput);
+    saveAnalysisResult(analysisResult, storageProjectId);
+
     persist(evidence);
     setPhase('reviewing');
     setReviewCount((c) => {
@@ -705,6 +729,7 @@ export function V2StrategyWorkspaceView({
       window.setTimeout(() => setPhase('followUp'), 400);
     }, REVIEW_MS);
   }, [
+    entities,
     evidence,
     isDemoGuided,
     isDemoReadonly,
@@ -771,7 +796,7 @@ export function V2StrategyWorkspaceView({
     if (understandingPhase === 'review-ready') {
       return sanitizeAiPmResponse(buildReviewTransitionMessage());
     }
-    if (understandingPhase === 'edit' || understandingPhase === 'together') {
+    if (understandingPhase === 'edit' || understandingPhase === 'together' || understandingPhase === 'edit_confirm') {
       return sanitizeAiPmResponse(buildBusinessUnderstandingIntro());
     }
     return sanitizeAiPmResponse(aiPmMessage.paragraphs.join(' '));
@@ -815,6 +840,7 @@ export function V2StrategyWorkspaceView({
           reviewCanStart={reviewGate.canStart}
           reviewBlockedReason={reviewGate.blockedReason}
           onUnderstandingConfirmed={refreshUnderstandingState}
+          onDomainChange={handleDomainChange}
         />
       )}
 
@@ -841,6 +867,7 @@ export function V2StrategyWorkspaceView({
       activeNodeId={activeNavNodeId}
       stripMessage={stripMessage}
       businessState={workspaceBusinessState}
+      sharedUnderstanding={sharedUnderstanding}
       onMainViewChange={setMainView}
       onSelectNode={setActiveNavNodeId}
       onSelectAiPm={() => setMainView('ai-pm')}

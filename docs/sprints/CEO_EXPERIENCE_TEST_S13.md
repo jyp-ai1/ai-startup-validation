@@ -27,3 +27,7 @@ Release Commit + Tag  →  CEO Experience Test  →  Classification  →  S14 Pl
 ```
 
 Baseline for “S13 vs new feedback”: git tag `s13-deterministic-analysis-engine-v1`.
+
+## Access (Production · same SHA)
+
+→ [`CEO_EXPERIENCE_TEST_ACCESS.md`](./CEO_EXPERIENCE_TEST_ACCESS.md)

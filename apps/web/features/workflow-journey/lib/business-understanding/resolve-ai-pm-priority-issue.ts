@@ -5,6 +5,8 @@ import {
   buildAiPmDynamicDiagnosis,
   estimateDynamicRiskScore,
 } from './build-ai-pm-dynamic-diagnosis';
+import { factKeyForIssue } from './build-conversation-memory';
+import { memoryHasFact, type ConversationMemory } from './conversation-memory';
 import { getResolvedIssueIds } from './workspace-ai-pm-loop-store';
 import {
   AI_PM_LOOP_ISSUE_ORDER,
@@ -15,7 +17,20 @@ import {
 type PriorityOptions = {
   documentText?: string | null;
   entities?: LaunchLensDomainContext | null;
+  /** S9 — skip issues already locked as confirmed Facts */
+  memory?: ConversationMemory | null;
+  /** S14 — defer competitor until Engine analysisResult exists */
+  analysisResultExists?: boolean;
 };
+
+function isIssueLockedInMemory(
+  issueId: AiPmLoopIssueId,
+  memory: ConversationMemory | null | undefined,
+): boolean {
+  if (!memory) return false;
+  const key = factKeyForIssue(issueId);
+  return key ? memoryHasFact(memory, key) : false;
+}
 
 function buildDiagnosis(
   understanding: BusinessUnderstanding,
@@ -41,7 +56,7 @@ export function resolveAiPmPriorityIssue(
 
 /**
  * Single source for loop UI, pause, and resume.
- * First issue: risk-based priority. After that: committed currentIssueId, then ranked gaps.
+ * S9: never re-ask an issue whose Fact is Confirmed in Conversation Memory.
  */
 export function resolveNextLoopIssue(
   understanding: BusinessUnderstanding,
@@ -52,19 +67,33 @@ export function resolveNextLoopIssue(
 
   const resolvedIds = getResolvedIssueIds(loop);
   const resolved = new Set(resolvedIds);
+  const memory = options?.memory ?? null;
 
-  if (loop.currentIssueId && !resolved.has(loop.currentIssueId)) {
+  if (
+    loop.currentIssueId &&
+    !resolved.has(loop.currentIssueId) &&
+    !isIssueLockedInMemory(loop.currentIssueId, memory)
+  ) {
     return loop.currentIssueId;
   }
 
   const diagnosis = buildDiagnosis(understanding, resolvedIds, options);
+  const candidates =
+    resolved.size === 0
+      ? ([diagnosis.primaryIssueId, ...diagnosis.topRiskIssueIds, ...AI_PM_LOOP_ISSUE_ORDER].filter(
+          Boolean,
+        ) as AiPmLoopIssueId[])
+      : [...diagnosis.topRiskIssueIds, ...AI_PM_LOOP_ISSUE_ORDER];
 
-  if (resolved.size === 0) {
-    return diagnosis.primaryIssueId;
+  for (const id of candidates) {
+    if (resolved.has(id)) continue;
+    if (isIssueLockedInMemory(id, memory)) continue;
+    // S14 — competitor is not a first Action before analysisResult exists
+    if (id === 'competitor_analysis' && !options?.analysisResultExists) continue;
+    return id;
   }
 
-  const next = diagnosis.topRiskIssueIds.find((id) => !resolved.has(id));
-  return next ?? AI_PM_LOOP_ISSUE_ORDER.find((id) => !resolved.has(id)) ?? null;
+  return null;
 }
 
 export function estimatePrioritySeverity(

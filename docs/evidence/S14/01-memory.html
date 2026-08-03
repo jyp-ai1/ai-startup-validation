@@ -1,0 +1,24 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"/><title>01 Memory</title>
+<style>
+body{font-family:ui-sans-serif,system-ui,sans-serif;background:#f6f4ef;color:#1a1a1a;padding:32px;max-width:720px;margin:0 auto}
+h1{font-size:18px;margin:0 0 8px} h2{font-size:13px;color:#666;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin:24px 0 8px}
+.card{border:1px solid #ddd;border-radius:16px;background:#fff;padding:20px;margin-top:12px}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:#e8f0fe;color:#1a56db}
+.ok{background:#e6f6ea;color:#11632e}.warn{background:#fff4e5;color:#9a5b00}
+.mono{font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;background:#111;color:#d7ffd7;padding:12px;border-radius:8px}
+li{margin:6px 0} button{margin-top:12px;padding:10px 16px;border-radius:12px;border:0;background:#1a1a1a;color:#fff;font-weight:600}
+button:disabled{opacity:.4}
+</style></head><body><h1>① Loop → Memory → Evidence Status</h1>
+<p class="badge">RC localhost Evidence</p>
+<div class="card">
+<h2>Loop answers</h2>
+<ol><li>결제하는 사람? → <b>병원 원장</b></li><li>문제? → <b>재방문 관리 부담</b></li></ol>
+<h2>Conversation Memory (Facts)</h2>
+<div class="mono">[
+  { key: "business", value: "병원 AI", source: "document" },
+  { key: "customer", value: "병원 원장", source: "user_turn" },
+  { key: "buyer", value: "병원 원장", source: "user_turn" },
+  { key: "problem", value: "재방문 관리 부담", source: "user_turn" }
+]</div>
+<p class="badge ok">Memory ≠ Evidence — Facts are source; Evidence Status is derived</p>
+</div></body></html>
