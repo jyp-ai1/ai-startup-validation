@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-08-03T15:14:00.000Z",
+  "engine": "apps/web/lib/analysis-engine",
+  "catalog": ["R-01", "R-02", "R-03", "R-05", "R-06"],
+  "r04Policy": "Fold — Insight language only",
+  "acceptanceCommand": "pnpm --filter web test:s13",
+  "acceptanceResult": "12 passed",
+  "runs": [
+    {
+      "fixture": "R-01",
+      "input": {
+        "stage": "mvp",
+        "businessType": "saas",
+        "evidence": {
+          "customer": "confirmed",
+          "problem": "confirmed",
+          "revenue": "unknown"
+        }
+      },
+      "traces": [
+        {
+          "decision": "RevenueValidation = Insufficient",
+          "ruleId": "R-01",
+          "evidenceRefs": ["customer", "problem", "revenue"],
+          "insightClaim": "고객·문제에 대한 이해(Problem Fit)는 있으나, 수익 구조에 대한 근거가 부족하여 시장성을 판단할 수 없습니다.",
+          "action": "수익 구조를 먼저 검증하세요."
+        }
+      ],
+      "problemFitDecisionPresent": false
+    },
+    {
+      "fixture": "R-02",
+      "input": {
+        "stage": "mvp",
+        "businessType": "saas",
+        "evidence": {
+          "customer": "confirmed",
+          "problem": "confirmed",
+          "revenue": "assumed"
+        }
+      },
+      "traces": [
+        {
+          "decision": "RevenueValidation = Fragile",
+          "ruleId": "R-02",
+          "evidenceRefs": ["customer", "revenue"],
+          "insightClaim": "수익 구조가 추정 단계라 시장성 판단은 취약합니다. 확인 후 재판단하세요.",
+          "action": "수익 구조 추정을 확인한 뒤 다시 판단하세요."
+        }
+      ],
+      "problemFitDecisionPresent": false
+    },
+    {
+      "fixture": "R-03",
+      "input": {
+        "stage": "mvp",
+        "businessType": "saas",
+        "evidence": {
+          "customer": "confirmed",
+          "problem": "confirmed",
+          "revenue": "confirmed"
+        }
+      },
+      "traces": [
+        {
+          "decision": "MarketJudgment = Ready",
+          "ruleId": "R-03",
+          "evidenceRefs": ["customer", "revenue"],
+          "insightClaim": "고객·문제에 대한 이해(Problem Fit)와 함께, 고객과 수익 근거가 확인되어 시장성 판단을 시작할 수 있습니다.",
+          "action": "이제 시장성 분석을 시작할 수 있습니다."
+        }
+      ],
+      "problemFitDecisionPresent": false
+    },
+    {
+      "fixture": "R-05",
+      "input": {
+        "stage": "idea",
+        "businessType": "generic",
+        "evidence": {
+          "customer": "unknown",
+          "problem": "unknown",
+          "revenue": "unknown"
+        }
+      },
+      "traces": [
+        {
+          "decision": "AnalysisGate = Blocked",
+          "ruleId": "R-05",
+          "evidenceRefs": ["customer"],
+          "insightClaim": "고객 Evidence가 없어 분석을 시작하기에 부족합니다.",
+          "action": "고객을 먼저 확인하세요."
+        }
+      ],
+      "problemFitDecisionPresent": false
+    },
+    {
+      "fixture": "R-06",
+      "input": {
+        "stage": "idea",
+        "businessType": "generic",
+        "evidence": {
+          "customer": "confirmed",
+          "problem": "unknown",
+          "payer": "unknown",
+          "revenue": "unknown"
+        }
+      },
+      "traces": [
+        {
+          "decision": "RevenueValidation = Insufficient",
+          "ruleId": "R-06",
+          "evidenceRefs": ["customer", "payer"],
+          "insightClaim": "수익 구조에 대한 근거가 부족하여 시장성을 판단할 수 없습니다.",
+          "action": "수익 구조를 먼저 검증하세요."
+        }
+      ],
+      "problemFitDecisionPresent": false
+    }
+  ]
+}
