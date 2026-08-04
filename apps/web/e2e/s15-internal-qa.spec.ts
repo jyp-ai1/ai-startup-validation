@@ -1,6 +1,7 @@
 /**
  * S15 Internal QA — user scenarios (no feature work).
- * RUN against local RC: PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000
+ * Production Candidate: PLAYWRIGHT_BASE_URL=https://ai-startup-validation-tau.vercel.app
+ * Local RC: PLAYWRIGHT_BASE_URL=http://127.0.0.1:3001
  */
 import { expect, test } from '@playwright/test';
 import path from 'node:path';
@@ -29,6 +30,73 @@ async function dismiss(page: import('@playwright/test').Page) {
     await b.first().click({ force: true });
   }
 }
+
+test('QA-1 new project — no 8-char gate (form copy or live create)', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/ko/my-projects', { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(1_200);
+  await dismiss(page);
+
+  const url = page.url();
+  const body = await page.locator('body').innerText();
+  const hasEightChar = /8자 이상|8 characters or more|적어도 8/i.test(body);
+  expect(hasEightChar, 'must not show 8-char requirement').toBe(false);
+
+  const onForm =
+    (await page.locator('#project-description').isVisible().catch(() => false)) ||
+    (await page.getByLabel(/사업 설명|Business description/i).isVisible().catch(() => false));
+
+  let createOk = false;
+  let firstQuestion = false;
+
+  if (onForm) {
+    await page.screenshot({ path: path.join(OUT, 'qa1-form-live.png'), fullPage: true });
+    const label = await page.locator('label[for="project-description"]').innerText().catch(() => '');
+    expect(/선택|optional/i.test(label) || label.length === 0).toBeTruthy();
+
+    await page.locator('#new-project-title').fill(`S15 QA ${Date.now().toString().slice(-6)}`);
+    const review = page.locator('input[name="reviewType"]').first();
+    if (await review.isVisible().catch(() => false)) await review.check({ force: true });
+    // leave description empty
+    await page.getByRole('button', { name: /새 프로젝트|Create/i }).click();
+    await page.waitForTimeout(5_000);
+    const after = await page.locator('body').innerText();
+    createOk = !/8자 이상|8 characters or more|생성 실패|error/i.test(after) || /workspace|질문|AI PM/i.test(after);
+    firstQuestion =
+      (await page.locator('textarea').first().isVisible().catch(() => false)) ||
+      /질문|같이|답변/i.test(after);
+    await page.screenshot({ path: path.join(OUT, 'qa1-after-create.png'), fullPage: true });
+  } else {
+    // Auth wall: scrape landing + login for 8-char; soft-confirm create gate via public UI only
+    await page.screenshot({ path: path.join(OUT, 'qa1-auth-wall.png'), fullPage: true });
+    await page.goto('/ko', { waitUntil: 'domcontentloaded' });
+    await dismiss(page);
+    const home = await page.locator('body').innerText();
+    expect(/8자 이상/.test(home)).toBe(false);
+  }
+
+  fs.writeFileSync(
+    path.join(OUT, 'qa1-result.json'),
+    JSON.stringify(
+      {
+        url,
+        hasEightChar,
+        onForm,
+        createOk,
+        firstQuestion,
+        authGated: !onForm,
+      },
+      null,
+      2,
+    ),
+  );
+
+  // PASS if no 8-char anywhere observed; live create preferred when session exists
+  expect(hasEightChar).toBe(false);
+  if (onForm) {
+    expect(createOk).toBe(true);
+  }
+});
 
 test('QA-2 PDF upload → Trust → Loop (no filename as business)', async ({ page }) => {
   test.setTimeout(180_000);

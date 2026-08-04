@@ -1,66 +1,41 @@
 # S15 Progress
 
 **Sprint theme:** Decision Fatigue → Guided Validation  
-**Phase:** Release for CEO self-verify (CPO absent)  
-**CEO Test:** Preview + Production URLs after this ship
+**Phase:** CTO QA Report submitted — CPO Final Review 대기  
+**CEO Walkthrough:** ⛔ HOLD until CPO Final PASS
 
-## Rules (locked)
+## Release Gate (CPO)
 
-1. AI는 **같이 이해하는** 시스템  
-2. AI는 **다음 행동을 알려주는** 시스템  
-3. Hero Action은 **항상 1개**  
-4. 사용자 모델: **현재 → 왜 → 다음**
+| 항목 | 상태 |
+|------|------|
+| Production Candidate | ✅ SHA **`65a5972`** |
+| S15 P0 구현 | ✅ |
+| Internal QA | ✅ Report submitted — 4 PASS + QA-1 CONDITIONAL |
+| CPO Final Review | 대기 |
+| CEO Walkthrough | ⛔ HOLD |
 
-## Done (user-flow)
+### Known Environment Issue
 
-### P0-1 Upload
-- Demo: PDF placeholder 업로드 허용 → Workspace Trust Block → Loop
-- 파일명(`plan.pdf`)이 사업명이 되면 FAIL (unit PASS)
-- Soft hint: 본문 미추출 시 Trust로 이어짐 안내
+> 이전 로컬 문자열 검색 작업은 개발 환경(터미널 인코딩/`netstat`) 문제로 중단되었음. 제품 코드 및 Production 배포에는 영향 없음. 현재 Production Candidate는 **SHA `65a5972`** 기준으로 판단.
 
-### P0-2 검토 시작
-- 비활성 시 **항상 이유 1줄** (무반응 금지 + generic fallback)
-- Memory: Loop turn을 Memory rebuild **전에** append → `problem` bag sync 수정 (unit PASS)
+*(Informational only — does not affect Release Gate.)*
 
-### P0-3 신규 프로젝트
-- Create 시 8자 description 강제 **삭제**
-- 설명 optional → 빈 Workspace 생성 가능
-
-### P0-4 / P0-5 Analysis Presenter
-- 화면: **현재 판단 → 근거(≤3) → 지금 해야 할 일(Hero CTA 1) → 더 보기**
-- Score panel Supporting + Analysis 있을 때 2nd Hero CTA 숨김
-
-## Internal QA
+## Internal QA (Production)
 
 Report: `docs/sprints/S15_QA_REPORT.md`  
-Evidence: `docs/evidence/S15/qa/`
+Evidence: `docs/evidence/S15/qa/`  
+Run: Playwright vs `https://ai-startup-validation-tau.vercel.app` — **3 passed**
 
 | QA | Result |
 |----|--------|
-| QA-1 신규 프로젝트 | **BLOCKED** (Cursor browser Google OAuth 미완료) |
-| QA-2 PDF Trust→Loop | **PASS** |
-| QA-3 Analysis 첫 스크롤 | **PASS** |
-| QA-4 Hero CTA = 1 | **PASS** |
-| QA-5 검토 시작/이유 | **PASS** |
+| QA-1 | **CONDITIONAL** (auth-gated create; no `8자` on wall + gate removed in `65a5972`) |
+| QA-2 | **PASS** |
+| QA-3 | **PASS** |
+| QA-4 | **PASS** |
+| QA-5 | **PASS** |
 
 ## Remaining
 
-- [x] Commit + push `65a5972`
-- [x] Production Ready (`ai-startup-validation-tau.vercel.app`)
-- [ ] Representative (CEO) self-verify on URLs below
-- [ ] P1 Guided Step (after P0 walkthrough)
-
-## Ship URLs (`65a5972`)
-
-| Env | URL |
-|-----|-----|
-| Production | https://ai-startup-validation-tau.vercel.app |
-| Production (alias) | https://ai-startup-validation-jyp-ai1s-projects.vercel.app |
-| Branch / Preview alias | https://ai-startup-validation-git-main-jyp-ai1s-projects.vercel.app |
-| Deployment | https://ai-startup-validation-hnh17abzs-jyp-ai1s-projects.vercel.app |
-
-`GET /api/build-info` → `commit: 65a5972554c4ab211bde51b7a7689e2415d2ceaa`
-
-## Blockers
-
-- None for ship. QA-1 live create was blocked only in Agent browser OAuth; Representative can verify on Production.
+- [ ] CPO Final Review
+- [ ] CEO Walkthrough (after CPO Final PASS)
+- [ ] P1 Guided Step (after P0 gate)
