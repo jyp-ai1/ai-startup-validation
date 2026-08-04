@@ -96,6 +96,7 @@ describe('S14 Payer placeholder', () => {
 describe('S14 Competitor defer', () => {
   it('skips competitor_analysis until analysisResult exists', () => {
     const understanding = buildBusinessUnderstanding(DOC);
+    // All non-competitor issues already answered — only competitor remains.
     const loop = {
       ...createInitialAiPmLoopState(),
       turns: [
@@ -109,6 +110,16 @@ describe('S14 Competitor defer', () => {
           answer: '대기 시간',
           appliedAt: new Date().toISOString(),
         },
+        {
+          issueId: 'bm_design' as const,
+          answer: '월 구독 SaaS',
+          appliedAt: new Date().toISOString(),
+        },
+        {
+          issueId: 'market_validation' as const,
+          answer: '병원 EMR 도입 시장이 확대 중',
+          appliedAt: new Date().toISOString(),
+        },
       ],
       currentIssueId: null as null,
     };
@@ -117,14 +128,13 @@ describe('S14 Competitor defer', () => {
       analysisResultExists: false,
     });
     expect(nextWithout).not.toBe('competitor_analysis');
+    expect(nextWithout).toBeNull();
 
     const nextWith = resolveNextLoopIssue(understanding, loop, {
       documentText: DOC,
       analysisResultExists: true,
     });
-    // may or may not be competitor depending on diagnosis — only assert filter lifts
-    void nextWith;
-    expect(true).toBe(true);
+    expect(nextWith).toBe('competitor_analysis');
   });
 });
 

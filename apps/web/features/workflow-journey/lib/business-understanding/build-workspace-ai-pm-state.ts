@@ -8,6 +8,7 @@ import {
   type WorkspacePersistedFacts,
 } from '@/lib/project/workspace-persisted-facts';
 
+import { hasAnalysisResult } from './analysis-result-store';
 import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
 import { isWorkspaceDocumentReadable } from './workspace-document-eligibility';
 import {
@@ -207,13 +208,17 @@ export function buildAiPmRuntimeJudgment(input: {
   loop: AiPmLoopState;
   understanding: BusinessUnderstanding;
   facts?: WorkspacePersistedFacts | null;
+  projectId?: string;
 }): AiPmRuntimeJudgment | null {
-  const { documentText, loop, understanding, facts } = input;
+  const { documentText, loop, understanding, facts, projectId } = input;
   const hasDocument = (documentText?.trim().length ?? 0) >= 8;
   if (!hasDocument) return null;
 
   const history = facts?.history ?? [];
-  const nextIssue = resolveNextLoopIssue(understanding, loop, { documentText });
+  const nextIssue = resolveNextLoopIssue(understanding, loop, {
+    documentText,
+    analysisResultExists: hasAnalysisResult(projectId),
+  });
   const lastCompleted = lastCompletedIssueFromHistory(history, loop);
 
   const currentPhase: AiPmPhaseId = nextIssue

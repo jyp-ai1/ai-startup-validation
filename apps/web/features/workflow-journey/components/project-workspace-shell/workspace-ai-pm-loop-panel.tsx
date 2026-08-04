@@ -34,6 +34,7 @@ import {
 } from '../../lib/business-understanding/workspace-document-eligibility';
 import { loadConversationMemory } from '../../lib/business-understanding/conversation-memory-store';
 import { buildConversationMemoryFromSources } from '../../lib/business-understanding/build-conversation-memory';
+import { hasAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentThinking } from '../../lib/business-understanding/build-thinking-presenter';
 import { presentS11Surface } from '../../lib/business-understanding/build-s11-surface-presenter';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
@@ -88,14 +89,16 @@ export function WorkspaceAiPmLoopPanel({
       previous: loadConversationMemory(projectId),
     });
   }, [projectId, documentText, loopState.turns, entities]);
+  const analysisResultExists = hasAnalysisResult(projectId);
   const nextIssue = useMemo(
     () =>
       resolveNextLoopIssue(understanding, loopState, {
         documentText: documentText ?? undefined,
         entities,
         memory: conversationMemory,
+        analysisResultExists,
       }),
-    [understanding, loopState, documentText, entities, conversationMemory],
+    [understanding, loopState, documentText, entities, conversationMemory, analysisResultExists],
   );
   const activeIssueId = loopState.currentIssueId ?? nextIssue;
   const lastTurn = loopState.turns.at(-1) ?? null;
@@ -170,6 +173,7 @@ export function WorkspaceAiPmLoopPanel({
       loop: loopState,
       understanding,
       facts: workspaceFacts,
+      projectId,
     });
   }, [loopState, projectId, understanding, workspaceFacts]);
 
@@ -332,6 +336,7 @@ export function WorkspaceAiPmLoopPanel({
         documentText: doc ?? undefined,
         entities,
         memory: loadConversationMemory(projectId),
+        analysisResultExists: hasAnalysisResult(projectId),
       });
       const next = patchAiPmLoopState(
         { phase: plannedNext ? 'issue' : 'complete', currentIssueId: plannedNext },
