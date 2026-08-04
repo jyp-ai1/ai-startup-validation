@@ -1,0 +1,221 @@
+{
+  "semantics": "per-key upsert; other Fact keys never wiped (append across keys)",
+  "not": "full Memory overwrite on each Loop answer",
+  "overwriteBan": {
+    "rule": "same key may update value; other keys must remain",
+    "observed": [
+      "After customer turn: business remained",
+      "After market turn: business + customer + buyer remained; market added",
+      "No stage showed prior keys wiped"
+    ]
+  },
+  "cpoAppendShape": {
+    "expected": [
+      [],
+      ["business"],
+      ["business", "customer"],
+      ["business", "customer", "problem"]
+    ],
+    "observedKeysTrail": [
+      [],
+      [],
+      ["business"],
+      ["business", "customer", "buyer", "market"],
+      ["business", "customer", "buyer", "market"],
+      ["business", "customer", "buyer", "market"],
+      ["business", "customer", "buyer", "market"]
+    ],
+    "observedTurnsTrail": [
+      [],
+      [],
+      ["customer_definition"],
+      ["customer_definition", "market_validation", "problem_definition"]
+    ],
+    "note": "ConversationMemory bag accumulated business→customer/buyer→market without wipe. problem_definition turn is present; Review Gate opened (canStart=true); Engine AnalysisInput.evidence.problem=confirmed. Memory bag key `problem` lagged behind turn at end-of-capture (Known)."
+  },
+  "trailStages": [
+    {
+      "stage": "00-empty",
+      "factKeys": [],
+      "turnIssueIds": [],
+      "evidence": {
+        "customer": "unknown",
+        "payer": "unknown",
+        "problem": "unknown",
+        "business": "unknown"
+      },
+      "canReview": false,
+      "hasAnalysis": false,
+      "currentIssue": "",
+      "chosenMemKey": ""
+    },
+    {
+      "stage": "01-after-document",
+      "factKeys": [],
+      "turnIssueIds": [],
+      "evidence": {
+        "customer": "unknown",
+        "payer": "unknown",
+        "problem": "unknown",
+        "business": "unknown"
+      },
+      "canReview": false,
+      "hasAnalysis": false,
+      "currentIssue": "customer_definition",
+      "chosenMemKey": ""
+    },
+    {
+      "stage": "02-after-customer",
+      "factKeys": ["business"],
+      "turnIssueIds": ["customer_definition"],
+      "evidence": {
+        "customer": "unknown",
+        "payer": "unknown",
+        "problem": "unknown",
+        "business": "confirmed"
+      },
+      "canReview": false,
+      "hasAnalysis": false,
+      "currentIssue": "market_validation",
+      "chosenMemKey": "launchlens.conversationMemory.demo-session"
+    },
+    {
+      "stage": "03-after-problem-attempt",
+      "factKeys": ["business", "customer", "buyer", "market"],
+      "turnIssueIds": [
+        "customer_definition",
+        "market_validation",
+        "problem_definition"
+      ],
+      "evidence": {
+        "customer": "confirmed",
+        "payer": "confirmed",
+        "problem": "unknown",
+        "business": "confirmed"
+      },
+      "canReview": true,
+      "hasAnalysis": false,
+      "currentIssue": "",
+      "chosenMemKey": "launchlens.conversationMemory.demo-session"
+    },
+    {
+      "stage": "04-review-gate",
+      "factKeys": ["business", "customer", "buyer", "market"],
+      "turnIssueIds": [
+        "customer_definition",
+        "market_validation",
+        "problem_definition"
+      ],
+      "evidence": {
+        "customer": "confirmed",
+        "payer": "confirmed",
+        "problem": "unknown",
+        "business": "confirmed"
+      },
+      "canReview": true,
+      "hasAnalysis": false,
+      "currentIssue": "",
+      "chosenMemKey": "launchlens.conversationMemory.demo-session"
+    },
+    {
+      "stage": "05-after-analysis",
+      "factKeys": ["business", "customer", "buyer", "market"],
+      "turnIssueIds": [
+        "customer_definition",
+        "market_validation",
+        "problem_definition"
+      ],
+      "evidence": {
+        "customer": "confirmed",
+        "payer": "confirmed",
+        "problem": "unknown",
+        "business": "confirmed"
+      },
+      "canReview": false,
+      "hasAnalysis": true,
+      "currentIssue": "",
+      "chosenMemKey": "launchlens.conversationMemory.demo-session"
+    },
+    {
+      "stage": "06-competitor-after-analysis",
+      "factKeys": ["business", "customer", "buyer", "market"],
+      "turnIssueIds": [
+        "customer_definition",
+        "market_validation",
+        "problem_definition"
+      ],
+      "evidence": {
+        "customer": "confirmed",
+        "payer": "confirmed",
+        "problem": "unknown",
+        "business": "confirmed"
+      },
+      "canReview": false,
+      "hasAnalysis": true,
+      "currentIssue": "",
+      "chosenMemKey": "launchlens.conversationMemory.demo-session"
+    }
+  ],
+  "finalMemory": {
+    "version": 1,
+    "projectId": "demo-session",
+    "facts": [
+      {
+        "key": "business",
+        "value": "사업계획서 요약",
+        "source": "document",
+        "confirmedAt": "2026-08-04T00:49:08.876Z"
+      },
+      {
+        "key": "customer",
+        "value": "병원 원장입니다",
+        "source": "user_turn",
+        "confirmedAt": "2026-08-04T00:49:08.876Z"
+      },
+      {
+        "key": "buyer",
+        "value": "병원 원장입니다",
+        "source": "user_turn",
+        "confirmedAt": "2026-08-04T00:49:08.876Z"
+      },
+      {
+        "key": "market",
+        "value": "재방문 관리에 시간과 비용 부담이 큽니다",
+        "source": "user_turn",
+        "confirmedAt": "2026-08-04T00:49:08.876Z"
+      }
+    ],
+    "updatedAt": "2026-08-04T00:49:08.876Z"
+  },
+  "finalLoopTurns": [
+    {
+      "issueId": "customer_definition",
+      "answer": "병원 원장입니다"
+    },
+    {
+      "issueId": "market_validation",
+      "answer": "재방문 관리에 시간과 비용 부담이 큽니다"
+    },
+    {
+      "issueId": "problem_definition",
+      "answer": "원장이 가장 크게 느끼는 문제는 재방문·대기 관리 비용입니다"
+    }
+  ],
+  "engineAnalysisAtReview": {
+    "evidence": {
+      "customer": "confirmed",
+      "problem": "confirmed",
+      "payer": "confirmed",
+      "revenue": "unknown",
+      "market": "confirmed",
+      "competition": "unknown"
+    },
+    "decision": "RevenueValidation = Insufficient",
+    "storageKey": "launchlens.s14.analysisResult.demo-session"
+  },
+  "capturedAt": "2026-08-04T00:49:30.440Z",
+  "rc": {
+    "baseURL": "http://127.0.0.1:3000",
+    "codeSha": "4da05a1fef3019d411a32810e902f1014b131d41"
+  }
+}

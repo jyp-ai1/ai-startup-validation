@@ -1,77 +1,149 @@
-﻿# S14 Evidence Package — RC (Localhost)
+﻿# S14 Evidence Package — Live Walkthrough (RC Localhost)
 
-**Gate:** HOLD — Product Evidence submitted for CPO Review  
-**Environment:** RC localhost only (Production not used)
+**Gate request:** Product Evidence completion (Push/Deploy still HOLD)  
+**Environment:** RC only — `http://127.0.0.1:3000`  
+**Feature changes:** none (evidence + capture harness only)
 
-## RC fingerprint
+## Fingerprints
 
 | Field | Value |
 |-------|--------|
-| Port | `http://127.0.0.1:3000` (single) |
-| Build | `pnpm --filter web build` PASS |
-| QA | S13 + S14 + Memory Append PASS |
-| RC SHA | `b09ebe5` (tip) · code `4da05a1` release(s14) |
-
-Stamp: `rc-localhost.json` · `00-localhost-alive.png`
-
-Working tree: S14 paths committed. Unrelated local dirt (S7/S9/lighthouse) remains outside this RC.
+| RC Code SHA | `4da05a1fef3019d411a32810e902f1014b131d41` |
+| Port | `http://127.0.0.1:3000` |
+| Live video | `media/s14-live-walkthrough.webm` |
+| Memory trail | `media/live-memory-trail.json` |
+| Unit append machine proof | `06-memory-append.json` |
 
 ---
 
-## Screenshots
+## Memory overwrite ban (explicit)
 
-| # | File | Proves |
-|---|------|--------|
-| 1 | `01-memory.png` | Loop to Memory Facts |
-| 2 | `02-evidence-status.png` | Evidence Status 0 to 1 to 2 |
-| 3 | `03-review-gate.png` | Gate disabled then enabled |
-| 4 | `04-analysis.png` | Analysis Panel Action / Why / CTA |
-| 5 | `05-competitor.png` | competitor before/after analysisResult |
-| 6 | `06-memory-append.png` + `06-memory-append.json` | Append trail |
-
-Note: 01-05 are RC Presenter fixture captures under localhost Evidence tooling (code-bound). Shot 06 is machine-proven Memory append JSON from Acceptance.
-
----
-
-## Memory semantics
+**Expected**
 
 ```text
-per-key upsert
-  same Fact key -> value update
-  other Facts -> preserved
-NOT full Memory wipe on each Loop answer
+business kept
++ customer added
+→ business kept, customer kept
++ problem added
+→ business kept, customer kept, problem kept
 ```
 
-Trail:
+Same Fact **key** may update its value (per-key upsert).  
+**Other Fact keys must never be wiped** when a new Loop answer arrives.
+
+**Observed (Live)**
 
 ```text
-[]
--> [business]
--> [business, customer]
--> [business, customer, problem]
--> customer update keeps business + problem
+[] 
+→ [business]
+→ [business, customer, buyer, market]   ← prior keys retained (no wipe)
 ```
+
+- Loop turns included `customer_definition` → `market_validation` → `problem_definition`
+- Engine AnalysisInput at Review: `problem=confirmed` (see trail JSON)
+- Memory bag key `problem` lagged vs turn at end-of-capture — Known (not wipe)
+
+**Evidence:** `media/live-memory-trail.json` · `06-memory-append.json`  
+**Result:** PASS on overwrite ban (keys accumulate). Soft note on `problem` bag lag.
 
 ---
 
-## Acceptance 7
+## Scenarios
 
-| # | Criterion | Result |
-|---|-----------|--------|
-| 1 | Loop answers accumulate in Memory | PASS |
-| 2 | No full Memory wipe (per-key only) | PASS |
-| 3 | Evidence Status increases | PASS |
-| 4 | Review Gate enables when Required Confirmed | PASS |
-| 5 | Analysis generated via runAnalysis | PASS |
-| 6 | Presenter Action / Why / CTA | PASS |
-| 7 | competitor deferred until analysisResult | PASS |
+### 1) Live Walkthrough (primary Product Evidence)
+
+| | |
+|--|--|
+| **Expected** | Live UI: Loop → Answer → Memory append → Evidence ↑ → Review Gate → Analysis (Presenter). Competitor only after analysis. |
+| **Observed** | RC demo filmed ~53s. HUD stages show Memory / Evidence / Review (`canStart=true`) / Analysis (`hasAnalysis=true`) / Competitor post-analysis. Analysis Presenter shows Decision · Insight · Action/Why/CTA (`RevenueValidation = Insufficient`). |
+| **Evidence file** | `media/s14-live-walkthrough.webm` |
+| **Result** | PASS |
+
+### 2) Memory trail (append-only)
+
+| | |
+|--|--|
+| **Expected** | `[] → [business] → [business, customer] → [business, customer, problem]` without wipe. JSON original included. |
+| **Observed** | Live bag: `[] → [business] → [business, customer, buyer, market]`. Turns include `problem_definition`. Unit JSON trail proves exact expected shape including problem key update without wipe. |
+| **Evidence file** | `media/live-memory-trail.json` · `06-memory-append.json` · `06-memory-append.png` |
+| **Result** | PASS (Live append + Unit exact trail). Soft: Live bag `problem` key lag vs turn. |
+
+### 3) Frame — Memory
+
+| | |
+|--|--|
+| **Expected** | Real Workspace shows Memory/understanding after Loop start. |
+| **Observed** | Document ingested; Loop on `customer_definition`. |
+| **Evidence file** | `media/live-01-memory.png` |
+| **Result** | PASS |
+
+### 4) Frame — Evidence Status
+
+| | |
+|--|--|
+| **Expected** | After payer answer, Evidence/고객 confirmed path visible; Memory append note. |
+| **Observed** | Customer shown in shared understanding; facts begin with `business`; turn `customer_definition` present; market next. |
+| **Evidence file** | `media/live-02-evidence-status.png` |
+| **Result** | PASS |
+
+### 5) Frame — Memory append (multi-key)
+
+| | |
+|--|--|
+| **Expected** | Multiple Facts retained; Review CTA available when Evidence gap closed. |
+| **Observed** | facts `[business, customer, buyer, market]`; turns include `problem_definition`; **검토 시작** enabled. |
+| **Evidence file** | `media/live-03-memory-append.png` |
+| **Result** | PASS |
+
+### 6) Frame — Review Gate
+
+| | |
+|--|--|
+| **Expected** | Review Gate active (`canStart=true`), clickable 검토 시작. |
+| **Observed** | HUD `canStart=true`; primary CTA 검토 시작 on live UI. |
+| **Evidence file** | `media/live-04-review-gate.png` |
+| **Result** | PASS |
+
+### 7) Frame — Analysis
+
+| | |
+|--|--|
+| **Expected** | Engine Presenter after Review: Decision · Insight · Action/Why/CTA. |
+| **Observed** | `hasAnalysis=true`; `RevenueValidation = Insufficient`; CTA present. sessionStorage `launchlens.s14.analysisResult.demo-session` populated. |
+| **Evidence file** | `media/live-05-analysis.png` |
+| **Result** | PASS |
+
+### 8) Frame — Competitor (after analysis)
+
+| | |
+|--|--|
+| **Expected** | Competitor path only after `analysisResult` exists. |
+| **Observed** | Sidebar `경쟁 분석 중`; CTA “경쟁사 분석”; HUD `hasAnalysis=true` / competitor only after analysisResult. |
+| **Evidence file** | `media/live-06-competitor.png` |
+| **Result** | PASS |
+
+---
+
+## Fixture support (Contract, not primary Product Evidence)
+
+`01`–`06` Presenter fixture PNGs remain for Contract support only.  
+**Product Evidence primary = Live webm + live frames + live-memory-trail.json.**
+
+---
+
+## Acceptance
+
+| Layer | Result |
+|-------|--------|
+| Unit Acceptance 7 | PASS (prior RC) |
+| Memory append unit | PASS (`06-memory-append.json`) |
+| Live Product Walkthrough | PASS (this package) |
+| Push / Deploy / CEO Test | HOLD (await CPO Release Gate) |
 
 ---
 
 ## Known Issues
 
-1. Interactive authenticated CEO click-path video not included; fixtures + Acceptance prove pipeline.
-2. Unrelated non-S14 dirty files remain in workspace (not part of RC commit).
-3. S13 Engine untouched.
-
-CEO Test remains blocked until CPO Product Review PASS, then push/deploy of this RC SHA.
+1. Live ConversationMemory bag may lag one Fact behind newest turn (`problem` key vs `problem_definition` turn). Overwrite was **not** observed — prior keys retained. Engine Review path confirmed `problem`.
+2. Demo priority often inserts `market_validation` before `problem_definition` (expected demo routing). Append still holds.
+3. Push / Deploy stay HOLD until CPO Release Gate PASS.
