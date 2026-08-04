@@ -300,13 +300,13 @@ export function WorkspaceAiPmLoopPanel({
       phase: 'answer',
     });
 
-    applyWorkspaceLoopAnswer(issueId, trimmed, projectId);
-    onDocumentUpdated?.(issueId, trimmed);
-
+    // S15 — append turn BEFORE Memory rebuild so bag includes the latest Fact
     appendAiPmLoopTurn(
       { issueId, answer: trimmed, appliedAt: new Date().toISOString() },
       projectId,
     );
+    applyWorkspaceLoopAnswer(issueId, trimmed, projectId);
+    onDocumentUpdated?.(issueId, trimmed);
 
     setAnswerDraft('');
     setReturnWelcomeDismissed(true);

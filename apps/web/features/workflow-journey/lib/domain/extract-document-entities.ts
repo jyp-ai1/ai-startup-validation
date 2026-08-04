@@ -4,6 +4,8 @@ import type {
   LaunchLensDomainContext,
 } from '@repo/types/domain/launchlens-domain';
 
+import { looksLikeDocumentFileName } from '../business-understanding/workspace-document-eligibility';
+
 const FOUNDER_ARCHETYPES = [
   '예비창업자',
   '예비 창업자',
@@ -83,8 +85,13 @@ function extractBusinessName(text: string): DomainEntityField {
   const title =
     lines[0]?.replace(/^[#\-\*]\s*/, '').slice(0, 48) ||
     findSection(text, ['서비스', 'service', '프로젝트', 'product', '사업명', '회사']);
-  if (title.length >= 2) {
+  // S15 P0-1 — upload filename must never become business name
+  if (title.length >= 2 && !looksLikeDocumentFileName(title) && !looksLikeDocumentFileName(text)) {
     return { value: title, basis: 'document', excerpt: title.slice(0, 120) };
+  }
+  const section = findSection(text, ['서비스', 'service', '프로젝트', 'product', '사업명', '회사']);
+  if (section.length >= 2 && !looksLikeDocumentFileName(section)) {
+    return { value: section.slice(0, 48), basis: 'document', excerpt: section.slice(0, 120) };
   }
   return { value: null, basis: 'unknown', excerpt: null };
 }

@@ -343,6 +343,11 @@ export function WorkspaceAiPmMain({
         <WorkspaceAnalysisResultPanel
           presenter={
             analysisPresenter ?? {
+              judgment: '판단 정리 중',
+              evidence: [],
+              hero: null,
+              secondary: [],
+              supportingScoreHint: null,
               headline: '시장성 분석 결과',
               decisions: [],
               insights: [],
@@ -503,14 +508,14 @@ export function WorkspaceAiPmMain({
               narrative={scoreNarrative}
               readOnly={readOnly}
               emphasis="supporting"
-              onFixPrimary={handleFixPrimaryIssue}
+              onFixPrimary={analysisPresenter ? undefined : handleFixPrimaryIssue}
             />
           ) : null}
 
           <WorkspacePostReviewRoadmap
             workshopAgreement={workshopAgreement}
             workshopAgreed={workshopAgreed}
-            showPrimaryAction
+            showPrimaryAction={!analysisPresenter}
             primaryActionLabel={tPostReview('primaryAction')}
           />
 

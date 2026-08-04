@@ -74,7 +74,7 @@ import {
   loadAiPmLoopState,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
 import { buildBusinessUnderstandingIntro, buildReviewTransitionMessage } from '../../lib/business-understanding/build-business-understanding';
-import { isWorkspaceDocumentAnalyzable } from '../../lib/business-understanding/workspace-document-eligibility';
+import { isWorkspaceDocumentAnalyzable, looksLikeDocumentFileName } from '../../lib/business-understanding/workspace-document-eligibility';
 import {
   deriveWorkspaceState,
 } from '../../lib/business-understanding/workspace-state';
@@ -307,7 +307,14 @@ export function V2StrategyWorkspaceView({
       const sample =
         demoSampleId === 'custom'
           ? {
-              projectName: customDocument.split('\n')[0]?.trim() || '내 사업 Demo',
+              projectName: (() => {
+                const first = customDocument.split('\n')[0]?.replace(/^[#\-\*]\s*/, '').trim() || '';
+                // S15 P0-1 — filename / placeholder heading ≠ business name
+                if (!first || looksLikeDocumentFileName(first) || looksLikeDocumentFileName(customDocument)) {
+                  return '내 사업 Demo';
+                }
+                return first;
+              })(),
               document: customDocument ?? '',
             }
           : getDemoSample(demoSampleId);

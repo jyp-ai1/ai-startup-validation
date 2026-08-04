@@ -57,7 +57,8 @@ export type WorkspaceReviewBlockedReason =
   | 'customer_missing'
   | 'payer_missing'
   | 'problem_missing'
-  | 'document_unreadable';
+  | 'document_unreadable'
+  | 'demo_readonly';
 
 /** S7-2/3 — single review gate (replaces scattered guards). */
 export type WorkspaceReviewGate = {
@@ -294,7 +295,11 @@ function deriveReviewGate(input: {
   } = input;
 
   if (isDemoReadonly) {
-    return { count: reviewCount, canStart: false, blockedReason: null };
+    return {
+      count: reviewCount,
+      canStart: false,
+      blockedReason: 'demo_readonly',
+    };
   }
 
   const alignment = loadMarketAlignment(projectId);

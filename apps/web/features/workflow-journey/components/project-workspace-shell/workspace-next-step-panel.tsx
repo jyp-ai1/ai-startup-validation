@@ -66,12 +66,16 @@ export function WorkspaceNextStepPanel({
           className="mt-5 rounded-xl"
           disabled={!canStartReview}
           onClick={onStartReview}
+          aria-disabled={!canStartReview}
         >
           {t('startReviewCta')}
         </Button>
-        {!canStartReview && reviewBlockedReason ? (
+        {/* S15 P0-2 — never silent: blocked Review always explains why */}
+        {!canStartReview ? (
           <p className="mt-3 text-sm text-muted-foreground" role="status">
-            {t(`reviewBlocked.${reviewBlockedReason}`)}
+            {reviewBlockedReason
+              ? t(`reviewBlocked.${reviewBlockedReason}`)
+              : t('reviewBlocked.generic')}
           </p>
         ) : null}
       </section>

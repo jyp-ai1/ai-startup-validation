@@ -7,7 +7,11 @@ import { ArrowRight, ClipboardPaste, FileText, Loader2, Sparkles, Upload } from 
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
-import { isWorkspaceDocumentAnalyzable, isWorkspaceDocumentReadable } from '../../lib/business-understanding/workspace-document-eligibility';
+import {
+  detectWorkspaceDocumentPlaceholder,
+  isWorkspaceDocumentAnalyzable,
+  looksLikeDocumentFileName,
+} from '../../lib/business-understanding/workspace-document-eligibility';
 import { clearAllDemoClientState } from '../../lib/demo-guided-session';
 import {
   DEMO_CUSTOM_DOCUMENT_KEY,
@@ -26,16 +30,28 @@ type DemoStartViewProps = {
   className?: string;
 };
 
+function safeServiceName(content: string): string {
+  const entities = extractDocumentEntities(content);
+  const candidates = [
+    entities.business.name?.trim(),
+    entities.business.value?.trim(),
+  ];
+  for (const candidate of candidates) {
+    if (candidate && candidate.length >= 2 && !looksLikeDocumentFileName(candidate)) {
+      return candidate;
+    }
+  }
+  return '내 프로젝트';
+}
+
 function buildDraftFromDocument(content: string): DemoProjectDraft {
   const entities = extractDocumentEntities(content);
-  const serviceName =
-    entities.business.name?.trim() ||
-    entities.business.value?.trim() ||
-    content.split('\n')[0]?.trim() ||
-    '내 프로젝트';
+  const serviceName = safeServiceName(content);
   const tagline =
-    entities.business.value?.trim() ||
     entities.product.value?.trim() ||
+    (entities.business.value?.trim() && !looksLikeDocumentFileName(entities.business.value)
+      ? entities.business.value.trim()
+      : null) ||
     'LaunchLens Demo에서 시작한 프로젝트';
 
   return {
@@ -75,7 +91,9 @@ export function DemoStartView({ className }: DemoStartViewProps) {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const canStartCustom = isWorkspaceDocumentReadable(customDocument);
+  const canStartCustom = isWorkspaceDocumentAnalyzable(customDocument);
+  const isPlaceholderDoc =
+    canStartCustom && detectWorkspaceDocumentPlaceholder(customDocument) != null;
   const hasWeakPaste = customDocument.trim().length > 0 && !canStartCustom;
 
   const applyFileText = useCallback(async (file: File) => {
@@ -83,12 +101,9 @@ export function DemoStartView({ className }: DemoStartViewProps) {
     setError(null);
     try {
       const { text } = await readSmartIntakeFile(file);
-      if (!isWorkspaceDocumentReadable(text)) {
-        setError(
-          isWorkspaceDocumentAnalyzable(text)
-            ? 'PDF 본문을 아직 읽을 수 없습니다. 텍스트를 붙여넣거나 TXT/Markdown 파일을 사용해 주세요.'
-            : '문서 내용이 부족합니다. 사업 설명을 더 추가해 주세요.',
-        );
+      // S15 P0-1 — accept analyzable docs (incl. PDF placeholder) → Trust Block in Workspace
+      if (!isWorkspaceDocumentAnalyzable(text)) {
+        setError('문서 내용이 부족합니다. 사업 설명을 더 추가해 주세요.');
         setFileName(null);
         return;
       }
@@ -252,6 +267,13 @@ export function DemoStartView({ className }: DemoStartViewProps) {
               className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
             />
           </label>
+
+          {isPlaceholderDoc ? (
+            <p className="text-sm text-amber-800 dark:text-amber-200" role="status">
+              파일 본문은 아직 추출되지 않았습니다. 시작 후 Trust Block에서 함께 확인하고 Shared
+              Understanding으로 이어집니다. 파일명은 사업명이 되지 않습니다.
+            </p>
+          ) : null}
 
           {hasWeakPaste ? (
             <p className="text-sm text-amber-800 dark:text-amber-200" role="status">

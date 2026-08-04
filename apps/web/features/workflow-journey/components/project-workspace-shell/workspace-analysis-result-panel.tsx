@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
@@ -12,13 +14,23 @@ type WorkspaceAnalysisResultPanelProps = {
   className?: string;
 };
 
-/** S14 — Engine Decision · Insight · Recommended Action (Action · Why · CTA). */
+/**
+ * S15 — Judgment → Evidence (≤3) → Hero Action (1 CTA).
+ * Secondary actions behind 「더보기」. Score is not the hero.
+ */
 export function WorkspaceAnalysisResultPanel({
   presenter,
   analyzing = false,
   onCta,
   className,
 }: WorkspaceAnalysisResultPanelProps) {
+  const [showMore, setShowMore] = useState(false);
+  const hero = presenter.hero ?? presenter.recommended;
+  const evidence = presenter.evidence?.length
+    ? presenter.evidence
+    : presenter.insights.map((i) => i.claim).slice(0, 3);
+  const judgment = presenter.judgment || presenter.decisions[0]?.summary || presenter.headline;
+
   if (analyzing) {
     return (
       <section
@@ -30,12 +42,10 @@ export function WorkspaceAnalysisResultPanel({
         aria-live="polite"
       >
         <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">AI PM</p>
-        <p className="mt-4 text-[15px] leading-relaxed">시장성 분석 진행중…</p>
+        <p className="mt-4 text-[15px] leading-relaxed">지금 판단을 정리하고 있습니다…</p>
       </section>
     );
   }
-
-  const recommended = presenter.recommended;
 
   return (
     <section
@@ -45,36 +55,54 @@ export function WorkspaceAnalysisResultPanel({
       )}
     >
       <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">AI PM</p>
-      <h2 className="mt-3 text-lg font-semibold tracking-tight">{presenter.headline}</h2>
 
-      <div className="mt-5 space-y-4">
+      <div className="mt-4 space-y-5">
         <div>
           <p className="text-xs font-semibold text-muted-foreground">현재 판단</p>
-          <ul className="mt-2 space-y-1 text-[15px] leading-relaxed">
-            {presenter.decisions.map((d) => (
-              <li key={d.ruleId}>{d.summary}</li>
-            ))}
-          </ul>
+          <p className="mt-2 text-[17px] font-semibold leading-snug tracking-tight">{judgment}</p>
         </div>
 
         <div>
           <p className="text-xs font-semibold text-muted-foreground">근거</p>
           <ul className="mt-2 space-y-2 text-[15px] leading-relaxed">
-            {presenter.insights.map((i) => (
-              <li key={i.ruleId}>{i.claim}</li>
+            {evidence.map((claim) => (
+              <li key={claim}>{claim}</li>
             ))}
           </ul>
         </div>
 
-        {recommended ? (
+        {hero ? (
           <div className="rounded-xl border border-border/60 bg-background/80 px-4 py-4">
-            <p className="text-xs font-semibold text-muted-foreground">추천</p>
-            <p className="mt-2 text-[15px] font-medium leading-relaxed">{recommended.action}</p>
-            <p className="mt-3 text-xs font-semibold text-muted-foreground">이유</p>
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{recommended.why}</p>
-            <Button type="button" className="mt-4 rounded-xl" onClick={onCta}>
-              {recommended.cta}
+            <p className="text-xs font-semibold text-muted-foreground">지금 해야 할 일</p>
+            <p className="mt-2 text-[15px] font-medium leading-relaxed">{hero.action}</p>
+            <p className="mt-3 text-xs font-semibold text-muted-foreground">왜</p>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{hero.why}</p>
+            <Button type="button" className="mt-4 w-full rounded-xl sm:w-auto" onClick={onCta}>
+              {hero.cta}
             </Button>
+          </div>
+        ) : null}
+
+        {presenter.secondary.length > 0 ? (
+          <div>
+            <Button
+              type="button"
+              variant="ghost"
+              className="h-auto px-0 text-sm text-muted-foreground"
+              onClick={() => setShowMore((v) => !v)}
+            >
+              {showMore ? '접기' : `더 보기 (${presenter.secondary.length})`}
+            </Button>
+            {showMore ? (
+              <ul className="mt-3 space-y-3 border-t border-border/50 pt-3 text-sm text-muted-foreground">
+                {presenter.secondary.map((item) => (
+                  <li key={item.ruleId}>
+                    <p className="font-medium text-foreground/90">{item.action}</p>
+                    <p className="mt-1">{item.why}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         ) : null}
       </div>

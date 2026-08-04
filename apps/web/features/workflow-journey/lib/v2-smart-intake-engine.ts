@@ -8,7 +8,7 @@ import {
   mapEntitiesToLegacyCustomer,
   mapEntitiesToLegacyIdea,
 } from './domain/extract-document-entities';
-import { detectWorkspaceDocumentPlaceholder } from './business-understanding/workspace-document-eligibility';
+import { detectWorkspaceDocumentPlaceholder, looksLikeDocumentFileName } from './business-understanding/workspace-document-eligibility';
 import type {
   SmartIntakeAnalysis,
   SmartIntakeFieldId,
@@ -66,17 +66,23 @@ export function analyzeSmartIntakeDocument(
     : extractDocumentEntities(text);
   const domainTrust = evaluateDomainTrust(entities);
 
-  const serviceName =
+  const rawServiceName =
     mapEntitiesToLegacyIdea(entities, text) ||
     lines[0]?.replace(/^[#\-\*]\s*/, '').slice(0, 40) ||
     findSection(text, ['서비스', 'service', '프로젝트', 'product']) ||
     '내 프로젝트';
+  // S15 P0-1 — never use upload filename / placeholder heading as serviceName
+  const serviceName =
+    looksLikeDocumentFileName(rawServiceName) || isBinaryPlaceholder(text, source)
+      ? '내 프로젝트'
+      : rawServiceName;
 
-  const tagline =
+  const rawTagline =
     lines[1]?.slice(0, 80) ||
     findSection(text, ['한줄', '소개', 'summary', 'tagline', 'overview']) ||
     lines[0]?.slice(0, 80) ||
     serviceName;
+  const tagline = looksLikeDocumentFileName(rawTagline) ? serviceName : rawTagline;
 
   const problem =
     findSection(text, ['문제', 'problem', 'pain', '불편', '과제']) ||

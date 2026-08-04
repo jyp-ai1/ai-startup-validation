@@ -357,8 +357,8 @@
       "existing-strategy": "기존 사업 전략",
       "investment-prep": "투자 준비"
     },
-    "descriptionLabel": "사업 설명 또는 문서 내용",
-    "descriptionPlaceholder": "사업계획서, IR deck, Notion 메모 등 8자 이상 붙여넣기",
+    "descriptionLabel": "사업 설명 (선택)",
+    "descriptionPlaceholder": "나중에 Workspace에서 AI와 함께 적어도 됩니다",
     "newProjectCta": "새 프로젝트 만들기",
     "newProjectSectionTitle": "새 프로젝트 만들기",
     "continueCta": "계속하기",
@@ -6780,7 +6780,9 @@
             "customer_missing": "대표가 누구인지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",
             "payer_missing": "누가 비용을 내는지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",
             "problem_missing": "어떤 문제를 푸는지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",
-            "document_unreadable": "문서 본문을 아직 읽지 못했습니다. 붙여넣기나 파일 업로드로 내용을 확인해 주세요."
+            "document_unreadable": "문서 본문을 아직 읽지 못했습니다. 붙여넣기나 파일 업로드로 내용을 확인해 주세요.",
+            "demo_readonly": "미리보기 모드에서는 검토를 시작할 수 없습니다. Demo를 열거나 로그인 후 진행해 주세요.",
+            "generic": "아직 검토를 시작할 조건이 모이지 않았습니다. 위에서 AI PM 질문에 답해 주세요."
           }
         },
         "documentIntake": {

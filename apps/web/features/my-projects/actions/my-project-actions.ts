@@ -25,7 +25,6 @@ import { recordOAuthAnalyticsEvent } from '@/lib/auth/oauth-analytics';
 import { PRODUCT_ANALYTICS_EVENTS } from '@/lib/analytics/product-analytics';
 import { requireAuthUser } from '@/lib/auth/server-auth';
 import { mergeWorkspacePersistedContext } from '@/lib/project/workspace-persisted-state';
-import { isWorkspaceDocumentAnalyzable } from '@/features/workflow-journey/lib/business-understanding/workspace-document-eligibility';
 
 export type CreateMyProjectState = {
   error?: string;
@@ -202,17 +201,16 @@ export async function createMyProjectAction(
   }
 
   const description = formData.get('description')?.toString().trim() ?? '';
-  if (!isWorkspaceDocumentAnalyzable(description)) {
-    return { error: '사업 설명 또는 문서 내용을 8자 이상 입력해 주세요.' };
-  }
+  // S15 P0-3 — empty Workspace first; document/description optional at create
+  const summary = description.length >= 2 ? description : '';
 
   const project = await createOwnedProject(user.id, {
     title,
-    summary: description,
+    summary: summary || title,
     onboardingContext: {
-      sprint12: buildInitialInterviewState(reviewTypeRaw, description),
+      sprint12: buildInitialInterviewState(reviewTypeRaw, summary || title),
       v2Demo: {
-        pastedContent: description,
+        pastedContent: summary,
         importSource: 'paste',
       },
     },

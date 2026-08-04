@@ -1,0 +1,13 @@
+{
+  "scenario": "QA-1 new project empty description",
+  "result": "BLOCKED",
+  "checks": {
+    "noEightCharCopyInBuild": true,
+    "optionalDescriptionLabelInBuild": true,
+    "createGateRemovedInSource": true,
+    "authenticatedCreateObserved": false,
+    "firstQuestionObserved": false
+  },
+  "blocker": "Google OAuth in Cursor browser incomplete; /ko/my-projects form submit not observed",
+  "screenshots": ["qa1-new-project.png"]
+}

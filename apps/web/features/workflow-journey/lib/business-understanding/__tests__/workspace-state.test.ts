@@ -138,13 +138,13 @@ describe('deriveWorkspaceState', () => {
     expect(state.review.blockedReason).toBe('document_unreadable');
   });
 
-  it('blocks review in demo readonly mode without exposing internal keys', () => {
+  it('blocks review in demo readonly with a user-facing reason (S15: no silent block)', () => {
     const state = derive({
       understandingPhase: 'review-ready',
       isDemoReadonly: true,
     });
     expect(state.review.canStart).toBe(false);
-    expect(state.review.blockedReason).toBeNull();
+    expect(state.review.blockedReason).toBe('demo_readonly');
   });
 
   it('exposes shared understanding spine with business · customer · problem', () => {
@@ -223,6 +223,6 @@ describe('applyWorkspaceLoopAnswer', () => {
 
     expect(result.documentText).toContain('[AI PM 확인 · 고객 정의]');
     expect(result.domain.customer.length).toBeGreaterThan(2);
-    expect(result.entities.customer.value.length).toBeGreaterThan(2);
+    expect(result.entities.customer.value?.length ?? 0).toBeGreaterThan(2);
   });
 });
