@@ -12,6 +12,7 @@ type WorkspaceAiPmScorePanelProps = {
   narrative: AiPmScoreNarrative;
   onFixPrimary?: (issueId: AiPmLoopIssueId) => void;
   readOnly?: boolean;
+  emphasis?: 'hero' | 'supporting';
   className?: string;
 };
 
@@ -19,23 +20,35 @@ export function WorkspaceAiPmScorePanel({
   narrative,
   onFixPrimary,
   readOnly = false,
+  emphasis = 'hero',
   className,
 }: WorkspaceAiPmScorePanelProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmScore');
   const { score, strengths, gaps, potentialTotal, primaryGap } = narrative;
+  const supporting = emphasis === 'supporting';
 
   return (
     <section
       className={cn(
-        'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7',
+        supporting
+          ? 'rounded-2xl border border-border/60 bg-muted/20 px-5 py-4 sm:px-7'
+          : 'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7',
         className,
       )}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{t('label')}</p>
-      <p className="mt-3 text-4xl font-bold tabular-nums tracking-tight">
-        {score.total}
-        <span className="ml-1 text-lg font-medium text-muted-foreground">/100</span>
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+        {t('label')}
       </p>
+      {!supporting ? (
+        <p className="mt-3 text-4xl font-bold tabular-nums tracking-tight">
+          {score.total}
+          <span className="ml-1 text-lg font-medium text-muted-foreground">/100</span>
+        </p>
+      ) : (
+        <p className="mt-2 text-sm text-muted-foreground">
+          {t('supportingScore', { score: score.total ?? 0 })}
+        </p>
+      )}
 
       <div className="mt-5 space-y-4">
         <div>

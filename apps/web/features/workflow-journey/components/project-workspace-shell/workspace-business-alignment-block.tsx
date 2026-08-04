@@ -21,6 +21,7 @@ type WorkspaceBusinessAlignmentBlockProps = {
   understanding: BusinessUnderstanding;
   initialState?: MarketAlignmentState | null;
   onConfirm: (state: MarketAlignmentState, candidates: MarketCandidate[]) => void;
+  onDirectionChange?: (state: MarketAlignmentState) => void;
   documentReadable?: boolean;
   readOnly?: boolean;
   className?: string;
@@ -66,6 +67,7 @@ export function WorkspaceBusinessAlignmentBlock({
   understanding,
   initialState,
   onConfirm,
+  onDirectionChange,
   documentReadable = true,
   readOnly = false,
   className,
@@ -79,10 +81,12 @@ export function WorkspaceBusinessAlignmentBlock({
   const [customDraft, setCustomDraft] = useState('');
   const [showCustom, setShowCustom] = useState(false);
 
-  const setDirection = (direction: StrategyDirection) => {
-    setState({ direction, primaryLabel: null });
+  const applyDirection = (direction: StrategyDirection) => {
+    const next = { direction, primaryLabel: null };
+    setState(next);
     setShowCustom(false);
     setCustomDraft('');
+    onDirectionChange?.(next);
   };
 
   const hasDirection = state.direction === 'has_direction';
@@ -140,21 +144,21 @@ export function WorkspaceBusinessAlignmentBlock({
             <ChoiceButton
               active={hasDirection}
               disabled={readOnly}
-              onClick={() => setDirection('has_direction')}
+              onClick={() => applyDirection('has_direction')}
             >
               {ta('optionHasDirection')}
             </ChoiceButton>
             <ChoiceButton
               active={state.direction === 'thinking'}
               disabled={readOnly}
-              onClick={() => setDirection('thinking')}
+              onClick={() => applyDirection('thinking')}
             >
               {ta('optionThinking')}
             </ChoiceButton>
             <ChoiceButton
               active={state.direction === 'decide_after_review'}
               disabled={readOnly}
-              onClick={() => setDirection('decide_after_review')}
+              onClick={() => applyDirection('decide_after_review')}
             >
               {ta('optionDecideAfterReview')}
             </ChoiceButton>
@@ -172,7 +176,9 @@ export function WorkspaceBusinessAlignmentBlock({
                   disabled={readOnly}
                   onClick={() => {
                     setShowCustom(false);
-                    setState({ direction: 'has_direction', primaryLabel: candidate.label });
+                    const next = { direction: 'has_direction' as const, primaryLabel: candidate.label };
+                    setState(next);
+                    onDirectionChange?.(next);
                   }}
                 >
                   {candidate.label}
@@ -183,10 +189,12 @@ export function WorkspaceBusinessAlignmentBlock({
                 disabled={readOnly}
                 onClick={() => {
                   setShowCustom(true);
-                  setState({
-                    direction: 'has_direction',
+                  const next = {
+                    direction: 'has_direction' as const,
                     primaryLabel: customDraft.trim() || null,
-                  });
+                  };
+                  setState(next);
+                  onDirectionChange?.(next);
                 }}
               >
                 {ta('customOption')}
@@ -199,15 +207,23 @@ export function WorkspaceBusinessAlignmentBlock({
                 onChange={(e) => {
                   const label = e.target.value;
                   setCustomDraft(label);
-                  setState({
-                    direction: 'has_direction',
+                  const next = {
+                    direction: 'has_direction' as const,
                     primaryLabel: label.trim() || null,
-                  });
+                  };
+                  setState(next);
+                  onDirectionChange?.(next);
                 }}
                 placeholder={ta('customPlaceholder')}
                 className="w-full rounded-xl border border-border/70 bg-background px-3 py-2 text-sm outline-none focus:border-primary/40"
               />
             ) : null}
+          </div>
+        ) : null}
+
+        {state.direction === 'thinking' ? (
+          <div className="rounded-xl border border-primary/20 bg-primary/[0.03] px-4 py-4 text-sm leading-relaxed">
+            {ta('thinkingPreserveLead')}
           </div>
         ) : null}
 

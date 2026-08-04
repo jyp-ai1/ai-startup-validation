@@ -2,6 +2,7 @@ import type { WorkspaceBusinessState } from './build-ai-pm-business-clarity';
 import type { WorkspaceSidebarSnapshot } from '../../components/project-workspace-shell/workspace-shell-types';
 
 import type { WorkspaceReviewGate, WorkspaceState } from './workspace-state';
+import type { WorkspaceSharedUnderstanding } from './build-shared-understanding';
 
 /** S7-2 — format-only views. No secondary state builders. */
 
@@ -19,4 +20,11 @@ export function presentWorkspaceReviewGate(state: WorkspaceState): WorkspaceRevi
 
 export function presentDocumentReadable(state: WorkspaceState): boolean {
   return state.document.readable;
+}
+
+/** S8-1 — Shared Understanding spine (business · customer · problem). */
+export function presentSharedUnderstanding(
+  state: WorkspaceState,
+): WorkspaceSharedUnderstanding | null {
+  return state.sharedUnderstanding;
 }

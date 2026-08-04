@@ -53,6 +53,17 @@ export function extractPlaceholderFileName(text: string | null | undefined): str
   return match?.[1]?.trim() ?? null;
 }
 
+/** S8-1 — never treat upload filenames as business names in UI copy. */
+export function looksLikeDocumentFileName(text: string | null | undefined): boolean {
+  const trimmed = text?.trim() ?? '';
+  if (!trimmed) return false;
+  if (/\.(pdf|docx?|txt|md|hwp)$/i.test(trimmed)) return true;
+  if (/^plan\.pdf$/i.test(trimmed)) return true;
+  if (/[_\d]{6,}\.(pdf|docx?)$/i.test(trimmed)) return true;
+  if (detectWorkspaceDocumentPlaceholder(trimmed) != null) return true;
+  return false;
+}
+
 /** Trust Contract: analyzable shape is not enough — content must be real text. */
 export function isWorkspaceDocumentReadable(text: string | null | undefined): boolean {
   if (!isWorkspaceDocumentAnalyzable(text)) return false;

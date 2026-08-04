@@ -11,8 +11,10 @@ import { cn } from '@repo/ui/lib/utils';
 import { JourneyGlobalNav } from '../journey-global-nav';
 import { WorkspaceAiPmStrip } from './workspace-ai-pm-strip';
 import { WorkspaceBusinessStateHeader } from './workspace-business-state-header';
+import { WorkspaceSharedUnderstandingPanel } from './workspace-shared-understanding-panel';
 import { WorkspaceSidebar } from './workspace-sidebar';
 import type { WorkspaceBusinessState } from '../../lib/business-understanding/build-ai-pm-business-clarity';
+import type { WorkspaceSharedUnderstanding } from '../../lib/business-understanding/build-shared-understanding';
 import type {
   WorkspaceMainView,
   WorkspaceNavNodeId,
@@ -32,6 +34,7 @@ type ProjectWorkspaceShellProps = {
   onSelectAiPm: () => void;
   stripMessage?: string | null;
   businessState?: WorkspaceBusinessState | null;
+  sharedUnderstanding?: WorkspaceSharedUnderstanding | null;
   children: React.ReactNode;
   className?: string;
 };
@@ -49,6 +52,7 @@ export function ProjectWorkspaceShell({
   onSelectAiPm,
   stripMessage = null,
   businessState = null,
+  sharedUnderstanding = null,
   children,
   className,
 }: ProjectWorkspaceShellProps) {
@@ -88,6 +92,10 @@ export function ProjectWorkspaceShell({
       </header>
 
       {businessState ? <WorkspaceBusinessStateHeader state={businessState} /> : null}
+
+      {sharedUnderstanding ? (
+        <WorkspaceSharedUnderstandingPanel understanding={sharedUnderstanding} />
+      ) : null}
 
       {!businessState ? <WorkspaceAiPmStrip message={stripMessage} /> : null}
 

@@ -3,10 +3,11 @@ import type { UnderstandingConfirmMode } from '@repo/types/domain/business-under
 const PHASE_KEY = 'launchlens.businessUnderstanding.phase';
 const MODE_KEY = 'launchlens.businessUnderstanding.mode';
 
-/** pending → card · edit/together → fields · aligning → founder baseline · review-ready → viability */
+/** pending → card · edit/together → fields · edit_confirm → AI ack · aligning → founder baseline · review-ready → viability */
 export type UnderstandingPhase =
   | 'pending'
   | UnderstandingConfirmMode
+  | 'edit_confirm'
   | 'aligning'
   | 'review-ready';
 
@@ -25,6 +26,7 @@ export function loadUnderstandingPhase(projectId?: string): UnderstandingPhase {
     raw === 'accepted' ||
     raw === 'edit' ||
     raw === 'together' ||
+    raw === 'edit_confirm' ||
     raw === 'aligning' ||
     raw === 'review-ready'
   ) {

@@ -24,13 +24,7 @@ import { buildBusinessUnderstanding } from '../../lib/business-understanding/bui
 import { buildAiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
 import {
   buildAiPmSharedThinking,
-  formatCompactThinkingProse,
 } from '../../lib/business-understanding/build-ai-pm-shared-thinking';
-import {
-  buildCompactQuestionInvite,
-  buildCompactRecognition,
-} from '../../lib/business-understanding/build-ai-pm-conversation-rhythm';
-import { buildBusinessLearningFromTurn } from '../../lib/business-understanding/build-ai-pm-business-learning';
 import {
   g1WorkspaceLabel,
   logG1LoopEvent,
@@ -38,13 +32,15 @@ import {
 import {
   getWorkspaceDocumentTrust,
 } from '../../lib/business-understanding/workspace-document-eligibility';
+import { loadConversationMemory } from '../../lib/business-understanding/conversation-memory-store';
+import { buildConversationMemoryFromSources } from '../../lib/business-understanding/build-conversation-memory';
+import { presentThinking } from '../../lib/business-understanding/build-thinking-presenter';
+import { presentS11Surface } from '../../lib/business-understanding/build-s11-surface-presenter';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
-import { WorkspaceAiPmBusinessLearningBlock } from './workspace-ai-pm-business-learning-block';
 import { WorkspaceDocumentTrustBlock } from './workspace-document-trust-block';
-import { WorkspaceAiPmRecognitionBlock } from './workspace-ai-pm-recognition-block';
 import { WorkspaceAiPmReturnWelcomeBlock } from './workspace-ai-pm-return-welcome-block';
-import { WorkspaceAiPmSharedThinkingReveal } from './workspace-ai-pm-shared-thinking-reveal';
 import { WorkspaceAiPmReadingSequence } from './workspace-ai-pm-reading-sequence';
+import { WorkspaceS11Surface } from './workspace-s11-surface';
 import type { WorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
 
 type WorkspaceAiPmLoopPanelProps = {
@@ -83,20 +79,70 @@ export function WorkspaceAiPmLoopPanel({
   const documentText = useMemo(() => loadWorkspaceDocumentText(projectId), [projectId, understanding]);
   const documentTrust = useMemo(() => getWorkspaceDocumentTrust(documentText), [documentText]);
   const documentReadable = documentTrust.status === 'readable';
+  const conversationMemory = useMemo(() => {
+    return buildConversationMemoryFromSources({
+      projectId: projectId ?? 'default',
+      documentText: documentText ?? '',
+      turns: loopState.turns,
+      entities,
+      previous: loadConversationMemory(projectId),
+    });
+  }, [projectId, documentText, loopState.turns, entities]);
   const nextIssue = useMemo(
     () =>
       resolveNextLoopIssue(understanding, loopState, {
         documentText: documentText ?? undefined,
         entities,
+        memory: conversationMemory,
       }),
-    [understanding, loopState, documentText, entities],
+    [understanding, loopState, documentText, entities, conversationMemory],
   );
+  const activeIssueId = loopState.currentIssueId ?? nextIssue;
+  const lastTurn = loopState.turns.at(-1) ?? null;
+  const s11Surface = useMemo(() => {
+    const askIssueId = loopState.currentIssueId ?? nextIssue;
+    const showUpdate =
+      loopState.phase === 'issue' &&
+      lastTurn != null &&
+      !recognitionDismissed &&
+      lastTurn.issueId !== askIssueId;
+
+    const thinking = presentThinking({
+      memory: conversationMemory,
+      documentText: documentText ?? '',
+      entities,
+      nextIssueId: askIssueId,
+    });
+
+    // Founder never picks a path — only answers. S11: Engine → Presenter Contract only.
+    if (showUpdate) {
+      return presentS11Surface(thinking, {
+        mode: 'update',
+        answeredIssueId: lastTurn.issueId,
+        nextIssueId: askIssueId,
+        documentText: documentText ?? '',
+      });
+    }
+    return presentS11Surface(thinking, {
+      mode: 'ask',
+      showDocumentLead: loopState.turns.length === 0,
+      documentText: documentText ?? '',
+    });
+  }, [
+    conversationMemory,
+    documentText,
+    entities,
+    loopState.currentIssueId,
+    loopState.phase,
+    loopState.turns.length,
+    nextIssue,
+    lastTurn,
+    recognitionDismissed,
+  ]);
   const initialDiagnosis = useMemo(
     () => buildAiPmInitialDiagnosis(understanding, entities, documentText),
     [understanding, entities, documentText],
   );
-  const activeIssueId = loopState.currentIssueId ?? nextIssue;
-  const lastTurn = loopState.turns.at(-1) ?? null;
   const sharedThinking = useMemo(() => {
     if (!activeIssueId) return null;
     const useContinuous = loopState.phase === 'issue' && lastTurn != null;
@@ -138,12 +184,8 @@ export function WorkspaceAiPmLoopPanel({
     setReturnWelcomeDismissed(true);
   }, []);
 
-  const dismissRecognition = useCallback(() => {
-    setRecognitionDismissed(true);
-  }, []);
-
   const showContinuousThinking =
-    Boolean(sharedThinking?.isContinuous) &&
+    Boolean(lastTurn) &&
     lastTurn != null &&
     lastTurn.issueId !== activeIssueId;
 
@@ -153,46 +195,19 @@ export function WorkspaceAiPmLoopPanel({
     !recognitionDismissed &&
     !showReturnWelcome;
 
-  const compactRecognition = useMemo(() => {
-    if (!lastTurn || !showContinuousThinking) return null;
-    return buildCompactRecognition(lastTurn, activeIssueId);
-  }, [lastTurn, showContinuousThinking, activeIssueId]);
-
-  const businessLearning = useMemo(() => {
-    if (!lastTurn || !showContinuousThinking) return null;
-    return buildBusinessLearningFromTurn(lastTurn);
-  }, [lastTurn, showContinuousThinking]);
-
-  const questionInvite = useMemo(() => {
-    if (!sharedThinking) return null;
-    return buildCompactQuestionInvite(sharedThinking.issueId, sharedThinking.question);
-  }, [sharedThinking]);
-
   const workspaceLabel = useMemo(() => g1WorkspaceLabel(projectId), [projectId]);
 
   useEffect(() => {
-    if (showRecognition && businessLearning) {
+    if (showRecognition && lastTurn) {
       logG1LoopEvent({
         event: 'learning_show',
         workspace: workspaceLabel,
         turn: loopState.turns.length,
-        issueId: lastTurn?.issueId ?? null,
+        issueId: lastTurn.issueId,
         phase: loopState.phase,
       });
     }
-  }, [showRecognition, businessLearning, workspaceLabel, loopState.turns.length, lastTurn?.issueId, loopState.phase]);
-
-  useEffect(() => {
-    if (showRecognition && compactRecognition) {
-      logG1LoopEvent({
-        event: 'recognition_show',
-        workspace: workspaceLabel,
-        turn: loopState.turns.length,
-        issueId: lastTurn?.issueId ?? null,
-        phase: loopState.phase,
-      });
-    }
-  }, [showRecognition, compactRecognition, workspaceLabel, loopState.turns.length, lastTurn?.issueId, loopState.phase]);
+  }, [showRecognition, workspaceLabel, loopState.turns.length, lastTurn, loopState.phase]);
 
   useEffect(() => {
     if (loopState.phase === 'answer' && activeIssueId) {
@@ -252,23 +267,25 @@ export function WorkspaceAiPmLoopPanel({
     syncState(next);
   }, [loopState.currentIssueId, nextIssue, projectId, readOnly, syncState]);
 
+  const dismissRecognition = useCallback(() => {
+    setRecognitionDismissed(true);
+    beginIssue();
+  }, [beginIssue]);
+
   const completeReading = useCallback(() => {
     if (readOnly) return;
-    const next = patchAiPmLoopState({ readingCompleted: true, phase: 'read_ack' }, projectId);
-    syncState(next);
-  }, [projectId, readOnly, syncState]);
-
-  const dismissReadAck = useCallback(() => {
+    const issue = nextIssue;
     const next = patchAiPmLoopState(
       {
+        readingCompleted: true,
         dismissedReadAck: true,
-        phase: nextIssue ? 'answer' : 'complete',
-        currentIssueId: nextIssue,
+        phase: issue ? 'answer' : 'complete',
+        currentIssueId: issue,
       },
       projectId,
     );
     syncState(next);
-  }, [nextIssue, projectId, syncState]);
+  }, [nextIssue, projectId, readOnly, syncState]);
 
   const submitAnswer = useCallback(() => {
     const issueId = loopState.currentIssueId ?? nextIssue;
@@ -314,6 +331,7 @@ export function WorkspaceAiPmLoopPanel({
       const plannedNext = resolveNextLoopIssue(freshUnderstanding, refreshed, {
         documentText: doc ?? undefined,
         entities,
+        memory: loadConversationMemory(projectId),
       });
       const next = patchAiPmLoopState(
         { phase: plannedNext ? 'issue' : 'complete', currentIssueId: plannedNext },
@@ -376,6 +394,31 @@ export function WorkspaceAiPmLoopPanel({
     );
   }
 
+  useEffect(() => {
+    // Never park Founder on a "다음으로 / 어떻게 할까요" gate — open the ask directly.
+    if (loopState.readingCompleted && (!loopState.dismissedReadAck || loopState.phase === 'read_ack')) {
+      const issue = loopState.currentIssueId ?? nextIssue;
+      syncState(
+        patchAiPmLoopState(
+          {
+            dismissedReadAck: true,
+            phase: issue ? 'answer' : 'complete',
+            currentIssueId: issue,
+          },
+          projectId,
+        ),
+      );
+    }
+  }, [
+    loopState.readingCompleted,
+    loopState.dismissedReadAck,
+    loopState.phase,
+    loopState.currentIssueId,
+    nextIssue,
+    projectId,
+    syncState,
+  ]);
+
   if (reanalyzing || loopState.phase === 'reanalyze') {
     return (
       <section
@@ -411,24 +454,9 @@ export function WorkspaceAiPmLoopPanel({
     );
   }
 
-  if (!loopState.dismissedReadAck || loopState.phase === 'read_ack') {
-    if (!sharedThinking) return null;
-    return (
-      <WorkspaceAiPmSharedThinkingReveal
-        thinking={sharedThinking}
-        readOnly={readOnly}
-        documentReadable={documentReadable}
-        workspace={workspaceLabel}
-        turn={loopState.turns.length + 1}
-        onContinue={dismissReadAck}
-        className={className}
-      />
-    );
-  }
-
   const activeIssue = activeIssueId;
 
-  if (loopState.phase === 'answer' && activeIssue && sharedThinking && questionInvite) {
+  if (loopState.phase === 'answer' && activeIssue) {
     return (
       <section
         className={cn(
@@ -436,30 +464,7 @@ export function WorkspaceAiPmLoopPanel({
           className,
         )}
       >
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{t('aiLabel')}</p>
-        <p className="mt-3 text-[15px] font-medium leading-relaxed">
-          {documentReadable ? t('sharedThinking.thinkingLead') : t('sharedThinking.thinkingLeadUnreadable')}
-        </p>
-        <p className="mt-2 text-[15px] leading-relaxed text-foreground">
-          {formatCompactThinkingProse(sharedThinking)}
-        </p>
-        <div className="mt-5 space-y-2">
-          {questionInvite.lines.map((line, index) => (
-            <p
-              key={`answer-q-${index}`}
-              className={cn(
-                'text-[15px] leading-relaxed',
-                index === questionInvite.lines.length - 1
-                  ? 'font-medium text-foreground'
-                  : index === 0
-                    ? 'text-muted-foreground'
-                    : 'font-medium text-primary',
-              )}
-            >
-              {line}
-            </p>
-          ))}
-        </div>
+        <WorkspaceS11Surface surface={s11Surface} />
         <textarea
           value={answerDraft}
           onChange={(event) => setAnswerDraft(event.target.value)}
@@ -467,6 +472,7 @@ export function WorkspaceAiPmLoopPanel({
           readOnly={readOnly}
           placeholder={t(`issues.${activeIssue}.placeholder`)}
           className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
+          aria-label={s11Surface.question.text || t('submitAnswerCta')}
         />
         <div className="mt-4 flex flex-wrap gap-2">
           <Button
@@ -477,20 +483,6 @@ export function WorkspaceAiPmLoopPanel({
           >
             {t('submitAnswerCta')}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="rounded-xl"
-            disabled={readOnly}
-            onClick={() => syncState(setAiPmLoopPhase('issue', projectId))}
-          >
-            {t('backCta')}
-          </Button>
-          {loopState.turns.length > 0 ? (
-            <Button type="button" variant="ghost" className="rounded-xl" disabled={readOnly} onClick={pauseSession}>
-              {t('sessionPauseCta')}
-            </Button>
-          ) : null}
         </div>
       </section>
     );
@@ -515,10 +507,12 @@ export function WorkspaceAiPmLoopPanel({
               {t('sharedThinking.continueCta')}
             </Button>
           </div>
-        ) : showRecognition && businessLearning && compactRecognition ? (
-          <div className="space-y-4">
-            <WorkspaceAiPmBusinessLearningBlock learning={businessLearning} />
-            <WorkspaceAiPmRecognitionBlock recognition={compactRecognition} />
+        ) : showRecognition ? (
+          <div
+            className="space-y-4 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7"
+            data-testid="ai-pm-thinking-update"
+          >
+            <WorkspaceS11Surface surface={s11Surface} />
             <Button
               type="button"
               className="rounded-xl"
@@ -530,15 +524,32 @@ export function WorkspaceAiPmLoopPanel({
           </div>
         ) : (
           <>
-            <WorkspaceAiPmSharedThinkingReveal
-              thinking={sharedThinking}
-              readOnly={readOnly}
-              showQuestionPreview
-              documentReadable={documentReadable}
-              workspace={workspaceLabel}
-              turn={loopState.turns.length + 1}
-              onContinue={beginIssue}
-            />
+            <section
+              className={cn(
+                'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7',
+              )}
+            >
+              <WorkspaceS11Surface surface={s11Surface} />
+              <textarea
+                value={answerDraft}
+                onChange={(event) => setAnswerDraft(event.target.value)}
+                rows={5}
+                readOnly={readOnly}
+                placeholder={activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : undefined}
+                className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
+                aria-label={s11Surface.question.text || t('submitAnswerCta')}
+              />
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  className="rounded-xl"
+                  disabled={readOnly || answerDraft.trim().length < 4}
+                  onClick={submitAnswer}
+                >
+                  {t('submitAnswerCta')}
+                </Button>
+              </div>
+            </section>
             {loopState.turns.length > 0 ? (
               <Button
                 type="button"

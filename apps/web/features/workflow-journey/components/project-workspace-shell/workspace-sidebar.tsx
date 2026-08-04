@@ -111,6 +111,37 @@ export function WorkspaceSidebar({
           {t('sidebar.progressLabel')}
         </p>
 
+        {snapshot.stepFirstProgress && snapshot.journeySteps?.length ? (
+          <ul className="mb-6 space-y-1" aria-label={t('sidebar.journeyLabel')}>
+            {snapshot.journeySteps.map((step) => {
+              const symbol = lifecycleSymbol(step.lifecycle);
+              return (
+                <li
+                  key={step.id}
+                  className={cn(
+                    'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm',
+                    step.lifecycle === 'in_progress' && 'bg-primary/10 font-medium text-primary',
+                    step.lifecycle === 'completed' && 'text-foreground',
+                    step.lifecycle === 'waiting' && 'text-muted-foreground',
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'w-4 shrink-0 text-center text-xs',
+                      step.lifecycle === 'in_progress' && 'text-primary',
+                      step.lifecycle === 'completed' && 'text-emerald-600',
+                    )}
+                    aria-hidden
+                  >
+                    {symbol}
+                  </span>
+                  {t(`journeyStep.${step.id}`)}
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
+
         <button
           type="button"
           onClick={onSelectAiPm}

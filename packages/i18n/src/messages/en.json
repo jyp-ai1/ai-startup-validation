@@ -6499,6 +6499,7 @@
           "label": "Project progress",
           "summaryLabel": "Summary",
           "progressLabel": "Progress",
+          "journeyLabel": "Where you are now",
           "progress": "{percent}% complete",
           "loopSummaryTitle": "With AI PM",
           "loopSummaryHint": "For now, the conversation matters more than scores or progress bars.",
@@ -6527,6 +6528,20 @@
           "customer": "Customer",
           "market": "Market",
           "competitor": "Competitor"
+        },
+        "journeyStep": {
+          "business": "Business",
+          "customer": "Customer",
+          "market": "Market",
+          "review": "Review"
+        },
+        "sharedUnderstanding": {
+          "label": "What I understand so far",
+          "fields": {
+            "business": "Business",
+            "customer": "Customer",
+            "problem": "Problem"
+          }
         },
         "nodeStatus": {
           "founder": {
@@ -6603,6 +6618,9 @@
           "customerAlignLead": "Customer is not confirmed yet.",
           "customerAlignSub": "Next we'll define the customer together.",
           "confirmCustomerCta": "Confirm customer",
+          "thinkingPreserveLead": "What you've confirmed so far stays as-is.",
+          "thinkingPreserveSub": "Still thinking is fine. We'll start the review on this basis and decide direction together afterward.",
+          "continueReviewCta": "Start review on this basis",
           "reviewReadyLead": "You're ready to start the viability review.",
           "startReviewCta": "Start review",
           "reviewBlocked": {
@@ -6629,8 +6647,24 @@
         },
         "aiPmLoop": {
           "aiLabel": "AI PM",
-          "readAckLead": "I've read your document.",
-          "readAckSub": "Based on what I found, we'll start with the most important gap first.",
+          "flowSpine": {
+            "understoodLabel": "What we've clarified so far",
+            "understoodEmpty": "Nothing clarified together yet.",
+            "documentUnderstoodLabel": "What I confirmed",
+            "documentGapLabel": "Not confirmed yet",
+            "blockedWhyLabel": "Why analysis cannot start yet",
+            "updateUnderstoodLabel": "What we understand so far",
+            "outcomeLabel": "Once this is confirmed",
+            "blockedLabel": "What's blocking now",
+            "checkNowLabel": "So please tell us just this",
+            "needLabel": "Not confirmed yet",
+            "needEmpty": "Nothing else to confirm right now.",
+            "whyLabel": "Why this question?",
+            "nextQuestionLabel": "Next question",
+            "questionLabel": "Q."
+          },
+          "readAckLead": "What I confirmed",
+          "readAckSub": "Here is what the document already supports, and the one gap we still need.",
           "readAckCta": "Continue",
           "diagnosisBridge": "Initial analysis confidence {confidence}% — the question below follows from this read.",
           "hypothesisLead": "I found \"{phrase}\" in your document, but it still needs clarification.",
@@ -6644,9 +6678,9 @@
           },
           "trustContract": {
             "label": "Document check",
-            "title": "We cannot read this PDF body yet.",
-            "pdfBody": "We only confirmed the file name \"{fileName}\". The body has not been extracted.",
-            "docxBody": "We loaded \"{fileName}\" but the Word body has not been extracted.",
+            "title": "We have not understood enough of your business from this document yet.",
+            "pdfBody": "We cannot read the PDF body yet. Let's clarify together through the questions below.",
+            "docxBody": "We cannot read the Word body yet. Let's clarify together through the questions below.",
             "insufficientBody": "There is not enough document text to analyze yet.",
             "nextHint": "Paste your document text or answer the questions below to continue.",
             "continueCta": "Continue with your answers",
@@ -6780,6 +6814,7 @@
         },
         "aiPmScore": {
           "label": "AI PM assessment",
+          "supportingScore": "Reference score {score} — next action comes first.",
           "whyTitle": "Why this score?",
           "potentialLead": "Fix the {count} items below to reach {target}+.",
           "breakdownToggle": "View dimension scores",
@@ -6864,6 +6899,7 @@
           "completeLabel": "Review complete",
           "completeLead": "We've finished the first review based on what you confirmed.",
           "completeSub": "Next we'll continue with the topic that helps most right now.",
+          "nextActionHeroLead": "Your next action together",
           "insightLabel": "Insight",
           "fallbackInsight": "Starting from what stood out in the review makes the next decision easier.",
           "primaryAction": "View recommended next tasks",
@@ -6933,6 +6969,10 @@
           "editComplete": "Apply edits — align baseline",
           "togetherComplete": "Done — align baseline",
           "editAcknowledgment": "Updated. We'll continue from your changes.",
+          "editConfirmLead": "Here's how I understand your edits.",
+          "editConfirmQuestion": "Is this correct?",
+          "editConfirmYes": "Yes — continue",
+          "editConfirmNo": "Edit again",
           "alignment": {
             "aiLabel": "AI PM",
             "readLead": "From your document, several key parties stand out.",
@@ -6946,6 +6986,7 @@
             "directionTitle": "Your current strategy direction",
             "optionHasDirection": "I already have a direction in mind",
             "optionThinking": "Still thinking it through",
+            "thinkingPreserveLead": "What you've confirmed so far stays as-is. We'll decide direction together after the review.",
             "optionDecideAfterReview": "I'd like to decide together after the review",
             "whichDirection": "Which direction?",
             "customOption": "Other",

@@ -21,6 +21,7 @@ type WorkspaceDecisionWorkshopBlockProps = {
   projectId?: string;
   readOnly?: boolean;
   onAgreed?: (topicLabel: string) => void;
+  hero?: boolean;
   className?: string;
 };
 
@@ -32,9 +33,11 @@ export function WorkspaceDecisionWorkshopBlock({
   projectId,
   readOnly = false,
   onAgreed,
+  hero = false,
   className,
 }: WorkspaceDecisionWorkshopBlockProps) {
   const tw = useTranslations('workflow.journey.workspaceShell.decisionWorkshop');
+  const tPost = useTranslations('workflow.journey.workspaceShell.postReview');
   const plan = useMemo(
     () => resolvePostReviewWorkshopPlan(understanding, alignment, candidates),
     [understanding, alignment, candidates],
@@ -87,11 +90,22 @@ export function WorkspaceDecisionWorkshopBlock({
   return (
     <section
       className={cn(
-        'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7',
+        hero
+          ? 'rounded-2xl border-2 border-primary/40 bg-gradient-to-br from-primary/[0.08] to-background px-5 py-6 sm:px-8'
+          : 'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7',
         className,
       )}
     >
       <div className="space-y-5 text-[15px] leading-relaxed">
+        {hero ? (
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
+              {tPost('completeLabel')}
+            </p>
+            <p className="mt-2 text-lg font-semibold leading-snug">{tPost('nextActionHeroLead')}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{tPost('completeSub')}</p>
+          </div>
+        ) : null}
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
             {tw('aiLabel')}
@@ -106,7 +120,12 @@ export function WorkspaceDecisionWorkshopBlock({
 
         {!showAlternates && !showCustom ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            <Button type="button" className="rounded-xl" disabled={readOnly} onClick={handleAgree}>
+            <Button
+              type="button"
+              className={cn('rounded-xl', hero && 'h-11 px-6 text-base')}
+              disabled={readOnly}
+              onClick={handleAgree}
+            >
               {tw('startTopic', { topic: tw(`topics.${topicId}`) })}
             </Button>
             <Button

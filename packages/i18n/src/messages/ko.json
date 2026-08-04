@@ -6651,7 +6651,8 @@
         "sidebar": {
           "label": "프로젝트 진행",
           "summaryLabel": "요약",
-          "progressLabel": "진행률",
+          "progressLabel": "진행",
+          "journeyLabel": "지금 어디까지 왔는지",
           "progress": "{percent}% 완료",
           "loopSummaryTitle": "AI PM과 함께",
           "loopSummaryHint": "지금은 점수나 진행률보다, 함께 정리하는 대화가 우선입니다.",
@@ -6680,6 +6681,20 @@
           "customer": "고객",
           "market": "시장",
           "competitor": "경쟁"
+        },
+        "journeyStep": {
+          "business": "사업",
+          "customer": "고객",
+          "market": "시장",
+          "review": "검토"
+        },
+        "sharedUnderstanding": {
+          "label": "제가 이해한 내용",
+          "fields": {
+            "business": "사업",
+            "customer": "고객",
+            "problem": "문제"
+          }
         },
         "nodeStatus": {
           "founder": {
@@ -6756,6 +6771,9 @@
           "customerAlignLead": "고객을 아직 확인하지 못했습니다.",
           "customerAlignSub": "다음으로 고객을 같이 정의하겠습니다.",
           "confirmCustomerCta": "고객 확인하기",
+          "thinkingPreserveLead": "지금까지 확인한 내용은 그대로 유지합니다.",
+          "thinkingPreserveSub": "아직 고민 중이셔도 괜찮습니다. 이 기준으로 검토를 시작한 뒤 함께 방향을 정리하겠습니다.",
+          "continueReviewCta": "이 기준으로 검토하기",
           "reviewReadyLead": "확인해 주신 기준으로 사업성 검토를 시작할 수 있습니다.",
           "startReviewCta": "검토 시작",
           "reviewBlocked": {
@@ -6780,10 +6798,26 @@
           "insufficientPasteHint": "분석할 정보가 부족합니다. 창업자·사업·고객 등 두 줄 이상, 또는 충분한 사업 설명을 입력해 주세요.",
           "invalidFile": "문서를 읽을 수 없습니다. 텍스트 파일 또는 PDF/DOCX를 사용해 주세요."
         },
-        "aiPmLoop": {
+          "aiPmLoop": {
           "aiLabel": "AI PM",
-          "readAckLead": "제가 문서를 읽었습니다.",
-          "readAckSub": "확인한 내용을 바탕으로, 가장 먼저 같이 정리할 부분부터 시작하겠습니다.",
+          "flowSpine": {
+            "understoodLabel": "현재까지 함께 정리한 내용",
+            "understoodEmpty": "아직 함께 정리한 내용은 없습니다.",
+            "documentUnderstoodLabel": "제가 확인한 내용",
+            "documentGapLabel": "아직 확인하지 못한 내용",
+            "blockedWhyLabel": "현재 분석을 시작하지 못하는 이유",
+            "updateUnderstoodLabel": "현재까지 이해한 내용",
+            "outcomeLabel": "이 정보가 확인되면",
+            "blockedLabel": "현재 막힌 이유",
+            "checkNowLabel": "그래서 먼저 이것만 알려주세요",
+            "needLabel": "아직 확인되지 않은 내용",
+            "needEmpty": "지금은 추가로 확인할 내용이 없습니다.",
+            "whyLabel": "왜 이 질문을 드리나요?",
+            "nextQuestionLabel": "다음 질문",
+            "questionLabel": "Q."
+          },
+          "readAckLead": "제가 확인한 내용",
+          "readAckSub": "문서에서 확인한 내용과, 아직 비어 있는 핵심만 먼저 보여드립니다.",
           "readAckCta": "다음으로",
           "diagnosisBridge": "초기 분석 Confidence {confidence}% — 아래 질문은 이 분석을 바탕으로 합니다.",
           "hypothesisLead": "문서에서 \"{phrase}\"을(를) 확인했지만, 아직 더 정리가 필요합니다.",
@@ -6797,9 +6831,9 @@
           },
           "trustContract": {
             "label": "문서 확인",
-            "title": "아직 PDF 내용을 읽을 수 없습니다.",
-            "pdfBody": "파일 \"{fileName}\" 이름만 확인했습니다. 본문은 아직 추출되지 않았습니다.",
-            "docxBody": "Word 파일 \"{fileName}\"을(를) 불러왔지만 본문은 아직 추출되지 않았습니다.",
+            "title": "아직 문서에서 사업 내용을 충분히 이해하지 못했습니다.",
+            "pdfBody": "PDF 본문을 아직 읽을 수 없습니다. 아래 질문으로 같이 정리해 주세요.",
+            "docxBody": "Word 본문을 아직 읽을 수 없습니다. 아래 질문으로 같이 정리해 주세요.",
             "insufficientBody": "분석할 본문이 아직 충분하지 않습니다.",
             "nextHint": "계속하려면 문서를 붙여넣거나, 아래 질문에 답해 주세요.",
             "continueCta": "답변으로 같이 정리하기",
@@ -6933,6 +6967,7 @@
         },
         "aiPmScore": {
           "label": "AI PM 평가",
+          "supportingScore": "참고 점수 {score}점 — 다음 행동이 우선입니다.",
           "whyTitle": "왜 이 점수인가?",
           "potentialLead": "아래 {count}가지만 해결하면 {target}점 이상 가능합니다.",
           "breakdownToggle": "항목별 점수 보기",
@@ -7017,6 +7052,7 @@
           "completeLabel": "검토 완료",
           "completeLead": "확인해 주신 기준으로 첫 검토를 마쳤습니다.",
           "completeSub": "아래 추천 작업부터 AI PM과 함께 이어가면 됩니다.",
+          "nextActionHeroLead": "다음으로 같이 할 일",
           "insightLabel": "Insight",
           "fallbackInsight": "검토에서 보인 핵심 주제부터 함께 정리하면 다음 판단이 쉬워집니다.",
           "primaryAction": "다음 추천 작업 보기",
@@ -7086,6 +7122,10 @@
           "editComplete": "수정 반영 — 기준 맞추기",
           "togetherComplete": "확인 완료 — 기준 맞추기",
           "editAcknowledgment": "반영했습니다. 수정한 내용을 기준으로 이어가겠습니다.",
+          "editConfirmLead": "수정 내용을 이렇게 이해했습니다.",
+          "editConfirmQuestion": "맞습니까?",
+          "editConfirmYes": "맞습니다, 다음으로",
+          "editConfirmNo": "다시 수정",
           "alignment": {
             "aiLabel": "AI PM",
             "readLead": "문서를 읽어보니 사업에서 중요한 대상이 여러 개 보입니다.",
@@ -7099,6 +7139,7 @@
             "directionTitle": "현재 전략 방향",
             "optionHasDirection": "이미 생각하고 있는 방향이 있습니다",
             "optionThinking": "아직 고민 중입니다",
+            "thinkingPreserveLead": "지금까지 확인한 내용은 그대로 유지합니다. 검토 후 함께 방향을 정리하겠습니다.",
             "optionDecideAfterReview": "검토 결과를 보고 같이 결정하고 싶습니다",
             "whichDirection": "어떤 방향인가요?",
             "customOption": "기타",

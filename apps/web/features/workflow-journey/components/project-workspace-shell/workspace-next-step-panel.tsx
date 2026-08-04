@@ -8,11 +8,14 @@ import { cn } from '@repo/ui/lib/utils';
 import type { UnderstandingPhase } from '../../lib/business-understanding/business-understanding-store';
 import type { WorkspaceReviewBlockedReason } from '../../lib/business-understanding/workspace-state';
 
+import type { MarketAlignmentState } from '../../lib/business-understanding/workspace-alignment';
+
 type WorkspaceNextStepPanelProps = {
   phase: UnderstandingPhase;
   hasDocument: boolean;
   canStartReview?: boolean;
   reviewBlockedReason?: WorkspaceReviewBlockedReason | null;
+  alignment?: MarketAlignmentState | null;
   onContinueUnderstanding: () => void;
   onContinueAlignment: () => void;
   onStartReview: () => void;
@@ -24,6 +27,7 @@ export function WorkspaceNextStepPanel({
   hasDocument,
   canStartReview = true,
   reviewBlockedReason = null,
+  alignment = null,
   onContinueUnderstanding,
   onContinueAlignment,
   onStartReview,
@@ -74,7 +78,8 @@ export function WorkspaceNextStepPanel({
     );
   }
 
-  if (phase === 'aligning' || phase === 'accepted' || phase === 'edit' || phase === 'together') {
+  if (phase === 'aligning' || phase === 'accepted' || phase === 'edit' || phase === 'together' || phase === 'edit_confirm') {
+    const thinkingSelected = alignment?.direction === 'thinking';
     return (
       <section
         className={cn(
@@ -85,10 +90,14 @@ export function WorkspaceNextStepPanel({
         <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
           {t('aiLabel')}
         </p>
-        <p className="mt-3 text-[15px] leading-relaxed">{t('customerAlignLead')}</p>
-        <p className="mt-2 text-sm text-muted-foreground">{t('customerAlignSub')}</p>
+        <p className="mt-3 text-[15px] leading-relaxed">
+          {thinkingSelected ? t('thinkingPreserveLead') : t('customerAlignLead')}
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {thinkingSelected ? t('thinkingPreserveSub') : t('customerAlignSub')}
+        </p>
         <Button type="button" className="mt-5 rounded-xl" onClick={onContinueAlignment}>
-          {t('confirmCustomerCta')}
+          {thinkingSelected ? t('continueReviewCta') : t('confirmCustomerCta')}
         </Button>
       </section>
     );
