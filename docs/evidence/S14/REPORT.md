@@ -41,10 +41,12 @@ Same Fact **key** may update its value (per-key upsert).
 
 - Loop turns included `customer_definition` → `market_validation` → `problem_definition`
 - Engine AnalysisInput at Review: `problem=confirmed` (see trail JSON)
-- Memory bag key `problem` lagged vs turn at end-of-capture — Known (not wipe)
+- ConversationMemory bag retained prior keys (no overwrite)
 
 **Evidence:** `media/live-memory-trail.json` · `06-memory-append.json`  
-**Result:** PASS on overwrite ban (keys accumulate). Soft note on `problem` bag lag.
+**Result:** PASS on overwrite ban (keys accumulate).
+
+**Confirmed Issue (S15 Backlog):** Live capture confirmed that after a `problem_definition` turn was recorded, the persisted ConversationMemory bag did not yet contain the `problem` Fact key, while Review-time rebuild from turns fed Engine with `problem=confirmed`. This is a Memory bag sync defect relative to the Loop turn contract — not Expected Behavior. S14 ships with overwrite-ban intact; bag sync is tracked for S15.
 
 ---
 
@@ -64,9 +66,9 @@ Same Fact **key** may update its value (per-key upsert).
 | | |
 |--|--|
 | **Expected** | `[] → [business] → [business, customer] → [business, customer, problem]` without wipe. JSON original included. |
-| **Observed** | Live bag: `[] → [business] → [business, customer, buyer, market]`. Turns include `problem_definition`. Unit JSON trail proves exact expected shape including problem key update without wipe. |
+| **Observed** | Live bag: `[] → [business] → [business, customer, buyer, market]`. Turns include `problem_definition`. Unit JSON trail proves exact expected shape including problem key update without wipe. Confirmed Issue: bag missed `problem` key after turn (S15). |
 | **Evidence file** | `media/live-memory-trail.json` · `06-memory-append.json` · `06-memory-append.png` |
-| **Result** | PASS (Live append + Unit exact trail). Soft: Live bag `problem` key lag vs turn. |
+| **Result** | PASS (Live append + Unit exact trail). Confirmed Issue logged for bag/`problem` sync → S15. |
 
 ### 3) Frame — Memory
 
@@ -142,8 +144,23 @@ Same Fact **key** may update its value (per-key upsert).
 
 ---
 
-## Known Issues
+## Classification
 
-1. Live ConversationMemory bag may lag one Fact behind newest turn (`problem` key vs `problem_definition` turn). Overwrite was **not** observed — prior keys retained. Engine Review path confirmed `problem`.
-2. Demo priority often inserts `market_validation` before `problem_definition` (expected demo routing). Append still holds.
-3. Push / Deploy stay HOLD until CPO Release Gate PASS.
+### Confirmed Issue — S15 Backlog
+
+**Title:** ConversationMemory bag sync after `problem_definition`
+
+**Confirming observation (Live):** `problem_definition` turn existed in `aiPmLoop`, and Engine AnalysisInput had `problem=confirmed`, but `launchlens.conversationMemory.demo-session` facts did not include key `problem` at end-of-capture.
+
+**Not:** Expected Behavior.  
+**Not:** Overwrite (prior keys remained).
+
+**Disposition:** S15 Backlog — fix Memory bag persistence so each confirmed Loop turn’s Fact key is present in sessionStorage ConversationMemory immediately after apply.
+
+### Expected Behavior
+
+Demo Loop priority may insert `market_validation` before `problem_definition`. This is demo routing, not a Memory wipe.
+
+### Gate
+
+Push / Deploy stay HOLD until CPO Release Gate PASS.
