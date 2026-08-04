@@ -45,12 +45,22 @@ Evidence: `docs/evidence/S15/qa/`
 
 ## Remaining
 
-- [ ] QA-1 live create (login on `127.0.0.1:3001` → empty description → first question)
-- [ ] Renew Report QA-1 → PASS
-- [ ] CPO Final Review
-- [ ] CEO Walkthrough (only after CPO Final PASS)
-- [ ] P1 Guided Step (after P0 gate)
+- [x] Commit + push `65a5972`
+- [x] Production Ready (`ai-startup-validation-tau.vercel.app`)
+- [ ] Representative (CEO) self-verify on URLs below
+- [ ] P1 Guided Step (after P0 walkthrough)
+
+## Ship URLs (`65a5972`)
+
+| Env | URL |
+|-----|-----|
+| Production | https://ai-startup-validation-tau.vercel.app |
+| Production (alias) | https://ai-startup-validation-jyp-ai1s-projects.vercel.app |
+| Branch / Preview alias | https://ai-startup-validation-git-main-jyp-ai1s-projects.vercel.app |
+| Deployment | https://ai-startup-validation-hnh17abzs-jyp-ai1s-projects.vercel.app |
+
+`GET /api/build-info` → `commit: 65a5972554c4ab211bde51b7a7689e2415d2ceaa`
 
 ## Blockers
 
-- QA-1: Agent browser OAuth incomplete (session ≠ system Chrome)
+- None for ship. QA-1 live create was blocked only in Agent browser OAuth; Representative can verify on Production.
