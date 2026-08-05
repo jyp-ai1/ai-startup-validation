@@ -14,14 +14,15 @@
 | CPO Final Review | ✅ PASS |
 | CEO Walkthrough | 🟢 APPROVED / open |
 
-## Production confirm (CPO Final)
+## Production confirm (live)
 
 | 항목 | 값 |
 |------|-----|
 | Production URL | https://ai-startup-validation-tau.vercel.app |
-| Production SHA | `827d189e6e354f3f69f4342adfdd5e6ae5221be4` |
-| Deploy Time | `2026-08-04T05:00:49.299Z` |
-| S15 P0 ancestry | `65a5972` ⊂ tip (`git merge-base --is-ancestor` OK) |
+| Production SHA (tip) | `2a0f9f65506569fcd62127c931b2b678d7c318a5` |
+| Deploy Time | `2026-08-05T23:42:14.858Z` |
+| S15 P0 | `65a5972` ⊂ tip |
+| CPO Final baseline | `827d189` (docs/freeze commits after; product P0 unchanged) |
 
 ## CEO Guide
 
