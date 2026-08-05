@@ -1,8 +1,8 @@
 # S15 Progress
 
 **Sprint theme:** Decision Fatigue → Guided Validation  
-**Phase:** CPO Final Review 🟡 — CEO Walkthrough 자료 제출  
-**CEO Walkthrough:** ⛔ HOLD until CPO Final PASS
+**Phase:** CEO Walkthrough 🟢 APPROVED / open  
+**CEO Walkthrough:** 🟢 APPROVED — freeze product code during walkthrough; feedback triage P0 / P1 / Backlog at end only
 
 ## Release Gate
 
@@ -11,8 +11,8 @@
 | S15 P0 Implementation | ✅ |
 | Internal QA | ✅ |
 | CTO QA Report | ✅ |
-| CPO Final Review | 🟡 |
-| CEO Walkthrough | ⛔ HOLD |
+| CPO Final Review | ✅ PASS |
+| CEO Walkthrough | 🟢 APPROVED / open |
 
 ## Production confirm (CPO Final)
 
@@ -27,8 +27,13 @@
 
 `docs/sprints/S15_CEO_WALKTHROUGH_GUIDE.md`
 
+## Feedback triage (post-walkthrough)
+
+`docs/sprints/S15_CEO_WALKTHROUGH_FEEDBACK.md` — classify as P0 / P1 / Backlog after Walkthrough only. No live/real-time code fixes during Walkthrough.
+
 ## Remaining
 
-- [ ] CPO Final PASS
+- [x] CPO Final PASS
 - [ ] CEO Walkthrough
+- [ ] Post-walkthrough feedback triage (P0 / P1 / Backlog)
 - [ ] P1 Guided Step (after P0 gate)

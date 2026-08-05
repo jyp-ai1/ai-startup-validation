@@ -1,8 +1,16 @@
 # S15 — CEO Walkthrough Guide
 
-**목적:** Production에서 S15 P0 사용자 경험을 직접 확인합니다.  
+**상태:** 🟢 **APPROVED** — Walkthrough open (CPO Final Review ✅ PASS)  
+**목적:** 아래 **두 질문만** 확인합니다 (점수 정확도 · AI 깊이 = 이번 게이트 범위 밖).
+
+1. 사용자가 **AI가 무엇을 이해했는지**, 그리고 **왜 다음 질문인지** 알 수 있는가?
+2. 최종 화면에서 **「지금 뭘 해야 하는지」**가 약 **3초** 안에 분명한가?
+
 **시간:** 약 5–8분  
 **URL:** https://ai-startup-validation-tau.vercel.app  
+
+**동결:** Walkthrough 중 **제품 코드 수정 금지**. 피드백은 종료 후 P0 / P1 / Backlog로만 분류  
+→ `docs/sprints/S15_CEO_WALKTHROUGH_FEEDBACK.md`
 
 체크할 때 **화면이 막히거나 설명이 없으면** 해당 단계에 ✗ 표시해 주세요.
 
@@ -50,6 +58,7 @@ PDF 본문은 아직 추출되지 않았습니다. Business·Customer는 직접 
 **PASS 조건**
 
 - [ ] 버튼이 무반응이 아님 (시작 **또는** 이유)
+- [ ] AI가 무엇을 이해했는지 / 왜 이 질문인지 납득 가능
 
 ### 4) Analysis 화면
 
@@ -69,7 +78,8 @@ PDF 본문은 아직 추출되지 않았습니다. Business·Customer는 직접 
 
 - [ ] 위 순서로 이해 가능
 - [ ] Hero CTA 버튼이 **정확히 1개**
-- [ ] 점수가 주인공이 아님 (참고)
+- [ ] **「지금 뭘 해야 하는지」**가 ~3초 안에 분명
+- [ ] 점수가 주인공이 아님 (참고 · 정확도 채점 불필요)
 
 ---
 
@@ -85,6 +95,7 @@ PDF 본문은 아직 추출되지 않았습니다. Business·Customer는 직접 
 - [ ] 「8자 이상」 문구 **없음**
 - [ ] 생성 실패 **없음**
 - [ ] Workspace에서 첫 질문(또는 함께 정리)으로 이어짐
+- [ ] AI가 이해한 것 / 왜 다음 질문인지 납득 가능
 
 ---
 
@@ -92,9 +103,11 @@ PDF 본문은 아직 추출되지 않았습니다. Business·Customer는 직접 
 
 | 느낌 | 메모 |
 |------|------|
-| 다음에 뭘 해야 할지 알겠는가? | |
-| 결정이 너무 많지 않은가? | |
+| AI가 이해한 것 / 왜 다음 질문인지 알겠는가? | |
+| 최종 화면에서 「지금 뭘」이 ~3초 안에 분명한가? | |
 | 막고 싶은 화면이 있었는가? | |
+
+상세 분류는 Walkthrough **종료 후** → `S15_CEO_WALKTHROUGH_FEEDBACK.md` (P0 / P1 / Backlog)
 
 ---
 
@@ -104,4 +117,5 @@ PDF 본문은 아직 추출되지 않았습니다. Business·Customer는 직접 
 |------|-----|
 | Production | https://ai-startup-validation-tau.vercel.app |
 | SHA (tip) | `827d189` — includes S15 P0 `65a5972` |
-| CPO Final | 🟡 — Walkthrough 승인 대기 |
+| CPO Final | ✅ PASS |
+| Walkthrough | 🟢 APPROVED / open — code freeze during session |
