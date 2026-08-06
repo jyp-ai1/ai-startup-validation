@@ -62,6 +62,7 @@ import { WorkspaceProgressiveOverview } from './workspace-progressive-overview';
 import { loadAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentAnalysisScreen } from '../../lib/business-understanding/present-analysis-screen';
 import { buildEmptyProjectConversationSeed } from '../../lib/business-understanding/build-empty-project-seed';
+import { buildSharedUnderstanding } from '../../lib/business-understanding/build-shared-understanding';
 
 import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
 
@@ -182,6 +183,17 @@ export function WorkspaceAiPmMain({
   );
 
   const loopComplete = isAiPmLoopComplete(loopState);
+
+  const finalUnderstanding = useMemo(() => {
+    if (!understanding) return null;
+    return buildSharedUnderstanding({
+      documentText: documentContext,
+      turns: loopState.turns,
+      understanding,
+      entities,
+      understandingPhase,
+    });
+  }, [documentContext, entities, loopState.turns, understanding, understandingPhase]);
 
   /** S16 P0-2 / P1-2 — confirm → next question (loop) or review-ready; never force market analysis */
   const proceedAfterUnderstandingConfirm = useCallback(() => {
@@ -434,6 +446,8 @@ export function WorkspaceAiPmMain({
           understanding={understanding}
           entities={entities}
           documentReadable={documentReadable}
+          documentText={storedDocumentText ?? documentContext}
+          projectId={projectId}
           onConfirm={handleConfirmMode}
         />
       ) : null}
@@ -443,6 +457,7 @@ export function WorkspaceAiPmMain({
           mode={understandingPhase === 'together' ? 'together' : 'edit'}
           domain={domain}
           entities={entities}
+          projectId={projectId}
           readOnly={readOnly}
           onDomainChange={onDomainChange}
           onApplyEdits={handleApplyEdits}
@@ -475,6 +490,7 @@ export function WorkspaceAiPmMain({
           canStartReview={reviewCanStart}
           reviewBlockedReason={reviewBlockedReason}
           alignment={savedAlignment}
+          finalUnderstanding={finalUnderstanding}
           onContinueUnderstanding={() => {
             saveUnderstandingPhase('pending', projectId);
             setUnderstandingPhase('pending');

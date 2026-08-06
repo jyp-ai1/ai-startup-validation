@@ -4455,6 +4455,7 @@
         "ctaQualityHint": "More input improves review quality.",
         "toast": {
           "saved": "{field} updated.",
+          "understandingUpdated": "✓ AI understanding updated",
           "deleted": "{field} removed.",
           "updated": "Review board updated.",
           "reviewAgainHint": "You can review again.",
@@ -6540,6 +6541,7 @@
         },
         "sharedUnderstanding": {
           "label": "What I understand so far",
+          "reflectUpdated": "I've updated my understanding like this",
           "fields": {
             "business": "Business",
             "customer": "Customer",
@@ -6626,6 +6628,9 @@
           "continueReviewCta": "Start review on this basis",
           "reviewReadyLead": "You're ready to start the viability review.",
           "startReviewCta": "Start review",
+          "finalReviewLead": "Before analysis, confirm the full AI understanding.",
+          "finalReviewSub": "If business · customer · problem look right, we start analysis.",
+          "finalConfirmCta": "✓ That's right — start analysis",
           "reviewBlocked": {
             "customer_missing": "We haven't confirmed who the customer is yet. The next question will clarify this.",
             "payer_missing": "We haven't confirmed who pays yet. The next question will clarify this.",
@@ -6749,6 +6754,13 @@
           "backCta": "Back",
           "reanalyzeTitle": "Good.",
           "reanalyzeHint": "Organizing our next thinking from what we learned together.",
+          "thinkingStages": {
+            "memory": "Updating Memory with your answer…",
+            "business": "Updating Shared Understanding…",
+            "nextQuestion": "Preparing the next question…"
+          },
+          "reflectLead": "I've updated my understanding like this",
+          "understandingUpdatedFlash": "✓ AI understanding updated",
           "turnAck": "Good — {resolved} is clearer now. Next we'll look at {next}.",
           "completeLead": "You and AI PM updated the plan in {count} turns.",
           "completeSub": "You're ready to start the viability review.",
@@ -6952,18 +6964,43 @@
           },
           "title": "Let's align on your business first",
           "intro": "Before review — only what we read in your document.",
+          "documentFirstLead": "Here's how I understand it",
+          "documentFirstSub": "Confirm or correct — you don't need to fill an empty form.",
+          "documentFirstLeadUnreadable": "I haven't fully read the document body yet",
+          "documentFirstSubUnreadable": "Here's a honest partial draft from what we know. Please confirm.",
+          "documentFirstDraftLabel": "AI draft",
+          "confidencePercent": "Confidence {percent}%",
+          "confidenceMode": {
+            "document": "From document",
+            "mixed": "Document + inference",
+            "inferred": "Needs inference"
+          },
+          "confidenceSource": {
+            "document": "document",
+            "inferred": "inferred",
+            "unknown": "unknown"
+          },
+          "draftFields": {
+            "business": "Business",
+            "customer": "Customer",
+            "problem": "Problem",
+            "market": "Market",
+            "competitor": "Competition"
+          },
           "zoneConfirmed": "Confirmed from the document",
           "zoneConfirmedEmpty": "Nothing confirmed from the document yet.",
           "zoneDecideTogether": "Still to decide together",
           "zoneDecideTogetherEmpty": "Nothing to decide together for now.",
           "zoneFounderJudgment": "Your call",
           "confirmLead": "Is this understanding correct?",
+          "confirmLeadHint": "If yes, we continue to questions. If not, correct only what's wrong.",
           "docReadLead": "From the document",
           "docReadSuffix": "— we confirmed these expressions.",
           "docReadSingle": "From the document — we confirmed {expression}.",
           "butLead": "However,",
           "notDecided": "Not decided yet.",
           "confirmYes": "✓ That's right",
+          "confirmNo": "No — I'll correct",
           "confirmEdit": "✎ I'll edit",
           "confirmTogether": "🤝 Check one by one",
           "reviewTransition": "I'll review viability based on what you confirmed.",
@@ -6972,6 +7009,8 @@
           "viabilityLead": "I'll review viability based on the baseline you confirmed.",
           "viabilityStartCta": "Start viability review",
           "editHint": "Edit any incorrect fields below.",
+          "editHintDocumentFirst": "Correct only what's wrong in the AI draft.",
+          "editHintDocumentFirstSub": "This is not an empty form — edit from what AI already understood.",
           "togetherHint": "Set each field to your baseline below.",
           "editComplete": "Apply edits — align baseline",
           "togetherComplete": "Done — align baseline",

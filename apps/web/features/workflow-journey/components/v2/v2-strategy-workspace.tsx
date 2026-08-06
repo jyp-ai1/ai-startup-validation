@@ -630,7 +630,8 @@ export function V2StrategyWorkspaceView({
     });
     markDirty(field);
     if (!isDemoGuided) {
-      appToast.success(tb('toast.saved', { field: tb(`fields.${field}`) }));
+      // S17 P1-2 — understanding update copy (not generic "saved")
+      appToast.success(tb('toast.understandingUpdated'));
     }
   };
 
