@@ -41,4 +41,6 @@
 
 ## Parallel track (docs only — S15 product freeze intact)
 
-- Platform SDK v1 = **Planning / impl blocked** pending CPO Scope Freeze — see `docs/sprints/SPRINT_A_PLAN.md`
+- Platform SDK v1 = 🟢 **Scope Freeze APPROVED (CPO)** · ⛔ **Implementation BLOCKED** until CEO Walkthrough completes + CPO impl go
+- Gate order: `S15 → CEO Walkthrough → Platform SDK Sprint A (CartPilot repo) → Sprint B SmartStore`
+- Work location when unblocked: **CartPilot repo only** (not this LaunchLens repo) — see `docs/sprints/SPRINT_A_PLAN.md`

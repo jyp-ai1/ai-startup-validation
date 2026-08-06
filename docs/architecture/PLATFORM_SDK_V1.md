@@ -1,9 +1,36 @@
 # Platform SDK v1 — Architecture Contract
 
-**Status:** 🔒 Scope Freeze — awaiting CPO approval (NO implementation until approved)  
+**Status:** 🟢 **Scope Freeze: APPROVED (CPO)** · ⛔ **Implementation: BLOCKED** until S15 CEO Walkthrough completes **+** CPO impl go  
 **Sprint:** A — Platform SDK v1  
+**Implementation home:** **CartPilot repo only** — not this LaunchLens / `naver-commerce` monorepo  
 **Paired docs:** [`docs/testing/PLATFORM_CONTRACT_TESTS.md`](../testing/PLATFORM_CONTRACT_TESTS.md) · [`docs/sprints/SPRINT_A_PLAN.md`](../sprints/SPRINT_A_PLAN.md)  
 **Authority:** CTO architecture contract for marketplace platform support. Product code must not diverge from this doc after CPO Scope Freeze.
+
+---
+
+## 0. Freeze & gate (locked)
+
+| Decision | State |
+|----------|-------|
+| Scope Freeze | ✅ **APPROVED (CPO)** — this doc + Contract Tests + Sprint A Plan are the baseline |
+| Implementation | ⛔ **BLOCKED** — no Registry / Executor / SmartStore product code until gate order clears |
+| Work location | **CartPilot repo** only (when impl starts). This LaunchLens repo holds **planning baseline docs** only |
+
+### Gate order (non-negotiable)
+
+```text
+S15 → CEO Walkthrough → Platform SDK Sprint A (CartPilot repo) → Sprint B SmartStore
+```
+
+S15 Walkthrough freeze stays in this repo. Platform SDK coding starts only in CartPilot after Walkthrough + CPO impl go.
+
+### Release Gate (every new marketplace)
+
+```text
+New Marketplace → Registry register → Contract Test → PASS → Merge
+```
+
+**No Merge without Executor Compliance.** Detail: [`PLATFORM_CONTRACT_TESTS.md`](../testing/PLATFORM_CONTRACT_TESTS.md).
 
 ---
 
@@ -19,7 +46,8 @@ Promote marketplace platform support from **ad-hoc implementation** to a **Contr
 | Tests per platform, inconsistent | Shared **Compliance Tests** gate registration |
 
 **Sprint A success definition (locked by CPO):**  
-Coupang runs on the SDK (refactored onto Registry/Executor). Success ≠ building SmartStore.
+Coupang runs on the SDK (refactored onto Registry/Executor). Success ≠ building SmartStore.  
+**CRITICAL:** SmartStore implementation is **FORBIDDEN** in Sprint A (`SmartStore 코드 0줄`).
 
 ---
 
@@ -27,42 +55,35 @@ Coupang runs on the SDK (refactored onto Registry/Executor). Success ≠ buildin
 
 ### 2.1 CartPilot / Coupang — not present in this repo
 
-As of Scope Freeze authoring (2026-08-06), this monorepo has:
+As of Scope Freeze baseline (2026-08-06), this LaunchLens monorepo has:
 
 | Expected | Found? | Notes |
 |----------|--------|-------|
 | CartPilot product surface | ❌ Absent | No files, packages, or docs named CartPilot |
 | Coupang Executor / API client | ❌ Absent | No Coupang payload/register code |
-| MarketplaceRegistry / Descriptor | ❌ Absent | Greenfield for Sprint A |
+| MarketplaceRegistry / Descriptor | ❌ Absent | Greenfield for Sprint A **in CartPilot repo** |
 
-**Assumption A1:** Sprint A will **introduce** Platform SDK packages/modules and a **Coupang Executor** as the first compliant implementation. If CartPilot/Coupang code later lands from another branch/repo, it must be **migrated onto** this Contract — not left as a parallel path.
+**Assumption A1:** Sprint A **implements** Platform SDK packages/modules and a **Coupang Executor** as the first compliant implementation **in the CartPilot repo**. Coupang is the greenfield-first-executor. If legacy CartPilot/Coupang code already exists there, it must be **migrated onto** this Contract — not left as a parallel path.
 
-**Assumption A2:** “Coupang Payload/register parity” Acceptance means: once a Coupang baseline fixture set is established in Sprint A (golden payloads + register request/response), refactor must preserve byte-comparable / schema-comparable parity. Until Coupang code exists, fixtures are authored as part of Sprint A implementation (post–Scope Freeze), not during this doc phase.
+**Assumption A2:** “Coupang Payload/register parity” Acceptance means: once a Coupang baseline fixture set is established in Sprint A (golden payloads + register request/response), refactor must preserve byte-comparable / schema-comparable parity. Fixtures are authored during CartPilot Sprint A implementation (post–impl go), not during this doc phase.
 
-### 2.2 Closest existing code (fit targets)
+**Assumption A3:** This LaunchLens / `naver-commerce` tree is **out of scope** for Sprint A coding. Do not refactor `apps/web/modules/naver-commerce/` for Platform SDK in Sprint A.
 
-Use these as **shape references** when placing SDK code — do not treat them as the SDK itself:
+### 2.2 Closest existing code in this repo (shape reference only — do not implement against)
 
 | Path | Relevance |
 |------|-----------|
-| `apps/web/modules/naver-commerce/` | SmartStore-oriented import → draft → upload stub pipeline |
-| `apps/web/modules/naver-commerce/services/draft-service.ts` | Draft build + `uploadDraftToNaver()` stub |
-| `apps/web/modules/naver-commerce/services/pipeline-service.ts` | Step pipeline (validate → crawl → extract → …) |
-| `apps/web/modules/naver-commerce/types/index.ts` | `ProductDraft`, pipeline types |
-| `packages/automation/src/jobs/index.ts` | `naver.upload` job stub; `JobRegistry` pattern |
+| `apps/web/modules/naver-commerce/` | SmartStore-oriented import → draft → upload stub — **Sprint B candidate later; 0 lines in Sprint A** |
 | `packages/ai/src/providers/registry.ts` | `ProviderRegistry` — registry pattern precedent |
-| `packages/agents/src/intelligence/platform/` | Intelligence “platform” types (unrelated domain; do not conflate) |
+| `packages/automation/src/jobs/index.ts` | `JobRegistry` pattern |
 
-**Assumption A3:** Sprint B (SmartStore Executor) will likely **wrap or replace** ad-hoc Naver paths under `apps/web/modules/naver-commerce/`. Sprint A must not rewrite SmartStore product UX.
+**Assumption A4:** Sprint B = first `registry.register(smartstore)` + Contract Test PASS = **SDK validation** (not a SmartStore feature build). May later wrap/replace ad-hoc Naver paths; Sprint A must not touch SmartStore.
 
-### 2.3 Monorepo layering (must fit)
-
-Follow existing architecture law (`docs/ARCHITECTURE.md`, `.cursor/rules/architecture.mdc`):
+### 2.3 Layering (must fit CartPilot / shared packages when impl starts)
 
 - Apps consume packages; packages never import from apps.
-- No marketplace vendor SDK imports in `apps/` UI trees or `packages/core`.
-- Shared types → `@repo/types` (or a dedicated `@repo/marketplace` package if introduced post-Freeze).
-- UI components stay in `@repo/ui` / feature modules; Executors stay server/pipeline-side.
+- No marketplace vendor SDK imports in UI trees or shared core.
+- UI knows Descriptor only; Executors stay server/pipeline-side.
 
 ---
 
@@ -124,21 +145,28 @@ type MarketplaceEntry = {
 ```text
 Compliance Tests PASS  →  Registry.register(entry) allowed
 Compliance Tests FAIL  →  register() MUST throw / be unreachable in CI
+Merge without PASS     →  FORBIDDEN
+```
+
+Release path:
+
+```text
+New Marketplace → Registry register → Contract Test → PASS → Merge
 ```
 
 See [`PLATFORM_CONTRACT_TESTS.md`](../testing/PLATFORM_CONTRACT_TESTS.md).
 
-### 4.4 Proposed placement (post–Scope Freeze)
+### 4.4 Proposed placement (CartPilot repo — post–impl go)
 
 | Layer | Proposed path (indicative) |
 |-------|----------------------------|
-| Contracts / types | `packages/types/src/marketplace/` **or** `packages/marketplace/src/contract/` |
-| Registry + Executor interfaces | `packages/marketplace/` (new) **or** `packages/automation/src/marketplace/` |
-| Coupang Executor impl | `packages/marketplace/src/executors/coupang/` |
-| App wiring / UI Descriptor consumers | `apps/web/features/…` or module under `apps/web/modules/` — **Descriptor only** |
-| Contract tests | `packages/marketplace/src/__tests__/compliance/` (or colocated per plan) |
+| Contracts / types | marketplace contract package in CartPilot |
+| Registry + Executor interfaces | same package |
+| Coupang Executor impl | `executors/coupang/` |
+| Contract tests | `__tests__/compliance/` |
+| App wiring | Descriptor-only consumers |
 
-Exact package name is an implementation detail **after** CPO Freeze; boundaries above are frozen.
+Exact package paths are an implementation detail **after** CPO impl go; boundaries above are frozen.
 
 ---
 
@@ -244,7 +272,7 @@ interface MarketplaceExecutor {
 }
 ```
 
-Canonical types (`CanonicalListingInput`, `MarketplaceResult`, etc.) are defined in the types package at implementation time; Contract Tests pin required fields.
+Canonical types are defined at CartPilot implementation time; Contract Tests pin required fields and cases.
 
 ---
 
@@ -258,11 +286,6 @@ Canonical types (`CanonicalListingInput`, `MarketplaceResult`, etc.) are defined
 | Registry | Entries + gate | Business UI |
 | Contract Tests | All Executor methods via harness | Production network side effects without fixture mode |
 
-### Alignment with monorepo rules
-
-- Application → Service → (Registry) → Executor → Adapter/SDK  
-- Vendor SDK only inside Executor adapter layer (same spirit as “no Supabase/OpenAI in apps/core”).
-
 ---
 
 ## 9. Forbidden patterns
@@ -275,13 +298,15 @@ Canonical types (`CanonicalListingInput`, `MarketplaceResult`, etc.) are defined
 | F4 | Silent mock register in prod without `[Sample]` / env flag | Product Constitution — no silent mock |
 | F5 | Duplicating platform metadata outside Registry | Single source of truth |
 | F6 | Changing S15 product code for SDK work | S15 CEO Walkthrough freeze |
-| F7 | Implementing SmartStore Executor in Sprint A | Sprint B scope |
+| F7 | Implementing SmartStore Executor in Sprint A | **CRITICAL** — Sprint B only; Sprint A = `SmartStore 코드 0줄` |
+| F8 | Implementing Platform SDK in this LaunchLens repo | Work in **CartPilot repo** only |
+| F9 | Merge without Executor Compliance | Release Gate |
 
 ---
 
 ## 10. Coupang migration onto SDK
 
-### 10.1 Target end state (Sprint A)
+### 10.1 Target end state (Sprint A — CartPilot)
 
 ```text
 UI ──Descriptor──▶ Registry.listDescriptors()
@@ -292,18 +317,18 @@ Pipeline ──id──▶ Registry.getExecutor('coupang')
                 buildPayload → validate → preview → register → normalizeResult
 ```
 
-### 10.2 Migration steps (implementation order — after Freeze)
+### 10.2 Migration steps (implementation order — after Walkthrough + CPO impl go, in CartPilot)
 
 1. Land contract types + Registry + Compliance harness (red tests).
-2. Implement `CoupangExecutor` to satisfy Compliance (fixtures first).
+2. Implement `CoupangExecutor` to satisfy Compliance (fixtures first; greenfield-first if no prior Coupang code).
 3. Wire bootstrap: register Coupang **only** if Compliance suite green in CI.
-4. Point any CartPilot / listing UI at `getDescriptor('coupang')` + Capability checks.
+4. Point listing UI at `getDescriptor('coupang')` + Capability checks.
 5. Point register pipeline at `getExecutor('coupang')` lifecycle — delete ad-hoc Coupang branches.
-6. Golden parity: Payload + register request/response vs baseline fixtures (Acceptance: Regression).
+6. Golden parity: Payload + register request/response vs baseline fixtures (Acceptance: Regression 0).
 
-### 10.3 If Coupang code is imported mid-sprint
+### 10.3 If Coupang legacy code exists in CartPilot
 
-Treat external CartPilot/Coupang drops as **legacy**. Migration checklist:
+Treat as **legacy**. Migration checklist:
 
 - [ ] Extract payload builder → `buildPayload`
 - [ ] Extract validators → `validate`
@@ -313,40 +338,45 @@ Treat external CartPilot/Coupang drops as **legacy**. Migration checklist:
 - [ ] Move metadata → Descriptor + Capabilities
 - [ ] Delete UI/pipeline platform if-branches
 - [ ] 100% Compliance + parity fixtures green
+- [ ] **Zero** SmartStore Executor / feature lines in the Sprint A PR
 
 ---
 
 ## 11. Roadmap (document only)
 
 ```text
-A  Platform SDK v1          ← this contract (Coupang on SDK)
-B  SmartStore Executor      ← reference second platform (proves SDK)
+A  Platform SDK v1          ← Coupang on SDK (CartPilot) — SmartStore 코드 0줄
+B  SmartStore Executor      ← first registry.register(smartstore) + Contract Test PASS = SDK validation
 C  Recent Work / Snapshot / Resume
 D  Dashboard 2.0
 E  Expansion (11번가, G마켓, 옥션, 카페24)
 ```
 
-Sprint B+ are **out of scope** for coding until A Acceptance + CPO gates.
+Sprint B+ are **out of scope** until A Acceptance + CPO gates.
 
 ---
 
 ## 12. Out of scope (this doc / Sprint A)
 
-- SmartStore feature build / Naver Commerce UX rewrite
+- SmartStore feature build / any SmartStore code (`SmartStore 코드 0줄`)
 - Sprint C–E product work
 - S15 Guided Validation product changes
+- Platform SDK coding in this LaunchLens / `naver-commerce` repo
 - Real multi-vendor production credentials matrix (env design OK; expansion Executors not A)
 - cancel / status lifecycle implementation
 
 ---
 
-## 13. CPO gate
+## 13. CPO decisions (recorded)
 
 ```text
-CPO Scope Freeze APPROVED on this doc + Contract Tests + Sprint A Plan
-  → implementation may start
-else
-  → NO Registry/Executor/product code
-```
+🟢 Scope Freeze APPROVED (CPO) on:
+   1. docs/architecture/PLATFORM_SDK_V1.md
+   2. docs/testing/PLATFORM_CONTRACT_TESTS.md
+   3. docs/sprints/SPRINT_A_PLAN.md
 
-S15 remains frozen (CEO Walkthrough). Platform SDK v1 = **Planning / impl blocked** until Freeze approval.
+⛔ Implementation NOT approved — BLOCKED until:
+   S15 CEO Walkthrough completes + CPO impl go
+
+Work only in CartPilot repo (not LaunchLens).
+```
