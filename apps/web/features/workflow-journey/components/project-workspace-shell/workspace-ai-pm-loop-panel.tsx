@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { BusinessUnderstanding } from '@repo/types/domain/business-understanding';
@@ -37,10 +36,12 @@ import { buildConversationMemoryFromSources } from '../../lib/business-understan
 import { hasAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentThinking } from '../../lib/business-understanding/build-thinking-presenter';
 import { presentS11Surface } from '../../lib/business-understanding/build-s11-surface-presenter';
+import { THINKING_TOTAL_MS } from '../../lib/business-understanding/thinking-stages';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
 import { WorkspaceDocumentTrustBlock } from './workspace-document-trust-block';
 import { WorkspaceAiPmReturnWelcomeBlock } from './workspace-ai-pm-return-welcome-block';
 import { WorkspaceAiPmReadingSequence } from './workspace-ai-pm-reading-sequence';
+import { WorkspaceAiPmThinkingStages } from './workspace-ai-pm-thinking-stages';
 import { WorkspaceS11Surface } from './workspace-s11-surface';
 import type { WorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
 
@@ -60,8 +61,6 @@ type WorkspaceAiPmLoopPanelProps = {
   className?: string;
 };
 
-const REANALYZE_MS = 1800;
-
 export function WorkspaceAiPmLoopPanel({
   understanding,
   entities = null,
@@ -79,6 +78,7 @@ export function WorkspaceAiPmLoopPanel({
   const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));
   const [answerDraft, setAnswerDraft] = useState('');
   const [reanalyzing, setReanalyzing] = useState(false);
+  const [updateSavedFlash, setUpdateSavedFlash] = useState(false);
   const [sessionPaused, setSessionPaused] = useState(false);
   const [returnWelcomeDismissed, setReturnWelcomeDismissed] = useState(false);
   const [recognitionDismissed, setRecognitionDismissed] = useState(true);
@@ -390,10 +390,13 @@ export function WorkspaceAiPmLoopPanel({
     setReturnWelcomeDismissed(true);
     setRecognitionDismissed(false);
     setReanalyzing(true);
+    setUpdateSavedFlash(false);
     setAiPmLoopPhase('reanalyze', projectId);
 
+    // S17-2 — staged Thinking (~1–2s) then reflect + next Q
     window.setTimeout(() => {
       setReanalyzing(false);
+      setUpdateSavedFlash(true);
       const refreshed = loadAiPmLoopState(projectId);
       const doc = loadWorkspaceDocumentText(projectId);
       const freshUnderstanding = doc?.trim()
@@ -411,6 +414,7 @@ export function WorkspaceAiPmLoopPanel({
         entities,
         memory: loadConversationMemory(projectId),
         analysisResultExists: hasAnalysisResult(projectId),
+        turns: refreshed.turns,
       });
       const next = patchAiPmLoopState(
         { phase: plannedNext ? 'issue' : 'complete', currentIssueId: plannedNext },
@@ -418,7 +422,8 @@ export function WorkspaceAiPmLoopPanel({
       );
       syncState(next);
       if (!plannedNext) onLoopComplete?.();
-    }, REANALYZE_MS);
+      window.setTimeout(() => setUpdateSavedFlash(false), 2200);
+    }, THINKING_TOTAL_MS);
   }, [
     answerDraft,
     loopState.currentIssueId,
@@ -429,6 +434,7 @@ export function WorkspaceAiPmLoopPanel({
     readOnly,
     syncState,
     understanding,
+    entities,
   ]);
 
   if (sessionPaused && loopState.turns.length > 0) {
@@ -479,18 +485,7 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   if (reanalyzing || loopState.phase === 'reanalyze') {
-    return (
-      <section
-        className={cn(
-          'flex min-h-[240px] flex-col items-center justify-center rounded-2xl border border-primary/25 bg-muted/20 px-6 py-10 text-center',
-          className,
-        )}
-      >
-        <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
-        <p className="mt-4 text-sm font-medium">{t('reanalyzeTitle')}</p>
-        <p className="mt-1 text-xs text-muted-foreground">{t('reanalyzeHint')}</p>
-      </section>
-    );
+    return <WorkspaceAiPmThinkingStages className={className} />;
   }
 
   if (!loopState.readingCompleted && loopState.turns.length === 0) {
@@ -571,6 +566,15 @@ export function WorkspaceAiPmLoopPanel({
             className="space-y-4 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7"
             data-testid="ai-pm-thinking-update"
           >
+            {updateSavedFlash ? (
+              <p
+                data-testid="ai-understanding-updated"
+                className="text-sm font-medium text-emerald-700 dark:text-emerald-300"
+              >
+                {t('understandingUpdatedFlash')}
+              </p>
+            ) : null}
+            <p className="text-sm font-medium text-foreground">{t('reflectLead')}</p>
             <WorkspaceS11Surface surface={s11Surface} />
             <Button
               type="button"

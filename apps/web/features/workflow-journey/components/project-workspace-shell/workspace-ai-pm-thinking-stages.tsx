@@ -1,0 +1,101 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+import { cn } from '@repo/ui/lib/utils';
+
+import {
+  resolveThinkingStage,
+  THINKING_STAGES,
+  THINKING_TOTAL_MS,
+  type ThinkingStageId,
+} from '../../lib/business-understanding/thinking-stages';
+
+type WorkspaceAiPmThinkingStagesProps = {
+  className?: string;
+  /** Called when total thinking window elapses (parent usually already has timeout). */
+  onComplete?: () => void;
+};
+
+/** S17-2 / P0-3 — staged Memory → Business update → next question. */
+export function WorkspaceAiPmThinkingStages({
+  className,
+  onComplete,
+}: WorkspaceAiPmThinkingStagesProps) {
+  const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
+  const [elapsed, setElapsed] = useState(0);
+  const active = resolveThinkingStage(elapsed);
+
+  useEffect(() => {
+    const started = performance.now();
+    const id = window.setInterval(() => {
+      const next = performance.now() - started;
+      setElapsed(next);
+      if (next >= THINKING_TOTAL_MS) {
+        window.clearInterval(id);
+        onComplete?.();
+      }
+    }, 120);
+    return () => window.clearInterval(id);
+  }, [onComplete]);
+
+  return (
+    <section
+      data-testid="ai-pm-thinking-stages"
+      className={cn(
+        'flex min-h-[240px] flex-col items-center justify-center rounded-2xl border border-primary/25 bg-muted/20 px-6 py-10 text-center',
+        className,
+      )}
+    >
+      <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
+      <p className="mt-4 text-sm font-medium">{t('reanalyzeTitle')}</p>
+      <ol className="mt-5 w-full max-w-xs space-y-2 text-left">
+        {THINKING_STAGES.map((stage) => (
+          <ThinkingRow
+            key={stage.id}
+            id={stage.id}
+            label={t(stage.labelKey)}
+            activeId={active.id}
+            elapsed={elapsed}
+            endsAtMs={stage.endsAtMs}
+          />
+        ))}
+      </ol>
+      <p className="mt-4 text-xs text-muted-foreground">{t('reanalyzeHint')}</p>
+    </section>
+  );
+}
+
+function ThinkingRow({
+  id,
+  label,
+  activeId,
+  elapsed,
+  endsAtMs,
+}: {
+  id: ThinkingStageId;
+  label: string;
+  activeId: ThinkingStageId;
+  elapsed: number;
+  endsAtMs: number;
+}) {
+  const done = elapsed >= endsAtMs;
+  const active = activeId === id && !done;
+  return (
+    <li
+      className={cn(
+        'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
+        active && 'bg-primary/10 font-medium text-foreground',
+        done && 'text-muted-foreground',
+        !active && !done && 'text-muted-foreground/70',
+      )}
+    >
+      <span className="w-4 shrink-0 text-center" aria-hidden>
+        {done ? '✓' : active ? '●' : '○'}
+      </span>
+      <span>{label}</span>
+    </li>
+  );
+}
