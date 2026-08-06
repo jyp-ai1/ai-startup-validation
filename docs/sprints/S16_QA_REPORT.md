@@ -5,6 +5,7 @@
 **Product:** LaunchLens only  
 **Authority:** CTO Internal QA  
 **Production tip at QA open:** `ddc36ca9620e38f355162997aac7dd00ea2b4f37`  
+**Production tip after P0-2 fix:** `61731d5b171fc5b39758c24be85e890daa460ae1`  
 **CEO Walkthrough:** ⏸ HOLD until CPO Review
 
 ---
@@ -26,12 +27,17 @@
 
 ```text
 GET https://ai-startup-validation-tau.vercel.app/api/build-info
+# QA open (S16 tip, P0-2 broken)
 commit: ddc36ca9620e38f355162997aac7dd00ea2b4f37
-branch: main
 deployTime: 2026-08-06T00:36:45.938Z
+
+# After fix push (P0-2 re-verified PASS on Production)
+commit: 61731d5b171fc5b39758c24be85e890daa460ae1
+deployTime: 2026-08-06T01:29:36.707Z
+branch: main
 ```
 
-Post-fix commit SHA is recorded after push (see Gate / Commit).
+Prod re-verify: confirm 「✓ 맞습니다」 before ask; textarea after confirm — `docs/evidence/S16/qa/prod-p0-2-confirm.png`, `prod-p0-2-after-confirm.png`.
 
 ---
 
@@ -53,7 +59,7 @@ Tests       87 passed (87)
 | ID | Scenario | Expected | Observed | Result | Evidence |
 |----|----------|----------|----------|--------|----------|
 | P0-1 | Upload/PDF placeholder → Workspace Trust; filename ≠ business; no overclaim | Trust admits unread; Shared Understanding spine; no `plan.pdf` as business name | Prod Playwright error-context + `qa2-result.json`: Trust “cannot read PDF body” / KO unread copy; `filenameAsBusiness=false`; `overclaim=false`. Spec assertion failed on EN button labels only. | **PASS** | `docs/evidence/S15/qa/qa2-result.json`; Playwright error-context QA-2 |
-| P0-2 | Shared Understanding first + 「맞습니까?」 before first ask | Confirm gate before textarea ask; spine 사업/고객/문제 | **Prod `ddc36ca` FAIL:** `#ai-pm-loop` empty; no confirm CTAs; main dead-end (`mainButtons=[]`). Root cause: LoopPanel parked `return null` after reading while parent `loopState.readingCompleted` stayed stale → UnderstandingCard never mounted. **Fix:** `onLoopStateChange` sync. **Local RC PASS:** confirm 「✓ 맞습니다」 before ask; ask opens after confirm. | **PASS** (after fix; local RC) | Prod fail: `docs/evidence/S16/qa/s16-browser-qa.json`, `p0-2-confirm-gate.png`. Local pass: `local-p0-2-confirm.png`, `local-p0-2-after-confirm.png` |
+| P0-2 | Shared Understanding first + 「맞습니까?」 before first ask | Confirm gate before textarea ask; spine 사업/고객/문제 | **Prod `ddc36ca` FAIL:** `#ai-pm-loop` empty; no confirm CTAs; main dead-end. Root cause: LoopPanel parked without parent `readingCompleted` sync. **Fix:** `onLoopStateChange`. **Local + Prod `61731d5` PASS:** confirm before ask; ask after 「맞습니다」. | **PASS** | Fail: `s16-browser-qa.json`. Pass: `local-p0-2-*.png`, `prod-p0-2-confirm.png`, `prod-p0-2-after-confirm.png` |
 | P0-3 | Stage-first progress; no 0→60% jump | Stages primary; % hidden pre-analysis | Prod + local: 사업/고객/시장/검토/AI 분석 완료; copy “점수나 진행률보다…”; no 60% jump pre-analysis. Unit: `hideProgressMetrics` + 5 stages. | **PASS** | `s16-browser-qa.json` p0_3; `workspace-state.test.ts`; screenshots |
 | P0-4 | Analysis: 현재 판단 → 근거 → Hero 1 | One Hero action; score supporting | Local after fix: judgment + evidence + 「지금 해야 할 일」; `primaryCount=1`; score labeled supporting. | **PASS** | `docs/evidence/S16/qa/local-p046-result.json`, `local-p0-4-analysis.png` |
 | P0-5 | New project / optional description / no 8-char gate | No 8-char requirement | Playwright QA-1 on Prod + local: `hasEightChar=false` (auth-walled create form OK). Empty-seed code path present. | **PASS** | `docs/evidence/S15/qa/qa1-result.json` |
@@ -105,12 +111,12 @@ Verified absent from LaunchLens docs tree (prior S16 commit `50d7c6a` / `ddc36ca
 
 ## CTO note
 
-Critical P0 Internal QA is **ready for CPO Review** after the P0-2 sync fix lands on Production (local RC green on P0-1..P0-6).  
+Critical P0 Internal QA is **ready for CPO Review**. P0-2 dead-end fixed and re-verified on Production `61731d5`. P0-1..P0-6 PASS.  
 
 CEO Walkthrough remains **HOLD**.
 
 ```text
-Internal QA ✅ (this report + P0-2 fix)
+Internal QA ✅ (this report + P0-2 fix on Production)
   → CTO Report ✅
   → CPO Review ⬜
   → CEO Walkthrough ⏸ HOLD
