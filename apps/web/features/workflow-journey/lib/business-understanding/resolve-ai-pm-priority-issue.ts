@@ -12,7 +12,9 @@ import {
   AI_PM_LOOP_ISSUE_ORDER,
   type AiPmLoopIssueId,
   type AiPmLoopState,
+  type AiPmLoopTurn,
 } from './workspace-ai-pm-loop-types';
+import { resolveNextIssueByMissingField } from './resolve-missing-field-priority';
 
 type PriorityOptions = {
   documentText?: string | null;
@@ -21,6 +23,8 @@ type PriorityOptions = {
   memory?: ConversationMemory | null;
   /** S14 — defer competitor until Engine analysisResult exists */
   analysisResultExists?: boolean;
+  /** S17-3 — loop turns for Shared Understanding spine */
+  turns?: AiPmLoopTurn[];
 };
 
 function isIssueLockedInMemory(
@@ -57,6 +61,7 @@ export function resolveAiPmPriorityIssue(
 /**
  * Single source for loop UI, pause, and resume.
  * S9: never re-ask an issue whose Fact is Confirmed in Conversation Memory.
+ * S17-3: highest-priority missing Shared Understanding field drives next ask.
  */
 export function resolveNextLoopIssue(
   understanding: BusinessUnderstanding,
@@ -76,6 +81,13 @@ export function resolveNextLoopIssue(
   ) {
     return loop.currentIssueId;
   }
+
+  // S17-3 — missing-field priority first
+  const byMissing = resolveNextIssueByMissingField(understanding, loop, {
+    ...options,
+    turns: options?.turns ?? loop.turns,
+  });
+  if (byMissing) return byMissing;
 
   const diagnosis = buildDiagnosis(understanding, resolvedIds, options);
   const candidates =
