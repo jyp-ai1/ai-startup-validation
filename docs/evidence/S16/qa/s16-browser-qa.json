@@ -1,0 +1,31 @@
+{
+  "p0_2": {
+    "hasSpine": true,
+    "hasConfirm": false,
+    "askVisibleBeforeConfirm": false,
+    "mainButtons": [],
+    "bodySnippet": "본문으로 건너뛰기\nLaunchLens\nDEMO\nDemo Workspace\nLogin\nKO\n\n현재 사업\n\n서비스명: 병원 AI 스크리닝 형태: B2B SaaS 대상: 병원\n\n제가 이해한 내용\n\n사업\n서비스명: 병원 AI 스크리닝 형태: B2B SaaS 대상: 병원\n고객\n아직 확인 중\n문제\n아직 확인 중\n\n요약\n\nAI PM과 함께\n\n지금은 점수나 진행률보다, 함께 정리하는 대화가 우선입니다.\n\n● AI PM 대화 중\n\n진행\n\n✔\n사업 이해\n●\n고객 이해\n○\n시장 이해\n○\n검토 준비\n○\nAI 분석 완료\n●\nAI PM\n\n개요\n\n●\n🟡 창업자 확인 중\n✔\n✓ 사업 이해\n●\n🟡 고객 확인 중\n○\n○ 시장 분석 대기\n○\n○ 경쟁 분석 대기\n\n인사이트\n\n추천\n\n다음 행동\n\nDEMO\n\nDemo Workspace\n\n체험용 프로젝트입니다. 로그인하면 이 방식 그대로 내 프로젝트를 관리할 수 있습니다.",
+    "askVisibleAfterConfirm": false,
+    "afterConfirmSnippet": "본문으로 건너뛰기\nLaunchLens\nDEMO\nDemo Workspace\nLogin\nKO\n\n현재 사업\n\n서비스명: 병원 AI 스크리닝 형태: B2B SaaS 대상: 병원\n\n제가 이해한 내용\n\n사업\n서비스명: 병원 AI 스크리닝 형태: B2B SaaS 대상: 병원\n고객\n아직 확인 중\n문제\n아직 확인 중\n\n요약\n\nAI PM과 함께\n\n지금은 점수나 진행률보다, 함께 정리하는 대화가 우선입니다.\n\n● AI PM 대화 중\n\n진행\n\n✔\n사업 이해\n●\n고객 이해\n○\n시장 이해\n○\n검토 준비\n○\nAI 분석 완료\n●\nAI PM\n\n개요\n\n●\n🟡 창업자 확인 중\n✔\n✓ 사업 이해\n●\n🟡 고객 확인 중\n○\n○ 시장 분석 대기\n○\n○ 경쟁 분석 대기\n\n인사이트\n\n추천\n\n다음 행동\n\nDEMO\n\nDemo Workspace\n\n체험용 프로젝트입니다. 로그인하면 이 방식 그대로 내 프로젝트를 관리할 수 있습니다.\n\nAI PM과 함께 검토를 진행하면 개요가 생성됩니다."
+  },
+  "p0_3": {
+    "stages": true,
+    "hidePct": true,
+    "percentJumpObserved": false
+  },
+  "p0_4": {
+    "hasJudgment": false,
+    "hasEvidence": false,
+    "hasHero": false,
+    "primaryCount": 0
+  },
+  "p0_6": {
+    "reviewMode": "reason"
+  },
+  "p1_1": {
+    "thinkingOptionVisible": false
+  },
+  "notes": [
+    "아직 고민중 not on happy path after confirm (aligning optional) — unit coverage used"
+  ]
+}

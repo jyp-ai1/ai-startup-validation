@@ -1,5 +1,5 @@
 {
-  "url": "https://ai-startup-validation-tau.vercel.app/auth/login?next=%2Fworkspace",
+  "url": "http://127.0.0.1:3010/auth/login?next=%2Fworkspace",
   "hasEightChar": false,
   "onForm": false,
   "createOk": false,

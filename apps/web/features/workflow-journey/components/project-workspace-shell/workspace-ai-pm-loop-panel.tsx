@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -53,6 +53,8 @@ type WorkspaceAiPmLoopPanelProps = {
   allowAsk?: boolean;
   workspaceFacts?: WorkspacePersistedFacts | null;
   onDocumentUpdated?: (issueId: AiPmLoopIssueId, answer: string) => void;
+  /** S16 P0-2 — parent must refresh loop snapshot so Shared Understanding confirm can mount */
+  onLoopStateChange?: () => void;
   onLoopComplete?: () => void;
   onSessionPause?: () => void;
   className?: string;
@@ -68,6 +70,7 @@ export function WorkspaceAiPmLoopPanel({
   allowAsk = true,
   workspaceFacts = null,
   onDocumentUpdated,
+  onLoopStateChange,
   onLoopComplete,
   onSessionPause,
   className,
@@ -79,6 +82,7 @@ export function WorkspaceAiPmLoopPanel({
   const [sessionPaused, setSessionPaused] = useState(false);
   const [returnWelcomeDismissed, setReturnWelcomeDismissed] = useState(false);
   const [recognitionDismissed, setRecognitionDismissed] = useState(true);
+  const confirmParkNotifiedRef = useRef(false);
 
   const documentText = useMemo(() => loadWorkspaceDocumentText(projectId), [projectId, understanding]);
   const documentTrust = useMemo(() => getWorkspaceDocumentTrust(documentText), [documentText]);
@@ -293,7 +297,20 @@ export function WorkspaceAiPmLoopPanel({
       projectId,
     );
     syncState(next);
-  }, [allowAsk, nextIssue, projectId, readOnly, syncState]);
+    // Parent gates UnderstandingCard on readingCompleted — sync or main stays empty.
+    onLoopStateChange?.();
+  }, [allowAsk, nextIssue, onLoopStateChange, projectId, readOnly, syncState]);
+
+  useEffect(() => {
+    // Recover when reading already completed in-store but parent snapshot lagged.
+    if (allowAsk || !loopState.readingCompleted || loopState.turns.length > 0) {
+      confirmParkNotifiedRef.current = false;
+      return;
+    }
+    if (confirmParkNotifiedRef.current) return;
+    confirmParkNotifiedRef.current = true;
+    onLoopStateChange?.();
+  }, [allowAsk, loopState.readingCompleted, loopState.turns.length, onLoopStateChange]);
 
   useEffect(() => {
     // S16 P0-2 — after reading, park until Shared Understanding confirm (allowAsk).

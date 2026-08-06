@@ -422,6 +422,7 @@ export function WorkspaceAiPmMain({
             allowAsk={understandingConfirmed}
             workspaceFacts={workspaceFacts}
             onDocumentUpdated={() => handleLoopDocumentUpdated()}
+            onLoopStateChange={() => setLoopState(loadAiPmLoopState(projectId))}
             onLoopComplete={handleLoopComplete}
             onSessionPause={onSessionPause}
           />
