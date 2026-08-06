@@ -1,19 +1,30 @@
 'use client';
 
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
+import {
+  buildDocumentFirstDraft,
+  seedDomainFromDocumentFirstDraft,
+} from '../../lib/business-understanding/build-document-first-draft';
+import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import type { WorkspaceSharedUnderstanding } from '../../lib/business-understanding/build-shared-understanding';
-import type { WorkspaceDomainEvidence, WorkspaceDomainFieldId } from '../../lib/workspace-ai-pm-messages';
+import {
+  loadWorkspaceDocumentText,
+  type WorkspaceDomainEvidence,
+  type WorkspaceDomainFieldId,
+} from '../../lib/workspace-ai-pm-messages';
 import { WorkspaceDomainFields } from './workspace-domain-fields';
 
 type WorkspaceUnderstandingEditFlowProps = {
   mode: 'edit' | 'together';
   domain: WorkspaceDomainEvidence;
   entities?: LaunchLensDomainContext | null;
+  projectId?: string;
   readOnly?: boolean;
   onDomainChange: (field: WorkspaceDomainFieldId, value: string) => void;
   onApplyEdits: () => void;
@@ -27,19 +38,48 @@ type WorkspaceUnderstandingConfirmFlowProps = {
   className?: string;
 };
 
+/**
+ * S17-1 — correction path seeds from AI draft (never blank empty form after upload).
+ */
 export function WorkspaceUnderstandingEditFlow({
   mode,
   domain,
   entities = null,
+  projectId,
   readOnly = false,
   onDomainChange,
   onApplyEdits,
   className,
 }: WorkspaceUnderstandingEditFlowProps) {
   const t = useTranslations('workflow.journey.workspaceShell.businessUnderstanding');
+  const seededRef = useRef(false);
+
+  const seededDomain = useMemo(() => {
+    const doc = loadWorkspaceDocumentText(projectId) ?? '';
+    if (doc.trim().length < 8) return domain;
+    const understanding = buildBusinessUnderstanding(doc);
+    const draft = buildDocumentFirstDraft({
+      documentText: doc,
+      understanding,
+      entities,
+    });
+    if (!draft) return domain;
+    return seedDomainFromDocumentFirstDraft(draft, domain);
+  }, [domain, entities, projectId]);
+
+  useEffect(() => {
+    if (readOnly || seededRef.current) return;
+    seededRef.current = true;
+    (['business', 'customer', 'market', 'competitor'] as const).forEach((field) => {
+      if (!domain[field].trim() && seededDomain[field].trim()) {
+        onDomainChange(field, seededDomain[field]);
+      }
+    });
+  }, [domain, onDomainChange, readOnly, seededDomain]);
 
   return (
     <section
+      data-testid="understanding-edit-seeded"
       className={cn(
         'rounded-2xl border border-border/70 bg-card px-5 py-5 sm:px-7',
         className,
@@ -47,10 +87,17 @@ export function WorkspaceUnderstandingEditFlow({
     >
       <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{t('aiLabel')}</p>
       <p className="mt-3 text-[15px] leading-relaxed">
-        {mode === 'together' ? t('togetherHint') : t('editHint')}
+        {mode === 'together' ? t('togetherHint') : t('editHintDocumentFirst')}
       </p>
+      <p className="mt-1 text-sm text-muted-foreground">{t('editHintDocumentFirstSub')}</p>
       <WorkspaceDomainFields
-        domain={domain}
+        domain={{
+          founder: domain.founder || seededDomain.founder,
+          business: domain.business || seededDomain.business,
+          customer: domain.customer || seededDomain.customer,
+          market: domain.market || seededDomain.market,
+          competitor: domain.competitor || seededDomain.competitor,
+        }}
         entities={entities}
         readOnly={readOnly}
         onChange={onDomainChange}
