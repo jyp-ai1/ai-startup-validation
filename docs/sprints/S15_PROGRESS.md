@@ -38,3 +38,7 @@
 - [ ] CEO Walkthrough
 - [ ] Post-walkthrough feedback triage (P0 / P1 / Backlog)
 - [ ] P1 Guided Step (after P0 gate)
+
+## Parallel track (docs only — S15 product freeze intact)
+
+- Platform SDK v1 = **Planning / impl blocked** pending CPO Scope Freeze — see `docs/sprints/SPRINT_A_PLAN.md`
