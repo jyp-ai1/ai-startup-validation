@@ -9,6 +9,9 @@
 | S17-2 SU Loop reflect | ✅ | Staged Thinking (Memory → SU → next Q); reflect copy; yellow highlight |
 | S17-3 Dynamic Question Engine | ✅ | Missing-field priority boost on Shared Understanding gaps |
 | S17-4 Final Confirmation | ✅ | Full understanding → ✓ 맞습니다 — 분석 시작 |
+| Internal QA (CTO) | ✅ PASS | Production `72bb394` — see `S17_QA_REPORT.md` |
+| CPO Review | ⏳ Ready | Gate open for CPO |
+| CEO Walkthrough | ⏸ HOLD | Until CPO opens gate |
 
 ## Acceptance snapshot
 
@@ -25,14 +28,15 @@
 
 ## Tests
 
-`s17-document-first.test.ts` · `s17-loop-priority.test.ts` · `workspace-state.test.ts` — **17 passed**
+`s17-document-first.test.ts` · `s17-loop-priority.test.ts` · `workspace-state.test.ts` — **17 passed**  
+Production Playwright `s17-internal-qa` — **5/5 passed**
 
 ## Known Issues
 
 | ID | Item |
 |----|------|
 | K-1 | Client PDF extraction still weak — Trust + partial draft + low confidence (empty form still forbidden) |
-| K-2 | S15 Playwright specs still lag S16 confirm gate — update in Internal QA |
+| K-2 | S15 Playwright specs still lag S16/S17 confirm + Document First — use `s17-internal-qa` until refreshed |
 
 ## Commits
 
@@ -43,5 +47,6 @@
 | `c203a2b` | feat(s17-2): staged Thinking and Shared Understanding reflect highlight |
 | `a9d34a4` | feat(s17-3): missing-field priority for next AI PM question |
 | `e3c4f59` | feat(s17-4): Final Review before Analysis plus Confidence and save copy |
+| `72bb394` | docs(s17): record stage commit SHAs |
 
-Tip: `e3c4f59` on `main` (pushed).
+Tip: `72bb394` on `main` (Production verified).
