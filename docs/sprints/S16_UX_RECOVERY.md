@@ -1,18 +1,23 @@
 # S16 UX Recovery
 
 **Sprint:** S16 — UX Recovery (NO new features)  
-**Status:** Implementation submitted for Internal QA → CTO Report → CPO Review  
-**CEO Walkthrough:** ⏸ HOLD until CPO Review of S16  
+**Status:** Implementation ✅ · Internal QA ✅ · **CPO Review PASS** · RC package submitted  
+**CEO Walkthrough:** ⏸ **HOLD** — awaiting CPO open of CEO Gate (RC package ready)  
 **Product:** LaunchLens only (CartPilot / Platform SDK docs purged from this repo)
 
 **North star:** Stabilize UX/flow so CEO can use LaunchLens for real startup validation.
+
+**RC package:** `S16_CEO_WALKTHROUGH_GUIDE.md` · `S16_KNOWN_ISSUES.md` · `S16_QA_REPORT.md`  
+**Production tip (RC):** `a13accf30776fb94061fcb7b30e255a50fd66222` · deploy `2026-08-06T01:33:58.524Z`
 
 ---
 
 ## Gate order
 
 ```text
-Internal QA → CTO Report → CPO Review → CEO Walkthrough (not started)
+Internal QA ✅ → CTO Report ✅ → CPO Review ✅ PASS (impl + QA)
+  → RC package ✅ submitted
+  → CEO Walkthrough ⏸ HOLD until CPO opens gate
 ```
 
 ---

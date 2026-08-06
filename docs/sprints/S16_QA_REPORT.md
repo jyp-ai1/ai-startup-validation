@@ -6,7 +6,8 @@
 **Authority:** CTO Internal QA  
 **Production tip at QA open:** `ddc36ca9620e38f355162997aac7dd00ea2b4f37`  
 **Production tip after P0-2 fix:** `61731d5b171fc5b39758c24be85e890daa460ae1`  
-**CEO Walkthrough:** ⏸ HOLD until CPO Review
+**CEO Walkthrough:** ⏸ HOLD — RC package submitted; gate opens only when CPO opens it  
+**CPO Review:** ✅ PASS (Implementation + Internal QA)
 
 ---
 
@@ -102,24 +103,29 @@ Verified absent from LaunchLens docs tree (prior S16 commit `50d7c6a` / `ddc36ca
 
 ## Known Issues (honest)
 
-1. PDF client extraction may still yield Trust “unreadable” — intentional honesty.
-2. 「아직 고민중」 not on post-confirm happy path (optional aligning) — covered by unit.
-3. Legacy `s15-internal-qa` specs need S16 confirm step (out of scope for this gate; not blocking CPO if scenario matrix PASS).
-4. CEO Walkthrough **HOLD**.
+Canonical table: `docs/sprints/S16_KNOWN_ISSUES.md`  
+(Expected Behavior · Deferred S17 · Confirmed Bug — none open at RC)
+
+CEO Walkthrough **HOLD** until CPO opens gate.
 
 ---
 
 ## CTO note
 
-Critical P0 Internal QA is **ready for CPO Review**. P0-2 dead-end fixed and re-verified on Production `61731d5`. P0-1..P0-6 PASS.  
+Critical P0 Internal QA **PASS**. P0-2 dead-end fixed and re-verified on Production `61731d5` / tip `a13accf`. P0-1..P0-6 PASS.  
 
-CEO Walkthrough remains **HOLD**.
+**CPO Review PASS** on Implementation + Internal QA.  
+**RC package submitted** (`S16_CEO_WALKTHROUGH_GUIDE.md`, `S16_KNOWN_ISSUES.md`).  
+CEO Walkthrough remains **HOLD** until CPO opens the gate.
 
 ```text
 Internal QA ✅ (this report + P0-2 fix on Production)
   → CTO Report ✅
-  → CPO Review ⬜
-  → CEO Walkthrough ⏸ HOLD
+  → CPO Review ✅ PASS
+  → RC package ✅ submitted
+  → CEO Walkthrough ⏸ HOLD (awaiting CPO gate open)
 ```
 
-Spec: `docs/sprints/S16_UX_RECOVERY.md`
+Spec: `docs/sprints/S16_UX_RECOVERY.md`  
+Known Issues: `docs/sprints/S16_KNOWN_ISSUES.md`  
+Walkthrough Guide: `docs/sprints/S16_CEO_WALKTHROUGH_GUIDE.md`

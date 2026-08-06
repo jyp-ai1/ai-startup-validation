@@ -37,8 +37,13 @@ coverage/
 .browser-temp/
 apps/web/.qa-chrome-profile/
 apps/web/.qa-auth/
+apps/web/test-results/
 .naver-commerce/
 .naver-commerce-test/
+
+# Local Playwright / smoke artifacts (not RC package)
+docs/evidence/**/playwright-output/
+docs/evidence/S14/media/prod-smoke/
 
 # Turbo
 .turbo/
