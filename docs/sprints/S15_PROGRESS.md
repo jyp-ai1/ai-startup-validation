@@ -1,8 +1,8 @@
 # S15 Progress
 
 **Sprint theme:** Decision Fatigue → Guided Validation  
-**Phase:** CEO Walkthrough 🟢 APPROVED / open  
-**CEO Walkthrough:** 🟢 APPROVED — freeze product code during walkthrough; feedback triage P0 / P1 / Backlog at end only
+**Phase:** S15 product P0 ✅ complete · **S16 UX Recovery active**  
+**CEO Walkthrough:** ⏸ **HOLD** — not started; opens only after **S16 CPO Review**
 
 ## Release Gate
 
@@ -12,7 +12,19 @@
 | Internal QA | ✅ |
 | CTO QA Report | ✅ |
 | CPO Final Review | ✅ PASS |
-| CEO Walkthrough | 🟢 APPROVED / open |
+| CEO Walkthrough | ⏸ HOLD (after S16 CPO Review) |
+
+## Active Sprint
+
+| 항목 | 상태 |
+|------|------|
+| **S16 UX Recovery** | 🟢 Active |
+| S16 Internal QA | ⬜ |
+| S16 CTO Report | ⬜ |
+| S16 CPO Review | ⬜ |
+| CEO Walkthrough | ⏸ HOLD |
+
+Spec / QA: `docs/sprints/S16_UX_RECOVERY.md` · `docs/sprints/S16_QA_REPORT.md`
 
 ## Production confirm (live)
 
@@ -26,21 +38,24 @@
 
 ## CEO Guide
 
-`docs/sprints/S15_CEO_WALKTHROUGH_GUIDE.md`
+`docs/sprints/S15_CEO_WALKTHROUGH_GUIDE.md` — **do not run** until S16 CPO Review PASS.
 
-## Feedback triage (post-walkthrough)
+## Feedback triage
 
-`docs/sprints/S15_CEO_WALKTHROUGH_FEEDBACK.md` — classify as P0 / P1 / Backlog after Walkthrough only. No live/real-time code fixes during Walkthrough.
+`docs/sprints/S15_CEO_WALKTHROUGH_FEEDBACK.md` — classify after Walkthrough only. S16 implements CEO-reported UX recovery **before** Walkthrough.
 
 ## Remaining
 
-- [x] CPO Final PASS
-- [ ] CEO Walkthrough
+- [x] CPO Final PASS (S15)
+- [ ] S16 UX Recovery (P0/P1)
+- [ ] S16 Internal QA → CTO Report → CPO Review
+- [ ] CEO Walkthrough (after S16 CPO Review)
 - [ ] Post-walkthrough feedback triage (P0 / P1 / Backlog)
-- [ ] P1 Guided Step (after P0 gate)
 
-## Parallel track (docs only — S15 product freeze intact)
+## Gate order (LaunchLens only)
 
-- Platform SDK v1 = 🟢 **Scope Freeze APPROVED (CPO)** · ⛔ **Implementation BLOCKED** until CEO Walkthrough completes + CPO impl go
-- Gate order: `S15 → CEO Walkthrough → Platform SDK Sprint A (CartPilot repo) → Sprint B SmartStore`
-- Work location when unblocked: **CartPilot repo only** (not this LaunchLens repo) — see `docs/sprints/SPRINT_A_PLAN.md`
+```text
+S15 (done) → S16 UX Recovery → Internal QA → CTO Report → CPO Review → CEO Walkthrough
+```
+
+No parallel product tracks in this repo. CartPilot / Platform SDK planning artifacts were purged from LaunchLens docs.
