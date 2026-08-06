@@ -30,7 +30,9 @@
 | D-1 | Legacy Playwright `s15-internal-qa` still asserts S15 flow (no S16 confirm step; EN Trust button regex) | QA-2/3 reds are **spec lag**, not product P0 fails — update specs in S17 |
 | D-2 | Analysis judgment copy can read machine-like on some domains | `S16_UX_RECOVERY` P0-4 Known Issues |
 | D-3 | Aligning UI only via NextStep continue-alignment (off happy path after confirm) | P1-1 / P1-2 design; optional path polish |
-| D-4 | Client PDF text extraction remains limited on some browsers | Trust stays honest (E-1); richer extraction is S17+ |
+| D-4 | Client PDF text extraction remains limited on some browsers | Trust stays honest (E-1); Document First partial draft shipped in S17 — richer extraction still later |
+
+**S17 note (2026-08-06):** Document First / Loop reflect / Final Review address the empty-form philosophy gap. CEO Walkthrough remains HOLD until CPO reopens gate after S17 Internal QA.
 
 ---
 
