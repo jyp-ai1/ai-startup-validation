@@ -201,8 +201,21 @@ export async function createMyProjectAction(
   }
 
   const description = formData.get('description')?.toString().trim() ?? '';
-  // S15 P0-3 — empty Workspace first; document/description optional at create
+  // S15 P0-3 / S16 P0-5 — empty Workspace first; description optional; AI can ask without a plan
   const summary = description.length >= 2 ? description : '';
+
+  const emptySeed =
+    !summary
+      ? [
+          `프로젝트 이름: ${title}`,
+          '',
+          '사업: 아직 확인되지 않음 — AI가 모릅니다.',
+          '고객: 아직 확인되지 않음 — AI가 모릅니다.',
+          '문제: 아직 확인되지 않음 — AI가 모릅니다.',
+          '',
+          '문서가 없습니다. 대표님께 직접 여쭙겠습니다.',
+        ].join('\n')
+      : '';
 
   const project = await createOwnedProject(user.id, {
     title,
@@ -210,7 +223,7 @@ export async function createMyProjectAction(
     onboardingContext: {
       sprint12: buildInitialInterviewState(reviewTypeRaw, summary || title),
       v2Demo: {
-        pastedContent: summary,
+        pastedContent: summary || emptySeed,
         importSource: 'paste',
       },
     },

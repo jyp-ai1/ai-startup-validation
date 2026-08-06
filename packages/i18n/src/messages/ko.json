@@ -6663,9 +6663,11 @@
           "stages": {
             "aiPmLoop": "● AI PM 대화 중",
             "founder": "● 창업자",
-            "business": "● 사업",
-            "customer": "● 고객",
-            "market": "○ 시장",
+            "business": "● 사업 이해",
+            "customer": "● 고객 이해",
+            "market": "● 시장 이해",
+            "review": "● 검토 준비",
+            "analysis": "● AI 분석 완료",
             "competitor": "○ 경쟁"
           }
         },
@@ -6683,10 +6685,11 @@
           "competitor": "경쟁"
         },
         "journeyStep": {
-          "business": "사업",
-          "customer": "고객",
-          "market": "시장",
-          "review": "검토"
+          "business": "사업 이해",
+          "customer": "고객 이해",
+          "market": "시장 이해",
+          "review": "검토 준비",
+          "analysis": "AI 분석 완료"
         },
         "sharedUnderstanding": {
           "label": "제가 이해한 내용",
@@ -6797,6 +6800,8 @@
           "pastePlaceholder": "사업계획서, IR deck, Notion 메모 등",
           "uploadCta": "파일 업로드",
           "startReadCta": "AI PM과 시작하기",
+          "startWithoutDocumentCta": "문서 없이 AI에게 바로 시작",
+          "startWithoutDocumentHint": "문서가 없어도 됩니다. AI PM이 사업·고객·문제를 직접 여쭙습니다.",
           "insufficientPasteHint": "분석할 정보가 부족합니다. 창업자·사업·고객 등 두 줄 이상, 또는 충분한 사업 설명을 입력해 주세요.",
           "invalidFile": "문서를 읽을 수 없습니다. 텍스트 파일 또는 PDF/DOCX를 사용해 주세요."
         },
@@ -7105,7 +7110,7 @@
           "zoneDecideTogether": "아직 함께 결정할 내용",
           "zoneDecideTogetherEmpty": "지금은 함께 결정할 항목이 없습니다.",
           "zoneFounderJudgment": "대표님의 판단",
-          "confirmLead": "아래 중 어떻게 진행할까요?",
+          "confirmLead": "제가 이해한 내용이 맞습니까?",
           "docReadLead": "문서에서는",
           "docReadSuffix": "이라는 표현을 확인했습니다.",
           "docReadSingle": "문서에서는 {expression}라는 표현을 확인했습니다.",

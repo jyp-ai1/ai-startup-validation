@@ -49,6 +49,8 @@ type WorkspaceAiPmLoopPanelProps = {
   entities?: LaunchLensDomainContext | null;
   projectId?: string;
   readOnly?: boolean;
+  /** S16 P0-2 — only open first ask after Shared Understanding confirm */
+  allowAsk?: boolean;
   workspaceFacts?: WorkspacePersistedFacts | null;
   onDocumentUpdated?: (issueId: AiPmLoopIssueId, answer: string) => void;
   onLoopComplete?: () => void;
@@ -63,6 +65,7 @@ export function WorkspaceAiPmLoopPanel({
   entities = null,
   projectId,
   readOnly = false,
+  allowAsk = true,
   workspaceFacts = null,
   onDocumentUpdated,
   onLoopComplete,
@@ -279,17 +282,71 @@ export function WorkspaceAiPmLoopPanel({
   const completeReading = useCallback(() => {
     if (readOnly) return;
     const issue = nextIssue;
+    // S16 P0-2 — park on issue until Shared Understanding confirm; open answer only when allowAsk
     const next = patchAiPmLoopState(
       {
         readingCompleted: true,
         dismissedReadAck: true,
-        phase: issue ? 'answer' : 'complete',
+        phase: allowAsk ? (issue ? 'answer' : 'complete') : 'issue',
         currentIssueId: issue,
       },
       projectId,
     );
     syncState(next);
-  }, [nextIssue, projectId, readOnly, syncState]);
+  }, [allowAsk, nextIssue, projectId, readOnly, syncState]);
+
+  useEffect(() => {
+    // S16 P0-2 — after reading, park until Shared Understanding confirm (allowAsk).
+    if (!loopState.readingCompleted) return;
+    if (loopState.turns.length > 0) return;
+    if (isAiPmLoopComplete(loopState)) return;
+
+    if (!allowAsk) {
+      if (loopState.phase === 'answer' || loopState.phase === 'read_ack') {
+        syncState(
+          patchAiPmLoopState(
+            {
+              dismissedReadAck: true,
+              phase: 'issue',
+              currentIssueId: loopState.currentIssueId ?? nextIssue,
+            },
+            projectId,
+          ),
+        );
+      }
+      return;
+    }
+
+    if (
+      loopState.phase === 'read_ack' ||
+      loopState.phase === 'issue' ||
+      !loopState.dismissedReadAck
+    ) {
+      const issue = loopState.currentIssueId ?? nextIssue;
+      if (loopState.phase === 'answer' && loopState.currentIssueId) return;
+      syncState(
+        patchAiPmLoopState(
+          {
+            dismissedReadAck: true,
+            phase: issue ? 'answer' : 'complete',
+            currentIssueId: issue,
+          },
+          projectId,
+        ),
+      );
+    }
+  }, [
+    allowAsk,
+    loopState,
+    loopState.readingCompleted,
+    loopState.dismissedReadAck,
+    loopState.phase,
+    loopState.currentIssueId,
+    loopState.turns.length,
+    nextIssue,
+    projectId,
+    syncState,
+  ]);
 
   const submitAnswer = useCallback(() => {
     const issueId = loopState.currentIssueId ?? nextIssue;
@@ -399,30 +456,10 @@ export function WorkspaceAiPmLoopPanel({
     );
   }
 
-  useEffect(() => {
-    // Never park Founder on a "다음으로 / 어떻게 할까요" gate — open the ask directly.
-    if (loopState.readingCompleted && (!loopState.dismissedReadAck || loopState.phase === 'read_ack')) {
-      const issue = loopState.currentIssueId ?? nextIssue;
-      syncState(
-        patchAiPmLoopState(
-          {
-            dismissedReadAck: true,
-            phase: issue ? 'answer' : 'complete',
-            currentIssueId: issue,
-          },
-          projectId,
-        ),
-      );
-    }
-  }, [
-    loopState.readingCompleted,
-    loopState.dismissedReadAck,
-    loopState.phase,
-    loopState.currentIssueId,
-    nextIssue,
-    projectId,
-    syncState,
-  ]);
+  // S16 P0-2 — reading done, waiting for parent Shared Understanding 「맞습니까?」 gate
+  if (!allowAsk && loopState.readingCompleted && loopState.turns.length === 0) {
+    return null;
+  }
 
   if (reanalyzing || loopState.phase === 'reanalyze') {
     return (

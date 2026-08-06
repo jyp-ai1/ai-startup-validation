@@ -61,6 +61,7 @@ import { WorkspacePostReviewRoadmap } from './workspace-post-review-roadmap';
 import { WorkspaceProgressiveOverview } from './workspace-progressive-overview';
 import { loadAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentAnalysisScreen } from '../../lib/business-understanding/present-analysis-screen';
+import { buildEmptyProjectConversationSeed } from '../../lib/business-understanding/build-empty-project-seed';
 
 import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
 
@@ -86,6 +87,8 @@ type WorkspaceAiPmMainProps = {
   showDemoLoginCta?: boolean;
   hasCompletedReview?: boolean;
   onDocumentIntake?: (content: string) => void;
+  /** Project display name — used for empty-start seed (S16 P0-5) */
+  projectName?: string;
   onLoopDocumentUpdated?: () => void;
   onLoopComplete?: () => void;
   onSessionPause?: () => void;
@@ -136,6 +139,7 @@ export function WorkspaceAiPmMain({
   showDemoLoginCta = false,
   hasCompletedReview = false,
   onDocumentIntake,
+  projectName,
   onLoopDocumentUpdated,
   onLoopComplete,
   onSessionPause,
@@ -156,22 +160,12 @@ export function WorkspaceAiPmMain({
 
   useEffect(() => {
     const loaded = loadUnderstandingPhase(projectId);
-    if (loaded === 'accepted') {
-      saveUnderstandingPhase('aligning', projectId);
-      setUnderstandingPhase('aligning');
-    } else {
-      setUnderstandingPhase(loaded);
-    }
+    // S16 — 'accepted' means Shared Understanding confirmed; keep it (do not force aligning)
+    setUnderstandingPhase(loaded);
     setSavedAlignment(loadMarketAlignment(projectId));
     setWorkshopAgreement(loadWorkshopAgreement(projectId));
     setLoopState(loadAiPmLoopState(projectId));
   }, [projectId, reviewCount]);
-
-  const goToMarketAlignment = useCallback(() => {
-    saveUnderstandingPhase('aligning', projectId);
-    setUnderstandingPhase('aligning');
-    onUnderstandingConfirmed?.();
-  }, [projectId, onUnderstandingConfirmed]);
 
   const documentContext = useMemo(
     () => buildDocumentContext(domain, entities, projectId),
@@ -189,6 +183,20 @@ export function WorkspaceAiPmMain({
 
   const loopComplete = isAiPmLoopComplete(loopState);
 
+  /** S16 P0-2 / P1-2 — confirm → next question (loop) or review-ready; never force market analysis */
+  const proceedAfterUnderstandingConfirm = useCallback(() => {
+    saveUnderstandingConfirmMode('accepted', projectId);
+    if (isAiPmLoopComplete(loadAiPmLoopState(projectId))) {
+      saveUnderstandingPhase('review-ready', projectId);
+      setUnderstandingPhase('review-ready');
+      onUnderstandingConfirmed?.();
+      return;
+    }
+    saveUnderstandingPhase('accepted', projectId);
+    setUnderstandingPhase('accepted');
+    onUnderstandingConfirmed?.();
+  }, [onUnderstandingConfirmed, projectId]);
+
   const scoreNarrative = useMemo(
     () =>
       understanding
@@ -202,36 +210,53 @@ export function WorkspaceAiPmMain({
     [understanding],
   );
 
+  const understandingConfirmed =
+    understandingPhase === 'accepted' ||
+    understandingPhase === 'review-ready' ||
+    understandingPhase === 'aligning' ||
+    loopState.turns.length > 0;
+
+  /** S16 P0-2 — after Trust/Reading, gate on Shared Understanding 「맞습니까?」 before first ask */
+  const needsUnderstandingConfirm =
+    Boolean(understanding) &&
+    reviewCount === 0 &&
+    !loopComplete &&
+    loopState.readingCompleted &&
+    loopState.turns.length === 0 &&
+    understandingPhase === 'pending';
+
   const showAiPmLoop =
     documentAnalyzable &&
     Boolean(understanding) &&
     reviewCount === 0 &&
     phase === 'compose' &&
-    !loopComplete;
+    !loopComplete &&
+    !needsUnderstandingConfirm &&
+    understandingPhase !== 'edit' &&
+    understandingPhase !== 'together' &&
+    understandingPhase !== 'edit_confirm';
 
   const showUnderstandingCard =
     Boolean(understanding) &&
     reviewCount === 0 &&
-    loopComplete &&
-    understandingPhase === 'pending';
+    (needsUnderstandingConfirm ||
+      (loopComplete && understandingPhase === 'pending'));
 
   const showUnderstandingEdit =
     Boolean(understanding) &&
     reviewCount === 0 &&
-    loopComplete &&
     (understandingPhase === 'edit' || understandingPhase === 'together');
 
   const showUnderstandingEditConfirm =
     Boolean(understanding) &&
     reviewCount === 0 &&
-    loopComplete &&
     understandingPhase === 'edit_confirm';
 
   const showMarketAlignment =
     Boolean(understanding) &&
     reviewCount === 0 &&
     loopComplete &&
-    (understandingPhase === 'aligning' || understandingPhase === 'accepted');
+    understandingPhase === 'aligning';
 
   const showNextStepPanel =
     reviewCount === 0 &&
@@ -257,7 +282,7 @@ export function WorkspaceAiPmMain({
   const handleConfirmMode = (mode: UnderstandingConfirmMode) => {
     saveUnderstandingConfirmMode(mode, projectId);
     if (mode === 'accepted') {
-      goToMarketAlignment();
+      proceedAfterUnderstandingConfirm();
       return;
     }
     saveUnderstandingPhase(mode, projectId);
@@ -281,8 +306,8 @@ export function WorkspaceAiPmMain({
   }, [onLoopDocumentUpdated, projectId]);
 
   const handleEditConfirmYes = useCallback(() => {
-    goToMarketAlignment();
-  }, [goToMarketAlignment]);
+    proceedAfterUnderstandingConfirm();
+  }, [proceedAfterUnderstandingConfirm]);
 
   const handleEditRevise = useCallback(() => {
     const mode = loadUnderstandingConfirmMode(projectId) ?? 'edit';
@@ -375,7 +400,12 @@ export function WorkspaceAiPmMain({
             <p className="mt-1 text-sm text-muted-foreground">{t('insufficientDocumentHint')}</p>
           </section>
         ) : null}
-        <WorkspaceDocumentIntake onSubmit={onDocumentIntake} />
+        <WorkspaceDocumentIntake
+          onSubmit={onDocumentIntake}
+          onStartWithoutDocument={() => {
+            onDocumentIntake(buildEmptyProjectConversationSeed(projectName));
+          }}
+        />
       </div>
     );
   }
@@ -389,6 +419,7 @@ export function WorkspaceAiPmMain({
             entities={entities}
             projectId={projectId}
             readOnly={readOnly}
+            allowAsk={understandingConfirmed}
             workspaceFacts={workspaceFacts}
             onDocumentUpdated={() => handleLoopDocumentUpdated()}
             onLoopComplete={handleLoopComplete}

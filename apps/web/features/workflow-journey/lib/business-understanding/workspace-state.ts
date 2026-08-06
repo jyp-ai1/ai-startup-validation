@@ -89,7 +89,13 @@ export type WorkspaceState = {
   sharedUnderstanding: WorkspaceSharedUnderstanding | null;
 };
 
-export type WorkspaceJourneyStepId = 'business' | 'customer' | 'market' | 'review';
+/** S16 P0-3 — stage-first progress (numbers secondary). */
+export type WorkspaceJourneyStepId =
+  | 'business'
+  | 'customer'
+  | 'market'
+  | 'review'
+  | 'analysis';
 
 export type WorkspaceJourneyStep = {
   id: WorkspaceJourneyStepId;
@@ -365,15 +371,22 @@ function deriveJourneySteps(
   const marketLifecycle = byId.market ?? 'waiting';
 
   let reviewLifecycle: NavNodeLifecycle = 'waiting';
-  if (reviewCount > 0 || understandingPhase === 'review-ready') {
+  if (reviewCount > 0) {
     reviewLifecycle = 'completed';
+  } else if (understandingPhase === 'review-ready') {
+    reviewLifecycle = 'in_progress';
   } else if (
     !loopInProgress &&
     (customerLifecycle === 'completed' || marketLifecycle === 'completed')
   ) {
     reviewLifecycle = 'in_progress';
-  } else if (customerLifecycle === 'in_progress') {
-    reviewLifecycle = 'waiting';
+  }
+
+  let analysisLifecycle: NavNodeLifecycle = 'waiting';
+  if (reviewCount > 0) {
+    analysisLifecycle = 'completed';
+  } else if (reviewLifecycle === 'in_progress' || reviewLifecycle === 'completed') {
+    analysisLifecycle = 'waiting';
   }
 
   return [
@@ -381,6 +394,7 @@ function deriveJourneySteps(
     { id: 'customer', lifecycle: customerLifecycle },
     { id: 'market', lifecycle: marketLifecycle },
     { id: 'review', lifecycle: reviewLifecycle },
+    { id: 'analysis', lifecycle: analysisLifecycle },
   ];
 }
 
@@ -414,17 +428,21 @@ function deriveSidebar(input: {
     reviewCount,
     loopInProgress,
   );
-  const stepFirstProgress = reviewCount === 0;
+  // S16 P0-3 — stages first; hide % until analysis complete (no 0%→60% jump)
+  const stepFirstProgress = true;
+  const hideProgressMetrics = reviewCount === 0;
 
-  if (loopInProgress) {
+  if (hideProgressMetrics) {
+    const activeJourney =
+      journeySteps.find((step) => step.lifecycle === 'in_progress') ?? journeySteps[0]!;
     return {
       businessScore: null,
       scoreDimensions: [],
       progressPercent: 0,
-      completedTopics: 0,
-      totalTopics: DOMAIN_ORDER.length,
-      activeStageKey: 'aiPmLoop',
-      lastUpdatedMinutesAgo: -1,
+      completedTopics: journeySteps.filter((s) => s.lifecycle === 'completed').length,
+      totalTopics: journeySteps.length,
+      activeStageKey: loopInProgress ? 'aiPmLoop' : activeJourney.id,
+      lastUpdatedMinutesAgo: understanding ? -1 : 0,
       nodes,
       hideProgressMetrics: true,
       journeySteps,
@@ -432,22 +450,23 @@ function deriveSidebar(input: {
     };
   }
 
-  const completedTopics = nodes.filter((n) => n.lifecycle === 'completed').length;
-  const totalTopics = nodes.length;
+  const completedTopics = journeySteps.filter((n) => n.lifecycle === 'completed').length;
+  const totalTopics = journeySteps.length;
   const progressPercent = Math.round((completedTopics / totalTopics) * 100);
-  const activeNode = nodes.find((n) => n.lifecycle === 'in_progress') ?? nodes[0]!;
+  const activeJourney =
+    journeySteps.find((n) => n.lifecycle === 'in_progress') ?? journeySteps.at(-1)!;
   const reviewScore = buildWorkspaceReviewScore(understanding, reviewCount);
-  const understandingAligned = understandingPhase === 'review-ready';
 
   return {
-    businessScore: understandingAligned && reviewCount > 0 ? reviewScore.total : null,
+    businessScore: reviewCount > 0 ? reviewScore.total : null,
     scoreDimensions: reviewScore.dimensions,
-    progressPercent: reviewCount > 0 ? Math.max(progressPercent, 20) : progressPercent,
+    progressPercent,
     completedTopics,
     totalTopics,
-    activeStageKey: activeNode.labelKey,
-    lastUpdatedMinutesAgo: reviewCount > 0 ? 0 : understanding ? -1 : 0,
+    activeStageKey: activeJourney.id,
+    lastUpdatedMinutesAgo: 0,
     nodes,
+    hideProgressMetrics: false,
     journeySteps,
     stepFirstProgress,
   };

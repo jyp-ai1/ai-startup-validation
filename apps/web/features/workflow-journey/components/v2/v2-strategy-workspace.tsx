@@ -838,6 +838,7 @@ export function V2StrategyWorkspaceView({
           showDemoLoginCta={showDemoLoginCta}
           hasCompletedReview={hasCompletedReview}
           onDocumentIntake={handleDocumentIntake}
+          projectName={projectName}
           onLoopDocumentUpdated={handleLoopDocumentUpdated}
           onLoopComplete={handleLoopComplete}
           onSessionPause={handleSessionPause}

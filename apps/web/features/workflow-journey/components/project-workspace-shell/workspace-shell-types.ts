@@ -41,6 +41,9 @@ export type WorkspaceSidebarSnapshot = {
   /** Hide score/progress during AI PM loop — CPO product gate. */
   hideProgressMetrics?: boolean;
   /** S8-1 — ●/○ journey steps (business · customer · market · review). */
-  journeySteps?: Array<{ id: 'business' | 'customer' | 'market' | 'review'; lifecycle: NavNodeLifecycle }>;
+  journeySteps?: Array<{
+    id: 'business' | 'customer' | 'market' | 'review' | 'analysis';
+    lifecycle: NavNodeLifecycle;
+  }>;
   stepFirstProgress?: boolean;
 };

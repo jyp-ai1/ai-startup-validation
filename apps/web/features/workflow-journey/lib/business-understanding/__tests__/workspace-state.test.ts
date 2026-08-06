@@ -155,15 +155,49 @@ describe('deriveWorkspaceState', () => {
     expect(state.sharedUnderstanding?.problem).toBeTruthy();
   });
 
-  it('derives four journey steps for step-first sidebar', () => {
+  it('derives five journey stages for step-first sidebar (S16 P0-3)', () => {
     const state = derive();
     expect(state.sidebar.stepFirstProgress).toBe(true);
+    expect(state.sidebar.hideProgressMetrics).toBe(true);
+    expect(state.sidebar.progressPercent).toBe(0);
     expect(state.sidebar.journeySteps?.map((step) => step.id)).toEqual([
       'business',
       'customer',
       'market',
       'review',
+      'analysis',
     ]);
+  });
+
+  it('keeps percent hidden after loop topics complete until analysis (no 0→60 jump)', () => {
+    const state = derive({
+      understandingPhase: 'review-ready',
+      loop: {
+        ...createInitialAiPmLoopState(),
+        turns: [
+          {
+            issueId: 'customer_definition',
+            answer: '30인 이하 제조기업. 사용자는 공장장, 구매자는 대표.',
+            appliedAt: new Date().toISOString(),
+          },
+          {
+            issueId: 'problem_definition',
+            answer: '예기치 않은 설비 고장으로 생산 중단',
+            appliedAt: new Date().toISOString(),
+          },
+          {
+            issueId: 'market_validation',
+            answer: '국내 중소 제조 공장 대상',
+            appliedAt: new Date().toISOString(),
+          },
+        ],
+      },
+    });
+    expect(state.sidebar.hideProgressMetrics).toBe(true);
+    expect(state.sidebar.progressPercent).toBe(0);
+    expect(state.sidebar.journeySteps?.find((s) => s.id === 'review')?.lifecycle).toBe(
+      'in_progress',
+    );
   });
 });
 

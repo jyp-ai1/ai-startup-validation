@@ -15,10 +15,16 @@ import { isWorkspaceDocumentAnalyzable } from '../../lib/business-understanding/
 
 type WorkspaceDocumentIntakeProps = {
   onSubmit: (content: string) => void;
+  /** S16 P0-5 — start AI conversation without a document */
+  onStartWithoutDocument?: () => void;
   className?: string;
 };
 
-export function WorkspaceDocumentIntake({ onSubmit, className }: WorkspaceDocumentIntakeProps) {
+export function WorkspaceDocumentIntake({
+  onSubmit,
+  onStartWithoutDocument,
+  className,
+}: WorkspaceDocumentIntakeProps) {
   const t = useTranslations('workflow.journey.workspaceShell.documentIntake');
   const [pasteContent, setPasteContent] = useState('');
   const [fileName, setFileName] = useState<string | null>(null);
@@ -159,6 +165,21 @@ export function WorkspaceDocumentIntake({ onSubmit, className }: WorkspaceDocume
       >
         {t('startReadCta')}
       </Button>
+
+      {onStartWithoutDocument ? (
+        <div className="mt-4 border-t border-border/60 pt-4">
+          <p className="text-sm text-muted-foreground">{t('startWithoutDocumentHint')}</p>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-3 w-full rounded-xl sm:w-auto"
+            disabled={loading}
+            onClick={onStartWithoutDocument}
+          >
+            {t('startWithoutDocumentCta')}
+          </Button>
+        </div>
+      ) : null}
 
       {hasWeakPaste ? (
         <p className="mt-3 text-sm text-amber-800 dark:text-amber-200" role="status">

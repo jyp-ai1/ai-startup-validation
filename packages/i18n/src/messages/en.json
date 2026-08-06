@@ -6510,9 +6510,11 @@
           "stages": {
             "aiPmLoop": "● AI PM dialogue",
             "founder": "● Founder",
-            "business": "● Business",
-            "customer": "● Customer",
-            "market": "○ Market",
+            "business": "● Business understanding",
+            "customer": "● Customer understanding",
+            "market": "● Market understanding",
+            "review": "● Ready for review",
+            "analysis": "● AI analysis complete",
             "competitor": "○ Competitor"
           }
         },
@@ -6530,10 +6532,11 @@
           "competitor": "Competitor"
         },
         "journeyStep": {
-          "business": "Business",
-          "customer": "Customer",
-          "market": "Market",
-          "review": "Review"
+          "business": "Business understanding",
+          "customer": "Customer understanding",
+          "market": "Market understanding",
+          "review": "Ready for review",
+          "analysis": "AI analysis complete"
         },
         "sharedUnderstanding": {
           "label": "What I understand so far",
@@ -6644,6 +6647,8 @@
           "pastePlaceholder": "Business plan, IR deck, Notion notes…",
           "uploadCta": "Upload file",
           "startReadCta": "Start with AI PM",
+          "startWithoutDocumentCta": "Start with AI without a document",
+          "startWithoutDocumentHint": "No document needed. AI PM will ask about business, customer, and problem.",
           "insufficientPasteHint": "Not enough to analyze. Add at least two lines (founder, business, customer…) or a fuller business description.",
           "invalidFile": "Could not read the file. Use text, PDF, or DOCX."
         },
@@ -6952,7 +6957,7 @@
           "zoneDecideTogether": "Still to decide together",
           "zoneDecideTogetherEmpty": "Nothing to decide together for now.",
           "zoneFounderJudgment": "Your call",
-          "confirmLead": "How would you like to proceed?",
+          "confirmLead": "Is this understanding correct?",
           "docReadLead": "From the document",
           "docReadSuffix": "— we confirmed these expressions.",
           "docReadSingle": "From the document — we confirmed {expression}.",
