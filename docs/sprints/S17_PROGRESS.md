@@ -34,6 +34,14 @@
 | K-1 | Client PDF extraction still weak — Trust + partial draft + low confidence (empty form still forbidden) |
 | K-2 | S15 Playwright specs still lag S16 confirm gate — update in Internal QA |
 
-## Gate suggestion
+## Commits
 
-**Internal QA next** (P0 done) → CTO report → CPO Review → CEO Walkthrough reopen when CPO opens gate.
+| SHA | Message |
+|-----|---------|
+| `8580d7d` | docs(s17): Shared Understanding Loop 2.0 mission and progress |
+| `94ee8d7` | feat(s17-1): Document First draft with confidence — no empty form after upload |
+| `c203a2b` | feat(s17-2): staged Thinking and Shared Understanding reflect highlight |
+| `a9d34a4` | feat(s17-3): missing-field priority for next AI PM question |
+| `e3c4f59` | feat(s17-4): Final Review before Analysis plus Confidence and save copy |
+
+Tip: `e3c4f59` on `main` (pushed).
