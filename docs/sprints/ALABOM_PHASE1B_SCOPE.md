@@ -1,78 +1,109 @@
-# ALABOM Phase 1-B — AI Business Understanding Engine & Experience
+# ALABOM Phase 1-B — AI Business Validation Experience
 
 ```text
-🟡 LONG SPRINT — Scope Expansion Required
-(NOT Scope Freeze Candidate — do not claim Freeze-ready)
+🟡 LONG SPRINT — Scope Expansion (CTO Work Order)
+Status: NOT FREEZE — awaiting single CPO Scope Review after EXECUTION_PLAN + this SCOPE
+Implementation: HOLD
+Baseline: d6d0e91
+Sprint identity: ALABOM Phase 1-B — AI Business Validation Experience
 ```
-
-**Implementation: HOLD** until CPO Scope Freeze (after this expansion cycle).
 
 **Date:** 2026-08-25  
 **From:** CTO → CPO  
-**Status:** **LONG SPRINT — Scope Expansion Required** · **Implementation HOLD** (NOT started)  
+**Document type:** **CTO Work Order** (Scope Expansion — language only)  
 **Predecessor gates:** Phase 1-A / 1-A.1 **CLOSED** · Phase 1-B **IMPLEMENTATION HOLD** · **CEO HOLD**  
-**Prior Scope revision:** `ea11e70` (LONG SPRINT / SCOPE FREEZE CANDIDATE) — **CPO did NOT freeze**; verdict 🟡 Freeze deferred — Scope must expand further.  
-**Product track:** Workspace first-experience AI UX (ALABOM) — one Understanding Engine & Experience Sprint on S16/S17 baseline; does **not** reopen brand Landing work.  
-**Constraint:** Docs-only Scope Expansion. **No code, no build/test, no deploy, no Phase 1-B impl, no S7–S17 contract changes** in this deliverable.
+**Baseline (preserved):** `d6d0e91` — do **not** delete history; this revision **builds on** that Scope. Prior Freeze-candidate language (`ea11e70` lineage) remains historical context only.  
+**Product track:** ALABOM Workspace first-experience — **core product experience** (AI Business Validation), not a small UX polish sprint. Does **not** reopen brand Landing work.  
+**Constraint:** Docs-only. **No code, no build/test, no deploy, no Phase 1-B impl, no unauthorized S7–S17 contract breaks** in this deliverable.  
+**Companion:** [`ALABOM_PHASE1B_EXECUTION_PLAN.md`](./ALABOM_PHASE1B_EXECUTION_PLAN.md)
 
 **Sources (prefer docs language):**  
-[`S17_SHARED_UNDERSTANDING_LOOP.md`](./S17_SHARED_UNDERSTANDING_LOOP.md) · [`S16_UX_RECOVERY.md`](./S16_UX_RECOVERY.md) · [`ALABOM_PHASE1A_REPORT.md`](./ALABOM_PHASE1A_REPORT.md) · [`ALABOM_PHASE1A_CPO_REVIEW.md`](./ALABOM_PHASE1A_CPO_REVIEW.md) · [`ALABOM_PHASE0_SCOPE_FREEZE.md`](./ALABOM_PHASE0_SCOPE_FREEZE.md) · S14/S15 ConversationMemory bag-sync pain (`S15_BACKLOG.md`) · `docs/PRODUCT_VISION_V3.md` · prior SHA `ea11e70`
+[`S17_SHARED_UNDERSTANDING_LOOP.md`](./S17_SHARED_UNDERSTANDING_LOOP.md) · [`S16_UX_RECOVERY.md`](./S16_UX_RECOVERY.md) · [`ALABOM_PHASE1A_REPORT.md`](./ALABOM_PHASE1A_REPORT.md) · [`ALABOM_PHASE1A_CPO_REVIEW.md`](./ALABOM_PHASE1A_CPO_REVIEW.md) · [`ALABOM_PHASE0_SCOPE_FREEZE.md`](./ALABOM_PHASE0_SCOPE_FREEZE.md) · S14/S15 ConversationMemory bag-sync pain · `docs/PRODUCT_VISION_V3.md` · baseline SHA `d6d0e91`
 
 ---
 
-## No mid-sprint Phase split (locked)
+## Absolute ban — no mid-sprint Phase split (locked)
 
 ```text
-Phase 1-B
- ├─ Product Contract
- ├─ Document Understanding
- ├─ New User Journey
- ├─ Shared Understanding
- ├─ Memory
- ├─ Question Engine
- ├─ Answer Processing
- ├─ Contradiction
- ├─ Confidence
- ├─ Stage Transition
- ├─ Review
- ├─ Persistence
- ├─ Demo/Auth
- ├─ UX
- ├─ QA
- └─ Production Validation
+Phase 1-B = AI Business Validation Experience (ONE LONG SPRINT)
+ ├─ Product Contract & Philosophy
+ ├─ Journey A Document First + Journey B Start From Idea
+ ├─ Unified Understanding Engine
+ ├─ Business Understanding Domain + Provenance + Confidence
+ ├─ Contradiction / Answer Quality / Question Engines
+ ├─ AI Processing + Understanding Update UX
+ ├─ Summary/Detail · Understanding Spine · Correction · Follow-up
+ ├─ Stage Architecture A–D + Transition + Validation handoff
+ ├─ Analysis Architecture (Evidence First; score supporting)
+ ├─ Memory · Persistence · Demo/Auth
+ ├─ Document Upload + Quality · New User · Landing→Workspace
+ ├─ Workspace UX · Navigation · Loading/Error · New Project · Review Start
+ ├─ Mobile · A11y · Performance · Token/Cost Control
+ ├─ Regression protect S7/S8/S14/S16/S17
+ ├─ QA Matrix · Evidence Package · CEO Walkthrough
+ └─ CPO Gate package
 ```
 
-**Do not** renumber into Phase 1-C / 1-D mid-sprint. All workstreams above live **under Phase 1-B only**. This Sprint bundles Document Flow + New User Flow + Shared Understanding + AI conversation Loop + Review transition + UX + QA as **one engine, not two products**.
+**Do not** invent Phase 1-B.1 / 1-B.2 / 1-C / 1-D mid-sprint. Blockers stay in **Phase 1-B backlog**. Code merge ≠ done.
 
 ---
 
 ## Table of contents
 
-1. [Sprint goal](#1-sprint-goal)
-2. [Two entry points → one Shared Understanding Engine](#2-two-entry-points--one-shared-understanding-engine)
-3. [Document Intelligence](#3-document-intelligence)
-4. [Information Provenance](#4-information-provenance)
-5. [Understanding Confidence](#5-understanding-confidence)
-6. [Contradiction Handling](#6-contradiction-handling)
-7. [Memory Architecture](#7-memory-architecture)
-8. [AI Processing Experience](#8-ai-processing-experience)
-9. [Question Engine](#9-question-engine)
-10. [Answer quality judgment](#10-answer-quality-judgment)
-11. [User Follow-up](#11-user-follow-up)
-12. [Summary / Detail (product-wide)](#12-summary--detail-product-wide)
-13. [Stage Model](#13-stage-model)
-14. [Stage Transition Engine](#14-stage-transition-engine)
-15. [Review Experience](#15-review-experience)
-16. [Decision Fatigue KPI](#16-decision-fatigue-kpi)
-17. [Resume / Refresh / Persistence](#17-resume--refresh--persistence)
-18. [Demo / Authenticated](#18-demo--authenticated)
-19. [Product UX surfaces](#19-product-ux-surfaces)
-20. [QA Matrix](#20-qa-matrix)
-21. [Deliverables (13)](#21-deliverables-13)
-22. [Explicit OUT](#22-explicit-out)
-23. [Gate](#23-gate)
-24. [Baseline vs Gap (honest)](#24-baseline-vs-gap-honest)
-25. [Explicit non-claims](#25-explicit-non-claims)
+| § | Title |
+|---|--------|
+| 0 | Absolute product goal |
+| 1 | Product philosophy |
+| 2 | Journey A — Document First |
+| 3 | Journey B — Start From Idea |
+| 4 | Unified Understanding Engine |
+| 5 | Business Understanding Domain (01–20) |
+| 6 | Source Provenance |
+| 7 | Confidence |
+| 8 | Contradiction Engine |
+| 9 | Answer Quality Engine |
+| 10 | Question Priority Engine |
+| 11 | Question generation rules |
+| 12 | AI Processing Experience |
+| 13 | Understanding Update (Before→After) |
+| 14 | Summary / Detail |
+| 15 | Understanding Spine |
+| 16 | User Correction |
+| 17 | User Follow-up Question |
+| 18 | Stage Architecture A–D |
+| 19 | Stage Transition |
+| 20 | Validation Engine handoff |
+| 21 | Analysis Architecture |
+| 22 | Evidence First |
+| 23 | Score is supporting |
+| 24 | Hero CTA = 1 |
+| 25 | Decision Fatigue |
+| 26 | Memory (S14/S15 bag sync) |
+| 27 | Persistence matrix |
+| 28 | Demo / Auth Contract |
+| 29 | Document Upload pipeline |
+| 30 | Document Quality test set |
+| 31 | New User Experience |
+| 32 | Landing → Workspace branching |
+| 33 | Workspace UX priority order |
+| 34 | Navigation |
+| 35 | Loading / Error / Empty / Retry |
+| 36 | New Project |
+| 37 | Review Start success / cannot / error |
+| 38 | Mobile order integrity |
+| 39 | Accessibility minimum |
+| 40 | Performance |
+| 41 | Token / AI Cost Control (CTO development) |
+| 42 | Regression protect S7/S8/S14/S16/S17 |
+| 43 | QA Matrix A1–F4 |
+| 44 | Evidence Package 01–16 |
+| 45 | CEO Walkthrough A + B |
+| 46 | Sprint completion checklist |
+| 47 | Absolute bans on micro-sprints |
+| 48 | CTO process |
+| 49 | Recommended internal work order |
+| 50 | Final CPO Gate package |
+| — | Explicit OUT · Gate statement · Baseline vs Gap · Non-claims |
 
 ---
 
@@ -81,699 +112,892 @@ Phase 1-B
 ```text
 Phase 1-A / 1-A.1 CLOSED
         ↓
-Phase 1-B Scope (ea11e70 Freeze Candidate) — CPO: Freeze deferred
+Phase 1-B baseline Scope d6d0e91 (preserved)
         ↓
-Phase 1-B LONG SPRINT — Scope Expansion Required  ← YOU ARE HERE
+Phase 1-B LONG SPRINT — Scope Expansion (CTO Work Order)  ← YOU ARE HERE
+        + EXECUTION_PLAN
         ↓
-CPO Scope Freeze (awaiting — after expansion accepted)
+ONE CPO Scope Review (PASS / FIX / HOLD)  ← only mid-gate
         ↓
-Implementation (blocked until Freeze)  ← still HOLD
+Implementation (blocked until Scope PASS)  ← still HOLD
         ↓
-Internal QA (one final batch) → CTO Report → CPO → CEO Walkthrough
+Internal QA → Production QA → Evidence → CTO Final Report
+        → CPO Review → CEO Walkthrough
 ```
 
-**Explicit:** Phase 1-B **implementation has NOT started.** This document is a **Scope Expansion** for one AI Business Understanding Engine & Experience Sprint — **not** Scope Freeze Candidate, **not** Freeze-ready. Zero code in this deliverable.
+**Explicit:** Phase 1-B **implementation has NOT started.** This document + EXECUTION_PLAN are the **CTO work instruction** for one **AI Business Validation Experience**. **NOT Freeze.** Implementation remains **HOLD** until CPO Scope **PASS**.
 
 ---
 
-## 1. Sprint goal
+## §0 Absolute product goal
 
-> 사용자가 가진 정보를 최대한 활용해 ALABOM이 먼저 사업을 이해하고, 부족한 정보만 대화로 확인하며, 답변할 때마다 이해 내용을 갱신하고, 충분히 구체화되면 사업성 검토로 자연스럽게 전환되는 전체 경험을 완성한다.
+> 사용자가 가진 정보(문서 또는 아이디어)를 입력하면 → ALABOM이 사업을 분석·이해하고 → 결과를 보여주며 → **AI 파트너 루프**(질문 → 답 → 이해 갱신 → 판단 → 다음 행동)로 사업성 검증까지 이어지는 **하나의 경험**을 완성한다.
 
-**This sprint is:**
+| Input | Analysis | Result | Partner loop |
+|-------|----------|--------|--------------|
+| PDF / plan **or** minimal idea seed | Unified Understanding Engine | Summary · Spine · Judgment · Gaps | Ask → Answer → Process → Update → Transition → Validation |
+
+**Exit = alpha-openable Business Validation Experience** — not green build alone, not “nice chat.”
+
+---
+
+## §1 Product philosophy
+
+The **full loop is one experience**:
+
+```text
+Understand → Ask only what matters → Update visibly → Resolve contradiction
+  → Transition when ready → Evidence-first Validation → One Hero next action
+```
 
 | Is | Is not |
 |----|--------|
-| One LONG Product Experience Sprint: Understanding Engine + Journey | A small UI polish sprint |
-| Document + New User → **one Shared Understanding Engine** | Two separate products / flows with divergent contracts |
-| Scope Expansion for CPO (language must expand further) | Scope Freeze Candidate / Freeze-ready claim |
-| Experience hardening on S16/S17 baseline | Greenfield AI / provider / engine rewrite |
-| Full loop: understand → ask → update → transition → Review | Landing redesign / brand restore |
+| Core product experience: AI Business Validation | Small UX polish / widget sprint |
+| Document + Idea → **one** Unified Understanding Engine | Two products with divergent contracts |
+| AI leads; user confirms / corrects | User fills long forms first |
+| Honest unknown / inference labels | Silent mock presented as fact |
+| Journey improvement on S16/S17 baseline | New provider / engine / score model |
 
 ---
 
-## 2. Two entry points → one Shared Understanding Engine
+## §2 Journey A — Document First
 
-Both paths converge on the **same** Understanding / Memory / Question / Stage / Review contracts.
-
-| | Entry A — Document | Entry B — New User |
-|--|--------------------|--------------------|
-| Start | PDF / plan document | Minimal seed Q (이름 / 아이디어 수준) |
-| AI role | Document-first understand | Answer-based initial understand |
-| User input | Gaps / uncertainty / confirm only | Gradual minimal info |
-| Question style | Confirm when Known in doc; open for Unknown | AI-chosen Unknown / Gap |
-| Core | Minimize re-entry; never re-ask doc facts | Minimize cognitive load; not fixed quiz |
-| Engine | **Shared Understanding Engine** | **Shared Understanding Engine** |
-| End | Transition when Sufficient → Review | Transition when Sufficient → Review |
-
-### Flow A — Document (canonical sequence)
+Canonical sequence:
 
 ```text
-PDF
-  → AI understand (parse / extract / draft)
-  → Document Intelligence surface (what doc said / missing / contradiction)
-  → Summary (AI가 이해한 내용)
-  → [더보기] → Detail (facts + provenance + judgment + uncertainty)
-  → Judgment / Conclusion (지금 이렇게 판단)
-  → Gaps (부족한 것)
-  → Confirm Q (문서 사실이 있으면 확인형)
-  → Answer
-  → Processing (staged; real work only — §8)
-  → Updated Understanding
-  → … (loop: Gap → Q → Answer → Processing → Update)
-  → Stage Transition Engine (enough) → Validation / Review
+PDF upload
+  → Parse / extract (honest quality)
+  → Draft Understanding (provenance DOCUMENT)
+  → Document Intelligence: what doc said / missing / contradiction
+  → Summary (AI가 이해한 내용) → [더보기] Detail
+  → Judgment now + Gaps
+  → Confirm-style Q when Known in doc; open Q only for Unknown
+  → Answer → Processing (§12) → Updated Understanding (§13)
+  → … loop …
+  → Stage Transition (§19) → Validation handoff (§20)
 ```
 
-**Hard rules (Document):**
+### Absolute bans (Document)
 
-| Rule | Meaning |
-|------|---------|
-| **Never re-ask what’s in the doc** | Extracted / confirmed facts are Known — do not quiz as open questions |
-| **Confirm-style when doc has facts** | 「문서에 ○○로 이해했습니다. 맞나요?」 not 「사업을 한 줄로 적어 주세요」 |
-| **No full re-entry (FAIL)** | Empty full-form primacy after upload = **hard product FAIL** (S17 P0-1 Document First) |
-| **Gap-only after draft** | User input is uncertainty / contradiction / missing only |
+| Ban | Meaning |
+|-----|---------|
+| **No “just type it manually” after weak PDF** | Weak extract → honest Trust + partial draft + **gap-only** Q. Never dump empty full-form or tell user to re-type the plan. |
+| **Never re-ask document facts as open questions** | Confirm-style only when doc has claims |
+| **No empty full-form primacy after upload** | Hard product **FAIL** (S17 P0-1 Document First) |
+| **Weak PDF ≠ Journey B** | Still Document Flow with honesty — not fake “document read” confidence |
 
-**FAIL if:** After upload, user is forced to re-enter full business fields, or Document Flow feels like “start the form over.”
+**FAIL if:** After upload, user is forced to re-enter full business fields, or product says “문서가 약하니 직접 입력하세요” as the primary path.
 
-### Flow B — New User (canonical sequence)
+---
+
+## §3 Journey B — Start From Idea
+
+Canonical sequence:
 
 ```text
-minimal seed Q
-  → Answer
-  → Processing (staged)
-  → Updated Understanding
-  → AI chooses next Q from Question Engine priority
-  → … (same Answer → Understanding → Conclusion → Next Gap)
-  → Stage Transition Engine (enough) → Review → next action
+Minimal seed Q (이름 / 아이디어 수준 — §31)
+  → Answer → Processing → Updated Understanding
+  → AI chooses next Q (Question Priority §10)
+  → … same Answer → Understanding → Conclusion → Next Gap …
+  → Stage Transition → Validation handoff
 ```
 
-**Hard rules (New User):**
+### Absolute bans (Idea)
 
-| Rule | Meaning |
-|------|---------|
-| **AI chooses next Q** | Priority from Understanding gaps — not a static form sequence |
-| **Not Document Flow with blank PDF** | No fake “document read” confidence |
-| **Admit unknowns** | Seed path is honest “AI가 모릅니다” (S16 P0-5), then gap-driven only |
-| **Minimize cognitive load** | One question at a time; gradual build |
-
----
-
-## 3. Document Intelligence
-
-After document intake, the product must **show** — not hide — what the document contributed.
-
-| Surface | Requirement |
-|---------|-------------|
-| **What the doc said** | Visible extracted claims mapped into Understanding fields (with provenance DOCUMENT) |
-| **What is missing** | Explicit Unknown / Critical Unknown list for business judgment |
-| **Contradiction confirm** | If user later conflicts with doc (or doc internal conflict), dedicated confirm — never silent overwrite (§6) |
-
-### Weak PDF honesty + gap-only Q
-
-When PDF extract is weak / partial / low confidence:
-
-| Do | Do not |
-|----|--------|
-| Honest Trust / confidence (S17 Trust Block baseline) | Fake high “document read” confidence |
-| Partial draft + confirm | Empty full-form primacy |
-| **Gap-only Q** for Unknown / Contradiction | Full re-entry questionnaire |
-| Confirm-style on thin Known | Pretend all stages are filled |
-
-Weak PDF is still **Document Flow**, not New User Flow with a blank file.
+| Ban | Meaning |
+|-----|---------|
+| **Not Document Flow with blank PDF** | No fake document-read confidence |
+| **Not a fixed 20-question quiz** | Domain fields exist (§5); AI skips Known; asks one gap at a time |
+| **Admit unknowns** | Seed path honest “AI가 모릅니다” (S16 P0-5), then gap-driven |
+| **One question at a time** | Minimize cognitive load |
 
 ---
 
-## 4. Information Provenance
+## §4 Unified Understanding Engine
 
-Every Understanding claim carries a **Source**. Display honesty is mandatory.
+Both journeys converge on the **same** contracts:
+
+| Contract | Shared |
+|----------|--------|
+| Understanding fields + Domain 01–20 | Yes |
+| Provenance · Confidence · Contradiction | Yes |
+| Answer Quality · Question Priority · Generation | Yes |
+| Processing · Spine · Summary/Detail | Yes |
+| Stage A–D · Transition · Validation handoff | Yes |
+| Memory · Persistence | Yes (storage lifetime may differ — §28) |
+
+**One engine, two entries — not two products.**
+
+---
+
+## §5 Business Understanding Domain (01–20)
+
+These are **understanding fields**, not a 20-question form. AI **skips Known / Confirmed / Sufficient** and asks only what Stage + Priority require.
+
+| # | Field | Stage affinity | Notes |
+|---|-------|----------------|-------|
+| 01 | Business one-liner | A | What we do |
+| 02 | Category / scope | A | Boundary honesty |
+| 03 | Customer / persona | A | Who uses |
+| 04 | Payer | A | Who pays (may = customer) |
+| 05 | Problem / job-to-be-done | A | Pain |
+| 06 | Problem frequency / severity | A | Depth |
+| 07 | Solution | A | How we solve |
+| 08 | Differentiation hypothesis | A | Why us |
+| 09 | Revenue model | A | How money enters |
+| 10 | Pricing hint | A | Optional until critical |
+| 11 | Market / channel context | B | Validation |
+| 12 | Market size / entry evidence | B | Evidence ≥1 when required |
+| 13 | Alternatives / competitors | B | Recognition |
+| 14 | Differentiation vs alternatives | B | |
+| 15 | Top risks / fatal assumptions | C | Risk |
+| 16 | Validation / testability | B–C | What can be tested |
+| 17 | Execution constraints | C | Team / time / capital honesty |
+| 18 | Evidence strength summary | B–D | Supporting, not hero |
+| 19 | Current judgment (GO/HOLD spirit) | D | Decision |
+| 20 | Next action (one line) | D | Hero CTA content |
+
+**Rule:** Skip Known. Never walk 01–20 as a questionnaire dump.
+
+---
+
+## §6 Source Provenance
+
+Every claim carries a **Source**. Display honesty is mandatory.
 
 | Source | Meaning | UI rule |
 |--------|---------|---------|
-| **DOCUMENT** | Extracted / attributed to uploaded plan | May show as document-backed fact pending confirm |
-| **USER_ANSWER** | Explicitly stated or confirmed by user | May show as user fact when Confirmed |
-| **AI_INFERENCE** | Model inferred / filled gap | **Never display as user fact**; label as AI judgment / inference |
-| **UNKNOWN** | Not established | Shown as missing / Needs confirmation |
+| **DOCUMENT** | Extracted / attributed to uploaded plan | Document-backed; confirm-style when needed |
+| **USER_CONFIRMED** | User affirmed a claim | May show as user-backed fact |
+| **USER_CORRECTED** | User replaced prior claim | New truth; prior retained for audit honesty |
+| **AI_INFERENCE** | Model inferred / filled gap | **Never** as settled user fact; label inference |
+| **EXTERNAL_EVIDENCE** | Outside evidence (when present) | Labeled; not invented as DOCUMENT |
+| **UNKNOWN** | Not established | Missing / Needs confirmation |
 
-### Confirmation state (per claim)
+**FAIL if:** `AI_INFERENCE` is shown as something the user said or as validated business truth without confirmation.
 
-| State | Meaning |
-|-------|---------|
-| **Confirmed** | User affirmed (or document confirm-style accepted) |
-| **Needs confirmation** | Present but not yet user-validated |
-
-**FAIL if:** AI_INFERENCE is presented as something the user said or as settled business truth without confirmation.
+*(Baseline `d6d0e91` used DOCUMENT / USER_ANSWER / AI_INFERENCE / UNKNOWN — this expansion adds USER_CONFIRMED, USER_CORRECTED, EXTERNAL_EVIDENCE and maps USER_ANSWER → USER_CONFIRMED / USER_CORRECTED.)*
 
 ---
 
-## 5. Understanding Confidence
+## §7 Confidence
 
-Per field / claim confidence ladder (product language):
+Per field / claim ladder:
 
 ```text
-Unknown → Inferred → User Confirmed → Sufficient
+UNKNOWN → INFERRED → PROPOSED → USER_CONFIRMED → VALIDATED
 ```
 
-| Level | Meaning | Question behavior |
-|-------|---------|-------------------|
-| **Unknown** | No usable claim | Eligible for Question Engine (Critical Unknown first) |
-| **Inferred** | AI_INFERENCE only | Needs confirmation; do not treat as Sufficient |
-| **User Confirmed** | USER_ANSWER or confirm-style accept | Strong for stage progress |
-| **Sufficient** | Confirmed + AI judged adequate for business judgment | **Skip re-asking**; do not quiz again |
+| Level | Meaning | Question / stage behavior |
+|-------|---------|---------------------------|
+| **UNKNOWN** | No usable claim | Eligible for Question Engine (Critical first) |
+| **INFERRED** | AI_INFERENCE only | Needs confirmation; **≠ fact** |
+| **PROPOSED** | Draft shown for confirm (doc or AI) | Confirm-style preferred |
+| **USER_CONFIRMED** | User affirmed | Strong for progress |
+| **VALIDATED** | Confirmed + adequate for current stage judgment | **Skip re-ask** unless Contradiction / user edit |
 
-**Skip re-ask when Sufficient** — locked. Re-ask only if Contradiction appears or user edits / challenges.
+**Locked:** AI inference ≠ fact. Skip re-ask when VALIDATED (or Sufficient equivalent). Re-ask only on Contradiction or user challenge.
 
 ---
 
-## 6. Contradiction Handling
+## §8 Contradiction Engine
 
-**Dedicated Acceptance.** Contradictions are first-class product events.
+First-class product events — dedicated Acceptance.
 
 | Rule | Meaning |
 |------|---------|
-| **Never silent overwrite** | New answer conflicting with DOCUMENT / prior USER_ANSWER must not quietly replace |
-| **Confirm which is current truth** | One focused confirm / clarify Q: which version stands |
-| **Priority** | Contradiction sits at **top** of Question Engine priority (§9) |
-| **Stage impact** | Active Contradiction blocks Stage Transition (Contradiction = 0 required) |
+| **Never silent overwrite** | Conflict with DOCUMENT / USER_CONFIRMED / USER_CORRECTED must not quietly replace |
+| **Confirm current truth** | One focused confirm / clarify Q |
+| **Priority** | Top of Question Priority (§10) |
+| **Stage impact** | Unresolved Contradiction **blocks** Stage Transition |
+| **Provenance** | Resolution yields USER_CONFIRMED or USER_CORRECTED |
 
-**FAIL if:** Doc fact or prior confirmed answer disappears without user acknowledgment.
-
----
-
-## 7. Memory Architecture
-
-### Turn pipeline (locked)
-
-```text
-Q
-  → Answer
-  → Conversation Memory
-  → Understanding (merge + provenance + confidence)
-  → Presenter
-  → UI (Summary / Detail / Conclusion / Next Gap / next Q)
-```
-
-### Bag sync completion criteria (from S14/S15 pain)
-
-Phase 1-B must close ConversationMemory / Understanding sync failures that previously blocked trust:
-
-| Criterion | PASS when |
-|-----------|-----------|
-| **No overwrite** | Prior answers / confirmed keys are not clobbered by later turns or stage moves |
-| **Key sync** | Answer that establishes a field (e.g. `problem`) appears in Memory bag **and** Understanding in the same turn |
-| **Stale prevent** | UI does not show obsolete Understanding after a successful merge |
-| **Reload persistence** | Refresh / re-entry restores understanding, stage, conversation, confirmed/unknown (§17) |
-| **Next-turn uses prior answers** | Question Engine and merge read prior Memory — not a blank slate each turn |
-| **Survives stage move** | Advancing Understanding → Validation (or stage ✔) does not drop Memory keys |
-
-**Baseline cite (do not rewrite contracts):** S14 Confirmed Issue — ConversationMemory bag sync (`problem`); carried in S15 backlog. Phase 1-B Scope requires **completion criteria** above as Acceptance — experience hardening, not a new memory product.
+**FAIL if:** Doc fact or prior confirmed answer disappears without acknowledgment.
 
 ---
 
-## 8. AI Processing Experience
+## §9 Answer Quality Engine
 
-**Staged thinking after answer** — not spinner-only.
+Do **NOT** always mark complete after any reply.
+
+| Judgment | Behavior |
+|----------|----------|
+| **VALID** | Merge; raise confidence toward USER_CONFIRMED / VALIDATED when appropriate |
+| **PARTIAL** | Merge what is usable; clarify remaining Critical Unknown |
+| **AMBIGUOUS** | Clarify Q; do not ✔-pass stage |
+| **IRRELEVANT** | Do not invent USER_CONFIRMED; re-ask or softer path |
+| **CONTRADICTORY** | Enter Contradiction Engine (§8) |
+| **UNKNOWN** | 「모름」 / empty signal → record UNKNOWN; never fake sufficiency |
+
+**No PASS by length** — no quiz-tick, no silent ✔.
+
+*(Maps baseline Sufficient / Ambiguous / Nonsense / Conflict / 모름 into this enum.)*
+
+---
+
+## §10 Question Priority Engine
+
+**One question at a time.** Ask only the most important unknown for business judgment.
+
+Locked order:
+
+1. **Contradiction** — resolve current truth  
+2. **Critical Unknown** — blocks stage sufficiency / business judgment  
+3. **Business-critical Detail** — sharpens without blocking  
+4. **Optional** — soft confirm; never starve higher priorities  
+
+---
+
+## §11 Question generation rules
+
+Next Q is derived from the **full state vector** — never a static list:
+
+| Input | Role |
+|-------|------|
+| **Known** | Skip open re-ask |
+| **Confirmed** (USER_CONFIRMED / VALIDATED) | Skip; confirm-style only if Contradiction |
+| **Inferred** (INFERRED / PROPOSED) | Prefer confirm-style |
+| **Unknown** | Open gap Q by priority |
+| **Contradiction** | Resolve first |
+| **Stage** (A–D) | Only ask what current stage needs; no early market quiz while A incomplete |
+
+| Good | Bad |
+|------|-----|
+| 「문서에 고객을 SMB로 이해했습니다. 맞나요?」 | 「사업/고객/문제/솔루션을 모두 적어 주세요」 |
+| One Critical Unknown for current stage | 20-field questionnaire / multi-Q wall |
+| Re-ask after IRRELEVANT / AMBIGUOUS | Polite “확인했습니다” then stage PASS |
+
+---
+
+## §12 AI Processing Experience
+
+Staged thinking after answer — not spinner-only.
 
 ```text
 Answer
-  → Processing stage 1: Memory / 반영 중
-  → Processing stage 2: Understanding update
-  → Processing stage 3: Next Gap / next Q ready
+  → Processing 1: Memory / 반영 중
+  → Processing 2: Understanding update
+  → Processing 3: Next Gap / next Q ready
   → Updated Understanding visible
   → next Q or stage advance announcement
 ```
 
 | Allowed | Forbidden |
 |---------|-----------|
-| Staged labels tied to **real** work where possible (S17 Thinking baseline) | Spinner-only with no stage meaning |
-| Visible duration of reflect before next Q | Silent jump to next quiz item |
-| Same Processing chrome on Document and New User | Batch-all-inputs-then-analyze |
-| Honest “working” only when work runs | **Fake progress / fake AI work presented as fact** |
-
-**Forbidden:** Collect many answers first, then one late analysis. Understanding must reflect **immediately** after each answer. **No fake progress bars or fabricated “AI is analyzing…” theater** that implies completed work that did not run. Real pipeline or visible `[Sample]` (product constitution).
+| Staged labels tied to **real** work where possible (S17 Thinking) | Spinner-only with no meaning |
+| Same chrome on Journey A and B | Batch-all-inputs-then-analyze |
+| Honest working only when work runs | **Fake AI work presented as fact** |
+| Visible `[Sample]` if not real pipeline | Silent mock as production truth |
 
 ---
 
-## 9. Question Engine
+## §13 Understanding Update Before → Answer → Processing → After
 
-**One question at a time.** Ask only the **most important unknown for business judgment**.
-
-### Priority (locked order)
-
-1. **Contradiction** — resolve current truth first  
-2. **Critical Unknown** — blocks business judgment / stage sufficiency  
-3. **Business-critical Detail** — sharpens understanding without blocking  
-4. **Optional** — soft confirm / nice-to-have; never starve higher priorities  
-
-### Question quality (Known / New / Unknown / Contradiction)
-
-| Class | Meaning | Question behavior |
-|-------|---------|-------------------|
-| **Known / Sufficient** | In doc or confirmed + adequate | Do **not** re-ask open; skip |
-| **New** | Just learned this turn | Merge; do not re-quiz |
-| **Unknown** | Missing for current stage / judgment | One Unknown-driven Q (highest priority) |
-| **Contradiction** | Doc vs user, or answer vs prior | Resolve with one focused confirm / clarify |
-
-### Confirm vs open
-
-- Facts exist (esp. Document entry) → **confirm-style**  
-- Unknown with no evidence → **open** gap Q  
-
-### Good vs bad (examples)
-
-| Good | Bad |
-|------|-----|
-| 「문서에 고객을 SMB로 이해했습니다. 맞나요?」 | 「사업을 한 줄로 / 고객 / 문제 / 솔루션을 모두 적어 주세요」 |
-| One Critical Unknown for current stage | Multi-question wall / fixed questionnaire dump |
-| Re-ask after nonsense (not ✔) | Polite “확인했습니다” then stage PASS |
-
----
-
-## 10. Answer quality judgment
-
-Do **NOT** always mark complete after any reply.
-
-| Judgment | Behavior |
-|----------|----------|
-| **Sufficient** | Merge; update confidence toward User Confirmed / Sufficient; may clear Critical Unknown |
-| **Ambiguous** | Clarify Q; do not ✔-pass stage |
-| **Nonsense / low-signal** | May save for audit honesty; **must NOT** ✔-pass; re-judge → re-ask; stage stays ● |
-| **Conflict** | Enter Contradiction Handling (§6); never silent overwrite |
-| **「I don't know」 / 모름** | Record as Unknown / Needs confirmation; do not invent USER_ANSWER; ask next Critical Unknown or softer path — never fake sufficiency |
-
-**No PASS by length** — no quiz-tick, no silent ✔.
-
----
-
-## 11. User Follow-up
-
-AI states a **Conclusion** (judgment now). User may reverse-question (e.g. **「왜?」**).
+Every turn must make the delta **visible**:
 
 ```text
-AI Conclusion
-  → User: 「왜?」 / challenge / edit
-  → Explain why (Evidence ≤3 or Detail evidence + provenance)
-  → return to validation loop unbroken
-       (confirm / contradict resolve / next Gap Q)
+Before (what AI believed)
+  → User Answer
+  → Processing (§12)
+  → After (what changed: fields + provenance + confidence)
+  → UI: highlight / “이렇게 이해를 수정했습니다”
 ```
 
 | Rule | Meaning |
 |------|---------|
-| Conclusion is visible | Not buried only in chat praise |
-| 「왜?」 returns evidence | Then returns to loop — not a dead-end essay |
-| Evidence capped | Prefer ≤3 evidence points (Decision Fatigue; §16) |
-| Loop unbroken | Follow-up never exits Understanding Engine into a dead end |
+| Immediate reflect | No collecting many answers then one late analysis |
+| Delta visible | User sees which fields moved |
+| Loop unbroken | Always a next Q or stage announce — no dead end |
 
 ---
 
-## 12. Summary / Detail (product-wide)
+## §14 Summary / Detail
 
-**Product-wide pattern** — not a one-off Document widget.
+Product-wide pattern (not a one-off Document widget):
 
 | Layer | Role |
 |-------|------|
-| **Summary** | Always visible short “AI가 이해한 내용” |
-| **[더보기] → Detail** | Expand on demand — **not** a second primary CTA |
-| **Detail may include** | Facts · Provenance (Source) · AI judgment / inference (labeled) · Evidence · Uncertainty · Follow-ups / open Gaps |
-| **AI Conclusion** | What AI believes is true *now* |
-| **Gap** | What is still missing |
-| **One primary CTA** | Next Q or next stage / Review Hero only |
-
-**One composition job:** Summary for scan; Detail on demand; never force Detail as the only path. Same pattern on loop turns and Review.
+| **Summary** | Always-visible short “AI가 이해한 내용” |
+| **[더보기] → Detail** | On demand — **not** a second primary CTA |
+| **Detail may include** | Facts · Provenance · Labeled inference · Evidence · Uncertainty · Open Gaps |
+| **One primary CTA** | Next Q or Hero only |
 
 ---
 
-## 13. Stage Model
+## §15 Understanding Spine
 
-Two **modes** — do not jump early to market validation while the business itself is still unexplained.
-
-### Understanding mode (사업 이해)
-
-| Focus | Examples |
-|-------|----------|
-| 사업 | What we do |
-| 고객 | Who pays / uses |
-| 문제 | Pain / job |
-| 해결 | How we solve |
-| 수익 | How money enters |
-
-### Validation mode (사업성 검토)
-
-| Focus | Examples |
-|-------|----------|
-| 시장 | Size / channel context |
-| 경쟁 | Alternatives / differentiation |
-| 검증가능성 | What can be tested |
-| 위험 | Fatal assumptions |
-| 종합 | Judgment / next action |
-
-**Rule:** Complete (or Sufficient) Understanding-mode fields before natural transition into Validation-mode questioning and Review. **No early jump** to market/competitor while business / customer / problem remain Unknown.
-
-### Fixed stage spine ①–⑩ (skip known)
-
-Canonical order. Stages are **fixed**; AI **skips already-Known / Sufficient** and lands on highest-priority Unknown / Contradiction.
-
-| # | Stage | Mode | AI가 알고 있는 것 | 부족한 것 | 예시 다음 질문 | 완료 조건 |
-|---|-------|------|-------------------|-----------|----------------|-----------|
-| ① | **business** | Understanding | 무엇을 하는지 | 모호한 카테고리/범위 | 확인형 또는 「이 사업은 한 문장으로?」 | Confirmed + non-empty + Sufficient |
-| ② | **customer** | Understanding | 누구를 위한지 | 페르소나/지불자 | 「누가 돈을 내고 쓰나요?」 | Confirmed + Sufficient |
-| ③ | **problem** | Understanding | 고통/직무 | 깊이·빈도 | 「가장 아픈 점은?」 | Confirmed + Sufficient |
-| ④ | **solution** | Understanding | 제안 방향(있다면) | 차별 가설 | 「그 문제를 어떻게 풀어 주나요?」 | Confirmed + Sufficient |
-| ⑤ | **revenue** | Understanding | 수익 힌트 | 누가·어떻게 | 「돈은 어떻게 들어옵니까?」 | Confirmed + Sufficient |
-| ⑥ | **market** | Validation | 시장 맥락 | 규모·진입 근거 | 「시장/채널은?」 | Confirmed + 근거 ≥1 |
-| ⑦ | **competitor** | Validation | 대체재 인식 | 직접 경쟁·차별 | 「비슷한 선택지는?」 | Confirmed + 인식 |
-| ⑧ | **risk** | Validation | 리스크 후보 | 치명 우선순위 | 「가장 위험한 가정은?」 | Confirmed + top risk 1 |
-| ⑨ | **judgment** | Validation | 누적 Understanding | GO/HOLD 합의 | Final Review 「✓ 맞습니다」 | 전체 확인 |
-| ⑩ | **next action** | Validation | 합의된 판단 | 실행 한 줄 | Review Hero CTA | next action 1개 |
-
-**Skip known:** Document entry may enter mid-spine (e.g. ①–③ Sufficient from PDF → start ● on first Unknown). Do not force walkthrough of ✔ stages.
-
-**Honesty:** Today’s S17 spine prioritizes business / customer / problem (± market/competitor). Full ①–⑩ as first-class UI+status are **Scope targets** for Phase 1-B — not claimed already complete. Order above places Understanding revenue **before** Validation market (aligned with Stage Model).
-
----
-
-## 14. Stage Transition Engine
-
-### Marks
+Visible spine of progress (✔ / ● / ○) aligned to Stage A–D fields — **user journey language**, not internal engine names.
 
 | Mark | Meaning |
 |------|---------|
-| **✔ 확인됨** | User confirmed **and** AI judged Sufficient; stage may advance |
-| **● 현재 확인 중** | Active — Processing / Question / awaiting confirm / re-ask after insufficient answer |
-| **○ 아직 확인 전** | Not yet reached or insufficient confidence |
+| **✔** | USER_CONFIRMED / VALIDATED for that node |
+| **●** | Current — Processing / Question / awaiting confirm |
+| **○** | Not yet / insufficient |
 
-### Transition gates (NOT answer-count thresholds)
+**Skip known:** Document entry may land mid-spine. Do not force walkthrough of ✔ nodes.  
+**Honesty:** S17 today covers business / customer / problem (± market/competitor). Full spine depth is a **Phase 1-B Scope target** on baseline — not claimed already complete.
 
-Advance / enter Review when **all** of:
+Canonical Understanding → Validation node order (skip Known): business → customer → problem → solution → revenue → market → competitor → risk → judgment → next action (aligned with Domain 01–20 / Stages A–D).
+
+---
+
+## §16 User Correction
+
+User may reject or edit AI understanding:
+
+```text
+AI draft / claim
+  → User: 아닙니다 / 수정
+  → Correction capture (USER_CORRECTED)
+  → Contradiction path if conflicts with DOCUMENT or prior confirm
+  → Processing → After Understanding
+```
+
+Never silent overwrite of prior DOCUMENT / USER_CONFIRMED without the Contradiction path when conflict exists.
+
+---
+
+## §17 User Follow-up Question
+
+AI states a **Conclusion**. User may reverse-question (e.g. **「왜?」**).
+
+```text
+AI Conclusion
+  → User: 「왜?」 / challenge
+  → Explain (Evidence ≤3 or Detail) with provenance
+  → return to validation loop unbroken
+```
+
+Follow-up never exits into a dead-end essay. Evidence capped for Decision Fatigue (§25).
+
+---
+
+## §18 Stage Architecture A / B / C / D
+
+| Stage | Name | Focus | Gate spirit |
+|-------|------|-------|-------------|
+| **A** | Understanding | Business, customer, problem, solution, revenue | Sufficient A before early B |
+| **B** | Validation | Market, competitive, testability | Evidence-aware |
+| **C** | Risk | Fatal assumptions, execution constraints | Top risk clear |
+| **D** | Decision | Judgment + **one** next action | Hero CTA = 1 |
+
+**No early jump** to market/competitor while A Critical Unknowns remain.
+
+---
+
+## §19 Stage Transition
+
+**Not answer-count thresholds.**
+
+Advance when **all** of:
 
 | Gate | Requirement |
 |------|-------------|
-| **Required fields** | Understanding-mode required set present for current transition target |
-| **Confidence** | Required claims at **Sufficient** (or User Confirmed + AI sufficiency) |
-| **Contradiction = 0** | No unresolved Contradiction |
-| **Critical Unknown = 0** | No open Critical Unknown for the transition |
+| Required fields for target | Present |
+| Confidence | Required claims USER_CONFIRMED / VALIDATED (or AI sufficiency + confirm policy) |
+| Contradiction = 0 | Unresolved = 0 |
+| Critical Unknown = 0 | For the transition |
 
-**Forbidden:** Advance by answer count, polite ack, or length alone. On advance: **announce next stage** (user always knows what to do next — no dead end). Nonsense / ambiguous keeps ● and re-asks.
+On advance: **announce next stage** — user always knows what to do next. Nonsense / AMBIGUOUS keeps ● and re-asks.
 
 ---
 
-## 15. Review Experience
+## §20 Validation Engine handoff
 
-Final surface when Stage Transition Engine says **enough**:
+When Transition says **enough** for Validation / Review:
+
+| Copy / UX | Requirement |
+|-----------|-------------|
+| Handoff announcement | Clear: Understanding → Validation / Review |
+| What carries | Understanding + provenance + confidence + Memory |
+| What does not | Re-quiz Known; silent drop of bag keys |
+| Tone | AI PM — judgment leading into Evidence First (§22) |
+
+---
+
+## §21 Analysis Architecture
+
+Analysis surfaces (post-handoff), **not** a score hero:
+
+| Lens | Role |
+|------|------|
+| Problem / Solution / Customer Fit | Core fit judgment |
+| Market | Context + evidence |
+| Revenue | Model honesty |
+| Competitive | Alternatives |
+| Execution Risk | Fatal assumptions |
+| Evidence Strength | Supporting signal |
+
+Scores (if any) are **supporting chrome** — never the primary composition (§23).
+
+---
+
+## §22 Evidence First
+
+Canonical Review / Analysis read order:
 
 ```text
-Judgment (AI conclusion first)
-  → 3 reasons (evidence / why)
-  → 1 critical problem
-  → 1 Hero CTA
-  → Detail (secondary — facts, provenance, uncertainty, follow-ups)
+Judgement
+  → Evidence (≤3 primary; more in Detail)
+  → Reasoning
+  → Action (exactly one Hero CTA)
 ```
+
+**FAIL if:** Score wall or dashboard widgets lead the first viewport.
+
+---
+
+## §23 Score is supporting
 
 | Rule | Meaning |
 |------|---------|
-| **Judgment first** | Not a dashboard of widgets |
-| **3 reasons** | Cap cognitive load; more under Detail |
-| **1 critical problem** | Single sharp risk / gap — not a wall of issues |
-| **1 Hero CTA** | Single primary next action |
-| **Detail secondary** | Evidence / provenance behind [더보기] — not competing CTAs |
-
-Exit Review = clear next action — Workspace user always knows **what to do next**.
+| Score ≠ hero | Judgment + Evidence + Action lead |
+| No new score model in Phase 1-B | OUT (§ Explicit OUT) |
+| Existing signals | May display as secondary Detail |
 
 ---
 
-## 16. Decision Fatigue KPI
+## §24 Hero CTA = 1
+
+Every primary surface (loop turn, stage announce, Review, Analysis exit) has **exactly one** primary CTA. Preserves S16 P0-4 one Hero spirit end-to-end.
+
+---
+
+## §25 Decision Fatigue
 
 | KPI | Rule |
 |-----|------|
-| **Hero CTA always = 1** | Every primary surface (loop turn, stage announce, Review) has exactly one primary CTA |
-| **「다음에 뭘 해야 하지?」 never** | FAIL if user cannot name the next action after any screen |
-| **No multi-CTA hero row** | Decision Fatigue FAIL |
-| **Evidence / Detail secondary** | Never compete with Hero |
-
-Preserves S16 P0-4 one Hero spirit end-to-end through Understanding → Review.
-
----
-
-## 17. Resume / Refresh / Persistence
-
-Survive refresh and re-entry:
-
-| Must survive | Meaning |
-|--------------|---------|
-| **Understanding** | Field claims + confidence levels |
-| **Stage** | Current mode / ✔●○ marks |
-| **Conversation** | Q/A turns needed for continuity |
-| **Confirmed / Unknown** | Confirmation state + Critical Unknown set |
-| **Provenance** | Source labels intact after reload |
-| **Memory bag** | Meets §7 bag sync criteria after reload |
-
-**FAIL if:** Refresh resets to empty form, loses Sufficient facts, or re-asks Known doc content as open questions.
+| Hero CTA = 1 | §24 |
+| 「다음에 뭘 해야 하지?」 never | FAIL if next action unclear |
+| No multi-CTA hero row | Decision Fatigue FAIL |
+| Evidence / Detail secondary | Never compete with Hero |
+| Evidence points capped | Prefer ≤3 on primary surface |
 
 ---
 
-## 18. Demo / Authenticated
+## §26 Memory (S14/S15 bag sync closure)
+
+### Turn pipeline (locked)
+
+```text
+Q → Answer → Conversation Memory → Understanding (merge + provenance + confidence)
+  → Presenter → UI (Summary / Detail / Conclusion / Next Gap / next Q)
+```
+
+### Bag sync completion criteria (Acceptance)
+
+| Criterion | PASS when |
+|-----------|-----------|
+| **No overwrite** | Prior answers / confirmed keys not clobbered by later turns or stage moves |
+| **Key sync** | Field-establishing answer (e.g. `problem`) appears in Memory bag **and** Understanding same turn |
+| **Stale prevent** | UI does not show obsolete Understanding after successful merge |
+| **Reload persistence** | Refresh restores understanding, stage, conversation, confirmed/unknown (§27) |
+| **Next-turn uses prior** | Question Engine reads prior Memory — not blank slate |
+| **Survives stage move** | A→B→C→D does not drop Memory keys |
+
+Baseline cite: S14 Confirmed Issue — ConversationMemory bag sync (`problem`); S15 backlog. Phase 1-B **closes** these criteria — experience hardening, not a new memory product.
+
+---
+
+## §27 Persistence matrix
+
+| Must survive refresh / re-entry | Meaning |
+|----------------------------------|---------|
+| Understanding | Field claims + confidence |
+| Stage | A–D + ✔●○ |
+| Conversation | Continuity turns |
+| Confirmed / Unknown | Confirmation + Critical Unknown set |
+| Provenance | Source labels intact |
+| Memory bag | §26 criteria after reload |
+
+**FAIL if:** Refresh → empty form, loses VALIDATED facts, or re-asks Known doc content as open Q.
+
+---
+
+## §28 Demo / Auth Contract
 
 | | Demo | Authenticated |
 |--|------|-----------------|
-| **Understanding Contract** | **Same** | **Same** |
-| **Question / Stage / Review** | **Same** | **Same** |
-| **Difference** | Persistence / session lifetime / auth boundary only | Durable persistence / identity |
+| Understanding / Question / Stage / Review | **Same contract** | **Same contract** |
+| Difference | Persistence / session lifetime / auth boundary only | Durable persistence / identity |
 
-**Do not** fork product logic into “demo Understanding” vs “auth Understanding.” Same engine; storage/auth only differs.
+**Do not** fork “demo Understanding” vs “auth Understanding.”
 
 ---
 
-## 19. Product UX surfaces
+## §29 Document Upload pipeline
 
-One continuous experience — not siloed pages:
+| Step | Requirement |
+|------|-------------|
+| Accept PDF / plan | Clear loading / error / retry (§35) |
+| Extract | Honest quality; Trust on weak |
+| Map to Domain fields | Provenance DOCUMENT |
+| **No filename-as-business-name** | Filename must **not** become business one-liner / project display name by default |
+| Draft surface | Document First — never empty-form primacy |
+
+---
+
+## §30 Document Quality test set
+
+Internal fixtures / scenarios CTO must cover before claiming Document PASS:
+
+| Class | Intent |
+|-------|--------|
+| Strong / complete PDF | Full Document Intelligence path |
+| Incomplete / thin PDF | Honest confidence + gap-only |
+| Filename-only / near-empty extract | No fake document-read; Unknowns explicit |
+| Conflicting claims in doc | Contradiction path |
+| Non-PDF / corrupt / timeout | Error + Retry — no silent fail |
+
+---
+
+## §31 New User Experience
+
+| Rule | Meaning |
+|------|---------|
+| **One minimal question** to start | Name / idea level — not a form wall |
+| Then gap-driven | Question Priority only |
+| Honest unknown | “AI가 모릅니다” then build |
+
+---
+
+## §32 Landing → Workspace branching
 
 ```text
-Landing
-  → Entry (doc vs no-doc)
-  → Workspace (Understanding loop + Processing + Spine)
-  → Review (judgment → reasons → critical problem → Hero CTA)
+Landing (entry only — no brand redesign)
+  → Detect / choose: Document vs Idea
+  → Workspace Unified Engine
+  → Review / Validation when ready
 ```
 
-| Surface | Job |
+Phase 1-A / 1-A.1 Landing closed — **no** Landing redesign in Phase 1-B.
+
+---
+
+## §33 Workspace UX priority order
+
+1. What to do **next** (one Hero / one Q)  
+2. Visible Understanding (Summary + Spine)  
+3. Honest Processing / Trust  
+4. Detail on demand  
+5. Secondary navigation — never steals Hero  
+
+---
+
+## §34 Navigation
+
+Navigation labels and IA follow **user journey** (Understand → Validate → Decide → Next action) — **not** AI internals (Memory bag, inference enums, engine names).
+
+---
+
+## §35 Loading / Error / Empty / Retry
+
+| State | Requirement |
+|-------|-------------|
+| Loading | Staged meaning where Processing applies |
+| Error | Visible; recoverable |
+| Empty | Honest empty — not fake filled Understanding |
+| Retry | Explicit control |
+| **Review Start** | **No silent fail** — success / cannot / error must be explicit (§37) |
+
+---
+
+## §36 New Project
+
+| Allowed at create | Forbidden |
+|-------------------|-----------|
+| **Name** + **review type** only | 8-character (or similar) barrier as create blocker |
+| Clear entry to Journey A or B | Mini-questionnaire wall at create |
+
+---
+
+## §37 Review Start — success / cannot / error
+
+| Outcome | UX |
 |---------|-----|
-| **Landing** | Entry only — **no** brand Landing redesign in this sprint (Phase 1-A closed) |
-| **Entry** | Choose / detect Document vs New User; then Shared Engine |
-| **Workspace** | Live Understanding, one Q, staged Processing, Summary/Detail |
-| **Review** | Decision Fatigue–compliant judgment surface |
+| **Success** | Enter Review / Analysis path with handoff clarity |
+| **Cannot** | Explain blocking gate (Contradiction / Critical Unknown / Stage) + one next action to unblock |
+| **Error** | Visible error + Retry — **never silent fail** |
 
 ---
 
-## 20. QA Matrix
+## §38 Mobile order integrity
 
-**One final QA batch** after Implementation — not piecemeal CPO loops. Expands prior Scenarios A–F into a full matrix.
+Same engine; composition order preserved: Summary → Spine/Judgment → one Q or Hero → Detail secondary. No multi-CTA trap; no desktop-only dead ends.
 
-### Document
+---
 
-| Case | PASS when |
-|------|-----------|
-| **Complete PDF** | Document Intelligence shows said / missing; Confirm Q; never re-ask Known; → Review |
-| **Incomplete / weak PDF** | Honest confidence; gap-only Q; still Document Flow |
-| **Filename-only / near-empty extract** | No fake document-read confidence; Unknowns explicit; gap-driven |
-| **Conflict (doc vs user)** | Contradiction confirm; no silent overwrite |
+## §39 Accessibility minimum
 
-### Conversation
+| Bar | Requirement |
+|-----|-------------|
+| Focus | Primary CTA / question reachable by keyboard |
+| Labels | Controls named; status not color-only |
+| Contrast | Readable Summary / errors |
+| Motion | Understanding highlight must not be sole information channel |
 
-| Case | PASS when |
-|------|-----------|
-| **OK / Sufficient answer** | Merge + confidence up; next Q from priority |
-| **Nonsense** | No ✔-pass; re-ask; stage stays ● |
-| **Ambiguous** | Clarify; not Sufficient |
-| **Follow-up 「왜?」** | Evidence → loop unbroken |
-| **Edit / reverse prior** | Contradiction or confirm path; Memory consistent |
+---
 
-### State
+## §40 Performance
 
-| Case | PASS when |
-|------|-----------|
-| **Refresh** | Understanding / stage / conversation / confirmed survive (§17) |
-| **Resume** | Re-entry continues; no full re-entry FAIL |
-| **Transition** | Gates = Required + Confidence + Contradiction=0 + Critical Unknown=0 — not answer count |
-| **Memory** | Bag sync criteria (§7) all PASS |
+| Rule | Meaning |
+|------|---------|
+| No re-ask confirmed | VALIDATED / USER_CONFIRMED skipped |
+| No duplicate analysis | Same inputs must not re-run full analysis without cause |
+| Prefer reuse | Understanding merge over full recompute when safe |
 
-### Product
+---
 
-| Case | PASS when |
-|------|-----------|
-| **Demo** | Same Understanding Contract as Auth |
-| **Auth** | Persistence durable; contract identical |
-| **Mobile** | One Hero; Summary/Detail usable; no multi-CTA trap |
-| **Desktop** | Same engine chrome; Decision Fatigue KPI |
+## §41 Token / AI Cost Control (CTO development itself)
 
-### Legacy scenario map (A–F → matrix)
+| Discipline | Rule |
+|------------|------|
+| Docs-first | Spec before speculative LLM loops |
+| No exploratory full-repo AI scans for this sprint’s own work | Targeted reads only |
+| Prefer Mock / deterministic fixtures until intelligence proves value | Constitution: Real LLM only when justified |
+| Cache / reuse Understanding | Avoid re-prompting confirmed fields |
+| Log cost-sensitive calls in Impl | Measurable; no silent expensive loops |
+| Mid-sprint | Do not burn tokens on OUT items (new provider, score model, Landing redesign) |
 
-| Legacy | Maps to |
+Mirrors EXECUTION_PLAN cost control.
+
+---
+
+## §42 Regression protect — S7 / S8 / S14 / S16 / S17
+
+| Sprint | Protect |
 |--------|---------|
-| A Strong PDF | Document · Complete |
-| B Weak PDF | Document · Incomplete |
-| C New User | Conversation · OK + State · Transition |
-| D Nonsense | Conversation · Nonsense |
-| E 「왜?」 | Conversation · Follow-up |
-| F Stage skip + advance | State · Transition + Review Decision Fatigue |
+| **S7 / S8** | Core trust / loop foundations — no unauthorized contract break |
+| **S14** | ConversationMemory bag sync pain → Phase 1-B **closes** criteria; do not regress further |
+| **S16** | Confirm-before-ask, one Hero, empty-start honesty |
+| **S17** | Document First, Thinking stages, missing-field Q, Final Review before Analysis |
 
-### Cross-cutting Acceptance checklist
-
-- [ ] Two entries → one Shared Understanding Engine (§2)  
-- [ ] Document Intelligence: said / missing / contradiction (§3)  
-- [ ] Provenance + never show AI_INFERENCE as user fact (§4)  
-- [ ] Confidence ladder; skip re-ask when Sufficient (§5)  
-- [ ] Contradiction never silent overwrite (§6)  
-- [ ] Memory pipeline + bag sync criteria (§7)  
-- [ ] Processing staged; no fake AI progress as fact (§8)  
-- [ ] Question Engine priority + one Q (§9)  
-- [ ] Answer quality judgment not always complete (§10)  
-- [ ] Follow-up returns to loop (§11)  
-- [ ] Summary / Detail product-wide (§12)  
-- [ ] Stage Model Understanding vs Validation (§13)  
-- [ ] Stage Transition Engine gates (§14)  
-- [ ] Review: judgment → 3 reasons → 1 critical → 1 Hero (§15)  
-- [ ] Decision Fatigue KPI (§16)  
-- [ ] Resume / Refresh / Persistence (§17)  
-- [ ] Demo / Auth same contract (§18)  
-- [ ] UX surfaces one experience (§19)  
-- [ ] QA Matrix one final batch (§20)  
+**Breaking any of the above requires explicit approval** before merge. Experience language only — not silent contract rewrites.
 
 ---
 
-## 21. Deliverables (13)
+## §43 QA Matrix A1–A4 · B1–B4 · C1–C4 · D1–D4 · E1–E4 · F1–F4
 
-Post–Scope Freeze Implementation delivers **all** of the following. This expansion doc locks language only — **Product Spec authorship starts after Freeze**.
+**One final QA batch** after Implementation — not piecemeal CPO loops.
 
-| # | Deliverable | Maps from prior Tracks A–E |
-|---|-------------|----------------------------|
-| 1 | **Product Spec** | Track E (after Freeze) |
-| 2 | **UX Flow** | Tracks A–B journey chrome |
-| 3 | **Understanding Contract** | Track C spine |
-| 4 | **Document Intelligence Contract** | Track A Document |
-| 5 | **Memory Contract** | Track C + S14/S15 bag sync criteria |
-| 6 | **Question Engine Contract** | Track C Q rules |
-| 7 | **Stage Transition Contract** | Track C stages + gates |
-| 8 | **UI implementation** | Tracks A–D experience |
-| 9 | **Internal QA** | Track D + §20 matrix (one batch) |
-| 10 | **Regression** | S16/S17 KEEP + Phase 1-B AC |
-| 11 | **Production validation** | Deploy-time honesty checks |
-| 12 | **CEO Walkthrough Guide** | After CPO opens Walkthrough |
-| 13 | **CPO Review Package** | CTO Report + evidence + AC |
+### A — Document
 
-**Out of this expansion doc:** writing full Specs, implementation, deploy, CEO Walkthrough execution.
+| ID | Case | PASS when |
+|----|------|-----------|
+| A1 | Complete PDF | Said / missing / Confirm Q; never re-ask Known; → handoff |
+| A2 | Incomplete / weak PDF | Honest confidence; gap-only; still Journey A |
+| A3 | Filename-only / near-empty | No fake document-read; no filename-as-business-name |
+| A4 | Doc vs user conflict | Contradiction confirm; no silent overwrite |
+
+### B — Conversation
+
+| ID | Case | PASS when |
+|----|------|-----------|
+| B1 | VALID answer | Merge + confidence up; next Q from priority |
+| B2 | Nonsense / IRRELEVANT | No ✔-pass; re-ask; stage stays ● |
+| B3 | AMBIGUOUS / PARTIAL | Clarify; not VALIDATED |
+| B4 | Follow-up 「왜?」 | Evidence → loop unbroken |
+
+### C — State / Memory
+
+| ID | Case | PASS when |
+|----|------|-----------|
+| C1 | Refresh | §27 survive |
+| C2 | Resume | Continues; no full re-entry FAIL |
+| C3 | Transition | Gates — not answer count |
+| C4 | Memory bag sync | §26 all PASS |
+
+### D — Product surfaces
+
+| ID | Case | PASS when |
+|----|------|-----------|
+| D1 | Demo | Same Understanding Contract as Auth |
+| D2 | Auth | Durable persistence; identical contract |
+| D3 | Mobile | One Hero; order integrity |
+| D4 | Desktop | Same engine; Decision Fatigue |
+
+### E — Review / Analysis
+
+| ID | Case | PASS when |
+|----|------|-----------|
+| E1 | Review Start success | Explicit success path |
+| E2 | Review Start cannot | Blocking reason + unblock CTA |
+| E3 | Review Start error | Visible + Retry; no silent fail |
+| E4 | Evidence First + Hero=1 | Judgment → Evidence → Reasoning → Action |
+
+### F — Cross-journey / regression
+
+| ID | Case | PASS when |
+|----|------|-----------|
+| F1 | Journey B seed | One min Q; honest unknown; gap-driven |
+| F2 | Correction / edit | USER_CORRECTED; Contradiction if needed |
+| F3 | New Project | Name + review type only; no 8-char barrier |
+| F4 | S16/S17 regression | Document First, Thinking, one Hero, confirm-before-ask HOLD |
 
 ---
 
-## 22. Explicit OUT
+## §44 Evidence Package 01–16
+
+Live walkthrough evidence required for core flows (screenshots / short clips + notes). Code merge ≠ Evidence.
+
+| # | Evidence |
+|---|----------|
+| 01 | Journey A — strong PDF Document First |
+| 02 | Journey A — weak PDF honesty + gap-only |
+| 03 | No filename-as-business-name |
+| 04 | Provenance labels visible (incl. AI_INFERENCE) |
+| 05 | Confidence ladder visible / skip re-ask |
+| 06 | Contradiction confirm (no silent overwrite) |
+| 07 | Answer Quality rejects nonsense ✔-pass |
+| 08 | Staged Processing (no fake AI as fact) |
+| 09 | Before→After Understanding update |
+| 10 | Summary / Detail + Spine |
+| 11 | Stage Transition announce (not answer count) |
+| 12 | Review: Evidence First + Hero=1 |
+| 13 | Memory bag sync + refresh persistence |
+| 14 | Demo vs Auth same contract |
+| 15 | Review Start cannot + error (no silent fail) |
+| 16 | Mobile order + Decision Fatigue |
+
+---
+
+## §45 CEO Walkthrough A + B
+
+| Walkthrough | Path |
+|-------------|------|
+| **A** | Document First → confirm → loop → Transition → Review / next action |
+| **B** | Start From Idea → gap Q → loop → Transition → Review / next action |
+
+CEO Walkthrough is a **completion gate** — not optional after merge. HOLD until CPO opens.
+
+---
+
+## §46 Sprint completion checklist
+
+Phase 1-B is **done** only when **all** apply:
+
+- [ ] CPO Scope **PASS** on this SCOPE + EXECUTION_PLAN  
+- [ ] Implementation complete per EXECUTION_PLAN workstreams  
+- [ ] §§0–50 Acceptance language met in product behavior  
+- [ ] QA Matrix A1–F4 one batch PASS  
+- [ ] Evidence Package 01–16 attached  
+- [ ] Regression S7/S8/S14/S16/S17 protected (or approved exceptions)  
+- [ ] CTO Final Report  
+- [ ] CPO Review PASS  
+- [ ] **CEO Walkthrough A + B** executed / accepted  
+
+**Code merge ≠ done.**
+
+---
+
+## §47 Absolute bans on micro-sprints
+
+| Ban | Meaning |
+|-----|---------|
+| No Phase 1-B.1 / 1-B.2 / 1-C splits | Everything under Phase 1-B |
+| No “ship Understanding only, Validation later” as new Phase | Backlog item inside 1-B if blocked |
+| Blockers stay in Phase 1-B backlog | Do not renumber to escape scope |
+| No Scope Freeze claim mid-expansion | Status remains LONG SPRINT until CPO Review |
+
+---
+
+## §48 CTO process
+
+```text
+1. Docs first (SCOPE + EXECUTION_PLAN)     ← current
+2. HOLD implementation until CPO Scope PASS
+3. Long implementation per §49 / EXECUTION_PLAN
+4. Report to CPO mid-sprint ONLY on blocker or scope change
+5. Final package once (§50)
+```
+
+---
+
+## §49 Recommended internal work order
+
+Report to CPO only on **blocker** or **scope change**. Internal order (maps to EXECUTION_PLAN workstreams):
+
+1. **Contracts** — Understanding · Provenance · Confidence · Domain 01–20 language lock  
+2. **Document pipeline** — Upload · Quality · no filename-as-name · Journey A bans  
+3. **Memory + Persistence** — §26 / §27 closure  
+4. **Question + Answer Quality + Contradiction** — Engines  
+5. **Processing + Understanding Update UX** — §§12–13  
+6. **Spine · Summary/Detail · Correction · Follow-up** — §§14–17  
+7. **Stage A–D · Transition · Validation handoff** — §§18–20  
+8. **Analysis / Review Evidence First · Hero · Fatigue** — §§21–25  
+9. **New User · Landing branch · New Project · Workspace UX / Nav** — §§31–34, §36  
+10. **Loading/Error/Review Start · Mobile · A11y · Performance · Cost** — §§35, 37–41  
+11. **Regression harness S7/S8/S14/S16/S17** — §42  
+12. **QA Matrix · Evidence · CEO guides** — §§43–45  
+
+---
+
+## §50 Final CPO Gate package list
+
+After Impl + QA + Evidence, CTO submits **once**:
+
+| Item | Purpose |
+|------|---------|
+| CTO Final Report | What shipped vs SCOPE |
+| AC checklist (§46) | Done = all |
+| QA Matrix results A1–F4 | One batch |
+| Evidence Package 01–16 | Live walkthrough |
+| Regression note | S7/S8/S14/S16/S17 |
+| Known Issues / Phase 1-B backlog | Honest blockers (no Phase split) |
+| CEO Walkthrough A+B guide | Ready for CPO open |
+
+CPO replies **once** with: **PASS** / **FIX** / **HOLD**.
+
+---
+
+## Explicit OUT
 
 Do **not** include in Phase 1-B:
 
 | OUT | Why |
 |-----|-----|
 | **New AI Provider** | No new LLM / PDF / auth providers |
-| **New analysis engine** | No `businessPlan.generate` / orchestration spine rewrite |
-| **New score model** | No score-led primary UX |
+| **New analysis engine** | No orchestration spine rewrite |
+| **New score model** | Score supporting only; no score-led primary UX |
 | **Marketplace** | Out of ALABOM Phase 1-B |
 | **Dashboard / KPI widget walls** | Journey, not dashboards |
-| **Auth redesign / structure changes** | High-risk; not this sprint — Demo/Auth = persistence only |
+| **Auth redesign / structure changes** | High-risk — Demo/Auth = persistence only |
 | **G2 / Generation-2 contract breaks** | No reopen |
-| **S7 / S8 / S14 / S16 / S17 contract changes** | Trust, confirm-before-ask, Document First, Thinking, one Hero, review gate — **KEEP**; experience language only |
-| Mid-sprint Phase 1-C / 1-D renumber | Structure under Phase 1-B only |
+| **Unauthorized S7 / S8 / S14 / S16 / S17 contract breaks** | KEEP; breaking needs approval |
+| Mid-sprint Phase 1-B.1 / 1-C renumber | Structure under Phase 1-B only |
 | Multi-CTA per stage / Review | Decision Fatigue FAIL |
-| Long forms / empty full-form after upload | Document Flow FAIL |
+| Long forms / empty full-form after upload | Journey A FAIL |
+| “Just type manually” after weak PDF | Absolute ban |
 | Batch-all-inputs-then-analyze | Contract FAIL |
-| Fake progress presented as real AI work | Processing FAIL |
-| LaunchLens brand restore | ALABOM display brand; `launchlens.*` storage keys **KEEP** |
+| Fake progress as real AI work | Processing FAIL |
+| Filename-as-business-name | Upload FAIL |
+| LaunchLens brand restore | ALABOM display; `launchlens.*` storage keys **KEEP** |
 | CartPilot / Platform SDK | Forbidden |
 | Landing redesign beyond closed Phase 1-A / 1-A.1 | Closed |
-| Phase 1-B **implementation** until CPO Scope Freeze | **HOLD** |
+| Phase 1-B **implementation** until CPO Scope PASS | **HOLD** |
 
 ---
 
-## 23. Gate
+## Baseline vs Gap (honest)
 
-```text
-Scope Expansion (this doc)
-  → CPO Scope Freeze          ← after expansion accepted
-  → Implementation            ← HOLD until Freeze
-  → Internal QA (one batch)
-  → CTO Report
-  → CPO
-  → CEO Walkthrough           (HOLD until CPO opens)
-```
+### Baseline `d6d0e91` (preserved — build on, do not erase)
 
-| Item | Status |
-|------|--------|
-| Phase 1-A / 1-A.1 | **CLOSED** |
-| Phase 1-B `ea11e70` Freeze Candidate | **Superseded** — CPO Freeze deferred |
-| Phase 1-B Scope | **LONG SPRINT — Scope Expansion Required** (this doc) |
-| Phase 1-B Scope Freeze Candidate claim | **Forbidden** until CPO accepts expansion |
-| Phase 1-B Scope Freeze | ⛔ awaiting CPO |
-| Phase 1-B Implementation | ⛔ **HOLD** · **NOT started** |
-| Product Spec (§21 #1) | ⛔ after Freeze only |
-| CEO Walkthrough | **HOLD** |
+Useful locked language retained and expanded here: two entries → one engine; Document Intelligence; provenance honesty; confidence; contradiction; Memory bag sync criteria; staged Processing; Question priority; answer quality; follow-up; Summary/Detail; stage model; transition gates; Review Decision Fatigue; Demo/Auth sameness; Explicit OUT; S16/S17 KEEP.
 
-### CPO decision needed
+### What this expansion adds (CTO work-order depth)
 
-Reply with one of:
-
-- **Freeze** → lock §§1–25 as Freeze input; only then allow Impl kickoff + Product Spec  
-- **수정** → list journey / contract / AC deltas (implementation still HOLD)  
-- **HOLD** → keep Implementation HOLD; no Freeze  
-- **Expand further** → additional Scope language (still not Freeze Candidate)
+Full §§0–50 work instruction: Domain 01–20; expanded provenance/confidence/answer enums; Stage A–D; Analysis Evidence First; upload/quality/new project/review-start/mobile/a11y/performance/cost; QA A1–F4; Evidence 01–16; CEO A+B; completion ≠ merge; process + work order + final gate package; companion EXECUTION_PLAN.
 
 ---
 
-## 24. Baseline vs Gap (honest)
+## Explicit non-claims
 
-### Current baseline (do not rewrite contracts)
-
-| Area | What already exists | Cite |
-|------|---------------------|------|
-| Document First / no empty-form primacy | S17 P0-1 PASS | `S17_SHARED_UNDERSTANDING_LOOP.md` |
-| Loop reflect + Thinking stages | Answer → Thinking → SU highlight | S17 P0-2/P0-3 |
-| Missing-field priority Q | customer / problem / business (+ diagnosis fallback) | S17 P0-5 |
-| Shared Understanding draft | business / customer / problem ± market / competitor | S17 |
-| Confirm before first ask | S16 P0-2 | loop panel |
-| Trust honesty on weak PDF | Trust Block | S17 |
-| Empty / no-doc start | Seed “AI가 모릅니다” | S16 P0-5 |
-| Final Review before Analysis | P1-3 | S17 |
-| One Hero post-analysis | S16 P0-4 | S16 |
-| Memory bag sync pain | `problem` key sync Accepted Risk | S14 → S15 backlog |
-
-### What Phase 1-B still needs (honest gaps)
-
-| Gap | Why it matters |
-|-----|----------------|
-| Shared Understanding Engine as single product contract across both entries | §2 |
-| Document Intelligence (said / missing / contradiction confirm) | §3 |
-| Provenance + Confidence ladder + Contradiction Acceptance | §4–§6 |
-| Memory Architecture + bag sync completion criteria | §7 |
-| Honest staged Processing (no fake AI work) | §8 |
-| Question Engine priority + answer quality judgment | §9–§10 |
-| Follow-up unbroken loop + Summary/Detail depth | §11–§12 |
-| Understanding vs Validation Stage Model + Transition gates | §13–§14 |
-| Review (judgment → 3 reasons → 1 critical → 1 Hero) + Decision Fatigue KPI | §15–§16 |
-| Resume / Demo-Auth sameness / UX surfaces / QA Matrix / 13 deliverables | §17–§21 |
-
-**Bottom line:** S17 delivers the **philosophy**. Phase 1-B is a **LONG Sprint — Scope Expansion Required** to define the full AI Business Understanding Engine & Experience — **not** Freeze-ready yet, **not** a small UI sprint, **not** a new provider/engine. **No S7–S17 contract rewrites** in this document.
-
----
-
-## 25. Explicit non-claims
-
-- **Zero product / UI / engine code changes** in this Scope Expansion session  
+- **Zero product / UI / engine code** in this Scope Expansion  
 - **Phase 1-B Implementation NOT started** (HOLD)  
-- **No S7 / S8 / S14 / S16 / S17 contract changes** in this doc  
-- This doc is **NOT** Scope Freeze Candidate and does **not** claim Freeze-ready  
-- This doc does **not** authorize Impl, deploy, Product Spec authorship as Freeze substitute, or CEO Walkthrough  
-
-### Intentionally deferred (until after CPO Freeze)
-
-- Full Product Spec / per-contract formal schemas  
-- UI implementation & production wiring  
-- Internal QA execution (matrix runs post-Impl as one batch)  
-- CEO Walkthrough Guide fill-in with live evidence  
-- Any Phase 1-C/1-D split (forbidden mid-sprint; revisit only if CPO explicitly renumbers after Freeze)
+- **No unauthorized S7 / S8 / S14 / S16 / S17 contract changes**  
+- This doc is **NOT Freeze** and does **not** claim Freeze-ready  
+- Does **not** authorize Impl, deploy, or CEO Walkthrough until CPO Scope PASS then later gates  
 
 ---
 
-*Record only — Next Autonomous Target: CPO Freeze / 수정 / HOLD / Expand further on this Scope Expansion; Implementation remains HOLD until Freeze. Status remains 🟡 LONG SPRINT — Scope Expansion Required (not Freeze Candidate).*
+*Record only — Next Autonomous Target: single CPO Scope Review (PASS / FIX / HOLD) on SCOPE + EXECUTION_PLAN; Implementation remains HOLD. Status: 🟡 LONG SPRINT — Scope Expansion (CTO Work Order). Baseline: d6d0e91.*
