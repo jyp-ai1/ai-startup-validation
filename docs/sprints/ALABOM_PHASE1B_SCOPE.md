@@ -1,24 +1,26 @@
-# ALABOM Phase 1-B — AI Business Validation Experience
+﻿# ALABOM — AI Business Validation Experience v1
+
+*(Folder/docs naming: Phase 1-B OK)*
 
 ```text
-🟡 LONG SPRINT — Scope Expansion (CTO Work Order)
-Status: NOT FREEZE — awaiting single CPO Scope Review after EXECUTION_PLAN + this SCOPE
-Implementation: HOLD
-Baseline: d6d0e91
-Sprint identity: ALABOM Phase 1-B — AI Business Validation Experience
+🟢 LONG SPRINT — EXECUTING
+No mid Freeze · No mid Scope Review · No Phase split
+Next CPO report = Final package only (unless escalation §29)
+Baseline history: 6d9b8b7 · d6d0e91 · ea11e70 (reference only — not “Scope Freeze Candidate”)
+Sprint identity: ALABOM — AI Business Validation Experience v1
 ```
 
 **Date:** 2026-08-25  
-**From:** CTO → CPO  
-**Document type:** **CTO Work Order** (Scope Expansion — language only)  
-**Predecessor gates:** Phase 1-A / 1-A.1 **CLOSED** · Phase 1-B **IMPLEMENTATION HOLD** · **CEO HOLD**  
-**Baseline (preserved):** `d6d0e91` — do **not** delete history; this revision **builds on** that Scope. Prior Freeze-candidate language (`ea11e70` lineage) remains historical context only.  
-**Product track:** ALABOM Workspace first-experience — **core product experience** (AI Business Validation), not a small UX polish sprint. Does **not** reopen brand Landing work.  
-**Constraint:** Docs-only. **No code, no build/test, no deploy, no Phase 1-B impl, no unauthorized S7–S17 contract breaks** in this deliverable.  
-**Companion:** [`ALABOM_PHASE1B_EXECUTION_PLAN.md`](./ALABOM_PHASE1B_EXECUTION_PLAN.md)
+**From:** CTO  
+**Document type:** **Final product work order** (Long Sprint — implement)  
+**Predecessor gates:** Phase 1-A / 1-A.1 **CLOSED** · prior HOLD / Freeze-candidate language **superseded**  
+**Baseline history (preserved):** `6d9b8b7` / `d6d0e91` / `ea11e70` — do **not** delete history; do **not** claim Freeze.  
+**Product track:** ALABOM Workspace first-experience — **core product experience** (AI Business Validation). Landing redesign **OUT**; **W1 Brand Concept 3 Progressive Loop** logo + favicon **IN**.  
+**Constraint:** No mid-sprint Phase splits · no mid Scope Review · no feature-by-feature CPO approvals · no unauthorized S7–S17 state-contract breaks (escalate §29).  
+**Companion:** [`ALABOM_PHASE1B_EXECUTION_PLAN.md`](./ALABOM_PHASE1B_EXECUTION_PLAN.md) · [`ALABOM_PHASE1B_PROGRESS.md`](./ALABOM_PHASE1B_PROGRESS.md)
 
 **Sources (prefer docs language):**  
-[`S17_SHARED_UNDERSTANDING_LOOP.md`](./S17_SHARED_UNDERSTANDING_LOOP.md) · [`S16_UX_RECOVERY.md`](./S16_UX_RECOVERY.md) · [`ALABOM_PHASE1A_REPORT.md`](./ALABOM_PHASE1A_REPORT.md) · [`ALABOM_PHASE1A_CPO_REVIEW.md`](./ALABOM_PHASE1A_CPO_REVIEW.md) · [`ALABOM_PHASE0_SCOPE_FREEZE.md`](./ALABOM_PHASE0_SCOPE_FREEZE.md) · S14/S15 ConversationMemory bag-sync pain · `docs/PRODUCT_VISION_V3.md` · baseline SHA `d6d0e91`
+[`S17_SHARED_UNDERSTANDING_LOOP.md`](./S17_SHARED_UNDERSTANDING_LOOP.md) · [`S16_UX_RECOVERY.md`](./S16_UX_RECOVERY.md) · [`ALABOM_PHASE1A_REPORT.md`](./ALABOM_PHASE1A_REPORT.md) · [`ALABOM_PHASE1A_CPO_REVIEW.md`](./ALABOM_PHASE1A_CPO_REVIEW.md) · [`ALABOM_PHASE0_SCOPE_FREEZE.md`](./ALABOM_PHASE0_SCOPE_FREEZE.md) · S14/S15 ConversationMemory bag-sync pain · `docs/PRODUCT_VISION_V3.md` · SHA history `6d9b8b7`  
 
 ---
 
@@ -26,6 +28,7 @@ Sprint identity: ALABOM Phase 1-B — AI Business Validation Experience
 
 ```text
 Phase 1-B = AI Business Validation Experience (ONE LONG SPRINT)
+ ├─ W1 Brand Concept 3 Progressive Loop (logo + favicon) & Entry
  ├─ Product Contract & Philosophy
  ├─ Journey A Document First + Journey B Start From Idea
  ├─ Unified Understanding Engine
@@ -34,14 +37,15 @@ Phase 1-B = AI Business Validation Experience (ONE LONG SPRINT)
  ├─ AI Processing + Understanding Update UX
  ├─ Summary/Detail · Understanding Spine · Correction · Follow-up
  ├─ Stage Architecture A–D + Transition + Validation handoff
- ├─ Analysis Architecture (Evidence First; score supporting)
+ ├─ Analysis Architecture (Evidence First; score supporting; Hero CTA=1)
  ├─ Memory · Persistence · Demo/Auth
  ├─ Document Upload + Quality · New User · Landing→Workspace
  ├─ Workspace UX · Navigation · Loading/Error · New Project · Review Start
  ├─ Mobile · A11y · Performance · Token/Cost Control
  ├─ Regression protect S7/S8/S14/S16/S17
- ├─ QA Matrix · Evidence Package · CEO Walkthrough
- └─ CPO Gate package
+ ├─ QA Matrix A–F · Evidence Package 01–20 · CEO Walkthrough A/B
+ ├─ FAIL conditions §27 · Escalation-only CPO §29 · DoD §30
+ └─ Final CPO package only
 ```
 
 **Do not** invent Phase 1-B.1 / 1-B.2 / 1-C / 1-D mid-sprint. Blockers stay in **Phase 1-B backlog**. Code merge ≠ done.
@@ -53,6 +57,7 @@ Phase 1-B = AI Business Validation Experience (ONE LONG SPRINT)
 | § | Title |
 |---|--------|
 | 0 | Absolute product goal |
+| 0b | W1 Brand — Concept 3 Progressive Loop |
 | 1 | Product philosophy |
 | 2 | Journey A — Document First |
 | 3 | Journey B — Start From Idea |
@@ -78,31 +83,21 @@ Phase 1-B = AI Business Validation Experience (ONE LONG SPRINT)
 | 23 | Score is supporting |
 | 24 | Hero CTA = 1 |
 | 25 | Decision Fatigue |
-| 26 | Memory (S14/S15 bag sync) |
-| 27 | Persistence matrix |
+| 26 | Memory + Persistence (S14/S15 bag sync) |
+| 27 | FAIL conditions (canonical) |
 | 28 | Demo / Auth Contract |
-| 29 | Document Upload pipeline |
-| 30 | Document Quality test set |
-| 31 | New User Experience |
-| 32 | Landing → Workspace branching |
-| 33 | Workspace UX priority order |
-| 34 | Navigation |
-| 35 | Loading / Error / Empty / Retry |
-| 36 | New Project |
-| 37 | Review Start success / cannot / error |
-| 38 | Mobile order integrity |
-| 39 | Accessibility minimum |
-| 40 | Performance |
-| 41 | Token / AI Cost Control (CTO development) |
-| 42 | Regression protect S7/S8/S14/S16/S17 |
-| 43 | QA Matrix A1–F4 |
-| 44 | Evidence Package 01–16 |
-| 45 | CEO Walkthrough A + B |
-| 46 | Sprint completion checklist |
-| 47 | Absolute bans on micro-sprints |
-| 48 | CTO process |
-| 49 | Recommended internal work order |
-| 50 | Final CPO Gate package |
+| 29 | Escalation-only CPO |
+| 30 | Definition of Done (DoD) |
+| 31 | Document Upload + Quality · New User · Landing→Workspace |
+| 32 | Workspace UX · Nav · Loading/Error · New Project · Review Start |
+| 33 | Mobile · A11y · Performance · Token/Cost |
+| 34 | Regression protect S7/S8/S14/S16/S17 |
+| 35 | QA Matrix A–F |
+| 36 | Evidence Package 01–20 |
+| 37 | CEO Walkthrough A + B |
+| 38 | Absolute bans on micro-sprints |
+| 39 | Internal work order W1–W12 |
+| 40 | Final CPO Gate package |
 | — | Explicit OUT · Gate statement · Baseline vs Gap · Non-claims |
 
 ---
@@ -112,20 +107,21 @@ Phase 1-B = AI Business Validation Experience (ONE LONG SPRINT)
 ```text
 Phase 1-A / 1-A.1 CLOSED
         ↓
-Phase 1-B baseline Scope d6d0e91 (preserved)
+Phase 1-B SCOPE + EXECUTION_PLAN (docs once; history SHAs preserved)
         ↓
-Phase 1-B LONG SPRINT — Scope Expansion (CTO Work Order)  ← YOU ARE HERE
-        + EXECUTION_PLAN
+🟢 LONG SPRINT — EXECUTING (W1–W12)  ← YOU ARE HERE
+   No mid Freeze · No mid Scope Review · No Phase split
         ↓
-ONE CPO Scope Review (PASS / FIX / HOLD)  ← only mid-gate
+Implement all → Targeted QA as you go → Internal QA batch
         ↓
-Implementation (blocked until Scope PASS)  ← still HOLD
+Production QA → Evidence 01–20 → CTO Final Report
         ↓
-Internal QA → Production QA → Evidence → CTO Final Report
-        → CPO Review → CEO Walkthrough
+CPO Final package only (§29 escalation exceptions)
+        ↓
+CEO Walkthrough A + B
 ```
 
-**Explicit:** Phase 1-B **implementation has NOT started.** This document + EXECUTION_PLAN are the **CTO work instruction** for one **AI Business Validation Experience**. **NOT Freeze.** Implementation remains **HOLD** until CPO Scope **PASS**.
+**Explicit:** This is the **final product work order**. Implementation is **authorized and in progress**. Next CPO report = **Final package only** (unless §29 escalation).
 
 ---
 
@@ -138,6 +134,23 @@ Internal QA → Production QA → Evidence → CTO Final Report
 | PDF / plan **or** minimal idea seed | Unified Understanding Engine | Summary · Spine · Judgment · Gaps | Ask → Answer → Process → Update → Transition → Validation |
 
 **Exit = alpha-openable Business Validation Experience** — not green build alone, not “nice chat.”
+
+---
+
+## §0b W1 Brand — Concept 3 Progressive Loop (mandatory)
+
+**Selected concept:** bottom-left collage quadrant — **“The Progressive Loop”** only (Concepts 1/2/4 OUT).
+
+| Asset | Spec |
+|-------|------|
+| **Logo icon** | Continuous lowercase **al** loop; orange → coral/red gradient |
+| **Wordmark** | **ALABOM** (bold black sans) + **알아봄** |
+| **Favicon** | Same **al** loop on **light gray rounded square** |
+| **Palette** | Warm orange/coral primary · light gray neutrals · black text |
+| **Theme** | Progressive Loop / Shared Understanding Spine — “ALABOM doesn't just analyze; it reasons. See what's KNOWN and what's next.” |
+| **Slogan vibe** | “AI processing you can trust, one step ahead.” |
+
+**Acceptance:** Assets live under `apps/web/public/` (or brand folder); wired through `BRAND_CONFIG` + layout metadata / OG / manifest / JSON-LD as applicable. **LaunchLens** residual strings removed on branded surfaces. Landing redesign remains OUT — brand mark + favicon + chrome wordmark only.
 
 ---
 
@@ -575,7 +588,7 @@ Every primary surface (loop turn, stage announce, Review, Analysis exit) has **e
 
 ---
 
-## §26 Memory (S14/S15 bag sync closure)
+## §26 Memory + Persistence (S14/S15 bag sync closure)
 
 ### Turn pipeline (locked)
 
@@ -591,15 +604,11 @@ Q → Answer → Conversation Memory → Understanding (merge + provenance + con
 | **No overwrite** | Prior answers / confirmed keys not clobbered by later turns or stage moves |
 | **Key sync** | Field-establishing answer (e.g. `problem`) appears in Memory bag **and** Understanding same turn |
 | **Stale prevent** | UI does not show obsolete Understanding after successful merge |
-| **Reload persistence** | Refresh restores understanding, stage, conversation, confirmed/unknown (§27) |
+| **Reload persistence** | Refresh restores understanding, stage, conversation, confirmed/unknown (matrix below) |
 | **Next-turn uses prior** | Question Engine reads prior Memory — not blank slate |
 | **Survives stage move** | A→B→C→D does not drop Memory keys |
 
-Baseline cite: S14 Confirmed Issue — ConversationMemory bag sync (`problem`); S15 backlog. Phase 1-B **closes** these criteria — experience hardening, not a new memory product.
-
----
-
-## §27 Persistence matrix
+### Persistence matrix
 
 | Must survive refresh / re-entry | Meaning |
 |----------------------------------|---------|
@@ -608,9 +617,33 @@ Baseline cite: S14 Confirmed Issue — ConversationMemory bag sync (`problem`); 
 | Conversation | Continuity turns |
 | Confirmed / Unknown | Confirmation + Critical Unknown set |
 | Provenance | Source labels intact |
-| Memory bag | §26 criteria after reload |
+| Memory bag | Bag sync criteria after reload |
 
-**FAIL if:** Refresh → empty form, loses VALIDATED facts, or re-asks Known doc content as open Q.
+Baseline cite: S14 Confirmed Issue — ConversationMemory bag sync (`problem`); S15 backlog. Phase 1-B **closes** these criteria — experience hardening, not a new memory product.
+
+---
+
+## §27 FAIL conditions (canonical)
+
+Any of the following is a **product FAIL** (blocks DoD §30):
+
+| FAIL | Meaning |
+|------|---------|
+| Full re-entry after weak PDF | User forced to re-type plan / empty full-form primacy |
+| “Just type manually” as primary path after weak extract | Absolute ban |
+| Filename-as-business-name | Filename becomes business one-liner / display name by default |
+| Re-ask Known / VALIDATED as open Q | Unless Contradiction or user edit |
+| AI_INFERENCE shown as user fact / validated truth | Inference ≠ fact |
+| Silent overwrite on Contradiction | Doc/user-confirmed truth disappears without acknowledge |
+| Fake Processing presented as real AI work | Staged honesty required |
+| Score / dashboard wall as first Review viewport | Evidence First FAIL |
+| Hero CTA ≠ 1 / multi-CTA hero row | Decision Fatigue FAIL |
+| Next action unclear («다음에 뭘 해야 하지?») | Dead-end FAIL |
+| Refresh → empty form / lost VALIDATED / re-ask Known doc | Persistence FAIL |
+| Demo Understanding ≠ Auth Understanding contract | Demo/Auth FAIL |
+| Silent Review Start fail | Error/recovery FAIL |
+| Unauthorized S7/S8/S14/S16/S17 **state contract** break without §29 | Regression FAIL |
+| Mid-sprint Phase 1-B.1 / 1-C invent | Process FAIL |
 
 ---
 
@@ -625,21 +658,52 @@ Baseline cite: S14 Confirmed Issue — ConversationMemory bag sync (`problem`); 
 
 ---
 
-## §29 Document Upload pipeline
+## §29 Escalation-only CPO
+
+Mid-sprint CPO contact is **forbidden** except:
+
+| Escalate when | Examples |
+|---------------|----------|
+| **Blocker** | Cannot proceed without product-vision change |
+| **Unauthorized state-contract break** | S7/S8/S14/S16/S17 KEEP would break |
+| **Scope change** | New provider / score model / auth redesign / G2 / marketplace |
+
+**Do not** escalate for: Freeze requests · mid Scope Review · feature-by-feature approval · “W3 done?” · Phase renumber.
+
+Presenter/Flow UX changes that preserve contracts = **continue**. Next scheduled CPO report = **Final package** (DoD §30).
+
+---
+
+## §30 Definition of Done (DoD)
+
+Phase 1-B / Long Sprint is **done** only when **all** apply:
+
+- [ ] W1–W12 Acceptance met (incl. **Brand Concept 3** logo + favicon)  
+- [ ] Product §§0–25 + Memory/Persistence + Demo/Auth behavior met  
+- [ ] No open §27 FAIL  
+- [ ] QA Matrix A–F one batch PASS  
+- [ ] Evidence Package **01–20** attached  
+- [ ] Regression S7/S8/S14/S16/S17 protected (or §29-approved exception)  
+- [ ] CTO Final Report  
+- [ ] CPO Final Review PASS  
+- [ ] **CEO Walkthrough A + B** executed / accepted  
+
+**Code merge ≠ done. Green build ≠ done.**
+
+---
+
+## Document Upload pipeline (W2)
 
 | Step | Requirement |
 |------|-------------|
-| Accept PDF / plan | Clear loading / error / retry (§35) |
+| Accept PDF / plan | Clear loading / error / retry |
 | Extract | Honest quality; Trust on weak |
 | Map to Domain fields | Provenance DOCUMENT |
 | **No filename-as-business-name** | Filename must **not** become business one-liner / project display name by default |
 | Draft surface | Document First — never empty-form primacy |
+| Weak PDF | Show what was understood + **gap Q only** — never demand full re-entry |
 
----
-
-## §30 Document Quality test set
-
-Internal fixtures / scenarios CTO must cover before claiming Document PASS:
+### Document Quality test set
 
 | Class | Intent |
 |-------|--------|
@@ -647,162 +711,93 @@ Internal fixtures / scenarios CTO must cover before claiming Document PASS:
 | Incomplete / thin PDF | Honest confidence + gap-only |
 | Filename-only / near-empty extract | No fake document-read; Unknowns explicit |
 | Conflicting claims in doc | Contradiction path |
-| Non-PDF / corrupt / timeout | Error + Retry — no silent fail |
 
 ---
 
-## §31 New User Experience
+## New User · Landing → Workspace · Workspace UX (W1 + chrome)
 
-| Rule | Meaning |
+### New User Experience
+
+One minimal seed question path for Journey B; honest unknown; AI leads.
+
+### Landing → Workspace branching
+
+No Landing redesign. Branch into Document First or Idea seed. Brand chrome uses Concept 3 mark.
+
+### Workspace UX priority order
+
+1. What AI understood (Summary / Spine)  
+2. One next question or Hero action  
+3. Judgment / Gaps  
+4. Detail / Evidence secondary  
+
+### Navigation
+
+User journey — not AI internals dump.
+
+### Loading / Error / Empty / Retry
+
+Visible; Retry present; no silent fail on Review Start.
+
+### New Project
+
+Name + review type only; no 8-char barrier.
+
+### Review Start
+
+Success / cannot (blocking reason + unblock CTA) / error (visible + Retry).
+
+---
+
+## Mobile · A11y · Performance · Token/Cost
+
+| Area | Rule |
+|------|------|
+| Mobile | One Hero; order integrity |
+| A11y | Minimum labels / focus / contrast on primary loop |
+| Performance | No re-ask confirmed; no duplicate analysis |
+| Token / cost | Fixtures first; skip VALIDATED; targeted tests; no evidence spam until near end |
+
+---
+
+## Regression protect S7 / S8 / S14 / S16 / S17
+
+| Keep | Meaning |
 |------|---------|
-| **One minimal question** to start | Name / idea level — not a form wall |
-| Then gap-driven | Question Priority only |
-| Honest unknown | “AI가 모릅니다” then build |
+| S7 / S8 | Prior KEEP contracts (Presenter/Flow OK) |
+| S14 | Memory bag sync class |
+| S16 | UX Recovery — Thinking, one Hero, honesty |
+| S17 | Shared Understanding Loop — Document First, confirm-before-ask |
+
+Unauthorized **state contract** breaks → **§29 escalate only**. Do not “fix” by inventing Phase 1-C.
 
 ---
 
-## §32 Landing → Workspace branching
+## QA Matrix A–F
 
-```text
-Landing (entry only — no brand redesign)
-  → Detect / choose: Document vs Idea
-  → Workspace Unified Engine
-  → Review / Validation when ready
-```
-
-Phase 1-A / 1-A.1 Landing closed — **no** Landing redesign in Phase 1-B.
-
----
-
-## §33 Workspace UX priority order
-
-1. What to do **next** (one Hero / one Q)  
-2. Visible Understanding (Summary + Spine)  
-3. Honest Processing / Trust  
-4. Detail on demand  
-5. Secondary navigation — never steals Hero  
-
----
-
-## §34 Navigation
-
-Navigation labels and IA follow **user journey** (Understand → Validate → Decide → Next action) — **not** AI internals (Memory bag, inference enums, engine names).
-
----
-
-## §35 Loading / Error / Empty / Retry
-
-| State | Requirement |
-|-------|-------------|
-| Loading | Staged meaning where Processing applies |
-| Error | Visible; recoverable |
-| Empty | Honest empty — not fake filled Understanding |
-| Retry | Explicit control |
-| **Review Start** | **No silent fail** — success / cannot / error must be explicit (§37) |
-
----
-
-## §36 New Project
-
-| Allowed at create | Forbidden |
-|-------------------|-----------|
-| **Name** + **review type** only | 8-character (or similar) barrier as create blocker |
-| Clear entry to Journey A or B | Mini-questionnaire wall at create |
-
----
-
-## §37 Review Start — success / cannot / error
-
-| Outcome | UX |
-|---------|-----|
-| **Success** | Enter Review / Analysis path with handoff clarity |
-| **Cannot** | Explain blocking gate (Contradiction / Critical Unknown / Stage) + one next action to unblock |
-| **Error** | Visible error + Retry — **never silent fail** |
-
----
-
-## §38 Mobile order integrity
-
-Same engine; composition order preserved: Summary → Spine/Judgment → one Q or Hero → Detail secondary. No multi-CTA trap; no desktop-only dead ends.
-
----
-
-## §39 Accessibility minimum
-
-| Bar | Requirement |
-|-----|-------------|
-| Focus | Primary CTA / question reachable by keyboard |
-| Labels | Controls named; status not color-only |
-| Contrast | Readable Summary / errors |
-| Motion | Understanding highlight must not be sole information channel |
-
----
-
-## §40 Performance
-
-| Rule | Meaning |
-|------|---------|
-| No re-ask confirmed | VALIDATED / USER_CONFIRMED skipped |
-| No duplicate analysis | Same inputs must not re-run full analysis without cause |
-| Prefer reuse | Understanding merge over full recompute when safe |
-
----
-
-## §41 Token / AI Cost Control (CTO development itself)
-
-| Discipline | Rule |
-|------------|------|
-| Docs-first | Spec before speculative LLM loops |
-| No exploratory full-repo AI scans for this sprint’s own work | Targeted reads only |
-| Prefer Mock / deterministic fixtures until intelligence proves value | Constitution: Real LLM only when justified |
-| Cache / reuse Understanding | Avoid re-prompting confirmed fields |
-| Log cost-sensitive calls in Impl | Measurable; no silent expensive loops |
-| Mid-sprint | Do not burn tokens on OUT items (new provider, score model, Landing redesign) |
-
-Mirrors EXECUTION_PLAN cost control.
-
----
-
-## §42 Regression protect — S7 / S8 / S14 / S16 / S17
-
-| Sprint | Protect |
-|--------|---------|
-| **S7 / S8** | Core trust / loop foundations — no unauthorized contract break |
-| **S14** | ConversationMemory bag sync pain → Phase 1-B **closes** criteria; do not regress further |
-| **S16** | Confirm-before-ask, one Hero, empty-start honesty |
-| **S17** | Document First, Thinking stages, missing-field Q, Final Review before Analysis |
-
-**Breaking any of the above requires explicit approval** before merge. Experience language only — not silent contract rewrites.
-
----
-
-## §43 QA Matrix A1–A4 · B1–B4 · C1–C4 · D1–D4 · E1–E4 · F1–F4
-
-**One final QA batch** after Implementation — not piecemeal CPO loops.
-
-### A — Document
+### A — Document First
 
 | ID | Case | PASS when |
 |----|------|-----------|
-| A1 | Complete PDF | Said / missing / Confirm Q; never re-ask Known; → handoff |
-| A2 | Incomplete / weak PDF | Honest confidence; gap-only; still Journey A |
-| A3 | Filename-only / near-empty | No fake document-read; no filename-as-business-name |
-| A4 | Doc vs user conflict | Contradiction confirm; no silent overwrite |
+| A1 | Strong PDF | Draft Understanding; no empty-form primacy |
+| A2 | Weak PDF | Honest Trust + gap-only; **no full re-entry** |
+| A3 | Filename-only extract | No filename-as-business-name |
+| A4 | Doc facts | Confirm-style; not open re-ask |
 
-### B — Conversation
+### B — Loop / engines
 
 | ID | Case | PASS when |
 |----|------|-----------|
-| B1 | VALID answer | Merge + confidence up; next Q from priority |
-| B2 | Nonsense / IRRELEVANT | No ✔-pass; re-ask; stage stays ● |
-| B3 | AMBIGUOUS / PARTIAL | Clarify; not VALIDATED |
-| B4 | Follow-up 「왜?」 | Evidence → loop unbroken |
+| B1 | Answer → Processing → Update | Staged; Before→After visible |
+| B2 | Contradiction | No silent overwrite; confirm Q |
+| B3 | Answer Quality | Nonsense not ✔-pass |
+| B4 | Spine / Summary / 「왜?」 | Known/next clear; Evidence → loop |
 
 ### C — State / Memory
 
 | ID | Case | PASS when |
 |----|------|-----------|
-| C1 | Refresh | §27 survive |
+| C1 | Refresh | Persistence survive |
 | C2 | Resume | Continues; no full re-entry FAIL |
 | C3 | Transition | Gates — not answer count |
 | C4 | Memory bag sync | §26 all PASS |
@@ -825,27 +820,27 @@ Mirrors EXECUTION_PLAN cost control.
 | E3 | Review Start error | Visible + Retry; no silent fail |
 | E4 | Evidence First + Hero=1 | Judgment → Evidence → Reasoning → Action |
 
-### F — Cross-journey / regression
+### F — Cross-journey / regression / brand
 
 | ID | Case | PASS when |
 |----|------|-----------|
 | F1 | Journey B seed | One min Q; honest unknown; gap-driven |
 | F2 | Correction / edit | USER_CORRECTED; Contradiction if needed |
-| F3 | New Project | Name + review type only; no 8-char barrier |
+| F3 | New Project + Brand | Name + review type; Concept 3 logo/favicon on branded surfaces |
 | F4 | S16/S17 regression | Document First, Thinking, one Hero, confirm-before-ask HOLD |
 
 ---
 
-## §44 Evidence Package 01–16
+## Evidence Package 01–20
 
 Live walkthrough evidence required for core flows (screenshots / short clips + notes). Code merge ≠ Evidence.
 
 | # | Evidence |
 |---|----------|
 | 01 | Journey A — strong PDF Document First |
-| 02 | Journey A — weak PDF honesty + gap-only |
+| 02 | Journey A — weak PDF honesty + gap-only (no full re-entry) |
 | 03 | No filename-as-business-name |
-| 04 | Provenance labels visible (incl. AI_INFERENCE) |
+| 04 | Provenance labels visible (incl. AI_INFERENCE ≠ fact) |
 | 05 | Confidence ladder visible / skip re-ask |
 | 06 | Contradiction confirm (no silent overwrite) |
 | 07 | Answer Quality rejects nonsense ✔-pass |
@@ -858,90 +853,65 @@ Live walkthrough evidence required for core flows (screenshots / short clips + n
 | 14 | Demo vs Auth same contract |
 | 15 | Review Start cannot + error (no silent fail) |
 | 16 | Mobile order + Decision Fatigue |
+| 17 | **Brand Concept 3** Progressive Loop logo + favicon |
+| 18 | Correction / 「왜?」 loop unbroken |
+| 19 | Validation handoff + S16/S17 regression note |
+| 20 | CEO Walkthrough A+B readiness |
 
 ---
 
-## §45 CEO Walkthrough A + B
+## CEO Walkthrough A + B
 
 | Walkthrough | Path |
 |-------------|------|
 | **A** | Document First → confirm → loop → Transition → Review / next action |
 | **B** | Start From Idea → gap Q → loop → Transition → Review / next action |
 
-CEO Walkthrough is a **completion gate** — not optional after merge. HOLD until CPO opens.
+CEO Walkthrough is a **completion gate** — not optional after merge. HOLD until CPO opens Final package.
 
 ---
 
-## §46 Sprint completion checklist
-
-Phase 1-B is **done** only when **all** apply:
-
-- [ ] CPO Scope **PASS** on this SCOPE + EXECUTION_PLAN  
-- [ ] Implementation complete per EXECUTION_PLAN workstreams  
-- [ ] §§0–50 Acceptance language met in product behavior  
-- [ ] QA Matrix A1–F4 one batch PASS  
-- [ ] Evidence Package 01–16 attached  
-- [ ] Regression S7/S8/S14/S16/S17 protected (or approved exceptions)  
-- [ ] CTO Final Report  
-- [ ] CPO Review PASS  
-- [ ] **CEO Walkthrough A + B** executed / accepted  
-
-**Code merge ≠ done.**
-
----
-
-## §47 Absolute bans on micro-sprints
+## Absolute bans on micro-sprints
 
 | Ban | Meaning |
 |-----|---------|
 | No Phase 1-B.1 / 1-B.2 / 1-C splits | Everything under Phase 1-B |
 | No “ship Understanding only, Validation later” as new Phase | Backlog item inside 1-B if blocked |
 | Blockers stay in Phase 1-B backlog | Do not renumber to escape scope |
-| No Scope Freeze claim mid-expansion | Status remains LONG SPRINT until CPO Review |
+| No Scope Freeze claim | Status = **EXECUTING** until DoD |
+| No mid Scope Review / feature CPO approvals | Final package only (§29 exceptions) |
 
 ---
 
-## §48 CTO process
+## Internal work order W1–W12
 
-```text
-1. Docs first (SCOPE + EXECUTION_PLAN)     ← current
-2. HOLD implementation until CPO Scope PASS
-3. Long implementation per §49 / EXECUTION_PLAN
-4. Report to CPO mid-sprint ONLY on blocker or scope change
-5. Final package once (§50)
-```
+Report to CPO only on **§29 escalation**. Internal order (maps to EXECUTION_PLAN):
 
----
-
-## §49 Recommended internal work order
-
-Report to CPO only on **blocker** or **scope change**. Internal order (maps to EXECUTION_PLAN workstreams):
-
-1. **Contracts** — Understanding · Provenance · Confidence · Domain 01–20 language lock  
-2. **Document pipeline** — Upload · Quality · no filename-as-name · Journey A bans  
-3. **Memory + Persistence** — §26 / §27 closure  
-4. **Question + Answer Quality + Contradiction** — Engines  
-5. **Processing + Understanding Update UX** — §§12–13  
-6. **Spine · Summary/Detail · Correction · Follow-up** — §§14–17  
-7. **Stage A–D · Transition · Validation handoff** — §§18–20  
-8. **Analysis / Review Evidence First · Hero · Fatigue** — §§21–25  
-9. **New User · Landing branch · New Project · Workspace UX / Nav** — §§31–34, §36  
-10. **Loading/Error/Review Start · Mobile · A11y · Performance · Cost** — §§35, 37–41  
-11. **Regression harness S7/S8/S14/S16/S17** — §42  
-12. **QA Matrix · Evidence · CEO guides** — §§43–45  
+1. **W1 Brand & Entry** — Concept 3 Progressive Loop logo + favicon · BrandConfig/OG · LaunchLens residual purge · New User / Landing→Workspace  
+2. **W2 Document Understanding** — Upload · Quality · Journey A bans  
+3. **W3 Understanding Engine** — Domain · Provenance · Confidence · Memory/Persistence  
+4. **W4 Spine UI** — Shared Understanding Spine  
+5. **W5 Question Loop** — one Q · Priority · skip Known  
+6. **W6 Answer / Processing / Contradiction** — Quality · staged Processing · Before→After  
+7. **W7 Summary / Detail**  
+8. **W8 Why / Correction / Follow-up**  
+9. **W9 Stage Transition** A–D  
+10. **W10 Evidence-first Review** · Score supporting · Hero CTA=1 · Fatigue  
+11. **W11 Validation + Regression** S7/S8/S14/S16/S17  
+12. **W12 QA · Evidence 01–20 · CEO guides · Final CPO package**  
 
 ---
 
-## §50 Final CPO Gate package list
+## Final CPO Gate package list
 
 After Impl + QA + Evidence, CTO submits **once**:
 
 | Item | Purpose |
 |------|---------|
 | CTO Final Report | What shipped vs SCOPE |
-| AC checklist (§46) | Done = all |
-| QA Matrix results A1–F4 | One batch |
-| Evidence Package 01–16 | Live walkthrough |
+| DoD checklist (§30) | Done = all |
+| QA Matrix results A–F | One batch |
+| Evidence Package 01–20 | Live walkthrough |
 | Regression note | S7/S8/S14/S16/S17 |
 | Known Issues / Phase 1-B backlog | Honest blockers (no Phase split) |
 | CEO Walkthrough A+B guide | Ready for CPO open |
@@ -952,52 +922,47 @@ CPO replies **once** with: **PASS** / **FIX** / **HOLD**.
 
 ## Explicit OUT
 
-Do **not** include in Phase 1-B:
+Do **not** include in this Long Sprint:
 
 | OUT | Why |
 |-----|-----|
 | **New AI Provider** | No new LLM / PDF / auth providers |
 | **New analysis engine** | No orchestration spine rewrite |
 | **New score model** | Score supporting only; no score-led primary UX |
-| **Marketplace** | Out of ALABOM Phase 1-B |
+| **Marketplace** | Out |
 | **Dashboard / KPI widget walls** | Journey, not dashboards |
 | **Auth redesign / structure changes** | High-risk — Demo/Auth = persistence only |
 | **G2 / Generation-2 contract breaks** | No reopen |
-| **Unauthorized S7 / S8 / S14 / S16 / S17 contract breaks** | KEEP; breaking needs approval |
+| **Unauthorized S7 / S8 / S14 / S16 / S17 state-contract breaks** | KEEP; breaking needs §29 |
 | Mid-sprint Phase 1-B.1 / 1-C renumber | Structure under Phase 1-B only |
-| Multi-CTA per stage / Review | Decision Fatigue FAIL |
-| Long forms / empty full-form after upload | Journey A FAIL |
-| “Just type manually” after weak PDF | Absolute ban |
-| Batch-all-inputs-then-analyze | Contract FAIL |
-| Fake progress as real AI work | Processing FAIL |
-| Filename-as-business-name | Upload FAIL |
-| LaunchLens brand restore | ALABOM display; `launchlens.*` storage keys **KEEP** |
+| Mid Freeze / mid Scope Review | Process OUT |
+| Concepts 1 / 2 / 4 brand marks | **Concept 3 only** |
+| Landing redesign beyond closed Phase 1-A / 1-A.1 | Closed; brand mark OK |
+| LaunchLens brand restore on display surfaces | ALABOM display; `launchlens.*` storage keys **KEEP** |
 | CartPilot / Platform SDK | Forbidden |
-| Landing redesign beyond closed Phase 1-A / 1-A.1 | Closed |
-| Phase 1-B **implementation** until CPO Scope PASS | **HOLD** |
 
 ---
 
 ## Baseline vs Gap (honest)
 
-### Baseline `d6d0e91` (preserved — build on, do not erase)
+### Baseline history (preserved — build on, do not erase)
 
-Useful locked language retained and expanded here: two entries → one engine; Document Intelligence; provenance honesty; confidence; contradiction; Memory bag sync criteria; staged Processing; Question priority; answer quality; follow-up; Summary/Detail; stage model; transition gates; Review Decision Fatigue; Demo/Auth sameness; Explicit OUT; S16/S17 KEEP.
+Useful locked language retained: two entries → one engine; Document Intelligence; provenance honesty; confidence; contradiction; Memory bag sync; staged Processing; Question priority; answer quality; follow-up; Summary/Detail; stage model; transition gates; Review Decision Fatigue; Demo/Auth sameness; Explicit OUT; S16/S17 KEEP. SHAs: `6d9b8b7` · `d6d0e91` · `ea11e70`.
 
-### What this expansion adds (CTO work-order depth)
+### What this work order locks for EXECUTING
 
-Full §§0–50 work instruction: Domain 01–20; expanded provenance/confidence/answer enums; Stage A–D; Analysis Evidence First; upload/quality/new project/review-start/mobile/a11y/performance/cost; QA A1–F4; Evidence 01–16; CEO A+B; completion ≠ merge; process + work order + final gate package; companion EXECUTION_PLAN.
+W1 Brand Concept 3; Domain 01–20; expanded provenance/confidence/answer enums; Stage A–D; Analysis Evidence First; Hero=1; upload/quality/new project/review-start/mobile/a11y/performance/cost; QA A–F; Evidence **01–20**; CEO A+B; **§27 FAIL · §29 escalation · §30 DoD**; companion EXECUTION_PLAN; **implementation authorized**.
 
 ---
 
 ## Explicit non-claims
 
-- **Zero product / UI / engine code** in this Scope Expansion  
-- **Phase 1-B Implementation NOT started** (HOLD)  
-- **No unauthorized S7 / S8 / S14 / S16 / S17 contract changes**  
-- This doc is **NOT Freeze** and does **not** claim Freeze-ready  
-- Does **not** authorize Impl, deploy, or CEO Walkthrough until CPO Scope PASS then later gates  
+- Does **not** claim Scope Freeze Candidate  
+- Does **not** invent Phase 1-B.1 / 1-C  
+- Does **not** authorize unauthorized S7 / S8 / S14 / S16 / S17 state-contract changes  
+- Does **not** invent new AI provider / score model / marketplace / auth redesign / G2  
+- Status is **EXECUTING** — complete only when DoD §30 met end-to-end  
 
 ---
 
-*Record only — Next Autonomous Target: single CPO Scope Review (PASS / FIX / HOLD) on SCOPE + EXECUTION_PLAN; Implementation remains HOLD. Status: 🟡 LONG SPRINT — Scope Expansion (CTO Work Order). Baseline: d6d0e91.*
+*Record only — Next Autonomous Target: implement W1→W12; Final CPO at package. Status: 🟢 LONG SPRINT — EXECUTING. Baseline history: 6d9b8b7.*
