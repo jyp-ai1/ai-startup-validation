@@ -158,6 +158,15 @@ export function V2StrategyWorkspaceView({
   const [phase, setPhase] = useState<WorkspacePhase>('compose');
   /** E3 — Review Start visible error + Retry (no silent fail) */
   const [reviewError, setReviewError] = useState<string | null>(null);
+
+  /** Demo QA only — `?forceReviewError=1` surfaces real Retry UI for Evidence #15 (not Auth). */
+  useEffect(() => {
+    if (!isDemoGuided || typeof window === 'undefined') return;
+    if (new URLSearchParams(window.location.search).get('forceReviewError') === '1') {
+      setReviewError('시장성 분석을 시작하지 못했습니다. 다시 시도해 주세요.');
+    }
+  }, [isDemoGuided]);
+
   const [businessStateRevision, setBusinessStateRevision] = useState(0);
   const [activeStep, setActiveStep] = useState<WorkflowStepId>('idea');
   const [activeMemoryId, setActiveMemoryId] = useState<string | null>(null);

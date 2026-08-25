@@ -1,0 +1,6 @@
+{
+  "label": "LIVE",
+  "errorVisible": false,
+  "retryVisible": false,
+  "probe": "demo forceReviewError=1"
+}
