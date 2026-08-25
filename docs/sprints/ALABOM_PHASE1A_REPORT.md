@@ -107,15 +107,16 @@ Exit 0
 |-----|---------|
 | `c9ceb06` | feat(alabom): BrandConfig + visible brand foundation |
 | `77bbbe5` | feat(alabom): Landing hero and CTAs for Phase 1-A |
-| *(this)* | docs(alabom): Phase 1-A report for CPO (+ vitest include + evidence) |
+| *(report tip)* | docs(alabom): Phase 1-A report for CPO (+ vitest include + evidence) — tip `52c8f32` |
 
 ---
 
 ## Production deploy
 
-- Push target: `main` → Vercel Production `https://ai-startup-validation-tau.vercel.app`
-- After push: verify `/api/build-info` (or `/build-info`) SHA matches tip of `main`
-- Deploy status: recorded at push time in report footer / ops note
+- Pushed: `main` @ `52c8f32` → Vercel Production https://ai-startup-validation-tau.vercel.app
+- `/api/build-info` **commit:** `52c8f322cec800037f8e8c959220d45bf316561b` (**MATCH tip**)
+- `deployTime`: `2026-08-25T01:46:47.904Z`
+- Live KO landing check: **PROD_HERO_PASS** · **NEGATION_GONE** · **ALABOM_PRESENT**
 
 ---
 
