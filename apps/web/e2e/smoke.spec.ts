@@ -27,6 +27,6 @@ test.describe('Launch smoke (Sprint L2.5)', () => {
       },
     ]);
     await page.goto('/');
-    await expect(page.locator('body')).toContainText(/Strategy|Start free|LaunchLens/i);
+    await expect(page.locator('body')).toContainText(/ALABOM|Know Before|Start Free/i);
   });
 });

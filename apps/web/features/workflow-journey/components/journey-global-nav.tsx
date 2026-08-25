@@ -18,7 +18,7 @@ type JourneyGlobalNavProps = {
 const PUBLIC_LINKS = [
   { href: '/#how-it-works', key: 'product' as const },
   { href: '/#pricing', key: 'pricing' as const },
-  { href: '/#why-launchlens', key: 'whyLaunchLens' as const },
+  { href: '/#why-alabom', key: 'whyLaunchLens' as const },
 ] as const;
 
 const AUTH_LINKS = [

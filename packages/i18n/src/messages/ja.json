@@ -1,9 +1,9 @@
-{
+﻿{
   "meta": {
-    "appName": "LaunchLens",
+    "appName": "ALABOM",
     "appDescription": "AI-powered strategy consulting platform for startups and enterprise teams",
-    "titleSuffix": "LaunchLens",
-    "appTagline": "AI Strategy Consultant"
+    "titleSuffix": "ALABOM",
+    "appTagline": "Know Before You Build."
   },
   "common": {
     "save": "保存",
@@ -1287,12 +1287,12 @@
     "statReadiness": "Avg. Readiness",
     "statConfidence": "Confidence Index",
     "meta": {
-      "title": "LaunchLens — AI Strategy Consultant",
-      "description": "AI Strategy Consultant for market research, competitive analysis, business validation, and executive reports. Evidence-based GO / NO GO decisions for startups and strategy teams.",
-      "keywords": "AI Strategy Consultant, AI Startup Validation, Business Strategy, Market Research, Competitive Analysis, Executive Report, GO NO GO"
+      "title": "ALABOM — Know Before You Build.",
+      "description": "Upload a business plan or enter an idea — AI understands first, then asks only what's missing.",
+      "keywords": "ALABOM, Know Before You Build, business validation, AI, startup"
     },
     "nav": {
-      "brand": "LaunchLens",
+      "brand": "ALABOM",
       "features": "機能",
       "demo": "Demo",
       "pricing": "料金",
@@ -1301,22 +1301,23 @@
       "startFree": "無料で始める",
       "builtFor": "Built For",
       "roadmap": "Roadmap",
-      "tagline": "AI Strategy Consultant",
+      "tagline": "Know Before You Build.",
       "howItWorks": "使い方"
     },
     "hero": {
-      "eyebrow": "AI Strategy Consultant",
-      "title": "AIが自動化する戦略コンサルティング",
+      "eyebrow": "ALABOM",
+      "title": "Know Before You Build.",
+      "subtitle": "事業計画書を上げるかアイデアを入力すると、AIが先に理解し、足りない部分だけ質問します。",
       "bullet1": "Market research",
       "bullet2": "Business validation",
       "bullet3": "Competitive analysis",
       "bullet4": "Executive reports",
       "bullet5": "Government grant fit analysis",
-      "tagline": "AIが調査します。あなたが決断します。",
+      "tagline": "Know Before You Build.",
       "ctaStart": "無料で始める",
-      "ctaDemo": "デモを見る",
+      "ctaDemo": "Demoで知る",
       "ctaHint1": "クレジットカード不要",
-      "ctaHint2": "3分で開始",
+      "ctaHint2": "30秒で開始",
       "ctaHint3": "Beta期間無料"
     },
     "preview": {

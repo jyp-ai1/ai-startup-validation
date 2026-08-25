@@ -1,9 +1,9 @@
-{
+﻿{
   "meta": {
-    "appName": "LaunchLens",
+    "appName": "ALABOM",
     "appDescription": "AI-powered strategy consulting platform for startups and enterprise teams",
-    "titleSuffix": "LaunchLens",
-    "appTagline": "AI Strategy Consultant"
+    "titleSuffix": "ALABOM",
+    "appTagline": "Know Before You Build."
   },
   "common": {
     "save": "Enregistrer",
@@ -1292,7 +1292,7 @@
       "keywords": "AI Strategy Consultant, AI Startup Validation, Business Strategy, Market Research, Competitive Analysis, Executive Report, GO NO GO"
     },
     "nav": {
-      "brand": "LaunchLens",
+      "brand": "ALABOM",
       "features": "Features",
       "demo": "Demo",
       "pricing": "Pricing",

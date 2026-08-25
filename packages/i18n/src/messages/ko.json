@@ -1,16 +1,16 @@
 {
   "meta": {
-    "appName": "LaunchLens",
-    "appTagline": "AI Strategy Consultant",
-    "appDescription": "스타트업과 기업 전략팀을 위한 AI 전략 컨설팅 플랫폼",
-    "titleSuffix": "LaunchLens"
+    "appName": "ALABOM",
+    "appTagline": "사업, 시작하기 전에 알아봄.",
+    "appDescription": "사업계획서를 올리거나 아이디어를 입력하면 AI가 먼저 이해하고, 부족한 부분만 질문합니다.",
+    "titleSuffix": "ALABOM"
   },
   "beta": {
     "badge": "프라이빗 베타"
   },
   "about": {
-    "title": "LaunchLens 소개",
-    "desc": "LaunchLens는 스타트업 검증과 기업 전략을 위한 AI Strategy Consultant 플랫폼입니다. 프라이빗 베타를 이용 중이며, 피드백이 로드맵을 만듭니다.",
+    "title": "ALABOM 소개",
+    "desc": "ALABOM(알아봄)은 사업 시작 전에 AI가 먼저 이해하고 부족한 부분만 질문하는 검증 워크스페이스입니다. 프라이빗 베타를 이용 중이며, 피드백이 로드맵을 만듭니다.",
     "version": "버전",
     "commit": "빌드",
     "environment": "환경",
@@ -1436,15 +1436,15 @@
   },
   "landing": {
     "meta": {
-      "title": "LaunchLens — CEO를 위한 AI PM Company",
-      "description": "대표님은 결정만, AI PM이 시장조사·경쟁분석·전략수립·실행관리를 대신합니다. CEO와 함께 회사를 운영하는 AI Strategy Company.",
-      "keywords": "AI PM, AI Strategy Company, CEO, 스타트업 운영, 시장조사, 경쟁분석, 사업 전략, 실행관리, GO HOLD, Private Beta"
+      "title": "ALABOM — 사업, 시작하기 전에 알아봄.",
+      "description": "사업계획서를 올리거나 아이디어를 입력하면 AI가 먼저 이해하고, 부족한 부분만 질문합니다.",
+      "keywords": "ALABOM, 알아봄, 사업 검증, AI, 창업, Know Before You Build, 사업계획서"
     },
     "nav": {
-      "brand": "LaunchLens",
-      "tagline": "Thinking Workspace",
+      "brand": "ALABOM",
+      "tagline": "사업, 시작하기 전에 알아봄.",
       "product": "Product",
-      "whyLaunchLens": "Why LaunchLens",
+      "whyLaunchLens": "왜 알아봄",
       "resources": "Demo",
       "features": "기능",
       "howItWorks": "이용 방법",
@@ -1456,8 +1456,8 @@
       "aiPm": "검토 과정",
       "stories": "후기",
       "signIn": "Login",
-      "startFree": "Start Free",
-      "openDemo": "Open Demo",
+      "startFree": "무료로 시작하기",
+      "openDemo": "Demo로 알아보기",
       "workspace": "Workspace",
       "settings": "Settings",
       "menuLabel": "내비게이션 메뉴",
@@ -1465,14 +1465,14 @@
       "closeMenu": "메뉴 닫기"
     },
     "hero": {
-      "eyebrow": "Think Better. Decide Better.",
-      "title": "LaunchLens는\n사업계획서를 만드는 AI가 아닙니다",
-      "subtitle": "창업자의 Thinking Workspace입니다. 생각 → 결정 → 기억이 이어지는 곳.",
+      "eyebrow": "ALABOM",
+      "title": "사업, 시작하기 전에 알아봄.",
+      "subtitle": "사업계획서를 올리거나 아이디어를 입력하면 AI가 먼저 이해하고, 부족한 부분만 질문합니다.",
       "northStar": "검토가 끝나면 AI PM이 계속 관리해드립니다.",
-      "ctaStart": "Start Free",
-      "ctaDemo": "Open Demo",
+      "ctaStart": "무료로 시작하기",
+      "ctaDemo": "Demo로 알아보기",
       "ctaHint1": "신용카드 필요 없음",
-      "ctaHint2": "30초 안에 이해",
+      "ctaHint2": "30초 안에 시작",
       "speedPromise": "내 사업이 될지 — 지금 바로 확인하세요",
       "ctaHint3": "Beta 무료",
       "journey": {
@@ -1482,7 +1482,7 @@
         "decision": "승인",
         "execution": "실행"
       },
-      "tagline": "사업을 검토해드립니다. 검토가 끝나면 AI PM이 계속 관리해드립니다.",
+      "tagline": "사업, 시작하기 전에 알아봄.",
       "flowPreview": {
         "steps": {
           "viability": "사업성",
@@ -1538,11 +1538,11 @@
     },
     "gtm": {
       "why": {
-        "title": "Why LaunchLens",
+        "title": "Why ALABOM",
         "problem1": "사업 아이디어는 있는데, 어디서부터 검토해야 할지 모르겠습니다.",
         "problem2": "ChatGPT에 물어보면 매번 다른 답이 나옵니다.",
         "problem3": "회의할 때마다 결정했던 내용이 사라집니다.",
-        "resolution": "LaunchLens는 생각을 이어갑니다."
+        "resolution": "ALABOM은 시작하기 전에 먼저 알아봅니다."
       },
       "howItWorks": {
         "title": "How it Works",
@@ -1580,9 +1580,9 @@
       },
       "finalCta": {
         "title": "생각을 이어갈 준비가 되셨나요?",
-        "desc": "LaunchLens는 문서를 써주는 AI가 아닙니다. 창업자의 Thinking Workspace입니다.",
-        "primary": "Start Free",
-        "secondary": "Open Demo"
+        "desc": "사업계획서를 올리거나 아이디어를 입력하면 AI가 먼저 이해하고, 부족한 부분만 질문합니다.",
+        "primary": "무료로 시작하기",
+        "secondary": "Demo로 알아보기"
       }
     },
     "aiTeam": {
@@ -1724,8 +1724,8 @@
       "desc": "4단계로 자연스럽게 이어지는 Closed Beta Journey입니다."
     },
     "why": {
-      "title": "왜 LaunchLens인가",
-      "subtitle": "사업성 분석이 아닌, CEO와 함께 회사를 운영하는 AI PM Company",
+      "title": "왜 ALABOM인가",
+      "subtitle": "사업, 시작하기 전에 알아봄 — AI가 먼저 이해하고 부족한 부분만 질문합니다.",
       "marketFirst": {
         "title": "시장 검증이 먼저",
         "desc": "아이디어가 통하는지 확인하지 않으면 이후 전략이 모두 흔들립니다."
@@ -2015,7 +2015,7 @@
       "ctaTitle": "AI PM과 함께 회사를 운영할 준비가 되셨나요?",
       "ctaDesc": "대표님은 결정만 — AI PM이 나머지를 수행합니다",
       "ctaButton": "AI PM과 회사 시작하기",
-      "copyright": "LaunchLens · AI PM Company",
+      "copyright": "ALABOM · 알아봄",
       "privacy": "Privacy",
       "terms": "Terms",
       "contact": "문의하기",
@@ -2026,9 +2026,9 @@
     },
     "legal": {
       "privacyTitle": "Privacy Policy",
-      "privacyBody": "LaunchLens는 사용자 데이터를 존중합니다. 프로젝트 정보는 Workspace에 저장되며 제3자에게 판매되지 않습니다. Sprint L2 인증 출시 전 전체 Privacy Policy가 게시됩니다.",
+      "privacyBody": "ALABOM은 사용자 데이터를 존중합니다. 프로젝트 정보는 Workspace에 저장되며 제3자에게 판매되지 않습니다. Sprint L2 인증 출시 전 전체 Privacy Policy가 게시됩니다.",
       "termsTitle": "Terms of Service",
-      "termsBody": "LaunchLens 이용 시 합법적인 Business Strategy 목적으로 플랫폼을 사용하는 것에 동의합니다. 유료 플랜 출시 전 전체 Terms of Service가 게시됩니다."
+      "termsBody": "ALABOM 이용 시 합법적인 Business Strategy 목적으로 플랫폼을 사용하는 것에 동의합니다. 유료 플랜 출시 전 전체 Terms of Service가 게시됩니다."
     }
   },
   "status": {

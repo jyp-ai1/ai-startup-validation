@@ -1,9 +1,9 @@
-{
+﻿{
   "meta": {
-    "appName": "LaunchLens",
+    "appName": "ALABOM",
     "appDescription": "AI-powered strategy consulting platform for startups and enterprise teams",
-    "titleSuffix": "LaunchLens",
-    "appTagline": "AI Strategy Consultant"
+    "titleSuffix": "ALABOM",
+    "appTagline": "Know Before You Build."
   },
   "common": {
     "save": "保存",
@@ -1287,12 +1287,12 @@
     "statReadiness": "Avg. Readiness",
     "statConfidence": "Confidence Index",
     "meta": {
-      "title": "LaunchLens — AI Strategy Consultant",
-      "description": "AI Strategy Consultant for market research, competitive analysis, business validation, and executive reports. Evidence-based GO / NO GO decisions for startups and strategy teams.",
-      "keywords": "AI Strategy Consultant, AI Startup Validation, Business Strategy, Market Research, Competitive Analysis, Executive Report, GO NO GO"
+      "title": "ALABOM — Know Before You Build.",
+      "description": "Upload a business plan or enter an idea — AI understands first, then asks only what's missing.",
+      "keywords": "ALABOM, Know Before You Build, business validation, AI, startup"
     },
     "nav": {
-      "brand": "LaunchLens",
+      "brand": "ALABOM",
       "features": "功能",
       "demo": "Demo",
       "pricing": "定价",
@@ -1301,22 +1301,23 @@
       "startFree": "免费开始",
       "builtFor": "Built For",
       "roadmap": "Roadmap",
-      "tagline": "AI Strategy Consultant",
+      "tagline": "Know Before You Build.",
       "howItWorks": "使用方式"
     },
     "hero": {
-      "eyebrow": "AI Strategy Consultant",
-      "title": "AI 驱动的战略咨询",
+      "eyebrow": "ALABOM",
+      "title": "Know Before You Build.",
+      "subtitle": "上传商业计划或输入想法后，AI 先理解，再只问缺少的部分。",
       "bullet1": "Market research",
       "bullet2": "Business validation",
       "bullet3": "Competitive analysis",
       "bullet4": "Executive reports",
       "bullet5": "Government grant fit analysis",
-      "tagline": "AI 负责调研，您来做决策。",
+      "tagline": "Know Before You Build.",
       "ctaStart": "免费开始",
-      "ctaDemo": "查看演示",
+      "ctaDemo": "用 Demo 了解",
       "ctaHint1": "无需信用卡",
-      "ctaHint2": "3 分钟即可开始",
+      "ctaHint2": "30 秒即可开始",
       "ctaHint3": "Beta 期间免费"
     },
     "preview": {

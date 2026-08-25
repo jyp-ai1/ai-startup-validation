@@ -10,7 +10,7 @@ export function LandingGtmWhyNarrative() {
   const t = useTranslations('landing.gtm.why');
 
   return (
-    <section id="why-launchlens" className="border-y border-border/50 bg-muted/10 py-20 sm:py-24">
+    <section id="why-alabom" className="border-y border-border/50 bg-muted/10 py-20 sm:py-24">
       <div className={LANDING_CONTAINER}>
         <div className={LANDING_CONTENT}>
         <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">

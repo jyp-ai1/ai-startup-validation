@@ -1,16 +1,16 @@
 {
   "meta": {
-    "appName": "LaunchLens",
-    "appTagline": "AI Strategy Consultant",
-    "appDescription": "AI-powered strategy consulting platform for startups and enterprise teams",
-    "titleSuffix": "LaunchLens"
+    "appName": "ALABOM",
+    "appTagline": "Know Before You Build.",
+    "appDescription": "Upload a business plan or enter an idea — AI understands first, then asks only what's missing.",
+    "titleSuffix": "ALABOM"
   },
   "beta": {
     "badge": "Private Beta"
   },
   "about": {
-    "title": "About LaunchLens",
-    "desc": "LaunchLens is an AI Strategy Consultant platform for startup validation and enterprise strategy. You are using a private beta — feedback shapes our roadmap.",
+    "title": "About ALABOM",
+    "desc": "ALABOM helps founders know before they build — AI understands first, then asks only what's missing. You are using a private beta — feedback shapes our roadmap.",
     "version": "Version",
     "commit": "Build",
     "environment": "Environment",
@@ -1436,15 +1436,15 @@
   },
   "landing": {
     "meta": {
-      "title": "LaunchLens — AI PM Company for CEOs",
-      "description": "You decide. Your AI PM handles market research, competitive analysis, strategy, and execution. An AI Strategy Company you run as CEO.",
-      "keywords": "AI PM, AI Strategy Company, CEO, startup operations, market research, competitive analysis, business strategy, execution management, GO HOLD, Private Beta"
+      "title": "ALABOM — Know Before You Build.",
+      "description": "Upload a business plan or enter an idea — AI understands first, then asks only what's missing.",
+      "keywords": "ALABOM, Know Before You Build, business validation, AI, startup, founder"
     },
     "nav": {
-      "brand": "LaunchLens",
-      "tagline": "Thinking Workspace",
+      "brand": "ALABOM",
+      "tagline": "Know Before You Build.",
       "product": "Product",
-      "whyLaunchLens": "Why LaunchLens",
+      "whyLaunchLens": "Why ALABOM",
       "resources": "Demo",
       "features": "Features",
       "howItWorks": "How it works",
@@ -1457,7 +1457,7 @@
       "stories": "Stories",
       "signIn": "Login",
       "startFree": "Start Free",
-      "openDemo": "Open Demo",
+      "openDemo": "Explore Demo",
       "workspace": "Workspace",
       "settings": "Settings",
       "menuLabel": "Navigation menu",
@@ -1465,9 +1465,9 @@
       "closeMenu": "Close menu"
     },
     "hero": {
-      "eyebrow": "Think Better. Decide Better.",
-      "title": "LaunchLens is not\nan AI that writes business plans",
-      "subtitle": "It is a Thinking Workspace for founders — where thinking, decisions, and memory connect.",
+      "eyebrow": "ALABOM",
+      "title": "Know Before You Build.",
+      "subtitle": "Upload a business plan or enter an idea — AI understands first, then asks only what's missing.",
       "northStar": "When the review is done, your AI PM keeps managing it.",
       "journey": {
         "label": "AI PM work loop",
@@ -1476,11 +1476,11 @@
         "decision": "Approve",
         "execution": "Execute"
       },
-      "tagline": "We review your business. When the review is done, your AI PM keeps managing it.",
+      "tagline": "Know Before You Build.",
       "ctaStart": "Start Free",
-      "ctaDemo": "Open Demo",
+      "ctaDemo": "Explore Demo",
       "ctaHint1": "No credit card required",
-      "ctaHint2": "Understand in 30 seconds",
+      "ctaHint2": "Start in 30 seconds",
       "speedPromise": "Find out if your business will work — start now",
       "ctaHint3": "Free during Beta",
       "flowPreview": {
@@ -1538,11 +1538,11 @@
     },
     "gtm": {
       "why": {
-        "title": "Why LaunchLens",
+        "title": "Why ALABOM",
         "problem1": "You have a business idea but don't know where to start reviewing it.",
         "problem2": "Ask ChatGPT and you get a different answer every time.",
         "problem3": "Decisions from meetings disappear by the next session.",
-        "resolution": "LaunchLens keeps your thinking going."
+        "resolution": "ALABOM helps you know before you build."
       },
       "howItWorks": {
         "title": "How it Works",
@@ -1580,9 +1580,9 @@
       },
       "finalCta": {
         "title": "Ready to continue your thinking?",
-        "desc": "LaunchLens is not an AI that writes documents. It is a Thinking Workspace for founders.",
+        "desc": "Upload a business plan or enter an idea — AI understands first, then asks only what's missing.",
         "primary": "Start Free",
-        "secondary": "Open Demo"
+        "secondary": "Explore Demo"
       }
     },
     "aiTeam": {
@@ -1712,8 +1712,8 @@
       "desc": "Four steps that flow naturally through Closed Beta."
     },
     "why": {
-      "title": "Why LaunchLens",
-      "subtitle": "Not viability analysis — an AI PM Company you run as CEO",
+      "title": "Why ALABOM",
+      "subtitle": "Know before you build — AI understands first, then asks only what's missing.",
       "marketFirst": {
         "title": "Market validation first",
         "desc": "Without proof the idea works, every later strategy wobbles."
@@ -1904,7 +1904,7 @@
       "ctaTitle": "Ready to run your company with AI PM?",
       "ctaDesc": "You decide — your AI PM handles the rest",
       "ctaButton": "Start running your company with AI PM",
-      "copyright": "LaunchLens · AI PM Company",
+      "copyright": "ALABOM",
       "privacy": "Privacy",
       "terms": "Terms",
       "contact": "Contact",
@@ -1915,9 +1915,9 @@
     },
     "legal": {
       "privacyTitle": "Privacy Policy",
-      "privacyBody": "LaunchLens respects your data. Project information is stored in your workspace and is not sold to third parties. Full privacy policy will be published before Sprint L2 authentication launch.",
+      "privacyBody": "ALABOM respects your data. Project information is stored in your workspace and is not sold to third parties. Full privacy policy will be published before Sprint L2 authentication launch.",
       "termsTitle": "Terms of Service",
-      "termsBody": "By using LaunchLens you agree to use the platform for lawful business strategy purposes. Full terms of service will be published before paid plans launch."
+      "termsBody": "By using ALABOM you agree to use the platform for lawful business strategy purposes. Full terms of service will be published before paid plans launch."
     }
   },
   "status": {

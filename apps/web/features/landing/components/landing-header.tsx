@@ -10,7 +10,7 @@ import { LANDING_CONTAINER } from '../lib/landing-layout';
 
 const NAV_LINKS = [
   { href: '#how-it-works', key: 'product' as const },
-  { href: '#why-launchlens', key: 'whyLaunchLens' as const },
+  { href: '#why-alabom', key: 'whyLaunchLens' as const },
   { href: '#pricing', key: 'pricing' as const },
 ] as const;
 
