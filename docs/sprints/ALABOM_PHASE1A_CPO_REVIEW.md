@@ -123,4 +123,7 @@ Honest residual: Workspace/onboarding i18n strings may still appear inside the *
 
 ### Production
 
-- Push `main` after this addendum; Production SHA recorded post-deploy via `/api/build-info`.
+- Pushed: `main` @ `64ed4f0`
+- `/api/build-info` **commit:** `64ed4f09b897a9b4f2d4f75a8077c4b135cf40a4` (**MATCH tip**)
+- `deployTime`: `2026-08-25T07:41:18.378Z`
+- Live `/ko`: FAQ desc ALABOM · JSON-LD LaunchLens **0** · AI Startup Validation **0** · payload LaunchLens residual from Workspace i18n only (not Landing surfaces)
