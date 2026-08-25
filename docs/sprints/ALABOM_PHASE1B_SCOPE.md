@@ -1,10 +1,11 @@
-# ALABOM Phase 1-B — Scope Review (CPO)
+# ALABOM Phase 1-B — Scope Revision (CPO Freeze)
 
 **Date:** 2026-08-25  
 **From:** CTO → CPO  
-**Status:** **Scope Review ONLY** · **Implementation NOT started**  
+**Status:** **Scope Revision submitted** → **awaiting CPO Freeze** · **Implementation HOLD** (NOT started)  
 **Predecessor gates:** Phase 1-A / 1-A.1 **CLOSED** · Phase 1-B **IMPLEMENTATION HOLD** · **CEO HOLD**  
-**Product track:** Workspace first-experience AI UX (ALABOM) — builds on S16/S17 contracts; does **not** reopen brand Landing work.
+**Product track:** Workspace first-experience AI UX (ALABOM) — builds on S16/S17 contracts; does **not** reopen brand Landing work.  
+**Constraint:** Docs-only revision. **No code, no deploy, no Phase 1-B impl, no S7–S17 contract changes** in this deliverable.
 
 **Sources (prefer docs):**  
 [`S17_SHARED_UNDERSTANDING_LOOP.md`](./S17_SHARED_UNDERSTANDING_LOOP.md) · [`S16_UX_RECOVERY.md`](./S16_UX_RECOVERY.md) · [`ALABOM_PHASE1A_REPORT.md`](./ALABOM_PHASE1A_REPORT.md) · [`ALABOM_PHASE1A_CPO_REVIEW.md`](./ALABOM_PHASE1A_CPO_REVIEW.md) · [`ALABOM_PHASE0_SCOPE_FREEZE.md`](./ALABOM_PHASE0_SCOPE_FREEZE.md) · `docs/PRODUCT_VISION_V3.md`
@@ -16,11 +17,13 @@
 ```text
 Phase 1-A / 1-A.1 CLOSED
         ↓
-Phase 1-B Scope Review  ← YOU ARE HERE (this doc)
+Phase 1-B Scope Review (prior)
         ↓
-CPO Review → Scope Freeze
+Phase 1-B Scope Revision  ← YOU ARE HERE (this doc; CPO 수정 incorporated)
         ↓
-Implementation (blocked until Freeze)
+CPO Freeze (awaiting)
+        ↓
+Implementation (blocked until Freeze)  ← still HOLD
         ↓
 Internal QA → CPO Review → CEO Walkthrough
 ```
@@ -31,57 +34,54 @@ Internal QA → CPO Review → CEO Walkthrough
 
 ## A. User Journey
 
-### Flow A — Document User
+### Document Flow (first) — failure condition
 
 **Intent:** User already has a plan/document. AI understands first; user never re-enters the whole form.
 
+**Canonical sequence (locked):**
+
 ```text
-PDF/문서 업로드
-  → AI understand (parse / draft Shared Understanding)
-  → summarize (사업·고객·문제 ± 시장·경쟁 — Document First)
-  → gaps (부족한 필드 식별)
-  → Question (최고-priority gap만)
+PDF → AI parse → summary → gaps → confirm Q
   → Answer
-  → Processing (Thinking / Memory 가시화)
-  → update (Shared Understanding 반영)
-  → confirm (사용자 확인)
-  → next Question …
-  → review (Final Review of full understanding)
-  → next action (분석 / Hero 다음 행동)
+  → [AI 분석중...] (Memory / Understanding reflect — immediate)
+  → Updated Understanding → Gap → next Q …
+  → review (enough → Final Review)
+  → next action
 ```
 
-**Hard rule:** After upload, the user **must never** be forced to re-enter all fields. Empty full-form primacy after PDF is a **FAIL** (S17 P0-1 / S16 HOLD philosophy gap closed in S17; Phase 1-B must preserve and harden this).
+**FAIL if:** After upload, the user is forced to **re-enter full business fields** (empty full-form primacy, or any path that makes Document Flow feel like “start the form over”). This is a hard product FAIL for Phase 1-B (preserves S17 P0-1 / Document First).
 
-### Flow B — New User
+### New User Flow
 
 **Intent:** No document. Minimal questions; AI builds understanding incrementally.
 
 ```text
-최소 질문 (이름/아이디어 수준)
+minimal Q (이름/아이디어 수준)
   → Answer
-  → AI understand (partial Shared Understanding)
-  → gap
-  → next Question
-  → … (Turn Contract 반복)
-  → validation-ready (Final Review → Analysis / judgment)
+  → [AI 분석중...] → merge → Updated Understanding → Gap → next Q
+  → … (Final UX Contract 반복)
+  → enough → review → next action
 ```
 
-**Hard rule:** Flow B is **not** Flow A with a blank PDF. No fake “document read” confidence. Seed path admits unknowns (S16 P0-5), then gap-driven questions only.
+**Hard rule:** New User Flow is **not** Document Flow with a blank PDF. No fake “document read” confidence. Seed path admits unknowns (S16 P0-5), then gap-driven questions only.
 
-### Flow separation (product)
+### Two-flow comparison (CPO)
 
-| | Flow A | Flow B |
-|--|--------|--------|
-| Entry | Document upload / paste | Empty / idea-only project or Demo-without-doc |
-| First surface | AI draft summary + Confidence + confirm | Minimal Q → AI draft grows |
-| Re-entry of all fields | **Forbidden** | N/A (there was no full form) |
-| Shared spine | Same Turn Contract + Stage table | Same Turn Contract + Stage table |
+| | Document Flow | New User Flow |
+|--|---------------|---------------|
+| Start | document | minimal Q |
+| AI role | document-first | answer-based initial understand |
+| User input | gaps/uncertainty only | gradual minimal info |
+| Core | minimize re-entry | minimize cognitive load |
+| End | enough → review | enough → review |
+
+Shared spine after entry: same **Final UX Contract** + Stage table. Paths must remain **user-obvious** and Acceptance-tested as distinct entries.
 
 ---
 
 ## B. Stage table
 
-Canonical stages for Phase 1-B Scope (CPO checklist order). Each stage advances only when **confidence + confirmation** allow — never by answer count alone.
+Canonical stages for Phase 1-B Scope (CPO checklist order). Each stage advances only when **confidence + confirmation** allow — never by answer count alone, and never by polite ack alone (see Nonsense).
 
 | 단계 | AI가 알고 있는 것 | 부족한 것 | 다음 질문 | 완료 조건 |
 |------|-------------------|-----------|-----------|-----------|
@@ -99,38 +99,52 @@ Canonical stages for Phase 1-B Scope (CPO checklist order). Each stage advances 
 
 ---
 
-## C. Turn Contract
+## C. Final UX Contract (locked — Phase 1-B core)
 
-Every interaction turn **must** follow this order:
+**This is the Phase 1-B core Contract.** All Document / New User turns must use this locked turn shape. Deviating from it is out of Scope Freeze compliance.
+
+```text
+AI가 이해한 내용 → [더보기] → 상세 → AI 판단/결론 → 현재 부족한 부분 → 질문 → 사용자 답변 → [AI 분석중...] → 업데이트된 이해 → 다음 질문 또는 다음 단계
+```
+
+### Immediate Memory / Understanding reflect (mandatory)
+
+Per answer, the loop **must** be:
 
 ```text
 Answer
-  → Processing          (visible Thinking / Memory / Business update)
+  → [AI 분석중...]          (visible; Thinking / Memory)
+  → merge with prior understanding
   → Updated Understanding
-  → Gap                 (what is still missing)
-  → Question            (one gap-driven question)
-  → User Confirmation   (맞습니다 / 아닙니다 · 수정)
+  → Gap
+  → next Q   (or next stage when enough)
 ```
+
+**Forbidden:** Batch-all-inputs-then-analyze (collect many answers first, then one late analysis). Understanding must reflect **immediately** after each answer.
 
 ### Nonsense / low-signal answers
 
-- Nonsense, empty, or off-topic answers **must NOT auto-complete** a stage.
-- Stage status stays **● 현재 확인 중** (or returns to ask again); never silent **✔ 확인됨**.
-- No “PASS by answer length” or quiz-tick advancement.
+- Nonsense, empty, or off-topic answers **may be saved** (for audit / memory honesty).
+- They **must NOT** pass the stage with a polite “확인했습니다” (or equivalent auto-ack that marks ✔).
+- AI **re-judges sufficiency** after the answer; if insufficient → **re-ask** (stage stays ● 현재 확인 중).
+- No “PASS by answer length,” quiz-tick, or silent ✔ 확인됨.
 
 ---
 
 ## D. UI Contract
 
-Per stage, the Workspace surface exposes **exactly these roles** (names may be localized; roles are fixed):
+Per stage, the Workspace surface exposes **exactly these roles** (names may be localized; roles are fixed; maps to Final UX Contract):
 
 | Role | Purpose |
 |------|---------|
-| **Summary** | AI’s current understanding of this stage (short) |
-| **More** | Optional detail — not a second primary CTA |
-| **AI Conclusion** | What AI believes is true *now* for this stage |
+| **Summary** | AI가 이해한 내용 (short) |
+| **More** | [더보기] → 상세 — not a second primary CTA |
+| **AI Conclusion** | AI 판단/결론 — what AI believes is true *now* |
+| **Gap** | 현재 부족한 부분 |
 | **User Question** | The single gap-driven question |
-| **Next Step** | One primary CTA for this stage |
+| **Processing** | [AI 분석중...] after user answer |
+| **Updated Understanding** | Merge result visible before next Q |
+| **Next Step** | One primary CTA — 다음 질문 또는 다음 단계 |
 
 **One CTA per stage.** No multi-CTA hero rows during understanding loop.
 
@@ -138,26 +152,28 @@ Per stage, the Workspace surface exposes **exactly these roles** (names may be l
 
 | Mark | Meaning |
 |------|---------|
-| **✔ 확인됨** | User confirmed; stage may advance |
-| **● 현재 확인 중** | Active stage — Processing / Question / awaiting confirm |
+| **✔ 확인됨** | User confirmed **and** AI judged sufficient; stage may advance |
+| **● 현재 확인 중** | Active stage — Processing / Question / awaiting confirm / re-ask after nonsense |
 | **○ 아직 확인 전** | Not yet reached or insufficient confidence |
 
 ---
 
 ## E. Acceptance Criteria (CPO checklist)
 
-Use this list **exactly** for later Freeze / QA. All must PASS for Phase 1-B to exit Scope → Impl → CPO.
+Use this list **exactly** for later Freeze / QA. All must PASS for Phase 1-B to exit Freeze → Impl → CPO. Wording aligned with FAIL conditions above.
 
-- [ ] **PDF first** — Document User path starts from upload/parse, not from empty form
-- [ ] **No full re-entry** — After upload, user never re-enters all fields
-- [ ] **Processing visible** — Answer → visible Processing before next Question
-- [ ] **Answer updates understanding** — Each valid answer changes Shared Understanding (visible)
-- [ ] **Gap-driven Q** — Next question comes from highest-priority gap, not fixed quiz order alone
-- [ ] **Nonsense not PASS** — Nonsense / empty answers do not mark stage ✔
-- [ ] **Stage advance on confidence** — Advance requires confidence + confirmation, not turn count
-- [ ] **Summary + Detail** — Summary always; More/Detail available without second primary CTA
-- [ ] **One CTA** — Exactly one primary Next Step per stage
-- [ ] **Flow A vs B separated** — Document path and New User path are distinct entries sharing Turn Contract
+- [ ] **PDF first** — Document Flow starts: PDF → AI parse → summary → gaps → confirm Q (not empty form)
+- [ ] **No full re-entry (FAIL)** — After upload, user is **never** forced to re-enter full business fields; empty full-form primacy = **FAIL**
+- [ ] **Immediate reflect** — Answer → [AI 분석중...] → merge → Updated Understanding → Gap → next Q (visible each turn)
+- [ ] **No batch-then-analyze** — Forbidden to collect all inputs then analyze once
+- [ ] **Answer updates understanding** — Each turn changes Shared Understanding when signal is usable (visible)
+- [ ] **Gap-driven Q** — Next question from highest-priority gap, not fixed quiz order alone
+- [ ] **Nonsense not PASS** — Nonsense/empty may save but must **not** pass stage via “확인했습니다”; AI re-judges → re-ask if needed
+- [ ] **Stage advance on confidence** — Advance requires confidence + confirmation + sufficiency, not turn count
+- [ ] **Final UX Contract** — Every turn follows the locked turn shape (Section C)
+- [ ] **Summary + Detail** — Summary always; [더보기]/Detail without second primary CTA
+- [ ] **One CTA** — Exactly one primary Next Step per stage (다음 질문 또는 다음 단계)
+- [ ] **Flow separation** — Document Flow vs New User Flow match the comparison table (Section A); share Final UX Contract only after distinct entry
 
 ---
 
@@ -185,14 +201,15 @@ Use this list **exactly** for later Freeze / QA. All must PASS for Phase 1-B to 
 | Gap | Why it matters for CPO Freeze |
 |-----|-------------------------------|
 | **9-stage model vs today’s spine** | Stage table (solution / revenue / risk / judgment) is not yet a first-class UI/status contract |
-| **Explicit User Confirmation every turn** | S17 updates understanding + Final Review exists; per-turn Confirm as hard Turn Contract may need tightening |
-| **Nonsense ≠ stage PASS** | No dedicated quality gate documented as Acceptance; must be specified + tested in 1-B |
-| **UI Contract roles** | Summary / More / AI Conclusion / User Question / Next Step + ✔●○ not fully named as the Workspace chrome |
-| **Flow A vs B product framing** | Both paths exist in S16/S17; ALABOM 1-B must make separation **user-obvious** and Acceptance-tested |
-| **Confidence-gated stage advance** | Confidence UX exists on Document First draft (S17 P1-1); stage-wide advance-on-confidence is broader than current loop issue resolution |
+| **Final UX Contract as hard chrome** | Locked turn shape (Section C) must be Workspace-visible end-to-end, not only philosophy |
+| **Immediate reflect enforced** | Forbid any batch-all-inputs-then-analyze path in Acceptance / QA |
+| **Nonsense ≠ stage PASS** | May save; must re-judge sufficiency and re-ask — dedicated quality gate + tests |
+| **UI Contract roles** | Summary / More / AI Conclusion / Gap / Q / Processing / Updated Understanding / Next Step + ✔●○ |
+| **Flow A vs B product framing** | Comparison table must be user-obvious and Acceptance-tested |
+| **Confidence-gated stage advance** | Confidence UX exists on Document First draft (S17 P1-1); stage-wide advance-on-confidence is broader |
 | **Workspace brand strings** | Phase 1-A closed Landing; Workspace LaunchLens residuals remain **out of 1-A** — brand display soft-fix may accompany 1-B only if CPO Freezes it; **not** a LaunchLens brand restore |
 
-**Bottom line for Freeze:** S17 already delivers the **philosophy** (AI drafts → user confirms → gap questions → visible updates). Phase 1-B is **experience hardening + stage/UI/Turn contracts**, not a greenfield engine.
+**Bottom line for Freeze:** S17 already delivers the **philosophy** (AI drafts → user confirms → gap questions → visible updates). Phase 1-B is **experience hardening + Final UX Contract / stage / UI**, not a greenfield engine. **No S7–S17 contract rewrites** in this Scope revision.
 
 ---
 
@@ -204,51 +221,54 @@ Do **not** include in Phase 1-B Scope Freeze:
 - New scores as primary UX
 - Engine rewrite (`businessPlan.generate`, AI provider ports, orchestration spine)
 - Multi-CTA per stage
-- Long forms / empty full-form after upload
+- Long forms / empty full-form after upload (Document Flow **FAIL**)
+- Batch-all-inputs-then-analyze
 - LaunchLens **brand restore** (ALABOM remains display brand; `launchlens.*` storage keys **KEEP**)
-- Breaking **S7–S16** contracts (Trust, confirm-before-ask, stage-first progress, one Hero, review gate)
+- Breaking **S7–S17** contracts (Trust, confirm-before-ask, Document First, Thinking, one Hero, review gate) — Scope revises **experience language only**; no contract reopen in this doc
 - CartPilot / Platform SDK
 - CEO Walkthrough before CPO opens that gate
 - Landing redesign beyond already-closed Phase 1-A / 1-A.1
+- Phase 1-B **implementation** until CPO Freeze
 
 ---
 
 ## H. Gates
 
 ```text
-Phase 1-B Scope Review (this doc)
-  → CPO Review (PASS / 수정 / HOLD)
-  → Scope Freeze
-  → Implementation
+Phase 1-B Scope Revision (this doc)
+  → CPO Freeze (PASS lock / 추가 수정 / HOLD)
+  → Implementation          ← still HOLD until Freeze
   → Internal QA
   → CPO Review
-  → CEO Walkthrough   (still HOLD until CPO opens)
+  → CEO Walkthrough         (still HOLD until CPO opens)
 ```
 
 | Item | Status |
 |------|--------|
 | Phase 1-A / 1-A.1 | **CLOSED** |
-| Phase 1-B Scope Review | **THIS DOC** — awaiting CPO |
-| Phase 1-B Scope Freeze | ⛔ blocked |
-| Phase 1-B Implementation | ⛔ **NOT started** |
+| Phase 1-B Scope Review | prior — superseded by this Revision |
+| Phase 1-B Scope Revision | **SUBMITTED** — awaiting CPO Freeze |
+| Phase 1-B Scope Freeze | ⛔ awaiting CPO |
+| Phase 1-B Implementation | ⛔ **HOLD** · **NOT started** |
 | CEO Walkthrough | **HOLD** |
 
 ### CPO decision needed
 
 Reply with one of:
 
-- **PASS** → allow Scope Freeze draft / lock Acceptance E as freeze input  
-- **수정** → list journey / stage / UI / AC deltas (implementation still HOLD)  
+- **Freeze** → lock Sections A–E (Final UX Contract + Acceptance) as Freeze input; only then allow Impl kickoff  
+- **수정** → list journey / Contract / AC deltas (implementation still HOLD)  
 - **HOLD** → keep Implementation HOLD; no Freeze  
 
 ---
 
 ## Explicit non-claims
 
-- **Zero product / UI / engine code changes** in this Scope Review session  
-- **Phase 1-B Implementation NOT started**  
+- **Zero product / UI / engine code changes** in this Scope Revision session  
+- **Phase 1-B Implementation NOT started** (HOLD)  
+- **No S7–S17 contract changes** in this doc  
 - This doc does not authorize Impl, deploy, or CEO Walkthrough  
 
 ---
 
-*Next Autonomous Target (record only): CPO PASS/수정/HOLD on this Scope Review; on PASS → Scope Freeze language lock; Implementation remains HOLD until Freeze.*
+*Next Autonomous Target (record only): CPO Freeze / 수정 / HOLD on this Scope Revision; on Freeze → Impl gate opens; Implementation remains HOLD until Freeze.*
