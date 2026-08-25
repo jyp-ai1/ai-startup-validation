@@ -1,17 +1,15 @@
-# ALABOM Phase 1-B — Internal QA Report (W12)
+# ALABOM Phase 1-B — Internal QA Report (W12+)
 
 ```text
-Status: INTERNAL QA — IMPROVED (live Evidence started; PARTIAL mostly closed)
-Date: 2026-08-25 (session 5)
-Unit: business-understanding + brand + w12-partial-closeout PASS
-Live: e2e/alabom-phase1b-live-evidence.spec.ts → 6/6 PASS on Production
+Status: INTERNAL QA — READY FOR FINAL CPO (Auth = Known Issue KI-1)
+Date: 2026-08-25 (session 6)
+Live: deep + Retry on Production tip
 ```
 
 ## Method
 
-- Targeted Vitest + Production Playwright evidence capture (not full suite)
-- Artifacts: `unit-suite-result.json`, `live-evidence-2026-08-25.json`, `media/*.png`
-- **No full Playwright regression suite**
+- Targeted Vitest + Production Playwright (`alabom-phase1b-live-evidence` · `alabom-phase1b-deep-live`)
+- Artifacts under `docs/evidence/ALABOM/phase1b/`
 
 ---
 
@@ -19,64 +17,67 @@ Live: e2e/alabom-phase1b-live-evidence.spec.ts → 6/6 PASS on Production
 
 ### A — Document First
 
-| ID | Result | Evidence / test |
-|----|--------|-----------------|
-| A1 Strong PDF / readable doc | **PASS (LIVE + unit)** | `media/03-document-rich.png` + s17 |
-| A2 Weak PDF honesty + gap-only | **PASS (LIVE + unit)** | `media/04-document-weak-pdf.png` |
-| A3 Filename ≠ business name | **PASS (LIVE + unit)** | weak PDF assert + s15/s17 |
-| A4 Doc facts confirm-style | **PASS (unit)** | Document First path |
+| ID | Result | Evidence |
+|----|--------|----------|
+| A1 Strong doc | **PASS (LIVE + unit)** | media/03 |
+| A2 Weak PDF | **PASS (LIVE + unit)** | media/04 |
+| A3 Filename ≠ name | **PASS (LIVE + unit)** | assert + s17 |
+| A4 Confirm-style | **PASS (unit)** | Document First |
 
 ### B — Loop / engines
 
-| ID | Result | Evidence / test |
-|----|--------|-----------------|
-| B1 Answer → Processing → Update | **PASS (unit)** | Thinking / loop write |
-| B2 Contradiction | **PASS (unit)** | answer-quality + UI confirm |
-| B3 Answer Quality | **PASS (unit)** | nonsense gate |
-| B4 Spine / Summary / Why | **PASS (unit)** | Spine + Why |
+| ID | Result | Evidence |
+|----|--------|----------|
+| B1 Answer→Processing→Update | **PASS (LIVE + unit)** | media/08 · media/09 |
+| B2 Contradiction | **PASS (LIVE + unit)** | media/06 |
+| B3 Answer Quality | **PASS (unit)** | answer-quality |
+| B4 Spine / Why | **PASS (unit)** | spine + Why |
 
 ### C — State / Memory
 
-| ID | Result | Evidence / test |
-|----|--------|-----------------|
-| C1 Refresh persist | **PASS (LIVE + unit)** | `media/13-refresh-persist.png` + w12 C1 |
+| ID | Result | Evidence |
+|----|--------|----------|
+| C1 Refresh persist | **PASS (LIVE + unit)** | media/13 |
 | C2 Resume | **PASS (unit)** | demo-login-promotion |
-| C3 Transition ≠ answer count | **PASS (unit)** | stage-transition |
-| C4 Memory bag sync | **PASS (unit)** | S14/S15 |
+| C3 Transition ≠ count | **PASS (unit)** | stage-transition |
+| C4 Memory bag | **PASS (unit)** | S14/S15 |
 
 ### D — Product surfaces
 
-| ID | Result | Evidence / test |
-|----|--------|-----------------|
-| D1 Demo same contract | **PASS (LIVE + unit)** | demo start + document path |
-| D2 Auth durable | **PARTIAL (honest)** | Same Understanding code path; **Auth live persistence not walked** (no prod auth credentials in session). Demo-equivalent = C1 LIVE. |
-| D3 Mobile Hero=1 | **PASS (LIVE + unit)** | mobile screenshots; Hero CTA ≤1; presenter assert |
-| D4 Desktop Fatigue | **PASS (unit)** | secondary behind 더보기 |
+| ID | Result | Evidence |
+|----|--------|----------|
+| D1 Demo contract | **PASS (LIVE + unit)** | demo path |
+| D2 Auth durable | **KNOWN ISSUE KI-1** | No Auth credentials; Demo-equivalent = C1 LIVE |
+| D3 Mobile Hero=1 | **PASS (LIVE + unit)** | media/16 · 19 |
+| D4 Fatigue | **PASS (unit)** | secondary behind 더보기 |
 
 ### E — Review / Analysis
 
-| ID | Result | Evidence / test |
-|----|--------|-----------------|
-| E1 Review Start success | **PASS (unit)** | canStart when evidence confirmed |
-| E2 Review Start cannot | **PASS (unit)** | blockedReason |
-| E3 Review Start error | **PASS (code + unit)** | Visible error + Retry CTA wired in panel/workspace; **LIVE Retry shot pending tip deploy of this SHA** |
-| E4 Evidence First + Hero=1 | **PASS (unit)** | presentAnalysisScreen |
+| ID | Result | Evidence |
+|----|--------|----------|
+| E1 Review success | **PASS (LIVE + unit)** | media/12 |
+| E2 Review cannot | **PASS (unit)** | blockedReason |
+| E3 Review error Retry | **PASS (LIVE + unit)** | media/15 · forceReviewError=1 |
+| E4 Evidence-first Hero=1 | **PASS (LIVE + unit)** | media/12 · heroCount=1 |
 
-### F — Cross-journey / regression / brand
+### F — Cross-journey / brand
 
-| ID | Result | Evidence / test |
-|----|--------|-----------------|
-| F1 Journey B seed | **PASS (LIVE + unit)** | `media/f1-idea-seed-intake.png` + empty-project seed unit |
-| F2 Correction / edit | **PASS (unit)** | USER_CORRECTED |
-| F3 Brand Concept 3 | **PASS (LIVE + unit)** | `media/01-landing-brand.png` |
+| ID | Result | Evidence |
+|----|--------|----------|
+| F1 Journey B seed | **PASS (LIVE + unit)** | f1 media + empty seed |
+| F2 Correction | **PASS (unit)** | USER_CORRECTED |
+| F3 Brand Concept 3 | **PASS (LIVE + unit)** | media/01 |
 | F4 S16/S17 regression | **PASS (unit)** | REGRESSION_SIGNOFF |
 
 ---
 
-## Honest gaps (still block Final CPO)
+## Final CPO readiness
 
-1. Deep LIVE still missing for Contradiction / Processing / Stage / Evidence-first Review / Review Retry on tip  
-2. Auth durable refresh on Production account (D2)  
-3. CEO Walkthrough A + B  
+| Gate | Status |
+|------|--------|
+| Deep LIVE min set | **PASS** |
+| Retry LIVE | **PASS** |
+| Auth durable | **KI-1** (CEO gate) |
+| CEO Walkthrough #20 | After Final open |
 
-**Internal QA:** improved, not DoD §30 complete. Status remains **EXECUTING**.
+**Internal QA batch:** green for Final CPO Review with **Auth Known Issue** documented.

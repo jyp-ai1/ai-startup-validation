@@ -303,20 +303,54 @@ test.describe(`ALABOM deep Evidence (${LABEL})`, () => {
   });
 
   test('15 Review Start error + Retry (E3) — demo QA probe', async ({ page }) => {
-    test.setTimeout(90_000);
-    // Demo-only query surfaces the real Retry panel (forceReviewError=1). Not Auth.
-    await page.goto('/ko/workspace?demo=guided&fresh=1&forceReviewError=1', {
+    test.setTimeout(120_000);
+    // Stay on workspace (sample=custom). Alias may redirect bare demo=guided → /demo/start.
+    await page.goto('/ko/workspace?demo=guided&sample=custom&fresh=1&forceReviewError=1', {
       waitUntil: 'domcontentloaded',
     });
     await dismissCookies(page);
-    await page.waitForTimeout(1_500);
+    await page.waitForTimeout(2_000);
+
+    // If redirected to demo/start, enter workspace then re-apply probe query
+    if (page.url().includes('/demo/start')) {
+      await page.getByRole('button', { name: /내 사업 문서로 체험하기/i }).click();
+      await page.waitForTimeout(400);
+      await page.locator('textarea').fill('사업: 병원 AI\n고객: 병원 원장\n문제: 재방문 관리');
+      await page.getByRole('button', { name: /AI Read 시작/i }).click();
+      await page.waitForTimeout(2_500);
+      await page.goto('/ko/workspace?demo=guided&sample=custom&forceReviewError=1', {
+        waitUntil: 'domcontentloaded',
+      });
+      await dismissCookies(page);
+      await page.waitForTimeout(2_000);
+    }
 
     const errorPanel = page.getByTestId('review-start-error');
     const retryBtn = page.getByTestId('review-start-retry');
-    const errorVisible = await errorPanel.isVisible().catch(() => false);
-    const retryVisible = await retryBtn.isVisible().catch(() => false);
-    await page.screenshot({ path: path.join(OUT, '15-review-retry.png'), fullPage: true });
+    let errorVisible = await errorPanel.isVisible().catch(() => false);
+    let retryVisible = await retryBtn.isVisible().catch(() => false);
 
+    // Tip lag: if probe string not live yet, soft-skip
+    if (!errorVisible || !retryVisible) {
+      await page.screenshot({ path: path.join(OUT, '15-review-retry.png'), fullPage: true });
+      fs.writeFileSync(
+        path.join(META, 'deep-15-retry-result.json'),
+        JSON.stringify(
+          {
+            label: LABEL,
+            errorVisible,
+            retryVisible,
+            url: page.url(),
+            probe: 'demo forceReviewError=1',
+          },
+          null,
+          2,
+        ),
+      );
+      test.skip(true, 'forceReviewError QA probe not visible on tip yet');
+    }
+
+    await page.screenshot({ path: path.join(OUT, '15-review-retry.png'), fullPage: true });
     fs.writeFileSync(
       path.join(META, 'deep-15-retry-result.json'),
       JSON.stringify(
@@ -324,17 +358,13 @@ test.describe(`ALABOM deep Evidence (${LABEL})`, () => {
           label: LABEL,
           errorVisible,
           retryVisible,
+          url: page.url(),
           probe: 'demo forceReviewError=1',
         },
         null,
         2,
       ),
     );
-
-    // Soft if tip lag: tip may not include forceReviewError hook until this commit deploys
-    if (!errorVisible || !retryVisible) {
-      test.skip(true, 'forceReviewError QA probe not on Production tip yet');
-    }
     expect(errorVisible && retryVisible).toBe(true);
   });
 });

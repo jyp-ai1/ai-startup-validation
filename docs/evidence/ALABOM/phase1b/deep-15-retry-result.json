@@ -1,6 +1,7 @@
 {
   "label": "LIVE",
-  "errorVisible": false,
-  "retryVisible": false,
+  "errorVisible": true,
+  "retryVisible": true,
+  "url": "https://ai-startup-validation-tau.vercel.app/workspace?demo=guided&sample=custom&fresh=1&forceReviewError=1",
   "probe": "demo forceReviewError=1"
 }
