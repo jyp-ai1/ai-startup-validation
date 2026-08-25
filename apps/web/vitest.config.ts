@@ -9,6 +9,7 @@ export default defineConfig({
       'features/**/first-trust/__tests__/**/*.test.ts',
       'features/**/business-understanding/**/__tests__/**/*.test.ts',
       'lib/analysis-engine/**/__tests__/**/*.test.ts',
+      'lib/brand/**/__tests__/**/*.test.ts',
     ],
     testTimeout: 120_000,
   },
