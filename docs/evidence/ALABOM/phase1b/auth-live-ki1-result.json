@@ -1,0 +1,26 @@
+{
+  "date": "2026-08-26",
+  "label": "LIVE Auth attempt",
+  "pass": false,
+  "ki1": "OPEN",
+  "production": "https://ai-startup-validation-tau.vercel.app",
+  "attempts": [
+    {
+      "method": "playwright storageState (.qa-auth/storageState.json)",
+      "result": "redirected to /auth/login — session expired/invalid"
+    },
+    {
+      "method": "persistent .qa-chrome-profile",
+      "result": "landed on /demo/start — not Auth workspace"
+    },
+    {
+      "method": "env E2E/TEST_USER credentials",
+      "result": "absent"
+    }
+  ],
+  "evidence": {
+    "blockedScreenshot": "media/14-auth-login-blocked.png",
+    "note": "No Auth secrets printed; Demo not used as Auth substitute"
+  },
+  "cpoEscalation": "Need fresh Google QA session or regenerated storageState for Production Auth walkthrough"
+}

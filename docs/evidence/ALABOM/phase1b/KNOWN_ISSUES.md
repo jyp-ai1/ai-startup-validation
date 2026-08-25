@@ -1,24 +1,44 @@
 # ALABOM Phase 1-B — Known Issues (Final CPO package)
 
 ```text
-Date: 2026-08-25
-Head: ff239a7+ (see git main tip)
+Date: 2026-08-26
+Head: see git main tip
+CPO Final Review: HOLD — KI-1 only
 ```
 
-## KI-1 — D2 Auth durable persistence (CEO / CPO gate)
+## KI-1 — D2 Auth durable persistence (CEO / CPO gate) — STILL OPEN
 
 | Field | Value |
 |-------|--------|
-| **Severity** | Known Issue — Demo-equivalent proven; Auth account walk blocked by env |
-| **Matrix** | D2 Auth durable |
-| **Evidence #** | 14 |
-| **Status** | **OPEN** — no Production Auth credentials / E2E Auth secrets in agent environment (`.env.local` has no E2E/TEST_USER/AUTH keys) |
-| **Honest gap** | Auth account refresh/resume on Production was **not** walked. No Auth screenshots invented. |
-| **Demo-equivalent proof** | C1 LIVE — Demo `sessionStorage` loop survives reload (`media/13-refresh-persist.png`). Same Understanding / Memory contracts as Auth path. |
-| **CEO / CPO gate** | Accept KI-1 for Final CPO Review **or** supply Auth test account for a follow-up LIVE walk before CEO Walkthrough A+B. |
-| **§29** | Not escalated — not a contract break. |
+| **Severity** | **Blocks CPO Final PASS** (HOLD sole reason) |
+| **Matrix** | D2 Auth durable · Evidence #14 |
+| **Status** | **OPEN — Auth LIVE not completed** |
+| **Attempted 2026-08-26** | Production Auth walkthrough via existing QA session artifacts |
+| **Result** | **FAIL to start Auth session** — cannot prove Auth Persistence / Isolation / Memory / Understanding LIVE |
+
+### Exact credential blocker (§29-style escalation to CPO)
+
+| Check | Result |
+|-------|--------|
+| `.env` / process `E2E_*` · `TEST_USER*` · Auth password keys | **Absent** |
+| `apps/web/.qa-auth/storageState.json` (gitignored) | **Present but expired/invalid** — Production `/ko/workspace` → `/auth/login` |
+| `apps/web/.qa-chrome-profile` (gitignored) | **Present but not Auth** — Production → `/demo/start` (guest/demo) |
+| Playwright e2e Auth fixtures / email-password login | **None** (Google OAuth only) |
+| Demo substitute | **Forbidden** for KI-1 close — CPO HOLD requires Auth LIVE |
+
+**Blocker for CPO:** Supply one of:
+
+1. Fresh Production Google QA account (interactive login once), **or**
+2. Regenerated `apps/web/.qa-auth/storageState.json` valid on `https://ai-startup-validation-tau.vercel.app`, **or**
+3. Temporary Auth test path (magic link / service account) documented for agent use
+
+Until then KI-1 **cannot** close honestly. Ready Auth walkthrough script: `apps/web/e2e/alabom-phase1b-auth-live.spec.ts`.
+
+### Demo-equivalent (already proven — not sufficient for HOLD close)
+
+C1 LIVE Demo refresh: `media/13-refresh-persist.png` — does **not** replace Auth LIVE.
 
 ## Closed (not Known Issues)
 
-- C1 Refresh · D3 Mobile Hero · E3 Review Retry · F1 Idea seed — PASS LIVE/unit  
-- Deep LIVE: Contradiction · Processing · Update · Stage · Evidence-first Hero=1 · Retry  
+- Product experience · LIVE Evidence 01–13/15–19 · Regression · Demo Persistence — CPO ✅  
+- Auth LIVE (#14) — **OPEN** (this issue)

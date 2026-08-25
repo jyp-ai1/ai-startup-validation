@@ -1,11 +1,11 @@
 # ALABOM Phase 1-B — CTO Report (Final CPO package)
 
 ```text
-Status: READY FOR FINAL CPO REVIEW
-Date: 2026-08-25
+Status: CPO HOLD — KI-1 Auth LIVE blocked (credential gap)
+Date: 2026-08-26
 Sprint: ALABOM — AI Business Validation Experience v1
 Production: https://ai-startup-validation-tau.vercel.app
-Known Issue: KI-1 Auth durable (CEO gate) — see KNOWN_ISSUES.md
+Known Issue: KI-1 Auth durable — OPEN — see KNOWN_ISSUES.md
 ```
 
 ## What shipped (code)
@@ -48,15 +48,23 @@ See [`../evidence/ALABOM/phase1b/EVIDENCE_INDEX.md`](../evidence/ALABOM/phase1b/
 | QA Matrix A–F | **Yes** with KI-1 Auth documented |
 | Evidence min LIVE set | **Yes** (10/10) |
 | Regression unit signed | **Yes** |
-| Auth durable LIVE | **No** — KI-1 CEO gate |
-| CEO Walkthrough A+B | **No** — after Final CPO |
+| Auth durable LIVE | **No** — KI-1 OPEN (2026-08-26 attempt blocked) |
+| CEO Walkthrough A+B | **No** — after Final PASS |
 
-**Conclusion:** Open **Final CPO Review** now. Accept KI-1 or request Auth credentials before CEO Walkthrough.
+**Conclusion:** CPO HOLD stands. **Cannot** re-request Final PASS until Auth LIVE closes KI-1. Demo Persistence remains ✅ but is not a substitute.
 
-## Escalation (§29)
+## Escalation (§29-style — Auth credential gap)
 
-None.
+**Blocker:** No usable Production Auth session for agent.
+
+| Needed from CPO / CTO | Why |
+|----------------------|-----|
+| Fresh Google QA login once → regenerate `apps/web/.qa-auth/storageState.json` | Existing file redirects to `/auth/login` |
+| **or** Auth test account / magic-link path | No E2E email/password; OAuth-only product |
+| Then: re-run `e2e/alabom-phase1b-auth-live.spec.ts` only | Closes KI-1 with LIVE Auth Evidence |
+
+Do **not** accept Demo as Auth for HOLD close-out.
 
 ---
 
-*Record — Next: CPO Final Review · then CEO Walkthrough A+B. Status: 🟡 READY FOR FINAL CPO REVIEW.*
+*Record — Status: 🟡 CPO HOLD · KI-1 Auth LIVE blocked. Next: credential → Auth walkthrough → Final PASS re-request.*
