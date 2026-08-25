@@ -75,7 +75,7 @@ export async function bootstrapFirstProject(userId: string, promoteDemo = false)
   }
 
   let title = '내 첫 프로젝트';
-  let summary = 'LaunchLens에서 시작한 첫 프로젝트';
+  let summary = 'ALABOM에서 시작한 첫 프로젝트';
   let onboardingContext: Record<string, unknown> = {
     sprint12: buildInitialInterviewState('startup-idea', summary),
   };
@@ -88,7 +88,7 @@ export async function bootstrapFirstProject(userId: string, promoteDemo = false)
       summary = draft.tagline.trim();
       onboardingContext = buildOnboardingFromDemoDraft(draft);
     } else {
-      title = 'LaunchLens';
+      title = 'ALABOM';
       summary = '창업자의 전략적 사고를 축적하는 Workspace';
     }
   }

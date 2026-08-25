@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { Sparkles } from 'lucide-react';
 
-import { UserMenu } from '@/features/auth';
+import { AlabomLogo } from '@/lib/brand/alabom-logo';
 import { getServerAuthUser } from '@/lib/auth/server-auth';
 
 import { LandingHeaderControls } from './landing-header-controls';
@@ -23,14 +22,10 @@ export async function LandingHeader() {
       <div className={`${LANDING_CONTAINER} flex h-16 items-center justify-between gap-3 sm:gap-4 lg:h-[72px]`}>
         <Link
           href="/"
-          className="flex min-w-0 shrink items-center gap-2.5 transition-opacity hover:opacity-80"
+          className="flex min-w-0 shrink items-center transition-opacity hover:opacity-80"
+          aria-label={t('nav.brand')}
         >
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Sparkles className="size-4" aria-hidden />
-          </div>
-          <span className="truncate text-[15px] font-semibold tracking-tight text-foreground">
-            {t('nav.brand')}
-          </span>
+          <AlabomLogo withWordmark withKorean />
         </Link>
 
         <nav className="hidden items-center gap-6 lg:flex" aria-label={t('nav.menuLabel')}>

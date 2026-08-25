@@ -14,8 +14,8 @@ export type DemoSampleDefinition = {
 export const DEMO_SAMPLES: DemoSampleDefinition[] = [
   {
     id: 'launchlens',
-    label: 'LaunchLens Sample',
-    projectName: 'LaunchLens Sample',
+    label: 'ALABOM Sample',
+    projectName: 'ALABOM Sample',
     document: TASTE_COMPANY_FULL_SAMPLE,
   },
   {

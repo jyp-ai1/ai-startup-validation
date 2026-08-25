@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="ALABOM">
+  <defs>
+    <linearGradient id="al-loop" x1="6" y1="20" x2="58" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="45%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#E11D48"/>
+    </linearGradient>
+  </defs>
+  <!--
+    Continuous lowercase "al" progressive loop:
+    left bowl = a, rising stem + exit = l, one stroke.
+  -->
+  <path
+    d="M26 46
+       C16 46 10 39 10 30
+       C10 20 17 14 26 14
+       C33 14 38 18 40 24
+       C41 20 44 16 50 16
+       C56 16 58 20 58 26
+       L58 46"
+    stroke="url(#al-loop)"
+    stroke-width="6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  <path
+    d="M26 46
+       C32 46 38 40 40 32"
+    stroke="url(#al-loop)"
+    stroke-width="6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+</svg>

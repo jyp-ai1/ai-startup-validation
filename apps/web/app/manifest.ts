@@ -13,8 +13,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: `${BRAND_CONFIG.tagline} ${BRAND_CONFIG.secondaryTagline}`,
     start_url: baseUrl,
     display: 'standalone',
-    background_color: '#0f1419',
-    theme_color: '#0f1419',
+    background_color: '#F3F4F6',
+    theme_color: '#F97316',
     lang: 'ko',
     icons: [
       {

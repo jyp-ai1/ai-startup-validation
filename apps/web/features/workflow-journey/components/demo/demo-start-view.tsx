@@ -2,10 +2,13 @@
 
 import { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ClipboardPaste, FileText, Loader2, Sparkles, Upload } from 'lucide-react';
+import { ArrowRight, ClipboardPaste, FileText, Loader2, Upload } from 'lucide-react';
 
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
+
+import { AlabomLogo } from '@/lib/brand/alabom-logo';
+import { BRAND_CONFIG } from '@/lib/brand/brand-config';
 
 import {
   detectWorkspaceDocumentPlaceholder,
@@ -52,7 +55,7 @@ function buildDraftFromDocument(content: string): DemoProjectDraft {
     (entities.business.value?.trim() && !looksLikeDocumentFileName(entities.business.value)
       ? entities.business.value.trim()
       : null) ||
-    'LaunchLens Demo에서 시작한 프로젝트';
+    'ALABOM Demo에서 시작한 프로젝트';
 
   return {
     serviceName,
@@ -120,11 +123,8 @@ export function DemoStartView({ className }: DemoStartViewProps) {
   return (
     <div className={cn('mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-14', className)}>
       <div className="mb-8 text-center">
-        <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Sparkles className="size-4" aria-hidden />
-          </span>
-          LaunchLens
+        <Link href="/" className="inline-flex" aria-label={BRAND_CONFIG.displayName}>
+          <AlabomLogo withWordmark markClassName="size-8" className="gap-2 text-sm" />
         </Link>
         <h1 className="mt-6 text-2xl font-bold tracking-tight sm:text-3xl">Demo 시작</h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -140,7 +140,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
             onClick={() => setMode('sample')}
           >
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">①</p>
-            <p className="mt-3 text-lg font-semibold">LaunchLens Sample 체험하기</p>
+            <p className="mt-3 text-lg font-semibold">ALABOM Sample 체험하기</p>
             <p className="mt-2 text-sm text-muted-foreground">
               SaaS · F&B · 커머스 · 제조 예시 문서로 Read → Review까지 체험
             </p>

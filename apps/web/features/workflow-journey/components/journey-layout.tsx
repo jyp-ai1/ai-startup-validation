@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Sparkles } from 'lucide-react';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import { AlabomLogo } from '@/lib/brand/alabom-logo';
+import { BRAND_CONFIG } from '@/lib/brand/brand-config';
 import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { cn } from '@repo/ui/lib/utils';
 
@@ -57,11 +58,12 @@ export function JourneyLayout({
             HEADER_WIDTH_CLASS[width],
           )}
         >
-          <Link href="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Sparkles className="size-4" aria-hidden />
-            </span>
-            LaunchLens
+          <Link
+            href="/"
+            className="flex items-center"
+            aria-label={BRAND_CONFIG.displayName}
+          >
+            <AlabomLogo withWordmark markClassName="size-8" className="gap-2 text-sm" />
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
             {versionLabel ? (

@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { Sparkles } from 'lucide-react';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import { AlabomLogo } from '@/lib/brand/alabom-logo';
+import { BRAND_CONFIG } from '@/lib/brand/brand-config';
 import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { cn } from '@repo/ui/lib/utils';
 
@@ -58,7 +59,7 @@ export function ProjectWorkspaceShell({
 }: ProjectWorkspaceShellProps) {
   useEffect(() => {
     if (!guestDemoMode) return;
-    document.title = `Demo Workspace | LaunchLens`;
+    document.title = `Demo Workspace | ${BRAND_CONFIG.displayName}`;
   }, [guestDemoMode]);
 
   return (
@@ -68,12 +69,14 @@ export function ProjectWorkspaceShell({
           <div className="flex min-w-0 items-center gap-4">
             <Link
               href="/"
-              className="flex shrink-0 items-center gap-2 text-sm font-semibold tracking-tight"
+              className="flex shrink-0 items-center"
+              aria-label={BRAND_CONFIG.displayName}
             >
-              <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Sparkles className="size-4" aria-hidden />
-              </span>
-              LaunchLens
+              <AlabomLogo
+                withWordmark
+                markClassName="size-8"
+                className="gap-2 text-sm"
+              />
             </Link>
             {demoBadge ? (
               <span className="shrink-0 rounded-md bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">

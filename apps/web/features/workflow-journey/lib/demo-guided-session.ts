@@ -118,7 +118,7 @@ function buildDraftFromDocument(content: string): DemoProjectDraft {
     tagline:
       entities.business.value?.trim() ||
       entities.product.value?.trim() ||
-      'LaunchLens Demo에서 시작한 프로젝트',
+      'ALABOM Demo에서 시작한 프로젝트',
     customer: entities.customer.value?.trim() ?? '',
     problem: '',
     pastedContent: content,
