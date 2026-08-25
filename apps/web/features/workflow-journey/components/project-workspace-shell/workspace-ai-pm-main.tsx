@@ -63,6 +63,11 @@ import { loadAnalysisResult } from '../../lib/business-understanding/analysis-re
 import { presentAnalysisScreen } from '../../lib/business-understanding/present-analysis-screen';
 import { buildEmptyProjectConversationSeed } from '../../lib/business-understanding/build-empty-project-seed';
 import { buildSharedUnderstanding } from '../../lib/business-understanding/build-shared-understanding';
+import { applyUserCorrection } from '../../lib/business-understanding/correction-and-why';
+import {
+  loadConversationMemory,
+  saveConversationMemory,
+} from '../../lib/business-understanding/conversation-memory-store';
 
 import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
 
@@ -318,8 +323,28 @@ export function WorkspaceAiPmMain({
   }, [onLoopDocumentUpdated, projectId]);
 
   const handleEditConfirmYes = useCallback(() => {
+    // W8 — correction path: domain edits lock as USER_CORRECTED facts
+    const memory = loadConversationMemory(projectId);
+    let nextMemory = memory;
+    const pairs = [
+      { key: 'business' as const, value: domain.business },
+      { key: 'customer' as const, value: domain.customer },
+      { key: 'market' as const, value: domain.market },
+      { key: 'competitor' as const, value: domain.competitor },
+    ];
+    for (const pair of pairs) {
+      if (!pair.value.trim()) continue;
+      const applied = applyUserCorrection({
+        projectId: projectId ?? 'default',
+        fieldKey: pair.key,
+        nextValue: pair.value,
+        previous: nextMemory,
+      });
+      nextMemory = applied.memory;
+    }
+    saveConversationMemory(nextMemory, projectId);
     proceedAfterUnderstandingConfirm();
-  }, [proceedAfterUnderstandingConfirm]);
+  }, [domain.business, domain.competitor, domain.customer, domain.market, proceedAfterUnderstandingConfirm, projectId]);
 
   const handleEditRevise = useCallback(() => {
     const mode = loadUnderstandingConfirmMode(projectId) ?? 'edit';
@@ -382,6 +407,8 @@ export function WorkspaceAiPmMain({
             analysisPresenter ?? {
               judgment: '판단 정리 중',
               evidence: [],
+              reasons: [],
+              criticalGap: null,
               hero: null,
               secondary: [],
               supportingScoreHint: null,
@@ -526,7 +553,16 @@ export function WorkspaceAiPmMain({
       {isPostReview ? (
         <div className="space-y-6">
           {analysisPresenter ? (
-            <WorkspaceAnalysisResultPanel presenter={analysisPresenter} analyzing={false} />
+            <WorkspaceAnalysisResultPanel
+              presenter={analysisPresenter}
+              analyzing={false}
+              onReturnToLoop={() => {
+                document.getElementById('ai-pm-loop')?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start',
+                });
+              }}
+            />
           ) : null}
           {showPostReviewWorkshop && understanding && !analysisPresenter ? (
             <div id="post-review-workshop">

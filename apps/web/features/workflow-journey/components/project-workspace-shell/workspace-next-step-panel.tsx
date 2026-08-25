@@ -68,6 +68,14 @@ export function WorkspaceNextStepPanel({
         </p>
         <p className="mt-3 text-[15px] font-medium leading-relaxed">{t('finalReviewLead')}</p>
         <p className="mt-1 text-sm text-muted-foreground">{t('finalReviewSub')}</p>
+        {canStartReview ? (
+          <p
+            data-testid="validation-handoff"
+            className="mt-3 text-sm leading-relaxed text-foreground"
+          >
+            {t('validationHandoff')}
+          </p>
+        ) : null}
 
         {finalUnderstanding ? (
           <dl className="mt-4 grid gap-3 rounded-xl border border-border/60 bg-background/80 px-4 py-4 sm:grid-cols-3">

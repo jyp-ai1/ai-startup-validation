@@ -54,8 +54,21 @@ export function clearAiPmLoopState(projectId?: string): void {
   sessionStorage.removeItem(loopKey(projectId));
 }
 
+/**
+ * Loop "complete" for UI handoff.
+ * Long Sprint W9: answer-count alone does NOT complete — phase must be `complete`
+ * when Stage Transition / no-next-issue path decides.
+ */
 export function isAiPmLoopComplete(state: AiPmLoopState): boolean {
-  return state.phase === 'complete' || state.turns.length >= AI_PM_LOOP_MIN_TURNS;
+  if (state.phase === 'complete') return true;
+  // Soft ceiling for legacy: enough turns and idle (no active issue/answer)
+  return (
+    state.turns.length >= AI_PM_LOOP_MIN_TURNS &&
+    state.currentIssueId === null &&
+    state.phase !== 'issue' &&
+    state.phase !== 'answer' &&
+    state.phase !== 'reanalyze'
+  );
 }
 
 export function getResolvedIssueIds(state: AiPmLoopState): AiPmLoopIssueId[] {
@@ -77,12 +90,12 @@ export function appendAiPmLoopTurn(
 ): AiPmLoopState {
   const current = loadAiPmLoopState(projectId);
   const turns = [...current.turns, turn];
-  const complete = turns.length >= AI_PM_LOOP_MIN_TURNS;
+  // W9 — do not auto-complete on turn count; Stage Transition / next-issue decides.
   const next: AiPmLoopState = {
     ...current,
     turns,
-    phase: complete ? 'complete' : 'reanalyze',
-    currentIssueId: complete ? null : current.currentIssueId,
+    phase: 'reanalyze',
+    currentIssueId: current.currentIssueId,
   };
   saveAiPmLoopState(next, projectId);
   return next;

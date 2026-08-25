@@ -6794,6 +6794,7 @@
           "startReviewCta": "검토 시작",
           "finalReviewLead": "분석 전에, AI가 이해한 내용을 최종 확인합니다.",
           "finalReviewSub": "사업 · 고객 · 문제가 맞으면 분석을 시작합니다.",
+          "validationHandoff": "이해가 충분합니다. 이제 사업성 검증으로 넘어가 판단·근거·다음 행동 하나를 정리합니다. (답변 개수가 기준이 아닙니다.)",
           "finalConfirmCta": "✓ 맞습니다 — 분석 시작",
           "reviewBlocked": {
             "customer_missing": "대표가 누구인지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",

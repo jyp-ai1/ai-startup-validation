@@ -32,6 +32,11 @@ export type WorkspaceLoopAnswerResult = {
   existingFact: string | null;
 };
 
+export type ApplyWorkspaceLoopAnswerOptions = {
+  /** Force merge after contradiction confirm (accept new). */
+  forceAccept?: boolean;
+};
+
 /**
  * S7-2 — single write path after a loop answer.
  * S9 ADR-053 — Conversation Memory (Facts) updated after every confirmed turn.
@@ -41,6 +46,7 @@ export function applyWorkspaceLoopAnswer(
   issueId: AiPmLoopIssueId,
   answer: string,
   projectId?: string,
+  options?: ApplyWorkspaceLoopAnswerOptions,
 ): WorkspaceLoopAnswerResult {
   const documentTextBefore = loadWorkspaceDocumentText(projectId)?.trim() ?? '';
   const previousMemory = loadConversationMemory(projectId);
@@ -48,7 +54,7 @@ export function applyWorkspaceLoopAnswer(
   const existingFact = factKey ? getFact(previousMemory, factKey)?.value ?? null : null;
   const { quality, mergeable } = evaluateAnswerQuality(answer, { existingFact });
 
-  if (!mergeable) {
+  if (!mergeable && !options?.forceAccept) {
     const inferred = inferDomainFromPaste(documentTextBefore, projectId);
     return {
       domain: inferred.domain,
@@ -80,7 +86,7 @@ export function applyWorkspaceLoopAnswer(
     domain: inferred.domain,
     entities: inferred.entities,
     documentText,
-    quality,
+    quality: options?.forceAccept ? 'VALID' : quality,
     applied: true,
     existingFact,
   };

@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { cn } from '@repo/ui/lib/utils';
 
 import type { SurfacePresenter } from '../../lib/business-understanding/surface-presenter-contract';
@@ -11,15 +13,27 @@ type WorkspaceS11SurfaceProps = {
 
 /**
  * S11 UI — Contract blocks only.
- * Assumed is shown as soft understanding — never as raw "unknown / 확인 안 됨" alone.
+ * W7 — Summary default; Detail expands purpose/reason (not a second Hero).
  */
 export function WorkspaceS11Surface({ surface, className }: WorkspaceS11SurfaceProps) {
+  const [detailOpen, setDetailOpen] = useState(false);
   const showQuestion = Boolean(surface.question.text.trim());
 
   return (
     <div data-testid="s11-surface" className={cn('space-y-6', className)}>
       <section data-testid="surface-understanding" aria-label="understanding">
-        <p className="text-sm font-semibold text-foreground">지금까지 이해한 내용</p>
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <p className="text-sm font-semibold text-foreground">지금까지 이해한 내용</p>
+          <button
+            type="button"
+            data-testid="s11-detail-toggle"
+            className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+            aria-expanded={detailOpen}
+            onClick={() => setDetailOpen((v) => !v)}
+          >
+            {detailOpen ? '요약' : '자세히'}
+          </button>
+        </div>
         {surface.understanding.confirmed.length > 0 ? (
           <ul className="mt-3 space-y-2">
             {surface.understanding.confirmed.map((line) => (
@@ -46,7 +60,7 @@ export function WorkspaceS11Surface({ surface, className }: WorkspaceS11SurfaceP
                   <span className="text-foreground">{item.value}</span>
                   <span className="ml-2 text-xs">(확인이 필요)</span>
                 </p>
-                <p className="text-sm">{item.reason}</p>
+                {detailOpen ? <p className="text-sm">{item.reason}</p> : null}
               </li>
             ))}
           </ul>
@@ -64,7 +78,8 @@ export function WorkspaceS11Surface({ surface, className }: WorkspaceS11SurfaceP
             {surface.decision.summary}
           </p>
         ) : null}
-        {surface.decision.blockingReason &&
+        {detailOpen &&
+        surface.decision.blockingReason &&
         surface.decision.blockingReason !== surface.decision.summary ? (
           <p className="text-[15px] leading-relaxed text-muted-foreground">
             {surface.decision.blockingReason}
@@ -76,7 +91,7 @@ export function WorkspaceS11Surface({ surface, className }: WorkspaceS11SurfaceP
         <section data-testid="surface-question" aria-label="question" className="space-y-2">
           <p className="text-sm font-semibold text-foreground">이번 질문</p>
           <p className="text-[15px] font-medium leading-relaxed">{surface.question.text}</p>
-          {surface.question.purpose ? (
+          {detailOpen && surface.question.purpose ? (
             <p
               data-testid="surface-question-purpose"
               className="text-[15px] leading-relaxed text-muted-foreground"
@@ -92,7 +107,7 @@ export function WorkspaceS11Surface({ surface, className }: WorkspaceS11SurfaceP
         {surface.action.current ? (
           <p className="text-[15px] leading-relaxed">{surface.action.current}</p>
         ) : null}
-        {surface.action.reason ? (
+        {detailOpen && surface.action.reason ? (
           <p
             data-testid="surface-action-reason"
             className="text-[15px] leading-relaxed text-muted-foreground"
@@ -100,7 +115,7 @@ export function WorkspaceS11Surface({ surface, className }: WorkspaceS11SurfaceP
             {surface.action.reason}
           </p>
         ) : null}
-        {surface.action.next ? (
+        {detailOpen && surface.action.next ? (
           <p className="text-[15px] leading-relaxed text-muted-foreground">{surface.action.next}</p>
         ) : null}
       </section>

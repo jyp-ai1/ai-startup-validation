@@ -43,6 +43,7 @@ import {
   evaluateAnswerQuality,
   type AnswerQuality,
 } from '../../lib/business-understanding/understanding-contract';
+import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
 import { WorkspaceDocumentTrustBlock } from './workspace-document-trust-block';
 import { WorkspaceAiPmReturnWelcomeBlock } from './workspace-ai-pm-return-welcome-block';
@@ -85,6 +86,12 @@ export function WorkspaceAiPmLoopPanel({
   const [answerDraft, setAnswerDraft] = useState('');
   const [reanalyzing, setReanalyzing] = useState(false);
   const [answerQualityHint, setAnswerQualityHint] = useState<AnswerQuality | null>(null);
+  const [contradiction, setContradiction] = useState<{
+    issueId: AiPmLoopIssueId;
+    prior: string;
+    next: string;
+  } | null>(null);
+
   const [updateSavedFlash, setUpdateSavedFlash] = useState(false);
   const [sessionPaused, setSessionPaused] = useState(false);
   const [returnWelcomeDismissed, setReturnWelcomeDismissed] = useState(false);
@@ -381,12 +388,19 @@ export function WorkspaceAiPmLoopPanel({
     const memory = loadConversationMemory(projectId);
     const existingFact = factKey ? getFact(memory, factKey)?.value ?? null : null;
     const preview = evaluateAnswerQuality(trimmed, { existingFact });
+    if (preview.quality === 'CONTRADICTORY' && existingFact) {
+      setAnswerQualityHint('CONTRADICTORY');
+      setContradiction({ issueId, prior: existingFact, next: trimmed });
+      return;
+    }
     if (!preview.mergeable) {
       setAnswerQualityHint(preview.quality);
+      setContradiction(null);
       return;
     }
 
     setAnswerQualityHint(null);
+    setContradiction(null);
 
     logG1LoopEvent({
       event: 'answer_submit',
@@ -438,6 +452,21 @@ export function WorkspaceAiPmLoopPanel({
         analysisResultExists: hasAnalysisResult(projectId),
         turns: refreshed.turns,
       });
+      // W9 — complete when no next gap AND stage transition allows Validation
+      if (
+        !plannedNext &&
+        canEnterValidation({
+          loop: refreshed,
+          memory: loadConversationMemory(projectId),
+          entities,
+        })
+      ) {
+        const complete = patchAiPmLoopState({ phase: 'complete', currentIssueId: null }, projectId);
+        syncState(complete);
+        onLoopComplete?.();
+        window.setTimeout(() => setUpdateSavedFlash(false), 2200);
+        return;
+      }
       const next = patchAiPmLoopState(
         { phase: plannedNext ? 'issue' : 'complete', currentIssueId: plannedNext },
         projectId,
@@ -459,6 +488,64 @@ export function WorkspaceAiPmLoopPanel({
     understanding,
     entities,
   ]);
+
+  const resolveContradiction = useCallback(
+    (choice: 'keep_prior' | 'accept_new') => {
+      if (!contradiction || readOnly) return;
+      const { issueId, prior, next } = contradiction;
+      if (choice === 'keep_prior') {
+        setContradiction(null);
+        setAnswerQualityHint(null);
+        setAnswerDraft('');
+        return;
+      }
+      setContradiction(null);
+      setAnswerQualityHint(null);
+      appendAiPmLoopTurn(
+        { issueId, answer: next, appliedAt: new Date().toISOString() },
+        projectId,
+      );
+      applyWorkspaceLoopAnswer(issueId, next, projectId, { forceAccept: true });
+      onDocumentUpdated?.(issueId, next);
+      setAnswerDraft('');
+      setReanalyzing(true);
+      setAiPmLoopPhase('reanalyze', projectId);
+      window.setTimeout(() => {
+        setReanalyzing(false);
+        setUpdateSavedFlash(true);
+        const refreshed = loadAiPmLoopState(projectId);
+        const doc = loadWorkspaceDocumentText(projectId);
+        const freshUnderstanding = doc?.trim()
+          ? buildBusinessUnderstanding(doc)
+          : understanding;
+        const plannedNext = resolveNextLoopIssue(freshUnderstanding, refreshed, {
+          documentText: doc ?? undefined,
+          entities,
+          memory: loadConversationMemory(projectId),
+          analysisResultExists: hasAnalysisResult(projectId),
+          turns: refreshed.turns,
+        });
+        const nextState = patchAiPmLoopState(
+          { phase: plannedNext ? 'issue' : 'complete', currentIssueId: plannedNext },
+          projectId,
+        );
+        syncState(nextState);
+        if (!plannedNext) onLoopComplete?.();
+        window.setTimeout(() => setUpdateSavedFlash(false), 2200);
+      }, THINKING_TOTAL_MS);
+      void prior;
+    },
+    [
+      contradiction,
+      entities,
+      onDocumentUpdated,
+      onLoopComplete,
+      projectId,
+      readOnly,
+      syncState,
+      understanding,
+    ],
+  );
 
   if (sessionPaused && loopState.turns.length > 0) {
     const lastTurn = loopState.turns[loopState.turns.length - 1]!;
@@ -562,6 +649,49 @@ export function WorkspaceAiPmLoopPanel({
           >
             {t(`answerQuality.${answerQualityHint}`)}
           </p>
+        ) : null}
+        {contradiction ? (
+          <div
+            data-testid="contradiction-confirm"
+            className="mt-3 space-y-3 rounded-xl border border-amber-500/40 bg-amber-500/[0.06] px-4 py-3"
+          >
+            <p className="text-sm font-medium text-foreground">
+              이전에 확인한 내용과 새 답변이 다릅니다. 어느 쪽이 맞습니까?
+            </p>
+            <dl className="grid gap-2 text-sm sm:grid-cols-2">
+              <div>
+                <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  이전 확인
+                </dt>
+                <dd className="mt-1 font-medium">{contradiction.prior}</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  새 답변
+                </dt>
+                <dd className="mt-1 font-medium">{contradiction.next}</dd>
+              </div>
+            </dl>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl"
+                disabled={readOnly}
+                onClick={() => resolveContradiction('keep_prior')}
+              >
+                이전 내용이 맞아
+              </Button>
+              <Button
+                type="button"
+                className="rounded-xl"
+                disabled={readOnly}
+                onClick={() => resolveContradiction('accept_new')}
+              >
+                새 답변이 맞아
+              </Button>
+            </div>
+          </div>
         ) : null}
         <div className="mt-4 flex flex-wrap gap-2">
           <Button

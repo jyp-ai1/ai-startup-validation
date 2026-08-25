@@ -6641,6 +6641,7 @@
           "startReviewCta": "Start review",
           "finalReviewLead": "Before analysis, confirm the full AI understanding.",
           "finalReviewSub": "If business · customer · problem look right, we start analysis.",
+          "validationHandoff": "Understanding is sufficient. Moving to validation: judgment, reasons, and one next action. (Not based on answer count.)",
           "finalConfirmCta": "✓ That's right — start analysis",
           "reviewBlocked": {
             "customer_missing": "We haven't confirmed who the customer is yet. The next question will clarify this.",
