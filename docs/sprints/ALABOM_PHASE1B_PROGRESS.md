@@ -2,7 +2,7 @@
 
 ```text
 🟢 LONG SPRINT — EXECUTING
-Updated: 2026-08-25 (session 4 — W12)
+Updated: 2026-08-25 (session 5 — live Evidence + PARTIAL closeout)
 Final CPO package: NOT READY (honest)
 ```
 
@@ -14,20 +14,22 @@ Final CPO package: NOT READY (honest)
 | W1 Brand Concept 3 | Done | `e5d6808` |
 | W2–W6 Loop foundations | Done | `1191259` |
 | W7–W11 Stage / Review / Why / Contradiction | Done | `18fbe8c` |
-| **W12 Internal QA + Evidence index + Regression unit sign-off + Prod smoke** | Done (partial) | this session |
-| CTO Report draft | Draft only — **not** Final Review ready | `ALABOM_PHASE1B_CTO_REPORT.md` |
+| W12 Internal QA draft | Done | `451bc59` |
+| **E3 Review Retry + W12 PARTIAL tests + LIVE Evidence media** | This session | pending commit |
+| CTO Report | Draft only — **not** Final Review ready | `ALABOM_PHASE1B_CTO_REPORT.md` |
 
-## Unit / Prod this session
+## Session 5 results
 
-- Vitest business-understanding + brand: **92/92 PASS** → `docs/evidence/ALABOM/phase1b/unit-suite-result.json`
-- Prod: `/` `/demo/start` `/icon.svg` `/brand/alabom-mark.svg` → **200**
-- Matrix A–F: see `ALABOM_PHASE1B_INTERNAL_QA.md` (PARTIAL cells remain)
+- Unit: w12-partial-closeout + prior suites PASS
+- Production Playwright `alabom-phase1b-live-evidence.spec.ts`: **6/6 PASS**
+- Media under `docs/evidence/ALABOM/phase1b/media/`
+- Matrix: C1/D3/E3/F1 closed (E3 code; LIVE Retry after deploy); **D2 Auth still PARTIAL**
 
 ## Remaining before Final CPO
 
-1. Live Evidence media for core 01–20 (min 01,02,06,08,09,11,12,13,15,17)
-2. Close PARTIAL: C1 refresh · D2 Auth · D3 Mobile · E3 Retry · F1 Idea seed
-3. Optional Playwright smoke if live evidence needs automation
+1. LIVE deep path: Contradiction · Processing · Stage · Evidence-first Review · Review Retry on tip
+2. D2 Auth durable walkthrough (or escalate §29 if blocked by credentials)
+3. Finalize CTO Report only when Evidence substantially LIVE
 4. CEO Walkthrough A+B after CPO opens Final package
 
 Do **not** invent Phase 1-B.1. Escalate only per SCOPE §29.

@@ -1,0 +1,22 @@
+{
+  "date": "2026-08-25",
+  "baseURL": "https://ai-startup-validation-tau.vercel.app",
+  "spec": "apps/web/e2e/alabom-phase1b-live-evidence.spec.ts",
+  "result": "6 passed / 0 failed (retries=0)",
+  "media": [
+    "01-landing-brand.png",
+    "02-demo-start.png",
+    "03-document-rich.png",
+    "04-document-weak-pdf.png",
+    "13-refresh-persist.png",
+    "16-mobile-workspace.png",
+    "19-mobile-landing.png",
+    "f1-idea-seed-intake.png"
+  ],
+  "notes": [
+    "Tip matched main brand (ALABOM + /brand/alabom-mark.svg) at capture time",
+    "C1 refresh: sessionStorage loop survives reload when fresh≠1",
+    "E3 Review Retry UI ships in this commit — not yet on tip at capture time",
+    "Auth durable (D2) not walked — Demo-equivalent only"
+  ]
+}

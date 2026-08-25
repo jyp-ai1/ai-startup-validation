@@ -1,19 +1,17 @@
 # ALABOM Phase 1-B — Internal QA Report (W12)
 
 ```text
-Status: INTERNAL QA — PARTIAL PASS (unit + prod smoke)
-Date: 2026-08-25
-Head at test run: 18fbe8c (then this package commit)
-Unit suite: 23 files · 92 tests · 0 fail
-Prod smoke: https://ai-startup-validation-tau.vercel.app → HOME/DEMO/ICON/MARK HTTP 200
+Status: INTERNAL QA — IMPROVED (live Evidence started; PARTIAL mostly closed)
+Date: 2026-08-25 (session 5)
+Unit: business-understanding + brand + w12-partial-closeout PASS
+Live: e2e/alabom-phase1b-live-evidence.spec.ts → 6/6 PASS on Production
 ```
 
 ## Method
 
-- Targeted Vitest: `features/workflow-journey/lib/business-understanding/__tests__` + `lib/brand/__tests__`
-- Artifact: [`unit-suite-result.json`](../evidence/ALABOM/phase1b/unit-suite-result.json)
-- Prod smoke: [`prod-smoke-2026-08-25.json`](../evidence/ALABOM/phase1b/prod-smoke-2026-08-25.json)
-- **No full Playwright suite** this session (token/cost discipline). Live CEO walkthrough still required before Final CPO.
+- Targeted Vitest + Production Playwright evidence capture (not full suite)
+- Artifacts: `unit-suite-result.json`, `live-evidence-2026-08-25.json`, `media/*.png`
+- **No full Playwright regression suite**
 
 ---
 
@@ -23,63 +21,62 @@ Prod smoke: https://ai-startup-validation-tau.vercel.app → HOME/DEMO/ICON/MARK
 
 | ID | Result | Evidence / test |
 |----|--------|-----------------|
-| A1 Strong PDF / readable doc | **PASS (unit)** | `s17-document-first` rich doc draft + provenance |
-| A2 Weak PDF honesty + gap-only | **PASS (unit)** | PDF placeholder draft + `gapFieldIds`; trust contract copy |
-| A3 Filename ≠ business name | **PASS (unit)** | `s15-p0-1-upload-filename` + s17 filename case |
-| A4 Doc facts confirm-style | **PASS (unit)** | missing-field priority + Document First confirm card path |
+| A1 Strong PDF / readable doc | **PASS (LIVE + unit)** | `media/03-document-rich.png` + s17 |
+| A2 Weak PDF honesty + gap-only | **PASS (LIVE + unit)** | `media/04-document-weak-pdf.png` |
+| A3 Filename ≠ business name | **PASS (LIVE + unit)** | weak PDF assert + s15/s17 |
+| A4 Doc facts confirm-style | **PASS (unit)** | Document First path |
 
 ### B — Loop / engines
 
 | ID | Result | Evidence / test |
 |----|--------|-----------------|
-| B1 Answer → Processing → Update | **PASS (unit)** | Thinking stages 1–2s; loop write path |
-| B2 Contradiction | **PASS (unit)** | `answer-quality` CONTRADICTORY; `correction-and-why` resolve; UI confirm mounted |
-| B3 Answer Quality | **PASS (unit)** | nonsense not mergeable; S15 bag sync rejects asdf |
-| B4 Spine / Summary / Why | **PASS (unit)** | Spine marks; Why follow-up; S11 Summary/Detail |
+| B1 Answer → Processing → Update | **PASS (unit)** | Thinking / loop write |
+| B2 Contradiction | **PASS (unit)** | answer-quality + UI confirm |
+| B3 Answer Quality | **PASS (unit)** | nonsense gate |
+| B4 Spine / Summary / Why | **PASS (unit)** | Spine + Why |
 
 ### C — State / Memory
 
 | ID | Result | Evidence / test |
 |----|--------|-----------------|
-| C1 Refresh persist | **PARTIAL** | sessionStorage + Memory rebuild unit; **live refresh walkthrough pending** |
-| C2 Resume | **PASS (unit)** | `demo-login-promotion` resume briefing |
-| C3 Transition ≠ answer count | **PASS (unit)** | `stage-transition` turn-count alone blocked |
-| C4 Memory bag sync | **PASS (unit)** | S14/S15 memory tests |
+| C1 Refresh persist | **PASS (LIVE + unit)** | `media/13-refresh-persist.png` + w12 C1 |
+| C2 Resume | **PASS (unit)** | demo-login-promotion |
+| C3 Transition ≠ answer count | **PASS (unit)** | stage-transition |
+| C4 Memory bag sync | **PASS (unit)** | S14/S15 |
 
 ### D — Product surfaces
 
 | ID | Result | Evidence / test |
 |----|--------|-----------------|
-| D1 Demo same contract | **PASS (unit)** + **prod HTTP** | demo continuity + `/demo/start` 200 |
-| D2 Auth durable | **PARTIAL** | same Understanding code path; **auth live persistence not re-walked** |
-| D3 Mobile Hero=1 | **PARTIAL** | Presenter Hero=1 unit; **device walkthrough pending** |
-| D4 Desktop Fatigue | **PASS (unit)** | Evidence-first panel: secondary behind 더보기 |
+| D1 Demo same contract | **PASS (LIVE + unit)** | demo start + document path |
+| D2 Auth durable | **PARTIAL (honest)** | Same Understanding code path; **Auth live persistence not walked** (no prod auth credentials in session). Demo-equivalent = C1 LIVE. |
+| D3 Mobile Hero=1 | **PASS (LIVE + unit)** | mobile screenshots; Hero CTA ≤1; presenter assert |
+| D4 Desktop Fatigue | **PASS (unit)** | secondary behind 더보기 |
 
 ### E — Review / Analysis
 
 | ID | Result | Evidence / test |
 |----|--------|-----------------|
-| E1 Review Start success | **PASS (unit)** | workspace-state canStart when evidence pack confirmed |
-| E2 Review Start cannot | **PASS (unit)** | blockedReason user-facing (incl. demo_readonly) |
-| E3 Review Start error | **PARTIAL** | no silent block unit; **network fail Retry live pending** |
-| E4 Evidence First + Hero=1 | **PASS (unit)** | `presentAnalysisScreen` + assertSingleHeroCta |
+| E1 Review Start success | **PASS (unit)** | canStart when evidence confirmed |
+| E2 Review Start cannot | **PASS (unit)** | blockedReason |
+| E3 Review Start error | **PASS (code + unit)** | Visible error + Retry CTA wired in panel/workspace; **LIVE Retry shot pending tip deploy of this SHA** |
+| E4 Evidence First + Hero=1 | **PASS (unit)** | presentAnalysisScreen |
 
 ### F — Cross-journey / regression / brand
 
 | ID | Result | Evidence / test |
 |----|--------|-----------------|
-| F1 Journey B seed | **PARTIAL** | empty-project seed exists; **live Idea path walkthrough pending** |
-| F2 Correction / edit | **PASS (unit)** | USER_CORRECTED apply + contradiction resolve |
-| F3 Brand Concept 3 | **PASS (unit + prod)** | brand-config tests; `/icon.svg` + `/brand/alabom-mark.svg` 200; ALABOM in HTML |
-| F4 S16/S17 regression | **PASS (unit)** | Document First, Thinking stages, journey stages, Hero=1 presenters |
+| F1 Journey B seed | **PASS (LIVE + unit)** | `media/f1-idea-seed-intake.png` + empty-project seed unit |
+| F2 Correction / edit | **PASS (unit)** | USER_CORRECTED |
+| F3 Brand Concept 3 | **PASS (LIVE + unit)** | `media/01-landing-brand.png` |
+| F4 S16/S17 regression | **PASS (unit)** | REGRESSION_SIGNOFF |
 
 ---
 
-## Honest gaps (block Final CPO until closed)
+## Honest gaps (still block Final CPO)
 
-1. Live walkthrough Evidence 01–20 (screens / short clips) — most cells unit-only today  
-2. Auth durable refresh on Production account  
-3. Mobile viewport Hero/order integrity  
-4. CEO Walkthrough A + B execution  
+1. Deep LIVE still missing for Contradiction / Processing / Stage / Evidence-first Review / Review Retry on tip  
+2. Auth durable refresh on Production account (D2)  
+3. CEO Walkthrough A + B  
 
-**Internal QA batch:** not full green for DoD §30. Status remains **EXECUTING**.
+**Internal QA:** improved, not DoD §30 complete. Status remains **EXECUTING**.

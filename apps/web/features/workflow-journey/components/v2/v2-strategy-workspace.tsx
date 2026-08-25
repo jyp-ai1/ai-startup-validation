@@ -156,6 +156,8 @@ export function V2StrategyWorkspaceView({
   const tStrip = useTranslations('workflow.journey.workspaceShell.strip');
 
   const [phase, setPhase] = useState<WorkspacePhase>('compose');
+  /** E3 — Review Start visible error + Retry (no silent fail) */
+  const [reviewError, setReviewError] = useState<string | null>(null);
   const [businessStateRevision, setBusinessStateRevision] = useState(0);
   const [activeStep, setActiveStep] = useState<WorkflowStepId>('idea');
   const [activeMemoryId, setActiveMemoryId] = useState<string | null>(null);
@@ -697,47 +699,57 @@ export function V2StrategyWorkspaceView({
 
   const runReview = useCallback(() => {
     if (!reviewGate.canStart) return;
+    setReviewError(null);
 
-    // S14 — Evidence Status → AnalysisInput → Engine (Loop-unaware)
-    const documentText = loadWorkspaceDocumentText(storageProjectId)?.trim() ?? '';
-    const loop = loadAiPmLoopState(storageProjectId);
-    const memory = buildConversationMemoryFromSources({
-      projectId: storageProjectId ?? 'default',
-      documentText,
-      turns: loop.turns,
-      entities,
-      previous: loadConversationMemory(storageProjectId),
-    });
-    const evidenceStatus = deriveEvidenceStatusFromMemory({ memory, entities });
-    const analysisInput = mapEvidenceStatusToAnalysisInput({ evidence: evidenceStatus });
-    const analysisResult = runAnalysis(analysisInput);
-    saveAnalysisResult(analysisResult, storageProjectId);
+    try {
+      // S14 — Evidence Status → AnalysisInput → Engine (Loop-unaware)
+      const documentText = loadWorkspaceDocumentText(storageProjectId)?.trim() ?? '';
+      const loop = loadAiPmLoopState(storageProjectId);
+      const memory = buildConversationMemoryFromSources({
+        projectId: storageProjectId ?? 'default',
+        documentText,
+        turns: loop.turns,
+        entities,
+        previous: loadConversationMemory(storageProjectId),
+      });
+      const evidenceStatus = deriveEvidenceStatusFromMemory({ memory, entities });
+      const analysisInput = mapEvidenceStatusToAnalysisInput({ evidence: evidenceStatus });
+      const analysisResult = runAnalysis(analysisInput);
+      saveAnalysisResult(analysisResult, storageProjectId);
 
-    persist(evidence);
-    setPhase('reviewing');
-    setReviewCount((c) => {
-      const next = c + 1;
-      savePersistedReviewCount(next, storageProjectId);
-      if (!isDemoGuided && !isDemoReadonly && storageProjectId) {
-        void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
-        stripWelcomeParamFromUrl(router);
-      }
-      return next;
-    });
-    setFollowUpDone(false);
-    setActiveMemoryId(null);
-    setLastReviewAt(new Date());
+      persist(evidence);
+      setPhase('reviewing');
+      setReviewCount((c) => {
+        const next = c + 1;
+        savePersistedReviewCount(next, storageProjectId);
+        if (!isDemoGuided && !isDemoReadonly && storageProjectId) {
+          void persistWorkspaceStateDbFirst({ projectId: storageProjectId });
+          stripWelcomeParamFromUrl(router);
+        }
+        return next;
+      });
+      setFollowUpDone(false);
+      setActiveMemoryId(null);
+      setLastReviewAt(new Date());
 
-    window.setTimeout(() => {
-      setPhase('board');
-      setActiveStep('review');
-      saveReviewSnapshot(evidence, storageProjectId);
-      setInvestigationViewed(false);
-      setDirtyHighlightField(null);
-      setDirtyFieldLabel(null);
-      createMeetingNoteFromReview(reviewCount + 1, storageProjectId);
-      window.setTimeout(() => setPhase('followUp'), 400);
-    }, REVIEW_MS);
+      window.setTimeout(() => {
+        setPhase('board');
+        setActiveStep('review');
+        saveReviewSnapshot(evidence, storageProjectId);
+        setInvestigationViewed(false);
+        setDirtyHighlightField(null);
+        setDirtyFieldLabel(null);
+        createMeetingNoteFromReview(reviewCount + 1, storageProjectId);
+        window.setTimeout(() => setPhase('followUp'), 400);
+      }, REVIEW_MS);
+    } catch (err) {
+      const message =
+        err instanceof Error && err.message.trim()
+          ? err.message
+          : '시장성 분석을 시작하지 못했습니다. 다시 시도해 주세요.';
+      setReviewError(message);
+      setPhase('compose');
+    }
   }, [
     entities,
     evidence,
@@ -848,6 +860,7 @@ export function V2StrategyWorkspaceView({
           workspaceFacts={initialWorkspaceSnapshot?.workspaceFacts ?? null}
           onAlignmentApplied={handleAlignmentApplied}
           onReview={runReview}
+          reviewError={reviewError}
           reviewCanStart={reviewGate.canStart}
           reviewBlockedReason={reviewGate.blockedReason}
           onUnderstandingConfirmed={refreshUnderstandingState}

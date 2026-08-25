@@ -14,6 +14,9 @@ import type { AnalysisScreenPresenter } from '../../lib/business-understanding/p
 type WorkspaceAnalysisResultPanelProps = {
   presenter: AnalysisScreenPresenter;
   analyzing?: boolean;
+  /** E3 — Review Start failed: visible message + Retry (no silent fail) */
+  reviewError?: string | null;
+  onRetryReview?: () => void;
   onCta?: () => void;
   /** Return to Understanding / validation loop after Why */
   onReturnToLoop?: () => void;
@@ -28,6 +31,8 @@ type WorkspaceAnalysisResultPanelProps = {
 export function WorkspaceAnalysisResultPanel({
   presenter,
   analyzing = false,
+  reviewError = null,
+  onRetryReview,
   onCta,
   onReturnToLoop,
   className,
@@ -50,6 +55,35 @@ export function WorkspaceAnalysisResultPanel({
       }),
     [judgment, reasons, presenter.criticalGap],
   );
+
+  if (reviewError) {
+    return (
+      <section
+        data-testid="review-start-error"
+        className={cn(
+          'rounded-2xl border border-destructive/35 bg-destructive/[0.04] px-6 py-8 text-center',
+          className,
+        )}
+        role="alert"
+        aria-live="assertive"
+      >
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-destructive">
+          AI PM
+        </p>
+        <p className="mt-4 text-[15px] leading-relaxed">{reviewError}</p>
+        {onRetryReview ? (
+          <Button
+            type="button"
+            data-testid="review-start-retry"
+            className="mt-5 rounded-xl"
+            onClick={onRetryReview}
+          >
+            다시 시도
+          </Button>
+        ) : null}
+      </section>
+    );
+  }
 
   if (analyzing) {
     return (

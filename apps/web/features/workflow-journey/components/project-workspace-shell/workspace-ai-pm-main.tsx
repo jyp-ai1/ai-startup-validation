@@ -87,6 +87,8 @@ type WorkspaceAiPmMainProps = {
     customer: string,
   ) => void;
   onReview: () => void;
+  /** E3 — Review Start error message; Retry via onReview */
+  reviewError?: string | null;
   reviewCanStart?: boolean;
   reviewBlockedReason?: import('../../lib/business-understanding/workspace-state').WorkspaceReviewBlockedReason | null;
   onUnderstandingConfirmed?: () => void;
@@ -139,6 +141,7 @@ export function WorkspaceAiPmMain({
   projectId,
   onAlignmentApplied,
   onReview,
+  reviewError = null,
   reviewCanStart = true,
   reviewBlockedReason = null,
   onUnderstandingConfirmed,
@@ -399,7 +402,7 @@ export function WorkspaceAiPmMain({
     onReview();
   };
 
-  if (phase === 'reviewing') {
+  if (phase === 'reviewing' || reviewError) {
     return (
       <div className={cn('mx-auto max-w-[720px] space-y-6 py-2', className)}>
         <WorkspaceAnalysisResultPanel
@@ -418,7 +421,9 @@ export function WorkspaceAiPmMain({
               recommended: null,
             }
           }
-          analyzing
+          analyzing={phase === 'reviewing' && !reviewError}
+          reviewError={reviewError}
+          onRetryReview={reviewError ? onReview : undefined}
         />
       </div>
     );
