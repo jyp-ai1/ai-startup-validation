@@ -5,6 +5,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { env } from '@repo/core/env';
 import { isAppLocale, type AppLocale } from '@repo/i18n/config';
 
+import { BRAND_CONFIG } from '@/lib/brand/brand-config';
 import { buildLocaleAlternates, buildOpenGraphLocale } from '@/lib/i18n/locale-seo';
 
 import '@repo/ui/globals.css';
@@ -51,8 +52,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     alternates: buildLocaleAlternates(baseUrl),
     icons: {
-      icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
-      apple: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+      icon: [{ url: BRAND_CONFIG.favicon, type: 'image/svg+xml' }],
+      apple: [{ url: BRAND_CONFIG.favicon, type: 'image/svg+xml' }],
     },
   };
 }
