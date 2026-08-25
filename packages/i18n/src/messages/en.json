@@ -213,7 +213,7 @@
     "vocDesc": "Voice of Customer — customer problem analysis.",
     "grants": "Government",
     "grantsDesc": "Explore government support programs.",
-    "startupValidation": "AI Startup Validation",
+    "startupValidation": "Startup Validation",
     "startupValidationDesc": "Startup idea validation and GO / NO GO scoring.",
     "businessStrategy": "AI Business Strategy",
     "businessStrategyDesc": "SWOT, PEST, and strategic frameworks (Sprint 6.2).",
@@ -1693,7 +1693,7 @@
       "title": "Before / After",
       "desc": "Not a viability analysis SaaS — an AI PM Company working for the CEO",
       "beforeLabel": "Before",
-      "afterLabel": "After · LaunchLens",
+      "afterLabel": "After · ALABOM",
       "beforeItems": [
         "CEO handles research through execution alone",
         "Hours lost to analysis and decks",
@@ -1730,7 +1730,7 @@
     "aiPm": {
       "eyebrow": "AI PM Company",
       "title": "Not an analysis tool. An AI PM working for the CEO.",
-      "desc": "LaunchLens is not a GPT wrapper. It's an AI PM Company that shows up daily to handle research, strategy, and execution.",
+      "desc": "ALABOM is not a GPT wrapper. It's an AI PM Company that shows up daily to handle research, strategy, and execution.",
       "points": {
         "lead": {
           "title": "Report — daily morning brief",
@@ -1823,7 +1823,7 @@
       "government": "Government"
     },
     "roadmap": {
-      "title": "LaunchLens Roadmap",
+      "title": "ALABOM Roadmap",
       "year": "2026",
       "desc": "Where we are today — and where we are headed.",
       "beta": { "title": "Private Beta", "desc": "Full workspace, AI Consultant, and Decision Engine — live now." },
@@ -1887,8 +1887,8 @@
     },
     "faq": {
       "title": "Frequently asked questions",
-      "desc": "Everything you need to know about LaunchLens.",
-      "q1": { "question": "What is an AI Strategy Consultant?", "answer": "LaunchLens is an AI-powered strategy platform that automates market research, competitive analysis, evidence collection, and executive reporting — guiding you to a defensible GO / NO GO decision." },
+      "desc": "Everything you need to know about ALABOM.",
+      "q1": { "question": "What is an AI Strategy Consultant?", "answer": "ALABOM is an AI-powered strategy platform that automates market research, competitive analysis, evidence collection, and executive reporting — guiding you to a defensible GO / NO GO decision." },
       "q2": { "question": "How does market research work?", "answer": "The AI orchestrator runs structured research tasks across market sizing, trends, and customer segments. Results feed into the Evidence library with confidence scores." },
       "q3": { "question": "Is SWOT generated automatically?", "answer": "Yes. The Framework Engine applies SWOT, Porter's Five Forces, and other consulting frameworks based on your project data and market analysis." },
       "q4": { "question": "Does it analyze government grant programs?", "answer": "Yes. Government module maps K-Startup, ministry programs, and grant fit scores to your project profile." },
@@ -1896,9 +1896,9 @@
       "q6": { "question": "Do I need to log in?", "answer": "Sign in with Google to save your projects. Use 'Try live demo' to explore without an account." },
       "q7": { "question": "How is GO / NO GO calculated?", "answer": "The Decision Engine scores research, evidence, VOC, competitors, and grants — with explainable drivers and missing-data checklist." },
       "q8": { "question": "Is my data used to train AI models?", "answer": "Your project data stays in your workspace. Real LLM integration (Sprint 9.0+) will follow enterprise privacy standards." },
-      "q9": { "question": "Who is LaunchLens for?", "answer": "Startups, corporate strategy teams, consultants, VCs, and public-sector innovators validating new initiatives." },
+      "q9": { "question": "Who is ALABOM for?", "answer": "Startups, corporate strategy teams, consultants, VCs, and public-sector innovators validating new initiatives." },
       "q10": { "question": "When will paid plans launch?", "answer": "Pro and Enterprise plans are coming soon. The Free plan includes the full workspace available today." },
-      "q11": { "question": "What is Private Beta?", "answer": "Private Beta gives you unlimited access to every LaunchLens feature at no cost while we refine the product with early adopters. Your feedback shapes the roadmap." }
+      "q11": { "question": "What is Private Beta?", "answer": "Private Beta gives you unlimited access to every ALABOM feature at no cost while we refine the product with early adopters. Your feedback shapes the roadmap." }
     },
     "footer": {
       "ctaTitle": "Ready to run your company with AI PM?",
@@ -2100,7 +2100,7 @@
   "analytics": {
     "consent": {
       "title": "Analytics & cookies",
-      "description": "We use analytics to improve LaunchLens. Accept to enable Google Analytics and product event tracking. You can decline and still use the product.",
+      "description": "We use analytics to improve ALABOM. Accept to enable Google Analytics and product event tracking. You can decline and still use the product.",
       "accept": "Accept analytics",
       "reject": "Decline"
     }

@@ -25,7 +25,7 @@ CEO Walkthrough remains HOLD. CartPilot out.
 | CTA 실제 동작 | **PASS** — `무료로 시작하기` → `/auth/login?next=%2Fworkspace` (HTTP 200); header/hero CTAs present |
 | Demo 진입 | **PASS** — `Demo로 알아보기` → `/demo/enter` → 307 → `/demo/start` (HTTP 200); ALABOM present on demo entry HTML |
 | Workspace regression | **N-A** (Phase 1-A scope = Brand + Landing only) — smoke only: Demo start page loads; no authenticated Workspace regression suite run |
-| LaunchLens 잔여 노출 | **YES** — Hero/header brand mark is ALABOM; residual LaunchLens remains in below-fold FAQ / JSON-LD / embedded i18n payload (and some EN “Why LaunchLens” strings). Not purged in Phase 1-A by design |
+| LaunchLens 잔여 노출 | **NO** (Phase 1-A.1) — Landing FAQ/Footer/JSON-LD/meta/consent user-facing strings → ALABOM. See addendum below. Workspace i18n hardcoding remains out of scope. |
 | Mobile | **PASS** — Evidence `hero-mobile-ko.png` shows KO hero + both CTAs + aux; live browser MCP unavailable this session — no new Playwright run |
 | Build/Test | Brand unit: `lib/brand` **2 tests PASS**; `pnpm --filter web build` **Exit 0** (391 static pages) — from Phase 1-A report |
 | git status | **clean** (`main` sync with `origin/main`; no porcelain) |
@@ -73,7 +73,54 @@ Reply with one of:
 - This package makes prior report content visible for the gate; it does not re-implement Phase 1-A  
 
 Next Autonomous Target  
-Epic: ALABOM Phase 1-A CPO gate (await PASS/수정/HOLD)  
-진행률: Review package submitted  
-예상 완료: CPO decision  
+Epic: ALABOM Phase 1-A.1 brand leakage fix (Landing FAQ/JSON-LD/i18n)  
+진행률: Implemented — await Production deploy verify  
+예상 완료: Vercel Production SHA match  
 다음 보고 08:00
+
+---
+
+## Addendum — Phase 1-A.1 (CPO 수정 → Landing leakage purge)
+
+**Date:** 2026-08-25  
+**Gate input:** CPO Phase 1-A = 🟡 수정 후 PASS → do Phase 1-A.1 only  
+**Phase 1-B:** still **HOLD**
+
+### Leakage
+
+```
+Before: LaunchLens leakage: YES
+After: LaunchLens leakage: NO
+```
+
+Scoped to Landing Hero/Header/CTA/FAQ/Footer/JSON-LD/metadata (+ cookie consent copy on Landing).  
+Honest residual: Workspace/onboarding i18n strings may still appear inside the **full message payload** embedded in `/ko` HTML (not rendered on Landing surfaces). `launchlens.*` storage/analytics keys unchanged.
+
+### Local verify (`next start` `/ko`)
+
+| Check | Result |
+|-------|--------|
+| Visible Hero/Header | ALABOM · 알아봄 · locked tagline |
+| FAQ / Footer strings | ALABOM (no LaunchLens) |
+| JSON-LD | LaunchLens **0** · ALABOM present |
+| AI Startup Validation | **0** on Landing HTML |
+| Brand unit tests | `lib/brand` **4 tests PASS** |
+| `pnpm --filter web build` | **Exit 0** |
+
+### Changed files
+
+- `packages/i18n/src/messages/{ko,en,ja,zh-CN,zh-TW,es,fr,de,pt,vi,id}.json` — `landing.*` FAQ/meta/footer/legal/roadmap/aiPm/beforeAfter/heroSubtitle + `analytics.consent.description`
+- `apps/web/lib/brand/__tests__/landing-brand-leakage.test.ts` **(new)**
+- `apps/web/lib/metadata.ts` — comment only
+- `docs/evidence/ALABOM/phase1a/phase1a-1-desktop.png`
+- `docs/evidence/ALABOM/phase1a/phase1a-1-mobile.png`
+- this addendum
+
+### Evidence
+
+- `docs/evidence/ALABOM/phase1a/phase1a-1-desktop.png`
+- `docs/evidence/ALABOM/phase1a/phase1a-1-mobile.png`
+
+### Production
+
+- Push `main` after this addendum; Production SHA recorded post-deploy via `/api/build-info`.

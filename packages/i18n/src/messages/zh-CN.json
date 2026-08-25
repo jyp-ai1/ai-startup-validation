@@ -203,7 +203,7 @@
     "agent": "AI Startup Agent",
     "aiStudio": "AI Studio",
     "agentConsultant": "AI Consultant",
-    "startupValidation": "AI Startup Validation",
+    "startupValidation": "Startup Validation",
     "startupValidationDesc": "Startup idea validation and GO / NO GO scoring.",
     "businessStrategy": "AI Business Strategy",
     "businessStrategyDesc": "SWOT, PEST, and strategic frameworks (Sprint 6.2).",
@@ -1267,7 +1267,7 @@
   "landing": {
     "eyebrow": "Enterprise AI Intelligence",
     "heroTitle": "Validate startups like a VC — with AI that leads with insight.",
-    "heroSubtitle": "LaunchLens turns research, evidence, and validation into executive-grade decisions. Conclusions first, data when you need it.",
+    "heroSubtitle": "ALABOM turns research, evidence, and validation into executive-grade decisions. Conclusions first, data when you need it.",
     "ctaPrimary": "Open Dashboard",
     "ctaSecondary": "Start New Project",
     "valueAiTitle": "AI-First Decisions",
@@ -1503,10 +1503,10 @@
     },
     "faq": {
       "title": "Frequently asked questions",
-      "desc": "Everything you need to know about LaunchLens.",
+      "desc": "Everything you need to know about ALABOM.",
       "q1": {
         "question": "What is an AI Strategy Consultant?",
-        "answer": "LaunchLens is an AI-powered strategy platform that automates market research, competitive analysis, evidence collection, and executive reporting — guiding you to a defensible GO / NO GO decision."
+        "answer": "ALABOM is an AI-powered strategy platform that automates market research, competitive analysis, evidence collection, and executive reporting — guiding you to a defensible GO / NO GO decision."
       },
       "q2": {
         "question": "How does market research work?",
@@ -1537,7 +1537,7 @@
         "answer": "Your project data stays in your workspace. Real LLM integration (Sprint 9.0+) will follow enterprise privacy standards."
       },
       "q9": {
-        "question": "Who is LaunchLens for?",
+        "question": "Who is ALABOM for?",
         "answer": "Startups, corporate strategy teams, consultants, VCs, and public-sector innovators validating new initiatives."
       },
       "q10": {
@@ -1546,14 +1546,14 @@
       },
       "q11": {
         "question": "What is Private Beta?",
-        "answer": "Private Beta gives you unlimited access to every LaunchLens feature at no cost while we refine the product with early adopters. Your feedback shapes the roadmap."
+        "answer": "Private Beta gives you unlimited access to every ALABOM feature at no cost while we refine the product with early adopters. Your feedback shapes the roadmap."
       }
     },
     "footer": {
       "ctaTitle": "Ready to validate your next big bet?",
       "ctaDesc": "Start free — no credit card, no login required.",
       "ctaButton": "Start free",
-      "copyright": "LaunchLens · AI Strategy Consultant",
+      "copyright": "ALABOM",
       "privacy": "Privacy",
       "terms": "Terms",
       "contact": "Contact",
@@ -1561,9 +1561,9 @@
     },
     "legal": {
       "privacyTitle": "Privacy Policy",
-      "privacyBody": "LaunchLens respects your data. Project information is stored in your workspace and is not sold to third parties. Full privacy policy will be published before Sprint L2 authentication launch.",
+      "privacyBody": "ALABOM respects your data. Project information is stored in your workspace and is not sold to third parties. Full privacy policy will be published before Sprint L2 authentication launch.",
       "termsTitle": "Terms of Service",
-      "termsBody": "By using LaunchLens you agree to use the platform for lawful business strategy purposes. Full terms of service will be published before paid plans launch."
+      "termsBody": "By using ALABOM you agree to use the platform for lawful business strategy purposes. Full terms of service will be published before paid plans launch."
     },
     "builtFor": {
       "title": "Built for",
@@ -1578,7 +1578,7 @@
       "government": "Government"
     },
     "roadmap": {
-      "title": "LaunchLens Roadmap",
+      "title": "ALABOM Roadmap",
       "year": "2026",
       "desc": "Where we are today — and where we are headed.",
       "beta": {
@@ -1806,7 +1806,7 @@
   "analytics": {
     "consent": {
       "title": "Analytics & cookies",
-      "description": "We use analytics to improve LaunchLens. Accept to enable Google Analytics and product event tracking. You can decline and still use the product.",
+      "description": "We use analytics to improve ALABOM. Accept to enable Google Analytics and product event tracking. You can decline and still use the product.",
       "accept": "Accept analytics",
       "reject": "Decline"
     }

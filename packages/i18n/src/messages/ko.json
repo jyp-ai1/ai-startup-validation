@@ -213,7 +213,7 @@
     "vocDesc": "고객의 목소리와 Pain Point를 분석합니다.",
     "grants": "Government",
     "grantsDesc": "정부 지원 사업을 탐색합니다.",
-    "startupValidation": "AI Startup Validation",
+    "startupValidation": "사업 검증",
     "startupValidationDesc": "스타트업 아이디어 검증 및 GO / NO GO 평가",
     "businessStrategy": "AI Business Strategy",
     "businessStrategyDesc": "SWOT, PEST 등 전략 프레임워크 (Sprint 6.2)",
@@ -1705,7 +1705,7 @@
       "title": "Before / After",
       "desc": "사업성 분석 SaaS가 아닌, CEO를 위해 일하는 AI PM Company",
       "beforeLabel": "Before",
-      "afterLabel": "After · LaunchLens",
+      "afterLabel": "After · ALABOM",
       "beforeItems": [
         "대표님이 시장조사부터 실행까지 직접",
         "분석·보고서에 시간 소모",
@@ -1742,7 +1742,7 @@
     "aiPm": {
       "eyebrow": "AI PM Company",
       "title": "분석 도구가 아닙니다. CEO를 위해 일하는 AI PM입니다.",
-      "desc": "LaunchLens는 GPT Wrapper가 아닙니다. 매일 출근해서 시장조사, 전략수립, 실행관리를 대신하는 AI PM Company입니다.",
+      "desc": "ALABOM은 GPT Wrapper가 아닙니다. 매일 출근해서 시장조사, 전략수립, 실행관리를 대신하는 AI PM Company입니다.",
       "points": {
         "lead": {
           "title": "Report — 매일 아침 보고",
@@ -1883,9 +1883,9 @@
       "government": "Government"
     },
     "roadmap": {
-      "title": "LaunchLens Roadmap",
+      "title": "ALABOM Roadmap",
       "year": "2026",
-      "desc": "지금과 앞으로의 LaunchLens.",
+      "desc": "지금과 앞으로의 ALABOM.",
       "beta": {
         "title": "Private Beta",
         "desc": "전체 Workspace, AI Consultant, Decision Engine — 지금 이용 가능."
@@ -1965,10 +1965,10 @@
     },
     "faq": {
       "title": "자주 묻는 질문",
-      "desc": "LaunchLens에 대해 궁금한 점을 확인하세요.",
+      "desc": "ALABOM에 대해 궁금한 점을 확인하세요.",
       "q1": {
         "question": "AI Strategy Consultant란?",
-        "answer": "LaunchLens는 시장조사, 경쟁사 분석, Evidence 수집, Executive Report를 AI가 자동 수행하고 GO / NO GO Decision까지 안내하는 AI 전략 플랫폼입니다."
+        "answer": "ALABOM은 시장조사, 경쟁사 분석, Evidence 수집, Executive Report를 AI가 자동 수행하고 GO / NO GO Decision까지 안내하는 AI 전략 플랫폼입니다."
       },
       "q2": {
         "question": "시장조사는 어떻게 하나요?",
@@ -2008,7 +2008,7 @@
       },
       "q11": {
         "question": "Private Beta란?",
-        "answer": "Private Beta 기간 동안 LaunchLens의 모든 기능을 무료로 이용할 수 있습니다. Early Adopter 피드백이 Roadmap에 반영됩니다."
+        "answer": "Private Beta 기간 동안 ALABOM의 모든 기능을 무료로 이용할 수 있습니다. Early Adopter 피드백이 Roadmap에 반영됩니다."
       }
     },
     "footer": {
@@ -2211,7 +2211,7 @@
   "analytics": {
     "consent": {
       "title": "분석 및 쿠키",
-      "description": "LaunchLens 개선을 위해 분석 데이터를 사용합니다. 수락하면 Google Analytics와 제품 이벤트 추적이 활성화됩니다. 거부해도 서비스 이용은 가능합니다.",
+      "description": "ALABOM 개선을 위해 분석 데이터를 사용합니다. 수락하면 Google Analytics와 제품 이벤트 추적이 활성화됩니다. 거부해도 서비스 이용은 가능합니다.",
       "accept": "분석 수락",
       "reject": "거부"
     }
