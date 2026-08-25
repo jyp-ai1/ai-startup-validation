@@ -82,6 +82,36 @@ export function mapDocumentFirstSourceToProvenance(
   return 'UNKNOWN';
 }
 
+/** Reverse map for Presenter surfaces that still key off legacy labels. */
+export function mapProvenanceToDocumentFirstSource(
+  provenance: UnderstandingProvenance,
+): 'document' | 'inferred' | 'unknown' {
+  if (provenance === 'DOCUMENT') return 'document';
+  if (provenance === 'AI_INFERENCE' || provenance === 'EXTERNAL_EVIDENCE') return 'inferred';
+  if (provenance === 'USER_CONFIRMED' || provenance === 'USER_CORRECTED') return 'document';
+  return 'unknown';
+}
+
+/** Default confidence ladder from provenance (Presenter may raise on confirm). */
+export function confidenceFromProvenance(
+  provenance: UnderstandingProvenance,
+): UnderstandingConfidence {
+  switch (provenance) {
+    case 'DOCUMENT':
+      return 'PROPOSED';
+    case 'AI_INFERENCE':
+      return 'INFERRED';
+    case 'USER_CONFIRMED':
+      return 'USER_CONFIRMED';
+    case 'USER_CORRECTED':
+      return 'USER_CONFIRMED';
+    case 'EXTERNAL_EVIDENCE':
+      return 'PROPOSED';
+    default:
+      return 'UNKNOWN';
+  }
+}
+
 /** Inference must never be treated as settled user fact. */
 export function isInferenceNotFact(provenance: UnderstandingProvenance): boolean {
   return provenance === 'AI_INFERENCE' || provenance === 'UNKNOWN';
@@ -90,4 +120,62 @@ export function isInferenceNotFact(provenance: UnderstandingProvenance): boolean
 /** Skip re-ask when confidence is strong enough (unless Contradiction / user edit). */
 export function shouldSkipReask(confidence: UnderstandingConfidence): boolean {
   return confidence === 'USER_CONFIRMED' || confidence === 'VALIDATED';
+}
+
+const NONSENSE_RE =
+  /^(.)\1{3,}$|^(asdf+|qwer+|test+|testing+|xxx+|ㄴㄴㄴ+|ㅋㅋㅋ+|ㅎㅎㅎ+|aaa+|zzz+)$/i;
+const UNKNOWN_SIGNAL_RE = /^(모름|몰라요|모르겠|잘\s*모르|unknown|n\/?a|없음|없어요)\.?$/i;
+
+/**
+ * Answer Quality Engine — never mark VALID by length alone.
+ * CONTRADICTORY when answer conflicts with a known confirmed fact.
+ */
+export function evaluateAnswerQuality(
+  answer: string,
+  options?: { existingFact?: string | null },
+): { quality: AnswerQuality; mergeable: boolean } {
+  const trimmed = answer.trim().replace(/\s+/g, ' ');
+  if (trimmed.length < 2) {
+    return { quality: 'UNKNOWN', mergeable: false };
+  }
+  if (UNKNOWN_SIGNAL_RE.test(trimmed)) {
+    return { quality: 'UNKNOWN', mergeable: false };
+  }
+  if (NONSENSE_RE.test(trimmed) || trimmed.length < 4) {
+    return { quality: 'IRRELEVANT', mergeable: false };
+  }
+
+  const existing = options?.existingFact?.trim().replace(/\s+/g, ' ') ?? '';
+  if (existing.length >= 4 && answersContradict(existing, trimmed)) {
+    return { quality: 'CONTRADICTORY', mergeable: false };
+  }
+
+  if (trimmed.length < 12 || /^(네|아니요|ㅇㅇ|ㄴㄴ|yes|no)\.?$/i.test(trimmed)) {
+    return { quality: 'PARTIAL', mergeable: true };
+  }
+
+  return { quality: 'VALID', mergeable: true };
+}
+
+/** Lightweight contradiction: both claims look like replacements of the same slot. */
+export function answersContradict(prior: string, next: string): boolean {
+  const a = prior.trim().replace(/\s+/g, ' ').toLowerCase();
+  const b = next.trim().replace(/\s+/g, ' ').toLowerCase();
+  if (!a || !b || a === b) return false;
+  if (a.includes(b) || b.includes(a)) return false;
+  // Distinct short noun phrases that share almost no tokens → treat as conflict
+  const tokensA = new Set(a.split(/[\s,/·]+/).filter((t) => t.length >= 2));
+  const tokensB = new Set(b.split(/[\s,/·]+/).filter((t) => t.length >= 2));
+  if (tokensA.size === 0 || tokensB.size === 0) return false;
+  let overlap = 0;
+  for (const t of tokensA) {
+    if (tokensB.has(t)) overlap += 1;
+  }
+  const ratio = overlap / Math.min(tokensA.size, tokensB.size);
+  return ratio < 0.2 && Math.abs(tokensA.size - tokensB.size) <= 3;
+}
+
+/** Quality that may enter Memory / Understanding as user-backed. */
+export function isMergeableAnswerQuality(quality: AnswerQuality): boolean {
+  return quality === 'VALID' || quality === 'PARTIAL';
 }

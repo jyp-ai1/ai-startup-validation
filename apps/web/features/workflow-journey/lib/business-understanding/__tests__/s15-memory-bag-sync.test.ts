@@ -62,10 +62,23 @@ describe('S15 Memory bag sync after loop answer', () => {
       },
       projectId,
     );
-    applyWorkspaceLoopAnswer('problem_definition', '재방문 관리 비용이 큽니다', projectId);
+    const result = applyWorkspaceLoopAnswer(
+      'problem_definition',
+      '재방문 관리 비용이 큽니다',
+      projectId,
+    );
 
+    expect(result.applied).toBe(true);
+    expect(result.quality).toBe('VALID');
     const mem = loadConversationMemory(projectId);
     expect(mem.facts.some((f) => f.key === 'problem')).toBe(true);
     expect(loadAiPmLoopState(projectId).turns).toHaveLength(1);
+  });
+
+  it('does not merge nonsense into Memory (Answer Quality gate)', () => {
+    const result = applyWorkspaceLoopAnswer('problem_definition', 'asdf', projectId);
+    expect(result.applied).toBe(false);
+    expect(result.quality).toBe('IRRELEVANT');
+    expect(loadConversationMemory(projectId).facts.some((f) => f.key === 'problem')).toBe(false);
   });
 });

@@ -6542,6 +6542,17 @@
         "sharedUnderstanding": {
           "label": "What I understand so far",
           "reflectUpdated": "I've updated my understanding like this",
+          "detailCta": "Detail",
+          "summaryCta": "Summary",
+          "inferenceNotFact": "AI inference · not confirmed fact",
+          "provenance": {
+            "document": "Document",
+            "userConfirmed": "Founder confirmed",
+            "userCorrected": "Founder corrected",
+            "aiInference": "AI inference",
+            "externalEvidence": "External evidence",
+            "unknown": "Unknown"
+          },
           "fields": {
             "business": "Business",
             "customer": "Customer",
@@ -6691,11 +6702,11 @@
           "trustContract": {
             "label": "Document check",
             "title": "We have not understood enough of your business from this document yet.",
-            "pdfBody": "We cannot read the PDF body yet. Let's clarify together through the questions below.",
-            "docxBody": "We cannot read the Word body yet. Let's clarify together through the questions below.",
-            "insufficientBody": "There is not enough document text to analyze yet.",
-            "nextHint": "Paste your document text or answer the questions below to continue.",
-            "continueCta": "Continue with your answers",
+            "pdfBody": "We cannot read the PDF body yet. We'll show what we understood and ask only about the gaps — you do not need to re-enter everything.",
+            "docxBody": "We cannot read the Word body yet. We'll show what we understood and ask only about the gaps — you do not need to re-enter everything.",
+            "insufficientBody": "There is not enough document text yet. We'll keep what we have and ask only about missing pieces.",
+            "nextHint": "What we already understood stays. We'll confirm only the missing items, one at a time.",
+            "continueCta": "Answer the gaps",
             "unknownFile": "uploaded file"
           },
           "reading": {
@@ -6751,6 +6762,14 @@
           "turnProgress": "AI PM dialogue turn {current}/{min}",
           "startIssueCta": "Start {issue}",
           "submitAnswerCta": "Apply answer",
+          "answerQuality": {
+            "VALID": "Answer applied.",
+            "PARTIAL": "Partially applied. Please add a bit more detail.",
+            "AMBIGUOUS": "That could mean several things — pick one clear answer.",
+            "IRRELEVANT": "That doesn't answer this question. Please respond to the question.",
+            "CONTRADICTORY": "That conflicts with what we already confirmed. Which is correct?",
+            "UNKNOWN": "Recorded as unknown. We'll move to the next gap."
+          },
           "backCta": "Back",
           "reanalyzeTitle": "Good.",
           "reanalyzeHint": "Organizing our next thinking from what we learned together.",
@@ -6980,6 +6999,15 @@
             "inferred": "inferred",
             "unknown": "unknown"
           },
+          "provenance": {
+            "document": "Document",
+            "userConfirmed": "Founder confirmed",
+            "userCorrected": "Founder corrected",
+            "aiInference": "AI inference",
+            "externalEvidence": "External evidence",
+            "unknown": "Unknown"
+          },
+          "inferenceNotFact": "not confirmed fact",
           "draftFields": {
             "business": "Business",
             "customer": "Customer",

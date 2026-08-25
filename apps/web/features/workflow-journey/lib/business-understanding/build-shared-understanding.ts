@@ -2,6 +2,12 @@ import type { BusinessUnderstanding } from '@repo/types/domain/business-understa
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
 import type { UnderstandingPhase } from './business-understanding-store';
+import { memoryHasFact, type ConversationMemory } from './conversation-memory';
+import {
+  confidenceFromProvenance,
+  type UnderstandingConfidence,
+  type UnderstandingProvenance,
+} from './understanding-contract';
 import {
   isWorkspaceDocumentReadable,
   looksLikeDocumentFileName,
@@ -13,6 +19,14 @@ export type WorkspaceSharedUnderstanding = {
   business: string;
   customer: string;
   problem: string;
+};
+
+/** Long Sprint Spine — values + provenance/confidence for UI honesty. */
+export type WorkspaceUnderstandingSpine = WorkspaceSharedUnderstanding & {
+  provenance: Record<keyof WorkspaceSharedUnderstanding, UnderstandingProvenance>;
+  confidence: Record<keyof WorkspaceSharedUnderstanding, UnderstandingConfidence>;
+  /** ✔ known · ● in progress · ○ unknown */
+  marks: Record<keyof WorkspaceSharedUnderstanding, 'known' | 'progress' | 'unknown'>;
 };
 
 export const SHARED_UNDERSTANDING_PENDING = '아직 확인 중';
@@ -33,31 +47,55 @@ function safeBusinessLabel(value: string | null | undefined): string | null {
   return truncate(trimmed, 48);
 }
 
+function isPending(value: string): boolean {
+  const trimmed = value.trim();
+  return (
+    !trimmed ||
+    trimmed === SHARED_UNDERSTANDING_PENDING ||
+    trimmed === SHARED_UNDERSTANDING_UNREADABLE_BUSINESS
+  );
+}
+
 function resolveBusinessField(
   documentText: string,
   entities: LaunchLensDomainContext | null,
   understanding: BusinessUnderstanding | null,
   readable: boolean,
-): string {
+): { value: string; provenance: UnderstandingProvenance } {
   if (!readable) {
-    return SHARED_UNDERSTANDING_UNREADABLE_BUSINESS;
+    return {
+      value: SHARED_UNDERSTANDING_UNREADABLE_BUSINESS,
+      provenance: 'UNKNOWN',
+    };
   }
 
   const fromEntity =
     safeBusinessLabel(entities?.product.value) ??
     safeBusinessLabel(entities?.business.value) ??
     safeBusinessLabel(entities?.business.name);
-  if (fromEntity) return fromEntity;
+  if (fromEntity) {
+    const basis = entities?.business.basis ?? entities?.product.basis;
+    return {
+      value: fromEntity,
+      provenance: basis === 'document' ? 'DOCUMENT' : 'AI_INFERENCE',
+    };
+  }
 
   if (understanding?.business.value?.trim()) {
     const fromUnderstanding = safeBusinessLabel(understanding.business.value);
-    if (fromUnderstanding) return fromUnderstanding;
+    if (fromUnderstanding) {
+      return {
+        value: fromUnderstanding,
+        provenance:
+          understanding.business.status === 'document' ? 'DOCUMENT' : 'AI_INFERENCE',
+      };
+    }
   }
 
   const solutionMatch = documentText.match(/(?:솔루션|서비스|제품|사업)[:\s]*([^\n#]{4,48})/i);
   if (solutionMatch?.[1]) {
     const fromDoc = safeBusinessLabel(solutionMatch[1]);
-    if (fromDoc) return fromDoc;
+    if (fromDoc) return { value: fromDoc, provenance: 'DOCUMENT' };
   }
 
   const firstLine = documentText
@@ -65,56 +103,162 @@ function resolveBusinessField(
     .map((line) => line.replace(/^#+\s*/, '').trim())
     .find((line) => line.length >= 4);
   const fromLine = safeBusinessLabel(firstLine);
-  if (fromLine) return fromLine;
+  if (fromLine) return { value: fromLine, provenance: 'DOCUMENT' };
 
-  return SHARED_UNDERSTANDING_PENDING;
+  return { value: SHARED_UNDERSTANDING_PENDING, provenance: 'UNKNOWN' };
 }
 
 function resolveCustomerField(
   turns: AiPmLoopTurn[],
   entities: LaunchLensDomainContext | null,
   understanding: BusinessUnderstanding | null,
-): string {
+  memory?: ConversationMemory | null,
+): { value: string; provenance: UnderstandingProvenance } {
+  if (memory && memoryHasFact(memory, 'customer')) {
+    const fact = memory.facts.find((f) => f.key === 'customer');
+    if (fact?.value.trim()) {
+      return {
+        value: truncate(fact.value, 48),
+        provenance: fact.source === 'user_turn' ? 'USER_CONFIRMED' : 'DOCUMENT',
+      };
+    }
+  }
+
   const customerTurn = turns.find((turn) => turn.issueId === 'customer_definition');
   if (customerTurn?.answer.trim()) {
-    return truncate(customerTurn.answer.replace(/\s+/g, ' '), 48);
+    return {
+      value: truncate(customerTurn.answer.replace(/\s+/g, ' '), 48),
+      provenance: 'USER_CONFIRMED',
+    };
   }
 
   const fromEntity = safeBusinessLabel(entities?.customer.value);
-  if (fromEntity) return fromEntity;
+  if (fromEntity) {
+    return {
+      value: fromEntity,
+      provenance: entities?.customer.basis === 'document' ? 'DOCUMENT' : 'AI_INFERENCE',
+    };
+  }
 
   if (understanding?.customer.value?.trim()) {
     const fromUnderstanding = safeBusinessLabel(understanding.customer.value);
-    if (fromUnderstanding) return fromUnderstanding;
+    if (fromUnderstanding) {
+      return {
+        value: fromUnderstanding,
+        provenance:
+          understanding.customer.status === 'document' ? 'DOCUMENT' : 'AI_INFERENCE',
+      };
+    }
   }
 
   if (understanding && understanding.customerMentions.length > 0) {
-    return truncate(
-      understanding.customerMentions
-        .slice(0, 2)
-        .map((mention) => mention.label)
-        .join(' · '),
-      48,
-    );
+    return {
+      value: truncate(
+        understanding.customerMentions
+          .slice(0, 2)
+          .map((mention) => mention.label)
+          .join(' · '),
+        48,
+      ),
+      provenance: 'AI_INFERENCE',
+    };
   }
 
-  return SHARED_UNDERSTANDING_PENDING;
+  return { value: SHARED_UNDERSTANDING_PENDING, provenance: 'UNKNOWN' };
 }
 
 function resolveProblemField(
   turns: AiPmLoopTurn[],
   understanding: BusinessUnderstanding | null,
-): string {
+  memory?: ConversationMemory | null,
+): { value: string; provenance: UnderstandingProvenance } {
+  if (memory && memoryHasFact(memory, 'problem')) {
+    const fact = memory.facts.find((f) => f.key === 'problem');
+    if (fact?.value.trim()) {
+      return {
+        value: truncate(fact.value, 48),
+        provenance: fact.source === 'user_turn' ? 'USER_CONFIRMED' : 'DOCUMENT',
+      };
+    }
+  }
+
   const problemTurn = turns.find((turn) => turn.issueId === 'problem_definition');
   if (problemTurn?.answer.trim()) {
-    return truncate(problemTurn.answer, 48);
+    return {
+      value: truncate(problemTurn.answer, 48),
+      provenance: 'USER_CONFIRMED',
+    };
   }
 
   if (understanding?.problem.value?.trim()) {
-    return truncate(understanding.problem.value, 48);
+    return {
+      value: truncate(understanding.problem.value, 48),
+      provenance:
+        understanding.problem.status === 'document' ? 'DOCUMENT' : 'AI_INFERENCE',
+    };
   }
 
-  return SHARED_UNDERSTANDING_PENDING;
+  return { value: SHARED_UNDERSTANDING_PENDING, provenance: 'UNKNOWN' };
+}
+
+function markFor(
+  value: string,
+  provenance: UnderstandingProvenance,
+): 'known' | 'progress' | 'unknown' {
+  if (isPending(value) || provenance === 'UNKNOWN') return 'unknown';
+  if (provenance === 'USER_CONFIRMED' || provenance === 'USER_CORRECTED') return 'known';
+  return 'progress';
+}
+
+/** Long Sprint Spine with provenance — use for UI honesty. */
+export function buildUnderstandingSpine(input: {
+  documentText: string;
+  turns: AiPmLoopTurn[];
+  understanding: BusinessUnderstanding | null;
+  entities: LaunchLensDomainContext | null;
+  understandingPhase?: UnderstandingPhase;
+  memory?: ConversationMemory | null;
+}): WorkspaceUnderstandingSpine | null {
+  const text = input.documentText.trim();
+  if (text.length < 8 || !input.understanding) return null;
+
+  const readable = isWorkspaceDocumentReadable(text);
+  const business = resolveBusinessField(
+    text,
+    input.entities,
+    input.understanding,
+    readable,
+  );
+  const customer = resolveCustomerField(
+    input.turns,
+    input.entities,
+    input.understanding,
+    input.memory,
+  );
+  const problem = resolveProblemField(input.turns, input.understanding, input.memory);
+
+  const provenance = {
+    business: business.provenance,
+    customer: customer.provenance,
+    problem: problem.provenance,
+  } as const;
+
+  return {
+    business: business.value,
+    customer: customer.value,
+    problem: problem.value,
+    provenance,
+    confidence: {
+      business: confidenceFromProvenance(provenance.business),
+      customer: confidenceFromProvenance(provenance.customer),
+      problem: confidenceFromProvenance(provenance.problem),
+    },
+    marks: {
+      business: markFor(business.value, provenance.business),
+      customer: markFor(customer.value, provenance.customer),
+      problem: markFor(problem.value, provenance.problem),
+    },
+  };
 }
 
 /** Spine — recomputed whenever workspace state derives (incl. every loop turn). */
@@ -124,15 +268,13 @@ export function buildSharedUnderstanding(input: {
   understanding: BusinessUnderstanding | null;
   entities: LaunchLensDomainContext | null;
   understandingPhase?: UnderstandingPhase;
+  memory?: ConversationMemory | null;
 }): WorkspaceSharedUnderstanding | null {
-  const text = input.documentText.trim();
-  if (text.length < 8 || !input.understanding) return null;
-
-  const readable = isWorkspaceDocumentReadable(text);
-
+  const spine = buildUnderstandingSpine(input);
+  if (!spine) return null;
   return {
-    business: resolveBusinessField(text, input.entities, input.understanding, readable),
-    customer: resolveCustomerField(input.turns, input.entities, input.understanding),
-    problem: resolveProblemField(input.turns, input.understanding),
+    business: spine.business,
+    customer: spine.customer,
+    problem: spine.problem,
   };
 }

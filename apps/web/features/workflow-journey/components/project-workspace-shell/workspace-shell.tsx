@@ -16,6 +16,7 @@ import { WorkspaceSharedUnderstandingPanel } from './workspace-shared-understand
 import { WorkspaceSidebar } from './workspace-sidebar';
 import type { WorkspaceBusinessState } from '../../lib/business-understanding/build-ai-pm-business-clarity';
 import type { WorkspaceSharedUnderstanding } from '../../lib/business-understanding/build-shared-understanding';
+import type { WorkspaceUnderstandingSpine } from '../../lib/business-understanding/build-shared-understanding';
 import type {
   WorkspaceMainView,
   WorkspaceNavNodeId,
@@ -36,6 +37,7 @@ type ProjectWorkspaceShellProps = {
   stripMessage?: string | null;
   businessState?: WorkspaceBusinessState | null;
   sharedUnderstanding?: WorkspaceSharedUnderstanding | null;
+  understandingSpine?: WorkspaceUnderstandingSpine | null;
   children: React.ReactNode;
   className?: string;
 };
@@ -54,6 +56,7 @@ export function ProjectWorkspaceShell({
   stripMessage = null,
   businessState = null,
   sharedUnderstanding = null,
+  understandingSpine = null,
   children,
   className,
 }: ProjectWorkspaceShellProps) {
@@ -97,7 +100,10 @@ export function ProjectWorkspaceShell({
       {businessState ? <WorkspaceBusinessStateHeader state={businessState} /> : null}
 
       {sharedUnderstanding ? (
-        <WorkspaceSharedUnderstandingPanel understanding={sharedUnderstanding} />
+        <WorkspaceSharedUnderstandingPanel
+          understanding={sharedUnderstanding}
+          spine={understandingSpine}
+        />
       ) : null}
 
       {!businessState ? <WorkspaceAiPmStrip message={stripMessage} /> : null}

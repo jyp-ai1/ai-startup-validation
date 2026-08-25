@@ -83,6 +83,7 @@ import {
   presentWorkspaceReviewGate,
   presentWorkspaceSidebar,
   presentSharedUnderstanding,
+  presentUnderstandingSpine,
 } from '../../lib/business-understanding/workspace-state-presenters';
 import {
   clearAllDemoClientState,
@@ -691,6 +692,7 @@ export function V2StrategyWorkspaceView({
   const sidebarSnapshot = presentWorkspaceSidebar(workspaceState);
   const workspaceBusinessState = presentWorkspaceHeader(workspaceState);
   const sharedUnderstanding = presentSharedUnderstanding(workspaceState);
+  const understandingSpine = presentUnderstandingSpine(workspaceState);
   const reviewGate = presentWorkspaceReviewGate(workspaceState);
 
   const runReview = useCallback(() => {
@@ -877,6 +879,7 @@ export function V2StrategyWorkspaceView({
       stripMessage={stripMessage}
       businessState={workspaceBusinessState}
       sharedUnderstanding={sharedUnderstanding}
+      understandingSpine={understandingSpine}
       onMainViewChange={setMainView}
       onSelectNode={setActiveNavNodeId}
       onSelectAiPm={() => setMainView('ai-pm')}

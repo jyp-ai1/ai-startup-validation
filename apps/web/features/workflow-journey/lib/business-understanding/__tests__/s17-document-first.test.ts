@@ -7,6 +7,7 @@ import {
 } from '../build-document-first-draft';
 import { SHARED_UNDERSTANDING_PENDING } from '../build-shared-understanding';
 import { PDF_PLACEHOLDER_TEXT } from '../../first-trust';
+import { looksLikeDocumentFileName } from '../workspace-document-eligibility';
 
 const RICH_DOC = `# 취향저격컴퍼니
 
@@ -18,8 +19,12 @@ const RICH_DOC = `# 취향저격컴퍼니
 경쟁: 유사 큐레이션 앱
 `;
 
+const FILENAME_DOC = `plan.pdf
+[[filename] plan.pdf]]
+`;
+
 describe('S17-1 Document First draft', () => {
-  it('builds draft with business/customer/problem and confidence after readable doc', () => {
+  it('builds draft with Long Sprint provenance after readable doc', () => {
     const understanding = buildBusinessUnderstanding(RICH_DOC);
     const draft = buildDocumentFirstDraft({
       documentText: RICH_DOC,
@@ -38,9 +43,11 @@ describe('S17-1 Document First draft', () => {
     expect(draft!.confidencePercent).toBeGreaterThan(0);
     expect(draft!.documentReadable).toBe(true);
     expect(['document', 'mixed', 'inferred']).toContain(draft!.confidenceMode);
+    expect(draft!.fields.every((f) => f.provenance && f.confidence)).toBe(true);
+    expect(looksLikeDocumentFileName(draft!.spine.business)).toBe(false);
   });
 
-  it('keeps honest unknown draft for PDF placeholder (no empty-form contract)', () => {
+  it('keeps honest unknown draft for PDF placeholder (gap fields only, no empty-form)', () => {
     const understanding = buildBusinessUnderstanding(PDF_PLACEHOLDER_TEXT);
     const draft = buildDocumentFirstDraft({
       documentText: PDF_PLACEHOLDER_TEXT,
@@ -51,8 +58,21 @@ describe('S17-1 Document First draft', () => {
     expect(draft!.documentReadable).toBe(false);
     expect(draft!.confidencePercent).toBeLessThanOrEqual(42);
     expect(draft!.fields.length).toBe(5);
-    // Always returns field rows — never null/empty form
     expect(draft!.fields.every((f) => typeof f.value === 'string')).toBe(true);
+    expect(draft!.gapFieldIds.length).toBeGreaterThan(0);
+  });
+
+  it('never uses filename as business name', () => {
+    const understanding = buildBusinessUnderstanding(FILENAME_DOC);
+    const draft = buildDocumentFirstDraft({
+      documentText: FILENAME_DOC,
+      understanding,
+    });
+    if (!draft) return;
+    expect(looksLikeDocumentFileName(draft.spine.business)).toBe(false);
+    const business = draft.fields.find((f) => f.id === 'business');
+    expect(business).toBeTruthy();
+    expect(looksLikeDocumentFileName(business!.value)).toBe(false);
   });
 
   it('seeds domain from draft so edit path is not blank', () => {

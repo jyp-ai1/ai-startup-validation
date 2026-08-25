@@ -23,8 +23,9 @@ import { buildBusinessUnderstanding } from './build-business-understanding';
 import type { UnderstandingPhase } from './business-understanding-store';
 import { buildWorkspaceBusinessState, type WorkspaceBusinessState } from './build-ai-pm-business-clarity';
 import {
-  buildSharedUnderstanding,
+  buildUnderstandingSpine,
   type WorkspaceSharedUnderstanding,
+  type WorkspaceUnderstandingSpine,
 } from './build-shared-understanding';
 import { evaluateDomainTrust } from '../domain/domain-trust-rules';
 import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
@@ -87,6 +88,8 @@ export type WorkspaceState = {
   sidebar: WorkspaceSidebarSnapshot;
   /** S8-1 — business · customer · problem spine (always when analyzable). */
   sharedUnderstanding: WorkspaceSharedUnderstanding | null;
+  /** Long Sprint Spine — provenance / ✔●○ marks for Detail. */
+  understandingSpine: WorkspaceUnderstandingSpine | null;
 };
 
 /** S16 P0-3 — stage-first progress (numbers secondary). */
@@ -531,16 +534,25 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
     loopInProgress,
   });
 
-  const sharedUnderstanding =
+  const memory = loadConversationMemory(input.projectId);
+  const understandingSpine =
     understanding && input.reviewCount === 0
-      ? buildSharedUnderstanding({
+      ? buildUnderstandingSpine({
           documentText,
           turns: input.loop.turns,
           understanding,
           entities,
           understandingPhase: input.understandingPhase,
+          memory,
         })
       : null;
+  const sharedUnderstanding = understandingSpine
+    ? {
+        business: understandingSpine.business,
+        customer: understandingSpine.customer,
+        problem: understandingSpine.problem,
+      }
+    : null;
 
   return {
     version: 1,
@@ -556,5 +568,6 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
     header,
     sidebar,
     sharedUnderstanding,
+    understandingSpine,
   };
 }

@@ -13,8 +13,9 @@ import { cn } from '@repo/ui/lib/utils';
 
 import {
   buildDocumentFirstDraft,
-  type DocumentFirstFieldSource,
+  type DocumentFirstField,
 } from '../../lib/business-understanding/build-document-first-draft';
+import type { UnderstandingProvenance } from '../../lib/business-understanding/understanding-contract';
 import { buildDiscoveryItems, collectUnconfirmedLines } from '../../lib/business-understanding/discovery-summary';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
 
@@ -28,15 +29,25 @@ type WorkspaceBusinessUnderstandingCardProps = {
   className?: string;
 };
 
-function sourceLabelKey(source: DocumentFirstFieldSource): string {
-  switch (source) {
-    case 'document':
-      return 'confidenceSource.document';
-    case 'inferred':
-      return 'confidenceSource.inferred';
+function provenanceLabelKey(provenance: UnderstandingProvenance): string {
+  switch (provenance) {
+    case 'DOCUMENT':
+      return 'provenance.document';
+    case 'USER_CONFIRMED':
+      return 'provenance.userConfirmed';
+    case 'USER_CORRECTED':
+      return 'provenance.userCorrected';
+    case 'AI_INFERENCE':
+      return 'provenance.aiInference';
+    case 'EXTERNAL_EVIDENCE':
+      return 'provenance.externalEvidence';
     default:
-      return 'confidenceSource.unknown';
+      return 'provenance.unknown';
   }
+}
+
+function fieldProvenance(field: DocumentFirstField): UnderstandingProvenance {
+  return field.provenance;
 }
 
 /** S17-1 Document First — AI draft first; user confirms/corrects (never empty form primacy). */
@@ -116,7 +127,8 @@ export function WorkspaceBusinessUnderstandingCard({
                 <dt className="flex flex-wrap items-baseline gap-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                   <span>{t(`draftFields.${field.id}`)}</span>
                   <span className="font-normal normal-case tracking-normal">
-                    ({t(sourceLabelKey(field.source))})
+                    ({t(provenanceLabelKey(fieldProvenance(field)))}
+                    {field.provenance === 'AI_INFERENCE' ? ` · ${t('inferenceNotFact')}` : ''})
                   </span>
                 </dt>
                 <dd className="mt-1 text-sm font-medium leading-snug text-foreground">{field.value}</dd>

@@ -33,10 +33,16 @@ import {
 } from '../../lib/business-understanding/workspace-document-eligibility';
 import { loadConversationMemory } from '../../lib/business-understanding/conversation-memory-store';
 import { buildConversationMemoryFromSources } from '../../lib/business-understanding/build-conversation-memory';
+import { factKeyForIssue } from '../../lib/business-understanding/build-conversation-memory';
+import { getFact } from '../../lib/business-understanding/conversation-memory';
 import { hasAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentThinking } from '../../lib/business-understanding/build-thinking-presenter';
 import { presentS11Surface } from '../../lib/business-understanding/build-s11-surface-presenter';
 import { THINKING_TOTAL_MS } from '../../lib/business-understanding/thinking-stages';
+import {
+  evaluateAnswerQuality,
+  type AnswerQuality,
+} from '../../lib/business-understanding/understanding-contract';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
 import { WorkspaceDocumentTrustBlock } from './workspace-document-trust-block';
 import { WorkspaceAiPmReturnWelcomeBlock } from './workspace-ai-pm-return-welcome-block';
@@ -78,6 +84,7 @@ export function WorkspaceAiPmLoopPanel({
   const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));
   const [answerDraft, setAnswerDraft] = useState('');
   const [reanalyzing, setReanalyzing] = useState(false);
+  const [answerQualityHint, setAnswerQualityHint] = useState<AnswerQuality | null>(null);
   const [updateSavedFlash, setUpdateSavedFlash] = useState(false);
   const [sessionPaused, setSessionPaused] = useState(false);
   const [returnWelcomeDismissed, setReturnWelcomeDismissed] = useState(false);
@@ -370,6 +377,17 @@ export function WorkspaceAiPmLoopPanel({
     const trimmed = answerDraft.trim();
     if (!issueId || trimmed.length < 4 || readOnly) return;
 
+    const factKey = factKeyForIssue(issueId);
+    const memory = loadConversationMemory(projectId);
+    const existingFact = factKey ? getFact(memory, factKey)?.value ?? null : null;
+    const preview = evaluateAnswerQuality(trimmed, { existingFact });
+    if (!preview.mergeable) {
+      setAnswerQualityHint(preview.quality);
+      return;
+    }
+
+    setAnswerQualityHint(null);
+
     logG1LoopEvent({
       event: 'answer_submit',
       workspace: g1WorkspaceLabel(projectId),
@@ -383,7 +401,11 @@ export function WorkspaceAiPmLoopPanel({
       { issueId, answer: trimmed, appliedAt: new Date().toISOString() },
       projectId,
     );
-    applyWorkspaceLoopAnswer(issueId, trimmed, projectId);
+    const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId);
+    if (!result.applied) {
+      setAnswerQualityHint(result.quality);
+      return;
+    }
     onDocumentUpdated?.(issueId, trimmed);
 
     setAnswerDraft('');
@@ -427,6 +449,7 @@ export function WorkspaceAiPmLoopPanel({
   }, [
     answerDraft,
     loopState.currentIssueId,
+    loopState.turns.length,
     onDocumentUpdated,
     onLoopComplete,
     nextIssue,
@@ -521,13 +544,25 @@ export function WorkspaceAiPmLoopPanel({
         <WorkspaceS11Surface surface={s11Surface} />
         <textarea
           value={answerDraft}
-          onChange={(event) => setAnswerDraft(event.target.value)}
+          onChange={(event) => {
+            setAnswerQualityHint(null);
+            setAnswerDraft(event.target.value);
+          }}
           rows={5}
           readOnly={readOnly}
           placeholder={t(`issues.${activeIssue}.placeholder`)}
           className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
           aria-label={s11Surface.question.text || t('submitAnswerCta')}
         />
+        {answerQualityHint ? (
+          <p
+            data-testid="answer-quality-hint"
+            className="mt-2 text-sm text-amber-800 dark:text-amber-200"
+            role="status"
+          >
+            {t(`answerQuality.${answerQualityHint}`)}
+          </p>
+        ) : null}
         <div className="mt-4 flex flex-wrap gap-2">
           <Button
             type="button"
@@ -595,13 +630,25 @@ export function WorkspaceAiPmLoopPanel({
               <WorkspaceS11Surface surface={s11Surface} />
               <textarea
                 value={answerDraft}
-                onChange={(event) => setAnswerDraft(event.target.value)}
+                onChange={(event) => {
+                  setAnswerQualityHint(null);
+                  setAnswerDraft(event.target.value);
+                }}
                 rows={5}
                 readOnly={readOnly}
                 placeholder={activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : undefined}
                 className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
                 aria-label={s11Surface.question.text || t('submitAnswerCta')}
               />
+              {answerQualityHint ? (
+                <p
+                  data-testid="answer-quality-hint"
+                  className="mt-2 text-sm text-amber-800 dark:text-amber-200"
+                  role="status"
+                >
+                  {t(`answerQuality.${answerQualityHint}`)}
+                </p>
+              ) : null}
               <div className="mt-4 flex flex-wrap gap-2">
                 <Button
                   type="button"

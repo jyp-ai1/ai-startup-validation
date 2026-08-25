@@ -6695,6 +6695,17 @@
         "sharedUnderstanding": {
           "label": "제가 이해한 내용",
           "reflectUpdated": "이렇게 이해를 수정했습니다",
+          "detailCta": "자세히",
+          "summaryCta": "요약",
+          "inferenceNotFact": "AI 추론 · 확정 사실 아님",
+          "provenance": {
+            "document": "문서",
+            "userConfirmed": "대표님 확인",
+            "userCorrected": "대표님 수정",
+            "aiInference": "AI 추론",
+            "externalEvidence": "외부 근거",
+            "unknown": "미확인"
+          },
           "fields": {
             "business": "사업",
             "customer": "고객",
@@ -6844,11 +6855,11 @@
           "trustContract": {
             "label": "문서 확인",
             "title": "아직 문서에서 사업 내용을 충분히 이해하지 못했습니다.",
-            "pdfBody": "PDF 본문을 아직 읽을 수 없습니다. 아래 질문으로 같이 정리해 주세요.",
-            "docxBody": "Word 본문을 아직 읽을 수 없습니다. 아래 질문으로 같이 정리해 주세요.",
-            "insufficientBody": "분석할 본문이 아직 충분하지 않습니다.",
-            "nextHint": "계속하려면 문서를 붙여넣거나, 아래 질문에 답해 주세요.",
-            "continueCta": "답변으로 같이 정리하기",
+            "pdfBody": "PDF 본문을 아직 읽을 수 없습니다. 이해한 내용과 부족한 부분만 질문으로 같이 정리합니다. 처음부터 다시 입력하실 필요는 없습니다.",
+            "docxBody": "Word 본문을 아직 읽을 수 없습니다. 이해한 내용과 부족한 부분만 질문으로 같이 정리합니다. 처음부터 다시 입력하실 필요는 없습니다.",
+            "insufficientBody": "분석할 본문이 아직 충분하지 않습니다. 이해한 부분부터 보여 드리고, 빈 칸만 질문합니다.",
+            "nextHint": "이미 파악한 내용은 유지합니다. 부족한 항목만 하나씩 확인합니다.",
+            "continueCta": "부족한 부분만 답변하기",
             "unknownFile": "업로드 파일"
           },
           "reading": {
@@ -6904,6 +6915,14 @@
           "turnProgress": "AI PM 대화 {current}/{min}회차",
           "startIssueCta": "{issue} 시작",
           "submitAnswerCta": "답변 반영하기",
+          "answerQuality": {
+            "VALID": "답변을 반영했습니다.",
+            "PARTIAL": "일부만 반영했습니다. 조금만 더 구체적으로 알려 주세요.",
+            "AMBIGUOUS": "뜻이 여러 가지로 읽힙니다. 한 가지만 골라 알려 주세요.",
+            "IRRELEVANT": "이 답변으로는 확인할 수 없습니다. 질문과 관련된 내용을 적어 주세요.",
+            "CONTRADICTORY": "이전에 확인한 내용과 다릅니다. 어느 쪽이 맞는지 확인해 주세요.",
+            "UNKNOWN": "「모름」으로 기록합니다. 다른 질문으로 이어갈게요."
+          },
           "backCta": "돌아가기",
           "reanalyzeTitle": "좋습니다.",
           "reanalyzeHint": "우리가 배운 내용을 바탕으로 다음 생각을 정리하고 있습니다.",
@@ -7133,6 +7152,15 @@
             "inferred": "추론",
             "unknown": "미확인"
           },
+          "provenance": {
+            "document": "문서",
+            "userConfirmed": "대표님 확인",
+            "userCorrected": "대표님 수정",
+            "aiInference": "AI 추론",
+            "externalEvidence": "외부 근거",
+            "unknown": "미확인"
+          },
+          "inferenceNotFact": "확정 사실 아님",
           "draftFields": {
             "business": "사업",
             "customer": "고객",
