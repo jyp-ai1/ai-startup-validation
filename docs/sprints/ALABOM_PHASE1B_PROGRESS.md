@@ -2,25 +2,32 @@
 
 ```text
 🟢 LONG SPRINT — EXECUTING
-Updated: 2026-08-25 (session 3)
+Updated: 2026-08-25 (session 4 — W12)
+Final CPO package: NOT READY (honest)
 ```
 
 ## Shipped
 
 | Area | Status | SHA / note |
 |------|--------|------------|
-| SCOPE + EXECUTION_PLAN → EXECUTING | Done | `5c6833c` |
-| **W1** Concept 3 Progressive Loop brand | Done | `e5d6808` |
-| **W2–W6** Provenance · Spine · Answer Quality · Memory bag | Done | `1191259` |
-| **W7–W8** Summary/Detail (S11) · Why follow-up · Correction (USER_CORRECTED) · Contradiction confirm UX | Done | this session |
-| **W9 / W11** Stage Transition Engine (not answer-count) · Validation handoff copy · loop no longer auto-completes on turn count | Done | this session |
-| **W10** Evidence-first Review: Judgment → ≤3 reasons → critical gap → Hero CTA=1 · score supporting | Done | this session |
+| Docs EXECUTING | Done | `5c6833c` |
+| W1 Brand Concept 3 | Done | `e5d6808` |
+| W2–W6 Loop foundations | Done | `1191259` |
+| W7–W11 Stage / Review / Why / Contradiction | Done | `18fbe8c` |
+| **W12 Internal QA + Evidence index + Regression unit sign-off + Prod smoke** | Done (partial) | this session |
+| CTO Report draft | Draft only — **not** Final Review ready | `ALABOM_PHASE1B_CTO_REPORT.md` |
 
-## Remaining (internal next)
+## Unit / Prod this session
 
-1. Full Regression harness sign-off S7/S8/S14/S16/S17 (W11 formal)
-2. W12 QA Matrix A–F + Evidence Package 01–20 + CEO guides
-3. Demo/Auth persistence smoke + mobile/error pass
-4. Deeper Stage C/D Risk/Decision surfaces (beyond Understanding→Validation)
+- Vitest business-understanding + brand: **92/92 PASS** → `docs/evidence/ALABOM/phase1b/unit-suite-result.json`
+- Prod: `/` `/demo/start` `/icon.svg` `/brand/alabom-mark.svg` → **200**
+- Matrix A–F: see `ALABOM_PHASE1B_INTERNAL_QA.md` (PARTIAL cells remain)
+
+## Remaining before Final CPO
+
+1. Live Evidence media for core 01–20 (min 01,02,06,08,09,11,12,13,15,17)
+2. Close PARTIAL: C1 refresh · D2 Auth · D3 Mobile · E3 Retry · F1 Idea seed
+3. Optional Playwright smoke if live evidence needs automation
+4. CEO Walkthrough A+B after CPO opens Final package
 
 Do **not** invent Phase 1-B.1. Escalate only per SCOPE §29.
