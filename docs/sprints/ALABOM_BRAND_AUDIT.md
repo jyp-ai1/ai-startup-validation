@@ -187,4 +187,6 @@ Until freeze: no logo, landing, or Workspace branding work.
 
 ---
 
+**Scope Freeze (next gate):** [`ALABOM_PHASE0_SCOPE_FREEZE.md`](./ALABOM_PHASE0_SCOPE_FREEZE.md) — brand vs UX separation; await CPO PASS before Phase 1.
+
 *Next Autonomous Target (record only): await CPO brand scope freeze; then Phase 1 brand surface swap (i18n + hardcoded headers/OG/favicon) excluding storage keys and Workspace UX refactor.*
