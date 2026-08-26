@@ -95,9 +95,10 @@ export function WorkspaceS11Surface({ surface, className }: WorkspaceS11SurfaceP
           {surface.question.purpose ? (
             <p
               data-testid="surface-question-purpose"
+              data-cpo-field="why-this-question-now"
               className="text-[15px] leading-relaxed text-muted-foreground"
             >
-              <span className="font-medium text-foreground/80">왜 묻나요 · </span>
+              <span className="font-medium text-foreground/80">왜 지금 이 질문 · </span>
               {surface.question.purpose}
             </p>
           ) : null}

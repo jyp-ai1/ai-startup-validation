@@ -36,6 +36,9 @@ const MID_JUDGMENT_RE =
   /(지금까지|요약|정리해|정리해줘|중간\s*판단|현재\s*이해|how\s+do\s+you\s+see|mid[-\s]?summary|understand(ing)?\s+so\s+far)/i;
 const CORRECTION_RE =
   /(아니\s*그게\s*아니라|사실은|정정|고쳐|수정하|아니라\s*|다시\s*말하|correction|actually\s+it)/i;
+/** Explicit conflict with a prior claim — force CONFLICT even if token overlap is high */
+const EXPLICIT_CONFLICT_CUE_RE =
+  /(다릅니다|다르다|와\s*다름|이\s*아니라|그게\s*아니라|모순|충돌|contradict|instead\s+of)/i;
 /** Hangul jamo mash / repeated syllables without real words */
 const HANGUL_JAMO_MASH_RE = /^[\u3131-\u318E\s]{4,}$/;
 const HANGUL_REPEATED_SYLLABLE_RE = /^(?:([가-힣])\1{2,}|([가-힣]{1,2})\2{3,})$/;
@@ -244,9 +247,12 @@ export function interpretAnswerSemantics(input: {
     (askedFact === factKey ? input.existingFact : null) ??
     null;
 
-  if (existingForKey && answersContradict(existingForKey, trimmed)) {
+  if (
+    existingForKey &&
+    (answersContradict(existingForKey, trimmed) || EXPLICIT_CONFLICT_CUE_RE.test(trimmed))
+  ) {
     return {
-      intent: isCorrection ? 'correction' : 'business_fact',
+      intent: isCorrection || EXPLICIT_CONFLICT_CUE_RE.test(trimmed) ? 'correction' : 'business_fact',
       factKey,
       resolvedIssueId,
       value: trimmed,

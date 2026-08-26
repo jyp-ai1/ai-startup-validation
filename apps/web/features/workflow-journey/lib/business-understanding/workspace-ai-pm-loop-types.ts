@@ -20,6 +20,8 @@ export type AiPmLoopTurn = {
   intent?: AnswerIntent;
   /** Core v3 — superseded after prior-answer edit */
   superseded?: boolean;
+  /** Core v3 — why this question was asked (judgment gap) — transcript/UI */
+  whyNow?: string;
 };
 
 export type AiPmLoopState = {

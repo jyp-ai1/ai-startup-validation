@@ -241,3 +241,21 @@ export function resolveNextIssueByMissingField(
   const ranked = resolveMissingFieldPriorities(understanding, loop, options);
   return ranked[0]?.issueId ?? null;
 }
+
+/**
+ * CPO-verifiable "WHY THIS QUESTION NOW" for the active (or top) issue.
+ * Prefer Living/conflict whyNow over soft diagnosis copy.
+ */
+export function getWhyThisQuestionNow(
+  understanding: BusinessUnderstanding,
+  loop: AiPmLoopState,
+  options?: PriorityOptions & { issueId?: AiPmLoopIssueId | null },
+): MissingFieldPriority | null {
+  const ranked = resolveMissingFieldPriorities(understanding, loop, options);
+  if (ranked.length === 0) return null;
+  const want = options?.issueId;
+  if (want) {
+    return ranked.find((r) => r.issueId === want) ?? ranked[0] ?? null;
+  }
+  return ranked[0] ?? null;
+}

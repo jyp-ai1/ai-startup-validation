@@ -21,7 +21,7 @@ export type SurfacePresenter = {
   };
   question: {
     text: string;
-    /** 답하면 무엇을 알 수 있는가 */
+    /** 답하면 무엇을 알 수 있는가 / WHY THIS QUESTION NOW */
     purpose: string;
   };
   action: {

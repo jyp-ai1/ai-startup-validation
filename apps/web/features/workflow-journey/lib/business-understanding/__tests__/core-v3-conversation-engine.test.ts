@@ -83,6 +83,17 @@ describe('Core v3 semantic interpretation', () => {
     expect(result.quality).toBe('CONTRADICTORY');
     expect(result.mergeable).toBe(false);
   });
+
+  it('explicit 「다릅니다」 cue forces CONFLICT even with shared tokens', () => {
+    const result = interpretAnswerSemantics({
+      answer: '대학생 개인이 결제합니다 — 앞서 말한 관광객 직접 결제와 다릅니다',
+      askedIssueId: 'customer_definition',
+      existingFactsByKey: { buyer: '관광객이 앱에서 직접 예약·결제합니다' },
+    });
+    expect(result.quality).toBe('CONTRADICTORY');
+    expect(result.mergeable).toBe(false);
+    expect(result.factKey).toBe('buyer');
+  });
 });
 
 describe('Core v3 memory build — semantic not slot dump', () => {

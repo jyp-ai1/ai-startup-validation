@@ -24,6 +24,7 @@ import {
   type AiPmLoopIssueId,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { resolveNextLoopIssue } from '../../lib/business-understanding/resolve-ai-pm-priority-issue';
+import { getWhyThisQuestionNow } from '../../lib/business-understanding/resolve-missing-field-priority';
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import { buildAiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
 import {
@@ -170,6 +171,25 @@ export function WorkspaceAiPmLoopPanel({
   );
   const activeIssueId = loopState.currentIssueId ?? nextIssue;
   const lastTurn = loopState.turns.at(-1) ?? null;
+  const whyThisQuestionNow = useMemo(() => {
+    if (!activeIssueId) return null;
+    return getWhyThisQuestionNow(understanding, loopState, {
+      documentText: documentText ?? undefined,
+      entities,
+      memory: conversationMemory,
+      analysisResultExists,
+      turns: loopState.turns,
+      issueId: activeIssueId,
+    });
+  }, [
+    activeIssueId,
+    understanding,
+    loopState,
+    documentText,
+    entities,
+    conversationMemory,
+    analysisResultExists,
+  ]);
   const s11Surface = useMemo(() => {
     const askIssueId = loopState.currentIssueId ?? nextIssue;
     const showUpdate =
@@ -186,19 +206,28 @@ export function WorkspaceAiPmLoopPanel({
     });
 
     // Founder never picks a path — only answers. S11: Engine → Presenter Contract only.
-    if (showUpdate) {
-      return presentS11Surface(thinking, {
-        mode: 'update',
-        answeredIssueId: lastTurn.issueId,
-        nextIssueId: askIssueId,
-        documentText: documentText ?? '',
-      });
+    let surface = showUpdate
+      ? presentS11Surface(thinking, {
+          mode: 'update',
+          answeredIssueId: lastTurn.issueId,
+          nextIssueId: askIssueId,
+          documentText: documentText ?? '',
+        })
+      : presentS11Surface(thinking, {
+          mode: 'ask',
+          showDocumentLead: loopState.turns.length === 0,
+          documentText: documentText ?? '',
+        });
+
+    // CPO AC-1 — prefer Living/conflict whyNow over generic unlock purpose
+    const whyNow = whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale;
+    if (whyNow && surface.question.text.trim()) {
+      surface = {
+        ...surface,
+        question: { ...surface.question, purpose: whyNow },
+      };
     }
-    return presentS11Surface(thinking, {
-      mode: 'ask',
-      showDocumentLead: loopState.turns.length === 0,
-      documentText: documentText ?? '',
-    });
+    return surface;
   }, [
     conversationMemory,
     documentText,
@@ -209,6 +238,7 @@ export function WorkspaceAiPmLoopPanel({
     nextIssue,
     lastTurn,
     recognitionDismissed,
+    whyThisQuestionNow,
   ]);
   const initialDiagnosis = useMemo(
     () => buildAiPmInitialDiagnosis(understanding, entities, documentText),
@@ -606,6 +636,7 @@ export function WorkspaceAiPmLoopPanel({
         appliedAt: new Date().toISOString(),
         semanticFactKey: semantic.factKey,
         intent: semantic.intent,
+        whyNow: whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale,
       },
       projectId,
     );
@@ -640,6 +671,7 @@ export function WorkspaceAiPmLoopPanel({
     readOnly,
     startProcessing,
     syncState,
+    whyThisQuestionNow,
   ]);
 
   const resolveContradiction = useCallback(
