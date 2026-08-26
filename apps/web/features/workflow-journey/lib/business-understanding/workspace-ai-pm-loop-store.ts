@@ -71,8 +71,54 @@ export function isAiPmLoopComplete(state: AiPmLoopState): boolean {
   );
 }
 
+/** Issues resolved by mergeable business facts only — why/mid/nonsense do not resolve. */
 export function getResolvedIssueIds(state: AiPmLoopState): AiPmLoopIssueId[] {
-  return state.turns.map((turn) => turn.issueId);
+  return state.turns
+    .filter((turn) => {
+      if (turn.superseded) return false;
+      if (
+        turn.intent === 'why_meta' ||
+        turn.intent === 'mid_judgment' ||
+        turn.intent === 'nonsense' ||
+        turn.intent === 'unknown_signal'
+      ) {
+        return false;
+      }
+      // Legacy turns without intent still count
+      return true;
+    })
+    .map((turn) => turn.issueId);
+}
+
+/** Mark turn superseded and trim downstream turns after prior-answer edit. */
+export function supersedeTurnAndInvalidateDownstream(
+  editedIssueId: AiPmLoopIssueId,
+  issueOrder: AiPmLoopIssueId[],
+  projectId?: string,
+): AiPmLoopState {
+  const current = loadAiPmLoopState(projectId);
+  const editIndex = issueOrder.indexOf(editedIssueId);
+  const downstream =
+    editIndex >= 0 ? new Set(issueOrder.slice(editIndex + 1)) : new Set<AiPmLoopIssueId>();
+
+  const turns = current.turns.map((turn) => {
+    if (turn.issueId === editedIssueId && !turn.superseded) {
+      return { ...turn, superseded: true };
+    }
+    if (downstream.has(turn.issueId)) {
+      return { ...turn, superseded: true };
+    }
+    return turn;
+  });
+
+  const next: AiPmLoopState = {
+    ...current,
+    turns,
+    phase: 'answer',
+    currentIssueId: editedIssueId,
+  };
+  saveAiPmLoopState(next, projectId);
+  return next;
 }
 
 export function patchAiPmLoopState(

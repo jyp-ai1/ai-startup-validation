@@ -12,22 +12,27 @@ import { deriveEvidenceStatusFromMemory } from '../evidence-status';
 describe('S14 Memory Append contract', () => {
   it('accumulates Facts across keys; same key updates without wiping others', () => {
     let memory = emptyConversationMemory('s14-append');
+    const currentTrail = () =>
+      memory.facts
+        .filter((f) => (f.lifecycle ?? 'current') === 'current')
+        .map((f) => `${f.key}:${f.value}`)
+        .sort();
     const trail: string[][] = [];
 
-    trail.push(memory.facts.map((f) => f.key));
+    trail.push(currentTrail());
 
     memory = upsertConfirmedFact(memory, 'business', '병원 AI', 'document');
-    trail.push(memory.facts.map((f) => `${f.key}:${f.value}`).sort());
+    trail.push(currentTrail());
 
     memory = upsertConfirmedFact(memory, 'customer', '병원 원장', 'user_turn');
-    trail.push(memory.facts.map((f) => `${f.key}:${f.value}`).sort());
+    trail.push(currentTrail());
 
     memory = upsertConfirmedFact(memory, 'problem', '재방문 관리 부담', 'user_turn');
-    trail.push(memory.facts.map((f) => `${f.key}:${f.value}`).sort());
+    trail.push(currentTrail());
 
-    // same key update — must not drop other Facts
+    // same key update — must not drop other Facts; prior becomes superseded
     memory = upsertConfirmedFact(memory, 'customer', '병원 원장(갱신)', 'user_turn');
-    trail.push(memory.facts.map((f) => `${f.key}:${f.value}`).sort());
+    trail.push(currentTrail());
 
     expect(trail[0]).toEqual([]);
     expect(trail[1]).toEqual(['business:병원 AI']);
@@ -42,7 +47,8 @@ describe('S14 Memory Append contract', () => {
       'customer:병원 원장(갱신)',
       'problem:재방문 관리 부담',
     ]);
-    expect(memory.facts).toHaveLength(3);
+    expect(memory.facts.filter((f) => (f.lifecycle ?? 'current') === 'current')).toHaveLength(3);
+    expect(memory.facts.some((f) => f.key === 'customer' && f.lifecycle === 'superseded')).toBe(true);
 
     const outDir = join(process.cwd(), '../../docs/evidence/S14');
     mkdirSync(outDir, { recursive: true });
@@ -50,7 +56,7 @@ describe('S14 Memory Append contract', () => {
       join(outDir, '06-memory-append.json'),
       JSON.stringify(
         {
-          semantics: 'per-key upsert; other Facts preserved (append across keys)',
+          semantics: 'per-key upsert; other Facts preserved; prior current → superseded (v3)',
           not: 'full Memory wipe on each answer',
           trail,
         },

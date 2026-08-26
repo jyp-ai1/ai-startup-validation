@@ -17,8 +17,12 @@ import {
   loadAiPmLoopState,
   patchAiPmLoopState,
   setAiPmLoopPhase,
+  supersedeTurnAndInvalidateDownstream,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
-import type { AiPmLoopIssueId } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
+import {
+  AI_PM_LOOP_ISSUE_ORDER,
+  type AiPmLoopIssueId,
+} from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { resolveNextLoopIssue } from '../../lib/business-understanding/resolve-ai-pm-priority-issue';
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import { buildAiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
@@ -32,10 +36,17 @@ import {
 import {
   getWorkspaceDocumentTrust,
 } from '../../lib/business-understanding/workspace-document-eligibility';
-import { loadConversationMemory } from '../../lib/business-understanding/conversation-memory-store';
+import {
+  loadConversationMemory,
+  saveConversationMemory,
+} from '../../lib/business-understanding/conversation-memory-store';
 import { buildConversationMemoryFromSources } from '../../lib/business-understanding/build-conversation-memory';
 import { factKeyForIssue } from '../../lib/business-understanding/build-conversation-memory';
-import { getFact } from '../../lib/business-understanding/conversation-memory';
+import {
+  clearFactsByKeys,
+  getFact,
+  type ConversationFactKey,
+} from '../../lib/business-understanding/conversation-memory';
 import { hasAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentThinking } from '../../lib/business-understanding/build-thinking-presenter';
 import { presentS11Surface } from '../../lib/business-understanding/build-s11-surface-presenter';
@@ -44,12 +55,15 @@ import {
   applyLoopProcessingTransition,
   runLoopAnswerProcessing,
 } from '../../lib/business-understanding/process-loop-answer';
-import { buildLivingUnderstandingState } from '../../lib/business-understanding/living-understanding-state';
+import {
+  buildLivingUnderstandingState,
+  factsToClearAfterEdit,
+} from '../../lib/business-understanding/living-understanding-state';
 import { buildConversationalFinalOutput } from '../../lib/business-understanding/build-conversational-final-output';
 import {
-  evaluateAnswerQuality,
   type AnswerQuality,
 } from '../../lib/business-understanding/understanding-contract';
+import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
 import { WorkspaceDocumentTrustBlock } from './workspace-document-trust-block';
@@ -96,9 +110,17 @@ export function WorkspaceAiPmLoopPanel({
   const [answerQualityHint, setAnswerQualityHint] = useState<AnswerQuality | null>(null);
   const [contradiction, setContradiction] = useState<{
     issueId: AiPmLoopIssueId;
+    factKey: ConversationFactKey;
     prior: string;
     next: string;
   } | null>(null);
+  const [whyPanel, setWhyPanel] = useState<{
+    explanation: string;
+    evidence: string[];
+    returnToLoopCta: string;
+  } | null>(null);
+  const [midJudgmentText, setMidJudgmentText] = useState<string | null>(null);
+  const [editPriorOpen, setEditPriorOpen] = useState(false);
 
   const [updateSavedFlash, setUpdateSavedFlash] = useState(false);
   const [sessionPaused, setSessionPaused] = useState(false);
@@ -333,12 +355,20 @@ export function WorkspaceAiPmLoopPanel({
       entities,
     });
 
+    const contradictionGaps = result.living.claims.filter((c) => c.status === 'contradiction').length;
+    // Stage-A spine unknowns still open after Memory merge (not decorative coverage %)
+    const spineUnknowns = result.living.gaps.filter((g) =>
+      ['customerPersona', 'payer', 'problemJtbd'].includes(g.fieldKey),
+    ).length;
+
     const canComplete =
       !result.nextIssueId &&
       canEnterValidation({
         loop: refreshed,
         memory: result.memory,
         entities,
+        understandingCoveragePercent: result.living.coveragePercent,
+        criticalGapCount: contradictionGaps + spineUnknowns,
       });
 
     const next = applyLoopProcessingTransition(result, projectId, canComplete);
@@ -502,43 +532,85 @@ export function WorkspaceAiPmLoopPanel({
   const submitAnswer = useCallback(() => {
     const issueId = loopState.currentIssueId ?? nextIssue;
     const trimmed = answerDraft.trim();
-    if (!issueId || trimmed.length < 4 || readOnly) return;
+    if (!issueId || trimmed.length < 2 || readOnly) return;
 
-    const factKey = factKeyForIssue(issueId);
     const memory = loadConversationMemory(projectId);
-    const existingFact = factKey ? getFact(memory, factKey)?.value ?? null : null;
-    const preview = evaluateAnswerQuality(trimmed, { existingFact });
-    if (preview.quality === 'CONTRADICTORY' && existingFact) {
-      setAnswerQualityHint('CONTRADICTORY');
-      setContradiction({ issueId, prior: existingFact, next: trimmed });
+    const existingFactsByKey: Partial<Record<ConversationFactKey, string | null>> = {};
+    for (const fact of memory.facts) {
+      if ((fact.lifecycle ?? 'current') === 'current') {
+        existingFactsByKey[fact.key] = fact.value;
+      }
+    }
+    const askedKey = factKeyForIssue(issueId);
+    const existingFact = askedKey ? getFact(memory, askedKey)?.value ?? null : null;
+
+    const semantic = interpretAnswerSemantics({
+      answer: trimmed,
+      askedIssueId: issueId,
+      existingFact,
+      existingFactsByKey,
+    });
+
+    // Why / mid-judgment — display only, never append Fact turn
+    if (semantic.intent === 'why_meta' || semantic.intent === 'mid_judgment') {
+      const preview = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, { semantic });
+      setAnswerQualityHint(null);
+      setContradiction(null);
+      if (semantic.intent === 'why_meta' && preview.whyFollowUp) {
+        setWhyPanel(preview.whyFollowUp);
+        setMidJudgmentText(null);
+      } else {
+        setMidJudgmentText(preview.midJudgmentText ?? semantic.rationale);
+        setWhyPanel(null);
+      }
+      setAnswerDraft('');
       return;
     }
-    if (!preview.mergeable) {
-      // Keep draft — nonsense must not fake Understanding; re-ask.
-      setAnswerQualityHint(preview.quality);
+
+    if (semantic.quality === 'CONTRADICTORY' && semantic.factKey && existingFactsByKey[semantic.factKey]) {
+      setAnswerQualityHint('CONTRADICTORY');
+      setContradiction({
+        issueId: semantic.resolvedIssueId ?? issueId,
+        factKey: semantic.factKey,
+        prior: existingFactsByKey[semantic.factKey]!,
+        next: trimmed,
+      });
+      applyWorkspaceLoopAnswer(issueId, trimmed, projectId, { semantic });
+      return;
+    }
+
+    if (!semantic.mergeable) {
+      setAnswerQualityHint(semantic.quality);
       setContradiction(null);
       return;
     }
 
     setAnswerQualityHint(null);
     setContradiction(null);
+    setWhyPanel(null);
+    setMidJudgmentText(null);
 
     logG1LoopEvent({
       event: 'answer_submit',
       workspace: g1WorkspaceLabel(projectId),
       turn: loopState.turns.length + 1,
-      issueId,
+      issueId: semantic.resolvedIssueId ?? issueId,
       phase: 'answer',
     });
 
-    // Append turn (phase stays stable) THEN Memory merge — bag includes latest Fact.
+    const recordIssueId = semantic.resolvedIssueId ?? issueId;
     appendAiPmLoopTurn(
-      { issueId, answer: trimmed, appliedAt: new Date().toISOString() },
+      {
+        issueId: recordIssueId,
+        answer: trimmed,
+        appliedAt: new Date().toISOString(),
+        semanticFactKey: semantic.factKey,
+        intent: semantic.intent,
+      },
       projectId,
     );
-    const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId);
+    const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, { semantic });
     if (!result.applied) {
-      // Roll back orphan turn; keep draft for re-ask.
       const rolled = loadAiPmLoopState(projectId);
       patchAiPmLoopState(
         {
@@ -552,7 +624,7 @@ export function WorkspaceAiPmLoopPanel({
       setAnswerQualityHint(result.quality);
       return;
     }
-    onDocumentUpdated?.(issueId, trimmed);
+    onDocumentUpdated?.(recordIssueId, trimmed);
 
     setAnswerDraft('');
     setReturnWelcomeDismissed(true);
@@ -573,7 +645,7 @@ export function WorkspaceAiPmLoopPanel({
   const resolveContradiction = useCallback(
     (choice: 'keep_prior' | 'accept_new') => {
       if (!contradiction || readOnly) return;
-      const { issueId, prior, next } = contradiction;
+      const { issueId, prior, next, factKey } = contradiction;
       if (choice === 'keep_prior') {
         setContradiction(null);
         setAnswerQualityHint(null);
@@ -583,10 +655,28 @@ export function WorkspaceAiPmLoopPanel({
       setContradiction(null);
       setAnswerQualityHint(null);
       appendAiPmLoopTurn(
-        { issueId, answer: next, appliedAt: new Date().toISOString() },
+        {
+          issueId,
+          answer: next,
+          appliedAt: new Date().toISOString(),
+          semanticFactKey: factKey,
+          intent: 'correction',
+        },
         projectId,
       );
-      applyWorkspaceLoopAnswer(issueId, next, projectId, { forceAccept: true });
+      applyWorkspaceLoopAnswer(issueId, next, projectId, {
+        forceAccept: true,
+        semantic: {
+          intent: 'correction',
+          factKey,
+          resolvedIssueId: issueId,
+          value: next,
+          mergeable: true,
+          displayOnly: false,
+          rationale: 'founder accepted new after conflict',
+          quality: 'VALID',
+        },
+      });
       onDocumentUpdated?.(issueId, next);
       setAnswerDraft('');
       startProcessing();
@@ -594,6 +684,56 @@ export function WorkspaceAiPmLoopPanel({
     },
     [contradiction, onDocumentUpdated, projectId, readOnly, startProcessing],
   );
+
+  const beginEditPriorAnswer = useCallback(
+    (editedIssueId: AiPmLoopIssueId) => {
+      if (readOnly) return;
+      const next = supersedeTurnAndInvalidateDownstream(
+        editedIssueId,
+        AI_PM_LOOP_ISSUE_ORDER,
+        projectId,
+      );
+      const keys = factsToClearAfterEdit(editedIssueId) as ConversationFactKey[];
+      const mem = loadConversationMemory(projectId);
+      saveConversationMemory(clearFactsByKeys(mem, keys), projectId);
+      // Rebuild memory from remaining non-superseded turns
+      const rebuilt = buildConversationMemoryFromSources({
+        projectId: projectId ?? 'default',
+        documentText: loadWorkspaceDocumentText(projectId) ?? '',
+        turns: next.turns,
+        entities,
+        previous: loadConversationMemory(projectId),
+      });
+      saveConversationMemory(rebuilt, projectId);
+      setEditPriorOpen(false);
+      setAnswerDraft('');
+      setWhyPanel(null);
+      setMidJudgmentText(null);
+      syncState(next);
+      onLoopStateChange?.();
+    },
+    [entities, onLoopStateChange, projectId, readOnly, syncState],
+  );
+
+  const editableTurns = useMemo(() => {
+    const seen = new Set<AiPmLoopIssueId>();
+    const out: Array<{ issueId: AiPmLoopIssueId; answer: string }> = [];
+    for (const turn of loopState.turns) {
+      if (turn.superseded) continue;
+      if (
+        turn.intent === 'why_meta' ||
+        turn.intent === 'mid_judgment' ||
+        turn.intent === 'nonsense'
+      ) {
+        continue;
+      }
+      if (seen.has(turn.issueId)) continue;
+      seen.add(turn.issueId);
+      out.push({ issueId: turn.issueId, answer: turn.answer });
+    }
+    return out;
+  }, [loopState.turns]);
+
 
   if (sessionPaused && loopState.turns.length > 0) {
     const lastTurn = loopState.turns[loopState.turns.length - 1]!;
@@ -714,6 +854,45 @@ export function WorkspaceAiPmLoopPanel({
         )}
       >
         <WorkspaceS11Surface surface={s11Surface} />
+        {whyPanel ? (
+          <div
+            data-testid="why-follow-up-panel"
+            className="mt-4 space-y-2 rounded-xl border border-border/60 bg-muted/20 px-4 py-3"
+          >
+            <p className="text-sm font-medium text-foreground">{whyPanel.explanation}</p>
+            <ul className="space-y-1 text-sm text-muted-foreground">
+              {whyPanel.evidence.map((line) => (
+                <li key={line}>· {line}</li>
+              ))}
+            </ul>
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-2 rounded-xl"
+              onClick={() => setWhyPanel(null)}
+            >
+              {whyPanel.returnToLoopCta}
+            </Button>
+          </div>
+        ) : null}
+        {midJudgmentText ? (
+          <div
+            data-testid="mid-judgment-panel"
+            className="mt-4 whitespace-pre-wrap rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm leading-relaxed"
+          >
+            {midJudgmentText}
+            <div className="mt-3">
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl"
+                onClick={() => setMidJudgmentText(null)}
+              >
+                이해 루프로 돌아가기
+              </Button>
+            </div>
+          </div>
+        ) : null}
         <textarea
           value={answerDraft}
           onChange={(event) => {
@@ -778,15 +957,60 @@ export function WorkspaceAiPmLoopPanel({
             </div>
           </div>
         ) : null}
+        {editPriorOpen && editableTurns.length > 0 ? (
+          <div
+            data-testid="edit-prior-answer-panel"
+            className="mt-3 space-y-2 rounded-xl border border-border/60 bg-background px-4 py-3"
+          >
+            <p className="text-sm font-medium">수정할 이전 답변을 선택하세요</p>
+            <ul className="space-y-2">
+              {editableTurns.map((turn) => (
+                <li key={turn.issueId}>
+                  <button
+                    type="button"
+                    className="w-full rounded-lg border border-border/50 px-3 py-2 text-left text-sm hover:bg-muted/40"
+                    disabled={readOnly}
+                    onClick={() => beginEditPriorAnswer(turn.issueId)}
+                  >
+                    <span className="font-medium">{t(`issues.${turn.issueId}.riskLabel`)}</span>
+                    <span className="mt-1 block text-muted-foreground line-clamp-2">
+                      {turn.answer}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <Button
+              type="button"
+              variant="ghost"
+              className="rounded-xl"
+              onClick={() => setEditPriorOpen(false)}
+            >
+              닫기
+            </Button>
+          </div>
+        ) : null}
         <div className="mt-4 flex flex-wrap gap-2">
           <Button
             type="button"
             className="rounded-xl"
-            disabled={readOnly || answerDraft.trim().length < 4}
+            disabled={readOnly || answerDraft.trim().length < 2}
             onClick={submitAnswer}
           >
             {t('submitAnswerCta')}
           </Button>
+          {editableTurns.length > 0 ? (
+            <Button
+              type="button"
+              variant="ghost"
+              className="rounded-xl"
+              data-testid="edit-prior-answer-cta"
+              disabled={readOnly}
+              onClick={() => setEditPriorOpen((open) => !open)}
+            >
+              ← 이전 답변 수정
+            </Button>
+          ) : null}
         </div>
       </section>
     );
@@ -882,12 +1106,49 @@ export function WorkspaceAiPmLoopPanel({
                 <Button
                   type="button"
                   className="rounded-xl"
-                  disabled={readOnly || answerDraft.trim().length < 4}
+                  disabled={readOnly || answerDraft.trim().length < 2}
                   onClick={submitAnswer}
                 >
                   {t('submitAnswerCta')}
                 </Button>
+                {editableTurns.length > 0 ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="rounded-xl"
+                    data-testid="edit-prior-answer-cta"
+                    disabled={readOnly}
+                    onClick={() => setEditPriorOpen((open) => !open)}
+                  >
+                    ← 이전 답변 수정
+                  </Button>
+                ) : null}
               </div>
+              {editPriorOpen && editableTurns.length > 0 ? (
+                <div
+                  data-testid="edit-prior-answer-panel"
+                  className="mt-3 space-y-2 rounded-xl border border-border/60 bg-background px-4 py-3"
+                >
+                  <p className="text-sm font-medium">수정할 이전 답변을 선택하세요</p>
+                  <ul className="space-y-2">
+                    {editableTurns.map((turn) => (
+                      <li key={turn.issueId}>
+                        <button
+                          type="button"
+                          className="w-full rounded-lg border border-border/50 px-3 py-2 text-left text-sm hover:bg-muted/40"
+                          disabled={readOnly}
+                          onClick={() => beginEditPriorAnswer(turn.issueId)}
+                        >
+                          <span className="font-medium">{t(`issues.${turn.issueId}.riskLabel`)}</span>
+                          <span className="mt-1 block text-muted-foreground line-clamp-2">
+                            {turn.answer}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </section>
             {loopState.turns.length > 0 ? (
               <Button

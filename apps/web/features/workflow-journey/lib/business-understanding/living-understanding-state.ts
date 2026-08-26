@@ -14,7 +14,13 @@ import {
   type UnderstandingConfidence,
   type UnderstandingProvenance,
 } from './understanding-contract';
-import { getFact, memoryHasFact, type ConversationMemory } from './conversation-memory';
+import {
+  getConflictFact,
+  getFact,
+  memoryHasFact,
+  memoryHasOpenConflict,
+  type ConversationMemory,
+} from './conversation-memory';
 import {
   buildSharedUnderstanding,
   SHARED_UNDERSTANDING_PENDING,
@@ -174,6 +180,22 @@ function resolveDomainValue(
       return claimFromValue(fieldKey, val, prov, val ? [{ kind: 'ai_inference', excerpt: val.slice(0, 80) }] : []);
     }
     case 'customerPersona': {
+      const conflict = mem ? getConflictFact(mem, 'customer') : null;
+      if (conflict) {
+        return {
+          fieldKey,
+          value: conflict.value,
+          status: 'contradiction',
+          provenance: 'USER_CORRECTED',
+          confidence: 'INFERRED',
+          evidence: [
+            { kind: 'user_answer', excerpt: conflict.value.slice(0, 80) },
+            ...(conflict.conflictWith
+              ? [{ kind: 'user_answer' as const, excerpt: conflict.conflictWith.slice(0, 80) }]
+              : []),
+          ],
+        };
+      }
       const fromMem = factValue(mem, 'customer');
       if (fromMem) {
         return claimFromValue(fieldKey, fromMem, 'USER_CONFIRMED', [
@@ -186,6 +208,22 @@ function resolveDomainValue(
       return claimFromValue(fieldKey, val, prov, val ? [{ kind: 'document', excerpt: val.slice(0, 80) }] : []);
     }
     case 'payer': {
+      const conflict = mem ? getConflictFact(mem, 'buyer') : null;
+      if (conflict) {
+        return {
+          fieldKey,
+          value: conflict.value,
+          status: 'contradiction',
+          provenance: 'USER_CORRECTED',
+          confidence: 'INFERRED',
+          evidence: [
+            { kind: 'user_answer', excerpt: conflict.value.slice(0, 80) },
+            ...(conflict.conflictWith
+              ? [{ kind: 'user_answer' as const, excerpt: conflict.conflictWith.slice(0, 80) }]
+              : []),
+          ],
+        };
+      }
       const buyer = factValue(mem, 'buyer') ?? factValue(mem, 'customer');
       if (buyer) {
         return claimFromValue(fieldKey, buyer, 'USER_CONFIRMED', [
@@ -195,6 +233,22 @@ function resolveDomainValue(
       return claimFromValue(fieldKey, null, 'UNKNOWN', []);
     }
     case 'problemJtbd': {
+      const conflict = mem ? getConflictFact(mem, 'problem') : null;
+      if (conflict) {
+        return {
+          fieldKey,
+          value: conflict.value,
+          status: 'contradiction',
+          provenance: 'USER_CORRECTED',
+          confidence: 'INFERRED',
+          evidence: [
+            { kind: 'user_answer', excerpt: conflict.value.slice(0, 80) },
+            ...(conflict.conflictWith
+              ? [{ kind: 'user_answer' as const, excerpt: conflict.conflictWith.slice(0, 80) }]
+              : []),
+          ],
+        };
+      }
       const fromMem = factValue(mem, 'problem');
       if (fromMem) {
         return claimFromValue(fieldKey, fromMem, 'USER_CONFIRMED', [
@@ -301,22 +355,48 @@ export function computeUnderstandingCoverage(claims: LivingClaim[]): number {
   return Math.round((covered / claims.length) * 100);
 }
 
-function scoreGap(claim: LivingClaim, resolvedIssueIds: Set<AiPmLoopIssueId>): LivingUnderstandingGap | null {
+function scoreGap(
+  claim: LivingClaim,
+  resolvedIssueIds: Set<AiPmLoopIssueId>,
+  options?: { hasContradiction?: boolean },
+): LivingUnderstandingGap | null {
+  if (claim.status === 'contradiction') {
+    const issueId = ISSUE_FOR_DOMAIN[claim.fieldKey] ?? null;
+    return {
+      fieldKey: claim.fieldKey,
+      issueId,
+      rationale: `「${claim.fieldKey}」에 모순이 있습니다. 어느 쪽이 맞는지 확인해야 사업 판단을 이어갈 수 있습니다.`,
+      priorityScore: 50_000,
+    };
+  }
+
   if (claim.status !== 'unknown') return null;
 
   const issueId = ISSUE_FOR_DOMAIN[claim.fieldKey] ?? null;
   if (issueId && resolvedIssueIds.has(issueId)) return null;
 
+  // Judgment-critical Stage A fields first — not fixed form order
   const impact = DOMAIN_IMPACT_WEIGHT[claim.fieldKey] ?? 3;
   const unknownFactor = 10;
-  const decisionRelevance = claim.fieldKey.startsWith('current') || claim.fieldKey.startsWith('next') ? 1 : 6;
+  const decisionRelevance =
+    claim.fieldKey === 'payer' ||
+    claim.fieldKey === 'customerPersona' ||
+    claim.fieldKey === 'problemJtbd' ||
+    claim.fieldKey === 'alternativesCompetitors' ||
+    claim.fieldKey === 'differentiationVsAlternatives'
+      ? 9
+      : claim.fieldKey.startsWith('current') || claim.fieldKey.startsWith('next')
+        ? 1
+        : 5;
   const answerability = issueId ? 8 : 2;
-  const priorityScore = impact * unknownFactor * decisionRelevance * answerability;
+  const contradictionBoost = options?.hasContradiction ? 0 : 0;
+  const priorityScore =
+    impact * unknownFactor * decisionRelevance * answerability + contradictionBoost;
 
   return {
     fieldKey: claim.fieldKey,
     issueId,
-    rationale: `「${claim.fieldKey}」이 아직 구체화되지 않았습니다.`,
+    rationale: `문서·이전 답변으로 「${claim.fieldKey}」가 아직 비어 있어 사업 GO/HOLD 판단에 필요합니다.`,
     priorityScore,
   };
 }
@@ -386,9 +466,12 @@ export function buildLivingUnderstandingState(input: BuildLivingStateInput): Liv
   );
 
   const coveragePercent = computeUnderstandingCoverage(claims);
+  const hasContradiction =
+    claims.some((c) => c.status === 'contradiction') ||
+    (memory != null && memoryHasOpenConflict(memory));
 
   const gaps = claims
-    .map((c) => scoreGap(c, resolved))
+    .map((c) => scoreGap(c, resolved, { hasContradiction }))
     .filter((g): g is LivingUnderstandingGap => g != null)
     .sort((a, b) => b.priorityScore - a.priorityScore);
 

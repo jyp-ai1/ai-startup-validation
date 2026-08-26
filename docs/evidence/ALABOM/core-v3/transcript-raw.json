@@ -1,0 +1,98 @@
+{
+  "at": "2026-08-26T09:04:41.728Z",
+  "turns": [
+    {
+      "issueId": "problem_definition",
+      "answer": "외국인 관광객이 현지 맛집을 찾기 어렵고 예약·동선이 파편화되어 있습니다",
+      "appliedAt": "2026-08-26T09:04:41.753Z",
+      "semanticFactKey": "problem",
+      "intent": "business_fact"
+    },
+    {
+      "issueId": "customer_definition",
+      "answer": "관광객이 앱에서 직접 예약·결제합니다",
+      "appliedAt": "2026-08-26T09:04:41.757Z",
+      "semanticFactKey": "buyer",
+      "intent": "business_fact"
+    },
+    {
+      "issueId": "customer_definition",
+      "answer": "방한 외국인 FIT 관광객이 주요 고객입니다",
+      "appliedAt": "2026-08-26T09:04:41.760Z",
+      "semanticFactKey": "customer",
+      "intent": "business_fact"
+    },
+    {
+      "issueId": "competitor_analysis",
+      "answer": "TripAdvisor·구글맵 대비 현지 재방문 큐레이션이 차별점입니다",
+      "appliedAt": "2026-08-26T09:04:41.764Z",
+      "semanticFactKey": "competitor",
+      "intent": "business_fact"
+    },
+    {
+      "issueId": "bm_design",
+      "answer": "사장님이 수수료를 대납하는 B2B 모델입니다",
+      "appliedAt": "2026-08-26T09:04:41.768Z",
+      "semanticFactKey": "revenue",
+      "intent": "business_fact"
+    },
+    {
+      "issueId": "market_validation",
+      "answer": "방한 관광 수요와 로컬 체험 예약 채널에서 검증할 계획입니다",
+      "appliedAt": "2026-08-26T09:04:41.769Z",
+      "semanticFactKey": "market",
+      "intent": "business_fact"
+    }
+  ],
+  "finalFacts": [
+    {
+      "key": "problem",
+      "value": "외국인 관광객이 현지 맛집을 찾기 어렵고 예약·동선이 파편화되어 있습니다",
+      "source": "user_turn",
+      "confirmedAt": "2026-08-26T09:04:41.769Z",
+      "lifecycle": "current"
+    },
+    {
+      "key": "buyer",
+      "value": "관광객이 앱에서 직접 예약·결제합니다",
+      "source": "user_turn",
+      "confirmedAt": "2026-08-26T09:04:41.769Z",
+      "lifecycle": "superseded"
+    },
+    {
+      "key": "buyer",
+      "value": "관광객이 앱에서 직접 예약·결제합니다",
+      "source": "user_turn",
+      "confirmedAt": "2026-08-26T09:04:41.769Z",
+      "lifecycle": "current"
+    },
+    {
+      "key": "customer",
+      "value": "방한 외국인 FIT 관광객이 주요 고객입니다",
+      "source": "user_turn",
+      "confirmedAt": "2026-08-26T09:04:41.769Z",
+      "lifecycle": "current"
+    },
+    {
+      "key": "competitor",
+      "value": "TripAdvisor·구글맵 대비 현지 재방문 큐레이션이 차별점입니다",
+      "source": "user_turn",
+      "confirmedAt": "2026-08-26T09:04:41.769Z",
+      "lifecycle": "current"
+    },
+    {
+      "key": "revenue",
+      "value": "사장님이 수수료를 대납하는 B2B 모델입니다",
+      "source": "user_turn",
+      "confirmedAt": "2026-08-26T09:04:41.769Z",
+      "lifecycle": "current"
+    },
+    {
+      "key": "market",
+      "value": "방한 관광 수요와 로컬 체험 예약 채널에서 검증할 계획입니다",
+      "source": "user_turn",
+      "confirmedAt": "2026-08-26T09:04:41.769Z",
+      "lifecycle": "current"
+    }
+  ]
+}

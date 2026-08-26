@@ -10,37 +10,53 @@ import {
 
 import { applyAiPmLoopAnswer } from './apply-ai-pm-loop-answer';
 import { buildConversationMemoryFromSources, factKeyForIssue } from './build-conversation-memory';
-import { getFact } from './conversation-memory';
+import {
+  getFact,
+  parkConflictFact,
+  type ConversationFactKey,
+} from './conversation-memory';
 import {
   loadConversationMemory,
   saveConversationMemory,
 } from './conversation-memory-store';
+import {
+  interpretAnswerSemantics,
+  type SemanticInterpretation,
+} from './interpret-answer-semantics';
 import {
   evaluateAnswerQuality,
   type AnswerQuality,
 } from './understanding-contract';
 import { loadAiPmLoopState } from './workspace-ai-pm-loop-store';
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
+import { buildWhyFollowUp, type WhyFollowUp } from './correction-and-why';
 
 export type WorkspaceLoopAnswerResult = {
   domain: WorkspaceDomainEvidence;
   entities: LaunchLensDomainContext;
   documentText: string;
   quality: AnswerQuality;
-  /** False when Answer Quality blocks Memory/Understanding merge. */
+  /** False when Answer Quality / semantic gate blocks Memory merge. */
   applied: boolean;
   existingFact: string | null;
+  /** Core v3 semantic interpretation */
+  semantic: SemanticInterpretation;
+  /** Why display payload when intent=why_meta */
+  whyFollowUp?: WhyFollowUp | null;
+  /** Mid-judgment display text when intent=mid_judgment */
+  midJudgmentText?: string | null;
 };
 
 export type ApplyWorkspaceLoopAnswerOptions = {
   /** Force merge after contradiction confirm (accept new). */
   forceAccept?: boolean;
+  /** Pre-computed semantic (submit path). */
+  semantic?: SemanticInterpretation;
 };
 
 /**
- * S7-2 — single write path after a loop answer.
- * S9 ADR-053 — Conversation Memory (Facts) updated after every confirmed turn.
- * Long Sprint — Answer Quality gate: nonsense / contradiction never silently ✔-pass.
+ * Core v3 — single write path after a loop answer.
+ * Semantic interpretation BEFORE Memory merge. Wrong-slot dump forbidden.
  */
 export function applyWorkspaceLoopAnswer(
   issueId: AiPmLoopIssueId,
@@ -50,23 +66,109 @@ export function applyWorkspaceLoopAnswer(
 ): WorkspaceLoopAnswerResult {
   const documentTextBefore = loadWorkspaceDocumentText(projectId)?.trim() ?? '';
   const previousMemory = loadConversationMemory(projectId);
-  const factKey = factKeyForIssue(issueId);
-  const existingFact = factKey ? getFact(previousMemory, factKey)?.value ?? null : null;
-  const { quality, mergeable } = evaluateAnswerQuality(answer, { existingFact });
 
-  if (!mergeable && !options?.forceAccept) {
+  const existingFactsByKey: Partial<Record<ConversationFactKey, string | null>> = {};
+  for (const fact of previousMemory.facts) {
+    if ((fact.lifecycle ?? 'current') === 'current') {
+      existingFactsByKey[fact.key] = fact.value;
+    }
+  }
+
+  const semantic =
+    options?.semantic ??
+    interpretAnswerSemantics({
+      answer,
+      askedIssueId: issueId,
+      existingFact: factKeyForIssue(issueId)
+        ? getFact(previousMemory, factKeyForIssue(issueId)!)?.value ?? null
+        : null,
+      existingFactsByKey,
+    });
+
+  const existingFact = semantic.factKey
+    ? getFact(previousMemory, semantic.factKey)?.value ?? null
+    : null;
+
+  // Display-only paths — never Memory / document Fact blocks
+  if (semantic.intent === 'why_meta') {
     const inferred = inferDomainFromPaste(documentTextBefore, projectId);
     return {
       domain: inferred.domain,
       entities: inferred.entities,
       documentText: documentTextBefore,
-      quality,
+      quality: 'IRRELEVANT',
       applied: false,
       existingFact,
+      semantic,
+      whyFollowUp: buildWhyFollowUp({
+        judgment: '이 질문은 사업 판단에 필요한 공백을 메우기 위한 것입니다.',
+        reasons: [
+          '문서·이전 답변으로 이미 아는 내용은 다시 묻지 않습니다.',
+          '지금 질문은 남은 Critical Unknown 또는 모순을 해소하기 위한 것입니다.',
+          semantic.rationale,
+        ],
+        criticalGap: semantic.resolvedIssueId,
+      }),
     };
   }
 
-  applyAiPmLoopAnswer(issueId, answer, projectId);
+  if (semantic.intent === 'mid_judgment') {
+    const inferred = inferDomainFromPaste(documentTextBefore, projectId);
+    const known = previousMemory.facts
+      .filter((f) => (f.lifecycle ?? 'current') === 'current')
+      .map((f) => `${f.key}: ${f.value}`)
+      .slice(0, 6);
+    return {
+      domain: inferred.domain,
+      entities: inferred.entities,
+      documentText: documentTextBefore,
+      quality: 'IRRELEVANT',
+      applied: false,
+      existingFact,
+      semantic,
+      midJudgmentText:
+        known.length > 0
+          ? `지금까지 확인한 내용:\n${known.map((l) => `· ${l}`).join('\n')}\n\n(이 요약은 화면에만 표시되며 Confirmed Fact로 저장되지 않습니다.)`
+          : '아직 확정된 Fact가 많지 않습니다. 문서·대화로 핵심을 더 채우면 중간 판단을 구체화합니다.\n\n(화면 표시만 — Fact DB 미저장)',
+    };
+  }
+
+  if (!options?.forceAccept && semantic.quality === 'CONTRADICTORY' && semantic.factKey && existingFact) {
+    const inferred = inferDomainFromPaste(documentTextBefore, projectId);
+    const parked = parkConflictFact(
+      previousMemory,
+      semantic.factKey,
+      existingFact,
+      answer,
+    );
+    saveConversationMemory(parked, projectId);
+    return {
+      domain: inferred.domain,
+      entities: inferred.entities,
+      documentText: documentTextBefore,
+      quality: 'CONTRADICTORY',
+      applied: false,
+      existingFact,
+      semantic,
+    };
+  }
+
+  if (!semantic.mergeable && !options?.forceAccept) {
+    const inferred = inferDomainFromPaste(documentTextBefore, projectId);
+    return {
+      domain: inferred.domain,
+      entities: inferred.entities,
+      documentText: documentTextBefore,
+      quality: semantic.quality,
+      applied: false,
+      existingFact,
+      semantic,
+    };
+  }
+
+  // Merge into document under SEMANTIC issue section (not wrong asked-slot)
+  const mergeIssueId = semantic.resolvedIssueId ?? issueId;
+  applyAiPmLoopAnswer(mergeIssueId, answer, projectId);
   const documentText = loadWorkspaceDocumentText(projectId)?.trim() ?? '';
   const inferred = inferDomainFromPaste(documentText, projectId);
   saveWorkspaceDomain(inferred.domain, projectId);
@@ -86,8 +188,17 @@ export function applyWorkspaceLoopAnswer(
     domain: inferred.domain,
     entities: inferred.entities,
     documentText,
-    quality: options?.forceAccept ? 'VALID' : quality,
+    quality: options?.forceAccept ? 'VALID' : semantic.quality,
     applied: true,
     existingFact,
+    semantic,
   };
+}
+
+/** @deprecated Prefer semantic path; kept for legacy callers using raw quality only */
+export function previewAnswerQuality(
+  answer: string,
+  existingFact?: string | null,
+): { quality: AnswerQuality; mergeable: boolean } {
+  return evaluateAnswerQuality(answer, { existingFact });
 }

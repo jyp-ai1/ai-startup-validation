@@ -1,3 +1,6 @@
+import type { ConversationFactKey } from './conversation-memory';
+import type { AnswerIntent } from './interpret-answer-semantics';
+
 export type AiPmLoopIssueId =
   | 'customer_definition'
   | 'competitor_analysis'
@@ -11,6 +14,12 @@ export type AiPmLoopTurn = {
   issueId: AiPmLoopIssueId;
   answer: string;
   appliedAt: string;
+  /** Core v3 — semantic fact key (may differ from asked issue template) */
+  semanticFactKey?: ConversationFactKey | null;
+  /** Core v3 — intent classification */
+  intent?: AnswerIntent;
+  /** Core v3 — superseded after prior-answer edit */
+  superseded?: boolean;
 };
 
 export type AiPmLoopState = {

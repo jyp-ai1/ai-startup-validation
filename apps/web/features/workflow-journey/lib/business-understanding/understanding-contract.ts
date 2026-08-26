@@ -128,6 +128,14 @@ const NONSENSE_RE =
 const UNKNOWN_SIGNAL_RE = /^(모름|몰라요|모르겠|잘\s*모르|unknown|n\/?a|없음|없어요)\.?$/i;
 const PUNCT_ONLY_RE = /^[\p{P}\p{S}\d\s]+$/u;
 const KEYBOARD_MASH_RE = /^(?:[a-z]{1,2}\s*){4,}$/i;
+const HANGUL_JAMO_MASH_RE = /^[\u3131-\u318E\s]{4,}$/;
+
+function isHangulJamoMash(trimmed: string): boolean {
+  if (HANGUL_JAMO_MASH_RE.test(trimmed)) return true;
+  const compact = trimmed.replace(/\s/g, '');
+  const jamoCount = (compact.match(/[\u3131-\u318E]/g) ?? []).length;
+  return jamoCount >= 4 && jamoCount / Math.max(compact.length, 1) >= 0.6;
+}
 
 /**
  * Answer Quality Engine — never mark VALID by length alone.
@@ -149,6 +157,7 @@ export function evaluateAnswerQuality(
     NONSENSE_RE.test(trimmed) ||
     PUNCT_ONLY_RE.test(trimmed) ||
     KEYBOARD_MASH_RE.test(trimmed) ||
+    isHangulJamoMash(trimmed) ||
     trimmed.length < 4
   ) {
     return { quality: 'IRRELEVANT', mergeable: false };

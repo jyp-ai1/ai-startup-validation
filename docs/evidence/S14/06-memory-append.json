@@ -1,5 +1,5 @@
 {
-  "semantics": "per-key upsert; other Facts preserved (append across keys)",
+  "semantics": "per-key upsert; other Facts preserved; prior current → superseded (v3)",
   "not": "full Memory wipe on each answer",
   "trail": [
     [],

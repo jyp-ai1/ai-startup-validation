@@ -10,6 +10,7 @@ import {
   isWorkspaceDocumentReadable,
   looksLikeDocumentFileName,
 } from './workspace-document-eligibility';
+import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import type { AiPmLoopIssueId, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 const TURN_TO_FACT: Partial<Record<AiPmLoopIssueId, ConversationFactKey>> = {
@@ -42,10 +43,10 @@ function safeBusinessFromEntities(entities: LaunchLensDomainContext | null): str
 }
 
 /**
- * Rebuild Memory from conversation sources.
- * - User loop answers → confirmed facts (always)
- * - Readable document business label → confirmed (explicit extract only)
- * Assumed inferences stay OUT of Memory (Presenter Confidence layer).
+ * Rebuild Memory from conversation sources (Core v3).
+ * - Semantic interpretation per turn — NOT issue-slot dump
+ * - Why / mid-judgment / nonsense never become Facts
+ * - Superseded turns skipped
  */
 export function buildConversationMemoryFromSources(input: {
   projectId: string;
@@ -56,10 +57,12 @@ export function buildConversationMemoryFromSources(input: {
 }): ConversationMemory {
   let memory = emptyConversationMemory(input.projectId);
 
-  // Preserve prior confirmed facts unless overwritten below
+  // Preserve prior document facts only (user turns rebuilt from turns below)
   if (input.previous?.facts.length) {
     for (const fact of input.previous.facts) {
-      memory = upsertConfirmedFact(memory, fact.key, fact.value, fact.source);
+      if (fact.source !== 'document') continue;
+      if ((fact.lifecycle ?? 'current') !== 'current') continue;
+      memory = upsertConfirmedFact(memory, fact.key, fact.value, 'document');
     }
   }
 
@@ -72,13 +75,52 @@ export function buildConversationMemoryFromSources(input: {
   }
 
   for (const turn of input.turns) {
-    const key = TURN_TO_FACT[turn.issueId];
-    if (!key) continue;
+    if (turn.superseded) continue;
+    // Explicit non-fact intents
+    if (
+      turn.intent === 'why_meta' ||
+      turn.intent === 'mid_judgment' ||
+      turn.intent === 'nonsense' ||
+      turn.intent === 'unknown_signal'
+    ) {
+      continue;
+    }
+
     const answer = turn.answer.trim();
     if (answer.length < 2) continue;
-    memory = upsertConfirmedFact(memory, key, answer, 'user_turn');
-    // S14 — customer_definition answers also lock buyer (payer) Fact
-    if (turn.issueId === 'customer_definition') {
+
+    // Prefer stored semantic key when present
+    if (turn.semanticFactKey) {
+      memory = upsertConfirmedFact(memory, turn.semanticFactKey, answer, 'user_turn');
+      if (turn.semanticFactKey === 'customer' || turn.semanticFactKey === 'buyer') {
+        // Payer-oriented customer answers also lock buyer when text signals payment
+        if (turn.semanticFactKey === 'buyer' || /(결제|지불|payer)/i.test(answer)) {
+          memory = upsertConfirmedFact(memory, 'buyer', answer, 'user_turn');
+        }
+      }
+      continue;
+    }
+
+    const existingFactsByKey: Partial<Record<ConversationFactKey, string | null>> = {};
+    for (const key of Object.keys(TURN_TO_FACT) as AiPmLoopIssueId[]) {
+      const fk = TURN_TO_FACT[key];
+      if (fk) {
+        existingFactsByKey[fk] =
+          memory.facts.find((f) => f.key === fk && (f.lifecycle ?? 'current') === 'current')
+            ?.value ?? null;
+      }
+    }
+
+    const semantic = interpretAnswerSemantics({
+      answer,
+      askedIssueId: turn.issueId,
+      existingFactsByKey,
+    });
+
+    if (!semantic.mergeable || !semantic.factKey) continue;
+
+    memory = upsertConfirmedFact(memory, semantic.factKey, answer, 'user_turn');
+    if (semantic.factKey === 'buyer' || /(결제|지불|payer)/i.test(answer)) {
       memory = upsertConfirmedFact(memory, 'buyer', answer, 'user_turn');
     }
   }

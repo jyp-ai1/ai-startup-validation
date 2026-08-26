@@ -70,7 +70,9 @@ describe('correction-and-why (W7–W8)', () => {
       previous: memory,
     });
     expect(applied.provenance).toBe('USER_CORRECTED');
-    expect(applied.memory.facts.find((f) => f.key === 'customer')?.value).toBe('병원 원장');
+    expect(applied.memory.facts.find((f) => f.key === 'customer' && (f.lifecycle ?? 'current') === 'current')?.value).toBe(
+      '병원 원장',
+    );
   });
 
   it('resolves contradiction keep vs accept', () => {
