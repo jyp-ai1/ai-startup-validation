@@ -1,0 +1,426 @@
+{
+  "at": "2026-08-26T14:16:06.313Z",
+  "productionCommit": "5d255082f073e81513acb8b058b42902bacee2e6",
+  "targetSha": "5d255082f073e81513acb8b058b42902bacee2e6",
+  "shaMatch": true,
+  "entryUrl": "/demo/start",
+  "seed": "외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.",
+  "turns": [
+    {
+      "turn": 1,
+      "label": "01-after-ai-read",
+      "aiQuestion": "",
+      "purpose": "",
+      "whyNow": "",
+      "userAnswer": "(seed document)",
+      "understanding": "",
+      "decision": "",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nGAPS/STATUS: 아직 확인 | Needs confirmation | Not confirmed",
+      "gapChangeNote": "initial",
+      "nextQuestion": "이번 질문\n\n지금 가장 크게 해결하려는 불편은 무엇인가요?\n\n왜 지금 이 질문 · 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n●\nCUSTOMER\n방한 외국인\n\nAI estimate\n\n○\nPROBLEM\n아직 확인 중\n\nNeeds confirmation\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\nAI PM\n\nHere's how I understand it\n\nConfirm or correct — you don't need to fill an empty form.\n\nAI DRAFT\n\nConfidence 49%·Document + inference\n\nBUSINESS\n(Confirmed from document)\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\nCUSTOMER\n(Needs confirmation)\n방한 외국인\nPROBLEM\n(Needs confirmation)\n아직 확인 중\nMARKET\n(Needs confirmation)\n아직 확인 중\nCOMPETITION\n(Needs confirmation)\n아직 확인 중\n\nNot confirmed yet\n\n•\n문서에서 창업자·대표 관련 표현을 확인하지 못했습니다.\n•\n실제 서비스를 사용하는 사람과 결제하는 사람이 누구인지는 문서에서 확인하지 못했습니다.\n•\n문서에서 수익 모델 관련 표현을 확인하지 못했습니다.\n•\n문서에서 제휴 파트너 관련 표현을 확인하지 못했습니다.\n\nYOUR CALL\n\nIs this understanding correct?\n\nIf yes, we continue to questions. If not, correct only what's wrong.\n\n✓ That's right\nNo — I'll correct\n🤝 Check one by one",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/01-after-ai-read.png",
+      "notes": [
+        "Minimal founder seed — personalized Seoul experiences for foreign tourists"
+      ],
+      "templateLikeHints": []
+    },
+    {
+      "turn": 2,
+      "label": "02-q1-after-confirm",
+      "aiQuestion": "이번 질문\n\n지금 가장 크게 해결하려는 불편은 무엇인가요?\n\n왜 지금 이 질문 · 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
+      "purpose": "왜 지금 이 질문 · 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
+      "whyNow": "왜 지금 이 질문 · 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
+      "userAnswer": "(confirm ✓ 맞습니다)",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사",
+      "decision": "지금 판단\n\n풀려는 문제가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nGAPS/STATUS: 아직 확인 | Needs confirmation",
+      "gapChangeNote": "changed vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?\n\n왜 지금 이 질문 · 누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n●\nCUSTOMER\n방한 외국인\n\nAI estimate\n\n○\nPROBLEM\n아직 확인 중\n\nNeeds confirmation\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\n지금 판단\n\n풀려는 문제가 확인되지 않았습니다.\n\n이번 질문\n\n지금 가장 크게 해결하려는 불편은 무엇인가요?\n\n왜 지금 이 질문 · 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n풀려는 문제가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/02-q1-ask.png",
+      "templateLikeHints": [
+        "stock-template-phrasing"
+      ]
+    },
+    {
+      "turn": 3,
+      "label": "03-after-a1",
+      "aiQuestion": "이번 질문\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?\n\n왜 지금 이 질문 · 누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.",
+      "purpose": "왜 지금 이 질문 · 누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.",
+      "whyNow": "왜 지금 이 질문 · 누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.",
+      "userAnswer": "패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다",
+      "decision": "지금 판단\n\n주요 고객이 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending",
+      "gapChangeNote": "changed vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n●\nCUSTOMER\n방한 외국인\n\nAI estimate\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n지금 판단\n\n주요 고객이 확인되지 않았습니다.\n\n이번 질문\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?\n\n왜 지금 이 질문 · 누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n주요 고객이 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/03-after-a1.png",
+      "notes": [
+        "first substantive answer"
+      ],
+      "templateLikeHints": [
+        "stock-template-phrasing"
+      ]
+    },
+    {
+      "turn": 4,
+      "label": "04-after-a2",
+      "aiQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "purpose": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "whyNow": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "userAnswer": "관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/04-after-a2.png",
+      "notes": [
+        "second substantive answer"
+      ],
+      "templateLikeHints": [
+        "stock-template-phrasing"
+      ]
+    },
+    {
+      "turn": 5,
+      "label": "05-mid-review-request",
+      "aiQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "purpose": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "whyNow": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "userAnswer": "지금까지 이해한 사업 정리해줘",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\n지금까지 확인한 내용:\n· business: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n· problem: 패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다.\n· buyer: 관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습니다.\n\n(이 요약은 화면에만 표시되며 Confirmed Fact로 저장되지 않습니다.)\n이해 루프로 돌아가기\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/05-mid-review.png",
+      "notes": [
+        "User asked mid-journey summary"
+      ],
+      "templateLikeHints": [
+        "stock-template-phrasing",
+        "re-ask-same-question-text"
+      ]
+    },
+    {
+      "turn": 6,
+      "label": "06-continue-l1",
+      "aiQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "purpose": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "whyNow": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "userAnswer": "관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/06-continue-l1.png",
+      "templateLikeHints": [
+        "stock-template-phrasing",
+        "re-ask-same-question-text"
+      ]
+    },
+    {
+      "turn": 7,
+      "label": "06-continue-l2",
+      "aiQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "purpose": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "whyNow": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "userAnswer": "관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/06-continue-l2.png",
+      "templateLikeHints": [
+        "stock-template-phrasing",
+        "re-ask-same-question-text"
+      ]
+    },
+    {
+      "turn": 8,
+      "label": "06-continue-l3",
+      "aiQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "purpose": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "whyNow": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "userAnswer": "관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/06-continue-l3.png",
+      "templateLikeHints": [
+        "stock-template-phrasing",
+        "re-ask-same-question-text"
+      ]
+    },
+    {
+      "turn": 9,
+      "label": "06-continue-l4",
+      "aiQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "purpose": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "whyNow": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "userAnswer": "관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/06-continue-l4.png",
+      "templateLikeHints": [
+        "stock-template-phrasing",
+        "re-ask-same-question-text"
+      ]
+    },
+    {
+      "turn": 10,
+      "label": "06-continue-l5",
+      "aiQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "purpose": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "whyNow": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "userAnswer": "관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/06-continue-l5.png",
+      "templateLikeHints": [
+        "stock-template-phrasing",
+        "re-ask-same-question-text"
+      ]
+    },
+    {
+      "turn": 11,
+      "label": "06-continue-l6",
+      "aiQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "purpose": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "whyNow": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "userAnswer": "관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/06-continue-l6.png",
+      "templateLikeHints": [
+        "stock-template-phrasing",
+        "re-ask-same-question-text"
+      ]
+    },
+    {
+      "turn": 12,
+      "label": "06-continue-l7",
+      "aiQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "purpose": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "whyNow": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "userAnswer": "관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/06-continue-l7.png",
+      "templateLikeHints": [
+        "stock-template-phrasing",
+        "re-ask-same-question-text"
+      ]
+    },
+    {
+      "turn": 13,
+      "label": "06-continue-l8",
+      "aiQuestion": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "purpose": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "whyNow": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "userAnswer": "관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition pending",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 지금 이 질문 · 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/06-continue-l8.png",
+      "templateLikeHints": [
+        "stock-template-phrasing",
+        "re-ask-same-question-text"
+      ]
+    },
+    {
+      "turn": 14,
+      "label": "06b-force-competition",
+      "aiQuestion": "이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+      "purpose": "왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+      "whyNow": "왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+      "userAnswer": "클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n✓\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n수익 구조가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\ncompetition\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\ncompetition",
+      "gapChangeNote": "changed vs prior snap",
+      "nextQuestion": "이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n✔\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n✔\n✓ Market analyzed\n●\n🟡 Analyzing competition\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n✓\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n수익 구조가 확인되지 않았습니다.\n\n이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n수익 구조가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/06-competition.png",
+      "templateLikeHints": [
+        "stock-template-phrasing"
+      ]
+    },
+    {
+      "turn": 15,
+      "label": "07b-force-differentiation",
+      "aiQuestion": "이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+      "purpose": "왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+      "whyNow": "왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+      "userAnswer": "차별점은 관심사·동선·식사 제약까지 반영한 실시간 맞춤 일정과 현지인 동행을 한 번에 묶는 점입니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n✓\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n수익 구조가 확인되지 않았습니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition analyzed\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition analyzed",
+      "gapChangeNote": "changed vs prior snap",
+      "nextQuestion": "이번 질문\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?\n\n왜 지금 이 질문 · 문서에 구체적인 고객 표현이 있습니다.",
+      "nextQuestionReason": "왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n✔\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n✔\n✓ Market analyzed\n✔\n✓ Competition analyzed\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n✓\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n수익 구조가 확인되지 않았습니다.\n\n이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 지금 이 질문 · 수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n수익 구조가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/07-differentiation.png",
+      "templateLikeHints": [
+        "stock-template-phrasing",
+        "re-ask-same-question-text"
+      ]
+    },
+    {
+      "turn": 16,
+      "label": "08-drain-l1",
+      "aiQuestion": "이번 질문\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?\n\n왜 지금 이 질문 · 문서에 구체적인 고객 표현이 있습니다.",
+      "purpose": "왜 지금 이 질문 · 문서에 구체적인 고객 표현이 있습니다.",
+      "whyNow": "왜 지금 이 질문 · 문서에 구체적인 고객 표현이 있습니다.",
+      "userAnswer": "클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n✓\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다\n✓\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다\n\n정의](확인이 필요)",
+      "decision": "지금 판단\n\n문서에서는 정의](으)로 보입니다.",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition analyzed\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition analyzed",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "",
+      "nextQuestionReason": "왜 지금 이 질문 · 문서에 구체적인 고객 표현이 있습니다.",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n✔\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n✔\n✓ Market analyzed\n✔\n✓ Competition analyzed\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다. 관심사와 체류일수에 맞춘 반나절 단위 맞춤 일정이 필요합니다\n✓\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다\n✓\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다\n\n정의](확인이 필요)\n\n지금 판단\n\n문서에서는 정의](으)로 보입니다.\n\n이번 질문\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?\n\n왜 지금 이 질문 · 문서에 구체적인 고객 표현이 있습니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n문서에 「정의]」이(가) 있지만 Primary Customer로 확정하려면 확인이 필요합니다.\n\nApply answer\n← 이전 답변 수정",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/08-drain-l1.png",
+      "templateLikeHints": [
+        "stock-template-phrasing"
+      ]
+    },
+    {
+      "turn": 17,
+      "label": "08-drain-l2",
+      "aiQuestion": "",
+      "purpose": "",
+      "whyNow": "",
+      "userAnswer": "클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다.",
+      "understanding": "",
+      "decision": "",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition analyzed\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition analyzed",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "",
+      "nextQuestionReason": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● Ready for review\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n✔\nMarket understanding\n●\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n✔\n✓ Market analyzed\n✔\n✓ Competition analyzed\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\nAI PM\n\nBefore analysis, confirm the full AI understanding.\n\nIf business · customer · problem look right, we start analysis.\n\nUnderstanding is sufficient. Moving to validation: judgment, reasons, and one next action. (Not based on answer count.)\n\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n✓ That's right — start analysis",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/08-drain-l2.png",
+      "templateLikeHints": []
+    },
+    {
+      "turn": 18,
+      "label": "09-sufficiency",
+      "aiQuestion": "",
+      "purpose": "",
+      "whyNow": "",
+      "userAnswer": "(overview / sufficiency)",
+      "understanding": "",
+      "decision": "",
+      "coverageText": "",
+      "storedFactsGaps": "BUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition analyzed\nBUSINESS\nCUSTOMER\nPROBLEM\nMarket understanding\nCompetition analyzed",
+      "gapChangeNote": "unchanged vs prior snap",
+      "nextQuestion": "",
+      "nextQuestionReason": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n관광객이 앱에서 일정·체험을…이 비용을 내는\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n✔\nCUSTOMER\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사…\n\nFounder confirmed\n\n✔\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● Ready for review\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n✔\nMarket understanding\n●\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n✔\n✓ Market analyzed\n✔\n✓ Competition analyzed\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\nAI PM\n\nBefore analysis, confirm the full AI understanding.\n\nIf business · customer · problem look right, we start analysis.\n\nUnderstanding is sufficient. Moving to validation: judgment, reasons, and one next action. (Not based on answer count.)\n\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\nCUSTOMER\n관광객이 앱에서 일정·체험을 결제합니다. 현지 가이드·소상공에게는 예약 수수료를 받습…\nPROBLEM\n패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까…\n✓ That's right — start analysis",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/09-sufficiency.png",
+      "templateLikeHints": []
+    },
+    {
+      "turn": 19,
+      "label": "10-final-viability-review",
+      "aiQuestion": "",
+      "purpose": "",
+      "whyNow": "",
+      "userAnswer": "(clicked start analysis)",
+      "understanding": "",
+      "decision": "",
+      "coverageText": "",
+      "storedFactsGaps": "Business understanding\nCustomer understanding\nProblem Fit)와 함께, 고객과 수익 근거가 확인되어 시장성 판단을 시작할 수 있습니다.\nMarket understanding\nCompetition analyzed\nBusiness understanding\nCustomer understanding\nProblem Fit)와 함께, 고객과 수익 근거가 확인되어 시장성 판단을 시작할 수 있습니다.\nMarket understanding\nCompetition analyzed",
+      "gapChangeNote": "changed vs prior snap",
+      "nextQuestion": "",
+      "nextQuestionReason": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.\n\nDemo Workspace\nLogin\nEN\n\nAI PM\n\nReview complete. Let's pick the next topic to explore together.\n\nSUMMARY\n\n74\n\n100% complete\n5/5\n\n● AI analysis complete\n\nAI Updated · Updated just now\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n✔\nMarket understanding\n✔\nReady for review\n✔\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n✔\n✓ Market analyzed\n✔\n✓ Competition analyzed\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\nAI PM\n\n현재 판단\n\nGO 방향 — MarketJudgment 기준으로 다음 행동이 분명합니다.\n\n근거 (최대 3)\n\n왜?\n고객·문제에 대한 이해(Problem Fit)와 함께, 고객과 수익 근거가 확인되어 시장성 판단을 시작할 수 있습니다.\n\n지원 신호 · 결정 1 · 주의 0 (점수는 보조)\n\n지금 해야 할 일\n\n이제 시장성 분석을 시작할 수 있습니다.\n\n시장성 다음 단계로\n\nAI PM ASSESSMENT\n\nReference score 74 — next action comes first.\n\nWhy this score?\n\n✔\nThe market looks reasonable.\n✔\nProblem definition is fairly clear.\n✔\nCustomer direction is taking shape.\n✔\nRevenue direction exists.\nView dimension scores\n\nWHAT'S NEXT\n\nHere's where we are — and what we'll work through together.\n\nPick the next topic to explore\n\nClarify market entry strategy\n\nComing soon\n\nReview customer priorities\n\nComing soon\n\nCONTINUE WITH YOUR PROJECT\n\nDon't stop here — keep going with your business\n\nAfter Google sign-in, you continue from the same point. The Demo flow becomes your workspace.\n\nContinue with Google\n\nYour Demo progress is restored in Workspace after sign-in.\n\nCurrent business readiness (AI)\n\n74/100\n\nScored from your document and confirmed inputs.\n\nView rationale\nMarket fit\n82\nProblem definition\n82\nCustomer clarity\n86\nRevenue model\n82\nExecution\n38\nSUMMARY\n\nDifferentiation in B2B SaaS is clear. Customer validation data is still thin, so confidence is limited. Next: target customer interviews.\n\nRecommended Next Step\n\n→\nRun 3 customer interviews\n\nRisk\nRecommendation",
+      "screenshot": "docs/evidence/ALABOM/conversation-validation/cpo-prod-journey/media/10-final-review.png",
+      "templateLikeHints": []
+    }
+  ],
+  "observations": [
+    "Sufficiency: coverage=(see body); finalVisible=false; readyReviewCopy=true",
+    "After start-analysis: review-like=true"
+  ],
+  "finalReviewReachable": true,
+  "templateLikeTurns": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ]
+}
