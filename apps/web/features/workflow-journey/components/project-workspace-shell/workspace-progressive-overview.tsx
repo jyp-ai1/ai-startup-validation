@@ -49,6 +49,8 @@ type WorkspaceProgressiveOverviewProps = {
   sharedUnderstanding?: WorkspaceSharedUnderstanding | null;
   nextIssueId?: AiPmLoopIssueId | null;
   nextIssueLabel?: string | null;
+  /** v2 — deterministic specificity % */
+  understandingCoveragePercent?: number | null;
   className?: string;
 };
 
@@ -64,6 +66,7 @@ export function WorkspaceProgressiveOverview({
   sharedUnderstanding = null,
   nextIssueId = null,
   nextIssueLabel = null,
+  understandingCoveragePercent = null,
   className,
 }: WorkspaceProgressiveOverviewProps) {
   const t = useTranslations('workflow.journey.workspaceShell.overview');
@@ -124,6 +127,14 @@ export function WorkspaceProgressiveOverview({
           <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             {t('stateBoardLabel')}
           </h2>
+          {understandingCoveragePercent != null ? (
+            <p
+              data-testid="understanding-coverage-percent"
+              className="mt-2 text-sm text-muted-foreground"
+            >
+              {t('coverageLabel', { percent: understandingCoveragePercent })}
+            </p>
+          ) : null}
           <dl className="mt-4 grid gap-3 sm:grid-cols-3">
             {rows.map((row) => {
               const mark = board.marks[row.key];

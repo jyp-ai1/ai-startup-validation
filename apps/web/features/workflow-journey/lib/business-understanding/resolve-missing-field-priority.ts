@@ -8,6 +8,10 @@ import {
 import { buildAiPmDynamicDiagnosis } from './build-ai-pm-dynamic-diagnosis';
 import { factKeyForIssue } from './build-conversation-memory';
 import { memoryHasFact, type ConversationMemory } from './conversation-memory';
+import {
+  buildLivingUnderstandingState,
+  resolveNextIssueFromLivingState,
+} from './living-understanding-state';
 import { getResolvedIssueIds } from './workspace-ai-pm-loop-store';
 import {
   type AiPmLoopIssueId,
@@ -85,10 +89,50 @@ export function resolveMissingFieldPriorities(
 
   const scored = new Map<AiPmLoopIssueId, MissingFieldPriority>();
 
+  // v2 — Living State gap priority (Impact × Unknown × Decision × Answerability)
+  if (text.length >= 8) {
+    const living = buildLivingUnderstandingState({
+      documentText: text,
+      understanding,
+      entities: options?.entities ?? null,
+      turns: options?.turns ?? loop.turns,
+      memory,
+      resolvedIssueIds: [...resolved],
+    });
+    const locked = new Set<AiPmLoopIssueId>();
+    for (const id of resolved) {
+      if (isIssueLockedInMemory(id, memory)) locked.add(id);
+    }
+    const fromLiving = resolveNextIssueFromLivingState(living, [...resolved], locked);
+    if (fromLiving && !resolved.has(fromLiving) && !locked.has(fromLiving)) {
+      const topGap = living.gaps.find((g) => g.issueId === fromLiving);
+      scored.set(fromLiving, {
+        issueId: fromLiving,
+        missingField: topGap?.fieldKey.includes('customer')
+          ? 'customer'
+          : topGap?.fieldKey.includes('problem')
+            ? 'problem'
+            : topGap?.fieldKey.includes('competitor')
+              ? 'competitor'
+              : topGap?.fieldKey.includes('market')
+                ? 'market'
+                : 'business',
+        rationale: topGap?.rationale ?? `Living State gap — ${fromLiving}`,
+        score: (topGap?.priorityScore ?? 100) + 50,
+      });
+    }
+  }
+
   for (const risk of diagnosis.riskScores) {
     if (resolved.has(risk.issueId)) continue;
     if (isIssueLockedInMemory(risk.issueId, memory)) continue;
-    if (risk.issueId === 'competitor_analysis' && !options?.analysisResultExists) continue;
+    if (risk.issueId === 'competitor_analysis' && !options?.analysisResultExists) {
+      const criticalConfirmed =
+        Boolean(memory) &&
+        memoryHasFact(memory!, 'customer') &&
+        memoryHasFact(memory!, 'problem');
+      if (!criticalConfirmed) continue;
+    }
 
     scored.set(risk.issueId, {
       issueId: risk.issueId,

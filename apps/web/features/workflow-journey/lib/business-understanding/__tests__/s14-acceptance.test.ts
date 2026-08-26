@@ -94,7 +94,7 @@ describe('S14 Payer placeholder', () => {
 });
 
 describe('S14 Competitor defer', () => {
-  it('skips competitor_analysis until analysisResult exists', () => {
+  it('allows competitor after critical facts OR analysisResult', () => {
     const understanding = buildBusinessUnderstanding(DOC);
     // All non-competitor issues already answered — only competitor remains.
     const loop = {
@@ -123,9 +123,11 @@ describe('S14 Competitor defer', () => {
       ],
       currentIssueId: null as null,
     };
+    // No memory + no analysis → still defer competitor
     const nextWithout = resolveNextLoopIssue(understanding, loop, {
       documentText: DOC,
       analysisResultExists: false,
+      memory: null,
     });
     expect(nextWithout).not.toBe('competitor_analysis');
     expect(nextWithout).toBeNull();

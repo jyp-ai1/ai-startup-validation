@@ -12,6 +12,7 @@ import { applyWorkspaceLoopAnswer } from '../../lib/business-understanding/works
 import { buildAiPmRuntimeJudgment } from '../../lib/business-understanding/build-workspace-ai-pm-state';
 import {
   appendAiPmLoopTurn,
+  getResolvedIssueIds,
   isAiPmLoopComplete,
   loadAiPmLoopState,
   patchAiPmLoopState,
@@ -38,7 +39,13 @@ import { getFact } from '../../lib/business-understanding/conversation-memory';
 import { hasAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentThinking } from '../../lib/business-understanding/build-thinking-presenter';
 import { presentS11Surface } from '../../lib/business-understanding/build-s11-surface-presenter';
-import { THINKING_TOTAL_MS } from '../../lib/business-understanding/thinking-stages';
+import { THINKING_STAGES, type ThinkingStageId } from '../../lib/business-understanding/thinking-stages';
+import {
+  applyLoopProcessingTransition,
+  runLoopAnswerProcessing,
+} from '../../lib/business-understanding/process-loop-answer';
+import { buildLivingUnderstandingState } from '../../lib/business-understanding/living-understanding-state';
+import { buildConversationalFinalOutput } from '../../lib/business-understanding/build-conversational-final-output';
 import {
   evaluateAnswerQuality,
   type AnswerQuality,
@@ -85,6 +92,7 @@ export function WorkspaceAiPmLoopPanel({
   const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));
   const [answerDraft, setAnswerDraft] = useState('');
   const [reanalyzing, setReanalyzing] = useState(false);
+  const [processingStageIds, setProcessingStageIds] = useState<ThinkingStageId[]>(['memory']);
   const [answerQualityHint, setAnswerQualityHint] = useState<AnswerQuality | null>(null);
   const [contradiction, setContradiction] = useState<{
     issueId: AiPmLoopIssueId;
@@ -113,6 +121,20 @@ export function WorkspaceAiPmLoopPanel({
       previous: loadConversationMemory(projectId),
     });
   }, [projectId, documentText, loopState.turns, entities]);
+
+  const livingState = useMemo(
+    () =>
+      buildLivingUnderstandingState({
+        documentText: documentText ?? '',
+        understanding,
+        entities,
+        turns: loopState.turns,
+        memory: conversationMemory,
+        resolvedIssueIds: getResolvedIssueIds(loopState),
+      }),
+    [conversationMemory, documentText, entities, loopState, understanding],
+  );
+
   const analysisResultExists = hasAnalysisResult(projectId);
   const nextIssue = useMemo(
     () =>
@@ -295,48 +317,34 @@ export function WorkspaceAiPmLoopPanel({
     setReanalyzing(false);
     setUpdateSavedFlash(true);
     const refreshed = loadAiPmLoopState(projectId);
-    const doc = loadWorkspaceDocumentText(projectId);
-    const freshUnderstanding = doc?.trim()
-      ? buildBusinessUnderstanding(doc)
-      : understanding;
+    const doc = loadWorkspaceDocumentText(projectId) ?? '';
+    const freshUnderstanding = doc.trim() ? buildBusinessUnderstanding(doc) : understanding;
 
-    if (isAiPmLoopComplete(refreshed)) {
-      const complete = patchAiPmLoopState({ phase: 'complete', currentIssueId: null }, projectId);
-      syncState(complete);
-      onLoopComplete?.();
+    if (!freshUnderstanding) {
+      syncState(refreshed);
       window.setTimeout(() => setUpdateSavedFlash(false), 2200);
       return;
     }
 
-    const plannedNext = resolveNextLoopIssue(freshUnderstanding, refreshed, {
-      documentText: doc ?? undefined,
+    const result = runLoopAnswerProcessing({
+      projectId,
+      documentText: doc,
+      understanding: freshUnderstanding,
       entities,
-      memory: loadConversationMemory(projectId),
-      analysisResultExists: hasAnalysisResult(projectId),
-      turns: refreshed.turns,
     });
 
-    if (
-      !plannedNext &&
+    const canComplete =
+      !result.nextIssueId &&
       canEnterValidation({
         loop: refreshed,
-        memory: loadConversationMemory(projectId),
+        memory: result.memory,
         entities,
-      })
-    ) {
-      const complete = patchAiPmLoopState({ phase: 'complete', currentIssueId: null }, projectId);
-      syncState(complete);
-      onLoopComplete?.();
-      window.setTimeout(() => setUpdateSavedFlash(false), 2200);
-      return;
-    }
+      });
 
-    const next = patchAiPmLoopState(
-      { phase: plannedNext ? 'issue' : 'complete', currentIssueId: plannedNext },
-      projectId,
-    );
+    const next = applyLoopProcessingTransition(result, projectId, canComplete);
     syncState(next);
-    if (!plannedNext) onLoopComplete?.();
+
+    if (next.phase === 'complete') onLoopComplete?.();
     window.setTimeout(() => setUpdateSavedFlash(false), 2200);
   }, [entities, onLoopComplete, projectId, syncState, understanding]);
 
@@ -347,31 +355,44 @@ export function WorkspaceAiPmLoopPanel({
     setReanalyzing(true);
     setUpdateSavedFlash(false);
     setAiPmLoopPhase('reanalyze', projectId);
-    syncState(loadAiPmLoopState(projectId));
-    if (processingTimerRef.current != null) {
-      window.clearTimeout(processingTimerRef.current);
-    }
-    processingTimerRef.current = window.setTimeout(() => {
-      finishProcessingRef.current();
-    }, THINKING_TOTAL_MS);
-  }, [projectId, syncState]);
 
-  // Recover durable `reanalyze` left by remount / failed apply — never stick forever.
+    const doc = loadWorkspaceDocumentText(projectId) ?? '';
+    const freshUnderstanding = doc.trim() ? buildBusinessUnderstanding(doc) : understanding;
+    if (freshUnderstanding) {
+      const result = runLoopAnswerProcessing({
+        projectId,
+        documentText: doc,
+        understanding: freshUnderstanding,
+        entities,
+      });
+      setProcessingStageIds(result.completedStages);
+    } else {
+      setProcessingStageIds(THINKING_STAGES.map((s) => s.id));
+    }
+
+    syncState(loadAiPmLoopState(projectId));
+  }, [entities, projectId, syncState, understanding]);
+
+  // Recover durable `reanalyze` left by remount — run real pipeline, UI completes via stages.
   useEffect(() => {
     if (loopState.phase !== 'reanalyze') return;
     if (reanalyzing) return;
     processingFinishedRef.current = false;
     setReanalyzing(true);
-    processingTimerRef.current = window.setTimeout(() => {
-      finishProcessingRef.current();
-    }, 400);
-    return () => {
-      if (processingTimerRef.current != null) {
-        window.clearTimeout(processingTimerRef.current);
-        processingTimerRef.current = null;
-      }
-    };
-  }, [loopState.phase, reanalyzing]);
+    const doc = loadWorkspaceDocumentText(projectId) ?? '';
+    const freshUnderstanding = doc.trim() ? buildBusinessUnderstanding(doc) : understanding;
+    if (freshUnderstanding) {
+      const result = runLoopAnswerProcessing({
+        projectId,
+        documentText: doc,
+        understanding: freshUnderstanding,
+        entities,
+      });
+      setProcessingStageIds(result.completedStages);
+    } else {
+      setProcessingStageIds(THINKING_STAGES.map((s) => s.id));
+    }
+  }, [entities, loopState.phase, projectId, reanalyzing, understanding]);
 
   useEffect(() => {
     return () => {
@@ -600,8 +621,10 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   if (isAiPmLoopComplete(loopState)) {
+    const finalOutput = buildConversationalFinalOutput(livingState);
     return (
       <section
+        data-testid="conversational-final-output"
         className={cn(
           'rounded-2xl border border-primary/25 bg-primary/[0.04] px-5 py-5 sm:px-7',
           className,
@@ -612,6 +635,35 @@ export function WorkspaceAiPmLoopPanel({
           {t('completeLead', { count: loopState.turns.length })}
         </p>
         <p className="mt-2 text-sm text-muted-foreground">{t('completeSub')}</p>
+        <div
+          data-testid="current-judgment-block"
+          className="mt-4 rounded-xl border border-border/60 bg-background/80 px-4 py-3"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+            {t('judgmentLabel')}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed">{finalOutput.judgmentSummary}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t('coverageFlash', { percent: finalOutput.coveragePercent })}
+          </p>
+        </div>
+        <ul className="mt-4 space-y-3">
+          {finalOutput.sections.map((section) => (
+            <li
+              key={section.id}
+              data-section={section.id}
+              className="rounded-lg border border-border/40 px-3 py-2.5"
+            >
+              <p className="text-xs font-semibold text-foreground">{section.title}</p>
+              <p className="mt-1 text-sm leading-snug">{section.summary}</p>
+              {section.evidence.length > 0 ? (
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {section.evidence[0]}
+                </p>
+              ) : null}
+            </li>
+          ))}
+        </ul>
       </section>
     );
   }
@@ -625,7 +677,7 @@ export function WorkspaceAiPmLoopPanel({
     return (
       <WorkspaceAiPmThinkingStages
         className={className}
-        completedStageIds={['memory']}
+        completedStageIds={processingStageIds}
         onComplete={() => finishProcessingRef.current()}
       />
     );
@@ -772,6 +824,20 @@ export function WorkspaceAiPmLoopPanel({
                 {t('understandingUpdatedFlash')}
               </p>
             ) : null}
+            <div
+              data-testid="current-judgment-block"
+              className="rounded-xl border border-border/50 bg-muted/20 px-4 py-3"
+            >
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                {t('judgmentLabel')}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-foreground">
+                {livingState.judgmentSummary}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t('coverageFlash', { percent: livingState.coveragePercent })}
+              </p>
+            </div>
             <p className="text-sm font-medium text-foreground">{t('reflectLead')}</p>
             <WorkspaceS11Surface surface={s11Surface} />
             <Button

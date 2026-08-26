@@ -22,11 +22,14 @@ import type {
 import { buildBusinessUnderstanding } from './build-business-understanding';
 import type { UnderstandingPhase } from './business-understanding-store';
 import { buildWorkspaceBusinessState, type WorkspaceBusinessState } from './build-ai-pm-business-clarity';
-import {
-  buildUnderstandingSpine,
+import { buildUnderstandingSpine,
   type WorkspaceSharedUnderstanding,
   type WorkspaceUnderstandingSpine,
 } from './build-shared-understanding';
+import {
+  buildLivingUnderstandingState,
+  type LivingUnderstandingState,
+} from './living-understanding-state';
 import { evaluateDomainTrust } from '../domain/domain-trust-rules';
 import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
 import { loadConversationMemory } from './conversation-memory-store';
@@ -43,7 +46,7 @@ import {
   isWorkspaceDocumentAnalyzable,
   isWorkspaceDocumentReadable,
 } from './workspace-document-eligibility';
-import { isAiPmLoopComplete } from './workspace-ai-pm-loop-store';
+import { isAiPmLoopComplete, getResolvedIssueIds } from './workspace-ai-pm-loop-store';
 import type { AiPmLoopIssueId, AiPmLoopState } from './workspace-ai-pm-loop-types';
 
 const DOMAIN_ORDER: WorkspaceNavNodeId[] = [
@@ -93,6 +96,10 @@ export type WorkspaceState = {
   understandingSpine: WorkspaceUnderstandingSpine | null;
   /** Current gap — same SoT as AI PM ask. */
   nextIssueId: AiPmLoopIssueId | null;
+  /** v2 — Living Understanding State (single SoT). */
+  livingState: LivingUnderstandingState | null;
+  /** v2 — deterministic specificity %. */
+  understandingCoveragePercent: number | null;
 };
 
 /** S16 P0-3 — stage-first progress (numbers secondary). */
@@ -420,6 +427,8 @@ function deriveSidebar(input: {
   reviewCount: number;
   loopInProgress: boolean;
   memory: ConversationMemory | null;
+  documentText: string;
+  livingState: LivingUnderstandingState | null;
 }): WorkspaceSidebarSnapshot {
   const {
     domain,
@@ -430,6 +439,7 @@ function deriveSidebar(input: {
     reviewCount,
     loopInProgress,
     memory,
+    livingState,
   } = input;
 
   const useUnderstandingLifecycle =
@@ -469,6 +479,7 @@ function deriveSidebar(input: {
       hideProgressMetrics: true,
       journeySteps,
       stepFirstProgress,
+      understandingCoveragePercent: livingState?.coveragePercent ?? null,
     };
   }
 
@@ -544,6 +555,19 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
       : null;
 
   const memory = loadConversationMemory(input.projectId);
+
+  const livingState =
+    understanding && input.reviewCount === 0
+      ? buildLivingUnderstandingState({
+          documentText,
+          understanding,
+          entities,
+          turns: input.loop.turns,
+          memory,
+          resolvedIssueIds: getResolvedIssueIds(input.loop),
+        })
+      : null;
+
   const sidebar = deriveSidebar({
     domain,
     understanding,
@@ -553,6 +577,8 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
     reviewCount: input.reviewCount,
     loopInProgress,
     memory,
+    documentText,
+    livingState,
   });
 
   const understandingSpine =
@@ -590,5 +616,7 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
     sharedUnderstanding,
     understandingSpine,
     nextIssueId,
+    livingState,
+    understandingCoveragePercent: livingState?.coveragePercent ?? null,
   };
 }

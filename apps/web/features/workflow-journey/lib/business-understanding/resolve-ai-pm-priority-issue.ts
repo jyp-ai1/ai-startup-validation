@@ -87,7 +87,21 @@ export function resolveNextLoopIssue(
     ...options,
     turns: options?.turns ?? loop.turns,
   });
-  if (byMissing) return byMissing;
+  if (byMissing) {
+    if (byMissing === 'competitor_analysis' && !options?.analysisResultExists) {
+      const criticalConfirmed =
+        Boolean(memory) &&
+        memoryHasFact(memory!, 'customer') &&
+        memoryHasFact(memory!, 'problem');
+      if (!criticalConfirmed) {
+        // fall through to diagnosis candidates
+      } else {
+        return byMissing;
+      }
+    } else {
+      return byMissing;
+    }
+  }
 
   const diagnosis = buildDiagnosis(understanding, resolvedIds, options);
   const candidates =
@@ -100,8 +114,14 @@ export function resolveNextLoopIssue(
   for (const id of candidates) {
     if (resolved.has(id)) continue;
     if (isIssueLockedInMemory(id, memory)) continue;
-    // S14 — competitor is not a first Action before analysisResult exists
-    if (id === 'competitor_analysis' && !options?.analysisResultExists) continue;
+    // S14 / v2 — competitor after analysis OR once customer+problem confirmed
+    if (id === 'competitor_analysis' && !options?.analysisResultExists) {
+      const criticalConfirmed =
+        Boolean(memory) &&
+        memoryHasFact(memory!, 'customer') &&
+        memoryHasFact(memory!, 'problem');
+      if (!criticalConfirmed) continue;
+    }
     return id;
   }
 

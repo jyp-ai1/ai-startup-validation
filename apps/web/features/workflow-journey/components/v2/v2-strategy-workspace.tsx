@@ -852,6 +852,7 @@ export function V2StrategyWorkspaceView({
               ? tLoop(`issues.${workspaceState.nextIssueId}.riskLabel`)
               : null
           }
+          understandingCoveragePercent={workspaceState.understandingCoveragePercent}
         />
       ) : activeMemory ? (
         <section className={cn(PANEL, 'animate-in fade-in duration-300')}>

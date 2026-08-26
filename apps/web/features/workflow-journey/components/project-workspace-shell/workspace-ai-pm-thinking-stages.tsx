@@ -8,8 +8,8 @@ import { cn } from '@repo/ui/lib/utils';
 
 import {
   resolveThinkingStage,
+  stateDrivenThinkingCompleteMs,
   THINKING_STAGES,
-  THINKING_TOTAL_MS,
   type ThinkingStageId,
 } from '../../lib/business-understanding/thinking-stages';
 
@@ -34,19 +34,20 @@ export function WorkspaceAiPmThinkingStages({
   const [elapsed, setElapsed] = useState(0);
   const active = resolveThinkingStage(elapsed);
   const forcedDone = new Set(completedStageIds);
+  const completeMs = stateDrivenThinkingCompleteMs(completedStageIds);
 
   useEffect(() => {
     const started = performance.now();
     const id = window.setInterval(() => {
       const next = performance.now() - started;
       setElapsed(next);
-      if (next >= THINKING_TOTAL_MS) {
+      if (next >= completeMs) {
         window.clearInterval(id);
         onComplete?.();
       }
-    }, 120);
+    }, 80);
     return () => window.clearInterval(id);
-  }, [onComplete]);
+  }, [completeMs, onComplete]);
 
   return (
     <section

@@ -1,14 +1,14 @@
 /**
- * ALABOM Core Understanding — targeted Production Demo LIVE (Scenarios A–F).
+ * ALABOM Core Experience v2 — Production Demo LIVE (Scenarios A–F).
  * PLAYWRIGHT_BASE_URL=https://ai-startup-validation-tau.vercel.app
- * Auth omitted (HOLD). Honesty: LIVE only when Production tip ≥ fa18171.
+ * Auth omitted (HOLD). Honesty: LIVE only when Production tip includes Living State SoT.
  */
 import { expect, test, type Page } from '@playwright/test';
 import path from 'node:path';
 import fs from 'node:fs';
 
-const OUT = path.join(process.cwd(), '../../docs/evidence/ALABOM/core/media');
-const RESULT = path.join(process.cwd(), '../../docs/evidence/ALABOM/core');
+const OUT = path.join(process.cwd(), '../../docs/evidence/ALABOM/core-v2/media');
+const RESULT = path.join(process.cwd(), '../../docs/evidence/ALABOM/core-v2');
 fs.mkdirSync(OUT, { recursive: true });
 fs.mkdirSync(RESULT, { recursive: true });
 

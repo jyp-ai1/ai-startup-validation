@@ -46,4 +46,6 @@ export type WorkspaceSidebarSnapshot = {
     lifecycle: NavNodeLifecycle;
   }>;
   stepFirstProgress?: boolean;
+  /** v2 — deterministic specificity % (NOT success probability). */
+  understandingCoveragePercent?: number | null;
 };

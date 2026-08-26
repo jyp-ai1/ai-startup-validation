@@ -15,8 +15,12 @@ import {
   getResolvedIssueIds,
   isAiPmLoopComplete,
   loadAiPmLoopState,
+  patchAiPmLoopState,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
-import type { AiPmLoopIssueId } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
+import {
+  AI_PM_LOOP_ISSUE_ORDER,
+  type AiPmLoopIssueId,
+} from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { buildAiPmScoreNarrative } from '../../lib/build-ai-pm-score-narrative';
 import { buildEditUnderstandingSummary } from '../../lib/business-understanding/build-edit-understanding-summary';
 import {
@@ -68,6 +72,11 @@ import {
   loadConversationMemory,
   saveConversationMemory,
 } from '../../lib/business-understanding/conversation-memory-store';
+import {
+  factsToClearAfterEdit,
+  invalidateDownstreamTurns,
+} from '../../lib/business-understanding/living-understanding-state';
+import { type ConversationFactKey } from '../../lib/business-understanding/conversation-memory';
 
 import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
 
@@ -326,17 +335,20 @@ export function WorkspaceAiPmMain({
   }, [onLoopDocumentUpdated, projectId]);
 
   const handleEditConfirmYes = useCallback(() => {
-    // W8 — correction path: domain edits lock as USER_CORRECTED facts
+    // W8 + v2 — correction locks USER_CORRECTED; invalidate downstream turns/facts
     const memory = loadConversationMemory(projectId);
     let nextMemory = memory;
-    const pairs = [
-      { key: 'business' as const, value: domain.business },
-      { key: 'customer' as const, value: domain.customer },
-      { key: 'market' as const, value: domain.market },
-      { key: 'competitor' as const, value: domain.competitor },
+    const pairs: Array<{ key: ConversationFactKey; value: string; issueId: AiPmLoopIssueId | null }> = [
+      { key: 'business', value: domain.business, issueId: 'bm_design' },
+      { key: 'customer', value: domain.customer, issueId: 'customer_definition' },
+      { key: 'market', value: domain.market, issueId: 'market_validation' },
+      { key: 'competitor', value: domain.competitor, issueId: 'competitor_analysis' },
     ];
+
+    let earliestEditIssue: AiPmLoopIssueId | null = null;
     for (const pair of pairs) {
       if (!pair.value.trim()) continue;
+      const prior = memory.facts.find((f) => f.key === pair.key)?.value ?? '';
       const applied = applyUserCorrection({
         projectId: projectId ?? 'default',
         fieldKey: pair.key,
@@ -344,10 +356,62 @@ export function WorkspaceAiPmMain({
         previous: nextMemory,
       });
       nextMemory = applied.memory;
+      if (
+        pair.issueId &&
+        prior.trim() &&
+        prior.trim() !== pair.value.trim() &&
+        (!earliestEditIssue ||
+          AI_PM_LOOP_ISSUE_ORDER.indexOf(pair.issueId) <
+            AI_PM_LOOP_ISSUE_ORDER.indexOf(earliestEditIssue))
+      ) {
+        earliestEditIssue = pair.issueId;
+      }
     }
+
+    if (earliestEditIssue) {
+      const loop = loadAiPmLoopState(projectId);
+      const keptTurns = invalidateDownstreamTurns(
+        loop.turns,
+        earliestEditIssue,
+        AI_PM_LOOP_ISSUE_ORDER,
+      );
+      // Drop facts that belonged to invalidated downstream issues
+      for (const issueId of AI_PM_LOOP_ISSUE_ORDER) {
+        if (AI_PM_LOOP_ISSUE_ORDER.indexOf(issueId) <= AI_PM_LOOP_ISSUE_ORDER.indexOf(earliestEditIssue)) {
+          continue;
+        }
+        for (const key of factsToClearAfterEdit(issueId)) {
+          nextMemory = {
+            ...nextMemory,
+            facts: nextMemory.facts.filter((f) => f.key !== key),
+            updatedAt: new Date().toISOString(),
+          };
+        }
+      }
+      // Keep the edited issue turn if still present; otherwise clear to recompute
+      const nextIssue =
+        keptTurns.find((t) => t.issueId === earliestEditIssue)?.issueId ?? earliestEditIssue;
+      patchAiPmLoopState(
+        {
+          turns: keptTurns,
+          phase: 'issue',
+          currentIssueId: nextIssue,
+        },
+        projectId,
+      );
+      setLoopState(loadAiPmLoopState(projectId));
+    }
+
     saveConversationMemory(nextMemory, projectId);
     proceedAfterUnderstandingConfirm();
-  }, [domain.business, domain.competitor, domain.customer, domain.market, proceedAfterUnderstandingConfirm, projectId]);
+  }, [
+    domain.business,
+    domain.competitor,
+    domain.customer,
+    domain.market,
+    proceedAfterUnderstandingConfirm,
+    projectId,
+  ]);
 
   const handleEditRevise = useCallback(() => {
     const mode = loadUnderstandingConfirmMode(projectId) ?? 'edit';

@@ -6589,6 +6589,7 @@
         "overview": {
           "empty": "No understanding yet. Continue with AI PM and this board will fill in.",
           "stateBoardLabel": "Current understanding",
+          "coverageLabel": "Business specificity {percent}%",
           "nextGapLabel": "Next to confirm",
           "noGap": "Core understanding is sufficient. Ready for review.",
           "scoreLabel": "Current business readiness (AI)",
@@ -6784,6 +6785,8 @@
           },
           "reflectLead": "I've updated my understanding like this",
           "understandingUpdatedFlash": "✓ AI understanding updated",
+          "judgmentLabel": "Current judgment",
+          "coverageFlash": "Specificity {percent}%",
           "turnAck": "Good — {resolved} is clearer now. Next we'll look at {next}.",
           "completeLead": "You and AI PM updated the plan in {count} turns.",
           "completeSub": "You're ready to start the viability review.",
