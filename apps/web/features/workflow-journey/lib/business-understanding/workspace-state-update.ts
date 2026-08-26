@@ -9,6 +9,7 @@ import {
 } from '../workspace-ai-pm-messages';
 
 import { applyAiPmLoopAnswer } from './apply-ai-pm-loop-answer';
+import { buildBusinessUnderstanding } from './build-business-understanding';
 import { buildConversationMemoryFromSources, factKeyForIssue } from './build-conversation-memory';
 import {
   getFact,
@@ -23,6 +24,7 @@ import {
   interpretAnswerSemantics,
   type SemanticInterpretation,
 } from './interpret-answer-semantics';
+import { getWhyThisQuestionNow } from './resolve-missing-field-priority';
 import {
   evaluateAnswerQuality,
   type AnswerQuality,
@@ -92,6 +94,22 @@ export function applyWorkspaceLoopAnswer(
   // Display-only paths — never Memory / document Fact blocks
   if (semantic.intent === 'why_meta') {
     const inferred = inferDomainFromPaste(documentTextBefore, projectId);
+    const loopForWhy = loadAiPmLoopState(projectId);
+    const understandingForWhy =
+      documentTextBefore.length >= 8
+        ? buildBusinessUnderstanding(documentTextBefore)
+        : null;
+    const livingWhy =
+      (understandingForWhy
+        ? getWhyThisQuestionNow(understandingForWhy, loopForWhy, {
+            documentText: documentTextBefore,
+            memory: previousMemory,
+            turns: loopForWhy.turns,
+            analysisResultExists: true,
+            issueId: issueId,
+          })?.whyNow
+        : null) ??
+      '이 질문은 지금 사업 GO/HOLD에 필요한 Critical Unknown을 메우기 위한 것입니다.';
     return {
       domain: inferred.domain,
       entities: inferred.entities,
@@ -101,11 +119,11 @@ export function applyWorkspaceLoopAnswer(
       existingFact,
       semantic,
       whyFollowUp: buildWhyFollowUp({
-        judgment: '이 질문은 사업 판단에 필요한 공백을 메우기 위한 것입니다.',
+        judgment: livingWhy,
         reasons: [
-          '문서·이전 답변으로 이미 아는 내용은 다시 묻지 않습니다.',
-          '지금 질문은 남은 Critical Unknown 또는 모순을 해소하기 위한 것입니다.',
-          semantic.rationale,
+          '이미 문서·이전 답변으로 확인된 내용은 다시 묻지 않습니다.',
+          livingWhy,
+          '답변 후에는 Living Understanding이 갱신되고, 다음 공백이 다시 골라집니다.',
         ],
         criticalGap: semantic.resolvedIssueId,
       }),

@@ -5,6 +5,7 @@ import {
   buildLivingUnderstandingState,
   computeUnderstandingCoverage,
   invalidateDownstreamTurns,
+  whyNowForGapField,
 } from '../living-understanding-state';
 import { upsertConfirmedFact, emptyConversationMemory } from '../conversation-memory';
 import { AI_PM_LOOP_ISSUE_ORDER } from '../workspace-ai-pm-loop-types';
@@ -86,5 +87,12 @@ describe('living-understanding-state (v2 SoT)', () => {
     const trimmed = invalidateDownstreamTurns(turns, 'customer_definition', AI_PM_LOOP_ISSUE_ORDER);
     expect(trimmed).toHaveLength(1);
     expect(trimmed[0]?.issueId).toBe('customer_definition');
+  });
+
+  it('whyNowForGapField is judgment-first (not generic next-question copy)', () => {
+    expect(whyNowForGapField('payer')).toMatch(/지불|GO\/HOLD/);
+    expect(whyNowForGapField('payer')).not.toMatch(/다음 질문입니다/);
+    expect(whyNowForGapField('problemJtbd')).not.toMatch(/문서·이전 답변으로 「/);
+    expect(whyNowForGapField('alternativesCompetitors')).toMatch(/대안|경쟁/);
   });
 });

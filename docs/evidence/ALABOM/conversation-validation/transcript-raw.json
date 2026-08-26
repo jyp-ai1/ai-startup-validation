@@ -1,5 +1,14 @@
 {
   "at": "2026-08-26T13:56:48.126Z",
+  "sprint": "conversation-validation",
+  "journeys": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+  ],
   "seed": "외국인 관광객용 로컬 맛집 예약 앱을 만들고 싶습니다.",
   "askedSequence": [
     "problem_definition",

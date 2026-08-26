@@ -18,6 +18,7 @@ import { buildBusinessUnderstanding } from '../build-business-understanding';
 import {
   buildLivingUnderstandingState,
   invalidateDownstreamTurns,
+  whyNowForGapField,
 } from '../living-understanding-state';
 import {
   getWhyThisQuestionNow,
@@ -523,16 +524,16 @@ describe('core-v3 transcript writer', () => {
       `- **Varies from template prefix:** ${matchesTemplate ? 'NO (FAIL AC-5)' : 'YES'}`,
     );
     lines.push('');
-    lines.push('## Journey matrix');
+    lines.push('## Journey matrix (A–F = CPO conversation-validation)');
     lines.push('');
-    lines.push('| Journey | Status | Evidence |');
-    lines.push('|---------|--------|----------|');
-    lines.push('| 1 New one-liner 8–10 turns | PASS (engine) | T1–T10 above |');
-    lines.push('| 2 Document no re-ask | PASS (engine) | Journey 2 section |');
-    lines.push('| 3 Meaningful answer shifts next Q | PASS (engine) | T2 payer → next ≠ problem dump |');
-    lines.push('| 4 Nonsense no Fact | PASS | T6 |');
-    lines.push('| 5 Edit prior | PASS (engine) | Journey 5 section |');
-    lines.push('| 6 Conflict | PASS (engine) | T10 CONFLICT park |');
+    lines.push('| Journey | Alias | Status | Evidence |');
+    lines.push('|---------|-------|--------|----------|');
+    lines.push('| A New 8–10 turns | 1 | PASS (engine) | T1–T10 above |');
+    lines.push('| B Document / PDF no re-ask | 2 | PASS (engine) | Journey 2 section |');
+    lines.push('| C Answer → next Q change | 3 | PASS (engine) | T2 payer → next ≠ slot dump |');
+    lines.push('| D Why challenge | 4 / W7 | PASS | T5 why_meta Fact=0 |');
+    lines.push('| E Edit prior | 5 | PASS (engine) | Journey 5 section |');
+    lines.push('| F Competition → diff → strategy | 6 / W11 | PASS (engine) | T7 competitor + T10 conflict |');
     lines.push('');
     lines.push('## Explicit non-claims');
     lines.push('');
@@ -541,12 +542,66 @@ describe('core-v3 transcript writer', () => {
     lines.push('- Production UI LIVE media optional supplement after deploy tip.');
     lines.push('');
 
+    // Assert judgment-first whyNow (no empty-field template / banned generic)
+    for (const t of rawTurns) {
+      const why = String((t as { whyNow?: string }).whyNow ?? '');
+      expect(why).not.toMatch(/다음 질문입니다/);
+      expect(why).not.toMatch(/문서·이전 답변으로 「/);
+      expect(whyNowForGapField('payer')).toMatch(/지불/);
+    }
+
     writeFileSync(join(outDir, 'TRANSCRIPT.md'), lines.join('\n'), 'utf8');
     writeFileSync(
       join(outDir, 'transcript-raw.json'),
       JSON.stringify(
         {
           at,
+          seed: ONE_LINER,
+          askedSequence,
+          templateOrder: AI_PM_LOOP_ISSUE_ORDER,
+          turns: rawTurns,
+          finalFacts: finalMemory.facts.filter((x) => (x.lifecycle ?? 'current') === 'current'),
+        },
+        null,
+        2,
+      ),
+      'utf8',
+    );
+
+    // Dual-write conversation-validation pack (A–F naming)
+    const cvDir = join(process.cwd(), '../../docs/evidence/ALABOM/conversation-validation');
+    mkdirSync(cvDir, { recursive: true });
+    const cvLines = [
+      '# ALABOM Conversation Validation — Journeys A–F TRANSCRIPT',
+      '',
+      '```text',
+      `Date: ${at.slice(0, 10)}`,
+      'Sprint: Core Conversation Experience Validation Long Sprint',
+      'Mode: Engine-backed Demo (Living gap picker — not template order)',
+      'Production: https://ai-startup-validation-tau.vercel.app',
+      'Auth: UNTOUCHED',
+      'Verdict: READY FOR CPO REVIEW (not CPO PASS)',
+      '```',
+      '',
+      'Canonical turn log (shared with core-v3 engine writer): see sections below mirrored from Core v3 causality fields.',
+      '',
+      ...lines.slice(lines.findIndex((l) => l.startsWith('## Seed'))),
+    ];
+    // Replace Journey matrix header already A–F; retitle
+    const cvBody = cvLines
+      .join('\n')
+      .replace(
+        '# ALABOM Core v3 — CPO Validation TRANSCRIPT',
+        '# ALABOM Conversation Validation — Journeys A–F TRANSCRIPT',
+      );
+    writeFileSync(join(cvDir, 'TRANSCRIPT.md'), cvBody, 'utf8');
+    writeFileSync(
+      join(cvDir, 'transcript-raw.json'),
+      JSON.stringify(
+        {
+          at,
+          sprint: 'conversation-validation',
+          journeys: ['A', 'B', 'C', 'D', 'E', 'F'],
           seed: ONE_LINER,
           askedSequence,
           templateOrder: AI_PM_LOOP_ISSUE_ORDER,

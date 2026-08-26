@@ -15,6 +15,13 @@ Source: CPO Validation Completion
 
 Semantic interpretation + claim lifecycle replace slot-dump merge. Explicit conflict cue (`다릅니다` etc.) forces CONFLICT when prior Fact exists. CPO PASS not claimed until transcript review.
 
+## KI-CQ-2 — Generic whyNow
+
+| Field | Value |
+|-------|--------|
+| **Status** | **FIXED** in conversation-validation sprint (judgment-first `whyNowForGapField`) |
+| **Evidence** | `docs/evidence/ALABOM/conversation-validation/TRANSCRIPT.md` |
+
 ## KI-1 — Auth durable (HOLD / Deferred)
 
 Unchanged. Out of scope. Auth untouched.

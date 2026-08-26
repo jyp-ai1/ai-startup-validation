@@ -1,12 +1,15 @@
-# ALABOM Core v3 — CPO Validation TRANSCRIPT
+# ALABOM Conversation Validation — Journeys A–F TRANSCRIPT
 
 ```text
 Date: 2026-08-26
-Mode: Engine-backed Demo (next Q from Living gap picker — not template order)
+Sprint: Core Conversation Experience Validation Long Sprint
+Mode: Engine-backed Demo (Living gap picker — not template order)
 Production: https://ai-startup-validation-tau.vercel.app
 Auth: UNTOUCHED
-Verdict language: READY FOR CPO TRANSCRIPT REVIEW (not CPO PASS)
+Verdict: READY FOR CPO REVIEW (not CPO PASS)
 ```
+
+Canonical turn log (shared with core-v3 engine writer): see sections below mirrored from Core v3 causality fields.
 
 ## Seed (Journey 1 — one-liner)
 

@@ -16,6 +16,7 @@ import {
 import {
   buildLivingUnderstandingState,
   resolveNextIssueFromLivingState,
+  whyNowForGapField,
 } from './living-understanding-state';
 import { getResolvedIssueIds } from './workspace-ai-pm-loop-store';
 import {
@@ -205,12 +206,19 @@ export function resolveMissingFieldPriorities(
         const pending =
           !fieldValue.trim() || fieldValue.trim() === SHARED_UNDERSTANDING_PENDING;
         if (!pending) continue;
+        const softFieldKey =
+          entry.field === 'customer'
+            ? 'customerPersona'
+            : entry.field === 'problem'
+              ? 'problemJtbd'
+              : 'businessOneLiner';
+        const softWhy = whyNowForGapField(softFieldKey);
         scored.set(entry.issueId, {
           issueId: entry.issueId,
           missingField: entry.field,
-          rationale: `Shared Understanding「${entry.field}」가 아직 비어 사업·판단에 필요합니다.`,
+          rationale: softWhy,
           score: 40,
-          whyNow: `document+dialogue left ${entry.field} unknown — needed for GO/HOLD judgment`,
+          whyNow: softWhy,
         });
       }
     }

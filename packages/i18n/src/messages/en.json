@@ -9202,7 +9202,7 @@
         "record": "Save answer",
         "recordFinal": "Save and finish",
         "savedFeedback": "Thank you.\n\nI've added this to the project.",
-        "nextQuestionFeedback": "Next question.",
+        "nextQuestionFeedback": "Your answer is reflected. Next we close the judgment gap that still blocks GO/HOLD.",
         "projectUpdated": "Today's project state has been updated.",
         "progress": "{current} of {total} complete.",
         "meta": "{minutes} min · +{impact}%",

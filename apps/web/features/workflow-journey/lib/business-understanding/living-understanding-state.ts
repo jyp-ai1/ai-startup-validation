@@ -355,6 +355,47 @@ export function computeUnderstandingCoverage(claims: LivingClaim[]): number {
   return Math.round((covered / claims.length) * 100);
 }
 
+/**
+ * Judgment-first whyNow — never generic "다음 질문입니다" / empty-field template.
+ * Each gap explains why the business decision needs this answer *now*.
+ */
+export function whyNowForGapField(fieldKey: string): string {
+  const map: Record<string, string> = {
+    payer:
+      '누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.',
+    customerPersona:
+      '고객이 넓거나 미정이면 검증·메시지 설계가 흔들립니다. 가장 필요로 하는 사람을 지금 좁힙니다.',
+    problemJtbd:
+      '해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.',
+    problemFrequencySeverity:
+      '문제가 얼마나 자주·심각하게 발생하는지 모르면 우선순위를 판단할 수 없습니다.',
+    alternativesCompetitors:
+      '이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.',
+    differentiationVsAlternatives:
+      '경쟁만 알고 차별이 없으면 「왜 우리인가」를 말할 수 없습니다. 차이점을 지금 확인합니다.',
+    differentiationHypothesis:
+      '차별 가설이 비어 있으면 경쟁 대비 포지션을 판단할 수 없습니다.',
+    revenueModel:
+      '수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.',
+    pricingHint:
+      '가격 신호가 없으면 수익·지불 의사 검증을 설계할 수 없습니다.',
+    marketChannel:
+      '도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.',
+    marketSizeEvidence:
+      '시장·수요 근거가 없으면 규모 판단을 할 수 없습니다.',
+    businessOneLiner:
+      '한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.',
+    categoryScope:
+      '카테고리 범위가 모호하면 경쟁·시장 비교가 흔들립니다.',
+    solution:
+      '해결 방식(솔루션)이 비면 문제–제공가치 연결을 판단할 수 없습니다.',
+  };
+  return (
+    map[fieldKey] ??
+    `「${fieldKey}」가 비어 있어 지금 사업 GO/HOLD 판단에 필요한 공백입니다.`
+  );
+}
+
 function scoreGap(
   claim: LivingClaim,
   resolvedIssueIds: Set<AiPmLoopIssueId>,
@@ -365,7 +406,7 @@ function scoreGap(
     return {
       fieldKey: claim.fieldKey,
       issueId,
-      rationale: `「${claim.fieldKey}」에 모순이 있습니다. 어느 쪽이 맞는지 확인해야 사업 판단을 이어갈 수 있습니다.`,
+      rationale: `「${claim.fieldKey}」에 서로 다른 답이 있습니다. 어느 쪽이 맞는지 확인해야 사업 판단을 이어갈 수 있습니다.`,
       priorityScore: 50_000,
     };
   }
@@ -396,7 +437,7 @@ function scoreGap(
   return {
     fieldKey: claim.fieldKey,
     issueId,
-    rationale: `문서·이전 답변으로 「${claim.fieldKey}」가 아직 비어 있어 사업 GO/HOLD 판단에 필요합니다.`,
+    rationale: whyNowForGapField(claim.fieldKey),
     priorityScore,
   };
 }

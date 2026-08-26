@@ -9387,7 +9387,7 @@
         "record": "답변 저장",
         "recordFinal": "답변 저장하고 완료",
         "savedFeedback": "감사합니다.\n\n이 내용을 프로젝트에 반영했습니다.",
-        "nextQuestionFeedback": "다음 질문입니다.",
+        "nextQuestionFeedback": "방금 답변을 반영했습니다. 다음으로 확인이 필요한 공백입니다.",
         "projectUpdated": "오늘 프로젝트 상태를 갱신했습니다.",
         "progress": "총 {total}개 중 {current}번째입니다.",
         "meta": "{minutes}분 · +{impact}%",
