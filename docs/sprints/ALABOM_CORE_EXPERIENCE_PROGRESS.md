@@ -16,6 +16,8 @@ Auth: UNTOUCHED (KI-1 HOLD / Deferred)
 
 ## Shipped this session (batch)
 
+**SHA:** `fa18171` (pushed `main`)
+
 - Loop: apply-then-process; no orphan `reanalyze`; mount recovery; idempotent finish; ThinkingStages `onComplete`
 - Answer quality harden (mash / punct-only); keep draft on reject
 - Progress lifecycle aligned to Memory + document-known customer
