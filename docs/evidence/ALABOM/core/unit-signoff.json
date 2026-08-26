@@ -1,0 +1,13 @@
+{
+  "at": "2026-08-26",
+  "suites": [
+    "answer-quality.test.ts",
+    "understanding-contract.test.ts",
+    "workspace-state.test.ts",
+    "s15-memory-bag-sync.test.ts",
+    "s17-document-first.test.ts",
+    "project-intake-seed.test.ts"
+  ],
+  "result": "PASS",
+  "notes": "Targeted unit only — not full monorepo suite"
+}
