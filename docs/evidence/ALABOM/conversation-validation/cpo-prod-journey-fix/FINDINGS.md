@@ -29,9 +29,19 @@ Fix CPO failures from `cpo-prod-journey/` at tip `5d25508`:
 | P0-7 | Why/meta display-only preserved |
 | P0-8 | `evaluateFinalIntegrityGate` blocks GO on drift/gaps/contradiction |
 
-## Observations (post-deploy capture)
+## Observations (engine simulation at `69a6eb1`)
 
-See `TRANSCRIPT.md` for turn-by-turn table after Production Demo journey re-run.
+1. **Gap-driven Q order** — first asks align to Living top gap (problem/payer/customer), not fixed Customer→Problem→Demand→Payer template.
+2. **whyNow ↔ targetGap aligned** — payer gap uses payment whyNow + payer question text (engine `whyNowAlignsWithTargetGap` ok).
+3. **Payer→buyer** — payment answer stored as `buyer` fact, not `customer`.
+4. **Why/mid/nonsense** — display-only intents; no extra Facts from meta probes.
+5. **Final integrity** — gate evaluates before GO; drift detector flags tourism→B2B mismatch.
+6. **Production LIVE** — deploy still on `89eb5b1` at capture time; Playwright UI capture partial (selector mismatch). Re-run after Vercel lands `69a6eb1`.
+
+## Residual risks for CPO review
+
+- Production UI transcript incomplete until deploy + Playwright re-capture.
+- Analysis engine narrative may still generic if input mapping unchanged (P1).
 
 ## Explicit non-claims
 
