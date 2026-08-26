@@ -22,7 +22,7 @@ import {
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 /** @deprecated Prefer `provenance` — kept for Presenter i18n keys. */
-export type DocumentFirstFieldSource = 'document' | 'inferred' | 'unknown';
+export type DocumentFirstFieldSource = 'document' | 'inferred' | 'unknown' | 'confirmed';
 
 export type DocumentFirstField = {
   id: 'business' | 'customer' | 'problem' | 'market' | 'competitor';

@@ -358,7 +358,7 @@
       "investment-prep": "투자 준비"
     },
     "descriptionLabel": "사업 설명 (선택)",
-    "descriptionPlaceholder": "나중에 Workspace에서 AI와 함께 적어도 됩니다",
+    "descriptionPlaceholder": "이 사업은 무엇을 하려는 건가요? 아는 만큼만 적어도 됩니다.",
     "newProjectCta": "새 프로젝트 만들기",
     "newProjectSectionTitle": "새 프로젝트 만들기",
     "continueCta": "계속하기",
@@ -6697,14 +6697,14 @@
           "reflectUpdated": "이렇게 이해를 수정했습니다",
           "detailCta": "자세히",
           "summaryCta": "요약",
-          "inferenceNotFact": "AI 추론 · 확정 사실 아님",
+          "inferenceNotFact": "AI 추정 · 확정 사실 아님",
           "provenance": {
-            "document": "문서",
-            "userConfirmed": "대표님 확인",
-            "userCorrected": "대표님 수정",
-            "aiInference": "AI 추론",
+            "document": "문서에서 확인됨",
+            "userConfirmed": "대표 확인 완료",
+            "userCorrected": "대표 확인 완료",
+            "aiInference": "AI 추정",
             "externalEvidence": "외부 근거",
-            "unknown": "미확인"
+            "unknown": "확인 필요"
           },
           "fields": {
             "business": "사업",
@@ -6725,7 +6725,7 @@
           },
           "customer": {
             "completed": "✓ 고객 확인",
-            "in_progress": "🟡 고객 확인 중",
+            "in_progress": "🟡 고객 · 확인 필요",
             "waiting": "○ 고객 분석 대기"
           },
           "market": {
@@ -6740,7 +6740,10 @@
           }
         },
         "overview": {
-          "empty": "AI PM과 함께 검토를 진행하면 개요가 생성됩니다.",
+          "empty": "아직 확인된 이해가 없습니다. AI PM과 문서·대화를 이어가면 여기에 상태가 쌓입니다.",
+          "stateBoardLabel": "현재 이해 상태",
+          "nextGapLabel": "다음으로 확인할 것",
+          "noGap": "핵심 이해가 충분합니다. 검토 단계로 넘어갈 수 있습니다.",
           "scoreLabel": "현재 AI가 판단한 사업 준비도",
           "scoreBasisLead": "문서와 확인한 내용을 기준으로 산정했습니다.",
           "scoreBreakdownToggle": "근거 보기",
@@ -6925,12 +6928,12 @@
             "UNKNOWN": "「모름」으로 기록합니다. 다른 질문으로 이어갈게요."
           },
           "backCta": "돌아가기",
-          "reanalyzeTitle": "좋습니다.",
-          "reanalyzeHint": "우리가 배운 내용을 바탕으로 다음 생각을 정리하고 있습니다.",
+          "reanalyzeTitle": "이해를 업데이트하는 중",
+          "reanalyzeHint": "Memory → Understanding → 다음 질문 순으로 반영합니다.",
           "thinkingStages": {
             "memory": "Memory에 답변을 반영하는 중…",
-            "business": "Shared Understanding을 업데이트하는 중…",
-            "nextQuestion": "다음 질문을 준비하는 중…"
+            "business": "Understanding을 업데이트하는 중…",
+            "nextQuestion": "다음 확인 질문을 준비하는 중…"
           },
           "reflectLead": "이렇게 이해를 수정했습니다",
           "understandingUpdatedFlash": "✓ AI 이해 업데이트 완료",
@@ -7151,15 +7154,16 @@
           "confidenceSource": {
             "document": "문서확인",
             "inferred": "추론",
-            "unknown": "미확인"
+            "unknown": "미확인",
+            "confirmed": "대표 확인 완료"
           },
           "provenance": {
-            "document": "문서",
-            "userConfirmed": "대표님 확인",
-            "userCorrected": "대표님 수정",
-            "aiInference": "AI 추론",
+            "document": "문서에서 확인됨",
+            "userConfirmed": "대표 확인 완료",
+            "userCorrected": "대표 확인 완료",
+            "aiInference": "AI 추정",
             "externalEvidence": "외부 근거",
-            "unknown": "미확인"
+            "unknown": "확인 필요"
           },
           "inferenceNotFact": "확정 사실 아님",
           "draftFields": {

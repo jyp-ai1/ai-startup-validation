@@ -85,10 +85,10 @@ export function mapDocumentFirstSourceToProvenance(
 /** Reverse map for Presenter surfaces that still key off legacy labels. */
 export function mapProvenanceToDocumentFirstSource(
   provenance: UnderstandingProvenance,
-): 'document' | 'inferred' | 'unknown' {
+): 'document' | 'inferred' | 'unknown' | 'confirmed' {
   if (provenance === 'DOCUMENT') return 'document';
   if (provenance === 'AI_INFERENCE' || provenance === 'EXTERNAL_EVIDENCE') return 'inferred';
-  if (provenance === 'USER_CONFIRMED' || provenance === 'USER_CORRECTED') return 'document';
+  if (provenance === 'USER_CONFIRMED' || provenance === 'USER_CORRECTED') return 'confirmed';
   return 'unknown';
 }
 
@@ -123,12 +123,15 @@ export function shouldSkipReask(confidence: UnderstandingConfidence): boolean {
 }
 
 const NONSENSE_RE =
-  /^(.)\1{3,}$|^(asdf+|qwer+|test+|testing+|xxx+|ㄴㄴㄴ+|ㅋㅋㅋ+|ㅎㅎㅎ+|aaa+|zzz+)$/i;
+  /^(.)\1{3,}$|^(asdf+|qwer+|test+|testing+|xxx+|ㄴㄴㄴ+|ㅋㅋㅋ+|ㅎㅎㅎ+|aaa+|zzz+|lalala+|blah+|foo+|bar+)$/i;
 const UNKNOWN_SIGNAL_RE = /^(모름|몰라요|모르겠|잘\s*모르|unknown|n\/?a|없음|없어요)\.?$/i;
+const PUNCT_ONLY_RE = /^[\p{P}\p{S}\d\s]+$/u;
+const KEYBOARD_MASH_RE = /^(?:[a-z]{1,2}\s*){4,}$/i;
 
 /**
  * Answer Quality Engine — never mark VALID by length alone.
  * CONTRADICTORY when answer conflicts with a known confirmed fact.
+ * Nonsense must not merge as Understanding (re-ask, keep draft).
  */
 export function evaluateAnswerQuality(
   answer: string,
@@ -141,7 +144,12 @@ export function evaluateAnswerQuality(
   if (UNKNOWN_SIGNAL_RE.test(trimmed)) {
     return { quality: 'UNKNOWN', mergeable: false };
   }
-  if (NONSENSE_RE.test(trimmed) || trimmed.length < 4) {
+  if (
+    NONSENSE_RE.test(trimmed) ||
+    PUNCT_ONLY_RE.test(trimmed) ||
+    KEYBOARD_MASH_RE.test(trimmed) ||
+    trimmed.length < 4
+  ) {
     return { quality: 'IRRELEVANT', mergeable: false };
   }
 

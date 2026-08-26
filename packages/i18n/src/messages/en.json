@@ -358,7 +358,7 @@
       "investment-prep": "Investment preparation"
     },
     "descriptionLabel": "Business description (optional)",
-    "descriptionPlaceholder": "You can add this later with AI in the Workspace",
+    "descriptionPlaceholder": "What is this business trying to do? Write only what you know.",
     "newProjectCta": "Create new project",
     "newProjectSectionTitle": "Create new project",
     "continueCta": "Continue",
@@ -6544,14 +6544,14 @@
           "reflectUpdated": "I've updated my understanding like this",
           "detailCta": "Detail",
           "summaryCta": "Summary",
-          "inferenceNotFact": "AI inference · not confirmed fact",
+          "inferenceNotFact": "AI estimate · not confirmed fact",
           "provenance": {
-            "document": "Document",
+            "document": "Confirmed from document",
             "userConfirmed": "Founder confirmed",
-            "userCorrected": "Founder corrected",
-            "aiInference": "AI inference",
+            "userCorrected": "Founder confirmed",
+            "aiInference": "AI estimate",
             "externalEvidence": "External evidence",
-            "unknown": "Unknown"
+            "unknown": "Needs confirmation"
           },
           "fields": {
             "business": "Business",
@@ -6587,7 +6587,10 @@
           }
         },
         "overview": {
-          "empty": "Complete a review with AI PM to generate your Overview.",
+          "empty": "No understanding yet. Continue with AI PM and this board will fill in.",
+          "stateBoardLabel": "Current understanding",
+          "nextGapLabel": "Next to confirm",
+          "noGap": "Core understanding is sufficient. Ready for review.",
           "scoreLabel": "Current business readiness (AI)",
           "scoreBasisLead": "Scored from your document and confirmed inputs.",
           "scoreBreakdownToggle": "View rationale",

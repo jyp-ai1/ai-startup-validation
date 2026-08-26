@@ -30,6 +30,7 @@ import {
 import { evaluateDomainTrust } from '../domain/domain-trust-rules';
 import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
 import { loadConversationMemory } from './conversation-memory-store';
+import { memoryHasFact, type ConversationMemory } from './conversation-memory';
 import {
   deriveEvidenceStatusFromMemory,
   firstReviewEvidenceGap,
@@ -90,6 +91,8 @@ export type WorkspaceState = {
   sharedUnderstanding: WorkspaceSharedUnderstanding | null;
   /** Long Sprint Spine — provenance / ✔●○ marks for Detail. */
   understandingSpine: WorkspaceUnderstandingSpine | null;
+  /** Current gap — same SoT as AI PM ask. */
+  nextIssueId: AiPmLoopIssueId | null;
 };
 
 /** S16 P0-3 — stage-first progress (numbers secondary). */
@@ -156,32 +159,38 @@ function lifecycleForNode(
   understanding: BusinessUnderstanding,
   entities: LaunchLensDomainContext | null,
   loop: AiPmLoopState,
+  memory: ConversationMemory | null,
 ): NavNodeLifecycle {
   switch (id) {
     case 'founder':
       if (understanding.founder.status === 'document') return 'completed';
       return 'in_progress';
     case 'business':
-      if (understanding.business.status === 'document') return 'completed';
+      if (memory && memoryHasFact(memory, 'business')) return 'completed';
+      if (understanding.business.status === 'document' && understanding.business.value) {
+        return 'completed';
+      }
       if (understanding.founder.status === 'document') return 'in_progress';
       return 'waiting';
     case 'customer':
+      // Single SoT with Spine/Memory — document-backed or confirmed ≠ stuck "확인 중"
       if (loopAnsweredIssue(loop, 'customer_definition')) return 'completed';
+      if (memory && memoryHasFact(memory, 'customer')) return 'completed';
       if (understanding.customer.status === 'document' && understanding.customer.value) {
         return 'completed';
       }
-      if (
-        understanding.customer.status === 'needs_confirmation' ||
-        understanding.customerMentions.length > 0
-      ) {
-        return 'in_progress';
+      if (understanding.customerMentions.length > 0) {
+        return 'completed';
       }
+      if (understanding.customer.status === 'needs_confirmation') return 'in_progress';
       if (understanding.business.status === 'document') return 'in_progress';
       return 'waiting';
     case 'market': {
+      if (memory && memoryHasFact(memory, 'market')) return 'completed';
       if (entities?.market.basis === 'document' && entities.market.value) return 'completed';
       if (
         loopAnsweredIssue(loop, 'customer_definition') ||
+        (memory && memoryHasFact(memory, 'customer')) ||
         understanding.customer.status === 'document' ||
         understanding.customerMentions.length > 0
       ) {
@@ -190,6 +199,7 @@ function lifecycleForNode(
       return 'waiting';
     }
     case 'competitor': {
+      if (memory && memoryHasFact(memory, 'competitor')) return 'completed';
       if (entities?.competitor.basis === 'document' && entities.competitor.value) {
         return 'completed';
       }
@@ -409,9 +419,18 @@ function deriveSidebar(input: {
   understandingPhase: UnderstandingPhase;
   reviewCount: number;
   loopInProgress: boolean;
+  memory: ConversationMemory | null;
 }): WorkspaceSidebarSnapshot {
-  const { domain, understanding, loop, entities, understandingPhase, reviewCount, loopInProgress } =
-    input;
+  const {
+    domain,
+    understanding,
+    loop,
+    entities,
+    understandingPhase,
+    reviewCount,
+    loopInProgress,
+    memory,
+  } = input;
 
   const useUnderstandingLifecycle =
     Boolean(understanding) && reviewCount === 0 && understandingPhase !== 'review-ready';
@@ -421,7 +440,7 @@ function deriveSidebar(input: {
     labelKey: id,
     lifecycle:
       useUnderstandingLifecycle && understanding
-        ? lifecycleForNode(id, understanding, entities, loop)
+        ? lifecycleForNode(id, understanding, entities, loop, memory)
         : lifecycleForDomainNode(id, domain, entities),
   }));
 
@@ -524,6 +543,7 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
         })
       : null;
 
+  const memory = loadConversationMemory(input.projectId);
   const sidebar = deriveSidebar({
     domain,
     understanding,
@@ -532,9 +552,9 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
     understandingPhase: input.understandingPhase,
     reviewCount: input.reviewCount,
     loopInProgress,
+    memory,
   });
 
-  const memory = loadConversationMemory(input.projectId);
   const understandingSpine =
     understanding && input.reviewCount === 0
       ? buildUnderstandingSpine({
@@ -569,5 +589,6 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
     sidebar,
     sharedUnderstanding,
     understandingSpine,
+    nextIssueId,
   };
 }

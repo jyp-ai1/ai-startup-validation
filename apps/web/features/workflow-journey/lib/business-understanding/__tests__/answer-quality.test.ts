@@ -14,6 +14,12 @@ describe('evaluateAnswerQuality (W5–W6)', () => {
     expect(evaluateAnswerQuality('xxx').mergeable).toBe(false);
   });
 
+  it('rejects keyboard mash / punctuation-only as IRRELEVANT', () => {
+    expect(evaluateAnswerQuality('as df as df').quality).toBe('IRRELEVANT');
+    expect(evaluateAnswerQuality('!!! ???').mergeable).toBe(false);
+    expect(evaluateAnswerQuality('blahblah').mergeable).toBe(false);
+  });
+
   it('records 모름 as UNKNOWN without merging as fact', () => {
     expect(evaluateAnswerQuality('모름')).toEqual({ quality: 'UNKNOWN', mergeable: false });
   });

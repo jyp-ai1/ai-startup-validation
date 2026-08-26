@@ -97,6 +97,9 @@ export function WorkspaceAiPmLoopPanel({
   const [returnWelcomeDismissed, setReturnWelcomeDismissed] = useState(false);
   const [recognitionDismissed, setRecognitionDismissed] = useState(true);
   const confirmParkNotifiedRef = useRef(false);
+  const processingTimerRef = useRef<number | null>(null);
+  const finishProcessingRef = useRef<() => void>(() => {});
+  const processingFinishedRef = useRef(false);
 
   const documentText = useMemo(() => loadWorkspaceDocumentText(projectId), [projectId, understanding]);
   const documentTrust = useMemo(() => getWorkspaceDocumentTrust(documentText), [documentText]);
@@ -282,6 +285,102 @@ export function WorkspaceAiPmLoopPanel({
     [],
   );
 
+  const finishProcessing = useCallback(() => {
+    if (processingFinishedRef.current) return;
+    processingFinishedRef.current = true;
+    if (processingTimerRef.current != null) {
+      window.clearTimeout(processingTimerRef.current);
+      processingTimerRef.current = null;
+    }
+    setReanalyzing(false);
+    setUpdateSavedFlash(true);
+    const refreshed = loadAiPmLoopState(projectId);
+    const doc = loadWorkspaceDocumentText(projectId);
+    const freshUnderstanding = doc?.trim()
+      ? buildBusinessUnderstanding(doc)
+      : understanding;
+
+    if (isAiPmLoopComplete(refreshed)) {
+      const complete = patchAiPmLoopState({ phase: 'complete', currentIssueId: null }, projectId);
+      syncState(complete);
+      onLoopComplete?.();
+      window.setTimeout(() => setUpdateSavedFlash(false), 2200);
+      return;
+    }
+
+    const plannedNext = resolveNextLoopIssue(freshUnderstanding, refreshed, {
+      documentText: doc ?? undefined,
+      entities,
+      memory: loadConversationMemory(projectId),
+      analysisResultExists: hasAnalysisResult(projectId),
+      turns: refreshed.turns,
+    });
+
+    if (
+      !plannedNext &&
+      canEnterValidation({
+        loop: refreshed,
+        memory: loadConversationMemory(projectId),
+        entities,
+      })
+    ) {
+      const complete = patchAiPmLoopState({ phase: 'complete', currentIssueId: null }, projectId);
+      syncState(complete);
+      onLoopComplete?.();
+      window.setTimeout(() => setUpdateSavedFlash(false), 2200);
+      return;
+    }
+
+    const next = patchAiPmLoopState(
+      { phase: plannedNext ? 'issue' : 'complete', currentIssueId: plannedNext },
+      projectId,
+    );
+    syncState(next);
+    if (!plannedNext) onLoopComplete?.();
+    window.setTimeout(() => setUpdateSavedFlash(false), 2200);
+  }, [entities, onLoopComplete, projectId, syncState, understanding]);
+
+  finishProcessingRef.current = finishProcessing;
+
+  const startProcessing = useCallback(() => {
+    processingFinishedRef.current = false;
+    setReanalyzing(true);
+    setUpdateSavedFlash(false);
+    setAiPmLoopPhase('reanalyze', projectId);
+    syncState(loadAiPmLoopState(projectId));
+    if (processingTimerRef.current != null) {
+      window.clearTimeout(processingTimerRef.current);
+    }
+    processingTimerRef.current = window.setTimeout(() => {
+      finishProcessingRef.current();
+    }, THINKING_TOTAL_MS);
+  }, [projectId, syncState]);
+
+  // Recover durable `reanalyze` left by remount / failed apply — never stick forever.
+  useEffect(() => {
+    if (loopState.phase !== 'reanalyze') return;
+    if (reanalyzing) return;
+    processingFinishedRef.current = false;
+    setReanalyzing(true);
+    processingTimerRef.current = window.setTimeout(() => {
+      finishProcessingRef.current();
+    }, 400);
+    return () => {
+      if (processingTimerRef.current != null) {
+        window.clearTimeout(processingTimerRef.current);
+        processingTimerRef.current = null;
+      }
+    };
+  }, [loopState.phase, reanalyzing]);
+
+  useEffect(() => {
+    return () => {
+      if (processingTimerRef.current != null) {
+        window.clearTimeout(processingTimerRef.current);
+      }
+    };
+  }, []);
+
   const beginIssue = useCallback(() => {
     const issue = loopState.currentIssueId ?? nextIssue;
     if (!issue || readOnly) return;
@@ -394,6 +493,7 @@ export function WorkspaceAiPmLoopPanel({
       return;
     }
     if (!preview.mergeable) {
+      // Keep draft — nonsense must not fake Understanding; re-ask.
       setAnswerQualityHint(preview.quality);
       setContradiction(null);
       return;
@@ -410,13 +510,24 @@ export function WorkspaceAiPmLoopPanel({
       phase: 'answer',
     });
 
-    // S15 — append turn BEFORE Memory rebuild so bag includes the latest Fact
+    // Append turn (phase stays stable) THEN Memory merge — bag includes latest Fact.
     appendAiPmLoopTurn(
       { issueId, answer: trimmed, appliedAt: new Date().toISOString() },
       projectId,
     );
     const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId);
     if (!result.applied) {
+      // Roll back orphan turn; keep draft for re-ask.
+      const rolled = loadAiPmLoopState(projectId);
+      patchAiPmLoopState(
+        {
+          turns: rolled.turns.slice(0, -1),
+          phase: 'answer',
+          currentIssueId: issueId,
+        },
+        projectId,
+      );
+      syncState(loadAiPmLoopState(projectId));
       setAnswerQualityHint(result.quality);
       return;
     }
@@ -425,68 +536,17 @@ export function WorkspaceAiPmLoopPanel({
     setAnswerDraft('');
     setReturnWelcomeDismissed(true);
     setRecognitionDismissed(false);
-    setReanalyzing(true);
-    setUpdateSavedFlash(false);
-    setAiPmLoopPhase('reanalyze', projectId);
-
-    // S17-2 — staged Thinking (~1–2s) then reflect + next Q
-    window.setTimeout(() => {
-      setReanalyzing(false);
-      setUpdateSavedFlash(true);
-      const refreshed = loadAiPmLoopState(projectId);
-      const doc = loadWorkspaceDocumentText(projectId);
-      const freshUnderstanding = doc?.trim()
-        ? buildBusinessUnderstanding(doc)
-        : understanding;
-
-      if (isAiPmLoopComplete(refreshed)) {
-        const complete = patchAiPmLoopState({ phase: 'complete', currentIssueId: null }, projectId);
-        syncState(complete);
-        onLoopComplete?.();
-        return;
-      }
-      const plannedNext = resolveNextLoopIssue(freshUnderstanding, refreshed, {
-        documentText: doc ?? undefined,
-        entities,
-        memory: loadConversationMemory(projectId),
-        analysisResultExists: hasAnalysisResult(projectId),
-        turns: refreshed.turns,
-      });
-      // W9 — complete when no next gap AND stage transition allows Validation
-      if (
-        !plannedNext &&
-        canEnterValidation({
-          loop: refreshed,
-          memory: loadConversationMemory(projectId),
-          entities,
-        })
-      ) {
-        const complete = patchAiPmLoopState({ phase: 'complete', currentIssueId: null }, projectId);
-        syncState(complete);
-        onLoopComplete?.();
-        window.setTimeout(() => setUpdateSavedFlash(false), 2200);
-        return;
-      }
-      const next = patchAiPmLoopState(
-        { phase: plannedNext ? 'issue' : 'complete', currentIssueId: plannedNext },
-        projectId,
-      );
-      syncState(next);
-      if (!plannedNext) onLoopComplete?.();
-      window.setTimeout(() => setUpdateSavedFlash(false), 2200);
-    }, THINKING_TOTAL_MS);
+    startProcessing();
   }, [
     answerDraft,
     loopState.currentIssueId,
     loopState.turns.length,
     onDocumentUpdated,
-    onLoopComplete,
     nextIssue,
     projectId,
     readOnly,
+    startProcessing,
     syncState,
-    understanding,
-    entities,
   ]);
 
   const resolveContradiction = useCallback(
@@ -508,43 +568,10 @@ export function WorkspaceAiPmLoopPanel({
       applyWorkspaceLoopAnswer(issueId, next, projectId, { forceAccept: true });
       onDocumentUpdated?.(issueId, next);
       setAnswerDraft('');
-      setReanalyzing(true);
-      setAiPmLoopPhase('reanalyze', projectId);
-      window.setTimeout(() => {
-        setReanalyzing(false);
-        setUpdateSavedFlash(true);
-        const refreshed = loadAiPmLoopState(projectId);
-        const doc = loadWorkspaceDocumentText(projectId);
-        const freshUnderstanding = doc?.trim()
-          ? buildBusinessUnderstanding(doc)
-          : understanding;
-        const plannedNext = resolveNextLoopIssue(freshUnderstanding, refreshed, {
-          documentText: doc ?? undefined,
-          entities,
-          memory: loadConversationMemory(projectId),
-          analysisResultExists: hasAnalysisResult(projectId),
-          turns: refreshed.turns,
-        });
-        const nextState = patchAiPmLoopState(
-          { phase: plannedNext ? 'issue' : 'complete', currentIssueId: plannedNext },
-          projectId,
-        );
-        syncState(nextState);
-        if (!plannedNext) onLoopComplete?.();
-        window.setTimeout(() => setUpdateSavedFlash(false), 2200);
-      }, THINKING_TOTAL_MS);
+      startProcessing();
       void prior;
     },
-    [
-      contradiction,
-      entities,
-      onDocumentUpdated,
-      onLoopComplete,
-      projectId,
-      readOnly,
-      syncState,
-      understanding,
-    ],
+    [contradiction, onDocumentUpdated, projectId, readOnly, startProcessing],
   );
 
   if (sessionPaused && loopState.turns.length > 0) {
@@ -595,7 +622,12 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   if (reanalyzing || loopState.phase === 'reanalyze') {
-    return <WorkspaceAiPmThinkingStages className={className} />;
+    return (
+      <WorkspaceAiPmThinkingStages
+        className={className}
+        onComplete={() => finishProcessingRef.current()}
+      />
+    );
   }
 
   if (!loopState.readingCompleted && loopState.turns.length === 0) {

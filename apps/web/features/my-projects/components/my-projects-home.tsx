@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus } from 'lucide-react';
 
@@ -30,6 +30,30 @@ type MyProjectsHomeProps = {
 };
 
 const INITIAL: CreateMyProjectState = {};
+const DESCRIPTION_MAX = 1000;
+
+function ProjectDescriptionField({ disabled }: { disabled: boolean }) {
+  const t = useTranslations('myProjects');
+  const [value, setValue] = useState('');
+  return (
+    <div className="space-y-1.5">
+      <textarea
+        id="project-description"
+        name="description"
+        rows={6}
+        maxLength={DESCRIPTION_MAX}
+        value={value}
+        onChange={(event) => setValue(event.target.value.slice(0, DESCRIPTION_MAX))}
+        placeholder={t('descriptionPlaceholder')}
+        className="min-h-[9rem] w-full resize-y rounded-xl border border-border/70 bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
+        disabled={disabled}
+      />
+      <p className="text-right text-xs text-muted-foreground">
+        {value.length}/{DESCRIPTION_MAX}
+      </p>
+    </div>
+  );
+}
 
 export function MyProjectsHome({ userName, userEmail, projects, dbReady }: MyProjectsHomeProps) {
   const t = useTranslations('myProjects');
@@ -95,15 +119,7 @@ export function MyProjectsHome({ userName, userEmail, projects, dbReady }: MyPro
             <label htmlFor="project-description" className="text-sm font-medium">
               {t('descriptionLabel')}
             </label>
-            <input
-              id="project-description"
-              name="description"
-              type="text"
-              maxLength={160}
-              placeholder={t('descriptionPlaceholder')}
-              className="h-11 w-full rounded-xl border border-border/70 bg-background px-4 text-sm outline-none ring-primary/30 focus:ring-2"
-              disabled={!dbReady || pending}
-            />
+            <ProjectDescriptionField disabled={!dbReady || pending} />
           </div>
 
           <Button type="submit" disabled={!dbReady || pending} className="h-11 w-full gap-1">

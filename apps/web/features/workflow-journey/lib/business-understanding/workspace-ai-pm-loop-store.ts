@@ -90,11 +90,11 @@ export function appendAiPmLoopTurn(
 ): AiPmLoopState {
   const current = loadAiPmLoopState(projectId);
   const turns = [...current.turns, turn];
-  // W9 — do not auto-complete on turn count; Stage Transition / next-issue decides.
+  // Keep phase stable here — caller sets `reanalyze` only after Memory merge succeeds.
+  // (Prevents durable stuck "AI 검토 중" when apply is rejected after append.)
   const next: AiPmLoopState = {
     ...current,
     turns,
-    phase: 'reanalyze',
     currentIssueId: current.currentIssueId,
   };
   saveAiPmLoopState(next, projectId);

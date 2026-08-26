@@ -154,6 +154,7 @@ export function V2StrategyWorkspaceView({
   const tDraft = useTranslations('workflow.v2.strategyWorkspace.decisionMemory.draft');
   const tDemo = useTranslations('workflow.journey.workspaceShell.demo');
   const tStrip = useTranslations('workflow.journey.workspaceShell.strip');
+  const tLoop = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
 
   const [phase, setPhase] = useState<WorkspacePhase>('compose');
   /** E3 — Review Start visible error + Retry (no silent fail) */
@@ -843,6 +844,14 @@ export function V2StrategyWorkspaceView({
           scoreDimensions={sidebarSnapshot.scoreDimensions}
           reviewCount={reviewCount}
           completedTopics={sidebarSnapshot.completedTopics}
+          spine={understandingSpine}
+          sharedUnderstanding={sharedUnderstanding}
+          nextIssueId={workspaceState.nextIssueId}
+          nextIssueLabel={
+            workspaceState.nextIssueId
+              ? tLoop(`issues.${workspaceState.nextIssueId}.riskLabel`)
+              : null
+          }
         />
       ) : activeMemory ? (
         <section className={cn(PANEL, 'animate-in fade-in duration-300')}>

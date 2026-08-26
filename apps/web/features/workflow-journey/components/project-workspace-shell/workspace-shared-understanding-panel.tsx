@@ -154,13 +154,13 @@ export function WorkspaceSharedUnderstandingPanel({
               >
                 {row.value}
               </dd>
-              {detailOpen && provenance ? (
+              {provenance ? (
                 <p
                   data-testid={`shared-understanding-provenance-${row.key}`}
                   className="mt-1 text-[11px] text-muted-foreground"
                 >
                   {t(provenanceLabelKey(provenance))}
-                  {provenance === 'AI_INFERENCE' ? (
+                  {detailOpen && provenance === 'AI_INFERENCE' ? (
                     <span className="ml-1 text-amber-700 dark:text-amber-300">
                       · {t('inferenceNotFact')}
                     </span>

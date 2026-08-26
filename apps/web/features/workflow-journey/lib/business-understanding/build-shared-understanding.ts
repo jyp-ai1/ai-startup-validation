@@ -61,7 +61,18 @@ function resolveBusinessField(
   entities: LaunchLensDomainContext | null,
   understanding: BusinessUnderstanding | null,
   readable: boolean,
+  memory?: ConversationMemory | null,
 ): { value: string; provenance: UnderstandingProvenance } {
+  if (memory && memoryHasFact(memory, 'business')) {
+    const fact = memory.facts.find((f) => f.key === 'business');
+    if (fact?.value.trim()) {
+      return {
+        value: truncate(fact.value, 48),
+        provenance: fact.source === 'user_turn' ? 'USER_CONFIRMED' : 'DOCUMENT',
+      };
+    }
+  }
+
   if (!readable) {
     return {
       value: SHARED_UNDERSTANDING_UNREADABLE_BUSINESS,
@@ -228,6 +239,7 @@ export function buildUnderstandingSpine(input: {
     input.entities,
     input.understanding,
     readable,
+    input.memory,
   );
   const customer = resolveCustomerField(
     input.turns,
