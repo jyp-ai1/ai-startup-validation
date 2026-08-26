@@ -625,6 +625,7 @@ export function WorkspaceAiPmLoopPanel({
     return (
       <WorkspaceAiPmThinkingStages
         className={className}
+        completedStageIds={['memory']}
         onComplete={() => finishProcessingRef.current()}
       />
     );

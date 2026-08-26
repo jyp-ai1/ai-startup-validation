@@ -7001,15 +7001,16 @@
           "confidenceSource": {
             "document": "document",
             "inferred": "inferred",
-            "unknown": "unknown"
+            "unknown": "unknown",
+            "confirmed": "founder confirmed"
           },
           "provenance": {
-            "document": "Document",
+            "document": "Confirmed from document",
             "userConfirmed": "Founder confirmed",
-            "userCorrected": "Founder corrected",
-            "aiInference": "AI inference",
+            "userCorrected": "Founder confirmed",
+            "aiInference": "AI estimate",
             "externalEvidence": "External evidence",
-            "unknown": "Unknown"
+            "unknown": "Needs confirmation"
           },
           "inferenceNotFact": "not confirmed fact",
           "draftFields": {

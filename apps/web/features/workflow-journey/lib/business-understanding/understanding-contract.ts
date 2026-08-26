@@ -75,10 +75,11 @@ export type UnderstandingClaim = {
 
 /** Map legacy Document First sources → Long Sprint provenance. */
 export function mapDocumentFirstSourceToProvenance(
-  source: 'document' | 'inferred' | 'unknown',
+  source: 'document' | 'inferred' | 'unknown' | 'confirmed',
 ): UnderstandingProvenance {
   if (source === 'document') return 'DOCUMENT';
   if (source === 'inferred') return 'AI_INFERENCE';
+  if (source === 'confirmed') return 'USER_CONFIRMED';
   return 'UNKNOWN';
 }
 

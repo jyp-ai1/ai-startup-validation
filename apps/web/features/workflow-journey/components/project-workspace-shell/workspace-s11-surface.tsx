@@ -13,7 +13,8 @@ type WorkspaceS11SurfaceProps = {
 
 /**
  * S11 UI — Contract blocks only.
- * W7 — Summary default; Detail expands purpose/reason (not a second Hero).
+ * Summary default; Why (purpose) always visible on the current question.
+ * Detail expands evidence/assumptions/action next — not a second Hero.
  */
 export function WorkspaceS11Surface({ surface, className }: WorkspaceS11SurfaceProps) {
   const [detailOpen, setDetailOpen] = useState(false);
@@ -91,11 +92,12 @@ export function WorkspaceS11Surface({ surface, className }: WorkspaceS11SurfaceP
         <section data-testid="surface-question" aria-label="question" className="space-y-2">
           <p className="text-sm font-semibold text-foreground">이번 질문</p>
           <p className="text-[15px] font-medium leading-relaxed">{surface.question.text}</p>
-          {detailOpen && surface.question.purpose ? (
+          {surface.question.purpose ? (
             <p
               data-testid="surface-question-purpose"
               className="text-[15px] leading-relaxed text-muted-foreground"
             >
+              <span className="font-medium text-foreground/80">왜 묻나요 · </span>
               {surface.question.purpose}
             </p>
           ) : null}
@@ -107,7 +109,7 @@ export function WorkspaceS11Surface({ surface, className }: WorkspaceS11SurfaceP
         {surface.action.current ? (
           <p className="text-[15px] leading-relaxed">{surface.action.current}</p>
         ) : null}
-        {detailOpen && surface.action.reason ? (
+        {surface.action.reason ? (
           <p
             data-testid="surface-action-reason"
             className="text-[15px] leading-relaxed text-muted-foreground"

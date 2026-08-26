@@ -17,16 +17,23 @@ type WorkspaceAiPmThinkingStagesProps = {
   className?: string;
   /** Called when total thinking window elapses (parent usually already has timeout). */
   onComplete?: () => void;
+  /**
+   * Stages already completed by real work before this UI mounts.
+   * Answer path writes Memory before PROCESSING — mark `memory` done immediately.
+   */
+  completedStageIds?: ThinkingStageId[];
 };
 
-/** S17-2 / P0-3 — staged Memory → Business update → next question. */
+/** Staged Memory → Understanding update → next question (state-aware, not fake spinner-only). */
 export function WorkspaceAiPmThinkingStages({
   className,
   onComplete,
+  completedStageIds = ['memory'],
 }: WorkspaceAiPmThinkingStagesProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
   const [elapsed, setElapsed] = useState(0);
   const active = resolveThinkingStage(elapsed);
+  const forcedDone = new Set(completedStageIds);
 
   useEffect(() => {
     const started = performance.now();
@@ -60,6 +67,7 @@ export function WorkspaceAiPmThinkingStages({
             activeId={active.id}
             elapsed={elapsed}
             endsAtMs={stage.endsAtMs}
+            forceDone={forcedDone.has(stage.id)}
           />
         ))}
       </ol>
@@ -74,17 +82,21 @@ function ThinkingRow({
   activeId,
   elapsed,
   endsAtMs,
+  forceDone,
 }: {
   id: ThinkingStageId;
   label: string;
   activeId: ThinkingStageId;
   elapsed: number;
   endsAtMs: number;
+  forceDone: boolean;
 }) {
-  const done = elapsed >= endsAtMs;
-  const active = activeId === id && !done;
+  const done = forceDone || elapsed >= endsAtMs;
+  const active = !done && activeId === id;
   return (
     <li
+      data-stage={id}
+      data-done={done ? 'true' : 'false'}
       className={cn(
         'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
         active && 'bg-primary/10 font-medium text-foreground',
