@@ -171,6 +171,7 @@ Pass quality notes (tone, specificity, no fake merge): _
 3. Cookie / locale overlays — dismiss before judging UX.
 4. Auth KI-1 HOLD — Demo only for this pack.
 5. Full Domain 01–20 durable store still derived — not a journey blocker.
+6. **Conversation quality (2026-08-26 Demo transcripts) — CPO HOLD:** form-like slot merge (payment→PROBLEM; meta-Why→CUSTOMER); payer re-ask after answer; no mid-loop back-edit; contradiction UI not observed on conflicting payer. See `docs/sprints/ALABOM_CORE_V2_CONVERSATION_QUALITY_REPORT.md` · `docs/evidence/ALABOM/core-v2/KNOWN_ISSUES.md` (KI-CQ-1).
 
 ## Auth
 

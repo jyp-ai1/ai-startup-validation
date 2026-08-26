@@ -1,0 +1,174 @@
+{
+  "at": "2026-08-26T06:35:38.369Z",
+  "productionCommit": "c485ce78dd2151eb974c5591c07772a95a50db37",
+  "turns": [
+    {
+      "label": "after-ai-read",
+      "question": "",
+      "purpose": "",
+      "understanding": "",
+      "decision": "",
+      "coverageText": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만…\n\nConfirmed from document\n\n●\nCUSTOMER\n방한 외국인\n\nAI estimate\n\n○\nPROBLEM\n아직 확인 중\n\nNeeds confirmation\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\nAI PM\n\nHere's how I understand it\n\nConfirm or correct — you don't need to fill an empty form.\n\nAI DRAFT\n\nConfidence 49%·Document + inference\n\nBUSINESS\n(Confirmed from document)\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만…\nCUSTOMER\n(Needs confirmation)\n방한 외국인\nPROBLEM\n(Needs confirmation)\n아직 확인 중\nMARKET\n(Needs confirmation)\n아직 확인 중\nCOMPETITION\n(Needs confirmation)\n아직 확인 중\n\nNot confirmed yet\n\n•\n문서에서 창업자·대표 관련 표현을 확인하지 못했습니다.\n•\n실제 서비스를 사용하는 사람과 결제하는 사람이 누구인지는 문서에서 확인하지 못했습니다.\n•\n문서에서 수익 모델 관련 표현을 확인하지 못했습니다.\n•\n문서에서 제휴 파트너 관련 표현을 확인하지 못했습니다.\n\nYOUR CALL\n\nIs this understanding correct?\n\nIf yes, we continue to questions. If not, correct only what's wrong.\n\n✓ That's right\nNo — I'll correct\n🤝 Check one by one",
+      "screenshot": "docs/evidence/ALABOM/core-v2/conversation-quality/01-after-ai-read.png"
+    },
+    {
+      "label": "test01-q1-after-confirm",
+      "question": "이번 질문\n\n지금 가장 크게 해결하려는 불편은 무엇인가요?\n\n왜 묻나요 · 이것만 확인되면 문제 분석을 시작할 수 있습니다.",
+      "purpose": "왜 묻나요 · 이것만 확인되면 문제 분석을 시작할 수 있습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들",
+      "decision": "지금 판단\n\n풀려는 문제가 확인되지 않았습니다.",
+      "coverageText": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만…\n\nConfirmed from document\n\n●\nCUSTOMER\n방한 외국인\n\nAI estimate\n\n○\nPROBLEM\n아직 확인 중\n\nNeeds confirmation\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n\n지금 판단\n\n풀려는 문제가 확인되지 않았습니다.\n\n이번 질문\n\n지금 가장 크게 해결하려는 불편은 무엇인가요?\n\n왜 묻나요 · 이것만 확인되면 문제 분석을 시작할 수 있습니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n풀려는 문제가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer",
+      "screenshot": "docs/evidence/ALABOM/core-v2/conversation-quality/01-q1-ask.png"
+    },
+    {
+      "label": "test01-q2-after-payer",
+      "question": "이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 묻나요 · 이것만 확인되면 시장성 분석을 시작할 수 있습니다.",
+      "purpose": "왜 묻나요 · 이것만 확인되면 시장성 분석을 시작할 수 있습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다",
+      "decision": "지금 판단\n\n수익 구조가 확인되지 않았습니다.",
+      "coverageText": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여…\n\n관광객이 직접 결제합니다\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n\nConfirmed from document\n\n●\nCUSTOMER\n방한 외국인\n\nAI estimate\n\n✔\nPROBLEM\n관광객이 직접 결제합니다\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n\n지금 판단\n\n수익 구조가 확인되지 않았습니다.\n\n이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 묻나요 · 이것만 확인되면 시장성 분석을 시작할 수 있습니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n수익 구조가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer",
+      "screenshot": "docs/evidence/ALABOM/core-v2/conversation-quality/01-q2-after-payer.png"
+    },
+    {
+      "label": "test02-before-mz",
+      "question": "이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 묻나요 · 이것만 확인되면 시장성 분석을 시작할 수 있습니다.",
+      "purpose": "왜 묻나요 · 이것만 확인되면 시장성 분석을 시작할 수 있습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다",
+      "decision": "지금 판단\n\n수익 구조가 확인되지 않았습니다.",
+      "coverageText": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여…\n\n관광객이 직접 결제합니다\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n\nConfirmed from document\n\n●\nCUSTOMER\n방한 외국인\n\nAI estimate\n\n✔\nPROBLEM\n관광객이 직접 결제합니다\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n\n지금 판단\n\n수익 구조가 확인되지 않았습니다.\n\n이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 묻나요 · 이것만 확인되면 시장성 분석을 시작할 수 있습니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n수익 구조가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer"
+    },
+    {
+      "label": "test02-after-mz",
+      "question": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 묻나요 · 이것만 확인되면 기회 규모 분석을 시작할 수 있습니다.",
+      "purpose": "왜 묻나요 · 이것만 확인되면 기회 규모 분석을 시작할 수 있습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여…\n\n관광객이 직접 결제합니다\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n\nConfirmed from document\n\n●\nCUSTOMER\nMZ 관광객 · 방한 외국인\n\nAI estimate\n\n✔\nPROBLEM\n관광객이 직접 결제합니다\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 묻나요 · 이것만 확인되면 기회 규모 분석을 시작할 수 있습니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer",
+      "screenshot": "docs/evidence/ALABOM/core-v2/conversation-quality/02-after-mz-answer.png"
+    },
+    {
+      "label": "test03-coverage",
+      "question": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 묻나요 · 이것만 확인되면 기회 규모 분석을 시작할 수 있습니다.",
+      "purpose": "왜 묻나요 · 이것만 확인되면 기회 규모 분석을 시작할 수 있습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여…\n\n관광객이 직접 결제합니다\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n\nConfirmed from document\n\n●\nCUSTOMER\nMZ 관광객 · 방한 외국인\n\nAI estimate\n\n✔\nPROBLEM\n관광객이 직접 결제합니다\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 묻나요 · 이것만 확인되면 기회 규모 분석을 시작할 수 있습니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer",
+      "screenshot": "docs/evidence/ALABOM/core-v2/conversation-quality/03-coverage.png"
+    },
+    {
+      "label": "test04-before-edit",
+      "question": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 묻나요 · 이것만 확인되면 기회 규모 분석을 시작할 수 있습니다.",
+      "purpose": "왜 묻나요 · 이것만 확인되면 기회 규모 분석을 시작할 수 있습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다",
+      "decision": "지금 판단\n\n시장 근거가 확인되지 않았습니다.",
+      "coverageText": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여…\n\n관광객이 직접 결제합니다\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n\nConfirmed from document\n\n●\nCUSTOMER\nMZ 관광객 · 방한 외국인\n\nAI estimate\n\n✔\nPROBLEM\n관광객이 직접 결제합니다\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n○\n○ Competition pending\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다\n\n지금 판단\n\n시장 근거가 확인되지 않았습니다.\n\n이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 묻나요 · 이것만 확인되면 기회 규모 분석을 시작할 수 있습니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n시장 근거가 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer"
+    },
+    {
+      "label": "test04-after-edit",
+      "question": "이번 질문\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?\n\n왜 묻나요 · 이것만 확인되면 누구를 위한 사업인지 분석을 시작할 수 있습니다.",
+      "purpose": "왜 묻나요 · 이것만 확인되면 누구를 위한 사업인지 분석을 시작할 수 있습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다\n✓\n결제 고객은 맛집 사장님이고, 관광객은 무료로 추천만 받습니다",
+      "decision": "지금 판단\n\n주요 고객이 확인되지 않았습니다.",
+      "coverageText": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여…\n\n관광객이 직접 결제합니다\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n\nConfirmed from document\n\n●\nCUSTOMER\nMZ 관광객 · 방한 외국인\n\nAI estimate\n\n✔\nPROBLEM\n관광객이 직접 결제합니다\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n✔\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n✔\n✓ Market analyzed\n●\n🟡 Analyzing competition\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다\n✓\n결제 고객은 맛집 사장님이고, 관광객은 무료로 추천만 받습니다\n\n지금 판단\n\n주요 고객이 확인되지 않았습니다.\n\n이번 질문\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?\n\n왜 묻나요 · 이것만 확인되면 누구를 위한 사업인지 분석을 시작할 수 있습니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n주요 고객이 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer",
+      "screenshot": "docs/evidence/ALABOM/core-v2/conversation-quality/04-after-edit.png"
+    },
+    {
+      "label": "test05-before-why",
+      "question": "이번 질문\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?\n\n왜 묻나요 · 이것만 확인되면 누구를 위한 사업인지 분석을 시작할 수 있습니다.",
+      "purpose": "왜 묻나요 · 이것만 확인되면 누구를 위한 사업인지 분석을 시작할 수 있습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다\n✓\n결제 고객은 맛집 사장님이고, 관광객은 무료로 추천만 받습니다",
+      "decision": "지금 판단\n\n주요 고객이 확인되지 않았습니다.",
+      "coverageText": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여…\n\n관광객이 직접 결제합니다\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n\nConfirmed from document\n\n●\nCUSTOMER\nMZ 관광객 · 방한 외국인\n\nAI estimate\n\n✔\nPROBLEM\n관광객이 직접 결제합니다\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n✔\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n✔\n✓ Market analyzed\n●\n🟡 Analyzing competition\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다\n✓\n결제 고객은 맛집 사장님이고, 관광객은 무료로 추천만 받습니다\n\n지금 판단\n\n주요 고객이 확인되지 않았습니다.\n\n이번 질문\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?\n\n왜 묻나요 · 이것만 확인되면 누구를 위한 사업인지 분석을 시작할 수 있습니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n주요 고객이 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer",
+      "screenshot": "docs/evidence/ALABOM/core-v2/conversation-quality/05-before-why.png"
+    },
+    {
+      "label": "test05-after-why-typed",
+      "question": "이번 질문\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?\n\n왜 묻나요 · 이것만 확인되면 경쟁 구도 분석을 시작할 수 있습니다.",
+      "purpose": "왜 묻나요 · 이것만 확인되면 경쟁 구도 분석을 시작할 수 있습니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n왜 그게 중요하죠?\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다\n✓\n결제 고객은 맛집 사장님이고, 관광객은 무료로 추천만 받습니다",
+      "decision": "지금 판단\n\n경쟁이 확인되지 않았습니다.",
+      "coverageText": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여…\n\n관광객이 직접 결제합니다\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n\nConfirmed from document\n\n✔\nCUSTOMER\n왜 그게 중요하죠?\n\nFounder confirmed\n\n✔\nPROBLEM\n관광객이 직접 결제합니다\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n✔\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n✔\n✓ Market analyzed\n●\n🟡 Analyzing competition\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n왜 그게 중요하죠?\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다\n✓\n결제 고객은 맛집 사장님이고, 관광객은 무료로 추천만 받습니다\n\n지금 판단\n\n경쟁이 확인되지 않았습니다.\n\n이번 질문\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?\n\n왜 묻나요 · 이것만 확인되면 경쟁 구도 분석을 시작할 수 있습니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n경쟁이 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer",
+      "screenshot": "docs/evidence/ALABOM/core-v2/conversation-quality/05-after-why-typed.png"
+    }
+  ],
+  "notes": [
+    "after-read body has tourist keywords: true",
+    "TEST 06: specificity 55% + sufficiency copy while competition Q still open",
+    "TEST 05 FAIL: meta-question stored as CUSTOMER",
+    "Form-like: template Qs; payment as PROBLEM; contradictory payer facts both kept"
+  ],
+  "tests": {
+    "01": {
+      "resultHint": "PASS_OR_PARTIAL",
+      "statesUnderstanding": true,
+      "mentionsPayerOrMonetization": true,
+      "updatedAfterPayer": true,
+      "asksWhyVsExisting": true,
+      "q1": "이번 질문\n\n지금 가장 크게 해결하려는 불편은 무엇인가요?\n\n왜 묻나요 · 이것만 확인되면 문제 분석을 시작할 수 있습니다.",
+      "q2": "이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 묻나요 · 이것만 확인되면 시장성 분석을 시작할 수 있습니다.",
+      "understandingQ1": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들",
+      "understandingQ2": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다"
+    },
+    "02": {
+      "resultHint": "PASS_OR_PARTIAL",
+      "reasksCustomer": false,
+      "reflectsMz": true,
+      "deeperQ": false,
+      "beforeQ": "이번 질문\n\n서비스 비용은 누가 지불하나요?\n\n왜 묻나요 · 이것만 확인되면 시장성 분석을 시작할 수 있습니다.",
+      "afterQ": "이번 질문\n\n이 시장에 수요가 있다는 근거는 무엇인가요?\n\n왜 묻나요 · 이것만 확인되면 기회 규모 분석을 시작할 수 있습니다.",
+      "understandingAfter": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다"
+    },
+    "03": {
+      "resultHint": "FAIL",
+      "hasPercent": false,
+      "hasGaps": true,
+      "nearCta": true,
+      "coverageText": "",
+      "bodyHits": []
+    },
+    "04": {
+      "resultHint": "BLOCKED",
+      "backUiFound": false,
+      "backUiLabel": "",
+      "historyEdit": false,
+      "contradictionUi": false,
+      "editPath": "none",
+      "recomputeObserved": true,
+      "limitation": "No dedicated UI to reopen/edit an earlier Q&A turn in the ask loop; only contradiction resolve and pre-confirm revise paths observed."
+    },
+    "05": {
+      "resultHint": "PASS_OR_PARTIAL",
+      "purposeVisible": true,
+      "purposeText": "왜 묻나요 · 이것만 확인되면 누구를 위한 사업인지 분석을 시작할 수 있습니다.",
+      "qualityHint": "",
+      "analysisWhyText": "",
+      "afterBodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여…\n\n관광객이 직접 결제합니다\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n\nConfirmed from document\n\n✔\nCUSTOMER\n왜 그게 중요하죠?\n\nFounder confirmed\n\n✔\nPROBLEM\n관광객이 직접 결제합니다\n\nFounder confirmed\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n✔\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n✔\n✓ Market analyzed\n●\n🟡 Analyzing competition\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 한국의 숨은 맛집과 로컬 체험을 연결해주는 여행 서비스를 만들\n✓\n왜 그게 중요하죠?\n✓\n관광객이 직접 결제합니다\n✓\nMZ 관광객이고 인스타그램에서 유명한 곳보다 현지인들이 가는 곳을 찾고 싶어합니다\n✓\n결제 고객은 맛집 사장님이고, 관광객은 무료로 추천만 받습니다\n\n지금 판단\n\n경쟁이 확인되지 않았습니다.\n\n이번 질문\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?\n\n왜 묻나요 · 이것만 확인되면 경쟁 구도 분석을 시작할 수 있습니다.\n\n다음\n\n이 질문에 답해 주세요.\n\n경쟁이 확인되지 않았습니다 — 그래서 지금 이 답을 확보해야 합니다.\n\nApply answer",
+      "justRepeatsQuestion": false
+    },
+    "06": {
+      "resultHint": "PARTIAL",
+      "finalVisible": false,
+      "stageAdvance": false,
+      "stillEndlessAsk": true,
+      "coverageMatch": "Business specificity 55%",
+      "sufficiencyCopy": "Core understanding is sufficient. Ready for review.",
+      "nextQuestionAtCapture": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+      "evidence": "Playwright error-context after TEST 05 — Overview board showed Business specificity 55% and Ready for review copy while ask loop still on competition question",
+      "bodyHits": [
+        "Business specificity 55%",
+        "Core understanding is sufficient. Ready for review.",
+        "Ready for review"
+      ]
+    }
+  }
+}
