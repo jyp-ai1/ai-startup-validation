@@ -1,48 +1,37 @@
 ﻿{
   "date": "2026-08-26",
-  "label": "LIVE Auth resume (KI-1)",
+  "label": "KI-1 Auth LIVE final resume (CDP bridge)",
   "pass": false,
   "ki1": "OPEN",
   "production": "https://ai-startup-validation-tau.vercel.app",
   "test": "apps/web/e2e/alabom-phase1b-auth-live.spec.ts",
-  "playwrightBrowserFix": {
-    "issue": "Needed chromium_headless_shell-1228; host previously had 1234 only",
-    "action": "pnpm exec playwright install chromium (from apps/web)",
-    "result": "Installed chromium-1228 + chromium_headless_shell-1228 into Playwright browser cache; Auth LIVE spec launched successfully"
-  },
+  "authLive": "NOT RUN",
+  "sessionSource": "CEO Chrome Default (User Data) — no CDP",
+  "storageState": "FAIL — not regenerated (CDP unavailable)",
   "checks": {
-    "Login": "FAIL",
-    "Project re-entry": "FAIL",
-    "Understanding persistence": "FAIL",
-    "Refresh Memory persistence": "FAIL",
-    "Logout to Login state": "FAIL"
+    "Login": "NOT RUN",
+    "Project re-entry": "NOT RUN",
+    "Understanding persistence": "NOT RUN",
+    "Refresh Memory persistence": "NOT RUN",
+    "Logout to Login state": "NOT RUN"
   },
-  "attempts": [
-    {
-      "method": "probe .qa-chrome-profile (headless)",
-      "result": "landed on /demo/start — not Auth workspace"
-    },
-    {
-      "method": "export storageState from .qa-chrome-profile",
-      "result": "refused save — onDemo=true"
-    },
-    {
-      "method": "headed interactive Google capture (.qa-chrome-profile)",
-      "result": "WAITED 180s on accounts.google.com signin — no OAuth completion in QA profile window"
-    },
-    {
-      "method": "existing .qa-auth/storageState.json (mtime 2026-07-31)",
-      "result": "Production /ko/workspace → /auth/login (expired/invalid)"
-    },
-    {
-      "method": "playwright test alabom-phase1b-auth-live.spec.ts vs Production",
-      "result": "FAIL at Login — Auth session valid expect true received false"
-    }
-  ],
+  "cdpProbe": {
+    "portsTried": [9222, 9229, 9223],
+    "result": "all connection refused / unreachable",
+    "chromeProcessCount": 28,
+    "chromeProcessesWithRemoteDebuggingPort": 0,
+    "userDataDir": "AppData\\\\Local\\\\Google\\\\Chrome\\\\User Data",
+    "relaunchAttempted": false,
+    "relaunchSkippedReason": "Active CEO Chrome Default session (28 processes). Quit+relaunch with --remote-debugging-port=9222 would interfere with open tabs/work. Unsafe without operator consent."
+  },
+  "blocker": {
+    "type": "operational_cdp",
+    "message": "CDP not enabled — need one Chrome relaunch with --remote-debugging-port=9222 (and same user-data-dir). NOT a Google login-again request. CEO already confirmed Production access on 2 accounts.",
+    "nextOperatorStep": "Quit Chrome once, relaunch: chrome.exe --remote-debugging-port=9222 --user-data-dir=\"%LOCALAPPDATA%\\\\Google\\\\Chrome\\\\User Data\". Keep Production Auth tab open. Then re-run KI-1 CDP capture + Auth LIVE only."
+  },
   "evidence": {
-    "blockedScreenshot": "media/14-auth-login-blocked.png",
-    "updatedAt": "2026-08-26T09:39:29+09:00",
-    "note": "No Auth secrets printed; Demo not used as Auth substitute; product code unchanged"
+    "updatedAt": "2026-08-26T10:25:34+09:00",
+    "note": "No Auth secrets; no product/OAuth/UI code changes; Auth LIVE not executed without valid storageState"
   },
-  "cpoEscalation": "CEO Google login must complete inside apps/web/.qa-chrome-profile (headed Playwright) so storageState can be regenerated locally, then re-run Auth LIVE only."
+  "codeChanges": "NONE"
 }

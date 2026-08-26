@@ -1,7 +1,7 @@
 ﻿# ALABOM Phase 1-B — Known Issues (Final CPO package)
 
 ```text
-Date: 2026-08-26 (KI-1 Auth LIVE resume)
+Date: 2026-08-26 (KI-1 Auth LIVE CDP final resume)
 Head: see git main tip
 CPO Final Review: HOLD — KI-1 only
 ```
@@ -12,33 +12,36 @@ CPO Final Review: HOLD — KI-1 only
 |-------|--------|
 | **Severity** | **Blocks CPO Final PASS** (HOLD sole reason) |
 | **Matrix** | D2 Auth durable · Evidence #14 |
-| **Status** | **OPEN — Auth LIVE not completed** |
-| **Resumed 2026-08-26** | Playwright chromium-1228 installed; Auth LIVE re-run vs Production |
-| **Result** | **FAIL at Login** — cannot prove Auth Persistence / Memory / Understanding LIVE |
+| **Status** | **OPEN — Auth LIVE NOT RUN** (session bridge blocked) |
+| **Resumed 2026-08-26 (final)** | CDP bridge to CEO Chrome → regenerate storageState → Auth LIVE only |
+| **Result** | **Operational blocker:** Chrome running **without** `--remote-debugging-port` |
 
 ### Checks (Auth LIVE)
 
 | Check | Result |
 |-------|--------|
-| Login | **FAIL** (storageState → `/auth/login`) |
-| Existing project re-entry | **FAIL** (blocked by Login) |
-| Understanding persistence | **FAIL** (blocked by Login) |
-| Refresh → Memory persistence | **FAIL** (blocked by Login) |
-| Logout → Login → project state | **FAIL** (blocked by Login) |
+| Login | **NOT RUN** |
+| Existing project re-entry | **NOT RUN** |
+| Understanding persistence | **NOT RUN** |
+| Refresh → Memory persistence | **NOT RUN** |
+| Logout → Login → project state | **NOT RUN** |
 
-### Exact credential blocker
+### Exact blocker (2026-08-26 CDP resume)
 
 | Check | Result |
 |-------|--------|
-| `.env` / process `E2E_*` · `TEST_USER*` · Auth password keys | **Absent** |
-| `apps/web/.qa-auth/storageState.json` (gitignored) | **Present but expired/invalid** — Production `/ko/workspace` → `/auth/login` |
-| `apps/web/.qa-chrome-profile` (gitignored) | **Present but not Auth** — `/demo/start` or Google sign-in wait timeout |
-| Playwright browser revision | **FIXED** — `pnpm exec playwright install chromium` → `chromium_headless_shell-1228` |
-| Demo substitute | **Forbidden** for KI-1 close |
+| Ports 9222 / 9229 / 9223 | **Not listening** (connection refused) |
+| Chrome processes | **28** running (Default User Data) |
+| Processes with `--remote-debugging-port` | **0** |
+| Quit+relaunch with CDP | **Not performed** — active CEO session interference risk |
+| `.qa-auth/storageState.json` | **Not regenerated** (prior file still expired) |
+| Auth LIVE spec | **NOT RUN** (no valid storageState) |
 
-**Blocker for CPO / CEO:** Complete Google login **inside** the headed `.qa-chrome-profile` window (or otherwise regenerate a valid `apps/web/.qa-auth/storageState.json` for Production). Then re-run only `e2e/alabom-phase1b-auth-live.spec.ts`.
+**This is NOT a “CEO must Google login again” request.** CEO already confirmed 2 Google accounts can access Production. Blocker is **CDP attach**: need **one** Chrome relaunch with remote debugging so Playwright can `connectOverCDP` and export `storageState` from the existing Auth session.
 
-Until then KI-1 **cannot** close honestly. Spec ready: `apps/web/e2e/alabom-phase1b-auth-live.spec.ts`. Evidence: `auth-live-ki1-result.json` · `media/14-auth-login-blocked.png`.
+**Operator step (once):** Quit Chrome → relaunch with `--remote-debugging-port=9222` and the same Default `--user-data-dir` → keep Production Auth workspace open → agent regenerates `apps/web/.qa-auth/storageState.json` via CDP → re-run only `e2e/alabom-phase1b-auth-live.spec.ts`.
+
+Evidence: `auth-live-ki1-result.json`. Spec ready: `apps/web/e2e/alabom-phase1b-auth-live.spec.ts`.
 
 ### Demo-equivalent (already proven — not sufficient for HOLD close)
 
