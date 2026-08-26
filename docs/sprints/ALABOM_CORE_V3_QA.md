@@ -5,7 +5,7 @@ Date: 2026-08-26
 Bar: Conversation PASS (not feature button PASS)
 Production: https://ai-startup-validation-tau.vercel.app
 Feature base: 5c6cb2075b8456a6b62a20913d7e14c541f6201a
-Validation tip: (record after this sprint deploy)
+Validation tip: f6338b81d30514742ee5f70c9232fc27c177a6b5
 Auth: UNTOUCHED
 ```
 

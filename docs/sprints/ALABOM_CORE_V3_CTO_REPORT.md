@@ -20,9 +20,9 @@ Every critical turn must be CPO-verifiable: Understanding Before/After · Why Th
 |-----|--------|
 | `5c6cb20` | Semantic interpretation · claim supersede/conflict · edit-prior UI · judgment gap picker · sufficiency gate |
 | `cf4d671` | Docs tip record |
-| *(this sprint tip)* | Living `whyNow` in UI · engine-driven CPO transcript fields · explicit conflict cue · AC-2 causality tests |
+| `f6338b8` | Living `whyNow` in UI · engine-driven CPO transcript fields · explicit conflict cue · AC-2 causality tests |
 
-Production tip recorded in QA after deploy.
+Production tip: `f6338b8` (pushed main → Vercel).
 
 ## Architecture (v3 answer path)
 
