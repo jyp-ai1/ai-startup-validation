@@ -1,8 +1,8 @@
-# ALABOM Phase 1-B — Evidence Package 01–20
+﻿# ALABOM Phase 1-B — Evidence Package 01–20
 
 ```text
 Folder: docs/evidence/ALABOM/phase1b/
-Updated: 2026-08-26 (KI-1 Auth LIVE attempt — blocked)
+Updated: 2026-08-26 (KI-1 Auth LIVE resume — FAIL at Login; Playwright chromium-1228 fixed)
 Honesty rule: Code merge ≠ Evidence. Unit PASS ≠ live walkthrough.
 Production: https://ai-startup-validation-tau.vercel.app
 ```
@@ -18,7 +18,7 @@ Production: https://ai-startup-validation-tau.vercel.app
 | `deep-11-12-result.json` | Stage · Evidence-first Hero=1 |
 | `deep-15-retry-result.json` | Review Retry LIVE |
 | `KNOWN_ISSUES.md` | Auth durable (KI-1) — **OPEN** · CPO HOLD |
-| `auth-live-ki1-result.json` | 2026-08-26 Auth LIVE attempt (FAIL — no valid session) |
+| `auth-live-ki1-result.json` | 2026-08-26 Auth LIVE resume (FAIL — expired storageState; QA profile not Auth) |
 | `media/*.png` | LIVE screenshots |
 | `REGRESSION_SIGNOFF.md` | S7/S8/S14/S16/S17 unit |
 
@@ -39,7 +39,7 @@ Production: https://ai-startup-validation-tau.vercel.app
 | 11 | Stage Transition | **LIVE + UNIT** | `media/11-stage-final-review.png` |
 | 12 | Evidence First + Hero=1 | **LIVE + UNIT** | `media/12-evidence-first-hero.png` · heroCount=1 |
 | 13 | Memory + refresh | **LIVE + UNIT** | `media/13-refresh-persist.png` |
-| 14 | Demo vs Auth | **LIVE Demo / Auth BLOCKED** | Demo LIVE; Auth attempt → `media/14-auth-login-blocked.png` · KI-1 OPEN |
+| 14 | Demo vs Auth | **LIVE Demo / Auth FAIL** | Demo LIVE; Auth resume → `media/14-auth-login-blocked.png` · KI-1 **OPEN** |
 | 15 | Review cannot + error Retry | **LIVE + UNIT** | `media/15-review-retry.png` · demo `forceReviewError=1` |
 | 16 | Mobile + Fatigue | **LIVE + UNIT** | `media/16-mobile-workspace.png` · `19-mobile-landing.png` |
 | 17 | Brand Concept 3 | **LIVE + UNIT** | `media/01-landing-brand.png` |

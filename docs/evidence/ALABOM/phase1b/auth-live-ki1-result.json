@@ -1,26 +1,48 @@
-{
+﻿{
   "date": "2026-08-26",
-  "label": "LIVE Auth attempt",
+  "label": "LIVE Auth resume (KI-1)",
   "pass": false,
   "ki1": "OPEN",
   "production": "https://ai-startup-validation-tau.vercel.app",
+  "test": "apps/web/e2e/alabom-phase1b-auth-live.spec.ts",
+  "playwrightBrowserFix": {
+    "issue": "Needed chromium_headless_shell-1228; host previously had 1234 only",
+    "action": "pnpm exec playwright install chromium (from apps/web)",
+    "result": "Installed chromium-1228 + chromium_headless_shell-1228 into Playwright browser cache; Auth LIVE spec launched successfully"
+  },
+  "checks": {
+    "Login": "FAIL",
+    "Project re-entry": "FAIL",
+    "Understanding persistence": "FAIL",
+    "Refresh Memory persistence": "FAIL",
+    "Logout to Login state": "FAIL"
+  },
   "attempts": [
     {
-      "method": "playwright storageState (.qa-auth/storageState.json)",
-      "result": "redirected to /auth/login — session expired/invalid"
-    },
-    {
-      "method": "persistent .qa-chrome-profile",
+      "method": "probe .qa-chrome-profile (headless)",
       "result": "landed on /demo/start — not Auth workspace"
     },
     {
-      "method": "env E2E/TEST_USER credentials",
-      "result": "absent"
+      "method": "export storageState from .qa-chrome-profile",
+      "result": "refused save — onDemo=true"
+    },
+    {
+      "method": "headed interactive Google capture (.qa-chrome-profile)",
+      "result": "WAITED 180s on accounts.google.com signin — no OAuth completion in QA profile window"
+    },
+    {
+      "method": "existing .qa-auth/storageState.json (mtime 2026-07-31)",
+      "result": "Production /ko/workspace → /auth/login (expired/invalid)"
+    },
+    {
+      "method": "playwright test alabom-phase1b-auth-live.spec.ts vs Production",
+      "result": "FAIL at Login — Auth session valid expect true received false"
     }
   ],
   "evidence": {
     "blockedScreenshot": "media/14-auth-login-blocked.png",
-    "note": "No Auth secrets printed; Demo not used as Auth substitute"
+    "updatedAt": "2026-08-26T09:39:29+09:00",
+    "note": "No Auth secrets printed; Demo not used as Auth substitute; product code unchanged"
   },
-  "cpoEscalation": "Need fresh Google QA session or regenerated storageState for Production Auth walkthrough"
+  "cpoEscalation": "CEO Google login must complete inside apps/web/.qa-chrome-profile (headed Playwright) so storageState can be regenerated locally, then re-run Auth LIVE only."
 }
