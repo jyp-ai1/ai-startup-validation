@@ -1,0 +1,41 @@
+{
+  "at": "2026-08-26T05:36:20.752Z",
+  "results": [
+    {
+      "id": "A",
+      "name": "Document-rich",
+      "status": "PASS",
+      "notes": "MZ/FIT visible; no blank-form primacy"
+    },
+    {
+      "id": "B",
+      "name": "Incomplete PDF",
+      "status": "PASS",
+      "notes": "Honest gap; no filename-as-name"
+    },
+    {
+      "id": "C",
+      "name": "Minimal input",
+      "status": "PASS",
+      "notes": "Reached ask / clarifying surface"
+    },
+    {
+      "id": "D",
+      "name": "Nonsense answer",
+      "status": "PASS",
+      "notes": "Quality gate / no processing fake path observed"
+    },
+    {
+      "id": "E",
+      "name": "Why on ask",
+      "status": "PASS",
+      "notes": "Purpose / why copy visible on ask without Detail-only gate"
+    },
+    {
+      "id": "F",
+      "name": "Processing + Overview board",
+      "status": "PASS",
+      "notes": "Answer path progressed; overview/understanding visible"
+    }
+  ]
+}

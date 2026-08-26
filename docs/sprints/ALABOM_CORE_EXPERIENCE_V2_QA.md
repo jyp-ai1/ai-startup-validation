@@ -1,8 +1,8 @@
-# ALABOM Core Experience v2 — Internal QA
+# ALABOM Core Experience v2 — QA
 
 ```text
 Date: 2026-08-26
-Scope: Phase 2 core — Living State + real processing
+Production tip: 89e34644d7920080890ceb74ba0f31f3288ae45a
 Auth: UNTOUCHED
 ```
 
@@ -10,23 +10,33 @@ Auth: UNTOUCHED
 
 | Check | Result |
 |-------|--------|
-| Living State builds 20 claims | PASS |
-| Coverage increases on confirmed facts | PASS |
-| Downstream turn invalidation helper | PASS |
-| deriveWorkspaceState regression | PASS (11/11) |
+| Living State 20 claims + coverage | PASS |
+| Coverage rises on confirmed facts | PASS |
+| Downstream invalidation helper | PASS |
+| deriveWorkspaceState regression | PASS |
+| Competitor defer / conversational unlock | PASS |
 | TypeScript | PASS |
 
-## Manual (local, pending)
+## LIVE Production Demo (serial workers=1)
 
-- [ ] Document upload → initial understanding → confirm → ONE gap question
-- [ ] Answer → processing stages complete ≤400ms after real write
-- [ ] Overview shows 구체화도 %
-- [ ] Overview / AI PM spine match (same `livingState.spine`)
-- [ ] Nonsense answer re-ask (unchanged v1 behavior)
-- [ ] Why branch on ask (unchanged v1 behavior)
+| ID | Result | Notes |
+|----|--------|-------|
+| A Document-rich | PASS | Extract visible; no blank-form primacy |
+| B Weak PDF | PASS | Honest gap; no filename-as-business |
+| C Minimal | PASS | Infer → one clarifying ask |
+| D Nonsense | PASS | Quality gate; no fake merge |
+| E Why | PASS | Purpose visible on ask |
+| F Processing+Overview | PASS | Stages → update; overview board |
 
-## LIVE Production
+Evidence: `docs/evidence/ALABOM/core-v2/scenarios-af-live.json` · `media/`
 
-**Not run** — awaiting deploy of v2 tip.
+## Conversational DoD honesty
 
-Prior v1 baseline: Scenarios A–F PASS @ `29db623`.
+- Processing tied to real Memory/Living pipeline (not 1800ms fake wait)
+- Overview coverage = deterministic specificity %
+- Post-answer judgment block from Living SoT
+- Stage transition remains sufficiency-based (not question count)
+
+## Auth
+
+**Confirm: Auth untouched.**

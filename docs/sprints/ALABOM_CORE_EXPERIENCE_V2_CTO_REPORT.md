@@ -1,85 +1,62 @@
 # ALABOM Core Experience v2 — CTO Report
 
 ```text
-Status: EXECUTING — Phase 2 core impl landed locally
+Status: READY FOR CPO PRODUCTION TEST
 Date: 2026-08-26
-Base SHA: 29db623 (v1 LIVE A–F PASS)
+Sprint: ALABOM Core Conversational Business Validation Experience v2
+Production: https://ai-startup-validation-tau.vercel.app
+Production tip: 89e34644d7920080890ceb74ba0f31f3288ae45a
 Auth: UNTOUCHED (KI-1 HOLD / Deferred)
 ```
 
-## Phase 1 — Audit
+## Mission result
 
-**Path:** `docs/sprints/ALABOM_CORE_EXPERIENCE_V2_AUDIT.md`
+Core experience rebuilt around **Living Understanding State** (single SoT). Demo conversational journey is not a field-fill form: Document/one-liner → AI understanding → confirm → ONE judgment-priority question → real processing → judgment update → repeat → final summary/detail/evidence.
 
-**Root causes (7):**
-1. No unified Living Understanding State — fragmented Memory + BusinessUnderstanding + Spine
-2. Form-adjacent 5-issue loop vs Domain 01–20 judgment engine
-3. Fake processing (`setTimeout` 1800ms after Memory already written)
-4. No deterministic 구체화도 % pre-review
-5. Domain 01–20 contract unwired
-6. Step-back downstream invalidation partial
-7. Confirm phase = UX flag, not durable claim graph
+## SHAs shipped
 
-## Phase 2 — Architecture (this checkpoint)
+| SHA | Slice |
+|-----|--------|
+| `89e3464` | Living State SoT · real processing · coverage % · judgment block · step-back invalidate · final output · LIVE evidence path |
 
-### New modules
+Base: `29db623` (v1 LIVE A–F).
 
-| File | Role |
-|------|------|
-| `living-understanding-state.ts` | **Single SoT** — 20 claims, coverage %, gaps, judgment summary |
-| `process-loop-answer.ts` | Real sync pipeline after answer (Memory → Living → next issue) |
+## Architecture
 
-### Wired readers
+- **SoT:** `living-understanding-state.ts` — Domain 01–20 claims (Known/Inferred/Confirmed/Unknown + Evidence), `coveragePercent`, gaps, `judgmentSummary`
+- **Pipeline:** `process-loop-answer.ts` — sync Memory → Living → next issue (no 1800ms fake gate)
+- **Readers:** `deriveWorkspaceState`, Overview coverage, AI PM loop, question priority
+- **Edit:** prior-step correction → `invalidateDownstreamTurns` + fact clear
+- **Final:** `buildConversationalFinalOutput` — summary/detail/evidence sections
+- **Competitor:** conversational after customer+problem confirmed OR analysisResult
 
-- `deriveWorkspaceState()` → `livingState` + `understandingCoveragePercent`
-- `resolveMissingFieldPriorities()` → Living gap priority boost
-- `WorkspaceProgressiveOverview` → coverage label
-- `WorkspaceAiPmLoopPanel` → state-driven processing (400ms min UX, all stages pre-completed by pipeline)
-- `WorkspaceAiPmThinkingStages` → `stateDrivenThinkingCompleteMs()`
+## Scenarios A–F (Production Demo LIVE)
 
-### Processing fix
+| ID | Scenario | Result |
+|----|----------|--------|
+| A | Document-rich | **PASS** |
+| B | Incomplete PDF | **PASS** |
+| C | Minimal input | **PASS** |
+| D | Nonsense answer | **PASS** |
+| E | Why on ask | **PASS** |
+| F | Processing → Update · Overview | **PASS** |
 
-**Before:** `setTimeout(THINKING_TOTAL_MS)` gate after sync Memory write.  
-**After:** `runLoopAnswerProcessing()` completes synchronously; UI shows stages already done; finishes at 400ms min display.
+Evidence: `docs/evidence/ALABOM/core-v2/` · tip `89e3464`
 
-## Unit tests
+## Unit
 
-| Suite | Status |
-|-------|--------|
-| `living-understanding-state.test.ts` | **PASS** (4) |
-| `workspace-state.test.ts` | **PASS** (11) |
-| `tsc --noEmit` | **PASS** |
-
-## Scenarios A–F
-
-| ID | UNIT | LIVE Production |
-|----|------|-----------------|
-| A Document-rich | pending re-run | v1 PASS @ 29db623 |
-| B Weak PDF | pending | v1 PASS |
-| C Minimal input | pending | v1 PASS |
-| D Nonsense | pending | v1 PASS |
-| E Why on ask | pending | v1 PASS |
-| F Processing→Update | **UNIT PASS** (pipeline) | pending deploy |
-
-## Evidence
-
-- Audit: `docs/sprints/ALABOM_CORE_EXPERIENCE_V2_AUDIT.md`
-- v2 evidence folder (pending LIVE): `docs/evidence/ALABOM/core-v2/`
+20/20 PASS (living-state · workspace-state · s14) · tsc PASS
 
 ## Auth
 
-**Confirm: Auth untouched.** No OAuth/CDP/storageState changes.
+**Confirm: Auth untouched.** No OAuth, CDP, or storageState changes.
 
-## READY FOR CPO PRODUCTION TEST
+## Known Issues (non-blocking)
 
-**NO** — remaining before gate:
+- Full Domain 01–20 claim persistence still derived (not a separate durable store beyond Memory+turns)
+- Processing UI still shows brief stage chrome (400ms min) after real sync writes — not fake work
+- Auth durable KI-1 deferred
 
-1. Production deploy + LIVE A–F re-run on v2 tip
-2. Wire step-back edit → `invalidateDownstreamTurns` in UI correction path
-3. Post-answer judgment block surfacing from `living.judgmentSummary` in loop panel
-4. Competitor/differentiation conversational stage polish
-5. Final output summary/detail/evidence structure
+## CPO gate
 
-## Next Autonomous Target
-
-Epic ALABOM Core v2 / ~55% / deploy + LIVE evidence / next report 08:00
+**READY FOR CPO PRODUCTION TEST** — conversational DoD met on Production Demo; not form-fill regression; A–F LIVE PASS.
