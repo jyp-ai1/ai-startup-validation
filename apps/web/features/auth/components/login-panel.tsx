@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import { AlabomLogo } from '@/lib/brand/alabom-logo';
 import { isSupabaseBrowserConfigured } from '@repo/db';
 
 import { GoogleSignInButton } from './google-sign-in-button';
@@ -19,7 +19,6 @@ type LoginPanelProps = {
 
 export function LoginPanel({ redirectTo, errorKey, signedOut = false, supabaseReady }: LoginPanelProps) {
   const t = useTranslations('auth');
-  const tm = useTranslations('meta');
 
   useEffect(() => {
     console.log({
@@ -35,14 +34,11 @@ export function LoginPanel({ redirectTo, errorKey, signedOut = false, supabaseRe
         <LocaleSwitcher />
       </div>
       <div className="w-full max-w-md rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:p-8">
-        <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Sparkles className="size-5" aria-hidden />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight">{tm('appName')}</h1>
-            <p className="text-sm text-muted-foreground">{t('tagline')}</p>
-          </div>
+        <div className="space-y-2">
+          <h1>
+            <AlabomLogo withWordmark withKorean markClassName="size-10" />
+          </h1>
+          <p className="text-sm text-muted-foreground">{t('tagline')}</p>
         </div>
 
         <p className="mt-8 text-sm leading-relaxed text-muted-foreground">{t('loginDesc')}</p>
