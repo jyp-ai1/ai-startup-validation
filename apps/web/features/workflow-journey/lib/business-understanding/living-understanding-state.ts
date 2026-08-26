@@ -73,7 +73,7 @@ export type LivingUnderstandingState = {
 
 const ISSUE_FOR_DOMAIN: Partial<Record<string, AiPmLoopIssueId>> = {
   customerPersona: 'customer_definition',
-  payer: 'customer_definition',
+  payer: 'bm_design',
   problemJtbd: 'problem_definition',
   problemFrequencySeverity: 'problem_definition',
   revenueModel: 'bm_design',
@@ -224,7 +224,7 @@ function resolveDomainValue(
           ],
         };
       }
-      const buyer = factValue(mem, 'buyer') ?? factValue(mem, 'customer');
+      const buyer = factValue(mem, 'buyer');
       if (buyer) {
         return claimFromValue(fieldKey, buyer, 'USER_CONFIRMED', [
           { kind: 'user_answer', excerpt: buyer.slice(0, 80) },

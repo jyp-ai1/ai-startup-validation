@@ -22,6 +22,8 @@ export type AiPmLoopTurn = {
   superseded?: boolean;
   /** Core v3 — why this question was asked (judgment gap) — transcript/UI */
   whyNow?: string;
+  /** P0-4 — Living gap fieldKey aligned with whyNow */
+  targetGap?: string;
 };
 
 export type AiPmLoopState = {

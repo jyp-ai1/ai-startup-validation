@@ -65,6 +65,9 @@ import { WorkspacePostReviewRoadmap } from './workspace-post-review-roadmap';
 import { WorkspaceProgressiveOverview } from './workspace-progressive-overview';
 import { loadAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentAnalysisScreen } from '../../lib/business-understanding/present-analysis-screen';
+import { buildLivingUnderstandingState } from '../../lib/business-understanding/living-understanding-state';
+import { evaluateFinalIntegrityGate } from '../../lib/business-understanding/final-integrity-gate';
+import { loadConversationMemory } from '../../lib/business-understanding/conversation-memory-store';
 import { buildEmptyProjectConversationSeed } from '../../lib/business-understanding/build-empty-project-seed';
 import { buildSharedUnderstanding } from '../../lib/business-understanding/build-shared-understanding';
 import { applyUserCorrection } from '../../lib/business-understanding/correction-and-why';
@@ -173,7 +176,27 @@ export function WorkspaceAiPmMain({
   const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));
   const analysisPresenter = useMemo(() => {
     const result = loadAnalysisResult(projectId);
-    return result ? presentAnalysisScreen(result) : null;
+    if (!result) return null;
+    const doc = loadWorkspaceDocumentText(projectId)?.trim() ?? '';
+    const loop = loadAiPmLoopState(projectId);
+    const memory = loadConversationMemory(projectId);
+    const understanding = doc.length >= 8 ? buildBusinessUnderstanding(doc) : null;
+    const integrity =
+      understanding != null
+        ? evaluateFinalIntegrityGate({
+            living: buildLivingUnderstandingState({
+              documentText: doc,
+              understanding,
+              turns: loop.turns,
+              memory,
+            }),
+            memory,
+            loop,
+            projectId,
+            documentText: doc,
+          })
+        : null;
+    return presentAnalysisScreen(result, { integrity });
   }, [projectId, reviewCount, phase]);
 
   useEffect(() => {

@@ -137,6 +137,9 @@ export type PresentThinkingSurfaceOptions = {
   nextIssueId?: AiPmLoopIssueId | null;
   /** First ask after document — show "문서를 확인했습니다." */
   showDocumentLead?: boolean;
+  /** P0-4 — gap-aligned question overrides issue template */
+  targetGap?: string | null;
+  gapQuestionText?: string | null;
 };
 
 export function presentThinkingSurface(
@@ -169,7 +172,8 @@ export function presentThinkingSurface(
     base.unlockLead = '이것만 확인되면';
     base.unlockResult = UNLOCK_RESULT[issueId];
     base.askLead = '그래서 먼저 이것만 알려주세요.';
-    base.nextQuestion = QUESTION_BY_CATEGORY[issueId];
+    base.nextQuestion =
+      options.gapQuestionText?.trim() || QUESTION_BY_CATEGORY[issueId];
     return base;
   }
 

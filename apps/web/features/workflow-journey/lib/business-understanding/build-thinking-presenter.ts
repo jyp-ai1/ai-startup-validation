@@ -11,6 +11,7 @@ import {
   type ConversationMemory,
 } from './conversation-memory';
 import { factKeyForIssue } from './build-conversation-memory';
+import { resolveGapQuestionBinding } from './gap-question-map';
 import {
   isWorkspaceDocumentReadable,
   looksLikeDocumentFileName,
@@ -163,6 +164,8 @@ export function presentThinking(input: {
   documentText: string;
   entities?: LaunchLensDomainContext | null;
   nextIssueId: AiPmLoopIssueId | null;
+  /** P0-4 — when set, factKey + decision align to gap not issue template */
+  targetGap?: string | null;
 }): ThinkingPresenterModel {
   const entities = input.entities ?? null;
   const knowledge = CORE_KEYS.map((key) =>
@@ -173,7 +176,8 @@ export function presentThinking(input: {
   const missing = knowledge.filter((item) => item.confidence !== 'confirmed');
 
   const issueId = input.nextIssueId;
-  const factKey = issueId ? factKeyForIssue(issueId) : null;
+  const gapBinding = resolveGapQuestionBinding(input.targetGap, issueId);
+  const factKey = input.targetGap ? gapBinding.factKey : issueId ? factKeyForIssue(issueId) : null;
   const decisionCopy = issueId
     ? DECISION_BY_ISSUE[issueId]
     : {

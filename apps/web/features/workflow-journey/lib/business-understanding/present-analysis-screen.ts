@@ -4,6 +4,8 @@
  */
 import type { AnalysisResult, Decision, Insight, RecommendedAction } from '@/lib/analysis-engine/types';
 
+import type { FinalIntegrityEvaluation } from './final-integrity-gate';
+
 export type AnalysisActionPresenter = {
   action: string;
   why: string;
@@ -99,22 +101,33 @@ function humanJudgment(decision: Decision | undefined): string {
   return `${decision.code}: ${decision.value}`;
 }
 
-export function presentAnalysisScreen(result: AnalysisResult): AnalysisScreenPresenter {
+export function presentAnalysisScreen(
+  result: AnalysisResult,
+  options?: { integrity?: FinalIntegrityEvaluation | null },
+): AnalysisScreenPresenter {
+  const integrity = options?.integrity;
+  const integrityBlocked = integrity != null && !integrity.canRecommendGo;
   const actions = rankedActions(result);
   const hero = actions[0] ?? null;
   const secondary = actions.slice(1);
   const primaryDecision =
     result.decisions.find((d) => d.ruleId === hero?.ruleId) ?? result.decisions[0];
-  const judgment = humanJudgment(primaryDecision);
+  let judgment = humanJudgment(primaryDecision);
+
+  if (integrityBlocked) {
+    judgment = `HOLD — ${integrity!.handoff}`;
+  }
 
   const reasons = result.insights.map((i) => i.claim).slice(0, 3);
   const criticalGap =
-    hero &&
-    (hero.decisionValue === 'Insufficient' ||
-      hero.decisionValue === 'Blocked' ||
-      hero.decisionValue === 'Fragile')
-      ? hero.action
-      : null;
+    integrityBlocked
+      ? integrity!.blockers[0] ?? integrity!.handoff
+      : hero &&
+          (hero.decisionValue === 'Insufficient' ||
+            hero.decisionValue === 'Blocked' ||
+            hero.decisionValue === 'Fragile')
+        ? hero.action
+        : null;
 
   const blockedOrFragile = result.decisions.filter(
     (d) =>

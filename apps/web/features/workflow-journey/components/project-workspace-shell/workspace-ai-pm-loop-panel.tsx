@@ -192,6 +192,8 @@ export function WorkspaceAiPmLoopPanel({
   ]);
   const s11Surface = useMemo(() => {
     const askIssueId = loopState.currentIssueId ?? nextIssue;
+    const targetGap = whyThisQuestionNow?.targetGap ?? null;
+    const gapQuestionText = whyThisQuestionNow?.questionText ?? null;
     const showUpdate =
       loopState.phase === 'issue' &&
       lastTurn != null &&
@@ -203,6 +205,7 @@ export function WorkspaceAiPmLoopPanel({
       documentText: documentText ?? '',
       entities,
       nextIssueId: askIssueId,
+      targetGap,
     });
 
     // Founder never picks a path — only answers. S11: Engine → Presenter Contract only.
@@ -212,11 +215,15 @@ export function WorkspaceAiPmLoopPanel({
           answeredIssueId: lastTurn.issueId,
           nextIssueId: askIssueId,
           documentText: documentText ?? '',
+          targetGap,
+          gapQuestionText,
         })
       : presentS11Surface(thinking, {
           mode: 'ask',
           showDocumentLead: loopState.turns.length === 0,
           documentText: documentText ?? '',
+          targetGap,
+          gapQuestionText,
         });
 
     // CPO AC-1 — prefer Living/conflict whyNow over generic unlock purpose
@@ -224,7 +231,16 @@ export function WorkspaceAiPmLoopPanel({
     if (whyNow && surface.question.text.trim()) {
       surface = {
         ...surface,
-        question: { ...surface.question, purpose: whyNow },
+        question: {
+          ...surface.question,
+          purpose: whyNow,
+          text: gapQuestionText?.trim() || surface.question.text,
+        },
+      };
+    } else if (gapQuestionText?.trim()) {
+      surface = {
+        ...surface,
+        question: { ...surface.question, text: gapQuestionText.trim() },
       };
     }
     return surface;
@@ -637,6 +653,7 @@ export function WorkspaceAiPmLoopPanel({
         semanticFactKey: semantic.factKey,
         intent: semantic.intent,
         whyNow: whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale,
+        targetGap: whyThisQuestionNow?.targetGap,
       },
       projectId,
     );

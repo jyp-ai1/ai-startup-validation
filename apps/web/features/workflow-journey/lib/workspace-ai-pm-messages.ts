@@ -1,6 +1,6 @@
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
-import { evaluateDomainTrust } from './domain/domain-trust-rules';
+import { pinOriginalBusinessIntent } from './business-understanding/original-business-intent';
 import { extractDocumentEntities } from './domain/extract-document-entities';
 import { buildFirstTrustMessage } from './first-trust/build-first-trust-message';
 import type { V2ValidationEvidence } from './v2-validation-store';
@@ -109,6 +109,7 @@ export function saveWorkspaceEntities(
 export function saveWorkspaceDocumentText(content: string, projectId?: string): void {
   if (typeof window === 'undefined') return;
   sessionStorage.setItem(documentTextKey(projectId), content);
+  pinOriginalBusinessIntent(content, projectId, 'document_seed');
 }
 
 export function loadWorkspaceDocumentText(projectId?: string): string | null {

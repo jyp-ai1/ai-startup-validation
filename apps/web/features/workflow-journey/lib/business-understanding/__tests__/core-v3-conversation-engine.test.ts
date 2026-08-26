@@ -8,6 +8,11 @@ import { interpretAnswerSemantics } from '../interpret-answer-semantics';
 import {
   buildConversationMemoryFromSources,
 } from '../build-conversation-memory';
+import { buildBusinessUnderstanding } from '../build-business-understanding';
+import { buildLivingUnderstandingState, whyNowForGapField } from '../living-understanding-state';
+import { evaluateIntentDrift } from '../original-business-intent';
+import { evaluateFinalIntegrityGate } from '../final-integrity-gate';
+import { resolveGapQuestionBinding, whyNowAlignsWithTargetGap } from '../gap-question-map';
 import {
   emptyConversationMemory,
   getConflictFact,
@@ -180,6 +185,53 @@ describe('Core v3 conflict + supersede', () => {
     ];
     const trimmed = invalidateDownstreamTurns(turns, 'customer_definition', AI_PM_LOOP_ISSUE_ORDER);
     expect(trimmed.map((t) => t.issueId)).toEqual(['customer_definition']);
+  });
+});
+
+describe('P0 intent drift + final integrity gate', () => {
+  it('detects tourism seed → B2B SaaS drift', () => {
+    const original =
+      '외국인 관광객을 대상으로 서울에서 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
+    const drifted = 'B2B SaaS 구독 플랫폼으로 중소기업 대상 업무 자동화';
+    const result = evaluateIntentDrift(original, drifted);
+    expect(result.drifted).toBe(true);
+  });
+
+  it('final gate blocks GO when understanding insufficient', () => {
+    const loop = createInitialAiPmLoopState();
+    let memory = emptyConversationMemory('p0');
+    memory = upsertConfirmedFact(memory, 'customer', '관광객', 'user_turn');
+    const original = '외국인 관광객 서울 맞춤형 체험 사업 아이디어 단계';
+    const living = buildLivingUnderstandingState({
+      documentText: original,
+      understanding: buildBusinessUnderstanding(original),
+      memory,
+      turns: loop.turns,
+    });
+
+    const gate = evaluateFinalIntegrityGate({
+      living,
+      memory,
+      loop,
+      documentText: original,
+    });
+    expect(gate.canRecommendGo).toBe(false);
+    expect(gate.blocker).toBeTruthy();
+  });
+});
+
+describe('P0 whyNow alignment with targetGap', () => {
+  it('whyNowAlignsWithTargetGap rejects payer why on customer gap', () => {
+    const customerWhy = whyNowForGapField('customerPersona');
+    expect(whyNowAlignsWithTargetGap('customerPersona', customerWhy)).toBe(true);
+    expect(whyNowAlignsWithTargetGap('customerPersona', whyNowForGapField('payer'))).toBe(false);
+  });
+
+  it('payer gap question is about payment not customer persona', () => {
+    const binding = resolveGapQuestionBinding('payer');
+    expect(binding.questionText).toMatch(/지불|비용/);
+    expect(binding.factKey).toBe('buyer');
+    expect(binding.whyNow).toMatch(/지불|GO\/HOLD/);
   });
 });
 

@@ -1,21 +1,18 @@
 import type { BusinessUnderstanding } from '@repo/types/domain/business-understanding';
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
-import {
-  SHARED_UNDERSTANDING_PENDING,
-  buildSharedUnderstanding,
-} from './build-shared-understanding';
 import { buildAiPmDynamicDiagnosis } from './build-ai-pm-dynamic-diagnosis';
 import { factKeyForIssue } from './build-conversation-memory';
 import {
   getConflictFact,
   memoryHasFact,
   memoryHasOpenConflict,
+  type ConversationFactKey,
   type ConversationMemory,
 } from './conversation-memory';
+import { resolveGapQuestionBinding } from './gap-question-map';
 import {
   buildLivingUnderstandingState,
-  resolveNextIssueFromLivingState,
   whyNowForGapField,
 } from './living-understanding-state';
 import { getResolvedIssueIds } from './workspace-ai-pm-loop-store';
@@ -27,11 +24,15 @@ import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 export type MissingFieldPriority = {
   issueId: AiPmLoopIssueId;
+  /** Living gap fieldKey — same id drives whyNow + question (P0-4) */
+  targetGap: string;
   missingField: 'business' | 'customer' | 'problem' | 'market' | 'competitor' | 'bm';
   rationale: string;
   score: number;
   /** Why this question now — for transcript / UX */
   whyNow: string;
+  /** Gap-aligned question text (may differ from issue template) */
+  questionText: string;
 };
 
 type PriorityOptions = {
@@ -64,9 +65,49 @@ function fieldFromGapKey(
   return 'business';
 }
 
+function factKeyToGap(factKey: ConversationFactKey): string {
+  switch (factKey) {
+    case 'buyer':
+      return 'payer';
+    case 'customer':
+      return 'customerPersona';
+    case 'problem':
+      return 'problemJtbd';
+    case 'competitor':
+      return 'alternativesCompetitors';
+    case 'market':
+      return 'marketSizeEvidence';
+    case 'revenue':
+      return 'revenueModel';
+    case 'business':
+      return 'businessOneLiner';
+    default:
+      return factKey;
+  }
+}
+
+function priorityFromGap(input: {
+  targetGap: string;
+  issueId: AiPmLoopIssueId;
+  rationale: string;
+  score: number;
+}): MissingFieldPriority {
+  const binding = resolveGapQuestionBinding(input.targetGap, input.issueId);
+  const whyNow = whyNowForGapField(input.targetGap);
+  return {
+    issueId: binding.issueId,
+    targetGap: input.targetGap,
+    missingField: fieldFromGapKey(input.targetGap),
+    rationale: input.rationale,
+    score: input.score,
+    whyNow,
+    questionText: binding.questionText,
+  };
+}
+
 /**
  * Core v3 — rank next question by judgment-critical gap.
- * No fixed Problem→Customer→Market template order.
+ * No fixed Problem→Customer→Market template order (P0-3).
  * Priority: open Conflict → Critical Unknown for judgment → detail.
  */
 export function resolveMissingFieldPriorities(
@@ -78,35 +119,25 @@ export function resolveMissingFieldPriorities(
   const memory = options?.memory ?? null;
   const text = options?.documentText?.trim() ?? '';
 
-  const scored = new Map<AiPmLoopIssueId, MissingFieldPriority>();
+  const scored = new Map<string, MissingFieldPriority>();
 
   // 0) Open conflicts first — AI must not silently pick
   if (memory && memoryHasOpenConflict(memory)) {
     for (const key of ['customer', 'problem', 'buyer', 'competitor', 'market', 'revenue'] as const) {
       const conflict = getConflictFact(memory, key);
       if (!conflict) continue;
-      const issueId =
-        key === 'buyer' || key === 'customer'
-          ? 'customer_definition'
-          : key === 'problem'
-            ? 'problem_definition'
-            : key === 'competitor'
-              ? 'competitor_analysis'
-              : key === 'market'
-                ? 'market_validation'
-                : 'bm_design';
-      if (resolved.has(issueId) && isIssueLockedInMemory(issueId, memory) && !conflict) continue;
-      scored.set(issueId, {
-        issueId,
-        missingField: fieldFromGapKey(key),
+      const gapKey = factKeyToGap(key);
+      const binding = resolveGapQuestionBinding(gapKey);
+      scored.set(gapKey, priorityFromGap({
+        targetGap: gapKey,
+        issueId: binding.issueId,
         rationale: `「${key}」에 모순된 답이 있습니다. 어느 쪽이 맞는지 확인이 필요합니다.`,
         score: 10_000,
-        whyNow: `contradiction on ${key} — clarifying Q before any other gap`,
-      });
+      }));
     }
   }
 
-  // 1) Living State judgment-critical gaps (Impact × Unknown × Decision × Answerability)
+  // 1) Living State judgment-critical gaps — primary path (P0-3)
   if (text.length >= 8) {
     const living = buildLivingUnderstandingState({
       documentText: text,
@@ -116,40 +147,31 @@ export function resolveMissingFieldPriorities(
       memory,
       resolvedIssueIds: [...resolved],
     });
-    const locked = new Set<AiPmLoopIssueId>();
-    for (const id of resolved) {
-      if (isIssueLockedInMemory(id, memory)) locked.add(id);
-    }
 
     for (const gap of living.gaps) {
-      if (!gap.issueId) continue;
-      if (resolved.has(gap.issueId) && isIssueLockedInMemory(gap.issueId, memory)) continue;
-      if (locked.has(gap.issueId)) continue;
-      const existing = scored.get(gap.issueId);
+      const binding = resolveGapQuestionBinding(gap.fieldKey, gap.issueId ?? undefined);
+      const issueId = gap.issueId ?? binding.issueId;
+      if (resolved.has(issueId) && isIssueLockedInMemory(issueId, memory)) {
+        // Still allow re-ask when same gap unknown (e.g. differentiation after competitor)
+        if (gap.fieldKey !== 'differentiationVsAlternatives' && gap.fieldKey !== 'differentiationHypothesis') {
+          continue;
+        }
+      }
+      const existing = scored.get(gap.fieldKey);
       if (existing && existing.score >= gap.priorityScore) continue;
-      scored.set(gap.issueId, {
-        issueId: gap.issueId,
-        missingField: fieldFromGapKey(gap.fieldKey),
-        rationale: gap.rationale,
-        score: gap.priorityScore,
-        whyNow: gap.rationale,
-      });
-    }
-
-    const fromLiving = resolveNextIssueFromLivingState(living, [...resolved], locked);
-    if (fromLiving && !scored.has(fromLiving)) {
-      const topGap = living.gaps.find((g) => g.issueId === fromLiving);
-      scored.set(fromLiving, {
-        issueId: fromLiving,
-        missingField: fieldFromGapKey(topGap?.fieldKey ?? ''),
-        rationale: topGap?.rationale ?? `Living State gap — ${fromLiving}`,
-        score: (topGap?.priorityScore ?? 100) + 50,
-        whyNow: topGap?.rationale ?? `critical unknown for judgment — ${fromLiving}`,
-      });
+      scored.set(
+        gap.fieldKey,
+        priorityFromGap({
+          targetGap: gap.fieldKey,
+          issueId,
+          rationale: gap.rationale,
+          score: gap.priorityScore,
+        }),
+      );
     }
   }
 
-  // 2) Dynamic diagnosis — only as soft signal, no fixed field order boost
+  // 2) Dynamic diagnosis — soft signal only; never imposes fixed order
   const diagnosis = buildAiPmDynamicDiagnosis(
     understanding,
     options?.entities,
@@ -168,61 +190,21 @@ export function resolveMissingFieldPriorities(
       if (!criticalConfirmed) continue;
     }
 
-    const existing = scored.get(risk.issueId);
-    if (existing) continue;
+    const binding = resolveGapQuestionBinding(null, risk.issueId);
+    if (scored.has(binding.targetGap)) continue;
 
-    scored.set(risk.issueId, {
-      issueId: risk.issueId,
-      missingField: risk.dimension === 'bm' ? 'bm' : risk.dimension,
-      rationale: risk.rationale,
-      score: risk.score,
-      whyNow: risk.rationale,
-    });
+    scored.set(
+      binding.targetGap,
+      priorityFromGap({
+        targetGap: binding.targetGap,
+        issueId: risk.issueId,
+        rationale: risk.rationale,
+        score: risk.score,
+      }),
+    );
   }
 
-  // Soft spine hint — only if Living State empty for that field; NO fixed order boost
-  if (text.length >= 8) {
-    const spine = buildSharedUnderstanding({
-      documentText: text,
-      turns: options?.turns ?? loop.turns,
-      understanding,
-      entities: options?.entities ?? null,
-      memory,
-    });
-    if (spine) {
-      const soft: Array<{
-        field: 'customer' | 'problem' | 'business';
-        issueId: AiPmLoopIssueId;
-      }> = [
-        { field: 'problem', issueId: 'problem_definition' },
-        { field: 'customer', issueId: 'customer_definition' },
-        { field: 'business', issueId: 'bm_design' },
-      ];
-      for (const entry of soft) {
-        if (scored.has(entry.issueId)) continue;
-        if (resolved.has(entry.issueId) && isIssueLockedInMemory(entry.issueId, memory)) continue;
-        if (isIssueLockedInMemory(entry.issueId, memory)) continue;
-        const fieldValue = spine[entry.field];
-        const pending =
-          !fieldValue.trim() || fieldValue.trim() === SHARED_UNDERSTANDING_PENDING;
-        if (!pending) continue;
-        const softFieldKey =
-          entry.field === 'customer'
-            ? 'customerPersona'
-            : entry.field === 'problem'
-              ? 'problemJtbd'
-              : 'businessOneLiner';
-        const softWhy = whyNowForGapField(softFieldKey);
-        scored.set(entry.issueId, {
-          issueId: entry.issueId,
-          missingField: entry.field,
-          rationale: softWhy,
-          score: 40,
-          whyNow: softWhy,
-        });
-      }
-    }
-  }
+  // P0-3 — removed fixed soft-spine Problem→Customer→Business order
 
   return [...scored.values()].sort((a, b) => b.score - a.score);
 }
@@ -250,17 +232,32 @@ export function resolveNextIssueByMissingField(
   return ranked[0]?.issueId ?? null;
 }
 
+/** Top ranked gap priority — includes targetGap + aligned questionText. */
+export function getTopGapPriority(
+  understanding: BusinessUnderstanding,
+  loop: AiPmLoopState,
+  options?: PriorityOptions,
+): MissingFieldPriority | null {
+  const ranked = resolveMissingFieldPriorities(understanding, loop, options);
+  return ranked[0] ?? null;
+}
+
 /**
  * CPO-verifiable "WHY THIS QUESTION NOW" for the active (or top) issue.
- * Prefer Living/conflict whyNow over soft diagnosis copy.
+ * whyNow and questionText share targetGap (P0-4).
  */
 export function getWhyThisQuestionNow(
   understanding: BusinessUnderstanding,
   loop: AiPmLoopState,
-  options?: PriorityOptions & { issueId?: AiPmLoopIssueId | null },
+  options?: PriorityOptions & { issueId?: AiPmLoopIssueId | null; targetGap?: string | null },
 ): MissingFieldPriority | null {
   const ranked = resolveMissingFieldPriorities(understanding, loop, options);
   if (ranked.length === 0) return null;
+
+  if (options?.targetGap) {
+    return ranked.find((r) => r.targetGap === options.targetGap) ?? ranked[0] ?? null;
+  }
+
   const want = options?.issueId;
   if (want) {
     return ranked.find((r) => r.issueId === want) ?? ranked[0] ?? null;

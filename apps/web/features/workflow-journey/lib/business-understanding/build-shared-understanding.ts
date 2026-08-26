@@ -135,7 +135,14 @@ function resolveCustomerField(
     }
   }
 
-  const customerTurn = turns.find((turn) => turn.issueId === 'customer_definition');
+  const customerTurn = turns.find(
+    (turn) =>
+      !turn.superseded &&
+      (turn.semanticFactKey === 'customer' ||
+        (turn.semanticFactKey == null &&
+          turn.issueId === 'customer_definition' &&
+          !/(결제|지불|payer)/i.test(turn.answer))),
+  );
   if (customerTurn?.answer.trim()) {
     return {
       value: truncate(customerTurn.answer.replace(/\s+/g, ' '), 48),
@@ -193,7 +200,12 @@ function resolveProblemField(
     }
   }
 
-  const problemTurn = turns.find((turn) => turn.issueId === 'problem_definition');
+  const problemTurn = turns.find(
+    (turn) =>
+      !turn.superseded &&
+      (turn.semanticFactKey === 'problem' ||
+        (turn.semanticFactKey == null && turn.issueId === 'problem_definition')),
+  );
   if (problemTurn?.answer.trim()) {
     return {
       value: truncate(problemTurn.answer, 48),
