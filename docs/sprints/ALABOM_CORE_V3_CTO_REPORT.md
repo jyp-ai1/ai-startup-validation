@@ -17,7 +17,7 @@ Rebuild conversation engine so AI continuously understands documents+dialogue an
 
 | SHA | Slice |
 |-----|--------|
-| *(this commit)* | Semantic interpretation · claim supersede/conflict · edit-prior UI · judgment gap picker · sufficiency gate · unit + engine transcript |
+| `5c6cb20` | Semantic interpretation · claim supersede/conflict · edit-prior UI · judgment gap picker · sufficiency gate · unit + engine transcript |
 
 Feature lands on `main` after this report’s commit; Production tip recorded in QA after deploy.
 
