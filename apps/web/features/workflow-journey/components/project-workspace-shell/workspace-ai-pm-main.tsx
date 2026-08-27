@@ -17,8 +17,6 @@ import {
   loadAiPmLoopState,
   patchAiPmLoopState,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
-import { loadConversationMemory } from '../../lib/business-understanding/conversation-memory-store';
-import { buildLivingUnderstandingState } from '../../lib/business-understanding/living-understanding-state';
 import { criticalGapsBlockAnalysis } from '../../lib/business-understanding/question-causality';
 import {
   AI_PM_LOOP_ISSUE_ORDER,

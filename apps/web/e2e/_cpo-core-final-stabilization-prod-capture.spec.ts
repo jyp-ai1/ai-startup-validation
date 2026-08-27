@@ -22,8 +22,8 @@ const MEDIA = path.join(OUT, 'media');
 const RAW_JSON = path.join(OUT, 'transcript-raw.json');
 fs.mkdirSync(MEDIA, { recursive: true });
 
-/** Match Stabilization fix SHA on Production (engine b7d24b5 · tip 316dbeb · 0069ce5 lineage). */
-const FIX_SHA_PREFIXES = ['316dbeb', 'b7d24b5', '0069ce5', 'edc5994'] as const;
+/** Match Stabilization fix SHA on Production (engine + gate reopen). */
+const FIX_SHA_PREFIXES = ['7f3016d', '316dbeb', 'b7d24b5', '0069ce5'] as const;
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
