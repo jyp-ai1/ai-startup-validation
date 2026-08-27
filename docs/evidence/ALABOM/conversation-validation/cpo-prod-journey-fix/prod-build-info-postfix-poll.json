@@ -1,0 +1,19 @@
+﻿{
+    "at":  "2026-08-27T00:42:25.0365176Z",
+    "source":  "GET /api/build-info",
+    "productionCommit":  "89eb5b166e80a9539f665c2e9b3b0808ca0f5a02",
+    "shaMatch":  false,
+    "deployTime":  "2026-08-27T00:42:24.505Z",
+    "expectedFixPrefixes":  [
+                                "69a6eb1",
+                                "b134fa9",
+                                "4a22b85"
+                            ],
+    "pollSession":  {
+                        "from":  "2026-08-27T00:23:05Z",
+                        "to":  "2026-08-27T00:41:12Z",
+                        "result":  "stale",
+                        "intervalSeconds":  120,
+                        "polls":  10
+                    }
+}
