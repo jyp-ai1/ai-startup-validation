@@ -39,6 +39,7 @@ Verdict: Core Final LIVE captured — NO CPO PASS declared
 3. **criticalGapBlockedStartAnalysis=null on Overview probe** — Start Analysis CTA not visible on Overview at probe; early AI PM panel did show block copy.
 4. **False "Core understanding is sufficient"** still appears in spine while PROBLEM Needs confirmation — capture now ignores that as final when Needs confirmation remains.
 5. Follow-up SHA `0069ce5` not included in this LIVE session — CPO should treat relevance-loop as known residual until re-capture.
+6. **Post-capture W14:** stock Overview `summaryBody` i18n (“Differentiation in B2B SaaS…”) replaced with domain-neutral Living-spine summary (ship after this FINDINGS baseline).
 
 ## Explicit non-claims
 

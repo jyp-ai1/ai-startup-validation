@@ -6756,14 +6756,14 @@
             "execution": "실행력"
           },
           "summaryLabel": "AI PM 요약",
-          "summaryBody": "B2B SaaS 시장에서 차별화 포인트는 명확합니다. 다만 고객 검증 데이터가 부족해 Confidence가 제한적입니다. 다음 단계는 타깃 고객 인터뷰입니다.",
+          "summaryBody": "대화에서 확인된 사업 이해를 기준으로 정리했습니다. 근거가 얇은 항목은 Confidence를 낮게 유지합니다 — 확정되지 않은 공백을 먼저 메우세요.",
           "nextStepLabel": "AI PM이 제안하는 다음 단계",
-          "nextStepAction": "고객 인터뷰 3건 진행",
+          "nextStepAction": "남아 있는 핵심 공백을 창업자와 확정",
           "nextStepCta": "검토 시작",
           "riskLabel": "Risk",
-          "riskBody": "경쟁사 2곳이 유사 포지셔닝 — 차별화 메시지 재정립 필요.",
+          "riskBody": "미해결 Critical Unknown 또는 모순이 남아 있으면 GO를 권하지 않습니다. 다음 행동을 키우기 전에 먼저 해소하세요.",
           "recommendationLabel": "Recommendation",
-          "recommendationBody": "초기 타깃을 스타트업 PM → Series A CEO로 좁히는 것을 검토하세요."
+          "recommendationBody": "현재 Living Understanding을 기준으로, 미확인 주장을 검증한 뒤 AI PM이 지목한 다음 근거 확보로 이어가세요."
         },
         "aiPmMain": {
           "label": "AI PM",

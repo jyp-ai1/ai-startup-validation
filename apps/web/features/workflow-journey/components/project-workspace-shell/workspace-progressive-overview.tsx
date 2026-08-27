@@ -106,6 +106,26 @@ export function WorkspaceProgressiveOverview({
   const showPostReview =
     reviewCount > 0 || completedTopics >= 2;
 
+  /** Core Final W14 — never render stock B2B SaaS template; prefer Living spine. */
+  const livingSummary =
+    board != null
+      ? [
+          board.business?.trim() ? `Business: ${board.business.trim()}` : null,
+          board.customer?.trim() ? `Customer: ${board.customer.trim()}` : null,
+          board.problem?.trim() ? `Problem: ${board.problem.trim()}` : null,
+        ]
+          .filter(Boolean)
+          .join(' · ')
+      : '';
+  const summaryText =
+    livingSummary.length > 12
+      ? `${livingSummary}. ${t('summaryBody')}`
+      : t('summaryBody');
+  const nextStepText =
+    nextIssueId && nextIssueLabel?.trim()
+      ? nextIssueLabel.trim()
+      : t('nextStepAction');
+
   if (!board && !showPostReview) {
     return (
       <div
@@ -186,13 +206,15 @@ export function WorkspaceProgressiveOverview({
             <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               {t('summaryLabel')}
             </h2>
-            <p className="mt-3 text-[15px] leading-relaxed">{t('summaryBody')}</p>
+            <p className="mt-3 text-[15px] leading-relaxed" data-testid="overview-summary-body">
+              {summaryText}
+            </p>
           </section>
           <section className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <p className="text-xs font-semibold text-muted-foreground">{t('nextStepLabel')}</p>
             <p className="mt-2 flex items-center gap-2 text-base font-medium">
               <span className="text-muted-foreground">→</span>
-              {t('nextStepAction')}
+              {nextStepText}
             </p>
           </section>
           <details className="animate-in fade-in border-t border-border/60 pt-6 duration-300">

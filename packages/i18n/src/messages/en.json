@@ -6603,14 +6603,14 @@
             "execution": "Execution"
           },
           "summaryLabel": "Summary",
-          "summaryBody": "Differentiation in B2B SaaS is clear. Customer validation data is still thin, so confidence is limited. Next: target customer interviews.",
+          "summaryBody": "Core understanding is recorded from the conversation. Where evidence is still thin, confidence stays limited — confirm the remaining gaps before treating any claim as settled.",
           "nextStepLabel": "Recommended Next Step",
-          "nextStepAction": "Run 3 customer interviews",
+          "nextStepAction": "Close the next critical gap with the founder",
           "nextStepCta": "Start",
           "riskLabel": "Risk",
-          "riskBody": "Two competitors share similar positioning — refine differentiation messaging.",
+          "riskBody": "Open Critical Unknowns or contradictions still block a clean GO. Resolve them before scaling the next action.",
           "recommendationLabel": "Recommendation",
-          "recommendationBody": "Consider narrowing initial target from startup PM to Series A CEOs."
+          "recommendationBody": "Stay with the current Living Understanding: verify unconfirmed claims, then run the next evidence check the AI PM names."
         },
         "aiPmMain": {
           "label": "AI PM",
