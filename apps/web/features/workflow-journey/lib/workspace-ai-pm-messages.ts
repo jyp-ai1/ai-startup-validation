@@ -2,6 +2,7 @@ import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-doma
 
 import { pinOriginalBusinessIntent } from './business-understanding/original-business-intent';
 import { extractDocumentEntities } from './domain/extract-document-entities';
+import { evaluateDomainTrust } from './domain/domain-trust-rules';
 import { buildFirstTrustMessage } from './first-trust/build-first-trust-message';
 import type { V2ValidationEvidence } from './v2-validation-store';
 

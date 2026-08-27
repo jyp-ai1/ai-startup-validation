@@ -67,7 +67,6 @@ import { loadAnalysisResult } from '../../lib/business-understanding/analysis-re
 import { presentAnalysisScreen } from '../../lib/business-understanding/present-analysis-screen';
 import { buildLivingUnderstandingState } from '../../lib/business-understanding/living-understanding-state';
 import { evaluateFinalIntegrityGate } from '../../lib/business-understanding/final-integrity-gate';
-import { loadConversationMemory } from '../../lib/business-understanding/conversation-memory-store';
 import { buildEmptyProjectConversationSeed } from '../../lib/business-understanding/build-empty-project-seed';
 import { buildSharedUnderstanding } from '../../lib/business-understanding/build-shared-understanding';
 import { applyUserCorrection } from '../../lib/business-understanding/correction-and-why';
