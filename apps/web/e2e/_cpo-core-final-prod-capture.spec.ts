@@ -24,7 +24,7 @@ const RAW_JSON = path.join(OUT, 'transcript-raw.json');
 fs.mkdirSync(MEDIA, { recursive: true });
 
 /** Parent replaces after commit — match FINAL fix SHA prefixes. */
-const FIX_SHA_PREFIXES = ['PLACEHOLDER_SHA'] as const;
+const FIX_SHA_PREFIXES = ['6e34fe6'] as const;
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
