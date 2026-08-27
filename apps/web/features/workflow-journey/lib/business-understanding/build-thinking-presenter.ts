@@ -54,6 +54,9 @@ const FACT_LABEL: Record<ConversationFactKey, string> = {
   revenue: '수익 모델',
   market: '시장',
   competitor: '경쟁',
+  differentiation: '차별점',
+  diffRelevance: '차별 고객 관련성',
+  defensibility: '방어력',
 };
 
 const DECISION_BY_ISSUE: Record<

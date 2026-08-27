@@ -3,7 +3,6 @@ import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-doma
 
 import { buildWorkspaceReviewScore } from '../build-workspace-review-score';
 import {
-  canProceedWorkspaceReview,
   emptyWorkspaceDomain,
   getDomainFieldMeta,
   inferDomainFromPaste,
@@ -30,6 +29,7 @@ import {
   buildLivingUnderstandingState,
   type LivingUnderstandingState,
 } from './living-understanding-state';
+import { criticalGapsBlockAnalysis } from './question-causality';
 import { evaluateDomainTrust } from '../domain/domain-trust-rules';
 import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
 import { loadConversationMemory } from './conversation-memory-store';
@@ -63,7 +63,8 @@ export type WorkspaceReviewBlockedReason =
   | 'payer_missing'
   | 'problem_missing'
   | 'document_unreadable'
-  | 'demo_readonly';
+  | 'demo_readonly'
+  | 'critical_gap';
 
 /** S7-2/3 — single review gate (replaces scattered guards). */
 export type WorkspaceReviewGate = {
@@ -257,6 +258,7 @@ function resolveReviewBlockedReason(input: {
   loop: AiPmLoopState;
   documentText: string;
   projectId?: string;
+  criticalGapBlocked?: boolean;
 }): WorkspaceReviewBlockedReason {
   if (!input.documentReadable) return 'document_unreadable';
 
@@ -274,6 +276,9 @@ function resolveReviewBlockedReason(input: {
   });
   const gap = firstReviewEvidenceGap(evidence);
   if (gap) return gap;
+
+  // Core v5 — critical viability gaps block Start Analysis even when evidence pack is ready
+  if (input.criticalGapBlocked) return 'critical_gap';
 
   if (input.entities) {
     const trust = evaluateDomainTrust(input.entities);
@@ -330,7 +335,6 @@ function deriveReviewGate(input: {
 
   const alignment = loadMarketAlignment(projectId);
   const alignmentOpen = allowsOpenReview(alignment);
-  const domainReady = canProceedWorkspaceReview(domain, entities);
   const phaseReady = understandingPhase === 'review-ready';
 
   // S14: Review Gate reads Evidence Status (from Memory), not Loop directly
@@ -343,10 +347,26 @@ function deriveReviewGate(input: {
   });
   const evidence = deriveEvidenceStatusFromMemory({ memory, entities });
   const evidenceReady = isRequiredReviewEvidenceConfirmed(evidence);
+
+  // Core v5 — also require no critical viability gaps (differentiation etc.)
+  const livingUnderstanding =
+    understanding != null
+      ? buildLivingUnderstandingState({
+          documentText,
+          understanding,
+          entities,
+          turns: loop.turns,
+          memory,
+          resolvedIssueIds: getResolvedIssueIds(loop),
+        })
+      : null;
+  const criticalBlocked =
+    livingUnderstanding != null && criticalGapsBlockAnalysis(livingUnderstanding);
+
+  // Fix tautology: evidenceReady alone must not unlock; need phase OR alignment, plus no critical gaps
+  const judgmentReady = phaseReady || alignmentOpen;
   const canStart =
-    documentReadable &&
-    evidenceReady &&
-    (phaseReady || alignmentOpen || domainReady || evidenceReady);
+    documentReadable && evidenceReady && judgmentReady && !criticalBlocked;
 
   if (canStart) {
     return { count: reviewCount, canStart: true, blockedReason: null };
@@ -364,6 +384,7 @@ function deriveReviewGate(input: {
       loop,
       documentText,
       projectId,
+      criticalGapBlocked: criticalBlocked,
     }),
   };
 }

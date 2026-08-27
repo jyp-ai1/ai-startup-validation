@@ -22,9 +22,10 @@ import {
 import {
   AI_PM_LOOP_ISSUE_ORDER,
   type AiPmLoopIssueId,
+  type AiPmLoopTurn,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { resolveNextLoopIssue } from '../../lib/business-understanding/resolve-ai-pm-priority-issue';
-import { getWhyThisQuestionNow } from '../../lib/business-understanding/resolve-missing-field-priority';
+import { getWhyThisQuestionNow, getTopGapPriority } from '../../lib/business-understanding/resolve-missing-field-priority';
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import { buildAiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
 import {
@@ -60,6 +61,12 @@ import {
   buildLivingUnderstandingState,
   factsToClearAfterEdit,
 } from '../../lib/business-understanding/living-understanding-state';
+import {
+  buildQuestionCausality,
+  buildUnderstandingDelta,
+  countCriticalViabilityGaps,
+  formatUnderstandingDeltaSummary,
+} from '../../lib/business-understanding/question-causality';
 import { buildConversationalFinalOutput } from '../../lib/business-understanding/build-conversational-final-output';
 import {
   type AnswerQuality,
@@ -107,7 +114,9 @@ export function WorkspaceAiPmLoopPanel({
   const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));
   const [answerDraft, setAnswerDraft] = useState('');
   const [reanalyzing, setReanalyzing] = useState(false);
-  const [processingStageIds, setProcessingStageIds] = useState<ThinkingStageId[]>(['memory']);
+  const [processingStageIds, setProcessingStageIds] = useState<ThinkingStageId[]>([
+    'confirmAnswer',
+  ]);
   const [answerQualityHint, setAnswerQualityHint] = useState<AnswerQuality | null>(null);
   const [contradiction, setContradiction] = useState<{
     issueId: AiPmLoopIssueId;
@@ -402,10 +411,8 @@ export function WorkspaceAiPmLoopPanel({
     });
 
     const contradictionGaps = result.living.claims.filter((c) => c.status === 'contradiction').length;
-    // Stage-A spine unknowns still open after Memory merge (not decorative coverage %)
-    const spineUnknowns = result.living.gaps.filter((g) =>
-      ['customerPersona', 'payer', 'problemJtbd'].includes(g.fieldKey),
-    ).length;
+    // Core v5 — critical viability gaps (customer/problem/payer/competition/diff) block complete
+    const criticalViability = countCriticalViabilityGaps(result.living);
 
     const canComplete =
       !result.nextIssueId &&
@@ -414,7 +421,7 @@ export function WorkspaceAiPmLoopPanel({
         memory: result.memory,
         entities,
         understandingCoveragePercent: result.living.coveragePercent,
-        criticalGapCount: contradictionGaps + spineUnknowns,
+        criticalGapCount: contradictionGaps + criticalViability,
       });
 
     const next = applyLoopProcessingTransition(result, projectId, canComplete);
@@ -425,6 +432,32 @@ export function WorkspaceAiPmLoopPanel({
   }, [entities, onLoopComplete, projectId, syncState, understanding]);
 
   finishProcessingRef.current = finishProcessing;
+
+  /** Core v5 — after why/mid panel close, re-judge gap ranking (do not blindly keep same Q). */
+  const closeWhyOrMidAndRejudge = useCallback(() => {
+    setWhyPanel(null);
+    setMidJudgmentText(null);
+    const top = getTopGapPriority(understanding, loopState, {
+      documentText: documentText ?? undefined,
+      entities,
+      memory: conversationMemory,
+      analysisResultExists,
+      turns: loopState.turns,
+    });
+    if (top?.issueId && top.issueId !== loopState.currentIssueId) {
+      patchAiPmLoopState({ currentIssueId: top.issueId }, projectId);
+      syncState(loadAiPmLoopState(projectId));
+    }
+  }, [
+    analysisResultExists,
+    conversationMemory,
+    documentText,
+    entities,
+    loopState,
+    projectId,
+    syncState,
+    understanding,
+  ]);
 
   const startProcessing = useCallback(() => {
     processingFinishedRef.current = false;
@@ -652,26 +685,63 @@ export function WorkspaceAiPmLoopPanel({
         : semantic.factKey
           ? [semantic.factKey]
           : [];
-    const understandingDelta = [
-      semantic.factKey ? `확인: ${semantic.factKey}` : null,
-      factKeys.length > 1 ? `추가 Fact: ${factKeys.filter((k) => k !== semantic.factKey).join(', ')}` : null,
-      whyThisQuestionNow?.targetGap
-        ? `다음 공백 후보 재계산 (직전 gap: ${whyThisQuestionNow.targetGap})`
-        : null,
-    ]
-      .filter(Boolean)
-      .join(' · ');
+
+    const doc = loadWorkspaceDocumentText(projectId) ?? documentText ?? '';
+    const beforeLiving = buildLivingUnderstandingState({
+      documentText: doc,
+      understanding,
+      entities,
+      turns: loopState.turns,
+      memory,
+      resolvedIssueIds: getResolvedIssueIds(loopState),
+    });
+    const askedGap = whyThisQuestionNow?.targetGap ?? 'unknown';
+    const causality = buildQuestionCausality({
+      living: beforeLiving,
+      targetGap: askedGap,
+    });
+
+    const projectedTurn: AiPmLoopTurn = {
+      issueId: recordIssueId,
+      answer: trimmed,
+      appliedAt: new Date().toISOString(),
+      semanticFactKey: semantic.factKey,
+      semanticFactKeys: factKeys,
+      intent: semantic.intent,
+      whyNow: causality.whyNow,
+      targetGap: askedGap,
+      causality,
+      sourceEvidence: causality.sourceEvidence,
+      previousUnderstanding: causality.previousUnderstanding,
+      unresolvedGap: causality.unresolvedGap,
+      expectedInformation: causality.expectedInformation,
+    };
+    const projectedTurns = [...loopState.turns, projectedTurn];
+    const afterMemory = buildConversationMemoryFromSources({
+      projectId: projectId ?? 'default',
+      documentText: doc,
+      turns: projectedTurns,
+      entities,
+      previous: memory,
+    });
+    const afterLiving = buildLivingUnderstandingState({
+      documentText: doc,
+      understanding,
+      entities,
+      turns: projectedTurns,
+      memory: afterMemory,
+      resolvedIssueIds: getResolvedIssueIds(loopState),
+    });
+    const delta = buildUnderstandingDelta({
+      before: beforeLiving,
+      after: afterLiving,
+      factKeys,
+    });
+    const understandingDelta = formatUnderstandingDeltaSummary(delta);
 
     appendAiPmLoopTurn(
       {
-        issueId: recordIssueId,
-        answer: trimmed,
-        appliedAt: new Date().toISOString(),
-        semanticFactKey: semantic.factKey,
-        semanticFactKeys: factKeys,
-        intent: semantic.intent,
-        whyNow: whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale,
-        targetGap: whyThisQuestionNow?.targetGap,
+        ...projectedTurn,
         understandingDelta,
       },
       projectId,
@@ -699,14 +769,18 @@ export function WorkspaceAiPmLoopPanel({
     startProcessing();
   }, [
     answerDraft,
+    documentText,
+    entities,
+    loopState,
     loopState.currentIssueId,
-    loopState.turns.length,
+    loopState.turns,
     onDocumentUpdated,
     nextIssue,
     projectId,
     readOnly,
     startProcessing,
     syncState,
+    understanding,
     whyThisQuestionNow,
   ]);
 
@@ -980,7 +1054,7 @@ export function WorkspaceAiPmLoopPanel({
               type="button"
               variant="outline"
               className="mt-2 rounded-xl"
-              onClick={() => setWhyPanel(null)}
+              onClick={closeWhyOrMidAndRejudge}
             >
               {whyPanel.returnToLoopCta}
             </Button>
@@ -997,7 +1071,7 @@ export function WorkspaceAiPmLoopPanel({
                 type="button"
                 variant="outline"
                 className="rounded-xl"
-                onClick={() => setMidJudgmentText(null)}
+                onClick={closeWhyOrMidAndRejudge}
               >
                 이해 루프로 돌아가기
               </Button>
@@ -1012,7 +1086,9 @@ export function WorkspaceAiPmLoopPanel({
           }}
           rows={5}
           readOnly={readOnly}
-          placeholder={t(`issues.${activeIssue}.placeholder`)}
+          placeholder={
+            whyThisQuestionNow?.questionText?.trim() || t(`issues.${activeIssue}.placeholder`)
+          }
           className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
           aria-label={s11Surface.question.text || t('submitAnswerCta')}
         />
@@ -1218,7 +1294,10 @@ export function WorkspaceAiPmLoopPanel({
                 }}
                 rows={5}
                 readOnly={readOnly}
-                placeholder={activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : undefined}
+                placeholder={
+                  whyThisQuestionNow?.questionText?.trim() ||
+                  (activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : undefined)
+                }
                 className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
                 aria-label={s11Surface.question.text || t('submitAnswerCta')}
               />

@@ -165,9 +165,14 @@ export function factKeyForGapField(fieldKey: string): ConversationFactKey | null
     case 'problemFrequencySeverity':
       return 'problem';
     case 'alternativesCompetitors':
+      return 'competitor';
     case 'differentiationVsAlternatives':
     case 'differentiationHypothesis':
-      return 'competitor';
+      return 'differentiation';
+    case 'validationTestability':
+      return 'diffRelevance';
+    case 'executionConstraints':
+      return 'defensibility';
     case 'marketChannel':
     case 'marketSizeEvidence':
       return 'market';

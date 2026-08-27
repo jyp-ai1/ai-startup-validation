@@ -43,12 +43,24 @@ const GAP_BINDINGS: Record<string, Omit<GapQuestionBinding, 'targetGap' | 'whyNo
   },
   differentiationVsAlternatives: {
     questionText: '경쟁 대비 이 서비스만의 차별점은 무엇인가요?',
-    factKey: 'competitor',
+    factKey: 'differentiation',
     issueId: 'competitor_analysis',
   },
   differentiationHypothesis: {
     questionText: '경쟁 대비 포지셔닝 가설은 무엇인가요?',
-    factKey: 'competitor',
+    factKey: 'differentiation',
+    issueId: 'competitor_analysis',
+  },
+  /** Core v5 — Differentiation conversation: customer relevance after diff. */
+  validationTestability: {
+    questionText: '그 차별점이 고객에게 왜 중요한가요? 어떤 순간에 체감되나요?',
+    factKey: 'diffRelevance',
+    issueId: 'competitor_analysis',
+  },
+  /** Core v5 — Differentiation conversation: defensibility. */
+  executionConstraints: {
+    questionText: '경쟁사가 따라오기 어려운 방어력은 무엇인가요?',
+    factKey: 'defensibility',
     issueId: 'competitor_analysis',
   },
   revenueModel: {
@@ -161,6 +173,8 @@ export function whyNowAlignsWithTargetGap(
   if (targetGap.includes('competitor') || targetGap.includes('differentiation')) {
     return /경쟁|대안|차별/.test(whyNow);
   }
+  if (targetGap === 'validationTestability') return /고객|관련|체감|차별/.test(whyNow);
+  if (targetGap === 'executionConstraints') return /방어|모방|따라|차별/.test(whyNow);
   if (targetGap.includes('market')) return /시장|수요|채널|근거/.test(whyNow);
   return true;
 }

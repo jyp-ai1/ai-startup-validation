@@ -9,7 +9,6 @@ import { factKeyForIssue } from './build-conversation-memory';
 import { memoryHasFact, type ConversationMemory } from './conversation-memory';
 import { getResolvedIssueIds } from './workspace-ai-pm-loop-store';
 import {
-  AI_PM_LOOP_ISSUE_ORDER,
   type AiPmLoopIssueId,
   type AiPmLoopState,
   type AiPmLoopTurn,
@@ -49,6 +48,15 @@ function buildDiagnosis(
   );
 }
 
+function criticalFactsLocked(memory: ConversationMemory | null | undefined): boolean {
+  if (!memory) return false;
+  return (
+    memoryHasFact(memory, 'customer') &&
+    memoryHasFact(memory, 'problem') &&
+    memoryHasFact(memory, 'buyer')
+  );
+}
+
 /** AI PM picks ONE priority — not a menu for the founder to browse. */
 export function resolveAiPmPriorityIssue(
   understanding: BusinessUnderstanding,
@@ -62,6 +70,8 @@ export function resolveAiPmPriorityIssue(
  * Single source for loop UI, pause, and resume.
  * S9: never re-ask an issue whose Fact is Confirmed in Conversation Memory.
  * Core v4: gap-level advancement — sticky currentIssueId yields when asked gap answered.
+ * Core v5: do NOT walk AI_PM_LOOP_ISSUE_ORDER as hard spine when living gaps already ranked;
+ * prefer null so sufficiency/complete can finish once critical facts are locked.
  */
 export function resolveNextLoopIssue(
   understanding: BusinessUnderstanding,
@@ -86,7 +96,7 @@ export function resolveNextLoopIssue(
         memoryHasFact(memory!, 'customer') &&
         memoryHasFact(memory!, 'problem');
       if (!criticalConfirmed) {
-        // fall through to diagnosis candidates
+        // fall through to soft diagnosis candidates
       } else {
         return byMissing;
       }
@@ -95,15 +105,13 @@ export function resolveNextLoopIssue(
     }
   }
 
+  // Soft diagnosis candidates only — never force unused issue slots via fixed spine
   const diagnosis = buildDiagnosis(understanding, resolvedIds, options);
-  const candidates =
-    resolved.size === 0
-      ? ([diagnosis.primaryIssueId, ...diagnosis.topRiskIssueIds, ...AI_PM_LOOP_ISSUE_ORDER].filter(
-          Boolean,
-        ) as AiPmLoopIssueId[])
-      : [...diagnosis.topRiskIssueIds, ...AI_PM_LOOP_ISSUE_ORDER];
+  const softCandidates = [diagnosis.primaryIssueId, ...diagnosis.topRiskIssueIds].filter(
+    (id): id is AiPmLoopIssueId => Boolean(id),
+  );
 
-  for (const id of candidates) {
+  for (const id of softCandidates) {
     if (resolved.has(id)) continue;
     if (isIssueLockedInMemory(id, memory)) continue;
     if (id === 'competitor_analysis' && !options?.analysisResultExists) {
@@ -114,6 +122,11 @@ export function resolveNextLoopIssue(
       if (!criticalConfirmed) continue;
     }
     return id;
+  }
+
+  // Core v5 — missing-field already null + critical facts locked → let complete/sufficiency handle
+  if (criticalFactsLocked(memory)) {
+    return null;
   }
 
   return null;

@@ -75,6 +75,12 @@ function factKeyToGap(factKey: ConversationFactKey): string {
       return 'problemJtbd';
     case 'competitor':
       return 'alternativesCompetitors';
+    case 'differentiation':
+      return 'differentiationVsAlternatives';
+    case 'diffRelevance':
+      return 'validationTestability';
+    case 'defensibility':
+      return 'executionConstraints';
     case 'market':
       return 'marketSizeEvidence';
     case 'revenue':
@@ -158,7 +164,17 @@ export function resolveMissingFieldPriorities(
 
   // 0) Open conflicts first — AI must not silently pick
   if (memory && memoryHasOpenConflict(memory)) {
-    for (const key of ['customer', 'problem', 'buyer', 'competitor', 'market', 'revenue'] as const) {
+    for (const key of [
+      'customer',
+      'problem',
+      'buyer',
+      'competitor',
+      'differentiation',
+      'diffRelevance',
+      'defensibility',
+      'market',
+      'revenue',
+    ] as const) {
       const conflict = getConflictFact(memory, key);
       if (!conflict) continue;
       const gapKey = factKeyToGap(key);
@@ -169,6 +185,21 @@ export function resolveMissingFieldPriorities(
         rationale: `「${key}」에 모순된 답이 있습니다. 어느 쪽이 맞는지 확인이 필요합니다.`,
         score: 10_000,
       }));
+    }
+  }
+
+  // Core v5 — after competitor fact exists, prefer differentiationVsAlternatives over unrelated slots
+  if (memory && memoryHasFact(memory, 'competitor') && !memoryHasFact(memory, 'differentiation')) {
+    if (!answeredGaps.has('differentiationVsAlternatives')) {
+      scored.set(
+        'differentiationVsAlternatives',
+        priorityFromGap({
+          targetGap: 'differentiationVsAlternatives',
+          issueId: 'competitor_analysis',
+          rationale: whyNowForGapField('differentiationVsAlternatives'),
+          score: 9_500,
+        }),
+      );
     }
   }
 
@@ -202,12 +233,14 @@ export function resolveMissingFieldPriorities(
         continue;
       }
 
-      // Differentiation may follow competitor even if competitor_analysis was touched
+      // Differentiation conversation siblings may follow competitor even if competitor_analysis touched
       if (
         resolved.has(issueId) &&
         isIssueLockedInMemory(issueId, memory) &&
         gap.fieldKey !== 'differentiationVsAlternatives' &&
         gap.fieldKey !== 'differentiationHypothesis' &&
+        gap.fieldKey !== 'validationTestability' &&
+        gap.fieldKey !== 'executionConstraints' &&
         gap.fieldKey !== 'revenueModel' &&
         gap.fieldKey !== 'pricingHint' &&
         gap.fieldKey !== 'payer'
@@ -271,6 +304,9 @@ export function resolveMissingFieldPriorities(
  * Prefer judgment-critical gap.
  * Core v4 — do NOT stick on currentIssueId when its asked gap was already answered
  * (fixes payer→revenue stuck re-ask loop).
+ * Core v5 — sticky yields after re-judge when living ranking changes (e.g. competitor→diff);
+ * getWhyThisQuestionNow / getTopGapPriority already re-rank via living — stick only while
+ * the in-flight gap is still open.
  */
 export function resolveNextIssueByMissingField(
   understanding: BusinessUnderstanding,
@@ -296,9 +332,19 @@ export function resolveNextIssueByMissingField(
       (lastGap && isGapSatisfiedInMemory(lastGap, memory));
 
     // Stick only when in-flight gap still open AND not just answered
+    // After why/mid return or re-judge, ranked[0] may differ — yield to top if last gap done
     if (!lastGapDone) {
       const stillOpenForIssue = ranked.find((r) => r.issueId === loop.currentIssueId);
       if (stillOpenForIssue && !answeredGaps.has(stillOpenForIssue.targetGap)) {
+        // If living re-rank strongly prefers a different gap, yield (sticky not absolute)
+        const top = ranked[0];
+        if (
+          top &&
+          top.targetGap !== stillOpenForIssue.targetGap &&
+          top.score > stillOpenForIssue.score * 1.15
+        ) {
+          return top.issueId;
+        }
         return loop.currentIssueId;
       }
     }

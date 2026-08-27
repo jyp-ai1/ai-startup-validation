@@ -1,6 +1,7 @@
 /**
- * ALABOM Core v4 — Semantic Interpretation Layer.
+ * ALABOM Core v4/v5 — Semantic Interpretation Layer.
  * User answer → intent + multi-fact routing by meaning (NOT current question slot dump).
+ * Core v5 — differentiation / diffRelevance / defensibility distinct from competitor.
  */
 
 import type { ConversationFactKey } from './conversation-memory';
@@ -50,9 +51,14 @@ const EXPLICIT_CONFLICT_CUE_RE =
 const HANGUL_JAMO_MASH_RE = /^[\u3131-\u318E\s]{4,}$/;
 const HANGUL_REPEATED_SYLLABLE_RE = /^(?:([가-힣])\1{2,}|([가-힣]{1,2})\2{3,})$/;
 
-const COMPETITOR_CUE_RE =
-  /(경쟁|대안|차별|differentiat|tripadvisor|네이버\s*지도|구글\s*맵|비슷한\s*서비스|vs\.?|대비|인플루언서|핫플이\s*아니라)/i;
-const DIFF_CUE_RE = /(차별|differentiat|인플루언서|핫플이\s*아니라|포지션|우리만)/i;
+/** Competitor name / alternative cues — excludes pure differentiation language */
+const COMPETITOR_NAME_CUE_RE =
+  /(경쟁|대안|tripadvisor|네이버\s*지도|구글\s*맵|비슷한\s*서비스|vs\.?|대비\s*(해|해서)|경쟁사)/i;
+/** Differentiation / positioning cues (distinct ConversationFactKey) */
+const DIFF_CUE_RE = /(차별|differentiat|인플루언서|핫플이\s*아니라|포지션|우리만|모방\s*어렵|방어력)/i;
+/** Broad cue used only to refuse dumping into customer/problem */
+const COMPETITOR_OR_DIFF_CUE_RE =
+  /(경쟁|대안|차별|differentiat|tripadvisor|네이버\s*지도|구글\s*맵|비슷한\s*서비스|vs\.?|대비|인플루언서|핫플이\s*아니라|포지션|우리만)/i;
 const PAYER_CUE_RE = /(결제|지불|payer|누가\s*(내|지불)|비용을?\s*내|구매자|돈\s*내)/i;
 const REVENUE_CUE_RE =
   /(수익|수수료|구독|pricing|매출|비즈니스\s*모델|\bbm\b|monetiz|커미션|중개\s*수수)/i;
@@ -72,9 +78,15 @@ const FACT_ROUTE: Array<{
     weight: 12,
   },
   {
+    key: 'differentiation',
+    issueId: 'competitor_analysis',
+    re: DIFF_CUE_RE,
+    weight: 12,
+  },
+  {
     key: 'competitor',
     issueId: 'competitor_analysis',
-    re: COMPETITOR_CUE_RE,
+    re: COMPETITOR_NAME_CUE_RE,
     weight: 11,
   },
   {
@@ -117,6 +129,11 @@ const ISSUE_TO_FACT: Partial<Record<AiPmLoopIssueId, ConversationFactKey>> = {
   competitor_analysis: 'competitor',
 };
 
+const DIFF_GAP_KEYS = new Set([
+  'differentiationVsAlternatives',
+  'differentiationHypothesis',
+]);
+
 function emptyInterpretation(
   partial: Omit<SemanticInterpretation, 'facts'> & { facts?: SemanticFactHit[] },
 ): SemanticInterpretation {
@@ -156,7 +173,9 @@ function collectFactHits(
     // Customer keyword often co-occurs with payer/competitor — demote when stronger BM/comp cues exist
     if (
       route.key === 'customer' &&
-      (PAYER_CUE_RE.test(text) || COMPETITOR_CUE_RE.test(text) || REVENUE_CUE_RE.test(text))
+      (PAYER_CUE_RE.test(text) ||
+        COMPETITOR_OR_DIFF_CUE_RE.test(text) ||
+        REVENUE_CUE_RE.test(text))
     ) {
       continue;
     }
@@ -164,21 +183,36 @@ function collectFactHits(
     hits.push({ key: route.key, issueId: route.issueId });
   }
 
-  // Explicit differentiation cue always yields competitor fact
-  if (DIFF_CUE_RE.test(text) && !seen.has('competitor')) {
+  const hasDiff = DIFF_CUE_RE.test(text);
+  const hasCompetitorName = COMPETITOR_NAME_CUE_RE.test(text);
+
+  // Core v5 — DIFF alone → differentiation; names alone → competitor; both → both
+  if (hasDiff && !seen.has('differentiation')) {
+    hits.push({ key: 'differentiation', issueId: 'competitor_analysis' });
+    seen.add('differentiation');
+  }
+  if (hasCompetitorName && !seen.has('competitor')) {
     hits.push({ key: 'competitor', issueId: 'competitor_analysis' });
+    seen.add('competitor');
   }
 
   return hits;
 }
 
-function refuseCustomerSlotForCompetitor(
+function refuseCustomerSlotForCompetitorOrDiff(
   factKey: ConversationFactKey | null,
   text: string,
 ): { factKey: ConversationFactKey; issueId: AiPmLoopIssueId } | null {
   if (factKey !== 'customer' && factKey !== 'problem') return null;
-  if (!COMPETITOR_CUE_RE.test(text) && !DIFF_CUE_RE.test(text)) return null;
+  if (!COMPETITOR_OR_DIFF_CUE_RE.test(text)) return null;
+  if (DIFF_CUE_RE.test(text)) {
+    return { factKey: 'differentiation', issueId: 'competitor_analysis' };
+  }
   return { factKey: 'competitor', issueId: 'competitor_analysis' };
+}
+
+function isDifferentiationAskedGap(gap: string | null | undefined): boolean {
+  return Boolean(gap && DIFF_GAP_KEYS.has(gap));
 }
 
 /**
@@ -195,6 +229,7 @@ export function interpretAnswerSemantics(input: {
 }): SemanticInterpretation {
   const trimmed = input.answer.trim().replace(/\s+/g, ' ');
   const askedFact = input.askedIssueId ? ISSUE_TO_FACT[input.askedIssueId] ?? null : null;
+  const askedGap = input.askedTargetGap?.trim() ?? null;
 
   if (trimmed.length < 2) {
     return emptyInterpretation({
@@ -278,12 +313,23 @@ export function interpretAnswerSemantics(input: {
   }
 
   // Asked customer/persona but answer is competitor/diff → never dump into CUSTOMER
-  const refused = refuseCustomerSlotForCompetitor(factKey, trimmed);
+  const refused = refuseCustomerSlotForCompetitorOrDiff(factKey, trimmed);
   if (refused) {
     factKey = refused.factKey;
     resolvedIssueId = refused.issueId;
-    if (!facts.some((f) => f.key === 'competitor')) {
-      facts = [{ key: 'competitor', issueId: 'competitor_analysis' }, ...facts.filter((f) => f.key !== 'customer')];
+    if (refused.factKey === 'differentiation') {
+      facts = [
+        { key: 'differentiation', issueId: 'competitor_analysis' },
+        ...facts.filter((f) => f.key !== 'customer' && f.key !== 'problem'),
+      ];
+      if (COMPETITOR_NAME_CUE_RE.test(trimmed) && !facts.some((f) => f.key === 'competitor')) {
+        facts.push({ key: 'competitor', issueId: 'competitor_analysis' });
+      }
+    } else if (!facts.some((f) => f.key === 'competitor')) {
+      facts = [
+        { key: 'competitor', issueId: 'competitor_analysis' },
+        ...facts.filter((f) => f.key !== 'customer'),
+      ];
     } else {
       facts = facts.filter((f) => f.key !== 'customer');
     }
@@ -291,9 +337,47 @@ export function interpretAnswerSemantics(input: {
 
   // Differentiation must never land in customer/problem
   if (DIFF_CUE_RE.test(trimmed) && (factKey === 'customer' || factKey === 'problem')) {
+    factKey = 'differentiation';
+    resolvedIssueId = 'competitor_analysis';
+  }
+
+  // Core v5 — DIFF cue OR asked differentiation gap → primary differentiation
+  if (DIFF_CUE_RE.test(trimmed) || isDifferentiationAskedGap(askedGap)) {
+    factKey = 'differentiation';
+    resolvedIssueId = 'competitor_analysis';
+    if (!facts.some((f) => f.key === 'differentiation')) {
+      facts.push({ key: 'differentiation', issueId: 'competitor_analysis' });
+    }
+    // Names + diff → both facts
+    if (COMPETITOR_NAME_CUE_RE.test(trimmed) && !facts.some((f) => f.key === 'competitor')) {
+      facts.push({ key: 'competitor', issueId: 'competitor_analysis' });
+    }
+  } else if (COMPETITOR_NAME_CUE_RE.test(trimmed) && !DIFF_CUE_RE.test(trimmed)) {
+    // Competitor cues without strong DIFF → competitor only
     factKey = 'competitor';
     resolvedIssueId = 'competitor_analysis';
   }
+
+  // Asked-gap overrides for differentiation conversation follow-ups
+  if (askedGap === 'validationTestability') {
+    factKey = 'diffRelevance';
+    resolvedIssueId = 'competitor_analysis';
+    if (!facts.some((f) => f.key === 'diffRelevance')) {
+      facts = [{ key: 'diffRelevance', issueId: 'competitor_analysis' }, ...facts];
+    }
+  } else if (askedGap === 'executionConstraints') {
+    factKey = 'defensibility';
+    resolvedIssueId = 'competitor_analysis';
+    if (!facts.some((f) => f.key === 'defensibility')) {
+      facts = [{ key: 'defensibility', issueId: 'competitor_analysis' }, ...facts];
+    }
+  }
+
+  // Never dump competitor/diff into customer
+  facts = facts.filter((f) => {
+    if (f.key !== 'customer') return true;
+    return !COMPETITOR_OR_DIFF_CUE_RE.test(trimmed);
+  });
 
   // Payer phrases must not land in problem; bookkeeping under bm_design
   if (factKey === 'problem' && PAYER_CUE_RE.test(trimmed)) {
@@ -303,7 +387,7 @@ export function interpretAnswerSemantics(input: {
 
   // When asked revenue gap and answer has revenue cue, ensure revenue fact hit
   if (
-    (input.askedTargetGap === 'revenueModel' || input.askedTargetGap === 'pricingHint') &&
+    (askedGap === 'revenueModel' || askedGap === 'pricingHint') &&
     REVENUE_CUE_RE.test(trimmed) &&
     !facts.some((f) => f.key === 'revenue')
   ) {
@@ -393,5 +477,8 @@ export function issueIdForFactKey(key: ConversationFactKey): AiPmLoopIssueId | n
   const hit = FACT_ROUTE.find((r) => r.key === key);
   if (hit) return hit.issueId;
   if (key === 'business') return 'bm_design';
+  if (key === 'diffRelevance' || key === 'defensibility' || key === 'differentiation') {
+    return 'competitor_analysis';
+  }
   return null;
 }

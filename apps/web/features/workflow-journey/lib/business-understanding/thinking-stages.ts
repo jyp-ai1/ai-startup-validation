@@ -1,5 +1,9 @@
-/** S17-2 — staged Thinking during Q→A→reflect (~1–2s total). */
-export type ThinkingStageId = 'memory' | 'business' | 'nextQuestion';
+/** S17-2 / Core v5 — staged Thinking mirroring judgment loop. */
+export type ThinkingStageId =
+  | 'confirmAnswer'
+  | 'updateUnderstanding'
+  | 'reviewJudgment'
+  | 'selectNextGap';
 
 export type ThinkingStage = {
   id: ThinkingStageId;
@@ -10,9 +14,10 @@ export type ThinkingStage = {
 };
 
 export const THINKING_STAGES: ThinkingStage[] = [
-  { id: 'memory', labelKey: 'thinkingStages.memory', endsAtMs: 600 },
-  { id: 'business', labelKey: 'thinkingStages.business', endsAtMs: 1200 },
-  { id: 'nextQuestion', labelKey: 'thinkingStages.nextQuestion', endsAtMs: 1800 },
+  { id: 'confirmAnswer', labelKey: 'thinkingStages.confirmAnswer', endsAtMs: 450 },
+  { id: 'updateUnderstanding', labelKey: 'thinkingStages.updateUnderstanding', endsAtMs: 900 },
+  { id: 'reviewJudgment', labelKey: 'thinkingStages.reviewJudgment', endsAtMs: 1350 },
+  { id: 'selectNextGap', labelKey: 'thinkingStages.selectNextGap', endsAtMs: 1800 },
 ];
 
 export const THINKING_TOTAL_MS = THINKING_STAGES[THINKING_STAGES.length - 1]!.endsAtMs;

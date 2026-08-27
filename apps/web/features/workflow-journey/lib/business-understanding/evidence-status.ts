@@ -34,11 +34,9 @@ export function deriveEvidenceStatusFromMemory(input: {
   if (memoryHasFact(memory, 'problem')) set('problem', 'confirmed');
   else set('problem', 'unknown');
 
+  // Core v5 — payer confirmed ONLY when buyer fact exists (no customer→payer shortcut)
   if (memoryHasFact(memory, 'buyer')) set('payer', 'confirmed');
-  else if (memoryHasFact(memory, 'customer')) {
-    // Payer-oriented customer_definition answers also confirm payer path
-    set('payer', 'confirmed');
-  } else set('payer', 'unknown');
+  else set('payer', 'unknown');
 
   if (memoryHasFact(memory, 'revenue')) set('revenue', 'confirmed');
   else set('revenue', 'unknown');
@@ -48,6 +46,7 @@ export function deriveEvidenceStatusFromMemory(input: {
     set('market', 'assumed');
   } else set('market', 'unknown');
 
+  // Competition from competitor name list — differentiation alone does not confirm competition
   if (memoryHasFact(memory, 'competitor')) set('competition', 'confirmed');
   else set('competition', 'unknown');
 

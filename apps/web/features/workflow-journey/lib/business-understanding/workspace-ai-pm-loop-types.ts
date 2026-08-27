@@ -1,5 +1,6 @@
 import type { ConversationFactKey } from './conversation-memory';
 import type { AnswerIntent } from './interpret-answer-semantics';
+import type { QuestionCausality } from './question-causality';
 
 export type AiPmLoopIssueId =
   | 'customer_definition'
@@ -26,8 +27,18 @@ export type AiPmLoopTurn = {
   whyNow?: string;
   /** P0-4 — Living gap fieldKey aligned with whyNow */
   targetGap?: string;
-  /** Core v4 — brief AI understanding delta shown before next Q */
+  /** Core v4/v5 — brief AI understanding delta shown before next Q (must be populated) */
   understandingDelta?: string;
+  /** Core v5 — full question causality for the ask that produced this turn */
+  causality?: QuestionCausality;
+  /** Core v5 — evidence excerpts that motivated the ask */
+  sourceEvidence?: string[];
+  /** Core v5 — understanding snapshot before the answer */
+  previousUnderstanding?: string;
+  /** Core v5 — unresolved gap fieldKey at ask time */
+  unresolvedGap?: string;
+  /** Core v5 — what information the ask expected */
+  expectedInformation?: string;
 };
 
 export type AiPmLoopState = {

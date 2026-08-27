@@ -89,8 +89,9 @@ describe('deriveWorkspaceState', () => {
       },
     });
 
-    expect(state.review.canStart).toBe(true);
-    expect(state.review.blockedReason).toBeNull();
+    expect(state.review.canStart).toBe(false);
+    // Core v5 — no buyer fact (and/or critical viability gaps) blocks Start Analysis
+    expect(['payer_missing', 'critical_gap']).toContain(state.review.blockedReason);
   });
 
   it('blocks review with user-facing reason when customer is not confirmed', () => {
@@ -249,14 +250,16 @@ describe('applyWorkspaceLoopAnswer', () => {
   it('persists domain entities through the single loop write path', () => {
     inferDomainFromPaste(DEMO_DOC, 'test');
 
+    // Pure customer answer (no payment cue) — Core v5 routes payer only with payment language
     const result = applyWorkspaceLoopAnswer(
       'customer_definition',
-      '30인 이하 제조기업. 사용자는 공장장, 구매자는 대표.',
+      '30인 이하 제조기업 공장장이 주요 사용자입니다.',
       'test',
     );
 
-    expect(result.documentText).toContain('[AI PM 확인 · 고객 정의]');
-    expect(result.domain.customer.length).toBeGreaterThan(2);
-    expect(result.entities.customer.value?.length ?? 0).toBeGreaterThan(2);
+    expect(result.applied).toBe(true);
+    expect(result.semantic.factKey).toBe('customer');
+    expect(result.documentText).toMatch(/\[AI PM 확인 · (고객 정의|페르소나 확인)\]/);
+    expect(result.documentText).toContain('공장장');
   });
 });

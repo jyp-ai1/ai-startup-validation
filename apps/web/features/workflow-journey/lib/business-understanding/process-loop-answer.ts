@@ -74,7 +74,12 @@ export function runLoopAnswerProcessing(input: RunLoopProcessingInput): LoopProc
     turns: loop.turns,
   });
 
-  const completedStages: ThinkingStageId[] = ['memory', 'business', 'nextQuestion'];
+  const completedStages: ThinkingStageId[] = [
+    'confirmAnswer',
+    'updateUnderstanding',
+    'reviewJudgment',
+    'selectNextGap',
+  ];
 
   return {
     loop,

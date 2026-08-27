@@ -9,7 +9,13 @@ export type ConversationFactKey =
   | 'buyer'
   | 'revenue'
   | 'market'
-  | 'competitor';
+  | 'competitor'
+  /** Core v5 — distinct from competitor name list (differentiation conversation). */
+  | 'differentiation'
+  /** Core v5 — why the differentiation matters to the customer. */
+  | 'diffRelevance'
+  /** Core v5 — defensibility / hard-to-copy moat. */
+  | 'defensibility';
 
 export type ConversationFactLifecycle = 'current' | 'superseded' | 'conflict';
 
@@ -41,6 +47,9 @@ export const CONVERSATION_FACT_KEYS: ConversationFactKey[] = [
   'revenue',
   'market',
   'competitor',
+  'differentiation',
+  'diffRelevance',
+  'defensibility',
 ];
 
 export function emptyConversationMemory(projectId: string): ConversationMemory {

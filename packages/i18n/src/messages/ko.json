@@ -6804,6 +6804,7 @@
             "customer_missing": "대표가 누구인지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",
             "payer_missing": "누가 비용을 내는지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",
             "problem_missing": "어떤 문제를 푸는지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",
+            "critical_gap": "사업성 판단에 필요한 핵심 공백(고객·문제·지불·경쟁·차별 등)이 남아 있습니다. AI PM 질문에 더 답해 주세요.",
             "document_unreadable": "문서 본문을 아직 읽지 못했습니다. 붙여넣기나 파일 업로드로 내용을 확인해 주세요.",
             "demo_readonly": "미리보기 모드에서는 검토를 시작할 수 없습니다. Demo를 열거나 로그인 후 진행해 주세요.",
             "generic": "아직 검토를 시작할 조건이 모이지 않았습니다. 위에서 AI PM 질문에 답해 주세요."
@@ -6932,9 +6933,10 @@
           "reanalyzeTitle": "이해를 업데이트하는 중",
           "reanalyzeHint": "Memory → Understanding → 다음 질문 순으로 반영합니다.",
           "thinkingStages": {
-            "memory": "Memory에 답변을 반영하는 중…",
-            "business": "Understanding을 업데이트하는 중…",
-            "nextQuestion": "다음 확인 질문을 준비하는 중…"
+            "confirmAnswer": "답변 확인",
+            "updateUnderstanding": "현재 이해 업데이트",
+            "reviewJudgment": "사업 판단 검토",
+            "selectNextGap": "다음 검토 포인트 결정"
           },
           "reflectLead": "이렇게 이해를 수정했습니다",
           "understandingUpdatedFlash": "✓ AI 이해 업데이트 완료",

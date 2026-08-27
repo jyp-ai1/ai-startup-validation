@@ -34,7 +34,7 @@ describe('Core v3 semantic interpretation', () => {
       askedIssueId: 'customer_definition',
     });
     expect(result.mergeable).toBe(true);
-    expect(result.factKey).toBe('competitor');
+    expect(result.factKey).toBe('differentiation');
     expect(result.resolvedIssueId).toBe('competitor_analysis');
     expect(result.factKey).not.toBe('customer');
   });
@@ -138,7 +138,7 @@ describe('Core v3 memory build — semantic not slot dump', () => {
     expect(memory.facts.filter((f) => (f.lifecycle ?? 'current') === 'current')).toHaveLength(1);
   });
 
-  it('stores differentiation under competitor even if asked as customer', () => {
+  it('stores differentiation under differentiation fact even if asked as customer', () => {
     const memory = buildConversationMemoryFromSources({
       projectId: 'v3',
       documentText: '# 관광 맛집',
@@ -152,7 +152,7 @@ describe('Core v3 memory build — semantic not slot dump', () => {
       ],
     });
     expect(getFact(memory, 'customer')).toBeNull();
-    expect(getFact(memory, 'competitor')?.value).toMatch(/차별|큐레이션/);
+    expect(getFact(memory, 'differentiation')?.value).toMatch(/차별|큐레이션/);
   });
 });
 

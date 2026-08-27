@@ -24,11 +24,11 @@ type WorkspaceAiPmThinkingStagesProps = {
   completedStageIds?: ThinkingStageId[];
 };
 
-/** Staged Memory → Understanding update → next question (state-aware, not fake spinner-only). */
+/** Staged confirm → update understanding → review judgment → next gap (state-aware). */
 export function WorkspaceAiPmThinkingStages({
   className,
   onComplete,
-  completedStageIds = ['memory'],
+  completedStageIds = ['confirmAnswer'],
 }: WorkspaceAiPmThinkingStagesProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
   const [elapsed, setElapsed] = useState(0);

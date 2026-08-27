@@ -47,12 +47,18 @@ describe('S17-3 missing-field priority', () => {
 });
 
 describe('S17-2 thinking stages', () => {
-  it('stages Memory → Business → next question within ~1–2s', () => {
-    expect(THINKING_STAGES.map((s) => s.id)).toEqual(['memory', 'business', 'nextQuestion']);
+  it('stages confirm → update → judgment → next gap within ~1–2s', () => {
+    expect(THINKING_STAGES.map((s) => s.id)).toEqual([
+      'confirmAnswer',
+      'updateUnderstanding',
+      'reviewJudgment',
+      'selectNextGap',
+    ]);
     expect(THINKING_TOTAL_MS).toBeGreaterThanOrEqual(1500);
     expect(THINKING_TOTAL_MS).toBeLessThanOrEqual(2500);
-    expect(resolveThinkingStage(0).id).toBe('memory');
-    expect(resolveThinkingStage(700).id).toBe('business');
-    expect(resolveThinkingStage(1300).id).toBe('nextQuestion');
+    expect(resolveThinkingStage(0).id).toBe('confirmAnswer');
+    expect(resolveThinkingStage(500).id).toBe('updateUnderstanding');
+    expect(resolveThinkingStage(1000).id).toBe('reviewJudgment');
+    expect(resolveThinkingStage(1500).id).toBe('selectNextGap');
   });
 });

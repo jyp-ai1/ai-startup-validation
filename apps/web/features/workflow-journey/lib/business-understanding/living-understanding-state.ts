@@ -86,6 +86,8 @@ const ISSUE_FOR_DOMAIN: Partial<Record<string, AiPmLoopIssueId>> = {
   categoryScope: 'bm_design',
   solution: 'bm_design',
   differentiationHypothesis: 'competitor_analysis',
+  validationTestability: 'competitor_analysis',
+  executionConstraints: 'competitor_analysis',
 };
 
 const DOMAIN_IMPACT_WEIGHT: Partial<Record<string, number>> = {
@@ -95,6 +97,8 @@ const DOMAIN_IMPACT_WEIGHT: Partial<Record<string, number>> = {
   payer: 8,
   revenueModel: 7,
   alternativesCompetitors: 6,
+  /** Core v5 — base; scoreGap boosts further when competitor known */
+  differentiationVsAlternatives: 7,
   marketChannel: 5,
   solution: 5,
   differentiationHypothesis: 5,
@@ -102,10 +106,10 @@ const DOMAIN_IMPACT_WEIGHT: Partial<Record<string, number>> = {
   categoryScope: 4,
   pricingHint: 3,
   marketSizeEvidence: 3,
-  differentiationVsAlternatives: 4,
   topRisks: 2,
-  validationTestability: 3,
-  executionConstraints: 2,
+  /** Core v5 — sequenced after differentiation */
+  validationTestability: 4,
+  executionConstraints: 3,
   evidenceStrengthSummary: 2,
   currentJudgment: 1,
   nextAction: 1,
@@ -278,8 +282,14 @@ function resolveDomainValue(
       );
     }
     case 'differentiationHypothesis': {
-      const val = understanding.valueProposition.value;
-      return claimFromValue(fieldKey, val, 'AI_INFERENCE', val ? [{ kind: 'ai_inference', excerpt: val.slice(0, 80) }] : []);
+      // Core v5 — differentiation fact only (competitor alone must NOT confirm)
+      const fromMem = factValue(mem, 'differentiation');
+      if (fromMem) {
+        return claimFromValue(fieldKey, fromMem, 'USER_CONFIRMED', [
+          { kind: 'user_answer', excerpt: fromMem.slice(0, 80) },
+        ]);
+      }
+      return claimFromValue(fieldKey, null, 'UNKNOWN', []);
     }
     case 'revenueModel': {
       const fromMem = factValue(mem, 'revenue');
@@ -333,8 +343,27 @@ function resolveDomainValue(
       );
     }
     case 'differentiationVsAlternatives': {
-      const fromMem = factValue(mem, 'competitor');
-      if (fromMem && /(차별|differentiat|우리만|핫플이\s*아니라|포지션)/i.test(fromMem)) {
+      // Core v5 — resolve from differentiation fact only (NOT competitor)
+      const fromMem = factValue(mem, 'differentiation');
+      if (fromMem) {
+        return claimFromValue(fieldKey, fromMem, 'USER_CONFIRMED', [
+          { kind: 'user_answer', excerpt: fromMem.slice(0, 80) },
+        ]);
+      }
+      return claimFromValue(fieldKey, null, 'UNKNOWN', []);
+    }
+    case 'validationTestability': {
+      const fromMem = factValue(mem, 'diffRelevance');
+      if (fromMem) {
+        return claimFromValue(fieldKey, fromMem, 'USER_CONFIRMED', [
+          { kind: 'user_answer', excerpt: fromMem.slice(0, 80) },
+        ]);
+      }
+      return claimFromValue(fieldKey, null, 'UNKNOWN', []);
+    }
+    case 'executionConstraints': {
+      const fromMem = factValue(mem, 'defensibility');
+      if (fromMem) {
         return claimFromValue(fieldKey, fromMem, 'USER_CONFIRMED', [
           { kind: 'user_answer', excerpt: fromMem.slice(0, 80) },
         ]);
@@ -342,8 +371,6 @@ function resolveDomainValue(
       return claimFromValue(fieldKey, null, 'UNKNOWN', []);
     }
     case 'topRisks':
-    case 'validationTestability':
-    case 'executionConstraints':
     case 'evidenceStrengthSummary':
     case 'currentJudgment':
     case 'nextAction':
@@ -382,6 +409,10 @@ export function whyNowForGapField(fieldKey: string): string {
       '경쟁만 알고 차별이 없으면 「왜 우리인가」를 말할 수 없습니다. 차이점을 지금 확인합니다.',
     differentiationHypothesis:
       '차별 가설이 비어 있으면 경쟁 대비 포지션을 판단할 수 없습니다.',
+    validationTestability:
+      '차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.',
+    executionConstraints:
+      '따라오기 어려운 방어력이 비면 「지속 가능한 차별」을 판단할 수 없습니다. 방어력을 지금 확인합니다.',
     revenueModel:
       '수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.',
     pricingHint:
@@ -403,10 +434,22 @@ export function whyNowForGapField(fieldKey: string): string {
   );
 }
 
+function isClaimKnown(claim: LivingClaim | undefined): boolean {
+  return Boolean(
+    claim &&
+      claim.status !== 'unknown' &&
+      claim.value != null &&
+      claim.value.trim().length >= 2,
+  );
+}
+
 function scoreGap(
   claim: LivingClaim,
   _resolvedIssueIds: Set<AiPmLoopIssueId>,
-  options?: { hasContradiction?: boolean },
+  options?: {
+    hasContradiction?: boolean;
+    claimsByKey?: Map<string, LivingClaim>;
+  },
 ): LivingUnderstandingGap | null {
   if (claim.status === 'contradiction') {
     const issueId = ISSUE_FOR_DOMAIN[claim.fieldKey] ?? null;
@@ -424,15 +467,42 @@ function scoreGap(
   // Core v4 — do NOT suppress sibling gaps on the same issueId (payer vs revenueModel).
   // Gap satisfaction is fact/claim based; issue resolution alone must not hide unknowns.
 
+  const byKey = options?.claimsByKey;
+  const competitorKnown = isClaimKnown(byKey?.get('alternativesCompetitors'));
+  const differentiationKnown = isClaimKnown(byKey?.get('differentiationVsAlternatives'));
+  const relevanceKnown = isClaimKnown(byKey?.get('validationTestability'));
+
   // Judgment-critical Stage A fields first — not fixed form order
-  const impact = DOMAIN_IMPACT_WEIGHT[claim.fieldKey] ?? 3;
+  let impact = DOMAIN_IMPACT_WEIGHT[claim.fieldKey] ?? 3;
+  // Core v5 — competitor known but differentiation unknown → outrank pricing/channel
+  if (
+    claim.fieldKey === 'differentiationVsAlternatives' &&
+    competitorKnown &&
+    !differentiationKnown
+  ) {
+    impact = 12;
+  }
+  // After differentiation known: validationTestability then executionConstraints
+  if (claim.fieldKey === 'validationTestability' && differentiationKnown && !relevanceKnown) {
+    impact = 10;
+  }
+  if (
+    claim.fieldKey === 'executionConstraints' &&
+    differentiationKnown &&
+    relevanceKnown
+  ) {
+    impact = 9;
+  }
+
   const unknownFactor = 10;
   const decisionRelevance =
     claim.fieldKey === 'payer' ||
     claim.fieldKey === 'customerPersona' ||
     claim.fieldKey === 'problemJtbd' ||
     claim.fieldKey === 'alternativesCompetitors' ||
-    claim.fieldKey === 'differentiationVsAlternatives'
+    claim.fieldKey === 'differentiationVsAlternatives' ||
+    claim.fieldKey === 'validationTestability' ||
+    claim.fieldKey === 'executionConstraints'
       ? 9
       : claim.fieldKey.startsWith('current') || claim.fieldKey.startsWith('next')
         ? 1
@@ -534,8 +604,9 @@ export function buildLivingUnderstandingState(input: BuildLivingStateInput): Liv
     claims.some((c) => c.status === 'contradiction') ||
     (memory != null && memoryHasOpenConflict(memory));
 
+  const claimsByKey = new Map(claims.map((c) => [c.fieldKey, c]));
   const gaps = claims
-    .map((c) => scoreGap(c, resolved, { hasContradiction }))
+    .map((c) => scoreGap(c, resolved, { hasContradiction, claimsByKey }))
     .filter((g): g is LivingUnderstandingGap => g != null)
     .sort((a, b) => b.priorityScore - a.priorityScore);
 

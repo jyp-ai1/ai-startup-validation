@@ -47,9 +47,11 @@ describe('Core v4 multi-fact + wrong-slot', () => {
       askedIssueId: 'customer_definition',
       askedTargetGap: 'customerPersona',
     });
-    expect(result.factKey).toBe('competitor');
+    expect(result.factKey).toBe('differentiation');
     expect(result.factKey).not.toBe('customer');
     expect(result.facts.some((f) => f.key === 'customer')).toBe(false);
+    expect(result.facts.map((f) => f.key)).toContain('competitor');
+    expect(result.facts.map((f) => f.key)).toContain('differentiation');
     expect(result.resolvedIssueId).toBe('competitor_analysis');
   });
 

@@ -6651,6 +6651,7 @@
             "customer_missing": "We haven't confirmed who the customer is yet. The next question will clarify this.",
             "payer_missing": "We haven't confirmed who pays yet. The next question will clarify this.",
             "problem_missing": "We haven't confirmed which problem you're solving yet. The next question will clarify this.",
+            "critical_gap": "Critical gaps remain for viability judgment (customer, problem, payer, competition, differentiation). Keep answering AI PM questions.",
             "document_unreadable": "We couldn't read the document body yet. Paste or upload content we can analyze.",
             "demo_readonly": "Review isn't available in preview mode. Open Demo or sign in to continue.",
             "generic": "We can't start review yet. Answer the AI PM questions above first."
@@ -6779,9 +6780,10 @@
           "reanalyzeTitle": "Good.",
           "reanalyzeHint": "Organizing our next thinking from what we learned together.",
           "thinkingStages": {
-            "memory": "Updating Memory with your answer…",
-            "business": "Updating Shared Understanding…",
-            "nextQuestion": "Preparing the next question…"
+            "confirmAnswer": "Confirming your answer",
+            "updateUnderstanding": "Updating current understanding",
+            "reviewJudgment": "Reviewing business judgment",
+            "selectNextGap": "Choosing the next review point"
           },
           "reflectLead": "I've updated my understanding like this",
           "understandingUpdatedFlash": "✓ AI understanding updated",
