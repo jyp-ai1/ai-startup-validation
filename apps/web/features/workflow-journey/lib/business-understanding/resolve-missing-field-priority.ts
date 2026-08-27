@@ -165,9 +165,17 @@ export function getAnsweredTargetGaps(turns: AiPmLoopTurn[] | undefined): Set<st
     if (turn.targetGap?.trim() && keys.length > 0) {
       const asked = turn.targetGap.trim();
       const binding = resolveGapQuestionBinding(asked);
-      if (keys.includes(binding.factKey)) {
+      if (keys.includes(binding.factKey) || asked === 'solution') {
         answered.add(asked);
       }
+    }
+    // P0 — explicit solution turn always closes solution gap
+    if (
+      turn.targetGap === 'solution' &&
+      (turn.intent === 'business_fact' || turn.intent === 'correction') &&
+      turn.answer?.trim()
+    ) {
+      answered.add('solution');
     }
   }
   return answered;
@@ -178,6 +186,18 @@ function isGapSatisfiedInMemory(
   memory: ConversationMemory | null | undefined,
 ): boolean {
   if (!memory) return false;
+  // P0 — solution must never be closed by document business one-liner alone
+  if (targetGap === 'solution' || targetGap === 'businessOneLiner') {
+    const fact = memory.facts.find(
+      (f) =>
+        f.key === 'business' &&
+        (f.lifecycle ?? 'current') === 'current' &&
+        f.source === 'user_turn',
+    );
+    // businessOneLiner may use user business fact; solution still requires its own turn
+    if (targetGap === 'solution') return false;
+    return Boolean(fact);
+  }
   const key = factKeyForGapField(targetGap);
   return key ? memoryHasFact(memory, key) : false;
 }
@@ -352,6 +372,7 @@ export function resolveMissingFieldPriorities(
         gap.fieldKey !== 'revenueModel' &&
         gap.fieldKey !== 'pricingHint' &&
         gap.fieldKey !== 'payer' &&
+        gap.fieldKey !== 'solution' &&
         gap.fieldKey !== 'marketChannel' &&
         gap.fieldKey !== 'marketSizeEvidence'
       ) {

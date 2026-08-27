@@ -29,7 +29,7 @@ import {
   buildLivingUnderstandingState,
   type LivingUnderstandingState,
 } from './living-understanding-state';
-import { criticalGapsBlockAnalysis, explainSufficiency } from './question-causality';
+import { criticalGapsBlockAnalysis, evaluateAnalysisReady, explainSufficiency } from './question-causality';
 import { evaluateDomainTrust } from '../domain/domain-trust-rules';
 import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
 import { loadConversationMemory } from './conversation-memory-store';
@@ -104,6 +104,10 @@ export type WorkspaceState = {
   /** Core Final Stabilization — Overview / CPO probe gate */
   criticalGapBlocked: boolean;
   criticalGapExplanation: string | null;
+  /** P0-1 — Analysis Ready (≠ sufficiency %) */
+  analysisReady: boolean;
+  sufficiencyPercent: number | null;
+  analysisReadyExplanation: string | null;
 };
 
 /** S16 P0-3 — stage-first progress (numbers secondary). */
@@ -625,8 +629,15 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
 
   const criticalGapBlocked =
     livingState != null ? criticalGapsBlockAnalysis(livingState) : false;
+  const analysisEval =
+    livingState != null ? evaluateAnalysisReady(livingState) : null;
+  const sufficiencyEval =
+    livingState != null ? explainSufficiency(livingState) : null;
   const criticalGapExplanation =
-    livingState != null ? explainSufficiency(livingState).explanation : null;
+    analysisEval?.whyNotReady ??
+    analysisEval?.explanation ??
+    sufficiencyEval?.explanation ??
+    null;
 
   return {
     version: 1,
@@ -648,5 +659,8 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
     understandingCoveragePercent: livingState?.coveragePercent ?? null,
     criticalGapBlocked,
     criticalGapExplanation,
+    analysisReady: analysisEval?.analysisReady ?? false,
+    sufficiencyPercent: livingState?.coveragePercent ?? null,
+    analysisReadyExplanation: analysisEval?.explanation ?? null,
   };
 }

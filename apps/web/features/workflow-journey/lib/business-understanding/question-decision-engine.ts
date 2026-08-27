@@ -124,6 +124,8 @@ export function resolveExcludedGaps(input: {
   const critical = new Set(listUnconfirmedCriticalGaps(input.living));
 
   for (const claim of input.living.claims) {
+    // P0 — solution never excluded via shared business document fact
+    if (claim.fieldKey === 'solution') continue;
     const key = factKeyForGapField(claim.fieldKey);
     if (key && input.memory && memoryHasFact(input.memory, key)) {
       exclude.add(claim.fieldKey);

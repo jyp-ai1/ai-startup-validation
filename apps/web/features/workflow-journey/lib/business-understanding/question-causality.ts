@@ -15,6 +15,7 @@ export const CRITICAL_VIABILITY_GAP_KEYS = [
   'customerPersona',
   'problemJtbd',
   'payer',
+  'solution',
   'alternativesCompetitors',
   'differentiationVsAlternatives',
 ] as const;
@@ -86,13 +87,11 @@ export function listCriticalViabilityGaps(living: LivingUnderstandingState): str
 /**
  * True when Start Analysis must be forbidden.
  * Core Final — DOCUMENT / AI_INFERENCE alone do NOT close critical gaps.
- * Only USER_CONFIRMED / USER_CORRECTED close them.
+ * Only USER_CONFIRMED / USER_CORRECTED close them. Open contradictions always block.
+ * P0-1: Analysis Ready only — not sufficiency %.
  */
 export function criticalGapsBlockAnalysis(living: LivingUnderstandingState): boolean {
-  if (listUnconfirmedCriticalGaps(living).length > 0) return true;
-  // Open contradictions always block
-  if (living.claims.some((c) => c.status === 'contradiction')) return true;
-  return false;
+  return !evaluateAnalysisReady(living).analysisReady;
 }
 
 function claimDigest(claims: LivingClaim[]): string {
@@ -278,11 +277,15 @@ export function formatUnderstandingDeltaSummary(delta: UnderstandingDelta): stri
   return s.length > 0 ? s : '이해 상태 갱신됨';
 }
 
-/** Sufficiency explanation — confirmed vs missing (W13). */
+/**
+ * P0-1 — Sufficiency = how concrete business understanding is (coverage / confirmed fields).
+ * Does NOT equal Analysis Ready.
+ */
 export function explainSufficiency(living: LivingUnderstandingState): {
   percent: number;
   confirmed: string[];
   missing: string[];
+  /** @deprecated use evaluateAnalysisReady().analysisReady — kept for callers */
   readyForAnalysis: boolean;
   explanation: string;
 } {
@@ -290,16 +293,60 @@ export function explainSufficiency(living: LivingUnderstandingState): {
     .filter((c) => isUserConfirmedClaim(c))
     .map((c) => c.fieldKey);
   const missing = listUnconfirmedCriticalGaps(living);
-  const ready = !criticalGapsBlockAnalysis(living);
-  const explanation = ready
-    ? `사업 구체화 ${living.coveragePercent}% — 핵심 공백이 사용자 확인으로 채워졌습니다. (답변 개수 기준 아님)`
-    : `사업 구체화 ${living.coveragePercent}% — 아직 확인 필요: ${missing.join(', ') || '판단 공백'}. Start Analysis는 차단됩니다.`;
+  const analysis = evaluateAnalysisReady(living);
+  const explanation = `사업 구체화 ${living.coveragePercent}% (충분성) — 사용자 확인 ${confirmed.length}항목. Analysis Ready와는 별개입니다.${
+    missing.length ? ` 미확인 핵심: ${missing.join(', ')}.` : ''
+  }`;
 
   return {
     percent: living.coveragePercent,
     confirmed,
     missing,
-    readyForAnalysis: ready,
+    readyForAnalysis: analysis.analysisReady,
+    explanation,
+  };
+}
+
+/**
+ * P0-1 — Analysis Ready = critical gaps/conflicts resolved enough to start viability analysis.
+ * High sufficiency / enough questions ≠ Analysis Ready.
+ * Critical Unknown remaining ⇒ Start Analysis DISABLED.
+ */
+export function evaluateAnalysisReady(living: LivingUnderstandingState): {
+  analysisReady: boolean;
+  sufficiencyPercent: number;
+  blockedGaps: string[];
+  whyNotReady: string | null;
+  explanation: string;
+} {
+  const blockedGaps = listUnconfirmedCriticalGaps(living);
+  const hasContradiction = living.claims.some((c) => c.status === 'contradiction');
+  const analysisReady = blockedGaps.length === 0 && !hasContradiction;
+
+  let whyNotReady: string | null = null;
+  if (hasContradiction) {
+    const conflict = living.claims.find((c) => c.status === 'contradiction');
+    whyNotReady = `모순 미해소: 「${conflict?.fieldKey ?? '충돌'}」— Old→Superseded→New 중 어느 쪽이 맞는지 확인이 필요합니다.`;
+  } else if (blockedGaps.length > 0) {
+    whyNotReady = `Critical Unknown 남음: ${blockedGaps.join(', ')}. Start Analysis는 차단됩니다.`;
+  }
+
+  const explanation = analysisReady
+    ? `Analysis Ready — 핵심 공백·모순이 사용자 확인으로 해소되었습니다. (구체화 ${living.coveragePercent}%는 참고)`
+    : whyNotReady ?? 'Analysis Ready 아님';
+
+  return {
+    analysisReady,
+    sufficiencyPercent: living.coveragePercent,
+    blockedGaps: hasContradiction
+      ? [
+          ...blockedGaps,
+          ...living.claims
+            .filter((c) => c.status === 'contradiction')
+            .map((c) => c.fieldKey),
+        ]
+      : blockedGaps,
+    whyNotReady,
     explanation,
   };
 }

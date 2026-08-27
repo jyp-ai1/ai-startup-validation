@@ -13,7 +13,16 @@ import {
   type AiPmLoopState,
   type AiPmLoopTurn,
 } from './workspace-ai-pm-loop-types';
-import { resolveNextIssueByMissingField } from './resolve-missing-field-priority';
+import {
+  getAnsweredTargetGaps,
+  resolveNextIssueByMissingField,
+} from './resolve-missing-field-priority';
+import { selectTopAdaptiveGap } from './adaptive-question-select';
+import {
+  buildLivingUnderstandingState,
+  resolveNextIssueFromLivingState,
+} from './living-understanding-state';
+import { criticalGapsBlockAnalysis } from './question-causality';
 
 type PriorityOptions = {
   documentText?: string | null;
@@ -70,8 +79,8 @@ export function resolveAiPmPriorityIssue(
  * Single source for loop UI, pause, and resume.
  * S9: never re-ask an issue whose Fact is Confirmed in Conversation Memory.
  * Core v4: gap-level advancement — sticky currentIssueId yields when asked gap answered.
- * Core v5: do NOT walk AI_PM_LOOP_ISSUE_ORDER as hard spine when living gaps already ranked;
- * prefer null so sufficiency/complete can finish once critical facts are locked.
+ * Core v5: do NOT walk AI_PM_LOOP_ISSUE_ORDER as hard spine when living gaps already ranked.
+ * P0-2: never return null while Analysis Ready is false — keep asking Critical Gaps.
  */
 export function resolveNextLoopIssue(
   understanding: BusinessUnderstanding,
@@ -83,11 +92,13 @@ export function resolveNextLoopIssue(
   const resolvedIds = getResolvedIssueIds(loop);
   const resolved = new Set(resolvedIds);
   const memory = options?.memory ?? null;
+  const turns = options?.turns ?? loop.turns;
+  const documentText = options?.documentText ?? '';
 
   // S17-3 / Core v4 — missing-field priority first (includes sticky-safe logic)
   const byMissing = resolveNextIssueByMissingField(understanding, loop, {
     ...options,
-    turns: options?.turns ?? loop.turns,
+    turns,
   });
   if (byMissing) {
     if (byMissing === 'competitor_analysis' && !options?.analysisResultExists) {
@@ -124,7 +135,29 @@ export function resolveNextLoopIssue(
     return id;
   }
 
-  // Core v5 — missing-field already null + critical facts locked → let complete/sufficiency handle
+  // P0-2 — if Analysis Ready is false, force next issue from living critical gap (no early exit)
+  if (documentText.trim().length >= 8) {
+    const living = buildLivingUnderstandingState({
+      documentText,
+      understanding,
+      entities: options?.entities ?? null,
+      turns,
+      memory,
+      resolvedIssueIds: resolvedIds,
+    });
+    if (criticalGapsBlockAnalysis(living)) {
+      const top = selectTopAdaptiveGap(living, {
+        answeredFactGaps: getAnsweredTargetGaps(turns),
+      });
+      if (top?.issueId) return top.issueId;
+      const livingIssue = resolveNextIssueFromLivingState(living, resolvedIds, new Set());
+      if (livingIssue) return livingIssue;
+      // Keep loop open on current issue rather than completing
+      return loop.currentIssueId;
+    }
+  }
+
+  // Only when Analysis Ready — allow null so loop may complete
   if (criticalFactsLocked(memory)) {
     return null;
   }

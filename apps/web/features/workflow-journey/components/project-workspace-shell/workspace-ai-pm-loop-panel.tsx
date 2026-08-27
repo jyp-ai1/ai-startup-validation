@@ -1263,20 +1263,27 @@ export function WorkspaceAiPmLoopPanel({
             className="mt-3 space-y-3 rounded-xl border border-amber-500/40 bg-amber-500/[0.06] px-4 py-3"
           >
             <p className="text-sm font-medium text-foreground">
-              이전에 확인한 내용과 새 답변이 다릅니다. 어느 쪽이 맞습니까?
+              이전에 확인한 내용과 새 답변이 다릅니다. 어느 쪽이 현재 이해(Current Understanding)인지
+              확인해 주세요. 자동으로 합치지 않습니다.
             </p>
             <dl className="grid gap-2 text-sm sm:grid-cols-2">
               <div>
                 <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  이전 확인
+                  Old Fact (이전 확인)
                 </dt>
                 <dd className="mt-1 font-medium">{contradiction.prior}</dd>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  새 답을 채택하면 Superseded로 남습니다.
+                </p>
               </div>
               <div>
                 <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  새 답변
+                  New Fact (새 답변)
                 </dt>
                 <dd className="mt-1 font-medium">{contradiction.next}</dd>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  채택 시 Current Understanding이 됩니다.
+                </p>
               </div>
             </dl>
             <div className="flex flex-wrap gap-2">
@@ -1287,7 +1294,7 @@ export function WorkspaceAiPmLoopPanel({
                 disabled={readOnly}
                 onClick={() => resolveContradiction('keep_prior')}
               >
-                이전 내용이 맞아
+                이전 내용이 맞아 (Current = Old)
               </Button>
               <Button
                 type="button"
@@ -1295,7 +1302,7 @@ export function WorkspaceAiPmLoopPanel({
                 disabled={readOnly}
                 onClick={() => resolveContradiction('accept_new')}
               >
-                새 답변이 맞아
+                새 답변이 맞아 (Old → Superseded)
               </Button>
             </div>
           </div>

@@ -8,11 +8,16 @@ import type { LivingClaim, LivingUnderstandingState } from './living-understandi
 import { resolveGapQuestionBinding } from './gap-question-map';
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
 
-/** Critical viability gaps — shared with analysis gate (avoid circular import). */
+/**
+ * Critical viability gaps — shared with analysis gate (avoid circular import).
+ * P0 Judgment: Sufficiency ≠ Analysis Ready. These must be USER_CONFIRMED
+ * before Start Analysis. Includes solution (CPO HOLD @ eabca85).
+ */
 export const ADAPTIVE_CRITICAL_GAP_KEYS = [
   'customerPersona',
   'problemJtbd',
   'payer',
+  'solution',
   'alternativesCompetitors',
   'differentiationVsAlternatives',
 ] as const;
@@ -130,6 +135,11 @@ export function selectAdaptiveNextGaps(
       } else {
         score = 54_000;
       }
+    }
+    // Solution after problem locked — blocks dishonest Start Analysis
+    if (key === 'solution') {
+      const problem = byKey('problemJtbd');
+      score = isUserConfirmed(problem) ? 52_000 : 45_000;
     }
     // Tourism: problem/customer slightly ahead of generic BM
     if (archetype === 'tourism' && (key === 'problemJtbd' || key === 'customerPersona')) {

@@ -181,6 +181,10 @@ export function answersContradict(prior: string, next: string): boolean {
   const b = next.trim().replace(/\s+/g, ' ').toLowerCase();
   if (!a || !b || a === b) return false;
   if (a.includes(b) || b.includes(a)) return false;
+
+  // P0-3 — payer archetype conflict (B2B/hotel vs tourist/direct) never silently merge
+  if (payerArchetypesConflict(a, b)) return true;
+
   // Distinct short noun phrases that share almost no tokens → treat as conflict
   const tokensA = new Set(a.split(/[\s,/·]+/).filter((t) => t.length >= 2));
   const tokensB = new Set(b.split(/[\s,/·]+/).filter((t) => t.length >= 2));
@@ -191,6 +195,13 @@ export function answersContradict(prior: string, next: string): boolean {
   }
   const ratio = overlap / Math.min(tokensA.size, tokensB.size);
   return ratio < 0.2 && Math.abs(tokensA.size - tokensB.size) <= 3;
+}
+
+/** B2B / OTA bulk settle vs tourist direct app pay — mutually exclusive payers. */
+function payerArchetypesConflict(a: string, b: string): boolean {
+  const b2b = /(b2b|호텔|ota|일괄|정산|기업|법인|제휴사)/i;
+  const direct = /(관광객|직접\s*(예약|결제)|앱에서.*(결제|예약)|소비자|b2c)/i;
+  return (b2b.test(a) && direct.test(b)) || (direct.test(a) && b2b.test(b));
 }
 
 /** Quality that may enter Memory / Understanding as user-backed. */

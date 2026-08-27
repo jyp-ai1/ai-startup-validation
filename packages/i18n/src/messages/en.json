@@ -6645,13 +6645,13 @@
           "startReviewCta": "Start review",
           "finalReviewLead": "Before analysis, confirm the full AI understanding.",
           "finalReviewSub": "If business · customer · problem look right, we start analysis.",
-          "validationHandoff": "Understanding is sufficient. Moving to validation: judgment, reasons, and one next action. (Not based on answer count.)",
+          "validationHandoff": "Analysis Ready — critical gaps and conflicts are resolved. Moving to viability validation. (Not based on sufficiency % or answer count.)",
           "finalConfirmCta": "✓ That's right — start analysis",
           "reviewBlocked": {
             "customer_missing": "We haven't confirmed who the customer is yet. The next question will clarify this.",
             "payer_missing": "We haven't confirmed who pays yet. The next question will clarify this.",
             "problem_missing": "We haven't confirmed which problem you're solving yet. The next question will clarify this.",
-            "critical_gap": "Critical gaps remain for viability judgment (customer, problem, payer, competition, differentiation). Keep answering AI PM questions.",
+            "critical_gap": "Not Analysis Ready. Critical Unknowns remain (customer, problem, payer, solution, competition, differentiation) — Start Analysis is blocked. Keep answering AI PM questions.",
             "document_unreadable": "We couldn't read the document body yet. Paste or upload content we can analyze.",
             "demo_readonly": "Review isn't available in preview mode. Open Demo or sign in to continue.",
             "generic": "We can't start review yet. Answer the AI PM questions above first."

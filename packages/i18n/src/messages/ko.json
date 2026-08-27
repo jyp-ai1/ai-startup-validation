@@ -6798,13 +6798,13 @@
           "startReviewCta": "검토 시작",
           "finalReviewLead": "분석 전에, AI가 이해한 내용을 최종 확인합니다.",
           "finalReviewSub": "사업 · 고객 · 문제가 맞으면 분석을 시작합니다.",
-          "validationHandoff": "이해가 충분합니다. 이제 사업성 검증으로 넘어가 판단·근거·다음 행동 하나를 정리합니다. (답변 개수가 기준이 아닙니다.)",
+          "validationHandoff": "Analysis Ready — 핵심 공백·모순이 해소되어 사업성 검증으로 넘어갑니다. (충분성 %·답변 개수가 기준이 아닙니다.)",
           "finalConfirmCta": "✓ 맞습니다 — 분석 시작",
           "reviewBlocked": {
             "customer_missing": "대표가 누구인지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",
             "payer_missing": "누가 비용을 내는지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",
             "problem_missing": "어떤 문제를 푸는지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",
-            "critical_gap": "사업성 판단에 필요한 핵심 공백(고객·문제·지불·경쟁·차별 등)이 남아 있습니다. AI PM 질문에 더 답해 주세요.",
+            "critical_gap": "Analysis Ready가 아닙니다. Critical Unknown(고객·문제·지불·솔루션·경쟁·차별 등)이 남아 Start Analysis가 차단됩니다. AI PM 질문에 더 답해 주세요.",
             "document_unreadable": "문서 본문을 아직 읽지 못했습니다. 붙여넣기나 파일 업로드로 내용을 확인해 주세요.",
             "demo_readonly": "미리보기 모드에서는 검토를 시작할 수 없습니다. Demo를 열거나 로그인 후 진행해 주세요.",
             "generic": "아직 검토를 시작할 조건이 모이지 않았습니다. 위에서 AI PM 질문에 답해 주세요."

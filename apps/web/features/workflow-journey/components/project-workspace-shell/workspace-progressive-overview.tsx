@@ -201,11 +201,18 @@ export function WorkspaceProgressiveOverview({
               role="status"
             >
               <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-800 dark:text-amber-200">
-                Start Analysis는 차단
+                Start Analysis는 차단 · Analysis Ready 아님
               </p>
               <p className="mt-2 text-sm leading-relaxed text-foreground">
                 {criticalGapExplanation?.trim() ||
                   'Critical gaps remain — Start Analysis는 차단됩니다. 핵심 공백을 먼저 확인하세요.'}
+              </p>
+              <p
+                className="mt-2 text-xs text-muted-foreground"
+                data-testid="sufficiency-vs-analysis-ready"
+              >
+                충분성(구체화 %)과 Analysis Ready는 별개입니다. Critical Unknown이 있으면 분석을 시작하지
+                않습니다.
               </p>
               <button
                 type="button"
@@ -222,7 +229,7 @@ export function WorkspaceProgressiveOverview({
               className="mt-4 text-xs text-muted-foreground"
               role="status"
             >
-              핵심 공백이 사용자 확인으로 채워졌습니다. Start Analysis 가능 여부를 AI가 판단합니다.
+              Analysis Ready — 핵심 공백·모순이 해소되었습니다. Start Analysis 가능 여부를 AI가 판단합니다.
             </p>
           )}
         </section>

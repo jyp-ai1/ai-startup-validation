@@ -46,7 +46,7 @@ const CORRECTION_RE =
   /(아니\s*그게\s*아니라|사실은|정정|고쳐|수정하|아니라\s*|다시\s*말하|correction|actually\s+it)/i;
 /** Explicit conflict with a prior claim — force CONFLICT even if token overlap is high */
 const EXPLICIT_CONFLICT_CUE_RE =
-  /(다릅니다|다르다|와\s*다름|이\s*아니라|그게\s*아니라|모순|충돌|contradict|instead\s+of)/i;
+  /(다릅니다|다르다|와\s*다름|이\s*아니라|그게\s*아니라|모순|충돌|contradict|instead\s+of|앞서와\s*달리|그건\s*아닌데)/i;
 /** Hangul jamo mash / repeated syllables without real words */
 const HANGUL_JAMO_MASH_RE = /^[\u3131-\u318E\s]{4,}$/;
 const HANGUL_REPEATED_SYLLABLE_RE = /^(?:([가-힣])\1{2,}|([가-힣]{1,2})\2{3,})$/;
@@ -412,12 +412,31 @@ export function interpretAnswerSemantics(input: {
     }
     facts = facts.filter((f) => f.key !== 'problem' && f.key !== 'customer');
   } else if (askedGap === 'validationTestability') {
-    factKey = 'diffRelevance';
-    resolvedIssueId = 'competitor_analysis';
-    if (!facts.some((f) => f.key === 'diffRelevance')) {
-      facts = [{ key: 'diffRelevance', issueId: 'competitor_analysis' }, ...facts];
+    // P0-3 — clear payer correction/conflict must not force-fill relevance slot
+    const payerOnly =
+      PAYER_CUE_RE.test(trimmed) &&
+      (isCorrection ||
+        EXPLICIT_CONFLICT_CUE_RE.test(trimmed) ||
+        /결제자|지불자|payer|관광객이\s*아니라|b2b|직접\s*결제/i.test(trimmed)) &&
+      !/(왜\s*중요|관련성|체감|가치)/i.test(trimmed);
+    if (payerOnly) {
+      factKey = 'buyer';
+      resolvedIssueId = 'bm_design';
+      facts = [{ key: 'buyer', issueId: 'bm_design' }];
+    } else {
+      factKey = 'diffRelevance';
+      resolvedIssueId = 'competitor_analysis';
+      if (!facts.some((f) => f.key === 'diffRelevance')) {
+        facts = [{ key: 'diffRelevance', issueId: 'competitor_analysis' }, ...facts];
+      }
+      facts = facts.filter((f) => f.key !== 'customer' && f.key !== 'problem');
     }
-    facts = facts.filter((f) => f.key !== 'customer' && f.key !== 'problem');
+  } else if (askedGap === 'solution') {
+    factKey = 'business';
+    resolvedIssueId = 'problem_definition';
+    if (!facts.some((f) => f.key === 'business')) {
+      facts = [{ key: 'business', issueId: 'problem_definition' }, ...facts];
+    }
   } else if (askedGap === 'executionConstraints') {
     factKey = 'defensibility';
     resolvedIssueId = 'competitor_analysis';

@@ -101,7 +101,7 @@ const DOMAIN_IMPACT_WEIGHT: Partial<Record<string, number>> = {
   /** Core v5 — base; scoreGap boosts further when competitor known */
   differentiationVsAlternatives: 7,
   marketChannel: 5,
-  solution: 5,
+  solution: 10,
   differentiationHypothesis: 5,
   problemFrequencySeverity: 4,
   categoryScope: 4,
@@ -274,6 +274,21 @@ function resolveDomainValue(
       );
     }
     case 'solution': {
+      // P0 — only explicit solution-turn confirms; document business one-liner must NOT close this gap
+      const fromTurn = [...(input.turns ?? [])]
+        .reverse()
+        .find(
+          (t) =>
+            !t.superseded &&
+            t.targetGap === 'solution' &&
+            (t.intent === 'business_fact' || t.intent === 'correction') &&
+            Boolean(t.answer?.trim()),
+        );
+      if (fromTurn?.answer?.trim()) {
+        return claimFromValue(fieldKey, fromTurn.answer.trim(), 'USER_CONFIRMED', [
+          { kind: 'user_answer', excerpt: fromTurn.answer.trim().slice(0, 80) },
+        ]);
+      }
       const val = understanding.solution.value;
       return claimFromValue(
         fieldKey,
@@ -512,6 +527,7 @@ function scoreGap(
     claim.fieldKey === 'payer' ||
     claim.fieldKey === 'customerPersona' ||
     claim.fieldKey === 'problemJtbd' ||
+    claim.fieldKey === 'solution' ||
     claim.fieldKey === 'alternativesCompetitors' ||
     claim.fieldKey === 'differentiationVsAlternatives' ||
     claim.fieldKey === 'validationTestability' ||

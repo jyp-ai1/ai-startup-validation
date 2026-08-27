@@ -12,6 +12,8 @@ import { buildLivingUnderstandingState } from '../living-understanding-state';
 import {
   buildUnderstandingDelta,
   criticalGapsBlockAnalysis,
+  evaluateAnalysisReady,
+  explainSufficiency,
   formatUnderstandingDeltaSummary,
 } from '../question-causality';
 import { reframeQuestion, isSameMeaningQuestion } from '../reframe-question';
@@ -36,6 +38,7 @@ import { createInitialAiPmLoopState } from '../workspace-ai-pm-loop-store';
 import type { AiPmLoopTurn } from '../workspace-ai-pm-loop-types';
 import { deriveWorkspaceState } from '../workspace-state';
 import { resolveGapQuestionBinding } from '../gap-question-map';
+import { resolveNextLoopIssue } from '../resolve-ai-pm-priority-issue';
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
@@ -204,7 +207,7 @@ describe('Stabilization — understandingDelta never empty on mergeable', () => 
 });
 
 describe('Stabilization — adaptive causality Competition→Diff→Value', () => {
-  it('after competitor+diff confirmed, next adaptive gap is validationTestability', () => {
+  it('after competitor+diff confirmed, next adaptive gap is solution (critical) before validation', () => {
     const turns: AiPmLoopTurn[] = [
       {
         issueId: 'customer_definition',
@@ -262,9 +265,10 @@ describe('Stabilization — adaptive causality Competition→Diff→Value', () =
     const top = selectTopAdaptiveGap(living, {
       answeredFactGaps: getAnsweredTargetGaps(turns),
     });
-    expect(top?.fieldKey).toBe('validationTestability');
+    // P0 — solution is Analysis Ready critical; outranks validationTestability
+    expect(top?.fieldKey).toBe('solution');
     const decision = decideNextQuestion({ living, turns, memory });
-    expect(decision?.targetGap).toBe('validationTestability');
+    expect(decision?.targetGap).toBe('solution');
   });
 });
 
@@ -389,3 +393,251 @@ describe('Stabilization — stock binding purity for relevance', () => {
     expect(qCount).toBeLessThanOrEqual(1);
   });
 });
+
+describe('P0 Judgment — Analysis Ready ≠ Sufficiency', () => {
+  it('high coverage with open solution still blocks Analysis Ready', () => {
+    const turns: AiPmLoopTurn[] = [
+      {
+        issueId: 'customer_definition',
+        answer: '방한 FIT',
+        appliedAt: '1',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '맞춤 일정 불가',
+        appliedAt: '2',
+        semanticFactKey: 'problem',
+        semanticFactKeys: ['problem'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+      },
+      {
+        issueId: 'bm_design',
+        answer: '관광객 결제',
+        appliedAt: '3',
+        semanticFactKey: 'buyer',
+        semanticFactKeys: ['buyer'],
+        intent: 'business_fact',
+        targetGap: 'payer',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '클룩',
+        appliedAt: '4',
+        semanticFactKey: 'competitor',
+        semanticFactKeys: ['competitor'],
+        intent: 'business_fact',
+        targetGap: 'alternativesCompetitors',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '실시간 맞춤',
+        appliedAt: '5',
+        semanticFactKey: 'differentiation',
+        semanticFactKeys: ['differentiation'],
+        intent: 'business_fact',
+        targetGap: 'differentiationVsAlternatives',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns,
+      memory,
+    });
+    const analysis = evaluateAnalysisReady(living);
+    const sufficiency = explainSufficiency(living);
+    expect(sufficiency.percent).toBeGreaterThan(0);
+    expect(analysis.analysisReady).toBe(false);
+    expect(analysis.blockedGaps).toContain('solution');
+    expect(criticalGapsBlockAnalysis(living)).toBe(true);
+    expect(stateAnalysisBlocksStart(living)).toBe(true);
+  });
+
+  it('critical gap forces next Q instead of null exit', () => {
+    const turns: AiPmLoopTurn[] = [
+      {
+        issueId: 'customer_definition',
+        answer: '방한 FIT',
+        appliedAt: '1',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '맞춤 일정 불가',
+        appliedAt: '2',
+        semanticFactKey: 'problem',
+        semanticFactKeys: ['problem'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+      },
+      {
+        issueId: 'bm_design',
+        answer: '관광객 결제',
+        appliedAt: '3',
+        semanticFactKey: 'buyer',
+        semanticFactKeys: ['buyer'],
+        intent: 'business_fact',
+        targetGap: 'payer',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '클룩',
+        appliedAt: '4',
+        semanticFactKey: 'competitor',
+        semanticFactKeys: ['competitor'],
+        intent: 'business_fact',
+        targetGap: 'alternativesCompetitors',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '실시간 맞춤',
+        appliedAt: '5',
+        semanticFactKey: 'differentiation',
+        semanticFactKeys: ['differentiation'],
+        intent: 'business_fact',
+        targetGap: 'differentiationVsAlternatives',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const understanding = buildBusinessUnderstanding(SEED);
+    const loop = { ...createInitialAiPmLoopState(), turns };
+    const next = resolveNextLoopIssue(understanding, loop, {
+      documentText: SEED,
+      memory,
+      turns,
+      analysisResultExists: true,
+    });
+    expect(next).not.toBeNull();
+    const decision = decideNextQuestion({
+      living: buildLivingUnderstandingState({
+        documentText: SEED,
+        understanding,
+        turns,
+        memory,
+      }),
+      turns,
+      memory,
+    });
+    expect(decision?.targetGap).toBe('solution');
+  });
+
+  it('payer B2B vs tourist direct is CONTRADICTORY not silent merge', () => {
+    const result = interpretAnswerSemantics({
+      answer: '관광객이 앱에서 일정·체험을 직접 예약·결제합니다',
+      askedIssueId: 'bm_design',
+      askedTargetGap: 'payer',
+      existingFact: 'B2B로 호텔·OTA가 일괄 정산합니다',
+      existingFactsByKey: { buyer: 'B2B로 호텔·OTA가 일괄 정산합니다' },
+    });
+    expect(result.quality).toBe('CONTRADICTORY');
+    expect(result.mergeable).toBe(false);
+    expect(result.factKey).toBe('buyer');
+  });
+
+  it('solution user turn closes gap and can unlock Analysis Ready with all criticals', () => {
+    const baseTurns: AiPmLoopTurn[] = [
+      {
+        issueId: 'customer_definition',
+        answer: '방한 FIT',
+        appliedAt: '1',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '맞춤 일정 불가',
+        appliedAt: '2',
+        semanticFactKey: 'problem',
+        semanticFactKeys: ['problem'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+      },
+      {
+        issueId: 'bm_design',
+        answer: '관광객 결제',
+        appliedAt: '3',
+        semanticFactKey: 'buyer',
+        semanticFactKeys: ['buyer'],
+        intent: 'business_fact',
+        targetGap: 'payer',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '클룩',
+        appliedAt: '4',
+        semanticFactKey: 'competitor',
+        semanticFactKeys: ['competitor'],
+        intent: 'business_fact',
+        targetGap: 'alternativesCompetitors',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '실시간 맞춤',
+        appliedAt: '5',
+        semanticFactKey: 'differentiation',
+        semanticFactKeys: ['differentiation'],
+        intent: 'business_fact',
+        targetGap: 'differentiationVsAlternatives',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '관심사·동선 맞춤 일정과 현지인 동행을 한 번에 제공합니다',
+        appliedAt: '6',
+        semanticFactKey: 'business',
+        semanticFactKeys: ['business'],
+        intent: 'business_fact',
+        targetGap: 'solution',
+      },
+    ];
+    const memory = memoryFromTurns(baseTurns);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns: baseTurns,
+      memory,
+    });
+    expect(evaluateAnalysisReady(living).analysisReady).toBe(true);
+    expect(criticalGapsBlockAnalysis(living)).toBe(false);
+  });
+
+  it('turn count alone never completes — stage gate ignores turnCount as blocker', () => {
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      memory: emptyConversationMemory('turns'),
+    });
+    expect(criticalGapsBlockAnalysis(living)).toBe(true);
+    // Many turns without closing solution still block
+    const manyTurns: AiPmLoopTurn[] = Array.from({ length: 25 }, (_, i) => ({
+      issueId: 'customer_definition' as const,
+      answer: `답 ${i}`,
+      appliedAt: String(i),
+      semanticFactKey: 'customer' as const,
+      semanticFactKeys: ['customer' as const],
+      intent: 'business_fact' as const,
+      targetGap: 'customerPersona',
+    }));
+    const livingMany = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns: manyTurns,
+      memory: memoryFromTurns(manyTurns),
+    });
+    expect(evaluateAnalysisReady(livingMany).analysisReady).toBe(false);
+  });
+});
+
+function stateAnalysisBlocksStart(living: ReturnType<typeof buildLivingUnderstandingState>): boolean {
+  return evaluateAnalysisReady(living).analysisReady === false;
+}
