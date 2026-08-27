@@ -379,37 +379,31 @@ export function interpretAnswerSemantics(input: {
   }
 
   // Asked-gap weak prior for follow-ups — skip when strong competing cue
-  if (!hasStrongOtherCue && !hasDiffCue && !hasCompetitorCue) {
+  // Core Final — validationTestability / defensibility: do NOT let customer keyword steal the slot
+  if (askedGap === 'validationTestability') {
+    factKey = 'diffRelevance';
+    resolvedIssueId = 'competitor_analysis';
+    if (!facts.some((f) => f.key === 'diffRelevance')) {
+      facts = [{ key: 'diffRelevance', issueId: 'competitor_analysis' }, ...facts];
+    }
+    facts = facts.filter((f) => f.key !== 'customer' && f.key !== 'problem');
+  } else if (askedGap === 'executionConstraints') {
+    factKey = 'defensibility';
+    resolvedIssueId = 'competitor_analysis';
+    if (!facts.some((f) => f.key === 'defensibility')) {
+      facts = [{ key: 'defensibility', issueId: 'competitor_analysis' }, ...facts];
+    }
+    facts = facts.filter((f) => f.key !== 'customer' && f.key !== 'problem');
+  } else if (!hasStrongOtherCue && !hasDiffCue && !hasCompetitorCue) {
     if (askedGap === 'alternativesCompetitors' && !top) {
       factKey = 'competitor';
       resolvedIssueId = 'competitor_analysis';
       if (!facts.some((f) => f.key === 'competitor')) {
         facts = [{ key: 'competitor', issueId: 'competitor_analysis' }, ...facts];
       }
-    } else if (askedGap === 'validationTestability' && !top) {
-      factKey = 'diffRelevance';
-      resolvedIssueId = 'competitor_analysis';
-      if (!facts.some((f) => f.key === 'diffRelevance')) {
-        facts = [{ key: 'diffRelevance', issueId: 'competitor_analysis' }, ...facts];
-      }
-    } else if (askedGap === 'executionConstraints' && !top) {
-      factKey = 'defensibility';
-      resolvedIssueId = 'competitor_analysis';
-      if (!facts.some((f) => f.key === 'defensibility')) {
-        facts = [{ key: 'defensibility', issueId: 'competitor_analysis' }, ...facts];
-      }
     }
   } else if (askedGap === 'alternativesCompetitors' && hasCompetitorCue) {
     factKey = 'competitor';
-    resolvedIssueId = 'competitor_analysis';
-  } else if (askedGap === 'validationTestability' && hasDiffCue === false && top?.key === undefined) {
-    // keep asked weak prior only if answer looks like relevance text
-    if (/중요|체감|고객/.test(trimmed)) {
-      factKey = 'diffRelevance';
-      resolvedIssueId = 'competitor_analysis';
-    }
-  } else if (askedGap === 'executionConstraints' && /방어|따라|모방|네트워크/.test(trimmed)) {
-    factKey = 'defensibility';
     resolvedIssueId = 'competitor_analysis';
   }
 
