@@ -262,6 +262,9 @@ function resolveReviewBlockedReason(input: {
 }): WorkspaceReviewBlockedReason {
   if (!input.documentReadable) return 'document_unreadable';
 
+  // Core Final — AI judgment gate first: critical viability unknowns block Start Analysis
+  if (input.criticalGapBlocked) return 'critical_gap';
+
   // S14 Evidence Sync: Memory → Evidence Status → gap
   const memory = buildConversationMemoryFromSources({
     projectId: input.projectId ?? 'default',
@@ -276,10 +279,6 @@ function resolveReviewBlockedReason(input: {
   });
   const gap = firstReviewEvidenceGap(evidence);
   if (gap) return gap;
-
-  // Core v5 — critical viability gaps block Start Analysis even when evidence pack is ready
-  if (input.criticalGapBlocked) return 'critical_gap';
-
   if (input.entities) {
     const trust = evaluateDomainTrust(input.entities);
     if (trust.issues.includes('founder_equals_customer')) return 'customer_missing';

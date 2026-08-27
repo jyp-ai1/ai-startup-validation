@@ -341,36 +341,67 @@ export function interpretAnswerSemantics(input: {
     resolvedIssueId = 'competitor_analysis';
   }
 
-  // Core v5 — DIFF cue OR asked differentiation gap → primary differentiation
-  if (DIFF_CUE_RE.test(trimmed) || isDifferentiationAskedGap(askedGap)) {
+  // Core Final — semantic first: NEVER force-fill asked slot when cues point elsewhere.
+  // Asked differentiation is only a weak prior when no competing strong signal.
+  const hasDiffCue = DIFF_CUE_RE.test(trimmed);
+  const hasCompetitorCue = COMPETITOR_NAME_CUE_RE.test(trimmed);
+  const hasStrongOtherCue =
+    PAYER_CUE_RE.test(trimmed) ||
+    REVENUE_CUE_RE.test(trimmed) ||
+    (hasCompetitorCue && !hasDiffCue);
+
+  if (hasDiffCue) {
     factKey = 'differentiation';
     resolvedIssueId = 'competitor_analysis';
     if (!facts.some((f) => f.key === 'differentiation')) {
       facts.push({ key: 'differentiation', issueId: 'competitor_analysis' });
     }
-    // Names + diff → both facts
-    if (COMPETITOR_NAME_CUE_RE.test(trimmed) && !facts.some((f) => f.key === 'competitor')) {
+    if (hasCompetitorCue && !facts.some((f) => f.key === 'competitor')) {
       facts.push({ key: 'competitor', issueId: 'competitor_analysis' });
     }
-  } else if (COMPETITOR_NAME_CUE_RE.test(trimmed) && !DIFF_CUE_RE.test(trimmed)) {
-    // Competitor cues without strong DIFF → competitor only
+  } else if (hasCompetitorCue && !hasDiffCue) {
     factKey = 'competitor';
     resolvedIssueId = 'competitor_analysis';
+    if (!facts.some((f) => f.key === 'competitor')) {
+      facts.push({ key: 'competitor', issueId: 'competitor_analysis' });
+    }
+  } else if (
+    isDifferentiationAskedGap(askedGap) &&
+    !hasStrongOtherCue &&
+    !top
+  ) {
+    // Weak prior only — no semantic cue at all
+    factKey = 'differentiation';
+    resolvedIssueId = 'competitor_analysis';
+    if (!facts.some((f) => f.key === 'differentiation')) {
+      facts.push({ key: 'differentiation', issueId: 'competitor_analysis' });
+    }
   }
 
-  // Asked-gap overrides for differentiation conversation follow-ups
-  if (askedGap === 'validationTestability') {
-    factKey = 'diffRelevance';
-    resolvedIssueId = 'competitor_analysis';
-    if (!facts.some((f) => f.key === 'diffRelevance')) {
-      facts = [{ key: 'diffRelevance', issueId: 'competitor_analysis' }, ...facts];
+  // Asked-gap weak prior for follow-ups — skip when strong competing cue
+  if (!hasStrongOtherCue && !hasDiffCue && !hasCompetitorCue) {
+    if (askedGap === 'validationTestability' && !top) {
+      factKey = 'diffRelevance';
+      resolvedIssueId = 'competitor_analysis';
+      if (!facts.some((f) => f.key === 'diffRelevance')) {
+        facts = [{ key: 'diffRelevance', issueId: 'competitor_analysis' }, ...facts];
+      }
+    } else if (askedGap === 'executionConstraints' && !top) {
+      factKey = 'defensibility';
+      resolvedIssueId = 'competitor_analysis';
+      if (!facts.some((f) => f.key === 'defensibility')) {
+        facts = [{ key: 'defensibility', issueId: 'competitor_analysis' }, ...facts];
+      }
     }
-  } else if (askedGap === 'executionConstraints') {
+  } else if (askedGap === 'validationTestability' && hasDiffCue === false && top?.key === undefined) {
+    // keep asked weak prior only if answer looks like relevance text
+    if (/중요|체감|고객/.test(trimmed)) {
+      factKey = 'diffRelevance';
+      resolvedIssueId = 'competitor_analysis';
+    }
+  } else if (askedGap === 'executionConstraints' && /방어|따라|모방|네트워크/.test(trimmed)) {
     factKey = 'defensibility';
     resolvedIssueId = 'competitor_analysis';
-    if (!facts.some((f) => f.key === 'defensibility')) {
-      facts = [{ key: 'defensibility', issueId: 'competitor_analysis' }, ...facts];
-    }
   }
 
   // Never dump competitor/diff into customer

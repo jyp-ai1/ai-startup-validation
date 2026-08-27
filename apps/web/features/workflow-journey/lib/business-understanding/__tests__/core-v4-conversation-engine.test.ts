@@ -96,10 +96,10 @@ describe('Core v4 re-ask prevention (P0)', () => {
       },
       {
         issueId: 'bm_design',
-        answer: '관광객이 앱에서 직접 결제합니다',
+        answer: '수익은 예약 건당 중개 수수료 10~15%입니다',
         appliedAt: '3',
-        semanticFactKey: 'buyer',
-        semanticFactKeys: ['buyer'],
+        semanticFactKey: 'revenue',
+        semanticFactKeys: ['revenue'],
         intent: 'business_fact',
         targetGap: 'revenueModel',
       },

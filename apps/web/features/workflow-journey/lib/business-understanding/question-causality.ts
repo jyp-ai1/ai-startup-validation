@@ -1,12 +1,14 @@
 /**
- * ALABOM Core v5 — Question causality + understanding delta.
+ * ALABOM Core Final — Question causality + understanding delta + analysis gate.
  * Every ask carries why it follows from the prior understanding.
+ * understandingDelta must never be empty after a mergeable answer.
  */
 
 import type { LivingClaim, LivingUnderstandingState } from './living-understanding-state';
 import { whyNowForGapField } from './living-understanding-state';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import type { ConversationFactKey } from './conversation-memory';
+import { listUnconfirmedCriticalGaps } from './adaptive-question-select';
 
 /** Gaps that block Start Analysis / Validation when still open. */
 export const CRITICAL_VIABILITY_GAP_KEYS = [
@@ -29,10 +31,20 @@ export type QuestionCausality = {
 };
 
 export type UnderstandingDelta = {
+  /** W3 — what was already understood before this answer */
+  existing: string[];
+  /** Newly understood this turn */
+  newlyUnderstood: string[];
+  /** Changed / superseded values */
+  changed: string[];
+  /** Still unknown after this turn */
+  stillUnknown: string[];
+  /** @deprecated alias — use newlyUnderstood */
   confirmed: string[];
   inferred: string[];
   superseded: string[];
   newlyUnknown: string[];
+  /** Never empty after mergeable answer */
   summary: string;
 };
 
@@ -53,24 +65,34 @@ const EXPECTED_INFO: Record<string, string> = {
   executionConstraints: '차별을 지키는 방어력·모방 난이도',
 };
 
+function isUserConfirmedClaim(claim: LivingClaim | undefined): boolean {
+  return Boolean(
+    claim &&
+      claim.value?.trim() &&
+      claim.status === 'confirmed' &&
+      (claim.provenance === 'USER_CONFIRMED' || claim.provenance === 'USER_CORRECTED'),
+  );
+}
+
 /** Count Living gaps that must be closed before Start Analysis. */
 export function countCriticalViabilityGaps(living: LivingUnderstandingState): number {
-  const critical = new Set<string>(CRITICAL_VIABILITY_GAP_KEYS);
-  return living.gaps.filter(
-    (g) => critical.has(g.fieldKey) || g.priorityScore >= 50_000,
-  ).length;
+  return listUnconfirmedCriticalGaps(living).length;
 }
 
 export function listCriticalViabilityGaps(living: LivingUnderstandingState): string[] {
-  const critical = new Set<string>(CRITICAL_VIABILITY_GAP_KEYS);
-  return living.gaps
-    .filter((g) => critical.has(g.fieldKey) || g.priorityScore >= 50_000)
-    .map((g) => g.fieldKey);
+  return listUnconfirmedCriticalGaps(living);
 }
 
-/** True when Start Analysis must be forbidden. */
+/**
+ * True when Start Analysis must be forbidden.
+ * Core Final — DOCUMENT / AI_INFERENCE alone do NOT close critical gaps.
+ * Only USER_CONFIRMED / USER_CORRECTED close them.
+ */
 export function criticalGapsBlockAnalysis(living: LivingUnderstandingState): boolean {
-  return countCriticalViabilityGaps(living) > 0;
+  if (listUnconfirmedCriticalGaps(living).length > 0) return true;
+  // Open contradictions always block
+  if (living.claims.some((c) => c.status === 'contradiction')) return true;
+  return false;
 }
 
 function claimDigest(claims: LivingClaim[]): string {
@@ -108,62 +130,176 @@ export function buildQuestionCausality(input: {
   };
 }
 
-/** Diff Living claims before/after an answer — always produces a visible summary. */
+function formatClaimLine(claim: LivingClaim, max = 48): string {
+  return `${claim.fieldKey}: ${(claim.value ?? '').slice(0, max)}`;
+}
+
+/**
+ * Diff Living claims before/after an answer — ALWAYS produces a non-empty summary.
+ * W3: existing + newly understood + changed + still unknown.
+ */
 export function buildUnderstandingDelta(input: {
   before: LivingUnderstandingState;
   after: LivingUnderstandingState;
   factKeys?: ConversationFactKey[];
 }): UnderstandingDelta {
   const beforeByKey = new Map(input.before.claims.map((c) => [c.fieldKey, c]));
+  const existing: string[] = [];
+  const newlyUnderstood: string[] = [];
+  const changed: string[] = [];
+  const stillUnknown: string[] = [];
   const confirmed: string[] = [];
   const inferred: string[] = [];
   const superseded: string[] = [];
   const newlyUnknown: string[] = [];
 
+  // Existing (stable confirmed/known before this turn)
+  for (const prev of input.before.claims) {
+    if (
+      (prev.status === 'confirmed' || prev.status === 'known') &&
+      prev.value?.trim()
+    ) {
+      const after = beforeByKey.get(prev.fieldKey);
+      const afterClaim = input.after.claims.find((c) => c.fieldKey === prev.fieldKey);
+      if (afterClaim && afterClaim.value === prev.value) {
+        existing.push(formatClaimLine(prev, 36));
+      }
+      void after;
+    }
+  }
+
   for (const after of input.after.claims) {
     const prev = beforeByKey.get(after.fieldKey);
-    if (!prev) continue;
+    if (!prev) {
+      if (after.value && after.status !== 'unknown') {
+        newlyUnderstood.push(formatClaimLine(after));
+        if (after.status === 'confirmed') confirmed.push(formatClaimLine(after));
+        else inferred.push(formatClaimLine(after));
+      }
+      continue;
+    }
+
     if (prev.value !== after.value && after.value) {
       if (prev.value && after.status === 'confirmed') {
-        superseded.push(`${after.fieldKey}: ${(prev.value ?? '').slice(0, 32)} → ${after.value.slice(0, 32)}`);
+        const line = `${after.fieldKey}: ${(prev.value ?? '').slice(0, 32)} → ${after.value.slice(0, 32)}`;
+        changed.push(line);
+        superseded.push(line);
       } else if (after.status === 'confirmed') {
-        confirmed.push(`${after.fieldKey}: ${after.value.slice(0, 48)}`);
+        newlyUnderstood.push(formatClaimLine(after));
+        confirmed.push(formatClaimLine(after));
       } else if (after.status === 'inferred' || after.status === 'known') {
-        inferred.push(`${after.fieldKey}: ${after.value.slice(0, 48)}`);
+        newlyUnderstood.push(formatClaimLine(after));
+        inferred.push(formatClaimLine(after));
+      } else {
+        changed.push(formatClaimLine(after));
       }
     } else if (prev.status !== after.status) {
       if (after.status === 'confirmed' && after.value) {
-        confirmed.push(`${after.fieldKey}: ${after.value.slice(0, 48)}`);
+        newlyUnderstood.push(formatClaimLine(after));
+        confirmed.push(formatClaimLine(after));
       }
       if (after.status === 'unknown' && prev.status !== 'unknown') {
         newlyUnknown.push(after.fieldKey);
+        stillUnknown.push(after.fieldKey);
+      }
+    }
+
+    if (after.status === 'unknown' || !after.value?.trim()) {
+      // Only list high-value unknowns
+      if (
+        CRITICAL_VIABILITY_GAP_KEYS.includes(
+          after.fieldKey as CriticalViabilityGapKey,
+        ) ||
+        after.fieldKey === 'revenueModel' ||
+        after.fieldKey === 'validationTestability'
+      ) {
+        if (!stillUnknown.includes(after.fieldKey)) {
+          stillUnknown.push(after.fieldKey);
+        }
       }
     }
   }
 
-  if (confirmed.length === 0 && inferred.length === 0 && superseded.length === 0 && input.factKeys?.length) {
-    confirmed.push(`Fact 반영: ${input.factKeys.join(', ')}`);
+  // Unconfirmed critical gaps always appear in stillUnknown
+  for (const key of listUnconfirmedCriticalGaps(input.after)) {
+    if (!stillUnknown.includes(key)) stillUnknown.push(key);
   }
 
-  const parts = [
-    confirmed.length ? `확인: ${confirmed.join(' · ')}` : null,
-    superseded.length ? `정정/대체: ${superseded.join(' · ')}` : null,
-    inferred.length ? `추론: ${inferred.join(' · ')}` : null,
-    newlyUnknown.length ? `재개방: ${newlyUnknown.join(', ')}` : null,
-  ].filter(Boolean);
+  if (
+    newlyUnderstood.length === 0 &&
+    changed.length === 0 &&
+    confirmed.length === 0 &&
+    inferred.length === 0 &&
+    input.factKeys?.length
+  ) {
+    const line = `Fact 반영: ${input.factKeys.join(', ')}`;
+    newlyUnderstood.push(line);
+    confirmed.push(line);
+  }
 
   const topGap = input.after.gaps[0]?.fieldKey;
-  const summary =
-    parts.length > 0
-      ? `${parts.join(' · ')}${topGap ? ` · 다음 공백: ${topGap}` : ''}`
-      : topGap
-        ? `이해 상태 재평가 완료 · 다음 공백: ${topGap}`
-        : '이해 상태 재평가 완료 — 핵심 공백이 해소되었습니다.';
+  const parts = [
+    existing.length ? `기존: ${existing.slice(0, 3).join(' · ')}` : null,
+    newlyUnderstood.length ? `신규: ${newlyUnderstood.join(' · ')}` : null,
+    changed.length ? `변경: ${changed.join(' · ')}` : null,
+    stillUnknown.length ? `미확인: ${stillUnknown.slice(0, 5).join(', ')}` : null,
+  ].filter(Boolean);
 
-  return { confirmed, inferred, superseded, newlyUnknown, summary };
+  let summary: string;
+  if (parts.length > 0) {
+    summary = `${parts.join(' · ')}${topGap ? ` · 다음 공백: ${topGap}` : ''}`;
+  } else if (topGap) {
+    summary = `이해 상태 재평가 완료 · 다음 공백: ${topGap}`;
+  } else {
+    summary = '이해 상태 재평가 완료 — 핵심 공백이 해소되었습니다.';
+  }
+
+  // Hard guarantee — never empty
+  if (!summary.trim()) {
+    summary = '이해 상태 갱신됨';
+  }
+
+  return {
+    existing: existing.slice(0, 6),
+    newlyUnderstood,
+    changed,
+    stillUnknown: stillUnknown.slice(0, 8),
+    confirmed,
+    inferred,
+    superseded,
+    newlyUnknown,
+    summary,
+  };
 }
 
 /** Format delta for turn storage / UI (never empty after a mergeable answer). */
 export function formatUnderstandingDeltaSummary(delta: UnderstandingDelta): string {
-  return delta.summary;
+  const s = delta.summary?.trim() ?? '';
+  return s.length > 0 ? s : '이해 상태 갱신됨';
+}
+
+/** Sufficiency explanation — confirmed vs missing (W13). */
+export function explainSufficiency(living: LivingUnderstandingState): {
+  percent: number;
+  confirmed: string[];
+  missing: string[];
+  readyForAnalysis: boolean;
+  explanation: string;
+} {
+  const confirmed = living.claims
+    .filter((c) => isUserConfirmedClaim(c))
+    .map((c) => c.fieldKey);
+  const missing = listUnconfirmedCriticalGaps(living);
+  const ready = !criticalGapsBlockAnalysis(living);
+  const explanation = ready
+    ? `사업 구체화 ${living.coveragePercent}% — 핵심 공백이 사용자 확인으로 채워졌습니다. (답변 개수 기준 아님)`
+    : `사업 구체화 ${living.coveragePercent}% — 아직 확인 필요: ${missing.join(', ') || '판단 공백'}. Start Analysis는 차단됩니다.`;
+
+  return {
+    percent: living.coveragePercent,
+    confirmed,
+    missing,
+    readyForAnalysis: ready,
+    explanation,
+  };
 }

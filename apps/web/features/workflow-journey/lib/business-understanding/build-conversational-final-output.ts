@@ -4,6 +4,11 @@
  */
 
 import type { LivingClaim, LivingUnderstandingState } from './living-understanding-state';
+import {
+  formatProvenanceTag,
+  sanitizeFinalClaimValue,
+  type ClaimProvenanceLabel,
+} from './final-result-integrity';
 
 export type FinalClaimStatusLabel = 'Confirmed' | 'Inferred' | 'Unknown' | 'Conflict' | 'Needs check';
 
@@ -12,6 +17,9 @@ export type FinalOutputClaimRow = {
   value: string | null;
   status: FinalClaimStatusLabel;
   evidence: string[];
+  /** Core Final W15 — provenance must be visible; AI_inferred ≠ user_confirmed */
+  provenance: ClaimProvenanceLabel;
+  provenanceTag: string;
 };
 
 export type FinalOutputSection = {
@@ -110,12 +118,23 @@ function statusLabel(claim: LivingClaim): FinalClaimStatusLabel {
   return 'Unknown';
 }
 
-function toClaimRow(claim: LivingClaim): FinalOutputClaimRow {
+function toClaimRow(claim: LivingClaim, living: LivingUnderstandingState): FinalOutputClaimRow {
+  const sanitized = sanitizeFinalClaimValue(claim, living);
+  // AI_inferred / document never labeled Confirmed in final UI
+  let status = statusLabel(claim);
+  if (sanitized.provenance === 'AI_inferred' && status === 'Confirmed') {
+    status = 'Inferred';
+  }
+  if (sanitized.provenance === 'document' && status === 'Confirmed') {
+    status = 'Needs check';
+  }
   return {
     domain: DOMAIN_TITLE[claim.fieldKey] ?? claim.fieldKey,
-    value: claim.value,
-    status: statusLabel(claim),
+    value: sanitized.value,
+    status,
     evidence: claim.evidence.map((e) => `[${e.kind}] ${e.excerpt}`).slice(0, 3),
+    provenance: sanitized.provenance,
+    provenanceTag: formatProvenanceTag(sanitized.provenance),
   };
 }
 
@@ -136,7 +155,7 @@ export function buildConversationalFinalOutput(
       .map((key) => claimByKey(living.claims, key))
       .filter((c): c is LivingClaim => Boolean(c));
 
-    const rows = sectionClaims.map(toClaimRow);
+    const rows = sectionClaims.map((c) => toClaimRow(c, living));
     claimRows.push(...rows);
 
     const filled = sectionClaims.filter((c) => formatClaim(c));
@@ -161,7 +180,7 @@ export function buildConversationalFinalOutput(
         .join(' · ') || '부분 확인';
 
     const detail = rows
-      .map((r) => `${r.domain}: ${r.value ?? '—'} (${r.status})`)
+      .map((r) => `${r.domain}: ${r.value ?? '—'} (${r.status} ${r.provenanceTag})`)
       .join('\n');
 
     const evidence = rows.flatMap((r) => r.evidence).slice(0, 6);

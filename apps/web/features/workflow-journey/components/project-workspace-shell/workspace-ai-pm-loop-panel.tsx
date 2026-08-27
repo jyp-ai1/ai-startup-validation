@@ -65,6 +65,7 @@ import {
   buildQuestionCausality,
   buildUnderstandingDelta,
   countCriticalViabilityGaps,
+  explainSufficiency,
   formatUnderstandingDeltaSummary,
 } from '../../lib/business-understanding/question-causality';
 import { buildConversationalFinalOutput } from '../../lib/business-understanding/build-conversational-final-output';
@@ -72,6 +73,8 @@ import {
   type AnswerQuality,
 } from '../../lib/business-understanding/understanding-contract';
 import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
+import { reframeQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
+import { enforceQuestionPurity } from '../../lib/business-understanding/question-purity';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
 import { WorkspaceDocumentTrustBlock } from './workspace-document-trust-block';
@@ -131,6 +134,13 @@ export function WorkspaceAiPmLoopPanel({
   } | null>(null);
   const [midJudgmentText, setMidJudgmentText] = useState<string | null>(null);
   const [editPriorOpen, setEditPriorOpen] = useState(false);
+  /** Core Final — reframed question after nonsense / why / mid (W7/W8) */
+  const [questionOverride, setQuestionOverride] = useState<{
+    targetGap: string;
+    questionText: string;
+    whyNow: string;
+    reason: ReframeReason;
+  } | null>(null);
 
   const [updateSavedFlash, setUpdateSavedFlash] = useState(false);
   const [sessionPaused, setSessionPaused] = useState(false);
@@ -182,7 +192,7 @@ export function WorkspaceAiPmLoopPanel({
   const lastTurn = loopState.turns.at(-1) ?? null;
   const whyThisQuestionNow = useMemo(() => {
     if (!activeIssueId) return null;
-    return getWhyThisQuestionNow(understanding, loopState, {
+    const base = getWhyThisQuestionNow(understanding, loopState, {
       documentText: documentText ?? undefined,
       entities,
       memory: conversationMemory,
@@ -190,6 +200,36 @@ export function WorkspaceAiPmLoopPanel({
       turns: loopState.turns,
       issueId: activeIssueId,
     });
+    if (!base) return null;
+
+    // Apply reframe override when present (same gap, or override is authoritative after why/mid/nonsense)
+    let questionText = base.questionText;
+    let whyNow = base.whyNow;
+    let targetGap = base.targetGap;
+    if (questionOverride) {
+      if (
+        questionOverride.targetGap === base.targetGap ||
+        questionOverride.reason === 'why_meta' ||
+        questionOverride.reason === 'mid_judgment' ||
+        questionOverride.reason === 'nonsense'
+      ) {
+        questionText = questionOverride.questionText;
+        whyNow = questionOverride.whyNow;
+        targetGap = questionOverride.targetGap;
+      }
+    }
+
+    const purity = enforceQuestionPurity({
+      questionText,
+      targetGap,
+    });
+
+    return {
+      ...base,
+      targetGap,
+      questionText: purity.sanitizedText,
+      whyNow,
+    };
   }, [
     activeIssueId,
     understanding,
@@ -198,6 +238,7 @@ export function WorkspaceAiPmLoopPanel({
     entities,
     conversationMemory,
     analysisResultExists,
+    questionOverride,
   ]);
   const s11Surface = useMemo(() => {
     const askIssueId = loopState.currentIssueId ?? nextIssue;
@@ -433,8 +474,9 @@ export function WorkspaceAiPmLoopPanel({
 
   finishProcessingRef.current = finishProcessing;
 
-  /** Core v5 — after why/mid panel close, re-judge gap ranking (do not blindly keep same Q). */
+  /** Core Final — after why/mid panel close, re-judge gap + REFRAME (never identical Q). */
   const closeWhyOrMidAndRejudge = useCallback(() => {
+    const reason: ReframeReason = whyPanel ? 'why_meta' : 'mid_judgment';
     setWhyPanel(null);
     setMidJudgmentText(null);
     const top = getTopGapPriority(understanding, loopState, {
@@ -443,6 +485,20 @@ export function WorkspaceAiPmLoopPanel({
       memory: conversationMemory,
       analysisResultExists,
       turns: loopState.turns,
+    });
+    const gap = top?.targetGap ?? whyThisQuestionNow?.targetGap ?? 'problemJtbd';
+    const prevQ = whyThisQuestionNow?.questionText ?? top?.questionText ?? null;
+    const reframed = reframeQuestion({
+      targetGap: gap,
+      living: livingState,
+      reason,
+      previousQuestionText: prevQ,
+    });
+    setQuestionOverride({
+      targetGap: reframed.targetGap,
+      questionText: reframed.questionText,
+      whyNow: reframed.whyNow,
+      reason,
     });
     if (top?.issueId && top.issueId !== loopState.currentIssueId) {
       patchAiPmLoopState({ currentIssueId: top.issueId }, projectId);
@@ -453,10 +509,13 @@ export function WorkspaceAiPmLoopPanel({
     conversationMemory,
     documentText,
     entities,
+    livingState,
     loopState,
     projectId,
     syncState,
     understanding,
+    whyPanel,
+    whyThisQuestionNow,
   ]);
 
   const startProcessing = useCallback(() => {
@@ -631,7 +690,7 @@ export function WorkspaceAiPmLoopPanel({
       askedTargetGap: whyThisQuestionNow?.targetGap,
     });
 
-    // Why / mid-judgment — display only, never append Fact turn
+    // Why / mid-judgment — display only, never append Fact turn; reframe on return (W8)
     if (semantic.intent === 'why_meta' || semantic.intent === 'mid_judgment') {
       const preview = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, { semantic });
       setAnswerQualityHint(null);
@@ -660,8 +719,25 @@ export function WorkspaceAiPmLoopPanel({
     }
 
     if (!semantic.mergeable) {
+      // Core Final W7 — nonsense / unknown → REFRAME (never identical Q)
+      const gap = whyThisQuestionNow?.targetGap ?? 'problemJtbd';
+      const reason: ReframeReason =
+        semantic.intent === 'nonsense' ? 'nonsense' : 'unknown_signal';
+      const reframed = reframeQuestion({
+        targetGap: gap,
+        living: livingState,
+        reason,
+        previousQuestionText: whyThisQuestionNow?.questionText,
+      });
+      setQuestionOverride({
+        targetGap: reframed.targetGap,
+        questionText: reframed.questionText,
+        whyNow: reframed.whyNow,
+        reason,
+      });
       setAnswerQualityHint(semantic.quality);
       setContradiction(null);
+      setAnswerDraft('');
       return;
     }
 
@@ -669,6 +745,7 @@ export function WorkspaceAiPmLoopPanel({
     setContradiction(null);
     setWhyPanel(null);
     setMidJudgmentText(null);
+    setQuestionOverride(null);
 
     logG1LoopEvent({
       event: 'answer_submit',
@@ -771,6 +848,7 @@ export function WorkspaceAiPmLoopPanel({
     answerDraft,
     documentText,
     entities,
+    livingState,
     loopState,
     loopState.currentIssueId,
     loopState.turns,
@@ -1027,6 +1105,14 @@ export function WorkspaceAiPmLoopPanel({
           <p className="mt-2 text-sm leading-relaxed text-foreground">
             {livingState.judgmentSummary}
           </p>
+          {lastTurn?.understandingDelta ? (
+            <p
+              data-testid="understanding-delta"
+              className="mt-2 text-xs text-emerald-800 dark:text-emerald-300"
+            >
+              {lastTurn.understandingDelta}
+            </p>
+          ) : null}
           {whyThisQuestionNow?.whyNow ? (
             <details className="mt-2" data-testid="why-now-details">
               <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
@@ -1036,6 +1122,17 @@ export function WorkspaceAiPmLoopPanel({
                 {whyThisQuestionNow.whyNow}
               </p>
             </details>
+          ) : null}
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t('coverageFlash', { percent: livingState.coveragePercent })}
+          </p>
+          {countCriticalViabilityGaps(livingState) > 0 ? (
+            <p
+              data-testid="critical-gap-block-hint"
+              className="mt-2 text-xs text-amber-800 dark:text-amber-200"
+            >
+              {explainSufficiency(livingState).explanation}
+            </p>
           ) : null}
         </div>
         <WorkspaceS11Surface surface={s11Surface} />

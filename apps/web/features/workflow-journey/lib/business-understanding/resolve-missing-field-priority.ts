@@ -112,12 +112,26 @@ function priorityFromGap(input: {
 }
 
 /**
- * Core v4 — gaps already asked and answered must not be re-asked (same-meaning ban).
- * Display-only / nonsense turns do not count.
+ * Core Final — gaps satisfied only when a mergeable turn confirmed the SEMANTIC fact,
+ * not merely because the gap was asked. Prevents wrong-slot "answered" bans.
  */
 export function getAnsweredTargetGaps(turns: AiPmLoopTurn[] | undefined): Set<string> {
   const answered = new Set<string>();
   if (!turns?.length) return answered;
+
+  const factToGap: Partial<Record<string, string>> = {
+    buyer: 'payer',
+    customer: 'customerPersona',
+    problem: 'problemJtbd',
+    competitor: 'alternativesCompetitors',
+    differentiation: 'differentiationVsAlternatives',
+    diffRelevance: 'validationTestability',
+    defensibility: 'executionConstraints',
+    market: 'marketSizeEvidence',
+    revenue: 'revenueModel',
+    business: 'businessOneLiner',
+  };
+
   for (const turn of turns) {
     if (turn.superseded) continue;
     if (
@@ -128,8 +142,23 @@ export function getAnsweredTargetGaps(turns: AiPmLoopTurn[] | undefined): Set<st
     ) {
       continue;
     }
-    if (turn.targetGap?.trim()) {
-      answered.add(turn.targetGap.trim());
+    const keys =
+      turn.semanticFactKeys && turn.semanticFactKeys.length > 0
+        ? turn.semanticFactKeys
+        : turn.semanticFactKey
+          ? [turn.semanticFactKey]
+          : [];
+    for (const key of keys) {
+      const gap = factToGap[key];
+      if (gap) answered.add(gap);
+    }
+    // Only count asked targetGap when it matches a semantic fact (no wrong-slot credit)
+    if (turn.targetGap?.trim() && keys.length > 0) {
+      const asked = turn.targetGap.trim();
+      const binding = resolveGapQuestionBinding(asked);
+      if (keys.includes(binding.factKey)) {
+        answered.add(asked);
+      }
     }
   }
   return answered;
@@ -186,6 +215,23 @@ export function resolveMissingFieldPriorities(
         score: 10_000,
       }));
     }
+  }
+
+  // Core Final — when competitor unknown, prefer alternativesCompetitors before differentiation
+  if (
+    memory &&
+    !memoryHasFact(memory, 'competitor') &&
+    !answeredGaps.has('alternativesCompetitors')
+  ) {
+    scored.set(
+      'alternativesCompetitors',
+      priorityFromGap({
+        targetGap: 'alternativesCompetitors',
+        issueId: 'competitor_analysis',
+        rationale: whyNowForGapField('alternativesCompetitors'),
+        score: 9_600,
+      }),
+    );
   }
 
   // Core v5 — after competitor fact exists, prefer differentiationVsAlternatives over unrelated slots

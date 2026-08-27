@@ -35,7 +35,8 @@ export type LivingClaimStatus =
   | 'inferred'
   | 'confirmed'
   | 'unknown'
-  | 'contradiction';
+  | 'contradiction'
+  | 'superseded';
 
 export type LivingEvidenceKind = 'document' | 'user_answer' | 'ai_inference';
 
@@ -471,13 +472,25 @@ function scoreGap(
   const competitorKnown = isClaimKnown(byKey?.get('alternativesCompetitors'));
   const differentiationKnown = isClaimKnown(byKey?.get('differentiationVsAlternatives'));
   const relevanceKnown = isClaimKnown(byKey?.get('validationTestability'));
+  const competitorUserConfirmed =
+    byKey?.get('alternativesCompetitors')?.status === 'confirmed' &&
+    (byKey?.get('alternativesCompetitors')?.provenance === 'USER_CONFIRMED' ||
+      byKey?.get('alternativesCompetitors')?.provenance === 'USER_CORRECTED');
 
   // Judgment-critical Stage A fields first — not fixed form order
   let impact = DOMAIN_IMPACT_WEIGHT[claim.fieldKey] ?? 3;
+  // Core Final — when BOTH competitor and differentiation unknown, prefer competitor first
+  if (claim.fieldKey === 'alternativesCompetitors' && !competitorKnown && !differentiationKnown) {
+    impact = 13;
+  }
+  // Core Final — demote differentiation until competitor is user-confirmed
+  if (claim.fieldKey === 'differentiationVsAlternatives' && !competitorUserConfirmed) {
+    impact = 5;
+  }
   // Core v5 — competitor known but differentiation unknown → outrank pricing/channel
   if (
     claim.fieldKey === 'differentiationVsAlternatives' &&
-    competitorKnown &&
+    competitorUserConfirmed &&
     !differentiationKnown
   ) {
     impact = 12;

@@ -120,13 +120,14 @@ describe('deriveWorkspaceState', () => {
     });
 
     expect(state.review.canStart).toBe(false);
-    expect(state.review.blockedReason).toBe('customer_missing');
+    // Core Final — unconfirmed customer is a critical viability gap
+    expect(state.review.blockedReason).toBe('critical_gap');
   });
 
   it('blocks review when understanding phase is not review-ready', () => {
     const state = derive({ understandingPhase: 'aligning' });
     expect(state.review.canStart).toBe(false);
-    expect(state.review.blockedReason).toBe('customer_missing');
+    expect(state.review.blockedReason).toBe('critical_gap');
   });
 
   it('blocks review for unreadable documents', () => {

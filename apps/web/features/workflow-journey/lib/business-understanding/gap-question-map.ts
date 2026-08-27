@@ -51,9 +51,9 @@ const GAP_BINDINGS: Record<string, Omit<GapQuestionBinding, 'targetGap' | 'whyNo
     factKey: 'differentiation',
     issueId: 'competitor_analysis',
   },
-  /** Core v5 — Differentiation conversation: customer relevance after diff. */
+  /** Core Final — One judgment purpose only (no dual ask). */
   validationTestability: {
-    questionText: '그 차별점이 고객에게 왜 중요한가요? 어떤 순간에 체감되나요?',
+    questionText: '그 차별점이 고객에게 왜 중요한가요?',
     factKey: 'diffRelevance',
     issueId: 'competitor_analysis',
   },
