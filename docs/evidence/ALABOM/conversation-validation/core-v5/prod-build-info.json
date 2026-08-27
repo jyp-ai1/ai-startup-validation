@@ -1,0 +1,7 @@
+{
+  "commit": "ffd500c72649742627421e2f598f6208d3d65db8",
+  "targetSha": "8b05c4f|ffd500c|8b30c51",
+  "shaMatch": true,
+  "at": "2026-08-27T07:57:06.701Z",
+  "source": "GET /api/build-info"
+}
