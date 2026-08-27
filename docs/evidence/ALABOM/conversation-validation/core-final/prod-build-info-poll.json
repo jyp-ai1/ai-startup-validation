@@ -1,0 +1,32 @@
+﻿[
+    {
+        "attempt":  1,
+        "shaMatch":  false,
+        "commit":  "9eef22f485232b88fcc3e884518455b977cb9ad2"
+    },
+    {
+        "attempt":  2,
+        "shaMatch":  false,
+        "commit":  "9eef22f485232b88fcc3e884518455b977cb9ad2"
+    },
+    {
+        "attempt":  3,
+        "shaMatch":  false,
+        "commit":  "9eef22f485232b88fcc3e884518455b977cb9ad2"
+    },
+    {
+        "attempt":  4,
+        "shaMatch":  false,
+        "commit":  "9eef22f485232b88fcc3e884518455b977cb9ad2"
+    },
+    {
+        "attempt":  5,
+        "shaMatch":  false,
+        "commit":  "9eef22f485232b88fcc3e884518455b977cb9ad2"
+    },
+    {
+        "attempt":  6,
+        "shaMatch":  true,
+        "commit":  "02a0126565a83579bfb67885b731108fee564ca1"
+    }
+]
