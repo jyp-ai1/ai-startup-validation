@@ -53,7 +53,7 @@ const HANGUL_REPEATED_SYLLABLE_RE = /^(?:([가-힣])\1{2,}|([가-힣]{1,2})\2{3,
 
 /** Competitor name / alternative cues — excludes pure differentiation language */
 const COMPETITOR_NAME_CUE_RE =
-  /(경쟁|대안|tripadvisor|네이버\s*지도|구글\s*맵|비슷한\s*서비스|vs\.?|대비\s*(해|해서)|경쟁사)/i;
+  /(경쟁|대안|tripadvisor|클룩|트립닷컴|트립어드바이저|네이버\s*지도|구글\s*맵|비슷한\s*서비스|이미\s*있지만|가이드\s*매칭|vs\.?|대비\s*(해|해서)|경쟁사)/i;
 /** Differentiation / positioning cues (distinct ConversationFactKey) */
 const DIFF_CUE_RE = /(차별|differentiat|인플루언서|핫플이\s*아니라|포지션|우리만|모방\s*어렵|방어력)/i;
 /** Broad cue used only to refuse dumping into customer/problem */
@@ -380,7 +380,13 @@ export function interpretAnswerSemantics(input: {
 
   // Asked-gap weak prior for follow-ups — skip when strong competing cue
   if (!hasStrongOtherCue && !hasDiffCue && !hasCompetitorCue) {
-    if (askedGap === 'validationTestability' && !top) {
+    if (askedGap === 'alternativesCompetitors' && !top) {
+      factKey = 'competitor';
+      resolvedIssueId = 'competitor_analysis';
+      if (!facts.some((f) => f.key === 'competitor')) {
+        facts = [{ key: 'competitor', issueId: 'competitor_analysis' }, ...facts];
+      }
+    } else if (askedGap === 'validationTestability' && !top) {
       factKey = 'diffRelevance';
       resolvedIssueId = 'competitor_analysis';
       if (!facts.some((f) => f.key === 'diffRelevance')) {
@@ -393,6 +399,9 @@ export function interpretAnswerSemantics(input: {
         facts = [{ key: 'defensibility', issueId: 'competitor_analysis' }, ...facts];
       }
     }
+  } else if (askedGap === 'alternativesCompetitors' && hasCompetitorCue) {
+    factKey = 'competitor';
+    resolvedIssueId = 'competitor_analysis';
   } else if (askedGap === 'validationTestability' && hasDiffCue === false && top?.key === undefined) {
     // keep asked weak prior only if answer looks like relevance text
     if (/중요|체감|고객/.test(trimmed)) {

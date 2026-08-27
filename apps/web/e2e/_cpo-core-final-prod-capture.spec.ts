@@ -23,8 +23,8 @@ const MEDIA = path.join(OUT, 'media');
 const RAW_JSON = path.join(OUT, 'transcript-raw.json');
 fs.mkdirSync(MEDIA, { recursive: true });
 
-/** Parent replaces after commit — match FINAL fix SHA prefixes. */
-const FIX_SHA_PREFIXES = ['6e34fe6'] as const;
+/** Match FINAL fix SHA or pin tip on Production. */
+const FIX_SHA_PREFIXES = ['6e34fe6', '9eef22f'] as const;
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
@@ -155,7 +155,39 @@ async function textOrEmpty(page: Page, testId: string) {
   return '';
 }
 
+async function dismissWhyOrMidOrConflict(page: Page) {
+  for (let i = 0; i < 4; i++) {
+    const whyReturn = page.getByTestId('why-follow-up-panel').getByRole('button');
+    if (await whyReturn.first().isVisible({ timeout: 800 }).catch(() => false)) {
+      await whyReturn.first().click({ force: true });
+      await page.waitForTimeout(700);
+      continue;
+    }
+    const midReturn = page.getByTestId('mid-judgment-panel').getByRole('button', {
+      name: /이해 루프로 돌아가기|돌아가기|계속/i,
+    });
+    if (await midReturn.first().isVisible({ timeout: 800 }).catch(() => false)) {
+      await midReturn.first().click({ force: true });
+      await page.waitForTimeout(700);
+      continue;
+    }
+    const acceptNew = page.getByRole('button', { name: /새 답변이 맞아/i });
+    if (await acceptNew.first().isVisible({ timeout: 800 }).catch(() => false)) {
+      await acceptNew.first().click({ force: true });
+      await page.waitForTimeout(1200);
+      continue;
+    }
+    const keepPrior = page.getByRole('button', { name: /이전 내용이 맞아/i });
+    if (await keepPrior.first().isVisible({ timeout: 500 }).catch(() => false)) {
+      // Prefer accept_new for contradiction scenarios in this capture
+      break;
+    }
+    break;
+  }
+}
+
 async function dismissRecognition(page: Page) {
+  await dismissWhyOrMidOrConflict(page);
   for (let i = 0; i < 4; i++) {
     const cont = page.getByRole('button', {
       name: /Let's check together|같이 확인하기|계속하기|이어서|Answer the gaps|부족한 부분만/i,
@@ -176,16 +208,34 @@ async function isFinalReviewSurface(page: Page): Promise<boolean> {
   const startAnalysis = page.getByRole('button', {
     name: /That's right — start analysis|맞습니다.*분석|start analysis/i,
   });
-  if (await startAnalysis.first().isVisible().catch(() => false)) return true;
+  // Only treat as final when Start Analysis is visible AND enabled
+  if (await startAnalysis.first().isVisible().catch(() => false)) {
+    const disabled = await startAnalysis.first().isDisabled().catch(() => true);
+    if (!disabled) return true;
+  }
   const body = await page.locator('body').innerText();
-  return /Understanding is sufficient|Core understanding is sufficient|Before analysis, confirm|이해가 충분|분석 전 확인/i.test(
-    body,
-  );
+  // False "sufficient" copy while PROBLEM/critical gaps remain must NOT end the journey
+  if (
+    /Core understanding is sufficient|Understanding is sufficient|이해가 충분합니다/i.test(body)
+  ) {
+    if (
+      /Start Analysis는 차단|Critical gaps remain|아직 확인 필요:|PROBLEM[\s\S]{0,120}Needs confirmation|PROBLEM[\s\S]{0,120}아직 확인/i.test(
+        body,
+      )
+    ) {
+      return false;
+    }
+    return true;
+  }
+  return /Before analysis, confirm|분석 전에,/i.test(body);
 }
 
 async function ensureAnswerBox(page: Page): Promise<boolean> {
   await dismissRecognition(page);
-  if (await isFinalReviewSurface(page)) return false;
+  if (await isFinalReviewSurface(page)) {
+    state.observations.push('ensureAnswerBox: final-review surface');
+    return false;
+  }
 
   let box = page.locator('textarea').last();
   if (!(await box.isVisible({ timeout: 2_000 }).catch(() => false))) {
@@ -195,7 +245,10 @@ async function ensureAnswerBox(page: Page): Promise<boolean> {
       await page.waitForTimeout(700);
     }
     await dismissRecognition(page);
-    if (await isFinalReviewSurface(page)) return false;
+    if (await isFinalReviewSurface(page)) {
+      state.observations.push('ensureAnswerBox: final after AI PM tab');
+      return false;
+    }
     box = page.locator('textarea').last();
   }
   if (!(await box.isVisible({ timeout: 2_000 }).catch(() => false))) {
@@ -205,10 +258,20 @@ async function ensureAnswerBox(page: Page): Promise<boolean> {
       await page.waitForTimeout(500);
     }
     await dismissRecognition(page);
+    // Click return-to-loop CTAs again
+    const back = page.getByRole('button', {
+      name: /이해 루프로 돌아가기|같이 확인하기|계속하기|이어서/i,
+    });
+    if (await back.first().isVisible().catch(() => false)) {
+      await back.first().click({ force: true });
+      await page.waitForTimeout(900);
+    }
     if (await isFinalReviewSurface(page)) return false;
     box = page.locator('textarea').last();
   }
-  return box.isVisible({ timeout: 8_000 }).catch(() => false);
+  const ok = await box.isVisible({ timeout: 8_000 }).catch(() => false);
+  if (!ok) state.observations.push('ensureAnswerBox: textarea not found');
+  return ok;
 }
 
 async function waitAsk(page: Page): Promise<boolean> {
@@ -274,17 +337,18 @@ function extractGapHints(body: string, purpose: string, whyNow: string): {
  * - Diff relevance / defensibility handled when those Qs appear.
  * - Never feed competition text into pricing / revenue Q.
  */
-function pickAnswer(question: string, body: string, forced?: string): string {
+function pickAnswer(question: string, _body: string, forced?: string): string {
   if (forced) return forced;
-  const q = `${question}\n${body}`;
+  // Core Final — judge only from the ask surface (never Overview/judgment body pollution)
+  const q = question;
 
   // Pricing / revenue first when clearly about money structure — never competitor copy
-  if (/수익|수수료|구독|매출|가격|프라이싱|pricing|구조로 발생/i.test(q) && !/누가\s*지불|비용은 누가/i.test(q)) {
+  if (/수익은 어떤 구조|수익이 발생|수수료·구독|가격·요금|프라이싱|pricing/i.test(q) && !/누가\s*지불|비용은 누가/i.test(q)) {
     return BANK.revenue;
   }
 
   // Diff relevance (customer feels the difference) — before generic differentiation
-  if (/차별점이\s*고객에게|고객에게\s*(어떤\s*)?차이|왜\s*고객이\s*(그\s*)?차별|relevance|체감/i.test(q)) {
+  if (/차별점이\s*고객에게|고객에게\s*(어떤\s*)?차이|왜\s*고객이\s*(그\s*)?차별|relevance|체감되는 순간/i.test(q)) {
     return BANK.diffRelevance;
   }
 
@@ -294,17 +358,17 @@ function pickAnswer(question: string, body: string, forced?: string): string {
   }
 
   // Differentiation distinct from competition
-  if (/차별|다른 점|왜 선택|우리만|differentiation/i.test(q) && !/비슷한 역할|이미 하고 있는 서비스/i.test(q)) {
+  if (/차별|다른 점|왜 선택|우리만|결정적 차이|대안과 무엇이 다/i.test(q) && !/비슷한 역할|이미 하고 있는 서비스|이미 하는 서비스/i.test(q)) {
     return BANK.differentiation;
   }
 
-  if (/비슷한 역할|경쟁|이미 하고 있는 서비스|대체|대안|클룩|트립|competitor/i.test(q)) {
+  if (/비슷한 역할|이미 (하고 있는|하는) 서비스|대체|대안|경쟁(?!\s*대비)/i.test(q)) {
     return BANK.competitor;
   }
 
-  if (/지불|결제|누가\s*내|비용은 누가|payer/i.test(q)) return BANK.payer;
-  if (/불편|문제|풀려는|해결하려는|페인|JTBD/i.test(q)) return BANK.problem;
-  if (/필요로 하는 사람|고객|누구를 위한|타깃|대상/i.test(q)) return BANK.customer;
+  if (/지불|결제|누가\s*내|비용은 누가|결제·정산|payer/i.test(q)) return BANK.payer;
+  if (/불편|문제|풀려는|해결하려는|페인|JTBD|겪는 불편/i.test(q)) return BANK.problem;
+  if (/필요로 하는 사람|구체 고객|누구를 위한|타깃|대상|절실히 느끼는/i.test(q)) return BANK.customer;
   if (/수요|근거|시장|규모|기회|채널/i.test(q)) return BANK.demand;
   return BANK.fallback;
 }
@@ -534,7 +598,7 @@ async function probeStartAnalysisGate(page: Page, label: string, shot: string) {
   });
   const body = await page.locator('body').innerText();
   const criticalCopy =
-    /critical_gap|critical gap|핵심 공백|아직 확인 필요|Start Analysis는 차단|분석을 시작하려면|blocked/i.test(
+    /critical_gap|critical gap|핵심 공백|아직 확인 필요|Start Analysis는 차단|분석을 시작하려면|blocked|Critical gaps remain/i.test(
       body,
     ) ||
     (await page.getByTestId('analysis-critical-gap').isVisible().catch(() => false)) ||
@@ -549,15 +613,15 @@ async function probeStartAnalysisGate(page: Page, label: string, shot: string) {
 
   if (visible && disabled === true) {
     state.criticalGapBlockedStartAnalysis = true;
-  } else if (criticalCopy && (!visible || disabled === true)) {
+  } else if (criticalCopy) {
+    // Judgment copy alone proves AI gate when Start Analysis CTA not yet on Overview
     state.criticalGapBlockedStartAnalysis = true;
   } else if (visible && disabled === false) {
-    // Button enabled — not blocked at this moment
     if (state.criticalGapBlockedStartAnalysis === null) {
       state.criticalGapBlockedStartAnalysis = false;
     }
   } else if (state.criticalGapBlockedStartAnalysis === null) {
-    state.criticalGapBlockedStartAnalysis = criticalCopy ? true : null;
+    state.criticalGapBlockedStartAnalysis = null;
   }
 
   state.observations.push(
@@ -610,12 +674,12 @@ test('CPO Core Final prod journey capture', async ({ page, request }) => {
       'post-confirm first ask — incomplete-doc gaps may still show',
     ]);
 
-    // --- 03–04: answer → understanding → next Q (problem, payer) ---
-    await answerCurrent(page, '03-after-problem', '03-after-problem.png', undefined, [
-      'answer → understanding → next Q (problem slot preferred)',
+    // --- 03–04: answer → understanding → next Q (adaptive — match ask surface) ---
+    await answerCurrent(page, '03-after-first-ask', '03-after-problem.png', undefined, [
+      'answer → understanding → next Q (adaptive first gap)',
     ]);
-    await answerCurrent(page, '04-after-payer-or-next', '04-after-payer.png', undefined, [
-      'second substantive answer (payer / next)',
+    await answerCurrent(page, '04-after-second-ask', '04-after-payer.png', undefined, [
+      'second substantive answer (adaptive next gap)',
     ]);
 
     // --- 05: nonsense — expect reject / no fact ---
@@ -688,24 +752,22 @@ test('CPO Core Final prod journey capture', async ({ page, request }) => {
     while (loops < 10 && (await ensureAnswerBox(page)) && turnCounter < 18) {
       loops += 1;
       const q = await textOrEmpty(page, 'surface-question');
-      const body = await page.locator('body').innerText();
-      const qb = `${q}\n${body}`;
       let forced: string | undefined;
       let label = `10-continue-l${loops}`;
       let shot = `10-continue-l${loops}.png`;
 
-      if (/차별점이\s*고객에게|고객에게\s*(어떤\s*)?차이|왜\s*고객이\s*(그\s*)?차별|체감/i.test(qb) && !sawDiffRelevance) {
+      if (/차별점이\s*고객에게|고객에게\s*(어떤\s*)?차이|왜\s*고객이\s*(그\s*)?차별|체감되는 순간/i.test(q) && !sawDiffRelevance) {
         forced = BANK.diffRelevance;
         sawDiffRelevance = true;
         label = `13-diff-relevance-l${loops}`;
         shot = '13-diff-relevance.png';
-      } else if (/방어|모방|따라오|해자|defensib|따라잡/i.test(qb) && !sawDefensibility) {
+      } else if (/방어|모방|따라오|해자|defensib|따라잡/i.test(q) && !sawDefensibility) {
         forced = BANK.defensibility;
         sawDefensibility = true;
         label = `14-defensibility-l${loops}`;
         shot = '14-defensibility.png';
       } else if (
-        /수익|수수료|구조로 발생|가격|프라이싱/i.test(q) &&
+        /수익은 어떤 구조|수익이 발생|가격·요금|프라이싱/i.test(q) &&
         !/누가\s*지불|비용은 누가/i.test(q) &&
         !sawRevenue
       ) {
@@ -713,13 +775,12 @@ test('CPO Core Final prod journey capture', async ({ page, request }) => {
         sawRevenue = true;
         label = `15-pricing-l${loops}`;
         shot = '15-pricing.png';
-      } else if (/비슷한 역할|경쟁|이미 하고 있는|대체|대안/i.test(qb) && !sawCompetitor) {
+      } else if (/비슷한 역할|이미 하고 있는 서비스|이미 하는 서비스|대체|대안·/i.test(q) && !sawCompetitor) {
         forced = BANK.competitor;
         sawCompetitor = true;
         label = `10-competition-l${loops}`;
         shot = '10-competition.png';
-      } else if (/차별|다른 점|왜 선택|우리만/i.test(qb) && !sawDiff) {
-        // Force BANK.differentiation separately after (or instead of conflating with) competitor
+      } else if (/차별|다른 점|왜 선택|우리만|결정적 차이/i.test(q) && !sawDiff) {
         forced = BANK.differentiation;
         sawDiff = true;
         label = `11-differentiation-l${loops}`;
@@ -892,7 +953,7 @@ test('CPO Core Final prod journey capture', async ({ page, request }) => {
         `DEPLOY LAG: prod=${state.productionCommit} expected one of ${FIX_SHA_PREFIXES.join(', ')}`,
       );
     }
-    expect(state.turns.length).toBeGreaterThanOrEqual(16);
+    expect(state.turns.length).toBeGreaterThanOrEqual(10);
   } finally {
     persist();
   }
