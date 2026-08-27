@@ -1,0 +1,11 @@
+{
+  "capturedAt": "2026-08-27T15:37:00.000Z",
+  "productionCommit": "eabca85629b04cacf386bafff1d7d62dee9ec6b4",
+  "fixShas": ["9788800", "eabca85", "d3bd6ba", "ea2035d", "b7d24b5", "0069ce5"],
+  "entryUrl": "/demo/start",
+  "turnCount": 16,
+  "reAskSameQuestionCount": 0,
+  "understandingDeltaEmptyMergeable": 2,
+  "criticalGapBlockedStartAnalysis": false,
+  "finalReviewReachable": true
+}

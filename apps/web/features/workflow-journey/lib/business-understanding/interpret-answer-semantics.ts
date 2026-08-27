@@ -391,12 +391,19 @@ export function interpretAnswerSemantics(input: {
   // Asked-gap weak prior for follow-ups — skip when strong competing cue
   // Core Final Stabilization — honor asked gap so answers close the right slot (no payer→problem steal)
   if (askedGap === 'problemJtbd') {
-    factKey = 'problem';
-    resolvedIssueId = 'problem_definition';
-    if (!facts.some((f) => f.key === 'problem')) {
-      facts = [{ key: 'problem', issueId: 'problem_definition' }, ...facts];
+    const problemCue = /(불편|문제|JTBD|해결하려|겪는|pain|pein)/i.test(trimmed);
+    const payerOnlyCorrection =
+      PAYER_CUE_RE.test(trimmed) &&
+      (isCorrection || /결제자|지불자|payer/i.test(trimmed)) &&
+      !problemCue;
+    if (!payerOnlyCorrection) {
+      factKey = 'problem';
+      resolvedIssueId = 'problem_definition';
+      if (!facts.some((f) => f.key === 'problem')) {
+        facts = [{ key: 'problem', issueId: 'problem_definition' }, ...facts];
+      }
+      facts = facts.filter((f) => f.key !== 'buyer' && f.key !== 'customer');
     }
-    facts = facts.filter((f) => f.key !== 'buyer' && f.key !== 'customer');
   } else if (askedGap === 'payer') {
     factKey = 'buyer';
     resolvedIssueId = 'bm_design';
