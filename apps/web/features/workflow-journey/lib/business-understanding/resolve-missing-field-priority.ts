@@ -530,21 +530,7 @@ export function getWhyThisQuestionNow(
 
   const answeredGaps = getAnsweredTargetGaps(options?.turns ?? loop.turns);
 
-  // Prefer absolute top gap — avoids bm_design sticky picking already-answered revenue forever
-  const top = ranked[0]!;
-  if (!answeredGaps.has(top.targetGap)) {
-    const want = options?.issueId;
-    if (want) {
-      const sameIssue = ranked.find(
-        (r) => r.issueId === want && !answeredGaps.has(r.targetGap),
-      );
-      // Only prefer same-issue if it is still the judgment-critical top-ish
-      if (sameIssue && sameIssue.score >= top.score * 0.85) {
-        return sameIssue;
-      }
-    }
-    return top;
-  }
-
-  return ranked.find((r) => !answeredGaps.has(r.targetGap)) ?? top;
+  // Core Final Stabilization — adaptive top gap is always SoT (no issue stickiness / fixed spine)
+  const next = ranked.find((r) => !answeredGaps.has(r.targetGap)) ?? ranked[0]!;
+  return next;
 }

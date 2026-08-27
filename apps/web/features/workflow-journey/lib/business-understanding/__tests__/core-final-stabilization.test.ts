@@ -63,6 +63,20 @@ describe('Stabilization — validationTestability never steals into customer', (
   });
 });
 
+describe('Stabilization — problemJtbd never steals into payer', () => {
+  it('forces problem when asked problemJtbd even if answer contains 결제/예약', () => {
+    const result = interpretAnswerSemantics({
+      answer: '관광객이 앱에서 일정·체험을 직접 예약·결제하는 과정에서 맞춤 일정을 찾지 못하는 불편이 큽니다',
+      askedIssueId: 'problem_definition',
+      askedTargetGap: 'problemJtbd',
+    });
+    expect(result.factKey).toBe('problem');
+    expect(result.facts.some((f) => f.key === 'problem')).toBe(true);
+    expect(result.facts.some((f) => f.key === 'buyer')).toBe(false);
+    expect(result.mergeable).toBe(true);
+  });
+});
+
 describe('Stabilization — closed gaps never re-asked', () => {
   it('excludes answered validationTestability from next priorities', () => {
     const turns: AiPmLoopTurn[] = [

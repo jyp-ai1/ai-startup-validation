@@ -75,7 +75,7 @@ import {
 } from '../../lib/business-understanding/understanding-contract';
 import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
 import { reframeQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
-import { countUnclosedGapAsks } from '../../lib/business-understanding/question-decision-engine';
+import { countUnclosedGapAsks, MAX_SAME_GAP_ASKS_BEFORE_YIELD } from '../../lib/business-understanding/question-decision-engine';
 import { enforceQuestionPurity } from '../../lib/business-understanding/question-purity';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
@@ -209,11 +209,15 @@ export function WorkspaceAiPmLoopPanel({
     let whyNow = base.whyNow;
     let targetGap = base.targetGap;
     if (questionOverride) {
+      const stickyAsks = countUnclosedGapAsks(loopState.turns, questionOverride.targetGap);
+      const overrideStale =
+        questionOverride.targetGap !== base.targetGap && stickyAsks >= MAX_SAME_GAP_ASKS_BEFORE_YIELD;
       if (
-        questionOverride.targetGap === base.targetGap ||
-        questionOverride.reason === 'why_meta' ||
-        questionOverride.reason === 'mid_judgment' ||
-        questionOverride.reason === 'nonsense'
+        !overrideStale &&
+        (questionOverride.targetGap === base.targetGap ||
+          questionOverride.reason === 'why_meta' ||
+          questionOverride.reason === 'mid_judgment' ||
+          questionOverride.reason === 'nonsense')
       ) {
         questionText = questionOverride.questionText;
         whyNow = questionOverride.whyNow;
@@ -760,15 +764,25 @@ export function WorkspaceAiPmLoopPanel({
     }
 
     if (!semantic.mergeable) {
-      // Core Final W7 — nonsense / unknown → REFRAME (never identical Q)
-      const gap = whyThisQuestionNow?.targetGap ?? 'problemJtbd';
+      // Core Final W7 — nonsense / unknown → REFRAME on adaptive top gap (never stale sticky)
+      const top = getTopGapPriority(understanding, loopState, {
+        documentText: documentText ?? undefined,
+        entities,
+        memory: conversationMemory,
+        analysisResultExists,
+        turns: loopState.turns,
+      });
+      const gap =
+        top?.targetGap ??
+        whyThisQuestionNow?.targetGap ??
+        'problemJtbd';
       const reason: ReframeReason =
         semantic.intent === 'nonsense' ? 'nonsense' : 'unknown_signal';
       const reframed = reframeQuestion({
         targetGap: gap,
         living: livingState,
         reason,
-        previousQuestionText: whyThisQuestionNow?.questionText,
+        previousQuestionText: whyThisQuestionNow?.questionText ?? top?.questionText,
       });
       setQuestionOverride({
         targetGap: reframed.targetGap,
@@ -776,6 +790,10 @@ export function WorkspaceAiPmLoopPanel({
         whyNow: reframed.whyNow,
         reason,
       });
+      if (top?.issueId && top.issueId !== loopState.currentIssueId) {
+        patchAiPmLoopState({ currentIssueId: top.issueId }, projectId);
+        syncState(loadAiPmLoopState(projectId));
+      }
       setAnswerQualityHint(semantic.quality);
       setContradiction(null);
       setAnswerDraft('');

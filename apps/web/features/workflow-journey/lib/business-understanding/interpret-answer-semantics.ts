@@ -389,8 +389,22 @@ export function interpretAnswerSemantics(input: {
   }
 
   // Asked-gap weak prior for follow-ups — skip when strong competing cue
-  // Core Final — validationTestability / defensibility: do NOT let customer keyword steal the slot
-  if (askedGap === 'validationTestability') {
+  // Core Final Stabilization — honor asked gap so answers close the right slot (no payer→problem steal)
+  if (askedGap === 'problemJtbd') {
+    factKey = 'problem';
+    resolvedIssueId = 'problem_definition';
+    if (!facts.some((f) => f.key === 'problem')) {
+      facts = [{ key: 'problem', issueId: 'problem_definition' }, ...facts];
+    }
+    facts = facts.filter((f) => f.key !== 'buyer' && f.key !== 'customer');
+  } else if (askedGap === 'payer') {
+    factKey = 'buyer';
+    resolvedIssueId = 'bm_design';
+    if (!facts.some((f) => f.key === 'buyer')) {
+      facts = [{ key: 'buyer', issueId: 'bm_design' }, ...facts];
+    }
+    facts = facts.filter((f) => f.key !== 'problem' && f.key !== 'customer');
+  } else if (askedGap === 'validationTestability') {
     factKey = 'diffRelevance';
     resolvedIssueId = 'competitor_analysis';
     if (!facts.some((f) => f.key === 'diffRelevance')) {
@@ -423,8 +437,12 @@ export function interpretAnswerSemantics(input: {
     return !COMPETITOR_OR_DIFF_CUE_RE.test(trimmed);
   });
 
-  // Payer phrases must not land in problem; bookkeeping under bm_design
-  if (factKey === 'problem' && PAYER_CUE_RE.test(trimmed)) {
+  // Payer phrases must not land in problem — except when problem gap was explicitly asked
+  if (
+    factKey === 'problem' &&
+    PAYER_CUE_RE.test(trimmed) &&
+    askedGap !== 'problemJtbd'
+  ) {
     factKey = 'buyer';
     resolvedIssueId = 'bm_design';
   }

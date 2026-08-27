@@ -23,7 +23,7 @@ const RAW_JSON = path.join(OUT, 'transcript-raw.json');
 fs.mkdirSync(MEDIA, { recursive: true });
 
 /** Match Stabilization fix SHA on Production. */
-const FIX_SHA_PREFIXES = ['ea2035d', 'cf332fc', 'b7d24b5', '0069ce5'] as const;
+const FIX_SHA_PREFIXES = ['d3bd6ba', 'ea2035d', 'b7d24b5', '0069ce5'] as const;
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
@@ -374,6 +374,11 @@ function pickAnswer(question: string, _body: string, forced?: string): string {
     return BANK.revenue;
   }
 
+  // Problem JTBD before payer — reframed stems embed payer digest with 「결제」
+  if (/불편|문제|풀려는|해결하려는|페인|JTBD|겪는 불편/i.test(q)) {
+    return BANK.problem;
+  }
+
   // Diff relevance (customer feels the difference) — before generic differentiation
   if (
     /차별점이\s*고객에게|고객에게\s*(어떤\s*)?차이|왜\s*고객이\s*(그\s*)?차별|relevance|체감되는 순간|어떤 가치를 만드|고객 여정 어디|결정적으로 체감/i.test(
@@ -618,6 +623,20 @@ async function answerCurrent(
  * Sets state.criticalGapBlockedStartAnalysis.
  */
 async function probeStartAnalysisGate(page: Page, label: string, shot: string) {
+  let body = await page.locator('body').innerText();
+  const criticalOnLoop =
+    (await page.getByTestId('critical-gap-block-hint').isVisible().catch(() => false)) ||
+    /Start Analysis는 차단|핵심 공백|아직 확인 필요|Critical gaps remain/i.test(body);
+
+  if (criticalOnLoop) {
+    state.criticalGapBlockedStartAnalysis = true;
+    state.observations.push(
+      `StartAnalysis probe @${label}: criticalCopy on AI PM loop; criticalGapBlockedStartAnalysis=true`,
+    );
+    await snap(page, label, '(start-analysis probe — loop)', shot, ['criticalCopy=loop']);
+    return;
+  }
+
   const overview = page.getByRole('button', { name: /개요|Overview/i });
   if (await overview.first().isVisible().catch(() => false)) {
     await overview.first().click();
@@ -627,7 +646,7 @@ async function probeStartAnalysisGate(page: Page, label: string, shot: string) {
   const startAnalysis = page.getByRole('button', {
     name: /That's right — start analysis|맞습니다.*분석|start analysis|분석 시작/i,
   });
-  const body = await page.locator('body').innerText();
+  body = await page.locator('body').innerText();
   const criticalCopy =
     /critical_gap|critical gap|핵심 공백|아직 확인 필요|Start Analysis는 차단|분석을 시작하려면|blocked|Critical gaps remain/i.test(
       body,
