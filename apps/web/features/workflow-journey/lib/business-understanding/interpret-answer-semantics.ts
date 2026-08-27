@@ -56,6 +56,9 @@ const COMPETITOR_NAME_CUE_RE =
   /(경쟁|대안|tripadvisor|클룩|트립닷컴|트립어드바이저|네이버\s*지도|구글\s*맵|비슷한\s*서비스|이미\s*있지만|가이드\s*매칭|vs\.?|대비\s*(해|해서)|경쟁사)/i;
 /** Differentiation / positioning cues (distinct ConversationFactKey) */
 const DIFF_CUE_RE = /(차별|differentiat|인플루언서|핫플이\s*아니라|포지션|우리만|모방\s*어렵|방어력)/i;
+/** Customer-value / relevance of differentiation (diffRelevance) */
+const DIFF_RELEVANCE_CUE_RE =
+  /(왜\s*중요|체감|관련성|가치가\s*|필요하|불편이\s*줄|시간을?\s*아끼|신뢰|안심|결제\s*전|선택\s*이유)/i;
 /** Broad cue used only to refuse dumping into customer/problem */
 const COMPETITOR_OR_DIFF_CUE_RE =
   /(경쟁|대안|차별|differentiat|tripadvisor|네이버\s*지도|구글\s*맵|비슷한\s*서비스|vs\.?|대비|인플루언서|핫플이\s*아니라|포지션|우리만)/i;
@@ -82,6 +85,12 @@ const FACT_ROUTE: Array<{
     issueId: 'competitor_analysis',
     re: DIFF_CUE_RE,
     weight: 12,
+  },
+  {
+    key: 'diffRelevance',
+    issueId: 'competitor_analysis',
+    re: DIFF_RELEVANCE_CUE_RE,
+    weight: 11,
   },
   {
     key: 'competitor',
@@ -170,12 +179,13 @@ function collectFactHits(
 
   for (const route of routes) {
     if (seen.has(route.key)) continue;
-    // Customer keyword often co-occurs with payer/competitor — demote when stronger BM/comp cues exist
+    // Customer keyword often co-occurs with payer/competitor/relevance — demote when stronger cues exist
     if (
       route.key === 'customer' &&
       (PAYER_CUE_RE.test(text) ||
         COMPETITOR_OR_DIFF_CUE_RE.test(text) ||
-        REVENUE_CUE_RE.test(text))
+        REVENUE_CUE_RE.test(text) ||
+        DIFF_RELEVANCE_CUE_RE.test(text))
     ) {
       continue;
     }

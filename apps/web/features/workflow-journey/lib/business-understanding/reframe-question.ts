@@ -70,8 +70,11 @@ function reframeStem(targetGap: string, living: LivingUnderstandingState): strin
       }
       return '고객이 지금 이 문제를 어떻게 해결하고 있나요? (대안·경쟁)';
     case 'validationTestability':
+      if (diff && customer) {
+        return `「${diff}」가 「${customer}」에게 구체적으로 어떤 가치를 만드나요?`;
+      }
       if (diff) {
-        return `「${diff}」가 고객에게 왜 중요한가요?`;
+        return `「${diff}」가 고객 여정 어디에서 결정적으로 체감되나요?`;
       }
       return '그 차이가 고객에게 체감되는 순간은 언제인가요?';
     case 'executionConstraints':
@@ -168,8 +171,26 @@ export function reframeQuestion(input: {
   };
 }
 
-/** Same-meaning check: identical normalized question text. */
+/** Same-meaning check: identical or near-identical normalized question text. */
 export function isSameMeaningQuestion(a: string, b: string): boolean {
-  const norm = (s: string) => s.replace(/\s+/g, ' ').trim().toLowerCase();
-  return Boolean(a && b && norm(a) === norm(b));
+  const norm = (s: string) =>
+    s
+      .replace(/\s+/g, ' ')
+      .replace(/[？?!.。…·,，、]/g, '')
+      .replace(/현재 이해\([^)]*\)를 기준으로 다시 묻습니다\s*—?\s*/g, '')
+      .trim()
+      .toLowerCase();
+  const na = norm(a);
+  const nb = norm(b);
+  if (!na || !nb) return false;
+  if (na === nb) return true;
+  // Stock relevance variants share the same core ask
+  const core = (s: string) =>
+    s
+      .replace(/「[^」]*」/g, '')
+      .replace(/그\s*(차별점|차이|차이점)/g, '차별')
+      .replace(/고객에게\s*(왜\s*)?중요/g, '고객중요')
+      .replace(/체감되는\s*순간은\s*언제인가요/g, '고객중요')
+      .replace(/\s+/g, '');
+  return core(na) === core(nb) && core(na).length >= 8;
 }

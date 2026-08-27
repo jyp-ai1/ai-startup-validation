@@ -15,6 +15,15 @@ import {
   buildLivingUnderstandingState,
   whyNowForGapField,
 } from './living-understanding-state';
+import {
+  selectAdaptiveNextGaps,
+} from './adaptive-question-select';
+import {
+  countUnclosedGapAsks,
+  resolveExcludedGaps,
+  MAX_SAME_GAP_ASKS_BEFORE_YIELD,
+} from './question-decision-engine';
+import { reframeQuestion, isSameMeaningQuestion } from './reframe-question';
 import { getResolvedIssueIds } from './workspace-ai-pm-loop-store';
 import {
   type AiPmLoopIssueId,
@@ -249,7 +258,7 @@ export function resolveMissingFieldPriorities(
     }
   }
 
-  // 1) Living State judgment-critical gaps — primary path
+  // 1) Living State judgment-critical gaps — primary path (adaptive-ranked)
   if (text.length >= 8) {
     const living = buildLivingUnderstandingState({
       documentText: text,
@@ -260,17 +269,70 @@ export function resolveMissingFieldPriorities(
       resolvedIssueIds: [...resolved],
     });
 
+    const exclude = resolveExcludedGaps({ turns, memory, living });
+
+    // Core Final Stabilization — adaptive ranking is production SoT (no fixed spine)
+    for (const candidate of selectAdaptiveNextGaps(living, {
+      excludeGaps: exclude,
+      answeredFactGaps: answeredGaps,
+    })) {
+      if (answeredGaps.has(candidate.fieldKey)) continue;
+      if (isGapSatisfiedInMemory(candidate.fieldKey, memory)) continue;
+      if (exclude.has(candidate.fieldKey) && !scored.has(candidate.fieldKey)) continue;
+
+      const existing = scored.get(candidate.fieldKey);
+      if (existing && existing.score >= candidate.score) continue;
+
+      let priority = priorityFromGap({
+        targetGap: candidate.fieldKey,
+        issueId: candidate.issueId,
+        rationale: candidate.rationale,
+        score: candidate.score,
+      });
+
+      // Same-gap re-ask → reframe question text (never identical meaning)
+      const priorAsks = countUnclosedGapAsks(turns, candidate.fieldKey);
+      if (priorAsks > 0) {
+        const reframed = reframeQuestion({
+          targetGap: candidate.fieldKey,
+          living,
+          reason: 'adaptive',
+          previousQuestionText: priority.questionText,
+        });
+        priority = {
+          ...priority,
+          questionText: reframed.questionText,
+          whyNow: reframed.whyNow,
+          rationale: `${candidate.rationale} (reframe after ${priorAsks} prior ask)`,
+        };
+      }
+
+      scored.set(candidate.fieldKey, priority);
+    }
+
     for (const gap of living.gaps) {
       const binding = resolveGapQuestionBinding(gap.fieldKey, gap.issueId ?? undefined);
       const issueId = gap.issueId ?? binding.issueId;
 
-      // Core v4 — never re-ask a gap the user already answered (same-meaning ban)
+      // Core Final — never re-ask answered / excluded gaps
       if (answeredGaps.has(gap.fieldKey) && !scored.has(gap.fieldKey)) {
+        continue;
+      }
+      if (exclude.has(gap.fieldKey) && !scored.has(gap.fieldKey)) {
         continue;
       }
 
       // Memory already has the fact for this gap
       if (isGapSatisfiedInMemory(gap.fieldKey, memory)) {
+        continue;
+      }
+
+      // Sticky fail on non-critical: skip after MAX asks
+      if (
+        !scored.has(gap.fieldKey) &&
+        countUnclosedGapAsks(turns, gap.fieldKey) >= MAX_SAME_GAP_ASKS_BEFORE_YIELD &&
+        exclude.has(gap.fieldKey)
+      ) {
         continue;
       }
 
@@ -289,22 +351,39 @@ export function resolveMissingFieldPriorities(
         gap.fieldKey !== 'executionConstraints' &&
         gap.fieldKey !== 'revenueModel' &&
         gap.fieldKey !== 'pricingHint' &&
-        gap.fieldKey !== 'payer'
+        gap.fieldKey !== 'payer' &&
+        gap.fieldKey !== 'marketChannel' &&
+        gap.fieldKey !== 'marketSizeEvidence'
       ) {
         continue;
       }
 
       const existing = scored.get(gap.fieldKey);
       if (existing && existing.score >= gap.priorityScore) continue;
-      scored.set(
-        gap.fieldKey,
-        priorityFromGap({
+
+      let priority = priorityFromGap({
+        targetGap: gap.fieldKey,
+        issueId,
+        rationale: gap.rationale,
+        score: gap.priorityScore,
+      });
+      const priorAsks = countUnclosedGapAsks(turns, gap.fieldKey);
+      if (priorAsks > 0) {
+        const reframed = reframeQuestion({
           targetGap: gap.fieldKey,
-          issueId,
-          rationale: gap.rationale,
-          score: gap.priorityScore,
-        }),
-      );
+          living,
+          reason: 'adaptive',
+          previousQuestionText: priority.questionText,
+        });
+        if (!isSameMeaningQuestion(reframed.questionText, priority.questionText)) {
+          priority = {
+            ...priority,
+            questionText: reframed.questionText,
+            whyNow: reframed.whyNow,
+          };
+        }
+      }
+      scored.set(gap.fieldKey, priority);
     }
   }
 
@@ -379,6 +458,20 @@ export function resolveNextIssueByMissingField(
 
     // Stick only when in-flight gap still open AND not just answered
     // After why/mid return or re-judge, ranked[0] may differ — yield to top if last gap done
+    // Core Final Stabilization — also yield after MAX unclosed asks (prevent identical loop)
+    if (!lastGapDone && lastGap) {
+      const unclosedAsks = countUnclosedGapAsks(turns, lastGap);
+      if (unclosedAsks >= MAX_SAME_GAP_ASKS_BEFORE_YIELD) {
+        const top = ranked[0];
+        if (top && top.targetGap !== lastGap) {
+          return top.issueId;
+        }
+        // Same issue but different sibling gap preferred
+        const sibling = ranked.find((r) => r.targetGap !== lastGap);
+        if (sibling) return sibling.issueId;
+      }
+    }
+
     if (!lastGapDone) {
       const stillOpenForIssue = ranked.find((r) => r.issueId === loop.currentIssueId);
       if (stillOpenForIssue && !answeredGaps.has(stillOpenForIssue.targetGap)) {
@@ -388,6 +481,15 @@ export function resolveNextIssueByMissingField(
           top &&
           top.targetGap !== stillOpenForIssue.targetGap &&
           top.score > stillOpenForIssue.score * 1.15
+        ) {
+          return top.issueId;
+        }
+        // Prefer top gap when sticky would re-ask same answered-sibling forever
+        if (
+          top &&
+          lastGap &&
+          stillOpenForIssue.targetGap === lastGap &&
+          top.targetGap !== lastGap
         ) {
           return top.issueId;
         }

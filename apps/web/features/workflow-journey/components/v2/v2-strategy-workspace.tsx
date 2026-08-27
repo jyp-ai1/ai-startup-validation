@@ -853,6 +853,8 @@ export function V2StrategyWorkspaceView({
               : null
           }
           understandingCoveragePercent={workspaceState.understandingCoveragePercent}
+          criticalGapBlocked={workspaceState.criticalGapBlocked}
+          criticalGapExplanation={workspaceState.criticalGapExplanation}
         />
       ) : activeMemory ? (
         <section className={cn(PANEL, 'animate-in fade-in duration-300')}>

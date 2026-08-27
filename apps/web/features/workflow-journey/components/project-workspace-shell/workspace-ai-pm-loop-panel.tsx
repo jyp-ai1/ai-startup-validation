@@ -74,6 +74,7 @@ import {
 } from '../../lib/business-understanding/understanding-contract';
 import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
 import { reframeQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
+import { countUnclosedGapAsks } from '../../lib/business-understanding/question-decision-engine';
 import { enforceQuestionPurity } from '../../lib/business-understanding/question-purity';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
@@ -217,6 +218,16 @@ export function WorkspaceAiPmLoopPanel({
         whyNow = questionOverride.whyNow;
         targetGap = questionOverride.targetGap;
       }
+    } else if (countUnclosedGapAsks(loopState.turns, base.targetGap) > 0) {
+      // Core Final Stabilization — never identical stock re-ask for open sticky gaps
+      const reframed = reframeQuestion({
+        targetGap: base.targetGap,
+        living: livingState,
+        reason: 'adaptive',
+        previousQuestionText: base.questionText,
+      });
+      questionText = reframed.questionText;
+      whyNow = reframed.whyNow;
     }
 
     const purity = enforceQuestionPurity({
@@ -239,6 +250,7 @@ export function WorkspaceAiPmLoopPanel({
     conversationMemory,
     analysisResultExists,
     questionOverride,
+    livingState,
   ]);
   const s11Surface = useMemo(() => {
     const askIssueId = loopState.currentIssueId ?? nextIssue;
@@ -714,7 +726,24 @@ export function WorkspaceAiPmLoopPanel({
         prior: existingFactsByKey[semantic.factKey]!,
         next: trimmed,
       });
+      // Persist conflict delta so mergeable-looking turns never show empty understandingDelta
+      const askedGap = whyThisQuestionNow?.targetGap ?? 'unknown';
+      appendAiPmLoopTurn(
+        {
+          issueId,
+          answer: trimmed,
+          appliedAt: new Date().toISOString(),
+          semanticFactKey: semantic.factKey,
+          semanticFactKeys: semantic.facts.map((f) => f.key),
+          intent: semantic.intent,
+          targetGap: askedGap,
+          understandingDelta: `충돌: ${semantic.factKey} — 기존 값과 새 답 중 어느 쪽이 맞는지 확인 필요 · 미확인: ${askedGap}`,
+        },
+        projectId,
+      );
       applyWorkspaceLoopAnswer(issueId, trimmed, projectId, { semantic });
+      syncState(loadAiPmLoopState(projectId));
+      setAnswerDraft('');
       return;
     }
 

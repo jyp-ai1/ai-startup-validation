@@ -51,6 +51,9 @@ type WorkspaceProgressiveOverviewProps = {
   nextIssueLabel?: string | null;
   /** v2 — deterministic specificity % */
   understandingCoveragePercent?: number | null;
+  /** Core Final Stabilization — Overview must surface analysis gate for CPO probe */
+  criticalGapBlocked?: boolean;
+  criticalGapExplanation?: string | null;
   className?: string;
 };
 
@@ -67,6 +70,8 @@ export function WorkspaceProgressiveOverview({
   nextIssueId = null,
   nextIssueLabel = null,
   understandingCoveragePercent = null,
+  criticalGapBlocked = false,
+  criticalGapExplanation = null,
   className,
 }: WorkspaceProgressiveOverviewProps) {
   const t = useTranslations('workflow.journey.workspaceShell.overview');
@@ -189,6 +194,37 @@ export function WorkspaceProgressiveOverview({
               {nextIssueId && nextIssueLabel ? nextIssueLabel : t('noGap')}
             </p>
           </div>
+          {criticalGapBlocked ? (
+            <div
+              data-testid="analysis-critical-gap"
+              className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3"
+              role="status"
+            >
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-800 dark:text-amber-200">
+                Start Analysis는 차단
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-foreground">
+                {criticalGapExplanation?.trim() ||
+                  'Critical gaps remain — Start Analysis는 차단됩니다. 핵심 공백을 먼저 확인하세요.'}
+              </p>
+              <button
+                type="button"
+                disabled
+                aria-disabled="true"
+                className="mt-3 inline-flex h-9 cursor-not-allowed items-center rounded-xl bg-muted px-4 text-sm font-medium text-muted-foreground opacity-70"
+              >
+                That&apos;s right — start analysis
+              </button>
+            </div>
+          ) : (
+            <p
+              data-testid="analysis-gate-open-hint"
+              className="mt-4 text-xs text-muted-foreground"
+              role="status"
+            >
+              핵심 공백이 사용자 확인으로 채워졌습니다. Start Analysis 가능 여부를 AI가 판단합니다.
+            </p>
+          )}
         </section>
       ) : null}
 

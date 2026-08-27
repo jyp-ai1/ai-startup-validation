@@ -29,7 +29,7 @@ import {
   buildLivingUnderstandingState,
   type LivingUnderstandingState,
 } from './living-understanding-state';
-import { criticalGapsBlockAnalysis } from './question-causality';
+import { criticalGapsBlockAnalysis, explainSufficiency } from './question-causality';
 import { evaluateDomainTrust } from '../domain/domain-trust-rules';
 import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
 import { loadConversationMemory } from './conversation-memory-store';
@@ -101,6 +101,9 @@ export type WorkspaceState = {
   livingState: LivingUnderstandingState | null;
   /** v2 — deterministic specificity %. */
   understandingCoveragePercent: number | null;
+  /** Core Final Stabilization — Overview / CPO probe gate */
+  criticalGapBlocked: boolean;
+  criticalGapExplanation: string | null;
 };
 
 /** S16 P0-3 — stage-first progress (numbers secondary). */
@@ -620,6 +623,11 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
       }
     : null;
 
+  const criticalGapBlocked =
+    livingState != null ? criticalGapsBlockAnalysis(livingState) : false;
+  const criticalGapExplanation =
+    livingState != null ? explainSufficiency(livingState).explanation : null;
+
   return {
     version: 1,
     projectId: input.projectId,
@@ -638,5 +646,7 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
     nextIssueId,
     livingState,
     understandingCoveragePercent: livingState?.coveragePercent ?? null,
+    criticalGapBlocked,
+    criticalGapExplanation,
   };
 }
