@@ -65,6 +65,7 @@ import {
   buildQuestionCausality,
   buildUnderstandingDelta,
   countCriticalViabilityGaps,
+  criticalGapsBlockAnalysis,
   explainSufficiency,
   formatUnderstandingDeltaSummary,
 } from '../../lib/business-understanding/question-causality';
@@ -469,6 +470,9 @@ export function WorkspaceAiPmLoopPanel({
 
     const canComplete =
       !result.nextIssueId &&
+      criticalViability === 0 &&
+      contradictionGaps === 0 &&
+      !criticalGapsBlockAnalysis(result.living) &&
       canEnterValidation({
         loop: refreshed,
         memory: result.memory,

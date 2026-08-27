@@ -110,19 +110,30 @@ export function WorkspaceNextStepPanel({
           {t('finalConfirmCta')}
         </Button>
         {!canStartReview ? (
-          <p
-            className="mt-3 text-sm text-muted-foreground"
-            role="status"
-            data-testid={
-              reviewBlockedReason === 'critical_gap'
-                ? 'analysis-critical-gap'
-                : 'review-blocked-hint'
-            }
-          >
-            {reviewBlockedReason
-              ? t(`reviewBlocked.${reviewBlockedReason}`)
-              : t('reviewBlocked.generic')}
-          </p>
+          <div className="mt-3 space-y-3" role="status">
+            <p
+              className="text-sm text-muted-foreground"
+              data-testid={
+                reviewBlockedReason === 'critical_gap'
+                  ? 'analysis-critical-gap'
+                  : 'review-blocked-hint'
+              }
+            >
+              {reviewBlockedReason
+                ? t(`reviewBlocked.${reviewBlockedReason}`)
+                : t('reviewBlocked.generic')}
+            </p>
+            {reviewBlockedReason === 'critical_gap' ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl"
+                onClick={onContinueUnderstanding}
+              >
+                {t('continueUnderstandingCta')}
+              </Button>
+            ) : null}
+          </div>
         ) : null}
       </section>
     );

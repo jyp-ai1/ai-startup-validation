@@ -17,6 +17,9 @@ import {
   loadAiPmLoopState,
   patchAiPmLoopState,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
+import { loadConversationMemory } from '../../lib/business-understanding/conversation-memory-store';
+import { buildLivingUnderstandingState } from '../../lib/business-understanding/living-understanding-state';
+import { criticalGapsBlockAnalysis } from '../../lib/business-understanding/question-causality';
 import {
   AI_PM_LOOP_ISSUE_ORDER,
   type AiPmLoopIssueId,
@@ -455,12 +458,42 @@ export function WorkspaceAiPmMain({
   }, [onLoopDocumentUpdated, projectId]);
 
   const handleLoopComplete = useCallback(() => {
+    // Core Final Stabilization — never jump to review-ready while critical gaps remain
+    const doc = loadWorkspaceDocumentText(projectId) ?? documentContext ?? '';
+    const mem = loadConversationMemory(projectId);
+    const und = understanding ?? (doc.trim() ? buildBusinessUnderstanding(doc) : null);
+    if (und) {
+      const living = buildLivingUnderstandingState({
+        documentText: doc,
+        understanding: und,
+        entities,
+        turns: loadAiPmLoopState(projectId).turns,
+        memory: mem,
+        resolvedIssueIds: getResolvedIssueIds(loadAiPmLoopState(projectId)),
+      });
+      if (criticalGapsBlockAnalysis(living)) {
+        // Re-open loop: stay in understanding, do not freeze on Start Analysis panel
+        patchAiPmLoopState({ phase: 'answer' }, projectId);
+        saveUnderstandingPhase('accepted', projectId);
+        setUnderstandingPhase('accepted');
+        setLoopState(loadAiPmLoopState(projectId));
+        onUnderstandingConfirmed?.();
+        return;
+      }
+    }
     saveUnderstandingPhase('review-ready', projectId);
     setUnderstandingPhase('review-ready');
     setLoopState(loadAiPmLoopState(projectId));
     onLoopComplete?.();
     onUnderstandingConfirmed?.();
-  }, [onLoopComplete, onUnderstandingConfirmed, projectId]);
+  }, [
+    documentContext,
+    entities,
+    onLoopComplete,
+    onUnderstandingConfirmed,
+    projectId,
+    understanding,
+  ]);
 
   const handleFixPrimaryIssue = useCallback((_issueId: AiPmLoopIssueId) => {
     window.requestAnimationFrame(() => {

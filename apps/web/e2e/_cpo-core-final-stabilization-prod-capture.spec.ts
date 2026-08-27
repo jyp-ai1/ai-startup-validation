@@ -22,8 +22,8 @@ const MEDIA = path.join(OUT, 'media');
 const RAW_JSON = path.join(OUT, 'transcript-raw.json');
 fs.mkdirSync(MEDIA, { recursive: true });
 
-/** Match Stabilization fix SHA on Production (includes 0069ce5 lineage). */
-const FIX_SHA_PREFIXES = ['b7d24b5', '2a3a066', '0069ce5', 'edc5994'] as const;
+/** Match Stabilization fix SHA on Production (engine b7d24b5 · tip 316dbeb · 0069ce5 lineage). */
+const FIX_SHA_PREFIXES = ['316dbeb', 'b7d24b5', '0069ce5', 'edc5994'] as const;
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
@@ -211,6 +211,8 @@ async function isFinalReviewSurface(page: Page): Promise<boolean> {
   if (await startAnalysis.first().isVisible().catch(() => false)) {
     const disabled = await startAnalysis.first().isDisabled().catch(() => true);
     if (!disabled) return true;
+    // Disabled Start Analysis + critical gaps = still in conversation, not final
+    return false;
   }
   const body = await page.locator('body').innerText();
   // False "sufficient" copy while PROBLEM/critical gaps remain must NOT end the journey
@@ -226,7 +228,14 @@ async function isFinalReviewSurface(page: Page): Promise<boolean> {
     }
     return true;
   }
-  return /Before analysis, confirm|분석 전에,/i.test(body);
+  // "Before analysis, confirm" with Critical gaps remain = gate surface, not journey end
+  if (/Before analysis, confirm|분석 전에,/i.test(body)) {
+    if (/Critical gaps remain|Start Analysis는 차단|아직 확인 필요/i.test(body)) {
+      return false;
+    }
+    return true;
+  }
+  return false;
 }
 
 async function ensureAnswerBox(page: Page): Promise<boolean> {
@@ -234,6 +243,35 @@ async function ensureAnswerBox(page: Page): Promise<boolean> {
   if (await isFinalReviewSurface(page)) {
     state.observations.push('ensureAnswerBox: final-review surface');
     return false;
+  }
+
+  // If blocked Start Analysis / confirm panel is showing, return to AI PM loop
+  const blockedStart = page.getByRole('button', {
+    name: /That's right — start analysis|맞습니다.*분석|start analysis/i,
+  });
+  if (await blockedStart.first().isVisible().catch(() => false)) {
+    const disabled = await blockedStart.first().isDisabled().catch(() => true);
+    if (disabled) {
+      const aiPm = page.getByRole('button', { name: /^AI PM$/i });
+      if (await aiPm.first().isVisible().catch(() => false)) {
+        await aiPm.first().click();
+        await page.waitForTimeout(800);
+      }
+          const cont = page.getByRole('button', {
+            name: /Keep answering|계속 답|같이 확인|부족한 부분|Continue understanding|이해 계속|이해 계속하기/i,
+          });
+          if (await cont.first().isVisible().catch(() => false)) {
+            await cont.first().click({ force: true });
+            await page.waitForTimeout(900);
+          } else {
+            // i18n continueUnderstandingCta may be Korean-only
+            const contKo = page.getByRole('button', { name: /이해|계속|공백/i });
+            if (await contKo.first().isVisible().catch(() => false)) {
+              await contKo.first().click({ force: true });
+              await page.waitForTimeout(900);
+            }
+          }
+    }
   }
 
   let box = page.locator('textarea').last();
@@ -460,7 +498,7 @@ async function snap(
   if (shotName) {
     const p = path.join(MEDIA, shotName);
     await page.screenshot({ path: p, fullPage: true });
-    screenshot = `docs/evidence/ALABOM/conversation-validation/core-final/media/${shotName}`;
+    screenshot = `docs/evidence/ALABOM/conversation-validation/core-final-stabilization/media/${shotName}`;
   }
 
   const prevQs = state.turns.map((t) => t.aiQuestion);
@@ -732,6 +770,11 @@ test('CPO Core Final Stabilization prod journey capture', async ({ page, request
         await answerCurrent(page, '08-prior-edit', '08-prior-edit.png', BANK.editCorrection, [
           'prior answer edit supersedes judgment',
         ]);
+      }
+      const closeEdit = page.getByRole('button', { name: /닫기|Close/i });
+      if (await closeEdit.first().isVisible().catch(() => false)) {
+        await closeEdit.first().click({ force: true });
+        await page.waitForTimeout(500);
       }
     } else {
       state.observations.push('prior-edit affordance not visible');
