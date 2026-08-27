@@ -746,6 +746,14 @@ export function WorkspaceAiPmLoopPanel({
         projectId,
       );
       applyWorkspaceLoopAnswer(issueId, trimmed, projectId, { semantic });
+      // Keep loop open for conflict resolution — never soft-complete
+      patchAiPmLoopState(
+        {
+          phase: 'answer',
+          currentIssueId: issueId,
+        },
+        projectId,
+      );
       syncState(loadAiPmLoopState(projectId));
       setAnswerDraft('');
       return;

@@ -22,8 +22,8 @@ const MEDIA = path.join(OUT, 'media');
 const RAW_JSON = path.join(OUT, 'transcript-raw.json');
 fs.mkdirSync(MEDIA, { recursive: true });
 
-/** Match Stabilization fix SHA on Production (engine + gate reopen). */
-const FIX_SHA_PREFIXES = ['7f3016d', '316dbeb', 'b7d24b5', '0069ce5'] as const;
+/** Match Stabilization fix SHA on Production (engine + gate reopen + build fix). */
+const FIX_SHA_PREFIXES = ['cf332fc', '7f3016d', 'b7d24b5', '0069ce5'] as const;
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
@@ -201,7 +201,15 @@ async function dismissRecognition(page: Page) {
 }
 
 async function isFinalReviewSurface(page: Page): Promise<boolean> {
+  const body = await page.locator('body').innerText();
+  const criticalStillOpen =
+    /Start Analysis는 차단|Critical gaps remain|아직 확인 필요:|PROBLEM[\s\S]{0,120}Needs confirmation|남은 핵심 공백/i.test(
+      body,
+    );
+
   if (await page.getByTestId('conversational-final-output').isVisible().catch(() => false)) {
+    // Premature "complete" UI while gaps remain — keep journey going
+    if (criticalStillOpen) return false;
     return true;
   }
   const startAnalysis = page.getByRole('button', {
@@ -211,28 +219,17 @@ async function isFinalReviewSurface(page: Page): Promise<boolean> {
   if (await startAnalysis.first().isVisible().catch(() => false)) {
     const disabled = await startAnalysis.first().isDisabled().catch(() => true);
     if (!disabled) return true;
-    // Disabled Start Analysis + critical gaps = still in conversation, not final
     return false;
   }
-  const body = await page.locator('body').innerText();
   // False "sufficient" copy while PROBLEM/critical gaps remain must NOT end the journey
   if (
     /Core understanding is sufficient|Understanding is sufficient|이해가 충분합니다/i.test(body)
   ) {
-    if (
-      /Start Analysis는 차단|Critical gaps remain|아직 확인 필요:|PROBLEM[\s\S]{0,120}Needs confirmation|PROBLEM[\s\S]{0,120}아직 확인/i.test(
-        body,
-      )
-    ) {
-      return false;
-    }
+    if (criticalStillOpen) return false;
     return true;
   }
-  // "Before analysis, confirm" with Critical gaps remain = gate surface, not journey end
   if (/Before analysis, confirm|분석 전에,/i.test(body)) {
-    if (/Critical gaps remain|Start Analysis는 차단|아직 확인 필요/i.test(body)) {
-      return false;
-    }
+    if (criticalStillOpen) return false;
     return true;
   }
   return false;

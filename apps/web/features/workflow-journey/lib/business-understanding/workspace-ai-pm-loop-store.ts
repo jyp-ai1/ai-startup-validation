@@ -59,16 +59,14 @@ export function clearAiPmLoopState(projectId?: string): void {
  * Long Sprint W9: answer-count alone does NOT complete — phase must be `complete`
  * when Stage Transition / no-next-issue path decides.
  */
+/**
+ * Loop is complete only when phase is explicitly `complete`
+ * (Stage Transition / processing decided readiness).
+ * Soft turn-count ceiling removed — it falsely ended journeys while
+ * critical Living gaps (problem / differentiation) remained open.
+ */
 export function isAiPmLoopComplete(state: AiPmLoopState): boolean {
-  if (state.phase === 'complete') return true;
-  // Soft ceiling for legacy: enough turns and idle (no active issue/answer)
-  return (
-    state.turns.length >= AI_PM_LOOP_MIN_TURNS &&
-    state.currentIssueId === null &&
-    state.phase !== 'issue' &&
-    state.phase !== 'answer' &&
-    state.phase !== 'reanalyze'
-  );
+  return state.phase === 'complete';
 }
 
 /** Issues resolved by mergeable business facts only — why/mid/nonsense do not resolve. */
