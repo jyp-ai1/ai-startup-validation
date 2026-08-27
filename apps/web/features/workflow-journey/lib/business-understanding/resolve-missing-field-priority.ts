@@ -2,7 +2,7 @@ import type { BusinessUnderstanding } from '@repo/types/domain/business-understa
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
 import { buildAiPmDynamicDiagnosis } from './build-ai-pm-dynamic-diagnosis';
-import { factKeyForIssue } from './build-conversation-memory';
+import { factKeyForGapField, factKeyForIssue } from './build-conversation-memory';
 import {
   getConflictFact,
   memoryHasFact,
@@ -106,9 +106,42 @@ function priorityFromGap(input: {
 }
 
 /**
- * Core v3 — rank next question by judgment-critical gap.
- * No fixed Problem→Customer→Market template order (P0-3).
+ * Core v4 — gaps already asked and answered must not be re-asked (same-meaning ban).
+ * Display-only / nonsense turns do not count.
+ */
+export function getAnsweredTargetGaps(turns: AiPmLoopTurn[] | undefined): Set<string> {
+  const answered = new Set<string>();
+  if (!turns?.length) return answered;
+  for (const turn of turns) {
+    if (turn.superseded) continue;
+    if (
+      turn.intent === 'why_meta' ||
+      turn.intent === 'mid_judgment' ||
+      turn.intent === 'nonsense' ||
+      turn.intent === 'unknown_signal'
+    ) {
+      continue;
+    }
+    if (turn.targetGap?.trim()) {
+      answered.add(turn.targetGap.trim());
+    }
+  }
+  return answered;
+}
+
+function isGapSatisfiedInMemory(
+  targetGap: string,
+  memory: ConversationMemory | null | undefined,
+): boolean {
+  if (!memory) return false;
+  const key = factKeyForGapField(targetGap);
+  return key ? memoryHasFact(memory, key) : false;
+}
+
+/**
+ * Core v4 — rank next question by judgment-critical gap.
  * Priority: open Conflict → Critical Unknown for judgment → detail.
+ * Re-ask ban: answered targetGaps skipped (unless conflict).
  */
 export function resolveMissingFieldPriorities(
   understanding: BusinessUnderstanding,
@@ -118,6 +151,8 @@ export function resolveMissingFieldPriorities(
   const resolved = new Set(getResolvedIssueIds(loop));
   const memory = options?.memory ?? null;
   const text = options?.documentText?.trim() ?? '';
+  const turns = options?.turns ?? loop.turns;
+  const answeredGaps = getAnsweredTargetGaps(turns);
 
   const scored = new Map<string, MissingFieldPriority>();
 
@@ -137,13 +172,13 @@ export function resolveMissingFieldPriorities(
     }
   }
 
-  // 1) Living State judgment-critical gaps — primary path (P0-3)
+  // 1) Living State judgment-critical gaps — primary path
   if (text.length >= 8) {
     const living = buildLivingUnderstandingState({
       documentText: text,
       understanding,
       entities: options?.entities ?? null,
-      turns: options?.turns ?? loop.turns,
+      turns,
       memory,
       resolvedIssueIds: [...resolved],
     });
@@ -151,12 +186,35 @@ export function resolveMissingFieldPriorities(
     for (const gap of living.gaps) {
       const binding = resolveGapQuestionBinding(gap.fieldKey, gap.issueId ?? undefined);
       const issueId = gap.issueId ?? binding.issueId;
-      if (resolved.has(issueId) && isIssueLockedInMemory(issueId, memory)) {
-        // Still allow re-ask when same gap unknown (e.g. differentiation after competitor)
-        if (gap.fieldKey !== 'differentiationVsAlternatives' && gap.fieldKey !== 'differentiationHypothesis') {
-          continue;
-        }
+
+      // Core v4 — never re-ask a gap the user already answered (same-meaning ban)
+      if (answeredGaps.has(gap.fieldKey) && !scored.has(gap.fieldKey)) {
+        continue;
       }
+
+      // Memory already has the fact for this gap
+      if (isGapSatisfiedInMemory(gap.fieldKey, memory)) {
+        continue;
+      }
+
+      // Issue-level lock only when gap's own fact is locked (not sibling gaps on same issue)
+      if (resolved.has(issueId) && isGapSatisfiedInMemory(gap.fieldKey, memory)) {
+        continue;
+      }
+
+      // Differentiation may follow competitor even if competitor_analysis was touched
+      if (
+        resolved.has(issueId) &&
+        isIssueLockedInMemory(issueId, memory) &&
+        gap.fieldKey !== 'differentiationVsAlternatives' &&
+        gap.fieldKey !== 'differentiationHypothesis' &&
+        gap.fieldKey !== 'revenueModel' &&
+        gap.fieldKey !== 'pricingHint' &&
+        gap.fieldKey !== 'payer'
+      ) {
+        continue;
+      }
+
       const existing = scored.get(gap.fieldKey);
       if (existing && existing.score >= gap.priorityScore) continue;
       scored.set(
@@ -192,6 +250,8 @@ export function resolveMissingFieldPriorities(
 
     const binding = resolveGapQuestionBinding(null, risk.issueId);
     if (scored.has(binding.targetGap)) continue;
+    if (answeredGaps.has(binding.targetGap)) continue;
+    if (isGapSatisfiedInMemory(binding.targetGap, memory)) continue;
 
     scored.set(
       binding.targetGap,
@@ -204,12 +264,14 @@ export function resolveMissingFieldPriorities(
     );
   }
 
-  // P0-3 — removed fixed soft-spine Problem→Customer→Business order
-
   return [...scored.values()].sort((a, b) => b.score - a.score);
 }
 
-/** Prefer judgment-critical gap; preserve in-flight issue. */
+/**
+ * Prefer judgment-critical gap.
+ * Core v4 — do NOT stick on currentIssueId when its asked gap was already answered
+ * (fixes payer→revenue stuck re-ask loop).
+ */
 export function resolveNextIssueByMissingField(
   understanding: BusinessUnderstanding,
   loop: AiPmLoopState,
@@ -217,18 +279,31 @@ export function resolveNextIssueByMissingField(
 ): AiPmLoopIssueId | null {
   if (loop.phase === 'complete') return null;
 
-  const resolved = new Set(getResolvedIssueIds(loop));
   const memory = options?.memory ?? null;
+  const turns = options?.turns ?? loop.turns;
+  const answeredGaps = getAnsweredTargetGaps(turns);
+  const ranked = resolveMissingFieldPriorities(understanding, loop, options);
 
   if (
     loop.currentIssueId &&
-    !resolved.has(loop.currentIssueId) &&
+    !getResolvedIssueIds(loop).includes(loop.currentIssueId) &&
     !isIssueLockedInMemory(loop.currentIssueId, memory)
   ) {
-    return loop.currentIssueId;
+    const lastTurn = [...turns].reverse().find((t) => !t.superseded);
+    const lastGap = lastTurn?.targetGap?.trim() ?? null;
+    const lastGapDone =
+      (lastGap && answeredGaps.has(lastGap)) ||
+      (lastGap && isGapSatisfiedInMemory(lastGap, memory));
+
+    // Stick only when in-flight gap still open AND not just answered
+    if (!lastGapDone) {
+      const stillOpenForIssue = ranked.find((r) => r.issueId === loop.currentIssueId);
+      if (stillOpenForIssue && !answeredGaps.has(stillOpenForIssue.targetGap)) {
+        return loop.currentIssueId;
+      }
+    }
   }
 
-  const ranked = resolveMissingFieldPriorities(understanding, loop, options);
   return ranked[0]?.issueId ?? null;
 }
 
@@ -245,6 +320,7 @@ export function getTopGapPriority(
 /**
  * CPO-verifiable "WHY THIS QUESTION NOW" for the active (or top) issue.
  * whyNow and questionText share targetGap (P0-4).
+ * Core v4 — prefer top living gap over sticky issue when gap already answered.
  */
 export function getWhyThisQuestionNow(
   understanding: BusinessUnderstanding,
@@ -258,9 +334,23 @@ export function getWhyThisQuestionNow(
     return ranked.find((r) => r.targetGap === options.targetGap) ?? ranked[0] ?? null;
   }
 
-  const want = options?.issueId;
-  if (want) {
-    return ranked.find((r) => r.issueId === want) ?? ranked[0] ?? null;
+  const answeredGaps = getAnsweredTargetGaps(options?.turns ?? loop.turns);
+
+  // Prefer absolute top gap — avoids bm_design sticky picking already-answered revenue forever
+  const top = ranked[0]!;
+  if (!answeredGaps.has(top.targetGap)) {
+    const want = options?.issueId;
+    if (want) {
+      const sameIssue = ranked.find(
+        (r) => r.issueId === want && !answeredGaps.has(r.targetGap),
+      );
+      // Only prefer same-issue if it is still the judgment-critical top-ish
+      if (sameIssue && sameIssue.score >= top.score * 0.85) {
+        return sameIssue;
+      }
+    }
+    return top;
   }
-  return ranked[0] ?? null;
+
+  return ranked.find((r) => !answeredGaps.has(r.targetGap)) ?? top;
 }

@@ -1,3 +1,8 @@
+/**
+ * ALABOM Core v4 — merge founder answer into working document.
+ * Section labels deliberately avoid extractCustomer keyword traps (고객/타깃).
+ */
+
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
 import {
   inferDomainFromPaste,
@@ -6,11 +11,11 @@ import {
 } from '../workspace-ai-pm-messages';
 
 const ISSUE_SECTION_LABEL: Record<AiPmLoopIssueId, string> = {
-  customer_definition: '고객 정의',
-  problem_definition: '문제 정의',
-  bm_design: '수익 모델',
-  competitor_analysis: '경쟁사',
-  market_validation: '시장 검증',
+  customer_definition: '페르소나 확인',
+  problem_definition: '문제 확인',
+  bm_design: '수익·지불 확인',
+  competitor_analysis: '경쟁·차별 확인',
+  market_validation: '시장 검증 확인',
 };
 
 /** Merge founder answer into working document and re-infer domain entities. */

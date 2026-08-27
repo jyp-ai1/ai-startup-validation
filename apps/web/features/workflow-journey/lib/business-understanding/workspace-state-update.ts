@@ -186,7 +186,17 @@ export function applyWorkspaceLoopAnswer(
 
   // Merge into document under SEMANTIC issue section (not wrong asked-slot)
   const mergeIssueId = semantic.resolvedIssueId ?? issueId;
-  applyAiPmLoopAnswer(mergeIssueId, answer, projectId);
+  // Multi-fact: write one document block per distinct semantic issue (primary first)
+  const mergeIssueIds = [
+    mergeIssueId,
+    ...semantic.facts
+      .map((f) => f.issueId)
+      .filter((id) => id !== mergeIssueId),
+  ];
+  const uniqueMergeIssues = [...new Set(mergeIssueIds)];
+  for (const id of uniqueMergeIssues.slice(0, 2)) {
+    applyAiPmLoopAnswer(id, answer, projectId);
+  }
   const documentText = loadWorkspaceDocumentText(projectId)?.trim() ?? '';
   const inferred = inferDomainFromPaste(documentText, projectId);
   saveWorkspaceDomain(inferred.domain, projectId);

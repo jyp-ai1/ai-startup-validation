@@ -110,6 +110,8 @@ function extractCustomer(
   let raw = '';
   let rawLine = '';
   for (const line of lines) {
+    // Never treat AI PM section headers as customer values (정의] pollution)
+    if (/^\[AI\s*PM\s*확인/i.test(line)) continue;
     const lower = line.toLowerCase();
     if (['타겟', '타깃', '고객', 'customer', 'target', '주요 고객'].some((k) => lower.includes(k))) {
       raw = line;
@@ -120,6 +122,8 @@ function extractCustomer(
 
   const candidate = raw
     .replace(/^(.*?)(타겟\s*고객|타겟|타깃|고객|customer|target)[\s:：]*/i, '')
+    .replace(/^정의\]\s*/i, '')
+    .replace(/^\[.*?\]\s*/g, '')
     .trim();
 
   // P0 — no customer section → never guess from keywords alone

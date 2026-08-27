@@ -595,6 +595,7 @@ export function WorkspaceAiPmLoopPanel({
       askedIssueId: issueId,
       existingFact,
       existingFactsByKey,
+      askedTargetGap: whyThisQuestionNow?.targetGap,
     });
 
     // Why / mid-judgment — display only, never append Fact turn
@@ -644,16 +645,34 @@ export function WorkspaceAiPmLoopPanel({
       phase: 'answer',
     });
 
-    const recordIssueId = semantic.resolvedIssueId ?? issueId;
+    const recordIssueId = issueId; // asked issue — resolve bookkeeping (not semantic dump)
+    const factKeys =
+      semantic.facts.length > 0
+        ? semantic.facts.map((f) => f.key)
+        : semantic.factKey
+          ? [semantic.factKey]
+          : [];
+    const understandingDelta = [
+      semantic.factKey ? `확인: ${semantic.factKey}` : null,
+      factKeys.length > 1 ? `추가 Fact: ${factKeys.filter((k) => k !== semantic.factKey).join(', ')}` : null,
+      whyThisQuestionNow?.targetGap
+        ? `다음 공백 후보 재계산 (직전 gap: ${whyThisQuestionNow.targetGap})`
+        : null,
+    ]
+      .filter(Boolean)
+      .join(' · ');
+
     appendAiPmLoopTurn(
       {
         issueId: recordIssueId,
         answer: trimmed,
         appliedAt: new Date().toISOString(),
         semanticFactKey: semantic.factKey,
+        semanticFactKeys: factKeys,
         intent: semantic.intent,
         whyNow: whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale,
         targetGap: whyThisQuestionNow?.targetGap,
+        understandingDelta,
       },
       projectId,
     );
@@ -719,6 +738,7 @@ export function WorkspaceAiPmLoopPanel({
           intent: 'correction',
           factKey,
           resolvedIssueId: issueId,
+          facts: [{ key: factKey, issueId }],
           value: next,
           mergeable: true,
           displayOnly: false,
@@ -831,7 +851,15 @@ export function WorkspaceAiPmLoopPanel({
           <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
             {t('judgmentLabel')}
           </p>
-          <p className="mt-2 text-sm leading-relaxed">{finalOutput.judgmentSummary}</p>
+          <p
+            data-testid="final-closeout-label"
+            className="mt-2 text-sm font-medium leading-relaxed text-foreground"
+          >
+            {finalOutput.closeoutLabel}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {finalOutput.judgmentSummary}
+          </p>
           <p className="mt-1 text-xs text-muted-foreground">
             {t('coverageFlash', { percent: finalOutput.coveragePercent })}
           </p>
@@ -845,6 +873,19 @@ export function WorkspaceAiPmLoopPanel({
             >
               <p className="text-xs font-semibold text-foreground">{section.title}</p>
               <p className="mt-1 text-sm leading-snug">{section.summary}</p>
+              {section.claims?.length ? (
+                <ul className="mt-2 space-y-1">
+                  {section.claims.map((row) => (
+                    <li
+                      key={`${section.id}-${row.domain}`}
+                      className="text-[11px] text-muted-foreground"
+                      data-claim-status={row.status}
+                    >
+                      · {row.domain}: {row.value ?? '—'} ({row.status})
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
               {section.evidence.length > 0 ? (
                 <p className="mt-1 text-[11px] text-muted-foreground">
                   {section.evidence[0]}
@@ -902,6 +943,27 @@ export function WorkspaceAiPmLoopPanel({
           className,
         )}
       >
+        <div
+          data-testid="current-judgment-block"
+          className="mb-4 rounded-xl border border-border/50 bg-muted/20 px-4 py-3"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+            {t('judgmentLabel')}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-foreground">
+            {livingState.judgmentSummary}
+          </p>
+          {whyThisQuestionNow?.whyNow ? (
+            <details className="mt-2" data-testid="why-now-details">
+              <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
+                왜 지금 이 질문을 하나요?
+              </summary>
+              <p className="mt-1 text-xs leading-relaxed text-foreground/90">
+                {whyThisQuestionNow.whyNow}
+              </p>
+            </details>
+          ) : null}
+        </div>
         <WorkspaceS11Surface surface={s11Surface} />
         {whyPanel ? (
           <div
@@ -1107,6 +1169,24 @@ export function WorkspaceAiPmLoopPanel({
               <p className="mt-2 text-sm leading-relaxed text-foreground">
                 {livingState.judgmentSummary}
               </p>
+              {lastTurn?.understandingDelta ? (
+                <p
+                  data-testid="understanding-delta"
+                  className="mt-2 text-xs text-emerald-800 dark:text-emerald-300"
+                >
+                  {lastTurn.understandingDelta}
+                </p>
+              ) : null}
+              {whyThisQuestionNow?.whyNow ? (
+                <details className="mt-2" data-testid="why-now-details">
+                  <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
+                    왜 지금 이 질문을 하나요?
+                  </summary>
+                  <p className="mt-1 text-xs leading-relaxed text-foreground/90">
+                    {whyThisQuestionNow.whyNow}
+                  </p>
+                </details>
+              ) : null}
               <p className="mt-1 text-xs text-muted-foreground">
                 {t('coverageFlash', { percent: livingState.coveragePercent })}
               </p>

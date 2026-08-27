@@ -83,7 +83,15 @@ const DECISION_BY_ISSUE: Record<
   },
 };
 
-const CORE_KEYS: ConversationFactKey[] = ['business', 'customer', 'problem', 'revenue', 'market'];
+const CORE_KEYS: ConversationFactKey[] = [
+  'business',
+  'customer',
+  'problem',
+  'buyer',
+  'revenue',
+  'market',
+  'competitor',
+];
 
 function assumedFromEntities(
   key: ConversationFactKey,

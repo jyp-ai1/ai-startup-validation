@@ -332,8 +332,15 @@ function resolveDomainValue(
         val ? [{ kind: 'document', excerpt: val.slice(0, 80) }] : [],
       );
     }
-    case 'differentiationVsAlternatives':
+    case 'differentiationVsAlternatives': {
+      const fromMem = factValue(mem, 'competitor');
+      if (fromMem && /(차별|differentiat|우리만|핫플이\s*아니라|포지션)/i.test(fromMem)) {
+        return claimFromValue(fieldKey, fromMem, 'USER_CONFIRMED', [
+          { kind: 'user_answer', excerpt: fromMem.slice(0, 80) },
+        ]);
+      }
       return claimFromValue(fieldKey, null, 'UNKNOWN', []);
+    }
     case 'topRisks':
     case 'validationTestability':
     case 'executionConstraints':
@@ -398,7 +405,7 @@ export function whyNowForGapField(fieldKey: string): string {
 
 function scoreGap(
   claim: LivingClaim,
-  resolvedIssueIds: Set<AiPmLoopIssueId>,
+  _resolvedIssueIds: Set<AiPmLoopIssueId>,
   options?: { hasContradiction?: boolean },
 ): LivingUnderstandingGap | null {
   if (claim.status === 'contradiction') {
@@ -414,7 +421,8 @@ function scoreGap(
   if (claim.status !== 'unknown') return null;
 
   const issueId = ISSUE_FOR_DOMAIN[claim.fieldKey] ?? null;
-  if (issueId && resolvedIssueIds.has(issueId)) return null;
+  // Core v4 — do NOT suppress sibling gaps on the same issueId (payer vs revenueModel).
+  // Gap satisfaction is fact/claim based; issue resolution alone must not hide unknowns.
 
   // Judgment-critical Stage A fields first — not fixed form order
   const impact = DOMAIN_IMPACT_WEIGHT[claim.fieldKey] ?? 3;
@@ -460,18 +468,33 @@ function buildJudgmentSummary(
   spine: WorkspaceSharedUnderstanding,
   coveragePercent: number,
   topGap: LivingUnderstandingGap | null,
+  claims?: LivingClaim[],
 ): string {
-  const parts: string[] = [];
-  if (!isPending(spine.business)) parts.push(`사업: ${spine.business}`);
-  if (!isPending(spine.customer)) parts.push(`고객: ${spine.customer}`);
-  if (!isPending(spine.problem)) parts.push(`문제: ${spine.problem}`);
-  const base =
-    parts.length > 0
-      ? `현재 이해 — ${parts.join(' · ')}.`
-      : '아직 핵심 사업 이해가 비어 있습니다.';
-  const coverage = `구체화도 ${coveragePercent}%.`;
-  const gap = topGap ? ` 다음 공백: ${topGap.rationale}` : '';
-  return `${base} ${coverage}${gap}`;
+  const confirmed =
+    claims
+      ?.filter((c) => c.status === 'confirmed' && c.value)
+      .slice(0, 4)
+      .map((c) => `${c.fieldKey}: ${c.value}`) ?? [];
+  const uncertain =
+    claims
+      ?.filter((c) => c.status === 'inferred' || c.status === 'contradiction')
+      .slice(0, 2)
+      .map((c) => c.fieldKey) ?? [];
+
+  const confirmedLine =
+    confirmed.length > 0
+      ? `지금까지 확인: ${confirmed.join(' · ')}.`
+      : !isPending(spine.business) || !isPending(spine.customer) || !isPending(spine.problem)
+        ? `현재 이해 — 사업: ${spine.business} · 고객: ${spine.customer} · 문제: ${spine.problem}.`
+        : '아직 핵심 사업 이해가 비어 있습니다.';
+
+  const uncertainLine =
+    uncertain.length > 0 ? ` 불확실: ${uncertain.join(', ')}.` : '';
+  const coverage = ` 이해 상태 커버리지 ${coveragePercent}% (필드 채움률이 아님).`;
+  const gap = topGap
+    ? ` 남은 핵심 공백은 「${topGap.fieldKey}」입니다. 그래서 지금 이 질문을 합니다.`
+    : '';
+  return `${confirmedLine}${uncertainLine}${coverage}${gap}`;
 }
 
 export type BuildLivingStateInput = {
@@ -517,7 +540,7 @@ export function buildLivingUnderstandingState(input: BuildLivingStateInput): Liv
     .sort((a, b) => b.priorityScore - a.priorityScore);
 
   const productStage = resolveProductStage(coveragePercent, memory);
-  const judgmentSummary = buildJudgmentSummary(spine, coveragePercent, gaps[0] ?? null);
+  const judgmentSummary = buildJudgmentSummary(spine, coveragePercent, gaps[0] ?? null, claims);
 
   return {
     version: 1,

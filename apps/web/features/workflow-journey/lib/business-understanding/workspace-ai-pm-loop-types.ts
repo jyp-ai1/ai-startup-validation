@@ -14,8 +14,10 @@ export type AiPmLoopTurn = {
   issueId: AiPmLoopIssueId;
   answer: string;
   appliedAt: string;
-  /** Core v3 — semantic fact key (may differ from asked issue template) */
+  /** Core v3 — primary semantic fact key (may differ from asked issue template) */
   semanticFactKey?: ConversationFactKey | null;
+  /** Core v4 — all semantic facts extracted from one utterance */
+  semanticFactKeys?: ConversationFactKey[];
   /** Core v3 — intent classification */
   intent?: AnswerIntent;
   /** Core v3 — superseded after prior-answer edit */
@@ -24,6 +26,8 @@ export type AiPmLoopTurn = {
   whyNow?: string;
   /** P0-4 — Living gap fieldKey aligned with whyNow */
   targetGap?: string;
+  /** Core v4 — brief AI understanding delta shown before next Q */
+  understandingDelta?: string;
 };
 
 export type AiPmLoopState = {

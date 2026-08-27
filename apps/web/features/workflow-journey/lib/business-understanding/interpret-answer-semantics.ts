@@ -1,6 +1,6 @@
 /**
- * ALABOM Core v3 — Semantic Interpretation Layer.
- * User answer → intent + fact routing by meaning (NOT current question slot dump).
+ * ALABOM Core v4 — Semantic Interpretation Layer.
+ * User answer → intent + multi-fact routing by meaning (NOT current question slot dump).
  */
 
 import type { ConversationFactKey } from './conversation-memory';
@@ -15,12 +15,19 @@ export type AnswerIntent =
   | 'correction'
   | 'unknown_signal';
 
+export type SemanticFactHit = {
+  key: ConversationFactKey;
+  issueId: AiPmLoopIssueId;
+};
+
 export type SemanticInterpretation = {
   intent: AnswerIntent;
-  /** null when answer must NOT enter Fact DB */
+  /** Primary fact key (highest-weight route) — null when answer must NOT enter Fact DB */
   factKey: ConversationFactKey | null;
-  /** Issue aligned with semantic fact (may differ from asked issue) */
+  /** Issue aligned with primary semantic fact (may differ from asked issue) */
   resolvedIssueId: AiPmLoopIssueId | null;
+  /** Core v4 — one utterance may yield multiple facts (payer + revenue, competition + diff) */
+  facts: SemanticFactHit[];
   value: string | null;
   /** True only for business_fact / correction that may merge */
   mergeable: boolean;
@@ -43,6 +50,13 @@ const EXPLICIT_CONFLICT_CUE_RE =
 const HANGUL_JAMO_MASH_RE = /^[\u3131-\u318E\s]{4,}$/;
 const HANGUL_REPEATED_SYLLABLE_RE = /^(?:([가-힣])\1{2,}|([가-힣]{1,2})\2{3,})$/;
 
+const COMPETITOR_CUE_RE =
+  /(경쟁|대안|차별|differentiat|tripadvisor|네이버\s*지도|구글\s*맵|비슷한\s*서비스|vs\.?|대비|인플루언서|핫플이\s*아니라)/i;
+const DIFF_CUE_RE = /(차별|differentiat|인플루언서|핫플이\s*아니라|포지션|우리만)/i;
+const PAYER_CUE_RE = /(결제|지불|payer|누가\s*(내|지불)|비용을?\s*내|구매자|돈\s*내)/i;
+const REVENUE_CUE_RE =
+  /(수익|수수료|구독|pricing|매출|비즈니스\s*모델|\bbm\b|monetiz|커미션|중개\s*수수)/i;
+
 const FACT_ROUTE: Array<{
   key: ConversationFactKey;
   issueId: AiPmLoopIssueId;
@@ -52,14 +66,15 @@ const FACT_ROUTE: Array<{
 }> = [
   {
     key: 'buyer',
-    issueId: 'customer_definition',
-    re: /(결제|지불|payer|누가\s*(내|지불)|비용을?\s*내|구매자|돈\s*내)/i,
+    // Loop bookkeeping: payer lives under BM, not customer spine
+    issueId: 'bm_design',
+    re: PAYER_CUE_RE,
     weight: 12,
   },
   {
     key: 'competitor',
     issueId: 'competitor_analysis',
-    re: /(경쟁|대안|차별|differentiat|tripadvisor|네이버\s*지도|구글\s*맵|비슷한\s*서비스|vs\.?|대비)/i,
+    re: COMPETITOR_CUE_RE,
     weight: 11,
   },
   {
@@ -83,7 +98,7 @@ const FACT_ROUTE: Array<{
   {
     key: 'revenue',
     issueId: 'bm_design',
-    re: /(수익|수수료|구독|pricing|매출|비즈니스\s*모델|bm| monetiz)/i,
+    re: REVENUE_CUE_RE,
     weight: 9,
   },
   {
@@ -102,16 +117,23 @@ const ISSUE_TO_FACT: Partial<Record<AiPmLoopIssueId, ConversationFactKey>> = {
   competitor_analysis: 'competitor',
 };
 
+function emptyInterpretation(
+  partial: Omit<SemanticInterpretation, 'facts'> & { facts?: SemanticFactHit[] },
+): SemanticInterpretation {
+  return { ...partial, facts: partial.facts ?? [] };
+}
+
 function isNonsenseText(trimmed: string): boolean {
   if (HANGUL_JAMO_MASH_RE.test(trimmed)) return true;
   if (HANGUL_REPEATED_SYLLABLE_RE.test(trimmed)) return true;
-  // Dense jamo mixed with latin mash (e.g. ㅁㄴㅇㄻㄴㅇㄻㅇ)
   const jamoCount = (trimmed.match(/[\u3131-\u318E]/g) ?? []).length;
   if (jamoCount >= 4 && jamoCount / trimmed.replace(/\s/g, '').length >= 0.6) return true;
   return false;
 }
 
-function scoreRoutes(text: string): Array<{ key: ConversationFactKey; issueId: AiPmLoopIssueId; score: number }> {
+function scoreRoutes(
+  text: string,
+): Array<{ key: ConversationFactKey; issueId: AiPmLoopIssueId; score: number }> {
   const hits: Array<{ key: ConversationFactKey; issueId: AiPmLoopIssueId; score: number }> = [];
   for (const route of FACT_ROUTE) {
     if (route.re.test(text)) {
@@ -119,6 +141,44 @@ function scoreRoutes(text: string): Array<{ key: ConversationFactKey; issueId: A
     }
   }
   return hits.sort((a, b) => b.score - a.score);
+}
+
+/** Collect multi-fact hits — competitor/diff never co-route into customer. */
+function collectFactHits(
+  text: string,
+  routes: Array<{ key: ConversationFactKey; issueId: AiPmLoopIssueId; score: number }>,
+): SemanticFactHit[] {
+  const seen = new Set<ConversationFactKey>();
+  const hits: SemanticFactHit[] = [];
+
+  for (const route of routes) {
+    if (seen.has(route.key)) continue;
+    // Customer keyword often co-occurs with payer/competitor — demote when stronger BM/comp cues exist
+    if (
+      route.key === 'customer' &&
+      (PAYER_CUE_RE.test(text) || COMPETITOR_CUE_RE.test(text) || REVENUE_CUE_RE.test(text))
+    ) {
+      continue;
+    }
+    seen.add(route.key);
+    hits.push({ key: route.key, issueId: route.issueId });
+  }
+
+  // Explicit differentiation cue always yields competitor fact
+  if (DIFF_CUE_RE.test(text) && !seen.has('competitor')) {
+    hits.push({ key: 'competitor', issueId: 'competitor_analysis' });
+  }
+
+  return hits;
+}
+
+function refuseCustomerSlotForCompetitor(
+  factKey: ConversationFactKey | null,
+  text: string,
+): { factKey: ConversationFactKey; issueId: AiPmLoopIssueId } | null {
+  if (factKey !== 'customer' && factKey !== 'problem') return null;
+  if (!COMPETITOR_CUE_RE.test(text) && !DIFF_CUE_RE.test(text)) return null;
+  return { factKey: 'competitor', issueId: 'competitor_analysis' };
 }
 
 /**
@@ -130,12 +190,14 @@ export function interpretAnswerSemantics(input: {
   askedIssueId: AiPmLoopIssueId | null;
   existingFact?: string | null;
   existingFactsByKey?: Partial<Record<ConversationFactKey, string | null>>;
+  /** Living gap that was asked — used to avoid dumping competitor into customer when asked */
+  askedTargetGap?: string | null;
 }): SemanticInterpretation {
   const trimmed = input.answer.trim().replace(/\s+/g, ' ');
   const askedFact = input.askedIssueId ? ISSUE_TO_FACT[input.askedIssueId] ?? null : null;
 
   if (trimmed.length < 2) {
-    return {
+    return emptyInterpretation({
       intent: 'unknown_signal',
       factKey: null,
       resolvedIssueId: null,
@@ -144,11 +206,11 @@ export function interpretAnswerSemantics(input: {
       displayOnly: false,
       rationale: '답변이 비어 있습니다.',
       quality: 'UNKNOWN',
-    };
+    });
   }
 
   if (isNonsenseText(trimmed) || evaluateAnswerQuality(trimmed).quality === 'IRRELEVANT') {
-    return {
+    return emptyInterpretation({
       intent: 'nonsense',
       factKey: null,
       resolvedIssueId: null,
@@ -157,11 +219,11 @@ export function interpretAnswerSemantics(input: {
       displayOnly: false,
       rationale: '의미 없는 입력 — Fact로 저장하지 않습니다.',
       quality: 'IRRELEVANT',
-    };
+    });
   }
 
   if (WHY_META_RE.test(trimmed) || /왜\s*그게\s*중요/.test(trimmed)) {
-    return {
+    return emptyInterpretation({
       intent: 'why_meta',
       factKey: null,
       resolvedIssueId: input.askedIssueId,
@@ -170,11 +232,11 @@ export function interpretAnswerSemantics(input: {
       displayOnly: true,
       rationale: 'Why/meta — 근거 설명만 하고 루프로 복귀. Fact DB 금지.',
       quality: 'IRRELEVANT',
-    };
+    });
   }
 
   if (MID_JUDGMENT_RE.test(trimmed)) {
-    return {
+    return emptyInterpretation({
       intent: 'mid_judgment',
       factKey: null,
       resolvedIssueId: input.askedIssueId,
@@ -183,12 +245,12 @@ export function interpretAnswerSemantics(input: {
       displayOnly: true,
       rationale: '중간 판단/요약 요청 — 화면 표시만. Confirmed Fact 자동 저장 금지.',
       quality: 'IRRELEVANT',
-    };
+    });
   }
 
   const unknownProbe = evaluateAnswerQuality(trimmed);
   if (unknownProbe.quality === 'UNKNOWN' && !unknownProbe.mergeable) {
-    return {
+    return emptyInterpretation({
       intent: 'unknown_signal',
       factKey: null,
       resolvedIssueId: null,
@@ -197,40 +259,69 @@ export function interpretAnswerSemantics(input: {
       displayOnly: false,
       rationale: '모름 신호 — Fact로 확정하지 않습니다.',
       quality: 'UNKNOWN',
-    };
+    });
   }
 
   const isCorrection = CORRECTION_RE.test(trimmed);
   const routes = scoreRoutes(trimmed);
   const top = routes[0] ?? null;
+  let facts = collectFactHits(trimmed, routes);
 
   // Semantic winner beats asked slot when clearly signaled
   let factKey: ConversationFactKey | null = top?.key ?? askedFact;
   let resolvedIssueId: AiPmLoopIssueId | null = top?.issueId ?? input.askedIssueId;
 
   // Guard: if asked slot conflicts with a strong competing signal, prefer semantic
-  if (top && askedFact && top.key !== askedFact && top.score >= 10) {
+  if (top && askedFact && top.key !== askedFact && top.score >= 9) {
     factKey = top.key;
     resolvedIssueId = top.issueId;
   }
 
+  // Asked customer/persona but answer is competitor/diff → never dump into CUSTOMER
+  const refused = refuseCustomerSlotForCompetitor(factKey, trimmed);
+  if (refused) {
+    factKey = refused.factKey;
+    resolvedIssueId = refused.issueId;
+    if (!facts.some((f) => f.key === 'competitor')) {
+      facts = [{ key: 'competitor', issueId: 'competitor_analysis' }, ...facts.filter((f) => f.key !== 'customer')];
+    } else {
+      facts = facts.filter((f) => f.key !== 'customer');
+    }
+  }
+
   // Differentiation must never land in customer/problem
-  if (
-    /(차별|differentiat|인플루언서|핫플이\s*아니라)/i.test(trimmed) &&
-    (factKey === 'customer' || factKey === 'problem')
-  ) {
+  if (DIFF_CUE_RE.test(trimmed) && (factKey === 'customer' || factKey === 'problem')) {
     factKey = 'competitor';
     resolvedIssueId = 'competitor_analysis';
   }
 
-  // Payer phrases must not land in problem
-  if (factKey === 'problem' && /(결제|지불|payer)/i.test(trimmed)) {
+  // Payer phrases must not land in problem; bookkeeping under bm_design
+  if (factKey === 'problem' && PAYER_CUE_RE.test(trimmed)) {
     factKey = 'buyer';
-    resolvedIssueId = 'customer_definition';
+    resolvedIssueId = 'bm_design';
+  }
+
+  // When asked revenue gap and answer has revenue cue, ensure revenue fact hit
+  if (
+    (input.askedTargetGap === 'revenueModel' || input.askedTargetGap === 'pricingHint') &&
+    REVENUE_CUE_RE.test(trimmed) &&
+    !facts.some((f) => f.key === 'revenue')
+  ) {
+    facts.push({ key: 'revenue', issueId: 'bm_design' });
+  }
+
+  // Payer+revenue multi-fact: keep both when both cues present
+  if (PAYER_CUE_RE.test(trimmed) && REVENUE_CUE_RE.test(trimmed)) {
+    if (!facts.some((f) => f.key === 'buyer')) {
+      facts.push({ key: 'buyer', issueId: 'bm_design' });
+    }
+    if (!facts.some((f) => f.key === 'revenue')) {
+      facts.push({ key: 'revenue', issueId: 'bm_design' });
+    }
   }
 
   if (!factKey || !resolvedIssueId) {
-    return {
+    return emptyInterpretation({
       intent: isCorrection ? 'correction' : 'business_fact',
       factKey: null,
       resolvedIssueId: null,
@@ -239,7 +330,12 @@ export function interpretAnswerSemantics(input: {
       displayOnly: false,
       rationale: '의미는 있으나 사업 Fact 슬롯을 확정할 수 없습니다 — 재질문.',
       quality: 'AMBIGUOUS',
-    };
+    });
+  }
+
+  // Primary must appear in facts list
+  if (!facts.some((f) => f.key === factKey)) {
+    facts = [{ key: factKey, issueId: resolvedIssueId }, ...facts];
   }
 
   const existingForKey =
@@ -251,21 +347,22 @@ export function interpretAnswerSemantics(input: {
     existingForKey &&
     (answersContradict(existingForKey, trimmed) || EXPLICIT_CONFLICT_CUE_RE.test(trimmed))
   ) {
-    return {
+    return emptyInterpretation({
       intent: isCorrection || EXPLICIT_CONFLICT_CUE_RE.test(trimmed) ? 'correction' : 'business_fact',
       factKey,
       resolvedIssueId,
+      facts,
       value: trimmed,
       mergeable: false,
       displayOnly: false,
       rationale: `기존 「${factKey}」 Fact와 충돌 — CONFLICT 확인 필요.`,
       quality: 'CONTRADICTORY',
-    };
+    });
   }
 
   const quality = evaluateAnswerQuality(trimmed, { existingFact: existingForKey });
   if (!quality.mergeable) {
-    return {
+    return emptyInterpretation({
       intent: 'business_fact',
       factKey: null,
       resolvedIssueId: null,
@@ -274,21 +371,22 @@ export function interpretAnswerSemantics(input: {
       displayOnly: false,
       rationale: '답변 품질 부족 — Fact 미저장.',
       quality: quality.quality,
-    };
+    });
   }
 
-  return {
+  return emptyInterpretation({
     intent: isCorrection ? 'correction' : 'business_fact',
     factKey,
     resolvedIssueId,
+    facts,
     value: trimmed,
     mergeable: true,
     displayOnly: false,
     rationale: top
-      ? `의미 라우팅: ${factKey} (signal≥${top.score}${askedFact && askedFact !== factKey ? `; asked-slot ${askedFact} 무시` : ''})`
+      ? `의미 라우팅: ${facts.map((f) => f.key).join('+')} (primary=${factKey}, signal≥${top.score}${askedFact && askedFact !== factKey ? `; asked-slot ${askedFact} 무시` : ''})`
       : `약한 prior: asked issue → ${factKey}`,
     quality: quality.quality,
-  };
+  });
 }
 
 export function issueIdForFactKey(key: ConversationFactKey): AiPmLoopIssueId | null {

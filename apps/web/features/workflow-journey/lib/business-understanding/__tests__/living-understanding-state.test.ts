@@ -31,7 +31,7 @@ describe('living-understanding-state (v2 SoT)', () => {
 
     expect(living.claims).toHaveLength(20);
     expect(living.coveragePercent).toBeGreaterThan(0);
-    expect(living.judgmentSummary).toContain('구체화도');
+    expect(living.judgmentSummary).toContain('커버리지');
   });
 
   it('coverage increases when memory facts are confirmed', () => {

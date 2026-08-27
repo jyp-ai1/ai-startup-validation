@@ -61,7 +61,7 @@ export function resolveAiPmPriorityIssue(
 /**
  * Single source for loop UI, pause, and resume.
  * S9: never re-ask an issue whose Fact is Confirmed in Conversation Memory.
- * S17-3: highest-priority missing Shared Understanding field drives next ask.
+ * Core v4: gap-level advancement — sticky currentIssueId yields when asked gap answered.
  */
 export function resolveNextLoopIssue(
   understanding: BusinessUnderstanding,
@@ -74,15 +74,7 @@ export function resolveNextLoopIssue(
   const resolved = new Set(resolvedIds);
   const memory = options?.memory ?? null;
 
-  if (
-    loop.currentIssueId &&
-    !resolved.has(loop.currentIssueId) &&
-    !isIssueLockedInMemory(loop.currentIssueId, memory)
-  ) {
-    return loop.currentIssueId;
-  }
-
-  // S17-3 — missing-field priority first
+  // S17-3 / Core v4 — missing-field priority first (includes sticky-safe logic)
   const byMissing = resolveNextIssueByMissingField(understanding, loop, {
     ...options,
     turns: options?.turns ?? loop.turns,
@@ -114,7 +106,6 @@ export function resolveNextLoopIssue(
   for (const id of candidates) {
     if (resolved.has(id)) continue;
     if (isIssueLockedInMemory(id, memory)) continue;
-    // S14 / v2 — competitor after analysis OR once customer+problem confirmed
     if (id === 'competitor_analysis' && !options?.analysisResultExists) {
       const criticalConfirmed =
         Boolean(memory) &&

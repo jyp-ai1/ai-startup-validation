@@ -42,9 +42,30 @@ function safeBusinessFromEntities(entities: LaunchLensDomainContext | null): str
   return null;
 }
 
+function upsertSemanticFacts(
+  memory: ConversationMemory,
+  answer: string,
+  keys: ConversationFactKey[],
+): ConversationMemory {
+  let next = memory;
+  const unique = [...new Set(keys)];
+  for (const key of unique) {
+    next = upsertConfirmedFact(next, key, answer, 'user_turn');
+  }
+  // Payer-oriented answers also lock buyer when payment cue present
+  if (
+    unique.includes('buyer') ||
+    (unique.includes('customer') && /(결제|지불|payer)/i.test(answer))
+  ) {
+    next = upsertConfirmedFact(next, 'buyer', answer, 'user_turn');
+  }
+  return next;
+}
+
 /**
- * Rebuild Memory from conversation sources (Core v3).
+ * Rebuild Memory from conversation sources (Core v4).
  * - Semantic interpretation per turn — NOT issue-slot dump
+ * - Multi-fact keys from one utterance
  * - Why / mid-judgment / nonsense never become Facts
  * - Superseded turns skipped
  */
@@ -57,7 +78,6 @@ export function buildConversationMemoryFromSources(input: {
 }): ConversationMemory {
   let memory = emptyConversationMemory(input.projectId);
 
-  // Preserve prior document facts only (user turns rebuilt from turns below)
   if (input.previous?.facts.length) {
     for (const fact of input.previous.facts) {
       if (fact.source !== 'document') continue;
@@ -76,7 +96,6 @@ export function buildConversationMemoryFromSources(input: {
 
   for (const turn of input.turns) {
     if (turn.superseded) continue;
-    // Explicit non-fact intents
     if (
       turn.intent === 'why_meta' ||
       turn.intent === 'mid_judgment' ||
@@ -89,15 +108,16 @@ export function buildConversationMemoryFromSources(input: {
     const answer = turn.answer.trim();
     if (answer.length < 2) continue;
 
-    // Prefer stored semantic key when present
-    if (turn.semanticFactKey) {
-      memory = upsertConfirmedFact(memory, turn.semanticFactKey, answer, 'user_turn');
-      if (turn.semanticFactKey === 'customer' || turn.semanticFactKey === 'buyer') {
-        // Payer-oriented customer answers also lock buyer when text signals payment
-        if (turn.semanticFactKey === 'buyer' || /(결제|지불|payer)/i.test(answer)) {
-          memory = upsertConfirmedFact(memory, 'buyer', answer, 'user_turn');
-        }
-      }
+    // Prefer stored semantic keys when present (multi-fact + primary)
+    const storedKeys =
+      turn.semanticFactKeys && turn.semanticFactKeys.length > 0
+        ? turn.semanticFactKeys
+        : turn.semanticFactKey
+          ? [turn.semanticFactKey]
+          : null;
+
+    if (storedKeys) {
+      memory = upsertSemanticFacts(memory, answer, storedKeys);
       continue;
     }
 
@@ -115,14 +135,16 @@ export function buildConversationMemoryFromSources(input: {
       answer,
       askedIssueId: turn.issueId,
       existingFactsByKey,
+      askedTargetGap: turn.targetGap,
     });
 
     if (!semantic.mergeable || !semantic.factKey) continue;
 
-    memory = upsertConfirmedFact(memory, semantic.factKey, answer, 'user_turn');
-    if (semantic.factKey === 'buyer' || /(결제|지불|payer)/i.test(answer)) {
-      memory = upsertConfirmedFact(memory, 'buyer', answer, 'user_turn');
-    }
+    const keys =
+      semantic.facts.length > 0
+        ? semantic.facts.map((f) => f.key)
+        : [semantic.factKey];
+    memory = upsertSemanticFacts(memory, answer, keys);
   }
 
   return memory;
@@ -130,4 +152,33 @@ export function buildConversationMemoryFromSources(input: {
 
 export function factKeyForIssue(issueId: AiPmLoopIssueId): ConversationFactKey | null {
   return TURN_TO_FACT[issueId] ?? null;
+}
+
+/** Gap fieldKey → memory fact that satisfies that gap (Core v4 re-ask gate). */
+export function factKeyForGapField(fieldKey: string): ConversationFactKey | null {
+  switch (fieldKey) {
+    case 'payer':
+      return 'buyer';
+    case 'customerPersona':
+      return 'customer';
+    case 'problemJtbd':
+    case 'problemFrequencySeverity':
+      return 'problem';
+    case 'alternativesCompetitors':
+    case 'differentiationVsAlternatives':
+    case 'differentiationHypothesis':
+      return 'competitor';
+    case 'marketChannel':
+    case 'marketSizeEvidence':
+      return 'market';
+    case 'revenueModel':
+    case 'pricingHint':
+      return 'revenue';
+    case 'businessOneLiner':
+    case 'categoryScope':
+    case 'solution':
+      return 'business';
+    default:
+      return null;
+  }
 }
