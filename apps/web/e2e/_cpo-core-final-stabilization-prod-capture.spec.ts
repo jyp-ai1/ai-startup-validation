@@ -22,8 +22,8 @@ const MEDIA = path.join(OUT, 'media');
 const RAW_JSON = path.join(OUT, 'transcript-raw.json');
 fs.mkdirSync(MEDIA, { recursive: true });
 
-/** Match Stabilization fix SHA on Production (engine + gate reopen + build fix). */
-const FIX_SHA_PREFIXES = ['cf332fc', '7f3016d', 'b7d24b5', '0069ce5'] as const;
+/** Match Stabilization fix SHA on Production. */
+const FIX_SHA_PREFIXES = ['ea2035d', 'cf332fc', 'b7d24b5', '0069ce5'] as const;
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
@@ -255,18 +255,11 @@ async function ensureAnswerBox(page: Page): Promise<boolean> {
         await page.waitForTimeout(800);
       }
           const cont = page.getByRole('button', {
-            name: /Keep answering|계속 답|같이 확인|부족한 부분|Continue understanding|이해 계속|이해 계속하기/i,
+            name: /Keep answering|계속 답|같이 확인|부족한 부분|Continue understanding|이해 계속|확인하기|^Continue$/i,
           });
           if (await cont.first().isVisible().catch(() => false)) {
             await cont.first().click({ force: true });
             await page.waitForTimeout(900);
-          } else {
-            // i18n continueUnderstandingCta may be Korean-only
-            const contKo = page.getByRole('button', { name: /이해|계속|공백/i });
-            if (await contKo.first().isVisible().catch(() => false)) {
-              await contKo.first().click({ force: true });
-              await page.waitForTimeout(900);
-            }
           }
     }
   }

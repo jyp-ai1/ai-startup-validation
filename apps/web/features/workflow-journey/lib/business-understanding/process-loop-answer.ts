@@ -99,10 +99,21 @@ export function applyLoopProcessingTransition(
   if (canComplete && !result.nextIssueId) {
     return patchAiPmLoopState({ phase: 'complete', currentIssueId: null }, projectId);
   }
+  if (result.nextIssueId) {
+    return patchAiPmLoopState(
+      {
+        phase: 'issue',
+        currentIssueId: result.nextIssueId,
+      },
+      projectId,
+    );
+  }
+  // Core Final Stabilization — never auto-complete when canComplete is false
+  // (nextIssueId null while critical gaps remain must keep the loop open)
   return patchAiPmLoopState(
     {
-      phase: result.nextIssueId ? 'issue' : 'complete',
-      currentIssueId: result.nextIssueId,
+      phase: 'answer',
+      currentIssueId: result.loop.currentIssueId,
     },
     projectId,
   );
