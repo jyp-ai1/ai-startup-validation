@@ -13,6 +13,8 @@ import {
   buildLivingUnderstandingState,
   type LivingUnderstandingState,
 } from './living-understanding-state';
+import { selectTopAdaptiveGap } from './adaptive-question-select';
+import { getAnsweredTargetGaps } from './resolve-missing-field-priority';
 import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
 import type { ThinkingStageId } from './thinking-stages';
 import { hasAnalysisResult } from './analysis-result-store';
@@ -116,6 +118,47 @@ export function applyLoopProcessingTransition(
       currentIssueId: result.loop.currentIssueId,
     },
     projectId,
+  );
+}
+
+/**
+ * Long Sprint — reopen Q loop after Analysis Ready handoff so founders can keep refining
+ * (depth gaps like marketChannel / validationTestability) without starting analysis yet.
+ */
+export function reopenAiPmLoopForRefinement(input: RunLoopProcessingInput): AiPmLoopState {
+  const loop = loadAiPmLoopState(input.projectId);
+  if (loop.phase !== 'complete') return loop;
+
+  const memory = loadConversationMemory(input.projectId);
+  const living = buildLivingUnderstandingState({
+    documentText: input.documentText,
+    understanding: input.understanding,
+    entities: input.entities ?? null,
+    turns: loop.turns,
+    memory,
+    resolvedIssueIds: getResolvedIssueIds(loop),
+  });
+
+  const top = selectTopAdaptiveGap(living, {
+    answeredFactGaps: getAnsweredTargetGaps(loop.turns),
+  });
+  const fallbackIssue =
+    [...loop.turns]
+      .reverse()
+      .find(
+        (t) =>
+          !t.superseded &&
+          t.intent !== 'why_meta' &&
+          t.intent !== 'mid_judgment' &&
+          t.intent !== 'nonsense',
+      )?.issueId ?? 'market_validation';
+
+  return patchAiPmLoopState(
+    {
+      phase: 'answer',
+      currentIssueId: top?.issueId ?? fallbackIssue,
+    },
+    input.projectId,
   );
 }
 

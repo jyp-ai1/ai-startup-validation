@@ -6800,6 +6800,7 @@
           "finalReviewSub": "사업 · 고객 · 문제가 맞으면 분석을 시작합니다.",
           "validationHandoff": "Analysis Ready — 핵심 공백·모순이 해소되어 사업성 검증으로 넘어갑니다. (충분성 %·답변 개수가 기준이 아닙니다.)",
           "finalConfirmCta": "✓ 맞습니다 — 분석 시작",
+          "continueRefiningCta": "AI PM과 계속 다듬기",
           "reviewBlocked": {
             "customer_missing": "대표가 누구인지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",
             "payer_missing": "누가 비용을 내는지 아직 확인되지 않았습니다. 다음 질문에서 확인됩니다.",

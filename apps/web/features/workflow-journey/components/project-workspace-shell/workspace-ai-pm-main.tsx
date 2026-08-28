@@ -70,6 +70,7 @@ import { buildLivingUnderstandingState } from '../../lib/business-understanding/
 import { evaluateFinalIntegrityGate } from '../../lib/business-understanding/final-integrity-gate';
 import { buildEmptyProjectConversationSeed } from '../../lib/business-understanding/build-empty-project-seed';
 import { buildSharedUnderstanding } from '../../lib/business-understanding/build-shared-understanding';
+import { reopenAiPmLoopForRefinement } from '../../lib/business-understanding/process-loop-answer';
 import { applyUserCorrection } from '../../lib/business-understanding/correction-and-why';
 import {
   loadConversationMemory,
@@ -502,6 +503,22 @@ export function WorkspaceAiPmMain({
     });
   }, []);
 
+  const handleContinueRefining = useCallback(() => {
+    const doc = loadWorkspaceDocumentText(projectId) ?? documentContext ?? '';
+    const und = understanding ?? (doc.trim() ? buildBusinessUnderstanding(doc) : null);
+    if (!und || doc.trim().length < 8) return;
+    reopenAiPmLoopForRefinement({
+      projectId,
+      documentText: doc,
+      understanding: und,
+      entities,
+    });
+    saveUnderstandingPhase('accepted', projectId);
+    setUnderstandingPhase('accepted');
+    setLoopState(loadAiPmLoopState(projectId));
+    onUnderstandingConfirmed?.();
+  }, [documentContext, entities, onUnderstandingConfirmed, projectId, understanding]);
+
   const handleMarketAligned = (state: MarketAlignmentState, candidates: MarketCandidate[]) => {
     const { domain: nextDomain, entities: nextEntities } = applyMarketAlignmentToWorkspace(
       state,
@@ -644,6 +661,7 @@ export function WorkspaceAiPmMain({
             saveUnderstandingPhase('pending', projectId);
             setUnderstandingPhase('pending');
           }}
+          onContinueRefining={handleContinueRefining}
           onContinueAlignment={() => {
             saveUnderstandingPhase('aligning', projectId);
             setUnderstandingPhase('aligning');

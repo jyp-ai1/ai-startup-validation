@@ -20,6 +20,8 @@ type WorkspaceNextStepPanelProps = {
   /** S17-4 — full AI understanding for Final Review before Analysis */
   finalUnderstanding?: WorkspaceSharedUnderstanding | null;
   onContinueUnderstanding: () => void;
+  /** Long Sprint — keep Q loop open after Analysis Ready (≠ Start Analysis) */
+  onContinueRefining?: () => void;
   onContinueAlignment: () => void;
   onStartReview: () => void;
   className?: string;
@@ -33,6 +35,7 @@ export function WorkspaceNextStepPanel({
   alignment = null,
   finalUnderstanding = null,
   onContinueUnderstanding,
+  onContinueRefining,
   onContinueAlignment,
   onStartReview,
   className,
@@ -100,15 +103,28 @@ export function WorkspaceNextStepPanel({
           </dl>
         ) : null}
 
-        <Button
-          type="button"
-          className="mt-5 rounded-xl"
-          disabled={!canStartReview}
-          onClick={onStartReview}
-          aria-disabled={!canStartReview}
-        >
-          {t('finalConfirmCta')}
-        </Button>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Button
+            type="button"
+            className="rounded-xl"
+            disabled={!canStartReview}
+            onClick={onStartReview}
+            aria-disabled={!canStartReview}
+          >
+            {t('finalConfirmCta')}
+          </Button>
+          {canStartReview && onContinueRefining ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl"
+              data-testid="continue-refining-cta"
+              onClick={onContinueRefining}
+            >
+              {t('continueRefiningCta')}
+            </Button>
+          ) : null}
+        </div>
         {!canStartReview ? (
           <div className="mt-3 space-y-3" role="status">
             <p

@@ -6647,6 +6647,7 @@
           "finalReviewSub": "If business · customer · problem look right, we start analysis.",
           "validationHandoff": "Analysis Ready — critical gaps and conflicts are resolved. Moving to viability validation. (Not based on sufficiency % or answer count.)",
           "finalConfirmCta": "✓ That's right — start analysis",
+          "continueRefiningCta": "Keep refining with AI PM",
           "reviewBlocked": {
             "customer_missing": "We haven't confirmed who the customer is yet. The next question will clarify this.",
             "payer_missing": "We haven't confirmed who pays yet. The next question will clarify this.",

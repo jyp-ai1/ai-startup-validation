@@ -128,7 +128,19 @@ const MIN_CAPTURE_TURNS = 30;
 let previousGaps = '';
 
 function persist() {
-  fs.writeFileSync(RAW_JSON, JSON.stringify(state, null, 2), 'utf8');
+  const payload = JSON.stringify(state, null, 2);
+  const tmp = `${RAW_JSON}.tmp`;
+  fs.writeFileSync(tmp, payload, 'utf8');
+  try {
+    fs.renameSync(tmp, RAW_JSON);
+  } catch {
+    fs.writeFileSync(RAW_JSON, payload, 'utf8');
+    try {
+      fs.unlinkSync(tmp);
+    } catch {
+      /* ignore */
+    }
+  }
 }
 
 async function dismissCookies(page: Page) {
@@ -246,6 +258,65 @@ async function isFinalReviewSurface(page: Page): Promise<boolean> {
   return false;
 }
 
+async function reopenFromAnalysisReady(page: Page): Promise<boolean> {
+  if (turnCounter >= MIN_CAPTURE_TURNS) return false;
+
+  const startAnalysis = page.getByRole('button', {
+    name: /That's right — start analysis|맞습니다.*분석|start analysis/i,
+  });
+  const onAnalysisReady =
+    (await startAnalysis.first().isVisible({ timeout: 1_500 }).catch(() => false)) &&
+    !(await startAnalysis.first().isDisabled().catch(() => true));
+
+  const body = await page.locator('body').innerText();
+  const reviewReady =
+    onAnalysisReady ||
+    /Before analysis, confirm|Analysis Ready|분석 전에,/i.test(body);
+
+  if (!reviewReady) return false;
+
+  // Product path — reopen Q loop without Start Analysis (Long Sprint continue-refining CTA)
+  const refine = page.getByTestId('continue-refining-cta');
+  if (await refine.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
+    await refine.first().click({ force: true });
+    await page.waitForTimeout(1_200);
+    const box = page.locator('textarea').last();
+    if (await box.isVisible({ timeout: 6_000 }).catch(() => false)) {
+      state.observations.push(`reopenFromAnalysisReady: continue-refining @turn${turnCounter}`);
+      return true;
+    }
+  }
+
+  // Return to AI PM dialogue (sidebar strip) — do NOT click Start Analysis yet.
+  const aiPmStrip = page.getByRole('button', { name: /^AI PM$|With AI PM|AI PM dialogue|AI PM 대화/i });
+  if (await aiPmStrip.first().isVisible().catch(() => false)) {
+    await aiPmStrip.first().click({ force: true });
+    await page.waitForTimeout(900);
+  }
+
+  const priorEditLink = page.getByRole('button', { name: /이전 답변 수정|← 이전/i });
+  if (await priorEditLink.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
+    await priorEditLink.first().click({ force: true });
+    await page.waitForTimeout(800);
+  } else {
+    const reopened = await tryReopenLoopViaPriorEdit(page);
+    if (!reopened) return false;
+  }
+
+  const pick = page.getByRole('button').filter({ hasText: /문제|고객|경쟁|수익|차별|지불|시장/i });
+  if (await pick.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
+    await pick.first().click({ force: true });
+    await page.waitForTimeout(900);
+  }
+
+  const box = page.locator('textarea').last();
+  const ok = await box.isVisible({ timeout: 5_000 }).catch(() => false);
+  if (ok) {
+    state.observations.push(`reopenFromAnalysisReady @turn${turnCounter}`);
+  }
+  return ok;
+}
+
 async function tryReopenLoopViaPriorEdit(page: Page): Promise<boolean> {
   if (turnCounter >= MIN_CAPTURE_TURNS) return false;
   const editCta = page.getByTestId('edit-prior-answer-cta');
@@ -338,8 +409,19 @@ async function ensureAnswerBox(page: Page): Promise<boolean> {
   }
   const ok = await box.isVisible({ timeout: 8_000 }).catch(() => false);
   if (!ok && turnCounter < MIN_CAPTURE_TURNS) {
-    const reopened = await tryReopenLoopViaPriorEdit(page);
+    const reopened =
+      (await reopenFromAnalysisReady(page)) || (await tryReopenLoopViaPriorEdit(page));
     if (reopened) {
+      box = page.locator('textarea').last();
+      return box.isVisible({ timeout: 5_000 }).catch(() => false);
+    }
+    // Last resort — dismiss "Done for today" / recognition and retry refine
+    const doneToday = page.getByRole('button', { name: /Done for today|오늘은 여기까지/i });
+    if (await doneToday.first().isVisible({ timeout: 800 }).catch(() => false)) {
+      await doneToday.first().click({ force: true }).catch(() => null);
+      await page.waitForTimeout(600);
+    }
+    if (await reopenFromAnalysisReady(page)) {
       box = page.locator('textarea').last();
       return box.isVisible({ timeout: 5_000 }).catch(() => false);
     }
@@ -422,6 +504,10 @@ function pickAnswer(question: string, _body: string, forced?: string): string {
   }
 
   // Problem JTBD before payer — reframed stems embed payer digest with 「결제」
+  if (/해결하는 방식|제공 가치|솔루션|solution|어떻게 해결/i.test(q)) {
+    return BANK.solution;
+  }
+
   if (/불편|문제|풀려는|해결하려는|페인|JTBD|겪는 불편/i.test(q)) {
     return BANK.problem;
   }
@@ -450,8 +536,6 @@ function pickAnswer(question: string, _body: string, forced?: string): string {
   }
 
   if (/지불|결제|누가\s*내|비용은 누가|결제·정산|payer/i.test(q)) return BANK.payer;
-  if (/불편|문제|풀려는|해결하려는|페인|JTBD|겪는 불편/i.test(q)) return BANK.problem;
-  if (/해결하는 방식|제공 가치|솔루션|solution|어떻게 해결/i.test(q)) return BANK.solution;
   if (/필요로 하는 사람|구체 고객|누구를 위한|타깃|대상|절실히 느끼는/i.test(q)) return BANK.customer;
   if (/수요|근거|시장|규모|기회|채널/i.test(q)) return BANK.demand;
   return BANK.fallback;
@@ -658,6 +742,7 @@ async function answerCurrent(
   shot: string,
   forcedAnswer?: string,
   notes?: string[],
+  opts?: { skipPriorEdit?: boolean },
 ): Promise<TurnSnap | null> {
   const q = await textOrEmpty(page, 'surface-question');
   const body = await page.locator('body').innerText();
@@ -673,6 +758,89 @@ async function answerCurrent(
   }
   await waitAsk(page);
   return snap(page, label, answer, shot, notes);
+}
+
+/** Long-state depth — stay in Q loop until MIN_CAPTURE_TURNS via refine-reopen + slot-safe answers. */
+async function extendToMinTurns(page: Page): Promise<void> {
+  let depth = 0;
+  while (turnCounter < MIN_CAPTURE_TURNS && depth < 40) {
+    if (!(await ensureAnswerBox(page))) {
+      const reopened =
+        (await reopenFromAnalysisReady(page)) || (await tryReopenLoopViaPriorEdit(page));
+      if (!reopened) {
+        state.observations.push(`extendToMinTurns stalled @turn${turnCounter}`);
+        break;
+      }
+    }
+    if (!(await ensureAnswerBox(page))) break;
+    depth += 1;
+    const q = await textOrEmpty(page, 'surface-question');
+    const body = await page.locator('body').innerText();
+    // Meta turns only when explicitly asking meta — otherwise always slot-safe pickAnswer
+    let forced: string | undefined;
+    if (/왜 그게 중요|why.*important/i.test(q) && depth % 7 === 0) forced = BANK.whyChallenge;
+    else if (/정리해줘|summarize/i.test(q) && depth % 11 === 0) forced = BANK.midSummaryAsk;
+    await answerCurrent(
+      page,
+      `18-depth-l${depth}`,
+      `18-depth-l${depth}.png`,
+      forced ?? pickAnswer(q, body),
+      ['long-state depth extension toward 30 turns'],
+      { skipPriorEdit: true },
+    );
+  }
+}
+
+/** Prior-edit extension — adds turns without closing remaining critical gaps. */
+async function priorEditExtension(
+  page: Page,
+  answer: string,
+  label: string,
+  shot: string,
+): Promise<TurnSnap | null> {
+  if (turnCounter >= MIN_CAPTURE_TURNS) return null;
+  const editBtn = page.getByRole('button', { name: /이전 답변 수정|← 이전/i });
+  if (!(await editBtn.first().isVisible({ timeout: 2_000 }).catch(() => false))) return null;
+  await editBtn.first().click({ force: true });
+  await page.waitForTimeout(700);
+  const pick = page.getByRole('button').filter({ hasText: /문제|고객|경쟁|수익|차별|지불|시장/i });
+  if (await pick.first().isVisible().catch(() => false)) {
+    await pick.first().click({ force: true });
+    await page.waitForTimeout(800);
+  }
+  if (!(await ensureAnswerBox(page))) return null;
+  return answerCurrent(page, label, shot, answer, ['prior-edit long-state extension'], {
+    skipPriorEdit: true,
+  });
+}
+
+async function answerWithOptionalPriorEdit(
+  page: Page,
+  label: string,
+  shot: string,
+  forcedAnswer?: string,
+  notes?: string[],
+): Promise<TurnSnap | null> {
+  const snapRow = await answerCurrent(page, label, shot, forcedAnswer, notes);
+  if (!snapRow || turnCounter >= MIN_CAPTURE_TURNS) return snapRow;
+  // Interleave prior-edit every answer while loop still open (Long Sprint 30+ turns)
+  if (turnCounter >= 5 && (await ensureAnswerBox(page))) {
+    const variants = [
+      BANK.editCorrection,
+      '추가: 초기 채널은 인스타그램 로컬 가이드와 호텔 컨시어지입니다.',
+      '정정: 차별점은 AI 추천이 아니라 현지 큐레이터 실시간 동선 조정입니다.',
+      '보완: MVP는 서울·관심사 3종으로 좁혀 2주 파일럿합니다.',
+      '추가: 가격 가설 1인 8~12만 원, 수수료 10~15%입니다.',
+    ];
+    const vi = Math.floor(turnCounter / 2) % variants.length;
+    await priorEditExtension(
+      page,
+      variants[vi]!,
+      `${label}-prior-edit`,
+      shot.replace('.png', '-prior-edit.png'),
+    );
+  }
+  return snapRow;
 }
 
 /**
@@ -888,7 +1056,13 @@ test('ALABOM Long Sprint Final prod journey capture (30+ turns)', async ({ page,
     let sawRevenue = false;
 
     // Long Sprint — continue until natural Analysis Ready; do not exit at 18.
-    while (loops < 16 && (await ensureAnswerBox(page)) && turnCounter < 28) {
+    while (loops < 20 && turnCounter < MIN_CAPTURE_TURNS) {
+      if (!(await ensureAnswerBox(page))) {
+        if (turnCounter >= MIN_CAPTURE_TURNS) break;
+        const reopened = await reopenFromAnalysisReady(page);
+        if (!reopened && !(await ensureAnswerBox(page))) break;
+      }
+      if (!(await ensureAnswerBox(page))) break;
       loops += 1;
       const q = await textOrEmpty(page, 'surface-question');
       let forced: string | undefined;
@@ -936,6 +1110,9 @@ test('ALABOM Long Sprint Final prod journey capture (30+ turns)', async ({ page,
       }
 
       await answerCurrent(page, label, shot, forced);
+      if (turnCounter < MIN_CAPTURE_TURNS && !(await ensureAnswerBox(page))) {
+        await reopenFromAnalysisReady(page);
+      }
       if (await isFinalReviewSurface(page)) break;
     }
 
@@ -1005,8 +1182,8 @@ test('ALABOM Long Sprint Final prod journey capture (30+ turns)', async ({ page,
     let editCycle = 0;
     while (editCycle < EDIT_CYCLE.length && turnCounter < MIN_CAPTURE_TURNS) {
       if (!(await ensureAnswerBox(page))) {
-        const reopened = await tryReopenLoopViaPriorEdit(page);
-        if (!reopened) break;
+        const reopened = await reopenFromAnalysisReady(page);
+        if (!reopened && !(await tryReopenLoopViaPriorEdit(page))) break;
       }
       if (!(await ensureAnswerBox(page))) break;
       const ans = EDIT_CYCLE[editCycle]!;
@@ -1022,6 +1199,9 @@ test('ALABOM Long Sprint Final prod journey capture (30+ turns)', async ({ page,
       }
       editCycle += 1;
     }
+
+    // Long Sprint — pad to 30+ via refine-reopen + depth answers before final probe
+    await extendToMinTurns(page);
 
     // --- Sufficiency + Start Analysis critical-gap probe (while gaps may remain) ---
     await probeStartAnalysisGate(page, '17-sufficiency-start-probe', '17-sufficiency-start-probe.png');
@@ -1060,11 +1240,12 @@ test('ALABOM Long Sprint Final prod journey capture (30+ turns)', async ({ page,
       await probeStartAnalysisGate(page, '19-reprobe-after-gaps', '19-reprobe-after-gaps.png');
     }
 
-    // --- Final review if reachable AFTER critical gaps closed ---
+    // --- Final review if reachable AFTER critical gaps closed AND ≥30 turns ---
     const startAnalysis = page.getByRole('button', {
       name: /That's right — start analysis|맞습니다.*분석|start analysis|분석 시작/i,
     });
     if (
+      turnCounter >= MIN_CAPTURE_TURNS &&
       (await startAnalysis.first().isVisible().catch(() => false)) &&
       !(await startAnalysis.first().isDisabled().catch(() => true))
     ) {
@@ -1086,6 +1267,10 @@ test('ALABOM Long Sprint Final prod journey capture (30+ turns)', async ({ page,
           'criticalGapBlockedStartAnalysis was true earlier; Start Analysis later succeeded after gap close',
         );
       }
+    } else if (turnCounter < MIN_CAPTURE_TURNS) {
+      state.observations.push(
+        `final review deferred — turnCount=${turnCounter} (<${MIN_CAPTURE_TURNS}); Start Analysis not clicked`,
+      );
     } else {
       state.observations.push(
         'final review not clicked — Start Analysis missing or still disabled (critical_gap may remain)',
