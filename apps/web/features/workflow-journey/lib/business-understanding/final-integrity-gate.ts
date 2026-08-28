@@ -74,10 +74,8 @@ export function evaluateFinalIntegrityGate(input: FinalIntegrityInput): FinalInt
   // Long Sprint — align Final Integrity Critical Unknown with Analysis Ready gate
   // (ADAPTIVE_CRITICAL_GAP_KEYS). priorityScore≥100 falsely treated pricingHint /
   // marketSizeEvidence / residual Stage-A fields as Critical after Start Analysis.
-  const criticalGapKeys = listUnconfirmedCriticalGaps(input.living);
-  const criticalGaps = input.living.gaps.filter((g) =>
-    criticalGapKeys.includes(g.fieldKey),
-  );
+  const criticalGapKeys = new Set<string>(listUnconfirmedCriticalGaps(input.living));
+  const criticalGaps = input.living.gaps.filter((g) => criticalGapKeys.has(g.fieldKey));
   if (criticalGaps.length > 0) {
     blockers.push(`Critical Unknown ${criticalGaps.length}건 — ${criticalGaps[0]?.rationale ?? ''}`);
   }
