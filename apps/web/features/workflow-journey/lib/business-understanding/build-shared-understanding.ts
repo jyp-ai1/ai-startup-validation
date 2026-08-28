@@ -64,7 +64,20 @@ function resolveBusinessField(
   memory?: ConversationMemory | null,
 ): { value: string; provenance: UnderstandingProvenance } {
   if (memory && memoryHasFact(memory, 'business')) {
-    const fact = memory.facts.find((f) => f.key === 'business');
+    const current = memory.facts.find(
+      (f) => f.key === 'business' && (f.lifecycle ?? 'current') === 'current',
+    );
+    const docBusiness = memory.facts.find(
+      (f) =>
+        f.key === 'business' &&
+        f.source === 'document' &&
+        (f.lifecycle === 'current' || f.lifecycle === 'superseded'),
+    );
+    // LS-2 — solution turns must not replace document business one-liner in spine
+    const fact =
+      current?.source === 'user_turn' && docBusiness?.value.trim()
+        ? docBusiness
+        : current ?? docBusiness;
     if (fact?.value.trim()) {
       return {
         value: truncate(fact.value, 48),

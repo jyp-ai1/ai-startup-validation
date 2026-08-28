@@ -771,6 +771,66 @@ describe('Long Sprint — pricingHint / marketSizeEvidence / integrity align', (
     });
     expect(gate.blockers.some((b) => /가격 신호|pricingHint/i.test(b))).toBe(false);
   });
+
+  it('LS-2 — solution answer does not overwrite document business one-liner or trigger identity drift HOLD', () => {
+    const solutionAnswer =
+      '관심사·동선·식사 제약을 반영한 실시간 맞춤 일정과 현지인 동행을 한 번에 제공하는 방식입니다.';
+    let memory = emptyConversationMemory('core-final-stab');
+    memory = upsertConfirmedFact(memory, 'business', SEED, 'document');
+    const turns: AiPmLoopTurn[] = [
+      {
+        issueId: 'customer_definition',
+        answer: 'FIT 외국인',
+        appliedAt: '1',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: solutionAnswer,
+        appliedAt: '2',
+        semanticFactKey: 'business',
+        semanticFactKeys: ['business'],
+        intent: 'business_fact',
+        targetGap: 'solution',
+      },
+    ];
+    memory = buildConversationMemoryFromSources({
+      projectId: 'core-final-stab',
+      documentText: SEED,
+      turns,
+      previous: memory,
+    });
+    const currentBusiness = memory.facts.find(
+      (f) => f.key === 'business' && f.lifecycle === 'current',
+    );
+    expect(currentBusiness?.source).toBe('document');
+    expect(currentBusiness?.value).toMatch(/외국인 관광객/);
+    expect(currentBusiness?.value).not.toBe(solutionAnswer);
+
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns,
+      memory,
+    });
+    const businessClaim = living.claims.find((c) => c.fieldKey === 'businessOneLiner');
+    expect(businessClaim?.value).toMatch(/외국인|관광|맞춤/);
+    expect(businessClaim?.value).not.toBe(solutionAnswer);
+
+    const loop = createInitialAiPmLoopState();
+    loop.turns = turns;
+    const gate = evaluateFinalIntegrityGate({
+      living,
+      memory,
+      loop,
+      documentText: SEED,
+    });
+    expect(gate.identityIntegrity).toBe(true);
+    expect(gate.blockers.some((b) => /확정된 사업 한 줄/.test(b))).toBe(false);
+  });
 });
 
 function stateAnalysisBlocksStart(living: ReturnType<typeof buildLivingUnderstandingState>): boolean {

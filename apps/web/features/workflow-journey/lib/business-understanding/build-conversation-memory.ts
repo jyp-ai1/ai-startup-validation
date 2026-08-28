@@ -42,13 +42,23 @@ function safeBusinessFromEntities(entities: LaunchLensDomainContext | null): str
   return null;
 }
 
+/** Solution answers populate solution claim via turn.targetGap — must NOT overwrite business one-liner. */
+function filterMemoryFactKeys(
+  keys: ConversationFactKey[],
+  targetGap?: string | null,
+): ConversationFactKey[] {
+  if (targetGap !== 'solution') return keys;
+  return keys.filter((key) => key !== 'business');
+}
+
 function upsertSemanticFacts(
   memory: ConversationMemory,
   answer: string,
   keys: ConversationFactKey[],
+  targetGap?: string | null,
 ): ConversationMemory {
   let next = memory;
-  const unique = [...new Set(keys)];
+  const unique = filterMemoryFactKeys([...new Set(keys)], targetGap);
   for (const key of unique) {
     next = upsertConfirmedFact(next, key, answer, 'user_turn');
   }
@@ -117,7 +127,7 @@ export function buildConversationMemoryFromSources(input: {
           : null;
 
     if (storedKeys) {
-      memory = upsertSemanticFacts(memory, answer, storedKeys);
+      memory = upsertSemanticFacts(memory, answer, storedKeys, turn.targetGap);
       continue;
     }
 
@@ -144,7 +154,7 @@ export function buildConversationMemoryFromSources(input: {
       semantic.facts.length > 0
         ? semantic.facts.map((f) => f.key)
         : [semantic.factKey];
-    memory = upsertSemanticFacts(memory, answer, keys);
+    memory = upsertSemanticFacts(memory, answer, keys, turn.targetGap);
   }
 
   return memory;
@@ -181,8 +191,10 @@ export function factKeyForGapField(fieldKey: string): ConversationFactKey | null
       return 'revenue';
     case 'businessOneLiner':
     case 'categoryScope':
-    case 'solution':
       return 'business';
+    case 'solution':
+      // Solution claim is resolved from turns — not business memory
+      return null;
     default:
       return null;
   }

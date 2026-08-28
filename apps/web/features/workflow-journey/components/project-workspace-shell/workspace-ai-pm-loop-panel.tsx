@@ -1345,6 +1345,7 @@ export function WorkspaceAiPmLoopPanel({
           <Button
             type="button"
             className="rounded-xl"
+            data-testid="submit-answer-cta"
             disabled={readOnly || answerDraft.trim().length < 2}
             onClick={submitAnswer}
           >
@@ -1477,7 +1478,10 @@ export function WorkspaceAiPmLoopPanel({
                     </p>
                   </details>
                 ) : null}
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p
+                  data-testid="understanding-coverage-percent"
+                  className="mt-1 text-xs text-muted-foreground"
+                >
                   {t('coverageFlash', { percent: livingState.coveragePercent })}
                 </p>
                 {countCriticalViabilityGaps(livingState) > 0 ? (
@@ -1496,13 +1500,13 @@ export function WorkspaceAiPmLoopPanel({
                   setAnswerQualityHint(null);
                   setAnswerDraft(event.target.value);
                 }}
-                rows={5}
+                rows={4}
                 readOnly={readOnly}
                 placeholder={
                   whyThisQuestionNow?.questionText?.trim() ||
                   (activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : undefined)
                 }
-                className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
+                className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[5rem]"
                 aria-label={s11Surface.question.text || t('submitAnswerCta')}
               />
               {answerQualityHint ? (
@@ -1514,10 +1518,11 @@ export function WorkspaceAiPmLoopPanel({
                   {t(`answerQuality.${answerQualityHint}`)}
                 </p>
               ) : null}
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2 pb-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:bg-gradient-to-t max-sm:from-background max-sm:via-background max-sm:to-background/80 max-sm:pt-2">
                 <Button
                   type="button"
-                  className="rounded-xl"
+                  className="rounded-xl max-sm:w-full"
+                  data-testid="submit-answer-cta"
                   disabled={readOnly || answerDraft.trim().length < 2}
                   onClick={submitAnswer}
                 >

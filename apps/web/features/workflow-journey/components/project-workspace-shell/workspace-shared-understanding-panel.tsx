@@ -96,7 +96,7 @@ export function WorkspaceSharedUnderstandingPanel({
     <section
       data-testid="shared-understanding-panel"
       className={cn(
-        'shrink-0 border-b border-border/60 bg-muted/20 px-4 py-4 sm:px-6 lg:px-8',
+        'shrink-0 border-b border-border/60 bg-muted/20 px-4 py-3 sm:px-6 sm:py-4 lg:px-8',
         className,
       )}
       aria-label={t('label')}

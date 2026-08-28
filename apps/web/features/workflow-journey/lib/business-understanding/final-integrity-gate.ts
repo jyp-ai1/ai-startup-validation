@@ -98,11 +98,16 @@ export function evaluateFinalIntegrityGate(input: FinalIntegrityInput): FinalInt
     }
   }
 
-  // Identity: business one-liner claim must relate to original when pinned
+  // Identity: business one-liner must align with pinned seed — compare spine + claim, not solution text
   const businessClaim = input.living.claims.find((c) => c.fieldKey === 'businessOneLiner');
+  const solutionClaim = input.living.claims.find((c) => c.fieldKey === 'solution');
   let identityIntegrity = true;
   if (original && businessClaim?.value) {
-    const idDrift = evaluateIntentDrift(original.text, businessClaim.value);
+    const identityText =
+      businessClaim.value === solutionClaim?.value
+        ? input.living.spine.business || businessClaim.value
+        : businessClaim.value;
+    const idDrift = evaluateIntentDrift(original.text, identityText);
     if (idDrift.drifted) {
       identityIntegrity = false;
       if (!blockers.some((b) => b.includes('정체성') || b.includes('어긋'))) {
