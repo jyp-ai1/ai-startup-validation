@@ -208,7 +208,7 @@ describe('Stabilization — understandingDelta never empty on mergeable', () => 
 });
 
 describe('Stabilization — adaptive causality Competition→Diff→Value', () => {
-  it('after competitor+diff confirmed, next adaptive gap is solution (critical) before validation', () => {
+  it('after competitor+diff confirmed, next adaptive gap is validationTestability (diff relevance)', () => {
     const turns: AiPmLoopTurn[] = [
       {
         issueId: 'customer_definition',
@@ -266,10 +266,78 @@ describe('Stabilization — adaptive causality Competition→Diff→Value', () =
     const top = selectTopAdaptiveGap(living, {
       answeredFactGaps: getAnsweredTargetGaps(turns),
     });
-    // P0 — solution is Analysis Ready critical; outranks validationTestability
-    expect(top?.fieldKey).toBe('solution');
+    // P0 vNext — competitor→diff→diff customer relevance before solution/customer slots
+    expect(top?.fieldKey).toBe('validationTestability');
     const decision = decideNextQuestion({ living, turns, memory });
-    expect(decision?.targetGap).toBe('solution');
+    expect(decision?.targetGap).toBe('validationTestability');
+  });
+
+  it('analysis ready blocked when diff confirmed but relevance missing', () => {
+    const turns: AiPmLoopTurn[] = [
+      {
+        issueId: 'customer_definition',
+        answer: '방한 FIT',
+        appliedAt: '1',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '맞춤 일정 불가',
+        appliedAt: '2',
+        semanticFactKey: 'problem',
+        semanticFactKeys: ['problem'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+      },
+      {
+        issueId: 'bm_design',
+        answer: '관광객 결제',
+        appliedAt: '3',
+        semanticFactKey: 'buyer',
+        semanticFactKeys: ['buyer'],
+        intent: 'business_fact',
+        targetGap: 'payer',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '클룩·트립닷컴',
+        appliedAt: '4',
+        semanticFactKey: 'competitor',
+        semanticFactKeys: ['competitor'],
+        intent: 'business_fact',
+        targetGap: 'alternativesCompetitors',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '실시간 맞춤',
+        appliedAt: '5',
+        semanticFactKey: 'differentiation',
+        semanticFactKeys: ['differentiation'],
+        intent: 'business_fact',
+        targetGap: 'differentiationVsAlternatives',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '관심사·동선 맞춤 일정과 현지인 동행을 한 번에 제공합니다',
+        appliedAt: '6',
+        semanticFactKey: 'business',
+        semanticFactKeys: ['business'],
+        intent: 'business_fact',
+        targetGap: 'solution',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns,
+      memory,
+    });
+    expect(evaluateAnalysisReady(living).analysisReady).toBe(false);
+    expect(evaluateAnalysisReady(living).blockedGaps).toContain('validationTestability');
   });
 });
 
@@ -528,7 +596,7 @@ describe('P0 Judgment — Analysis Ready ≠ Sufficiency', () => {
       turns,
       memory,
     });
-    expect(decision?.targetGap).toBe('solution');
+    expect(decision?.targetGap).toBe('validationTestability');
   });
 
   it('payer B2B vs tourist direct is CONTRADICTORY not silent merge', () => {
@@ -592,9 +660,18 @@ describe('P0 Judgment — Analysis Ready ≠ Sufficiency', () => {
         targetGap: 'differentiationVsAlternatives',
       },
       {
+        issueId: 'competitor_analysis',
+        answer: '맞춤 일정이 없으면 동선 낭비가 커서 고객이 예약 전에 차이를 체감합니다',
+        appliedAt: '6',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'validationTestability',
+      },
+      {
         issueId: 'problem_definition',
         answer: '관심사·동선 맞춤 일정과 현지인 동행을 한 번에 제공합니다',
-        appliedAt: '6',
+        appliedAt: '7',
         semanticFactKey: 'business',
         semanticFactKeys: ['business'],
         intent: 'business_fact',
@@ -735,9 +812,18 @@ describe('Long Sprint — pricingHint / marketSizeEvidence / integrity align', (
         targetGap: 'differentiationVsAlternatives',
       },
       {
+        issueId: 'competitor_analysis',
+        answer: '맞춤 일정이 없으면 동선 낭비가 커서 고객이 예약 전에 차이를 체감합니다',
+        appliedAt: '6',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'validationTestability',
+      },
+      {
         issueId: 'problem_definition',
         answer: '관심사·동선 맞춤 일정과 현지인 동행',
-        appliedAt: '6',
+        appliedAt: '7',
         semanticFactKey: 'business',
         semanticFactKeys: ['business'],
         intent: 'business_fact',
@@ -746,7 +832,7 @@ describe('Long Sprint — pricingHint / marketSizeEvidence / integrity align', (
       {
         issueId: 'bm_design',
         answer: '수수료 10~15%',
-        appliedAt: '7',
+        appliedAt: '8',
         semanticFactKey: 'revenue',
         semanticFactKeys: ['revenue'],
         intent: 'business_fact',

@@ -263,6 +263,24 @@ export function resolveMissingFieldPriorities(
     );
   }
 
+  // Core v5 — after differentiation fact exists, prefer validationTestability (diff relevance)
+  if (
+    memory &&
+    memoryHasFact(memory, 'differentiation') &&
+    !memoryHasFact(memory, 'diffRelevance') &&
+    !answeredGaps.has('validationTestability')
+  ) {
+    scored.set(
+      'validationTestability',
+      priorityFromGap({
+        targetGap: 'validationTestability',
+        issueId: 'competitor_analysis',
+        rationale: whyNowForGapField('validationTestability'),
+        score: 9_700,
+      }),
+    );
+  }
+
   // Core v5 — after competitor fact exists, prefer differentiationVsAlternatives over unrelated slots
   if (memory && memoryHasFact(memory, 'competitor') && !memoryHasFact(memory, 'differentiation')) {
     if (!answeredGaps.has('differentiationVsAlternatives')) {

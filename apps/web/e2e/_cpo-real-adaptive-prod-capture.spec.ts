@@ -13,7 +13,7 @@ import path from 'node:path';
 
 const OUT = path.resolve(
   process.cwd(),
-  '../../docs/evidence/ALABOM/cpo-validation/real-adaptive',
+  '../../docs/evidence/ALABOM/cpo-validation/real-adaptive-vnext',
 );
 const MEDIA = path.join(OUT, 'media');
 const RAW_JSON = path.join(OUT, 'transcript-raw.json');

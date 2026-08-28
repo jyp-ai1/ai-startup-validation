@@ -31,13 +31,44 @@ export type AdaptiveGapCandidate = {
   rationale: string;
 };
 
-function isUserConfirmed(claim: LivingClaim | undefined): boolean {
+export function isUserConfirmedClaim(claim: LivingClaim | undefined): boolean {
   return (
     claim != null &&
     (claim.provenance === 'USER_CONFIRMED' || claim.provenance === 'USER_CORRECTED') &&
     claim.status === 'confirmed' &&
     Boolean(claim.value?.trim())
   );
+}
+
+/** @deprecated alias */
+function isUserConfirmed(claim: LivingClaim | undefined): boolean {
+  return isUserConfirmedClaim(claim);
+}
+
+/**
+ * P0 vNext — differentiation confirmed but customer relevance not yet linked.
+ * Blocks Analysis Ready and forces competitor→diff→diff value chain.
+ */
+export function isDiffConfirmedWithoutRelevance(
+  living: LivingUnderstandingState,
+): boolean {
+  const diff = claimByKey(living, 'differentiationVsAlternatives');
+  const relevance = claimByKey(living, 'validationTestability');
+  return isUserConfirmedClaim(diff) && !isUserConfirmedClaim(relevance);
+}
+
+/**
+ * Gaps that block Start Analysis — critical viability + diff relevance when diff exists.
+ */
+export function listAnalysisBlockingGaps(living: LivingUnderstandingState): string[] {
+  const blocked: string[] = [...listUnconfirmedCriticalGaps(living)];
+  if (
+    isDiffConfirmedWithoutRelevance(living) &&
+    !blocked.includes('validationTestability')
+  ) {
+    blocked.push('validationTestability');
+  }
+  return blocked;
 }
 
 function isUnknownOrWeak(claim: LivingClaim | undefined): boolean {
@@ -114,6 +145,20 @@ export function selectAdaptiveNextGaps(
     });
   }
 
+  // 1.5) P0 vNext — after differentiation, diff→customer relevance BEFORE solution/customer slots
+  if (isDiffConfirmedWithoutRelevance(living)) {
+    const key = 'validationTestability';
+    if (!exclude.has(key) && !answered.has(key)) {
+      const binding = resolveGapQuestionBinding(key);
+      candidates.push({
+        fieldKey: key,
+        issueId: binding.issueId,
+        score: 58_000,
+        rationale: binding.whyNow,
+      });
+    }
+  }
+
   // 2) Critical viability — require user confirmation
   for (const key of ADAPTIVE_CRITICAL_GAP_KEYS) {
     if (exclude.has(key) || answered.has(key)) continue;
@@ -159,17 +204,23 @@ export function selectAdaptiveNextGaps(
     });
   }
 
-  // 3) Differentiation chain after diff confirmed
+  // 3) Differentiation chain after diff confirmed (relevance handled in 1.5 when open)
   const diffConfirmed = isUserConfirmed(byKey('differentiationVsAlternatives'));
   if (diffConfirmed) {
     for (const key of ['validationTestability', 'executionConstraints'] as const) {
       if (exclude.has(key) || answered.has(key)) continue;
       if (isUserConfirmed(byKey(key))) continue;
       const binding = resolveGapQuestionBinding(key);
+      const score =
+        key === 'validationTestability'
+          ? isDiffConfirmedWithoutRelevance(living)
+            ? 58_000
+            : 35_000
+          : 34_000;
       candidates.push({
         fieldKey: key,
         issueId: binding.issueId,
-        score: key === 'validationTestability' ? 35_000 : 34_000,
+        score,
         rationale: binding.whyNow,
       });
     }

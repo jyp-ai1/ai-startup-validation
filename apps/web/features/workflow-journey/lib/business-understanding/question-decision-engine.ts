@@ -9,6 +9,7 @@ import { whyNowForGapField } from './living-understanding-state';
 import {
   selectAdaptiveNextGaps,
   listUnconfirmedCriticalGaps,
+  isDiffConfirmedWithoutRelevance,
   type AdaptiveGapCandidate,
 } from './adaptive-question-select';
 import { resolveGapQuestionBinding } from './gap-question-map';
@@ -243,6 +244,39 @@ export function decideNextQuestion(input: {
   }
 
   void lastQuestionTexts;
+
+  // P0 vNext — last answer was differentiation → next MUST be diff customer relevance
+  const lastMergeable = [...(input.turns ?? [])]
+    .reverse()
+    .find(
+      (t) =>
+        !t.superseded &&
+        t.intent !== 'why_meta' &&
+        t.intent !== 'mid_judgment' &&
+        t.intent !== 'nonsense' &&
+        t.intent !== 'unknown_signal',
+    );
+  if (
+    lastMergeable &&
+    (lastMergeable.targetGap === 'differentiationVsAlternatives' ||
+      lastMergeable.semanticFactKey === 'differentiation' ||
+      lastMergeable.semanticFactKeys?.includes('differentiation')) &&
+    isDiffConfirmedWithoutRelevance(input.living) &&
+    !exclude.has('validationTestability') &&
+    !answered.has('validationTestability')
+  ) {
+    const binding = resolveGapQuestionBinding('validationTestability');
+    return {
+      targetGap: 'validationTestability',
+      issueId: binding.issueId,
+      questionText: binding.questionText,
+      whyNow: whyNowForGapField('validationTestability') || binding.whyNow,
+      rationale: '방금 확인한 차별점이 고객 문제와 어떻게 연결되는지 확인합니다.',
+      score: 58_000,
+      reframed: false,
+      excludedGaps: [...exclude],
+    };
+  }
 
   return {
     targetGap: top.fieldKey,

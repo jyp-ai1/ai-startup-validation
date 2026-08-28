@@ -2,47 +2,48 @@
 
 ```text
 Date: 2026-08-28 (KST)
-Production SHA (baseline): bc7923937d342364214beb559b5d14693090c4c5
-CPO judgment: FIX — T17–T30 harness padding invalidated T33 GO credibility
+Production SHA (baseline): 6f29b90 → vNext deploy pending poll
+CPO judgment: FIX — real adaptive vNext (T4 wrong-slot + Analysis Ready too early)
 Auth / KI-1: Deferred
 CEO Walkthrough: NOT READY
 ```
 
-## Open — CPO FIX batch (real adaptive)
+## Open — CPO FIX batch (real adaptive vNext)
 
 | ID | Issue | Severity | Status |
 |----|-------|----------|--------|
-| RA-1 | Harness T17–T30 identical padding (14× same answer) | **P0** | **FIXED** — new `_cpo-real-adaptive-prod-capture.spec.ts`; no extendToMinTurns / forced-diff |
-| RA-2 | T33 GO 75 not credible on padded journey | **P0** | Re-capture required — 15–25 meaningful unique turns only |
-| RA-3 | Why meta must explain why-now (not re-ask only) | P0 | **FIXED** — `buildWhyFollowUp` includes asked question + targetGap |
-| RA-4 | B2B vs tourist payer conflict explicit Q | P0 | Engine OK — conflict UI + priority; verify in capture |
-| RA-5 | Analysis gate score-only GO | P0 | Engine OK — `evaluateFinalIntegrityGate` + `presentAnalysisScreen` HOLD |
+| RA-V1 | T4 wrong-slot: after diff → customer persona instead of diff relevance | **P0** | **FIXED** — competitor→diff→validationTestability chain + last-answer causality |
+| RA-V2 | Analysis Ready ~10 turns (turn-count / premature gate) | **P0** | **FIXED** — `listAnalysisBlockingGaps`; diff without relevance blocks Start Analysis |
+| RA-V3 | LIVE capture 15–25 meaningful adaptive turns | P0 | **IN PROGRESS** — `_cpo-real-adaptive-prod-capture.spec.ts` → `real-adaptive-vnext/` |
 
-## Resolved prior batch (@ bc792393 T33)
+## Resolved prior batch
 
 | ID | Issue | Resolution |
 |----|-------|------------|
-| LS-2-prod | Full T33 re-capture | DONE @ bc792393 — **credibility voided by padding** |
-| LS-7 | Mobile Submit CTA | FIXED |
-| LS-1 | New User Demo | DONE @ 086da4e |
+| RA-1 | Harness padding T17–T30 | FIXED @ 6f29b90 |
+| RA-2 | T33 GO on padded journey | Superseded by vNext capture |
+| RA-3 | Why meta why-now | FIXED |
+| RA-4 | B2B vs tourist payer conflict | Engine OK |
+| RA-5 | Analysis gate score-only GO | Engine OK |
 
 ## Explicitly deferred
 
 - **Auth / KI-1**
-- **CPO PASS** — pending real-adaptive LIVE capture
+- **CPO PASS** — pending vNext LIVE capture
 - **CEO Walkthrough**
 
-## Regression watch (real adaptive targets)
+## Regression watch (real adaptive vNext)
 
-| Metric | Target | Prior T33 (padded) |
-|--------|--------|---------------------|
-| Identical answer repeats | 0 | 14 (T17–T30) |
-| Padding turns | 0 | 14+ |
-| Meaningful answers | 15–25 | 33 (inflated) |
-| Same-meaning re-ask | 0 | 0 |
+| Metric | Target |
+|--------|--------|
+| wrong-slot | 0 |
+| mixed-Q | 0 |
+| re-ask | 0 |
+| padding turns | 0 |
+| Meaningful answers | 15–25 natural |
 
 ## Closing statements (required)
 
 - **CPO review: pending — do NOT declare PASS**
 - **CEO Walkthrough: NOT READY**
-- **CTO QA: real-adaptive capture in progress**
+- **CTO QA: vNext engine shipped — LIVE capture pending**

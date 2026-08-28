@@ -8,7 +8,7 @@ import type { LivingClaim, LivingUnderstandingState } from './living-understandi
 import { whyNowForGapField } from './living-understanding-state';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import type { ConversationFactKey } from './conversation-memory';
-import { listUnconfirmedCriticalGaps } from './adaptive-question-select';
+import { listUnconfirmedCriticalGaps, listAnalysisBlockingGaps } from './adaptive-question-select';
 
 /** Gaps that block Start Analysis / Validation when still open. */
 export const CRITICAL_VIABILITY_GAP_KEYS = [
@@ -319,7 +319,7 @@ export function evaluateAnalysisReady(living: LivingUnderstandingState): {
   whyNotReady: string | null;
   explanation: string;
 } {
-  const blockedGaps = listUnconfirmedCriticalGaps(living);
+  const blockedGaps = listAnalysisBlockingGaps(living);
   const hasContradiction = living.claims.some((c) => c.status === 'contradiction');
   const analysisReady = blockedGaps.length === 0 && !hasContradiction;
 
@@ -328,7 +328,11 @@ export function evaluateAnalysisReady(living: LivingUnderstandingState): {
     const conflict = living.claims.find((c) => c.status === 'contradiction');
     whyNotReady = `모순 미해소: 「${conflict?.fieldKey ?? '충돌'}」— Old→Superseded→New 중 어느 쪽이 맞는지 확인이 필요합니다.`;
   } else if (blockedGaps.length > 0) {
-    whyNotReady = `Critical Unknown 남음: ${blockedGaps.join(', ')}. Start Analysis는 차단됩니다.`;
+    const diffRelevanceOnly =
+      blockedGaps.length === 1 && blockedGaps[0] === 'validationTestability';
+    whyNotReady = diffRelevanceOnly
+      ? '차별점은 확인했지만 고객에게 왜 중요한지 아직 연결되지 않았습니다. 분석하기 전에 이것 하나만 더 확인해볼게요.'
+      : `Critical Unknown 남음: ${blockedGaps.join(', ')}. Start Analysis는 차단됩니다.`;
   }
 
   const explanation = analysisReady
