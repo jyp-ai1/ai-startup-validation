@@ -1,0 +1,7 @@
+{
+  "commit": "470f5df4662a86e3078d647c2faa54bbae2d2366",
+  "at": "2026-08-28T08:50:50.391Z",
+  "source": "GET /api/build-info",
+  "priorCommit": "086da4eb0468c69a7ab10976092172e1ba49dfa2",
+  "deployVerified": true
+}

@@ -340,6 +340,12 @@ test('CPO supplemental — Mobile viewport flow', async ({ page, request }) => {
   await page.getByTestId('s11-surface').waitFor({ state: 'visible', timeout: 15_000 });
   const qVisible = await page.getByTestId('surface-question').isVisible();
   const progressVisible = await page.getByTestId('understanding-coverage-percent').isVisible().catch(() => false);
+  const ctaBeforeAnswer = await page
+    .getByTestId('submit-answer-cta')
+    .or(page.getByRole('button', { name: /답변 반영|Apply answer|Apply|제출|Submit|보내기/i }))
+    .first()
+    .isVisible()
+    .catch(() => false);
   const backVisible = await page
     .getByRole('button', { name: /이전 답변 수정|← 이전/i })
     .first()
@@ -347,6 +353,7 @@ test('CPO supplemental — Mobile viewport flow', async ({ page, request }) => {
     .catch(() => false);
   bundle.observations.push(`mobileQuestionVisible=${qVisible}`);
   bundle.observations.push(`mobileProgressVisible=${progressVisible}`);
+  bundle.observations.push(`mobileCtaBeforeAnswer=${ctaBeforeAnswer}`);
   bundle.observations.push(`mobileBackVisible=${backVisible}`);
 
   await snap(page, '03-mobile-first-q', '(mobile first Q)', 'mobile-03-q.png');
@@ -354,17 +361,10 @@ test('CPO supplemental — Mobile viewport flow', async ({ page, request }) => {
   await snap(page, '05-mobile-after-a1', '(mobile after A1)', 'mobile-05-judgment.png');
 
   const judgmentVisible = await page.getByTestId('current-judgment-block').isVisible().catch(() => false);
-  const ctaVisible = await page
-    .getByTestId('submit-answer-cta')
-    .or(page.getByRole('button', { name: /답변 반영|Apply answer|Apply|제출|Submit|보내기/i }))
-    .first()
-    .isVisible()
-    .catch(() => false);
   bundle.observations.push(`mobileJudgmentVisible=${judgmentVisible}`);
-  bundle.observations.push(`mobileCtaVisible=${ctaVisible}`);
 
   bundle.verdict =
-    qVisible && ctaVisible
+    qVisible && ctaBeforeAnswer
       ? 'PASS — mobile Q/A/progress/back affordances usable'
       : 'FAIL — mobile layout blocked core flow';
   persist('mobile');

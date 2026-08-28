@@ -1,0 +1,50 @@
+{
+  "scenario": "identity-final",
+  "at": "2026-08-28T08:52:21.508Z",
+  "productionCommit": "470f5df4662a86e3078d647c2faa54bbae2d2366",
+  "entryUrl": "/demo/start",
+  "seed": "외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.",
+  "turns": [
+    {
+      "turn": 1,
+      "label": "loop-1",
+      "aiQuestion": "이번 질문\n\n경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+      "purpose": "",
+      "whyNow": "",
+      "judgmentBlock": "CURRENT JUDGMENT\n\n지금까지 확인: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사 · alternativesCompetitors: 클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다.. 불확실: categoryScope, customerPersona. 이해 상태 커버리지 20% (필드 채움률이 아님). 남은 핵심 공백은 「differentiationVsAlternatives」입니다. 그래서 지금 이 질문을 합니다.\n\n기존: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤 · 신규: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사 · alternativesCompetitors: 클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사· · 미확인: payer, problemJtbd, solution, revenueModel, differentiationVsAlternatives · 다음 공백: differentiationVsAlternatives\n\n왜 지금 이 질문을 하나요?\n\nSpecificity 20%",
+      "understandingDelta": "기존: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤 · 신규: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사 · alternativesCompetitors: 클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사· · 미확인: payer, problemJtbd, solution, revenueModel, differentiationVsAlternatives · 다음 공백: differentiationVsAlternatives",
+      "userAnswer": "클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다.",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다\n✓\n수익 구조",
+      "decision": "지금 판단\n\n시장성 분석을 위한 조건이 하나 충족되었습니다.",
+      "coverageText": "",
+      "nextQuestion": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n●\nCUSTOMER\n방한 외국인\n\nAI estimate\n\n○\nPROBLEM\n아직 확인 중\n\nNeeds confirmation\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n✔\n✓ Competition analyzed\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\n✓ AI understanding updated\n\nCURRENT JUDGMENT\n\n지금까지 확인: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사 · alternativesCompetitors: 클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다.. 불확실: categoryScope, customerPersona. 이해 상태 커버리지 20% (필드 채움률이 아님). 남은 핵심 공백은 「differentiationVsAlternatives」입니다. 그래서 지금 이 질문을 합니다.\n\n기존: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인",
+      "screenshot": "01-identity-01.png"
+    },
+    {
+      "turn": 2,
+      "label": "final-output",
+      "aiQuestion": "이번 질문\n\n경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+      "purpose": "",
+      "whyNow": "",
+      "judgmentBlock": "CURRENT JUDGMENT\n\n지금까지 확인: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사 · alternativesCompetitors: 클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다.. 불확실: categoryScope, customerPersona. 이해 상태 커버리지 20% (필드 채움률이 아님). 남은 핵심 공백은 「differentiationVsAlternatives」입니다. 그래서 지금 이 질문을 합니다.\n\n기존: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤 · 신규: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사 · alternativesCompetitors: 클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사· · 미확인: payer, problemJtbd, solution, revenueModel, differentiationVsAlternatives · 다음 공백: differentiationVsAlternatives\n\n왜 지금 이 질문을 하나요?\n\nSpecificity 20%",
+      "understandingDelta": "기존: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤 · 신규: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사 · alternativesCompetitors: 클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사· · 미확인: payer, problemJtbd, solution, revenueModel, differentiationVsAlternatives · 다음 공백: differentiationVsAlternatives",
+      "userAnswer": "(final / analysis surface)",
+      "understanding": "지금까지 이해한 내용\n\n자세히\n✓\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n✓\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다\n✓\n수익 구조",
+      "decision": "지금 판단\n\n시장성 분석을 위한 조건이 하나 충족되었습니다.",
+      "coverageText": "",
+      "nextQuestion": "",
+      "bodyExcerpt": "Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n\n현재 사업\n\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경…\n\nWHAT I UNDERSTAND SO FAR\n\nDetail\n●\nBUSINESS\n외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사\n\nConfirmed from document\n\n●\nCUSTOMER\n방한 외국인\n\nAI estimate\n\n○\nPROBLEM\n아직 확인 중\n\nNeeds confirmation\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n✔\nBusiness understanding\n✔\nCustomer understanding\n●\nMarket understanding\n○\nReady for review\n○\nAI analysis complete\n●\nAI PM\n\nOverview\n\n●\n🟡 Confirming founder\n✔\n✓ Business understood\n✔\n✓ Customer confirmed\n●\n🟡 Analyzing market\n✔\n✓ Competition analyzed\n\nInsights\n\nRecommendations\n\nActions\n\nDEMO\n\nDemo Workspace\n\nThis is a sample project. Sign in to manage your own project the same way.\n\nCURRENT JUDGMENT\n\n지금까지 확인: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사 · alternativesCompetitors: 클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다.. 불확실: categoryScope, customerPersona. 이해 상태 커버리지 20% (필드 채움률이 아님). 남은 핵심 공백은 「differentiationVsAlternatives」입니다. 그래서 지금 이 질문을 합니다.\n\n기존: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤 · 신규: businessOneLiner: ",
+      "screenshot": "02-identity-final.png",
+      "notes": [
+        "No identity HOLD on this capture"
+      ]
+    }
+  ],
+  "observations": [
+    "identityHoldCopy=false",
+    "b2bTemplatePollution=false",
+    "tourismSpinePresent=true"
+  ],
+  "verdict": "PASS — no identity drift HOLD on capture"
+}
