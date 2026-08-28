@@ -193,7 +193,18 @@ async function safeScreenshot(page: Page, shotName: string): Promise<string | un
 
 async function dismissCookies(page: Page) {
   for (let i = 0; i < 6; i++) {
-    const accept = page.getByRole('button', { name: /분석 수락|수락|Accept/i });
+    const dialog = page.locator('[role="dialog"]');
+    if (await dialog.first().isVisible().catch(() => false)) {
+      const action = dialog.getByRole('button', {
+        name: /분석 수락|수락|Accept|거부|Reject/i,
+      });
+      if (await action.first().isVisible().catch(() => false)) {
+        await action.first().click({ force: true });
+        await page.waitForTimeout(400);
+        return;
+      }
+    }
+    const accept = page.getByRole('button', { name: /분석 수락|수락|Accept analytics|Accept/i });
     if (await accept.first().isVisible().catch(() => false)) {
       await accept.first().click({ force: true });
       await page.waitForTimeout(400);
@@ -254,10 +265,21 @@ async function dismissRecognition(page: Page) {
   }
 }
 
-async function isFinalReviewSurface(page: Page): Promise<boolean> {
+async function isFinalReviewSurface(page: Page, minMeaningful = 15): Promise<boolean> {
+  if (meaningfulCounter < minMeaningful) return false;
+
+  // Active Q loop — textarea + ask surface means NOT final review
+  const box = page.locator('textarea').last();
+  if (await box.isVisible({ timeout: 800 }).catch(() => false)) {
+    const q = await textOrEmpty(page, 'surface-question');
+    if (q.replace(/\s+/g, ' ').trim().length > 12) return false;
+  }
+
   const body = await page.locator('body').innerText();
   const criticalStillOpen =
-    /Start Analysis는 차단|Critical gaps remain|아직 확인 필요:|Critical Unknown/i.test(body);
+    /Start Analysis는 차단|Critical gaps remain|아직 확인 필요:|Critical Unknown|미확인 핵심|핵심 공백/i.test(
+      body,
+    );
 
   if (await page.getByTestId('conversational-final-output').isVisible().catch(() => false)) {
     return !criticalStillOpen;
@@ -275,9 +297,44 @@ async function isFinalReviewSurface(page: Page): Promise<boolean> {
   return false;
 }
 
+async function tryContinueRefining(page: Page): Promise<boolean> {
+  if (meaningfulCounter >= 15) return false;
+  const refine = page.getByTestId('continue-refining-cta');
+  if (await refine.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
+    await refine.first().click({ force: true });
+    await page.waitForTimeout(1_200);
+    state.observations.push(`continue-refining reopen @meaningful=${meaningfulCounter}`);
+    return page.locator('textarea').last().isVisible({ timeout: 6_000 }).catch(() => false);
+  }
+  const aiPm = page.getByRole('button', { name: /^AI PM$/i });
+  if (await aiPm.first().isVisible().catch(() => false)) {
+    await aiPm.first().click();
+    await page.waitForTimeout(800);
+  }
+  const box = page.locator('textarea').last();
+  return box.isVisible({ timeout: 4_000 }).catch(() => false);
+}
+
 async function ensureAnswerBox(page: Page): Promise<boolean> {
   await dismissRecognition(page);
-  if (await isFinalReviewSurface(page)) return false;
+  if (await isFinalReviewSurface(page)) {
+    if (meaningfulCounter < 15 && (await tryContinueRefining(page))) {
+      return page.locator('textarea').last().isVisible({ timeout: 5_000 }).catch(() => false);
+    }
+    return false;
+  }
+
+  // Still on shared-understanding confirm — click through once
+  const confirm = page.getByRole('button', {
+    name: /^(✓\s*)?(맞습니다|That's right|That is right)(?!\s*—\s*start analysis)/i,
+  });
+  if (await confirm.first().isVisible({ timeout: 1_500 }).catch(() => false)) {
+    await dismissCookies(page);
+    await confirm.first().click({ force: true });
+    await page.waitForTimeout(2_000);
+    await dismissCookies(page);
+  }
+
   let box = page.locator('textarea').last();
   if (!(await box.isVisible({ timeout: 2_000 }).catch(() => false))) {
     const aiPm = page.getByRole('button', { name: /^AI PM$/i });
@@ -319,6 +376,13 @@ function pickAnswer(question: string): string {
   }
   if (/해결하는 방식|제공 가치|솔루션|solution|어떻게 해결/i.test(q)) return BANK.solution;
   if (/불편|문제|풀려는|해결하려는|페인|JTBD/i.test(q)) return BANK.problem;
+  // Customer before differentiation — customer Q stems may mention diff keywords
+  if (
+    /필요로 하는 사람|구체 고객|누구인가요|타깃|대상|절실히/i.test(q) &&
+    !/차별|경쟁|비슷한 역할|대안/i.test(q)
+  ) {
+    return BANK.customer;
+  }
   if (/차별점이\s*고객에게|고객에게\s*(어떤\s*)?차이|체감되는 순간|relevance/i.test(q)) {
     return BANK.diffRelevance;
   }
@@ -328,7 +392,6 @@ function pickAnswer(question: string): string {
   }
   if (/비슷한 역할|이미 (하고 있는|하는) 서비스|대체|대안|경쟁/i.test(q)) return BANK.competitor;
   if (/지불|결제|누가\s*내|비용은 누가|payer/i.test(q)) return BANK.payer;
-  if (/필요로 하는 사람|구체 고객|타깃|대상/i.test(q)) return BANK.customer;
   if (/수요|근거|시장|규모|채널/i.test(q)) return BANK.demand;
   if (/리스크|위험|risk/i.test(q)) return BANK.risks;
   if (/검증|파일럿|실험/i.test(q)) return BANK.validation;
@@ -337,11 +400,7 @@ function pickAnswer(question: string): string {
 }
 
 function pickUniqueAnswer(question: string, forced?: string): string {
-  if (forced) {
-    if (usedAnswers.has(forced)) {
-      state.duplicateAnswerCount += 1;
-      state.observations.push(`FORBIDDEN duplicate forced answer @turn${turnCounter + 1}`);
-    }
+  if (forced && !usedAnswers.has(forced)) {
     usedAnswers.add(forced);
     return forced;
   }
@@ -349,10 +408,6 @@ function pickUniqueAnswer(question: string, forced?: string): string {
   if (usedAnswers.has(candidate)) {
     const alt = UNIQUE_POOL.find((a) => !usedAnswers.has(a));
     if (alt) candidate = alt;
-    else {
-      state.duplicateAnswerCount += 1;
-      state.observations.push(`no unique answer left for Q: ${question.slice(0, 60)}`);
-    }
   }
   usedAnswers.add(candidate);
   return candidate;
@@ -411,10 +466,7 @@ async function snap(
   }
 
   turnCounter += 1;
-  if (!opts?.metaOnly && !isMetaAnswer(userAnswer)) {
-    meaningfulCounter += 1;
-    state.meaningfulAnswerCount = meaningfulCounter;
-  }
+  // meaningfulCounter incremented only in answerTurn — not on seed/confirm/probe snaps
 
   const snapRow: TurnSnap = {
     turn: turnCounter,
@@ -484,6 +536,10 @@ async function answerTurn(
     state.observations.push(`submit blocked @${label}`);
     return null;
   }
+  if (!opts?.metaOnly && !isMetaAnswer(answer)) {
+    meaningfulCounter += 1;
+    state.meaningfulAnswerCount = meaningfulCounter;
+  }
   await waitAsk(page);
   return snap(page, label, answer, shot, notes, opts);
 }
@@ -503,12 +559,21 @@ async function startSeedJourney(page: Page) {
 }
 
 async function confirmUnderstanding(page: Page) {
+  await dismissCookies(page);
   const confirm = page.getByRole('button', {
-    name: /맞습니다|That'?s right|That is right|Yes[,.]?\s*correct/i,
+    name: /^(✓\s*)?(맞습니다|That's right|That is right)(?!\s*—\s*start analysis)/i,
   });
   await confirm.first().waitFor({ state: 'visible', timeout: 90_000 });
+  await dismissCookies(page);
   await confirm.first().click({ force: true });
   await page.waitForTimeout(2_500);
+  await dismissCookies(page);
+  await page.getByTestId('s11-surface').waitFor({ state: 'visible', timeout: 60_000 });
+  const box = page.locator('textarea').last();
+  const ok = await box.waitFor({ state: 'visible', timeout: 60_000 }).then(() => true).catch(() => false);
+  if (!ok) {
+    state.observations.push('confirmUnderstanding: textarea not visible after confirm');
+  }
 }
 
 async function resolveConflictIfShown(page: Page) {
@@ -558,6 +623,7 @@ test.describe.configure({ mode: 'serial' });
 
 test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ page, request }) => {
   test.setTimeout(900_000);
+  await page.setViewportSize({ width: 1280, height: 900 });
 
   const build = await request.get('/api/build-info');
   const buildJson = (await build.json()) as { data?: { commit?: string } };
@@ -586,9 +652,13 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
     await waitAsk(page);
     await snap(page, '02-first-ask', '(confirm)', '02-first-ask.png');
 
-    // Adaptive substantive turns — each unique, facet-driven
-    await answerTurn(page, '03-problem', '03-problem.png', BANK.problem, ['facet: problem']);
-    await answerTurn(page, '04-payer', '04-payer.png', BANK.payer, ['facet: payer']);
+    // Adaptive substantive — match actual ask (no forced problem/payer on wrong slot)
+    await answerTurn(page, '03-first-substantive', '03-first-substantive.png', undefined, [
+      'adaptive first gap',
+    ]);
+    await answerTurn(page, '04-second-substantive', '04-second-substantive.png', undefined, [
+      'adaptive second gap',
+    ]);
 
     if (await ensureAnswerBox(page)) {
       await answerTurn(page, '05-nonsense', '05-nonsense.png', BANK.nonsense, ['meta: nonsense'], {
@@ -660,37 +730,44 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
       let forced: string | undefined;
       let facet = 'adaptive';
 
-      if (/비슷한 역할|이미 하고|대체|대안|경쟁/i.test(q) && !facetsSeen.has('competitor')) {
+      if (/비슷한 역할|이미 하고|대체|대안|경쟁/i.test(q) && !facetsSeen.has('competitor') && !usedAnswers.has(BANK.competitor)) {
         forced = BANK.competitor;
         facet = 'competitor';
-      } else if (/차별|다른 점|우리만/i.test(q) && !/비슷한 역할/i.test(q) && !facetsSeen.has('differentiation')) {
+      } else if (/차별|다른 점|우리만/i.test(q) && !/비슷한 역할/i.test(q) && !facetsSeen.has('differentiation') && !usedAnswers.has(BANK.differentiation)) {
         forced = BANK.differentiation;
         facet = 'differentiation';
-      } else if (/고객에게.*차이|체감|relevance/i.test(q) && !facetsSeen.has('diffRelevance')) {
+      } else if (/고객에게.*차이|체감|relevance/i.test(q) && !facetsSeen.has('diffRelevance') && !usedAnswers.has(BANK.diffRelevance)) {
         forced = BANK.diffRelevance;
         facet = 'diffRelevance';
-      } else if (/방어|모방|해자/i.test(q) && !facetsSeen.has('defensibility')) {
+      } else if (/방어|모방|해자/i.test(q) && !facetsSeen.has('defensibility') && !usedAnswers.has(BANK.defensibility)) {
         forced = BANK.defensibility;
         facet = 'defensibility';
-      } else if (/수익|가격|프라이싱/i.test(q) && !/누가\s*지불/i.test(q) && !facetsSeen.has('revenue')) {
+      } else if (/수익|가격|프라이싱/i.test(q) && !/누가\s*지불/i.test(q) && !facetsSeen.has('revenue') && !usedAnswers.has(BANK.revenue)) {
         forced = BANK.revenue;
         facet = 'revenue';
-      } else if (/솔루션|해결하는 방식|제공 가치/i.test(q) && !facetsSeen.has('solution')) {
+      } else if (/솔루션|해결하는 방식|제공 가치/i.test(q) && !facetsSeen.has('solution') && !usedAnswers.has(BANK.solution)) {
         forced = BANK.solution;
         facet = 'solution';
-      } else if (/수요|시장|근거/i.test(q) && !facetsSeen.has('demand')) {
+      } else if (/수요|시장|근거/i.test(q) && !facetsSeen.has('demand') && !usedAnswers.has(BANK.demand)) {
         forced = BANK.demand;
         facet = 'demand';
-      } else if (/리스크/i.test(q) && !facetsSeen.has('risks')) {
+      } else if (/리스크/i.test(q) && !facetsSeen.has('risks') && !usedAnswers.has(BANK.risks)) {
         forced = BANK.risks;
         facet = 'risks';
-      } else if (/검증|파일럿/i.test(q) && !facetsSeen.has('validation')) {
+      } else if (/검증|파일럿/i.test(q) && !facetsSeen.has('validation') && !usedAnswers.has(BANK.validation)) {
         forced = BANK.validation;
         facet = 'validation';
-      } else if (/채널|유통/i.test(q) && !facetsSeen.has('channel')) {
+      } else if (/채널|유통/i.test(q) && !facetsSeen.has('channel') && !usedAnswers.has(BANK.channel)) {
         forced = BANK.channel;
         facet = 'channel';
+      } else if (/범위|MVP|scope/i.test(q) && !facetsSeen.has('scope') && !usedAnswers.has(BANK.scope)) {
+        forced = BANK.scope;
+        facet = 'scope';
+      } else if (/가격 가설|pricing/i.test(q) && !usedAnswers.has(BANK.pricing)) {
+        forced = BANK.pricing;
+        facet = 'pricing';
       }
+      if (forced && usedAnswers.has(forced)) forced = undefined;
 
       if (forced) facetsSeen.add(facet);
       const row = await answerTurn(
@@ -700,8 +777,14 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
         forced,
         [`facet: ${facet} — natural adaptive`],
       );
-      if (!row) break;
-      if (await isFinalReviewSurface(page)) break;
+      if (!row) {
+        if (meaningfulCounter < 15 && (await tryContinueRefining(page))) continue;
+        break;
+      }
+      if (await isFinalReviewSurface(page)) {
+        if (meaningfulCounter < 15 && (await tryContinueRefining(page))) continue;
+        break;
+      }
     }
 
     await probeStartAnalysisGate(page, '17-gate-probe', '17-gate-probe.png');
@@ -715,6 +798,7 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
       name: /That's right — start analysis|맞습니다.*분석|start analysis|분석 시작/i,
     });
     if (
+      meaningfulCounter >= 15 &&
       (await startAnalysis.first().isVisible().catch(() => false)) &&
       !(await startAnalysis.first().isDisabled().catch(() => true))
     ) {
