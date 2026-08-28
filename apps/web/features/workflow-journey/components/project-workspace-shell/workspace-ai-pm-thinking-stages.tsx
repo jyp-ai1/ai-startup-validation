@@ -22,6 +22,8 @@ type WorkspaceAiPmThinkingStagesProps = {
    * Answer path writes Memory before PROCESSING — mark `memory` done immediately.
    */
   completedStageIds?: ThinkingStageId[];
+  /** Last turn delta — visible during processing so mergeable turns never capture empty. */
+  understandingDelta?: string | null;
 };
 
 /** Staged confirm → update understanding → review judgment → next gap (state-aware). */
@@ -29,6 +31,7 @@ export function WorkspaceAiPmThinkingStages({
   className,
   onComplete,
   completedStageIds = ['confirmAnswer'],
+  understandingDelta,
 }: WorkspaceAiPmThinkingStagesProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
   const [elapsed, setElapsed] = useState(0);
@@ -73,6 +76,12 @@ export function WorkspaceAiPmThinkingStages({
         ))}
       </ol>
       <p className="mt-4 text-xs text-muted-foreground">{t('reanalyzeHint')}</p>
+      <p
+        data-testid="understanding-delta"
+        className="mt-3 max-w-md text-left text-xs leading-relaxed text-emerald-800 dark:text-emerald-300"
+      >
+        {understandingDelta?.trim() || '이해 상태 갱신됨'}
+      </p>
     </section>
   );
 }

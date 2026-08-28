@@ -22,10 +22,8 @@ const MEDIA = path.join(OUT, 'media');
 const RAW_JSON = path.join(OUT, 'transcript-raw.json');
 fs.mkdirSync(MEDIA, { recursive: true });
 
-/** Match Long Sprint Final fix SHA on Production (update after push). */
-const FIX_SHA_PREFIXES = [
-  'long-sprint', // placeholder — overwritten by REQUIRED_SHA_PREFIX env or tip match below
-] as const;
+/** Match Long Sprint fix SHA on Production (update after push). */
+const FIX_SHA_PREFIXES = ['048b38e'] as const;
 const REQUIRED_SHA_PREFIX = (process.env.ALABOM_REQUIRED_SHA ?? '').trim();
 
 const SEED =
@@ -168,8 +166,12 @@ async function dismissCookies(page: Page) {
 
 async function textOrEmpty(page: Page, testId: string) {
   const el = page.getByTestId(testId);
-  if (await el.isVisible().catch(() => false)) {
-    return (await el.innerText()).trim();
+  try {
+    await el.first().waitFor({ state: 'attached', timeout: 8_000 });
+    const text = (await el.first().innerText()).trim();
+    if (text) return text;
+  } catch {
+    /* element absent — fall through */
   }
   return '';
 }
@@ -593,12 +595,27 @@ async function snap(
   notes?: string[],
 ): Promise<TurnSnap> {
   await page.waitForTimeout(600);
+  await page
+    .getByTestId('understanding-delta')
+    .first()
+    .waitFor({ state: 'attached', timeout: 12_000 })
+    .catch(() => null);
   const understanding = await textOrEmpty(page, 'surface-understanding');
   const decision = await textOrEmpty(page, 'surface-decision');
   const questionBlock = await textOrEmpty(page, 'surface-question');
   const purpose = await textOrEmpty(page, 'surface-question-purpose');
   const judgmentBlock = await textOrEmpty(page, 'current-judgment-block');
-  const understandingDelta = await textOrEmpty(page, 'understanding-delta');
+  let understandingDelta = await textOrEmpty(page, 'understanding-delta');
+  if (!understandingDelta) {
+    const judgment = await textOrEmpty(page, 'current-judgment-block');
+    const deltaLine = judgment
+      .split('\n')
+      .map((line) => line.trim())
+      .find((line) =>
+        /^(기존:|신규:|변경:|미확인:|충돌:|Fact 반영:|이해 상태)/.test(line),
+      );
+    if (deltaLine) understandingDelta = deltaLine;
+  }
   let whyNow = purpose;
   const whyDetails = page.getByTestId('why-now-details');
   if (await whyDetails.isVisible().catch(() => false)) {

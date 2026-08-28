@@ -1119,6 +1119,7 @@ export function WorkspaceAiPmLoopPanel({
       <WorkspaceAiPmThinkingStages
         className={className}
         completedStageIds={processingStageIds}
+        understandingDelta={lastTurn?.understandingDelta}
         onComplete={() => finishProcessingRef.current()}
       />
     );
@@ -1448,6 +1449,46 @@ export function WorkspaceAiPmLoopPanel({
                 'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7',
               )}
             >
+              <div
+                data-testid="current-judgment-block"
+                className="mb-4 rounded-xl border border-border/50 bg-muted/20 px-4 py-3"
+              >
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  {t('judgmentLabel')}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground">
+                  {livingState.judgmentSummary}
+                </p>
+                {lastTurn ? (
+                  <p
+                    data-testid="understanding-delta"
+                    className="mt-2 text-xs text-emerald-800 dark:text-emerald-300"
+                  >
+                    {lastTurn.understandingDelta?.trim() || '이해 상태 갱신됨'}
+                  </p>
+                ) : null}
+                {whyThisQuestionNow?.whyNow ? (
+                  <details className="mt-2" data-testid="why-now-details">
+                    <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
+                      왜 지금 이 질문을 하나요?
+                    </summary>
+                    <p className="mt-1 text-xs leading-relaxed text-foreground/90">
+                      {whyThisQuestionNow.whyNow}
+                    </p>
+                  </details>
+                ) : null}
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t('coverageFlash', { percent: livingState.coveragePercent })}
+                </p>
+                {countCriticalViabilityGaps(livingState) > 0 ? (
+                  <p
+                    data-testid="critical-gap-block-hint"
+                    className="mt-2 text-xs text-amber-800 dark:text-amber-200"
+                  >
+                    {explainSufficiency(livingState).explanation}
+                  </p>
+                ) : null}
+              </div>
               <WorkspaceS11Surface surface={s11Surface} />
               <textarea
                 value={answerDraft}
