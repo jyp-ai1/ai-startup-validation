@@ -1164,12 +1164,12 @@ export function WorkspaceAiPmLoopPanel({
           <p className="mt-2 text-sm leading-relaxed text-foreground">
             {livingState.judgmentSummary}
           </p>
-          {lastTurn?.understandingDelta ? (
+          {lastTurn ? (
             <p
               data-testid="understanding-delta"
               className="mt-2 text-xs text-emerald-800 dark:text-emerald-300"
             >
-              {lastTurn.understandingDelta}
+              {lastTurn.understandingDelta?.trim() || '이해 상태 갱신됨'}
             </p>
           ) : null}
           {whyThisQuestionNow?.whyNow ? (
@@ -1408,12 +1408,12 @@ export function WorkspaceAiPmLoopPanel({
               <p className="mt-2 text-sm leading-relaxed text-foreground">
                 {livingState.judgmentSummary}
               </p>
-              {lastTurn?.understandingDelta ? (
+              {lastTurn ? (
                 <p
                   data-testid="understanding-delta"
                   className="mt-2 text-xs text-emerald-800 dark:text-emerald-300"
                 >
-                  {lastTurn.understandingDelta}
+                  {lastTurn.understandingDelta?.trim() || '이해 상태 갱신됨'}
                 </p>
               ) : null}
               {whyThisQuestionNow?.whyNow ? (

@@ -324,6 +324,33 @@ function resolveDomainValue(
       );
     }
     case 'pricingHint': {
+      // Long Sprint — never hard-UNKNOWN when revenue/pricing was answered.
+      // Fee/%/price cues confirm; otherwise revenue text is an inferred pricing signal.
+      const fromPricingTurn = [...(input.turns ?? [])]
+        .reverse()
+        .find(
+          (t) =>
+            !t.superseded &&
+            t.targetGap === 'pricingHint' &&
+            (t.intent === 'business_fact' || t.intent === 'correction') &&
+            Boolean(t.answer?.trim()),
+        );
+      if (fromPricingTurn?.answer?.trim()) {
+        return claimFromValue(fieldKey, fromPricingTurn.answer.trim(), 'USER_CONFIRMED', [
+          { kind: 'user_answer', excerpt: fromPricingTurn.answer.trim().slice(0, 80) },
+        ]);
+      }
+      const fromMem = factValue(mem, 'revenue');
+      if (fromMem) {
+        const hasPricingCue =
+          /\d+\s*%|수수료|요금|가격|프라이싱|원\b|달러|₩|\$|구독료|단가|pricing/i.test(fromMem);
+        return claimFromValue(
+          fieldKey,
+          fromMem,
+          hasPricingCue ? 'USER_CONFIRMED' : 'AI_INFERENCE',
+          [{ kind: 'user_answer', excerpt: fromMem.slice(0, 80) }],
+        );
+      }
       return claimFromValue(fieldKey, null, 'UNKNOWN', []);
     }
     case 'marketChannel': {
@@ -341,8 +368,30 @@ function resolveDomainValue(
         val ? [{ kind: 'document', excerpt: val.slice(0, 80) }] : [],
       );
     }
-    case 'marketSizeEvidence':
+    case 'marketSizeEvidence': {
+      // Long Sprint — demand/market answers must close this gap (was hard-UNKNOWN → post-analysis HOLD).
+      const fromDemandTurn = [...(input.turns ?? [])]
+        .reverse()
+        .find(
+          (t) =>
+            !t.superseded &&
+            t.targetGap === 'marketSizeEvidence' &&
+            (t.intent === 'business_fact' || t.intent === 'correction') &&
+            Boolean(t.answer?.trim()),
+        );
+      if (fromDemandTurn?.answer?.trim()) {
+        return claimFromValue(fieldKey, fromDemandTurn.answer.trim(), 'USER_CONFIRMED', [
+          { kind: 'user_answer', excerpt: fromDemandTurn.answer.trim().slice(0, 80) },
+        ]);
+      }
+      const fromMem = factValue(mem, 'market');
+      if (fromMem) {
+        return claimFromValue(fieldKey, fromMem, 'USER_CONFIRMED', [
+          { kind: 'user_answer', excerpt: fromMem.slice(0, 80) },
+        ]);
+      }
       return claimFromValue(fieldKey, null, 'UNKNOWN', []);
+    }
     case 'alternativesCompetitors': {
       const fromMem = factValue(mem, 'competitor');
       if (fromMem) {

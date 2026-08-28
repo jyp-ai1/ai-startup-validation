@@ -38,6 +38,7 @@ import { createInitialAiPmLoopState } from '../workspace-ai-pm-loop-store';
 import type { AiPmLoopTurn } from '../workspace-ai-pm-loop-types';
 import { deriveWorkspaceState } from '../workspace-state';
 import { resolveGapQuestionBinding } from '../gap-question-map';
+import { evaluateFinalIntegrityGate } from '../final-integrity-gate';
 import { resolveNextLoopIssue } from '../resolve-ai-pm-priority-issue';
 
 const SEED =
@@ -635,6 +636,140 @@ describe('P0 Judgment — Analysis Ready ≠ Sufficiency', () => {
       memory: memoryFromTurns(manyTurns),
     });
     expect(evaluateAnalysisReady(livingMany).analysisReady).toBe(false);
+  });
+});
+
+describe('Long Sprint — pricingHint / marketSizeEvidence / integrity align', () => {
+  it('revenue with fee % confirms pricingHint (not hard-UNKNOWN)', () => {
+    const turns: AiPmLoopTurn[] = [
+      {
+        issueId: 'bm_design',
+        answer: '수익은 예약 건당 중개 수수료 10~15%와 현지 파트너 제휴 리포트 구독입니다.',
+        appliedAt: '1',
+        semanticFactKey: 'revenue',
+        semanticFactKeys: ['revenue'],
+        intent: 'business_fact',
+        targetGap: 'revenueModel',
+      },
+    ];
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns,
+      memory: memoryFromTurns(turns),
+    });
+    const pricing = living.claims.find((c) => c.fieldKey === 'pricingHint');
+    expect(pricing?.status).toBe('confirmed');
+    expect(pricing?.value).toMatch(/수수료|10/);
+  });
+
+  it('marketSizeEvidence demand turn confirms claim', () => {
+    const turns: AiPmLoopTurn[] = [
+      {
+        issueId: 'market_validation',
+        answer:
+          '방한 외래객 회복과 맞춤 투어 문의가 늘고 있다는 제휴 가이드 피드백이 있습니다.',
+        appliedAt: '1',
+        semanticFactKey: 'market',
+        semanticFactKeys: ['market'],
+        intent: 'business_fact',
+        targetGap: 'marketSizeEvidence',
+      },
+    ];
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns,
+      memory: memoryFromTurns(turns),
+    });
+    const demand = living.claims.find((c) => c.fieldKey === 'marketSizeEvidence');
+    expect(demand?.status).toBe('confirmed');
+    expect(demand?.value).toMatch(/방한|가이드/);
+  });
+
+  it('integrity Critical Unknown aligns with Analysis Ready (not pricingHint alone)', () => {
+    const baseTurns: AiPmLoopTurn[] = [
+      {
+        issueId: 'customer_definition',
+        answer: 'FIT 외국인',
+        appliedAt: '1',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '획일적 동선',
+        appliedAt: '2',
+        semanticFactKey: 'problem',
+        semanticFactKeys: ['problem'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+      },
+      {
+        issueId: 'bm_design',
+        answer: '관광객 직접 결제',
+        appliedAt: '3',
+        semanticFactKey: 'buyer',
+        semanticFactKeys: ['buyer'],
+        intent: 'business_fact',
+        targetGap: 'payer',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '클룩·트립',
+        appliedAt: '4',
+        semanticFactKey: 'competitor',
+        semanticFactKeys: ['competitor'],
+        intent: 'business_fact',
+        targetGap: 'alternativesCompetitors',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '실시간 맞춤',
+        appliedAt: '5',
+        semanticFactKey: 'differentiation',
+        semanticFactKeys: ['differentiation'],
+        intent: 'business_fact',
+        targetGap: 'differentiationVsAlternatives',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '관심사·동선 맞춤 일정과 현지인 동행',
+        appliedAt: '6',
+        semanticFactKey: 'business',
+        semanticFactKeys: ['business'],
+        intent: 'business_fact',
+        targetGap: 'solution',
+      },
+      {
+        issueId: 'bm_design',
+        answer: '수수료 10~15%',
+        appliedAt: '7',
+        semanticFactKey: 'revenue',
+        semanticFactKeys: ['revenue'],
+        intent: 'business_fact',
+        targetGap: 'revenueModel',
+      },
+    ];
+    const memory = memoryFromTurns(baseTurns);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns: baseTurns,
+      memory,
+    });
+    expect(evaluateAnalysisReady(living).analysisReady).toBe(true);
+    const loop = createInitialAiPmLoopState();
+    loop.turns = baseTurns;
+    const gate = evaluateFinalIntegrityGate({
+      living,
+      memory,
+      loop,
+      documentText: SEED,
+    });
+    expect(gate.blockers.some((b) => /가격 신호|pricingHint/i.test(b))).toBe(false);
   });
 });
 

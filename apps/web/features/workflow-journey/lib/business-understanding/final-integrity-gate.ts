@@ -3,6 +3,7 @@
  * Score alone cannot GO: Original Intent · Identity · Critical Gap · Contradiction.
  */
 
+import { listUnconfirmedCriticalGaps } from './adaptive-question-select';
 import type { ConversationMemory } from './conversation-memory';
 import { memoryHasOpenConflict } from './conversation-memory';
 import type { LivingUnderstandingState } from './living-understanding-state';
@@ -70,7 +71,13 @@ export function evaluateFinalIntegrityGate(input: FinalIntegrityInput): FinalInt
     blockers.push('아직 해결되지 않은 모순된 답이 있습니다.');
   }
 
-  const criticalGaps = input.living.gaps.filter((g) => g.priorityScore >= 100);
+  // Long Sprint — align Final Integrity Critical Unknown with Analysis Ready gate
+  // (ADAPTIVE_CRITICAL_GAP_KEYS). priorityScore≥100 falsely treated pricingHint /
+  // marketSizeEvidence / residual Stage-A fields as Critical after Start Analysis.
+  const criticalGapKeys = listUnconfirmedCriticalGaps(input.living);
+  const criticalGaps = input.living.gaps.filter((g) =>
+    criticalGapKeys.includes(g.fieldKey),
+  );
   if (criticalGaps.length > 0) {
     blockers.push(`Critical Unknown ${criticalGaps.length}건 — ${criticalGaps[0]?.rationale ?? ''}`);
   }
