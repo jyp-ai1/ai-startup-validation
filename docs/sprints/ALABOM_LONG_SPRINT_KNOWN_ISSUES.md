@@ -14,7 +14,7 @@ Auth: Deferred
 | LS-2 | Post-analysis identity drift HOLD | Low | Final surface: `확정된 사업 한 줄이 시작 의도와 맞지 않습니다` — not pricingHint |
 | LS-3 | Generic delta fallback `이해 상태 갱신됨` on some turns | Low | Engine merged but delta summary generic; UX acceptable, not empty |
 | LS-4 | B2B(확인이 필요) linger after conflict resolution | Low | Understanding panel tag after payer not-that clarifications |
-| LS-5 | LIVE re-capture on post-fix SHA | Process | Baseline metrics @ 048b38e; delta UI fix needs deploy + E2E re-run |
+| LS-5 | Full post-fix 33-turn LIVE re-capture | Process | Partial run to 28 turns @ f1894ba (delta=0); full run blocked by screenshot file lock on Windows |
 
 ## Fixed this sprint
 

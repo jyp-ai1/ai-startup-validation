@@ -11,12 +11,12 @@ Auth: Deferred
 ## Coordinator return block
 
 ```text
-Production SHA: 048b38eb4c3f0a4c89a48f13c5d54e559ce18c65 (baseline LIVE)
-                + delta-visibility patch (commit pending push/deploy)
-Implementation: complete (engine @ 048b38e + delta UI fix this session)
-Internal QA: PASS — 25 unit tests, web build green
-LIVE journeys: docs/evidence/ALABOM/long-sprint/ (33 turns, split transcripts)
-Hard metrics table: see below (honest @ 048b38e; delta fix not yet re-LIVE)
+Production SHA: f1894baa1dae4ef6e733fd407b217b6c30109e1b (deployed)
+                Baseline LIVE @ 048b38e — 33 turns (delta empty mergeable=4, superseded)
+Implementation: complete (@ f1894ba — delta UI fix deployed)
+Internal QA: PASS — 25 unit tests, web build green; LIVE spot-check turn 9 delta populated (was empty @ 048b38e)
+LIVE journeys: docs/evidence/ALABOM/long-sprint/ (33-turn baseline @ 048b38e); post-fix partial @ f1894ba interrupted (screenshot lock)
+Hard metrics table: baseline @ 048b38e below; delta empty mergeable **0 on f1894ba spot-check turns 3–28 (partial run)**
 UI/UX items: 15–19 done (textarea placeholder + processing delta this session)
 Deliverables: 4 sprint docs + docs/evidence/ALABOM/long-sprint/
 CEO Walkthrough: NOT READY (until CPO PASS)
@@ -63,7 +63,7 @@ The Long Sprint engine at **048b38e** already delivers adaptive one-question con
 | edit supersede leak | 0 | 0 |
 | hallucinated facts | 0 | 0 |
 | whyNow present | ~100% | 100% |
-| understandingDelta empty (mergeable) | **4** | 0 |
+| understandingDelta empty (mergeable) | **4** @ 048b38e → **0** @ f1894ba (partial 28-turn spot-check) | 0 |
 | 30+ journey | PASS | PASS |
 | final result | PASS | PASS |
 

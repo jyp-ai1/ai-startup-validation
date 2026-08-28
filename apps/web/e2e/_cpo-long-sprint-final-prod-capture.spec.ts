@@ -23,7 +23,7 @@ const RAW_JSON = path.join(OUT, 'transcript-raw.json');
 fs.mkdirSync(MEDIA, { recursive: true });
 
 /** Match Long Sprint fix SHA on Production (update after push). */
-const FIX_SHA_PREFIXES = ['048b38e'] as const;
+const FIX_SHA_PREFIXES = ['f1894ba'] as const;
 const REQUIRED_SHA_PREFIX = (process.env.ALABOM_REQUIRED_SHA ?? '').trim();
 
 const SEED =
@@ -167,7 +167,7 @@ async function dismissCookies(page: Page) {
 async function textOrEmpty(page: Page, testId: string) {
   const el = page.getByTestId(testId);
   try {
-    await el.first().waitFor({ state: 'attached', timeout: 8_000 });
+    await el.first().waitFor({ state: 'attached', timeout: 4_000 });
     const text = (await el.first().innerText()).trim();
     if (text) return text;
   } catch {
@@ -598,7 +598,7 @@ async function snap(
   await page
     .getByTestId('understanding-delta')
     .first()
-    .waitFor({ state: 'attached', timeout: 12_000 })
+    .waitFor({ state: 'attached', timeout: 4_000 })
     .catch(() => null);
   const understanding = await textOrEmpty(page, 'surface-understanding');
   const decision = await textOrEmpty(page, 'surface-decision');
@@ -932,7 +932,7 @@ async function probeStartAnalysisGate(page: Page, label: string, shot: string) {
 test.describe.configure({ mode: 'serial' });
 
 test('ALABOM Long Sprint Final prod journey capture (30+ turns)', async ({ page, request }) => {
-  test.setTimeout(900_000);
+  test.setTimeout(1_200_000);
 
   const build = await request.get('/api/build-info');
   const buildJson = (await build.json()) as { data?: { commit?: string } };
