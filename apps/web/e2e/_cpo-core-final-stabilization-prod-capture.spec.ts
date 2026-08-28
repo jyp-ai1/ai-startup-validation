@@ -16,14 +16,14 @@ import path from 'node:path';
 
 const OUT = path.resolve(
   process.cwd(),
-  '../../docs/evidence/ALABOM/conversation-validation/core-final-stabilization',
+  '../../docs/evidence/ALABOM/conversation-validation/core-final-stabilization/p0-judgment-fix',
 );
 const MEDIA = path.join(OUT, 'media');
 const RAW_JSON = path.join(OUT, 'transcript-raw.json');
 fs.mkdirSync(MEDIA, { recursive: true });
 
-/** Match Stabilization fix SHA on Production. */
-const FIX_SHA_PREFIXES = ['9788800', 'd3bd6ba', 'ea2035d', 'b7d24b5', '0069ce5'] as const;
+/** Match P0 Judgment fix SHA on Production. */
+const FIX_SHA_PREFIXES = ['62b3ffe', '9788800', 'd3bd6ba', 'ea2035d', 'b7d24b5', '0069ce5'] as const;
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
@@ -54,6 +54,9 @@ const BANK = {
     '정정합니다. 초기 타깃은 방한 FIT 외국인만이 아니라, 국내 MZ 개별 여행객도 포함합니다.',
   contradiction:
     '앞서와 달리 정정합니다. 결제자는 관광객이 아니라 B2B로 호텔·OTA가 일괄 정산합니다.',
+  notThat: '그건 아닌데? 결제자는 관광객 직접 결제가 맞고, B2B 정산은 아닙니다.',
+  solution:
+    '관심사·동선·식사 제약을 반영한 실시간 맞춤 일정과 현지인 동행을 한 번에 제공하는 방식입니다.',
   fallback:
     '아직 MVP 전 아이디어 단계이고, 서울 한정으로 관심사 기반 맞춤 반나절 체험을 먼저 검증하려 합니다.',
 };
@@ -404,6 +407,7 @@ function pickAnswer(question: string, _body: string, forced?: string): string {
 
   if (/지불|결제|누가\s*내|비용은 누가|결제·정산|payer/i.test(q)) return BANK.payer;
   if (/불편|문제|풀려는|해결하려는|페인|JTBD|겪는 불편/i.test(q)) return BANK.problem;
+  if (/해결하는 방식|제공 가치|솔루션|solution|어떻게 해결/i.test(q)) return BANK.solution;
   if (/필요로 하는 사람|구체 고객|누구를 위한|타깃|대상|절실히 느끼는/i.test(q)) return BANK.customer;
   if (/수요|근거|시장|규모|기회|채널/i.test(q)) return BANK.demand;
   return BANK.fallback;
@@ -626,7 +630,9 @@ async function probeStartAnalysisGate(page: Page, label: string, shot: string) {
   let body = await page.locator('body').innerText();
   const criticalOnLoop =
     (await page.getByTestId('critical-gap-block-hint').isVisible().catch(() => false)) ||
-    /Start Analysis는 차단|핵심 공백|아직 확인 필요|Critical gaps remain/i.test(body);
+    /Start Analysis는 차단|Analysis Ready 아님|Critical Unknown|핵심 공백|아직 확인 필요|Critical gaps remain/i.test(
+      body,
+    );
 
   if (criticalOnLoop) {
     state.criticalGapBlockedStartAnalysis = true;
@@ -648,11 +654,12 @@ async function probeStartAnalysisGate(page: Page, label: string, shot: string) {
   });
   body = await page.locator('body').innerText();
   const criticalCopy =
-    /critical_gap|critical gap|핵심 공백|아직 확인 필요|Start Analysis는 차단|분석을 시작하려면|blocked|Critical gaps remain/i.test(
+    /critical_gap|critical gap|핵심 공백|아직 확인 필요|Start Analysis는 차단|Analysis Ready 아님|Critical Unknown|분석을 시작하려면|blocked|Critical gaps remain/i.test(
       body,
     ) ||
     (await page.getByTestId('analysis-critical-gap').isVisible().catch(() => false)) ||
-    (await page.getByTestId('critical-gap-block-hint').isVisible().catch(() => false));
+    (await page.getByTestId('critical-gap-block-hint').isVisible().catch(() => false)) ||
+    (await page.getByTestId('sufficiency-vs-analysis-ready').isVisible().catch(() => false));
 
   let disabled: boolean | null = null;
   let visible = false;
@@ -795,6 +802,22 @@ test('CPO Core Final Stabilization prod journey capture', async ({ page, request
         'contradiction / correction — payer flipped to B2B hotel/OTA settlement',
       ]);
     }
+    // Resolve conflict UI if shown, else re-mention "그건 아닌데?"
+    const keepPrior = page.getByRole('button', { name: /이전 내용이 맞아|Current = Old/i });
+    const acceptNew = page.getByRole('button', { name: /새 답변이 맞아|Superseded/i });
+    if (await acceptNew.first().isVisible().catch(() => false)) {
+      await acceptNew.first().click();
+      await page.waitForTimeout(1200);
+      state.observations.push('contradiction resolved: accept_new (Old→Superseded)');
+    } else if (await keepPrior.first().isVisible().catch(() => false)) {
+      await keepPrior.first().click();
+      await page.waitForTimeout(1200);
+      state.observations.push('contradiction resolved: keep_prior');
+    } else if (await ensureAnswerBox(page)) {
+      await answerCurrent(page, '09b-not-that', '09b-not-that.png', BANK.notThat, [
+        '그건 아닌데? — re-mention / conflict clarification',
+      ]);
+    }
 
     // --- 10–14: competitor (distinct) → differentiation → relevance / defensibility / pricing ---
     let loops = 0;
@@ -826,6 +849,10 @@ test('CPO Core Final Stabilization prod journey capture', async ({ page, request
         sawDefensibility = true;
         label = `14-defensibility-l${loops}`;
         shot = '14-defensibility.png';
+      } else if (/해결하는 방식|제공 가치|솔루션|solution|어떻게 해결/i.test(q)) {
+        forced = BANK.solution;
+        label = `12-solution-l${loops}`;
+        shot = '12-solution.png';
       } else if (
         /수익은 어떤 구조|수익이 발생|가격·요금|프라이싱/i.test(q) &&
         !/누가\s*지불|비용은 누가/i.test(q) &&
@@ -869,9 +896,9 @@ test('CPO Core Final Stabilization prod journey capture', async ({ page, request
       sawDiff = true;
     }
 
-    // Drain remaining asks toward sufficiency (cap total ~28 turns for W20)
+    // Drain remaining asks toward Analysis Ready (cap ~30; do not pad artificially)
     let drain = 0;
-    while (drain < 8 && turnCounter < 28 && (await ensureAnswerBox(page))) {
+    while (drain < 10 && turnCounter < 30 && (await ensureAnswerBox(page))) {
       drain += 1;
       await answerCurrent(page, `16-drain-l${drain}`, `16-drain-l${drain}.png`);
       if (await isFinalReviewSurface(page)) break;
@@ -887,7 +914,7 @@ test('CPO Core Final Stabilization prod journey capture', async ({ page, request
       .isVisible()
       .catch(() => false);
     const readyReview =
-      /Ready for review|검토\s*시작|사업성\s*검토|충분|Core understanding is sufficient|Understanding is sufficient|start analysis|1차 사업성 검토/i.test(
+      /Ready for review|검토\s*시작|사업성\s*검토|Analysis Ready|start analysis|1차 사업성 검토/i.test(
         bodySuf,
       );
     state.finalReviewReachable = finalVisible || readyReview;
