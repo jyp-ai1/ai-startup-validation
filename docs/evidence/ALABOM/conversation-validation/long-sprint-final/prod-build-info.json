@@ -1,0 +1,7 @@
+{
+  "commit": "44cb48d1bf2fd11ceb9e7be45ef57997e86b9a56",
+  "targetSha": "tip-main",
+  "shaMatch": true,
+  "at": "2026-08-28T00:56:22.138Z",
+  "source": "GET /api/build-info"
+}
