@@ -99,16 +99,18 @@ export function applyWorkspaceLoopAnswer(
       documentTextBefore.length >= 8
         ? buildBusinessUnderstanding(documentTextBefore)
         : null;
-    const livingWhy =
-      (understandingForWhy
+    const whyPriority =
+      understandingForWhy != null
         ? getWhyThisQuestionNow(understandingForWhy, loopForWhy, {
             documentText: documentTextBefore,
             memory: previousMemory,
             turns: loopForWhy.turns,
             analysisResultExists: true,
             issueId: issueId,
-          })?.whyNow
-        : null) ??
+          })
+        : null;
+    const livingWhy =
+      whyPriority?.whyNow ??
       '이 질문은 지금 사업 GO/HOLD에 필요한 Critical Unknown을 메우기 위한 것입니다.';
     return {
       domain: inferred.domain,
@@ -125,7 +127,8 @@ export function applyWorkspaceLoopAnswer(
           livingWhy,
           '답변 후에는 Living Understanding이 갱신되고, 다음 공백이 다시 골라집니다.',
         ],
-        criticalGap: semantic.resolvedIssueId,
+        criticalGap: whyPriority?.targetGap ?? semantic.resolvedIssueId,
+        askedQuestion: whyPriority?.questionText ?? null,
       }),
     };
   }

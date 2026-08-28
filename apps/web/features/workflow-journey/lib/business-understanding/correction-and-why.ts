@@ -79,11 +79,16 @@ export function buildWhyFollowUp(input: {
   judgment: string;
   reasons: string[];
   criticalGap?: string | null;
+  /** Current ask — meta must explain why THIS question matters now */
+  askedQuestion?: string | null;
 }): WhyFollowUp {
   const evidence = input.reasons.slice(0, 3);
+  const qLead = input.askedQuestion?.trim()
+    ? `지금 「${input.askedQuestion.trim().slice(0, 120)}」을(를) 묻는 이유: `
+    : '';
   const explanation = input.criticalGap
-    ? `${input.judgment} 핵심 공백은 「${input.criticalGap}」입니다.`
-    : `${input.judgment} 아래 근거를 기준으로 판단했습니다.`;
+    ? `${qLead}${input.judgment} 핵심 공백은 「${input.criticalGap}」입니다.`
+    : `${qLead}${input.judgment} 아래 근거를 기준으로 판단했습니다.`;
   return {
     explanation,
     evidence,
