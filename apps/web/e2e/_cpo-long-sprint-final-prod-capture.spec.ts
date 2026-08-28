@@ -123,6 +123,8 @@ const state: CaptureState = {
 };
 
 let turnCounter = 0;
+/** Long Sprint — do not treat final-review as journey end before this many snaps. */
+const MIN_CAPTURE_TURNS = 30;
 let previousGaps = '';
 
 function persist() {
@@ -207,6 +209,9 @@ async function dismissRecognition(page: Page) {
 }
 
 async function isFinalReviewSurface(page: Page): Promise<boolean> {
+  // Long Sprint — keep Q loop until MIN_CAPTURE_TURNS even if Start Analysis enables early.
+  if (turnCounter < MIN_CAPTURE_TURNS) return false;
+
   const body = await page.locator('body').innerText();
   const criticalStillOpen =
     /Start Analysis는 차단|Critical gaps remain|아직 확인 필요:|PROBLEM[\s\S]{0,120}Needs confirmation|남은 핵심 공백/i.test(
