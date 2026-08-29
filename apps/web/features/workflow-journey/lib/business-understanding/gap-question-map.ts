@@ -128,6 +128,33 @@ const ISSUE_FALLBACK: Record<AiPmLoopIssueId, GapQuestionBinding> = {
   },
 };
 
+/** Match visible ask text → gap fieldKey (Loop 7 append fallback). */
+export function inferTargetGapFromQuestionText(
+  questionText: string | null | undefined,
+): string | null {
+  const q = questionText?.trim().replace(/\s+/g, ' ');
+  if (!q || q.length < 6) return null;
+
+  for (const [gap, binding] of Object.entries(GAP_BINDINGS)) {
+    const stock = binding.questionText.trim();
+    if (q.includes(stock) || stock.includes(q)) return gap;
+    const phrase = stock.replace(/[?？]/g, '').slice(0, 16);
+    if (phrase.length >= 8 && q.includes(phrase)) return gap;
+  }
+
+  if (/가장 필요로 하는 사람|누구인가요/.test(q)) return 'customerPersona';
+  if (/크게 해결하려는 불편|핵심 불편/.test(q)) return 'problemJtbd';
+  if (/제공 가치|해결하는 방식/.test(q)) return 'solution';
+  if (/비용은 누가|누가 지불/.test(q)) return 'payer';
+  if (/비슷한 역할|이미 하고 있는 서비스/.test(q)) return 'alternativesCompetitors';
+  if (/차별점은 무엇|차별점이/.test(q) && !/왜 중요/.test(q)) return 'differentiationVsAlternatives';
+  if (/고객에게 왜 중요|어떤 가치를 만드/.test(q)) return 'validationTestability';
+  if (/방어력|따라오기/.test(q)) return 'executionConstraints';
+  if (/수익은 어떤|수익 구조/.test(q)) return 'revenueModel';
+
+  return null;
+}
+
 /** Resolve question binding from Living gap fieldKey — primary path. */
 export function resolveGapQuestionBinding(
   targetGap: string | null | undefined,

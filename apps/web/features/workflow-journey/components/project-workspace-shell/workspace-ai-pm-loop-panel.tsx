@@ -75,6 +75,7 @@ import {
 } from '../../lib/business-understanding/understanding-contract';
 import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
 import { reframeQuestion, buildConflictClarifyQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
+import { resolveAskedTargetGapForAppend } from '../../lib/business-understanding/resolve-asked-target-gap';
 import { countUnclosedGapAsks, MAX_SAME_GAP_ASKS_BEFORE_YIELD } from '../../lib/business-understanding/question-decision-engine';
 import { enforceQuestionPurity } from '../../lib/business-understanding/question-purity';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
@@ -718,12 +719,26 @@ export function WorkspaceAiPmLoopPanel({
     const askedKey = factKeyForIssue(issueId);
     const existingFact = askedKey ? getFact(memory, askedKey)?.value ?? null : null;
 
+    const askedTargetGap = resolveAskedTargetGapForAppend({
+      issueId,
+      whyTargetGap: whyThisQuestionNow?.targetGap,
+      overrideTargetGap: questionOverride?.targetGap,
+      questionText: whyThisQuestionNow?.questionText,
+      fallbackTargetGap: getTopGapPriority(understanding, loopState, {
+        documentText: documentText ?? undefined,
+        entities,
+        memory: conversationMemory,
+        analysisResultExists,
+        turns: loadAiPmLoopState(projectId).turns,
+      })?.targetGap,
+    });
+
     const semantic = interpretAnswerSemantics({
       answer: trimmed,
       askedIssueId: issueId,
       existingFact,
       existingFactsByKey,
-      askedTargetGap: whyThisQuestionNow?.targetGap,
+      askedTargetGap,
     });
 
     // Why / mid-judgment — display only, never append Fact turn; reframe on return (W8)
@@ -751,10 +766,10 @@ export function WorkspaceAiPmLoopPanel({
         prior,
         next: trimmed,
       });
-      const askedGap = whyThisQuestionNow?.targetGap ?? 'unknown';
+      const askedGap = askedTargetGap;
       const conflictClarify = buildConflictClarifyQuestion({
         factKey: semantic.factKey,
-        targetGap: askedGap !== 'unknown' ? askedGap : undefined,
+        targetGap: askedGap,
         priorValue: prior,
         newValue: trimmed,
         living: livingState,
@@ -871,7 +886,7 @@ export function WorkspaceAiPmLoopPanel({
       memory,
       resolvedIssueIds: getResolvedIssueIds(loopState),
     });
-    const askedGap = whyThisQuestionNow?.targetGap ?? 'unknown';
+    const askedGap = askedTargetGap;
     const causality = buildQuestionCausality({
       living: beforeLiving,
       targetGap: askedGap,
@@ -886,6 +901,7 @@ export function WorkspaceAiPmLoopPanel({
       intent: semantic.intent,
       whyNow: causality.whyNow,
       targetGap: askedGap,
+      unresolvedGap: askedGap,
       causality,
       sourceEvidence: causality.sourceEvidence,
       previousUnderstanding: causality.previousUnderstanding,
@@ -925,7 +941,7 @@ export function WorkspaceAiPmLoopPanel({
     syncState(loadAiPmLoopState(projectId));
     const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, {
       semantic,
-      askedTargetGap: whyThisQuestionNow?.targetGap,
+      askedTargetGap: askedGap,
     });
     if (!result.applied) {
       const rolled = loadAiPmLoopState(projectId);
@@ -949,6 +965,8 @@ export function WorkspaceAiPmLoopPanel({
     startProcessing();
   }, [
     answerDraft,
+    analysisResultExists,
+    conversationMemory,
     documentText,
     entities,
     livingState,
@@ -958,6 +976,7 @@ export function WorkspaceAiPmLoopPanel({
     onDocumentUpdated,
     nextIssue,
     projectId,
+    questionOverride,
     readOnly,
     startProcessing,
     syncState,
@@ -984,6 +1003,12 @@ export function WorkspaceAiPmLoopPanel({
           appliedAt: new Date().toISOString(),
           semanticFactKey: factKey,
           intent: 'correction',
+          targetGap: resolveAskedTargetGapForAppend({
+            issueId,
+            whyTargetGap: whyThisQuestionNow?.targetGap,
+            overrideTargetGap: questionOverride?.targetGap,
+            questionText: whyThisQuestionNow?.questionText,
+          }),
         },
         projectId,
       );
@@ -1006,7 +1031,7 @@ export function WorkspaceAiPmLoopPanel({
       startProcessing();
       void prior;
     },
-    [contradiction, onDocumentUpdated, projectId, readOnly, startProcessing],
+    [contradiction, onDocumentUpdated, projectId, questionOverride, readOnly, startProcessing, whyThisQuestionNow],
   );
 
   const beginEditPriorAnswer = useCallback(

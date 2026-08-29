@@ -11,6 +11,7 @@ import {
   looksLikeDocumentFileName,
 } from './workspace-document-eligibility';
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
+import { inferAskedTargetGapFromTurn } from './resolve-asked-target-gap';
 import type { AiPmLoopIssueId, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 const TURN_TO_FACT: Partial<Record<AiPmLoopIssueId, ConversationFactKey>> = {
@@ -145,7 +146,7 @@ export function buildConversationMemoryFromSources(input: {
       answer,
       askedIssueId: turn.issueId,
       existingFactsByKey,
-      askedTargetGap: turn.targetGap,
+      askedTargetGap: inferAskedTargetGapFromTurn(turn),
     });
 
     if (!semantic.mergeable || !semantic.factKey) continue;

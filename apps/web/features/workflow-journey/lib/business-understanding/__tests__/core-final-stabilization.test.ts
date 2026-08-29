@@ -47,6 +47,11 @@ import { resolveGapQuestionBinding } from '../gap-question-map';
 import { evaluateFinalIntegrityGate } from '../final-integrity-gate';
 import { resolveNextLoopIssue } from '../resolve-ai-pm-priority-issue';
 import { detectWrongSlotMergeContext } from '../wrong-slot-priority';
+import {
+  inferAskedTargetGapFromTurn,
+  resolveAskedTargetGapForAppend,
+} from '../resolve-asked-target-gap';
+import { inferTargetGapFromQuestionText } from '../gap-question-map';
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
@@ -1667,6 +1672,94 @@ describe('Loop 5 vNext — P0-1/P0-2 causality (T12/T13/T14)', () => {
     expect(priority?.targetGap).toBe('problemJtbd');
     expect(priority?.targetGap).not.toBe('solution');
     expect(detectWrongSlotMergeContext(turns)?.askedGap).toBe('problemJtbd');
+  });
+
+  it('Loop 7 — production turn shape without targetGap still detects P0-1 wrong-slot', () => {
+    const t12Answer =
+      '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.';
+    const t12Semantic = interpretAnswerSemantics({
+      answer: t12Answer,
+      askedIssueId: 'customer_definition',
+      askedTargetGap: 'customerPersona',
+    });
+    const turns: AiPmLoopTurn[] = [
+      ...prefixThroughPayer,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '4',
+        semanticFactKey: t12Semantic.factKey,
+        semanticFactKeys: t12Semantic.facts.map((f) => f.key),
+        intent: t12Semantic.intent,
+        // production bug: adaptive append omitted targetGap
+      },
+    ];
+    expect(inferAskedTargetGapFromTurn(turns.at(-1)!)).toBe('customerPersona');
+    expect(detectWrongSlotMergeContext(turns)?.closedGap).toBe('validationTestability');
+    const memory = memoryFromTurns(turns);
+    const understanding = buildBusinessUnderstanding(SEED);
+    const loop = { ...createInitialAiPmLoopState(), turns, phase: 'answer' as const };
+    const priority = getWhyThisQuestionNow(understanding, loop, {
+      documentText: SEED,
+      memory,
+      turns,
+    });
+    expect(priority?.targetGap).toBe('customerPersona');
+  });
+
+  it('Loop 7 — production turn shape without targetGap still detects P0-2 wrong-slot', () => {
+    const t12Answer =
+      '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.';
+    const personaAnswer =
+      '초기 타깃은 서울을 3~7일 방문하는 FIT 외국인(밀레니얼·MZ)이고, 혼자 또는 2인 여행이 많습니다.';
+    const t13Semantic = interpretAnswerSemantics({
+      answer: personaAnswer,
+      askedIssueId: 'problem_definition',
+      askedTargetGap: 'problemJtbd',
+    });
+    const turns: AiPmLoopTurn[] = [
+      ...prefixThroughPayer,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '4',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: personaAnswer,
+        appliedAt: '5',
+        semanticFactKey: t13Semantic.factKey,
+        semanticFactKeys: t13Semantic.facts.map((f) => f.key),
+        intent: t13Semantic.intent,
+      },
+    ];
+    expect(inferAskedTargetGapFromTurn(turns.at(-1)!)).toBe('problemJtbd');
+    expect(detectWrongSlotMergeContext(turns)?.closedGap).toBe('customerPersona');
+    const memory = memoryFromTurns(turns);
+    const understanding = buildBusinessUnderstanding(SEED);
+    const loop = { ...createInitialAiPmLoopState(), turns, phase: 'answer' as const };
+    const priority = getWhyThisQuestionNow(understanding, loop, {
+      documentText: SEED,
+      memory,
+      turns,
+    });
+    expect(priority?.targetGap).toBe('problemJtbd');
+    expect(priority?.targetGap).not.toBe('solution');
+  });
+
+  it('Loop 7 — resolveAskedTargetGapForAppend uses visible question text', () => {
+    expect(
+      inferTargetGapFromQuestionText('이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?'),
+    ).toBe('customerPersona');
+    expect(
+      resolveAskedTargetGapForAppend({
+        issueId: 'competitor_analysis',
+        questionText: '지금 가장 크게 해결하려는 불편은 무엇인가요?',
+      }),
+    ).toBe('problemJtbd');
   });
 
   it('evaluateAnalysisReady unchanged — regression guard', () => {

@@ -7,6 +7,7 @@
 import { listUnconfirmedCriticalGaps } from './adaptive-question-select';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
+import { inferAskedTargetGapFromTurn } from './resolve-asked-target-gap';
 import { hasDiffRelevanceEvidence } from './understanding-contract';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
@@ -69,7 +70,7 @@ function closedGapsFromTurn(turn: AiPmLoopTurn, keys: string[]): string[] {
     if (gap) gaps.push(gap);
   }
   if (turn.targetGap?.trim() && keys.length > 0) {
-    const asked = turn.targetGap.trim();
+    const asked = inferAskedTargetGapFromTurn(turn) ?? turn.targetGap.trim();
     const binding = resolveGapQuestionBinding(asked);
     if (asked === 'validationTestability') {
       if (keys.includes('diffRelevance') && hasDiffRelevanceEvidence(turn.answer ?? '')) {
@@ -85,7 +86,7 @@ function closedGapsFromTurn(turn: AiPmLoopTurn, keys: string[]): string[] {
 /** Resolve semantic fact keys — stored keys or live interpret fallback (production turns). */
 function resolveSemanticKeys(turn: AiPmLoopTurn): string[] {
   const answer = (turn.answer ?? '').trim();
-  const askedGap = turn.targetGap?.trim() ?? '';
+  const askedGap = inferAskedTargetGapFromTurn(turn) ?? '';
   // Loop 6f — stored customer key on persona ask may be relevance wrong-slot (live BANK.diffRelevance)
   if (
     askedGap === 'customerPersona' &&
@@ -114,9 +115,10 @@ export function detectWrongSlotMergeContext(
   turns: AiPmLoopTurn[] | undefined,
 ): WrongSlotMergeContext | null {
   const last = lastMergeableTurn(turns);
-  if (!last?.targetGap?.trim()) return null;
+  if (!last) return null;
 
-  const askedGap = last.targetGap.trim();
+  const askedGap = inferAskedTargetGapFromTurn(last);
+  if (!askedGap) return null;
   const keys = resolveSemanticKeys(last);
   const closedGaps = closedGapsFromTurn(last, keys);
   if (closedGaps.length === 0) return null;
