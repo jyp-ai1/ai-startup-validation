@@ -72,6 +72,135 @@ function effectiveAskedGapFromTurn(turn: AiPmLoopTurn): string {
   );
 }
 
+function isPersonaQuestionText(questionText: string | null | undefined): boolean {
+  const text = questionText?.trim() ?? '';
+  if (!text) return false;
+  return (
+    inferTargetGapFromQuestionText(text) === 'customerPersona' ||
+    /(가장 필요로 하는 사람|누구인가요)/i.test(text)
+  );
+}
+
+function isProblemQuestionText(questionText: string | null | undefined): boolean {
+  const text = questionText?.trim() ?? '';
+  if (!text) return false;
+  return (
+    inferTargetGapFromQuestionText(text) === 'problemJtbd' ||
+    /(크게 해결하려는 불편|핵심 불편)/i.test(text)
+  );
+}
+
+function isBankDiffRelevanceAnswer(answer: string): boolean {
+  return (
+    answer.length >= 2 &&
+    hasDiffRelevanceEvidence(answer) &&
+    DIFF_RELEVANCE_CUE_RE.test(answer) &&
+    !PERSONA_SEGMENT_CUE_RE.test(answer)
+  );
+}
+
+function isBankPersonaSegmentAnswer(answer: string): boolean {
+  return (
+    answer.length >= 2 &&
+    PERSONA_SEGMENT_CUE_RE.test(answer) &&
+    !PROBLEM_CUE_RE.test(answer)
+  );
+}
+
+/**
+ * Loop 9f — nuclear bypass when UI display + BANK answer pattern match but poisoned
+ * targetGap / semantic keys prevented semantic wrong-slot detection (@ 940800e live).
+ */
+export function resolveNuclearWrongSlotBypass(
+  turn: AiPmLoopTurn | null | undefined,
+): WrongSlotMergeContext | null {
+  if (!turn) return null;
+  const answer = (turn.answer ?? '').trim();
+  if (answer.length < 2) return null;
+
+  const questionText = turn.askedQuestionText ?? '';
+  const poisonedGap = cleanGap(turn.targetGap);
+
+  if (isPersonaQuestionText(questionText) && isBankDiffRelevanceAnswer(answer)) {
+    return {
+      askedGap: 'customerPersona',
+      closedGap: 'validationTestability',
+      closedFactKey: 'diffRelevance',
+      segmentExplicitlyNarrowed: false,
+    };
+  }
+
+  if (
+    !questionText.trim() &&
+    isBankDiffRelevanceAnswer(answer) &&
+    poisonedGap &&
+    poisonedGap !== 'customerPersona'
+  ) {
+    return {
+      askedGap: 'customerPersona',
+      closedGap: 'validationTestability',
+      closedFactKey: 'diffRelevance',
+      segmentExplicitlyNarrowed: false,
+    };
+  }
+
+  if (isProblemQuestionText(questionText) && isBankPersonaSegmentAnswer(answer)) {
+    return {
+      askedGap: 'problemJtbd',
+      closedGap: 'customerPersona',
+      closedFactKey: 'customer',
+      segmentExplicitlyNarrowed: false,
+    };
+  }
+
+  if (
+    !questionText.trim() &&
+    isBankPersonaSegmentAnswer(answer) &&
+    poisonedGap &&
+    poisonedGap !== 'problemJtbd' &&
+    poisonedGap !== 'customerPersona'
+  ) {
+    return {
+      askedGap: 'problemJtbd',
+      closedGap: 'customerPersona',
+      closedFactKey: 'customer',
+      segmentExplicitlyNarrowed: false,
+    };
+  }
+
+  return null;
+}
+
+/** Panel submit-time bypass from visible question + answer (before persist). */
+export function resolveNuclearWrongSlotAtSubmit(input: {
+  questionText: string | null | undefined;
+  answer: string;
+}): WrongSlotMergeContext | null {
+  const answer = input.answer.trim();
+  if (answer.length < 2) return null;
+  const questionText = input.questionText?.trim() ?? '';
+
+  if (isPersonaQuestionText(questionText) && isBankDiffRelevanceAnswer(answer)) {
+    return {
+      askedGap: 'customerPersona',
+      closedGap: 'validationTestability',
+      closedFactKey: 'diffRelevance',
+      segmentExplicitlyNarrowed: false,
+    };
+  }
+
+  if (isProblemQuestionText(questionText) && isBankPersonaSegmentAnswer(answer)) {
+    return {
+      askedGap: 'problemJtbd',
+      closedGap: 'customerPersona',
+      closedFactKey: 'customer',
+      segmentExplicitlyNarrowed: false,
+    };
+  }
+
+  return null;
+}
+
 function isBankDiffRelevanceOnPersonaAsk(answer: string, effectiveAsked: string): boolean {
   return (
     effectiveAsked === 'customerPersona' &&
@@ -215,13 +344,16 @@ export function detectWrongSlotMergeContext(
   if (!last) return null;
 
   const storedAskedGap = inferAskedTargetGapFromTurn(last);
-  if (!storedAskedGap) return null;
+  if (!storedAskedGap) return resolveNuclearWrongSlotBypass(last);
+
   const keys = resolveSemanticKeys(last);
   const closedGaps = closedGapsFromTurn(last, keys);
-  if (closedGaps.length === 0) return null;
+  if (closedGaps.length === 0) return resolveNuclearWrongSlotBypass(last);
 
   const askedGap = resolveEffectiveAskedGap(last, storedAskedGap, keys, closedGaps);
-  if (closedGaps.includes(askedGap)) return null;
+  if (closedGaps.includes(askedGap)) {
+    return resolveNuclearWrongSlotBypass(last);
+  }
 
   const closedGap = closedGaps[0]!;
   const closedFactKey = last.semanticFactKey ?? keys[0] ?? '';
@@ -344,6 +476,11 @@ export function resolveWrongSlotReaskGap(ctx: WrongSlotMergeContext | null): str
  * Loop 8 — definitive wrong-slot next gap; bypasses ranked[] / answeredGaps skip.
  * Used by getWhyThisQuestionNow, decideNextQuestion, resolveNextIssueByMissingField.
  */
+/** True while a wrong-slot re-ask is pending — blocks solution re-ask loops (P0-2 / reAsk=6). */
+export function hasPendingWrongSlotReask(turns: AiPmLoopTurn[] | undefined): boolean {
+  return resolveWrongSlotReaskGap(detectWrongSlotMergeContext(turns)) != null;
+}
+
 export function resolveWrongSlotQuestionAnchor(
   turns: AiPmLoopTurn[] | undefined,
 ): WrongSlotQuestionAnchor | null {

@@ -11,10 +11,12 @@ import { expect, test, type Page } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const OUT = path.resolve(
-  process.cwd(),
-  '../../docs/evidence/ALABOM/cpo-validation/real-adaptive-vnext',
-);
+const OUT = process.env.ALABOM_CAPTURE_OUT
+  ? path.resolve(process.env.ALABOM_CAPTURE_OUT)
+  : path.resolve(
+      process.cwd(),
+      '../../docs/evidence/ALABOM/cpo-validation/real-adaptive-vnext',
+    );
 const MEDIA = path.join(OUT, 'media');
 const RAW_JSON = path.join(OUT, 'transcript-raw.json');
 fs.mkdirSync(MEDIA, { recursive: true });
@@ -171,7 +173,19 @@ let previousGaps = '';
 const usedAnswers = new Set<string>();
 
 function persist() {
-  fs.writeFileSync(RAW_JSON, JSON.stringify(state, null, 2), 'utf8');
+  const payload = JSON.stringify(state, null, 2);
+  try {
+    fs.writeFileSync(RAW_JSON, payload, 'utf8');
+  } catch {
+    const tmp = `${RAW_JSON}.tmp`;
+    fs.writeFileSync(tmp, payload, 'utf8');
+    try {
+      fs.renameSync(tmp, RAW_JSON);
+    } catch {
+      fs.copyFileSync(tmp, RAW_JSON);
+      fs.unlinkSync(tmp);
+    }
+  }
 }
 
 function uniqueShotName(shotName: string): string {

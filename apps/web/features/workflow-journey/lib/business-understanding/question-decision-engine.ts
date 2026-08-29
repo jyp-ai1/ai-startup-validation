@@ -19,6 +19,7 @@ import { hasDiffRelevanceEvidence } from './understanding-contract';
 import {
   buildDeltaAwareWhyNow,
   detectWrongSlotMergeContext,
+  hasPendingWrongSlotReask,
   resolveWrongSlotQuestionAnchor,
   shouldBlockSolutionForOpenProblem,
   shouldPrioritizePersonaAfterWrongSlotRelevance,
@@ -318,6 +319,8 @@ export function decideNextQuestion(input: {
     turns: input.turns,
   }).filter(
     (c) => !(c.fieldKey === 'solution' && shouldBlockSolutionForOpenProblem(input.living)),
+  ).filter(
+    (c) => !(c.fieldKey === 'solution' && hasPendingWrongSlotReask(input.turns)),
   );
 
   const top: AdaptiveGapCandidate | undefined = candidates[0];

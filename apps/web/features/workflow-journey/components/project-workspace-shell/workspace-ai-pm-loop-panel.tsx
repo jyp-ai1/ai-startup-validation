@@ -78,7 +78,8 @@ import { hasDiffRelevanceEvidence } from '../../lib/business-understanding/under
 import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
 import { reframeQuestion, buildConflictClarifyQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
 import { resolveAskedTargetGapForAppend } from '../../lib/business-understanding/resolve-asked-target-gap';
-import { inferTargetGapFromQuestionText } from '../../lib/business-understanding/gap-question-map';
+import { inferTargetGapFromQuestionText, resolveGapQuestionBinding } from '../../lib/business-understanding/gap-question-map';
+import { resolveNuclearWrongSlotAtSubmit } from '../../lib/business-understanding/wrong-slot-priority';
 import { countUnclosedGapAsks, MAX_SAME_GAP_ASKS_BEFORE_YIELD } from '../../lib/business-understanding/question-decision-engine';
 import { enforceQuestionPurity } from '../../lib/business-understanding/question-purity';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
@@ -505,8 +506,17 @@ export function WorkspaceAiPmLoopPanel({
         criticalGapCount: contradictionGaps + criticalViability,
       });
 
-    const next = applyLoopProcessingTransition(result, projectId, canComplete);
-    const wrongSlotAfter = resolveWrongSlotQuestionOverride(next.turns);
+    const wrongSlotBefore = resolveWrongSlotQuestionOverride(refreshed.turns);
+    const next = wrongSlotBefore
+      ? patchAiPmLoopState(
+          {
+            phase: 'answer',
+            currentIssueId: wrongSlotBefore.issueId,
+          },
+          projectId,
+        )
+      : applyLoopProcessingTransition(result, projectId, canComplete);
+    const wrongSlotAfter = resolveWrongSlotQuestionOverride(next.turns) ?? wrongSlotBefore;
     if (wrongSlotAfter) {
       setQuestionOverride({
         targetGap: wrongSlotAfter.targetGap,
@@ -784,13 +794,13 @@ export function WorkspaceAiPmLoopPanel({
     const existingFact = askedKey ? getFact(memory, askedKey)?.value ?? null : null;
 
     const displayedQuestionText =
-      lastAskSurfaceRef.current.questionText ??
       whyThisQuestionNow?.questionText ??
+      lastAskSurfaceRef.current.questionText ??
       null;
     const displayedGap =
       inferTargetGapFromQuestionText(displayedQuestionText) ??
-      lastAskSurfaceRef.current.targetGap ??
       whyThisQuestionNow?.targetGap ??
+      lastAskSurfaceRef.current.targetGap ??
       null;
     // Loop 9c — wrong_slot override is authoritative for append; else match displayed gap only
     const activeOverrideGap =
@@ -824,7 +834,8 @@ export function WorkspaceAiPmLoopPanel({
     });
 
     // Loop 9e — display SoT canonicalizes facts when interpret used poisoned askedGap (@ cbce256 live)
-    const displayedGapForCanonical = visibleGap;
+    const displayedGapForCanonical =
+      inferTargetGapFromQuestionText(displayedQuestionText) ?? whyThisQuestionNow?.targetGap ?? visibleGap;
     if (displayedGapForCanonical === 'customerPersona' && semantic.mergeable) {
       const personaSegmentCue =
         /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행)/i.test(trimmed);
@@ -882,6 +893,36 @@ export function WorkspaceAiPmLoopPanel({
     ) {
       resolvedAskedGap = 'problemJtbd';
     }
+
+    // Loop 9f — nuclear wrong-slot: display persona + BANK.diffRelevance (or problem + persona)
+    const nuclearWrongSlot = resolveNuclearWrongSlotAtSubmit({
+      questionText: displayedQuestionText,
+      answer: trimmed,
+    });
+    if (nuclearWrongSlot) {
+      resolvedAskedGap = nuclearWrongSlot.askedGap;
+      if (nuclearWrongSlot.closedFactKey === 'diffRelevance') {
+        semantic = {
+          ...semantic,
+          factKey: 'diffRelevance',
+          resolvedIssueId: 'competitor_analysis',
+          facts: [{ key: 'diffRelevance', issueId: 'competitor_analysis' }],
+        };
+      } else if (nuclearWrongSlot.closedFactKey === 'customer') {
+        semantic = {
+          ...semantic,
+          factKey: 'customer',
+          resolvedIssueId: 'customer_definition',
+          facts: [{ key: 'customer', issueId: 'customer_definition' }],
+        };
+      }
+    }
+
+    const persistedQuestionText =
+      displayedQuestionText?.trim() ||
+      (resolvedAskedGap
+        ? resolveGapQuestionBinding(resolvedAskedGap).questionText
+        : undefined);
 
     // Why / mid-judgment — display only, never append Fact turn; reframe on return (W8)
     if (semantic.intent === 'why_meta' || semantic.intent === 'mid_judgment') {
@@ -1042,7 +1083,7 @@ export function WorkspaceAiPmLoopPanel({
       intent: semantic.intent,
       whyNow: causality.whyNow,
       targetGap: askedGap,
-      askedQuestionText: displayedQuestionText?.trim() || undefined,
+      askedQuestionText: persistedQuestionText,
       causality,
       sourceEvidence: causality.sourceEvidence,
       previousUnderstanding: causality.previousUnderstanding,
@@ -1080,7 +1121,19 @@ export function WorkspaceAiPmLoopPanel({
       projectId,
     );
     syncState(loadAiPmLoopState(projectId));
-    const wrongSlotNext = resolveWrongSlotQuestionOverride(projectedTurns);
+    let wrongSlotNext = resolveWrongSlotQuestionOverride(projectedTurns);
+    if (!wrongSlotNext && nuclearWrongSlot) {
+      const binding = resolveGapQuestionBinding(nuclearWrongSlot.askedGap);
+      wrongSlotNext = {
+        targetGap: nuclearWrongSlot.askedGap,
+        issueId: binding.issueId,
+        questionText: binding.questionText,
+        whyNow: binding.whyNow,
+        rationale: binding.whyNow,
+        score: 56_000,
+        missingField: 'business' as const,
+      };
+    }
     if (wrongSlotNext) {
       setQuestionOverride({
         targetGap: wrongSlotNext.targetGap,

@@ -67,12 +67,44 @@ finishProcessing → phase issue → whyThisQuestionNow useMemo
 | `ba2b25c` (Loop 9c) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 0 | 52/52 unit PASS; delta detects wrong-slot but display ranks problem/solution |
 | `18c032f` (Loop 9d-a) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 0 | closedGap re-ask anchor; same-slot poison not yet detected |
 | `1537c00` (Loop 9d-b) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 0 | same-slot remap + lastAskSurfaceRef; capture @ 1537c00 still ranked |
-| Loop 9d-c (pending) | pending | pending | — | BANK diffRelevance cue heuristic + decideNextQuestion display SoT |
+| `cbce256` (Loop 9d-c) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | **6** | BANK diffRelevance cues + decideNextQuestion SoT; T11→T12 persona ✓; unit/live gap persists |
 
-## Verdict (@ `1537c00` live capture)
+## Loop 9e fix (shipped @ `940800e`, live verify Loop 9e-b)
 
-**CPO PASS: No** — P0-1 AND P0-2 remain live FAIL on capture @ `1537c00`.
+**Root cause confirmed (@ cbce256):** Live turns stored `semanticFactKey: customer` (not `diffRelevance`) when persona ask received BANK.diffRelevance — interpret ran with poisoned `targetGap: problemJtbd`, so `detectWrongSlotMergeContext` saw same-slot merge (`customerPersona` closed) and returned null. Ranked path won post-`finishProcessing`.
 
-**Root cause confirmed:** T12 append poisons `targetGap=validationTestability` (T11 partial override). `detectWrongSlotMergeContext` returned null (`askedGap === closedGap`) → ranked `problemJtbd` won display despite delta crediting `validationTestability`.
+| File | Change |
+|------|--------|
+| `wrong-slot-priority.ts` | Loop 9e — `effectiveAskedGapFromTurn` (question text first); remap stored `customer` + BANK diffRelevance cues → `diffRelevance`; extend poisoned `problemJtbd` same-slot remap |
+| `workspace-ai-pm-loop-panel.tsx` | Display SoT canonicalize semantic at submit (persona→diffRelevance, problem→customer, solution→business); finishProcessing skips ranked `issue` phase → `answer` when wrong-slot override active |
+| `core-final-stabilization.test.ts` | Loop 9e — cbce256 live shapes (`customer` key + poisoned targetGap, no askedQuestionText) |
 
-**Loop 9d-c shipped:** same-slot poison via BANK answer cues (no `askedQuestionText` required) + `decideNextQuestion` as panel display SoT. **56/56 unit PASS.**
+## Verdict (@ `cbce256` live capture — Loop 9d-c)
+
+**CPO PASS: No** — P0-1 AND P0-2 remain live FAIL on capture @ `cbce256`.
+
+**Root cause confirmed (unchanged shape):** T12 persona ask + `BANK.diffRelevance` → display ranks `problemJtbd` (not persona re-ask). T13 problem ask + persona wrong-slot → display ranks `solution` (not problem re-ask). Unit tests with constructed poisoned turns PASS; live demo localStorage path still diverges.
+
+**Loop 9d-c shipped:** same-slot poison via BANK answer cues (no `askedQuestionText` required) + `decideNextQuestion` as panel display SoT. **56/56 unit PASS.** Live capture @ `cbce256`: harness PASS · T11→T12 persona pin ✓ · reAsk=6 (solution loop T14–T19) · P0-3/4/5 PASS.
+
+## Loop 9e-b live (@ `940800e`)
+
+| SHA | P0-1 T12→T13 | P0-2 T13→T14 | reAsk | Notes |
+|-----|--------------|--------------|-------|-------|
+| `940800e` (Loop 9e) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | **6** | Unit 59/59 PASS; canonicalize credits `validationTestability` not `customer` key — wrong-slot anchor still null live |
+
+## Loop 9f fix (@ 940800e live FAIL — append/display path)
+
+**Root cause (@ 940800e):** Unit tests passed cbce256-shaped poison turns but live demo path diverged: `submitAnswer` preferred stale `lastAskSurfaceRef` over `whyThisQuestionNow` for `askedQuestionText`; `finishProcessing` ran `applyLoopProcessingTransition(phase: issue)` before wrong-slot pin, clearing override via ranked display. Same-slot poison (`diffRelevance` + `validationTestability` targetGap) returned null from semantic detection when UI showed persona.
+
+| File | Change |
+|------|--------|
+| `wrong-slot-priority.ts` | Loop 9f — `resolveNuclearWrongSlotBypass` / `resolveNuclearWrongSlotAtSubmit`; fallback when semantic same-slot; `hasPendingWrongSlotReask` blocks solution |
+| `workspace-ai-pm-loop-panel.tsx` | Display SoT: `whyThisQuestionNow` before ref; nuclear canonicalize at submit; persist `askedQuestionText` fallback; wrong-slot before `applyLoopProcessingTransition` |
+| `question-decision-engine.ts` | Block `solution` when `hasPendingWrongSlotReask` |
+| `core-final-stabilization.test.ts` | Loop 9f — exact @940800e T12/T13 turn shapes |
+| `_cpo-real-adaptive-prod-capture.spec.ts` | EPERM-safe persist (write + copy fallback) |
+
+## Verdict (@ `940800e` live capture — Loop 9e-b)
+
+**CPO PASS: No** — P0-1 AND P0-2 remain live FAIL + reAsk=6 @ `940800e`.
