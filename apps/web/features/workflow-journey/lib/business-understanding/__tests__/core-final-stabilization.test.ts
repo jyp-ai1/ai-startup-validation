@@ -30,6 +30,7 @@ import {
   resolveMissingFieldPriorities,
   resolveNextIssueByMissingField,
   resolvePreservedGapAfterMeta,
+  resolveWrongSlotQuestionOverride,
 } from '../resolve-missing-field-priority';
 import {
   listUnconfirmedCriticalGaps,
@@ -2222,5 +2223,255 @@ describe('Loop 9 — unit vs live divergence (@ a9ebd63 T11 partial override →
     });
     expect(priority?.targetGap).toBe('problemJtbd');
     expect(priority?.targetGap).not.toBe('customerPersona');
+  });
+});
+
+describe('Loop 9c — multi-hop wrong_slot override persistence (@ 0dc4ba9 live BANK)', () => {
+  const LIVE_DOC =
+    '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다. 방한 외국인 관광객이 주요 고객입니다.';
+
+  const prefixThroughT10: AiPmLoopTurn[] = [
+    {
+      issueId: 'competitor_analysis',
+      answer: '클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다.',
+      appliedAt: '1',
+      semanticFactKey: 'competitor',
+      semanticFactKeys: ['competitor'],
+      intent: 'business_fact',
+      targetGap: 'alternativesCompetitors',
+    },
+    {
+      issueId: 'competitor_analysis',
+      answer:
+        '차별점은 관심사·동선·식사 제약까지 반영한 실시간 맞춤 일정과 현지인 동행을 한 번에 묶는 점입니다.',
+      appliedAt: '2',
+      semanticFactKey: 'differentiation',
+      semanticFactKeys: ['differentiation'],
+      intent: 'business_fact',
+      targetGap: 'differentiationVsAlternatives',
+    },
+    {
+      issueId: 'customer_definition',
+      answer:
+        '정정합니다. 초기 타깃은 방한 FIT 외국인만이 아니라, 국내 MZ 개별 여행객도 포함합니다.',
+      appliedAt: '3',
+      semanticFactKey: 'customer',
+      semanticFactKeys: ['customer'],
+      intent: 'correction',
+      targetGap: 'customerPersona',
+    },
+    {
+      issueId: 'bm_design',
+      answer: '그건 아닌데? 결제자는 관광객 직접 결제가 맞고, B2B 정산은 아닙니다.',
+      appliedAt: '4',
+      semanticFactKey: 'buyer',
+      semanticFactKeys: ['buyer'],
+      intent: 'business_fact',
+      targetGap: 'payer',
+    },
+  ];
+
+  const t12Answer =
+    '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.';
+  const t13Answer =
+    '초기 타깃은 서울을 3~7일 방문하는 FIT 외국인(밀레니얼·MZ)이고, 혼자 또는 2인 여행이 많습니다.';
+  const personaQuestion = '이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?';
+  const problemQuestion = '지금 가장 크게 해결하려는 불편은 무엇인가요?';
+
+  function liveMemory(turns: AiPmLoopTurn[]) {
+    return buildConversationMemoryFromSources({
+      projectId: 'loop9c-live',
+      documentText: LIVE_DOC,
+      turns,
+    });
+  }
+
+  it('P0-1 hop T12→T13: persona ask + BANK.diffRelevance → customerPersona re-ask not problemJtbd', () => {
+    const askedGap = resolveAskedTargetGapForAppend({
+      issueId: 'customer_definition',
+      whyTargetGap: 'problemJtbd',
+      overrideTargetGap: null,
+      questionText: personaQuestion,
+    });
+    expect(askedGap).toBe('customerPersona');
+
+    const semantic = interpretAnswerSemantics({
+      answer: t12Answer,
+      askedIssueId: 'customer_definition',
+      askedTargetGap: askedGap,
+    });
+    expect(semantic.factKey).toBe('diffRelevance');
+
+    const turnsAfterT12: AiPmLoopTurn[] = [
+      ...prefixThroughT10,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '5',
+        semanticFactKey: semantic.factKey,
+        semanticFactKeys: semantic.facts.map((f) => f.key),
+        intent: semantic.intent,
+        targetGap: askedGap,
+      },
+    ];
+
+    expect(detectWrongSlotMergeContext(turnsAfterT12)?.closedGap).toBe('validationTestability');
+    expect(resolveWrongSlotQuestionOverride(turnsAfterT12)?.targetGap).toBe('customerPersona');
+
+    const memory = liveMemory(turnsAfterT12);
+    const understanding = buildBusinessUnderstanding(LIVE_DOC);
+    const loop = {
+      ...createInitialAiPmLoopState(),
+      turns: turnsAfterT12,
+      phase: 'answer' as const,
+      currentIssueId: 'customer_definition' as const,
+    };
+
+    expect(
+      resolveNextLoopIssue(understanding, loop, {
+        documentText: LIVE_DOC,
+        memory,
+        turns: turnsAfterT12,
+      }),
+    ).toBe('customer_definition');
+
+    const priority = getWhyThisQuestionNow(understanding, loop, {
+      documentText: LIVE_DOC,
+      memory,
+      turns: turnsAfterT12,
+    });
+    expect(priority?.targetGap).toBe('customerPersona');
+    expect(priority?.targetGap).not.toBe('problemJtbd');
+    expect(priority?.questionText).toMatch(/가장 필요로 하는 사람|누구인가요/);
+  });
+
+  it('P0-2 hop T13→T14: problem ask + BANK.customer → problemJtbd re-ask not solution', () => {
+    const turnsAfterT13: AiPmLoopTurn[] = [
+      ...prefixThroughT10,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '5',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: t13Answer,
+        appliedAt: '6',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+      },
+    ];
+
+    const askedGap = resolveAskedTargetGapForAppend({
+      issueId: 'problem_definition',
+      whyTargetGap: 'solution',
+      overrideTargetGap: 'problemJtbd',
+      questionText: problemQuestion,
+    });
+    expect(askedGap).toBe('problemJtbd');
+
+    expect(detectWrongSlotMergeContext(turnsAfterT13)?.askedGap).toBe('problemJtbd');
+    expect(detectWrongSlotMergeContext(turnsAfterT13)?.closedGap).toBe('customerPersona');
+    expect(resolveWrongSlotQuestionOverride(turnsAfterT13)?.targetGap).toBe('problemJtbd');
+
+    const memory = liveMemory(turnsAfterT13);
+    const understanding = buildBusinessUnderstanding(LIVE_DOC);
+    const loop = {
+      ...createInitialAiPmLoopState(),
+      turns: turnsAfterT13,
+      phase: 'answer' as const,
+      currentIssueId: 'problem_definition' as const,
+    };
+
+    expect(
+      resolveNextLoopIssue(understanding, loop, {
+        documentText: LIVE_DOC,
+        memory,
+        turns: turnsAfterT13,
+      }),
+    ).toBe('problem_definition');
+
+    const priority = getWhyThisQuestionNow(understanding, loop, {
+      documentText: LIVE_DOC,
+      memory,
+      turns: turnsAfterT13,
+    });
+    expect(priority?.targetGap).toBe('problemJtbd');
+    expect(priority?.targetGap).not.toBe('solution');
+    expect(priority?.questionText).toMatch(/크게 해결하려는 불편|핵심 불편/);
+  });
+
+  it('multi-hop chain: consecutive wrong-slot appends both resolve override before ranked advance', () => {
+    const t12Semantic = interpretAnswerSemantics({
+      answer: t12Answer,
+      askedIssueId: 'customer_definition',
+      askedTargetGap: 'customerPersona',
+    });
+    const turnsAfterT12: AiPmLoopTurn[] = [
+      ...prefixThroughT10,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '5',
+        semanticFactKey: t12Semantic.factKey,
+        semanticFactKeys: t12Semantic.facts.map((f) => f.key),
+        intent: t12Semantic.intent,
+        targetGap: 'customerPersona',
+      },
+    ];
+    const memoryAfterT12 = liveMemory(turnsAfterT12);
+    const understanding = buildBusinessUnderstanding(LIVE_DOC);
+    const loopAfterT12 = {
+      ...createInitialAiPmLoopState(),
+      turns: turnsAfterT12,
+      phase: 'answer' as const,
+    };
+    expect(
+      getWhyThisQuestionNow(understanding, loopAfterT12, {
+        documentText: LIVE_DOC,
+        memory: memoryAfterT12,
+        turns: turnsAfterT12,
+      })?.targetGap,
+    ).toBe('customerPersona');
+
+    const turnsAfterT13: AiPmLoopTurn[] = [
+      ...turnsAfterT12,
+      {
+        issueId: 'problem_definition',
+        answer: t13Answer,
+        appliedAt: '6',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+      },
+    ];
+    const memoryAfterT13 = liveMemory(turnsAfterT13);
+    const loopAfterT13 = {
+      ...createInitialAiPmLoopState(),
+      turns: turnsAfterT13,
+      phase: 'answer' as const,
+    };
+    expect(
+      getWhyThisQuestionNow(understanding, loopAfterT13, {
+        documentText: LIVE_DOC,
+        memory: memoryAfterT13,
+        turns: turnsAfterT13,
+      })?.targetGap,
+    ).toBe('problemJtbd');
+
+    const ranked = resolveMissingFieldPriorities(understanding, loopAfterT13, {
+      documentText: LIVE_DOC,
+      memory: memoryAfterT13,
+      turns: turnsAfterT13,
+    });
+    expect(ranked[0]?.targetGap).toBe('problemJtbd');
+    expect(ranked[0]?.targetGap).not.toBe('solution');
   });
 });

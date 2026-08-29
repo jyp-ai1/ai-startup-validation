@@ -223,6 +223,13 @@ function isGapSatisfiedInMemory(
   ) {
     return false;
   }
+  // Loop 9c — wrong-slot persona on problem ask; problem still needs USER_CONFIRMED
+  if (
+    targetGap === 'problemJtbd' &&
+    shouldPrioritizeProblemAfterWrongSlotPersona(options?.wrongSlotContext ?? null)
+  ) {
+    return false;
+  }
   // P0 — solution must never be closed by document business one-liner alone
   if (targetGap === 'solution' || targetGap === 'businessOneLiner') {
     const fact = memory.facts.find(
@@ -262,6 +269,10 @@ export function resolveMissingFieldPriorities(
   // Loop 6e — prior partial persona turns must not suppress wrong-slot persona re-ask
   if (shouldPrioritizePersonaAfterWrongSlotRelevance(wrongSlotContext)) {
     answeredGaps.delete('customerPersona');
+  }
+  // Loop 9c — prior customer credit must not suppress wrong-slot problem re-ask
+  if (shouldPrioritizeProblemAfterWrongSlotPersona(wrongSlotContext)) {
+    answeredGaps.delete('problemJtbd');
   }
 
   const scored = new Map<string, MissingFieldPriority>();

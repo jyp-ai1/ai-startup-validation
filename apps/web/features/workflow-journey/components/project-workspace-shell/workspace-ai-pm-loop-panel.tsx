@@ -219,12 +219,13 @@ export function WorkspaceAiPmLoopPanel({
     let whyNow = base.whyNow;
     let targetGap = base.targetGap;
     if (questionOverride) {
-      const stickyAsks = countUnclosedGapAsks(loopState.turns, questionOverride.targetGap);
+      const stickyAsks = countUnclosedGapAsks(freshTurns, questionOverride.targetGap);
+      // Loop 9c — wrong_slot re-ask never yields to ranked base while asked gap still open
       const overrideStale =
-        questionOverride.targetGap !== base.targetGap && stickyAsks >= MAX_SAME_GAP_ASKS_BEFORE_YIELD;
-      const wrongSlotReAsk =
-        questionOverride.reason === 'wrong_slot' &&
-        questionOverride.targetGap !== base.targetGap;
+        questionOverride.reason !== 'wrong_slot' &&
+        questionOverride.targetGap !== base.targetGap &&
+        stickyAsks >= MAX_SAME_GAP_ASKS_BEFORE_YIELD;
+      const wrongSlotReAsk = questionOverride.reason === 'wrong_slot';
       if (
         !overrideStale &&
         (questionOverride.targetGap === base.targetGap ||
@@ -502,6 +503,22 @@ export function WorkspaceAiPmLoopPanel({
     const next = applyLoopProcessingTransition(result, projectId, canComplete);
     syncState(next);
 
+    // Loop 9c — re-pin wrong_slot override after processing (survives remount / reanalyze)
+    const wrongSlotAfter = resolveWrongSlotQuestionOverride(next.turns);
+    if (wrongSlotAfter) {
+      setQuestionOverride({
+        targetGap: wrongSlotAfter.targetGap,
+        questionText: wrongSlotAfter.questionText,
+        whyNow: wrongSlotAfter.whyNow ?? wrongSlotAfter.rationale,
+        reason: 'wrong_slot',
+      });
+      if (wrongSlotAfter.issueId !== next.currentIssueId) {
+        syncState(
+          patchAiPmLoopState({ currentIssueId: wrongSlotAfter.issueId }, projectId),
+        );
+      }
+    }
+
     if (next.phase === 'complete') onLoopComplete?.();
     window.setTimeout(() => setUpdateSavedFlash(false), 2200);
   }, [entities, onLoopComplete, projectId, syncState, understanding]);
@@ -611,6 +628,39 @@ export function WorkspaceAiPmLoopPanel({
       }
     };
   }, []);
+
+  // Loop 9c — turns-derived wrong_slot SoT across render cycles until on-slot answer
+  useEffect(() => {
+    if (loopState.phase === 'reanalyze') return;
+    const turns = loadAiPmLoopState(projectId).turns;
+    const wrongSlot = resolveWrongSlotQuestionOverride(turns);
+    if (!wrongSlot) {
+      setQuestionOverride((prev) => (prev?.reason === 'wrong_slot' ? null : prev));
+      return;
+    }
+    setQuestionOverride((prev) => {
+      const next = {
+        targetGap: wrongSlot.targetGap,
+        questionText: wrongSlot.questionText,
+        whyNow: wrongSlot.whyNow ?? wrongSlot.rationale,
+        reason: 'wrong_slot' as const,
+      };
+      if (
+        prev?.reason === 'wrong_slot' &&
+        prev.targetGap === next.targetGap &&
+        prev.questionText === next.questionText
+      ) {
+        return prev;
+      }
+      return next;
+    });
+    const current = loadAiPmLoopState(projectId);
+    if (wrongSlot.issueId !== current.currentIssueId) {
+      syncState(
+        patchAiPmLoopState({ currentIssueId: wrongSlot.issueId }, projectId),
+      );
+    }
+  }, [loopState.phase, loopState.turns.length, projectId, syncState]);
 
   const beginIssue = useCallback(() => {
     const issue = loopState.currentIssueId ?? nextIssue;
@@ -726,11 +776,13 @@ export function WorkspaceAiPmLoopPanel({
 
     const displayedGap = whyThisQuestionNow?.targetGap ?? null;
     const displayedQuestionText = whyThisQuestionNow?.questionText ?? null;
-    // Loop 9 — ignore stale questionOverride when UI already re-ranked to a different gap
+    // Loop 9c — wrong_slot override is authoritative for append; else match displayed gap only
     const activeOverrideGap =
-      questionOverride?.targetGap && questionOverride.targetGap === displayedGap
+      questionOverride?.reason === 'wrong_slot'
         ? questionOverride.targetGap
-        : null;
+        : questionOverride?.targetGap && questionOverride.targetGap === displayedGap
+          ? questionOverride.targetGap
+          : null;
     const askedTargetGap = resolveAskedTargetGapForAppend({
       issueId,
       whyTargetGap: displayedGap,
@@ -873,7 +925,6 @@ export function WorkspaceAiPmLoopPanel({
     setContradiction(null);
     setWhyPanel(null);
     setMidJudgmentText(null);
-    setQuestionOverride(null);
 
     logG1LoopEvent({
       event: 'answer_submit',
@@ -964,6 +1015,8 @@ export function WorkspaceAiPmLoopPanel({
         patchAiPmLoopState({ currentIssueId: wrongSlotNext.issueId }, projectId);
         syncState(loadAiPmLoopState(projectId));
       }
+    } else {
+      setQuestionOverride(null);
     }
     const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, {
       semantic,
