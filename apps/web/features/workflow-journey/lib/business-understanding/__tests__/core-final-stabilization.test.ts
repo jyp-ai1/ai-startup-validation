@@ -2194,7 +2194,7 @@ describe('Loop 9 — unit vs live divergence (@ a9ebd63 T11 partial override →
     expect(priority?.questionText).toMatch(/크게 해결하려는 불편|핵심 불편/);
   });
 
-  it('regression — wrong targetGap validationTestability on T12 reproduces live FAIL without fix', () => {
+  it('regression — wrong targetGap validationTestability on T12 fixed by Loop 9d same-slot poison', () => {
     const turnsWrongGap: AiPmLoopTurn[] = [
       ...prefixThroughT10,
       {
@@ -2207,7 +2207,7 @@ describe('Loop 9 — unit vs live divergence (@ a9ebd63 T11 partial override →
         targetGap: 'validationTestability',
       },
     ];
-    expect(detectWrongSlotMergeContext(turnsWrongGap)).toBeNull();
+    expect(detectWrongSlotMergeContext(turnsWrongGap)?.askedGap).toBe('customerPersona');
 
     const memory = liveMemory(turnsWrongGap);
     const understanding = buildBusinessUnderstanding(LIVE_DOC);
@@ -2221,8 +2221,8 @@ describe('Loop 9 — unit vs live divergence (@ a9ebd63 T11 partial override →
       memory,
       turns: turnsWrongGap,
     });
-    expect(priority?.targetGap).toBe('problemJtbd');
-    expect(priority?.targetGap).not.toBe('customerPersona');
+    expect(priority?.targetGap).toBe('customerPersona');
+    expect(priority?.targetGap).not.toBe('problemJtbd');
   });
 });
 
@@ -2585,6 +2585,24 @@ describe('Loop 9d — poisoned targetGap display SoT (@ ba2b25c live BANK)', () 
         intent: 'business_fact',
         targetGap: 'validationTestability',
         askedQuestionText: personaQuestion,
+      },
+    ];
+
+    expect(detectWrongSlotMergeContext(turnsAfterT12)?.askedGap).toBe('customerPersona');
+    expect(resolveWrongSlotQuestionOverride(turnsAfterT12)?.targetGap).toBe('customerPersona');
+  });
+
+  it('P0-1 same-slot poison without askedQuestionText — BANK diffRelevance cues', () => {
+    const turnsAfterT12: AiPmLoopTurn[] = [
+      ...prefixThroughT10,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '5',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'validationTestability',
       },
     ];
 

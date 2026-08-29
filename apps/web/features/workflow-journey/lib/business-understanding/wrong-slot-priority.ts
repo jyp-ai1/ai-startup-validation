@@ -138,19 +138,23 @@ function resolveEffectiveAskedGap(
   ) {
     const personaCue =
       fromQuestion === 'customerPersona' ||
-      /(가장 필요로 하는 사람|누구인가요)/i.test(turn.askedQuestionText ?? '');
+      /(가장 필요로 하는 사람|누구인가요)/i.test(turn.askedQuestionText ?? '') ||
+      (!/(인터뷰|CTA|랜딩|파일럿|검증\s*계획|가이드\s*10)/i.test(answer) &&
+        /(체감|예약\s*전|차이|동선)/i.test(answer));
     if (personaCue) return 'customerPersona';
   }
 
   if (
-    askedGap === 'solution' &&
+    (askedGap === 'solution' || askedGap === 'problemJtbd') &&
     closedGaps.includes('customerPersona') &&
     keys.includes('customer')
   ) {
     const problemCue =
       fromQuestion === 'problemJtbd' ||
-      /(크게 해결하려는 불편|핵심 불편)/i.test(turn.askedQuestionText ?? '');
-    if (problemCue) return 'problemJtbd';
+      /(크게 해결하려는 불편|핵심 불편)/i.test(turn.askedQuestionText ?? '') ||
+      (/(타깃|FIT|MZ|방문|2인\s*여행|밀레니얼)/i.test(answer) &&
+        !/(불편|패키지|획일|동선\s*낭비|맞춤\s*일정)/i.test(answer));
+    if (problemCue && askedGap !== 'problemJtbd') return 'problemJtbd';
   }
 
   return askedGap;

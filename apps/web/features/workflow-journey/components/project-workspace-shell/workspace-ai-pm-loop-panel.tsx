@@ -25,6 +25,7 @@ import {
   type AiPmLoopTurn,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { resolveNextLoopIssue } from '../../lib/business-understanding/resolve-ai-pm-priority-issue';
+import { decideNextQuestion } from '../../lib/business-understanding/question-decision-engine';
 import { getWhyThisQuestionNow, resolvePreservedGapAfterMeta, resolveWrongSlotQuestionOverride } from '../../lib/business-understanding/resolve-missing-field-priority';
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import { buildAiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
@@ -210,59 +211,29 @@ export function WorkspaceAiPmLoopPanel({
       previous: loadConversationMemory(projectId),
     });
 
-    // Loop 9c — turns-derived wrong_slot is absolute SoT (bypasses override stale / ranked base)
-    const wrongSlotFromTurns = resolveWrongSlotQuestionOverride(freshTurns);
-    if (wrongSlotFromTurns) {
-      const priorAsks = countUnclosedGapAsks(freshTurns, wrongSlotFromTurns.targetGap);
-      let questionText = wrongSlotFromTurns.questionText;
-      let whyNow = wrongSlotFromTurns.whyNow;
-      if (priorAsks > 0) {
-        const reframed = reframeQuestion({
-          targetGap: wrongSlotFromTurns.targetGap,
-          living: livingState,
-          reason: 'adaptive',
-          previousQuestionText: questionText,
-        });
-        questionText = reframed.questionText;
-        whyNow = reframed.whyNow;
-      }
-      const purity = enforceQuestionPurity({
-        questionText,
-        targetGap: wrongSlotFromTurns.targetGap,
-      });
-      return {
-        ...wrongSlotFromTurns,
-        targetGap: wrongSlotFromTurns.targetGap,
-        questionText: purity.sanitizedText,
-        whyNow,
-      };
-    }
-
-    const base = getWhyThisQuestionNow(understanding, loopState, {
-      documentText: documentText ?? undefined,
-      entities,
-      memory: freshMemory,
-      analysisResultExists,
+    // Loop 9d — decideNextQuestion is display SoT (wrong_slot anchor before ranked)
+    const decision = decideNextQuestion({
+      living: livingState,
       turns: freshTurns,
-      issueId: activeIssueId,
+      memory: freshMemory,
+      previousQuestionText: questionOverride?.questionText ?? null,
     });
-    if (!base) return null;
+    if (!decision) return null;
 
-    // Apply reframe override when present (same gap, or override is authoritative after why/mid/nonsense)
-    let questionText = base.questionText;
-    let whyNow = base.whyNow;
-    let targetGap = base.targetGap;
+    let questionText = decision.questionText;
+    let whyNow = decision.whyNow;
+    let targetGap = decision.targetGap;
+
     if (questionOverride) {
       const stickyAsks = countUnclosedGapAsks(freshTurns, questionOverride.targetGap);
-      // Loop 9c — wrong_slot re-ask never yields to ranked base while asked gap still open
       const overrideStale =
         questionOverride.reason !== 'wrong_slot' &&
-        questionOverride.targetGap !== base.targetGap &&
+        questionOverride.targetGap !== targetGap &&
         stickyAsks >= MAX_SAME_GAP_ASKS_BEFORE_YIELD;
       const wrongSlotReAsk = questionOverride.reason === 'wrong_slot';
       if (
         !overrideStale &&
-        (questionOverride.targetGap === base.targetGap ||
+        (questionOverride.targetGap === targetGap ||
           questionOverride.reason === 'why_meta' ||
           questionOverride.reason === 'mid_judgment' ||
           questionOverride.reason === 'nonsense' ||
@@ -272,16 +243,6 @@ export function WorkspaceAiPmLoopPanel({
         whyNow = questionOverride.whyNow;
         targetGap = questionOverride.targetGap;
       }
-    } else if (countUnclosedGapAsks(loopState.turns, base.targetGap) > 0) {
-      // Core Final Stabilization — never identical stock re-ask for open sticky gaps
-      const reframed = reframeQuestion({
-        targetGap: base.targetGap,
-        living: livingState,
-        reason: 'adaptive',
-        previousQuestionText: base.questionText,
-      });
-      questionText = reframed.questionText;
-      whyNow = reframed.whyNow;
     }
 
     const purity = enforceQuestionPurity({
@@ -290,10 +251,13 @@ export function WorkspaceAiPmLoopPanel({
     });
 
     return {
-      ...base,
+      issueId: decision.issueId,
       targetGap,
       questionText: purity.sanitizedText,
       whyNow,
+      rationale: decision.rationale,
+      score: decision.score,
+      missingField: 'business' as const,
     };
   }, [
     activeIssueId,

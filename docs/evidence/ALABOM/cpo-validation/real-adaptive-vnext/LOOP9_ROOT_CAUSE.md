@@ -65,10 +65,14 @@ finishProcessing → phase issue → whyThisQuestionNow useMemo
 | `4ad9e76` (Loop 9a) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 0 | append fix alone insufficient |
 | `0dc4ba9` (Loop 9b) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 0 | T11→T12 persona pin ✓; multi-hop chain broken |
 | `ba2b25c` (Loop 9c) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 0 | 52/52 unit PASS; delta detects wrong-slot but display ranks problem/solution |
-| Loop 9d | pending capture | pending capture | — | poisoned-targetGap anchor + askedQuestionText SoT |
+| `18c032f` (Loop 9d-a) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 0 | closedGap re-ask anchor; same-slot poison not yet detected |
+| `1537c00` (Loop 9d-b) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 0 | same-slot remap + lastAskSurfaceRef; capture @ 1537c00 still ranked |
+| Loop 9d-c (pending) | pending | pending | — | BANK diffRelevance cue heuristic + decideNextQuestion display SoT |
 
-## Verdict (@ `ba2b25c` live — Loop 9c)
+## Verdict (@ `1537c00` live capture)
 
-**CPO PASS: No** — P0-1 AND P0-2 remain live FAIL.
+**CPO PASS: No** — P0-1 AND P0-2 remain live FAIL on capture @ `1537c00`.
 
-**Loop 9d shipped:** closed-gap re-ask anchor bypasses poisoned `targetGap`; display SoT from turns on every render. **Pending:** one live capture post-deploy.
+**Root cause confirmed:** T12 append poisons `targetGap=validationTestability` (T11 partial override). `detectWrongSlotMergeContext` returned null (`askedGap === closedGap`) → ranked `problemJtbd` won display despite delta crediting `validationTestability`.
+
+**Loop 9d-c shipped:** same-slot poison via BANK answer cues (no `askedQuestionText` required) + `decideNextQuestion` as panel display SoT. **56/56 unit PASS.**
