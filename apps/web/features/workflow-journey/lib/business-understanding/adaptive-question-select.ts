@@ -7,6 +7,7 @@
 import type { LivingClaim, LivingUnderstandingState } from './living-understanding-state';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
+import { hasDiffRelevanceEvidence } from './understanding-contract';
 
 /**
  * Critical viability gaps — shared with analysis gate (avoid circular import).
@@ -54,7 +55,11 @@ export function isDiffConfirmedWithoutRelevance(
 ): boolean {
   const diff = claimByKey(living, 'differentiationVsAlternatives');
   const relevance = claimByKey(living, 'validationTestability');
-  return isUserConfirmedClaim(diff) && !isUserConfirmedClaim(relevance);
+  const relevanceMem = relevance?.value?.trim();
+  const hasEvidence =
+    isUserConfirmedClaim(relevance) &&
+    Boolean(relevanceMem && hasDiffRelevanceEvidence(relevanceMem));
+  return isUserConfirmedClaim(diff) && !hasEvidence;
 }
 
 /**

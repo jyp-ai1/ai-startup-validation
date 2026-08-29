@@ -130,6 +130,20 @@ const PUNCT_ONLY_RE = /^[\p{P}\p{S}\d\s]+$/u;
 const KEYBOARD_MASH_RE = /^(?:[a-z]{1,2}\s*){4,}$/i;
 const HANGUL_JAMO_MASH_RE = /^[\u3131-\u318E\s]{4,}$/;
 
+/** P0 vNext Loop 2 — diff→customer relevance closes only with concrete value evidence. */
+const DIFF_RELEVANCE_EVIDENCE_RE =
+  /(왜\s*중요|체감|관련성|가치|불편|줄여|절약|낭비|예약\s*전|신뢰|시간|선택\s*이유|필요)/i;
+
+export function hasDiffRelevanceEvidence(text: string): boolean {
+  const trimmed = text.trim();
+  if (trimmed.length < 10) return false;
+  if (/^(정정|아니|사실은|그건\s*아닌)/i.test(trimmed)) return false;
+  if (/^(초기\s*타깃|타겟|타깃|관광객|여행객|FIT|MZ)/i.test(trimmed) && !DIFF_RELEVANCE_EVIDENCE_RE.test(trimmed)) {
+    return false;
+  }
+  return DIFF_RELEVANCE_EVIDENCE_RE.test(trimmed);
+}
+
 function isHangulJamoMash(trimmed: string): boolean {
   if (HANGUL_JAMO_MASH_RE.test(trimmed)) return true;
   const compact = trimmed.replace(/\s/g, '');

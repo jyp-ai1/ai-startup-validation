@@ -4,7 +4,7 @@
  * Closed gaps never re-asked. Same-meaning identical Q banned. No fixed spine.
  */
 
-import type { LivingUnderstandingState } from './living-understanding-state';
+import type { LivingClaim, LivingUnderstandingState } from './living-understanding-state';
 import { whyNowForGapField } from './living-understanding-state';
 import {
   selectAdaptiveNextGaps,
@@ -15,6 +15,7 @@ import {
 import { resolveGapQuestionBinding } from './gap-question-map';
 import { reframeQuestion, isSameMeaningQuestion } from './reframe-question';
 import { factKeyForGapField } from './build-conversation-memory';
+import { hasDiffRelevanceEvidence } from './understanding-contract';
 import {
   memoryHasFact,
   type ConversationFactKey,
@@ -60,12 +61,22 @@ function answeredTargetGaps(turns: AiPmLoopTurn[] | undefined): Set<string> {
           : [];
     for (const key of keys) {
       const gap = FACT_TO_GAP[key];
+      if (gap === 'validationTestability') {
+        if (keys.includes('diffRelevance') && hasDiffRelevanceEvidence(turn.answer ?? '')) {
+          answered.add(gap);
+        }
+        continue;
+      }
       if (gap) answered.add(gap);
     }
     if (turn.targetGap?.trim() && keys.length > 0) {
       const asked = turn.targetGap.trim();
       const binding = resolveGapQuestionBinding(asked);
-      if (keys.includes(binding.factKey as ConversationFactKey)) {
+      if (asked === 'validationTestability') {
+        if (keys.includes('diffRelevance') && hasDiffRelevanceEvidence(turn.answer ?? '')) {
+          answered.add(asked);
+        }
+      } else if (keys.includes(binding.factKey as ConversationFactKey)) {
         answered.add(asked);
       }
     }

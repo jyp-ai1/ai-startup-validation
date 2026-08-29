@@ -25,7 +25,7 @@ import {
   type AiPmLoopTurn,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { resolveNextLoopIssue } from '../../lib/business-understanding/resolve-ai-pm-priority-issue';
-import { getWhyThisQuestionNow, getTopGapPriority } from '../../lib/business-understanding/resolve-missing-field-priority';
+import { getWhyThisQuestionNow, getTopGapPriority, resolvePreservedGapAfterMeta } from '../../lib/business-understanding/resolve-missing-field-priority';
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import { buildAiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
 import {
@@ -74,7 +74,7 @@ import {
   type AnswerQuality,
 } from '../../lib/business-understanding/understanding-contract';
 import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
-import { reframeQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
+import { reframeQuestion, buildConflictClarifyQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
 import { countUnclosedGapAsks, MAX_SAME_GAP_ASKS_BEFORE_YIELD } from '../../lib/business-understanding/question-decision-engine';
 import { enforceQuestionPurity } from '../../lib/business-understanding/question-purity';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
@@ -497,8 +497,14 @@ export function WorkspaceAiPmLoopPanel({
   /** Core Final — after why/mid panel close, re-judge gap + REFRAME (never identical Q). */
   const closeWhyOrMidAndRejudge = useCallback(() => {
     const reason: ReframeReason = whyPanel ? 'why_meta' : 'mid_judgment';
+    const inFlightGap = whyThisQuestionNow?.targetGap ?? questionOverride?.targetGap ?? null;
     setWhyPanel(null);
     setMidJudgmentText(null);
+    const gap = resolvePreservedGapAfterMeta({
+      living: livingState,
+      turns: loopState.turns,
+      inFlightGap,
+    });
     const top = getTopGapPriority(understanding, loopState, {
       documentText: documentText ?? undefined,
       entities,
@@ -506,7 +512,6 @@ export function WorkspaceAiPmLoopPanel({
       analysisResultExists,
       turns: loopState.turns,
     });
-    const gap = top?.targetGap ?? whyThisQuestionNow?.targetGap ?? 'problemJtbd';
     const prevQ = whyThisQuestionNow?.questionText ?? top?.questionText ?? null;
     const reframed = reframeQuestion({
       targetGap: gap,
@@ -520,8 +525,9 @@ export function WorkspaceAiPmLoopPanel({
       whyNow: reframed.whyNow,
       reason,
     });
-    if (top?.issueId && top.issueId !== loopState.currentIssueId) {
-      patchAiPmLoopState({ currentIssueId: top.issueId }, projectId);
+    const issueForGap = top?.issueId ?? loopState.currentIssueId;
+    if (issueForGap && issueForGap !== loopState.currentIssueId) {
+      patchAiPmLoopState({ currentIssueId: issueForGap }, projectId);
       syncState(loadAiPmLoopState(projectId));
     }
   }, [
@@ -532,6 +538,7 @@ export function WorkspaceAiPmLoopPanel({
     livingState,
     loopState,
     projectId,
+    questionOverride?.targetGap,
     syncState,
     understanding,
     whyPanel,
@@ -728,14 +735,28 @@ export function WorkspaceAiPmLoopPanel({
 
     if (semantic.quality === 'CONTRADICTORY' && semantic.factKey && existingFactsByKey[semantic.factKey]) {
       setAnswerQualityHint('CONTRADICTORY');
+      const prior = existingFactsByKey[semantic.factKey]!;
       setContradiction({
         issueId: semantic.resolvedIssueId ?? issueId,
         factKey: semantic.factKey,
-        prior: existingFactsByKey[semantic.factKey]!,
+        prior,
         next: trimmed,
       });
-      // Persist conflict delta so mergeable-looking turns never show empty understandingDelta
       const askedGap = whyThisQuestionNow?.targetGap ?? 'unknown';
+      const conflictClarify = buildConflictClarifyQuestion({
+        factKey: semantic.factKey,
+        targetGap: askedGap !== 'unknown' ? askedGap : undefined,
+        priorValue: prior,
+        newValue: trimmed,
+        living: livingState,
+      });
+      setQuestionOverride({
+        targetGap: conflictClarify.targetGap,
+        questionText: conflictClarify.questionText,
+        whyNow: conflictClarify.whyNow,
+        reason: 'adaptive',
+      });
+      // Persist conflict delta so mergeable-looking turns never show empty understandingDelta
       appendAiPmLoopTurn(
         {
           issueId,
@@ -744,8 +765,8 @@ export function WorkspaceAiPmLoopPanel({
           semanticFactKey: semantic.factKey,
           semanticFactKeys: semantic.facts.map((f) => f.key),
           intent: semantic.intent,
-          targetGap: askedGap,
-          understandingDelta: `충돌: ${semantic.factKey} — 기존 값과 새 답 중 어느 쪽이 맞는지 확인 필요 · 미확인: ${askedGap}`,
+          targetGap: conflictClarify.targetGap,
+          understandingDelta: `충돌: ${semantic.factKey} — 기존 값과 새 답 중 어느 쪽이 맞는지 확인 필요 · 미확인: ${conflictClarify.targetGap}`,
         },
         projectId,
       );
@@ -764,7 +785,11 @@ export function WorkspaceAiPmLoopPanel({
     }
 
     if (!semantic.mergeable) {
-      // Core Final W7 — nonsense / unknown → REFRAME on adaptive top gap (never stale sticky)
+      // Core Final W7 — nonsense / unknown / weak relevance → REFRAME on adaptive top gap
+      const preserveGap =
+        semantic.quality === 'PARTIAL' && whyThisQuestionNow?.targetGap
+          ? whyThisQuestionNow.targetGap
+          : null;
       const top = getTopGapPriority(understanding, loopState, {
         documentText: documentText ?? undefined,
         entities,
@@ -773,11 +798,16 @@ export function WorkspaceAiPmLoopPanel({
         turns: loopState.turns,
       });
       const gap =
+        preserveGap ??
         top?.targetGap ??
         whyThisQuestionNow?.targetGap ??
         'problemJtbd';
       const reason: ReframeReason =
-        semantic.intent === 'nonsense' ? 'nonsense' : 'unknown_signal';
+        semantic.intent === 'nonsense'
+          ? 'nonsense'
+          : semantic.quality === 'PARTIAL'
+            ? 'adaptive'
+            : 'unknown_signal';
       const reframed = reframeQuestion({
         targetGap: gap,
         living: livingState,
@@ -882,7 +912,10 @@ export function WorkspaceAiPmLoopPanel({
       },
       projectId,
     );
-    const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, { semantic });
+    const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, {
+      semantic,
+      askedTargetGap: whyThisQuestionNow?.targetGap,
+    });
     if (!result.applied) {
       const rolled = loadAiPmLoopState(projectId);
       patchAiPmLoopState(

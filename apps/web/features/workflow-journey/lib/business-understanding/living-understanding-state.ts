@@ -10,6 +10,7 @@ import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-doma
 import {
   BUSINESS_UNDERSTANDING_DOMAIN,
   confidenceFromProvenance,
+  hasDiffRelevanceEvidence,
   type BusinessUnderstandingDomainKey,
   type UnderstandingConfidence,
   type UnderstandingProvenance,
@@ -168,6 +169,22 @@ function resolveDomainValue(
 
   switch (fieldKey) {
     case 'businessOneLiner': {
+      const conflict = mem ? getConflictFact(mem, 'business') : null;
+      if (conflict) {
+        return {
+          fieldKey,
+          value: conflict.value,
+          status: 'contradiction',
+          provenance: 'USER_CORRECTED',
+          confidence: 'INFERRED',
+          evidence: [
+            { kind: 'user_answer', excerpt: conflict.value.slice(0, 80) },
+            ...(conflict.conflictWith
+              ? [{ kind: 'user_answer' as const, excerpt: conflict.conflictWith.slice(0, 80) }]
+              : []),
+          ],
+        };
+      }
       const fromMem = factValue(mem, 'business');
       if (fromMem) {
         return claimFromValue(fieldKey, fromMem, 'USER_CONFIRMED', [
@@ -419,7 +436,7 @@ function resolveDomainValue(
     }
     case 'validationTestability': {
       const fromMem = factValue(mem, 'diffRelevance');
-      if (fromMem) {
+      if (fromMem && hasDiffRelevanceEvidence(fromMem)) {
         return claimFromValue(fieldKey, fromMem, 'USER_CONFIRMED', [
           { kind: 'user_answer', excerpt: fromMem.slice(0, 80) },
         ]);

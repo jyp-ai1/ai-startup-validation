@@ -6,7 +6,7 @@
 
 import type { ConversationFactKey } from './conversation-memory';
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
-import { evaluateAnswerQuality, answersContradict } from './understanding-contract';
+import { evaluateAnswerQuality, answersContradict, hasDiffRelevanceEvidence } from './understanding-contract';
 
 export type AnswerIntent =
   | 'business_fact'
@@ -411,6 +411,17 @@ export function interpretAnswerSemantics(input: {
       facts = [{ key: 'buyer', issueId: 'bm_design' }, ...facts];
     }
     facts = facts.filter((f) => f.key !== 'problem' && f.key !== 'customer');
+  } else if (askedGap === 'customerPersona') {
+    const customerCue =
+      /(고객|타깃|타겟|사용자|유저|persona|관광객|여행객|FIT|MZ|누가\s*쓰|필요로\s*하)/i.test(trimmed);
+    if (customerCue || isCorrection) {
+      factKey = 'customer';
+      resolvedIssueId = 'customer_definition';
+      if (!facts.some((f) => f.key === 'customer')) {
+        facts = [{ key: 'customer', issueId: 'customer_definition' }, ...facts];
+      }
+      facts = facts.filter((f) => f.key !== 'diffRelevance' && f.key !== 'buyer');
+    }
   } else if (askedGap === 'validationTestability') {
     // P0-3 — clear payer correction/conflict must not force-fill relevance slot
     const payerOnly =
@@ -423,6 +434,19 @@ export function interpretAnswerSemantics(input: {
       factKey = 'buyer';
       resolvedIssueId = 'bm_design';
       facts = [{ key: 'buyer', issueId: 'bm_design' }];
+    } else if (!hasDiffRelevanceEvidence(trimmed)) {
+      return emptyInterpretation({
+        intent: isCorrection ? 'correction' : 'business_fact',
+        factKey: 'diffRelevance',
+        resolvedIssueId: 'competitor_analysis',
+        facts: [{ key: 'diffRelevance', issueId: 'competitor_analysis' }],
+        value: trimmed,
+        mergeable: false,
+        displayOnly: false,
+        rationale:
+          '차별점의 고객 관련성은 확인했지만, 왜 중요한지 구체적 근거가 부족합니다 — follow-up 필요.',
+        quality: 'PARTIAL',
+      });
     } else {
       factKey = 'diffRelevance';
       resolvedIssueId = 'competitor_analysis';

@@ -7,6 +7,8 @@
 import type { LivingClaim, LivingUnderstandingState } from './living-understanding-state';
 import { whyNowForGapField } from './living-understanding-state';
 import { resolveGapQuestionBinding } from './gap-question-map';
+import type { ConversationMemory } from './conversation-memory';
+import { memoryHasOpenConflict } from './conversation-memory';
 import type { ConversationFactKey } from './conversation-memory';
 import { listUnconfirmedCriticalGaps, listAnalysisBlockingGaps } from './adaptive-question-select';
 
@@ -90,8 +92,11 @@ export function listCriticalViabilityGaps(living: LivingUnderstandingState): str
  * Only USER_CONFIRMED / USER_CORRECTED close them. Open contradictions always block.
  * P0-1: Analysis Ready only — not sufficiency %.
  */
-export function criticalGapsBlockAnalysis(living: LivingUnderstandingState): boolean {
-  return !evaluateAnalysisReady(living).analysisReady;
+export function criticalGapsBlockAnalysis(
+  living: LivingUnderstandingState,
+  memory?: ConversationMemory | null,
+): boolean {
+  return !evaluateAnalysisReady(living, memory).analysisReady;
 }
 
 function claimDigest(claims: LivingClaim[]): string {
@@ -312,7 +317,10 @@ export function explainSufficiency(living: LivingUnderstandingState): {
  * High sufficiency / enough questions ≠ Analysis Ready.
  * Critical Unknown remaining ⇒ Start Analysis DISABLED.
  */
-export function evaluateAnalysisReady(living: LivingUnderstandingState): {
+export function evaluateAnalysisReady(
+  living: LivingUnderstandingState,
+  memory?: ConversationMemory | null,
+): {
   analysisReady: boolean;
   sufficiencyPercent: number;
   blockedGaps: string[];
@@ -320,7 +328,9 @@ export function evaluateAnalysisReady(living: LivingUnderstandingState): {
   explanation: string;
 } {
   const blockedGaps = listAnalysisBlockingGaps(living);
-  const hasContradiction = living.claims.some((c) => c.status === 'contradiction');
+  const hasContradiction =
+    living.claims.some((c) => c.status === 'contradiction') ||
+    (memory != null && memoryHasOpenConflict(memory));
   const analysisReady = blockedGaps.length === 0 && !hasContradiction;
 
   let whyNotReady: string | null = null;

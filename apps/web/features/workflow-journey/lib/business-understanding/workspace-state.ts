@@ -628,9 +628,9 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
     : null;
 
   const criticalGapBlocked =
-    livingState != null ? criticalGapsBlockAnalysis(livingState) : false;
+    livingState != null ? criticalGapsBlockAnalysis(livingState, memory) : false;
   const analysisEval =
-    livingState != null ? evaluateAnalysisReady(livingState) : null;
+    livingState != null ? evaluateAnalysisReady(livingState, memory) : null;
   const sufficiencyEval =
     livingState != null ? explainSufficiency(livingState) : null;
   const criticalGapExplanation =

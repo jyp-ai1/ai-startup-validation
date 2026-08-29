@@ -17,19 +17,22 @@ import {
 } from './living-understanding-state';
 import {
   selectAdaptiveNextGaps,
+  isDiffConfirmedWithoutRelevance,
+  listAnalysisBlockingGaps,
 } from './adaptive-question-select';
 import {
   countUnclosedGapAsks,
   resolveExcludedGaps,
   MAX_SAME_GAP_ASKS_BEFORE_YIELD,
 } from './question-decision-engine';
-import { reframeQuestion, isSameMeaningQuestion } from './reframe-question';
+import { reframeQuestion, isSameMeaningQuestion, buildConflictClarifyQuestion } from './reframe-question';
 import { getResolvedIssueIds } from './workspace-ai-pm-loop-store';
 import {
   type AiPmLoopIssueId,
   type AiPmLoopState,
 } from './workspace-ai-pm-loop-types';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
+import { hasDiffRelevanceEvidence } from './understanding-contract';
 
 export type MissingFieldPriority = {
   issueId: AiPmLoopIssueId;
@@ -159,13 +162,23 @@ export function getAnsweredTargetGaps(turns: AiPmLoopTurn[] | undefined): Set<st
           : [];
     for (const key of keys) {
       const gap = factToGap[key];
+      if (gap === 'validationTestability') {
+        if (keys.includes('diffRelevance') && hasDiffRelevanceEvidence(turn.answer ?? '')) {
+          answered.add(gap);
+        }
+        continue;
+      }
       if (gap) answered.add(gap);
     }
     // Only count asked targetGap when it matches a semantic fact (no wrong-slot credit)
     if (turn.targetGap?.trim() && keys.length > 0) {
       const asked = turn.targetGap.trim();
       const binding = resolveGapQuestionBinding(asked);
-      if (keys.includes(binding.factKey) || asked === 'solution') {
+      if (asked === 'validationTestability') {
+        if (keys.includes('diffRelevance') && hasDiffRelevanceEvidence(turn.answer ?? '')) {
+          answered.add(asked);
+        }
+      } else if (keys.includes(binding.factKey) || asked === 'solution') {
         answered.add(asked);
       }
     }
@@ -220,8 +233,19 @@ export function resolveMissingFieldPriorities(
 
   const scored = new Map<string, MissingFieldPriority>();
 
-  // 0) Open conflicts first — AI must not silently pick
+  // 0) Open conflicts first — AI must not silently pick (score beats all adaptive gaps)
   if (memory && memoryHasOpenConflict(memory)) {
+    const livingForConflict =
+      text.length >= 8
+        ? buildLivingUnderstandingState({
+            documentText: text,
+            understanding,
+            entities: options?.entities ?? null,
+            turns,
+            memory,
+            resolvedIssueIds: [...resolved],
+          })
+        : null;
     for (const key of [
       'customer',
       'problem',
@@ -232,17 +256,36 @@ export function resolveMissingFieldPriorities(
       'defensibility',
       'market',
       'revenue',
+      'business',
     ] as const) {
       const conflict = getConflictFact(memory, key);
       if (!conflict) continue;
       const gapKey = factKeyToGap(key);
-      const binding = resolveGapQuestionBinding(gapKey);
-      scored.set(gapKey, priorityFromGap({
+      const clarify = buildConflictClarifyQuestion({
+        factKey: key,
         targetGap: gapKey,
-        issueId: binding.issueId,
-        rationale: `「${key}」에 모순된 답이 있습니다. 어느 쪽이 맞는지 확인이 필요합니다.`,
-        score: 10_000,
-      }));
+        priorValue: conflict.conflictWith ?? conflict.value,
+        newValue: conflict.value,
+        living:
+          livingForConflict ??
+          buildLivingUnderstandingState({
+            documentText: text || 'placeholder',
+            understanding,
+            turns,
+            memory,
+            resolvedIssueIds: [...resolved],
+          }),
+      });
+      scored.set(gapKey, {
+        ...priorityFromGap({
+          targetGap: gapKey,
+          issueId: resolveGapQuestionBinding(gapKey).issueId,
+          rationale: clarify.whyNow,
+          score: 200_000,
+        }),
+        questionText: clarify.questionText,
+        whyNow: clarify.whyNow,
+      });
     }
   }
 
@@ -572,4 +615,42 @@ export function getWhyThisQuestionNow(
   // Core Final Stabilization — adaptive top gap is always SoT (no issue stickiness / fixed spine)
   const next = ranked.find((r) => !answeredGaps.has(r.targetGap)) ?? ranked[0]!;
   return next;
+}
+
+/**
+ * Loop 2 — after why/mid meta, preserve in-flight gap (no regression to older slots).
+ */
+export function resolvePreservedGapAfterMeta(input: {
+  living: ReturnType<typeof buildLivingUnderstandingState>;
+  turns: AiPmLoopTurn[];
+  inFlightGap: string | null;
+}): string {
+  const answered = getAnsweredTargetGaps(input.turns);
+  const blocking = new Set(listAnalysisBlockingGaps(input.living));
+
+  if (
+    input.inFlightGap &&
+    !answered.has(input.inFlightGap) &&
+    blocking.has(input.inFlightGap)
+  ) {
+    return input.inFlightGap;
+  }
+
+  if (
+    isDiffConfirmedWithoutRelevance(input.living) &&
+    !answered.has('validationTestability')
+  ) {
+    return 'validationTestability';
+  }
+
+  const conflict = input.living.claims.find((c) => c.status === 'contradiction');
+  if (conflict && !answered.has(conflict.fieldKey)) {
+    return conflict.fieldKey;
+  }
+
+  for (const gap of blocking) {
+    if (!answered.has(gap)) return gap;
+  }
+
+  return input.inFlightGap ?? 'problemJtbd';
 }

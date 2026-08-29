@@ -3,6 +3,7 @@
  * Same-meaning identical Q banned. Nonsense / why / mid → REFRAME with current understanding.
  */
 
+import type { ConversationFactKey } from './conversation-memory';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import { resolveGapQuestionBinding } from './gap-question-map';
 
@@ -168,6 +169,76 @@ export function reframeQuestion(input: {
     whyNow,
     reframed,
     reason: input.reason,
+  };
+}
+
+const FACT_LABEL: Partial<Record<ConversationFactKey, string>> = {
+  buyer: '결제자',
+  customer: '고객',
+  problem: '핵심 문제',
+  competitor: '경쟁·대안',
+  differentiation: '차별점',
+  diffRelevance: '고객 관련성',
+  business: '사업 정의',
+  revenue: '수익 구조',
+  market: '시장·검증',
+  defensibility: '방어력',
+};
+
+function gapForConflictFact(factKey: ConversationFactKey): string {
+  switch (factKey) {
+    case 'buyer':
+      return 'payer';
+    case 'customer':
+      return 'customerPersona';
+    case 'problem':
+      return 'problemJtbd';
+    case 'competitor':
+      return 'alternativesCompetitors';
+    case 'differentiation':
+      return 'differentiationVsAlternatives';
+    case 'diffRelevance':
+      return 'validationTestability';
+    case 'defensibility':
+      return 'executionConstraints';
+    case 'revenue':
+      return 'revenueModel';
+    case 'market':
+      return 'marketSizeEvidence';
+    case 'business':
+      return 'businessOneLiner';
+    default:
+      return resolveGapQuestionBinding(null, 'bm_design').targetGap;
+  }
+}
+
+function clipConflictValue(value: string, max = 36): string {
+  const v = value.trim();
+  return v.length > max ? `${v.slice(0, max)}…` : v;
+}
+
+/**
+ * Loop 2 — conflict must clarify A vs B (not repeat the prior slot question).
+ */
+export function buildConflictClarifyQuestion(input: {
+  factKey: ConversationFactKey;
+  targetGap?: string;
+  priorValue: string;
+  newValue: string;
+  living: LivingUnderstandingState;
+}): ReframedQuestion {
+  const targetGap = input.targetGap?.trim() || gapForConflictFact(input.factKey);
+  const label = FACT_LABEL[input.factKey] ?? input.factKey;
+  const a = clipConflictValue(input.priorValue);
+  const b = clipConflictValue(input.newValue);
+  const questionText = `「${label}」에 두 가지 답이 있습니다. A) ${a} · B) ${b} — 어느 쪽이 맞나요?`;
+  const whyNow = `모순을 해소해야 다음 공백으로 넘어갈 수 있습니다. A와 B 중 맞는 쪽을 선택해 주세요. (현재 이해: ${knownDigest(input.living)})`;
+  return {
+    targetGap,
+    questionText,
+    whyNow,
+    reframed: true,
+    reason: 'adaptive',
   };
 }
 

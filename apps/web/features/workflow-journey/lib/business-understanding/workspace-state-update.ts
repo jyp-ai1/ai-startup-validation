@@ -54,6 +54,8 @@ export type ApplyWorkspaceLoopAnswerOptions = {
   forceAccept?: boolean;
   /** Pre-computed semantic (submit path). */
   semantic?: SemanticInterpretation;
+  /** Living gap that was asked — semantic routing honor */
+  askedTargetGap?: string | null;
 };
 
 /**
@@ -85,6 +87,7 @@ export function applyWorkspaceLoopAnswer(
         ? getFact(previousMemory, factKeyForIssue(issueId)!)?.value ?? null
         : null,
       existingFactsByKey,
+      askedTargetGap: options?.askedTargetGap,
     });
 
   const existingFact = semantic.factKey

@@ -16,7 +16,7 @@ import {
   explainSufficiency,
   formatUnderstandingDeltaSummary,
 } from '../question-causality';
-import { reframeQuestion, isSameMeaningQuestion } from '../reframe-question';
+import { reframeQuestion, isSameMeaningQuestion, buildConflictClarifyQuestion } from '../reframe-question';
 import {
   countUnclosedGapAsks,
   decideNextQuestion,
@@ -28,6 +28,7 @@ import {
   getAnsweredTargetGaps,
   resolveMissingFieldPriorities,
   resolveNextIssueByMissingField,
+  resolvePreservedGapAfterMeta,
 } from '../resolve-missing-field-priority';
 import { selectTopAdaptiveGap } from '../adaptive-question-select';
 import {
@@ -922,3 +923,139 @@ describe('Long Sprint — pricingHint / marketSizeEvidence / integrity align', (
 function stateAnalysisBlocksStart(living: ReturnType<typeof buildLivingUnderstandingState>): boolean {
   return evaluateAnalysisReady(living).analysisReady === false;
 }
+
+describe('Loop 2 vNext — causality · conflict · relevance evidence', () => {
+  it('mid-judgment preserves validationTestability when diff relevance still open', () => {
+    const turns: AiPmLoopTurn[] = [
+      {
+        issueId: 'competitor_analysis',
+        answer: '클룩·트립닷컴',
+        appliedAt: '1',
+        semanticFactKey: 'competitor',
+        semanticFactKeys: ['competitor'],
+        intent: 'business_fact',
+        targetGap: 'alternativesCompetitors',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '실시간 맞춤 일정',
+        appliedAt: '2',
+        semanticFactKey: 'differentiation',
+        semanticFactKeys: ['differentiation'],
+        intent: 'business_fact',
+        targetGap: 'differentiationVsAlternatives',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns,
+      memory,
+    });
+    const preserved = resolvePreservedGapAfterMeta({
+      living,
+      turns,
+      inFlightGap: 'validationTestability',
+    });
+    expect(preserved).toBe('validationTestability');
+  });
+
+  it('customer correction while asked customerPersona does not close validationTestability', () => {
+    const result = interpretAnswerSemantics({
+      answer:
+        '정정합니다. 초기 타깃은 방한 FIT 외국인만이 아니라, 국내 MZ 개별 여행객도 포함합니다.',
+      askedIssueId: 'customer_definition',
+      askedTargetGap: 'customerPersona',
+    });
+    expect(result.factKey).toBe('customer');
+    expect(result.facts.some((f) => f.key === 'diffRelevance')).toBe(false);
+    expect(result.mergeable).toBe(true);
+  });
+
+  it('validationTestability weak answer is PARTIAL and not mergeable', () => {
+    const result = interpretAnswerSemantics({
+      answer: '정정합니다. 초기 타깃은 방한 FIT 외국인만이 아니라, 국내 MZ 개별 여행객도 포함합니다.',
+      askedIssueId: 'competitor_analysis',
+      askedTargetGap: 'validationTestability',
+    });
+    expect(result.quality).toBe('PARTIAL');
+    expect(result.mergeable).toBe(false);
+  });
+
+  it('validationTestability closes only with relevance evidence', () => {
+    const weakTurns: AiPmLoopTurn[] = [
+      {
+        issueId: 'competitor_analysis',
+        answer: '정정합니다. 초기 타깃은 방한 FIT 외국인만이 아니라, 국내 MZ도 포함',
+        appliedAt: '1',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'correction',
+        targetGap: 'validationTestability',
+      },
+    ];
+    expect(getAnsweredTargetGaps(weakTurns).has('validationTestability')).toBe(false);
+
+    const strongTurns: AiPmLoopTurn[] = [
+      {
+        issueId: 'competitor_analysis',
+        answer: '맞춤 일정이 없으면 동선 낭비가 커서 고객이 예약 전에 차이를 체감합니다',
+        appliedAt: '1',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'validationTestability',
+      },
+    ];
+    expect(getAnsweredTargetGaps(strongTurns).has('validationTestability')).toBe(true);
+  });
+
+  it('open memory conflict blocks Analysis Ready', () => {
+    let memory = emptyConversationMemory('conflict-block');
+    memory = upsertConfirmedFact(memory, 'buyer', 'B2B 호텔·OTA 정산', 'user_turn');
+    memory = {
+      ...memory,
+      facts: [
+        ...memory.facts.filter((f) => f.key !== 'buyer'),
+        {
+          key: 'buyer',
+          value: 'B2B 호텔·OTA 정산',
+          source: 'user_turn',
+          lifecycle: 'current',
+        },
+        {
+          key: 'buyer',
+          value: '관광객 직접 결제',
+          source: 'user_turn',
+          lifecycle: 'conflict',
+          conflictWith: 'B2B 호텔·OTA 정산',
+        },
+      ],
+    };
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      memory,
+    });
+    expect(evaluateAnalysisReady(living, memory).analysisReady).toBe(false);
+    expect(criticalGapsBlockAnalysis(living, memory)).toBe(true);
+  });
+
+  it('conflict clarify question differs from stock customer ask', () => {
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      memory: emptyConversationMemory('clarify'),
+    });
+    const stock = resolveGapQuestionBinding('customerPersona').questionText;
+    const clarify = buildConflictClarifyQuestion({
+      factKey: 'buyer',
+      priorValue: 'B2B 호텔·OTA 정산',
+      newValue: '관광객 직접 결제',
+      living,
+    });
+    expect(clarify.questionText).toMatch(/A\)|B\)|어느 쪽/);
+    expect(isSameMeaningQuestion(clarify.questionText, stock)).toBe(false);
+  });
+});
