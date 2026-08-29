@@ -303,6 +303,8 @@ export function selectAdaptiveNextGaps(
 
   // Merge living.gaps scores as soft boost
   for (const gap of living.gaps) {
+    // Loop 6 — living.gaps merge must not re-introduce solution while problem open
+    if (gap.fieldKey === 'solution' && blockSolution) continue;
     const existing = candidates.find((c) => c.fieldKey === gap.fieldKey);
     if (existing) {
       existing.score = Math.max(existing.score, gap.priorityScore);

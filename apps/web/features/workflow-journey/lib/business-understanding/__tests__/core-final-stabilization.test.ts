@@ -1458,6 +1458,90 @@ describe('Loop 5 vNext — P0-1/P0-2 causality (T12/T13/T14)', () => {
     expect(decision?.whyNow).toMatch(/타깃 고객|핵심 불편|문제/);
   });
 
+  /** Loop 6 — production path (getWhyThisQuestionNow) with document-inferred customer memory @ T12. */
+  it('P0-1 live T12→T13: getWhyThisQuestionNow keeps customerPersona with doc customer memory', () => {
+    const t12Answer =
+      '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.';
+    const turns: AiPmLoopTurn[] = [
+      ...prefixThroughPayer,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '4',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const understanding = buildBusinessUnderstanding(SEED);
+    const loop = { ...createInitialAiPmLoopState(), turns, phase: 'answer' as const };
+    const priority = getWhyThisQuestionNow(understanding, loop, {
+      documentText: SEED,
+      memory,
+      turns,
+    });
+    expect(priority?.targetGap).toBe('customerPersona');
+    expect(priority?.targetGap).not.toBe('problemJtbd');
+    expect(priority?.whyNow).toMatch(/고객 관련성|타깃 고객|관련성/);
+  });
+
+  /** Loop 6 — production path @ T13: living.gaps must not bypass solution block. */
+  it('P0-2 live T13→T14: getWhyThisQuestionNow selects problemJtbd not solution', () => {
+    const personaAnswer =
+      '초기 타깃은 서울을 3~7일 방문하는 FIT 외국인(밀레니얼·MZ)이고, 혼자 또는 2인 여행이 많습니다.';
+    const t12Answer =
+      '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.';
+    const turns: AiPmLoopTurn[] = [
+      ...prefixThroughPayer,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '4',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: personaAnswer,
+        appliedAt: '5',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const understanding = buildBusinessUnderstanding(SEED);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding,
+      turns,
+      memory,
+    });
+    expect(living.gaps.some((g) => g.fieldKey === 'solution')).toBe(true);
+    expect(listUnconfirmedCriticalGaps(living)).toContain('problemJtbd');
+
+    const loop = { ...createInitialAiPmLoopState(), turns, phase: 'answer' as const };
+    const priority = getWhyThisQuestionNow(understanding, loop, {
+      documentText: SEED,
+      memory,
+      turns,
+    });
+    expect(priority?.targetGap).toBe('problemJtbd');
+    expect(priority?.targetGap).not.toBe('solution');
+
+    const ranked = resolveMissingFieldPriorities(understanding, loop, {
+      documentText: SEED,
+      memory,
+      turns,
+    });
+    expect(ranked[0]?.targetGap).toBe('problemJtbd');
+  });
+
   it('evaluateAnalysisReady unchanged — regression guard', () => {
     const turns: AiPmLoopTurn[] = [
       {

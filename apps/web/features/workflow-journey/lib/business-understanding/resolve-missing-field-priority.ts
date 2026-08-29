@@ -36,7 +36,9 @@ import { hasDiffRelevanceEvidence } from './understanding-contract';
 import {
   buildDeltaAwareWhyNow,
   detectWrongSlotMergeContext,
+  PERSONA_WRONG_SLOT_BOOST,
   shouldBlockSolutionForOpenProblem,
+  shouldPrioritizePersonaAfterWrongSlotRelevance,
 } from './wrong-slot-priority';
 
 export type MissingFieldPriority = {
@@ -208,8 +210,16 @@ export function getAnsweredTargetGaps(turns: AiPmLoopTurn[] | undefined): Set<st
 function isGapSatisfiedInMemory(
   targetGap: string,
   memory: ConversationMemory | null | undefined,
+  options?: { wrongSlotContext?: ReturnType<typeof detectWrongSlotMergeContext> },
 ): boolean {
   if (!memory) return false;
+  // Loop 6 — wrong-slot relevance on persona ask; customer still needs USER_CONFIRMED
+  if (
+    targetGap === 'customerPersona' &&
+    shouldPrioritizePersonaAfterWrongSlotRelevance(options?.wrongSlotContext ?? null)
+  ) {
+    return false;
+  }
   // P0 — solution must never be closed by document business one-liner alone
   if (targetGap === 'solution' || targetGap === 'businessOneLiner') {
     const fact = memory.facts.find(
@@ -374,7 +384,7 @@ export function resolveMissingFieldPriorities(
         continue;
       }
       if (answeredGaps.has(candidate.fieldKey)) continue;
-      if (isGapSatisfiedInMemory(candidate.fieldKey, memory)) continue;
+      if (isGapSatisfiedInMemory(candidate.fieldKey, memory, { wrongSlotContext })) continue;
       if (exclude.has(candidate.fieldKey) && !scored.has(candidate.fieldKey)) continue;
 
       const existing = scored.get(candidate.fieldKey);
@@ -412,7 +422,30 @@ export function resolveMissingFieldPriorities(
       scored.set(candidate.fieldKey, priority);
     }
 
+    // Loop 6 P0-1 — force customerPersona when wrong-slot closed relevance on persona ask
+    if (shouldPrioritizePersonaAfterWrongSlotRelevance(wrongSlotContext)) {
+      const binding = resolveGapQuestionBinding('customerPersona');
+      const existing = scored.get('customerPersona');
+      const score = Math.max(existing?.score ?? 0, PERSONA_WRONG_SLOT_BOOST);
+      if (!existing || existing.score < score) {
+        scored.set(
+          'customerPersona',
+          priorityFromGap({
+            targetGap: 'customerPersona',
+            issueId: binding.issueId,
+            rationale: binding.whyNow,
+            score,
+            wrongSlotContext,
+          }),
+        );
+      }
+    }
+
     for (const gap of living.gaps) {
+      // Loop 6 — living.gaps path must honor solution block (production SoT bypass @ f633733)
+      if (gap.fieldKey === 'solution' && shouldBlockSolutionForOpenProblem(living)) {
+        continue;
+      }
       const binding = resolveGapQuestionBinding(gap.fieldKey, gap.issueId ?? undefined);
       const issueId = gap.issueId ?? binding.issueId;
 
@@ -425,7 +458,7 @@ export function resolveMissingFieldPriorities(
       }
 
       // Memory already has the fact for this gap
-      if (isGapSatisfiedInMemory(gap.fieldKey, memory)) {
+      if (isGapSatisfiedInMemory(gap.fieldKey, memory, { wrongSlotContext })) {
         continue;
       }
 
@@ -439,7 +472,7 @@ export function resolveMissingFieldPriorities(
       }
 
       // Issue-level lock only when gap's own fact is locked (not sibling gaps on same issue)
-      if (resolved.has(issueId) && isGapSatisfiedInMemory(gap.fieldKey, memory)) {
+      if (resolved.has(issueId) && isGapSatisfiedInMemory(gap.fieldKey, memory, { wrongSlotContext })) {
         continue;
       }
 
@@ -517,7 +550,23 @@ export function resolveMissingFieldPriorities(
     const binding = resolveGapQuestionBinding(null, risk.issueId);
     if (scored.has(binding.targetGap)) continue;
     if (answeredGaps.has(binding.targetGap)) continue;
-    if (isGapSatisfiedInMemory(binding.targetGap, memory)) continue;
+    if (isGapSatisfiedInMemory(binding.targetGap, memory, { wrongSlotContext })) continue;
+    if (
+      binding.targetGap === 'solution' &&
+      text.length >= 8 &&
+      shouldBlockSolutionForOpenProblem(
+        buildLivingUnderstandingState({
+          documentText: text,
+          understanding,
+          entities: options?.entities ?? null,
+          turns,
+          memory,
+          resolvedIssueIds: [...resolved],
+        }),
+      )
+    ) {
+      continue;
+    }
 
     scored.set(
       binding.targetGap,

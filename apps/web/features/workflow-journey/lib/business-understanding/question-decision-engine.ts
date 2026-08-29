@@ -20,6 +20,7 @@ import {
   buildDeltaAwareWhyNow,
   detectWrongSlotMergeContext,
   shouldBlockSolutionForOpenProblem,
+  shouldPrioritizePersonaAfterWrongSlotRelevance,
 } from './wrong-slot-priority';
 import {
   memoryHasFact,
@@ -139,10 +140,20 @@ export function resolveExcludedGaps(input: {
 }): Set<string> {
   const exclude = new Set<string>(answeredTargetGaps(input.turns));
   const critical = new Set(listUnconfirmedCriticalGaps(input.living));
+  const wrongSlotContext = detectWrongSlotMergeContext(input.turns);
 
   for (const claim of input.living.claims) {
     // P0 — solution never excluded via shared business document fact
     if (claim.fieldKey === 'solution') continue;
+    // Loop 6 — document-inferred memory must not suppress critical gaps still lacking USER_CONFIRMED
+    if (critical.has(claim.fieldKey as never)) continue;
+    // Loop 6 — wrong-slot relevance on persona ask must re-open customerPersona
+    if (
+      claim.fieldKey === 'customerPersona' &&
+      shouldPrioritizePersonaAfterWrongSlotRelevance(wrongSlotContext)
+    ) {
+      continue;
+    }
     const key = factKeyForGapField(claim.fieldKey);
     if (key && input.memory && memoryHasFact(input.memory, key)) {
       exclude.add(claim.fieldKey);
