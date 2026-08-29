@@ -11,6 +11,11 @@ import type { ConversationMemory } from './conversation-memory';
 import { memoryHasOpenConflict } from './conversation-memory';
 import type { ConversationFactKey } from './conversation-memory';
 import { listUnconfirmedCriticalGaps, listAnalysisBlockingGaps } from './adaptive-question-select';
+import {
+  buildDeltaAwareWhyNow,
+  detectWrongSlotMergeContext,
+} from './wrong-slot-priority';
+import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 /** Gaps that block Start Analysis / Validation when still open. */
 export const CRITICAL_VIABILITY_GAP_KEYS = [
@@ -112,9 +117,15 @@ export function buildQuestionCausality(input: {
   living: LivingUnderstandingState;
   targetGap: string;
   sourceEvidenceExcerpts?: string[];
+  turns?: AiPmLoopTurn[];
 }): QuestionCausality {
   const binding = resolveGapQuestionBinding(input.targetGap);
-  const whyNow = whyNowForGapField(input.targetGap);
+  const wrongSlotContext = detectWrongSlotMergeContext(input.turns);
+  const whyNow = buildDeltaAwareWhyNow({
+    targetGap: input.targetGap,
+    baseWhyNow: whyNowForGapField(input.targetGap),
+    wrongSlotContext,
+  });
   const evidence =
     input.sourceEvidenceExcerpts && input.sourceEvidenceExcerpts.length > 0
       ? input.sourceEvidenceExcerpts

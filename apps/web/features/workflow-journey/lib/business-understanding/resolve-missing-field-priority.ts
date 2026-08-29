@@ -33,6 +33,11 @@ import {
 } from './workspace-ai-pm-loop-types';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import { hasDiffRelevanceEvidence } from './understanding-contract';
+import {
+  buildDeltaAwareWhyNow,
+  detectWrongSlotMergeContext,
+  shouldBlockSolutionForOpenProblem,
+} from './wrong-slot-priority';
 
 export type MissingFieldPriority = {
   issueId: AiPmLoopIssueId;
@@ -109,9 +114,15 @@ function priorityFromGap(input: {
   issueId: AiPmLoopIssueId;
   rationale: string;
   score: number;
+  wrongSlotContext?: ReturnType<typeof detectWrongSlotMergeContext>;
 }): MissingFieldPriority {
   const binding = resolveGapQuestionBinding(input.targetGap, input.issueId);
-  const whyNow = whyNowForGapField(input.targetGap);
+  const baseWhyNow = whyNowForGapField(input.targetGap);
+  const whyNow = buildDeltaAwareWhyNow({
+    targetGap: input.targetGap,
+    baseWhyNow,
+    wrongSlotContext: input.wrongSlotContext ?? null,
+  });
   return {
     issueId: binding.issueId,
     targetGap: input.targetGap,
@@ -230,6 +241,7 @@ export function resolveMissingFieldPriorities(
   const text = options?.documentText?.trim() ?? '';
   const turns = options?.turns ?? loop.turns;
   const answeredGaps = getAnsweredTargetGaps(turns);
+  const wrongSlotContext = detectWrongSlotMergeContext(turns);
 
   const scored = new Map<string, MissingFieldPriority>();
 
@@ -356,7 +368,11 @@ export function resolveMissingFieldPriorities(
     for (const candidate of selectAdaptiveNextGaps(living, {
       excludeGaps: exclude,
       answeredFactGaps: answeredGaps,
+      turns,
     })) {
+      if (candidate.fieldKey === 'solution' && shouldBlockSolutionForOpenProblem(living)) {
+        continue;
+      }
       if (answeredGaps.has(candidate.fieldKey)) continue;
       if (isGapSatisfiedInMemory(candidate.fieldKey, memory)) continue;
       if (exclude.has(candidate.fieldKey) && !scored.has(candidate.fieldKey)) continue;
@@ -369,6 +385,7 @@ export function resolveMissingFieldPriorities(
         issueId: candidate.issueId,
         rationale: candidate.rationale,
         score: candidate.score,
+        wrongSlotContext,
       });
 
       // Same-gap re-ask → reframe question text (never identical meaning)
@@ -383,7 +400,11 @@ export function resolveMissingFieldPriorities(
         priority = {
           ...priority,
           questionText: reframed.questionText,
-          whyNow: reframed.whyNow,
+          whyNow: buildDeltaAwareWhyNow({
+            targetGap: candidate.fieldKey,
+            baseWhyNow: reframed.whyNow,
+            wrongSlotContext,
+          }),
           rationale: `${candidate.rationale} (reframe after ${priorAsks} prior ask)`,
         };
       }
@@ -448,6 +469,7 @@ export function resolveMissingFieldPriorities(
         issueId,
         rationale: gap.rationale,
         score: gap.priorityScore,
+        wrongSlotContext,
       });
       const priorAsks = countUnclosedGapAsks(turns, gap.fieldKey);
       if (priorAsks > 0) {
@@ -461,7 +483,11 @@ export function resolveMissingFieldPriorities(
           priority = {
             ...priority,
             questionText: reframed.questionText,
-            whyNow: reframed.whyNow,
+            whyNow: buildDeltaAwareWhyNow({
+              targetGap: gap.fieldKey,
+              baseWhyNow: reframed.whyNow,
+              wrongSlotContext,
+            }),
           };
         }
       }

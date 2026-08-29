@@ -26,11 +26,13 @@ import {
 } from '../question-decision-engine';
 import {
   getAnsweredTargetGaps,
+  getWhyThisQuestionNow,
   resolveMissingFieldPriorities,
   resolveNextIssueByMissingField,
   resolvePreservedGapAfterMeta,
 } from '../resolve-missing-field-priority';
 import {
+  listUnconfirmedCriticalGaps,
   selectRefinementGapAfterAnalysisReady,
   selectTopAdaptiveGap,
 } from '../adaptive-question-select';
@@ -1330,5 +1332,215 @@ describe('Loop 4 vNext — post-Analysis Ready depth follow-ups', () => {
       turns,
     });
     expect(next).not.toBeNull();
+  });
+});
+
+describe('Loop 5 vNext — P0-1/P0-2 causality (T12/T13/T14)', () => {
+  /** Prefix through payer — validationTestability still open (T11-class plan does not close). */
+  const prefixThroughPayer: AiPmLoopTurn[] = [
+    {
+      issueId: 'competitor_analysis',
+      answer: '클룩·트립닷컴·가이드 매칭 앱',
+      appliedAt: '1',
+      semanticFactKey: 'competitor',
+      semanticFactKeys: ['competitor'],
+      intent: 'business_fact',
+      targetGap: 'alternativesCompetitors',
+    },
+    {
+      issueId: 'competitor_analysis',
+      answer: '차별점은 관심사·동선·식사 맞춤 일정',
+      appliedAt: '2',
+      semanticFactKey: 'differentiation',
+      semanticFactKeys: ['differentiation'],
+      intent: 'business_fact',
+      targetGap: 'differentiationVsAlternatives',
+    },
+    {
+      issueId: 'bm_design',
+      answer: '관광객 직접 결제',
+      appliedAt: '3',
+      semanticFactKey: 'buyer',
+      semanticFactKeys: ['buyer'],
+      intent: 'business_fact',
+      targetGap: 'payer',
+    },
+  ];
+
+  it('P0-1 T12→T13: wrong-slot relevance on persona ask re-ranks customerPersona', () => {
+    const t12Answer =
+      '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서 고객이 예약 전에 차이를 체감합니다';
+    const turns: AiPmLoopTurn[] = [
+      ...prefixThroughPayer,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '4',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const understanding = buildBusinessUnderstanding(SEED);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding,
+      turns,
+      memory,
+    });
+    const top = selectTopAdaptiveGap(living, {
+      answeredFactGaps: getAnsweredTargetGaps(turns),
+      turns,
+    });
+    expect(top?.fieldKey).toBe('customerPersona');
+
+    const decision = decideNextQuestion({ living, turns, memory });
+    expect(decision?.targetGap).toBe('customerPersona');
+    expect(decision?.whyNow).toMatch(/고객 관련성|관련성/);
+
+    const loop = { ...createInitialAiPmLoopState(), turns, phase: 'answer' as const };
+    const priority = getWhyThisQuestionNow(understanding, loop, {
+      documentText: SEED,
+      memory,
+      turns,
+    });
+    expect(priority?.targetGap).toBe('customerPersona');
+    expect(priority?.whyNow).toMatch(/고객 관련성|타깃 고객/);
+  });
+
+  it('P0-2 T13→T14: persona merge on problem ask selects problemJtbd not solution', () => {
+    const personaAnswer =
+      '초기 타깃은 서울을 3~7일 머무는 FIT 외국인과 국내 MZ 개별 여행객';
+    const t12Answer =
+      '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서 고객이 예약 전에 차이를 체감합니다';
+    const turns: AiPmLoopTurn[] = [
+      ...prefixThroughPayer,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '4',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: personaAnswer,
+        appliedAt: '5',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const understanding = buildBusinessUnderstanding(SEED);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding,
+      turns,
+      memory,
+    });
+    expect(listUnconfirmedCriticalGaps(living)).toContain('problemJtbd');
+
+    const top = selectTopAdaptiveGap(living, {
+      answeredFactGaps: getAnsweredTargetGaps(turns),
+      turns,
+    });
+    expect(top?.fieldKey).toBe('problemJtbd');
+    expect(top?.fieldKey).not.toBe('solution');
+
+    const decision = decideNextQuestion({ living, turns, memory });
+    expect(decision?.targetGap).toBe('problemJtbd');
+    expect(decision?.whyNow).toMatch(/타깃 고객|핵심 불편|문제/);
+  });
+
+  it('evaluateAnalysisReady unchanged — regression guard', () => {
+    const turns: AiPmLoopTurn[] = [
+      {
+        issueId: 'customer_definition',
+        answer: '방한 FIT',
+        appliedAt: '1',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '맞춤 일정 불가',
+        appliedAt: '2',
+        semanticFactKey: 'problem',
+        semanticFactKeys: ['problem'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+      },
+      {
+        issueId: 'bm_design',
+        answer: '관광객 결제',
+        appliedAt: '3',
+        semanticFactKey: 'buyer',
+        semanticFactKeys: ['buyer'],
+        intent: 'business_fact',
+        targetGap: 'payer',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '클룩',
+        appliedAt: '4',
+        semanticFactKey: 'competitor',
+        semanticFactKeys: ['competitor'],
+        intent: 'business_fact',
+        targetGap: 'alternativesCompetitors',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '실시간 맞춤',
+        appliedAt: '5',
+        semanticFactKey: 'differentiation',
+        semanticFactKeys: ['differentiation'],
+        intent: 'business_fact',
+        targetGap: 'differentiationVsAlternatives',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '맞춤 일정이 없으면 동선 낭비가 커서 고객이 예약 전에 차이를 체감합니다',
+        appliedAt: '6',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'validationTestability',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '관심사·동선 맞춤 일정과 현지인 동행을 한 번에 제공합니다',
+        appliedAt: '7',
+        semanticFactKey: 'business',
+        semanticFactKeys: ['business'],
+        intent: 'business_fact',
+        targetGap: 'solution',
+      },
+      {
+        issueId: 'bm_design',
+        answer: '수수료 10~15%',
+        appliedAt: '8',
+        semanticFactKey: 'revenue',
+        semanticFactKeys: ['revenue'],
+        intent: 'business_fact',
+        targetGap: 'revenueModel',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns,
+      memory,
+    });
+    expect(evaluateAnalysisReady(living).analysisReady).toBe(true);
+    expect(evaluateAnalysisReady(living).blockedGaps).toHaveLength(0);
   });
 });

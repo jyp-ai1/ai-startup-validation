@@ -6,8 +6,16 @@
 
 import type { LivingClaim, LivingUnderstandingState } from './living-understanding-state';
 import { resolveGapQuestionBinding } from './gap-question-map';
-import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
+import type { AiPmLoopIssueId, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import { hasDiffRelevanceEvidence } from './understanding-contract';
+import {
+  detectWrongSlotMergeContext,
+  PERSONA_WRONG_SLOT_BOOST,
+  PROBLEM_WRONG_SLOT_BOOST,
+  shouldBlockSolutionForOpenProblem,
+  shouldPrioritizePersonaAfterWrongSlotRelevance,
+  shouldPrioritizeProblemAfterWrongSlotPersona,
+} from './wrong-slot-priority';
 
 /**
  * Critical viability gaps — shared with analysis gate (avoid circular import).
@@ -145,12 +153,20 @@ export function detectBusinessArchetype(
  */
 export function selectAdaptiveNextGaps(
   living: LivingUnderstandingState,
-  options?: { excludeGaps?: Set<string>; answeredFactGaps?: Set<string> },
+  options?: {
+    excludeGaps?: Set<string>;
+    answeredFactGaps?: Set<string>;
+    turns?: AiPmLoopTurn[];
+  },
 ): AdaptiveGapCandidate[] {
   const exclude = options?.excludeGaps ?? new Set<string>();
   const answered = options?.answeredFactGaps ?? new Set<string>();
   const archetype = detectBusinessArchetype(living);
   const candidates: AdaptiveGapCandidate[] = [];
+  const wrongSlotContext = detectWrongSlotMergeContext(options?.turns);
+  const prioritizePersona = shouldPrioritizePersonaAfterWrongSlotRelevance(wrongSlotContext);
+  const prioritizeProblem = shouldPrioritizeProblemAfterWrongSlotPersona(wrongSlotContext);
+  const blockSolution = shouldBlockSolutionForOpenProblem(living);
 
   const byKey = (k: string) => claimByKey(living, k);
 
@@ -184,9 +200,11 @@ export function selectAdaptiveNextGaps(
   // 2) Critical viability — require user confirmation
   for (const key of ADAPTIVE_CRITICAL_GAP_KEYS) {
     if (exclude.has(key) || answered.has(key)) continue;
+    // P0-2 — hard block solution while problemJtbd is critical-unconfirmed
+    if (key === 'solution' && blockSolution) continue;
     const claim = byKey(key);
     if (isUserConfirmed(claim)) continue;
-    if (!isUnknownOrWeak(claim) && claim?.status === 'confirmed') continue;
+    // Critical gaps stay candidates until USER_CONFIRMED — do not skip DOCUMENT-inferred alone
 
     let score = 50_000;
     // Competition before Differentiation when both open
@@ -207,6 +225,13 @@ export function selectAdaptiveNextGaps(
     if (key === 'solution') {
       const problem = byKey('problemJtbd');
       score = isUserConfirmed(problem) ? 52_000 : 45_000;
+    }
+    // P0-1 — wrong-slot relevance on persona ask → re-rank persona above problem
+    if (key === 'customerPersona' && prioritizePersona) {
+      score = Math.max(score, PERSONA_WRONG_SLOT_BOOST);
+    }
+    if (key === 'problemJtbd' && prioritizeProblem) {
+      score = Math.max(score, PROBLEM_WRONG_SLOT_BOOST);
     }
     // Tourism: problem/customer slightly ahead of generic BM
     if (archetype === 'tourism' && (key === 'problemJtbd' || key === 'customerPersona')) {

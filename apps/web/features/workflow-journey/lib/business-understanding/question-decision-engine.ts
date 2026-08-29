@@ -17,6 +17,11 @@ import { reframeQuestion, isSameMeaningQuestion } from './reframe-question';
 import { factKeyForGapField } from './build-conversation-memory';
 import { hasDiffRelevanceEvidence } from './understanding-contract';
 import {
+  buildDeltaAwareWhyNow,
+  detectWrongSlotMergeContext,
+  shouldBlockSolutionForOpenProblem,
+} from './wrong-slot-priority';
+import {
   memoryHasFact,
   type ConversationFactKey,
   type ConversationMemory,
@@ -212,6 +217,7 @@ export function decideNextQuestion(input: {
     living: input.living,
   });
   const answered = answeredTargetGaps(input.turns);
+  const wrongSlotContext = detectWrongSlotMergeContext(input.turns);
 
   // Loop 3 — gate CANNOT open until relevance closed; always re-ask with reframe
   if (
@@ -254,7 +260,10 @@ export function decideNextQuestion(input: {
   const candidates = selectAdaptiveNextGaps(input.living, {
     excludeGaps: exclude,
     answeredFactGaps: answered,
-  });
+    turns: input.turns,
+  }).filter(
+    (c) => !(c.fieldKey === 'solution' && shouldBlockSolutionForOpenProblem(input.living)),
+  );
 
   const top: AdaptiveGapCandidate | undefined = candidates[0];
   if (!top) return null;
@@ -267,7 +276,11 @@ export function decideNextQuestion(input: {
     (priorAsks > 0 ? binding.questionText : null);
 
   let questionText = binding.questionText;
-  let whyNow = whyNowForGapField(top.fieldKey) || binding.whyNow || top.rationale;
+  let whyNow = buildDeltaAwareWhyNow({
+    targetGap: top.fieldKey,
+    baseWhyNow: whyNowForGapField(top.fieldKey) || binding.whyNow || top.rationale,
+    wrongSlotContext,
+  });
   let reframed = false;
 
   // Same gap re-ask OR identical stock → always reframe (never identical meaning)
@@ -282,6 +295,12 @@ export function decideNextQuestion(input: {
     whyNow = reframedQ.whyNow;
     reframed = true;
   }
+
+  whyNow = buildDeltaAwareWhyNow({
+    targetGap: top.fieldKey,
+    baseWhyNow: whyNow,
+    wrongSlotContext,
+  });
 
   // Hard same-meaning ban vs previous ask surface
   if (prevText && isSameMeaningQuestion(questionText, prevText)) {
