@@ -25,7 +25,7 @@ import {
   type AiPmLoopTurn,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { resolveNextLoopIssue } from '../../lib/business-understanding/resolve-ai-pm-priority-issue';
-import { getWhyThisQuestionNow, resolvePreservedGapAfterMeta } from '../../lib/business-understanding/resolve-missing-field-priority';
+import { getWhyThisQuestionNow, resolvePreservedGapAfterMeta, resolveWrongSlotQuestionOverride } from '../../lib/business-understanding/resolve-missing-field-priority';
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import { buildAiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
 import {
@@ -76,6 +76,7 @@ import {
 import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
 import { reframeQuestion, buildConflictClarifyQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
 import { resolveAskedTargetGapForAppend } from '../../lib/business-understanding/resolve-asked-target-gap';
+import { inferTargetGapFromQuestionText } from '../../lib/business-understanding/gap-question-map';
 import { countUnclosedGapAsks, MAX_SAME_GAP_ASKS_BEFORE_YIELD } from '../../lib/business-understanding/question-decision-engine';
 import { enforceQuestionPurity } from '../../lib/business-understanding/question-purity';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
@@ -221,12 +222,16 @@ export function WorkspaceAiPmLoopPanel({
       const stickyAsks = countUnclosedGapAsks(loopState.turns, questionOverride.targetGap);
       const overrideStale =
         questionOverride.targetGap !== base.targetGap && stickyAsks >= MAX_SAME_GAP_ASKS_BEFORE_YIELD;
+      const wrongSlotReAsk =
+        questionOverride.reason === 'wrong_slot' &&
+        questionOverride.targetGap !== base.targetGap;
       if (
         !overrideStale &&
         (questionOverride.targetGap === base.targetGap ||
           questionOverride.reason === 'why_meta' ||
           questionOverride.reason === 'mid_judgment' ||
-          questionOverride.reason === 'nonsense')
+          questionOverride.reason === 'nonsense' ||
+          wrongSlotReAsk)
       ) {
         questionText = questionOverride.questionText;
         whyNow = questionOverride.whyNow;
@@ -739,13 +744,15 @@ export function WorkspaceAiPmLoopPanel({
         turns: loadAiPmLoopState(projectId).turns,
       })?.targetGap,
     });
+    const visibleGap = inferTargetGapFromQuestionText(displayedQuestionText);
+    const resolvedAskedGap = visibleGap ?? askedTargetGap;
 
     const semantic = interpretAnswerSemantics({
       answer: trimmed,
       askedIssueId: issueId,
       existingFact,
       existingFactsByKey,
-      askedTargetGap,
+      askedTargetGap: resolvedAskedGap,
     });
 
     // Why / mid-judgment — display only, never append Fact turn; reframe on return (W8)
@@ -773,7 +780,7 @@ export function WorkspaceAiPmLoopPanel({
         prior,
         next: trimmed,
       });
-      const askedGap = askedTargetGap;
+      const askedGap = resolvedAskedGap;
       const conflictClarify = buildConflictClarifyQuestion({
         factKey: semantic.factKey,
         targetGap: askedGap,
@@ -893,7 +900,7 @@ export function WorkspaceAiPmLoopPanel({
       memory,
       resolvedIssueIds: getResolvedIssueIds(loopState),
     });
-    const askedGap = askedTargetGap;
+    const askedGap = resolvedAskedGap;
     const causality = buildQuestionCausality({
       living: beforeLiving,
       targetGap: askedGap,
@@ -945,6 +952,19 @@ export function WorkspaceAiPmLoopPanel({
       projectId,
     );
     syncState(loadAiPmLoopState(projectId));
+    const wrongSlotNext = resolveWrongSlotQuestionOverride(projectedTurns);
+    if (wrongSlotNext) {
+      setQuestionOverride({
+        targetGap: wrongSlotNext.targetGap,
+        questionText: wrongSlotNext.questionText,
+        whyNow: wrongSlotNext.whyNow ?? wrongSlotNext.rationale,
+        reason: 'wrong_slot',
+      });
+      if (wrongSlotNext.issueId !== (loopState.currentIssueId ?? nextIssue)) {
+        patchAiPmLoopState({ currentIssueId: wrongSlotNext.issueId }, projectId);
+        syncState(loadAiPmLoopState(projectId));
+      }
+    }
     const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, {
       semantic,
       askedTargetGap: askedGap,

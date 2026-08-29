@@ -7,7 +7,13 @@ import type { ConversationFactKey } from './conversation-memory';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import { resolveGapQuestionBinding } from './gap-question-map';
 
-export type ReframeReason = 'nonsense' | 'why_meta' | 'mid_judgment' | 'unknown_signal' | 'adaptive';
+export type ReframeReason =
+  | 'nonsense'
+  | 'why_meta'
+  | 'mid_judgment'
+  | 'unknown_signal'
+  | 'adaptive'
+  | 'wrong_slot';
 
 export type ReframedQuestion = {
   targetGap: string;
