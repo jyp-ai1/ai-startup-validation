@@ -719,11 +719,18 @@ export function WorkspaceAiPmLoopPanel({
     const askedKey = factKeyForIssue(issueId);
     const existingFact = askedKey ? getFact(memory, askedKey)?.value ?? null : null;
 
+    const displayedGap = whyThisQuestionNow?.targetGap ?? null;
+    const displayedQuestionText = whyThisQuestionNow?.questionText ?? null;
+    // Loop 9 — ignore stale questionOverride when UI already re-ranked to a different gap
+    const activeOverrideGap =
+      questionOverride?.targetGap && questionOverride.targetGap === displayedGap
+        ? questionOverride.targetGap
+        : null;
     const askedTargetGap = resolveAskedTargetGapForAppend({
       issueId,
-      whyTargetGap: whyThisQuestionNow?.targetGap,
-      overrideTargetGap: questionOverride?.targetGap,
-      questionText: questionOverride?.questionText ?? whyThisQuestionNow?.questionText,
+      whyTargetGap: displayedGap,
+      overrideTargetGap: activeOverrideGap,
+      questionText: displayedQuestionText,
       fallbackTargetGap: getWhyThisQuestionNow(understanding, loopState, {
         documentText: documentText ?? undefined,
         entities,

@@ -36,12 +36,14 @@ export function resolveAskedTargetGapForAppend(input: {
   questionText?: string | null;
   fallbackTargetGap?: string | null;
 }): string {
-  // Loop 8 — override + visible ask beat stale whyTargetGap (live panel wrong-slot path)
-  const fromOverride = cleanGap(input.overrideTargetGap);
-  if (fromOverride) return fromOverride;
-
+  // Loop 9 — visible question text is ground truth; beats stale override from prior partial
+  // reframe (T11 validationTestability PARTIAL → T12 persona ask @ a9ebd63 live P0-1).
   const fromQuestion = inferTargetGapFromQuestionText(input.questionText);
   if (fromQuestion) return fromQuestion;
+
+  // Loop 8 — active reframe override beats stale whyTargetGap when question text unavailable
+  const fromOverride = cleanGap(input.overrideTargetGap);
+  if (fromOverride) return fromOverride;
 
   const fromWhy = cleanGap(input.whyTargetGap);
   if (fromWhy) return fromWhy;
