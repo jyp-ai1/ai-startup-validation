@@ -46,6 +46,7 @@ import { deriveWorkspaceState } from '../workspace-state';
 import { resolveGapQuestionBinding } from '../gap-question-map';
 import { evaluateFinalIntegrityGate } from '../final-integrity-gate';
 import { resolveNextLoopIssue } from '../resolve-ai-pm-priority-issue';
+import { detectWrongSlotMergeContext } from '../wrong-slot-priority';
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
@@ -1540,6 +1541,90 @@ describe('Loop 5 vNext — P0-1/P0-2 causality (T12/T13/T14)', () => {
       turns,
     });
     expect(ranked[0]?.targetGap).toBe('problemJtbd');
+  });
+
+  /** Loop 6 — live transcript fidelity via interpretAnswerSemantics (not hard-coded keys). */
+  it('P0-1 live interpret T12→T13: BANK.diffRelevance on persona ask', () => {
+    const t12Answer =
+      '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.';
+    const semantic = interpretAnswerSemantics({
+      answer: t12Answer,
+      askedIssueId: 'customer_definition',
+      askedTargetGap: 'customerPersona',
+    });
+    expect(semantic.factKey).toBe('diffRelevance');
+    const turns: AiPmLoopTurn[] = [
+      ...prefixThroughPayer,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '4',
+        semanticFactKey: semantic.factKey,
+        semanticFactKeys: semantic.facts.map((f) => f.key),
+        intent: semantic.intent,
+        targetGap: 'customerPersona',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const understanding = buildBusinessUnderstanding(SEED);
+    const loop = { ...createInitialAiPmLoopState(), turns, phase: 'answer' as const };
+    const priority = getWhyThisQuestionNow(understanding, loop, {
+      documentText: SEED,
+      memory,
+      turns,
+    });
+    expect(priority?.targetGap).toBe('customerPersona');
+    expect(detectWrongSlotMergeContext(turns)?.closedGap).toBe('validationTestability');
+  });
+
+  it('P0-2 live interpret T13→T14: BANK.customer on problem ask', () => {
+    const t12Answer =
+      '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.';
+    const t12Semantic = interpretAnswerSemantics({
+      answer: t12Answer,
+      askedIssueId: 'customer_definition',
+      askedTargetGap: 'customerPersona',
+    });
+    const personaAnswer =
+      '초기 타깃은 서울을 3~7일 방문하는 FIT 외국인(밀레니얼·MZ)이고, 혼자 또는 2인 여행이 많습니다.';
+    const t13Semantic = interpretAnswerSemantics({
+      answer: personaAnswer,
+      askedIssueId: 'problem_definition',
+      askedTargetGap: 'problemJtbd',
+    });
+    expect(t13Semantic.factKey).toBe('customer');
+    const turns: AiPmLoopTurn[] = [
+      ...prefixThroughPayer,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '4',
+        semanticFactKey: t12Semantic.factKey,
+        semanticFactKeys: t12Semantic.facts.map((f) => f.key),
+        intent: t12Semantic.intent,
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: personaAnswer,
+        appliedAt: '5',
+        semanticFactKey: t13Semantic.factKey,
+        semanticFactKeys: t13Semantic.facts.map((f) => f.key),
+        intent: t13Semantic.intent,
+        targetGap: 'problemJtbd',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const understanding = buildBusinessUnderstanding(SEED);
+    const loop = { ...createInitialAiPmLoopState(), turns, phase: 'answer' as const };
+    const priority = getWhyThisQuestionNow(understanding, loop, {
+      documentText: SEED,
+      memory,
+      turns,
+    });
+    expect(priority?.targetGap).toBe('problemJtbd');
+    expect(priority?.targetGap).not.toBe('solution');
+    expect(detectWrongSlotMergeContext(turns)?.askedGap).toBe('problemJtbd');
   });
 
   it('evaluateAnalysisReady unchanged — regression guard', () => {

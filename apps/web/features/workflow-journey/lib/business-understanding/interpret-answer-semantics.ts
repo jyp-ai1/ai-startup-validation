@@ -419,11 +419,23 @@ export function interpretAnswerSemantics(input: {
   // Core Final Stabilization — honor asked gap so answers close the right slot (no payer→problem steal)
   if (askedGap === 'problemJtbd') {
     const problemCue = /(불편|문제|JTBD|해결하려|겪는|pain|pein)/i.test(trimmed);
+    const personaSegmentCue =
+      /(타깃|타겯|FIT|MZ|밀레니얼|방문|머무|여행객|세그먼트|persona|누구|초기\s*타깃|2인\s*여행)/i.test(
+        trimmed,
+      );
     const payerOnlyCorrection =
       PAYER_CUE_RE.test(trimmed) &&
       (isCorrection || /결제자|지불자|payer/i.test(trimmed)) &&
       !problemCue;
-    if (!payerOnlyCorrection) {
+    // Loop 6 P0-2 — persona segment on problem ask is wrong-slot, not problem fill
+    if (personaSegmentCue && !problemCue && !payerOnlyCorrection) {
+      factKey = 'customer';
+      resolvedIssueId = 'customer_definition';
+      if (!facts.some((f) => f.key === 'customer')) {
+        facts = [{ key: 'customer', issueId: 'customer_definition' }, ...facts];
+      }
+      facts = facts.filter((f) => f.key !== 'problem' && f.key !== 'buyer');
+    } else if (!payerOnlyCorrection) {
       factKey = 'problem';
       resolvedIssueId = 'problem_definition';
       if (!facts.some((f) => f.key === 'problem')) {
@@ -439,9 +451,25 @@ export function interpretAnswerSemantics(input: {
     }
     facts = facts.filter((f) => f.key !== 'problem' && f.key !== 'customer');
   } else if (askedGap === 'customerPersona') {
+    const personaSegmentCue =
+      /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|여행객|세그먼트|persona|누구|초기\s*타깃|2인\s*여행)/i.test(
+        trimmed,
+      );
     const customerCue =
       /(고객|타깃|타겟|사용자|유저|persona|관광객|여행객|FIT|MZ|누가\s*쓰|필요로\s*하)/i.test(trimmed);
-    if (customerCue || isCorrection) {
+    // Loop 6 P0-1 — generic "고객" in relevance sentence is not persona confirmation
+    const relevanceDominant =
+      hasDiffRelevanceEvidence(trimmed) &&
+      /(체감|예약\s*전|차이|동선|왜\s*중요|관련성)/i.test(trimmed) &&
+      !personaSegmentCue;
+    if (relevanceDominant) {
+      factKey = 'diffRelevance';
+      resolvedIssueId = 'competitor_analysis';
+      if (!facts.some((f) => f.key === 'diffRelevance')) {
+        facts = [{ key: 'diffRelevance', issueId: 'competitor_analysis' }, ...facts];
+      }
+      facts = facts.filter((f) => f.key !== 'customer' && f.key !== 'problem');
+    } else if (customerCue || isCorrection) {
       factKey = 'customer';
       resolvedIssueId = 'customer_definition';
       if (!facts.some((f) => f.key === 'customer')) {
