@@ -17,7 +17,10 @@ import {
   getAnsweredTargetGaps,
   resolveNextIssueByMissingField,
 } from './resolve-missing-field-priority';
-import { selectTopAdaptiveGap } from './adaptive-question-select';
+import {
+  selectRefinementGapAfterAnalysisReady,
+  selectTopAdaptiveGap,
+} from './adaptive-question-select';
 import {
   buildLivingUnderstandingState,
   resolveNextIssueFromLivingState,
@@ -135,7 +138,7 @@ export function resolveNextLoopIssue(
     return id;
   }
 
-  // P0-2 — if Analysis Ready is false, force next issue from living critical gap (no early exit)
+  // P0-2 / Loop 4 — living-state gap resolution (critical block OR post-ready depth)
   if (documentText.trim().length >= 8) {
     const living = buildLivingUnderstandingState({
       documentText,
@@ -145,19 +148,23 @@ export function resolveNextLoopIssue(
       memory,
       resolvedIssueIds: resolvedIds,
     });
+    const answeredFactGaps = getAnsweredTargetGaps(turns);
+
     if (criticalGapsBlockAnalysis(living)) {
-      const top = selectTopAdaptiveGap(living, {
-        answeredFactGaps: getAnsweredTargetGaps(turns),
-      });
+      const top = selectTopAdaptiveGap(living, { answeredFactGaps });
       if (top?.issueId) return top.issueId;
       const livingIssue = resolveNextIssueFromLivingState(living, resolvedIds, new Set());
       if (livingIssue) return livingIssue;
       // Keep loop open on current issue rather than completing
       return loop.currentIssueId;
     }
+
+    // Loop 4 — Analysis Ready but partial depth gaps remain: keep asking before complete
+    const refinement = selectRefinementGapAfterAnalysisReady(living, { answeredFactGaps });
+    if (refinement?.issueId) return refinement.issueId;
   }
 
-  // Only when Analysis Ready — allow null so loop may complete
+  // Only when Analysis Ready AND no refinement gaps — allow null so loop may complete
   if (criticalFactsLocked(memory)) {
     return null;
   }

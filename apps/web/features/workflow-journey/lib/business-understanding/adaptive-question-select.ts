@@ -303,6 +303,51 @@ export function selectTopAdaptiveGap(
   return selectAdaptiveNextGaps(living, options)[0] ?? null;
 }
 
+/**
+ * Non-blocking depth gaps — high-value follow-ups after Analysis Ready.
+ * Keeps Q loop open naturally (pricingHint, marketChannel, executionConstraints, …).
+ * Does NOT re-open closed critical viability or validationTestability.
+ */
+export const REFINEMENT_DEPTH_GAP_KEYS = [
+  'marketChannel',
+  'marketSizeEvidence',
+  'pricingHint',
+  'executionConstraints',
+  'revenueModel',
+] as const;
+
+export type RefinementDepthGapKey = (typeof REFINEMENT_DEPTH_GAP_KEYS)[number];
+
+function analysisReady(living: LivingUnderstandingState): boolean {
+  return (
+    listAnalysisBlockingGaps(living).length === 0 &&
+    !living.claims.some((c) => c.status === 'contradiction')
+  );
+}
+
+/** Next partial-gap ask when critical viability is closed — null when depth exhausted. */
+export function selectRefinementGapAfterAnalysisReady(
+  living: LivingUnderstandingState,
+  options?: { excludeGaps?: Set<string>; answeredFactGaps?: Set<string> },
+): AdaptiveGapCandidate | null {
+  if (!analysisReady(living)) return null;
+
+  const candidates = selectAdaptiveNextGaps(living, options).filter((c) => {
+    if (ADAPTIVE_CRITICAL_GAP_KEYS.includes(c.fieldKey as AdaptiveCriticalGapKey)) {
+      return false;
+    }
+    if (c.fieldKey === 'validationTestability' && isValidationTestabilityClosed(living)) {
+      return false;
+    }
+    return (
+      REFINEMENT_DEPTH_GAP_KEYS.includes(c.fieldKey as RefinementDepthGapKey) ||
+      c.score >= 20_000
+    );
+  });
+
+  return candidates[0] ?? null;
+}
+
 /** Critical keys still lacking USER_CONFIRMED. */
 export function listUnconfirmedCriticalGaps(
   living: LivingUnderstandingState,

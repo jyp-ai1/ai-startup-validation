@@ -30,7 +30,10 @@ import {
   resolveNextIssueByMissingField,
   resolvePreservedGapAfterMeta,
 } from '../resolve-missing-field-priority';
-import { selectTopAdaptiveGap } from '../adaptive-question-select';
+import {
+  selectRefinementGapAfterAnalysisReady,
+  selectTopAdaptiveGap,
+} from '../adaptive-question-select';
 import {
   emptyConversationMemory,
   upsertConfirmedFact,
@@ -1196,5 +1199,136 @@ describe('Loop 3 vNext — gate · first correction conflict · relevance hold',
     const decision = decideNextQuestion({ living, turns, memory });
     expect(decision?.targetGap).toBe('validationTestability');
     expect(decision?.reframed).toBe(true);
+  });
+});
+
+describe('Loop 4 vNext — post-Analysis Ready depth follow-ups', () => {
+  const analysisReadyTurns: AiPmLoopTurn[] = [
+    {
+      issueId: 'customer_definition',
+      answer: '방한 FIT',
+      appliedAt: '1',
+      semanticFactKey: 'customer',
+      semanticFactKeys: ['customer'],
+      intent: 'business_fact',
+      targetGap: 'customerPersona',
+    },
+    {
+      issueId: 'problem_definition',
+      answer: '맞춤 일정 불가',
+      appliedAt: '2',
+      semanticFactKey: 'problem',
+      semanticFactKeys: ['problem'],
+      intent: 'business_fact',
+      targetGap: 'problemJtbd',
+    },
+    {
+      issueId: 'bm_design',
+      answer: '관광객 결제',
+      appliedAt: '3',
+      semanticFactKey: 'buyer',
+      semanticFactKeys: ['buyer'],
+      intent: 'business_fact',
+      targetGap: 'payer',
+    },
+    {
+      issueId: 'competitor_analysis',
+      answer: '클룩',
+      appliedAt: '4',
+      semanticFactKey: 'competitor',
+      semanticFactKeys: ['competitor'],
+      intent: 'business_fact',
+      targetGap: 'alternativesCompetitors',
+    },
+    {
+      issueId: 'competitor_analysis',
+      answer: '실시간 맞춤',
+      appliedAt: '5',
+      semanticFactKey: 'differentiation',
+      semanticFactKeys: ['differentiation'],
+      intent: 'business_fact',
+      targetGap: 'differentiationVsAlternatives',
+    },
+    {
+      issueId: 'competitor_analysis',
+      answer: '맞춤 일정이 없으면 동선 낭비가 커서 고객이 예약 전에 차이를 체감합니다',
+      appliedAt: '6',
+      semanticFactKey: 'diffRelevance',
+      semanticFactKeys: ['diffRelevance'],
+      intent: 'business_fact',
+      targetGap: 'validationTestability',
+    },
+    {
+      issueId: 'problem_definition',
+      answer: '관심사·동선 맞춤 일정과 현지인 동행을 한 번에 제공합니다',
+      appliedAt: '7',
+      semanticFactKey: 'business',
+      semanticFactKeys: ['business'],
+      intent: 'business_fact',
+      targetGap: 'solution',
+    },
+    {
+      issueId: 'bm_design',
+      answer: '수수료 10~15%',
+      appliedAt: '8',
+      semanticFactKey: 'revenue',
+      semanticFactKeys: ['revenue'],
+      intent: 'business_fact',
+      targetGap: 'revenueModel',
+    },
+    {
+      issueId: 'competitor_analysis',
+      answer: '파트너 네트워크 방어력',
+      appliedAt: '9',
+      semanticFactKey: 'business',
+      semanticFactKeys: ['business'],
+      intent: 'business_fact',
+      targetGap: 'executionConstraints',
+    },
+  ];
+
+  it('selectRefinementGapAfterAnalysisReady returns marketChannel when criticals closed', () => {
+    const turns = analysisReadyTurns;
+    const memory = memoryFromTurns(turns);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns,
+      memory,
+    });
+    expect(evaluateAnalysisReady(living).analysisReady).toBe(true);
+    const refinement = selectRefinementGapAfterAnalysisReady(living, {
+      answeredFactGaps: getAnsweredTargetGaps(turns),
+    });
+    expect(refinement).not.toBeNull();
+    expect(['marketChannel', 'marketSizeEvidence', 'pricingHint', 'executionConstraints']).toContain(
+      refinement!.fieldKey,
+    );
+  });
+
+  it('resolveNextLoopIssue keeps asking partial gaps when Analysis Ready', () => {
+    const turns = analysisReadyTurns.slice(0, 8);
+    const memory = memoryFromTurns(turns);
+    const understanding = buildBusinessUnderstanding(SEED);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding,
+      turns,
+      memory,
+    });
+    expect(criticalGapsBlockAnalysis(living)).toBe(false);
+
+    const loop = {
+      ...createInitialAiPmLoopState(),
+      phase: 'answer' as const,
+      currentIssueId: 'bm_design' as const,
+      turns,
+    };
+    const next = resolveNextLoopIssue(understanding, loop, {
+      documentText: SEED,
+      memory,
+      turns,
+    });
+    expect(next).not.toBeNull();
   });
 });

@@ -344,6 +344,11 @@ async function ensureAnswerBox(page: Page): Promise<boolean> {
     }
     box = page.locator('textarea').last();
   }
+  if (!(await box.isVisible({ timeout: 2_000 }).catch(() => false))) {
+    if (meaningfulCounter < 15 && (await tryContinueRefining(page))) {
+      return page.locator('textarea').last().isVisible({ timeout: 5_000 }).catch(() => false);
+    }
+  }
   return box.isVisible({ timeout: 8_000 }).catch(() => false);
 }
 
@@ -784,6 +789,33 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
       if (await isFinalReviewSurface(page)) {
         if (meaningfulCounter < 15 && (await tryContinueRefining(page))) continue;
         break;
+      }
+    }
+
+    // Loop 4 — drain partial-gap follow-ups via continue-refining if loop closed early
+    let drain = 0;
+    while (
+      meaningfulCounter < 15 &&
+      drain < 8 &&
+      !(await page.locator('textarea').last().isVisible({ timeout: 1_500 }).catch(() => false))
+    ) {
+      if (!(await tryContinueRefining(page))) break;
+      drain += 1;
+      while (
+        meaningfulCounter < MAX_MEANINGFUL_TURNS &&
+        (await ensureAnswerBox(page))
+      ) {
+        if (await isFinalReviewSurface(page)) break;
+        const q = await textOrEmpty(page, 'surface-question');
+        if (!q.replace(/\s+/g, ' ').trim()) break;
+        const row = await answerTurn(
+          page,
+          `11-refine-drain-l${drain}`,
+          `11-refine-drain-l${drain}.png`,
+          undefined,
+          ['continue-refining depth drain'],
+        );
+        if (!row) break;
       }
     }
 

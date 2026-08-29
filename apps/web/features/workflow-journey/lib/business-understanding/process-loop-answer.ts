@@ -13,7 +13,10 @@ import {
   buildLivingUnderstandingState,
   type LivingUnderstandingState,
 } from './living-understanding-state';
-import { selectTopAdaptiveGap } from './adaptive-question-select';
+import {
+  selectRefinementGapAfterAnalysisReady,
+  selectTopAdaptiveGap,
+} from './adaptive-question-select';
 import { getAnsweredTargetGaps } from './resolve-missing-field-priority';
 import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
 import type { ThinkingStageId } from './thinking-stages';
@@ -139,9 +142,10 @@ export function reopenAiPmLoopForRefinement(input: RunLoopProcessingInput): AiPm
     resolvedIssueIds: getResolvedIssueIds(loop),
   });
 
-  const top = selectTopAdaptiveGap(living, {
-    answeredFactGaps: getAnsweredTargetGaps(loop.turns),
-  });
+  const answeredFactGaps = getAnsweredTargetGaps(loop.turns);
+  const top =
+    selectRefinementGapAfterAnalysisReady(living, { answeredFactGaps }) ??
+    selectTopAdaptiveGap(living, { answeredFactGaps });
   const fallbackIssue =
     [...loop.turns]
       .reverse()
