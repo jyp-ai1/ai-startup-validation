@@ -27,23 +27,35 @@
 | `workspace-ai-pm-loop-panel.tsx` | `useEffect` re-sync `questionOverride` from `resolveWrongSlotQuestionOverride(turns)` on every turn change; re-pin in `finishProcessing`; `wrong_slot` exempt from `overrideStale`; defer clear until post-append re-resolve; `wrong_slot` override authoritative on submit |
 | `resolve-missing-field-priority.ts` | `answeredGaps.delete('problemJtbd')` + `isGapSatisfiedInMemory` guard for P0-2 wrong-slot persona merge |
 
+## Loop 9d fix (@ ba2b25c live FAIL)
+
+**Root cause:** Append path poisoned `targetGap` with ranked gap (`problemJtbd`/`solution`) while UI showed persona/problem ask. `detectWrongSlotMergeContext` credited wrong-slot delta (closedGap correct) but `resolveWrongSlotQuestionAnchor` required `askedGap === customerPersona|problemJtbd` — anchor returned null → ranked display won post-`finishProcessing`.
+
+| File | Change |
+|------|--------|
+| `wrong-slot-priority.ts` | `resolveWrongSlotReaskGap()` maps `closedGap → re-ask gap`; anchor uses closed-gap SoT (poisoned askedGap tolerated) |
+| `resolve-missing-field-priority.ts` | Unified reask boost + `answeredGaps.delete(reaskGap)` via `resolveWrongSlotReaskGap` |
+| `resolve-asked-target-gap.ts` | `inferAskedTargetGapFromTurn` prefers `askedQuestionText` before poisoned `targetGap` |
+| `workspace-ai-pm-loop-types.ts` | `askedQuestionText` on turn (display SoT at submit) |
+| `workspace-ai-pm-loop-panel.tsx` | Persist `askedQuestionText`; never clear `wrong_slot` override on append; atomic finishProcessing issue patch |
+
 ## Panel path (actual next-Q SoT)
 
 ```
 submitAnswer
   → resolveAskedTargetGapForAppend (questionText first)
-  → appendAiPmLoopTurn(targetGap)
+  → appendAiPmLoopTurn(targetGap + askedQuestionText)
   → resolveWrongSlotQuestionOverride(projectedTurns) → setQuestionOverride(wrong_slot)
   → startProcessing → finishProcessing
-  → resolveWrongSlotQuestionOverride(turns) → re-pin override + currentIssueId
+  → resolveWrongSlotQuestionOverride(turns) → re-pin override + currentIssueId (single sync)
 finishProcessing → phase issue → whyThisQuestionNow useMemo
-  → getWhyThisQuestionNow → resolveWrongSlotQuestionOverride (turns SoT)
+  → resolveWrongSlotQuestionOverride(freshTurns) FIRST (turns SoT, not ranked)
   → useEffect sync override from turns (survives remount)
 ```
 
 ## Unit verification
 
-- **52/52 PASS** incl. Loop 9c multi-hop chain (T12 persona+diffRelevance → persona re-ask → T13 problem+persona → problem re-ask)
+- **54/54 PASS** incl. Loop 9d poisoned `targetGap` (P0-1 problemJtbd→persona, P0-2 solution→problem)
 
 ## Live verification
 
@@ -52,10 +64,11 @@ finishProcessing → phase issue → whyThisQuestionNow useMemo
 | `a9ebd63` (baseline) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 2 | pre-Loop 9 |
 | `4ad9e76` (Loop 9a) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 0 | append fix alone insufficient |
 | `0dc4ba9` (Loop 9b) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 0 | T11→T12 persona pin ✓; multi-hop chain broken |
-| Loop 9c | _pending live capture_ | _pending live capture_ | — | turns-derived override persistence |
+| `ba2b25c` (Loop 9c) | **FAIL** → `problemJtbd` | **FAIL** → `solution` | 0 | 52/52 unit PASS; delta detects wrong-slot but display ranks problem/solution |
+| Loop 9d | pending capture | pending capture | — | poisoned-targetGap anchor + askedQuestionText SoT |
 
-## Verdict (@ `0dc4ba9` live — Loop 9b)
+## Verdict (@ `ba2b25c` live — Loop 9c)
 
 **CPO PASS: No** — P0-1 AND P0-2 remain live FAIL.
 
-**Loop 9c target:** sustain wrong_slot override across consecutive mergeable appends until on-slot answer closes the asked gap.
+**Loop 9d shipped:** closed-gap re-ask anchor bypasses poisoned `targetGap`; display SoT from turns on every render. **Pending:** one live capture post-deploy.

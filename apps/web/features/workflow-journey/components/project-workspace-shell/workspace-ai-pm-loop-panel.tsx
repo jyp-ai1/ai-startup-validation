@@ -541,9 +541,6 @@ export function WorkspaceAiPmLoopPanel({
       });
 
     const next = applyLoopProcessingTransition(result, projectId, canComplete);
-    syncState(next);
-
-    // Loop 9c — re-pin wrong_slot override after processing (survives remount / reanalyze)
     const wrongSlotAfter = resolveWrongSlotQuestionOverride(next.turns);
     if (wrongSlotAfter) {
       setQuestionOverride({
@@ -552,11 +549,13 @@ export function WorkspaceAiPmLoopPanel({
         whyNow: wrongSlotAfter.whyNow ?? wrongSlotAfter.rationale,
         reason: 'wrong_slot',
       });
-      if (wrongSlotAfter.issueId !== next.currentIssueId) {
-        syncState(
-          patchAiPmLoopState({ currentIssueId: wrongSlotAfter.issueId }, projectId),
-        );
-      }
+      syncState(
+        wrongSlotAfter.issueId !== next.currentIssueId
+          ? patchAiPmLoopState({ currentIssueId: wrongSlotAfter.issueId }, projectId)
+          : next,
+      );
+    } else {
+      syncState(next);
     }
 
     if (next.phase === 'complete') onLoopComplete?.();
@@ -1024,6 +1023,7 @@ export function WorkspaceAiPmLoopPanel({
       intent: semantic.intent,
       whyNow: causality.whyNow,
       targetGap: askedGap,
+      askedQuestionText: displayedQuestionText?.trim() || undefined,
       causality,
       sourceEvidence: causality.sourceEvidence,
       previousUnderstanding: causality.previousUnderstanding,
@@ -1074,7 +1074,7 @@ export function WorkspaceAiPmLoopPanel({
         syncState(loadAiPmLoopState(projectId));
       }
     } else {
-      setQuestionOverride(null);
+      setQuestionOverride((prev) => (prev?.reason === 'wrong_slot' ? prev : null));
     }
     const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, {
       semantic,

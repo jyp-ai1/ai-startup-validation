@@ -18,6 +18,9 @@ function cleanGap(value: string | null | undefined): string | null {
 
 /** Infer asked gap from a persisted turn (legacy / production shapes missing targetGap). */
 export function inferAskedTargetGapFromTurn(turn: AiPmLoopTurn): string | null {
+  const fromStoredQuestion = inferTargetGapFromQuestionText(turn.askedQuestionText);
+  if (fromStoredQuestion) return fromStoredQuestion;
+
   const direct = cleanGap(turn.targetGap);
   if (direct) return direct;
 

@@ -27,6 +27,8 @@ export type AiPmLoopTurn = {
   whyNow?: string;
   /** P0-4 — Living gap fieldKey aligned with whyNow */
   targetGap?: string;
+  /** Loop 9d — visible question at submit (display SoT when targetGap poisoned) */
+  askedQuestionText?: string;
   /** Core v4/v5 — brief AI understanding delta shown before next Q (must be populated) */
   understandingDelta?: string;
   /** Core v5 — full question causality for the ask that produced this turn */

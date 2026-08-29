@@ -39,6 +39,7 @@ import {
   PERSONA_WRONG_SLOT_BOOST,
   PROBLEM_WRONG_SLOT_BOOST,
   resolveWrongSlotQuestionAnchor,
+  resolveWrongSlotReaskGap,
   shouldBlockSolutionForOpenProblem,
   shouldPrioritizePersonaAfterWrongSlotRelevance,
   shouldPrioritizeProblemAfterWrongSlotPersona,
@@ -267,12 +268,9 @@ export function resolveMissingFieldPriorities(
     answeredGaps.add(wrongSlotContext.closedGap);
   }
   // Loop 6e — prior partial persona turns must not suppress wrong-slot persona re-ask
-  if (shouldPrioritizePersonaAfterWrongSlotRelevance(wrongSlotContext)) {
-    answeredGaps.delete('customerPersona');
-  }
-  // Loop 9c — prior customer credit must not suppress wrong-slot problem re-ask
-  if (shouldPrioritizeProblemAfterWrongSlotPersona(wrongSlotContext)) {
-    answeredGaps.delete('problemJtbd');
+  const wrongSlotReaskGap = resolveWrongSlotReaskGap(wrongSlotContext);
+  if (wrongSlotReaskGap) {
+    answeredGaps.delete(wrongSlotReaskGap);
   }
 
   const scored = new Map<string, MissingFieldPriority>();
@@ -618,19 +616,12 @@ export function resolveMissingFieldPriorities(
     }
   }
 
-  if (shouldPrioritizePersonaAfterWrongSlotRelevance(wrongSlotContext)) {
-    const personaIdx = ranked.findIndex((r) => r.targetGap === 'customerPersona');
-    if (personaIdx > 0) {
-      const [persona] = ranked.splice(personaIdx, 1);
-      ranked.unshift(persona);
-    }
-  }
-
-  if (shouldPrioritizeProblemAfterWrongSlotPersona(wrongSlotContext)) {
-    const problemIdx = ranked.findIndex((r) => r.targetGap === 'problemJtbd');
-    if (problemIdx > 0) {
-      const [problem] = ranked.splice(problemIdx, 1);
-      ranked.unshift(problem);
+  const reaskGapForRank = resolveWrongSlotReaskGap(wrongSlotContext);
+  if (reaskGapForRank) {
+    const reaskIdx = ranked.findIndex((r) => r.targetGap === reaskGapForRank);
+    if (reaskIdx > 0) {
+      const [reask] = ranked.splice(reaskIdx, 1);
+      ranked.unshift(reask);
     }
   }
 

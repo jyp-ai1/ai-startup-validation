@@ -234,6 +234,23 @@ export type WrongSlotQuestionAnchor = {
 };
 
 /**
+ * Loop 9d — map wrong-slot closed gap → gap that must be re-asked on display.
+ * Covers poisoned `targetGap` on append (ranked gap stored while UI showed anchor ask).
+ */
+export function resolveWrongSlotReaskGap(ctx: WrongSlotMergeContext | null): string | null {
+  if (!ctx) return null;
+  if (shouldPrioritizePersonaAfterWrongSlotRelevance(ctx)) return 'customerPersona';
+  if (shouldPrioritizeProblemAfterWrongSlotPersona(ctx)) return 'problemJtbd';
+  if (ctx.closedGap === 'validationTestability' && !ctx.segmentExplicitlyNarrowed) {
+    return 'customerPersona';
+  }
+  if (ctx.closedGap === 'customerPersona') {
+    return 'problemJtbd';
+  }
+  return null;
+}
+
+/**
  * Loop 8 — definitive wrong-slot next gap; bypasses ranked[] / answeredGaps skip.
  * Used by getWhyThisQuestionNow, decideNextQuestion, resolveNextIssueByMissingField.
  */
@@ -241,23 +258,16 @@ export function resolveWrongSlotQuestionAnchor(
   turns: AiPmLoopTurn[] | undefined,
 ): WrongSlotQuestionAnchor | null {
   const ctx = detectWrongSlotMergeContext(turns);
-  if (shouldPrioritizePersonaAfterWrongSlotRelevance(ctx)) {
-    const binding = resolveGapQuestionBinding('customerPersona');
-    return {
-      targetGap: 'customerPersona',
-      issueId: binding.issueId,
-      score: PERSONA_WRONG_SLOT_BOOST,
-      wrongSlotContext: ctx!,
-    };
-  }
-  if (shouldPrioritizeProblemAfterWrongSlotPersona(ctx)) {
-    const binding = resolveGapQuestionBinding('problemJtbd');
-    return {
-      targetGap: 'problemJtbd',
-      issueId: binding.issueId,
-      score: PROBLEM_WRONG_SLOT_BOOST,
-      wrongSlotContext: ctx!,
-    };
-  }
-  return null;
+  const reaskGap = resolveWrongSlotReaskGap(ctx);
+  if (!ctx || !reaskGap) return null;
+
+  const boost =
+    reaskGap === 'customerPersona' ? PERSONA_WRONG_SLOT_BOOST : PROBLEM_WRONG_SLOT_BOOST;
+  const binding = resolveGapQuestionBinding(reaskGap);
+  return {
+    targetGap: reaskGap,
+    issueId: binding.issueId,
+    score: boost,
+    wrongSlotContext: ctx,
+  };
 }
