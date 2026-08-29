@@ -40,6 +40,7 @@ import {
   shouldBlockSolutionForOpenProblem,
   shouldPrioritizePersonaAfterWrongSlotRelevance,
   shouldPrioritizeProblemAfterWrongSlotPersona,
+  PROBLEM_WRONG_SLOT_BOOST,
 } from './wrong-slot-priority';
 
 export type MissingFieldPriority = {
@@ -722,6 +723,37 @@ export function getTopGapPriority(
 }
 
 /**
+ * Loop 6f — production SoT override when wrong-slot context is definitive.
+ * Bypasses ranked[] / answeredGaps skip (prior edit may exclude persona from ranked).
+ */
+function resolveWrongSlotQuestionOverride(
+  turns: AiPmLoopTurn[] | undefined,
+): MissingFieldPriority | null {
+  const ctx = detectWrongSlotMergeContext(turns);
+  if (shouldPrioritizePersonaAfterWrongSlotRelevance(ctx)) {
+    const binding = resolveGapQuestionBinding('customerPersona');
+    return priorityFromGap({
+      targetGap: 'customerPersona',
+      issueId: binding.issueId,
+      rationale: binding.whyNow,
+      score: PERSONA_WRONG_SLOT_BOOST,
+      wrongSlotContext: ctx,
+    });
+  }
+  if (shouldPrioritizeProblemAfterWrongSlotPersona(ctx)) {
+    const binding = resolveGapQuestionBinding('problemJtbd');
+    return priorityFromGap({
+      targetGap: 'problemJtbd',
+      issueId: binding.issueId,
+      rationale: binding.whyNow,
+      score: PROBLEM_WRONG_SLOT_BOOST,
+      wrongSlotContext: ctx,
+    });
+  }
+  return null;
+}
+
+/**
  * CPO-verifiable "WHY THIS QUESTION NOW" for the active (or top) issue.
  * whyNow and questionText share targetGap (P0-4).
  * Core v4 — prefer top living gap over sticky issue when gap already answered.
@@ -732,6 +764,9 @@ export function getWhyThisQuestionNow(
   options?: PriorityOptions & { issueId?: AiPmLoopIssueId | null; targetGap?: string | null },
 ): MissingFieldPriority | null {
   const turns = options?.turns ?? loop.turns;
+  const wrongSlotOverride = resolveWrongSlotQuestionOverride(turns);
+  if (wrongSlotOverride) return wrongSlotOverride;
+
   const wrongSlotContext = detectWrongSlotMergeContext(turns);
   const ranked = resolveMissingFieldPriorities(understanding, loop, options);
   if (ranked.length === 0) return null;

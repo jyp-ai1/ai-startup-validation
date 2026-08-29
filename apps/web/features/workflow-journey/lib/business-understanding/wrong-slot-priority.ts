@@ -84,10 +84,21 @@ function closedGapsFromTurn(turn: AiPmLoopTurn, keys: string[]): string[] {
 
 /** Resolve semantic fact keys — stored keys or live interpret fallback (production turns). */
 function resolveSemanticKeys(turn: AiPmLoopTurn): string[] {
+  const answer = (turn.answer ?? '').trim();
+  const askedGap = turn.targetGap?.trim() ?? '';
+  // Loop 6f — stored customer key on persona ask may be relevance wrong-slot (live BANK.diffRelevance)
+  if (
+    askedGap === 'customerPersona' &&
+    answer.length >= 2 &&
+    hasDiffRelevanceEvidence(answer) &&
+    /(체감|예약\s*전|차이|동선|왜\s*중요|관련성)/i.test(answer) &&
+    !/(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행)/i.test(answer)
+  ) {
+    return ['diffRelevance'];
+  }
   const stored = semanticKeys(turn);
   if (stored.length > 0) return stored;
-  const answer = (turn.answer ?? '').trim();
-  if (answer.length < 2 || !turn.targetGap?.trim()) return [];
+  if (answer.length < 2 || !askedGap) return [];
   const interpreted = interpretAnswerSemantics({
     answer,
     askedIssueId: turn.issueId,
