@@ -192,7 +192,6 @@ export function WorkspaceAiPmLoopPanel({
   );
   const activeIssueId = loopState.currentIssueId ?? nextIssue;
   const lastTurn = loopState.turns.at(-1) ?? null;
-  const lastTurn = loopState.turns.at(-1) ?? null;
   const whyThisQuestionNow = useMemo(() => {
     if (!activeIssueId) return null;
     const freshTurns = loadAiPmLoopState(projectId).turns;
