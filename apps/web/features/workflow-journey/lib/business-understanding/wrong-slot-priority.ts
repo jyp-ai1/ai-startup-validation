@@ -102,7 +102,7 @@ function resolveSemanticKeys(turn: AiPmLoopTurn): string[] {
   const interpreted = interpretAnswerSemantics({
     answer,
     askedIssueId: turn.issueId,
-    askedTargetGap: turn.targetGap.trim(),
+    askedTargetGap: askedGap,
   });
   if (!interpreted.mergeable) return [];
   if (interpreted.facts.length > 0) return interpreted.facts.map((f) => f.key);
