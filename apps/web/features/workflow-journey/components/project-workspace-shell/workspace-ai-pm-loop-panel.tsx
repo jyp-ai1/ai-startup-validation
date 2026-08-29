@@ -154,6 +154,11 @@ export function WorkspaceAiPmLoopPanel({
   const processingTimerRef = useRef<number | null>(null);
   const finishProcessingRef = useRef<() => void>(() => {});
   const processingFinishedRef = useRef(false);
+  /** Loop 9c — last rendered ask surface (survives brief whyThisQuestionNow null during phase flip) */
+  const lastAskSurfaceRef = useRef<{ targetGap: string | null; questionText: string | null }>({
+    targetGap: null,
+    questionText: null,
+  });
 
   const documentText = useMemo(() => loadWorkspaceDocumentText(projectId), [projectId, understanding]);
   const documentTrust = useMemo(() => getWorkspaceDocumentTrust(documentText), [documentText]);
@@ -352,6 +357,12 @@ export function WorkspaceAiPmLoopPanel({
       surface = {
         ...surface,
         question: { ...surface.question, text: gapQuestionText.trim() },
+      };
+    }
+    if (loopState.phase === 'answer' && (targetGap || gapQuestionText)) {
+      lastAskSurfaceRef.current = {
+        targetGap,
+        questionText: gapQuestionText ?? surface.question.text ?? null,
       };
     }
     return surface;
@@ -803,8 +814,10 @@ export function WorkspaceAiPmLoopPanel({
     const askedKey = factKeyForIssue(issueId);
     const existingFact = askedKey ? getFact(memory, askedKey)?.value ?? null : null;
 
-    const displayedGap = whyThisQuestionNow?.targetGap ?? null;
-    const displayedQuestionText = whyThisQuestionNow?.questionText ?? null;
+    const displayedGap =
+      whyThisQuestionNow?.targetGap ?? lastAskSurfaceRef.current.targetGap ?? null;
+    const displayedQuestionText =
+      whyThisQuestionNow?.questionText ?? lastAskSurfaceRef.current.questionText ?? null;
     // Loop 9c — wrong_slot override is authoritative for append; else match displayed gap only
     const activeOverrideGap =
       questionOverride?.reason === 'wrong_slot'
@@ -826,7 +839,7 @@ export function WorkspaceAiPmLoopPanel({
       })?.targetGap,
     });
     const visibleGap = inferTargetGapFromQuestionText(displayedQuestionText);
-    const resolvedAskedGap = visibleGap ?? askedTargetGap;
+    let resolvedAskedGap = visibleGap ?? askedTargetGap;
 
     const semantic = interpretAnswerSemantics({
       answer: trimmed,
@@ -835,6 +848,22 @@ export function WorkspaceAiPmLoopPanel({
       existingFactsByKey,
       askedTargetGap: resolvedAskedGap,
     });
+
+    // Loop 9c — never persist validationTestability when visible ask was persona + diffRelevance
+    if (
+      semantic.factKey === 'diffRelevance' &&
+      semantic.mergeable &&
+      inferTargetGapFromQuestionText(displayedQuestionText) === 'customerPersona'
+    ) {
+      resolvedAskedGap = 'customerPersona';
+    }
+    if (
+      semantic.factKey === 'customer' &&
+      semantic.mergeable &&
+      inferTargetGapFromQuestionText(displayedQuestionText) === 'problemJtbd'
+    ) {
+      resolvedAskedGap = 'problemJtbd';
+    }
 
     // Why / mid-judgment — display only, never append Fact turn; reframe on return (W8)
     if (semantic.intent === 'why_meta' || semantic.intent === 'mid_judgment') {
