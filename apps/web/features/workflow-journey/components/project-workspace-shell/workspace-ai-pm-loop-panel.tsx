@@ -192,14 +192,16 @@ export function WorkspaceAiPmLoopPanel({
   );
   const activeIssueId = loopState.currentIssueId ?? nextIssue;
   const lastTurn = loopState.turns.at(-1) ?? null;
+  const lastTurn = loopState.turns.at(-1) ?? null;
   const whyThisQuestionNow = useMemo(() => {
     if (!activeIssueId) return null;
+    const freshTurns = loadAiPmLoopState(projectId).turns;
     const base = getWhyThisQuestionNow(understanding, loopState, {
       documentText: documentText ?? undefined,
       entities,
       memory: conversationMemory,
       analysisResultExists,
-      turns: loopState.turns,
+      turns: freshTurns,
       issueId: activeIssueId,
     });
     if (!base) return null;
@@ -505,12 +507,13 @@ export function WorkspaceAiPmLoopPanel({
       turns: loopState.turns,
       inFlightGap,
     });
+    const freshTurns = loadAiPmLoopState(projectId).turns;
     const top = getTopGapPriority(understanding, loopState, {
       documentText: documentText ?? undefined,
       entities,
       memory: conversationMemory,
       analysisResultExists,
-      turns: loopState.turns,
+      turns: freshTurns,
     });
     const prevQ = whyThisQuestionNow?.questionText ?? top?.questionText ?? null;
     const reframed = reframeQuestion({
@@ -790,12 +793,13 @@ export function WorkspaceAiPmLoopPanel({
         semantic.quality === 'PARTIAL' && whyThisQuestionNow?.targetGap
           ? whyThisQuestionNow.targetGap
           : null;
+      const freshTurns = loadAiPmLoopState(projectId).turns;
       const top = getTopGapPriority(understanding, loopState, {
         documentText: documentText ?? undefined,
         entities,
         memory: conversationMemory,
         analysisResultExists,
-        turns: loopState.turns,
+        turns: freshTurns,
       });
       const gap =
         preserveGap ??
@@ -912,6 +916,7 @@ export function WorkspaceAiPmLoopPanel({
       },
       projectId,
     );
+    syncState(loadAiPmLoopState(projectId));
     const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, {
       semantic,
       askedTargetGap: whyThisQuestionNow?.targetGap,
