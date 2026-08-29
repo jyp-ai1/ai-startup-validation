@@ -25,7 +25,7 @@ import {
   type AiPmLoopTurn,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { resolveNextLoopIssue } from '../../lib/business-understanding/resolve-ai-pm-priority-issue';
-import { getWhyThisQuestionNow, getTopGapPriority, resolvePreservedGapAfterMeta } from '../../lib/business-understanding/resolve-missing-field-priority';
+import { getWhyThisQuestionNow, resolvePreservedGapAfterMeta } from '../../lib/business-understanding/resolve-missing-field-priority';
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import { buildAiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
 import {
@@ -515,7 +515,7 @@ export function WorkspaceAiPmLoopPanel({
       inFlightGap,
     });
     const freshTurns = loadAiPmLoopState(projectId).turns;
-    const top = getTopGapPriority(understanding, loopState, {
+    const top = getWhyThisQuestionNow(understanding, loopState, {
       documentText: documentText ?? undefined,
       entities,
       memory: conversationMemory,
@@ -723,8 +723,8 @@ export function WorkspaceAiPmLoopPanel({
       issueId,
       whyTargetGap: whyThisQuestionNow?.targetGap,
       overrideTargetGap: questionOverride?.targetGap,
-      questionText: whyThisQuestionNow?.questionText,
-      fallbackTargetGap: getTopGapPriority(understanding, loopState, {
+      questionText: questionOverride?.questionText ?? whyThisQuestionNow?.questionText,
+      fallbackTargetGap: getWhyThisQuestionNow(understanding, loopState, {
         documentText: documentText ?? undefined,
         entities,
         memory: conversationMemory,
@@ -815,7 +815,7 @@ export function WorkspaceAiPmLoopPanel({
           ? whyThisQuestionNow.targetGap
           : null;
       const freshTurns = loadAiPmLoopState(projectId).turns;
-      const top = getTopGapPriority(understanding, loopState, {
+      const top = getWhyThisQuestionNow(understanding, loopState, {
         documentText: documentText ?? undefined,
         entities,
         memory: conversationMemory,

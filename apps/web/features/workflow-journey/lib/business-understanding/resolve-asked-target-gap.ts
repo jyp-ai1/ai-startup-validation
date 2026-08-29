@@ -36,14 +36,15 @@ export function resolveAskedTargetGapForAppend(input: {
   questionText?: string | null;
   fallbackTargetGap?: string | null;
 }): string {
-  const fromWhy = cleanGap(input.whyTargetGap);
-  if (fromWhy) return fromWhy;
-
+  // Loop 8 — override + visible ask beat stale whyTargetGap (live panel wrong-slot path)
   const fromOverride = cleanGap(input.overrideTargetGap);
   if (fromOverride) return fromOverride;
 
   const fromQuestion = inferTargetGapFromQuestionText(input.questionText);
   if (fromQuestion) return fromQuestion;
+
+  const fromWhy = cleanGap(input.whyTargetGap);
+  if (fromWhy) return fromWhy;
 
   const fromFallback = cleanGap(input.fallbackTargetGap);
   if (fromFallback) return fromFallback;

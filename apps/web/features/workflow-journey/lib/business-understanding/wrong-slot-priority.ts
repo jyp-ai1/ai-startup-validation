@@ -10,7 +10,7 @@ import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import { inferAskedTargetGapFromTurn } from './resolve-asked-target-gap';
 import { hasDiffRelevanceEvidence } from './understanding-contract';
 import type { LivingUnderstandingState } from './living-understanding-state';
-import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
+import type { AiPmLoopIssueId, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 const FACT_TO_GAP: Partial<Record<string, string>> = {
   buyer: 'payer',
@@ -215,3 +215,40 @@ export function shouldPrioritizeProblemAfterWrongSlotPersona(
 
 /** Score boost for problemJtbd after wrong-slot persona merge on problem ask. */
 export const PROBLEM_WRONG_SLOT_BOOST = 56_000;
+
+/** Loop 8 — shared SoT anchor before ranked gap selection (panel + engine). */
+export type WrongSlotQuestionAnchor = {
+  targetGap: string;
+  issueId: AiPmLoopIssueId;
+  score: number;
+  wrongSlotContext: WrongSlotMergeContext;
+};
+
+/**
+ * Loop 8 — definitive wrong-slot next gap; bypasses ranked[] / answeredGaps skip.
+ * Used by getWhyThisQuestionNow, decideNextQuestion, resolveNextIssueByMissingField.
+ */
+export function resolveWrongSlotQuestionAnchor(
+  turns: AiPmLoopTurn[] | undefined,
+): WrongSlotQuestionAnchor | null {
+  const ctx = detectWrongSlotMergeContext(turns);
+  if (shouldPrioritizePersonaAfterWrongSlotRelevance(ctx)) {
+    const binding = resolveGapQuestionBinding('customerPersona');
+    return {
+      targetGap: 'customerPersona',
+      issueId: binding.issueId,
+      score: PERSONA_WRONG_SLOT_BOOST,
+      wrongSlotContext: ctx!,
+    };
+  }
+  if (shouldPrioritizeProblemAfterWrongSlotPersona(ctx)) {
+    const binding = resolveGapQuestionBinding('problemJtbd');
+    return {
+      targetGap: 'problemJtbd',
+      issueId: binding.issueId,
+      score: PROBLEM_WRONG_SLOT_BOOST,
+      wrongSlotContext: ctx!,
+    };
+  }
+  return null;
+}

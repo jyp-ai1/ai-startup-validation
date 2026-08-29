@@ -36,11 +36,10 @@ import { hasDiffRelevanceEvidence } from './understanding-contract';
 import {
   buildDeltaAwareWhyNow,
   detectWrongSlotMergeContext,
-  PERSONA_WRONG_SLOT_BOOST,
+  resolveWrongSlotQuestionAnchor,
   shouldBlockSolutionForOpenProblem,
   shouldPrioritizePersonaAfterWrongSlotRelevance,
   shouldPrioritizeProblemAfterWrongSlotPersona,
-  PROBLEM_WRONG_SLOT_BOOST,
 } from './wrong-slot-priority';
 
 export type MissingFieldPriority = {
@@ -642,8 +641,13 @@ export function resolveNextIssueByMissingField(
 
   const memory = options?.memory ?? null;
   const turns = options?.turns ?? loop.turns;
+  // Loop 8 — wrong-slot re-ask anchors issue before ranked yield (live panel path)
+  const wrongSlotAnchor = resolveWrongSlotQuestionAnchor(turns);
+  if (wrongSlotAnchor) return wrongSlotAnchor.issueId;
+
   const answeredGaps = getAnsweredTargetGaps(turns);
   const ranked = resolveMissingFieldPriorities(understanding, loop, options);
+  const wrongSlotContext = detectWrongSlotMergeContext(turns);
 
   if (
     loop.currentIssueId &&
@@ -702,6 +706,19 @@ export function resolveNextIssueByMissingField(
           stillOpenForIssue.targetGap === lastGap &&
           top.targetGap !== lastGap
         ) {
+          // Loop 8 — do not yield away from wrong-slot asked gap still open
+          if (
+            shouldPrioritizePersonaAfterWrongSlotRelevance(wrongSlotContext) &&
+            lastGap === 'customerPersona'
+          ) {
+            return loop.currentIssueId;
+          }
+          if (
+            shouldPrioritizeProblemAfterWrongSlotPersona(wrongSlotContext) &&
+            lastGap === 'problemJtbd'
+          ) {
+            return loop.currentIssueId;
+          }
           return top.issueId;
         }
         return loop.currentIssueId;
@@ -718,39 +735,31 @@ export function getTopGapPriority(
   loop: AiPmLoopState,
   options?: PriorityOptions,
 ): MissingFieldPriority | null {
+  const turns = options?.turns ?? loop.turns;
+  const wrongSlotOverride = resolveWrongSlotQuestionOverride(turns);
+  if (wrongSlotOverride) return wrongSlotOverride;
+
   const ranked = resolveMissingFieldPriorities(understanding, loop, options);
   return ranked[0] ?? null;
 }
 
 /**
- * Loop 6f — production SoT override when wrong-slot context is definitive.
+ * Loop 6f/8 — production SoT override when wrong-slot context is definitive.
  * Bypasses ranked[] / answeredGaps skip (prior edit may exclude persona from ranked).
  */
-function resolveWrongSlotQuestionOverride(
+export function resolveWrongSlotQuestionOverride(
   turns: AiPmLoopTurn[] | undefined,
 ): MissingFieldPriority | null {
-  const ctx = detectWrongSlotMergeContext(turns);
-  if (shouldPrioritizePersonaAfterWrongSlotRelevance(ctx)) {
-    const binding = resolveGapQuestionBinding('customerPersona');
-    return priorityFromGap({
-      targetGap: 'customerPersona',
-      issueId: binding.issueId,
-      rationale: binding.whyNow,
-      score: PERSONA_WRONG_SLOT_BOOST,
-      wrongSlotContext: ctx,
-    });
-  }
-  if (shouldPrioritizeProblemAfterWrongSlotPersona(ctx)) {
-    const binding = resolveGapQuestionBinding('problemJtbd');
-    return priorityFromGap({
-      targetGap: 'problemJtbd',
-      issueId: binding.issueId,
-      rationale: binding.whyNow,
-      score: PROBLEM_WRONG_SLOT_BOOST,
-      wrongSlotContext: ctx,
-    });
-  }
-  return null;
+  const anchor = resolveWrongSlotQuestionAnchor(turns);
+  if (!anchor) return null;
+  const binding = resolveGapQuestionBinding(anchor.targetGap);
+  return priorityFromGap({
+    targetGap: anchor.targetGap,
+    issueId: binding.issueId,
+    rationale: binding.whyNow,
+    score: anchor.score,
+    wrongSlotContext: anchor.wrongSlotContext,
+  });
 }
 
 /**

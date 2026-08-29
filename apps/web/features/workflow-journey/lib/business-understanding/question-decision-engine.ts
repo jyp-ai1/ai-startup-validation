@@ -19,6 +19,7 @@ import { hasDiffRelevanceEvidence } from './understanding-contract';
 import {
   buildDeltaAwareWhyNow,
   detectWrongSlotMergeContext,
+  resolveWrongSlotQuestionAnchor,
   shouldBlockSolutionForOpenProblem,
   shouldPrioritizePersonaAfterWrongSlotRelevance,
 } from './wrong-slot-priority';
@@ -229,6 +230,49 @@ export function decideNextQuestion(input: {
   });
   const answered = answeredTargetGaps(input.turns);
   const wrongSlotContext = detectWrongSlotMergeContext(input.turns);
+
+  // Loop 8 — wrong-slot SoT BEFORE ranked selection (mirrors live panel getWhyThisQuestionNow)
+  const wrongSlotAnchor = resolveWrongSlotQuestionAnchor(input.turns);
+  if (wrongSlotAnchor) {
+    const binding = resolveGapQuestionBinding(wrongSlotAnchor.targetGap);
+    const priorAsks = countUnclosedGapAsks(input.turns, wrongSlotAnchor.targetGap);
+    const prevText =
+      input.previousQuestionText?.trim() ||
+      lastAskTextForGap(input.turns, wrongSlotAnchor.targetGap) ||
+      (priorAsks > 0 ? binding.questionText : null);
+    let questionText = binding.questionText;
+    let whyNow = buildDeltaAwareWhyNow({
+      targetGap: wrongSlotAnchor.targetGap,
+      baseWhyNow: whyNowForGapField(wrongSlotAnchor.targetGap) || binding.whyNow,
+      wrongSlotContext: wrongSlotAnchor.wrongSlotContext,
+    });
+    let reframed = false;
+    if (priorAsks > 0 || (prevText && isSameMeaningQuestion(prevText, binding.questionText))) {
+      const reframedQ = reframeQuestion({
+        targetGap: wrongSlotAnchor.targetGap,
+        living: input.living,
+        reason: 'adaptive',
+        previousQuestionText: prevText ?? binding.questionText,
+      });
+      questionText = reframedQ.questionText;
+      whyNow = buildDeltaAwareWhyNow({
+        targetGap: wrongSlotAnchor.targetGap,
+        baseWhyNow: reframedQ.whyNow,
+        wrongSlotContext: wrongSlotAnchor.wrongSlotContext,
+      });
+      reframed = true;
+    }
+    return {
+      targetGap: wrongSlotAnchor.targetGap,
+      issueId: binding.issueId,
+      questionText,
+      whyNow,
+      rationale: binding.whyNow,
+      score: wrongSlotAnchor.score,
+      reframed,
+      excludedGaps: [...exclude],
+    };
+  }
 
   // Loop 3 — gate CANNOT open until relevance closed; always re-ask with reframe
   if (
