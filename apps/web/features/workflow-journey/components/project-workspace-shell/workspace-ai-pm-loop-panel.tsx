@@ -195,10 +195,17 @@ export function WorkspaceAiPmLoopPanel({
   const whyThisQuestionNow = useMemo(() => {
     if (!activeIssueId) return null;
     const freshTurns = loadAiPmLoopState(projectId).turns;
+    const freshMemory = buildConversationMemoryFromSources({
+      projectId: projectId ?? 'default',
+      documentText: documentText ?? '',
+      turns: freshTurns,
+      entities,
+      previous: loadConversationMemory(projectId),
+    });
     const base = getWhyThisQuestionNow(understanding, loopState, {
       documentText: documentText ?? undefined,
       entities,
-      memory: conversationMemory,
+      memory: freshMemory,
       analysisResultExists,
       turns: freshTurns,
       issueId: activeIssueId,

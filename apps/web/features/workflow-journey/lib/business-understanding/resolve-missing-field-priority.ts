@@ -257,6 +257,10 @@ export function resolveMissingFieldPriorities(
   if (wrongSlotContext && wrongSlotContext.askedGap !== wrongSlotContext.closedGap) {
     answeredGaps.add(wrongSlotContext.closedGap);
   }
+  // Loop 6e — prior partial persona turns must not suppress wrong-slot persona re-ask
+  if (shouldPrioritizePersonaAfterWrongSlotRelevance(wrongSlotContext)) {
+    answeredGaps.delete('customerPersona');
+  }
 
   const scored = new Map<string, MissingFieldPriority>();
 
@@ -727,6 +731,8 @@ export function getWhyThisQuestionNow(
   loop: AiPmLoopState,
   options?: PriorityOptions & { issueId?: AiPmLoopIssueId | null; targetGap?: string | null },
 ): MissingFieldPriority | null {
+  const turns = options?.turns ?? loop.turns;
+  const wrongSlotContext = detectWrongSlotMergeContext(turns);
   const ranked = resolveMissingFieldPriorities(understanding, loop, options);
   if (ranked.length === 0) return null;
 
@@ -734,7 +740,24 @@ export function getWhyThisQuestionNow(
     return ranked.find((r) => r.targetGap === options.targetGap) ?? ranked[0] ?? null;
   }
 
-  const answeredGaps = getAnsweredTargetGaps(options?.turns ?? loop.turns);
+  // Loop 6e — wrong-slot causality overrides answered-gap skip (prior edit may have credited persona)
+  if (shouldPrioritizePersonaAfterWrongSlotRelevance(wrongSlotContext)) {
+    const persona =
+      ranked.find((r) => r.targetGap === 'customerPersona') ??
+      ranked[0];
+    if (persona?.targetGap === 'customerPersona') return persona;
+  }
+  if (shouldPrioritizeProblemAfterWrongSlotPersona(wrongSlotContext)) {
+    const problem =
+      ranked.find((r) => r.targetGap === 'problemJtbd') ??
+      ranked[0];
+    if (problem?.targetGap === 'problemJtbd') return problem;
+  }
+
+  const answeredGaps = getAnsweredTargetGaps(turns);
+  if (wrongSlotContext && wrongSlotContext.askedGap !== wrongSlotContext.closedGap) {
+    answeredGaps.add(wrongSlotContext.closedGap);
+  }
 
   // Core Final Stabilization — adaptive top gap is always SoT (no issue stickiness / fixed spine)
   const next = ranked.find((r) => !answeredGaps.has(r.targetGap)) ?? ranked[0]!;

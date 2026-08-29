@@ -1543,7 +1543,6 @@ describe('Loop 5 vNext — P0-1/P0-2 causality (T12/T13/T14)', () => {
     expect(ranked[0]?.targetGap).toBe('problemJtbd');
   });
 
-  /** Loop 6 — live transcript fidelity via interpretAnswerSemantics (not hard-coded keys). */
   it('P0-1 live interpret T12→T13: BANK.diffRelevance on persona ask', () => {
     const t12Answer =
       '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.';
@@ -1575,6 +1574,49 @@ describe('Loop 5 vNext — P0-1/P0-2 causality (T12/T13/T14)', () => {
     });
     expect(priority?.targetGap).toBe('customerPersona');
     expect(detectWrongSlotMergeContext(turns)?.closedGap).toBe('validationTestability');
+  });
+
+  it('P0-1 live interpret T12→T13: prior persona edit does not suppress wrong-slot re-ask', () => {
+    const editCorrection =
+      '정정합니다. 초기 타깃은 방한 FIT 외국인만이 아니라, 국내 MZ 개별 여행객도 포함합니다.';
+    const t12Answer =
+      '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.';
+    const t12Semantic = interpretAnswerSemantics({
+      answer: t12Answer,
+      askedIssueId: 'customer_definition',
+      askedTargetGap: 'customerPersona',
+    });
+    const turns: AiPmLoopTurn[] = [
+      ...prefixThroughPayer,
+      {
+        issueId: 'customer_definition',
+        answer: editCorrection,
+        appliedAt: '3b',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'correction',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '4',
+        semanticFactKey: t12Semantic.factKey,
+        semanticFactKeys: t12Semantic.facts.map((f) => f.key),
+        intent: t12Semantic.intent,
+        targetGap: 'customerPersona',
+      },
+    ];
+    expect(getAnsweredTargetGaps(turns).has('customerPersona')).toBe(true);
+    const memory = memoryFromTurns(turns);
+    const understanding = buildBusinessUnderstanding(SEED);
+    const loop = { ...createInitialAiPmLoopState(), turns, phase: 'answer' as const };
+    const priority = getWhyThisQuestionNow(understanding, loop, {
+      documentText: SEED,
+      memory,
+      turns,
+    });
+    expect(priority?.targetGap).toBe('customerPersona');
   });
 
   it('P0-2 live interpret T13→T14: BANK.customer on problem ask', () => {
