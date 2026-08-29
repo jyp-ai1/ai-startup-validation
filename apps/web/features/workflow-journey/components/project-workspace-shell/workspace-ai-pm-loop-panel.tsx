@@ -74,6 +74,7 @@ import { buildConversationalFinalOutput } from '../../lib/business-understanding
 import {
   type AnswerQuality,
 } from '../../lib/business-understanding/understanding-contract';
+import { hasDiffRelevanceEvidence } from '../../lib/business-understanding/understanding-contract';
 import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
 import { reframeQuestion, buildConflictClarifyQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
 import { resolveAskedTargetGapForAppend } from '../../lib/business-understanding/resolve-asked-target-gap';
@@ -513,10 +514,15 @@ export function WorkspaceAiPmLoopPanel({
         whyNow: wrongSlotAfter.whyNow ?? wrongSlotAfter.rationale,
         reason: 'wrong_slot',
       });
+      // Loop 9e — skip ranked issue phase; display wrong-slot re-ask immediately
       syncState(
-        wrongSlotAfter.issueId !== next.currentIssueId
-          ? patchAiPmLoopState({ currentIssueId: wrongSlotAfter.issueId }, projectId)
-          : next,
+        patchAiPmLoopState(
+          {
+            phase: 'answer',
+            currentIssueId: wrongSlotAfter.issueId,
+          },
+          projectId,
+        ),
       );
     } else {
       syncState(next);
@@ -809,13 +815,57 @@ export function WorkspaceAiPmLoopPanel({
     const visibleGap = inferTargetGapFromQuestionText(displayedQuestionText);
     let resolvedAskedGap = visibleGap ?? askedTargetGap;
 
-    const semantic = interpretAnswerSemantics({
+    let semantic = interpretAnswerSemantics({
       answer: trimmed,
       askedIssueId: issueId,
       existingFact,
       existingFactsByKey,
       askedTargetGap: resolvedAskedGap,
     });
+
+    // Loop 9e — display SoT canonicalizes facts when interpret used poisoned askedGap (@ cbce256 live)
+    const displayedGapForCanonical = visibleGap;
+    if (displayedGapForCanonical === 'customerPersona' && semantic.mergeable) {
+      const personaSegmentCue =
+        /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행)/i.test(trimmed);
+      const relevanceDominant =
+        hasDiffRelevanceEvidence(trimmed) &&
+        /(체감|예약\s*전|차이|동선|왜\s*중요|관련성)/i.test(trimmed) &&
+        !personaSegmentCue;
+      if (relevanceDominant) {
+        semantic = {
+          ...semantic,
+          factKey: 'diffRelevance',
+          resolvedIssueId: 'competitor_analysis',
+          facts: [{ key: 'diffRelevance', issueId: 'competitor_analysis' }],
+        };
+        resolvedAskedGap = 'customerPersona';
+      }
+    } else if (displayedGapForCanonical === 'problemJtbd' && semantic.mergeable) {
+      const personaSegmentCue =
+        /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행)/i.test(trimmed);
+      const problemCue =
+        /(불편|pain|문제|해결|jtbd|획일|동선\s*낭비|맞춤\s*일정|패키지)/i.test(trimmed);
+      if (personaSegmentCue && !problemCue) {
+        semantic = {
+          ...semantic,
+          factKey: 'customer',
+          resolvedIssueId: 'customer_definition',
+          facts: [{ key: 'customer', issueId: 'customer_definition' }],
+        };
+        resolvedAskedGap = 'problemJtbd';
+      }
+    } else if (displayedGapForCanonical === 'solution' && semantic.mergeable) {
+      resolvedAskedGap = 'solution';
+      if (!semantic.facts.some((f) => f.key === 'business')) {
+        semantic = {
+          ...semantic,
+          factKey: 'business',
+          resolvedIssueId: 'problem_definition',
+          facts: [{ key: 'business', issueId: 'problem_definition' }],
+        };
+      }
+    }
 
     // Loop 9c — never persist validationTestability when visible ask was persona + diffRelevance
     if (

@@ -57,6 +57,36 @@ function semanticKeys(turn: AiPmLoopTurn): string[] {
   return [];
 }
 
+const PERSONA_SEGMENT_CUE_RE =
+  /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행|persona)/i;
+const DIFF_RELEVANCE_CUE_RE = /(체감|예약\s*전|차이|동선|왜\s*중요|관련성)/i;
+const PROBLEM_CUE_RE =
+  /(불편|pain|문제|해결|jtbd|획일|동선\s*낭비|맞춤\s*일정|패키지)/i;
+
+/** Display SoT — askedQuestionText beats poisoned targetGap on persisted turns. */
+function effectiveAskedGapFromTurn(turn: AiPmLoopTurn): string {
+  return (
+    inferTargetGapFromQuestionText(turn.askedQuestionText) ??
+    inferAskedTargetGapFromTurn(turn) ??
+    ''
+  );
+}
+
+function isBankDiffRelevanceOnPersonaAsk(answer: string, effectiveAsked: string): boolean {
+  return (
+    effectiveAsked === 'customerPersona' &&
+    answer.length >= 2 &&
+    hasDiffRelevanceEvidence(answer) &&
+    DIFF_RELEVANCE_CUE_RE.test(answer) &&
+    !PERSONA_SEGMENT_CUE_RE.test(answer)
+  );
+}
+
+function cleanGap(value: string | null | undefined): string | null {
+  const trimmed = value?.trim() ?? '';
+  return trimmed.length > 0 ? trimmed : null;
+}
+
 function closedGapsFromTurn(turn: AiPmLoopTurn, keys: string[]): string[] {
   const gaps: string[] = [];
   for (const key of keys) {
@@ -86,33 +116,51 @@ function closedGapsFromTurn(turn: AiPmLoopTurn, keys: string[]): string[] {
 /** Resolve semantic fact keys — stored keys or live interpret fallback (production turns). */
 function resolveSemanticKeys(turn: AiPmLoopTurn): string[] {
   const answer = (turn.answer ?? '').trim();
-  const askedGap = inferAskedTargetGapFromTurn(turn) ?? '';
-  // Loop 6f — stored customer key on persona ask may be relevance wrong-slot (live BANK.diffRelevance)
+  const effectiveAsked = effectiveAskedGapFromTurn(turn);
+  const stored = semanticKeys(turn);
+  const poisonedGap = cleanGap(turn.targetGap);
+
+  // Loop 9e — live @ cbce256: customer stored on persona BANK.diffRelevance (poisoned targetGap)
+  if (isBankDiffRelevanceOnPersonaAsk(answer, effectiveAsked)) {
+    return ['diffRelevance'];
+  }
   if (
-    askedGap === 'customerPersona' &&
+    stored.includes('customer') &&
     answer.length >= 2 &&
     hasDiffRelevanceEvidence(answer) &&
-    /(체감|예약\s*전|차이|동선|왜\s*중요|관련성)/i.test(answer) &&
-    !/(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행)/i.test(answer)
+    DIFF_RELEVANCE_CUE_RE.test(answer) &&
+    !PERSONA_SEGMENT_CUE_RE.test(answer) &&
+    (effectiveAsked === 'customerPersona' ||
+      poisonedGap === 'validationTestability' ||
+      poisonedGap === 'problemJtbd')
   ) {
     return ['diffRelevance'];
   }
-  // Loop 9c — problem ask + persona segment answer stored as customer (live BANK.customer @ T13)
+  // Loop 9c/9e — problem ask + persona segment (question text or effective gap)
   if (
-    askedGap === 'problemJtbd' &&
+    (effectiveAsked === 'problemJtbd' ||
+      inferTargetGapFromQuestionText(turn.askedQuestionText) === 'problemJtbd') &&
     answer.length >= 2 &&
-    /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행|persona)/i.test(answer) &&
-    !/(불편|pain|문제|해결|jtbd|획일|동선\s*낭비|맞춤\s*일정|패키지)/i.test(answer)
+    PERSONA_SEGMENT_CUE_RE.test(answer) &&
+    !PROBLEM_CUE_RE.test(answer)
   ) {
     return ['customer'];
   }
-  const stored = semanticKeys(turn);
+  if (
+    stored.includes('customer') &&
+    answer.length >= 2 &&
+    PERSONA_SEGMENT_CUE_RE.test(answer) &&
+    !PROBLEM_CUE_RE.test(answer) &&
+    (poisonedGap === 'solution' || poisonedGap === 'problemJtbd')
+  ) {
+    return ['customer'];
+  }
   if (stored.length > 0) return stored;
-  if (answer.length < 2 || !askedGap) return [];
+  if (answer.length < 2 || !effectiveAsked) return [];
   const interpreted = interpretAnswerSemantics({
     answer,
     askedIssueId: turn.issueId,
-    askedTargetGap: askedGap,
+    askedTargetGap: effectiveAsked,
   });
   if (!interpreted.mergeable) return [];
   if (interpreted.facts.length > 0) return interpreted.facts.map((f) => f.key);
@@ -131,7 +179,7 @@ function resolveEffectiveAskedGap(
 
   const answer = turn.answer ?? '';
   if (
-    askedGap === 'validationTestability' &&
+    (askedGap === 'validationTestability' || askedGap === 'problemJtbd') &&
     closedGaps.includes('validationTestability') &&
     keys.includes('diffRelevance') &&
     hasDiffRelevanceEvidence(answer)
@@ -140,7 +188,7 @@ function resolveEffectiveAskedGap(
       fromQuestion === 'customerPersona' ||
       /(가장 필요로 하는 사람|누구인가요)/i.test(turn.askedQuestionText ?? '') ||
       (!/(인터뷰|CTA|랜딩|파일럿|검증\s*계획|가이드\s*10)/i.test(answer) &&
-        /(체감|예약\s*전|차이|동선)/i.test(answer));
+        DIFF_RELEVANCE_CUE_RE.test(answer));
     if (personaCue) return 'customerPersona';
   }
 
@@ -152,8 +200,7 @@ function resolveEffectiveAskedGap(
     const problemCue =
       fromQuestion === 'problemJtbd' ||
       /(크게 해결하려는 불편|핵심 불편)/i.test(turn.askedQuestionText ?? '') ||
-      (/(타깃|FIT|MZ|방문|2인\s*여행|밀레니얼)/i.test(answer) &&
-        !/(불편|패키지|획일|동선\s*낭비|맞춤\s*일정)/i.test(answer));
+      (PERSONA_SEGMENT_CUE_RE.test(answer) && !PROBLEM_CUE_RE.test(answer));
     if (problemCue && askedGap !== 'problemJtbd') return 'problemJtbd';
   }
 
