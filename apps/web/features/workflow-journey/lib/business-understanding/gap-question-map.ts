@@ -142,7 +142,7 @@ export function inferTargetGapFromQuestionText(
     if (phrase.length >= 8 && q.includes(phrase)) return gap;
   }
 
-  if (/가장 필요로 하는 사람|누구인가요/.test(q)) return 'customerPersona';
+  if (/가장 필요로 하는 사람|가장 필요로 하는|누구인가요/.test(q)) return 'customerPersona';
   if (/크게 해결하려는 불편|핵심 불편/.test(q)) return 'problemJtbd';
   if (/제공 가치|해결하는 방식/.test(q)) return 'solution';
   if (/비용은 누가|누가 지불/.test(q)) return 'payer';

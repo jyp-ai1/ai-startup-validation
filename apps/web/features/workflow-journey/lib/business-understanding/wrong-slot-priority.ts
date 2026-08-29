@@ -97,6 +97,15 @@ function resolveSemanticKeys(turn: AiPmLoopTurn): string[] {
   ) {
     return ['diffRelevance'];
   }
+  // Loop 9c — problem ask + persona segment answer stored as customer (live BANK.customer @ T13)
+  if (
+    askedGap === 'problemJtbd' &&
+    answer.length >= 2 &&
+    /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행|persona)/i.test(answer) &&
+    !/(불편|pain|문제|해결|jtbd|획일|동선\s*낭비|맞춤\s*일정|패키지)/i.test(answer)
+  ) {
+    return ['customer'];
+  }
   const stored = semanticKeys(turn);
   if (stored.length > 0) return stored;
   if (answer.length < 2 || !askedGap) return [];

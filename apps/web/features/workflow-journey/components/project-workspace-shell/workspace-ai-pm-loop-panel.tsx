@@ -204,6 +204,35 @@ export function WorkspaceAiPmLoopPanel({
       entities,
       previous: loadConversationMemory(projectId),
     });
+
+    // Loop 9c — turns-derived wrong_slot is absolute SoT (bypasses override stale / ranked base)
+    const wrongSlotFromTurns = resolveWrongSlotQuestionOverride(freshTurns);
+    if (wrongSlotFromTurns) {
+      const priorAsks = countUnclosedGapAsks(freshTurns, wrongSlotFromTurns.targetGap);
+      let questionText = wrongSlotFromTurns.questionText;
+      let whyNow = wrongSlotFromTurns.whyNow;
+      if (priorAsks > 0) {
+        const reframed = reframeQuestion({
+          targetGap: wrongSlotFromTurns.targetGap,
+          living: livingState,
+          reason: 'adaptive',
+          previousQuestionText: questionText,
+        });
+        questionText = reframed.questionText;
+        whyNow = reframed.whyNow;
+      }
+      const purity = enforceQuestionPurity({
+        questionText,
+        targetGap: wrongSlotFromTurns.targetGap,
+      });
+      return {
+        ...wrongSlotFromTurns,
+        targetGap: wrongSlotFromTurns.targetGap,
+        questionText: purity.sanitizedText,
+        whyNow,
+      };
+    }
+
     const base = getWhyThisQuestionNow(understanding, loopState, {
       documentText: documentText ?? undefined,
       entities,
