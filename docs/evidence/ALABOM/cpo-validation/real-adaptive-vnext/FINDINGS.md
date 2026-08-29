@@ -1,74 +1,44 @@
-# ALABOM Real Adaptive vNext — FINDINGS (Loop 4)
+# ALABOM Real Adaptive vNext — FINDINGS (Loop 8)
 
-## Loop 4 batch fixes shipped @ `4c4792e`
+## Deploy status
 
-| Fix | Loop 3 | Loop 4 |
-|-----|--------|--------|
-| validationTestability blocks Analysis Ready until evidence | **PASS** | **PASS** (closed T11; gate @ T22 after relevance merge) |
-| First payer B2B correction → conflict | **PASS** | **PASS** (T9 CONTRADICTORY UI; T10 clarify retains tourist direct pay) |
-| relevance gap never sticky-yields | **PASS** | **PASS** (held through conflict arc; reframe chain intact) |
-| Natural meaningful depth 15–25 | **PARTIAL** — 13 | **PASS** — **16** (post-ready partial-gap follow-ups + continue-refining safety net) |
-| reAsk / wrong-slot / mixed-Q / padding | 0 / 0 / 0 / 0 | **PASS** — preserved 0 / 0 / 0 / 0 |
+| Item | Value |
+|------|-------|
+| Loop 7b baseline SHA | `9fa5248` — targetGap persist LIVE; P0-1/P0-2 FIX |
+| **Loop 8 fix SHA** | `4769f4f` — wrong-slot override on live panel path |
+| Loop 8 push | **SUCCESS** @ 2026-08-30T05:02 KST |
+| Loop 8 Vercel deploy | **PENDING** — prod still @ `9fa5248` as of poll timeout |
+| Live capture @ `4769f4f` | **PENDING deploy** |
 
-### Loop 4 engine change
+## Loop 8 root cause (traced T12–T14 @ `9fa5248`)
 
-- `selectRefinementGapAfterAnalysisReady()` — after critical viability closes, engine keeps asking high-value partial gaps (`marketChannel`, `marketSizeEvidence`, `pricingHint`, `executionConstraints`, `revenueModel`) via `resolveNextLoopIssue` before `phase: complete`.
-- `reopenAiPmLoopForRefinement()` prefers refinement gaps when Analysis Ready handoff fires.
-- Harness: `ensureAnswerBox` + drain loop invoke `continue-refining-cta` when textarea disappears with meaningful < 15.
+| Layer | Finding |
+|-------|---------|
+| **T12 append** | `resolveAskedTargetGapForAppend` preferred stale `whyTargetGap=problemJtbd` over `overrideTargetGap=customerPersona` and visible persona question text → turn persisted with wrong asked gap → `detectWrongSlotMergeContext` null or mis-anchored |
+| **T12→T13 next Q** | `resolveNextIssueByMissingField` yielded to ranked `problemJtbd` (lines 698–705) despite wrong-slot persona still open |
+| **Panel gap pick** | `getTopGapPriority` bypassed `resolveWrongSlotQuestionOverride`; used in nonsense/reframe + append fallback paths |
+| **Engine gap** | `decideNextQuestion` ranked before wrong-slot anchor (unit passed via adaptive boost only; live doc-memory path excluded persona from ranked[]) |
 
-```text
-Production SHA: 4c4792e322fb75ab90a9dd0978a2d28faec5fc0a
-Real conversation turns: 23
-Meaningful answers: 16
-same-meaning re-ask: 0
-wrong-slot: 0
-mixed-Q: 0
-padding: 0
-Conflict:
-- detected: yes (T9 first B2B payer correction — inferred tourist-direct prior)
-- clarified: yes (contradiction UI @ T9; harness resolved @ T10)
-- superseded: yes (tourist direct pay retained after clarify)
-Why-now:
-- present: yes (why panel + per-turn whyNow; validationTestability called out through T6–T11)
-- each next question causally explained: yes through conflict + relevance reframe chain
-Understanding delta:
-- populated turns: 19
-- empty turns: 4 (T1 seed, T2 confirm, T22 gate probe meta-only context)
-Critical gaps:
-- remaining at gate: none (validationTestability closed T11; pricingHint partial only)
-- resolved: customerPersona, problemJtbd, payer, solution, alternativesCompetitors, differentiationVsAlternatives, validationTestability, revenueModel, executionConstraints
-Depth follow-ups (post-Analysis Ready):
-- T18 demand (marketSizeEvidence), T19–T21 partial-gap chain before gate
-- continue-refining reopen @meaningful=13 (safety net — engine also continued naturally)
-Analysis Ready:
-- enabled at: T22 gate-probe (after validationTestability + partial depth closed)
-- reason: critical viability + diff relevance evidence user-confirmed
-- blocked while critical gap/conflict exists: yes during T9 open payer conflict
-Final result: GO (MarketJudgment — score 75)
-CTO QA: PASS
-```
+## Loop 8 fix (commit `4769f4f`)
 
-## Hard metrics
+1. **`resolveWrongSlotQuestionAnchor`** — shared SoT in `wrong-slot-priority.ts`
+2. **`resolveAskedTargetGapForAppend`** — priority: override → questionText → whyTargetGap
+3. **`decideNextQuestion` / `getTopGapPriority` / `resolveNextIssueByMissingField`** — wrong-slot anchor BEFORE ranked selection
+4. **Panel** — all gap picks use `getWhyThisQuestionNow`; append uses `questionOverride?.questionText`
+5. **Tests** — 45/45 PASS including Loop 8 @ 9fa5248 T12/T13 integration
 
-| Metric | Target | Actual |
-|--------|--------|--------|
-| Same-meaning re-ask | 0 | 0 |
-| Wrong-slot | 0 | 0 |
-| Mixed-Q | 0 | 0 |
-| Identical answer repeats | 0 | 0 |
-| Padding turns | 0 | 0 |
-| Meaningful answers | 15–25 | 16 |
+## P0 causality verdicts
 
-## Loop 3 regression check
+| P0 | Transition | Unit @ `4769f4f` | Live @ `4769f4f` |
+|----|------------|------------------|------------------|
+| **P0-1** | T12→T13 | **PASS** | **PENDING deploy** |
+| **P0-2** | T13→T14 | **PASS** | **PENDING deploy** |
+| **P0-3** | T16→T22 | PASS (regression) | prior PASS @ `9fa5248` |
+| **P0-4** | Analysis gate | PASS (regression) | prior PASS @ `9fa5248` |
+| **P0-5** | Final GO | PASS (regression) | prior PASS @ `9fa5248` |
 
-- validationTestability gate: **PASS** — Start Analysis blocked until T11 relevance evidence; no premature gate @ T17
-- First payer conflict: **PASS** — CONTRADICTORY UI, not silent merge
-- reAsk / wrong-slot / mixed-Q / padding: **PASS** — all zero
-- T4/mid-judgment/conflict flow: **PASS** — nonsense/why/mid meta turns preserved; no identical re-ask
+**CPO PASS declared:** **No** — live capture on `4769f4f` pending Vercel deploy.
 
-```text
-CPO review: pending — do NOT declare PASS
-CEO Walkthrough: NOT READY
-```
+## Next step
 
-Evidence: `docs/evidence/ALABOM/cpo-validation/real-adaptive-vnext/TRANSCRIPT.md`
+Poll deploy → ONE live capture @ `4769f4f` → re-evaluate P0-1 AND P0-2 live.

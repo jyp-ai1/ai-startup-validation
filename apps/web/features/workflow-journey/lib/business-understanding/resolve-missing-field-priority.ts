@@ -36,6 +36,8 @@ import { hasDiffRelevanceEvidence } from './understanding-contract';
 import {
   buildDeltaAwareWhyNow,
   detectWrongSlotMergeContext,
+  PERSONA_WRONG_SLOT_BOOST,
+  PROBLEM_WRONG_SLOT_BOOST,
   resolveWrongSlotQuestionAnchor,
   shouldBlockSolutionForOpenProblem,
   shouldPrioritizePersonaAfterWrongSlotRelevance,
