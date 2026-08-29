@@ -543,7 +543,18 @@ export function resolveNextIssueByMissingField(
     // Core Final Stabilization — also yield after MAX unclosed asks (prevent identical loop)
     if (!lastGapDone && lastGap) {
       const unclosedAsks = countUnclosedGapAsks(turns, lastGap);
-      if (unclosedAsks >= MAX_SAME_GAP_ASKS_BEFORE_YIELD) {
+      const relevanceBlocks =
+        lastGap === 'validationTestability' &&
+        isDiffConfirmedWithoutRelevance(
+          buildLivingUnderstandingState({
+            documentText: options?.documentText ?? '',
+            understanding,
+            entities: options?.entities ?? null,
+            turns,
+            memory,
+          }),
+        );
+      if (unclosedAsks >= MAX_SAME_GAP_ASKS_BEFORE_YIELD && !relevanceBlocks) {
         const top = ranked[0];
         if (top && top.targetGap !== lastGap) {
           return top.issueId;

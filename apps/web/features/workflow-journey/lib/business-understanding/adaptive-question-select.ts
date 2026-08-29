@@ -46,6 +46,29 @@ function isUserConfirmed(claim: LivingClaim | undefined): boolean {
   return isUserConfirmedClaim(claim);
 }
 
+/** Differentiation confirmed via either viability field. */
+export function isDifferentiationConfirmed(living: LivingUnderstandingState): boolean {
+  return (
+    isUserConfirmedClaim(claimByKey(living, 'differentiationVsAlternatives')) ||
+    isUserConfirmedClaim(claimByKey(living, 'differentiationHypothesis'))
+  );
+}
+
+/**
+ * validationTestability closes only with USER_CONFIRMED diff-relevance evidence —
+ * not partial/wrong-slot answers.
+ */
+export function isValidationTestabilityClosed(
+  living: LivingUnderstandingState,
+): boolean {
+  const relevance = claimByKey(living, 'validationTestability');
+  const relevanceMem = relevance?.value?.trim();
+  return (
+    isUserConfirmedClaim(relevance) &&
+    Boolean(relevanceMem && hasDiffRelevanceEvidence(relevanceMem))
+  );
+}
+
 /**
  * P0 vNext — differentiation confirmed but customer relevance not yet linked.
  * Blocks Analysis Ready and forces competitor→diff→diff value chain.
@@ -53,13 +76,7 @@ function isUserConfirmed(claim: LivingClaim | undefined): boolean {
 export function isDiffConfirmedWithoutRelevance(
   living: LivingUnderstandingState,
 ): boolean {
-  const diff = claimByKey(living, 'differentiationVsAlternatives');
-  const relevance = claimByKey(living, 'validationTestability');
-  const relevanceMem = relevance?.value?.trim();
-  const hasEvidence =
-    isUserConfirmedClaim(relevance) &&
-    Boolean(relevanceMem && hasDiffRelevanceEvidence(relevanceMem));
-  return isUserConfirmedClaim(diff) && !hasEvidence;
+  return isDifferentiationConfirmed(living) && !isValidationTestabilityClosed(living);
 }
 
 /**

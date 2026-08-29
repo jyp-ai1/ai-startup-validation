@@ -226,6 +226,33 @@ function isDifferentiationAskedGap(gap: string | null | undefined): boolean {
 }
 
 /**
+ * Loop 3 — first explicit payer correction vs implicit prior (e.g. tourist direct)
+ * must CONFLICT even when no buyer fact exists yet in Memory.
+ */
+function inferPayerPriorForCorrection(
+  answer: string,
+  existingFactsByKey?: Partial<Record<ConversationFactKey, string | null>>,
+): string | null {
+  const existing = existingFactsByKey?.buyer?.trim();
+  if (existing && existing.length >= 4) return existing;
+
+  const trimmed = answer.trim();
+  if (!CORRECTION_RE.test(trimmed) && !EXPLICIT_CONFLICT_CUE_RE.test(trimmed)) return null;
+  if (!PAYER_CUE_RE.test(trimmed)) return null;
+
+  if (/관광객.{0,20}아니라|여행객.{0,20}아니라|직접\s*결제.{0,12}아니/i.test(trimmed)) {
+    return '관광객이 앱에서 직접 예약·결제합니다';
+  }
+  if (
+    /(b2b|호텔|ota|일괄\s*정산).{0,24}(아니라|아닙|아닌)/i.test(trimmed) &&
+    /(관광객|직접|b2c)/i.test(trimmed)
+  ) {
+    return 'B2B로 호텔·OTA가 일괄 정산합니다';
+  }
+  return null;
+}
+
+/**
  * Interpret answer by meaning. Wrong-slot merge is forbidden:
  * asked issue is only a weak prior when no semantic signal exists.
  */
@@ -538,10 +565,16 @@ export function interpretAnswerSemantics(input: {
     input.existingFactsByKey?.[factKey] ??
     (askedFact === factKey ? input.existingFact : null) ??
     null;
+  const inferredPrior =
+    !existingForKey && factKey === 'buyer' && isCorrection
+      ? inferPayerPriorForCorrection(trimmed, input.existingFactsByKey)
+      : null;
+  const priorForConflict = existingForKey ?? inferredPrior;
 
   if (
-    existingForKey &&
-    (answersContradict(existingForKey, trimmed) || EXPLICIT_CONFLICT_CUE_RE.test(trimmed))
+    priorForConflict &&
+    (answersContradict(priorForConflict, trimmed) ||
+      (EXPLICIT_CONFLICT_CUE_RE.test(trimmed) && isCorrection && answersContradict(priorForConflict, trimmed)))
   ) {
     return emptyInterpretation({
       intent: isCorrection || EXPLICIT_CONFLICT_CUE_RE.test(trimmed) ? 'correction' : 'business_fact',
@@ -556,7 +589,7 @@ export function interpretAnswerSemantics(input: {
     });
   }
 
-  const quality = evaluateAnswerQuality(trimmed, { existingFact: existingForKey });
+  const quality = evaluateAnswerQuality(trimmed, { existingFact: priorForConflict });
   if (!quality.mergeable) {
     return emptyInterpretation({
       intent: 'business_fact',

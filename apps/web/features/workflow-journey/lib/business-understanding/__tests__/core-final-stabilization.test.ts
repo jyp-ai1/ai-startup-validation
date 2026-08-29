@@ -451,7 +451,7 @@ describe('Stabilization — sticky yield after failed closes', () => {
       turns,
     });
     const topGap = ranked[0]?.targetGap;
-    expect(topGap).not.toBe('validationTestability');
+    expect(topGap).toBe('validationTestability');
     void next;
   });
 });
@@ -1057,5 +1057,144 @@ describe('Loop 2 vNext — causality · conflict · relevance evidence', () => {
     });
     expect(clarify.questionText).toMatch(/A\)|B\)|어느 쪽/);
     expect(isSameMeaningQuestion(clarify.questionText, stock)).toBe(false);
+  });
+});
+
+describe('Loop 3 vNext — gate · first correction conflict · relevance hold', () => {
+  it('first explicit payer B2B correction triggers CONTRADICTORY without prior buyer fact', () => {
+    const result = interpretAnswerSemantics({
+      answer:
+        '앞서와 달리 정정합니다. 결제자는 관광객이 아니라 B2B로 호텔·OTA가 일괄 정산합니다.',
+      askedIssueId: 'competitor_analysis',
+      askedTargetGap: 'validationTestability',
+      existingFactsByKey: {},
+    });
+    expect(result.quality).toBe('CONTRADICTORY');
+    expect(result.mergeable).toBe(false);
+    expect(result.factKey).toBe('buyer');
+  });
+
+  it('Analysis Ready blocked when diff confirmed but validationTestability still open', () => {
+    const turns: AiPmLoopTurn[] = [
+      {
+        issueId: 'customer_definition',
+        answer: 'FIT 외국인',
+        appliedAt: '1',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '획일적 동선',
+        appliedAt: '2',
+        semanticFactKey: 'problem',
+        semanticFactKeys: ['problem'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+      },
+      {
+        issueId: 'bm_design',
+        answer: '관광객 직접 결제',
+        appliedAt: '3',
+        semanticFactKey: 'buyer',
+        semanticFactKeys: ['buyer'],
+        intent: 'business_fact',
+        targetGap: 'payer',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '클룩·트립',
+        appliedAt: '4',
+        semanticFactKey: 'competitor',
+        semanticFactKeys: ['competitor'],
+        intent: 'business_fact',
+        targetGap: 'alternativesCompetitors',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '실시간 맞춤 일정',
+        appliedAt: '5',
+        semanticFactKey: 'differentiation',
+        semanticFactKeys: ['differentiation'],
+        intent: 'business_fact',
+        targetGap: 'differentiationVsAlternatives',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: '관심사·동선 맞춤 일정과 현지인 동행',
+        appliedAt: '6',
+        semanticFactKey: 'business',
+        semanticFactKeys: ['business'],
+        intent: 'business_fact',
+        targetGap: 'solution',
+      },
+      {
+        issueId: 'bm_design',
+        answer: '수익은 예약 건당 중개 수수료 10~15%',
+        appliedAt: '7',
+        semanticFactKey: 'revenue',
+        semanticFactKeys: ['revenue'],
+        intent: 'business_fact',
+        targetGap: 'revenueModel',
+      },
+    ];
+    const memory = memoryFromTurns(turns);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns,
+      memory,
+    });
+    expect(evaluateAnalysisReady(living).analysisReady).toBe(false);
+    expect(evaluateAnalysisReady(living).blockedGaps).toContain('validationTestability');
+    expect(criticalGapsBlockAnalysis(living)).toBe(true);
+  });
+
+  it('decideNextQuestion holds validationTestability after max wrong-slot asks', () => {
+    const baseTurns: AiPmLoopTurn[] = [
+      {
+        issueId: 'competitor_analysis',
+        answer: '클룩',
+        appliedAt: '1',
+        semanticFactKey: 'competitor',
+        semanticFactKeys: ['competitor'],
+        intent: 'business_fact',
+        targetGap: 'alternativesCompetitors',
+      },
+      {
+        issueId: 'competitor_analysis',
+        answer: '실시간 맞춤',
+        appliedAt: '2',
+        semanticFactKey: 'differentiation',
+        semanticFactKeys: ['differentiation'],
+        intent: 'business_fact',
+        targetGap: 'differentiationVsAlternatives',
+      },
+    ];
+    const stuckAsks: AiPmLoopTurn[] = Array.from(
+      { length: MAX_SAME_GAP_ASKS_BEFORE_YIELD + 1 },
+      (_, i) => ({
+        issueId: 'bm_design' as const,
+        answer: `수익 구조 답 ${i}`,
+        appliedAt: String(10 + i),
+        semanticFactKey: 'revenue' as const,
+        semanticFactKeys: ['revenue' as const],
+        intent: 'business_fact' as const,
+        targetGap: 'validationTestability',
+      }),
+    );
+    const turns = [...baseTurns, ...stuckAsks];
+    const memory = memoryFromTurns(turns);
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns,
+      memory,
+    });
+    const decision = decideNextQuestion({ living, turns, memory });
+    expect(decision?.targetGap).toBe('validationTestability');
+    expect(decision?.reframed).toBe(true);
   });
 });

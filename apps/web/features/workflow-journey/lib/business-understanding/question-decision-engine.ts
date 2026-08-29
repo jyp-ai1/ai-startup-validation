@@ -152,6 +152,10 @@ export function resolveExcludedGaps(input: {
     seenGaps.add(gap);
     if (exclude.has(gap)) continue;
     if (critical.has(gap as never)) continue;
+    // Loop 3 — analysis-blocking relevance never yields via sticky exclude
+    if (gap === 'validationTestability' && isDiffConfirmedWithoutRelevance(input.living)) {
+      continue;
+    }
     const asks = countUnclosedGapAsks(input.turns, gap);
     if (asks >= MAX_SAME_GAP_ASKS_BEFORE_YIELD) {
       exclude.add(gap);
@@ -208,6 +212,44 @@ export function decideNextQuestion(input: {
     living: input.living,
   });
   const answered = answeredTargetGaps(input.turns);
+
+  // Loop 3 — gate CANNOT open until relevance closed; always re-ask with reframe
+  if (
+    isDiffConfirmedWithoutRelevance(input.living) &&
+    !answered.has('validationTestability')
+  ) {
+    const binding = resolveGapQuestionBinding('validationTestability');
+    const priorAsks = countUnclosedGapAsks(input.turns, 'validationTestability');
+    const prevText =
+      input.previousQuestionText?.trim() ||
+      lastAskTextForGap(input.turns, 'validationTestability') ||
+      (priorAsks > 0 ? binding.questionText : null);
+    let questionText = binding.questionText;
+    let whyNow = whyNowForGapField('validationTestability') || binding.whyNow;
+    let reframed = false;
+    if (priorAsks > 0 || (prevText && isSameMeaningQuestion(prevText, binding.questionText))) {
+      const reframedQ = reframeQuestion({
+        targetGap: 'validationTestability',
+        living: input.living,
+        reason: 'adaptive',
+        previousQuestionText: prevText ?? binding.questionText,
+      });
+      questionText = reframedQ.questionText;
+      whyNow = reframedQ.whyNow;
+      reframed = true;
+    }
+    return {
+      targetGap: 'validationTestability',
+      issueId: binding.issueId,
+      questionText,
+      whyNow,
+      rationale:
+        '차별점은 확인했지만 고객 관련성 근거가 부족합니다 — follow-up reframe 후 Analysis Ready.',
+      score: 58_000,
+      reframed,
+      excludedGaps: [...exclude],
+    };
+  }
 
   const candidates = selectAdaptiveNextGaps(input.living, {
     excludeGaps: exclude,

@@ -552,7 +552,14 @@ function scoreGap(
   const byKey = options?.claimsByKey;
   const competitorKnown = isClaimKnown(byKey?.get('alternativesCompetitors'));
   const differentiationKnown = isClaimKnown(byKey?.get('differentiationVsAlternatives'));
-  const relevanceKnown = isClaimKnown(byKey?.get('validationTestability'));
+  const relevanceClaim = byKey?.get('validationTestability');
+  const relevanceMem = relevanceClaim?.value?.trim();
+  const relevanceKnown =
+    relevanceClaim != null &&
+    relevanceClaim.status === 'confirmed' &&
+    (relevanceClaim.provenance === 'USER_CONFIRMED' ||
+      relevanceClaim.provenance === 'USER_CORRECTED') &&
+    Boolean(relevanceMem && hasDiffRelevanceEvidence(relevanceMem));
   const competitorUserConfirmed =
     byKey?.get('alternativesCompetitors')?.status === 'confirmed' &&
     (byKey?.get('alternativesCompetitors')?.provenance === 'USER_CONFIRMED' ||
