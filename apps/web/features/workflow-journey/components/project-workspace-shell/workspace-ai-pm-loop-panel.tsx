@@ -813,10 +813,15 @@ export function WorkspaceAiPmLoopPanel({
     const askedKey = factKeyForIssue(issueId);
     const existingFact = askedKey ? getFact(memory, askedKey)?.value ?? null : null;
 
-    const displayedGap =
-      whyThisQuestionNow?.targetGap ?? lastAskSurfaceRef.current.targetGap ?? null;
     const displayedQuestionText =
-      whyThisQuestionNow?.questionText ?? lastAskSurfaceRef.current.questionText ?? null;
+      lastAskSurfaceRef.current.questionText ??
+      whyThisQuestionNow?.questionText ??
+      null;
+    const displayedGap =
+      inferTargetGapFromQuestionText(displayedQuestionText) ??
+      lastAskSurfaceRef.current.targetGap ??
+      whyThisQuestionNow?.targetGap ??
+      null;
     // Loop 9c — wrong_slot override is authoritative for append; else match displayed gap only
     const activeOverrideGap =
       questionOverride?.reason === 'wrong_slot'

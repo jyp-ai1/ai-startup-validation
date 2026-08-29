@@ -2573,6 +2573,25 @@ describe('Loop 9d — poisoned targetGap display SoT (@ ba2b25c live BANK)', () 
     ).toBe('customer_definition');
   });
 
+  it('P0-1 same-slot poison validationTestability on persona BANK still re-asks persona', () => {
+    const turnsAfterT12: AiPmLoopTurn[] = [
+      ...prefixThroughT10,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '5',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'validationTestability',
+        askedQuestionText: personaQuestion,
+      },
+    ];
+
+    expect(detectWrongSlotMergeContext(turnsAfterT12)?.askedGap).toBe('customerPersona');
+    expect(resolveWrongSlotQuestionOverride(turnsAfterT12)?.targetGap).toBe('customerPersona');
+  });
+
   it('P0-2 poisoned targetGap=solution still re-asks problemJtbd', () => {
     const turnsAfterT13: AiPmLoopTurn[] = [
       ...prefixThroughT10,

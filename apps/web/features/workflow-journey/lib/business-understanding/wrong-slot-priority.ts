@@ -5,7 +5,7 @@
  */
 
 import { listUnconfirmedCriticalGaps } from './adaptive-question-select';
-import { resolveGapQuestionBinding } from './gap-question-map';
+import { inferTargetGapFromQuestionText, resolveGapQuestionBinding } from './gap-question-map';
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import { inferAskedTargetGapFromTurn } from './resolve-asked-target-gap';
 import { hasDiffRelevanceEvidence } from './understanding-contract';
@@ -119,6 +119,43 @@ function resolveSemanticKeys(turn: AiPmLoopTurn): string[] {
   return interpreted.factKey ? [interpreted.factKey] : [];
 }
 
+/** Loop 9d — remap poisoned stored askedGap when closed gap matches slot but UI asked differently. */
+function resolveEffectiveAskedGap(
+  turn: AiPmLoopTurn,
+  askedGap: string,
+  keys: string[],
+  closedGaps: string[],
+): string {
+  const fromQuestion = inferTargetGapFromQuestionText(turn.askedQuestionText);
+  if (fromQuestion && fromQuestion !== askedGap) return fromQuestion;
+
+  const answer = turn.answer ?? '';
+  if (
+    askedGap === 'validationTestability' &&
+    closedGaps.includes('validationTestability') &&
+    keys.includes('diffRelevance') &&
+    hasDiffRelevanceEvidence(answer)
+  ) {
+    const personaCue =
+      fromQuestion === 'customerPersona' ||
+      /(가장 필요로 하는 사람|누구인가요)/i.test(turn.askedQuestionText ?? '');
+    if (personaCue) return 'customerPersona';
+  }
+
+  if (
+    askedGap === 'solution' &&
+    closedGaps.includes('customerPersona') &&
+    keys.includes('customer')
+  ) {
+    const problemCue =
+      fromQuestion === 'problemJtbd' ||
+      /(크게 해결하려는 불편|핵심 불편)/i.test(turn.askedQuestionText ?? '');
+    if (problemCue) return 'problemJtbd';
+  }
+
+  return askedGap;
+}
+
 /** Last turn asked one gap but semantically closed a different gap. */
 export function detectWrongSlotMergeContext(
   turns: AiPmLoopTurn[] | undefined,
@@ -126,11 +163,13 @@ export function detectWrongSlotMergeContext(
   const last = lastMergeableTurn(turns);
   if (!last) return null;
 
-  const askedGap = inferAskedTargetGapFromTurn(last);
-  if (!askedGap) return null;
+  const storedAskedGap = inferAskedTargetGapFromTurn(last);
+  if (!storedAskedGap) return null;
   const keys = resolveSemanticKeys(last);
   const closedGaps = closedGapsFromTurn(last, keys);
   if (closedGaps.length === 0) return null;
+
+  const askedGap = resolveEffectiveAskedGap(last, storedAskedGap, keys, closedGaps);
   if (closedGaps.includes(askedGap)) return null;
 
   const closedGap = closedGaps[0]!;
