@@ -39,6 +39,7 @@ import {
   PERSONA_WRONG_SLOT_BOOST,
   shouldBlockSolutionForOpenProblem,
   shouldPrioritizePersonaAfterWrongSlotRelevance,
+  shouldPrioritizeProblemAfterWrongSlotPersona,
 } from './wrong-slot-priority';
 
 export type MissingFieldPriority = {
@@ -252,6 +253,10 @@ export function resolveMissingFieldPriorities(
   const turns = options?.turns ?? loop.turns;
   const answeredGaps = getAnsweredTargetGaps(turns);
   const wrongSlotContext = detectWrongSlotMergeContext(turns);
+  // Loop 6 — credit semantically closed gap even when turn lacks stored semanticFactKey
+  if (wrongSlotContext && wrongSlotContext.askedGap !== wrongSlotContext.closedGap) {
+    answeredGaps.add(wrongSlotContext.closedGap);
+  }
 
   const scored = new Map<string, MissingFieldPriority>();
 
@@ -579,7 +584,40 @@ export function resolveMissingFieldPriorities(
     );
   }
 
-  return [...scored.values()].sort((a, b) => b.score - a.score);
+  let ranked = [...scored.values()].sort((a, b) => b.score - a.score);
+
+  // Loop 6 — final guard: production SoT must not lose to living.gaps / diagnosis overrides
+  if (text.length >= 8) {
+    const livingFinal = buildLivingUnderstandingState({
+      documentText: text,
+      understanding,
+      entities: options?.entities ?? null,
+      turns,
+      memory,
+      resolvedIssueIds: [...resolved],
+    });
+    if (shouldBlockSolutionForOpenProblem(livingFinal)) {
+      ranked = ranked.filter((r) => r.targetGap !== 'solution');
+    }
+  }
+
+  if (shouldPrioritizePersonaAfterWrongSlotRelevance(wrongSlotContext)) {
+    const personaIdx = ranked.findIndex((r) => r.targetGap === 'customerPersona');
+    if (personaIdx > 0) {
+      const [persona] = ranked.splice(personaIdx, 1);
+      ranked.unshift(persona);
+    }
+  }
+
+  if (shouldPrioritizeProblemAfterWrongSlotPersona(wrongSlotContext)) {
+    const problemIdx = ranked.findIndex((r) => r.targetGap === 'problemJtbd');
+    if (problemIdx > 0) {
+      const [problem] = ranked.splice(problemIdx, 1);
+      ranked.unshift(problem);
+    }
+  }
+
+  return ranked;
 }
 
 /**

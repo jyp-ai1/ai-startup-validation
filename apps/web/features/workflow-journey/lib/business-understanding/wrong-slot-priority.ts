@@ -6,6 +6,7 @@
 
 import { listUnconfirmedCriticalGaps } from './adaptive-question-select';
 import { resolveGapQuestionBinding } from './gap-question-map';
+import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import { hasDiffRelevanceEvidence } from './understanding-contract';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
@@ -55,8 +56,7 @@ function semanticKeys(turn: AiPmLoopTurn): string[] {
   return [];
 }
 
-function closedGapsFromTurn(turn: AiPmLoopTurn): string[] {
-  const keys = semanticKeys(turn);
+function closedGapsFromTurn(turn: AiPmLoopTurn, keys: string[]): string[] {
   const gaps: string[] = [];
   for (const key of keys) {
     const gap = FACT_TO_GAP[key];
@@ -82,6 +82,22 @@ function closedGapsFromTurn(turn: AiPmLoopTurn): string[] {
   return gaps;
 }
 
+/** Resolve semantic fact keys — stored keys or live interpret fallback (production turns). */
+function resolveSemanticKeys(turn: AiPmLoopTurn): string[] {
+  const stored = semanticKeys(turn);
+  if (stored.length > 0) return stored;
+  const answer = (turn.answer ?? '').trim();
+  if (answer.length < 2 || !turn.targetGap?.trim()) return [];
+  const interpreted = interpretAnswerSemantics({
+    answer,
+    askedIssueId: turn.issueId,
+    askedTargetGap: turn.targetGap.trim(),
+  });
+  if (!interpreted.mergeable) return [];
+  if (interpreted.facts.length > 0) return interpreted.facts.map((f) => f.key);
+  return interpreted.factKey ? [interpreted.factKey] : [];
+}
+
 /** Last turn asked one gap but semantically closed a different gap. */
 export function detectWrongSlotMergeContext(
   turns: AiPmLoopTurn[] | undefined,
@@ -90,12 +106,13 @@ export function detectWrongSlotMergeContext(
   if (!last?.targetGap?.trim()) return null;
 
   const askedGap = last.targetGap.trim();
-  const closedGaps = closedGapsFromTurn(last);
+  const keys = resolveSemanticKeys(last);
+  const closedGaps = closedGapsFromTurn(last, keys);
   if (closedGaps.length === 0) return null;
   if (closedGaps.includes(askedGap)) return null;
 
   const closedGap = closedGaps[0]!;
-  const closedFactKey = last.semanticFactKey ?? semanticKeys(last)[0] ?? '';
+  const closedFactKey = last.semanticFactKey ?? keys[0] ?? '';
 
   let segmentExplicitlyNarrowed = false;
   if (askedGap === 'customerPersona') {
