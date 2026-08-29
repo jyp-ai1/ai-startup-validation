@@ -901,7 +901,6 @@ export function WorkspaceAiPmLoopPanel({
       intent: semantic.intent,
       whyNow: causality.whyNow,
       targetGap: askedGap,
-      unresolvedGap: askedGap,
       causality,
       sourceEvidence: causality.sourceEvidence,
       previousUnderstanding: causality.previousUnderstanding,
