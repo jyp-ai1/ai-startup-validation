@@ -845,12 +845,18 @@ export function WorkspaceAiPmLoopPanel({
     const askedKey = factKeyForIssue(issueId);
     const existingFact = askedKey ? getFact(memory, askedKey)?.value ?? null : null;
 
-    const visibleQuestionText =
-      lastAskSurfaceRef.current.questionText ??
-      questionOverride?.questionText ??
-      whyThisQuestionNow?.questionText ??
-      null;
-    const displayedQuestionText = visibleQuestionText;
+    const refText = lastAskSurfaceRef.current.questionText;
+    const refGap =
+      inferTargetGapFromQuestionText(refText) ?? lastAskSurfaceRef.current.targetGap;
+    const liveGap =
+      whyThisQuestionNow?.targetGap ??
+      inferTargetGapFromQuestionText(whyThisQuestionNow?.questionText);
+    const liveText = whyThisQuestionNow?.questionText ?? questionOverride?.questionText ?? null;
+    // Loop 9h-c — stale ref from prior wrong_slot must not poison solution (or other) append
+    const displayedQuestionText =
+      liveGap && refGap && liveGap !== refGap
+        ? liveText ?? refText
+        : refText ?? liveText;
     const displayedGap =
       inferTargetGapFromQuestionText(displayedQuestionText) ??
       lastAskSurfaceRef.current.targetGap ??
@@ -887,13 +893,28 @@ export function WorkspaceAiPmLoopPanel({
       askedIssueId: issueId,
       existingFact,
       existingFactsByKey,
-      askedTargetGap: resolvedAskedGap,
+      askedTargetGap: visibleGap ?? resolvedAskedGap,
     });
 
     // Loop 9e — display SoT canonicalizes facts when interpret used poisoned askedGap (@ cbce256 live)
     const displayedGapForCanonical =
       inferTargetGapFromQuestionText(displayedQuestionText) ?? visibleGap;
-    if (displayedGapForCanonical === 'customerPersona' && semantic.mergeable) {
+
+    // Loop 9h-c — solution Q text wins over poisoned askedTargetGap / issue template
+    if (
+      displayedGapForCanonical === 'solution' &&
+      semantic.mergeable
+    ) {
+      resolvedAskedGap = 'solution';
+      if (!semantic.facts.some((f) => f.key === 'business')) {
+        semantic = {
+          ...semantic,
+          factKey: 'business',
+          resolvedIssueId: 'problem_definition',
+          facts: [{ key: 'business', issueId: 'problem_definition' }],
+        };
+      }
+    } else if (displayedGapForCanonical === 'customerPersona' && semantic.mergeable) {
       const personaSegmentCue =
         /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행)/i.test(trimmed);
       const relevanceDominant =
@@ -922,16 +943,6 @@ export function WorkspaceAiPmLoopPanel({
           facts: [{ key: 'customer', issueId: 'customer_definition' }],
         };
         resolvedAskedGap = 'problemJtbd';
-      }
-    } else if (displayedGapForCanonical === 'solution' && semantic.mergeable) {
-      resolvedAskedGap = 'solution';
-      if (!semantic.facts.some((f) => f.key === 'business')) {
-        semantic = {
-          ...semantic,
-          factKey: 'business',
-          resolvedIssueId: 'problem_definition',
-          facts: [{ key: 'business', issueId: 'problem_definition' }],
-        };
       }
     }
 

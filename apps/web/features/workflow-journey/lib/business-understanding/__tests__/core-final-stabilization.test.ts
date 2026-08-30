@@ -3495,4 +3495,52 @@ describe('Loop 9h-c — clear wrongSlotReaskPending on on-slot re-ask answer', (
     ];
     expect(hasPendingWrongSlotReask(turnsAfterProblemReask)).toBe(false);
   });
+
+  it('solution ask + solution answer uses business fact and targetGap=solution (not problemJtbd steal)', () => {
+    const solutionQuestion = '문제를 해결하는 방식(제공 가치)은 무엇인가요?';
+    const solutionAnswer =
+      '관심사·동선·식사 제약을 반영한 실시간 맞춤 일정과 현지인 동행을 한 번에 제공하는 방식입니다.';
+    expect(inferTargetGapFromQuestionText(solutionQuestion)).toBe('solution');
+    const semantic = interpretAnswerSemantics({
+      answer: solutionAnswer,
+      askedIssueId: 'problem_definition',
+      askedTargetGap: 'solution',
+    });
+    expect(semantic.factKey).toBe('business');
+    expect(semantic.facts.some((f) => f.key === 'problem')).toBe(false);
+
+    const turns: AiPmLoopTurn[] = [
+      {
+        issueId: 'problem_definition',
+        answer: solutionAnswer,
+        appliedAt: '1',
+        semanticFactKey: 'business',
+        semanticFactKeys: ['business'],
+        intent: 'business_fact',
+        targetGap: 'solution',
+        askedQuestionText: solutionQuestion,
+      },
+    ];
+    const living = buildLivingUnderstandingState({
+      documentText: SEED,
+      understanding: buildBusinessUnderstanding(SEED),
+      turns,
+      memory: memoryFromTurns(turns),
+    });
+    const solutionGap = living.gaps.find((g) => g.fieldKey === 'solution');
+    expect(solutionGap?.status).not.toBe('open');
+  });
+
+  it('resolveAskedTargetGapForAppend prefers solution question text over problem_definition issue fallback', () => {
+    const solutionQuestion = '문제를 해결하는 방식(제공 가치)은 무엇인가요?';
+    expect(
+      resolveAskedTargetGapForAppend({
+        issueId: 'problem_definition',
+        questionText: solutionQuestion,
+        whyTargetGap: 'problemJtbd',
+        overrideTargetGap: 'problemJtbd',
+        fallbackTargetGap: 'problemJtbd',
+      }),
+    ).toBe('solution');
+  });
 });

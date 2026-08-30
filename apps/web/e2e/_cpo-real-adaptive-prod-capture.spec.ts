@@ -864,7 +864,11 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
       let facet = 'adaptive';
 
       // Loop 9h-c — on-slot answer when wrong-slot re-ask is pending (clears pending in engine)
-      if (
+      // Loop 9h-c — solution Q wins over stale wrong-slot pending (prevents problem append on solution ask)
+      if (/솔루션|해결하는 방식|제공 가치/i.test(q) && !facetsSeen.has('solution') && !usedAnswers.has(BANK.solution)) {
+        forced = BANK.solution;
+        facet = 'solution';
+      } else if (
         pendingBeforeAnswer === 'customerPersona' &&
         /(가장 필요로 하는 사람|누구인가요)/i.test(q) &&
         !/(크게 해결하려는 불편|핵심 불편|솔루션|해결하는 방식|제공 가치)/i.test(q)
@@ -907,9 +911,6 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
       } else if (/수익|가격|프라이싱/i.test(q) && !/누가\s*지불/i.test(q) && !facetsSeen.has('revenue') && !usedAnswers.has(BANK.revenue)) {
         forced = BANK.revenue;
         facet = 'revenue';
-      } else if (/솔루션|해결하는 방식|제공 가치/i.test(q) && !facetsSeen.has('solution') && !usedAnswers.has(BANK.solution)) {
-        forced = BANK.solution;
-        facet = 'solution';
       } else if (/수요|시장|근거/i.test(q) && !facetsSeen.has('demand') && !usedAnswers.has(BANK.demand)) {
         forced = BANK.demand;
         facet = 'demand';
