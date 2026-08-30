@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@repo/ui/lib/utils';
 
 import { formatFounderJudgmentSummary } from '../../lib/business-understanding/build-conversation-understanding-summary';
+import type { LivingUnderstandingState } from '../../lib/business-understanding/living-understanding-state';
 import type { AiPmLoopTurn } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import {
   countCriticalViabilityGaps,
