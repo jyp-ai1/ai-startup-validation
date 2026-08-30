@@ -164,7 +164,15 @@ export function presentThinkingSurface(
   }
 
   if (options.mode === 'ask') {
-    if (!issueId) return base;
+    const gapQuestion = options.gapQuestionText?.trim() ?? '';
+    if (!issueId) {
+      // Adaptive gap ask — Memory may mark fact Confirmed while engine still has a next question.
+      if (gapQuestion) {
+        base.nextQuestion = gapQuestion;
+        base.askLead = '그래서 먼저 이것만 알려주세요.';
+      }
+      return base;
+    }
     if (options.showDocumentLead) {
       base.documentLead = '문서를 확인했습니다.';
     }
@@ -172,8 +180,7 @@ export function presentThinkingSurface(
     base.unlockLead = '이것만 확인되면';
     base.unlockResult = UNLOCK_RESULT[issueId];
     base.askLead = '그래서 먼저 이것만 알려주세요.';
-    base.nextQuestion =
-      options.gapQuestionText?.trim() || QUESTION_BY_CATEGORY[issueId];
+    base.nextQuestion = gapQuestion || QUESTION_BY_CATEGORY[issueId];
     return base;
   }
 
@@ -186,6 +193,12 @@ export function presentThinkingSurface(
     base.nextFocusLead = next
       ? NEXT_FOCUS_BY_NEXT[next]
       : '이제 확인된 내용으로 다음 단계를 정리할 수 있습니다.';
+    const gapQuestion = options.gapQuestionText?.trim() ?? '';
+    if (gapQuestion) {
+      base.nextQuestion = gapQuestion;
+    } else if (next) {
+      base.nextQuestion = QUESTION_BY_CATEGORY[next];
+    }
   }
   return base;
 }

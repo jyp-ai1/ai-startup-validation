@@ -54,6 +54,7 @@ import {
 import { hasAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentThinking } from '../../lib/business-understanding/build-thinking-presenter';
 import { presentS11Surface } from '../../lib/business-understanding/build-s11-surface-presenter';
+import { buildConversationUnderstandingRows } from '../../lib/business-understanding/build-conversation-understanding-summary';
 import { THINKING_STAGES, type ThinkingStageId } from '../../lib/business-understanding/thinking-stages';
 import {
   applyLoopProcessingTransition,
@@ -117,16 +118,29 @@ function ConversationSecondaryBlocks({
   livingState,
   lastTurn,
   whyNow,
+  displayQuestionText,
 }: {
   s11Surface: ReturnType<typeof presentS11Surface>;
   livingState: ReturnType<typeof buildLivingUnderstandingState>;
   lastTurn: AiPmLoopTurn | null;
   whyNow: string | null | undefined;
+  displayQuestionText: string;
 }) {
+  const understandingRows = useMemo(
+    () => buildConversationUnderstandingRows(livingState),
+    [livingState],
+  );
+
   return (
     <>
       {whyNow ? <ConversationWhyNowBlock whyNow={whyNow} /> : null}
-      <WorkspaceS11Surface surface={s11Surface} sections="understanding" className="mt-4" />
+      <WorkspaceS11Surface
+        surface={s11Surface}
+        sections="understanding"
+        questionTextOverride={displayQuestionText}
+        understandingRows={understandingRows}
+        className="mt-4"
+      />
       <WorkspaceAiPmConversationDetail
         livingState={livingState}
         lastTurn={lastTurn}
@@ -430,6 +444,26 @@ export function WorkspaceAiPmLoopPanel({
     questionOverride,
     pendingWrongSlotReask,
     turnsWrongSlotOverride,
+  ]);
+
+  const displayQuestionText = useMemo(() => {
+    const fromEngine =
+      whyThisQuestionNow?.questionText?.trim() ||
+      turnsWrongSlotOverride?.questionText?.trim() ||
+      questionOverride?.questionText?.trim() ||
+      '';
+    const fromSurface = s11Surface.question.text.trim();
+    const fromRef = lastAskSurfaceRef.current.questionText?.trim() ?? '';
+    const issueFallback =
+      activeIssueId != null ? t(`issues.${activeIssueId}.question`) : '';
+    return fromEngine || fromSurface || fromRef || issueFallback;
+  }, [
+    activeIssueId,
+    questionOverride?.questionText,
+    s11Surface.question.text,
+    t,
+    turnsWrongSlotOverride?.questionText,
+    whyThisQuestionNow?.questionText,
   ]);
   const initialDiagnosis = useMemo(
     () => buildAiPmInitialDiagnosis(understanding, entities, documentText),
@@ -1577,7 +1611,12 @@ export function WorkspaceAiPmLoopPanel({
           className,
         )}
       >
-        <WorkspaceS11Surface surface={s11Surface} sections="question" hideWhyNow />
+        <WorkspaceS11Surface
+          surface={s11Surface}
+          sections="question"
+          hideWhyNow
+          questionTextOverride={displayQuestionText}
+        />
         {whyPanel ? (
           <div
             data-testid="why-follow-up-panel"
@@ -1629,7 +1668,7 @@ export function WorkspaceAiPmLoopPanel({
             whyThisQuestionNow?.questionText?.trim() || t(`issues.${activeIssue}.placeholder`)
           }
           className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[4.5rem]"
-          aria-label={s11Surface.question.text || t('submitAnswerCta')}
+          aria-label={displayQuestionText || t('submitAnswerCta')}
         />
         {answerQualityHint ? (
           <p
@@ -1744,6 +1783,7 @@ export function WorkspaceAiPmLoopPanel({
           livingState={livingState}
           lastTurn={lastTurn}
           whyNow={whyNowText}
+          displayQuestionText={displayQuestionText}
         />
       </section>
     );
@@ -1782,12 +1822,18 @@ export function WorkspaceAiPmLoopPanel({
               </p>
             ) : null}
             <p className="text-sm font-medium text-foreground">{t('reflectLead')}</p>
-            <WorkspaceS11Surface surface={s11Surface} sections="question" hideWhyNow />
+            <WorkspaceS11Surface
+              surface={s11Surface}
+              sections="question"
+              hideWhyNow
+              questionTextOverride={displayQuestionText}
+            />
             <ConversationSecondaryBlocks
               s11Surface={s11Surface}
               livingState={livingState}
               lastTurn={lastTurn}
               whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
+              displayQuestionText={displayQuestionText}
             />
             <Button
               type="button"
@@ -1805,7 +1851,12 @@ export function WorkspaceAiPmLoopPanel({
                 'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-4 py-4 sm:px-7 sm:py-5',
               )}
             >
-              <WorkspaceS11Surface surface={s11Surface} sections="question" hideWhyNow />
+              <WorkspaceS11Surface
+          surface={s11Surface}
+          sections="question"
+          hideWhyNow
+          questionTextOverride={displayQuestionText}
+        />
               <textarea
                 value={answerDraft}
                 onChange={(event) => {
@@ -1819,7 +1870,7 @@ export function WorkspaceAiPmLoopPanel({
                   (activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : undefined)
                 }
                 className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[5rem]"
-                aria-label={s11Surface.question.text || t('submitAnswerCta')}
+                aria-label={displayQuestionText || t('submitAnswerCta')}
               />
               {answerQualityHint ? (
                 <p
@@ -1883,6 +1934,7 @@ export function WorkspaceAiPmLoopPanel({
                 livingState={livingState}
                 lastTurn={lastTurn}
                 whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
+                displayQuestionText={displayQuestionText}
               />
             </section>
             {loopState.turns.length > 0 ? (

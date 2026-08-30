@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { cn } from '@repo/ui/lib/utils';
 
+import type { ConversationUnderstandingRow } from '../../lib/business-understanding/build-conversation-understanding-summary';
 import type { SurfacePresenter } from '../../lib/business-understanding/surface-presenter-contract';
 
 type WorkspaceS11SurfaceProps = {
@@ -12,6 +13,10 @@ type WorkspaceS11SurfaceProps = {
   hideWhyNow?: boolean;
   /** P0-3 — question-only on the active conversation surface. */
   sections?: 'all' | 'question' | 'understanding';
+  /** P0 CEO walkthrough — adaptive gap question when presenter issueId is null. */
+  questionTextOverride?: string | null;
+  /** P1 — labeled living-state summary instead of transcript lines. */
+  understandingRows?: ConversationUnderstandingRow[];
   className?: string;
 };
 
@@ -23,12 +28,15 @@ export function WorkspaceS11Surface({
   surface,
   hideWhyNow = false,
   sections = 'all',
+  questionTextOverride = null,
+  understandingRows,
   className,
 }: WorkspaceS11SurfaceProps) {
   const t = useTranslations('workflow.journey.workspaceShell.conversationUx');
-  const showQuestion = Boolean(surface.question.text.trim());
+  const questionText = (questionTextOverride ?? surface.question.text).trim();
+  const showQuestion = Boolean(questionText);
 
-  const understandingLines = [
+  const legacyUnderstandingLines = [
     ...surface.understanding.confirmed,
     ...surface.understanding.assumptions.map((item) => item.value),
   ];
@@ -43,7 +51,7 @@ export function WorkspaceS11Surface({
           <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
             {t('currentQuestionLabel')}
           </p>
-          <p className="text-lg font-semibold leading-relaxed sm:text-xl">{surface.question.text}</p>
+          <p className="text-lg font-semibold leading-relaxed sm:text-xl">{questionText}</p>
           {!hideWhyNow && surface.question.purpose ? (
             <details className="mt-1" data-testid="why-now-details">
               <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
@@ -70,9 +78,18 @@ export function WorkspaceS11Surface({
             {t('understandingToggle')}
           </summary>
           <div className="mt-3 space-y-3 border-t border-border/40 pt-3">
-          {understandingLines.length > 0 ? (
+          {understandingRows && understandingRows.length > 0 ? (
+            <dl className="space-y-2" data-testid="surface-understanding-summary">
+              {understandingRows.map((row) => (
+                <div key={row.label} className="grid gap-1 sm:grid-cols-[5rem_1fr]">
+                  <dt className="text-xs font-semibold text-muted-foreground">{row.label}</dt>
+                  <dd className="text-sm leading-relaxed">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : legacyUnderstandingLines.length > 0 ? (
             <ul className="space-y-2">
-              {understandingLines.map((line) => (
+              {legacyUnderstandingLines.map((line) => (
                 <li key={`u-${line}`} className="flex gap-2 text-sm leading-relaxed">
                   <span className="shrink-0 text-emerald-600" aria-hidden>
                     ·

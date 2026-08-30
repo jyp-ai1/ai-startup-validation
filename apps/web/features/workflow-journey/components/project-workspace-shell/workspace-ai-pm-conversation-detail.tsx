@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { cn } from '@repo/ui/lib/utils';
 
-import type { LivingUnderstandingState } from '../../lib/business-understanding/living-understanding-state';
+import { formatFounderJudgmentSummary } from '../../lib/business-understanding/build-conversation-understanding-summary';
 import type { AiPmLoopTurn } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import {
   countCriticalViabilityGaps,
@@ -37,7 +37,9 @@ export function WorkspaceAiPmConversationDetail({
         data-testid="current-judgment-block"
         className="mt-3 space-y-2 border-t border-border/40 pt-3"
       >
-        <p className="text-sm leading-relaxed text-foreground">{livingState.judgmentSummary}</p>
+        <p className="text-sm leading-relaxed text-foreground">
+          {formatFounderJudgmentSummary(livingState)}
+        </p>
         {lastTurn ? (
           <p
             data-testid="understanding-delta"

@@ -133,10 +133,15 @@ export function presentS11Surface(
   }
   out.understanding.assumptions = assumptions;
 
+  const gapQuestion = options.gapQuestionText?.trim() ?? '';
+
   if (options.mode === 'update') {
     out.decision.summary =
       surface.updateConfirm || surface.updateLead || '조건이 하나 충족되었습니다.';
-    out.question = { text: '', purpose: '' };
+    out.question = {
+      text: gapQuestion || surface.nextQuestion,
+      purpose: '',
+    };
     out.action.current = surface.nextFocusLead || '다음 확인으로 이어갑니다.';
     out.action.reason = surface.conditionMetLabel
       ? `${surface.conditionMetLabel}이 확인되어 다음 확인으로 이어갑니다.`
@@ -167,7 +172,7 @@ export function presentS11Surface(
     });
     out.decision.summary = copy.summary;
     out.decision.blockingReason = copy.blockingReason;
-    out.question.text = surface.nextQuestion;
+    out.question.text = gapQuestion || surface.nextQuestion;
     out.question.purpose =
       surface.unlockLead && surface.unlockResult
         ? `${surface.unlockLead} ${surface.unlockResult}`
@@ -188,13 +193,13 @@ export function presentS11Surface(
     out.decision.blockingReason = surface.blockedReason;
   }
 
-  out.question.text = surface.nextQuestion;
+  out.question.text = gapQuestion || surface.nextQuestion;
   out.question.purpose =
     surface.unlockLead && surface.unlockResult
       ? `${surface.unlockLead} ${surface.unlockResult}`
       : surface.unlockResult || '';
 
-  if (surface.nextQuestion) {
+  if (out.question.text) {
     out.action.current = '이 질문에 답해 주세요.';
     out.action.next = surface.unlockResult
       ? `${surface.unlockResult.replace(/\.$/, '')}.`
