@@ -6692,6 +6692,20 @@
           "review": "검토 준비",
           "analysis": "AI 분석 완료"
         },
+        "conversationUx": {
+          "seedToggle": "사업 내용 보기 ▾",
+          "currentQuestionLabel": "지금 질문",
+          "whyNowToggle": "▸ 왜 지금 이 질문인가요?",
+          "understandingToggle": "▸ 지금까지 AI가 이해한 내용",
+          "understandingEmpty": "아직 정리된 내용이 없습니다.",
+          "progressHint": "AI PM과 함께 검증 중",
+          "journey": {
+            "understand": "사업 이해",
+            "market": "시장 검증",
+            "viability": "사업성 검토",
+            "result": "결과 확인"
+          }
+        },
         "sharedUnderstanding": {
           "label": "제가 이해한 내용",
           "reflectUpdated": "이렇게 이해를 수정했습니다",
@@ -6941,6 +6955,7 @@
           },
           "reflectLead": "이렇게 이해를 수정했습니다",
           "understandingUpdatedFlash": "✓ AI 이해 업데이트 완료",
+          "detailToggle": "▸ 상세 보기",
           "judgmentLabel": "현재 판단",
           "coverageFlash": "구체화도 {percent}%",
           "turnAck": "좋습니다. {resolved}가 명확해졌습니다. 이제 {next}를 같이 보겠습니다.",

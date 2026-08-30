@@ -6539,6 +6539,20 @@
           "review": "Ready for review",
           "analysis": "AI analysis complete"
         },
+        "conversationUx": {
+          "seedToggle": "View business details ▾",
+          "currentQuestionLabel": "Current question",
+          "whyNowToggle": "▸ Why this question now?",
+          "understandingToggle": "▸ What AI understands so far",
+          "understandingEmpty": "Nothing confirmed yet.",
+          "progressHint": "Validating with AI PM",
+          "journey": {
+            "understand": "Business understanding",
+            "market": "Market validation",
+            "viability": "Viability review",
+            "result": "Results"
+          }
+        },
         "sharedUnderstanding": {
           "label": "What I understand so far",
           "reflectUpdated": "I've updated my understanding like this",
@@ -6788,6 +6802,7 @@
           },
           "reflectLead": "I've updated my understanding like this",
           "understandingUpdatedFlash": "✓ AI understanding updated",
+          "detailToggle": "▸ View details",
           "judgmentLabel": "Current judgment",
           "coverageFlash": "Specificity {percent}%",
           "turnAck": "Good — {resolved} is clearer now. Next we'll look at {next}.",

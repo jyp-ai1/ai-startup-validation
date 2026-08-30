@@ -32,6 +32,35 @@ function lifecycleSymbol(lifecycle: WorkspaceNavNode['lifecycle']): string {
   }
 }
 
+type SimplifiedJourneyStep = {
+  id: string;
+  lifecycle: WorkspaceNavNode['lifecycle'];
+};
+
+/** P0-5 — four user-facing stages (presentation only). */
+function toSimplifiedJourneySteps(
+  steps: NonNullable<WorkspaceSidebarSnapshot['journeySteps']>,
+): SimplifiedJourneyStep[] {
+  const byId = Object.fromEntries(steps.map((step) => [step.id, step.lifecycle]));
+
+  const merge = (
+    a: WorkspaceNavNode['lifecycle'],
+    b: WorkspaceNavNode['lifecycle'],
+  ): WorkspaceNavNode['lifecycle'] => {
+    if (a === 'completed' && b === 'completed') return 'completed';
+    if (a === 'in_progress' || b === 'in_progress') return 'in_progress';
+    if (a === 'completed' || b === 'completed') return 'in_progress';
+    return 'waiting';
+  };
+
+  return [
+    { id: 'understand', lifecycle: merge(byId.business ?? 'waiting', byId.customer ?? 'waiting') },
+    { id: 'market', lifecycle: byId.market ?? 'waiting' },
+    { id: 'viability', lifecycle: byId.review ?? 'waiting' },
+    { id: 'result', lifecycle: byId.analysis ?? 'waiting' },
+  ];
+}
+
 export function WorkspaceSidebar({
   snapshot,
   mainView,
@@ -42,6 +71,10 @@ export function WorkspaceSidebar({
   className,
 }: WorkspaceSidebarProps) {
   const t = useTranslations('workflow.journey.workspaceShell');
+  const simplifiedSteps =
+    snapshot.hideProgressMetrics && snapshot.journeySteps?.length
+      ? toSimplifiedJourneySteps(snapshot.journeySteps)
+      : null;
 
   return (
     <aside
@@ -111,7 +144,36 @@ export function WorkspaceSidebar({
           {t('sidebar.progressLabel')}
         </p>
 
-        {snapshot.stepFirstProgress && snapshot.journeySteps?.length ? (
+        {snapshot.stepFirstProgress && simplifiedSteps?.length ? (
+          <ul className="mb-6 space-y-1" aria-label={t('sidebar.journeyLabel')}>
+            {simplifiedSteps.map((step) => {
+              const symbol = lifecycleSymbol(step.lifecycle);
+              return (
+                <li
+                  key={step.id}
+                  className={cn(
+                    'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm',
+                    step.lifecycle === 'in_progress' && 'bg-primary/10 font-medium text-primary',
+                    step.lifecycle === 'completed' && 'text-foreground',
+                    step.lifecycle === 'waiting' && 'text-muted-foreground',
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'w-4 shrink-0 text-center text-xs',
+                      step.lifecycle === 'in_progress' && 'text-primary',
+                      step.lifecycle === 'completed' && 'text-emerald-600',
+                    )}
+                    aria-hidden
+                  >
+                    {symbol}
+                  </span>
+                  {t(`conversationUx.journey.${step.id}` as 'conversationUx.journey.understand')}
+                </li>
+              );
+            })}
+          </ul>
+        ) : snapshot.stepFirstProgress && snapshot.journeySteps?.length ? (
           <ul className="mb-6 space-y-1" aria-label={t('sidebar.journeyLabel')}>
             {snapshot.journeySteps.map((step) => {
               const symbol = lifecycleSymbol(step.lifecycle);
@@ -158,42 +220,44 @@ export function WorkspaceSidebar({
           {t('strip.label')}
         </button>
 
-        <div className="mb-6">
-          <p className="mb-2 text-sm font-semibold">{t('sections.overview')}</p>
-          <ul className="space-y-0.5">
-            {snapshot.nodes.map((node) => {
-              const active = mainView === 'overview' && activeNodeId === node.id;
-              const symbol = lifecycleSymbol(node.lifecycle);
-              return (
-                <li key={node.id}>
-                  <button
-                    type="button"
-                    onClick={() => onSelectNode(node.id)}
-                    className={cn(
-                      'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors',
-                      active
-                        ? 'bg-primary/10 font-medium text-primary'
-                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
-                      node.lifecycle === 'completed' && !active && 'text-foreground',
-                    )}
-                  >
-                    <span
+        {!snapshot.hideProgressMetrics ? (
+          <div className="mb-6">
+            <p className="mb-2 text-sm font-semibold">{t('sections.overview')}</p>
+            <ul className="space-y-0.5">
+              {snapshot.nodes.map((node) => {
+                const active = mainView === 'overview' && activeNodeId === node.id;
+                const symbol = lifecycleSymbol(node.lifecycle);
+                return (
+                  <li key={node.id}>
+                    <button
+                      type="button"
+                      onClick={() => onSelectNode(node.id)}
                       className={cn(
-                        'w-4 shrink-0 text-center text-xs',
-                        node.lifecycle === 'in_progress' && 'text-primary',
-                        node.lifecycle === 'completed' && 'text-emerald-600',
+                        'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors',
+                        active
+                          ? 'bg-primary/10 font-medium text-primary'
+                          : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+                        node.lifecycle === 'completed' && !active && 'text-foreground',
                       )}
-                      aria-hidden
                     >
-                      {symbol}
-                    </span>
-                    {t(`nodeStatus.${node.id}.${node.lifecycle}`)}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+                      <span
+                        className={cn(
+                          'w-4 shrink-0 text-center text-xs',
+                          node.lifecycle === 'in_progress' && 'text-primary',
+                          node.lifecycle === 'completed' && 'text-emerald-600',
+                        )}
+                        aria-hidden
+                      >
+                        {symbol}
+                      </span>
+                      {t(`nodeStatus.${node.id}.${node.lifecycle}`)}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : null}
 
         <div className="space-y-4 opacity-45">
           {[t('sections.insights'), t('sections.recommendations'), t('sections.actions')].map(

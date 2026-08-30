@@ -1,34 +1,49 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import type { WorkspaceBusinessState } from '../../lib/business-understanding/build-ai-pm-business-clarity';
 import { cn } from '@repo/ui/lib/utils';
 
 type WorkspaceBusinessStateHeaderProps = {
+  projectName: string;
   state: WorkspaceBusinessState;
   className?: string;
 };
 
-/** S4 narrative header — structured snapshot deferred to S6.2. */
+/** P0-1 — project name only; full seed text in collapsible. */
 export function WorkspaceBusinessStateHeader({
+  projectName,
   state,
   className,
 }: WorkspaceBusinessStateHeaderProps) {
+  const t = useTranslations('workflow.journey.workspaceShell.conversationUx');
+  const seedText =
+    state.clarity?.initialSummary?.trim() ||
+    state.headline?.trim() ||
+    state.headlineLines.join('\n').trim();
+
   return (
     <section
       className={cn(
-        'shrink-0 border-b border-primary/20 bg-gradient-to-r from-primary/[0.06] via-background to-background px-4 py-4 sm:px-6 lg:px-8',
+        'shrink-0 border-b border-border/60 bg-background px-4 py-3 sm:px-6 lg:px-8',
         className,
       )}
-      aria-label={state.label}
+      aria-label={projectName}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{state.label}</p>
-      <div className="mt-2 space-y-1">
-        {state.headlineLines.map((line) => (
-          <p key={line} className="text-base font-semibold leading-snug tracking-tight text-foreground sm:text-lg">
-            {line}
+      <h1 className="truncate text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+        {projectName}
+      </h1>
+      {seedText ? (
+        <details className="mt-2" data-testid="business-seed-details">
+          <summary className="cursor-pointer text-xs font-medium text-primary">
+            {t('seedToggle')}
+          </summary>
+          <p className="mt-2 max-w-3xl whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+            {seedText}
           </p>
-        ))}
-      </div>
+        </details>
+      ) : null}
     </section>
   );
 }

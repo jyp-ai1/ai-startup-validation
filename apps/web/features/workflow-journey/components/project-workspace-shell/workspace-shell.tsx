@@ -12,6 +12,7 @@ import { cn } from '@repo/ui/lib/utils';
 import { JourneyGlobalNav } from '../journey-global-nav';
 import { WorkspaceAiPmStrip } from './workspace-ai-pm-strip';
 import { WorkspaceBusinessStateHeader } from './workspace-business-state-header';
+import { WorkspaceConversationProgressBar } from './workspace-conversation-progress-bar';
 import { WorkspaceSharedUnderstandingPanel } from './workspace-shared-understanding-panel';
 import { WorkspaceSidebar } from './workspace-sidebar';
 import type { WorkspaceBusinessState } from '../../lib/business-understanding/build-ai-pm-business-clarity';
@@ -87,7 +88,7 @@ export function ProjectWorkspaceShell({
               </span>
             ) : null}
             {!businessState && projectName ? (
-              <p className="truncate text-sm text-muted-foreground">{projectName}</p>
+              <p className="truncate text-sm font-medium text-foreground">{projectName}</p>
             ) : null}
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -97,7 +98,9 @@ export function ProjectWorkspaceShell({
         </div>
       </header>
 
-      {businessState ? <WorkspaceBusinessStateHeader state={businessState} /> : null}
+      {businessState ? (
+        <WorkspaceBusinessStateHeader projectName={projectName} state={businessState} />
+      ) : null}
 
       {sharedUnderstanding ? (
         <WorkspaceSharedUnderstandingPanel
@@ -124,8 +127,11 @@ export function ProjectWorkspaceShell({
 
         <main
           id="main-content"
-          className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-10 sm:py-10 lg:px-[clamp(2.5rem,6vw,5rem)]"
+          className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-10 sm:py-10 lg:px-[clamp(2.5rem,6vw,5rem)] max-sm:py-3"
         >
+          {mainView === 'ai-pm' && sidebar.hideProgressMetrics ? (
+            <WorkspaceConversationProgressBar snapshot={sidebar} />
+          ) : null}
           {children}
         </main>
       </div>

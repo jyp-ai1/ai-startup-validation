@@ -26,12 +26,6 @@ type WorkspaceSharedUnderstandingPanelProps = {
 
 const HIGHLIGHT_MS = 1800;
 
-const MARK_GLYPH = {
-  known: '✔',
-  progress: '●',
-  unknown: '○',
-} as const;
-
 function provenanceLabelKey(provenance: UnderstandingProvenance): string {
   switch (provenance) {
     case 'DOCUMENT':
@@ -49,7 +43,7 @@ function provenanceLabelKey(provenance: UnderstandingProvenance): string {
   }
 }
 
-/** S8-1 + S17-2 + Long Sprint Spine — always-visible understanding with Summary/Detail. */
+/** P0-2 — collapsed by default; no BUSINESS/CUSTOMER/PROBLEM labels on default surface. */
 export function WorkspaceSharedUnderstandingPanel({
   understanding,
   spine = null,
@@ -58,6 +52,7 @@ export function WorkspaceSharedUnderstandingPanel({
   className,
 }: WorkspaceSharedUnderstandingPanelProps) {
   const t = useTranslations('workflow.journey.workspaceShell.sharedUnderstanding');
+  const tUx = useTranslations('workflow.journey.workspaceShell.conversationUx');
   const prevRef = useRef<WorkspaceSharedUnderstanding | null>(null);
   const [autoHighlight, setAutoHighlight] = useState<FieldKey[]>([]);
   const [showReflect, setShowReflect] = useState(false);
@@ -92,85 +87,90 @@ export function WorkspaceSharedUnderstandingPanel({
     { key: 'problem', value: understanding.problem },
   ];
 
+  const summaryLine = rows
+    .map((row) => row.value.trim())
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(' · ');
+
   return (
     <section
       data-testid="shared-understanding-panel"
       className={cn(
-        'shrink-0 border-b border-border/60 bg-muted/20 px-4 py-3 sm:px-6 sm:py-4 lg:px-8',
+        'shrink-0 border-b border-border/60 bg-muted/10 px-4 py-2 sm:px-6 lg:px-8',
         className,
       )}
-      aria-label={t('label')}
+      aria-label={tUx('understandingToggle')}
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{t('label')}</p>
-        <div className="flex flex-wrap items-center gap-2">
+      <details>
+        <summary className="cursor-pointer py-2 text-xs font-medium text-muted-foreground">
+          {tUx('understandingToggle')}
+          {summaryLine ? (
+            <span className="ml-2 font-normal text-foreground/70">— {summaryLine}</span>
+          ) : null}
+        </summary>
+        <div className="pb-3 pt-1">
           {showReflect ? (
             <p
               data-testid="shared-understanding-reflect"
-              className="animate-in fade-in text-xs font-medium text-amber-800 dark:text-amber-200"
+              className="animate-in fade-in mb-2 text-xs font-medium text-amber-800 dark:text-amber-200"
             >
               {t('reflectUpdated')}
             </p>
           ) : null}
-          <button
-            type="button"
-            data-testid="shared-understanding-detail-toggle"
-            className="text-xs font-medium text-primary underline-offset-2 hover:underline"
-            aria-expanded={detailOpen}
-            onClick={() => setDetailOpen((open) => !open)}
-          >
-            {detailOpen ? t('summaryCta') : t('detailCta')}
-          </button>
-        </div>
-      </div>
-      <dl className="mt-3 grid gap-3 sm:grid-cols-3">
-        {rows.map((row) => {
-          const highlighted = autoHighlight.includes(row.key);
-          const mark = spine?.marks[row.key] ?? 'progress';
-          const provenance = spine?.provenance[row.key];
-          return (
-            <div
-              key={row.key}
-              data-highlighted={highlighted ? 'true' : undefined}
-              data-mark={mark}
-              className={cn(
-                'min-w-0 rounded-lg px-2 py-1.5 transition-[background-color,box-shadow,opacity] duration-500',
-                highlighted
-                  ? 'bg-amber-100/90 opacity-100 shadow-[inset_0_0_0_1px_rgba(251,191,36,0.55)] dark:bg-amber-950/50'
-                  : 'bg-transparent opacity-100',
-              )}
+          <div className="flex flex-wrap items-baseline justify-end gap-2">
+            <button
+              type="button"
+              data-testid="shared-understanding-detail-toggle"
+              className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+              aria-expanded={detailOpen}
+              onClick={() => setDetailOpen((open) => !open)}
             >
-              <dt className="flex flex-wrap items-baseline gap-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                <span aria-hidden className="font-semibold text-foreground/70">
-                  {MARK_GLYPH[mark]}
-                </span>
-                <span>{t(`fields.${row.key}`)}</span>
-              </dt>
-              <dd
-                className={cn(
-                  'mt-1 text-sm font-medium leading-snug text-foreground',
-                  highlighted && 'animate-in fade-in duration-500',
-                )}
-              >
-                {row.value}
-              </dd>
-              {provenance ? (
-                <p
-                  data-testid={`shared-understanding-provenance-${row.key}`}
-                  className="mt-1 text-[11px] text-muted-foreground"
+              {detailOpen ? t('summaryCta') : t('detailCta')}
+            </button>
+          </div>
+          <ul className="mt-2 space-y-3">
+            {rows.map((row) => {
+              const highlighted = autoHighlight.includes(row.key);
+              const provenance = spine?.provenance[row.key];
+              return (
+                <li
+                  key={row.key}
+                  data-highlighted={highlighted ? 'true' : undefined}
+                  className={cn(
+                    'rounded-lg px-2 py-1.5 transition-[background-color,box-shadow,opacity] duration-500',
+                    highlighted
+                      ? 'bg-amber-100/90 opacity-100 shadow-[inset_0_0_0_1px_rgba(251,191,36,0.55)] dark:bg-amber-950/50'
+                      : 'bg-transparent opacity-100',
+                  )}
                 >
-                  {t(provenanceLabelKey(provenance))}
-                  {detailOpen && provenance === 'AI_INFERENCE' ? (
-                    <span className="ml-1 text-amber-700 dark:text-amber-300">
-                      · {t('inferenceNotFact')}
-                    </span>
+                  <p
+                    className={cn(
+                      'text-sm font-medium leading-snug text-foreground',
+                      highlighted && 'animate-in fade-in duration-500',
+                    )}
+                  >
+                    {row.value}
+                  </p>
+                  {detailOpen && provenance ? (
+                    <p
+                      data-testid={`shared-understanding-provenance-${row.key}`}
+                      className="mt-1 text-[11px] text-muted-foreground"
+                    >
+                      {t(provenanceLabelKey(provenance))}
+                      {provenance === 'AI_INFERENCE' ? (
+                        <span className="ml-1 text-amber-700 dark:text-amber-300">
+                          · {t('inferenceNotFact')}
+                        </span>
+                      ) : null}
+                    </p>
                   ) : null}
-                </p>
-              ) : null}
-            </div>
-          );
-        })}
-      </dl>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </details>
     </section>
   );
 }

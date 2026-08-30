@@ -89,8 +89,48 @@ import { WorkspaceDocumentTrustBlock } from './workspace-document-trust-block';
 import { WorkspaceAiPmReturnWelcomeBlock } from './workspace-ai-pm-return-welcome-block';
 import { WorkspaceAiPmReadingSequence } from './workspace-ai-pm-reading-sequence';
 import { WorkspaceAiPmThinkingStages } from './workspace-ai-pm-thinking-stages';
+import { WorkspaceAiPmConversationDetail } from './workspace-ai-pm-conversation-detail';
 import { WorkspaceS11Surface } from './workspace-s11-surface';
 import type { WorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
+
+function ConversationWhyNowBlock({
+  whyNow,
+}: {
+  whyNow: string;
+}) {
+  return (
+    <details className="mt-4 rounded-xl border border-border/50 bg-muted/10 px-4 py-3" data-testid="why-now-details">
+      <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
+        ▸ 왜 지금 이 질문인가요?
+      </summary>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{whyNow}</p>
+    </details>
+  );
+}
+
+function ConversationSecondaryBlocks({
+  s11Surface,
+  livingState,
+  lastTurn,
+  whyNow,
+}: {
+  s11Surface: ReturnType<typeof presentS11Surface>;
+  livingState: ReturnType<typeof buildLivingUnderstandingState>;
+  lastTurn: AiPmLoopTurn | null;
+  whyNow: string | null | undefined;
+}) {
+  return (
+    <>
+      {whyNow ? <ConversationWhyNowBlock whyNow={whyNow} /> : null}
+      <WorkspaceS11Surface surface={s11Surface} sections="understanding" className="mt-4" />
+      <WorkspaceAiPmConversationDetail
+        livingState={livingState}
+        lastTurn={lastTurn}
+        className="mt-4"
+      />
+    </>
+  );
+}
 
 type WorkspaceAiPmLoopPanelProps = {
   understanding: BusinessUnderstanding;
@@ -1438,56 +1478,45 @@ export function WorkspaceAiPmLoopPanel({
           {t('completeLead', { count: loopState.turns.length })}
         </p>
         <p className="mt-2 text-sm text-muted-foreground">{t('completeSub')}</p>
-        <div
-          data-testid="current-judgment-block"
-          className="mt-4 rounded-xl border border-border/60 bg-background/80 px-4 py-3"
-        >
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-            {t('judgmentLabel')}
-          </p>
-          <p
-            data-testid="final-closeout-label"
-            className="mt-2 text-sm font-medium leading-relaxed text-foreground"
+        <details className="mt-4 rounded-xl border border-border/60 bg-background/80 px-4 py-3">
+          <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
+            {t('detailToggle')}
+          </summary>
+          <div
+            data-testid="current-judgment-block"
+            className="mt-3 space-y-2 border-t border-border/40 pt-3"
           >
-            {finalOutput.closeoutLabel}
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            {finalOutput.judgmentSummary}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {t('coverageFlash', { percent: finalOutput.coveragePercent })}
-          </p>
-        </div>
-        <ul className="mt-4 space-y-3">
-          {finalOutput.sections.map((section) => (
-            <li
-              key={section.id}
-              data-section={section.id}
-              className="rounded-lg border border-border/40 px-3 py-2.5"
+            <p
+              data-testid="final-closeout-label"
+              className="text-sm font-medium leading-relaxed text-foreground"
             >
-              <p className="text-xs font-semibold text-foreground">{section.title}</p>
-              <p className="mt-1 text-sm leading-snug">{section.summary}</p>
-              {section.claims?.length ? (
-                <ul className="mt-2 space-y-1">
-                  {section.claims.map((row) => (
-                    <li
-                      key={`${section.id}-${row.domain}`}
-                      className="text-[11px] text-muted-foreground"
-                      data-claim-status={row.status}
-                    >
-                      · {row.domain}: {row.value ?? '—'} ({row.status})
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-              {section.evidence.length > 0 ? (
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  {section.evidence[0]}
-                </p>
-              ) : null}
-            </li>
-          ))}
-        </ul>
+              {finalOutput.closeoutLabel}
+            </p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {finalOutput.judgmentSummary}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {t('coverageFlash', { percent: finalOutput.coveragePercent })}
+            </p>
+          </div>
+          <ul className="mt-4 space-y-3">
+            {finalOutput.sections.map((section) => (
+              <li
+                key={section.id}
+                data-section={section.id}
+                className="rounded-lg border border-border/40 px-3 py-2.5"
+              >
+                <p className="text-xs font-semibold text-foreground">{section.title}</p>
+                <p className="mt-1 text-sm leading-snug">{section.summary}</p>
+                {section.evidence.length > 0 ? (
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    {section.evidence[0]}
+                  </p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </details>
       </section>
     );
   }
@@ -1531,54 +1560,17 @@ export function WorkspaceAiPmLoopPanel({
   const activeIssue = activeIssueId;
 
   if (displayPhase === 'answer' && activeIssue) {
+    const whyNowText =
+      whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale ?? s11Surface.question.purpose;
+
     return (
       <section
         className={cn(
-          'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7',
+          'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-4 py-4 sm:px-7 sm:py-5',
           className,
         )}
       >
-        <div
-          data-testid="current-judgment-block"
-          className="mb-4 rounded-xl border border-border/50 bg-muted/20 px-4 py-3"
-        >
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-            {t('judgmentLabel')}
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-foreground">
-            {livingState.judgmentSummary}
-          </p>
-          {lastTurn ? (
-            <p
-              data-testid="understanding-delta"
-              className="mt-2 text-xs text-emerald-800 dark:text-emerald-300"
-            >
-              {lastTurn.understandingDelta?.trim() || '이해 상태 갱신됨'}
-            </p>
-          ) : null}
-          {whyThisQuestionNow?.whyNow ? (
-            <details className="mt-2" data-testid="why-now-details">
-              <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
-                왜 지금 이 질문을 하나요?
-              </summary>
-              <p className="mt-1 text-xs leading-relaxed text-foreground/90">
-                {whyThisQuestionNow.whyNow}
-              </p>
-            </details>
-          ) : null}
-          <p className="mt-1 text-xs text-muted-foreground">
-            {t('coverageFlash', { percent: livingState.coveragePercent })}
-          </p>
-          {countCriticalViabilityGaps(livingState) > 0 ? (
-            <p
-              data-testid="critical-gap-block-hint"
-              className="mt-2 text-xs text-amber-800 dark:text-amber-200"
-            >
-              {explainSufficiency(livingState).explanation}
-            </p>
-          ) : null}
-        </div>
-        <WorkspaceS11Surface surface={s11Surface} />
+        <WorkspaceS11Surface surface={s11Surface} sections="question" hideWhyNow />
         {whyPanel ? (
           <div
             data-testid="why-follow-up-panel"
@@ -1624,12 +1616,12 @@ export function WorkspaceAiPmLoopPanel({
             setAnswerQualityHint(null);
             setAnswerDraft(event.target.value);
           }}
-          rows={5}
+          rows={4}
           readOnly={readOnly}
           placeholder={
             whyThisQuestionNow?.questionText?.trim() || t(`issues.${activeIssue}.placeholder`)
           }
-          className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
+          className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[4.5rem]"
           aria-label={s11Surface.question.text || t('submitAnswerCta')}
         />
         {answerQualityHint ? (
@@ -1647,27 +1639,20 @@ export function WorkspaceAiPmLoopPanel({
             className="mt-3 space-y-3 rounded-xl border border-amber-500/40 bg-amber-500/[0.06] px-4 py-3"
           >
             <p className="text-sm font-medium text-foreground">
-              이전에 확인한 내용과 새 답변이 다릅니다. 어느 쪽이 현재 이해(Current Understanding)인지
-              확인해 주세요. 자동으로 합치지 않습니다.
+              이전에 확인한 내용과 새 답변이 다릅니다. 어느 쪽이 맞는지 확인해 주세요.
             </p>
             <dl className="grid gap-2 text-sm sm:grid-cols-2">
               <div>
                 <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Old Fact (이전 확인)
+                  이전 확인
                 </dt>
                 <dd className="mt-1 font-medium">{contradiction.prior}</dd>
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  새 답을 채택하면 Superseded로 남습니다.
-                </p>
               </div>
               <div>
                 <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  New Fact (새 답변)
+                  새 답변
                 </dt>
                 <dd className="mt-1 font-medium">{contradiction.next}</dd>
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  채택 시 Current Understanding이 됩니다.
-                </p>
               </div>
             </dl>
             <div className="flex flex-wrap gap-2">
@@ -1678,7 +1663,7 @@ export function WorkspaceAiPmLoopPanel({
                 disabled={readOnly}
                 onClick={() => resolveContradiction('keep_prior')}
               >
-                이전 내용이 맞아 (Current = Old)
+                이전 내용이 맞아요
               </Button>
               <Button
                 type="button"
@@ -1686,7 +1671,7 @@ export function WorkspaceAiPmLoopPanel({
                 disabled={readOnly}
                 onClick={() => resolveContradiction('accept_new')}
               >
-                새 답변이 맞아 (Old → Superseded)
+                새 답변이 맞아요
               </Button>
             </div>
           </div>
@@ -1724,10 +1709,10 @@ export function WorkspaceAiPmLoopPanel({
             </Button>
           </div>
         ) : null}
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:bg-gradient-to-t max-sm:from-background max-sm:via-background max-sm:to-background/80 max-sm:pt-2">
           <Button
             type="button"
-            className="rounded-xl"
+            className="rounded-xl max-sm:w-full"
             data-testid="submit-answer-cta"
             disabled={readOnly || answerDraft.trim().length < 2}
             onClick={submitAnswer}
@@ -1747,6 +1732,12 @@ export function WorkspaceAiPmLoopPanel({
             </Button>
           ) : null}
         </div>
+        <ConversationSecondaryBlocks
+          s11Surface={s11Surface}
+          livingState={livingState}
+          lastTurn={lastTurn}
+          whyNow={whyNowText}
+        />
       </section>
     );
   }
@@ -1783,40 +1774,14 @@ export function WorkspaceAiPmLoopPanel({
                 {t('understandingUpdatedFlash')}
               </p>
             ) : null}
-            <div
-              data-testid="current-judgment-block"
-              className="rounded-xl border border-border/50 bg-muted/20 px-4 py-3"
-            >
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                {t('judgmentLabel')}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-foreground">
-                {livingState.judgmentSummary}
-              </p>
-              {lastTurn ? (
-                <p
-                  data-testid="understanding-delta"
-                  className="mt-2 text-xs text-emerald-800 dark:text-emerald-300"
-                >
-                  {lastTurn.understandingDelta?.trim() || '이해 상태 갱신됨'}
-                </p>
-              ) : null}
-              {whyThisQuestionNow?.whyNow ? (
-                <details className="mt-2" data-testid="why-now-details">
-                  <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
-                    왜 지금 이 질문을 하나요?
-                  </summary>
-                  <p className="mt-1 text-xs leading-relaxed text-foreground/90">
-                    {whyThisQuestionNow.whyNow}
-                  </p>
-                </details>
-              ) : null}
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t('coverageFlash', { percent: livingState.coveragePercent })}
-              </p>
-            </div>
             <p className="text-sm font-medium text-foreground">{t('reflectLead')}</p>
-            <WorkspaceS11Surface surface={s11Surface} />
+            <WorkspaceS11Surface surface={s11Surface} sections="question" hideWhyNow />
+            <ConversationSecondaryBlocks
+              s11Surface={s11Surface}
+              livingState={livingState}
+              lastTurn={lastTurn}
+              whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
+            />
             <Button
               type="button"
               className="rounded-xl"
@@ -1830,53 +1795,10 @@ export function WorkspaceAiPmLoopPanel({
           <>
             <section
               className={cn(
-                'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-5 py-5 sm:px-7',
+                'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-4 py-4 sm:px-7 sm:py-5',
               )}
             >
-              <div
-                data-testid="current-judgment-block"
-                className="mb-4 rounded-xl border border-border/50 bg-muted/20 px-4 py-3"
-              >
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  {t('judgmentLabel')}
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-foreground">
-                  {livingState.judgmentSummary}
-                </p>
-                {lastTurn ? (
-                  <p
-                    data-testid="understanding-delta"
-                    className="mt-2 text-xs text-emerald-800 dark:text-emerald-300"
-                  >
-                    {lastTurn.understandingDelta?.trim() || '이해 상태 갱신됨'}
-                  </p>
-                ) : null}
-                {whyThisQuestionNow?.whyNow ? (
-                  <details className="mt-2" data-testid="why-now-details">
-                    <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
-                      왜 지금 이 질문을 하나요?
-                    </summary>
-                    <p className="mt-1 text-xs leading-relaxed text-foreground/90">
-                      {whyThisQuestionNow.whyNow}
-                    </p>
-                  </details>
-                ) : null}
-                <p
-                  data-testid="understanding-coverage-percent"
-                  className="mt-1 text-xs text-muted-foreground"
-                >
-                  {t('coverageFlash', { percent: livingState.coveragePercent })}
-                </p>
-                {countCriticalViabilityGaps(livingState) > 0 ? (
-                  <p
-                    data-testid="critical-gap-block-hint"
-                    className="mt-2 text-xs text-amber-800 dark:text-amber-200"
-                  >
-                    {explainSufficiency(livingState).explanation}
-                  </p>
-                ) : null}
-              </div>
-              <WorkspaceS11Surface surface={s11Surface} />
+              <WorkspaceS11Surface surface={s11Surface} sections="question" hideWhyNow />
               <textarea
                 value={answerDraft}
                 onChange={(event) => {
@@ -1949,6 +1871,12 @@ export function WorkspaceAiPmLoopPanel({
                   </ul>
                 </div>
               ) : null}
+              <ConversationSecondaryBlocks
+                s11Surface={s11Surface}
+                livingState={livingState}
+                lastTurn={lastTurn}
+                whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
+              />
             </section>
             {loopState.turns.length > 0 ? (
               <Button
