@@ -67,14 +67,33 @@ CEO free-form on customerPersona ask
 
 ---
 
-## CPO copy-paste block
+## Production 3/3 CEO input verification (FINAL)
+
+**Capture:** 2026-08-30T13:14:23Z · 3 fresh sessions · 4.2m total harness time
+
+| Input | semanticFactKey | gap closed | next gap | persona repeat |
+|-------|-----------------|------------|----------|----------------|
+| 예약 전에 맞춤 일정을 원하는 방한 외국인 | `customer` | customerPersona | problemJtbd | **0** |
+| 동선 낭비 없이 여행하고 싶은 외국인 | `customer` | customerPersona | problemJtbd | **0** |
+| 차별점을 예약 전에 체감하고 싶은 사람 | `customer` | customerPersona | problemJtbd | **0** |
+
+**Causal chain proven (each input):** user input → classification → semanticFactKey=customer → customerPersona CLOSED → next gap=problemJtbd → persona repeat=0
+
+**Regression:** reAsk/wrong-slot/mixed-Q baseline @ `4755e27` unchanged by persona-only fix; unit 79/79 PASS @ `294ac87`
+
+See [CEO_THREE_INPUT_VERIFICATION.md](./CEO_THREE_INPUT_VERIFICATION.md) · `ceo-three-input-summary.json` · `input-{1,2,3}/transcript-raw.json`
+
+---
+
+## CPO copy-paste block (FINAL)
 
 ```text
-=== CEO Walkthrough Persona Loop Fix — CPO Re-judgment Request ===
+=== CEO Walkthrough Persona Loop Fix — CPO Final Re-judgment Request ===
 
 Production SHA: 294ac87bea13ec19dfe198dc22946eb21f2e9fbd
 Deploy time: 2026-08-30T12:40:21.682Z
 Fix commit: fix(persona): close customerPersona gap for CEO free-form answers
+Final verification: 2026-08-30T13:14:23Z (3/3 fresh Production sessions)
 
 ROOT CAUSE (proven):
   CEO free-form persona answers with relevance co-words (예약 전, 동선, 체감)
@@ -85,30 +104,38 @@ FIX (minimal):
   NO turn-count escape · NO reAsk ban change · NO UX/spine overhaul
 
 LOCAL VERIFICATION:
-  Unit: 79/79 PASS (ceo-persona-loop-repro + core-final-stabilization)
+  Unit: 79/79 PASS (ceo-persona-loop-repro 16/16 + core-final-stabilization 78/78)
 
-PRODUCTION VERIFICATION:
-  Harness: PASS @ 294ac87 (1.4m, _cpo-ceo-persona-loop-prod-capture.spec.ts)
-  CEO input: "예약 전에 맞춤 일정을 원하는 방한 외국인"
-  customerPersona closed: YES (after 1st CEO answer)
-  Next gap: problemJtbd
-  Persona repeats: 0
+PRODUCTION VERIFICATION (3/3 fresh sessions):
+  Harness: 3/3 PASS @ 294ac87 (4.2m, _cpo-ceo-persona-loop-prod-capture.spec.ts)
+
+  | Input | semanticFactKey | gap closed | next gap | persona repeat |
+  | 예약 전에 맞춤 일정을 원하는 방한 외국인 | customer | customerPersona | problemJtbd | 0 |
+  | 동선 낭비 없이 여행하고 싶은 외국인 | customer | customerPersona | problemJtbd | 0 |
+  | 차별점을 예약 전에 체감하고 싶은 사람 | customer | customerPersona | problemJtbd | 0 |
+
+REGRESSION (@ 294ac87 persona fix only):
+  reAsk=0 baseline @ 4755e27 unchanged (no engine path change)
+  wrong-slot P0-1 preserved (unit)
+  mixed-Q/padding=0 (no harness padding added)
 
 PASS CRITERIA MET (CTO):
   ✓ Production SHA verified
-  ✓ CEO free-form closes customerPersona via normal classification
-  ✓ Transition to next critical gap (problemJtbd)
-  ✓ No infinite persona repeat
+  ✓ CEO 3/3 free-form closes customerPersona via normal classification
+  ✓ semanticFactKey=customer on all 3 Production paths
+  ✓ Transition to problemJtbd on all 3
+  ✓ Persona repeat=0 on all 3
+  ✓ Adaptive regression baseline unchanged
 
-CPO PASS: NOT declared — submitted for CPO re-judgment
+CPO PASS: NOT declared — submitted for CPO final judgment
 CEO Walkthrough: HOLD until CPO re-judgment
 
 Evidence:
+  docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-loop/CEO_THREE_INPUT_VERIFICATION.md
+  docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-loop/ceo-three-input-summary.json
+  docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-loop/input-{1,2,3}/transcript-raw.json
   docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-loop/INFINITE_LOOP_EVIDENCE.md
   docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-loop/CPO_SUBMISSION.md
-  docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-loop/transcript-raw.json
-  docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-loop/prod-build-info.json
-  docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-loop/media/
 ```
 
 ---
@@ -117,8 +144,11 @@ Evidence:
 
 | Path | Role |
 |------|------|
+| `CEO_THREE_INPUT_VERIFICATION.md` | 3/3 Production causal chains |
+| `ceo-three-input-summary.json` | Machine-readable 3/3 summary |
+| `input-{1,2,3}/transcript-raw.json` | Per-input Production captures |
 | `INFINITE_LOOP_EVIDENCE.md` | Full BEFORE/AFTER + fix scope |
 | `CPO_SUBMISSION.md` | This document |
-| `transcript-raw.json` | Production harness capture |
+| `transcript-raw.json` | Input #1 legacy mirror |
 | `prod-build-info.json` | SHA poll artifact |
-| `media/` | Screenshots T01–T07 |
+| `media/` | Input #1 legacy screenshots |

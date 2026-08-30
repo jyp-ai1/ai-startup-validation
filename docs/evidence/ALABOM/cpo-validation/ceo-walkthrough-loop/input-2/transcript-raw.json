@@ -1,10 +1,10 @@
 {
-  "at": "2026-08-30T13:10:15.102Z",
+  "at": "2026-08-30T13:11:39.151Z",
   "productionCommit": "294ac87bea13ec19dfe198dc22946eb21f2e9fbd",
   "seed": "외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.",
   "scenario": "ceo-persona-loop",
-  "inputId": 1,
-  "ceoAnswer": "예약 전에 맞춤 일정을 원하는 방한 외국인",
+  "inputId": 2,
+  "ceoAnswer": "동선 낭비 없이 여행하고 싶은 외국인",
   "turns": [
     {
       "turn": 1,
@@ -76,7 +76,7 @@
       "turn": 7,
       "label": "ceo-persona-answer",
       "aiQuestion": "CURRENT QUESTION\n\n지금 가장 크게 해결하려는 불편은 무엇인가요?",
-      "userAnswer": "예약 전에 맞춤 일정을 원하는 방한 외국인",
+      "userAnswer": "동선 낭비 없이 여행하고 싶은 외국인",
       "targetGapHint": "",
       "storedFactsGaps": "",
       "nextQuestion": "CURRENT QUESTION\n\n지금 가장 크게 해결하려는 불편은 무엇인가요?",
@@ -90,6 +90,5 @@
   "lastTurnSemanticFactKey": "customer",
   "lastTurnTargetGap": "customerPersona",
   "customerPersonaClosed": true,
-  "verdict": "PASS — semanticFactKey=customer; customerPersona closed; next gap not persona repeat",
-  "note": "input-1 canonical; see input-2/ input-3/ and ceo-three-input-summary.json"
+  "verdict": "PASS — semanticFactKey=customer; customerPersona closed; next gap not persona repeat"
 }

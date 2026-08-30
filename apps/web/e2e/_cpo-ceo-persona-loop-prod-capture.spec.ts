@@ -2,23 +2,23 @@
  * CEO Walkthrough — Customer persona infinite loop reproduction on Production.
  * Uses CEO free-form answers (NOT BANK.customer harness keywords).
  *
+ * Runs 3 separate fresh sessions — one per canonical CEO input.
+ *
  * From apps/web:
  *   $env:CI='1'; $env:PLAYWRIGHT_BASE_URL='https://ai-startup-validation-tau.vercel.app'
  *   pnpm exec playwright test e2e/_cpo-ceo-persona-loop-prod-capture.spec.ts --retries=0
  */
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page, type APIRequestContext } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const OUT = process.env.ALABOM_CAPTURE_OUT
+const BASE_OUT = process.env.ALABOM_CAPTURE_OUT
   ? path.resolve(process.env.ALABOM_CAPTURE_OUT)
   : path.resolve(
       process.cwd(),
       '../../docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-loop',
     );
-const MEDIA = path.join(OUT, 'media');
-const RAW_JSON = path.join(OUT, 'transcript-raw.json');
-fs.mkdirSync(MEDIA, { recursive: true });
+fs.mkdirSync(BASE_OUT, { recursive: true });
 
 const SEED =
   '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.';
@@ -38,12 +38,12 @@ const NAV_BANK = {
     '아직 MVP 전 아이디어 단계이고, 서울 한정으로 관심사 기반 맞춤 반나절 체험을 먼저 검증하려 합니다.',
 };
 
-/** CEO free-form persona answers — omit BANK keywords (FIT/MZ/초기 타깃). */
-const CEO_PERSONA_ANSWERS = [
-  '예약 전에 맞춤 일정을 원하는 방한 외국인',
-  '동선 낭비 없이 여행하고 싶은 외국인',
-  '차별점을 예약 전에 체감하고 싶은 사람',
-];
+/** Canonical CEO free-form persona answers — omit BANK keywords (FIT/MZ/초기 타깃). */
+const CEO_PERSONA_INPUTS = [
+  { id: 1, answer: '예약 전에 맞춤 일정을 원하는 방한 외국인' },
+  { id: 2, answer: '동선 낭비 없이 여행하고 싶은 외국인' },
+  { id: 3, answer: '차별점을 예약 전에 체감하고 싶은 사람' },
+] as const;
 
 const PERSONA_Q_RE = /필요로 하는|구체 고객|누구인가요|타깃|대상|절실히/i;
 const PROBLEM_Q_RE = /불편|문제|풀려는|해결하려는|페인|JTBD/i;
@@ -60,43 +60,47 @@ type TurnSnap = {
   screenshot?: string;
 };
 
-type CaptureState = {
+type InputCaptureState = {
   at: string;
   productionCommit: string;
   seed: string;
   scenario: 'ceo-persona-loop';
+  inputId: number;
+  ceoAnswer: string;
   turns: TurnSnap[];
   personaQuestionRepeats: number;
-  customerGapClosedAfterFirstCeoAnswer: boolean | null;
+  customerGapClosedAfterCeoAnswer: boolean | null;
   nextGapAfterPersona: string | null;
+  lastTurnSemanticFactKey: string | null;
+  lastTurnTargetGap: string | null;
+  customerPersonaClosed: boolean | null;
   verdict: string | null;
 };
 
-const state: CaptureState = {
-  at: new Date().toISOString(),
-  productionCommit: '',
-  seed: SEED,
-  scenario: 'ceo-persona-loop',
-  turns: [],
-  personaQuestionRepeats: 0,
-  customerGapClosedAfterFirstCeoAnswer: null,
-  nextGapAfterPersona: null,
-  verdict: null,
+type ThreeInputSummary = {
+  at: string;
+  productionCommit: string;
+  inputs: Array<{
+    inputId: number;
+    ceoAnswer: string;
+    semanticFactKey: string | null;
+    customerPersonaClosed: boolean;
+    nextGap: string | null;
+    personaRepeat: number;
+    verdict: string;
+  }>;
+  allPass: boolean;
 };
 
-let turnCounter = 0;
-let shotSeq = 0;
-
-function persist() {
-  fs.writeFileSync(RAW_JSON, JSON.stringify(state, null, 2), 'utf8');
-}
+const PERSONA_Q_RE_FN = PERSONA_Q_RE;
+const PROBLEM_Q_RE_FN = PROBLEM_Q_RE;
 
 function isPersonaQuestion(q: string): boolean {
-  return PERSONA_Q_RE.test(q) && !/차별|경쟁|비슷한 역할|대안/i.test(q);
+  return PERSONA_Q_RE_FN.test(q) && !/차별|경쟁|비슷한 역할|대안/i.test(q);
 }
 
 function isProblemQuestion(q: string): boolean {
-  return PROBLEM_Q_RE.test(q);
+  return PROBLEM_Q_RE_FN.test(q);
 }
 
 async function dismissCookies(page: Page) {
@@ -210,33 +214,44 @@ async function submitAnswer(page: Page, answer: string): Promise<boolean> {
   return true;
 }
 
-async function snapTurn(
-  page: Page,
-  label: string,
-  userAnswer: string,
-  shot?: string,
-): Promise<TurnSnap> {
-  turnCounter += 1;
-  shotSeq += 1;
-  const fileName = shot ? `${String(shotSeq).padStart(2, '0')}-${shot}` : undefined;
-  if (fileName) {
-    await page.screenshot({ path: path.join(MEDIA, fileName), fullPage: true }).catch(() => null);
-  }
-  const aiQuestion = await textOrEmpty(page, 'surface-question');
-  const row: TurnSnap = {
-    turn: turnCounter,
-    label,
-    aiQuestion,
-    userAnswer,
-    targetGapHint: await textOrEmpty(page, 'target-gap-hint'),
-    storedFactsGaps: await textOrEmpty(page, 'stored-facts-gaps'),
-    nextQuestion: '',
-    personaRepeat: false,
-    screenshot: fileName,
-  };
-  state.turns.push(row);
-  persist();
-  return row;
+async function readLastMeaningfulTurn(page: Page): Promise<{
+  semanticFactKey: string | null;
+  targetGap: string | null;
+  answer: string | null;
+} | null> {
+  return page.evaluate(() => {
+    for (let i = 0; i < sessionStorage.length; i += 1) {
+      const k = sessionStorage.key(i);
+      if (!k?.includes('aiPmLoop')) continue;
+      const raw = sessionStorage.getItem(k);
+      if (!raw) continue;
+      try {
+        const parsed = JSON.parse(raw) as {
+          turns?: Array<{
+            answer?: string;
+            semanticFactKey?: string | null;
+            targetGap?: string | null;
+            superseded?: boolean;
+            intent?: string;
+          }>;
+        };
+        const turns = parsed.turns ?? [];
+        for (let j = turns.length - 1; j >= 0; j -= 1) {
+          const t = turns[j]!;
+          if (t.superseded) continue;
+          if (t.intent === 'why_meta' || t.intent === 'mid_judgment' || t.intent === 'nonsense') continue;
+          return {
+            semanticFactKey: t.semanticFactKey ?? null,
+            targetGap: t.targetGap ?? null,
+            answer: t.answer ?? null,
+          };
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+    return null;
+  });
 }
 
 function pickNavAnswer(question: string): string {
@@ -253,7 +268,14 @@ function pickNavAnswer(question: string): string {
   return NAV_BANK.fallback;
 }
 
-async function answerUntilPersonaOrLimit(page: Page, maxTurns = 16): Promise<string> {
+async function answerUntilPersonaOrLimit(
+  page: Page,
+  state: InputCaptureState,
+  outDir: string,
+  persist: () => void,
+  snapTurn: (label: string, userAnswer: string, shot?: string) => Promise<TurnSnap>,
+  maxTurns = 16,
+): Promise<string> {
   const navFallbacks = [
     NAV_BANK.competitor,
     NAV_BANK.differentiation,
@@ -277,78 +299,179 @@ async function answerUntilPersonaOrLimit(page: Page, maxTurns = 16): Promise<str
     lastQ = q;
     if (!(await submitAnswer(page, filler))) break;
     await waitAsk(page);
-    await snapTurn(page, `prefill-${i + 1}`, filler, `prefill-${i + 1}.png`);
+    await snapTurn(`prefill-${i + 1}`, filler, `prefill-${i + 1}.png`);
   }
   return await textOrEmpty(page, 'surface-question');
 }
 
-test.describe.configure({ mode: 'serial' });
+async function runCeoInputJourney(
+  page: Page,
+  request: APIRequestContext,
+  input: (typeof CEO_PERSONA_INPUTS)[number],
+): Promise<InputCaptureState> {
+  const outDir = path.join(BASE_OUT, `input-${input.id}`);
+  const mediaDir = path.join(outDir, 'media');
+  fs.mkdirSync(mediaDir, { recursive: true });
+  const rawJson = path.join(outDir, 'transcript-raw.json');
 
-test('CEO persona loop — Production path with free-form answers', async ({ page, request }) => {
-  test.setTimeout(360_000);
+  let turnCounter = 0;
+  let shotSeq = 0;
+
+  const state: InputCaptureState = {
+    at: new Date().toISOString(),
+    productionCommit: '',
+    seed: SEED,
+    scenario: 'ceo-persona-loop',
+    inputId: input.id,
+    ceoAnswer: input.answer,
+    turns: [],
+    personaQuestionRepeats: 0,
+    customerGapClosedAfterCeoAnswer: null,
+    nextGapAfterPersona: null,
+    lastTurnSemanticFactKey: null,
+    lastTurnTargetGap: null,
+    customerPersonaClosed: null,
+    verdict: null,
+  };
+
+  const persist = () => {
+    fs.writeFileSync(rawJson, JSON.stringify(state, null, 2), 'utf8');
+  };
+
+  const snapTurn = async (label: string, userAnswer: string, shot?: string): Promise<TurnSnap> => {
+    turnCounter += 1;
+    shotSeq += 1;
+    const fileName = shot ? `${String(shotSeq).padStart(2, '0')}-${shot}` : undefined;
+    if (fileName) {
+      await page.screenshot({ path: path.join(mediaDir, fileName), fullPage: true }).catch(() => null);
+    }
+    const aiQuestion = await textOrEmpty(page, 'surface-question');
+    const row: TurnSnap = {
+      turn: turnCounter,
+      label,
+      aiQuestion,
+      userAnswer,
+      targetGapHint: await textOrEmpty(page, 'target-gap-hint'),
+      storedFactsGaps: await textOrEmpty(page, 'stored-facts-gaps'),
+      nextQuestion: '',
+      personaRepeat: false,
+      screenshot: fileName,
+    };
+    state.turns.push(row);
+    persist();
+    return row;
+  };
 
   const build = await request.get('/api/build-info');
   const buildJson = (await build.json()) as { data?: { commit?: string } };
   state.productionCommit = buildJson.data?.commit ?? '';
   fs.writeFileSync(
-    path.join(OUT, 'prod-build-info.json'),
-    JSON.stringify({ commit: state.productionCommit, at: state.at }, null, 2),
+    path.join(outDir, 'prod-build-info.json'),
+    JSON.stringify({ commit: state.productionCommit, at: state.at, inputId: input.id }, null, 2),
   );
 
   await startDemo(page);
-  await snapTurn(page, 'after-ai-read', '(seed)', 'after-ai-read.png');
+  await snapTurn('after-ai-read', '(seed)', 'after-ai-read.png');
   await confirmSeed(page);
-  await snapTurn(page, 'after-confirm', '(confirm)', 'after-confirm.png');
+  await snapTurn('after-confirm', '(confirm)', 'after-confirm.png');
 
-  const personaQ = await answerUntilPersonaOrLimit(page);
-  expect(isPersonaQuestion(personaQ), `Expected persona Q, got: ${personaQ.slice(0, 80)}`).toBe(true);
-  await snapTurn(page, 'persona-ask', '(awaiting CEO answer)', 'persona-ask.png');
+  const personaQ = await answerUntilPersonaOrLimit(page, state, outDir, persist, snapTurn);
+  expect(isPersonaQuestion(personaQ), `[input-${input.id}] Expected persona Q, got: ${personaQ.slice(0, 80)}`).toBe(
+    true,
+  );
+  await snapTurn('persona-ask', '(awaiting CEO answer)', 'persona-ask.png');
 
-  let lastPersonaQ = personaQ;
-  let personaRepeats = 0;
+  expect(await submitAnswer(page, input.answer)).toBe(true);
+  await page.getByTestId('s11-surface').waitFor({ state: 'visible', timeout: 15_000 }).catch(() => null);
+  const nextQ = await textOrEmpty(page, 'surface-question');
+  const row = await snapTurn('ceo-persona-answer', input.answer, 'ceo-persona-answer.png');
+  row.nextQuestion = nextQ;
 
-  for (let i = 0; i < CEO_PERSONA_ANSWERS.length; i++) {
-    const answer = CEO_PERSONA_ANSWERS[i]!;
-    expect(await submitAnswer(page, answer)).toBe(true);
-    await page.getByTestId('s11-surface').waitFor({ state: 'visible', timeout: 15_000 }).catch(() => null);
-    const nextQ = await textOrEmpty(page, 'surface-question');
-    const row = await snapTurn(page, `ceo-persona-${i + 1}`, answer, `ceo-persona-${i + 1}.png`);
-    row.nextQuestion = nextQ;
+  const lastTurn = await readLastMeaningfulTurn(page);
+  state.lastTurnSemanticFactKey = lastTurn?.semanticFactKey ?? null;
+  state.lastTurnTargetGap = lastTurn?.targetGap ?? null;
 
-    if (i === 0) {
-      state.customerGapClosedAfterFirstCeoAnswer = !isPersonaQuestion(nextQ);
-      state.nextGapAfterPersona = isProblemQuestion(nextQ)
-        ? 'problemJtbd'
-        : isPersonaQuestion(nextQ)
-          ? 'customerPersona (still open)'
-          : 'other';
-    }
+  const personaRepeat = isPersonaQuestion(nextQ);
+  row.personaRepeat = personaRepeat;
+  state.personaQuestionRepeats = personaRepeat ? 1 : 0;
+  state.customerGapClosedAfterCeoAnswer = !personaRepeat;
+  state.customerPersonaClosed = state.lastTurnSemanticFactKey === 'customer' && !personaRepeat;
+  state.nextGapAfterPersona = isProblemQuestion(nextQ)
+    ? 'problemJtbd'
+    : personaRepeat
+      ? 'customerPersona (still open)'
+      : 'other';
 
-    if (isPersonaQuestion(nextQ)) {
-      personaRepeats += 1;
-      row.personaRepeat = true;
-      lastPersonaQ = nextQ;
-    } else {
-      break;
-    }
-  }
-
-  state.personaQuestionRepeats = personaRepeats;
-
-  if (state.customerGapClosedAfterFirstCeoAnswer) {
-    state.verdict = 'PASS — CEO persona answer closed gap; next question is not persona repeat';
-  } else if (personaRepeats >= 2) {
-    state.verdict = `FAIL — persona question repeated ${personaRepeats + 1} times (infinite loop)`;
+  if (state.customerGapClosedAfterCeoAnswer && state.lastTurnSemanticFactKey === 'customer') {
+    state.verdict = 'PASS — semanticFactKey=customer; customerPersona closed; next gap not persona repeat';
+  } else if (personaRepeat) {
+    state.verdict = 'FAIL — persona question repeated after CEO answer';
+  } else if (state.lastTurnSemanticFactKey !== 'customer') {
+    state.verdict = `FAIL — semanticFactKey=${state.lastTurnSemanticFactKey ?? 'null'} (expected customer)`;
   } else {
     state.verdict = 'FAIL — customerPersona gap did not close after CEO answer';
   }
   persist();
 
   expect(
-    state.customerGapClosedAfterFirstCeoAnswer,
-    `Persona loop on prod @ ${state.productionCommit.slice(0, 7)} — repeats=${personaRepeats}, lastQ=${lastPersonaQ.slice(0, 60)}`,
+    state.customerGapClosedAfterCeoAnswer,
+    `[input-${input.id}] Persona loop on prod @ ${state.productionCommit.slice(0, 7)} — semanticFactKey=${state.lastTurnSemanticFactKey}`,
   ).toBe(true);
-  expect(isProblemQuestion(await textOrEmpty(page, 'surface-question')) || !isPersonaQuestion(lastPersonaQ)).toBe(
-    true,
-  );
-});
+  expect(state.lastTurnSemanticFactKey, `[input-${input.id}] semanticFactKey must be customer`).toBe('customer');
+  expect(isProblemQuestion(nextQ), `[input-${input.id}] next gap must be problemJtbd`).toBe(true);
+  expect(state.personaQuestionRepeats, `[input-${input.id}] persona repeat must be 0`).toBe(0);
+
+  return state;
+}
+
+function writeThreeInputSummary(results: InputCaptureState[]) {
+  const summary: ThreeInputSummary = {
+    at: new Date().toISOString(),
+    productionCommit: results[0]?.productionCommit ?? '',
+    inputs: results.map((r) => ({
+      inputId: r.inputId,
+      ceoAnswer: r.ceoAnswer,
+      semanticFactKey: r.lastTurnSemanticFactKey,
+      customerPersonaClosed: r.customerGapClosedAfterCeoAnswer === true && r.lastTurnSemanticFactKey === 'customer',
+      nextGap: r.nextGapAfterPersona,
+      personaRepeat: r.personaQuestionRepeats,
+      verdict: r.verdict ?? 'UNKNOWN',
+    })),
+    allPass: results.every(
+      (r) =>
+        r.customerGapClosedAfterCeoAnswer === true &&
+        r.lastTurnSemanticFactKey === 'customer' &&
+        r.nextGapAfterPersona === 'problemJtbd' &&
+        r.personaQuestionRepeats === 0,
+    ),
+  };
+  fs.writeFileSync(path.join(BASE_OUT, 'ceo-three-input-summary.json'), JSON.stringify(summary, null, 2), 'utf8');
+
+  // Legacy single-file transcript for input-1 (backward compat)
+  if (results[0]) {
+    fs.writeFileSync(
+      path.join(BASE_OUT, 'transcript-raw.json'),
+      JSON.stringify({ ...results[0], note: 'input-1 canonical; see input-2/ input-3/ and ceo-three-input-summary.json' }, null, 2),
+      'utf8',
+    );
+    fs.writeFileSync(
+      path.join(BASE_OUT, 'prod-build-info.json'),
+      JSON.stringify({ commit: results[0].productionCommit, at: results[0].at }, null, 2),
+    );
+  }
+}
+
+test.describe.configure({ mode: 'serial' });
+
+const collectedResults: InputCaptureState[] = [];
+
+for (const input of CEO_PERSONA_INPUTS) {
+  test(`CEO persona input #${input.id} — fresh Production session`, async ({ page, request }) => {
+    test.setTimeout(360_000);
+    const result = await runCeoInputJourney(page, request, input);
+    collectedResults.push(result);
+    if (collectedResults.length === CEO_PERSONA_INPUTS.length) {
+      writeThreeInputSummary(collectedResults);
+    }
+  });
+}

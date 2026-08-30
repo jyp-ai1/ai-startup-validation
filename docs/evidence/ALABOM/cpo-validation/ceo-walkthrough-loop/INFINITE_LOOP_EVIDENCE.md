@@ -166,9 +166,44 @@ Harness regression: existing @ `4755e27` evidence **reAsk=0**; no harness paddin
 
 ---
 
+## Phase 5 — Production 3/3 CEO input verification (FINAL @ `294ac87`)
+
+**Capture:** 2026-08-30T13:14:23Z · 3 separate fresh `/demo/start?fresh=1` sessions · 4.2m total
+
+```powershell
+cd apps/web
+$env:CI='1'
+$env:PLAYWRIGHT_BASE_URL='https://ai-startup-validation-tau.vercel.app'
+pnpm exec playwright test e2e/_cpo-ceo-persona-loop-prod-capture.spec.ts --retries=0
+```
+
+| # | Input | semanticFactKey | customerPersona closed? | Next gap | Persona repeats |
+|---|-------|-----------------|-------------------------|----------|-----------------|
+| 1 | 예약 전에 맞춤 일정을 원하는 방한 외국인 | `customer` | **YES** | **problemJtbd** | **0** |
+| 2 | 동선 낭비 없이 여행하고 싶은 외국인 | `customer` | **YES** | **problemJtbd** | **0** |
+| 3 | 차별점을 예약 전에 체감하고 싶은 사람 | `customer` | **YES** | **problemJtbd** | **0** |
+
+**Causal chain (each input):** user input → classification → semanticFactKey=customer → customerPersona CLOSED → next gap=problemJtbd → persona repeat=0
+
+**Artifacts:** `ceo-three-input-summary.json` · `input-{1,2,3}/transcript-raw.json` · [CEO_THREE_INPUT_VERIFICATION.md](./CEO_THREE_INPUT_VERIFICATION.md)
+
+### Adaptive regression (@ `294ac87`)
+
+Persona fix is scoped to `persona-answer-cues.ts` + semantic routing — **no change** to adaptive engine paths @ `4755e27`.
+
+| Metric | Baseline @4755e27 | Post-persona-fix |
+|--------|-------------------|------------------|
+| reAsk | **0** | unchanged (25-turn capture not re-run; engine diff scoped) |
+| wrong-slot | **0** | P0-1 preserved in unit tests |
+| mixed-Q / padding | **0** | no CEO harness padding |
+
+Unit @ `294ac87`: **79/79 PASS** (ceo-persona-loop-repro + core-final-stabilization)
+
+---
+
 ## CPO verdict
 
-**CEO Walkthrough: HOLD** — Production harness PASS @ `294ac87`; submitted for CPO re-judgment (not CTO-declared PASS).
+**CEO Walkthrough: HOLD** — Production 3/3 CEO input verification PASS @ `294ac87`; submitted for CPO final judgment (not CTO-declared PASS).
 
 **CPO PASS: NOT declared.**
 
@@ -185,4 +220,5 @@ See [CPO_SUBMISSION.md](./CPO_SUBMISSION.md) for copy-paste block.
 | `../../real-adaptive-vnext/CPO_SUBMISSION.md` | Harness reAsk=0 baseline |
 | `apps/web/.../persona-answer-cues.ts` | Fix |
 | `apps/web/.../__tests__/ceo-persona-loop-repro.test.ts` | CEO answer matrix |
-| `apps/web/e2e/_cpo-ceo-persona-loop-prod-capture.spec.ts` | Production CEO-input re-verify |
+| `apps/web/e2e/_cpo-ceo-persona-loop-prod-capture.spec.ts` | Production 3/3 CEO-input re-verify |
+| `CEO_THREE_INPUT_VERIFICATION.md` | 3/3 causal chain summary |

@@ -90,6 +90,5 @@
   "lastTurnSemanticFactKey": "customer",
   "lastTurnTargetGap": "customerPersona",
   "customerPersonaClosed": true,
-  "verdict": "PASS — semanticFactKey=customer; customerPersona closed; next gap not persona repeat",
-  "note": "input-1 canonical; see input-2/ input-3/ and ceo-three-input-summary.json"
+  "verdict": "PASS — semanticFactKey=customer; customerPersona closed; next gap not persona repeat"
 }
