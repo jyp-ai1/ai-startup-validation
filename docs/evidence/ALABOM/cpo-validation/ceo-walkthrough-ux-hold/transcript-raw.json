@@ -1,7 +1,7 @@
 {
-  "at": "2026-08-30T14:48:25.696Z",
-  "productionCommit": "768c123d318c3995f98199b597412ed6a0a951a3",
-  "deployTime": "2026-08-30T14:48:27.095Z",
+  "at": "2026-08-30T15:07:24.087Z",
+  "productionCommit": "44c0ecb6810d4debcfd6cea6fd9ecf9e4b38e635",
+  "deployTime": "2026-08-30T15:07:25.750Z",
   "targetSha": "eff9d23",
   "shaMatch": false,
   "seed": "외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.",
@@ -73,18 +73,25 @@
     },
     {
       "id": "understanding-panel-labeled-rows",
-      "pass": false,
-      "note": "labels=(none)"
+      "pass": true,
+      "note": "labels=고객, 문제, 해결 방법, 수익, 차별점, 수요"
     }
   ],
   "understandingPanel": {
     "expanded": true,
-    "hasSummaryRows": false,
-    "rowLabels": [],
+    "hasSummaryRows": true,
+    "rowLabels": [
+      "고객",
+      "문제",
+      "해결 방법",
+      "수익",
+      "차별점",
+      "수요"
+    ],
     "screenshot": "docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-ux-hold/media/understanding-panel.png"
   },
   "observations": [
-    "BLOCKED: Production at 768c123 — target eff9d23 deploy FAILED (Vercel build TS error)",
+    "BLOCKED: Production at 44c0ecb — target eff9d23 deploy FAILED (Vercel build TS error)",
     "Capture runs on current Production baseline to document pre-fix UX state until redeploy succeeds."
   ]
 }

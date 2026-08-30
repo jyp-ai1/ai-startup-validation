@@ -1,12 +1,10 @@
 {
-  "commit": "768c123d318c3995f98199b597412ed6a0a951a3",
-  "targetSha": "eff9d23",
-  "shaMatch": false,
-  "deployTime": "2026-08-30T14:48:27.095Z",
-  "deployStatus": "blocked",
-  "vercelDeploymentId": "dpl_6pMZJrB3MAjAk72CePMonGLycnvc",
-  "vercelDeployResult": "failure",
-  "vercelBuildError": "Type error: Cannot find name LivingUnderstandingState in workspace-ai-pm-conversation-detail.tsx",
-  "at": "2026-08-30T14:48:25.696Z",
-  "source": "GET /api/build-info"
+  "commit": "44c0ecb6810d4debcfd6cea6fd9ecf9e4b38e635",
+  "targetSha": "44c0ecb",
+  "shaMatch": true,
+  "deployTime": "2026-08-30T15:05:52.863Z",
+  "deployStatus": "live",
+  "at": "2026-08-30T15:07:24.087Z",
+  "source": "GET /api/build-info",
+  "includes": ["eff9d23 UX fix", "LivingUnderstandingState import fix"]
 }
