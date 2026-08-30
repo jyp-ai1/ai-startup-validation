@@ -1145,7 +1145,7 @@ export function WorkspaceAiPmLoopPanel({
     const priorPendingGap = getLastWrongSlotReaskPendingGap(loopState.turns);
     const wrongSlotReaskPending =
       resolveWrongSlotReaskPendingAtSubmit({
-        questionText: visibleQuestionText,
+        questionText: displayedQuestionText,
         answer: trimmed,
         priorPendingGap,
       }) ?? undefined;
