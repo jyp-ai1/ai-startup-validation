@@ -107,6 +107,37 @@ function isBankPersonaSegmentAnswer(answer: string): boolean {
   );
 }
 
+function isOnSlotPersonaAnswer(answer: string): boolean {
+  return answer.length >= 2 && !isBankDiffRelevanceAnswer(answer) && isBankPersonaSegmentAnswer(answer);
+}
+
+function isOnSlotProblemAnswer(answer: string): boolean {
+  return (
+    answer.length >= 2 &&
+    !isBankPersonaSegmentAnswer(answer) &&
+    PROBLEM_CUE_RE.test(answer)
+  );
+}
+
+/** Loop 9h-c — user answered the pending re-ask gap on-slot (clears wrongSlotReaskPending). */
+export function shouldClearWrongSlotReaskPendingAtSubmit(input: {
+  pendingGap: string;
+  questionText: string | null | undefined;
+  answer: string;
+}): boolean {
+  const pendingGap = input.pendingGap.trim();
+  const answer = input.answer.trim();
+  if (answer.length < 2 || !pendingGap) return false;
+
+  if (pendingGap === 'customerPersona') {
+    return isPersonaQuestionText(input.questionText) && isOnSlotPersonaAnswer(answer);
+  }
+  if (pendingGap === 'problemJtbd') {
+    return isProblemQuestionText(input.questionText) && isOnSlotProblemAnswer(answer);
+  }
+  return false;
+}
+
 /**
  * Loop 9f — nuclear bypass when UI display + BANK answer pattern match but poisoned
  * targetGap / semantic keys prevented semantic wrong-slot detection (@ 940800e live).
@@ -195,7 +226,19 @@ export function resolveNuclearWrongSlotBypass(
 export function resolveWrongSlotReaskPendingAtSubmit(input: {
   questionText: string | null | undefined;
   answer: string;
+  /** Prior turn's persisted pending gap — cleared when on-slot re-ask answer received. */
+  priorPendingGap?: string | null;
 }): string | null {
+  if (
+    input.priorPendingGap &&
+    shouldClearWrongSlotReaskPendingAtSubmit({
+      pendingGap: input.priorPendingGap,
+      questionText: input.questionText,
+      answer: input.answer,
+    })
+  ) {
+    return null;
+  }
   return resolveWrongSlotReaskGap(resolveNuclearWrongSlotAtSubmit(input));
 }
 
@@ -540,8 +583,37 @@ export function resolveWrongSlotReaskGap(ctx: WrongSlotMergeContext | null): str
  */
 /** True while a wrong-slot re-ask is pending — blocks solution re-ask loops (P0-2 / reAsk=6). */
 export function hasPendingWrongSlotReask(turns: AiPmLoopTurn[] | undefined): boolean {
-  if (getLastWrongSlotReaskPendingGap(turns)) return true;
-  return resolveWrongSlotReaskGap(detectWrongSlotMergeContext(turns)) != null;
+  const pending = getLastWrongSlotReaskPendingGap(turns);
+  if (pending) {
+    const last = lastMergeableTurn(turns);
+    if (
+      last &&
+      shouldClearWrongSlotReaskPendingAtSubmit({
+        pendingGap: pending,
+        questionText: last.askedQuestionText,
+        answer: last.answer ?? '',
+      })
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  const reaskGap = resolveWrongSlotReaskGap(detectWrongSlotMergeContext(turns));
+  if (!reaskGap) return false;
+
+  const last = lastMergeableTurn(turns);
+  if (
+    last &&
+    shouldClearWrongSlotReaskPendingAtSubmit({
+      pendingGap: reaskGap,
+      questionText: last.askedQuestionText,
+      answer: last.answer ?? '',
+    })
+  ) {
+    return false;
+  }
+  return true;
 }
 
 export function resolveWrongSlotQuestionAnchor(

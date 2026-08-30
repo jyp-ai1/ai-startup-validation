@@ -80,7 +80,7 @@ import { interpretAnswerSemantics } from '../../lib/business-understanding/inter
 import { reframeQuestion, buildConflictClarifyQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
 import { resolveAskedTargetGapForAppend } from '../../lib/business-understanding/resolve-asked-target-gap';
 import { inferTargetGapFromQuestionText, resolveGapQuestionBinding } from '../../lib/business-understanding/gap-question-map';
-import { resolveNuclearWrongSlotAtSubmit, resolveWrongSlotReaskPendingAtSubmit, hasPendingWrongSlotReask } from '../../lib/business-understanding/wrong-slot-priority';
+import { resolveNuclearWrongSlotAtSubmit, resolveWrongSlotReaskPendingAtSubmit, hasPendingWrongSlotReask, getLastWrongSlotReaskPendingGap } from '../../lib/business-understanding/wrong-slot-priority';
 import { countUnclosedGapAsks, MAX_SAME_GAP_ASKS_BEFORE_YIELD } from '../../lib/business-understanding/question-decision-engine';
 import { enforceQuestionPurity } from '../../lib/business-understanding/question-purity';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
@@ -1128,10 +1128,12 @@ export function WorkspaceAiPmLoopPanel({
       targetGap: askedGap,
     });
 
+    const priorPendingGap = getLastWrongSlotReaskPendingGap(loopState.turns);
     const wrongSlotReaskPending =
       resolveWrongSlotReaskPendingAtSubmit({
         questionText: visibleQuestionText,
         answer: trimmed,
+        priorPendingGap,
       }) ?? undefined;
 
     const projectedTurn: AiPmLoopTurn = {

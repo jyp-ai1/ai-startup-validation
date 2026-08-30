@@ -118,6 +118,8 @@ type TurnSnap = {
   notes?: string[];
   templateLikeHints?: string[];
   metaOnly?: boolean;
+  /** Loop 9h-c — wrongSlotReaskPending set on the turn just submitted (if any). */
+  wrongSlotPendingSet?: string | null;
 };
 
 type CaptureState = {
@@ -440,13 +442,37 @@ function isMetaAnswer(answer: string): boolean {
   );
 }
 
+async function readLastTurnWrongSlotPending(page: Page): Promise<string | null> {
+  return page.evaluate(() => {
+    for (let i = 0; i < sessionStorage.length; i += 1) {
+      const k = sessionStorage.key(i);
+      if (!k?.includes('aiPmLoop')) continue;
+      const raw = sessionStorage.getItem(k);
+      if (!raw) continue;
+      try {
+        const parsed = JSON.parse(raw) as { turns?: Array<{ wrongSlotReaskPending?: string; superseded?: boolean; intent?: string }> };
+        const turns = parsed.turns ?? [];
+        for (let j = turns.length - 1; j >= 0; j -= 1) {
+          const t = turns[j]!;
+          if (t.superseded) continue;
+          if (t.intent === 'why_meta' || t.intent === 'mid_judgment' || t.intent === 'nonsense') continue;
+          return t.wrongSlotReaskPending?.trim() || null;
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+    return null;
+  });
+}
+
 async function snap(
   page: Page,
   label: string,
   userAnswer: string,
   shotName?: string,
   notes?: string[],
-  opts?: { metaOnly?: boolean },
+  opts?: { metaOnly?: boolean; wrongSlotPendingSet?: string | null },
 ): Promise<TurnSnap> {
   await page.waitForTimeout(600);
   const understanding = await textOrEmpty(page, 'surface-understanding');
@@ -480,8 +506,15 @@ async function snap(
   const prevQs = state.turns.map((t) => t.aiQuestion);
   const templateLikeHints: string[] = [];
   if (prevQs.some((pq) => pq && pq === questionBlock)) {
-    templateLikeHints.push('re-ask-same-question-text');
-    state.reAskSameQuestionCount += 1;
+    const prevSnap = state.turns[state.turns.length - 1];
+    const intentionalWrongSlotReask =
+      prevSnap?.wrongSlotPendingSet === 'customerPersona' ||
+      prevSnap?.wrongSlotPendingSet === 'problemJtbd' ||
+      prevSnap?.notes?.some((n) => /wrong-slot-p0/i.test(n ?? '')) === true;
+    if (!intentionalWrongSlotReask) {
+      templateLikeHints.push('re-ask-same-question-text');
+      state.reAskSameQuestionCount += 1;
+    }
   }
 
   turnCounter += 1;
@@ -510,6 +543,7 @@ async function snap(
     notes,
     templateLikeHints,
     metaOnly: opts?.metaOnly,
+    wrongSlotPendingSet: opts?.wrongSlotPendingSet ?? null,
   };
   if (templateLikeHints.length) state.templateLikeTurns.push(turnCounter);
   state.turns.push(snapRow);
@@ -601,12 +635,13 @@ async function answerTurn(
     state.observations.push(`submit blocked @${label}`);
     return null;
   }
+  const wrongSlotPendingSet = await readLastTurnWrongSlotPending(page);
   if (!opts?.metaOnly && !isMetaAnswer(answer)) {
     meaningfulCounter += 1;
     state.meaningfulAnswerCount = meaningfulCounter;
   }
   await waitAsk(page);
-  return snap(page, label, answer, shot, notes, opts);
+  return snap(page, label, answer, shot, notes, { ...opts, wrongSlotPendingSet });
 }
 
 async function startSeedJourney(page: Page) {
@@ -783,6 +818,7 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
 
     // Natural adaptive loop — NO padding, NO forced-diff, end at Analysis Ready
     const facetsSeen = new Set<string>();
+    const wrongSlotProbesDone = { p0_1: false, p0_2: false };
     let loops = 0;
     while (
       loops < MAX_MEANINGFUL_TURNS + 5 &&
@@ -792,17 +828,34 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
       if (await isFinalReviewSurface(page)) break;
       loops += 1;
       const q = await textOrEmpty(page, 'surface-question');
+      const pendingBeforeAnswer = await readLastTurnWrongSlotPending(page);
       let forced: string | undefined;
       let facet = 'adaptive';
 
-      // Loop 9h — deterministic wrong-slot BANK answers for P0-1/P0-2 (qBefore shape, not facet)
+      // Loop 9h-c — on-slot answer when wrong-slot re-ask is pending (clears pending in engine)
       if (
+        pendingBeforeAnswer === 'customerPersona' &&
+        /(가장 필요로 하는 사람|누구인가요)/i.test(q) &&
+        !/(크게 해결하려는 불편|핵심 불편|솔루션|해결하는 방식|제공 가치)/i.test(q)
+      ) {
+        forced = BANK.customer;
+        facet = 'wrong-slot-reask-persona';
+      } else if (
+        pendingBeforeAnswer === 'problemJtbd' &&
+        /(크게 해결하려는 불편|핵심 불편)/i.test(q) &&
+        !/(솔루션|해결하는 방식|제공 가치|가장 필요로 하는 사람|누구인가요)/i.test(q)
+      ) {
+        forced = BANK.problem;
+        facet = 'wrong-slot-reask-problem';
+      } else if (
+        !wrongSlotProbesDone.p0_1 &&
         /(가장 필요로 하는 사람|누구인가요)/i.test(q) &&
         !/(크게 해결하려는 불편|핵심 불편|솔루션|해결하는 방식|제공 가치)/i.test(q)
       ) {
         forced = BANK.diffRelevance;
         facet = 'wrong-slot-p0-1';
       } else if (
+        !wrongSlotProbesDone.p0_2 &&
         /(크게 해결하려는 불편|핵심 불편)/i.test(q) &&
         !/(솔루션|해결하는 방식|제공 가치|가장 필요로 하는 사람|누구인가요)/i.test(q)
       ) {
@@ -860,6 +913,8 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
         if (meaningfulCounter < 15 && (await tryContinueRefining(page))) continue;
         break;
       }
+      if (facet === 'wrong-slot-p0-1') wrongSlotProbesDone.p0_1 = true;
+      if (facet === 'wrong-slot-p0-2') wrongSlotProbesDone.p0_2 = true;
       // Loop 9h — P0-1/P0-2 immediate transition: qBefore shape + BANK answer (not facet label)
       const answered = row?.userAnswer ?? forced ?? '';
       if (

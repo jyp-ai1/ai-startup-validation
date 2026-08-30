@@ -47,7 +47,7 @@ import { deriveWorkspaceState } from '../workspace-state';
 import { resolveGapQuestionBinding } from '../gap-question-map';
 import { evaluateFinalIntegrityGate } from '../final-integrity-gate';
 import { resolveNextLoopIssue } from '../resolve-ai-pm-priority-issue';
-import { detectWrongSlotMergeContext, hasPendingWrongSlotReask, resolveNuclearWrongSlotAtSubmit, resolveNuclearWrongSlotBypass, resolveWrongSlotReaskPendingAtSubmit } from '../wrong-slot-priority';
+import { detectWrongSlotMergeContext, hasPendingWrongSlotReask, resolveNuclearWrongSlotAtSubmit, resolveNuclearWrongSlotBypass, resolveWrongSlotReaskPendingAtSubmit, shouldClearWrongSlotReaskPendingAtSubmit } from '../wrong-slot-priority';
 import { applyLoopProcessingTransition } from '../process-loop-answer';
 import {
   inferAskedTargetGapFromTurn,
@@ -3380,5 +3380,119 @@ describe('Loop 9h — wrongSlotReaskPending on turn metadata (@ 7df4764)', () =>
     expect(hasPendingWrongSlotReask(turnsAfterT13)).toBe(true);
     expect(resolveWrongSlotQuestionOverride(turnsAfterT13)?.targetGap).toBe('problemJtbd');
     expect(resolveWrongSlotQuestionOverride(turnsAfterT13)?.targetGap).not.toBe('solution');
+  });
+});
+
+describe('Loop 9h-c — clear wrongSlotReaskPending on on-slot re-ask answer', () => {
+  const personaQuestion = '이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?';
+  const problemQuestion = '지금 가장 크게 해결하려는 불편은 무엇인가요?';
+  const t12Answer =
+    '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.';
+  const t13Answer =
+    '초기 타깃은 서울을 3~7일 방문하는 FIT 외국인(밀레니얼·MZ)이고, 혼자 또는 2인 여행이 많습니다.';
+  const t14Answer =
+    '패키지 투어는 동선이 획일적이고, 혼자 계획하면 언어·시간 때문에 현지인 일상에 가까운 경험을 놓칩니다.';
+
+  it('shouldClearWrongSlotReaskPendingAtSubmit true for on-slot persona after pending', () => {
+    expect(
+      shouldClearWrongSlotReaskPendingAtSubmit({
+        pendingGap: 'customerPersona',
+        questionText: personaQuestion,
+        answer: t13Answer,
+      }),
+    ).toBe(true);
+    expect(
+      shouldClearWrongSlotReaskPendingAtSubmit({
+        pendingGap: 'customerPersona',
+        questionText: personaQuestion,
+        answer: t12Answer,
+      }),
+    ).toBe(false);
+  });
+
+  it('shouldClearWrongSlotReaskPendingAtSubmit true for on-slot problem after pending', () => {
+    expect(
+      shouldClearWrongSlotReaskPendingAtSubmit({
+        pendingGap: 'problemJtbd',
+        questionText: problemQuestion,
+        answer: t14Answer,
+      }),
+    ).toBe(true);
+    expect(
+      shouldClearWrongSlotReaskPendingAtSubmit({
+        pendingGap: 'problemJtbd',
+        questionText: problemQuestion,
+        answer: t13Answer,
+      }),
+    ).toBe(false);
+  });
+
+  it('resolveWrongSlotReaskPendingAtSubmit clears pending when priorPendingGap + on-slot answer', () => {
+    expect(
+      resolveWrongSlotReaskPendingAtSubmit({
+        questionText: personaQuestion,
+        answer: t13Answer,
+        priorPendingGap: 'customerPersona',
+      }),
+    ).toBeNull();
+    expect(
+      resolveWrongSlotReaskPendingAtSubmit({
+        questionText: problemQuestion,
+        answer: t14Answer,
+        priorPendingGap: 'problemJtbd',
+      }),
+    ).toBeNull();
+  });
+
+  it('hasPendingWrongSlotReask false after on-slot re-ask turn appended', () => {
+    const turnsAfterPersonaReask: AiPmLoopTurn[] = [
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '1',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'validationTestability',
+        wrongSlotReaskPending: 'customerPersona',
+        askedQuestionText: personaQuestion,
+      },
+      {
+        issueId: 'customer_definition',
+        answer: t13Answer,
+        appliedAt: '2',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+        askedQuestionText: personaQuestion,
+      },
+    ];
+    expect(hasPendingWrongSlotReask(turnsAfterPersonaReask)).toBe(false);
+
+    const turnsAfterProblemReask: AiPmLoopTurn[] = [
+      {
+        issueId: 'problem_definition',
+        answer: t13Answer,
+        appliedAt: '1',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'solution',
+        wrongSlotReaskPending: 'problemJtbd',
+        askedQuestionText: problemQuestion,
+      },
+      {
+        issueId: 'problem_definition',
+        answer: t14Answer,
+        appliedAt: '2',
+        semanticFactKey: 'problem',
+        semanticFactKeys: ['problem'],
+        intent: 'business_fact',
+        targetGap: 'problemJtbd',
+        askedQuestionText: problemQuestion,
+      },
+    ];
+    expect(hasPendingWrongSlotReask(turnsAfterProblemReask)).toBe(false);
   });
 });
