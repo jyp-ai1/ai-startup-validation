@@ -326,7 +326,8 @@ export function V2StrategyWorkspaceView({
                 if (!first || looksLikeDocumentFileName(first) || looksLikeDocumentFileName(customDocument)) {
                   return '내 사업 Demo';
                 }
-                return first;
+                // UX check ① — short header title; full seed stays in collapsible only
+                return deriveProjectName(first);
               })(),
               document: customDocument ?? '',
             }
