@@ -892,7 +892,7 @@ export function WorkspaceAiPmLoopPanel({
 
     // Loop 9e — display SoT canonicalizes facts when interpret used poisoned askedGap (@ cbce256 live)
     const displayedGapForCanonical =
-      inferTargetGapFromQuestionText(displayedQuestionText) ?? whyThisQuestionNow?.targetGap ?? visibleGap;
+      inferTargetGapFromQuestionText(displayedQuestionText) ?? visibleGap;
     if (displayedGapForCanonical === 'customerPersona' && semantic.mergeable) {
       const personaSegmentCue =
         /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행)/i.test(trimmed);

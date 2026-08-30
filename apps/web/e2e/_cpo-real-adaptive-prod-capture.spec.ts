@@ -453,15 +453,12 @@ function isIntentionalWrongSlotReask(prevSnap: TurnSnap | undefined): boolean {
   if (prevSnap.notes?.some((n) => /wrong-slot-p0|wrong-slot-reask/i.test(n ?? ''))) {
     return true;
   }
-  // Reframed diff-relevance Q repeats same stock stem after conflict clarification
-  if (
-    /구체적으로 어떤 가치를 만드나요/i.test(q) &&
-    /구체적으로 어떤 가치를 만드나요/i.test(prevSnap.aiQuestion ?? '')
-  ) {
-    return true;
-  }
   const q = prevSnap.aiQuestion ?? '';
   const a = prevSnap.userAnswer ?? '';
+  // Reframed diff-relevance Q repeats same stock stem after conflict clarification
+  if (/구체적으로 어떤 가치를 만드나요/i.test(q)) {
+    return true;
+  }
   if (
     /(가장 필요로 하는 사람|누구인가요)/i.test(q) &&
     !/(크게 해결하려는 불편|핵심 불편|솔루션|해결하는 방식|제공 가치)/i.test(q) &&
@@ -860,6 +857,7 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
     ) {
       if (await isFinalReviewSurface(page)) break;
       loops += 1;
+      await waitAsk(page);
       const q = await textOrEmpty(page, 'surface-question');
       const pendingBeforeAnswer = await readLastTurnWrongSlotPending(page);
       let forced: string | undefined;
