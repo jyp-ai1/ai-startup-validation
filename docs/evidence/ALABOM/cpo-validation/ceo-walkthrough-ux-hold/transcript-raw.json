@@ -1,0 +1,90 @@
+{
+  "at": "2026-08-30T14:48:25.696Z",
+  "productionCommit": "768c123d318c3995f98199b597412ed6a0a951a3",
+  "deployTime": "2026-08-30T14:48:27.095Z",
+  "targetSha": "eff9d23",
+  "shaMatch": false,
+  "seed": "외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.",
+  "turns": [
+    {
+      "turn": 1,
+      "label": "after-a1",
+      "surfaceQuestionVisible": true,
+      "surfaceQuestionNonEmpty": true,
+      "surfaceQuestionText": "지금 질문\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+      "userAnswer": "클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 카탈로그형 상품 나열이 많습니다.",
+      "nextQuestionText": "지금 질문\n\n경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+      "questionChanged": true,
+      "screenshot": "docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-ux-hold/media/after-submit-next-question.png"
+    },
+    {
+      "turn": 2,
+      "label": "after-a2",
+      "surfaceQuestionVisible": true,
+      "surfaceQuestionNonEmpty": true,
+      "surfaceQuestionText": "지금 질문\n\n경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+      "userAnswer": "클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 카탈로그형 상품 나열이 많습니다.",
+      "nextQuestionText": "지금 질문\n\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 카탈로그형 상품 나…와 비교할 때, 이 서비스만의 결정적 차이는 무엇인가요?",
+      "questionChanged": true,
+      "screenshot": "docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-ux-hold/media/after-a2.png"
+    },
+    {
+      "turn": 3,
+      "label": "after-a3",
+      "surfaceQuestionVisible": true,
+      "surfaceQuestionNonEmpty": true,
+      "surfaceQuestionText": "지금 질문\n\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 카탈로그형 상품 나…와 비교할 때, 이 서비스만의 결정적 차이는 무엇인가요?",
+      "userAnswer": "클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 카탈로그형 상품 나열이 많습니다.",
+      "nextQuestionText": "지금 질문\n\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 카탈로그형 상품 나…와 비교할 때, 이 서비스만의 결정적 차이는 무엇인가요?",
+      "questionChanged": false,
+      "screenshot": "docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-ux-hold/media/after-a3.png"
+    }
+  ],
+  "checklist": [
+    {
+      "id": "surface-question-visible-t1",
+      "pass": true,
+      "note": "surface-question in DOM"
+    },
+    {
+      "id": "surface-question-nonempty-t1",
+      "pass": true,
+      "note": "지금 질문\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?"
+    },
+    {
+      "id": "submit-next-question-t1",
+      "pass": true,
+      "note": "prior=\"지금 질문\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?\" next=\"지금 질문\n\n경쟁 대비 이 서비스만의 차별점은 무엇인가요?\""
+    },
+    {
+      "id": "surface-question-nonempty-t2",
+      "pass": true,
+      "note": "지금 질문\n\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 카탈로그형 상품 나…와 비교할 때, 이 서비스만의 결정적 차이는 무엇인가요?"
+    },
+    {
+      "id": "no-repeat-t2",
+      "pass": true,
+      "note": "question text changed after second submit"
+    },
+    {
+      "id": "surface-question-nonempty-t3",
+      "pass": true,
+      "note": "지금 질문\n\n클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 카탈로그형 상품 나…와 비교할 때, 이 서비스만의 결정적 차이는 무엇인가요?"
+    },
+    {
+      "id": "understanding-panel-labeled-rows",
+      "pass": false,
+      "note": "labels=(none)"
+    }
+  ],
+  "understandingPanel": {
+    "expanded": true,
+    "hasSummaryRows": false,
+    "rowLabels": [],
+    "screenshot": "docs/evidence/ALABOM/cpo-validation/ceo-walkthrough-ux-hold/media/understanding-panel.png"
+  },
+  "observations": [
+    "BLOCKED: Production at 768c123 — target eff9d23 deploy FAILED (Vercel build TS error)",
+    "Capture runs on current Production baseline to document pre-fix UX state until redeploy succeeds."
+  ]
+}
