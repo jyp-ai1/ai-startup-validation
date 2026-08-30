@@ -2979,4 +2979,20 @@ describe('Loop 9f — @940800e live turn shapes (transcript T12/T13 exact)', () 
         ?.askedGap,
     ).toBe('problemJtbd');
   });
+
+  it('P0-1 same-slot @940800e: customerPersona targetGap + BANK answer (no askedQuestionText)', () => {
+    const turn: AiPmLoopTurn = {
+      issueId: 'customer_definition',
+      answer: t12Answer,
+      appliedAt: '5',
+      semanticFactKey: 'customer',
+      semanticFactKeys: ['customer'],
+      intent: 'business_fact',
+      targetGap: 'customerPersona',
+    };
+    expect(resolveNuclearWrongSlotBypass(turn)?.closedGap).toBe('validationTestability');
+    expect(resolveWrongSlotQuestionOverride([...prefixThroughT10, turn])?.targetGap).toBe(
+      'customerPersona',
+    );
+  });
 });

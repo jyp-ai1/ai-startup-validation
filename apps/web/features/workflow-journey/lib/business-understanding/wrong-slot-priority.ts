@@ -130,6 +130,16 @@ export function resolveNuclearWrongSlotBypass(
     };
   }
 
+  // Same-slot poison: targetGap already customerPersona but BANK closed relevance not persona
+  if (poisonedGap === 'customerPersona' && isBankDiffRelevanceAnswer(answer)) {
+    return {
+      askedGap: 'customerPersona',
+      closedGap: 'validationTestability',
+      closedFactKey: 'diffRelevance',
+      segmentExplicitlyNarrowed: false,
+    };
+  }
+
   if (
     !questionText.trim() &&
     isBankDiffRelevanceAnswer(answer) &&
@@ -145,6 +155,16 @@ export function resolveNuclearWrongSlotBypass(
   }
 
   if (isProblemQuestionText(questionText) && isBankPersonaSegmentAnswer(answer)) {
+    return {
+      askedGap: 'problemJtbd',
+      closedGap: 'customerPersona',
+      closedFactKey: 'customer',
+      segmentExplicitlyNarrowed: false,
+    };
+  }
+
+  // Same-slot poison: targetGap problemJtbd but persona segment answer
+  if (poisonedGap === 'problemJtbd' && isBankPersonaSegmentAnswer(answer)) {
     return {
       askedGap: 'problemJtbd',
       closedGap: 'customerPersona',

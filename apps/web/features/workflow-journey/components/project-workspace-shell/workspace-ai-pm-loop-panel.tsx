@@ -325,7 +325,7 @@ export function WorkspaceAiPmLoopPanel({
         question: { ...surface.question, text: gapQuestionText.trim() },
       };
     }
-    if (loopState.phase === 'answer' && (targetGap || gapQuestionText)) {
+    if ((loopState.phase === 'answer' || questionOverride?.reason === 'wrong_slot') && (targetGap || gapQuestionText)) {
       lastAskSurfaceRef.current = {
         targetGap,
         questionText: gapQuestionText ?? surface.question.text ?? null,
@@ -343,6 +343,7 @@ export function WorkspaceAiPmLoopPanel({
     lastTurn,
     recognitionDismissed,
     whyThisQuestionNow,
+    questionOverride,
   ]);
   const initialDiagnosis = useMemo(
     () => buildAiPmInitialDiagnosis(understanding, entities, documentText),
