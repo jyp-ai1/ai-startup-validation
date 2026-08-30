@@ -137,3 +137,21 @@ finishProcessing → phase issue → whyThisQuestionNow useMemo
 **CPO PASS: No** — P0-1 AND P0-2 immediate next-Q transitions still FAIL; reAsk=0 + gate probe PASS + unit 68/68 PASS + full capture harness PASS.
 
 **Root cause confirmed (unchanged shape):** T12 persona ask + `BANK.diffRelevance` → display ranks `problemJtbd` on first paint (not persona re-ask). T13 problem ask + persona wrong-slot → display ranks `solution` (not problem re-ask). Loop 9g synchronous pin + transition guard did not close unit/live gap on demo production path.
+
+## Loop 9h fix (@ 7df4764 live FAIL — persisted pending flag)
+
+**Root cause (@ 7df4764):** `hasPendingWrongSlotReask(turns)` returned **false** at demo transition because inference from poisoned turn metadata failed when `targetGap: validationTestability` matched closed gap (same-slot) or `askedQuestionText` was absent on persisted turn. React ref pin + flushSync could not compensate — display SoT read stale/inferred turns, not definitive submit-time wrong-slot signal.
+
+| File | Change |
+|------|--------|
+| `workspace-ai-pm-loop-types.ts` | `wrongSlotReaskPending?: string` on turn — persisted re-ask gap |
+| `wrong-slot-priority.ts` | `resolveWrongSlotReaskPendingAtSubmit()` from display Q+A; `getLastWrongSlotReaskPendingGap()`; anchor/hasPending read pending flag first |
+| `workspace-ai-pm-loop-panel.tsx` | Set `wrongSlotReaskPending` on append from `displayedQuestionText + answer` |
+| `core-final-stabilization.test.ts` | Loop 9h — exact @7df4764 T12 poison turn + pending flag |
+| `_cpo-real-adaptive-prod-capture.spec.ts` | P0-1/P0-2 assert on qBefore+answer shape; deterministic wrong-slot BANK forcing |
+
+## Loop 9h-b live (pending deploy)
+
+| SHA | P0-1 T12→T13 | P0-2 T13→T14 | reAsk | Gate | Notes |
+|-----|--------------|--------------|-------|------|-------|
+| TBD | pending | pending | pending | pending | wrongSlotReaskPending on turn metadata |

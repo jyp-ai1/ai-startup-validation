@@ -47,7 +47,7 @@ import { deriveWorkspaceState } from '../workspace-state';
 import { resolveGapQuestionBinding } from '../gap-question-map';
 import { evaluateFinalIntegrityGate } from '../final-integrity-gate';
 import { resolveNextLoopIssue } from '../resolve-ai-pm-priority-issue';
-import { detectWrongSlotMergeContext, hasPendingWrongSlotReask, resolveNuclearWrongSlotAtSubmit, resolveNuclearWrongSlotBypass } from '../wrong-slot-priority';
+import { detectWrongSlotMergeContext, hasPendingWrongSlotReask, resolveNuclearWrongSlotAtSubmit, resolveNuclearWrongSlotBypass, resolveWrongSlotReaskPendingAtSubmit } from '../wrong-slot-priority';
 import { applyLoopProcessingTransition } from '../process-loop-answer';
 import {
   inferAskedTargetGapFromTurn,
@@ -3254,5 +3254,131 @@ describe('Loop 9g — synchronous wrong-slot display after append', () => {
     const decision = decideNextQuestion({ living, turns: turnsAfterT13, memory });
     expect(decision?.targetGap).toBe('problemJtbd');
     expect(decision?.targetGap).not.toBe('solution');
+  });
+});
+
+describe('Loop 9h — wrongSlotReaskPending on turn metadata (@ 7df4764)', () => {
+  const LIVE_DOC =
+    '외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다. 방한 외국인 관광객이 주요 고객입니다.';
+
+  const prefixThroughT10: AiPmLoopTurn[] = [
+    {
+      issueId: 'competitor_analysis',
+      answer: '클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다.',
+      appliedAt: '1',
+      semanticFactKey: 'competitor',
+      semanticFactKeys: ['competitor'],
+      intent: 'business_fact',
+      targetGap: 'alternativesCompetitors',
+    },
+    {
+      issueId: 'competitor_analysis',
+      answer:
+        '차별점은 관심사·동선·식사 제약까지 반영한 실시간 맞춤 일정과 현지인 동행을 한 번에 묶는 점입니다.',
+      appliedAt: '2',
+      semanticFactKey: 'differentiation',
+      semanticFactKeys: ['differentiation'],
+      intent: 'business_fact',
+      targetGap: 'differentiationVsAlternatives',
+    },
+    {
+      issueId: 'customer_definition',
+      answer:
+        '정정합니다. 초기 타깃은 방한 FIT 외국인만이 아니라, 국내 MZ 개별 여행객도 포함합니다.',
+      appliedAt: '3',
+      semanticFactKey: 'customer',
+      semanticFactKeys: ['customer'],
+      intent: 'business_fact',
+      targetGap: 'customerPersona',
+    },
+    {
+      issueId: 'bm_design',
+      answer: '그건 아닌데? 결제자는 관광객 직접 결제가 맞고, B2B 정산은 아닙니다.',
+      appliedAt: '4',
+      semanticFactKey: 'buyer',
+      semanticFactKeys: ['buyer'],
+      intent: 'business_fact',
+      targetGap: 'payer',
+    },
+  ];
+
+  const t12Answer =
+    '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.';
+  const t13Answer =
+    '초기 타깃은 서울을 3~7일 방문하는 FIT 외국인(밀레니얼·MZ)이고, 혼자 또는 2인 여행이 많습니다.';
+  const personaQuestion = '이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?';
+  const problemQuestion = '지금 가장 크게 해결하려는 불편은 무엇인가요?';
+
+  it('resolveWrongSlotReaskPendingAtSubmit maps display Q+A to re-ask gap', () => {
+    expect(
+      resolveWrongSlotReaskPendingAtSubmit({ questionText: personaQuestion, answer: t12Answer }),
+    ).toBe('customerPersona');
+    expect(
+      resolveWrongSlotReaskPendingAtSubmit({ questionText: problemQuestion, answer: t13Answer }),
+    ).toBe('problemJtbd');
+  });
+
+  /** @7df4764 live T12 — same-slot validationTestability poison; pending flag is SoT when inference null */
+  it('hasPendingWrongSlotReask true when wrongSlotReaskPending persisted (@ 7df4764 T12)', () => {
+    const turn7df4764: AiPmLoopTurn = {
+      issueId: 'customer_definition',
+      answer: t12Answer,
+      appliedAt: '5',
+      semanticFactKey: 'diffRelevance',
+      semanticFactKeys: ['diffRelevance'],
+      intent: 'business_fact',
+      targetGap: 'validationTestability',
+      wrongSlotReaskPending: 'customerPersona',
+    };
+    const turnsAfterT12 = [...prefixThroughT10, turn7df4764];
+
+    expect(hasPendingWrongSlotReask(turnsAfterT12)).toBe(true);
+    expect(resolveWrongSlotQuestionOverride(turnsAfterT12)?.targetGap).toBe('customerPersona');
+
+    const decision = decideNextQuestion({
+      living: buildLivingUnderstandingState({
+        documentText: LIVE_DOC,
+        understanding: buildBusinessUnderstanding(LIVE_DOC),
+        turns: turnsAfterT12,
+        memory: buildConversationMemoryFromSources({
+          projectId: 'loop9h-t12',
+          documentText: LIVE_DOC,
+          turns: turnsAfterT12,
+        }),
+      }),
+      turns: turnsAfterT12,
+    });
+    expect(decision?.targetGap).toBe('customerPersona');
+    expect(decision?.targetGap).not.toBe('problemJtbd');
+  });
+
+  it('hasPendingWrongSlotReask true for P0-2 when wrongSlotReaskPending on T13 turn', () => {
+    const turnsAfterT13: AiPmLoopTurn[] = [
+      ...prefixThroughT10,
+      {
+        issueId: 'customer_definition',
+        answer: t12Answer,
+        appliedAt: '5',
+        semanticFactKey: 'diffRelevance',
+        semanticFactKeys: ['diffRelevance'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+        wrongSlotReaskPending: 'customerPersona',
+      },
+      {
+        issueId: 'problem_definition',
+        answer: t13Answer,
+        appliedAt: '6',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'solution',
+        wrongSlotReaskPending: 'problemJtbd',
+      },
+    ];
+
+    expect(hasPendingWrongSlotReask(turnsAfterT13)).toBe(true);
+    expect(resolveWrongSlotQuestionOverride(turnsAfterT13)?.targetGap).toBe('problemJtbd');
+    expect(resolveWrongSlotQuestionOverride(turnsAfterT13)?.targetGap).not.toBe('solution');
   });
 });

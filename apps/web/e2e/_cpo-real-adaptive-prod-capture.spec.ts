@@ -795,7 +795,22 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
       let forced: string | undefined;
       let facet = 'adaptive';
 
-      if (/비슷한 역할|이미 하고|대체|대안|경쟁/i.test(q) && !facetsSeen.has('competitor') && !usedAnswers.has(BANK.competitor)) {
+      // Loop 9h — deterministic wrong-slot BANK answers for P0-1/P0-2 (qBefore shape, not facet)
+      if (
+        /(가장 필요로 하는 사람|누구인가요)/i.test(q) &&
+        !/(크게 해결하려는 불편|핵심 불편|솔루션|해결하는 방식|제공 가치)/i.test(q) &&
+        !usedAnswers.has(BANK.diffRelevance)
+      ) {
+        forced = BANK.diffRelevance;
+        facet = 'wrong-slot-p0-1';
+      } else if (
+        /(크게 해결하려는 불편|핵심 불편)/i.test(q) &&
+        !/(솔루션|해결하는 방식|제공 가치|가장 필요로 하는 사람|누구인가요)/i.test(q) &&
+        !usedAnswers.has(BANK.customer)
+      ) {
+        forced = BANK.customer;
+        facet = 'wrong-slot-p0-2';
+      } else if (/비슷한 역할|이미 하고|대체|대안|경쟁/i.test(q) && !facetsSeen.has('competitor') && !usedAnswers.has(BANK.competitor)) {
         forced = BANK.competitor;
         facet = 'competitor';
       } else if (/차별|다른 점|우리만/i.test(q) && !/비슷한 역할/i.test(q) && !facetsSeen.has('differentiation') && !usedAnswers.has(BANK.differentiation)) {
@@ -847,15 +862,20 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
         if (meaningfulCounter < 15 && (await tryContinueRefining(page))) continue;
         break;
       }
-      // Loop 9g — P0-1/P0-2 immediate transition evidence @ T12/T13 shapes
-      if (facet === 'diffRelevance' && /(가장 필요로 하는 사람|누구인가요)/i.test(qBefore)) {
+      // Loop 9h — P0-1/P0-2 immediate transition: qBefore shape + BANK answer (not facet label)
+      const answered = row?.userAnswer ?? forced ?? '';
+      if (
+        /(가장 필요로 하는 사람|누구인가요)/i.test(qBefore) &&
+        !/(크게 해결하려는 불편|핵심 불편|솔루션|해결하는 방식|제공 가치)/i.test(qBefore) &&
+        answered === BANK.diffRelevance
+      ) {
         await dumpLoopStorage(page, 't12-wrong-slot');
         await assertImmediateWrongSlotReask(page, 'customerPersona', 'P0-1 T12→T13');
       }
       if (
-        forced === BANK.customer &&
         /(크게 해결하려는 불편|핵심 불편|불편)/i.test(qBefore) &&
-        !/(가장 필요로 하는 사람|누구인가요)/i.test(qBefore)
+        !/(가장 필요로 하는 사람|누구인가요|솔루션|해결하는 방식|제공 가치)/i.test(qBefore) &&
+        answered === BANK.customer
       ) {
         await dumpLoopStorage(page, 't13-wrong-slot');
         await assertImmediateWrongSlotReask(page, 'problemJtbd', 'P0-2 T13→T14');

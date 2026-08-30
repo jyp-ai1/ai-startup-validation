@@ -191,6 +191,48 @@ export function resolveNuclearWrongSlotBypass(
   return null;
 }
 
+/** Loop 9h — definitive re-ask gap from visible question + answer at submit (before persist). */
+export function resolveWrongSlotReaskPendingAtSubmit(input: {
+  questionText: string | null | undefined;
+  answer: string;
+}): string | null {
+  return resolveWrongSlotReaskGap(resolveNuclearWrongSlotAtSubmit(input));
+}
+
+function wrongSlotContextFromPendingReaskGap(reaskGap: string): WrongSlotMergeContext {
+  if (reaskGap === 'customerPersona') {
+    return {
+      askedGap: 'customerPersona',
+      closedGap: 'validationTestability',
+      closedFactKey: 'diffRelevance',
+      segmentExplicitlyNarrowed: false,
+    };
+  }
+  if (reaskGap === 'problemJtbd') {
+    return {
+      askedGap: 'problemJtbd',
+      closedGap: 'customerPersona',
+      closedFactKey: 'customer',
+      segmentExplicitlyNarrowed: false,
+    };
+  }
+  return {
+    askedGap: reaskGap,
+    closedGap: reaskGap,
+    closedFactKey: '',
+    segmentExplicitlyNarrowed: false,
+  };
+}
+
+/** Last mergeable turn with persisted wrong-slot re-ask flag (Loop 9h display SoT). */
+export function getLastWrongSlotReaskPendingGap(
+  turns: AiPmLoopTurn[] | undefined,
+): string | null {
+  const last = lastMergeableTurn(turns);
+  const pending = cleanGap(last?.wrongSlotReaskPending);
+  return pending;
+}
+
 /** Panel submit-time bypass from visible question + answer (before persist). */
 export function resolveNuclearWrongSlotAtSubmit(input: {
   questionText: string | null | undefined;
@@ -498,12 +540,31 @@ export function resolveWrongSlotReaskGap(ctx: WrongSlotMergeContext | null): str
  */
 /** True while a wrong-slot re-ask is pending — blocks solution re-ask loops (P0-2 / reAsk=6). */
 export function hasPendingWrongSlotReask(turns: AiPmLoopTurn[] | undefined): boolean {
+  if (getLastWrongSlotReaskPendingGap(turns)) return true;
   return resolveWrongSlotReaskGap(detectWrongSlotMergeContext(turns)) != null;
 }
 
 export function resolveWrongSlotQuestionAnchor(
   turns: AiPmLoopTurn[] | undefined,
 ): WrongSlotQuestionAnchor | null {
+  const pendingGap = getLastWrongSlotReaskPendingGap(turns);
+  if (pendingGap) {
+    const last = lastMergeableTurn(turns);
+    const ctx =
+      detectWrongSlotMergeContext(turns) ??
+      (last ? resolveNuclearWrongSlotBypass(last) : null) ??
+      wrongSlotContextFromPendingReaskGap(pendingGap);
+    const boost =
+      pendingGap === 'customerPersona' ? PERSONA_WRONG_SLOT_BOOST : PROBLEM_WRONG_SLOT_BOOST;
+    const binding = resolveGapQuestionBinding(pendingGap);
+    return {
+      targetGap: pendingGap,
+      issueId: binding.issueId,
+      score: boost,
+      wrongSlotContext: ctx,
+    };
+  }
+
   const ctx = detectWrongSlotMergeContext(turns);
   const reaskGap = resolveWrongSlotReaskGap(ctx);
   if (!ctx || !reaskGap) return null;

@@ -80,7 +80,7 @@ import { interpretAnswerSemantics } from '../../lib/business-understanding/inter
 import { reframeQuestion, buildConflictClarifyQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
 import { resolveAskedTargetGapForAppend } from '../../lib/business-understanding/resolve-asked-target-gap';
 import { inferTargetGapFromQuestionText, resolveGapQuestionBinding } from '../../lib/business-understanding/gap-question-map';
-import { resolveNuclearWrongSlotAtSubmit, hasPendingWrongSlotReask } from '../../lib/business-understanding/wrong-slot-priority';
+import { resolveNuclearWrongSlotAtSubmit, resolveWrongSlotReaskPendingAtSubmit, hasPendingWrongSlotReask } from '../../lib/business-understanding/wrong-slot-priority';
 import { countUnclosedGapAsks, MAX_SAME_GAP_ASKS_BEFORE_YIELD } from '../../lib/business-understanding/question-decision-engine';
 import { enforceQuestionPurity } from '../../lib/business-understanding/question-purity';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
@@ -1126,6 +1126,12 @@ export function WorkspaceAiPmLoopPanel({
       targetGap: askedGap,
     });
 
+    const wrongSlotReaskPending =
+      resolveWrongSlotReaskPendingAtSubmit({
+        questionText: displayedQuestionText,
+        answer: trimmed,
+      }) ?? undefined;
+
     const projectedTurn: AiPmLoopTurn = {
       issueId: recordIssueId,
       answer: trimmed,
@@ -1136,6 +1142,7 @@ export function WorkspaceAiPmLoopPanel({
       whyNow: causality.whyNow,
       targetGap: askedGap,
       askedQuestionText: persistedQuestionText,
+      wrongSlotReaskPending,
       causality,
       sourceEvidence: causality.sourceEvidence,
       previousUnderstanding: causality.previousUnderstanding,

@@ -29,6 +29,8 @@ export type AiPmLoopTurn = {
   targetGap?: string;
   /** Loop 9d — visible question at submit (display SoT when targetGap poisoned) */
   askedQuestionText?: string;
+  /** Loop 9h — gap that must be re-asked after wrong-slot merge (display SoT, beats inference) */
+  wrongSlotReaskPending?: string;
   /** Core v4/v5 — brief AI understanding delta shown before next Q (must be populated) */
   understandingDelta?: string;
   /** Core v5 — full question causality for the ask that produced this turn */
