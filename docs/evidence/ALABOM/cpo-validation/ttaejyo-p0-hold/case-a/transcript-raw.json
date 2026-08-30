@@ -1,0 +1,52 @@
+{
+  "productionCommit": "e8d32cf7628a2c533cc97e56dd3133439461adeb",
+  "path": "/ko/workspace?demo=guided&sample=saas&fresh=1",
+  "surfaces": [
+    {
+      "label": "after-load",
+      "surfaceQuestion": "",
+      "hasTextarea": false,
+      "hasSubmitCta": false,
+      "continueCtaVisible": false
+    },
+    {
+      "label": "after-confirm",
+      "surfaceQuestion": "지금 질문\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+      "hasTextarea": true,
+      "hasSubmitCta": true,
+      "continueCtaVisible": false
+    },
+    {
+      "label": "turn-0",
+      "surfaceQuestion": "지금 질문\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+      "hasTextarea": true,
+      "hasSubmitCta": true,
+      "continueCtaVisible": false
+    },
+    {
+      "label": "turn-1",
+      "surfaceQuestion": "지금 질문\n\n「스마트PM」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+      "hasTextarea": true,
+      "hasSubmitCta": true,
+      "continueCtaVisible": false
+    },
+    {
+      "label": "turn-2",
+      "surfaceQuestion": "지금 질문\n\n「스마트PM」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+      "hasTextarea": true,
+      "hasSubmitCta": true,
+      "continueCtaVisible": false
+    },
+    {
+      "label": "turn-3",
+      "surfaceQuestion": "지금 질문\n\n경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+      "hasTextarea": true,
+      "hasSubmitCta": true,
+      "continueCtaVisible": false
+    }
+  ],
+  "differentiationReached": true,
+  "submitWorks": true,
+  "nextQuestionAfterSubmit": "지금 질문\n\n그 차별점이 고객에게 왜 중요한가요?",
+  "verdict": "PASS — textarea visible, submit works, next question differs"
+}

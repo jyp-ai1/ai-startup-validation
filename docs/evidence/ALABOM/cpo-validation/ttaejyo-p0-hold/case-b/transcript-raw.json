@@ -1,0 +1,14 @@
+{
+  "productionCommit": "e8d32cf7628a2c533cc97e56dd3133439461adeb",
+  "scenario": "resume-payer",
+  "authAvailable": true,
+  "blocker": "Redirected to login: https://ai-startup-validation-tau.vercel.app/auth/login?next=%2Fworkspace",
+  "payerQuestion": "",
+  "answer": "고객이요",
+  "nextQuestion": "",
+  "payerRepeat": null,
+  "lastTurnSemanticFactKey": null,
+  "lastTurnTargetGap": null,
+  "gapClosed": null,
+  "verdict": "BLOCKED — auth storage expired"
+}

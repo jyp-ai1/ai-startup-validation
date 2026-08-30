@@ -1,8 +1,12 @@
 {
-  "requestedSha": "2c551a3",
-  "probedCommit": "44f6940074933515b4815ba42dbc9ee0488a6cfe",
-  "deployTime": "2026-08-30T16:09:44.670Z",
-  "shaMatch": false,
-  "probedAt": "2026-08-31T01:10:00+09:00",
-  "note": "Fixes applied locally; Production still on 44f6940 at investigation time"
+  "commit": "e8d32cf7628a2c533cc97e56dd3133439461adeb",
+  "commitShort": "e8d32cf",
+  "targetSha": "e8d32cf",
+  "priorCommit": "44f6940",
+  "branch": "main",
+  "deployTime": "2026-08-30T16:46:00.647Z",
+  "environment": "production",
+  "verifiedAt": "2026-08-30T17:05:00.000Z",
+  "caseA": "PASS",
+  "caseB": "BLOCKED_AUTH_EXPIRED"
 }

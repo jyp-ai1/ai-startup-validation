@@ -1,0 +1,10 @@
+{
+  "productionCommit": "e8d32cf7628a2c533cc97e56dd3133439461adeb",
+  "scenario": "fresh-demo-payer-ko",
+  "payerQuestion": "",
+  "answer": "고객이요",
+  "nextQuestion": "",
+  "payerRepeat": null,
+  "lastTurn": null,
+  "verdict": null
+}
