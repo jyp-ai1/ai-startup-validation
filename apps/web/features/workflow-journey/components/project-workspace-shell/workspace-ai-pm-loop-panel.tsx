@@ -1236,7 +1236,8 @@ export function WorkspaceAiPmLoopPanel({
       };
     } else {
       wrongSlotSubmitPinRef.current = null;
-      setQuestionOverride((prev) => (prev?.reason === 'wrong_slot' ? prev : null));
+      // Loop 9h-c — clear stale wrong_slot override when re-ask pending resolved
+      setQuestionOverride((prev) => (prev?.reason === 'wrong_slot' ? null : prev));
     }
     const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, {
       semantic,

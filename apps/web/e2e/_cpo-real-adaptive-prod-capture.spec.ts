@@ -442,6 +442,36 @@ function isMetaAnswer(answer: string): boolean {
   );
 }
 
+function isIntentionalWrongSlotReask(prevSnap: TurnSnap | undefined): boolean {
+  if (!prevSnap) return false;
+  if (
+    prevSnap.wrongSlotPendingSet === 'customerPersona' ||
+    prevSnap.wrongSlotPendingSet === 'problemJtbd'
+  ) {
+    return true;
+  }
+  if (prevSnap.notes?.some((n) => /wrong-slot-p0|wrong-slot-reask/i.test(n ?? ''))) {
+    return true;
+  }
+  const q = prevSnap.aiQuestion ?? '';
+  const a = prevSnap.userAnswer ?? '';
+  if (
+    /(가장 필요로 하는 사람|누구인가요)/i.test(q) &&
+    !/(크게 해결하려는 불편|핵심 불편|솔루션|해결하는 방식|제공 가치)/i.test(q) &&
+    a === BANK.diffRelevance
+  ) {
+    return true;
+  }
+  if (
+    /(크게 해결하려는 불편|핵심 불편)/i.test(q) &&
+    !/(가장 필요로 하는 사람|누구인가요|솔루션|해결하는 방식|제공 가치)/i.test(q) &&
+    a === BANK.customer
+  ) {
+    return true;
+  }
+  return false;
+}
+
 async function readLastTurnWrongSlotPending(page: Page): Promise<string | null> {
   return page.evaluate(() => {
     for (let i = 0; i < sessionStorage.length; i += 1) {
@@ -507,11 +537,7 @@ async function snap(
   const templateLikeHints: string[] = [];
   if (prevQs.some((pq) => pq && pq === questionBlock)) {
     const prevSnap = state.turns[state.turns.length - 1];
-    const intentionalWrongSlotReask =
-      prevSnap?.wrongSlotPendingSet === 'customerPersona' ||
-      prevSnap?.wrongSlotPendingSet === 'problemJtbd' ||
-      prevSnap?.notes?.some((n) => /wrong-slot-p0/i.test(n ?? '')) === true;
-    if (!intentionalWrongSlotReask) {
+    if (!isIntentionalWrongSlotReask(prevSnap)) {
       templateLikeHints.push('re-ask-same-question-text');
       state.reAskSameQuestionCount += 1;
     }
@@ -1016,6 +1042,7 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
 
   expect(state.duplicateAnswerCount).toBe(0);
   expect(state.paddingTurnCount).toBe(0);
+  expect(state.reAskSameQuestionCount).toBe(0);
   expect(meaningfulCounter).toBeGreaterThanOrEqual(15);
   expect(meaningfulCounter).toBeLessThanOrEqual(25);
 });
