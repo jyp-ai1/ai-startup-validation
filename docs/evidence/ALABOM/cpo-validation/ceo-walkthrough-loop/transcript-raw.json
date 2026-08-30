@@ -1,0 +1,89 @@
+{
+  "at": "2026-08-30T12:53:08.271Z",
+  "productionCommit": "294ac87bea13ec19dfe198dc22946eb21f2e9fbd",
+  "seed": "외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.",
+  "scenario": "ceo-persona-loop",
+  "turns": [
+    {
+      "turn": 1,
+      "label": "after-ai-read",
+      "aiQuestion": "",
+      "userAnswer": "(seed)",
+      "targetGapHint": "",
+      "storedFactsGaps": "",
+      "nextQuestion": "",
+      "personaRepeat": false,
+      "screenshot": "01-after-ai-read.png"
+    },
+    {
+      "turn": 2,
+      "label": "after-confirm",
+      "aiQuestion": "CURRENT QUESTION\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+      "userAnswer": "(confirm)",
+      "targetGapHint": "",
+      "storedFactsGaps": "",
+      "nextQuestion": "",
+      "personaRepeat": false,
+      "screenshot": "02-after-confirm.png"
+    },
+    {
+      "turn": 3,
+      "label": "prefill-1",
+      "aiQuestion": "CURRENT QUESTION\n\n경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+      "userAnswer": "클룩·트립닷컴·가이드 매칭 앱이 이미 있지만, 대부분 카탈로그형 상품 나열이라 관심사·동선 맞춤이 약합니다.",
+      "targetGapHint": "",
+      "storedFactsGaps": "",
+      "nextQuestion": "",
+      "personaRepeat": false,
+      "screenshot": "03-prefill-1.png"
+    },
+    {
+      "turn": 4,
+      "label": "prefill-2",
+      "aiQuestion": "CURRENT QUESTION\n\n그 차별점이 고객에게 왜 중요한가요?",
+      "userAnswer": "차별점은 관심사·동선·식사 제약까지 반영한 실시간 맞춤 일정과 현지인 동행을 한 번에 묶는 점입니다.",
+      "targetGapHint": "",
+      "storedFactsGaps": "",
+      "nextQuestion": "",
+      "personaRepeat": false,
+      "screenshot": "04-prefill-2.png"
+    },
+    {
+      "turn": 5,
+      "label": "prefill-3",
+      "aiQuestion": "CURRENT QUESTION\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "userAnswer": "맞춤 일정이 없으면 첫날부터 동선 낭비가 커서, 고객은 예약 전에 차이를 체감합니다.",
+      "targetGapHint": "",
+      "storedFactsGaps": "",
+      "nextQuestion": "",
+      "personaRepeat": false,
+      "screenshot": "05-prefill-3.png"
+    },
+    {
+      "turn": 6,
+      "label": "persona-ask",
+      "aiQuestion": "CURRENT QUESTION\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "userAnswer": "(awaiting CEO answer)",
+      "targetGapHint": "",
+      "storedFactsGaps": "",
+      "nextQuestion": "",
+      "personaRepeat": false,
+      "screenshot": "06-persona-ask.png"
+    },
+    {
+      "turn": 7,
+      "label": "ceo-persona-1",
+      "aiQuestion": "CURRENT QUESTION\n\n지금 가장 크게 해결하려는 불편은 무엇인가요?",
+      "userAnswer": "예약 전에 맞춤 일정을 원하는 방한 외국인",
+      "targetGapHint": "",
+      "storedFactsGaps": "",
+      "nextQuestion": "CURRENT QUESTION\n\n지금 가장 크게 해결하려는 불편은 무엇인가요?",
+      "personaRepeat": false,
+      "screenshot": "07-ceo-persona-1.png"
+    }
+  ],
+  "personaQuestionRepeats": 0,
+  "customerGapClosedAfterFirstCeoAnswer": true,
+  "nextGapAfterPersona": "problemJtbd",
+  "verdict": "PASS — CEO persona answer closed gap; next question is not persona repeat"
+}
