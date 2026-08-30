@@ -1,0 +1,6 @@
+{
+  "url": "https://ai-startup-validation-tau.vercel.app/auth/login?next=%2Fworkspace",
+  "onLogin": true,
+  "onWorkspace": false,
+  "at": "2026-08-30T23:41:39.588Z"
+}

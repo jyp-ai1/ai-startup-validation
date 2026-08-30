@@ -1,12 +1,12 @@
 {
-  "commit": "e8d32cf7628a2c533cc97e56dd3133439461adeb",
-  "commitShort": "e8d32cf",
+  "commit": "84c31c9bc1222c8733e28553d3113f6d8411a1e2",
+  "commitShort": "84c31c9",
   "targetSha": "e8d32cf",
-  "priorCommit": "44f6940",
+  "priorTargetSha": "e8d32cf7628a2c533cc97e56dd3133439461adeb",
   "branch": "main",
-  "deployTime": "2026-08-30T16:46:00.647Z",
+  "deployTime": "2026-08-30T23:41:23.394Z",
   "environment": "production",
-  "verifiedAt": "2026-08-30T17:05:00.000Z",
-  "caseA": "PASS",
-  "caseB": "BLOCKED_AUTH_EXPIRED"
+  "verifiedAt": "2026-08-31T08:41:00+09:00",
+  "caseB": "BLOCKED_AUTH_EXPIRED",
+  "caseBNote": "Resume payer chain not executed — storageState expired; Google login requires human"
 }

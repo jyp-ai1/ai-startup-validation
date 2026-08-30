@@ -1,0 +1,29 @@
+{
+  "step": "STEP 1 — QA auth refresh",
+  "verifiedAt": "2026-08-31T08:41:00+09:00",
+  "storageStatePath": "apps/web/.qa-auth/storageState.json",
+  "storageStateMtime": "2026-08-01T16:03:23+09:00",
+  "exportFromChromeProfile": {
+    "script": "scripts/_export-qa-storage-state.mjs",
+    "url": "https://ai-startup-validation-tau.vercel.app/demo/start",
+    "onLogin": false,
+    "onDemo": true,
+    "saved": false
+  },
+  "probeStorageState": {
+    "script": "scripts/_probe-storage-state.mjs",
+    "url": "https://ai-startup-validation-tau.vercel.app/auth/login?next=%2Fworkspace",
+    "onLogin": true,
+    "onWorkspace": false
+  },
+  "captureAuthStorage": {
+    "script": "scripts/_capture-auth-storage.mjs",
+    "headed": true,
+    "waitSec": 180,
+    "authenticated": false,
+    "saved": false,
+    "error": "Google OAuth identifier page — no human login; browser closed before /workspace"
+  },
+  "verdict": "BLOCKED",
+  "reason": "QA auth refresh failed — expired storageState (2026-08-01); .qa-chrome-profile has demo session not Auth; headed capture cannot complete Google login without human"
+}

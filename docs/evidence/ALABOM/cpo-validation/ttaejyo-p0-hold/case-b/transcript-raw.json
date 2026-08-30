@@ -1,7 +1,13 @@
 {
-  "productionCommit": "e8d32cf7628a2c533cc97e56dd3133439461adeb",
+  "productionCommit": "84c31c9bc1222c8733e28553d3113f6d8411a1e2",
+  "productionCommitShort": "84c31c9",
+  "targetCommit": "e8d32cf7628a2c533cc97e56dd3133439461adeb",
+  "targetCommitShort": "e8d32cf",
+  "deployTime": "2026-08-30T23:41:23.394Z",
+  "verifiedAt": "2026-08-31T08:41:00+09:00",
   "scenario": "resume-payer",
   "authAvailable": true,
+  "authValid": false,
   "blocker": "Redirected to login: https://ai-startup-validation-tau.vercel.app/auth/login?next=%2Fworkspace",
   "payerQuestion": "",
   "answer": "고객이요",
@@ -10,5 +16,5 @@
   "lastTurnSemanticFactKey": null,
   "lastTurnTargetGap": null,
   "gapClosed": null,
-  "verdict": "BLOCKED — auth storage expired"
+  "verdict": "BLOCKED — auth storage expired; CASE B resume chain not executed"
 }
