@@ -845,14 +845,16 @@ export function WorkspaceAiPmLoopPanel({
     const askedKey = factKeyForIssue(issueId);
     const existingFact = askedKey ? getFact(memory, askedKey)?.value ?? null : null;
 
-    const displayedQuestionText =
-      whyThisQuestionNow?.questionText ??
+    const visibleQuestionText =
       lastAskSurfaceRef.current.questionText ??
+      questionOverride?.questionText ??
+      whyThisQuestionNow?.questionText ??
       null;
+    const displayedQuestionText = visibleQuestionText;
     const displayedGap =
       inferTargetGapFromQuestionText(displayedQuestionText) ??
-      whyThisQuestionNow?.targetGap ??
       lastAskSurfaceRef.current.targetGap ??
+      whyThisQuestionNow?.targetGap ??
       null;
     // Loop 9c — wrong_slot override is authoritative for append; else match displayed gap only
     const activeOverrideGap =
@@ -1128,7 +1130,7 @@ export function WorkspaceAiPmLoopPanel({
 
     const wrongSlotReaskPending =
       resolveWrongSlotReaskPendingAtSubmit({
-        questionText: displayedQuestionText,
+        questionText: visibleQuestionText,
         answer: trimmed,
       }) ?? undefined;
 
@@ -1181,6 +1183,18 @@ export function WorkspaceAiPmLoopPanel({
     );
     syncState(loadAiPmLoopState(projectId));
     let wrongSlotNext = resolveWrongSlotQuestionOverride(projectedTurns);
+    if (!wrongSlotNext && wrongSlotReaskPending) {
+      const binding = resolveGapQuestionBinding(wrongSlotReaskPending);
+      wrongSlotNext = {
+        targetGap: wrongSlotReaskPending,
+        issueId: binding.issueId,
+        questionText: binding.questionText,
+        whyNow: binding.whyNow,
+        rationale: binding.whyNow,
+        score: wrongSlotReaskPending === 'customerPersona' ? 56_000 : 56_000,
+        missingField: 'business' as const,
+      };
+    }
     if (!wrongSlotNext && nuclearWrongSlot) {
       const binding = resolveGapQuestionBinding(nuclearWrongSlot.askedGap);
       wrongSlotNext = {

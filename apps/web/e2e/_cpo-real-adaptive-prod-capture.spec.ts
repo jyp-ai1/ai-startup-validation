@@ -419,8 +419,8 @@ function pickAnswer(question: string): string {
 }
 
 function pickUniqueAnswer(question: string, forced?: string): string {
-  if (forced && !usedAnswers.has(forced)) {
-    usedAnswers.add(forced);
+  if (forced) {
+    if (!usedAnswers.has(forced)) usedAnswers.add(forced);
     return forced;
   }
   let candidate = pickAnswer(question);
@@ -798,15 +798,13 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
       // Loop 9h — deterministic wrong-slot BANK answers for P0-1/P0-2 (qBefore shape, not facet)
       if (
         /(가장 필요로 하는 사람|누구인가요)/i.test(q) &&
-        !/(크게 해결하려는 불편|핵심 불편|솔루션|해결하는 방식|제공 가치)/i.test(q) &&
-        !usedAnswers.has(BANK.diffRelevance)
+        !/(크게 해결하려는 불편|핵심 불편|솔루션|해결하는 방식|제공 가치)/i.test(q)
       ) {
         forced = BANK.diffRelevance;
         facet = 'wrong-slot-p0-1';
       } else if (
         /(크게 해결하려는 불편|핵심 불편)/i.test(q) &&
-        !/(솔루션|해결하는 방식|제공 가치|가장 필요로 하는 사람|누구인가요)/i.test(q) &&
-        !usedAnswers.has(BANK.customer)
+        !/(솔루션|해결하는 방식|제공 가치|가장 필요로 하는 사람|누구인가요)/i.test(q)
       ) {
         forced = BANK.customer;
         facet = 'wrong-slot-p0-2';
@@ -847,7 +845,7 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
         forced = BANK.pricing;
         facet = 'pricing';
       }
-      if (forced && usedAnswers.has(forced)) forced = undefined;
+      if (forced && usedAnswers.has(forced) && !facet.startsWith('wrong-slot')) forced = undefined;
 
       if (forced) facetsSeen.add(facet);
       const qBefore = q;
