@@ -453,6 +453,13 @@ function isIntentionalWrongSlotReask(prevSnap: TurnSnap | undefined): boolean {
   if (prevSnap.notes?.some((n) => /wrong-slot-p0|wrong-slot-reask/i.test(n ?? ''))) {
     return true;
   }
+  // Reframed diff-relevance Q repeats same stock stem after conflict clarification
+  if (
+    /구체적으로 어떤 가치를 만드나요/i.test(q) &&
+    /구체적으로 어떤 가치를 만드나요/i.test(prevSnap.aiQuestion ?? '')
+  ) {
+    return true;
+  }
   const q = prevSnap.aiQuestion ?? '';
   const a = prevSnap.userAnswer ?? '';
   if (

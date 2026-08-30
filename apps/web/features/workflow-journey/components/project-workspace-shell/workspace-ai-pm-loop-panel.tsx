@@ -857,8 +857,11 @@ export function WorkspaceAiPmLoopPanel({
       whyThisQuestionNow?.targetGap ??
       null;
     // Loop 9c — wrong_slot override is authoritative for append; else match displayed gap only
+    // Loop 9h-c — never apply wrong_slot override when visible Q is a different gap (poisons solution ask)
     const activeOverrideGap =
-      questionOverride?.reason === 'wrong_slot'
+      questionOverride?.reason === 'wrong_slot' &&
+      displayedGap &&
+      questionOverride.targetGap === displayedGap
         ? questionOverride.targetGap
         : questionOverride?.targetGap && questionOverride.targetGap === displayedGap
           ? questionOverride.targetGap
