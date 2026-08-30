@@ -8,10 +8,14 @@ import type { ConversationFactKey } from './conversation-memory';
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
 import { evaluateAnswerQuality, answersContradict, hasDiffRelevanceEvidence } from './understanding-contract';
 import {
+  isOnSlotCompetitorAnswer,
+} from './competitor-answer-cues';
+import {
   hasCustomerPersonaCue,
   hasPersonaSegmentCue,
   isRelevanceDominantOnPersonaAsk,
 } from './persona-answer-cues';
+import { isOnSlotPayerAnswer } from './payer-answer-cues';
 
 export type AnswerIntent =
   | 'business_fact'
@@ -451,7 +455,29 @@ export function interpretAnswerSemantics(input: {
     if (!facts.some((f) => f.key === 'buyer')) {
       facts = [{ key: 'buyer', issueId: 'bm_design' }, ...facts];
     }
-    facts = facts.filter((f) => f.key !== 'problem' && f.key !== 'customer');
+    // CEO free-form — "고객이요" on payer ask is payer confirmation, not persona steal
+    if (isOnSlotPayerAnswer(trimmed) && !PAYER_CUE_RE.test(trimmed)) {
+      facts = facts.filter((f) => f.key !== 'customer' && f.key !== 'problem' && f.key !== 'revenue');
+    } else {
+      facts = facts.filter((f) => f.key !== 'problem' && f.key !== 'customer');
+    }
+  } else if (askedGap === 'alternativesCompetitors') {
+    const competitorOnSlot = isOnSlotCompetitorAnswer(trimmed) || hasCompetitorCue;
+    if (competitorOnSlot) {
+      factKey = 'competitor';
+      resolvedIssueId = 'competitor_analysis';
+      if (!facts.some((f) => f.key === 'competitor')) {
+        facts = [{ key: 'competitor', issueId: 'competitor_analysis' }, ...facts];
+      }
+      facts = facts.filter((f) => f.key !== 'business' && f.key !== 'customer' && f.key !== 'market');
+    } else if (!hasDiffCue && !hasStrongOtherCue && !top) {
+      factKey = 'competitor';
+      resolvedIssueId = 'competitor_analysis';
+      if (!facts.some((f) => f.key === 'competitor')) {
+        facts = [{ key: 'competitor', issueId: 'competitor_analysis' }, ...facts];
+      }
+      facts = facts.filter((f) => f.key !== 'business');
+    }
   } else if (askedGap === 'customerPersona') {
     const personaSegmentCue = hasPersonaSegmentCue(trimmed);
     const customerCue = hasCustomerPersonaCue(trimmed);
@@ -524,14 +550,6 @@ export function interpretAnswerSemantics(input: {
       facts = [{ key: 'defensibility', issueId: 'competitor_analysis' }, ...facts];
     }
     facts = facts.filter((f) => f.key !== 'customer' && f.key !== 'problem');
-  } else if (!hasStrongOtherCue && !hasDiffCue && !hasCompetitorCue) {
-    if (askedGap === 'alternativesCompetitors' && !top) {
-      factKey = 'competitor';
-      resolvedIssueId = 'competitor_analysis';
-      if (!facts.some((f) => f.key === 'competitor')) {
-        facts = [{ key: 'competitor', issueId: 'competitor_analysis' }, ...facts];
-      }
-    }
   } else if (askedGap === 'alternativesCompetitors' && hasCompetitorCue) {
     factKey = 'competitor';
     resolvedIssueId = 'competitor_analysis';

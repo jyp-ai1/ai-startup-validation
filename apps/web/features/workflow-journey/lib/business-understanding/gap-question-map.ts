@@ -145,8 +145,8 @@ export function inferTargetGapFromQuestionText(
   if (/가장 필요로 하는 사람|가장 필요로 하는|누구인가요/.test(q)) return 'customerPersona';
   if (/크게 해결하려는 불편|핵심 불편/.test(q)) return 'problemJtbd';
   if (/제공 가치|해결하는 방식/.test(q)) return 'solution';
-  if (/비용은 누가|누가 지불/.test(q)) return 'payer';
-  if (/비슷한 역할|이미 하고 있는 서비스/.test(q)) return 'alternativesCompetitors';
+  if (/비용은 누가|누가\s*(비용|지불)|비용을?\s*지불|누가\s*내|결제\s*주체/.test(q)) return 'payer';
+  if (/비슷한 역할|이미 하고 있는 서비스|하는 서비스가/.test(q)) return 'alternativesCompetitors';
   if (/차별점은 무엇|차별점이/.test(q) && !/왜 중요/.test(q)) return 'differentiationVsAlternatives';
   if (/고객에게 왜 중요|어떤 가치를 만드/.test(q)) return 'validationTestability';
   if (/방어력|따라오기/.test(q)) return 'executionConstraints';

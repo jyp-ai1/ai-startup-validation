@@ -81,6 +81,8 @@ import {
   hasPersonaSegmentCue,
   isRelevanceDominantOnPersonaAsk,
 } from '../../lib/business-understanding/persona-answer-cues';
+import { isOnSlotCompetitorAnswer } from '../../lib/business-understanding/competitor-answer-cues';
+import { isOnSlotPayerAnswer } from '../../lib/business-understanding/payer-answer-cues';
 import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
 import { reframeQuestion, buildConflictClarifyQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
 import { resolveAskedTargetGapForAppend } from '../../lib/business-understanding/resolve-asked-target-gap';
@@ -963,7 +965,8 @@ export function WorkspaceAiPmLoopPanel({
         turns: loadAiPmLoopState(projectId).turns,
       })?.targetGap,
     });
-    const visibleGap = inferTargetGapFromQuestionText(displayedQuestionText);
+    const visibleGap =
+      inferTargetGapFromQuestionText(displayedQuestionText) ?? displayedGap;
     let resolvedAskedGap = visibleGap ?? askedTargetGap;
 
     let semantic = interpretAnswerSemantics({
@@ -990,6 +993,24 @@ export function WorkspaceAiPmLoopPanel({
           factKey: 'business',
           resolvedIssueId: 'problem_definition',
           facts: [{ key: 'business', issueId: 'problem_definition' }],
+        };
+      }
+    } else if (displayedGapForCanonical === 'payer' && semantic.mergeable) {
+      if (semantic.factKey !== 'buyer' && isOnSlotPayerAnswer(trimmed)) {
+        semantic = {
+          ...semantic,
+          factKey: 'buyer',
+          resolvedIssueId: 'bm_design',
+          facts: [{ key: 'buyer', issueId: 'bm_design' }],
+        };
+      }
+    } else if (displayedGapForCanonical === 'alternativesCompetitors' && semantic.mergeable) {
+      if (semantic.factKey !== 'competitor' && isOnSlotCompetitorAnswer(trimmed)) {
+        semantic = {
+          ...semantic,
+          factKey: 'competitor',
+          resolvedIssueId: 'competitor_analysis',
+          facts: [{ key: 'competitor', issueId: 'competitor_analysis' }],
         };
       }
     } else if (displayedGapForCanonical === 'customerPersona' && semantic.mergeable) {
