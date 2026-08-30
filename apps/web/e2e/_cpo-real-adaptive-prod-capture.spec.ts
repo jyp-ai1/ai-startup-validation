@@ -517,6 +517,52 @@ async function snap(
   return snapRow;
 }
 
+async function dumpLoopStorage(page: Page, label: string) {
+  const dump = await page.evaluate(() => {
+    const out: Record<string, string> = {};
+    for (let i = 0; i < sessionStorage.length; i += 1) {
+      const k = sessionStorage.key(i);
+      if (k && (k.includes('aiPmLoop') || k.includes('conversationMemory'))) {
+        out[`ss:${k}`] = sessionStorage.getItem(k) ?? '';
+      }
+    }
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const k = localStorage.key(i);
+      if (k && (k.includes('aiPmLoop') || k.includes('conversationMemory'))) {
+        out[`ls:${k}`] = localStorage.getItem(k) ?? '';
+      }
+    }
+    return out;
+  });
+  const dumpPath = path.join(OUT, `storage-dump-${label}.json`);
+  fs.writeFileSync(dumpPath, JSON.stringify(dump, null, 2), 'utf8');
+  state.observations.push(`storage dump @${label}: ${Object.keys(dump).length} keys → ${dumpPath}`);
+}
+
+async function assertImmediateWrongSlotReask(
+  page: Page,
+  expected: 'customerPersona' | 'problemJtbd',
+  label: string,
+) {
+  await waitAsk(page);
+  const q = await textOrEmpty(page, 'surface-question');
+  if (expected === 'customerPersona') {
+    const ok =
+      /(가장 필요로 하는 사람|누구인가요|타깃|타겟)/i.test(q) &&
+      !/(크게 해결하려는 불편|핵심 불편|솔루션|해결하는 방식)/i.test(q);
+    if (!ok) {
+      state.wrongSlotHints.push(`${label}: immediate next not persona — got "${q.slice(0, 120)}"`);
+    }
+  } else {
+    const ok =
+      /(크게 해결하려는 불편|핵심 불편|불편)/i.test(q) &&
+      !/(솔루션|해결하는 방식|제공 가치)/i.test(q);
+    if (!ok) {
+      state.wrongSlotHints.push(`${label}: immediate next not problem — got "${q.slice(0, 120)}"`);
+    }
+  }
+}
+
 async function submitAnswer(page: Page, answer: string): Promise<boolean> {
   if (!(await ensureAnswerBox(page))) return false;
   const box = page.locator('textarea').last();
@@ -789,6 +835,7 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
       if (forced && usedAnswers.has(forced)) forced = undefined;
 
       if (forced) facetsSeen.add(facet);
+      const qBefore = q;
       const row = await answerTurn(
         page,
         `10-adaptive-l${loops}-${facet}`,
@@ -799,6 +846,19 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
       if (!row) {
         if (meaningfulCounter < 15 && (await tryContinueRefining(page))) continue;
         break;
+      }
+      // Loop 9g — P0-1/P0-2 immediate transition evidence @ T12/T13 shapes
+      if (facet === 'diffRelevance' && /(가장 필요로 하는 사람|누구인가요)/i.test(qBefore)) {
+        await dumpLoopStorage(page, 't12-wrong-slot');
+        await assertImmediateWrongSlotReask(page, 'customerPersona', 'P0-1 T12→T13');
+      }
+      if (
+        forced === BANK.customer &&
+        /(크게 해결하려는 불편|핵심 불편|불편)/i.test(qBefore) &&
+        !/(가장 필요로 하는 사람|누구인가요)/i.test(qBefore)
+      ) {
+        await dumpLoopStorage(page, 't13-wrong-slot');
+        await assertImmediateWrongSlotReask(page, 'problemJtbd', 'P0-2 T13→T14');
       }
       if (await isFinalReviewSurface(page)) {
         if (meaningfulCounter < 15 && (await tryContinueRefining(page))) continue;
@@ -870,6 +930,10 @@ test('ALABOM real adaptive prod capture (15–25 meaningful turns)', async ({ pa
     state.observations.push(`whyPanelSeen=${state.whyPanelSeen}`);
     state.observations.push(`conflictUiSeen=${state.conflictUiSeen}`);
     state.observations.push(`reAskSameQuestionCount=${state.reAskSameQuestionCount}`);
+    state.observations.push(`wrongSlotHints=${state.wrongSlotHints.length}`);
+    if (state.wrongSlotHints.length) {
+      state.observations.push(...state.wrongSlotHints);
+    }
     state.observations.push(`turnCount=${turnCounter}`);
     state.observations.push(`analysisVerdict=${state.analysisVerdict}`);
     persist();

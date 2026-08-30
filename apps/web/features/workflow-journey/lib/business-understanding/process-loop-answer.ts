@@ -22,6 +22,10 @@ import { resolveNextLoopIssue } from './resolve-ai-pm-priority-issue';
 import type { ThinkingStageId } from './thinking-stages';
 import { hasAnalysisResult } from './analysis-result-store';
 import {
+  hasPendingWrongSlotReask,
+  resolveWrongSlotQuestionAnchor,
+} from './wrong-slot-priority';
+import {
   loadAiPmLoopState,
   patchAiPmLoopState,
 } from './workspace-ai-pm-loop-store';
@@ -103,6 +107,18 @@ export function applyLoopProcessingTransition(
 ): AiPmLoopState {
   if (canComplete && !result.nextIssueId) {
     return patchAiPmLoopState({ phase: 'complete', currentIssueId: null }, projectId);
+  }
+  // Loop 9g — never enter ranked issue phase while wrong-slot re-ask is pending
+  if (hasPendingWrongSlotReask(result.loop.turns)) {
+    const anchor = resolveWrongSlotQuestionAnchor(result.loop.turns);
+    return patchAiPmLoopState(
+      {
+        phase: 'answer',
+        currentIssueId:
+          anchor?.issueId ?? result.nextIssueId ?? result.loop.currentIssueId,
+      },
+      projectId,
+    );
   }
   if (result.nextIssueId) {
     return patchAiPmLoopState(

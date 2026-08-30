@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
 import type { BusinessUnderstanding } from '@repo/types/domain/business-understanding';
@@ -79,7 +80,7 @@ import { interpretAnswerSemantics } from '../../lib/business-understanding/inter
 import { reframeQuestion, buildConflictClarifyQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
 import { resolveAskedTargetGapForAppend } from '../../lib/business-understanding/resolve-asked-target-gap';
 import { inferTargetGapFromQuestionText, resolveGapQuestionBinding } from '../../lib/business-understanding/gap-question-map';
-import { resolveNuclearWrongSlotAtSubmit } from '../../lib/business-understanding/wrong-slot-priority';
+import { resolveNuclearWrongSlotAtSubmit, hasPendingWrongSlotReask } from '../../lib/business-understanding/wrong-slot-priority';
 import { countUnclosedGapAsks, MAX_SAME_GAP_ASKS_BEFORE_YIELD } from '../../lib/business-understanding/question-decision-engine';
 import { enforceQuestionPurity } from '../../lib/business-understanding/question-purity';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
@@ -162,6 +163,8 @@ export function WorkspaceAiPmLoopPanel({
     targetGap: null,
     questionText: null,
   });
+  /** Loop 9g — submit-time wrong_slot pin survives finishProcessing before turns SoT catches up */
+  const wrongSlotSubmitPinRef = useRef<ReturnType<typeof resolveWrongSlotQuestionOverride>>(null);
 
   const documentText = useMemo(() => loadWorkspaceDocumentText(projectId), [projectId, understanding]);
   const documentTrust = useMemo(() => getWorkspaceDocumentTrust(documentText), [documentText]);
@@ -189,6 +192,21 @@ export function WorkspaceAiPmLoopPanel({
     [conversationMemory, documentText, entities, loopState, understanding],
   );
 
+  const pendingWrongSlotReask = useMemo(
+    () => hasPendingWrongSlotReask(loopState.turns),
+    [loopState.turns],
+  );
+
+  const turnsWrongSlotOverride = useMemo(
+    () =>
+      resolveWrongSlotQuestionOverride(loopState.turns) ??
+      wrongSlotSubmitPinRef.current,
+    [loopState.turns],
+  );
+
+  const displayPhase =
+    pendingWrongSlotReask && loopState.phase === 'issue' ? 'answer' : loopState.phase;
+
   const analysisResultExists = hasAnalysisResult(projectId);
   const nextIssue = useMemo(
     () =>
@@ -214,6 +232,24 @@ export function WorkspaceAiPmLoopPanel({
     });
 
     // Loop 9d — decideNextQuestion is display SoT (wrong_slot anchor before ranked)
+    const turnsOverride =
+      resolveWrongSlotQuestionOverride(freshTurns) ?? wrongSlotSubmitPinRef.current;
+    if (turnsOverride) {
+      const purity = enforceQuestionPurity({
+        questionText: turnsOverride.questionText,
+        targetGap: turnsOverride.targetGap,
+      });
+      return {
+        issueId: turnsOverride.issueId,
+        targetGap: turnsOverride.targetGap,
+        questionText: purity.sanitizedText,
+        whyNow: turnsOverride.whyNow ?? turnsOverride.rationale,
+        rationale: turnsOverride.rationale,
+        score: turnsOverride.score,
+        missingField: 'business' as const,
+      };
+    }
+
     const decision = decideNextQuestion({
       living: livingState,
       turns: freshTurns,
@@ -274,13 +310,17 @@ export function WorkspaceAiPmLoopPanel({
   ]);
   const s11Surface = useMemo(() => {
     const askIssueId = loopState.currentIssueId ?? nextIssue;
-    const targetGap = whyThisQuestionNow?.targetGap ?? null;
-    const gapQuestionText = whyThisQuestionNow?.questionText ?? null;
+    const turnsPin = turnsWrongSlotOverride;
+    const targetGap =
+      turnsPin?.targetGap ?? whyThisQuestionNow?.targetGap ?? null;
+    const gapQuestionText =
+      turnsPin?.questionText ?? whyThisQuestionNow?.questionText ?? null;
     const showUpdate =
-      loopState.phase === 'issue' &&
+      displayPhase === 'issue' &&
       lastTurn != null &&
       !recognitionDismissed &&
-      lastTurn.issueId !== askIssueId;
+      lastTurn.issueId !== askIssueId &&
+      !pendingWrongSlotReask;
 
     const thinking = presentThinking({
       memory: conversationMemory,
@@ -325,7 +365,7 @@ export function WorkspaceAiPmLoopPanel({
         question: { ...surface.question, text: gapQuestionText.trim() },
       };
     }
-    if ((loopState.phase === 'answer' || questionOverride?.reason === 'wrong_slot') && (targetGap || gapQuestionText)) {
+    if ((displayPhase === 'answer' || questionOverride?.reason === 'wrong_slot' || pendingWrongSlotReask) && (targetGap || gapQuestionText)) {
       lastAskSurfaceRef.current = {
         targetGap,
         questionText: gapQuestionText ?? surface.question.text ?? null,
@@ -337,13 +377,15 @@ export function WorkspaceAiPmLoopPanel({
     documentText,
     entities,
     loopState.currentIssueId,
-    loopState.phase,
+    displayPhase,
     loopState.turns.length,
     nextIssue,
     lastTurn,
     recognitionDismissed,
     whyThisQuestionNow,
     questionOverride,
+    pendingWrongSlotReask,
+    turnsWrongSlotOverride,
   ]);
   const initialDiagnosis = useMemo(
     () => buildAiPmInitialDiagnosis(understanding, entities, documentText),
@@ -507,7 +549,8 @@ export function WorkspaceAiPmLoopPanel({
         criticalGapCount: contradictionGaps + criticalViability,
       });
 
-    const wrongSlotBefore = resolveWrongSlotQuestionOverride(refreshed.turns);
+    const wrongSlotBefore =
+      resolveWrongSlotQuestionOverride(refreshed.turns) ?? wrongSlotSubmitPinRef.current;
     const next = wrongSlotBefore
       ? patchAiPmLoopState(
           {
@@ -517,7 +560,8 @@ export function WorkspaceAiPmLoopPanel({
           projectId,
         )
       : applyLoopProcessingTransition(result, projectId, canComplete);
-    const wrongSlotAfter = resolveWrongSlotQuestionOverride(next.turns) ?? wrongSlotBefore;
+    const wrongSlotAfter =
+      resolveWrongSlotQuestionOverride(next.turns) ?? wrongSlotBefore;
     if (wrongSlotAfter) {
       setQuestionOverride({
         targetGap: wrongSlotAfter.targetGap,
@@ -536,6 +580,7 @@ export function WorkspaceAiPmLoopPanel({
         ),
       );
     } else {
+      wrongSlotSubmitPinRef.current = null;
       syncState(next);
     }
 
@@ -675,9 +720,15 @@ export function WorkspaceAiPmLoopPanel({
       return next;
     });
     const current = loadAiPmLoopState(projectId);
-    if (wrongSlot.issueId !== current.currentIssueId) {
+    if (wrongSlot.issueId !== current.currentIssueId || current.phase === 'issue') {
       syncState(
-        patchAiPmLoopState({ currentIssueId: wrongSlot.issueId }, projectId),
+        patchAiPmLoopState(
+          {
+            phase: 'answer',
+            currentIssueId: wrongSlot.issueId,
+          },
+          projectId,
+        ),
       );
     }
   }, [loopState.phase, loopState.turns.length, projectId, syncState]);
@@ -1136,17 +1187,32 @@ export function WorkspaceAiPmLoopPanel({
       };
     }
     if (wrongSlotNext) {
-      setQuestionOverride({
+      wrongSlotSubmitPinRef.current = wrongSlotNext;
+      const override = {
         targetGap: wrongSlotNext.targetGap,
         questionText: wrongSlotNext.questionText,
         whyNow: wrongSlotNext.whyNow ?? wrongSlotNext.rationale,
-        reason: 'wrong_slot',
+        reason: 'wrong_slot' as const,
+      };
+      // Loop 9g — synchronous pin before reanalyze so first paint never shows ranked issue Q
+      flushSync(() => {
+        setQuestionOverride(override);
+        setRecognitionDismissed(true);
+        const pinned = patchAiPmLoopState(
+          {
+            phase: 'answer',
+            currentIssueId: wrongSlotNext.issueId,
+          },
+          projectId,
+        );
+        syncState(pinned);
       });
-      if (wrongSlotNext.issueId !== (loopState.currentIssueId ?? nextIssue)) {
-        patchAiPmLoopState({ currentIssueId: wrongSlotNext.issueId }, projectId);
-        syncState(loadAiPmLoopState(projectId));
-      }
+      lastAskSurfaceRef.current = {
+        targetGap: override.targetGap,
+        questionText: override.questionText,
+      };
     } else {
+      wrongSlotSubmitPinRef.current = null;
       setQuestionOverride((prev) => (prev?.reason === 'wrong_slot' ? prev : null));
     }
     const result = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, {
@@ -1426,7 +1492,7 @@ export function WorkspaceAiPmLoopPanel({
 
   const activeIssue = activeIssueId;
 
-  if (loopState.phase === 'answer' && activeIssue) {
+  if (displayPhase === 'answer' && activeIssue) {
     return (
       <section
         className={cn(
@@ -1651,7 +1717,7 @@ export function WorkspaceAiPmLoopPanel({
     return null;
   }
 
-  if (loopState.phase === 'issue') {
+  if (displayPhase === 'issue') {
     return (
       <section className={cn('space-y-4', className)}>
         {showReturnWelcome && runtimeJudgment?.returnWelcome ? (
