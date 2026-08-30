@@ -34,7 +34,10 @@ export function WorkspaceS11Surface({
   ];
 
   return (
-    <div data-testid="s11-surface" className={cn('space-y-4', className)}>
+    <div
+      data-testid={sections === 'understanding' ? 's11-surface-understanding' : 's11-surface'}
+      className={cn('space-y-4', className)}
+    >
       {sections !== 'understanding' && showQuestion ? (
         <section data-testid="surface-question" aria-label="question" className="space-y-2">
           <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
