@@ -1,0 +1,26 @@
+{
+  "at": "2026-08-30T15:49:05.698Z",
+  "productionCommit": "2c551a3aaf53f4621b8a86c8601b5598f9f79065",
+  "targetSha": "2c551a3",
+  "caseA": {
+    "currentQuestion": "CURRENT QUESTION\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+    "answer": "여행관련, 전통주 관련 개별 서비스는 많다.",
+    "semanticFactKey": "competitor",
+    "targetGap": "alternativesCompetitors",
+    "gapClosed": true,
+    "nextGap": "differentiationVsAlternatives",
+    "repeat": false,
+    "verdict": "PASS — semanticFactKey=competitor; alternativesCompetitors closed; next gap not competitor repeat"
+  },
+  "caseB": {
+    "currentQuestion": "CURRENT QUESTION\n\n서비스 비용은 누가 지불하나요?",
+    "answer": "고객이요",
+    "semanticFactKey": "buyer",
+    "targetGap": "payer",
+    "gapClosed": true,
+    "nextGap": "alternativesCompetitors",
+    "repeat": false,
+    "verdict": "PASS — semanticFactKey=buyer; payer closed; next gap not payer repeat"
+  },
+  "allPass": true
+}

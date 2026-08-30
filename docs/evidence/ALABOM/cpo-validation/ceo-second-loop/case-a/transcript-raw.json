@@ -1,0 +1,102 @@
+{
+  "at": "2026-08-30T15:46:17.349Z",
+  "productionCommit": "2c551a3aaf53f4621b8a86c8601b5598f9f79065",
+  "seed": "외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.",
+  "scenario": "case-a-competitor",
+  "ceoAnswer": "여행관련, 전통주 관련 개별 서비스는 많다.",
+  "currentQuestionBefore": "CURRENT QUESTION\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+  "turns": [
+    {
+      "turn": 1,
+      "label": "after-ai-read",
+      "aiQuestion": "",
+      "userAnswer": "(seed)",
+      "targetGapHint": "",
+      "storedFactsGaps": "",
+      "nextQuestion": "",
+      "gapRepeat": false,
+      "screenshot": "01-after-ai-read.png"
+    },
+    {
+      "turn": 2,
+      "label": "after-confirm",
+      "aiQuestion": "CURRENT QUESTION\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+      "userAnswer": "(confirm)",
+      "targetGapHint": "",
+      "storedFactsGaps": "",
+      "nextQuestion": "",
+      "gapRepeat": false,
+      "screenshot": "02-after-confirm.png"
+    },
+    {
+      "turn": 3,
+      "label": "case-a-ask-before",
+      "aiQuestion": "CURRENT QUESTION\n\n비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+      "userAnswer": "(awaiting CEO answer)",
+      "targetGapHint": "",
+      "storedFactsGaps": "",
+      "nextQuestion": "",
+      "gapRepeat": false,
+      "screenshot": "03-before-answer.png"
+    },
+    {
+      "turn": 4,
+      "label": "case-a-ceo-answer",
+      "aiQuestion": "CURRENT QUESTION\n\n경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+      "userAnswer": "여행관련, 전통주 관련 개별 서비스는 많다.",
+      "targetGapHint": "",
+      "storedFactsGaps": "",
+      "nextQuestion": "CURRENT QUESTION\n\n경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
+      "gapRepeat": false,
+      "screenshot": "04-after-submit-next-question.png"
+    }
+  ],
+  "lastTurnSemanticFactKey": "competitor",
+  "lastTurnTargetGap": "alternativesCompetitors",
+  "lastTurnClassification": "business_fact",
+  "gapClosed": true,
+  "nextGap": "differentiationVsAlternatives",
+  "gapRepeatCount": 0,
+  "sessionStorageDump": {
+    "launchlens.aiPmLoop.demo-session": {
+      "version": 1,
+      "phase": "answer",
+      "turns": [
+        {
+          "issueId": "bm_design",
+          "answer": "여행관련, 전통주 관련 개별 서비스는 많다.",
+          "appliedAt": "2026-08-30T15:46:58.603Z",
+          "semanticFactKey": "competitor",
+          "semanticFactKeys": [
+            "competitor"
+          ],
+          "intent": "business_fact",
+          "whyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
+          "targetGap": "alternativesCompetitors",
+          "askedQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "causality": {
+            "sourceEvidence": [
+              "외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사"
+            ],
+            "previousUnderstanding": "businessOneLiner=외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험",
+            "unresolvedGap": "alternativesCompetitors",
+            "whyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
+            "expectedInformation": "이미 쓰는 대안·경쟁 서비스 이름/역할",
+            "targetGap": "alternativesCompetitors"
+          },
+          "sourceEvidence": [
+            "외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사"
+          ],
+          "previousUnderstanding": "businessOneLiner=외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험",
+          "unresolvedGap": "alternativesCompetitors",
+          "expectedInformation": "이미 쓰는 대안·경쟁 서비스 이름/역할",
+          "understandingDelta": "기존: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤 · 신규: businessOneLiner: 외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사 · alternativesCompetitors: 여행관련, 전통주 관련 개별 서비스는 많다. · 미확인: payer, problemJtbd, solution, revenueModel, differentiationVsAlternatives · 다음 공백: differentiationVsAlternatives"
+        }
+      ],
+      "currentIssueId": "market_validation",
+      "readingCompleted": true,
+      "dismissedReadAck": true
+    }
+  },
+  "verdict": "PASS — semanticFactKey=competitor; alternativesCompetitors closed; next gap not competitor repeat"
+}

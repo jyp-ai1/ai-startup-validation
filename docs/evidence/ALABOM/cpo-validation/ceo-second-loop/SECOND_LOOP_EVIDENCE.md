@@ -1,8 +1,9 @@
 # CEO Second Conversation Loop — CASE A + CASE B
 
-**Status:** ROOT CAUSE PROVEN · FIX IMPLEMENTED (local) · **Production re-verify PENDING deploy**
+**Status:** ROOT CAUSE PROVEN · FIX DEPLOYED · **Production CASE A/B re-verify PASS @ `2c551a3`**
 
 **Production baseline (pre-fix):** `44c0ecb`  
+**Production verified:** `2c551a3` — see `PRODUCTION_CASE_AB_VERIFICATION.md`  
 **Prior related fix:** customerPersona @ `294ac87` via `persona-answer-cues.ts`  
 **Fix scope:** `competitor-answer-cues.ts` + `payer-answer-cues.ts` + gap inference + semantic routing (no UX/spine/ranking overhaul)
 
@@ -142,24 +143,20 @@ Two compounding issues:
 
 ---
 
-## Phase 5 — Production re-verify
+## Phase 5 — Production re-verify (@ `2c551a3`)
 
-**NOT RUN** — fix is local only; deploy required before Production CEO-path re-capture.
+**RUN 2026-08-30** — Playwright harness `_cpo-ceo-second-loop-prod-capture.spec.ts`
 
-Suggested command after deploy:
+| Case | semanticFactKey | gap closed | repeat | Verdict |
+|------|-----------------|------------|--------|---------|
+| A competitor | `competitor` | alternativesCompetitors YES | 0 | PASS |
+| B payer | `buyer` | payer YES | 0 | PASS |
 
-```powershell
-cd apps/web
-$env:CI='1'
-$env:PLAYWRIGHT_BASE_URL='https://ai-startup-validation-tau.vercel.app'
-pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/ceo-second-loop-repro.test.ts
-```
+Unit @ capture time: **88/88 PASS** (ceo-second-loop-repro 10 + core-final-stabilization 78)
 
-Manual CEO inputs to re-verify:
-1. `여행관련, 전통주 관련 개별 서비스는 많다.` on competitor ask
-2. `고객이요` or `외국인 관광객이요` on payer ask
+Full evidence: `PRODUCTION_CASE_AB_VERIFICATION.md` · `case-a/` · `case-b/` · `case-ab-summary.json`
 
-**CPO PASS: NOT declared.**
+**CPO PASS: NOT declared.** CEO Walkthrough HOLD.
 
 ---
 
@@ -168,6 +165,10 @@ Manual CEO inputs to re-verify:
 | Path | Role |
 |------|------|
 | `SECOND_LOOP_EVIDENCE.md` | This document |
+| `PRODUCTION_CASE_AB_VERIFICATION.md` | Production re-verify @ 2c551a3 |
+| `case-a/transcript-raw.json` | CASE A Production capture |
+| `case-b/transcript-raw.json` | CASE B Production capture |
+| `apps/web/e2e/_cpo-ceo-second-loop-prod-capture.spec.ts` | Playwright harness |
 | `apps/web/.../competitor-answer-cues.ts` | CASE A fix |
 | `apps/web/.../payer-answer-cues.ts` | CASE B fix |
 | `apps/web/.../__tests__/ceo-second-loop-repro.test.ts` | Regression matrix |
