@@ -1,0 +1,12 @@
+Loop 7c live capture — 2026-08-29T19:50:13Z
+Production SHA: 9fa5248494b8ebe0dc461dd887db0ee797232976
+ALABOM_REQUIRED_SHA=9fa5248
+Result: 1 passed (4.8m)
+meaningfulAnswerCount=16
+duplicateAnswerCount=0
+paddingTurnCount=0
+reAskSameQuestionCount=0
+turnCount=23
+analysisVerdict=판단 (GO score 75)
+P0-1 T12→T13: FIX
+P0-2 T13→T14: FIX

@@ -105,6 +105,12 @@ finishProcessing → phase issue → whyThisQuestionNow useMemo
 | `core-final-stabilization.test.ts` | Loop 9f — exact @940800e T12/T13 turn shapes |
 | `_cpo-real-adaptive-prod-capture.spec.ts` | EPERM-safe persist (write + copy fallback) |
 
-## Verdict (@ `940800e` live capture — Loop 9e-b)
+## Loop 9f-b live (@ `b2fc5d9`)
 
-**CPO PASS: No** — P0-1 AND P0-2 remain live FAIL + reAsk=6 @ `940800e`.
+| SHA | P0-1 T12→T13 | P0-2 T13→T14 | reAsk | Gate | Notes |
+|-----|--------------|--------------|-------|------|-------|
+| `b2fc5d9` | **FAIL** → `problemJtbd` | **FAIL** → `solution` | **0** | PASS | same-slot nuclear + ref sync; journey completes; delayed persona re-ask @ T14→T15 |
+
+## Verdict (@ `b2fc5d9` live capture — Loop 9f)
+
+**CPO PASS: No** — P0-1 AND P0-2 immediate next-Q transitions still FAIL; reAsk=0 + gate probe PASS + unit 64/64 PASS.

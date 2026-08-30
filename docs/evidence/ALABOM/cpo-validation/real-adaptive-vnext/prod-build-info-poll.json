@@ -1,0 +1,9 @@
+[
+  {
+    "attempt": 1,
+    "at": "2026-08-30T08:30:00+09:00",
+    "commit": "940800ef594768fe82c274b014ec2a81e6c38215",
+    "matched": true,
+    "note": "Already deployed at poll start (post-push immediate check)"
+  }
+]
