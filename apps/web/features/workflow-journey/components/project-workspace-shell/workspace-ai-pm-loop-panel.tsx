@@ -76,6 +76,10 @@ import {
   type AnswerQuality,
 } from '../../lib/business-understanding/understanding-contract';
 import { hasDiffRelevanceEvidence } from '../../lib/business-understanding/understanding-contract';
+import {
+  hasPersonaSegmentCue,
+  isRelevanceDominantOnPersonaAsk,
+} from '../../lib/business-understanding/persona-answer-cues';
 import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
 import { reframeQuestion, buildConflictClarifyQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
 import { resolveAskedTargetGapForAppend } from '../../lib/business-understanding/resolve-asked-target-gap';
@@ -955,13 +959,7 @@ export function WorkspaceAiPmLoopPanel({
         };
       }
     } else if (displayedGapForCanonical === 'customerPersona' && semantic.mergeable) {
-      const personaSegmentCue =
-        /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행)/i.test(trimmed);
-      const relevanceDominant =
-        hasDiffRelevanceEvidence(trimmed) &&
-        /(체감|예약\s*전|차이|동선|왜\s*중요|관련성)/i.test(trimmed) &&
-        !personaSegmentCue;
-      if (relevanceDominant) {
+      if (isRelevanceDominantOnPersonaAsk(trimmed)) {
         semantic = {
           ...semantic,
           factKey: 'diffRelevance',
@@ -969,10 +967,19 @@ export function WorkspaceAiPmLoopPanel({
           facts: [{ key: 'diffRelevance', issueId: 'competitor_analysis' }],
         };
         resolvedAskedGap = 'customerPersona';
+      } else if (
+        hasPersonaSegmentCue(trimmed) &&
+        semantic.factKey !== 'customer'
+      ) {
+        semantic = {
+          ...semantic,
+          factKey: 'customer',
+          resolvedIssueId: 'customer_definition',
+          facts: [{ key: 'customer', issueId: 'customer_definition' }],
+        };
       }
     } else if (displayedGapForCanonical === 'problemJtbd' && semantic.mergeable) {
-      const personaSegmentCue =
-        /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행)/i.test(trimmed);
+      const personaSegmentCue = hasPersonaSegmentCue(trimmed);
       const problemCue =
         /(불편|pain|문제|해결|jtbd|획일|동선\s*낭비|맞춤\s*일정|패키지)/i.test(trimmed);
       if (personaSegmentCue && !problemCue) {

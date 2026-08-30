@@ -9,6 +9,12 @@ import { inferTargetGapFromQuestionText, resolveGapQuestionBinding } from './gap
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import { inferAskedTargetGapFromTurn } from './resolve-asked-target-gap';
 import { hasDiffRelevanceEvidence } from './understanding-contract';
+import {
+  DIFF_RELEVANCE_SURFACE_RE,
+  hasPersonaSegmentCue,
+  isOnSlotPersonaAnswer,
+  isRelevanceDominantOnPersonaAsk,
+} from './persona-answer-cues';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import type { AiPmLoopIssueId, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
@@ -57,9 +63,6 @@ function semanticKeys(turn: AiPmLoopTurn): string[] {
   return [];
 }
 
-const PERSONA_SEGMENT_CUE_RE =
-  /(타깃|타겟|FIT|MZ|밀레니얼|방문|머무|초기\s*타깃|2인\s*여행|persona)/i;
-const DIFF_RELEVANCE_CUE_RE = /(체감|예약\s*전|차이|동선|왜\s*중요|관련성)/i;
 const PROBLEM_CUE_RE =
   /(불편|pain|문제|해결|jtbd|획일|동선\s*낭비|맞춤\s*일정|패키지)/i;
 
@@ -91,24 +94,11 @@ function isProblemQuestionText(questionText: string | null | undefined): boolean
 }
 
 function isBankDiffRelevanceAnswer(answer: string): boolean {
-  return (
-    answer.length >= 2 &&
-    hasDiffRelevanceEvidence(answer) &&
-    DIFF_RELEVANCE_CUE_RE.test(answer) &&
-    !PERSONA_SEGMENT_CUE_RE.test(answer)
-  );
+  return answer.length >= 2 && isRelevanceDominantOnPersonaAsk(answer);
 }
 
 function isBankPersonaSegmentAnswer(answer: string): boolean {
-  return (
-    answer.length >= 2 &&
-    PERSONA_SEGMENT_CUE_RE.test(answer) &&
-    !PROBLEM_CUE_RE.test(answer)
-  );
-}
-
-function isOnSlotPersonaAnswer(answer: string): boolean {
-  return answer.length >= 2 && !isBankDiffRelevanceAnswer(answer) && isBankPersonaSegmentAnswer(answer);
+  return answer.length >= 2 && hasPersonaSegmentCue(answer) && !PROBLEM_CUE_RE.test(answer);
 }
 
 function isOnSlotProblemAnswer(answer: string): boolean {
@@ -307,13 +297,7 @@ export function resolveNuclearWrongSlotAtSubmit(input: {
 }
 
 function isBankDiffRelevanceOnPersonaAsk(answer: string, effectiveAsked: string): boolean {
-  return (
-    effectiveAsked === 'customerPersona' &&
-    answer.length >= 2 &&
-    hasDiffRelevanceEvidence(answer) &&
-    DIFF_RELEVANCE_CUE_RE.test(answer) &&
-    !PERSONA_SEGMENT_CUE_RE.test(answer)
-  );
+  return effectiveAsked === 'customerPersona' && isRelevanceDominantOnPersonaAsk(answer);
 }
 
 function cleanGap(value: string | null | undefined): string | null {
@@ -361,9 +345,7 @@ function resolveSemanticKeys(turn: AiPmLoopTurn): string[] {
   if (
     stored.includes('customer') &&
     answer.length >= 2 &&
-    hasDiffRelevanceEvidence(answer) &&
-    DIFF_RELEVANCE_CUE_RE.test(answer) &&
-    !PERSONA_SEGMENT_CUE_RE.test(answer) &&
+    isRelevanceDominantOnPersonaAsk(answer) &&
     (effectiveAsked === 'customerPersona' ||
       poisonedGap === 'validationTestability' ||
       poisonedGap === 'problemJtbd')
@@ -375,7 +357,7 @@ function resolveSemanticKeys(turn: AiPmLoopTurn): string[] {
     (effectiveAsked === 'problemJtbd' ||
       inferTargetGapFromQuestionText(turn.askedQuestionText) === 'problemJtbd') &&
     answer.length >= 2 &&
-    PERSONA_SEGMENT_CUE_RE.test(answer) &&
+    hasPersonaSegmentCue(answer) &&
     !PROBLEM_CUE_RE.test(answer)
   ) {
     return ['customer'];
@@ -383,7 +365,7 @@ function resolveSemanticKeys(turn: AiPmLoopTurn): string[] {
   if (
     stored.includes('customer') &&
     answer.length >= 2 &&
-    PERSONA_SEGMENT_CUE_RE.test(answer) &&
+    hasPersonaSegmentCue(answer) &&
     !PROBLEM_CUE_RE.test(answer) &&
     (poisonedGap === 'solution' || poisonedGap === 'problemJtbd')
   ) {
@@ -422,7 +404,7 @@ function resolveEffectiveAskedGap(
       fromQuestion === 'customerPersona' ||
       /(가장 필요로 하는 사람|누구인가요)/i.test(turn.askedQuestionText ?? '') ||
       (!/(인터뷰|CTA|랜딩|파일럿|검증\s*계획|가이드\s*10)/i.test(answer) &&
-        DIFF_RELEVANCE_CUE_RE.test(answer));
+        DIFF_RELEVANCE_SURFACE_RE.test(answer));
     if (personaCue) return 'customerPersona';
   }
 
@@ -434,7 +416,7 @@ function resolveEffectiveAskedGap(
     const problemCue =
       fromQuestion === 'problemJtbd' ||
       /(크게 해결하려는 불편|핵심 불편)/i.test(turn.askedQuestionText ?? '') ||
-      (PERSONA_SEGMENT_CUE_RE.test(answer) && !PROBLEM_CUE_RE.test(answer));
+      (hasPersonaSegmentCue(answer) && !PROBLEM_CUE_RE.test(answer));
     if (problemCue && askedGap !== 'problemJtbd') return 'problemJtbd';
   }
 

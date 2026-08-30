@@ -1375,6 +1375,30 @@ describe('Loop 5 vNext — P0-1/P0-2 causality (T12/T13/T14)', () => {
     },
   ];
 
+  it('CEO walkthrough — persona ask + relevance co-occurring closes customerPersona', () => {
+    const ceoAnswer = '예약 전에 맞춤 일정을 원하는 방한 외국인';
+    const semantic = interpretAnswerSemantics({
+      answer: ceoAnswer,
+      askedIssueId: 'customer_definition',
+      askedTargetGap: 'customerPersona',
+    });
+    expect(semantic.factKey).toBe('customer');
+    expect(semantic.mergeable).toBe(true);
+    const turns: AiPmLoopTurn[] = [
+      {
+        issueId: 'customer_definition',
+        answer: ceoAnswer,
+        appliedAt: '2026-08-30T00:00:00.000Z',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        intent: 'business_fact',
+        targetGap: 'customerPersona',
+        askedQuestionText: '이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?',
+      },
+    ];
+    expect(getAnsweredTargetGaps(turns).has('customerPersona')).toBe(true);
+  });
+
   it('P0-1 T12→T13: wrong-slot relevance on persona ask re-ranks customerPersona', () => {
     const t12Answer =
       '맞춤 일정이 없으면 첫날부터 동선 낭비가 커서 고객이 예약 전에 차이를 체감합니다';
