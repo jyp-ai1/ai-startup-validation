@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
@@ -586,6 +586,12 @@ export function WorkspaceAiPmLoopPanel({
     [],
   );
 
+  /** TTAEJYO CASE B — re-read sessionStorage after DB hydrator or project switch */
+  useLayoutEffect(() => {
+    syncState(loadAiPmLoopState(projectId));
+    setRecognitionDismissed(true);
+  }, [projectId, syncState]);
+
   const finishProcessing = useCallback(() => {
     if (processingFinishedRef.current) return;
     processingFinishedRef.current = true;
@@ -661,7 +667,13 @@ export function WorkspaceAiPmLoopPanel({
       );
     } else {
       wrongSlotSubmitPinRef.current = null;
-      syncState(next);
+      // TTAEJYO CASE A — skip recognition interstitial; open answer surface immediately
+      const opened =
+        next.phase === 'issue' && next.currentIssueId
+          ? patchAiPmLoopState({ phase: 'answer' }, projectId)
+          : next;
+      setRecognitionDismissed(true);
+      syncState(opened);
     }
 
     if (next.phase === 'complete') onLoopComplete?.();

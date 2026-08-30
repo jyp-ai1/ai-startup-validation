@@ -42,6 +42,10 @@ export function shouldApplyDbSnapshot(
   projectId: string,
   snapshot: WorkspacePersistedSnapshot,
 ): boolean {
+  // TTAEJYO CASE B — resume: server loop state beats stale sessionStorage timestamps
+  if ((snapshot.aiPmLoop?.turns.length ?? 0) > 0) {
+    return true;
+  }
   const cachedAt = readWorkspaceCacheUpdatedAt(projectId);
   if (!cachedAt) return true;
   return snapshot.updatedAt >= cachedAt;
