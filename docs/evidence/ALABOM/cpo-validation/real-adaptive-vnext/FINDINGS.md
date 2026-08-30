@@ -1,89 +1,97 @@
-# ALABOM Real Adaptive vNext — FINDINGS (Loop 9e-b)
+# ALABOM Real Adaptive vNext — FINDINGS (Loop 9g-b)
 
 ## Deploy status
 
 | Item | Value |
 |------|-------|
-| **Loop 9e fix** | Shipped @ `940800ef594768fe82c274b014ec2a81e6c38215` |
-| **Prior production SHA** | `cbce25631d453b8f0ae0d4a743957dcca58bf337` (Loop 9d-c live FAIL) |
-| Unit tests | **59/59 PASS** (`core-final-stabilization.test.ts` incl. Loop 9e cbce256 shapes) |
-| Live capture | @ `940800e` — partial run (harness EPERM on final persist; T1–T21 captured) |
+| **Loop 9g fix** | Shipped @ `7df4764591bc76e7bd208412bef91f355bc366f7` |
+| **Prior production SHA** | `b2fc5d9` (Loop 9f-b live FAIL — delayed persona re-ask) |
+| Unit tests | **68/68 PASS** (`core-final-stabilization.test.ts` incl. Loop 9g applyLoopProcessingTransition + immediate T12/T13) |
+| `pnpm build` | **PASS** |
+| Deploy poll | **SUCCESS** @ 2026-08-30T00:20:03Z (~2min after push) |
+| Live capture | @ `7df4764` — harness PASS · 16 meaningful · 23 turns · ~4.9min |
 
-## Loop 9e root cause (@ cbce256 live)
-
-Live localStorage turns stored **`semanticFactKey: customer`** on T12 persona ask + BANK.diffRelevance because interpret used **poisoned `targetGap: problemJtbd`**. Wrong-slot detector treated it as same-slot persona merge → `resolveWrongSlotQuestionOverride` returned **null** → ranked `problemJtbd`/`solution` displayed. reAsk=6 cascaded from premature solution ask while problemJtbd still open.
-
-## Loop 9e fix (shipped @ `940800e`)
+## Loop 9g fix (shipped @ `7df4764`)
 
 | File | Change |
 |------|--------|
-| `wrong-slot-priority.ts` | Remap stored `customer` + diffRelevance cues on poisoned gaps; `effectiveAskedGapFromTurn` prefers `askedQuestionText` |
-| `workspace-ai-pm-loop-panel.tsx` | Canonicalize semantic facts from displayed gap at submit; wrong-slot finish → `phase: answer` (skip ranked issue interstitial) |
-| Tests | Loop 9e — `customer` key + `problemJtbd`/`solution` poison without `askedQuestionText` |
+| `process-loop-answer.ts` | `applyLoopProcessingTransition` blocks `phase: issue` when `hasPendingWrongSlotReask(turns)` |
+| `workspace-ai-pm-loop-panel.tsx` | `flushSync` wrong-slot pin at submit; `wrongSlotSubmitPinRef`; `displayPhase` skips issue UI |
+| `core-final-stabilization.test.ts` | Loop 9g — 4 tests: never issue when pending; immediate T12→persona / T13→problem |
+| `_cpo-real-adaptive-prod-capture.spec.ts` | Storage dump + immediate P0-1/P0-2 assertions @ T12/T13 shapes |
 
-## P0 causality verdicts (@ `940800e` live)
+## P0 causality verdicts (@ `7df4764` live)
 
-| P0 | Transition | Unit @ Loop 9e | Live @ `940800e` |
+| P0 | Transition | Unit @ Loop 9g | Live @ `7df4764` |
 |----|------------|----------------|------------------|
-| **P0-1** | T12→T13 | **PASS** (59/59 incl. poison + no askedQuestionText) | **FAIL** — persona ask + `BANK.diffRelevance` → next Q `problemJtbd` ❌ |
-| **P0-2** | T13→T14 | **PASS** | **FAIL** — problem ask + persona merge → next Q `solution` ❌ |
-| **P0-3** | T16→T22 adaptive depth | PASS | **PARTIAL** — 16 meaningful · capture aborted before gate probe |
-| **P0-4** | Analysis gate @ T21 | PASS | **NOT REACHED** — harness EPERM before gate probe |
-| **P0-5** | Final GO @ T22 | PASS | **NOT REACHED** |
+| **P0-1** | T12→T13 immediate | **PASS** (68/68) | **FAIL** — persona ask + diffRelevance → next Q `problemJtbd` ❌ |
+| **P0-2** | T13→T14 immediate | **PASS** | **FAIL** — problem ask + persona merge → next Q `solution` ❌ |
+| **P0-3** | T16→T22 adaptive depth | PASS | **PASS** — 16 meaningful · natural adaptive loop |
+| **P0-4** | Analysis gate @ T21 | PASS | **PASS** — Start Analysis enabled @ gate probe |
+| **P0-5** | Final GO @ T22 | PASS | **PASS** — GO score 75 @ final review |
 
-**CPO PASS declared:** **No** — P0-1 AND P0-2 remain live FAIL on capture @ `940800e`.
+**CPO PASS declared:** **No** — P0-1 AND P0-2 immediate transitions remain live FAIL on capture @ `7df4764`.
 
-## Loop 9e-b live T11–T14 evidence (@ `940800e`)
+## Loop 9g-b live T11–T15 evidence (@ `7df4764`)
 
 ### T11→T12 — PASS ✓
 
 | | |
 |---|---|
-| T11 asked | validation / diff-relevance follow-up (post conflict) |
+| T11 asked | validationTestability follow-up (post conflict) |
 | T11 answer | `BANK.validation` |
 | **T11→T12 next Q** | **"이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?"** → `customerPersona` ✓ |
 
-### P0-1 T12→T13 — FAIL
+### P0-1 T12→T13 — FAIL (immediate)
 
 | | |
 |---|---|
 | T12 asked | `customerPersona` — "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?" |
-| T12 answer | `BANK.diffRelevance` |
-| Delta | `validationTestability` credited (diffRelevance canonicalized) |
-| **T12→T13 next Q** | **"지금 가장 크게 해결하려는 불편은 무엇인가요?"** → `problemJtbd` ❌ (expected `customerPersona` re-ask) |
+| T12 answer | `BANK.diffRelevance` (wrong-slot) |
+| Delta | `validationTestability` credited |
+| **T12→T13 next Q** | **"지금 가장 크게 해결하려는 불편은 무엇인가요?"** → `problemJtbd` ❌ (expected immediate `customerPersona` re-ask) |
 
-### P0-2 T13→T14 — FAIL
+### P0-2 T13→T14 — FAIL (immediate)
 
 | | |
 |---|---|
 | T13 asked | `problemJtbd` |
 | T13 answer | `BANK.customer` (persona wrong-slot) |
 | Delta | `customerPersona` credited on problem ask |
-| **T13→T14 next Q** | **"문제를 해결하는 방식(제공 가치)은 무엇인가요?"** → `solution` ❌ (expected `problemJtbd` re-ask) |
+| **T13→T14 next Q** | **"문제를 해결하는 방식(제공 가치)은 무엇인가요?"** → `solution` ❌ (expected immediate `problemJtbd` re-ask) |
 
-## Hard metrics (@ `940800e`)
+### Delayed re-ask @ T14→T15
+
+| | |
+|---|---|
+| T14 asked | `solution` |
+| T14 answer | `BANK.problem` (correct slot for problem ask, but asked on solution Q) |
+| **T14→T15 next Q** | **"이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?"** → delayed persona re-ask (same pattern as `b2fc5d9`) |
+
+## Hard metrics (@ `7df4764`)
 
 | Metric | Target | Actual | Verdict |
 |--------|--------|--------|---------|
-| Same-meaning re-ask | 0 | **6** | **FAIL** (solution Q re-asked T15–T20) |
-| Wrong-slot (harness) | 0 | 0 | PASS |
+| Same-meaning re-ask | 0 | **0** | **PASS** |
+| Wrong-slot (harness immediate) | 0 | 0 | PASS (harness gap — see note) |
 | Padding | 0 | 0 | PASS |
 | Meaningful answers | 15–25 | 16 | PASS |
 | Duplicate answers | 0 | 0 | PASS |
-| P0-1 live | PASS | **FAIL** | ❌ |
-| P0-2 live | PASS | **FAIL** | ❌ |
-| P0-3/4/5 | PASS | NOT REACHED | — |
+| Gate probe | enabled | enabled @ T17 | PASS |
+| P0-1 live immediate | PASS | **FAIL** | ❌ |
+| P0-2 live immediate | PASS | **FAIL** | ❌ |
+| P0-3/4/5 | PASS | PASS | ✓ |
 
-## Next step (Loop 9f)
+**Harness note:** `wrongSlotHints=0` because P0-1/P0-2 assertions require `facet=diffRelevance` / `forced=BANK.customer`; adaptive loop used `facet=adaptive` with same BANK strings. Transcript nextQuestion chain confirms live FAIL.
 
-Live @ `940800e` still routes ranked `problemJtbd`/`solution` after wrong-slot merges despite unit PASS on cbce256-shaped turns. Investigate: (1) `askedQuestionText` persistence on demo path, (2) `finishProcessing` wrong-slot override vs `decideNextQuestion` race, (3) same-slot null when `closedGap=validationTestability` + poisoned `targetGap`.
+## Next step (Loop 9h)
 
-```text
-Unit tests: PASS — 59/59 (Loop 9e cbce256 shapes)
-Deploy SHA: 940800ef594768fe82c274b014ec2a81e6c38215
-Live capture @ 940800e: 16 meaningful · reAsk=6 · P0-1/P0-2 FAIL
-CPO PASS: No — P0-1 AND P0-2 live FAIL + reAsk=6
-Transcript: docs/evidence/ALABOM/cpo-validation/real-adaptive-vnext/TRANSCRIPT.md
-Root cause: docs/evidence/ALABOM/cpo-validation/real-adaptive-vnext/LOOP9_ROOT_CAUSE.md
-Poll: docs/evidence/ALABOM/cpo-validation/real-adaptive-vnext/prod-build-info-poll.json
-```
+Live @ `7df4764` still routes ranked `problemJtbd`/`solution` on first paint after wrong-slot merges despite `flushSync` pin + `applyLoopProcessingTransition` guard. Unit/live gap persists — investigate: (1) demo path `hasPendingWrongSlotReask` false at transition time, (2) nuclear bypass not firing before ranked display on production bundle, (3) harness should assert on qBefore shape regardless of facet.
+
+## Evidence artifacts
+
+- `transcript-raw.json` — full 23-turn capture @ `7df4764`
+- `TRANSCRIPT.md` — human-readable turn bodies
+- `prod-build-info.json` / `prod-build-info-poll.json`
+- `loop9g-b-capture-run.log`
+- `LOOP9_ROOT_CAUSE.md` — causality chain + verdict table

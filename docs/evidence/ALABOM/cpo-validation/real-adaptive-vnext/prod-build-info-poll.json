@@ -1,9 +1,10 @@
 [
   {
     "attempt": 1,
-    "at": "2026-08-30T08:30:00+09:00",
-    "commit": "940800ef594768fe82c274b014ec2a81e6c38215",
+    "at": "2026-08-30T09:20:00+09:00",
+    "commit": "7df4764591bc76e7bd208412bef91f355bc366f7",
     "matched": true,
-    "note": "Already deployed at poll start (post-push immediate check)"
+    "deployTime": "2026-08-30T00:20:03.519Z",
+    "note": "Deploy SUCCESS ~2min after push (7df4764 → main)"
   }
 ]

@@ -114,3 +114,26 @@ finishProcessing → phase issue → whyThisQuestionNow useMemo
 ## Verdict (@ `b2fc5d9` live capture — Loop 9f)
 
 **CPO PASS: No** — P0-1 AND P0-2 immediate next-Q transitions still FAIL; reAsk=0 + gate probe PASS + unit 64/64 PASS.
+
+## Loop 9g fix (@ b2fc5d9 live FAIL — synchronous display)
+
+**Root cause (@ b2fc5d9):** `finishProcessing` entered `phase: issue` (ranked path) before wrong-slot pin won on first paint. `setQuestionOverride(wrong_slot)` was one React commit late; issue-phase recognition UI briefly showed ranked `problemJtbd` / `solution` before delayed persona re-ask @ T14→T15.
+
+| File | Change |
+|------|--------|
+| `process-loop-answer.ts` | `applyLoopProcessingTransition` blocks `phase: issue` when `hasPendingWrongSlotReask(turns)` — forces `phase: answer` + anchor issueId |
+| `workspace-ai-pm-loop-panel.tsx` | Loop 9g — `flushSync` synchronous wrong-slot pin at submit (override + `phase: answer` before `startProcessing`); `wrongSlotSubmitPinRef` survives finishProcessing; `displayPhase` skips issue UI when pending wrong-slot; `whyThisQuestionNow` / `s11Surface` derive from turns override on same commit |
+| `core-final-stabilization.test.ts` | Loop 9g — 4 tests: applyLoopProcessingTransition never issue when pending; immediate T12→persona / T13→problem |
+| `_cpo-real-adaptive-prod-capture.spec.ts` | Loop 9g — sessionStorage/localStorage dump @ T12/T13 wrong-slot; immediate P0-1/P0-2 assertion after submit |
+
+## Loop 9g-b live (@ `7df4764`)
+
+| SHA | P0-1 T12→T13 | P0-2 T13→T14 | reAsk | Gate | Notes |
+|-----|--------------|--------------|-------|------|-------|
+| `7df4764` | **FAIL** → `problemJtbd` | **FAIL** → `solution` | **0** | PASS | flushSync + issue-phase block; delayed persona re-ask @ T14→T15; harness wrongSlotHints=0 (facet=adaptive path) |
+
+## Verdict (@ `7df4764` live capture — Loop 9g-b)
+
+**CPO PASS: No** — P0-1 AND P0-2 immediate next-Q transitions still FAIL; reAsk=0 + gate probe PASS + unit 68/68 PASS + full capture harness PASS.
+
+**Root cause confirmed (unchanged shape):** T12 persona ask + `BANK.diffRelevance` → display ranks `problemJtbd` on first paint (not persona re-ask). T13 problem ask + persona wrong-slot → display ranks `solution` (not problem re-ask). Loop 9g synchronous pin + transition guard did not close unit/live gap on demo production path.

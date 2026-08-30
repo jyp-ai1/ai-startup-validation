@@ -1,7 +1,7 @@
 {
-  "at": "2026-08-30T00:07:05.731Z",
-  "productionCommit": "b2fc5d9850adee658f8b94a2147697f1cf680799",
-  "targetSha": "b2fc5d9",
+  "at": "2026-08-30T00:20:26.108Z",
+  "productionCommit": "7df4764591bc76e7bd208412bef91f355bc366f7",
+  "targetSha": "7df4764",
   "shaMatch": true,
   "entryUrl": "/demo/start",
   "seed": "외국인 관광객을 대상으로 서울에서 기존 관광상품과 다른 개인 맞춤형 경험을 제공하는 사업을 생각하고 있습니다.",
@@ -589,6 +589,7 @@
     "whyPanelSeen=true",
     "conflictUiSeen=true",
     "reAskSameQuestionCount=0",
+    "wrongSlotHints=0",
     "turnCount=23",
     "analysisVerdict=판단"
   ],
