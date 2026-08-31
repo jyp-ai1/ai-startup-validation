@@ -165,6 +165,8 @@ type WorkspaceAiPmLoopPanelProps = {
   onLoopStateChange?: () => void;
   onLoopComplete?: () => void;
   onSessionPause?: () => void;
+  /** FIX 1 CASE A — re-sync when DB hydrator applies a new snapshot */
+  workspaceSnapshotUpdatedAt?: string | null;
   className?: string;
 };
 
@@ -179,6 +181,7 @@ export function WorkspaceAiPmLoopPanel({
   onLoopStateChange,
   onLoopComplete,
   onSessionPause,
+  workspaceSnapshotUpdatedAt = null,
   className,
 }: WorkspaceAiPmLoopPanelProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
@@ -586,11 +589,11 @@ export function WorkspaceAiPmLoopPanel({
     [],
   );
 
-  /** TTAEJYO CASE B — re-read sessionStorage after DB hydrator or project switch */
+  /** FIX 1 CASE A — re-read sessionStorage after DB hydrator, revalidate, or project switch */
   useLayoutEffect(() => {
     syncState(loadAiPmLoopState(projectId));
     setRecognitionDismissed(true);
-  }, [projectId, syncState]);
+  }, [projectId, workspaceSnapshotUpdatedAt, syncState]);
 
   const finishProcessing = useCallback(() => {
     if (processingFinishedRef.current) return;

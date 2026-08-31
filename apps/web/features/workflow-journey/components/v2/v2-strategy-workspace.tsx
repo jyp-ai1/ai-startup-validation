@@ -880,6 +880,7 @@ export function V2StrategyWorkspaceView({
           onLoopComplete={handleLoopComplete}
           onSessionPause={handleSessionPause}
           workspaceFacts={initialWorkspaceSnapshot?.workspaceFacts ?? null}
+          workspaceSnapshotUpdatedAt={initialWorkspaceSnapshot?.updatedAt ?? null}
           onAlignmentApplied={handleAlignmentApplied}
           onReview={runReview}
           reviewError={reviewError}

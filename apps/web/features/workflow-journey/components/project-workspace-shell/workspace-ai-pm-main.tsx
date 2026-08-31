@@ -115,6 +115,7 @@ type WorkspaceAiPmMainProps = {
   onSessionPause?: () => void;
   onDomainChange?: (field: WorkspaceDomainFieldId, value: string) => void;
   workspaceFacts?: import('@/lib/project/workspace-persisted-facts').WorkspacePersistedFacts | null;
+  workspaceSnapshotUpdatedAt?: string | null;
   className?: string;
 };
 
@@ -167,6 +168,7 @@ export function WorkspaceAiPmMain({
   onSessionPause,
   onDomainChange,
   workspaceFacts = null,
+  workspaceSnapshotUpdatedAt = null,
   className,
 }: WorkspaceAiPmMainProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmMain');
@@ -599,6 +601,7 @@ export function WorkspaceAiPmMain({
             readOnly={readOnly}
             allowAsk={understandingConfirmed}
             workspaceFacts={workspaceFacts}
+            workspaceSnapshotUpdatedAt={workspaceSnapshotUpdatedAt}
             onDocumentUpdated={() => handleLoopDocumentUpdated()}
             onLoopStateChange={() => setLoopState(loadAiPmLoopState(projectId))}
             onLoopComplete={handleLoopComplete}

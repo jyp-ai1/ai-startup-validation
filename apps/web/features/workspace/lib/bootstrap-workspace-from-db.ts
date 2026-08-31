@@ -1,7 +1,10 @@
 import type { UnderstandingPhase } from '@/features/workflow-journey/lib/business-understanding/business-understanding-store';
 import type { WorkspacePersistedSnapshot } from '@/lib/project/workspace-persisted-state';
 
-import { applyWorkspaceSnapshotToCache } from './apply-workspace-snapshot';
+import {
+  applyWorkspaceSnapshotToCache,
+  shouldApplyDbSnapshot,
+} from './apply-workspace-snapshot';
 
 export type WorkspaceUiBootstrap = {
   understandingPhase: UnderstandingPhase;
@@ -24,7 +27,7 @@ export function bootstrapWorkspaceFromDb(
 
   if (!snapshot || !projectId) return defaults;
 
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && shouldApplyDbSnapshot(projectId, snapshot)) {
     applyWorkspaceSnapshotToCache(projectId, snapshot);
   }
 
