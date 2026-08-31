@@ -90,6 +90,13 @@ import { inferTargetGapFromQuestionText, resolveGapQuestionBinding } from '../..
 import { resolveNuclearWrongSlotAtSubmit, resolveWrongSlotReaskPendingAtSubmit, hasPendingWrongSlotReask, getLastWrongSlotReaskPendingGap } from '../../lib/business-understanding/wrong-slot-priority';
 import { countUnclosedGapAsks, MAX_SAME_GAP_ASKS_BEFORE_YIELD } from '../../lib/business-understanding/question-decision-engine';
 import { enforceQuestionPurity } from '../../lib/business-understanding/question-purity';
+import {
+  captureLockedAskSurface,
+  isQuestionTransitionLockActive,
+  resolveDisplayQuestionWithLock,
+  shouldRejectStaleAskSurfaceUpdate,
+  type LockedAskSurface,
+} from '../../lib/business-understanding/question-transition-lock';
 import { canEnterValidation } from '../../lib/business-understanding/stage-transition';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
 import { WorkspaceDocumentTrustBlock } from './workspace-document-trust-block';
@@ -228,6 +235,10 @@ export function WorkspaceAiPmLoopPanel({
   });
   /** Loop 9g — submit-time wrong_slot pin survives finishProcessing before turns SoT catches up */
   const wrongSlotSubmitPinRef = useRef<ReturnType<typeof resolveWrongSlotQuestionOverride>>(null);
+  /** FIX 2 — pin ask surface during USER_TYPING / submit / processing until next commit */
+  const lockedAskSurfaceRef = useRef<LockedAskSurface | null>(null);
+  const [lockedAskSurface, setLockedAskSurface] = useState<LockedAskSurface | null>(null);
+  const [answerInputFocused, setAnswerInputFocused] = useState(false);
 
   const documentText = useMemo(() => loadWorkspaceDocumentText(projectId), [projectId, understanding]);
   const documentTrust = useMemo(() => getWorkspaceDocumentTrust(documentText), [documentText]);
@@ -283,7 +294,21 @@ export function WorkspaceAiPmLoopPanel({
   );
   const activeIssueId = loopState.currentIssueId ?? nextIssue;
   const lastTurn = loopState.turns.at(-1) ?? null;
+
+  const questionLockActive = useMemo(
+    () =>
+      isQuestionTransitionLockActive({
+        lock: lockedAskSurface,
+        phase: loopState.phase,
+        reanalyzing,
+      }),
+    [lockedAskSurface, loopState.phase, reanalyzing],
+  );
+
   const whyThisQuestionNow = useMemo(() => {
+    if (questionLockActive && lockedAskSurface) {
+      return lockedAskSurface;
+    }
     if (!activeIssueId) return null;
     const freshTurns = loadAiPmLoopState(projectId).turns;
     const freshMemory = buildConversationMemoryFromSources({
@@ -370,6 +395,8 @@ export function WorkspaceAiPmLoopPanel({
     analysisResultExists,
     questionOverride,
     livingState,
+    lockedAskSurface,
+    questionLockActive,
   ]);
   const s11Surface = useMemo(() => {
     const askIssueId = loopState.currentIssueId ?? nextIssue;
@@ -461,9 +488,18 @@ export function WorkspaceAiPmLoopPanel({
     const fromRef = lastAskSurfaceRef.current.questionText?.trim() ?? '';
     const issueFallback =
       activeIssueId != null ? t(`issues.${activeIssueId}.question`) : '';
-    return fromEngine || fromSurface || fromRef || issueFallback;
+    return resolveDisplayQuestionWithLock({
+      lock: lockedAskSurface,
+      lockActive: questionLockActive,
+      fromEngine,
+      fromSurface,
+      fromRef,
+      issueFallback,
+    });
   }, [
     activeIssueId,
+    lockedAskSurface,
+    questionLockActive,
     questionOverride?.questionText,
     s11Surface.question.text,
     t,
@@ -589,11 +625,70 @@ export function WorkspaceAiPmLoopPanel({
     [],
   );
 
+  const clearQuestionLock = useCallback(() => {
+    lockedAskSurfaceRef.current = null;
+    setLockedAskSurface(null);
+    setAnswerInputFocused(false);
+  }, []);
+
+  const commitQuestionLock = useCallback((surface: LockedAskSurface | null) => {
+    lockedAskSurfaceRef.current = surface;
+    setLockedAskSurface(surface);
+    if (surface) {
+      lastAskSurfaceRef.current = {
+        targetGap: surface.targetGap,
+        questionText: surface.questionText,
+      };
+    }
+  }, []);
+
+  const activateQuestionLock = useCallback(() => {
+    const issueId = loopState.currentIssueId ?? nextIssue;
+    if (!issueId) return;
+    const captured = captureLockedAskSurface({
+      issueId: whyThisQuestionNow?.issueId ?? issueId,
+      targetGap:
+        lockedAskSurfaceRef.current?.targetGap ??
+        whyThisQuestionNow?.targetGap ??
+        lastAskSurfaceRef.current.targetGap ??
+        questionOverride?.targetGap,
+      questionText:
+        lockedAskSurfaceRef.current?.questionText ??
+        whyThisQuestionNow?.questionText ??
+        lastAskSurfaceRef.current.questionText ??
+        questionOverride?.questionText,
+      whyNow:
+        lockedAskSurfaceRef.current?.whyNow ??
+        whyThisQuestionNow?.whyNow ??
+        questionOverride?.whyNow,
+      rationale:
+        lockedAskSurfaceRef.current?.rationale ??
+        whyThisQuestionNow?.rationale,
+      score: lockedAskSurfaceRef.current?.score ?? whyThisQuestionNow?.score,
+      missingField: lockedAskSurfaceRef.current?.missingField ?? whyThisQuestionNow?.missingField,
+      fallbackIssueId: issueId,
+    });
+    if (!captured) return;
+    commitQuestionLock(captured);
+  }, [
+    commitQuestionLock,
+    loopState.currentIssueId,
+    nextIssue,
+    questionOverride?.targetGap,
+    questionOverride?.questionText,
+    questionOverride?.whyNow,
+    whyThisQuestionNow,
+  ]);
+
   /** FIX 1 CASE A — re-read sessionStorage after DB hydrator, revalidate, or project switch */
   useLayoutEffect(() => {
     syncState(loadAiPmLoopState(projectId));
     setRecognitionDismissed(true);
   }, [projectId, workspaceSnapshotUpdatedAt, syncState]);
+
+  useEffect(() => {
+    clearQuestionLock();
+  }, [projectId, clearQuestionLock]);
 
   const finishProcessing = useCallback(() => {
     if (processingFinishedRef.current) return;
@@ -668,6 +763,22 @@ export function WorkspaceAiPmLoopPanel({
           projectId,
         ),
       );
+      const purity = enforceQuestionPurity({
+        questionText: wrongSlotAfter.questionText,
+        targetGap: wrongSlotAfter.targetGap,
+      });
+      commitQuestionLock(
+        captureLockedAskSurface({
+          issueId: wrongSlotAfter.issueId,
+          targetGap: wrongSlotAfter.targetGap,
+          questionText: purity.sanitizedText,
+          whyNow: wrongSlotAfter.whyNow ?? wrongSlotAfter.rationale,
+          rationale: wrongSlotAfter.rationale,
+          score: wrongSlotAfter.score,
+          missingField: wrongSlotAfter.missingField,
+          fallbackIssueId: wrongSlotAfter.issueId,
+        }),
+      );
     } else {
       wrongSlotSubmitPinRef.current = null;
       // TTAEJYO CASE A — skip recognition interstitial; open answer surface immediately
@@ -677,11 +788,41 @@ export function WorkspaceAiPmLoopPanel({
           : next;
       setRecognitionDismissed(true);
       syncState(opened);
+      const openedState = loadAiPmLoopState(projectId);
+      const freshMemory = buildConversationMemoryFromSources({
+        projectId: projectId ?? 'default',
+        documentText: doc,
+        turns: openedState.turns,
+        entities,
+        previous: loadConversationMemory(projectId),
+      });
+      const decision = decideNextQuestion({
+        living: result.living,
+        turns: openedState.turns,
+        memory: freshMemory,
+      });
+      if (decision) {
+        const purity = enforceQuestionPurity({
+          questionText: decision.questionText,
+          targetGap: decision.targetGap,
+        });
+        commitQuestionLock(
+          captureLockedAskSurface({
+            issueId: decision.issueId,
+            targetGap: decision.targetGap,
+            questionText: purity.sanitizedText,
+            whyNow: decision.whyNow,
+            rationale: decision.rationale,
+            score: decision.score,
+            fallbackIssueId: decision.issueId,
+          }),
+        );
+      }
     }
 
     if (next.phase === 'complete') onLoopComplete?.();
     window.setTimeout(() => setUpdateSavedFlash(false), 2200);
-  }, [entities, onLoopComplete, projectId, syncState, understanding]);
+  }, [commitQuestionLock, entities, onLoopComplete, projectId, syncState, understanding]);
 
   finishProcessingRef.current = finishProcessing;
 
@@ -717,6 +858,16 @@ export function WorkspaceAiPmLoopPanel({
       whyNow: reframed.whyNow,
       reason,
     });
+    commitQuestionLock(
+      captureLockedAskSurface({
+        issueId: top?.issueId ?? loopState.currentIssueId ?? 'problem_definition',
+        targetGap: reframed.targetGap,
+        questionText: reframed.questionText,
+        whyNow: reframed.whyNow,
+        rationale: reframed.whyNow,
+        fallbackIssueId: top?.issueId ?? loopState.currentIssueId ?? 'problem_definition',
+      }),
+    );
     const issueForGap = top?.issueId ?? loopState.currentIssueId;
     if (issueForGap && issueForGap !== loopState.currentIssueId) {
       patchAiPmLoopState({ currentIssueId: issueForGap }, projectId);
@@ -724,6 +875,7 @@ export function WorkspaceAiPmLoopPanel({
     }
   }, [
     analysisResultExists,
+    commitQuestionLock,
     conversationMemory,
     documentText,
     entities,
@@ -794,6 +946,21 @@ export function WorkspaceAiPmLoopPanel({
     if (loopState.phase === 'reanalyze') return;
     const turns = loadAiPmLoopState(projectId).turns;
     const wrongSlot = resolveWrongSlotQuestionOverride(turns);
+    if (
+      wrongSlot &&
+      lockedAskSurfaceRef.current &&
+      isQuestionTransitionLockActive({
+        lock: lockedAskSurfaceRef.current,
+        phase: loopState.phase,
+        reanalyzing,
+      }) &&
+      shouldRejectStaleAskSurfaceUpdate({
+        committedLock: lockedAskSurfaceRef.current,
+        incoming: wrongSlot,
+      })
+    ) {
+      return;
+    }
     if (!wrongSlot) {
       setQuestionOverride((prev) => (prev?.reason === 'wrong_slot' ? null : prev));
       return;
@@ -826,7 +993,7 @@ export function WorkspaceAiPmLoopPanel({
         ),
       );
     }
-  }, [loopState.phase, loopState.turns.length, projectId, syncState]);
+  }, [loopState.phase, loopState.turns.length, projectId, reanalyzing, syncState]);
 
   const beginIssue = useCallback(() => {
     const issue = loopState.currentIssueId ?? nextIssue;
@@ -929,6 +1096,8 @@ export function WorkspaceAiPmLoopPanel({
     const issueId = loopState.currentIssueId ?? nextIssue;
     const trimmed = answerDraft.trim();
     if (!issueId || trimmed.length < 2 || readOnly) return;
+
+    activateQuestionLock();
 
     const memory = loadConversationMemory(projectId);
     const existingFactsByKey: Partial<Record<ConversationFactKey, string | null>> = {};
@@ -1395,6 +1564,7 @@ export function WorkspaceAiPmLoopPanel({
     setRecognitionDismissed(false);
     startProcessing();
   }, [
+    activateQuestionLock,
     answerDraft,
     analysisResultExists,
     conversationMemory,
@@ -1489,10 +1659,11 @@ export function WorkspaceAiPmLoopPanel({
       setAnswerDraft('');
       setWhyPanel(null);
       setMidJudgmentText(null);
+      clearQuestionLock();
       syncState(next);
       onLoopStateChange?.();
     },
-    [entities, onLoopStateChange, projectId, readOnly, syncState],
+    [clearQuestionLock, entities, onLoopStateChange, projectId, readOnly, syncState],
   );
 
   const editableTurns = useMemo(() => {
@@ -1694,8 +1865,16 @@ export function WorkspaceAiPmLoopPanel({
         ) : null}
         <textarea
           value={answerDraft}
+          onFocus={() => {
+            setAnswerInputFocused(true);
+            activateQuestionLock();
+          }}
+          onBlur={() => setAnswerInputFocused(false)}
           onChange={(event) => {
             setAnswerQualityHint(null);
+            if (event.target.value.length > 0) {
+              activateQuestionLock();
+            }
             setAnswerDraft(event.target.value);
           }}
           rows={4}
@@ -1895,8 +2074,16 @@ export function WorkspaceAiPmLoopPanel({
         />
               <textarea
                 value={answerDraft}
+                onFocus={() => {
+                  setAnswerInputFocused(true);
+                  activateQuestionLock();
+                }}
+                onBlur={() => setAnswerInputFocused(false)}
                 onChange={(event) => {
                   setAnswerQualityHint(null);
+                  if (event.target.value.length > 0) {
+                    activateQuestionLock();
+                  }
                   setAnswerDraft(event.target.value);
                 }}
                 rows={4}
