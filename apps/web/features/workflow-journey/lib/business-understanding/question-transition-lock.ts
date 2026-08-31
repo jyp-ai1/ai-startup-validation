@@ -1,7 +1,7 @@
 import {
-  isGenericGapQuestionText,
   resolveGapQuestionBinding,
 } from './gap-question-map';
+import { gateUserFacingQuestion, isNaturalUserFacingQuestion } from './question-quality-gate';
 import type { AiPmLoopIssueId, AiPmLoopState } from './workspace-ai-pm-loop-types';
 
 /** Pinned ask surface — uses targetGap + questionText identity (no generationId). */
@@ -76,7 +76,7 @@ export function resolveWhyThisQuestionWithLock<T extends LockedAskSurface>(
 function firstVisibleQuestion(...candidates: (string | null | undefined)[]): string {
   for (const candidate of candidates) {
     const text = candidate?.trim();
-    if (text && !isGenericGapQuestionText(text)) return text;
+    if (text && isNaturalUserFacingQuestion(text)) return text;
   }
   return '';
 }
@@ -104,10 +104,10 @@ export function resolveDisplayQuestionWithLock(input: {
 
   if (input.lockActive && input.lock?.questionText.trim()) {
     const locked = input.lock.questionText.trim();
-    if (!isGenericGapQuestionText(locked)) return locked;
+    if (isNaturalUserFacingQuestion(locked)) return locked;
   }
 
-  return (
+  const resolved =
     firstVisibleQuestion(
       input.fromOverride,
       input.fromEngine,
@@ -116,9 +116,16 @@ export function resolveDisplayQuestionWithLock(input: {
       fromGapBinding,
       input.issueFallback,
     ) ||
-    (input.lockActive ? input.lock?.questionText.trim() : '') ||
-    ''
-  );
+    (input.lockActive && isNaturalUserFacingQuestion(input.lock?.questionText)
+      ? input.lock!.questionText.trim()
+      : '') ||
+    '';
+
+  return gateUserFacingQuestion({
+    candidate: resolved,
+    targetGap: input.targetGap,
+    fallbackIssueId: input.fallbackIssueId,
+  });
 }
 
 /** True when sessionStorage carries an active display lock (FIX 2b). */
