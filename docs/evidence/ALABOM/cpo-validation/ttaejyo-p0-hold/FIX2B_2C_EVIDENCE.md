@@ -66,8 +66,8 @@ From `apps/web/` @ 2026-08-31T17:26 KST:
 
 ## Production verification
 
-- **Commit SHA:** _(filled after push)_
-- **Production SHA:** _(filled after /api/build-info poll)_
+- **Commit SHA:** `e1f3f1d`
+- **Production SHA:** `e1f3f1d5fdcd51dd0df74a1933db1ad494d689af` (polled 2026-08-31T17:35 KST, deployTime `2026-08-31T08:34:56.673Z`)
 - **CEO Production test:** NOT RUN (per gate — document deploy SHA only)
 
 ---
