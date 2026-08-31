@@ -6,6 +6,10 @@ import type {
   AiPmLoopState,
   AiPmLoopTurn,
 } from '@/features/workflow-journey/lib/business-understanding/workspace-ai-pm-loop-types';
+import {
+  hasPersistedQuestionTransitionLock,
+  mergeAiPmLoopHonoringQuestionLock,
+} from '@/features/workflow-journey/lib/business-understanding/question-transition-lock';
 import { saveUnderstandingPhase } from '@/features/workflow-journey/lib/business-understanding/business-understanding-store';
 import { saveWorkspaceDocumentText } from '@/features/workflow-journey/lib/workspace-ai-pm-messages';
 import type { WorkspacePersistedSnapshot } from '@/lib/project/workspace-persisted-state';
@@ -47,15 +51,8 @@ export function isClientLoopAheadOfDb(client: AiPmLoopState, db: AiPmLoopState):
 
 /** Merge DB snapshot loop with client cache — client wins when ahead (FIX 1 CASE A). */
 export function mergeAiPmLoopForHydrate(client: AiPmLoopState, db: AiPmLoopState): AiPmLoopState {
-  if (isClientLoopAheadOfDb(client, db)) {
-    return client;
-  }
-
-  return {
-    ...db,
-    readingCompleted: client.readingCompleted || db.readingCompleted,
-    dismissedReadAck: client.dismissedReadAck || db.dismissedReadAck,
-  };
+  const clientAhead = isClientLoopAheadOfDb(client, db);
+  return mergeAiPmLoopHonoringQuestionLock(client, db, clientAhead);
 }
 
 /** DB snapshot → sessionStorage cache (never the other way on load). */
@@ -113,6 +110,16 @@ export function shouldApplyDbSnapshot(
 
   // FIX 1 CASE A — post-answer: stale DB must not overwrite newer client turns
   if (dbLoop && isClientLoopAheadOfDb(clientLoop, dbLoop)) {
+    return false;
+  }
+
+  // FIX 2b — active display lock: stale DB must not regress ask surface on equal turns
+  if (
+    dbLoop &&
+    hasPersistedQuestionTransitionLock(clientLoop) &&
+    clientLoop.lockedAskSurface &&
+    dbLoop.currentIssueId !== clientLoop.currentIssueId
+  ) {
     return false;
   }
 

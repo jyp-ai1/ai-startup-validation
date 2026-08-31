@@ -1,6 +1,7 @@
 import type { ConversationFactKey } from './conversation-memory';
 import type { AnswerIntent } from './interpret-answer-semantics';
 import type { QuestionCausality } from './question-causality';
+import type { LockedAskSurface } from './question-transition-lock';
 
 export type AiPmLoopIssueId =
   | 'customer_definition'
@@ -53,6 +54,8 @@ export type AiPmLoopState = {
   /** Staged reading animation finished — show initial diagnosis before loop questions. */
   readingCompleted: boolean;
   dismissedReadAck: boolean;
+  /** FIX 2b — durable display lock survives remount / hydrate */
+  lockedAskSurface?: LockedAskSurface | null;
 };
 
 export const AI_PM_LOOP_MIN_TURNS = 3;

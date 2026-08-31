@@ -237,7 +237,11 @@ export function WorkspaceAiPmLoopPanel({
   const wrongSlotSubmitPinRef = useRef<ReturnType<typeof resolveWrongSlotQuestionOverride>>(null);
   /** FIX 2 — pin ask surface during USER_TYPING / submit / processing until next commit */
   const lockedAskSurfaceRef = useRef<LockedAskSurface | null>(null);
-  const [lockedAskSurface, setLockedAskSurface] = useState<LockedAskSurface | null>(null);
+  const [lockedAskSurface, setLockedAskSurface] = useState<LockedAskSurface | null>(() => {
+    const stored = loadAiPmLoopState(projectId).lockedAskSurface ?? null;
+    lockedAskSurfaceRef.current = stored;
+    return stored;
+  });
   const [answerInputFocused, setAnswerInputFocused] = useState(false);
 
   const documentText = useMemo(() => loadWorkspaceDocumentText(projectId), [projectId, understanding]);
@@ -629,18 +633,23 @@ export function WorkspaceAiPmLoopPanel({
     lockedAskSurfaceRef.current = null;
     setLockedAskSurface(null);
     setAnswerInputFocused(false);
-  }, []);
+    patchAiPmLoopState({ lockedAskSurface: null }, projectId);
+  }, [projectId]);
 
-  const commitQuestionLock = useCallback((surface: LockedAskSurface | null) => {
-    lockedAskSurfaceRef.current = surface;
-    setLockedAskSurface(surface);
-    if (surface) {
-      lastAskSurfaceRef.current = {
-        targetGap: surface.targetGap,
-        questionText: surface.questionText,
-      };
-    }
-  }, []);
+  const commitQuestionLock = useCallback(
+    (surface: LockedAskSurface | null) => {
+      lockedAskSurfaceRef.current = surface;
+      setLockedAskSurface(surface);
+      patchAiPmLoopState({ lockedAskSurface: surface }, projectId);
+      if (surface) {
+        lastAskSurfaceRef.current = {
+          targetGap: surface.targetGap,
+          questionText: surface.questionText,
+        };
+      }
+    },
+    [projectId],
+  );
 
   const activateQuestionLock = useCallback(() => {
     const issueId = loopState.currentIssueId ?? nextIssue;
@@ -682,13 +691,19 @@ export function WorkspaceAiPmLoopPanel({
 
   /** FIX 1 CASE A — re-read sessionStorage after DB hydrator, revalidate, or project switch */
   useLayoutEffect(() => {
-    syncState(loadAiPmLoopState(projectId));
+    const hydrated = loadAiPmLoopState(projectId);
+    syncState(hydrated);
+    const storedLock = hydrated.lockedAskSurface ?? null;
+    lockedAskSurfaceRef.current = storedLock;
+    setLockedAskSurface(storedLock);
     setRecognitionDismissed(true);
   }, [projectId, workspaceSnapshotUpdatedAt, syncState]);
 
   useEffect(() => {
-    clearQuestionLock();
-  }, [projectId, clearQuestionLock]);
+    const storedLock = loadAiPmLoopState(projectId).lockedAskSurface ?? null;
+    lockedAskSurfaceRef.current = storedLock;
+    setLockedAskSurface(storedLock);
+  }, [projectId]);
 
   const finishProcessing = useCallback(() => {
     if (processingFinishedRef.current) return;
@@ -705,6 +720,7 @@ export function WorkspaceAiPmLoopPanel({
 
     if (!freshUnderstanding) {
       syncState(refreshed);
+      onDocumentUpdated?.(refreshed.currentIssueId ?? 'problem_definition', '');
       window.setTimeout(() => setUpdateSavedFlash(false), 2200);
       return;
     }
@@ -821,8 +837,12 @@ export function WorkspaceAiPmLoopPanel({
     }
 
     if (next.phase === 'complete') onLoopComplete?.();
+    onDocumentUpdated?.(
+      loadAiPmLoopState(projectId).currentIssueId ?? 'problem_definition',
+      '',
+    );
     window.setTimeout(() => setUpdateSavedFlash(false), 2200);
-  }, [commitQuestionLock, entities, onLoopComplete, projectId, syncState, understanding]);
+  }, [commitQuestionLock, entities, onDocumentUpdated, onLoopComplete, projectId, syncState, understanding]);
 
   finishProcessingRef.current = finishProcessing;
 
@@ -1557,7 +1577,6 @@ export function WorkspaceAiPmLoopPanel({
       setAnswerQualityHint(result.quality);
       return;
     }
-    onDocumentUpdated?.(recordIssueId, trimmed);
 
     setAnswerDraft('');
     setReturnWelcomeDismissed(true);
@@ -1574,7 +1593,6 @@ export function WorkspaceAiPmLoopPanel({
     loopState,
     loopState.currentIssueId,
     loopState.turns,
-    onDocumentUpdated,
     nextIssue,
     projectId,
     questionOverride,
@@ -1627,7 +1645,6 @@ export function WorkspaceAiPmLoopPanel({
           quality: 'VALID',
         },
       });
-      onDocumentUpdated?.(issueId, next);
       setAnswerDraft('');
       startProcessing();
       void prior;

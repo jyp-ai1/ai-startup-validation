@@ -1,4 +1,4 @@
-import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
+import type { AiPmLoopIssueId, AiPmLoopState } from './workspace-ai-pm-loop-types';
 
 /** Pinned ask surface — uses targetGap + questionText identity (no generationId). */
 export type LockedAskSurface = {
@@ -87,6 +87,46 @@ export function resolveDisplayQuestionWithLock(input: {
     input.fromRef ||
     input.issueFallback
   );
+}
+
+/** True when sessionStorage carries an active display lock (FIX 2b). */
+export function hasPersistedQuestionTransitionLock(state: AiPmLoopState): boolean {
+  const lock = state.lockedAskSurface;
+  if (!lock?.questionText?.trim() || !lock?.targetGap?.trim()) return false;
+  return state.phase === 'answer' || state.phase === 'reanalyze';
+}
+
+/**
+ * FIX 2b — when client holds a durable lock, hydrate merge must not revert to stale DB ask.
+ */
+export function mergeAiPmLoopHonoringQuestionLock(
+  client: AiPmLoopState,
+  db: AiPmLoopState,
+  clientAhead: boolean,
+): AiPmLoopState {
+  const base = clientAhead
+    ? client
+    : {
+        ...db,
+        readingCompleted: client.readingCompleted || db.readingCompleted,
+        dismissedReadAck: client.dismissedReadAck || db.dismissedReadAck,
+        lockedAskSurface: client.lockedAskSurface ?? db.lockedAskSurface ?? null,
+      };
+
+  if (!hasPersistedQuestionTransitionLock(client)) {
+    return base;
+  }
+
+  const lock = client.lockedAskSurface!;
+  return {
+    ...base,
+    lockedAskSurface: lock,
+    phase: client.phase === 'reanalyze' ? 'reanalyze' : 'answer',
+    currentIssueId: lock.issueId ?? client.currentIssueId ?? base.currentIssueId,
+    turns: clientAhead || client.turns.length >= db.turns.length ? client.turns : base.turns,
+    readingCompleted: client.readingCompleted || db.readingCompleted,
+    dismissedReadAck: client.dismissedReadAck || db.dismissedReadAck,
+  };
 }
 
 /** Stale async callback must not regress to a different gap/question identity. */
