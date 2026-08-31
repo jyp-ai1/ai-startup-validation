@@ -2,6 +2,8 @@
 
 **Date:** 2026-08-31  
 **Status:** PASS  
+**Commit:** `b0a4588b5521d90f0ff93f4270ac82c4ac84dea6`  
+**Production deploy:** confirmed via `/api/build-info` @ 2026-08-31T10:49:05Z  
 **Scope:** User-facing ask semantic validation only (render/quality gate). No ranking, payer, persistence, or transition-lock semantics changed.
 
 ---
