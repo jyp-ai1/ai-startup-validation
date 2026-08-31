@@ -1,3 +1,7 @@
+import {
+  isGenericGapQuestionText,
+  resolveGapQuestionBinding,
+} from './gap-question-map';
 import type { AiPmLoopIssueId, AiPmLoopState } from './workspace-ai-pm-loop-types';
 
 /** Pinned ask surface — uses targetGap + questionText identity (no generationId). */
@@ -69,23 +73,51 @@ export function resolveWhyThisQuestionWithLock<T extends LockedAskSurface>(
   return fresh;
 }
 
+function firstVisibleQuestion(...candidates: (string | null | undefined)[]): string {
+  for (const candidate of candidates) {
+    const text = candidate?.trim();
+    if (text && !isGenericGapQuestionText(text)) return text;
+  }
+  return '';
+}
+
 /** Prefer locked question text over recomputed engine / i18n fallback. */
 export function resolveDisplayQuestionWithLock(input: {
   lock: LockedAskSurface | null;
   lockActive: boolean;
+  /** Validation reframe / conflict clarify — wins over stale engine generic. */
+  fromOverride?: string;
   fromEngine: string;
   fromSurface: string;
   fromRef: string;
   issueFallback: string;
+  targetGap?: string | null;
+  fallbackIssueId?: AiPmLoopIssueId | null;
 }): string {
+  const fromGapBinding =
+    input.targetGap?.trim()
+      ? resolveGapQuestionBinding(
+          input.targetGap,
+          input.fallbackIssueId ?? undefined,
+        ).questionText
+      : '';
+
   if (input.lockActive && input.lock?.questionText.trim()) {
-    return input.lock.questionText.trim();
+    const locked = input.lock.questionText.trim();
+    if (!isGenericGapQuestionText(locked)) return locked;
   }
+
   return (
-    input.fromEngine ||
-    input.fromSurface ||
-    input.fromRef ||
-    input.issueFallback
+    firstVisibleQuestion(
+      input.fromOverride,
+      input.fromEngine,
+      input.fromSurface,
+      input.fromRef,
+      fromGapBinding,
+      input.issueFallback,
+    ) ||
+    (input.lockActive ? input.lock?.questionText.trim() : '') ||
+    ''
   );
 }
 

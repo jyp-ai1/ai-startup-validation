@@ -15,6 +15,15 @@ export type GapQuestionBinding = {
   whyNow: string;
 };
 
+/** Shown when gap fieldKey cannot be mapped — must never replace a real ask in UI. */
+export const GENERIC_GAP_QUESTION_TEXT =
+  '아직 확인이 필요한 핵심 공백이 있습니다. 알려 주세요.';
+
+export function isGenericGapQuestionText(text: string | null | undefined): boolean {
+  const q = text?.trim();
+  return Boolean(q && q === GENERIC_GAP_QUESTION_TEXT);
+}
+
 const GAP_BINDINGS: Record<string, Omit<GapQuestionBinding, 'targetGap' | 'whyNow'>> = {
   customerPersona: {
     questionText: '이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?',
@@ -175,7 +184,7 @@ export function resolveGapQuestionBinding(
   const genericGap = gap ?? 'unknown';
   return {
     targetGap: genericGap,
-    questionText: '아직 확인이 필요한 핵심 공백이 있습니다. 알려 주세요.',
+    questionText: GENERIC_GAP_QUESTION_TEXT,
     factKey: 'business',
     issueId: fallbackIssueId ?? 'bm_design',
     whyNow: whyNowForGapField(genericGap),

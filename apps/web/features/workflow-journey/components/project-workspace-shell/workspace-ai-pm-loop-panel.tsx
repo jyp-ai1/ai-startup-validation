@@ -367,6 +367,8 @@ export function WorkspaceAiPmLoopPanel({
           questionOverride.reason === 'why_meta' ||
           questionOverride.reason === 'mid_judgment' ||
           questionOverride.reason === 'nonsense' ||
+          questionOverride.reason === 'unknown_signal' ||
+          questionOverride.reason === 'adaptive' ||
           wrongSlotReAsk)
       ) {
         questionText = questionOverride.questionText;
@@ -486,29 +488,41 @@ export function WorkspaceAiPmLoopPanel({
     const fromEngine =
       whyThisQuestionNow?.questionText?.trim() ||
       turnsWrongSlotOverride?.questionText?.trim() ||
-      questionOverride?.questionText?.trim() ||
       '';
     const fromSurface = s11Surface.question.text.trim();
     const fromRef = lastAskSurfaceRef.current.questionText?.trim() ?? '';
     const issueFallback =
       activeIssueId != null ? t(`issues.${activeIssueId}.question`) : '';
+    const targetGap =
+      lockedAskSurface?.targetGap ??
+      questionOverride?.targetGap ??
+      whyThisQuestionNow?.targetGap ??
+      turnsWrongSlotOverride?.targetGap ??
+      lastAskSurfaceRef.current.targetGap ??
+      null;
     return resolveDisplayQuestionWithLock({
       lock: lockedAskSurface,
       lockActive: questionLockActive,
+      fromOverride: questionOverride?.questionText?.trim(),
       fromEngine,
       fromSurface,
       fromRef,
       issueFallback,
+      targetGap,
+      fallbackIssueId: activeIssueId,
     });
   }, [
     activeIssueId,
     lockedAskSurface,
     questionLockActive,
     questionOverride?.questionText,
+    questionOverride?.targetGap,
     s11Surface.question.text,
     t,
     turnsWrongSlotOverride?.questionText,
+    turnsWrongSlotOverride?.targetGap,
     whyThisQuestionNow?.questionText,
+    whyThisQuestionNow?.targetGap,
   ]);
   const initialDiagnosis = useMemo(
     () => buildAiPmInitialDiagnosis(understanding, entities, documentText),
@@ -1402,6 +1416,16 @@ export function WorkspaceAiPmLoopPanel({
         whyNow: reframed.whyNow,
         reason,
       });
+      commitQuestionLock(
+        captureLockedAskSurface({
+          issueId: top?.issueId ?? loopState.currentIssueId ?? issueId,
+          targetGap: reframed.targetGap,
+          questionText: reframed.questionText,
+          whyNow: reframed.whyNow,
+          rationale: reframed.whyNow,
+          fallbackIssueId: top?.issueId ?? loopState.currentIssueId ?? issueId,
+        }),
+      );
       if (top?.issueId && top.issueId !== loopState.currentIssueId) {
         patchAiPmLoopState({ currentIssueId: top.issueId }, projectId);
         syncState(loadAiPmLoopState(projectId));
@@ -1586,6 +1610,7 @@ export function WorkspaceAiPmLoopPanel({
     activateQuestionLock,
     answerDraft,
     analysisResultExists,
+    commitQuestionLock,
     conversationMemory,
     documentText,
     entities,
@@ -1676,11 +1701,53 @@ export function WorkspaceAiPmLoopPanel({
       setAnswerDraft('');
       setWhyPanel(null);
       setMidJudgmentText(null);
+      setQuestionOverride(null);
       clearQuestionLock();
       syncState(next);
+      const doc = loadWorkspaceDocumentText(projectId) ?? '';
+      const freshMemory = buildConversationMemoryFromSources({
+        projectId: projectId ?? 'default',
+        documentText: doc,
+        turns: next.turns,
+        entities,
+        previous: loadConversationMemory(projectId),
+      });
+      const freshUnderstanding = doc.trim() ? buildBusinessUnderstanding(doc) : understanding;
+      if (freshUnderstanding) {
+        const living = buildLivingUnderstandingState({
+          documentText: doc,
+          understanding: freshUnderstanding,
+          entities,
+          turns: next.turns,
+          memory: freshMemory,
+          resolvedIssueIds: getResolvedIssueIds(next),
+        });
+        const decision = decideNextQuestion({
+          living,
+          turns: next.turns,
+          memory: freshMemory,
+        });
+        if (decision) {
+          const purity = enforceQuestionPurity({
+            questionText: decision.questionText,
+            targetGap: decision.targetGap,
+          });
+          commitQuestionLock(
+            captureLockedAskSurface({
+              issueId: decision.issueId,
+              targetGap: decision.targetGap,
+              questionText: purity.sanitizedText,
+              whyNow: decision.whyNow,
+              rationale: decision.rationale,
+              score: decision.score,
+              fallbackIssueId: decision.issueId,
+            }),
+          );
+        }
+      }
       onLoopStateChange?.();
     },
-    [clearQuestionLock, entities, onLoopStateChange, projectId, readOnly, syncState],
+    [clearQuestionLock, commitQuestionLock, entities, onLoopStateChange, projectId, readOnly, syncState, understanding],
   );
 
   const editableTurns = useMemo(() => {

@@ -1,0 +1,37 @@
+{
+  "task": "mp-current-question-visibility",
+  "status": "PASS",
+  "date": "2026-08-31",
+  "tests": {
+    "new": { "passed": 4, "total": 4 },
+    "regression": { "passed": 9, "total": 9 },
+    "overall": { "passed": 13, "total": 13 }
+  },
+  "cases": [
+    {
+      "id": 1,
+      "name": "Normal answer → next actual question displayed",
+      "pass": true,
+      "assertion": "resolveDisplayQuestionWithLock uses customerPersona stock when engine is generic"
+    },
+    {
+      "id": 2,
+      "name": "Irrelevant answer → current question still visible",
+      "pass": true,
+      "assertion": "fromOverride reframe wins over GENERIC_GAP_QUESTION_TEXT; IRRELEVANT hint remains separate UI"
+    },
+    {
+      "id": 3,
+      "name": "Prior answer edit → question does not disappear",
+      "pass": true,
+      "assertion": "beginEditPriorAnswer re-commits lock from decideNextQuestion; gap binding fallback when engine empty"
+    }
+  ],
+  "rootCause": "displayQuestionText resolver treated GENERIC_GAP fallback as valid SoT; questionOverride for IRRELEVANT/unknown_signal not prioritized; prior edit cleared lock without re-commit",
+  "changedFiles": [
+    "apps/web/features/workflow-journey/lib/business-understanding/gap-question-map.ts",
+    "apps/web/features/workflow-journey/lib/business-understanding/question-transition-lock.ts",
+    "apps/web/features/workflow-journey/components/project-workspace-shell/workspace-ai-pm-loop-panel.tsx",
+    "apps/web/features/workflow-journey/lib/business-understanding/__tests__/current-question-visibility.test.ts"
+  ]
+}
