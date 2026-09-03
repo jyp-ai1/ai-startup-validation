@@ -42,33 +42,45 @@ Set-Location "C:\Users\김성길\Documents\GitHub\cursor-project"
 
 If script absent (pull failed), paste output of section 4 commands manually OR open Cursor local agent on handoff clone.
 
-## Correct recovery path (redesigned)
+## CEO git pull failure (2026-09-03) — updated after diagnose
+
+CEO read-only output (handoff machine):
+
+| Field | Value |
+|-------|-------|
+| Branch | `main` |
+| HEAD | `cbcde8213cb2b746707f132fd317c84bc3b7871f` ✅ handoff baseline |
+| Merge state | **NONE** — pull failed cleanly, no MERGE_HEAD |
+| Remote | `origin` → `jyp-ai1/ai-startup-validation` |
+| Ahead of origin/main | 1 commit |
+
+**Critical finding:** V3 PR1–PR8 modules exist on disk but are mostly **untracked** (+ modified tracked integration files). Direct push of `cbcde821` alone would **omit** untracked V3 assets.
+
+Untracked V3 core (confirmed present on disk):
+
+- `build-answer-review.ts`, `update-gap-state-from-review.ts`, `evaluate-stage-readiness.ts`, `decide-next-question-from-review.ts`
+- `v3-review-pipeline.ts`, `v3-legacy-bypass-guards.ts`
+- `ai-pm-loop-v3.test.ts`, `v3-runtime-certification.test.ts`
+- `docs/architecture/ai-pm-v3/gate-review/*`, CEO surfaces, types, E2E specs
+
+## Correct recovery path (v2 — CTO on handoff)
 
 ```text
-CTO session ON handoff machine (Cursor local / self-hosted worker)
+CTO session on handoff machine
         ↓
-Read-only: git status, V3 branch scan
+Confirm MERGE_HEAD absent ✅
         ↓
-Identify V3-complete branch (8 modules + 2 tests)
+Verify 8 modules + 2 tests on disk ✅
         ↓
-Direct push ONLY (no pull, no merge):
-  git push -u origin <V3-SOURCE>:feature/v3-baseline-recovery --force-with-lease
+git add (explicit V3 paths only — preservation)
         ↓
-Cloud CTO: pnpm run verify:v3-baseline
+Single recovery commit (if needed)
+        ↓
+git push origin HEAD:feature/v3-baseline-recovery --force-with-lease
+        ↓
+Cloud: pnpm run verify:v3-baseline
 ```
+
+Script: `scripts/handoff-recover-v3-baseline.ps1` (CTO only — not CEO)
 
 **CEO: no further Git commands.**
-
-## Script delivery without merge
-
-Option A — CTO local agent on handoff (preferred): clone already has V3; push script optional.
-
-Option B — Single-file fetch (CTO only, not CEO):
-
-```powershell
-git fetch origin feature/v3-baseline-recovery
-git show origin/feature/v3-baseline-recovery:scripts/handoff-push-v3-baseline.ps1 |
-  Out-File -Encoding utf8 scripts\handoff-push-v3-baseline.ps1
-```
-
-This does **not** merge branches; writes one file only. **CTO executes, not CEO.**
