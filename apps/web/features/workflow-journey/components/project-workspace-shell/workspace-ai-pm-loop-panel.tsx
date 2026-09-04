@@ -20,13 +20,14 @@ import {
   setAiPmLoopPhase,
   supersedeTurnAndInvalidateDownstream,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
+import { resolveNextQuestionDecision } from '../../lib/business-understanding/resolve-next-question-decision';
+import { isV3ReviewPipelineActive } from '../../lib/business-understanding/v3-review-pipeline';
 import {
   AI_PM_LOOP_ISSUE_ORDER,
   type AiPmLoopIssueId,
   type AiPmLoopTurn,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { resolveNextLoopIssue } from '../../lib/business-understanding/resolve-ai-pm-priority-issue';
-import { decideNextQuestion } from '../../lib/business-understanding/question-decision-engine';
 import { getWhyThisQuestionNow, resolvePreservedGapAfterMeta, resolveWrongSlotQuestionOverride } from '../../lib/business-understanding/resolve-missing-field-priority';
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import { buildAiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
@@ -57,6 +58,7 @@ import { presentS11Surface } from '../../lib/business-understanding/build-s11-su
 import { buildConversationUnderstandingRows } from '../../lib/business-understanding/build-conversation-understanding-summary';
 import { THINKING_STAGES, type ThinkingStageId } from '../../lib/business-understanding/thinking-stages';
 import {
+  appendLoopTurnWithReview,
   applyLoopProcessingTransition,
   runLoopAnswerProcessing,
 } from '../../lib/business-understanding/process-loop-answer';
@@ -104,6 +106,7 @@ import { WorkspaceAiPmReturnWelcomeBlock } from './workspace-ai-pm-return-welcom
 import { WorkspaceAiPmReadingSequence } from './workspace-ai-pm-reading-sequence';
 import { WorkspaceAiPmThinkingStages } from './workspace-ai-pm-thinking-stages';
 import { WorkspaceAiPmConversationDetail } from './workspace-ai-pm-conversation-detail';
+import { WorkspaceCeoSixSurfaces } from './workspace-ceo-six-surfaces';
 import { WorkspaceS11Surface } from './workspace-s11-surface';
 import type { WorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
 
@@ -126,12 +129,14 @@ function ConversationSecondaryBlocks({
   s11Surface,
   livingState,
   lastTurn,
+  loopState,
   whyNow,
   displayQuestionText,
 }: {
   s11Surface: ReturnType<typeof presentS11Surface>;
   livingState: ReturnType<typeof buildLivingUnderstandingState>;
   lastTurn: AiPmLoopTurn | null;
+  loopState: ReturnType<typeof loadAiPmLoopState>;
   whyNow: string | null | undefined;
   displayQuestionText: string;
 }) {
@@ -139,9 +144,17 @@ function ConversationSecondaryBlocks({
     () => buildConversationUnderstandingRows(livingState),
     [livingState],
   );
+  const v3Active = isV3ReviewPipelineActive();
 
   return (
     <>
+      {v3Active && lastTurn ? (
+        <WorkspaceCeoSixSurfaces
+          lastTurn={lastTurn}
+          loop={loopState}
+          className="mt-4"
+        />
+      ) : null}
       {whyNow ? <ConversationWhyNowBlock whyNow={whyNow} /> : null}
       <WorkspaceS11Surface
         surface={s11Surface}
@@ -342,11 +355,13 @@ export function WorkspaceAiPmLoopPanel({
       };
     }
 
-    const decision = decideNextQuestion({
+    const decision = resolveNextQuestionDecision({
       living: livingState,
       turns: freshTurns,
       memory: freshMemory,
       previousQuestionText: questionOverride?.questionText ?? null,
+      projectId,
+      gapState: loadAiPmLoopState(projectId).gapState,
     });
     if (!decision) return null;
 
@@ -826,10 +841,12 @@ export function WorkspaceAiPmLoopPanel({
         entities,
         previous: loadConversationMemory(projectId),
       });
-      const decision = decideNextQuestion({
+      const decision = resolveNextQuestionDecision({
         living: result.living,
         turns: openedState.turns,
         memory: freshMemory,
+        projectId,
+        gapState: openedState.gapState,
       });
       if (decision) {
         const purity = enforceQuestionPurity({
@@ -1352,19 +1369,33 @@ export function WorkspaceAiPmLoopPanel({
         reason: 'adaptive',
       });
       // Persist conflict delta so mergeable-looking turns never show empty understandingDelta
-      appendAiPmLoopTurn(
-        {
-          issueId,
-          answer: trimmed,
-          appliedAt: new Date().toISOString(),
-          semanticFactKey: semantic.factKey,
-          semanticFactKeys: semantic.facts.map((f) => f.key),
-          intent: semantic.intent,
-          targetGap: conflictClarify.targetGap,
-          understandingDelta: `충돌: ${semantic.factKey} — 기존 값과 새 답 중 어느 쪽이 맞는지 확인 필요 · 미확인: ${conflictClarify.targetGap}`,
-        },
-        projectId,
-      );
+      const conflictTurn = {
+        issueId,
+        answer: trimmed,
+        appliedAt: new Date().toISOString(),
+        semanticFactKey: semantic.factKey,
+        semanticFactKeys: semantic.facts.map((f) => f.key),
+        intent: semantic.intent,
+        targetGap: conflictClarify.targetGap,
+        understandingDelta: `충돌: ${semantic.factKey} — 기존 값과 새 답 중 어느 쪽이 맞는지 확인 필요 · 미확인: ${conflictClarify.targetGap}`,
+      };
+      if (isV3ReviewPipelineActive()) {
+        appendLoopTurnWithReview(
+          conflictTurn,
+          {
+            askedGapId: askedGap ?? conflictClarify.targetGap,
+            askedQuestionText: displayedQuestionText ?? persistedQuestionText ?? '',
+            askedIssueId: issueId,
+            userAnswer: trimmed,
+            displayedQuestionText: displayedQuestionText ?? '',
+            existingFact,
+            existingFactsByKey,
+          },
+          projectId,
+        );
+      } else {
+        appendAiPmLoopTurn(conflictTurn, projectId);
+      }
       applyWorkspaceLoopAnswer(issueId, trimmed, projectId, { semantic });
       // Keep loop open for conflict resolution — never soft-complete
       patchAiPmLoopState(
@@ -1520,13 +1551,27 @@ export function WorkspaceAiPmLoopPanel({
     });
     const understandingDelta = formatUnderstandingDeltaSummary(delta);
 
-    appendAiPmLoopTurn(
-      {
-        ...projectedTurn,
-        understandingDelta,
-      },
-      projectId,
-    );
+    const turnPayload = {
+      ...projectedTurn,
+      understandingDelta,
+    };
+    if (isV3ReviewPipelineActive()) {
+      appendLoopTurnWithReview(
+        turnPayload,
+        {
+          askedGapId: askedGap ?? resolvedAskedGap ?? 'problemJtbd',
+          askedQuestionText: persistedQuestionText ?? displayedQuestionText ?? '',
+          askedIssueId: recordIssueId,
+          userAnswer: trimmed,
+          displayedQuestionText: displayedQuestionText ?? persistedQuestionText ?? '',
+          existingFact,
+          existingFactsByKey,
+        },
+        projectId,
+      );
+    } else {
+      appendAiPmLoopTurn(turnPayload, projectId);
+    }
     syncState(loadAiPmLoopState(projectId));
     let wrongSlotNext = resolveWrongSlotQuestionOverride(projectedTurns);
     if (!wrongSlotNext && wrongSlotReaskPending) {
@@ -1640,22 +1685,34 @@ export function WorkspaceAiPmLoopPanel({
       }
       setContradiction(null);
       setAnswerQualityHint(null);
-      appendAiPmLoopTurn(
-        {
+      const correctionTurn = {
+        issueId,
+        answer: next,
+        appliedAt: new Date().toISOString(),
+        semanticFactKey: factKey,
+        intent: 'correction' as const,
+        targetGap: resolveAskedTargetGapForAppend({
           issueId,
-          answer: next,
-          appliedAt: new Date().toISOString(),
-          semanticFactKey: factKey,
-          intent: 'correction',
-          targetGap: resolveAskedTargetGapForAppend({
-            issueId,
-            whyTargetGap: whyThisQuestionNow?.targetGap,
-            overrideTargetGap: questionOverride?.targetGap,
-            questionText: whyThisQuestionNow?.questionText,
-          }),
-        },
-        projectId,
-      );
+          whyTargetGap: whyThisQuestionNow?.targetGap,
+          overrideTargetGap: questionOverride?.targetGap,
+          questionText: whyThisQuestionNow?.questionText,
+        }),
+      };
+      if (isV3ReviewPipelineActive()) {
+        appendLoopTurnWithReview(
+          correctionTurn,
+          {
+            askedGapId: correctionTurn.targetGap ?? 'problemJtbd',
+            askedQuestionText: whyThisQuestionNow?.questionText ?? '',
+            askedIssueId: issueId,
+            userAnswer: next,
+            displayedQuestionText: whyThisQuestionNow?.questionText ?? '',
+          },
+          projectId,
+        );
+      } else {
+        appendAiPmLoopTurn(correctionTurn, projectId);
+      }
       applyWorkspaceLoopAnswer(issueId, next, projectId, {
         forceAccept: true,
         semantic: {
@@ -1722,10 +1779,12 @@ export function WorkspaceAiPmLoopPanel({
           memory: freshMemory,
           resolvedIssueIds: getResolvedIssueIds(next),
         });
-        const decision = decideNextQuestion({
+        const decision = resolveNextQuestionDecision({
           living,
           turns: next.turns,
           memory: freshMemory,
+          projectId,
+          gapState: next.gapState,
         });
         if (decision) {
           const purity = enforceQuestionPurity({
@@ -2081,6 +2140,7 @@ export function WorkspaceAiPmLoopPanel({
           s11Surface={s11Surface}
           livingState={livingState}
           lastTurn={lastTurn}
+          loopState={loopState}
           whyNow={whyNowText}
           displayQuestionText={displayQuestionText}
         />
@@ -2131,6 +2191,7 @@ export function WorkspaceAiPmLoopPanel({
               s11Surface={s11Surface}
               livingState={livingState}
               lastTurn={lastTurn}
+              loopState={loopState}
               whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
               displayQuestionText={displayQuestionText}
             />
@@ -2240,6 +2301,7 @@ export function WorkspaceAiPmLoopPanel({
                 s11Surface={s11Surface}
                 livingState={livingState}
                 lastTurn={lastTurn}
+                loopState={loopState}
                 whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
                 displayQuestionText={displayQuestionText}
               />
