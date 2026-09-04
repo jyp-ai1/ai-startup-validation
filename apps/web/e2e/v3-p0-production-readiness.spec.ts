@@ -33,8 +33,13 @@ test.describe('PR8.5 — V3 P0 Production Readiness E2E', () => {
     const page = await browser.newPage();
     try {
       await bootstrapV3DemoSession(page);
-    } catch {
-      testInfo.skip(true, 'V3_REVIEW_PIPELINE not active — set NEXT_PUBLIC_V3_REVIEW_PIPELINE=true at dev start');
+    } catch (err) {
+      // DAY 11 — 기존에는 모든 예외를 무조건 skip으로 삼켜서, selector 실패나
+      // 런타임 오류까지 "V3 flag 비활성"으로 오표기됐다(실패가 skip으로 위장).
+      // 실제 원인을 항상 출력해 skip이 조용한 PASS가 되지 않게 한다.
+      // eslint-disable-next-line no-console
+      console.error('[E2E bootstrap 실패]', err instanceof Error ? err.stack ?? err.message : String(err));
+      testInfo.skip(true, `V3 bootstrap failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       await page.close();
     }

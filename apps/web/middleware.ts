@@ -28,16 +28,16 @@ export default async function middleware(request: NextRequest) {
   response = await updateSession(request, response);
 
   const demoParam = request.nextUrl.searchParams.get('demo');
-  if (
-    request.nextUrl.pathname === '/workspace' &&
-    demoParam &&
-    (demoParam === '1' || demoParam === 'guided' || demoParam === 'readonly')
-  ) {
+  const isDemoWorkspaceRequest =
+    demoParam === '1' || demoParam === 'guided' || demoParam === 'readonly';
+
+  if (request.nextUrl.pathname === '/workspace' && isDemoWorkspaceRequest) {
     response.cookies.set(WORKSPACE_MODE_COOKIE, DEMO_MODE_VALUE, {
       path: '/',
       maxAge: 60 * 60 * 24 * 30,
       sameSite: 'lax',
     });
+    response.headers.set('x-workspace-demo', '1');
   }
 
   const projectId = request.nextUrl.searchParams.get('project');
