@@ -56,7 +56,7 @@ test.describe('PR8.5 — V3 P0 Production Readiness E2E', () => {
     const nextQ = await readSurfaceQuestion(page);
     expect(nextQ.length).toBeGreaterThan(5);
 
-    const aiUnderstanding = await textOrEmpty(page, 'surface-ai-understanding');
+    const aiUnderstanding = await textOrEmpty(page, 'ceo-surface-ai-understanding');
     expect(aiUnderstanding.length).toBeGreaterThan(0);
   });
 
@@ -190,8 +190,8 @@ test.describe('PR8.5 — V3 P0 Production Readiness E2E', () => {
   test('E2E-06 — CEO 6 surfaces ②→③→④→⑤→⑥ visible in order', async ({ page }) => {
     await assertCeoSurfacesOrder(page);
 
-    await expect(page.getByTestId('surface-ai-understanding')).toBeVisible();
-    await expect(page.getByTestId('surface-why-ask')).toBeVisible();
-    await expect(page.getByTestId('surface-next-question')).toBeVisible();
+    await expect(page.getByTestId('ceo-surface-ai-understanding')).toBeVisible();
+    await expect(page.getByTestId('ceo-surface-why-ask')).toBeVisible();
+    await expect(page.getByTestId('ceo-surface-next-question')).toBeVisible();
   });
 });

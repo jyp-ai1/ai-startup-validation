@@ -42,7 +42,13 @@ const GAP_LABELS: Record<string, string> = {
   alternativesCompetitors: '경쟁/대안',
   differentiationVsAlternatives: '차별점',
   validationTestability: '검증 가능성',
+  solution: '핵심 방법',
+  revenueModel: '수익',
+  categoryScope: '시장 범위',
+  problemFrequencySeverity: '문제 빈도·심각도',
 };
+
+const INTERNAL_GAP_IDS = new Set(Object.keys(GAP_LABELS));
 
 const FORBIDDEN_UI_PATTERNS = [
   /\btargetGapId\b/i,
@@ -51,16 +57,34 @@ const FORBIDDEN_UI_PATTERNS = [
   /\brecommendedAction\b/i,
   /핵심 공백/,
   /다시 묻습니다/,
+  /의미\s*라우팅/i,
+  /\bprimary\s*=/i,
+  /\bsignal\s*[≥>=]/i,
+  /\basked-slot\b/i,
+  /\brouting\b/i,
 ];
 
 export function isUserFacingSurfaceCopy(text: string): boolean {
   const trimmed = text.trim();
   if (!trimmed) return false;
+  if (isInternalGapId(trimmed)) return false;
   return !FORBIDDEN_UI_PATTERNS.some((pattern) => pattern.test(trimmed));
 }
 
+function isInternalGapId(text: string): boolean {
+  return INTERNAL_GAP_IDS.has(text.trim());
+}
+
 function gapLabel(gapId: string): string {
-  return GAP_LABELS[gapId] ?? gapId;
+  return GAP_LABELS[gapId] ?? '확인 항목';
+}
+
+/** Strip routing/engine metadata — display layer only. */
+function sanitizeUserFacingValue(raw: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed || isInternalGapId(trimmed)) return null;
+  if (!isUserFacingSurfaceCopy(trimmed)) return null;
+  return trimmed;
 }
 
 function formatAiUnderstanding(review: AnswerReview): string | null {
@@ -83,16 +107,24 @@ function confirmedFromArtifacts(
   const items = new Set<string>();
 
   for (const line of review?.known ?? []) {
-    if (isUserFacingSurfaceCopy(line)) items.add(line);
+    const trimmed = line.trim();
+    if (isInternalGapId(trimmed)) {
+      items.add(`확인됨: ${gapLabel(trimmed)}`);
+      continue;
+    }
+    if (isUserFacingSurfaceCopy(trimmed)) items.add(trimmed);
   }
 
   if (gapState) {
     for (const record of Object.values(gapState.gaps)) {
       if (record.completeness !== 'CLOSED') continue;
       const evidence = record.evidence.map((e) => e.value).filter(Boolean).join(', ');
-      const value = evidence || record.rationale?.trim();
-      if (!value) continue;
-      const line = `확인됨: ${gapLabel(record.gapId)} → ${value}`;
+      const value =
+        sanitizeUserFacingValue(evidence) ??
+        sanitizeUserFacingValue(record.rationale?.trim() ?? '');
+      const line = value
+        ? `확인됨: ${gapLabel(record.gapId)} → ${value}`
+        : `확인됨: ${gapLabel(record.gapId)}`;
       if (isUserFacingSurfaceCopy(line)) items.add(line);
     }
   }
@@ -107,7 +139,12 @@ function unconfirmedFromArtifacts(
   const items = new Set<string>();
 
   for (const line of [...(review?.unknown ?? []), ...(review?.unconfirmed ?? [])]) {
-    if (isUserFacingSurfaceCopy(line)) items.add(line);
+    const trimmed = line.trim();
+    if (isInternalGapId(trimmed)) {
+      items.add(`아직 필요: ${gapLabel(trimmed)}`);
+      continue;
+    }
+    if (isUserFacingSurfaceCopy(trimmed)) items.add(trimmed);
   }
 
   if (gapState) {

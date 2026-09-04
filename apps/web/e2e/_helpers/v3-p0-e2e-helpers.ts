@@ -151,12 +151,10 @@ export async function waitForAskSurface(page: Page) {
 
 export async function readSurfaceQuestion(page: Page): Promise<string> {
   try {
-    const ceo = page.getByTestId('surface-next-question');
+    const ceo = page.getByTestId('ceo-surface-next-question');
     if (await ceo.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      const qLine = await ceo.locator('p.text-base').innerText().catch(() => '');
-      if (qLine.trim().length > 3) return qLine.trim();
       const raw = (await ceo.innerText()).trim();
-      return raw.replace(/^다음 질문\s*/i, '').trim();
+      return raw.replace(/^다음\s*질문\s*/i, '').trim();
     }
   } catch {
     /* fall through */
@@ -232,18 +230,18 @@ export async function assertCeoSurfacesOrder(page: Page) {
   const ceo = page.getByTestId('ceo-six-surfaces');
   await expect(ceo).toBeVisible({ timeout: 15_000 });
 
-  const ai = page.getByTestId('surface-ai-understanding');
+  const ai = page.getByTestId('ceo-surface-ai-understanding');
   await expect(ai).toBeVisible();
 
   const order = await page.evaluate(() => {
     const root = document.querySelector('[data-testid="ceo-six-surfaces"]');
     if (!root) return [] as string[];
     const ids = [
-      'surface-ai-understanding',
-      'surface-confirmed-facts',
-      'surface-unconfirmed-gaps',
-      'surface-why-ask',
-      'surface-next-question',
+      'ceo-surface-ai-understanding',
+      'ceo-surface-confirmed',
+      'ceo-surface-unconfirmed',
+      'ceo-surface-why-ask',
+      'ceo-surface-next-question',
     ];
     const positions = ids
       .map((id) => {
@@ -258,17 +256,17 @@ export async function assertCeoSurfacesOrder(page: Page) {
   });
 
   expect(order.length).toBeGreaterThanOrEqual(3);
-  expect(order[0]).toBe('surface-ai-understanding');
+  expect(order[0]).toBe('ceo-surface-ai-understanding');
 
   const idx = (id: string) => order.indexOf(id);
-  if (idx('surface-confirmed-facts') >= 0 && idx('surface-unconfirmed-gaps') >= 0) {
-    expect(idx('surface-confirmed-facts')).toBeLessThan(idx('surface-unconfirmed-gaps'));
+  if (idx('ceo-surface-confirmed') >= 0 && idx('ceo-surface-unconfirmed') >= 0) {
+    expect(idx('ceo-surface-confirmed')).toBeLessThan(idx('ceo-surface-unconfirmed'));
   }
-  if (idx('surface-why-ask') >= 0 && idx('surface-next-question') >= 0) {
-    expect(idx('surface-why-ask')).toBeLessThan(idx('surface-next-question'));
+  if (idx('ceo-surface-why-ask') >= 0 && idx('ceo-surface-next-question') >= 0) {
+    expect(idx('ceo-surface-why-ask')).toBeLessThan(idx('ceo-surface-next-question'));
   }
-  if (idx('surface-unconfirmed-gaps') >= 0 && idx('surface-why-ask') >= 0) {
-    expect(idx('surface-unconfirmed-gaps')).toBeLessThan(idx('surface-why-ask'));
+  if (idx('ceo-surface-unconfirmed') >= 0 && idx('ceo-surface-why-ask') >= 0) {
+    expect(idx('ceo-surface-unconfirmed')).toBeLessThan(idx('ceo-surface-why-ask'));
   }
 }
 

@@ -1302,14 +1302,23 @@ describe('PR6 — hydrate / remount / CEO 6 surfaces (AC1–AC7)', () => {
     expect(isUserFacingSurfaceCopy('reviewId: rev-123')).toBe(false);
     expect(isUserFacingSurfaceCopy('score: 40000')).toBe(false);
     expect(isUserFacingSurfaceCopy('핵심 공백을 선택합니다')).toBe(false);
+    expect(isUserFacingSurfaceCopy('businessOneLiner')).toBe(false);
+    expect(isUserFacingSurfaceCopy('problemJtbd')).toBe(false);
+    expect(
+      isUserFacingSurfaceCopy(
+        '확인됨: 사업 한 줄 → 의미 라우팅: problem (primary=problem, signal≥10)',
+      ),
+    ).toBe(false);
     expect(isUserFacingSurfaceCopy('확인됨: 지불 주체 → 고객')).toBe(true);
 
+    const { review } = buildAnswerReview(baseReviewInput());
+    review.known = ['businessOneLiner', 'problemJtbd'];
     const surfaces = buildCeoSixSurfaces({
       lastTurn: {
         issueId: 'bm_design',
         answer: '고객이 직접 내요.',
         appliedAt: '2026-09-02T00:00:00.000Z',
-        review: buildAnswerReview(baseReviewInput()).review,
+        review,
       },
       lastDecision: sampleLastDecision(),
     });
@@ -1322,6 +1331,9 @@ describe('PR6 — hydrate / remount / CEO 6 surfaces (AC1–AC7)', () => {
     ].filter(Boolean) as string[];
     for (const line of allCopy) {
       expect(isUserFacingSurfaceCopy(line)).toBe(true);
+      expect(line).not.toMatch(/\bbusinessOneLiner\b/);
+      expect(line).not.toMatch(/\bproblemJtbd\b/);
+      expect(line).not.toMatch(/의미\s*라우팅|primary\s*=|asked-slot/i);
     }
   });
 
