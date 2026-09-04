@@ -1,3 +1,5 @@
+import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
+
 import type { BusinessUnderstanding } from '@repo/types/domain/business-understanding';
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
@@ -44,6 +46,8 @@ import {
   shouldPrioritizePersonaAfterWrongSlotRelevance,
   shouldPrioritizeProblemAfterWrongSlotPersona,
 } from './wrong-slot-priority';
+import { isV3ReviewPipelineActive } from './v3-review-pipeline';
+import { getClosedGapIds } from './update-gap-state-from-review';
 
 export type MissingFieldPriority = {
   issueId: AiPmLoopIssueId;
@@ -144,7 +148,14 @@ function priorityFromGap(input: {
  * Core Final — gaps satisfied only when a mergeable turn confirmed the SEMANTIC fact,
  * not merely because the gap was asked. Prevents wrong-slot "answered" bans.
  */
-export function getAnsweredTargetGaps(turns: AiPmLoopTurn[] | undefined): Set<string> {
+export function getAnsweredTargetGaps(
+  turns: AiPmLoopTurn[] | undefined,
+  gapState?: GapKnowledgeState | null,
+): Set<string> {
+  if (isV3ReviewPipelineActive() && gapState) {
+    return new Set(getClosedGapIds(gapState));
+  }
+
   const answered = new Set<string>();
   if (!turns?.length) return answered;
 
@@ -776,6 +787,20 @@ export function getWhyThisQuestionNow(
   loop: AiPmLoopState,
   options?: PriorityOptions & { issueId?: AiPmLoopIssueId | null; targetGap?: string | null },
 ): MissingFieldPriority | null {
+  if (isV3ReviewPipelineActive() && loop.lastDecision?.questionText?.trim()) {
+    const d = loop.lastDecision;
+    const targetGap = d.targetGapId ?? d.targetGap;
+    return {
+      issueId: d.issueId,
+      targetGap,
+      missingField: fieldFromGapKey(targetGap),
+      rationale: d.actionRationale ?? d.rationale,
+      score: d.score,
+      whyNow: d.whyNow,
+      questionText: d.questionText,
+    };
+  }
+
   const turns = options?.turns ?? loop.turns;
   const wrongSlotOverride = resolveWrongSlotQuestionOverride(turns);
   if (wrongSlotOverride) return wrongSlotOverride;

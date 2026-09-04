@@ -7,6 +7,7 @@ import type { BusinessUnderstanding } from '@repo/types/domain/business-understa
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
 import { buildBusinessUnderstanding } from './build-business-understanding';
+import { buildAnswerReview, type BuildAnswerReviewInput } from './build-answer-review';
 import { buildConversationMemoryFromSources } from './build-conversation-memory';
 import { loadConversationMemory, saveConversationMemory } from './conversation-memory-store';
 import {
@@ -28,10 +29,19 @@ import {
 import {
   loadAiPmLoopState,
   patchAiPmLoopState,
+  appendAiPmLoopTurn,
+  saveAiPmLoopState,
 } from './workspace-ai-pm-loop-store';
-import type { AiPmLoopIssueId, AiPmLoopState } from './workspace-ai-pm-loop-types';
+import type { AiPmLoopIssueId, AiPmLoopState, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import { getResolvedIssueIds } from './workspace-ai-pm-loop-store';
 import type { ConversationMemory } from './conversation-memory';
+import { isV3ReviewPipelineActive } from './v3-review-pipeline';
+import { resolveV3NextIssueAfterProcessing } from './v3-legacy-bypass-guards';
+import {
+  createEmptyGapState,
+  getClosedGapIds,
+  updateGapStateFromReview,
+} from './update-gap-state-from-review';
 
 export type LoopProcessingResult = {
   loop: AiPmLoopState;
@@ -49,12 +59,59 @@ export type RunLoopProcessingInput = {
   entities?: LaunchLensDomainContext | null;
 };
 
+export type AppendLoopTurnReviewInput = Omit<BuildAnswerReviewInput, 'turnId'>;
+
+/**
+ * PR1/PR3 — append turn with V3 review + gapState when pipeline is ON.
+ * Legacy path appends turn only (no review artifact).
+ */
+export function appendLoopTurnWithReview(
+  turn: AiPmLoopTurn,
+  reviewInput: AppendLoopTurnReviewInput,
+  projectId?: string,
+): AiPmLoopState {
+  if (!isV3ReviewPipelineActive()) {
+    return appendAiPmLoopTurn(turn, projectId);
+  }
+
+  const current = loadAiPmLoopState(projectId);
+  const priorClosedGaps = getClosedGapIds(current.gapState ?? createEmptyGapState());
+
+  const { review, semantic } = buildAnswerReview({
+    ...reviewInput,
+    turnId: turn.appliedAt,
+    priorClosedGaps,
+  });
+
+  const turnWithReview: AiPmLoopTurn = {
+    ...turn,
+    review,
+    semanticFactKey: semantic.factKey,
+    semanticFactKeys:
+      semantic.facts.length > 0 ? semantic.facts.map((f) => f.key) : undefined,
+    intent: semantic.intent,
+  };
+
+  const gapState = updateGapStateFromReview(
+    review,
+    current.gapState ?? createEmptyGapState(),
+  );
+
+  const next: AiPmLoopState = {
+    ...current,
+    turns: [...current.turns, turnWithReview],
+    gapState,
+  };
+  saveAiPmLoopState(next, projectId);
+  return next;
+}
+
 /**
  * Run after answer is persisted — merges Memory, rebuilds Living State, resolves next issue.
  * All synchronous; no setTimeout gate.
  */
 export function runLoopAnswerProcessing(input: RunLoopProcessingInput): LoopProcessingResult {
-  const loop = loadAiPmLoopState(input.projectId);
+  let loop = loadAiPmLoopState(input.projectId);
   const previous = loadConversationMemory(input.projectId);
 
   const memory = buildConversationMemoryFromSources({
@@ -75,13 +132,17 @@ export function runLoopAnswerProcessing(input: RunLoopProcessingInput): LoopProc
     resolvedIssueIds: getResolvedIssueIds(loop),
   });
 
-  const nextIssueId = resolveNextLoopIssue(input.understanding, loop, {
-    documentText: input.documentText,
-    entities: input.entities ?? null,
-    memory,
-    analysisResultExists: hasAnalysisResult(input.projectId),
-    turns: loop.turns,
-  });
+  const nextIssueId = isV3ReviewPipelineActive()
+    ? resolveV3NextIssueAfterProcessing({ loop, living, memory })
+    : resolveNextLoopIssue(input.understanding, loop, {
+        documentText: input.documentText,
+        entities: input.entities ?? null,
+        memory,
+        analysisResultExists: hasAnalysisResult(input.projectId),
+        turns: loop.turns,
+      });
+
+  loop = loadAiPmLoopState(input.projectId);
 
   const completedStages: ThinkingStageId[] = [
     'confirmAnswer',
