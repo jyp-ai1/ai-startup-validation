@@ -9,6 +9,7 @@ import {
   sanitizeFinalClaimValue,
   type ClaimProvenanceLabel,
 } from './final-result-integrity';
+import { founderFieldLabel } from './founder-field-labels';
 
 export type FinalClaimStatusLabel = 'Confirmed' | 'Inferred' | 'Unknown' | 'Conflict' | 'Needs check';
 
@@ -129,7 +130,7 @@ function toClaimRow(claim: LivingClaim, living: LivingUnderstandingState): Final
     status = 'Needs check';
   }
   return {
-    domain: DOMAIN_TITLE[claim.fieldKey] ?? claim.fieldKey,
+    domain: founderFieldLabel(claim.fieldKey),
     value: sanitized.value,
     status,
     evidence: claim.evidence.map((e) => `[${e.kind}] ${e.excerpt}`).slice(0, 3),

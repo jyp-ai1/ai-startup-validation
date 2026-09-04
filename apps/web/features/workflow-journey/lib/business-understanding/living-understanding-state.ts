@@ -15,6 +15,7 @@ import {
   type UnderstandingConfidence,
   type UnderstandingProvenance,
 } from './understanding-contract';
+import { founderFieldLabel } from './founder-field-labels';
 import {
   getConflictFact,
   getFact,
@@ -646,12 +647,15 @@ function buildJudgmentSummary(
     claims
       ?.filter((c) => c.status === 'confirmed' && c.value)
       .slice(0, 4)
-      .map((c) => `${c.fieldKey}: ${c.value}`) ?? [];
+      .map(
+        (c) =>
+          `${founderFieldLabel(c.fieldKey)}: ${c.value}`,
+      ) ?? [];
   const uncertain =
     claims
       ?.filter((c) => c.status === 'inferred' || c.status === 'contradiction')
       .slice(0, 2)
-      .map((c) => c.fieldKey) ?? [];
+      .map((c) => founderFieldLabel(c.fieldKey)) ?? [];
 
   const confirmedLine =
     confirmed.length > 0
@@ -664,7 +668,7 @@ function buildJudgmentSummary(
     uncertain.length > 0 ? ` 불확실: ${uncertain.join(', ')}.` : '';
   const coverage = ` 이해 상태 커버리지 ${coveragePercent}% (필드 채움률이 아님).`;
   const gap = topGap
-    ? ` 남은 핵심 공백은 「${topGap.fieldKey}」입니다. 그래서 지금 이 질문을 합니다.`
+    ? ` 남은 핵심 공백은 「${founderFieldLabel(topGap.fieldKey)}」입니다. 그래서 지금 이 질문을 합니다.`
     : '';
   return `${confirmedLine}${uncertainLine}${coverage}${gap}`;
 }
