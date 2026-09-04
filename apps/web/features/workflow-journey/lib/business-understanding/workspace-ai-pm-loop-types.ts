@@ -1,4 +1,8 @@
+import type { AnswerReview } from '@repo/types/domain/answer-review';
+import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
+
 import type { ConversationFactKey } from './conversation-memory';
+import type { NextQuestionDecision } from './decide-next-question-from-review';
 import type { AnswerIntent } from './interpret-answer-semantics';
 import type { QuestionCausality } from './question-causality';
 import type { LockedAskSurface } from './question-transition-lock';
@@ -44,6 +48,8 @@ export type AiPmLoopTurn = {
   unresolvedGap?: string;
   /** Core v5 — what information the ask expected */
   expectedInformation?: string;
+  /** PR1 — persisted AnswerReview artifact (V3 pipeline) */
+  review?: AnswerReview;
 };
 
 export type AiPmLoopState = {
@@ -56,6 +62,10 @@ export type AiPmLoopState = {
   dismissedReadAck: boolean;
   /** FIX 2b — durable display lock survives remount / hydrate */
   lockedAskSurface?: LockedAskSurface | null;
+  /** PR2 — gap knowledge state from review pipeline */
+  gapState?: GapKnowledgeState;
+  /** PR4 — last NextQuestionDecision from review→decide path */
+  lastDecision?: NextQuestionDecision;
 };
 
 export const AI_PM_LOOP_MIN_TURNS = 3;

@@ -17,6 +17,7 @@ import {
   getAnsweredTargetGaps,
   resolveNextIssueByMissingField,
 } from './resolve-missing-field-priority';
+import { isV3ReviewPipelineActive } from './v3-review-pipeline';
 import {
   selectRefinementGapAfterAnalysisReady,
   selectTopAdaptiveGap,
@@ -92,6 +93,10 @@ export function resolveNextLoopIssue(
 ): AiPmLoopIssueId | null {
   if (loop.phase === 'complete') return null;
 
+  if (isV3ReviewPipelineActive() && loop.lastDecision?.issueId) {
+    return loop.lastDecision.issueId;
+  }
+
   const resolvedIds = getResolvedIssueIds(loop);
   const resolved = new Set(resolvedIds);
   const memory = options?.memory ?? null;
@@ -148,7 +153,7 @@ export function resolveNextLoopIssue(
       memory,
       resolvedIssueIds: resolvedIds,
     });
-    const answeredFactGaps = getAnsweredTargetGaps(turns);
+    const answeredFactGaps = getAnsweredTargetGaps(turns, loop.gapState);
 
     if (criticalGapsBlockAnalysis(living)) {
       const top = selectTopAdaptiveGap(living, { answeredFactGaps });

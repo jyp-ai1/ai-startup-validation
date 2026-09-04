@@ -29,98 +29,105 @@ import {
   type VOCRepository,
 } from '@repo/db';
 
-export const db = getDatabasePlatform();
+let dbInstance: ReturnType<typeof getDatabasePlatform> | null = null;
+
+function getDb(): ReturnType<typeof getDatabasePlatform> {
+  if (!dbInstance) {
+    dbInstance = getDatabasePlatform();
+  }
+  return dbInstance;
+}
 
 export function getUserRepository(): UserRepository {
-  return db.resolve<UserRepository>(DbTokens.UserRepository);
+  return getDb().resolve<UserRepository>(DbTokens.UserRepository);
 }
 
 export function getStartupProjectRepository(): StartupProjectRepository {
-  return db.resolve<StartupProjectRepository>(DbTokens.StartupProjectRepository);
+  return getDb().resolve<StartupProjectRepository>(DbTokens.StartupProjectRepository);
 }
 
 export function getResearchPlanRepository(): ResearchPlanRepository {
-  return db.resolve<ResearchPlanRepository>(DbTokens.ResearchPlanRepository);
+  return getDb().resolve<ResearchPlanRepository>(DbTokens.ResearchPlanRepository);
 }
 
 export function getEvidenceRepository(): EvidenceRepository {
-  return db.resolve<EvidenceRepository>(DbTokens.EvidenceRepository);
+  return getDb().resolve<EvidenceRepository>(DbTokens.EvidenceRepository);
 }
 
 export function getCompetitorRepository(): CompetitorRepository {
-  return db.resolve<CompetitorRepository>(DbTokens.CompetitorRepository);
+  return getDb().resolve<CompetitorRepository>(DbTokens.CompetitorRepository);
 }
 
 export function getVOCRepository(): VOCRepository {
-  return db.resolve<VOCRepository>(DbTokens.VOCRepository);
+  return getDb().resolve<VOCRepository>(DbTokens.VOCRepository);
 }
 
 export function getGovernmentGrantRepository(): GovernmentGrantRepository {
-  return db.resolve<GovernmentGrantRepository>(DbTokens.GovernmentGrantRepository);
+  return getDb().resolve<GovernmentGrantRepository>(DbTokens.GovernmentGrantRepository);
 }
 
 export function getValidationScoreRepository(): ValidationScoreRepository {
-  return db.resolve<ValidationScoreRepository>(DbTokens.ValidationScoreRepository);
+  return getDb().resolve<ValidationScoreRepository>(DbTokens.ValidationScoreRepository);
 }
 
 export function getValidationReportRepository(): ValidationReportRepository {
-  return db.resolve<ValidationReportRepository>(DbTokens.ValidationReportRepository);
+  return getDb().resolve<ValidationReportRepository>(DbTokens.ValidationReportRepository);
 }
 
 export function getReportSectionRepository(): ReportSectionRepository {
-  return db.resolve<ReportSectionRepository>(DbTokens.ReportSectionRepository);
+  return getDb().resolve<ReportSectionRepository>(DbTokens.ReportSectionRepository);
 }
 
 export function getAIReportGenerationRepository(): AIReportGenerationRepository {
-  return db.resolve<AIReportGenerationRepository>(DbTokens.AIReportGenerationRepository);
+  return getDb().resolve<AIReportGenerationRepository>(DbTokens.AIReportGenerationRepository);
 }
 
 export function getBusinessPlanRepository(): BusinessPlanRepository {
-  return db.resolve<BusinessPlanRepository>(DbTokens.BusinessPlanRepository);
+  return getDb().resolve<BusinessPlanRepository>(DbTokens.BusinessPlanRepository);
 }
 
 export function getBusinessPlanSectionRepository(): BusinessPlanSectionRepository {
-  return db.resolve<BusinessPlanSectionRepository>(DbTokens.BusinessPlanSectionRepository);
+  return getDb().resolve<BusinessPlanSectionRepository>(DbTokens.BusinessPlanSectionRepository);
 }
 
 export function getPRDRepository(): PRDRepository {
-  return db.resolve<PRDRepository>(DbTokens.PRDRepository);
+  return getDb().resolve<PRDRepository>(DbTokens.PRDRepository);
 }
 
 export function getPRDSectionRepository(): PRDSectionRepository {
-  return db.resolve<PRDSectionRepository>(DbTokens.PRDSectionRepository);
+  return getDb().resolve<PRDSectionRepository>(DbTokens.PRDSectionRepository);
 }
 
 export function getDevelopmentSpecRepository(): DevelopmentSpecRepository {
-  return db.resolve<DevelopmentSpecRepository>(DbTokens.DevelopmentSpecRepository);
+  return getDb().resolve<DevelopmentSpecRepository>(DbTokens.DevelopmentSpecRepository);
 }
 
 export function getDevelopmentSpecSectionRepository(): DevelopmentSpecSectionRepository {
-  return db.resolve<DevelopmentSpecSectionRepository>(DbTokens.DevelopmentSpecSectionRepository);
+  return getDb().resolve<DevelopmentSpecSectionRepository>(DbTokens.DevelopmentSpecSectionRepository);
 }
 
 export function getKnowledgeDocumentRepository(): KnowledgeDocumentRepository {
-  return db.resolve<KnowledgeDocumentRepository>(DbTokens.KnowledgeDocumentRepository);
+  return getDb().resolve<KnowledgeDocumentRepository>(DbTokens.KnowledgeDocumentRepository);
 }
 
 export function getKnowledgeChunkRepository(): KnowledgeChunkRepository {
-  return db.resolve<KnowledgeChunkRepository>(DbTokens.KnowledgeChunkRepository);
+  return getDb().resolve<KnowledgeChunkRepository>(DbTokens.KnowledgeChunkRepository);
 }
 
 export function getProjectMemoryRepository(): ProjectMemoryRepository {
-  return db.resolve<ProjectMemoryRepository>(DbTokens.ProjectMemoryRepository);
+  return getDb().resolve<ProjectMemoryRepository>(DbTokens.ProjectMemoryRepository);
 }
 
 export function getUserWatchlistRepository(): UserWatchlistRepository {
-  return db.resolve<UserWatchlistRepository>(DbTokens.UserWatchlistRepository);
+  return getDb().resolve<UserWatchlistRepository>(DbTokens.UserWatchlistRepository);
 }
 
 export function getNotificationRepository(): NotificationRepository {
-  return db.resolve<NotificationRepository>(DbTokens.NotificationRepository);
+  return getDb().resolve<NotificationRepository>(DbTokens.NotificationRepository);
 }
 
 export function getNotificationSettingsRepository(): NotificationSettingsRepository {
-  return db.resolve<NotificationSettingsRepository>(DbTokens.NotificationSettingsRepository);
+  return getDb().resolve<NotificationSettingsRepository>(DbTokens.NotificationSettingsRepository);
 }
 
 export { DbTokens, getDatabasePlatform };
