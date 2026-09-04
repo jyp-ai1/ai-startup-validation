@@ -3,6 +3,7 @@
  * Uses Living Understanding spine + claims — not transcript accumulation.
  */
 import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
+import { founderFieldLabel } from './founder-field-labels';
 import type { LivingUnderstandingState } from './living-understanding-state';
 
 export type ConversationUnderstandingRow = {
@@ -11,12 +12,13 @@ export type ConversationUnderstandingRow = {
 };
 
 const FIELD_LABEL: Record<string, string> = {
-  businessOneLiner: '사업',
+  businessOneLiner: '사업 한 줄',
   customerPersona: '고객',
-  problemJtbd: '문제',
-  solution: '해결 방법',
-  revenueModel: '수익',
+  problemJtbd: '핵심 문제',
+  solution: '핵심 방법',
+  revenueModel: '수익 모델',
   pricingHint: '가격',
+  alternativesCompetitors: '대안/경쟁',
   differentiationVsAlternatives: '차별점',
   marketSizeEvidence: '수요',
 };
@@ -100,7 +102,10 @@ export function formatFounderJudgmentSummary(living: LivingUnderstandingState): 
   const confirmed = living.claims
     .filter((c) => c.status === 'confirmed' && c.value?.trim())
     .slice(0, 4)
-    .map((c) => `${FIELD_LABEL[c.fieldKey] ?? c.fieldKey}: ${c.value!.trim()}`);
+    .map(
+      (c) =>
+        `${FIELD_LABEL[c.fieldKey] ?? founderFieldLabel(c.fieldKey)}: ${c.value!.trim()}`,
+    );
 
   const spineLine = [
     living.spine.business !== SHARED_UNDERSTANDING_PENDING
@@ -126,14 +131,14 @@ export function formatFounderJudgmentSummary(living: LivingUnderstandingState): 
   const uncertain = living.claims
     .filter((c) => c.status === 'inferred' || c.status === 'contradiction')
     .slice(0, 2)
-    .map((c) => FIELD_LABEL[c.fieldKey] ?? c.fieldKey);
+    .map((c) => FIELD_LABEL[c.fieldKey] ?? founderFieldLabel(c.fieldKey));
 
   const uncertainLine =
     uncertain.length > 0 ? ` 불확실: ${uncertain.join(', ')}.` : '';
 
   const topGap = living.gaps[0];
   const gapLine = topGap
-    ? ` 남은 핵심 공백은 「${FIELD_LABEL[topGap.fieldKey] ?? topGap.fieldKey}」입니다.`
+    ? ` 남은 핵심 공백은 「${founderFieldLabel(topGap.fieldKey)}」입니다.`
     : '';
 
   return `${confirmedLine}${uncertainLine} 이해 상태 커버리지 ${living.coveragePercent}% (필드 채움률이 아님).${gapLine}`;

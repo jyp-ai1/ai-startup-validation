@@ -81,8 +81,15 @@ export function WorkspaceCeoSixSurfaces({
               <li key={line}>{line}</li>
             ))}
           </ul>
+        ) : surfaces.confirmedFacts.length > 0 ? (
+          <p className="text-muted-foreground">
+            현재 미확인으로 분류된 항목이 없습니다. 다음 질문으로 이어갑니다.
+          </p>
         ) : (
-          '—'
+          <p className="text-muted-foreground">
+            아직 미확인 목록이 없습니다. 답변을 입력하면 AI가 확인·미확인 항목을
+            갱신합니다.
+          </p>
         )}
       </SurfaceBlock>
       <SurfaceBlock label="왜 이것을 묻는지" testId="ceo-surface-why-ask">

@@ -109,8 +109,26 @@ describe('CEO walkthrough UX — surface question visibility', () => {
     });
 
     const summary = formatFounderJudgmentSummary(living);
-    expect(summary).not.toMatch(/businessOneLiner:/);
-    expect(summary).not.toMatch(/customerPersona:/);
+    expect(summary).not.toMatch(/businessOneLiner/);
+    expect(summary).not.toMatch(/customerPersona/);
+    expect(summary).not.toMatch(/problemJtbd/);
+    expect(summary).not.toMatch(/revenueModel/);
+    expect(summary).not.toMatch(/alternativesCompetitors/);
+  });
+
+  it('living judgmentSummary never exposes internal domain keys', () => {
+    const doc = ALABOM_SEED;
+    const understanding = buildBusinessUnderstanding(doc);
+    const living = buildLivingUnderstandingState({
+      documentText: doc,
+      understanding,
+      turns: [],
+      memory: null,
+    });
+
+    expect(living.judgmentSummary).not.toMatch(/businessOneLiner/);
+    expect(living.judgmentSummary).not.toMatch(/alternativesCompetitors/);
+    expect(living.judgmentSummary).not.toMatch(/problemJtbd/);
   });
 
   it('buildConversationUnderstandingRows returns labeled spine fields', () => {
@@ -127,8 +145,8 @@ describe('CEO walkthrough UX — surface question visibility', () => {
     expect(rows.map((r) => r.label)).toEqual([
       '고객',
       '문제',
-      '해결 방법',
-      '수익',
+      '핵심 방법',
+      '수익 모델',
       '차별점',
       '수요',
     ]);
