@@ -73,6 +73,22 @@ export type {
 } from './project';
 
 export type {
+  ConversationFactKey,
+  AiPmLoopIssueId,
+  AnswerIntent,
+  AnswerQuality,
+  EvidenceClass,
+  GapCompleteness,
+  RecommendedAction,
+  GapVerdict,
+  ExtractedFact,
+  ContradictionRecord,
+  AnswerReview,
+} from './domain/answer-review';
+
+export type { GapKnowledgeRecord, GapKnowledgeState } from './domain/gap-knowledge-state';
+
+export type {
   StartupProject,
   StartupProjectStatus,
   CreateStartupProjectInput,
