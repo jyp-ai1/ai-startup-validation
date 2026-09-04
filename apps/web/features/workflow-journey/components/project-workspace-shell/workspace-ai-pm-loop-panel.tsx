@@ -84,7 +84,10 @@ import {
 } from '../../lib/business-understanding/persona-answer-cues';
 import { isOnSlotCompetitorAnswer } from '../../lib/business-understanding/competitor-answer-cues';
 import { isOnSlotPayerAnswer } from '../../lib/business-understanding/payer-answer-cues';
-import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
+import {
+  interpretAnswerSemantics,
+  type SemanticInterpretation,
+} from '../../lib/business-understanding/interpret-answer-semantics';
 import { buildAnswerReview } from '../../lib/business-understanding/build-answer-review';
 import { buildCeoSixSurfaces } from '../../lib/business-understanding/build-ceo-six-surfaces';
 import { hydrateAiPmLoopState } from '../../lib/business-understanding/hydrate-ai-pm-loop-state';
@@ -1293,10 +1296,19 @@ export function WorkspaceAiPmLoopPanel({
     });
     const visibleGap =
       inferTargetGapFromQuestionText(displayedQuestionText) ?? displayedGap;
-    let resolvedAskedGap = visibleGap ?? askedTargetGap;
+    // V3-TD-01 — 선언 타입만 명시한다(런타임 동작 변경 없음).
+    // inferTargetGapFromQuestionText()와 buildAnswerReview() 모두 gap 식별자를
+    // string|null로 돌려주는데, 이 지역변수는 초기값만 보고 string으로 추론돼
+    // V3 분기의 대입(string|null)에서 어긋났다. gap 식별자는 ConversationFactKey가
+    // 아니라 별도 도메인이므로(solution/customerPersona 등 포함) 좁히지 않고
+    // 실제 도메인 그대로 string|null로 선언한다.
+    let resolvedAskedGap: string | null = visibleGap ?? askedTargetGap;
     let v3Review: AnswerReview | undefined;
 
-    let semantic;
+    // V3-TD-01 — 어노테이션이 없으면 TS가 V3 분기(SemanticInterpretation)와 legacy
+    // 분기의 인라인 객체 리터럴을 union으로 추론해, factKey/resolvedIssueId가 string
+    // 으로 넓어진다. 정본 타입을 명시해 리터럴에 contextual typing이 걸리게 한다.
+    let semantic: SemanticInterpretation;
     let nuclearWrongSlot: ReturnType<typeof resolveNuclearWrongSlotAtSubmit> = null;
 
     if (isV3ReviewPipelineActive()) {
@@ -1467,7 +1479,10 @@ export function WorkspaceAiPmLoopPanel({
         prior,
         next: trimmed,
       });
-      const askedGap = resolvedAskedGap;
+      // V3-TD-01 — targetGap 소비처는 optional(string | undefined) 계약이다.
+    // gap이 없을 때 null을 넘기던 것을 계약에 맞춰 undefined로 정규화한다
+    // (이 코드베이스에서 gap 부재는 null/undefined 구분 없이 동일하게 다뤄진다).
+    const askedGap = resolvedAskedGap ?? undefined;
       const conflictAppliedAt = new Date().toISOString();
       const conflictReview: AnswerReview | undefined = v3Review
         ? {
@@ -1587,7 +1602,7 @@ export function WorkspaceAiPmLoopPanel({
             answer: trimmed,
             appliedAt: probeAppliedAt,
             intent: semantic.intent,
-            targetGap: resolvedAskedGap,
+            targetGap: resolvedAskedGap ?? undefined,
             understandingDelta: semantic.rationale,
             review: probeReview,
           },
@@ -1725,10 +1740,18 @@ export function WorkspaceAiPmLoopPanel({
       memory,
       resolvedIssueIds: getResolvedIssueIds(loopState),
     });
-    const askedGap = resolvedAskedGap;
+    // V3-TD-01 — targetGap 소비처는 optional(string | undefined) 계약이다.
+    // gap이 없을 때 null을 넘기던 것을 계약에 맞춰 undefined로 정규화한다
+    // (이 코드베이스에서 gap 부재는 null/undefined 구분 없이 동일하게 다뤄진다).
+    const askedGap = resolvedAskedGap ?? undefined;
     const causality = buildQuestionCausality({
       living: beforeLiving,
-      targetGap: askedGap,
+      // V3-TD-01 — buildQuestionCausality는 targetGap을 string으로 요구하지만
+      // 내부적으로는 resolveGapQuestionBinding(string|null|undefined)에 그대로
+      // 넘긴다(안전 처리됨). 파라미터를 넓히면 EXPECTED_INFO 인덱싱 등에서 연쇄
+      // 수정이 생기므로, 여기서는 런타임 값을 바꾸지 않고 기존 동작을 그대로
+      // 유지한다. gap이 비어 있을 수 있다는 점은 타입 이전부터 있던 사항이다.
+      targetGap: askedGap as string,
     });
 
     const priorPendingGap = getLastWrongSlotReaskPendingGap(loopState.turns);
