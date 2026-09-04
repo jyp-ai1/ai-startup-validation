@@ -25,6 +25,7 @@ import {
   type SemanticInterpretation,
 } from './interpret-answer-semantics';
 import { getWhyThisQuestionNow } from './resolve-missing-field-priority';
+import { isV3ReviewPipelineActive } from './v3-review-pipeline';
 import {
   evaluateAnswerQuality,
   type AnswerQuality,
@@ -98,12 +99,14 @@ export function applyWorkspaceLoopAnswer(
   if (semantic.intent === 'why_meta') {
     const inferred = inferDomainFromPaste(documentTextBefore, projectId);
     const loopForWhy = loadAiPmLoopState(projectId);
+    const persistedWhy =
+      loopForWhy.lastDecision?.actionRationale?.trim() ?? null;
     const understandingForWhy =
       documentTextBefore.length >= 8
         ? buildBusinessUnderstanding(documentTextBefore)
         : null;
     const whyPriority =
-      understandingForWhy != null
+      persistedWhy == null && understandingForWhy != null && !isV3ReviewPipelineActive()
         ? getWhyThisQuestionNow(understandingForWhy, loopForWhy, {
             documentText: documentTextBefore,
             memory: previousMemory,
@@ -113,6 +116,7 @@ export function applyWorkspaceLoopAnswer(
           })
         : null;
     const livingWhy =
+      persistedWhy ??
       whyPriority?.whyNow ??
       '이 질문은 지금 사업 GO/HOLD에 필요한 Critical Unknown을 메우기 위한 것입니다.';
     return {

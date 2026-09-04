@@ -13,6 +13,7 @@ import {
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import { inferAskedTargetGapFromTurn } from './resolve-asked-target-gap';
 import type { AiPmLoopIssueId, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
+import { isV3ReviewPipelineActive } from './v3-review-pipeline';
 
 const TURN_TO_FACT: Partial<Record<AiPmLoopIssueId, ConversationFactKey>> = {
   customer_definition: 'customer',
@@ -118,6 +119,14 @@ export function buildConversationMemoryFromSources(input: {
 
     const answer = turn.answer.trim();
     if (answer.length < 2) continue;
+
+    // PR6 — BANK from review.extractedFacts only when V3 pipeline ON (S16 I6)
+    if (isV3ReviewPipelineActive() && turn.review?.extractedFacts.length) {
+      for (const fact of turn.review.extractedFacts) {
+        memory = upsertConfirmedFact(memory, fact.key, fact.value, 'user_turn');
+      }
+      continue;
+    }
 
     // Prefer stored semantic keys when present (multi-fact + primary)
     const storedKeys =

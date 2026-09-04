@@ -6,6 +6,8 @@
 import type { BusinessUnderstanding } from '@repo/types/domain/business-understanding';
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
+import type { AnswerReview } from '@repo/types/domain/answer-review';
+
 import { buildBusinessUnderstanding } from './build-business-understanding';
 import { buildConversationMemoryFromSources } from './build-conversation-memory';
 import { loadConversationMemory, saveConversationMemory } from './conversation-memory-store';
@@ -28,10 +30,22 @@ import {
 import {
   loadAiPmLoopState,
   patchAiPmLoopState,
+  appendAiPmLoopTurn,
 } from './workspace-ai-pm-loop-store';
-import type { AiPmLoopIssueId, AiPmLoopState } from './workspace-ai-pm-loop-types';
+import type { AiPmLoopIssueId, AiPmLoopState, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import { getResolvedIssueIds } from './workspace-ai-pm-loop-store';
 import type { ConversationMemory } from './conversation-memory';
+import { buildAnswerReview, type BuildAnswerReviewInput } from './build-answer-review';
+import { isV3ReviewPipelineActive } from './v3-review-pipeline';
+import {
+  resolveV3NextIssueAfterProcessing,
+  resolveV3RefinementIssue,
+} from './v3-legacy-bypass-guards';
+import {
+  createEmptyGapState,
+  getClosedGapIds,
+  updateGapStateFromReview,
+} from './update-gap-state-from-review';
 
 export type LoopProcessingResult = {
   loop: AiPmLoopState;
@@ -48,6 +62,47 @@ export type RunLoopProcessingInput = {
   understanding: BusinessUnderstanding;
   entities?: LaunchLensDomainContext | null;
 };
+
+/**
+ * Append turn with optional V3 AnswerReview when V3_REVIEW_PIPELINE is ON.
+ * reviewId is unique per call; turnId aligns with turn.appliedAt.
+ */
+export function appendLoopTurnWithReview(
+  turn: AiPmLoopTurn,
+  reviewInput: Omit<BuildAnswerReviewInput, 'turnId'>,
+  projectId?: string,
+): AiPmLoopState {
+  if (!isV3ReviewPipelineActive()) {
+    return appendAiPmLoopTurn(turn, projectId);
+  }
+
+  const current = loadAiPmLoopState(projectId);
+  const priorGapState = current.gapState ?? createEmptyGapState();
+  const priorClosedGaps = getClosedGapIds(priorGapState);
+
+  const turnId = turn.appliedAt;
+  const { review } = buildAnswerReview({
+    ...reviewInput,
+    turnId,
+    priorClosedGaps,
+  });
+  const persistedReview: AnswerReview = {
+    ...review,
+    turnId,
+    sourceTurnId: turnId,
+  };
+  const gapState = updateGapStateFromReview(persistedReview, priorGapState);
+
+  const turns = [...current.turns, { ...turn, review: persistedReview }];
+  const next: AiPmLoopState = {
+    ...current,
+    turns,
+    gapState,
+    currentIssueId: current.currentIssueId,
+  };
+  patchAiPmLoopState(next, projectId);
+  return next;
+}
 
 /**
  * Run after answer is persisted — merges Memory, rebuilds Living State, resolves next issue.
@@ -75,13 +130,16 @@ export function runLoopAnswerProcessing(input: RunLoopProcessingInput): LoopProc
     resolvedIssueIds: getResolvedIssueIds(loop),
   });
 
-  const nextIssueId = resolveNextLoopIssue(input.understanding, loop, {
-    documentText: input.documentText,
-    entities: input.entities ?? null,
-    memory,
-    analysisResultExists: hasAnalysisResult(input.projectId),
-    turns: loop.turns,
-  });
+  // PR7 B11 — V3 ON: issue from review→decide only; legacy issue spine disabled
+  const nextIssueId = isV3ReviewPipelineActive()
+    ? resolveV3NextIssueAfterProcessing({ loop, living, memory })
+    : resolveNextLoopIssue(input.understanding, loop, {
+        documentText: input.documentText,
+        entities: input.entities ?? null,
+        memory,
+        analysisResultExists: hasAnalysisResult(input.projectId),
+        turns: loop.turns,
+      });
 
   const completedStages: ThinkingStageId[] = [
     'confirmAnswer',
@@ -158,7 +216,19 @@ export function reopenAiPmLoopForRefinement(input: RunLoopProcessingInput): AiPm
     resolvedIssueIds: getResolvedIssueIds(loop),
   });
 
-  const answeredFactGaps = getAnsweredTargetGaps(loop.turns);
+  // PR7 B12 — V3 ON: reopen from readiness + gapState, not rank
+  const v3RefinementIssue = resolveV3RefinementIssue(loop);
+  if (v3RefinementIssue) {
+    return patchAiPmLoopState(
+      {
+        phase: 'answer',
+        currentIssueId: v3RefinementIssue,
+      },
+      input.projectId,
+    );
+  }
+
+  const answeredFactGaps = getAnsweredTargetGaps(loop.turns, loop.gapState);
   const top =
     selectRefinementGapAfterAnalysisReady(living, { answeredFactGaps }) ??
     selectTopAdaptiveGap(living, { answeredFactGaps });

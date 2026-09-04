@@ -26,6 +26,8 @@ import {
   MAX_SAME_GAP_ASKS_BEFORE_YIELD,
 } from './question-decision-engine';
 import { reframeQuestion, isSameMeaningQuestion, buildConflictClarifyQuestion } from './reframe-question';
+import { resolveV3AnsweredGaps, resolveV3DisplayPriority } from './v3-legacy-bypass-guards';
+import { isV3ReviewPipelineActive } from './v3-review-pipeline';
 import { getResolvedIssueIds } from './workspace-ai-pm-loop-store';
 import {
   type AiPmLoopIssueId,
@@ -144,7 +146,14 @@ function priorityFromGap(input: {
  * Core Final — gaps satisfied only when a mergeable turn confirmed the SEMANTIC fact,
  * not merely because the gap was asked. Prevents wrong-slot "answered" bans.
  */
-export function getAnsweredTargetGaps(turns: AiPmLoopTurn[] | undefined): Set<string> {
+export function getAnsweredTargetGaps(
+  turns: AiPmLoopTurn[] | undefined,
+  gapState?: import('@repo/types/domain/gap-knowledge-state').GapKnowledgeState | null,
+): Set<string> {
+  // PR7 B19 — gapVerdicts primary when V3 ON; legacy turn inference is M2 fallback only
+  const v3Answered = resolveV3AnsweredGaps(turns, gapState);
+  if (v3Answered) return v3Answered;
+
   const answered = new Set<string>();
   if (!turns?.length) return answered;
 
@@ -261,7 +270,7 @@ export function resolveMissingFieldPriorities(
   const memory = options?.memory ?? null;
   const text = options?.documentText?.trim() ?? '';
   const turns = options?.turns ?? loop.turns;
-  const answeredGaps = getAnsweredTargetGaps(turns);
+  const answeredGaps = getAnsweredTargetGaps(turns, loop.gapState);
   const wrongSlotContext = detectWrongSlotMergeContext(turns);
   // Loop 6 — credit semantically closed gap even when turn lacks stored semanticFactKey
   if (wrongSlotContext && wrongSlotContext.askedGap !== wrongSlotContext.closedGap) {
@@ -649,7 +658,7 @@ export function resolveNextIssueByMissingField(
   const wrongSlotAnchor = resolveWrongSlotQuestionAnchor(turns);
   if (wrongSlotAnchor) return wrongSlotAnchor.issueId;
 
-  const answeredGaps = getAnsweredTargetGaps(turns);
+  const answeredGaps = getAnsweredTargetGaps(turns, loop.gapState);
   const ranked = resolveMissingFieldPriorities(understanding, loop, options);
   const wrongSlotContext = detectWrongSlotMergeContext(turns);
 
@@ -780,6 +789,11 @@ export function getWhyThisQuestionNow(
   const wrongSlotOverride = resolveWrongSlotQuestionOverride(turns);
   if (wrongSlotOverride) return wrongSlotOverride;
 
+  // PR7 B9 — V3 ON: display rationale from lastDecision only; rank cannot select
+  if (isV3ReviewPipelineActive()) {
+    return resolveV3DisplayPriority(loop);
+  }
+
   const wrongSlotContext = detectWrongSlotMergeContext(turns);
   const ranked = resolveMissingFieldPriorities(understanding, loop, options);
   if (ranked.length === 0) return null;
@@ -802,7 +816,7 @@ export function getWhyThisQuestionNow(
     if (problem?.targetGap === 'problemJtbd') return problem;
   }
 
-  const answeredGaps = getAnsweredTargetGaps(turns);
+  const answeredGaps = getAnsweredTargetGaps(turns, loop.gapState);
   if (wrongSlotContext && wrongSlotContext.askedGap !== wrongSlotContext.closedGap) {
     answeredGaps.add(wrongSlotContext.closedGap);
   }

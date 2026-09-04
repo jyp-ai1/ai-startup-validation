@@ -38,6 +38,8 @@ export function resolveAskedTargetGapForAppend(input: {
   overrideTargetGap?: string | null;
   questionText?: string | null;
   fallbackTargetGap?: string | null;
+  /** PR7 B6 — lastDecision.targetGapId when V3 ON (replaces live rank fallback) */
+  lastDecisionTargetGap?: string | null;
 }): string {
   // Loop 9 — visible question text is ground truth; beats stale override from prior partial
   // reframe (T11 validationTestability PARTIAL → T12 persona ask @ a9ebd63 live P0-1).
@@ -50,6 +52,9 @@ export function resolveAskedTargetGapForAppend(input: {
 
   const fromWhy = cleanGap(input.whyTargetGap);
   if (fromWhy) return fromWhy;
+
+  const fromDecision = cleanGap(input.lastDecisionTargetGap);
+  if (fromDecision) return fromDecision;
 
   const fromFallback = cleanGap(input.fallbackTargetGap);
   if (fromFallback) return fromFallback;

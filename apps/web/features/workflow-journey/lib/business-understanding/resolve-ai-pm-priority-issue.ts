@@ -26,6 +26,8 @@ import {
   resolveNextIssueFromLivingState,
 } from './living-understanding-state';
 import { criticalGapsBlockAnalysis } from './question-causality';
+import { resolveV3IssueFromDecision } from './v3-legacy-bypass-guards';
+import { isV3ReviewPipelineActive } from './v3-review-pipeline';
 
 type PriorityOptions = {
   documentText?: string | null;
@@ -91,6 +93,12 @@ export function resolveNextLoopIssue(
   options?: PriorityOptions,
 ): AiPmLoopIssueId | null {
   if (loop.phase === 'complete') return null;
+
+  // PR7 B20 — V3 ON: follow NextQuestionDecision, not issue spine
+  if (isV3ReviewPipelineActive()) {
+    const fromDecision = resolveV3IssueFromDecision(loop);
+    if (fromDecision) return fromDecision;
+  }
 
   const resolvedIds = getResolvedIssueIds(loop);
   const resolved = new Set(resolvedIds);

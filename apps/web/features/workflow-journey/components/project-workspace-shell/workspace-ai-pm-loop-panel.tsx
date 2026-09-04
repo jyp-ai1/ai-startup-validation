@@ -26,7 +26,8 @@ import {
   type AiPmLoopTurn,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { resolveNextLoopIssue } from '../../lib/business-understanding/resolve-ai-pm-priority-issue';
-import { decideNextQuestion } from '../../lib/business-understanding/question-decision-engine';
+import { resolveNextQuestionDecision } from '../../lib/business-understanding/resolve-next-question-decision';
+import { isNextQuestionDecision } from '../../lib/business-understanding/decide-next-question-from-review';
 import { getWhyThisQuestionNow, resolvePreservedGapAfterMeta, resolveWrongSlotQuestionOverride } from '../../lib/business-understanding/resolve-missing-field-priority';
 import { buildBusinessUnderstanding } from '../../lib/business-understanding/build-business-understanding';
 import { buildAiPmInitialDiagnosis } from '../../lib/business-understanding/build-ai-pm-initial-diagnosis';
@@ -84,6 +85,19 @@ import {
 import { isOnSlotCompetitorAnswer } from '../../lib/business-understanding/competitor-answer-cues';
 import { isOnSlotPayerAnswer } from '../../lib/business-understanding/payer-answer-cues';
 import { interpretAnswerSemantics } from '../../lib/business-understanding/interpret-answer-semantics';
+import { buildAnswerReview } from '../../lib/business-understanding/build-answer-review';
+import { buildCeoSixSurfaces } from '../../lib/business-understanding/build-ceo-six-surfaces';
+import { hydrateAiPmLoopState } from '../../lib/business-understanding/hydrate-ai-pm-loop-state';
+import {
+  resolveRemountAskSurface,
+} from '../../lib/business-understanding/resolve-remount-ask-surface';
+import { isV3ReviewPipelineActive } from '../../lib/business-understanding/v3-review-pipeline';
+import {
+  resolveV3FallbackTargetGap,
+  resolveV3PanelDecision,
+  shouldBindDisplayFromPersistedDecision,
+} from '../../lib/business-understanding/v3-legacy-bypass-guards';
+import type { AnswerReview } from '@repo/types/domain/answer-review';
 import { reframeQuestion, buildConflictClarifyQuestion, type ReframeReason } from '../../lib/business-understanding/reframe-question';
 import { resolveAskedTargetGapForAppend } from '../../lib/business-understanding/resolve-asked-target-gap';
 import { inferTargetGapFromQuestionText, resolveGapQuestionBinding } from '../../lib/business-understanding/gap-question-map';
@@ -105,6 +119,7 @@ import { WorkspaceAiPmReadingSequence } from './workspace-ai-pm-reading-sequence
 import { WorkspaceAiPmThinkingStages } from './workspace-ai-pm-thinking-stages';
 import { WorkspaceAiPmConversationDetail } from './workspace-ai-pm-conversation-detail';
 import { WorkspaceS11Surface } from './workspace-s11-surface';
+import { WorkspaceCeoSixSurfaces } from './workspace-ceo-six-surfaces';
 import type { WorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
 
 function ConversationWhyNowBlock({
@@ -314,7 +329,26 @@ export function WorkspaceAiPmLoopPanel({
       return lockedAskSurface;
     }
     if (!activeIssueId) return null;
-    const freshTurns = loadAiPmLoopState(projectId).turns;
+
+    const freshLoop = loadAiPmLoopState(projectId);
+
+    // PR7 B1 — V3 ON: bind display from persisted lastDecision, never live rank
+    if (shouldBindDisplayFromPersistedDecision(freshLoop)) {
+      const persisted = resolveRemountAskSurface(freshLoop);
+      if (persisted) {
+        return {
+          issueId: persisted.issueId,
+          targetGap: persisted.targetGap,
+          questionText: persisted.questionText,
+          whyNow: persisted.whyNow,
+          rationale: persisted.rationale,
+          score: 0,
+          missingField: 'business' as const,
+        };
+      }
+    }
+
+    const freshTurns = freshLoop.turns;
     const freshMemory = buildConversationMemoryFromSources({
       projectId: projectId ?? 'default',
       documentText: documentText ?? '',
@@ -342,11 +376,14 @@ export function WorkspaceAiPmLoopPanel({
       };
     }
 
-    const decision = decideNextQuestion({
+    const decision = resolveNextQuestionDecision({
       living: livingState,
       turns: freshTurns,
       memory: freshMemory,
+      gapState: freshLoop.gapState,
       previousQuestionText: questionOverride?.questionText ?? null,
+      projectId,
+      persistLastDecision: false,
     });
     if (!decision) return null;
 
@@ -387,7 +424,9 @@ export function WorkspaceAiPmLoopPanel({
       targetGap,
       questionText: purity.sanitizedText,
       whyNow,
-      rationale: decision.rationale,
+      rationale: isNextQuestionDecision(decision)
+        ? decision.actionRationale
+        : decision.rationale,
       score: decision.score,
       missingField: 'business' as const,
     };
@@ -559,6 +598,20 @@ export function WorkspaceAiPmLoopPanel({
     });
   }, [loopState, projectId, understanding, workspaceFacts]);
 
+  const ceoSixSurfaces = useMemo(() => {
+    if (!isV3ReviewPipelineActive()) return null;
+    const loop = loadAiPmLoopState(projectId);
+    const turn = loop.turns.at(-1) ?? null;
+    if (!turn?.review && !loop.lastDecision) return null;
+    return buildCeoSixSurfaces({
+      lastTurn: turn,
+      gapState: loop.gapState,
+      lastDecision: loop.lastDecision,
+      lockedAskSurface: loop.lockedAskSurface,
+      loop,
+    });
+  }, [loopState.turns.length, loopState.gapState, loopState.lastDecision, projectId]);
+
   const showResumeBriefing = loopState.turns.length > 0;
   const showReturnWelcome =
     showResumeBriefing &&
@@ -705,7 +758,13 @@ export function WorkspaceAiPmLoopPanel({
 
   /** FIX 1 CASE A — re-read sessionStorage after DB hydrator, revalidate, or project switch */
   useLayoutEffect(() => {
-    const hydrated = loadAiPmLoopState(projectId);
+    const stored = loadAiPmLoopState(projectId);
+    const hydrated = isV3ReviewPipelineActive()
+      ? hydrateAiPmLoopState({ merged: stored, client: stored, db: stored })
+      : stored;
+    if (hydrated !== stored) {
+      patchAiPmLoopState(hydrated, projectId);
+    }
     syncState(hydrated);
     const storedLock = hydrated.lockedAskSurface ?? null;
     lockedAskSurfaceRef.current = storedLock;
@@ -826,23 +885,28 @@ export function WorkspaceAiPmLoopPanel({
         entities,
         previous: loadConversationMemory(projectId),
       });
-      const decision = decideNextQuestion({
+      const decision = resolveNextQuestionDecision({
         living: result.living,
         turns: openedState.turns,
         memory: freshMemory,
+        gapState: openedState.gapState,
+        projectId,
       });
       if (decision) {
         const purity = enforceQuestionPurity({
           questionText: decision.questionText,
           targetGap: decision.targetGap,
         });
+        const whyNow = decision.whyNow;
         commitQuestionLock(
           captureLockedAskSurface({
             issueId: decision.issueId,
             targetGap: decision.targetGap,
             questionText: purity.sanitizedText,
-            whyNow: decision.whyNow,
-            rationale: decision.rationale,
+            whyNow,
+            rationale: isNextQuestionDecision(decision)
+              ? decision.actionRationale
+              : decision.rationale,
             score: decision.score,
             fallbackIssueId: decision.issueId,
           }),
@@ -860,18 +924,58 @@ export function WorkspaceAiPmLoopPanel({
 
   finishProcessingRef.current = finishProcessing;
 
-  /** Core Final — after why/mid panel close, re-judge gap + REFRAME (never identical Q). */
+  /** Core Final — after why/mid panel close, re-judge via V3 review→decide (PR7 B7). */
   const closeWhyOrMidAndRejudge = useCallback(() => {
     const reason: ReframeReason = whyPanel ? 'why_meta' : 'mid_judgment';
-    const inFlightGap = whyThisQuestionNow?.targetGap ?? questionOverride?.targetGap ?? null;
     setWhyPanel(null);
     setMidJudgmentText(null);
+
+    const freshLoop = loadAiPmLoopState(projectId);
+    const freshTurns = freshLoop.turns;
+
+    if (isV3ReviewPipelineActive()) {
+      const decision = resolveV3PanelDecision({
+        living: livingState,
+        turns: freshTurns,
+        memory: conversationMemory,
+        gapState: freshLoop.gapState,
+        previousQuestionText: whyThisQuestionNow?.questionText ?? null,
+      });
+      if (decision) {
+        const purity = enforceQuestionPurity({
+          questionText: decision.questionText,
+          targetGap: decision.targetGap,
+        });
+        setQuestionOverride({
+          targetGap: decision.targetGap,
+          questionText: purity.sanitizedText,
+          whyNow: decision.whyNow,
+          reason,
+        });
+        commitQuestionLock(
+          captureLockedAskSurface({
+            issueId: decision.issueId,
+            targetGap: decision.targetGap,
+            questionText: purity.sanitizedText,
+            whyNow: decision.whyNow,
+            rationale: decision.actionRationale,
+            fallbackIssueId: decision.issueId,
+          }),
+        );
+        if (decision.issueId !== loopState.currentIssueId) {
+          patchAiPmLoopState({ currentIssueId: decision.issueId }, projectId);
+          syncState(loadAiPmLoopState(projectId));
+        }
+      }
+      return;
+    }
+
+    const inFlightGap = whyThisQuestionNow?.targetGap ?? questionOverride?.targetGap ?? null;
     const gap = resolvePreservedGapAfterMeta({
       living: livingState,
       turns: loopState.turns,
       inFlightGap,
     });
-    const freshTurns = loadAiPmLoopState(projectId).turns;
     const top = getWhyThisQuestionNow(understanding, loopState, {
       documentText: documentText ?? undefined,
       entities,
@@ -1170,139 +1274,165 @@ export function WorkspaceAiPmLoopPanel({
         : questionOverride?.targetGap && questionOverride.targetGap === displayedGap
           ? questionOverride.targetGap
           : null;
+    const freshLoopForGap = loadAiPmLoopState(projectId);
     const askedTargetGap = resolveAskedTargetGapForAppend({
       issueId,
       whyTargetGap: displayedGap,
       overrideTargetGap: activeOverrideGap,
       questionText: displayedQuestionText,
-      fallbackTargetGap: getWhyThisQuestionNow(understanding, loopState, {
-        documentText: documentText ?? undefined,
-        entities,
-        memory: conversationMemory,
-        analysisResultExists,
-        turns: loadAiPmLoopState(projectId).turns,
-      })?.targetGap,
+      lastDecisionTargetGap: resolveV3FallbackTargetGap(freshLoopForGap),
+      fallbackTargetGap: isV3ReviewPipelineActive()
+        ? null
+        : getWhyThisQuestionNow(understanding, loopState, {
+            documentText: documentText ?? undefined,
+            entities,
+            memory: conversationMemory,
+            analysisResultExists,
+            turns: freshLoopForGap.turns,
+          })?.targetGap,
     });
     const visibleGap =
       inferTargetGapFromQuestionText(displayedQuestionText) ?? displayedGap;
     let resolvedAskedGap = visibleGap ?? askedTargetGap;
+    let v3Review: AnswerReview | undefined;
 
-    let semantic = interpretAnswerSemantics({
-      answer: trimmed,
-      askedIssueId: issueId,
-      existingFact,
-      existingFactsByKey,
-      askedTargetGap: visibleGap ?? resolvedAskedGap,
-    });
+    let semantic;
+    let nuclearWrongSlot: ReturnType<typeof resolveNuclearWrongSlotAtSubmit> = null;
 
-    // Loop 9e — display SoT canonicalizes facts when interpret used poisoned askedGap (@ cbce256 live)
-    const displayedGapForCanonical =
-      inferTargetGapFromQuestionText(displayedQuestionText) ?? visibleGap;
+    if (isV3ReviewPipelineActive()) {
+      const projectedTurnId = new Date().toISOString();
+      const v3Result = buildAnswerReview({
+        turnId: projectedTurnId,
+        askedGapId: resolvedAskedGap ?? visibleGap ?? askedTargetGap ?? 'payer',
+        askedQuestionText: displayedQuestionText ?? '',
+        askedIssueId: issueId,
+        userAnswer: trimmed,
+        existingFact,
+        existingFactsByKey,
+        displayedQuestionText: displayedQuestionText ?? '',
+      });
+      semantic = v3Result.semantic;
+      resolvedAskedGap = v3Result.resolvedAskedGap;
+      nuclearWrongSlot = v3Result.nuclearWrongSlot;
+      v3Review = v3Result.review;
+    } else {
+      semantic = interpretAnswerSemantics({
+        answer: trimmed,
+        askedIssueId: issueId,
+        existingFact,
+        existingFactsByKey,
+        askedTargetGap: visibleGap ?? resolvedAskedGap,
+      });
 
-    // Loop 9h-c — solution Q text wins over poisoned askedTargetGap / issue template
-    if (
-      displayedGapForCanonical === 'solution' &&
-      semantic.mergeable
-    ) {
-      resolvedAskedGap = 'solution';
-      if (!semantic.facts.some((f) => f.key === 'business')) {
-        semantic = {
-          ...semantic,
-          factKey: 'business',
-          resolvedIssueId: 'problem_definition',
-          facts: [{ key: 'business', issueId: 'problem_definition' }],
-        };
-      }
-    } else if (displayedGapForCanonical === 'payer' && semantic.mergeable) {
-      if (semantic.factKey !== 'buyer' && isOnSlotPayerAnswer(trimmed)) {
-        semantic = {
-          ...semantic,
-          factKey: 'buyer',
-          resolvedIssueId: 'bm_design',
-          facts: [{ key: 'buyer', issueId: 'bm_design' }],
-        };
-      }
-    } else if (displayedGapForCanonical === 'alternativesCompetitors' && semantic.mergeable) {
-      if (semantic.factKey !== 'competitor' && isOnSlotCompetitorAnswer(trimmed)) {
-        semantic = {
-          ...semantic,
-          factKey: 'competitor',
-          resolvedIssueId: 'competitor_analysis',
-          facts: [{ key: 'competitor', issueId: 'competitor_analysis' }],
-        };
-      }
-    } else if (displayedGapForCanonical === 'customerPersona' && semantic.mergeable) {
-      if (isRelevanceDominantOnPersonaAsk(trimmed)) {
-        semantic = {
-          ...semantic,
-          factKey: 'diffRelevance',
-          resolvedIssueId: 'competitor_analysis',
-          facts: [{ key: 'diffRelevance', issueId: 'competitor_analysis' }],
-        };
-        resolvedAskedGap = 'customerPersona';
-      } else if (
-        hasPersonaSegmentCue(trimmed) &&
-        semantic.factKey !== 'customer'
+      // Loop 9e — display SoT canonicalizes facts when interpret used poisoned askedGap (@ cbce256 live)
+      const displayedGapForCanonical =
+        inferTargetGapFromQuestionText(displayedQuestionText) ?? visibleGap;
+
+      // Loop 9h-c — solution Q text wins over poisoned askedTargetGap / issue template
+      if (
+        displayedGapForCanonical === 'solution' &&
+        semantic.mergeable
       ) {
-        semantic = {
-          ...semantic,
-          factKey: 'customer',
-          resolvedIssueId: 'customer_definition',
-          facts: [{ key: 'customer', issueId: 'customer_definition' }],
-        };
+        resolvedAskedGap = 'solution';
+        if (!semantic.facts.some((f) => f.key === 'business')) {
+          semantic = {
+            ...semantic,
+            factKey: 'business',
+            resolvedIssueId: 'problem_definition',
+            facts: [{ key: 'business', issueId: 'problem_definition' }],
+          };
+        }
+      } else if (displayedGapForCanonical === 'payer' && semantic.mergeable) {
+        if (semantic.factKey !== 'buyer' && isOnSlotPayerAnswer(trimmed)) {
+          semantic = {
+            ...semantic,
+            factKey: 'buyer',
+            resolvedIssueId: 'bm_design',
+            facts: [{ key: 'buyer', issueId: 'bm_design' }],
+          };
+        }
+      } else if (displayedGapForCanonical === 'alternativesCompetitors' && semantic.mergeable) {
+        if (semantic.factKey !== 'competitor' && isOnSlotCompetitorAnswer(trimmed)) {
+          semantic = {
+            ...semantic,
+            factKey: 'competitor',
+            resolvedIssueId: 'competitor_analysis',
+            facts: [{ key: 'competitor', issueId: 'competitor_analysis' }],
+          };
+        }
+      } else if (displayedGapForCanonical === 'customerPersona' && semantic.mergeable) {
+        if (isRelevanceDominantOnPersonaAsk(trimmed)) {
+          semantic = {
+            ...semantic,
+            factKey: 'diffRelevance',
+            resolvedIssueId: 'competitor_analysis',
+            facts: [{ key: 'diffRelevance', issueId: 'competitor_analysis' }],
+          };
+          resolvedAskedGap = 'customerPersona';
+        } else if (
+          hasPersonaSegmentCue(trimmed) &&
+          semantic.factKey !== 'customer'
+        ) {
+          semantic = {
+            ...semantic,
+            factKey: 'customer',
+            resolvedIssueId: 'customer_definition',
+            facts: [{ key: 'customer', issueId: 'customer_definition' }],
+          };
+        }
+      } else if (displayedGapForCanonical === 'problemJtbd' && semantic.mergeable) {
+        const personaSegmentCue = hasPersonaSegmentCue(trimmed);
+        const problemCue =
+          /(불편|pain|문제|해결|jtbd|획일|동선\s*낭비|맞춤\s*일정|패키지)/i.test(trimmed);
+        if (personaSegmentCue && !problemCue) {
+          semantic = {
+            ...semantic,
+            factKey: 'customer',
+            resolvedIssueId: 'customer_definition',
+            facts: [{ key: 'customer', issueId: 'customer_definition' }],
+          };
+          resolvedAskedGap = 'problemJtbd';
+        }
       }
-    } else if (displayedGapForCanonical === 'problemJtbd' && semantic.mergeable) {
-      const personaSegmentCue = hasPersonaSegmentCue(trimmed);
-      const problemCue =
-        /(불편|pain|문제|해결|jtbd|획일|동선\s*낭비|맞춤\s*일정|패키지)/i.test(trimmed);
-      if (personaSegmentCue && !problemCue) {
-        semantic = {
-          ...semantic,
-          factKey: 'customer',
-          resolvedIssueId: 'customer_definition',
-          facts: [{ key: 'customer', issueId: 'customer_definition' }],
-        };
+
+      // Loop 9c — never persist validationTestability when visible ask was persona + diffRelevance
+      if (
+        semantic.factKey === 'diffRelevance' &&
+        semantic.mergeable &&
+        inferTargetGapFromQuestionText(displayedQuestionText) === 'customerPersona'
+      ) {
+        resolvedAskedGap = 'customerPersona';
+      }
+      if (
+        semantic.factKey === 'customer' &&
+        semantic.mergeable &&
+        inferTargetGapFromQuestionText(displayedQuestionText) === 'problemJtbd'
+      ) {
         resolvedAskedGap = 'problemJtbd';
       }
-    }
 
-    // Loop 9c — never persist validationTestability when visible ask was persona + diffRelevance
-    if (
-      semantic.factKey === 'diffRelevance' &&
-      semantic.mergeable &&
-      inferTargetGapFromQuestionText(displayedQuestionText) === 'customerPersona'
-    ) {
-      resolvedAskedGap = 'customerPersona';
-    }
-    if (
-      semantic.factKey === 'customer' &&
-      semantic.mergeable &&
-      inferTargetGapFromQuestionText(displayedQuestionText) === 'problemJtbd'
-    ) {
-      resolvedAskedGap = 'problemJtbd';
-    }
-
-    // Loop 9f — nuclear wrong-slot: display persona + BANK.diffRelevance (or problem + persona)
-    const nuclearWrongSlot = resolveNuclearWrongSlotAtSubmit({
-      questionText: displayedQuestionText,
-      answer: trimmed,
-    });
-    if (nuclearWrongSlot) {
-      resolvedAskedGap = nuclearWrongSlot.askedGap;
-      if (nuclearWrongSlot.closedFactKey === 'diffRelevance') {
-        semantic = {
-          ...semantic,
-          factKey: 'diffRelevance',
-          resolvedIssueId: 'competitor_analysis',
-          facts: [{ key: 'diffRelevance', issueId: 'competitor_analysis' }],
-        };
-      } else if (nuclearWrongSlot.closedFactKey === 'customer') {
-        semantic = {
-          ...semantic,
-          factKey: 'customer',
-          resolvedIssueId: 'customer_definition',
-          facts: [{ key: 'customer', issueId: 'customer_definition' }],
-        };
+      // Loop 9f — nuclear wrong-slot: display persona + BANK.diffRelevance (or problem + persona)
+      nuclearWrongSlot = resolveNuclearWrongSlotAtSubmit({
+        questionText: displayedQuestionText,
+        answer: trimmed,
+      });
+      if (nuclearWrongSlot) {
+        resolvedAskedGap = nuclearWrongSlot.askedGap;
+        if (nuclearWrongSlot.closedFactKey === 'diffRelevance') {
+          semantic = {
+            ...semantic,
+            factKey: 'diffRelevance',
+            resolvedIssueId: 'competitor_analysis',
+            facts: [{ key: 'diffRelevance', issueId: 'competitor_analysis' }],
+          };
+        } else if (nuclearWrongSlot.closedFactKey === 'customer') {
+          semantic = {
+            ...semantic,
+            factKey: 'customer',
+            resolvedIssueId: 'customer_definition',
+            facts: [{ key: 'customer', issueId: 'customer_definition' }],
+          };
+        }
       }
     }
 
@@ -1338,6 +1468,68 @@ export function WorkspaceAiPmLoopPanel({
         next: trimmed,
       });
       const askedGap = resolvedAskedGap;
+      const conflictAppliedAt = new Date().toISOString();
+      const conflictReview: AnswerReview | undefined = v3Review
+        ? {
+            ...v3Review,
+            turnId: conflictAppliedAt,
+            sourceTurnId: conflictAppliedAt,
+          }
+        : undefined;
+
+      // PR7 B5 — V3 ON: clarify via review→decide, not panel buildConflictClarifyQuestion
+      if (isV3ReviewPipelineActive() && conflictReview) {
+        appendAiPmLoopTurn(
+          {
+            issueId,
+            answer: trimmed,
+            appliedAt: conflictAppliedAt,
+            semanticFactKey: semantic.factKey,
+            semanticFactKeys: semantic.facts.map((f) => f.key),
+            intent: semantic.intent,
+            targetGap: askedGap,
+            understandingDelta: `충돌: ${semantic.factKey} — 기존 값과 새 답 중 어느 쪽이 맞는지 확인 필요`,
+            review: conflictReview,
+          },
+          projectId,
+        );
+        applyWorkspaceLoopAnswer(issueId, trimmed, projectId, { semantic });
+        const conflictLoop = loadAiPmLoopState(projectId);
+        const decision = resolveV3PanelDecision({
+          living: livingState,
+          turns: conflictLoop.turns,
+          memory: conversationMemory,
+          gapState: conflictLoop.gapState,
+          previousQuestionText: displayedQuestionText,
+        });
+        if (decision) {
+          const purity = enforceQuestionPurity({
+            questionText: decision.questionText,
+            targetGap: decision.targetGap,
+          });
+          setQuestionOverride({
+            targetGap: decision.targetGap,
+            questionText: purity.sanitizedText,
+            whyNow: decision.whyNow,
+            reason: 'adaptive',
+          });
+          commitQuestionLock(
+            captureLockedAskSurface({
+              issueId: decision.issueId,
+              targetGap: decision.targetGap,
+              questionText: purity.sanitizedText,
+              whyNow: decision.whyNow,
+              rationale: decision.actionRationale,
+              fallbackIssueId: decision.issueId,
+            }),
+          );
+        }
+        patchAiPmLoopState({ phase: 'answer', currentIssueId: issueId }, projectId);
+        syncState(loadAiPmLoopState(projectId));
+        setAnswerDraft('');
+        return;
+      }
+
       const conflictClarify = buildConflictClarifyQuestion({
         factKey: semantic.factKey,
         targetGap: askedGap,
@@ -1356,12 +1548,13 @@ export function WorkspaceAiPmLoopPanel({
         {
           issueId,
           answer: trimmed,
-          appliedAt: new Date().toISOString(),
+          appliedAt: conflictAppliedAt,
           semanticFactKey: semantic.factKey,
           semanticFactKeys: semantic.facts.map((f) => f.key),
           intent: semantic.intent,
           targetGap: conflictClarify.targetGap,
           understandingDelta: `충돌: ${semantic.factKey} — 기존 값과 새 답 중 어느 쪽이 맞는지 확인 필요 · 미확인: ${conflictClarify.targetGap}`,
+          ...(conflictReview ? { review: conflictReview } : {}),
         },
         projectId,
       );
@@ -1380,6 +1573,72 @@ export function WorkspaceAiPmLoopPanel({
     }
 
     if (!semantic.mergeable) {
+      // PR7 B4 — V3 ON: probe via review→decide, not panel getWhyThisQuestionNow + reframeQuestion
+      if (isV3ReviewPipelineActive() && v3Review) {
+        const probeAppliedAt = new Date().toISOString();
+        const probeReview: AnswerReview = {
+          ...v3Review,
+          turnId: probeAppliedAt,
+          sourceTurnId: probeAppliedAt,
+        };
+        appendAiPmLoopTurn(
+          {
+            issueId,
+            answer: trimmed,
+            appliedAt: probeAppliedAt,
+            intent: semantic.intent,
+            targetGap: resolvedAskedGap,
+            understandingDelta: semantic.rationale,
+            review: probeReview,
+          },
+          projectId,
+        );
+        const probeLoop = loadAiPmLoopState(projectId);
+        const decision = resolveV3PanelDecision({
+          living: livingState,
+          turns: probeLoop.turns,
+          memory: conversationMemory,
+          gapState: probeLoop.gapState,
+          previousQuestionText: displayedQuestionText,
+        });
+        if (decision) {
+          const purity = enforceQuestionPurity({
+            questionText: decision.questionText,
+            targetGap: decision.targetGap,
+          });
+          const reason: ReframeReason =
+            semantic.intent === 'nonsense'
+              ? 'nonsense'
+              : semantic.quality === 'PARTIAL'
+                ? 'adaptive'
+                : 'unknown_signal';
+          setQuestionOverride({
+            targetGap: decision.targetGap,
+            questionText: purity.sanitizedText,
+            whyNow: decision.whyNow,
+            reason,
+          });
+          commitQuestionLock(
+            captureLockedAskSurface({
+              issueId: decision.issueId,
+              targetGap: decision.targetGap,
+              questionText: purity.sanitizedText,
+              whyNow: decision.whyNow,
+              rationale: decision.actionRationale,
+              fallbackIssueId: decision.issueId,
+            }),
+          );
+          if (decision.issueId !== loopState.currentIssueId) {
+            patchAiPmLoopState({ currentIssueId: decision.issueId }, projectId);
+            syncState(loadAiPmLoopState(projectId));
+          }
+        }
+        setAnswerQualityHint(semantic.quality);
+        setContradiction(null);
+        setAnswerDraft('');
+        return;
+      }
+
       // Core Final W7 — nonsense / unknown / weak relevance → REFRAME on adaptive top gap
       const preserveGap =
         semantic.quality === 'PARTIAL' && whyThisQuestionNow?.targetGap
@@ -1524,6 +1783,15 @@ export function WorkspaceAiPmLoopPanel({
       {
         ...projectedTurn,
         understandingDelta,
+        ...(v3Review
+          ? {
+              review: {
+                ...v3Review,
+                turnId: projectedTurn.appliedAt,
+                sourceTurnId: projectedTurn.appliedAt,
+              },
+            }
+          : {}),
       },
       projectId,
     );
@@ -1722,23 +1990,28 @@ export function WorkspaceAiPmLoopPanel({
           memory: freshMemory,
           resolvedIssueIds: getResolvedIssueIds(next),
         });
-        const decision = decideNextQuestion({
+        const decision = resolveNextQuestionDecision({
           living,
           turns: next.turns,
           memory: freshMemory,
+          gapState: next.gapState,
+          projectId,
         });
         if (decision) {
           const purity = enforceQuestionPurity({
             questionText: decision.questionText,
             targetGap: decision.targetGap,
           });
+          const whyNow = decision.whyNow;
           commitQuestionLock(
             captureLockedAskSurface({
               issueId: decision.issueId,
               targetGap: decision.targetGap,
               questionText: purity.sanitizedText,
-              whyNow: decision.whyNow,
-              rationale: decision.rationale,
+              whyNow,
+              rationale: isNextQuestionDecision(decision)
+                ? decision.actionRationale
+                : decision.rationale,
               score: decision.score,
               fallbackIssueId: decision.issueId,
             }),
@@ -2084,6 +2357,7 @@ export function WorkspaceAiPmLoopPanel({
           whyNow={whyNowText}
           displayQuestionText={displayQuestionText}
         />
+        {ceoSixSurfaces ? <WorkspaceCeoSixSurfaces surfaces={ceoSixSurfaces} /> : null}
       </section>
     );
   }
@@ -2134,6 +2408,7 @@ export function WorkspaceAiPmLoopPanel({
               whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
               displayQuestionText={displayQuestionText}
             />
+            {ceoSixSurfaces ? <WorkspaceCeoSixSurfaces surfaces={ceoSixSurfaces} /> : null}
             <Button
               type="button"
               className="rounded-xl"
