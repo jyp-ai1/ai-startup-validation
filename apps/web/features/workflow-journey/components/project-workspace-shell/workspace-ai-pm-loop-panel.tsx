@@ -20,6 +20,11 @@ import {
   setAiPmLoopPhase,
   supersedeTurnAndInvalidateDownstream,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
+import {
+  clearAnswerDraft,
+  loadAnswerDraft,
+  saveAnswerDraft,
+} from '../../lib/business-understanding/workspace-answer-draft-store';
 import { resolveNextQuestionDecision } from '../../lib/business-understanding/resolve-next-question-decision';
 import { shouldSkipLiveRankOnRemount } from '../../lib/business-understanding/resolve-remount-ask-surface';
 import { resolveV3DisplayPriority } from '../../lib/business-understanding/v3-legacy-bypass-guards';
@@ -667,6 +672,19 @@ export function WorkspaceAiPmLoopPanel({
     [],
   );
 
+  const updateAnswerDraft = useCallback(
+    (value: string) => {
+      setAnswerDraft(value);
+      saveAnswerDraft(value, projectId);
+    },
+    [projectId],
+  );
+
+  const resetAnswerDraft = useCallback(() => {
+    clearAnswerDraft(projectId);
+    setAnswerDraft('');
+  }, [projectId]);
+
   const clearQuestionLock = useCallback(() => {
     lockedAskSurfaceRef.current = null;
     setLockedAskSurface(null);
@@ -735,6 +753,7 @@ export function WorkspaceAiPmLoopPanel({
     lockedAskSurfaceRef.current = storedLock;
     setLockedAskSurface(storedLock);
     setRecognitionDismissed(true);
+    setAnswerDraft(loadAnswerDraft(projectId));
   }, [projectId, workspaceSnapshotUpdatedAt, syncState]);
 
   useEffect(() => {
@@ -1352,7 +1371,7 @@ export function WorkspaceAiPmLoopPanel({
         setMidJudgmentText(preview.midJudgmentText ?? semantic.rationale);
         setWhyPanel(null);
       }
-      setAnswerDraft('');
+      resetAnswerDraft();
       return;
     }
 
@@ -1417,7 +1436,7 @@ export function WorkspaceAiPmLoopPanel({
         projectId,
       );
       syncState(loadAiPmLoopState(projectId));
-      setAnswerDraft('');
+      resetAnswerDraft();
       return;
     }
 
@@ -1474,7 +1493,7 @@ export function WorkspaceAiPmLoopPanel({
       }
       setAnswerQualityHint(semantic.quality);
       setContradiction(null);
-      setAnswerDraft('');
+      resetAnswerDraft();
       return;
     }
 
@@ -1658,7 +1677,7 @@ export function WorkspaceAiPmLoopPanel({
       return;
     }
 
-    setAnswerDraft('');
+    resetAnswerDraft();
     setReturnWelcomeDismissed(true);
     setRecognitionDismissed(false);
     startProcessing();
@@ -1678,6 +1697,7 @@ export function WorkspaceAiPmLoopPanel({
     projectId,
     questionOverride,
     readOnly,
+    resetAnswerDraft,
     startProcessing,
     syncState,
     understanding,
@@ -1691,7 +1711,7 @@ export function WorkspaceAiPmLoopPanel({
       if (choice === 'keep_prior') {
         setContradiction(null);
         setAnswerQualityHint(null);
-        setAnswerDraft('');
+        resetAnswerDraft();
         return;
       }
       setContradiction(null);
@@ -1738,7 +1758,7 @@ export function WorkspaceAiPmLoopPanel({
           quality: 'VALID',
         },
       });
-      setAnswerDraft('');
+      resetAnswerDraft();
       startProcessing();
       void prior;
     },
@@ -1766,7 +1786,7 @@ export function WorkspaceAiPmLoopPanel({
       });
       saveConversationMemory(rebuilt, projectId);
       setEditPriorOpen(false);
-      setAnswerDraft('');
+      resetAnswerDraft();
       setWhyPanel(null);
       setMidJudgmentText(null);
       setQuestionOverride(null);
@@ -2031,7 +2051,7 @@ export function WorkspaceAiPmLoopPanel({
             if (event.target.value.length > 0) {
               activateQuestionLock();
             }
-            setAnswerDraft(event.target.value);
+            updateAnswerDraft(event.target.value);
           }}
           rows={4}
           readOnly={readOnly}
@@ -2242,7 +2262,7 @@ export function WorkspaceAiPmLoopPanel({
                   if (event.target.value.length > 0) {
                     activateQuestionLock();
                   }
-                  setAnswerDraft(event.target.value);
+                  updateAnswerDraft(event.target.value);
                 }}
                 rows={4}
                 readOnly={readOnly}
