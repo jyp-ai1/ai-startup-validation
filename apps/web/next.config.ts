@@ -54,6 +54,8 @@ const nextConfig: NextConfig = {
             process.env.NEXT_PUBLIC_AI_PM_FOCUSED_UI ?? 'true',
           NEXT_PUBLIC_AI_PM_JUDGMENT_POLICY_V1:
             process.env.NEXT_PUBLIC_AI_PM_JUDGMENT_POLICY_V1 ?? 'true',
+          NEXT_PUBLIC_AI_PM_ANSWER_FIRST_ROUTING_V1:
+            process.env.NEXT_PUBLIC_AI_PM_ANSWER_FIRST_ROUTING_V1 ?? 'true',
         }
       : {}),
   },

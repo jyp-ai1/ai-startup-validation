@@ -1347,7 +1347,8 @@ export function WorkspaceAiPmLoopPanel({
     // Loop 9h-c — solution Q text wins over poisoned askedTargetGap / issue template
     if (
       displayedGapForCanonical === 'solution' &&
-      semantic.mergeable
+      semantic.mergeable &&
+      !semantic.slotConflict
     ) {
       resolvedAskedGap = 'solution';
       if (!semantic.facts.some((f) => f.key === 'business')) {
