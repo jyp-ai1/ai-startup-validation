@@ -856,6 +856,7 @@ export function WorkspaceAiPmLoopPanel({
         memory: freshMemory,
         projectId,
         gapState: openedState.gapState,
+        persistLastDecision: true,
       });
       if (decision) {
         const purity = enforceQuestionPurity({
@@ -1794,6 +1795,7 @@ export function WorkspaceAiPmLoopPanel({
           memory: freshMemory,
           projectId,
           gapState: next.gapState,
+          persistLastDecision: true,
         });
         if (decision) {
           const purity = enforceQuestionPurity({

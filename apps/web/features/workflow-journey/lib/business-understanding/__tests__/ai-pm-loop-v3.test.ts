@@ -667,6 +667,7 @@ describe('PR4 — decideNextQuestionFromReview (AC1–AC19)', () => {
       memory: null,
       gapState: loop.gapState,
       projectId: 'pr4-flag-on',
+      persistLastDecision: true,
     });
     expect(isNextQuestionDecision(decision)).toBe(true);
     expect(loadAiPmLoopState('pr4-flag-on').lastDecision?.sourceReviewId).toBeTruthy();
