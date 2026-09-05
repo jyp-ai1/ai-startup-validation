@@ -7383,19 +7383,19 @@
         "cta": "Start today's actions"
       },
       "liveStream": {
-        "marketResearch.1": "Founder,\n\nthe market size looks sufficient.",
-        "marketResearch.2": "Checking competitors now.",
-        "marketResearch.3": "There are many similar services.\n\nFinding your differentiation.",
-        "marketResearch.4": "Wrapping up market research.",
-        "competitorAnalysis.1": "Identifying your main customers.",
-        "competitorAnalysis.2": "Mapping the competitive landscape.",
-        "competitorAnalysis.3": "Found your differentiation points.",
-        "strategyWriting.1": "Great.\n\nBuilding your execution strategy.",
-        "strategyWriting.2": "Reviewing the revenue model.",
-        "strategyWriting.3": "Finalizing the strategy draft.",
-        "todayPlan.1": "Calculating business viability.",
-        "todayPlan.2": "Choosing what you should do today.",
-        "todayPlan.3": "Almost done.\n\nJust a moment."
+        "marketResearch_1": "Founder,\n\nthe market size looks sufficient.",
+        "marketResearch_2": "Checking competitors now.",
+        "marketResearch_3": "There are many similar services.\n\nFinding your differentiation.",
+        "marketResearch_4": "Wrapping up market research.",
+        "competitorAnalysis_1": "Identifying your main customers.",
+        "competitorAnalysis_2": "Mapping the competitive landscape.",
+        "competitorAnalysis_3": "Found your differentiation points.",
+        "strategyWriting_1": "Great.\n\nBuilding your execution strategy.",
+        "strategyWriting_2": "Reviewing the revenue model.",
+        "strategyWriting_3": "Finalizing the strategy draft.",
+        "todayPlan_1": "Calculating business viability.",
+        "todayPlan_2": "Choosing what you should do today.",
+        "todayPlan_3": "Almost done.\n\nJust a moment."
       },
       "reasoning": {
         "marketResearch": "Checking whether similar services already exist.",

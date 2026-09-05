@@ -19,6 +19,10 @@ import {
   interpretAnswerSemantics,
   type SemanticInterpretation,
 } from './interpret-answer-semantics';
+import {
+  extractCorrectedFactValue,
+  isCustomerFieldCorrection,
+} from './ai-pm-correction-semantics';
 import { isOnSlotCompetitorAnswer } from './competitor-answer-cues';
 import {
   hasCustomerPersonaCue,
@@ -222,8 +226,17 @@ function offTopicSemanticOverride(
   };
 }
 
-function extractFactValue(key: ConversationFactKey, userAnswer: string): string {
+function extractFactValue(
+  key: ConversationFactKey,
+  userAnswer: string,
+  intent?: SemanticInterpretation['intent'],
+): string {
   const t = userAnswer.trim();
+  if (intent === 'correction') {
+    const corrected = extractCorrectedFactValue(key, t);
+    if (corrected && corrected.length >= 2) return corrected;
+    if (key === 'problem' && isCustomerFieldCorrection(t)) return '';
+  }
   switch (key) {
     case 'buyer': {
       const m = t.match(/(고객|소비자|사용자|구매자|기업|회사|B2B|B2C)/i);
@@ -407,7 +420,7 @@ function buildExtractedFacts(
     );
     return {
       key: hit.key,
-      value: extractFactValue(hit.key, userAnswer) || fallbackValue,
+      value: extractFactValue(hit.key, userAnswer, semantic.intent) || fallbackValue,
       evidenceClass,
       confidence,
       targetGap: gapForFactKey(hit.key) ?? resolvedAskedGap ?? '',

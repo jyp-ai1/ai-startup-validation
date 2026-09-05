@@ -1,8 +1,8 @@
 # ALABOM — DAY 8-B AI PM UX POLICY DESIGN
 
-**Status:** Policy design + P0 hotfix (Phase 1)  
+**Status:** Phase 1 shipped · Phase 2 implemented (Focused UI + Understanding Gate + Bootstrap P0)  
 **Base SHA:** `ea573cf112f6514b4bb45d8f19bb2a8b0b05b2b3`  
-**Stage B:** HOLD until CPO policy approval
+**Stage B:** HOLD until CPO verifies Phase 2
 
 ---
 
@@ -338,6 +338,22 @@ V3 remains the **memory and readiness engine**. The **Product Policy Layer** bec
 
 ---
 
-**DAY 8-B Phase 1:** COMPLETE (code)  
-**DAY 8-B Phase 2–4:** DESIGN ONLY — awaiting CPO approval  
-**Stage B development:** HOLD
+---
+
+## 13. Phase 2 Implementation (DAY 8-B)
+
+| Module | Path | Role |
+|--------|------|------|
+| Feature flag | `ai-pm-focused-ui.ts` | `NEXT_PUBLIC_AI_PM_FOCUSED_UI` |
+| Intent router | `ai-pm-intent-policy.ts` | RESEARCH → ai_action stub |
+| Question policy | `ai-pm-question-policy.ts` | Bootstrap P0, validationTestability, cluster soft ranking |
+| Understanding gate | `ai-pm-understanding-gate.ts` | whatChanged → judgment update |
+| Presenter | `ai-pm-focused-presenter.ts` | 3-block snapshot builder |
+| UI | `workspace-ai-pm-focused-surface.tsx` | CEO-facing 3-block surface |
+| Policy hook | `resolve-next-question-decision.ts` | wraps V3 decision output |
+
+**Tests:** `day8b-phase2-focused-ui.test.ts`
+
+**DAY 8-B Phase 1:** COMPLETE  
+**DAY 8-B Phase 2:** COMPLETE (behind `NEXT_PUBLIC_AI_PM_FOCUSED_UI`)  
+**DAY 8-B Phase 3–4:** HOLD (Research engine, Stage B)

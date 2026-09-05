@@ -7548,19 +7548,19 @@
         "cta": "오늘 할 일 시작"
       },
       "liveStream": {
-        "marketResearch.1": "대표님.\n\n시장 규모는 충분합니다.",
-        "marketResearch.2": "경쟁사를 확인하는 중입니다.",
-        "marketResearch.3": "비슷한 서비스가 많습니다.\n\n차별점을 찾고 있습니다.",
-        "marketResearch.4": "시장 조사를 마무리하고 있습니다.",
-        "competitorAnalysis.1": "주 고객층을 파악하고 있습니다.",
-        "competitorAnalysis.2": "경쟁 환경을 정리하고 있습니다.",
-        "competitorAnalysis.3": "차별화 포인트를 찾았습니다.",
-        "strategyWriting.1": "좋습니다.\n\n실행 전략을 만들겠습니다.",
-        "strategyWriting.2": "수익 구조를 검토하고 있습니다.",
-        "strategyWriting.3": "전략 초안을 정리하고 있습니다.",
-        "todayPlan.1": "사업 가능성을 계산하고 있습니다.",
-        "todayPlan.2": "오늘 하실 일을 고르고 있습니다.",
-        "todayPlan.3": "거의 다 됐습니다.\n\n잠시만 기다려 주세요."
+        "marketResearch_1": "대표님.\n\n시장 규모는 충분합니다.",
+        "marketResearch_2": "경쟁사를 확인하는 중입니다.",
+        "marketResearch_3": "비슷한 서비스가 많습니다.\n\n차별점을 찾고 있습니다.",
+        "marketResearch_4": "시장 조사를 마무리하고 있습니다.",
+        "competitorAnalysis_1": "주 고객층을 파악하고 있습니다.",
+        "competitorAnalysis_2": "경쟁 환경을 정리하고 있습니다.",
+        "competitorAnalysis_3": "차별화 포인트를 찾았습니다.",
+        "strategyWriting_1": "좋습니다.\n\n실행 전략을 만들겠습니다.",
+        "strategyWriting_2": "수익 구조를 검토하고 있습니다.",
+        "strategyWriting_3": "전략 초안을 정리하고 있습니다.",
+        "todayPlan_1": "사업 가능성을 계산하고 있습니다.",
+        "todayPlan_2": "오늘 하실 일을 고르고 있습니다.",
+        "todayPlan_3": "거의 다 됐습니다.\n\n잠시만 기다려 주세요."
       },
       "reasoning": {
         "marketResearch": "비슷한 서비스를 찾고 있습니다.",

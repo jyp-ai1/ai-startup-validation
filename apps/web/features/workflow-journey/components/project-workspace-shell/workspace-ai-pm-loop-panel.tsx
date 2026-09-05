@@ -29,6 +29,12 @@ import { resolveNextQuestionDecision } from '../../lib/business-understanding/re
 import { shouldSkipLiveRankOnRemount } from '../../lib/business-understanding/resolve-remount-ask-surface';
 import { resolveV3DisplayPriority } from '../../lib/business-understanding/v3-legacy-bypass-guards';
 import { isV3ReviewPipelineActive } from '../../lib/business-understanding/v3-review-pipeline';
+import { isAiPmFocusedUiActive } from '../../lib/business-understanding/ai-pm-focused-ui';
+import { buildAiPmFocusedSnapshot } from '../../lib/business-understanding/ai-pm-focused-presenter';
+import {
+  classifyAiPmCeoIntent,
+  researchIntentStubMessage,
+} from '../../lib/business-understanding/ai-pm-intent-policy';
 import {
   AI_PM_LOOP_ISSUE_ORDER,
   type AiPmLoopIssueId,
@@ -114,8 +120,39 @@ import { WorkspaceAiPmReadingSequence } from './workspace-ai-pm-reading-sequence
 import { WorkspaceAiPmThinkingStages } from './workspace-ai-pm-thinking-stages';
 import { WorkspaceAiPmConversationDetail } from './workspace-ai-pm-conversation-detail';
 import { WorkspaceCeoSixSurfaces } from './workspace-ceo-six-surfaces';
+import { WorkspaceAiPmFocusedSurface } from './workspace-ai-pm-focused-surface';
 import { WorkspaceS11Surface } from './workspace-s11-surface';
 import type { WorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
+import type { AiPmFocusedSnapshot } from '../../lib/business-understanding/ai-pm-focused-presenter';
+
+function AiPmQuestionSurface({
+  focusedUiActive,
+  focusedSnapshot,
+  s11Surface,
+  displayQuestionText,
+  className,
+}: {
+  focusedUiActive: boolean;
+  focusedSnapshot: AiPmFocusedSnapshot | null;
+  s11Surface: ReturnType<typeof presentS11Surface>;
+  displayQuestionText: string;
+  className?: string;
+}) {
+  if (focusedUiActive && focusedSnapshot) {
+    return (
+      <WorkspaceAiPmFocusedSurface snapshot={focusedSnapshot} className={className} />
+    );
+  }
+  return (
+    <WorkspaceS11Surface
+      surface={s11Surface}
+      sections="question"
+      hideWhyNow
+      questionTextOverride={displayQuestionText}
+      className={className}
+    />
+  );
+}
 
 function ConversationWhyNowBlock({
   whyNow,
@@ -139,6 +176,7 @@ function ConversationSecondaryBlocks({
   loopState,
   whyNow,
   displayQuestionText,
+  hideForFocusedUi,
 }: {
   s11Surface: ReturnType<typeof presentS11Surface>;
   livingState: ReturnType<typeof buildLivingUnderstandingState>;
@@ -146,12 +184,17 @@ function ConversationSecondaryBlocks({
   loopState: ReturnType<typeof loadAiPmLoopState>;
   whyNow: string | null | undefined;
   displayQuestionText: string;
+  hideForFocusedUi?: boolean;
 }) {
   const understandingRows = useMemo(
     () => buildConversationUnderstandingRows(livingState),
     [livingState],
   );
   const v3Active = isV3ReviewPipelineActive();
+
+  if (hideForFocusedUi) {
+    return null;
+  }
 
   return (
     <>
@@ -552,6 +595,29 @@ export function WorkspaceAiPmLoopPanel({
     turnsWrongSlotOverride?.targetGap,
     whyThisQuestionNow?.questionText,
     whyThisQuestionNow?.targetGap,
+  ]);
+  const focusedUiActive = isAiPmFocusedUiActive();
+  const focusedSnapshot = useMemo(() => {
+    if (!focusedUiActive) return null;
+    return buildAiPmFocusedSnapshot({
+      living: livingState,
+      lastTurn,
+      lastDecision: loopState.lastDecision ?? null,
+      displayQuestionText,
+      whyNow:
+        whyThisQuestionNow?.whyNow ??
+        whyThisQuestionNow?.rationale ??
+        s11Surface.question.purpose,
+    });
+  }, [
+    focusedUiActive,
+    livingState,
+    lastTurn,
+    loopState.lastDecision,
+    displayQuestionText,
+    whyThisQuestionNow?.whyNow,
+    whyThisQuestionNow?.rationale,
+    s11Surface.question.purpose,
   ]);
   const initialDiagnosis = useMemo(
     () => buildAiPmInitialDiagnosis(understanding, entities, documentText),
@@ -1359,6 +1425,14 @@ export function WorkspaceAiPmLoopPanel({
         ? resolveGapQuestionBinding(resolvedAskedGap).questionText
         : undefined);
 
+    const ceoIntent = classifyAiPmCeoIntent(trimmed, semantic.intent);
+    if (ceoIntent.route === 'ai_action' && ceoIntent.intent === 'RESEARCH') {
+      setMidJudgmentText(researchIntentStubMessage());
+      setWhyPanel(null);
+      resetAnswerDraft();
+      return;
+    }
+
     // Why / mid-judgment — display only, never append Fact turn; reframe on return (W8)
     if (semantic.intent === 'why_meta' || semantic.intent === 'mid_judgment') {
       const preview = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, { semantic });
@@ -1994,11 +2068,11 @@ export function WorkspaceAiPmLoopPanel({
           className,
         )}
       >
-        <WorkspaceS11Surface
-          surface={s11Surface}
-          sections="question"
-          hideWhyNow
-          questionTextOverride={displayQuestionText}
+        <AiPmQuestionSurface
+          focusedUiActive={focusedUiActive}
+          focusedSnapshot={focusedSnapshot}
+          s11Surface={s11Surface}
+          displayQuestionText={displayQuestionText}
         />
         {whyPanel ? (
           <div
@@ -2176,6 +2250,7 @@ export function WorkspaceAiPmLoopPanel({
           loopState={loopState}
           whyNow={whyNowText}
           displayQuestionText={displayQuestionText}
+          hideForFocusedUi={focusedUiActive}
         />
       </section>
     );
@@ -2214,11 +2289,11 @@ export function WorkspaceAiPmLoopPanel({
               </p>
             ) : null}
             <p className="text-sm font-medium text-foreground">{t('reflectLead')}</p>
-            <WorkspaceS11Surface
-              surface={s11Surface}
-              sections="question"
-              hideWhyNow
-              questionTextOverride={displayQuestionText}
+            <AiPmQuestionSurface
+              focusedUiActive={focusedUiActive}
+              focusedSnapshot={focusedSnapshot}
+              s11Surface={s11Surface}
+              displayQuestionText={displayQuestionText}
             />
             <ConversationSecondaryBlocks
               s11Surface={s11Surface}
@@ -2227,6 +2302,7 @@ export function WorkspaceAiPmLoopPanel({
               loopState={loopState}
               whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
               displayQuestionText={displayQuestionText}
+              hideForFocusedUi={focusedUiActive}
             />
             <Button
               type="button"
@@ -2244,12 +2320,12 @@ export function WorkspaceAiPmLoopPanel({
                 'rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.04] to-background px-4 py-4 sm:px-7 sm:py-5',
               )}
             >
-              <WorkspaceS11Surface
-          surface={s11Surface}
-          sections="question"
-          hideWhyNow
-          questionTextOverride={displayQuestionText}
-        />
+              <AiPmQuestionSurface
+                focusedUiActive={focusedUiActive}
+                focusedSnapshot={focusedSnapshot}
+                s11Surface={s11Surface}
+                displayQuestionText={displayQuestionText}
+              />
               <textarea
                 value={answerDraft}
                 onFocus={() => {
@@ -2337,6 +2413,7 @@ export function WorkspaceAiPmLoopPanel({
                 loopState={loopState}
                 whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
                 displayQuestionText={displayQuestionText}
+                hideForFocusedUi={focusedUiActive}
               />
             </section>
             {loopState.turns.length > 0 ? (

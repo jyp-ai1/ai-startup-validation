@@ -11,6 +11,13 @@ import {
   looksLikeDocumentFileName,
 } from './workspace-document-eligibility';
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
+import {
+  extractCorrectedFactValue,
+  isMisroutedCustomerDescription,
+  parseNotXButYCorrection,
+  scrubRejectedCustomerMention,
+  type ParsedNotXButY,
+} from './ai-pm-correction-semantics';
 import { inferAskedTargetGapFromTurn } from './resolve-asked-target-gap';
 import type { AiPmLoopIssueId, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
@@ -52,16 +59,53 @@ function filterMemoryFactKeys(
   return keys.filter((key) => key !== 'business');
 }
 
+function applyCustomerCorrectionRevision(
+  memory: ConversationMemory,
+  answer: string,
+): ConversationMemory {
+  const revision = parseNotXButYCorrection(answer);
+  if (!revision) return memory;
+
+  let next = memory;
+  for (const key of ['problem', 'business'] as ConversationFactKey[]) {
+    const fact = next.facts.find(
+      (f) => f.key === key && (f.lifecycle ?? 'current') === 'current',
+    );
+    if (!fact?.value.includes(revision.rejected)) continue;
+
+    if (key === 'problem' && isMisroutedCustomerDescription(fact.value)) {
+      const cleaned = scrubRejectedCustomerMention(fact.value, revision);
+      if (cleaned.length >= 2) {
+        next = upsertConfirmedFact(next, key, cleaned, 'user_turn');
+      }
+      continue;
+    }
+
+    const cleaned = scrubRejectedCustomerMention(fact.value, revision);
+    if (cleaned.length >= 2 && cleaned !== fact.value) {
+      next = upsertConfirmedFact(next, key, cleaned, 'user_turn');
+    }
+  }
+  return next;
+}
+
 function upsertSemanticFacts(
   memory: ConversationMemory,
   answer: string,
   keys: ConversationFactKey[],
   targetGap?: string | null,
+  intent?: AiPmLoopTurn['intent'],
 ): ConversationMemory {
   let next = memory;
   const unique = filterMemoryFactKeys([...new Set(keys)], targetGap);
   for (const key of unique) {
-    next = upsertConfirmedFact(next, key, answer, 'user_turn');
+    const value =
+      intent === 'correction' ? extractCorrectedFactValue(key, answer) : answer;
+    if (!value || value.trim().length < 2) continue;
+    next = upsertConfirmedFact(next, key, value, 'user_turn');
+  }
+  if (intent === 'correction' && unique.includes('customer')) {
+    next = applyCustomerCorrectionRevision(next, answer);
   }
   // Payer-oriented answers also lock buyer when payment cue present
   if (
@@ -128,7 +172,7 @@ export function buildConversationMemoryFromSources(input: {
           : null;
 
     if (storedKeys) {
-      memory = upsertSemanticFacts(memory, answer, storedKeys, turn.targetGap);
+      memory = upsertSemanticFacts(memory, answer, storedKeys, turn.targetGap, turn.intent);
       continue;
     }
 
@@ -155,7 +199,7 @@ export function buildConversationMemoryFromSources(input: {
       semantic.facts.length > 0
         ? semantic.facts.map((f) => f.key)
         : [semantic.factKey];
-    memory = upsertSemanticFacts(memory, answer, keys, turn.targetGap);
+    memory = upsertSemanticFacts(memory, answer, keys, turn.targetGap, turn.intent);
   }
 
   return memory;

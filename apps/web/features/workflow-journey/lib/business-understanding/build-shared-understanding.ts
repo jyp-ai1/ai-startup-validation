@@ -141,9 +141,18 @@ function resolveCustomerField(
   if (memory && memoryHasFact(memory, 'customer')) {
     const fact = memory.facts.find((f) => f.key === 'customer');
     if (fact?.value.trim()) {
+      const correctedTurn = [...turns]
+        .reverse()
+        .find(
+          (turn) =>
+            !turn.superseded &&
+            turn.intent === 'correction' &&
+            (turn.semanticFactKey === 'customer' ||
+              turn.semanticFactKeys?.includes('customer')),
+        );
       return {
         value: truncate(fact.value, 48),
-        provenance: fact.source === 'user_turn' ? 'USER_CONFIRMED' : 'DOCUMENT',
+        provenance: correctedTurn ? 'USER_CORRECTED' : 'USER_CONFIRMED',
       };
     }
   }

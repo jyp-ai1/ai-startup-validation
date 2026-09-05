@@ -89,7 +89,8 @@ export async function startDemoSaas(page: Page) {
 
   if (page.url().includes('/workspace')) {
     await page
-      .getByTestId('s11-surface-understanding')
+      .getByTestId('ai-pm-focused-surface')
+      .or(page.getByTestId('s11-surface-understanding'))
       .or(page.getByTestId('s11-surface'))
       .or(page.getByRole('button', { name: /맞습니다|That'?s right/i }))
       .first()
@@ -101,14 +102,27 @@ export async function startDemoSaas(page: Page) {
   await startDemoSaasViaUi(page);
 }
 
+export async function waitForPmAskSurface(page: Page) {
+  const focused = page.getByTestId('ai-pm-focused-surface');
+  const s11 = page.getByTestId('s11-surface');
+  const started = Date.now();
+  while (Date.now() - started < 60_000) {
+    if (await focused.isVisible().catch(() => false)) return;
+    if (await s11.isVisible().catch(() => false)) return;
+    await page.waitForTimeout(250);
+  }
+  throw new Error('Neither ai-pm-focused-surface nor s11-surface became visible');
+}
+
 export async function confirmUnderstanding(page: Page) {
+  await dismissCookies(page);
   const confirm = page.getByRole('button', {
     name: /^(✓\s*)?(맞습니다|That'?s right|Yes[,.]?\s*correct|That is right)/i,
   });
   await confirm.first().waitFor({ state: 'visible', timeout: 90_000 });
   await confirm.first().click({ force: true });
   await page.waitForTimeout(1_500);
-  await page.getByTestId('s11-surface').waitFor({ state: 'visible', timeout: 60_000 });
+  await waitForPmAskSurface(page);
 }
 
 export async function dismissRecognition(page: Page) {
@@ -145,11 +159,26 @@ export async function submitAnswer(page: Page, answer: string): Promise<boolean>
 }
 
 export async function waitForAskSurface(page: Page) {
-  await page.getByTestId('s11-surface').waitFor({ state: 'visible', timeout: 60_000 });
+  await waitForPmAskSurface(page);
   await dismissRecognition(page);
 }
 
 export async function readSurfaceQuestion(page: Page): Promise<string> {
+  try {
+    const focused = page.getByTestId('ai-pm-focused-surface');
+    if (await focused.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      const prompt = page.getByTestId('focused-confirm-prompt');
+      const questionLine = prompt.locator('p.font-medium').last();
+      if (await questionLine.isVisible({ timeout: 1_000 }).catch(() => false)) {
+        return (await questionLine.innerText()).trim();
+      }
+      const raw = (await prompt.innerText()).trim();
+      return raw.split('\n').pop()?.trim() ?? raw;
+    }
+  } catch {
+    /* fall through */
+  }
+
   try {
     const ceo = page.getByTestId('ceo-surface-next-question');
     if (await ceo.isVisible({ timeout: 3_000 }).catch(() => false)) {
