@@ -31,7 +31,7 @@ export type ResolveNextQuestionInput = {
   gapState?: GapKnowledgeState;
   previousQuestionText?: string | null;
   projectId?: string;
-  /** Persist lastDecision on loop state when V3 path returns a decision. */
+  /** When true, persist lastDecision or clear stale artifacts on null decision. Default false (read-only). */
   persistLastDecision?: boolean;
 };
 
@@ -75,11 +75,11 @@ export function resolveNextQuestionDecision(
   if (
     decision &&
     isNextQuestionDecision(decision) &&
-    input.persistLastDecision !== false &&
+    input.persistLastDecision === true &&
     input.projectId
   ) {
     patchAiPmLoopState({ lastDecision: decision }, input.projectId);
-  } else if (input.projectId) {
+  } else if (input.projectId && input.persistLastDecision === true && !decision) {
     const persisted = loadAiPmLoopState(input.projectId);
     const staleGap =
       persisted.lastDecision?.targetGapId?.trim() ||

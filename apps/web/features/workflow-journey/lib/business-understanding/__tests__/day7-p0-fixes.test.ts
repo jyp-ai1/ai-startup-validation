@@ -231,6 +231,7 @@ describe('DAY 7 P0-A — CLOSED anti-repeat / stale decision', () => {
       memory: null,
       projectId: 'day7-stale',
       gapState: loadAiPmLoopState('day7-stale').gapState,
+      persistLastDecision: true,
     });
 
     const loop = loadAiPmLoopState('day7-stale');
