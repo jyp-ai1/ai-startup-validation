@@ -4,6 +4,7 @@
 
 import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
 
+import { applyQuestionPolicy, createBootstrapDecisionWithPolicy } from './ai-pm-question-policy';
 import {
   decideNextQuestionFromReview,
   isNextQuestionDecision,
@@ -62,15 +63,31 @@ export function resolveNextQuestionDecision(
     turns,
   });
 
-  const decision = decideNextQuestionFromReview({
-    living: input.living,
-    turns,
-    memory: input.memory,
-    lastReview,
-    gapState,
-    stageReadiness,
-    previousQuestionText: input.previousQuestionText,
-  });
+  const rawDecision =
+    decideNextQuestionFromReview({
+      living: input.living,
+      turns,
+      memory: input.memory,
+      lastReview,
+      gapState,
+      stageReadiness,
+      previousQuestionText: input.previousQuestionText,
+    }) ??
+    (!lastReview
+      ? createBootstrapDecisionWithPolicy(gapState, stageReadiness)
+      : null);
+
+  const decision =
+    rawDecision && isNextQuestionDecision(rawDecision)
+      ? applyQuestionPolicy({
+          decision: rawDecision,
+          gapState,
+          living: input.living,
+          turns,
+          stageReadiness,
+          isBootstrap: !lastReview,
+        })
+      : rawDecision;
 
   if (
     decision &&
