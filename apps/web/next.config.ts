@@ -45,6 +45,15 @@ const nextConfig: NextConfig = {
   ],
   env: {
     NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: process.env.VERCEL_GIT_COMMIT_SHA,
+    // DAY 8-B Phase 2 — bake Focused UI + V3 flags into Vercel production client bundle
+    ...(process.env.VERCEL === '1' && process.env.VERCEL_ENV === 'production'
+      ? {
+          NEXT_PUBLIC_V3_REVIEW_PIPELINE:
+            process.env.NEXT_PUBLIC_V3_REVIEW_PIPELINE ?? 'true',
+          NEXT_PUBLIC_AI_PM_FOCUSED_UI:
+            process.env.NEXT_PUBLIC_AI_PM_FOCUSED_UI ?? 'true',
+        }
+      : {}),
   },
   images: {
     remotePatterns: [
