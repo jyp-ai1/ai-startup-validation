@@ -875,6 +875,7 @@ export function WorkspaceAiPmLoopPanel({
           }),
         );
       }
+      syncState(loadAiPmLoopState(projectId));
     }
 
     if (next.phase === 'complete') onLoopComplete?.();
@@ -1814,6 +1815,7 @@ export function WorkspaceAiPmLoopPanel({
             }),
           );
         }
+        syncState(loadAiPmLoopState(projectId));
       }
       onLoopStateChange?.();
     },

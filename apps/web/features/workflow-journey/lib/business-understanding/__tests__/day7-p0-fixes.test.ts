@@ -270,6 +270,53 @@ describe('DAY 7 P0-C — remount / hydrate bind', () => {
   });
 });
 
+describe('DAY 7 E2E-01 — first answer CEO next question', () => {
+  it('persisted lastDecision/lock yields CEO next question after first CLOSED answer', () => {
+    const store = stubSessionStorage();
+    setV3ReviewPipelineForTest(true);
+    clearAiPmLoopState('e2e01');
+
+    appendLoopTurnWithReview(
+      {
+        issueId: 'problem_definition',
+        answer:
+          '10~50인 스타트업 CEO와 PM이 전략 검토를 회의마다 처음부터 다시 하는 문제입니다.',
+        appliedAt: '1',
+        targetGap: 'problemJtbd',
+      },
+      {
+        askedGapId: 'problemJtbd',
+        askedQuestionText: '핵심 문제는 무엇인가요?',
+        askedIssueId: 'problem_definition',
+        userAnswer:
+          '10~50인 스타트업 CEO와 PM이 전략 검토를 회의마다 처음부터 다시 하는 문제입니다.',
+        displayedQuestionText: '핵심 문제는 무엇인가요?',
+      },
+      'e2e01',
+    );
+
+    const loop = loadAiPmLoopState('e2e01');
+    const living = minimalLiving();
+    const decision = resolveNextQuestionDecision({
+      living,
+      turns: loop.turns,
+      memory: null,
+      projectId: 'e2e01',
+      gapState: loop.gapState,
+      persistLastDecision: true,
+    });
+    expect(decision?.questionText?.length).toBeGreaterThan(5);
+
+    const loopAfter = loadAiPmLoopState('e2e01');
+    const surfaces = buildCeoSixSurfaces({
+      lastTurn: loopAfter.turns.at(-1)!,
+      loop: loopAfter,
+    });
+    expect(surfaces.nextQuestion?.length).toBeGreaterThan(5);
+    void store;
+  });
+});
+
 describe('DAY 7 P0-D — conflict path internal key leak', () => {
   it('ceo-surface-ai-understanding maps review.known gap IDs to Korean labels', () => {
     const closed = stateFromReview({
