@@ -1,0 +1,12 @@
+{
+  "at": "2026-09-05T09:40:09.741Z",
+  "source": "GET /api/build-info",
+  "productionUrl": "https://ai-startup-validation-tau.vercel.app",
+  "commit": "c253120fb1848af6ff17d9feabb45ebd4a7804bb",
+  "gitHead": "c253120fb1848af6ff17d9feabb45ebd4a7804bb",
+  "shaMatch": true,
+  "pr17MergeCommit": "8fba5e8519896ff63f7957d4ad56b464b2525399",
+  "pr18EnvFixCommit": "c253120fb1848af6ff17d9feabb45ebd4a7804bb",
+  "browserAF": "6/6 PASS",
+  "focusedUiOn": true
+}
