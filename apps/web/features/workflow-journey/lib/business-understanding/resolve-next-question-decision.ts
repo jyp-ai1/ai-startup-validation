@@ -5,6 +5,7 @@
 import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
 
 import { applyQuestionPolicy, createBootstrapDecisionWithPolicy } from './ai-pm-question-policy';
+import { applyNoAskPolicy } from './ai-pm-no-ask-policy';
 import {
   decideNextQuestionFromReview,
   isNextQuestionDecision,
@@ -77,7 +78,7 @@ export function resolveNextQuestionDecision(
       ? createBootstrapDecisionWithPolicy(gapState, stageReadiness)
       : null);
 
-  const decision =
+  let decision =
     rawDecision && isNextQuestionDecision(rawDecision)
       ? applyQuestionPolicy({
           decision: rawDecision,
@@ -88,6 +89,17 @@ export function resolveNextQuestionDecision(
           isBootstrap: !lastReview,
         })
       : rawDecision;
+
+  if (decision && isNextQuestionDecision(decision)) {
+    decision = applyNoAskPolicy({
+      decision,
+      living: input.living,
+      gapState,
+      turns,
+      memory: input.memory,
+      stageReadiness,
+    });
+  }
 
   if (
     decision &&
