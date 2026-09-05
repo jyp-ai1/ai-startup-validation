@@ -21,6 +21,8 @@ import {
   supersedeTurnAndInvalidateDownstream,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
 import { resolveNextQuestionDecision } from '../../lib/business-understanding/resolve-next-question-decision';
+import { shouldSkipLiveRankOnRemount } from '../../lib/business-understanding/resolve-remount-ask-surface';
+import { resolveV3DisplayPriority } from '../../lib/business-understanding/v3-legacy-bypass-guards';
 import { isV3ReviewPipelineActive } from '../../lib/business-understanding/v3-review-pipeline';
 import {
   AI_PM_LOOP_ISSUE_ORDER,
@@ -325,6 +327,13 @@ export function WorkspaceAiPmLoopPanel({
   const whyThisQuestionNow = useMemo(() => {
     if (questionLockActive && lockedAskSurface) {
       return lockedAskSurface;
+    }
+    if (isV3ReviewPipelineActive()) {
+      const freshLoop = loadAiPmLoopState(projectId);
+      if (shouldSkipLiveRankOnRemount(freshLoop)) {
+        const persisted = resolveV3DisplayPriority(freshLoop);
+        if (persisted) return persisted;
+      }
     }
     if (!activeIssueId) return null;
     const freshTurns = loadAiPmLoopState(projectId).turns;
@@ -1383,7 +1392,7 @@ export function WorkspaceAiPmLoopPanel({
         appendLoopTurnWithReview(
           conflictTurn,
           {
-            askedGapId: askedGap ?? conflictClarify.targetGap,
+            askedGapId: conflictClarify.targetGap ?? askedGap,
             askedQuestionText: displayedQuestionText ?? persistedQuestionText ?? '',
             askedIssueId: issueId,
             userAnswer: trimmed,

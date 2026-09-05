@@ -36,6 +36,8 @@ export function resolveV3DisplayPriority(loop: AiPmLoopState): MissingFieldPrior
   if (!isV3ReviewPipelineActive()) return null;
   const persisted = resolveRemountAskSurface(loop);
   if (!persisted) return null;
+  const gapState = loop.gapState ?? createEmptyGapState();
+  if (!isGapAskable(persisted.targetGap, gapState)) return null;
   return {
     issueId: persisted.issueId,
     targetGap: persisted.targetGap,

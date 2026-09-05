@@ -2,6 +2,7 @@ import {
   DEMO_CUSTOM_DOCUMENT_KEY,
   DEMO_SESSION_PROJECT_ID,
 } from './demo-samples';
+import { loadAiPmLoopState } from './business-understanding/workspace-ai-pm-loop-store';
 import { clearBusinessUnderstandingConfirmed } from './business-understanding/business-understanding-store';
 import { loadWorkspaceDocumentText } from './workspace-ai-pm-messages';
 import {
@@ -31,6 +32,17 @@ function removeKeysContaining(storage: Storage, fragment: string): void {
     if (key?.includes(fragment)) toRemove.push(key);
   }
   toRemove.forEach((key) => storage.removeItem(key));
+}
+
+/** True when demo workspace already has V3 loop progress — skip fresh wipe on reload. */
+export function hasDemoAiPmLoopProgress(projectId = DEMO_SESSION_PROJECT_ID): boolean {
+  if (typeof window === 'undefined') return false;
+  const loop = loadAiPmLoopState(projectId);
+  return (
+    loop.turns.length > 0 ||
+    Boolean(loop.lastDecision?.questionText?.trim()) ||
+    Boolean(loop.lockedAskSurface?.questionText?.trim())
+  );
 }
 
 /** Wipe all demo client state — must run before every demo entry. */
