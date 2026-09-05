@@ -44,6 +44,8 @@ export default defineConfig({
           NODE_OPTIONS: '--max-old-space-size=6144',
           V3_REVIEW_PIPELINE: 'true',
           NEXT_PUBLIC_V3_REVIEW_PIPELINE: 'true',
+          NEXT_PUBLIC_AI_PM_FOCUSED_UI: process.env.NEXT_PUBLIC_AI_PM_FOCUSED_UI ?? 'false',
+          AI_PM_FOCUSED_UI: process.env.AI_PM_FOCUSED_UI ?? 'false',
         },
       },
 });

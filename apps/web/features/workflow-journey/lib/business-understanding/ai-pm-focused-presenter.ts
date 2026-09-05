@@ -3,10 +3,14 @@
  * Converts V3 engine output → CEO language (latest snapshot only).
  */
 
-import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
 import type { NextQuestionDecision } from './decide-next-question-from-review';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import { runUnderstandingGate } from './ai-pm-understanding-gate';
+import {
+  buildCeoJudgmentSnapshot,
+  buildCeoUnderstandingSnapshot,
+  sanitizeCeoFacingCopy,
+} from './ai-pm-judgment-presenter';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 export type AiPmFocusedSnapshot = {
@@ -20,50 +24,24 @@ export type AiPmFocusedSnapshot = {
   questionText: string;
 };
 
-function isPending(value: string | null | undefined): boolean {
-  const v = value?.trim() ?? '';
-  return !v || v === SHARED_UNDERSTANDING_PENDING;
-}
-
 function buildBusinessUnderstandingText(living: LivingUnderstandingState): string {
-  const parts: string[] = [];
-
-  const business = living.spine.business?.trim();
-  if (!isPending(business)) {
-    parts.push(business!);
-  }
-
-  const customer = living.spine.customer?.trim();
-  if (!isPending(customer)) {
-    parts.push(`대상: ${customer}`);
-  }
-
-  const problem = living.spine.problem?.trim();
-  if (!isPending(problem)) {
-    parts.push(`문제: ${problem}`);
-  }
-
-  if (parts.length === 0) {
-    const oneLiner = living.claims.find(
-      (c) => c.fieldKey === 'businessOneLiner' && c.value?.trim(),
-    );
-    if (oneLiner?.value?.trim()) {
-      return oneLiner.value.trim();
-    }
-    return '아직 사업 설명을 확인 중입니다. 아래 질문에 답해 주시면 이해를 쌓겠습니다.';
-  }
-
-  return parts.join(' · ');
+  return sanitizeCeoFacingCopy(buildCeoUnderstandingSnapshot(living));
 }
 
 function buildConfirmPrompt(
   whyNow: string | null | undefined,
   lastDecision: NextQuestionDecision | null,
   gateRemaining: string | null,
+  judgment: string,
 ): string {
   const fromWhy = whyNow?.trim() || lastDecision?.whyNow?.trim();
-  if (fromWhy) return fromWhy;
-  if (gateRemaining) return gateRemaining;
+  if (fromWhy && !fromWhy.includes('targetGap') && !fromWhy.includes('CLOSED')) {
+    return sanitizeCeoFacingCopy(fromWhy);
+  }
+  if (gateRemaining) return sanitizeCeoFacingCopy(gateRemaining);
+  if (judgment.includes('불명확') || judgment.includes('확인')) {
+    return judgment;
+  }
   return '다음 판단을 위해 아래 내용을 확인하고 싶습니다.';
 }
 
@@ -89,31 +67,20 @@ export function buildAiPmFocusedSnapshot(input: {
 
   const businessUnderstanding = buildBusinessUnderstandingText(input.living);
 
-  let currentJudgment: string;
-  if (gate?.whatChanged) {
-    currentJudgment = gate.whatChanged;
-  } else if (input.lastTurn?.understandingDelta?.trim()) {
-    const delta = input.lastTurn.understandingDelta.trim();
-    const withoutCoverage = delta.replace(/이해 상태 커버리지\s*\d+%[^·]*/g, '').trim();
-    currentJudgment = withoutCoverage || input.living.judgmentSummary.slice(0, 200);
-  } else {
-    currentJudgment = input.living.judgmentSummary
-      .replace(/\s*이해 상태 커버리지\s*\d+%[^.]*\./, '')
-      .slice(0, 220)
-      .trim();
-  }
-
-  if (!currentJudgment || currentJudgment.length < 4) {
-    currentJudgment = '사업 이해를 쌓는 중입니다.';
-  }
+  const currentJudgment = sanitizeCeoFacingCopy(
+    buildCeoJudgmentSnapshot(input.living, gate),
+  );
 
   const confirmPrompt = buildConfirmPrompt(
     input.whyNow,
     input.lastDecision,
     gate?.remainingUncertainty ?? null,
+    currentJudgment,
   );
 
-  const questionText = input.displayQuestionText.trim() || '다음 확인이 필요합니다.';
+  const questionText = sanitizeCeoFacingCopy(
+    input.displayQuestionText.trim() || '다음 확인이 필요합니다.',
+  );
 
   return {
     businessUnderstanding,

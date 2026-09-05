@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach } from 'vitest';
 
 import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
 
@@ -15,6 +15,16 @@ import {
 } from '../ai-pm-question-policy';
 import { gapSemanticCluster } from '../ai-pm-semantic-clusters';
 import { runUnderstandingGate } from '../ai-pm-understanding-gate';
+import {
+  buildCeoJudgmentSnapshot,
+  buildCeoUnderstandingSnapshot,
+} from '../ai-pm-judgment-presenter';
+import { buildConversationMemoryFromSources } from '../build-conversation-memory';
+import { upsertConfirmedFact, emptyConversationMemory } from '../conversation-memory';
+import { resolveNextQuestionDecision } from '../resolve-next-question-decision';
+import { setV3ReviewPipelineForTest } from '../v3-review-pipeline';
+import { setAiPmFocusedUiForTest } from '../ai-pm-focused-ui';
+import { formatQuestionTrace } from '../ai-pm-question-trace';
 import type { NextQuestionDecision } from '../decide-next-question-from-review';
 import { evaluateStageReadiness, isStageBGap } from '../evaluate-stage-readiness';
 import { buildBusinessUnderstanding } from '../build-business-understanding';
@@ -192,6 +202,144 @@ describe('DAY 8-B Phase 2 — understanding gate', () => {
     const gate = runUnderstandingGate({ before, after });
     expect(gate.judgmentUpdate.trim().length).toBeGreaterThan(0);
     expect(gate.delta.summary.trim().length).toBeGreaterThan(0);
+  });
+});
+
+describe('DAY 8-B Phase 2 — judgment vs understanding separation', () => {
+  it('judgment is distinct from understanding and uses CEO language', () => {
+    const living = buildLivingUnderstandingState({
+      documentText: DOC,
+      understanding: testUnderstanding(),
+      memory: upsertConfirmedFact(
+        emptyConversationMemory('test'),
+        'customer',
+        '반찬가게·꽃집 등 직접 배송 소상공인',
+        'user_turn',
+      ),
+    });
+    const understanding = buildCeoUnderstandingSnapshot(living);
+    const judgment = buildCeoJudgmentSnapshot(living);
+
+    expect(understanding).toMatch(/소상공인|반찬|꽃|고객/);
+    expect(judgment).not.toBe(understanding);
+    expect(judgment).not.toMatch(/customerPersona|businessOneLiner|targetGap/i);
+    expect(judgment).toMatch(/구체화|불명확|확인|쌓|판단|가능/);
+  });
+});
+
+describe('DAY 8-B Phase 2 — A-U-J-Q Continuity (acceptance)', () => {
+  beforeEach(() => {
+    setV3ReviewPipelineForTest(true);
+    setAiPmFocusedUiForTest(true);
+  });
+
+  afterEach(() => {
+    setV3ReviewPipelineForTest(null);
+    setAiPmFocusedUiForTest(null);
+  });
+
+  it('Answer A → Understanding → Judgment → Question B continuity', () => {
+    const understandingDoc = testUnderstanding();
+    const answerA =
+      '반찬가게나 꽃집처럼 직접 배송하는 소상공인이 주문부터 배송까지 한 번에 관리할 수 있게 하는 서비스입니다.';
+
+    const livingBefore = buildLivingUnderstandingState({
+      documentText: DOC,
+      understanding: understandingDoc,
+    });
+
+    const turns = [
+      {
+        issueId: 'customer_definition' as const,
+        answer: answerA,
+        appliedAt: '2026-09-05T01:00:00.000Z',
+        targetGap: 'customerPersona',
+      },
+    ];
+    const memory = buildConversationMemoryFromSources({
+      projectId: 'aujq-test',
+      documentText: DOC,
+      turns,
+      entities: null,
+      previous: emptyConversationMemory('aujq-test'),
+    });
+
+    const livingAfter = buildLivingUnderstandingState({
+      documentText: DOC,
+      understanding: understandingDoc,
+      turns,
+      memory,
+    });
+
+    const decision = resolveNextQuestionDecision({
+      living: livingAfter,
+      turns,
+      memory,
+      gapState: createEmptyGapState(),
+    });
+
+    const snapshot = buildAiPmFocusedSnapshot({
+      living: livingAfter,
+      livingBefore,
+      lastTurn: turns[0]!,
+      lastDecision: decision && 'drivenByReview' in decision ? decision : null,
+      displayQuestionText: decision?.questionText ?? '',
+      whyNow: decision?.whyNow,
+    });
+
+    expect(snapshot.businessUnderstanding).toMatch(/소상공인|반찬|꽃|고객|배송/);
+    expect(snapshot.currentJudgment).not.toMatch(/customerPersona|businessOneLiner/i);
+    expect(snapshot.currentJudgment.length).toBeGreaterThan(8);
+    expect(snapshot.currentJudgment).not.toBe(snapshot.businessUnderstanding);
+    expect(snapshot.questionText.trim().length).toBeGreaterThan(10);
+
+    const trace = formatQuestionTrace({
+      ceoInput: answerA,
+      intent: 'ANSWER',
+      understanding: snapshot.businessUnderstanding,
+      judgment: snapshot.currentJudgment,
+      policy: 'bootstrap+continuity',
+      decision: decision && 'drivenByReview' in decision ? decision : null,
+      question: snapshot.questionText,
+    });
+    expect(trace).toMatch(/CEO:/);
+    expect(trace).toMatch(/Q=/);
+  });
+});
+
+describe('DAY 8-B Phase 2 — CEO-facing leak scan (programmatic)', () => {
+  const LEAK_PATTERNS = [
+    'businessOneLiner',
+    'customerPersona',
+    'problemJtbd',
+    'marketChannel',
+    'targetGap',
+    'gapState',
+    'Prior turn',
+  ];
+
+  it('focused snapshot contains zero internal keys', () => {
+    const living = buildLivingUnderstandingState({
+      documentText: DOC,
+      understanding: testUnderstanding(),
+      memory: upsertConfirmedFact(
+        emptyConversationMemory('leak-test'),
+        'customer',
+        '반찬가게·꽃집 등 직접 배송 소상공인',
+        'user_turn',
+      ),
+    });
+    const snapshot = buildAiPmFocusedSnapshot({
+      living,
+      lastTurn: null,
+      lastDecision: null,
+      displayQuestionText: '지금은 주문을 어디에서 받고 있나요?',
+      whyNow: '주문·배송 관리 방식 확인이 필요합니다.',
+    });
+    const joined = Object.values(snapshot).join('\n');
+    for (const leak of LEAK_PATTERNS) {
+      expect(joined).not.toContain(leak);
+    }
   });
 });
 

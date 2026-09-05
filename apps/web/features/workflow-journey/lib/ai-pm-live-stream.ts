@@ -14,7 +14,7 @@ export function getLiveStreamMessageKeys(agentIndex: number): string[] {
   };
 
   const count = counts[workId as keyof typeof counts] ?? 2;
-  return Array.from({ length: count }, (_, index) => `${workId}.${index + 1}`);
+  return Array.from({ length: count }, (_, index) => `${workId}_${index + 1}`);
 }
 
 export const LIVE_STREAM_INTERVAL_MS = 2000;
