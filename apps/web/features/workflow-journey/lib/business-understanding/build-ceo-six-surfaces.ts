@@ -64,13 +64,29 @@ const FORBIDDEN_UI_PATTERNS = [
   /\bsignal\s*[≥>=]/i,
   /\basked-slot\b/i,
   /\brouting\b/i,
+  /Prior turn CLOSED/i,
+  /preserved in review/i,
+  /Multi-fact utterance/i,
+  /technology ≠ customer/i,
+  /\bmergeable\b/i,
+  /\bCONTRADICTED\b/,
+  /\bPARTIAL\b/,
+  /\bOPEN\b.*\bgap\b/i,
 ];
+
+/** Engine / review pipeline copy — never show on CEO surfaces. */
+export function isEngineMetaCopy(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return true;
+  return FORBIDDEN_UI_PATTERNS.some((pattern) => pattern.test(trimmed));
+}
 
 export function isUserFacingSurfaceCopy(text: string): boolean {
   const trimmed = text.trim();
   if (!trimmed) return false;
   if (isInternalGapId(trimmed)) return false;
-  return !FORBIDDEN_UI_PATTERNS.some((pattern) => pattern.test(trimmed));
+  if (isEngineMetaCopy(trimmed)) return false;
+  return true;
 }
 
 function isInternalGapId(text: string): boolean {
@@ -136,7 +152,8 @@ function formatAiUnderstanding(review: AnswerReview): string | null {
     if (labels.length > 0) return labels.join('. ');
   }
   const rationale = review.rationale?.trim();
-  return rationale || null;
+  if (rationale && isUserFacingSurfaceCopy(rationale)) return rationale;
+  return null;
 }
 
 function confirmedFromArtifacts(
@@ -158,9 +175,7 @@ function confirmedFromArtifacts(
     for (const record of Object.values(gapState.gaps)) {
       if (record.completeness !== 'CLOSED') continue;
       const evidence = record.evidence.map((e) => e.value).filter(Boolean).join(', ');
-      const value =
-        sanitizeUserFacingValue(evidence) ??
-        sanitizeUserFacingValue(record.rationale?.trim() ?? '');
+      const value = sanitizeUserFacingValue(evidence);
       const line = value
         ? `확인됨: ${gapLabel(record.gapId)} → ${value}`
         : `확인됨: ${gapLabel(record.gapId)}`;
@@ -216,16 +231,14 @@ function buildSurfaceFive(input: {
     remount && isPersistedTargetAskable(remountTarget, gapState) ? remount : null;
 
   const actionRationale =
-    lastDecision?.actionRationale?.trim() ||
-    safeRemount?.rationale?.trim() ||
-    lockedAskSurface?.rationale?.trim() ||
-    '';
+    [lastDecision?.actionRationale, safeRemount?.rationale, lockedAskSurface?.rationale]
+      .map((s) => s?.trim())
+      .find((s) => s && isUserFacingSurfaceCopy(s)) ?? '';
 
   const whyNow =
-    lastDecision?.whyNow?.trim() ||
-    safeRemount?.whyNow?.trim() ||
-    lockedAskSurface?.whyNow?.trim() ||
-    '';
+    [lastDecision?.whyNow, safeRemount?.whyNow, lockedAskSurface?.whyNow]
+      .map((s) => s?.trim())
+      .find((s) => s && isUserFacingSurfaceCopy(s)) ?? '';
 
   const questionText =
     lastDecision?.questionText?.trim() ||
