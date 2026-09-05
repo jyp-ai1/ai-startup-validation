@@ -30,6 +30,7 @@ import { shouldSkipLiveRankOnRemount } from '../../lib/business-understanding/re
 import { resolveV3DisplayPriority } from '../../lib/business-understanding/v3-legacy-bypass-guards';
 import { isV3ReviewPipelineActive } from '../../lib/business-understanding/v3-review-pipeline';
 import { isAiPmFocusedUiActive } from '../../lib/business-understanding/ai-pm-focused-ui';
+import { isAiPmJudgmentPolicyV1Active } from '../../lib/business-understanding/ai-pm-judgment-policy-v1';
 import { buildAiPmFocusedSnapshot } from '../../lib/business-understanding/ai-pm-focused-presenter';
 import {
   classifyAiPmCeoIntent,
@@ -333,6 +334,35 @@ export function WorkspaceAiPmLoopPanel({
     [conversationMemory, documentText, entities, loopState, understanding],
   );
 
+  /** DAY 8-D Phase A — living state before last turn for dynamic judgment delta. */
+  const livingBeforeForSnapshot = useMemo(() => {
+    if (!isAiPmJudgmentPolicyV1Active() || loopState.turns.length === 0) {
+      return null;
+    }
+    const priorTurns = loopState.turns.slice(0, -1);
+    const priorMemory = buildConversationMemoryFromSources({
+      projectId: projectId ?? 'default',
+      documentText: documentText ?? '',
+      turns: priorTurns,
+      entities,
+      previous: loadConversationMemory(projectId),
+    });
+    return buildLivingUnderstandingState({
+      documentText: documentText ?? '',
+      understanding,
+      entities,
+      turns: priorTurns,
+      memory: priorMemory,
+      resolvedIssueIds: getResolvedIssueIds({ ...loopState, turns: priorTurns }),
+    });
+  }, [
+    documentText,
+    entities,
+    loopState,
+    projectId,
+    understanding,
+  ]);
+
   const pendingWrongSlotReask = useMemo(
     () => hasPendingWrongSlotReask(loopState.turns),
     [loopState.turns],
@@ -601,6 +631,7 @@ export function WorkspaceAiPmLoopPanel({
     if (!focusedUiActive) return null;
     return buildAiPmFocusedSnapshot({
       living: livingState,
+      livingBefore: livingBeforeForSnapshot,
       lastTurn,
       lastDecision: loopState.lastDecision ?? null,
       displayQuestionText,
@@ -612,6 +643,7 @@ export function WorkspaceAiPmLoopPanel({
   }, [
     focusedUiActive,
     livingState,
+    livingBeforeForSnapshot,
     lastTurn,
     loopState.lastDecision,
     displayQuestionText,
