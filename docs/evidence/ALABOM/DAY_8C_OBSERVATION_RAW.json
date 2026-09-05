@@ -1,0 +1,188 @@
+{
+  "productionSha": "bb5e310b563bfebf7edbcee58a1d4aff307d7bee",
+  "observationMinutes": 1,
+  "totalTurns": 5,
+  "turns": [
+    {
+      "turn": 0,
+      "label": "bootstrap_first_question",
+      "ceoAnswer": null,
+      "questionAfter": "한 줄로, 무엇을 누구에게 제공하는 사업인가요?",
+      "focused": true,
+      "business": "AI가 이해한 현재 사업\n\n스마트PM 핵심 문제는 문제: 전략 검토가 회의마다 리셋됨입니다.",
+      "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+      "confirm": "지금 확인할 것\n\n한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.\n\n한 줄로, 무엇을 누구에게 제공하는 사업인가요?",
+      "question": "한 줄로, 무엇을 누구에게 제공하는 사업인가요?"
+    },
+    {
+      "turn": 1,
+      "label": "first_business_answer",
+      "ceoAnswer": "반찬가게와 꽃집에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CEO가 전략 회의마다 처음부터 정리하는 문제를 줄이려고 합니다.",
+      "questionBefore": "한 줄로, 무엇을 누구에게 제공하는 사업인가요?",
+      "questionAfter": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+      "understanding": "AI가 이해한 현재 사업\n\n스마트PM 핵심 문제는 반찬가게와 꽃집에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CE…입니다.",
+      "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+      "confirmPrompt": "지금 확인할 것\n\n해결 방식(솔루션)이 비면 문제–제공가치 연결을 판단할 수 없습니다.\n\n문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+      "researchStubVisible": false,
+      "questionChanged": true
+    },
+    {
+      "turn": 2,
+      "label": "competitor_answer",
+      "ceoAnswer": "Notion, Linear, Jira 같은 도구는 있지만 AI PM 관점에서 전략 검토를 이어주는 서비스는 없다고 봅니다.",
+      "questionBefore": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+      "questionAfter": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "understanding": "AI가 이해한 현재 사업\n\n스마트PM 핵심 문제는 반찬가게와 꽃집에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CE…입니다. 제공 가치는 Notion, Linear, Jira 같은 도구는 있지만 AI PM 관점에서 전략 검토를 이어주는 서비스는 없다고 봅니다.입니다.",
+      "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+      "confirmPrompt": "지금 확인할 것\n\n고객이 넓거나 미정이면 검증·메시지 설계가 흔들립니다. 가장 필요로 하는 사람을 지금 좁힙니다.\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "researchStubVisible": false,
+      "questionChanged": true
+    },
+    {
+      "turn": 3,
+      "label": "ceo_correction",
+      "ceoAnswer": "아니요. 제가 말한 핵심 고객은 꽃집이 아니라 반찬가게입니다. 꽃집은 부가 타깃이에요.",
+      "questionBefore": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "questionAfter": "서비스 비용은 누가 지불하나요?",
+      "understanding": "AI가 이해한 현재 사업\n\n스마트PM 주요 고객은 반찬가게입니다. 핵심 문제는 반찬가게에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CE…입니다. 제공 가치는 Notion, Linear, Jira 같은 도구는 있지만 AI PM 관점에서 전략 검토를 이어주는 서비스는 없다고 봅니다.입니다.",
+      "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+      "confirmPrompt": "지금 확인할 것\n\n누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.\n\n서비스 비용은 누가 지불하나요?",
+      "researchStubVisible": false,
+      "questionChanged": true
+    },
+    {
+      "turn": 4,
+      "label": "research_request",
+      "ceoAnswer": "경쟁사 찾아줘",
+      "questionBefore": "서비스 비용은 누가 지불하나요?",
+      "questionAfter": "서비스 비용은 누가 지불하나요?",
+      "understanding": "AI가 이해한 현재 사업\n\n스마트PM 주요 고객은 반찬가게입니다. 핵심 문제는 반찬가게에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CE…입니다. 제공 가치는 Notion, Linear, Jira 같은 도구는 있지만 AI PM 관점에서 전략 검토를 이어주는 서비스는 없다고 봅니다.입니다.",
+      "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+      "confirmPrompt": "지금 확인할 것\n\n누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.\n\n서비스 비용은 누가 지불하나요?",
+      "researchStubVisible": true,
+      "questionChanged": false,
+      "researchQuestionUnchanged": true
+    }
+  ],
+  "log": [
+    {
+      "at": "2026-09-05T16:39:40.370Z",
+      "section": "landing",
+      "url": "https://ai-startup-validation-tau.vercel.app/",
+      "title": "ALABOM — 사업, 시작하기 전에 알아봄. | ALABOM"
+    },
+    {
+      "at": "2026-09-05T16:39:46.748Z",
+      "section": "workspace_entry",
+      "url": "https://ai-startup-validation-tau.vercel.app/workspace?demo=guided&sample=saas&fresh=1"
+    },
+    {
+      "at": "2026-09-05T16:39:52.275Z",
+      "section": "turn",
+      "turn": 0,
+      "label": "bootstrap_first_question",
+      "ceoAnswer": null,
+      "questionAfter": "한 줄로, 무엇을 누구에게 제공하는 사업인가요?",
+      "focused": true,
+      "business": "AI가 이해한 현재 사업\n\n스마트PM 핵심 문제는 문제: 전략 검토가 회의마다 리셋됨입니다.",
+      "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+      "confirm": "지금 확인할 것\n\n한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.\n\n한 줄로, 무엇을 누구에게 제공하는 사업인가요?",
+      "question": "한 줄로, 무엇을 누구에게 제공하는 사업인가요?"
+    },
+    {
+      "at": "2026-09-05T16:39:55.319Z",
+      "section": "turn",
+      "turn": 1,
+      "label": "first_business_answer",
+      "ceoAnswer": "반찬가게와 꽃집에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CEO가 전략 회의마다 처음부터 정리하는 문제를 줄이려고 합니다.",
+      "questionBefore": "한 줄로, 무엇을 누구에게 제공하는 사업인가요?",
+      "questionAfter": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+      "understanding": "AI가 이해한 현재 사업\n\n스마트PM 핵심 문제는 반찬가게와 꽃집에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CE…입니다.",
+      "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+      "confirmPrompt": "지금 확인할 것\n\n해결 방식(솔루션)이 비면 문제–제공가치 연결을 판단할 수 없습니다.\n\n문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+      "researchStubVisible": false,
+      "questionChanged": true
+    },
+    {
+      "at": "2026-09-05T16:39:58.556Z",
+      "section": "turn",
+      "turn": 2,
+      "label": "competitor_answer",
+      "ceoAnswer": "Notion, Linear, Jira 같은 도구는 있지만 AI PM 관점에서 전략 검토를 이어주는 서비스는 없다고 봅니다.",
+      "questionBefore": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+      "questionAfter": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "understanding": "AI가 이해한 현재 사업\n\n스마트PM 핵심 문제는 반찬가게와 꽃집에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CE…입니다. 제공 가치는 Notion, Linear, Jira 같은 도구는 있지만 AI PM 관점에서 전략 검토를 이어주는 서비스는 없다고 봅니다.입니다.",
+      "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+      "confirmPrompt": "지금 확인할 것\n\n고객이 넓거나 미정이면 검증·메시지 설계가 흔들립니다. 가장 필요로 하는 사람을 지금 좁힙니다.\n\n이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "researchStubVisible": false,
+      "questionChanged": true
+    },
+    {
+      "at": "2026-09-05T16:40:01.526Z",
+      "section": "turn",
+      "turn": 3,
+      "label": "ceo_correction",
+      "ceoAnswer": "아니요. 제가 말한 핵심 고객은 꽃집이 아니라 반찬가게입니다. 꽃집은 부가 타깃이에요.",
+      "questionBefore": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "questionAfter": "서비스 비용은 누가 지불하나요?",
+      "understanding": "AI가 이해한 현재 사업\n\n스마트PM 주요 고객은 반찬가게입니다. 핵심 문제는 반찬가게에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CE…입니다. 제공 가치는 Notion, Linear, Jira 같은 도구는 있지만 AI PM 관점에서 전략 검토를 이어주는 서비스는 없다고 봅니다.입니다.",
+      "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+      "confirmPrompt": "지금 확인할 것\n\n누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.\n\n서비스 비용은 누가 지불하나요?",
+      "researchStubVisible": false,
+      "questionChanged": true
+    },
+    {
+      "at": "2026-09-05T16:40:03.858Z",
+      "section": "turn",
+      "turn": 4,
+      "label": "research_request",
+      "ceoAnswer": "경쟁사 찾아줘",
+      "questionBefore": "서비스 비용은 누가 지불하나요?",
+      "questionAfter": "서비스 비용은 누가 지불하나요?",
+      "understanding": "AI가 이해한 현재 사업\n\n스마트PM 주요 고객은 반찬가게입니다. 핵심 문제는 반찬가게에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CE…입니다. 제공 가치는 Notion, Linear, Jira 같은 도구는 있지만 AI PM 관점에서 전략 검토를 이어주는 서비스는 없다고 봅니다.입니다.",
+      "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+      "confirmPrompt": "지금 확인할 것\n\n누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.\n\n서비스 비용은 누가 지불하나요?",
+      "researchStubVisible": true,
+      "questionChanged": false
+    },
+    {
+      "at": "2026-09-05T16:40:06.931Z",
+      "section": "persistence_draft",
+      "draftText": "DAY8C draft test — 소상공인 배송 관리",
+      "draftRestored": "DAY8C draft test — 소상공인 배송 관리",
+      "pass": true
+    },
+    {
+      "at": "2026-09-05T16:40:10.162Z",
+      "section": "persistence_post_answer",
+      "before": {
+        "focused": true,
+        "business": "AI가 이해한 현재 사업\n\n스마트PM 주요 고객은 반찬가게입니다. 핵심 문제는 반찬가게에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CE…입니다. 제공 가치는 Notion, Linear, Jira 같은 도구는 있지만 AI PM 관점에서 전략 검토를 이어주는 서비스는 없다고 봅니다.입니다.",
+        "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+        "confirm": "지금 확인할 것\n\n누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.\n\n서비스 비용은 누가 지불하나요?",
+        "question": "서비스 비용은 누가 지불하나요?"
+      },
+      "after": {
+        "focused": true,
+        "business": "AI가 이해한 현재 사업\n\n스마트PM 주요 고객은 반찬가게입니다. 핵심 문제는 반찬가게에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CE…입니다. 제공 가치는 Notion, Linear, Jira 같은 도구는 있지만 AI PM 관점에서 전략 검토를 이어주는 서비스는 없다고 봅니다.입니다.",
+        "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+        "confirm": "지금 확인할 것\n\n누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.\n\n서비스 비용은 누가 지불하나요?",
+        "question": "서비스 비용은 누가 지불하나요?"
+      },
+      "qBefore": "서비스 비용은 누가 지불하나요?",
+      "qAfter": "서비스 비용은 누가 지불하나요?"
+    },
+    {
+      "at": "2026-09-05T16:40:13.180Z",
+      "section": "persistence_reentry",
+      "reentry": {
+        "focused": true,
+        "business": "AI가 이해한 현재 사업\n\n스마트PM 주요 고객은 반찬가게입니다. 핵심 문제는 반찬가게에 직접 배송하는 소상공인을 위한 주문·배송 관리 SaaS입니다. CE…입니다. 제공 가치는 Notion, Linear, Jira 같은 도구는 있지만 AI PM 관점에서 전략 검토를 이어주는 서비스는 없다고 봅니다.입니다.",
+        "judgment": "현재 판단\n\n경쟁·대안 환경을 더 구체적으로 알면 차별 포인트 판단이 가능합니다.",
+        "confirm": "지금 확인할 것\n\n누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.\n\n서비스 비용은 누가 지불하나요?",
+        "question": "서비스 비용은 누가 지불하나요?"
+      },
+      "reentryQ": "서비스 비용은 누가 지불하나요?"
+    }
+  ]
+}
