@@ -428,10 +428,11 @@ function buildContradictions(
     null;
   if (!prior) return [];
 
+  const conflictGapId = gapForFactKey(semantic.factKey) ?? askedGapId;
   return [
     {
       factKey: semantic.factKey,
-      gapId: askedGapId,
+      gapId: conflictGapId,
       priorValue: prior,
       newValue: semantic.value ?? '',
       resolutionRequired: true,
@@ -458,14 +459,13 @@ function seedPriorClosedVerdicts(
 ): void {
   for (const gapId of priorClosedGaps ?? []) {
     const existing = verdicts[gapId];
-    if (existing?.completeness === 'CLOSED') continue;
+    // Gap addressed this turn (e.g. CONTRADICTED) — do not re-seal as CLOSED.
+    if (existing) continue;
     verdicts[gapId] = {
       gapId,
       completeness: 'CLOSED',
-      rationale: existing
-        ? 'Prior turn CLOSED — preserved in review (PR2 no re-open).'
-        : 'Prior turn CLOSED — preserved in review.',
-      factKeys: existing?.factKeys ?? [],
+      rationale: 'Prior turn CLOSED — preserved in review.',
+      factKeys: [],
     };
   }
 }
@@ -530,6 +530,18 @@ function buildGapVerdicts(
       rationale: `Multi-fact utterance — ${fact.key}`,
       factKeys: [fact.key],
     };
+  }
+
+  if (semantic.quality === 'CONTRADICTORY' && semantic.factKey) {
+    const conflictGapId = gapForFactKey(semantic.factKey);
+    if (conflictGapId) {
+      verdicts[conflictGapId] = {
+        gapId: conflictGapId,
+        completeness: 'CONTRADICTED',
+        rationale: semantic.rationale,
+        factKeys: [semantic.factKey],
+      };
+    }
   }
 
   seedPriorClosedVerdicts(verdicts, priorClosedGaps);
@@ -641,8 +653,16 @@ export function buildAnswerReview(input: BuildAnswerReviewInput): BuildAnswerRev
     input.priorClosedGaps,
   );
   const askedCompleteness = gapVerdicts[askedGapId]?.completeness ?? 'OPEN';
-  const recommendedAction = deriveRecommendedAction(askedCompleteness, semantic, trimmed);
-  const { known, unconfirmed, unknown } = buildKnownUnconfirmedUnknown(askedGapId, gapVerdicts);
+  const reviewAskedGapId =
+    contradictions[0]?.gapId?.trim() || askedGapId;
+  const recommendedAction =
+    contradictions.length > 0
+      ? 'challenge'
+      : deriveRecommendedAction(askedCompleteness, semantic, trimmed);
+  const { known, unconfirmed, unknown } = buildKnownUnconfirmedUnknown(
+    reviewAskedGapId,
+    gapVerdicts,
+  );
 
   const createdAt = new Date().toISOString();
   const review: AnswerReview = {
@@ -650,7 +670,7 @@ export function buildAnswerReview(input: BuildAnswerReviewInput): BuildAnswerRev
     turnId: input.turnId,
     sourceTurnId: input.turnId,
     createdAt,
-    askedGapId,
+    askedGapId: reviewAskedGapId,
     askedQuestionText: input.askedQuestionText,
     askedIssueId: input.askedIssueId,
     userAnswer: trimmed,

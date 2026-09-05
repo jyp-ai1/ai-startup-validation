@@ -7,8 +7,10 @@ import type { AnswerReview } from '@repo/types/domain/answer-review';
 import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
 
 import type { NextQuestionDecision } from './decide-next-question-from-review';
+import { founderFieldLabel } from './founder-field-labels';
 import type { LockedAskSurface } from './question-transition-lock';
 import { resolveRemountAskSurface } from './resolve-remount-ask-surface';
+import { isGapAskable } from './update-gap-state-from-review';
 import type { AiPmLoopState, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 /** Surface ⑤ internal order: actionRationale → whyNow → questionText */
@@ -87,6 +89,34 @@ function sanitizeUserFacingValue(raw: string): string | null {
   return trimmed;
 }
 
+function isPersistedTargetAskable(
+  targetGap: string | undefined,
+  gapState?: GapKnowledgeState,
+): boolean {
+  const trimmed = targetGap?.trim();
+  if (!trimmed || !gapState) return true;
+  return isGapAskable(trimmed, gapState);
+}
+
+function sanitizePersistedDecision(
+  decision: NextQuestionDecision | null | undefined,
+  gapState?: GapKnowledgeState,
+): NextQuestionDecision | null | undefined {
+  if (!decision) return decision;
+  const target = decision.targetGapId ?? decision.targetGap;
+  if (!isPersistedTargetAskable(target, gapState)) return null;
+  return decision;
+}
+
+function sanitizeLockedAskSurface(
+  lock: LockedAskSurface | null | undefined,
+  gapState?: GapKnowledgeState,
+): LockedAskSurface | null | undefined {
+  if (!lock) return lock;
+  if (!isPersistedTargetAskable(lock.targetGap, gapState)) return null;
+  return lock;
+}
+
 function formatAiUnderstanding(review: AnswerReview): string | null {
   if (review.extractedFacts.length > 0) {
     const values = review.extractedFacts
@@ -95,7 +125,16 @@ function formatAiUnderstanding(review: AnswerReview): string | null {
     if (values.length === 1) return values[0]!;
     if (values.length > 1) return values.join('; ');
   }
-  if (review.known.length > 0) return review.known.join('. ');
+  if (review.known.length > 0) {
+    const labels = review.known
+      .map((item) => {
+        const trimmed = item.trim();
+        if (!trimmed) return null;
+        return isInternalGapId(trimmed) ? founderFieldLabel(trimmed) : trimmed;
+      })
+      .filter(Boolean) as string[];
+    if (labels.length > 0) return labels.join('. ');
+  }
   const rationale = review.rationale?.trim();
   return rationale || null;
 }
@@ -162,28 +201,36 @@ function buildSurfaceFive(input: {
   lastDecision?: NextQuestionDecision | null;
   lockedAskSurface?: LockedAskSurface | null;
   loop?: AiPmLoopState;
+  gapState?: GapKnowledgeState;
 }): CeoSurfaceFive {
+  const gapState = input.gapState ?? input.loop?.gapState;
+  const lastDecision = sanitizePersistedDecision(input.lastDecision, gapState);
+  const lockedAskSurface = sanitizeLockedAskSurface(input.lockedAskSurface, gapState);
+
   const remount =
     input.loop != null
       ? resolveRemountAskSurface(input.loop)
       : null;
+  const remountTarget = remount?.targetGap;
+  const safeRemount =
+    remount && isPersistedTargetAskable(remountTarget, gapState) ? remount : null;
 
   const actionRationale =
-    input.lastDecision?.actionRationale?.trim() ||
-    remount?.rationale?.trim() ||
-    input.lockedAskSurface?.rationale?.trim() ||
+    lastDecision?.actionRationale?.trim() ||
+    safeRemount?.rationale?.trim() ||
+    lockedAskSurface?.rationale?.trim() ||
     '';
 
   const whyNow =
-    input.lastDecision?.whyNow?.trim() ||
-    remount?.whyNow?.trim() ||
-    input.lockedAskSurface?.whyNow?.trim() ||
+    lastDecision?.whyNow?.trim() ||
+    safeRemount?.whyNow?.trim() ||
+    lockedAskSurface?.whyNow?.trim() ||
     '';
 
   const questionText =
-    input.lastDecision?.questionText?.trim() ||
-    remount?.questionText?.trim() ||
-    input.lockedAskSurface?.questionText?.trim() ||
+    lastDecision?.questionText?.trim() ||
+    safeRemount?.questionText?.trim() ||
+    lockedAskSurface?.questionText?.trim() ||
     '';
 
   return { actionRationale, whyNow, questionText };
@@ -198,7 +245,16 @@ export function buildCeoSixSurfaces(input: {
   loop?: AiPmLoopState;
 }): CeoSixSurfaces {
   const review = input.lastTurn?.review;
-  const whyAsk = buildSurfaceFive(input);
+  const gapState = input.gapState ?? input.loop?.gapState;
+  const whyAsk = buildSurfaceFive({
+    ...input,
+    lastDecision: sanitizePersistedDecision(input.lastDecision ?? input.loop?.lastDecision, gapState),
+    lockedAskSurface: sanitizeLockedAskSurface(
+      input.lockedAskSurface ?? input.loop?.lockedAskSurface,
+      gapState,
+    ),
+    gapState,
+  });
   const nextQuestion = whyAsk.questionText || null;
 
   return {

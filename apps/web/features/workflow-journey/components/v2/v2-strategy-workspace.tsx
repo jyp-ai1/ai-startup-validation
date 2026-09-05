@@ -87,6 +87,7 @@ import {
 } from '../../lib/business-understanding/workspace-state-presenters';
 import {
   clearAllDemoClientState,
+  hasDemoAiPmLoopProgress,
   loadPersistedReviewCount,
   savePersistedReviewCount,
 } from '../../lib/demo-guided-session';
@@ -300,7 +301,7 @@ export function V2StrategyWorkspaceView({
               : '')
           : '';
 
-      if (demoFresh) {
+      if (demoFresh && !hasDemoAiPmLoopProgress(DEMO_SESSION_PROJECT_ID)) {
         clearAllDemoClientState(DEMO_SESSION_PROJECT_ID);
         if (preservedCustomDocument) {
           sessionStorage.setItem(DEMO_CUSTOM_DOCUMENT_KEY, preservedCustomDocument);

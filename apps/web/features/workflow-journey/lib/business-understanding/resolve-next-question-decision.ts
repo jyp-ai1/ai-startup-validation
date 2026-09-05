@@ -16,7 +16,7 @@ import {
   decideNextQuestion,
   type QuestionDecision,
 } from './question-decision-engine';
-import { createEmptyGapState } from './update-gap-state-from-review';
+import { createEmptyGapState, isGapAskable } from './update-gap-state-from-review';
 import { isV3ReviewPipelineActive } from './v3-review-pipeline';
 import {
   loadAiPmLoopState,
@@ -79,6 +79,19 @@ export function resolveNextQuestionDecision(
     input.projectId
   ) {
     patchAiPmLoopState({ lastDecision: decision }, input.projectId);
+  } else if (input.projectId) {
+    const persisted = loadAiPmLoopState(input.projectId);
+    const staleGap =
+      persisted.lastDecision?.targetGapId?.trim() ||
+      persisted.lastDecision?.targetGap?.trim() ||
+      persisted.lockedAskSurface?.targetGap?.trim() ||
+      null;
+    if (staleGap && !isGapAskable(staleGap, gapState)) {
+      patchAiPmLoopState(
+        { lastDecision: undefined, lockedAskSurface: undefined },
+        input.projectId,
+      );
+    }
   }
 
   return decision;
