@@ -22,6 +22,11 @@ import {
   parseNotXButYCorrection,
   shouldSkipContradictionForCorrection,
 } from './ai-pm-correction-semantics';
+import {
+  applyAnswerFirstRouting,
+  shouldSkipAskedGapForceFill,
+  type AnswerSlotConflict,
+} from './ai-pm-answer-first-routing';
 
 export type AnswerIntent =
   | 'business_fact'
@@ -51,6 +56,8 @@ export type SemanticInterpretation = {
   displayOnly: boolean;
   rationale: string;
   quality: ReturnType<typeof evaluateAnswerQuality>['quality'];
+  /** DAY 8-D Phase B — set when answer semantics differ from asked gap */
+  slotConflict?: AnswerSlotConflict | null;
 };
 
 const WHY_META_RE =
@@ -128,7 +135,7 @@ const FACT_ROUTE: Array<{
   {
     key: 'market',
     issueId: 'market_validation',
-    re: /(시장|수요|채널|tam|sam|증거|검증|얼마나\s*많)/i,
+    re: /(시장|수요|채널|tam|sam|증거|검증|얼마나\s*많|전화\s*주문|네이버|카카오|온라인\s*주문|주문\s*채널)/i,
     weight: 9,
   },
   {
@@ -140,8 +147,8 @@ const FACT_ROUTE: Array<{
   {
     key: 'business',
     issueId: 'bm_design',
-    re: /(사업\s*(한\s*줄|요약)|한\s*줄로|우리는\s*.*제공|플랫폼|서비스는)/i,
-    weight: 7,
+    re: /(사업\s*(한\s*줄|요약)|한\s*줄로|우리는\s*.*제공|플랫폼|서비스는|직접\s*배송|배송은?\s*직접|물류|delivery)/i,
+    weight: 8,
   },
 ];
 
@@ -430,6 +437,16 @@ export function interpretAnswerSemantics(input: {
     }
   }
 
+  const topRouteScore = top?.score ?? 0;
+  const skipAskedGapForceFill = shouldSkipAskedGapForceFill({
+    askedGap,
+    primaryFactKey: factKey,
+    facts,
+    topRouteScore,
+    isCorrection,
+    isCustomerFieldCorrection: isCorrection && isCustomerFieldCorrection(trimmed),
+  });
+
   // Asked-gap weak prior for follow-ups — skip when strong competing cue
   // Core Final Stabilization — honor asked gap so answers close the right slot (no payer→problem steal)
   // DAY 8-B P0 — customer CORRECT revises customer claim (never problem-slot append)
@@ -472,7 +489,7 @@ export function interpretAnswerSemantics(input: {
     } else {
       facts = facts.filter((f) => f.key !== 'problem' && f.key !== 'customer');
     }
-  } else if (askedGap === 'alternativesCompetitors') {
+  } else if (askedGap === 'alternativesCompetitors' && !skipAskedGapForceFill) {
     const competitorOnSlot = isOnSlotCompetitorAnswer(trimmed) || hasCompetitorCue;
     if (competitorOnSlot) {
       factKey = 'competitor';
@@ -489,7 +506,7 @@ export function interpretAnswerSemantics(input: {
       }
       facts = facts.filter((f) => f.key !== 'business');
     }
-  } else if (askedGap === 'customerPersona') {
+  } else if (askedGap === 'customerPersona' && !skipAskedGapForceFill) {
     const personaSegmentCue = hasPersonaSegmentCue(trimmed);
     const customerCue = hasCustomerPersonaCue(trimmed);
     const relevanceDominant = isRelevanceDominantOnPersonaAsk(trimmed);
@@ -548,13 +565,13 @@ export function interpretAnswerSemantics(input: {
       }
       facts = facts.filter((f) => f.key !== 'customer' && f.key !== 'problem');
     }
-  } else if (askedGap === 'solution') {
+  } else if (askedGap === 'solution' && !skipAskedGapForceFill) {
     factKey = 'business';
     resolvedIssueId = 'problem_definition';
     if (!facts.some((f) => f.key === 'business')) {
       facts = [{ key: 'business', issueId: 'problem_definition' }, ...facts];
     }
-  } else if (askedGap === 'executionConstraints') {
+  } else if (askedGap === 'executionConstraints' && !skipAskedGapForceFill) {
     factKey = 'defensibility';
     resolvedIssueId = 'competitor_analysis';
     if (!facts.some((f) => f.key === 'defensibility')) {
@@ -688,7 +705,7 @@ export function interpretAnswerSemantics(input: {
   const resolvedValue =
     isCorrection && factKey ? extractCorrectedFactValue(factKey, trimmed) : trimmed;
 
-  return emptyInterpretation({
+  const base = emptyInterpretation({
     intent: isCorrection ? 'correction' : 'business_fact',
     factKey,
     resolvedIssueId,
@@ -701,6 +718,28 @@ export function interpretAnswerSemantics(input: {
       : `약한 prior: asked issue → ${factKey}`,
     quality: quality.quality,
   });
+
+  const routed = applyAnswerFirstRouting({
+    askedGap,
+    answer: trimmed,
+    semantic: base,
+    topRouteScore,
+    isCorrection,
+    isCustomerFieldCorrection: isCorrection && isCustomerFieldCorrection(trimmed),
+  });
+
+  return {
+    intent: routed.intent,
+    factKey: routed.factKey,
+    resolvedIssueId: routed.resolvedIssueId,
+    facts: routed.facts,
+    value: routed.value,
+    mergeable: routed.mergeable,
+    displayOnly: routed.displayOnly,
+    rationale: routed.rationale,
+    quality: routed.quality,
+    slotConflict: routed.slotConflict,
+  };
 }
 
 export function issueIdForFactKey(key: ConversationFactKey): AiPmLoopIssueId | null {

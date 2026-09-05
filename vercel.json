@@ -4,6 +4,7 @@
   "buildCommand": "pnpm --filter web build",
   "env": {
     "V3_REVIEW_PIPELINE": "true",
-    "AI_PM_FOCUSED_UI": "true"
+    "AI_PM_FOCUSED_UI": "true",
+    "AI_PM_JUDGMENT_POLICY_V1": "true"
   }
 }
