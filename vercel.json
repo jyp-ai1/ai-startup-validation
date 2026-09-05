@@ -1,5 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "pnpm install",
-  "buildCommand": "pnpm --filter web build"
+  "buildCommand": "pnpm --filter web build",
+  "env": {
+    "V3_REVIEW_PIPELINE": "true",
+    "AI_PM_FOCUSED_UI": "true"
+  }
 }
