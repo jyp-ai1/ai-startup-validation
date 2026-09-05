@@ -5,6 +5,7 @@
 
 import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
 import { founderFieldLabel } from './founder-field-labels';
+import { scrubRejectedCustomerMention } from './ai-pm-correction-semantics';
 import type { LivingClaim, LivingUnderstandingState } from './living-understanding-state';
 import type { UnderstandingGateResult } from './ai-pm-understanding-gate';
 
@@ -24,6 +25,15 @@ function isUserConfirmed(claim: LivingClaim | undefined): boolean {
   );
 }
 
+function applyCorrectionRevisionToLine(
+  living: LivingUnderstandingState,
+  line: string,
+): string {
+  const revision = living.customerCorrectionRevision;
+  if (!revision) return line;
+  return scrubRejectedCustomerMention(line, revision);
+}
+
 /** CEO-facing understanding — what AI currently knows about the business. */
 export function buildCeoUnderstandingSnapshot(
   living: LivingUnderstandingState,
@@ -32,24 +42,39 @@ export function buildCeoUnderstandingSnapshot(
 
   const business = living.spine.business?.trim();
   if (!isPending(business)) {
-    lines.push(business!);
+    lines.push(applyCorrectionRevisionToLine(living, business!));
   }
 
   const customer = living.spine.customer?.trim();
   if (!isPending(customer)) {
-    lines.push(`주요 고객은 ${customer.endsWith('입니다') || customer.endsWith('이다') ? customer : `${customer}입니다`}.`);
+    lines.push(
+      applyCorrectionRevisionToLine(
+        living,
+        `주요 고객은 ${customer!.endsWith('입니다') || customer!.endsWith('이다') ? customer! : `${customer}입니다`}.`,
+      ),
+    );
   }
 
   const problem = living.spine.problem?.trim();
   if (!isPending(problem)) {
-    lines.push(`핵심 문제는 ${problem.endsWith('입니다') || problem.endsWith('이다') ? problem : `${problem}입니다`}.`);
+    lines.push(
+      applyCorrectionRevisionToLine(
+        living,
+        `핵심 문제는 ${problem!.endsWith('입니다') || problem!.endsWith('이다') ? problem! : `${problem}입니다`}.`,
+      ),
+    );
   }
 
   const solution = living.claims.find(
     (c) => c.fieldKey === 'solution' && c.value?.trim() && c.status !== 'unknown',
   );
   if (solution?.value?.trim() && !lines.some((l) => l.includes(solution.value!.slice(0, 12)))) {
-    lines.push(`제공 가치는 ${solution.value.trim()}입니다.`);
+    lines.push(
+      applyCorrectionRevisionToLine(
+        living,
+        `제공 가치는 ${solution.value.trim()}입니다.`,
+      ),
+    );
   }
 
   if (lines.length === 0) {
@@ -132,13 +157,16 @@ export function buildCeoJudgmentSnapshot(
   const uncertainty = buildUncertaintyClause(living);
 
   if (turnInsight && uncertainty) {
-    return `${turnInsight} ${uncertainty}`;
+    return applyCorrectionRevisionToLine(
+      living,
+      `${turnInsight} ${uncertainty}`,
+    );
   }
   if (turnInsight) {
-    return turnInsight;
+    return applyCorrectionRevisionToLine(living, turnInsight);
   }
   if (uncertainty) {
-    return uncertainty;
+    return applyCorrectionRevisionToLine(living, uncertainty);
   }
 
   const confirmed = living.claims.filter((c) => isUserConfirmed(c));

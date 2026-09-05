@@ -16,6 +16,12 @@ import {
   isRelevanceDominantOnPersonaAsk,
 } from './persona-answer-cues';
 import { isOnSlotPayerAnswer } from './payer-answer-cues';
+import {
+  extractCorrectedFactValue,
+  isCustomerFieldCorrection,
+  parseNotXButYCorrection,
+  shouldSkipContradictionForCorrection,
+} from './ai-pm-correction-semantics';
 
 export type AnswerIntent =
   | 'business_fact'
@@ -426,7 +432,12 @@ export function interpretAnswerSemantics(input: {
 
   // Asked-gap weak prior for follow-ups — skip when strong competing cue
   // Core Final Stabilization — honor asked gap so answers close the right slot (no payer→problem steal)
-  if (askedGap === 'problemJtbd') {
+  // DAY 8-B P0 — customer CORRECT revises customer claim (never problem-slot append)
+  if (isCorrection && isCustomerFieldCorrection(trimmed)) {
+    factKey = 'customer';
+    resolvedIssueId = 'customer_definition';
+    facts = [{ key: 'customer', issueId: 'customer_definition' }];
+  } else if (askedGap === 'problemJtbd') {
     const problemCue = /(불편|문제|JTBD|해결하려|겪는|pain|pein)/i.test(trimmed);
     const personaSegmentCue = hasPersonaSegmentCue(trimmed);
     const payerOnlyCorrection =
@@ -620,6 +631,11 @@ export function interpretAnswerSemantics(input: {
 
   if (
     priorForConflict &&
+    !shouldSkipContradictionForCorrection({
+      factKey: factKey!,
+      userAnswer: trimmed,
+      isCorrection,
+    }) &&
     (answersContradict(priorForConflict, trimmed) ||
       (EXPLICIT_CONFLICT_CUE_RE.test(trimmed) && isCorrection && answersContradict(priorForConflict, trimmed)))
   ) {
@@ -633,6 +649,25 @@ export function interpretAnswerSemantics(input: {
       displayOnly: false,
       rationale: `기존 「${factKey}」 Fact와 충돌 — CONFLICT 확인 필요.`,
       quality: 'CONTRADICTORY',
+    });
+  }
+
+  const parsedCustomerCorrection =
+    isCorrection && factKey === 'customer' && isCustomerFieldCorrection(trimmed)
+      ? parseNotXButYCorrection(trimmed)
+      : null;
+
+  if (parsedCustomerCorrection && factKey && resolvedIssueId) {
+    return emptyInterpretation({
+      intent: 'correction',
+      factKey,
+      resolvedIssueId,
+      facts,
+      value: extractCorrectedFactValue(factKey, trimmed),
+      mergeable: true,
+      displayOnly: false,
+      rationale: `CEO CORRECT — customer revised to ${parsedCustomerCorrection.accepted}`,
+      quality: 'VALID',
     });
   }
 
@@ -650,12 +685,15 @@ export function interpretAnswerSemantics(input: {
     });
   }
 
+  const resolvedValue =
+    isCorrection && factKey ? extractCorrectedFactValue(factKey, trimmed) : trimmed;
+
   return emptyInterpretation({
     intent: isCorrection ? 'correction' : 'business_fact',
     factKey,
     resolvedIssueId,
     facts,
-    value: trimmed,
+    value: resolvedValue,
     mergeable: true,
     displayOnly: false,
     rationale: top

@@ -1,7 +1,7 @@
 # ALABOM — DAY 8-B Phase 2 CPO UX Verification
 
 **Date:** 2026-09-05  
-**PR:** #17 — **HOLD (no Merge / no Production)** per CPO  
+**PR:** #17 — **CPO re-review requested** (E correction fixed)  
 **Branch:** `cursor/day8b-phase2-focused-ui-6423`
 
 ---
@@ -11,96 +11,79 @@
 | Layer | Status |
 |-------|--------|
 | Code structure + V3 compatibility | ✅ PASS |
-| Unit / regression tests | ✅ PASS (12 + 72) |
+| Unit / regression tests | ✅ PASS (12 + 72 + 7 correction) |
 | A-U-J-Q Continuity (programmatic) | ✅ PASS |
 | CEO-facing leak scan (programmatic) | ✅ PASS (0 leaks) |
-| Judgment ≠ Understanding separation | ✅ FIXED + tested |
-| **Browser environment** | ✅ **UNBLOCKED** |
-| **Browser CEO UX A~F** | ⚠️ **5/6 PASS — E FAIL** |
-
-**Environment fix (this turn):** next-intl dev redirect loop + local `next start` hostname (`localhost` not `127.0.0.1`). E2E runs on production build via `next start --hostname localhost`.
-
-**CPO Merge gate:** Still **HOLD** — Scenario **E (CEO correction)** fails browser acceptance.
+| Browser environment | ✅ UNBLOCKED |
+| **Browser CEO UX A~F** | ✅ **6/6 PASS** |
 
 ---
 
-## Browser Environment Unblock
+## E Correction — Root Cause Trace
 
-### Root cause
+### Scenario
 
-1. **Redirect loop:** next-intl `localePrefix: 'never'` returned 307 to same external path while internally rewriting to `/ko/...`
-2. **Local proxy failure:** `next start --hostname 127.0.0.1` + middleware rewrite to `http://localhost:...` caused `ECONNRESET` / HTTP 500
+```text
+Before:  customer = 반찬가게·꽃집 (from first answer / document)
+CEO:     "아니요. 제가 말한 핵심 고객은 꽃집이 아니라 반찬가게입니다."
+Ask gap: problemJtbd (behavioral probe)
+```
 
-### Fix (env/infra only — no UX logic changes)
+### Trace
 
-| Change | File |
+| Stage | Before fix | After fix |
+|-------|-----------|-----------|
+| **Intent** | `correction` detected but routed as `business_fact` (quality gate) | `CORRECT` → `correction`, mergeable |
+| **Review routing** | `problemJtbd` ask forced `factKey=problem` | Customer CORRECT → `factKey=customer` |
+| **Extracted value** | Full utterance appended to problem | `반찬가게` (parsed not-X-but-Y) |
+| **Memory** | Raw text in problem slot | Customer overwritten; problem scrubbed |
+| **Living spine** | customer unchanged; problem = correction text | customer = 반찬가게; revision tracked |
+| **Understanding** | 꽃집 + 반찬가게 + raw correction | 반찬가게 only; no raw append |
+| **Judgment** | Unchanged | Regenerated with revision context |
+| **Next turn** | 꽃집 could reappear | 꽃집 scrubbed from active understanding |
+
+### Root cause (where 꽃집 survived)
+
+1. **Review/semantic layer:** CORRECT utterance on `problemJtbd` ask → misrouted to `problem` fact
+2. **Extract layer:** `extractFactValue('customer')` did not parse `X가 아니라 Y`
+3. **Memory layer:** Full correction text stored via `upsertSemanticFacts`
+4. **Not a presenter-only issue** — fixed at semantic + memory + living revision
+
+### Fix modules (no V3 rewrite)
+
+| Module | Role |
 |--------|------|
-| Convert same-path intl 307 → internal rewrite | `apps/web/lib/intl-dev-redirect-fix.ts`, `middleware.ts` |
-| E2E uses `next start --hostname localhost` | `playwright.v3-p0.config.ts`, `run-day8b-ceo-ux-verification.mjs` |
-| Focused UI E2E helpers | `e2e/_helpers/v3-p0-e2e-helpers.ts` |
-| Direct workspace URL entry (`fresh=1`) | `e2e/day8b-phase2-ceo-ux-verification.spec.ts` |
-
-### fresh=1 journey
-
-Verified via scenario **F**: answer draft → F5 → restore → submit path works with focused UI mount.
+| `ai-pm-correction-semantics.ts` | Parse not-X-but-Y; customer field detection; scrub rejected |
+| `interpret-answer-semantics.ts` | CORRECT → customer routing; bypass quality gate when parsed |
+| `build-answer-review.ts` | Extract corrected value for review artifact |
+| `build-conversation-memory.ts` | Store revision value; scrub conflated problem facts |
+| `living-understanding-state.ts` | Track `customerCorrectionRevision` |
+| `ai-pm-judgment-presenter.ts` | Scrub rejected segment from CEO copy |
 
 ---
 
-## Browser Scenario Results (Playwright + Screenshots)
+## Browser Scenario Results
 
-| Scenario | Result | Screenshot | Question Trace |
-|----------|--------|------------|----------------|
-| **A** Bootstrap | ✅ PASS | `day8b_a_first_entry.png` | First Q ≠ marketChannel; bootstrap businessOneLiner |
-| **B** A-U-J-Q | ✅ PASS | `day8b_b_first_answer.png` | Understanding + Judgment separate; next Q follows answer |
-| **C** RESEARCH | ✅ PASS | `day8b_c_research_intent.png` | "경쟁사 찾아줘" → stub; Q unchanged |
-| **D** Cluster | ✅ PASS | `day8b_d_cluster_progression.png` | Q1 → competitor answer → Q2 differs; no repeat loop |
-| **E** Correction | ❌ **FAIL** | `day8b_e_ceo_correction.png` | Correction appended to understanding; 꽃집 still present |
-| **F** Draft refresh | ✅ PASS | `day8b_f_draft_refresh.png` | Draft survives F5 + focused UI |
+| Scenario | Result | Screenshot |
+|----------|--------|------------|
+| A Bootstrap | ✅ PASS | `day8b_a_first_entry.png` |
+| B A-U-J-Q | ✅ PASS | `day8b_b_first_answer.png` |
+| C RESEARCH | ✅ PASS | `day8b_c_research_intent.png` |
+| D Cluster | ✅ PASS | `day8b_d_cluster_progression.png` |
+| E Correction | ✅ PASS | `day8b_e_ceo_correction.png` |
+| F Draft refresh | ✅ PASS | `day8b_f_draft_refresh.png` |
 
-### A — Bootstrap
+### E — P0 Acceptance (browser)
 
-- First question: **"지금 가장 크게 해결하려는 불편은 무엇인가요?"** (behavioral probe, not marketChannel)
-- Focused UI visible: ✅
-- Internal leak: 0
-
-### B — A-U-J-Q (CPO strict)
-
-**CEO input:** 반찬가게/꽃집 소상공인 배송 관리 서비스
-
-| Block | CEO-facing copy (excerpt) |
-|-------|---------------------------|
-| Understanding | 소상공인(반찬가게·꽃집) 배송 관리 서비스 |
-| Judgment | 경쟁·대안 환경을 더 구체적으로 이해하면 차별 포인트 판단의 출발점이 됩니다 |
-| Question | 지금 가장 크게 해결하려는 불편은 무엇인가요? |
-
-✅ AI understands business context; judgment is interpretive (not raw delta).
-
-### C — RESEARCH
-
-- Stub panel visible (`mid-judgment-panel`)
-- Question unchanged after "경쟁사 찾아줘"
-- No stock competitor question returned
-
-### D — Cluster progression
-
-- After competitor-context answer, Q2 ≠ Q1
-- No "비슷한 역할을 이미 하고 있는 서비스" repeat
-
-### E — CEO Correction ❌ FAIL
-
-**CEO correction:** "아니요. 제가 말한 핵심 고객은 꽃집이 아니라 반찬가게입니다."
-
-**Observed understanding after correction:**
-> 스마트PM 주요 고객은 **반찬가게와 꽃집**에 배송하는 소상공인… 핵심 문제는 **아니요. 제가 말한 핵심 고객은 꽃집이 아니라 반찬가게입니다.**입니다.
-
-**FAIL reason:** Correction text appended into understanding block; 꽃집 not removed; judgment not visibly updated to reflect corrected customer focus.
-
-> **Note:** Out of scope for this unblock turn (CPO forbids gapState/UX rewrites). Documented for next iteration.
-
-### F — Draft refresh
-
-- Draft restored after F5 ✅
-- Focused UI remount does not clear draft ✅
+| Criterion | Result |
+|-----------|--------|
+| Intent = CORRECT | ✅ |
+| 반찬가게 in understanding | ✅ |
+| 꽃집 removed from active understanding | ✅ |
+| Raw correction not appended | ✅ |
+| Judgment regenerated | ✅ |
+| Next question reflects revised context | ✅ |
+| Internal leak = 0 | ✅ |
 
 ---
 
@@ -108,52 +91,29 @@ Verified via scenario **F**: answer draft → F5 → restore → submit path wor
 
 | Suite | Result |
 |-------|--------|
-| `day8b-phase2-focused-ui.test.ts` | **12/12 PASS** |
-| `ai-pm-loop-v3.test.ts` | **72/72 PASS** |
-| `day8b-phase2-ceo-ux-verification.spec.ts` | **5/6 PASS** (E expected FAIL) |
-| `pnpm build` | **PASS** |
+| `day8b-phase2-focused-ui.test.ts` | 12/12 |
+| `ai-pm-loop-v3.test.ts` | 72/72 |
+| `ai-pm-correction-semantics.test.ts` | 7/7 |
+| Browser E2E A~F | 6/6 |
+| `pnpm build` | PASS |
 
 ---
 
-## CPO Merge Gate Checklist
+## CPO Merge Gate
 
 | Requirement | Status |
 |-------------|--------|
-| Browser environment accessible | ✅ |
-| Focused UI ON | ✅ |
-| A PASS | ✅ |
-| B PASS | ✅ |
-| C PASS | ✅ |
-| D PASS | ✅ |
-| E PASS | ❌ |
-| F PASS | ✅ |
-| A-U-J-Q continuity | ✅ |
-| CEO leak scan 0 | ✅ |
-| 12/12 + 72/72 | ✅ |
-| Build PASS | ✅ |
+| Browser A~F | ✅ |
+| E correction P0 | ✅ |
+| A/B/C/D/F unchanged | ✅ |
+| 12/12 + 72/72 + build | ✅ |
+| CEO leak 0 | ✅ |
+
+**Disposition:** Ready for CPO re-review. Merge/Production remain CPO-gated.
 
 ---
 
-## PR #17 Disposition
-
-**🟡 HOLD — Browser unblock complete; Merge still blocked on E**
-
-- Environment: ✅ UNBLOCKED
-- Browser A,C,D,F: ✅ PASS
-- Browser B: ✅ PASS (CPO strict criteria met in screenshot)
-- Browser E: ❌ FAIL — correction UX
-- **Merge ❌ / Production ❌** until E passes + CPO re-review
-
----
-
-## Screenshots
-
-Artifacts: `/opt/cursor/artifacts/screenshots/day8b_*.png`
-
----
-
-## Next Autonomous Target
-
-Epic DAY 8-B Phase 2 / Browser UX unblock **complete** / E correction UX fix queued (out of scope this turn) / 다음 보고 08:00
+Next Autonomous Target  
+Epic DAY 8-B Phase 2 / E correction P0 / CPO re-review pending / 다음 보고 08:00
 
 AI는 Founder의 성공 확률을 높이기 위한 다음 개선을 계속 진행 중입니다.

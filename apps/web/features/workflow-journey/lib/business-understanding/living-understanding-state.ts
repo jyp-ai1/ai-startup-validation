@@ -29,6 +29,8 @@ import {
   type WorkspaceSharedUnderstanding,
 } from './build-shared-understanding';
 import type { AiPmLoopIssueId, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
+import type { ParsedNotXButY } from './ai-pm-correction-semantics';
+import { parseNotXButYCorrection } from './ai-pm-correction-semantics';
 import type { ProductStageId } from './stage-transition';
 import { factKeyForIssue } from './build-conversation-memory';
 
@@ -72,6 +74,8 @@ export type LivingUnderstandingState = {
   gaps: LivingUnderstandingGap[];
   judgmentSummary: string;
   spine: WorkspaceSharedUnderstanding;
+  /** Latest customer CORRECT revision — scrubs rejected segment from CEO copy. */
+  customerCorrectionRevision?: ParsedNotXButY | null;
 };
 
 const ISSUE_FOR_DOMAIN: Partial<Record<string, AiPmLoopIssueId>> = {
@@ -719,6 +723,19 @@ export function buildLivingUnderstandingState(input: BuildLivingStateInput): Liv
   const productStage = resolveProductStage(coveragePercent, memory);
   const judgmentSummary = buildJudgmentSummary(spine, coveragePercent, gaps[0] ?? null, claims);
 
+  const latestCustomerCorrectionTurn = [...turns]
+    .reverse()
+    .find(
+      (turn) =>
+        !turn.superseded &&
+        turn.intent === 'correction' &&
+        (turn.semanticFactKey === 'customer' ||
+          turn.semanticFactKeys?.includes('customer')),
+    );
+  const customerCorrectionRevision = latestCustomerCorrectionTurn
+    ? parseNotXButYCorrection(latestCustomerCorrectionTurn.answer)
+    : null;
+
   return {
     version: 1,
     claims,
@@ -727,6 +744,7 @@ export function buildLivingUnderstandingState(input: BuildLivingStateInput): Liv
     gaps,
     judgmentSummary,
     spine,
+    customerCorrectionRevision,
   };
 }
 
