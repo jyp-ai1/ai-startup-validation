@@ -1335,6 +1335,35 @@ describe('PR6 — hydrate / remount / CEO 6 surfaces (AC1–AC7)', () => {
       expect(line).not.toMatch(/\bproblemJtbd\b/);
       expect(line).not.toMatch(/의미\s*라우팅|primary\s*=|asked-slot/i);
     }
+
+    // Conflict / multi-turn: empty extractedFacts + priorClosed known gaps
+    const { review: conflictReview } = buildAnswerReview(
+      baseReviewInput({
+        userAnswer: '회사에서 지불해요',
+        askedGapId: 'payer',
+        displayedQuestionText: '비용은 누가 지불하나요?',
+        existingFactsByKey: { buyer: '고객' },
+        priorClosedGaps: [
+          'businessOneLiner',
+          'problemJtbd',
+          'customerPersona',
+          'payer',
+          'revenueModel',
+        ],
+      }),
+    );
+    expect(conflictReview.extractedFacts).toHaveLength(0);
+    const conflictSurfaces = buildCeoSixSurfaces({
+      lastTurn: {
+        issueId: 'bm_design',
+        answer: '회사에서 지불해요',
+        appliedAt: '2026-09-02T00:00:01.000Z',
+        review: conflictReview,
+      },
+      lastDecision: sampleLastDecision(),
+    });
+    expect(conflictSurfaces.aiUnderstanding).not.toMatch(/businessOneLiner|problemJtbd|customerPersona|revenueModel/);
+    expect(conflictSurfaces.aiUnderstanding).toMatch(/사업 한 줄|핵심 문제|고객|수익/);
   });
 
   it('AC6: remount path skips live rank when lastDecision present', () => {

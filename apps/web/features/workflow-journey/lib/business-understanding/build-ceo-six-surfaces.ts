@@ -95,7 +95,16 @@ function formatAiUnderstanding(review: AnswerReview): string | null {
     if (values.length === 1) return values[0]!;
     if (values.length > 1) return values.join('; ');
   }
-  if (review.known.length > 0) return review.known.join('. ');
+  if (review.known.length > 0) {
+    const labels = review.known
+      .map((item) => {
+        const trimmed = item.trim();
+        if (!trimmed) return null;
+        return isInternalGapId(trimmed) ? gapLabel(trimmed) : trimmed;
+      })
+      .filter(Boolean) as string[];
+    if (labels.length > 0) return labels.join('. ');
+  }
   const rationale = review.rationale?.trim();
   return rationale || null;
 }
