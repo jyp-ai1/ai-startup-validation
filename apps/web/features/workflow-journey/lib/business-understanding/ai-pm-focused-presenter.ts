@@ -68,7 +68,11 @@ export function buildAiPmFocusedSnapshot(input: {
   const businessUnderstanding = buildBusinessUnderstandingText(input.living);
 
   const currentJudgment = sanitizeCeoFacingCopy(
-    buildCeoJudgmentSnapshot(input.living, gate),
+    buildCeoJudgmentSnapshot(input.living, gate, {
+      livingBefore: input.livingBefore,
+      lastTurn: input.lastTurn,
+      lastReview: input.lastTurn?.review ?? null,
+    }),
   );
 
   const confirmPrompt = buildConfirmPrompt(
