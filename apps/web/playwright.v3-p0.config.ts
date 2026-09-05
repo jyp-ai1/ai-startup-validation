@@ -11,7 +11,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 const useProd = Boolean(process.env.PLAYWRIGHT_BASE_URL?.includes('vercel.app'));
 
-const E2E_HOST = process.env.PLAYWRIGHT_E2E_HOST ?? '127.0.0.1';
+const E2E_HOST = process.env.PLAYWRIGHT_E2E_HOST ?? 'localhost';
 const E2E_PORT = process.env.PLAYWRIGHT_E2E_PORT ?? '3199';
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? `http://${E2E_HOST}:${E2E_PORT}`;
 const healthURL = `${baseURL}/health`;
@@ -33,7 +33,7 @@ export default defineConfig({
   webServer: useProd
     ? undefined
     : {
-        command: `pnpm exec next dev --hostname ${E2E_HOST} --port ${E2E_PORT}`,
+        command: `pnpm exec next start --hostname ${E2E_HOST} --port ${E2E_PORT}`,
         url: healthURL,
         reuseExistingServer: false,
         timeout: 240_000,

@@ -76,15 +76,7 @@ async function waitForFocusedOrS11(page: import('@playwright/test').Page) {
 
 test.describe('DAY 8-B Phase 2 CEO UX Verification', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/demo/start?fresh=1', { waitUntil: 'domcontentloaded', timeout: 90_000 });
-    await page.waitForTimeout(1_000);
-    const sampleEntry = page.getByTestId('demo-entry-sample');
-    await sampleEntry.waitFor({ state: 'visible', timeout: 30_000 });
-    await sampleEntry.click();
-    await page.getByTestId('demo-sample-saas').click();
-    await page.getByTestId('demo-start-sample-read').click();
-    await page.waitForURL(/\/workspace/, { timeout: 45_000 });
-    await page.waitForTimeout(2_000);
+    await startDemoSaas(page);
   });
 
   test('A — first entry bootstrap (no marketChannel)', async ({ page }) => {
@@ -152,6 +144,56 @@ test.describe('DAY 8-B Phase 2 CEO UX Verification', () => {
     test.info().attach('trace-C', {
       body: `CEO="경쟁사 찾아줘" → Intent=RESEARCH → stub=${stubVisible} → Q unchanged="${afterQ.slice(0, 40)}"`,
     });
+  });
+
+  test('D — cluster progression (no repeat competitor loop)', async ({ page }) => {
+    await confirmUnderstanding(page);
+    await dismissRecognition(page);
+    await waitForFocusedOrS11(page);
+
+    const answer =
+      '반찬가게나 꽃집처럼 직접 배송하는 소상공인이 주문부터 배송까지 한 번에 관리할 수 있게 하는 서비스입니다.';
+    await submitAnswer(page, answer);
+    await waitForFocusedOrS11(page);
+    const q1 = await readSurfaceQuestion(page);
+
+    await submitAnswer(page, 'Notion이랑 Linear 쓰는 팀이 경쟁 대상이에요.');
+    await waitForFocusedOrS11(page);
+    const q2 = await readSurfaceQuestion(page);
+
+    expect(q1).not.toBe(q2);
+    expect(q2).not.toMatch(/비슷한 역할을 이미 하고 있는 서비스|경쟁사 찾아/i);
+
+    await saveScreenshot(page, 'day8b_d_cluster_progression');
+    test.info().attach('trace-D', {
+      body: `CEO answer → Q1="${q1.slice(0, 40)}" → competitor answer → Q2="${q2.slice(0, 40)}"`,
+    });
+  });
+
+  test('E — CEO correction updates understanding', async ({ page }) => {
+    await confirmUnderstanding(page);
+    await dismissRecognition(page);
+    await waitForFocusedOrS11(page);
+
+    await submitAnswer(
+      page,
+      '반찬가게와 꽃집에 배송하는 소상공인을 위한 주문·배송 관리 서비스입니다.',
+    );
+    await waitForFocusedOrS11(page);
+
+    const beforeBlocks = await readFocusedBlocks(page);
+    await submitAnswer(page, '아니요. 제가 말한 핵심 고객은 꽃집이 아니라 반찬가게입니다.');
+    await waitForFocusedOrS11(page);
+    const afterBlocks = await readFocusedBlocks(page);
+
+    await saveScreenshot(page, 'day8b_e_ceo_correction');
+    test.info().attach('trace-E', {
+      body: `Before="${beforeBlocks.business.slice(0, 80)}" → Correction → After="${afterBlocks.business.slice(0, 80)}"`,
+    });
+
+    expect(afterBlocks.business).toMatch(/반찬/);
+    expect(afterBlocks.business).not.toMatch(/꽃집/);
+    expect(afterBlocks.judgment.length).toBeGreaterThan(5);
   });
 
   test('F — draft persistence on refresh', async ({ page }) => {

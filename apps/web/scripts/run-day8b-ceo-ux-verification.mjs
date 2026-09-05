@@ -27,12 +27,22 @@ const port = await findFreePort();
 const env = {
   ...process.env,
   PLAYWRIGHT_E2E_PORT: String(port),
-  PLAYWRIGHT_E2E_HOST: '127.0.0.1',
+  PLAYWRIGHT_E2E_HOST: 'localhost',
   V3_REVIEW_PIPELINE: 'true',
   NEXT_PUBLIC_V3_REVIEW_PIPELINE: 'true',
   NEXT_PUBLIC_AI_PM_FOCUSED_UI: 'true',
   AI_PM_FOCUSED_UI: 'true',
 };
+
+console.info('[day8b-ceo-ux] Building production bundle for E2E…');
+const build = spawnSync('pnpm', ['run', 'build'], {
+  cwd: webRoot,
+  env,
+  stdio: 'inherit',
+});
+if (build.status !== 0) {
+  process.exit(build.status ?? 1);
+}
 
 const result = spawnSync(
   'pnpm',

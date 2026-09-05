@@ -2,6 +2,7 @@ import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { updateSession } from './lib/auth/update-session';
+import { resolveIntlSamePathRedirectLoop } from './lib/intl-dev-redirect-fix';
 import { resolveLegacyRedirect } from './lib/legacy-route-redirects';
 import { DEMO_MODE_VALUE, WORKSPACE_MODE_COOKIE } from './lib/auth/server-auth';
 import { routing } from './i18n/routing';
@@ -14,16 +15,24 @@ export default async function middleware(request: NextRequest) {
     return legacyRedirect;
   }
 
+  const originalPathname = request.nextUrl.pathname;
   const intlResponse = intlMiddleware(request);
-  const pathname = request.nextUrl.pathname;
+  const pathname = originalPathname;
 
   const applyPathHeader = (res: NextResponse) => {
     res.headers.set('x-pathname', pathname);
     return res;
   };
 
-  let response =
+  let response: NextResponse =
     intlResponse instanceof NextResponse ? intlResponse : NextResponse.next({ request });
+
+  if (intlResponse instanceof NextResponse) {
+    const loopFix = resolveIntlSamePathRedirectLoop(request, intlResponse, originalPathname);
+    if (loopFix) {
+      response = loopFix;
+    }
+  }
 
   response = await updateSession(request, response);
 
