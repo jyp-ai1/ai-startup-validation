@@ -16,6 +16,7 @@ import {
   detectWrongSlotMergeContext,
 } from './wrong-slot-priority';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
+import { founderFieldLabel } from './founder-field-labels';
 
 /** Gaps that block Start Analysis / Validation when still open. */
 export const CRITICAL_VIABILITY_GAP_KEYS = [
@@ -146,7 +147,16 @@ export function buildQuestionCausality(input: {
 }
 
 function formatClaimLine(claim: LivingClaim, max = 48): string {
-  return `${claim.fieldKey}: ${(claim.value ?? '').slice(0, max)}`;
+  return `${founderFieldLabel(claim.fieldKey)}: ${(claim.value ?? '').slice(0, max)}`;
+}
+
+function formatChangedClaimLine(claim: LivingClaim, prevValue: string, max = 32): string {
+  const label = founderFieldLabel(claim.fieldKey);
+  return `${label}: ${prevValue.slice(0, max)} → ${claim.value!.slice(0, max)}`;
+}
+
+function formatFieldKeyList(keys: string[]): string {
+  return keys.map((key) => founderFieldLabel(key)).join(', ');
 }
 
 /**
@@ -196,7 +206,7 @@ export function buildUnderstandingDelta(input: {
 
     if (prev.value !== after.value && after.value) {
       if (prev.value && after.status === 'confirmed') {
-        const line = `${after.fieldKey}: ${(prev.value ?? '').slice(0, 32)} → ${after.value.slice(0, 32)}`;
+        const line = formatChangedClaimLine(after, prev.value ?? '', 32);
         changed.push(line);
         superseded.push(line);
       } else if (after.status === 'confirmed') {
@@ -257,14 +267,14 @@ export function buildUnderstandingDelta(input: {
     existing.length ? `기존: ${existing.slice(0, 3).join(' · ')}` : null,
     newlyUnderstood.length ? `신규: ${newlyUnderstood.join(' · ')}` : null,
     changed.length ? `변경: ${changed.join(' · ')}` : null,
-    stillUnknown.length ? `미확인: ${stillUnknown.slice(0, 5).join(', ')}` : null,
+    stillUnknown.length ? `미확인: ${formatFieldKeyList(stillUnknown.slice(0, 5))}` : null,
   ].filter(Boolean);
 
   let summary: string;
   if (parts.length > 0) {
-    summary = `${parts.join(' · ')}${topGap ? ` · 다음 공백: ${topGap}` : ''}`;
+    summary = `${parts.join(' · ')}${topGap ? ` · 다음 공백: ${founderFieldLabel(topGap)}` : ''}`;
   } else if (topGap) {
-    summary = `이해 상태 재평가 완료 · 다음 공백: ${topGap}`;
+    summary = `이해 상태 재평가 완료 · 다음 공백: ${founderFieldLabel(topGap)}`;
   } else {
     summary = '이해 상태 재평가 완료 — 핵심 공백이 해소되었습니다.';
   }
@@ -311,7 +321,7 @@ export function explainSufficiency(living: LivingUnderstandingState): {
   const missing = listUnconfirmedCriticalGaps(living);
   const analysis = evaluateAnalysisReady(living);
   const explanation = `사업 구체화 ${living.coveragePercent}% (충분성) — 사용자 확인 ${confirmed.length}항목. Analysis Ready와는 별개입니다.${
-    missing.length ? ` 미확인 핵심: ${missing.join(', ')}.` : ''
+    missing.length ? ` 미확인 핵심: ${formatFieldKeyList(missing)}.` : ''
   }`;
 
   return {
