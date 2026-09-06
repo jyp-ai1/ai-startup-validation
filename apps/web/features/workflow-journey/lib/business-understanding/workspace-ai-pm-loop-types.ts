@@ -7,6 +7,17 @@ import type { AnswerIntent } from './interpret-answer-semantics';
 import type { QuestionCausality } from './question-causality';
 import type { LockedAskSurface } from './question-transition-lock';
 
+export type AiPmResearchPending = {
+  utterance: string;
+  headline: string;
+  detail: string;
+  topic: 'competitor' | 'market' | 'general';
+  requestedAt: string;
+  frozenQuestionText: string;
+  frozenTargetGap: string;
+  frozenIssueId: AiPmLoopIssueId;
+};
+
 export type AiPmLoopIssueId =
   | 'customer_definition'
   | 'competitor_analysis'
@@ -66,6 +77,8 @@ export type AiPmLoopState = {
   gapState?: GapKnowledgeState;
   /** PR4 — last NextQuestionDecision from review→decide path */
   lastDecision?: NextQuestionDecision;
+  /** DAY 8-D Phase D — research intent freezes question engine */
+  researchPending?: AiPmResearchPending | null;
 };
 
 export const AI_PM_LOOP_MIN_TURNS = 3;

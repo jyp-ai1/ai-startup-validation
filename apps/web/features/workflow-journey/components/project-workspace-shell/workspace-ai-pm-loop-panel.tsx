@@ -30,11 +30,16 @@ import { shouldSkipLiveRankOnRemount } from '../../lib/business-understanding/re
 import { resolveV3DisplayPriority } from '../../lib/business-understanding/v3-legacy-bypass-guards';
 import { isV3ReviewPipelineActive } from '../../lib/business-understanding/v3-review-pipeline';
 import { isAiPmFocusedUiActive } from '../../lib/business-understanding/ai-pm-focused-ui';
+import { isAiPmJudgmentPolicyV1Active } from '../../lib/business-understanding/ai-pm-judgment-policy-v1';
 import { buildAiPmFocusedSnapshot } from '../../lib/business-understanding/ai-pm-focused-presenter';
 import {
   classifyAiPmCeoIntent,
   researchIntentStubMessage,
 } from '../../lib/business-understanding/ai-pm-intent-policy';
+import {
+  buildResearchAcknowledgement,
+} from '../../lib/business-understanding/ai-pm-research-ux-policy';
+import { isAiPmResearchUxV1Active } from '../../lib/business-understanding/ai-pm-research-ux-policy-v1';
 import {
   AI_PM_LOOP_ISSUE_ORDER,
   type AiPmLoopIssueId,
@@ -333,6 +338,35 @@ export function WorkspaceAiPmLoopPanel({
     [conversationMemory, documentText, entities, loopState, understanding],
   );
 
+  /** DAY 8-D Phase A — living state before last turn for dynamic judgment delta. */
+  const livingBeforeForSnapshot = useMemo(() => {
+    if (!isAiPmJudgmentPolicyV1Active() || loopState.turns.length === 0) {
+      return null;
+    }
+    const priorTurns = loopState.turns.slice(0, -1);
+    const priorMemory = buildConversationMemoryFromSources({
+      projectId: projectId ?? 'default',
+      documentText: documentText ?? '',
+      turns: priorTurns,
+      entities,
+      previous: loadConversationMemory(projectId),
+    });
+    return buildLivingUnderstandingState({
+      documentText: documentText ?? '',
+      understanding,
+      entities,
+      turns: priorTurns,
+      memory: priorMemory,
+      resolvedIssueIds: getResolvedIssueIds({ ...loopState, turns: priorTurns }),
+    });
+  }, [
+    documentText,
+    entities,
+    loopState,
+    projectId,
+    understanding,
+  ]);
+
   const pendingWrongSlotReask = useMemo(
     () => hasPendingWrongSlotReask(loopState.turns),
     [loopState.turns],
@@ -373,6 +407,18 @@ export function WorkspaceAiPmLoopPanel({
   );
 
   const whyThisQuestionNow = useMemo(() => {
+    if (loopState.researchPending && isAiPmResearchUxV1Active()) {
+      const rp = loopState.researchPending;
+      return {
+        issueId: rp.frozenIssueId,
+        targetGap: rp.frozenTargetGap,
+        questionText: rp.frozenQuestionText,
+        whyNow: rp.detail,
+        rationale: rp.detail,
+        score: 999_999,
+        missingField: 'business' as const,
+      };
+    }
     if (questionLockActive && lockedAskSurface) {
       return lockedAskSurface;
     }
@@ -419,6 +465,7 @@ export function WorkspaceAiPmLoopPanel({
       previousQuestionText: questionOverride?.questionText ?? null,
       projectId,
       gapState: loadAiPmLoopState(projectId).gapState,
+      researchPending: Boolean(loadAiPmLoopState(projectId).researchPending),
     });
     if (!decision) return null;
 
@@ -601,9 +648,11 @@ export function WorkspaceAiPmLoopPanel({
     if (!focusedUiActive) return null;
     return buildAiPmFocusedSnapshot({
       living: livingState,
+      livingBefore: livingBeforeForSnapshot,
       lastTurn,
       lastDecision: loopState.lastDecision ?? null,
       displayQuestionText,
+      researchPending: loopState.researchPending ?? null,
       whyNow:
         whyThisQuestionNow?.whyNow ??
         whyThisQuestionNow?.rationale ??
@@ -612,8 +661,10 @@ export function WorkspaceAiPmLoopPanel({
   }, [
     focusedUiActive,
     livingState,
+    livingBeforeForSnapshot,
     lastTurn,
     loopState.lastDecision,
+    loopState.researchPending,
     displayQuestionText,
     whyThisQuestionNow?.whyNow,
     whyThisQuestionNow?.rationale,
@@ -979,6 +1030,11 @@ export function WorkspaceAiPmLoopPanel({
     const inFlightGap = whyThisQuestionNow?.targetGap ?? questionOverride?.targetGap ?? null;
     setWhyPanel(null);
     setMidJudgmentText(null);
+    if (loopState.researchPending) {
+      patchAiPmLoopState({ researchPending: null }, projectId);
+      syncState(loadAiPmLoopState(projectId));
+      return;
+    }
     const gap = resolvePreservedGapAfterMeta({
       living: livingState,
       turns: loopState.turns,
@@ -1315,7 +1371,8 @@ export function WorkspaceAiPmLoopPanel({
     // Loop 9h-c — solution Q text wins over poisoned askedTargetGap / issue template
     if (
       displayedGapForCanonical === 'solution' &&
-      semantic.mergeable
+      semantic.mergeable &&
+      !semantic.slotConflict
     ) {
       resolvedAskedGap = 'solution';
       if (!semantic.facts.some((f) => f.key === 'business')) {
@@ -1427,7 +1484,28 @@ export function WorkspaceAiPmLoopPanel({
 
     const ceoIntent = classifyAiPmCeoIntent(trimmed, semantic.intent);
     if (ceoIntent.route === 'ai_action' && ceoIntent.intent === 'RESEARCH') {
-      setMidJudgmentText(researchIntentStubMessage());
+      if (isAiPmResearchUxV1Active()) {
+        const ack = buildResearchAcknowledgement(trimmed);
+        patchAiPmLoopState(
+          {
+            researchPending: {
+              utterance: trimmed,
+              headline: ack.headline,
+              detail: ack.detail,
+              topic: ack.topic,
+              requestedAt: new Date().toISOString(),
+              frozenQuestionText: displayedQuestionText ?? persistedQuestionText ?? '',
+              frozenTargetGap: resolvedAskedGap ?? 'businessOneLiner',
+              frozenIssueId: issueId,
+            },
+          },
+          projectId,
+        );
+        syncState(loadAiPmLoopState(projectId));
+        resetAnswerDraft();
+        return;
+      }
+      setMidJudgmentText(researchIntentStubMessage(trimmed));
       setWhyPanel(null);
       resetAnswerDraft();
       return;
@@ -2093,6 +2171,25 @@ export function WorkspaceAiPmLoopPanel({
             >
               {whyPanel.returnToLoopCta}
             </Button>
+          </div>
+        ) : null}
+        {loopState.researchPending && isAiPmResearchUxV1Active() ? (
+          <div
+            data-testid="research-ack-panel"
+            className="mt-4 whitespace-pre-wrap rounded-xl border border-primary/20 bg-primary/[0.04] px-4 py-3 text-sm leading-relaxed"
+          >
+            {loopState.researchPending.headline}
+            <p className="mt-2 text-muted-foreground">{loopState.researchPending.detail}</p>
+            <div className="mt-3">
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl"
+                onClick={closeWhyOrMidAndRejudge}
+              >
+                이해 루프로 돌아가기
+              </Button>
+            </div>
           </div>
         ) : null}
         {midJudgmentText ? (

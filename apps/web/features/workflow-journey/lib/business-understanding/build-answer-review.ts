@@ -23,6 +23,7 @@ import {
   extractCorrectedFactValue,
   isCustomerFieldCorrection,
 } from './ai-pm-correction-semantics';
+import { isAskedGapOpenDueToSlotConflict } from './ai-pm-answer-first-routing';
 import { isOnSlotCompetitorAnswer } from './competitor-answer-cues';
 import {
   hasCustomerPersonaCue,
@@ -77,7 +78,7 @@ export function canonicalizeSubmitSemantics(input: {
   const displayedGapForCanonical =
     inferTargetGapFromQuestionText(input.displayedQuestionText) ?? input.visibleGap;
 
-  if (displayedGapForCanonical === 'solution' && semantic.mergeable) {
+  if (displayedGapForCanonical === 'solution' && semantic.mergeable && !semantic.slotConflict) {
     resolvedAskedGap = 'solution';
     if (!semantic.facts.some((f) => f.key === 'business')) {
       semantic = {
@@ -377,6 +378,7 @@ function deriveGapCompleteness(
   askedGapId: string,
   userAnswer: string,
 ): GapCompleteness {
+  if (isAskedGapOpenDueToSlotConflict(askedGapId, semantic)) return 'OPEN';
   if (semantic.quality === 'CONTRADICTORY') return 'CONTRADICTED';
   if (isWeakGenericSegment(userAnswer)) return 'PARTIAL';
   if (isAmbiguousHedge(userAnswer) || semantic.quality === 'AMBIGUOUS') return 'OPEN';

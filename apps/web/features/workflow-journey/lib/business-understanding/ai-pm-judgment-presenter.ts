@@ -1,13 +1,25 @@
 /**
  * DAY 8-B — CEO Judgment presenter (distinct from Understanding delta).
  * Understanding = what AI knows. Judgment = what AI believes + what's still uncertain.
+ * DAY 8-D Phase A — Dynamic Judgment when AI_PM_JUDGMENT_POLICY_V1 is ON.
  */
 
-import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
-import { founderFieldLabel } from './founder-field-labels';
+import type { AnswerReview } from '@repo/types/domain/answer-review';
+
 import { scrubRejectedCustomerMention } from './ai-pm-correction-semantics';
+import {
+  buildCurrentBeliefSummary,
+  buildSpecificUncertaintyLine,
+  computeJudgmentDelta,
+  formatJudgmentDeltaForCeo,
+} from './ai-pm-judgment-delta';
+import { isAiPmJudgmentPolicyV1Active } from './ai-pm-judgment-policy-v1';
+import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
+import type { ConversationFactKey } from './conversation-memory';
+import { founderFieldLabel } from './founder-field-labels';
 import type { LivingClaim, LivingUnderstandingState } from './living-understanding-state';
 import type { UnderstandingGateResult } from './ai-pm-understanding-gate';
+import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 const INTERNAL_KEY_RE =
   /\b(businessOneLiner|customerPersona|problemJtbd|marketChannel|targetGap|gapState|validationTestability|alternativesCompetitors|differentiationVsAlternatives)\b/i;
@@ -146,13 +158,45 @@ function buildUncertaintyClause(living: LivingUnderstandingState): string | null
   return `${label}에 대한 확인이 아직 필요합니다.`;
 }
 
+export type CeoJudgmentSnapshotOptions = {
+  livingBefore?: LivingUnderstandingState | null;
+  lastReview?: AnswerReview | null;
+  lastTurn?: AiPmLoopTurn | null;
+};
+
 /**
  * CEO-facing judgment — belief state + remaining uncertainty (NOT raw delta).
  */
 export function buildCeoJudgmentSnapshot(
   living: LivingUnderstandingState,
   gate?: UnderstandingGateResult | null,
+  options?: CeoJudgmentSnapshotOptions,
 ): string {
+  if (isAiPmJudgmentPolicyV1Active()) {
+    if (options?.livingBefore && options.livingBefore !== living) {
+      const delta = computeJudgmentDelta({
+        before: options.livingBefore,
+        after: living,
+        lastReview: options.lastReview ?? options.lastTurn?.review ?? null,
+        lastTurn: options.lastTurn ?? null,
+      });
+      return applyCorrectionRevisionToLine(
+        living,
+        formatJudgmentDeltaForCeo(living, delta),
+      );
+    }
+    const bootstrapDelta = {
+      state: 'UNCHANGED' as const,
+      beliefLine: buildCurrentBeliefSummary(living),
+      uncertaintyLine: buildSpecificUncertaintyLine(living),
+      triggerFactKeys: [] as ConversationFactKey[],
+    };
+    return applyCorrectionRevisionToLine(
+      living,
+      formatJudgmentDeltaForCeo(living, bootstrapDelta),
+    );
+  }
+
   const turnInsight = interpretTurnChange(gate ?? null);
   const uncertainty = buildUncertaintyClause(living);
 
