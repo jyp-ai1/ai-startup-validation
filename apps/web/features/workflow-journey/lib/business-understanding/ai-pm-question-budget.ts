@@ -58,7 +58,7 @@ export function evaluateJudgmentStop(input: {
       shouldStop: true,
       reason: 'follow_up',
       showJudgmentView: true,
-      judgmentTitle: count >= CEO_JUDGMENT_SESSION_MAX_QUESTIONS ? 'result' : 'interim',
+      judgmentTitle: 'interim',
     };
   }
 
@@ -83,10 +83,16 @@ export function judgmentViewTitle(
   questionCount: number,
   mode: 'interim' | 'result' | 'question',
 ): string {
-  if (mode === 'result' || questionCount >= CEO_JUDGMENT_SESSION_MAX_QUESTIONS) {
+  if (mode === 'result') {
     return '사업 검토 결과';
   }
-  if (mode === 'interim' || questionCount >= CEO_JUDGMENT_EARLY_VIEW_FROM) {
+  if (mode === 'interim') {
+    return '현재까지의 사업 판단';
+  }
+  if (questionCount >= CEO_JUDGMENT_SESSION_MAX_QUESTIONS) {
+    return '사업 검토 결과';
+  }
+  if (questionCount >= CEO_JUDGMENT_EARLY_VIEW_FROM) {
     return '현재까지의 사업 판단';
   }
   return '지금 확인할 것';

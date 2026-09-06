@@ -84,6 +84,8 @@ export type AiPmLoopState = {
   ceoJudgment?: CeoJudgmentState | null;
   /** DAY 8-G — question vs judgment view */
   viewMode?: 'question' | 'judgment' | null;
+  /** DAY 8-G — judgment screen title mode */
+  judgmentViewMode?: 'interim' | 'result' | null;
   /** DAY 8-G — follow-up from judgment view (single question then return) */
   judgmentFollowUp?: boolean | null;
 };

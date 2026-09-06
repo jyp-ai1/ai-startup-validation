@@ -868,8 +868,34 @@ export function WorkspaceAiPmLoopPanel({
   );
 
   const showInterimJudgment = useCallback(() => {
-    syncState(openJudgmentView(projectId));
-  }, [projectId, syncState]);
+    const doc = loadWorkspaceDocumentText(projectId) ?? '';
+    const freshUnderstanding = doc.trim() ? buildBusinessUnderstanding(doc) : understanding;
+    const current = loadAiPmLoopState(projectId);
+    if (freshUnderstanding) {
+      const memory = buildConversationMemoryFromSources({
+        projectId: projectId ?? 'default',
+        documentText: doc,
+        turns: current.turns,
+        entities,
+        previous: loadConversationMemory(projectId),
+      });
+      const living = buildLivingUnderstandingState({
+        documentText: doc,
+        understanding: freshUnderstanding,
+        turns: current.turns,
+        memory,
+      });
+      syncJudgmentAfterAnswer({
+        projectId,
+        living,
+        loop: current,
+        forceJudgmentView: true,
+      });
+    } else {
+      openJudgmentView(projectId);
+    }
+    syncState(loadAiPmLoopState(projectId));
+  }, [entities, projectId, syncState, understanding]);
 
   const continueQuestionsFromJudgment = useCallback(() => {
     syncState(resumeQuestionView(projectId));
@@ -1078,7 +1104,11 @@ export function WorkspaceAiPmLoopPanel({
           },
           projectId,
         )
-      : applyLoopProcessingTransition(result, projectId, canComplete);
+      : applyLoopProcessingTransition(
+          result,
+          projectId,
+          canComplete && !isAiPmJudgmentAggregationV1Active(),
+        );
     const wrongSlotAfter =
       resolveWrongSlotQuestionOverride(next.turns) ?? wrongSlotBefore;
     if (wrongSlotAfter) {
@@ -2214,6 +2244,33 @@ export function WorkspaceAiPmLoopPanel({
     );
   }
 
+  if (
+    simpleQuestionUiActive &&
+    loopState.viewMode === 'judgment' &&
+    loopState.ceoJudgment
+  ) {
+    const stop = evaluateJudgmentStop({
+      questionCount: loopState.ceoJudgment.questionCount,
+      judgment: loopState.ceoJudgment,
+    });
+    const titleMode =
+      loopState.judgmentViewMode ??
+      (stop.judgmentTitle === 'result' ? 'result' : 'interim');
+    return (
+      <WorkspaceAiPmJudgmentView
+        className={className}
+        judgment={loopState.ceoJudgment}
+        titleMode={titleMode}
+        readOnly={readOnly}
+        onContinueQuestions={
+          loopState.ceoJudgment.questionCount < 5 ? continueQuestionsFromJudgment : undefined
+        }
+        onFollowUpCheck={startFollowUpFromJudgment}
+        onFinishReview={finishJudgmentReview}
+      />
+    );
+  }
+
   if (isAiPmLoopComplete(loopState)) {
     const finalOutput = buildConversationalFinalOutput(livingState);
     return (
@@ -2309,30 +2366,6 @@ export function WorkspaceAiPmLoopPanel({
   }
 
   const activeIssue = activeIssueId;
-
-  if (
-    simpleQuestionUiActive &&
-    loopState.viewMode === 'judgment' &&
-    loopState.ceoJudgment
-  ) {
-    const stop = evaluateJudgmentStop({
-      questionCount: loopState.ceoJudgment.questionCount,
-      judgment: loopState.ceoJudgment,
-    });
-    return (
-      <WorkspaceAiPmJudgmentView
-        className={className}
-        judgment={loopState.ceoJudgment}
-        titleMode={stop.judgmentTitle === 'result' ? 'result' : 'interim'}
-        readOnly={readOnly}
-        onContinueQuestions={
-          loopState.ceoJudgment.questionCount < 5 ? continueQuestionsFromJudgment : undefined
-        }
-        onFollowUpCheck={startFollowUpFromJudgment}
-        onFinishReview={finishJudgmentReview}
-      />
-    );
-  }
 
   if (displayPhase === 'answer' && activeIssue) {
     const whyNowText =

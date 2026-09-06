@@ -115,7 +115,7 @@ describe('DAY 8-G — Judgment & Simple Conversation', () => {
 
     const snapshot = buildAiPmSimpleQuestionSnapshot({
       displayQuestionText: '다음 질문',
-      questionCount: 3,
+      questionCount: 2,
     });
     expect(snapshot.showInterimJudgmentCta).toBe(true);
   });

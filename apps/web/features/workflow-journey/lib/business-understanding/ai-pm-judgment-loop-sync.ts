@@ -57,11 +57,14 @@ export function syncJudgmentAfterAnswer(input: {
 
   if (stop.showJudgmentView) {
     patch.viewMode = 'judgment';
+    patch.phase = 'answer';
+    patch.judgmentViewMode = stop.judgmentTitle === 'result' ? 'result' : 'interim';
     if (input.loop.judgmentFollowUp) {
       patch.judgmentFollowUp = false;
     }
   } else if (!input.forceJudgmentView && input.loop.viewMode === 'judgment') {
     patch.viewMode = 'question';
+    patch.judgmentViewMode = null;
   }
 
   const loop = patchAiPmLoopState(patch, input.projectId);
@@ -70,11 +73,11 @@ export function syncJudgmentAfterAnswer(input: {
 }
 
 export function openJudgmentView(projectId?: string): AiPmLoopState {
-  return patchAiPmLoopState({ viewMode: 'judgment' }, projectId);
+  return patchAiPmLoopState({ viewMode: 'judgment', judgmentViewMode: 'interim' }, projectId);
 }
 
 export function resumeQuestionView(projectId?: string): AiPmLoopState {
-  return patchAiPmLoopState({ viewMode: 'question' }, projectId);
+  return patchAiPmLoopState({ viewMode: 'question', judgmentViewMode: null }, projectId);
 }
 
 export function startJudgmentFollowUp(projectId?: string): AiPmLoopState {

@@ -89,7 +89,8 @@ export async function startDemoSaas(page: Page) {
 
   if (page.url().includes('/workspace')) {
     await page
-      .getByTestId('ai-pm-focused-surface')
+      .getByTestId('ai-pm-simple-question')
+      .or(page.getByTestId('ai-pm-focused-surface'))
       .or(page.getByTestId('s11-surface-understanding'))
       .or(page.getByTestId('s11-surface'))
       .or(page.getByRole('button', { name: /맞습니다|That'?s right/i }))
@@ -103,15 +104,17 @@ export async function startDemoSaas(page: Page) {
 }
 
 export async function waitForPmAskSurface(page: Page) {
+  const simple = page.getByTestId('ai-pm-simple-question');
   const focused = page.getByTestId('ai-pm-focused-surface');
   const s11 = page.getByTestId('s11-surface');
   const started = Date.now();
   while (Date.now() - started < 60_000) {
+    if (await simple.isVisible().catch(() => false)) return;
     if (await focused.isVisible().catch(() => false)) return;
     if (await s11.isVisible().catch(() => false)) return;
     await page.waitForTimeout(250);
   }
-  throw new Error('Neither ai-pm-focused-surface nor s11-surface became visible');
+  throw new Error('Neither ai-pm-simple-question, ai-pm-focused-surface nor s11-surface became visible');
 }
 
 export async function confirmUnderstanding(page: Page) {
@@ -172,6 +175,34 @@ export async function submitResearchDelegation(page: Page, utterance: string): P
   return submitAnswer(page, utterance);
 }
 
+/** Submit on open-answer surface — prefers typed answer; confirm Yes only when it advances turns. */
+export async function submitOpenAnswer(page: Page, answer: string): Promise<boolean> {
+  await dismissRecognition(page);
+  await waitForAskSurface(page).catch(() => null);
+  await advanceToOpenAnswerSurface(page);
+
+  const box = page.locator('textarea').last();
+  if (await box.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    return submitAnswer(page, answer);
+  }
+
+  const confirmYes = page.getByTestId('confirm-yes-cta');
+  if (await confirmYes.isVisible({ timeout: 1_500 }).catch(() => false)) {
+    const beforeTurns = await readLoopTurnCount(page);
+    await confirmYes.click({ force: true });
+    await page.waitForTimeout(900);
+    const thinking = page.getByTestId('ai-pm-thinking-stages');
+    if (await thinking.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await thinking.waitFor({ state: 'hidden', timeout: 45_000 }).catch(() => null);
+    }
+    await page.waitForTimeout(800);
+    const afterTurns = await readLoopTurnCount(page);
+    return afterTurns > beforeTurns;
+  }
+
+  return false;
+}
+
 export async function submitAnswer(page: Page, answer: string): Promise<boolean> {
   await dismissRecognition(page);
   await waitForAskSurface(page).catch(() => null);
@@ -197,6 +228,15 @@ export async function waitForAskSurface(page: Page) {
 }
 
 export async function readSurfaceQuestion(page: Page): Promise<string> {
+  try {
+    const simple = page.getByTestId('ai-pm-simple-question');
+    if (await simple.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      return (await page.getByTestId('simple-question-text').innerText()).trim();
+    }
+  } catch {
+    /* fall through */
+  }
+
   try {
     const focused = page.getByTestId('ai-pm-focused-surface');
     if (await focused.isVisible({ timeout: 2_000 }).catch(() => false)) {
@@ -256,6 +296,32 @@ export async function isV3PipelineActiveInBrowser(page: Page): Promise<boolean> 
   });
 }
 
+export async function readLoopTurnCount(page: Page): Promise<number> {
+  const loop = await readLoopFromSession(page);
+  return (
+    loop?.turns?.filter(
+      (t) =>
+        Boolean(t.answer?.trim()) &&
+        !(t as { superseded?: boolean }).superseded,
+    ).length ?? 0
+  );
+}
+
+export async function submitUntilJudgmentBudget(page: Page, answers: string[]): Promise<void> {
+  for (let attempt = 0; attempt < 18; attempt += 1) {
+    if (await page.getByTestId('ai-pm-judgment-view').isVisible({ timeout: 1_000 }).catch(() => false)) {
+      return;
+    }
+    await submitOpenAnswer(page, answers[attempt % answers.length]!);
+    await page.waitForTimeout(1_500);
+    const thinking = page.getByTestId('ai-pm-thinking-stages');
+    if (await thinking.isVisible({ timeout: 1_000 }).catch(() => false)) {
+      await thinking.waitFor({ state: 'hidden', timeout: 45_000 }).catch(() => null);
+    }
+    await page.waitForTimeout(800);
+  }
+}
+
 export async function readLoopFromSession(page: Page) {
   return page.evaluate(() => {
     for (let i = 0; i < sessionStorage.length; i += 1) {
@@ -268,7 +334,7 @@ export async function readLoopFromSession(page: Page) {
           gapState?: { gaps?: Record<string, { completeness?: string }> };
           lastDecision?: { questionText?: string; targetGapId?: string };
           lockedAskSurface?: { questionText?: string; targetGap?: string };
-          turns?: Array<{ review?: unknown; targetGap?: string }>;
+          turns?: Array<{ review?: unknown; targetGap?: string; answer?: string; superseded?: boolean }>;
         };
       } catch {
         /* ignore */

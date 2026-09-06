@@ -6,6 +6,7 @@ import { buildAnswerGuide, formatAnswerGuideText } from './ai-pm-answer-guide';
 import { toHumanLanguageQuestion } from './ai-pm-question-human-language';
 import { sanitizeCeoWhyNow } from './ai-pm-question-presentation';
 import {
+  CEO_JUDGMENT_EARLY_VIEW_FROM,
   CEO_JUDGMENT_SESSION_MAX_QUESTIONS,
   judgmentViewTitle,
 } from './ai-pm-question-budget';
@@ -69,6 +70,6 @@ export function buildAiPmSimpleQuestionSnapshot(input: {
     progressLabel: `사업 이해 ${index} / ${CEO_JUDGMENT_SESSION_MAX_QUESTIONS}`,
     questionIndex: index,
     maxQuestions: CEO_JUDGMENT_SESSION_MAX_QUESTIONS,
-    showInterimJudgmentCta: input.questionCount >= 3,
+    showInterimJudgmentCta: index >= CEO_JUDGMENT_EARLY_VIEW_FROM,
   };
 }

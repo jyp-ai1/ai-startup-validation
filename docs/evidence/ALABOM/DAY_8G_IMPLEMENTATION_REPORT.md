@@ -47,7 +47,7 @@ Unit: `day8g-judgment-conversation.test.ts` — 10/10 PASS (G-R1~G-R10)
 
 Full: 8-F regression unit tests PASS (`day8f-question-causality`, `day8d-phase-c-no-ask`)
 
-Browser: `day8g-judgment-conversation.spec.ts` — blocked by E2E server Internal Server Error (infra); unit + build gate PASS
+Browser: `pnpm run test:e2e:day8g` — **14/14 PASS** (see `DAY_8G_BROWSER_GATE_REPORT.md`)
 
 ## 5. G-R1 ~ G-R10
 
@@ -93,10 +93,14 @@ Pending merge/deploy
 
 Pending CPO gate
 
-## 12. Known Issues
+## 12. Browser Gate
 
-None identified in unit/build gate.
+See `docs/evidence/ALABOM/DAY_8G_BROWSER_GATE_REPORT.md` — all scenarios PASS (E2E infra, G-A~G-E, F-B1~F-B3, D1~D5).
 
-## 13. CPO Review Required
+## 13. Known Issues
 
-DAY 8-G implementation ready for Production Browser validation (Scenarios A–F).
+None — browser gate PASS.
+
+## 14. CPO Review Required
+
+Local Browser Gate PASS. Awaiting CPO Merge GO → Production deploy → Production Browser A~F.
