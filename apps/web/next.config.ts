@@ -62,6 +62,8 @@ const nextConfig: NextConfig = {
             process.env.NEXT_PUBLIC_AI_PM_RESEARCH_UX_V1 ?? 'true',
           NEXT_PUBLIC_AI_PM_ANSWER_TARGET_BINDING_V1:
             process.env.NEXT_PUBLIC_AI_PM_ANSWER_TARGET_BINDING_V1 ?? 'true',
+          NEXT_PUBLIC_AI_PM_JUDGMENT_AGGREGATION_V1:
+            process.env.NEXT_PUBLIC_AI_PM_JUDGMENT_AGGREGATION_V1 ?? 'true',
         }
       : {}),
   },

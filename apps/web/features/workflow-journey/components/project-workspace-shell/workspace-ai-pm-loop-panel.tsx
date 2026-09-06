@@ -30,6 +30,15 @@ import { shouldSkipLiveRankOnRemount } from '../../lib/business-understanding/re
 import { resolveV3DisplayPriority } from '../../lib/business-understanding/v3-legacy-bypass-guards';
 import { isV3ReviewPipelineActive } from '../../lib/business-understanding/v3-review-pipeline';
 import { isAiPmFocusedUiActive } from '../../lib/business-understanding/ai-pm-focused-ui';
+import { isAiPmJudgmentAggregationV1Active } from '../../lib/business-understanding/ai-pm-judgment-aggregation-v1';
+import { buildAiPmSimpleQuestionSnapshot } from '../../lib/business-understanding/ai-pm-simple-question-presenter';
+import {
+  openJudgmentView,
+  resumeQuestionView,
+  startJudgmentFollowUp,
+  syncJudgmentAfterAnswer,
+} from '../../lib/business-understanding/ai-pm-judgment-loop-sync';
+import { evaluateJudgmentStop } from '../../lib/business-understanding/ai-pm-question-budget';
 import { isAiPmJudgmentPolicyV1Active } from '../../lib/business-understanding/ai-pm-judgment-policy-v1';
 import { buildAiPmFocusedSnapshot } from '../../lib/business-understanding/ai-pm-focused-presenter';
 import {
@@ -128,6 +137,8 @@ import { WorkspaceAiPmThinkingStages } from './workspace-ai-pm-thinking-stages';
 import { WorkspaceAiPmConversationDetail } from './workspace-ai-pm-conversation-detail';
 import { WorkspaceCeoSixSurfaces } from './workspace-ceo-six-surfaces';
 import { WorkspaceAiPmFocusedSurface } from './workspace-ai-pm-focused-surface';
+import { WorkspaceAiPmSimpleQuestion } from './workspace-ai-pm-simple-question';
+import { WorkspaceAiPmJudgmentView } from './workspace-ai-pm-judgment-view';
 import { WorkspaceS11Surface } from './workspace-s11-surface';
 import type { WorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
 import type { AiPmFocusedSnapshot } from '../../lib/business-understanding/ai-pm-focused-presenter';
@@ -135,16 +146,31 @@ import type { AiPmFocusedSnapshot } from '../../lib/business-understanding/ai-pm
 function AiPmQuestionSurface({
   focusedUiActive,
   focusedSnapshot,
+  simpleQuestionUiActive,
+  simpleSnapshot,
+  onShowInterimJudgment,
   s11Surface,
   displayQuestionText,
   className,
 }: {
   focusedUiActive: boolean;
   focusedSnapshot: AiPmFocusedSnapshot | null;
+  simpleQuestionUiActive: boolean;
+  simpleSnapshot: ReturnType<typeof buildAiPmSimpleQuestionSnapshot> | null;
+  onShowInterimJudgment?: () => void;
   s11Surface: ReturnType<typeof presentS11Surface>;
   displayQuestionText: string;
   className?: string;
 }) {
+  if (simpleQuestionUiActive && simpleSnapshot) {
+    return (
+      <WorkspaceAiPmSimpleQuestion
+        snapshot={simpleSnapshot}
+        onShowInterimJudgment={onShowInterimJudgment}
+        className={className}
+      />
+    );
+  }
   if (focusedUiActive && focusedSnapshot) {
     return (
       <WorkspaceAiPmFocusedSurface snapshot={focusedSnapshot} className={className} />
@@ -663,7 +689,39 @@ export function WorkspaceAiPmLoopPanel({
     questionPresentation.questionType === 'confirm' &&
     !loopState.researchPending &&
     Boolean(questionPresentation.confirmKnownValue || /맞나요/.test(displayQuestionText ?? ''));
-  const focusedUiActive = isAiPmFocusedUiActive();
+  const judgmentConversationActive = isAiPmJudgmentAggregationV1Active();
+  const focusedUiActive = isAiPmFocusedUiActive() && !judgmentConversationActive;
+  const simpleQuestionUiActive = judgmentConversationActive;
+  const activeTargetGap =
+    lockedAskSurface?.targetGap ??
+    questionOverride?.targetGap ??
+    whyThisQuestionNow?.targetGap ??
+    turnsWrongSlotOverride?.targetGap ??
+    lastAskSurfaceRef.current.targetGap ??
+    null;
+  const simpleQuestionSnapshot = useMemo(() => {
+    if (!simpleQuestionUiActive) return null;
+    return buildAiPmSimpleQuestionSnapshot({
+      displayQuestionText,
+      targetGap: activeTargetGap,
+      whyNow:
+        whyThisQuestionNow?.whyNow ??
+        whyThisQuestionNow?.rationale ??
+        s11Surface.question.purpose,
+      questionCount: loopState.ceoJudgment?.questionCount ?? loopState.turns.filter(
+        (t) => !t.superseded && t.answer?.trim() && t.intent !== 'why_meta' && t.intent !== 'mid_judgment',
+      ).length,
+    });
+  }, [
+    simpleQuestionUiActive,
+    displayQuestionText,
+    activeTargetGap,
+    whyThisQuestionNow?.whyNow,
+    whyThisQuestionNow?.rationale,
+    s11Surface.question.purpose,
+    loopState.ceoJudgment?.questionCount,
+    loopState.turns,
+  ]);
   const focusedSnapshot = useMemo(() => {
     if (!focusedUiActive) return null;
     return buildAiPmFocusedSnapshot({
@@ -809,6 +867,40 @@ export function WorkspaceAiPmLoopPanel({
     [],
   );
 
+  const showInterimJudgment = useCallback(() => {
+    const doc = loadWorkspaceDocumentText(projectId) ?? '';
+    const freshUnderstanding = doc.trim() ? buildBusinessUnderstanding(doc) : understanding;
+    const current = loadAiPmLoopState(projectId);
+    if (freshUnderstanding) {
+      const memory = buildConversationMemoryFromSources({
+        projectId: projectId ?? 'default',
+        documentText: doc,
+        turns: current.turns,
+        entities,
+        previous: loadConversationMemory(projectId),
+      });
+      const living = buildLivingUnderstandingState({
+        documentText: doc,
+        understanding: freshUnderstanding,
+        turns: current.turns,
+        memory,
+      });
+      syncJudgmentAfterAnswer({
+        projectId,
+        living,
+        loop: current,
+        forceJudgmentView: true,
+      });
+    } else {
+      openJudgmentView(projectId);
+    }
+    syncState(loadAiPmLoopState(projectId));
+  }, [entities, projectId, syncState, understanding]);
+
+  const continueQuestionsFromJudgment = useCallback(() => {
+    syncState(resumeQuestionView(projectId));
+  }, [projectId, syncState]);
+
   const updateAnswerDraft = useCallback(
     (value: string) => {
       setAnswerDraft(value);
@@ -843,6 +935,65 @@ export function WorkspaceAiPmLoopPanel({
     },
     [projectId],
   );
+
+  const startFollowUpFromJudgment = useCallback(() => {
+    startJudgmentFollowUp(projectId);
+    const refreshed = loadAiPmLoopState(projectId);
+    const doc = loadWorkspaceDocumentText(projectId) ?? '';
+    const freshUnderstanding = doc.trim() ? buildBusinessUnderstanding(doc) : understanding;
+    if (!freshUnderstanding) {
+      syncState(refreshed);
+      return;
+    }
+    const memory = buildConversationMemoryFromSources({
+      projectId: projectId ?? 'default',
+      documentText: doc,
+      turns: refreshed.turns,
+      entities,
+      previous: loadConversationMemory(projectId),
+    });
+    const living = buildLivingUnderstandingState({
+      documentText: doc,
+      understanding: freshUnderstanding,
+      turns: refreshed.turns,
+      memory,
+    });
+    const decision = resolveNextQuestionDecision({
+      living,
+      turns: refreshed.turns,
+      memory,
+      projectId,
+      gapState: refreshed.gapState,
+      persistLastDecision: true,
+    });
+    if (decision) {
+      const purity = enforceQuestionPurity({
+        questionText: decision.questionText,
+        targetGap: decision.targetGap,
+      });
+      commitQuestionLock(
+        captureLockedAskSurface({
+          issueId: decision.issueId,
+          targetGap: decision.targetGap,
+          questionText: purity.sanitizedText,
+          whyNow: decision.whyNow,
+          rationale: decision.rationale,
+          score: decision.score,
+          fallbackIssueId: decision.issueId,
+        }),
+      );
+    }
+    syncState(
+      patchAiPmLoopState(
+        { phase: 'answer', currentIssueId: decision?.issueId ?? refreshed.currentIssueId },
+        projectId,
+      ),
+    );
+  }, [commitQuestionLock, entities, projectId, syncState, understanding]);
+
+  const finishJudgmentReview = useCallback(() => {
+    syncState(openJudgmentView(projectId));
+  }, [projectId, syncState]);
 
   const activateQuestionLock = useCallback(() => {
     const issueId = loopState.currentIssueId ?? nextIssue;
@@ -953,7 +1104,11 @@ export function WorkspaceAiPmLoopPanel({
           },
           projectId,
         )
-      : applyLoopProcessingTransition(result, projectId, canComplete);
+      : applyLoopProcessingTransition(
+          result,
+          projectId,
+          canComplete && !isAiPmJudgmentAggregationV1Active(),
+        );
     const wrongSlotAfter =
       resolveWrongSlotQuestionOverride(next.turns) ?? wrongSlotBefore;
     if (wrongSlotAfter) {
@@ -999,6 +1154,24 @@ export function WorkspaceAiPmLoopPanel({
       setRecognitionDismissed(true);
       syncState(opened);
       const openedState = loadAiPmLoopState(projectId);
+      const judgmentSync = syncJudgmentAfterAnswer({
+        projectId,
+        living: result.living,
+        loop: openedState,
+        forceJudgmentView: Boolean(openedState.judgmentFollowUp),
+      });
+
+      if (judgmentSync.stop.shouldStop && judgmentSync.stop.showJudgmentView) {
+        syncState(judgmentSync.loop);
+        if (next.phase === 'complete') onLoopComplete?.();
+        onDocumentUpdated?.(
+          loadAiPmLoopState(projectId).currentIssueId ?? 'problem_definition',
+          '',
+        );
+        window.setTimeout(() => setUpdateSavedFlash(false), 2200);
+        return;
+      }
+
       const freshMemory = buildConversationMemoryFromSources({
         projectId: projectId ?? 'default',
         documentText: doc,
@@ -1014,7 +1187,13 @@ export function WorkspaceAiPmLoopPanel({
         gapState: openedState.gapState,
         persistLastDecision: true,
       });
-      if (decision) {
+      const budgetBlock =
+        isAiPmJudgmentAggregationV1Active() &&
+        evaluateJudgmentStop({
+          questionCount: judgmentSync.judgment.questionCount,
+          judgment: judgmentSync.judgment,
+        }).shouldStop;
+      if (decision && !budgetBlock) {
         const purity = enforceQuestionPurity({
           questionText: decision.questionText,
           targetGap: decision.targetGap,
@@ -2065,6 +2244,33 @@ export function WorkspaceAiPmLoopPanel({
     );
   }
 
+  if (
+    simpleQuestionUiActive &&
+    loopState.viewMode === 'judgment' &&
+    loopState.ceoJudgment
+  ) {
+    const stop = evaluateJudgmentStop({
+      questionCount: loopState.ceoJudgment.questionCount,
+      judgment: loopState.ceoJudgment,
+    });
+    const titleMode =
+      loopState.judgmentViewMode ??
+      (stop.judgmentTitle === 'result' ? 'result' : 'interim');
+    return (
+      <WorkspaceAiPmJudgmentView
+        className={className}
+        judgment={loopState.ceoJudgment}
+        titleMode={titleMode}
+        readOnly={readOnly}
+        onContinueQuestions={
+          loopState.ceoJudgment.questionCount < 5 ? continueQuestionsFromJudgment : undefined
+        }
+        onFollowUpCheck={startFollowUpFromJudgment}
+        onFinishReview={finishJudgmentReview}
+      />
+    );
+  }
+
   if (isAiPmLoopComplete(loopState)) {
     const finalOutput = buildConversationalFinalOutput(livingState);
     return (
@@ -2175,6 +2381,9 @@ export function WorkspaceAiPmLoopPanel({
         <AiPmQuestionSurface
           focusedUiActive={focusedUiActive}
           focusedSnapshot={focusedSnapshot}
+          simpleQuestionUiActive={simpleQuestionUiActive}
+          simpleSnapshot={simpleQuestionSnapshot}
+          onShowInterimJudgment={showInterimJudgment}
           s11Surface={s11Surface}
           displayQuestionText={displayQuestionText}
         />
@@ -2279,7 +2488,9 @@ export function WorkspaceAiPmLoopPanel({
             rows={4}
             readOnly={readOnly}
             placeholder={
-              whyThisQuestionNow?.questionText?.trim() || t(`issues.${activeIssue}.placeholder`)
+              simpleQuestionUiActive
+                ? '답변을 입력하세요'
+                : whyThisQuestionNow?.questionText?.trim() || t(`issues.${activeIssue}.placeholder`)
             }
             className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[4.5rem]"
             aria-label={displayQuestionText || t('submitAnswerCta')}
@@ -2402,7 +2613,7 @@ export function WorkspaceAiPmLoopPanel({
           loopState={loopState}
           whyNow={whyNowText}
           displayQuestionText={displayQuestionText}
-          hideForFocusedUi={focusedUiActive}
+          hideForFocusedUi={focusedUiActive || simpleQuestionUiActive}
         />
       </section>
     );
@@ -2444,6 +2655,9 @@ export function WorkspaceAiPmLoopPanel({
             <AiPmQuestionSurface
               focusedUiActive={focusedUiActive}
               focusedSnapshot={focusedSnapshot}
+              simpleQuestionUiActive={simpleQuestionUiActive}
+              simpleSnapshot={simpleQuestionSnapshot}
+              onShowInterimJudgment={showInterimJudgment}
               s11Surface={s11Surface}
               displayQuestionText={displayQuestionText}
             />
@@ -2454,7 +2668,7 @@ export function WorkspaceAiPmLoopPanel({
               loopState={loopState}
               whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
               displayQuestionText={displayQuestionText}
-              hideForFocusedUi={focusedUiActive}
+              hideForFocusedUi={focusedUiActive || simpleQuestionUiActive}
             />
             <Button
               type="button"
@@ -2475,6 +2689,9 @@ export function WorkspaceAiPmLoopPanel({
               <AiPmQuestionSurface
                 focusedUiActive={focusedUiActive}
                 focusedSnapshot={focusedSnapshot}
+                simpleQuestionUiActive={simpleQuestionUiActive}
+                simpleSnapshot={simpleQuestionSnapshot}
+                onShowInterimJudgment={showInterimJudgment}
                 s11Surface={s11Surface}
                 displayQuestionText={displayQuestionText}
               />
@@ -2656,7 +2873,7 @@ export function WorkspaceAiPmLoopPanel({
                 loopState={loopState}
                 whyNow={whyThisQuestionNow?.whyNow ?? whyThisQuestionNow?.rationale}
                 displayQuestionText={displayQuestionText}
-                hideForFocusedUi={focusedUiActive}
+                hideForFocusedUi={focusedUiActive || simpleQuestionUiActive}
               />
             </section>
             {loopState.turns.length > 0 ? (
