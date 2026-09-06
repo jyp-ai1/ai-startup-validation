@@ -101,6 +101,8 @@ See `docs/evidence/ALABOM/DAY_8G_BROWSER_GATE_REPORT.md` — all scenarios PASS 
 
 None — browser gate PASS.
 
-## 14. CPO Review Required
+## 14. Final Status
 
-Production Gate PASS @ `69634a7`. Awaiting CPO final DAY 8-G sign-off.
+**CLOSED / FROZEN** — CPO sign-off 2026-09-06  
+Tag: `alabom-day8g-prod-69634a7` @ `69634a756c4d6f6fde77e442b6ae60f841ff4185`  
+Next: DAY 8-H CEO Product Acceptance (observation only — no code changes)
