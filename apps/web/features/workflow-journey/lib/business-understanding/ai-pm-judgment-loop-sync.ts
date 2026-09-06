@@ -2,9 +2,10 @@
  * DAY 8-G — Loop panel judgment sync (presentation layer only).
  */
 
-import { buildCeoJudgmentState } from './ai-pm-judgment-aggregation';
+import { buildCeoJudgmentStateWithTrace } from './ai-pm-judgment-aggregation';
 import { isAiPmJudgmentAggregationV1Active } from './ai-pm-judgment-aggregation-v1';
 import type { CeoJudgmentDimensionId, CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
+import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import {
   evaluateJudgmentStop,
@@ -17,6 +18,7 @@ export type JudgmentLoopSyncResult = {
   loop: AiPmLoopState;
   judgment: CeoJudgmentState;
   stop: JudgmentStopVerdict;
+  turnTrace?: JudgmentTurnTrace;
 };
 
 export function syncJudgmentAfterAnswer(input: {
@@ -24,14 +26,17 @@ export function syncJudgmentAfterAnswer(input: {
   living: LivingUnderstandingState;
   loop: AiPmLoopState;
   forceJudgmentView?: boolean;
+  lastQuestionText?: string;
+  /** Pre-answer judgment snapshot for trace baseline */
+  beforeState?: CeoJudgmentState | null;
 }): JudgmentLoopSyncResult {
   if (!isAiPmJudgmentAggregationV1Active()) {
     return {
       loop: input.loop,
-      judgment: input.loop.ceoJudgment ?? buildCeoJudgmentState({
+      judgment: input.loop.ceoJudgment ?? buildCeoJudgmentStateWithTrace({
         living: input.living,
         turns: input.loop.turns,
-      }),
+      }).state,
       stop: {
         shouldStop: false,
         reason: 'continue',
@@ -41,10 +46,14 @@ export function syncJudgmentAfterAnswer(input: {
     };
   }
 
-  const judgment = buildCeoJudgmentState({
+  const prior = input.loop.ceoJudgment ?? null;
+
+  const { state: judgment, traceEntries } = buildCeoJudgmentStateWithTrace({
     living: input.living,
     turns: input.loop.turns,
-    prior: input.loop.ceoJudgment,
+    prior,
+    beforeState: input.beforeState ?? prior,
+    question: input.lastQuestionText,
   });
 
   const stop = evaluateJudgmentStop({
@@ -53,7 +62,34 @@ export function syncJudgmentAfterAnswer(input: {
     forceJudgmentView: input.forceJudgmentView,
   });
 
-  const patch: Partial<AiPmLoopState> = { ceoJudgment: judgment };
+  const actionable = input.loop.turns.filter(
+    (t) =>
+      !t.superseded &&
+      t.intent !== 'why_meta' &&
+      t.intent !== 'mid_judgment' &&
+      t.intent !== 'nonsense' &&
+      Boolean(t.answer?.trim()),
+  );
+  const last = actionable[actionable.length - 1];
+  const turnTrace: JudgmentTurnTrace | undefined =
+    last && traceEntries.length > 0
+      ? {
+          turnId: last.appliedAt,
+          turnIndex: actionable.length,
+          question: input.lastQuestionText ?? last.askedQuestionText ?? '',
+          answer: last.answer,
+          understandingOneLiner: input.living.spine.customer ?? input.living.spine.problem ?? '',
+          judgmentOneLiner: judgment.oneLiner,
+          dimensionEntries: traceEntries,
+        }
+      : undefined;
+
+  const patch: Partial<AiPmLoopState> = {
+    ceoJudgment: judgment,
+    ...(turnTrace
+      ? { judgmentTraces: [...(input.loop.judgmentTraces ?? []), turnTrace] }
+      : {}),
+  };
 
   if (stop.showJudgmentView) {
     patch.viewMode = 'judgment';
@@ -69,7 +105,7 @@ export function syncJudgmentAfterAnswer(input: {
 
   const loop = patchAiPmLoopState(patch, input.projectId);
 
-  return { loop, judgment, stop };
+  return { loop, judgment, stop, turnTrace };
 }
 
 export function openJudgmentView(projectId?: string): AiPmLoopState {

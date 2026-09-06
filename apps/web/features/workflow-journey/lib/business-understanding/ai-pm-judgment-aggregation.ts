@@ -13,10 +13,14 @@ import {
   type CeoJudgmentState,
   type CeoJudgmentStatus,
 } from './ai-pm-ceo-judgment-dimensions';
+import { extractDimensionSummaries } from './ai-pm-dimension-extract';
 import { finalizeJudgmentPresentation } from './ai-pm-judgment-conclusion';
 import { isAiPmJudgmentAggregationV1Active } from './ai-pm-judgment-aggregation-v1';
+import {
+  buildJudgmentTraceEntries,
+  type JudgmentTraceEntry,
+} from './ai-pm-judgment-trace';
 import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
-import type { ConversationFactKey } from './conversation-memory';
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
@@ -27,8 +31,6 @@ const SOLUTION_METHOD_CUE_RE =
   /(연결|통합|관리|플랫폼|서비스|제공|만들|구축|해결하려|하려고|시스템|앱|툴)/i;
 const CURRENT_ALTERNATIVE_CUE_RE =
   /(엑셀|카카오|카톡|수기|직접\s*관리|기존|지금은|현재는|이미\s*)/i;
-const PROBLEM_CUE_RE =
-  /(불편|문제|어렵|힘들|분리|따로|없고|부족|번거|복잡)/i;
 const CUSTOMER_CUE_RE =
   /(소상공인|사장|고객|가게|양조|반찬|꽃집|배송|CEO|PM|스타트업)/i;
 
@@ -185,145 +187,90 @@ function dimensionFromLiving(living: LivingUnderstandingState): Partial<
   return out;
 }
 
-function factKeyToDimension(
-  key: ConversationFactKey,
-  answer: string,
-): CeoJudgmentDimensionId | null {
-  switch (key) {
-    case 'customer':
-      return 'customer';
-    case 'problem':
-      return 'problem';
-    case 'business':
-      return /(하려고|제공|만들|연결|통합|해결|플랫폼|앱|툴|시스템)/.test(answer)
-        ? 'solution'
-        : null;
-    case 'differentiation':
-    case 'defensibility':
-      return 'solution';
-    case 'diffRelevance':
-      return 'customerChange';
-    case 'competitor':
-      return null;
-    default:
-      return null;
-  }
-}
-
 function dimensionsFromAnswerText(
   answer: string,
   askedIssueId?: AiPmLoopTurn['issueId'],
   askedGap?: string,
-): Partial<Record<CeoJudgmentDimensionId, CeoJudgmentDimension>> {
+): {
+  dimensions: Partial<Record<CeoJudgmentDimensionId, CeoJudgmentDimension>>;
+  meta: Partial<
+    Record<
+      CeoJudgmentDimensionId,
+      { interpretedMeaning: string; evidence: string; reason: string }
+    >
+  >;
+} {
   const trimmed = answer.trim();
-  if (trimmed.length < 4) return {};
+  if (trimmed.length < 4) return { dimensions: {}, meta: {} };
 
-  const semantic = interpretAnswerSemantics({
+  interpretAnswerSemantics({
     answer: trimmed,
     askedIssueId: askedIssueId ?? null,
     askedTargetGap: askedGap,
   });
 
+  const extracted = extractDimensionSummaries(trimmed);
   const out: Partial<Record<CeoJudgmentDimensionId, CeoJudgmentDimension>> = {};
+  const meta: Partial<
+    Record<
+      CeoJudgmentDimensionId,
+      { interpretedMeaning: string; evidence: string; reason: string }
+    >
+  > = {};
 
-  for (const hit of semantic.facts) {
-    const dimId = factKeyToDimension(hit.key, trimmed);
-    if (!dimId) continue;
-    const { status, reason } = toStatus(trimmed, 'strong');
-    out[dimId] = {
-      id: dimId,
-      label: CEO_JUDGMENT_DIMENSION_LABELS[dimId],
-      status,
-      summary: clip(trimmed),
-      statusReason: reason,
+  for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+    const hit = extracted[id];
+    if (!hit) continue;
+    const strength =
+      id === 'customerChange' || id === 'problem' ? 'strong' : 'partial';
+    const { status, reason } = toStatus(hit.summary, strength);
+    out[id] = {
+      id,
+      label: CEO_JUDGMENT_DIMENSION_LABELS[id],
+      status: id === 'solution' && hit.reason.includes('needs_check') ? 'needs_check' : status,
+      summary: hit.summary,
+      statusReason: hit.reason || reason,
+    };
+    meta[id] = {
+      interpretedMeaning: hit.interpretedMeaning,
+      evidence: hit.evidence,
+      reason: hit.reason,
     };
   }
 
-  if (CUSTOMER_CUE_RE.test(trimmed)) {
-    const { status, reason } = toStatus(trimmed, CUSTOMER_CUE_RE.test(trimmed) ? 'strong' : 'partial');
-    out.customer = mergeDimension(
-      out.customer ?? {
-        id: 'customer',
-        label: CEO_JUDGMENT_DIMENSION_LABELS.customer,
-        status: 'unknown',
-        summary: '',
-      },
-      { status, summary: clip(trimmed), statusReason: reason },
-    );
-  }
-
-  if (PROBLEM_CUE_RE.test(trimmed)) {
-    const { status, reason } = toStatus(trimmed, 'strong');
-    out.problem = mergeDimension(
-      out.problem ?? {
-        id: 'problem',
-        label: CEO_JUDGMENT_DIMENSION_LABELS.problem,
-        status: 'unknown',
-        summary: '',
-      },
-      { status, summary: clip(trimmed), statusReason: reason },
-    );
-  }
-
-  if (CUSTOMER_CHANGE_CUE_RE.test(trimmed) && !SOLUTION_METHOD_CUE_RE.test(trimmed)) {
-    const { status, reason } = toStatus(trimmed, 'strong');
-    out.customerChange = {
-      id: 'customerChange',
-      label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
-      status,
-      summary: clip(trimmed),
-      statusReason: reason,
-    };
-  } else if (SOLUTION_METHOD_CUE_RE.test(trimmed) && !CUSTOMER_CHANGE_CUE_RE.test(trimmed)) {
-    const problemDominant =
-      PROBLEM_CUE_RE.test(trimmed) &&
-      /(불편|어렵|힘들|번거|복잡)/.test(trimmed) &&
-      !/(하려고|하려\s*합니다|제공|만들려|연결하|통합하|해결하)/.test(trimmed);
-    if (!problemDominant) {
-      const { status, reason } = toStatus(trimmed, 'partial');
-      out.solution = {
-        id: 'solution',
-        label: CEO_JUDGMENT_DIMENSION_LABELS.solution,
-        status,
-        summary: clip(trimmed),
-        statusReason: reason,
-      };
-    }
-  } else if (SOLUTION_METHOD_CUE_RE.test(trimmed) && CUSTOMER_CHANGE_CUE_RE.test(trimmed)) {
-    const { status, reason } = toStatus(trimmed, 'strong');
-    out.customerChange = {
-      id: 'customerChange',
-      label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
-      status,
-      summary: clip(trimmed),
-      statusReason: reason,
-    };
-    out.solution = {
-      id: 'solution',
-      label: CEO_JUDGMENT_DIMENSION_LABELS.solution,
+  if (CURRENT_ALTERNATIVE_CUE_RE.test(trimmed) && !out.problem && !CUSTOMER_CHANGE_CUE_RE.test(trimmed)) {
+    const altSummary = `현재 ${clip(trimmed, 40)} 등으로 관리하는 것으로 이해했습니다`;
+    out.problem = {
+      id: 'problem',
+      label: CEO_JUDGMENT_DIMENSION_LABELS.problem,
       status: 'needs_check',
-      summary: clip(trimmed),
-      statusReason: '해결 방법은 보이나 고객 변화는 별도 확인이 필요함',
+      summary: altSummary,
+      statusReason: '기존 방식 정보 — 문제의 근거로 활용',
+    };
+    meta.problem = {
+      interpretedMeaning: '기존 대안/관리 방식을 문제 맥락으로 해석',
+      evidence: trimmed,
+      reason: '기존 방식 정보 — 문제의 근거로 활용',
     };
   }
 
-  if (CURRENT_ALTERNATIVE_CUE_RE.test(trimmed) && !CUSTOMER_CHANGE_CUE_RE.test(trimmed)) {
-    out.problem = mergeDimension(
-      out.problem ?? {
-        id: 'problem',
-        label: CEO_JUDGMENT_DIMENSION_LABELS.problem,
-        status: 'unknown',
-        summary: '',
-      },
-      {
-        status: 'needs_check',
-        summary: `현재 ${clip(trimmed, 40)} 등으로 관리하는 것으로 이해했습니다`,
-        statusReason: '기존 방식 정보 — 문제의 근거로 활용',
-      },
-    );
+  if (CUSTOMER_CUE_RE.test(trimmed) && !out.customer) {
+    const { status, reason } = toStatus(trimmed, 'partial');
+    out.customer = {
+      id: 'customer',
+      label: CEO_JUDGMENT_DIMENSION_LABELS.customer,
+      status,
+      summary: clip(trimmed),
+      statusReason: reason,
+    };
+    meta.customer = {
+      interpretedMeaning: '고객 단서 — 세분 추출 실패, 전체 답변에서 보수적 반영',
+      evidence: trimmed,
+      reason,
+    };
   }
 
-  return out;
+  return { dimensions: out, meta };
 }
 
 function countActionableTurns(turns: AiPmLoopTurn[]): number {
@@ -366,7 +313,7 @@ export function buildCeoJudgmentState(input: {
   );
   const last = actionable[actionable.length - 1];
   if (last?.answer?.trim()) {
-    const fromAnswer = dimensionsFromAnswerText(
+    const { dimensions: fromAnswer } = dimensionsFromAnswerText(
       last.answer,
       last.issueId,
       last.targetGap,
@@ -402,13 +349,19 @@ export function applyAnswerToJudgment(input: {
   issueId?: AiPmLoopTurn['issueId'];
   targetGap?: string;
 }): CeoJudgmentState {
-  const fromAnswer = dimensionsFromAnswerText(
+  const { dimensions: fromAnswer } = dimensionsFromAnswerText(
     input.answer,
     input.issueId,
     input.targetGap,
   );
   let state: CeoJudgmentState = {
     ...input.prior,
+    dimensions: {
+      customer: { ...input.prior.dimensions.customer },
+      problem: { ...input.prior.dimensions.problem },
+      solution: { ...input.prior.dimensions.solution },
+      customerChange: { ...input.prior.dimensions.customerChange },
+    },
     questionCount: input.prior.questionCount + 1,
   };
   for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
@@ -417,4 +370,98 @@ export function applyAnswerToJudgment(input: {
     }
   }
   return finalizeJudgmentPresentation(state);
+}
+
+export type BuildCeoJudgmentWithTraceResult = {
+  state: CeoJudgmentState;
+  traceEntries: JudgmentTraceEntry[];
+  dimensionMeta: Partial<
+    Record<
+      CeoJudgmentDimensionId,
+      { interpretedMeaning: string; evidence: string; reason: string; knownPriorInfo?: string }
+    >
+  >;
+};
+
+export function buildCeoJudgmentStateWithTrace(input: {
+  living: LivingUnderstandingState;
+  turns: AiPmLoopTurn[];
+  prior?: CeoJudgmentState | null;
+  lastReview?: AnswerReview | null;
+  sourceTurnId?: string;
+  question?: string;
+  answer?: string;
+  /** Pre-turn judgment — when set, used as trace baseline instead of prior. */
+  beforeState?: CeoJudgmentState | null;
+}): BuildCeoJudgmentWithTraceResult {
+  const actionable = input.turns.filter(
+    (t) =>
+      !t.superseded &&
+      t.intent !== 'why_meta' &&
+      t.intent !== 'mid_judgment' &&
+      t.intent !== 'nonsense',
+  );
+  const last = actionable[actionable.length - 1];
+  const answer = input.answer ?? last?.answer ?? '';
+  const question = input.question ?? last?.askedQuestionText ?? '';
+
+  const prior =
+    input.beforeState ??
+    input.prior ??
+    emptyCeoJudgmentState(Math.max(0, countActionableTurns(input.turns) - 1));
+
+  const state = buildCeoJudgmentState({
+    living: input.living,
+    turns: input.turns,
+    prior: input.prior ?? prior,
+    lastReview: input.lastReview,
+  });
+
+  const { meta } = answer.trim()
+    ? dimensionsFromAnswerText(answer, last?.issueId, last?.targetGap)
+    : { meta: {} };
+
+  const dimensionMeta: BuildCeoJudgmentWithTraceResult['dimensionMeta'] = {};
+  for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+    if (meta[id]) {
+      dimensionMeta[id] = {
+        ...meta[id]!,
+        knownPriorInfo: prior.dimensions[id].summary || undefined,
+      };
+    }
+  }
+
+  const traceEntries = buildJudgmentTraceEntries({
+    sourceTurnId: input.sourceTurnId ?? last?.appliedAt ?? `turn-${actionable.length}`,
+    question,
+    answer,
+    prior,
+    next: state,
+    dimensionMeta,
+  });
+
+  if (traceEntries.length === 0 && answer.trim()) {
+    for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+      const before = prior.dimensions[id];
+      const after = state.dimensions[id];
+      if (before.summary.trim() !== after.summary.trim() || before.status !== after.status) {
+        traceEntries.push({
+          sourceTurnId: input.sourceTurnId ?? last?.appliedAt ?? `turn-${actionable.length}`,
+          question,
+          answer,
+          interpretedMeaning: meta[id]?.interpretedMeaning ?? `${id} dimension update`,
+          evidence: meta[id]?.evidence ?? answer.trim(),
+          affectedDimension: id,
+          previousJudgment: { status: before.status, summary: before.summary },
+          newJudgment: { status: after.status, summary: after.summary },
+          changeType: !before.summary.trim() && after.summary.trim() ? 'NEW' : 'CHANGED',
+          reason: meta[id]?.reason ?? after.statusReason ?? 'judgment sync',
+          knownPriorInfo: before.summary || undefined,
+          newlyAddedInfo: after.summary || undefined,
+        });
+      }
+    }
+  }
+
+  return { state, traceEntries, dimensionMeta };
 }
