@@ -119,7 +119,7 @@ export function WorkspaceAiPmJudgmentView({
               data-testid="judgment-follow-up-cta"
               onClick={onFollowUpCheck}
             >
-              이 부분 더 확인하기
+              이 부분 보완하기
             </Button>
           ) : null}
         </div>
