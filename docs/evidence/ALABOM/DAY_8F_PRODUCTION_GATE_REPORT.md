@@ -78,9 +78,9 @@ Deploy observed: `2026-09-06T07:29:48.805Z`
 |------|---------|
 | DAY 8-F Implementation | ✅ PASS |
 | DAY 8-F Production Gate | ✅ **PASS** |
-| DAY 8-F Final | ✅ **CLOSED** @ `3096037` |
-| DAY 8-E | Superseded by 8-F production closure |
-| Research Engine / Stage B | 🔴 HOLD |
+| DAY 8-F Final | ✅ **CLOSED** @ `3096037` (CPO sign-off 2026-09-06) |
+| DAY 8-E | ✅ Superseded by 8-F production closure |
+| Research Engine / Stage B | 🔴 HOLD — separate Epic only |
 
 ---
 
