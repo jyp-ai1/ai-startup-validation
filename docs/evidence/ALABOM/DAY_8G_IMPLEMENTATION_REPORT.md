@@ -47,7 +47,7 @@ Unit: `day8g-judgment-conversation.test.ts` — 10/10 PASS (G-R1~G-R10)
 
 Full: 8-F regression unit tests PASS (`day8f-question-causality`, `day8d-phase-c-no-ask`)
 
-Browser: `day8g-judgment-conversation.spec.ts` (G-B1~G-B3)
+Browser: `day8g-judgment-conversation.spec.ts` — blocked by E2E server Internal Server Error (infra); unit + build gate PASS
 
 ## 5. G-R1 ~ G-R10
 
@@ -74,9 +74,9 @@ Preserved via flag-off path + existing test suites. Unit regression PASS.
 
 ## 8. Git
 
-Commit: pending push
-Push: pending
-PR: pending
+Commit: 33b7e2b
+Push: origin/cursor/day8g-judgment-conversation-6423
+PR: #24
 
 ## 9. Production
 
