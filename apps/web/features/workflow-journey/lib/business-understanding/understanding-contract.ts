@@ -126,6 +126,9 @@ export function shouldSkipReask(confidence: UnderstandingConfidence): boolean {
 const NONSENSE_RE =
   /^(.)\1{3,}$|^(asdf+|qwer+|test+|testing+|xxx+|ㄴㄴㄴ+|ㅋㅋㅋ+|ㅎㅎㅎ+|aaa+|zzz+|lalala+|blah+|foo+|bar+)$/i;
 const UNKNOWN_SIGNAL_RE = /^(모름|몰라요|모르겠|잘\s*모르|unknown|n\/?a|없음|없어요)\.?$/i;
+/** Partial unknown — CEO declined to answer a specific slot (DAY 8-I P0-3). */
+const PARTIAL_UNKNOWN_RE =
+  /(?:아직\s*(?:모르|측정|확인)|모르겠(?:습니다|어요)?|잘\s*모르|측정하지\s*못|정확히\s*말하지\s*않|말하기\s*어렵|확인이\s*필요|원하는\s*건\s*(?:정확히\s*)?말하지|~?\s*만\s*말했)/i;
 const PUNCT_ONLY_RE = /^[\p{P}\p{S}\d\s]+$/u;
 const KEYBOARD_MASH_RE = /^(?:[a-z]{1,2}\s*){4,}$/i;
 const HANGUL_JAMO_MASH_RE = /^[\u3131-\u318E\s]{4,}$/;
@@ -164,7 +167,7 @@ export function evaluateAnswerQuality(
   if (trimmed.length < 2) {
     return { quality: 'UNKNOWN', mergeable: false };
   }
-  if (UNKNOWN_SIGNAL_RE.test(trimmed)) {
+  if (UNKNOWN_SIGNAL_RE.test(trimmed) || PARTIAL_UNKNOWN_RE.test(trimmed)) {
     return { quality: 'UNKNOWN', mergeable: false };
   }
   if (

@@ -65,6 +65,7 @@ export function runCpoRSelfChecks(): CpoRSelfCheck[] {
   const r4 = applyAnswerToJudgment({
     prior: emptyCeoJudgmentState(3),
     answer: '배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다.',
+    targetGap: 'validationTestability',
   });
   checks.push({
     id: 'CPO-R4',
@@ -90,8 +91,12 @@ export function runCpoRSelfChecks(): CpoRSelfCheck[] {
 
   const multi =
     '소규모 양조장이 엑셀로 주문을 관리하고 배송 누락이 생겨서 주문과 배송을 한 곳에서 관리하려고 합니다.';
-  const extracted = extractDimensionSummaries(multi);
-  const r6state = applyAnswerToJudgment({ prior: emptyCeoJudgmentState(0), answer: multi });
+  const extracted = extractDimensionSummaries(multi, { allowMultiFact: true });
+  const r6state = applyAnswerToJudgment({
+    prior: emptyCeoJudgmentState(0),
+    answer: multi,
+    allowMultiFact: true,
+  });
   const r6issues = detectDimensionSeparationIssues(r6state);
   checks.push({
     id: 'CPO-R6',
@@ -108,16 +113,22 @@ export function runCpoRSelfChecks(): CpoRSelfCheck[] {
   let r7prior = applyAnswerToJudgment({
     prior: emptyCeoJudgmentState(0),
     answer: '소규모 양조장과 반찬가게 사장님이 주 고객입니다.',
+    targetGap: 'customerPersona',
   });
   const r7before = r7prior.dimensions.customer.summary;
   r7prior = applyAnswerToJudgment({
     prior: r7prior,
     answer: '소규모 양조장과 반찬가게 사장님이 주 고객입니다.',
+    targetGap: 'customerPersona',
   });
   checks.push({
     id: 'CPO-R7',
     label: '기존 정보 반복 → 재질문/중복 저장 없음',
-    verdict: r7prior.dimensions.customer.summary === r7before ? 'PASS' : 'FAIL',
+    verdict:
+      r7prior.dimensions.customer.summary === r7before &&
+      r7prior.dimensions.problem.status === 'unknown'
+        ? 'PASS'
+        : 'FAIL',
     evidenceTurns: 'Harness Turn 07, 27 (D_repeat)',
     rationale: `repeat unchanged=${r7prior.dimensions.customer.summary === r7before}`,
   });
@@ -129,25 +140,35 @@ export function runCpoRSelfChecks(): CpoRSelfCheck[] {
   r8 = applyAnswerToJudgment({
     prior: r8,
     answer: '고객은 양조장만이 아니라 반찬가게와 꽃집도 포함합니다.',
+    targetGap: 'customerPersona',
   });
   checks.push({
     id: 'CPO-R8',
     label: '기존 판단 수정 → 새로운 정보로 업데이트',
-    verdict: /반찬|꽃집|포함/.test(r8.dimensions.customer.summary) ? 'PASS' : 'FAIL',
+    verdict:
+      /반찬|꽃집|포함/.test(r8.dimensions.customer.summary) &&
+      r8.dimensions.customerChange.status === 'unknown'
+        ? 'PASS'
+        : 'FAIL',
     evidenceTurns: 'Harness Turn 08 (E_correction)',
     rationale: `customer=${r8.dimensions.customer.summary.slice(0, 50)}`,
   });
 
+  const r9prior = applyAnswerToJudgment({
+    prior: emptyCeoJudgmentState(0),
+    answer: '배송 누락이 주문 건수의 10% 정도로 매우 심각합니다.',
+    targetGap: 'problemJtbd',
+  });
   const r9 = applyAnswerToJudgment({
-    prior: emptyCeoJudgmentState(2),
+    prior: r9prior,
     answer: '정확한 시장 규모는 아직 모르겠습니다.',
+    targetGap: 'marketSizeEvidence',
   });
   checks.push({
     id: 'CPO-R9',
     label: '모르는 정보 → AI가 임의 생성하지 않음',
     verdict:
-      r9.dimensions.customer.status === 'unknown' &&
-      r9.dimensions.problem.status === 'unknown'
+      r9.dimensions.problem.summary === r9prior.dimensions.problem.summary
         ? 'PASS'
         : 'FAIL',
     evidenceTurns: 'Harness Turn 10, 19 (G_unknown)',

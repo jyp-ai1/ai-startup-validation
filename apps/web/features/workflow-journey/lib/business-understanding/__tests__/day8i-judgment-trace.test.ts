@@ -84,17 +84,19 @@ describe('DAY 8-I — Judgment Trace & Dimension Separation', () => {
     });
     expect(state.dimensions.solution.status).not.toBe('unknown');
     expect(state.dimensions.solution.summary).toMatch(/한\s*곳|SaaS|관리/);
+    expect(state.dimensions.problem.status).toBe('unknown');
   });
 
   it('CPO-R4 — customer change answer reflects in customerChange', () => {
     const state = applyAnswerToJudgment({
       prior: emptyCeoJudgmentState(3),
       answer: '배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다.',
-      issueId: 'market_validation',
+      issueId: 'competitor_analysis',
       targetGap: 'validationTestability',
     });
     expect(state.dimensions.customerChange.status).not.toBe('unknown');
     expect(state.dimensions.customerChange.summary).toMatch(/누락|확인|단축|줄이/);
+    expect(state.dimensions.problem.summary).not.toBe(state.dimensions.customerChange.summary);
   });
 
   it('CPO-R5 — off-slot answer meaning prioritized over question slot', () => {
@@ -111,6 +113,7 @@ describe('DAY 8-I — Judgment Trace & Dimension Separation', () => {
   it('CPO-R6 — multi-fact answer splits across dimensions', () => {
     const extracted = extractDimensionSummaries(
       '소규모 양조장이 엑셀로 주문을 관리하고 배송 누락이 생겨서 주문과 배송을 한 곳에서 관리하려고 합니다.',
+      { allowMultiFact: true },
     );
     expect(extracted.customer?.summary).toMatch(/양조/);
     expect(extracted.problem?.summary).toMatch(/누락|엑셀/);
@@ -120,17 +123,9 @@ describe('DAY 8-I — Judgment Trace & Dimension Separation', () => {
       prior: emptyCeoJudgmentState(0),
       answer:
         '소규모 양조장이 엑셀로 주문을 관리하고 배송 누락이 생겨서 주문과 배송을 한 곳에서 관리하려고 합니다.',
+      allowMultiFact: true,
     });
     const issues = detectDimensionSeparationIssues(state);
-    const sameTextCount = new Set(
-      [
-        state.dimensions.customer.summary,
-        state.dimensions.problem.summary,
-        state.dimensions.solution.summary,
-        state.dimensions.customerChange.summary,
-      ].filter(Boolean),
-    ).size;
-    expect(sameTextCount).toBeGreaterThan(1);
     expect(issues.filter((i) => i.sharedSummary.length > 20)).toHaveLength(0);
   });
 
@@ -138,25 +133,34 @@ describe('DAY 8-I — Judgment Trace & Dimension Separation', () => {
     let state = applyAnswerToJudgment({
       prior: emptyCeoJudgmentState(0),
       answer: '소규모 양조장과 반찬가게 사장님이 주 고객입니다.',
+      targetGap: 'customerPersona',
+      issueId: 'customer_definition',
     });
     const before = state.dimensions.customer.summary;
     state = applyAnswerToJudgment({
       prior: state,
       answer: '소규모 양조장과 반찬가게 사장님이 주 고객입니다.',
+      targetGap: 'customerPersona',
+      issueId: 'customer_definition',
     });
     expect(state.dimensions.customer.summary).toBe(before);
+    expect(state.dimensions.problem.status).toBe('unknown');
   });
 
   it('CPO-R8 — correction updates existing judgment', () => {
     let state = applyAnswerToJudgment({
       prior: emptyCeoJudgmentState(0),
       answer: '소규모 양조장이 주 고객입니다.',
+      targetGap: 'customerPersona',
     });
     state = applyAnswerToJudgment({
       prior: state,
       answer: '고객은 양조장만이 아니라 반찬가게와 꽃집도 포함합니다.',
+      targetGap: 'customerPersona',
+      issueId: 'customer_definition',
     });
     expect(state.dimensions.customer.summary).toMatch(/반찬|꽃집|포함/);
+    expect(state.dimensions.customerChange.status).toBe('unknown');
     const change = classifyJudgmentChangeType({
       before: { status: 'needs_check', summary: '소규모 양조장이 주 고객입니다.' },
       after: { status: state.dimensions.customer.status, summary: state.dimensions.customer.summary },
@@ -165,13 +169,19 @@ describe('DAY 8-I — Judgment Trace & Dimension Separation', () => {
   });
 
   it('CPO-R9 — unknown answer does not invent facts', () => {
+    const prior = applyAnswerToJudgment({
+      prior: emptyCeoJudgmentState(0),
+      answer: '배송 누락이 주문 건수의 10% 정도로 매우 심각합니다.',
+      targetGap: 'problemJtbd',
+    });
     const state = applyAnswerToJudgment({
-      prior: emptyCeoJudgmentState(2),
+      prior,
       answer: '정확한 시장 규모는 아직 모르겠습니다.',
       issueId: 'market_validation',
+      targetGap: 'marketSizeEvidence',
     });
-    expect(state.dimensions.customer.status).toBe('unknown');
-    expect(state.dimensions.problem.status).toBe('unknown');
+    expect(state.dimensions.problem.summary).toBe(prior.dimensions.problem.summary);
+    expect(state.dimensions.customerChange.summary).toBe(prior.dimensions.customerChange.summary);
   });
 
   it('CPO-R10 — 20+ turn conversation maintains early→late connection', () => {

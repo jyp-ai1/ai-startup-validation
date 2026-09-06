@@ -6,6 +6,7 @@ import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
 
 import { applyQuestionPolicy, createBootstrapDecisionWithPolicy } from './ai-pm-question-policy';
 import { applyNoAskPolicy } from './ai-pm-no-ask-policy';
+import { applyAntiRepeatPolicy } from './ai-pm-anti-repeat-policy';
 import {
   decideNextQuestionFromReview,
   isNextQuestionDecision,
@@ -105,6 +106,15 @@ export function resolveNextQuestionDecision(
       turns,
       memory: input.memory,
       stageReadiness,
+    });
+  }
+
+  if (decision && isNextQuestionDecision(decision)) {
+    decision = applyAntiRepeatPolicy({
+      decision,
+      turns,
+      living: input.living,
+      gapState,
     });
   }
 
