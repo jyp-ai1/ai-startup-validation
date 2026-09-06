@@ -2637,27 +2637,23 @@ P0s from 8-E (Answer Target Binding · Confirm/Open · Edit binding · Research 
 
 ---
 
-## ALABOM DAY 8-G — AI Judgment & Simple Conversation 🟡 DESIGN v1 (CPO)
+## ALABOM DAY 8-G — AI Judgment & Simple Conversation 🟢 DESIGN COMPLETE
 
-**Status:** Flow & screen structure v1 — **implementation HOLD** until judgment info-structure sign-off  
+**Status:** Flow + Judgment Info-Structure v1 **PASS** — **Implementation GO** (await sprint directive)  
 **Frozen:** DAY 8-F @ `3096037` — do not modify  
-**Diagnosis:** [`DAY_8G_CPO_DIAGNOSIS_REPORT.md`](./evidence/ALABOM/DAY_8G_CPO_DIAGNOSIS_REPORT.md)  
-**Flow v1:** [`DAY_8G_FLOW_SCREEN_DESIGN_v1.md`](./evidence/ALABOM/DAY_8G_FLOW_SCREEN_DESIGN_v1.md)
 
-**North star:** 질문이 목적이 아니라 **판단이 목적**
+| Doc | Status |
+|-----|--------|
+| [`DAY_8G_CPO_DIAGNOSIS_REPORT.md`](./evidence/ALABOM/DAY_8G_CPO_DIAGNOSIS_REPORT.md) | ✅ |
+| [`DAY_8G_FLOW_SCREEN_DESIGN_v1.md`](./evidence/ALABOM/DAY_8G_FLOW_SCREEN_DESIGN_v1.md) | ✅ PASS |
+| [`DAY_8G_JUDGMENT_INFO_STRUCTURE_v1.md`](./evidence/ALABOM/DAY_8G_JUDGMENT_INFO_STRUCTURE_v1.md) | ✅ PASS |
 
-| Decision (v1) | CPO lock |
-|---------------|----------|
-| Question stop | Dual: min judgment readiness **or** max **5** / session |
-| Judgment UI | Compact `✓ 이해 업데이트됨`; card from ~3 answers; mandatory at 5 |
-| Judgment shape | Status 🟢🟡🔴 + one-line reason; no scores v1 |
-| Review destination | **사업 검토 결과** screen + optional follow-up |
-| Question screen | 1 question + guide + collapsed why; no jargon |
-| Infinite questions | **Forbidden** |
+**Judgment model (CEO):** ① 고객 · ② 문제 · ③ 해결 방법 · ④ 고객에게 달라지는 점 — each 🟢🟡🔴  
+**G-4:** Answer-first semantic mapping · multi-dimension update · no inferred facts  
+**Session:** max 5 questions · Judgment View from ~3rd · mandatory at 5  
 
-**Next CPO design (blocks CTO):** 사업 검토 결과 **정보 구조** (fields + answer→judgment mapping)
-
-**HOLD:** Research Engine · Stage B · V3 rewrite · 8-F regression surface
+**Implementation scope (pending sprint doc):** G-1~G-5 presentation/aggregation layer on 8-F + V3  
+**Forbidden:** V3 rewrite · factKey/gapState redesign · Research Engine · Stage B  
 
 ---
 

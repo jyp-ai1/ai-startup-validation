@@ -3,8 +3,9 @@
 **Date:** 2026-09-06  
 **Project:** ALABOM  
 **Prior epic:** DAY 8-F ✅ CLOSED @ Production `3096037` — **do not modify**  
-**Status:** **Design phase — no CTO implementation until judgment info-structure sign-off**  
-**Flow v1:** [`DAY_8G_FLOW_SCREEN_DESIGN_v1.md`](./DAY_8G_FLOW_SCREEN_DESIGN_v1.md)
+**Status:** **Design complete — Implementation GO** (await sprint directive)  
+**Flow v1:** [`DAY_8G_FLOW_SCREEN_DESIGN_v1.md`](./DAY_8G_FLOW_SCREEN_DESIGN_v1.md)  
+**Judgment v1:** [`DAY_8G_JUDGMENT_INFO_STRUCTURE_v1.md`](./DAY_8G_JUDGMENT_INFO_STRUCTURE_v1.md)
 
 ---
 
