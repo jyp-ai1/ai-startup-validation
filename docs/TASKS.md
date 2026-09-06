@@ -2610,20 +2610,36 @@ PM 확인 요청
 
 ---
 
-## ALABOM DAY 8-E — CEO Full Journey Acceptance 🟢 GO
+## ALABOM DAY 8-E — CEO Full Journey Acceptance ❌ HOLD
 
-**Status:** Observation only — **no development**  
+**Status:** CPO HOLD — structural P0 discovered · **no development**  
 **Production:** https://ai-startup-validation-tau.vercel.app @ `ea566ac`  
-**Spec:** [`docs/evidence/ALABOM/DAY_8E_CEO_FULL_JOURNEY_ACCEPTANCE.md`](./evidence/ALABOM/DAY_8E_CEO_FULL_JOURNEY_ACCEPTANCE.md)
+**Observation:** [`docs/evidence/ALABOM/DAY_8E_CEO_JOURNEY_OBSERVATION_REPORT.md`](./evidence/ALABOM/DAY_8E_CEO_JOURNEY_OBSERVATION_REPORT.md)
 
-| # | Criterion | Method |
+| # | Criterion | Result |
 |---|-----------|--------|
-| 1 | AI truly understands my business | U block changes per CEO answer |
-| 2 | I don't repeat myself | No-Ask felt on Production |
-| 3 | AI doesn't re-delegate its work | Research ack, no gap re-ask |
-| 4 | Next question feels necessary | CEO trusts why-now |
+| 1 | AI truly understands my business | ⚠️ PARTIAL |
+| 2 | I don't repeat myself | ❌ FAIL |
+| 3 | AI doesn't re-delegate its work | ⚠️ MIXED |
+| 4 | Next question feels necessary | ❌ FAIL |
 
-**Output:** Completed acceptance doc + screenshots + `DAY_8E_OBSERVATION_RAW.json`
+**P0 discovered:** Answer Target Binding · Confirm/Open split · Edit binding · Research phrasing
+
+---
+
+## ALABOM DAY 8-F — Question Causality Design 🟢 GO (Design Only)
+
+**Status:** Root cause analysis submitted — **implementation HOLD until CPO approval**  
+**Spec:** [`docs/evidence/ALABOM/DAY_8F_DESIGN_REPORT.md`](./evidence/ALABOM/DAY_8F_DESIGN_REPORT.md)
+
+| P0 | Topic | Root cause (summary) |
+|----|-------|----------------------|
+| P0-1 | Answer Target Binding | `solution` → `business` factKey collision; memory_document beats prior turn |
+| P0-2 | Confirm vs Open | CONFIRM uses OPEN textarea UX; "네 맞습니다" corrupts facts |
+| P0-3 | Previous Edit Binding | `editableTurns` dedupes by issueId, not last turn |
+| P0-4 | Research Continuity | `RESEARCH_RE` misses "확인해주세요" / "알아보고" delegation |
+
+**HOLD:** Research Engine · Stage B · V3 core rewrite
 
 ---
 

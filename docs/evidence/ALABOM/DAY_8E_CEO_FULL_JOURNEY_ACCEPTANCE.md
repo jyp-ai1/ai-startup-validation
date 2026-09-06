@@ -222,8 +222,10 @@ Fill and attach:
 | **CONDITIONAL** | Policies work but friction remains — queue targeted UX fixes (no new features) |
 | **FAIL** | Semantic repeat, research re-ask, or dead Judgment returns — regression investigation |
 
+**Current status (2026-09-06):** ❌ **HOLD** — see [DAY_8E_CEO_JOURNEY_OBSERVATION_REPORT.md](./DAY_8E_CEO_JOURNEY_OBSERVATION_REPORT.md)
+
 **On PASS:** Research Engine remains HOLD until CEO trust confirmed.  
-**On FAIL:** Do not add features — trace which DAY 8-D phase regressed on Production.
+**On FAIL:** Do not add features — proceed to [DAY_8F_DESIGN_REPORT.md](./DAY_8F_DESIGN_REPORT.md)
 
 ---
 
