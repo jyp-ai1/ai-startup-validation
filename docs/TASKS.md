@@ -2591,6 +2591,42 @@ PM 확인 요청
 
 ---
 
+## ALABOM DAY 8-D — Judgment & Question Policy ✅ CLOSED
+
+**Status:** CPO **PASS** · **FROZEN** @ Production `ea566ac`  
+**Merge:** PR #22  
+**Evidence:** [`docs/evidence/ALABOM/DAY_8D_FINAL_CLOSURE_REPORT.md`](./evidence/ALABOM/DAY_8D_FINAL_CLOSURE_REPORT.md)
+
+| Phase | Deliverable | Status |
+|-------|-------------|--------|
+| A | Dynamic Judgment | ✅ 12/12 unit · J Gate |
+| B | Answer-first Routing | ✅ 8/8 · Browser 5/5 |
+| C | No-Ask / Semantic Repeat | ✅ 7/7 · Browser 6/6 |
+| D | Research Intent UX | ✅ 6/6 · Browser 5/5 · **Production 5/5** |
+| Regression | V3 + Focused UI + Correction | ✅ 124/124 |
+| Production | SHA + smoke + D1–D5 | ✅ `ea566ac` |
+
+**HOLD:** Research Engine · Stage B · V3 Core rewrite
+
+---
+
+## ALABOM DAY 8-E — CEO Full Journey Acceptance 🟢 GO
+
+**Status:** Observation only — **no development**  
+**Production:** https://ai-startup-validation-tau.vercel.app @ `ea566ac`  
+**Spec:** [`docs/evidence/ALABOM/DAY_8E_CEO_FULL_JOURNEY_ACCEPTANCE.md`](./evidence/ALABOM/DAY_8E_CEO_FULL_JOURNEY_ACCEPTANCE.md)
+
+| # | Criterion | Method |
+|---|-----------|--------|
+| 1 | AI truly understands my business | U block changes per CEO answer |
+| 2 | I don't repeat myself | No-Ask felt on Production |
+| 3 | AI doesn't re-delegate its work | Research ack, no gap re-ask |
+| 4 | Next question feels necessary | CEO trusts why-now |
+
+**Output:** Completed acceptance doc + screenshots + `DAY_8E_OBSERVATION_RAW.json`
+
+---
+
 ## Task Lifecycle
 
 ```
