@@ -2627,19 +2627,19 @@ PM 확인 요청
 
 ---
 
-## ALABOM DAY 8-F — Question Causality F-1~F-5 ✅ IMPLEMENTED
+## ALABOM DAY 8-F — Question Causality ✅ CLOSED @ `3096037`
 
-**Status:** F-1~F-5 implemented on `cursor/day8f-question-causality-6423`  
-**Design:** [`docs/evidence/ALABOM/DAY_8F_DESIGN_REPORT.md`](./evidence/ALABOM/DAY_8F_DESIGN_REPORT.md)  
-**Report:** [`docs/evidence/ALABOM/DAY_8F_IMPLEMENTATION_REPORT.md`](./evidence/ALABOM/DAY_8F_IMPLEMENTATION_REPORT.md)
+**Status:** Production Gate PASS — merged PR #23, Production Browser 9/9  
+**Implementation:** [`DAY_8F_IMPLEMENTATION_REPORT.md`](./evidence/ALABOM/DAY_8F_IMPLEMENTATION_REPORT.md)  
+**Production Gate:** [`DAY_8F_PRODUCTION_GATE_REPORT.md`](./evidence/ALABOM/DAY_8F_PRODUCTION_GATE_REPORT.md)
 
 | Item | Status |
 |------|--------|
-| F-1 Answer Target Binding | ✅ Unit F1-R1~R3 + Browser F-B1 |
-| F-2 Confirm/Open UX | ✅ Unit F2-R1/R2 + Browser F-B3 |
+| F-1 Answer Target Binding | ✅ Prod F-B1 |
+| F-2 Confirm/Open UX | ✅ Prod F-B3 |
 | F-3 Previous Answer Edit | ✅ Unit F3-R1 |
-| F-4 Research Delegation | ✅ Unit F4-R1 + Browser F-B2/F-B2b + D1–D5 |
-| F-5 Meta Guard | ✅ Presenter + whyNow sanitize |
+| F-4 Research Delegation | ✅ Prod F-B2/F-B2b + D1–D5 |
+| F-5 Meta Guard | ✅ Presenter + whyNow |
 
 **HOLD:** Research Engine · Stage B · V3 core rewrite
 
