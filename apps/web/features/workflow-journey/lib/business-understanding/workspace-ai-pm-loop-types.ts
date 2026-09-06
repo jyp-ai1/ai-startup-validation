@@ -6,6 +6,7 @@ import type { NextQuestionDecision } from './decide-next-question-from-review';
 import type { AnswerIntent } from './interpret-answer-semantics';
 import type { QuestionCausality } from './question-causality';
 import type { LockedAskSurface } from './question-transition-lock';
+import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 
 export type AiPmResearchPending = {
   utterance: string;
@@ -79,6 +80,12 @@ export type AiPmLoopState = {
   lastDecision?: NextQuestionDecision;
   /** DAY 8-D Phase D — research intent freezes question engine */
   researchPending?: AiPmResearchPending | null;
+  /** DAY 8-G — CEO judgment presentation layer */
+  ceoJudgment?: CeoJudgmentState | null;
+  /** DAY 8-G — question vs judgment view */
+  viewMode?: 'question' | 'judgment' | null;
+  /** DAY 8-G — follow-up from judgment view (single question then return) */
+  judgmentFollowUp?: boolean | null;
 };
 
 export const AI_PM_LOOP_MIN_TURNS = 3;

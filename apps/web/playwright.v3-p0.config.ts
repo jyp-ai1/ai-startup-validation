@@ -63,6 +63,10 @@ export default defineConfig({
             process.env.AI_PM_ANSWER_TARGET_BINDING_V1 ?? 'true',
           NEXT_PUBLIC_AI_PM_ANSWER_TARGET_BINDING_V1:
             process.env.NEXT_PUBLIC_AI_PM_ANSWER_TARGET_BINDING_V1 ?? 'true',
+          AI_PM_JUDGMENT_AGGREGATION_V1:
+            process.env.AI_PM_JUDGMENT_AGGREGATION_V1 ?? 'true',
+          NEXT_PUBLIC_AI_PM_JUDGMENT_AGGREGATION_V1:
+            process.env.NEXT_PUBLIC_AI_PM_JUDGMENT_AGGREGATION_V1 ?? 'true',
         },
       },
 });
