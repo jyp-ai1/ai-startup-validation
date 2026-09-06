@@ -2637,6 +2637,28 @@ P0s from 8-E (Answer Target Binding · Confirm/Open · Edit binding · Research 
 
 ---
 
+## ALABOM DAY 8-G — AI Judgment & Simple Conversation 🟡 DESIGN (CPO)
+
+**Status:** CPO diagnosis captured — **implementation HOLD** until flow sign-off  
+**Frozen:** DAY 8-F @ `3096037` — do not modify  
+**Diagnosis:** [`DAY_8G_CPO_DIAGNOSIS_REPORT.md`](./evidence/ALABOM/DAY_8G_CPO_DIAGNOSIS_REPORT.md)
+
+**Core shift:** 질문 무한 루프 → **답변마다 AI 판단 업데이트** + 질문 예산 + 사업 판단 확인 시점
+
+| Pillar | Topic | Status |
+|--------|-------|--------|
+| G-1 | Human-language questions (no “가치” jargon) | Design |
+| G-2 | Answer guides below question | Design |
+| G-3 | Progressive disclosure (why hidden by default) | Design |
+| G-4 | Answer → judgment loop | Design |
+| G-5 | Question budget + judgment checkpoint | Design |
+
+**CPO must decide before CTO GO:** ① question stop rule · ② judgment reveal timing · ③ judgment UI shape · ④ “검토 결과” moment
+
+**HOLD:** Research Engine · Stage B · V3 rewrite · 8-F regression surface
+
+---
+
 ## Task Lifecycle
 
 ```
