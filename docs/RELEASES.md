@@ -6,6 +6,20 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### ALABOM DAY 8-F — Question Causality (2026-09-06)
+
+**Production SHA:** `309603730885ac793a3fba1203d84e9e5b795e4f` · **PR:** #23  
+**Prod:** https://ai-startup-validation-tau.vercel.app
+
+- F-1 Answer Target Binding — latest CEO answer meaning > memory for confirm
+- F-2 Confirm/Open UX — Yes/No on confirm; textarea on open only
+- F-3 Previous Answer Edit — binds to last actionable CEO turn
+- F-4 Research Delegation — natural-language research cues → ack + question stop
+- F-5 Presentation Meta Guard — no internal reasoning leak to CEO UI
+- Production Browser: F-B1~F-B3 + D1–D5 **9/9 PASS**
+
+Evidence: [`docs/evidence/ALABOM/DAY_8F_PRODUCTION_GATE_REPORT.md`](./evidence/ALABOM/DAY_8F_PRODUCTION_GATE_REPORT.md)
+
 ### Sprint 1.6 — Decision Memory (2026-07-27)
 
 **Commit:** `97e8bd1` · **Route:** `/validation`
