@@ -7,10 +7,15 @@ import type { BusinessUnderstanding } from '@repo/types/domain/business-understa
 
 import { buildBusinessUnderstanding } from './build-business-understanding';
 import { buildCeoJudgmentState, buildCeoJudgmentStateWithTrace } from './ai-pm-judgment-aggregation';
+import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 import { buildBusinessReviewResult } from './ai-pm-business-review';
-import { detectDimensionSeparationIssues } from './ai-pm-judgment-trace';
+import {
+  detectDimensionSeparationIssues,
+  formatJudgmentEvolutionTable,
+} from './ai-pm-judgment-trace';
 import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
-import { formatJudgmentEvolutionTable } from './ai-pm-judgment-trace';
+import { extractDimensionSummaries } from './ai-pm-dimension-extract';
+import { runCpoRSelfChecks, type CpoRSelfCheck } from './day8i-cpo-r-self-check';
 import { buildLivingUnderstandingState } from './living-understanding-state';
 import { buildConversationMemoryFromSources } from './build-conversation-memory';
 import {
@@ -64,9 +69,18 @@ export type Day8iConversationTurnRecord = {
     customerChange: string;
   };
   trace: JudgmentTurnTrace | null;
+  judgmentSnapshot: CeoJudgmentState | null;
   nextQuestion: string | null;
   nextQuestionReason: string | null;
   note?: string;
+};
+
+export type Day8iInferenceCheck = {
+  turn: number;
+  ceoSaid: string;
+  aiJudged: string;
+  hasEvidence: boolean;
+  verdict: 'PASS' | 'FAIL';
 };
 
 export type Day8iConversationResult = {
@@ -74,16 +88,20 @@ export type Day8iConversationResult = {
   totalTurns: number;
   turns: Day8iConversationTurnRecord[];
   finalReview: ReturnType<typeof buildBusinessReviewResult> | null;
+  finalJudgmentSnapshot: CeoJudgmentState | null;
   separationIssues: ReturnType<typeof detectDimensionSeparationIssues>;
   repeatedQuestions: Array<{ turn: number; question: string; priorTurn: number }>;
   unsupportedInferences: string[];
+  inferenceChecks: Day8iInferenceCheck[];
   judgmentChanges: Array<{
     turn: number;
     dimension: string;
     before: string;
     after: string;
     reason: string;
+    changeType?: string;
   }>;
+  cpoSelfChecks: CpoRSelfCheck[];
 };
 
 const DEFAULT_DOC = `# 소규모 양조장 주문·배송 SaaS
@@ -194,6 +212,7 @@ export function runDay8iConversation(input: {
   const questionHistory: Array<{ turn: number; text: string }> = [];
   const judgmentChanges: Day8iConversationResult['judgmentChanges'] = [];
   const unsupportedInferences: string[] = [];
+  const inferenceChecks: Day8iInferenceCheck[] = [];
 
   for (let i = 0; i < steps.length; i += 1) {
     const step = steps[i]!;
@@ -293,6 +312,7 @@ export function runDay8iConversation(input: {
         ),
       },
       trace: sync.turnTrace ?? null,
+      judgmentSnapshot: sync.judgment,
       nextQuestion: null,
       nextQuestionReason: nextReason,
       note: step.note,
@@ -306,7 +326,26 @@ export function runDay8iConversation(input: {
           before: entry.previousJudgment.summary,
           after: entry.newJudgment.summary,
           reason: entry.reason,
+          changeType: entry.changeType,
         });
+      }
+    }
+
+    for (const dimId of ['customer', 'problem', 'solution', 'customerChange'] as const) {
+      const d = sync.judgment.dimensions[dimId];
+      if (!d.summary.trim()) continue;
+      const extracted = classifyAnswerHasDimension(step.ceoAnswer, dimId);
+      if (!extracted && step.category === 'H_inference_risk') {
+        inferenceChecks.push({
+          turn: i + 1,
+          ceoSaid: step.ceoAnswer,
+          aiJudged: `${dimId}: ${d.summary}`,
+          hasEvidence: false,
+          verdict: 'FAIL',
+        });
+        unsupportedInferences.push(
+          `Turn ${i + 1}: ${dimId}="${d.summary}" — CEO 답변에 해당 dimension 근거 없음`,
+        );
       }
     }
 
@@ -378,11 +417,19 @@ export function runDay8iConversation(input: {
     totalTurns: turns.length,
     turns,
     finalReview,
+    finalJudgmentSnapshot: finalJudgment,
     separationIssues,
     repeatedQuestions,
     unsupportedInferences,
+    inferenceChecks,
     judgmentChanges,
+    cpoSelfChecks: runCpoRSelfChecks(),
   };
+}
+
+function classifyAnswerHasDimension(answer: string, dim: string): boolean {
+  const extracted = extractDimensionSummaries(answer);
+  return Boolean(extracted[dim as keyof typeof extracted]);
 }
 
 export function formatDay8iCtoReport(result: Day8iConversationResult): string {

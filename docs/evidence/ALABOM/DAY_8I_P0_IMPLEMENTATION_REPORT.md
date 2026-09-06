@@ -1,57 +1,80 @@
 # ALABOM — DAY 8-I P0 Implementation Report
 
-**Status:** IMPLEMENTATION COMPLETE — **CPO independent review GO**  
-**CEO TEST:** HOLD (per work order)  
+**Status:** CTO Evidence Re-Report submitted — **CPO 2차 검토 대기**  
+**CEO TEST:** HOLD  
 **Base:** DAY 8-H FROZEN @ `fcc61dd`
 
 ---
 
-## Scope delivered
+## CPO Evidence (primary deliverable)
 
-1. **Judgment trace structure** (`ai-pm-judgment-trace.ts`)
-   - `sourceTurnId`, `question`, `answer`, `interpretedMeaning`, `evidence`, `affectedDimension`, `previousJudgment`, `newJudgment`, `changeType`, `reason`
-   - `changeType`: NEW | CONFIRMED | STRENGTHENED | WEAKENED | CHANGED | UNCHANGED | CONFLICTED | UNKNOWN
+**CPO가 독립 재검토할 문서:**
 
-2. **Semantic dimension extraction** (`ai-pm-dimension-extract.ts`)
-   - Clause-level split (고객/문제/해결/고객변화) — prevents full-utterance copy into all 4 dimensions
-   - Dedup guard when identical summary lacks distinct semantic basis
+→ [`DAY_8I_CPO_EVIDENCE_REPORT.md`](./DAY_8I_CPO_EVIDENCE_REPORT.md) (~130KB, 30턴 전체 원문)
 
-3. **Aggregation + loop sync**
-   - `buildCeoJudgmentStateWithTrace()` — trace on every judgment update
-   - `syncJudgmentAfterAnswer()` — persists `judgmentTraces[]` on loop state
-   - `beforeState` baseline for turn-level causality
+재생성:
 
-4. **30-turn conversation harness** (`day8i-conversation-harness.ts`)
-   - Scenarios A–J (normal, off-slot, multi-fact, repeat, correction, judgment change, unknown, inference, research, continuity)
-   - Full V3 pipeline: question → answer → review → living → judgment → next question
+```bash
+node apps/web/scripts/generate-day8i-cpo-evidence.mjs
+```
 
-5. **CPO test set** (`day8i-judgment-trace.test.ts`)
-   - CPO-R1~R12: **12/12 PASS**
-   - 30-turn harness test: **PASS**
+### Report sections (CPO work order compliant)
 
-6. **CTO report artifact**
-   - [DAY_8I_CTO_30_TURN_REPORT.md](./DAY_8I_CTO_30_TURN_REPORT.md) — full trace for CPO independent review
+| Section | Content |
+|---------|---------|
+| 1 | 실행 정보 (SHA, command, flags, timestamp) |
+| 2 | Turn 01–30 **전체 원문** (CEO Answer, AI Question, Interpretation, Evidence, Change Type…) |
+| 3 | Judgment Evolution table (30 rows) |
+| 4 | Dimension 분리 검증 + 동일 문장 복사 표시 |
+| 5 | 반복 질문 검증 (전 턴) |
+| 6 | Unsupported Inference (PASS/FAIL per case) |
+| 7 | Judgment Change (Before→After, mismatch flags) |
+| 8 | Final Business Review (actual output) |
+| 9 | CTO R1–R12 self-check (per-rule verdict + evidence turns) |
+| — | **CPO Review Evidence** mandatory checklist |
 
 ---
 
-## Test results
+## Process (fixed)
+
+```text
+CTO 구현
+ ↓
+CTO 1차 테스트
+ ↓
+CTO Evidence Report  ← THIS DOCUMENT
+ ↓
+CPO 2차 독립 검토
+ ↓
+CPO 추가 테스트
+ ↓
+CPO PASS
+ ↓
+Production Gate
+ ↓
+CEO 실사용 테스트
+```
+
+**CTO 1차 PASS ≠ CPO PASS**
+
+---
+
+## Unit test evidence
 
 | Suite | Result |
 |-------|--------|
-| CPO-R1~R12 | 12/12 PASS |
-| 30-turn CTO harness | PASS |
-| DAY 8-G regression (G-R1~R10) | 10/10 PASS |
-| DAY 8-H regression (H-R1~R10) | 10/10 PASS |
-
-Run: `node apps/web/scripts/run-day8i-conversation-test.mjs`
+| CPO-R1~R12 (day8i-judgment-trace.test.ts) | 13/13 PASS |
+| Evidence generator | PASS |
+| DAY 8-G regression | 10/10 PASS |
+| DAY 8-H regression | 10/10 PASS |
 
 ---
 
-## CPO review instructions
+## CPO next step
 
-1. Read [DAY_8I_CTO_30_TURN_REPORT.md](./DAY_8I_CTO_30_TURN_REPORT.md) sections 2–9
-2. Verify judgment evolution table (section 3) shows distinct dimension meanings
-3. Run CPO-R1~R12 independently if desired
-4. Classify any FAIL as P0/P1 before CEO TEST GO
+1. Open `DAY_8I_CPO_EVIDENCE_REPORT.md`
+2. Read Section 2 Turn 01–30 without summary
+3. Cross-check Section 3 evolution + Section 9 R1–R12
+4. Issue CPO PASS/FAIL → Production gate or P0 fix
 
 **CEO TEST remains HOLD until CPO PASS.**
