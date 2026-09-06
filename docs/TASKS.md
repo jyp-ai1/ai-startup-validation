@@ -2637,23 +2637,25 @@ P0s from 8-E (Answer Target Binding · Confirm/Open · Edit binding · Research 
 
 ---
 
-## ALABOM DAY 8-G — AI Judgment & Simple Conversation 🟡 DESIGN (CPO)
+## ALABOM DAY 8-G — AI Judgment & Simple Conversation 🟡 DESIGN v1 (CPO)
 
-**Status:** CPO diagnosis captured — **implementation HOLD** until flow sign-off  
+**Status:** Flow & screen structure v1 — **implementation HOLD** until judgment info-structure sign-off  
 **Frozen:** DAY 8-F @ `3096037` — do not modify  
-**Diagnosis:** [`DAY_8G_CPO_DIAGNOSIS_REPORT.md`](./evidence/ALABOM/DAY_8G_CPO_DIAGNOSIS_REPORT.md)
+**Diagnosis:** [`DAY_8G_CPO_DIAGNOSIS_REPORT.md`](./evidence/ALABOM/DAY_8G_CPO_DIAGNOSIS_REPORT.md)  
+**Flow v1:** [`DAY_8G_FLOW_SCREEN_DESIGN_v1.md`](./evidence/ALABOM/DAY_8G_FLOW_SCREEN_DESIGN_v1.md)
 
-**Core shift:** 질문 무한 루프 → **답변마다 AI 판단 업데이트** + 질문 예산 + 사업 판단 확인 시점
+**North star:** 질문이 목적이 아니라 **판단이 목적**
 
-| Pillar | Topic | Status |
-|--------|-------|--------|
-| G-1 | Human-language questions (no “가치” jargon) | Design |
-| G-2 | Answer guides below question | Design |
-| G-3 | Progressive disclosure (why hidden by default) | Design |
-| G-4 | Answer → judgment loop | Design |
-| G-5 | Question budget + judgment checkpoint | Design |
+| Decision (v1) | CPO lock |
+|---------------|----------|
+| Question stop | Dual: min judgment readiness **or** max **5** / session |
+| Judgment UI | Compact `✓ 이해 업데이트됨`; card from ~3 answers; mandatory at 5 |
+| Judgment shape | Status 🟢🟡🔴 + one-line reason; no scores v1 |
+| Review destination | **사업 검토 결과** screen + optional follow-up |
+| Question screen | 1 question + guide + collapsed why; no jargon |
+| Infinite questions | **Forbidden** |
 
-**CPO must decide before CTO GO:** ① question stop rule · ② judgment reveal timing · ③ judgment UI shape · ④ “검토 결과” moment
+**Next CPO design (blocks CTO):** 사업 검토 결과 **정보 구조** (fields + answer→judgment mapping)
 
 **HOLD:** Research Engine · Stage B · V3 rewrite · 8-F regression surface
 

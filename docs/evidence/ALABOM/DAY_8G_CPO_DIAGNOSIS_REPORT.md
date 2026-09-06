@@ -3,7 +3,8 @@
 **Date:** 2026-09-06  
 **Project:** ALABOM  
 **Prior epic:** DAY 8-F ✅ CLOSED @ Production `3096037` — **do not modify**  
-**Status:** **Design phase — no CTO implementation until CPO flow sign-off**
+**Status:** **Design phase — no CTO implementation until judgment info-structure sign-off**  
+**Flow v1:** [`DAY_8G_FLOW_SCREEN_DESIGN_v1.md`](./DAY_8G_FLOW_SCREEN_DESIGN_v1.md)
 
 ---
 
