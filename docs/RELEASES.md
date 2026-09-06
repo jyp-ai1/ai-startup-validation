@@ -6,6 +6,20 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### ALABOM DAY 8-G — Judgment Conversation (2026-09-06)
+
+**Production SHA:** `69634a756c4d6f6fde77e442b6ae60f841ff4185` · **PR:** #24  
+**Prod:** https://ai-startup-validation-tau.vercel.app
+
+- G-1 Simple Question UX — one question + answer guide
+- G-2 Answer Guide — CEO-friendly input hints
+- G-3 Progressive Disclosure — why-question in details
+- G-4 Judgment aggregation — 4 CEO dimensions, multi-fact per answer (read-only presentation)
+- G-5 Question budget — max 5 questions; Q3 interim / Q5 result judgment view
+- Production Browser: G-A~G-E + F-B1~F-B3 + D1–D5 **14/14 PASS**
+
+Evidence: [`docs/evidence/ALABOM/DAY_8G_PRODUCTION_GATE_REPORT.md`](./evidence/ALABOM/DAY_8G_PRODUCTION_GATE_REPORT.md)
+
 ### ALABOM DAY 8-F — Question Causality (2026-09-06)
 
 **Production SHA:** `309603730885ac793a3fba1203d84e9e5b795e4f` · **PR:** #23  

@@ -74,24 +74,24 @@ Preserved via flag-off path + existing test suites. Unit regression PASS.
 
 ## 8. Git
 
-Commit: 33b7e2b
-Push: origin/cursor/day8g-judgment-conversation-6423
-PR: #24
+Merge commit: `69634a756c4d6f6fde77e442b6ae60f841ff4185`  
+Feature commit: `243e04206e26c95efd10575c270ded52f76db075`  
+PR: #24 — merged
 
 ## 9. Production
 
-Merge SHA: pending
-Build SHA: pending
-Production SHA: pending
-SHA MATCH: pending
+Merge SHA: `69634a756c4d6f6fde77e442b6ae60f841ff4185`  
+Build SHA: `69634a756c4d6f6fde77e442b6ae60f841ff4185`  
+Production SHA: `69634a756c4d6f6fde77e442b6ae60f841ff4185`  
+SHA MATCH: ✅ YES
 
 ## 10. Production Smoke
 
-Pending merge/deploy
+`/api/health` ok · `/api/build-info` commit match · `/workspace` demo 200
 
 ## 11. Production Browser
 
-Pending CPO gate
+14/14 PASS — see `DAY_8G_PRODUCTION_GATE_REPORT.md`
 
 ## 12. Browser Gate
 
@@ -103,4 +103,4 @@ None — browser gate PASS.
 
 ## 14. CPO Review Required
 
-Local Browser Gate PASS. Awaiting CPO Merge GO → Production deploy → Production Browser A~F.
+Production Gate PASS @ `69634a7`. Awaiting CPO final DAY 8-G sign-off.
