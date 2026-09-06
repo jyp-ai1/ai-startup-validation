@@ -11,7 +11,9 @@ import {
   buildCeoUnderstandingSnapshot,
   sanitizeCeoFacingCopy,
 } from './ai-pm-judgment-presenter';
-import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
+import type { AiPmLoopTurn, AiPmResearchPending } from './workspace-ai-pm-loop-types';
+import { isAiPmResearchUxV1Active } from './ai-pm-research-ux-policy-v1';
+import { sanitizeResearchCopyForCeo } from './ai-pm-research-ux-policy';
 
 export type AiPmFocusedSnapshot = {
   /** AI가 이해한 현재 사업 */
@@ -55,6 +57,7 @@ export function buildAiPmFocusedSnapshot(input: {
   lastDecision: NextQuestionDecision | null;
   displayQuestionText: string;
   whyNow?: string | null;
+  researchPending?: AiPmResearchPending | null;
 }): AiPmFocusedSnapshot {
   const gate =
     input.livingBefore && input.lastTurn
@@ -85,6 +88,16 @@ export function buildAiPmFocusedSnapshot(input: {
   const questionText = sanitizeCeoFacingCopy(
     input.displayQuestionText.trim() || '다음 확인이 필요합니다.',
   );
+
+  if (input.researchPending && isAiPmResearchUxV1Active()) {
+    const rp = input.researchPending;
+    return {
+      businessUnderstanding,
+      currentJudgment,
+      confirmPrompt: sanitizeResearchCopyForCeo(rp.detail),
+      questionText: sanitizeResearchCopyForCeo(rp.headline),
+    };
+  }
 
   return {
     businessUnderstanding,

@@ -35,6 +35,8 @@ export type ResolveNextQuestionInput = {
   projectId?: string;
   /** When true, persist lastDecision or clear stale artifacts on null decision. Default false (read-only). */
   persistLastDecision?: boolean;
+  /** Phase D — when research pending, question engine must not advance. */
+  researchPending?: boolean;
 };
 
 export function resolveNextQuestionDecision(
@@ -47,6 +49,11 @@ export function resolveNextQuestionDecision(
       memory: input.memory,
       previousQuestionText: input.previousQuestionText,
     });
+  }
+
+  if (input.researchPending) {
+    const loop = input.projectId ? loadAiPmLoopState(input.projectId) : null;
+    return loop?.lastDecision ?? null;
   }
 
   const loop = input.projectId ? loadAiPmLoopState(input.projectId) : null;

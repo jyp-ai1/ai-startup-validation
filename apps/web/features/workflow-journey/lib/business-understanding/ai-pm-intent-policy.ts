@@ -4,6 +4,7 @@
  */
 
 import type { AnswerIntent } from './interpret-answer-semantics';
+import { researchAcknowledgementMessage } from './ai-pm-research-ux-policy';
 
 export type AiPmCeoIntent =
   | 'ANSWER'
@@ -22,7 +23,7 @@ export type AiPmIntentClassification = {
 };
 
 const RESEARCH_RE =
-  /(찾아\s*줘|찾아주|조사\s*해|조사해\s*줘|검색\s*해|리서치|알아\s*봐|알아봐\s*줘|research|look\s+up|find\s+(competitor|alternative|market))/i;
+  /(찾아\s*줘|찾아주|조사\s*해|조사해\s*줘|검색\s*해|리서치|알아\s*봐|알아봐\s*줘|시장\s*조사|시장조사|비슷한\s*서비스\s*조사|research|look\s+up|find\s+(competitor|alternative|market))/i;
 const DECIDE_RE =
   /(이대로\s*(go|고)|go\s*해도|진행\s*해|결정\s*해|확정\s*해|start\s+analysis|분석\s*시작)/i;
 
@@ -92,7 +93,7 @@ function hasEmbeddedFactualAnswer(text: string): boolean {
   return withoutResearch.length >= 4 && /[가-힣a-zA-Z0-9]/.test(withoutResearch);
 }
 
-/** Stub copy when RESEARCH intent is detected — no investigation engine yet. */
-export function researchIntentStubMessage(): string {
-  return '조사 요청을 받았습니다. AI 조사 기능은 준비 중입니다. 지금은 알고 계신 경쟁·대안을 직접 알려 주시면 이해에 반영하겠습니다.';
+/** Stub copy when RESEARCH intent is detected — Phase D uses acknowledgement policy. */
+export function researchIntentStubMessage(utterance?: string): string {
+  return researchAcknowledgementMessage(utterance);
 }

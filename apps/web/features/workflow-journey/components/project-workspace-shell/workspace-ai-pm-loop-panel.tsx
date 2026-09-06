@@ -37,6 +37,10 @@ import {
   researchIntentStubMessage,
 } from '../../lib/business-understanding/ai-pm-intent-policy';
 import {
+  buildResearchAcknowledgement,
+} from '../../lib/business-understanding/ai-pm-research-ux-policy';
+import { isAiPmResearchUxV1Active } from '../../lib/business-understanding/ai-pm-research-ux-policy-v1';
+import {
   AI_PM_LOOP_ISSUE_ORDER,
   type AiPmLoopIssueId,
   type AiPmLoopTurn,
@@ -403,6 +407,18 @@ export function WorkspaceAiPmLoopPanel({
   );
 
   const whyThisQuestionNow = useMemo(() => {
+    if (loopState.researchPending && isAiPmResearchUxV1Active()) {
+      const rp = loopState.researchPending;
+      return {
+        issueId: rp.frozenIssueId,
+        targetGap: rp.frozenTargetGap,
+        questionText: rp.frozenQuestionText,
+        whyNow: rp.detail,
+        rationale: rp.detail,
+        score: 999_999,
+        missingField: 'business' as const,
+      };
+    }
     if (questionLockActive && lockedAskSurface) {
       return lockedAskSurface;
     }
@@ -449,6 +465,7 @@ export function WorkspaceAiPmLoopPanel({
       previousQuestionText: questionOverride?.questionText ?? null,
       projectId,
       gapState: loadAiPmLoopState(projectId).gapState,
+      researchPending: Boolean(loadAiPmLoopState(projectId).researchPending),
     });
     if (!decision) return null;
 
@@ -635,6 +652,7 @@ export function WorkspaceAiPmLoopPanel({
       lastTurn,
       lastDecision: loopState.lastDecision ?? null,
       displayQuestionText,
+      researchPending: loopState.researchPending ?? null,
       whyNow:
         whyThisQuestionNow?.whyNow ??
         whyThisQuestionNow?.rationale ??
@@ -646,6 +664,7 @@ export function WorkspaceAiPmLoopPanel({
     livingBeforeForSnapshot,
     lastTurn,
     loopState.lastDecision,
+    loopState.researchPending,
     displayQuestionText,
     whyThisQuestionNow?.whyNow,
     whyThisQuestionNow?.rationale,
@@ -1011,6 +1030,11 @@ export function WorkspaceAiPmLoopPanel({
     const inFlightGap = whyThisQuestionNow?.targetGap ?? questionOverride?.targetGap ?? null;
     setWhyPanel(null);
     setMidJudgmentText(null);
+    if (loopState.researchPending) {
+      patchAiPmLoopState({ researchPending: null }, projectId);
+      syncState(loadAiPmLoopState(projectId));
+      return;
+    }
     const gap = resolvePreservedGapAfterMeta({
       living: livingState,
       turns: loopState.turns,
@@ -1460,7 +1484,28 @@ export function WorkspaceAiPmLoopPanel({
 
     const ceoIntent = classifyAiPmCeoIntent(trimmed, semantic.intent);
     if (ceoIntent.route === 'ai_action' && ceoIntent.intent === 'RESEARCH') {
-      setMidJudgmentText(researchIntentStubMessage());
+      if (isAiPmResearchUxV1Active()) {
+        const ack = buildResearchAcknowledgement(trimmed);
+        patchAiPmLoopState(
+          {
+            researchPending: {
+              utterance: trimmed,
+              headline: ack.headline,
+              detail: ack.detail,
+              topic: ack.topic,
+              requestedAt: new Date().toISOString(),
+              frozenQuestionText: displayedQuestionText ?? persistedQuestionText ?? '',
+              frozenTargetGap: resolvedAskedGap ?? 'businessOneLiner',
+              frozenIssueId: issueId,
+            },
+          },
+          projectId,
+        );
+        syncState(loadAiPmLoopState(projectId));
+        resetAnswerDraft();
+        return;
+      }
+      setMidJudgmentText(researchIntentStubMessage(trimmed));
       setWhyPanel(null);
       resetAnswerDraft();
       return;
@@ -2126,6 +2171,25 @@ export function WorkspaceAiPmLoopPanel({
             >
               {whyPanel.returnToLoopCta}
             </Button>
+          </div>
+        ) : null}
+        {loopState.researchPending && isAiPmResearchUxV1Active() ? (
+          <div
+            data-testid="research-ack-panel"
+            className="mt-4 whitespace-pre-wrap rounded-xl border border-primary/20 bg-primary/[0.04] px-4 py-3 text-sm leading-relaxed"
+          >
+            {loopState.researchPending.headline}
+            <p className="mt-2 text-muted-foreground">{loopState.researchPending.detail}</p>
+            <div className="mt-3">
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl"
+                onClick={closeWhyOrMidAndRejudge}
+              >
+                이해 루프로 돌아가기
+              </Button>
+            </div>
           </div>
         ) : null}
         {midJudgmentText ? (
