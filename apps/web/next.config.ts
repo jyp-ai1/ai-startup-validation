@@ -45,8 +45,8 @@ const nextConfig: NextConfig = {
   ],
   env: {
     NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: process.env.VERCEL_GIT_COMMIT_SHA,
-    // DAY 8-B Phase 2 — bake Focused UI + V3 flags into Vercel production client bundle
-    ...(process.env.VERCEL === '1' && process.env.VERCEL_ENV === 'production'
+    // Bake AI PM policy flags into production client bundle (Vercel + local E2E `next build`)
+    ...(process.env.NODE_ENV === 'production'
       ? {
           NEXT_PUBLIC_V3_REVIEW_PIPELINE:
             process.env.NEXT_PUBLIC_V3_REVIEW_PIPELINE ?? 'true',
@@ -60,6 +60,8 @@ const nextConfig: NextConfig = {
             process.env.NEXT_PUBLIC_AI_PM_NO_ASK_POLICY_V1 ?? 'true',
           NEXT_PUBLIC_AI_PM_RESEARCH_UX_V1:
             process.env.NEXT_PUBLIC_AI_PM_RESEARCH_UX_V1 ?? 'true',
+          NEXT_PUBLIC_AI_PM_ANSWER_TARGET_BINDING_V1:
+            process.env.NEXT_PUBLIC_AI_PM_ANSWER_TARGET_BINDING_V1 ?? 'true',
         }
       : {}),
   },

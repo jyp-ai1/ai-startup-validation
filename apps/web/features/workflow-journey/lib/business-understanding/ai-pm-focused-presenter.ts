@@ -14,6 +14,7 @@ import {
 import type { AiPmLoopTurn, AiPmResearchPending } from './workspace-ai-pm-loop-types';
 import { isAiPmResearchUxV1Active } from './ai-pm-research-ux-policy-v1';
 import { sanitizeResearchCopyForCeo } from './ai-pm-research-ux-policy';
+import { sanitizeCeoWhyNow } from './ai-pm-question-presentation';
 
 export type AiPmFocusedSnapshot = {
   /** AI가 이해한 현재 사업 */
@@ -38,7 +39,7 @@ function buildConfirmPrompt(
 ): string {
   const fromWhy = whyNow?.trim() || lastDecision?.whyNow?.trim();
   if (fromWhy && !fromWhy.includes('targetGap') && !fromWhy.includes('CLOSED')) {
-    return sanitizeCeoFacingCopy(fromWhy);
+    return sanitizeCeoWhyNow(sanitizeCeoFacingCopy(fromWhy));
   }
   if (gateRemaining) return sanitizeCeoFacingCopy(gateRemaining);
   if (judgment.includes('불명확') || judgment.includes('확인')) {

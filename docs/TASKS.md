@@ -2627,17 +2627,19 @@ PM 확인 요청
 
 ---
 
-## ALABOM DAY 8-F — Question Causality Design 🟢 GO (Design Only)
+## ALABOM DAY 8-F — Question Causality F-1~F-5 ✅ IMPLEMENTED
 
-**Status:** Root cause analysis submitted — **implementation HOLD until CPO approval**  
-**Spec:** [`docs/evidence/ALABOM/DAY_8F_DESIGN_REPORT.md`](./evidence/ALABOM/DAY_8F_DESIGN_REPORT.md)
+**Status:** F-1~F-5 implemented on `cursor/day8f-question-causality-6423`  
+**Design:** [`docs/evidence/ALABOM/DAY_8F_DESIGN_REPORT.md`](./evidence/ALABOM/DAY_8F_DESIGN_REPORT.md)  
+**Report:** [`docs/evidence/ALABOM/DAY_8F_IMPLEMENTATION_REPORT.md`](./evidence/ALABOM/DAY_8F_IMPLEMENTATION_REPORT.md)
 
-| P0 | Topic | Root cause (summary) |
-|----|-------|----------------------|
-| P0-1 | Answer Target Binding | `solution` → `business` factKey collision; memory_document beats prior turn |
-| P0-2 | Confirm vs Open | CONFIRM uses OPEN textarea UX; "네 맞습니다" corrupts facts |
-| P0-3 | Previous Edit Binding | `editableTurns` dedupes by issueId, not last turn |
-| P0-4 | Research Continuity | `RESEARCH_RE` misses "확인해주세요" / "알아보고" delegation |
+| Item | Status |
+|------|--------|
+| F-1 Answer Target Binding | ✅ Unit F1-R1~R3 + Browser F-B1 |
+| F-2 Confirm/Open UX | ✅ Unit F2-R1/R2 + Browser F-B3 |
+| F-3 Previous Answer Edit | ✅ Unit F3-R1 |
+| F-4 Research Delegation | ✅ Unit F4-R1 + Browser F-B2/F-B2b + D1–D5 |
+| F-5 Meta Guard | ✅ Presenter + whyNow sanitize |
 
 **HOLD:** Research Engine · Stage B · V3 core rewrite
 

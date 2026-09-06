@@ -139,6 +139,39 @@ export async function dismissRecognition(page: Page) {
   }
 }
 
+/** F-2 confirm surfaces hide textarea — advance with Yes until open answer UI appears. */
+export async function advanceToOpenAnswerSurface(page: Page, maxConfirms = 4): Promise<void> {
+  for (let i = 0; i < maxConfirms; i += 1) {
+    await dismissRecognition(page);
+    const textarea = page.locator('textarea').last();
+    if (await textarea.isVisible({ timeout: 1500 }).catch(() => false)) {
+      return;
+    }
+    const yes = page.getByTestId('confirm-yes-cta');
+    const yesVisible = await yes.isVisible({ timeout: 1500 }).catch(() => false);
+    if (yesVisible) {
+      const beforeQ = await readSurfaceQuestion(page).catch(() => '');
+      await yes.click({ force: true });
+      await page.waitForTimeout(900);
+      const thinking = page.getByTestId('ai-pm-thinking-stages');
+      if (await thinking.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await thinking.waitFor({ state: 'hidden', timeout: 45_000 }).catch(() => null);
+      }
+      await page.waitForTimeout(800);
+      const afterQ = await readSurfaceQuestion(page).catch(() => '');
+      if (afterQ !== beforeQ) continue;
+      if (await textarea.isVisible({ timeout: 1500 }).catch(() => false)) return;
+      continue;
+    }
+    break;
+  }
+}
+
+export async function submitResearchDelegation(page: Page, utterance: string): Promise<boolean> {
+  await advanceToOpenAnswerSurface(page);
+  return submitAnswer(page, utterance);
+}
+
 export async function submitAnswer(page: Page, answer: string): Promise<boolean> {
   await dismissRecognition(page);
   await waitForAskSurface(page).catch(() => null);

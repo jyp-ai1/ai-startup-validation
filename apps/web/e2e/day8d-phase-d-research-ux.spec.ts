@@ -10,7 +10,7 @@ import {
   dismissRecognition,
   readSurfaceQuestion,
   startDemoSaas,
-  submitAnswer,
+  submitResearchDelegation,
   waitForAskSurface,
 } from './_helpers/v3-p0-e2e-helpers';
 
@@ -47,7 +47,7 @@ test.describe('DAY 8-D Phase D — Research UX Browser', () => {
 
   test('D1 — research intent: 경쟁사 찾아줘', async ({ page }) => {
     const beforeQ = (await readFocusedBlocks(page)).question;
-    await submitAnswer(page, '경쟁사 찾아줘');
+    await submitResearchDelegation(page, '경쟁사 찾아줘');
     await page.waitForTimeout(800);
 
     const ack = page.getByTestId('research-ack-panel');
@@ -65,7 +65,7 @@ test.describe('DAY 8-D Phase D — Research UX Browser', () => {
 
   test('D2 — question engine bypass: no new gap question after research', async ({ page }) => {
     const q0 = (await readFocusedBlocks(page)).question;
-    await submitAnswer(page, '시장조사 해줘');
+    await submitResearchDelegation(page, '시장조사 해줘');
     await page.waitForTimeout(800);
 
     const q1 = (await readFocusedBlocks(page)).question;
@@ -77,7 +77,7 @@ test.describe('DAY 8-D Phase D — Research UX Browser', () => {
   });
 
   test('D3 — CEO-friendly copy only', async ({ page }) => {
-    await submitAnswer(page, '비슷한 서비스 조사해줘');
+    await submitResearchDelegation(page, '비슷한 서비스 조사해줘');
     await page.waitForTimeout(800);
 
     const body = await page.locator('body').innerText();
@@ -89,7 +89,7 @@ test.describe('DAY 8-D Phase D — Research UX Browser', () => {
 
   test('D4 — question freeze after research request', async ({ page }) => {
     const qBefore = (await readFocusedBlocks(page)).question;
-    await submitAnswer(page, '경쟁사 찾아줘');
+    await submitResearchDelegation(page, '경쟁사 찾아줘');
     await page.waitForTimeout(800);
 
     const qAfter = (await readFocusedBlocks(page)).question;
@@ -104,7 +104,7 @@ test.describe('DAY 8-D Phase D — Research UX Browser', () => {
   test('D5 — return continuity after resume', async ({ page }) => {
     const before = await readFocusedBlocks(page);
 
-    await submitAnswer(page, '경쟁사 찾아줘');
+    await submitResearchDelegation(page, '경쟁사 찾아줘');
     await page.waitForTimeout(800);
     await page.getByRole('button', { name: '이해 루프로 돌아가기' }).click();
     await waitForAskSurface(page);

@@ -102,6 +102,11 @@ export type QuestionDecision = {
   reframed: boolean;
   /** Gaps excluded because answered or sticky-failed */
   excludedGaps: string[];
+  /** DAY 8-F — presentation metadata only (not V3 SoT) */
+  questionType?: 'open' | 'confirm';
+  confirmKnownValue?: string;
+  confirmGapId?: string;
+  confirmSourceTurnAppliedAt?: string;
 };
 
 /** Count how many prior turns asked this gap without closing it (semantic fact). */

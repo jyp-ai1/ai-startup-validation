@@ -22,7 +22,7 @@ import type { UnderstandingGateResult } from './ai-pm-understanding-gate';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 const INTERNAL_KEY_RE =
-  /\b(businessOneLiner|customerPersona|problemJtbd|marketChannel|targetGap|gapState|validationTestability|alternativesCompetitors|differentiationVsAlternatives)\b/i;
+  /\b(businessOneLiner|customerPersona|problemJtbd|marketChannel|targetGap|gapState|validationTestability|alternativesCompetitors|differentiationVsAlternatives|semantic repeat|memory_document|memory_user|no-ask|gapId|routing|policy)\b/i;
 
 function isPending(value: string | null | undefined): boolean {
   const v = value?.trim() ?? '';
