@@ -61,7 +61,17 @@ export function hasNoMeaningfulGap(input: {
     turns: input.turns,
   });
 
-  return candidates.every((c) => !isGapAskable(c.fieldKey, input.gapState));
+  const askableFromCandidates = candidates.some((c) =>
+    isGapAskable(c.fieldKey, input.gapState),
+  );
+  if (askableFromCandidates) return false;
+
+  // Adaptive list empty but OPEN gaps remain — still meaningful (bootstrap path).
+  for (const gapId of Object.keys(input.gapState.gaps)) {
+    if (isGapAskable(gapId, input.gapState)) return false;
+  }
+
+  return true;
 }
 
 export type NoGapTerminationVerdict = {
@@ -96,7 +106,7 @@ export function evaluateNoGapTermination(input: {
     return { terminate: true, reason: 'repeat_loop_kill' };
   }
 
-  if (hasNoMeaningfulGap(input)) {
+  if (input.turns.length >= 4 && hasNoMeaningfulGap(input)) {
     return { terminate: true, reason: 'no_askable_gap' };
   }
 

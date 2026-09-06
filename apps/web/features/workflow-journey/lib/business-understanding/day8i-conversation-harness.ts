@@ -463,9 +463,11 @@ export function runDay8iConversation(input: {
   const repeatedQuestions: Day8iConversationResult['repeatedQuestions'] = [];
   for (let i = 1; i < questionHistory.length; i += 1) {
     const cur = questionHistory[i]!;
+    if (!cur.text.trim() || cur.text.startsWith('(검토')) continue;
     for (let j = 0; j < i; j += 1) {
       const prev = questionHistory[j]!;
-      if (cur.text.trim() && cur.text.trim() === prev.text.trim()) {
+      if (!prev.text.trim() || prev.text.startsWith('(검토')) continue;
+      if (cur.text.trim() === prev.text.trim()) {
         repeatedQuestions.push({
           turn: cur.turn,
           question: cur.text,
