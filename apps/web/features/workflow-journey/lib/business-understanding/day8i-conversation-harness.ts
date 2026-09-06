@@ -6,7 +6,7 @@
 import type { BusinessUnderstanding } from '@repo/types/domain/business-understanding';
 
 import { buildBusinessUnderstanding } from './build-business-understanding';
-import { buildCeoJudgmentState, buildCeoJudgmentStateWithTrace } from './ai-pm-judgment-aggregation';
+import { buildCeoJudgmentStateWithTrace } from './ai-pm-judgment-aggregation';
 import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 import { buildBusinessReviewResult } from './ai-pm-business-review';
 import {
@@ -24,7 +24,14 @@ import {
 } from './process-loop-answer';
 import { resolveNextQuestionDecision } from './resolve-next-question-decision';
 import { isNextQuestionDecision } from './decide-next-question-from-review';
-import { syncJudgmentAfterAnswer } from './ai-pm-judgment-loop-sync';
+import { syncJudgmentAfterAnswer, openBusinessReview } from './ai-pm-judgment-loop-sync';
+import {
+  clearProjectConsultingState,
+  recordProjectSnapshot,
+  saveProjectConsultingState,
+} from './project-consulting-store';
+import { createEmptyProjectConsultingState } from './project-consulting-state';
+import { isSameMeaningQuestion } from './reframe-question';
 import {
   clearAiPmLoopState,
   loadAiPmLoopState,
@@ -102,6 +109,10 @@ export type Day8iConversationResult = {
     changeType?: string;
   }>;
   cpoSelfChecks: CpoRSelfCheck[];
+  /** Turns where no meaningful gap → review/judgment instead of ask */
+  noGapTerminations: number[];
+  /** Consecutive same-question pairs (R15 loop kill) */
+  consecutiveRepeats: Array<{ turn: number; question: string }>;
 };
 
 const DEFAULT_DOC = `# 소규모 양조장 주문·배송 SaaS
@@ -213,6 +224,12 @@ export function runDay8iConversation(input: {
   const judgmentChanges: Day8iConversationResult['judgmentChanges'] = [];
   const unsupportedInferences: string[] = [];
   const inferenceChecks: Day8iInferenceCheck[] = [];
+  const noGapTerminations: number[] = [];
+  const consecutiveRepeats: Day8iConversationResult['consecutiveRepeats'] = [];
+  let askTerminated = false;
+
+  clearProjectConsultingState(projectId);
+  saveProjectConsultingState(createEmptyProjectConsultingState(projectId));
 
   for (let i = 0; i < steps.length; i += 1) {
     const step = steps[i]!;
@@ -229,20 +246,45 @@ export function runDay8iConversation(input: {
       memory,
     });
 
-    const decision = resolveNextQuestionDecision({
-      living,
-      turns: loop.turns,
-      memory,
-      gapState: loop.gapState,
-      projectId,
-    });
+    const decision = askTerminated
+      ? null
+      : resolveNextQuestionDecision({
+          living,
+          turns: loop.turns,
+          memory,
+          gapState: loop.gapState,
+          projectId,
+        });
     const { text: question, gap: targetGap, reason: nextReason } =
       questionFromDecision(decision);
 
-    const binding = resolveGapQuestionBinding(targetGap || 'customerPersona');
+    if (!decision && !askTerminated) {
+      noGapTerminations.push(i + 1);
+      askTerminated = true;
+      openBusinessReview(projectId);
+      loop = loadAiPmLoopState(projectId);
+    }
+
+    const binding = targetGap ? resolveGapQuestionBinding(targetGap) : null;
     const askedGap = step.askedGap ?? targetGap ?? binding?.targetGap ?? 'customerPersona';
     const askedIssueId = step.askedIssueId ?? binding?.issueId ?? 'customer_definition';
-    const displayQuestion = question || binding?.questionText || '질문';
+    const displayQuestion = decision
+      ? question || binding?.questionText || '질문'
+      : '(검토 모드 — 추가 질문 없음)';
+
+    if (i > 0) {
+      const prevQ = questionHistory[i - 1]?.text;
+      if (
+        prevQ &&
+        displayQuestion &&
+        !displayQuestion.startsWith('(검토') &&
+        !prevQ.startsWith('(검토') &&
+        (prevQ.trim() === displayQuestion.trim() ||
+          isSameMeaningQuestion(prevQ, displayQuestion))
+      ) {
+        consecutiveRepeats.push({ turn: i + 1, question: displayQuestion });
+      }
+    }
 
     const appliedAt = new Date(Date.now() + i * 1000).toISOString();
     const turn: AiPmLoopTurn = {
@@ -272,18 +314,7 @@ export function runDay8iConversation(input: {
     });
 
     const turnsBefore = loop.turns.slice(0, -1);
-    const livingBefore =
-      turnsBefore.length > 0
-        ? buildLivingUnderstandingState({
-            documentText,
-            understanding,
-            turns: turnsBefore,
-            memory,
-          })
-        : null;
-    const beforeState = livingBefore
-      ? buildCeoJudgmentState({ living: livingBefore, turns: turnsBefore })
-      : null;
+    const beforeState = loop.ceoJudgment ?? null;
 
     const sync = syncJudgmentAfterAnswer({
       projectId,
@@ -372,11 +403,43 @@ export function runDay8iConversation(input: {
     });
     record.nextQuestion = questionFromDecision(nextDecision).text || null;
 
+    if (i === 0) {
+      recordProjectSnapshot({
+        projectId,
+        trigger: 'PROJECT_CREATED',
+        loop: sync.loop,
+        documentText,
+        understanding: processed.living.spine.problem || processed.living.spine.customer,
+      });
+    }
+
+    if (step.category === 'E_correction') {
+      const reviewAtCorrection = buildBusinessReviewResult(sync.judgment);
+      recordProjectSnapshot({
+        projectId,
+        trigger: 'CEO_CORRECTED',
+        loop: sync.loop,
+        documentText,
+        understanding: processed.living.spine.problem || processed.living.spine.customer,
+        businessReview: {
+          verdictLabel: reviewAtCorrection.verdictLabel,
+          oneLiner: reviewAtCorrection.oneLiner,
+          nextAction: reviewAtCorrection.nextAction,
+        },
+      });
+    }
+
     turns.push(record);
     questionHistory.push({ turn: i + 1, text: displayQuestion });
   }
 
   const finalLoop = loadAiPmLoopState(projectId);
+  recordProjectSnapshot({
+    projectId,
+    trigger: 'SESSION_END',
+    loop: finalLoop,
+    documentText,
+  });
   const finalMemory = buildConversationMemoryFromSources({
     projectId,
     documentText,
@@ -424,6 +487,8 @@ export function runDay8iConversation(input: {
     inferenceChecks,
     judgmentChanges,
     cpoSelfChecks: runCpoRSelfChecks(),
+    noGapTerminations,
+    consecutiveRepeats,
   };
 }
 
@@ -545,7 +610,8 @@ export function formatDay8iCtoReport(result: Day8iConversationResult): string {
   const fail =
     result.separationIssues.length > 0 ||
     result.unsupportedInferences.length > 2 ||
-    result.repeatedQuestions.length > 3;
+    result.repeatedQuestions.length > 3 ||
+    result.consecutiveRepeats.length > 0;
   lines.push(fail ? 'FAIL' : 'PASS');
   lines.push('');
   lines.push(

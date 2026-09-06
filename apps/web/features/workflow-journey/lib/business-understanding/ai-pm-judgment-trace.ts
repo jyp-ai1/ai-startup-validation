@@ -128,8 +128,14 @@ export function buildJudgmentTraceEntries(input: {
       { interpretedMeaning: string; evidence: string; reason: string; knownPriorInfo?: string }
     >
   >;
+  /** When set, only dimensions extracted from the answer may produce trace entries. */
+  allowedDimensions?: CeoJudgmentDimensionId[];
 }): JudgmentTraceEntry[] {
   const entries: JudgmentTraceEntry[] = [];
+  const allowed =
+    input.allowedDimensions && input.allowedDimensions.length > 0
+      ? new Set(input.allowedDimensions)
+      : null;
 
   for (const id of [
     'customer',
@@ -137,6 +143,7 @@ export function buildJudgmentTraceEntries(input: {
     'solution',
     'customerChange',
   ] as CeoJudgmentDimensionId[]) {
+    if (allowed && !allowed.has(id)) continue;
     const before = input.prior.dimensions[id];
     const after = input.next.dimensions[id];
     const changeType = classifyJudgmentChangeType({

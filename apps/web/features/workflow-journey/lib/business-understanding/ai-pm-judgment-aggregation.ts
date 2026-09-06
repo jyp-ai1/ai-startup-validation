@@ -24,6 +24,7 @@ import {
 } from './ai-pm-judgment-target-binding';
 import {
   buildJudgmentTraceEntries,
+  classifyJudgmentChangeType,
   type JudgmentTraceEntry,
 } from './ai-pm-judgment-trace';
 import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
@@ -302,18 +303,33 @@ export function buildCeoJudgmentState(input: {
   turns: AiPmLoopTurn[];
   prior?: CeoJudgmentState | null;
   lastReview?: AnswerReview | null;
+  /** When true, skip living spine merge — prior already reflects accumulated state. */
+  incremental?: boolean;
 }): CeoJudgmentState {
   if (!isAiPmJudgmentAggregationV1Active()) {
     return emptyCeoJudgmentState(countActionableTurns(input.turns));
   }
 
-  let state = input.prior ?? emptyCeoJudgmentState(countActionableTurns(input.turns));
+  const incremental = input.incremental ?? Boolean(input.prior);
+  let state = input.prior
+    ? {
+        ...input.prior,
+        dimensions: {
+          customer: { ...input.prior.dimensions.customer },
+          problem: { ...input.prior.dimensions.problem },
+          solution: { ...input.prior.dimensions.solution },
+          customerChange: { ...input.prior.dimensions.customerChange },
+        },
+      }
+    : emptyCeoJudgmentState(countActionableTurns(input.turns));
   state.questionCount = countActionableTurns(input.turns);
 
-  const fromLiving = dimensionFromLiving(input.living);
-  for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
-    if (fromLiving[id]) {
-      state.dimensions[id] = mergeDimension(state.dimensions[id], fromLiving[id]!);
+  if (!incremental) {
+    const fromLiving = dimensionFromLiving(input.living);
+    for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+      if (fromLiving[id]) {
+        state.dimensions[id] = mergeDimension(state.dimensions[id], fromLiving[id]!);
+      }
     }
   }
 
@@ -471,17 +487,23 @@ export function buildCeoJudgmentStateWithTrace(input: {
   const state = buildCeoJudgmentState({
     living: input.living,
     turns: input.turns,
-    prior: input.prior ?? prior,
+    prior,
     lastReview: input.lastReview,
+    incremental: Boolean(input.beforeState ?? input.prior),
   });
 
+  const multiFact =
+    answer.includes('하고') ||
+    answer.includes('해서') ||
+    (answer.match(/[,，]/g)?.length ?? 0) >= 1;
   const answerDims = answer.trim()
-    ? dimensionsFromAnswerText(answer, last?.issueId, last?.targetGap)
+    ? dimensionsFromAnswerText(answer, last?.issueId, last?.targetGap, multiFact)
     : { meta: {}, frozen: false, dimensions: {} };
-  const { meta } = answerDims;
+  const { meta, dimensions: fromAnswerDims } = answerDims;
 
   const dimensionMeta: BuildCeoJudgmentWithTraceResult['dimensionMeta'] = {};
   for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+    if (!fromAnswerDims[id]) continue;
     const entry = meta[id];
     if (entry) {
       dimensionMeta[id] = {
@@ -498,28 +520,33 @@ export function buildCeoJudgmentStateWithTrace(input: {
     prior,
     next: state,
     dimensionMeta,
+    allowedDimensions: Object.keys(fromAnswerDims) as CeoJudgmentDimensionId[],
   });
 
   if (traceEntries.length === 0 && answer.trim()) {
     for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+      if (fromAnswerDims[id] === undefined) continue;
       const before = prior.dimensions[id];
       const after = state.dimensions[id];
-      if (before.summary.trim() !== after.summary.trim() || before.status !== after.status) {
-        traceEntries.push({
-          sourceTurnId: input.sourceTurnId ?? last?.appliedAt ?? `turn-${actionable.length}`,
-          question,
-          answer,
-          interpretedMeaning: meta[id]?.interpretedMeaning ?? `${id} dimension update`,
-          evidence: meta[id]?.evidence ?? answer.trim(),
-          affectedDimension: id,
-          previousJudgment: { status: before.status, summary: before.summary },
-          newJudgment: { status: after.status, summary: after.summary },
-          changeType: !before.summary.trim() && after.summary.trim() ? 'NEW' : 'CHANGED',
-          reason: meta[id]?.reason ?? after.statusReason ?? 'judgment sync',
-          knownPriorInfo: before.summary || undefined,
-          newlyAddedInfo: after.summary || undefined,
-        });
-      }
+      const changeType = classifyJudgmentChangeType({
+        before: { status: before.status, summary: before.summary },
+        after: { status: after.status, summary: after.summary },
+      });
+      if (changeType === 'UNCHANGED') continue;
+      traceEntries.push({
+        sourceTurnId: input.sourceTurnId ?? last?.appliedAt ?? `turn-${actionable.length}`,
+        question,
+        answer,
+        interpretedMeaning: meta[id]?.interpretedMeaning ?? `${id} dimension update`,
+        evidence: meta[id]?.evidence ?? answer.trim(),
+        affectedDimension: id,
+        previousJudgment: { status: before.status, summary: before.summary },
+        newJudgment: { status: after.status, summary: after.summary },
+        changeType: !before.summary.trim() && after.summary.trim() ? 'NEW' : 'CHANGED',
+        reason: meta[id]?.reason ?? after.statusReason ?? 'judgment sync',
+        knownPriorInfo: before.summary || undefined,
+        newlyAddedInfo: after.summary || undefined,
+      });
     }
   }
 
