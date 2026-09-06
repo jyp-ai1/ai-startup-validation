@@ -4,7 +4,7 @@
 
 import { buildCeoJudgmentState } from './ai-pm-judgment-aggregation';
 import { isAiPmJudgmentAggregationV1Active } from './ai-pm-judgment-aggregation-v1';
-import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
+import type { CeoJudgmentDimensionId, CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import {
   evaluateJudgmentStop,
@@ -83,6 +83,53 @@ export function resumeQuestionView(projectId?: string): AiPmLoopState {
 export function startJudgmentFollowUp(projectId?: string): AiPmLoopState {
   return patchAiPmLoopState(
     { viewMode: 'question', judgmentFollowUp: true },
+    projectId,
+  );
+}
+
+/** DAY 8-H — open 1-page business review (distinct from interim judgment view). */
+export function openBusinessReview(projectId?: string): AiPmLoopState {
+  return patchAiPmLoopState(
+    {
+      viewMode: 'review',
+      reviewDecisionShown: false,
+      supplementDimensionId: null,
+      judgmentFollowUp: false,
+    },
+    projectId,
+  );
+}
+
+/** DAY 8-H — show GO / 조건부 GO / NO-GO on review screen. */
+export function showBusinessReviewDecision(projectId?: string): AiPmLoopState {
+  return patchAiPmLoopState({ reviewDecisionShown: true }, projectId);
+}
+
+/** DAY 8-H — enter supplement mode for one dimension. */
+export function openSupplementMode(
+  dimensionId: CeoJudgmentDimensionId,
+  projectId?: string,
+): AiPmLoopState {
+  return patchAiPmLoopState(
+    {
+      viewMode: 'supplement',
+      supplementDimensionId: dimensionId,
+      judgmentFollowUp: false,
+      phase: 'answer',
+    },
+    projectId,
+  );
+}
+
+/** DAY 8-H — return to review after supplement answer. */
+export function returnToBusinessReview(projectId?: string): AiPmLoopState {
+  return patchAiPmLoopState(
+    {
+      viewMode: 'review',
+      supplementDimensionId: null,
+      reviewDecisionShown: false,
+      judgmentFollowUp: false,
+    },
     projectId,
   );
 }

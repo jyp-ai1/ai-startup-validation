@@ -6,7 +6,7 @@ import type { NextQuestionDecision } from './decide-next-question-from-review';
 import type { AnswerIntent } from './interpret-answer-semantics';
 import type { QuestionCausality } from './question-causality';
 import type { LockedAskSurface } from './question-transition-lock';
-import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
+import type { CeoJudgmentDimensionId, CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 
 export type AiPmResearchPending = {
   utterance: string;
@@ -83,11 +83,17 @@ export type AiPmLoopState = {
   /** DAY 8-G — CEO judgment presentation layer */
   ceoJudgment?: CeoJudgmentState | null;
   /** DAY 8-G — question vs judgment view */
-  viewMode?: 'question' | 'judgment' | null;
+  viewMode?: 'question' | 'judgment' | 'review' | 'supplement' | null;
   /** DAY 8-G — judgment screen title mode */
   judgmentViewMode?: 'interim' | 'result' | null;
   /** DAY 8-G — follow-up from judgment view (single question then return) */
   judgmentFollowUp?: boolean | null;
+  /** DAY 8-H — dimension being supplemented */
+  supplementDimensionId?: CeoJudgmentDimensionId | null;
+  /** DAY 8-H — show GO/조건부/NO-GO on review screen */
+  reviewDecisionShown?: boolean | null;
+  /** DAY 8-H — return to business review after supplement answer processing */
+  supplementPendingReview?: boolean | null;
 };
 
 export const AI_PM_LOOP_MIN_TURNS = 3;

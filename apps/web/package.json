@@ -16,6 +16,7 @@
     "test:e2e:v3-p0": "node scripts/run-v3-p0-e2e.mjs",
     "test:e2e:v3-p0:infra": "node scripts/run-v3-p0-e2e.mjs e2e/v3-p0-infra-smoke.spec.ts --retries=0",
     "test:e2e:day8g": "node scripts/run-day8g-e2e.mjs",
+    "test:e2e:day8h": "node scripts/run-day8h-e2e.mjs",
     "verify:v3-baseline": "node scripts/verify-v3-baseline-recovery.mjs"
   },
   "dependencies": {

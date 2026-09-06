@@ -31,13 +31,24 @@ import { resolveV3DisplayPriority } from '../../lib/business-understanding/v3-le
 import { isV3ReviewPipelineActive } from '../../lib/business-understanding/v3-review-pipeline';
 import { isAiPmFocusedUiActive } from '../../lib/business-understanding/ai-pm-focused-ui';
 import { isAiPmJudgmentAggregationV1Active } from '../../lib/business-understanding/ai-pm-judgment-aggregation-v1';
+import { isAiPmBusinessReviewV1Active } from '../../lib/business-understanding/ai-pm-business-review-v1';
+import { buildBusinessReviewResult } from '../../lib/business-understanding/ai-pm-business-review';
+import { buildCeoJudgmentState } from '../../lib/business-understanding/ai-pm-judgment-aggregation';
 import { buildAiPmSimpleQuestionSnapshot } from '../../lib/business-understanding/ai-pm-simple-question-presenter';
 import {
+  openBusinessReview,
   openJudgmentView,
+  openSupplementMode,
   resumeQuestionView,
-  startJudgmentFollowUp,
+  returnToBusinessReview,
+  showBusinessReviewDecision,
   syncJudgmentAfterAnswer,
 } from '../../lib/business-understanding/ai-pm-judgment-loop-sync';
+import {
+  buildAiPmSupplementSnapshot,
+  pickSupplementDimension,
+  supplementDimensionToGap,
+} from '../../lib/business-understanding/ai-pm-supplement-presenter';
 import { evaluateJudgmentStop } from '../../lib/business-understanding/ai-pm-question-budget';
 import { isAiPmJudgmentPolicyV1Active } from '../../lib/business-understanding/ai-pm-judgment-policy-v1';
 import { buildAiPmFocusedSnapshot } from '../../lib/business-understanding/ai-pm-focused-presenter';
@@ -139,6 +150,8 @@ import { WorkspaceCeoSixSurfaces } from './workspace-ceo-six-surfaces';
 import { WorkspaceAiPmFocusedSurface } from './workspace-ai-pm-focused-surface';
 import { WorkspaceAiPmSimpleQuestion } from './workspace-ai-pm-simple-question';
 import { WorkspaceAiPmJudgmentView } from './workspace-ai-pm-judgment-view';
+import { WorkspaceAiPmBusinessReview } from './workspace-ai-pm-business-review';
+import { WorkspaceAiPmSupplementSurface } from './workspace-ai-pm-supplement-surface';
 import { WorkspaceS11Surface } from './workspace-s11-surface';
 import type { WorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
 import type { AiPmFocusedSnapshot } from '../../lib/business-understanding/ai-pm-focused-presenter';
@@ -936,62 +949,37 @@ export function WorkspaceAiPmLoopPanel({
     [projectId],
   );
 
-  const startFollowUpFromJudgment = useCallback(() => {
-    startJudgmentFollowUp(projectId);
-    const refreshed = loadAiPmLoopState(projectId);
-    const doc = loadWorkspaceDocumentText(projectId) ?? '';
-    const freshUnderstanding = doc.trim() ? buildBusinessUnderstanding(doc) : understanding;
-    if (!freshUnderstanding) {
-      syncState(refreshed);
-      return;
-    }
-    const memory = buildConversationMemoryFromSources({
-      projectId: projectId ?? 'default',
-      documentText: doc,
-      turns: refreshed.turns,
-      entities,
-      previous: loadConversationMemory(projectId),
-    });
-    const living = buildLivingUnderstandingState({
-      documentText: doc,
-      understanding: freshUnderstanding,
-      turns: refreshed.turns,
-      memory,
-    });
-    const decision = resolveNextQuestionDecision({
-      living,
-      turns: refreshed.turns,
-      memory,
-      projectId,
-      gapState: refreshed.gapState,
-      persistLastDecision: true,
-    });
-    if (decision) {
-      const purity = enforceQuestionPurity({
-        questionText: decision.questionText,
-        targetGap: decision.targetGap,
-      });
-      commitQuestionLock(
-        captureLockedAskSurface({
-          issueId: decision.issueId,
-          targetGap: decision.targetGap,
-          questionText: purity.sanitizedText,
-          whyNow: decision.whyNow,
-          rationale: decision.rationale,
-          score: decision.score,
-          fallbackIssueId: decision.issueId,
-        }),
-      );
-    }
-    syncState(
-      patchAiPmLoopState(
-        { phase: 'answer', currentIssueId: decision?.issueId ?? refreshed.currentIssueId },
-        projectId,
-      ),
-    );
-  }, [commitQuestionLock, entities, projectId, syncState, understanding]);
+  const startSupplementForJudgment = useCallback(() => {
+    const current = loadAiPmLoopState(projectId);
+    const judgment = current.ceoJudgment;
+    if (!judgment || !isAiPmBusinessReviewV1Active()) return;
+    const dimId =
+      pickSupplementDimension(judgment);
+    syncState(openSupplementMode(dimId, projectId));
+  }, [projectId, syncState]);
+
+  const startSupplementFromReview = useCallback(() => {
+    const current = loadAiPmLoopState(projectId);
+    const judgment = current.ceoJudgment;
+    if (!judgment) return;
+    const review = buildBusinessReviewResult(judgment);
+    const dimId = review.primaryGapId ?? pickSupplementDimension(judgment);
+    syncState(openSupplementMode(dimId, projectId));
+  }, [projectId, syncState]);
+
+  const showReviewDecision = useCallback(() => {
+    syncState(showBusinessReviewDecision(projectId));
+  }, [projectId, syncState]);
+
+  const returnToReview = useCallback(() => {
+    syncState(returnToBusinessReview(projectId));
+  }, [projectId, syncState]);
 
   const finishJudgmentReview = useCallback(() => {
+    if (isAiPmBusinessReviewV1Active()) {
+      syncState(openBusinessReview(projectId));
+      return;
+    }
     syncState(openJudgmentView(projectId));
   }, [projectId, syncState]);
 
@@ -1154,6 +1142,39 @@ export function WorkspaceAiPmLoopPanel({
       setRecognitionDismissed(true);
       syncState(opened);
       const openedState = loadAiPmLoopState(projectId);
+
+      if (
+        isAiPmBusinessReviewV1Active() &&
+        (openedState.supplementPendingReview ||
+          openedState.viewMode === 'supplement' ||
+          openedState.supplementDimensionId)
+      ) {
+        const judgmentSync = syncJudgmentAfterAnswer({
+          projectId,
+          living: result.living,
+          loop: openedState,
+        });
+        syncState(
+          patchAiPmLoopState(
+            {
+              viewMode: 'review',
+              supplementDimensionId: null,
+              supplementPendingReview: false,
+              reviewDecisionShown: false,
+              judgmentFollowUp: false,
+              ceoJudgment: judgmentSync.judgment,
+            },
+            projectId,
+          ),
+        );
+        onDocumentUpdated?.(
+          loadAiPmLoopState(projectId).currentIssueId ?? 'problem_definition',
+          '',
+        );
+        window.setTimeout(() => setUpdateSavedFlash(false), 2200);
+        return;
+      }
+
       const judgmentSync = syncJudgmentAfterAnswer({
         projectId,
         living: result.living,
@@ -1495,7 +1516,8 @@ export function WorkspaceAiPmLoopPanel({
   ]);
 
   const submitAnswer = useCallback((forcedText?: string) => {
-    const issueId = loopState.currentIssueId ?? nextIssue;
+    const storedLoop = loadAiPmLoopState(projectId);
+    const issueId = storedLoop.currentIssueId ?? loopState.currentIssueId ?? nextIssue;
     const trimmed = (forcedText ?? answerDraft).trim();
     if (!issueId || trimmed.length < 2 || readOnly) return;
 
@@ -2055,6 +2077,86 @@ export function WorkspaceAiPmLoopPanel({
     whyThisQuestionNow,
   ]);
 
+  const submitSupplementAnswer = useCallback(
+    (answer: string) => {
+      const current = loadAiPmLoopState(projectId);
+      const dimId =
+        current.supplementDimensionId ??
+        (current.ceoJudgment ? pickSupplementDimension(current.ceoJudgment) : null);
+      if (!dimId || answer.trim().length < 2 || readOnly) return;
+
+      let judgment = current.ceoJudgment;
+      if (!judgment) {
+        const doc = loadWorkspaceDocumentText(projectId) ?? '';
+        const freshUnderstanding = doc.trim() ? buildBusinessUnderstanding(doc) : understanding;
+        if (freshUnderstanding) {
+          const memory = buildConversationMemoryFromSources({
+            projectId: projectId ?? 'default',
+            documentText: doc,
+            turns: current.turns,
+            entities,
+            previous: loadConversationMemory(projectId),
+          });
+          const living = buildLivingUnderstandingState({
+            documentText: doc,
+            understanding: freshUnderstanding,
+            turns: current.turns,
+            memory,
+          });
+          judgment = buildCeoJudgmentState({
+            living,
+            turns: current.turns,
+          });
+          patchAiPmLoopState({ ceoJudgment: judgment }, projectId);
+        }
+      }
+      if (!judgment) return;
+
+      const snapshot = buildAiPmSupplementSnapshot(judgment, dimId);
+      const { targetGap, issueId } = supplementDimensionToGap(dimId);
+      const purity = enforceQuestionPurity({
+        questionText: snapshot.questionText,
+        targetGap,
+      });
+      patchAiPmLoopState(
+        {
+          currentIssueId: issueId,
+          phase: 'answer',
+          viewMode: 'supplement',
+          supplementDimensionId: dimId,
+          supplementPendingReview: true,
+        },
+        projectId,
+      );
+      commitQuestionLock(
+        captureLockedAskSurface({
+          issueId,
+          targetGap,
+          questionText: purity.sanitizedText,
+          whyNow: snapshot.whyNeeded,
+          rationale: snapshot.whyNeeded,
+          score: 0,
+          fallbackIssueId: issueId,
+        }),
+      );
+      syncState(loadAiPmLoopState(projectId));
+      flushSync(() => {
+        syncState(loadAiPmLoopState(projectId));
+      });
+      const turnsBefore = loadAiPmLoopState(projectId).turns.length;
+      submitAnswer(answer);
+      const afterFirst = loadAiPmLoopState(projectId);
+      if (afterFirst.turns.length === turnsBefore) {
+        updateAnswerDraft(answer);
+        flushSync(() => {
+          syncState(loadAiPmLoopState(projectId));
+        });
+        submitAnswer(answer);
+      }
+    },
+    [commitQuestionLock, entities, projectId, readOnly, submitAnswer, syncState, understanding, updateAnswerDraft],
+  );
+
   const resolveContradiction = useCallback(
     (choice: 'keep_prior' | 'accept_new') => {
       if (!contradiction || readOnly) return;
@@ -2244,6 +2346,59 @@ export function WorkspaceAiPmLoopPanel({
     );
   }
 
+  if (reanalyzing || loopState.phase === 'reanalyze') {
+    return (
+      <WorkspaceAiPmThinkingStages
+        className={className}
+        completedStageIds={processingStageIds}
+        understandingDelta={lastTurn?.understandingDelta}
+        onComplete={() => finishProcessingRef.current()}
+      />
+    );
+  }
+
+  if (
+    simpleQuestionUiActive &&
+    isAiPmBusinessReviewV1Active() &&
+    loopState.viewMode === 'review' &&
+    loopState.ceoJudgment
+  ) {
+    const review = buildBusinessReviewResult(loopState.ceoJudgment);
+    return (
+      <WorkspaceAiPmBusinessReview
+        className={className}
+        review={review}
+        decisionShown={Boolean(loopState.reviewDecisionShown)}
+        readOnly={readOnly}
+        onSupplement={
+          review.primaryGapId ? startSupplementFromReview : undefined
+        }
+        onContinueWithCurrentInfo={showReviewDecision}
+      />
+    );
+  }
+
+  if (
+    simpleQuestionUiActive &&
+    isAiPmBusinessReviewV1Active() &&
+    loopState.viewMode === 'supplement' &&
+    loopState.ceoJudgment
+  ) {
+    const snapshot = buildAiPmSupplementSnapshot(
+      loopState.ceoJudgment,
+      loopState.supplementDimensionId,
+    );
+    return (
+      <WorkspaceAiPmSupplementSurface
+        className={className}
+        snapshot={snapshot}
+        readOnly={readOnly}
+        onSubmit={submitSupplementAnswer}
+        onCancel={returnToReview}
+      />
+    );
+  }
+
   if (
     simpleQuestionUiActive &&
     loopState.viewMode === 'judgment' &&
@@ -2265,7 +2420,9 @@ export function WorkspaceAiPmLoopPanel({
         onContinueQuestions={
           loopState.ceoJudgment.questionCount < 5 ? continueQuestionsFromJudgment : undefined
         }
-        onFollowUpCheck={startFollowUpFromJudgment}
+        onFollowUpCheck={
+          isAiPmBusinessReviewV1Active() ? startSupplementForJudgment : undefined
+        }
         onFinishReview={finishJudgmentReview}
       />
     );
@@ -2332,17 +2489,6 @@ export function WorkspaceAiPmLoopPanel({
   // S16 P0-2 — reading done, waiting for parent Shared Understanding 「맞습니까?」 gate
   if (!allowAsk && loopState.readingCompleted && loopState.turns.length === 0) {
     return null;
-  }
-
-  if (reanalyzing || loopState.phase === 'reanalyze') {
-    return (
-      <WorkspaceAiPmThinkingStages
-        className={className}
-        completedStageIds={processingStageIds}
-        understandingDelta={lastTurn?.understandingDelta}
-        onComplete={() => finishProcessingRef.current()}
-      />
-    );
   }
 
   if (!loopState.readingCompleted && loopState.turns.length === 0) {
