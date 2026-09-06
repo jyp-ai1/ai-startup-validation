@@ -40,6 +40,8 @@ import {
   buildResearchAcknowledgement,
 } from '../../lib/business-understanding/ai-pm-research-ux-policy';
 import { isAiPmResearchUxV1Active } from '../../lib/business-understanding/ai-pm-research-ux-policy-v1';
+import { inferQuestionPresentationType, extractConfirmKnownValueFromQuestion } from '../../lib/business-understanding/ai-pm-question-presentation';
+import { resolveEditablePriorTurns } from '../../lib/business-understanding/ai-pm-editable-turns';
 import {
   AI_PM_LOOP_ISSUE_ORDER,
   type AiPmLoopIssueId,
@@ -604,6 +606,9 @@ export function WorkspaceAiPmLoopPanel({
   ]);
 
   const displayQuestionText = useMemo(() => {
+    if (loopState.researchPending && isAiPmResearchUxV1Active()) {
+      return loopState.researchPending.headline;
+    }
     const fromEngine =
       whyThisQuestionNow?.questionText?.trim() ||
       turnsWrongSlotOverride?.questionText?.trim() ||
@@ -631,6 +636,7 @@ export function WorkspaceAiPmLoopPanel({
       fallbackIssueId: activeIssueId,
     });
   }, [
+    loopState.researchPending,
     activeIssueId,
     lockedAskSurface,
     questionLockActive,
@@ -643,6 +649,20 @@ export function WorkspaceAiPmLoopPanel({
     whyThisQuestionNow?.questionText,
     whyThisQuestionNow?.targetGap,
   ]);
+  const questionPresentation = useMemo(() => {
+    const decision = loopState.lastDecision;
+    const type =
+      decision?.questionType ?? inferQuestionPresentationType(displayQuestionText ?? '');
+    return {
+      questionType: type,
+      confirmKnownValue: decision?.confirmKnownValue ?? null,
+      confirmGapId: decision?.confirmGapId ?? decision?.targetGapId ?? null,
+    };
+  }, [loopState.lastDecision, displayQuestionText]);
+  const isConfirmQuestion =
+    questionPresentation.questionType === 'confirm' &&
+    !loopState.researchPending &&
+    Boolean(questionPresentation.confirmKnownValue || /맞나요/.test(displayQuestionText ?? ''));
   const focusedUiActive = isAiPmFocusedUiActive();
   const focusedSnapshot = useMemo(() => {
     if (!focusedUiActive) return null;
@@ -1295,9 +1315,9 @@ export function WorkspaceAiPmLoopPanel({
     syncState,
   ]);
 
-  const submitAnswer = useCallback(() => {
+  const submitAnswer = useCallback((forcedText?: string) => {
     const issueId = loopState.currentIssueId ?? nextIssue;
-    const trimmed = answerDraft.trim();
+    const trimmed = (forcedText ?? answerDraft).trim();
     if (!issueId || trimmed.length < 2 || readOnly) return;
 
     activateQuestionLock();
@@ -1994,24 +2014,30 @@ export function WorkspaceAiPmLoopPanel({
     [clearQuestionLock, commitQuestionLock, entities, onLoopStateChange, projectId, readOnly, syncState, understanding],
   );
 
-  const editableTurns = useMemo(() => {
-    const seen = new Set<AiPmLoopIssueId>();
-    const out: Array<{ issueId: AiPmLoopIssueId; answer: string }> = [];
-    for (const turn of loopState.turns) {
-      if (turn.superseded) continue;
-      if (
-        turn.intent === 'why_meta' ||
-        turn.intent === 'mid_judgment' ||
-        turn.intent === 'nonsense'
-      ) {
-        continue;
-      }
-      if (seen.has(turn.issueId)) continue;
-      seen.add(turn.issueId);
-      out.push({ issueId: turn.issueId, answer: turn.answer });
-    }
-    return out;
-  }, [loopState.turns]);
+  const editableTurns = useMemo(
+    () => resolveEditablePriorTurns(loopState.turns),
+    [loopState.turns],
+  );
+
+  const handleConfirmYes = useCallback(() => {
+    const known =
+      questionPresentation.confirmKnownValue?.trim() ||
+      loopState.lastDecision?.confirmKnownValue?.trim() ||
+      extractConfirmKnownValueFromQuestion(displayQuestionText);
+    if (!known || readOnly) return;
+    submitAnswer(known);
+  }, [
+    questionPresentation.confirmKnownValue,
+    loopState.lastDecision,
+    displayQuestionText,
+    readOnly,
+    submitAnswer,
+  ]);
+
+  const handleConfirmNo = useCallback(() => {
+    const last = editableTurns[0];
+    if (last) beginEditPriorAnswer(last.issueId);
+  }, [editableTurns, beginEditPriorAnswer]);
 
 
   if (sessionPaused && loopState.turns.length > 0) {
@@ -2210,28 +2236,55 @@ export function WorkspaceAiPmLoopPanel({
             </div>
           </div>
         ) : null}
-        <textarea
-          value={answerDraft}
-          onFocus={() => {
-            setAnswerInputFocused(true);
-            activateQuestionLock();
-          }}
-          onBlur={() => setAnswerInputFocused(false)}
-          onChange={(event) => {
-            setAnswerQualityHint(null);
-            if (event.target.value.length > 0) {
+        {isConfirmQuestion ? (
+          <div
+            data-testid="confirm-question-actions"
+            className="mt-4 flex flex-wrap gap-2"
+          >
+            <Button
+              type="button"
+              className="rounded-xl"
+              data-testid="confirm-yes-cta"
+              disabled={readOnly}
+              onClick={handleConfirmYes}
+            >
+              네, 맞습니다
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl"
+              data-testid="confirm-no-cta"
+              disabled={readOnly}
+              onClick={handleConfirmNo}
+            >
+              아니요, 수정할게요
+            </Button>
+          </div>
+        ) : (
+          <textarea
+            value={answerDraft}
+            onFocus={() => {
+              setAnswerInputFocused(true);
               activateQuestionLock();
+            }}
+            onBlur={() => setAnswerInputFocused(false)}
+            onChange={(event) => {
+              setAnswerQualityHint(null);
+              if (event.target.value.length > 0) {
+                activateQuestionLock();
+              }
+              updateAnswerDraft(event.target.value);
+            }}
+            rows={4}
+            readOnly={readOnly}
+            placeholder={
+              whyThisQuestionNow?.questionText?.trim() || t(`issues.${activeIssue}.placeholder`)
             }
-            updateAnswerDraft(event.target.value);
-          }}
-          rows={4}
-          readOnly={readOnly}
-          placeholder={
-            whyThisQuestionNow?.questionText?.trim() || t(`issues.${activeIssue}.placeholder`)
-          }
-          className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[4.5rem]"
-          aria-label={displayQuestionText || t('submitAnswerCta')}
-        />
+            className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[4.5rem]"
+            aria-label={displayQuestionText || t('submitAnswerCta')}
+          />
+        )}
         {answerQualityHint ? (
           <p
             data-testid="answer-quality-hint"
@@ -2318,15 +2371,17 @@ export function WorkspaceAiPmLoopPanel({
           </div>
         ) : null}
         <div className="mt-4 flex flex-wrap gap-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:bg-gradient-to-t max-sm:from-background max-sm:via-background max-sm:to-background/80 max-sm:pt-2">
-          <Button
-            type="button"
-            className="rounded-xl max-sm:w-full"
-            data-testid="submit-answer-cta"
-            disabled={readOnly || answerDraft.trim().length < 2}
-            onClick={submitAnswer}
-          >
-            {t('submitAnswerCta')}
-          </Button>
+          {!isConfirmQuestion ? (
+            <Button
+              type="button"
+              className="rounded-xl max-sm:w-full"
+              data-testid="submit-answer-cta"
+              disabled={readOnly || answerDraft.trim().length < 2}
+              onClick={() => submitAnswer()}
+            >
+              {t('submitAnswerCta')}
+            </Button>
+          ) : null}
           {editableTurns.length > 0 ? (
             <Button
               type="button"
@@ -2423,29 +2478,116 @@ export function WorkspaceAiPmLoopPanel({
                 s11Surface={s11Surface}
                 displayQuestionText={displayQuestionText}
               />
-              <textarea
-                value={answerDraft}
-                onFocus={() => {
-                  setAnswerInputFocused(true);
-                  activateQuestionLock();
-                }}
-                onBlur={() => setAnswerInputFocused(false)}
-                onChange={(event) => {
-                  setAnswerQualityHint(null);
-                  if (event.target.value.length > 0) {
+              {whyPanel ? (
+                <div
+                  data-testid="why-follow-up-panel"
+                  className="mt-4 space-y-2 rounded-xl border border-border/60 bg-muted/20 px-4 py-3"
+                >
+                  <p className="text-sm font-medium text-foreground">{whyPanel.explanation}</p>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
+                    {whyPanel.evidence.map((line) => (
+                      <li key={line}>· {line}</li>
+                    ))}
+                  </ul>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-2 rounded-xl"
+                    onClick={closeWhyOrMidAndRejudge}
+                  >
+                    {whyPanel.returnToLoopCta}
+                  </Button>
+                </div>
+              ) : null}
+              {loopState.researchPending && isAiPmResearchUxV1Active() ? (
+                <div
+                  data-testid="research-ack-panel"
+                  className="mt-4 whitespace-pre-wrap rounded-xl border border-primary/20 bg-primary/[0.04] px-4 py-3 text-sm leading-relaxed"
+                >
+                  {loopState.researchPending.headline}
+                  <p className="mt-2 text-muted-foreground">{loopState.researchPending.detail}</p>
+                  <div className="mt-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-xl"
+                      onClick={closeWhyOrMidAndRejudge}
+                    >
+                      이해 루프로 돌아가기
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
+              {midJudgmentText ? (
+                <div
+                  data-testid="mid-judgment-panel"
+                  className="mt-4 whitespace-pre-wrap rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm leading-relaxed"
+                >
+                  {midJudgmentText}
+                  <div className="mt-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-xl"
+                      onClick={closeWhyOrMidAndRejudge}
+                    >
+                      이해 루프로 돌아가기
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
+              {!loopState.researchPending && !midJudgmentText && !whyPanel ? (
+              <>
+              {isConfirmQuestion ? (
+                <div
+                  data-testid="confirm-question-actions"
+                  className="mt-4 flex flex-wrap gap-2"
+                >
+                  <Button
+                    type="button"
+                    className="rounded-xl"
+                    data-testid="confirm-yes-cta"
+                    disabled={readOnly}
+                    onClick={handleConfirmYes}
+                  >
+                    네, 맞습니다
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-xl"
+                    data-testid="confirm-no-cta"
+                    disabled={readOnly}
+                    onClick={handleConfirmNo}
+                  >
+                    아니요, 수정할게요
+                  </Button>
+                </div>
+              ) : (
+                <textarea
+                  value={answerDraft}
+                  onFocus={() => {
+                    setAnswerInputFocused(true);
                     activateQuestionLock();
+                  }}
+                  onBlur={() => setAnswerInputFocused(false)}
+                  onChange={(event) => {
+                    setAnswerQualityHint(null);
+                    if (event.target.value.length > 0) {
+                      activateQuestionLock();
+                    }
+                    updateAnswerDraft(event.target.value);
+                  }}
+                  rows={4}
+                  readOnly={readOnly}
+                  placeholder={
+                    whyThisQuestionNow?.questionText?.trim() ||
+                    (activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : undefined)
                   }
-                  updateAnswerDraft(event.target.value);
-                }}
-                rows={4}
-                readOnly={readOnly}
-                placeholder={
-                  whyThisQuestionNow?.questionText?.trim() ||
-                  (activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : undefined)
-                }
-                className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[5rem]"
-                aria-label={displayQuestionText || t('submitAnswerCta')}
-              />
+                  className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[5rem]"
+                  aria-label={displayQuestionText || t('submitAnswerCta')}
+                />
+              )}
               {answerQualityHint ? (
                 <p
                   data-testid="answer-quality-hint"
@@ -2456,15 +2598,17 @@ export function WorkspaceAiPmLoopPanel({
                 </p>
               ) : null}
               <div className="mt-4 flex flex-wrap gap-2 pb-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:bg-gradient-to-t max-sm:from-background max-sm:via-background max-sm:to-background/80 max-sm:pt-2">
-                <Button
-                  type="button"
-                  className="rounded-xl max-sm:w-full"
-                  data-testid="submit-answer-cta"
-                  disabled={readOnly || answerDraft.trim().length < 2}
-                  onClick={submitAnswer}
-                >
-                  {t('submitAnswerCta')}
-                </Button>
+                {!isConfirmQuestion ? (
+                  <Button
+                    type="button"
+                    className="rounded-xl max-sm:w-full"
+                    data-testid="submit-answer-cta"
+                    disabled={readOnly || answerDraft.trim().length < 2}
+                    onClick={() => submitAnswer()}
+                  >
+                    {t('submitAnswerCta')}
+                  </Button>
+                ) : null}
                 {editableTurns.length > 0 ? (
                   <Button
                     type="button"
@@ -2502,6 +2646,8 @@ export function WorkspaceAiPmLoopPanel({
                     ))}
                   </ul>
                 </div>
+                ) : null}
+              </>
               ) : null}
               <ConversationSecondaryBlocks
                 s11Surface={s11Surface}

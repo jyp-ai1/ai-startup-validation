@@ -31,6 +31,12 @@ import { isGapAskable } from './update-gap-state-from-review';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import { gapForSemanticFactKey } from './ai-pm-answer-first-routing';
+import { resolveAnswerTargetKnowledgeForGap } from './ai-pm-answer-target-binding-policy';
+import { isAiPmAnswerTargetBindingV1Active } from './ai-pm-answer-target-binding-policy-v1';
+import {
+  defaultConfirmWhyNow,
+  isConfirmPollutionValue,
+} from './ai-pm-question-presentation';
 
 export type NoAskAction = 'ASK' | 'CONFIRM' | 'MOVE';
 
@@ -70,6 +76,7 @@ const CONFIRM_FIRST_GAPS = new Set([
   'problemJtbd',
   'alternativesCompetitors',
   'differentiationVsAlternatives',
+  'solution',
 ]);
 
 const GAP_CONFIRM_LABEL: Record<string, string> = {
@@ -162,6 +169,10 @@ export function scanSemanticKnowledgeForGap(input: {
   memory: ConversationMemory | null;
   turns: AiPmLoopTurn[];
 }): SemanticKnowledgeHit | null {
+  if (isAiPmAnswerTargetBindingV1Active()) {
+    return resolveAnswerTargetKnowledgeForGap(input);
+  }
+
   const gapId = input.gapId.trim();
   if (!gapId) return null;
 
@@ -362,6 +373,9 @@ export function evaluateNoAskPolicy(input: {
   });
 
   if (knowledge) {
+    if (isConfirmPollutionValue(knowledge.value)) {
+      return { action: 'ASK' };
+    }
     if (CONFIRM_FIRST_GAPS.has(targetGapId) || !knowledge.userConfirmed) {
       return {
         action: 'CONFIRM',
@@ -459,15 +473,20 @@ export function applyNoAskPolicy(input: ApplyNoAskPolicyInput): NextQuestionDeci
 
   if (verdict.action === 'CONFIRM') {
     const binding = resolveGapQuestionBinding(verdict.gapId);
+    const latestTurn = [...input.turns].reverse().find((t) => !t.superseded);
     return {
       ...input.decision,
       targetGap: verdict.gapId,
       targetGapId: verdict.gapId,
       issueId: binding.issueId,
       questionText: verdict.confirmText,
-      whyNow: `이미 말씀하신 내용을 바탕으로 확인합니다. (${verdict.reason})`,
+      whyNow: defaultConfirmWhyNow(),
       rationale: verdict.reason,
       reframed: true,
+      questionType: 'confirm',
+      confirmKnownValue: verdict.knownValue,
+      confirmGapId: verdict.gapId,
+      confirmSourceTurnAppliedAt: latestTurn?.appliedAt,
       actionRationale: 'No-Ask CONFIRM — gap OPEN이지만 의미상 이미 충족',
       reason: `no-ask confirm ${verdict.gapId}`,
     };
@@ -484,6 +503,7 @@ export function applyNoAskPolicy(input: ApplyNoAskPolicyInput): NextQuestionDeci
     whyNow,
     rationale: binding.whyNow,
     reframed: true,
+    questionType: 'open',
     actionRationale: `No-Ask MOVE — ${verdict.fromGapId} → ${verdict.toGapId} (${verdict.reason})`,
     reason: `no-ask move ${verdict.fromGapId}→${verdict.toGapId}`,
   };

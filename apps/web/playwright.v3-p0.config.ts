@@ -59,6 +59,10 @@ export default defineConfig({
           AI_PM_RESEARCH_UX_V1: process.env.AI_PM_RESEARCH_UX_V1 ?? 'true',
           NEXT_PUBLIC_AI_PM_RESEARCH_UX_V1:
             process.env.NEXT_PUBLIC_AI_PM_RESEARCH_UX_V1 ?? 'true',
+          AI_PM_ANSWER_TARGET_BINDING_V1:
+            process.env.AI_PM_ANSWER_TARGET_BINDING_V1 ?? 'true',
+          NEXT_PUBLIC_AI_PM_ANSWER_TARGET_BINDING_V1:
+            process.env.NEXT_PUBLIC_AI_PM_ANSWER_TARGET_BINDING_V1 ?? 'true',
         },
       },
 });
