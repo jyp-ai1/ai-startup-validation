@@ -6,6 +6,17 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### ALABOM DAY 8-H — Business Review Loop (2026-09-06) ✅ Production
+
+**Production SHA:** `fcc61ddc9061…` · **PR:** #25  
+**Prod:** https://ai-startup-validation-tau.vercel.app
+
+- P0: `여기까지 검토하기` → 1-page business review + GO/조건부 GO/NO-GO
+- P0: Supplement mode (AI explains + guide, not gap loop)
+- Production Browser: H-A~H-E + 8-G/F/D **19/19 PASS**
+
+Evidence: [`docs/evidence/ALABOM/DAY_8H_PRODUCTION_GATE_REPORT.md`](./evidence/ALABOM/DAY_8H_PRODUCTION_GATE_REPORT.md)
+
 ### ALABOM DAY 8-G — Judgment Conversation (2026-09-06) ✅ CLOSED
 
 **Production SHA:** `69634a756c4d6f6fde77e442b6ae60f841ff4185` · **Tag:** `alabom-day8g-prod-69634a7` · **PR:** #24  
