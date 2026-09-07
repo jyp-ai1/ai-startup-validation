@@ -5,16 +5,12 @@
 import type {
   CeoJudgmentDimension,
   CeoJudgmentDimensionId,
+  JudgmentEvidenceRecord,
 } from './ai-pm-ceo-judgment-dimensions';
 
 export type JudgmentEvidenceRole = 'primary' | 'supporting' | 'related';
 
-export type JudgmentEvidenceRecord = {
-  span: string;
-  meaning: string;
-  sourceTurnIndex?: number;
-  role: JudgmentEvidenceRole;
-};
+export type { JudgmentEvidenceRecord };
 
 export type JudgmentFocusContext = {
   turnIndex?: number;

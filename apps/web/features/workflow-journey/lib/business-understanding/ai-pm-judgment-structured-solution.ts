@@ -5,10 +5,12 @@
 import {
   CEO_JUDGMENT_DIMENSION_LABELS,
   type CeoJudgmentDimension,
+  type SolutionLayerEvidence,
 } from './ai-pm-ceo-judgment-dimensions';
 import { isSemanticCopy } from './ai-pm-judgment-target-binding';
 import { isAiPmJudgmentFix5V1Active } from './ai-pm-judgment-fix5-v1';
 import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
+import { isAiPmJudgmentFix7V1Active } from './ai-pm-judgment-fix7-v1';
 import { applyEvidenceToDimension } from './ai-pm-judgment-evidence-model';
 
 export type SolutionLayers = {
@@ -16,6 +18,8 @@ export type SolutionLayers = {
   keyFeature?: string;
   mvpScope?: string;
 };
+
+export type { SolutionLayerEvidence };
 
 function clip(text: string, max = 96): string {
   const t = text.trim().replace(/\s+/g, ' ');
@@ -84,9 +88,17 @@ export function layersFromLegacySummary(summary: string): SolutionLayers {
   return layers;
 }
 
+function normalizeSolutionText(text: string): string {
+  return text
+    .replace(/(?:를\s*)?만들려(?:고|는)?\s*합니다\.?$/i, '')
+    .replace(/입니다\.?$/i, '')
+    .trim();
+}
+
 function isDuplicateLayer(existing: string | undefined, incoming: string): boolean {
   if (!existing?.trim()) return false;
-  return isSemanticCopy(existing, incoming);
+  if (isSemanticCopy(existing, incoming)) return true;
+  return isSemanticCopy(normalizeSolutionText(existing), normalizeSolutionText(incoming));
 }
 
 /**
@@ -95,6 +107,7 @@ function isDuplicateLayer(existing: string | undefined, incoming: string): boole
 export function mergeStructuredSolutionDimension(
   prior: CeoJudgmentDimension,
   nextSummary: string,
+  sourceTurnIndex?: number,
 ): CeoJudgmentDimension {
   if (!isAiPmJudgmentFix5V1Active()) {
     return prior;
@@ -102,6 +115,27 @@ export function mergeStructuredSolutionDimension(
 
   const incoming = nextSummary.trim();
   if (!incoming) return prior;
+
+  const upsertLayerEvidence = (
+    dim: CeoJudgmentDimension,
+    layerKey: keyof SolutionLayers,
+    span: string,
+  ): CeoJudgmentDimension => {
+    if (!isAiPmJudgmentFix7V1Active() || !sourceTurnIndex) return dim;
+    const existing = [...(dim.solutionLayerEvidence ?? [])];
+    const idx = existing.findIndex((e) => e.layer === layerKey);
+    if (idx >= 0) {
+      return dim;
+    }
+    const entry: SolutionLayerEvidence = {
+      layer: layerKey,
+      evidenceSpan: span,
+      sourceTurnIndex,
+    };
+    if (idx >= 0) existing[idx] = entry;
+    else existing.push(entry);
+    return { ...dim, solutionLayerEvidence: existing };
+  };
 
   if (!prior.summary.trim() && !prior.solutionLayers) {
     const layerKey = classifySolutionLayer(incoming);
@@ -117,11 +151,22 @@ export function mergeStructuredSolutionDimension(
       statusReason: 'CEO 답변에서 첫 해결 방법 evidence',
     };
     if (isAiPmJudgmentFix6V1Active()) {
-      return applyEvidenceToDimension(merged, {
+      let withEvidence = applyEvidenceToDimension(merged, {
         conclusion: rendered,
         summary: structured,
-        records: [{ span: incoming, meaning: incoming, role: 'primary' }],
+        records: [
+          {
+            span: incoming,
+            meaning: incoming,
+            role: 'primary',
+            sourceTurnIndex,
+            layerKey,
+          },
+        ],
+        sourceTurnIndex,
       });
+      withEvidence = upsertLayerEvidence(withEvidence, layerKey, incoming);
+      return withEvidence;
     }
     return merged;
   }
@@ -131,11 +176,11 @@ export function mergeStructuredSolutionDimension(
     : layersFromLegacySummary(prior.summary);
 
   const layerKey = classifySolutionLayer(incoming);
-  if (isDuplicateLayer(layers[layerKey], incoming)) {
+  if (layers[layerKey] && isDuplicateLayer(layers[layerKey], incoming)) {
     return {
       ...prior,
       label: CEO_JUDGMENT_DIMENSION_LABELS.solution,
-      summary: renderSolutionJudgment(layers),
+      summary: isAiPmJudgmentFix6V1Active() ? renderSolutionJudgmentStructured(layers) : renderSolutionJudgment(layers),
       solutionLayers: layers,
       statusReason: 'CEO 답변 — 기존 해결 방법 판단과 동일',
     };
@@ -155,7 +200,7 @@ export function mergeStructuredSolutionDimension(
   };
 
   if (isAiPmJudgmentFix6V1Active()) {
-    return applyEvidenceToDimension(merged, {
+    let withEvidence = applyEvidenceToDimension(merged, {
       conclusion: rendered,
       summary: structured,
       records: [
@@ -163,9 +208,14 @@ export function mergeStructuredSolutionDimension(
           span: incoming,
           meaning: incoming,
           role: layerKey === 'approach' ? 'primary' : 'supporting',
+          sourceTurnIndex,
+          layerKey,
         },
       ],
+      sourceTurnIndex,
     });
+    withEvidence = upsertLayerEvidence(withEvidence, layerKey, incoming);
+    return withEvidence;
   }
 
   return merged;

@@ -149,6 +149,7 @@ export function finalizeJudgmentPresentation(state: CeoJudgmentState): CeoJudgme
 
   const nextId = isAiPmJudgmentFix6V1Active()
     ? pickDynamicNextFocus(nextState, {
+        turnIndex: nextState.currentTurnIndex,
         lastUpdatedDimensions: nextState.lastUpdatedDimensions ?? [],
         recentCorrections: nextState.recentCorrections ?? [],
       })

@@ -18,7 +18,12 @@ import { runCpoR13ToR25Checks } from './day8i-cpo-r-extended-checks';
 import { runCpoRSelfChecks } from './day8i-cpo-r-self-check';
 import { formatTurnBlock } from './day8i-cpo-evidence-report';
 import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
+import { isAiPmJudgmentFix7V1Active } from './ai-pm-judgment-fix7-v1';
 import { buildEvidenceSourceMap } from './ai-pm-judgment-evidence-review';
+import {
+  buildStructuredFinalReview,
+  renderDimensionStructuredReview,
+} from './ai-pm-judgment-structured-review';
 
 export type Fix3RevalidationMeta = {
   commitSha: string;
@@ -145,6 +150,10 @@ function formatCriticalTurnVerdict(
 function buildDimensionSourceMap(result: Day8iConversationResult): string {
   const final = result.finalJudgmentSnapshot;
   if (!final) return '(no final state)';
+
+  if (isAiPmJudgmentFix7V1Active()) {
+    return buildStructuredFinalReview(final);
+  }
 
   if (isAiPmJudgmentFix6V1Active()) {
     return buildEvidenceSourceMap(final);
@@ -407,11 +416,20 @@ export function formatFix3RevalidationReport(
     lines.push(r.oneLiner);
     lines.push('');
     lines.push('### 4 Dimension');
-    for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
-      const d = j.dimensions[id];
-      lines.push(`${CEO_JUDGMENT_DIMENSION_LABELS[id]}: ${statusEmoji(d.status)} ${d.summary || '(empty)'}`);
+    if (isAiPmJudgmentFix7V1Active()) {
+      for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+        const d = j.dimensions[id];
+        lines.push(`${CEO_JUDGMENT_DIMENSION_LABELS[id]}: ${statusEmoji(d.status)}`);
+        lines.push(renderDimensionStructuredReview(d));
+        lines.push('');
+      }
+    } else {
+      for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+        const d = j.dimensions[id];
+        lines.push(`${CEO_JUDGMENT_DIMENSION_LABELS[id]}: ${statusEmoji(d.status)} ${d.summary || '(empty)'}`);
+      }
+      lines.push('');
     }
-    lines.push('');
     lines.push('### Dimension Source Trace');
     lines.push(buildDimensionSourceMap(result));
     lines.push('### 현재 AI 판단');

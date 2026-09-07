@@ -10,6 +10,7 @@ import {
   pickNextCheckDimension,
 } from './ai-pm-judgment-conclusion';
 import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
+import { isAiPmJudgmentFix7V1Active } from './ai-pm-judgment-fix7-v1';
 import {
   buildDynamicNextCheckPrompt,
   pickDynamicNextFocus,
@@ -39,7 +40,7 @@ export function formatReviewModeDisplay(judgment: CeoJudgmentState): string {
 
   const nextFocusId = isAiPmJudgmentFix6V1Active()
     ? pickDynamicNextFocus(judgment, {
-        turnIndex: undefined,
+        turnIndex: judgment.currentTurnIndex,
         lastUpdatedDimensions: judgment.lastUpdatedDimensions ?? [],
         recentCorrections: judgment.recentCorrections ?? [],
       })

@@ -1,5 +1,5 @@
 /**
- * DAY 8-I P0 FIX-6 — Evidence-grounded business review (Final ↔ Source ↔ Span).
+ * DAY 8-I P0 FIX-6/7 — Evidence-grounded business review (strict alignment).
  */
 
 import type {
@@ -12,6 +12,12 @@ import {
   evidenceGroundedSummary,
   primaryEvidenceRecord,
 } from './ai-pm-judgment-evidence-model';
+import { isAiPmJudgmentFix7V1Active } from './ai-pm-judgment-fix7-v1';
+import {
+  buildStructuredReviewEntry,
+  buildStructuredSourceMap,
+  renderDimensionStructuredReview,
+} from './ai-pm-judgment-structured-review';
 import { renderSolutionJudgmentStructured } from './ai-pm-judgment-structured-solution';
 
 export type DimensionSourceTrace = {
@@ -23,6 +29,9 @@ export type DimensionSourceTrace = {
 };
 
 export function formatDimensionForReview(dimension: CeoJudgmentDimension): string {
+  if (isAiPmJudgmentFix7V1Active()) {
+    return renderDimensionStructuredReview(dimension);
+  }
   if (dimension.id === 'solution' && dimension.solutionLayers) {
     return renderSolutionJudgmentStructured(dimension.solutionLayers);
   }
@@ -32,19 +41,22 @@ export function formatDimensionForReview(dimension: CeoJudgmentDimension): strin
 export function buildDimensionSourceTrace(
   dimension: CeoJudgmentDimension,
 ): DimensionSourceTrace {
+  if (isAiPmJudgmentFix7V1Active()) {
+    const entry = buildStructuredReviewEntry(dimension);
+    return {
+      dimensionId: dimension.id,
+      finalSummary: entry.display,
+      sourceTurnIndex: entry.primarySourceTurn,
+      evidenceSpan: entry.primaryEvidenceSpan,
+      aligned: entry.aligned,
+    };
+  }
+
   const primary = primaryEvidenceRecord(dimension);
   const finalSummary = formatDimensionForReview(dimension);
   const evidenceSpan = primary?.span?.trim() || null;
   const sourceTurnIndex = primary?.sourceTurnIndex ?? dimension.sourceTurns?.[0] ?? null;
-
-  let aligned = Boolean(evidenceSpan);
-  if (aligned && dimension.id === 'problem') {
-    aligned =
-      finalSummary.includes('확인 시간') ||
-      finalSummary.includes('주문 확인') ||
-      (evidenceSpan?.includes('확인') ?? false) ||
-      !/배송\s*누락이\s*핵심/.test(finalSummary);
-  }
+  const aligned = Boolean(evidenceSpan && sourceTurnIndex);
 
   return {
     dimensionId: dimension.id,
@@ -56,6 +68,10 @@ export function buildDimensionSourceTrace(
 }
 
 export function buildEvidenceSourceMap(state: CeoJudgmentState): string {
+  if (isAiPmJudgmentFix7V1Active()) {
+    return buildStructuredSourceMap(state);
+  }
+
   const lines: string[] = [];
 
   for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
@@ -87,14 +103,27 @@ export function evaluateEvidenceAlignment(state: CeoJudgmentState): Array<{
 
   for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
     const trace = buildDimensionSourceTrace(state.dimensions[id]);
-    if (!trace.evidenceSpan) {
-      issues.push({ dimensionId: id, issue: 'missing primary evidence span' });
+    if (id === 'solution' && isAiPmJudgmentFix7V1Active()) {
+      const ev = state.dimensions.solution.solutionLayerEvidence ?? [];
+      for (const layer of ['approach', 'keyFeature', 'mvpScope'] as const) {
+        const hit = ev.find((e) => e.layer === layer);
+        if (!hit?.sourceTurnIndex) {
+          issues.push({ dimensionId: id, issue: `solution layer ${layer} missing source turn` });
+        }
+      }
+      if (!trace.aligned) {
+        issues.push({ dimensionId: id, issue: 'solution layers not fully evidence-grounded' });
+      }
+      continue;
+    }
+    if (!trace.evidenceSpan || !trace.sourceTurnIndex) {
+      issues.push({ dimensionId: id, issue: 'missing primary evidence span or source turn' });
       continue;
     }
     if (!trace.aligned) {
       issues.push({
         dimensionId: id,
-        issue: `final "${trace.finalSummary}" not aligned with evidence "${trace.evidenceSpan}"`,
+        issue: `final not aligned with evidence "${trace.evidenceSpan}"`,
       });
     }
   }

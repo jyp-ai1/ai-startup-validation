@@ -32,6 +32,7 @@ import { isAiPmJudgmentMeaningModelV1Active } from './ai-pm-judgment-meaning-mod
 import { isAiPmJudgmentFix5V1Active } from './ai-pm-judgment-fix5-v1';
 import { mergeStructuredSolutionDimension } from './ai-pm-judgment-structured-solution';
 import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
+import { isAiPmJudgmentFix7V1Active } from './ai-pm-judgment-fix7-v1';
 import {
   applyEvidenceToDimension,
   type JudgmentEvidenceRecord,
@@ -93,6 +94,13 @@ function mergeDimension(
     isCorrection?: boolean;
   },
 ): CeoJudgmentDimension {
+  if (isAiPmJudgmentFix7V1Active() && prior.id === 'customerChange') {
+    next = {
+      ...next,
+      status: 'needs_check',
+      evidenceType: next.evidenceType ?? prior.evidenceType,
+    };
+  }
   if (next.evidenceType === 'hypothesis' || next.evidenceType === 'expectation') {
     const isExpectation = next.evidenceType === 'expectation';
     const merged = {
@@ -130,7 +138,12 @@ function mergeDimension(
   ) {
     const correction = extractProblemPriorityCorrection(options.answer);
     if (correction) {
-      return mergeProblemPriorityCorrection(prior, correction, options.sourceTurnIndex);
+      return mergeProblemPriorityCorrection(
+        prior,
+        correction,
+        options.sourceTurnIndex,
+        options.answer,
+      );
     }
   }
   if (
@@ -138,7 +151,7 @@ function mergeDimension(
     prior.id === 'solution' &&
     next.summary?.trim()
   ) {
-    return mergeStructuredSolutionDimension(prior, next.summary);
+    return mergeStructuredSolutionDimension(prior, next.summary, options?.sourceTurnIndex);
   }
   if (
     isAiPmJudgmentMeaningModelV1Active() &&
@@ -350,10 +363,18 @@ function dimensionsFromAnswerText(
     const hit = extracted[id];
     if (!hit) continue;
     const strength =
-      id === 'customerChange' || id === 'problem' ? 'strong' : 'partial';
+      id === 'problem' ? 'strong' : id === 'customerChange' ? 'strong' : 'partial';
     const { status, reason } = toStatus(hit.summary, strength);
     const isHypothesis = hit.evidenceType === 'hypothesis';
     const isExpectation = hit.evidenceType === 'expectation';
+    const resolvedStatus =
+      isAiPmJudgmentFix7V1Active() && id === 'customerChange'
+        ? 'needs_check'
+        : isHypothesis || isExpectation
+          ? 'needs_check'
+          : id === 'solution' && hit.reason.includes('needs_check')
+            ? 'needs_check'
+            : status;
     out[id] = {
       id,
       label:
@@ -362,12 +383,7 @@ function dimensionsFromAnswerText(
           : isExpectation && id === 'customerChange'
             ? '고객 기대효과'
             : CEO_JUDGMENT_DIMENSION_LABELS[id],
-      status:
-        isHypothesis || isExpectation
-          ? 'needs_check'
-          : id === 'solution' && hit.reason.includes('needs_check')
-            ? 'needs_check'
-            : status,
+      status: resolvedStatus,
       summary: hit.summary,
       statusReason: isHypothesis
         ? 'CEO가 세운 가설 — 검증 전'
@@ -496,6 +512,7 @@ export function buildCeoJudgmentState(input: {
       state.lastUpdatedDimensions = lastUpdated;
       state.recentCorrections = recentCorrections;
     }
+    state.currentTurnIndex = turnIndex;
   }
 
   if (
@@ -573,6 +590,7 @@ export function applyAnswerToJudgment(input: {
   if (lastUpdated.length > 0) {
     state.lastUpdatedDimensions = lastUpdated;
   }
+  state.currentTurnIndex = input.prior.currentTurnIndex;
   return finalizeJudgmentPresentation(state);
 }
 

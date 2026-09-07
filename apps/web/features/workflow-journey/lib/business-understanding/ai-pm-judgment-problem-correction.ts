@@ -1,5 +1,5 @@
 /**
- * DAY 8-I P0 FIX-6 — Problem priority correction (replace primary, demote prior).
+ * DAY 8-I P0 FIX-6/7 — Problem priority correction (true replace, not append).
  */
 
 import {
@@ -10,21 +10,20 @@ import {
   applyEvidenceToDimension,
   type JudgmentEvidenceRecord,
 } from './ai-pm-judgment-evidence-model';
-import { isSemanticCopy } from './ai-pm-judgment-target-binding';
+import { isAiPmJudgmentFix7V1Active } from './ai-pm-judgment-fix7-v1';
 
 const PRIORITY_CORRECTION_RE =
   /(?:사실\s*)?(?:문제(?:는|가)?\s*)?(?:.+?)(?:보다|보다는)\s*(.+?)(?:이|가)\s*더\s*(?:큽|중요|심각)/i;
 
-const DEMOTED_PROBLEM_RE = /(.+?)(?:보다|보다는)\s*(?:주문\s*확인|확인\s*시간|배송\s*누락|[^,.;]{2,24})/i;
-
 export type ProblemPriorityCorrection = {
   primaryProblem: string;
-  relatedProblem?: string;
+  relatedProblems: string[];
   evidence: string;
+  fullEvidence: string;
   meaning: string;
 };
 
-function clip(text: string, max = 96): string {
+function clip(text: string, max = 120): string {
   const t = text.trim().replace(/\s+/g, ' ');
   if (t.length <= max) return t;
   return `${t.slice(0, max - 1).trim()}…`;
@@ -33,6 +32,14 @@ function clip(text: string, max = 96): string {
 /** Detect CEO reprioritizing problems: "A보다 B가 더 큽니다". */
 export function isProblemPriorityCorrection(answer: string): boolean {
   return PRIORITY_CORRECTION_RE.test(answer.trim());
+}
+
+function inferRelatedFromPrior(prior: CeoJudgmentDimension): string[] {
+  const related: string[] = [];
+  const text = `${prior.summary} ${prior.currentConclusion ?? ''}`;
+  if (/배송\s*누락/.test(text)) related.push('배송 누락');
+  if (/엑셀|카카오|카톡/.test(text)) related.push('엑셀/카카오톡 관리');
+  return related;
 }
 
 /** Extract priority correction meaning from CEO answer (T22). */
@@ -46,85 +53,64 @@ export function extractProblemPriorityCorrection(answer: string): ProblemPriorit
     ? '주문 확인 시간이 핵심 문제'
     : clip(`${primaryRaw}이(가) 핵심 문제`);
 
-  let relatedProblem: string | undefined;
-  const demoted = trimmed.match(/(?:배송\s*누락|[^,.;]{2,20})(?:보다|보다는)/i)?.[0];
-  if (demoted) {
-    relatedProblem = demoted.replace(/(?:보다|보다는)\s*$/, '').trim();
-    if (/배송\s*누락/.test(relatedProblem)) relatedProblem = '배송 누락';
-  } else if (/배송\s*누락/.test(trimmed)) {
-    relatedProblem = '배송 누락';
-  }
-
-  const evidenceMatch = trimmed.match(/(?:주문\s*확인\s*시간[^,.;]{0,16}|확인\s*시간[^,.;]{0,16}).*?(?:더\s*큽|더\s*큼|더\s*중요)/i);
-  const evidence = clip(evidenceMatch?.[0]?.trim() || primaryRaw || trimmed, 48);
+  const relatedProblems: string[] = [];
+  if (/배송\s*누락/.test(trimmed)) relatedProblems.push('배송 누락');
 
   return {
     primaryProblem,
-    relatedProblem,
-    evidence,
+    relatedProblems,
+    evidence: clip(trimmed),
+    fullEvidence: trimmed,
     meaning: primaryProblem,
   };
 }
 
-function priorRelatedFacts(prior: CeoJudgmentDimension): string[] {
-  const fromRecords = (prior.evidenceRecords ?? [])
-    .filter((r) => r.role !== 'primary')
-    .map((r) => r.meaning || r.span);
-  if (fromRecords.length > 0) return fromRecords;
-
-  return prior.summary
-    .replace(/…$/, '')
-    .split(/\s*·\s*/)
-    .map((s) => s.trim())
-    .filter((s) => s.length >= 4);
+function renderProblemSummary(primary: string, related: string[]): string {
+  const lines = [`PRIMARY: ${primary}`];
+  if (related.length > 0) {
+    lines.push('RELATED:');
+    for (const r of related) lines.push(`- ${r}`);
+  }
+  return lines.join('\n');
 }
 
-/** Merge priority correction — primary replaces, prior facts become related. */
+/** Merge priority correction — replaces collection with PRIMARY + RELATED only (FIX-7). */
 export function mergeProblemPriorityCorrection(
   prior: CeoJudgmentDimension,
   correction: ProblemPriorityCorrection,
   sourceTurnIndex?: number,
+  fullAnswer?: string,
 ): CeoJudgmentDimension {
+  const evidenceSpan = fullAnswer?.trim() || correction.fullEvidence || correction.evidence;
+
+  const relatedSet = new Set<string>();
+  for (const r of correction.relatedProblems) relatedSet.add(r);
+  for (const r of inferRelatedFromPrior(prior)) relatedSet.add(r);
+  if (correction.relatedProblems.includes('배송 누락')) relatedSet.add('배송 누락');
+
+  const related = [...relatedSet].slice(0, 3);
+
   const records: JudgmentEvidenceRecord[] = [
     {
-      span: correction.evidence,
+      span: evidenceSpan,
       meaning: correction.primaryProblem,
       role: 'primary',
       sourceTurnIndex,
     },
   ];
 
-  const related = correction.relatedProblem?.trim();
-  if (related) {
+  for (const item of related) {
     records.push({
-      span: related,
-      meaning: `${related}은(는) 관련 문제`,
+      span: item,
+      meaning: item,
       role: 'related',
       sourceTurnIndex,
     });
   }
 
-  for (const fact of priorRelatedFacts(prior)) {
-    if (isSemanticCopy(fact, correction.primaryProblem)) continue;
-    if (related && isSemanticCopy(fact, related)) continue;
-    if (/핵심\s*문제/.test(fact)) continue;
-    records.push({
-      span: fact,
-      meaning: fact,
-      role: 'supporting',
-    });
-  }
-
-  const relatedParts = records
-    .filter((r) => r.role === 'related')
-    .map((r) => `${r.span}은(는) 관련 문제`);
-  const supporting = records
-    .filter((r) => r.role === 'supporting')
-    .map((r) => r.meaning)
-    .slice(0, 3);
-
-  const summaryParts = [correction.primaryProblem, ...relatedParts, ...supporting];
-  const summary = clip(summaryParts.join(' · '));
+  const summary = isAiPmJudgmentFix7V1Active()
+    ? renderProblemSummary(correction.primaryProblem, related)
+    : clip([correction.primaryProblem, ...related.map((r) => `${r}은(는) 관련 문제`)].join(' · '));
 
   return applyEvidenceToDimension(
     {
@@ -132,6 +118,7 @@ export function mergeProblemPriorityCorrection(
       label: CEO_JUDGMENT_DIMENSION_LABELS.problem,
       status: 'clear',
       statusReason: 'CEO가 문제 우선순위를 수정함',
+      evidenceRecords: records,
     },
     {
       conclusion: correction.primaryProblem,

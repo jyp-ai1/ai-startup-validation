@@ -20,6 +20,14 @@ export type JudgmentEvidenceRecord = {
   meaning: string;
   sourceTurnIndex?: number;
   role: JudgmentEvidenceRole;
+  /** Solution layer key when applicable (FIX-7) */
+  layerKey?: 'approach' | 'keyFeature' | 'mvpScope';
+};
+
+export type SolutionLayerEvidence = {
+  layer: 'approach' | 'keyFeature' | 'mvpScope';
+  evidenceSpan: string;
+  sourceTurnIndex: number;
 };
 
 export type SolutionJudgmentLayers = {
@@ -40,6 +48,8 @@ export type CeoJudgmentDimension = {
   evidenceType?: JudgmentEvidenceType;
   /** Structured solution layers — rendered into summary (FIX-5) */
   solutionLayers?: SolutionJudgmentLayers;
+  /** Per-layer evidence with source turns (FIX-7) */
+  solutionLayerEvidence?: SolutionLayerEvidence[];
   /** Primary judgment conclusion — evidence-grounded (FIX-6) */
   currentConclusion?: string;
   /** Evidence chain backing this dimension (FIX-6) */
@@ -62,6 +72,8 @@ export type CeoJudgmentState = {
   lastUpdatedDimensions?: CeoJudgmentDimensionId[];
   /** Dimensions CEO corrected — dynamic focus skips these (FIX-6) */
   recentCorrections?: CeoJudgmentDimensionId[];
+  /** Current pipeline turn index for focus selection (FIX-7) */
+  currentTurnIndex?: number;
 };
 
 export const CEO_JUDGMENT_DIMENSION_LABELS: Record<CeoJudgmentDimensionId, string> = {
