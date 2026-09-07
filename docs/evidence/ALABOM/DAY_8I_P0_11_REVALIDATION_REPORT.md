@@ -7,7 +7,8 @@
 | Field | Value |
 |-------|-------|
 | Branch | `cursor/day8i-p0-11-workspace-intake-6423` |
-| Scope | P0-A intake upload · P0-B lifecycle · P0-C data isolation |
+| Commit SHA | `03014d7` |
+| PR | [#37](https://github.com/jyp-ai1/ai-startup-validation/pull/37) |
 | FIX-10 baseline | `cf180e068a3554828a8f4cd3681569fe44132cf2` (main) |
 
 ## 2. P0 Acceptance Matrix
