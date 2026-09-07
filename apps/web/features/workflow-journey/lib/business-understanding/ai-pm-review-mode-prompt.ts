@@ -9,6 +9,12 @@ import {
   buildNextCheckPrompt,
   pickNextCheckDimension,
 } from './ai-pm-judgment-conclusion';
+import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
+import {
+  buildDynamicNextCheckPrompt,
+  pickDynamicNextFocus,
+} from './ai-pm-judgment-next-focus';
+import { formatDimensionForReview } from './ai-pm-judgment-evidence-review';
 
 function dimensionLabel(id: keyof CeoJudgmentState['dimensions'], d: CeoJudgmentState['dimensions'][typeof id]): string {
   if (d.label?.trim()) return d.label;
@@ -18,15 +24,30 @@ function dimensionLabel(id: keyof CeoJudgmentState['dimensions'], d: CeoJudgment
 export function formatReviewModeDisplay(judgment: CeoJudgmentState): string {
   const line = (id: keyof CeoJudgmentState['dimensions']) => {
     const d = judgment.dimensions[id];
-    const val = d.summary.trim() || '(미확인)';
+    const display = isAiPmJudgmentFix6V1Active()
+      ? formatDimensionForReview(d)
+      : d.summary.trim() || '(미확인)';
     const prefix =
-      d.evidenceType === 'hypothesis' ? '🟡 (가설) ' : '';
+      d.evidenceType === 'hypothesis'
+        ? '🟡 (가설) '
+        : d.evidenceType === 'expectation'
+          ? '🟡 (기대효과) '
+          : '';
+    const val = display.includes('\n') ? `\n${display}` : display;
     return `${dimensionLabel(id, d)}: ${prefix}${val}`;
   };
 
-  const nextFocusId = pickNextCheckDimension(judgment);
+  const nextFocusId = isAiPmJudgmentFix6V1Active()
+    ? pickDynamicNextFocus(judgment, {
+        turnIndex: undefined,
+        lastUpdatedDimensions: judgment.lastUpdatedDimensions ?? [],
+        recentCorrections: judgment.recentCorrections ?? [],
+      })
+    : pickNextCheckDimension(judgment);
   const nextFocus = nextFocusId
-    ? buildNextCheckPrompt(nextFocusId)
+    ? isAiPmJudgmentFix6V1Active()
+      ? buildDynamicNextCheckPrompt(nextFocusId)
+      : buildNextCheckPrompt(nextFocusId)
     : '현재 정보로 사업 판단을 계속 정교화할 수 있습니다.';
 
   return [

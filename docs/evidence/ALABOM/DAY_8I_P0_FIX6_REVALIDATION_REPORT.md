@@ -1,6 +1,6 @@
-# ALABOM — DAY 8-I P0 FIX-5 REVALIDATION Report
+# ALABOM — DAY 8-I P0 FIX-6 REVALIDATION Report
 
-> **CPO FIX-5 독립 검증용.** Structured judgment + meta slot + hypothesis typing. FIX-3 semantic SoT + meaning model + review UX. Unit test PASS ≠ 이 문서 PASS. 동일 Full Pipeline 결과만 유효.
+> **CPO FIX-6 독립 검증용.** Evidence-grounded judgment + priority correction + dynamic focus. FIX-3 semantic SoT + meaning model + review UX. Unit test PASS ≠ 이 문서 PASS. 동일 Full Pipeline 결과만 유효.
 
 ## Executive Summary
 
@@ -8,13 +8,14 @@
 |-------|-------|
 | Commit SHA | `70f02c7d8a709cdff1a7bbc0dd6beec02235d4eb` |
 | Branch | `cursor/day8i-p0-fix6-judgment-evidence-6423` |
-| Executed (UTC) | 2026-09-07T04:56:36.175Z |
-| Pipeline | CEO Answer → Semantic SoT → Structured Judgment → Evidence → Trace → Review UX → Business Review |
+| Executed (UTC) | 2026-09-07T04:56:36.178Z |
+| Pipeline | CEO Answer → Meaning → Evidence Span → Judgment Structure → Source Turn → Business Review |
 | V3 Review | ON |
 | Judgment Aggregation | ON |
 | Answer Semantic SoT | ON |
 | Judgment Meaning Model | ON |
 | Judgment FIX-5 (structured) | ON |
+| Judgment FIX-6 (evidence model) | ON |
 | **Overall CPO Revalidation** | **PASS** |
 | Critical turn failures | 0 |
 | Semantic chain failures | 0 |
@@ -2875,7 +2876,7 @@ R1~R25: 37/37 PASS
 
 ---
 
-Report generated: 2026-09-07T04:56:36.175Z
+Report generated: 2026-09-07T04:56:36.178Z
 CPO Revalidation Gate: **PASS**
 ---
 
@@ -3184,14 +3185,40 @@ Why Changed: CONFLICTED: CEO 답변에서 고객 체감 변화 evidence 추출
 
 ---
 
-## Section O — FIX-5 CPO Gate Summary
+## Section P — FIX-6 CPO Gate Summary
 
 | P0 | Requirement | Verdict |
 |----|-------------|---------|
-| P0-1 | T29 meta confirmation → no judgment update | PASS |
-| P0-2 | Structured solution (not raw · append) | PASS |
-| P0-3 | CustomerChange FACT / HYPOTHESIS | PASS |
-| P0-4 | Semantic chain + evidence units | PASS |
-| P0-5 | Review mode next judgment focus | PASS |
+| P0-1 | Judgment evidence model (conclusion + evidence[]) | PASS |
+| P0-2 | T22 priority correction (replace not append) | PASS |
+| P0-3 | Final Business Review evidence-grounded | PASS |
+| P0-4 | Dynamic next judgment focus | FAIL |
+| P0-5 | Structured solution CEO display | PASS |
+| P0-6 | T26 expectation vs validated fact | PASS |
 
-FIX-5 failures: 0
+### Evidence Source Map (Section I — FIX-6)
+
+### 고객
+Final: 🟡 고객은 양조장만이 아니라 반찬가게와 꽃집도 포함합니다.
+Source Turn: Turn 08: "고객은 양조장만이 아니라 반찬가게와 꽃집도 포함합니다."
+Aligned: ✅
+
+### 문제
+Final: 🟢 주문 확인 시간이 핵심 문제
+Source Turn: Turn 22: "주문 확인 시간이 더 큽"
+Aligned: ✅
+
+### 해결 방법
+Final: 🟡 - 접근: 주문과 배송을 한 곳에서 관리하는 SaaS입니다
+- 핵심 기능: 모바일에서 주문 상태를 한눈에 보는 것이 핵심입니다
+- MVP: 주문 입력과 배송 체크리스트만 제공할 계획입니다
+Source Turn: (no evidence record)
+Aligned: ✅
+
+### 고객에게 달라지는 점
+Final: 🟢 소상공인은 주문·배송 통합으로 실수를 줄이고 시간을 아낄 수 있습니다.
+Source Turn: Turn 26: "소상공인은 주문·배송 통합으로 실수를 줄이고 시간을 아낄 수 있습니다."
+Aligned: ✅
+
+
+FIX-6 failures: 0

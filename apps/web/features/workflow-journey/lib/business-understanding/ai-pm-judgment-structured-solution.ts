@@ -8,6 +8,8 @@ import {
 } from './ai-pm-ceo-judgment-dimensions';
 import { isSemanticCopy } from './ai-pm-judgment-target-binding';
 import { isAiPmJudgmentFix5V1Active } from './ai-pm-judgment-fix5-v1';
+import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
+import { applyEvidenceToDimension } from './ai-pm-judgment-evidence-model';
 
 export type SolutionLayers = {
   approach?: string;
@@ -44,7 +46,25 @@ export function renderSolutionJudgment(layers: SolutionLayers): string {
   return clip(segs.join(' — '));
 }
 
-function layersFromLegacySummary(summary: string): SolutionLayers {
+/** CEO-visible structured solution bullets (FIX-6). */
+export function renderSolutionJudgmentStructured(layers: SolutionLayers): string {
+  const lines: string[] = [];
+  if (layers.approach?.trim()) {
+    lines.push(`- 접근: ${layers.approach.trim().replace(/\.$/, '')}`);
+  }
+  if (layers.keyFeature?.trim()) {
+    const k = layers.keyFeature.trim().replace(/\.$/, '');
+    lines.push(`- 핵심 기능: ${k.replace(/^핵심:\s*/, '')}`);
+  }
+  if (layers.mvpScope?.trim()) {
+    const m = layers.mvpScope.trim().replace(/\.$/, '').replace(/^MVP(?:는|:)?\s*/, '');
+    lines.push(`- MVP: ${m}`);
+  }
+  if (lines.length === 0) return '';
+  return lines.join('\n');
+}
+
+export function layersFromLegacySummary(summary: string): SolutionLayers {
   const layers: SolutionLayers = {};
   const parts = summary
     .replace(/…$/, '')
@@ -86,14 +106,24 @@ export function mergeStructuredSolutionDimension(
   if (!prior.summary.trim() && !prior.solutionLayers) {
     const layerKey = classifySolutionLayer(incoming);
     const layers: SolutionLayers = { [layerKey]: incoming };
-    return {
+    const rendered = renderSolutionJudgment(layers);
+    const structured = renderSolutionJudgmentStructured(layers);
+    const merged: CeoJudgmentDimension = {
       ...prior,
       label: CEO_JUDGMENT_DIMENSION_LABELS.solution,
       status: 'needs_check',
-      summary: renderSolutionJudgment(layers),
+      summary: isAiPmJudgmentFix6V1Active() ? structured : rendered,
       solutionLayers: layers,
       statusReason: 'CEO 답변에서 첫 해결 방법 evidence',
     };
+    if (isAiPmJudgmentFix6V1Active()) {
+      return applyEvidenceToDimension(merged, {
+        conclusion: rendered,
+        summary: structured,
+        records: [{ span: incoming, meaning: incoming, role: 'primary' }],
+      });
+    }
+    return merged;
   }
 
   const layers: SolutionLayers = prior.solutionLayers
@@ -113,15 +143,32 @@ export function mergeStructuredSolutionDimension(
 
   layers[layerKey] = incoming;
   const rendered = renderSolutionJudgment(layers);
+  const structured = renderSolutionJudgmentStructured(layers);
 
-  return {
+  const merged: CeoJudgmentDimension = {
     ...prior,
     label: CEO_JUDGMENT_DIMENSION_LABELS.solution,
     status: prior.status === 'unknown' ? 'needs_check' : prior.status,
-    summary: rendered,
+    summary: isAiPmJudgmentFix6V1Active() ? structured : rendered,
     solutionLayers: layers,
     statusReason: 'CEO 답변 — 해결 방법 구조화 판단 갱신',
   };
+
+  if (isAiPmJudgmentFix6V1Active()) {
+    return applyEvidenceToDimension(merged, {
+      conclusion: rendered,
+      summary: structured,
+      records: [
+        {
+          span: incoming,
+          meaning: incoming,
+          role: layerKey === 'approach' ? 'primary' : 'supporting',
+        },
+      ],
+    });
+  }
+
+  return merged;
 }
 
 /** Detect raw append pattern (multiple unrelated sentences joined with ·). */

@@ -17,6 +17,8 @@ import {
 import { runCpoR13ToR25Checks } from './day8i-cpo-r-extended-checks';
 import { runCpoRSelfChecks } from './day8i-cpo-r-self-check';
 import { formatTurnBlock } from './day8i-cpo-evidence-report';
+import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
+import { buildEvidenceSourceMap } from './ai-pm-judgment-evidence-review';
 
 export type Fix3RevalidationMeta = {
   commitSha: string;
@@ -141,9 +143,14 @@ function formatCriticalTurnVerdict(
 }
 
 function buildDimensionSourceMap(result: Day8iConversationResult): string {
-  const lines: string[] = [];
   const final = result.finalJudgmentSnapshot;
   if (!final) return '(no final state)';
+
+  if (isAiPmJudgmentFix6V1Active()) {
+    return buildEvidenceSourceMap(final);
+  }
+
+  const lines: string[] = [];
 
   for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
     const summary = final.dimensions[id].summary;

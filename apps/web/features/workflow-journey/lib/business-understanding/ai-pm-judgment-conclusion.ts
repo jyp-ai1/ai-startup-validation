@@ -9,6 +9,16 @@ import type {
   CeoJudgmentStatus,
 } from './ai-pm-ceo-judgment-dimensions';
 import { CEO_JUDGMENT_DIMENSION_LABELS } from './ai-pm-ceo-judgment-dimensions';
+import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
+import {
+  renderSolutionJudgmentStructured,
+  layersFromLegacySummary,
+  type SolutionLayers,
+} from './ai-pm-judgment-structured-solution';
+import {
+  buildDynamicNextCheckPrompt,
+  pickDynamicNextFocus,
+} from './ai-pm-judgment-next-focus';
 
 function dim(state: CeoJudgmentState, id: CeoJudgmentDimensionId): CeoJudgmentDimension {
   return state.dimensions[id];
@@ -111,12 +121,48 @@ export function buildNextCheckPrompt(id: CeoJudgmentDimensionId): string {
 }
 
 export function finalizeJudgmentPresentation(state: CeoJudgmentState): CeoJudgmentState {
-  const nextId = pickNextCheckDimension(state);
+  let nextState = state;
+  if (isAiPmJudgmentFix6V1Active()) {
+    const solution = nextState.dimensions.solution;
+    const layers =
+      solution.solutionLayers ??
+      (solution.summary.includes('—') || solution.summary.includes('·')
+        ? layersFromLegacySummary(solution.summary)
+        : undefined);
+    if (layers && (layers.approach || layers.keyFeature || layers.mvpScope)) {
+      const structured = renderSolutionJudgmentStructured(layers);
+      if (structured) {
+        nextState = {
+          ...nextState,
+          dimensions: {
+            ...nextState.dimensions,
+            solution: {
+              ...solution,
+              summary: structured,
+              solutionLayers: solution.solutionLayers ?? layers,
+            },
+          },
+        };
+      }
+    }
+  }
+
+  const nextId = isAiPmJudgmentFix6V1Active()
+    ? pickDynamicNextFocus(nextState, {
+        lastUpdatedDimensions: nextState.lastUpdatedDimensions ?? [],
+        recentCorrections: nextState.recentCorrections ?? [],
+      })
+    : pickNextCheckDimension(nextState);
+  const nextCheck = nextId
+    ? isAiPmJudgmentFix6V1Active()
+      ? buildDynamicNextCheckPrompt(nextId)
+      : buildNextCheckPrompt(nextId)
+    : null;
   return {
-    ...state,
-    oneLiner: buildJudgmentOneLiner(state),
-    conclusion: buildJudgmentConclusion(state),
-    nextCheck: nextId ? buildNextCheckPrompt(nextId) : null,
+    ...nextState,
+    oneLiner: buildJudgmentOneLiner(nextState),
+    conclusion: buildJudgmentConclusion(nextState),
+    nextCheck,
     updatedAt: new Date().toISOString(),
   };
 }

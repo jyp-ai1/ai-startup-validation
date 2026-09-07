@@ -11,7 +11,16 @@ export type CeoJudgmentDimensionId =
 
 export type CeoJudgmentStatus = 'clear' | 'needs_check' | 'unknown';
 
-export type JudgmentEvidenceType = 'fact' | 'hypothesis';
+export type JudgmentEvidenceType = 'fact' | 'hypothesis' | 'expectation';
+
+export type JudgmentEvidenceRole = 'primary' | 'supporting' | 'related';
+
+export type JudgmentEvidenceRecord = {
+  span: string;
+  meaning: string;
+  sourceTurnIndex?: number;
+  role: JudgmentEvidenceRole;
+};
 
 export type SolutionJudgmentLayers = {
   approach?: string;
@@ -31,6 +40,14 @@ export type CeoJudgmentDimension = {
   evidenceType?: JudgmentEvidenceType;
   /** Structured solution layers — rendered into summary (FIX-5) */
   solutionLayers?: SolutionJudgmentLayers;
+  /** Primary judgment conclusion — evidence-grounded (FIX-6) */
+  currentConclusion?: string;
+  /** Evidence chain backing this dimension (FIX-6) */
+  evidenceRecords?: JudgmentEvidenceRecord[];
+  /** Source turn indices for traceability (FIX-6) */
+  sourceTurns?: number[];
+  /** CEO explicitly corrected this dimension — skip repeat focus (FIX-6) */
+  correctionApplied?: boolean;
 };
 
 export type CeoJudgmentState = {
@@ -41,6 +58,10 @@ export type CeoJudgmentState = {
   /** Session question count (answered turns, excluding meta/research) */
   questionCount: number;
   updatedAt: string;
+  /** Dimensions updated on last merge pass (FIX-6) */
+  lastUpdatedDimensions?: CeoJudgmentDimensionId[];
+  /** Dimensions CEO corrected — dynamic focus skips these (FIX-6) */
+  recentCorrections?: CeoJudgmentDimensionId[];
 };
 
 export const CEO_JUDGMENT_DIMENSION_LABELS: Record<CeoJudgmentDimensionId, string> = {

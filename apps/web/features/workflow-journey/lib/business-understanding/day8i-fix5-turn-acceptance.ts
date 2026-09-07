@@ -11,7 +11,7 @@ import {
   type TurnAcceptanceFailure,
   type TurnDimensionExpectation,
 } from './day8i-fix3-turn-acceptance';
-import { isRawSolutionAppend, renderSolutionJudgment } from './ai-pm-judgment-structured-solution';
+import { isRawSolutionAppend, renderSolutionJudgment, renderSolutionJudgmentStructured } from './ai-pm-judgment-structured-solution';
 import { extractAnswerSemanticEvidences } from './ai-pm-answer-semantic-sot';
 import { isSemanticCopy } from './ai-pm-judgment-target-binding';
 
@@ -147,7 +147,14 @@ export function evaluateStructuredSolutionState(
   const layers = s.solutionLayers;
   if (layers) {
     const rendered = renderSolutionJudgment(layers);
-    if (rendered && !isSemanticCopy(rendered, s.summary) && s.summary !== rendered) {
+    const structured = renderSolutionJudgmentStructured(layers);
+    const summaryMatches =
+      !rendered ||
+      isSemanticCopy(rendered, s.summary) ||
+      s.summary === rendered ||
+      s.summary === structured ||
+      (structured && s.summary.includes('- 접근:'));
+    if (rendered && !summaryMatches) {
       failures.push({
         turnIndex: 30,
         label: 'FIX-5 structured solution',

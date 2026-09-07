@@ -21,7 +21,7 @@ export type DimensionExtractHit = {
   interpretedMeaning: string;
   evidence: string;
   reason: string;
-  evidenceType?: 'fact' | 'hypothesis';
+  evidenceType?: 'fact' | 'hypothesis' | 'expectation';
 };
 
 export type ExtractDimensionOptions = {

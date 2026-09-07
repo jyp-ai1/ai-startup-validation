@@ -12,6 +12,10 @@ import { isAiPmAnswerSemanticSotV1Active } from './ai-pm-answer-semantic-sot-v1'
 import { isAiPmJudgmentMeaningModelV1Active } from './ai-pm-judgment-meaning-model-v1';
 import { isMetaConfirmationAnswer } from './ai-pm-answer-meta-slots';
 import {
+  extractProblemPriorityCorrection,
+  isProblemPriorityCorrection,
+} from './ai-pm-judgment-problem-correction';
+import {
   isCustomerCorrectionAnswer,
   isInferenceRiskAnswer,
   isPartialUnknownAnswer,
@@ -39,7 +43,7 @@ export type AnswerSemanticEvidence = {
   evidence: string;
   interpretedMeaning: string;
   reason: string;
-  evidenceType?: 'fact' | 'hypothesis';
+  evidenceType?: 'fact' | 'hypothesis' | 'expectation';
 };
 
 export type AnswerSemanticExtraction = {
@@ -210,6 +214,19 @@ function extractProblemEvidence(clauses: string[], trimmed: string): AnswerSeman
   if (/가장\s*큰\s*변화|변화입니다/.test(trimmed)) return null;
   if (SOLUTION_BENEFIT_ONLY_RE.test(trimmed) && !/(?:엑셀|따로|심각|10%)/.test(trimmed)) {
     return null;
+  }
+
+  if (isProblemPriorityCorrection(trimmed)) {
+    const correction = extractProblemPriorityCorrection(trimmed);
+    if (correction) {
+      return {
+        dimension: 'problem',
+        summary: correction.primaryProblem,
+        evidence: correction.evidence,
+        interpretedMeaning: correction.meaning,
+        reason: 'CEO가 문제 우선순위를 수정함',
+      };
+    }
   }
 
   const units: string[] = [];
@@ -446,6 +463,18 @@ export function extractAnswerSemanticEvidences(answer: string): AnswerSemanticEx
       reason: 'CEO 답변에서 가설·기대 효과 evidence 추출',
       evidenceType: 'hypothesis',
     });
+  } else if (
+    /(?:실수|시간|아낄|줄이).*(?:수\s*있|할\s*수)/.test(trimmed) &&
+    !/(?:80%|가설)/.test(trimmed)
+  ) {
+    collected.push({
+      dimension: 'customerChange',
+      summary: clip(trimmed),
+      evidence: trimmed,
+      interpretedMeaning: 'CEO 답변 — 기대효과 주장 (검증 전)',
+      reason: 'CEO 기대효과 — 고객 검증 전',
+      evidenceType: 'expectation',
+    });
   } else {
     const change = extractCustomerChangeEvidence(clauses, trimmed);
     if (change) collected.push(change);
@@ -468,7 +497,7 @@ export function semanticEvidencesToDimensionHits(
       interpretedMeaning: string;
       evidence: string;
       reason: string;
-      evidenceType?: 'fact' | 'hypothesis';
+      evidenceType?: 'fact' | 'hypothesis' | 'expectation';
     }
   >
 > {
@@ -481,7 +510,7 @@ export function semanticEvidencesToDimensionHits(
         interpretedMeaning: string;
         evidence: string;
         reason: string;
-        evidenceType?: 'fact' | 'hypothesis';
+        evidenceType?: 'fact' | 'hypothesis' | 'expectation';
       }
     >
   > = {};
