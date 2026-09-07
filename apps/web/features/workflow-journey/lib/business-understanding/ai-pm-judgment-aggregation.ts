@@ -13,11 +13,47 @@ import {
   type CeoJudgmentState,
   type CeoJudgmentStatus,
 } from './ai-pm-ceo-judgment-dimensions';
+import { extractDimensionSummaries } from './ai-pm-dimension-extract';
 import { finalizeJudgmentPresentation } from './ai-pm-judgment-conclusion';
 import { isAiPmJudgmentAggregationV1Active } from './ai-pm-judgment-aggregation-v1';
+import {
+  isDocumentEchoSummary,
+  isInferenceRiskAnswer,
+  isPartialUnknownAnswer,
+  isQuestionBackAnswer,
+  isVagueOrUnknownAnswer,
+} from './ai-pm-judgment-target-binding';
+import {
+  buildJudgmentTraceEntries,
+  classifyJudgmentChangeType,
+  type JudgmentTraceEntry,
+} from './ai-pm-judgment-trace';
+import { mergeDimensionAccumulative } from './ai-pm-judgment-accumulative-merge';
+import { isAiPmJudgmentMeaningModelV1Active } from './ai-pm-judgment-meaning-model-v1';
+import { isAiPmJudgmentFix5V1Active } from './ai-pm-judgment-fix5-v1';
+import { mergeStructuredSolutionDimension } from './ai-pm-judgment-structured-solution';
+import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
+import { isAiPmJudgmentFix7V1Active } from './ai-pm-judgment-fix7-v1';
+import { isAiPmJudgmentFix8V1Active } from './ai-pm-judgment-fix8-v1';
+import { isAiPmJudgmentFix9V1Active } from './ai-pm-judgment-fix9-v1';
+import {
+  mergeCanonicalCustomer,
+  mergeCanonicalCustomerChange,
+  mergeCanonicalProblem,
+} from './ai-pm-judgment-canonical-state';
+import {
+  applyEvidenceToDimension,
+  type JudgmentEvidenceRecord,
+} from './ai-pm-judgment-evidence-model';
+import {
+  extractProblemPriorityCorrection,
+  isProblemPriorityCorrection,
+  mergeProblemPriorityCorrection,
+} from './ai-pm-judgment-problem-correction';
+import { isCustomerCorrectionAnswer } from './ai-pm-judgment-target-binding';
+import { isMetaConfirmationAnswer } from './ai-pm-answer-meta-slots';
 import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
-import type { ConversationFactKey } from './conversation-memory';
-import { interpretAnswerSemantics } from './interpret-answer-semantics';
+import { evaluateAnswerQuality } from './understanding-contract';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
@@ -27,8 +63,6 @@ const SOLUTION_METHOD_CUE_RE =
   /(연결|통합|관리|플랫폼|서비스|제공|만들|구축|해결하려|하려고|시스템|앱|툴)/i;
 const CURRENT_ALTERNATIVE_CUE_RE =
   /(엑셀|카카오|카톡|수기|직접\s*관리|기존|지금은|현재는|이미\s*)/i;
-const PROBLEM_CUE_RE =
-  /(불편|문제|어렵|힘들|분리|따로|없고|부족|번거|복잡)/i;
 const CUSTOMER_CUE_RE =
   /(소상공인|사장|고객|가게|양조|반찬|꽃집|배송|CEO|PM|스타트업)/i;
 
@@ -59,23 +93,203 @@ function toStatus(
 function mergeDimension(
   prior: CeoJudgmentDimension,
   next: Partial<CeoJudgmentDimension>,
+  options?: {
+    preferUserExtract?: boolean;
+    sourceTurnIndex?: number;
+    answer?: string;
+    evidence?: string;
+    interpretedMeaning?: string;
+    isCorrection?: boolean;
+  },
 ): CeoJudgmentDimension {
+  if (
+    (isAiPmJudgmentFix7V1Active() || isAiPmJudgmentFix8V1Active()) &&
+    prior.id === 'customerChange'
+  ) {
+    next = {
+      ...next,
+      status: 'needs_check',
+      evidenceType: next.evidenceType ?? prior.evidenceType,
+    };
+  }
+  if (
+    isAiPmJudgmentFix8V1Active() &&
+    prior.id === 'customerChange' &&
+    next.summary?.trim()
+  ) {
+    return mergeCanonicalCustomerChange(prior, {
+      conclusion: next.summary,
+      evidence: options?.evidence ?? next.summary,
+      sourceTurnIndex: options?.sourceTurnIndex,
+      evidenceType: next.evidenceType,
+    });
+  }
+  if (
+    isAiPmJudgmentFix8V1Active() &&
+    prior.id === 'customer' &&
+    next.summary?.trim()
+  ) {
+    return mergeCanonicalCustomer(prior, {
+      conclusion: next.summary,
+      evidence: options?.evidence ?? next.summary,
+      sourceTurnIndex: options?.sourceTurnIndex,
+      isCorrection: options?.isCorrection,
+      fullAnswer: options?.answer,
+    });
+  }
+  if (
+    isAiPmJudgmentFix8V1Active() &&
+    prior.id === 'problem' &&
+    options?.answer &&
+    isProblemPriorityCorrection(options.answer)
+  ) {
+    const correction = extractProblemPriorityCorrection(options.answer);
+    if (correction) {
+      return mergeProblemPriorityCorrection(
+        prior,
+        correction,
+        options.sourceTurnIndex,
+        options.answer,
+      );
+    }
+  }
+  if (
+    isAiPmJudgmentFix8V1Active() &&
+    prior.id === 'problem' &&
+    next.summary?.trim() &&
+    options?.evidence
+  ) {
+    return mergeCanonicalProblem(prior, {
+      conclusion: next.summary,
+      evidence: options.evidence,
+      meaning: options.interpretedMeaning ?? next.summary,
+      sourceTurnIndex: options?.sourceTurnIndex,
+      isSeverity: /10%|심각/.test(options.evidence),
+    });
+  }
+  if (next.evidenceType === 'hypothesis' || next.evidenceType === 'expectation') {
+    const isExpectation = next.evidenceType === 'expectation';
+    const merged = {
+      ...prior,
+      ...next,
+      label: isExpectation ? '고객 기대효과' : '고객 변화 가설',
+      status: 'needs_check' as const,
+      evidenceType: next.evidenceType,
+      statusReason: isExpectation
+        ? 'CEO 기대효과 주장 — 검증 전'
+        : 'CEO가 세운 가설 — 검증 전',
+    };
+    if (isAiPmJudgmentFix6V1Active() && options?.evidence) {
+      return applyEvidenceToDimension(merged, {
+        conclusion: next.summary,
+        summary: next.summary,
+        records: [
+          {
+            span: options.evidence,
+            meaning: next.summary ?? options.evidence,
+            role: 'primary',
+            sourceTurnIndex: options.sourceTurnIndex,
+          },
+        ],
+        sourceTurnIndex: options.sourceTurnIndex,
+      });
+    }
+    return merged;
+  }
+  if (
+    isAiPmJudgmentFix6V1Active() &&
+    prior.id === 'problem' &&
+    options?.answer &&
+    isProblemPriorityCorrection(options.answer)
+  ) {
+    const correction = extractProblemPriorityCorrection(options.answer);
+    if (correction) {
+      return mergeProblemPriorityCorrection(
+        prior,
+        correction,
+        options.sourceTurnIndex,
+        options.answer,
+      );
+    }
+  }
+  if (
+    isAiPmJudgmentFix5V1Active() &&
+    prior.id === 'solution' &&
+    next.summary?.trim()
+  ) {
+    return mergeStructuredSolutionDimension(prior, next.summary, options?.sourceTurnIndex);
+  }
+  if (
+    isAiPmJudgmentMeaningModelV1Active() &&
+    prior.id === 'problem' &&
+    next.summary?.trim() &&
+    !isAiPmJudgmentFix8V1Active()
+  ) {
+    return mergeDimensionAccumulative(prior, next);
+  }
+  if (
+    isAiPmJudgmentMeaningModelV1Active() &&
+    prior.id === 'solution' &&
+    next.summary?.trim() &&
+    !isAiPmJudgmentFix5V1Active()
+  ) {
+    return mergeDimensionAccumulative(prior, next);
+  }
   if (!next.summary?.trim()) return prior;
+
+  if (isDocumentEchoSummary(next.summary) && prior.summary.trim() && !isDocumentEchoSummary(prior.summary)) {
+    return prior;
+  }
+
   const statusRank = { unknown: 0, needs_check: 1, clear: 2 };
+  const userWins =
+    options?.preferUserExtract &&
+    next.summary.trim().length >= 4 &&
+    !isDocumentEchoSummary(next.summary);
+
+  if (userWins && next.status === 'clear') {
+    return {
+      ...prior,
+      ...next,
+      label: CEO_JUDGMENT_DIMENSION_LABELS[prior.id],
+      summary: clip(next.summary!),
+    };
+  }
+
   const keepPrior =
     prior.status === 'clear' &&
     next.status !== 'clear' &&
-    prior.summary.trim().length >= next.summary!.trim().length;
+    prior.summary.trim().length >= next.summary!.trim().length &&
+    !userWins;
   if (keepPrior) return prior;
-  if (statusRank[prior.status] > statusRank[next.status ?? 'unknown'] && prior.summary.trim()) {
+  if (statusRank[prior.status] > statusRank[next.status ?? 'unknown'] && prior.summary.trim() && !userWins) {
     return prior;
   }
-  return {
+  const merged: CeoJudgmentDimension = {
     ...prior,
     ...next,
     label: CEO_JUDGMENT_DIMENSION_LABELS[prior.id],
     summary: next.summary?.trim() ? clip(next.summary) : prior.summary,
   };
+
+  if (isAiPmJudgmentFix6V1Active() && next.summary?.trim() && options?.evidence) {
+    const record: JudgmentEvidenceRecord = {
+      span: options.evidence,
+      meaning: options.interpretedMeaning ?? next.summary,
+      role: options.isCorrection ? 'primary' : 'supporting',
+      sourceTurnIndex: options.sourceTurnIndex,
+    };
+    const withEvidence = applyEvidenceToDimension(merged, {
+      conclusion: options.isCorrection ? next.summary : merged.currentConclusion ?? next.summary,
+      summary: merged.summary,
+      records: [record],
+      sourceTurnIndex: options.sourceTurnIndex,
+      correctionApplied: options.isCorrection ?? merged.correctionApplied,
+    });
+    return withEvidence;
+  }
+
+  return merged;
 }
 
 function claimSummary(living: LivingUnderstandingState, fieldKey: string): string {
@@ -137,10 +351,9 @@ function dimensionFromLiving(living: LivingUnderstandingState): Partial<
   }
 
   const solutionClaim = claimSummary(living, 'solution');
-  if (solutionClaim && !isPending(solutionClaim)) {
-    const hasOutcome = CUSTOMER_CHANGE_CUE_RE.test(solutionClaim);
+  if (solutionClaim && !isPending(solutionClaim) && !isDocumentEchoSummary(solutionClaim)) {
     const hasMethod = SOLUTION_METHOD_CUE_RE.test(solutionClaim);
-    if (hasMethod && !hasOutcome) {
+    if (hasMethod) {
       const { status, reason } = toStatus(solutionClaim, 'partial');
       out.solution = {
         id: 'solution',
@@ -149,24 +362,6 @@ function dimensionFromLiving(living: LivingUnderstandingState): Partial<
         summary: clip(solutionClaim),
         statusReason: reason,
       };
-    } else if (hasOutcome) {
-      const { status, reason } = toStatus(solutionClaim, 'strong');
-      out.customerChange = {
-        id: 'customerChange',
-        label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
-        status,
-        summary: clip(solutionClaim),
-        statusReason: reason,
-      };
-      if (hasMethod) {
-        out.solution = {
-          id: 'solution',
-          label: CEO_JUDGMENT_DIMENSION_LABELS.solution,
-          status: 'needs_check',
-          summary: clip(solutionClaim),
-          statusReason: '해결 방향은 보이나 고객 변화와 구분해 추가 확인이 필요함',
-        };
-      }
     }
   }
 
@@ -185,145 +380,115 @@ function dimensionFromLiving(living: LivingUnderstandingState): Partial<
   return out;
 }
 
-function factKeyToDimension(
-  key: ConversationFactKey,
-  answer: string,
-): CeoJudgmentDimensionId | null {
-  switch (key) {
-    case 'customer':
-      return 'customer';
-    case 'problem':
-      return 'problem';
-    case 'business':
-      return /(하려고|제공|만들|연결|통합|해결|플랫폼|앱|툴|시스템)/.test(answer)
-        ? 'solution'
-        : null;
-    case 'differentiation':
-    case 'defensibility':
-      return 'solution';
-    case 'diffRelevance':
-      return 'customerChange';
-    case 'competitor':
-      return null;
-    default:
-      return null;
-  }
-}
-
 function dimensionsFromAnswerText(
   answer: string,
   askedIssueId?: AiPmLoopTurn['issueId'],
   askedGap?: string,
-): Partial<Record<CeoJudgmentDimensionId, CeoJudgmentDimension>> {
-  const trimmed = answer.trim();
-  if (trimmed.length < 4) return {};
-
-  const semantic = interpretAnswerSemantics({
-    answer: trimmed,
-    askedIssueId: askedIssueId ?? null,
-    askedTargetGap: askedGap,
-  });
-
-  const out: Partial<Record<CeoJudgmentDimensionId, CeoJudgmentDimension>> = {};
-
-  for (const hit of semantic.facts) {
-    const dimId = factKeyToDimension(hit.key, trimmed);
-    if (!dimId) continue;
-    const { status, reason } = toStatus(trimmed, 'strong');
-    out[dimId] = {
-      id: dimId,
-      label: CEO_JUDGMENT_DIMENSION_LABELS[dimId],
-      status,
-      summary: clip(trimmed),
-      statusReason: reason,
-    };
-  }
-
-  if (CUSTOMER_CUE_RE.test(trimmed)) {
-    const { status, reason } = toStatus(trimmed, CUSTOMER_CUE_RE.test(trimmed) ? 'strong' : 'partial');
-    out.customer = mergeDimension(
-      out.customer ?? {
-        id: 'customer',
-        label: CEO_JUDGMENT_DIMENSION_LABELS.customer,
-        status: 'unknown',
-        summary: '',
-      },
-      { status, summary: clip(trimmed), statusReason: reason },
-    );
-  }
-
-  if (PROBLEM_CUE_RE.test(trimmed)) {
-    const { status, reason } = toStatus(trimmed, 'strong');
-    out.problem = mergeDimension(
-      out.problem ?? {
-        id: 'problem',
-        label: CEO_JUDGMENT_DIMENSION_LABELS.problem,
-        status: 'unknown',
-        summary: '',
-      },
-      { status, summary: clip(trimmed), statusReason: reason },
-    );
-  }
-
-  if (CUSTOMER_CHANGE_CUE_RE.test(trimmed) && !SOLUTION_METHOD_CUE_RE.test(trimmed)) {
-    const { status, reason } = toStatus(trimmed, 'strong');
-    out.customerChange = {
-      id: 'customerChange',
-      label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
-      status,
-      summary: clip(trimmed),
-      statusReason: reason,
-    };
-  } else if (SOLUTION_METHOD_CUE_RE.test(trimmed) && !CUSTOMER_CHANGE_CUE_RE.test(trimmed)) {
-    const problemDominant =
-      PROBLEM_CUE_RE.test(trimmed) &&
-      /(불편|어렵|힘들|번거|복잡)/.test(trimmed) &&
-      !/(하려고|하려\s*합니다|제공|만들려|연결하|통합하|해결하)/.test(trimmed);
-    if (!problemDominant) {
-      const { status, reason } = toStatus(trimmed, 'partial');
-      out.solution = {
-        id: 'solution',
-        label: CEO_JUDGMENT_DIMENSION_LABELS.solution,
-        status,
-        summary: clip(trimmed),
-        statusReason: reason,
-      };
-    }
-  } else if (SOLUTION_METHOD_CUE_RE.test(trimmed) && CUSTOMER_CHANGE_CUE_RE.test(trimmed)) {
-    const { status, reason } = toStatus(trimmed, 'strong');
-    out.customerChange = {
-      id: 'customerChange',
-      label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
-      status,
-      summary: clip(trimmed),
-      statusReason: reason,
-    };
-    out.solution = {
-      id: 'solution',
-      label: CEO_JUDGMENT_DIMENSION_LABELS.solution,
-      status: 'needs_check',
-      summary: clip(trimmed),
-      statusReason: '해결 방법은 보이나 고객 변화는 별도 확인이 필요함',
-    };
-  }
-
-  if (CURRENT_ALTERNATIVE_CUE_RE.test(trimmed) && !CUSTOMER_CHANGE_CUE_RE.test(trimmed)) {
-    out.problem = mergeDimension(
-      out.problem ?? {
-        id: 'problem',
-        label: CEO_JUDGMENT_DIMENSION_LABELS.problem,
-        status: 'unknown',
-        summary: '',
-      },
+  allowMultiFact?: boolean,
+): {
+  dimensions: Partial<Record<CeoJudgmentDimensionId, CeoJudgmentDimension>>;
+  meta: Partial<
+    Record<
+      CeoJudgmentDimensionId,
       {
-        status: 'needs_check',
-        summary: `현재 ${clip(trimmed, 40)} 등으로 관리하는 것으로 이해했습니다`,
-        statusReason: '기존 방식 정보 — 문제의 근거로 활용',
-      },
-    );
+        interpretedMeaning: string;
+        evidence: string;
+        reason: string;
+        evidenceType?: 'fact' | 'hypothesis' | 'expectation';
+      }
+    >
+  >;
+  frozen: boolean;
+} {
+  const trimmed = answer.trim();
+  if (trimmed.length < 4) return { dimensions: {}, meta: {}, frozen: false };
+
+  if (isQuestionBackAnswer(trimmed)) {
+    return { dimensions: {}, meta: {}, frozen: true };
   }
 
-  return out;
+  const quality = evaluateAnswerQuality(trimmed);
+  if (quality.quality === 'UNKNOWN' || isPartialUnknownAnswer(trimmed) || isInferenceRiskAnswer(trimmed)) {
+    return { dimensions: {}, meta: {}, frozen: true };
+  }
+
+  const extracted = extractDimensionSummaries(trimmed, {
+    targetGap: askedGap,
+    issueId: askedIssueId,
+    allowMultiFact,
+  });
+  const out: Partial<Record<CeoJudgmentDimensionId, CeoJudgmentDimension>> = {};
+  const meta: Partial<
+    Record<
+      CeoJudgmentDimensionId,
+      {
+        interpretedMeaning: string;
+        evidence: string;
+        reason: string;
+        evidenceType?: 'fact' | 'hypothesis' | 'expectation';
+      }
+    >
+  > = {};
+
+  for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+    const hit = extracted[id];
+    if (!hit) continue;
+    const strength =
+      id === 'problem' ? 'strong' : id === 'customerChange' ? 'strong' : 'partial';
+    const { status, reason } = toStatus(hit.summary, strength);
+    const isHypothesis = hit.evidenceType === 'hypothesis';
+    const isExpectation = hit.evidenceType === 'expectation';
+    const resolvedStatus =
+      (isAiPmJudgmentFix7V1Active() || isAiPmJudgmentFix8V1Active()) &&
+      id === 'customerChange'
+        ? 'needs_check'
+        : isHypothesis || isExpectation
+          ? 'needs_check'
+          : id === 'solution' && hit.reason.includes('needs_check')
+            ? 'needs_check'
+            : status;
+    out[id] = {
+      id,
+      label:
+        isHypothesis && id === 'customerChange'
+          ? '고객 변화 가설'
+          : isExpectation && id === 'customerChange'
+            ? '고객 기대효과'
+            : CEO_JUDGMENT_DIMENSION_LABELS[id],
+      status: resolvedStatus,
+      summary: hit.summary,
+      statusReason: isHypothesis
+        ? 'CEO가 세운 가설 — 검증 전'
+        : isExpectation
+          ? 'CEO 기대효과 주장 — 검증 전'
+          : hit.reason || reason,
+      evidenceType: hit.evidenceType ?? 'fact',
+    };
+    meta[id] = {
+      interpretedMeaning: hit.interpretedMeaning,
+      evidence: hit.evidence,
+      reason: hit.reason,
+      evidenceType: hit.evidenceType,
+    };
+  }
+
+  if (CURRENT_ALTERNATIVE_CUE_RE.test(trimmed) && !out.problem && !CUSTOMER_CHANGE_CUE_RE.test(trimmed)) {
+    const altSummary = `현재 ${clip(trimmed, 40)} 등으로 관리하는 것으로 이해했습니다`;
+    out.problem = {
+      id: 'problem',
+      label: CEO_JUDGMENT_DIMENSION_LABELS.problem,
+      status: 'needs_check',
+      summary: altSummary,
+      statusReason: '기존 방식 정보 — 문제의 근거로 활용',
+    };
+    meta.problem = {
+      interpretedMeaning: '기존 대안/관리 방식을 문제 맥락으로 해석',
+      evidence: trimmed,
+      reason: '기존 방식 정보 — 문제의 근거로 활용',
+    };
+  }
+
+  return { dimensions: out, meta, frozen: false };
 }
 
 function countActionableTurns(turns: AiPmLoopTurn[]): number {
@@ -342,20 +507,28 @@ export function buildCeoJudgmentState(input: {
   turns: AiPmLoopTurn[];
   prior?: CeoJudgmentState | null;
   lastReview?: AnswerReview | null;
+  /** When true, skip living spine merge — prior already reflects accumulated state. */
+  incremental?: boolean;
 }): CeoJudgmentState {
   if (!isAiPmJudgmentAggregationV1Active()) {
     return emptyCeoJudgmentState(countActionableTurns(input.turns));
   }
 
-  let state = input.prior ?? emptyCeoJudgmentState(countActionableTurns(input.turns));
+  const incremental = input.incremental ?? Boolean(input.prior);
+  let state = input.prior
+    ? {
+        ...input.prior,
+        dimensions: {
+          customer: { ...input.prior.dimensions.customer },
+          problem: { ...input.prior.dimensions.problem },
+          solution: { ...input.prior.dimensions.solution },
+          customerChange: { ...input.prior.dimensions.customerChange },
+        },
+      }
+    : emptyCeoJudgmentState(countActionableTurns(input.turns));
   state.questionCount = countActionableTurns(input.turns);
 
-  const fromLiving = dimensionFromLiving(input.living);
-  for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
-    if (fromLiving[id]) {
-      state.dimensions[id] = mergeDimension(state.dimensions[id], fromLiving[id]!);
-    }
-  }
+  // FIX-3: Judgment dimensions come ONLY from CEO answers — never from living/document spine.
 
   const actionable = input.turns.filter(
     (t) =>
@@ -364,18 +537,54 @@ export function buildCeoJudgmentState(input: {
       t.intent !== 'mid_judgment' &&
       t.intent !== 'nonsense',
   );
-  const last = actionable[actionable.length - 1];
-  if (last?.answer?.trim()) {
-    const fromAnswer = dimensionsFromAnswerText(
-      last.answer,
-      last.issueId,
-      last.targetGap,
+  const turnsToApply =
+    incremental && input.prior
+      ? actionable.slice(-1)
+      : actionable.filter((t) => Boolean(t.answer?.trim()));
+
+  for (let ti = 0; ti < turnsToApply.length; ti += 1) {
+    const turn = turnsToApply[ti]!;
+    if (!turn.answer?.trim()) continue;
+    const turnIndex = actionable.indexOf(turn) + 1;
+    const multiFact =
+      turn.answer.includes('하고') ||
+      turn.answer.includes('해서') ||
+      (turn.answer.match(/[,，]/g)?.length ?? 0) >= 1;
+    const { dimensions: fromAnswer, meta, frozen } = dimensionsFromAnswerText(
+      turn.answer,
+      turn.issueId,
+      turn.targetGap,
+      multiFact,
     );
+    if (frozen) {
+      continue;
+    }
+    const lastUpdated: CeoJudgmentDimensionId[] = [];
+    const recentCorrections = [...(state.recentCorrections ?? [])];
     for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
       if (fromAnswer[id]) {
-        state.dimensions[id] = mergeDimension(state.dimensions[id], fromAnswer[id]!);
+        const isCorrection =
+          (id === 'customer' && isCustomerCorrectionAnswer(turn.answer)) ||
+          (id === 'problem' && isProblemPriorityCorrection(turn.answer));
+        if (isCorrection && !recentCorrections.includes(id)) {
+          recentCorrections.push(id);
+        }
+        state.dimensions[id] = mergeDimension(state.dimensions[id], fromAnswer[id]!, {
+          preferUserExtract: true,
+          sourceTurnIndex: turnIndex,
+          answer: turn.answer,
+          evidence: meta[id]?.evidence,
+          interpretedMeaning: meta[id]?.interpretedMeaning,
+          isCorrection,
+        });
+        lastUpdated.push(id);
       }
     }
+    if (lastUpdated.length > 0) {
+      state.lastUpdatedDimensions = lastUpdated;
+      state.recentCorrections = recentCorrections;
+    }
+    state.currentTurnIndex = turnIndex;
   }
 
   if (
@@ -401,20 +610,190 @@ export function applyAnswerToJudgment(input: {
   answer: string;
   issueId?: AiPmLoopTurn['issueId'];
   targetGap?: string;
+  allowMultiFact?: boolean;
 }): CeoJudgmentState {
-  const fromAnswer = dimensionsFromAnswerText(
+  const multiFact =
+    input.allowMultiFact ??
+    (input.answer.includes('하고') ||
+      input.answer.includes('해서') ||
+      (input.answer.match(/[,，]/g)?.length ?? 0) >= 1);
+
+  const { dimensions: fromAnswer, meta, frozen } = dimensionsFromAnswerText(
     input.answer,
     input.issueId,
     input.targetGap,
+    multiFact,
   );
   let state: CeoJudgmentState = {
     ...input.prior,
+    dimensions: {
+      customer: { ...input.prior.dimensions.customer },
+      problem: { ...input.prior.dimensions.problem },
+      solution: { ...input.prior.dimensions.solution },
+      customerChange: { ...input.prior.dimensions.customerChange },
+    },
     questionCount: input.prior.questionCount + 1,
+    recentCorrections: [...(input.prior.recentCorrections ?? [])],
   };
+
+  if (frozen) {
+    return finalizeJudgmentPresentation(state);
+  }
+
+  const lastUpdated: CeoJudgmentDimensionId[] = [];
   for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
     if (fromAnswer[id]) {
-      state.dimensions[id] = mergeDimension(state.dimensions[id], fromAnswer[id]!);
+      const isCorrection =
+        (id === 'customer' && isCustomerCorrectionAnswer(input.answer)) ||
+        (id === 'problem' && isProblemPriorityCorrection(input.answer));
+      if (isCorrection && !state.recentCorrections!.includes(id)) {
+        state.recentCorrections!.push(id);
+      }
+      state.dimensions[id] = mergeDimension(state.dimensions[id], fromAnswer[id]!, {
+        preferUserExtract: true,
+        answer: input.answer,
+        evidence: meta[id]?.evidence,
+        interpretedMeaning: meta[id]?.interpretedMeaning,
+        isCorrection,
+      });
+      lastUpdated.push(id);
     }
   }
+  if (lastUpdated.length > 0) {
+    state.lastUpdatedDimensions = lastUpdated;
+  }
+  state.currentTurnIndex = input.prior.currentTurnIndex;
   return finalizeJudgmentPresentation(state);
+}
+
+export type BuildCeoJudgmentWithTraceResult = {
+  state: CeoJudgmentState;
+  traceEntries: JudgmentTraceEntry[];
+  dimensionMeta: Partial<
+    Record<
+      CeoJudgmentDimensionId,
+      { interpretedMeaning: string; evidence: string; reason: string; knownPriorInfo?: string }
+    >
+  >;
+};
+
+export function buildCeoJudgmentStateWithTrace(input: {
+  living: LivingUnderstandingState;
+  turns: AiPmLoopTurn[];
+  prior?: CeoJudgmentState | null;
+  lastReview?: AnswerReview | null;
+  sourceTurnId?: string;
+  question?: string;
+  answer?: string;
+  /** Pre-turn judgment — when set, used as trace baseline instead of prior. */
+  beforeState?: CeoJudgmentState | null;
+}): BuildCeoJudgmentWithTraceResult {
+  const actionable = input.turns.filter(
+    (t) =>
+      !t.superseded &&
+      t.intent !== 'why_meta' &&
+      t.intent !== 'mid_judgment' &&
+      t.intent !== 'nonsense',
+  );
+  const last = actionable[actionable.length - 1];
+  const answer = input.answer ?? last?.answer ?? '';
+  const question = input.question ?? last?.askedQuestionText ?? '';
+
+  const prior =
+    input.beforeState ??
+    input.prior ??
+    emptyCeoJudgmentState(Math.max(0, countActionableTurns(input.turns) - 1));
+
+  const state = buildCeoJudgmentState({
+    living: input.living,
+    turns: input.turns,
+    prior,
+    lastReview: input.lastReview,
+    incremental: Boolean(input.beforeState ?? input.prior),
+  });
+
+  const multiFact =
+    answer.includes('하고') ||
+    answer.includes('해서') ||
+    (answer.match(/[,，]/g)?.length ?? 0) >= 1;
+  const answerDims = answer.trim()
+    ? dimensionsFromAnswerText(answer, last?.issueId, last?.targetGap, multiFact)
+    : { meta: {}, frozen: false, dimensions: {} };
+  const { meta, dimensions: fromAnswerDims, frozen } = answerDims;
+
+  if (isMetaConfirmationAnswer(answer)) {
+    return { state, traceEntries: [], dimensionMeta: {} };
+  }
+
+  const extractedDimensionIds = Object.keys(fromAnswerDims) as CeoJudgmentDimensionId[];
+
+  const dimensionMeta: BuildCeoJudgmentWithTraceResult['dimensionMeta'] = {};
+  for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+    if (!fromAnswerDims[id]) continue;
+    const entry = meta[id];
+    if (entry) {
+      dimensionMeta[id] = {
+        ...entry,
+        knownPriorInfo: prior.dimensions[id].summary || undefined,
+      };
+    }
+  }
+
+  const traceEntries = buildJudgmentTraceEntries({
+    sourceTurnId: input.sourceTurnId ?? last?.appliedAt ?? `turn-${actionable.length}`,
+    question,
+    answer,
+    prior,
+    next: state,
+    dimensionMeta,
+    allowedDimensions: frozen ? [] : extractedDimensionIds,
+  });
+
+  if (!frozen && traceEntries.length === 0 && answer.trim()) {
+    for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+      if (fromAnswerDims[id] === undefined) continue;
+      const before = prior.dimensions[id];
+      const after = state.dimensions[id];
+      const changeType = classifyJudgmentChangeType({
+        before: { status: before.status, summary: before.summary },
+        after: { status: after.status, summary: after.summary },
+      });
+      if (changeType === 'UNCHANGED') {
+        traceEntries.push({
+          sourceTurnId: input.sourceTurnId ?? last?.appliedAt ?? `turn-${actionable.length}`,
+          question,
+          answer,
+          interpretedMeaning: meta[id]?.interpretedMeaning ?? `${id} dimension update`,
+          evidence: meta[id]?.evidence ?? answer.trim(),
+          affectedDimension: id,
+          previousJudgment: { status: before.status, summary: before.summary },
+          newJudgment: { status: after.status, summary: after.summary },
+          changeType: 'CONFIRMED',
+          reason: meta[id]?.reason ?? after.statusReason ?? 'judgment sync',
+          knownPriorInfo: before.summary || undefined,
+        });
+        continue;
+      }
+      traceEntries.push({
+        sourceTurnId: input.sourceTurnId ?? last?.appliedAt ?? `turn-${actionable.length}`,
+        question,
+        answer,
+        interpretedMeaning: meta[id]?.interpretedMeaning ?? `${id} dimension update`,
+        evidence: meta[id]?.evidence ?? answer.trim(),
+        affectedDimension: id,
+        previousJudgment: { status: before.status, summary: before.summary },
+        newJudgment: { status: after.status, summary: after.summary },
+        changeType:
+          !before.summary.trim() && after.summary.trim() ? 'NEW' : changeType === 'NEW' ? 'NEW' : 'CHANGED',
+        reason: meta[id]?.reason ?? after.statusReason ?? 'judgment sync',
+        knownPriorInfo: before.summary || undefined,
+        newlyAddedInfo:
+          changeType === 'NEW' || changeType === 'CHANGED' || changeType === 'STRENGTHENED'
+            ? after.summary
+            : undefined,
+      });
+    }
+  }
+
+  return { state, traceEntries, dimensionMeta };
 }

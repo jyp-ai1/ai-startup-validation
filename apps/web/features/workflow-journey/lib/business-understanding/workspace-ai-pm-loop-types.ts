@@ -7,6 +7,7 @@ import type { AnswerIntent } from './interpret-answer-semantics';
 import type { QuestionCausality } from './question-causality';
 import type { LockedAskSurface } from './question-transition-lock';
 import type { CeoJudgmentDimensionId, CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
+import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
 
 export type AiPmResearchPending = {
   utterance: string;
@@ -94,6 +95,8 @@ export type AiPmLoopState = {
   reviewDecisionShown?: boolean | null;
   /** DAY 8-H — return to business review after supplement answer processing */
   supplementPendingReview?: boolean | null;
+  /** DAY 8-I — judgment trace entries for CPO review */
+  judgmentTraces?: JudgmentTurnTrace[];
 };
 
 export const AI_PM_LOOP_MIN_TURNS = 3;

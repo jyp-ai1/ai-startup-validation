@@ -32,7 +32,10 @@ const GAP_GUIDES: Record<string, AiPmAnswerGuide> = {
   },
   businessOneLiner: {
     hint: '누구에게 무엇을 제공하는지 한 문장으로 적어주세요.',
-    examples: ['소상공인용 주문·배송 관리', '직접 배송 가게를 위한 통합 툴'],
+    examples: [
+      '영세한 양조장이 온라인에서 제품을 알릴 수 있도록 홍보·판매를 지원합니다.',
+      '소상공인용 주문·배송 관리',
+    ],
   },
 };
 

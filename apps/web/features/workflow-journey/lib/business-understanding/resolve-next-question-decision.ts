@@ -6,6 +6,13 @@ import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
 
 import { applyQuestionPolicy, createBootstrapDecisionWithPolicy } from './ai-pm-question-policy';
 import { applyNoAskPolicy } from './ai-pm-no-ask-policy';
+import { applyAntiRepeatPolicy } from './ai-pm-anti-repeat-policy';
+import { applyNoGapTermination } from './ai-pm-no-gap-termination';
+import {
+  applyJudgmentNextQuestionBinding,
+  createJudgmentBoundDecision,
+} from './ai-pm-judgment-next-question-binding';
+import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 import {
   decideNextQuestionFromReview,
   isNextQuestionDecision,
@@ -33,6 +40,8 @@ export type ResolveNextQuestionInput = {
   gapState?: GapKnowledgeState;
   previousQuestionText?: string | null;
   projectId?: string;
+  /** Override loop store judgment (e.g. post-answer sync snapshot). */
+  judgment?: import('./ai-pm-ceo-judgment-dimensions').CeoJudgmentState | null;
   /** When true, persist lastDecision or clear stale artifacts on null decision. Default false (read-only). */
   persistLastDecision?: boolean;
   /** Phase D — when research pending, question engine must not advance. */
@@ -59,6 +68,7 @@ export function resolveNextQuestionDecision(
   const loop = input.projectId ? loadAiPmLoopState(input.projectId) : null;
   const gapState = input.gapState ?? loop?.gapState ?? createEmptyGapState();
   const turns = input.turns;
+  const judgmentSnapshot = input.judgment ?? loop?.ceoJudgment ?? null;
 
   const lastReviewTurn = [...turns]
     .reverse()
@@ -105,6 +115,48 @@ export function resolveNextQuestionDecision(
       turns,
       memory: input.memory,
       stageReadiness,
+      judgment: judgmentSnapshot,
+      judgmentTraces: loop?.judgmentTraces,
+    });
+  }
+
+  if (
+    decision &&
+    isNextQuestionDecision(decision) &&
+    isAiPmJudgmentFix10V1Active()
+  ) {
+    decision = applyJudgmentNextQuestionBinding({
+      decision,
+      judgment: judgmentSnapshot,
+      turns,
+    });
+  } else if (
+    !decision &&
+    isAiPmJudgmentFix10V1Active() &&
+    judgmentSnapshot &&
+    loop &&
+    loop.turns.filter((t) => !t.superseded).length < 7
+  ) {
+    decision = createJudgmentBoundDecision(judgmentSnapshot);
+  }
+
+  if (decision && isNextQuestionDecision(decision)) {
+    decision = applyAntiRepeatPolicy({
+      decision,
+      turns,
+      living: input.living,
+      gapState,
+      judgment: judgmentSnapshot,
+    });
+  }
+
+  if (decision && isNextQuestionDecision(decision)) {
+    decision = applyNoGapTermination({
+      decision,
+      living: input.living,
+      turns,
+      gapState,
+      judgment: judgmentSnapshot,
     });
   }
 

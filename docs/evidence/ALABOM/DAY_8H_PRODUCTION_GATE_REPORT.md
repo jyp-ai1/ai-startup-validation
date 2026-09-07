@@ -9,9 +9,9 @@
 
 | Check | SHA |
 |-------|-----|
-| Merge commit (main) | `fcc61ddc9061…` |
-| `/api/build-info` | `fcc61ddc9061…` |
-| `/api/health` | `fcc61ddc9061…` |
+| Merge commit (main) | `fcc61ddc9061cde322c3fb0682491bc1d803a0e0` |
+| `/api/build-info` | `fcc61ddc9061cde322c3fb0682491bc1d803a0e0` |
+| `/api/health` | `fcc61ddc9061cde322c3fb0682491bc1d803a0e0` |
 
 **Git = Build = Production:** ✅ MATCH
 

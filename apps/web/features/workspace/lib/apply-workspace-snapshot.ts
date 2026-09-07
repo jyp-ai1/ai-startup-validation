@@ -12,6 +12,7 @@ import {
 } from '@/features/workflow-journey/lib/business-understanding/question-transition-lock';
 import { saveUnderstandingPhase } from '@/features/workflow-journey/lib/business-understanding/business-understanding-store';
 import { saveWorkspaceDocumentText } from '@/features/workflow-journey/lib/workspace-ai-pm-messages';
+import { saveProjectConsultingState } from '@/features/workflow-journey/lib/business-understanding/project-consulting-store';
 import type { WorkspacePersistedSnapshot } from '@/lib/project/workspace-persisted-state';
 
 const CACHE_META_KEY = (projectId: string) => `launchlens.workspace.${projectId}.dbUpdatedAt`;
@@ -81,6 +82,10 @@ export function applyWorkspaceSnapshotToCache(
 
   if (typeof snapshot.reviewCount === 'number') {
     savePersistedReviewCountToCache(snapshot.reviewCount, projectId);
+  }
+
+  if (snapshot.projectConsulting) {
+    saveProjectConsultingState(snapshot.projectConsulting);
   }
 
   if (clientWasAhead) {

@@ -93,7 +93,7 @@ const GAP_BINDINGS: Record<string, Omit<GapQuestionBinding, 'targetGap' | 'whyNo
     issueId: 'market_validation',
   },
   businessOneLiner: {
-    questionText: '한 줄로, 무엇을 누구에게 제공하는 사업인가요?',
+    questionText: '이 사업은 누구에게 무엇을 제공하나요?',
     factKey: 'business',
     issueId: 'bm_design',
   },

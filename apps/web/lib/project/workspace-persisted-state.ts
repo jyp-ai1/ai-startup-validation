@@ -9,6 +9,7 @@ import type { UnderstandingPhase } from '@/features/workflow-journey/lib/busines
 import type { WorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
 import type { StartupProject } from '@repo/types/validation';
 import { parseWorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
+import type { ProjectConsultingState } from '@/features/workflow-journey/lib/business-understanding/project-consulting-state';
 
 export type WorkspacePersistedSnapshot = {
   documentText?: string;
@@ -17,6 +18,8 @@ export type WorkspacePersistedSnapshot = {
   workspaceFacts?: WorkspacePersistedFacts;
   understandingPhase?: UnderstandingPhase;
   reviewCount?: number;
+  /** DAY 8-I — project consulting continuity + immutable snapshots */
+  projectConsulting?: ProjectConsultingState;
   updatedAt: string;
 };
 
@@ -50,6 +53,10 @@ export function parseWorkspacePersistedSnapshot(
   const understandingPhase =
     typeof raw.understandingPhase === 'string' ? (raw.understandingPhase as UnderstandingPhase) : undefined;
   const reviewCount = typeof raw.reviewCount === 'number' ? raw.reviewCount : undefined;
+  const projectConsulting =
+    isRecord(raw.projectConsulting) && typeof raw.projectConsulting.projectId === 'string'
+      ? (raw.projectConsulting as ProjectConsultingState)
+      : undefined;
 
   return {
     documentText,
@@ -57,6 +64,7 @@ export function parseWorkspacePersistedSnapshot(
     workspaceFacts,
     understandingPhase,
     reviewCount,
+    projectConsulting,
     updatedAt,
   };
 }

@@ -2,6 +2,7 @@ import type { AiPmLoopState } from '@/features/workflow-journey/lib/business-und
 import type { UnderstandingPhase } from '@/features/workflow-journey/lib/business-understanding/business-understanding-store';
 import { buildWorkspacePersistedFacts } from '@/features/workflow-journey/lib/business-understanding/build-workspace-ai-pm-state';
 import { loadAiPmLoopState } from '@/features/workflow-journey/lib/business-understanding/workspace-ai-pm-loop-store';
+import { loadProjectConsultingState } from '@/features/workflow-journey/lib/business-understanding/project-consulting-store';
 import { loadUnderstandingPhase } from '@/features/workflow-journey/lib/business-understanding/business-understanding-store';
 import { loadPersistedReviewCount } from '@/features/workflow-journey/lib/demo-guided-session';
 import { loadWorkspaceDocumentText } from '@/features/workflow-journey/lib/workspace-ai-pm-messages';
@@ -18,6 +19,7 @@ type SyncWorkspacePersistenceOptions = {
 export function buildWorkspacePersistedSnapshot(projectId: string): WorkspacePersistedSnapshot {
   const documentText = loadWorkspaceDocumentText(projectId) ?? undefined;
   const aiPmLoop = loadAiPmLoopState(projectId);
+  const projectConsulting = loadProjectConsultingState(projectId);
   const reviewCount = loadPersistedReviewCount(projectId);
   const workspaceFacts = buildWorkspacePersistedFacts({
     documentText,
@@ -31,6 +33,10 @@ export function buildWorkspacePersistedSnapshot(projectId: string): WorkspacePer
     workspaceFacts,
     understandingPhase: loadUnderstandingPhase(projectId),
     reviewCount,
+    projectConsulting:
+      projectConsulting.conversationTurnCount > 0 || projectConsulting.snapshots.length > 0
+        ? projectConsulting
+        : undefined,
     updatedAt: new Date().toISOString(),
   };
 }

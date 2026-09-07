@@ -5,6 +5,7 @@ import type {
 } from '@repo/types/domain/launchlens-domain';
 
 import { looksLikeDocumentFileName } from '../business-understanding/workspace-document-eligibility';
+import { parseIntakeSeedDocument } from '@/lib/project/parse-intake-seed';
 
 const FOUNDER_ARCHETYPES = [
   '예비창업자',
@@ -81,10 +82,23 @@ function extractFounder(text: string): DomainEntityField {
 }
 
 function extractBusinessName(text: string): DomainEntityField {
+  const intake = parseIntakeSeedDocument(text);
+  if (intake.businessOneLinerCandidate && intake.businessOneLinerCandidate.length >= 8) {
+    const excerpt = intake.businessOneLinerCandidate.slice(0, 120);
+    return {
+      value: excerpt.slice(0, 72),
+      basis: 'document',
+      excerpt,
+    };
+  }
+
   const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const substantive = lines.filter(
+    (l) => !/^프로젝트\s*이름:/i.test(l) && !/^사업\s*설명:$/i.test(l),
+  );
   const title =
-    lines[0]?.replace(/^[#\-\*]\s*/, '').slice(0, 48) ||
-    findSection(text, ['서비스', 'service', '프로젝트', 'product', '사업명', '회사']);
+    substantive[0]?.replace(/^[#\-\*]\s*/, '').slice(0, 48) ||
+    findSection(text, ['서비스', 'service', 'product', '사업명', '회사']);
   // S15 P0-1 — upload filename must never become business name
   if (title.length >= 2 && !looksLikeDocumentFileName(title) && !looksLikeDocumentFileName(text)) {
     return { value: title, basis: 'document', excerpt: title.slice(0, 120) };

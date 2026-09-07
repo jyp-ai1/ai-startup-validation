@@ -1230,6 +1230,16 @@ export function WorkspaceAiPmLoopPanel({
             fallbackIssueId: decision.issueId,
           }),
         );
+      } else if (!decision || budgetBlock) {
+        patchAiPmLoopState(
+          { lastDecision: undefined, lockedAskSurface: undefined },
+          projectId,
+        );
+        if (isAiPmBusinessReviewV1Active()) {
+          syncState(openBusinessReview(projectId));
+        } else {
+          syncState(openJudgmentView(projectId));
+        }
       }
       syncState(loadAiPmLoopState(projectId));
     }
@@ -2287,6 +2297,16 @@ export function WorkspaceAiPmLoopPanel({
               fallbackIssueId: decision.issueId,
             }),
           );
+        } else {
+          patchAiPmLoopState(
+            { lastDecision: undefined, lockedAskSurface: undefined },
+            projectId,
+          );
+          if (isAiPmBusinessReviewV1Active()) {
+            openBusinessReview(projectId);
+          } else {
+            openJudgmentView(projectId);
+          }
         }
         syncState(loadAiPmLoopState(projectId));
       }

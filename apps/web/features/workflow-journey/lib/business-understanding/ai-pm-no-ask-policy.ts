@@ -37,6 +37,14 @@ import {
   defaultConfirmWhyNow,
   isConfirmPollutionValue,
 } from './ai-pm-question-presentation';
+import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
+import {
+  isStaleKnowledgeForJudgment,
+  turnMapsToGapByJudgment,
+} from './ai-pm-judgment-next-question-binding';
+import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
+import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
+import { isMetaConfirmationAnswer } from './ai-pm-answer-meta-slots';
 
 export type NoAskAction = 'ASK' | 'CONFIRM' | 'MOVE';
 
@@ -168,6 +176,7 @@ export function scanSemanticKnowledgeForGap(input: {
   living: LivingUnderstandingState;
   memory: ConversationMemory | null;
   turns: AiPmLoopTurn[];
+  judgmentTraces?: JudgmentTurnTrace[];
 }): SemanticKnowledgeHit | null {
   if (isAiPmAnswerTargetBindingV1Active()) {
     return resolveAnswerTargetKnowledgeForGap(input);
@@ -260,7 +269,15 @@ export function scanSemanticKnowledgeForGap(input: {
   return null;
 }
 
-function buildConfirmText(gapId: string, value: string): string {
+function buildConfirmText(gapId: string, value: string, userConfirmed = false): string {
+  if (isAiPmJudgmentFix10V1Active()) {
+    if (gapId === 'businessOneLiner') {
+      return `제가 이해한 사업은 「${clipValue(value, 80)}」입니다. 맞나요?`;
+    }
+    if (gapId === 'customerPersona' && !userConfirmed) {
+      return `AI가 「${clipValue(value, 36)}」을(를) 주요 고객으로 추정했습니다. 맞나요?`;
+    }
+  }
   const label = GAP_CONFIRM_LABEL[gapId] ?? '내용';
   return `${label}은(는) 「${clipValue(value, 36)}」으로 이해했습니다. 맞나요?`;
 }
@@ -330,12 +347,14 @@ function isSemanticRepeatAsk(input: {
   living: LivingUnderstandingState;
   memory: ConversationMemory | null;
   turns: AiPmLoopTurn[];
+  judgmentTraces?: JudgmentTurnTrace[];
 }): SemanticKnowledgeHit | null {
   const hit = scanSemanticKnowledgeForGap({
     gapId: input.targetGapId,
     living: input.living,
     memory: input.memory,
     turns: input.turns,
+    judgmentTraces: input.judgmentTraces,
   });
   if (!hit) return null;
 
@@ -343,6 +362,15 @@ function isSemanticRepeatAsk(input: {
   if (isSameMeaningQuestion(input.questionText, stock)) return hit;
 
   return hit;
+}
+
+function hasUserConfirmedBusinessOneLiner(turns: AiPmLoopTurn[]): boolean {
+  return turns.some(
+    (t) =>
+      !t.superseded &&
+      t.targetGap === 'businessOneLiner' &&
+      isMetaConfirmationAnswer(t.answer?.trim() ?? ''),
+  );
 }
 
 /**
@@ -356,10 +384,36 @@ export function evaluateNoAskPolicy(input: {
   turns: AiPmLoopTurn[];
   memory: ConversationMemory | null;
   stageReadiness: StageReadiness;
+  judgment?: CeoJudgmentState | null;
+  judgmentTraces?: JudgmentTurnTrace[];
 }): NoAskVerdict {
   if (!isAiPmNoAskPolicyV1Active()) return { action: 'ASK' };
 
   const targetGapId = input.targetGapId.trim();
+
+  // FIX-10 — intake business description must be confirmed before open re-ask
+  if (
+    isAiPmJudgmentFix10V1Active() &&
+    targetGapId === 'businessOneLiner' &&
+    !hasUserConfirmedBusinessOneLiner(input.turns)
+  ) {
+    const intakeHit = scanSemanticKnowledgeForGap({
+      gapId: 'businessOneLiner',
+      living: input.living,
+      memory: input.memory,
+      turns: input.turns,
+    });
+    if (intakeHit && !isConfirmPollutionValue(intakeHit.value)) {
+      return {
+        action: 'CONFIRM',
+        gapId: targetGapId,
+        confirmText: buildConfirmText(targetGapId, intakeHit.value, intakeHit.userConfirmed),
+        knownValue: intakeHit.value,
+        reason: 'FIX-10 intake business — CEO confirm required',
+      };
+    }
+  }
+
   if (!targetGapId || !isGapAskable(targetGapId, input.gapState)) {
     return { action: 'ASK' };
   }
@@ -370,17 +424,28 @@ export function evaluateNoAskPolicy(input: {
     living: input.living,
     memory: input.memory,
     turns: input.turns,
+    judgmentTraces: input.judgmentTraces,
   });
 
   if (knowledge) {
     if (isConfirmPollutionValue(knowledge.value)) {
       return { action: 'ASK' };
     }
+    if (
+      isAiPmJudgmentFix10V1Active() &&
+      isStaleKnowledgeForJudgment({
+        gapId: targetGapId,
+        value: knowledge.value,
+        judgment: input.judgment,
+      })
+    ) {
+      return { action: 'ASK' };
+    }
     if (CONFIRM_FIRST_GAPS.has(targetGapId) || !knowledge.userConfirmed) {
       return {
         action: 'CONFIRM',
         gapId: targetGapId,
-        confirmText: buildConfirmText(targetGapId, knowledge.value),
+        confirmText: buildConfirmText(targetGapId, knowledge.value, knowledge.userConfirmed),
         knownValue: knowledge.value,
         reason: `semantic repeat — ${knowledge.source}`,
       };
@@ -435,7 +500,7 @@ export function evaluateNoAskPolicy(input: {
         return {
           action: 'CONFIRM',
           gapId: targetGapId,
-          confirmText: buildConfirmText(targetGapId, clusterHit.value),
+          confirmText: buildConfirmText(targetGapId, clusterHit.value, clusterHit.userConfirmed),
           knownValue: clusterHit.value,
           reason: `same cluster ${lastCluster} — confirm known`,
         };
@@ -453,6 +518,8 @@ export type ApplyNoAskPolicyInput = {
   turns: AiPmLoopTurn[];
   memory: ConversationMemory | null;
   stageReadiness: StageReadiness;
+  judgment?: CeoJudgmentState | null;
+  judgmentTraces?: JudgmentTurnTrace[];
 };
 
 /** Apply No-Ask verdict on V3/policy decision output — presentation-safe only. */
@@ -467,6 +534,8 @@ export function applyNoAskPolicy(input: ApplyNoAskPolicyInput): NextQuestionDeci
     turns: input.turns,
     memory: input.memory,
     stageReadiness: input.stageReadiness,
+    judgment: input.judgment,
+    judgmentTraces: input.judgmentTraces,
   });
 
   if (verdict.action === 'ASK') return input.decision;

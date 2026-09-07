@@ -15,6 +15,11 @@ import {
   pickNextCheckDimension,
   weakestDimensionLabel,
 } from './ai-pm-judgment-conclusion';
+import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
+import {
+  computeTrustBasedReadiness,
+  computeTrustBasedVerdict,
+} from './ai-pm-judgment-trust-policy';
 
 export type BusinessReviewReadiness = 'ready' | 'supplement_recommended' | 'insufficient';
 
@@ -114,9 +119,22 @@ function buildAiJudgmentCopy(state: CeoJudgmentState, readiness: BusinessReviewR
   }
 
   if (readiness === 'insufficient') {
+    if (isAiPmJudgmentFix10V1Active()) {
+      return {
+        headline: '🔴 아직 사업 판단을 내리기 어렵습니다',
+        body: '현재는 사업 대상에 대한 단서만 있고, 고객의 구체적인 문제와 해결 방법이 확인되지 않았습니다.',
+      };
+    }
     return {
       headline: '🔴 현재 정보로 판단 어려움',
       body: '고객과 문제에 대한 정보가 아직 충분하지 않아 사업 검토를 확정하기 어렵습니다. 핵심 정보를 먼저 확인해야 합니다.',
+    };
+  }
+
+  if (readiness === 'supplement_recommended' && isAiPmJudgmentFix10V1Active()) {
+    return {
+      headline: '🔴 아직 사업 판단을 내리기 어렵습니다',
+      body: 'CEO가 직접 확인한 핵심 정보가 아직 부족합니다. 추정만으로는 사업 검토를 확정할 수 없습니다.',
     };
   }
 
@@ -188,8 +206,12 @@ function buildNextAction(verdict: BusinessReviewVerdict, primaryGapId: CeoJudgme
 }
 
 export function buildBusinessReviewResult(state: CeoJudgmentState): BusinessReviewResult {
-  const readiness = computeBusinessReviewReadiness(state);
-  const verdict = computeBusinessReviewVerdict(readiness);
+  const readiness = isAiPmJudgmentFix10V1Active()
+    ? computeTrustBasedReadiness(state)
+    : computeBusinessReviewReadiness(state);
+  const verdict = isAiPmJudgmentFix10V1Active()
+    ? computeTrustBasedVerdict(readiness, state)
+    : computeBusinessReviewVerdict(readiness);
   const readinessMeta = READINESS_LABEL[readiness];
   const verdictMeta = VERDICT_LABEL[verdict];
   const { headline, body } = buildAiJudgmentCopy(state, readiness);

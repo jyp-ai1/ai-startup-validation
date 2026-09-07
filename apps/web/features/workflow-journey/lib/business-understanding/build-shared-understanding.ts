@@ -12,6 +12,7 @@ import {
   isWorkspaceDocumentReadable,
   looksLikeDocumentFileName,
 } from './workspace-document-eligibility';
+import { parseIntakeSeedDocument } from '@/lib/project/parse-intake-seed';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 /** S8-1 — always-on contract: business · customer · problem only. */
@@ -93,6 +94,14 @@ function resolveBusinessField(
     };
   }
 
+  const intake = parseIntakeSeedDocument(documentText);
+  if (intake.businessOneLinerCandidate) {
+    const fromDesc = safeBusinessLabel(intake.businessOneLinerCandidate);
+    if (fromDesc) {
+      return { value: fromDesc, provenance: 'DOCUMENT' };
+    }
+  }
+
   const fromEntity =
     safeBusinessLabel(entities?.product.value) ??
     safeBusinessLabel(entities?.business.value) ??
@@ -125,7 +134,7 @@ function resolveBusinessField(
   const firstLine = documentText
     .split('\n')
     .map((line) => line.replace(/^#+\s*/, '').trim())
-    .find((line) => line.length >= 4);
+    .find((line) => line.length >= 4 && !/^프로젝트\s*이름:/i.test(line));
   const fromLine = safeBusinessLabel(firstLine);
   if (fromLine) return { value: fromLine, provenance: 'DOCUMENT' };
 
