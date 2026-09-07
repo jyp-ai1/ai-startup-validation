@@ -1,7 +1,7 @@
 {
   "label": "P0-11 Actual Browser Journey R1~R5",
   "baseURL": "http://127.0.0.1:3333",
-  "executedAt": "2026-09-07T16:25:05.089Z",
+  "executedAt": "2026-09-07T23:42:41.824Z",
   "gate": "BLOCKED",
   "auth": {
     "pass": false,
