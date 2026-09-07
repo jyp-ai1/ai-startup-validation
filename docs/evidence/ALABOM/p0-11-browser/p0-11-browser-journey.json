@@ -1,19 +1,45 @@
 {
-  "label": "P0-11 Browser Journey — auth blocked probe",
+  "label": "P0-11 Actual Browser Journey R1~R5",
   "baseURL": "http://127.0.0.1:3333",
-  "executedAt": "2026-09-07T16:13:13.377Z",
-  "results": {
-    "auth": {
-      "pass": false,
-      "error": "Missing Supabase env — need SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY in apps/web/.env.local"
-    }
+  "executedAt": "2026-09-07T16:25:05.089Z",
+  "gate": "BLOCKED",
+  "auth": {
+    "pass": false,
+    "error": "AUTH_BLOCKED — Supabase service role not configured"
   },
+  "audit": [
+    {
+      "id": "AUTH",
+      "input": "magic-link QA session",
+      "uiAction": "inject Supabase session cookie → /ko/workspace",
+      "actualResult": {
+        "error": "AUTH_BLOCKED — Supabase service role not configured"
+      },
+      "expected": "Authenticated workspace list",
+      "pass": false,
+      "screenshot": "/workspace/docs/evidence/ALABOM/p0-11-browser/media/auth_fail.png"
+    }
+  ],
   "projectIds": {},
   "errors": [
     {
       "id": "auth",
-      "msg": "Missing Supabase env — need SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY in apps/web/.env.local"
+      "msg": "AUTH_BLOCKED — Supabase service role not configured"
     }
   ],
-  "note": "R1~R5 not executed. Add SUPABASE_SERVICE_ROLE_KEY then re-run scripts/run-day8i-p0-11-browser-journey.mjs"
+  "summary": {
+    "passed": [],
+    "failed": [
+      "AUTH"
+    ],
+    "pending": [
+      "R1",
+      "R2",
+      "R3",
+      "R4",
+      "R5"
+    ],
+    "passCount": 0,
+    "required": 5
+  }
 }

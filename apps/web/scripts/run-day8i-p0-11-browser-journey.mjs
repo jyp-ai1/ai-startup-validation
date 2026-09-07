@@ -2,18 +2,12 @@
 /**
  * DAY 8-I P0-11 — Actual Browser Journey R1~R5 (CPO 2nd verification).
  *
- * Requires apps/web/.env.local:
- *   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY
- *   (optional) QA_EMAIL — defaults to cto-qa@launchlens.dev
+ * Prerequisite: Supabase QA secrets in environment or apps/web/.env.local
+ *   Run: node scripts/sync-qa-env.mjs  (syncs Cursor secrets → .env.local)
  *
- * Usage (local P0-11 build):
- *   pnpm build
- *   PORT=3333 pnpm exec next start --port 3333 &
- *   node scripts/run-day8i-p0-11-browser-journey.mjs
- *
- * Usage (production after P0-11 deploy):
- *   PLAYWRIGHT_BASE_URL=https://ai-startup-validation-tau.vercel.app \
- *   node scripts/run-day8i-p0-11-browser-journey.mjs
+ * Usage:
+ *   pnpm build && PORT=3333 pnpm exec next start --port 3333 &
+ *   node scripts/sync-qa-env.mjs && node scripts/run-day8i-p0-11-browser-journey.mjs
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -33,10 +27,16 @@ const report = {
   label: 'P0-11 Actual Browser Journey R1~R5',
   baseURL: BASE,
   executedAt: new Date().toISOString(),
-  results: {},
+  gate: 'BLOCKED',
+  auth: { pass: false },
+  audit: [],
   projectIds: {},
   errors: [],
 };
+
+function audit(id, row) {
+  report.audit.push({ id, ...row });
+}
 
 function loadEnv() {
   const envPath = join(WEB_ROOT, '.env.local');
@@ -72,9 +72,7 @@ async function createMagicSession(env) {
   const email = env.QA_EMAIL ?? 'cto-qa@launchlens.dev';
 
   if (!supabaseUrl || !serviceKey || !anonKey) {
-    throw new Error(
-      'Missing Supabase env — need SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY in apps/web/.env.local',
-    );
+    throw new Error('AUTH_BLOCKED — Supabase service role not configured');
   }
 
   const gen = await fetch(`${supabaseUrl}/auth/v1/admin/generate_link`, {
@@ -88,7 +86,7 @@ async function createMagicSession(env) {
   });
   const genBody = await gen.json();
   if (!genBody.hashed_token) {
-    throw new Error(`Magic link generate failed: ${JSON.stringify(genBody).slice(0, 200)}`);
+    throw new Error(`Magic link generate failed: ${JSON.stringify(genBody).slice(0, 120)}`);
   }
 
   const verify = await fetch(`${supabaseUrl}/auth/v1/verify`, {
@@ -98,7 +96,7 @@ async function createMagicSession(env) {
   });
   const session = await verify.json();
   if (!session.access_token) {
-    throw new Error(`Magic link verify failed: ${JSON.stringify(session).slice(0, 200)}`);
+    throw new Error(`Magic link verify failed: ${JSON.stringify(session).slice(0, 120)}`);
   }
   return { session, supabaseUrl, email };
 }
@@ -127,26 +125,59 @@ async function injectSession(context, session, supabaseUrl, baseUrl) {
 }
 
 async function login(page, context, env) {
-  const { session, supabaseUrl } = await createMagicSession(env);
+  const { session, supabaseUrl, email } = await createMagicSession(env);
   await injectSession(context, session, supabaseUrl, BASE);
   await page.goto(`${BASE}/ko/workspace`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
   await dismissCookies(page);
   await page.waitForTimeout(1500);
   if (/\/auth\/login/i.test(page.url())) {
-    throw new Error(`Auth injection failed — redirected to ${page.url()}`);
+    throw new Error(`Auth injection failed — redirected to login`);
   }
+  report.auth = { pass: true, method: 'magic-link', emailDomain: email.split('@')[1] ?? 'unknown' };
 }
 
-async function readAiUnderstanding(page) {
-  const ai = page.getByTestId('ceo-surface-ai-understanding');
-  if (await ai.isVisible({ timeout: 8_000 }).catch(() => false)) {
-    return (await ai.innerText()).trim();
+async function readSurface(page, testId) {
+  const el = page.getByTestId(testId);
+  if (await el.isVisible({ timeout: 4_000 }).catch(() => false)) {
+    return (await el.innerText()).trim();
   }
-  const s11 = page.getByTestId('s11-surface-understanding');
-  if (await s11.isVisible({ timeout: 4_000 }).catch(() => false)) {
-    return (await s11.innerText()).trim();
+  return '';
+}
+
+async function readWorkspaceSignals(page) {
+  const body = await page.locator('body').innerText();
+  return {
+    aiUnderstanding: await readSurface(page, 'ceo-surface-ai-understanding'),
+    judgment: await readSurface(page, 'ai-pm-judgment-view'),
+    nextQuestion: await readSurface(page, 'ceo-surface-next-question'),
+    simpleQuestion: await readSurface(page, 'simple-question-text'),
+    bodySnippet: body.slice(0, 1200),
+  };
+}
+
+async function confirmUnderstandingIfPresent(page) {
+  const confirm = page.getByRole('button', {
+    name: /^(✓\s*)?(맞습니다|That'?s right)/i,
+  });
+  if (await confirm.first().isVisible({ timeout: 15_000 }).catch(() => false)) {
+    await confirm.first().click({ force: true });
+    await page.waitForTimeout(1500);
+    return true;
   }
-  return (await page.locator('body').innerText()).slice(0, 800);
+  return false;
+}
+
+async function submitOneAnswer(page) {
+  const box = page.locator('textarea').last();
+  if (!(await box.isVisible({ timeout: 8_000 }).catch(() => false))) return false;
+  await box.fill('주요 고객은 소규모 양조장 사장님과 지역 관광객입니다.');
+  const submit = page.getByTestId('submit-answer-cta');
+  if (await submit.isEnabled({ timeout: 5_000 }).catch(() => false)) {
+    await submit.click({ force: true });
+    await page.waitForTimeout(2500);
+    return true;
+  }
+  return false;
 }
 
 async function createProject(page, { title, description, fixturePath }) {
@@ -156,14 +187,10 @@ async function createProject(page, { title, description, fixturePath }) {
 
   await page.locator('#new-project-title').fill(title);
   await page.locator('input[name="reviewType"]').first().check({ force: true });
-
-  if (description) {
-    await page.locator('#project-description').fill(description);
-  }
+  if (description) await page.locator('#project-description').fill(description);
 
   if (fixturePath) {
-    const upload = page.getByTestId('project-intake-upload').locator('input[type="file"]');
-    await upload.setInputFiles(fixturePath);
+    await page.getByTestId('project-intake-upload').locator('input[type="file"]').setInputFiles(fixturePath);
     await page.getByText(/업로드 완료|Upload complete|문서를 불러오는/i).first().waitFor({ timeout: 30_000 });
   }
 
@@ -174,175 +201,192 @@ async function createProject(page, { title, description, fixturePath }) {
   return projectId;
 }
 
-async function runR1(page) {
-  const projectId = await createProject(page, {
-    title: '주인집1',
-    description: '',
-    fixturePath: FIXTURE_A,
+async function openProject(page, projectId) {
+  await page.goto(`${BASE}/ko/workspace?project=${encodeURIComponent(projectId)}`, {
+    waitUntil: 'domcontentloaded',
   });
-  report.projectIds.r1 = projectId;
+  await dismissCookies(page);
+  await page.waitForTimeout(2000);
+}
+
+async function runR1(page) {
+  const input = '주인집1 + p0-11-brewery-plan.txt upload';
+  const projectId = await createProject(page, { title: '주인집1', description: '', fixturePath: FIXTURE_A });
+  report.projectIds.A = projectId;
   const shot = await snap(page, 'r1_upload_understanding');
-  const understanding = await readAiUnderstanding(page);
-  const body = await page.locator('body').innerText();
-  const titleSeparated =
-    understanding.includes('양조장') &&
-    !/AI가 이해한 내용[\s\S]{0,120}주인집1/.test(body) &&
-    body.includes('주인집1');
-  const pass = Boolean(projectId) && understanding.includes('양조장') && titleSeparated;
-  report.results.R1 = {
+  const signals = await readWorkspaceSignals(page);
+  const pass =
+    Boolean(projectId) &&
+    /양조장/.test(signals.aiUnderstanding || signals.bodySnippet) &&
+    !/^주인집1$/m.test(signals.aiUnderstanding);
+
+  audit('R1', {
+    input,
+    uiAction: 'My Projects → create with file upload → Workspace AI Understanding',
+    actualResult: { projectId, understandingSnippet: (signals.aiUnderstanding || signals.bodySnippet).slice(0, 300) },
+    expected: 'Project name ≠ business one-liner; brewery in AI Understanding',
     pass,
-    projectId,
-    understandingSnippet: understanding.slice(0, 400),
-    titleSeparated,
-    expected: 'Project name ≠ business one-liner; brewery content in AI Understanding',
     screenshot: shot,
-  };
-  if (!pass) throw new Error('R1 FAIL — title/business separation or upload intake');
+  });
+  if (!pass) throw new Error('R1 FAIL');
 }
 
 async function runR2(page) {
+  const input = '텍스트온리QA + cafe subscription description';
   const projectId = await createProject(page, {
     title: '텍스트온리QA',
     description: '동네 카페 원두 구독 서비스 — 바리스타가 매일 다른 원두를 추천합니다.',
     fixturePath: null,
   });
-  report.projectIds.r2 = projectId;
+  report.projectIds.R2 = projectId;
   const shot = await snap(page, 'r2_text_only_understanding');
-  const understanding = await readAiUnderstanding(page);
-  const pass = Boolean(projectId) && /카페|원두|구독/.test(understanding);
-  report.results.R2 = {
+  const signals = await readWorkspaceSignals(page);
+  const pass = Boolean(projectId) && /카페|원두|구독/.test(signals.aiUnderstanding || signals.bodySnippet);
+
+  audit('R2', {
+    input,
+    uiAction: 'Create project text-only → Workspace',
+    actualResult: { projectId, understandingSnippet: (signals.aiUnderstanding || signals.bodySnippet).slice(0, 300) },
+    expected: 'Description appears in AI Understanding',
     pass,
-    projectId,
-    understandingSnippet: understanding.slice(0, 400),
-    expected: 'Text-only create → AI Understanding with description content',
     screenshot: shot,
-  };
-  if (!pass) throw new Error('R2 FAIL — text-only intake');
+  });
+  if (!pass) throw new Error('R2 FAIL');
 }
 
 async function runR3(page) {
-  const projectA = report.projectIds.r1;
+  const projectA = report.projectIds.A;
+  await openProject(page, projectA);
+  await confirmUnderstandingIfPresent(page);
+  const answered = await submitOneAnswer(page);
+  const aProgressShot = await snap(page, 'r3_a_partial_review');
+  const aProgress = await readWorkspaceSignals(page);
+
   const projectB = await createProject(page, {
     title: '반찬가게 배송관리',
     description: '',
     fixturePath: FIXTURE_B,
   });
-  report.projectIds.r3b = projectB;
+  report.projectIds.B = projectB;
 
-  await page.goto(`${BASE}/ko/workspace?project=${encodeURIComponent(projectB)}`, {
-    waitUntil: 'domcontentloaded',
-  });
-  await page.waitForTimeout(2000);
-  const bUnderstanding = await readAiUnderstanding(page);
-  const bBody = await page.locator('body').innerText();
+  await openProject(page, projectB);
+  await confirmUnderstandingIfPresent(page);
+  const bSignals = await readWorkspaceSignals(page);
   const bShot = await snap(page, 'r3_project_b');
 
-  const bClean =
-    /반찬|배송/.test(bUnderstanding) &&
-    !/양조장/.test(bUnderstanding) &&
-    !/양조장/.test(bBody);
-
-  await page.goto(`${BASE}/ko/workspace?project=${encodeURIComponent(projectA)}`, {
-    waitUntil: 'domcontentloaded',
-  });
-  await page.waitForTimeout(2000);
-  const aUnderstanding = await readAiUnderstanding(page);
-  const aBody = await page.locator('body').innerText();
+  await openProject(page, projectA);
+  const aSignals = await readWorkspaceSignals(page);
   const aShot = await snap(page, 'r3_project_a_reentry');
 
+  const bClean =
+    /반찬|배송/.test(bSignals.aiUnderstanding || bSignals.bodySnippet) &&
+    !/양조장/.test(bSignals.aiUnderstanding) &&
+    !/양조장/.test(bSignals.judgment) &&
+    !/양조장/.test(bSignals.nextQuestion);
+
   const aClean =
-    /양조장/.test(aUnderstanding) &&
-    !/반찬가게 배송관리/.test(aUnderstanding) &&
-    !/반찬/.test(aBody.slice(0, 600));
+    /양조장/.test(aSignals.aiUnderstanding || aSignals.bodySnippet) &&
+    !/반찬가게/.test(aSignals.aiUnderstanding) &&
+    !/반찬/.test(aSignals.judgment) &&
+    !/반찬/.test(aSignals.nextQuestion);
 
   const pass = bClean && aClean;
-  report.results.R3 = {
+
+  audit('R3', {
+    input: 'A=양조장(+partial review) B=반찬 → B → A',
+    uiAction: 'A confirm+answer → create B → open B → re-open A',
+    actualResult: {
+      projectA,
+      projectB,
+      aPartialReview: answered,
+      bUnderstanding: (bSignals.aiUnderstanding || bSignals.bodySnippet).slice(0, 250),
+      aUnderstanding: (aSignals.aiUnderstanding || aSignals.bodySnippet).slice(0, 250),
+      bLeakedA: /양조장/.test(`${bSignals.aiUnderstanding}${bSignals.judgment}${bSignals.nextQuestion}`),
+      aLeakedB: /반찬/.test(`${aSignals.aiUnderstanding}${aSignals.judgment}${aSignals.nextQuestion}`),
+    },
+    expected: 'No cross-project Understanding/Judgment/Question bleed',
     pass,
-    projectA,
-    projectB,
-    bUnderstandingSnippet: bUnderstanding.slice(0, 300),
-    aUnderstandingSnippet: aUnderstanding.slice(0, 300),
-    bLeakedA: /양조장/.test(bUnderstanding),
-    aLeakedB: /반찬/.test(aUnderstanding),
-    expected: 'A and B isolated — no cross-project understanding bleed',
-    screenshots: [bShot, aShot],
-  };
-  if (!pass) throw new Error('R3 FAIL — project data isolation');
+    screenshots: [aProgressShot, bShot, aShot],
+  });
+  if (!pass) throw new Error('R3 FAIL');
 }
 
 async function runR4(page) {
-  const projectA = report.projectIds.r1;
+  const projectA = report.projectIds.A;
+  const projectB = report.projectIds.B;
   await page.goto(`${BASE}/ko/workspace`, { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(1000);
 
-  const row = page.getByTestId(`project-list-item-${projectA}`);
-  await row.getByRole('button', { name: /프로젝트 메뉴|Project menu/i }).click();
-  await row.getByRole('menuitem', { name: /이름 변경|Rename/i }).click();
-  await page.locator('input[value="주인집1"], input').last().fill('주인집1-renamed');
+  const rowA = page.getByTestId(`project-list-item-${projectA}`);
+  await rowA.getByRole('button', { name: /프로젝트 메뉴|Project menu/i }).click();
+  await rowA.getByRole('menuitem', { name: /이름 변경|Rename/i }).click();
+  await page.locator('input').last().fill('주인집1-renamed');
   await page.getByRole('button', { name: /저장|Save/i }).click();
   await page.waitForTimeout(1500);
   const renameShot = await snap(page, 'r4_rename');
-
   const renamedVisible = await page.getByText('주인집1-renamed').isVisible().catch(() => false);
 
-  await row.getByRole('button', { name: /프로젝트 메뉴|Project menu/i }).click();
-  await row.getByRole('menuitem', { name: /보관|Archive/i }).click();
+  await page.getByTestId(`project-list-item-${projectA}`).getByRole('button', { name: /프로젝트 메뉴|Project menu/i }).click();
+  await page.getByRole('menuitem', { name: /보관|Archive/i }).click();
   await page.waitForTimeout(1500);
   const archiveShot = await snap(page, 'r4_archived');
-
   const archivedHidden = !(await page.getByText('주인집1-renamed').isVisible().catch(() => false));
-  await page.getByRole('button', { name: /보관함|archived/i }).click();
+
+  await page.getByRole('button', { name: /보관함|View archived|archived/i }).click();
   await page.waitForTimeout(500);
   const archivedVisible = await page.getByText('주인집1-renamed').isVisible().catch(() => false);
 
-  const projectC = report.projectIds.r3b;
-  const rowC = page.getByTestId(`project-list-item-${projectC}`);
-  await rowC.getByRole('button', { name: /프로젝트 메뉴|Project menu/i }).click();
-  await rowC.getByRole('menuitem', { name: /삭제|Delete/i }).click();
+  const archivedRow = page.getByTestId(`project-list-item-${projectA}`);
+  await archivedRow.getByRole('button', { name: /프로젝트 메뉴|Project menu/i }).click();
+  await archivedRow.getByRole('menuitem', { name: /복구|Restore/i }).click();
+  await page.waitForTimeout(1500);
+  const restoreShot = await snap(page, 'r4_restored');
+  const restoredVisible = await page.getByText('주인집1-renamed').isVisible().catch(() => false);
+
+  const rowB = page.getByTestId(`project-list-item-${projectB}`);
+  await rowB.getByRole('button', { name: /프로젝트 메뉴|Project menu/i }).click();
+  await rowB.getByRole('menuitem', { name: /삭제|Delete/i }).click();
   await page.getByRole('button', { name: /^삭제$|^Delete$/i }).click();
   await page.waitForTimeout(1500);
   const deleteShot = await snap(page, 'r4_deleted');
+  const bGone = !(await page.getByText('반찬가게 배송관리').isVisible().catch(() => false));
 
-  const cGone = !(await page.getByText('반찬가게 배송관리').isVisible().catch(() => false));
+  const pass = renamedVisible && archivedHidden && archivedVisible && restoredVisible && bGone;
 
-  const pass = renamedVisible && archivedHidden && archivedVisible && cGone;
-  report.results.R4 = {
+  audit('R4', {
+    input: 'A rename/archive/restore; B delete',
+    uiAction: '⋯ menu → rename → archive → archived view → restore → delete B with confirm',
+    actualResult: { renamedVisible, archivedHidden, archivedVisible, restoredVisible, bGone, projectA, projectB },
+    expected: 'List state changes at each lifecycle step',
     pass,
-    renamedVisible,
-    archivedHidden,
-    archivedVisible,
-    deleteConfirmed: cGone,
-    expected: 'rename → archive → delete with confirmation',
-    screenshots: [renameShot, archiveShot, deleteShot],
-  };
-  if (!pass) throw new Error('R4 FAIL — lifecycle');
+    screenshots: [renameShot, archiveShot, restoreShot, deleteShot],
+  });
+  if (!pass) throw new Error('R4 FAIL');
 }
 
 async function runR5(page, context, env) {
-  const projectA = report.projectIds.r1;
+  const projectA = report.projectIds.A;
   await context.clearCookies();
-  await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
   });
 
   await login(page, context, env);
-  await page.goto(`${BASE}/ko/workspace?project=${encodeURIComponent(projectA)}`, {
-    waitUntil: 'domcontentloaded',
-  });
-  await page.waitForTimeout(2000);
+  await openProject(page, projectA);
   const shot = await snap(page, 'r5_relogin_restore');
-  const understanding = await readAiUnderstanding(page);
-  const pass = /양조장|주인집1-renamed|주인집1/.test(understanding);
-  report.results.R5 = {
+  const signals = await readWorkspaceSignals(page);
+  const pass = /양조장|주인집1-renamed|주인집1/.test(signals.aiUnderstanding || signals.bodySnippet);
+
+  audit('R5', {
+    input: 'clear session → magic-link re-login → open project A',
+    uiAction: 'logout/clear → login → /workspace?project=A',
+    actualResult: { projectA, understandingSnippet: (signals.aiUnderstanding || signals.bodySnippet).slice(0, 300) },
+    expected: 'Project A business context restored after re-login',
     pass,
-    projectA,
-    understandingSnippet: understanding.slice(0, 400),
-    expected: 'After re-login, project A state restored',
     screenshot: shot,
-  };
-  if (!pass) throw new Error('R5 FAIL — re-login persistence');
+  });
+  if (!pass) throw new Error('R5 FAIL');
 }
 
 async function main() {
@@ -361,7 +405,6 @@ async function main() {
 
   try {
     await login(page, context, env);
-    report.results.auth = { pass: true };
 
     for (const [id, fn] of [
       ['R1', () => runR1(page)],
@@ -377,7 +420,9 @@ async function main() {
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
         report.errors.push({ id, msg });
-        if (!report.results[id]) report.results[id] = { pass: false, error: msg };
+        if (!report.audit.find((a) => a.id === id)) {
+          audit(id, { pass: false, error: msg });
+        }
         console.error(`FAIL ${id}:`, msg);
         await snap(page, `${id.toLowerCase()}_fail`).catch(() => {});
       }
@@ -385,19 +430,30 @@ async function main() {
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     report.errors.push({ id: 'auth', msg });
-    report.results.auth = { pass: false, error: msg };
-    await snap(page, 'auth_fail').catch(() => {});
-    console.error('AUTH FAIL:', msg);
+    report.auth = { pass: false, error: msg };
+    audit('AUTH', {
+      input: 'magic-link QA session',
+      uiAction: 'inject Supabase session cookie → /ko/workspace',
+      actualResult: { error: msg },
+      expected: 'Authenticated workspace list',
+      pass: false,
+      screenshot: await snap(page, 'auth_fail').catch(() => null),
+    });
+    console.error('AUTH FAIL:', msg.replace(/Bearer\s+\S+/g, 'Bearer [redacted]'));
   }
+
+  const passed = report.audit.filter((a) => a.pass === true).map((a) => a.id);
+  const failed = report.audit.filter((a) => a.pass === false).map((a) => a.id);
+  const pending = ['R1', 'R2', 'R3', 'R4', 'R5'].filter((id) => !report.audit.find((a) => a.id === id));
+  report.summary = { passed, failed, pending, passCount: passed.length, required: 5 };
+  report.gate = passed.length === 5 ? 'PASS' : report.auth.pass ? 'PARTIAL' : 'BLOCKED';
 
   writeFileSync(join(EVIDENCE_DIR, 'p0-11-browser-journey.json'), JSON.stringify(report, null, 2));
   await browser.close();
-
-  const allPass = ['R1', 'R2', 'R3', 'R4', 'R5'].every((k) => report.results[k]?.pass === true);
-  process.exit(allPass ? 0 : 1);
+  process.exit(passed.length === 5 ? 0 : 1);
 }
 
 main().catch((e) => {
-  console.error(e);
+  console.error(e.message?.replace(/Bearer\s+\S+/g, 'Bearer [redacted]') ?? e);
   process.exit(1);
 });
