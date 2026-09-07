@@ -10,6 +10,7 @@
 import type { CeoJudgmentDimensionId } from './ai-pm-ceo-judgment-dimensions';
 import { isAiPmAnswerSemanticSotV1Active } from './ai-pm-answer-semantic-sot-v1';
 import { isAiPmJudgmentMeaningModelV1Active } from './ai-pm-judgment-meaning-model-v1';
+import { isMetaConfirmationAnswer } from './ai-pm-answer-meta-slots';
 import {
   isCustomerCorrectionAnswer,
   isInferenceRiskAnswer,
@@ -29,6 +30,7 @@ export type AnswerSemanticSlot =
   | 'marketUnknown'
   | 'researchIntent'
   | 'hypothesis'
+  | 'metaConfirmation'
   | 'none';
 
 export type AnswerSemanticEvidence = {
@@ -37,6 +39,7 @@ export type AnswerSemanticEvidence = {
   evidence: string;
   interpretedMeaning: string;
   reason: string;
+  evidenceType?: 'fact' | 'hypothesis';
 };
 
 export type AnswerSemanticExtraction = {
@@ -385,6 +388,10 @@ export function extractAnswerSemanticEvidences(answer: string): AnswerSemanticEx
     return { evidences: [], nonJudgmentSlot: null, frozen: true };
   }
 
+  if (isMetaConfirmationAnswer(trimmed)) {
+    return { evidences: [], nonJudgmentSlot: 'metaConfirmation', frozen: false };
+  }
+
   const nonJudgmentSlot = detectNonJudgmentSlot(trimmed);
   if (nonJudgmentSlot === 'researchIntent') {
     return { evidences: [], nonJudgmentSlot, frozen: false };
@@ -425,21 +432,23 @@ export function extractAnswerSemanticEvidences(answer: string): AnswerSemanticEx
   const customer = extractCustomerEvidence(clauses, trimmed);
   const problem = extractProblemEvidence(clauses, trimmed);
   const solution = extractSolutionEvidence(clauses, trimmed);
-  const change = extractCustomerChangeEvidence(clauses, trimmed);
 
   if (customer) collected.push(customer);
   if (problem) collected.push(problem);
   if (solution) collected.push(solution);
-  if (change) collected.push(change);
 
-  if (HYPOTHESIS_RE.test(trimmed) && !change && !problem) {
+  if (HYPOTHESIS_RE.test(trimmed)) {
     collected.push({
       dimension: 'customerChange',
       summary: clip(trimmed),
       evidence: trimmed,
-      interpretedMeaning: 'CEO 답변 — 검증 가설/기대 효과 evidence',
+      interpretedMeaning: 'CEO 답변 — 고객 변화 가설 (검증 전)',
       reason: 'CEO 답변에서 가설·기대 효과 evidence 추출',
+      evidenceType: 'hypothesis',
     });
+  } else {
+    const change = extractCustomerChangeEvidence(clauses, trimmed);
+    if (change) collected.push(change);
   }
 
   return {
@@ -454,14 +463,26 @@ export function semanticEvidencesToDimensionHits(
 ): Partial<
   Record<
     CeoJudgmentDimensionId,
-    { summary: string; interpretedMeaning: string; evidence: string; reason: string }
+    {
+      summary: string;
+      interpretedMeaning: string;
+      evidence: string;
+      reason: string;
+      evidenceType?: 'fact' | 'hypothesis';
+    }
   >
 > {
   if (!isAiPmAnswerSemanticSotV1Active()) return {};
   const out: Partial<
     Record<
       CeoJudgmentDimensionId,
-      { summary: string; interpretedMeaning: string; evidence: string; reason: string }
+      {
+        summary: string;
+        interpretedMeaning: string;
+        evidence: string;
+        reason: string;
+        evidenceType?: 'fact' | 'hypothesis';
+      }
     >
   > = {};
   for (const ev of extraction.evidences) {
@@ -470,6 +491,7 @@ export function semanticEvidencesToDimensionHits(
       interpretedMeaning: ev.interpretedMeaning,
       evidence: ev.evidence,
       reason: ev.reason,
+      evidenceType: ev.evidenceType,
     };
   }
   return out;

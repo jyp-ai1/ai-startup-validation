@@ -21,6 +21,7 @@ export type DimensionExtractHit = {
   interpretedMeaning: string;
   evidence: string;
   reason: string;
+  evidenceType?: 'fact' | 'hypothesis';
 };
 
 export type ExtractDimensionOptions = {
@@ -42,9 +43,13 @@ export function extractDimensionSummaries(
 
   if (isAiPmAnswerSemanticSotV1Active()) {
     const extraction = extractAnswerSemanticEvidences(trimmed);
-    if (extraction.frozen || extraction.nonJudgmentSlot === 'researchIntent' ||
-        extraction.nonJudgmentSlot === 'payer' ||
-        extraction.nonJudgmentSlot === 'businessGoal') {
+    if (
+      extraction.frozen ||
+      extraction.nonJudgmentSlot === 'researchIntent' ||
+      extraction.nonJudgmentSlot === 'metaConfirmation' ||
+      extraction.nonJudgmentSlot === 'payer' ||
+      extraction.nonJudgmentSlot === 'businessGoal'
+    ) {
       return {};
     }
     return semanticEvidencesToDimensionHits(extraction);

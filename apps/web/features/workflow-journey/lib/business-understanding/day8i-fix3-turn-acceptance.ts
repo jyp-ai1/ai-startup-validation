@@ -24,7 +24,13 @@ export type TurnDimensionExpectation = {
   /** When true, trace evidence spans must not overlap across dimensions */
   evidenceMustNotOverlap?: boolean;
   /** Non-judgment slots — no 4-dimension update expected */
-  nonJudgmentSlot?: 'payer' | 'research' | 'businessGoal' | 'marketUnknown' | 'frozen';
+  nonJudgmentSlot?:
+    | 'payer'
+    | 'research'
+    | 'businessGoal'
+    | 'marketUnknown'
+    | 'frozen'
+    | 'metaConfirmation';
 };
 
 export const FIX3_CRITICAL_TURN_EXPECTATIONS: TurnDimensionExpectation[] = [
@@ -335,13 +341,14 @@ export function evaluateFinalReviewDimensions(state: CeoJudgmentState | null): T
       });
     } else if (
       dim === 'solution' &&
+      !/—/.test(d.summary) &&
       !(/SaaS|한\s*곳|통합/.test(d.summary) && /MVP|모바일|체크리스트/.test(d.summary))
     ) {
       failures.push({
         turnIndex: 30,
         label: 'P0-7 Final Review',
         field: label,
-        expected: 'accumulated solution (base SaaS/통합 + MVP/모바일 refinement)',
+        expected: 'structured solution (— layers or approach + MVP/mobile)',
         actual: d.summary,
       });
     } else if (

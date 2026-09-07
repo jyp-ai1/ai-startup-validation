@@ -29,6 +29,9 @@ import {
 } from './ai-pm-judgment-trace';
 import { mergeDimensionAccumulative } from './ai-pm-judgment-accumulative-merge';
 import { isAiPmJudgmentMeaningModelV1Active } from './ai-pm-judgment-meaning-model-v1';
+import { isAiPmJudgmentFix5V1Active } from './ai-pm-judgment-fix5-v1';
+import { mergeStructuredSolutionDimension } from './ai-pm-judgment-structured-solution';
+import { isMetaConfirmationAnswer } from './ai-pm-answer-meta-slots';
 import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
 import { evaluateAnswerQuality } from './understanding-contract';
 import type { LivingUnderstandingState } from './living-understanding-state';
@@ -72,10 +75,35 @@ function mergeDimension(
   next: Partial<CeoJudgmentDimension>,
   options?: { preferUserExtract?: boolean },
 ): CeoJudgmentDimension {
+  if (next.evidenceType === 'hypothesis') {
+    return {
+      ...prior,
+      ...next,
+      label: next.label ?? '고객 변화 가설',
+      status: 'needs_check',
+      evidenceType: 'hypothesis',
+      statusReason: next.statusReason ?? 'CEO가 세운 가설 — 검증 전',
+    };
+  }
+  if (
+    isAiPmJudgmentFix5V1Active() &&
+    prior.id === 'solution' &&
+    next.summary?.trim()
+  ) {
+    return mergeStructuredSolutionDimension(prior, next.summary);
+  }
   if (
     isAiPmJudgmentMeaningModelV1Active() &&
-    (prior.id === 'solution' || prior.id === 'problem') &&
+    prior.id === 'problem' &&
     next.summary?.trim()
+  ) {
+    return mergeDimensionAccumulative(prior, next);
+  }
+  if (
+    isAiPmJudgmentMeaningModelV1Active() &&
+    prior.id === 'solution' &&
+    next.summary?.trim() &&
+    !isAiPmJudgmentFix5V1Active()
   ) {
     return mergeDimensionAccumulative(prior, next);
   }
@@ -215,7 +243,12 @@ function dimensionsFromAnswerText(
   meta: Partial<
     Record<
       CeoJudgmentDimensionId,
-      { interpretedMeaning: string; evidence: string; reason: string }
+      {
+        interpretedMeaning: string;
+        evidence: string;
+        reason: string;
+        evidenceType?: 'fact' | 'hypothesis';
+      }
     >
   >;
   frozen: boolean;
@@ -237,7 +270,12 @@ function dimensionsFromAnswerText(
   const meta: Partial<
     Record<
       CeoJudgmentDimensionId,
-      { interpretedMeaning: string; evidence: string; reason: string }
+      {
+        interpretedMeaning: string;
+        evidence: string;
+        reason: string;
+        evidenceType?: 'fact' | 'hypothesis';
+      }
     >
   > = {};
 
@@ -247,17 +285,25 @@ function dimensionsFromAnswerText(
     const strength =
       id === 'customerChange' || id === 'problem' ? 'strong' : 'partial';
     const { status, reason } = toStatus(hit.summary, strength);
+    const isHypothesis = hit.evidenceType === 'hypothesis';
     out[id] = {
       id,
-      label: CEO_JUDGMENT_DIMENSION_LABELS[id],
-      status: id === 'solution' && hit.reason.includes('needs_check') ? 'needs_check' : status,
+      label:
+        isHypothesis && id === 'customerChange'
+          ? '고객 변화 가설'
+          : CEO_JUDGMENT_DIMENSION_LABELS[id],
+      status: isHypothesis ? 'needs_check' : id === 'solution' && hit.reason.includes('needs_check') ? 'needs_check' : status,
       summary: hit.summary,
-      statusReason: hit.reason || reason,
+      statusReason: isHypothesis
+        ? 'CEO가 세운 가설 — 검증 전'
+        : hit.reason || reason,
+      evidenceType: hit.evidenceType ?? 'fact',
     };
     meta[id] = {
       interpretedMeaning: hit.interpretedMeaning,
       evidence: hit.evidence,
       reason: hit.reason,
+      evidenceType: hit.evidenceType,
     };
   }
 
@@ -471,6 +517,10 @@ export function buildCeoJudgmentStateWithTrace(input: {
     ? dimensionsFromAnswerText(answer, last?.issueId, last?.targetGap, multiFact)
     : { meta: {}, frozen: false, dimensions: {} };
   const { meta, dimensions: fromAnswerDims, frozen } = answerDims;
+
+  if (isMetaConfirmationAnswer(answer)) {
+    return { state, traceEntries: [], dimensionMeta: {} };
+  }
 
   const extractedDimensionIds = Object.keys(fromAnswerDims) as CeoJudgmentDimensionId[];
 

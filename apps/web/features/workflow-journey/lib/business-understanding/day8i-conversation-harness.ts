@@ -29,8 +29,10 @@ import { syncJudgmentAfterAnswer, openBusinessReview } from './ai-pm-judgment-lo
 import {
   formatResearchAcknowledgement,
   formatReviewModeDisplay,
+  isMetaConfirmationPrompt,
   isResearchIntentAnswer,
 } from './ai-pm-review-mode-prompt';
+import { isMetaConfirmationAnswer, formatMetaConfirmationAcknowledgement } from './ai-pm-answer-meta-slots';
 import { applyNoGapTermination } from './ai-pm-no-gap-termination';
 import {
   clearProjectConsultingState,
@@ -287,6 +289,8 @@ export function runDay8iConversation(input: {
     } else if (askTerminated || !decision) {
       if (isResearchIntentAnswer(step.ceoAnswer) || step.category === 'I_research') {
         displayQuestion = formatResearchAcknowledgement(step.ceoAnswer);
+      } else if (isMetaConfirmationAnswer(step.ceoAnswer)) {
+        displayQuestion = formatMetaConfirmationAcknowledgement();
       } else {
         displayQuestion = formatReviewModeDisplay(
           loop.ceoJudgment ?? emptyCeoJudgmentState(i + 1),
@@ -343,8 +347,9 @@ export function runDay8iConversation(input: {
     const sync = syncJudgmentAfterAnswer({
       projectId,
       living: processed.living,
-      loop: processed.loop,
+      loop,
       lastQuestionText: displayQuestion,
+      answer: step.ceoAnswer,
       beforeState,
     });
 
@@ -561,7 +566,8 @@ function isReviewOrAckPrompt(text: string): boolean {
   return (
     t.startsWith('[현재 AI 판단]') ||
     t.startsWith('알겠습니다.') ||
-    t.startsWith('(검토')
+    t.startsWith('(검토') ||
+    isMetaConfirmationPrompt(t)
   );
 }
 

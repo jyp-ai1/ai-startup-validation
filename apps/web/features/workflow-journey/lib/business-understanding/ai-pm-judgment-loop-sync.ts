@@ -27,6 +27,8 @@ export function syncJudgmentAfterAnswer(input: {
   loop: AiPmLoopState;
   forceJudgmentView?: boolean;
   lastQuestionText?: string;
+  /** Current CEO answer — must match the turn being synced (FIX-5). */
+  answer?: string;
   /** Pre-answer judgment snapshot for trace baseline */
   beforeState?: CeoJudgmentState | null;
 }): JudgmentLoopSyncResult {
@@ -54,6 +56,7 @@ export function syncJudgmentAfterAnswer(input: {
     prior,
     beforeState: input.beforeState ?? prior,
     question: input.lastQuestionText,
+    answer: input.answer,
   });
 
   const stop = evaluateJudgmentStop({

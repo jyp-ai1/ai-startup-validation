@@ -1,6 +1,7 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 
 import { setAiPmJudgmentMeaningModelV1ForTest } from '../ai-pm-judgment-meaning-model-v1';
+import { setAiPmJudgmentFix5V1ForTest } from '../ai-pm-judgment-fix5-v1';
 import { setAiPmAnswerSemanticSotV1ForTest } from '../ai-pm-answer-semantic-sot-v1';
 import { setAiPmJudgmentAggregationV1ForTest } from '../ai-pm-judgment-aggregation-v1';
 import { setV3ReviewPipelineForTest } from '../v3-review-pipeline';
@@ -10,13 +11,13 @@ import {
   runDay8iConversation,
 } from '../day8i-conversation-harness';
 import {
-  FIX3_CRITICAL_TURN_EXPECTATIONS,
   detectCrossDimensionCopy,
   evaluateFinalReviewDimensions,
   evaluateTurnExpectation,
   type TurnAcceptanceFailure,
 } from '../day8i-fix3-turn-acceptance';
 import { evaluateAllSemanticChains } from '../day8i-fix4-semantic-chain';
+import { evaluateAllFix5Turns, FIX5_CRITICAL_TURN_EXPECTATIONS } from '../day8i-fix5-turn-acceptance';
 import { extractAnswerSemanticEvidences } from '../ai-pm-answer-semantic-sot';
 
 function stubSessionStorage() {
@@ -51,6 +52,7 @@ describe('DAY 8-I P0 FIX-3 — Answer Semantic SoT', () => {
     setAiPmJudgmentAggregationV1ForTest(true);
     setAiPmAnswerSemanticSotV1ForTest(true);
     setAiPmJudgmentMeaningModelV1ForTest(true);
+    setAiPmJudgmentFix5V1ForTest(true);
   });
 
   afterEach(() => {
@@ -58,6 +60,7 @@ describe('DAY 8-I P0 FIX-3 — Answer Semantic SoT', () => {
     setAiPmJudgmentAggregationV1ForTest(null);
     setAiPmAnswerSemanticSotV1ForTest(null);
     setAiPmJudgmentMeaningModelV1ForTest(null);
+    setAiPmJudgmentFix5V1ForTest(null);
     vi.unstubAllGlobals();
     clearAiPmLoopState('fix3-accept');
     clearProjectConsultingState('fix3-accept');
@@ -135,7 +138,7 @@ describe('DAY 8-I P0 FIX-3 — Answer Semantic SoT', () => {
 
     const failures: TurnAcceptanceFailure[] = [];
 
-    for (const spec of FIX3_CRITICAL_TURN_EXPECTATIONS) {
+    for (const spec of FIX5_CRITICAL_TURN_EXPECTATIONS) {
       const turn = result.turns[spec.turnIndex - 1];
       if (!turn) {
         failures.push({
@@ -150,12 +153,13 @@ describe('DAY 8-I P0 FIX-3 — Answer Semantic SoT', () => {
       failures.push(...evaluateTurnExpectation(spec, turn));
     }
 
+    failures.push(...evaluateAllSemanticChains(result.turns));
+    failures.push(...evaluateAllFix5Turns(result.turns, result.finalJudgmentSnapshot));
+
     if (result.finalJudgmentSnapshot) {
       failures.push(...detectCrossDimensionCopy(result.finalJudgmentSnapshot));
     }
     failures.push(...evaluateFinalReviewDimensions(result.finalJudgmentSnapshot));
-
-    failures.push(...evaluateAllSemanticChains(result.turns));
 
     expect(result.repeatedQuestions.length, 'repeated display questions').toBe(0);
     expect(result.repeatedNextQuestions.length, 'repeated next questions').toBe(0);

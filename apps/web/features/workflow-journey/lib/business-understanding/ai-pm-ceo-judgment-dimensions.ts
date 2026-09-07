@@ -11,6 +11,14 @@ export type CeoJudgmentDimensionId =
 
 export type CeoJudgmentStatus = 'clear' | 'needs_check' | 'unknown';
 
+export type JudgmentEvidenceType = 'fact' | 'hypothesis';
+
+export type SolutionJudgmentLayers = {
+  approach?: string;
+  keyFeature?: string;
+  mvpScope?: string;
+};
+
 export type CeoJudgmentDimension = {
   id: CeoJudgmentDimensionId;
   label: string;
@@ -19,6 +27,10 @@ export type CeoJudgmentDimension = {
   summary: string;
   /** Optional one-line reason for status */
   statusReason?: string;
+  /** FACT vs HYPOTHESIS for customerChange (FIX-5) */
+  evidenceType?: JudgmentEvidenceType;
+  /** Structured solution layers — rendered into summary (FIX-5) */
+  solutionLayers?: SolutionJudgmentLayers;
 };
 
 export type CeoJudgmentState = {
