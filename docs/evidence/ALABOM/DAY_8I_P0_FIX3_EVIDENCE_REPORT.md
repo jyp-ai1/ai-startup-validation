@@ -2,7 +2,11 @@
 
 ## Gate
 
-DAY 8-I → **P0 FIX-3 (Answer Semantic SoT)** → CTO 1차 → CPO 4차 → Production
+DAY 8-I → **P0 FIX-3 REVALIDATION** → CPO 4차 → Production
+
+**Primary evidence document:** `docs/evidence/ALABOM/DAY_8I_P0_FIX3_REVALIDATION_REPORT.md` (Sections A–J)
+
+This file is a summary index. CPO must review the REVALIDATION report — not unit test counts alone.
 
 ## Core Principle
 

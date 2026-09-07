@@ -44,17 +44,19 @@ export type AnswerSemanticExtraction = {
   frozen: boolean;
 };
 
-/** Avoid splitting on `에서` — breaks phrases like `한 곳에서`. */
-const CLAUSE_SPLIT_RE = /(?:[,，;；]|(?:\s*(?:하고|그래서|때문에|해서|인데|지만)\s*))/i;
+/** Avoid splitting on `에서` — breaks phrases like `한 곳에서`. Include `이고` for multi-fact answers. */
+const CLAUSE_SPLIT_RE = /(?:[,，;；]|(?:\s*(?:하고|이고|그래서|때문에|해서|인데|지만)\s*))/i;
 
 const CUSTOMER_SEGMENT_RE =
   /(?:소규모\s*)?(?:양조장?|반찬|꽃집|가게|사장|소상공인|CEO|PM|스타트업|고객|타깃|사용자|원장)[^,.;]*/i;
 const PROBLEM_SEGMENT_RE =
   /(?:불편|문제|어렵|힘들|누락|분리|따로|번거|복잡|실수|확인\s*시간|엑셀|카카오|카톡|놓치|재주문)[^,.;]*/i;
 const SOLUTION_SEGMENT_RE =
-  /(?:한\s*곳에서|하나로\s*연결|한눈에|관리하려(?:고|는)?|하려고|하려\s*합니다|SaaS|플랫폼|통합|MVP|체크리스트|모바일|연결(?:하는|하)?|만들(?:려|는)?)/i;
+  /(?:한\s*곳에서|하나로\s*연결|한눈에|관리하려(?:고|는)?|하려고|하려\s*합니다|SaaS|플랫폼|MVP|체크리스트|모바일|연결(?:하는|하)?|만들(?:려|는)?)/i;
+const SOLUTION_BENEFIT_ONLY_RE =
+  /(?:실수|시간|누락).*(?:줄이|아낄|단축|감소).*(?:수\s*있|할\s*수)/i;
 const CUSTOMER_CHANGE_SEGMENT_RE =
-  /(?:(?:줄이|줄일|단축|감소|아낄|절감).*(?:수\s*있|할\s*수|기대|목표)|(?:편해|좋아지).*(?:질|진|다)|확인\s*시간\s*(?:을\s*)?(?:단축|줄)|누락\s*(?:을|이)?\s*(?:줄|감).*(?:수\s*있|기대|목표)|가장\s*큰\s*변화)/i;
+  /(?:(?:줄이|줄일|단축|감소|아낄|절감).*(?:수\s*있|할\s*수|기대|목표)|(?:편해|좋아지).*(?:질|진|다)|(?:실수|시간).*(?:줄이|아낄).*(?:수\s*있|할\s*수)|확인\s*시간\s*(?:을\s*)?(?:단축|줄)|누락\s*(?:을|이)?\s*(?:줄|감).*(?:수\s*있|기대|목표)|가장\s*큰\s*변화)/i;
 const PAYER_RE = /(?:월\s*구독|\d+\s*만\s*원|직접\s*결제|수수료|요금|수익\s*은)/i;
 const BUSINESS_GOAL_RE = /(?:\d+\s*곳|1년\s*내|목표로)/i;
 const RESEARCH_INTENT_RE = /(?:확인해\s*주세요|조사(?:해|를)?|research|경쟁사)/i;
@@ -105,22 +107,79 @@ function detectNonJudgmentSlot(answer: string): AnswerSemanticSlot | null {
   return null;
 }
 
-function extractCustomerEvidence(clauses: string[], trimmed: string): AnswerSemanticEvidence | null {
-  const seg = pickSegment(clauses, CUSTOMER_SEGMENT_RE, trimmed);
-  if (!seg) return null;
-  if (PAYER_RE.test(seg) && !/(양조|반찬|꽃집|사장|소상공인|고객)/.test(seg)) return null;
-  if (PROBLEM_SEGMENT_RE.test(seg) && !CUSTOMER_SEGMENT_RE.test(seg.split(/(?:엑셀|누락|문제)/)[0] ?? '')) {
-    return null;
+function isTruncatedCustomerSummary(summary: string): boolean {
+  const t = summary.trim();
+  if (/^(?:소상공인|반찬가게|양조장|꽃집|가게)$/.test(t)) return true;
+  if (/^(?:소상공인|반찬가게|양조장|꽃집|가게)(?:은|는|이|가)$/.test(t)) return true;
+  if (t.length <= 8 && /(?:은|는|이|가)$/.test(t)) return true;
+  return false;
+}
+
+/** Subject-only mention in a problem/change sentence is not a customer definition. */
+function isCustomerDefinitionClause(clause: string): boolean {
+  if (isTruncatedCustomerSummary(clause)) return false;
+  if (/주\s*고객|포함|타깃|타겟|대상|사장님(?:이|들)?\s*주\s*고객|고객(?:입니다|이고)?|(?:이|가)\s*고객/.test(clause)) {
+    return true;
   }
-  const persona = seg.split(/(?:이\s*)?(?:엑셀|카카오|주문|배송|누락)/i)[0]?.trim();
-  const summary = clip(persona && persona.length >= 4 ? persona : seg);
-  return {
-    dimension: 'customer',
-    summary,
-    evidence: seg,
-    interpretedMeaning: 'CEO 답변 — 고객(누구) evidence',
-    reason: dimensionReason('customer'),
-  };
+  if (/(?:\d+\s*건|하루\s*\d+|주문을\s*받|매출)/.test(clause)) {
+    return false;
+  }
+  if (SOLUTION_BENEFIT_ONLY_RE.test(clause)) {
+    return false;
+  }
+  if (/실수를\s*줄|시간을\s*아낄|줄이고\s*시간/.test(clause)) {
+    return false;
+  }
+  if (/문제|놓치|재주문|불편|심각/.test(clause) && !/주\s*고객|포함|사장님|고객(?:입니다|이고)?/.test(clause)) {
+    return false;
+  }
+  if (
+    /(?:줄이|아낄|단축|감소|편해).*(?:수\s*있|할\s*수|습니다)/.test(clause) &&
+    !/주\s*고객|포함|사장님|고객(?:입니다|이고)?/.test(clause)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function refineSolutionSegment(clause: string): string {
+  const m = clause.match(
+    /(?:주문[^,.;]{0,40}?(?:한\s*곳에서|통합)[^,.;]{0,40}?(?:관리|연결)[^,.;]{0,24}(?:하려고|합니다)?|(?:한\s*곳에서|SaaS|MVP|모바일|체크리스트)[^,.;]{0,60}|[^,.;]{0,20}(?:관리하려고|만들려고)[^,.;]{0,40})/i,
+  );
+  return clip(m?.[0]?.trim() || clause);
+}
+
+function extractCustomerEvidence(clauses: string[], trimmed: string): AnswerSemanticEvidence | null {
+  for (const clause of clauses) {
+    if (!CUSTOMER_SEGMENT_RE.test(clause)) continue;
+    if (!isCustomerDefinitionClause(clause)) continue;
+    const seg = clip(clause);
+    if (PAYER_RE.test(seg) && !/(양조|반찬|꽃집|사장|소상공인|고객)/.test(seg)) continue;
+    const persona = seg.split(/(?:이\s*)?(?:엑셀|카카오|주문|배송|누락)/i)[0]?.trim();
+    const summary = clip(persona && persona.length >= 4 ? persona.replace(/(?:이|가|은|는)$/, '') : seg);
+    if (isTruncatedCustomerSummary(summary)) continue;
+    return {
+      dimension: 'customer',
+      summary,
+      evidence: seg,
+      interpretedMeaning: 'CEO 답변 — 고객(누구) evidence',
+      reason: dimensionReason('customer'),
+    };
+  }
+  if (CUSTOMER_SEGMENT_RE.test(trimmed) && isCustomerDefinitionClause(trimmed)) {
+    const persona = trimmed.split(/(?:이\s*)?(?:엑셀|카카오|주문|배송|누락)/i)[0]?.trim();
+    const summary = clip(persona && persona.length >= 4 ? persona.replace(/(?:이|가|은|는)$/, '') : trimmed);
+    if (!isTruncatedCustomerSummary(summary)) {
+      return {
+        dimension: 'customer',
+        summary,
+        evidence: clip(trimmed),
+        interpretedMeaning: 'CEO 답변 — 고객(누구) evidence',
+        reason: dimensionReason('customer'),
+      };
+    }
+  }
+  return null;
 }
 
 function extractProblemEvidence(clauses: string[], trimmed: string): AnswerSemanticEvidence | null {
@@ -129,11 +188,15 @@ function extractProblemEvidence(clauses: string[], trimmed: string): AnswerSeman
     if (CUSTOMER_CHANGE_SEGMENT_RE.test(clause) && /(?:수\s*있|기대|목표|달라)/.test(clause)) {
       continue;
     }
+    if (SOLUTION_BENEFIT_ONLY_RE.test(clause) || /실수를\s*줄|시간을\s*아낄/.test(clause)) {
+      continue;
+    }
     if (SOLUTION_SEGMENT_RE.test(clause) && !PROBLEM_SEGMENT_RE.test(clause)) continue;
     if (PROBLEM_SEGMENT_RE.test(clause)) {
       const problemOnly =
-        clause.match(/(?:엑셀|카카오|누락|불편|문제|관리|실수|확인\s*시간|따로|놓치|재주문|심각)[^,.;]*/i)?.[0] ??
-        clause;
+        clause.match(
+          /(?:엑셀[^,.;]{0,30}?(?:관리|누락)|카카오[^,.;]{0,30}|누락[^,.;]{0,30}|불편[^,.;]{0,30}|문제[^,.;]{0,40}|놓치[^,.;]{0,30}|재주문[^,.;]{0,30}|확인\s*시간[^,.;]{0,30}|심각[^,.;]{0,20})/i,
+        )?.[0] ?? clause;
       return {
         dimension: 'problem',
         summary: clip(problemOnly.trim().length >= 4 ? problemOnly : clause),
@@ -157,26 +220,36 @@ function extractProblemEvidence(clauses: string[], trimmed: string): AnswerSeman
 }
 
 function extractSolutionEvidence(clauses: string[], trimmed: string): AnswerSemanticEvidence | null {
+  if (SOLUTION_BENEFIT_ONLY_RE.test(trimmed) && !/(?:SaaS|MVP|만들|관리하려|한\s*곳에서|모바일|체크리스트)/.test(trimmed)) {
+    return null;
+  }
   for (const clause of clauses) {
-    if (/(?:줄이|단축|감소)\s*(?:할|수|기대)/.test(clause) && !SOLUTION_SEGMENT_RE.test(clause)) {
+    if (/(?:줄이|단축|감소|아낄)\s*(?:할|수|기대)/.test(clause) && !SOLUTION_SEGMENT_RE.test(clause)) {
+      continue;
+    }
+    if (SOLUTION_BENEFIT_ONLY_RE.test(clause) && !/(?:SaaS|MVP|만들|관리하려|한\s*곳에서|모바일)/.test(clause)) {
       continue;
     }
     if (SOLUTION_SEGMENT_RE.test(clause)) {
+      const refined = refineSolutionSegment(clause);
       return {
         dimension: 'solution',
-        summary: clip(clause),
-        evidence: clip(clause),
+        summary: refined,
+        evidence: refined,
         interpretedMeaning: 'CEO 답변 — 해결 방법 evidence',
         reason: dimensionReason('solution'),
       };
     }
   }
   const seg = pickSegment(clauses, SOLUTION_SEGMENT_RE, trimmed);
-  if (!seg) return null;
+  if (!seg || (SOLUTION_BENEFIT_ONLY_RE.test(trimmed) && !/(?:SaaS|MVP|만들|관리하려)/.test(seg))) {
+    return null;
+  }
+  const refined = refineSolutionSegment(seg);
   return {
     dimension: 'solution',
-    summary: seg,
-    evidence: seg,
+    summary: refined,
+    evidence: refined,
     interpretedMeaning: 'CEO 답변 — 해결 방법 evidence',
     reason: dimensionReason('solution'),
   };
@@ -184,6 +257,15 @@ function extractSolutionEvidence(clauses: string[], trimmed: string): AnswerSema
 
 function extractCustomerChangeEvidence(clauses: string[], trimmed: string): AnswerSemanticEvidence | null {
   if (/가장\s*큰\s*변화|변화입니다/.test(trimmed)) {
+    return {
+      dimension: 'customerChange',
+      summary: clip(trimmed),
+      evidence: trimmed,
+      interpretedMeaning: 'CEO 답변 — 고객 체감 변화 evidence',
+      reason: dimensionReason('customerChange'),
+    };
+  }
+  if (SOLUTION_BENEFIT_ONLY_RE.test(trimmed)) {
     return {
       dimension: 'customerChange',
       summary: clip(trimmed),

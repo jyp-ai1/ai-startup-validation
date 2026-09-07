@@ -77,7 +77,7 @@ function classifyAnswerDimension(answer: string): CeoJudgmentDimensionId[] {
   );
 }
 
-function formatTurnBlock(t: Day8iConversationTurnRecord): string {
+export function formatTurnBlock(t: Day8iConversationTurnRecord): string {
   const lines: string[] = [];
   lines.push(`Turn ${String(t.turnIndex).padStart(2, '0')}`);
   lines.push('');

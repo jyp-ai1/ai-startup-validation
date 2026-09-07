@@ -101,6 +101,19 @@ export const FIX3_CRITICAL_TURN_EXPECTATIONS: TurnDimensionExpectation[] = [
     mustNotUpdate: ['problem', 'solution', 'customerChange'],
   },
   {
+    turnIndex: 14,
+    label: 'T14 continuity volume',
+    mustNotUpdate: ['customer'],
+  },
+  {
+    turnIndex: 16,
+    label: 'T16 multi-fact problem',
+    mustUpdate: ['problem'],
+    mustNotUpdate: ['customer', 'solution'],
+    stateMustContain: { problem: /놓치|재주문|배송\s*시간/ },
+    stateMustNotContain: { customer: /^반찬가게(?:은|는)?$/ },
+  },
+  {
     turnIndex: 18,
     label: 'T18 hypothesis',
     mustUpdate: ['customerChange'],
@@ -129,6 +142,14 @@ export const FIX3_CRITICAL_TURN_EXPECTATIONS: TurnDimensionExpectation[] = [
     label: 'T25 business goal',
     nonJudgmentSlot: 'businessGoal',
     mustNotUpdate: ['customer', 'problem', 'solution', 'customerChange'],
+  },
+  {
+    turnIndex: 26,
+    label: 'T26 customerChange benefit',
+    mustUpdate: ['customerChange'],
+    mustNotUpdate: ['customer', 'solution'],
+    stateMustContain: { customerChange: /실수|시간|줄|아낄/ },
+    stateMustNotContain: { customer: /^소상공인(?:은|는)?$/ },
   },
   {
     turnIndex: 27,
@@ -286,6 +307,18 @@ export function evaluateFinalReviewDimensions(state: CeoJudgmentState | null): T
         label: 'P0-7 Final Review',
         field: label,
         expected: re.toString(),
+        actual: d.summary,
+      });
+    } else if (
+      dim === 'customer' &&
+      /(?:\d+\s*건|하루\s*\d+|주문을\s*받)/.test(d.summary) &&
+      !/주\s*고객|포함|반찬|꽃집/.test(d.summary)
+    ) {
+      failures.push({
+        turnIndex: 30,
+        label: 'P0-7 Final Review',
+        field: label,
+        expected: 'customer segment definition (not volume fact)',
         actual: d.summary,
       });
     }

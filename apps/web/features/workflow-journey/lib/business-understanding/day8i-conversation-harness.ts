@@ -369,6 +369,11 @@ export function runDay8iConversation(input: {
     }
 
     for (const dimId of ['customer', 'problem', 'solution', 'customerChange'] as const) {
+      const traceUpdated =
+        sync.turnTrace?.dimensionEntries.some((e) => e.affectedDimension === dimId) ?? false;
+      if (!traceUpdated && step.category === 'H_inference_risk') {
+        continue;
+      }
       const d = sync.judgment.dimensions[dimId];
       if (!d.summary.trim()) continue;
       const extracted = classifyAnswerHasDimension(step.ceoAnswer, dimId);
@@ -381,22 +386,17 @@ export function runDay8iConversation(input: {
           verdict: 'FAIL',
         });
         unsupportedInferences.push(
-          `Turn ${i + 1}: ${dimId}="${d.summary}" — CEO 답변에 해당 dimension 근거 없음`,
+          `Turn ${i + 1}: ${dimId}="${d.summary}" — CEO 답변에 해당 dimension 근거 없음 (trace update)`,
         );
       }
     }
 
     if (
-      j.dimensions.customer.summary &&
-      !step.ceoAnswer.includes('고객') &&
-      !step.ceoAnswer.includes('양조') &&
-      !step.ceoAnswer.includes('반찬') &&
-      !step.ceoAnswer.includes('소상공인') &&
-      j.dimensions.customer.status === 'clear' &&
-      step.category === 'H_inference_risk'
+      step.category === 'H_inference_risk' &&
+      (sync.turnTrace?.dimensionEntries.length ?? 0) > 0
     ) {
       unsupportedInferences.push(
-        `Turn ${i + 1}: 고객 확정 "${j.dimensions.customer.summary}" — CEO 답변에 고객 단서 없음`,
+        `Turn ${i + 1}: inference risk — judgment trace must be empty, got [${sync.turnTrace!.dimensionEntries.map((e) => e.affectedDimension).join(',')}]`,
       );
     }
 
