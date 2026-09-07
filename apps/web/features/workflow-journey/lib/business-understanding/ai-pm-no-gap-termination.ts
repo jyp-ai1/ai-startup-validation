@@ -11,6 +11,11 @@ import type { LivingUnderstandingState } from './living-understanding-state';
 import { isSameMeaningQuestion } from './reframe-question';
 import { isGapAskable } from './update-gap-state-from-review';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
+import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
+import {
+  createJudgmentBoundDecision,
+  pickFix10JudgmentFocus,
+} from './ai-pm-judgment-next-question-binding';
 
 function normalizeQuestion(text: string): string {
   return text.trim().replace(/\s+/g, ' ');
@@ -119,8 +124,30 @@ export function applyNoGapTermination(input: {
   living: LivingUnderstandingState;
   turns: AiPmLoopTurn[];
   gapState: GapKnowledgeState;
+  judgment?: import('./ai-pm-ceo-judgment-dimensions').CeoJudgmentState | null;
 }): NextQuestionDecision | null {
   const verdict = evaluateNoGapTermination(input);
-  if (verdict.terminate) return null;
-  return input.decision;
+  if (!verdict.terminate) return input.decision;
+
+  if (isAiPmJudgmentFix10V1Active() && input.judgment) {
+    if (verdict.reason === 'no_askable_gap' && input.turns.length >= 4) {
+      return null;
+    }
+    const bootstrap = createJudgmentBoundDecision(input.judgment);
+    const q = bootstrap?.questionText?.trim() ?? '';
+    if (q && !isRepeatedQuestion(input.turns, q)) {
+      return bootstrap;
+    }
+    if (bootstrap?.questionType === 'confirm' && q) {
+      return bootstrap;
+    }
+    if (
+      verdict.reason === 'repeat_loop_kill' &&
+      pickFix10JudgmentFocus(input.judgment)
+    ) {
+      return bootstrap;
+    }
+  }
+
+  return null;
 }

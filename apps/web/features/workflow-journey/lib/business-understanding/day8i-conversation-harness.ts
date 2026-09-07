@@ -432,20 +432,7 @@ export function runDay8iConversation(input: {
           gapState: sync.loop.gapState,
           projectId,
         });
-    const nextDecision =
-      rawNextDecision && !askTerminated && isNextQuestionDecision(rawNextDecision)
-        ? applyNoGapTermination({
-            decision: rawNextDecision,
-            living: processed.living,
-            turns: sync.loop.turns,
-            gapState: sync.loop.gapState ?? createEmptyGapState(),
-          })
-        : askTerminated
-          ? null
-          : rawNextDecision && isNextQuestionDecision(rawNextDecision)
-            ? rawNextDecision
-            : null;
-    record.nextQuestion = questionFromDecision(nextDecision).text || null;
+    record.nextQuestion = questionFromDecision(rawNextDecision).text || null;
 
     if (!record.nextQuestion && !askTerminated) {
       askTerminated = true;

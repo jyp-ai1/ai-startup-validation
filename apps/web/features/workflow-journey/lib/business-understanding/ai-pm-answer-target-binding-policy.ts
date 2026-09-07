@@ -22,6 +22,9 @@ import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
 import { isConfirmPollutionValue } from './ai-pm-question-presentation';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import { hasCustomerPersonaCue, hasPersonaSegmentCue } from './persona-answer-cues';
+import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
+import { turnMapsToGapByJudgment } from './ai-pm-judgment-next-question-binding';
+import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
 
 const SPINE_FACT: Partial<Record<ConversationFactKey, keyof LivingUnderstandingState['spine']>> = {
   business: 'business',
@@ -46,7 +49,12 @@ function claimForGap(living: LivingUnderstandingState, gapId: string) {
   return living.claims.find((c) => c.fieldKey === gapId);
 }
 
-function turnMapsToGap(turn: AiPmLoopTurn, gapId: string): boolean {
+function turnMapsToGap(turn: AiPmLoopTurn, gapId: string, judgmentTraces?: JudgmentTurnTrace[]): boolean {
+  if (isAiPmJudgmentFix10V1Active() && judgmentTraces && judgmentTraces.length > 0) {
+    const byJudgment = turnMapsToGapByJudgment({ turn, gapId, traces: judgmentTraces });
+    if (byJudgment !== null) return byJudgment;
+  }
+
   if (turn.targetGap?.trim() === gapId) return true;
 
   const answer = turn.answer?.trim() ?? '';
@@ -90,13 +98,14 @@ function turnMapsToGap(turn: AiPmLoopTurn, gapId: string): boolean {
 function findLatestTurnKnowledge(
   gapId: string,
   turns: AiPmLoopTurn[],
+  judgmentTraces?: JudgmentTurnTrace[],
 ): SemanticKnowledgeHit | null {
   for (let i = turns.length - 1; i >= 0; i -= 1) {
     const turn = turns[i]!;
     if (turn.superseded) continue;
     const answer = turn.answer?.trim() ?? '';
     if (answer.length < 4 || isConfirmPollutionValue(answer)) continue;
-    if (!turnMapsToGap(turn, gapId)) continue;
+    if (!turnMapsToGap(turn, gapId, judgmentTraces)) continue;
 
     const binding = resolveGapQuestionBinding(gapId);
     return {
@@ -119,6 +128,7 @@ export function resolveAnswerTargetKnowledgeForGap(input: {
   living: LivingUnderstandingState;
   memory: ConversationMemory | null;
   turns: AiPmLoopTurn[];
+  judgmentTraces?: JudgmentTurnTrace[];
 }): SemanticKnowledgeHit | null {
   if (!isAiPmAnswerTargetBindingV1Active()) return null;
 
@@ -155,7 +165,7 @@ export function resolveAnswerTargetKnowledgeForGap(input: {
   }
 
   // 1 — Latest turn meaning (highest priority)
-  const latestTurn = findLatestTurnKnowledge(gapId, input.turns);
+  const latestTurn = findLatestTurnKnowledge(gapId, input.turns, input.judgmentTraces);
   if (latestTurn) return latestTurn;
 
   // 2 — Living claim (user-confirmed, same gap field)

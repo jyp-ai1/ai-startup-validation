@@ -9,6 +9,11 @@ import { applyNoAskPolicy } from './ai-pm-no-ask-policy';
 import { applyAntiRepeatPolicy } from './ai-pm-anti-repeat-policy';
 import { applyNoGapTermination } from './ai-pm-no-gap-termination';
 import {
+  applyJudgmentNextQuestionBinding,
+  createJudgmentBoundDecision,
+} from './ai-pm-judgment-next-question-binding';
+import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
+import {
   decideNextQuestionFromReview,
   isNextQuestionDecision,
   type NextQuestionDecision,
@@ -107,7 +112,34 @@ export function resolveNextQuestionDecision(
       turns,
       memory: input.memory,
       stageReadiness,
+      judgment: loop?.ceoJudgment ?? null,
+      judgmentTraces: loop?.judgmentTraces,
     });
+  }
+
+  if (decision && isNextQuestionDecision(decision)) {
+    decision = applyAntiRepeatPolicy({
+      decision,
+      turns,
+      living: input.living,
+      gapState,
+    });
+  }
+
+  if (
+    decision &&
+    isNextQuestionDecision(decision) &&
+    isAiPmJudgmentFix10V1Active()
+  ) {
+    const judgment = loop?.ceoJudgment ?? null;
+    decision = applyJudgmentNextQuestionBinding({ decision, judgment });
+  } else if (
+    !decision &&
+    isAiPmJudgmentFix10V1Active() &&
+    loop?.ceoJudgment &&
+    loop.turns.filter((t) => !t.superseded).length < 7
+  ) {
+    decision = createJudgmentBoundDecision(loop.ceoJudgment);
   }
 
   if (decision && isNextQuestionDecision(decision)) {
@@ -125,6 +157,7 @@ export function resolveNextQuestionDecision(
       living: input.living,
       turns,
       gapState,
+      judgment: loop?.ceoJudgment ?? null,
     });
   }
 

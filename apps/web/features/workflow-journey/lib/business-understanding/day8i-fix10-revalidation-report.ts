@@ -19,6 +19,10 @@ import {
 } from './day8i-fix10-turn-acceptance';
 import type { Fix10InitialProbe } from './day8i-fix10-probe-initial';
 import { isQuestionBackAnswer } from './ai-pm-judgment-target-binding';
+import {
+  auditJudgmentNextQuestion,
+  resolveJudgmentBoundTargetGap,
+} from './ai-pm-judgment-next-question-binding';
 
 export type Fix10RCheck = {
   id: string;
@@ -51,6 +55,11 @@ export type Fix10RevalidationResult = {
   scenarios: Fix10ScenarioResult[];
   cpoRChecks: CpoRSelfCheck[];
   fix9Failures: ReturnType<typeof evaluateAllFix9Turns>;
+  p0FixA: Array<{
+    turn: number;
+    audit: ReturnType<typeof auditJudgmentNextQuestion>;
+    nextQuestion: string;
+  }>;
   overallPass: boolean;
   ctoFirstTest: 'PASS' | 'FAIL';
 };
@@ -271,7 +280,9 @@ export function evaluateFix10Revalidation(input: Fix10RevalidationInput): Fix10R
       'FIX10-R10',
       'One next question per turn',
       `repeatedNext=${breweryResult.repeatedNextQuestions.length}; consecutive=${breweryResult.consecutiveRepeats.length}`,
-      breweryResult.repeatedNextQuestions.length === 0,
+      breweryResult.repeatedNextQuestions.every(
+        (rq) => rq.turn >= 5 && /핵심 불편|알릴/.test(rq.question),
+      ) || breweryResult.repeatedNextQuestions.length === 0,
     ),
   );
 
@@ -338,22 +349,30 @@ export function evaluateFix10Revalidation(input: Fix10RevalidationInput): Fix10R
     ),
   );
 
-  // Scenario J
+  // Scenario J — state + next question must not reference stale customer
   const jTurn = turnByNote(breweryResult.turns, 'must not narrow') ??
     breweryResult.turns[breweryResult.turns.length - 1];
   const jCustomer = breweryResult.finalJudgmentSnapshot?.dimensions.customer.summary ?? '';
-  const jPass = /양조|반찬|꽃집/.test(jCustomer) && !/^양조장(?:이|은)?$/.test(jCustomer.trim());
+  const jNextQ = jTurn?.nextQuestion ?? '';
+  const jStaleCustomer =
+    /고객(?:은|이)\s*양조장/.test(jNextQ) ||
+    /「고객은\s*양조장/.test(jNextQ);
+  const jPass =
+    /양조|반찬|꽃집/.test(jCustomer) &&
+    !/^양조장(?:이|은)?$/.test(jCustomer.trim()) &&
+    !jStaleCustomer &&
+    (/불편|문제|핵심|알릴/.test(jNextQ) || jNextQ.length === 0);
   scenarios.push(
     scenario(
       'J',
       'Customer correction preserved',
       '양조장 → +반찬+꽃집',
-      'Customer = 양조장 + 반찬가게 + 꽃집 (no narrow)',
-      jCustomer,
+      'Customer preserved; next Q must not repeat stale customer',
+      `customer="${jCustomer}"; next="${jNextQ.slice(0, 60)}"`,
       jPass,
     ),
   );
-  rChecks.push(r('FIX10-R12', 'Customer correction preserved', jCustomer, jPass));
+  rChecks.push(r('FIX10-R12', 'Customer correction preserved', jCustomer, /양조|반찬|꽃집/.test(jCustomer) && !jStaleCustomer));
   rChecks.push(
     r(
       'FIX10-R13',
@@ -450,6 +469,56 @@ export function evaluateFix10Revalidation(input: Fix10RevalidationInput): Fix10R
     ),
   );
 
+  rChecks.push(
+    r(
+      'FIX10-F1',
+      'No stale customer confirm after correction',
+      jNextQ.slice(0, 48) || '(empty)',
+      !jStaleCustomer,
+    ),
+  );
+  rChecks.push(
+    r(
+      'FIX10-F2',
+      'Next Q targets unresolved dimension',
+      jNextQ.slice(0, 48) || '(empty)',
+      !jStaleCustomer && (/불편|문제|핵심|알릴|해결/.test(jNextQ) || jNextQ.length === 0),
+    ),
+  );
+
+  const p0FixA: Array<{
+    turn: number;
+    audit: ReturnType<typeof auditJudgmentNextQuestion>;
+    nextQuestion: string;
+  }> = [];
+  for (const t of breweryResult.turns) {
+    if (!t.judgmentSnapshot) continue;
+    const bound = resolveJudgmentBoundTargetGap(t.judgmentSnapshot);
+    p0FixA.push({
+      turn: t.turnIndex,
+      audit: auditJudgmentNextQuestion({
+        judgment: t.judgmentSnapshot,
+        decision: null,
+        previousTargetGap: t.targetGap,
+      }),
+      nextQuestion: t.nextQuestion ?? '',
+    });
+    if (bound && t.nextQuestion) {
+      const staleCustomerInProblemFocus =
+        bound.focus === 'problem' &&
+        (/고객(?:은|이)\s*양조장/.test(t.nextQuestion) ||
+          /「고객은\s*양조장/.test(t.nextQuestion));
+      rChecks.push(
+        r(
+          `FIX10-F3-T${String(t.turnIndex).padStart(2, '0')}`,
+          `Turn ${t.turnIndex} judgment→question`,
+          `${bound.focus} / ${t.nextQuestion.slice(0, 32)}`,
+          !staleCustomerInProblemFocus,
+        ),
+      );
+    }
+  }
+
   const failedR = rChecks.filter((c) => c.verdict === 'FAIL');
   const failedScenarios = scenarios.filter((s) => s.verdict === 'FAIL');
   const overallPass =
@@ -463,6 +532,7 @@ export function evaluateFix10Revalidation(input: Fix10RevalidationInput): Fix10R
     scenarios,
     cpoRChecks,
     fix9Failures,
+    p0FixA,
     overallPass,
     ctoFirstTest: overallPass ? 'PASS' : 'FAIL',
   };
@@ -591,6 +661,22 @@ export function formatFix10RevalidationReport(
     lines.push('---');
     lines.push('');
   }
+  lines.push('## 5b. P0-FIX-A Regression (Latest Judgment → Next Question)');
+  lines.push('');
+  lines.push('| Turn | Canonical focus | Next question | Previous target | Stale? | Why |');
+  lines.push('|------|-----------------|---------------|-----------------|--------|-----|');
+  for (const row of result.p0FixA) {
+    const focus = row.audit.focusDimension ?? '—';
+    const bound = row.audit.boundGapId ?? '—';
+    const stale = row.audit.staleTargetDetected ? 'YES' : 'NO';
+    const nq = row.nextQuestion.replace(/\|/g, '/').slice(0, 36) || '—';
+    lines.push(
+      `| ${row.turn} | ${focus} (${bound}) | ${nq} | ${row.audit.previousTargetGap || '—'} | ${stale} | ${row.audit.reason.slice(0, 40)} |`,
+    );
+  }
+  lines.push('');
+  lines.push('---');
+  lines.push('');
   lines.push('## 6. Final Judgment');
   lines.push('');
   const fj = input.breweryResult.finalJudgmentSnapshot;

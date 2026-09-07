@@ -70,6 +70,11 @@ export function resolveJudgmentTargetDimension(
   return null;
 }
 
+export function dimensionForGap(gapId: string): CeoJudgmentDimensionId | null {
+  const gap = gapId.trim();
+  return GAP_TO_DIMENSION[gap] ?? null;
+}
+
 /** Detect customer correction — must update customer, not customerChange. */
 export function isCustomerCorrectionAnswer(answer: string): boolean {
   const t = answer.trim();

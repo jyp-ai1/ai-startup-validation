@@ -38,6 +38,12 @@ import {
   isConfirmPollutionValue,
 } from './ai-pm-question-presentation';
 import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
+import {
+  isStaleKnowledgeForJudgment,
+  turnMapsToGapByJudgment,
+} from './ai-pm-judgment-next-question-binding';
+import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
+import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
 import { isMetaConfirmationAnswer } from './ai-pm-answer-meta-slots';
 
 export type NoAskAction = 'ASK' | 'CONFIRM' | 'MOVE';
@@ -170,6 +176,7 @@ export function scanSemanticKnowledgeForGap(input: {
   living: LivingUnderstandingState;
   memory: ConversationMemory | null;
   turns: AiPmLoopTurn[];
+  judgmentTraces?: JudgmentTurnTrace[];
 }): SemanticKnowledgeHit | null {
   if (isAiPmAnswerTargetBindingV1Active()) {
     return resolveAnswerTargetKnowledgeForGap(input);
@@ -340,12 +347,14 @@ function isSemanticRepeatAsk(input: {
   living: LivingUnderstandingState;
   memory: ConversationMemory | null;
   turns: AiPmLoopTurn[];
+  judgmentTraces?: JudgmentTurnTrace[];
 }): SemanticKnowledgeHit | null {
   const hit = scanSemanticKnowledgeForGap({
     gapId: input.targetGapId,
     living: input.living,
     memory: input.memory,
     turns: input.turns,
+    judgmentTraces: input.judgmentTraces,
   });
   if (!hit) return null;
 
@@ -375,6 +384,8 @@ export function evaluateNoAskPolicy(input: {
   turns: AiPmLoopTurn[];
   memory: ConversationMemory | null;
   stageReadiness: StageReadiness;
+  judgment?: CeoJudgmentState | null;
+  judgmentTraces?: JudgmentTurnTrace[];
 }): NoAskVerdict {
   if (!isAiPmNoAskPolicyV1Active()) return { action: 'ASK' };
 
@@ -413,10 +424,21 @@ export function evaluateNoAskPolicy(input: {
     living: input.living,
     memory: input.memory,
     turns: input.turns,
+    judgmentTraces: input.judgmentTraces,
   });
 
   if (knowledge) {
     if (isConfirmPollutionValue(knowledge.value)) {
+      return { action: 'ASK' };
+    }
+    if (
+      isAiPmJudgmentFix10V1Active() &&
+      isStaleKnowledgeForJudgment({
+        gapId: targetGapId,
+        value: knowledge.value,
+        judgment: input.judgment,
+      })
+    ) {
       return { action: 'ASK' };
     }
     if (CONFIRM_FIRST_GAPS.has(targetGapId) || !knowledge.userConfirmed) {
@@ -496,6 +518,8 @@ export type ApplyNoAskPolicyInput = {
   turns: AiPmLoopTurn[];
   memory: ConversationMemory | null;
   stageReadiness: StageReadiness;
+  judgment?: CeoJudgmentState | null;
+  judgmentTraces?: JudgmentTurnTrace[];
 };
 
 /** Apply No-Ask verdict on V3/policy decision output — presentation-safe only. */
@@ -510,6 +534,8 @@ export function applyNoAskPolicy(input: ApplyNoAskPolicyInput): NextQuestionDeci
     turns: input.turns,
     memory: input.memory,
     stageReadiness: input.stageReadiness,
+    judgment: input.judgment,
+    judgmentTraces: input.judgmentTraces,
   });
 
   if (verdict.action === 'ASK') return input.decision;

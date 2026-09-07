@@ -6,9 +6,9 @@
 
 | Field | Value |
 |-------|-------|
-| Commit SHA | `3c33b19d75b55fb97e5753537f42e9e8912822ca` |
+| Commit SHA | `338483ad9b8d97b482358dcd5a588b280b92542e` |
 | Branch | `cursor/day8i-p0-fix10-ceo-trust-journey-6423` |
-| Executed (UTC) | 2026-09-07T09:26:04.024Z |
+| Executed (UTC) | 2026-09-07T14:31:39.503Z |
 | Pipeline | CEO Answer → Canonical Judgment (preserved) → Evidence Provenance → R1-R25 → Final Review |
 | V3 Review | ON |
 | Judgment Aggregation | ON |
@@ -66,7 +66,7 @@ CEO 답변에서 고객 세그먼트 evidence 추출
 Newly Added Info: 소규모 양조장과 반찬가게 사장님이 주 고객입니다.
 
 Next Question:
-서비스 비용은 누가 지불하나요?
+지금 가장 크게 해결하려는 불편은 무엇인가요?
 
 ---
 
@@ -78,13 +78,13 @@ CEO Answer:
 주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 AI Question:
-서비스 비용은 누가 지불하나요?
+지금 가장 크게 해결하려는 불편은 무엇인가요?
 
-Target Gap: payer
-Next Question Reason: 누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.
+Target Gap: problemJtbd
+Next Question Reason: 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.
 
 Understanding (spine):
-문제: 주문과 배송을 따로 관리해야 함
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 소규모 양조장과 반찬가게 사장님이 주 고객입니다의 PRIMARY: 배송 누락 문제를 다루는 사업으로 이해했습니다.
@@ -110,7 +110,7 @@ CEO 답변에서 문제/불편 evidence 추출
 Newly Added Info: PRIMARY: 배송 누락
 
 Next Question:
-지금 가장 크게 해결하려는 불편은 무엇인가요?
+핵심 불편은(는) 「배송 누락」으로 이해했습니다. 맞나요?
 
 ---
 
@@ -122,13 +122,13 @@ CEO Answer:
 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
 
 AI Question:
-지금 가장 크게 해결하려는 불편은 무엇인가요?
+핵심 불편은(는) 「배송 누락」으로 이해했습니다. 맞나요?
 
 Target Gap: problemJtbd
-Next Question Reason: 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.
+Next Question Reason: 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 소규모 양조장과 반찬가게 사장님이 주 고객입니다의 PRIMARY: 배송 누락을(를) - 접근: 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 방향으로 해결하려는 서비스로 이해했습니다.
@@ -154,7 +154,7 @@ CEO 답변에서 해결 방법 evidence 추출
 Newly Added Info: - 접근: 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다
 
 Next Question:
-고객·수요를 검증할 채널은 어디인가요?
+서비스 비용은 누가 지불하나요?
 
 ---
 
@@ -166,13 +166,13 @@ CEO Answer:
 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다.
 
 AI Question:
-고객·수요를 검증할 채널은 어디인가요?
+서비스 비용은 누가 지불하나요?
 
-Target Gap: marketChannel
-Next Question Reason: 도달 채널이 비면 수요 검증을 어디서 할지 모릅니다. 검증 채널을 지금 정합니다.
+Target Gap: payer
+Next Question Reason: 누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다.
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 소규모 양조장과 반찬가게 사장님이 주 고객입니다의 PRIMARY: 배송 누락을(를) - 접근: 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 방향으로 해결하려는 서비스로 이해했습니다.
@@ -226,7 +226,7 @@ AI Question:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 소규모 양조장과 반찬가게 사장님이 주 고객입니다의 PRIMARY: 배송 누락
@@ -293,7 +293,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 소규모 양조장과 반찬가게 사장님이 주 고객입니다의 PRIMARY: 배송 누락
@@ -403,7 +403,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 소규모 양조장과 반찬가게 사장님이 주 고객입니다의 PRIMARY: 배송 누락
@@ -465,7 +465,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -527,7 +527,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -600,7 +600,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -654,7 +654,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -693,7 +693,7 @@ AI Question:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -747,7 +747,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -801,7 +801,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -855,7 +855,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -927,7 +927,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -1002,7 +1002,7 @@ RELATED:
 Target Gap: validationTestability
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -1059,7 +1059,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -1125,7 +1125,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -1182,7 +1182,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -1239,7 +1239,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 배송 누락
@@ -1310,7 +1310,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 주문 확인 시간이 핵심 문제
@@ -1396,7 +1396,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 주문 확인 시간이 핵심 문제
@@ -1438,7 +1438,7 @@ AI Question:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 주문 확인 시간이 핵심 문제
@@ -1500,7 +1500,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 주문 확인 시간이 핵심 문제
@@ -1562,7 +1562,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 주문 확인 시간이 핵심 문제
@@ -1631,7 +1631,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 주문 확인 시간이 핵심 문제
@@ -1705,7 +1705,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 주문 확인 시간이 핵심 문제
@@ -1759,7 +1759,7 @@ AI Question:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 주문 확인 시간이 핵심 문제
@@ -1823,7 +1823,7 @@ RELATED:
 Target Gap: 
 
 Understanding (spine):
-주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+주문과 배송을 따로 관리해서 배송 누락이 자주 생깁니다.
 
 Judgment One-liner:
 양조장, 반찬가게, 꽃집 포함의 PRIMARY: 주문 확인 시간이 핵심 문제
@@ -1891,7 +1891,7 @@ Previous State → New State:
 - customer: [unknown] "(empty)" → [clear] "소규모 양조장과 반찬가게 사장님이 주 고객입니다." (NEW)
 
 Next Question:
-서비스 비용은 누가 지불하나요?
+지금 가장 크게 해결하려는 불편은 무엇인가요?
 
 **Result: PASS**
 
@@ -1901,7 +1901,7 @@ CEO Answer:
 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
 
 AI Question:
-지금 가장 크게 해결하려는 불편은 무엇인가요?
+핵심 불편은(는) 「배송 누락」으로 이해했습니다. 맞나요?
 
 Question Target: problemJtbd
 
@@ -1924,7 +1924,7 @@ Previous State → New State:
 - solution: [unknown] "(empty)" → [needs_check] "- 접근: 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다" (NEW)
 
 Next Question:
-고객·수요를 검증할 채널은 어디인가요?
+서비스 비용은 누가 지불하나요?
 
 **Result: PASS**
 
@@ -1934,9 +1934,9 @@ CEO Answer:
 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다.
 
 AI Question:
-고객·수요를 검증할 채널은 어디인가요?
+서비스 비용은 누가 지불하나요?
 
-Question Target: marketChannel
+Question Target: payer
 
 Answer Meaning (Semantic SoT):
 - customerChange: CEO 답변 — 기대효과 주장 (검증 전)
@@ -3385,7 +3385,7 @@ R1~R25: 37/37 PASS
 
 ---
 
-Report generated: 2026-09-07T09:26:04.024Z
+Report generated: 2026-09-07T14:31:39.503Z
 CPO Revalidation Gate: **PASS**
 ---
 
