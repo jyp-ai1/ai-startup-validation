@@ -6,6 +6,17 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### ALABOM DAY 8-I P0 FIX-10 — CEO Trust Journey + Judgment→Next Q (2026-09-07) ✅ Production
+
+**Production SHA:** `cf180e068a3554828a8f4cd3681569fe44132cf2` · **PR:** #36  
+**Prod:** https://ai-startup-validation-tau.vercel.app · **CPO 2nd:** PASS
+
+- P0-FIX-10: project name ≠ business one-liner, initial AI understanding confirm, no unsupported customer inference
+- P0-FIX-A-2: canonical judgment → next question binding (T3 problem confirm, not payer)
+- FIX-9 / 30-turn regression preserved
+
+Evidence: [`docs/evidence/ALABOM/DAY_8I_PRODUCTION_GATE_REPORT.md`](./evidence/ALABOM/DAY_8I_PRODUCTION_GATE_REPORT.md) · Revalidation: [`DAY_8I_P0_FIX10_REVALIDATION_REPORT.md`](./evidence/ALABOM/DAY_8I_P0_FIX10_REVALIDATION_REPORT.md)
+
 ### ALABOM DAY 8-H — Business Review Loop (2026-09-06) ✅ Production
 
 **Production SHA:** `fcc61ddc9061…` · **PR:** #25  

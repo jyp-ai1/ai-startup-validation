@@ -384,8 +384,8 @@ None detected.
 |------|--------|
 | CTO 1st Test | **PASS** |
 | **CPO 2nd 독립 검증** | **PASS** |
-| Production | **HOLD** (merge + deploy + SHA pending) |
-| CEO TEST | **HOLD** |
+| Production | **PASS** (`cf180e0` — see `DAY_8I_PRODUCTION_GATE_REPORT.md`) |
+| CEO TEST | **HOLD** (CPO Production 최종 확인 대기) |
 
 > CPO 2차 PASS (2026-09-07): Canonical Judgment → Next Question 연결 trace 확인. Production SHA 검증 전 CEO TEST 금지.
 
