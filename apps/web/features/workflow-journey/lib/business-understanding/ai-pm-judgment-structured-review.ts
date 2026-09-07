@@ -47,7 +47,11 @@ export function renderProblemStructuredReview(d: CeoJudgmentDimension): string {
   if (related.length > 0) {
     lines.push('RELATED:');
     for (const r of related) {
-      lines.push(`- ${r.meaning || r.span}`);
+      const turn =
+        r.sourceTurnIndex != null
+          ? ` (Turn ${String(r.sourceTurnIndex).padStart(2, '0')}: "${r.span}")`
+          : '';
+      lines.push(`- ${r.meaning || r.span}${turn}`);
     }
   }
   return lines.join('\n');
@@ -148,7 +152,7 @@ export function buildStructuredFinalReview(state: CeoJudgmentState): string {
         ? CUSTOMER_CHANGE_CLAIM_LABEL
         : CEO_JUDGMENT_DIMENSION_LABELS[id];
     lines.push(`### ${heading}`);
-    lines.push(`${statusEmoji(entry.status)} ${entry.display}`);
+    lines.push(`${statusEmoji(entry.status)} ${entry.display.replace(/^🟡\s*/, '')}`);
     if (d.id === 'solution' && d.solutionLayerEvidence?.length) {
       lines.push('Source:');
       for (const ev of d.solutionLayerEvidence) {

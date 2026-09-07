@@ -34,6 +34,7 @@ import { mergeStructuredSolutionDimension } from './ai-pm-judgment-structured-so
 import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
 import { isAiPmJudgmentFix7V1Active } from './ai-pm-judgment-fix7-v1';
 import { isAiPmJudgmentFix8V1Active } from './ai-pm-judgment-fix8-v1';
+import { isAiPmJudgmentFix9V1Active } from './ai-pm-judgment-fix9-v1';
 import {
   mergeCanonicalCustomer,
   mergeCanonicalCustomerChange,
@@ -132,6 +133,7 @@ function mergeDimension(
       evidence: options?.evidence ?? next.summary,
       sourceTurnIndex: options?.sourceTurnIndex,
       isCorrection: options?.isCorrection,
+      fullAnswer: options?.answer,
     });
   }
   if (

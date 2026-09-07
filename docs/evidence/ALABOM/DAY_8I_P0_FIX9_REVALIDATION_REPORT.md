@@ -1,6 +1,6 @@
-# ALABOM — DAY 8-I P0 FIX-8 REVALIDATION Report
+# ALABOM — DAY 8-I P0 FIX-9 REVALIDATION Report
 
-> **CPO FIX-8 독립 검증용.** Canonical current judgment + evidence fidelity + state-based focus. FIX-3 semantic SoT + meaning model + review UX. Unit test PASS ≠ 이 문서 PASS. 동일 Full Pipeline 결과만 유효.
+> **CPO FIX-9 독립 검증용.** Canonical preservation + R1-R25 zero FAIL + evidence provenance. FIX-3 semantic SoT + meaning model + review UX. Unit test PASS ≠ 이 문서 PASS. 동일 Full Pipeline 결과만 유효.
 
 ## Executive Summary
 
@@ -8,16 +8,14 @@
 |-------|-------|
 | Commit SHA | `b2c67a25aa1dcc3ed2fa0f008c3fb288316255b7` |
 | Branch | `cursor/day8i-p0-fix9-judgment-preservation-6423` |
-| Executed (UTC) | 2026-09-07T08:40:58.092Z |
-| Pipeline | CEO Answer → Canonical Judgment State → Evidence Fidelity → Source Turn → Final Review |
+| Executed (UTC) | 2026-09-07T08:40:52.781Z |
+| Pipeline | CEO Answer → Canonical Judgment (preserved) → Evidence Provenance → R1-R25 → Final Review |
 | V3 Review | ON |
 | Judgment Aggregation | ON |
 | Answer Semantic SoT | ON |
 | Judgment Meaning Model | ON |
-| Judgment FIX-5 | ON |
-| Judgment FIX-6 | ON |
-| Judgment FIX-7 | ON |
-| Judgment FIX-8 | ON |
+| Judgment FIX-5~8 | ON |
+| Judgment FIX-9 | ON |
 | **Overall CPO Revalidation** | **PASS** |
 | Critical turn failures | 0 |
 | Semantic chain failures | 0 |
@@ -3387,7 +3385,7 @@ R1~R25: 37/37 PASS
 
 ---
 
-Report generated: 2026-09-07T08:40:58.092Z
+Report generated: 2026-09-07T08:40:52.781Z
 CPO Revalidation Gate: **PASS**
 ---
 
@@ -3732,18 +3730,64 @@ Why Changed: CONFLICTED: CEO 답변에서 고객 체감 변화 evidence 추출
 
 ---
 
-## Section R — FIX-8 CPO Gate Summary
+## Section S — FIX-9 CPO Gate Summary
 
 | P0 | Requirement | Verdict |
 |----|-------------|---------|
-| P0-1 | Dimension별 단일 Current Judgment | PASS |
-| P0-2 | Problem primary+related (no · append) | PASS |
-| P0-3 | Evidence fidelity (T09/T22 full span) | PASS |
-| P0-4 | Customer Change claim label + status lock | PASS |
-| P0-5 | State-based dynamic next focus | PASS |
-| P0-6 | Final Review = canonical state output | PASS |
+| P0-1 | Existing canonical state protection (T06) | PASS |
+| P0-2 | Evidence canonical objects | PASS |
+| P0-3 | T09/T22 strict evidence + RELATED source | PASS |
+| P0-4 | Customer Change provenance | PASS |
+| P0-5 | Snapshot R20 immutable A/B | PASS |
+| P0-6 | R1~R25 zero FAIL | PASS |
 
-Customer Change heading: `고객에게 달라질 것으로 보는 점`
+### Critical R Checks
+
+- **CPO-R8**: PASS — customer=양조장, 반찬가게, 꽃집 포함
+- **CPO-R16**: PASS — customer=소규모 양조장과 반찬가게 사장님이 주 고객입니다. problemTrace=false
+- **CPO-R20**: PASS — A="PRIMARY: 배송 누락" B="PRIMARY: 확인 시간이 더 큼" storedA="PRIMARY: 배송 누락"
+
+### R1~R25 Full Table
+
+| ID | Verdict | Rationale |
+|----|---------|-----------|
+| CPO-R1 | PASS | customer=소규모 양조장과 반찬가게 사장님이 주 고객입니다. solution=unknown |
+| CPO-R2 | PASS | problem=PRIMARY: 배송 누락 |
+| CPO-R3 | PASS | solution=- 접근: 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 |
+| CPO-R4 | PASS | customerChange=배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다. |
+| CPO-R5 | PASS | off-slot → problem=PRIMARY: 엑셀로 주문을 관리 |
+| CPO-R6 | PASS | extracted=[true,true,true] dupes=0 |
+| CPO-R7 | PASS | repeat unchanged=true |
+| CPO-R8 | PASS | customer=양조장, 반찬가게, 꽃집 포함 |
+| CPO-R9 | PASS | customer=unknown problem=needs_check |
+| CPO-R10 | PASS | CPO must verify Turn 01 customer in Turn 30 evolution table |
+| CPO-R11 | PASS | CPO must verify oneLiner ≠ businessDoc echo |
+| CPO-R12 | PASS | CPO must verify whyNow/gap linkage |
+| CPO-R13 | PASS | turn7 problem trace=false |
+| CPO-R14 | PASS | terminate=true reason=no_decision |
+| CPO-R15 | PASS | consecutiveRepeats=0 repeatedNext=0 |
+| CPO-R21 | PASS | changes=20 |
+| CPO-R22 | PASS | noGapAt=4 |
+| CPO-R16 | PASS | customer=소규모 양조장과 반찬가게 사장님이 주 고객입니다. problemTrace=false |
+| CPO-R17 | PASS | problem preserved=PRIMARY: 배송 누락이 주문 건수의 1 traceProblem=false |
+| CPO-R18 | PASS | turns=5 canResume=true |
+| CPO-R19 | PASS | turnCount=5 |
+| CPO-R20 | PASS | A="PRIMARY: 배송 누락" B="PRIMARY: 확인 시간이 더 큼" storedA="PRIMARY: 배송 누락" |
+| CPO-R24 | PASS | A trigger=JUDGMENT_UPDATED B trigger=CEO_CORRECTED |
+| CPO-R25 | PASS | snapshot preserves point-in-time judgment |
+| CPO-R23 | PASS | isolated=true |
+
+**FAILURES: 0**
+
+### Customer Change Provenance
+
+{
+  "claim": "배송 누락 감소와 확인 시간 단축이 고객에게 가장 큰 변화입니다.",
+  "status": "needs_check",
+  "sourceTurnIndex": 29,
+  "validation": "pending",
+  "evidenceType": "expectation"
+}
 
 ### Structured Final Review
 
@@ -3779,4 +3823,4 @@ Source: Turn 29: "배송 누락 감소와 확인 시간 단축이 고객에게 �
 Aligned: ✅
 
 
-FIX-8 failures: 0
+FIX-9 failures: 0

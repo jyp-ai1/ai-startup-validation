@@ -12,6 +12,7 @@ import {
 } from './ai-pm-judgment-evidence-model';
 import { isAiPmJudgmentFix7V1Active } from './ai-pm-judgment-fix7-v1';
 import { isAiPmJudgmentFix8V1Active } from './ai-pm-judgment-fix8-v1';
+import { isAiPmJudgmentFix9V1Active } from './ai-pm-judgment-fix9-v1';
 
 const PRIORITY_CORRECTION_RE =
   /(?:사실\s*)?(?:문제(?:는|가)?\s*)?(?:.+?)(?:보다|보다는)\s*(.+?)(?:이|가)\s*더\s*(?:큽|중요|심각)/i;
@@ -48,6 +49,9 @@ function inferRelatedFromPrior(prior: CeoJudgmentDimension): string[] {
       }
       if (/분리|따로/.test(text) && !related.includes('주문·배송 분리 관리')) {
         related.push('주문·배송 분리 관리');
+      }
+      if (/10%|심각/.test(text) && !related.some((x) => /10%|심각/.test(x))) {
+        related.push(r.meaning || r.span);
       }
     }
     if (related.length > 0) return related;
@@ -94,7 +98,13 @@ function renderProblemSummary(primary: string, related: string[]): string {
   return lines.join('\n');
 }
 
-/** Merge priority correction — replaces collection with PRIMARY + RELATED only (FIX-7). */
+function preservePriorRelatedRecords(prior: CeoJudgmentDimension): JudgmentEvidenceRecord[] {
+  return (prior.evidenceRecords ?? [])
+    .filter((r) => r.role !== 'primary')
+    .map((r) => ({ ...r, role: 'related' as const }));
+}
+
+/** Merge priority correction — replaces PRIMARY, preserves prior RELATED evidence (FIX-9). */
 export function mergeProblemPriorityCorrection(
   prior: CeoJudgmentDimension,
   correction: ProblemPriorityCorrection,
@@ -108,18 +118,27 @@ export function mergeProblemPriorityCorrection(
   for (const r of inferRelatedFromPrior(prior)) relatedSet.add(r);
   if (correction.relatedProblems.includes('배송 누락')) relatedSet.add('배송 누락');
 
-  const related = [...relatedSet].slice(0, 3);
+  const related = [...relatedSet].slice(0, 4);
 
   const records: JudgmentEvidenceRecord[] = [
     {
       span: evidenceSpan,
-      meaning: correction.meaning,
+      meaning: correction.primaryProblem,
       role: 'primary',
       sourceTurnIndex,
     },
   ];
 
+  if (isAiPmJudgmentFix9V1Active()) {
+    for (const preserved of preservePriorRelatedRecords(prior)) {
+      if (!records.some((r) => r.span.trim() === preserved.span.trim())) {
+        records.push(preserved);
+      }
+    }
+  }
+
   for (const item of related) {
+    if (records.some((r) => r.meaning.includes(item) || r.span.includes(item))) continue;
     records.push({
       span: item,
       meaning: item,
@@ -129,7 +148,12 @@ export function mergeProblemPriorityCorrection(
   }
 
   const summary = isAiPmJudgmentFix7V1Active() || isAiPmJudgmentFix8V1Active()
-    ? renderProblemSummary(correction.primaryProblem, related)
+    ? renderProblemSummary(correction.primaryProblem, [
+        ...related,
+        ...records
+          .filter((r) => r.role === 'related' && /10%|심각/.test(`${r.span} ${r.meaning}`))
+          .map((r) => r.meaning || r.span),
+      ].filter((v, i, a) => a.indexOf(v) === i).slice(0, 4))
     : clip([correction.primaryProblem, ...related.map((r) => `${r}은(는) 관련 문제`)].join(' · '));
 
   return applyEvidenceToDimension(

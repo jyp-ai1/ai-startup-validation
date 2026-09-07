@@ -20,6 +20,10 @@ import {
 } from './project-consulting-store';
 import { findSnapshotById } from './project-consulting-state';
 import {
+  extractProblemPrimaryText,
+  problemPrimaryEquivalent,
+} from './ai-pm-judgment-problem-primary';
+import {
   clearAiPmLoopState,
   loadAiPmLoopState,
   saveAiPmLoopState,
@@ -258,22 +262,26 @@ export function runCpoR13ToR25Checks(): CpoRSelfCheck[] {
     documentText: doc,
   });
   const snapB = loadProjectConsultingState(snapPid).snapshots[1]!;
-  const snapAImmutable =
-    findSnapshotById(loadProjectConsultingState(snapPid), snapA.snapshotId)?.judgment?.dimensions
-      .problem.summary === '배송 누락';
   const snapAProblem = snapA.judgment?.dimensions.problem.summary ?? '';
   const snapBProblem = snapB.judgment?.dimensions.problem.summary ?? '';
+  const snapAStored =
+    findSnapshotById(loadProjectConsultingState(snapPid), snapA.snapshotId)?.judgment?.dimensions
+      .problem.summary ?? '';
+  const snapAPrimary = extractProblemPrimaryText(snapAProblem);
+  const snapBPrimary = extractProblemPrimaryText(snapBProblem);
+  const snapAStoredPrimary = extractProblemPrimaryText(snapAStored);
   checks.push({
     id: 'CPO-R20',
     label: 'Snapshot Immutability — 과거 Snapshot 불변',
     verdict:
-      snapAImmutable &&
-      snapAProblem !== snapBProblem &&
-      snapAProblem.includes('배송')
+      problemPrimaryEquivalent(snapAStoredPrimary, '배송 누락') &&
+      snapAPrimary !== snapBPrimary &&
+      /배송|누락/.test(snapAPrimary) &&
+      /확인\s*시간|더\s*큼/.test(snapBPrimary)
         ? 'PASS'
         : 'FAIL',
     evidenceTurns: 'Snapshot A → correction → Snapshot B',
-    rationale: `A="${snapAProblem}" B="${snapBProblem}"`,
+    rationale: `A="${snapAProblem}" B="${snapBProblem}" storedA="${snapAStored}"`,
   });
 
   checks.push({

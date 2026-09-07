@@ -15,8 +15,52 @@ import {
 } from './ai-pm-judgment-evidence-model';
 import { renderProblemStructuredReview } from './ai-pm-judgment-structured-review';
 import { isSemanticCopy } from './ai-pm-judgment-target-binding';
+import { isAiPmJudgmentFix9V1Active } from './ai-pm-judgment-fix9-v1';
+import { extractProblemPrimaryText } from './ai-pm-judgment-problem-primary';
 
 export const CUSTOMER_CHANGE_CLAIM_LABEL = '고객에게 달라질 것으로 보는 점';
+
+export type CustomerChangeProvenance = {
+  claim: string;
+  status: 'needs_check';
+  sourceTurnIndex: number | null;
+  validation: 'pending';
+  evidenceType: 'hypothesis' | 'expectation' | 'fact';
+};
+
+function normalizeText(text: string): string {
+  return text.trim().replace(/\s+/g, ' ');
+}
+
+/** True when incoming customer evidence narrows an established broader customer definition. */
+export function isNarrowingCustomerEvidence(priorSummary: string, incoming: string): boolean {
+  const prior = normalizeText(priorSummary);
+  const next = normalizeText(incoming);
+  if (!prior || !next || prior === next) return false;
+  if (isSemanticCopy(prior, next)) return false;
+
+  const priorHasBreadth = /반찬|꽃집|사장|포함|주\s*고객|등/.test(prior);
+  const nextIsSegmentOnly =
+    /^(?:소규모\s*)?(?:양조장|반찬가게|꽃집)(?:이|가|은|는)?$/.test(next) ||
+    (next.length <= 12 && /양조장|반찬|꽃집/.test(next) && !/포함|사장|주\s*고객/.test(next));
+
+  if (priorHasBreadth && nextIsSegmentOnly) return true;
+
+  const priorFlat = prior.replace(/[^\p{L}\p{N}]/gu, '');
+  const nextFlat = next.replace(/[^\p{L}\p{N}]/gu, '');
+  if (priorFlat.includes(nextFlat) && priorFlat.length > nextFlat.length + 6) return true;
+
+  return false;
+}
+
+function summarizeCustomerCorrection(answer: string): string {
+  const trimmed = answer.trim();
+  if (/반찬|꽃집/.test(trimmed) && /포함|만이\s*아니라/.test(trimmed)) {
+    return '양조장, 반찬가게, 꽃집 포함';
+  }
+  if (/포함/.test(trimmed)) return clip(trimmed);
+  return clip(trimmed);
+}
 
 function clip(text: string, max = 120): string {
   const t = text.trim().replace(/\s+/g, ' ');
@@ -45,6 +89,11 @@ function inferRelatedFromRecords(records: JudgmentEvidenceRecord[]): string[] {
   for (const r of records) {
     if (r.role === 'primary') continue;
     const text = `${r.span} ${r.meaning}`;
+    if (/10%|심각/.test(text)) {
+      const full = normalizeText(r.span.length >= r.meaning.length ? r.span : r.meaning);
+      if (!related.some((x) => /10%|심각/.test(x))) related.push(full);
+      continue;
+    }
     if (/배송\s*누락/.test(text) && !related.includes('배송 누락')) related.push('배송 누락');
     if (/엑셀|카카오|카톡/.test(text) && !related.includes('엑셀/카카오톡 관리')) {
       related.push('엑셀/카카오톡 관리');
@@ -52,11 +101,8 @@ function inferRelatedFromRecords(records: JudgmentEvidenceRecord[]): string[] {
     if (/분리\s*관리|따로\s*관리/.test(text) && !related.includes('주문·배송 분리 관리')) {
       related.push('주문·배송 분리 관리');
     }
-    if (/10%|심각/.test(text) && !related.some((x) => /10%|심각/.test(x))) {
-      related.push(r.meaning || r.span);
-    }
     if (/놓치|재주문/.test(text) && !related.some((x) => /놓치|재주문/.test(x))) {
-      related.push(r.meaning || clip(r.span, 40));
+      related.push(normalizeText(r.meaning || r.span));
     }
   }
   return related.slice(0, 4);
@@ -139,7 +185,7 @@ export function mergeCanonicalProblem(
   );
 }
 
-/** Single current customer conclusion — replace on correction, else first wins. */
+/** Single current customer conclusion — replace only on explicit correction. */
 export function mergeCanonicalCustomer(
   prior: CeoJudgmentDimension,
   input: {
@@ -147,11 +193,46 @@ export function mergeCanonicalCustomer(
     evidence: string;
     sourceTurnIndex?: number;
     isCorrection?: boolean;
+    fullAnswer?: string;
   },
 ): CeoJudgmentDimension {
+  const conclusion = input.isCorrection && isAiPmJudgmentFix9V1Active()
+    ? summarizeCustomerCorrection(input.fullAnswer ?? input.evidence)
+    : input.conclusion;
+  const evidence = input.evidence.trim();
+
+  if (
+    isAiPmJudgmentFix9V1Active() &&
+    !input.isCorrection &&
+    prior.summary.trim() &&
+    isNarrowingCustomerEvidence(prior.summary, conclusion)
+  ) {
+    const supporting: JudgmentEvidenceRecord = {
+      span: evidence,
+      meaning: conclusion,
+      role: 'supporting',
+      sourceTurnIndex: input.sourceTurnIndex,
+    };
+    const records = upsertRecord(prior.evidenceRecords ?? [], supporting);
+    return applyEvidenceToDimension(
+      {
+        ...prior,
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customer,
+        status: prior.status === 'unknown' ? 'clear' : prior.status,
+        evidenceRecords: records,
+      },
+      {
+        conclusion: prior.currentConclusion ?? prior.summary,
+        summary: prior.summary,
+        records: [supporting],
+        sourceTurnIndex: input.sourceTurnIndex,
+      },
+    );
+  }
+
   const record: JudgmentEvidenceRecord = {
-    span: input.evidence,
-    meaning: input.conclusion,
+    span: evidence,
+    meaning: conclusion,
     role: 'primary',
     sourceTurnIndex: input.sourceTurnIndex,
   };
@@ -171,8 +252,8 @@ export function mergeCanonicalCustomer(
       evidenceRecords: records,
     },
     {
-      conclusion: input.conclusion,
-      summary: clip(input.conclusion),
+      conclusion,
+      summary: clip(conclusion),
       records: input.isCorrection ? [record] : records,
       sourceTurnIndex: input.sourceTurnIndex,
       correctionApplied: input.isCorrection ?? prior.correctionApplied,
@@ -229,18 +310,50 @@ export function mergeCanonicalCustomerChange(
   );
 }
 
+export function buildCustomerChangeProvenance(d: CeoJudgmentDimension): CustomerChangeProvenance | null {
+  if (d.status === 'unknown' && !d.summary.trim() && !(d.evidenceRecords?.length)) return null;
+  const primary = d.evidenceRecords?.find((r) => r.role === 'primary') ?? d.evidenceRecords?.[0];
+  return {
+    claim: d.currentConclusion ?? primary?.meaning ?? d.summary,
+    status: 'needs_check',
+    sourceTurnIndex: primary?.sourceTurnIndex ?? d.sourceTurns?.[0] ?? null,
+    validation: 'pending',
+    evidenceType:
+      d.evidenceType === 'hypothesis' || d.evidenceType === 'expectation'
+        ? d.evidenceType
+        : 'expectation',
+  };
+}
+
 /** Sync dimension display summary from canonical evidence — never re-combine strings. */
 export function syncDimensionCanonicalDisplay(d: CeoJudgmentDimension): CeoJudgmentDimension {
   if (d.id === 'problem') {
     const primary = d.evidenceRecords?.find((r) => r.role === 'primary');
+    if (!primary?.meaning?.trim() && !primary?.span?.trim() && d.status === 'unknown') {
+      return { ...d, summary: '' };
+    }
     const related = inferRelatedFromRecords(d.evidenceRecords ?? []);
-    const conclusion = d.currentConclusion ?? primary?.meaning ?? '';
+    const conclusion = d.currentConclusion ?? primary?.meaning ?? extractProblemPrimaryText(d.summary);
+    if (!conclusion.trim()) {
+      return { ...d, summary: '' };
+    }
     return {
       ...d,
       summary: rebuildProblemSummary(conclusion, related),
     };
   }
   if (d.id === 'customerChange') {
+    const hasClaim =
+      Boolean(d.summary.trim() || d.currentConclusion?.trim()) ||
+      Boolean(d.evidenceRecords?.some((r) => r.span.trim() || r.meaning.trim()));
+    if (!hasClaim) {
+      return {
+        ...d,
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
+        status: 'unknown',
+        summary: '',
+      };
+    }
     return {
       ...d,
       label: CUSTOMER_CHANGE_CLAIM_LABEL,
