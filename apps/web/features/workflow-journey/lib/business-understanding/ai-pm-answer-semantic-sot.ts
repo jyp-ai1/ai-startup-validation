@@ -9,6 +9,7 @@
 
 import type { CeoJudgmentDimensionId } from './ai-pm-ceo-judgment-dimensions';
 import { isAiPmAnswerSemanticSotV1Active } from './ai-pm-answer-semantic-sot-v1';
+import { isAiPmJudgmentMeaningModelV1Active } from './ai-pm-judgment-meaning-model-v1';
 import {
   isCustomerCorrectionAnswer,
   isInferenceRiskAnswer,
@@ -44,8 +45,9 @@ export type AnswerSemanticExtraction = {
   frozen: boolean;
 };
 
-/** Avoid splitting on `에서` — breaks phrases like `한 곳에서`. Include `이고` for multi-fact answers. */
-const CLAUSE_SPLIT_RE = /(?:[,，;；]|(?:\s*(?:하고|이고|그래서|때문에|해서|인데|지만)\s*))/i;
+/** Avoid splitting on `에서` — breaks phrases like `한 곳에서`. Include `이고` for multi-fact answers.
+ *  Do NOT split on bare `해서` — breaks `불편해서`, `생겨서` stays for T06 multi-fact. */
+const CLAUSE_SPLIT_RE = /(?:[,，;；]|(?:\s*(?:하고|이고|그래서|때문에|생겨서|인데|지만)\s*))/i;
 
 const CUSTOMER_SEGMENT_RE =
   /(?:소규모\s*)?(?:양조장?|반찬|꽃집|가게|사장|소상공인|CEO|PM|스타트업|고객|타깃|사용자|원장)[^,.;]*/i;
@@ -142,14 +144,25 @@ function isCustomerDefinitionClause(clause: string): boolean {
   return true;
 }
 
+function stripCausalPrefix(text: string): string {
+  return text
+    .replace(/^(?:[^,.;]{0,16}(?:생겨서|해서|때문에|이어서|그래서)\s*)+/i, '')
+    .replace(/^(?:이|가|을|를|에서)\s+/, '')
+    .trim();
+}
+
 function refineSolutionSegment(clause: string): string {
-  const m = clause.match(
-    /(?:주문[^,.;]{0,40}?(?:한\s*곳에서|통합)[^,.;]{0,40}?(?:관리|연결)[^,.;]{0,24}(?:하려고|합니다)?|(?:한\s*곳에서|SaaS|MVP|모바일|체크리스트)[^,.;]{0,60}|[^,.;]{0,20}(?:관리하려고|만들려고)[^,.;]{0,40})/i,
+  const cleaned = stripCausalPrefix(clause);
+  const m = cleaned.match(
+    /(?:주문[^,.;]{0,40}?(?:한\s*곳에서|통합)[^,.;]{0,40}?(?:관리|연결)[^,.;]{0,24}(?:하려고|합니다)?|(?:한\s*곳에서|SaaS|MVP|모바일|체크리스트)[^,.;]{0,60}|(?:관리하려고|만들려고|제공)[^,.;]{0,48})/i,
   );
-  return clip(m?.[0]?.trim() || clause);
+  const refined = stripCausalPrefix(m?.[0]?.trim() || cleaned);
+  return clip(refined || cleaned);
 }
 
 function extractCustomerEvidence(clauses: string[], trimmed: string): AnswerSemanticEvidence | null {
+  if (/가장\s*큰\s*변화|변화입니다/.test(trimmed)) return null;
+  if (/고객에게/.test(trimmed) && CUSTOMER_CHANGE_SEGMENT_RE.test(trimmed)) return null;
   for (const clause of clauses) {
     if (!CUSTOMER_SEGMENT_RE.test(clause)) continue;
     if (!isCustomerDefinitionClause(clause)) continue;
@@ -161,8 +174,8 @@ function extractCustomerEvidence(clauses: string[], trimmed: string): AnswerSema
     return {
       dimension: 'customer',
       summary,
-      evidence: seg,
-      interpretedMeaning: 'CEO 답변 — 고객(누구) evidence',
+      evidence: summary,
+      interpretedMeaning: 'CEO 답변 — 고객(누구) meaning unit',
       reason: dimensionReason('customer'),
     };
   }
@@ -173,8 +186,8 @@ function extractCustomerEvidence(clauses: string[], trimmed: string): AnswerSema
       return {
         dimension: 'customer',
         summary,
-        evidence: clip(trimmed),
-        interpretedMeaning: 'CEO 답변 — 고객(누구) evidence',
+        evidence: summary,
+        interpretedMeaning: 'CEO 답변 — 고객(누구) meaning unit',
         reason: dimensionReason('customer'),
       };
     }
@@ -182,41 +195,70 @@ function extractCustomerEvidence(clauses: string[], trimmed: string): AnswerSema
   return null;
 }
 
+function isOutcomeClause(clause: string): boolean {
+  return (
+    SOLUTION_BENEFIT_ONLY_RE.test(clause) ||
+    /(?:누락|확인\s*시간).*(?:줄|단축|감).*(?:수\s*있|할\s*수)/.test(clause) ||
+    /(?:줄이|아낄|단축).*(?:수\s*있|할\s*수|습니다)/.test(clause)
+  );
+}
+
 function extractProblemEvidence(clauses: string[], trimmed: string): AnswerSemanticEvidence | null {
   if (/가장\s*큰\s*변화|변화입니다/.test(trimmed)) return null;
+  if (SOLUTION_BENEFIT_ONLY_RE.test(trimmed) && !/(?:엑셀|따로|심각|10%)/.test(trimmed)) {
+    return null;
+  }
+
+  const units: string[] = [];
   for (const clause of clauses) {
-    if (CUSTOMER_CHANGE_SEGMENT_RE.test(clause) && /(?:수\s*있|기대|목표|달라)/.test(clause)) {
-      continue;
-    }
-    if (SOLUTION_BENEFIT_ONLY_RE.test(clause) || /실수를\s*줄|시간을\s*아낄/.test(clause)) {
-      continue;
-    }
+    if (isOutcomeClause(clause)) continue;
     if (SOLUTION_SEGMENT_RE.test(clause) && !PROBLEM_SEGMENT_RE.test(clause)) continue;
-    if (PROBLEM_SEGMENT_RE.test(clause)) {
-      const problemOnly =
-        clause.match(
-          /(?:엑셀[^,.;]{0,30}?(?:관리|누락)|카카오[^,.;]{0,30}|누락[^,.;]{0,30}|불편[^,.;]{0,30}|문제[^,.;]{0,40}|놓치[^,.;]{0,30}|재주문[^,.;]{0,30}|확인\s*시간[^,.;]{0,30}|심각[^,.;]{0,20})/i,
-        )?.[0] ?? clause;
-      return {
-        dimension: 'problem',
-        summary: clip(problemOnly.trim().length >= 4 ? problemOnly : clause),
-        evidence: clip(clause),
-        interpretedMeaning: 'CEO 답변 — 문제/불편 evidence',
-        reason: dimensionReason('problem'),
-      };
+    if (!PROBLEM_SEGMENT_RE.test(clause)) continue;
+
+    const excel = clause.match(/엑셀[^,.;]{0,24}?(?:관리|누락)/i)?.[0];
+    if (excel) units.push(clip(excel.replace(/\s*누락.*$/, '').trim() || excel, 32));
+
+    if (/배송\s*누락/.test(clause) && !/(?:줄|감|단축)/.test(clause)) {
+      units.push('배송 누락');
+    }
+    if (/따로\s*관리/.test(clause)) units.push('주문·배송 분리 관리');
+    if (/확인\s*시간/.test(clause) && !/(?:단축|줄)/.test(clause)) {
+      units.push(clip(clause.match(/확인\s*시간[^,.;]{0,20}/i)?.[0] ?? '확인 시간', 24));
+    }
+    if (/10%|심각/.test(clause)) {
+      units.push(clip(clause.match(/[^,.;]{0,30}(?:10%|심각)[^,.;]{0,20}/i)?.[0] ?? clause, 36));
+    }
+    if (/놓치|재주문/.test(clause)) {
+      units.push(clip(clause.match(/[^,.;]{0,40}(?:놓치|재주문)[^,.;]{0,24}/i)?.[0] ?? clause, 40));
     }
   }
-  const alt = pickSegment(clauses, /(?:엑셀|카카오|카톡|수기)/i, trimmed);
-  if (alt && PROBLEM_SEGMENT_RE.test(trimmed)) {
-    return {
-      dimension: 'problem',
-      summary: clip(`현재 ${alt}(으)로 관리하며 불편`),
-      evidence: alt,
-      interpretedMeaning: 'CEO 답변 — 기존 방식/문제 evidence',
-      reason: 'CEO 답변에서 기존 방식·문제 evidence 추출',
-    };
+
+  const unique = [...new Set(units.map((u) => u.trim()).filter((u) => u.length >= 4))];
+  if (unique.length === 0) {
+    for (const clause of clauses) {
+      if (isOutcomeClause(clause)) continue;
+      if (PROBLEM_SEGMENT_RE.test(clause)) {
+        const problemOnly =
+          clause.match(
+            /(?:엑셀[^,.;]{0,30}?(?:관리|누락)|카카오[^,.;]{0,30}|누락[^,.;]{0,30}|불편[^,.;]{0,30}|문제[^,.;]{0,40}|놓치[^,.;]{0,30}|재주문[^,.;]{0,30}|확인\s*시간[^,.;]{0,30}|심각[^,.;]{0,20})/i,
+          )?.[0] ?? clause;
+        unique.push(clip(problemOnly.trim(), 40));
+        break;
+      }
+    }
   }
-  return null;
+
+  if (unique.length === 0) return null;
+
+  const summary = clip(unique.join(' · '));
+  const evidence = unique[0]!;
+  return {
+    dimension: 'problem',
+    summary,
+    evidence,
+    interpretedMeaning: 'CEO 답변 — 문제/불편 meaning unit',
+    reason: dimensionReason('problem'),
+  };
 }
 
 function extractSolutionEvidence(clauses: string[], trimmed: string): AnswerSemanticEvidence | null {
@@ -288,9 +330,26 @@ function extractCustomerChangeEvidence(clauses: string[], trimmed: string): Answ
   };
 }
 
-function dedupeEvidences(evidences: AnswerSemanticEvidence[]): AnswerSemanticEvidence[] {
+function enforceDistinctEvidenceSpans(evidences: AnswerSemanticEvidence[]): AnswerSemanticEvidence[] {
+  if (!isAiPmJudgmentMeaningModelV1Active()) return evidences;
   const out: AnswerSemanticEvidence[] = [];
   for (const ev of evidences) {
+    const overlaps = out.some(
+      (e) =>
+        e.dimension !== ev.dimension &&
+        (isSemanticCopy(e.evidence, ev.evidence) ||
+          isSemanticCopy(e.summary, ev.evidence) ||
+          isSemanticCopy(ev.summary, e.evidence)),
+    );
+    if (!overlaps) out.push(ev);
+  }
+  return out;
+}
+
+function dedupeEvidences(evidences: AnswerSemanticEvidence[]): AnswerSemanticEvidence[] {
+  const separated = enforceDistinctEvidenceSpans(evidences);
+  const out: AnswerSemanticEvidence[] = [];
+  for (const ev of separated) {
     const dup = out.find(
       (e) =>
         e.dimension !== ev.dimension &&

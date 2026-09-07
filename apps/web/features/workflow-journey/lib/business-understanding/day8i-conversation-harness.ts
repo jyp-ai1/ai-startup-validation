@@ -8,6 +8,7 @@ import type { BusinessUnderstanding } from '@repo/types/domain/business-understa
 import { buildBusinessUnderstanding } from './build-business-understanding';
 import { buildCeoJudgmentStateWithTrace } from './ai-pm-judgment-aggregation';
 import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
+import { emptyCeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 import { buildBusinessReviewResult } from './ai-pm-business-review';
 import {
   detectDimensionSeparationIssues,
@@ -25,6 +26,11 @@ import {
 import { resolveNextQuestionDecision } from './resolve-next-question-decision';
 import { isNextQuestionDecision } from './decide-next-question-from-review';
 import { syncJudgmentAfterAnswer, openBusinessReview } from './ai-pm-judgment-loop-sync';
+import {
+  formatResearchAcknowledgement,
+  formatReviewModeDisplay,
+  isResearchIntentAnswer,
+} from './ai-pm-review-mode-prompt';
 import { applyNoGapTermination } from './ai-pm-no-gap-termination';
 import {
   clearProjectConsultingState,
@@ -274,17 +280,29 @@ export function runDay8iConversation(input: {
     const binding = targetGap ? resolveGapQuestionBinding(targetGap) : null;
     const askedGap = step.askedGap ?? targetGap ?? binding?.targetGap ?? 'customerPersona';
     const askedIssueId = step.askedIssueId ?? binding?.issueId ?? 'customer_definition';
-    const displayQuestion = decision
-      ? question || binding?.questionText || '질문'
-      : '(검토 모드 — 추가 질문 없음)';
+
+    let displayQuestion: string;
+    if (decision) {
+      displayQuestion = question || binding?.questionText || '질문';
+    } else if (askTerminated || !decision) {
+      if (isResearchIntentAnswer(step.ceoAnswer) || step.category === 'I_research') {
+        displayQuestion = formatResearchAcknowledgement(step.ceoAnswer);
+      } else {
+        displayQuestion = formatReviewModeDisplay(
+          loop.ceoJudgment ?? emptyCeoJudgmentState(i + 1),
+        );
+      }
+    } else {
+      displayQuestion = '(검토 모드 — 추가 질문 없음)';
+    }
 
     if (i > 0) {
       const prevQ = questionHistory[i - 1]?.text;
       if (
         prevQ &&
         displayQuestion &&
-        !displayQuestion.startsWith('(검토') &&
-        !prevQ.startsWith('(검토') &&
+        !displayQuestion.startsWith('[') &&
+        !prevQ.startsWith('[') &&
         (prevQ.trim() === displayQuestion.trim() ||
           isSameMeaningQuestion(prevQ, displayQuestion))
       ) {
@@ -506,10 +524,10 @@ export function runDay8iConversation(input: {
   const repeatedQuestions: Day8iConversationResult['repeatedQuestions'] = [];
   for (let i = 1; i < questionHistory.length; i += 1) {
     const cur = questionHistory[i]!;
-    if (!cur.text.trim() || cur.text.startsWith('(검토')) continue;
+    if (!cur.text.trim() || isReviewOrAckPrompt(cur.text)) continue;
     for (let j = 0; j < i; j += 1) {
       const prev = questionHistory[j]!;
-      if (!prev.text.trim() || prev.text.startsWith('(검토')) continue;
+      if (!prev.text.trim() || isReviewOrAckPrompt(prev.text)) continue;
       if (cur.text.trim() === prev.text.trim()) {
         repeatedQuestions.push({
           turn: cur.turn,
@@ -536,6 +554,15 @@ export function runDay8iConversation(input: {
     consecutiveRepeats,
     repeatedNextQuestions,
   };
+}
+
+function isReviewOrAckPrompt(text: string): boolean {
+  const t = text.trim();
+  return (
+    t.startsWith('[현재 AI 판단]') ||
+    t.startsWith('알겠습니다.') ||
+    t.startsWith('(검토')
+  );
 }
 
 function classifyAnswerHasDimension(answer: string, dim: string): boolean {

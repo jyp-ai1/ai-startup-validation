@@ -1,5 +1,5 @@
 /**
- * Generates DAY 8-I P0 FIX-3 REVALIDATION report for CPO 4차 review.
+ * Generates DAY 8-I P0 FIX-4 REVALIDATION report for CPO review.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -15,9 +15,9 @@ import { setAiPmAnswerSemanticSotV1ForTest } from '../ai-pm-answer-semantic-sot-
 import { clearAiPmLoopState } from '../workspace-ai-pm-loop-store';
 import { clearProjectConsultingState } from '../project-consulting-store';
 import {
-  evaluateFix3Revalidation,
-  formatFix3RevalidationReport,
-} from '../day8i-fix3-revalidation-report';
+  evaluateFix4Revalidation,
+  formatFix4RevalidationReport,
+} from '../day8i-fix4-revalidation-report';
 
 function stubSessionStorage() {
   const store = new Map<string, string>();
@@ -51,10 +51,10 @@ function gitBranch(): string {
   }
 }
 
-export function generateFix3RevalidationReport(): {
+export function generateFix4RevalidationReport(): {
   report: string;
   overallPass: boolean;
-  criticalFailureCount: number;
+  semanticChainFailureCount: number;
 } {
   stubSessionStorage();
   setV3ReviewPipelineForTest(true);
@@ -62,33 +62,38 @@ export function generateFix3RevalidationReport(): {
   setAiPmAnswerSemanticSotV1ForTest(true);
   setAiPmJudgmentMeaningModelV1ForTest(true);
 
-  const projectId = `fix3-reval-${Date.now()}`;
+  const projectId = `fix4-reval-${Date.now()}`;
   const result = runDay8iConversation({ projectId });
   clearAiPmLoopState(projectId);
   clearProjectConsultingState(projectId);
 
-  const reval = evaluateFix3Revalidation(result);
-  const report = formatFix3RevalidationReport(result, {
-    commitSha: gitSha(),
-    branch: gitBranch(),
-    executedAt: new Date().toISOString(),
-    pipeline:
-      'CEO Answer → V3 Review → Semantic SoT → Evidence → Dimension → Judgment → Trace → Next Decision → Business Review',
-    flags: {
-      v3ReviewPipeline: true,
-      judgmentAggregation: true,
-      answerSemanticSot: true,
+  const reval = evaluateFix4Revalidation(result);
+  const report = formatFix4RevalidationReport(
+    result,
+    {
+      commitSha: gitSha(),
+      branch: gitBranch(),
+      executedAt: new Date().toISOString(),
+      pipeline:
+        'CEO Answer → V3 Review → Semantic SoT → Meaning Unit → Evidence → Dimension → Accumulative Judgment → Trace → Review UX → Business Review',
+      flags: {
+        v3ReviewPipeline: true,
+        judgmentAggregation: true,
+        answerSemanticSot: true,
+      },
+      meaningModel: true,
     },
-  }, reval);
+    reval,
+  );
 
   return {
     report,
-    overallPass: reval.overallPass,
-    criticalFailureCount: reval.criticalFailures.length,
+    overallPass: reval.fix4OverallPass,
+    semanticChainFailureCount: reval.semanticChainFailures.length,
   };
 }
 
-describe('DAY 8-I P0 FIX-3 REVALIDATION', () => {
+describe('DAY 8-I P0 FIX-4 REVALIDATION', () => {
   beforeEach(() => {
     stubSessionStorage();
     setV3ReviewPipelineForTest(true);
@@ -105,24 +110,26 @@ describe('DAY 8-I P0 FIX-3 REVALIDATION', () => {
     vi.unstubAllGlobals();
   });
 
-  it('generates Sections A–J revalidation report', () => {
-    const { report, overallPass, criticalFailureCount } = generateFix3RevalidationReport();
+  it('generates FIX-4 Sections A–N revalidation report', () => {
+    const { report, overallPass, semanticChainFailureCount } =
+      generateFix4RevalidationReport();
 
-    expect(report).toContain('## Section A');
-    expect(report).toContain('## Section B');
-    expect(report).toContain('## Section J');
-    expect(report).toContain('Turn 01');
-    expect(report).toContain('Turn 30');
-    expect(report).toContain('Section I — Final Business Review');
+    expect(report).toContain('## Section K');
+    expect(report).toContain('## Section M');
+    expect(report).toContain('Judgment Meaning Model');
+    expect(report).toContain('[현재 AI 판단]');
+    expect(report).toContain('알겠습니다. 경쟁사');
 
     const outDir = path.resolve(__dirname, '../../../../../../../docs/evidence/ALABOM');
     fs.mkdirSync(outDir, { recursive: true });
-    const outPath = path.join(outDir, 'DAY_8I_P0_FIX3_REVALIDATION_REPORT.md');
+    const outPath = path.join(outDir, 'DAY_8I_P0_FIX4_REVALIDATION_REPORT.md');
     fs.writeFileSync(outPath, report, 'utf8');
 
-    console.info(`[fix3-reval] Report: ${outPath}`);
-    console.info(`[fix3-reval] Overall: ${overallPass ? 'PASS' : 'FAIL'} (${criticalFailureCount} critical failures)`);
+    console.info(`[fix4-reval] Report: ${outPath}`);
+    console.info(
+      `[fix4-reval] Overall: ${overallPass ? 'PASS' : 'FAIL'} (${semanticChainFailureCount} semantic chain failures)`,
+    );
 
-    expect(overallPass, `CPO revalidation must PASS — see ${outPath}`).toBe(true);
+    expect(overallPass, `CPO FIX-4 revalidation must PASS — see ${outPath}`).toBe(true);
   }, 180_000);
 });

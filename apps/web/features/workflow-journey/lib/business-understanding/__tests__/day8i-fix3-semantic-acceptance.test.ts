@@ -1,5 +1,6 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 
+import { setAiPmJudgmentMeaningModelV1ForTest } from '../ai-pm-judgment-meaning-model-v1';
 import { setAiPmAnswerSemanticSotV1ForTest } from '../ai-pm-answer-semantic-sot-v1';
 import { setAiPmJudgmentAggregationV1ForTest } from '../ai-pm-judgment-aggregation-v1';
 import { setV3ReviewPipelineForTest } from '../v3-review-pipeline';
@@ -15,6 +16,7 @@ import {
   evaluateTurnExpectation,
   type TurnAcceptanceFailure,
 } from '../day8i-fix3-turn-acceptance';
+import { evaluateAllSemanticChains } from '../day8i-fix4-semantic-chain';
 import { extractAnswerSemanticEvidences } from '../ai-pm-answer-semantic-sot';
 
 function stubSessionStorage() {
@@ -48,12 +50,14 @@ describe('DAY 8-I P0 FIX-3 — Answer Semantic SoT', () => {
     setV3ReviewPipelineForTest(true);
     setAiPmJudgmentAggregationV1ForTest(true);
     setAiPmAnswerSemanticSotV1ForTest(true);
+    setAiPmJudgmentMeaningModelV1ForTest(true);
   });
 
   afterEach(() => {
     setV3ReviewPipelineForTest(null);
     setAiPmJudgmentAggregationV1ForTest(null);
     setAiPmAnswerSemanticSotV1ForTest(null);
+    setAiPmJudgmentMeaningModelV1ForTest(null);
     vi.unstubAllGlobals();
     clearAiPmLoopState('fix3-accept');
     clearProjectConsultingState('fix3-accept');
@@ -150,6 +154,8 @@ describe('DAY 8-I P0 FIX-3 — Answer Semantic SoT', () => {
       failures.push(...detectCrossDimensionCopy(result.finalJudgmentSnapshot));
     }
     failures.push(...evaluateFinalReviewDimensions(result.finalJudgmentSnapshot));
+
+    failures.push(...evaluateAllSemanticChains(result.turns));
 
     expect(result.repeatedQuestions.length, 'repeated display questions').toBe(0);
     expect(result.repeatedNextQuestions.length, 'repeated next questions').toBe(0);

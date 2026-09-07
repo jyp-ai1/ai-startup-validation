@@ -6,6 +6,7 @@
 import type { CeoJudgmentDimensionId } from './ai-pm-ceo-judgment-dimensions';
 import type { Day8iConversationTurnRecord } from './day8i-conversation-harness';
 import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
+import { isSemanticCopy } from './ai-pm-judgment-target-binding';
 
 export type TurnDimensionExpectation = {
   turnIndex: number;
@@ -20,6 +21,8 @@ export type TurnDimensionExpectation = {
   stateMustNotContain?: Partial<Record<CeoJudgmentDimensionId, RegExp>>;
   /** Trace evidence must include pattern */
   evidenceMustContain?: Partial<Record<CeoJudgmentDimensionId, RegExp>>;
+  /** When true, trace evidence spans must not overlap across dimensions */
+  evidenceMustNotOverlap?: boolean;
   /** Non-judgment slots — no 4-dimension update expected */
   nonJudgmentSlot?: 'payer' | 'research' | 'businessGoal' | 'marketUnknown' | 'frozen';
 };
@@ -45,6 +48,7 @@ export const FIX3_CRITICAL_TURN_EXPECTATIONS: TurnDimensionExpectation[] = [
     turnIndex: 4,
     label: 'T04 customerChange',
     mustUpdate: ['customerChange'],
+    mustNotUpdate: ['problem'],
     stateMustContain: { customerChange: /누락|확인|단축|줄/ },
   },
   {
@@ -60,9 +64,10 @@ export const FIX3_CRITICAL_TURN_EXPECTATIONS: TurnDimensionExpectation[] = [
     mustUpdate: ['customer', 'problem', 'solution'],
     evidenceMustContain: {
       customer: /양조/,
-      problem: /누락|엑셀/,
+      problem: /엑셀|누락/,
       solution: /한\s*곳|관리/,
     },
+    evidenceMustNotOverlap: true,
   },
   {
     turnIndex: 7,
@@ -258,6 +263,25 @@ export function evaluateTurnExpectation(
     }
   }
 
+  if (spec.evidenceMustNotOverlap && turn.trace?.dimensionEntries.length) {
+    const entries = turn.trace.dimensionEntries;
+    for (let i = 0; i < entries.length; i += 1) {
+      for (let j = i + 1; j < entries.length; j += 1) {
+        const a = entries[i]!;
+        const b = entries[j]!;
+        if (isSemanticCopy(a.evidence, b.evidence)) {
+          failures.push({
+            turnIndex: spec.turnIndex,
+            label: spec.label,
+            field: 'evidenceMustNotOverlap',
+            expected: 'distinct evidence spans',
+            actual: `${a.affectedDimension}="${a.evidence}" vs ${b.affectedDimension}="${b.evidence}"`,
+          });
+        }
+      }
+    }
+  }
+
   if (spec.nonJudgmentSlot && traceDims.length > 0) {
     failures.push({
       turnIndex: spec.turnIndex,
@@ -307,6 +331,17 @@ export function evaluateFinalReviewDimensions(state: CeoJudgmentState | null): T
         label: 'P0-7 Final Review',
         field: label,
         expected: re.toString(),
+        actual: d.summary,
+      });
+    } else if (
+      dim === 'solution' &&
+      !(/SaaS|한\s*곳|통합/.test(d.summary) && /MVP|모바일|체크리스트/.test(d.summary))
+    ) {
+      failures.push({
+        turnIndex: 30,
+        label: 'P0-7 Final Review',
+        field: label,
+        expected: 'accumulated solution (base SaaS/통합 + MVP/모바일 refinement)',
         actual: d.summary,
       });
     } else if (

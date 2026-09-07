@@ -27,6 +27,8 @@ import {
   classifyJudgmentChangeType,
   type JudgmentTraceEntry,
 } from './ai-pm-judgment-trace';
+import { mergeDimensionAccumulative } from './ai-pm-judgment-accumulative-merge';
+import { isAiPmJudgmentMeaningModelV1Active } from './ai-pm-judgment-meaning-model-v1';
 import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
 import { evaluateAnswerQuality } from './understanding-contract';
 import type { LivingUnderstandingState } from './living-understanding-state';
@@ -70,6 +72,13 @@ function mergeDimension(
   next: Partial<CeoJudgmentDimension>,
   options?: { preferUserExtract?: boolean },
 ): CeoJudgmentDimension {
+  if (
+    isAiPmJudgmentMeaningModelV1Active() &&
+    (prior.id === 'solution' || prior.id === 'problem') &&
+    next.summary?.trim()
+  ) {
+    return mergeDimensionAccumulative(prior, next);
+  }
   if (!next.summary?.trim()) return prior;
 
   if (isDocumentEchoSummary(next.summary) && prior.summary.trim() && !isDocumentEchoSummary(prior.summary)) {

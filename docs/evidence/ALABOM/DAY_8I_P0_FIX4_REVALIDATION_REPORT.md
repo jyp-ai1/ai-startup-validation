@@ -1,6 +1,6 @@
-# ALABOM — DAY 8-I P0 FIX-3 REVALIDATION Report
+# ALABOM — DAY 8-I P0 FIX-4 REVALIDATION Report
 
-> **CPO 4차 독립 검증용.** Unit test PASS ≠ 이 문서 PASS. 동일 Full Pipeline 결과만 유효.
+> **CPO FIX-4 독립 검증용.** FIX-3 semantic SoT + meaning model + review UX. Unit test PASS ≠ 이 문서 PASS. 동일 Full Pipeline 결과만 유효.
 
 ## Executive Summary
 
@@ -8,13 +8,15 @@
 |-------|-------|
 | Commit SHA | `117a609d65e612657fddd1c25bc55c08c78d1dad` |
 | Branch | `cursor/day8i-p0-fix4-judgment-model-6423` |
-| Executed (UTC) | 2026-09-07T04:26:53.695Z |
-| Pipeline | CEO Answer → V3 Review → Semantic SoT → Evidence → Dimension → Judgment → Trace → Next Decision → Business Review |
+| Executed (UTC) | 2026-09-07T04:27:26.136Z |
+| Pipeline | CEO Answer → V3 Review → Semantic SoT → Meaning Unit → Evidence → Dimension → Accumulative Judgment → Trace → Review UX → Business Review |
 | V3 Review | ON |
 | Judgment Aggregation | ON |
 | Answer Semantic SoT | ON |
+| Judgment Meaning Model | ON |
 | **Overall CPO Revalidation** | **PASS** |
 | Critical turn failures | 0 |
+| Semantic chain failures | 0 |
 | Unsupported inference | 0 |
 | Repeated next questions | 0 |
 
@@ -83,13 +85,13 @@ Understanding (spine):
 문제: 주문과 배송을 따로 관리해야 함
 
 Judgment One-liner:
-소규모 양조장과 반찬가게 사장님이 주 고객입니다의 주문·배송 분리 관리 · 배송 누락 문제를 다루는 사업으로 이해했습니다.
+소규모 양조장과 반찬가게 사장님이 주 고객입니다의 배송 누락 · 주문·배송 분리 관리 문제를 다루는 사업으로 이해했습니다.
 
 AI Interpretation:
 CEO 답변 — 문제/불편 meaning unit
 
 Evidence:
-주문·배송 분리 관리
+배송 누락
 
 Affected Dimension: problem
 
@@ -97,13 +99,13 @@ Previous Judgment:
   status=unknown summary="(empty)"
 
 New Judgment:
-  status=clear summary="주문·배송 분리 관리 · 배송 누락"
+  status=clear summary="배송 누락 · 주문·배송 분리 관리"
 
 Change Type: NEW
 
 Reason:
 CEO 답변에서 문제/불편 evidence 추출
-Newly Added Info: 주문·배송 분리 관리 · 배송 누락
+Newly Added Info: 배송 누락 · 주문·배송 분리 관리
 
 Next Question:
 지금 가장 크게 해결하려는 불편은 무엇인가요?
@@ -127,7 +129,7 @@ Understanding (spine):
 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
 
 Judgment One-liner:
-소규모 양조장과 반찬가게 사장님이 주 고객입니다의 주문·배송 분리 관리 · 배송 누락을(를) 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 방향으로 해결하려는 서비스로 이해했습니다.
+소규모 양조장과 반찬가게 사장님이 주 고객입니다의 배송 누락 · 주문·배송 분리 관리을(를) 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 방향으로 해결하려는 서비스로 이해했습니다.
 
 AI Interpretation:
 CEO 답변 — 해결 방법 evidence
@@ -171,7 +173,7 @@ Understanding (spine):
 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
 
 Judgment One-liner:
-소규모 양조장과 반찬가게 사장님이 주 고객입니다의 주문·배송 분리 관리 · 배송 누락을(를) 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 방향으로 해결하려는 서비스로 이해했습니다.
+소규모 양조장과 반찬가게 사장님이 주 고객입니다의 배송 누락 · 주문·배송 분리 관리을(를) 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 방향으로 해결하려는 서비스로 이해했습니다.
 
 AI Interpretation:
 CEO 답변 — 고객 체감 변화 evidence
@@ -208,7 +210,7 @@ CEO Answer:
 AI Question:
 [현재 AI 판단]
 고객: 소규모 양조장과 반찬가게 사장님이 주 고객입니다.
-문제: 주문·배송 분리 관리 · 배송 누락
+문제: 배송 누락 · 주문·배송 분리 관리
 해결 방법: 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다
 고객에게 달라지는 점: 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다.
 
@@ -233,7 +235,7 @@ Evidence:
 Affected Dimension: problem
 
 Previous Judgment:
-  status=clear summary="주문·배송 분리 관리 · 배송 누락"
+  status=clear summary="배송 누락 · 주문·배송 분리 관리"
 
 New Judgment:
   status=clear summary="배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락"
@@ -243,7 +245,7 @@ Change Type: CONFIRMED
 Reason:
 CEO 답변에서 문제/불편 evidence 추출
 
-Known Prior Info: 주문·배송 분리 관리 · 배송 누락
+Known Prior Info: 배송 누락 · 주문·배송 분리 관리
 
 Next Question:
 (none)
@@ -1577,7 +1579,7 @@ CEO Answer:
 AI Question:
 [현재 AI 판단]
 고객: 소규모 양조장과 반찬가게 사장님이 주 고객입니다.
-문제: 주문·배송 분리 관리 · 배송 누락
+문제: 배송 누락 · 주문·배송 분리 관리
 해결 방법: 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다
 고객에게 달라지는 점: 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다.
 
@@ -1603,7 +1605,7 @@ Actual Evidence:
 - problem: 엑셀로 주문을 관리
 
 Previous State → New State:
-- problem: [clear] "주문·배송 분리 관리 · 배송 누락" → [clear] "배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락" (CONFIRMED)
+- problem: [clear] "배송 누락 · 주문·배송 분리 관리" → [clear] "배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락" (CONFIRMED)
 
 Next Question:
 (none)
@@ -2347,9 +2349,9 @@ Next Question:
 | Turn | Customer | Problem | Solution | Customer Change |
 |------|----------|---------|----------|-----------------|
 | 01 | 🟡 소규모 양조장과 반찬가게 사장님이 주 고객입니다. | 🔴 (empty) | 🔴 (empty) | 🔴 (empty) |
-| 02 | 🟡 소규모 양조장과 반찬가게 사장님이 주 고객입니다. | 🟢 주문·배송 분리 관리 · 배송 누락 | 🔴 (empty) | 🔴 (empty) |
-| 03 | 🟡 소규모 양조장과 반찬가게 사장님이 주 고객입니다. | 🟢 주문·배송 분리 관리 · 배송 누락 | 🟡 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 | 🔴 (empty) |
-| 04 | 🟡 소규모 양조장과 반찬가게 사장님이 주 고객입니다. | 🟢 주문·배송 분리 관리 · 배송 누락 | 🟡 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 | 🟢 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다. |
+| 02 | 🟡 소규모 양조장과 반찬가게 사장님이 주 고객입니다. | 🟢 배송 누락 · 주문·배송 분리 관리 | 🔴 (empty) | 🔴 (empty) |
+| 03 | 🟡 소규모 양조장과 반찬가게 사장님이 주 고객입니다. | 🟢 배송 누락 · 주문·배송 분리 관리 | 🟡 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 | 🔴 (empty) |
+| 04 | 🟡 소규모 양조장과 반찬가게 사장님이 주 고객입니다. | 🟢 배송 누락 · 주문·배송 분리 관리 | 🟡 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 | 🟢 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다. |
 | 05 | 🟡 소규모 양조장과 반찬가게 사장님이 주 고객입니다. | 🟢 배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락 | 🟡 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 | 🟢 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다. |
 | 06 | 🟡 소규모 양조장 | 🟢 배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락 | 🟡 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 ·  | 🟢 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다. |
 | 07 | 🟡 소규모 양조장과 반찬가게 사장님이 주 고객입니다. | 🟢 배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락 | 🟡 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 ·  | 🟢 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다. |
@@ -2641,7 +2643,7 @@ Source Turn / Evidence:
 | ID | Verdict | Rationale |
 |----|---------|-----------|
 | CPO-R1 | **PASS** | customer=소규모 양조장과 반찬가게 사장님이 주 고객입니다. solution=unknown |
-| CPO-R2 | **PASS** | problem=주문·배송 분리 관리 · 배송 누락 |
+| CPO-R2 | **PASS** | problem=배송 누락 · 주문·배송 분리 관리 |
 | CPO-R3 | **PASS** | solution=주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 |
 | CPO-R4 | **PASS** | customerChange=배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다. |
 | CPO-R5 | **PASS** | off-slot → problem=엑셀로 주문을 관리 · 배송 누락 |
@@ -2657,7 +2659,7 @@ Source Turn / Evidence:
 | ID | Verdict | Rationale |
 |----|---------|-----------|
 | CPO-R1 | **PASS** | customer=소규모 양조장과 반찬가게 사장님이 주 고객입니다. solution=unknown |
-| CPO-R2 | **PASS** | problem=주문·배송 분리 관리 · 배송 누락 |
+| CPO-R2 | **PASS** | problem=배송 누락 · 주문·배송 분리 관리 |
 | CPO-R3 | **PASS** | solution=주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 |
 | CPO-R4 | **PASS** | customerChange=배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다. |
 | CPO-R5 | **PASS** | off-slot → problem=엑셀로 주문을 관리 · 배송 누락 |
@@ -2686,5 +2688,296 @@ R1~R25: 37/37 PASS
 
 ---
 
-Report generated: 2026-09-07T04:26:53.695Z
+Report generated: 2026-09-07T04:27:26.136Z
 CPO Revalidation Gate: **PASS**
+---
+
+## Section K — Review Mode UX (FIX-4 P0-3)
+
+After no-gap termination, AI must show judgment + supplement paths (not silent stop).
+
+Review-mode turns: 24
+
+Sample display (Turn 09):
+```text
+[현재 AI 판단]
+고객: 고객은 양조장만이 아니라 반찬가게와 꽃집도 포함합니다.
+문제: 배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락
+해결 방법: 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 · 주문과 배송을 한 곳에서 관리하려고 합니다
+고객에게 달라지는 점: 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다.
+
+[다음 선택]
+· 이 부분 보완하기
+· 현재 정보로 계속 검토
+```
+
+Canonical review prompt template:
+```text
+[현재 AI 판단]
+고객: 고객은 양조장만이 아니라 반찬가게와 꽃집도 포함합니다.
+문제: 배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락이 주문 건수의 10% 정도로 매우 심각합니다 · 카카오톡과 엑셀을 동시에 써서 실수가 많습니다 · 반찬가게는 배송 시간을 놓치면 재주문이 줄어드는 문제가 있습니다 · 배송 누락 · 확인 시간이 더 큽니다
+해결 방법: 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 · 주문과 배송을 한 곳에서 관리하려고 합니다 · 모바일에서 주문 상태를 한눈에 보는 것이 핵심입니다 · 주문과 배송을 한 곳에서 관리하는 SaaS입니다 · MVP는 주문 입력과 배송 체크리스트만 제공할 계획입니다
+고객에게 달라지는 점: 배송 누락 감소와 확인 시간 단축이 고객에게 가장 큰 변화입니다.
+
+[다음 선택]
+· 이 부분 보완하기
+· 현재 정보로 계속 검토
+```
+
+---
+
+## Section L — Research Acknowledgement (FIX-4 P0-4)
+
+### Turn 12
+CEO: 경쟁사가 누군지 모르겠습니다. 확인해주세요.
+AI: 알겠습니다. 경쟁사 확인이 필요한 상태로 기록했습니다. [검토 흐름으로 돌아가기]
+
+### Turn 24
+CEO: 시장 조사는 AI가 해주면 좋겠습니다.
+AI: 알겠습니다. 시장 조사 요청으로 기록했습니다. [검토 흐름으로 돌아가기]
+
+
+---
+
+## Section M — Semantic Chain (FIX-4 P0-5)
+
+Each critical turn: CEO Answer → Meaning → Evidence Span → Dimension → State. Semantic mismatch = FAIL.
+
+#### Turn 01 Semantic Chain
+
+```text
+CEO Answer: 소규모 양조장과 반찬가게 사장님이 주 고객입니다.
+↓
+Meaning (customer): CEO 답변 — 고객(누구) meaning unit
+Evidence Span: 소규모 양조장과 반찬가게 사장님이 주 고객입니다.
+Expected Dimension: customer
+Actual Dimension: customer
+Previous State: [unknown] "(empty)"
+New State: [needs_check] "소규모 양조장과 반찬가게 사장님이 주 고객입니다."
+Why Changed: NEW: CEO 답변에서 고객 세그먼트 evidence 추출
+---
+```
+
+#### Turn 03 Semantic Chain
+
+```text
+CEO Answer: 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다.
+↓
+Meaning (solution): CEO 답변 — 해결 방법 evidence
+Evidence Span: 주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다
+Expected Dimension: solution
+Actual Dimension: solution
+Previous State: [unknown] "(empty)"
+New State: [needs_check] "주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다"
+Why Changed: NEW: CEO 답변에서 해결 방법 evidence 추출
+---
+```
+
+#### Turn 04 Semantic Chain
+
+```text
+CEO Answer: 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다.
+↓
+Meaning (customerChange): CEO 답변 — 고객 체감 변화 evidence
+Evidence Span: 배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다.
+Expected Dimension: customerChange
+Actual Dimension: customerChange
+Previous State: [unknown] "(empty)"
+New State: [clear] "배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다."
+Why Changed: NEW: CEO 답변에서 고객 체감 변화 evidence 추출
+---
+```
+
+#### Turn 05 Semantic Chain
+
+```text
+CEO Answer: 엑셀로 주문을 관리하다 보니 배송 누락이 많습니다.
+↓
+Meaning (problem): CEO 답변 — 문제/불편 meaning unit
+Evidence Span: 엑셀로 주문을 관리
+Expected Dimension: problem
+Actual Dimension: problem
+Previous State: [clear] "배송 누락 · 주문·배송 분리 관리"
+New State: [clear] "배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락"
+Why Changed: CONFIRMED: CEO 답변에서 문제/불편 evidence 추출
+---
+```
+
+#### Turn 06 Semantic Chain
+
+```text
+CEO Answer: 소규모 양조장이 엑셀로 주문을 관리하고 배송 누락이 생겨서 주문과 배송을 한 곳에서 관리하려고 합니다.
+↓
+Meaning (customer): CEO 답변 — 고객(누구) meaning unit
+Evidence Span: 소규모 양조장
+Expected Dimension: customer
+Actual Dimension: customer
+Previous State: [needs_check] "소규모 양조장과 반찬가게 사장님이 주 고객입니다."
+New State: [needs_check] "소규모 양조장"
+Why Changed: CONFLICTED: CEO 답변에서 고객 세그먼트 evidence 추출
+---
+Meaning (problem): CEO 답변 — 문제/불편 meaning unit
+Evidence Span: 엑셀로 주문을 관리
+Expected Dimension: problem
+Actual Dimension: problem
+Previous State: [clear] "배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락"
+New State: [clear] "배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락"
+Why Changed: CONFIRMED: CEO 답변에서 문제/불편 evidence 추출
+---
+Meaning (solution): CEO 답변 — 해결 방법 evidence
+Evidence Span: 주문과 배송을 한 곳에서 관리하려고 합니다
+Expected Dimension: solution
+Actual Dimension: solution
+Previous State: [needs_check] "주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다"
+New State: [needs_check] "주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 · 주문과 배송을 한 곳에서 관리하려고 합니다"
+Why Changed: CONFIRMED: CEO 답변에서 해결 방법 evidence 추출
+---
+```
+
+#### Turn 08 Semantic Chain
+
+```text
+CEO Answer: 고객은 양조장만이 아니라 반찬가게와 꽃집도 포함합니다.
+↓
+Meaning (customer): CEO 답변 — 고객(누구) meaning unit
+Evidence Span: 고객은 양조장만이 아니라 반찬가게와 꽃집도 포함합니다.
+Expected Dimension: customer
+Actual Dimension: customer
+Previous State: [needs_check] "소규모 양조장과 반찬가게 사장님이 주 고객입니다."
+New State: [needs_check] "고객은 양조장만이 아니라 반찬가게와 꽃집도 포함합니다."
+Why Changed: CONFLICTED: CEO가 고객 정의를 수정함
+---
+```
+
+#### Turn 09 Semantic Chain
+
+```text
+CEO Answer: 배송 누락이 주문 건수의 10% 정도로 매우 심각합니다.
+↓
+Meaning (problem): CEO 답변 — 문제/불편 meaning unit
+Evidence Span: 배송 누락
+Expected Dimension: problem
+Actual Dimension: problem
+Previous State: [clear] "배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락"
+New State: [clear] "배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락 · 배송 누락이 주문 건수의 10% 정도로 매우 심각합니다"
+Why Changed: CHANGED: CEO 답변에서 문제/불편 evidence 추출
+---
+```
+
+#### Turn 16 Semantic Chain
+
+```text
+CEO Answer: 반찬가게는 배송 시간을 놓치면 재주문이 줄어드는 문제가 있습니다.
+↓
+Meaning (problem): CEO 답변 — 문제/불편 meaning unit
+Evidence Span: 반찬가게는 배송 시간을 놓치면 재주문이 줄어드는 문제가 있습니다
+Expected Dimension: problem
+Actual Dimension: problem
+Previous State: [clear] "배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락이 주문 건수의 10% 정도로 매우 심각합니다 · 카카오톡과 엑셀을 동시에 써서 실수가 많습니다"
+New State: [clear] "배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락이 주문 건수의 10% 정도로 매우 심각합니다 · 카카오톡과 엑셀을 동시에 써서 실수가 많습니다 · 반찬가게는 배송 시간을 놓치면 재주문이 줄어드는 문제가 있습니다"
+Why Changed: CONFIRMED: CEO 답변에서 문제/불편 evidence 추출
+---
+```
+
+#### Turn 18 Semantic Chain
+
+```text
+CEO Answer: 배송 누락을 80% 줄일 수 있다고 가설을 세웠습니다.
+↓
+Meaning (customerChange): CEO 답변 — 고객 체감 변화 evidence
+Evidence Span: 배송 누락을 80% 줄일 수 있다고 가설을 세웠습니다.
+Expected Dimension: customerChange
+Actual Dimension: customerChange
+Previous State: [clear] "배송 누락을 줄이고 주문 확인 시간을 단축할 수 있습니다."
+New State: [clear] "배송 누락을 80% 줄일 수 있다고 가설을 세웠습니다."
+Why Changed: CHANGED: CEO 답변에서 고객 체감 변화 evidence 추출
+---
+```
+
+#### Turn 21 Semantic Chain
+
+```text
+CEO Answer: 모바일에서 주문 상태를 한눈에 보는 것이 핵심입니다.
+↓
+Meaning (solution): CEO 답변 — 해결 방법 evidence
+Evidence Span: 모바일에서 주문 상태를 한눈에 보는 것이 핵심입니다
+Expected Dimension: solution
+Actual Dimension: solution
+Previous State: [needs_check] "주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 · 주문과 배송을 한 곳에서 관리하려고 합니다"
+New State: [needs_check] "주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 · 주문과 배송을 한 곳에서 관리하려고 합니다 · 모바일에서 주문 상태를 한눈에 보는 것이 핵심입니다"
+Why Changed: CHANGED: CEO 답변에서 해결 방법 evidence 추출
+---
+```
+
+#### Turn 22 Semantic Chain
+
+```text
+CEO Answer: 사실 문제는 배송 누락보다 주문 확인 시간이 더 큽니다.
+↓
+Meaning (problem): CEO 답변 — 문제/불편 meaning unit
+Evidence Span: 배송 누락
+Expected Dimension: problem
+Actual Dimension: problem
+Previous State: [clear] "배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락이 주문 건수의 10% 정도로 매우 심각합니다 · 카카오톡과 엑셀을 동시에 써서 실수가 많습니다 · 반찬가게는 배송 시간을 놓치면 재주문이 줄어드는 문제가 있습니다"
+New State: [clear] "배송 분리 관리 · 엑셀로 주문을 관리 · 배송 누락이 주문 건수의 10% 정도로 매우 심각합니다 · 카카오톡과 엑셀을 동시에 써서 실수가 많습니다 · 반찬가게는 배송 시간을 놓치면 재주문이 줄어드는 문제가 있습니다 · 배송 누락 · 확인 시간이 더 큽니다"
+Why Changed: CONFIRMED: CEO가 문제 정의를 수정함
+---
+```
+
+#### Turn 26 Semantic Chain
+
+```text
+CEO Answer: 소상공인은 주문·배송 통합으로 실수를 줄이고 시간을 아낄 수 있습니다.
+↓
+Meaning (customerChange): CEO 답변 — 고객 체감 변화 evidence
+Evidence Span: 소상공인은 주문·배송 통합으로 실수를 줄이고 시간을 아낄 수 있습니다.
+Expected Dimension: customerChange
+Actual Dimension: customerChange
+Previous State: [clear] "배송 누락을 80% 줄일 수 있다고 가설을 세웠습니다."
+New State: [clear] "소상공인은 주문·배송 통합으로 실수를 줄이고 시간을 아낄 수 있습니다."
+Why Changed: CONFLICTED: CEO 답변에서 고객 체감 변화 evidence 추출
+---
+```
+
+#### Turn 28 Semantic Chain
+
+```text
+CEO Answer: MVP는 주문 입력과 배송 체크리스트만 제공할 계획입니다.
+↓
+Meaning (solution): CEO 답변 — 해결 방법 evidence
+Evidence Span: MVP는 주문 입력과 배송 체크리스트만 제공할 계획입니다
+Expected Dimension: solution
+Actual Dimension: solution
+Previous State: [needs_check] "주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 · 주문과 배송을 한 곳에서 관리하려고 합니다 · 모바일에서 주문 상태를 한눈에 보는 것이 핵심입니다 · 주문과 배송을 한 곳에서 관리하는 SaaS입니다"
+New State: [needs_check] "주문과 배송을 한 곳에서 관리하는 SaaS를 만들려고 합니다 · 주문과 배송을 한 곳에서 관리하려고 합니다 · 모바일에서 주문 상태를 한눈에 보는 것이 핵심입니다 · 주문과 배송을 한 곳에서 관리하는 SaaS입니다 · MVP는 주문 입력과 배송 체크리스트만 제공할 계획입니다"
+Why Changed: CONFIRMED: CEO 답변에서 해결 방법 evidence 추출
+---
+```
+
+#### Turn 30 Semantic Chain
+
+```text
+CEO Answer: 배송 누락 감소와 확인 시간 단축이 고객에게 가장 큰 변화입니다.
+↓
+Meaning (customerChange): CEO 답변 — 고객 체감 변화 evidence
+Evidence Span: 배송 누락 감소와 확인 시간 단축이 고객에게 가장 큰 변화입니다.
+Expected Dimension: customerChange
+Actual Dimension: customerChange
+Previous State: [clear] "소상공인은 주문·배송 통합으로 실수를 줄이고 시간을 아낄 수 있습니다."
+New State: [clear] "배송 누락 감소와 확인 시간 단축이 고객에게 가장 큰 변화입니다."
+Why Changed: CONFLICTED: CEO 답변에서 고객 체감 변화 evidence 추출
+---
+```
+
+
+---
+
+## Section N — FIX-4 CPO Gate Summary
+
+| P0 | Requirement | Verdict |
+|----|-------------|---------|
+| P0-1 | Distinct meaning-unit evidence spans | PASS |
+| P0-2 | Accumulative solution/problem merge | PASS |
+| P0-3 | Review mode judgment + supplement paths | PASS |
+| P0-4 | Research intent acknowledgement | PASS |
+| P0-5 | Semantic chain validation | PASS |
