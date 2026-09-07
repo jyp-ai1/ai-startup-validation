@@ -10,6 +10,8 @@ import type {
 } from './ai-pm-ceo-judgment-dimensions';
 import { CEO_JUDGMENT_DIMENSION_LABELS } from './ai-pm-ceo-judgment-dimensions';
 import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
+import { isAiPmJudgmentFix8V1Active } from './ai-pm-judgment-fix8-v1';
+import { syncCanonicalJudgmentState } from './ai-pm-judgment-canonical-state';
 import {
   renderSolutionJudgmentStructured,
   layersFromLegacySummary,
@@ -159,6 +161,11 @@ export function finalizeJudgmentPresentation(state: CeoJudgmentState): CeoJudgme
       ? buildDynamicNextCheckPrompt(nextId)
       : buildNextCheckPrompt(nextId)
     : null;
+
+  if (isAiPmJudgmentFix8V1Active()) {
+    nextState = syncCanonicalJudgmentState(nextState);
+  }
+
   return {
     ...nextState,
     oneLiner: buildJudgmentOneLiner(nextState),

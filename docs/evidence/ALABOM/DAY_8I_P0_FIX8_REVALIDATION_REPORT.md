@@ -1,6 +1,6 @@
-# ALABOM — DAY 8-I P0 FIX-6 REVALIDATION Report
+# ALABOM — DAY 8-I P0 FIX-8 REVALIDATION Report
 
-> **CPO FIX-6 독립 검증용.** Evidence-grounded judgment + priority correction + dynamic focus. FIX-3 semantic SoT + meaning model + review UX. Unit test PASS ≠ 이 문서 PASS. 동일 Full Pipeline 결과만 유효.
+> **CPO FIX-8 독립 검증용.** Canonical current judgment + evidence fidelity + state-based focus. FIX-3 semantic SoT + meaning model + review UX. Unit test PASS ≠ 이 문서 PASS. 동일 Full Pipeline 결과만 유효.
 
 ## Executive Summary
 
@@ -8,14 +8,16 @@
 |-------|-------|
 | Commit SHA | `c68dacd6feae241c8fa6e4bfc8404dbd9fe048d5` |
 | Branch | `cursor/day8i-p0-fix8-judgment-canonical-6423` |
-| Executed (UTC) | 2026-09-07T08:21:50.397Z |
-| Pipeline | CEO Answer → Meaning → Evidence Span → Judgment Structure → Source Turn → Business Review |
+| Executed (UTC) | 2026-09-07T08:21:45.516Z |
+| Pipeline | CEO Answer → Canonical Judgment State → Evidence Fidelity → Source Turn → Final Review |
 | V3 Review | ON |
 | Judgment Aggregation | ON |
 | Answer Semantic SoT | ON |
 | Judgment Meaning Model | ON |
-| Judgment FIX-5 (structured) | ON |
-| Judgment FIX-6 (evidence model) | ON |
+| Judgment FIX-5 | ON |
+| Judgment FIX-6 | ON |
+| Judgment FIX-7 | ON |
+| Judgment FIX-8 | ON |
 | **Overall CPO Revalidation** | **PASS** |
 | Critical turn failures | 0 |
 | Semantic chain failures | 0 |
@@ -3370,7 +3372,7 @@ R1~R25: 33/37 PASS
 
 ---
 
-Report generated: 2026-09-07T08:21:50.397Z
+Report generated: 2026-09-07T08:21:45.516Z
 CPO Revalidation Gate: **PASS**
 ---
 
@@ -3715,18 +3717,20 @@ Why Changed: CONFLICTED: CEO 답변에서 고객 체감 변화 evidence 추출
 
 ---
 
-## Section P — FIX-6 CPO Gate Summary
+## Section R — FIX-8 CPO Gate Summary
 
 | P0 | Requirement | Verdict |
 |----|-------------|---------|
-| P0-1 | Judgment evidence model (conclusion + evidence[]) | PASS |
-| P0-2 | T22 priority correction (replace not append) | PASS |
-| P0-3 | Final Business Review evidence-grounded | PASS |
-| P0-4 | Dynamic next judgment focus | PASS |
-| P0-5 | Structured solution CEO display | PASS |
-| P0-6 | T26 expectation vs validated fact | PASS |
+| P0-1 | Dimension별 단일 Current Judgment | PASS |
+| P0-2 | Problem primary+related (no · append) | PASS |
+| P0-3 | Evidence fidelity (T09/T22 full span) | PASS |
+| P0-4 | Customer Change claim label + status lock | PASS |
+| P0-5 | State-based dynamic next focus | PASS |
+| P0-6 | Final Review = canonical state output | PASS |
 
-### Evidence Source Map (Section I — FIX-6)
+Customer Change heading: `고객에게 달라질 것으로 보는 점`
+
+### Structured Final Review
 
 ### 고객
 🟢 고객은 양조장만이 아니라 반찬가게와 꽃집도 포함합니다.
@@ -3757,4 +3761,4 @@ Source: Turn 29: "배송 누락 감소와 확인 시간 단축이 고객에게 �
 Aligned: ✅
 
 
-FIX-6 failures: 0
+FIX-8 failures: 0

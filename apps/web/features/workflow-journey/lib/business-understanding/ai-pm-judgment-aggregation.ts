@@ -33,6 +33,12 @@ import { isAiPmJudgmentFix5V1Active } from './ai-pm-judgment-fix5-v1';
 import { mergeStructuredSolutionDimension } from './ai-pm-judgment-structured-solution';
 import { isAiPmJudgmentFix6V1Active } from './ai-pm-judgment-fix6-v1';
 import { isAiPmJudgmentFix7V1Active } from './ai-pm-judgment-fix7-v1';
+import { isAiPmJudgmentFix8V1Active } from './ai-pm-judgment-fix8-v1';
+import {
+  mergeCanonicalCustomer,
+  mergeCanonicalCustomerChange,
+  mergeCanonicalProblem,
+} from './ai-pm-judgment-canonical-state';
 import {
   applyEvidenceToDimension,
   type JudgmentEvidenceRecord,
@@ -94,12 +100,69 @@ function mergeDimension(
     isCorrection?: boolean;
   },
 ): CeoJudgmentDimension {
-  if (isAiPmJudgmentFix7V1Active() && prior.id === 'customerChange') {
+  if (
+    (isAiPmJudgmentFix7V1Active() || isAiPmJudgmentFix8V1Active()) &&
+    prior.id === 'customerChange'
+  ) {
     next = {
       ...next,
       status: 'needs_check',
       evidenceType: next.evidenceType ?? prior.evidenceType,
     };
+  }
+  if (
+    isAiPmJudgmentFix8V1Active() &&
+    prior.id === 'customerChange' &&
+    next.summary?.trim()
+  ) {
+    return mergeCanonicalCustomerChange(prior, {
+      conclusion: next.summary,
+      evidence: options?.evidence ?? next.summary,
+      sourceTurnIndex: options?.sourceTurnIndex,
+      evidenceType: next.evidenceType,
+    });
+  }
+  if (
+    isAiPmJudgmentFix8V1Active() &&
+    prior.id === 'customer' &&
+    next.summary?.trim()
+  ) {
+    return mergeCanonicalCustomer(prior, {
+      conclusion: next.summary,
+      evidence: options?.evidence ?? next.summary,
+      sourceTurnIndex: options?.sourceTurnIndex,
+      isCorrection: options?.isCorrection,
+    });
+  }
+  if (
+    isAiPmJudgmentFix8V1Active() &&
+    prior.id === 'problem' &&
+    options?.answer &&
+    isProblemPriorityCorrection(options.answer)
+  ) {
+    const correction = extractProblemPriorityCorrection(options.answer);
+    if (correction) {
+      return mergeProblemPriorityCorrection(
+        prior,
+        correction,
+        options.sourceTurnIndex,
+        options.answer,
+      );
+    }
+  }
+  if (
+    isAiPmJudgmentFix8V1Active() &&
+    prior.id === 'problem' &&
+    next.summary?.trim() &&
+    options?.evidence
+  ) {
+    return mergeCanonicalProblem(prior, {
+      conclusion: next.summary,
+      evidence: options.evidence,
+      meaning: options.interpretedMeaning ?? next.summary,
+      sourceTurnIndex: options?.sourceTurnIndex,
+      isSeverity: /10%|심각/.test(options.evidence),
+    });
   }
   if (next.evidenceType === 'hypothesis' || next.evidenceType === 'expectation') {
     const isExpectation = next.evidenceType === 'expectation';
@@ -156,7 +219,8 @@ function mergeDimension(
   if (
     isAiPmJudgmentMeaningModelV1Active() &&
     prior.id === 'problem' &&
-    next.summary?.trim()
+    next.summary?.trim() &&
+    !isAiPmJudgmentFix8V1Active()
   ) {
     return mergeDimensionAccumulative(prior, next);
   }
@@ -368,7 +432,8 @@ function dimensionsFromAnswerText(
     const isHypothesis = hit.evidenceType === 'hypothesis';
     const isExpectation = hit.evidenceType === 'expectation';
     const resolvedStatus =
-      isAiPmJudgmentFix7V1Active() && id === 'customerChange'
+      (isAiPmJudgmentFix7V1Active() || isAiPmJudgmentFix8V1Active()) &&
+      id === 'customerChange'
         ? 'needs_check'
         : isHypothesis || isExpectation
           ? 'needs_check'

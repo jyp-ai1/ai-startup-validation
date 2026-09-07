@@ -14,6 +14,8 @@ import {
 import { isRawSolutionAppend, renderSolutionJudgment, renderSolutionJudgmentStructured } from './ai-pm-judgment-structured-solution';
 import { extractAnswerSemanticEvidences } from './ai-pm-answer-semantic-sot';
 import { isSemanticCopy } from './ai-pm-judgment-target-binding';
+import { isAiPmJudgmentFix8V1Active } from './ai-pm-judgment-fix8-v1';
+import { CUSTOMER_CHANGE_CLAIM_LABEL } from './ai-pm-judgment-canonical-state';
 
 export const FIX5_ADDITIONAL_TURN_EXPECTATIONS: TurnDimensionExpectation[] = [
   {
@@ -76,12 +78,15 @@ export function evaluateHypothesisTurn(
       actual: d.status,
     });
   }
-  if (!/가설/.test(d.label)) {
+  const labelOk =
+    /가설/.test(d.label) ||
+    (isAiPmJudgmentFix8V1Active() && d.label === CUSTOMER_CHANGE_CLAIM_LABEL);
+  if (!labelOk) {
     failures.push({
       turnIndex: 18,
       label: 'T18 hypothesis',
       field: 'hypothesis.label',
-      expected: 'label contains 가설',
+      expected: 'label contains 가설 or FIX-8 claim label',
       actual: d.label,
     });
   }

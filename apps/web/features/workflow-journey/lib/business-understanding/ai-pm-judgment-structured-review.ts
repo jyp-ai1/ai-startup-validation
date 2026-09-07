@@ -15,6 +15,11 @@ import {
 } from './ai-pm-ceo-judgment-dimensions';
 import type { SolutionLayerEvidence } from './ai-pm-ceo-judgment-dimensions';
 import type { SolutionLayers } from './ai-pm-judgment-structured-solution';
+import {
+  CUSTOMER_CHANGE_CLAIM_LABEL,
+  syncDimensionCanonicalDisplay,
+} from './ai-pm-judgment-canonical-state';
+import { isAiPmJudgmentFix8V1Active } from './ai-pm-judgment-fix8-v1';
 
 export type StructuredReviewEntry = {
   dimensionId: CeoJudgmentDimensionId;
@@ -34,10 +39,11 @@ function relatedRecords(d: CeoJudgmentDimension) {
 }
 
 export function renderProblemStructuredReview(d: CeoJudgmentDimension): string {
-  const primary = primaryRecord(d);
-  const related = relatedRecords(d);
+  const synced = isAiPmJudgmentFix8V1Active() ? syncDimensionCanonicalDisplay(d) : d;
+  const primary = primaryRecord(synced);
+  const related = relatedRecords(synced);
   const lines: string[] = [];
-  lines.push(`PRIMARY: ${primary?.meaning ?? d.currentConclusion ?? '(empty)'}`);
+  lines.push(`PRIMARY: ${primary?.meaning ?? synced.currentConclusion ?? '(empty)'}`);
   if (related.length > 0) {
     lines.push('RELATED:');
     for (const r of related) {
@@ -73,12 +79,18 @@ export function renderSolutionStructuredReview(
 
 export function renderCustomerChangeStructuredReview(d: CeoJudgmentDimension): string {
   const primary = primaryRecord(d);
-  const prefix =
-    d.evidenceType === 'hypothesis'
-      ? '🟡 (가설) '
-      : d.evidenceType === 'expectation'
-        ? '🟡 (기대효과) '
-        : '';
+  let prefix = '';
+  if (d.evidenceType === 'hypothesis') {
+    prefix = isAiPmJudgmentFix8V1Active()
+      ? '🟡 CEO 가설 — 아직 검증되지 않음: '
+      : '🟡 (가설) ';
+  } else if (d.evidenceType === 'expectation') {
+    prefix = isAiPmJudgmentFix8V1Active()
+      ? '🟡 CEO 기대효과 — 아직 검증되지 않음: '
+      : '🟡 (기대효과) ';
+  } else if (isAiPmJudgmentFix8V1Active()) {
+    prefix = '🟡 CEO 주장 — 아직 검증되지 않음: ';
+  }
   const conclusion = primary?.meaning ?? d.currentConclusion ?? d.summary;
   return `${prefix}${conclusion || '(empty)'}`;
 }
@@ -125,9 +137,17 @@ export function buildStructuredReviewEntry(d: CeoJudgmentDimension): StructuredR
 export function buildStructuredFinalReview(state: CeoJudgmentState): string {
   const lines: string[] = [];
   for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
-    const d = state.dimensions[id];
+    const raw = state.dimensions[id];
+    const d =
+      isAiPmJudgmentFix8V1Active() && id === 'customerChange'
+        ? { ...raw, label: CUSTOMER_CHANGE_CLAIM_LABEL }
+        : raw;
     const entry = buildStructuredReviewEntry(d);
-    lines.push(`### ${CEO_JUDGMENT_DIMENSION_LABELS[id]}`);
+    const heading =
+      id === 'customerChange' && isAiPmJudgmentFix8V1Active()
+        ? CUSTOMER_CHANGE_CLAIM_LABEL
+        : CEO_JUDGMENT_DIMENSION_LABELS[id];
+    lines.push(`### ${heading}`);
     lines.push(`${statusEmoji(entry.status)} ${entry.display}`);
     if (d.id === 'solution' && d.solutionLayerEvidence?.length) {
       lines.push('Source:');

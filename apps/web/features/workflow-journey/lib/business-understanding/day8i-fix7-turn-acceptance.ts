@@ -133,8 +133,10 @@ export function evaluateMilestoneFocus(
   for (const turnIndex of MILESTONE_TURNS) {
     const turn = turns[turnIndex - 1];
     if (!turn?.judgmentSnapshot) continue;
-    const expected = expectedFocusAtTurn(turnIndex);
-    const expectedPrompt = expected ? expectedFocusPromptAtTurn(turnIndex) : null;
+    const expected = expectedFocusAtTurn(turnIndex, turn.judgmentSnapshot);
+    const expectedPrompt = expected
+      ? expectedFocusPromptAtTurn(turnIndex, turn.judgmentSnapshot)
+      : null;
 
     if (turnIndex >= 29) {
       if (turn.nextQuestion && /더 구체적으로 확인/.test(turn.nextQuestion)) {

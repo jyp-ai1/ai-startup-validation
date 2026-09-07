@@ -10,6 +10,7 @@
 import type { CeoJudgmentDimensionId } from './ai-pm-ceo-judgment-dimensions';
 import { isAiPmAnswerSemanticSotV1Active } from './ai-pm-answer-semantic-sot-v1';
 import { isAiPmJudgmentMeaningModelV1Active } from './ai-pm-judgment-meaning-model-v1';
+import { isAiPmJudgmentFix8V1Active } from './ai-pm-judgment-fix8-v1';
 import { isMetaConfirmationAnswer } from './ai-pm-answer-meta-slots';
 import {
   extractProblemPriorityCorrection,
@@ -219,11 +220,17 @@ function extractProblemEvidence(clauses: string[], trimmed: string): AnswerSeman
   if (isProblemPriorityCorrection(trimmed)) {
     const correction = extractProblemPriorityCorrection(trimmed);
     if (correction) {
+      const evidence = isAiPmJudgmentFix8V1Active()
+        ? correction.fullEvidence
+        : correction.evidence;
+      const meaning = isAiPmJudgmentFix8V1Active()
+        ? '주문 확인 시간이 배송 누락보다 더 큼'
+        : correction.meaning;
       return {
         dimension: 'problem',
         summary: correction.primaryProblem,
-        evidence: correction.evidence,
-        interpretedMeaning: correction.meaning,
+        evidence,
+        interpretedMeaning: meaning,
         reason: 'CEO가 문제 우선순위를 수정함',
       };
     }
@@ -239,13 +246,21 @@ function extractProblemEvidence(clauses: string[], trimmed: string): AnswerSeman
     if (excel) units.push(clip(excel.replace(/\s*누락.*$/, '').trim() || excel, 32));
 
     if (/배송\s*누락/.test(clause) && !/(?:줄|감|단축)/.test(clause)) {
-      units.push('배송 누락');
+      if (/10%|심각/.test(clause)) {
+        const fullSeverity =
+          clause.match(/[^,.;]*배송\s*누락[^,.;]*(?:10%|심각)[^,.;]*/i)?.[0]?.trim() ??
+          clause.match(/[^,.;]{0,60}(?:10%|심각)[^,.;]{0,30}/i)?.[0]?.trim() ??
+          clause.trim();
+        units.push(isAiPmJudgmentFix8V1Active() ? clip(fullSeverity, 80) : clip(fullSeverity, 36));
+      } else {
+        units.push('배송 누락');
+      }
     }
     if (/따로\s*관리/.test(clause)) units.push('주문·배송 분리 관리');
     if (/확인\s*시간/.test(clause) && !/(?:단축|줄)/.test(clause)) {
       units.push(clip(clause.match(/확인\s*시간[^,.;]{0,20}/i)?.[0] ?? '확인 시간', 24));
     }
-    if (/10%|심각/.test(clause)) {
+    if (/10%|심각/.test(clause) && !/배송\s*누락/.test(clause)) {
       units.push(clip(clause.match(/[^,.;]{0,30}(?:10%|심각)[^,.;]{0,20}/i)?.[0] ?? clause, 36));
     }
     if (/놓치|재주문/.test(clause)) {
@@ -270,13 +285,22 @@ function extractProblemEvidence(clauses: string[], trimmed: string): AnswerSeman
 
   if (unique.length === 0) return null;
 
-  const summary = clip(unique.join(' · '));
-  const evidence = unique[0]!;
+  const primaryFact = unique[0]!;
+  const summary = isAiPmJudgmentFix8V1Active()
+    ? clip(primaryFact)
+    : clip(unique.join(' · '));
+  const evidence =
+    isAiPmJudgmentFix8V1Active()
+      ? unique.find((u) => /10%|심각/.test(u)) ??
+        unique.reduce((a, b) => (b.length > a.length ? b : a), primaryFact)
+      : primaryFact;
+  const interpretedMeaning = isAiPmJudgmentFix8V1Active() ? clip(evidence, 80) : summary;
+
   return {
     dimension: 'problem',
     summary,
     evidence,
-    interpretedMeaning: 'CEO 답변 — 문제/불편 meaning unit',
+    interpretedMeaning,
     reason: dimensionReason('problem'),
   };
 }

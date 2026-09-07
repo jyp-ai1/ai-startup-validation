@@ -11,6 +11,7 @@ import {
   type JudgmentEvidenceRecord,
 } from './ai-pm-judgment-evidence-model';
 import { isAiPmJudgmentFix7V1Active } from './ai-pm-judgment-fix7-v1';
+import { isAiPmJudgmentFix8V1Active } from './ai-pm-judgment-fix8-v1';
 
 const PRIORITY_CORRECTION_RE =
   /(?:사실\s*)?(?:문제(?:는|가)?\s*)?(?:.+?)(?:보다|보다는)\s*(.+?)(?:이|가)\s*더\s*(?:큽|중요|심각)/i;
@@ -36,6 +37,21 @@ export function isProblemPriorityCorrection(answer: string): boolean {
 
 function inferRelatedFromPrior(prior: CeoJudgmentDimension): string[] {
   const related: string[] = [];
+  const records = prior.evidenceRecords ?? [];
+  if (records.length > 0) {
+    for (const r of records) {
+      if (r.role === 'primary') continue;
+      const text = `${r.span} ${r.meaning}`;
+      if (/배송\s*누락/.test(text) && !related.includes('배송 누락')) related.push('배송 누락');
+      if (/엑셀|카카오|카톡/.test(text) && !related.includes('엑셀/카카오톡 관리')) {
+        related.push('엑셀/카카오톡 관리');
+      }
+      if (/분리|따로/.test(text) && !related.includes('주문·배송 분리 관리')) {
+        related.push('주문·배송 분리 관리');
+      }
+    }
+    if (related.length > 0) return related;
+  }
   const text = `${prior.summary} ${prior.currentConclusion ?? ''}`;
   if (/배송\s*누락/.test(text)) related.push('배송 누락');
   if (/엑셀|카카오|카톡/.test(text)) related.push('엑셀/카카오톡 관리');
@@ -56,12 +72,16 @@ export function extractProblemPriorityCorrection(answer: string): ProblemPriorit
   const relatedProblems: string[] = [];
   if (/배송\s*누락/.test(trimmed)) relatedProblems.push('배송 누락');
 
+  const meaning = isAiPmJudgmentFix8V1Active()
+    ? '주문 확인 시간이 배송 누락보다 더 큼'
+    : primaryProblem;
+
   return {
     primaryProblem,
     relatedProblems,
     evidence: clip(trimmed),
     fullEvidence: trimmed,
-    meaning: primaryProblem,
+    meaning,
   };
 }
 
@@ -93,7 +113,7 @@ export function mergeProblemPriorityCorrection(
   const records: JudgmentEvidenceRecord[] = [
     {
       span: evidenceSpan,
-      meaning: correction.primaryProblem,
+      meaning: correction.meaning,
       role: 'primary',
       sourceTurnIndex,
     },
@@ -108,7 +128,7 @@ export function mergeProblemPriorityCorrection(
     });
   }
 
-  const summary = isAiPmJudgmentFix7V1Active()
+  const summary = isAiPmJudgmentFix7V1Active() || isAiPmJudgmentFix8V1Active()
     ? renderProblemSummary(correction.primaryProblem, related)
     : clip([correction.primaryProblem, ...related.map((r) => `${r}은(는) 관련 문제`)].join(' · '));
 
