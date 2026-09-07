@@ -62,7 +62,7 @@ export function MyProjectListItem({ project, variant = 'active' }: MyProjectList
   }
 
   return (
-    <li className="flex items-start gap-2 px-5 py-4">
+    <li className="flex items-start gap-2 px-5 py-4" data-testid={`project-list-item-${project.id}`}>
       <div className="min-w-0 flex-1">
         <Link
           href={buildProjectCanvasUrl(project.id)}

@@ -136,9 +136,14 @@ Build: `pnpm build` ✅ PASS
 |------|---------|
 | P0-11 CTO 구현 | ✅ PASS |
 | P0-11 CTO 1st (build + unit + code trace) | ✅ PASS |
-| P0-11 CPO 2nd 독립 검증 | ⏳ PENDING (Production deploy 후) |
+| P0-11 CPO 2nd — Browser R1~R5 | ⏳ **PENDING** (see browser report) |
+| P0-11 CPO 2nd 독립 검증 | ⏳ **PENDING** |
 | Production Deploy | ⏳ PENDING |
 | CEO TEST | ⏸ **HOLD** until P0-11 Production PASS |
+
+**Browser evidence:** `docs/evidence/ALABOM/DAY_8I_P0_11_BROWSER_JOURNEY_REPORT.md`  
+**Harness:** `apps/web/scripts/run-day8i-p0-11-browser-journey.mjs`  
+**Blocker:** `SUPABASE_SERVICE_ROLE_KEY` missing in cloud agent — mockup screenshots discarded; real auth journeys not yet executed.
 
 ## 7. Files Changed
 

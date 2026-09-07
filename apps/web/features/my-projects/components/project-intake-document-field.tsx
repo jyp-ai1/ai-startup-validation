@@ -82,7 +82,7 @@ export function ProjectIntakeDocumentField({
     documentContent.length > 0 && detectWorkspaceDocumentPlaceholder(documentContent) != null;
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-testid="project-intake-upload">
       <span className="text-sm font-medium">{t('documentLabel')}</span>
       <p className="text-xs text-muted-foreground">{t('documentHint')}</p>
 

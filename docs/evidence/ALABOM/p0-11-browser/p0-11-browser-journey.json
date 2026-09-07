@@ -1,0 +1,19 @@
+{
+  "label": "P0-11 Browser Journey — auth blocked probe",
+  "baseURL": "http://127.0.0.1:3333",
+  "executedAt": "2026-09-07T16:13:13.377Z",
+  "results": {
+    "auth": {
+      "pass": false,
+      "error": "Missing Supabase env — need SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY in apps/web/.env.local"
+    }
+  },
+  "projectIds": {},
+  "errors": [
+    {
+      "id": "auth",
+      "msg": "Missing Supabase env — need SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY in apps/web/.env.local"
+    }
+  ],
+  "note": "R1~R5 not executed. Add SUPABASE_SERVICE_ROLE_KEY then re-run scripts/run-day8i-p0-11-browser-journey.mjs"
+}

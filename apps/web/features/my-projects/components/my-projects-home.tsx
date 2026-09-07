@@ -62,7 +62,7 @@ export function MyProjectsHome({
 
       <div className="rounded-2xl border border-border/70 bg-card p-5">
         <h2 className="mb-4 text-sm font-semibold">{t('newProjectSectionTitle')}</h2>
-        <form action={formAction} className="space-y-5">
+        <form action={formAction} className="space-y-5" data-testid="my-projects-create-form">
           <div className="space-y-2">
             <label htmlFor="new-project-title" className="text-sm font-medium">
               {t('newProjectLabel')}
