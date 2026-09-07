@@ -6,9 +6,9 @@
 
 | Field | Value |
 |-------|-------|
-| Commit SHA | `338483ad9b8d97b482358dcd5a588b280b92542e` |
+| Commit SHA | `a81df2e07758941397cf86bd6dfe3b5a875b2e90` |
 | Branch | `cursor/day8i-p0-fix10-ceo-trust-journey-6423` |
-| Executed (UTC) | 2026-09-07T14:32:25.749Z |
+| Executed (UTC) | 2026-09-07T14:33:23.122Z |
 
 ## 2. Environment / Feature Flag
 
@@ -185,7 +185,7 @@ End of brewery pipeline
 | FIX10-R22 | FIX-9 R regression | 0 | **PASS** |
 | FIX10-R23 | Feature flags ON | FIX-10 default ON | **PASS** |
 | FIX10-R24 | Build | PASS | **PASS** |
-| FIX10-R25 | SHA integrity | 338483ad9b8d | **PASS** |
+| FIX10-R25 | SHA integrity | a81df2e07758 | **PASS** |
 | FIX10-F1 | No stale customer confirm after correction | (empty) | **PASS** |
 | FIX10-F2 | Next Q targets unresolved dimension | (empty) | **PASS** |
 | FIX10-F3-T01 | Turn 1 judgment→question | customer / 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? | **PASS** |
