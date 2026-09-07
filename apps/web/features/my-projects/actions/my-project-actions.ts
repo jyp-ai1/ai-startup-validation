@@ -8,8 +8,12 @@ import type { StartupProject } from '@repo/types/validation';
 import { isSupabaseConfigured } from '@repo/db';
 
 import {
+  archiveOwnedProject,
   createOwnedProject,
   listOwnedProjects,
+  softDeleteOwnedProject,
+  unarchiveOwnedProject,
+  updateOwnedProject,
 } from '@/features/projects/services/project-service';
 import {
   buildInitialInterviewState,
@@ -24,7 +28,7 @@ import {
 import { recordOAuthAnalyticsEvent } from '@/lib/auth/oauth-analytics';
 import { PRODUCT_ANALYTICS_EVENTS } from '@/lib/analytics/product-analytics';
 import { requireAuthUser } from '@/lib/auth/server-auth';
-import { buildProjectIntakeSeed } from '@/lib/project/build-project-intake-seed';
+import { buildAuthProjectIntakeContent } from '@/lib/project/merge-intake-document';
 import { mergeWorkspacePersistedContext } from '@/lib/project/workspace-persisted-state';
 
 export type CreateMyProjectState = {
@@ -62,10 +66,12 @@ function buildOnboardingFromDemoDraft(draft: DemoProjectDraft) {
 export async function listMyProjectsForPage() {
   const user = await requireAuthUser('/workspace');
   if (!isSupabaseConfigured()) {
-    return { user, projects: [], dbReady: false as const };
+    return { user, projects: [], archivedProjects: [], dbReady: false as const };
   }
-  const projects = await listOwnedProjects(user.id);
-  return { user, projects, dbReady: true as const };
+  const all = await listOwnedProjects(user.id);
+  const projects = all.filter((p) => p.status !== 'ARCHIVED');
+  const archivedProjects = all.filter((p) => p.status === 'ARCHIVED');
+  return { user, projects, archivedProjects, dbReady: true as const };
 }
 
 /** Bootstrap first project when user has zero projects. */
@@ -202,9 +208,24 @@ export async function createMyProjectAction(
   }
 
   const description = formData.get('description')?.toString().trim() ?? '';
-  // Core Understanding — title always seeds Workspace; description optional (max 1000).
-  const summary = description.length >= 2 ? description.slice(0, 1000) : '';
-  const pastedContent = buildProjectIntakeSeed(title, summary || null);
+  const documentContent = formData.get('documentContent')?.toString().trim() ?? '';
+  const fileName = formData.get('fileName')?.toString().trim() ?? '';
+  const importSourceRaw = formData.get('importSource')?.toString().trim() ?? 'paste';
+
+  const intake = buildAuthProjectIntakeContent({
+    title,
+    description,
+    documentContent,
+    importSource: importSourceRaw,
+    fileName: fileName || undefined,
+  });
+
+  const summary =
+    description.length >= 2
+      ? description.slice(0, 1000)
+      : documentContent.length >= 8
+        ? intake.pastedContent.split('\n').slice(0, 3).join(' ').slice(0, 200)
+        : title;
 
   const project = await createOwnedProject(user.id, {
     title,
@@ -212,8 +233,9 @@ export async function createMyProjectAction(
     onboardingContext: {
       sprint12: buildInitialInterviewState(reviewTypeRaw, summary || title),
       v2Demo: {
-        pastedContent,
-        importSource: 'paste',
+        pastedContent: intake.pastedContent,
+        importSource: intake.importSource,
+        ...(intake.fileName ? { fileName: intake.fileName } : {}),
       },
     },
   });
@@ -221,4 +243,73 @@ export async function createMyProjectAction(
   revalidatePath('/workspace');
   revalidatePath('/my-projects');
   redirect(`/workspace?project=${encodeURIComponent(project.id)}&welcome=1`);
+}
+
+export async function renameMyProjectAction(
+  projectId: string,
+  title: string,
+): Promise<CreateMyProjectState> {
+  const user = await requireAuthUser('/workspace');
+  if (!isSupabaseConfigured()) {
+    return { error: '데이터베이스가 연결되지 않았습니다.' };
+  }
+  const trimmed = title.trim();
+  if (trimmed.length < 2) {
+    return { error: '프로젝트 이름을 2자 이상 입력해 주세요.' };
+  }
+  try {
+    await updateOwnedProject(user.id, projectId, { title: trimmed });
+    revalidatePath('/workspace');
+    return {};
+  } catch {
+    return { error: '프로젝트 이름을 변경할 수 없습니다.' };
+  }
+}
+
+export async function archiveMyProjectAction(
+  projectId: string,
+): Promise<CreateMyProjectState> {
+  const user = await requireAuthUser('/workspace');
+  if (!isSupabaseConfigured()) {
+    return { error: '데이터베이스가 연결되지 않았습니다.' };
+  }
+  try {
+    await archiveOwnedProject(user.id, projectId);
+    revalidatePath('/workspace');
+    return {};
+  } catch {
+    return { error: '프로젝트를 보관할 수 없습니다.' };
+  }
+}
+
+export async function unarchiveMyProjectAction(
+  projectId: string,
+): Promise<CreateMyProjectState> {
+  const user = await requireAuthUser('/workspace');
+  if (!isSupabaseConfigured()) {
+    return { error: '데이터베이스가 연결되지 않았습니다.' };
+  }
+  try {
+    await unarchiveOwnedProject(user.id, projectId);
+    revalidatePath('/workspace');
+    return {};
+  } catch {
+    return { error: '프로젝트를 복구할 수 없습니다.' };
+  }
+}
+
+export async function deleteMyProjectAction(
+  projectId: string,
+): Promise<CreateMyProjectState> {
+  const user = await requireAuthUser('/workspace');
+  if (!isSupabaseConfigured()) {
+    return { error: '데이터베이스가 연결되지 않았습니다.' };
+  }
+  try {
+    await softDeleteOwnedProject(user.id, projectId);
+    revalidatePath('/workspace');
+    return {};
+  } catch {
+    return { error: '프로젝트를 삭제할 수 없습니다.' };
+  }
 }

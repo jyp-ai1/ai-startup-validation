@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useActionState, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus } from 'lucide-react';
@@ -8,57 +7,43 @@ import { Plus } from 'lucide-react';
 import type { StartupProject } from '@repo/types/validation';
 import { Button } from '@repo/ui';
 
-import { buildProjectCanvasUrl } from '@/lib/auth/journey-routes';
-
 import { REVIEW_TYPES } from '@/features/interview/types/interview-state';
 
 import {
   createMyProjectAction,
   type CreateMyProjectState,
 } from '../actions/my-project-actions';
+import { displayName } from '../lib/my-project-utils';
+import { MyProjectListItem } from './my-project-list-item';
 import {
-  displayName,
-  formatRecentActivity,
-  projectStatusLabel,
-} from '../lib/my-project-utils';
+  ProjectIntakeDocumentField,
+  type ProjectIntakeUploadStatus,
+} from './project-intake-document-field';
+import { ProjectDescriptionField } from './project-description-field';
 
 type MyProjectsHomeProps = {
   userName: string | null;
   userEmail: string;
   projects: StartupProject[];
+  archivedProjects: StartupProject[];
   dbReady: boolean;
 };
 
 const INITIAL: CreateMyProjectState = {};
-const DESCRIPTION_MAX = 1000;
 
-function ProjectDescriptionField({ disabled }: { disabled: boolean }) {
-  const t = useTranslations('myProjects');
-  const [value, setValue] = useState('');
-  return (
-    <div className="space-y-1.5">
-      <textarea
-        id="project-description"
-        name="description"
-        rows={6}
-        maxLength={DESCRIPTION_MAX}
-        value={value}
-        onChange={(event) => setValue(event.target.value.slice(0, DESCRIPTION_MAX))}
-        placeholder={t('descriptionPlaceholder')}
-        className="min-h-[9rem] w-full resize-y rounded-xl border border-border/70 bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
-        disabled={disabled}
-      />
-      <p className="text-right text-xs text-muted-foreground">
-        {value.length}/{DESCRIPTION_MAX}
-      </p>
-    </div>
-  );
-}
-
-export function MyProjectsHome({ userName, userEmail, projects, dbReady }: MyProjectsHomeProps) {
+export function MyProjectsHome({
+  userName,
+  userEmail,
+  projects,
+  archivedProjects,
+  dbReady,
+}: MyProjectsHomeProps) {
   const t = useTranslations('myProjects');
   const [state, formAction, pending] = useActionState(createMyProjectAction, INITIAL);
+  const [uploadStatus, setUploadStatus] = useState<ProjectIntakeUploadStatus>('idle');
+  const [showArchived, setShowArchived] = useState(false);
   const greetingName = displayName(userName, userEmail);
+  const uploadBlocking = uploadStatus === 'loading';
 
   return (
     <div className="mx-auto max-w-lg space-y-8 py-4">
@@ -76,6 +61,7 @@ export function MyProjectsHome({ userName, userEmail, projects, dbReady }: MyPro
       ) : null}
 
       <div className="rounded-2xl border border-border/70 bg-card p-5">
+        <h2 className="mb-4 text-sm font-semibold">{t('newProjectSectionTitle')}</h2>
         <form action={formAction} className="space-y-5">
           <div className="space-y-2">
             <label htmlFor="new-project-title" className="text-sm font-medium">
@@ -90,11 +76,11 @@ export function MyProjectsHome({ userName, userEmail, projects, dbReady }: MyPro
               maxLength={80}
               placeholder={t('newProjectPlaceholder')}
               className="h-11 w-full rounded-xl border border-border/70 bg-background px-4 text-sm outline-none ring-primary/30 focus:ring-2"
-              disabled={!dbReady || pending}
+              disabled={!dbReady || pending || uploadBlocking}
             />
           </div>
 
-          <fieldset className="space-y-3" disabled={!dbReady || pending}>
+          <fieldset className="space-y-3" disabled={!dbReady || pending || uploadBlocking}>
             <legend className="text-sm font-medium">{t('reviewTypeLabel')}</legend>
             <div className="space-y-2">
               {REVIEW_TYPES.map((type) => (
@@ -119,12 +105,21 @@ export function MyProjectsHome({ userName, userEmail, projects, dbReady }: MyPro
             <label htmlFor="project-description" className="text-sm font-medium">
               {t('descriptionLabel')}
             </label>
-            <ProjectDescriptionField disabled={!dbReady || pending} />
+            <ProjectDescriptionField disabled={!dbReady || pending || uploadBlocking} />
           </div>
 
-          <Button type="submit" disabled={!dbReady || pending} className="h-11 w-full gap-1">
+          <ProjectIntakeDocumentField
+            disabled={!dbReady || pending}
+            onStatusChange={setUploadStatus}
+          />
+
+          <Button
+            type="submit"
+            disabled={!dbReady || pending || uploadBlocking}
+            className="h-11 w-full gap-1"
+          >
             <Plus className="size-4" aria-hidden />
-            {t('newProjectCta')}
+            {pending ? t('creating') : t('newProjectCta')}
           </Button>
 
           {state.error ? (
@@ -140,27 +135,31 @@ export function MyProjectsHome({ userName, userEmail, projects, dbReady }: MyPro
           <h2 className="mb-4 text-sm font-medium text-muted-foreground">{t('recentProjects')}</h2>
           <ul className="divide-y divide-border/60 rounded-2xl border border-border/70 bg-card">
             {projects.map((project) => (
-              <li key={project.id}>
-                <Link
-                  href={buildProjectCanvasUrl(project.id)}
-                  className="block px-5 py-4 transition-colors hover:bg-muted/40"
-                >
-                  <p className="font-semibold">{project.title}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {projectStatusLabel(project.status)}
-                  </p>
-                  <p className="mt-0.5 text-xs text-muted-foreground/80">
-                    {t('lastEdited', {
-                      when: formatRecentActivity(project.lastActivityAt ?? project.updatedAt),
-                    })}
-                  </p>
-                </Link>
-              </li>
+              <MyProjectListItem key={project.id} project={project} variant="active" />
             ))}
           </ul>
         </section>
       ) : dbReady ? (
         <p className="text-center text-sm text-muted-foreground">{t('emptyHint')}</p>
+      ) : null}
+
+      {archivedProjects.length > 0 ? (
+        <section className="space-y-3">
+          <button
+            type="button"
+            className="text-sm font-medium text-muted-foreground underline-offset-2 hover:underline"
+            onClick={() => setShowArchived((v) => !v)}
+          >
+            {showArchived ? t('lifecycle.hideArchived') : t('lifecycle.showArchived')}
+          </button>
+          {showArchived ? (
+            <ul className="divide-y divide-border/60 rounded-2xl border border-border/70 bg-card">
+              {archivedProjects.map((project) => (
+                <MyProjectListItem key={project.id} project={project} variant="archived" />
+              ))}
+            </ul>
+          ) : null}
+        </section>
       ) : null}
     </div>
   );

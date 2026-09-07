@@ -119,3 +119,60 @@ export async function updateOwnedProjectContext(
   const repo = getStartupProjectRepository();
   return repo.update(projectId, { onboardingContext });
 }
+
+/** Update owned project fields (P0-11 lifecycle). */
+export async function updateOwnedProject(
+  userId: string,
+  projectId: string,
+  input: import('@repo/types/validation').UpdateStartupProjectInput,
+): Promise<StartupProject> {
+  if (!isSupabaseConfigured()) {
+    throw new Error('Database not configured');
+  }
+
+  await assertProjectOwner(userId, projectId);
+  const repo = getStartupProjectRepository();
+  return repo.update(projectId, input);
+}
+
+/** Soft-delete owned project. */
+export async function softDeleteOwnedProject(
+  userId: string,
+  projectId: string,
+): Promise<StartupProject> {
+  if (!isSupabaseConfigured()) {
+    throw new Error('Database not configured');
+  }
+
+  await assertProjectOwner(userId, projectId);
+  const repo = getStartupProjectRepository();
+  return repo.softDelete(projectId);
+}
+
+/** Archive owned project (status ARCHIVED). */
+export async function archiveOwnedProject(
+  userId: string,
+  projectId: string,
+): Promise<StartupProject> {
+  if (!isSupabaseConfigured()) {
+    throw new Error('Database not configured');
+  }
+
+  await assertProjectOwner(userId, projectId);
+  const repo = getStartupProjectRepository();
+  return repo.archive(projectId);
+}
+
+/** Restore archived owned project to DRAFT. */
+export async function unarchiveOwnedProject(
+  userId: string,
+  projectId: string,
+): Promise<StartupProject> {
+  if (!isSupabaseConfigured()) {
+    throw new Error('Database not configured');
+  }
+
+  await assertProjectOwner(userId, projectId);
+  const repo = getStartupProjectRepository();
+  return repo.unarchive(projectId);
+}

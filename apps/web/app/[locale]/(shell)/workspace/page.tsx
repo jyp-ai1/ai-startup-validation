@@ -96,7 +96,7 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
     );
   }
 
-  const { user, projects, dbReady } = await listMyProjectsForPage();
+  const { user, projects, archivedProjects, dbReady } = await listMyProjectsForPage();
   const promoteDemo = params.from === 'demo' && params.promote === '1';
   const authComplete = params.auth === 'complete';
   const welcome = params.welcome === '1';
@@ -180,6 +180,7 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
         userName={user.fullName}
         userEmail={user.email}
         projects={projects}
+        archivedProjects={archivedProjects}
         dbReady={dbReady}
       />
     </>

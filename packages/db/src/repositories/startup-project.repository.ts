@@ -140,7 +140,14 @@ export type StartupProjectRepository = BaseRepository<
   StartupProject,
   CreateStartupProjectInput,
   UpdateStartupProjectInput
->;
+> & {
+  softDelete(id: ID): Promise<StartupProject>;
+  restore(id: ID): Promise<StartupProject>;
+  archive(id: ID): Promise<StartupProject>;
+  unarchive(id: ID): Promise<StartupProject>;
+  duplicate(id: ID): Promise<StartupProject>;
+  togglePin(id: ID): Promise<StartupProject>;
+};
 
 /** Supabase adapter for startup_projects table. */
 export class SupabaseStartupProjectRepository implements StartupProjectRepository {

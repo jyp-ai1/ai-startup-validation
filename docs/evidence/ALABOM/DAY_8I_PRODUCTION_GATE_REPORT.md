@@ -17,7 +17,7 @@
 | Git = Build = Production SHA | ✅ **MATCH** |
 | Production Smoke | ✅ PASS |
 | **CPO Production 최종** | ✅ **PASS** (2026-09-07) |
-| **CEO TEST** | 🟢 **GO** |
+| **CEO TEST** | ⏸ **HOLD** (P0-11 intake parity + workspace lifecycle) |
 
 ## SHA Integrity
 
@@ -60,11 +60,25 @@ Evidence: `docs/evidence/ALABOM/DAY_8I_P0_FIX10_REVALIDATION_REPORT.md` Section 
 | Production SHA | ✅ PASS |
 | Production Smoke | ✅ PASS |
 | CPO Production 최종 확인 | ✅ **PASS** |
-| CEO TEST GO | 🟢 **GO** |
+| **CEO TEST GO** | ⏸ **HOLD** — P0-11 intake parity + workspace lifecycle pending Production |
 
 ---
 
-## CEO TEST — 관찰 기준 (Production `cf180e0`)
+## P0-11 Gate (DAY 8-I)
+
+| Gate | Verdict |
+|------|---------|
+| P0-11 CTO 구현 | ⏳ PR pending |
+| P0-11 CTO 1st | ⏳ PR pending |
+| P0-11 CPO 2nd | ⏳ PENDING |
+| P0-11 Production | ⏳ PENDING |
+| **CEO TEST GO** | ⏸ **HOLD** until P0-11 Production PASS |
+
+Evidence: `docs/evidence/ALABOM/DAY_8I_P0_11_REVALIDATION_REPORT.md`
+
+---
+
+## CEO TEST — 관찰 기준 (Production — HOLD until P0-11)
 
 **URL:** https://ai-startup-validation-tau.vercel.app  
 **SHA:** `cf180e068a3554828a8f4cd3681569fe44132cf2`
