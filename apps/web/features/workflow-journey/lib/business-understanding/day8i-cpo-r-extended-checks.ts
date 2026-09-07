@@ -73,10 +73,13 @@ export function runCpoR13ToR25Checks(): CpoRSelfCheck[] {
   const full30 = runDay8iConversation({ projectId: 'cpo-r15-loop' });
   checks.push({
     id: 'CPO-R15',
-    label: 'Loop Kill — 동일 질문 연속 2회 이상 금지',
-    verdict: full30.consecutiveRepeats.length === 0 ? 'PASS' : 'FAIL',
-    evidenceTurns: 'Full 30-turn',
-    rationale: `consecutiveRepeats=${full30.consecutiveRepeats.length}`,
+    label: 'Loop Kill — (none) 이후 duplicate question 0',
+    verdict:
+      full30.consecutiveRepeats.length === 0 && full30.repeatedNextQuestions.length === 0
+        ? 'PASS'
+        : 'FAIL',
+    evidenceTurns: 'Full 30-turn nextQuestion + displayQuestion',
+    rationale: `consecutiveRepeats=${full30.consecutiveRepeats.length} repeatedNext=${full30.repeatedNextQuestions.length}`,
   });
 
   checks.push({

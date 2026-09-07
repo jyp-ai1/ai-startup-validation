@@ -25,6 +25,7 @@ import {
 import { resolveNextQuestionDecision } from './resolve-next-question-decision';
 import { isNextQuestionDecision } from './decide-next-question-from-review';
 import { syncJudgmentAfterAnswer, openBusinessReview } from './ai-pm-judgment-loop-sync';
+import { applyNoGapTermination } from './ai-pm-no-gap-termination';
 import {
   clearProjectConsultingState,
   recordProjectSnapshot,
@@ -39,6 +40,7 @@ import {
 } from './workspace-ai-pm-loop-store';
 import type { AiPmLoopIssueId, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import { resolveGapQuestionBinding } from './gap-question-map';
+import { createEmptyGapState } from './update-gap-state-from-review';
 
 export type Day8iScenarioCategory =
   | 'A_normal'
@@ -113,6 +115,8 @@ export type Day8iConversationResult = {
   noGapTerminations: number[];
   /** Consecutive same-question pairs (R15 loop kill) */
   consecutiveRepeats: Array<{ turn: number; question: string }>;
+  /** Post-answer nextQuestion duplicates after no-gap termination (R15) */
+  repeatedNextQuestions: Array<{ turn: number; question: string; priorTurn: number }>;
 };
 
 const DEFAULT_DOC = `# 소규모 양조장 주문·배송 SaaS
@@ -226,6 +230,8 @@ export function runDay8iConversation(input: {
   const inferenceChecks: Day8iInferenceCheck[] = [];
   const noGapTerminations: number[] = [];
   const consecutiveRepeats: Day8iConversationResult['consecutiveRepeats'] = [];
+  const repeatedNextQuestions: Day8iConversationResult['repeatedNextQuestions'] = [];
+  const nextQuestionHistory: Array<{ turn: number; text: string }> = [];
   let askTerminated = false;
 
   clearProjectConsultingState(projectId);
@@ -394,14 +400,51 @@ export function runDay8iConversation(input: {
       );
     }
 
-    const nextDecision = resolveNextQuestionDecision({
-      living: processed.living,
-      turns: sync.loop.turns,
-      memory: processed.memory,
-      gapState: sync.loop.gapState,
-      projectId,
-    });
+    const rawNextDecision = askTerminated
+      ? null
+      : resolveNextQuestionDecision({
+          living: processed.living,
+          turns: sync.loop.turns,
+          memory: processed.memory,
+          gapState: sync.loop.gapState,
+          projectId,
+        });
+    const nextDecision =
+      rawNextDecision && !askTerminated && isNextQuestionDecision(rawNextDecision)
+        ? applyNoGapTermination({
+            decision: rawNextDecision,
+            living: processed.living,
+            turns: sync.loop.turns,
+            gapState: sync.loop.gapState ?? createEmptyGapState(),
+          })
+        : askTerminated
+          ? null
+          : rawNextDecision && isNextQuestionDecision(rawNextDecision)
+            ? rawNextDecision
+            : null;
     record.nextQuestion = questionFromDecision(nextDecision).text || null;
+
+    if (!record.nextQuestion && !askTerminated) {
+      askTerminated = true;
+      noGapTerminations.push(i + 1);
+      openBusinessReview(projectId);
+    }
+
+    if (record.nextQuestion) {
+      for (const prev of nextQuestionHistory) {
+        if (
+          prev.text.trim() === record.nextQuestion!.trim() ||
+          isSameMeaningQuestion(prev.text, record.nextQuestion!)
+        ) {
+          repeatedNextQuestions.push({
+            turn: i + 1,
+            question: record.nextQuestion!,
+            priorTurn: prev.turn,
+          });
+        }
+      }
+      nextQuestionHistory.push({ turn: i + 1, text: record.nextQuestion });
+    }
 
     if (i === 0) {
       recordProjectSnapshot({
@@ -491,6 +534,7 @@ export function runDay8iConversation(input: {
     cpoSelfChecks: runCpoRSelfChecks(),
     noGapTerminations,
     consecutiveRepeats,
+    repeatedNextQuestions,
   };
 }
 
@@ -613,7 +657,8 @@ export function formatDay8iCtoReport(result: Day8iConversationResult): string {
     result.separationIssues.length > 0 ||
     result.unsupportedInferences.length > 2 ||
     result.repeatedQuestions.length > 3 ||
-    result.consecutiveRepeats.length > 0;
+    result.consecutiveRepeats.length > 0 ||
+    result.repeatedNextQuestions.length > 0;
   lines.push(fail ? 'FAIL' : 'PASS');
   lines.push('');
   lines.push(

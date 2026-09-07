@@ -520,7 +520,21 @@ export function buildCeoJudgmentStateWithTrace(input: {
     prior,
     next: state,
     dimensionMeta,
-    allowedDimensions: Object.keys(fromAnswerDims) as CeoJudgmentDimensionId[],
+    allowedDimensions: (Object.keys(fromAnswerDims) as CeoJudgmentDimensionId[]).filter(
+      (id) => {
+        const changeType = classifyJudgmentChangeType({
+          before: {
+            status: prior.dimensions[id].status,
+            summary: prior.dimensions[id].summary,
+          },
+          after: {
+            status: state.dimensions[id].status,
+            summary: state.dimensions[id].summary,
+          },
+        });
+        return changeType !== 'UNCHANGED';
+      },
+    ),
   });
 
   if (traceEntries.length === 0 && answer.trim()) {

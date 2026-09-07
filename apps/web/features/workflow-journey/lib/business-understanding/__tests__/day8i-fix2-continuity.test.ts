@@ -97,6 +97,11 @@ describe('DAY 8-I P0 FIX-2 — State/Trace + Continuity', () => {
     const result = runDay8iConversation({ projectId: 'fix2-nogap' });
     expect(result.noGapTerminations.length).toBeGreaterThan(0);
     expect(result.consecutiveRepeats.length).toBe(0);
+    expect(result.repeatedNextQuestions.length).toBe(0);
+    const turn7 = result.turns[6];
+    expect(turn7?.trace?.dimensionEntries.some((e) => e.affectedDimension === 'problem')).toBe(
+      false,
+    );
     clearAiPmLoopState('fix2-nogap');
     clearProjectConsultingState('fix2-nogap');
   });
