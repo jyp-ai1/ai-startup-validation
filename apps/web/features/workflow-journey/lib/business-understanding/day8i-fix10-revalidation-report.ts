@@ -21,7 +21,10 @@ import type { Fix10InitialProbe } from './day8i-fix10-probe-initial';
 import { isQuestionBackAnswer } from './ai-pm-judgment-target-binding';
 import {
   auditJudgmentNextQuestion,
+  buildFix10TurnAudit,
+  isOffTrackGapForFix10,
   resolveJudgmentBoundTargetGap,
+  type Fix10TurnAudit,
 } from './ai-pm-judgment-next-question-binding';
 
 export type Fix10RCheck = {
@@ -60,6 +63,7 @@ export type Fix10RevalidationResult = {
     audit: ReturnType<typeof auditJudgmentNextQuestion>;
     nextQuestion: string;
   }>;
+  fix10TurnAudits: Fix10TurnAudit[];
   overallPass: boolean;
   ctoFirstTest: 'PASS' | 'FAIL';
 };
@@ -354,6 +358,7 @@ export function evaluateFix10Revalidation(input: Fix10RevalidationInput): Fix10R
     breweryResult.turns[breweryResult.turns.length - 1];
   const jCustomer = breweryResult.finalJudgmentSnapshot?.dimensions.customer.summary ?? '';
   const jNextQ = jTurn?.nextQuestion ?? '';
+  const jNextGap = jTurn?.nextTargetGap ?? '';
   const jStaleCustomer =
     /고객(?:은|이)\s*양조장/.test(jNextQ) ||
     /「고객은\s*양조장/.test(jNextQ);
@@ -361,7 +366,8 @@ export function evaluateFix10Revalidation(input: Fix10RevalidationInput): Fix10R
     /양조|반찬|꽃집/.test(jCustomer) &&
     !/^양조장(?:이|은)?$/.test(jCustomer.trim()) &&
     !jStaleCustomer &&
-    (/불편|문제|핵심|알릴/.test(jNextQ) || jNextQ.length === 0);
+    !isOffTrackGapForFix10(jNextGap) &&
+    (/불편|문제|핵심|알릴|해결|필요로/.test(jNextQ) || jNextQ.length === 0);
   scenarios.push(
     scenario(
       'J',
@@ -482,7 +488,9 @@ export function evaluateFix10Revalidation(input: Fix10RevalidationInput): Fix10R
       'FIX10-F2',
       'Next Q targets unresolved dimension',
       jNextQ.slice(0, 48) || '(empty)',
-      !jStaleCustomer && (/불편|문제|핵심|알릴|해결/.test(jNextQ) || jNextQ.length === 0),
+      !jStaleCustomer &&
+        !isOffTrackGapForFix10(jNextGap) &&
+        (/불편|문제|핵심|알릴|해결|필요로/.test(jNextQ) || jNextQ.length === 0),
     ),
   );
 
@@ -491,18 +499,33 @@ export function evaluateFix10Revalidation(input: Fix10RevalidationInput): Fix10R
     audit: ReturnType<typeof auditJudgmentNextQuestion>;
     nextQuestion: string;
   }> = [];
+  const fix10TurnAudits: Fix10TurnAudit[] = [];
+  let previousTargetGap = '';
   for (const t of breweryResult.turns) {
+    const audit = buildFix10TurnAudit({
+      turnIndex: t.turnIndex,
+      ceoAnswer: t.ceoAnswer,
+      trace: t.trace,
+      judgment: t.judgmentSnapshot,
+      previousTargetGap: t.targetGap || previousTargetGap,
+      nextQuestion: t.nextQuestion,
+      nextTargetGap: t.nextTargetGap,
+      nextWhyNow: t.nextWhyNow,
+    });
+    fix10TurnAudits.push(audit);
+
     if (!t.judgmentSnapshot) continue;
     const bound = resolveJudgmentBoundTargetGap(t.judgmentSnapshot);
     p0FixA.push({
       turn: t.turnIndex,
       audit: auditJudgmentNextQuestion({
         judgment: t.judgmentSnapshot,
-        decision: null,
-        previousTargetGap: t.targetGap,
+        selectedTargetGap: t.nextTargetGap ?? audit.selectedTargetGap,
+        previousTargetGap: t.targetGap || previousTargetGap,
       }),
       nextQuestion: t.nextQuestion ?? '',
     });
+    previousTargetGap = t.nextTargetGap ?? t.targetGap ?? previousTargetGap;
     if (bound && t.nextQuestion) {
       const staleCustomerInProblemFocus =
         bound.focus === 'problem' &&
@@ -517,6 +540,27 @@ export function evaluateFix10Revalidation(input: Fix10RevalidationInput): Fix10R
         ),
       );
     }
+    if (t.turnIndex === 3) {
+      const t3Pass =
+        audit.changedDimension === 'problem' &&
+        !isOffTrackGapForFix10(audit.selectedTargetGap ?? '');
+      rChecks.push(
+        r(
+          'FIX10-F4',
+          'T3 problem NEW → not payer/pricing',
+          `${audit.nextFocus ?? '—'} / ${(t.nextQuestion ?? '').slice(0, 40)}`,
+          t3Pass,
+        ),
+      );
+    }
+    rChecks.push(
+      r(
+        `FIX10-F5-T${String(t.turnIndex).padStart(2, '0')}`,
+        `Turn ${t.turnIndex} audit verdict`,
+        audit.verdict,
+        audit.verdict === 'PASS',
+      ),
+    );
   }
 
   const failedR = rChecks.filter((c) => c.verdict === 'FAIL');
@@ -533,6 +577,7 @@ export function evaluateFix10Revalidation(input: Fix10RevalidationInput): Fix10R
     cpoRChecks,
     fix9Failures,
     p0FixA,
+    fix10TurnAudits,
     overallPass,
     ctoFirstTest: overallPass ? 'PASS' : 'FAIL',
   };
@@ -661,7 +706,33 @@ export function formatFix10RevalidationReport(
     lines.push('---');
     lines.push('');
   }
-  lines.push('## 5b. P0-FIX-A Regression (Latest Judgment → Next Question)');
+  lines.push('## 5b. P0-FIX-A-2 Regression (Canonical Judgment → Next Question)');
+  lines.push('');
+  lines.push(
+    '| Turn | CEO Answer | Answer Meaning | Changed | Unresolved | Next Focus | Selected Q | Why Now | Prev Target | Stale | Verdict |',
+  );
+  lines.push(
+    '|------|------------|----------------|---------|------------|------------|------------|---------|-------------|-------|---------|',
+  );
+  for (const row of result.fix10TurnAudits) {
+    const ceo = row.ceoAnswer.replace(/\|/g, '/').slice(0, 28);
+    const meaning = row.answerMeaning.replace(/\|/g, '/').slice(0, 24);
+    const changed = row.changedDimension ?? '—';
+    const unresolved = row.unresolvedDimensions.join('/') || '—';
+    const focus = row.nextFocus ? `${row.nextFocus} (${row.boundGapId})` : '—';
+    const sel = row.selectedQuestion.replace(/\|/g, '/').slice(0, 28) || '—';
+    const why = row.whyNow.replace(/\|/g, '/').slice(0, 24) || '—';
+    const prev = row.previousTarget || '—';
+    const stale = row.staleTarget ? 'YES' : 'NO';
+    lines.push(
+      `| ${row.turnIndex} | ${ceo} | ${meaning} | ${changed} | ${unresolved} | ${focus} | ${sel} | ${why} | ${prev} | ${stale} | **${row.verdict}** |`,
+    );
+    if (row.failReason) {
+      lines.push(`| | _fail: ${row.failReason.slice(0, 60)}_ | | | | | | | | | |`);
+    }
+  }
+  lines.push('');
+  lines.push('### P0-FIX-A Summary');
   lines.push('');
   lines.push('| Turn | Canonical focus | Next question | Previous target | Stale? | Why |');
   lines.push('|------|-----------------|---------------|-----------------|--------|-----|');

@@ -4,6 +4,9 @@
 
 import { selectAdaptiveNextGaps } from './adaptive-question-select';
 import type { NextQuestionDecision } from './decide-next-question-from-review';
+import { isOffTrackGapForFix10, listFix10FocusCandidates, buildJudgmentBoundQuestion } from './ai-pm-judgment-next-question-binding';
+import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
+import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 import { STAGE_A_REQUIRED_GAPS, STAGE_B_REQUIRED_GAPS } from './evaluate-stage-readiness';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import type { LivingUnderstandingState } from './living-understanding-state';
@@ -78,8 +81,9 @@ export function applyAntiRepeatPolicy(input: {
   turns: AiPmLoopTurn[];
   living: LivingUnderstandingState;
   gapState: GapKnowledgeState;
+  judgment?: CeoJudgmentState | null;
 }): NextQuestionDecision {
-  const { decision, turns, living, gapState } = input;
+  const { decision, turns, living, gapState, judgment } = input;
   const q = decision.questionText?.trim() ?? '';
   if (!q) return decision;
 
@@ -89,6 +93,44 @@ export function applyAntiRepeatPolicy(input: {
   ).length;
 
   if (repeatCount === 0) return decision;
+
+  if (isAiPmJudgmentFix10V1Active() && judgment) {
+    for (const candidate of listFix10FocusCandidates(judgment)) {
+      if (candidate.gapId === decision.targetGapId) continue;
+      if (isOffTrackGapForFix10(candidate.gapId)) continue;
+      const built = buildJudgmentBoundQuestion({
+        focus: candidate.focus,
+        gapId: candidate.gapId,
+        judgment,
+      });
+      if (!wasQuestionAskedBefore(turns, built.questionText)) {
+        return {
+          ...decision,
+          targetGap: candidate.gapId,
+          targetGapId: candidate.gapId,
+          issueId: built.issueId,
+          questionText: built.questionText,
+          whyNow: built.whyNow,
+          action: 'advance',
+          reviewAction: 'advance',
+          actionRationale: '동일 질문 반복 방지 — judgment focus로 이동합니다.',
+          reason: `anti-repeat judgment advance to ${candidate.focus}→${candidate.gapId}`,
+          reframed: true,
+        };
+      }
+    }
+    const reframed = reframeWithSuffix(q, repeatCount);
+    if (reframed !== q) {
+      return {
+        ...decision,
+        questionText: reframed,
+        actionRationale: '동일 질문 반복 방지 — 표현을 바꿔 재확인합니다.',
+        reason: `${decision.reason}; anti-repeat reframe`,
+        reframed: true,
+      };
+    }
+    return decision;
+  }
 
   const alternateGap = pickAlternateGap({
     currentGap: decision.targetGapId,

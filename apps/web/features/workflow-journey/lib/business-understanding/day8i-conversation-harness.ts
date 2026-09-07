@@ -89,6 +89,8 @@ export type Day8iConversationTurnRecord = {
   judgmentSnapshot: CeoJudgmentState | null;
   nextQuestion: string | null;
   nextQuestionReason: string | null;
+  nextTargetGap: string | null;
+  nextWhyNow: string | null;
   note?: string;
 };
 
@@ -182,19 +184,21 @@ export const DAY8I_30_TURN_SCENARIO: Day8iScenarioStep[] = [
 
 function questionFromDecision(
   decision: ReturnType<typeof resolveNextQuestionDecision>,
-): { text: string; gap: string; reason: string | null } {
-  if (!decision) return { text: '', gap: '', reason: null };
+): { text: string; gap: string; reason: string | null; whyNow: string | null } {
+  if (!decision) return { text: '', gap: '', reason: null, whyNow: null };
   if (isNextQuestionDecision(decision)) {
     return {
       text: decision.questionText,
       gap: decision.targetGap,
       reason: decision.whyNow ?? decision.rationale ?? null,
+      whyNow: decision.whyNow ?? decision.rationale ?? null,
     };
   }
   return {
     text: decision.questionText ?? '',
     gap: decision.targetGap ?? '',
     reason: decision.whyNow ?? null,
+    whyNow: decision.whyNow ?? null,
   };
 }
 
@@ -375,6 +379,8 @@ export function runDay8iConversation(input: {
       judgmentSnapshot: sync.judgment,
       nextQuestion: null,
       nextQuestionReason: nextReason,
+      nextTargetGap: null,
+      nextWhyNow: null,
       note: step.note,
     };
 
@@ -431,8 +437,12 @@ export function runDay8iConversation(input: {
           memory: processed.memory,
           gapState: sync.loop.gapState,
           projectId,
+          judgment: sync.judgment,
         });
-    record.nextQuestion = questionFromDecision(rawNextDecision).text || null;
+    const rawNext = questionFromDecision(rawNextDecision);
+    record.nextQuestion = rawNext.text || null;
+    record.nextTargetGap = rawNext.gap || null;
+    record.nextWhyNow = rawNext.whyNow;
 
     if (!record.nextQuestion && !askTerminated) {
       askTerminated = true;

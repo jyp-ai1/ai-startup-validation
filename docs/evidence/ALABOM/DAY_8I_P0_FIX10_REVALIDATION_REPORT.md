@@ -6,9 +6,9 @@
 
 | Field | Value |
 |-------|-------|
-| Commit SHA | `a81df2e07758941397cf86bd6dfe3b5a875b2e90` |
+| Commit SHA | `69480efd022b66b8885d66ceb9408a7e704022a2` |
 | Branch | `cursor/day8i-p0-fix10-ceo-trust-journey-6423` |
-| Executed (UTC) | 2026-09-07T14:33:23.122Z |
+| Executed (UTC) | 2026-09-07T14:58:15.761Z |
 
 ## 2. Environment / Feature Flag
 
@@ -185,12 +185,21 @@ End of brewery pipeline
 | FIX10-R22 | FIX-9 R regression | 0 | **PASS** |
 | FIX10-R23 | Feature flags ON | FIX-10 default ON | **PASS** |
 | FIX10-R24 | Build | PASS | **PASS** |
-| FIX10-R25 | SHA integrity | a81df2e07758 | **PASS** |
+| FIX10-R25 | SHA integrity | 69480efd022b | **PASS** |
 | FIX10-F1 | No stale customer confirm after correction | (empty) | **PASS** |
 | FIX10-F2 | Next Q targets unresolved dimension | (empty) | **PASS** |
 | FIX10-F3-T01 | Turn 1 judgment→question | customer / 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? | **PASS** |
-| FIX10-F3-T02 | Turn 2 judgment→question | customer / 이 사업은 누구에게 무엇을 제공하나요? | **PASS** |
-| FIX10-F3-T03 | Turn 3 judgment→question | customer / 서비스 비용은 누가 지불하나요? | **PASS** |
+| FIX10-F5-T01 | Turn 1 audit verdict | PASS | **PASS** |
+| FIX10-F3-T02 | Turn 2 judgment→question | customer / 지금 가장 크게 해결하려는 불편은 무엇인가요? | **PASS** |
+| FIX10-F5-T02 | Turn 2 audit verdict | PASS | **PASS** |
+| FIX10-F3-T03 | Turn 3 judgment→question | customer / 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했습니 | **PASS** |
+| FIX10-F4 | T3 problem NEW → not payer/pricing | problem / 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했습니다. 맞나요? | **PASS** |
+| FIX10-F5-T03 | Turn 3 audit verdict | PASS | **PASS** |
+| FIX10-F3-T04 | Turn 4 judgment→question | customer / 문제를 해결하는 방식(제공 가치)은 무엇인가요? | **PASS** |
+| FIX10-F5-T04 | Turn 4 audit verdict | PASS | **PASS** |
+| FIX10-F3-T05 | Turn 5 judgment→question | problem / 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했습니 | **PASS** |
+| FIX10-F5-T05 | Turn 5 audit verdict | PASS | **PASS** |
+| FIX10-F5-T06 | Turn 6 audit verdict | PASS | **PASS** |
 
 ---
 
@@ -199,15 +208,11 @@ End of brewery pipeline
 | Turn | Question | CEO Answer | Dimension | Prev → New | Next |
 |------|----------|------------|-----------|------------|------|
 | 1 | 제가 이해한 사업은 「영세한 양조장들이 온라인 마케팅을 잘 못하고 있어서 | 네, 맞습니다. | (frozen/none) | — | 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요 |
-| 2 | 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? | 고객이 누군데? | (frozen/none) | — | 이 사업은 누구에게 무엇을 제공하나요? |
-| 3 | 이 사업은 누구에게 무엇을 제공하나요? | 양조장들은 온라인에 제품을 알릴 방법을 잘 모르고, 홍보할 인력도 부족합 | problem:NEW | unknown→needs_check | 서비스 비용은 누가 지불하나요? |
-| 4 | 서비스 비용은 누가 지불하나요? | 온라인으로 홍보하면 더 많은 고객에게 제품을 알릴 수 있을 것 같습니다. | customerChange:NEW | unknown→needs_check | — |
-| 5 | [현재 AI 판단]
-고객: 
-문제: PRIMARY: 알릴 방법을 잘 모르 | 고객은 양조장입니다. | customer:NEW | unknown→clear | — |
-| 6 | [현재 AI 판단]
-고객: 고객은 양조장입니다.
-문제: PRIMARY:  | 양조장뿐 아니라 반찬가게와 꽃집도 대상입니다. | customer:CONFLICTED | clear→clear | — |
+| 2 | 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? | 고객이 누군데? | (frozen/none) | — | 지금 가장 크게 해결하려는 불편은 무엇인가요? |
+| 3 | 지금 가장 크게 해결하려는 불편은 무엇인가요? | 양조장들은 온라인에 제품을 알릴 방법을 잘 모르고, 홍보할 인력도 부족합 | problem:NEW | unknown→needs_check | 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했 |
+| 4 | 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했습니다. 맞나요? | 온라인으로 홍보하면 더 많은 고객에게 제품을 알릴 수 있을 것 같습니다. | customerChange:NEW | unknown→needs_check | 문제를 해결하는 방식(제공 가치)은 무엇인가요? |
+| 5 | 문제를 해결하는 방식(제공 가치)은 무엇인가요? | 고객은 양조장입니다. | customer:NEW | unknown→clear | 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했 |
+| 6 | 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했습니다. 맞나요?  | 양조장뿐 아니라 반찬가게와 꽃집도 대상입니다. | customer:CONFLICTED | clear→clear | — |
 
 ### Turn Detail
 
@@ -239,17 +244,17 @@ End of brewery pipeline
 
 **Dimensions:** customer=🔴 (없음) | problem=🔴 (없음) | solution=🔴 (없음) | change=🔴 (없음)
 
-**Next Question:** 이 사업은 누구에게 무엇을 제공하나요?
+**Next Question:** 지금 가장 크게 해결하려는 불편은 무엇인가요?
 
 ---
 
 #### Turn 03 [Scenario G — explicit problem]
 
-**Question:** 이 사업은 누구에게 무엇을 제공하나요?
+**Question:** 지금 가장 크게 해결하려는 불편은 무엇인가요?
 
 **CEO Answer:** 양조장들은 온라인에 제품을 알릴 방법을 잘 모르고, 홍보할 인력도 부족합니다.
 
-**Target Gap:** businessOneLiner
+**Target Gap:** problemJtbd
 
 - **problem** NEW: "" → "PRIMARY: 알릴 방법을 잘 모르고"
   - Meaning: 알릴 방법을 잘 모르고
@@ -257,17 +262,17 @@ End of brewery pipeline
 
 **Dimensions:** customer=🔴 (없음) | problem=🟡 PRIMARY: 알릴 방법을 잘 모르고 | solution=🔴 (없음) | change=🔴 (없음)
 
-**Next Question:** 서비스 비용은 누가 지불하나요?
+**Next Question:** 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했습니다. 맞나요?
 
 ---
 
 #### Turn 04 [Scenario H — customer change claim (hypothesis)]
 
-**Question:** 서비스 비용은 누가 지불하나요?
+**Question:** 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했습니다. 맞나요?
 
 **CEO Answer:** 온라인으로 홍보하면 더 많은 고객에게 제품을 알릴 수 있을 것 같습니다.
 
-**Target Gap:** payer
+**Target Gap:** problemJtbd
 
 - **customerChange** NEW: "" → "온라인으로 홍보하면 더 많은 고객에게 제품을 알릴 수 있을 것 같습니다."
   - Meaning: CEO 답변 — 고객 변화 가설 (검증 전)
@@ -275,27 +280,17 @@ End of brewery pipeline
 
 **Dimensions:** customer=🔴 (없음) | problem=🟡 PRIMARY: 알릴 방법을 잘 모르고 | solution=🔴 (없음) | change=🟡 온라인으로 홍보하면 더 많은 고객에게 제품을 알릴 수 있을 것 같습니다.
 
+**Next Question:** 문제를 해결하는 방식(제공 가치)은 무엇인가요?
 
 ---
 
 #### Turn 05 [Scenario J — initial customer (will be corrected)]
 
-**Question:** [현재 AI 판단]
-고객: 
-문제: PRIMARY: 알릴 방법을 잘 모르고
-해결 방법: (empty)
-고객에게 달라질 것으로 보는 점: 🟡 (가설) 🟡 CEO 가설 — 아직 검증되지 않음: 온라인으로 홍보하면 더 많은 고객에게 제품을 알릴 수 있을 것 같습니다.
-
-[다음 AI 판단 초점]
-· 무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다.
-
-[다음 선택]
-· 이 부분 보완하기
-· 현재 정보로 계속 검토
+**Question:** 문제를 해결하는 방식(제공 가치)은 무엇인가요?
 
 **CEO Answer:** 고객은 양조장입니다.
 
-**Target Gap:** 
+**Target Gap:** solution
 
 - **customer** NEW: "" → "고객은 양조장입니다."
   - Meaning: CEO 답변 — 고객(누구) meaning unit
@@ -303,27 +298,17 @@ End of brewery pipeline
 
 **Dimensions:** customer=🟢 고객은 양조장입니다. | problem=🟡 PRIMARY: 알릴 방법을 잘 모르고 | solution=🔴 (없음) | change=🟡 온라인으로 홍보하면 더 많은 고객에게 제품을 알릴 수 있을 것 같습니다.
 
+**Next Question:** 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했습니다. 맞나요? 조금 더 구체적으로 알려 주세요.
 
 ---
 
 #### Turn 06 [Scenario J — customer correction (must not narrow)]
 
-**Question:** [현재 AI 판단]
-고객: 고객은 양조장입니다.
-문제: PRIMARY: 알릴 방법을 잘 모르고
-해결 방법: (empty)
-고객에게 달라질 것으로 보는 점: 🟡 (가설) 🟡 CEO 가설 — 아직 검증되지 않음: 온라인으로 홍보하면 더 많은 고객에게 제품을 알릴 수 있을 것 같습니다.
-
-[다음 AI 판단 초점]
-· 무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다.
-
-[다음 선택]
-· 이 부분 보완하기
-· 현재 정보로 계속 검토
+**Question:** 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했습니다. 맞나요? 조금 더 구체적으로 알려 주세요.
 
 **CEO Answer:** 양조장뿐 아니라 반찬가게와 꽃집도 대상입니다.
 
-**Target Gap:** 
+**Target Gap:** problemJtbd
 
 - **customer** CONFLICTED: "고객은 양조장입니다." → "양조장뿐 아니라 반찬가게와 꽃집도 대상입니다."
   - Meaning: CEO 답변 — 고객(누구) meaning unit
@@ -334,16 +319,27 @@ End of brewery pipeline
 
 ---
 
-## 5b. P0-FIX-A Regression (Latest Judgment → Next Question)
+## 5b. P0-FIX-A-2 Regression (Canonical Judgment → Next Question)
+
+| Turn | CEO Answer | Answer Meaning | Changed | Unresolved | Next Focus | Selected Q | Why Now | Prev Target | Stale | Verdict |
+|------|------------|----------------|---------|------------|------------|------------|---------|-------------|-------|---------|
+| 1 | 네, 맞습니다. | (none) | — | customer/problem/solution | customer (customerPersona) | 이 서비스를 실제로 가장 필요로 하는 사람은 누구인 | 누구를 위한 사업인지 더 구체적으로 확인해야 | businessOneLiner | NO | **PASS** |
+| 2 | 고객이 누군데? | (none) | — | customer/problem/solution | problem (problemJtbd) | 지금 가장 크게 해결하려는 불편은 무엇인가요? | 고객이 실제로 겪는 핵심 문제와 우선순위를  | customerPersona | NO | **PASS** |
+| 3 | 양조장들은 온라인에 제품을 알릴 방법을 잘 모르고, | 알릴 방법을 잘 모르고 | problem | customer/problem/solution | problem (problemJtbd) | 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이 | 고객이 실제로 겪는 핵심 문제와 우선순위를  | problemJtbd | NO | **PASS** |
+| 4 | 온라인으로 홍보하면 더 많은 고객에게 제품을 알릴  | CEO 답변 — 고객 변화 가설 (검증 전) | customerChange | customer/problem/solution/customerChange | solution (solution) | 문제를 해결하는 방식(제공 가치)은 무엇인가요? | 무엇을 어떻게 해결하려는지 더 구체적으로 확 | problemJtbd | NO | **PASS** |
+| 5 | 고객은 양조장입니다. | CEO 답변 — 고객(누구) meaning  | customer | problem/solution/customerChange | problem (problemJtbd) | 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이 | 고객이 실제로 겪는 핵심 문제와 우선순위를  | solution | NO | **PASS** |
+| 6 | 양조장뿐 아니라 반찬가게와 꽃집도 대상입니다. | CEO 답변 — 고객(누구) meaning  | customer | problem/solution/customerChange | problem (problemJtbd) | — | 고객이 실제로 겪는 핵심 문제와 우선순위를  | problemJtbd | NO | **PASS** |
+
+### P0-FIX-A Summary
 
 | Turn | Canonical focus | Next question | Previous target | Stale? | Why |
 |------|-----------------|---------------|-----------------|--------|-----|
-| 1 | — (—) | 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? | businessOneLiner | NO | no judgment or decision |
-| 2 | — (—) | 이 사업은 누구에게 무엇을 제공하나요? | customerPersona | NO | no judgment or decision |
-| 3 | — (—) | 서비스 비용은 누가 지불하나요? | businessOneLiner | NO | no judgment or decision |
-| 4 | — (—) | — | payer | NO | no judgment or decision |
-| 5 | — (—) | — | — | NO | no judgment or decision |
-| 6 | — (—) | — | — | NO | no judgment or decision |
+| 1 | customer (customerPersona) | 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? | businessOneLiner | NO | aligned on customerPersona (customer) |
+| 2 | customer (customerPersona) | 지금 가장 크게 해결하려는 불편은 무엇인가요? | customerPersona | YES | selected problemJtbd ≠ bound customerPer |
+| 3 | customer (customerPersona) | 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했습니다. 맞 | problemJtbd | YES | selected problemJtbd ≠ bound customerPer |
+| 4 | customer (customerPersona) | 문제를 해결하는 방식(제공 가치)은 무엇인가요? | problemJtbd | YES | selected solution ≠ bound customerPerson |
+| 5 | problem (problemJtbd) | 핵심 불편은(는) 「알릴 방법을 잘 모르고」으로 이해했습니다. 맞 | solution | NO | aligned on problemJtbd (problem) |
+| 6 | problem (problemJtbd) | — | problemJtbd | NO | aligned on problemJtbd (problem) |
 
 ---
 

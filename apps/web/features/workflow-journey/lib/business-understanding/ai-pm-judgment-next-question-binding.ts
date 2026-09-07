@@ -14,11 +14,12 @@ import { dimensionForGap } from './ai-pm-judgment-target-binding';
 import { isSemanticCopy } from './ai-pm-judgment-target-binding';
 import {
   buildDynamicNextCheckPrompt,
-  pickDynamicNextFocus,
 } from './ai-pm-judgment-next-focus';
+import { inferTargetGapFromQuestionText } from './gap-question-map';
 import type { NextQuestionDecision } from './decide-next-question-from-review';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import { whyNowForGapField } from './living-understanding-state';
+import { isRepeatedQuestion } from './ai-pm-no-gap-termination';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
 
@@ -39,6 +40,27 @@ const FIX10_FOCUS_ORDER: CeoJudgmentDimensionId[] = [
   'solution',
   'customerChange',
 ];
+
+const OFF_TRACK_GAP_RE =
+  /^(payer|pricingHint|revenueModel|marketChannel|marketSizeEvidence|problemFrequencySeverity)$/;
+
+export function isOffTrackGapForFix10(gapId: string): boolean {
+  return OFF_TRACK_GAP_RE.test(gapId.trim());
+}
+
+export function isJudgmentBoundDecision(decision: NextQuestionDecision): boolean {
+  return (
+    decision.reason?.includes('judgment-bound') === true ||
+    decision.reason?.includes('judgment-bootstrap') === true ||
+    decision.actionRationale?.includes('FIX-10 P0-FIX-A') === true
+  );
+}
+
+export function listFix10UnresolvedDimensions(
+  judgment: CeoJudgmentState,
+): CeoJudgmentDimensionId[] {
+  return FIX10_FOCUS_ORDER.filter((id) => isFix10DimensionUnresolved(judgment, id));
+}
 
 function isFix10DimensionUnresolved(
   state: CeoJudgmentState,
@@ -73,6 +95,19 @@ export function pickFix10JudgmentFocus(
     if (isFix10DimensionUnresolved(judgment, 'problem')) return 'problem';
   }
 
+  if (recent.has('problem')) {
+    const prob = judgment.dimensions.problem;
+    if (
+      isFix10DimensionUnresolved(judgment, 'problem') &&
+      prob.status === 'needs_check' &&
+      hasCanonicalProblemPrimary(prob)
+    ) {
+      return 'problem';
+    }
+    if (isFix10DimensionUnresolved(judgment, 'customer')) return 'customer';
+    if (isFix10DimensionUnresolved(judgment, 'problem')) return 'problem';
+  }
+
   for (const id of FIX10_FOCUS_ORDER) {
     if (isFix10DimensionUnresolved(judgment, id)) return id;
   }
@@ -85,6 +120,23 @@ export type JudgmentNextQuestionAudit = {
   previousTargetGap: string;
   staleTargetDetected: boolean;
   reason: string;
+};
+
+export type Fix10TurnAudit = {
+  turnIndex: number;
+  ceoAnswer: string;
+  answerMeaning: string;
+  changedDimension: CeoJudgmentDimensionId | null;
+  unresolvedDimensions: CeoJudgmentDimensionId[];
+  nextFocus: CeoJudgmentDimensionId | null;
+  boundGapId: string | null;
+  selectedQuestion: string;
+  whyNow: string;
+  previousTarget: string;
+  selectedTargetGap: string | null;
+  staleTarget: boolean;
+  verdict: 'PASS' | 'FAIL';
+  failReason: string;
 };
 
 function isCustomerDefinitionText(text: string): boolean {
@@ -161,6 +213,31 @@ export function resolveJudgmentBoundTargetGap(
   return { focus, gapId: gapForJudgmentDimension(focus) };
 }
 
+/** Ordered focus candidates — primary first, then remaining unresolved dimensions. */
+export function listFix10FocusCandidates(
+  judgment: CeoJudgmentState,
+): Array<{ focus: CeoJudgmentDimensionId; gapId: string }> {
+  const primary = pickFix10JudgmentFocus(judgment);
+  const out: Array<{ focus: CeoJudgmentDimensionId; gapId: string }> = [];
+  const seen = new Set<CeoJudgmentDimensionId>();
+  const coreOpen =
+    isFix10DimensionUnresolved(judgment, 'customer') ||
+    isFix10DimensionUnresolved(judgment, 'problem') ||
+    isFix10DimensionUnresolved(judgment, 'solution');
+
+  if (primary) {
+    out.push({ focus: primary, gapId: gapForJudgmentDimension(primary) });
+    seen.add(primary);
+  }
+  for (const id of listFix10UnresolvedDimensions(judgment)) {
+    if (seen.has(id)) continue;
+    if (coreOpen && id === 'customerChange') continue;
+    out.push({ focus: id, gapId: gapForJudgmentDimension(id) });
+    seen.add(id);
+  }
+  return out;
+}
+
 function clipConfirm(text: string, max = 36): string {
   const t = text.trim().replace(/\s+/g, ' ');
   if (t.length <= max) return t;
@@ -205,12 +282,12 @@ export function buildJudgmentBoundQuestion(input: {
 }
 
 /**
- * Override V3 gap decision with latest canonical judgment focus.
- * Preserves businessOneLiner confirm when still required.
+ * P0-FIX-A-2 — Canonical judgment is the direct consumer of next-question selection.
  */
 export function applyJudgmentNextQuestionBinding(input: {
   decision: NextQuestionDecision;
   judgment: CeoJudgmentState | null | undefined;
+  turns?: AiPmLoopTurn[];
 }): NextQuestionDecision {
   if (!isAiPmJudgmentFix10V1Active() || !input.judgment) {
     return input.decision;
@@ -223,37 +300,29 @@ export function applyJudgmentNextQuestionBinding(input: {
     return input.decision;
   }
 
-  if (
-    input.decision.targetGapId === 'businessOneLiner' &&
-    input.decision.questionType === 'confirm'
-  ) {
-    return input.decision;
+  const candidates = listFix10FocusCandidates(input.judgment);
+  if (candidates.length === 0) return input.decision;
+
+  let bound = candidates[0]!;
+  let built = buildJudgmentBoundQuestion({ ...bound, judgment: input.judgment });
+
+  if (input.turns?.length) {
+    for (const candidate of candidates) {
+      const candidateBuilt = buildJudgmentBoundQuestion({
+        ...candidate,
+        judgment: input.judgment,
+      });
+      if (!isRepeatedQuestion(input.turns, candidateBuilt.questionText)) {
+        bound = candidate;
+        built = candidateBuilt;
+        break;
+      }
+    }
   }
 
-  const bound = resolveJudgmentBoundTargetGap(input.judgment);
-  if (!bound) return input.decision;
-
-  const decisionDim = dimensionForGap(input.decision.targetGapId);
-  const staleTarget = input.decision.targetGapId !== bound.gapId;
-  const staleConfirm =
-    input.decision.questionType === 'confirm' &&
-    Boolean(input.decision.confirmKnownValue) &&
-    isStaleKnowledgeForJudgment({
-      gapId: input.decision.targetGapId,
-      value: input.decision.confirmKnownValue ?? input.decision.questionText,
-      judgment: input.judgment,
-    });
-
-  const shouldOverride =
-    staleConfirm ||
-    (staleTarget &&
-      (decisionDim !== bound.focus ||
-        /^(payer|pricingHint|revenueModel|marketChannel)$/.test(input.decision.targetGapId)));
-
-  if (!shouldOverride) return input.decision;
-
-  const staleTargetDetected = staleTarget || staleConfirm;
-  const built = buildJudgmentBoundQuestion({ ...bound, judgment: input.judgment });
+  const staleTargetDetected =
+    input.decision.targetGapId !== bound.gapId ||
+    isOffTrackGapForFix10(input.decision.targetGapId);
 
   return {
     ...input.decision,
@@ -267,8 +336,8 @@ export function applyJudgmentNextQuestionBinding(input: {
     questionType: built.questionType ?? 'open',
     confirmKnownValue: built.confirmKnownValue,
     confirmGapId: built.questionType === 'confirm' ? bound.gapId : undefined,
-    actionRationale: `FIX-10 P0-FIX-A — judgment focus ${bound.focus}`,
-    reason: `judgment-bound ${bound.focus}→${bound.gapId}${staleTargetDetected ? ' (stale gap replaced)' : ''}`,
+    actionRationale: `FIX-10 P0-FIX-A-2 — judgment focus ${bound.focus}`,
+    reason: `judgment-bound ${bound.focus}→${bound.gapId}${staleTargetDetected ? ' (replaced off-track target)' : ''}`,
   };
 }
 
@@ -305,17 +374,17 @@ export function createJudgmentBoundDecision(
 
 export function auditJudgmentNextQuestion(input: {
   judgment: CeoJudgmentState | null | undefined;
-  decision: NextQuestionDecision | null;
+  selectedTargetGap?: string | null;
   previousTargetGap?: string | null;
 }): JudgmentNextQuestionAudit {
-  const previousTargetGap = input.previousTargetGap?.trim() ?? input.decision?.targetGapId ?? '';
-  if (!input.judgment || !input.decision) {
+  const previousTargetGap = input.previousTargetGap?.trim() ?? '';
+  if (!input.judgment) {
     return {
       focusDimension: null,
       boundGapId: null,
       previousTargetGap,
       staleTargetDetected: false,
-      reason: 'no judgment or decision',
+      reason: 'no judgment snapshot',
     };
   }
 
@@ -330,14 +399,121 @@ export function auditJudgmentNextQuestion(input: {
     };
   }
 
-  const staleTargetDetected = previousTargetGap !== bound.gapId;
+  const selected = input.selectedTargetGap?.trim() ?? '';
+  const staleTargetDetected =
+    Boolean(selected && selected !== bound.gapId) ||
+    isOffTrackGapForFix10(selected);
   return {
     focusDimension: bound.focus,
     boundGapId: bound.gapId,
     previousTargetGap,
     staleTargetDetected,
     reason: staleTargetDetected
-      ? `replaced stale ${previousTargetGap} with ${bound.gapId} (${bound.focus})`
+      ? `selected ${selected || '(empty)'} ≠ bound ${bound.gapId} (${bound.focus})`
       : `aligned on ${bound.gapId} (${bound.focus})`,
+  };
+}
+
+export function buildFix10TurnAudit(input: {
+  turnIndex: number;
+  ceoAnswer: string;
+  trace: JudgmentTurnTrace | null;
+  judgment: CeoJudgmentState | null;
+  previousTargetGap: string;
+  nextQuestion: string | null;
+  nextTargetGap?: string | null;
+  nextWhyNow?: string | null;
+}): Fix10TurnAudit {
+  const judgment = input.judgment;
+  const changed =
+    input.trace?.dimensionEntries.find((e) => e.changeType === 'NEW' || e.changeType === 'CONFLICTED')
+      ?.affectedDimension ??
+    input.trace?.dimensionEntries[0]?.affectedDimension ??
+    null;
+  const answerMeaning =
+    input.trace?.dimensionEntries[0]?.interpretedMeaning ??
+    input.trace?.dimensionEntries[0]?.reason ??
+    changed ??
+    '(none)';
+
+  if (!judgment) {
+    return {
+      turnIndex: input.turnIndex,
+      ceoAnswer: input.ceoAnswer,
+      answerMeaning: String(answerMeaning),
+      changedDimension: changed,
+      unresolvedDimensions: [],
+      nextFocus: null,
+      boundGapId: null,
+      selectedQuestion: input.nextQuestion ?? '',
+      whyNow: input.nextWhyNow ?? '',
+      previousTarget: input.previousTargetGap,
+      selectedTargetGap: input.nextTargetGap ?? null,
+      staleTarget: false,
+      verdict: input.nextQuestion ? 'FAIL' : 'PASS',
+      failReason: input.nextQuestion ? 'missing judgment snapshot' : '',
+    };
+  }
+
+  const candidates = listFix10FocusCandidates(judgment);
+  const primary = candidates[0] ?? null;
+  const selectedTargetGap =
+    input.nextTargetGap?.trim() ||
+    inferTargetGapFromQuestionText(input.nextQuestion) ||
+    null;
+  const matched = selectedTargetGap
+    ? candidates.find((c) => c.gapId === selectedTargetGap)
+    : null;
+  const nextFocus = matched?.focus ?? primary?.focus ?? null;
+  const boundGapId = matched?.gapId ?? primary?.gapId ?? null;
+  const unresolved = listFix10UnresolvedDimensions(judgment);
+  const built = primary
+    ? buildJudgmentBoundQuestion({ ...primary, judgment })
+    : null;
+  const whyNow = input.nextWhyNow ?? built?.whyNow ?? '';
+  const staleTarget =
+    Boolean(primary && selectedTargetGap && !matched && selectedTargetGap !== primary.gapId) ||
+    isOffTrackGapForFix10(selectedTargetGap ?? '');
+
+  let verdict: 'PASS' | 'FAIL' = 'PASS';
+  let failReason = '';
+
+  if (input.nextQuestion) {
+    if (isOffTrackGapForFix10(selectedTargetGap ?? '')) {
+      verdict = 'FAIL';
+      failReason = `off-track gap ${selectedTargetGap}`;
+    } else if (primary && selectedTargetGap && !matched) {
+      verdict = 'FAIL';
+      failReason = `selected ${selectedTargetGap} ∉ judgment candidates`;
+    } else if (
+      boundGapId === 'problemJtbd' &&
+      (/고객(?:은|이)\s*양조장/.test(input.nextQuestion) ||
+        /「고객은\s*양조장/.test(input.nextQuestion))
+    ) {
+      verdict = 'FAIL';
+      failReason = 'stale customer confirm after correction';
+    }
+  }
+
+  if (input.turnIndex === 3 && changed === 'problem' && isOffTrackGapForFix10(selectedTargetGap ?? '')) {
+    verdict = 'FAIL';
+    failReason = 'T3 problem NEW must not advance to payer/pricing';
+  }
+
+  return {
+    turnIndex: input.turnIndex,
+    ceoAnswer: input.ceoAnswer,
+    answerMeaning: String(answerMeaning),
+    changedDimension: changed,
+    unresolvedDimensions: unresolved,
+    nextFocus,
+    boundGapId,
+    selectedQuestion: input.nextQuestion ?? '',
+    whyNow,
+    previousTarget: input.previousTargetGap,
+    selectedTargetGap,
+    staleTarget,
+    verdict,
+    failReason,
   };
 }

@@ -14,7 +14,6 @@ import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 import {
   createJudgmentBoundDecision,
-  pickFix10JudgmentFocus,
 } from './ai-pm-judgment-next-question-binding';
 
 function normalizeQuestion(text: string): string {
@@ -136,15 +135,6 @@ export function applyNoGapTermination(input: {
     const bootstrap = createJudgmentBoundDecision(input.judgment);
     const q = bootstrap?.questionText?.trim() ?? '';
     if (q && !isRepeatedQuestion(input.turns, q)) {
-      return bootstrap;
-    }
-    if (bootstrap?.questionType === 'confirm' && q) {
-      return bootstrap;
-    }
-    if (
-      verdict.reason === 'repeat_loop_kill' &&
-      pickFix10JudgmentFocus(input.judgment)
-    ) {
       return bootstrap;
     }
   }

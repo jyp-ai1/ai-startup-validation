@@ -40,6 +40,8 @@ export type ResolveNextQuestionInput = {
   gapState?: GapKnowledgeState;
   previousQuestionText?: string | null;
   projectId?: string;
+  /** Override loop store judgment (e.g. post-answer sync snapshot). */
+  judgment?: import('./ai-pm-ceo-judgment-dimensions').CeoJudgmentState | null;
   /** When true, persist lastDecision or clear stale artifacts on null decision. Default false (read-only). */
   persistLastDecision?: boolean;
   /** Phase D — when research pending, question engine must not advance. */
@@ -66,6 +68,7 @@ export function resolveNextQuestionDecision(
   const loop = input.projectId ? loadAiPmLoopState(input.projectId) : null;
   const gapState = input.gapState ?? loop?.gapState ?? createEmptyGapState();
   const turns = input.turns;
+  const judgmentSnapshot = input.judgment ?? loop?.ceoJudgment ?? null;
 
   const lastReviewTurn = [...turns]
     .reverse()
@@ -112,17 +115,8 @@ export function resolveNextQuestionDecision(
       turns,
       memory: input.memory,
       stageReadiness,
-      judgment: loop?.ceoJudgment ?? null,
+      judgment: judgmentSnapshot,
       judgmentTraces: loop?.judgmentTraces,
-    });
-  }
-
-  if (decision && isNextQuestionDecision(decision)) {
-    decision = applyAntiRepeatPolicy({
-      decision,
-      turns,
-      living: input.living,
-      gapState,
     });
   }
 
@@ -131,15 +125,19 @@ export function resolveNextQuestionDecision(
     isNextQuestionDecision(decision) &&
     isAiPmJudgmentFix10V1Active()
   ) {
-    const judgment = loop?.ceoJudgment ?? null;
-    decision = applyJudgmentNextQuestionBinding({ decision, judgment });
+    decision = applyJudgmentNextQuestionBinding({
+      decision,
+      judgment: judgmentSnapshot,
+      turns,
+    });
   } else if (
     !decision &&
     isAiPmJudgmentFix10V1Active() &&
-    loop?.ceoJudgment &&
+    judgmentSnapshot &&
+    loop &&
     loop.turns.filter((t) => !t.superseded).length < 7
   ) {
-    decision = createJudgmentBoundDecision(loop.ceoJudgment);
+    decision = createJudgmentBoundDecision(judgmentSnapshot);
   }
 
   if (decision && isNextQuestionDecision(decision)) {
@@ -148,6 +146,7 @@ export function resolveNextQuestionDecision(
       turns,
       living: input.living,
       gapState,
+      judgment: judgmentSnapshot,
     });
   }
 
@@ -157,7 +156,7 @@ export function resolveNextQuestionDecision(
       living: input.living,
       turns,
       gapState,
-      judgment: loop?.ceoJudgment ?? null,
+      judgment: judgmentSnapshot,
     });
   }
 
