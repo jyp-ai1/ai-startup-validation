@@ -38,6 +38,7 @@ import {
   isConfirmPollutionValue,
 } from './ai-pm-question-presentation';
 import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
+import { isMetaConfirmationAnswer } from './ai-pm-answer-meta-slots';
 
 export type NoAskAction = 'ASK' | 'CONFIRM' | 'MOVE';
 
@@ -354,6 +355,15 @@ function isSemanticRepeatAsk(input: {
   return hit;
 }
 
+function hasUserConfirmedBusinessOneLiner(turns: AiPmLoopTurn[]): boolean {
+  return turns.some(
+    (t) =>
+      !t.superseded &&
+      t.targetGap === 'businessOneLiner' &&
+      isMetaConfirmationAnswer(t.answer?.trim() ?? ''),
+  );
+}
+
 /**
  * Evaluate whether the proposed question should be suppressed or confirmed.
  */
@@ -369,6 +379,30 @@ export function evaluateNoAskPolicy(input: {
   if (!isAiPmNoAskPolicyV1Active()) return { action: 'ASK' };
 
   const targetGapId = input.targetGapId.trim();
+
+  // FIX-10 — intake business description must be confirmed before open re-ask
+  if (
+    isAiPmJudgmentFix10V1Active() &&
+    targetGapId === 'businessOneLiner' &&
+    !hasUserConfirmedBusinessOneLiner(input.turns)
+  ) {
+    const intakeHit = scanSemanticKnowledgeForGap({
+      gapId: 'businessOneLiner',
+      living: input.living,
+      memory: input.memory,
+      turns: input.turns,
+    });
+    if (intakeHit && !isConfirmPollutionValue(intakeHit.value)) {
+      return {
+        action: 'CONFIRM',
+        gapId: targetGapId,
+        confirmText: buildConfirmText(targetGapId, intakeHit.value, intakeHit.userConfirmed),
+        knownValue: intakeHit.value,
+        reason: 'FIX-10 intake business — CEO confirm required',
+      };
+    }
+  }
+
   if (!targetGapId || !isGapAskable(targetGapId, input.gapState)) {
     return { action: 'ASK' };
   }

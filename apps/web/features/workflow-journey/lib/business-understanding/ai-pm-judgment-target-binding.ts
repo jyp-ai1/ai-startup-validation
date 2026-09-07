@@ -96,7 +96,13 @@ export function isInferenceRiskAnswer(answer: string): boolean {
 
 /** Partial unknown about a specific slot — freeze only, keep unrelated dimensions. */
 export function isPartialUnknownAnswer(answer: string): boolean {
-  return PARTIAL_UNKNOWN_RE.test(answer.trim()) && !isInferenceRiskAnswer(answer);
+  const t = answer.trim();
+  if (!PARTIAL_UNKNOWN_RE.test(t) || isInferenceRiskAnswer(answer)) return false;
+  // Third-party problem description ("양조장들은 … 잘 모르고") is not CEO declining to answer
+  if (t.length >= 24 && /(?:들은|들이|들의|고객|양조|가게|사장|업체)/.test(t)) {
+    return false;
+  }
+  return true;
 }
 
 const QUESTION_BACK_RE =

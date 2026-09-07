@@ -62,7 +62,7 @@ const CLAUSE_SPLIT_RE = /(?:[,，;；]|(?:\s*(?:하고|이고|그래서|때문�
 const CUSTOMER_SEGMENT_RE =
   /(?:소규모\s*)?(?:양조장?|반찬|꽃집|가게|사장|소상공인|CEO|PM|스타트업|고객|타깃|사용자|원장)[^,.;]*/i;
 const PROBLEM_SEGMENT_RE =
-  /(?:불편|문제|어렵|힘들|누락|분리|따로|번거|복잡|실수|확인\s*시간|엑셀|카카오|카톡|놓치|재주문)[^,.;]*/i;
+  /(?:불편|문제|어렵|힘들|누락|분리|따로|번거|복잡|실수|확인\s*시간|엑셀|카카오|카톡|놓치|재주문|모르|부족|못하고|알릴\s*방법|홍보\s*할|마케팅)[^,.;]*/i;
 const SOLUTION_SEGMENT_RE =
   /(?:한\s*곳에서|하나로\s*연결|한눈에|관리하려(?:고|는)?|하려고|하려\s*합니다|SaaS|플랫폼|MVP|체크리스트|모바일|연결(?:하는|하)?|만들(?:려|는)?)/i;
 const SOLUTION_BENEFIT_ONLY_RE =
@@ -72,7 +72,8 @@ const CUSTOMER_CHANGE_SEGMENT_RE =
 const PAYER_RE = /(?:월\s*구독|\d+\s*만\s*원|직접\s*결제|수수료|요금|수익\s*은)/i;
 const BUSINESS_GOAL_RE = /(?:\d+\s*곳|1년\s*내|목표로)/i;
 const RESEARCH_INTENT_RE = /(?:확인해\s*주세요|조사(?:해|를)?|research|경쟁사)/i;
-const HYPOTHESIS_RE = /(?:가설|80%|줄일\s*수\s*있다)/i;
+const HYPOTHESIS_RE =
+  /(?:가설|80%|줄일\s*수\s*있다|것\s*같(?:습니다|아요|다)?|있을\s*것|수\s*있을\s*것)/i;
 
 function clip(text: string, max = 72): string {
   const t = text.trim().replace(/\s+/g, ' ');
@@ -171,11 +172,25 @@ function refineSolutionSegment(clause: string): string {
   return clip(refined || cleaned);
 }
 
+function isProblemDescriptionClause(clause: string): boolean {
+  return (
+    /(?:들은|들이|들의)/.test(clause) &&
+    /(?:모르|부족|못하고|알릴\s*방법|홍보|마케팅|어렵|불편|인력)/.test(clause)
+  );
+}
+
+function isCustomerBenefitExpectation(text: string): boolean {
+  return (
+    /(?:것\s*같|기대|할\s*수\s*있|있을\s*것)/.test(text) &&
+    /(?:고객|알릴|홍보|제품)/.test(text)
+  );
+}
+
 function extractCustomerEvidence(clauses: string[], trimmed: string): AnswerSemanticEvidence | null {
-  if (/가장\s*큰\s*변화|변화입니다/.test(trimmed)) return null;
   if (/고객에게/.test(trimmed) && CUSTOMER_CHANGE_SEGMENT_RE.test(trimmed)) return null;
   for (const clause of clauses) {
     if (!CUSTOMER_SEGMENT_RE.test(clause)) continue;
+    if (isProblemDescriptionClause(clause)) continue;
     if (!isCustomerDefinitionClause(clause)) continue;
     const seg = clip(clause);
     if (PAYER_RE.test(seg) && !/(양조|반찬|꽃집|사장|소상공인|고객)/.test(seg)) continue;
@@ -190,7 +205,7 @@ function extractCustomerEvidence(clauses: string[], trimmed: string): AnswerSema
       reason: dimensionReason('customer'),
     };
   }
-  if (CUSTOMER_SEGMENT_RE.test(trimmed) && isCustomerDefinitionClause(trimmed)) {
+  if (CUSTOMER_SEGMENT_RE.test(trimmed) && isCustomerDefinitionClause(trimmed) && !isProblemDescriptionClause(trimmed)) {
     const persona = trimmed.split(/(?:이\s*)?(?:엑셀|카카오|주문|배송|누락)/i)[0]?.trim();
     const summary = clip(persona && persona.length >= 4 ? persona.replace(/(?:이|가|은|는)$/, '') : trimmed);
     if (!isTruncatedCustomerSummary(summary)) {
@@ -278,12 +293,16 @@ function extractProblemEvidence(clauses: string[], trimmed: string): AnswerSeman
       if (PROBLEM_SEGMENT_RE.test(clause)) {
         const problemOnly =
           clause.match(
-            /(?:엑셀[^,.;]{0,30}?(?:관리|누락)|카카오[^,.;]{0,30}|누락[^,.;]{0,30}|불편[^,.;]{0,30}|문제[^,.;]{0,40}|놓치[^,.;]{0,30}|재주문[^,.;]{0,30}|확인\s*시간[^,.;]{0,30}|심각[^,.;]{0,20})/i,
+            /(?:엑셀[^,.;]{0,30}?(?:관리|누락)|카카오[^,.;]{0,30}|누락[^,.;]{0,30}|불편[^,.;]{0,30}|문제[^,.;]{0,40}|놓치[^,.;]{0,30}|재주문[^,.;]{0,30}|확인\s*시간[^,.;]{0,30}|심각[^,.;]{0,20}|모르[^,.;]{0,40}|부족[^,.;]{0,40}|알릴\s*방법[^,.;]{0,40}|홍보[^,.;]{0,40})/i,
           )?.[0] ?? clause;
-        unique.push(clip(problemOnly.trim(), 40));
+        unique.push(clip(problemOnly.trim(), 72));
         break;
       }
     }
+  }
+
+  if (unique.length === 0 && /(?:모르|부족|못하고|알릴\s*방법|홍보)/.test(trimmed)) {
+    unique.push(clip(trimmed, 72));
   }
 
   if (unique.length === 0) return null;
@@ -477,15 +496,16 @@ export function extractAnswerSemanticEvidences(answer: string): AnswerSemanticEx
   }
 
   const collected: AnswerSemanticEvidence[] = [];
-  const customer = extractCustomerEvidence(clauses, trimmed);
-  const problem = extractProblemEvidence(clauses, trimmed);
-  const solution = extractSolutionEvidence(clauses, trimmed);
+  const expectationAnswer = isCustomerBenefitExpectation(trimmed);
+  const customer = expectationAnswer ? null : extractCustomerEvidence(clauses, trimmed);
+  const problem = expectationAnswer ? null : extractProblemEvidence(clauses, trimmed);
+  const solution = expectationAnswer ? null : extractSolutionEvidence(clauses, trimmed);
 
   if (customer) collected.push(customer);
   if (problem) collected.push(problem);
   if (solution) collected.push(solution);
 
-  if (HYPOTHESIS_RE.test(trimmed)) {
+  if (HYPOTHESIS_RE.test(trimmed) || expectationAnswer) {
     collected.push({
       dimension: 'customerChange',
       summary: clip(trimmed),

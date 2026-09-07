@@ -167,7 +167,16 @@ export function evaluateAnswerQuality(
   if (trimmed.length < 2) {
     return { quality: 'UNKNOWN', mergeable: false };
   }
-  if (UNKNOWN_SIGNAL_RE.test(trimmed) || PARTIAL_UNKNOWN_RE.test(trimmed)) {
+  if (
+    PARTIAL_UNKNOWN_RE.test(trimmed) &&
+    !(
+      trimmed.length >= 24 &&
+      /(?:들은|들이|들의|고객|양조|가게|사장|업체)/.test(trimmed)
+    )
+  ) {
+    return { quality: 'UNKNOWN', mergeable: false };
+  }
+  if (UNKNOWN_SIGNAL_RE.test(trimmed)) {
     return { quality: 'UNKNOWN', mergeable: false };
   }
   if (
