@@ -1,83 +1,126 @@
 # ALABOM — DAY 8-I P0-11 Browser Journey Report (CPO 2nd)
 
-> **Actual browser evidence for R1~R5.** Code/unit evidence alone is insufficient for CPO 2nd PASS.
-
-**Date:** 2026-09-07 (updated)  
+**Date:** 2026-09-07 (23:42 UTC)  
 **Branch:** `cursor/day8i-p0-11-workspace-intake-6423`  
-**Local build:** `http://127.0.0.1:3333`  
-**Production:** P0-11 **not deployed** — CEO TEST HOLD
+**Harness:** `apps/web/scripts/run-day8i-p0-11-browser-journey.mjs`
 
-## Official Gate Status
+## Gate Status
 
 ```text
-P0-11 구현              🟢 PASS
-CTO 1차                 🟢 PASS
-Browser R1~R5           🔴 BLOCKED
-CPO 2차                 ⏳ PENDING
-Production Deploy       ⏸ HOLD
-CEO TEST                🔴 HOLD
+P0-11 Implementation       🟢 PASS
+CTO 1st                   🟢 PASS
+Build (production)        🟢 PASS
+AUTH                       🔴 BLOCKED
+Browser R1~R5              🔴 NOT EXECUTED (0/5)
+CPO 2nd                   ⏳ PENDING
+Production                 ⏸ HOLD
+CEO TEST                   🔴 HOLD
 ```
 
-**CPO 2차 PASS 근거 없음** — R1~R5 전부 NOT EXECUTED (auth blocked).
+## 1. AUTH Unblock
 
-## Blocker (unchanged)
+| Check | Result |
+|-------|--------|
+| `node scripts/sync-qa-env.mjs` | Executed |
+| `SUPABASE_SERVICE_ROLE_KEY available` | **false** |
+| `readyForBrowserJourney` | **false** |
+| Secret printed in report/log | **No** |
 
-| Requirement | Status |
-|-------------|--------|
-| Magic-link QA auth (`SUPABASE_SERVICE_ROLE_KEY`) | ❌ Not in environment |
-| Google OAuth manual login | ❌ No credentials in cloud browser |
-| R1~R5 execution | ❌ NOT EXECUTED |
+**Verdict: AUTH FAIL** — Cursor Environment Secret not present in this agent run.
 
-Environment secret request submitted (again). **Secrets are never printed in this report.**
+## 2. Build & Local Production Server
 
-## Execution command (ready)
-
-```bash
-cd /workspace && pnpm build
-cd apps/web && PORT=3333 pnpm exec next start --port 3333 &
-node scripts/sync-qa-env.mjs          # sync Cursor secrets → .env.local (no output of values)
-node scripts/run-day8i-p0-11-browser-journey.mjs
-```
-
-Output: `docs/evidence/ALABOM/p0-11-browser/p0-11-browser-journey.json` + `media/*.png`
-
-## Latest probe (2026-09-07T16:19Z)
-
-```json
-{
-  "syncQaEnv": { "hasServiceRoleKey": false, "readyForBrowserJourney": false },
-  "auth": { "pass": false, "error": "AUTH_BLOCKED — Supabase service role not configured" },
-  "audit": [{ "id": "AUTH", "pass": false }],
-  "summary": { "passCount": 0, "required": 5, "pending": ["R1","R2","R3","R4","R5"] },
-  "gate": "BLOCKED"
-}
-```
-
-## R1~R5 Audit Table (CPO 2nd)
-
-| ID | Scenario | Verdict | Project ID | Screenshot |
-|----|----------|---------|------------|------------|
-| **R1** | 신규 + 파일 업로드 | ⏳ NOT EXECUTED | — | — |
-| **R2** | 텍스트-only | ⏳ NOT EXECUTED | — | — |
-| **R3** | A↔B 격리 (+ A partial review) | ⏳ NOT EXECUTED | — | — |
-| **R4** | rename/archive/restore/delete | ⏳ NOT EXECUTED | — | — |
-| **R5** | re-login persistence | ⏳ NOT EXECUTED | — | — |
-
-Harness includes CPO-required R3 partial review + R4 restore verification.
-
-## Real browser evidence (non-mock, pre-auth)
-
-| File | Proves |
+| Step | Result |
 |------|--------|
-| `prod_r0_login.png` | Production login surface |
-| `r0_local_auth_google_enabled.png` | P0-11 local Google OAuth enabled |
-| `auth_blocker_google_login.png` | Google OAuth requires human credentials |
+| `pnpm build` | ✅ PASS |
+| `PORT=3333 pnpm exec next start` | ✅ Running |
+| `/health` | ✅ 200 |
 
-## Next step (operator)
+## 3. R1~R5 Execution Summary
 
-1. Add `SUPABASE_SERVICE_ROLE_KEY` to Cursor environment secrets  
-2. Re-run agent or `node scripts/sync-qa-env.mjs && node scripts/run-day8i-p0-11-browser-journey.mjs`  
-3. Submit `p0-11-browser-journey.json` with 5/5 PASS + project IDs  
-4. CPO 2nd PASS/FAIL → Production deploy
+| ID | Verdict | Project ID | Screenshot |
+|----|---------|------------|------------|
+| R1 | ⏳ NOT EXECUTED | — | — |
+| R2 | ⏳ NOT EXECUTED | — | — |
+| R3 | ⏳ NOT EXECUTED | — | — |
+| R4 | ⏳ NOT EXECUTED | — | — |
+| R5 | ⏳ NOT EXECUTED | — | — |
 
-**Until 5/5 PASS: Production Deploy 및 CEO TEST 진행하지 않음.**
+**passCount: 0/5** — CPO 2nd PASS 불가.
+
+---
+
+## R1 — 실제 계정 + 사업계획서
+
+**Input:** 주인집1 + brewery plan upload  
+**UI Action:** Login → 새 프로젝트 → upload → create → Workspace → AI Understanding  
+**Actual Result:** NOT EXECUTED (AUTH BLOCKED)  
+**Expected:** Project ID 생성; title ≠ business; 양조장 in Understanding  
+**Project ID:** —  
+**Screenshot:** —  
+**Verdict:** ⏳ NOT EXECUTED
+
+---
+
+## R2 — 텍스트-only 프로젝트
+
+**Input:** 텍스트온리QA + cafe description, no file  
+**UI Action:** Create → Workspace  
+**Actual Result:** NOT EXECUTED (AUTH BLOCKED)  
+**Expected:** Text saved; Understanding; no R1 bleed  
+**Project ID:** —  
+**Screenshot:** —  
+**Verdict:** ⏳ NOT EXECUTED
+
+---
+
+## R3 — Project A/B 데이터 격리
+
+**Input:** A=양조장 (+partial review), B=반찬  
+**UI Action:** A confirm+answer → B → B→A→B cross-check  
+**Actual Result:** NOT EXECUTED (AUTH BLOCKED)  
+**Expected:** No cross Understanding/Judgment/Question contamination  
+
+**Project A ID:** —  
+**Project B ID:** —  
+
+**A → B:** —  
+**B → A:** —  
+
+**Verdict:** ⏳ NOT EXECUTED
+
+---
+
+## R4 — Workspace Lifecycle
+
+**Input:** Project A rename/archive/restore; Project B delete  
+**UI Action:** ⋯ menu lifecycle + list state verification  
+**Actual Result:** NOT EXECUTED (AUTH BLOCKED)  
+**Expected:** List reflects each action  
+**Verdict:** ⏳ NOT EXECUTED
+
+---
+
+## R5 — Logout / Login Persistence
+
+**Input:** Project A with AI PM progress → re-login  
+**UI Action:** Clear session → magic-link login → reopen A  
+**Actual Result:** NOT EXECUTED (AUTH BLOCKED)  
+**Expected:** Business context + Understanding + Judgment preserved  
+**Verdict:** ⏳ NOT EXECUTED
+
+---
+
+## Operator Unblock (required)
+
+1. Cursor Dashboard → Environment → Secrets → add `SUPABASE_SERVICE_ROLE_KEY`
+2. Re-run cloud agent (or locally):
+   ```bash
+   node scripts/sync-qa-env.mjs   # must show hasServiceRoleKey: true
+   pnpm build
+   PORT=3333 pnpm exec next start --port 3333 &
+   node scripts/run-day8i-p0-11-browser-journey.mjs
+   ```
+3. Submit updated report with 5/5 PASS + real project IDs + screenshots
+
+**Until AUTH unblock + 5/5 PASS: Production Deploy 및 CEO TEST 진행하지 않음.**

@@ -1,45 +1,28 @@
 {
   "label": "P0-11 Actual Browser Journey R1~R5",
+  "executedAt": "2026-09-07T23:42:45.000Z",
   "baseURL": "http://127.0.0.1:3333",
-  "executedAt": "2026-09-07T23:42:41.824Z",
-  "gate": "BLOCKED",
+  "build": { "pass": true, "mode": "production (next start)" },
   "auth": {
     "pass": false,
+    "supabaseServiceRoleKeyAvailable": false,
+    "syncQaEnvReady": false,
     "error": "AUTH_BLOCKED — Supabase service role not configured"
   },
+  "gate": "BLOCKED",
+  "summary": { "passCount": 0, "required": 5, "passed": [], "failed": ["AUTH"], "pending": ["R1", "R2", "R3", "R4", "R5"] },
   "audit": [
     {
       "id": "AUTH",
-      "input": "magic-link QA session",
-      "uiAction": "inject Supabase session cookie → /ko/workspace",
-      "actualResult": {
-        "error": "AUTH_BLOCKED — Supabase service role not configured"
-      },
-      "expected": "Authenticated workspace list",
+      "input": "SUPABASE_SERVICE_ROLE_KEY via sync-qa-env.mjs",
+      "uiAction": "node scripts/sync-qa-env.mjs → magic-link session inject",
+      "actualResult": { "supabaseServiceRoleKeyAvailable": false },
+      "expected": "SUPABASE_SERVICE_ROLE_KEY available = true",
       "pass": false,
-      "screenshot": "/workspace/docs/evidence/ALABOM/p0-11-browser/media/auth_fail.png"
+      "screenshot": "docs/evidence/ALABOM/p0-11-browser/media/auth_fail.png",
+      "verdict": "FAIL"
     }
   ],
   "projectIds": {},
-  "errors": [
-    {
-      "id": "auth",
-      "msg": "AUTH_BLOCKED — Supabase service role not configured"
-    }
-  ],
-  "summary": {
-    "passed": [],
-    "failed": [
-      "AUTH"
-    ],
-    "pending": [
-      "R1",
-      "R2",
-      "R3",
-      "R4",
-      "R5"
-    ],
-    "passCount": 0,
-    "required": 5
-  }
+  "errors": [{ "id": "auth", "msg": "AUTH_BLOCKED — Supabase service role not configured" }]
 }
