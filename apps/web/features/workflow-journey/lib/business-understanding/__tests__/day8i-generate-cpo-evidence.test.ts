@@ -15,6 +15,7 @@ import {
 } from '../day8i-cpo-evidence-report';
 import { setV3ReviewPipelineForTest } from '../v3-review-pipeline';
 import { setAiPmJudgmentAggregationV1ForTest } from '../ai-pm-judgment-aggregation-v1';
+import { setAiPmAnswerSemanticSotV1ForTest } from '../ai-pm-answer-semantic-sot-v1';
 import { clearAiPmLoopState } from '../workspace-ai-pm-loop-store';
 
 function stubSessionStorage() {
@@ -53,6 +54,7 @@ export function generateDay8iCpoEvidenceReport(): string {
   stubSessionStorage();
   setV3ReviewPipelineForTest(true);
   setAiPmJudgmentAggregationV1ForTest(true);
+  setAiPmAnswerSemanticSotV1ForTest(true);
 
   const projectId = `day8i-cpo-evidence-${Date.now()}`;
   const result = runDay8iConversation({ projectId });

@@ -268,22 +268,6 @@ function dimensionsFromAnswerText(
     };
   }
 
-  if (CUSTOMER_CUE_RE.test(trimmed) && !out.customer && !askedGap) {
-    const { status, reason } = toStatus(trimmed, 'partial');
-    out.customer = {
-      id: 'customer',
-      label: CEO_JUDGMENT_DIMENSION_LABELS.customer,
-      status,
-      summary: clip(trimmed),
-      statusReason: reason,
-    };
-    meta.customer = {
-      interpretedMeaning: '고객 단서 — 세분 추출 실패, 전체 답변에서 보수적 반영',
-      evidence: trimmed,
-      reason: reason ?? 'CEO 답변에 구체적으로 나타남',
-    };
-  }
-
   return { dimensions: out, meta, frozen: false };
 }
 
@@ -324,14 +308,7 @@ export function buildCeoJudgmentState(input: {
     : emptyCeoJudgmentState(countActionableTurns(input.turns));
   state.questionCount = countActionableTurns(input.turns);
 
-  if (!incremental) {
-    const fromLiving = dimensionFromLiving(input.living);
-    for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
-      if (fromLiving[id]) {
-        state.dimensions[id] = mergeDimension(state.dimensions[id], fromLiving[id]!);
-      }
-    }
-  }
+  // FIX-3: Judgment dimensions come ONLY from CEO answers — never from living/document spine.
 
   const actionable = input.turns.filter(
     (t) =>
@@ -340,36 +317,31 @@ export function buildCeoJudgmentState(input: {
       t.intent !== 'mid_judgment' &&
       t.intent !== 'nonsense',
   );
-  const last = actionable[actionable.length - 1];
-  if (last?.answer?.trim()) {
+  const turnsToApply =
+    incremental && input.prior
+      ? actionable.slice(-1)
+      : actionable.filter((t) => Boolean(t.answer?.trim()));
+
+  for (const turn of turnsToApply) {
+    if (!turn.answer?.trim()) continue;
     const multiFact =
-      last.answer.includes('하고') ||
-      last.answer.includes('해서') ||
-      (last.answer.match(/[,，]/g)?.length ?? 0) >= 1;
+      turn.answer.includes('하고') ||
+      turn.answer.includes('해서') ||
+      (turn.answer.match(/[,，]/g)?.length ?? 0) >= 1;
     const { dimensions: fromAnswer, frozen } = dimensionsFromAnswerText(
-      last.answer,
-      last.issueId,
-      last.targetGap,
+      turn.answer,
+      turn.issueId,
+      turn.targetGap,
       multiFact,
     );
     if (frozen) {
-      if (isInferenceRiskAnswer(last.answer)) {
-        for (const id of ['problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
-          state.dimensions[id] = {
-            ...state.dimensions[id],
-            status: 'unknown',
-            summary: '',
-            statusReason: 'CEO가 구체적으로 확인하지 않음',
-          };
-        }
-      }
-    } else {
-      for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
-        if (fromAnswer[id]) {
-          state.dimensions[id] = mergeDimension(state.dimensions[id], fromAnswer[id]!, {
-            preferUserExtract: true,
-          });
-        }
+      continue;
+    }
+    for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+      if (fromAnswer[id]) {
+        state.dimensions[id] = mergeDimension(state.dimensions[id], fromAnswer[id]!, {
+          preferUserExtract: true,
+        });
       }
     }
   }
@@ -423,16 +395,6 @@ export function applyAnswerToJudgment(input: {
   };
 
   if (frozen) {
-    if (isInferenceRiskAnswer(input.answer)) {
-      for (const id of ['problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
-        state.dimensions[id] = {
-          ...state.dimensions[id],
-          status: 'unknown',
-          summary: '',
-          statusReason: 'CEO가 구체적으로 확인하지 않음',
-        };
-      }
-    }
     return finalizeJudgmentPresentation(state);
   }
 
@@ -499,7 +461,9 @@ export function buildCeoJudgmentStateWithTrace(input: {
   const answerDims = answer.trim()
     ? dimensionsFromAnswerText(answer, last?.issueId, last?.targetGap, multiFact)
     : { meta: {}, frozen: false, dimensions: {} };
-  const { meta, dimensions: fromAnswerDims } = answerDims;
+  const { meta, dimensions: fromAnswerDims, frozen } = answerDims;
+
+  const extractedDimensionIds = Object.keys(fromAnswerDims) as CeoJudgmentDimensionId[];
 
   const dimensionMeta: BuildCeoJudgmentWithTraceResult['dimensionMeta'] = {};
   for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
@@ -520,24 +484,10 @@ export function buildCeoJudgmentStateWithTrace(input: {
     prior,
     next: state,
     dimensionMeta,
-    allowedDimensions: (Object.keys(fromAnswerDims) as CeoJudgmentDimensionId[]).filter(
-      (id) => {
-        const changeType = classifyJudgmentChangeType({
-          before: {
-            status: prior.dimensions[id].status,
-            summary: prior.dimensions[id].summary,
-          },
-          after: {
-            status: state.dimensions[id].status,
-            summary: state.dimensions[id].summary,
-          },
-        });
-        return changeType !== 'UNCHANGED';
-      },
-    ),
+    allowedDimensions: frozen ? [] : extractedDimensionIds,
   });
 
-  if (traceEntries.length === 0 && answer.trim()) {
+  if (!frozen && traceEntries.length === 0 && answer.trim()) {
     for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
       if (fromAnswerDims[id] === undefined) continue;
       const before = prior.dimensions[id];
@@ -546,7 +496,22 @@ export function buildCeoJudgmentStateWithTrace(input: {
         before: { status: before.status, summary: before.summary },
         after: { status: after.status, summary: after.summary },
       });
-      if (changeType === 'UNCHANGED') continue;
+      if (changeType === 'UNCHANGED') {
+        traceEntries.push({
+          sourceTurnId: input.sourceTurnId ?? last?.appliedAt ?? `turn-${actionable.length}`,
+          question,
+          answer,
+          interpretedMeaning: meta[id]?.interpretedMeaning ?? `${id} dimension update`,
+          evidence: meta[id]?.evidence ?? answer.trim(),
+          affectedDimension: id,
+          previousJudgment: { status: before.status, summary: before.summary },
+          newJudgment: { status: after.status, summary: after.summary },
+          changeType: 'CONFIRMED',
+          reason: meta[id]?.reason ?? after.statusReason ?? 'judgment sync',
+          knownPriorInfo: before.summary || undefined,
+        });
+        continue;
+      }
       traceEntries.push({
         sourceTurnId: input.sourceTurnId ?? last?.appliedAt ?? `turn-${actionable.length}`,
         question,
@@ -556,10 +521,14 @@ export function buildCeoJudgmentStateWithTrace(input: {
         affectedDimension: id,
         previousJudgment: { status: before.status, summary: before.summary },
         newJudgment: { status: after.status, summary: after.summary },
-        changeType: !before.summary.trim() && after.summary.trim() ? 'NEW' : 'CHANGED',
+        changeType:
+          !before.summary.trim() && after.summary.trim() ? 'NEW' : changeType === 'NEW' ? 'NEW' : 'CHANGED',
         reason: meta[id]?.reason ?? after.statusReason ?? 'judgment sync',
         knownPriorInfo: before.summary || undefined,
-        newlyAddedInfo: after.summary || undefined,
+        newlyAddedInfo:
+          changeType === 'NEW' || changeType === 'CHANGED' || changeType === 'STRENGTHENED'
+            ? after.summary
+            : undefined,
       });
     }
   }

@@ -133,7 +133,7 @@ export function buildJudgmentTraceEntries(input: {
 }): JudgmentTraceEntry[] {
   const entries: JudgmentTraceEntry[] = [];
   const allowed =
-    input.allowedDimensions && input.allowedDimensions.length > 0
+    input.allowedDimensions !== undefined
       ? new Set(input.allowedDimensions)
       : null;
 
@@ -150,7 +150,9 @@ export function buildJudgmentTraceEntries(input: {
       before: { status: before.status, summary: before.summary },
       after: { status: after.status, summary: after.summary },
     });
-    if (changeType === 'UNCHANGED') continue;
+    const effectiveChangeType =
+      changeType === 'UNCHANGED' && allowed?.has(id) ? 'CONFIRMED' : changeType;
+    if (effectiveChangeType === 'UNCHANGED') continue;
 
     const meta = input.dimensionMeta[id];
     entries.push({
@@ -164,7 +166,7 @@ export function buildJudgmentTraceEntries(input: {
       affectedDimension: id,
       previousJudgment: { status: before.status, summary: before.summary },
       newJudgment: { status: after.status, summary: after.summary },
-      changeType,
+      changeType: effectiveChangeType,
       reason:
         meta?.reason ??
         after.statusReason ??

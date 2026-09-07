@@ -156,16 +156,29 @@ export function runCpoR13ToR25Checks(): CpoRSelfCheck[] {
     answer: '고객이 원하는 건 정확히 말하지 않았습니다.',
     targetGap: 'validationTestability',
   });
+  const r17trace = buildCeoJudgmentStateWithTrace({
+    living: buildLivingUnderstandingState({
+      documentText: doc,
+      understanding,
+      turns: [],
+      memory: null,
+    }),
+    turns: [],
+    prior: r17prior,
+    beforeState: r17prior,
+    answer: '고객이 원하는 건 정확히 말하지 않았습니다.',
+  });
   checks.push({
     id: 'CPO-R17',
-    label: 'Unknown Integrity — CEO 모름 → 기존 판단 유지하지 않음(unknown 처리)',
+    label: 'Inference Risk — CEO 모름 → unsupported inference 없음, unrelated dimension 유지',
     verdict:
-      r17after.dimensions.problem.status === 'unknown' ||
-      r17after.dimensions.problem.summary !== r17prior.dimensions.problem.summary
+      r17after.dimensions.problem.status === r17prior.dimensions.problem.status &&
+      r17after.dimensions.problem.summary === r17prior.dimensions.problem.summary &&
+      !r17trace.traceEntries.some((e) => e.affectedDimension === 'problem')
         ? 'PASS'
         : 'FAIL',
     evidenceTurns: 'Turn 23 H_inference_risk',
-    rationale: `problem status=${r17after.dimensions.problem.status}`,
+    rationale: `problem preserved=${r17after.dimensions.problem.summary.slice(0, 24)} traceProblem=${r17trace.traceEntries.some((e) => e.affectedDimension === 'problem')}`,
   });
 
   const pid = 'cpo-r18-reload';
