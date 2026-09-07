@@ -6,9 +6,9 @@
 
 | Field | Value |
 |-------|-------|
-| Commit SHA | `bcc7a708d0b4e70e7292f29ba1defcbef2e8adef` |
+| Commit SHA | `2c13ac1be29fb1d2b789cc9a6613cd8c2b546769` |
 | Branch | `cursor/day8i-p0-fix10-ceo-trust-journey-6423` |
-| Executed (UTC) | 2026-09-07T09:46:21.035Z |
+| Executed (UTC) | 2026-09-07T09:47:18.104Z |
 
 ## 2. Environment / Feature Flag
 
@@ -185,7 +185,7 @@ End of brewery pipeline
 | FIX10-R22 | FIX-9 R regression | 0 | **PASS** |
 | FIX10-R23 | Feature flags ON | FIX-10 default ON | **PASS** |
 | FIX10-R24 | Build | PASS | **PASS** |
-| FIX10-R25 | SHA integrity | bcc7a708d0b4 | **PASS** |
+| FIX10-R25 | SHA integrity | 2c13ac1be29f | **PASS** |
 
 ---
 
