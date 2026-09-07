@@ -14,6 +14,7 @@ const GAP_QUESTION_OVERRIDES: Record<string, string> = {
   solution: '그래서 무엇을 해결하려고 하나요?',
   problemJtbd: '고객이 지금 가장 불편해하는 점은 무엇인가요?',
   customerPersona: '이 서비스를 가장 필요로 하는 사람은 누구인가요?',
+  businessOneLiner: '이 사업은 누구에게 무엇을 제공하나요?',
 };
 
 const PHRASE_REPLACEMENTS: [RegExp, string][] = [
@@ -50,6 +51,10 @@ export function toHumanLanguageQuestion(
   questionText: string,
   targetGap?: string | null,
 ): string {
+  const trimmed = questionText.trim();
+  if (/맞나요\s*[?？]?\s*$/.test(trimmed) || /이해했습니다/.test(trimmed)) {
+    return sanitizeConsultingTerms(trimmed);
+  }
   const gapOverride = targetGap ? GAP_QUESTION_OVERRIDES[targetGap] : undefined;
   const base = gapOverride ?? questionText;
   return sanitizeConsultingTerms(base);

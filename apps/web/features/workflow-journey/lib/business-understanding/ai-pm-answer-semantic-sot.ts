@@ -21,6 +21,7 @@ import {
   isInferenceRiskAnswer,
   isPartialUnknownAnswer,
   isProblemCorrectionAnswer,
+  isQuestionBackAnswer,
   isSemanticCopy,
   isVagueOrUnknownAnswer,
 } from './ai-pm-judgment-target-binding';
@@ -36,6 +37,7 @@ export type AnswerSemanticSlot =
   | 'researchIntent'
   | 'hypothesis'
   | 'metaConfirmation'
+  | 'questionBack'
   | 'none';
 
 export type AnswerSemanticEvidence = {
@@ -108,6 +110,7 @@ function pickSegment(clauses: string[], re: RegExp, fallback?: string): string |
 
 function detectNonJudgmentSlot(answer: string): AnswerSemanticSlot | null {
   const t = answer.trim();
+  if (isQuestionBackAnswer(t)) return 'questionBack';
   if (RESEARCH_INTENT_RE.test(t)) return 'researchIntent';
   if (BUSINESS_GOAL_RE.test(t) && /\d+\s*곳|목표/.test(t)) return 'businessGoal';
   if (PAYER_RE.test(t) && !PROBLEM_SEGMENT_RE.test(t.replace(/결제|구독|만원|수익/g, ''))) {
@@ -427,6 +430,10 @@ export function extractAnswerSemanticEvidences(answer: string): AnswerSemanticEx
 
   if (isInferenceRiskAnswer(trimmed)) {
     return { evidences: [], nonJudgmentSlot: null, frozen: true };
+  }
+
+  if (isQuestionBackAnswer(trimmed)) {
+    return { evidences: [], nonJudgmentSlot: 'questionBack', frozen: true };
   }
 
   if (isMetaConfirmationAnswer(trimmed)) {

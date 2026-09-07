@@ -37,6 +37,7 @@ import {
   defaultConfirmWhyNow,
   isConfirmPollutionValue,
 } from './ai-pm-question-presentation';
+import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 
 export type NoAskAction = 'ASK' | 'CONFIRM' | 'MOVE';
 
@@ -260,7 +261,15 @@ export function scanSemanticKnowledgeForGap(input: {
   return null;
 }
 
-function buildConfirmText(gapId: string, value: string): string {
+function buildConfirmText(gapId: string, value: string, userConfirmed = false): string {
+  if (isAiPmJudgmentFix10V1Active()) {
+    if (gapId === 'businessOneLiner') {
+      return `제가 이해한 사업은 「${clipValue(value, 80)}」입니다. 맞나요?`;
+    }
+    if (gapId === 'customerPersona' && !userConfirmed) {
+      return `AI가 「${clipValue(value, 36)}」을(를) 주요 고객으로 추정했습니다. 맞나요?`;
+    }
+  }
   const label = GAP_CONFIRM_LABEL[gapId] ?? '내용';
   return `${label}은(는) 「${clipValue(value, 36)}」으로 이해했습니다. 맞나요?`;
 }
@@ -380,7 +389,7 @@ export function evaluateNoAskPolicy(input: {
       return {
         action: 'CONFIRM',
         gapId: targetGapId,
-        confirmText: buildConfirmText(targetGapId, knowledge.value),
+        confirmText: buildConfirmText(targetGapId, knowledge.value, knowledge.userConfirmed),
         knownValue: knowledge.value,
         reason: `semantic repeat — ${knowledge.source}`,
       };
@@ -435,7 +444,7 @@ export function evaluateNoAskPolicy(input: {
         return {
           action: 'CONFIRM',
           gapId: targetGapId,
-          confirmText: buildConfirmText(targetGapId, clusterHit.value),
+          confirmText: buildConfirmText(targetGapId, clusterHit.value, clusterHit.userConfirmed),
           knownValue: clusterHit.value,
           reason: `same cluster ${lastCluster} — confirm known`,
         };

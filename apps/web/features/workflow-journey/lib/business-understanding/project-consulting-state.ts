@@ -6,6 +6,7 @@
 import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
 import type { AiPmLoopState } from './workspace-ai-pm-loop-types';
+import { parseIntakeSeedDocument } from '@/lib/project/parse-intake-seed';
 
 export type ProjectSnapshotTrigger =
   | 'PROJECT_CREATED'
@@ -77,10 +78,15 @@ export function buildBusinessProfileFromJudgment(input: {
   projectName?: string;
 }): ProjectBusinessProfile {
   const j = input.judgment;
+  const intake = input.documentText ? parseIntakeSeedDocument(input.documentText) : null;
+  const businessOneLiner =
+    intake?.businessOneLinerCandidate ??
+    (j?.oneLiner?.trim() || undefined);
+
   return {
-    projectName: input.projectName,
+    projectName: input.projectName ?? intake?.projectTitle ?? undefined,
     documentText: input.documentText,
-    businessOneLiner: input.documentText?.split('\n')[0]?.replace(/^#\s*/, '').trim(),
+    businessOneLiner,
     customer: j?.dimensions.customer.summary || undefined,
     problem: j?.dimensions.problem.summary || undefined,
     solution: j?.dimensions.solution.summary || undefined,

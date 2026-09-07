@@ -20,6 +20,7 @@ import {
   isDocumentEchoSummary,
   isInferenceRiskAnswer,
   isPartialUnknownAnswer,
+  isQuestionBackAnswer,
   isVagueOrUnknownAnswer,
 } from './ai-pm-judgment-target-binding';
 import {
@@ -401,6 +402,10 @@ function dimensionsFromAnswerText(
 } {
   const trimmed = answer.trim();
   if (trimmed.length < 4) return { dimensions: {}, meta: {}, frozen: false };
+
+  if (isQuestionBackAnswer(trimmed)) {
+    return { dimensions: {}, meta: {}, frozen: true };
+  }
 
   const quality = evaluateAnswerQuality(trimmed);
   if (quality.quality === 'UNKNOWN' || isPartialUnknownAnswer(trimmed) || isInferenceRiskAnswer(trimmed)) {

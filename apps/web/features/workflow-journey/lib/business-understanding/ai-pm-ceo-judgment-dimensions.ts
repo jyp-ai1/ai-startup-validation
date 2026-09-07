@@ -58,6 +58,8 @@ export type CeoJudgmentDimension = {
   sourceTurns?: number[];
   /** CEO explicitly corrected this dimension — skip repeat focus (FIX-6) */
   correctionApplied?: boolean;
+  /** CEO-confirmed vs AI-inferred (FIX-10) */
+  knowledgeSource?: 'ceo_confirmed' | 'ai_inference';
 };
 
 export type CeoJudgmentState = {

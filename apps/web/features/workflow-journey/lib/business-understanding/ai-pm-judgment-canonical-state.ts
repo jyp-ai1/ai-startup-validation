@@ -16,7 +16,12 @@ import {
 import { renderProblemStructuredReview } from './ai-pm-judgment-structured-review';
 import { isSemanticCopy } from './ai-pm-judgment-target-binding';
 import { isAiPmJudgmentFix9V1Active } from './ai-pm-judgment-fix9-v1';
+import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 import { extractProblemPrimaryText } from './ai-pm-judgment-problem-primary';
+import {
+  inferenceStatusReason,
+  resolveCustomerJudgmentStatus,
+} from './ai-pm-judgment-trust-policy';
 
 export const CUSTOMER_CHANGE_CLAIM_LABEL = '고객에게 달라질 것으로 보는 점';
 
@@ -194,6 +199,7 @@ export function mergeCanonicalCustomer(
     sourceTurnIndex?: number;
     isCorrection?: boolean;
     fullAnswer?: string;
+    fromInference?: boolean;
   },
 ): CeoJudgmentDimension {
   const conclusion = input.isCorrection && isAiPmJudgmentFix9V1Active()
@@ -241,6 +247,41 @@ export function mergeCanonicalCustomer(
     : prior.evidenceRecords?.length
       ? prior.evidenceRecords
       : [record];
+
+  if (isAiPmJudgmentFix10V1Active()) {
+    const resolved = resolveCustomerJudgmentStatus({
+      conclusion,
+      fromInference: input.fromInference,
+      isCorrection: input.isCorrection,
+    });
+    const statusReason =
+      resolved.knowledgeSource === 'ai_inference'
+        ? inferenceStatusReason('customer')
+        : resolved.status === 'clear'
+          ? input.isCorrection
+            ? 'CEO가 고객 정의를 수정함'
+            : 'CEO가 직접 확인함'
+          : 'CEO 답변 — 추가 확인 필요';
+
+    return applyEvidenceToDimension(
+      {
+        ...prior,
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customer,
+        status: resolved.status,
+        statusReason,
+        knowledgeSource: resolved.knowledgeSource,
+        correctionApplied: input.isCorrection ?? prior.correctionApplied,
+        evidenceRecords: records,
+      },
+      {
+        conclusion,
+        summary: clip(conclusion),
+        records: input.isCorrection ? [record] : records,
+        sourceTurnIndex: input.sourceTurnIndex,
+        correctionApplied: input.isCorrection ?? prior.correctionApplied,
+      },
+    );
+  }
 
   return applyEvidenceToDimension(
     {

@@ -99,6 +99,20 @@ export function isPartialUnknownAnswer(answer: string): boolean {
   return PARTIAL_UNKNOWN_RE.test(answer.trim()) && !isInferenceRiskAnswer(answer);
 }
 
+const QUESTION_BACK_RE =
+  /^(?:그(?:런데|러면)?\s*)?(?:고객|문제|해결|대상|타깃|타겟|누구|뭐(?:가|야)?|무엇).{0,24}(?:누군|뭔데|무엇|어떤|뭐야|뭐죠|말(?:이|씀)?)\s*[?？]?$/i;
+
+/** CEO pushed the question back — not a definitional answer (FIX-10). */
+export function isQuestionBackAnswer(answer: string): boolean {
+  const t = answer.trim().replace(/\s+/g, ' ');
+  if (t.length < 4) return false;
+  if (QUESTION_BACK_RE.test(t)) return true;
+  if (/\?$/.test(t) && /(?:누군|뭔데|무슨\s*말|무엇(?:인|이)?(?:데|야)?)/.test(t)) {
+    return /(?:고객|문제|해결|대상|타깃|타겟)/.test(t) || t.length <= 28;
+  }
+  return false;
+}
+
 /** Document spine echo — must not overwrite user extract. */
 export function isDocumentEchoSummary(summary: string): boolean {
   const t = summary.trim();
