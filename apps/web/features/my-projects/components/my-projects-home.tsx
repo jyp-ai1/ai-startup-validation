@@ -147,6 +147,7 @@ export function MyProjectsHome({
         <section className="space-y-3">
           <button
             type="button"
+            data-testid="project-archived-toggle"
             className="text-sm font-medium text-muted-foreground underline-offset-2 hover:underline"
             onClick={() => setShowArchived((v) => !v)}
           >

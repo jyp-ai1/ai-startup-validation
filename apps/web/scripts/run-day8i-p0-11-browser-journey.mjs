@@ -315,39 +315,37 @@ async function runR4(page) {
   const projectA = report.projectIds.A;
   const projectB = report.projectIds.B;
   await page.goto(`${BASE}/ko/workspace`, { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(1000);
+  await dismissCookies(page);
+  await page.getByTestId(`project-list-item-${projectA}`).waitFor({ state: 'visible', timeout: 15_000 });
 
-  const rowA = page.getByTestId(`project-list-item-${projectA}`);
-  await rowA.getByRole('button', { name: /프로젝트 메뉴|Project menu/i }).click();
-  await rowA.getByRole('menuitem', { name: /이름 변경|Rename/i }).click();
-  await page.locator('input').last().fill('주인집1-renamed');
-  await page.getByRole('button', { name: /저장|Save/i }).click();
-  await page.waitForTimeout(1500);
+  await page.getByTestId(`project-menu-${projectA}`).click();
+  await page.getByRole('menuitem', { name: /이름 변경|Rename/i }).click();
+  await page.getByTestId('project-rename-input').fill('주인집1-renamed');
+  await page.getByTestId('project-rename-save').click();
+  await page.getByText('주인집1-renamed').waitFor({ state: 'visible', timeout: 10_000 });
   const renameShot = await snap(page, 'r4_rename');
-  const renamedVisible = await page.getByText('주인집1-renamed').isVisible().catch(() => false);
+  const renamedVisible = await page.getByText('주인집1-renamed').isVisible();
 
-  await page.getByTestId(`project-list-item-${projectA}`).getByRole('button', { name: /프로젝트 메뉴|Project menu/i }).click();
+  await page.getByTestId(`project-menu-${projectA}`).click();
   await page.getByRole('menuitem', { name: /보관|Archive/i }).click();
-  await page.waitForTimeout(1500);
+  await page.getByText('주인집1-renamed').waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => {});
   const archiveShot = await snap(page, 'r4_archived');
   const archivedHidden = !(await page.getByText('주인집1-renamed').isVisible().catch(() => false));
 
-  await page.getByRole('button', { name: /보관함|View archived|archived/i }).click();
-  await page.waitForTimeout(500);
-  const archivedVisible = await page.getByText('주인집1-renamed').isVisible().catch(() => false);
+  await page.getByTestId('project-archived-toggle').click();
+  await page.getByText('주인집1-renamed').waitFor({ state: 'visible', timeout: 10_000 });
+  const archivedVisible = await page.getByText('주인집1-renamed').isVisible();
 
-  const archivedRow = page.getByTestId(`project-list-item-${projectA}`);
-  await archivedRow.getByRole('button', { name: /프로젝트 메뉴|Project menu/i }).click();
-  await archivedRow.getByRole('menuitem', { name: /복구|Restore/i }).click();
-  await page.waitForTimeout(1500);
+  await page.getByTestId(`project-menu-${projectA}`).click();
+  await page.getByRole('menuitem', { name: /복구|Restore/i }).click();
+  await page.getByText('주인집1-renamed').waitFor({ state: 'visible', timeout: 10_000 });
   const restoreShot = await snap(page, 'r4_restored');
-  const restoredVisible = await page.getByText('주인집1-renamed').isVisible().catch(() => false);
+  const restoredVisible = await page.getByText('주인집1-renamed').isVisible();
 
-  const rowB = page.getByTestId(`project-list-item-${projectB}`);
-  await rowB.getByRole('button', { name: /프로젝트 메뉴|Project menu/i }).click();
-  await rowB.getByRole('menuitem', { name: /삭제|Delete/i }).click();
+  await page.getByTestId(`project-menu-${projectB}`).click();
+  await page.getByRole('menuitem', { name: /삭제|Delete/i }).click();
   await page.getByRole('button', { name: /^삭제$|^Delete$/i }).click();
-  await page.waitForTimeout(1500);
+  await page.getByText('반찬가게 배송관리').waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => {});
   const deleteShot = await snap(page, 'r4_deleted');
   const bGone = !(await page.getByText('반찬가게 배송관리').isVisible().catch(() => false));
 

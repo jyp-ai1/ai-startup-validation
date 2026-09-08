@@ -94,6 +94,7 @@ export function MyProjectListItem({ project, variant = 'active' }: MyProjectList
             className="size-9 shrink-0"
             disabled={pending}
             aria-label={ta('menuLabel')}
+            data-testid={`project-menu-${project.id}`}
           >
             <MoreHorizontal className="size-4" />
           </Button>
@@ -141,6 +142,7 @@ export function MyProjectListItem({ project, variant = 'active' }: MyProjectList
             <DialogTitle>{ta('renameTitle')}</DialogTitle>
           </DialogHeader>
           <input
+            data-testid="project-rename-input"
             className="h-11 w-full rounded-xl border border-border/70 bg-background px-4 text-sm outline-none ring-primary/30 focus:ring-2"
             value={renameTitle}
             onChange={(event) => setRenameTitle(event.target.value)}
@@ -151,6 +153,7 @@ export function MyProjectListItem({ project, variant = 'active' }: MyProjectList
               {ta('cancel')}
             </Button>
             <Button
+              data-testid="project-rename-save"
               disabled={renameTitle.trim().length < 2 || pending}
               onClick={() =>
                 run(async () => {
