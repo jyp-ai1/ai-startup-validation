@@ -5,7 +5,12 @@ import { loadAiPmLoopState } from '@/features/workflow-journey/lib/business-unde
 import { loadProjectConsultingState } from '@/features/workflow-journey/lib/business-understanding/project-consulting-store';
 import { loadUnderstandingPhase } from '@/features/workflow-journey/lib/business-understanding/business-understanding-store';
 import { loadPersistedReviewCount } from '@/features/workflow-journey/lib/demo-guided-session';
-import { loadWorkspaceDocumentText } from '@/features/workflow-journey/lib/workspace-ai-pm-messages';
+import {
+  loadWorkspaceDocumentText,
+  loadWorkspaceDomain,
+  loadWorkspaceEntities,
+} from '@/features/workflow-journey/lib/workspace-ai-pm-messages';
+import { loadConversationMemory } from '@/features/workflow-journey/lib/business-understanding/conversation-memory-store';
 import type { WorkspacePersistedSnapshot } from '@/lib/project/workspace-persisted-state';
 
 import { applyWorkspaceSnapshotToCache } from './apply-workspace-snapshot';
@@ -21,6 +26,9 @@ export function buildWorkspacePersistedSnapshot(projectId: string): WorkspacePer
   const aiPmLoop = loadAiPmLoopState(projectId);
   const projectConsulting = loadProjectConsultingState(projectId);
   const reviewCount = loadPersistedReviewCount(projectId);
+  const domain = loadWorkspaceDomain(projectId) ?? undefined;
+  const entities = loadWorkspaceEntities(projectId) ?? undefined;
+  const memory = loadConversationMemory(projectId);
   const workspaceFacts = buildWorkspacePersistedFacts({
     documentText,
     loop: aiPmLoop,
@@ -37,6 +45,9 @@ export function buildWorkspacePersistedSnapshot(projectId: string): WorkspacePer
       projectConsulting.conversationTurnCount > 0 || projectConsulting.snapshots.length > 0
         ? projectConsulting
         : undefined,
+    domain,
+    entities,
+    conversationMemory: memory.facts.length > 0 ? memory : undefined,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -52,7 +63,10 @@ export async function persistWorkspaceStateDbFirst({
   if (
     !snapshot.documentText &&
     snapshot.reviewCount === 0 &&
-    (snapshot.aiPmLoop?.turns.length ?? 0) === 0
+    (snapshot.aiPmLoop?.turns.length ?? 0) === 0 &&
+    !snapshot.domain &&
+    !snapshot.entities &&
+    !snapshot.conversationMemory
   ) {
     return false;
   }
