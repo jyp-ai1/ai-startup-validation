@@ -889,6 +889,7 @@ export function V2StrategyWorkspaceView({
           reviewBlockedReason={reviewGate.blockedReason}
           onUnderstandingConfirmed={refreshUnderstandingState}
           onDomainChange={handleDomainChange}
+          enableDbPersistence={!isDemoNoPersist}
         />
       )}
 

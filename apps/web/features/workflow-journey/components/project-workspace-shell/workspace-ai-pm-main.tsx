@@ -115,6 +115,8 @@ type WorkspaceAiPmMainProps = {
   onLoopComplete?: () => void;
   onSessionPause?: () => void;
   onDomainChange?: (field: WorkspaceDomainFieldId, value: string) => void;
+  /** When false (demo/guest), skip server persist — avoids requireAuthUser redirect. */
+  enableDbPersistence?: boolean;
   workspaceFacts?: import('@/lib/project/workspace-persisted-facts').WorkspacePersistedFacts | null;
   workspaceSnapshotUpdatedAt?: string | null;
   className?: string;
@@ -168,6 +170,7 @@ export function WorkspaceAiPmMain({
   onLoopComplete,
   onSessionPause,
   onDomainChange,
+  enableDbPersistence = true,
   workspaceFacts = null,
   workspaceSnapshotUpdatedAt = null,
   className,
@@ -359,10 +362,10 @@ export function WorkspaceAiPmMain({
     setUnderstandingPhase('edit_confirm');
     onLoopDocumentUpdated?.();
     setLoopState(loadAiPmLoopState(projectId));
-    if (projectId) {
+    if (projectId && enableDbPersistence) {
       void persistWorkspaceStateDbFirst({ projectId });
     }
-  }, [onLoopDocumentUpdated, projectId]);
+  }, [enableDbPersistence, onLoopDocumentUpdated, projectId]);
 
   const handleEditConfirmYes = useCallback(() => {
     // W8 + v2 — correction locks USER_CORRECTED; invalidate downstream turns/facts
@@ -433,7 +436,7 @@ export function WorkspaceAiPmMain({
     }
 
     saveConversationMemory(nextMemory, projectId);
-    if (projectId) {
+    if (projectId && enableDbPersistence) {
       void persistWorkspaceStateDbFirst({ projectId });
     }
     proceedAfterUnderstandingConfirm();
@@ -442,6 +445,7 @@ export function WorkspaceAiPmMain({
     domain.competitor,
     domain.customer,
     domain.market,
+    enableDbPersistence,
     proceedAfterUnderstandingConfirm,
     projectId,
   ]);
