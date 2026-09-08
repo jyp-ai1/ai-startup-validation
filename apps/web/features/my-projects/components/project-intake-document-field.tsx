@@ -10,7 +10,10 @@ import {
   detectWorkspaceDocumentPlaceholder,
   isWorkspaceDocumentAnalyzable,
 } from '@/features/workflow-journey/lib/business-understanding/workspace-document-eligibility';
-import { readSmartIntakeFile } from '@/features/workflow-journey/lib/v2-smart-intake-engine';
+import {
+  readSmartIntakeFile,
+  SmartIntakeFileReadError,
+} from '@/features/workflow-journey/lib/v2-smart-intake-engine';
 
 export type ProjectIntakeUploadStatus = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -46,6 +49,13 @@ export function ProjectIntakeDocumentField({
       setStatus('loading');
       try {
         const { text, source, fileName: name } = await readSmartIntakeFile(file);
+        if (detectWorkspaceDocumentPlaceholder(text) != null) {
+          setError(t('fileReadFailed'));
+          setDocumentContent('');
+          setFileName(null);
+          setStatus('error');
+          return;
+        }
         if (!isWorkspaceDocumentAnalyzable(text)) {
           setError(t('fileTooShort'));
           setDocumentContent('');
@@ -57,8 +67,12 @@ export function ProjectIntakeDocumentField({
         setFileName(name);
         setImportSource(source);
         setStatus('ready');
-      } catch {
-        setError(t('fileReadError'));
+      } catch (error) {
+        if (error instanceof SmartIntakeFileReadError && error.reason === 'unsupported') {
+          setError(t('fileUnsupported'));
+        } else {
+          setError(t('fileReadFailed'));
+        }
         setDocumentContent('');
         setFileName(null);
         setStatus('error');
@@ -165,9 +179,25 @@ export function ProjectIntakeDocumentField({
       ) : null}
 
       {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
+        <div className="space-y-2" role="alert">
+          <p className="text-sm font-medium text-destructive">{error}</p>
+          <p className="text-xs text-muted-foreground">{t('fileReadFailedHint')}</p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="text-sm text-primary underline-offset-2 hover:underline"
+              onClick={(event) => {
+                event.stopPropagation();
+                setError(null);
+                setStatus('idle');
+                fileInputRef.current?.click();
+              }}
+              disabled={disabled || loading}
+            >
+              {t('retryUpload')}
+            </button>
+          </div>
+        </div>
       ) : null}
     </div>
   );

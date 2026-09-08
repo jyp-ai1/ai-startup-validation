@@ -352,6 +352,7 @@ export function WorkspaceAiPmLoopPanel({
     return stored;
   });
   const [answerInputFocused, setAnswerInputFocused] = useState(false);
+  const [confirmCorrectionMode, setConfirmCorrectionMode] = useState(false);
 
   const documentText = useMemo(() => loadWorkspaceDocumentText(projectId), [projectId, understanding]);
   const documentTrust = useMemo(() => getWorkspaceDocumentTrust(documentText), [documentText]);
@@ -701,7 +702,13 @@ export function WorkspaceAiPmLoopPanel({
   const isConfirmQuestion =
     questionPresentation.questionType === 'confirm' &&
     !loopState.researchPending &&
+    !confirmCorrectionMode &&
     Boolean(questionPresentation.confirmKnownValue || /맞나요/.test(displayQuestionText ?? ''));
+  const confirmCorrectionKnownValue =
+    questionPresentation.confirmKnownValue?.trim() ||
+    loopState.lastDecision?.confirmKnownValue?.trim() ||
+    extractConfirmKnownValueFromQuestion(displayQuestionText) ||
+    '';
   const judgmentConversationActive = isAiPmJudgmentAggregationV1Active();
   const focusedUiActive = isAiPmFocusedUiActive() && !judgmentConversationActive;
   const simpleQuestionUiActive = judgmentConversationActive;
@@ -925,6 +932,7 @@ export function WorkspaceAiPmLoopPanel({
   const resetAnswerDraft = useCallback(() => {
     clearAnswerDraft(projectId);
     setAnswerDraft('');
+    setConfirmCorrectionMode(false);
   }, [projectId]);
 
   const clearQuestionLock = useCallback(() => {
@@ -2337,8 +2345,28 @@ export function WorkspaceAiPmLoopPanel({
 
   const handleConfirmNo = useCallback(() => {
     const last = editableTurns[0];
-    if (last) beginEditPriorAnswer(last.issueId);
-  }, [editableTurns, beginEditPriorAnswer]);
+    if (last) {
+      beginEditPriorAnswer(last.issueId);
+      return;
+    }
+    const known =
+      questionPresentation.confirmKnownValue?.trim() ||
+      loopState.lastDecision?.confirmKnownValue?.trim() ||
+      extractConfirmKnownValueFromQuestion(displayQuestionText);
+    setConfirmCorrectionMode(true);
+    resetAnswerDraft();
+    if (known) {
+      updateAnswerDraft('');
+    }
+  }, [
+    editableTurns,
+    beginEditPriorAnswer,
+    questionPresentation.confirmKnownValue,
+    loopState.lastDecision?.confirmKnownValue,
+    displayQuestionText,
+    resetAnswerDraft,
+    updateAnswerDraft,
+  ]);
 
 
   if (sessionPaused && loopState.turns.length > 0) {
@@ -2611,7 +2639,33 @@ export function WorkspaceAiPmLoopPanel({
             </div>
           </div>
         ) : null}
-        {isConfirmQuestion ? (
+        {confirmCorrectionMode ? (
+          <div data-testid="confirm-correction-flow" className="mt-4 space-y-3">
+            <p className="text-sm font-medium">제가 이해한 사업</p>
+            <p className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm leading-relaxed">
+              {confirmCorrectionKnownValue || '—'}
+            </p>
+            <p className="text-sm font-medium">어떻게 수정하면 될까요?</p>
+            <textarea
+              value={answerDraft}
+              onChange={(event) => updateAnswerDraft(event.target.value)}
+              rows={4}
+              readOnly={readOnly}
+              placeholder="수정할 내용을 입력하세요"
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
+              aria-label="CEO correction"
+            />
+            <Button
+              type="button"
+              className="rounded-xl"
+              data-testid="confirm-correction-submit"
+              disabled={readOnly || !answerDraft.trim()}
+              onClick={() => submitAnswer(answerDraft)}
+            >
+              수정 내용 반영
+            </Button>
+          </div>
+        ) : isConfirmQuestion ? (
           <div
             data-testid="confirm-question-actions"
             className="mt-4 flex flex-wrap gap-2"
@@ -2748,7 +2802,7 @@ export function WorkspaceAiPmLoopPanel({
           </div>
         ) : null}
         <div className="mt-4 flex flex-wrap gap-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:bg-gradient-to-t max-sm:from-background max-sm:via-background max-sm:to-background/80 max-sm:pt-2">
-          {!isConfirmQuestion ? (
+          {!isConfirmQuestion && !confirmCorrectionMode ? (
             <Button
               type="button"
               className="rounded-xl max-sm:w-full"
@@ -2921,7 +2975,33 @@ export function WorkspaceAiPmLoopPanel({
               ) : null}
               {!loopState.researchPending && !midJudgmentText && !whyPanel ? (
               <>
-              {isConfirmQuestion ? (
+              {confirmCorrectionMode ? (
+                <div data-testid="confirm-correction-flow" className="mt-4 space-y-3">
+                  <p className="text-sm font-medium">제가 이해한 사업</p>
+                  <p className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm leading-relaxed">
+                    {confirmCorrectionKnownValue || '—'}
+                  </p>
+                  <p className="text-sm font-medium">어떻게 수정하면 될까요?</p>
+                  <textarea
+                    value={answerDraft}
+                    onChange={(event) => updateAnswerDraft(event.target.value)}
+                    rows={4}
+                    readOnly={readOnly}
+                    placeholder="수정할 내용을 입력하세요"
+                    className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
+                    aria-label="CEO correction"
+                  />
+                  <Button
+                    type="button"
+                    className="rounded-xl"
+                    data-testid="confirm-correction-submit"
+                    disabled={readOnly || !answerDraft.trim()}
+                    onClick={() => submitAnswer(answerDraft)}
+                  >
+                    수정 내용 반영
+                  </Button>
+                </div>
+              ) : isConfirmQuestion ? (
                 <div
                   data-testid="confirm-question-actions"
                   className="mt-4 flex flex-wrap gap-2"
@@ -2981,7 +3061,7 @@ export function WorkspaceAiPmLoopPanel({
                 </p>
               ) : null}
               <div className="mt-4 flex flex-wrap gap-2 pb-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:bg-gradient-to-t max-sm:from-background max-sm:via-background max-sm:to-background/80 max-sm:pt-2">
-                {!isConfirmQuestion ? (
+                {!isConfirmQuestion && !confirmCorrectionMode ? (
                   <Button
                     type="button"
                     className="rounded-xl max-sm:w-full"

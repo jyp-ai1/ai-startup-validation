@@ -87,19 +87,19 @@ function resolveBusinessField(
     }
   }
 
-  if (!readable) {
-    return {
-      value: SHARED_UNDERSTANDING_UNREADABLE_BUSINESS,
-      provenance: 'UNKNOWN',
-    };
-  }
-
   const intake = parseIntakeSeedDocument(documentText);
   if (intake.businessOneLinerCandidate) {
     const fromDesc = safeBusinessLabel(intake.businessOneLinerCandidate);
     if (fromDesc) {
       return { value: fromDesc, provenance: 'DOCUMENT' };
     }
+  }
+
+  if (!readable) {
+    return {
+      value: SHARED_UNDERSTANDING_UNREADABLE_BUSINESS,
+      provenance: 'UNKNOWN',
+    };
   }
 
   const fromEntity =

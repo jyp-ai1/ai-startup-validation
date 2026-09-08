@@ -67,7 +67,7 @@ export function buildAiPmSimpleQuestionSnapshot(input: {
     questionText,
     answerGuideText: formatAnswerGuideText(guide),
     whyQuestionSummary: buildWhySummary(input.targetGap, input.whyNow),
-    progressLabel: `사업 이해 ${index} / ${CEO_JUDGMENT_SESSION_MAX_QUESTIONS}`,
+    progressLabel: `확인 진행 중 · ${index}번째 질문`,
     questionIndex: index,
     maxQuestions: CEO_JUDGMENT_SESSION_MAX_QUESTIONS,
     showInterimJudgmentCta: index >= CEO_JUDGMENT_EARLY_VIEW_FROM,

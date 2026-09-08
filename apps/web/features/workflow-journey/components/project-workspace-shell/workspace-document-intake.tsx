@@ -10,8 +10,12 @@ import { cn } from '@repo/ui/lib/utils';
 import {
   isSmartIntakeContentValid,
   readSmartIntakeFile,
+  SmartIntakeFileReadError,
 } from '../../lib/v2-smart-intake-engine';
-import { isWorkspaceDocumentAnalyzable } from '../../lib/business-understanding/workspace-document-eligibility';
+import {
+  detectWorkspaceDocumentPlaceholder,
+  isWorkspaceDocumentAnalyzable,
+} from '../../lib/business-understanding/workspace-document-eligibility';
 
 type WorkspaceDocumentIntakeProps = {
   onSubmit: (content: string) => void;
@@ -42,16 +46,28 @@ export function WorkspaceDocumentIntake({
       setError(null);
       try {
         const { text } = await readSmartIntakeFile(file);
+        if (detectWorkspaceDocumentPlaceholder(text) != null) {
+          setError(t('readFailed'));
+          setFileName(null);
+          setPasteContent('');
+          return;
+        }
         if (!isSmartIntakeContentValid(text) && !isWorkspaceDocumentAnalyzable(text)) {
           setError(t('invalidFile'));
           setFileName(null);
+          setPasteContent('');
           return;
         }
         setPasteContent(text);
         setFileName(file.name);
-      } catch {
-        setError(t('invalidFile'));
+      } catch (err) {
+        if (err instanceof SmartIntakeFileReadError && err.reason === 'unsupported') {
+          setError(t('unsupportedFile'));
+        } else {
+          setError(t('readFailed'));
+        }
         setFileName(null);
+        setPasteContent('');
       } finally {
         setLoading(false);
       }
@@ -188,9 +204,34 @@ export function WorkspaceDocumentIntake({
       ) : null}
 
       {error ? (
-        <p className="mt-3 text-sm text-destructive" role="alert">
-          {error}
-        </p>
+        <div className="mt-3 space-y-2" role="alert">
+          <p className="text-sm font-medium text-destructive">{error}</p>
+          <p className="text-sm text-muted-foreground">{t('readFailedHint')}</p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="rounded-xl"
+              disabled={loading}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {t('retryUpload')}
+            </Button>
+            {onStartWithoutDocument ? (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="rounded-xl"
+                disabled={loading}
+                onClick={onStartWithoutDocument}
+              >
+                {t('pasteInstead')}
+              </Button>
+            ) : null}
+          </div>
+        </div>
       ) : null}
     </section>
   );

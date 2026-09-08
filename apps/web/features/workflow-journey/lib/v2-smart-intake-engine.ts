@@ -85,8 +85,7 @@ export function analyzeSmartIntakeDocument(
   const tagline = looksLikeDocumentFileName(rawTagline) ? serviceName : rawTagline;
 
   const problem =
-    findSection(text, ['문제', 'problem', 'pain', '불편', '과제']) ||
-    (text.length > 20 && !isBinaryPlaceholder(text, source) ? text.slice(0, 160) : '');
+    findSection(text, ['문제', 'problem', 'pain', '불편', '과제']) || '';
 
   const customer = mapEntitiesToLegacyCustomer(entities);
 
@@ -177,23 +176,82 @@ export function buildDraftFromAnalysis(
   };
 }
 
+export class SmartIntakeFileReadError extends Error {
+  readonly reason: 'unsupported' | 'empty' | 'parse_failed' | 'network';
+
+  constructor(reason: SmartIntakeFileReadError['reason'], message: string) {
+    super(message);
+    this.name = 'SmartIntakeFileReadError';
+    this.reason = reason;
+  }
+}
+
+async function readBinaryIntakeFile(
+  file: File,
+): Promise<{ text: string; source: SmartIntakeImportSource; fileName: string }> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  let response: Response;
+  try {
+    response = await fetch('/api/intake/extract-document', {
+      method: 'POST',
+      body: formData,
+    });
+  } catch {
+    throw new SmartIntakeFileReadError('network', 'Document extraction request failed');
+  }
+
+  const payload = (await response.json().catch(() => null)) as
+    | { ok: true; text: string; source: SmartIntakeImportSource; fileName: string }
+    | { ok: false; reason?: string; detail?: string }
+    | null;
+
+  if (!response.ok || !payload || payload.ok !== true || !payload.text?.trim()) {
+    const reason =
+      payload && 'reason' in payload && payload.reason === 'unsupported'
+        ? 'unsupported'
+        : payload && 'reason' in payload && payload.reason === 'parse_failed'
+          ? 'parse_failed'
+          : 'empty';
+    throw new SmartIntakeFileReadError(
+      reason,
+      payload && 'detail' in payload && payload.detail
+        ? payload.detail
+        : 'Could not extract text from document',
+    );
+  }
+
+  return {
+    text: payload.text.trim(),
+    source: payload.source,
+    fileName: payload.fileName ?? file.name,
+  };
+}
+
 export async function readSmartIntakeFile(
   file: File,
 ): Promise<{ text: string; source: SmartIntakeImportSource; fileName: string }> {
   const fileName = file.name;
   const ext = fileName.split('.').pop()?.toLowerCase() ?? 'txt';
-  if (ext === 'pdf') {
-    const demoText = `# ${fileName}\n\nPDF 본문은 아직 추출되지 않았습니다. Business·Customer는 직접 확인이 필요합니다.`;
-    return { text: demoText, source: 'pdf', fileName };
+
+  if (ext === 'pdf' || ext === 'docx' || ext === 'doc') {
+    return readBinaryIntakeFile(file);
   }
-  if (ext === 'docx') {
-    const demoText = 'Word 사업계획서를 불러왔습니다. AI PM이 핵심 섹션을 추출합니다.';
-    return { text: demoText, source: 'docx', fileName };
-  }
+
   if (ext === 'md' || ext === 'markdown') {
-    return { text: await file.text(), source: 'md', fileName };
+    const text = (await file.text()).trim();
+    if (text.length < 8) {
+      throw new SmartIntakeFileReadError('empty', 'Document has insufficient text');
+    }
+    return { text, source: 'md', fileName };
   }
-  return { text: await file.text(), source: 'txt', fileName };
+
+  const text = (await file.text()).trim();
+  if (text.length < 8) {
+    throw new SmartIntakeFileReadError('empty', 'Document has insufficient text');
+  }
+  return { text, source: 'txt', fileName };
 }
 
 export function isSmartIntakeContentValid(content: string): boolean {

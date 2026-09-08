@@ -378,7 +378,11 @@
       "placeholderNotice": "PDF/DOCX body extraction pending — Trust Block will guide confirmation in Workspace.",
       "removeFile": "Remove file",
       "fileTooShort": "Document content is too short. Add more business description.",
-      "fileReadError": "Unsupported or unreadable file. Use TXT, PDF, or DOCX."
+      "fileReadError": "Unsupported or unreadable file. Use TXT, PDF, or DOCX.",
+      "fileReadFailed": "We couldn't read the document.",
+      "fileReadFailedHint": "Try uploading again, or paste the content in the business description field.",
+      "fileUnsupported": "Unsupported file type. Only TXT, PDF, and DOCX are supported.",
+      "retryUpload": "Upload again"
     },
     "lifecycle": {
       "open": "Open",
@@ -6716,7 +6720,12 @@
           "startWithoutDocumentCta": "Start with AI without a document",
           "startWithoutDocumentHint": "No document needed. AI PM will ask about business, customer, and problem.",
           "insufficientPasteHint": "Not enough to analyze. Add at least two lines (founder, business, customer…) or a fuller business description.",
-          "invalidFile": "Could not read the file. Use text, PDF, or DOCX."
+          "invalidFile": "Could not read the file. Use text, PDF, or DOCX.",
+          "readFailed": "We couldn't read the document.",
+          "readFailedHint": "Try uploading again, or paste the content below.",
+          "unsupportedFile": "Unsupported file type. Only TXT, PDF, and DOCX are supported.",
+          "retryUpload": "Upload again",
+          "pasteInstead": "Enter content directly"
         },
         "aiPmLoop": {
           "aiLabel": "AI PM",

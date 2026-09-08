@@ -378,7 +378,11 @@
       "placeholderNotice": "PDF/DOCX 본문 추출 전 — Workspace Trust Block에서 확인 안내가 표시됩니다.",
       "removeFile": "파일 제거",
       "fileTooShort": "문서 내용이 부족합니다. 사업 설명을 더 추가해 주세요.",
-      "fileReadError": "지원하지 않는 파일이거나 읽을 수 없습니다. TXT, PDF, DOCX를 사용해 주세요."
+      "fileReadError": "지원하지 않는 파일이거나 읽을 수 없습니다. TXT, PDF, DOCX를 사용해 주세요.",
+      "fileReadFailed": "문서를 읽지 못했습니다.",
+      "fileReadFailedHint": "다시 업로드하거나, 아래 사업 설명란에 내용을 직접 입력해 주세요.",
+      "fileUnsupported": "지원하지 않는 파일 형식입니다. TXT, PDF, DOCX만 업로드할 수 있습니다.",
+      "retryUpload": "다시 업로드"
     },
     "lifecycle": {
       "open": "열기",
@@ -6869,7 +6873,12 @@
           "startWithoutDocumentCta": "문서 없이 AI에게 바로 시작",
           "startWithoutDocumentHint": "문서가 없어도 됩니다. AI PM이 사업·고객·문제를 직접 여쭙습니다.",
           "insufficientPasteHint": "분석할 정보가 부족합니다. 창업자·사업·고객 등 두 줄 이상, 또는 충분한 사업 설명을 입력해 주세요.",
-          "invalidFile": "문서를 읽을 수 없습니다. 텍스트 파일 또는 PDF/DOCX를 사용해 주세요."
+          "invalidFile": "문서를 읽을 수 없습니다. 텍스트 파일 또는 PDF/DOCX를 사용해 주세요.",
+          "readFailed": "문서를 읽지 못했습니다.",
+          "readFailedHint": "다시 업로드하거나, 아래에 내용을 직접 붙여넣어 주세요.",
+          "unsupportedFile": "지원하지 않는 파일 형식입니다. TXT, PDF, DOCX만 사용할 수 있습니다.",
+          "retryUpload": "다시 업로드",
+          "pasteInstead": "내용 직접 입력"
         },
           "aiPmLoop": {
           "aiLabel": "AI PM",

@@ -24,6 +24,7 @@ import {
 } from '../../lib/business-understanding/workspace-ai-pm-loop-types';
 import { buildAiPmScoreNarrative } from '../../lib/build-ai-pm-score-narrative';
 import { buildEditUnderstandingSummary } from '../../lib/business-understanding/build-edit-understanding-summary';
+import { persistWorkspaceStateDbFirst } from '@/features/workspace/lib/sync-workspace-persistence';
 import {
   loadUnderstandingConfirmMode,
   loadUnderstandingPhase,
@@ -358,6 +359,9 @@ export function WorkspaceAiPmMain({
     setUnderstandingPhase('edit_confirm');
     onLoopDocumentUpdated?.();
     setLoopState(loadAiPmLoopState(projectId));
+    if (projectId) {
+      void persistWorkspaceStateDbFirst({ projectId });
+    }
   }, [onLoopDocumentUpdated, projectId]);
 
   const handleEditConfirmYes = useCallback(() => {
@@ -429,6 +433,9 @@ export function WorkspaceAiPmMain({
     }
 
     saveConversationMemory(nextMemory, projectId);
+    if (projectId) {
+      void persistWorkspaceStateDbFirst({ projectId });
+    }
     proceedAfterUnderstandingConfirm();
   }, [
     domain.business,
