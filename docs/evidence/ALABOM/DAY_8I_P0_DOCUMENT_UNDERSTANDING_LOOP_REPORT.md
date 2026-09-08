@@ -75,12 +75,15 @@
 
 ## 7. Production
 
-Commit SHA: _(filled after push)_
-Build SHA: _(filled after push)_
-Production SHA: _(filled after deploy verify)_
-SHA Match: PENDING
+Commit SHA: `8374176`
+Build SHA: `8374176` (local build PASS)
+Production SHA: `2254e38` (deploy propagating at report time)
+SHA Match: PENDING — main pushed; Vercel production lag observed (~3min)
 
-Production smoke: PENDING post-deploy
+Production smoke:
+- Local `/api/intake/extract-document` TXT extract PASS
+- Production `/api/health` 200
+- Full browser journey: pending production SHA match + CPO Gate 1–6
 
 ## 8. Known Issues
 
