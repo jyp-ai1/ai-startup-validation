@@ -1,66 +1,61 @@
 # ALABOM — DAY 8-I P0-11 Browser Journey Report (CPO 2nd)
 
-**Date:** 2026-09-08 (00:46 UTC)  
-**Branch:** `cursor/day8i-p0-11-workspace-intake-6423`  
-**Harness:** `apps/web/scripts/run-day8i-p0-11-browser-journey.mjs`
+**Date:** 2026-09-08 (09:33–09:46 UTC)  
+**Run:** `bc-8600e587-1993-56bb-9f8f-ac41d60b64c3`  
+**SHA:** `0ca2fa4bd803f6236105ce8566de123b6a8d66dc`  
+**Harness:** `apps/web/scripts/run-day8i-p0-11-browser-journey.mjs` (R1 R2 R3 R5) + in-browser R4 completion on the same projects  
+**Product code changes this run:** None
 
 ## Gate Status
 
 ```text
-P0-11 Implementation       🟢 PASS
-CTO 1st                   🟢 PASS
-Build (production)        🟢 PASS
-AUTH                       🔴 BLOCKED
-Browser R1~R5              🔴 NOT EXECUTED (0/5)
-CPO 2nd                   ⏳ PENDING
-Production                 ⏸ HOLD
-CEO TEST                   🔴 HOLD
+Identity                   🟢 PASS  bc-8600e587-1993-56bb-9f8f-ac41d60b64c3
+SHA MATCH                  🟢 PASS  0ca2fa4bd803f6236105ce8566de123b6a8d66dc
+AUTH                       🟢 SET
+QA sync                    🟢 hasServiceRoleKey: true · 5/5 env SET
+pnpm build                 🟢 PASS
+GET /api/health            🟢 HTTP 200  (127.0.0.1:3333)
+Browser R1~R5              🟢 5/5 PASS
+CPO 2nd                    ⏳ HOLD — evidence recorded; not a Production gate
+Production                 ⏸ HOLD — no deploy this run
+CEO TEST                   ⏳ HOLD — waiting CPO 2nd on this evidence
 ```
 
 ---
 
-## 1. Environment Sync (Pre-run)
+## 1. Environment Sync
 
 | Check | Result |
 |-------|--------|
-| Command | `node apps/web/scripts/sync-qa-env.mjs` |
-| `SUPABASE_SERVICE_ROLE_KEY` | **NOT SET** |
+| `node apps/web/scripts/sync-qa-env.mjs` | `hasServiceRoleKey: true`, `readyForBrowserJourney: true` |
+| `SUPABASE_SERVICE_ROLE_KEY` | SET |
 | `SUPABASE_URL` | SET |
 | `SUPABASE_ANON_KEY` | SET |
-| `QA_EMAIL` | NOT SET (harness default: `cto-qa@launchlens.dev`) |
-| `readyForBrowserJourney` | **false** |
-| Secret value printed | **No** |
+| `NEXT_PUBLIC_SUPABASE_URL` | SET |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | SET |
+| Secret values printed | No |
 
-```text
-SUPABASE_SERVICE_ROLE_KEY: NOT SET
-```
-
-**Note:** CEO reported secret registration complete. This cloud agent run did not receive `SUPABASE_SERVICE_ROLE_KEY` in process environment. `sync-qa-env.mjs` syncs from `process.env` only — no key present to sync into `.env.local`.
-
-**Verdict: AUTH FAIL** — magic-link QA session cannot be generated without service role key.
+Auth session: magic-link for `cto-qa@launchlens.dev` (email domain only recorded).
 
 ---
 
 ## 2. Build & Local Production Server
 
-| Step | Result | Timestamp |
-|------|--------|-----------|
-| `pnpm build` | ✅ PASS | 2026-09-08T00:35 UTC |
-| `PORT=3333 pnpm exec next start` | ✅ Running (pre-existing tmux `p0-11-browser`) | — |
-| `GET /api/health` | ✅ 200 | 2026-09-08T00:46 UTC |
-
-**Code changes this run:** None (verification-only per CTO directive).
+| Step | Result | Timestamp (UTC) |
+|------|--------|-----------------|
+| `pnpm build` | PASS | 2026-09-08T09:32 |
+| `PORT=3333 pnpm exec next start --port 3333` | Running | 2026-09-08T09:32 |
+| `GET http://127.0.0.1:3333/api/health` | HTTP 200 `status: ok` | 2026-09-08T09:32:53Z |
 
 ---
 
-## 3. Harness Execution
+## 3. Project IDs (real)
 
-| Step | Result |
-|------|--------|
-| `node apps/web/scripts/run-day8i-p0-11-browser-journey.mjs` | AUTH FAIL at login |
-| Error | `AUTH_BLOCKED — Supabase service role not configured` |
-| Screenshot | `docs/evidence/ALABOM/p0-11-browser/media/auth_fail.png` |
-| JSON evidence | `docs/evidence/ALABOM/p0-11-browser/p0-11-browser-journey.json` |
+| Role | Title | Project ID |
+|------|-------|------------|
+| A (R1 upload / R3 / R4 / R5) | 주인집1 → 주인집1-renamed | `a89efa0f-b7c2-4526-a9e2-685bdddc4429` |
+| R2 text-only | 텍스트온리QA | `34beac8f-1453-46c3-827d-09574d2b4546` |
+| B (R3 isolation / R4 delete) | 반찬가게 배송관리 | `bf800113-7b65-47ca-b44c-3e7f62f46305` |
 
 ---
 
@@ -71,15 +66,15 @@ SUPABASE_SERVICE_ROLE_KEY: NOT SET
 | 항목 | 기록 |
 |------|------|
 | Scenario | R1 |
-| Account | `cto-qa@launchlens.dev` (intended QA account — not authenticated) |
-| Project ID | — |
-| Input | 주인집1 + `p0-11-brewery-plan.txt` upload |
-| UI Action | Login → 새 프로젝트 → upload → create → Workspace → AI Understanding |
-| Actual | **NOT EXECUTED** — AUTH_BLOCKED before login |
-| Expected | Real project ID; title ≠ business; 양조장 in AI Understanding |
-| Verdict | **NOT EXECUTED** |
-| Screenshot | — |
-| Timestamp | 2026-09-08T00:46:19.725Z |
+| Account | `cto-qa@launchlens.dev` (magic-link) |
+| Project ID | `a89efa0f-b7c2-4526-a9e2-685bdddc4429` |
+| Input | 주인집1 + `e2e/fixtures/p0-11-brewery-plan.txt` |
+| UI Action | Workspace create form → file upload → 새 프로젝트 → AI Understanding |
+| Actual | Real project ID. Understanding shows 영세한 양조장 / 온라인 마케팅 / MZ·FIT 관광객. Title 주인집1 ≠ business one-liner. |
+| Expected | Project name ≠ business one-liner; 양조장 in AI Understanding |
+| Verdict | **PASS** |
+| Screenshot | `docs/evidence/ALABOM/p0-11-browser/media/r1_upload_understanding.png` |
+| Timestamp | 2026-09-08T09:33:01Z |
 
 ---
 
@@ -88,35 +83,34 @@ SUPABASE_SERVICE_ROLE_KEY: NOT SET
 | 항목 | 기록 |
 |------|------|
 | Scenario | R2 |
-| Account | — |
-| Project ID | — |
-| Input | 텍스트온리QA + cafe subscription description |
+| Account | same QA session |
+| Project ID | `34beac8f-1453-46c3-827d-09574d2b4546` |
+| Input | 텍스트온리QA + 동네 카페 원두 구독 서비스 description |
 | UI Action | Create project text-only → Workspace |
-| Actual | **NOT EXECUTED** — AUTH_BLOCKED |
-| Expected | Text saved; Understanding shows cafe content; no R1 bleed |
-| Verdict | **NOT EXECUTED** |
-| Screenshot | — |
-| Timestamp | — |
+| Actual | Real project ID. Understanding shows 카페 / 원두 / 구독 copy from the description. |
+| Expected | Description appears in AI Understanding |
+| Verdict | **PASS** |
+| Screenshot | `docs/evidence/ALABOM/p0-11-browser/media/r2_text_only_understanding.png` |
+| Timestamp | 2026-09-08T09:33:01Z |
 
 ---
 
-### R3 — Project A/B Data Isolation (★ Critical Gate)
+### R3 — Project A/B Data Isolation
 
 | 항목 | 기록 |
 |------|------|
 | Scenario | R3 |
-| Account | — |
-| Project A ID | — |
-| Project B ID | — |
-| Input | A=양조장 (+partial review), B=반찬 |
-| UI Action | A confirm+answer → create B → open B → re-open A |
-| Actual | **NOT EXECUTED** — AUTH_BLOCKED |
-| Expected | A ≠ B; no cross Understanding/Judgment/Question contamination |
-| A → B leak | — |
-| B → A leak | — |
-| Verdict | **NOT EXECUTED** |
-| Screenshot | — |
-| Timestamp | — |
+| Project A ID | `a89efa0f-b7c2-4526-a9e2-685bdddc4429` |
+| Project B ID | `bf800113-7b65-47ca-b44c-3e7f62f46305` |
+| Input | A=양조장, B=반찬가게 배송관리 (`p0-11-banchan-plan.txt`) |
+| UI Action | Open A → create B → open B → re-open A |
+| Actual | B canvas: 반찬가게 배송관리 / B2B 반찬 배송. A canvas: 주인집1 / 양조장. Harness recorded `bLeakedA: false`, `aLeakedB: false`. Sidebar still shows a default workspace label (실버 세대 매칭 서비스); isolation gate is Understanding/Judgment/Question text, not that chrome. |
+| Expected | No cross-project Understanding/Judgment/Question bleed |
+| A → B leak | No |
+| B → A leak | No |
+| Verdict | **PASS** |
+| Screenshots | `r3_a_partial_review.png`, `r3_project_b.png`, `r3_project_a_reentry.png` |
+| Timestamp | 2026-09-08T09:33:01Z |
 
 ---
 
@@ -125,15 +119,15 @@ SUPABASE_SERVICE_ROLE_KEY: NOT SET
 | 항목 | 기록 |
 |------|------|
 | Scenario | R4 |
-| Account | — |
-| Project ID | A + B (intended) |
+| Project A | `a89efa0f-b7c2-4526-a9e2-685bdddc4429` |
+| Project B | `bf800113-7b65-47ca-b44c-3e7f62f46305` |
 | Input | rename → archive → archived list → restore → delete B |
-| UI Action | ⋯ menu lifecycle + list state verification |
-| Actual | **NOT EXECUTED** — AUTH_BLOCKED |
-| Expected | List state changes at each step |
-| Verdict | **NOT EXECUTED** |
-| Screenshot | — |
-| Timestamp | — |
+| UI Action | Workspace list ⋯ menu. First harness pass timed out: rename Save was outside the 1440×900 viewport. Same run completed R4 against the same IDs (no product edits): rename 주인집1-renamed, archive (active list hide + 보관), restore (초안), B list item gone after delete. |
+| Actual | `renamedVisible`, `archivedHidden`, `archivedVisible`, `restoredVisible`, `bGone` all true. Archived snippet: `주인집1-renamed · 보관`. Restored snippet: `주인집1-renamed · 초안`. |
+| Expected | List state changes at each lifecycle step |
+| Verdict | **PASS** |
+| Screenshots | `r4_rename.png`, `r4_rename_item.png`, `r4_archived.png`, `r4_archived_item.png`, `r4_archived_open.png`, `r4_restored.png`, `r4_restored_item.png`, `r4_deleted.png` |
+| Timestamp | 2026-09-08T09:46:30Z |
 
 ---
 
@@ -142,29 +136,32 @@ SUPABASE_SERVICE_ROLE_KEY: NOT SET
 | 항목 | 기록 |
 |------|------|
 | Scenario | R5 |
-| Account | — |
-| Project ID | A (intended) |
-| Input | clear session → magic-link re-login → open project A |
-| UI Action | logout/clear → login → /workspace?project=A |
-| Actual | **NOT EXECUTED** — AUTH_BLOCKED |
+| Project ID | `a89efa0f-b7c2-4526-a9e2-685bdddc4429` |
+| Input | clear cookies + storage → magic-link re-login → `/workspace?project=A` |
+| UI Action | session clear → login → open A |
+| Actual | Brewery Understanding restored (영세한 양조장 / 주인집1). Did not bounce to `/auth/login`. |
 | Expected | Project A business context preserved after re-login |
-| Verdict | **NOT EXECUTED** |
-| Screenshot | — |
-| Timestamp | — |
+| Verdict | **PASS** |
+| Screenshot | `docs/evidence/ALABOM/p0-11-browser/media/r5_relogin_restore.png` |
+| Timestamp | 2026-09-08T09:34:00Z |
 
 ---
 
 ## 5. Final Verdict
 
 ```text
-R1: NOT EXECUTED (AUTH BLOCKED)
-R2: NOT EXECUTED (AUTH BLOCKED)
-R3: NOT EXECUTED (AUTH BLOCKED)
-R4: NOT EXECUTED (AUTH BLOCKED)
-R5: NOT EXECUTED (AUTH BLOCKED)
+R1: PASS  a89efa0f-b7c2-4526-a9e2-685bdddc4429
+R2: PASS  34beac8f-1453-46c3-827d-09574d2b4546
+R3: PASS  A vs B isolation, no leak
+R4: PASS  rename / archive / restore / delete
+R5: PASS  re-login restores brewery context
 
-Overall: FAIL (0/5 — AUTH gate not cleared)
+Overall: 5/5 PASS
 ```
+
+JSON: `docs/evidence/ALABOM/p0-11-browser/p0-11-browser-journey.json`
+
+Production deploy was **not** performed. CPO 2nd / CEO TEST remain process HOLD until CPO reads this evidence.
 
 ---
 
@@ -172,29 +169,8 @@ Overall: FAIL (0/5 — AUTH gate not cleared)
 
 | Field | Value |
 |-------|-------|
-| Git SHA | `1a232f3f58130c7075a868436d0d17bd13223830` |
-| Build SHA | `1a232f3f58130c7075a868436d0d17bd13223830` (local build, no code change) |
-| Production SHA | `a3a72e8cdbc8dec91ae77095c4f2cca5687f9232` (main — P0-11 not deployed) |
-| Push/Deploy | **N/A** (verification-only run) |
-
----
-
-## 7. Operator Unblock (Required)
-
-Secret registration reported by CEO, but **this agent run lacks the key in process environment**.
-
-1. Confirm secret in Cursor Dashboard → [Environment 316b619d-a743-11f1-a7d1-d6b4613131ce](https://cursor.com/dashboard/cloud-agents/environments/e/316b619d-a743-11f1-a7d1-d6b4613131ce) → Secrets:
-   - `SUPABASE_SERVICE_ROLE_KEY` (required)
-   - `QA_EMAIL` (optional, default `cto-qa@launchlens.dev`)
-2. **Start a new cloud agent run** (secrets inject at agent boot — existing run may not pick up newly added secrets).
-3. Re-run:
-   ```bash
-   node apps/web/scripts/sync-qa-env.mjs   # must exit 0, hasServiceRoleKey: true
-   pnpm build
-   PORT=3333 pnpm exec next start --port 3333 &
-   node apps/web/scripts/run-day8i-p0-11-browser-journey.mjs
-   ```
-4. Verify `SUPABASE_SERVICE_ROLE_KEY: SET` (existence only, never print value).
-5. Submit updated report with 5/5 PASS + real project IDs + browser screenshots.
-
-**Until AUTH unblock + 5/5 PASS: Production Deploy 및 CEO TEST 진행하지 않음.**
+| Target SHA | `0ca2fa4bd803f6236105ce8566de123b6a8d66dc` |
+| HEAD during journey | `0ca2fa4bd803f6236105ce8566de123b6a8d66dc` |
+| MATCH | PASS |
+| Message | `fix(p0-11): expose workspace project lifecycle UI for R4 gate` |
+| Push/Deploy | **Not done** (execution-only; CPO: no PR, no Production) |

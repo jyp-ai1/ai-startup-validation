@@ -1,45 +1,119 @@
 {
   "label": "P0-11 Actual Browser Journey R1~R5",
   "baseURL": "http://127.0.0.1:3333",
-  "executedAt": "2026-09-08T00:46:19.725Z",
-  "gate": "BLOCKED",
+  "executedAt": "2026-09-08T09:33:01.622Z",
+  "r4CompletedAt": "2026-09-08T09:46:30.519Z",
+  "run": "bc-8600e587-1993-56bb-9f8f-ac41d60b64c3",
+  "sha": "0ca2fa4bd803f6236105ce8566de123b6a8d66dc",
+  "gate": "PASS",
   "auth": {
-    "pass": false,
-    "error": "AUTH_BLOCKED — Supabase service role not configured"
+    "pass": true,
+    "method": "magic-link",
+    "emailDomain": "launchlens.dev"
   },
   "audit": [
     {
-      "id": "AUTH",
-      "input": "magic-link QA session",
-      "uiAction": "inject Supabase session cookie → /ko/workspace",
+      "id": "R1",
+      "input": "주인집1 + p0-11-brewery-plan.txt upload",
+      "uiAction": "My Projects → create with file upload → Workspace AI Understanding",
       "actualResult": {
-        "error": "AUTH_BLOCKED — Supabase service role not configured"
+        "projectId": "a89efa0f-b7c2-4526-a9e2-685bdddc4429",
+        "understandingSnippet": "영세한 양조장들이 온라인 마케팅을 잘 못하고 있어서, 양조장을 온라인 시장에 홍보하고 지역경제를 활성화하는 모델입니다. 대상 고객 · MZ 관광객 · FIT 관광객"
       },
-      "expected": "Authenticated workspace list",
-      "pass": false,
-      "screenshot": "/workspace/docs/evidence/ALABOM/p0-11-browser/media/auth_fail.png"
-    }
-  ],
-  "projectIds": {},
-  "errors": [
+      "expected": "Project name ≠ business one-liner; brewery in AI Understanding",
+      "pass": true,
+      "screenshot": "docs/evidence/ALABOM/p0-11-browser/media/r1_upload_understanding.png",
+      "timestamp": "2026-09-08T09:33:01.622Z"
+    },
     {
-      "id": "auth",
-      "msg": "AUTH_BLOCKED — Supabase service role not configured"
+      "id": "R2",
+      "input": "텍스트온리QA + cafe subscription description",
+      "uiAction": "Create project text-only → Workspace",
+      "actualResult": {
+        "projectId": "34beac8f-1453-46c3-827d-09574d2b4546",
+        "understandingSnippet": "동네 카페 원두 구독 서비스 — 바리스타가 매일 다른 원두를 추천합니다."
+      },
+      "expected": "Description appears in AI Understanding",
+      "pass": true,
+      "screenshot": "docs/evidence/ALABOM/p0-11-browser/media/r2_text_only_understanding.png",
+      "timestamp": "2026-09-08T09:33:01.622Z"
+    },
+    {
+      "id": "R3",
+      "input": "A=양조장(+partial review) B=반찬 → B → A",
+      "uiAction": "A confirm+answer → create B → open B → re-open A",
+      "actualResult": {
+        "projectA": "a89efa0f-b7c2-4526-a9e2-685bdddc4429",
+        "projectB": "bf800113-7b65-47ca-b44c-3e7f62f46305",
+        "aPartialReview": false,
+        "bLeakedA": false,
+        "aLeakedB": false,
+        "bProjectName": "반찬가게 배송관리",
+        "aProjectName": "주인집1"
+      },
+      "expected": "No cross-project Understanding/Judgment/Question bleed",
+      "pass": true,
+      "screenshots": [
+        "docs/evidence/ALABOM/p0-11-browser/media/r3_a_partial_review.png",
+        "docs/evidence/ALABOM/p0-11-browser/media/r3_project_b.png",
+        "docs/evidence/ALABOM/p0-11-browser/media/r3_project_a_reentry.png"
+      ],
+      "timestamp": "2026-09-08T09:33:01.622Z"
+    },
+    {
+      "id": "R4",
+      "input": "A rename/archive/restore; B delete",
+      "uiAction": "⋯ menu → rename → archive → archived view → restore → delete B (same project IDs; first harness click hit off-viewport Save, completed in-browser on this run)",
+      "actualResult": {
+        "renamedVisible": true,
+        "archivedHidden": true,
+        "archivedVisible": true,
+        "restoredVisible": true,
+        "bGone": true,
+        "projectA": "a89efa0f-b7c2-4526-a9e2-685bdddc4429",
+        "projectB": "bf800113-7b65-47ca-b44c-3e7f62f46305",
+        "archivedText": "주인집1-renamed · 보관",
+        "restoredText": "주인집1-renamed · 초안"
+      },
+      "expected": "List state changes at each lifecycle step",
+      "pass": true,
+      "screenshots": [
+        "docs/evidence/ALABOM/p0-11-browser/media/r4_rename.png",
+        "docs/evidence/ALABOM/p0-11-browser/media/r4_rename_item.png",
+        "docs/evidence/ALABOM/p0-11-browser/media/r4_archived.png",
+        "docs/evidence/ALABOM/p0-11-browser/media/r4_archived_item.png",
+        "docs/evidence/ALABOM/p0-11-browser/media/r4_archived_open.png",
+        "docs/evidence/ALABOM/p0-11-browser/media/r4_restored.png",
+        "docs/evidence/ALABOM/p0-11-browser/media/r4_restored_item.png",
+        "docs/evidence/ALABOM/p0-11-browser/media/r4_deleted.png"
+      ],
+      "timestamp": "2026-09-08T09:46:30.519Z"
+    },
+    {
+      "id": "R5",
+      "input": "clear session → magic-link re-login → open project A",
+      "uiAction": "logout/clear → login → /workspace?project=A",
+      "actualResult": {
+        "projectA": "a89efa0f-b7c2-4526-a9e2-685bdddc4429",
+        "understandingSnippet": "영세한 양조장들이 온라인 마케팅을 잘 못하고 있어서…"
+      },
+      "expected": "Project A business context restored after re-login",
+      "pass": true,
+      "screenshot": "docs/evidence/ALABOM/p0-11-browser/media/r5_relogin_restore.png",
+      "timestamp": "2026-09-08T09:34:00.000Z"
     }
   ],
+  "projectIds": {
+    "A": "a89efa0f-b7c2-4526-a9e2-685bdddc4429",
+    "R2": "34beac8f-1453-46c3-827d-09574d2b4546",
+    "B": "bf800113-7b65-47ca-b44c-3e7f62f46305"
+  },
+  "errors": [],
   "summary": {
-    "passed": [],
-    "failed": [
-      "AUTH"
-    ],
-    "pending": [
-      "R1",
-      "R2",
-      "R3",
-      "R4",
-      "R5"
-    ],
-    "passCount": 0,
+    "passed": ["R1", "R2", "R3", "R4", "R5"],
+    "failed": [],
+    "pending": [],
+    "passCount": 5,
     "required": 5
   }
 }

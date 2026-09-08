@@ -1,0 +1,30 @@
+{
+  "id": "R4",
+  "executedAt": "2026-09-08T09:46:30.519Z",
+  "projectA": "a89efa0f-b7c2-4526-a9e2-685bdddc4429",
+  "projectB": "bf800113-7b65-47ca-b44c-3e7f62f46305",
+  "pass": true,
+  "itemSnippets": {
+    "archivedText": "주인집1-renamed\n\n프로젝트 이름: 주인집1 사업 설명:\n\n최근 수정 4분 전 · 보관\n\n열기",
+    "restoredText": "주인집1-renamed\n\n프로젝트 이름: 주인집1 사업 설명:\n\n최근 수정 방금 · 초안\n\n열기"
+  },
+  "actualResult": {
+    "renamedVisible": true,
+    "archivedHidden": true,
+    "archivedVisible": true,
+    "restoredVisible": true,
+    "bGone": true,
+    "projectA": "a89efa0f-b7c2-4526-a9e2-685bdddc4429",
+    "projectB": "bf800113-7b65-47ca-b44c-3e7f62f46305"
+  },
+  "screenshots": [
+    "/workspace/docs/evidence/ALABOM/p0-11-browser/media/r4_rename.png",
+    "/workspace/docs/evidence/ALABOM/p0-11-browser/media/r4_rename_item.png",
+    "/workspace/docs/evidence/ALABOM/p0-11-browser/media/r4_archived.png",
+    "/workspace/docs/evidence/ALABOM/p0-11-browser/media/r4_archived_item.png",
+    "/workspace/docs/evidence/ALABOM/p0-11-browser/media/r4_archived_open.png",
+    "/workspace/docs/evidence/ALABOM/p0-11-browser/media/r4_restored.png",
+    "/workspace/docs/evidence/ALABOM/p0-11-browser/media/r4_restored_item.png",
+    "/workspace/docs/evidence/ALABOM/p0-11-browser/media/r4_deleted.png"
+  ]
+}
