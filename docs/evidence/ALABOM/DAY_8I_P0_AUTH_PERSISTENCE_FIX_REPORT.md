@@ -92,9 +92,9 @@ Project B: empty snapshot applied
 
 | Item | Value | Status |
 |------|-------|--------|
-| Commit | `fe0e8e4` | — |
-| Production SHA | _pending deploy_ | ⏳ |
-| SHA Match | — | ⏳ |
+| Commit | `ba14a8f` | — |
+| Production SHA | `ba14a8f86560221351caf5ccd43c7d0919ca2d1c5` | ✅ PASS |
+| SHA Match | main @ ba14a8f === production | ✅ PASS |
 | Auth correction + refresh E2E | Pod has no OAuth | ⏳ CPO 2차 on production |
 
 ---
