@@ -39,6 +39,14 @@ const EXACT_REDIRECTS: Record<string, string> = {
 export function resolveLegacyRedirect(request: NextRequest): NextResponse | null {
   const pathname = request.nextUrl.pathname;
 
+  const localeAuthMatch = pathname.match(/^\/(ko|en)\/auth(\/.*)?$/);
+  if (localeAuthMatch) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/auth${localeAuthMatch[2] ?? ''}`;
+    logLegacyRedirect(pathname, url.pathname + url.search, 'locale_auth_to_root');
+    return NextResponse.redirect(url, 307);
+  }
+
   const exact = EXACT_REDIRECTS[pathname];
   if (exact) {
     const url = request.nextUrl.clone();
