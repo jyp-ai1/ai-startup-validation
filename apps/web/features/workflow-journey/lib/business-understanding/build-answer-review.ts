@@ -126,7 +126,9 @@ export function canonicalizeSubmitSemantics(input: {
   } else if (displayedGapForCanonical === 'problemJtbd' && semantic.mergeable) {
     const personaSegmentCue = hasPersonaSegmentCue(trimmed);
     const problemCue =
-      /(불편|pain|문제|해결|jtbd|획일|동선\s*낭비|맞춤\s*일정|패키지)/i.test(trimmed);
+      /(불편|pain|문제|해결|jtbd|획일|동선\s*낭비|맞춤\s*일정|패키지|부족|어렵|못하고|힘들|인력|홍보(?:가|를)?\s*어렵|알릴\s*방법)/i.test(
+        trimmed,
+      );
     if (personaSegmentCue && !problemCue) {
       semantic = {
         ...semantic,

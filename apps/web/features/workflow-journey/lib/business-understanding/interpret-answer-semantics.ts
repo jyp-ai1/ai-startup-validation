@@ -455,7 +455,10 @@ export function interpretAnswerSemantics(input: {
     resolvedIssueId = 'customer_definition';
     facts = [{ key: 'customer', issueId: 'customer_definition' }];
   } else if (askedGap === 'problemJtbd') {
-    const problemCue = /(불편|문제|JTBD|해결하려|겪는|pain|pein)/i.test(trimmed);
+    const problemCue =
+      /(불편|문제|JTBD|해결하려|겪는|pain|pein|부족|어렵|못하고|힘들|인력|홍보(?:가|를)?\s*어렵|알릴\s*방법)/i.test(
+        trimmed,
+      );
     const personaSegmentCue = hasPersonaSegmentCue(trimmed);
     const payerOnlyCorrection =
       PAYER_CUE_RE.test(trimmed) &&

@@ -144,7 +144,10 @@ function isCustomerDefinitionClause(clause: string): boolean {
   if (/실수를\s*줄|시간을\s*아낄|줄이고\s*시간/.test(clause)) {
     return false;
   }
-  if (/문제|놓치|재주문|불편|심각/.test(clause) && !/주\s*고객|포함|사장님|고객(?:입니다|이고)?/.test(clause)) {
+  if (
+    /문제|놓치|재주문|불편|심각|부족|어렵|못하고|인력|홍보(?:가|를)?\s*어렵/.test(clause) &&
+    !/주\s*고객|포함|사장님|고객(?:입니다|이고)?|타깃|타겟|대상/.test(clause)
+  ) {
     return false;
   }
   if (
@@ -173,10 +176,16 @@ function refineSolutionSegment(clause: string): string {
 }
 
 function isProblemDescriptionClause(clause: string): boolean {
-  return (
-    /(?:들은|들이|들의)/.test(clause) &&
-    /(?:모르|부족|못하고|알릴\s*방법|홍보|마케팅|어렵|불편|인력)/.test(clause)
-  );
+  const painCue = /(?:모르|부족|못하고|알릴\s*방법|홍보|마케팅|어렵|불편|인력)/.test(clause);
+  if (!painCue) return false;
+  if (/(?:들은|들이|들의)/.test(clause)) return true;
+  // P0-2C — "양조장은 … 부족/어렵" is pain, not customer persona
+  if (/^(?:[^,.;]{0,24}(?:은|는|이|가))\s/.test(clause) || /(?:은|는)\s/.test(clause)) {
+    if (!/(?:타깃|타겟|대상|주\s*고객|고객(?:입니다|이고))/.test(clause)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function isCustomerBenefitExpectation(text: string): boolean {
@@ -497,9 +506,16 @@ export function extractAnswerSemanticEvidences(answer: string): AnswerSemanticEx
 
   const collected: AnswerSemanticEvidence[] = [];
   const expectationAnswer = isCustomerBenefitExpectation(trimmed);
-  const customer = expectationAnswer ? null : extractCustomerEvidence(clauses, trimmed);
+  let customer = expectationAnswer ? null : extractCustomerEvidence(clauses, trimmed);
   const problem = expectationAnswer ? null : extractProblemEvidence(clauses, trimmed);
   const solution = expectationAnswer ? null : extractSolutionEvidence(clauses, trimmed);
+
+  if (customer && problem && isSemanticCopy(customer.summary, problem.summary)) {
+    customer = null;
+  }
+  if (customer && problem && isProblemDescriptionClause(trimmed)) {
+    customer = null;
+  }
 
   if (customer) collected.push(customer);
   if (problem) collected.push(problem);
