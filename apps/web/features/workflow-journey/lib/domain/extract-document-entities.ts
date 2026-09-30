@@ -110,32 +110,55 @@ function extractBusinessName(text: string): DomainEntityField {
   return { value: null, basis: 'unknown', excerpt: null };
 }
 
+const CUSTOMER_LINE_PREFIX =
+  /^(대상|타겟\s*고객|타겟|타깃|고객|customer|target)\s*[:：]\s*/i;
+
 function extractCustomer(
   text: string,
   model: BusinessModel | null,
   founder: DomainEntityField,
 ): DomainEntityField {
   const lower = text.toLowerCase();
-  if (lower.includes('양조장') && !lower.includes('타겟') && !lower.includes('관광객')) {
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const hasExplicitTargetLine = lines.some((line) => CUSTOMER_LINE_PREFIX.test(line));
+
+  // P0-2B — 양조장 B2B 제휴 문맥과 「대상: 소규모 양조장」 타깃 라벨을 구분
+  if (
+    lower.includes('양조장') &&
+    !lower.includes('타겟') &&
+    !lower.includes('관광객') &&
+    !hasExplicitTargetLine
+  ) {
     return { value: null, basis: 'unknown', excerpt: null };
   }
 
-  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
   let raw = '';
   let rawLine = '';
-  for (const line of lines) {
-    // Never treat AI PM section headers as customer values (정의] pollution)
-    if (/^\[AI\s*PM\s*확인/i.test(line)) continue;
-    const lower = line.toLowerCase();
-    if (['타겟', '타깃', '고객', 'customer', 'target', '주요 고객'].some((k) => lower.includes(k))) {
-      raw = line;
-      rawLine = line;
-      break;
+
+  const labeledTarget = lines.find(
+    (line) => !/^\[AI\s*PM\s*확인/i.test(line) && CUSTOMER_LINE_PREFIX.test(line),
+  );
+  if (labeledTarget) {
+    raw = labeledTarget;
+    rawLine = labeledTarget;
+  } else {
+    for (const line of lines) {
+      if (/^\[AI\s*PM\s*확인/i.test(line)) continue;
+      const lineLower = line.toLowerCase();
+      if (
+        ['타겟', '타깃', '고객', 'customer', 'target', '주요 고객'].some((k) =>
+          lineLower.includes(k),
+        )
+      ) {
+        raw = line;
+        rawLine = line;
+        break;
+      }
     }
   }
 
   const candidate = raw
-    .replace(/^(.*?)(타겟\s*고객|타겟|타깃|고객|customer|target)[\s:：]*/i, '')
+    .replace(/^(.*?)(타겟\s*고객|타겟|타깃|고객|customer|target|대상)[\s:：]*/i, '')
     .replace(/^정의\]\s*/i, '')
     .replace(/^\[.*?\]\s*/g, '')
     .trim();
