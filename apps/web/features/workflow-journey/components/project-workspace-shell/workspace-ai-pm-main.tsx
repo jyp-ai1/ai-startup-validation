@@ -72,6 +72,7 @@ import { evaluateFinalIntegrityGate } from '../../lib/business-understanding/fin
 import { buildEmptyProjectConversationSeed } from '../../lib/business-understanding/build-empty-project-seed';
 import { buildSharedUnderstanding } from '../../lib/business-understanding/build-shared-understanding';
 import { reopenAiPmLoopForRefinement } from '../../lib/business-understanding/process-loop-answer';
+import { applyWorkspaceDomainToMemory } from '../../lib/business-understanding/apply-workspace-domain-to-memory';
 import { applyUserCorrection } from '../../lib/business-understanding/correction-and-why';
 import {
   loadConversationMemory,
@@ -354,10 +355,18 @@ export function WorkspaceAiPmMain({
       documentText: documentContext,
       entities,
       loop: loopState,
+      domain,
+      memory: loadConversationMemory(projectId),
     });
-  }, [documentContext, entities, loopState, understandingPhase]);
+  }, [documentContext, domain, entities, loopState, projectId, understandingPhase]);
 
   const handleApplyEdits = useCallback(() => {
+    const nextMemory = applyWorkspaceDomainToMemory({
+      projectId: projectId ?? 'default',
+      domain,
+      previous: loadConversationMemory(projectId),
+    });
+    saveConversationMemory(nextMemory, projectId);
     saveUnderstandingPhase('edit_confirm', projectId);
     setUnderstandingPhase('edit_confirm');
     onLoopDocumentUpdated?.();
@@ -365,7 +374,7 @@ export function WorkspaceAiPmMain({
     if (projectId && enableDbPersistence) {
       void persistWorkspaceStateDbFirst({ projectId });
     }
-  }, [enableDbPersistence, onLoopDocumentUpdated, projectId]);
+  }, [domain, enableDbPersistence, onLoopDocumentUpdated, projectId]);
 
   const handleEditConfirmYes = useCallback(() => {
     // W8 + v2 — correction locks USER_CORRECTED; invalidate downstream turns/facts
