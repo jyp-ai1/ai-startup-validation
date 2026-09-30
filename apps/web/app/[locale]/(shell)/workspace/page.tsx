@@ -70,8 +70,13 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
 
     let projectId = params.project ?? cookieStore.get('ACTIVE_PROJECT_ID')?.value;
     if (!projectId) {
-      const demos = await listDemoProjects();
-      projectId = demos[0]?.id ?? 'demo';
+      // Fresh guided demo never needs DB — avoids 500 when Supabase fetch fails
+      if (explicitDemoSession) {
+        projectId = 'demo';
+      } else {
+        const demos = await listDemoProjects();
+        projectId = demos[0]?.id ?? 'demo';
+      }
     }
     const user = DEMO_GUEST_USER;
     const demoMode =
