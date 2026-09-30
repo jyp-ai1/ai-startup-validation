@@ -148,7 +148,7 @@ describe('P0-2C customerChange supplement → Final Review handoff', () => {
     expect(judgment.dimensions.customerChange.summary).toMatch(/홍보|SNS|줄/);
   });
 
-  it('shouldHandoffToFinalReview requires customerChange clear and living not blocked', () => {
+  it('shouldHandoffToFinalReview false when customerChange still open', () => {
     let judgment = emptyCeoJudgmentState(3);
     judgment.dimensions.customer = {
       ...judgment.dimensions.customer,
@@ -157,8 +157,8 @@ describe('P0-2C customerChange supplement → Final Review handoff', () => {
     };
     judgment.dimensions.problem = {
       ...judgment.dimensions.problem,
-      status: 'clear',
-      summary: '홍보 인력 부족',
+      status: 'needs_check',
+      summary: 'PRIMARY: 홍보 방법과 인력이 부족해 홍보가 어렵습니다',
     };
     judgment.dimensions.solution = {
       ...judgment.dimensions.solution,
@@ -167,12 +167,12 @@ describe('P0-2C customerChange supplement → Final Review handoff', () => {
     };
     judgment.dimensions.customerChange = {
       ...judgment.dimensions.customerChange,
-      status: 'clear',
-      summary: CUSTOMER_CHANGE_ANSWER,
+      status: 'needs_check',
+      summary: '',
     };
 
     const understanding = buildBusinessUnderstanding(CEO_DOC);
-    const livingBlocked = buildLivingUnderstandingState({
+    const living = buildLivingUnderstandingState({
       documentText: CEO_DOC,
       understanding,
       turns: [],
@@ -183,6 +183,6 @@ describe('P0-2C customerChange supplement → Final Review handoff', () => {
         entities: null,
       }),
     });
-    expect(shouldHandoffToFinalReview({ living: livingBlocked, judgment })).toBe(false);
+    expect(shouldHandoffToFinalReview({ living, judgment })).toBe(false);
   });
 });
