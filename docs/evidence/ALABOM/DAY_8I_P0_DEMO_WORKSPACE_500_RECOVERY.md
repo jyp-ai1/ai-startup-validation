@@ -33,17 +33,21 @@ Fresh guided demo (`fresh=1`) does not require DB project id (client uses `demo-
 - `listDemoProjects`: second catch returns `[]`
 - `workspace/page.tsx`: `explicitDemoSession` skips DB lookup, `projectId = 'demo'`
 
-Commit: _(see git after push)_
+Commit: `458195a` (fix) · `fc4d290` (main merge)
 
 ## Tests
 
 - `lib/project/__tests__/list-demo-projects.test.ts` — 2 pass
+- `pnpm build` (web) — PASS
 - Local smoke port **3202**: demo workspace **no 500**, AI PM surface visible
 
 ## Production Smoke
 
-_(pending deploy)_
+| When | SHA | Demo workspace |
+|------|-----|----------------|
+| Pre-fix | `5babecb` | **FAIL** (500 UI) |
+| Post-merge deploy | `fc4d290` | **Pending** Vercel (still `5babecb` @ 12:37 UTC poll) |
 
 ## CPO Decision
 
-_(pending Production verify)_
+**RECOVERED (code)** — Production deploy + smoke **pending**
