@@ -289,6 +289,24 @@ function extractProblem(text: string): UnderstandingField {
       confirmedExpressions: [expression],
     });
   }
+
+  const needIndex = findLineIndex(
+    lines,
+    (l) =>
+      /니즈|needs?\b/i.test(l) &&
+      l.length > 10 &&
+      !/^(대상|타겟|타깃|고객)\s*[:：]/i.test(l),
+  );
+  if (needIndex >= 0) {
+    const line = lines[needIndex]!;
+    const expression = line.slice(0, 60).trim();
+    return toField(line.slice(0, 80), 'document', {
+      excerpt: line.slice(0, 120),
+      pageRef: lineToPageRef(needIndex),
+      confirmedExpressions: [expression],
+    });
+  }
+
   return toField(null, 'unknown');
 }
 
