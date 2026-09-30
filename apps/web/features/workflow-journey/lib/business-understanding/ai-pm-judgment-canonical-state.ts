@@ -319,6 +319,8 @@ export function mergeCanonicalCustomerChange(
     evidence: string;
     sourceTurnIndex?: number;
     evidenceType?: 'fact' | 'hypothesis' | 'expectation';
+    /** P0-2C — CEO supplement on validationTestability closes the customerChange check. */
+    ceoSupplementConfirmed?: boolean;
   },
 ): CeoJudgmentDimension {
   const isClaim =
@@ -337,13 +339,19 @@ export function mergeCanonicalCustomerChange(
   const records = upsertRecord(prior.evidenceRecords ?? [], record);
   const evidenceType = input.evidenceType ?? prior.evidenceType ?? (isClaim ? 'expectation' : 'fact');
 
+  const ceoConfirmed =
+    Boolean(input.ceoSupplementConfirmed) &&
+    Boolean(input.sourceTurnIndex && input.sourceTurnIndex > 0) &&
+    input.conclusion.trim().length >= 6;
+
   return applyEvidenceToDimension(
     {
       ...prior,
       label: CUSTOMER_CHANGE_CLAIM_LABEL,
-      status: 'needs_check',
-      statusReason:
-        evidenceType === 'hypothesis'
+      status: ceoConfirmed ? 'clear' : 'needs_check',
+      statusReason: ceoConfirmed
+        ? 'CEO 보완 답변으로 확인됨'
+        : evidenceType === 'hypothesis'
           ? 'CEO 가설 — 아직 검증되지 않음'
           : evidenceType === 'expectation'
             ? 'CEO 기대효과 — 아직 검증되지 않음'
@@ -402,6 +410,14 @@ export function syncDimensionCanonicalDisplay(d: CeoJudgmentDimension): CeoJudgm
         label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
         status: 'unknown',
         summary: '',
+      };
+    }
+    if (d.status === 'clear') {
+      return {
+        ...d,
+        label: CUSTOMER_CHANGE_CLAIM_LABEL,
+        status: 'clear',
+        summary: clip(d.currentConclusion ?? d.summary),
       };
     }
     return {

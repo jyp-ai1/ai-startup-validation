@@ -373,6 +373,18 @@ function extractSolutionEvidence(clauses: string[], trimmed: string): AnswerSema
 }
 
 function extractCustomerChangeEvidence(clauses: string[], trimmed: string): AnswerSemanticEvidence | null {
+  if (
+    /(?:줄(?:어|이|고|ㄴ|어듭)|단축|감소|아낄)/.test(trimmed) &&
+    /(?:홍보|SNS|노출|시간|불편|실수|누락|관리)/.test(trimmed)
+  ) {
+    return {
+      dimension: 'customerChange',
+      summary: clip(trimmed),
+      evidence: trimmed,
+      interpretedMeaning: 'CEO 답변 — 고객 체감 변화 evidence',
+      reason: dimensionReason('customerChange'),
+    };
+  }
   if (/가장\s*큰\s*변화|변화입니다/.test(trimmed)) {
     return {
       dimension: 'customerChange',
@@ -517,8 +529,19 @@ export function extractAnswerSemanticEvidences(answer: string): AnswerSemanticEx
     customer = null;
   }
 
+  const changeFromAnswer = extractCustomerChangeEvidence(clauses, trimmed);
+
   if (customer) collected.push(customer);
-  if (problem) collected.push(problem);
+  if (
+    problem &&
+    !(
+      changeFromAnswer &&
+      (isSemanticCopy(problem.summary, changeFromAnswer.summary) ||
+        changeFromAnswer.evidence.includes(problem.evidence))
+    )
+  ) {
+    collected.push(problem);
+  }
   if (solution) collected.push(solution);
 
   if (HYPOTHESIS_RE.test(trimmed) || expectationAnswer) {
@@ -542,9 +565,8 @@ export function extractAnswerSemanticEvidences(answer: string): AnswerSemanticEx
       reason: 'CEO 기대효과 — 고객 검증 전',
       evidenceType: 'expectation',
     });
-  } else {
-    const change = extractCustomerChangeEvidence(clauses, trimmed);
-    if (change) collected.push(change);
+  } else if (changeFromAnswer) {
+    collected.push(changeFromAnswer);
   }
 
   return {

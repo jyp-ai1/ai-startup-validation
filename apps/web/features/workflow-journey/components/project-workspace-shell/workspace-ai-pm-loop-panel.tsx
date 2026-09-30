@@ -50,6 +50,7 @@ import {
   supplementDimensionToGap,
 } from '../../lib/business-understanding/ai-pm-supplement-presenter';
 import { evaluateJudgmentStop } from '../../lib/business-understanding/ai-pm-question-budget';
+import { shouldHandoffToFinalReview } from '../../lib/business-understanding/ai-pm-p0-2c-supplement-handoff';
 import { isAiPmJudgmentPolicyV1Active } from '../../lib/business-understanding/ai-pm-judgment-policy-v1';
 import { buildAiPmFocusedSnapshot } from '../../lib/business-understanding/ai-pm-focused-presenter';
 import {
@@ -975,9 +976,37 @@ export function WorkspaceAiPmLoopPanel({
     syncState(openSupplementMode(dimId, projectId));
   }, [projectId, syncState]);
 
+  const completeFinalReviewHandoff = useCallback(
+    (
+      living: typeof livingState,
+      judgment: NonNullable<ReturnType<typeof loadAiPmLoopState>['ceoJudgment']>,
+    ) => {
+      if (!shouldHandoffToFinalReview({ living, judgment })) return false;
+      patchAiPmLoopState(
+        {
+          phase: 'complete',
+          currentIssueId: null,
+          viewMode: 'question',
+          supplementDimensionId: null,
+          supplementPendingReview: false,
+        },
+        projectId,
+      );
+      onLoopComplete?.();
+      return true;
+    },
+    [onLoopComplete, projectId],
+  );
+
   const showReviewDecision = useCallback(() => {
+    const current = loadAiPmLoopState(projectId);
+    const judgment = current.ceoJudgment;
+    if (judgment && completeFinalReviewHandoff(livingState, judgment)) {
+      syncState(loadAiPmLoopState(projectId));
+      return;
+    }
     syncState(showBusinessReviewDecision(projectId));
-  }, [projectId, syncState]);
+  }, [completeFinalReviewHandoff, livingState, projectId, syncState]);
 
   const returnToReview = useCallback(() => {
     syncState(returnToBusinessReview(projectId));
@@ -1175,6 +1204,15 @@ export function WorkspaceAiPmLoopPanel({
             projectId,
           ),
         );
+        if (completeFinalReviewHandoff(result.living, judgmentSync.judgment)) {
+          syncState(loadAiPmLoopState(projectId));
+          onDocumentUpdated?.(
+            loadAiPmLoopState(projectId).currentIssueId ?? 'problem_definition',
+            '',
+          );
+          window.setTimeout(() => setUpdateSavedFlash(false), 2200);
+          return;
+        }
         onDocumentUpdated?.(
           loadAiPmLoopState(projectId).currentIssueId ?? 'problem_definition',
           '',
@@ -1258,7 +1296,16 @@ export function WorkspaceAiPmLoopPanel({
       '',
     );
     window.setTimeout(() => setUpdateSavedFlash(false), 2200);
-  }, [commitQuestionLock, entities, onDocumentUpdated, onLoopComplete, projectId, syncState, understanding]);
+  }, [
+    commitQuestionLock,
+    completeFinalReviewHandoff,
+    entities,
+    onDocumentUpdated,
+    onLoopComplete,
+    projectId,
+    syncState,
+    understanding,
+  ]);
 
   finishProcessingRef.current = finishProcessing;
 

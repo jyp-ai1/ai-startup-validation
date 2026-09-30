@@ -29,6 +29,10 @@ import {
   type JudgmentTraceEntry,
 } from './ai-pm-judgment-trace';
 import { mergeDimensionAccumulative } from './ai-pm-judgment-accumulative-merge';
+import {
+  isAiPmP02cSupplementHandoffActive,
+  isValidationTestabilitySupplementTarget,
+} from './ai-pm-p0-2c-supplement-handoff';
 import { isAiPmJudgmentMeaningModelV1Active } from './ai-pm-judgment-meaning-model-v1';
 import { isAiPmJudgmentFix5V1Active } from './ai-pm-judgment-fix5-v1';
 import { mergeStructuredSolutionDimension } from './ai-pm-judgment-structured-solution';
@@ -106,6 +110,7 @@ function mergeDimension(
     evidence?: string;
     interpretedMeaning?: string;
     isCorrection?: boolean;
+    targetGap?: string;
   },
 ): CeoJudgmentDimension {
   if (
@@ -123,11 +128,16 @@ function mergeDimension(
     prior.id === 'customerChange' &&
     next.summary?.trim()
   ) {
+    const ceoSupplementConfirmed =
+      isAiPmP02cSupplementHandoffActive() &&
+      isValidationTestabilitySupplementTarget(options?.targetGap) &&
+      Boolean(options?.sourceTurnIndex && options.sourceTurnIndex > 0);
     return mergeCanonicalCustomerChange(prior, {
       conclusion: next.summary,
       evidence: options?.evidence ?? next.summary,
       sourceTurnIndex: options?.sourceTurnIndex,
       evidenceType: next.evidenceType,
+      ceoSupplementConfirmed,
     });
   }
   if (
@@ -659,6 +669,7 @@ export function buildCeoJudgmentState(input: {
           evidence: meta[id]?.evidence,
           interpretedMeaning: meta[id]?.interpretedMeaning,
           isCorrection,
+          targetGap: turn.targetGap,
         });
         lastUpdated.push(id);
       }
@@ -694,6 +705,7 @@ export function applyAnswerToJudgment(input: {
   issueId?: AiPmLoopTurn['issueId'];
   targetGap?: string;
   allowMultiFact?: boolean;
+  sourceTurnIndex?: number;
 }): CeoJudgmentState {
   const multiFact =
     input.allowMultiFact ??
@@ -737,6 +749,8 @@ export function applyAnswerToJudgment(input: {
     return finalizeJudgmentPresentation(state);
   }
 
+  const priorTurn = input.prior.currentTurnIndex ?? 0;
+  const turnIndex = input.sourceTurnIndex ?? (priorTurn > 0 ? priorTurn + 1 : 1);
   const lastUpdated: CeoJudgmentDimensionId[] = [];
   for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
     if (fromAnswer[id]) {
@@ -748,10 +762,12 @@ export function applyAnswerToJudgment(input: {
       }
       state.dimensions[id] = mergeDimension(state.dimensions[id], fromAnswer[id]!, {
         preferUserExtract: true,
+        sourceTurnIndex: turnIndex,
         answer: input.answer,
         evidence: meta[id]?.evidence,
         interpretedMeaning: meta[id]?.interpretedMeaning,
         isCorrection,
+        targetGap: input.targetGap,
       });
       lastUpdated.push(id);
     }
@@ -759,7 +775,7 @@ export function applyAnswerToJudgment(input: {
   if (lastUpdated.length > 0) {
     state.lastUpdatedDimensions = lastUpdated;
   }
-  state.currentTurnIndex = input.prior.currentTurnIndex;
+  state.currentTurnIndex = turnIndex;
   return finalizeJudgmentPresentation(state);
 }
 
