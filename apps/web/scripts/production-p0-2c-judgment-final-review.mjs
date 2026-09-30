@@ -12,8 +12,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const EVIDENCE = path.join(__dirname, '..', '..', '..', 'docs', 'evidence', 'ALABOM', 'P0-2C-production');
 
 const BASE = process.env.PRODUCTION_URL ?? 'https://ai-startup-validation-tau.vercel.app';
-const MAX_ITER = 55;
-const MAX_MEANINGFUL = 22;
+const MAX_ITER = 65;
+const MAX_MEANINGFUL = 28;
 
 const CEO_DOC = `# 영세 양조장 온라인 홍보 SaaS
 
@@ -203,9 +203,15 @@ async function advanceToOpenAnswerSurface(page, maxConfirms = 5) {
 }
 
 function pickAnswer(q, i) {
+  if (/맞나요|맞습니까/.test(q)) return '네, 맞습니다.';
   if (/어느 쪽이 맞나요/.test(q)) return /B\)/.test(q) ? 'B' : 'A';
-  if (/불편|문제|니즈|어려/.test(q)) return QA_BANK[1];
-  if (/고객|누구|대상|제공|맞나요/.test(q)) return QA_BANK[0];
+  if (/불편|문제|니즈|어려|핵심\s*불편/.test(q)) return QA_BANK[1];
+  if (/필요로 하는 사람|고객|누구|대상|사용하는지|타깃|타겟/.test(q)) {
+    return '소규모 양조장(영세 양조장) 운영자입니다.';
+  }
+  if (/좋아지|달라지|변화|실수|불편\s*중/.test(q)) {
+    return '홍보·SNS 관리 시간이 줄고, 온라인 노출 실수(누락)가 줄어듭니다.';
+  }
   if (/수익|지불|비용|모델|결제/.test(q)) return QA_BANK[2];
   if (/경쟁|대안/.test(q)) return QA_BANK[3];
   if (/차별/.test(q)) return QA_BANK[4];
@@ -274,6 +280,16 @@ function assess() {
   c.slot_corruption_customer_as_problem =
     /고객[\s\S]{0,120}온라인 홍보 방법과 인력이 부족/.test(body) &&
     !/문제[\s\S]{0,80}온라인 홍보 방법과 인력이 부족/.test(body);
+
+  c.customer_preserved_in_judgment =
+    /소규모\s*양조장/.test(body) &&
+    !/고객[\s\S]{0,40}아직\s*모름[\s\S]{0,200}PRIMARY:/.test(body.replace(/\n/g, ' '));
+
+  c.problem_pain_merged = /PRIMARY:.*(?:부족|어렵|홍보)/.test(body);
+
+  const discomfortQs = qs.filter((q) => /불편/.test(q) && !/맞나요/.test(q));
+  c.no_repeat_discomfort_gap =
+    discomfortQs.length <= 1 || new Set(discomfortQs).size === discomfortQs.length;
 
   c.judgment_grounds_in_context = /양조장|홍보|SaaS|니즈/.test(report.excerpts.judgment ?? body);
 
@@ -373,7 +389,35 @@ try {
       }
     }
 
+    if (/맞나요|맞습니까/.test(q || '')) {
+      let confirmed = false;
+      for (const yes of [
+        page.getByTestId('confirm-yes-cta'),
+        page.getByRole('button', { name: /^✓?\s*맞습니다$/i }),
+        page.getByRole('button', { name: /^네,?\s*맞습니다/i }),
+      ]) {
+        if (await yes.first().isVisible().catch(() => false)) {
+          await yes.first().click({ force: true });
+          await waitForThinking(page);
+          await page.waitForTimeout(2_000);
+          report.steps.confirmMicroTurn = 'PASS';
+          confirmed = true;
+          break;
+        }
+      }
+      if (confirmed) continue;
+    }
+
     const boxVisible = await page.locator('textarea').last().isVisible().catch(() => false);
+    if (boxVisible && /맞나요|맞습니까/.test(q || '')) {
+      await page.locator('textarea').last().fill('네, 맞습니다.');
+      const submit = page.getByTestId('submit-answer-cta');
+      if (await submit.isEnabled().catch(() => false)) {
+        await submit.click({ force: true });
+        await waitForThinking(page);
+        continue;
+      }
+    }
     if (boxVisible) {
       const answer = pickAnswer(q || body.slice(0, 600), i);
       const turn = report.qaTurns[report.qaTurns.length - 1];
