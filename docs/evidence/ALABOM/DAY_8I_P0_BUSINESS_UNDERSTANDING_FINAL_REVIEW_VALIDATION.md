@@ -1,6 +1,6 @@
 # ALABOM — P0 Business Understanding & Final Review Validation
 
-**Date:** 2026-09-25  
+**Date:** 2026-09-30 (re-run) · prior 2026-09-25  
 **Type:** Production verification-only (no code changes)  
 **Production URL:** https://ai-startup-validation-tau.vercel.app
 
@@ -65,6 +65,18 @@ Demo workspace route (`/workspace?demo=guided&sample=*&fresh=1`) fails during in
 ## Code Change
 
 **NONE**
+
+---
+
+## 2026-09-30 Re-run
+
+| Check | Result |
+|-------|--------|
+| Production `/demo/start` → custom paste | ✅ UI PASS |
+| Production workspace launch | ❌ **500** (unchanged) |
+| Local `127.0.0.1:3201` (isolated port) | ❌ workspace **500** — server log: `TypeError: fetch failed` on demo project `findAll` (Supabase) |
+
+CEO slot-filling / Final Review criteria **still not observable** on Production or local without DB-backed demo workspace.
 
 ---
 
