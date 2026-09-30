@@ -17,6 +17,7 @@ import {
   loadAiPmLoopState,
   patchAiPmLoopState,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
+import { shouldHandoffToFinalReview } from '../../lib/business-understanding/ai-pm-p0-2c-supplement-handoff';
 import { criticalGapsBlockAnalysis } from '../../lib/business-understanding/question-causality';
 import {
   AI_PM_LOOP_ISSUE_ORDER,
@@ -484,14 +485,27 @@ export function WorkspaceAiPmMain({
     const mem = loadConversationMemory(projectId);
     const und = understanding ?? (doc.trim() ? buildBusinessUnderstanding(doc) : null);
     if (und) {
+      const loop = loadAiPmLoopState(projectId);
       const living = buildLivingUnderstandingState({
         documentText: doc,
         understanding: und,
         entities,
-        turns: loadAiPmLoopState(projectId).turns,
+        turns: loop.turns,
         memory: mem,
-        resolvedIssueIds: getResolvedIssueIds(loadAiPmLoopState(projectId)),
+        resolvedIssueIds: getResolvedIssueIds(loop),
       });
+      const judgment = loop.ceoJudgment;
+      if (
+        judgment &&
+        shouldHandoffToFinalReview({ living, judgment })
+      ) {
+        saveUnderstandingPhase('review-ready', projectId);
+        setUnderstandingPhase('review-ready');
+        setLoopState(loadAiPmLoopState(projectId));
+        onLoopComplete?.();
+        onUnderstandingConfirmed?.();
+        return;
+      }
       if (criticalGapsBlockAnalysis(living)) {
         // Re-open loop: stay in understanding, do not freeze on Start Analysis panel
         patchAiPmLoopState({ phase: 'answer' }, projectId);

@@ -12,8 +12,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const EVIDENCE = path.join(__dirname, '..', '..', '..', 'docs', 'evidence', 'ALABOM', 'P0-2C-production');
 
 const BASE = process.env.PRODUCTION_URL ?? 'https://ai-startup-validation-tau.vercel.app';
-const MAX_ITER = 55;
-const MAX_MEANINGFUL = 22;
+const MAX_ITER = 65;
+const MAX_MEANINGFUL = 28;
+
+const CUSTOMER_PERSONA_ANSWER = '소규모 양조장(영세 양조장) 운영자입니다.';
+const CUSTOMER_CHANGE_ANSWER =
+  '홍보·SNS 관리 시간이 줄고, 온라인 노출 실수(누락)가 줄어듭니다.';
 
 const CEO_DOC = `# 영세 양조장 온라인 홍보 SaaS
 
@@ -93,6 +97,9 @@ async function textOrEmpty(page, testId) {
 }
 
 async function readSurfaceQuestion(page) {
+  if (await page.getByTestId('ai-pm-supplement-surface').isVisible().catch(() => false)) {
+    return textOrEmpty(page, 'supplement-question-text');
+  }
   if (await page.getByTestId('ai-pm-simple-question').isVisible().catch(() => false)) {
     return textOrEmpty(page, 'simple-question-text');
   }
@@ -203,9 +210,13 @@ async function advanceToOpenAnswerSurface(page, maxConfirms = 5) {
 }
 
 function pickAnswer(q, i) {
+  if (/맞나요|맞습니까/.test(q)) return '네, 맞습니다.';
   if (/어느 쪽이 맞나요/.test(q)) return /B\)/.test(q) ? 'B' : 'A';
-  if (/불편|문제|니즈|어려/.test(q)) return QA_BANK[1];
-  if (/고객|누구|대상|제공|맞나요/.test(q)) return QA_BANK[0];
+  if (/필요로 하는 사람|누구인가요|타깃|타겟|대상|사용하는지/.test(q)) {
+    return CUSTOMER_PERSONA_ANSWER;
+  }
+  if (/좋아지|달라지|변화|실수|불편\s*중/.test(q)) return CUSTOMER_CHANGE_ANSWER;
+  if (/불편|문제|니즈|어려|핵심\s*불편/.test(q)) return QA_BANK[1];
   if (/수익|지불|비용|모델|결제/.test(q)) return QA_BANK[2];
   if (/경쟁|대안/.test(q)) return QA_BANK[3];
   if (/차별/.test(q)) return QA_BANK[4];
@@ -221,7 +232,10 @@ function pickAnswer(q, i) {
 
 async function submitAnswer(page, answer) {
   await dismissRecognition(page);
-  const box = page.locator('textarea').last();
+  const supplementInput = page.getByTestId('supplement-answer-input');
+  const box = (await supplementInput.isVisible().catch(() => false))
+    ? supplementInput
+    : page.locator('textarea').last();
   if (!(await box.isVisible({ timeout: 6_000 }).catch(() => false))) return false;
   await box.fill(answer);
   const supplementSubmit = page.getByTestId('supplement-submit-cta');
@@ -281,6 +295,13 @@ function assess() {
     !/문제[\s\S]{0,80}온라인 홍보 방법과 인력이 부족/.test(body);
 
   c.judgment_grounds_in_context = /양조장|홍보|SaaS|니즈/.test(report.excerpts.judgment ?? body);
+
+  c.customer_change_supplement_completed =
+    report.steps.supplementSubmit === 'PASS' ||
+    /고객에게 달라지는 점[\s\S]{0,80}🟢|고객에게 달라지는 점[\s\S]{0,80}확인됨/.test(body);
+  c.judgment_progress_after_supplement =
+    report.steps.businessReviewContinue === 'PASS' || c.final_review_reached;
+  c.production_sha_matches = Boolean(report.productionSha && report.productionSha.length >= 7);
 
   if (c.final_review_reached && c.final_has_brewery_context && c.context_maintained_in_header && !c.slot_corruption_customer_as_problem) {
     report.p0_2c = 'PASS_CANDIDATE';
@@ -369,18 +390,49 @@ try {
       }
     }
 
-    const supplement = page.getByRole('button', { name: /이 부분 보완하기/i }).first();
-    if (!(await page.locator('textarea').last().isVisible().catch(() => false))) {
-      if (await supplement.isVisible().catch(() => false)) {
-        await supplement.click({ force: true });
-        await page.waitForTimeout(1_500);
-        report.observations.push(`supplement click iter ${i}`);
+    if (/맞나요|맞습니까/.test(q || '')) {
+      let confirmed = false;
+      for (const yes of [
+        page.getByTestId('confirm-yes-cta'),
+        page.getByRole('button', { name: /^✓?\s*맞습니다$/i }),
+        page.getByRole('button', { name: /^네,?\s*맞습니다/i }),
+      ]) {
+        if (await yes.first().isVisible().catch(() => false)) {
+          await yes.first().click({ force: true });
+          await waitForThinking(page);
+          await page.waitForTimeout(2_000);
+          report.steps.confirmMicroTurn = 'PASS';
+          confirmed = true;
+          break;
+        }
       }
+      if (confirmed) continue;
+    }
+
+    const supplementSurface = page.getByTestId('ai-pm-supplement-surface');
+    const supplementInput = page.getByTestId('supplement-answer-input');
+    const mainTextarea = page.locator('textarea').last();
+    const boxVisible =
+      (await supplementInput.isVisible().catch(() => false)) ||
+      (await mainTextarea.isVisible().catch(() => false));
+
+    const supplementCta = page.getByTestId('business-review-supplement-cta');
+    if (
+      !boxVisible &&
+      !(await supplementSurface.isVisible().catch(() => false)) &&
+      (await supplementCta.isVisible().catch(() => false))
+    ) {
+      await supplementCta.click({ force: true });
+      await page.waitForTimeout(2_000);
+      await waitForThinking(page);
+      report.steps.supplementOpened = 'PASS';
+      continue;
     }
 
     const continueReview = page.getByTestId('business-review-continue-cta');
     if (
-      !(await page.locator('textarea').last().isVisible().catch(() => false)) &&
+      !boxVisible &&
+      !(await supplementSurface.isVisible().catch(() => false)) &&
       (await continueReview.isVisible().catch(() => false))
     ) {
       await continueReview.click({ force: true });
@@ -390,13 +442,15 @@ try {
       continue;
     }
 
-    const boxVisible = await page.locator('textarea').last().isVisible().catch(() => false);
     if (boxVisible) {
       const answer = pickAnswer(q || body.slice(0, 600), i);
       const turn = report.qaTurns[report.qaTurns.length - 1];
       if (turn && !turn.answer) turn.answer = answer;
       const ok = await submitAnswer(page, answer);
       if (!ok) report.observations.push(`submit failed iter ${i}`);
+      else if (await supplementInput.isVisible().catch(() => false)) {
+        report.steps.supplementSubmit = 'PASS';
+      }
       if (i % 4 === 3) {
         await page.screenshot({
           path: path.join(EVIDENCE, 'screenshots', `02-qa-${String(i + 1).padStart(2, '0')}.png`),
