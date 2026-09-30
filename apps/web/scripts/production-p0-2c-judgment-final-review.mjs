@@ -224,13 +224,18 @@ async function submitAnswer(page, answer) {
   const box = page.locator('textarea').last();
   if (!(await box.isVisible({ timeout: 6_000 }).catch(() => false))) return false;
   await box.fill(answer);
-  const submit = page.getByTestId('submit-answer-cta');
-  if (await submit.isEnabled({ timeout: 4_000 }).catch(() => false)) {
-    await submit.click({ force: true });
+  const supplementSubmit = page.getByTestId('supplement-submit-cta');
+  if (await supplementSubmit.isEnabled({ timeout: 2_000 }).catch(() => false)) {
+    await supplementSubmit.click({ force: true });
   } else {
-    const alt = page.getByRole('button', { name: /답변 반영하기|답변 보내기/i }).first();
-    if (!(await alt.isVisible().catch(() => false))) return false;
-    await alt.click({ force: true });
+    const submit = page.getByTestId('submit-answer-cta');
+    if (await submit.isEnabled({ timeout: 4_000 }).catch(() => false)) {
+      await submit.click({ force: true });
+    } else {
+      const alt = page.getByRole('button', { name: /답변 반영하기|답변 보내기/i }).first();
+      if (!(await alt.isVisible().catch(() => false))) return false;
+      await alt.click({ force: true });
+    }
   }
   await waitForThinking(page);
   await page.waitForTimeout(1_200);
@@ -371,6 +376,18 @@ try {
         await page.waitForTimeout(1_500);
         report.observations.push(`supplement click iter ${i}`);
       }
+    }
+
+    const continueReview = page.getByTestId('business-review-continue-cta');
+    if (
+      !(await page.locator('textarea').last().isVisible().catch(() => false)) &&
+      (await continueReview.isVisible().catch(() => false))
+    ) {
+      await continueReview.click({ force: true });
+      await waitForThinking(page);
+      await page.waitForTimeout(1_200);
+      report.steps.businessReviewContinue = 'PASS';
+      continue;
     }
 
     const boxVisible = await page.locator('textarea').last().isVisible().catch(() => false);
