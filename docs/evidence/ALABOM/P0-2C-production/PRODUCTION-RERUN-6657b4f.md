@@ -5,8 +5,9 @@
 | Production SHA | `6657b4fe9c9b01b782fbaeb980ce603e21f24e0d` |
 | Git = Build = Production | ✅ (via `/api/build-info`) |
 | Script | `apps/web/scripts/production-p0-2c-judgment-final-review.mjs` |
-| Verdict | **PASS_CANDIDATE** |
+| Verdict | **PASS_CANDIDATE** → **CPO CLOSED** (2026-09-30) |
 | Run at | 2026-09-30T15:27:45Z |
+| CEO TEST | **GO** (CPO — post P0-2C CLOSED) |
 
 ## Deploy chain
 
