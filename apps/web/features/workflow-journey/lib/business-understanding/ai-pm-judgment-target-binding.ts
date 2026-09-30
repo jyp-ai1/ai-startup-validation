@@ -132,6 +132,19 @@ export function isDocumentEchoSummary(summary: string): boolean {
   return false;
 }
 
+/** Problem / pain answer — not a customer definition (P0-2C brewery loop). */
+export function isProblemPainAnswer(answer: string): boolean {
+  const t = answer.trim();
+  if (t.length < 8) return false;
+  if (!/(?:불편|부족|어렵|못하고|힘들|인력|홍보(?:가|를)?\s*어렵|알릴\s*방법)/.test(t)) {
+    return false;
+  }
+  if (/(?:타깃|타겟|대상|주\s*고객|고객(?:입니다|이고|은)|포함|만이\s*아니)/.test(t)) {
+    return false;
+  }
+  return true;
+}
+
 /** Same normalized text copied across dimensions — semantic copy FAIL. */
 export function isSemanticCopy(a: string, b: string): boolean {
   const na = a.trim().replace(/\s+/g, ' ');

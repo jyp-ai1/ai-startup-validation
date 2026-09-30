@@ -14,7 +14,7 @@ import {
   type JudgmentEvidenceRecord,
 } from './ai-pm-judgment-evidence-model';
 import { renderProblemStructuredReview } from './ai-pm-judgment-structured-review';
-import { isSemanticCopy } from './ai-pm-judgment-target-binding';
+import { isProblemPainAnswer, isSemanticCopy } from './ai-pm-judgment-target-binding';
 import { isAiPmJudgmentFix9V1Active } from './ai-pm-judgment-fix9-v1';
 import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 import { extractProblemPrimaryText } from './ai-pm-judgment-problem-primary';
@@ -206,6 +206,15 @@ export function mergeCanonicalCustomer(
     ? summarizeCustomerCorrection(input.fullAnswer ?? input.evidence)
     : input.conclusion;
   const evidence = input.evidence.trim();
+
+  if (
+    !input.isCorrection &&
+    prior.summary.trim() &&
+    prior.status !== 'unknown' &&
+    isProblemPainAnswer(conclusion)
+  ) {
+    return prior;
+  }
 
   if (
     isAiPmJudgmentFix9V1Active() &&
