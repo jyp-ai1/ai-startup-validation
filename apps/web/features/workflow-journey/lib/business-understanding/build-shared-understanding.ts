@@ -13,6 +13,7 @@ import {
   looksLikeDocumentFileName,
 } from './workspace-document-eligibility';
 import { parseIntakeSeedDocument } from '@/lib/project/parse-intake-seed';
+import type { WorkspaceDomainEvidence } from '../workspace-ai-pm-messages';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 /** S8-1 — always-on contract: business · customer · problem only. */
@@ -31,6 +32,21 @@ export type WorkspaceUnderstandingSpine = WorkspaceSharedUnderstanding & {
 };
 
 export const SHARED_UNDERSTANDING_PENDING = '아직 확인 중';
+
+/** P0-2A — workspace domain evidence overrides pending spine fields after founder edit. */
+export function mergeWorkspaceDomainIntoSharedUnderstanding(
+  spine: WorkspaceSharedUnderstanding,
+  domain?: WorkspaceDomainEvidence | null,
+): WorkspaceSharedUnderstanding {
+  if (!domain) return spine;
+  const business = domain.business.trim();
+  const customer = domain.customer.trim();
+  return {
+    business: business || spine.business,
+    customer: customer || spine.customer,
+    problem: spine.problem,
+  };
+}
 
 export const SHARED_UNDERSTANDING_UNREADABLE_BUSINESS =
   '아직 문서에서 사업 내용을 충분히 이해하지 못했습니다';
@@ -272,6 +288,7 @@ export function buildUnderstandingSpine(input: {
   entities: LaunchLensDomainContext | null;
   understandingPhase?: UnderstandingPhase;
   memory?: ConversationMemory | null;
+  domain?: WorkspaceDomainEvidence | null;
 }): WorkspaceUnderstandingSpine | null {
   const text = input.documentText.trim();
   if (text.length < 8 || !input.understanding) return null;
@@ -292,15 +309,31 @@ export function buildUnderstandingSpine(input: {
   );
   const problem = resolveProblemField(input.turns, input.understanding, input.memory);
 
+  let businessValue = business.value;
+  let customerValue = customer.value;
+  let businessProv = business.provenance;
+  let customerProv = customer.provenance;
+
+  const domainBusiness = input.domain?.business.trim() ?? '';
+  const domainCustomer = input.domain?.customer.trim() ?? '';
+  if (domainBusiness) {
+    businessValue = truncate(domainBusiness, 48);
+    businessProv = 'USER_CORRECTED';
+  }
+  if (domainCustomer) {
+    customerValue = truncate(domainCustomer, 48);
+    customerProv = 'USER_CORRECTED';
+  }
+
   const provenance = {
-    business: business.provenance,
-    customer: customer.provenance,
+    business: businessProv,
+    customer: customerProv,
     problem: problem.provenance,
   } as const;
 
   return {
-    business: business.value,
-    customer: customer.value,
+    business: businessValue,
+    customer: customerValue,
     problem: problem.value,
     provenance,
     confidence: {
@@ -309,8 +342,8 @@ export function buildUnderstandingSpine(input: {
       problem: confidenceFromProvenance(provenance.problem),
     },
     marks: {
-      business: markFor(business.value, provenance.business),
-      customer: markFor(customer.value, provenance.customer),
+      business: markFor(businessValue, provenance.business),
+      customer: markFor(customerValue, provenance.customer),
       problem: markFor(problem.value, provenance.problem),
     },
   };
@@ -324,6 +357,7 @@ export function buildSharedUnderstanding(input: {
   entities: LaunchLensDomainContext | null;
   understandingPhase?: UnderstandingPhase;
   memory?: ConversationMemory | null;
+  domain?: WorkspaceDomainEvidence | null;
 }): WorkspaceSharedUnderstanding | null {
   const spine = buildUnderstandingSpine(input);
   if (!spine) return null;
