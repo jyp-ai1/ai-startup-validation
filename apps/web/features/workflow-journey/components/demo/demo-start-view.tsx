@@ -266,6 +266,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
               사업 문서 붙여넣기
             </span>
             <textarea
+              data-testid="demo-my-business-document"
               value={customDocument}
               onChange={(event) => {
                 setCustomDocument(event.target.value);
