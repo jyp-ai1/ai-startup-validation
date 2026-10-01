@@ -8,10 +8,7 @@ import { cn } from '@repo/ui/lib/utils';
 
 import { buildDocumentFirstDraft } from '../../lib/business-understanding/build-document-first-draft';
 import { founderFieldLabel } from '../../lib/business-understanding/founder-field-labels';
-import {
-  gapCeoSurfaceKind,
-  gapCeoSurfaceLabel,
-} from '../../lib/business-understanding/gap-ceo-surface-label';
+import { formatGapCeoSurfaceLine } from '../../lib/business-understanding/gap-state-ceo-surface';
 import { whyNowForGapField } from '../../lib/business-understanding/living-understanding-state';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
 
@@ -107,8 +104,10 @@ export function WorkspaceEvidenceReviewStrip({
           <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
             {draft.gapFieldIds.map((gapId) => (
               <li key={gapId}>
-                {founderFieldLabel(gapId)} —{' '}
-                {gapCeoSurfaceLabel(gapCeoSurfaceKind('OPEN'))}
+                {formatGapCeoSurfaceLine({
+                  gapLabel: founderFieldLabel(gapId),
+                  record: { completeness: 'OPEN' },
+                })}
               </li>
             ))}
           </ul>
