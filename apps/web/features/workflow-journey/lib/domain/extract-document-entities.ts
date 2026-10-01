@@ -110,13 +110,27 @@ function extractBusinessName(text: string): DomainEntityField {
   return { value: null, basis: 'unknown', excerpt: null };
 }
 
+function hasExplicitCustomerSection(text: string): boolean {
+  return text.split('\n').some((line) => {
+    const lower = line.toLowerCase();
+    return ['타겟', '타깃', '고객', 'customer', 'target', '주요 고객', '대상'].some((k) =>
+      lower.includes(k),
+    );
+  });
+}
+
 function extractCustomer(
   text: string,
   model: BusinessModel | null,
   founder: DomainEntityField,
 ): DomainEntityField {
   const lower = text.toLowerCase();
-  if (lower.includes('양조장') && !lower.includes('타겟') && !lower.includes('관광객')) {
+  if (
+    lower.includes('양조장') &&
+    !lower.includes('타겟') &&
+    !lower.includes('관광객') &&
+    !hasExplicitCustomerSection(text)
+  ) {
     return { value: null, basis: 'unknown', excerpt: null };
   }
 
@@ -127,7 +141,11 @@ function extractCustomer(
     // Never treat AI PM section headers as customer values (정의] pollution)
     if (/^\[AI\s*PM\s*확인/i.test(line)) continue;
     const lower = line.toLowerCase();
-    if (['타겟', '타깃', '고객', 'customer', 'target', '주요 고객'].some((k) => lower.includes(k))) {
+    if (
+      ['타겟', '타깃', '고객', 'customer', 'target', '주요 고객', '대상'].some((k) =>
+        lower.includes(k),
+      )
+    ) {
       raw = line;
       rawLine = line;
       break;
@@ -135,7 +153,7 @@ function extractCustomer(
   }
 
   const candidate = raw
-    .replace(/^(.*?)(타겟\s*고객|타겟|타깃|고객|customer|target)[\s:：]*/i, '')
+    .replace(/^(.*?)(타겟\s*고객|타겟|타깃|고객|customer|target|대상)[\s:：]*/i, '')
     .replace(/^정의\]\s*/i, '')
     .replace(/^\[.*?\]\s*/g, '')
     .trim();

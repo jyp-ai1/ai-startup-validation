@@ -72,6 +72,9 @@ import { evaluateFinalIntegrityGate } from '../../lib/business-understanding/fin
 import { buildEmptyProjectConversationSeed } from '../../lib/business-understanding/build-empty-project-seed';
 import { buildSharedUnderstanding } from '../../lib/business-understanding/build-shared-understanding';
 import { reopenAiPmLoopForRefinement } from '../../lib/business-understanding/process-loop-answer';
+import { commitFirstAskAfterUnderstandingConfirm } from '../../lib/business-understanding/understanding-confirm-ask-transition';
+import { syncDemoCustomDocumentKey } from '../../lib/demo-guided-document-sync';
+import { DEMO_SESSION_PROJECT_ID } from '../../lib/demo-samples';
 import { applyUserCorrection } from '../../lib/business-understanding/correction-and-why';
 import {
   loadConversationMemory,
@@ -251,10 +254,34 @@ export function WorkspaceAiPmMain({
       onUnderstandingConfirmed?.();
       return;
     }
+
+    const doc = loadWorkspaceDocumentText(projectId) ?? documentContext ?? '';
+    const und = understanding ?? (doc.trim() ? buildBusinessUnderstanding(doc) : null);
+    if (und && doc.trim().length >= 8) {
+      commitFirstAskAfterUnderstandingConfirm({
+        projectId,
+        documentText: doc,
+        understanding: und,
+        entities,
+      });
+      setLoopState(loadAiPmLoopState(projectId));
+    }
+
+    if (showDemoLoginCta && projectId === DEMO_SESSION_PROJECT_ID) {
+      syncDemoCustomDocumentKey(projectId);
+    }
+
     saveUnderstandingPhase('accepted', projectId);
     setUnderstandingPhase('accepted');
     onUnderstandingConfirmed?.();
-  }, [onUnderstandingConfirmed, projectId]);
+  }, [
+    documentContext,
+    entities,
+    onUnderstandingConfirmed,
+    projectId,
+    showDemoLoginCta,
+    understanding,
+  ]);
 
   const scoreNarrative = useMemo(
     () =>
@@ -365,7 +392,10 @@ export function WorkspaceAiPmMain({
     if (projectId && enableDbPersistence) {
       void persistWorkspaceStateDbFirst({ projectId });
     }
-  }, [enableDbPersistence, onLoopDocumentUpdated, projectId]);
+    if (showDemoLoginCta && projectId === DEMO_SESSION_PROJECT_ID) {
+      syncDemoCustomDocumentKey(projectId);
+    }
+  }, [enableDbPersistence, onLoopDocumentUpdated, projectId, showDemoLoginCta]);
 
   const handleEditConfirmYes = useCallback(() => {
     // W8 + v2 — correction locks USER_CORRECTED; invalidate downstream turns/facts
@@ -439,6 +469,9 @@ export function WorkspaceAiPmMain({
     if (projectId && enableDbPersistence) {
       void persistWorkspaceStateDbFirst({ projectId });
     }
+    if (showDemoLoginCta && projectId === DEMO_SESSION_PROJECT_ID) {
+      syncDemoCustomDocumentKey(projectId);
+    }
     proceedAfterUnderstandingConfirm();
   }, [
     domain.business,
@@ -448,6 +481,7 @@ export function WorkspaceAiPmMain({
     enableDbPersistence,
     proceedAfterUnderstandingConfirm,
     projectId,
+    showDemoLoginCta,
   ]);
 
   const handleEditRevise = useCallback(() => {
