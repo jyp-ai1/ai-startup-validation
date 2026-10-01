@@ -13,6 +13,13 @@ describe('LS-2 slot accuracy — labeled customer lines', () => {
     expect(customer.value).toContain('치과');
   });
 
+  it('maps labeled 문제: line to product/problem signal', () => {
+    const text = '사업명: 테스트\n문제: 배송 누락이 잦음';
+    const { product } = extractDocumentEntities(text);
+    expect(product.value).toContain('배송');
+    expect(product.basis).toBe('document');
+  });
+
   it('does not invent customer when no customer line exists', () => {
     const text = '사업명: 테스트\n문제: 운영 비용';
     const { customer } = extractDocumentEntities(text);

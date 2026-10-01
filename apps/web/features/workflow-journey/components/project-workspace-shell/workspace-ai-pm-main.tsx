@@ -26,6 +26,7 @@ import {
 import { buildAiPmScoreNarrative } from '../../lib/build-ai-pm-score-narrative';
 import { buildEditUnderstandingSummary } from '../../lib/business-understanding/build-edit-understanding-summary';
 import { persistWorkspaceStateDbFirst } from '@/features/workspace/lib/sync-workspace-persistence';
+import { useWorkspacePersistFlush } from '@/features/workspace/hooks/use-workspace-persist-flush';
 import {
   loadUnderstandingConfirmMode,
   loadUnderstandingPhase,
@@ -66,6 +67,7 @@ import { WorkspaceNextStepPanel } from './workspace-next-step-panel';
 import { WorkspaceAnalysisResultPanel } from './workspace-analysis-result-panel';
 import { WorkspacePostReviewRoadmap } from './workspace-post-review-roadmap';
 import { WorkspaceProgressiveOverview } from './workspace-progressive-overview';
+import { WorkspaceEvidenceReviewStrip } from './workspace-evidence-review-strip';
 import { loadAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentAnalysisScreen } from '../../lib/business-understanding/present-analysis-screen';
 import { buildLivingUnderstandingState } from '../../lib/business-understanding/living-understanding-state';
@@ -192,6 +194,7 @@ export function WorkspaceAiPmMain({
   demoMyBusinessPreview = false,
   className,
 }: WorkspaceAiPmMainProps) {
+  useWorkspacePersistFlush(projectId, enableDbPersistence);
   const t = useTranslations('workflow.journey.workspaceShell.aiPmMain');
   const tPostReview = useTranslations('workflow.journey.workspaceShell.postReview');
   const [understandingPhase, setUnderstandingPhase] = useState<UnderstandingPhase>('pending');
@@ -708,6 +711,17 @@ export function WorkspaceAiPmMain({
       understanding &&
       shouldShowDemoMyBusinessPreview(projectId, understandingPhase) ? (
         <WorkspaceDemoMyBusinessPreview
+          understanding={understanding}
+          entities={entities}
+          projectId={projectId}
+        />
+      ) : null}
+
+      {!demoSamplePlayback &&
+      !demoMyBusinessPreview &&
+      understanding &&
+      isWorkspaceDocumentReadable(loadWorkspaceDocumentText(projectId) ?? '') ? (
+        <WorkspaceEvidenceReviewStrip
           understanding={understanding}
           entities={entities}
           projectId={projectId}
