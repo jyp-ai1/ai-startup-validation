@@ -1,0 +1,8 @@
+{
+  "runAt": "2026-10-01T09:36:58Z",
+  "gitSha": "26d296aa8e4b1ade0e46ce3b66c78446cb813028",
+  "testFiles": 9,
+  "testsPassed": 35,
+  "testsFailed": 0,
+  "command": "vitest run (ai-evaluation + demo + persistence + p0-3 + w12 + extraction)"
+}
