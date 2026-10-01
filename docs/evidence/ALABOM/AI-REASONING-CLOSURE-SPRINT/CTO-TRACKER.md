@@ -5,19 +5,15 @@
 **CPO verdict:** `CPO-1PASS-VERDICT-CLOSURE-2026-10-01.md`  
 **PR #62:** merged → `main` @ `b1c88cf` (2026-10-01).
 
-**Phase 2:** **진행 중** (CPO: `CPO-PHASE2-STATUS-2026-10-01.md`) · CEO TEST **HOLD** · E2E PASS ≠ Closure PASS.
+**Phase 2:** **OPEN / 작업 진행 중** · CEO TEST **HOLD** · Report **v2 미제출** · CPO **재 1-pass 전**.
 
-**Done @ `b1c88cf`:** #62 merge, SHA, reasoning-closure E2E, historical P0, Track G (🟡 scope).
+**Baseline SHA:** **`ed85d35`** (#63 merged) — regression + bundle evidence on file.
 
-**#63:** merged @ **`ed85d35`**. Phase 2 bundle **PASS** (`phase2-bundle-summary.json`) @ Production SHA match.
+**Track B:** gap CEO **UI** Production PASS (demo) ≠ Track B 전체 PASS. **Track D:** Production **미검증**.
 
-**Open:** Auth full journey, Track **D** Production judgment trace, Production **AI** eval (LLM), PDF/DOCX **binary** parity, Checklist, **Completion Report v2**, CPO 재 1-pass.
+**Open ladder:** Auth full journey → Track D authenticated → Production AI eval → PDF/DOCX binary → (#64 merge + SHA if needed) → Report v2 → CPO → CEO.
 
-**Track B Production:** gap surfaces **PASS** (demo path). **Track F:** paste smoke only.
-
-**PR:** [#64 pending] evidence scripts + bundle. **CEO TEST: HOLD**.
-
-**Ladder:** merge #63 → SHA → regression → Auth/B-D/E/F Production evidence → Report v2 → CPO → CEO GO/HOLD (`CPO-PHASE2-STATUS-2026-10-01.md`).
+**PR:** [#64](https://github.com/jyp-ai1/ai-startup-validation/pull/64) (bundle scripts + evidence). **전체 Closure PASS 승격 금지.**
 
 ## Tracks
 
