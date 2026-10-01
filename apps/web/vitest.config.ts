@@ -12,6 +12,7 @@ export default defineConfig({
       'lib/brand/**/__tests__/**/*.test.ts',
       'lib/project/**/__tests__/**/*.test.ts',
       'lib/intake/**/__tests__/**/*.test.ts',
+      'lib/ai-evaluation/**/__tests__/**/*.test.ts',
     ],
     testTimeout: 120_000,
   },
