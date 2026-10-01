@@ -16,6 +16,7 @@ type DemoSamplePlaybackBarProps = {
 
 export function DemoSamplePlaybackBar({ projectId, onAdvanced }: DemoSamplePlaybackBarProps) {
   const frame = currentDemoPlaybackFrame(projectId);
+  const visibleQuestion = frame?.presenter?.questionText?.trim();
   const atEnd = isDemoPlaybackAtTerminalFrame(projectId);
 
   const handleNext = () => {
@@ -31,6 +32,9 @@ export function DemoSamplePlaybackBar({ projectId, onAdvanced }: DemoSamplePlayb
     >
       <p className="text-xs font-semibold uppercase tracking-widest text-primary">Sample Playback</p>
       <p className="mt-1 text-sm font-medium">{frame?.stepLabel ?? '시나리오 재생'}</p>
+      {visibleQuestion ? (
+        <p className="mt-2 text-sm text-foreground">{visibleQuestion}</p>
+      ) : null}
       {frame?.presenter?.prefilledAnswerDisplay ? (
         <p className="mt-2 text-sm text-muted-foreground">
           확인된 답변: {frame.presenter.prefilledAnswerDisplay}

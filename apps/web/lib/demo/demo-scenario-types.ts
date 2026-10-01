@@ -41,6 +41,7 @@ export type DemoScenarioFrame = {
   surface: DemoScenarioSurface;
   workspaceSnapshot: WorkspacePersistedSnapshot;
   presenter?: {
+    targetGap?: string;
     understandingSummary?: string;
     questionText?: string;
     prefilledAnswerDisplay?: string;
