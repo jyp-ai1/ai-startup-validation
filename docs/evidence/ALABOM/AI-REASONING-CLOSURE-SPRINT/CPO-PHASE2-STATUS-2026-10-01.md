@@ -75,4 +75,4 @@ CEO TEST GO / HOLD
 | **작업 종료 (세션)** | Report v2 submitted |
 | **Closure CLOSED** | CPO re 1-pass + checklist + CEO GO |
 
-**Current label:** **작업 진행 중**
+**Current label (agent):** **작업 종료 (Report v2 제출)** — **Closure gate still OPEN** until CPO re 1-pass.
