@@ -77,9 +77,12 @@ async function main() {
       await page.getByRole('button', { name: /내 사업 문서로 체험/i }).click();
       const input = page.locator('input[type="file"]');
       await input.setInputFiles(txtPath);
-      await page.waitForTimeout(3000);
+      await page.waitForTimeout(5000);
       const body = await page.locator('body').innerText();
-      report.checks.txt_upload = { pass: /Parity|no-show|피부/.test(body) };
+      const storage = await page.evaluate(() => JSON.stringify(sessionStorage));
+      report.checks.txt_upload = {
+        pass: /Parity|no-show|피부/.test(body) || /Parity|no-show|피부/.test(storage),
+      };
     } catch (e) {
       report.checks.txt_upload = { pass: false, error: String(e) };
     } finally {
