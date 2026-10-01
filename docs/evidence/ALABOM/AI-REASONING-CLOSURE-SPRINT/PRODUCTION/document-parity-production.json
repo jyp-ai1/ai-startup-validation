@@ -1,0 +1,24 @@
+{
+  "checks": {
+    "paste_1000": {
+      "pass": true
+    },
+    "paste_3000": {
+      "pass": false,
+      "error": "TimeoutError: locator.waitFor: Timeout 45000ms exceeded.\nCall log:\n  - waiting for getByTestId('demo-my-business-document') to be visible\n"
+    },
+    "paste_5000": {
+      "pass": true
+    },
+    "txt_upload": {
+      "pass": false
+    },
+    "pdf_docx": {
+      "pass": false,
+      "status": "NOT_RUN",
+      "reason": "Binary PDF/DOCX semantic extraction on Production requires authenticated Trust Block path — not automated in demo-only pass."
+    }
+  },
+  "verdict": "FAIL",
+  "finishedAt": "2026-10-01T23:38:53.950Z"
+}

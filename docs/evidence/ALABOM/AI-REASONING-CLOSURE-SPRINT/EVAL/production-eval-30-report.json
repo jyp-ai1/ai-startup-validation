@@ -1,0 +1,25 @@
+{
+  "gitSha": "d60297222175d0f4f39623ab29a5b8c62a507553",
+  "productionCommit": "ed85d35cd3534d8ac730829ae25b8e00d6a7f64a",
+  "shaMatch": false,
+  "localHarness": {
+    "pass": true,
+    "scenarioTarget": 30,
+    "scenarioPackPresent": true,
+    "note": "Grounding extraction via vitest — not Production LLM pipeline."
+  },
+  "productionAiEval": {
+    "status": "NOT_RUN",
+    "reason": "No Production-safe batch LLM eval endpoint; per-scenario Production AI compare requires authenticated project loop or approved eval service."
+  },
+  "dimensions": {
+    "grounding": "PASS_LOCAL",
+    "slotAccuracy": "PASS_LOCAL",
+    "completeness": "NOT_RUN_PRODUCTION",
+    "gapAccuracy": "NOT_RUN_PRODUCTION",
+    "questionQuality": "NOT_RUN_PRODUCTION",
+    "reasoning": "NOT_RUN_PRODUCTION",
+    "actionability": "NOT_RUN_PRODUCTION"
+  },
+  "finishedAt": "2026-10-01T23:37:51.421Z"
+}
