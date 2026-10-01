@@ -5,8 +5,8 @@
 **CPO verdict:** `CPO-1PASS-VERDICT-CLOSURE-2026-10-01.md`  
 **PR #62:** merged → `main` @ `b1c88cf` (2026-10-01).
 
-**Phase 2 agent session:** **종료** (2026-10-01) — **Completion Report v2** submitted.  
-**Closure gate:** **OPEN** (CPO re 1-pass pending) · CEO TEST **HOLD**.
+**Phase 2 agent session:** **종료** — Report v2 submitted.  
+**CPO re 1-pass (2026-10-01):** **PARTIAL PASS / Closure OPEN / CEO HOLD** → `CPO-1PASS-VERDICT-CLOSURE-PHASE2-2026-10-01.md`
 
 **Baseline SHA:** **`ed85d35`** (#63 merged) — regression + bundle evidence on file.
 
