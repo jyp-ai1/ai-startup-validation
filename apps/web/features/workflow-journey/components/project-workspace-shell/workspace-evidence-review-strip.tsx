@@ -8,10 +8,7 @@ import { cn } from '@repo/ui/lib/utils';
 
 import { buildDocumentFirstDraft } from '../../lib/business-understanding/build-document-first-draft';
 import { founderFieldLabel } from '../../lib/business-understanding/founder-field-labels';
-import {
-  gapCeoSurfaceKind,
-  gapCeoSurfaceLabel,
-} from '../../lib/business-understanding/gap-ceo-surface-label';
+import { formatGapCeoSurfaceLine } from '../../lib/business-understanding/gap-state-ceo-surface';
 import { whyNowForGapField } from '../../lib/business-understanding/living-understanding-state';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
 
@@ -102,13 +99,18 @@ export function WorkspaceEvidenceReviewStrip({
       ) : null}
 
       {draft.gapFieldIds.length > 0 ? (
-        <div className="mt-3 rounded-lg border border-dashed border-primary/30 px-3 py-2">
+        <div
+          className="mt-3 rounded-lg border border-dashed border-primary/30 px-3 py-2"
+          data-testid="gap-ceo-surface-list"
+        >
           <p className="text-[11px] font-medium uppercase text-muted-foreground">아직 모르는 것</p>
           <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
             {draft.gapFieldIds.map((gapId) => (
-              <li key={gapId}>
-                {founderFieldLabel(gapId)} —{' '}
-                {gapCeoSurfaceLabel(gapCeoSurfaceKind('OPEN'))}
+              <li key={gapId} data-testid="gap-ceo-surface-line">
+                {formatGapCeoSurfaceLine({
+                  gapLabel: founderFieldLabel(gapId),
+                  record: { completeness: 'OPEN' },
+                })}
               </li>
             ))}
           </ul>

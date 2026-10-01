@@ -8,6 +8,8 @@ import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-doma
 import { cn } from '@repo/ui/lib/utils';
 
 import { buildDocumentFirstDraft } from '../../lib/business-understanding/build-document-first-draft';
+import { founderFieldLabel } from '../../lib/business-understanding/founder-field-labels';
+import { formatGapCeoSurfaceLine } from '../../lib/business-understanding/gap-state-ceo-surface';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
 import { WorkspaceDemoLoginCta } from '../project-workspace-shell/workspace-demo-login-cta';
 
@@ -108,12 +110,25 @@ export function WorkspaceDemoMyBusinessPreview({
       ) : null}
 
       {draft && draft.gapFieldIds.length > 0 ? (
-        <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3">
+        <div
+          className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3"
+          data-testid="gap-ceo-surface-list"
+        >
           <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
             추가로 확인이 필요한 내용
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {draft.gapFieldIds.join(' · ')} — 로그인 후 AI PM이 이어서 질문합니다.
+          <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+            {draft.gapFieldIds.map((gapId) => (
+              <li key={gapId} data-testid="gap-ceo-surface-line">
+                {formatGapCeoSurfaceLine({
+                  gapLabel: founderFieldLabel(gapId),
+                  record: { completeness: 'OPEN' },
+                })}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs text-muted-foreground">
+            로그인 후 AI PM이 이어서 질문합니다.
           </p>
         </div>
       ) : null}
