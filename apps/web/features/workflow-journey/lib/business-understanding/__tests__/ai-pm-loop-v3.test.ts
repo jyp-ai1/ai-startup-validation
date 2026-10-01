@@ -1286,16 +1286,16 @@ describe('PR6 — hydrate / remount / CEO 6 surfaces (AC1–AC7)', () => {
     expect(surfaces.nextQuestion).toBeTruthy();
   });
 
-  it('AC4: surface ⑤ order actionRationale → whyNow → questionText', () => {
-    const decision = sampleLastDecision();
-    const lines = renderSurfaceFiveLines({
-      actionRationale: decision.actionRationale,
-      whyNow: decision.whyNow,
-      questionText: decision.questionText,
+  it('AC4: surface ⑤ order actionRationale → whyNow → decisionImpact → questionText', () => {
+    const surfaces = buildCeoSixSurfaces({
+      lastTurn: null,
+      lastDecision: sampleLastDecision(),
     });
-    expect(lines[0]).toBe(decision.actionRationale);
-    expect(lines[1]).toBe(decision.whyNow);
-    expect(lines[2]).toBe(decision.questionText);
+    const lines = renderSurfaceFiveLines(surfaces.whyAsk);
+    expect(lines[0]).toBe(surfaces.whyAsk.actionRationale);
+    expect(lines[1]).toBe(surfaces.whyAsk.whyNow);
+    expect(lines[2]).toBe(surfaces.whyAsk.decisionImpactHint);
+    expect(lines[lines.length - 1]).toBe(surfaces.whyAsk.questionText);
   });
 
   it('AC5: no user exposure of targetGapId/reviewId/score/engine metadata', () => {

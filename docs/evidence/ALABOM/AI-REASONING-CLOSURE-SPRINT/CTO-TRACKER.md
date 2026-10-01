@@ -8,12 +8,12 @@
 
 | Track | Scope | Status |
 |-------|--------|--------|
-| A | Production closure (MB-A, auth journey, P0 browser, SHA) | 🔵 MB-A E2E PASS @ `d38634c` (2026-10-01) |
-| B | Gap intelligence (taxonomy, priority, reopen) | ⬜ |
-| C | Question intelligence | ⬜ |
+| A | Production closure (MB-A, auth journey, P0 browser, SHA) | 🔵 Gate1 + historical P0 PASS @ `18e7393` (2026-10-01); auth full journey ⬜ |
+| B | Gap intelligence (taxonomy, priority, reopen) | 🟡 CEO surface labels @ PR #61 |
+| C | Question intelligence | 🟡 `explainNextQuestionForCeo` + surface ⑤ impact hint |
 | D | Judgment intelligence | ⬜ |
-| E | Evaluation 5→20→30 | ⬜ |
-| F | Long document semantic parity | ⬜ |
-| G | Final UX flow strip | ⬜ |
+| E | Evaluation 5→20→30 | 🟡 30 scenarios (pack3) + harness |
+| F | Long document semantic parity | 🟡 char-length parity tests @ PR #61 |
+| G | Final UX flow strip | 🟡 evidence review “왜 중요한가” @ PR #61 |
 
 **V3 SoT:** frozen unless Stop Condition.

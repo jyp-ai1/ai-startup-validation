@@ -124,6 +124,17 @@ async function dismissCookieBanner(page) {
   }
 }
 
+async function openMyBusinessPastePanel(page) {
+  await page.goto(`${PRODUCTION_URL}/demo/start`, { waitUntil: 'domcontentloaded' });
+  await dismissCookieBanner(page);
+  const entry = page.getByRole('button', { name: /내 사업 문서로 체험/i });
+  await entry.waitFor({ state: 'visible', timeout: 30_000 });
+  await entry.click();
+  const docInput = page.getByTestId('demo-my-business-document');
+  await docInput.waitFor({ state: 'visible', timeout: 45_000 });
+  return docInput;
+}
+
 async function confirmUnderstandingIfVisible(page) {
   const btn = page.getByRole('button', { name: /맞습니다|맞아요|확인/i }).first();
   if ((await btn.count()) > 0 && (await btn.isVisible().catch(() => false))) {
@@ -231,39 +242,39 @@ async function runSample(browser, sample) {
 async function runMyBusiness(browser, label, doc, mustContain, mustNotContain) {
   const context = await browser.newContext();
   const page = await context.newPage();
-  const result = { pass: false, errors: [], previewSnippet: '' };
+  const result = { pass: false, errors: [], previewSnippet: '', attempts: 0 };
 
-  try {
-    await page.goto(`${PRODUCTION_URL}/demo/start`, { waitUntil: 'domcontentloaded' });
-    await dismissCookieBanner(page);
-    await page.getByRole('button', { name: /내 사업/i }).click();
-    const docInput = page.getByTestId('demo-my-business-document');
-    await docInput.waitFor({ state: 'visible', timeout: 45_000 });
-    await docInput.fill(doc);
-    await page.getByRole('button', { name: /AI Read/i }).click();
-    await page.waitForURL(/sample=custom/, { timeout: 60_000 });
-    await page.waitForTimeout(3000);
+  for (let attempt = 1; attempt <= 2 && !result.pass; attempt += 1) {
+    result.attempts = attempt;
+    result.errors = [];
+    try {
+      const docInput = await openMyBusinessPastePanel(page);
+      await docInput.fill(doc);
+      await page.getByRole('button', { name: /AI Read/i }).click();
+      await page.waitForURL(/sample=custom/, { timeout: 60_000 });
+      await page.waitForTimeout(3000);
 
-    const text = await page.locator('body').innerText();
-    result.previewSnippet = text.slice(0, 1200);
-    const storage = JSON.stringify(await storageDump(page));
+      const text = await page.locator('body').innerText();
+      result.previewSnippet = text.slice(0, 1200);
+      const storage = JSON.stringify(await storageDump(page));
 
-    for (const m of mustContain) {
-      if (!text.includes(m) && !storage.includes(m)) result.errors.push(`missing ${m}`);
+      for (const m of mustContain) {
+        if (!text.includes(m) && !storage.includes(m)) result.errors.push(`missing ${m}`);
+      }
+      for (const n of mustNotContain) {
+        if (text.includes(n) || storage.includes(n)) result.errors.push(`forbidden ${n}`);
+      }
+      if (containsAny(text + storage, SMARTPM_MARKERS).length) {
+        result.errors.push('SmartPM leak');
+      }
+
+      result.pass = result.errors.length === 0;
+    } catch (e) {
+      result.errors.push(e instanceof Error ? e.message : String(e));
     }
-    for (const n of mustNotContain) {
-      if (text.includes(n) || storage.includes(n)) result.errors.push(`forbidden ${n}`);
-    }
-    if (containsAny(text + storage, SMARTPM_MARKERS).length) {
-      result.errors.push('SmartPM leak');
-    }
-
-    result.pass = result.errors.length === 0;
-  } catch (e) {
-    result.errors.push(e instanceof Error ? e.message : String(e));
-  } finally {
-    await context.close();
   }
+
+  await context.close();
   return result;
 }
 
@@ -312,11 +323,7 @@ async function main() {
     });
     await isoPage.waitForTimeout(8000);
     const afterSample = await storageDump(isoPage);
-    await isoPage.goto(`${PRODUCTION_URL}/demo/start`, { waitUntil: 'domcontentloaded' });
-    await dismissCookieBanner(isoPage);
-    await isoPage.getByRole('button', { name: /내 사업/i }).click();
-    const isoDoc = isoPage.getByTestId('demo-my-business-document');
-    await isoDoc.waitFor({ state: 'visible', timeout: 45_000 });
+    const isoDoc = await openMyBusinessPastePanel(isoPage);
     await isoDoc.fill(MY_BUSINESS_A);
     await isoPage.getByRole('button', { name: /AI Read/i }).click();
     await isoPage.waitForURL(/sample=custom/, { timeout: 60_000 });

@@ -1,0 +1,16 @@
+{
+  "checks": {
+    "smartPmMyBusiness": {
+      "pass": true,
+      "bad": [],
+      "clinicInStorage": false
+    },
+    "sampleToMyBusinessIsolation": {
+      "pass": true,
+      "mbDocSnippet": "사업명: P0 회귀 QA\n고객: 테스트 F&B 사장\n문제: 홍보 시간 부족\n수익: 월 구독",
+      "legacySampleKeysCoexist": true
+    }
+  },
+  "verdict": "PASS",
+  "finishedAt": "2026-10-01T13:38:31.276Z"
+}

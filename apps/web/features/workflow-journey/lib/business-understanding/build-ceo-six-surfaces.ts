@@ -7,16 +7,19 @@ import type { AnswerReview } from '@repo/types/domain/answer-review';
 import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
 
 import type { NextQuestionDecision } from './decide-next-question-from-review';
+import { explainNextQuestionForCeo } from './explain-next-question-for-ceo';
 import { founderFieldLabel } from './founder-field-labels';
 import type { LockedAskSurface } from './question-transition-lock';
 import { resolveRemountAskSurface } from './resolve-remount-ask-surface';
 import { isGapAskable } from './update-gap-state-from-review';
 import type { AiPmLoopState, AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
-/** Surface ⑤ internal order: actionRationale → whyNow → questionText */
+/** Surface ⑤ internal order: actionRationale → whyNow → decisionImpact → questionText */
 export type CeoSurfaceFive = {
   actionRationale: string;
   whyNow: string;
+  /** Track C — decision impact (no internal scores). */
+  decisionImpactHint: string;
   questionText: string;
 };
 
@@ -246,7 +249,10 @@ function buildSurfaceFive(input: {
     lockedAskSurface?.questionText?.trim() ||
     '';
 
-  return { actionRationale, whyNow, questionText };
+  const decisionImpactHint =
+    lastDecision != null ? explainNextQuestionForCeo(lastDecision).decisionImpactHint : '';
+
+  return { actionRationale, whyNow, decisionImpactHint, questionText };
 }
 
 /** Build CEO 6 surfaces from persisted loop artifacts (post-answer UX). */
@@ -282,7 +288,10 @@ export function buildCeoSixSurfaces(input: {
 
 /** Surface ⑤ render lines in frozen order (S14 §7). */
 export function renderSurfaceFiveLines(whyAsk: CeoSurfaceFive): string[] {
-  return [whyAsk.actionRationale, whyAsk.whyNow, whyAsk.questionText].filter(
-    (line) => line.trim().length > 0,
-  );
+  return [
+    whyAsk.actionRationale,
+    whyAsk.whyNow,
+    whyAsk.decisionImpactHint,
+    whyAsk.questionText,
+  ].filter((line) => line.trim().length > 0);
 }

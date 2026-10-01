@@ -8,6 +8,7 @@ export type AiEvalScenario = {
 };
 
 import { AI_EVAL_SCENARIOS_PACK_2 } from './scenarios-pack-2';
+import { AI_EVAL_SCENARIOS_PACK_3 } from './scenarios-pack-3';
 
 const AI_EVAL_SCENARIOS_CORE: AiEvalScenario[] = [
   {
@@ -62,8 +63,9 @@ const AI_EVAL_SCENARIOS_CORE: AiEvalScenario[] = [
   },
 ];
 
-/** Track E — 20 scenarios (5 core + 15 pack). */
+/** Track E — 30 scenarios (5 core + 15 pack2 + 10 pack3). */
 export const AI_EVAL_SCENARIOS: AiEvalScenario[] = [
   ...AI_EVAL_SCENARIOS_CORE,
   ...AI_EVAL_SCENARIOS_PACK_2,
+  ...AI_EVAL_SCENARIOS_PACK_3,
 ];
