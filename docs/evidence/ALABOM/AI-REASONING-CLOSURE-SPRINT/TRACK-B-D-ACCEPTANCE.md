@@ -13,6 +13,8 @@
 
 **Not claimed:** engine taxonomy/priority/reopen policy changes (V3 SoT frozen).
 
+**Production (Track B):** `production-track-bd-browser.mjs` → `PRODUCTION/track-bd-production.json` (My Business demo path; **not** authenticated judgment loop).
+
 ## Track D — Judgment trace (CEO bundle)
 
 | Artifact | Path |

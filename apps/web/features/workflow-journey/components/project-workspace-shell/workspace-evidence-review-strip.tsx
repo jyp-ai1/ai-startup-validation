@@ -99,11 +99,14 @@ export function WorkspaceEvidenceReviewStrip({
       ) : null}
 
       {draft.gapFieldIds.length > 0 ? (
-        <div className="mt-3 rounded-lg border border-dashed border-primary/30 px-3 py-2">
+        <div
+          className="mt-3 rounded-lg border border-dashed border-primary/30 px-3 py-2"
+          data-testid="gap-ceo-surface-list"
+        >
           <p className="text-[11px] font-medium uppercase text-muted-foreground">아직 모르는 것</p>
           <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
             {draft.gapFieldIds.map((gapId) => (
-              <li key={gapId}>
+              <li key={gapId} data-testid="gap-ceo-surface-line">
                 {formatGapCeoSurfaceLine({
                   gapLabel: founderFieldLabel(gapId),
                   record: { completeness: 'OPEN' },
