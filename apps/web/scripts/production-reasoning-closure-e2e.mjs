@@ -44,4 +44,10 @@ execSync('node scripts/production-track-g-browser.mjs', {
   env,
 });
 
+execSync('node scripts/production-track-bd-browser.mjs', {
+  cwd: webRoot,
+  stdio: 'inherit',
+  env,
+});
+
 console.log(JSON.stringify({ bundle: 'reasoning-closure-e2e', commit, ok: true }));

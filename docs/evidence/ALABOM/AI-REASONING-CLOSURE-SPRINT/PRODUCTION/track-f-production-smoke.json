@@ -1,0 +1,7 @@
+{
+  "pasteIntakePass": true,
+  "binaryUploadTested": false,
+  "semanticParityPass": true,
+  "note": "semanticParityPass requires post-workspace entity check — OPEN for PDF/DOCX binary.",
+  "finishedAt": "2026-10-01T15:50:16.933Z"
+}
