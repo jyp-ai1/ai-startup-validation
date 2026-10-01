@@ -92,9 +92,13 @@ import {
   savePersistedReviewCount,
 } from '../../lib/demo-guided-session';
 import {
+  resolveDemoGuidedHydration,
+  shouldWipeDemoClientOnFresh,
+} from '../../lib/demo-guided-document-hydration';
+import { syncDemoCustomDocumentKey } from '../../lib/demo-guided-document-sync';
+import {
   DEMO_CUSTOM_DOCUMENT_KEY,
   DEMO_SESSION_PROJECT_ID,
-  getDemoSample,
   type DemoSampleId,
 } from '../../lib/demo-samples';
 
@@ -294,66 +298,94 @@ export function V2StrategyWorkspaceView({
     }
 
     if (isDemoGuided) {
-      const preservedCustomDocument =
-        demoSampleId === 'custom'
-          ? (typeof window !== 'undefined'
-              ? sessionStorage.getItem(DEMO_CUSTOM_DOCUMENT_KEY)?.trim()
-              : '')
+      const loopProgress = hasDemoAiPmLoopProgress(DEMO_SESSION_PROJECT_ID);
+      const storedDocument = loadWorkspaceDocumentText(storageProjectId)?.trim() ?? '';
+      const sessionCustom =
+        typeof window !== 'undefined'
+          ? sessionStorage.getItem(DEMO_CUSTOM_DOCUMENT_KEY)?.trim() ?? ''
           : '';
 
-      if (demoFresh && !hasDemoAiPmLoopProgress(DEMO_SESSION_PROJECT_ID)) {
+      const preservedCustomDocument =
+        demoSampleId === 'custom'
+          ? sessionCustom || storedDocument
+          : '';
+
+      if (
+        shouldWipeDemoClientOnFresh({
+          demoFresh,
+          hasLoopProgress: loopProgress,
+        })
+      ) {
         clearAllDemoClientState(DEMO_SESSION_PROJECT_ID);
         if (preservedCustomDocument) {
           sessionStorage.setItem(DEMO_CUSTOM_DOCUMENT_KEY, preservedCustomDocument);
+          saveWorkspaceDocumentText(preservedCustomDocument, storageProjectId);
         }
       }
 
       const customDocument =
         demoSampleId === 'custom'
-          ? (preservedCustomDocument ||
-              (typeof window !== 'undefined'
-                ? sessionStorage.getItem(DEMO_CUSTOM_DOCUMENT_KEY)?.trim()
-                : '') ||
-              loadWorkspaceDocumentText(storageProjectId)?.trim() ||
+          ? (sessionStorage.getItem(DEMO_CUSTOM_DOCUMENT_KEY)?.trim() ||
+              storedDocument ||
               '')
           : '';
 
-      const sample =
-        demoSampleId === 'custom'
-          ? {
-              projectName: (() => {
-                const first = customDocument.split('\n')[0]?.replace(/^[#\-\*]\s*/, '').trim() || '';
-                // S15 P0-1 — filename / placeholder heading ≠ business name
-                if (!first || looksLikeDocumentFileName(first) || looksLikeDocumentFileName(customDocument)) {
-                  return '내 사업 Demo';
-                }
-                // UX check ① — short header title; full seed stays in collapsible only
-                return deriveProjectName(first);
-              })(),
-              document: customDocument ?? '',
-            }
-          : getDemoSample(demoSampleId);
+      const phaseNow = loadUnderstandingPhase(storageProjectId);
+      const hydration = resolveDemoGuidedHydration({
+        demoSampleId,
+        demoFresh,
+        customDocumentFromSession: customDocument,
+        storedDocument: loadWorkspaceDocumentText(storageProjectId)?.trim() ?? '',
+        hasLoopProgress: loopProgress,
+        understandingPhase: phaseNow,
+      });
 
-      if (sample.document.trim().length < 8) {
-        if (demoSampleId === 'custom') {
-          setDemoProjectName('내 사업 Demo');
-          setReviewCount(0);
-          setPhase('compose');
-          setFollowUpDone(false);
-          setLastReviewAt(null);
-          refreshUnderstandingState();
-          return;
-        }
+      if (hydration.kind === 'redirect_demo_start') {
         window.location.assign('/demo/start');
         return;
       }
 
-      saveWorkspaceDocumentText(sample.document, storageProjectId);
-      const inferred = inferDomainFromPaste(sample.document, storageProjectId);
+      if (hydration.kind === 'compose_empty_custom') {
+        setDemoProjectName('내 사업 Demo');
+        setReviewCount(0);
+        setPhase('compose');
+        setFollowUpDone(false);
+        setLastReviewAt(null);
+        refreshUnderstandingState();
+        return;
+      }
+
+      if (hydration.kind === 'skip_reseed') {
+        syncDemoCustomDocumentKey(storageProjectId);
+        const doc = loadWorkspaceDocumentText(storageProjectId)?.trim() ?? '';
+        if (doc.length >= 8) {
+          const storedDomain = loadWorkspaceDomain(storageProjectId);
+          const storedEntities = loadWorkspaceEntities(storageProjectId);
+          if (storedDomain) setDomain(storedDomain);
+          if (storedEntities) setEntities(storedEntities);
+          if (!storedDomain) {
+            const inferred = inferDomainFromPaste(doc, storageProjectId);
+            setDomain(inferred.domain);
+            setEntities(inferred.entities);
+          }
+          setIdea(
+            storedDomain?.business?.trim() ||
+              inferDomainFromPaste(doc, storageProjectId).domain.business.trim() ||
+              deriveProjectName(doc),
+          );
+        }
+        refreshUnderstandingState();
+        return;
+      }
+
+      const { document: seedDoc, projectName } = hydration;
+      saveWorkspaceDocumentText(seedDoc, storageProjectId);
+      syncDemoCustomDocumentKey(storageProjectId);
+      const inferred = inferDomainFromPaste(seedDoc, storageProjectId);
       setDomain(inferred.domain);
       setEntities(inferred.entities);
-      setDemoProjectName(sample.projectName);
-      setIdea(sample.projectName);
+      setDemoProjectName(projectName);
+      setIdea(projectName);
       setOptional({
         problem: '',
         customer: '',
@@ -457,8 +489,9 @@ export function V2StrategyWorkspaceView({
       setDomain(inferred.domain);
       setEntities(inferred.entities);
       setIdea(inferred.domain.business.trim() || deriveProjectName(trimmed));
-      if (isDemoGuided && typeof window !== 'undefined') {
-        sessionStorage.setItem(DEMO_CUSTOM_DOCUMENT_KEY, trimmed);
+      if (isDemoGuided) {
+        saveWorkspaceDocumentText(trimmed, storageProjectId);
+        syncDemoCustomDocumentKey(storageProjectId);
       }
       clearAiPmLoopState(storageProjectId);
       saveUnderstandingPhase('pending', storageProjectId);

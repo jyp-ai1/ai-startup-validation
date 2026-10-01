@@ -279,6 +279,22 @@ function mapCustomerField(
 
 function extractProblem(text: string): UnderstandingField {
   const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i]!;
+    const labeled = line.match(
+      /^(?:[-*]\s*)?(?:문제|problem|pain|과제|핵심\s*문제)\s*[:\：]\s*(.+)$/i,
+    );
+    if (labeled?.[1]?.trim() && labeled[1].trim().length >= 2) {
+      const value = labeled[1].trim();
+      const expression = value.slice(0, 60).trim();
+      return toField(value.slice(0, 80), 'document', {
+        excerpt: value.slice(0, 120),
+        pageRef: lineToPageRef(i),
+        confirmedExpressions: [expression],
+      });
+    }
+  }
+
   const lineIndex = findLineIndex(lines, (l) => /문제|problem|pain|과제/i.test(l));
   if (lineIndex >= 0 && lines[lineIndex]!.length > 4) {
     const line = lines[lineIndex]!;
