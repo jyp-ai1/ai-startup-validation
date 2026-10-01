@@ -9,9 +9,13 @@
 
 **Done @ `b1c88cf`:** #62 merge, SHA, reasoning-closure E2E, historical P0, Track G (🟡 scope).
 
-**Open:** Auth full journey, Track B/D **Production** acceptance ( `4ba4197` = 준비만, PASS 승격 전 ), Production AI eval, PDF/DOCX parity, **#63 merge** → SHA → regression → Production evidence, Checklist, **Completion Report v2**, CPO 재 1-pass.
+**#63:** merged @ **`ed85d35`**. Phase 2 bundle **PASS** (`phase2-bundle-summary.json`) @ Production SHA match.
 
-**PR:** [#63](https://github.com/jyp-ai1/ai-startup-validation/pull/63) (Draft). **CEO TEST: HOLD** — 요청 없음.
+**Open:** Auth full journey, Track **D** Production judgment trace, Production **AI** eval (LLM), PDF/DOCX **binary** parity, Checklist, **Completion Report v2**, CPO 재 1-pass.
+
+**Track B Production:** gap surfaces **PASS** (demo path). **Track F:** paste smoke only.
+
+**PR:** [#64 pending] evidence scripts + bundle. **CEO TEST: HOLD**.
 
 **Ladder:** merge #63 → SHA → regression → Auth/B-D/E/F Production evidence → Report v2 → CPO → CEO GO/HOLD (`CPO-PHASE2-STATUS-2026-10-01.md`).
 

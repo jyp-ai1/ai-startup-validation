@@ -1,11 +1,11 @@
 {
   "kind": "ai-eval-matrix-local",
-  "commit": "b1c88cf1183c5d6b0582b6c4af906e4cc45cec37",
+  "commit": "ed85d35cd3534d8ac730829ae25b8e00d6a7f64a",
   "scenarioTarget": 30,
   "harnessFile": "lib/ai-evaluation/__tests__/ai-pm-scenario-harness.test.ts",
   "vitestPass": true,
-  "vitestTail": "\n RUN  v3.2.7 /workspace/apps/web\n\n ✓ lib/ai-evaluation/__tests__/ai-pm-scenario-harness.test.ts (31 tests) 40ms\n\n Test Files  1 passed (1)\n      Tests  31 passed (31)\n   Start at  15:27:25\n   Duration  801ms (transform 409ms, setup 0ms, collect 575ms, tests 40ms, environment 0ms, prepare 53ms)\n\n",
+  "vitestTail": "\n RUN  v3.2.7 /workspace/apps/web\n\n ✓ lib/ai-evaluation/__tests__/ai-pm-scenario-harness.test.ts (31 tests) 33ms\n\n Test Files  1 passed (1)\n      Tests  31 passed (31)\n   Start at  15:50:18\n   Duration  740ms (transform 379ms, setup 0ms, collect 519ms, tests 33ms, environment 0ms, prepare 45ms)\n\n",
   "productionEval": "NOT_RUN",
   "note": "Production AI eval requires deployed SHA + optional LLM; local harness = grounding + short conversation smoke.",
-  "finishedAt": "2026-10-01T15:27:26.261Z"
+  "finishedAt": "2026-10-01T15:50:18.840Z"
 }

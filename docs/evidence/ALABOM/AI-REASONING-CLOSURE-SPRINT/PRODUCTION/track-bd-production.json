@@ -1,0 +1,21 @@
+{
+  "trackB": {
+    "gapListVisible": {
+      "pass": true
+    },
+    "gapLineCount": 2,
+    "firstLineSnippet": "확인 항목 — 아직 확인되지 않음",
+    "ceoLabelPresent": {
+      "pass": true
+    },
+    "pass": true
+  },
+  "trackD": {
+    "judgmentTrace": {
+      "pass": false,
+      "reason": "Judgment trace Production check requires authenticated loop turn — not run on demo preview path."
+    }
+  },
+  "verdict": "PARTIAL",
+  "finishedAt": "2026-10-01T15:50:11.372Z"
+}

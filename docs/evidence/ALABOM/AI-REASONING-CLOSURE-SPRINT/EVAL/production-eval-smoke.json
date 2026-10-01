@@ -1,0 +1,10 @@
+{
+  "kind": "production-eval-smoke",
+  "gitSha": "ed85d35cd3534d8ac730829ae25b8e00d6a7f64a",
+  "productionCommit": "ed85d35cd3534d8ac730829ae25b8e00d6a7f64a",
+  "shaMatch": true,
+  "harnessPassAtGitSha": true,
+  "productionAiEval": "NOT_RUN",
+  "status": "PARTIAL",
+  "finishedAt": "2026-10-01T15:50:18.844Z"
+}

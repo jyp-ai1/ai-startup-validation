@@ -62,7 +62,13 @@ Production @ `b1c88cf`에서 입증된 범위:
 - Completion Report v2 — **미제출**
 - CPO 재 1-pass — **아직 전**
 
-**`4ba4197` Track B Production acceptance:** **구현/준비만** 기록. Production 실행 결과 **`track-bd-production.json` PASS** 전까지 Track B Production **PASS 승격 금지**.
+**#63:** merged → **`ed85d35`** · Git = Build = Production **PASS** (2026-10-01 bundle).
+
+**Track B Production:** `track-bd-production.json` — gap CEO surfaces **PASS** on My Business demo path; bundle verdict **PARTIAL** (Track D judgment trace not on this path).
+
+**Track F:** `track-f-production-smoke.json` — paste intake **PASS**; PDF/DOCX binary **OPEN** (not PASS for semantic parity gate).
+
+**Track E:** `production-eval-smoke.json` — **PARTIAL** (SHA + local harness; `productionAiEval: NOT_RUN`).
 
 **상태 변경 ladder (순서 고정):**
 
