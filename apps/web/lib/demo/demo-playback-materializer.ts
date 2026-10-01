@@ -34,7 +34,7 @@ import {
   pinDemoPlaybackAskSurface,
 } from './demo-playback-presenter';
 
-const FRAMES_CACHE_KEY = 'launchlens.demo.playback.frames.v2';
+const FRAMES_CACHE_KEY = 'launchlens.demo.playback.frames.v3';
 
 function framesCacheKey(projectId: string): string {
   return `${FRAMES_CACHE_KEY}.${projectId}`;
@@ -189,30 +189,30 @@ export function materializeDemoPlaybackFrames(bundle: DemoSeedBundle, projectId:
     });
 
     const nextGap = qaSteps[i + 1]?.targetGap;
-    if (nextGap) {
-      pinDemoPlaybackAskSurface(projectId, nextGap);
+    if (!nextGap) {
+      continue;
     }
+
+    pinDemoPlaybackAskSurface(projectId, nextGap);
     loop = loadAiPmLoopState(projectId);
 
     const displayQuestion =
-      nextGap != null
-        ? (canonicalPlaybackQuestionForGap(nextGap) ?? askedQuestionText)
-        : askedQuestionText;
+      canonicalPlaybackQuestionForGap(nextGap) ?? loop.lockedAskSurface?.questionText ?? askedQuestionText;
 
     frames.push(
       toFrame(
         frameIndex,
-        nextGap && (STAGE_B_REQUIRED_GAPS as readonly string[]).includes(nextGap)
-          ? `Stage B · ${i + 1}/${qaSteps.length}`
-          : `Stage A · ${i + 1}/${qaSteps.length}`,
+        (STAGE_B_REQUIRED_GAPS as readonly string[]).includes(nextGap)
+          ? `Stage B · ${i + 2}/${qaSteps.length}`
+          : `Stage A · ${i + 2}/${qaSteps.length}`,
         'question',
         projectId,
         'accepted',
         'next',
         {
-          targetGap: nextGap ?? step.targetGap,
+          targetGap: nextGap,
           questionText: displayQuestion,
-          prefilledAnswerDisplay: step.prefilledAnswerDisplay,
+          prefilledAnswerDisplay: qaSteps[i + 1]?.prefilledAnswerDisplay,
         },
       ),
     );
