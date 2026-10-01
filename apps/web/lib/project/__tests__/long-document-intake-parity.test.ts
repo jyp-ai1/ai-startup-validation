@@ -24,12 +24,12 @@ describe('Long Sprint LS-1 — long document intake parity', () => {
     expect(pastedContent).toContain('no-show 15~25%');
   });
 
-  it('extracts stable business signal from short vs long paste', () => {
+  it('extracts stable customer signal from short vs long paste', () => {
     const short = `사업명: 클리닉플로우\n${CORE}`;
     const long = `${short}\n\n${repeatBlock(20)}`;
-    const shortBiz = extractDocumentEntities(short).business.value ?? '';
-    const longBiz = extractDocumentEntities(long).business.value ?? '';
-    expect(shortBiz.length).toBeGreaterThan(2);
-    expect(longBiz).toBe(shortBiz);
+    const shortCustomer = extractDocumentEntities(short).customer.value ?? '';
+    const longCustomer = extractDocumentEntities(long).customer.value ?? '';
+    expect(shortCustomer.length).toBeGreaterThan(3);
+    expect(longCustomer).toBe(shortCustomer);
   });
 });
