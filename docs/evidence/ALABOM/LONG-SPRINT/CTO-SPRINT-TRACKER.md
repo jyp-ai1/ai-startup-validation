@@ -11,12 +11,12 @@
 | A | Demo Sample UX + probe fix | 🟢 integrated unit QA |
 | B | Sample data narrative consistency | 🟢 |
 | C | My Business Preview (input+doc, basis labels, cap) | 🟢 unit + hydration guards |
-| D | Demo data ops (JSON/registry, no risky DB rewrite) | ⬜ |
-| E | Production full journey vs V3 SoT map | ⬜ |
-| F | AI PM loop / A→B→A / CLOSED no re-ask | ⬜ (existing PR2 CLOSED tests) |
-| G | Judgment + Final Review UX | 🔵 vertical review stack (shell panels) |
-| H | UI truncation / layout | 🔵 same pass as G |
-| I | Regression matrix + Production E2E | ⬜ |
+| D | Demo data ops (JSON/registry, no risky DB rewrite) | 🟢 `demo-seed-registry` |
+| E | Production full journey vs V3 SoT map | 🟢 `V3-PRODUCTION-JOURNEY-MAP.md` |
+| F | AI PM loop / A→B→A / CLOSED no re-ask | 🟢 targeted unit regression |
+| G | Judgment + Final Review UX | 🟢 vertical review stack (shell panels) |
+| H | UI truncation / layout | 🟢 same pass as G |
+| I | Regression matrix + Production E2E | 🔵 `production-long-sprint-e2e.mjs` post-merge |
 
 ## Stop conditions (report only)
 
