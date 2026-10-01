@@ -14,8 +14,11 @@ const CEO_DOC = `사업명: 소상공인 매장 홍보 자동화 서비스
 해결방향: SNS 홍보 콘텐츠 자동 생성`;
 
 describe('P0-3A demo guided hydration', () => {
-  it('detects SmartPM preset literal', () => {
-    expect(isSmartPmSampleDocument(getDemoSample('saas').document)).toBe(true);
+  it('detects SmartPM preset literal (legacy guard only)', () => {
+    expect(isSmartPmSampleDocument(getDemoSample('clinicflow').document)).toBe(false);
+    expect(
+      isSmartPmSampleDocument(`스마트PM\n전략 검토가 회의마다 리셋됨`),
+    ).toBe(true);
     expect(isSmartPmSampleDocument(CEO_DOC)).toBe(false);
   });
 
@@ -59,7 +62,7 @@ describe('P0-3A demo guided hydration', () => {
     }
   });
 
-  it('still applies saas sample on fresh preset demo', () => {
+  it('applies seeded clinicflow sample on fresh preset demo (legacy saas alias)', () => {
     const decision = resolveDemoGuidedHydration({
       demoSampleId: 'saas',
       demoFresh: true,
@@ -70,7 +73,8 @@ describe('P0-3A demo guided hydration', () => {
     });
     expect(decision.kind).toBe('apply_sample');
     if (decision.kind === 'apply_sample') {
-      expect(isSmartPmSampleDocument(decision.document)).toBe(true);
+      expect(decision.document).toContain('클리닉플로우');
+      expect(isSmartPmSampleDocument(decision.document)).toBe(false);
     }
   });
 
