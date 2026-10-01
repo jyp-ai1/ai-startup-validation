@@ -50,3 +50,31 @@ Production @ `b1c88cf`에서 입증된 범위:
 | **Closure CLOSED** | CPO 재 1-pass + checklist + CEO GO 조건 충족 |
 
 **Current label:** **작업 진행 중**
+
+---
+
+## CPO 고정 (2026-10-01) — 상태 변경 기준
+
+**유지:**
+
+- Closure Phase 2 — **OPEN** / **작업 진행 중**
+- CEO TEST — **HOLD**
+- Completion Report v2 — **미제출**
+- CPO 재 1-pass — **아직 전**
+
+**`4ba4197` Track B Production acceptance:** **구현/준비만** 기록. Production 실행 결과 **`track-bd-production.json` PASS** 전까지 Track B Production **PASS 승격 금지**.
+
+**상태 변경 ladder (순서 고정):**
+
+```text
+#63
+ ↓ merge
+ ↓ Git = Build = Production SHA
+ ↓ Production regression
+ ↓ Auth / B-D / E / F 실제 Production evidence
+ ↓ Completion Report v2
+ ↓ CPO 재 1-pass
+ ↓ CEO TEST GO 또는 HOLD
+```
+
+**지금 CEO 테스트 요청 없음.** Phase 2 **OPEN** 유지.
