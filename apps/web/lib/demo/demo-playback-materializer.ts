@@ -6,10 +6,9 @@ import {
   appendLoopTurnWithReview,
   runLoopAnswerProcessing,
 } from '@/features/workflow-journey/lib/business-understanding/process-loop-answer';
-import { isNextQuestionDecision } from '@/features/workflow-journey/lib/business-understanding/decide-next-question-from-review';
 import { resolveNextQuestionDecision } from '@/features/workflow-journey/lib/business-understanding/resolve-next-question-decision';
 import { commitFirstAskAfterUnderstandingConfirm } from '@/features/workflow-journey/lib/business-understanding/understanding-confirm-ask-transition';
-import { captureLockedAskSurface } from '@/features/workflow-journey/lib/business-understanding/question-transition-lock';
+import { STAGE_B_REQUIRED_GAPS } from '@/features/workflow-journey/lib/business-understanding/evaluate-stage-readiness';
 import { syncJudgmentAfterAnswer } from '@/features/workflow-journey/lib/business-understanding/ai-pm-judgment-loop-sync';
 import { openBusinessReview } from '@/features/workflow-journey/lib/business-understanding/ai-pm-judgment-loop-sync';
 import {
@@ -30,8 +29,12 @@ import type { WorkspacePersistedSnapshot } from '@/lib/project/workspace-persist
 
 import type { DemoScenarioFrame, DemoSeedBundle } from './demo-scenario-types';
 import { demoSeedQaSteps } from './demo-seed-qa';
+import {
+  canonicalPlaybackQuestionForGap,
+  pinDemoPlaybackAskSurface,
+} from './demo-playback-presenter';
 
-const FRAMES_CACHE_KEY = 'launchlens.demo.playback.frames.v1';
+const FRAMES_CACHE_KEY = 'launchlens.demo.playback.frames.v2';
 
 function framesCacheKey(projectId: string): string {
   return `${FRAMES_CACHE_KEY}.${projectId}`;
@@ -109,10 +112,15 @@ export function materializeDemoPlaybackFrames(bundle: DemoSeedBundle, projectId:
     entities: inferred.entities,
   });
 
+  pinDemoPlaybackAskSurface(projectId, qaSteps[0]!.targetGap);
   let loop = loadAiPmLoopState(projectId);
-  const firstQ = loop.lockedAskSurface?.questionText ?? loop.lastDecision?.questionText;
+  const firstQ =
+    canonicalPlaybackQuestionForGap(qaSteps[0]!.targetGap) ??
+    loop.lockedAskSurface?.questionText ??
+    loop.lastDecision?.questionText;
   frames.push(
-    toFrame(1, '첫 질문', 'question', projectId, 'accepted', 'next', {
+    toFrame(1, 'Stage A · 사업 한 줄', 'question', projectId, 'accepted', 'next', {
+      targetGap: qaSteps[0]!.targetGap,
       questionText: firstQ ?? undefined,
       prefilledAnswerDisplay: qaSteps[0]?.prefilledAnswerDisplay,
     }),
@@ -124,9 +132,9 @@ export function materializeDemoPlaybackFrames(bundle: DemoSeedBundle, projectId:
     const step = qaSteps[i]!;
     const binding = resolveGapQuestionBinding(step.targetGap);
     const askedQuestionText =
-      loop.lockedAskSurface?.questionText ??
-      loop.lastDecision?.questionText ??
+      canonicalPlaybackQuestionForGap(step.targetGap) ??
       binding?.questionText ??
+      loop.lockedAskSurface?.questionText ??
       '';
 
     const appliedAt = new Date(Date.now() + i * 1000).toISOString();
@@ -171,7 +179,7 @@ export function materializeDemoPlaybackFrames(bundle: DemoSeedBundle, projectId:
       memory,
     });
 
-    const decision = resolveNextQuestionDecision({
+    resolveNextQuestionDecision({
       living,
       turns: loop.turns,
       memory,
@@ -180,38 +188,30 @@ export function materializeDemoPlaybackFrames(bundle: DemoSeedBundle, projectId:
       persistLastDecision: true,
     });
 
-    if (decision && isNextQuestionDecision(decision)) {
-      const lock = captureLockedAskSurface({
-        issueId: decision.issueId,
-        targetGap: decision.targetGap,
-        questionText: decision.questionText,
-        whyNow: decision.whyNow,
-        rationale: decision.actionRationale,
-        score: decision.score,
-        fallbackIssueId: decision.issueId,
-      });
-      patchAiPmLoopState(
-        {
-          lockedAskSurface: lock,
-          lastDecision: decision,
-          phase: 'answer',
-          currentIssueId: decision.issueId,
-        },
-        projectId,
-      );
-      loop = loadAiPmLoopState(projectId);
+    const nextGap = qaSteps[i + 1]?.targetGap;
+    if (nextGap) {
+      pinDemoPlaybackAskSurface(projectId, nextGap);
     }
+    loop = loadAiPmLoopState(projectId);
+
+    const displayQuestion =
+      nextGap != null
+        ? (canonicalPlaybackQuestionForGap(nextGap) ?? askedQuestionText)
+        : askedQuestionText;
 
     frames.push(
       toFrame(
         frameIndex,
-        `확인 ${i + 1}/${qaSteps.length}`,
+        nextGap && (STAGE_B_REQUIRED_GAPS as readonly string[]).includes(nextGap)
+          ? `Stage B · ${i + 1}/${qaSteps.length}`
+          : `Stage A · ${i + 1}/${qaSteps.length}`,
         'question',
         projectId,
         'accepted',
         'next',
         {
-          questionText: askedQuestionText,
+          targetGap: nextGap ?? step.targetGap,
+          questionText: displayQuestion,
           prefilledAnswerDisplay: step.prefilledAnswerDisplay,
         },
       ),

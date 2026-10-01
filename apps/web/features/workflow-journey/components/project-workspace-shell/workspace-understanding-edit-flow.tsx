@@ -130,25 +130,25 @@ export function WorkspaceUnderstandingConfirmFlow({
       <p className="mt-3 text-[15px] font-medium leading-relaxed">{t('editConfirmLead')}</p>
       <dl
         data-testid="edit-understanding-confirm"
-        className="mt-4 grid gap-3 rounded-xl border border-border/60 bg-background/80 px-4 py-4 sm:grid-cols-3"
+        className="mt-4 space-y-3 rounded-xl border border-border/60 bg-background/80 px-4 py-4"
       >
-        <div>
+        <div className="min-w-0">
           <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             {ts('fields.business')}
           </dt>
-          <dd className="mt-1 text-sm font-medium">{summary.business}</dd>
+          <dd className="mt-1 break-words text-sm font-medium leading-relaxed">{summary.business}</dd>
         </div>
-        <div>
+        <div className="min-w-0 border-t border-border/40 pt-3">
           <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             {ts('fields.customer')}
           </dt>
-          <dd className="mt-1 text-sm font-medium">{summary.customer}</dd>
+          <dd className="mt-1 break-words text-sm font-medium leading-relaxed">{summary.customer}</dd>
         </div>
-        <div>
+        <div className="min-w-0 border-t border-border/40 pt-3">
           <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             {ts('fields.problem')}
           </dt>
-          <dd className="mt-1 text-sm font-medium">{summary.problem}</dd>
+          <dd className="mt-1 break-words text-sm font-medium leading-relaxed">{summary.problem}</dd>
         </div>
       </dl>
       <p className="mt-4 text-sm font-medium">{t('editConfirmQuestion')}</p>

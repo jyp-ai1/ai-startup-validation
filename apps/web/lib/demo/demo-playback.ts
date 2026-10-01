@@ -7,6 +7,7 @@ import {
 import { materializeDemoPlaybackFrames } from './demo-playback-materializer';
 import { getDemoSeedBundleByProjectId } from './seed';
 import type { DemoScenarioFrame } from './demo-scenario-types';
+import { applyDemoPlaybackPresenter } from './demo-playback-presenter';
 
 export function isDemoSamplePlaybackProject(projectId: string | undefined): boolean {
   return isDemoSampleProjectId(projectId);
@@ -28,6 +29,7 @@ export function resetDemoPlayback(projectId: string): void {
   if (typeof window === 'undefined') return;
   sessionStorage.removeItem(demoPlaybackFrameStorageKey(projectId));
   sessionStorage.removeItem(`launchlens.demo.playback.frames.v1.${projectId}`);
+  sessionStorage.removeItem(`launchlens.demo.playback.frames.v2.${projectId}`);
 }
 
 export function getDemoPlaybackFrames(projectId: string): DemoScenarioFrame[] {
@@ -38,6 +40,7 @@ export function getDemoPlaybackFrames(projectId: string): DemoScenarioFrame[] {
 
 export function applyDemoPlaybackFrame(projectId: string, frame: DemoScenarioFrame): void {
   applyWorkspaceSnapshotToCache(projectId, frame.workspaceSnapshot);
+  applyDemoPlaybackPresenter(projectId, frame);
 }
 
 export function initDemoSamplePlayback(projectId: string): DemoScenarioFrame | null {

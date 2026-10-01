@@ -15,7 +15,9 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUT_DIR = join(__dirname, '../../../docs/evidence/ALABOM/GATE1-PRODUCTION');
+const OUT_DIR =
+  process.env.EVIDENCE_OUT_DIR ??
+  join(__dirname, '../../../docs/evidence/ALABOM/GATE1-PRODUCTION');
 const PRODUCTION_URL =
   process.env.PRODUCTION_URL ?? 'https://ai-startup-validation-tau.vercel.app';
 const EXPECT_COMMIT_PREFIX =

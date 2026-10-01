@@ -28,6 +28,7 @@ import {
   type DemoProjectDraft,
 } from '../../lib/v2-demo-project-store';
 import { extractDocumentEntities } from '../../lib/domain/extract-document-entities';
+import { composeMyBusinessIntakeDocument } from '@/lib/demo/compose-my-business-intake';
 
 type DemoStartViewProps = {
   className?: string;
@@ -89,16 +90,23 @@ export function DemoStartView({ className }: DemoStartViewProps) {
   const [mode, setMode] = useState<'pick' | 'sample' | 'custom'>('pick');
   const [selectedSample, setSelectedSample] = useState<DemoSampleId>('clinicflow');
   const [customDocument, setCustomDocument] = useState('');
+  const [fileDocumentText, setFileDocumentText] = useState('');
   const [fileName, setFileName] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const canStartCustom = isWorkspaceDocumentAnalyzable(customDocument);
+  const composedIntake = composeMyBusinessIntakeDocument({
+    paste: customDocument,
+    fileText: fileDocumentText,
+    fileName,
+  });
+  const canStartCustom = isWorkspaceDocumentAnalyzable(composedIntake);
   const isPlaceholderDoc =
-    canStartCustom && detectWorkspaceDocumentPlaceholder(customDocument) != null;
-  const hasWeakPaste = customDocument.trim().length > 0 && !canStartCustom;
+    canStartCustom && detectWorkspaceDocumentPlaceholder(composedIntake) != null;
+  const hasWeakPaste =
+    (customDocument.trim().length > 0 || fileDocumentText.trim().length > 0) && !canStartCustom;
 
   const applyFileText = useCallback(async (file: File) => {
     setLoading(true);
@@ -111,7 +119,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
         setFileName(null);
         return;
       }
-      setCustomDocument(text);
+      setFileDocumentText(text);
       setFileName(file.name);
     } catch {
       setError('문서를 읽을 수 없습니다. TXT, PDF, DOCX를 사용해 주세요.');
@@ -295,7 +303,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
             <Button
               type="button"
               disabled={!canStartCustom || loading}
-              onClick={() => startDemoWorkspace('custom', customDocument)}
+              onClick={() => startDemoWorkspace('custom', composedIntake)}
             >
               AI Read 시작
               <ArrowRight className="ml-2 size-4" aria-hidden />
