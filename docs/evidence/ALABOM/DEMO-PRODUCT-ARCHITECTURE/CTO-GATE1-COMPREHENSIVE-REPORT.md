@@ -62,5 +62,12 @@
 
 ---
 
+---
+
+## F. Production DoD (CPO 2차 — 2026-10-01)
+
+- Merge **#52** → main `e68e3cc1771b41eb67915e10ae1c37604b05c6d0`
+- Browser E2E **PASS** — see `docs/evidence/ALABOM/GATE1-PRODUCTION/CPO-GATE1-PRODUCTION-EVIDENCE.md`
+
 **Next Autonomous Target**  
-Epic ALABOM Gate 1 · Production deploy + smoke · CPO 2차 · 다음 보고 08:00 KST
+CPO Gate 1 final verdict → CEO TEST GO/HOLD
