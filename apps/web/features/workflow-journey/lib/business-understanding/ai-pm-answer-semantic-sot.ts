@@ -144,7 +144,10 @@ function isCustomerDefinitionClause(clause: string): boolean {
   if (/실수를\s*줄|시간을\s*아낄|줄이고\s*시간/.test(clause)) {
     return false;
   }
-  if (/문제|놓치|재주문|불편|심각/.test(clause) && !/주\s*고객|포함|사장님|고객(?:입니다|이고)?/.test(clause)) {
+  if (
+    /문제|놓치|재주문|불편|심각|부족|어렵|못하고|인력|홍보(?:가|를)?\s*어렵/.test(clause) &&
+    !/주\s*고객|포함|사장님|고객(?:입니다|이고)?|타깃|타겟|대상/.test(clause)
+  ) {
     return false;
   }
   if (
@@ -173,10 +176,16 @@ function refineSolutionSegment(clause: string): string {
 }
 
 function isProblemDescriptionClause(clause: string): boolean {
-  return (
-    /(?:들은|들이|들의)/.test(clause) &&
-    /(?:모르|부족|못하고|알릴\s*방법|홍보|마케팅|어렵|불편|인력)/.test(clause)
-  );
+  const painCue = /(?:모르|부족|못하고|알릴\s*방법|홍보|마케팅|어렵|불편|인력)/.test(clause);
+  if (!painCue) return false;
+  if (/(?:들은|들이|들의)/.test(clause)) return true;
+  // P0-2C — "양조장은 … 부족/어렵" is pain, not customer persona
+  if (/^(?:[^,.;]{0,24}(?:은|는|이|가))\s/.test(clause) || /(?:은|는)\s/.test(clause)) {
+    if (!/(?:타깃|타겟|대상|주\s*고객|고객(?:입니다|이고))/.test(clause)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function isCustomerBenefitExpectation(text: string): boolean {
@@ -364,6 +373,18 @@ function extractSolutionEvidence(clauses: string[], trimmed: string): AnswerSema
 }
 
 function extractCustomerChangeEvidence(clauses: string[], trimmed: string): AnswerSemanticEvidence | null {
+  if (
+    /(?:줄(?:어|이|고|ㄴ|어듭)|단축|감소|아낄)/.test(trimmed) &&
+    /(?:홍보|SNS|노출|시간|불편|실수|누락|관리)/.test(trimmed)
+  ) {
+    return {
+      dimension: 'customerChange',
+      summary: clip(trimmed),
+      evidence: trimmed,
+      interpretedMeaning: 'CEO 답변 — 고객 체감 변화 evidence',
+      reason: dimensionReason('customerChange'),
+    };
+  }
   if (/가장\s*큰\s*변화|변화입니다/.test(trimmed)) {
     return {
       dimension: 'customerChange',
@@ -497,12 +518,30 @@ export function extractAnswerSemanticEvidences(answer: string): AnswerSemanticEx
 
   const collected: AnswerSemanticEvidence[] = [];
   const expectationAnswer = isCustomerBenefitExpectation(trimmed);
-  const customer = expectationAnswer ? null : extractCustomerEvidence(clauses, trimmed);
+  let customer = expectationAnswer ? null : extractCustomerEvidence(clauses, trimmed);
   const problem = expectationAnswer ? null : extractProblemEvidence(clauses, trimmed);
   const solution = expectationAnswer ? null : extractSolutionEvidence(clauses, trimmed);
 
+  if (customer && problem && isSemanticCopy(customer.summary, problem.summary)) {
+    customer = null;
+  }
+  if (customer && problem && isProblemDescriptionClause(trimmed)) {
+    customer = null;
+  }
+
+  const changeFromAnswer = extractCustomerChangeEvidence(clauses, trimmed);
+
   if (customer) collected.push(customer);
-  if (problem) collected.push(problem);
+  if (
+    problem &&
+    !(
+      changeFromAnswer &&
+      (isSemanticCopy(problem.summary, changeFromAnswer.summary) ||
+        changeFromAnswer.evidence.includes(problem.evidence))
+    )
+  ) {
+    collected.push(problem);
+  }
   if (solution) collected.push(solution);
 
   if (HYPOTHESIS_RE.test(trimmed) || expectationAnswer) {
@@ -526,9 +565,8 @@ export function extractAnswerSemanticEvidences(answer: string): AnswerSemanticEx
       reason: 'CEO 기대효과 — 고객 검증 전',
       evidenceType: 'expectation',
     });
-  } else {
-    const change = extractCustomerChangeEvidence(clauses, trimmed);
-    if (change) collected.push(change);
+  } else if (changeFromAnswer) {
+    collected.push(changeFromAnswer);
   }
 
   return {

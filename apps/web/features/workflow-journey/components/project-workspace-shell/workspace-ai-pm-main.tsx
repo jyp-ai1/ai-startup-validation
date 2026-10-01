@@ -17,6 +17,7 @@ import {
   loadAiPmLoopState,
   patchAiPmLoopState,
 } from '../../lib/business-understanding/workspace-ai-pm-loop-store';
+import { shouldHandoffToFinalReview } from '../../lib/business-understanding/ai-pm-p0-2c-supplement-handoff';
 import { criticalGapsBlockAnalysis } from '../../lib/business-understanding/question-causality';
 import {
   AI_PM_LOOP_ISSUE_ORDER,
@@ -75,6 +76,7 @@ import { reopenAiPmLoopForRefinement } from '../../lib/business-understanding/pr
 import { commitFirstAskAfterUnderstandingConfirm } from '../../lib/business-understanding/understanding-confirm-ask-transition';
 import { syncDemoCustomDocumentKey } from '../../lib/demo-guided-document-sync';
 import { DEMO_SESSION_PROJECT_ID } from '../../lib/demo-samples';
+import { applyWorkspaceDomainToMemory } from '../../lib/business-understanding/apply-workspace-domain-to-memory';
 import { applyUserCorrection } from '../../lib/business-understanding/correction-and-why';
 import {
   loadConversationMemory,
@@ -381,10 +383,18 @@ export function WorkspaceAiPmMain({
       documentText: documentContext,
       entities,
       loop: loopState,
+      domain,
+      memory: loadConversationMemory(projectId),
     });
-  }, [documentContext, entities, loopState, understandingPhase]);
+  }, [documentContext, domain, entities, loopState, projectId, understandingPhase]);
 
   const handleApplyEdits = useCallback(() => {
+    const nextMemory = applyWorkspaceDomainToMemory({
+      projectId: projectId ?? 'default',
+      domain,
+      previous: loadConversationMemory(projectId),
+    });
+    saveConversationMemory(nextMemory, projectId);
     saveUnderstandingPhase('edit_confirm', projectId);
     setUnderstandingPhase('edit_confirm');
     onLoopDocumentUpdated?.();
@@ -395,7 +405,7 @@ export function WorkspaceAiPmMain({
     if (showDemoLoginCta && projectId === DEMO_SESSION_PROJECT_ID) {
       syncDemoCustomDocumentKey(projectId);
     }
-  }, [enableDbPersistence, onLoopDocumentUpdated, projectId, showDemoLoginCta]);
+  }, [domain, enableDbPersistence, onLoopDocumentUpdated, projectId, showDemoLoginCta]);
 
   const handleEditConfirmYes = useCallback(() => {
     // W8 + v2 — correction locks USER_CORRECTED; invalidate downstream turns/facts
@@ -509,14 +519,27 @@ export function WorkspaceAiPmMain({
     const mem = loadConversationMemory(projectId);
     const und = understanding ?? (doc.trim() ? buildBusinessUnderstanding(doc) : null);
     if (und) {
+      const loop = loadAiPmLoopState(projectId);
       const living = buildLivingUnderstandingState({
         documentText: doc,
         understanding: und,
         entities,
-        turns: loadAiPmLoopState(projectId).turns,
+        turns: loop.turns,
         memory: mem,
-        resolvedIssueIds: getResolvedIssueIds(loadAiPmLoopState(projectId)),
+        resolvedIssueIds: getResolvedIssueIds(loop),
       });
+      const judgment = loop.ceoJudgment;
+      if (
+        judgment &&
+        shouldHandoffToFinalReview({ living, judgment })
+      ) {
+        saveUnderstandingPhase('review-ready', projectId);
+        setUnderstandingPhase('review-ready');
+        setLoopState(loadAiPmLoopState(projectId));
+        onLoopComplete?.();
+        onUnderstandingConfirmed?.();
+        return;
+      }
       if (criticalGapsBlockAnalysis(living)) {
         // Re-open loop: stay in understanding, do not freeze on Start Analysis panel
         patchAiPmLoopState({ phase: 'answer' }, projectId);

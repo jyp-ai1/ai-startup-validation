@@ -23,8 +23,13 @@ export async function listDemoProjects(): Promise<StartupProject[]> {
     return await repo.findAll({ is_demo: true });
   } catch {
     // Migration 016 not applied — fall back to seed projects
-    const all = await repo.findAll();
-    return all.filter((p) => p.isDemo || p.title.includes('실버'));
+    try {
+      const all = await repo.findAll();
+      return all.filter((p) => p.isDemo || p.title.includes('실버'));
+    } catch {
+      // Supabase unreachable — demo workspace uses client session fallback (demo-session)
+      return [];
+    }
   }
 }
 

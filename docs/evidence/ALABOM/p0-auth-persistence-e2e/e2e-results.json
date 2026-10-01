@@ -1,0 +1,16 @@
+{
+  "at": "2026-09-08T16:09:12.978Z",
+  "productionSha": "ba14a8f",
+  "storageStatePresent": false,
+  "scenarios": [
+    {
+      "id": "demo-correction-no-auth-redirect",
+      "label": "Demo correction — no auth redirect",
+      "pass": false,
+      "reason": "Correction entry not found after 120s. Body: Skip to main content\nALABOM\nDEMO\nDemo Workspace\nLogin\nEN\n영세 양조장 온라인 홍보 SaaS\nView business details ▾\n▸ What AI understands so far— 서비스: 영세 양조장이 온라인에서 제품을 홍보·판매할 수 있도록 지원하는 B2B Sa… · 아직 확인 중\n\nSUMMARY\n\nWith AI PM\n\nFor now, the conversation matters more than scores or progress bars.\n\n● AI PM dialogue\n\nPROGRESS\n\n●\nBusiness understanding\n○\nMarket validation\n○\nViability review\n○\nResults\n●\nAI PM\n\nInsights",
+      "url": "https://ai-startup-validation-tau.vercel.app/workspace?demo=guided&sample=custom&fresh=1"
+    }
+  ],
+  "authBlocked": true,
+  "note": "Authenticated E2E requires Google OAuth storageState on agent pod"
+}

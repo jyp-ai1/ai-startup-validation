@@ -617,6 +617,7 @@ export function deriveWorkspaceState(input: DeriveWorkspaceStateInput): Workspac
           entities,
           understandingPhase: input.understandingPhase,
           memory,
+          domain,
         })
       : null;
   const sharedUnderstanding = understandingSpine

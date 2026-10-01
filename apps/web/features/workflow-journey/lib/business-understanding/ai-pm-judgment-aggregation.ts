@@ -29,6 +29,10 @@ import {
   type JudgmentTraceEntry,
 } from './ai-pm-judgment-trace';
 import { mergeDimensionAccumulative } from './ai-pm-judgment-accumulative-merge';
+import {
+  isAiPmP02cSupplementHandoffActive,
+  isValidationTestabilitySupplementTarget,
+} from './ai-pm-p0-2c-supplement-handoff';
 import { isAiPmJudgmentMeaningModelV1Active } from './ai-pm-judgment-meaning-model-v1';
 import { isAiPmJudgmentFix5V1Active } from './ai-pm-judgment-fix5-v1';
 import { mergeStructuredSolutionDimension } from './ai-pm-judgment-structured-solution';
@@ -50,7 +54,13 @@ import {
   isProblemPriorityCorrection,
   mergeProblemPriorityCorrection,
 } from './ai-pm-judgment-problem-correction';
-import { isCustomerCorrectionAnswer } from './ai-pm-judgment-target-binding';
+import {
+  filterToTargetDimension,
+  isCustomerCorrectionAnswer,
+  isProblemPainAnswer,
+  isSemanticCopy,
+  resolveJudgmentTargetDimension,
+} from './ai-pm-judgment-target-binding';
 import { isMetaConfirmationAnswer } from './ai-pm-answer-meta-slots';
 import { SHARED_UNDERSTANDING_PENDING } from './build-shared-understanding';
 import { evaluateAnswerQuality } from './understanding-contract';
@@ -100,6 +110,7 @@ function mergeDimension(
     evidence?: string;
     interpretedMeaning?: string;
     isCorrection?: boolean;
+    targetGap?: string;
   },
 ): CeoJudgmentDimension {
   if (
@@ -117,11 +128,16 @@ function mergeDimension(
     prior.id === 'customerChange' &&
     next.summary?.trim()
   ) {
+    const ceoSupplementConfirmed =
+      isAiPmP02cSupplementHandoffActive() &&
+      isValidationTestabilitySupplementTarget(options?.targetGap) &&
+      Boolean(options?.sourceTurnIndex && options.sourceTurnIndex > 0);
     return mergeCanonicalCustomerChange(prior, {
       conclusion: next.summary,
       evidence: options?.evidence ?? next.summary,
       sourceTurnIndex: options?.sourceTurnIndex,
       evidenceType: next.evidenceType,
+      ceoSupplementConfirmed,
     });
   }
   if (
@@ -491,6 +507,67 @@ function dimensionsFromAnswerText(
   return { dimensions: out, meta, frozen: false };
 }
 
+type DimensionHitMap = Partial<Record<CeoJudgmentDimensionId, CeoJudgmentDimension>>;
+
+function stripWrongSlotCustomerFromJudgmentHits(
+  hits: DimensionHitMap,
+  ctx: { answer: string; targetGap?: string | null; issueId?: AiPmLoopTurn['issueId']; allowMultiFact?: boolean },
+): DimensionHitMap {
+  if (!hits.customer) return hits;
+  const target = resolveJudgmentTargetDimension({
+    answer: ctx.answer,
+    targetGap: ctx.targetGap,
+    issueId: ctx.issueId,
+  });
+  const pain = isProblemPainAnswer(ctx.answer);
+  if (
+    (target === 'problem' || pain) &&
+    !isCustomerCorrectionAnswer(ctx.answer) &&
+    (hits.problem || pain)
+  ) {
+    const next = { ...hits };
+    delete next.customer;
+    return next;
+  }
+  if (hits.problem && isSemanticCopy(hits.customer.summary ?? '', hits.problem.summary ?? '')) {
+    const next = { ...hits };
+    delete next.customer;
+    return next;
+  }
+  return hits;
+}
+
+function seedJudgmentFromLivingSpine(
+  state: CeoJudgmentState,
+  living: LivingUnderstandingState,
+): CeoJudgmentState {
+  const fromLiving = dimensionFromLiving(living);
+  const next = {
+    ...state,
+    dimensions: {
+      customer: { ...state.dimensions.customer },
+      problem: { ...state.dimensions.problem },
+      solution: { ...state.dimensions.solution },
+      customerChange: { ...state.dimensions.customerChange },
+    },
+  };
+  for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
+    const seed = fromLiving[id];
+    if (!seed?.summary?.trim()) continue;
+    const cur = next.dimensions[id];
+    if (cur.status !== 'unknown' && !isPending(cur.summary)) continue;
+    next.dimensions[id] = {
+      ...cur,
+      ...seed,
+      knowledgeSource:
+        id === 'customer' && !isPending(living.spine.customer ?? '')
+          ? 'ceo_confirmed'
+          : cur.knowledgeSource,
+    };
+  }
+  return next;
+}
+
 function countActionableTurns(turns: AiPmLoopTurn[]): number {
   return turns.filter(
     (t) =>
@@ -528,7 +605,9 @@ export function buildCeoJudgmentState(input: {
     : emptyCeoJudgmentState(countActionableTurns(input.turns));
   state.questionCount = countActionableTurns(input.turns);
 
-  // FIX-3: Judgment dimensions come ONLY from CEO answers — never from living/document spine.
+  if (!input.prior) {
+    state = seedJudgmentFromLivingSpine(state, input.living);
+  }
 
   const actionable = input.turns.filter(
     (t) =>
@@ -550,7 +629,7 @@ export function buildCeoJudgmentState(input: {
       turn.answer.includes('하고') ||
       turn.answer.includes('해서') ||
       (turn.answer.match(/[,，]/g)?.length ?? 0) >= 1;
-    const { dimensions: fromAnswer, meta, frozen } = dimensionsFromAnswerText(
+    let { dimensions: fromAnswer, meta, frozen } = dimensionsFromAnswerText(
       turn.answer,
       turn.issueId,
       turn.targetGap,
@@ -558,6 +637,20 @@ export function buildCeoJudgmentState(input: {
     );
     if (frozen) {
       continue;
+    }
+    fromAnswer = stripWrongSlotCustomerFromJudgmentHits(fromAnswer, {
+      answer: turn.answer,
+      targetGap: turn.targetGap,
+      issueId: turn.issueId,
+      allowMultiFact: multiFact,
+    });
+    const bindTarget = resolveJudgmentTargetDimension({
+      answer: turn.answer,
+      targetGap: turn.targetGap,
+      issueId: turn.issueId,
+    });
+    if (bindTarget && !multiFact) {
+      fromAnswer = filterToTargetDimension(fromAnswer, bindTarget, false) as DimensionHitMap;
     }
     const lastUpdated: CeoJudgmentDimensionId[] = [];
     const recentCorrections = [...(state.recentCorrections ?? [])];
@@ -576,6 +669,7 @@ export function buildCeoJudgmentState(input: {
           evidence: meta[id]?.evidence,
           interpretedMeaning: meta[id]?.interpretedMeaning,
           isCorrection,
+          targetGap: turn.targetGap,
         });
         lastUpdated.push(id);
       }
@@ -611,6 +705,7 @@ export function applyAnswerToJudgment(input: {
   issueId?: AiPmLoopTurn['issueId'];
   targetGap?: string;
   allowMultiFact?: boolean;
+  sourceTurnIndex?: number;
 }): CeoJudgmentState {
   const multiFact =
     input.allowMultiFact ??
@@ -618,12 +713,26 @@ export function applyAnswerToJudgment(input: {
       input.answer.includes('해서') ||
       (input.answer.match(/[,，]/g)?.length ?? 0) >= 1);
 
-  const { dimensions: fromAnswer, meta, frozen } = dimensionsFromAnswerText(
+  let { dimensions: fromAnswer, meta, frozen } = dimensionsFromAnswerText(
     input.answer,
     input.issueId,
     input.targetGap,
     multiFact,
   );
+  fromAnswer = stripWrongSlotCustomerFromJudgmentHits(fromAnswer, {
+    answer: input.answer,
+    targetGap: input.targetGap,
+    issueId: input.issueId,
+    allowMultiFact: multiFact,
+  });
+  const bindTarget = resolveJudgmentTargetDimension({
+    answer: input.answer,
+    targetGap: input.targetGap,
+    issueId: input.issueId,
+  });
+  if (bindTarget && !multiFact) {
+    fromAnswer = filterToTargetDimension(fromAnswer, bindTarget, false) as DimensionHitMap;
+  }
   let state: CeoJudgmentState = {
     ...input.prior,
     dimensions: {
@@ -640,6 +749,8 @@ export function applyAnswerToJudgment(input: {
     return finalizeJudgmentPresentation(state);
   }
 
+  const priorTurn = input.prior.currentTurnIndex ?? 0;
+  const turnIndex = input.sourceTurnIndex ?? (priorTurn > 0 ? priorTurn + 1 : 1);
   const lastUpdated: CeoJudgmentDimensionId[] = [];
   for (const id of ['customer', 'problem', 'solution', 'customerChange'] as CeoJudgmentDimensionId[]) {
     if (fromAnswer[id]) {
@@ -651,10 +762,12 @@ export function applyAnswerToJudgment(input: {
       }
       state.dimensions[id] = mergeDimension(state.dimensions[id], fromAnswer[id]!, {
         preferUserExtract: true,
+        sourceTurnIndex: turnIndex,
         answer: input.answer,
         evidence: meta[id]?.evidence,
         interpretedMeaning: meta[id]?.interpretedMeaning,
         isCorrection,
+        targetGap: input.targetGap,
       });
       lastUpdated.push(id);
     }
@@ -662,7 +775,7 @@ export function applyAnswerToJudgment(input: {
   if (lastUpdated.length > 0) {
     state.lastUpdatedDimensions = lastUpdated;
   }
-  state.currentTurnIndex = input.prior.currentTurnIndex;
+  state.currentTurnIndex = turnIndex;
   return finalizeJudgmentPresentation(state);
 }
 
