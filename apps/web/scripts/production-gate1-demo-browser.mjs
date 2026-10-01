@@ -235,8 +235,11 @@ async function runMyBusiness(browser, label, doc, mustContain, mustNotContain) {
 
   try {
     await page.goto(`${PRODUCTION_URL}/demo/start`, { waitUntil: 'domcontentloaded' });
+    await dismissCookieBanner(page);
     await page.getByRole('button', { name: /내 사업/i }).click();
-    await page.locator('textarea').fill(doc);
+    const docInput = page.getByTestId('demo-my-business-document');
+    await docInput.waitFor({ state: 'visible', timeout: 45_000 });
+    await docInput.fill(doc);
     await page.getByRole('button', { name: /AI Read/i }).click();
     await page.waitForURL(/sample=custom/, { timeout: 60_000 });
     await page.waitForTimeout(3000);
@@ -310,8 +313,11 @@ async function main() {
     await isoPage.waitForTimeout(8000);
     const afterSample = await storageDump(isoPage);
     await isoPage.goto(`${PRODUCTION_URL}/demo/start`, { waitUntil: 'domcontentloaded' });
+    await dismissCookieBanner(isoPage);
     await isoPage.getByRole('button', { name: /내 사업/i }).click();
-    await isoPage.locator('textarea').fill(MY_BUSINESS_A);
+    const isoDoc = isoPage.getByTestId('demo-my-business-document');
+    await isoDoc.waitFor({ state: 'visible', timeout: 45_000 });
+    await isoDoc.fill(MY_BUSINESS_A);
     await isoPage.getByRole('button', { name: /AI Read/i }).click();
     await isoPage.waitForURL(/sample=custom/, { timeout: 60_000 });
     await isoPage.waitForTimeout(5000);
