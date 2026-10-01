@@ -81,24 +81,30 @@ export function WorkspaceNextStepPanel({
         ) : null}
 
         {finalUnderstanding ? (
-          <dl className="mt-4 grid gap-3 rounded-xl border border-border/60 bg-background/80 px-4 py-4 sm:grid-cols-3">
-            <div>
+          <dl className="mt-4 space-y-3 rounded-xl border border-border/60 bg-background/80 px-4 py-4">
+            <div className="min-w-0">
               <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                 {ts('fields.business')}
               </dt>
-              <dd className="mt-1 text-sm font-medium">{finalUnderstanding.business}</dd>
+              <dd className="mt-1 break-words text-sm font-medium leading-relaxed">
+                {finalUnderstanding.business}
+              </dd>
             </div>
-            <div>
+            <div className="min-w-0 border-t border-border/40 pt-3">
               <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                 {ts('fields.customer')}
               </dt>
-              <dd className="mt-1 text-sm font-medium">{finalUnderstanding.customer}</dd>
+              <dd className="mt-1 break-words text-sm font-medium leading-relaxed">
+                {finalUnderstanding.customer}
+              </dd>
             </div>
-            <div>
+            <div className="min-w-0 border-t border-border/40 pt-3">
               <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                 {ts('fields.problem')}
               </dt>
-              <dd className="mt-1 text-sm font-medium">{finalUnderstanding.problem}</dd>
+              <dd className="mt-1 break-words text-sm font-medium leading-relaxed">
+                {finalUnderstanding.problem}
+              </dd>
             </div>
           </dl>
         ) : null}

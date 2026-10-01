@@ -8,14 +8,14 @@
 
 | ID | Scope | Status |
 |----|--------|--------|
-| A | Demo Sample UX + probe fix | 🟢 (Batch 1 — pending integrated QA) |
-| B | Sample data narrative consistency | 🟢 tests |
-| C | My Business Preview (input+doc, basis labels, cap) | 🔵 In progress |
+| A | Demo Sample UX + probe fix | 🟢 integrated unit QA |
+| B | Sample data narrative consistency | 🟢 |
+| C | My Business Preview (input+doc, basis labels, cap) | 🟢 unit + hydration guards |
 | D | Demo data ops (JSON/registry, no risky DB rewrite) | ⬜ |
 | E | Production full journey vs V3 SoT map | ⬜ |
-| F | AI PM loop / A→B→A / CLOSED no re-ask | ⬜ |
-| G | Judgment + Final Review UX | ⬜ |
-| H | UI truncation / layout | ⬜ |
+| F | AI PM loop / A→B→A / CLOSED no re-ask | ⬜ (existing PR2 CLOSED tests) |
+| G | Judgment + Final Review UX | 🔵 vertical review stack (shell panels) |
+| H | UI truncation / layout | 🔵 same pass as G |
 | I | Regression matrix + Production E2E | ⬜ |
 
 ## Stop conditions (report only)

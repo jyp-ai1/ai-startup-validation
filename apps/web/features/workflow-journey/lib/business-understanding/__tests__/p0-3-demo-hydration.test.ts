@@ -59,7 +59,39 @@ describe('P0-3A demo guided hydration', () => {
     if (decision.kind === 'apply_sample') {
       expect(decision.document).toContain('소상공인');
       expect(decision.document).not.toContain('스마트PM');
+      expect(decision.document).not.toContain('클리닉플로우');
     }
+  });
+
+  it('My Business never hydrates from Sample A/B/C seed document', () => {
+    const clinicDoc = getDemoSample('clinicflow').document;
+    expect(clinicDoc).toContain('클리닉플로우');
+
+    const decision = resolveDemoGuidedHydration({
+      demoSampleId: 'custom',
+      demoFresh: true,
+      customDocumentFromSession: CEO_DOC,
+      storedDocument: '',
+      hasLoopProgress: false,
+      understandingPhase: 'pending',
+    });
+    expect(decision.kind).toBe('apply_sample');
+    if (decision.kind === 'apply_sample') {
+      expect(decision.document).not.toBe(clinicDoc);
+      expect(decision.document).not.toContain('클리닉플로우');
+    }
+  });
+
+  it('redirects weak custom intake without sample fallback', () => {
+    const decision = resolveDemoGuidedHydration({
+      demoSampleId: 'custom',
+      demoFresh: true,
+      customDocumentFromSession: '짧음',
+      storedDocument: '',
+      hasLoopProgress: false,
+      understandingPhase: 'pending',
+    });
+    expect(decision.kind).toBe('compose_empty_custom');
   });
 
   it('applies seeded clinicflow sample on fresh preset demo (legacy saas alias)', () => {
