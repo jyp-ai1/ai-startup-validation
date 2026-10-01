@@ -41,10 +41,8 @@ function hasKeyword(text: string, keywords: string[]): boolean {
 
 function isFounderArchetypeOnly(value: string): boolean {
   const normalized = value.trim().toLowerCase();
-  if (!normalized) return false;
-  return FOUNDER_ARCHETYPES.some(
-    (a) => normalized === a.toLowerCase() || normalized.includes(a.toLowerCase()),
-  );
+  if (!normalized || normalized.length > 32) return false;
+  return FOUNDER_ARCHETYPES.some((a) => normalized === a.toLowerCase());
 }
 
 function detectBusinessModel(text: string): BusinessModel | null {
@@ -112,6 +110,17 @@ function extractBusinessName(text: string): DomainEntityField {
 
 const CUSTOMER_LINE_PREFIX =
   /^(대상|타겟\s*고객|타겟|타깃|고객|customer|target)\s*[:：]\s*/i;
+
+const PROBLEM_LINE_PREFIX = /^(문제|problem|pain|불편|jtbd)\s*[:：]\s*/i;
+
+function extractProblemFromLabel(text: string): DomainEntityField | null {
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const labeled = lines.find((line) => PROBLEM_LINE_PREFIX.test(line));
+  if (!labeled) return null;
+  const value = labeled.replace(PROBLEM_LINE_PREFIX, '').trim();
+  if (value.length < 4) return null;
+  return { value: value.slice(0, 120), basis: 'document', excerpt: labeled.slice(0, 120) };
+}
 
 function extractCustomer(
   text: string,
@@ -234,6 +243,12 @@ export function extractDocumentEntities(raw: string): LaunchLensDomainContext {
   const founder = extractFounder(text);
   const businessName = extractBusinessName(text);
   const customer = extractCustomer(text, model, founder);
+  const labeledProblem = extractProblemFromLabel(text);
+  const productFromSection = fieldFromSection(text, ['제품', 'product', '서비스', 'mvp', '솔루션']);
+  const product =
+    labeledProblem && (!productFromSection.value || productFromSection.basis === 'unknown')
+      ? labeledProblem
+      : productFromSection;
 
   return {
     founder,
@@ -243,7 +258,7 @@ export function extractDocumentEntities(raw: string): LaunchLensDomainContext {
       model,
     },
     customer,
-    product: fieldFromSection(text, ['제품', 'product', '서비스', 'mvp', '솔루션']),
+    product,
     market: fieldFromSection(text, ['시장', 'market', 'tam', 'sam']),
     competitor: fieldFromSection(text, ['경쟁', 'competitor', 'competition', '대안']),
   };

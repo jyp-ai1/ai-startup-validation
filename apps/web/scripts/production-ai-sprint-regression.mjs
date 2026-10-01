@@ -17,6 +17,7 @@ const vitestFiles = [
   'lib/project/__tests__/long-document-intake-parity.test.ts',
   'lib/project/__tests__/extract-document-entities-customer.test.ts',
   'lib/ai-evaluation/__tests__/grounding-contamination.test.ts',
+  'lib/ai-evaluation/__tests__/ai-pm-scenario-harness.test.ts',
   'lib/project/__tests__/p0-authenticated-persistence.test.ts',
   'features/workflow-journey/lib/business-understanding/__tests__/p0-3-demo-hydration.test.ts',
   'features/workflow-journey/lib/business-understanding/__tests__/w12-partial-closeout.test.ts',
