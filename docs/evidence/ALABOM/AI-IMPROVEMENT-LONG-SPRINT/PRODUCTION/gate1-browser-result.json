@@ -1,0 +1,235 @@
+{
+  "productionUrl": "https://ai-startup-validation-tau.vercel.app",
+  "startedAt": "2026-10-01T09:36:57.641Z",
+  "health": {
+    "status": "ok",
+    "timestamp": "2026-10-01T09:36:57.852Z",
+    "version": "0.1.0",
+    "commit": "26d296aa8e4b1ade0e46ce3b66c78446cb813028",
+    "environment": "production",
+    "gaConfigured": false
+  },
+  "shaEquality": {
+    "git": "26d296aa8e4b1ade0e46ce3b66c78446cb813028",
+    "build": "26d296aa8e4b1ade0e46ce3b66c78446cb813028",
+    "production": "26d296aa8e4b1ade0e46ce3b66c78446cb813028",
+    "pass": true
+  },
+  "samples": {
+    "clinicflow": {
+      "pass": true,
+      "errors": [],
+      "questions": [],
+      "storageKeys": [
+        "launchlens.conversationMemory.demo-sample-clinicflow",
+        "launchlens.originalBusinessIntent.demo-sample-clinicflow",
+        "launchlens.demo.customDocument.demo-sample-clinicflow",
+        "launchlens.reviewCount.demo-sample-clinicflow",
+        "launchlens.businessUnderstanding.phase.demo-sample-clinicflow",
+        "launchlens.demo.playback.frames.v3.demo-sample-clinicflow",
+        "launchlens.workspace.demo-sample-clinicflow.dbUpdatedAt",
+        "launchlens.document.demo-sample-clinicflow.raw",
+        "launchlens.demo.playback.demo-sample-clinicflow.frameIndex",
+        "launchlens.aiPmLoop.demo-sample-clinicflow"
+      ],
+      "playbackFrames": [
+        {
+          "frameIndex": "0",
+          "surface": "그 차별점이 고객에게 왜 중요한가요?"
+        },
+        {
+          "frameIndex": "1",
+          "surface": "이 사업은 누구에게 무엇을 제공하나요?"
+        },
+        {
+          "frameIndex": "2",
+          "surface": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?"
+        },
+        {
+          "frameIndex": "3",
+          "surface": "서비스 비용은 누가 지불하나요?"
+        },
+        {
+          "frameIndex": "4",
+          "surface": "지금 가장 크게 해결하려는 불편은 무엇인가요?"
+        },
+        {
+          "frameIndex": "5",
+          "surface": "고객·수요를 검증할 채널은 어디인가요?"
+        },
+        {
+          "frameIndex": "6",
+          "surface": "비슷한 역할을 이미 하고 있는 서비스가 있나요?"
+        },
+        {
+          "frameIndex": "7",
+          "surface": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?"
+        },
+        {
+          "frameIndex": "8",
+          "surface": "그 차별점이 고객에게 왜 중요한가요?"
+        },
+        {
+          "frameIndex": "9",
+          "surface": "문제를 해결하는 방식(제공 가치)은 무엇인가요?"
+        },
+        {
+          "frameIndex": "10",
+          "surface": "문제를 해결하는 방식(제공 가치)은 무엇인가요?"
+        }
+      ]
+    },
+    "local-sns": {
+      "pass": true,
+      "errors": [],
+      "questions": [],
+      "storageKeys": [
+        "launchlens.conversationMemory.demo-sample-local-sns",
+        "launchlens.workspace.demo-sample-local-sns.dbUpdatedAt",
+        "launchlens.demo.playback.demo-sample-local-sns.frameIndex",
+        "launchlens.businessUnderstanding.phase.demo-sample-local-sns",
+        "launchlens.demo.playback.frames.v3.demo-sample-local-sns",
+        "launchlens.aiPmLoop.demo-sample-local-sns",
+        "launchlens.reviewCount.demo-sample-local-sns",
+        "launchlens.originalBusinessIntent.demo-sample-local-sns",
+        "launchlens.document.demo-sample-local-sns.raw",
+        "launchlens.demo.customDocument.demo-sample-local-sns"
+      ],
+      "playbackFrames": [
+        {
+          "frameIndex": "0",
+          "surface": "그 차별점이 고객에게 왜 중요한가요?"
+        },
+        {
+          "frameIndex": "1",
+          "surface": "이 사업은 누구에게 무엇을 제공하나요?"
+        },
+        {
+          "frameIndex": "2",
+          "surface": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?"
+        },
+        {
+          "frameIndex": "3",
+          "surface": "서비스 비용은 누가 지불하나요?"
+        },
+        {
+          "frameIndex": "4",
+          "surface": "지금 가장 크게 해결하려는 불편은 무엇인가요?"
+        },
+        {
+          "frameIndex": "5",
+          "surface": "고객·수요를 검증할 채널은 어디인가요?"
+        },
+        {
+          "frameIndex": "6",
+          "surface": "비슷한 역할을 이미 하고 있는 서비스가 있나요?"
+        },
+        {
+          "frameIndex": "7",
+          "surface": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?"
+        },
+        {
+          "frameIndex": "8",
+          "surface": "그 차별점이 고객에게 왜 중요한가요?"
+        },
+        {
+          "frameIndex": "9",
+          "surface": "제가 이해한 사업은 「직원 5명 이하 음식점·카페의 SNS·네이버 플레이스 홍보를 자동화합니다.」입니다. 맞나요?"
+        },
+        {
+          "frameIndex": "10",
+          "surface": "제가 이해한 사업은 「직원 5명 이하 음식점·카페의 SNS·네이버 플레이스 홍보를 자동화합니다.」입니다. 맞나요?"
+        }
+      ]
+    },
+    "fitbridge": {
+      "pass": true,
+      "errors": [],
+      "questions": [],
+      "storageKeys": [
+        "launchlens.demo.playback.frames.v3.demo-sample-fitbridge",
+        "launchlens.originalBusinessIntent.demo-sample-fitbridge",
+        "launchlens.conversationMemory.demo-sample-fitbridge",
+        "launchlens.workspace.demo-sample-fitbridge.dbUpdatedAt",
+        "launchlens.businessUnderstanding.phase.demo-sample-fitbridge",
+        "launchlens.demo.customDocument.demo-sample-fitbridge",
+        "launchlens.reviewCount.demo-sample-fitbridge",
+        "launchlens.demo.playback.demo-sample-fitbridge.frameIndex",
+        "launchlens.document.demo-sample-fitbridge.raw",
+        "launchlens.aiPmLoop.demo-sample-fitbridge"
+      ],
+      "playbackFrames": [
+        {
+          "frameIndex": "0",
+          "surface": "그 차별점이 고객에게 왜 중요한가요?"
+        },
+        {
+          "frameIndex": "1",
+          "surface": "이 사업은 누구에게 무엇을 제공하나요?"
+        },
+        {
+          "frameIndex": "2",
+          "surface": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?"
+        },
+        {
+          "frameIndex": "3",
+          "surface": "서비스 비용은 누가 지불하나요?"
+        },
+        {
+          "frameIndex": "4",
+          "surface": "지금 가장 크게 해결하려는 불편은 무엇인가요?"
+        },
+        {
+          "frameIndex": "5",
+          "surface": "고객·수요를 검증할 채널은 어디인가요?"
+        },
+        {
+          "frameIndex": "6",
+          "surface": "비슷한 역할을 이미 하고 있는 서비스가 있나요?"
+        },
+        {
+          "frameIndex": "7",
+          "surface": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?"
+        },
+        {
+          "frameIndex": "8",
+          "surface": "그 차별점이 고객에게 왜 중요한가요?"
+        },
+        {
+          "frameIndex": "9",
+          "surface": "핵심 고객은(는) 「True Fit, 자체 ML, 정적 사이즈 차트, 단순 추천 위…」으로 이해했습니다. 맞나요?"
+        },
+        {
+          "frameIndex": "10",
+          "surface": "핵심 고객은(는) 「True Fit, 자체 ML, 정적 사이즈 차트, 단순 추천 위…」으로 이해했습니다. 맞나요?"
+        }
+      ]
+    }
+  },
+  "myBusiness": {
+    "a": {
+      "pass": false,
+      "errors": [
+        "locator.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('textarea')\n"
+      ],
+      "previewSnippet": ""
+    },
+    "b": {
+      "pass": true,
+      "errors": [],
+      "previewSnippet": "본문으로 건너뛰기\nALABOM\nDEMO\nDemo Workspace\nLogin\nKO\nLaunchLens Sample\n사업 내용 보기 ▾\n▸ 지금까지 AI가 이해한 내용— 사업명: 핏브릿지 QA-B · 연 매출 5~50억 D2C 브랜드\n\n요약\n\nAI PM과 함께\n\n지금은 점수나 진행률보다, 함께 정리하는 대화가 우선입니다.\n\n● AI PM 대화 중\n\n진행\n\n✔\n사업 이해\n●\n시장 검증\n○\n사업성 검토\n○\n결과 확인\n●\nAI PM\n\n인사이트\n\n추천\n\n다음 행동\n\nDEMO\n\nDemo Workspace\n\n체험용 프로젝트입니다. 로그인하면 이 방식 그대로 내 프로젝트를 관리할 수 있습니다.\n\nAI PM\n\nAI PM이 문서를 읽고 있습니다…\n\n「사업명: 핏브릿지 QA-B」부터 확인합니다.\n\n창업자 · 문제 · 고객 · 시장 · 경쟁 · BM · 리스크 · 투자 관점을 순서대로 확인합니다.\n\n문서 6개 섹션 · 111자\n\n창업자 확인\n문서에서 창업자·대표 관련 표현을 확인하지 못했습니다.\n문제 확인\n사이즈 반품 35%, 마진 악화\n고객 후보 추출\n연 매출 5~50억 D2C 브랜드\n시장 조사\n사이즈 반품 35%, 마진 악화\n경쟁사 조사\n사업모델 추출\n고객: 연 매출 5~50억 D2C 브랜드\n리스크 탐색\n투자 관점 분석\n\n문서 6개 섹션 · 111자 — 순서대로 읽고 있습니다.\n\n\"사이즈 반품 35%, 마진 악화\" — 잠시 관련 시장을 확인하고 있습니다.\n\n사업명: 핏브릿지 QA-B 사례와 비교 중…\n\n분석 및 쿠키\n\nALABOM 개선을 위해 분석 데이터를 사용합니다. 수락하면 Google Analytics와 제품 이벤트 추적이 활성화됩니다. 거부해도 서비스 이용은 가능합니다.\n\n분석 수락\n거부"
+    }
+  },
+  "isolation": {
+    "sampleToMyBusiness": {
+      "mbDocContainsClinicSeed": false,
+      "mbDocContainsSmartPm": false,
+      "mbLoopContainsClinicSeed": false,
+      "legacySampleKeysMayCoexist": true,
+      "pass": true
+    }
+  },
+  "verdict": "FAIL",
+  "notes": [],
+  "finishedAt": "2026-10-01T09:38:39.316Z"
+}
