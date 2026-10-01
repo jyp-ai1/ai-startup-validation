@@ -139,6 +139,20 @@ function extractCustomer(
     (line) => !/^\[AI\s*PM\s*확인/i.test(line) && CUSTOMER_LINE_PREFIX.test(line),
   );
   if (labeledTarget) {
+    const explicitValue = labeledTarget.replace(CUSTOMER_LINE_PREFIX, '').trim();
+    if (explicitValue.length >= 2) {
+      if (isFounderArchetypeOnly(explicitValue)) {
+        return { value: null, basis: 'needs_confirmation', excerpt: labeledTarget.slice(0, 120) };
+      }
+      if (hasKeyword(explicitValue, ['예비창업', '창업자', '대표', 'startup founder'])) {
+        return { value: null, basis: 'needs_confirmation', excerpt: labeledTarget.slice(0, 120) };
+      }
+      return {
+        value: explicitValue.slice(0, 80),
+        basis: 'document',
+        excerpt: labeledTarget.slice(0, 120),
+      };
+    }
     raw = labeledTarget;
     rawLine = labeledTarget;
   } else {
