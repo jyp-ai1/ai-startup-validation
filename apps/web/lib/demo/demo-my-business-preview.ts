@@ -12,12 +12,18 @@ export function shouldBlockDemoMyBusinessJudgment(projectId: string | undefined)
   return loop.viewMode === 'judgment' || loop.viewMode === 'review' || loop.viewMode === 'supplement';
 }
 
-export function demoMyBusinessPreviewComplete(projectId: string | undefined): boolean {
+/** Show My Business preview surface after document read (before Production full loop). */
+export function shouldShowDemoMyBusinessPreview(
+  projectId: string | undefined,
+  understandingPhase: string,
+): boolean {
   if (!isDemoMyBusinessPreviewCap(projectId)) return false;
   const loop = loadAiPmLoopState(projectId);
-  return (
-    loop.readingCompleted &&
-    loop.turns.length >= 1 &&
-    Boolean(loop.lastDecision?.questionText || loop.lockedAskSurface?.questionText)
-  );
+  if (!loop.readingCompleted) return false;
+  return understandingPhase === 'pending' || understandingPhase === 'accepted';
+}
+
+/** @deprecated use shouldShowDemoMyBusinessPreview */
+export function demoMyBusinessPreviewComplete(projectId: string | undefined): boolean {
+  return shouldShowDemoMyBusinessPreview(projectId, 'accepted');
 }

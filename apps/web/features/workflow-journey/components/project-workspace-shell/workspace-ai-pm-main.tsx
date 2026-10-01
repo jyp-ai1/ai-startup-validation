@@ -77,11 +77,12 @@ import { commitFirstAskAfterUnderstandingConfirm } from '../../lib/business-unde
 import { syncDemoCustomDocumentKey } from '../../lib/demo-guided-document-sync';
 import { isDemoGuestProjectId } from '@/lib/demo/demo-isolation';
 import {
-  demoMyBusinessPreviewComplete,
   isDemoMyBusinessPreviewCap,
   shouldBlockDemoMyBusinessJudgment,
+  shouldShowDemoMyBusinessPreview,
 } from '@/lib/demo/demo-my-business-preview';
 import { DemoSamplePlaybackBar } from '../demo/demo-sample-playback-bar';
+import { WorkspaceDemoMyBusinessPreview } from '../demo/workspace-demo-my-business-preview';
 import { advanceDemoPlaybackFrame } from '@/lib/demo/demo-playback';
 import { applyWorkspaceDomainToMemory } from '../../lib/business-understanding/apply-workspace-domain-to-memory';
 import { applyUserCorrection } from '../../lib/business-understanding/correction-and-why';
@@ -260,6 +261,17 @@ export function WorkspaceAiPmMain({
 
   /** S16 P0-2 / P1-2 — confirm → next question (loop) or review-ready; never force market analysis */
   const proceedAfterUnderstandingConfirm = useCallback(() => {
+    if (
+      demoMyBusinessPreview &&
+      projectId &&
+      isDemoMyBusinessPreviewCap(projectId)
+    ) {
+      saveUnderstandingPhase('accepted', projectId);
+      setUnderstandingPhase('accepted');
+      onUnderstandingConfirmed?.();
+      return;
+    }
+
     if (demoSamplePlayback && projectId) {
       advanceDemoPlaybackFrame(projectId);
       setLoopState(loadAiPmLoopState(projectId));
@@ -296,6 +308,7 @@ export function WorkspaceAiPmMain({
     setUnderstandingPhase('accepted');
     onUnderstandingConfirmed?.();
   }, [
+    demoMyBusinessPreview,
     demoSamplePlayback,
     documentContext,
     entities,
@@ -692,12 +705,18 @@ export function WorkspaceAiPmMain({
 
       {demoMyBusinessPreview &&
       projectId &&
-      isDemoMyBusinessPreviewCap(projectId) &&
-      demoMyBusinessPreviewComplete(projectId) ? (
-        <WorkspaceDemoLoginCta />
+      understanding &&
+      shouldShowDemoMyBusinessPreview(projectId, understandingPhase) ? (
+        <WorkspaceDemoMyBusinessPreview
+          understanding={understanding}
+          entities={entities}
+          projectId={projectId}
+        />
       ) : null}
 
-      {showAiPmLoop && understanding ? (
+      {showAiPmLoop &&
+      understanding &&
+      !(demoMyBusinessPreview && shouldShowDemoMyBusinessPreview(projectId, understandingPhase)) ? (
         <div id="ai-pm-loop">
           <WorkspaceAiPmLoopPanel
             understanding={understanding}

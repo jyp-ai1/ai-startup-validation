@@ -8,9 +8,9 @@
 
 | ID | Scope | Status |
 |----|--------|--------|
-| A | Demo Sample UX + probe fix | 🔵 In progress |
-| B | Sample data narrative consistency | ⬜ |
-| C | My Business Preview (input+doc, basis labels, fail UX) | ⬜ |
+| A | Demo Sample UX + probe fix | 🟢 (Batch 1 — pending integrated QA) |
+| B | Sample data narrative consistency | 🟢 tests |
+| C | My Business Preview (input+doc, basis labels, cap) | 🔵 In progress |
 | D | Demo data ops (JSON/registry, no risky DB rewrite) | ⬜ |
 | E | Production full journey vs V3 SoT map | ⬜ |
 | F | AI PM loop / A→B→A / CLOSED no re-ask | ⬜ |
