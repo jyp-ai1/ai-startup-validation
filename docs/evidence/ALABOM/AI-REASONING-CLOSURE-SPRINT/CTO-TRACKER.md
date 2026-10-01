@@ -4,6 +4,8 @@
 
 **Mode:** Autonomous — no mid CPO/CEO communication except Stop Condition or final Completion Report.
 
+**CPO record (2026-10-01):** Evidence through PR #62 draft · CEO TEST HOLD · final 1-pass on Completion Report vs `CPO-GATE-CHECKLIST.md`.
+
 ## Tracks
 
 | Track | Scope | Status |
@@ -13,7 +15,7 @@
 | C | Question intelligence | 🟡 `explainNextQuestionForCeo` + surface ⑤ impact hint |
 | D | Judgment intelligence | ⬜ |
 | E | Evaluation 5→20→30 | 🟡 30 scenarios (pack3) + harness |
-| F | Long document semantic parity | 🟡 char-length parity tests @ PR #61 |
-| G | Final UX flow strip | 🟡 evidence review “왜 중요한가” @ PR #61 |
+| F | Long document semantic parity | 🟡 length + PDF/DOCX placeholder parity tests |
+| G | Final UX flow strip | 🟡 gap CEO labels + why-now + next-validation copy |
 
 **V3 SoT:** frozen unless Stop Condition.

@@ -32,4 +32,10 @@ execSync('node scripts/production-historical-p0-browser.mjs', {
   env,
 });
 
+execSync('node scripts/production-auth-journey-evidence.mjs', {
+  cwd: webRoot,
+  stdio: 'inherit',
+  env,
+});
+
 console.log(JSON.stringify({ bundle: 'reasoning-closure-e2e', commit, ok: true }));

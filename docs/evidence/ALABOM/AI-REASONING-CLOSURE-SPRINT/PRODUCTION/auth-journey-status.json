@@ -1,0 +1,14 @@
+{
+  "unauthenticatedSmoke": {
+    "pass": true,
+    "error": null
+  },
+  "fullJourney": {
+    "status": "BLOCKED",
+    "reason": "CTO Google profile missing (.qa-chrome-profile or .qa-auth/storageState.json). Run production-flow-qa.mjs locally.",
+    "flow1": null,
+    "flow2": null
+  },
+  "commit": null,
+  "finishedAt": "2026-10-01T13:42:57.418Z"
+}
