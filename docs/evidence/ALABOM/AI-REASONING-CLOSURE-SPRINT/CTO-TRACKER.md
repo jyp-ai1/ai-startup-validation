@@ -8,7 +8,7 @@
 
 | Track | Scope | Status |
 |-------|--------|--------|
-| A | Production closure (MB-A, auth journey, P0 browser, SHA) | 🔵 |
+| A | Production closure (MB-A, auth journey, P0 browser, SHA) | 🔵 MB-A E2E PASS @ `d38634c` (2026-10-01) |
 | B | Gap intelligence (taxonomy, priority, reopen) | ⬜ |
 | C | Question intelligence | ⬜ |
 | D | Judgment intelligence | ⬜ |
