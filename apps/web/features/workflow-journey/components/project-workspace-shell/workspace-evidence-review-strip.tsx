@@ -7,6 +7,7 @@ import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-doma
 import { cn } from '@repo/ui/lib/utils';
 
 import { buildDocumentFirstDraft } from '../../lib/business-understanding/build-document-first-draft';
+import { whyNowForGapField } from '../../lib/business-understanding/living-understanding-state';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
 
 type WorkspaceEvidenceReviewStripProps = {
@@ -99,6 +100,9 @@ export function WorkspaceEvidenceReviewStrip({
         <div className="mt-3 rounded-lg border border-dashed border-primary/30 px-3 py-2">
           <p className="text-[11px] font-medium uppercase text-muted-foreground">아직 모르는 것</p>
           <p className="mt-1 text-sm text-muted-foreground">{draft.gapFieldIds.join(' · ')}</p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            왜 중요한가 — {whyNowForGapField(draft.gapFieldIds[0] ?? 'customerPersona')}
+          </p>
         </div>
       ) : null}
     </section>

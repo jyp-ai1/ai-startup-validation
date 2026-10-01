@@ -7,7 +7,9 @@ export type AiEvalScenario = {
   expectedProblemSubstring: string;
 };
 
-export const AI_EVAL_SCENARIOS: AiEvalScenario[] = [
+import { AI_EVAL_SCENARIOS_PACK_2 } from './scenarios-pack-2';
+
+const AI_EVAL_SCENARIOS_CORE: AiEvalScenario[] = [
   {
     id: 'clinic-b2b',
     label: 'B2B SaaS clinic',
@@ -58,4 +60,10 @@ export const AI_EVAL_SCENARIOS: AiEvalScenario[] = [
     expectedCustomerSubstring: 'PM',
     expectedProblemSubstring: '리셋',
   },
+];
+
+/** Track E — 20 scenarios (5 core + 15 pack). */
+export const AI_EVAL_SCENARIOS: AiEvalScenario[] = [
+  ...AI_EVAL_SCENARIOS_CORE,
+  ...AI_EVAL_SCENARIOS_PACK_2,
 ];
