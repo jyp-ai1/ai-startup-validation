@@ -21,6 +21,10 @@ const vitestFiles = [
   'lib/project/__tests__/p0-authenticated-persistence.test.ts',
   'features/workflow-journey/lib/business-understanding/__tests__/p0-3-demo-hydration.test.ts',
   'features/workflow-journey/lib/business-understanding/__tests__/w12-partial-closeout.test.ts',
+  'features/workflow-journey/lib/business-understanding/__tests__/explain-next-question-for-ceo.test.ts',
+  'features/workflow-journey/lib/business-understanding/__tests__/gap-ceo-surface-label.test.ts',
+  'lib/project/__tests__/semantic-parity-lengths.test.ts',
+  'lib/project/__tests__/semantic-parity-binary.test.ts',
 ].join(' ');
 
 execSync(`pnpm exec vitest run ${vitestFiles}`, { cwd: webRoot, stdio: 'inherit' });
