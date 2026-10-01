@@ -1,7 +1,6 @@
-import {
-  DEMO_CUSTOM_DOCUMENT_KEY,
-  DEMO_SESSION_PROJECT_ID,
-} from './demo-samples';
+import { demoCustomDocumentKey, DEMO_CUSTOM_DOCUMENT_KEY, DEMO_SESSION_PROJECT_ID } from './demo-samples';
+import { resetDemoPlayback } from '@/lib/demo/demo-playback';
+import { isDemoMyBusinessProjectId } from '@/lib/demo/demo-isolation';
 import { loadAiPmLoopState } from './business-understanding/workspace-ai-pm-loop-store';
 import { clearBusinessUnderstandingConfirmed } from './business-understanding/business-understanding-store';
 import { loadWorkspaceDocumentText } from './workspace-ai-pm-messages';
@@ -45,21 +44,21 @@ export function hasDemoAiPmLoopProgress(projectId = DEMO_SESSION_PROJECT_ID): bo
   );
 }
 
-/** Wipe all demo client state — must run before every demo entry. */
+/** Wipe demo client state for one project namespace (Sample / My Business isolated). */
 export function clearAllDemoClientState(projectId = DEMO_SESSION_PROJECT_ID): void {
   if (typeof window === 'undefined') return;
 
   clearDemoGuidedWorkspaceSession(projectId);
+  resetDemoPlayback(projectId);
 
-  sessionStorage.removeItem(DEMO_PROJECT_DRAFT_KEY);
-  sessionStorage.removeItem(DEMO_WORKFLOW_SNAPSHOT_KEY);
-  sessionStorage.removeItem(DEMO_CUSTOM_DOCUMENT_KEY);
-
-  removeKeysContaining(sessionStorage, '.demo');
-  removeKeysContaining(localStorage, '.demo');
-
-  document.cookie = 'll_demo_project_draft=; path=/; max-age=0; SameSite=Lax';
-  document.cookie = 'WORKSPACE_MODE=; path=/; max-age=0; SameSite=Lax';
+  if (isDemoMyBusinessProjectId(projectId)) {
+    sessionStorage.removeItem(demoCustomDocumentKey(projectId));
+    sessionStorage.removeItem(DEMO_CUSTOM_DOCUMENT_KEY);
+    sessionStorage.removeItem(DEMO_PROJECT_DRAFT_KEY);
+    sessionStorage.removeItem(DEMO_WORKFLOW_SNAPSHOT_KEY);
+    document.cookie = 'll_demo_project_draft=; path=/; max-age=0; SameSite=Lax';
+    document.cookie = 'WORKSPACE_MODE=; path=/; max-age=0; SameSite=Lax';
+  }
 }
 
 export function clearDemoGuidedWorkspaceSession(projectId: string): void {

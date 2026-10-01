@@ -85,7 +85,7 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
         : params.demo === 'guided' || params.demo === '1' || demoCookie
           ? 'demo-guided'
           : 'demo-guided';
-    const demoSampleId = isDemoSampleId(params.sample) ? params.sample : 'launchlens';
+    const demoSampleId = isDemoSampleId(params.sample) ? params.sample : 'clinicflow';
 
     return (
       <>

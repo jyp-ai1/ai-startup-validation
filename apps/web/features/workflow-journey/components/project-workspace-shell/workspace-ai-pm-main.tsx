@@ -75,7 +75,14 @@ import { buildSharedUnderstanding } from '../../lib/business-understanding/build
 import { reopenAiPmLoopForRefinement } from '../../lib/business-understanding/process-loop-answer';
 import { commitFirstAskAfterUnderstandingConfirm } from '../../lib/business-understanding/understanding-confirm-ask-transition';
 import { syncDemoCustomDocumentKey } from '../../lib/demo-guided-document-sync';
-import { DEMO_SESSION_PROJECT_ID } from '../../lib/demo-samples';
+import { isDemoGuestProjectId } from '@/lib/demo/demo-isolation';
+import {
+  demoMyBusinessPreviewComplete,
+  isDemoMyBusinessPreviewCap,
+  shouldBlockDemoMyBusinessJudgment,
+} from '@/lib/demo/demo-my-business-preview';
+import { DemoSamplePlaybackBar } from '../demo/demo-sample-playback-bar';
+import { advanceDemoPlaybackFrame } from '@/lib/demo/demo-playback';
 import { applyWorkspaceDomainToMemory } from '../../lib/business-understanding/apply-workspace-domain-to-memory';
 import { applyUserCorrection } from '../../lib/business-understanding/correction-and-why';
 import {
@@ -118,6 +125,8 @@ type WorkspaceAiPmMainProps = {
   projectName?: string;
   onLoopDocumentUpdated?: () => void;
   onLoopComplete?: () => void;
+  demoSamplePlayback?: boolean;
+  demoMyBusinessPreview?: boolean;
   onSessionPause?: () => void;
   onDomainChange?: (field: WorkspaceDomainFieldId, value: string) => void;
   /** When false (demo/guest), skip server persist — avoids requireAuthUser redirect. */
@@ -178,6 +187,8 @@ export function WorkspaceAiPmMain({
   enableDbPersistence = true,
   workspaceFacts = null,
   workspaceSnapshotUpdatedAt = null,
+  demoSamplePlayback = false,
+  demoMyBusinessPreview = false,
   className,
 }: WorkspaceAiPmMainProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmMain');
@@ -249,6 +260,14 @@ export function WorkspaceAiPmMain({
 
   /** S16 P0-2 / P1-2 — confirm → next question (loop) or review-ready; never force market analysis */
   const proceedAfterUnderstandingConfirm = useCallback(() => {
+    if (demoSamplePlayback && projectId) {
+      advanceDemoPlaybackFrame(projectId);
+      setLoopState(loadAiPmLoopState(projectId));
+      setUnderstandingPhase(loadUnderstandingPhase(projectId));
+      onUnderstandingConfirmed?.();
+      return;
+    }
+
     saveUnderstandingConfirmMode('accepted', projectId);
     if (isAiPmLoopComplete(loadAiPmLoopState(projectId))) {
       saveUnderstandingPhase('review-ready', projectId);
@@ -269,7 +288,7 @@ export function WorkspaceAiPmMain({
       setLoopState(loadAiPmLoopState(projectId));
     }
 
-    if (showDemoLoginCta && projectId === DEMO_SESSION_PROJECT_ID) {
+    if (showDemoLoginCta && projectId && isDemoGuestProjectId(projectId)) {
       syncDemoCustomDocumentKey(projectId);
     }
 
@@ -277,6 +296,7 @@ export function WorkspaceAiPmMain({
     setUnderstandingPhase('accepted');
     onUnderstandingConfirmed?.();
   }, [
+    demoSamplePlayback,
     documentContext,
     entities,
     onUnderstandingConfirmed,
@@ -402,7 +422,7 @@ export function WorkspaceAiPmMain({
     if (projectId && enableDbPersistence) {
       void persistWorkspaceStateDbFirst({ projectId });
     }
-    if (showDemoLoginCta && projectId === DEMO_SESSION_PROJECT_ID) {
+    if (showDemoLoginCta && projectId && isDemoGuestProjectId(projectId)) {
       syncDemoCustomDocumentKey(projectId);
     }
   }, [domain, enableDbPersistence, onLoopDocumentUpdated, projectId, showDemoLoginCta]);
@@ -479,7 +499,7 @@ export function WorkspaceAiPmMain({
     if (projectId && enableDbPersistence) {
       void persistWorkspaceStateDbFirst({ projectId });
     }
-    if (showDemoLoginCta && projectId === DEMO_SESSION_PROJECT_ID) {
+    if (showDemoLoginCta && projectId && isDemoGuestProjectId(projectId)) {
       syncDemoCustomDocumentKey(projectId);
     }
     proceedAfterUnderstandingConfirm();
@@ -660,13 +680,34 @@ export function WorkspaceAiPmMain({
 
   return (
     <div className={cn('mx-auto max-w-[720px] space-y-6 py-2', className)}>
+      {demoSamplePlayback && projectId ? (
+        <DemoSamplePlaybackBar
+          projectId={projectId}
+          onAdvanced={() => {
+            setLoopState(loadAiPmLoopState(projectId));
+            setUnderstandingPhase(loadUnderstandingPhase(projectId));
+          }}
+        />
+      ) : null}
+
+      {demoMyBusinessPreview &&
+      projectId &&
+      isDemoMyBusinessPreviewCap(projectId) &&
+      demoMyBusinessPreviewComplete(projectId) ? (
+        <WorkspaceDemoLoginCta />
+      ) : null}
+
       {showAiPmLoop && understanding ? (
         <div id="ai-pm-loop">
           <WorkspaceAiPmLoopPanel
             understanding={understanding}
             entities={entities}
             projectId={projectId}
-            readOnly={readOnly}
+            readOnly={
+              readOnly ||
+              demoSamplePlayback ||
+              (demoMyBusinessPreview && shouldBlockDemoMyBusinessJudgment(projectId))
+            }
             allowAsk={understandingConfirmed}
             workspaceFacts={workspaceFacts}
             workspaceSnapshotUpdatedAt={workspaceSnapshotUpdatedAt}

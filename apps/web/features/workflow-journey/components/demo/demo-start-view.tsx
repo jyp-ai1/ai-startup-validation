@@ -16,10 +16,10 @@ import {
   looksLikeDocumentFileName,
 } from '../../lib/business-understanding/workspace-document-eligibility';
 import { clearAllDemoClientState } from '../../lib/demo-guided-session';
+import { resolveDemoGuidedProjectId } from '@/lib/demo/demo-isolation';
 import {
-  DEMO_CUSTOM_DOCUMENT_KEY,
+  demoCustomDocumentKey,
   DEMO_SAMPLES,
-  DEMO_SESSION_PROJECT_ID,
   type DemoSampleId,
 } from '../../lib/demo-samples';
 import { readSmartIntakeFile } from '../../lib/v2-smart-intake-engine';
@@ -68,11 +68,12 @@ function buildDraftFromDocument(content: string): DemoProjectDraft {
 }
 
 function startDemoWorkspace(sample: DemoSampleId, customDocument?: string): void {
-  clearAllDemoClientState(DEMO_SESSION_PROJECT_ID);
+  const projectId = resolveDemoGuidedProjectId({ sampleParam: sample });
+  clearAllDemoClientState(projectId);
 
   if (sample === 'custom' && customDocument?.trim()) {
     const trimmed = customDocument.trim();
-    sessionStorage.setItem(DEMO_CUSTOM_DOCUMENT_KEY, trimmed);
+    sessionStorage.setItem(demoCustomDocumentKey(projectId), trimmed);
     persistDemoProjectDraftForLogin(buildDraftFromDocument(trimmed));
   }
 
@@ -86,7 +87,7 @@ function startDemoWorkspace(sample: DemoSampleId, customDocument?: string): void
 
 export function DemoStartView({ className }: DemoStartViewProps) {
   const [mode, setMode] = useState<'pick' | 'sample' | 'custom'>('pick');
-  const [selectedSample, setSelectedSample] = useState<DemoSampleId>('launchlens');
+  const [selectedSample, setSelectedSample] = useState<DemoSampleId>('clinicflow');
   const [customDocument, setCustomDocument] = useState('');
   const [fileName, setFileName] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -142,7 +143,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">①</p>
             <p className="mt-3 text-lg font-semibold">ALABOM Sample 체험하기</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              SaaS · F&B · 커머스 · 제조 예시 문서로 Read → Review까지 체험
+              클리닉플로우 · 동네장터알림 · 핏브릿지 — 실제 사업 시나리오 Playback
             </p>
           </button>
           <button

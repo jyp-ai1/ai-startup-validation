@@ -53,7 +53,7 @@ export function WorkspaceProjectCanvas({
   authComplete = false,
   needsPersona = false,
   demoMode = 'default',
-  demoSampleId = 'launchlens',
+  demoSampleId = 'clinicflow',
   demoFresh = false,
   seedDocument,
   persistedWorkspace = null,

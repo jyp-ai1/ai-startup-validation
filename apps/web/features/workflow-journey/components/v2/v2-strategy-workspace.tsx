@@ -97,10 +97,12 @@ import {
 } from '../../lib/demo-guided-document-hydration';
 import { syncDemoCustomDocumentKey } from '../../lib/demo-guided-document-sync';
 import {
-  DEMO_CUSTOM_DOCUMENT_KEY,
-  DEMO_SESSION_PROJECT_ID,
+  demoCustomDocumentKey,
+  resolveDemoSampleSlug,
   type DemoSampleId,
 } from '../../lib/demo-samples';
+import { resolveDemoGuidedProjectId } from '@/lib/demo/demo-isolation';
+import { initDemoSamplePlayback, isDemoSamplePlaybackProject } from '@/lib/demo/demo-playback';
 
 type WorkspacePhase = 'compose' | 'reviewing' | 'board' | 'followUp';
 
@@ -143,7 +145,7 @@ export function V2StrategyWorkspaceView({
   mode = 'default',
   user = null,
   projectId,
-  demoSampleId = 'launchlens',
+  demoSampleId = 'clinicflow',
   demoFresh = false,
   seedDocument,
   isNewProject = false,
@@ -153,7 +155,17 @@ export function V2StrategyWorkspaceView({
   const isDemoReadonly = mode === 'demo-readonly';
   const isDemoGuided = mode === 'demo-guided';
   const isDemoNoPersist = isDemoReadonly || isDemoGuided;
-  const storageProjectId = isDemoGuided ? DEMO_SESSION_PROJECT_ID : projectId;
+  const guidedStorageProjectId = useMemo(
+    () =>
+      isDemoGuided
+        ? resolveDemoGuidedProjectId({ sampleParam: demoSampleId })
+        : undefined,
+    [demoSampleId, isDemoGuided],
+  );
+  const storageProjectId = isDemoGuided
+    ? (guidedStorageProjectId ?? resolveDemoGuidedProjectId({ sampleParam: demoSampleId }))
+    : projectId;
+  const demoSampleSlug = resolveDemoSampleSlug(demoSampleId);
   const tb = useTranslations('workflow.v2.reviewBoard');
   const td = useTranslations('workflow.v2.strategyWorkspace.decisionMemory');
   const tDraft = useTranslations('workflow.v2.strategyWorkspace.decisionMemory.draft');
@@ -298,11 +310,13 @@ export function V2StrategyWorkspaceView({
     }
 
     if (isDemoGuided) {
-      const loopProgress = hasDemoAiPmLoopProgress(DEMO_SESSION_PROJECT_ID);
+      if (!storageProjectId) return;
+      const loopProgress = hasDemoAiPmLoopProgress(storageProjectId);
       const storedDocument = loadWorkspaceDocumentText(storageProjectId)?.trim() ?? '';
+      const customKey = storageProjectId ? demoCustomDocumentKey(storageProjectId) : '';
       const sessionCustom =
-        typeof window !== 'undefined'
-          ? sessionStorage.getItem(DEMO_CUSTOM_DOCUMENT_KEY)?.trim() ?? ''
+        typeof window !== 'undefined' && customKey
+          ? sessionStorage.getItem(customKey)?.trim() ?? ''
           : '';
 
       const preservedCustomDocument =
@@ -316,16 +330,16 @@ export function V2StrategyWorkspaceView({
           hasLoopProgress: loopProgress,
         })
       ) {
-        clearAllDemoClientState(DEMO_SESSION_PROJECT_ID);
-        if (preservedCustomDocument) {
-          sessionStorage.setItem(DEMO_CUSTOM_DOCUMENT_KEY, preservedCustomDocument);
+        clearAllDemoClientState(storageProjectId);
+        if (preservedCustomDocument && customKey) {
+          sessionStorage.setItem(customKey, preservedCustomDocument);
           saveWorkspaceDocumentText(preservedCustomDocument, storageProjectId);
         }
       }
 
       const customDocument =
         demoSampleId === 'custom'
-          ? (sessionStorage.getItem(DEMO_CUSTOM_DOCUMENT_KEY)?.trim() ||
+          ? (sessionStorage.getItem(customKey)?.trim() ||
               storedDocument ||
               '')
           : '';
@@ -396,6 +410,13 @@ export function V2StrategyWorkspaceView({
       setPhase('compose');
       setFollowUpDone(false);
       setLastReviewAt(null);
+      if (
+        demoSampleSlug !== 'custom' &&
+        storageProjectId &&
+        isDemoSamplePlaybackProject(storageProjectId)
+      ) {
+        initDemoSamplePlayback(storageProjectId);
+      }
       refreshUnderstandingState();
       return;
     }
@@ -482,7 +503,7 @@ export function V2StrategyWorkspaceView({
 
   const handleDocumentIntake = useCallback(
     (content: string) => {
-      if (isDemoReadonly) return;
+      if (isDemoReadonly || !storageProjectId) return;
       const trimmed = content.trim();
       if (!isWorkspaceDocumentAnalyzable(trimmed)) return;
       const inferred = inferDomainFromPaste(trimmed, storageProjectId);
@@ -906,6 +927,8 @@ export function V2StrategyWorkspaceView({
           phase={phase}
           readOnly={isDemoReadonly}
           projectId={storageProjectId}
+          demoSamplePlayback={demoSampleSlug !== 'custom' && isDemoSamplePlaybackProject(storageProjectId ?? '')}
+          demoMyBusinessPreview={demoSampleSlug === 'custom'}
           showDemoLoginCta={showDemoLoginCta}
           hasCompletedReview={hasCompletedReview}
           onDocumentIntake={handleDocumentIntake}

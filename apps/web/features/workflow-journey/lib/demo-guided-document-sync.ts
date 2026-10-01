@@ -1,13 +1,11 @@
-import { DEMO_CUSTOM_DOCUMENT_KEY, DEMO_SESSION_PROJECT_ID } from './demo-samples';
+import { demoCustomDocumentKey } from './demo-samples';
 import { loadWorkspaceDocumentText } from './workspace-ai-pm-messages';
 import { isWorkspaceDocumentAnalyzable } from './business-understanding/workspace-document-eligibility';
 
 /** Keep session custom key aligned with canonical workspace document (demo only). */
-export function syncDemoCustomDocumentKey(
-  projectId: string = DEMO_SESSION_PROJECT_ID,
-): void {
+export function syncDemoCustomDocumentKey(projectId: string): void {
   if (typeof window === 'undefined') return;
   const doc = loadWorkspaceDocumentText(projectId)?.trim() ?? '';
   if (!isWorkspaceDocumentAnalyzable(doc)) return;
-  sessionStorage.setItem(DEMO_CUSTOM_DOCUMENT_KEY, doc);
+  sessionStorage.setItem(demoCustomDocumentKey(projectId), doc);
 }
