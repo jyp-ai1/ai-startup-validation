@@ -1,0 +1,138 @@
+{
+  "cases": [
+    {
+      "id": "cal-normal",
+      "behavior": "normal",
+      "auto": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "question": "PARTIAL",
+        "reasoning": "PASS"
+      },
+      "cpo": {
+        "id": "cal-normal",
+        "behavior": "normal",
+        "cpoUnderstanding": "PASS",
+        "cpoQuestion": "PASS"
+      },
+      "aligned": false,
+      "mismatches": [
+        "question: auto=PARTIAL cpo=PASS"
+      ]
+    },
+    {
+      "id": "cal-sparse",
+      "behavior": "sparse",
+      "auto": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "question": "PASS",
+        "reasoning": "PASS"
+      },
+      "cpo": {
+        "id": "cal-sparse",
+        "behavior": "sparse",
+        "cpoUnderstanding": "PARTIAL",
+        "cpoState": "PARTIAL"
+      },
+      "aligned": false,
+      "mismatches": [
+        "understanding: auto=PASS cpo=PARTIAL",
+        "state: auto=PASS cpo=PARTIAL"
+      ]
+    },
+    {
+      "id": "cal-multi",
+      "behavior": "multi_fact",
+      "auto": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "question": "PARTIAL",
+        "reasoning": "PASS"
+      },
+      "cpo": {
+        "id": "cal-multi",
+        "behavior": "multi_fact",
+        "cpoUnderstanding": "PASS"
+      },
+      "aligned": false,
+      "mismatches": [
+        "understanding: auto=FAIL cpo=PASS"
+      ]
+    },
+    {
+      "id": "cal-off-slot",
+      "behavior": "off_slot",
+      "auto": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "question": "PARTIAL",
+        "reasoning": "PASS"
+      },
+      "cpo": {
+        "id": "cal-off-slot",
+        "behavior": "off_slot",
+        "cpoState": "PARTIAL"
+      },
+      "aligned": false,
+      "mismatches": [
+        "state: auto=PASS cpo=PARTIAL"
+      ]
+    },
+    {
+      "id": "cal-contradiction",
+      "behavior": "contradiction",
+      "auto": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "question": "PARTIAL",
+        "reasoning": "PASS"
+      },
+      "cpo": {
+        "id": "cal-contradiction",
+        "behavior": "contradiction",
+        "cpoState": "FAIL",
+        "note": "T4+ must CONFLICT"
+      },
+      "aligned": true,
+      "mismatches": []
+    },
+    {
+      "id": "cal-correction",
+      "behavior": "correction",
+      "auto": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "question": "PASS",
+        "reasoning": "PASS"
+      },
+      "cpo": {
+        "id": "cal-correction",
+        "behavior": "correction",
+        "cpoUnderstanding": "PASS"
+      },
+      "aligned": true,
+      "mismatches": []
+    },
+    {
+      "id": "cal-uncertainty",
+      "behavior": "uncertainty",
+      "auto": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "question": "PARTIAL",
+        "reasoning": "PASS"
+      },
+      "cpo": {
+        "id": "cal-uncertainty",
+        "behavior": "uncertainty",
+        "cpoReasoning": "PASS",
+        "note": "WTP must not close as FACT"
+      },
+      "aligned": true,
+      "mismatches": []
+    }
+  ],
+  "alignmentRate": 0.42857142857142855,
+  "placeholderSkipped": 3
+}

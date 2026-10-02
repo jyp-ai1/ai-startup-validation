@@ -1,14 +1,19 @@
 # Long Sprint status
 
 **Updated:** 2026-10-02 UTC  
-**Sprint:** **2A Validation Lab** — Phase 1 actual evidence (CPO re-open)  
-**Cluster fix:** **NOT STARTED** (CPO gate)
+**Sprint:** **AI PM Validation Engine** — **COMPLETION EVIDENCE PUBLISHED**  
+**Cluster fix (2B):** **HOLD** — use mining clusters for next Improvement Sprint  
 
 | Phase | Status |
 |-------|--------|
-| Sprint 2 Long Sprint Phase 1–2 (cluster search) | DONE |
-| **Sprint 2A Phase 1** — dynamic Q + actual capture | **IN PROGRESS** (`validation-lab-evidence.json`) |
-| CPO 2-pass on actual rows | OPEN |
-| Cluster A→E fix | BLOCKED until CPO confirms evidence |
+| P1 Schema + state transitions | DONE |
+| P2 Mini Sandbox 150 turns | DONE |
+| P3 Dynamic conversation | DONE (V3 loop + ground truth) |
+| P4 Evaluation engine | DONE (L1–L5 rules, intent/priority) |
+| P5 CPO calibration | DONE (set + compare — **CPO sign-off pending**) |
+| P6 Failure mining | DONE |
+| P7 Holdout biz-16/17 | DONE |
+| P8 Scale 10×6×5 | DONE |
+| P9 Real business | Deferred to existing `evidence:real-business-review` |
 
-Docs: `SPRINT-2A-VALIDATION-LAB.md` · `CPO-PROGRESS-REPORT-2026-10-02-STOP.md`
+**CEO/CPO read first:** `VALIDATION-ENGINE-COMPLETION-EVIDENCE.md`

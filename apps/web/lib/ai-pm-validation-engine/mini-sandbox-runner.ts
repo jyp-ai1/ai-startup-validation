@@ -160,13 +160,14 @@ export function runMiniSandboxSession(input: {
 
     const evaluation = evaluateTurnDeterministic({
       userAnswer: userInput,
-      extractedFactCount: review.extractedFacts.length,
+      extractedFacts: review.extractedFacts,
       behavior: input.behavior,
       turn: t,
       groundTruthGap: gtGapAfter,
       aiGapSnapshot: aiGapAfter,
       askedGapId,
       nextTargetGap: pendingDecision?.targetGapId ?? null,
+      nextQuestionText: pendingDecision?.questionText ?? null,
     });
 
     rows.push({

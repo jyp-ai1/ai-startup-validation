@@ -24,6 +24,17 @@ export function generateUserAnswer(input: {
         return '실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.';
       }
       return `고객은 20~30대 ${c}입니다.`;
+    case 'sparse':
+      return 'B2B.';
+    case 'off_slot':
+      return `참고로 우리 팀은 5명이고, ${p} 문제는 심각합니다.`;
+    case 'uncertainty':
+      return '유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.';
+    case 'correction':
+      if (input.turn >= 3) {
+        return `정정합니다. 고객은 ${c}가 아니라 중소 제조 CEO입니다.`;
+      }
+      return `고객은 ${c}입니다.`;
     default:
       return `(${input.behavior}) ${c} 관련 답변 turn ${input.turn}`;
   }
