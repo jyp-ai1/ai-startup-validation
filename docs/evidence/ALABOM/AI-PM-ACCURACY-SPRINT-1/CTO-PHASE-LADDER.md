@@ -18,7 +18,8 @@
 | Phase | Command |
 |-------|---------|
 | ① | `cd apps/web && pnpm test:cpo-2pass-evidence` |
-| ② | `pnpm evidence:real-business-review` → `pnpm evidence:phase2-cpo-pack` (needs storageState) |
+| ② harness | `pnpm test:multi-business-accuracy` |
+| ②-A Production | `pnpm evidence:real-business-review` → `pnpm evidence:phase2-cpo-pack` (needs storageState) |
 | Golden regression | `pnpm test:accuracy-golden` |
 
 **Metrics:** `ACCURACY-LAYER-METRICS.md` — no fake % until CPO labels rows.
