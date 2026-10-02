@@ -201,10 +201,20 @@ export function evaluateAnswerQuality(
   return { quality: 'VALID', mergeable: true };
 }
 
+/** CEO declares a revised customer segment (often embedded in a long reversal utterance). */
+export function extractDeclaredCustomerSegment(text: string): string | null {
+  const t = text.trim();
+  const m = t.match(
+    /(?:실제\s*(?:최종\s*)?)?고객(?:은|이)\s*([^,.]+?)(?:입니다|이고|이며|였습니다|\.|,|$)/u,
+  );
+  return m?.[1]?.trim() ?? null;
+}
+
 /** Lightweight contradiction: both claims look like replacements of the same slot. */
 export function answersContradict(prior: string, next: string): boolean {
   const a = prior.trim().replace(/\s+/g, ' ').toLowerCase();
-  const b = next.trim().replace(/\s+/g, ' ').toLowerCase();
+  const declared = extractDeclaredCustomerSegment(next);
+  const b = (declared ?? next).trim().replace(/\s+/g, ' ').toLowerCase();
   if (!a || !b || a === b) return false;
   if (a.includes(b) || b.includes(a)) return false;
 
@@ -220,6 +230,9 @@ export function answersContradict(prior: string, next: string): boolean {
     if (tokensB.has(t)) overlap += 1;
   }
   const ratio = overlap / Math.min(tokensA.size, tokensB.size);
+  if (declared) {
+    return ratio < 0.35;
+  }
   return ratio < 0.2 && Math.abs(tokensA.size - tokensB.size) <= 3;
 }
 

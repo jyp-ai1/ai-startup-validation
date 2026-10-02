@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://launchlens.dev/schemas/business-scenario.json",
+  "title": "BusinessScenario",
+  "type": "object",
+  "required": ["id", "archetype", "documentText"],
+  "properties": {
+    "id": { "type": "string" },
+    "archetype": { "type": "string" },
+    "documentText": { "type": "string" },
+    "groundTruth": {
+      "type": "object",
+      "properties": {
+        "business": { "$ref": "#/$defs/slotValue" },
+        "customer": { "$ref": "#/$defs/slotValue" },
+        "user": { "$ref": "#/$defs/slotValue" },
+        "payer": { "$ref": "#/$defs/slotValue" },
+        "problem": { "$ref": "#/$defs/slotValue" },
+        "jtbd": { "$ref": "#/$defs/slotValue" },
+        "market": { "$ref": "#/$defs/slotValue" },
+        "channel": { "$ref": "#/$defs/slotValue" },
+        "alternative": { "$ref": "#/$defs/slotValue" },
+        "competitor": { "$ref": "#/$defs/slotValue" },
+        "solution": { "$ref": "#/$defs/slotValue" },
+        "differentiation": { "$ref": "#/$defs/slotValue" },
+        "businessModel": { "$ref": "#/$defs/slotValue" },
+        "revenue": { "$ref": "#/$defs/slotValue" },
+        "pricing": { "$ref": "#/$defs/slotValue" },
+        "validation": { "$ref": "#/$defs/slotValue" }
+      }
+    },
+    "set": { "enum": ["development", "calibration", "regression", "holdout", "real"] }
+  },
+  "$defs": {
+    "slotValue": {
+      "type": "object",
+      "properties": {
+        "value": { "type": "string" },
+        "source": { "enum": ["founder", "document", "inferred", "unknown"] },
+        "certainty": { "enum": ["KNOWN", "PARTIAL", "UNKNOWN", "ASSUMPTION", "INFERENCE", "CONFLICT"] },
+        "evidenceStrength": { "type": "integer", "minimum": 1, "maximum": 5 }
+      }
+    }
+  }
+}

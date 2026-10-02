@@ -1,0 +1,2373 @@
+{
+  "generatedAt": "2026-10-02T10:35:17.694Z",
+  "sprint": "AI_PM_IMPROVEMENT_SPRINT_1",
+  "phase": "CPO_CALIBRATION",
+  "baselineTurns": 650,
+  "targetPerCluster": 10,
+  "clusters": {
+    "F13_MULTI_FACT_LOSS": {
+      "sampled": 10,
+      "available": 98,
+      "cases": [
+        {
+          "id": "cal-F13_MULTI_FACT_LOSS-1-sb-b2c-saas-t1",
+          "cluster": "F13_MULTI_FACT_LOSS",
+          "businessId": "sb-b2c-saas",
+          "archetype": "B2C SaaS",
+          "behavior": "multi_fact",
+          "turn": 1,
+          "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 할 일·일정 분산를 관리합니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "CLOSED",
+            "payerUser": "CLOSED",
+            "wtp": "OPEN"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "FAIL",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F13_MULTI_FACT_LOSS",
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F13_MULTI_FACT_LOSS-2-sb-b2b-saas-t1",
+          "cluster": "F13_MULTI_FACT_LOSS",
+          "businessId": "sb-b2b-saas",
+          "archetype": "B2B SaaS",
+          "behavior": "multi_fact",
+          "turn": 1,
+          "userInput": "경영진/팀 리더가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 업무 협업 비효율를 관리합니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "CLOSED",
+            "payerUser": "CLOSED",
+            "wtp": "OPEN"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "FAIL",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F13_MULTI_FACT_LOSS",
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F13_MULTI_FACT_LOSS-3-sb-marketplace-t1",
+          "cluster": "F13_MULTI_FACT_LOSS",
+          "businessId": "sb-marketplace",
+          "archetype": "Marketplace",
+          "behavior": "multi_fact",
+          "turn": 1,
+          "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 적합 전문가 찾기 어려움를 관리합니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "CLOSED",
+            "payerUser": "CLOSED",
+            "wtp": "OPEN"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "FAIL",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F13_MULTI_FACT_LOSS",
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F13_MULTI_FACT_LOSS-4-sb-commerce-t2",
+          "cluster": "F13_MULTI_FACT_LOSS",
+          "businessId": "sb-commerce",
+          "archetype": "Commerce",
+          "behavior": "multi_fact",
+          "turn": 2,
+          "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 신뢰할 제품 선택 어려움를 관리합니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "CLOSED",
+            "payerUser": "CLOSED",
+            "wtp": "OPEN"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "differentiationVsAlternatives": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "customerPersona": "OPEN"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "FAIL",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F13_MULTI_FACT_LOSS"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F13_MULTI_FACT_LOSS-5-sb-subscription-t1",
+          "cluster": "F13_MULTI_FACT_LOSS",
+          "businessId": "sb-subscription",
+          "archetype": "Subscription",
+          "behavior": "multi_fact",
+          "turn": 1,
+          "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 지속 구독 가치 불확실를 관리합니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "CLOSED",
+            "payerUser": "CLOSED",
+            "wtp": "OPEN"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "FAIL",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F13_MULTI_FACT_LOSS",
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F13_MULTI_FACT_LOSS-6-sb-local-t1",
+          "cluster": "F13_MULTI_FACT_LOSS",
+          "businessId": "sb-local",
+          "archetype": "Local Service",
+          "behavior": "multi_fact",
+          "turn": 1,
+          "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 온라인 홍보 시간 부족를 관리합니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "CLOSED",
+            "payerUser": "CLOSED",
+            "wtp": "OPEN"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "FAIL",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F13_MULTI_FACT_LOSS",
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F13_MULTI_FACT_LOSS-7-sb-platform-t1",
+          "cluster": "F13_MULTI_FACT_LOSS",
+          "businessId": "sb-platform",
+          "archetype": "Platform",
+          "behavior": "multi_fact",
+          "turn": 1,
+          "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "CLOSED",
+            "payerUser": "CLOSED",
+            "wtp": "OPEN"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "FAIL",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F13_MULTI_FACT_LOSS",
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F13_MULTI_FACT_LOSS-8-sb-hardware-t1",
+          "cluster": "F13_MULTI_FACT_LOSS",
+          "businessId": "sb-hardware",
+          "archetype": "Hardware",
+          "behavior": "multi_fact",
+          "turn": 1,
+          "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 장비 상태 모니터링를 관리합니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "CLOSED",
+            "payerUser": "CLOSED",
+            "wtp": "OPEN"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "FAIL",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F13_MULTI_FACT_LOSS",
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F13_MULTI_FACT_LOSS-9-sb-professional-t1",
+          "cluster": "F13_MULTI_FACT_LOSS",
+          "businessId": "sb-professional",
+          "archetype": "Professional Service",
+          "behavior": "multi_fact",
+          "turn": 1,
+          "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "CLOSED",
+            "payerUser": "CLOSED",
+            "wtp": "OPEN"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "FAIL",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F13_MULTI_FACT_LOSS",
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F13_MULTI_FACT_LOSS-10-sb-professional-t2",
+          "cluster": "F13_MULTI_FACT_LOSS",
+          "businessId": "sb-professional",
+          "archetype": "Professional Service",
+          "behavior": "multi_fact",
+          "turn": 2,
+          "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "CLOSED",
+            "payerUser": "CLOSED",
+            "wtp": "OPEN"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "CLOSED",
+            "customerPersona": "OPEN",
+            "problemJtbd": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "FAIL",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F13_MULTI_FACT_LOSS"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        }
+      ]
+    },
+    "F11_CONTRADICTION_MISHANDLING": {
+      "sampled": 10,
+      "available": 20,
+      "cases": [
+        {
+          "id": "cal-F11_CONTRADICTION_MISHANDLING-1-sb-b2c-saas-t5",
+          "cluster": "F11_CONTRADICTION_MISHANDLING",
+          "businessId": "sb-b2c-saas",
+          "archetype": "B2C SaaS",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F11_CONTRADICTION_MISHANDLING-2-sb-b2b-saas-t5",
+          "cluster": "F11_CONTRADICTION_MISHANDLING",
+          "businessId": "sb-b2b-saas",
+          "archetype": "B2B SaaS",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F11_CONTRADICTION_MISHANDLING-3-sb-marketplace-t5",
+          "cluster": "F11_CONTRADICTION_MISHANDLING",
+          "businessId": "sb-marketplace",
+          "archetype": "Marketplace",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "marketChannel": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "alternativesCompetitors": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F11_CONTRADICTION_MISHANDLING-4-sb-commerce-t5",
+          "cluster": "F11_CONTRADICTION_MISHANDLING",
+          "businessId": "sb-commerce",
+          "archetype": "Commerce",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F11_CONTRADICTION_MISHANDLING-5-sb-subscription-t5",
+          "cluster": "F11_CONTRADICTION_MISHANDLING",
+          "businessId": "sb-subscription",
+          "archetype": "Subscription",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F11_CONTRADICTION_MISHANDLING-6-sb-local-t5",
+          "cluster": "F11_CONTRADICTION_MISHANDLING",
+          "businessId": "sb-local",
+          "archetype": "Local Service",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F11_CONTRADICTION_MISHANDLING-7-sb-platform-t5",
+          "cluster": "F11_CONTRADICTION_MISHANDLING",
+          "businessId": "sb-platform",
+          "archetype": "Platform",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F11_CONTRADICTION_MISHANDLING-8-sb-hardware-t5",
+          "cluster": "F11_CONTRADICTION_MISHANDLING",
+          "businessId": "sb-hardware",
+          "archetype": "Hardware",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F11_CONTRADICTION_MISHANDLING-9-sb-professional-t5",
+          "cluster": "F11_CONTRADICTION_MISHANDLING",
+          "businessId": "sb-professional",
+          "archetype": "Professional Service",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F11_CONTRADICTION_MISHANDLING-10-sb-ai-service-t5",
+          "cluster": "F11_CONTRADICTION_MISHANDLING",
+          "businessId": "sb-ai-service",
+          "archetype": "AI Service",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        }
+      ]
+    },
+    "STATE_DRIFT": {
+      "sampled": 10,
+      "available": 20,
+      "cases": [
+        {
+          "id": "cal-STATE_DRIFT-1-sb-b2c-saas-t5",
+          "cluster": "STATE_DRIFT",
+          "businessId": "sb-b2c-saas",
+          "archetype": "B2C SaaS",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-STATE_DRIFT-2-sb-b2b-saas-t5",
+          "cluster": "STATE_DRIFT",
+          "businessId": "sb-b2b-saas",
+          "archetype": "B2B SaaS",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-STATE_DRIFT-3-sb-marketplace-t5",
+          "cluster": "STATE_DRIFT",
+          "businessId": "sb-marketplace",
+          "archetype": "Marketplace",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "marketChannel": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "alternativesCompetitors": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-STATE_DRIFT-4-sb-commerce-t5",
+          "cluster": "STATE_DRIFT",
+          "businessId": "sb-commerce",
+          "archetype": "Commerce",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-STATE_DRIFT-5-sb-subscription-t5",
+          "cluster": "STATE_DRIFT",
+          "businessId": "sb-subscription",
+          "archetype": "Subscription",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-STATE_DRIFT-6-sb-local-t5",
+          "cluster": "STATE_DRIFT",
+          "businessId": "sb-local",
+          "archetype": "Local Service",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-STATE_DRIFT-7-sb-platform-t5",
+          "cluster": "STATE_DRIFT",
+          "businessId": "sb-platform",
+          "archetype": "Platform",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-STATE_DRIFT-8-sb-hardware-t5",
+          "cluster": "STATE_DRIFT",
+          "businessId": "sb-hardware",
+          "archetype": "Hardware",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-STATE_DRIFT-9-sb-professional-t5",
+          "cluster": "STATE_DRIFT",
+          "businessId": "sb-professional",
+          "archetype": "Professional Service",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-STATE_DRIFT-10-sb-ai-service-t5",
+          "cluster": "STATE_DRIFT",
+          "businessId": "sb-ai-service",
+          "archetype": "AI Service",
+          "behavior": "contradiction",
+          "turn": 5,
+          "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CONFLICT",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "marketChannel": "CONTRADICTED"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "FAIL",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F11_CONTRADICTION_MISHANDLING",
+            "STATE_DRIFT"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        }
+      ]
+    },
+    "F04_FACT_ASSUMPTION_CONFUSION": {
+      "sampled": 10,
+      "available": 125,
+      "cases": [
+        {
+          "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-1-sb-subscription-t1",
+          "cluster": "F04_FACT_ASSUMPTION_CONFUSION",
+          "businessId": "sb-subscription",
+          "archetype": "Subscription",
+          "behavior": "normal",
+          "turn": 1,
+          "userInput": "핵심 고객은 콘텐츠 소비자이고, 가장 큰 문제는 지속 구독 가치 불확실입니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "revenueModel": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-2-sb-b2c-saas-t1",
+          "cluster": "F04_FACT_ASSUMPTION_CONFUSION",
+          "businessId": "sb-b2c-saas",
+          "archetype": "B2C SaaS",
+          "behavior": "uncertainty",
+          "turn": 1,
+          "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-3-sb-b2b-saas-t1",
+          "cluster": "F04_FACT_ASSUMPTION_CONFUSION",
+          "businessId": "sb-b2b-saas",
+          "archetype": "B2B SaaS",
+          "behavior": "uncertainty",
+          "turn": 1,
+          "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-4-sb-marketplace-t1",
+          "cluster": "F04_FACT_ASSUMPTION_CONFUSION",
+          "businessId": "sb-marketplace",
+          "archetype": "Marketplace",
+          "behavior": "uncertainty",
+          "turn": 1,
+          "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-5-sb-commerce-t1",
+          "cluster": "F04_FACT_ASSUMPTION_CONFUSION",
+          "businessId": "sb-commerce",
+          "archetype": "Commerce",
+          "behavior": "uncertainty",
+          "turn": 1,
+          "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-6-sb-local-t1",
+          "cluster": "F04_FACT_ASSUMPTION_CONFUSION",
+          "businessId": "sb-local",
+          "archetype": "Local Service",
+          "behavior": "uncertainty",
+          "turn": 1,
+          "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-7-sb-platform-t1",
+          "cluster": "F04_FACT_ASSUMPTION_CONFUSION",
+          "businessId": "sb-platform",
+          "archetype": "Platform",
+          "behavior": "uncertainty",
+          "turn": 1,
+          "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-8-sb-hardware-t1",
+          "cluster": "F04_FACT_ASSUMPTION_CONFUSION",
+          "businessId": "sb-hardware",
+          "archetype": "Hardware",
+          "behavior": "uncertainty",
+          "turn": 1,
+          "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-9-sb-professional-t1",
+          "cluster": "F04_FACT_ASSUMPTION_CONFUSION",
+          "businessId": "sb-professional",
+          "archetype": "Professional Service",
+          "behavior": "uncertainty",
+          "turn": 1,
+          "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-10-sb-professional-t2",
+          "cluster": "F04_FACT_ASSUMPTION_CONFUSION",
+          "businessId": "sb-professional",
+          "archetype": "Professional Service",
+          "behavior": "uncertainty",
+          "turn": 2,
+          "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
+          "askedGapId": "customerPersona",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "CLOSED",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "PARTIAL",
+            "customerPersona": "OPEN"
+          },
+          "expectedGap": null,
+          "actualGap": "customerPersona",
+          "expectedQuestionIntent": "customer_definition",
+          "actualQuestionIntent": "customer_definition",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PASS",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [],
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        }
+      ]
+    },
+    "F08_WRONG_GAP_PRIORITY": {
+      "sampled": 10,
+      "available": 206,
+      "cases": [
+        {
+          "id": "cal-F08_WRONG_GAP_PRIORITY-1-sb-b2c-saas-t1",
+          "cluster": "F08_WRONG_GAP_PRIORITY",
+          "businessId": "sb-b2c-saas",
+          "archetype": "B2C SaaS",
+          "behavior": "normal",
+          "turn": 1,
+          "userInput": "핵심 고객은 직장인·프리랜서이고, 가장 큰 문제는 할 일·일정 분산입니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "customerPersona": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F08_WRONG_GAP_PRIORITY-2-sb-b2b-saas-t1",
+          "cluster": "F08_WRONG_GAP_PRIORITY",
+          "businessId": "sb-b2b-saas",
+          "archetype": "B2B SaaS",
+          "behavior": "normal",
+          "turn": 1,
+          "userInput": "핵심 고객은 중소기업 팀이고, 가장 큰 문제는 업무 협업 비효율입니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "customerPersona": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F08_WRONG_GAP_PRIORITY-3-sb-marketplace-t1",
+          "cluster": "F08_WRONG_GAP_PRIORITY",
+          "businessId": "sb-marketplace",
+          "archetype": "Marketplace",
+          "behavior": "normal",
+          "turn": 1,
+          "userInput": "핵심 고객은 중소기업 수요자이고, 가장 큰 문제는 적합 전문가 찾기 어려움입니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "customerPersona": "CLOSED",
+            "marketChannel": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F08_WRONG_GAP_PRIORITY-4-sb-commerce-t1",
+          "cluster": "F08_WRONG_GAP_PRIORITY",
+          "businessId": "sb-commerce",
+          "archetype": "Commerce",
+          "behavior": "normal",
+          "turn": 1,
+          "userInput": "핵심 고객은 20~40대 건강 관심 소비자이고, 가장 큰 문제는 신뢰할 제품 선택 어려움입니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "differentiationVsAlternatives": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F08_WRONG_GAP_PRIORITY-5-sb-subscription-t1",
+          "cluster": "F08_WRONG_GAP_PRIORITY",
+          "businessId": "sb-subscription",
+          "archetype": "Subscription",
+          "behavior": "normal",
+          "turn": 1,
+          "userInput": "핵심 고객은 콘텐츠 소비자이고, 가장 큰 문제는 지속 구독 가치 불확실입니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "revenueModel": "PARTIAL"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F08_WRONG_GAP_PRIORITY-6-sb-local-t1",
+          "cluster": "F08_WRONG_GAP_PRIORITY",
+          "businessId": "sb-local",
+          "archetype": "Local Service",
+          "behavior": "normal",
+          "turn": 1,
+          "userInput": "핵심 고객은 1~3호점 F&B 사장이고, 가장 큰 문제는 온라인 홍보 시간 부족입니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "customerPersona": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F08_WRONG_GAP_PRIORITY-7-sb-platform-t1",
+          "cluster": "F08_WRONG_GAP_PRIORITY",
+          "businessId": "sb-platform",
+          "archetype": "Platform",
+          "behavior": "normal",
+          "turn": 1,
+          "userInput": "핵심 고객은 스타트업 개발팀이고, 가장 큰 문제는 API 연동·운영 부담입니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "customerPersona": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F08_WRONG_GAP_PRIORITY-8-sb-hardware-t1",
+          "cluster": "F08_WRONG_GAP_PRIORITY",
+          "businessId": "sb-hardware",
+          "archetype": "Hardware",
+          "behavior": "normal",
+          "turn": 1,
+          "userInput": "핵심 고객은 제조 SMB이고, 가장 큰 문제는 장비 상태 모니터링입니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "customerPersona": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F08_WRONG_GAP_PRIORITY-9-sb-professional-t1",
+          "cluster": "F08_WRONG_GAP_PRIORITY",
+          "businessId": "sb-professional",
+          "archetype": "Professional Service",
+          "behavior": "normal",
+          "turn": 1,
+          "userInput": "핵심 고객은 초기 스타트업 CEO이고, 가장 큰 문제는 GTM 실행 리소스 부족입니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "OPEN",
+            "payerUser": "OPEN",
+            "wtp": "OPEN",
+            "businessOneLiner": "CLOSED"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "customerPersona": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "PASS",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        },
+        {
+          "id": "cal-F08_WRONG_GAP_PRIORITY-10-sb-professional-t1",
+          "cluster": "F08_WRONG_GAP_PRIORITY",
+          "businessId": "sb-professional",
+          "archetype": "Professional Service",
+          "behavior": "multi_fact",
+          "turn": 1,
+          "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.",
+          "askedGapId": "businessOneLiner",
+          "expectedFacts": null,
+          "actualFacts": null,
+          "expectedState": {
+            "customerPersona": "OPEN",
+            "problemStatement": "CLOSED",
+            "payerUser": "CLOSED",
+            "wtp": "OPEN"
+          },
+          "actualState": {
+            "businessOneLiner": "CLOSED",
+            "revenueModel": "CLOSED"
+          },
+          "expectedGap": null,
+          "actualGap": "businessOneLiner",
+          "expectedQuestionIntent": "business_summary",
+          "actualQuestionIntent": "business_summary",
+          "expectedReasoning": null,
+          "actualReasoning": null,
+          "autoVerdict": {
+            "understanding": "FAIL",
+            "state": "PASS",
+            "gap": "PASS",
+            "question": "PARTIAL",
+            "reasoning": "PASS",
+            "judgment": "PASS"
+          },
+          "failureTypes": [
+            "F13_MULTI_FACT_LOSS",
+            "F16_WRONG_NEXT_QUESTION_RATIONALE"
+          ],
+          "severity": "medium",
+          "cpoCalibratedVerdict": "PENDING",
+          "calibrationClass": "PENDING",
+          "cpoNotes": null
+        }
+      ]
+    }
+  },
+  "shortfalls": []
+}

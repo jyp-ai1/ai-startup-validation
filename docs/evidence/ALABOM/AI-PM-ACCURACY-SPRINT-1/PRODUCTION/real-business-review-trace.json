@@ -1,0 +1,17 @@
+{
+  "status": "BLOCKED",
+  "phase": 2,
+  "sessionId": null,
+  "productionUrl": "https://ai-startup-validation-tau.vercel.app",
+  "gitSha": "4f70ad7ea93212a31c8dcf79408b3ca5c9acb861",
+  "startedAt": null,
+  "finishedAt": "2026-10-02T04:52:13.602Z",
+  "turns": [],
+  "finalKnowledgeState": null,
+  "reasoning": null,
+  "judgment": null,
+  "uncertainty": null,
+  "nextValidation": null,
+  "blockReason": "Missing QA_AUTH_STORAGE_STATE_PATH or apps/web/.qa-auth/storageState.json — Real Business Review trace requires authenticated Production session.",
+  "nextStep": "Provide valid storageState → re-run pnpm evidence:real-business-review"
+}

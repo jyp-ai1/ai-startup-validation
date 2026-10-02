@@ -649,6 +649,38 @@ export function interpretAnswerSemantics(input: {
       : null;
   const priorForConflict = existingForKey ?? inferredPrior;
 
+  const explicitCorrectionDecl =
+    /정정합니다|수정할게요|아까\s*답변을\s*수정|답변을\s*바꿉/u.test(trimmed);
+  const personaHypothesisReversal =
+    /실제\s*(최종\s*)?고객|이전에\s*말한|초기\s*가설/u.test(trimmed);
+
+  const personaReversalOnCustomerCue =
+    !explicitCorrectionDecl &&
+    personaHypothesisReversal &&
+    (factKey === 'customer' ||
+      askedGap === 'customerPersona' ||
+      facts.some((f) => f.key === 'customer') ||
+      hasCustomerPersonaCue(trimmed));
+  if (personaReversalOnCustomerCue) {
+    const priorPersona =
+      input.existingFactsByKey?.customer ??
+      (askedFact === 'customer' ? input.existingFact : null) ??
+      null;
+    if (priorPersona && answersContradict(priorPersona, trimmed)) {
+      return emptyInterpretation({
+        intent: 'business_fact',
+        factKey: 'customer',
+        resolvedIssueId: 'customer_definition',
+        facts: [{ key: 'customer', issueId: 'customer_definition' }],
+        value: trimmed,
+        mergeable: false,
+        displayOnly: false,
+        rationale: '고객 정의가 이전 진술과 충돌 — CONFLICT 확인 필요.',
+        quality: 'CONTRADICTORY',
+      });
+    }
+  }
+
   if (
     priorForConflict &&
     !shouldSkipContradictionForCorrection({

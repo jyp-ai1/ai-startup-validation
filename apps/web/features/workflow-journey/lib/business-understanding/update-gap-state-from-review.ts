@@ -45,14 +45,20 @@ function confidenceFromFacts(
 function buildRecordFromVerdict(
   review: AnswerReview,
   verdict: GapVerdict,
+  prev?: GapKnowledgeRecord,
 ): GapKnowledgeRecord {
-  const evidence = review.extractedFacts
+  let evidence = review.extractedFacts
     .filter((f) => f.targetGap === verdict.gapId)
     .map((f) => ({
       factKey: f.key,
       value: f.value,
       evidenceClass: f.evidenceClass,
     }));
+
+  // Sprint 1 — preserve prior evidence when this turn only re-seals CLOSED (E-2).
+  if (evidence.length === 0 && prev?.evidence.length && verdict.completeness === 'CLOSED') {
+    evidence = prev.evidence;
+  }
 
   return {
     gapId: verdict.gapId,
@@ -82,7 +88,7 @@ export function updateGapStateFromReview(
     if (!shouldApplyVerdict(prev, verdict.completeness)) {
       continue;
     }
-    gaps[verdict.gapId] = buildRecordFromVerdict(review, verdict);
+    gaps[verdict.gapId] = buildRecordFromVerdict(review, verdict, prev);
     lastReviewByGap[verdict.gapId] = review.reviewId;
   }
 

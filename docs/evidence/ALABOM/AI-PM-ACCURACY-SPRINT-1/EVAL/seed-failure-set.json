@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "purpose": "REGRESSION_SEED — all cluster fixes must pass these",
+  "clusterFixHold": true,
+  "seeds": [
+    {
+      "id": "A",
+      "label": "WTP / uncertainty as FACT",
+      "sprint2Types": ["F04_FACT_ASSUMPTION_CONFUSION", "F05_INFERENCE_AS_FACT"],
+      "references": ["golden-h-wtp-assumption", "CPO-ROOT-CAUSE-biz-01.md#t4"]
+    },
+    {
+      "id": "B",
+      "label": "Sparse answer slot contamination",
+      "sprint2Types": ["F06_CLOSED_STATE_REGRESSION", "F07_OPEN_GAP_MISSED"],
+      "references": ["cross-business sparse probe"]
+    },
+    {
+      "id": "C",
+      "label": "Off-slot absorption + state preservation",
+      "sprint2Types": ["F07_OPEN_GAP_MISSED", "F10_OFF_SLOT_MISHANDLING"],
+      "references": ["golden-c-wrong-slot", "CPO-ROOT-CAUSE-biz-07.md"]
+    },
+    {
+      "id": "D",
+      "label": "Multi-fact slot separation",
+      "sprint2Types": ["F13_MULTI_FACT_LOSS", "F03_PAYER_USER_CONFUSION"],
+      "references": ["CPO-ROOT-CAUSE-biz-01.md#t2"]
+    },
+    {
+      "id": "E",
+      "label": "Contradiction → CONFLICT",
+      "sprint2Types": ["F11_CONTRADICTION_MISHANDLING"],
+      "references": ["CPO-ROOT-CAUSE-biz-01.md#t5"]
+    },
+    {
+      "id": "F",
+      "label": "Correction entity extraction / contamination",
+      "sprint2Types": ["F12_CORRECTION_ROLLBACK"],
+      "references": ["validation-lab correction perturbation"]
+    }
+  ],
+  "regressionCommands": [
+    "pnpm test:accuracy-golden",
+    "pnpm test:multi-business-accuracy",
+    "pnpm test:mini-sandbox"
+  ]
+}

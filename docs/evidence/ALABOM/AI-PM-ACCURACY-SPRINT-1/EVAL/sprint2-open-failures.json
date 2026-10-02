@@ -1,0 +1,57 @@
+{
+  "updatedAt": "2026-10-02T05:10:00.000Z",
+  "status": "HOLD_VALIDATION_ENGINE_SPRINT",
+  "note": "Cluster fixes paused; A-F in seed-failure-set.json",
+  "clusters": ["A_WTP", "B_SPARSE", "C_OFF_SLOT_STATE", "D_MULTI_FACT", "E_CONTRADICTION"],
+  "crossBusinessSearch": "EVAL/cross-business-failure-search.json",
+  "sourceReport": "multi-business-harness-report.json",
+  "failures": [
+    {
+      "businessId": "biz-01",
+      "turn": 2,
+      "perturbation": "multi_fact",
+      "harnessTypes": ["F1_SLOT_MISCLASSIFICATION"],
+      "sprint2Types": ["F13_MULTI_FACT_LOSS", "F03_PAYER_USER_CONFUSION"],
+      "rcaDoc": "CPO-ROOT-CAUSE-biz-01.md#t2--multi_fact",
+      "fixStatus": "NOT_STARTED"
+    },
+    {
+      "businessId": "biz-01",
+      "turn": 3,
+      "perturbation": "off_slot",
+      "harnessTypes": ["F3_GAP_MISCLASSIFICATION"],
+      "sprint2Types": ["F07_OPEN_GAP_MISSED", "F10_OFF_SLOT_MISHANDLING", "F05_INFERENCE_AS_FACT"],
+      "rcaDoc": "CPO-ROOT-CAUSE-biz-01.md#t3--off_slot-customer-ask",
+      "fixStatus": "NOT_STARTED"
+    },
+    {
+      "businessId": "biz-01",
+      "turn": 4,
+      "perturbation": "uncertainty",
+      "harnessTypes": ["F7_EVIDENCE_INFERENCE_CONFUSION", "F3_GAP_MISCLASSIFICATION"],
+      "sprint2Types": ["F04_FACT_ASSUMPTION_CONFUSION", "F05_INFERENCE_AS_FACT", "F06_CLOSED_STATE_REGRESSION"],
+      "rcaDoc": "CPO-ROOT-CAUSE-biz-01.md#t4--uncertainty-wtp",
+      "fixStatus": "NOT_STARTED"
+    },
+    {
+      "businessId": "biz-01",
+      "turn": 5,
+      "perturbation": "contradiction",
+      "harnessTypes": ["F6_CONTRADICTION_HANDLING"],
+      "sprint2Types": ["F11_CONTRADICTION_MISHANDLING"],
+      "rcaDoc": "CPO-ROOT-CAUSE-biz-01.md#t5--contradiction-payer",
+      "fixStatus": "NOT_STARTED"
+    },
+    {
+      "businessId": "biz-07",
+      "turn": 3,
+      "perturbation": "off_slot",
+      "harnessTypes": ["F3_GAP_MISCLASSIFICATION"],
+      "sprint2Types": ["F07_OPEN_GAP_MISSED", "F10_OFF_SLOT_MISHANDLING", "F01_CUSTOMER_POLLUTION", "F08_WRONG_GAP_PRIORITY"],
+      "rcaDoc": "CPO-ROOT-CAUSE-biz-07.md#t3--off_slot-customer-ask",
+      "fixStatus": "NOT_STARTED",
+      "relatedGolden": "golden-c-wrong-slot"
+    }
+  ],
+  "failureTypeRegressionLog": []
+}

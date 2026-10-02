@@ -1,0 +1,74 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { afterAll, describe, expect, it } from 'vitest';
+
+import {
+  buildCpo2PassEvidencePack,
+  renderCpo2PassAccessManifest,
+  renderCpo2PassMarkdown,
+  renderCpo2PassReviewSheet,
+  renderCpoReverify3Submission,
+} from '../cpo-2pass-evidence';
+import { GOLDEN_SCENARIOS } from '../golden-scenarios';
+import { REASONING_JUDGMENT_GOLDEN_STUBS } from '../reasoning-judgment-golden';
+
+afterAll(() => {
+  if (process.env.CPO_2PASS_EVIDENCE !== '1') return;
+  const gitSha = process.env.ACCURACY_GIT_SHA ?? 'unknown';
+  const gitBranch = process.env.ACCURACY_GIT_BRANCH ?? 'unknown';
+  const pack = buildCpo2PassEvidencePack({ gitSha, gitBranch });
+  const outDir = path.resolve(
+    process.cwd(),
+    '../../docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1/EVAL',
+  );
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(outDir, 'cpo-2pass-evidence-pack.json'),
+    `${JSON.stringify(pack, null, 2)}\n`,
+  );
+  const evidenceRoot = path.resolve(process.cwd(), '../../docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1');
+  fs.writeFileSync(path.join(evidenceRoot, 'CPO-ACCURACY-2PASS.md'), `${renderCpo2PassMarkdown(pack)}\n`);
+  fs.writeFileSync(
+    path.join(evidenceRoot, 'CPO-2PASS-REVIEW-SHEET.md'),
+    `${renderCpo2PassReviewSheet(pack)}\n`,
+  );
+  fs.writeFileSync(
+    path.join(evidenceRoot, 'CPO-2PASS-REVERIFY-3-SUBMISSION.md'),
+    `${renderCpoReverify3Submission(pack)}\n`,
+  );
+  fs.writeFileSync(
+    path.join(evidenceRoot, 'CPO-2PASS-ACCESS-MANIFEST.md'),
+    `${renderCpo2PassAccessManifest({
+      gitSha: process.env.ACCURACY_GIT_SHA ?? 'unknown',
+      branch: process.env.ACCURACY_GIT_BRANCH ?? 'cursor/ai-pm-accuracy-sprint1-6423',
+      repo: 'jyp-ai1/ai-startup-validation',
+    })}\n`,
+  );
+});
+
+describe('CPO 2-pass evidence pack', () => {
+  it('pack includes git provenance when env set', () => {
+    const sha = 'abc123';
+    const pack = buildCpo2PassEvidencePack({ gitSha: sha, gitBranch: 'test-branch' });
+    expect(pack.gitSha).toBe(sha);
+    expect(['REVERIFY_3_AWAITING_CPO_VERDICT', 'REVERIFY_3_CPO_SIGNED']).toContain(pack.reverifyPhase);
+  });
+
+  it('row count equals total golden turns', () => {
+    const turnCount = GOLDEN_SCENARIOS.reduce((n, s) => n + s.turns.length, 0);
+    const pack = buildCpo2PassEvidencePack();
+    expect(pack.rows.length).toBe(turnCount);
+    if (pack.phase1Status === 'CLOSED') {
+      expect(pack.rows.every((r) => r.cpoVerdict === 'PASS')).toBe(true);
+    } else {
+      for (const row of pack.rows) {
+        expect(row.cpoVerdict).toBe('PENDING_CPO_2PASS');
+      }
+    }
+  });
+
+  it('reasoning/judgment golden stubs A–H defined', () => {
+    expect(REASONING_JUDGMENT_GOLDEN_STUBS).toHaveLength(8);
+  });
+});
