@@ -1,19 +1,208 @@
 {
-  "generatedAt": "2026-10-02T10:05:56.798Z",
+  "generatedAt": "2026-10-02T10:35:15.982Z",
   "phase": "CALIBRATION_CPO_CONFIRMED",
   "note": "CPO Phase 3 confirmation pass — draft submission overturned where rubric requires.",
   "cases": [
     {
-      "id": "cal-F13_MULTI_FACT_LOSS-1-sb-platform-t2",
+      "id": "cal-F13_MULTI_FACT_LOSS-1-sb-b2c-saas-t1",
       "cluster": "F13_MULTI_FACT_LOSS",
-      "businessId": "sb-platform",
-      "archetype": "Platform",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 할 일·일정 분산를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 할 일·일정 분산를 관리합니다.\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "expectedGap": null,
+      "actualGap": "customerPersona",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "customer_definition",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PASS",
+        "question": "PARTIAL",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F13_MULTI_FACT_LOSS",
+        "F16_WRONG_NEXT_QUESTION_RATIONALE"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "caseId": "cal-F13_MULTI_FACT_LOSS-1-sb-b2c-saas-t1",
+      "business": "sb-b2c-saas",
+      "expectedGaps": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "cpoRationale": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-F13_MULTI_FACT_LOSS-2-sb-b2b-saas-t1",
+      "cluster": "F13_MULTI_FACT_LOSS",
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "경영진/팀 리더가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 업무 협업 비효율를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"경영진/팀 리더가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 업무 협업 비효율를 관리합니다.\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "expectedGap": null,
+      "actualGap": "customerPersona",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "customer_definition",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PASS",
+        "question": "PARTIAL",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F13_MULTI_FACT_LOSS",
+        "F16_WRONG_NEXT_QUESTION_RATIONALE"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "caseId": "cal-F13_MULTI_FACT_LOSS-2-sb-b2b-saas-t1",
+      "business": "sb-b2b-saas",
+      "expectedGaps": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "cpoRationale": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-F13_MULTI_FACT_LOSS-3-sb-marketplace-t1",
+      "cluster": "F13_MULTI_FACT_LOSS",
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 적합 전문가 찾기 어려움를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 적합 전문가 찾기 어려움를 관리합니다.\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "expectedGap": null,
+      "actualGap": "customerPersona",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "customer_definition",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PASS",
+        "question": "PARTIAL",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F13_MULTI_FACT_LOSS",
+        "F16_WRONG_NEXT_QUESTION_RATIONALE"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "caseId": "cal-F13_MULTI_FACT_LOSS-3-sb-marketplace-t1",
+      "business": "sb-marketplace",
+      "expectedGaps": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "cpoRationale": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-F13_MULTI_FACT_LOSS-4-sb-commerce-t2",
+      "cluster": "F13_MULTI_FACT_LOSS",
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
       "behavior": "multi_fact",
       "turn": 2,
-      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 신뢰할 제품 선택 어려움를 관리합니다.",
       "askedGapId": "customerPersona",
       "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
-      "actualFacts": "[{\"key\":\"buyer\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"},{\"key\":\"problem\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 신뢰할 제품 선택 어려움를 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "CLOSED",
@@ -22,8 +211,7 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
         "problemJtbd": "CLOSED",
         "customerPersona": "OPEN"
       },
@@ -45,11 +233,11 @@
         "F13_MULTI_FACT_LOSS"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "EVALUATOR_DEFECT",
-      "cpoNotes": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "caseId": "cal-F13_MULTI_FACT_LOSS-1-sb-platform-t2",
-      "business": "sb-platform",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "caseId": "cal-F13_MULTI_FACT_LOSS-4-sb-commerce-t2",
+      "business": "sb-commerce",
       "expectedGaps": {
         "customerPersona": "OPEN",
         "problemStatement": "CLOSED",
@@ -58,30 +246,155 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
         "problemJtbd": "CLOSED",
         "customerPersona": "OPEN"
       },
-      "cpoRationale": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "confirmedForFix": false,
+      "cpoRationale": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "confirmedForFix": true,
       "actualNextQuestion": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?",
       "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "EVALUATOR_DEFECT",
-      "draftVerdict": "PASS"
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-F13_MULTI_FACT_LOSS-2-sb-platform-t3",
+      "id": "cal-F13_MULTI_FACT_LOSS-5-sb-subscription-t1",
+      "cluster": "F13_MULTI_FACT_LOSS",
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 지속 구독 가치 불확실를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"구독 가치 불확실를 관리합니다\",\"evidenceClass\":\"ASSUMPTION\"}]",
+      "expectedState": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "PARTIAL"
+      },
+      "expectedGap": "revenueModel",
+      "actualGap": "customerPersona",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "customer_definition",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PASS",
+        "question": "PARTIAL",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F13_MULTI_FACT_LOSS",
+        "F16_WRONG_NEXT_QUESTION_RATIONALE"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "caseId": "cal-F13_MULTI_FACT_LOSS-5-sb-subscription-t1",
+      "business": "sb-subscription",
+      "expectedGaps": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "PARTIAL"
+      },
+      "cpoRationale": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-F13_MULTI_FACT_LOSS-6-sb-local-t1",
+      "cluster": "F13_MULTI_FACT_LOSS",
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 온라인 홍보 시간 부족를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 온라인 홍보 시간 부족를 관리합니다.\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "expectedGap": null,
+      "actualGap": "customerPersona",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "customer_definition",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PASS",
+        "question": "PARTIAL",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F13_MULTI_FACT_LOSS",
+        "F16_WRONG_NEXT_QUESTION_RATIONALE"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "caseId": "cal-F13_MULTI_FACT_LOSS-6-sb-local-t1",
+      "business": "sb-local",
+      "expectedGaps": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "cpoRationale": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-F13_MULTI_FACT_LOSS-7-sb-platform-t1",
       "cluster": "F13_MULTI_FACT_LOSS",
       "businessId": "sb-platform",
       "archetype": "Platform",
       "behavior": "multi_fact",
-      "turn": 3,
+      "turn": 1,
       "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
-      "askedGapId": "customerPersona",
+      "askedGapId": "businessOneLiner",
       "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
-      "actualFacts": "[{\"key\":\"buyer\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"},{\"key\":\"problem\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "CLOSED",
@@ -90,33 +403,31 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
+        "revenueModel": "CLOSED"
       },
-      "expectedGap": "customerPersona",
+      "expectedGap": null,
       "actualGap": "customerPersona",
-      "expectedQuestionIntent": "customer_definition",
+      "expectedQuestionIntent": "unknown",
       "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "답변이 customerPersona 주제와 무관합니다 — 같은 gap 재확인.",
+      "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
         "understanding": "FAIL",
         "state": "PASS",
         "gap": "PASS",
-        "question": "PASS",
+        "question": "PARTIAL",
         "reasoning": "PASS",
         "judgment": "PASS"
       },
       "failureTypes": [
-        "F13_MULTI_FACT_LOSS"
+        "F13_MULTI_FACT_LOSS",
+        "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "EVALUATOR_DEFECT",
-      "cpoNotes": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "caseId": "cal-F13_MULTI_FACT_LOSS-2-sb-platform-t3",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "caseId": "cal-F13_MULTI_FACT_LOSS-7-sb-platform-t1",
       "business": "sb-platform",
       "expectedGaps": {
         "customerPersona": "OPEN",
@@ -126,30 +437,27 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
+        "revenueModel": "CLOSED"
       },
-      "cpoRationale": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?",
+      "cpoRationale": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
       "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "EVALUATOR_DEFECT",
-      "draftVerdict": "PASS"
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-F13_MULTI_FACT_LOSS-3-sb-platform-t4",
+      "id": "cal-F13_MULTI_FACT_LOSS-8-sb-hardware-t1",
       "cluster": "F13_MULTI_FACT_LOSS",
-      "businessId": "sb-platform",
-      "archetype": "Platform",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
       "behavior": "multi_fact",
-      "turn": 4,
-      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
-      "askedGapId": "customerPersona",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 장비 상태 모니터링를 관리합니다.",
+      "askedGapId": "businessOneLiner",
       "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
-      "actualFacts": "[{\"key\":\"buyer\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"},{\"key\":\"problem\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 장비 상태 모니터링를 관리합니다.\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "CLOSED",
@@ -158,34 +466,32 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
+        "revenueModel": "CLOSED"
       },
-      "expectedGap": "customerPersona",
+      "expectedGap": null,
       "actualGap": "customerPersona",
-      "expectedQuestionIntent": "customer_definition",
+      "expectedQuestionIntent": "unknown",
       "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "답변이 customerPersona 주제와 무관합니다 — 같은 gap 재확인.",
+      "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
         "understanding": "FAIL",
         "state": "PASS",
         "gap": "PASS",
-        "question": "PASS",
+        "question": "PARTIAL",
         "reasoning": "PASS",
         "judgment": "PASS"
       },
       "failureTypes": [
-        "F13_MULTI_FACT_LOSS"
+        "F13_MULTI_FACT_LOSS",
+        "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "EVALUATOR_DEFECT",
-      "cpoNotes": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "caseId": "cal-F13_MULTI_FACT_LOSS-3-sb-platform-t4",
-      "business": "sb-platform",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "caseId": "cal-F13_MULTI_FACT_LOSS-8-sb-hardware-t1",
+      "business": "sb-hardware",
       "expectedGaps": {
         "customerPersona": "OPEN",
         "problemStatement": "CLOSED",
@@ -194,30 +500,27 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
+        "revenueModel": "CLOSED"
       },
-      "cpoRationale": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?",
+      "cpoRationale": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
       "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "EVALUATOR_DEFECT",
-      "draftVerdict": "PASS"
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-F13_MULTI_FACT_LOSS-4-sb-platform-t5",
+      "id": "cal-F13_MULTI_FACT_LOSS-9-sb-professional-t1",
       "cluster": "F13_MULTI_FACT_LOSS",
-      "businessId": "sb-platform",
-      "archetype": "Platform",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
       "behavior": "multi_fact",
-      "turn": 5,
-      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
-      "askedGapId": "customerPersona",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.",
+      "askedGapId": "businessOneLiner",
       "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
-      "actualFacts": "[{\"key\":\"buyer\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"},{\"key\":\"problem\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "CLOSED",
@@ -226,34 +529,32 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
+        "revenueModel": "CLOSED"
       },
-      "expectedGap": "customerPersona",
+      "expectedGap": null,
       "actualGap": "customerPersona",
-      "expectedQuestionIntent": "customer_definition",
+      "expectedQuestionIntent": "unknown",
       "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "답변이 customerPersona 주제와 무관합니다 — 같은 gap 재확인.",
+      "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
         "understanding": "FAIL",
         "state": "PASS",
         "gap": "PASS",
-        "question": "PASS",
+        "question": "PARTIAL",
         "reasoning": "PASS",
         "judgment": "PASS"
       },
       "failureTypes": [
-        "F13_MULTI_FACT_LOSS"
+        "F13_MULTI_FACT_LOSS",
+        "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "EVALUATOR_DEFECT",
-      "cpoNotes": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "caseId": "cal-F13_MULTI_FACT_LOSS-4-sb-platform-t5",
-      "business": "sb-platform",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "caseId": "cal-F13_MULTI_FACT_LOSS-9-sb-professional-t1",
+      "business": "sb-professional",
       "expectedGaps": {
         "customerPersona": "OPEN",
         "problemStatement": "CLOSED",
@@ -262,302 +563,27 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
+        "revenueModel": "CLOSED"
       },
-      "cpoRationale": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?",
+      "cpoRationale": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
       "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "EVALUATOR_DEFECT",
-      "draftVerdict": "PASS"
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-F13_MULTI_FACT_LOSS-5-sb-platform-t2",
+      "id": "cal-F13_MULTI_FACT_LOSS-10-sb-professional-t2",
       "cluster": "F13_MULTI_FACT_LOSS",
-      "businessId": "sb-platform",
-      "archetype": "Platform",
-      "behavior": "multi_fact",
-      "turn": 2,
-      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
-      "askedGapId": "customerPersona",
-      "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
-      "actualFacts": "[{\"key\":\"buyer\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"},{\"key\":\"problem\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
-      "expectedState": {
-        "customerPersona": "OPEN",
-        "problemStatement": "CLOSED",
-        "payerUser": "CLOSED",
-        "wtp": "OPEN"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
-      },
-      "expectedGap": "customerPersona",
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "customer_definition",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "답변이 customerPersona 주제와 무관합니다 — 같은 gap 재확인.",
-      "autoVerdict": {
-        "understanding": "FAIL",
-        "state": "PASS",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F13_MULTI_FACT_LOSS"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "EVALUATOR_DEFECT",
-      "cpoNotes": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "caseId": "cal-F13_MULTI_FACT_LOSS-5-sb-platform-t2",
-      "business": "sb-platform",
-      "expectedGaps": {
-        "customerPersona": "OPEN",
-        "problemStatement": "CLOSED",
-        "payerUser": "CLOSED",
-        "wtp": "OPEN"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
-      },
-      "cpoRationale": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "EVALUATOR_DEFECT",
-      "draftVerdict": "PASS"
-    },
-    {
-      "id": "cal-F13_MULTI_FACT_LOSS-6-sb-platform-t3",
-      "cluster": "F13_MULTI_FACT_LOSS",
-      "businessId": "sb-platform",
-      "archetype": "Platform",
-      "behavior": "multi_fact",
-      "turn": 3,
-      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
-      "askedGapId": "customerPersona",
-      "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
-      "actualFacts": "[{\"key\":\"buyer\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"},{\"key\":\"problem\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
-      "expectedState": {
-        "customerPersona": "OPEN",
-        "problemStatement": "CLOSED",
-        "payerUser": "CLOSED",
-        "wtp": "OPEN"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
-      },
-      "expectedGap": "customerPersona",
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "customer_definition",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "답변이 customerPersona 주제와 무관합니다 — 같은 gap 재확인.",
-      "autoVerdict": {
-        "understanding": "FAIL",
-        "state": "PASS",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F13_MULTI_FACT_LOSS"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "EVALUATOR_DEFECT",
-      "cpoNotes": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "caseId": "cal-F13_MULTI_FACT_LOSS-6-sb-platform-t3",
-      "business": "sb-platform",
-      "expectedGaps": {
-        "customerPersona": "OPEN",
-        "problemStatement": "CLOSED",
-        "payerUser": "CLOSED",
-        "wtp": "OPEN"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
-      },
-      "cpoRationale": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "EVALUATOR_DEFECT",
-      "draftVerdict": "PASS"
-    },
-    {
-      "id": "cal-F13_MULTI_FACT_LOSS-7-sb-platform-t4",
-      "cluster": "F13_MULTI_FACT_LOSS",
-      "businessId": "sb-platform",
-      "archetype": "Platform",
-      "behavior": "multi_fact",
-      "turn": 4,
-      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
-      "askedGapId": "customerPersona",
-      "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
-      "actualFacts": "[{\"key\":\"buyer\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"},{\"key\":\"problem\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
-      "expectedState": {
-        "customerPersona": "OPEN",
-        "problemStatement": "CLOSED",
-        "payerUser": "CLOSED",
-        "wtp": "OPEN"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
-      },
-      "expectedGap": "customerPersona",
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "customer_definition",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "답변이 customerPersona 주제와 무관합니다 — 같은 gap 재확인.",
-      "autoVerdict": {
-        "understanding": "FAIL",
-        "state": "PASS",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F13_MULTI_FACT_LOSS"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "EVALUATOR_DEFECT",
-      "cpoNotes": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "caseId": "cal-F13_MULTI_FACT_LOSS-7-sb-platform-t4",
-      "business": "sb-platform",
-      "expectedGaps": {
-        "customerPersona": "OPEN",
-        "problemStatement": "CLOSED",
-        "payerUser": "CLOSED",
-        "wtp": "OPEN"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
-      },
-      "cpoRationale": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "EVALUATOR_DEFECT",
-      "draftVerdict": "PASS"
-    },
-    {
-      "id": "cal-F13_MULTI_FACT_LOSS-8-sb-platform-t5",
-      "cluster": "F13_MULTI_FACT_LOSS",
-      "businessId": "sb-platform",
-      "archetype": "Platform",
-      "behavior": "multi_fact",
-      "turn": 5,
-      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
-      "askedGapId": "customerPersona",
-      "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
-      "actualFacts": "[{\"key\":\"buyer\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"},{\"key\":\"problem\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
-      "expectedState": {
-        "customerPersona": "OPEN",
-        "problemStatement": "CLOSED",
-        "payerUser": "CLOSED",
-        "wtp": "OPEN"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
-      },
-      "expectedGap": "customerPersona",
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "customer_definition",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "답변이 customerPersona 주제와 무관합니다 — 같은 gap 재확인.",
-      "autoVerdict": {
-        "understanding": "FAIL",
-        "state": "PASS",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F13_MULTI_FACT_LOSS"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "EVALUATOR_DEFECT",
-      "cpoNotes": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "caseId": "cal-F13_MULTI_FACT_LOSS-8-sb-platform-t5",
-      "business": "sb-platform",
-      "expectedGaps": {
-        "customerPersona": "OPEN",
-        "problemStatement": "CLOSED",
-        "payerUser": "CLOSED",
-        "wtp": "OPEN"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
-      },
-      "cpoRationale": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "EVALUATOR_DEFECT",
-      "draftVerdict": "PASS"
-    },
-    {
-      "id": "cal-F13_MULTI_FACT_LOSS-9-sb-platform-t2",
-      "cluster": "F13_MULTI_FACT_LOSS",
-      "businessId": "sb-platform",
-      "archetype": "Platform",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
       "behavior": "multi_fact",
       "turn": 2,
-      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.",
       "askedGapId": "customerPersona",
       "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
-      "actualFacts": "[{\"key\":\"buyer\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"},{\"key\":\"problem\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "CLOSED",
@@ -566,10 +592,9 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
         "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
+        "customerPersona": "OPEN",
+        "problemJtbd": "PARTIAL"
       },
       "expectedGap": "customerPersona",
       "actualGap": "customerPersona",
@@ -589,11 +614,11 @@
         "F13_MULTI_FACT_LOSS"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "EVALUATOR_DEFECT",
-      "cpoNotes": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "caseId": "cal-F13_MULTI_FACT_LOSS-9-sb-platform-t2",
-      "business": "sb-platform",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "caseId": "cal-F13_MULTI_FACT_LOSS-10-sb-professional-t2",
+      "business": "sb-professional",
       "expectedGaps": {
         "customerPersona": "OPEN",
         "problemStatement": "CLOSED",
@@ -602,98 +627,29 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
         "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
+        "customerPersona": "OPEN",
+        "problemJtbd": "PARTIAL"
       },
-      "cpoRationale": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "confirmedForFix": false,
+      "cpoRationale": "Multi-fact utterance but only 1 extracted fact(s); slots not separated.",
+      "confirmedForFix": true,
       "actualNextQuestion": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?",
       "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "EVALUATOR_DEFECT",
-      "draftVerdict": "PASS"
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-F13_MULTI_FACT_LOSS-10-sb-platform-t3",
-      "cluster": "F13_MULTI_FACT_LOSS",
-      "businessId": "sb-platform",
-      "archetype": "Platform",
-      "behavior": "multi_fact",
-      "turn": 3,
-      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
-      "askedGapId": "customerPersona",
-      "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
-      "actualFacts": "[{\"key\":\"buyer\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"},{\"key\":\"problem\",\"value\":\"대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.\",\"evidenceClass\":\"INFERENCE\"}]",
-      "expectedState": {
-        "customerPersona": "OPEN",
-        "problemStatement": "CLOSED",
-        "payerUser": "CLOSED",
-        "wtp": "OPEN"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
-      },
-      "expectedGap": "customerPersona",
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "customer_definition",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "답변이 customerPersona 주제와 무관합니다 — 같은 gap 재확인.",
-      "autoVerdict": {
-        "understanding": "FAIL",
-        "state": "PASS",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F13_MULTI_FACT_LOSS"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "EVALUATOR_DEFECT",
-      "cpoNotes": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "caseId": "cal-F13_MULTI_FACT_LOSS-10-sb-platform-t3",
-      "business": "sb-platform",
-      "expectedGaps": {
-        "customerPersona": "OPEN",
-        "problemStatement": "CLOSED",
-        "payerUser": "CLOSED",
-        "wtp": "OPEN"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "revenueModel": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "customerPersona": "OPEN"
-      },
-      "cpoRationale": "Multiple facts extracted; auto F13 FAIL is not justified.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "EVALUATOR_DEFECT",
-      "draftVerdict": "PASS"
-    },
-    {
-      "id": "cal-F11_CONTRADICTION_MISHANDLING-1-sb-b2c-saas-t4",
+      "id": "cal-F11_CONTRADICTION_MISHANDLING-1-sb-b2c-saas-t5",
       "cluster": "F11_CONTRADICTION_MISHANDLING",
       "businessId": "sb-b2c-saas",
       "archetype": "B2C SaaS",
       "behavior": "contradiction",
-      "turn": 4,
+      "turn": 5,
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
+      "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -705,17 +661,17 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
         "marketChannel": "CONTRADICTED"
       },
       "expectedGap": null,
-      "actualGap": "customerPersona",
+      "actualGap": "marketChannel",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
+      "actualQuestionIntent": "unknown",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
         "understanding": "PASS",
         "state": "FAIL",
@@ -732,7 +688,7 @@
       "cpoCalibratedVerdict": "FAIL",
       "calibrationClass": "AI_PM_DEFECT",
       "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
-      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-1-sb-b2c-saas-t4",
+      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-1-sb-b2c-saas-t5",
       "business": "sb-b2c-saas",
       "expectedGaps": {
         "customerPersona": "CONFLICT",
@@ -745,30 +701,30 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
         "marketChannel": "CONTRADICTED"
       },
       "cpoRationale": "Contradiction turn without customerPersona CONFLICT state.",
       "confirmedForFix": true,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
+      "actualNextQuestion": "직장인. 문제: 할 일 분산.에게 도달·검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
       "cpoConfirmed": true,
       "draftClass": "AI_PM_DEFECT",
       "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-F11_CONTRADICTION_MISHANDLING-2-sb-b2b-saas-t4",
+      "id": "cal-F11_CONTRADICTION_MISHANDLING-2-sb-b2b-saas-t5",
       "cluster": "F11_CONTRADICTION_MISHANDLING",
       "businessId": "sb-b2b-saas",
       "archetype": "B2B SaaS",
       "behavior": "contradiction",
-      "turn": 4,
+      "turn": 5,
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
+      "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -780,17 +736,17 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
         "marketChannel": "CONTRADICTED"
       },
       "expectedGap": null,
-      "actualGap": "customerPersona",
+      "actualGap": "marketChannel",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
+      "actualQuestionIntent": "unknown",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
         "understanding": "PASS",
         "state": "FAIL",
@@ -807,7 +763,7 @@
       "cpoCalibratedVerdict": "FAIL",
       "calibrationClass": "AI_PM_DEFECT",
       "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
-      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-2-sb-b2b-saas-t4",
+      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-2-sb-b2b-saas-t5",
       "business": "sb-b2b-saas",
       "expectedGaps": {
         "customerPersona": "CONFLICT",
@@ -820,30 +776,30 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
         "marketChannel": "CONTRADICTED"
       },
       "cpoRationale": "Contradiction turn without customerPersona CONFLICT state.",
       "confirmedForFix": true,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
+      "actualNextQuestion": "수요를 검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
       "cpoConfirmed": true,
       "draftClass": "AI_PM_DEFECT",
       "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-F11_CONTRADICTION_MISHANDLING-3-sb-marketplace-t4",
+      "id": "cal-F11_CONTRADICTION_MISHANDLING-3-sb-marketplace-t5",
       "cluster": "F11_CONTRADICTION_MISHANDLING",
       "businessId": "sb-marketplace",
       "archetype": "Marketplace",
       "behavior": "contradiction",
-      "turn": 4,
+      "turn": 5,
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "alternativesCompetitors",
+      "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -855,17 +811,18 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
+        "alternativesCompetitors": "CONTRADICTED"
       },
       "expectedGap": null,
-      "actualGap": "customerPersona",
+      "actualGap": "alternativesCompetitors",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
+      "actualQuestionIntent": "alternatives_competition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
         "understanding": "PASS",
         "state": "FAIL",
@@ -882,7 +839,7 @@
       "cpoCalibratedVerdict": "FAIL",
       "calibrationClass": "AI_PM_DEFECT",
       "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
-      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-3-sb-marketplace-t4",
+      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-3-sb-marketplace-t5",
       "business": "sb-marketplace",
       "expectedGaps": {
         "customerPersona": "CONFLICT",
@@ -895,15 +852,16 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
+        "alternativesCompetitors": "CONTRADICTED"
       },
       "cpoRationale": "Contradiction turn without customerPersona CONFLICT state.",
       "confirmedForFix": true,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
+      "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+      "actualNextTargetGap": "alternativesCompetitors",
       "cpoConfirmed": true,
       "draftClass": "AI_PM_DEFECT",
       "draftVerdict": "FAIL"
@@ -918,7 +876,7 @@
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
       "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"B2C 일반 소비자가 최종 고객입니다.\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -993,7 +951,7 @@
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
       "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"B2C 일반 소비자가 최종 고객입니다.\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -1059,316 +1017,16 @@
       "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-F11_CONTRADICTION_MISHANDLING-6-sb-local-t4",
+      "id": "cal-F11_CONTRADICTION_MISHANDLING-6-sb-local-t5",
       "cluster": "F11_CONTRADICTION_MISHANDLING",
       "businessId": "sb-local",
       "archetype": "Local Service",
       "behavior": "contradiction",
-      "turn": 4,
-      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
-      "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
-      "expectedState": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "expectedGap": null,
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
-      "autoVerdict": {
-        "understanding": "PASS",
-        "state": "FAIL",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F11_CONTRADICTION_MISHANDLING",
-        "STATE_DRIFT"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
-      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-6-sb-local-t4",
-      "business": "sb-local",
-      "expectedGaps": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "cpoRationale": "Contradiction turn without customerPersona CONFLICT state.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
-    },
-    {
-      "id": "cal-F11_CONTRADICTION_MISHANDLING-7-sb-platform-t4",
-      "cluster": "F11_CONTRADICTION_MISHANDLING",
-      "businessId": "sb-platform",
-      "archetype": "Platform",
-      "behavior": "contradiction",
-      "turn": 4,
-      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
-      "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
-      "expectedState": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "expectedGap": null,
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
-      "autoVerdict": {
-        "understanding": "PASS",
-        "state": "FAIL",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F11_CONTRADICTION_MISHANDLING",
-        "STATE_DRIFT"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
-      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-7-sb-platform-t4",
-      "business": "sb-platform",
-      "expectedGaps": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "cpoRationale": "Contradiction turn without customerPersona CONFLICT state.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
-    },
-    {
-      "id": "cal-F11_CONTRADICTION_MISHANDLING-8-sb-hardware-t4",
-      "cluster": "F11_CONTRADICTION_MISHANDLING",
-      "businessId": "sb-hardware",
-      "archetype": "Hardware",
-      "behavior": "contradiction",
-      "turn": 4,
-      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
-      "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
-      "expectedState": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "expectedGap": null,
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
-      "autoVerdict": {
-        "understanding": "PASS",
-        "state": "FAIL",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F11_CONTRADICTION_MISHANDLING",
-        "STATE_DRIFT"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
-      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-8-sb-hardware-t4",
-      "business": "sb-hardware",
-      "expectedGaps": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "cpoRationale": "Contradiction turn without customerPersona CONFLICT state.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
-    },
-    {
-      "id": "cal-F11_CONTRADICTION_MISHANDLING-9-sb-professional-t4",
-      "cluster": "F11_CONTRADICTION_MISHANDLING",
-      "businessId": "sb-professional",
-      "archetype": "Professional Service",
-      "behavior": "contradiction",
-      "turn": 4,
-      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
-      "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
-      "expectedState": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "expectedGap": null,
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
-      "autoVerdict": {
-        "understanding": "PASS",
-        "state": "FAIL",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F11_CONTRADICTION_MISHANDLING",
-        "STATE_DRIFT"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
-      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-9-sb-professional-t4",
-      "business": "sb-professional",
-      "expectedGaps": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "cpoRationale": "Contradiction turn without customerPersona CONFLICT state.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
-    },
-    {
-      "id": "cal-F11_CONTRADICTION_MISHANDLING-10-sb-professional-t5",
-      "cluster": "F11_CONTRADICTION_MISHANDLING",
-      "businessId": "sb-professional",
-      "archetype": "Professional Service",
-      "behavior": "contradiction",
       "turn": 5,
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "alternativesCompetitors",
+      "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"B2C 일반 소비자가 최종 고객입니다.\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -1407,7 +1065,232 @@
       "cpoCalibratedVerdict": "FAIL",
       "calibrationClass": "AI_PM_DEFECT",
       "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
-      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-10-sb-professional-t5",
+      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-6-sb-local-t5",
+      "business": "sb-local",
+      "expectedGaps": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "cpoRationale": "Contradiction turn without customerPersona CONFLICT state.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "수요를 검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-F11_CONTRADICTION_MISHANDLING-7-sb-platform-t5",
+      "cluster": "F11_CONTRADICTION_MISHANDLING",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "customerPersona",
+      "expectedFacts": "Per cluster CPO rubric",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "expectedGap": null,
+      "actualGap": "marketChannel",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "unknown",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PASS",
+        "question": "PASS",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F11_CONTRADICTION_MISHANDLING",
+        "STATE_DRIFT"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
+      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-7-sb-platform-t5",
+      "business": "sb-platform",
+      "expectedGaps": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "cpoRationale": "Contradiction turn without customerPersona CONFLICT state.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "수요를 검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-F11_CONTRADICTION_MISHANDLING-8-sb-hardware-t5",
+      "cluster": "F11_CONTRADICTION_MISHANDLING",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "customerPersona",
+      "expectedFacts": "Per cluster CPO rubric",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "expectedGap": null,
+      "actualGap": "marketChannel",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "unknown",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PASS",
+        "question": "PASS",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F11_CONTRADICTION_MISHANDLING",
+        "STATE_DRIFT"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
+      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-8-sb-hardware-t5",
+      "business": "sb-hardware",
+      "expectedGaps": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "cpoRationale": "Contradiction turn without customerPersona CONFLICT state.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "수요를 검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-F11_CONTRADICTION_MISHANDLING-9-sb-professional-t5",
+      "cluster": "F11_CONTRADICTION_MISHANDLING",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "customerPersona",
+      "expectedFacts": "Per cluster CPO rubric",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "expectedGap": null,
+      "actualGap": "marketChannel",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "unknown",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PASS",
+        "question": "PASS",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F11_CONTRADICTION_MISHANDLING",
+        "STATE_DRIFT"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
+      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-9-sb-professional-t5",
       "business": "sb-professional",
       "expectedGaps": {
         "customerPersona": "CONFLICT",
@@ -1434,16 +1317,16 @@
       "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-STATE_DRIFT-1-sb-b2c-saas-t4",
-      "cluster": "STATE_DRIFT",
-      "businessId": "sb-b2c-saas",
-      "archetype": "B2C SaaS",
+      "id": "cal-F11_CONTRADICTION_MISHANDLING-10-sb-ai-service-t5",
+      "cluster": "F11_CONTRADICTION_MISHANDLING",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
       "behavior": "contradiction",
-      "turn": 4,
+      "turn": 5,
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
+      "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -1455,17 +1338,92 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
         "marketChannel": "CONTRADICTED"
       },
       "expectedGap": null,
-      "actualGap": "customerPersona",
+      "actualGap": "marketChannel",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
+      "actualQuestionIntent": "unknown",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PASS",
+        "question": "PASS",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F11_CONTRADICTION_MISHANDLING",
+        "STATE_DRIFT"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoNotes": "Contradiction turn without customerPersona CONFLICT state.",
+      "caseId": "cal-F11_CONTRADICTION_MISHANDLING-10-sb-ai-service-t5",
+      "business": "sb-ai-service",
+      "expectedGaps": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "cpoRationale": "Contradiction turn without customerPersona CONFLICT state.",
+      "confirmedForFix": true,
+      "actualNextQuestion": "수요를 검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-STATE_DRIFT-1-sb-b2c-saas-t5",
+      "cluster": "STATE_DRIFT",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "customerPersona",
+      "expectedFacts": "Per cluster CPO rubric",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "expectedGap": null,
+      "actualGap": "marketChannel",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "unknown",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
         "understanding": "PASS",
         "state": "FAIL",
@@ -1482,7 +1440,7 @@
       "cpoCalibratedVerdict": "PASS",
       "calibrationClass": "GROUND_TRUTH_DEFECT",
       "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
-      "caseId": "cal-STATE_DRIFT-1-sb-b2c-saas-t4",
+      "caseId": "cal-STATE_DRIFT-1-sb-b2c-saas-t5",
       "business": "sb-b2c-saas",
       "expectedGaps": {
         "customerPersona": "CONFLICT",
@@ -1495,30 +1453,30 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
         "marketChannel": "CONTRADICTED"
       },
       "cpoRationale": "Sandbox GT uses CONFLICT keys not aligned with V3 CONTRADICTED/CLOSED — not AI PM drift.",
       "confirmedForFix": false,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
+      "actualNextQuestion": "직장인. 문제: 할 일 분산.에게 도달·검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
       "cpoConfirmed": true,
       "draftClass": "AI_PM_DEFECT",
       "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-STATE_DRIFT-2-sb-b2b-saas-t4",
+      "id": "cal-STATE_DRIFT-2-sb-b2b-saas-t5",
       "cluster": "STATE_DRIFT",
       "businessId": "sb-b2b-saas",
       "archetype": "B2B SaaS",
       "behavior": "contradiction",
-      "turn": 4,
+      "turn": 5,
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
+      "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -1530,17 +1488,17 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
         "marketChannel": "CONTRADICTED"
       },
       "expectedGap": null,
-      "actualGap": "customerPersona",
+      "actualGap": "marketChannel",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
+      "actualQuestionIntent": "unknown",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
         "understanding": "PASS",
         "state": "FAIL",
@@ -1557,7 +1515,7 @@
       "cpoCalibratedVerdict": "PASS",
       "calibrationClass": "GROUND_TRUTH_DEFECT",
       "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
-      "caseId": "cal-STATE_DRIFT-2-sb-b2b-saas-t4",
+      "caseId": "cal-STATE_DRIFT-2-sb-b2b-saas-t5",
       "business": "sb-b2b-saas",
       "expectedGaps": {
         "customerPersona": "CONFLICT",
@@ -1570,30 +1528,30 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
         "marketChannel": "CONTRADICTED"
       },
       "cpoRationale": "Sandbox GT uses CONFLICT keys not aligned with V3 CONTRADICTED/CLOSED — not AI PM drift.",
       "confirmedForFix": false,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
+      "actualNextQuestion": "수요를 검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
       "cpoConfirmed": true,
       "draftClass": "AI_PM_DEFECT",
       "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-STATE_DRIFT-3-sb-marketplace-t4",
+      "id": "cal-STATE_DRIFT-3-sb-marketplace-t5",
       "cluster": "STATE_DRIFT",
       "businessId": "sb-marketplace",
       "archetype": "Marketplace",
       "behavior": "contradiction",
-      "turn": 4,
+      "turn": 5,
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "alternativesCompetitors",
+      "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -1605,17 +1563,18 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
+        "alternativesCompetitors": "CONTRADICTED"
       },
       "expectedGap": null,
-      "actualGap": "customerPersona",
+      "actualGap": "alternativesCompetitors",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
+      "actualQuestionIntent": "alternatives_competition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
         "understanding": "PASS",
         "state": "FAIL",
@@ -1632,7 +1591,7 @@
       "cpoCalibratedVerdict": "PASS",
       "calibrationClass": "GROUND_TRUTH_DEFECT",
       "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
-      "caseId": "cal-STATE_DRIFT-3-sb-marketplace-t4",
+      "caseId": "cal-STATE_DRIFT-3-sb-marketplace-t5",
       "business": "sb-marketplace",
       "expectedGaps": {
         "customerPersona": "CONFLICT",
@@ -1645,15 +1604,16 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
+        "alternativesCompetitors": "CONTRADICTED"
       },
       "cpoRationale": "Sandbox GT uses CONFLICT keys not aligned with V3 CONTRADICTED/CLOSED — not AI PM drift.",
       "confirmedForFix": false,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
+      "actualNextQuestion": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+      "actualNextTargetGap": "alternativesCompetitors",
       "cpoConfirmed": true,
       "draftClass": "AI_PM_DEFECT",
       "draftVerdict": "FAIL"
@@ -1668,7 +1628,7 @@
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
       "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"B2C 일반 소비자가 최종 고객입니다.\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -1743,7 +1703,7 @@
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
       "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"B2C 일반 소비자가 최종 고객입니다.\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -1809,316 +1769,16 @@
       "draftVerdict": "FAIL"
     },
     {
-      "id": "cal-STATE_DRIFT-6-sb-local-t4",
+      "id": "cal-STATE_DRIFT-6-sb-local-t5",
       "cluster": "STATE_DRIFT",
       "businessId": "sb-local",
       "archetype": "Local Service",
       "behavior": "contradiction",
-      "turn": 4,
-      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
-      "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
-      "expectedState": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "expectedGap": null,
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
-      "autoVerdict": {
-        "understanding": "PASS",
-        "state": "FAIL",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F11_CONTRADICTION_MISHANDLING",
-        "STATE_DRIFT"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "GROUND_TRUTH_DEFECT",
-      "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
-      "caseId": "cal-STATE_DRIFT-6-sb-local-t4",
-      "business": "sb-local",
-      "expectedGaps": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "cpoRationale": "Sandbox GT uses CONFLICT keys not aligned with V3 CONTRADICTED/CLOSED — not AI PM drift.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
-    },
-    {
-      "id": "cal-STATE_DRIFT-7-sb-platform-t4",
-      "cluster": "STATE_DRIFT",
-      "businessId": "sb-platform",
-      "archetype": "Platform",
-      "behavior": "contradiction",
-      "turn": 4,
-      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
-      "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
-      "expectedState": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "expectedGap": null,
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
-      "autoVerdict": {
-        "understanding": "PASS",
-        "state": "FAIL",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F11_CONTRADICTION_MISHANDLING",
-        "STATE_DRIFT"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "GROUND_TRUTH_DEFECT",
-      "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
-      "caseId": "cal-STATE_DRIFT-7-sb-platform-t4",
-      "business": "sb-platform",
-      "expectedGaps": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "cpoRationale": "Sandbox GT uses CONFLICT keys not aligned with V3 CONTRADICTED/CLOSED — not AI PM drift.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
-    },
-    {
-      "id": "cal-STATE_DRIFT-8-sb-hardware-t4",
-      "cluster": "STATE_DRIFT",
-      "businessId": "sb-hardware",
-      "archetype": "Hardware",
-      "behavior": "contradiction",
-      "turn": 4,
-      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
-      "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
-      "expectedState": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "expectedGap": null,
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
-      "autoVerdict": {
-        "understanding": "PASS",
-        "state": "FAIL",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F11_CONTRADICTION_MISHANDLING",
-        "STATE_DRIFT"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "GROUND_TRUTH_DEFECT",
-      "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
-      "caseId": "cal-STATE_DRIFT-8-sb-hardware-t4",
-      "business": "sb-hardware",
-      "expectedGaps": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "cpoRationale": "Sandbox GT uses CONFLICT keys not aligned with V3 CONTRADICTED/CLOSED — not AI PM drift.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
-    },
-    {
-      "id": "cal-STATE_DRIFT-9-sb-professional-t4",
-      "cluster": "STATE_DRIFT",
-      "businessId": "sb-professional",
-      "archetype": "Professional Service",
-      "behavior": "contradiction",
-      "turn": 4,
-      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "marketChannel",
-      "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[]",
-      "expectedState": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualState": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "expectedGap": null,
-      "actualGap": "customerPersona",
-      "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "customer_definition",
-      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "기존 확인 내용과 충돌 — marketChannel gap 해소 필요.",
-      "autoVerdict": {
-        "understanding": "PASS",
-        "state": "FAIL",
-        "gap": "PASS",
-        "question": "PASS",
-        "reasoning": "PASS",
-        "judgment": "PASS"
-      },
-      "failureTypes": [
-        "F11_CONTRADICTION_MISHANDLING",
-        "STATE_DRIFT"
-      ],
-      "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "GROUND_TRUTH_DEFECT",
-      "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
-      "caseId": "cal-STATE_DRIFT-9-sb-professional-t4",
-      "business": "sb-professional",
-      "expectedGaps": {
-        "customerPersona": "CONFLICT",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED"
-      },
-      "actualGaps": {
-        "businessOneLiner": "CLOSED",
-        "customerPersona": "CONTRADICTED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CONTRADICTED"
-      },
-      "cpoRationale": "Sandbox GT uses CONFLICT keys not aligned with V3 CONTRADICTED/CLOSED — not AI PM drift.",
-      "confirmedForFix": false,
-      "actualNextQuestion": "「고객」에 두 가지 답이 있습니다. A) 음식점 사장님 · B) B2C 일반 소비자가 최종 고객입니다. — 어느 쪽이 맞나요?",
-      "actualNextTargetGap": "customerPersona",
-      "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
-    },
-    {
-      "id": "cal-STATE_DRIFT-10-sb-professional-t5",
-      "cluster": "STATE_DRIFT",
-      "businessId": "sb-professional",
-      "archetype": "Professional Service",
-      "behavior": "contradiction",
       "turn": 5,
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "alternativesCompetitors",
+      "askedGapId": "customerPersona",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"B2C 일반 소비자가 최종 고객입니다.\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -2157,8 +1817,308 @@
       "cpoCalibratedVerdict": "PASS",
       "calibrationClass": "GROUND_TRUTH_DEFECT",
       "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
-      "caseId": "cal-STATE_DRIFT-10-sb-professional-t5",
+      "caseId": "cal-STATE_DRIFT-6-sb-local-t5",
+      "business": "sb-local",
+      "expectedGaps": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "cpoRationale": "Sandbox GT uses CONFLICT keys not aligned with V3 CONTRADICTED/CLOSED — not AI PM drift.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "수요를 검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-STATE_DRIFT-7-sb-platform-t5",
+      "cluster": "STATE_DRIFT",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "customerPersona",
+      "expectedFacts": "Per cluster CPO rubric",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "expectedGap": null,
+      "actualGap": "marketChannel",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "unknown",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PASS",
+        "question": "PASS",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F11_CONTRADICTION_MISHANDLING",
+        "STATE_DRIFT"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
+      "caseId": "cal-STATE_DRIFT-7-sb-platform-t5",
+      "business": "sb-platform",
+      "expectedGaps": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "cpoRationale": "Sandbox GT uses CONFLICT keys not aligned with V3 CONTRADICTED/CLOSED — not AI PM drift.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "수요를 검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-STATE_DRIFT-8-sb-hardware-t5",
+      "cluster": "STATE_DRIFT",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "customerPersona",
+      "expectedFacts": "Per cluster CPO rubric",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "expectedGap": null,
+      "actualGap": "marketChannel",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "unknown",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PASS",
+        "question": "PASS",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F11_CONTRADICTION_MISHANDLING",
+        "STATE_DRIFT"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
+      "caseId": "cal-STATE_DRIFT-8-sb-hardware-t5",
+      "business": "sb-hardware",
+      "expectedGaps": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "cpoRationale": "Sandbox GT uses CONFLICT keys not aligned with V3 CONTRADICTED/CLOSED — not AI PM drift.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "수요를 검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-STATE_DRIFT-9-sb-professional-t5",
+      "cluster": "STATE_DRIFT",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "customerPersona",
+      "expectedFacts": "Per cluster CPO rubric",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "expectedGap": null,
+      "actualGap": "marketChannel",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "unknown",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PASS",
+        "question": "PASS",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F11_CONTRADICTION_MISHANDLING",
+        "STATE_DRIFT"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
+      "caseId": "cal-STATE_DRIFT-9-sb-professional-t5",
       "business": "sb-professional",
+      "expectedGaps": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualGaps": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "cpoRationale": "Sandbox GT uses CONFLICT keys not aligned with V3 CONTRADICTED/CLOSED — not AI PM drift.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "수요를 검증할 채널은 어디인가요?",
+      "actualNextTargetGap": "marketChannel",
+      "cpoConfirmed": true,
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
+    },
+    {
+      "id": "cal-STATE_DRIFT-10-sb-ai-service-t5",
+      "cluster": "STATE_DRIFT",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "customerPersona",
+      "expectedFacts": "Per cluster CPO rubric",
+      "actualFacts": "[{\"key\":\"customer\",\"value\":\"50대 남성 기업 IT 담당자\",\"evidenceClass\":\"FACT\"}]",
+      "expectedState": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "actualState": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "expectedGap": null,
+      "actualGap": "marketChannel",
+      "expectedQuestionIntent": "unknown",
+      "actualQuestionIntent": "unknown",
+      "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
+      "actualReasoning": "답변이 충분합니다 — customerPersona gap CLOSED, 다음 주제로 진행.",
+      "autoVerdict": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PASS",
+        "question": "PASS",
+        "reasoning": "PASS",
+        "judgment": "PASS"
+      },
+      "failureTypes": [
+        "F11_CONTRADICTION_MISHANDLING",
+        "STATE_DRIFT"
+      ],
+      "severity": "medium",
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoNotes": "AI gap state diverges from business-meaningful expectation (assumption closed as FACT).",
+      "caseId": "cal-STATE_DRIFT-10-sb-ai-service-t5",
+      "business": "sb-ai-service",
       "expectedGaps": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -2193,7 +2153,7 @@
       "userInput": "핵심 고객은 콘텐츠 소비자이고, 가장 큰 문제는 지속 구독 가치 불확실입니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"Subscription을(를) 위한 사용자\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"지속 구독 가치 불확실\",\"evidenceClass\":\"FACT\"},{\"key\":\"revenue\",\"value\":\"구독 가치 불확실입니다\",\"evidenceClass\":\"ASSUMPTION\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -2203,12 +2163,13 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED"
+        "problemJtbd": "CLOSED",
+        "revenueModel": "PARTIAL"
       },
-      "expectedGap": null,
-      "actualGap": "payer",
+      "expectedGap": "revenueModel",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "payer_user",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
       "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
@@ -2223,8 +2184,8 @@
         "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "PASS",
-      "calibrationClass": "AI_PM_DEFECT",
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
       "cpoNotes": "Fact vs assumption boundary for WTP/pricing claims.",
       "caseId": "cal-F04_FACT_ASSUMPTION_CONFUSION-1-sb-subscription-t1",
       "business": "sb-subscription",
@@ -2237,15 +2198,16 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED"
+        "problemJtbd": "CLOSED",
+        "revenueModel": "PARTIAL"
       },
       "cpoRationale": "Fact vs assumption boundary for WTP/pricing claims.",
       "confirmedForFix": false,
-      "actualNextQuestion": "서비스 비용은 누가 지불하나요?",
-      "actualNextTargetGap": "payer",
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "PASS"
+      "draftClass": "EVALUATOR_DEFECT",
+      "draftVerdict": "PARTIAL"
     },
     {
       "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-2-sb-b2c-saas-t1",
@@ -2257,7 +2219,7 @@
       "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "WTP/pricing must not be FACT without validation",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"market\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"revenue\",\"value\":\"구독료를 낼 것 같지만 아직 검증은 없습니다\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.\",\"evidenceClass\":\"ASSUMPTION\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -2267,14 +2229,12 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "expectedGap": null,
-      "actualGap": "payer",
+      "expectedGap": "revenueModel",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "payer_user",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
       "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
@@ -2289,9 +2249,9 @@
         "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Uncertainty language but WTP/pricing stored as FACT.",
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoNotes": "Fact vs assumption boundary for WTP/pricing claims.",
       "caseId": "cal-F04_FACT_ASSUMPTION_CONFUSION-2-sb-b2c-saas-t1",
       "business": "sb-b2c-saas",
       "expectedGaps": {
@@ -2303,17 +2263,15 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "cpoRationale": "Uncertainty language but WTP/pricing stored as FACT.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "서비스 비용은 누가 지불하나요?",
-      "actualNextTargetGap": "payer",
+      "cpoRationale": "Fact vs assumption boundary for WTP/pricing claims.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
+      "draftClass": "EVALUATOR_DEFECT",
+      "draftVerdict": "PARTIAL"
     },
     {
       "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-3-sb-b2b-saas-t1",
@@ -2325,7 +2283,7 @@
       "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "WTP/pricing must not be FACT without validation",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"market\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"revenue\",\"value\":\"구독료를 낼 것 같지만 아직 검증은 없습니다\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.\",\"evidenceClass\":\"ASSUMPTION\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -2335,14 +2293,12 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "expectedGap": null,
-      "actualGap": "payer",
+      "expectedGap": "revenueModel",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "payer_user",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
       "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
@@ -2357,9 +2313,9 @@
         "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Uncertainty language but WTP/pricing stored as FACT.",
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoNotes": "Fact vs assumption boundary for WTP/pricing claims.",
       "caseId": "cal-F04_FACT_ASSUMPTION_CONFUSION-3-sb-b2b-saas-t1",
       "business": "sb-b2b-saas",
       "expectedGaps": {
@@ -2371,17 +2327,15 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "cpoRationale": "Uncertainty language but WTP/pricing stored as FACT.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "서비스 비용은 누가 지불하나요?",
-      "actualNextTargetGap": "payer",
+      "cpoRationale": "Fact vs assumption boundary for WTP/pricing claims.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
+      "draftClass": "EVALUATOR_DEFECT",
+      "draftVerdict": "PARTIAL"
     },
     {
       "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-4-sb-marketplace-t1",
@@ -2393,7 +2347,7 @@
       "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "WTP/pricing must not be FACT without validation",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"market\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"revenue\",\"value\":\"구독료를 낼 것 같지만 아직 검증은 없습니다\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.\",\"evidenceClass\":\"ASSUMPTION\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -2403,14 +2357,12 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "expectedGap": null,
-      "actualGap": "payer",
+      "expectedGap": "revenueModel",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "payer_user",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
       "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
@@ -2425,9 +2377,9 @@
         "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Uncertainty language but WTP/pricing stored as FACT.",
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoNotes": "Fact vs assumption boundary for WTP/pricing claims.",
       "caseId": "cal-F04_FACT_ASSUMPTION_CONFUSION-4-sb-marketplace-t1",
       "business": "sb-marketplace",
       "expectedGaps": {
@@ -2439,17 +2391,15 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "cpoRationale": "Uncertainty language but WTP/pricing stored as FACT.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "서비스 비용은 누가 지불하나요?",
-      "actualNextTargetGap": "payer",
+      "cpoRationale": "Fact vs assumption boundary for WTP/pricing claims.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
+      "draftClass": "EVALUATOR_DEFECT",
+      "draftVerdict": "PARTIAL"
     },
     {
       "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-5-sb-commerce-t1",
@@ -2461,7 +2411,7 @@
       "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "WTP/pricing must not be FACT without validation",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"market\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"revenue\",\"value\":\"구독료를 낼 것 같지만 아직 검증은 없습니다\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.\",\"evidenceClass\":\"ASSUMPTION\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -2471,14 +2421,12 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "expectedGap": null,
-      "actualGap": "payer",
+      "expectedGap": "revenueModel",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "payer_user",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
       "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
@@ -2493,9 +2441,9 @@
         "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Uncertainty language but WTP/pricing stored as FACT.",
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoNotes": "Fact vs assumption boundary for WTP/pricing claims.",
       "caseId": "cal-F04_FACT_ASSUMPTION_CONFUSION-5-sb-commerce-t1",
       "business": "sb-commerce",
       "expectedGaps": {
@@ -2507,17 +2455,15 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "cpoRationale": "Uncertainty language but WTP/pricing stored as FACT.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "서비스 비용은 누가 지불하나요?",
-      "actualNextTargetGap": "payer",
+      "cpoRationale": "Fact vs assumption boundary for WTP/pricing claims.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
+      "draftClass": "EVALUATOR_DEFECT",
+      "draftVerdict": "PARTIAL"
     },
     {
       "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-6-sb-local-t1",
@@ -2529,7 +2475,7 @@
       "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "WTP/pricing must not be FACT without validation",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"market\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"revenue\",\"value\":\"구독료를 낼 것 같지만 아직 검증은 없습니다\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.\",\"evidenceClass\":\"ASSUMPTION\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -2539,14 +2485,12 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "expectedGap": null,
-      "actualGap": "payer",
+      "expectedGap": "revenueModel",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "payer_user",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
       "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
@@ -2561,9 +2505,9 @@
         "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Uncertainty language but WTP/pricing stored as FACT.",
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoNotes": "Fact vs assumption boundary for WTP/pricing claims.",
       "caseId": "cal-F04_FACT_ASSUMPTION_CONFUSION-6-sb-local-t1",
       "business": "sb-local",
       "expectedGaps": {
@@ -2575,17 +2519,15 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "cpoRationale": "Uncertainty language but WTP/pricing stored as FACT.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "서비스 비용은 누가 지불하나요?",
-      "actualNextTargetGap": "payer",
+      "cpoRationale": "Fact vs assumption boundary for WTP/pricing claims.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
+      "draftClass": "EVALUATOR_DEFECT",
+      "draftVerdict": "PARTIAL"
     },
     {
       "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-7-sb-platform-t1",
@@ -2597,7 +2539,7 @@
       "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "WTP/pricing must not be FACT without validation",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"market\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"revenue\",\"value\":\"구독료를 낼 것 같지만 아직 검증은 없습니다\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.\",\"evidenceClass\":\"ASSUMPTION\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -2607,14 +2549,12 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "expectedGap": null,
-      "actualGap": "payer",
+      "expectedGap": "revenueModel",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "payer_user",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
       "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
@@ -2629,9 +2569,9 @@
         "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Uncertainty language but WTP/pricing stored as FACT.",
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoNotes": "Fact vs assumption boundary for WTP/pricing claims.",
       "caseId": "cal-F04_FACT_ASSUMPTION_CONFUSION-7-sb-platform-t1",
       "business": "sb-platform",
       "expectedGaps": {
@@ -2643,17 +2583,15 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "cpoRationale": "Uncertainty language but WTP/pricing stored as FACT.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "서비스 비용은 누가 지불하나요?",
-      "actualNextTargetGap": "payer",
+      "cpoRationale": "Fact vs assumption boundary for WTP/pricing claims.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
+      "draftClass": "EVALUATOR_DEFECT",
+      "draftVerdict": "PARTIAL"
     },
     {
       "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-8-sb-hardware-t1",
@@ -2665,7 +2603,7 @@
       "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "WTP/pricing must not be FACT without validation",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"market\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"revenue\",\"value\":\"구독료를 낼 것 같지만 아직 검증은 없습니다\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.\",\"evidenceClass\":\"ASSUMPTION\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -2675,14 +2613,12 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "expectedGap": null,
-      "actualGap": "payer",
+      "expectedGap": "revenueModel",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "payer_user",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
       "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
@@ -2697,9 +2633,9 @@
         "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Uncertainty language but WTP/pricing stored as FACT.",
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoNotes": "Fact vs assumption boundary for WTP/pricing claims.",
       "caseId": "cal-F04_FACT_ASSUMPTION_CONFUSION-8-sb-hardware-t1",
       "business": "sb-hardware",
       "expectedGaps": {
@@ -2711,17 +2647,15 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "cpoRationale": "Uncertainty language but WTP/pricing stored as FACT.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "서비스 비용은 누가 지불하나요?",
-      "actualNextTargetGap": "payer",
+      "cpoRationale": "Fact vs assumption boundary for WTP/pricing claims.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
+      "draftClass": "EVALUATOR_DEFECT",
+      "draftVerdict": "PARTIAL"
     },
     {
       "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-9-sb-professional-t1",
@@ -2733,7 +2667,7 @@
       "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "WTP/pricing must not be FACT without validation",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"market\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"revenue\",\"value\":\"구독료를 낼 것 같지만 아직 검증은 없습니다\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.\",\"evidenceClass\":\"ASSUMPTION\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -2743,14 +2677,12 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "expectedGap": null,
-      "actualGap": "payer",
+      "expectedGap": "revenueModel",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "payer_user",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
       "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
@@ -2765,9 +2697,9 @@
         "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Uncertainty language but WTP/pricing stored as FACT.",
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoNotes": "Fact vs assumption boundary for WTP/pricing claims.",
       "caseId": "cal-F04_FACT_ASSUMPTION_CONFUSION-9-sb-professional-t1",
       "business": "sb-professional",
       "expectedGaps": {
@@ -2779,17 +2711,15 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED"
+        "revenueModel": "PARTIAL"
       },
-      "cpoRationale": "Uncertainty language but WTP/pricing stored as FACT.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "서비스 비용은 누가 지불하나요?",
-      "actualNextTargetGap": "payer",
+      "cpoRationale": "Fact vs assumption boundary for WTP/pricing claims.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
+      "draftClass": "EVALUATOR_DEFECT",
+      "draftVerdict": "PARTIAL"
     },
     {
       "id": "cal-F04_FACT_ASSUMPTION_CONFUSION-10-sb-professional-t2",
@@ -2801,28 +2731,25 @@
       "userInput": "유료 의향은 아직 불확실하고, 인터뷰만 몇 번 했습니다.",
       "askedGapId": "customerPersona",
       "expectedFacts": "WTP/pricing must not be FACT without validation",
-      "actualFacts": "[{\"key\":\"buyer\",\"value\":\"고객\",\"evidenceClass\":\"FACT\"},{\"key\":\"market\",\"value\":\"아마 고객들이 월 구독료를 낼 것 같지만 아직 검증은 없습니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"revenue\",\"value\":\"구독료를 낼 것 같지만 아직 검증은 없습니다\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[]",
       "expectedState": {
-        "customerPersona": "OPEN",
+        "customerPersona": "CLOSED",
         "problemStatement": "OPEN",
         "payerUser": "OPEN",
         "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED"
+        "businessOneLiner": "CLOSED"
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED",
-        "payer": "CLOSED"
+        "revenueModel": "PARTIAL",
+        "customerPersona": "OPEN"
       },
-      "expectedGap": null,
-      "actualGap": "problemJtbd",
-      "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "problem_jtbd",
+      "expectedGap": "customerPersona",
+      "actualGap": "customerPersona",
+      "expectedQuestionIntent": "customer_definition",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "답변이 충분합니다 — payer gap CLOSED, 다음 주제로 진행.",
+      "actualReasoning": "답변이 customerPersona 주제와 무관합니다 — 같은 gap 재확인.",
       "autoVerdict": {
         "understanding": "PASS",
         "state": "PASS",
@@ -2832,33 +2759,30 @@
         "judgment": "PASS"
       },
       "failureTypes": [],
-      "cpoCalibratedVerdict": "FAIL",
-      "calibrationClass": "AI_PM_DEFECT",
-      "cpoNotes": "Uncertainty language but WTP/pricing stored as FACT.",
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoNotes": "Fact vs assumption boundary for WTP/pricing claims.",
       "caseId": "cal-F04_FACT_ASSUMPTION_CONFUSION-10-sb-professional-t2",
       "business": "sb-professional",
       "expectedGaps": {
-        "customerPersona": "OPEN",
+        "customerPersona": "CLOSED",
         "problemStatement": "OPEN",
         "payerUser": "OPEN",
         "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED"
+        "businessOneLiner": "CLOSED"
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "marketChannel": "CLOSED",
-        "revenueModel": "CLOSED",
-        "payer": "CLOSED"
+        "revenueModel": "PARTIAL",
+        "customerPersona": "OPEN"
       },
-      "cpoRationale": "Uncertainty language but WTP/pricing stored as FACT.",
-      "confirmedForFix": true,
-      "actualNextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-      "actualNextTargetGap": "problemJtbd",
+      "cpoRationale": "Fact vs assumption boundary for WTP/pricing claims.",
+      "confirmedForFix": false,
+      "actualNextQuestion": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "AI_PM_DEFECT",
-      "draftVerdict": "FAIL"
+      "draftClass": "EVALUATOR_DEFECT",
+      "draftVerdict": "PARTIAL"
     },
     {
       "id": "cal-F08_WRONG_GAP_PRIORITY-1-sb-b2c-saas-t1",
@@ -2870,7 +2794,7 @@
       "userInput": "핵심 고객은 직장인·프리랜서이고, 가장 큰 문제는 할 일·일정 분산입니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"B2C SaaS을(를) 위한 사용자\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"할 일·일정 분산\",\"evidenceClass\":\"FACT\"},{\"key\":\"customer\",\"value\":\"직장인·프리랜서\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -2880,6 +2804,7 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "expectedGap": null,
@@ -2914,6 +2839,7 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "cpoRationale": "Intent/Priority evaluation — gap id mismatch alone is not AI PM defect (CPO Phase 3).",
@@ -2934,7 +2860,7 @@
       "userInput": "핵심 고객은 중소기업 팀이고, 가장 큰 문제는 업무 협업 비효율입니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"B2B SaaS을(를) 위한 사용자\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"업무 협업 비효율\",\"evidenceClass\":\"FACT\"},{\"key\":\"customer\",\"value\":\"중소기업 팀\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -2944,6 +2870,7 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "expectedGap": null,
@@ -2978,6 +2905,7 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "cpoRationale": "Intent/Priority evaluation — gap id mismatch alone is not AI PM defect (CPO Phase 3).",
@@ -2998,7 +2926,7 @@
       "userInput": "핵심 고객은 중소기업 수요자이고, 가장 큰 문제는 적합 전문가 찾기 어려움입니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"Marketplace을(를) 위한 사용자\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"적합 전문가 찾기 어려움\",\"evidenceClass\":\"FACT\"},{\"key\":\"customer\",\"value\":\"중소기업 수요자\",\"evidenceClass\":\"FACT\"},{\"key\":\"market\",\"value\":\"핵심 고객은 중소기업 수요자이고, 가장 큰 문제는 적합 전문가 찾기 어려움입니다.\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -3008,7 +2936,9 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED"
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED"
       },
       "expectedGap": null,
       "actualGap": "payer",
@@ -3042,7 +2972,9 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED"
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED"
       },
       "cpoRationale": "Intent/Priority evaluation — gap id mismatch alone is not AI PM defect (CPO Phase 3).",
       "confirmedForFix": false,
@@ -3062,7 +2994,7 @@
       "userInput": "핵심 고객은 20~40대 건강 관심 소비자이고, 가장 큰 문제는 신뢰할 제품 선택 어려움입니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"Commerce을(를) 위한 사용자\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"diffRelevance\",\"value\":\"핵심 고객은 20~40대 건강 관심 소비자이고, 가장 큰 문제는 신뢰할 제품 선택 어려움입니다.\",\"evidenceClass\":\"FACT\"},{\"key\":\"problem\",\"value\":\"신뢰할 제품 선택 어려움\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -3072,12 +3004,13 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED"
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED"
       },
       "expectedGap": null,
-      "actualGap": "payer",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "payer_user",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
       "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
@@ -3106,12 +3039,13 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED"
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED"
       },
       "cpoRationale": "Intent/Priority evaluation — gap id mismatch alone is not AI PM defect (CPO Phase 3).",
       "confirmedForFix": false,
-      "actualNextQuestion": "서비스 비용은 누가 지불하나요?",
-      "actualNextTargetGap": "payer",
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
       "draftClass": "EVALUATOR_DEFECT",
       "draftVerdict": "PARTIAL"
@@ -3126,7 +3060,7 @@
       "userInput": "핵심 고객은 콘텐츠 소비자이고, 가장 큰 문제는 지속 구독 가치 불확실입니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"Subscription을(를) 위한 사용자\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"지속 구독 가치 불확실\",\"evidenceClass\":\"FACT\"},{\"key\":\"revenue\",\"value\":\"구독 가치 불확실입니다\",\"evidenceClass\":\"ASSUMPTION\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -3136,12 +3070,13 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED"
+        "problemJtbd": "CLOSED",
+        "revenueModel": "PARTIAL"
       },
-      "expectedGap": null,
-      "actualGap": "payer",
+      "expectedGap": "revenueModel",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "payer_user",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
       "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
@@ -3158,7 +3093,7 @@
       "severity": "medium",
       "cpoCalibratedVerdict": "PASS",
       "calibrationClass": "EVALUATOR_DEFECT",
-      "cpoNotes": "Insufficient gap context for priority judgment.",
+      "cpoNotes": "Priority gap revenueModel open but next question targets customerPersona.",
       "caseId": "cal-F08_WRONG_GAP_PRIORITY-5-sb-subscription-t1",
       "business": "sb-subscription",
       "expectedGaps": {
@@ -3170,15 +3105,16 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED"
+        "problemJtbd": "CLOSED",
+        "revenueModel": "PARTIAL"
       },
       "cpoRationale": "Intent/Priority evaluation — gap id mismatch alone is not AI PM defect (CPO Phase 3).",
       "confirmedForFix": false,
-      "actualNextQuestion": "서비스 비용은 누가 지불하나요?",
-      "actualNextTargetGap": "payer",
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
-      "draftClass": "EVALUATOR_DEFECT",
-      "draftVerdict": "PARTIAL"
+      "draftClass": "AI_PM_DEFECT",
+      "draftVerdict": "FAIL"
     },
     {
       "id": "cal-F08_WRONG_GAP_PRIORITY-6-sb-local-t1",
@@ -3190,7 +3126,7 @@
       "userInput": "핵심 고객은 1~3호점 F&B 사장이고, 가장 큰 문제는 온라인 홍보 시간 부족입니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"Local Service을(를) 위한 사용자\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"온라인 홍보 시간 부족\",\"evidenceClass\":\"FACT\"},{\"key\":\"customer\",\"value\":\"1~3호점 F&B 사장\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -3200,6 +3136,7 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "expectedGap": null,
@@ -3234,6 +3171,7 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "cpoRationale": "Intent/Priority evaluation — gap id mismatch alone is not AI PM defect (CPO Phase 3).",
@@ -3254,7 +3192,7 @@
       "userInput": "핵심 고객은 스타트업 개발팀이고, 가장 큰 문제는 API 연동·운영 부담입니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"Platform을(를) 위한 사용자\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"API 연동·운영 부담\",\"evidenceClass\":\"FACT\"},{\"key\":\"customer\",\"value\":\"스타트업 개발팀\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -3264,6 +3202,7 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "expectedGap": null,
@@ -3298,6 +3237,7 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "cpoRationale": "Intent/Priority evaluation — gap id mismatch alone is not AI PM defect (CPO Phase 3).",
@@ -3318,7 +3258,7 @@
       "userInput": "핵심 고객은 제조 SMB이고, 가장 큰 문제는 장비 상태 모니터링입니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"Hardware을(를) 위한 사용자\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"장비 상태 모니터링\",\"evidenceClass\":\"FACT\"},{\"key\":\"customer\",\"value\":\"제조 SMB\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -3328,6 +3268,7 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "expectedGap": null,
@@ -3362,6 +3303,7 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "cpoRationale": "Intent/Priority evaluation — gap id mismatch alone is not AI PM defect (CPO Phase 3).",
@@ -3382,7 +3324,7 @@
       "userInput": "핵심 고객은 초기 스타트업 CEO이고, 가장 큰 문제는 GTM 실행 리소스 부족입니다.",
       "askedGapId": "businessOneLiner",
       "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"Professional Service을(를) 위한 사용자\",\"evidenceClass\":\"FACT\"}]",
+      "actualFacts": "[{\"key\":\"problem\",\"value\":\"GTM 실행 리소스 부족\",\"evidenceClass\":\"FACT\"},{\"key\":\"customer\",\"value\":\"초기 스타트업 CEO\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
         "problemStatement": "OPEN",
@@ -3392,6 +3334,7 @@
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "expectedGap": null,
@@ -3426,6 +3369,7 @@
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
         "customerPersona": "CLOSED"
       },
       "cpoRationale": "Intent/Priority evaluation — gap id mismatch alone is not AI PM defect (CPO Phase 3).",
@@ -3437,43 +3381,34 @@
       "draftVerdict": "PARTIAL"
     },
     {
-      "id": "cal-F08_WRONG_GAP_PRIORITY-10-sb-professional-t5",
+      "id": "cal-F08_WRONG_GAP_PRIORITY-10-sb-professional-t1",
       "cluster": "F08_WRONG_GAP_PRIORITY",
       "businessId": "sb-professional",
       "archetype": "Professional Service",
-      "behavior": "normal",
-      "turn": 5,
-      "userInput": "핵심 고객은 초기 스타트업 CEO이고, 가장 큰 문제는 GTM 실행 리소스 부족입니다.",
-      "askedGapId": "differentiationVsAlternatives",
-      "expectedFacts": "Per cluster CPO rubric",
-      "actualFacts": "[{\"key\":\"customer\",\"value\":\"Professional Service을(를) 위한 사용자\",\"evidenceClass\":\"FACT\"}]",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "expectedFacts": "Separate payer/user/problem/workaround into distinct slots",
+      "actualFacts": "[{\"key\":\"revenue\",\"value\":\"구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.\",\"evidenceClass\":\"FACT\"}]",
       "expectedState": {
         "customerPersona": "OPEN",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CLOSED",
-        "alternativesCompetitors": "CLOSED"
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
       },
       "actualState": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CLOSED",
-        "alternativesCompetitors": "CLOSED"
+        "revenueModel": "CLOSED"
       },
       "expectedGap": null,
-      "actualGap": "differentiationVsAlternatives",
+      "actualGap": "customerPersona",
       "expectedQuestionIntent": "unknown",
-      "actualQuestionIntent": "differentiation",
+      "actualQuestionIntent": "customer_definition",
       "expectedReasoning": "Evidence strength must not exceed claim (L5 internal)",
-      "actualReasoning": "답변이 충분합니다 — alternativesCompetitors gap CLOSED, 다음 주제로 진행.",
+      "actualReasoning": "답변이 충분합니다 — businessOneLiner gap CLOSED, 다음 주제로 진행.",
       "autoVerdict": {
-        "understanding": "PASS",
+        "understanding": "FAIL",
         "state": "PASS",
         "gap": "PASS",
         "question": "PARTIAL",
@@ -3481,37 +3416,29 @@
         "judgment": "PASS"
       },
       "failureTypes": [
+        "F13_MULTI_FACT_LOSS",
         "F16_WRONG_NEXT_QUESTION_RATIONALE"
       ],
       "severity": "medium",
       "cpoCalibratedVerdict": "PASS",
       "calibrationClass": "EVALUATOR_DEFECT",
       "cpoNotes": "Insufficient gap context for priority judgment.",
-      "caseId": "cal-F08_WRONG_GAP_PRIORITY-10-sb-professional-t5",
+      "caseId": "cal-F08_WRONG_GAP_PRIORITY-10-sb-professional-t1",
       "business": "sb-professional",
       "expectedGaps": {
         "customerPersona": "OPEN",
-        "problemStatement": "OPEN",
-        "payerUser": "OPEN",
-        "wtp": "OPEN",
-        "businessOneLiner": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CLOSED",
-        "alternativesCompetitors": "CLOSED"
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
       },
       "actualGaps": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
-        "payer": "CLOSED",
-        "problemJtbd": "CLOSED",
-        "marketChannel": "CLOSED",
-        "alternativesCompetitors": "CLOSED"
+        "revenueModel": "CLOSED"
       },
       "cpoRationale": "Intent/Priority evaluation — gap id mismatch alone is not AI PM defect (CPO Phase 3).",
       "confirmedForFix": false,
-      "actualNextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
-      "actualNextTargetGap": "differentiationVsAlternatives",
+      "actualNextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+      "actualNextTargetGap": "customerPersona",
       "cpoConfirmed": true,
       "draftClass": "EVALUATOR_DEFECT",
       "draftVerdict": "PARTIAL"
@@ -3520,10 +3447,10 @@
   "summaryTable": [
     {
       "cluster": "F13_MULTI_FACT_LOSS",
-      "aiPm": 0,
-      "evaluator": 10,
+      "aiPm": 10,
+      "evaluator": 0,
       "gt": 0,
-      "cpoConfirmed": 0
+      "cpoConfirmed": 10
     },
     {
       "cluster": "F11_CONTRADICTION_MISHANDLING",
@@ -3541,10 +3468,10 @@
     },
     {
       "cluster": "F04_FACT_ASSUMPTION_CONFUSION",
-      "aiPm": 10,
-      "evaluator": 0,
+      "aiPm": 0,
+      "evaluator": 10,
       "gt": 0,
-      "cpoConfirmed": 9
+      "cpoConfirmed": 0
     },
     {
       "cluster": "F08_WRONG_GAP_PRIORITY",
@@ -3555,7 +3482,7 @@
     }
   ],
   "confirmedFixClusters": [
-    "F11_CONTRADICTION_MISHANDLING",
-    "F04_FACT_ASSUMPTION_CONFUSION"
+    "F13_MULTI_FACT_LOSS",
+    "F11_CONTRADICTION_MISHANDLING"
   ]
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  hasValidationEvidenceCue,
   isUserAssumptionUtterance,
   isWtpHypothesisOnly,
   normalizeSlotValue,
@@ -30,6 +31,14 @@ describe('semantic-slot-normalization (CPO 2-pass fixes)', () => {
   it('detects WTP hypothesis', () => {
     expect(isWtpHypothesisOnly('아마 고객들이 이 서비스에 돈을 낼 것 같아요.')).toBe(true);
     expect(isUserAssumptionUtterance('아마 고객들이 이 서비스에 돈을 낼 것 같아요.')).toBe(true);
+  });
+
+  it('F04 — validation evidence vs assumption hedge', () => {
+    expect(
+      hasValidationEvidenceCue('실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.'),
+    ).toBe(true);
+    expect(isUserAssumptionUtterance('중소기업 고객이 월 10만원을 낼 것 같습니다.')).toBe(true);
+    expect(hasValidationEvidenceCue('중소기업 고객이 월 10만원을 낼 것 같습니다.')).toBe(false);
   });
 
   it('C-1 — splits revenue vs competitor', () => {

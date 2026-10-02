@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T10:05:56.852Z",
+  "generatedAt": "2026-10-02T10:35:16.036Z",
   "totalTurns": 650,
   "before": {
     "totalTurns": 450,
@@ -36,26 +36,47 @@
   },
   "after": {
     "totalTurns": 650,
-    "failedTurns": 44,
+    "failedTurns": 118,
     "clusters": [
       {
+        "code": "F13_MULTI_FACT_LOSS",
+        "count": 98,
+        "examples": [
+          {
+            "businessId": "sb-b2c-saas",
+            "behavior": "multi_fact",
+            "turn": 1
+          },
+          {
+            "businessId": "sb-b2c-saas",
+            "behavior": "multi_fact",
+            "turn": 2
+          },
+          {
+            "businessId": "sb-b2c-saas",
+            "behavior": "multi_fact",
+            "turn": 3
+          },
+          {
+            "businessId": "sb-b2c-saas",
+            "behavior": "multi_fact",
+            "turn": 4
+          },
+          {
+            "businessId": "sb-b2c-saas",
+            "behavior": "multi_fact",
+            "turn": 5
+          }
+        ]
+      },
+      {
         "code": "F11_CONTRADICTION_MISHANDLING",
-        "count": 36,
+        "count": 20,
         "examples": [
           {
             "businessId": "sb-b2c-saas",
             "behavior": "contradiction",
-            "turn": 4
-          },
-          {
-            "businessId": "sb-b2c-saas",
-            "behavior": "contradiction",
             "turn": 5
-          },
-          {
-            "businessId": "sb-b2b-saas",
-            "behavior": "contradiction",
-            "turn": 4
           },
           {
             "businessId": "sb-b2b-saas",
@@ -65,28 +86,28 @@
           {
             "businessId": "sb-marketplace",
             "behavior": "contradiction",
-            "turn": 4
+            "turn": 5
+          },
+          {
+            "businessId": "sb-commerce",
+            "behavior": "contradiction",
+            "turn": 5
+          },
+          {
+            "businessId": "sb-subscription",
+            "behavior": "contradiction",
+            "turn": 5
           }
         ]
       },
       {
         "code": "STATE_DRIFT",
-        "count": 36,
+        "count": 20,
         "examples": [
           {
             "businessId": "sb-b2c-saas",
             "behavior": "contradiction",
-            "turn": 4
-          },
-          {
-            "businessId": "sb-b2c-saas",
-            "behavior": "contradiction",
             "turn": 5
-          },
-          {
-            "businessId": "sb-b2b-saas",
-            "behavior": "contradiction",
-            "turn": 4
           },
           {
             "businessId": "sb-b2b-saas",
@@ -96,91 +117,85 @@
           {
             "businessId": "sb-marketplace",
             "behavior": "contradiction",
-            "turn": 4
-          }
-        ]
-      },
-      {
-        "code": "F13_MULTI_FACT_LOSS",
-        "count": 8,
-        "examples": [
-          {
-            "businessId": "sb-platform",
-            "behavior": "multi_fact",
-            "turn": 2
-          },
-          {
-            "businessId": "sb-platform",
-            "behavior": "multi_fact",
-            "turn": 3
-          },
-          {
-            "businessId": "sb-platform",
-            "behavior": "multi_fact",
-            "turn": 4
-          },
-          {
-            "businessId": "sb-platform",
-            "behavior": "multi_fact",
             "turn": 5
           },
           {
-            "businessId": "sb-platform",
-            "behavior": "multi_fact",
-            "turn": 2
+            "businessId": "sb-commerce",
+            "behavior": "contradiction",
+            "turn": 5
+          },
+          {
+            "businessId": "sb-subscription",
+            "behavior": "contradiction",
+            "turn": 5
           }
         ]
       },
       {
         "code": "F16_WRONG_NEXT_QUESTION_RATIONALE",
-        "count": 2,
+        "count": 18,
         "examples": [
           {
-            "businessId": "sb-marketplace",
-            "behavior": "contradiction",
-            "turn": 5
+            "businessId": "sb-b2c-saas",
+            "behavior": "multi_fact",
+            "turn": 1
+          },
+          {
+            "businessId": "sb-b2b-saas",
+            "behavior": "multi_fact",
+            "turn": 1
           },
           {
             "businessId": "sb-marketplace",
-            "behavior": "contradiction",
-            "turn": 5
+            "behavior": "multi_fact",
+            "turn": 1
+          },
+          {
+            "businessId": "sb-subscription",
+            "behavior": "multi_fact",
+            "turn": 1
+          },
+          {
+            "businessId": "sb-local",
+            "behavior": "multi_fact",
+            "turn": 1
           }
         ]
       }
     ],
     "byBehavior": {
-      "contradiction": 36,
-      "multi_fact": 8
+      "multi_fact": 98,
+      "contradiction": 20
     },
     "byBusiness": {
-      "sb-b2c-saas": 4,
-      "sb-b2b-saas": 4,
-      "sb-marketplace": 4,
-      "sb-commerce": 2,
-      "sb-subscription": 2,
-      "sb-local": 4,
+      "sb-b2c-saas": 12,
+      "sb-b2b-saas": 12,
+      "sb-marketplace": 12,
+      "sb-commerce": 10,
+      "sb-subscription": 12,
+      "sb-local": 12,
       "sb-platform": 12,
-      "sb-hardware": 4,
-      "sb-professional": 4,
-      "sb-ai-service": 4
+      "sb-hardware": 12,
+      "sb-professional": 12,
+      "sb-ai-service": 12
     }
   },
   "clusterDelta": {
+    "F13_MULTI_FACT_LOSS": {
+      "before": 98,
+      "after": 98
+    },
     "F11_CONTRADICTION_MISHANDLING": {
       "before": 40,
-      "after": 36
+      "after": 20
     },
     "STATE_DRIFT": {
       "before": 40,
-      "after": 36
-    },
-    "F13_MULTI_FACT_LOSS": {
-      "before": 98,
-      "after": 8
+      "after": 20
     },
     "F16_WRONG_NEXT_QUESTION_RATIONALE": {
       "before": 0,
-      "after": 2
+      "after": 18
     }
   }
 }

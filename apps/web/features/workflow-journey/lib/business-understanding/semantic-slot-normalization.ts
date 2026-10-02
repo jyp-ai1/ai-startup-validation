@@ -8,7 +8,15 @@ import type { ConversationFactKey } from '@repo/types/domain/answer-review';
 /** User hedge / unvalidated optimism — not FACT-worthy (Gate 7). */
 export function isUserAssumptionUtterance(text: string): boolean {
   const t = text.trim();
-  return /(아마|할\s*것\s*같|것\s*같아|추정|예상|느낌|생각해|될\s*것|일\s*것|분명히)/i.test(t);
+  return /(아마|(?:할|낼)\s*것\s*같|것\s*같|추정|예상|느낌|생각해|될\s*것|일\s*것|분명히|불확실|검증하지|아직\s*확인|인터뷰만|몇\s*번\s*했)/i.test(
+    t,
+  );
+}
+
+/** Validation-grade evidence cues (interviews with counts, payment). */
+export function hasValidationEvidenceCue(text: string): boolean {
+  const t = text.trim();
+  return /(\d+\s*(곳|개|명|건).*?(인터뷰|검증|확인)|유료\s*파일럿|실제\s*결제|LOI|계약)/i.test(t);
 }
 
 /** Market leadership / dominance rhetoric without validation data. */

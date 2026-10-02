@@ -127,7 +127,7 @@ export function replayCalibrationTurn(input: {
     const askedQuestionText = pendingDecision?.questionText ?? binding.questionText;
 
     let userInput: string;
-    if (biz.sandbox && !isMatrixPerturbation(input.behavior)) {
+    if (biz.sandbox) {
       userInput = generateUserAnswer({
         business: biz.sandbox,
         behavior: input.behavior as AnswerBehaviorId,
