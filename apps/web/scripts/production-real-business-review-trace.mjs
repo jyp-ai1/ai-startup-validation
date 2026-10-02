@@ -211,7 +211,7 @@ async function main() {
     process.exit(1);
   }
 
-  writeTrace({
+  const body = {
     status: captureError ? 'PARTIAL' : 'CAPTURED',
     phase: 2,
     sessionId: projectId,
@@ -230,7 +230,18 @@ async function main() {
       'Extend to 20–30 turns for longitudinal gate',
     ],
     blockReason: captureError ?? undefined,
-  });
+  };
+
+  writeTrace(body);
+
+  if (turns.length > 0) {
+    spawnSync('pnpm', ['evidence:phase2-cpo-pack'], {
+      cwd: webRoot,
+      encoding: 'utf8',
+      shell: true,
+      stdio: 'inherit',
+    });
+  }
 
   process.exit(captureError ? 1 : 0);
 }

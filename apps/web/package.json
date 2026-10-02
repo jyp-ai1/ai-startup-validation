@@ -20,7 +20,8 @@
     "verify:v3-baseline": "node scripts/verify-v3-baseline-recovery.mjs",
     "test:accuracy-golden": "node scripts/run-accuracy-golden-scenarios.mjs",
     "test:cpo-2pass-evidence": "node scripts/run-cpo-2pass-evidence.mjs",
-    "evidence:real-business-review": "node scripts/production-real-business-review-trace.mjs"
+    "evidence:real-business-review": "node scripts/production-real-business-review-trace.mjs",
+    "evidence:phase2-cpo-pack": "node scripts/run-phase2-cpo-review-pack.mjs"
   },
   "dependencies": {
     "@repo/agents": "workspace:*",

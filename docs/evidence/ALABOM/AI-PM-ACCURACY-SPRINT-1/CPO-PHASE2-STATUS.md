@@ -65,9 +65,16 @@ export QA_AUTH_STORAGE_STATE_PATH=/path/to/storageState.json
 
 ```bash
 cd apps/web && pnpm evidence:real-business-review
+cd apps/web && pnpm evidence:phase2-cpo-pack   # also runs automatically after CAPTURED trace
 ```
 
-**Output:** `PRODUCTION/real-business-review-trace.json`
+**Output:**
+
+| File | Role |
+|------|------|
+| `PRODUCTION/real-business-review-trace.json` | Raw session + turns |
+| `CPO-PHASE2-REVIEW-SHEET.md` | CPO Layer 1–3 table |
+| `EVAL/phase2-cpo-review-pack.json` | Machine rows |
 
 When auth is missing → `status: BLOCKED` (real login path **unverified** — not a QA convenience issue). When auth present → 12 scripted turns, each row shaped for CPO checklist (`answerUnderstanding`, `gapSnapshot`, `nextQuestion`, `layers`).
 

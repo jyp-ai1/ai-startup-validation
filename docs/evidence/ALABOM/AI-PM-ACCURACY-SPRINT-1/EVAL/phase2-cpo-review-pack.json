@@ -1,0 +1,11 @@
+{
+  "generatedAt": "2026-10-02T05:00:04.822Z",
+  "purpose": "CPO_REAL_BUSINESS_REVIEW_L1_L3",
+  "phase2Status": "OPEN",
+  "traceStatus": "BLOCKED",
+  "productionUrl": "https://ai-startup-validation-tau.vercel.app",
+  "gitSha": "4f70ad7ea93212a31c8dcf79408b3ca5c9acb861",
+  "sessionId": null,
+  "turnCount": 0,
+  "rows": []
+}
