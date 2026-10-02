@@ -15,6 +15,7 @@ export const INPUT_PERTURBATION_TYPES = [
   'correction',
   'refusal',
   'repeated',
+  'mixed',
 ] as const;
 
 export type InputPerturbationType = (typeof INPUT_PERTURBATION_TYPES)[number];
@@ -31,6 +32,7 @@ export const INPUT_PERTURBATION_LABELS: Record<InputPerturbationType, string> = 
   correction: 'correction',
   refusal: 'refusal / 모름',
   repeated: 'repeated answer',
+  mixed: 'mixed (multi-type in one session)',
 };
 
 /** Harness invariants commonly checked per perturbation (CPO rubric hints). */
@@ -46,4 +48,19 @@ export const PERTURBATION_INVARIANT_HINTS: Record<InputPerturbationType, string[
   correction: ['L2 supersede/correct prior fact'],
   refusal: ['L3 probe same gap without inventing facts'],
   repeated: ['L3 F4 no repeat on CLOSED gap'],
+  mixed: ['L1–L3 combined stress across turns'],
 };
+
+/** CPO Sprint 2A — 10 lab perturbations (Phase 1 capture). */
+export const VALIDATION_LAB_PERTURBATIONS: InputPerturbationType[] = [
+  'normal',
+  'sparse',
+  'multi_fact',
+  'off_slot',
+  'contradiction',
+  'repeated',
+  'uncertainty',
+  'unsupported_claim',
+  'correction',
+  'mixed',
+];

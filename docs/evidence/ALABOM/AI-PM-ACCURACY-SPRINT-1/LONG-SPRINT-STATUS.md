@@ -1,20 +1,14 @@
-# Long Sprint — status
+# Long Sprint status
 
-**Last updated:** 2026-10-02 UTC (operator stop)  
-**Mode:** **PAUSED** — work stopped; not complete  
-**Branch:** `cursor/ai-pm-accuracy-sprint1-6423` · PR #66  
+**Updated:** 2026-10-02 UTC  
+**Sprint:** **2A Validation Lab** — Phase 1 actual evidence (CPO re-open)  
+**Cluster fix:** **NOT STARTED** (CPO gate)
 
-**CPO report:** `CPO-PROGRESS-REPORT-2026-10-02-STOP.md`
+| Phase | Status |
+|-------|--------|
+| Sprint 2 Long Sprint Phase 1–2 (cluster search) | DONE |
+| **Sprint 2A Phase 1** — dynamic Q + actual capture | **IN PROGRESS** (`validation-lab-evidence.json`) |
+| CPO 2-pass on actual rows | OPEN |
+| Cluster A→E fix | BLOCKED until CPO confirms evidence |
 
-## Progress snapshot
-
-| Step | Status |
-|------|--------|
-| Phase ① Golden 8 CPO | **CLOSED** |
-| RCA biz-01 / biz-07 | **DONE** (frozen) |
-| Cross-business 15×11 search | **DONE** |
-| Failure cluster consolidation | **DONE** |
-| Cluster layer-only fix | **NOT STARTED** |
-| Completion Evidence | **IN_PROGRESS → PAUSED** |
-
-Resume: operator directive + CPO cluster fix order.
+Docs: `SPRINT-2A-VALIDATION-LAB.md` · `CPO-PROGRESS-REPORT-2026-10-02-STOP.md`

@@ -221,7 +221,7 @@ export function runMultiBusinessHarness(): MultiBusinessHarnessReport {
   const failCount = scenarios.length - passCount;
 
   const bySet: MultiBusinessHarnessReport['bySet'] = {};
-  for (const set of ['development', 'regression', 'unseen'] as const) {
+  for (const set of ['development', 'regression', 'holdout'] as const) {
     const rows = scenarios.filter((s) => s.set === set);
     const pass = rows.filter((s) => s.pass).length;
     bySet[set] = {

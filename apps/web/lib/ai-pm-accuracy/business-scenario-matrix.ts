@@ -11,7 +11,7 @@ export type KnowledgeFieldInitial =
   | 'ASSUMPTION'
   | 'INFERENCE';
 
-export type BusinessScenarioSet = 'development' | 'regression' | 'unseen';
+export type BusinessScenarioSet = 'development' | 'regression' | 'holdout';
 
 export type BusinessScenarioMatrixRow = {
   id: string;
@@ -57,8 +57,10 @@ export const BUSINESS_SCENARIO_MATRIX: BusinessScenarioMatrixRow[] = [
   row(11, 'Community', '직군 커뮤니티', 'regression', doc('Community', '개발자', '네트워킹')),
   row(12, 'Platform/API', '개발자 API', 'regression', doc('API Platform', '스타트업 개발팀', '연동 비용')),
   row(13, 'Hardware+SaaS', 'IoT 관리', 'regression', doc('IoT SaaS', '제조 SMB', '장비 모니터링')),
-  row(14, 'Professional Service', '컨설팅/대행', 'unseen', doc('Agency', '스타트업 CEO', 'GTM 실행')),
-  row(15, 'Offline', '오프라인 매장', 'unseen', doc('Offline retail', '매장 운영자', '재고·회원')),
+  row(14, 'Professional Service', '컨설팅/대행', 'regression', doc('Agency', '스타트업 CEO', 'GTM 실행')),
+  row(15, 'Offline', '오프라인 매장', 'regression', doc('Offline retail', '매장 운영자', '재고·회원')),
+  row(16, 'GovTech', '공공 SaaS', 'holdout', doc('GovTech', '지자체 실무자', '레거시 연동')),
+  row(17, 'FinTech', 'SMB 금융', 'holdout', doc('FinTech', '소상공인', '대출·정산')),
 ];
 
 function doc(category: string, customer: string, problem: string): string {
@@ -104,7 +106,7 @@ function row(
     documentText,
     initialFields: defaultInitial(),
     set,
-    layers: set === 'unseen' ? ['A', 'C'] : set === 'regression' ? ['A', 'B'] : ['A', 'B'],
+    layers: set === 'holdout' ? ['A', 'C'] : set === 'regression' ? ['A', 'B'] : ['A', 'B'],
   };
 }
 
