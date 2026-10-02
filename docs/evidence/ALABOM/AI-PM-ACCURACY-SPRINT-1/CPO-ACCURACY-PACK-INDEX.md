@@ -2,7 +2,10 @@
 
 | # | Document | Role |
 |---|----------|------|
-| 1 | `ALABOM-AI-PM-ACCURACY-VALIDATION-REPORT.md` | **Primary — read this** |
+| 0 | `CPO-1PASS-VERDICT-ACCURACY-SLICE1-2026-10-02.md` | CPO 1차 판정 (Slice PASS / Sprint OPEN) |
+| 1 | `ALABOM-AI-PM-ACCURACY-VALIDATION-REPORT.md` | CTO Slice 1 report |
+| 1b | `CPO-ACCURACY-2PASS.md` | **CPO independent 2-pass (fill Verdict)** |
+| 1c | `EVAL/cpo-2pass-evidence-pack.json` | Machine-readable 2-pass rows |
 | 2 | `BUSINESS-JUDGMENT-TAXONOMY.md` | 26-item taxonomy |
 | 3 | `CPO-WORK-ORDER-ACK-2026-10-02.md` | Sprint pivot ack |
 | 4 | `EVAL/golden-scenarios-turn-evidence.json` | Turn-level PASS/FAIL evidence |

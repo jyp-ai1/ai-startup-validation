@@ -113,8 +113,9 @@ Post-fix + regression:
 
 ## 11. Final AI PM Accuracy Assessment (CTO · Slice 1)
 
-**Golden V3 deterministic loop:** **PASS (8/8)** with measurable before/after.  
-**Sprint 1 full DoD (§21):** **PARTIAL** — automation + one improve→re-verify cycle complete; CPO 2-pass, Production real login, CEO tests **OPEN**.
+**Golden V3 deterministic loop:** **PASS (8/8)** with measurable before/after — *CTO self-check only*.  
+**CPO 1-pass (2026-10-02):** **Slice 1 PASS (conditional) / Sprint 1 OPEN** — see `CPO-1PASS-VERDICT-ACCURACY-SLICE1-2026-10-02.md`.  
+**Next:** `pnpm test:cpo-2pass-evidence` → `CPO-ACCURACY-2PASS.md` for CPO Layer 1–3 independent review.
 
 ---
 

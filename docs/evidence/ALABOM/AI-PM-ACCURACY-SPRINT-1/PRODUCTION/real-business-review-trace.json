@@ -1,0 +1,16 @@
+{
+  "status": "BLOCKED",
+  "sessionId": null,
+  "productionUrl": "https://ai-startup-validation-tau.vercel.app",
+  "gitSha": null,
+  "startedAt": null,
+  "finishedAt": "2026-10-02T04:19:21.658Z",
+  "turns": [],
+  "finalKnowledgeState": null,
+  "reasoning": null,
+  "judgment": null,
+  "uncertainty": null,
+  "nextValidation": null,
+  "blockReason": "Missing QA_AUTH_STORAGE_STATE_PATH or apps/web/.qa-auth/storageState.json — Real Business Review trace requires authenticated Production session.",
+  "nextStep": "Provide storageState → implement browser capture → re-run this script"
+}
