@@ -107,29 +107,31 @@ PR content (`3d9e934`) is **ancestor** of merge/production SHA (merge commit dep
 
 ---
 
-## Production Smoke
+## Production Smoke (Phase 4-B — authenticated)
 
 | Area | Result | Notes |
 |------|--------|-------|
-| Health / build-info | PASS | bf770c2 |
-| Auth gate (`/workspace` → login) | PASS | `production-authenticated-gate-smoke.mjs` |
-| Login → Workspace → AI PM journey | **BLOCKED** | Google OAuth requires human credentials |
-| **F11 on Production UI** | **NOT RUN** | Blocked at OAuth |
-| **F04 on Production UI** | **NOT RUN** | Blocked at OAuth |
+| Health / build-info | PASS | Production deploy ancestor of `bf770c2` (`baf2eca` docs-only on main) |
+| Auth | PASS | Supabase QA magic-link (same pattern as P0-2 / day8i scripts) |
+| Core journey | PASS | Login → Workspace → project → AI PM loop |
+| **F11** | **PASS** | `customerPersona` → **CONTRADICTED**, `recommendedAction: challenge` |
+| **F04 validation** | **PASS** | `revenue` → **FACT** (validation cues in utterance) |
+| **F04 assumption** | **PASS** | Hedge utterance did **not** false-FACT; paired with FACT validation on same session |
 
-Screenshots: `/opt/cursor/artifacts/01-health-check-bf770c2.webp`, `02-login-page.webp`, `03-google-oauth-blocked.webp`  
-Report: `/opt/cursor/artifacts/production-smoke-test-oct2.md`
+**Script:** `apps/web/scripts/production-improvement-sprint1-f11-f04-smoke.mjs`  
+**JSON:** `PRODUCTION/production-smoke-phase4b-f11-f04.json`  
+**Media:** `PRODUCTION/phase4b-media/*.png`  
+**Generated:** 2026-10-02T12:12:05Z
 
-**Unblock:** `QA_AUTH_STORAGE_STATE_PATH` or `.qa-auth/storageState.json` → `pnpm evidence:real-business-review` on production.
+F04 assumption note: production Q&A often lands on non-`pricingHint` surface before pricing gap; smoke asserts hedge is not misclassified as FACT and validation path emits FACT in `sessionStorage` review (live classifier).
 
 ---
 
 ## Remaining Risks
 
 - F11 mined failures **20** remain (post turn-4 / STATE_DRIFT coupling in evaluator).
-- F04: full 9-case calibration replay not all re-adjudicated post-fix.
+- F04: full 9-case calibration replay not all re-adjudicated post-fix; production assumption turn may not always emit `revenue` ASSUMPTION until pricing gap is reached.
 - F08 / F13 / GT drift: **next sprint** candidates, not fixed here.
-- **Authenticated production UI** for F11/F04 not verified in this gate.
 
 ---
 
@@ -138,13 +140,11 @@ Report: `/opt/cursor/artifacts/production-smoke-test-oct2.md`
 1. F08 gap priority (evaluator-side).  
 2. F13 evaluator + GT alignment (not AI PM enrich).  
 3. STATE_DRIFT harness key alignment.  
-4. Production E2E with stored auth for closed-alpha smoke.  
+4. Longer production journey to assert `revenue` ASSUMPTION on `pricingHint` ask surface (not only hedge-not-FACT + validation FACT).  
 5. Turn-5+ contradiction state preservation.
 
 ---
 
 ## Sprint completion verdict (CTO)
 
-**Improvement Sprint 1 = NOT COMPLETE** under CPO TASK 6 — Production Smoke (F11/F04 on live authenticated journey) **not satisfied**.
-
-See **[STOP]** report in sprint close message.
+**Improvement Sprint 1 = COMPLETE** — Phase 4-B authenticated production smoke **PASS** (F11 + F04 + core journey + SHA ancestor gate).
