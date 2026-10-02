@@ -2,7 +2,7 @@
 
 **Updated:** 2026-10-02 UTC  
 **PR:** #66  
-**Status:** **OPEN** — evidence on branch; awaiting CPO independent Expected + Verdict
+**Status:** **OPEN** — CPO initial 2-pass recorded (4P/3PART/3FAIL); **CTO fix cycle 1** applied; awaiting **CPO re-verify**
 
 ## Evidence files (must be readable before Phase ① CLOSE)
 

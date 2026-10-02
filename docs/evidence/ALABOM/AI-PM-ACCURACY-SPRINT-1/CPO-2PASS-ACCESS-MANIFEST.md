@@ -1,6 +1,6 @@
 # Phase ① — CPO 2-pass evidence access manifest
 
-**Branch:** `cursor/ai-pm-accuracy-sprint1-6423` · **Commit:** `6dfd69c96fea8c4dbdab041ec0c1b5850e9a9f10`
+**Branch:** `cursor/ai-pm-accuracy-sprint1-6423` · **Commit:** `7a7f3caa2f08c94b55453f66ea0a1270a2811929`
 
 ## Repository paths (workspace)
 

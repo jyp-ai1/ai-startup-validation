@@ -1,6 +1,6 @@
 # CPO Accuracy — Golden 8 Independent 2-pass
 
-**Generated:** 2026-10-02T04:23:58.811Z
+**Generated:** 2026-10-02T04:28:15.156Z
 **Slice 1:** PASS_CONDITIONAL · **Sprint 1:** OPEN
 **CTO Golden (self-check):** 8/8 — *not CPO acceptance*
 
@@ -29,7 +29,9 @@ CPO fills **CPO Expected** and **CPO Verdict** per row. Divergence from CTO Expe
           "사장"
         ],
         "valueExcludes": [
-          "유입"
+          "유입",
+          "SNS",
+          "홍보할"
         ]
       },
       {
@@ -40,7 +42,8 @@ CPO fills **CPO Expected** and **CPO Verdict** per row. Divergence from CTO Expe
           "시간"
         ],
         "valueExcludes": [
-          "유입 부족"
+          "유입 부족",
+          "음식점 사장"
         ]
       }
     ]
@@ -73,13 +76,13 @@ CPO review questions:
     "extractedFacts": [
       {
         "key": "customer",
-        "value": "우리 고객은 동네 음식점 사장님이고 SNS 홍보할 시간이 없습니다.",
+        "value": "동네 음식점 사장님",
         "evidenceClass": "FACT",
         "targetGap": "customerPersona"
       },
       {
         "key": "problem",
-        "value": "우리 고객은 동네 음식점 사장님이고 SNS 홍보할 시간이 없습니다.",
+        "value": "SNS 홍보할 시간이 없습니다",
         "evidenceClass": "FACT",
         "targetGap": "problemJtbd"
       }
@@ -88,8 +91,8 @@ CPO review questions:
     "quality": "VALID"
   },
   "state": {
-    "customer": "우리 고객은 동네 음식점 사장님이고 SNS 홍보할 시간이 없습니다.",
-    "problem": "우리 고객은 동네 음식점 사장님이고 SNS 홍보할 시간이 없습니다."
+    "customer": "동네 음식점 사장님",
+    "problem": "SNS 홍보할 시간이 없습니다"
   },
   "gap": {
     "customerPersona": "CLOSED",
@@ -228,7 +231,7 @@ CPO review questions:
     "extractedFacts": [
       {
         "key": "competitor",
-        "value": "현재 월 매출은 3천만원이고 경쟁사는 배달앱입니다.",
+        "value": "배달앱",
         "evidenceClass": "INFERENCE",
         "targetGap": "alternativesCompetitors"
       },
@@ -243,12 +246,12 @@ CPO review questions:
     "quality": "IRRELEVANT"
   },
   "state": {
-    "competitor": "현재 월 매출은 3천만원이고 경쟁사는 배달앱입니다.",
+    "competitor": "배달앱",
     "revenue": "매출은 3천만원이고 경쟁사는 배달앱입니다"
   },
   "gap": {
     "customerPersona": "OPEN",
-    "alternativesCompetitors": "OPEN",
+    "alternativesCompetitors": "PARTIAL",
     "revenueModel": "CLOSED"
   },
   "nextQuestion": {
@@ -309,7 +312,7 @@ CPO review questions:
     "extractedFacts": [
       {
         "key": "customer",
-        "value": "소상공인 카페 사장님입니다.",
+        "value": "소상공인 카페 사장님",
         "evidenceClass": "FACT",
         "targetGap": "customerPersona"
       }
@@ -318,7 +321,7 @@ CPO review questions:
     "quality": "VALID"
   },
   "state": {
-    "customer": "소상공인 카페 사장님입니다."
+    "customer": "소상공인 카페 사장님"
   },
   "gap": {
     "customerPersona": "CLOSED"
@@ -388,7 +391,7 @@ CPO review questions:
   "nextQuestion": {
     "targetGapId": "customerPersona",
     "action": "clarify",
-    "questionText": "「고객」에 두 가지 답이 있습니다. A) 소상공인 카페 사장님입니다. · B) 실제로는 대기업 IT 팀이 핵심 고객입니다. — 어느 쪽이 맞나요?"
+    "questionText": "「고객」에 두 가지 답이 있습니다. A) 소상공인 카페 사장님 · B) 실제로는 대기업 IT 팀이 핵심 고객입니다. — 어느 쪽이 맞나요?"
   },
   "reason": "이전에 말씀하신 내용과 다릅니다. 확인이 필요합니다."
 }
@@ -438,7 +441,7 @@ CPO review questions:
     "extractedFacts": [
       {
         "key": "customer",
-        "value": "소규모 양조장입니다.",
+        "value": "소규모 양조장",
         "evidenceClass": "FACT",
         "targetGap": "customerPersona"
       }
@@ -447,7 +450,7 @@ CPO review questions:
     "quality": "PARTIAL"
   },
   "state": {
-    "customer": "소규모 양조장입니다."
+    "customer": "소규모 양조장"
   },
   "gap": {
     "customerPersona": "CLOSED"
@@ -513,7 +516,7 @@ CPO review questions:
     "extractedFacts": [
       {
         "key": "problem",
-        "value": "온라인 홍보가 어렵습니다.",
+        "value": "온라인 홍보가 어렵습니다",
         "evidenceClass": "FACT",
         "targetGap": "problemJtbd"
       }
@@ -522,7 +525,8 @@ CPO review questions:
     "quality": "VALID"
   },
   "state": {
-    "problem": "온라인 홍보가 어렵습니다."
+    "customer": "소규모 양조장",
+    "problem": "온라인 홍보가 어렵습니다"
   },
   "gap": {
     "customerPersona": "CLOSED",
@@ -563,12 +567,20 @@ CPO review questions:
         "key": "customer",
         "valueIncludes": [
           "양조장"
+        ],
+        "valueExcludes": [
+          "가격",
+          "10만"
         ]
       },
       {
         "key": "problem",
         "valueIncludes": [
           "홍보"
+        ],
+        "valueExcludes": [
+          "10만",
+          "가격은"
         ]
       },
       {
@@ -603,19 +615,19 @@ CPO review questions:
     "extractedFacts": [
       {
         "key": "problem",
-        "value": "고객은 소규모 양조장이고, 문제는 온라인 홍보 어려움이며, 가격은 월 10만원입니다.",
+        "value": "온라인 홍보 어려움",
         "evidenceClass": "FACT",
         "targetGap": "problemJtbd"
       },
       {
         "key": "customer",
-        "value": "고객은 소규모 양조장이고, 문제는 온라인 홍보 어려움이며, 가격은 월 10만원입니다.",
+        "value": "소규모 양조장",
         "evidenceClass": "FACT",
         "targetGap": "customerPersona"
       },
       {
         "key": "revenue",
-        "value": "월 10만원입니다",
+        "value": "월 10만원",
         "evidenceClass": "FACT",
         "targetGap": "revenueModel"
       }
@@ -624,9 +636,9 @@ CPO review questions:
     "quality": "VALID"
   },
   "state": {
-    "customer": "고객은 소규모 양조장이고, 문제는 온라인 홍보 어려움이며, 가격은 월 10만원입니다.",
-    "problem": "고객은 소규모 양조장이고, 문제는 온라인 홍보 어려움이며, 가격은 월 10만원입니다.",
-    "revenue": "월 10만원입니다"
+    "customer": "소규모 양조장",
+    "problem": "온라인 홍보 어려움",
+    "revenue": "월 10만원"
   },
   "gap": {
     "customerPersona": "CLOSED",
@@ -673,7 +685,9 @@ CPO review questions:
   "state": {
     "preserveFacts": {}
   },
-  "gap": {},
+  "gap": {
+    "differentiationVsAlternatives": "PARTIAL"
+  },
   "nextQuestion": null,
   "reason": null
 }
@@ -691,28 +705,27 @@ CPO review questions:
   "interpretation": {
     "extractedFacts": [
       {
-        "key": "market",
+        "key": "differentiation",
         "value": "분명히 시장 1위가 될 수 있는 압도적 기술입니다.",
-        "evidenceClass": "FACT",
-        "targetGap": "marketChannel"
+        "evidenceClass": "ASSUMPTION",
+        "targetGap": "differentiationVsAlternatives"
       }
     ],
     "intent": "business_fact",
     "quality": "VALID"
   },
   "state": {
-    "market": "분명히 시장 1위가 될 수 있는 압도적 기술입니다."
+    "differentiation": "분명히 시장 1위가 될 수 있는 압도적 기술입니다."
   },
   "gap": {
-    "differentiationVsAlternatives": "CLOSED",
-    "marketChannel": "CLOSED"
+    "differentiationVsAlternatives": "PARTIAL"
   },
   "nextQuestion": {
-    "targetGapId": "businessOneLiner",
-    "action": "advance",
-    "questionText": "이 사업은 누구에게 무엇을 제공하나요?"
+    "targetGapId": "differentiationVsAlternatives",
+    "action": "probe",
+    "questionText": "「아직 문서에서 사업 내용을 충분히 이해하지 못했습니다」가 대안과 갈리는 핵심 한 가지는 무엇인가요?"
   },
-  "reason": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다."
+  "reason": "답변이 부분적이라 같은 주제를 더 구체적으로 확인합니다."
 }
 ```
 
@@ -747,7 +760,9 @@ CPO review questions:
   "state": {
     "preserveFacts": {}
   },
-  "gap": {},
+  "gap": {
+    "pricingHint": "PARTIAL"
+  },
   "nextQuestion": null,
   "reason": null
 }
@@ -765,28 +780,28 @@ CPO review questions:
   "interpretation": {
     "extractedFacts": [
       {
-        "key": "customer",
+        "key": "revenue",
         "value": "아마 고객들이 이 서비스에 돈을 낼 것 같아요.",
-        "evidenceClass": "FACT",
-        "targetGap": "customerPersona"
+        "evidenceClass": "ASSUMPTION",
+        "targetGap": "revenueModel"
       }
     ],
     "intent": "business_fact",
     "quality": "VALID"
   },
   "state": {
-    "customer": "아마 고객들이 이 서비스에 돈을 낼 것 같아요."
+    "revenue": "아마 고객들이 이 서비스에 돈을 낼 것 같아요."
   },
   "gap": {
-    "pricingHint": "CLOSED",
-    "customerPersona": "CLOSED"
+    "pricingHint": "PARTIAL",
+    "revenueModel": "PARTIAL"
   },
   "nextQuestion": {
-    "targetGapId": "businessOneLiner",
-    "action": "advance",
-    "questionText": "이 사업은 누구에게 무엇을 제공하나요?"
+    "targetGapId": "pricingHint",
+    "action": "probe",
+    "questionText": "현재 이해(아직 문서에서 사업 내용을 충분히 이해하지 못했습니다)를 기준으로 다시 묻습니다 — 가격·요금에 대한 가설이나 신호가 있나요?"
   },
-  "reason": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다."
+  "reason": "답변이 부분적이라 같은 주제를 더 구체적으로 확인합니다."
 }
 ```
 

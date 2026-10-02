@@ -1,0 +1,34 @@
+import { describe, expect, it } from 'vitest';
+
+import {
+  isUserAssumptionUtterance,
+  isWtpHypothesisOnly,
+  normalizeSlotValue,
+  valuesAreDistinctAcrossKeys,
+} from '../semantic-slot-normalization';
+
+describe('semantic-slot-normalization (CPO 2-pass fixes)', () => {
+  it('splits A-1 customer vs problem clauses', () => {
+    const u =
+      '우리 고객은 동네 음식점 사장님이고 SNS 홍보할 시간이 없습니다.';
+    expect(normalizeSlotValue('customer', u)).toMatch(/음식점.*사장/);
+    expect(normalizeSlotValue('problem', u)).toMatch(/SNS|홍보/);
+    expect(valuesAreDistinctAcrossKeys({
+      customer: normalizeSlotValue('customer', u)!,
+      problem: normalizeSlotValue('problem', u)!,
+    })).toBe(true);
+  });
+
+  it('splits F-1 multi-slot utterance', () => {
+    const u =
+      '고객은 소규모 양조장이고, 문제는 온라인 홍보 어려움이며, 가격은 월 10만원입니다.';
+    expect(normalizeSlotValue('customer', u)).toMatch(/양조장/);
+    expect(normalizeSlotValue('problem', u)).toMatch(/홍보/);
+    expect(normalizeSlotValue('revenue', u)).toMatch(/10/);
+  });
+
+  it('detects WTP hypothesis', () => {
+    expect(isWtpHypothesisOnly('아마 고객들이 이 서비스에 돈을 낼 것 같아요.')).toBe(true);
+    expect(isUserAssumptionUtterance('아마 고객들이 이 서비스에 돈을 낼 것 같아요.')).toBe(true);
+  });
+});

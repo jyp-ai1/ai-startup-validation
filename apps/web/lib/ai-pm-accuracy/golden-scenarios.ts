@@ -67,12 +67,12 @@ export const GOLDEN_SCENARIOS: GoldenScenario[] = [
             {
               key: 'customer',
               valueIncludes: ['음식점', '사장'],
-              valueExcludes: ['유입'],
+              valueExcludes: ['유입', 'SNS', '홍보할'],
             },
             {
               key: 'problem',
               valueIncludes: ['SNS', '홍보', '시간'],
-              valueExcludes: ['유입 부족'],
+              valueExcludes: ['유입 부족', '음식점 사장'],
             },
           ],
           gapCompleteness: { customerPersona: 'CLOSED' },
@@ -201,8 +201,8 @@ export const GOLDEN_SCENARIOS: GoldenScenario[] = [
           '고객은 소규모 양조장이고, 문제는 온라인 홍보 어려움이며, 가격은 월 10만원입니다.',
         expect: {
           factChecks: [
-            { key: 'customer', valueIncludes: ['양조장'] },
-            { key: 'problem', valueIncludes: ['홍보'] },
+            { key: 'customer', valueIncludes: ['양조장'], valueExcludes: ['가격', '10만'] },
+            { key: 'problem', valueIncludes: ['홍보'], valueExcludes: ['10만', '가격은'] },
             { key: 'revenue', valueIncludes: ['10'] },
           ],
         },
@@ -228,6 +228,7 @@ export const GOLDEN_SCENARIOS: GoldenScenario[] = [
               evidenceClassNot: 'FACT',
             },
           ],
+          gapCompleteness: { differentiationVsAlternatives: 'PARTIAL' },
         },
       },
     ],
@@ -251,6 +252,7 @@ export const GOLDEN_SCENARIOS: GoldenScenario[] = [
               evidenceClassNot: 'FACT',
             },
           ],
+          gapCompleteness: { pricingHint: 'PARTIAL' },
         },
       },
     ],

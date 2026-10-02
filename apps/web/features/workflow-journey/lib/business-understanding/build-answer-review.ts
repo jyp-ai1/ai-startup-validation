@@ -36,6 +36,12 @@ import {
   resolveNuclearWrongSlotAtSubmit,
   type WrongSlotMergeContext,
 } from './wrong-slot-priority';
+import {
+  isUnvalidatedMarketDominanceClaim,
+  isUserAssumptionUtterance,
+  isWtpHypothesisOnly,
+  normalizeSlotValue,
+} from './semantic-slot-normalization';
 
 export type BuildAnswerReviewInput = {
   turnId: string;
@@ -240,6 +246,8 @@ function extractFactValue(
     if (corrected && corrected.length >= 2) return corrected;
     if (key === 'problem' && isCustomerFieldCorrection(t)) return '';
   }
+  const normalized = normalizeSlotValue(key, t);
+  if (normalized && normalized.length >= 2) return normalized;
   switch (key) {
     case 'buyer': {
       const m = t.match(/(고객|소비자|사용자|구매자|기업|회사|B2B|B2C)/i);
@@ -343,6 +351,20 @@ function evidenceForExtractedFact(
   userAnswer: string,
   askedGapId: string,
 ): { evidenceClass: ExtractedFact['evidenceClass']; confidence: ExtractedFact['confidence'] } {
+  if (isWtpHypothesisOnly(userAnswer) && (hit.key === 'revenue' || hit.key === 'buyer' || hit.key === 'customer')) {
+    return { evidenceClass: 'ASSUMPTION', confidence: 'low' };
+  }
+  if (isUserAssumptionUtterance(userAnswer) && hit.key === 'customer' && askedGapId === 'pricingHint') {
+    return { evidenceClass: 'ASSUMPTION', confidence: 'low' };
+  }
+  if (isUnvalidatedMarketDominanceClaim(userAnswer)) {
+    if (hit.key === 'market' || hit.key === 'differentiation' || hit.key === 'diffRelevance') {
+      return { evidenceClass: 'ASSUMPTION', confidence: 'low' };
+    }
+  }
+  if (hit.key === 'competitor' && askedGapId === 'customerPersona') {
+    return { evidenceClass: 'INFERENCE', confidence: 'medium' };
+  }
   const onSlot =
     (hit.key === 'buyer' && askedGapId === 'payer' && isOnSlotPayerAnswer(userAnswer)) ||
     (hit.key === 'customer' && askedGapId === 'customerPersona' && isOnSlotPersonaAnswer(userAnswer)) ||
@@ -380,6 +402,12 @@ function isOnSlotSufficient(
     if (!semantic.mergeable) return false;
     return isOnSlotPersonaAnswer(userAnswer);
   }
+  if (askedGapId === 'differentiationVsAlternatives' && isUnvalidatedMarketDominanceClaim(userAnswer)) {
+    return false;
+  }
+  if (askedGapId === 'pricingHint' && isWtpHypothesisOnly(userAnswer)) {
+    return false;
+  }
   if (semantic.quality === 'VALID' && semantic.mergeable) return true;
   return false;
 }
@@ -395,6 +423,12 @@ function deriveGapCompleteness(
 ): GapCompleteness {
   if (askedGapId === 'customerPersona' && !isOnSlotPersonaAnswer(userAnswer)) {
     return 'OPEN';
+  }
+  if (askedGapId === 'differentiationVsAlternatives' && isUnvalidatedMarketDominanceClaim(userAnswer)) {
+    return 'PARTIAL';
+  }
+  if (askedGapId === 'pricingHint' && isWtpHypothesisOnly(userAnswer)) {
+    return 'PARTIAL';
   }
   if (isAskedGapOpenDueToSlotConflict(askedGapId, semantic)) return 'OPEN';
   if (semantic.quality === 'CONTRADICTORY') return 'CONTRADICTED';
@@ -427,16 +461,31 @@ function buildExtractedFacts(
   semantic: SemanticInterpretation,
   resolvedAskedGap: string | null,
   userAnswer: string,
+  askedGapId: string,
 ): ExtractedFact[] {
   if (!semantic.mergeable || semantic.facts.length === 0) return [];
 
+  let hits = [...semantic.facts];
+  if (askedGapId === 'pricingHint' && isWtpHypothesisOnly(userAnswer)) {
+    hits = hits.filter((h) => h.key === 'revenue' || h.key === 'buyer');
+    if (!hits.some((h) => h.key === 'revenue')) {
+      hits = [{ key: 'revenue', issueId: 'bm_design' }, ...hits];
+    }
+  }
+  if (askedGapId === 'differentiationVsAlternatives' && isUnvalidatedMarketDominanceClaim(userAnswer)) {
+    hits = hits.filter((h) => h.key !== 'market');
+    if (!hits.some((h) => h.key === 'differentiation')) {
+      hits = [{ key: 'differentiation', issueId: 'competitor_analysis' }, ...hits];
+    }
+  }
+
   const fallbackValue = semantic.value ?? userAnswer.trim();
-  return semantic.facts.map((hit) => {
+  return hits.map((hit) => {
     const { evidenceClass, confidence } = evidenceForExtractedFact(
       hit,
       semantic,
       userAnswer,
-      resolvedAskedGap ?? '',
+      askedGapId,
     );
     return {
       key: hit.key,
@@ -481,8 +530,17 @@ function deriveSecondaryGapCompleteness(
     if (fact.key === 'buyer' && fact.evidenceClass === 'FACT') return 'CLOSED';
     return 'OPEN';
   }
+  const evidenceSensitiveGap =
+    fact.targetGap === 'differentiationVsAlternatives' ||
+    fact.targetGap === 'differentiationHypothesis' ||
+    fact.targetGap === 'marketChannel' ||
+    fact.targetGap === 'pricingHint' ||
+    fact.targetGap === 'validationTestability';
+  if (evidenceSensitiveGap && fact.evidenceClass !== 'FACT') {
+    return fact.evidenceClass === 'ASSUMPTION' ? 'PARTIAL' : 'OPEN';
+  }
   if (fact.evidenceClass === 'FACT') return 'CLOSED';
-  if (fact.evidenceClass === 'ASSUMPTION') return 'PARTIAL';
+  if (fact.evidenceClass === 'ASSUMPTION' || fact.evidenceClass === 'INFERENCE') return 'PARTIAL';
   return 'OPEN';
 }
 
@@ -688,7 +746,7 @@ export function buildAnswerReview(input: BuildAnswerReviewInput): BuildAnswerRev
     };
   }
 
-  const extractedFacts = buildExtractedFacts(semantic, askedGapId, trimmed);
+  const extractedFacts = buildExtractedFacts(semantic, askedGapId, trimmed, askedGapId);
   const contradictions = buildContradictions(semantic, askedGapId, input.existingFactsByKey);
   const gapVerdicts = buildGapVerdicts(
     askedGapId,
