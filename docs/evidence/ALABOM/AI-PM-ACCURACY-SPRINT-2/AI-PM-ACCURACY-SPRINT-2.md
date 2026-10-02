@@ -1,6 +1,6 @@
 # AI PM Accuracy Sprint 2
 
-**Status:** Phase 1 — Longitudinal Calibration Set (no AI PM structural fix until CPO adjudication)
+**Status:** Phase 1 **COMPLETE** (calibration set + auto adjudication). Phase 2 — CPO review of adjudication; **no AI PM structural fix** until confirmed defects.
 
 ## Mission
 
@@ -47,11 +47,14 @@ Example chain: `FACT → ASSUMPTION → CORRECTION → CONFLICT → RESOLUTION`
 | Longitudinal spec | `LONGITUDINAL-CALIBRATION-SET-SPEC.md` |
 | CPO instructions | `CPO-CALIBRATION-INSTRUCTIONS.md` |
 | Generated pack | `EVAL/longitudinal-calibration-pack.json` |
+| Auto adjudication | `EVAL/longitudinal-adjudication-submission.json` |
+| Adjudication summary | `PHASE-1-ADJUDICATION-SUMMARY.md` |
 
 Generate pack (harness only):
 
 ```bash
 cd apps/web && node scripts/run-longitudinal-calibration-pack.mjs
+cd apps/web && node scripts/run-longitudinal-adjudication.mjs
 ```
 
 ## Hard rules
