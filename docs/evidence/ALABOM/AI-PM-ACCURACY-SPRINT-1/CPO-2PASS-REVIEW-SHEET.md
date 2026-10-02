@@ -1,6 +1,6 @@
 # CPO 2-pass — Review Sheet (Golden 8 turns)
-**Generated:** 2026-10-02T04:23:45.047Z
-**Git SHA:** `b8e91591b799c3bdc747b8251a08d654ec0fb1b9`
+**Generated:** 2026-10-02T04:23:58.811Z
+**Git SHA:** `6dfd69c96fea8c4dbdab041ec0c1b5850e9a9f10`
 **Rows:** 10 · CTO self-check 8/8 (not CPO acceptance)
 CPO: fill **CPO Expected** and **Verdict** per row. Full Actual JSON: `EVAL/cpo-2pass-evidence-pack.json`.
 | # | Scenario | Turn | Asked gap | User answer (trim) | Actual facts | Gap state | Next Q | CTO self | CPO Expected | CPO Verdict |
