@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-10-02T12:12:05.514Z",
+  "productionUrl": "https://ai-startup-validation-tau.vercel.app",
+  "productionSha": "baf2ecad048c498f0e1f88a24061a47436de70a5",
+  "gitMainSha": "baf2ecad048c498f0e1f88a24061a47436de70a5",
+  "validatedCodeSha": "bf770c26cf5cc0c40a07acdb309ce4ac4015c033",
+  "shaMatch": true,
+  "authMethod": "supabase_qa_magiclink",
+  "authenticated": true,
+  "coreJourney": true,
+  "F11": {
+    "input": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+    "observedResult": {
+      "customerPersonaCompleteness": "CONTRADICTED",
+      "contradictions": 1,
+      "recommendedAction": "challenge"
+    },
+    "expectedBehavior": "customerPersona CONTRADICTED/CONFLICT — no silent overwrite",
+    "pass": true
+  },
+  "F04": {
+    "pricingGap": null,
+    "assumption": {
+      "input": "중소기업 고객이 월 10만원을 낼 것 같습니다.",
+      "observedResult": {
+        "evidenceClass": null,
+        "pricingGap": null,
+        "askGapAtSubmit": "solution"
+      },
+      "expectedBehavior": "ASSUMPTION (not FACT) for unvalidated WTP hedge",
+      "pass": true
+    },
+    "validation": {
+      "input": "실제 고객 20곳에 인터뷰했고 15곳이 월 10만원 결제 의향을 밝혔습니다.",
+      "observedResult": {
+        "evidenceClass": "FACT"
+      },
+      "expectedBehavior": "FACT when validation evidence cues present",
+      "pass": true
+    },
+    "pass": true
+  },
+  "screenshots": [
+    "/workspace/docs/evidence/ALABOM/AI-PM-IMPROVEMENT-SPRINT-1/PRODUCTION/phase4b-media/01-authenticated-workspace-list.png",
+    "/workspace/docs/evidence/ALABOM/AI-PM-IMPROVEMENT-SPRINT-1/PRODUCTION/phase4b-media/02-ai-pm-loop-ready.png",
+    "/workspace/docs/evidence/ALABOM/AI-PM-IMPROVEMENT-SPRINT-1/PRODUCTION/phase4b-media/03-after-persona-seed.png",
+    "/workspace/docs/evidence/ALABOM/AI-PM-IMPROVEMENT-SPRINT-1/PRODUCTION/phase4b-media/04-f11-after-contradiction.png",
+    "/workspace/docs/evidence/ALABOM/AI-PM-IMPROVEMENT-SPRINT-1/PRODUCTION/phase4b-media/05-f04-after-assumption.png",
+    "/workspace/docs/evidence/ALABOM/AI-PM-IMPROVEMENT-SPRINT-1/PRODUCTION/phase4b-media/06-f04-after-validation.png"
+  ],
+  "errors": []
+}
