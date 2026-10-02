@@ -71,9 +71,17 @@ function resolveBusiness(businessId: string): {
 }
 
 function isMatrixPerturbation(behavior: string): behavior is InputPerturbationType {
-  return ['normal', 'sparse', 'multi_fact', 'off_slot', 'contradiction', 'uncertainty', 'correction'].includes(
-    behavior,
-  );
+  return [
+    'normal',
+    'sparse',
+    'multi_fact',
+    'off_slot',
+    'contradiction',
+    'uncertainty',
+    'correction',
+    'longitudinal_f11',
+    'longitudinal_f04_pricing',
+  ].includes(behavior);
 }
 
 export function replayCalibrationTurn(input: {
@@ -149,9 +157,9 @@ export function replayCalibrationTurn(input: {
       state: groundTruth,
       behavior: (input.behavior === 'multi_fact'
         ? 'multi_fact'
-        : input.behavior === 'contradiction'
+        : input.behavior === 'contradiction' || input.behavior === 'longitudinal_f11'
           ? 'contradiction'
-          : input.behavior === 'uncertainty'
+          : input.behavior === 'uncertainty' || input.behavior === 'longitudinal_f04_pricing'
             ? 'uncertainty'
             : 'normal') as AnswerBehaviorId,
       turn: t,
