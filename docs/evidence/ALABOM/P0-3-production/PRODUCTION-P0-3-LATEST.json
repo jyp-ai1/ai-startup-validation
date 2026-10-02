@@ -1,0 +1,24 @@
+{
+  "gate": "P0-3-A-C",
+  "at": "2026-10-01T01:45:34.281Z",
+  "baseUrl": "https://ai-startup-validation-tau.vercel.app",
+  "productionSha": "820482ac3e3a68273283b90a70e0b8b9df6f7fb2",
+  "expectedSha": "820482ac3e3a68273283b90a70e0b8b9df6f7fb2",
+  "shaMatch": true,
+  "scenarioA": {
+    "pass": true,
+    "notes": [
+      "No SmartPM after custom start",
+      "PASS: no SmartPM after confirm"
+    ]
+  },
+  "scenarioC": {
+    "pass": true,
+    "notes": [
+      "PASS: advanced to a different question"
+    ],
+    "firstQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+    "secondQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?"
+  },
+  "verdict": "PASS_CANDIDATE"
+}
