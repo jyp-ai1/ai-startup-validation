@@ -2,6 +2,7 @@ import type { AccuracyFailureType } from './failure-taxonomy';
 import { runAllGoldenScenarios } from './accuracy-turn-harness';
 import { GOLDEN_SCENARIOS } from './golden-scenarios';
 import { CPO_INDEPENDENT_RUBRIC } from './cpo-independent-rubric';
+import { CPO_REVERIFY_3_ROW_GUIDANCE, reverify3Key } from './cpo-reverify-3-guidance';
 
 export type Cpo2PassRow = {
   scenario: string;
@@ -14,6 +15,8 @@ export type Cpo2PassRow = {
   actual: Record<string, unknown>;
   ctoPass: boolean;
   cpoVerdict: 'PENDING_CPO_2PASS';
+  /** Re-verify #3 — CPO should expect (CTO documents; CPO judges Actual). */
+  cpoReverify3Expected: string | null;
   failureType: AccuracyFailureType[];
   cpoLayers: string[];
   cpoReviewQuestions: string[];
@@ -26,15 +29,27 @@ export type Cpo2PassEvidencePack = {
   slice1Status: 'PASS_CONDITIONAL';
   sprint1Status: 'OPEN';
   ctoGoldenPass: string;
+  /** Must match code under test — CPO acceptance requires this SHA on GitHub. */
+  gitSha: string;
+  gitBranch: string;
+  reverifyPhase: 'REVERIFY_3_AWAITING_CPO_VERDICT';
+  fixCycle: '2';
   rows: Cpo2PassRow[];
+};
+
+export type BuildCpo2PassPackOptions = {
+  gitSha: string;
+  gitBranch: string;
 };
 
 function rubricFor(scenarioId: string, turn: number) {
   return CPO_INDEPENDENT_RUBRIC.filter((r) => r.scenarioId === scenarioId && r.turn === turn);
 }
 
-export function buildCpo2PassEvidencePack(): Cpo2PassEvidencePack {
+export function buildCpo2PassEvidencePack(options?: BuildCpo2PassPackOptions): Cpo2PassEvidencePack {
   const pkg = runAllGoldenScenarios();
+  const gitSha = options?.gitSha ?? process.env.ACCURACY_GIT_SHA ?? 'unknown';
+  const gitBranch = options?.gitBranch ?? process.env.ACCURACY_GIT_BRANCH ?? 'unknown';
   const rows: Cpo2PassRow[] = [];
 
   for (const scenarioResult of pkg.scenarios) {
@@ -56,7 +71,10 @@ export function buildCpo2PassEvidencePack(): Cpo2PassEvidencePack {
           reason: turnRec.expectedReason,
         },
         cpoExpected:
+          CPO_REVERIFY_3_ROW_GUIDANCE[reverify3Key(scenarioResult.scenarioId, turnRec.turn)] ??
           '[CPO independent — use rubric questions below; do not inherit CTO PASS automatically]',
+        cpoReverify3Expected:
+          CPO_REVERIFY_3_ROW_GUIDANCE[reverify3Key(scenarioResult.scenarioId, turnRec.turn)] ?? null,
         actual: {
           interpretation: turnRec.actualInterpretation,
           state: turnRec.actualState,
@@ -80,6 +98,10 @@ export function buildCpo2PassEvidencePack(): Cpo2PassEvidencePack {
     slice1Status: 'PASS_CONDITIONAL',
     sprint1Status: 'OPEN',
     ctoGoldenPass: `${pkg.passCount}/${pkg.scenarioCount}`,
+    gitSha,
+    gitBranch,
+    reverifyPhase: 'REVERIFY_3_AWAITING_CPO_VERDICT',
+    fixCycle: '2',
     rows,
   };
 }
@@ -167,26 +189,48 @@ function summarizeNext(actual: Record<string, unknown>): string {
 }
 
 /** Compact sheet for CPO independent review (full JSON in sibling files). */
-export function renderCpo2PassReviewSheet(pack: Cpo2PassEvidencePack, gitSha?: string): string {
+export function renderCpo2PassReviewSheet(pack: Cpo2PassEvidencePack): string {
   const lines: string[] = [
     '# CPO 2-pass — Review Sheet (Golden 8 turns)',
     '',
     `**Generated:** ${pack.generatedAt}`,
-    gitSha ? `**Git SHA:** \`${gitSha}\`` : '',
+    `**Git SHA:** \`${pack.gitSha}\``,
+    `**Branch:** \`${pack.gitBranch}\``,
+    `**Re-verify:** ${pack.reverifyPhase} · Fix Cycle ${pack.fixCycle}`,
     `**Rows:** ${pack.rows.length} · CTO self-check ${pack.ctoGoldenPass} (not CPO acceptance)`,
     '',
     'CPO: fill **CPO Expected** and **Verdict** per row. Full Actual JSON: `EVAL/cpo-2pass-evidence-pack.json`.',
     '',
-    '| # | Scenario | Turn | Asked gap | User answer (trim) | Actual facts | Gap state | Next Q | CTO self | CPO Expected | CPO Verdict |',
-    '|---|----------|------|-----------|-------------------|--------------|-----------|--------|----------|--------------|-------------|',
-  ].filter(Boolean);
+    '| # | Scenario | Turn | Actual facts | Gap state | CPO Re-verify #3 Expected | CPO Verdict |',
+    '|---|----------|------|--------------|-----------|----------------------------|-------------|',
+  ];
 
   pack.rows.forEach((row, i) => {
-    const user = row.userAnswer.replace(/\|/g, '/').slice(0, 40);
+    const exp = (row.cpoReverify3Expected ?? row.cpoExpected).replace(/\|/g, '/').replace(/\n/g, ' ');
     lines.push(
-      `| ${i + 1} | ${row.scenarioLetter}-${row.scenario.slice(-12)} | ${row.turn} | ${row.askedGapId} | ${user}… | ${summarizeFacts(row.actual).replace(/\|/g, '/')} | ${summarizeGap(row.actual)} | ${summarizeNext(row.actual).replace(/\|/g, '/')} | ${row.ctoPass ? 'PASS' : 'FAIL'} | _CPO fill_ | _PENDING_ |`,
+      `| ${i + 1} | ${row.scenarioLetter} ${row.scenario} | ${row.turn} | ${summarizeFacts(row.actual).replace(/\|/g, '/')} | ${summarizeGap(row.actual)} | ${exp.slice(0, 120)}${exp.length > 120 ? '…' : ''} | _PENDING_CPO_ |`,
     );
   });
+
+  lines.push('');
+  lines.push('## Re-verify #3 focus — C / H (Fix Cycle 2)');
+  lines.push('');
+  for (const row of pack.rows.filter((r) => r.cpoReverify3Expected)) {
+    lines.push(`### ${row.scenario} T${row.turn}`);
+    lines.push('');
+    lines.push('**CPO Expected (independent checklist):**');
+    lines.push('');
+    lines.push(row.cpoReverify3Expected ?? '');
+    lines.push('');
+    lines.push('**Actual @ SHA:**');
+    lines.push('');
+    lines.push('```json');
+    lines.push(JSON.stringify(row.actual, null, 2));
+    lines.push('```');
+    lines.push('');
+    lines.push('**CPO Verdict:** `[ PASS | PARTIAL | FAIL ]`');
+    lines.push('');
+  }
 
   lines.push('');
   lines.push('## Per-turn rubric (CPO independent questions)');
@@ -199,6 +243,44 @@ export function renderCpo2PassReviewSheet(pack: Cpo2PassEvidencePack, gitSha?: s
     lines.push('');
   }
   return lines.join('\n');
+}
+
+export function renderCpoReverify3Submission(pack: Cpo2PassEvidencePack): string {
+  const focus = pack.rows.filter((r) => r.cpoReverify3Expected);
+  return [
+    '# CPO 2-pass Re-verify #3 — evidence submission (CTO)',
+    '',
+    `**Git SHA:** \`${pack.gitSha}\``,
+    `**Generated:** ${pack.generatedAt}`,
+    `**CTO Golden self-check:** ${pack.ctoGoldenPass} (not CPO acceptance)`,
+    '',
+    'CPO: compare **Actual** below to **CPO Expected** and record Verdict. Phase ① CLOSE only after CPO signs all rows.',
+    '',
+    '## Regenerate command',
+    '',
+    '```bash',
+    'cd apps/web && pnpm test:cpo-2pass-evidence',
+    '```',
+    '',
+    '## C / H Actual snapshots',
+    '',
+    ...focus.flatMap((row) => [
+      `### ${row.scenario} turn ${row.turn}`,
+      '',
+      '**CPO Expected:**',
+      '',
+      row.cpoReverify3Expected ?? '',
+      '',
+      '**Actual:**',
+      '',
+      '```json',
+      JSON.stringify(row.actual, null, 2),
+      '```',
+      '',
+      '**CPO Verdict:** _pending_',
+      '',
+    ]),
+  ].join('\n');
 }
 
 export function renderCpo2PassAccessManifest(opts: {
@@ -214,6 +296,7 @@ export function renderCpo2PassAccessManifest(opts: {
     ['EVAL/cpo-2pass-evidence-pack.json', 'Machine-readable rows'],
     ['EVAL/golden-scenarios-turn-evidence.json', 'CTO turn evidence'],
     ['CPO-2PASS-FILL-TEMPLATE.md', 'CPO verdict copy-paste template'],
+    ['CPO-2PASS-REVERIFY-3-SUBMISSION.md', 'Re-verify #3 C/H submission for CPO'],
   ];
   const lines = [
     '# Phase ① — CPO 2-pass evidence access manifest',

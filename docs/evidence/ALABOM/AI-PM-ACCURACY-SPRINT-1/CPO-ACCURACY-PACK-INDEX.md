@@ -4,6 +4,7 @@
 |---|----------|------|
 | 0 | `CPO-1PASS-VERDICT-ACCURACY-SLICE1-2026-10-02.md` | CPO 1차 판정 (Slice PASS / Sprint OPEN) |
 | 1 | `ALABOM-AI-PM-ACCURACY-VALIDATION-REPORT.md` | CTO Slice 1 report |
+| **REVERIFY #3** | `CPO-2PASS-REVERIFY-3-SUBMISSION.md` | **C/H Actual @ git SHA — CPO Verdict pending** |
 | **START** | `CPO-2PASS-ACCESS-MANIFEST.md` | **Paths + GitHub links to all 2-pass files** |
 | 1b | `CPO-2PASS-REVIEW-SHEET.md` | Compact table — CPO fill Expected/Verdict |
 | 1c | `CPO-ACCURACY-2PASS.md` | Full narrative + JSON blocks |

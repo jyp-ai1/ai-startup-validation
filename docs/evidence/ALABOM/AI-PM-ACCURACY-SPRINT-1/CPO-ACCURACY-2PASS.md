@@ -1,6 +1,6 @@
 # CPO Accuracy — Golden 8 Independent 2-pass
 
-**Generated:** 2026-10-02T04:31:38.449Z
+**Generated:** 2026-10-02T04:43:04.525Z
 **Slice 1:** PASS_CONDITIONAL · **Sprint 1:** OPEN
 **CTO Golden (self-check):** 8/8 — *not CPO acceptance*
 
@@ -240,7 +240,10 @@ CPO review questions:
 ```
 
 **CPO Expected (independent):**
-[CPO independent — use rubric questions below; do not inherit CTO PASS automatically]
+competitor = FACT, value "배달앱" (explicit 경쟁사)
+revenue = FACT, value "월 매출 3천만원" (no competitor clause)
+customerPersona = OPEN
+revenueModel = PARTIAL (operational revenue snapshot, not full BM)
 
 CPO review questions:
 - customer slot에 매출/경쟁이 저장되지 않았는가?
@@ -793,7 +796,10 @@ CPO review questions:
 ```
 
 **CPO Expected (independent):**
-[CPO independent — use rubric questions below; do not inherit CTO PASS automatically]
+WTP rhetoric → ASSUMPTION (not FACT)
+pricingHint = PARTIAL
+revenueModel = OPEN (must not receive WTP assumption)
+no customerPersona CLOSED from WTP-only answer
 
 CPO review questions:
 - “아마 낼 것 같다”가 validated WTP(FACT)로 저장되지 않았는가?

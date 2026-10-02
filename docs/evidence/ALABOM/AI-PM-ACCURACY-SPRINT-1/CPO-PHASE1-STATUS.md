@@ -2,7 +2,7 @@
 
 **Updated:** 2026-10-02 UTC  
 **PR:** #66  
-**Status:** **OPEN** — CPO re-verify #2 (7P/3PART/0FAIL); **Fix Cycle 2 (C/H)** applied; awaiting **CPO re-verify #3**
+**Status:** **OPEN** — Evidence regenerated @ **`7abb071`** (`REVERIFY_3_AWAITING_CPO_VERDICT`); awaiting **CPO independent Re-verify #3**
 
 ## Evidence files (must be readable before Phase ① CLOSE)
 

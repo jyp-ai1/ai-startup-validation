@@ -1,6 +1,6 @@
 # Phase ① — CPO 2-pass evidence access manifest
 
-**Branch:** `cursor/ai-pm-accuracy-sprint1-6423` · **Commit:** `5abca1993400bb61808c058faf8c71e1c472f088`
+**Branch:** `cursor/ai-pm-accuracy-sprint1-6423` · **Commit:** `7abb07177342f664881b5db8dd1db7df8d41830d`
 
 ## Repository paths (workspace)
 
@@ -9,6 +9,7 @@
 - `docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1/EVAL/cpo-2pass-evidence-pack.json`
 - `docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1/EVAL/golden-scenarios-turn-evidence.json`
 - `docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1/CPO-2PASS-FILL-TEMPLATE.md`
+- `docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1/CPO-2PASS-REVERIFY-3-SUBMISSION.md`
 
 ## GitHub (browse on branch)
 
@@ -17,6 +18,7 @@
 - [EVAL/cpo-2pass-evidence-pack.json](https://github.com/jyp-ai1/ai-startup-validation/blob/cursor/ai-pm-accuracy-sprint1-6423/docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1/EVAL/cpo-2pass-evidence-pack.json) — Machine-readable rows
 - [EVAL/golden-scenarios-turn-evidence.json](https://github.com/jyp-ai1/ai-startup-validation/blob/cursor/ai-pm-accuracy-sprint1-6423/docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1/EVAL/golden-scenarios-turn-evidence.json) — CTO turn evidence
 - [CPO-2PASS-FILL-TEMPLATE.md](https://github.com/jyp-ai1/ai-startup-validation/blob/cursor/ai-pm-accuracy-sprint1-6423/docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1/CPO-2PASS-FILL-TEMPLATE.md) — CPO verdict copy-paste template
+- [CPO-2PASS-REVERIFY-3-SUBMISSION.md](https://github.com/jyp-ai1/ai-startup-validation/blob/cursor/ai-pm-accuracy-sprint1-6423/docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1/CPO-2PASS-REVERIFY-3-SUBMISSION.md) — Re-verify #3 C/H submission for CPO
 
 ## Regenerate locally
 
