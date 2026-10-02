@@ -13,8 +13,8 @@ function gt(
   extras: Partial<BusinessScenarioContract['groundTruth']> = {},
 ): BusinessScenarioContract['groundTruth'] {
   return {
-    customer: { value: customer, source: 'document', certainty: 'KNOWN', evidenceStrength: 3 },
-    problem: { value: problem, source: 'document', certainty: 'KNOWN', evidenceStrength: 3 },
+    customer: { value: customer, source: 'document', certainty: 'CLOSED', evidenceStrength: 3 },
+    problem: { value: problem, source: 'document', certainty: 'CLOSED', evidenceStrength: 3 },
     ...extras,
   };
 }
@@ -34,7 +34,7 @@ export const MINI_SANDBOX_BUSINESSES: BusinessScenarioContract[] = [
     documentText: 'B2B SaaS — 10~50명 팀 협업. 구매: 경영진, 사용: 실무자.',
     groundTruth: gt('중소기업 팀', '업무 협업 비효율', {
       payer: { value: '경영진/팀 리더', certainty: 'PARTIAL', evidenceStrength: 3 },
-      user: { value: '실무자', certainty: 'KNOWN', evidenceStrength: 3 },
+      user: { value: '실무자', certainty: 'CLOSED', evidenceStrength: 3 },
     }),
     set: 'development',
   },

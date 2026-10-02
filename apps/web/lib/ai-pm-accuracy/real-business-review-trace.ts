@@ -3,7 +3,9 @@
  * Evidence filled by production-real-business-review-trace.mjs when auth available.
  */
 
-export type { Phase2TurnTrace as RealBusinessReviewTurnTrace } from './map-real-business-turn-trace';
+import type { Phase2TurnTrace } from './map-real-business-turn-trace';
+
+export type RealBusinessReviewTurnTrace = Phase2TurnTrace;
 
 export type RealBusinessReviewSessionTrace = {
   status: 'BLOCKED' | 'CAPTURED' | 'PARTIAL';

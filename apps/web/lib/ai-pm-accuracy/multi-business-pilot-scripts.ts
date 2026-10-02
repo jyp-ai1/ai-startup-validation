@@ -90,7 +90,7 @@ export const MULTI_BUSINESS_PILOT_SCRIPTS: MultiBusinessPilotScript[] = [
       turn('normal', 'customerPersona', 'customer_definition', 'PM과 기획자가 주 사용자입니다.', {
         gapCompleteness: { customerPersona: 'CLOSED' },
       }),
-      turn('unsupported_claim', 'differentiationVsAlternatives', 'differentiation', '시장 100조이고 무조건 1위가 될 기술입니다.', {
+      turn('unsupported_claim', 'differentiationVsAlternatives', 'competitor_analysis', '시장 100조이고 무조건 1위가 될 기술입니다.', {
         factChecks: [
           {
             key: 'differentiation',
