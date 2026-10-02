@@ -14,6 +14,7 @@ export default defineConfig({
       'lib/intake/**/__tests__/**/*.test.ts',
       'lib/ai-evaluation/**/__tests__/**/*.test.ts',
       'lib/ai-pm-accuracy/**/__tests__/**/*.test.ts',
+      'lib/ai-pm-validation-engine/**/__tests__/**/*.test.ts',
     ],
     testTimeout: 120_000,
   },

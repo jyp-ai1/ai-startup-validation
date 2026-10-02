@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://launchlens.dev/schemas/conversation-state.json",
+  "title": "ConversationState",
+  "type": "object",
+  "properties": {
+    "gaps": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": ["OPEN", "PARTIAL", "CLOSED", "CONFLICT", "UNKNOWN", "ASSUMPTION", "INFERENCE"]
+      }
+    },
+    "facts": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "transitionLog": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/transition" }
+    }
+  },
+  "$defs": {
+    "transition": {
+      "type": "object",
+      "required": ["from", "to", "trigger"],
+      "properties": {
+        "slot": { "type": "string" },
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "trigger": { "enum": ["answer", "correction", "contradiction", "off_slot", "system"] }
+      }
+    }
+  }
+}

@@ -22,6 +22,8 @@
     "test:multi-business-accuracy": "node scripts/run-multi-business-accuracy.mjs",
     "test:cross-business-failure-search": "node scripts/run-cross-business-failure-search.mjs",
     "test:validation-lab-evidence": "node scripts/run-validation-lab-evidence.mjs",
+    "test:mini-sandbox": "vitest run lib/ai-pm-validation-engine/__tests__/mini-sandbox-runner.test.ts",
+    "test:mini-sandbox-evidence": "node scripts/run-mini-sandbox-evidence.mjs",
     "test:cpo-2pass-evidence": "node scripts/run-cpo-2pass-evidence.mjs",
     "evidence:real-business-review": "node scripts/production-real-business-review-trace.mjs",
     "evidence:phase2-cpo-pack": "node scripts/run-phase2-cpo-review-pack.mjs"

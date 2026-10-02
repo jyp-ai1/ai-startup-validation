@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://launchlens.dev/schemas/expected-turn.json",
+  "title": "ExpectedTurn",
+  "type": "object",
+  "properties": {
+    "input": { "type": "string" },
+    "expectedFacts": { "type": "array" },
+    "expectedState": { "type": "object" },
+    "expectedGaps": { "type": "object" },
+    "acceptableQuestionIntent": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "L4 — intent families, not exact wording"
+    },
+    "forbiddenInterpretations": { "type": "array", "items": { "type": "string" } }
+  }
+}

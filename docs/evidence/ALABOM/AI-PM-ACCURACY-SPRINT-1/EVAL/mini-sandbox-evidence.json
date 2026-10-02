@@ -1,0 +1,5173 @@
+{
+  "generatedAt": "2026-10-02T08:29:38.921Z",
+  "sprint": "VALIDATION_ENGINE_POC",
+  "matrix": {
+    "businesses": 10,
+    "behaviors": 3,
+    "turnsPerSession": 5,
+    "totalTurns": 150
+  },
+  "designConstraints": [
+    "state_drift_logged",
+    "deterministic_user_agent",
+    "deterministic_l1_l3_eval",
+    "cost_cap_poc_150_turns"
+  ],
+  "rows": [
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "normal",
+      "turn": 1,
+      "userInput": "핵심 고객은 직장인·프리랜서이고, 가장 큰 문제는 할 일·일정 분산입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "normal",
+      "turn": 2,
+      "userInput": "핵심 고객은 직장인·프리랜서이고, 가장 큰 문제는 할 일·일정 분산입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "normal",
+      "turn": 3,
+      "userInput": "핵심 고객은 직장인·프리랜서이고, 가장 큰 문제는 할 일·일정 분산입니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "normal",
+      "turn": 4,
+      "userInput": "핵심 고객은 직장인·프리랜서이고, 가장 큰 문제는 할 일·일정 분산입니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "normal",
+      "turn": 5,
+      "userInput": "핵심 고객은 직장인·프리랜서이고, 가장 큰 문제는 할 일·일정 분산입니다.",
+      "askedGapId": "differentiationVsAlternatives",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 할 일·일정 분산를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "multi_fact",
+      "turn": 2,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 할 일·일정 분산를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "multi_fact",
+      "turn": 3,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 할 일·일정 분산를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "multi_fact",
+      "turn": 4,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 할 일·일정 분산를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "multi_fact",
+      "turn": 5,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 할 일·일정 분산를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "contradiction",
+      "turn": 1,
+      "userInput": "고객은 20~30대 직장인·프리랜서입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "contradiction",
+      "turn": 2,
+      "userInput": "고객은 20~30대 직장인·프리랜서입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "contradiction",
+      "turn": 3,
+      "userInput": "고객은 20~30대 직장인·프리랜서입니다.",
+      "askedGapId": "problemJtbd",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "contradiction",
+      "turn": 4,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "normal",
+      "turn": 1,
+      "userInput": "핵심 고객은 중소기업 팀이고, 가장 큰 문제는 업무 협업 비효율입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "normal",
+      "turn": 2,
+      "userInput": "핵심 고객은 중소기업 팀이고, 가장 큰 문제는 업무 협업 비효율입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "normal",
+      "turn": 3,
+      "userInput": "핵심 고객은 중소기업 팀이고, 가장 큰 문제는 업무 협업 비효율입니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "normal",
+      "turn": 4,
+      "userInput": "핵심 고객은 중소기업 팀이고, 가장 큰 문제는 업무 협업 비효율입니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "normal",
+      "turn": 5,
+      "userInput": "핵심 고객은 중소기업 팀이고, 가장 큰 문제는 업무 협업 비효율입니다.",
+      "askedGapId": "differentiationVsAlternatives",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "경영진/팀 리더가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 업무 협업 비효율를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "multi_fact",
+      "turn": 2,
+      "userInput": "경영진/팀 리더가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 업무 협업 비효율를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "multi_fact",
+      "turn": 3,
+      "userInput": "경영진/팀 리더가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 업무 협업 비효율를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "multi_fact",
+      "turn": 4,
+      "userInput": "경영진/팀 리더가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 업무 협업 비효율를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "multi_fact",
+      "turn": 5,
+      "userInput": "경영진/팀 리더가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 업무 협업 비효율를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "contradiction",
+      "turn": 1,
+      "userInput": "고객은 20~30대 중소기업 팀입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "contradiction",
+      "turn": 2,
+      "userInput": "고객은 20~30대 중소기업 팀입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "contradiction",
+      "turn": 3,
+      "userInput": "고객은 20~30대 중소기업 팀입니다.",
+      "askedGapId": "problemJtbd",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "contradiction",
+      "turn": 4,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "normal",
+      "turn": 1,
+      "userInput": "핵심 고객은 중소기업 수요자이고, 가장 큰 문제는 적합 전문가 찾기 어려움입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "normal",
+      "turn": 2,
+      "userInput": "핵심 고객은 중소기업 수요자이고, 가장 큰 문제는 적합 전문가 찾기 어려움입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "normal",
+      "turn": 3,
+      "userInput": "핵심 고객은 중소기업 수요자이고, 가장 큰 문제는 적합 전문가 찾기 어려움입니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
+        "payer": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "normal",
+      "turn": 4,
+      "userInput": "핵심 고객은 중소기업 수요자이고, 가장 큰 문제는 적합 전문가 찾기 어려움입니다.",
+      "askedGapId": "differentiationVsAlternatives",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
+        "payer": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "normal",
+      "turn": 5,
+      "userInput": "핵심 고객은 중소기업 수요자이고, 가장 큰 문제는 적합 전문가 찾기 어려움입니다.",
+      "askedGapId": "validationTestability",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "validationTestability": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
+        "payer": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "validationTestability": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 적합 전문가 찾기 어려움를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "multi_fact",
+      "turn": 2,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 적합 전문가 찾기 어려움를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "multi_fact",
+      "turn": 3,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 적합 전문가 찾기 어려움를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "multi_fact",
+      "turn": 4,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 적합 전문가 찾기 어려움를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "multi_fact",
+      "turn": 5,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 적합 전문가 찾기 어려움를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "contradiction",
+      "turn": 1,
+      "userInput": "고객은 20~30대 중소기업 수요자입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "contradiction",
+      "turn": 2,
+      "userInput": "고객은 20~30대 중소기업 수요자입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "contradiction",
+      "turn": 3,
+      "userInput": "고객은 20~30대 중소기업 수요자입니다.",
+      "askedGapId": "problemJtbd",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "contradiction",
+      "turn": 4,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "differentiationVsAlternatives",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "marketChannel": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "normal",
+      "turn": 1,
+      "userInput": "핵심 고객은 20~40대 건강 관심 소비자이고, 가장 큰 문제는 신뢰할 제품 선택 어려움입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "normal",
+      "turn": 2,
+      "userInput": "핵심 고객은 20~40대 건강 관심 소비자이고, 가장 큰 문제는 신뢰할 제품 선택 어려움입니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "CLOSED",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "normal",
+      "turn": 3,
+      "userInput": "핵심 고객은 20~40대 건강 관심 소비자이고, 가장 큰 문제는 신뢰할 제품 선택 어려움입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "CLOSED",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "normal",
+      "turn": 4,
+      "userInput": "핵심 고객은 20~40대 건강 관심 소비자이고, 가장 큰 문제는 신뢰할 제품 선택 어려움입니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "CLOSED",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "normal",
+      "turn": 5,
+      "userInput": "핵심 고객은 20~40대 건강 관심 소비자이고, 가장 큰 문제는 신뢰할 제품 선택 어려움입니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "CLOSED",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 신뢰할 제품 선택 어려움를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "multi_fact",
+      "turn": 2,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 신뢰할 제품 선택 어려움를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "multi_fact",
+      "turn": 3,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 신뢰할 제품 선택 어려움를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "multi_fact",
+      "turn": 4,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 신뢰할 제품 선택 어려움를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "multi_fact",
+      "turn": 5,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 신뢰할 제품 선택 어려움를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "contradiction",
+      "turn": 1,
+      "userInput": "고객은 20~30대 20~40대 건강 관심 소비자입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "contradiction",
+      "turn": 2,
+      "userInput": "고객은 20~30대 20~40대 건강 관심 소비자입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "contradiction",
+      "turn": 3,
+      "userInput": "고객은 20~30대 20~40대 건강 관심 소비자입니다.",
+      "askedGapId": "problemJtbd",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "contradiction",
+      "turn": 4,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CONTRADICTED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "normal",
+      "turn": 1,
+      "userInput": "핵심 고객은 콘텐츠 소비자이고, 가장 큰 문제는 지속 구독 가치 불확실입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "normal",
+      "turn": 2,
+      "userInput": "핵심 고객은 콘텐츠 소비자이고, 가장 큰 문제는 지속 구독 가치 불확실입니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "CLOSED",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "normal",
+      "turn": 3,
+      "userInput": "핵심 고객은 콘텐츠 소비자이고, 가장 큰 문제는 지속 구독 가치 불확실입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "CLOSED",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "normal",
+      "turn": 4,
+      "userInput": "핵심 고객은 콘텐츠 소비자이고, 가장 큰 문제는 지속 구독 가치 불확실입니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "CLOSED",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "normal",
+      "turn": 5,
+      "userInput": "핵심 고객은 콘텐츠 소비자이고, 가장 큰 문제는 지속 구독 가치 불확실입니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "CLOSED",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 지속 구독 가치 불확실를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "multi_fact",
+      "turn": 2,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 지속 구독 가치 불확실를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "multi_fact",
+      "turn": 3,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 지속 구독 가치 불확실를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "multi_fact",
+      "turn": 4,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 지속 구독 가치 불확실를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "multi_fact",
+      "turn": 5,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 지속 구독 가치 불확실를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "contradiction",
+      "turn": 1,
+      "userInput": "고객은 20~30대 콘텐츠 소비자입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "contradiction",
+      "turn": 2,
+      "userInput": "고객은 20~30대 콘텐츠 소비자입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "contradiction",
+      "turn": 3,
+      "userInput": "고객은 20~30대 콘텐츠 소비자입니다.",
+      "askedGapId": "problemJtbd",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "contradiction",
+      "turn": 4,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CONTRADICTED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CONTRADICTED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "normal",
+      "turn": 1,
+      "userInput": "핵심 고객은 1~3호점 F&B 사장이고, 가장 큰 문제는 온라인 홍보 시간 부족입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "normal",
+      "turn": 2,
+      "userInput": "핵심 고객은 1~3호점 F&B 사장이고, 가장 큰 문제는 온라인 홍보 시간 부족입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "normal",
+      "turn": 3,
+      "userInput": "핵심 고객은 1~3호점 F&B 사장이고, 가장 큰 문제는 온라인 홍보 시간 부족입니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "normal",
+      "turn": 4,
+      "userInput": "핵심 고객은 1~3호점 F&B 사장이고, 가장 큰 문제는 온라인 홍보 시간 부족입니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "normal",
+      "turn": 5,
+      "userInput": "핵심 고객은 1~3호점 F&B 사장이고, 가장 큰 문제는 온라인 홍보 시간 부족입니다.",
+      "askedGapId": "differentiationVsAlternatives",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 온라인 홍보 시간 부족를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "multi_fact",
+      "turn": 2,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 온라인 홍보 시간 부족를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN",
+        "problemJtbd": "PARTIAL"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "multi_fact",
+      "turn": 3,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 온라인 홍보 시간 부족를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN",
+        "problemJtbd": "PARTIAL"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "multi_fact",
+      "turn": 4,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 온라인 홍보 시간 부족를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN",
+        "problemJtbd": "PARTIAL"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "multi_fact",
+      "turn": 5,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 온라인 홍보 시간 부족를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN",
+        "problemJtbd": "PARTIAL"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "contradiction",
+      "turn": 1,
+      "userInput": "고객은 20~30대 1~3호점 F&B 사장입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "contradiction",
+      "turn": 2,
+      "userInput": "고객은 20~30대 1~3호점 F&B 사장입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "contradiction",
+      "turn": 3,
+      "userInput": "고객은 20~30대 1~3호점 F&B 사장입니다.",
+      "askedGapId": "problemJtbd",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "contradiction",
+      "turn": 4,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "normal",
+      "turn": 1,
+      "userInput": "핵심 고객은 스타트업 개발팀이고, 가장 큰 문제는 API 연동·운영 부담입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "normal",
+      "turn": 2,
+      "userInput": "핵심 고객은 스타트업 개발팀이고, 가장 큰 문제는 API 연동·운영 부담입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "normal",
+      "turn": 3,
+      "userInput": "핵심 고객은 스타트업 개발팀이고, 가장 큰 문제는 API 연동·운영 부담입니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "normal",
+      "turn": 4,
+      "userInput": "핵심 고객은 스타트업 개발팀이고, 가장 큰 문제는 API 연동·운영 부담입니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "normal",
+      "turn": 5,
+      "userInput": "핵심 고객은 스타트업 개발팀이고, 가장 큰 문제는 API 연동·운영 부담입니다.",
+      "askedGapId": "differentiationVsAlternatives",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "multi_fact",
+      "turn": 2,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "multi_fact",
+      "turn": 3,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "multi_fact",
+      "turn": 4,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "multi_fact",
+      "turn": 5,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 API 연동·운영 부담를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "contradiction",
+      "turn": 1,
+      "userInput": "고객은 20~30대 스타트업 개발팀입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "contradiction",
+      "turn": 2,
+      "userInput": "고객은 20~30대 스타트업 개발팀입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "contradiction",
+      "turn": 3,
+      "userInput": "고객은 20~30대 스타트업 개발팀입니다.",
+      "askedGapId": "problemJtbd",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "contradiction",
+      "turn": 4,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "normal",
+      "turn": 1,
+      "userInput": "핵심 고객은 제조 SMB이고, 가장 큰 문제는 장비 상태 모니터링입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "normal",
+      "turn": 2,
+      "userInput": "핵심 고객은 제조 SMB이고, 가장 큰 문제는 장비 상태 모니터링입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "normal",
+      "turn": 3,
+      "userInput": "핵심 고객은 제조 SMB이고, 가장 큰 문제는 장비 상태 모니터링입니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "normal",
+      "turn": 4,
+      "userInput": "핵심 고객은 제조 SMB이고, 가장 큰 문제는 장비 상태 모니터링입니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "normal",
+      "turn": 5,
+      "userInput": "핵심 고객은 제조 SMB이고, 가장 큰 문제는 장비 상태 모니터링입니다.",
+      "askedGapId": "differentiationVsAlternatives",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 장비 상태 모니터링를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "multi_fact",
+      "turn": 2,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 장비 상태 모니터링를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "multi_fact",
+      "turn": 3,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 장비 상태 모니터링를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "multi_fact",
+      "turn": 4,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 장비 상태 모니터링를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "multi_fact",
+      "turn": 5,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 장비 상태 모니터링를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "contradiction",
+      "turn": 1,
+      "userInput": "고객은 20~30대 제조 SMB입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "contradiction",
+      "turn": 2,
+      "userInput": "고객은 20~30대 제조 SMB입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "contradiction",
+      "turn": 3,
+      "userInput": "고객은 20~30대 제조 SMB입니다.",
+      "askedGapId": "problemJtbd",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "contradiction",
+      "turn": 4,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "normal",
+      "turn": 1,
+      "userInput": "핵심 고객은 초기 스타트업 CEO이고, 가장 큰 문제는 GTM 실행 리소스 부족입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "normal",
+      "turn": 2,
+      "userInput": "핵심 고객은 초기 스타트업 CEO이고, 가장 큰 문제는 GTM 실행 리소스 부족입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "normal",
+      "turn": 3,
+      "userInput": "핵심 고객은 초기 스타트업 CEO이고, 가장 큰 문제는 GTM 실행 리소스 부족입니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "normal",
+      "turn": 4,
+      "userInput": "핵심 고객은 초기 스타트업 CEO이고, 가장 큰 문제는 GTM 실행 리소스 부족입니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "normal",
+      "turn": 5,
+      "userInput": "핵심 고객은 초기 스타트업 CEO이고, 가장 큰 문제는 GTM 실행 리소스 부족입니다.",
+      "askedGapId": "differentiationVsAlternatives",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "multi_fact",
+      "turn": 2,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN",
+        "problemJtbd": "PARTIAL"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "multi_fact",
+      "turn": 3,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN",
+        "problemJtbd": "PARTIAL"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "multi_fact",
+      "turn": 4,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN",
+        "problemJtbd": "PARTIAL"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "multi_fact",
+      "turn": 5,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 GTM 실행 리소스 부족를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN",
+        "problemJtbd": "PARTIAL"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "contradiction",
+      "turn": 1,
+      "userInput": "고객은 20~30대 초기 스타트업 CEO입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "contradiction",
+      "turn": 2,
+      "userInput": "고객은 20~30대 초기 스타트업 CEO입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "contradiction",
+      "turn": 3,
+      "userInput": "고객은 20~30대 초기 스타트업 CEO입니다.",
+      "askedGapId": "problemJtbd",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "contradiction",
+      "turn": 4,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "normal",
+      "turn": 1,
+      "userInput": "핵심 고객은 PM·기획자이고, 가장 큰 문제는 문서 분석 시간입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "normal",
+      "turn": 2,
+      "userInput": "핵심 고객은 PM·기획자이고, 가장 큰 문제는 문서 분석 시간입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "normal",
+      "turn": 3,
+      "userInput": "핵심 고객은 PM·기획자이고, 가장 큰 문제는 문서 분석 시간입니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "normal",
+      "turn": 4,
+      "userInput": "핵심 고객은 PM·기획자이고, 가장 큰 문제는 문서 분석 시간입니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "normal",
+      "turn": 5,
+      "userInput": "핵심 고객은 PM·기획자이고, 가장 큰 문제는 문서 분석 시간입니다.",
+      "askedGapId": "differentiationVsAlternatives",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED",
+        "differentiationVsAlternatives": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "multi_fact",
+      "turn": 1,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 문서 분석 시간를 관리합니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "multi_fact",
+      "turn": 2,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 문서 분석 시간를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "multi_fact",
+      "turn": 3,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 문서 분석 시간를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "multi_fact",
+      "turn": 4,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 문서 분석 시간를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "multi_fact",
+      "turn": 5,
+      "userInput": "구매 decision maker가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 문서 분석 시간를 관리합니다.",
+      "askedGapId": "customerPersona",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "CLOSED",
+        "payerUser": "CLOSED",
+        "wtp": "OPEN"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "revenueModel": "CLOSED",
+        "customerPersona": "OPEN"
+      },
+      "evaluation": {
+        "understanding": "FAIL",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F13_MULTI_FACT_LOSS"
+        ],
+        "severity": "medium",
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "contradiction",
+      "turn": 1,
+      "userInput": "고객은 20~30대 PM·기획자입니다.",
+      "askedGapId": "businessOneLiner",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "contradiction",
+      "turn": 2,
+      "userInput": "고객은 20~30대 PM·기획자입니다.",
+      "askedGapId": "payer",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "contradiction",
+      "turn": 3,
+      "userInput": "고객은 20~30대 PM·기획자입니다.",
+      "askedGapId": "problemJtbd",
+      "groundTruthGapAfter": {
+        "customerPersona": "OPEN",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "PASS",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [],
+        "stateDrift": false
+      },
+      "stateDrift": false
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "contradiction",
+      "turn": 4,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "marketChannel",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    },
+    {
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "contradiction",
+      "turn": 5,
+      "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
+      "askedGapId": "alternativesCompetitors",
+      "groundTruthGapAfter": {
+        "customerPersona": "CONFLICT",
+        "problemStatement": "OPEN",
+        "payerUser": "OPEN",
+        "wtp": "OPEN",
+        "businessOneLiner": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED"
+      },
+      "aiGapAfter": {
+        "businessOneLiner": "CLOSED",
+        "customerPersona": "CLOSED",
+        "payer": "CLOSED",
+        "problemJtbd": "CLOSED",
+        "marketChannel": "CLOSED",
+        "alternativesCompetitors": "CLOSED"
+      },
+      "evaluation": {
+        "understanding": "PASS",
+        "state": "FAIL",
+        "gap": "PENDING",
+        "question": "PENDING",
+        "reasoning": "PENDING",
+        "judgment": "PENDING",
+        "failureType": [
+          "F11_CONTRADICTION_MISHANDLING",
+          "STATE_DRIFT"
+        ],
+        "severity": "medium",
+        "stateDrift": true
+      },
+      "stateDrift": true
+    }
+  ],
+  "engineHealth": {
+    "sessionsCompleted": 30,
+    "stateDriftTurns": 20,
+    "userAgentDeterministic": true
+  }
+}

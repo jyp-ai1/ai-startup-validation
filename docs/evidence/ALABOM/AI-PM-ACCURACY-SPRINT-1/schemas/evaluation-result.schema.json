@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://launchlens.dev/schemas/evaluation-result.json",
+  "title": "EvaluationResult",
+  "type": "object",
+  "required": ["understanding", "state", "gap", "question", "reasoning", "judgment"],
+  "properties": {
+    "understanding": { "enum": ["PASS", "PARTIAL", "FAIL", "PENDING"] },
+    "state": { "enum": ["PASS", "PARTIAL", "FAIL", "PENDING"] },
+    "gap": { "enum": ["PASS", "PARTIAL", "FAIL", "PENDING"] },
+    "question": { "enum": ["PASS", "PARTIAL", "FAIL", "PENDING"] },
+    "reasoning": { "enum": ["PASS", "PARTIAL", "FAIL", "PENDING"] },
+    "judgment": { "enum": ["PASS", "PARTIAL", "FAIL", "PENDING"] },
+    "failureType": { "type": "array", "items": { "type": "string" } },
+    "severity": { "enum": ["low", "medium", "high", "critical"] },
+    "stateDrift": { "type": "boolean" },
+    "evidenceStrengthMisuse": { "type": "boolean" }
+  }
+}

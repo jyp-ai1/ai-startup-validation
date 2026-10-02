@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://launchlens.dev/schemas/answer-behavior.json",
+  "title": "AnswerBehavior",
+  "type": "object",
+  "required": ["id"],
+  "properties": {
+    "id": {
+      "enum": [
+        "normal",
+        "sparse",
+        "multi_fact",
+        "off_slot",
+        "contradiction",
+        "correction",
+        "uncertainty",
+        "overclaim",
+        "repeated",
+        "irrelevant",
+        "ambiguous",
+        "partial",
+        "refusal"
+      ]
+    },
+    "description": { "type": "string" },
+    "policy": {
+      "type": "object",
+      "description": "Deterministic user-agent policy — separate from business ground truth"
+    }
+  }
+}
