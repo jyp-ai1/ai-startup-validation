@@ -1,10 +1,12 @@
-# Phase ② — Real Business Review (Production)
+# Phase ② — Real Business Review (Production) · Track A
 
 **Updated:** 2026-10-02 UTC  
 **PR:** #66  
-**Status:** **OPEN** — awaiting authenticated Production session trace
+**Status:** **OPEN** — Track A auth-blocked · **Sprint 2 Tracks B–D runnable in parallel**
 
 **Prerequisite:** Phase ① **CLOSED** (CPO Re-verify #3 · 10/10 PASS @ `7abb071`)
+
+**Full accuracy gate:** see `ALABOM-AI-PM-ACCURACY-SPRINT-2.md` (multi-business + cross-business + unseen — Track A alone is **INCOMPLETE** for CPO).
 
 ## Goal
 
@@ -78,9 +80,17 @@ cd apps/web && pnpm evidence:phase2-cpo-pack   # also runs automatically after C
 
 When auth is missing → `status: BLOCKED` (real login path **unverified** — not a QA convenience issue). When auth present → 12 scripted turns, each row shaped for CPO checklist (`answerUnderstanding`, `gapSnapshot`, `nextQuestion`, `layers`).
 
+## Sprint 2 parallel (auth not required)
+
+```bash
+cd apps/web && pnpm test:multi-business-accuracy
+```
+
+→ `EVAL/multi-business-harness-report.json` · matrix `BUSINESS-SCENARIO-MATRIX.md`
+
 ## CTO priority
 
-Evidence first — no Phase ② feature expansion until trace + CPO Layer 1–3 on Production.
+Evidence first — expand matrix + perturbations + harness (Layer A/B) while Track A waits on `storageState`.
 
 ## Production merge
 

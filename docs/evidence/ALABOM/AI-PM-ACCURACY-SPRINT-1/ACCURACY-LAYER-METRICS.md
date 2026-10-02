@@ -1,6 +1,6 @@
 # Accuracy layer metrics (schema only)
 
-**Rule (CPO §14):** No invented percentages until sufficient labeled sample.
+**Rule (CPO §14):** No invented percentages until sufficient labeled sample. Report **per-dimension**, **per-business minimum**, and **failure taxonomy** — not a single blended “AI Accuracy %”.
 
 | Layer | Metric key | Sample source | Current value |
 |-------|------------|---------------|---------------|
@@ -15,3 +15,14 @@
 | L5 | `judgment_accuracy` | RJ Golden A–H (future) | **NOT_WIRED** |
 
 After CPO 2-pass: update denominators = rows with CPO Verdict PASS|PARTIAL|FAIL.
+
+## Sprint 2 harness (Layer A — fast)
+
+Source: `EVAL/multi-business-harness-report.json` from `pnpm test:multi-business-accuracy`.
+
+| Slice | Current |
+|-------|---------|
+| Layer A probes (15 biz × 1 turn) | See report `layerA` — **CTO self-check only** |
+| Layer B pilots (3 biz × multi-turn) | See report `layerB` |
+| Unseen set (biz-14, biz-15) | Included in Layer A — **do not tune fixes to these** |
+| CPO-labeled multi-business | **NOT_ENOUGH_SAMPLES** |

@@ -30,7 +30,7 @@ import type {
 import type { AccuracyFailureType } from './failure-taxonomy';
 import { GOLDEN_SCENARIOS, type GoldenScenario, type GoldenTurnExpect } from './golden-scenarios';
 
-function snapshotFactsFromGapState(
+export function snapshotFactsFromGapState(
   gapState: GapKnowledgeState,
 ): Partial<Record<ConversationFactKey, string>> {
   const out: Partial<Record<ConversationFactKey, string>> = {};
@@ -42,7 +42,7 @@ function snapshotFactsFromGapState(
   return out;
 }
 
-function snapshotGapCompleteness(gapState: GapKnowledgeState): Record<string, string> {
+export function snapshotGapCompleteness(gapState: GapKnowledgeState): Record<string, string> {
   const out: Record<string, string> = {};
   for (const [gapId, record] of Object.entries(gapState.gaps)) {
     out[gapId] = record.completeness;
@@ -54,7 +54,7 @@ function findFact(facts: ExtractedFact[], key: ConversationFactKey): ExtractedFa
   return facts.find((f) => f.key === key);
 }
 
-function evaluateTurnExpect(
+export function evaluateTurnExpect(
   expect: GoldenTurnExpect,
   ctx: {
     review: ReturnType<typeof buildAnswerReview>['review'];
