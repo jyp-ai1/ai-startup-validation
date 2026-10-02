@@ -1,6 +1,6 @@
 # AI PM Accuracy Sprint 2 — Completion Evidence
 
-**Status:** PENDING — Long Sprint in progress (no interim CPO submission)
+**Status:** IN_PROGRESS — Long Sprint active (no interim CPO submission). Operator status: `LONG-SPRINT-STATUS.md`
 
 | Section | State |
 |---------|--------|
