@@ -144,3 +144,100 @@ export function renderCpo2PassMarkdown(pack: Cpo2PassEvidencePack): string {
 
   return lines.join('\n');
 }
+
+function summarizeFacts(actual: Record<string, unknown>): string {
+  const facts = (actual.interpretation as { extractedFacts?: Array<{ key: string; value: string; evidenceClass: string }> })
+    ?.extractedFacts;
+  if (!facts?.length) return '(none)';
+  return facts.map((f) => `${f.key}=${f.evidenceClass}:"${f.value.slice(0, 48)}${f.value.length > 48 ? '…' : ''}"`).join('; ');
+}
+
+function summarizeGap(actual: Record<string, unknown>): string {
+  const gap = actual.gap as Record<string, string> | undefined;
+  if (!gap || !Object.keys(gap).length) return '(none)';
+  return Object.entries(gap)
+    .map(([k, v]) => `${k}:${v}`)
+    .join(', ');
+}
+
+function summarizeNext(actual: Record<string, unknown>): string {
+  const n = actual.nextQuestion as { targetGapId?: string; action?: string; questionText?: string } | null;
+  if (!n) return '(none)';
+  return `${n.targetGapId}/${n.action} — ${(n.questionText ?? '').slice(0, 60)}`;
+}
+
+/** Compact sheet for CPO independent review (full JSON in sibling files). */
+export function renderCpo2PassReviewSheet(pack: Cpo2PassEvidencePack, gitSha?: string): string {
+  const lines: string[] = [
+    '# CPO 2-pass — Review Sheet (Golden 8 turns)',
+    '',
+    `**Generated:** ${pack.generatedAt}`,
+    gitSha ? `**Git SHA:** \`${gitSha}\`` : '',
+    `**Rows:** ${pack.rows.length} · CTO self-check ${pack.ctoGoldenPass} (not CPO acceptance)`,
+    '',
+    'CPO: fill **CPO Expected** and **Verdict** per row. Full Actual JSON: `EVAL/cpo-2pass-evidence-pack.json`.',
+    '',
+    '| # | Scenario | Turn | Asked gap | User answer (trim) | Actual facts | Gap state | Next Q | CTO self | CPO Expected | CPO Verdict |',
+    '|---|----------|------|-----------|-------------------|--------------|-----------|--------|----------|--------------|-------------|',
+  ].filter(Boolean);
+
+  pack.rows.forEach((row, i) => {
+    const user = row.userAnswer.replace(/\|/g, '/').slice(0, 40);
+    lines.push(
+      `| ${i + 1} | ${row.scenarioLetter}-${row.scenario.slice(-12)} | ${row.turn} | ${row.askedGapId} | ${user}… | ${summarizeFacts(row.actual).replace(/\|/g, '/')} | ${summarizeGap(row.actual)} | ${summarizeNext(row.actual).replace(/\|/g, '/')} | ${row.ctoPass ? 'PASS' : 'FAIL'} | _CPO fill_ | _PENDING_ |`,
+    );
+  });
+
+  lines.push('');
+  lines.push('## Per-turn rubric (CPO independent questions)');
+  lines.push('');
+  for (const row of pack.rows) {
+    if (!row.cpoReviewQuestions.length) continue;
+    lines.push(`### ${row.scenario} T${row.turn}`);
+    for (const q of row.cpoReviewQuestions) lines.push(`- ${q}`);
+    if (row.divergenceNote) lines.push(`- *CTO/CPO divergence risk:* ${row.divergenceNote}`);
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+
+export function renderCpo2PassAccessManifest(opts: {
+  gitSha: string;
+  branch: string;
+  repo: string;
+}): string {
+  const base = `https://github.com/${opts.repo}/blob/${opts.branch}`;
+  const root = 'docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1';
+  const files = [
+    ['CPO-ACCURACY-2PASS.md', 'Full turn narrative + JSON blocks'],
+    ['CPO-2PASS-REVIEW-SHEET.md', 'Compact table for CPO fill'],
+    ['EVAL/cpo-2pass-evidence-pack.json', 'Machine-readable rows'],
+    ['EVAL/golden-scenarios-turn-evidence.json', 'CTO turn evidence'],
+    ['CPO-2PASS-FILL-TEMPLATE.md', 'CPO verdict copy-paste template'],
+  ];
+  const lines = [
+    '# Phase ① — CPO 2-pass evidence access manifest',
+    '',
+    `**Branch:** \`${opts.branch}\` · **Commit:** \`${opts.gitSha}\``,
+    '',
+    '## Repository paths (workspace)',
+    '',
+    ...files.map(([f]) => `- \`${root}/${f}\``),
+    '',
+    '## GitHub (browse on branch)',
+    '',
+    ...files.map(([f, desc]) => `- [${f}](${base}/${root}/${f}) — ${desc}`),
+    '',
+    '## Regenerate locally',
+    '',
+    '```bash',
+    'cd apps/web && pnpm test:cpo-2pass-evidence',
+    '```',
+    '',
+    '## Phase ① close criteria',
+    '',
+    'CPO completes independent Expected + Verdict on all rows → Layer 1–3 failure tally → FAIL/PARTIAL fixes → re-run → CPO re-verify.',
+    '',
+  ];
+  return lines.join('\n');
+}

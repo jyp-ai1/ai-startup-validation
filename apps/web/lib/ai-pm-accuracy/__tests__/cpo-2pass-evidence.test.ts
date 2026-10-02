@@ -5,7 +5,9 @@ import { afterAll, describe, expect, it } from 'vitest';
 
 import {
   buildCpo2PassEvidencePack,
+  renderCpo2PassAccessManifest,
   renderCpo2PassMarkdown,
+  renderCpo2PassReviewSheet,
 } from '../cpo-2pass-evidence';
 import { GOLDEN_SCENARIOS } from '../golden-scenarios';
 import { REASONING_JUDGMENT_GOLDEN_STUBS } from '../reasoning-judgment-golden';
@@ -22,9 +24,19 @@ afterAll(() => {
     path.join(outDir, 'cpo-2pass-evidence-pack.json'),
     `${JSON.stringify(pack, null, 2)}\n`,
   );
+  const evidenceRoot = path.resolve(process.cwd(), '../../docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1');
+  fs.writeFileSync(path.join(evidenceRoot, 'CPO-ACCURACY-2PASS.md'), `${renderCpo2PassMarkdown(pack)}\n`);
   fs.writeFileSync(
-    path.resolve(process.cwd(), '../../docs/evidence/ALABOM/AI-PM-ACCURACY-SPRINT-1/CPO-ACCURACY-2PASS.md'),
-    `${renderCpo2PassMarkdown(pack)}\n`,
+    path.join(evidenceRoot, 'CPO-2PASS-REVIEW-SHEET.md'),
+    `${renderCpo2PassReviewSheet(pack, process.env.ACCURACY_GIT_SHA)}\n`,
+  );
+  fs.writeFileSync(
+    path.join(evidenceRoot, 'CPO-2PASS-ACCESS-MANIFEST.md'),
+    `${renderCpo2PassAccessManifest({
+      gitSha: process.env.ACCURACY_GIT_SHA ?? 'unknown',
+      branch: process.env.ACCURACY_GIT_BRANCH ?? 'cursor/ai-pm-accuracy-sprint1-6423',
+      repo: 'jyp-ai1/ai-startup-validation',
+    })}\n`,
   );
 });
 
