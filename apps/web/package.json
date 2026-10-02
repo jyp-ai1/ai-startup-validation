@@ -17,7 +17,17 @@
     "test:e2e:v3-p0:infra": "node scripts/run-v3-p0-e2e.mjs e2e/v3-p0-infra-smoke.spec.ts --retries=0",
     "test:e2e:day8g": "node scripts/run-day8g-e2e.mjs",
     "test:e2e:day8h": "node scripts/run-day8h-e2e.mjs",
-    "verify:v3-baseline": "node scripts/verify-v3-baseline-recovery.mjs"
+    "verify:v3-baseline": "node scripts/verify-v3-baseline-recovery.mjs",
+    "test:accuracy-golden": "node scripts/run-accuracy-golden-scenarios.mjs",
+    "test:multi-business-accuracy": "node scripts/run-multi-business-accuracy.mjs",
+    "test:cross-business-failure-search": "node scripts/run-cross-business-failure-search.mjs",
+    "test:validation-lab-evidence": "node scripts/run-validation-lab-evidence.mjs",
+    "test:mini-sandbox": "vitest run lib/ai-pm-validation-engine/__tests__/mini-sandbox-runner.test.ts",
+    "test:mini-sandbox-evidence": "node scripts/run-mini-sandbox-evidence.mjs",
+    "test:validation-engine-completion": "node scripts/run-validation-engine-completion.mjs",
+    "test:cpo-2pass-evidence": "node scripts/run-cpo-2pass-evidence.mjs",
+    "evidence:real-business-review": "node scripts/production-real-business-review-trace.mjs",
+    "evidence:phase2-cpo-pack": "node scripts/run-phase2-cpo-review-pack.mjs"
   },
   "dependencies": {
     "@repo/agents": "workspace:*",

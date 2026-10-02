@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "purpose": "Auto evaluator vs CPO reference verdicts",
+  "cases": [
+    { "id": "cal-normal", "behavior": "normal", "cpoUnderstanding": "PASS", "cpoQuestion": "PASS" },
+    { "id": "cal-sparse", "behavior": "sparse", "cpoUnderstanding": "PARTIAL", "cpoState": "PARTIAL" },
+    { "id": "cal-multi", "behavior": "multi_fact", "cpoUnderstanding": "PASS" },
+    { "id": "cal-off-slot", "behavior": "off_slot", "cpoState": "PARTIAL" },
+    { "id": "cal-contradiction", "behavior": "contradiction", "cpoState": "FAIL", "note": "T4+ must CONFLICT" },
+    { "id": "cal-correction", "behavior": "correction", "cpoUnderstanding": "PASS" },
+    { "id": "cal-uncertainty", "behavior": "uncertainty", "cpoReasoning": "PASS", "note": "WTP must not close as FACT" },
+    { "id": "cal-overclaim", "behavior": "overclaim", "cpoReasoning": "FAIL", "placeholder": true },
+    { "id": "cal-repeated", "behavior": "repeated", "cpoQuestion": "FAIL", "placeholder": true },
+    { "id": "cal-ambiguous", "behavior": "ambiguous", "cpoUnderstanding": "PARTIAL", "placeholder": true }
+  ],
+  "cpoSignOff": "PENDING_CEO_CPO_REVIEW"
+}

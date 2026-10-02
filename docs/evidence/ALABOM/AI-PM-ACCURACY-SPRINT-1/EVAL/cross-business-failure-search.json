@@ -1,0 +1,2000 @@
+{
+  "generatedAt": "2026-10-02T05:09:50.334Z",
+  "sprint": "GENERALIZATION_FAILURE_SEARCH",
+  "matrixSize": {
+    "businesses": 15,
+    "perturbations": 11,
+    "cells": 165
+  },
+  "cells": [
+    {
+      "businessId": "biz-01",
+      "set": "development",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-01",
+      "set": "development",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-01",
+      "set": "development",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-01",
+      "set": "development",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-01",
+      "set": "development",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-01",
+      "set": "development",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-01",
+      "set": "development",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-01",
+      "set": "development",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-01",
+      "set": "development",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-01",
+      "set": "development",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-01",
+      "set": "development",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-02",
+      "set": "development",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-02",
+      "set": "development",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-02",
+      "set": "development",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-02",
+      "set": "development",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-02",
+      "set": "development",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-02",
+      "set": "development",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-02",
+      "set": "development",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-02",
+      "set": "development",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-02",
+      "set": "development",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-02",
+      "set": "development",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-02",
+      "set": "development",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-03",
+      "set": "development",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-03",
+      "set": "development",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-03",
+      "set": "development",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-03",
+      "set": "development",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-03",
+      "set": "development",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-03",
+      "set": "development",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-03",
+      "set": "development",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-03",
+      "set": "development",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-03",
+      "set": "development",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-03",
+      "set": "development",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-03",
+      "set": "development",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-04",
+      "set": "development",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-04",
+      "set": "development",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-04",
+      "set": "development",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-04",
+      "set": "development",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-04",
+      "set": "development",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-04",
+      "set": "development",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-04",
+      "set": "development",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-04",
+      "set": "development",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-04",
+      "set": "development",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-04",
+      "set": "development",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-04",
+      "set": "development",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-05",
+      "set": "development",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-05",
+      "set": "development",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-05",
+      "set": "development",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-05",
+      "set": "development",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-05",
+      "set": "development",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-05",
+      "set": "development",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-05",
+      "set": "development",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-05",
+      "set": "development",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-05",
+      "set": "development",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-05",
+      "set": "development",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-05",
+      "set": "development",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-06",
+      "set": "development",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-06",
+      "set": "development",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-06",
+      "set": "development",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-06",
+      "set": "development",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-06",
+      "set": "development",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-06",
+      "set": "development",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-06",
+      "set": "development",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-06",
+      "set": "development",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-06",
+      "set": "development",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-06",
+      "set": "development",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-06",
+      "set": "development",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-07",
+      "set": "development",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-07",
+      "set": "development",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-07",
+      "set": "development",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-07",
+      "set": "development",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-07",
+      "set": "development",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-07",
+      "set": "development",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-07",
+      "set": "development",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-07",
+      "set": "development",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-07",
+      "set": "development",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-07",
+      "set": "development",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-07",
+      "set": "development",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-08",
+      "set": "development",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-08",
+      "set": "development",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-08",
+      "set": "development",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-08",
+      "set": "development",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-08",
+      "set": "development",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-08",
+      "set": "development",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-08",
+      "set": "development",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-08",
+      "set": "development",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-08",
+      "set": "development",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-08",
+      "set": "development",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-08",
+      "set": "development",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-09",
+      "set": "development",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-09",
+      "set": "development",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-09",
+      "set": "development",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-09",
+      "set": "development",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-09",
+      "set": "development",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-09",
+      "set": "development",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-09",
+      "set": "development",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-09",
+      "set": "development",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-09",
+      "set": "development",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-09",
+      "set": "development",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-09",
+      "set": "development",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-10",
+      "set": "development",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-10",
+      "set": "development",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-10",
+      "set": "development",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-10",
+      "set": "development",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-10",
+      "set": "development",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-10",
+      "set": "development",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-10",
+      "set": "development",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-10",
+      "set": "development",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-10",
+      "set": "development",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-10",
+      "set": "development",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-10",
+      "set": "development",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-11",
+      "set": "regression",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-11",
+      "set": "regression",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-11",
+      "set": "regression",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-11",
+      "set": "regression",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-11",
+      "set": "regression",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-11",
+      "set": "regression",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-11",
+      "set": "regression",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-11",
+      "set": "regression",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-11",
+      "set": "regression",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-11",
+      "set": "regression",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-11",
+      "set": "regression",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-12",
+      "set": "regression",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-12",
+      "set": "regression",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-12",
+      "set": "regression",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-12",
+      "set": "regression",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-12",
+      "set": "regression",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-12",
+      "set": "regression",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-12",
+      "set": "regression",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-12",
+      "set": "regression",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-12",
+      "set": "regression",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-12",
+      "set": "regression",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-12",
+      "set": "regression",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-13",
+      "set": "regression",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-13",
+      "set": "regression",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-13",
+      "set": "regression",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-13",
+      "set": "regression",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-13",
+      "set": "regression",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-13",
+      "set": "regression",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-13",
+      "set": "regression",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-13",
+      "set": "regression",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-13",
+      "set": "regression",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-13",
+      "set": "regression",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-13",
+      "set": "regression",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-14",
+      "set": "unseen",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-14",
+      "set": "unseen",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-14",
+      "set": "unseen",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-14",
+      "set": "unseen",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-14",
+      "set": "unseen",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-14",
+      "set": "unseen",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-14",
+      "set": "unseen",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-14",
+      "set": "unseen",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-14",
+      "set": "unseen",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-14",
+      "set": "unseen",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-14",
+      "set": "unseen",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-15",
+      "set": "unseen",
+      "perturbation": "normal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-15",
+      "set": "unseen",
+      "perturbation": "sparse",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-15",
+      "set": "unseen",
+      "perturbation": "verbose",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-15",
+      "set": "unseen",
+      "perturbation": "multi_fact",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-15",
+      "set": "unseen",
+      "perturbation": "off_slot",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-15",
+      "set": "unseen",
+      "perturbation": "contradiction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-15",
+      "set": "unseen",
+      "perturbation": "unsupported_claim",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-15",
+      "set": "unseen",
+      "perturbation": "uncertainty",
+      "pass": false,
+      "harnessFailureTypes": [
+        "F7_EVIDENCE_INFERENCE_CONFUSION",
+        "F3_GAP_MISCLASSIFICATION"
+      ],
+      "sprint2FailureTypes": [
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT",
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED"
+      ],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-15",
+      "set": "unseen",
+      "perturbation": "correction",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-15",
+      "set": "unseen",
+      "perturbation": "refusal",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    },
+    {
+      "businessId": "biz-15",
+      "set": "unseen",
+      "perturbation": "repeated",
+      "pass": true,
+      "harnessFailureTypes": [],
+      "sprint2FailureTypes": [],
+      "turn": 1
+    }
+  ],
+  "bySprint2Type": {
+    "F06_CLOSED_STATE_REGRESSION": {
+      "failCount": 30,
+      "businesses": [
+        "biz-01",
+        "biz-02",
+        "biz-03",
+        "biz-04",
+        "biz-05",
+        "biz-06",
+        "biz-07",
+        "biz-08",
+        "biz-09",
+        "biz-10",
+        "biz-11",
+        "biz-12",
+        "biz-13",
+        "biz-14",
+        "biz-15"
+      ]
+    },
+    "F07_OPEN_GAP_MISSED": {
+      "failCount": 30,
+      "businesses": [
+        "biz-01",
+        "biz-02",
+        "biz-03",
+        "biz-04",
+        "biz-05",
+        "biz-06",
+        "biz-07",
+        "biz-08",
+        "biz-09",
+        "biz-10",
+        "biz-11",
+        "biz-12",
+        "biz-13",
+        "biz-14",
+        "biz-15"
+      ]
+    },
+    "F04_FACT_ASSUMPTION_CONFUSION": {
+      "failCount": 15,
+      "businesses": [
+        "biz-01",
+        "biz-02",
+        "biz-03",
+        "biz-04",
+        "biz-05",
+        "biz-06",
+        "biz-07",
+        "biz-08",
+        "biz-09",
+        "biz-10",
+        "biz-11",
+        "biz-12",
+        "biz-13",
+        "biz-14",
+        "biz-15"
+      ]
+    },
+    "F05_INFERENCE_AS_FACT": {
+      "failCount": 15,
+      "businesses": [
+        "biz-01",
+        "biz-02",
+        "biz-03",
+        "biz-04",
+        "biz-05",
+        "biz-06",
+        "biz-07",
+        "biz-08",
+        "biz-09",
+        "biz-10",
+        "biz-11",
+        "biz-12",
+        "biz-13",
+        "biz-14",
+        "biz-15"
+      ]
+    }
+  },
+  "byBusiness": {
+    "biz-01": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-02": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-03": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-04": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-05": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-06": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-07": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-08": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-09": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-10": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-11": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-12": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-13": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-14": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    },
+    "biz-15": {
+      "failCount": 2,
+      "types": [
+        "F06_CLOSED_STATE_REGRESSION",
+        "F07_OPEN_GAP_MISSED",
+        "F04_FACT_ASSUMPTION_CONFUSION",
+        "F05_INFERENCE_AS_FACT"
+      ]
+    }
+  },
+  "clusterHints": [
+    {
+      "sprint2Type": "F06_CLOSED_STATE_REGRESSION",
+      "businessCount": 15,
+      "businesses": [
+        "biz-01",
+        "biz-02",
+        "biz-03",
+        "biz-04",
+        "biz-05",
+        "biz-06",
+        "biz-07",
+        "biz-08",
+        "biz-09",
+        "biz-10",
+        "biz-11",
+        "biz-12",
+        "biz-13",
+        "biz-14",
+        "biz-15"
+      ],
+      "note": "Candidate failure cluster — layer-only fix target (not business-specific)"
+    },
+    {
+      "sprint2Type": "F07_OPEN_GAP_MISSED",
+      "businessCount": 15,
+      "businesses": [
+        "biz-01",
+        "biz-02",
+        "biz-03",
+        "biz-04",
+        "biz-05",
+        "biz-06",
+        "biz-07",
+        "biz-08",
+        "biz-09",
+        "biz-10",
+        "biz-11",
+        "biz-12",
+        "biz-13",
+        "biz-14",
+        "biz-15"
+      ],
+      "note": "Candidate failure cluster — layer-only fix target (not business-specific)"
+    },
+    {
+      "sprint2Type": "F04_FACT_ASSUMPTION_CONFUSION",
+      "businessCount": 15,
+      "businesses": [
+        "biz-01",
+        "biz-02",
+        "biz-03",
+        "biz-04",
+        "biz-05",
+        "biz-06",
+        "biz-07",
+        "biz-08",
+        "biz-09",
+        "biz-10",
+        "biz-11",
+        "biz-12",
+        "biz-13",
+        "biz-14",
+        "biz-15"
+      ],
+      "note": "Candidate failure cluster — layer-only fix target (not business-specific)"
+    },
+    {
+      "sprint2Type": "F05_INFERENCE_AS_FACT",
+      "businessCount": 15,
+      "businesses": [
+        "biz-01",
+        "biz-02",
+        "biz-03",
+        "biz-04",
+        "biz-05",
+        "biz-06",
+        "biz-07",
+        "biz-08",
+        "biz-09",
+        "biz-10",
+        "biz-11",
+        "biz-12",
+        "biz-13",
+        "biz-14",
+        "biz-15"
+      ],
+      "note": "Candidate failure cluster — layer-only fix target (not business-specific)"
+    }
+  ]
+}

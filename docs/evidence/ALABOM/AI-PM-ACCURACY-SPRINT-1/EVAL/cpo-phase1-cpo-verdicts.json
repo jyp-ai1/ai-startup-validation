@@ -1,0 +1,22 @@
+{
+  "signedAt": "2026-10-02T04:46:00.000Z",
+  "signedBy": "CPO",
+  "reverify": 3,
+  "evidenceGitSha": "7abb07177342f664881b5db8dd1db7df8d41830d",
+  "evidenceDocCommits": ["8716e81", "a7ef095"],
+  "phase1Status": "CLOSED",
+  "summary": { "pass": 10, "partial": 0, "fail": 0 },
+  "verdictNote": "Independent CPO rubric — not CTO 8/8 re-approval.",
+  "rows": [
+    { "scenario": "golden-a-normal-input", "turn": 1, "scenarioLetter": "A", "verdict": "PASS" },
+    { "scenario": "golden-b-sparse", "turn": 1, "scenarioLetter": "B", "verdict": "PASS" },
+    { "scenario": "golden-c-wrong-slot", "turn": 1, "scenarioLetter": "C", "verdict": "PASS" },
+    { "scenario": "golden-d-contradiction", "turn": 1, "scenarioLetter": "D", "verdict": "PASS" },
+    { "scenario": "golden-d-contradiction", "turn": 2, "scenarioLetter": "D", "verdict": "PASS" },
+    { "scenario": "golden-e-no-repeat", "turn": 1, "scenarioLetter": "E", "verdict": "PASS" },
+    { "scenario": "golden-e-no-repeat", "turn": 2, "scenarioLetter": "E", "verdict": "PASS" },
+    { "scenario": "golden-f-multi-slot", "turn": 1, "scenarioLetter": "F", "verdict": "PASS" },
+    { "scenario": "golden-g-overclaim", "turn": 1, "scenarioLetter": "G", "verdict": "PASS" },
+    { "scenario": "golden-h-wtp-assumption", "turn": 1, "scenarioLetter": "H", "verdict": "PASS" }
+  ]
+}
