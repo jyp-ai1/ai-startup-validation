@@ -121,7 +121,7 @@ export function runMiniSandboxSession(input: {
     });
 
     const turnId = `${input.business.id}-${input.behavior}-t${t}`;
-    const { review } = buildAnswerReview({
+    const { review, semantic } = buildAnswerReview({
       turnId,
       askedGapId,
       askedQuestionText,
@@ -140,7 +140,7 @@ export function runMiniSandboxSession(input: {
       answer: userInput,
       appliedAt: turnId,
       targetGap: askedGapId,
-      semanticFactKey: review.semanticInterpretationRef?.factKey ?? null,
+      semanticFactKey: semantic.factKey,
     });
 
     const stageReadiness = evaluateStageReadiness({ gapState, turns: loopTurns });
