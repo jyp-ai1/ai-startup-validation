@@ -10,7 +10,9 @@
 | `19f6782` | First introduction of `multi-business-pilot-scripts.ts` with invalid `AiPmLoopIssueId` (`'differentiation'`) |
 | `f6c2f4a` | Current **origin** `cursor/ai-pm-accuracy-sprint1-6423` HEAD (descendant of 19f6782) |
 | `106b33a` | Validation Engine completion on `cursor/alabom-validation-engine-p1-6423` (descendant of 19f6782) |
-| **Fix commit** | See §7 after push |
+| **Fix commit (PR #66 accuracy)** | `180997d` |
+| **Fix commit (PR #67 validation engine)** | `a63f7f9` |
+| **Fix commit (PR #68 → main)** | `23f0ce2` |
 
 Relationship:
 
@@ -69,10 +71,44 @@ pnpm test:validation-engine-completion  # PASS
 pnpm test:accuracy-golden        # PASS (10/10)
 ```
 
-## 6. Vercel Preview
+## 6. Local build result
 
-Updated after fix push — see §10–12 in final commit message / CI comment.
+**PASS** — `pnpm --filter web build` (after all TS fixes).
 
-## 7–12. Post-push fields
+## 7. Validation regression
 
-Filled in commit footer: Fix SHA, Preview URL, smoke result.
+| Command | Result |
+|---------|--------|
+| `pnpm test:validation-engine-completion` | PASS (PR #67 branch) |
+| `pnpm test:accuracy-golden` | PASS 10/10 |
+
+## 8. Vercel Preview deployment
+
+| PR | Branch HEAD | Vercel check | Status (2026-10-02 ~08:57 UTC) |
+|----|-------------|--------------|----------------------------------|
+| [#66](https://github.com/jyp-ai1/ai-startup-validation/pull/66) | `180997d` | [Deployment](https://vercel.com/jyp-ai1s-projects/ai-startup-validation/J2zewKJMqKNXRb4oGCVg8zd16z3A) | **SUCCESS — Ready** |
+| [#67](https://github.com/jyp-ai1/ai-startup-validation/pull/67) | `a63f7f9` | [Deployment](https://vercel.com/jyp-ai1s-projects/ai-startup-validation/ChmwREwtp78NKs4QD64Vni41feE3) | **SUCCESS — Ready** |
+
+## 9. Preview URLs (vercel[bot])
+
+- PR #66: `https://ai-startup-validation-git-cursor-ai-pm-04cc9f-jyp-ai1s-projects.vercel.app`
+- PR #67: `https://ai-startup-validation-git-cursor-alabom-34a38a-jyp-ai1s-projects.vercel.app`
+
+## 10. Preview smoke
+
+- Cloud agent `curl` to preview hosts: blocked / timeout (egress).
+- Automated fetch `/api/health` on PR #66 preview: **403** (Vercel/bot protection).
+- **Authoritative gate:** GitHub **Vercel check SUCCESS** + vercel[bot] **Ready** on both PRs after fix commits.
+
+## 11. Final gate
+
+```text
+Local Build           PASS
+Validation Regression PASS (where applicable)
+Vercel Preview Build  PASS (#66, #67)
+Preview Smoke         PARTIAL (CEO browser spot-check recommended)
+```
+
+## 12. Changed files (fix)
+
+Core: `multi-business-pilot-scripts.ts`, `real-business-review-trace.ts`, `validation-lab-runner.ts`; PR #67 also `mini-sandbox-businesses.ts`, `mini-sandbox-runner.ts`, `validation-engine-completion.ts`.
