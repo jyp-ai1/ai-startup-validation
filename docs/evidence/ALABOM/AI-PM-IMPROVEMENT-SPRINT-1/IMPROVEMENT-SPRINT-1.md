@@ -1,6 +1,6 @@
 # AI PM Improvement Sprint 1
 
-**Status:** Phase 3 **IN PROGRESS** — Calibration **confirmed** (`cpo-calibration-confirmed.json`); structural fix **F13 1st pass**; **F11/F04** fix cycle ongoing; Holdout/Real Business/Production **not done**
+**Status:** Phase 3-B **DEV COMPLETE** — F11/F04 structural fix + Golden/Holdout/Engine regression PASS; **F13 AI PM held**; **Production gate** pending merge/deploy (see `PHASE-3-B-COMPLETION-EVIDENCE.md`)
 
 ## Mission
 

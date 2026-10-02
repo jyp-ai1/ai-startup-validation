@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T08:34:24.854Z",
+  "generatedAt": "2026-10-02T10:44:54.669Z",
   "holdoutIds": [
     "biz-16",
     "biz-17"
@@ -11,26 +11,16 @@
   },
   "failureMining": {
     "totalTurns": 30,
-    "failedTurns": 4,
+    "failedTurns": 2,
     "clusters": [
       {
         "code": "F11_CONTRADICTION_MISHANDLING",
-        "count": 4,
+        "count": 2,
         "examples": [
           {
             "businessId": "biz-16",
             "behavior": "contradiction",
-            "turn": 4
-          },
-          {
-            "businessId": "biz-16",
-            "behavior": "contradiction",
             "turn": 5
-          },
-          {
-            "businessId": "biz-17",
-            "behavior": "contradiction",
-            "turn": 4
           },
           {
             "businessId": "biz-17",
@@ -41,22 +31,12 @@
       },
       {
         "code": "STATE_DRIFT",
-        "count": 4,
+        "count": 2,
         "examples": [
           {
             "businessId": "biz-16",
             "behavior": "contradiction",
-            "turn": 4
-          },
-          {
-            "businessId": "biz-16",
-            "behavior": "contradiction",
             "turn": 5
-          },
-          {
-            "businessId": "biz-17",
-            "behavior": "contradiction",
-            "turn": 4
           },
           {
             "businessId": "biz-17",
@@ -67,11 +47,11 @@
       }
     ],
     "byBehavior": {
-      "contradiction": 4
+      "contradiction": 2
     },
     "byBusiness": {
-      "biz-16": 2,
-      "biz-17": 2
+      "biz-16": 1,
+      "biz-17": 1
     }
   },
   "rows": [
@@ -199,11 +179,11 @@
       },
       "aiGapAfter": {
         "businessOneLiner": "CLOSED",
-        "problemJtbd": "CLOSED",
+        "problemJtbd": "CONTRADICTED",
         "revenueModel": "CLOSED",
         "customerPersona": "CLOSED",
         "payer": "CLOSED",
-        "marketChannel": "CLOSED"
+        "marketChannel": "CONTRADICTED"
       },
       "evaluation": {
         "understanding": "PASS",
@@ -224,7 +204,7 @@
       "behavior": "normal",
       "turn": 5,
       "userInput": "핵심 고객은 공공 SaaS이고, 가장 큰 문제는 GovTech 스타트업\n타겟: 지자체 실무자\n핵심 문제: 레거시 연동\n수익: 검토 중입니다.",
-      "askedGapId": "alternativesCompetitors",
+      "askedGapId": "problemJtbd",
       "groundTruthGapAfter": {
         "customerPersona": "CLOSED",
         "problemStatement": "OPEN",
@@ -233,7 +213,7 @@
         "businessOneLiner": "CLOSED",
         "payer": "CLOSED",
         "marketChannel": "CLOSED",
-        "alternativesCompetitors": "CLOSED"
+        "problemJtbd": "CLOSED"
       },
       "aiGapAfter": {
         "businessOneLiner": "CLOSED",
@@ -241,8 +221,7 @@
         "revenueModel": "CLOSED",
         "customerPersona": "CLOSED",
         "payer": "CLOSED",
-        "marketChannel": "CLOSED",
-        "alternativesCompetitors": "CLOSED"
+        "marketChannel": "CONTRADICTED"
       },
       "evaluation": {
         "understanding": "PASS",
@@ -551,27 +530,23 @@
       },
       "aiGapAfter": {
         "businessOneLiner": "CLOSED",
-        "customerPersona": "CLOSED",
+        "customerPersona": "CONTRADICTED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
-        "marketChannel": "CLOSED"
+        "marketChannel": "CONTRADICTED"
       },
       "evaluation": {
         "understanding": "PASS",
-        "state": "FAIL",
+        "state": "PASS",
         "gap": "PASS",
         "question": "PASS",
         "reasoning": "PASS",
         "judgment": "PASS",
-        "failureType": [
-          "F11_CONTRADICTION_MISHANDLING",
-          "STATE_DRIFT"
-        ],
-        "severity": "medium",
-        "stateDrift": true,
+        "failureType": [],
+        "stateDrift": false,
         "evidenceStrengthMisuse": false
       },
-      "stateDrift": true
+      "stateDrift": false
     },
     {
       "businessId": "biz-16",
@@ -579,7 +554,7 @@
       "behavior": "contradiction",
       "turn": 5,
       "userInput": "실제 최종 고객은 50대 남성 기업 IT 담당자입니다. 이전에 말한 고객 정의는 초기 가설이었습니다.",
-      "askedGapId": "alternativesCompetitors",
+      "askedGapId": "customerPersona",
       "groundTruthGapAfter": {
         "customerPersona": "CONFLICT",
         "problemStatement": "OPEN",
@@ -594,8 +569,7 @@
         "customerPersona": "CLOSED",
         "payer": "CLOSED",
         "problemJtbd": "CLOSED",
-        "marketChannel": "CLOSED",
-        "alternativesCompetitors": "CLOSED"
+        "marketChannel": "CONTRADICTED"
       },
       "evaluation": {
         "understanding": "PASS",
@@ -738,11 +712,11 @@
       },
       "aiGapAfter": {
         "businessOneLiner": "CLOSED",
-        "problemJtbd": "CLOSED",
+        "problemJtbd": "CONTRADICTED",
         "revenueModel": "CLOSED",
         "customerPersona": "CLOSED",
         "payer": "CLOSED",
-        "marketChannel": "CLOSED"
+        "marketChannel": "CONTRADICTED"
       },
       "evaluation": {
         "understanding": "PASS",
@@ -763,7 +737,7 @@
       "behavior": "normal",
       "turn": 5,
       "userInput": "핵심 고객은 SMB 금융이고, 가장 큰 문제는 FinTech 스타트업\n타겟: 소상공인\n핵심 문제: 대출·정산\n수익: 검토 중입니다.",
-      "askedGapId": "alternativesCompetitors",
+      "askedGapId": "problemJtbd",
       "groundTruthGapAfter": {
         "customerPersona": "CLOSED",
         "problemStatement": "OPEN",
@@ -772,7 +746,7 @@
         "businessOneLiner": "CLOSED",
         "payer": "CLOSED",
         "marketChannel": "CLOSED",
-        "alternativesCompetitors": "CLOSED"
+        "problemJtbd": "CLOSED"
       },
       "aiGapAfter": {
         "businessOneLiner": "CLOSED",
@@ -780,8 +754,7 @@
         "revenueModel": "CLOSED",
         "customerPersona": "CLOSED",
         "payer": "CLOSED",
-        "marketChannel": "CLOSED",
-        "alternativesCompetitors": "CLOSED"
+        "marketChannel": "CONTRADICTED"
       },
       "evaluation": {
         "understanding": "PASS",
