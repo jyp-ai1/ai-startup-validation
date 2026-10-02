@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T04:28:15.156Z",
+  "generatedAt": "2026-10-02T04:31:38.449Z",
   "purpose": "CPO_GOLDEN_8_INDEPENDENT_2PASS",
   "slice1Status": "PASS_CONDITIONAL",
   "sprint1Status": "OPEN",
@@ -166,6 +166,28 @@
                 "3천",
                 "배달"
               ]
+            },
+            {
+              "key": "competitor",
+              "valueIncludes": [
+                "배달"
+              ],
+              "valueExcludes": [
+                "3천",
+                "매출"
+              ],
+              "evidenceClass": "FACT"
+            },
+            {
+              "key": "revenue",
+              "valueIncludes": [
+                "3천"
+              ],
+              "valueExcludes": [
+                "배달",
+                "경쟁"
+              ],
+              "evidenceClass": "FACT"
             }
           ]
         },
@@ -173,7 +195,8 @@
           "preserveFacts": {}
         },
         "gap": {
-          "customerPersona": "OPEN"
+          "customerPersona": "OPEN",
+          "revenueModel": "PARTIAL"
         },
         "nextQuestion": {
           "targetGapId": "customerPersona"
@@ -187,12 +210,12 @@
             {
               "key": "competitor",
               "value": "배달앱",
-              "evidenceClass": "INFERENCE",
+              "evidenceClass": "FACT",
               "targetGap": "alternativesCompetitors"
             },
             {
               "key": "revenue",
-              "value": "매출은 3천만원이고 경쟁사는 배달앱입니다",
+              "value": "월 매출 3천만원",
               "evidenceClass": "FACT",
               "targetGap": "revenueModel"
             }
@@ -202,12 +225,12 @@
         },
         "state": {
           "competitor": "배달앱",
-          "revenue": "매출은 3천만원이고 경쟁사는 배달앱입니다"
+          "revenue": "월 매출 3천만원"
         },
         "gap": {
           "customerPersona": "OPEN",
-          "alternativesCompetitors": "PARTIAL",
-          "revenueModel": "CLOSED"
+          "alternativesCompetitors": "CLOSED",
+          "revenueModel": "PARTIAL"
         },
         "nextQuestion": {
           "targetGapId": "customerPersona",
@@ -634,7 +657,8 @@
           "preserveFacts": {}
         },
         "gap": {
-          "pricingHint": "PARTIAL"
+          "pricingHint": "PARTIAL",
+          "revenueModel": "OPEN"
         },
         "nextQuestion": null,
         "reason": null
@@ -647,7 +671,7 @@
               "key": "revenue",
               "value": "아마 고객들이 이 서비스에 돈을 낼 것 같아요.",
               "evidenceClass": "ASSUMPTION",
-              "targetGap": "revenueModel"
+              "targetGap": "pricingHint"
             }
           ],
           "intent": "business_fact",
@@ -657,8 +681,7 @@
           "revenue": "아마 고객들이 이 서비스에 돈을 낼 것 같아요."
         },
         "gap": {
-          "pricingHint": "PARTIAL",
-          "revenueModel": "PARTIAL"
+          "pricingHint": "PARTIAL"
         },
         "nextQuestion": {
           "targetGapId": "pricingHint",

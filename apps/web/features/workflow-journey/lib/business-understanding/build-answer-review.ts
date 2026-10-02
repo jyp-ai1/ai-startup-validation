@@ -37,6 +37,8 @@ import {
   type WrongSlotMergeContext,
 } from './wrong-slot-priority';
 import {
+  isExplicitCompetitorStatement,
+  isOperationalRevenueStatement,
   isUnvalidatedMarketDominanceClaim,
   isUserAssumptionUtterance,
   isWtpHypothesisOnly,
@@ -363,7 +365,17 @@ function evidenceForExtractedFact(
     }
   }
   if (hit.key === 'competitor' && askedGapId === 'customerPersona') {
+    if (isExplicitCompetitorStatement(userAnswer)) {
+      return { evidenceClass: 'FACT', confidence: 'high' };
+    }
     return { evidenceClass: 'INFERENCE', confidence: 'medium' };
+  }
+  if (
+    hit.key === 'revenue' &&
+    isOperationalRevenueStatement(userAnswer) &&
+    askedGapId === 'customerPersona'
+  ) {
+    return { evidenceClass: 'FACT', confidence: 'high' };
   }
   const onSlot =
     (hit.key === 'buyer' && askedGapId === 'payer' && isOnSlotPayerAnswer(userAnswer)) ||
@@ -487,12 +499,16 @@ function buildExtractedFacts(
       userAnswer,
       askedGapId,
     );
+    let targetGap = gapForFactKey(hit.key) ?? resolvedAskedGap ?? '';
+    if (isWtpHypothesisOnly(userAnswer) && hit.key === 'revenue') {
+      targetGap = 'pricingHint';
+    }
     return {
       key: hit.key,
       value: extractFactValue(hit.key, userAnswer, semantic.intent) || fallbackValue,
       evidenceClass,
       confidence,
-      targetGap: gapForFactKey(hit.key) ?? resolvedAskedGap ?? '',
+      targetGap,
       source: semantic.intent === 'correction' ? 'corrected' : 'explicit',
     };
   });
@@ -538,6 +554,14 @@ function deriveSecondaryGapCompleteness(
     fact.targetGap === 'validationTestability';
   if (evidenceSensitiveGap && fact.evidenceClass !== 'FACT') {
     return fact.evidenceClass === 'ASSUMPTION' ? 'PARTIAL' : 'OPEN';
+  }
+  if (
+    fact.targetGap === 'revenueModel' &&
+    fact.key === 'revenue' &&
+    isOperationalRevenueStatement(fact.value) &&
+    !/(구독|수수료|수익\s*모델|BM|비즈니스\s*모델)/iu.test(fact.value)
+  ) {
+    return 'PARTIAL';
   }
   if (fact.evidenceClass === 'FACT') return 'CLOSED';
   if (fact.evidenceClass === 'ASSUMPTION' || fact.evidenceClass === 'INFERENCE') return 'PARTIAL';

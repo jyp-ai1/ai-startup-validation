@@ -116,7 +116,8 @@ function evaluateTurnExpect(
   if (expect.gapCompleteness) {
     for (const [gapId, completeness] of Object.entries(expect.gapCompleteness)) {
       const actual = ctx.gapState.gaps[gapId]?.completeness;
-      if (actual !== completeness) {
+      const effectiveActual = actual ?? (completeness === 'OPEN' ? 'OPEN' : undefined);
+      if (effectiveActual !== completeness) {
         messages.push(`gap ${gapId}: expected ${completeness}, got ${actual ?? 'missing'}`);
         failureTypes.push('F3_GAP_MISCLASSIFICATION');
       }

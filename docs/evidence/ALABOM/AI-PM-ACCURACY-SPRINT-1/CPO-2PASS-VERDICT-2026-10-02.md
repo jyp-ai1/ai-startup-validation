@@ -31,3 +31,20 @@ See CPO message for per-turn table (A PARTIAL … H FAIL).
 | State preservation | Prior gap evidence kept when CLOSED re-sealed (`update-gap-state-from-review`) |
 
 **CTO Golden self-check:** 8/8 after fix cycle 1 (not CPO acceptance).
+
+---
+
+## CPO re-verify (Fix Cycle 1)
+
+**PASS 7 / PARTIAL 3 / FAIL 0** — Phase ① still OPEN; **Fix Cycle 2** scoped to **C + H** only.
+
+---
+
+## CTO fix cycle 2 (C/H precision)
+
+| Case | Change |
+|------|--------|
+| **C** | Explicit `경쟁사는 X` → competitor **FACT**; revenue normalized to `월 매출 3천만원` (no competitor clause); operational revenue → revenueModel **PARTIAL** |
+| **H** | WTP assumption binds to **pricingHint** only; **revenueModel** not updated (OPEN) |
+
+**Awaiting CPO 2-pass re-verify #3** for Phase ① CLOSE.

@@ -17,6 +17,15 @@ export function isUnvalidatedMarketDominanceClaim(text: string): boolean {
   return /(시장\s*1\s*위|압도적|독점|무조건|분명히\s*시장|반드시\s*성공)/i.test(t);
 }
 
+/** Explicit competitor naming on wrong-slot answers (C — FACT when user says 경쟁사는 X). */
+export function isExplicitCompetitorStatement(text: string): boolean {
+  return /경쟁(?:사|서비스)(?:는|가)?\s*\S+/u.test(text.trim());
+}
+
+export function isOperationalRevenueStatement(text: string): boolean {
+  return /(?:현재\s*)?(?:월\s*)?매출(?:은|이)?\s*[\d,.]+/u.test(text.trim());
+}
+
 export function isWtpHypothesisOnly(text: string): boolean {
   const t = text.trim();
   return (
@@ -68,6 +77,13 @@ export function normalizeSlotValue(key: ConversationFactKey, userAnswer: string)
   }
 
   if (key === 'revenue') {
+    const sales = t.match(
+      /(?:현재\s*)?(?:월\s*)?매출(?:은|이)?\s*([0-9,.천백만억]+?\s*만?\s*원?)(?:이고|이며|,|\.|$)/u,
+    );
+    if (sales?.[1]) {
+      const amt = stripEnding(sales[1]);
+      return amt.startsWith('월') ? amt : `월 매출 ${amt}`;
+    }
     const labeled = t.match(/(?:가격(?:은|이)|수익(?:은|이))\s*([^,，.]+?)(?:입니다|이며|이고|$)/u);
     if (labeled?.[1]) return stripEnding(labeled[1]);
     const monthly = t.match(/(월\s*[\d,.]+\s*만?\s*원?)/u);

@@ -31,4 +31,11 @@ describe('semantic-slot-normalization (CPO 2-pass fixes)', () => {
     expect(isWtpHypothesisOnly('아마 고객들이 이 서비스에 돈을 낼 것 같아요.')).toBe(true);
     expect(isUserAssumptionUtterance('아마 고객들이 이 서비스에 돈을 낼 것 같아요.')).toBe(true);
   });
+
+  it('C-1 — splits revenue vs competitor', () => {
+    const u = '현재 월 매출은 3천만원이고 경쟁사는 배달앱입니다.';
+    expect(normalizeSlotValue('revenue', u)).toMatch(/3천/);
+    expect(normalizeSlotValue('revenue', u)).not.toMatch(/배달/);
+    expect(normalizeSlotValue('competitor', u)).toMatch(/배달/);
+  });
 });

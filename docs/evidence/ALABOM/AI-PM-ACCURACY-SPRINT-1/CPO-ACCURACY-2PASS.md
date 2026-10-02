@@ -1,6 +1,6 @@
 # CPO Accuracy — Golden 8 Independent 2-pass
 
-**Generated:** 2026-10-02T04:28:15.156Z
+**Generated:** 2026-10-02T04:31:38.449Z
 **Slice 1:** PASS_CONDITIONAL · **Sprint 1:** OPEN
 **CTO Golden (self-check):** 8/8 — *not CPO acceptance*
 
@@ -200,6 +200,28 @@ CPO review questions:
           "3천",
           "배달"
         ]
+      },
+      {
+        "key": "competitor",
+        "valueIncludes": [
+          "배달"
+        ],
+        "valueExcludes": [
+          "3천",
+          "매출"
+        ],
+        "evidenceClass": "FACT"
+      },
+      {
+        "key": "revenue",
+        "valueIncludes": [
+          "3천"
+        ],
+        "valueExcludes": [
+          "배달",
+          "경쟁"
+        ],
+        "evidenceClass": "FACT"
       }
     ]
   },
@@ -207,7 +229,8 @@ CPO review questions:
     "preserveFacts": {}
   },
   "gap": {
-    "customerPersona": "OPEN"
+    "customerPersona": "OPEN",
+    "revenueModel": "PARTIAL"
   },
   "nextQuestion": {
     "targetGapId": "customerPersona"
@@ -232,12 +255,12 @@ CPO review questions:
       {
         "key": "competitor",
         "value": "배달앱",
-        "evidenceClass": "INFERENCE",
+        "evidenceClass": "FACT",
         "targetGap": "alternativesCompetitors"
       },
       {
         "key": "revenue",
-        "value": "매출은 3천만원이고 경쟁사는 배달앱입니다",
+        "value": "월 매출 3천만원",
         "evidenceClass": "FACT",
         "targetGap": "revenueModel"
       }
@@ -247,12 +270,12 @@ CPO review questions:
   },
   "state": {
     "competitor": "배달앱",
-    "revenue": "매출은 3천만원이고 경쟁사는 배달앱입니다"
+    "revenue": "월 매출 3천만원"
   },
   "gap": {
     "customerPersona": "OPEN",
-    "alternativesCompetitors": "PARTIAL",
-    "revenueModel": "CLOSED"
+    "alternativesCompetitors": "CLOSED",
+    "revenueModel": "PARTIAL"
   },
   "nextQuestion": {
     "targetGapId": "customerPersona",
@@ -761,7 +784,8 @@ CPO review questions:
     "preserveFacts": {}
   },
   "gap": {
-    "pricingHint": "PARTIAL"
+    "pricingHint": "PARTIAL",
+    "revenueModel": "OPEN"
   },
   "nextQuestion": null,
   "reason": null
@@ -783,7 +807,7 @@ CPO review questions:
         "key": "revenue",
         "value": "아마 고객들이 이 서비스에 돈을 낼 것 같아요.",
         "evidenceClass": "ASSUMPTION",
-        "targetGap": "revenueModel"
+        "targetGap": "pricingHint"
       }
     ],
     "intent": "business_fact",
@@ -793,8 +817,7 @@ CPO review questions:
     "revenue": "아마 고객들이 이 서비스에 돈을 낼 것 같아요."
   },
   "gap": {
-    "pricingHint": "PARTIAL",
-    "revenueModel": "PARTIAL"
+    "pricingHint": "PARTIAL"
   },
   "nextQuestion": {
     "targetGapId": "pricingHint",
