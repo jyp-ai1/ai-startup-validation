@@ -1,10 +1,10 @@
 # CPO 2-pass Re-verify #3 — evidence submission (CTO)
 
-**Git SHA:** `7abb07177342f664881b5db8dd1db7df8d41830d`
-**Generated:** 2026-10-02T04:43:04.525Z
+**Git SHA:** `a7ef095145c2be14d846d50625025c40521fe15d`
+**Generated:** 2026-10-02T04:47:25.508Z
 **CTO Golden self-check:** 8/8 (not CPO acceptance)
 
-CPO: compare **Actual** below to **CPO Expected** and record Verdict. Phase ① CLOSE only after CPO signs all rows.
+Phase ① **CLOSED** — CPO Re-verify #3 signed. See `CPO-2PASS-VERDICT-REVERIFY-3-CLOSED.md`.
 
 ## Regenerate command
 
@@ -63,7 +63,7 @@ revenueModel = PARTIAL (operational revenue snapshot, not full BM)
 }
 ```
 
-**CPO Verdict:** _pending_
+**CPO Verdict:** **PASS**
 
 ### golden-h-wtp-assumption turn 1
 
@@ -105,5 +105,5 @@ no customerPersona CLOSED from WTP-only answer
 }
 ```
 
-**CPO Verdict:** _pending_
+**CPO Verdict:** **PASS**
 

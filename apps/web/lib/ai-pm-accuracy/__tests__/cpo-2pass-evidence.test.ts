@@ -52,15 +52,19 @@ describe('CPO 2-pass evidence pack', () => {
     const sha = 'abc123';
     const pack = buildCpo2PassEvidencePack({ gitSha: sha, gitBranch: 'test-branch' });
     expect(pack.gitSha).toBe(sha);
-    expect(pack.reverifyPhase).toBe('REVERIFY_3_AWAITING_CPO_VERDICT');
+    expect(['REVERIFY_3_AWAITING_CPO_VERDICT', 'REVERIFY_3_CPO_SIGNED']).toContain(pack.reverifyPhase);
   });
 
   it('row count equals total golden turns', () => {
     const turnCount = GOLDEN_SCENARIOS.reduce((n, s) => n + s.turns.length, 0);
     const pack = buildCpo2PassEvidencePack();
     expect(pack.rows.length).toBe(turnCount);
-    for (const row of pack.rows) {
-      expect(row.cpoVerdict).toBe('PENDING_CPO_2PASS');
+    if (pack.phase1Status === 'CLOSED') {
+      expect(pack.rows.every((r) => r.cpoVerdict === 'PASS')).toBe(true);
+    } else {
+      for (const row of pack.rows) {
+        expect(row.cpoVerdict).toBe('PENDING_CPO_2PASS');
+      }
     }
   });
 

@@ -1,6 +1,6 @@
 # CPO Accuracy — Golden 8 Independent 2-pass
 
-**Generated:** 2026-10-02T04:43:04.525Z
+**Generated:** 2026-10-02T04:47:25.508Z
 **Slice 1:** PASS_CONDITIONAL · **Sprint 1:** OPEN
 **CTO Golden (self-check):** 8/8 — *not CPO acceptance*
 

@@ -3,6 +3,12 @@ import { runAllGoldenScenarios } from './accuracy-turn-harness';
 import { GOLDEN_SCENARIOS } from './golden-scenarios';
 import { CPO_INDEPENDENT_RUBRIC } from './cpo-independent-rubric';
 import { CPO_REVERIFY_3_ROW_GUIDANCE, reverify3Key } from './cpo-reverify-3-guidance';
+import {
+  buildVerdictLookup,
+  loadCpoPhase1SignedVerdicts,
+  verdictKey,
+  type CpoPhase1RowVerdict,
+} from './cpo-phase1-verdicts';
 
 export type Cpo2PassRow = {
   scenario: string;
@@ -14,7 +20,7 @@ export type Cpo2PassRow = {
   cpoExpected: string;
   actual: Record<string, unknown>;
   ctoPass: boolean;
-  cpoVerdict: 'PENDING_CPO_2PASS';
+  cpoVerdict: 'PENDING_CPO_2PASS' | CpoPhase1RowVerdict;
   /** Re-verify #3 — CPO should expect (CTO documents; CPO judges Actual). */
   cpoReverify3Expected: string | null;
   failureType: AccuracyFailureType[];
@@ -32,8 +38,10 @@ export type Cpo2PassEvidencePack = {
   /** Must match code under test — CPO acceptance requires this SHA on GitHub. */
   gitSha: string;
   gitBranch: string;
-  reverifyPhase: 'REVERIFY_3_AWAITING_CPO_VERDICT';
+  reverifyPhase: 'REVERIFY_3_AWAITING_CPO_VERDICT' | 'REVERIFY_3_CPO_SIGNED';
+  phase1Status: 'OPEN' | 'CLOSED';
   fixCycle: '2';
+  cpoSignedAt?: string;
   rows: Cpo2PassRow[];
 };
 
@@ -50,6 +58,9 @@ export function buildCpo2PassEvidencePack(options?: BuildCpo2PassPackOptions): C
   const pkg = runAllGoldenScenarios();
   const gitSha = options?.gitSha ?? process.env.ACCURACY_GIT_SHA ?? 'unknown';
   const gitBranch = options?.gitBranch ?? process.env.ACCURACY_GIT_BRANCH ?? 'unknown';
+  const signed = loadCpoPhase1SignedVerdicts();
+  const verdictLookup = buildVerdictLookup(signed);
+  const phase1Closed = signed?.phase1Status === 'CLOSED' && verdictLookup.size > 0;
   const rows: Cpo2PassRow[] = [];
 
   for (const scenarioResult of pkg.scenarios) {
@@ -83,7 +94,7 @@ export function buildCpo2PassEvidencePack(options?: BuildCpo2PassPackOptions): C
           reason: turnRec.actualReason,
         },
         ctoPass: turnRec.pass,
-        cpoVerdict: 'PENDING_CPO_2PASS',
+        cpoVerdict: verdictLookup.get(verdictKey(scenarioResult.scenarioId, turnRec.turn)) ?? 'PENDING_CPO_2PASS',
         failureType: turnRec.failureTypes,
         cpoLayers: rubrics.flatMap((r) => r.layers),
         cpoReviewQuestions: rubrics.flatMap((r) => r.cpoReviewQuestions),
@@ -100,8 +111,10 @@ export function buildCpo2PassEvidencePack(options?: BuildCpo2PassPackOptions): C
     ctoGoldenPass: `${pkg.passCount}/${pkg.scenarioCount}`,
     gitSha,
     gitBranch,
-    reverifyPhase: 'REVERIFY_3_AWAITING_CPO_VERDICT',
+    reverifyPhase: phase1Closed ? 'REVERIFY_3_CPO_SIGNED' : 'REVERIFY_3_AWAITING_CPO_VERDICT',
+    phase1Status: phase1Closed ? 'CLOSED' : 'OPEN',
     fixCycle: '2',
+    cpoSignedAt: signed?.signedAt,
     rows,
   };
 }
@@ -197,9 +210,12 @@ export function renderCpo2PassReviewSheet(pack: Cpo2PassEvidencePack): string {
     `**Git SHA:** \`${pack.gitSha}\``,
     `**Branch:** \`${pack.gitBranch}\``,
     `**Re-verify:** ${pack.reverifyPhase} · Fix Cycle ${pack.fixCycle}`,
+    `**Phase ①:** ${pack.phase1Status}${pack.cpoSignedAt ? ` (CPO signed ${pack.cpoSignedAt})` : ''}`,
     `**Rows:** ${pack.rows.length} · CTO self-check ${pack.ctoGoldenPass} (not CPO acceptance)`,
     '',
-    'CPO: fill **CPO Expected** and **Verdict** per row. Full Actual JSON: `EVAL/cpo-2pass-evidence-pack.json`.',
+    pack.phase1Status === 'CLOSED'
+      ? 'Phase ① CLOSED — CPO verdicts locked in `EVAL/cpo-phase1-cpo-verdicts.json`. Regen refreshes Actual only.'
+      : 'CPO: fill **CPO Expected** and **Verdict** per row. Full Actual JSON: `EVAL/cpo-2pass-evidence-pack.json`.',
     '',
     '| # | Scenario | Turn | Actual facts | Gap state | CPO Re-verify #3 Expected | CPO Verdict |',
     '|---|----------|------|--------------|-----------|----------------------------|-------------|',
@@ -208,7 +224,7 @@ export function renderCpo2PassReviewSheet(pack: Cpo2PassEvidencePack): string {
   pack.rows.forEach((row, i) => {
     const exp = (row.cpoReverify3Expected ?? row.cpoExpected).replace(/\|/g, '/').replace(/\n/g, ' ');
     lines.push(
-      `| ${i + 1} | ${row.scenarioLetter} ${row.scenario} | ${row.turn} | ${summarizeFacts(row.actual).replace(/\|/g, '/')} | ${summarizeGap(row.actual)} | ${exp.slice(0, 120)}${exp.length > 120 ? '…' : ''} | _PENDING_CPO_ |`,
+      `| ${i + 1} | ${row.scenarioLetter} ${row.scenario} | ${row.turn} | ${summarizeFacts(row.actual).replace(/\|/g, '/')} | ${summarizeGap(row.actual)} | ${exp.slice(0, 120)}${exp.length > 120 ? '…' : ''} | **${row.cpoVerdict}** |`,
     );
   });
 
@@ -228,7 +244,7 @@ export function renderCpo2PassReviewSheet(pack: Cpo2PassEvidencePack): string {
     lines.push(JSON.stringify(row.actual, null, 2));
     lines.push('```');
     lines.push('');
-    lines.push('**CPO Verdict:** `[ PASS | PARTIAL | FAIL ]`');
+    lines.push(`**CPO Verdict:** **${row.cpoVerdict}**`);
     lines.push('');
   }
 
@@ -254,7 +270,9 @@ export function renderCpoReverify3Submission(pack: Cpo2PassEvidencePack): string
     `**Generated:** ${pack.generatedAt}`,
     `**CTO Golden self-check:** ${pack.ctoGoldenPass} (not CPO acceptance)`,
     '',
-    'CPO: compare **Actual** below to **CPO Expected** and record Verdict. Phase ① CLOSE only after CPO signs all rows.',
+    pack.phase1Status === 'CLOSED'
+      ? 'Phase ① **CLOSED** — CPO Re-verify #3 signed. See `CPO-2PASS-VERDICT-REVERIFY-3-CLOSED.md`.'
+      : 'CPO: compare **Actual** below to **CPO Expected** and record Verdict. Phase ① CLOSE only after CPO signs all rows.',
     '',
     '## Regenerate command',
     '',
@@ -277,7 +295,7 @@ export function renderCpoReverify3Submission(pack: Cpo2PassEvidencePack): string
       JSON.stringify(row.actual, null, 2),
       '```',
       '',
-      '**CPO Verdict:** _pending_',
+      `**CPO Verdict:** **${row.cpoVerdict}**`,
       '',
     ]),
   ].join('\n');
@@ -297,6 +315,9 @@ export function renderCpo2PassAccessManifest(opts: {
     ['EVAL/golden-scenarios-turn-evidence.json', 'CTO turn evidence'],
     ['CPO-2PASS-FILL-TEMPLATE.md', 'CPO verdict copy-paste template'],
     ['CPO-2PASS-REVERIFY-3-SUBMISSION.md', 'Re-verify #3 C/H submission for CPO'],
+    ['CPO-2PASS-VERDICT-REVERIFY-3-CLOSED.md', 'Phase ① CLOSED — CPO 10/10 PASS'],
+    ['CPO-PHASE2-STATUS.md', 'Phase ② Real Business Review status'],
+    ['EVAL/cpo-phase1-cpo-verdicts.json', 'Locked CPO row verdicts'],
   ];
   const lines = [
     '# Phase ① — CPO 2-pass evidence access manifest',

@@ -2,26 +2,32 @@
 
 **Updated:** 2026-10-02 UTC  
 **PR:** #66  
-**Status:** **OPEN** — Evidence regenerated @ **`7abb071`** (`REVERIFY_3_AWAITING_CPO_VERDICT`); awaiting **CPO independent Re-verify #3**
+**Status:** **CLOSED** — CPO Re-verify #3 · **10/10 PASS** @ evidence SHA **`7abb071`**
 
-## Evidence files (must be readable before Phase ① CLOSE)
+## Sign-off
+
+- **Verdict record:** `CPO-2PASS-VERDICT-REVERIFY-3-CLOSED.md`
+- **Machine lock:** `EVAL/cpo-phase1-cpo-verdicts.json`
+- **Evidence pack commits:** `8716e81`, `a7ef095` (+ post-close regen on branch)
+
+## Evidence files
 
 | File | Purpose |
 |------|---------|
 | `CPO-2PASS-ACCESS-MANIFEST.md` | Paths + GitHub links |
-| `CPO-2PASS-REVIEW-SHEET.md` | Compact table (start here) |
+| `CPO-2PASS-REVIEW-SHEET.md` | Compact table (CPO verdicts locked on regen) |
 | `CPO-ACCURACY-2PASS.md` | Full narrative + JSON |
 | `EVAL/cpo-2pass-evidence-pack.json` | Machine rows |
-| `CPO-2PASS-FILL-TEMPLATE.md` | Verdict recording format |
-| `CPO-2PASS-REVERIFY-3-SUBMISSION.md` | Re-verify #3 — C/H Actual @ SHA for independent verdict |
+| `CPO-2PASS-REVERIFY-3-SUBMISSION.md` | C/H Actual @ SHA |
+| `CPO-PHASE2-STATUS.md` | Phase ② entry |
 
 ## CPO close checklist
 
-1. [ ] All turns: CPO Expected written independently  
-2. [ ] Divergence vs CTO Expected logged  
-3. [ ] Actual vs CPO Expected → PASS/PARTIAL/FAIL  
-4. [ ] Layer 1–3 failure tally (no fake %)  
-5. [ ] FAIL/PARTIAL → CTO fix → Golden regression → CPO re-verify  
-6. [ ] Phase ① CLOSED → then Phase ② Real Business Review  
+1. [x] All turns: CPO Expected written independently  
+2. [x] Actual vs CPO Expected → PASS/PARTIAL/FAIL  
+3. [x] Re-verify #3: 10 PASS / 0 PARTIAL / 0 FAIL  
+4. [x] Phase ① CLOSED  
 
-**Production merge:** HOLD until Phase ① (+ later gates per ladder).
+**Production merge:** HOLD — Phase ② Real Business Review + later ladder gates.
+
+**Next:** `CPO-PHASE2-STATUS.md`

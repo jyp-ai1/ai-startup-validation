@@ -1,8 +1,8 @@
 # CTO phase ladder (CPO-fixed order)
 
 ```text
-① CPO Golden 8 2-pass evidence     → CPO-ACCURACY-2PASS.md (CPO fills Verdict)
-② Real login Business Review       → PRODUCTION/real-business-review-trace.json
+① CPO Golden 8 2-pass evidence     → CLOSED (Re-verify #3 · 10/10 PASS @ 7abb071)
+② Real login Business Review       → PRODUCTION/real-business-review-trace.json (OPEN)
 ③ Full conversation trace          → turn chain + final judgment chain
 ④ CPO Layer 1–3                    → on Golden + Real
 ⑤ RJ Golden A–H wire               → reasoning-judgment-golden.ts (stubs → harness)

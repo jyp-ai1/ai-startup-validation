@@ -1,25 +1,26 @@
 # CPO 2-pass — Review Sheet (Golden 8 turns)
 
-**Generated:** 2026-10-02T04:43:04.525Z
-**Git SHA:** `7abb07177342f664881b5db8dd1db7df8d41830d`
+**Generated:** 2026-10-02T04:47:25.508Z
+**Git SHA:** `a7ef095145c2be14d846d50625025c40521fe15d`
 **Branch:** `cursor/ai-pm-accuracy-sprint1-6423`
-**Re-verify:** REVERIFY_3_AWAITING_CPO_VERDICT · Fix Cycle 2
+**Re-verify:** REVERIFY_3_CPO_SIGNED · Fix Cycle 2
+**Phase ①:** CLOSED (CPO signed 2026-10-02T04:46:00.000Z)
 **Rows:** 10 · CTO self-check 8/8 (not CPO acceptance)
 
-CPO: fill **CPO Expected** and **Verdict** per row. Full Actual JSON: `EVAL/cpo-2pass-evidence-pack.json`.
+Phase ① CLOSED — CPO verdicts locked in `EVAL/cpo-phase1-cpo-verdicts.json`. Regen refreshes Actual only.
 
 | # | Scenario | Turn | Actual facts | Gap state | CPO Re-verify #3 Expected | CPO Verdict |
 |---|----------|------|--------------|-----------|----------------------------|-------------|
-| 1 | A golden-a-normal-input | 1 | customer=FACT:"동네 음식점 사장님"; problem=FACT:"SNS 홍보할 시간이 없습니다" | customerPersona:CLOSED, problemJtbd:CLOSED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | _PENDING_CPO_ |
-| 2 | B golden-b-sparse | 1 | (none) | customerPersona:PARTIAL | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | _PENDING_CPO_ |
-| 3 | C golden-c-wrong-slot | 1 | competitor=FACT:"배달앱"; revenue=FACT:"월 매출 3천만원" | customerPersona:OPEN, alternativesCompetitors:CLOSED, revenueModel:PARTIAL | competitor = FACT, value "배달앱" (explicit 경쟁사) revenue = FACT, value "월 매출 3천만원" (no competitor clause) customerPersona =… | _PENDING_CPO_ |
-| 4 | D golden-d-contradiction | 1 | customer=FACT:"소상공인 카페 사장님" | customerPersona:CLOSED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | _PENDING_CPO_ |
-| 5 | D golden-d-contradiction | 2 | (none) | customerPersona:CONTRADICTED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | _PENDING_CPO_ |
-| 6 | E golden-e-no-repeat | 1 | customer=FACT:"소규모 양조장" | customerPersona:CLOSED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | _PENDING_CPO_ |
-| 7 | E golden-e-no-repeat | 2 | problem=FACT:"온라인 홍보가 어렵습니다" | customerPersona:CLOSED, problemJtbd:CLOSED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | _PENDING_CPO_ |
-| 8 | F golden-f-multi-slot | 1 | problem=FACT:"온라인 홍보 어려움"; customer=FACT:"소규모 양조장"; revenue=FACT:"월 10만원" | customerPersona:CLOSED, problemJtbd:CLOSED, revenueModel:CLOSED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | _PENDING_CPO_ |
-| 9 | G golden-g-overclaim | 1 | differentiation=ASSUMPTION:"분명히 시장 1위가 될 수 있는 압도적 기술입니다." | differentiationVsAlternatives:PARTIAL | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | _PENDING_CPO_ |
-| 10 | H golden-h-wtp-assumption | 1 | revenue=ASSUMPTION:"아마 고객들이 이 서비스에 돈을 낼 것 같아요." | pricingHint:PARTIAL | WTP rhetoric → ASSUMPTION (not FACT) pricingHint = PARTIAL revenueModel = OPEN (must not receive WTP assumption) no cust… | _PENDING_CPO_ |
+| 1 | A golden-a-normal-input | 1 | customer=FACT:"동네 음식점 사장님"; problem=FACT:"SNS 홍보할 시간이 없습니다" | customerPersona:CLOSED, problemJtbd:CLOSED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | **PASS** |
+| 2 | B golden-b-sparse | 1 | (none) | customerPersona:PARTIAL | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | **PASS** |
+| 3 | C golden-c-wrong-slot | 1 | competitor=FACT:"배달앱"; revenue=FACT:"월 매출 3천만원" | customerPersona:OPEN, alternativesCompetitors:CLOSED, revenueModel:PARTIAL | competitor = FACT, value "배달앱" (explicit 경쟁사) revenue = FACT, value "월 매출 3천만원" (no competitor clause) customerPersona =… | **PASS** |
+| 4 | D golden-d-contradiction | 1 | customer=FACT:"소상공인 카페 사장님" | customerPersona:CLOSED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | **PASS** |
+| 5 | D golden-d-contradiction | 2 | (none) | customerPersona:CONTRADICTED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | **PASS** |
+| 6 | E golden-e-no-repeat | 1 | customer=FACT:"소규모 양조장" | customerPersona:CLOSED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | **PASS** |
+| 7 | E golden-e-no-repeat | 2 | problem=FACT:"온라인 홍보가 어렵습니다" | customerPersona:CLOSED, problemJtbd:CLOSED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | **PASS** |
+| 8 | F golden-f-multi-slot | 1 | problem=FACT:"온라인 홍보 어려움"; customer=FACT:"소규모 양조장"; revenue=FACT:"월 10만원" | customerPersona:CLOSED, problemJtbd:CLOSED, revenueModel:CLOSED | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | **PASS** |
+| 9 | G golden-g-overclaim | 1 | differentiation=ASSUMPTION:"분명히 시장 1위가 될 수 있는 압도적 기술입니다." | differentiationVsAlternatives:PARTIAL | [CPO independent — use rubric questions below; do not inherit CTO PASS automatically] | **PASS** |
+| 10 | H golden-h-wtp-assumption | 1 | revenue=ASSUMPTION:"아마 고객들이 이 서비스에 돈을 낼 것 같아요." | pricingHint:PARTIAL | WTP rhetoric → ASSUMPTION (not FACT) pricingHint = PARTIAL revenueModel = OPEN (must not receive WTP assumption) no cust… | **PASS** |
 
 ## Re-verify #3 focus — C / H (Fix Cycle 2)
 
@@ -72,7 +73,7 @@ revenueModel = PARTIAL (operational revenue snapshot, not full BM)
 }
 ```
 
-**CPO Verdict:** `[ PASS | PARTIAL | FAIL ]`
+**CPO Verdict:** **PASS**
 
 ### golden-h-wtp-assumption T1
 
@@ -114,7 +115,7 @@ no customerPersona CLOSED from WTP-only answer
 }
 ```
 
-**CPO Verdict:** `[ PASS | PARTIAL | FAIL ]`
+**CPO Verdict:** **PASS**
 
 
 ## Per-turn rubric (CPO independent questions)

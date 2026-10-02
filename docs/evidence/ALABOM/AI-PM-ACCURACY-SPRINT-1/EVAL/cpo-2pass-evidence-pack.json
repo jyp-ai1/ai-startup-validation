@@ -1,13 +1,15 @@
 {
-  "generatedAt": "2026-10-02T04:43:04.525Z",
+  "generatedAt": "2026-10-02T04:47:25.508Z",
   "purpose": "CPO_GOLDEN_8_INDEPENDENT_2PASS",
   "slice1Status": "PASS_CONDITIONAL",
   "sprint1Status": "OPEN",
   "ctoGoldenPass": "8/8",
-  "gitSha": "7abb07177342f664881b5db8dd1db7df8d41830d",
+  "gitSha": "a7ef095145c2be14d846d50625025c40521fe15d",
   "gitBranch": "cursor/ai-pm-accuracy-sprint1-6423",
-  "reverifyPhase": "REVERIFY_3_AWAITING_CPO_VERDICT",
+  "reverifyPhase": "REVERIFY_3_CPO_SIGNED",
+  "phase1Status": "CLOSED",
   "fixCycle": "2",
+  "cpoSignedAt": "2026-10-02T04:46:00.000Z",
   "rows": [
     {
       "scenario": "golden-a-normal-input",
@@ -90,7 +92,7 @@
         "reason": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다."
       },
       "ctoPass": true,
-      "cpoVerdict": "PENDING_CPO_2PASS",
+      "cpoVerdict": "PASS",
       "failureType": [],
       "cpoLayers": [
         "L1_UNDERSTANDING",
@@ -146,7 +148,7 @@
         "reason": "답변이 관련 없어 같은 주제를 다시 확인합니다."
       },
       "ctoPass": true,
-      "cpoVerdict": "PENDING_CPO_2PASS",
+      "cpoVerdict": "PASS",
       "failureType": [],
       "cpoLayers": [
         "L2_GAP",
@@ -247,7 +249,7 @@
         "reason": "답변이 관련 없어 같은 주제를 다시 확인합니다."
       },
       "ctoPass": true,
-      "cpoVerdict": "PENDING_CPO_2PASS",
+      "cpoVerdict": "PASS",
       "failureType": [],
       "cpoLayers": [
         "L1_UNDERSTANDING",
@@ -310,7 +312,7 @@
         "reason": "답변이 충분합니다. 다음 주제로 넘어갑니다."
       },
       "ctoPass": true,
-      "cpoVerdict": "PENDING_CPO_2PASS",
+      "cpoVerdict": "PASS",
       "failureType": [],
       "cpoLayers": [
         "L1_UNDERSTANDING",
@@ -359,7 +361,7 @@
         "reason": "이전에 말씀하신 내용과 다릅니다. 확인이 필요합니다."
       },
       "ctoPass": true,
-      "cpoVerdict": "PENDING_CPO_2PASS",
+      "cpoVerdict": "PASS",
       "failureType": [],
       "cpoLayers": [
         "L1_UNDERSTANDING",
@@ -419,7 +421,7 @@
         "reason": "답변이 충분합니다. 다음 주제로 넘어갑니다."
       },
       "ctoPass": true,
-      "cpoVerdict": "PENDING_CPO_2PASS",
+      "cpoVerdict": "PASS",
       "failureType": [],
       "cpoLayers": [],
       "cpoReviewQuestions": []
@@ -478,7 +480,7 @@
         "reason": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다."
       },
       "ctoPass": true,
-      "cpoVerdict": "PENDING_CPO_2PASS",
+      "cpoVerdict": "PASS",
       "failureType": [],
       "cpoLayers": [
         "L2_GAP",
@@ -578,7 +580,7 @@
         "reason": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다."
       },
       "ctoPass": true,
-      "cpoVerdict": "PENDING_CPO_2PASS",
+      "cpoVerdict": "PASS",
       "failureType": [],
       "cpoLayers": [
         "L1_UNDERSTANDING",
@@ -642,7 +644,7 @@
         "reason": "답변이 부분적이라 같은 주제를 더 구체적으로 확인합니다."
       },
       "ctoPass": true,
-      "cpoVerdict": "PENDING_CPO_2PASS",
+      "cpoVerdict": "PASS",
       "failureType": [],
       "cpoLayers": [
         "L1_UNDERSTANDING"
@@ -705,7 +707,7 @@
         "reason": "답변이 부분적이라 같은 주제를 더 구체적으로 확인합니다."
       },
       "ctoPass": true,
-      "cpoVerdict": "PENDING_CPO_2PASS",
+      "cpoVerdict": "PASS",
       "failureType": [],
       "cpoLayers": [
         "L1_UNDERSTANDING"
