@@ -285,11 +285,16 @@ function isOnSlotPersonaAnswer(text: string): boolean {
   return (
     hasCustomerPersonaCue(t) ||
     hasPersonaSegmentCue(t) ||
-    /(마케팅\s*팀|중소기업|스타트업|[\w가-힣]{2,}팀)/i.test(t)
+    /(마케팅\s*팀|중소기업|스타트업|[\w가-힣]{2,}팀)/i.test(t) ||
+    /(양조장|음식점|카페|병원|원장|사장|소상공인|소규모\s*[\w가-힣]+)/i.test(t)
   );
 }
 
-const REVENUE_CUE_RE = /(수익|수수료|구독|pricing|매출|monetiz|커미션|중개\s*수수)/i;
+const REVENUE_CUE_RE =
+  /(수익|수수료|구독|pricing|매출|가격|만원|원\s*\/\s*월|monetiz|커미션|중개\s*수수)/i;
+
+const PROBLEM_ON_PERSONA_CUE_RE =
+  /(SNS|홍보(?:할)?\s*시간|시간이?\s*없|불편|문제|어렵|부족|힘들)/i;
 
 /** Ensure payer+revenue multi-fact hits when both cues appear in one utterance (V3-07). */
 function enrichMultiFactSemantic(
@@ -312,6 +317,14 @@ function enrichMultiFactSemantic(
 
   if (REVENUE_CUE_RE.test(trimmed) && !facts.some((f) => f.key === 'revenue')) {
     facts = [...facts, { key: 'revenue', issueId: 'bm_design' }];
+  }
+
+  if (
+    askedGapId === 'customerPersona' &&
+    PROBLEM_ON_PERSONA_CUE_RE.test(trimmed) &&
+    !facts.some((f) => f.key === 'problem')
+  ) {
+    facts = [...facts, { key: 'problem', issueId: 'problem_definition' }];
   }
 
   if (facts.length === semantic.facts.length) return semantic;
@@ -380,6 +393,9 @@ function deriveGapCompleteness(
   askedGapId: string,
   userAnswer: string,
 ): GapCompleteness {
+  if (askedGapId === 'customerPersona' && !isOnSlotPersonaAnswer(userAnswer)) {
+    return 'OPEN';
+  }
   if (isAskedGapOpenDueToSlotConflict(askedGapId, semantic)) return 'OPEN';
   if (semantic.quality === 'CONTRADICTORY') return 'CONTRADICTED';
   if (isWeakGenericSegment(userAnswer)) return 'PARTIAL';
@@ -658,6 +674,18 @@ export function buildAnswerReview(input: BuildAnswerReviewInput): BuildAnswerRev
     };
   } else {
     semantic = enrichMultiFactSemantic(semantic, trimmed, askedGapId);
+  }
+
+  if (askedGapId === 'customerPersona' && !isOnSlotPersonaAnswer(trimmed)) {
+    semantic = {
+      ...semantic,
+      quality: 'IRRELEVANT',
+      facts: semantic.facts.filter(
+        (f) => f.key !== 'customer' || isOnSlotPersonaAnswer(trimmed),
+      ),
+      factKey: semantic.facts.find((f) => f.key !== 'customer')?.key ?? null,
+      rationale: '답변이 customerPersona 주제와 무관합니다 — WHO 세그먼트 확인 필요.',
+    };
   }
 
   const extractedFacts = buildExtractedFacts(semantic, askedGapId, trimmed);

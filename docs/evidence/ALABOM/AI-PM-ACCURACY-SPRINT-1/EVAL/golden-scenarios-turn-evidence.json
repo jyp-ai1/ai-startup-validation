@@ -1,0 +1,633 @@
+{
+  "generatedAt": "2026-10-02T04:13:10.699Z",
+  "pipeline": "v3-review",
+  "scenarioCount": 8,
+  "passCount": 8,
+  "failCount": 0,
+  "scenarios": [
+    {
+      "scenarioId": "golden-a-normal-input",
+      "label": "정상 사업 입력",
+      "gates": [
+        "GATE_1_UNDERSTANDING"
+      ],
+      "pass": true,
+      "turns": [
+        {
+          "scenario": "golden-a-normal-input",
+          "turn": 1,
+          "userInput": "우리 고객은 동네 음식점 사장님이고 SNS 홍보할 시간이 없습니다.",
+          "expectedInterpretation": {
+            "factChecks": [
+              {
+                "key": "customer",
+                "valueIncludes": [
+                  "음식점",
+                  "사장"
+                ],
+                "valueExcludes": [
+                  "유입"
+                ]
+              },
+              {
+                "key": "problem",
+                "valueIncludes": [
+                  "SNS",
+                  "홍보",
+                  "시간"
+                ],
+                "valueExcludes": [
+                  "유입 부족"
+                ]
+              }
+            ]
+          },
+          "actualInterpretation": {
+            "extractedFacts": [
+              {
+                "key": "customer",
+                "value": "우리 고객은 동네 음식점 사장님이고 SNS 홍보할 시간이 없습니다.",
+                "evidenceClass": "FACT",
+                "targetGap": "customerPersona"
+              },
+              {
+                "key": "problem",
+                "value": "우리 고객은 동네 음식점 사장님이고 SNS 홍보할 시간이 없습니다.",
+                "evidenceClass": "FACT",
+                "targetGap": "problemJtbd"
+              }
+            ],
+            "intent": "business_fact",
+            "quality": "VALID"
+          },
+          "expectedState": {
+            "preserveFacts": {}
+          },
+          "actualState": {
+            "customer": "우리 고객은 동네 음식점 사장님이고 SNS 홍보할 시간이 없습니다.",
+            "problem": "우리 고객은 동네 음식점 사장님이고 SNS 홍보할 시간이 없습니다."
+          },
+          "expectedGap": {
+            "customerPersona": "CLOSED"
+          },
+          "actualGap": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "expectedNextQuestion": null,
+          "actualNextQuestion": {
+            "targetGapId": "businessOneLiner",
+            "action": "advance",
+            "questionText": "이 사업은 누구에게 무엇을 제공하나요?"
+          },
+          "expectedReason": null,
+          "actualReason": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
+          "pass": true,
+          "failureTypes": [],
+          "gates": [
+            "GATE_1_UNDERSTANDING"
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "golden-b-sparse",
+      "label": "정보 부족",
+      "gates": [
+        "GATE_1_UNDERSTANDING",
+        "GATE_6_NEXT_QUESTION"
+      ],
+      "pass": true,
+      "turns": [
+        {
+          "scenario": "golden-b-sparse",
+          "turn": 1,
+          "userInput": "사람들",
+          "expectedInterpretation": {
+            "factChecks": []
+          },
+          "actualInterpretation": {
+            "extractedFacts": [],
+            "intent": "nonsense",
+            "quality": "IRRELEVANT"
+          },
+          "expectedState": {
+            "preserveFacts": {}
+          },
+          "actualState": {},
+          "expectedGap": {
+            "customerPersona": "PARTIAL"
+          },
+          "actualGap": {
+            "customerPersona": "PARTIAL"
+          },
+          "expectedNextQuestion": {
+            "targetGapId": "customerPersona",
+            "action": "probe"
+          },
+          "actualNextQuestion": {
+            "targetGapId": "customerPersona",
+            "action": "probe",
+            "questionText": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?"
+          },
+          "expectedReason": null,
+          "actualReason": "답변이 관련 없어 같은 주제를 다시 확인합니다.",
+          "pass": true,
+          "failureTypes": [],
+          "gates": [
+            "GATE_1_UNDERSTANDING",
+            "GATE_6_NEXT_QUESTION"
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "golden-c-wrong-slot",
+      "label": "엉뚱한 답변",
+      "gates": [
+        "GATE_3_WRONG_ANSWER",
+        "GATE_1_UNDERSTANDING"
+      ],
+      "pass": true,
+      "turns": [
+        {
+          "scenario": "golden-c-wrong-slot",
+          "turn": 1,
+          "userInput": "현재 월 매출은 3천만원이고 경쟁사는 배달앱입니다.",
+          "expectedInterpretation": {
+            "factChecks": [
+              {
+                "key": "customer",
+                "valueExcludes": [
+                  "3천",
+                  "배달"
+                ]
+              }
+            ]
+          },
+          "actualInterpretation": {
+            "extractedFacts": [
+              {
+                "key": "competitor",
+                "value": "현재 월 매출은 3천만원이고 경쟁사는 배달앱입니다.",
+                "evidenceClass": "INFERENCE",
+                "targetGap": "alternativesCompetitors"
+              },
+              {
+                "key": "revenue",
+                "value": "매출은 3천만원이고 경쟁사는 배달앱입니다",
+                "evidenceClass": "FACT",
+                "targetGap": "revenueModel"
+              }
+            ],
+            "intent": "business_fact",
+            "quality": "IRRELEVANT"
+          },
+          "expectedState": {
+            "preserveFacts": {}
+          },
+          "actualState": {
+            "competitor": "현재 월 매출은 3천만원이고 경쟁사는 배달앱입니다.",
+            "revenue": "매출은 3천만원이고 경쟁사는 배달앱입니다"
+          },
+          "expectedGap": {
+            "customerPersona": "OPEN"
+          },
+          "actualGap": {
+            "customerPersona": "OPEN",
+            "alternativesCompetitors": "OPEN",
+            "revenueModel": "CLOSED"
+          },
+          "expectedNextQuestion": {
+            "targetGapId": "customerPersona"
+          },
+          "actualNextQuestion": {
+            "targetGapId": "customerPersona",
+            "action": "probe",
+            "questionText": "이 서비스를 가장 필요로 하는 구체 고객은 누구인가요?"
+          },
+          "expectedReason": "관련 없",
+          "actualReason": "답변이 관련 없어 같은 주제를 다시 확인합니다.",
+          "pass": true,
+          "failureTypes": [],
+          "gates": [
+            "GATE_3_WRONG_ANSWER",
+            "GATE_1_UNDERSTANDING"
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "golden-d-contradiction",
+      "label": "모순 답변",
+      "gates": [
+        "GATE_5_CONTRADICTION",
+        "GATE_2_PRESERVATION"
+      ],
+      "pass": true,
+      "turns": [
+        {
+          "scenario": "golden-d-contradiction",
+          "turn": 1,
+          "userInput": "소상공인 카페 사장님입니다.",
+          "expectedInterpretation": {
+            "factChecks": []
+          },
+          "actualInterpretation": {
+            "extractedFacts": [
+              {
+                "key": "customer",
+                "value": "소상공인 카페 사장님입니다.",
+                "evidenceClass": "FACT",
+                "targetGap": "customerPersona"
+              }
+            ],
+            "intent": "business_fact",
+            "quality": "VALID"
+          },
+          "expectedState": {
+            "preserveFacts": {
+              "customer": "소상공인"
+            }
+          },
+          "actualState": {
+            "customer": "소상공인 카페 사장님입니다."
+          },
+          "expectedGap": {
+            "customerPersona": "CLOSED"
+          },
+          "actualGap": {
+            "customerPersona": "CLOSED"
+          },
+          "expectedNextQuestion": null,
+          "actualNextQuestion": {
+            "targetGapId": "businessOneLiner",
+            "action": "advance",
+            "questionText": "이 사업은 누구에게 무엇을 제공하나요?"
+          },
+          "expectedReason": null,
+          "actualReason": "답변이 충분합니다. 다음 주제로 넘어갑니다.",
+          "pass": true,
+          "failureTypes": [],
+          "gates": [
+            "GATE_5_CONTRADICTION",
+            "GATE_2_PRESERVATION"
+          ]
+        },
+        {
+          "scenario": "golden-d-contradiction",
+          "turn": 2,
+          "userInput": "실제로는 대기업 IT 팀이 핵심 고객입니다.",
+          "expectedInterpretation": {
+            "factChecks": []
+          },
+          "actualInterpretation": {
+            "extractedFacts": [],
+            "intent": "business_fact",
+            "quality": "CONTRADICTORY"
+          },
+          "expectedState": {
+            "preserveFacts": {}
+          },
+          "actualState": {},
+          "expectedGap": {
+            "customerPersona": "CONTRADICTED"
+          },
+          "actualGap": {
+            "customerPersona": "CONTRADICTED"
+          },
+          "expectedNextQuestion": null,
+          "actualNextQuestion": {
+            "targetGapId": "customerPersona",
+            "action": "clarify",
+            "questionText": "「고객」에 두 가지 답이 있습니다. A) 소상공인 카페 사장님입니다. · B) 실제로는 대기업 IT 팀이 핵심 고객입니다. — 어느 쪽이 맞나요?"
+          },
+          "expectedReason": null,
+          "actualReason": "이전에 말씀하신 내용과 다릅니다. 확인이 필요합니다.",
+          "pass": true,
+          "failureTypes": [],
+          "gates": [
+            "GATE_5_CONTRADICTION",
+            "GATE_2_PRESERVATION"
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "golden-e-no-repeat",
+      "label": "이미 답변한 정보",
+      "gates": [
+        "GATE_4_REPEAT",
+        "GATE_2_PRESERVATION"
+      ],
+      "pass": true,
+      "turns": [
+        {
+          "scenario": "golden-e-no-repeat",
+          "turn": 1,
+          "userInput": "소규모 양조장입니다.",
+          "expectedInterpretation": {
+            "factChecks": []
+          },
+          "actualInterpretation": {
+            "extractedFacts": [
+              {
+                "key": "customer",
+                "value": "소규모 양조장입니다.",
+                "evidenceClass": "FACT",
+                "targetGap": "customerPersona"
+              }
+            ],
+            "intent": "business_fact",
+            "quality": "PARTIAL"
+          },
+          "expectedState": {
+            "preserveFacts": {}
+          },
+          "actualState": {
+            "customer": "소규모 양조장입니다."
+          },
+          "expectedGap": {
+            "customerPersona": "CLOSED"
+          },
+          "actualGap": {
+            "customerPersona": "CLOSED"
+          },
+          "expectedNextQuestion": null,
+          "actualNextQuestion": {
+            "targetGapId": "businessOneLiner",
+            "action": "advance",
+            "questionText": "이 사업은 누구에게 무엇을 제공하나요?"
+          },
+          "expectedReason": null,
+          "actualReason": "답변이 충분합니다. 다음 주제로 넘어갑니다.",
+          "pass": true,
+          "failureTypes": [],
+          "gates": [
+            "GATE_4_REPEAT",
+            "GATE_2_PRESERVATION"
+          ]
+        },
+        {
+          "scenario": "golden-e-no-repeat",
+          "turn": 2,
+          "userInput": "온라인 홍보가 어렵습니다.",
+          "expectedInterpretation": {
+            "factChecks": []
+          },
+          "actualInterpretation": {
+            "extractedFacts": [
+              {
+                "key": "problem",
+                "value": "온라인 홍보가 어렵습니다.",
+                "evidenceClass": "FACT",
+                "targetGap": "problemJtbd"
+              }
+            ],
+            "intent": "business_fact",
+            "quality": "VALID"
+          },
+          "expectedState": {
+            "preserveFacts": {
+              "customer": "양조장"
+            }
+          },
+          "actualState": {
+            "problem": "온라인 홍보가 어렵습니다."
+          },
+          "expectedGap": {
+            "problemJtbd": "CLOSED"
+          },
+          "actualGap": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED"
+          },
+          "expectedNextQuestion": {
+            "mustNotTargetGap": "customerPersona"
+          },
+          "actualNextQuestion": {
+            "targetGapId": "businessOneLiner",
+            "action": "advance",
+            "questionText": "이 사업은 누구에게 무엇을 제공하나요?"
+          },
+          "expectedReason": null,
+          "actualReason": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
+          "pass": true,
+          "failureTypes": [],
+          "gates": [
+            "GATE_4_REPEAT",
+            "GATE_2_PRESERVATION"
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "golden-f-multi-slot",
+      "label": "여러 정보 한 번에",
+      "gates": [
+        "GATE_1_UNDERSTANDING",
+        "GATE_2_PRESERVATION"
+      ],
+      "pass": true,
+      "turns": [
+        {
+          "scenario": "golden-f-multi-slot",
+          "turn": 1,
+          "userInput": "고객은 소규모 양조장이고, 문제는 온라인 홍보 어려움이며, 가격은 월 10만원입니다.",
+          "expectedInterpretation": {
+            "factChecks": [
+              {
+                "key": "customer",
+                "valueIncludes": [
+                  "양조장"
+                ]
+              },
+              {
+                "key": "problem",
+                "valueIncludes": [
+                  "홍보"
+                ]
+              },
+              {
+                "key": "revenue",
+                "valueIncludes": [
+                  "10"
+                ]
+              }
+            ]
+          },
+          "actualInterpretation": {
+            "extractedFacts": [
+              {
+                "key": "problem",
+                "value": "고객은 소규모 양조장이고, 문제는 온라인 홍보 어려움이며, 가격은 월 10만원입니다.",
+                "evidenceClass": "FACT",
+                "targetGap": "problemJtbd"
+              },
+              {
+                "key": "customer",
+                "value": "고객은 소규모 양조장이고, 문제는 온라인 홍보 어려움이며, 가격은 월 10만원입니다.",
+                "evidenceClass": "FACT",
+                "targetGap": "customerPersona"
+              },
+              {
+                "key": "revenue",
+                "value": "월 10만원입니다",
+                "evidenceClass": "FACT",
+                "targetGap": "revenueModel"
+              }
+            ],
+            "intent": "business_fact",
+            "quality": "VALID"
+          },
+          "expectedState": {
+            "preserveFacts": {}
+          },
+          "actualState": {
+            "customer": "고객은 소규모 양조장이고, 문제는 온라인 홍보 어려움이며, 가격은 월 10만원입니다.",
+            "problem": "고객은 소규모 양조장이고, 문제는 온라인 홍보 어려움이며, 가격은 월 10만원입니다.",
+            "revenue": "월 10만원입니다"
+          },
+          "expectedGap": {},
+          "actualGap": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "revenueModel": "CLOSED"
+          },
+          "expectedNextQuestion": null,
+          "actualNextQuestion": {
+            "targetGapId": "businessOneLiner",
+            "action": "advance",
+            "questionText": "이 사업은 누구에게 무엇을 제공하나요?"
+          },
+          "expectedReason": null,
+          "actualReason": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
+          "pass": true,
+          "failureTypes": [],
+          "gates": [
+            "GATE_1_UNDERSTANDING",
+            "GATE_2_PRESERVATION"
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "golden-g-overclaim",
+      "label": "과장된 사업성 주장",
+      "gates": [
+        "GATE_7_EVIDENCE"
+      ],
+      "pass": true,
+      "turns": [
+        {
+          "scenario": "golden-g-overclaim",
+          "turn": 1,
+          "userInput": "분명히 시장 1위가 될 수 있는 압도적 기술입니다.",
+          "expectedInterpretation": {
+            "factChecks": [
+              {
+                "key": "differentiation",
+                "evidenceClassNot": "FACT"
+              }
+            ]
+          },
+          "actualInterpretation": {
+            "extractedFacts": [
+              {
+                "key": "market",
+                "value": "분명히 시장 1위가 될 수 있는 압도적 기술입니다.",
+                "evidenceClass": "FACT",
+                "targetGap": "marketChannel"
+              }
+            ],
+            "intent": "business_fact",
+            "quality": "VALID"
+          },
+          "expectedState": {
+            "preserveFacts": {}
+          },
+          "actualState": {
+            "market": "분명히 시장 1위가 될 수 있는 압도적 기술입니다."
+          },
+          "expectedGap": {},
+          "actualGap": {
+            "differentiationVsAlternatives": "CLOSED",
+            "marketChannel": "CLOSED"
+          },
+          "expectedNextQuestion": null,
+          "actualNextQuestion": {
+            "targetGapId": "businessOneLiner",
+            "action": "advance",
+            "questionText": "이 사업은 누구에게 무엇을 제공하나요?"
+          },
+          "expectedReason": null,
+          "actualReason": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
+          "pass": true,
+          "failureTypes": [],
+          "gates": [
+            "GATE_7_EVIDENCE"
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "golden-h-wtp-assumption",
+      "label": "근거 없는 지불의향",
+      "gates": [
+        "GATE_7_EVIDENCE"
+      ],
+      "pass": true,
+      "turns": [
+        {
+          "scenario": "golden-h-wtp-assumption",
+          "turn": 1,
+          "userInput": "아마 고객들이 이 서비스에 돈을 낼 것 같아요.",
+          "expectedInterpretation": {
+            "factChecks": [
+              {
+                "key": "revenue",
+                "evidenceClassNot": "FACT"
+              }
+            ]
+          },
+          "actualInterpretation": {
+            "extractedFacts": [
+              {
+                "key": "customer",
+                "value": "아마 고객들이 이 서비스에 돈을 낼 것 같아요.",
+                "evidenceClass": "FACT",
+                "targetGap": "customerPersona"
+              }
+            ],
+            "intent": "business_fact",
+            "quality": "VALID"
+          },
+          "expectedState": {
+            "preserveFacts": {}
+          },
+          "actualState": {
+            "customer": "아마 고객들이 이 서비스에 돈을 낼 것 같아요."
+          },
+          "expectedGap": {},
+          "actualGap": {
+            "pricingHint": "CLOSED",
+            "customerPersona": "CLOSED"
+          },
+          "expectedNextQuestion": null,
+          "actualNextQuestion": {
+            "targetGapId": "businessOneLiner",
+            "action": "advance",
+            "questionText": "이 사업은 누구에게 무엇을 제공하나요?"
+          },
+          "expectedReason": null,
+          "actualReason": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
+          "pass": true,
+          "failureTypes": [],
+          "gates": [
+            "GATE_7_EVIDENCE"
+          ]
+        }
+      ]
+    }
+  ]
+}
