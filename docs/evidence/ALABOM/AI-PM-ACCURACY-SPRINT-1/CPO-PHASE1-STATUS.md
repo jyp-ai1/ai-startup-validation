@@ -13,6 +13,7 @@
 | `CPO-ACCURACY-2PASS.md` | Full narrative + JSON |
 | `EVAL/cpo-2pass-evidence-pack.json` | Machine rows |
 | `CPO-2PASS-FILL-TEMPLATE.md` | Verdict recording format |
+| `CPO-2PASS-REVERIFY-3-SUBMISSION.md` | Re-verify #3 — C/H Actual @ SHA for independent verdict |
 
 ## CPO close checklist
 
