@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-10-02T10:52:00.000Z",
+  "productionUrl": "https://ai-startup-validation-tau.vercel.app",
+  "gitMainSha": "bf770c26cf5cc0c40a07acdb309ce4ac4015c033",
+  "prValidatedSha": "3d9e93413f50eddbfe8927debf7a1876ba18ad80",
+  "productionHealthCommit": "bf770c26cf5cc0c40a07acdb309ce4ac4015c033",
+  "shaMatch": true,
+  "smoke": {
+    "health": "PASS",
+    "authGateRedirect": "PASS",
+    "loginToWorkspace": "BLOCKED",
+    "f11ContradictionUi": "NOT_RUN",
+    "f04EvidenceUi": "NOT_RUN"
+  },
+  "blockReason": "Google OAuth requires human credentials; no QA_AUTH_STORAGE_STATE_PATH in deploy agent environment",
+  "artifacts": [
+    "/opt/cursor/artifacts/01-health-check-bf770c2.webp",
+    "/opt/cursor/artifacts/02-login-page.webp",
+    "/opt/cursor/artifacts/03-google-oauth-blocked.webp",
+    "/opt/cursor/artifacts/production-smoke-test-oct2.md"
+  ]
+}
