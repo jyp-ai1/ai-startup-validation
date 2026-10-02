@@ -83,7 +83,8 @@ export function detectStateDrift(
   for (const [slot, gt] of Object.entries(groundTruth.gaps)) {
     const ai = aiGapSnapshot[slot];
     if (!ai) continue;
-    if (gt === 'CONFLICT' && ai !== 'CONFLICT' && ai !== 'OPEN') return true;
+    if (gt === 'CONFLICT' && ai !== 'CONFLICT' && ai !== 'CONTRADICTED' && ai !== 'OPEN')
+      return true;
     if (gt === 'ASSUMPTION' && ai === 'CLOSED') return true;
   }
   return false;

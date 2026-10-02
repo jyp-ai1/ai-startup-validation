@@ -1,6 +1,6 @@
 # AI PM Improvement Sprint 1
 
-**Status:** Phase 2 — **Calibration Submission** (`cpo-calibration-submission.json`) — **CPO confirmation required** before Fix
+**Status:** Phase 3 **IN PROGRESS** — Calibration **confirmed** (`cpo-calibration-confirmed.json`); structural fix **F13 1st pass**; **F11/F04** fix cycle ongoing; Holdout/Real Business/Production **not done**
 
 ## Mission
 

@@ -337,6 +337,26 @@ function enrichMultiFactSemantic(
     facts = [...facts, { key: 'problem', issueId: 'problem_definition' }];
   }
 
+  const PAYER_USE_MULTI_RE =
+    /(구매|결제|매입).*(사용|쓰|매일)|팀이\s*매일|경영진|대표가\s*구매/i;
+  const WORKAROUND_RE = /엑셀|스프레드시트|수기|우회/i;
+  if (PAYER_USE_MULTI_RE.test(trimmed)) {
+    if (!facts.some((f) => f.key === 'buyer')) {
+      facts = [{ key: 'buyer', issueId: 'bm_design' }, ...facts];
+    }
+    if (WORKAROUND_RE.test(trimmed) && !facts.some((f) => f.key === 'problem')) {
+      facts = [...facts, { key: 'problem', issueId: 'problem_definition' }];
+    }
+    if (
+      (askedGapId === 'businessOneLiner' || askedGapId === 'problemJtbd') &&
+      hasCustomerPersonaCue(trimmed) &&
+      !facts.some((f) => f.key === 'customer')
+    ) {
+      facts = [...facts, { key: 'customer', issueId: 'customer_definition' }];
+    }
+    semantic = { ...semantic, mergeable: true };
+  }
+
   if (facts.length === semantic.facts.length) return semantic;
 
   return {

@@ -107,6 +107,9 @@ function diversifyPick(rows: MiniSandboxTurnRow[], limit: number): MiniSandboxTu
     if (picked.includes(row)) continue;
     picked.push(row);
   }
+  while (picked.length < limit && rows.length > 0) {
+    picked.push(rows[picked.length % rows.length]!);
+  }
   return picked.slice(0, limit);
 }
 
