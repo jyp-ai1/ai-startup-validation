@@ -68,7 +68,7 @@ function livingForBusiness(biz: BusinessScenarioMatrixRow) {
   });
 }
 
-function runScriptOnBusiness(
+export function runScriptOnBusiness(
   biz: BusinessScenarioMatrixRow,
   script: { turns: MultiBusinessScriptTurn[] },
 ): { pass: boolean; turns: TurnEvidenceRecord[] } {
