@@ -188,7 +188,7 @@ export function runFullValidationLab(options?: { gitSha?: string | null }): Vali
       rows: rows.length,
     },
     holdoutPolicy:
-      'biz-16-17 holdout; biz-14-15 regression (prior Layer A probe — not used for fix tuning)',
+      'biz-16-17 holdout; biz-14-15 regression (Layer A probe acknowledged contamination)',
     rows,
   };
 }
