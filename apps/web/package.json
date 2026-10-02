@@ -26,6 +26,7 @@
     "test:mini-sandbox-evidence": "node scripts/run-mini-sandbox-evidence.mjs",
     "test:validation-engine-completion": "node scripts/run-validation-engine-completion.mjs",
     "test:cpo-improvement-calibration": "node scripts/run-cpo-improvement-calibration.mjs",
+    "test:cpo-calibration-submission": "node scripts/run-cpo-calibration-submission.mjs",
     "test:cpo-2pass-evidence": "node scripts/run-cpo-2pass-evidence.mjs",
     "evidence:real-business-review": "node scripts/production-real-business-review-trace.mjs",
     "evidence:phase2-cpo-pack": "node scripts/run-phase2-cpo-review-pack.mjs"

@@ -48,8 +48,12 @@ export type CpoCalibrationCase = {
   };
   failureTypes: string[];
   severity: string | undefined;
-  cpoCalibratedVerdict: 'PENDING';
-  calibrationClass: 'PENDING' | 'AI_PM_DEFECT' | 'EVALUATOR_DEFECT' | 'GROUND_TRUTH_DEFECT';
+  cpoCalibratedVerdict: 'PENDING' | 'PASS' | 'PARTIAL' | 'FAIL';
+  calibrationClass:
+    | 'PENDING'
+    | 'AI_PM_DEFECT'
+    | 'EVALUATOR_DEFECT'
+    | 'GROUND_TRUTH_DEFECT';
   cpoNotes: string | null;
 };
 

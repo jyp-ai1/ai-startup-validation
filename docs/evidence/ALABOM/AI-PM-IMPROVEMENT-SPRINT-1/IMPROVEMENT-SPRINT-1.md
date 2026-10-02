@@ -1,6 +1,6 @@
 # AI PM Improvement Sprint 1
 
-**Status:** Phase 0 — **CPO Calibration OPEN** (no structural AI PM fixes until calibration PASS)
+**Status:** Phase 2 — **Calibration Submission** (`cpo-calibration-submission.json`) — **CPO confirmation required** before Fix
 
 ## Mission
 
@@ -42,8 +42,13 @@ CPO Calibration (50 cases)
 Generate:
 
 ```bash
-cd apps/web && CPO_IMPROVEMENT_CALIBRATION_EVIDENCE=1 pnpm test:cpo-improvement-calibration
+cd apps/web && pnpm test:cpo-calibration-submission
 ```
+
+Outputs:
+
+- `EVAL/cpo-calibration-submission.json` — **50 cases with actualFacts, verdict, class, cpoRationale**
+- `EVAL/cpo-calibration-summary.md` — aggregate table
 
 ## CEO
 
