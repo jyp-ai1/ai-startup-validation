@@ -3,19 +3,11 @@
  * Evidence filled by production-real-business-review-trace.mjs when auth available.
  */
 
-export type RealBusinessReviewTurnTrace = {
-  turn: number;
-  userAnswer: string;
-  aiUnderstanding: Record<string, unknown>;
-  knowledgeState: Record<string, unknown>;
-  gapSnapshot: Record<string, string>;
-  nextQuestion: string | null;
-  nextQuestionTargetGap: string | null;
-  nextQuestionWhy: string | null;
-};
+export type { Phase2TurnTrace as RealBusinessReviewTurnTrace } from './map-real-business-turn-trace';
 
 export type RealBusinessReviewSessionTrace = {
-  status: 'BLOCKED' | 'CAPTURED';
+  status: 'BLOCKED' | 'CAPTURED' | 'PARTIAL';
+  phase?: 2;
   sessionId: string | null;
   productionUrl: string;
   gitSha: string | null;

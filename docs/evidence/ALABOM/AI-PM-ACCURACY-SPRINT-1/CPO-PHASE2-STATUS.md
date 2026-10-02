@@ -8,15 +8,31 @@
 
 ## Goal
 
-Validate **longitudinal accuracy** (10–30 turns): Business Understanding → taxonomy gaps → knowledge state → next question, on **real logged-in Production**, not Golden 8 alone.
+Validate **longitudinal accuracy** (12 → 20–30 turns): whether AI PM **preserves knowledge** across a real Business Review — not single-turn Golden 8 accuracy alone.
 
-## Layers (this phase)
+**CPO rubric:** `CPO-PHASE2-RUBRIC.md` (9 dimensions per turn; L4–5 after initial pass).
+
+## Gate ladder (CPO-fixed)
+
+```text
+storageState
+  → Production 12-turn trace (CAPTURED)
+  → CPO Layer 1–3 independent 2-pass
+  → fix layer-only + regression + re-trace
+  → 20–30 turn extension
+  → Layer 4 Reasoning → Layer 5 Judgment
+  → CPO final → Production SHA → CEO TEST (not before CPO pass)
+```
+
+**CEO TEST:** not requested until Phase ② CPO longitudinal pass.
+
+## Layers (initial capture)
 
 1. Layer 1 — Understanding  
-2. Layer 2 — Gap  
-3. Layer 3 — Next Question  
+2. Layer 2 — Gap + state preservation  
+3. Layer 3 — Next question choice + why  
 
-(Layers 4–5 Reasoning/Judgment follow after trace + CPO 2-pass on real session.)
+(Layers 4–5 in trace rows marked `NOT_IN_PHASE2_INITIAL` until wired.)
 
 ## Blocker
 
@@ -53,8 +69,12 @@ cd apps/web && pnpm evidence:real-business-review
 
 **Output:** `PRODUCTION/real-business-review-trace.json`
 
-When auth is missing → `status: BLOCKED` with reason. When auth present → browser capture runs (longitudinal Q→A, sessionStorage loop snapshot per turn).
+When auth is missing → `status: BLOCKED` (real login path **unverified** — not a QA convenience issue). When auth present → 12 scripted turns, each row shaped for CPO checklist (`answerUnderstanding`, `gapSnapshot`, `nextQuestion`, `layers`).
+
+## CTO priority
+
+Evidence first — no Phase ② feature expansion until trace + CPO Layer 1–3 on Production.
 
 ## Production merge
 
-**HOLD** until Phase ② CPO 2-pass on real trace (+ later ladder gates).
+**HOLD** until Phase ② CPO 2-pass on real longitudinal trace (+ ladder gates).

@@ -32,7 +32,12 @@
 cd apps/web && pnpm test:cpo-2pass-evidence
 ```
 
-## Phase ① close criteria
+## Phase ①
 
-CPO completes independent Expected + Verdict on all rows → Layer 1–3 failure tally → FAIL/PARTIAL fixes → re-run → CPO re-verify.
+**CLOSED** — Re-verify #3 · 10/10 PASS · verdict lock `EVAL/cpo-phase1-cpo-verdicts.json`.
+
+## Phase ②
+
+- `CPO-PHASE2-STATUS.md` · `CPO-PHASE2-RUBRIC.md`
+- `PRODUCTION/real-business-review-trace.json` via `pnpm evidence:real-business-review`
 

@@ -4,7 +4,7 @@
 
 | Layer | Metric key | Sample source | Current value |
 |-------|------------|---------------|---------------|
-| L1 | `answer_understanding` | Golden 8 + CPO 2-pass + Real Review | **NOT_ENOUGH_SAMPLES** |
+| L1 | `answer_understanding` | Golden 8 **CLOSED** + Real Review (Phase ②) | Golden labeled **10/10 PASS**; Real **NOT_ENOUGH_SAMPLES** |
 | L2 | `state_accuracy` | Same | **NOT_ENOUGH_SAMPLES** |
 | L2 | `gap_accuracy` | Same | **NOT_ENOUGH_SAMPLES** |
 | L3 | `question_accuracy` | Same | **NOT_ENOUGH_SAMPLES** |

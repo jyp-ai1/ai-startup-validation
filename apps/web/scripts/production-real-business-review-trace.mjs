@@ -10,6 +10,8 @@ import { fileURLToPath } from 'node:url';
 
 import { chromium } from '@playwright/test';
 
+import { mapLoopTurnToPhase2Trace } from '../lib/ai-pm-accuracy/map-real-business-turn-trace.mjs';
+
 const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const repoRoot = path.resolve(webRoot, '../..');
 const storageDefault = path.join(webRoot, '.qa-auth/storageState.json');
@@ -161,19 +163,14 @@ async function captureTurn(page, projectId, turnIndex, userAnswer) {
     .catch(() => {});
 
   const snap = await readLoopSnapshot(page, projectId);
-  const last = snap.lastTurn;
 
-  return {
+  return mapLoopTurnToPhase2Trace({
     turn: turnIndex,
     userAnswer,
-    aiUnderstanding: last?.review?.interpretation ?? last?.interpretation ?? {},
-    knowledgeState: snap.loop?.gapState ?? {},
-    gapSnapshot: (snap.loop?.gapState ?? {}) ,
-    nextQuestion: last?.nextQuestion?.questionText ?? questionText,
-    nextQuestionTargetGap: last?.nextQuestion?.targetGapId ?? snap.loop?.currentIssueId ?? null,
-    nextQuestionWhy: last?.reason ?? null,
-    rawLastTurn: last,
-  };
+    questionBefore: questionText,
+    lastTurn: snap.lastTurn,
+    gapState: snap.loop?.gapState ?? null,
+  });
 }
 
 async function main() {
