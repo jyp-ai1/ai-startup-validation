@@ -61,6 +61,17 @@ storageState BLOCKED
   └── Tracks B–D / Layer A → RUNNABLE (harness)
 ```
 
+## Open Layer B failures (RCA — fix not started)
+
+| Business | Doc |
+|----------|-----|
+| biz-01 | `CPO-ROOT-CAUSE-biz-01.md` |
+| biz-07 | `CPO-ROOT-CAUSE-biz-07.md` |
+
+Registry: `EVAL/sprint2-open-failures.json` · Taxonomy: `apps/web/lib/ai-pm-accuracy/sprint2-failure-taxonomy.ts`
+
+**Policy:** `UNSEEN-SET-POLICY.md` · `FAILURE-TYPE-REGRESSION.md` · L4: `CPO-L4-QUESTION-RUBRIC.md`
+
 ## Key files
 
 - `apps/web/lib/ai-pm-accuracy/business-scenario-matrix.ts`
