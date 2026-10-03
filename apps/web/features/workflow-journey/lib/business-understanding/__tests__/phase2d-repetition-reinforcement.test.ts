@@ -80,6 +80,25 @@ describe('Phase 2-D B — repetition is reinforcement', () => {
     expect(gapState.gaps.customerPersona?.completeness).not.toBe('CONTRADICTED');
   });
 
+  it('"문제가 핵심입니다" restates the stored problem instead of declaring "핵심"', () => {
+    const { gapState, contradictions } = run([
+      ask(PROBLEM, '가장 큰 문제는 업무 요청이 메신저와 메일에 흩어져 누락되는 문제입니다.'),
+      ask(CHANNEL, '앞에서 말씀드린 대로 업무 요청이 메신저와 메일에 흩어져 누락되는 문제가 핵심입니다.'),
+    ]);
+    expect(contradictions).toEqual([0, 0]);
+    expect(gapState.gaps.problemJtbd?.completeness).toBe('CLOSED');
+  });
+
+  it('a channel answer that starts with "고객은" does not contradict the stored customer', () => {
+    const { gapState, contradictions } = run([
+      ask(CUSTOMER, '핵심 고객은 바쁜 직장인입니다.'),
+      ask(CHANNEL, '고객은 주로 유튜브 재테크 채널 협업을 통해 처음 만납니다.'),
+    ]);
+    expect(contradictions).toEqual([0, 0]);
+    expect(gapState.gaps.customerPersona?.completeness).toBe('CLOSED');
+    expect(gapState.gaps.marketChannel?.completeness).not.toBe('CONTRADICTED');
+  });
+
   it.each([CUSTOMER, CHANNEL])('A/B — a genuinely different customer is CONTRADICTED (asked $gap)', (asked) => {
     const { gapState, contradictions } = run([
       ask(CUSTOMER, '핵심 고객은 바쁜 직장인입니다.'),

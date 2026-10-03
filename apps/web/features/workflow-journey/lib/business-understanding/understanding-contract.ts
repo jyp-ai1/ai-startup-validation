@@ -201,17 +201,22 @@ export function evaluateAnswerQuality(
   return { quality: 'VALID', mergeable: true };
 }
 
+const VERBAL_PREDICATE_RE = /(?:니다|해요|어요|아요|는다|한다|된다)$|[을를]\s*통해/u;
+
 /** CEO declares a revised customer segment (often embedded in a long reversal utterance). */
 export function extractDeclaredCustomerSegment(text: string): string | null {
   const t = text.trim();
   const m = t.match(
     /(?:실제\s*(?:최종\s*)?)?고객(?:은|이)\s*([^,.]+?)(?:입니다|이고|이며|였습니다|\.|,|$)/u,
   );
-  return m?.[1]?.trim() ?? null;
+  const segment = m?.[1]?.trim() ?? null;
+  // "고객은 주로 X를 통해 처음 만납니다" describes how customers are reached, not who they are.
+  if (segment && VERBAL_PREDICATE_RE.test(segment)) return null;
+  return segment;
 }
 
 const DECLARED_PROBLEM_RE =
-  /(?:가장\s*큰\s*|핵심\s*)?문제(?:는|가)\s*([^,.]+?)(?:입니다|이고|이며|예요|이에요|\.|,|$)/u;
+  /(?:(?:가장\s*큰|핵심)\s*문제(?:는|가)|문제는)\s*([^,.]+?)(?:입니다|이고|이며|예요|이에요|\.|,|$)/u;
 
 /**
  * Value the answer declares for one slot. A stored fact is only ever compared with the value
