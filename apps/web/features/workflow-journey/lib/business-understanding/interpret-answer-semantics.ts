@@ -39,6 +39,9 @@ export type AnswerIntent =
 export type SemanticFactHit = {
   key: ConversationFactKey;
   issueId: AiPmLoopIssueId;
+  /** Set by claim segmentation (F13) — the claim's own value instead of the whole answer. */
+  claimValue?: string;
+  claimEvidenceClass?: 'FACT' | 'ASSUMPTION' | 'INFERENCE';
 };
 
 export type SemanticInterpretation = {
