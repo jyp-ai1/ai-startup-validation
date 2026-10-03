@@ -10266,5 +10266,41 @@
         }
       }
     }
+  },
+  "projectBrief": {
+    "pageTitle": "Project brief",
+    "eyebrow": "What your AI PM has confirmed so far",
+    "backToProjects": "My projects",
+    "meta": "{count} answers so far",
+    "metaWithDate": "{count} answers so far · last answered {when}",
+    "reviewStatus": {
+      "understanding": "Understanding the business",
+      "validation": "Checking the market",
+      "ready": "Ready for review"
+    },
+    "judgment": {
+      "ready": "The key points needed for a review are confirmed.",
+      "understandingBlocked": "{item} is not confirmed yet, so the AI PM cannot move to the next judgment.",
+      "validationBlocked": "The business is understood. {item} still needs to be confirmed before a review.",
+      "inProgress": "The AI PM is still confirming the key points."
+    },
+    "sections": {
+      "confirmed": "Confirmed",
+      "unconfirmed": "Not confirmed yet",
+      "conflicts": "Needs attention — conflicting answers",
+      "recentUnderstanding": "What the AI PM understood last",
+      "nextQuestion": "What to confirm next"
+    },
+    "empty": {
+      "title": "Nothing has been confirmed with your AI PM yet.",
+      "body": "Answer the first question in the workspace and your progress will show up here."
+    },
+    "unstructured": {
+      "title": "Your answers have not been organized into a judgment yet.",
+      "body": "Continue in the workspace and the AI PM will organize what is confirmed."
+    },
+    "cta": "Continue confirming",
+    "entryLink": "Progress",
+    "canvasLink": "What's confirmed so far"
   }
 }

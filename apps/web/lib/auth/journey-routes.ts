@@ -24,6 +24,15 @@ export function buildProjectCanvasUrl(projectId: string): string {
   return `/workspace?project=${encodeURIComponent(projectId)}`;
 }
 
+export type ProjectBriefEntry = 'list' | 'canvas';
+
+export function buildProjectBriefUrl(projectId: string, entry?: ProjectBriefEntry): string {
+  const qs = new URLSearchParams();
+  qs.set('project', projectId);
+  if (entry) qs.set('from', entry);
+  return `/workspace/brief?${qs.toString()}`;
+}
+
 export function buildWorkspaceProjectQuery(params: {
   project?: string;
   welcome?: string;

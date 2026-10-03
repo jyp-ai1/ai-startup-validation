@@ -22,7 +22,8 @@ import {
   DropdownMenuTrigger,
 } from '@repo/ui';
 
-import { buildProjectCanvasUrl } from '@/lib/auth/journey-routes';
+import { hasProjectBriefContent } from '@/features/workspace/lib/has-project-brief-content';
+import { buildProjectBriefUrl, buildProjectCanvasUrl } from '@/lib/auth/journey-routes';
 
 import {
   archiveMyProjectAction,
@@ -40,6 +41,8 @@ type MyProjectListItemProps = {
 export function MyProjectListItem({ project, variant = 'active' }: MyProjectListItemProps) {
   const t = useTranslations('myProjects');
   const ta = useTranslations('myProjects.lifecycle');
+  const tb = useTranslations('projectBrief');
+  const showBriefLink = variant === 'active' && hasProjectBriefContent(project.onboardingContext);
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [renameOpen, setRenameOpen] = useState(false);
@@ -78,6 +81,15 @@ export function MyProjectListItem({ project, variant = 'active' }: MyProjectList
             {projectStatusLabel(project.status)}
           </p>
         </Link>
+        {showBriefLink ? (
+          <Link
+            href={buildProjectBriefUrl(project.id, 'list')}
+            className="mt-1 inline-block text-xs font-medium text-primary underline-offset-2 hover:underline"
+            data-testid={`project-brief-link-${project.id}`}
+          >
+            {tb('entryLink')}
+          </Link>
+        ) : null}
       </div>
 
       <Link href={buildProjectCanvasUrl(project.id)}>

@@ -10355,5 +10355,41 @@
         }
       }
     }
+  },
+  "projectBrief": {
+    "pageTitle": "사업 판단 현황",
+    "eyebrow": "AI PM이 지금까지 확인한 내용",
+    "backToProjects": "내 프로젝트",
+    "meta": "지금까지 답변 {count}개",
+    "metaWithDate": "지금까지 답변 {count}개 · 마지막 답변 {when}",
+    "reviewStatus": {
+      "understanding": "사업 이해 중",
+      "validation": "시장 확인 중",
+      "ready": "검토 준비 완료"
+    },
+    "judgment": {
+      "ready": "검토에 필요한 핵심 내용이 확인되었습니다.",
+      "understandingBlocked": "{item}이(가) 아직 확인되지 않아 다음 판단으로 넘어가기 어렵습니다.",
+      "validationBlocked": "사업 이해는 끝났습니다. 검토 전에 {item}을(를) 확인해야 합니다.",
+      "inProgress": "AI PM이 핵심 내용을 확인하고 있습니다."
+    },
+    "sections": {
+      "confirmed": "확인된 내용",
+      "unconfirmed": "아직 확인되지 않은 내용",
+      "conflicts": "주의 — 서로 다른 설명",
+      "recentUnderstanding": "AI PM이 최근에 이해한 내용",
+      "nextQuestion": "다음에 확인할 것"
+    },
+    "empty": {
+      "title": "아직 AI PM과 확인한 내용이 없습니다.",
+      "body": "워크스페이스에서 첫 질문에 답하면 이곳에 진행 상황이 정리됩니다."
+    },
+    "unstructured": {
+      "title": "답변은 있지만 아직 판단 상태로 정리되지 않았습니다.",
+      "body": "워크스페이스에서 이어서 진행하면 AI PM이 확인된 내용을 정리합니다."
+    },
+    "cta": "이어서 확인하기",
+    "entryLink": "현황",
+    "canvasLink": "지금까지 확인한 내용"
   }
 }

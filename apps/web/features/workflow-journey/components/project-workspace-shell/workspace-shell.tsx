@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { AlabomLogo } from '@/lib/brand/alabom-logo';
@@ -39,6 +40,8 @@ type ProjectWorkspaceShellProps = {
   businessState?: WorkspaceBusinessState | null;
   sharedUnderstanding?: WorkspaceSharedUnderstanding | null;
   understandingSpine?: WorkspaceUnderstandingSpine | null;
+  /** Authenticated projects only — demo canvases have no persisted brief. */
+  briefHref?: string | null;
   children: React.ReactNode;
   className?: string;
 };
@@ -58,9 +61,12 @@ export function ProjectWorkspaceShell({
   businessState = null,
   sharedUnderstanding = null,
   understandingSpine = null,
+  briefHref = null,
   children,
   className,
 }: ProjectWorkspaceShellProps) {
+  const tb = useTranslations('projectBrief');
+
   useEffect(() => {
     if (!guestDemoMode) return;
     document.title = `Demo Workspace | ${BRAND_CONFIG.displayName}`;
@@ -92,6 +98,15 @@ export function ProjectWorkspaceShell({
             ) : null}
           </div>
           <div className="flex shrink-0 items-center gap-2">
+            {briefHref ? (
+              <Link
+                href={briefHref}
+                className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground sm:inline"
+                data-testid="workspace-brief-link"
+              >
+                {tb('canvasLink')}
+              </Link>
+            ) : null}
             <JourneyGlobalNav user={user} guestDemoMode={guestDemoMode} />
             <LocaleSwitcher />
           </div>
