@@ -21,12 +21,21 @@ export function getClosedGapIds(gapState: GapKnowledgeState): string[] {
 /**
  * CLOSED is monotonic — OPEN/PARTIAL cannot supersede CLOSED.
  * CONTRADICTED is the explicit exception (S12/S27).
+ * CONTRADICTED itself only moves on a new contradiction or on this turn's evidence for the same
+ * slot (explicit correction / A-B resolution) — an answer about another slot leaves it unresolved.
  */
 function shouldApplyVerdict(
+  review: AnswerReview,
   prev: GapKnowledgeRecord | undefined,
   nextCompleteness: GapCompleteness,
 ): boolean {
   if (!prev) return true;
+  if (prev.completeness === 'CONTRADICTED') {
+    return (
+      nextCompleteness === 'CONTRADICTED' ||
+      review.extractedFacts.some((f) => f.targetGap === prev.gapId)
+    );
+  }
   if (prev.completeness !== 'CLOSED') return true;
   return nextCompleteness === 'CONTRADICTED' || nextCompleteness === 'CLOSED';
 }
@@ -85,7 +94,7 @@ export function updateGapStateFromReview(
 
   for (const verdict of Object.values(review.gapVerdicts)) {
     const prev = gaps[verdict.gapId];
-    if (!shouldApplyVerdict(prev, verdict.completeness)) {
+    if (!shouldApplyVerdict(review, prev, verdict.completeness)) {
       continue;
     }
     gaps[verdict.gapId] = buildRecordFromVerdict(review, verdict, prev);
