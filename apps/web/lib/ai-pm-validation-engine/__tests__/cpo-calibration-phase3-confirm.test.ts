@@ -3,13 +3,20 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
+import { buildCpoImprovementCalibrationPack } from '../cpo-improvement-calibration-pack';
+
 import { buildPhase3CalibrationConfirm } from '../cpo-calibration-phase3-confirm';
 import { compareImprovementBaseline } from '../improvement-before-after';
 
 describe('Phase 3 — calibration confirm + before/after', () => {
   it('produces CPO-confirmed table and fix cluster list', () => {
     const confirm = buildPhase3CalibrationConfirm();
-    expect(confirm.cases).toHaveLength(50);
+    // Clusters with no remaining auto failures sample fewer than 10 (see pack shortfalls).
+    const sampled = Object.values(buildCpoImprovementCalibrationPack().clusters).reduce(
+      (n, block) => n + block.cases.length,
+      0,
+    );
+    expect(confirm.cases).toHaveLength(sampled);
     expect(confirm.summaryTable).toHaveLength(5);
 
     const f08 = confirm.summaryTable.find((r) => r.cluster === 'F08_WRONG_GAP_PRIORITY');
