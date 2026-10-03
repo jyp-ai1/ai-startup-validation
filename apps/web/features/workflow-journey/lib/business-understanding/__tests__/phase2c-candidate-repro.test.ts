@@ -68,7 +68,7 @@ describe('Phase 2-C B — repeated answer flagged as a contradiction', () => {
 });
 
 describe('Phase 2-C C — correction value truncated', () => {
-  it.fails('stores the full corrected customer segment', () => {
+  it('stores the full corrected customer segment', () => {
     const r = review('problemJtbd', 'problem_definition', CORRECTION, PROBLEM_Q, {
       customer: '직장인·프리랜서',
     });

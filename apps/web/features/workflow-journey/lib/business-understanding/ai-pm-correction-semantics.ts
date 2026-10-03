@@ -32,13 +32,38 @@ export type ParsedNotXButY = {
   accepted: string;
 };
 
+const NOT_PIVOT_RE = /(?:이|가)\s*아니(?:요|라)[,]?\s*/u;
+const CLAUSE_END_RE = /[.,;!?\n]/u;
+const FIELD_TOPIC_PREFIX_RE =
+  /^.*?(?:고객|타깃|타겟|대상|구매자|결제자|사용자|문제|채널|경쟁|대안)\s*(?:은|는|이|가)\s+/u;
+const TRAILING_COPULA_RE = /\s*(?:입니다|이에요|예요|이죠|이다|이요|요)$/u;
+
+/** Clause-bounded phrase before "X이/가 아니라" — keeps multi-token segments like "직장인·프리랜서". */
+function rejectedPhrase(before: string): string {
+  const clauses = before.split(CLAUSE_END_RE);
+  let clause = (clauses[clauses.length - 1] ?? '').trim();
+  if (FIELD_TOPIC_PREFIX_RE.test(clause)) {
+    clause = clause.replace(FIELD_TOPIC_PREFIX_RE, '');
+  } else {
+    clause = clause.split(/\s+/).pop() ?? '';
+  }
+  return clause.trim();
+}
+
+/** Clause-bounded phrase after "아니라" — keeps multi-token values like "중소 제조 CEO". */
+function acceptedPhrase(after: string): string {
+  const clause = after.split(CLAUSE_END_RE)[0] ?? '';
+  return clause.trim().replace(TRAILING_COPULA_RE, '').trim();
+}
+
 /** Parse "꽃집이 아니라 반찬가게" → { rejected: 꽃집, accepted: 반찬가게 }. */
 export function parseNotXButYCorrection(text: string): ParsedNotXButY | null {
   const trimmed = text.trim();
-  const match = trimmed.match(NOT_X_BUT_Y_RE);
-  if (!match?.[1] || !match?.[2]) return null;
-  const rejected = match[1].trim().replace(/[입니다\.]+$/, '');
-  const accepted = match[2].trim().replace(/[입니다\.]+$/, '');
+  if (!NOT_X_BUT_Y_RE.test(trimmed)) return null;
+  const pivot = trimmed.match(NOT_PIVOT_RE);
+  if (!pivot || pivot.index === undefined) return null;
+  const rejected = rejectedPhrase(trimmed.slice(0, pivot.index));
+  const accepted = acceptedPhrase(trimmed.slice(pivot.index + pivot[0].length));
   if (rejected.length < 1 || accepted.length < 1) return null;
   if (rejected === accepted) return null;
   return { rejected, accepted };
