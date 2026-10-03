@@ -1,3 +1,6 @@
+import { isCustomerFieldCorrection } from '@/features/workflow-journey/lib/business-understanding/ai-pm-correction-semantics';
+import { isNoSlotContentAnswer } from '@/features/workflow-journey/lib/business-understanding/asked-slot-evidence';
+
 import type {
   AnswerBehaviorId,
   ConversationStateContract,
@@ -83,6 +86,13 @@ export function applyGroundTruthAnswer(input: {
   }
 
   const slot = input.askedGapId || 'customerPersona';
+  // Phase 2-D A — same rule as the AI PM: no direct evidence for the asked slot keeps it open.
+  if (
+    isNoSlotContentAnswer(input.userAnswer) ||
+    (isCustomerFieldCorrection(input.userAnswer) && slot !== 'customerPersona')
+  ) {
+    return { gaps, facts, transitionLog };
+  }
   closeSlot(slot, input.userAnswer.slice(0, 120));
   return { gaps, facts, transitionLog };
 }
