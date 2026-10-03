@@ -79,12 +79,13 @@ describe('Phase 2-C C — correction value truncated', () => {
 describe('Phase 2-C D — internal text leaks into the next question', () => {
   // D1 is on HOLD (harness investigation). Pins move when conversation path changes; the leak
   // is the placeholder used as a living claim, not the specific turn that first reached it.
-  it.fails('does not quote the unreadable-document placeholder', () => {
+  // D1 HOLD remains a harness investigation (short sandbox docs). D2 stops the question leak.
+  it('does not quote the unreadable-document placeholder', () => {
     const r = replayCalibrationTurn({ businessId: 'sb-marketplace', behavior: 'multi_fact', turn: 1 })!;
     expect(r.actualNextQuestion).not.toMatch(/아직 문서에서 사업 내용을 충분히 이해하지 못했습니다/);
   });
 
-  it.fails('does not quote raw document field labels (readable document)', () => {
+  it('does not quote raw document field labels (readable document)', () => {
     const r = replayCalibrationTurn({ businessId: 'sb-b2c-saas', behavior: 'uncertainty', turn: 2 })!;
     expect(r.actualNextQuestion).not.toMatch(/「[^」]*(타겟:|문제:|구매:|사용:)/);
   });

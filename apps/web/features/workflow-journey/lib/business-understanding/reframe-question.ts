@@ -6,6 +6,7 @@
 import type { ConversationFactKey } from './conversation-memory';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import { resolveGapQuestionBinding } from './gap-question-map';
+import { toUserFacingClaimSnippet } from './user-facing-claim';
 
 export type ReframeReason =
   | 'nonsense'
@@ -30,9 +31,8 @@ function claimSnippet(
   max = 48,
 ): string | null {
   const claim = living.claims.find((c) => c.fieldKey === fieldKey);
-  const v = claim?.value?.trim();
-  if (!v || claim?.status === 'unknown') return null;
-  return v.length > max ? `${v.slice(0, max)}…` : v;
+  if (!claim || claim.status === 'unknown') return null;
+  return toUserFacingClaimSnippet(claim.value, max);
 }
 
 function knownDigest(living: LivingUnderstandingState): string {
@@ -44,7 +44,8 @@ function knownDigest(living: LivingUnderstandingState): string {
     claimSnippet(living, 'alternativesCompetitors', 28),
     claimSnippet(living, 'differentiationVsAlternatives', 28),
   ].filter(Boolean);
-  return parts.slice(0, 3).join(' · ') || living.judgmentSummary.slice(0, 80);
+  if (parts.length > 0) return parts.slice(0, 3).join(' · ');
+  return toUserFacingClaimSnippet(living.judgmentSummary, 80) ?? '';
 }
 
 /** Gap-specific reframed stems grounded in what we already know. */
@@ -133,16 +134,17 @@ function contextualWhyNow(
 ): string {
   const digest = knownDigest(living);
   const base = resolveGapQuestionBinding(targetGap).whyNow;
+  const withDigest = (text: string) => (digest ? `${text} (현재 이해: ${digest})` : text);
   if (reason === 'nonsense') {
-    return `이전 답은 사업 사실에 반영되지 않았습니다. 현재 이해(${digest})를 기준으로 ${base}`;
+    return withDigest(`이전 답은 사업 사실에 반영되지 않았습니다. ${base}`);
   }
   if (reason === 'why_meta') {
-    return `왜 지금인지: ${base} (현재 이해: ${digest})`;
+    return withDigest(`왜 지금인지: ${base}`);
   }
   if (reason === 'mid_judgment') {
-    return `중간 정리 후 재판단했습니다. 남은 핵심 공백「${targetGap}」— ${base}`;
+    return withDigest(`중간 정리 후 재판단했습니다. 남은 핵심 공백을 이어서 확인합니다. ${base}`);
   }
-  return `${base} (현재 이해: ${digest})`;
+  return withDigest(base);
 }
 
 /**
@@ -163,7 +165,9 @@ export function reframeQuestion(input: {
   const prev = input.previousQuestionText?.trim() ?? '';
   if (prev && questionText.trim() === prev) {
     const digest = knownDigest(input.living);
-    questionText = `현재 이해(${digest})를 기준으로 다시 묻습니다 — ${questionText}`;
+    questionText = digest
+      ? `지금까지 확인한 내용을 기준으로 다시 묻습니다 — ${questionText}`
+      : `같은 주제를 다른 말로 다시 묻습니다 — ${questionText}`;
   }
 
   const whyNow = contextualWhyNow(input.targetGap, input.living, input.reason);
@@ -219,8 +223,7 @@ function gapForConflictFact(factKey: ConversationFactKey): string {
 }
 
 function clipConflictValue(value: string, max = 36): string {
-  const v = value.trim();
-  return v.length > max ? `${v.slice(0, max)}…` : v;
+  return toUserFacingClaimSnippet(value, max) ?? '앞서 말씀하신 내용';
 }
 
 /**
