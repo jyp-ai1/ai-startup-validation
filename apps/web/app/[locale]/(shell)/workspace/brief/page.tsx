@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { redirect } from 'next/navigation';
 
 import { formatRecentActivity } from '@/features/my-projects/lib/my-project-utils';
 import { getOwnedProject } from '@/features/projects/services/project-service';
+import { ProjectBriefUnavailable } from '@/features/workspace/components/project-brief-unavailable';
 import { ProjectBriefView } from '@/features/workspace/components/project-brief-view';
 import { buildProjectBrief } from '@/features/workspace/lib/build-project-brief';
-import { logJourneyRedirect } from '@/lib/auth/journey-redirect-audit';
 import type { ProjectBriefEntry } from '@/lib/auth/journey-routes';
 import { requireAuthUser } from '@/lib/auth/server-auth';
 import { parseWorkspacePersistedSnapshot } from '@/lib/project/workspace-persisted-state';
@@ -29,29 +28,17 @@ function parseEntry(from: string | undefined): ProjectBriefEntry | null {
   return from === 'list' || from === 'canvas' ? from : null;
 }
 
-function rejectToWorkspace(reason: string): never {
-  logJourneyRedirect({
-    layer: 'server',
-    from: '/workspace/brief',
-    to: '/workspace',
-    reason,
-  });
-  redirect('/workspace');
-}
-
 /** Read-only returning-founder summary of stored AI PM state — /workspace/brief?project= */
 export default async function ProjectBriefPage({ searchParams }: ProjectBriefPageProps) {
   const params = await searchParams;
   const user = await requireAuthUser('/workspace');
   const projectId = params.project?.trim();
 
-  if (!projectId) {
-    rejectToWorkspace('brief_missing_project');
-  }
-
-  const project = await getOwnedProject(user.id, projectId).catch(() => null);
+  // An in-page state instead of redirect(): an early server redirect under the [locale] loading boundary
+  // crashes the App Router on first load in production builds (React #310).
+  const project = projectId ? await getOwnedProject(user.id, projectId).catch(() => null) : null;
   if (!project) {
-    rejectToWorkspace('brief_project_not_owned');
+    return <ProjectBriefUnavailable />;
   }
 
   const snapshot = parseWorkspacePersistedSnapshot(project);

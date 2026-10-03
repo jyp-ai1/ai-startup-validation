@@ -10299,6 +10299,11 @@
       "title": "Your answers have not been organized into a judgment yet.",
       "body": "Continue in the workspace and the AI PM will organize what is confirmed."
     },
+    "unavailable": {
+      "title": "We couldn't find this project.",
+      "body": "The link is incorrect or you don't have access to this project.",
+      "cta": "Back to my projects"
+    },
     "cta": "Continue confirming",
     "entryLink": "Progress",
     "canvasLink": "What's confirmed so far"
