@@ -44,6 +44,7 @@ import {
 } from '../project-workspace-shell';
 import { V2DecisionMemoryDetail } from './v2-decision-memory-detail';
 import { sanitizeAiPmResponse, sanitizeDocumentLabel, sanitizeAiPmParagraphs } from '@/lib/ai/ai-response-sanitizer';
+import { buildProjectBriefUrl } from '@/lib/auth/journey-routes';
 import type { AppAuthUser } from '@/lib/auth/server-auth';
 import { hasWorkspaceJourneyState } from '@/lib/project/workspace-journey-state';
 import { stripWelcomeParamFromUrl } from '@/features/workspace/components/workspace-welcome-param-cleanup';
@@ -974,6 +975,9 @@ export function V2StrategyWorkspaceView({
       businessState={workspaceBusinessState}
       sharedUnderstanding={sharedUnderstanding}
       understandingSpine={understandingSpine}
+      briefHref={
+        !isDemoNoPersist && user && projectId ? buildProjectBriefUrl(projectId, 'canvas') : null
+      }
       onMainViewChange={setMainView}
       onSelectNode={setActiveNavNodeId}
       onSelectAiPm={() => setMainView('ai-pm')}

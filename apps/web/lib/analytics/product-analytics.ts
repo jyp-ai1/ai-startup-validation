@@ -72,6 +72,8 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   bmChanged: 'bm_changed',
   blindSpotDetected: 'blind_spot_detected',
   clarityQuestionRaised: 'clarity_question_raised',
+  projectBriefViewed: 'project_brief_viewed',
+  projectBriefCtaClicked: 'project_brief_cta_clicked',
 } as const;
 
 export type ProductAnalyticsEvent =
@@ -107,6 +109,11 @@ export type ProductAnalyticsParams = {
   checks_passed?: number;
   checks_total?: number;
   is_returning?: boolean;
+  entry?: string;
+  readiness?: string;
+  closed_count?: number;
+  open_count?: number;
+  conflict_count?: number;
 };
 
 export type ProductAnalyticsAdapter = {
