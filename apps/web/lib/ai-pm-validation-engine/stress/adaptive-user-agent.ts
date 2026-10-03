@@ -245,7 +245,14 @@ export function generateStressAnswer(input: {
     case 'sparse': {
       const value = slotValue(t, gap, mem);
       if (!value) return asNormal();
-      return { behavior: 'sparse', scheduledBehavior: scheduled, text: `${value}.`, claims: [] };
+      mem.answeredText[gap] = `${value}.`;
+      mem.value[gap] = value;
+      return {
+        behavior: 'sparse',
+        scheduledBehavior: scheduled,
+        text: `${value}.`,
+        claims: [{ gap, value, evidence: 'FACT', kind: 'answer' }],
+      };
     }
     case 'multi_fact': {
       const text = `${iGa(t.payer)} 결제하고 ${iGa(t.user)} ${t.usageFrequency} 사용하며, 지금은 ${euroRo(t.alternative)} 해결하고 있습니다.`;
