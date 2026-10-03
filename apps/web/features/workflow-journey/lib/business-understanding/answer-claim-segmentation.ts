@@ -22,6 +22,8 @@ export type AnswerClaim = {
   issueId: AiPmLoopIssueId | null;
   value: string;
   evidenceClass: Extract<EvidenceClass, 'FACT' | 'ASSUMPTION' | 'INFERENCE'>;
+  /** Repeat-usage evidence only — not a Stage A/B required gap. */
+  usageFrequency?: string;
 };
 
 const CLAUSE_SPLIT_RE = /[,.;!?]\s*|(?<=(?:하고|하며|이고|이며))\s+/u;
@@ -32,6 +34,7 @@ const BUYER_RE =
   /^(.+?)(?:께서|가|이)\s*(?:직접\s*)?(?:구매|결제|구입|비용을\s*(?:내|부담)|돈을\s*내|계약)/u;
 
 const USER_RE = /^(.+?)(?:께서|가|이)\s*(?:매일|주로|직접|실제로)?\s*(?:사용|이용|씁|씀|쓰)/u;
+const USAGE_FREQUENCY_RE = /(매일|매주|하루에도|항상|매일같이)/u;
 
 const WORKAROUND_RE =
   /(?:지금은|현재는|현재|요즘은)\s*(.+?)(?:으로|로)\s*(?:(.+?)(?:을|를)\s*)?(?:관리|처리|해결|대응|버티|때우)/u;
@@ -85,7 +88,18 @@ function claimsForClause(clause: string): AnswerClaim[] {
   if (user) {
     const value = cleanEntity(user[1]);
     if (value.length < 1) return [];
-    return [{ role: 'user', clause, key: null, issueId: null, value, evidenceClass }];
+    const usageFrequency = clause.match(USAGE_FREQUENCY_RE)?.[1];
+    return [
+      {
+        role: 'user',
+        clause,
+        key: null,
+        issueId: null,
+        value,
+        evidenceClass,
+        ...(usageFrequency ? { usageFrequency } : {}),
+      },
+    ];
   }
 
   return [];
