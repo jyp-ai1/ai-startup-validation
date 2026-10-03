@@ -161,7 +161,7 @@ function isHangulJamoMash(trimmed: string): boolean {
  */
 export function evaluateAnswerQuality(
   answer: string,
-  options?: { existingFact?: string | null },
+  options?: { existingFact?: string | null; factKey?: string | null },
 ): { quality: AnswerQuality; mergeable: boolean } {
   const trimmed = answer.trim().replace(/\s+/g, ' ');
   if (trimmed.length < 2) {
@@ -190,7 +190,7 @@ export function evaluateAnswerQuality(
   }
 
   const existing = options?.existingFact?.trim().replace(/\s+/g, ' ') ?? '';
-  if (existing.length >= 4 && answersContradict(existing, trimmed)) {
+  if (existing.length >= 4 && answersContradict(existing, trimmed, options?.factKey)) {
     return { quality: 'CONTRADICTORY', mergeable: false };
   }
 
@@ -210,10 +210,39 @@ export function extractDeclaredCustomerSegment(text: string): string | null {
   return m?.[1]?.trim() ?? null;
 }
 
+const DECLARED_PROBLEM_RE =
+  /(?:가장\s*큰\s*|핵심\s*)?문제(?:는|가)\s*([^,.]+?)(?:입니다|이고|이며|예요|이에요|\.|,|$)/u;
+
+/**
+ * Value the answer declares for one slot. A stored fact is only ever compared with the value
+ * declared for the same slot — never with another slot's clause in a multi-fact answer.
+ * Unknown key (legacy callers) keeps the customer-segment extraction.
+ */
+function declaredValueForSlot(text: string, factKey: string | null | undefined): string | null {
+  if (factKey === undefined || factKey === null || factKey === 'customer') {
+    return extractDeclaredCustomerSegment(text);
+  }
+  if (factKey === 'problem') return text.trim().match(DECLARED_PROBLEM_RE)?.[1]?.trim() ?? null;
+  return null;
+}
+
+function slotTokens(text: string): string[] {
+  return text.split(/[\s,/·]+/).filter((t) => t.length >= 2);
+}
+
+/** Inflected forms ("직장인들" / "직장인") count as the same token. */
+function tokensShareStem(a: string, b: string): boolean {
+  return a === b || a.startsWith(b) || b.startsWith(a);
+}
+
 /** Lightweight contradiction: both claims look like replacements of the same slot. */
-export function answersContradict(prior: string, next: string): boolean {
+export function answersContradict(
+  prior: string,
+  next: string,
+  factKey?: string | null,
+): boolean {
   const a = prior.trim().replace(/\s+/g, ' ').toLowerCase();
-  const declared = extractDeclaredCustomerSegment(next);
+  const declared = declaredValueForSlot(next, factKey);
   const b = (declared ?? next).trim().replace(/\s+/g, ' ').toLowerCase();
   if (!a || !b || a === b) return false;
   if (a.includes(b) || b.includes(a)) return false;
@@ -222,18 +251,15 @@ export function answersContradict(prior: string, next: string): boolean {
   if (payerArchetypesConflict(a, b)) return true;
 
   // Distinct short noun phrases that share almost no tokens → treat as conflict
-  const tokensA = new Set(a.split(/[\s,/·]+/).filter((t) => t.length >= 2));
-  const tokensB = new Set(b.split(/[\s,/·]+/).filter((t) => t.length >= 2));
-  if (tokensA.size === 0 || tokensB.size === 0) return false;
-  let overlap = 0;
-  for (const t of tokensA) {
-    if (tokensB.has(t)) overlap += 1;
-  }
-  const ratio = overlap / Math.min(tokensA.size, tokensB.size);
+  const tokensA = [...new Set(slotTokens(a))];
+  const tokensB = [...new Set(slotTokens(b))];
+  if (tokensA.length === 0 || tokensB.length === 0) return false;
+  const overlap = tokensA.filter((t) => tokensB.some((u) => tokensShareStem(t, u))).length;
+  const ratio = overlap / Math.min(tokensA.length, tokensB.length);
   if (declared) {
     return ratio < 0.35;
   }
-  return ratio < 0.2 && Math.abs(tokensA.size - tokensB.size) <= 3;
+  return ratio < 0.2 && Math.abs(tokensA.length - tokensB.length) <= 3;
 }
 
 /** B2B / OTA bulk settle vs tourist direct app pay — mutually exclusive payers. */

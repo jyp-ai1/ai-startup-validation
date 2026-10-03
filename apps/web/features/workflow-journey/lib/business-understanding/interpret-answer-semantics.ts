@@ -669,7 +669,7 @@ export function interpretAnswerSemantics(input: {
       input.existingFactsByKey?.customer ??
       (askedFact === 'customer' ? input.existingFact : null) ??
       null;
-    if (priorPersona && answersContradict(priorPersona, trimmed)) {
+    if (priorPersona && answersContradict(priorPersona, trimmed, 'customer')) {
       return emptyInterpretation({
         intent: 'business_fact',
         factKey: 'customer',
@@ -691,8 +691,10 @@ export function interpretAnswerSemantics(input: {
       userAnswer: trimmed,
       isCorrection,
     }) &&
-    (answersContradict(priorForConflict, trimmed) ||
-      (EXPLICIT_CONFLICT_CUE_RE.test(trimmed) && isCorrection && answersContradict(priorForConflict, trimmed)))
+    (answersContradict(priorForConflict, trimmed, factKey) ||
+      (EXPLICIT_CONFLICT_CUE_RE.test(trimmed) &&
+        isCorrection &&
+        answersContradict(priorForConflict, trimmed, factKey)))
   ) {
     return emptyInterpretation({
       intent: isCorrection || EXPLICIT_CONFLICT_CUE_RE.test(trimmed) ? 'correction' : 'business_fact',
@@ -726,7 +728,7 @@ export function interpretAnswerSemantics(input: {
     });
   }
 
-  const quality = evaluateAnswerQuality(trimmed, { existingFact: priorForConflict });
+  const quality = evaluateAnswerQuality(trimmed, { existingFact: priorForConflict, factKey });
   if (!quality.mergeable) {
     return emptyInterpretation({
       intent: 'business_fact',

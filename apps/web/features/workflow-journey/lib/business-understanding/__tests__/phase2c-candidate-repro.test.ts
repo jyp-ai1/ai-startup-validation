@@ -54,7 +54,7 @@ describe('Phase 2-C A — unrelated answer force-closes the asked gap', () => {
 });
 
 describe('Phase 2-C B — repeated answer flagged as a contradiction', () => {
-  it.fails('restating the same problem is not a problemJtbd contradiction', () => {
+  it('restating the same problem is not a problemJtbd contradiction', () => {
     const r = review(
       'marketChannel',
       'market_validation',
@@ -77,8 +77,11 @@ describe('Phase 2-C C — correction value truncated', () => {
 });
 
 describe('Phase 2-C D — internal text leaks into the next question', () => {
+  // D1 is on HOLD (harness investigation). The original pin (sb-marketplace normal t4) reached the
+  // placeholder only through a false repetition conflict, which fix B removed; the leak path itself
+  // (placeholder used as a claim value) is unchanged and still reproduces here.
   it.fails('does not quote the unreadable-document placeholder', () => {
-    const r = replayCalibrationTurn({ businessId: 'sb-marketplace', behavior: 'normal', turn: 4 })!;
+    const r = replayCalibrationTurn({ businessId: 'sb-marketplace', behavior: 'longitudinal_f11', turn: 6 })!;
     expect(r.actualNextQuestion).not.toMatch(/아직 문서에서 사업 내용을 충분히 이해하지 못했습니다/);
   });
 
