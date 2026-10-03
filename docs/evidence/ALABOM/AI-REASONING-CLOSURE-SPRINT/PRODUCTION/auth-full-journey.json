@@ -1,0 +1,9 @@
+{
+  "status": "BLOCKED",
+  "storageStatePath": "/workspace/apps/web/.qa-auth/storageState.json",
+  "storageStatePresent": false,
+  "steps": [],
+  "productionUrl": "https://ai-startup-validation-tau.vercel.app",
+  "finishedAt": "2026-10-01T23:37:48.434Z",
+  "reason": "Missing QA_AUTH_STORAGE_STATE_PATH or apps/web/.qa-auth/storageState.json — cannot run Production authenticated E2E in this environment."
+}
