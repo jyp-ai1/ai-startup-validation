@@ -13,6 +13,7 @@ import type {
   RecommendedAction,
 } from '@repo/types/domain/answer-review';
 
+import { segmentMultiClaimAnswer } from './answer-claim-segmentation';
 import type { ConversationFactKey } from './conversation-memory';
 import { inferTargetGapFromQuestionText } from './gap-question-map';
 import {
@@ -370,6 +371,40 @@ function enrichMultiFactSemantic(
   };
 }
 
+const CLAIM_CONFIDENCE: Record<'FACT' | 'ASSUMPTION' | 'INFERENCE', ExtractedFact['confidence']> = {
+  FACT: 'high',
+  INFERENCE: 'medium',
+  ASSUMPTION: 'low',
+};
+
+/**
+ * F13 — a multi-claim utterance is reviewed claim by claim. Claims replace the whole-answer
+ * fact hits, which were keyed by surface cues of the full sentence (e.g. "구매" → revenue).
+ * Returns null when the answer is not a multi-claim utterance.
+ */
+function applyClaimSegmentation(
+  semantic: SemanticInterpretation,
+  userAnswer: string,
+): SemanticInterpretation | null {
+  if (semantic.intent !== 'business_fact' || semantic.quality === 'CONTRADICTORY') return null;
+  const claims = segmentMultiClaimAnswer(userAnswer);
+  if (claims.length === 0) return null;
+
+  const facts = claims.map((c) => ({
+    key: c.key!,
+    issueId: c.issueId!,
+    claimValue: c.value,
+    claimEvidenceClass: c.evidenceClass,
+  }));
+  return {
+    ...semantic,
+    facts,
+    factKey: facts[0].key,
+    resolvedIssueId: facts[0].issueId,
+    mergeable: true,
+  };
+}
+
 function evidenceForExtractedFact(
   hit: { key: ConversationFactKey },
   semantic: SemanticInterpretation,
@@ -536,19 +571,19 @@ function buildExtractedFacts(
 
   const fallbackValue = semantic.value ?? userAnswer.trim();
   return hits.map((hit) => {
-    const { evidenceClass, confidence } = evidenceForExtractedFact(
-      hit,
-      semantic,
-      userAnswer,
-      askedGapId,
-    );
+    const { evidenceClass, confidence } = hit.claimEvidenceClass
+      ? {
+          evidenceClass: hit.claimEvidenceClass,
+          confidence: CLAIM_CONFIDENCE[hit.claimEvidenceClass],
+        }
+      : evidenceForExtractedFact(hit, semantic, userAnswer, askedGapId);
     let targetGap = gapForFactKey(hit.key) ?? resolvedAskedGap ?? '';
     if (isWtpHypothesisOnly(userAnswer) && hit.key === 'revenue') {
       targetGap = 'pricingHint';
     }
     return {
       key: hit.key,
-      value: extractFactValue(hit.key, userAnswer, semantic.intent) || fallbackValue,
+      value: hit.claimValue ?? (extractFactValue(hit.key, userAnswer, semantic.intent) || fallbackValue),
       evidenceClass,
       confidence,
       targetGap,
@@ -798,7 +833,9 @@ export function buildAnswerReview(input: BuildAnswerReviewInput): BuildAnswerRev
       rationale: '답변이 모호합니다 — 의미 명확화 필요.',
     };
   } else {
-    semantic = enrichMultiFactSemantic(semantic, trimmed, askedGapId);
+    semantic =
+      applyClaimSegmentation(semantic, trimmed) ??
+      enrichMultiFactSemantic(semantic, trimmed, askedGapId);
   }
 
   if (askedGapId === 'customerPersona' && !isOnSlotPersonaAnswer(trimmed)) {
