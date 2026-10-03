@@ -207,6 +207,28 @@ function gapForFactKey(key: ConversationFactKey): string | undefined {
   return FACT_KEY_TO_GAP[key];
 }
 
+const SLOT_OWNED_GAPS = new Set(Object.values(FACT_KEY_TO_GAP));
+
+/**
+ * Same Slot/Entity check — every fact in the answer belongs to another gap's slot and none to the
+ * asked gap. A conflict found in such an answer belongs to that other slot, not the asked gap.
+ * Unmapped fact keys keep the legacy path (alias asks such as solution/pricingHint).
+ */
+function isAnswerForOtherSlotsOnly(askedGapId: string, semantic: SemanticInterpretation): boolean {
+  if (!SLOT_OWNED_GAPS.has(askedGapId)) return false;
+  const keys =
+    semantic.facts.length > 0
+      ? semantic.facts.map((f) => f.key)
+      : semantic.factKey
+        ? [semantic.factKey]
+        : [];
+  if (keys.length === 0) return false;
+  return keys.every((key) => {
+    const gapId = gapForFactKey(key);
+    return gapId !== undefined && gapId !== askedGapId;
+  });
+}
+
 /** V3-06 — technology/solution prose on persona ask is off-topic (R5 IRRELEVANT). */
 const TECH_SOLUTION_CUE_RE =
   /(기술|AI|인공지능|알고리즘|딥러닝|머신러닝|플랫폼|SaaS|솔루션|API|백엔드|프론트|엔진|모델)/i;
@@ -462,7 +484,9 @@ function deriveGapCompleteness(
     return 'PARTIAL';
   }
   if (isAskedGapOpenDueToSlotConflict(askedGapId, semantic)) return 'OPEN';
-  if (semantic.quality === 'CONTRADICTORY') return 'CONTRADICTED';
+  if (semantic.quality === 'CONTRADICTORY') {
+    return isAnswerForOtherSlotsOnly(askedGapId, semantic) ? 'OPEN' : 'CONTRADICTED';
+  }
   if (isWeakGenericSegment(userAnswer)) return 'PARTIAL';
   if (isAmbiguousHedge(userAnswer) || semantic.quality === 'AMBIGUOUS') return 'OPEN';
   if (semantic.intent === 'nonsense' || semantic.quality === 'IRRELEVANT') return 'OPEN';
