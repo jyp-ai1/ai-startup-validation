@@ -3,15 +3,22 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
+import { buildCpoImprovementCalibrationPack } from '../cpo-improvement-calibration-pack';
+
 import {
   buildCpoCalibrationSubmission,
   formatSummaryMarkdown,
 } from '../cpo-calibration-submission';
 
 describe('CPO Calibration submission (Phase 2)', () => {
-  it('produces 50 enriched cases with adjudication and summary table', () => {
+  it('produces enriched cases with adjudication and summary table', () => {
     const sub = buildCpoCalibrationSubmission();
-    expect(sub.cases).toHaveLength(50);
+    // Clusters with no remaining auto failures sample fewer than 10 (see pack shortfalls).
+    const sampled = Object.values(buildCpoImprovementCalibrationPack().clusters).reduce(
+      (n, block) => n + block.cases.length,
+      0,
+    );
+    expect(sub.cases).toHaveLength(sampled);
     expect(sub.summaryTable).toHaveLength(5);
 
     for (const c of sub.cases) {

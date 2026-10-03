@@ -3,7 +3,7 @@ import type {
   ConversationStateContract,
   GapCompleteness,
 } from './contracts';
-import { appendTransition, correctionTransition } from './state-transition-rules';
+import { appendTransition } from './state-transition-rules';
 import { inferEvidenceStrengthFromText } from './evidence-strength';
 
 const DEFAULT_GAPS: Record<string, GapCompleteness> = {
@@ -21,6 +21,20 @@ export function createInitialGroundTruthState(): ConversationStateContract {
   };
 }
 
+const PERSONA_REVERSAL_RE = /이전에\s*말한\s*고객\s*정의는|초기\s*가설이었/;
+const REFINEMENT_RE = /정정합니다|도\s*포함/;
+
+/** Persona reversal utterance — an explicit reversal cue, or a late contradiction-behavior turn that is not a refinement. */
+function isPersonaReversal(input: {
+  behavior: AnswerBehaviorId;
+  turn: number;
+  userAnswer: string;
+}): boolean {
+  if (input.behavior !== 'contradiction') return false;
+  if (PERSONA_REVERSAL_RE.test(input.userAnswer)) return true;
+  return input.turn >= 4 && !REFINEMENT_RE.test(input.userAnswer);
+}
+
 /** State(t) + answer(t) → State(t+1) — deterministic, separate from AI PM. */
 export function applyGroundTruthAnswer(input: {
   state: ConversationStateContract;
@@ -34,38 +48,31 @@ export function applyGroundTruthAnswer(input: {
 
   const closeSlot = (slot: string, value: string) => {
     const from = gaps[slot] ?? 'OPEN';
-    const to: GapCompleteness =
-      input.behavior === 'contradiction' && input.turn >= 4 && slot === 'customerPersona'
-        ? 'CONFLICT'
-        : strength <= 2 && slot === 'wtp'
-          ? 'ASSUMPTION'
-          : 'CLOSED';
+    const to: GapCompleteness = strength <= 2 && slot === 'wtp' ? 'ASSUMPTION' : 'CLOSED';
     transitionLog = appendTransition(transitionLog, {
       slot,
       from,
       to,
-      trigger:
-        (input.behavior === 'contradiction' && input.turn >= 4) ||
-          (input.behavior === 'longitudinal_f11' && input.turn >= 5)
-          ? 'contradiction'
-          : 'answer',
+      trigger: 'answer',
     });
     gaps = { ...gaps, [slot]: to };
     facts = { ...facts, [slot]: value };
   };
 
-  if (
-    (input.behavior === 'contradiction' && input.turn >= 4) ||
-    (input.behavior === 'longitudinal_f11' && input.turn >= 5)
-  ) {
-    for (const tr of correctionTransition('customerPersona')) {
-      transitionLog = appendTransition(transitionLog, tr);
-    }
-    gaps = { ...gaps, customerPersona: 'CONFLICT' };
-    facts = {
-      ...facts,
-      customerPersona: input.userAnswer.slice(0, 120),
-    };
+  if (isPersonaReversal(input)) {
+    const value = input.userAnswer.slice(0, 120);
+    const from = gaps.customerPersona ?? 'OPEN';
+    // Restating the pending new definition is the user's explicit resolution of the A/B conflict.
+    const restated = facts.customerPersona === value && (from === 'CONFLICT' || from === 'CLOSED');
+    const to: GapCompleteness = restated ? 'CLOSED' : 'CONFLICT';
+    transitionLog = appendTransition(transitionLog, {
+      slot: 'customerPersona',
+      from,
+      to,
+      trigger: restated ? 'correction' : 'contradiction',
+    });
+    gaps = { ...gaps, customerPersona: to };
+    facts = { ...facts, customerPersona: value };
     return { gaps, facts, transitionLog };
   }
 
