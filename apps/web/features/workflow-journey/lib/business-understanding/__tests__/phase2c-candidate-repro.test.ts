@@ -35,14 +35,14 @@ function review(
 }
 
 describe('Phase 2-C A — unrelated answer force-closes the asked gap', () => {
-  it.fails('a customer correction does not close marketChannel', () => {
+  it('a customer correction does not close marketChannel', () => {
     const r = review('marketChannel', 'market_validation', CORRECTION, CHANNEL_Q, {
       customer: '직장인·프리랜서',
     });
     expect(r.gapVerdicts.marketChannel?.completeness).not.toBe('CLOSED');
   });
 
-  it.fails('team size and HQ location do not close marketChannel', () => {
+  it('team size and HQ location do not close marketChannel', () => {
     const r = review(
       'marketChannel',
       'market_validation',
@@ -77,16 +77,15 @@ describe('Phase 2-C C — correction value truncated', () => {
 });
 
 describe('Phase 2-C D — internal text leaks into the next question', () => {
-  // D1 is on HOLD (harness investigation). The original pin (sb-marketplace normal t4) reached the
-  // placeholder only through a false repetition conflict, which fix B removed; the leak path itself
-  // (placeholder used as a claim value) is unchanged and still reproduces here.
+  // D1 is on HOLD (harness investigation). Pins move when conversation path changes; the leak
+  // is the placeholder used as a living claim, not the specific turn that first reached it.
   it.fails('does not quote the unreadable-document placeholder', () => {
-    const r = replayCalibrationTurn({ businessId: 'sb-marketplace', behavior: 'longitudinal_f11', turn: 6 })!;
+    const r = replayCalibrationTurn({ businessId: 'sb-marketplace', behavior: 'multi_fact', turn: 1 })!;
     expect(r.actualNextQuestion).not.toMatch(/아직 문서에서 사업 내용을 충분히 이해하지 못했습니다/);
   });
 
   it.fails('does not quote raw document field labels (readable document)', () => {
-    const r = replayCalibrationTurn({ businessId: 'sb-b2c-saas', behavior: 'multi_fact', turn: 2 })!;
+    const r = replayCalibrationTurn({ businessId: 'sb-b2c-saas', behavior: 'uncertainty', turn: 2 })!;
     expect(r.actualNextQuestion).not.toMatch(/「[^」]*(타겟:|문제:|구매:|사용:)/);
   });
 });

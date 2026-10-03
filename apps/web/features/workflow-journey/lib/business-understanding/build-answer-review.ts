@@ -14,6 +14,7 @@ import type {
 } from '@repo/types/domain/answer-review';
 
 import { segmentMultiClaimAnswer } from './answer-claim-segmentation';
+import { isDeclaredOtherSlotAnswer, isNoSlotContentAnswer } from './asked-slot-evidence';
 import type { ConversationFactKey } from './conversation-memory';
 import { inferTargetGapFromQuestionText } from './gap-question-map';
 import {
@@ -522,6 +523,12 @@ function deriveGapCompleteness(
   if (semantic.quality === 'CONTRADICTORY') {
     return isAnswerForOtherSlotsOnly(askedGapId, semantic) ? 'OPEN' : 'CONTRADICTED';
   }
+  if (
+    isAnswerForOtherSlotsOnly(askedGapId, semantic) &&
+    isDeclaredOtherSlotAnswer(semantic, userAnswer)
+  ) {
+    return 'OPEN';
+  }
   if (isWeakGenericSegment(userAnswer)) return 'PARTIAL';
   if (isAmbiguousHedge(userAnswer) || semantic.quality === 'AMBIGUOUS') return 'OPEN';
   if (semantic.intent === 'nonsense' || semantic.quality === 'IRRELEVANT') return 'OPEN';
@@ -831,6 +838,15 @@ export function buildAnswerReview(input: BuildAnswerReviewInput): BuildAnswerRev
       mergeable: false,
       quality: 'AMBIGUOUS',
       rationale: '답변이 모호합니다 — 의미 명확화 필요.',
+    };
+  } else if (semantic.intent === 'business_fact' && isNoSlotContentAnswer(trimmed)) {
+    semantic = {
+      ...semantic,
+      factKey: null,
+      facts: [],
+      mergeable: false,
+      quality: 'PARTIAL',
+      rationale: `답변에 ${askedGapId}에 대한 근거가 아직 없습니다 — 기존 상태 유지, 같은 주제 재확인.`,
     };
   } else {
     semantic =

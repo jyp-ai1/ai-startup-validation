@@ -91,12 +91,15 @@ function claimsForClause(clause: string): AnswerClaim[] {
   return [];
 }
 
-export function segmentAnswerClaims(answer: string): AnswerClaim[] {
+export function splitAnswerClauses(answer: string): string[] {
   return answer
     .split(CLAUSE_SPLIT_RE)
     .map((c) => c.trim())
-    .filter((c) => c.length > 0)
-    .flatMap(claimsForClause);
+    .filter((c) => c.length > 0);
+}
+
+export function segmentAnswerClaims(answer: string): AnswerClaim[] {
+  return splitAnswerClauses(answer).flatMap(claimsForClause);
 }
 
 /** Slot-mapped claims when the answer is a multi-claim utterance; otherwise []. */

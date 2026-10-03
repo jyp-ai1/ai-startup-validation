@@ -223,7 +223,7 @@ const DECLARED_PROBLEM_RE =
  * declared for the same slot — never with another slot's clause in a multi-fact answer.
  * Unknown key (legacy callers) keeps the customer-segment extraction.
  */
-function declaredValueForSlot(text: string, factKey: string | null | undefined): string | null {
+export function declaredValueForSlot(text: string, factKey: string | null | undefined): string | null {
   if (factKey === undefined || factKey === null || factKey === 'customer') {
     return extractDeclaredCustomerSegment(text);
   }

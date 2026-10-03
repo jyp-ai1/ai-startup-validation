@@ -6,7 +6,12 @@
 
 import type { ConversationFactKey } from './conversation-memory';
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
-import { evaluateAnswerQuality, answersContradict, hasDiffRelevanceEvidence } from './understanding-contract';
+import {
+  answersContradict,
+  declaredValueForSlot,
+  evaluateAnswerQuality,
+  hasDiffRelevanceEvidence,
+} from './understanding-contract';
 import {
   isOnSlotCompetitorAnswer,
 } from './competitor-answer-cues';
@@ -462,7 +467,8 @@ export function interpretAnswerSemantics(input: {
       /(불편|문제|JTBD|해결하려|겪는|pain|pein|부족|어렵|못하고|힘들|인력|홍보(?:가|를)?\s*어렵|알릴\s*방법)/i.test(
         trimmed,
       );
-    const personaSegmentCue = hasPersonaSegmentCue(trimmed);
+    const personaSegmentCue =
+      hasPersonaSegmentCue(trimmed) || declaredValueForSlot(trimmed, 'customer') !== null;
     const payerOnlyCorrection =
       PAYER_CUE_RE.test(trimmed) &&
       (isCorrection || /결제자|지불자|payer/i.test(trimmed)) &&
