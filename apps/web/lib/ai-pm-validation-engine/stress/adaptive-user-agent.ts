@@ -3,7 +3,7 @@
  * with a seeded behavior mix. Each answer carries the claims it makes, which feed the stress GT.
  */
 
-import { eulReul, euroRo, gwaWa, iGa } from './josa';
+import { eulReul, eunNeun, euroRo, gwaWa, iGa } from './josa';
 import type { StressBusinessTruth } from './stress-business-universe';
 
 export const STRESS_BEHAVIORS = [
@@ -139,7 +139,11 @@ function normalAnswer(t: StressBusinessTruth, gap: string, value: string): Answe
     case 'differentiationVsAlternatives':
       return one(`${gwaWa(t.alternative)} 달리 ${iGa(value)} 차별점입니다.`);
     case 'validationTestability':
-      return one(`${euroRo(value)} 검증할 계획입니다.`);
+      // The AI PM binds this gap to "why the differentiation matters to the customer".
+      return {
+        text: `이 차별점 덕분에 ${eunNeun(t.customer)} ${eulReul(t.problem)} 덜 겪게 되어서 중요합니다.`,
+        claims: [{ gap, value: t.differentiation, evidence: 'FACT', kind: 'answer' }],
+      };
     case 'revenueModel':
       return one(`수익은 ${euroRo(value)} 냅니다.`);
     default:
@@ -161,10 +165,11 @@ function nonCoreAnswer(t: StressBusinessTruth, gap: string): AnswerParts {
         claims: [{ gap: 'pricingHint', value: '월 1~2만 원', evidence: 'ASSUMPTION', kind: 'answer' }],
       };
     case 'executionConstraints':
+      // The AI PM binds this gap to defensibility ("경쟁사가 따라오기 어려운 방어력").
       return {
-        text: `${t.teamSize}명 팀이라 개발 인력이 가장 큰 제약입니다.`,
+        text: `${eulReul(t.differentiation)} 운영하며 쌓은 노하우가 경쟁사가 따라오기 어려운 부분입니다.`,
         claims: [
-          { gap: 'executionConstraints', value: '개발 인력', evidence: 'FACT', kind: 'answer' },
+          { gap: 'executionConstraints', value: t.differentiation, evidence: 'FACT', kind: 'answer' },
         ],
       };
     case 'differentiationHypothesis':
