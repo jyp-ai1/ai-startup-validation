@@ -112,6 +112,11 @@ describe('buildProjectBrief', () => {
       '검증 가능성',
     ]);
     expect(brief.unconfirmed[0]).toEqual({ label: '구매자', statusLabel: '아직 확인되지 않음', value: null });
+    expect(brief.unconfirmed[1]).toEqual({
+      label: '핵심 문제',
+      statusLabel: '가설은 있으나 검증 필요',
+      value: null,
+    });
     expect(brief.blockerLabel).toBe('구매자');
     expect(brief.conflicts).toEqual([]);
   });

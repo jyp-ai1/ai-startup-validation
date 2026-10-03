@@ -95,7 +95,8 @@ function toItem(gapId: string, completeness: GapCompleteness, record?: GapKnowle
   return {
     label: founderFieldLabel(gapId),
     statusLabel: gapCeoSurfaceLabel(gapCeoSurfaceKind(completeness)),
-    value: completeness === 'OPEN' ? null : evidenceValue(record),
+    // Partial evidence is often a bare reply ("네, 맞습니다") — only settled or conflicting values carry meaning alone.
+    value: completeness === 'CLOSED' || completeness === 'CONTRADICTED' ? evidenceValue(record) : null,
   };
 }
 
