@@ -9,7 +9,7 @@ import { segmentAnswerClaims, segmentMultiClaimAnswer } from '../answer-claim-se
 import { buildAnswerReview } from '../build-answer-review';
 
 const MATRIX_MULTI_FACT = '대표가 구매하고 직원이 매일 사용하며 지금은 엑셀로 관리합니다.';
-const SANDBOX_MULTI_FACT = '경영진/팀 리더가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 업무 협업 비효율를 관리합니다.';
+const SANDBOX_MULTI_FACT = '경영진/팀 리더가 구매하고 팀이 매일 사용하며, 지금은 엑셀로 업무 협업 비효율을 관리합니다.';
 
 const SINGLE_FACT_BEHAVIORS: AnswerBehaviorId[] = [
   'normal',
@@ -30,6 +30,7 @@ describe('F13 — clause/claim segmentation', () => {
       ['user', null, '직원', 'FACT'],
       ['workaround', 'competitor', '엑셀', 'FACT'],
     ]);
+    expect(claims.find((c) => c.role === 'user')?.usageFrequency).toBe('매일');
   });
 
   it('derives the managed problem from a workaround clause as INFERENCE', () => {
