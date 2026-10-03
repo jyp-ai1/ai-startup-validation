@@ -139,6 +139,29 @@ function adjudicateP0Preservation(
 ): LongitudinalAdjudicationRow {
   const prevCp = prev.customerPersona;
   const ai = replay.actualGaps.customerPersona ?? replay.actualState.customerPersona ?? null;
+  const gt = replay.expectedState.customerPersona ?? replay.expectedGaps.customerPersona ?? null;
+
+  if (isConflictLike(prevCp) && gt === 'CLOSED') {
+    if (ai === 'CLOSED') {
+      return rowShell(replay, turn, 'P0', {
+        verdict: 'PASS',
+        calibrationClass: 'GROUND_TRUTH_DEFECT',
+        rationale:
+          'Explicit resolution — user restated the new definition after the A/B question; GT now transitions CONFLICT → CLOSED (CPO Phase 2-A reclassification).',
+        confirmedForFix: false,
+        notes: [`turn${prev.turn}=${prevCp}`, `turn${turn}=${ai}`, `gt=${gt}`],
+      });
+    }
+    if (isConflictLike(ai)) {
+      return rowShell(replay, turn, 'P0', {
+        verdict: 'FAIL',
+        calibrationClass: 'AI_PM_DEFECT',
+        rationale: 'User explicitly resolved the conflict but the AI PM kept it CONTRADICTED.',
+        confirmedForFix: true,
+        notes: [`turn${prev.turn}=${prevCp}`, `turn${turn}=${ai}`, `gt=${gt}`],
+      });
+    }
+  }
 
   if (isConflictLike(prevCp) && ai === 'CLOSED') {
     return rowShell(replay, turn, 'P0', {

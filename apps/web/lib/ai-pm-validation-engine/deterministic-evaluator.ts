@@ -34,7 +34,7 @@ export function evaluateTurnDeterministic(input: {
     understanding = 'FAIL';
   }
 
-  if (input.behavior === 'contradiction' && input.turn >= 4) {
+  if (input.behavior === 'contradiction' && input.groundTruthGap.customerPersona === 'CONFLICT') {
     const cp = input.aiGapSnapshot.customerPersona;
     const hasConflict = cp === 'CONFLICT' || cp === 'CONTRADICTED';
     if (!hasConflict) {
