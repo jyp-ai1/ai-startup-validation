@@ -1,0 +1,376 @@
+{
+  "baseUrl": "http://localhost:3100",
+  "ranAt": "2026-10-03T01:59:57.396Z",
+  "authMethod": "supabase_qa_magiclink",
+  "cases": {
+    "A": {
+      "desktop": {
+        "rendered": true,
+        "title": "ImpSprint1-smoke-1790941468400",
+        "reviewStatus": "understanding",
+        "judgment": "사업 이해 중사업 한 줄이(가) 아직 확인되지 않아 다음 판단으로 넘어가기 어렵습니다.",
+        "emptyKind": null,
+        "confirmed": 4,
+        "unconfirmed": 6,
+        "conflicts": 0,
+        "nextQuestion": "다음에 확인할 것문제를 해결하는 방식(제공 가치)은 무엇인가요?무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다.",
+        "ctaText": "이어서 확인하기",
+        "ctaHref": "/workspace?project=9fc88893-5230-4aa2-be57-e1d07c55a4e5",
+        "ctaCount": 1,
+        "horizontalOverflow": false,
+        "leak": null,
+        "url": "/workspace/brief",
+        "events": [
+          {
+            "name": "project_brief_viewed",
+            "project_id": "9fc88893-5230-4aa2-be57-e1d07c55a4e5",
+            "readiness": "NOT_READY",
+            "entry": "list"
+          }
+        ],
+        "consoleErrors": []
+      },
+      "ctaNavigation": {
+        "landedOn": "/workspace?project=9fc88893-5230-4aa2-be57-e1d07c55a4e5",
+        "ctaEvent": {
+          "name": "project_brief_cta_clicked",
+          "project_id": "9fc88893-5230-4aa2-be57-e1d07c55a4e5",
+          "readiness": "NOT_READY"
+        },
+        "canvasBriefLink": "/workspace/brief?project=9fc88893-5230-4aa2-be57-e1d07c55a4e5&from=canvas"
+      },
+      "mobile": {
+        "rendered": true,
+        "title": "ImpSprint1-smoke-1790941468400",
+        "reviewStatus": "understanding",
+        "judgment": "사업 이해 중사업 한 줄이(가) 아직 확인되지 않아 다음 판단으로 넘어가기 어렵습니다.",
+        "emptyKind": null,
+        "confirmed": 4,
+        "unconfirmed": 6,
+        "conflicts": 0,
+        "nextQuestion": "다음에 확인할 것문제를 해결하는 방식(제공 가치)은 무엇인가요?무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다.",
+        "ctaText": "이어서 확인하기",
+        "ctaHref": "/workspace?project=9fc88893-5230-4aa2-be57-e1d07c55a4e5",
+        "ctaCount": 1,
+        "horizontalOverflow": false,
+        "leak": null,
+        "url": "/workspace/brief",
+        "events": [
+          {
+            "name": "project_brief_viewed",
+            "project_id": "9fc88893-5230-4aa2-be57-e1d07c55a4e5",
+            "readiness": "NOT_READY",
+            "entry": "list"
+          }
+        ],
+        "consoleErrors": []
+      }
+    },
+    "B": {
+      "desktop": {
+        "rendered": true,
+        "title": "ImpSprint1-smoke-1790940525525",
+        "reviewStatus": "understanding",
+        "judgment": "사업 이해 중사업 한 줄이(가) 아직 확인되지 않아 다음 판단으로 넘어가기 어렵습니다.",
+        "emptyKind": null,
+        "confirmed": 2,
+        "unconfirmed": 6,
+        "conflicts": 0,
+        "nextQuestion": "다음에 확인할 것핵심 불편은(는) 「영세한 양조장들이 온라인 마케팅을 잘 못」으로 이해했습니다. 맞나요?고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
+        "ctaText": "이어서 확인하기",
+        "ctaHref": "/workspace?project=b742768b-49e3-49e2-b68c-366be47c0a10",
+        "ctaCount": 1,
+        "horizontalOverflow": false,
+        "leak": null,
+        "url": "/workspace/brief",
+        "events": [
+          {
+            "name": "project_brief_viewed",
+            "project_id": "b742768b-49e3-49e2-b68c-366be47c0a10",
+            "readiness": "NOT_READY",
+            "entry": "list"
+          }
+        ],
+        "consoleErrors": []
+      },
+      "ctaNavigation": {
+        "landedOn": "/workspace?project=b742768b-49e3-49e2-b68c-366be47c0a10",
+        "ctaEvent": {
+          "name": "project_brief_cta_clicked",
+          "project_id": "b742768b-49e3-49e2-b68c-366be47c0a10",
+          "readiness": "NOT_READY"
+        },
+        "canvasBriefLink": "/workspace/brief?project=b742768b-49e3-49e2-b68c-366be47c0a10&from=canvas"
+      },
+      "mobile": {
+        "rendered": true,
+        "title": "ImpSprint1-smoke-1790940525525",
+        "reviewStatus": "understanding",
+        "judgment": "사업 이해 중사업 한 줄이(가) 아직 확인되지 않아 다음 판단으로 넘어가기 어렵습니다.",
+        "emptyKind": null,
+        "confirmed": 2,
+        "unconfirmed": 6,
+        "conflicts": 0,
+        "nextQuestion": "다음에 확인할 것핵심 불편은(는) 「영세한 양조장들이 온라인 마케팅을 잘 못」으로 이해했습니다. 맞나요?고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
+        "ctaText": "이어서 확인하기",
+        "ctaHref": "/workspace?project=b742768b-49e3-49e2-b68c-366be47c0a10",
+        "ctaCount": 1,
+        "horizontalOverflow": false,
+        "leak": null,
+        "url": "/workspace/brief",
+        "events": [
+          {
+            "name": "project_brief_viewed",
+            "project_id": "b742768b-49e3-49e2-b68c-366be47c0a10",
+            "readiness": "NOT_READY",
+            "entry": "list"
+          }
+        ],
+        "consoleErrors": []
+      }
+    },
+    "C": {
+      "desktop": {
+        "rendered": true,
+        "title": "ImpSprint1-f11-smoke-1790943135173",
+        "reviewStatus": "understanding",
+        "judgment": "사업 이해 중사업 한 줄이(가) 아직 확인되지 않아 다음 판단으로 넘어가기 어렵습니다.",
+        "emptyKind": null,
+        "confirmed": 4,
+        "unconfirmed": 5,
+        "conflicts": 1,
+        "nextQuestion": "다음에 확인할 것문제를 해결하는 방식(제공 가치)은 무엇인가요?무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다.",
+        "ctaText": "이어서 확인하기",
+        "ctaHref": "/workspace?project=b58d8257-2b09-47fe-aed9-38fe10d64a98",
+        "ctaCount": 1,
+        "horizontalOverflow": false,
+        "leak": null,
+        "url": "/workspace/brief",
+        "events": [
+          {
+            "name": "project_brief_viewed",
+            "project_id": "b58d8257-2b09-47fe-aed9-38fe10d64a98",
+            "readiness": "NOT_READY",
+            "entry": "list"
+          }
+        ],
+        "consoleErrors": []
+      },
+      "ctaNavigation": {
+        "landedOn": "/workspace?project=b58d8257-2b09-47fe-aed9-38fe10d64a98",
+        "ctaEvent": {
+          "name": "project_brief_cta_clicked",
+          "project_id": "b58d8257-2b09-47fe-aed9-38fe10d64a98",
+          "readiness": "NOT_READY"
+        },
+        "canvasBriefLink": "/workspace/brief?project=b58d8257-2b09-47fe-aed9-38fe10d64a98&from=canvas"
+      },
+      "mobile": {
+        "rendered": true,
+        "title": "ImpSprint1-f11-smoke-1790943135173",
+        "reviewStatus": "understanding",
+        "judgment": "사업 이해 중사업 한 줄이(가) 아직 확인되지 않아 다음 판단으로 넘어가기 어렵습니다.",
+        "emptyKind": null,
+        "confirmed": 4,
+        "unconfirmed": 5,
+        "conflicts": 1,
+        "nextQuestion": "다음에 확인할 것문제를 해결하는 방식(제공 가치)은 무엇인가요?무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다.",
+        "ctaText": "이어서 확인하기",
+        "ctaHref": "/workspace?project=b58d8257-2b09-47fe-aed9-38fe10d64a98",
+        "ctaCount": 1,
+        "horizontalOverflow": false,
+        "leak": null,
+        "url": "/workspace/brief",
+        "events": [
+          {
+            "name": "project_brief_viewed",
+            "project_id": "b58d8257-2b09-47fe-aed9-38fe10d64a98",
+            "readiness": "NOT_READY",
+            "entry": "list"
+          }
+        ],
+        "consoleErrors": []
+      }
+    },
+    "D": {
+      "desktop": {
+        "rendered": true,
+        "title": "[QA] Project Brief READY fixture",
+        "reviewStatus": "ready",
+        "judgment": "검토 준비 완료검토에 필요한 핵심 내용이 확인되었습니다.",
+        "emptyKind": null,
+        "confirmed": 8,
+        "unconfirmed": 0,
+        "conflicts": 0,
+        "nextQuestion": null,
+        "ctaText": "이어서 확인하기",
+        "ctaHref": "/workspace?project=cd568f79-4d18-4eab-a099-66dc409d93b3",
+        "ctaCount": 1,
+        "horizontalOverflow": false,
+        "leak": null,
+        "url": "/workspace/brief",
+        "events": [
+          {
+            "name": "project_brief_viewed",
+            "project_id": "cd568f79-4d18-4eab-a099-66dc409d93b3",
+            "readiness": "READY",
+            "entry": "list"
+          }
+        ],
+        "consoleErrors": []
+      },
+      "ctaNavigation": {
+        "landedOn": "/workspace?project=cd568f79-4d18-4eab-a099-66dc409d93b3",
+        "ctaEvent": {
+          "name": "project_brief_cta_clicked",
+          "project_id": "cd568f79-4d18-4eab-a099-66dc409d93b3",
+          "readiness": "READY"
+        },
+        "canvasBriefLink": "/workspace/brief?project=cd568f79-4d18-4eab-a099-66dc409d93b3&from=canvas"
+      },
+      "mobile": {
+        "rendered": true,
+        "title": "[QA] Project Brief READY fixture",
+        "reviewStatus": "ready",
+        "judgment": "검토 준비 완료검토에 필요한 핵심 내용이 확인되었습니다.",
+        "emptyKind": null,
+        "confirmed": 8,
+        "unconfirmed": 0,
+        "conflicts": 0,
+        "nextQuestion": null,
+        "ctaText": "이어서 확인하기",
+        "ctaHref": "/workspace?project=cd568f79-4d18-4eab-a099-66dc409d93b3",
+        "ctaCount": 1,
+        "horizontalOverflow": false,
+        "leak": null,
+        "url": "/workspace/brief",
+        "events": [
+          {
+            "name": "project_brief_viewed",
+            "project_id": "cd568f79-4d18-4eab-a099-66dc409d93b3",
+            "readiness": "READY",
+            "entry": "list"
+          }
+        ],
+        "consoleErrors": []
+      }
+    },
+    "E": {
+      "desktop": {
+        "rendered": true,
+        "title": "ImpSprint1-smoke-1790940453768",
+        "reviewStatus": null,
+        "judgment": null,
+        "emptyKind": "empty",
+        "confirmed": 0,
+        "unconfirmed": 0,
+        "conflicts": 0,
+        "nextQuestion": null,
+        "ctaText": "이어서 확인하기",
+        "ctaHref": "/workspace?project=ca6b148b-5123-42eb-9c51-e62ae3412eac",
+        "ctaCount": 1,
+        "horizontalOverflow": false,
+        "leak": null,
+        "url": "/workspace/brief",
+        "events": [
+          {
+            "name": "project_brief_viewed",
+            "project_id": "ca6b148b-5123-42eb-9c51-e62ae3412eac",
+            "readiness": "empty",
+            "entry": "list"
+          }
+        ],
+        "consoleErrors": []
+      },
+      "ctaNavigation": {
+        "landedOn": "/workspace?project=ca6b148b-5123-42eb-9c51-e62ae3412eac",
+        "ctaEvent": {
+          "name": "project_brief_cta_clicked",
+          "project_id": "ca6b148b-5123-42eb-9c51-e62ae3412eac",
+          "readiness": "empty"
+        },
+        "canvasBriefLink": "/workspace/brief?project=ca6b148b-5123-42eb-9c51-e62ae3412eac&from=canvas"
+      },
+      "mobile": {
+        "rendered": true,
+        "title": "ImpSprint1-smoke-1790940453768",
+        "reviewStatus": null,
+        "judgment": null,
+        "emptyKind": "empty",
+        "confirmed": 0,
+        "unconfirmed": 0,
+        "conflicts": 0,
+        "nextQuestion": null,
+        "ctaText": "이어서 확인하기",
+        "ctaHref": "/workspace?project=ca6b148b-5123-42eb-9c51-e62ae3412eac",
+        "ctaCount": 1,
+        "horizontalOverflow": false,
+        "leak": null,
+        "url": "/workspace/brief",
+        "events": [
+          {
+            "name": "project_brief_viewed",
+            "project_id": "ca6b148b-5123-42eb-9c51-e62ae3412eac",
+            "readiness": "empty",
+            "entry": "list"
+          }
+        ],
+        "consoleErrors": []
+      }
+    },
+    "F": [
+      {
+        "label": "missing project param",
+        "finalPath": "/workspace/brief",
+        "finalSearch": "",
+        "status": 200,
+        "briefRendered": false,
+        "unavailableRendered": true,
+        "events": [],
+        "consoleErrors": []
+      },
+      {
+        "label": "malformed id",
+        "finalPath": "/workspace/brief",
+        "finalSearch": "?project=not-a-uuid",
+        "status": 200,
+        "briefRendered": false,
+        "unavailableRendered": true,
+        "events": [],
+        "consoleErrors": []
+      },
+      {
+        "label": "unknown uuid",
+        "finalPath": "/workspace/brief",
+        "finalSearch": "?project=00000000-0000-4000-8000-000000000000",
+        "status": 200,
+        "briefRendered": false,
+        "unavailableRendered": true,
+        "events": [],
+        "consoleErrors": []
+      },
+      {
+        "label": "project owned by another user",
+        "finalPath": "/workspace/brief",
+        "finalSearch": "?project=2d73fab3-3663-44ce-a77d-1558b1da411f",
+        "status": 200,
+        "briefRendered": false,
+        "unavailableRendered": true,
+        "events": [],
+        "consoleErrors": []
+      }
+    ]
+  },
+  "unauthenticated": {
+    "finalPath": "/auth/login",
+    "briefRendered": false
+  },
+  "listEntry": {
+    "linkForAnsweredProject": "/workspace/brief?project=9fc88893-5230-4aa2-be57-e1d07c55a4e5&from=list",
+    "linkForEmptyProject": false
+  },
+  "fixture": {
+    "inserted": "cd568f79-4d18-4eab-a099-66dc409d93b3",
+    "deleted": true
+  }
+}

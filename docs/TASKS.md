@@ -2657,6 +2657,20 @@ P0s from 8-E (Answer Target Binding · Confirm/Open · Edit binding · Research 
 
 ---
 
+## ALABOM New Page — Project Brief (사업 판단 현황) 🟡 REVIEW (Draft PR #73)
+
+**Branch:** `cursor/project-brief-e648` · **Merge gate:** CPO acceptance (CTO does not merge or deploy)  
+**Route:** `/workspace/brief?project=<id>` — read-only view of stored `aiPmLoop` (no Sample, no state writes)  
+**Entry:** project card "현황" · canvas header "지금까지 확인한 내용" · CTA "이어서 확인하기" → `/workspace?project=<id>`  
+**Events:** `project_brief_viewed` · `project_brief_cta_clicked` (`project_id` required)
+
+| Doc | Status |
+|-----|--------|
+| [`NEW-PAGE-DISCOVERY.md`](./evidence/ALABOM/NEW-PAGE-DISCOVERY.md) | ✅ |
+| [`PROJECT-BRIEF/PROJECT-BRIEF-QA.md`](./evidence/ALABOM/PROJECT-BRIEF/PROJECT-BRIEF-QA.md) | ✅ A–F PASS (local prod build; Preview behind Vercel SSO) |
+
+---
+
 ## Task Lifecycle
 
 ```
