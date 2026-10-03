@@ -17,10 +17,9 @@ describe('Improvement Sprint 1 — CPO calibration pack', () => {
     let totalCases = 0;
     for (const code of CALIBRATION_CLUSTER_CODES) {
       const block = pack.clusters[code];
-      expect(block.cases.length).toBe(Math.min(10, block.available));
-      if (block.available < 10) {
-        expect(pack.shortfalls.some((s) => s.startsWith(`${code}:`))).toBe(true);
-      }
+      // diversifyPick pads to 10 by repeating rows once any row matches; empty clusters are shortfalls.
+      expect(block.cases.length).toBe(block.available > 0 ? 10 : 0);
+      expect(pack.shortfalls.some((s) => s.startsWith(`${code}:`))).toBe(block.available === 0);
       totalCases += block.cases.length;
       for (const c of block.cases) {
         expect(c.cpoCalibratedVerdict).toBe('PENDING');
