@@ -1,0 +1,2326 @@
+{
+  "generatedAt": "2026-10-02T23:57:33.663Z",
+  "sprint": "AI_PM_ACCURACY_SPRINT_2",
+  "phase": "LONGITUDINAL_ADJUDICATION",
+  "rowCount": 70,
+  "summary": {
+    "byClass": {
+      "GROUND_TRUTH_DEFECT": 10,
+      "EVALUATOR_DEFECT": 30,
+      "AI_PM_DEFECT": 30
+    },
+    "aiPmConfirmedCount": 30,
+    "p0Fail": 20,
+    "p1Fail": 10
+  },
+  "confirmedAiPmDefects": [
+    {
+      "id": "sb-b2c-saas-longitudinal_f11-t6",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-b2c-saas-longitudinal_f11-t7",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-b2c-saas-longitudinal_f04_pricing-t6",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validated revenue FACT downgraded or lost on weak follow-up turn.",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "was FACT → none"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-b2b-saas-longitudinal_f11-t6",
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-b2b-saas-longitudinal_f11-t7",
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-b2b-saas-longitudinal_f04_pricing-t6",
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validated revenue FACT downgraded or lost on weak follow-up turn.",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "was FACT → none"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-marketplace-longitudinal_f11-t6",
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-marketplace-longitudinal_f11-t7",
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-marketplace-longitudinal_f04_pricing-t5",
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "payer"
+      }
+    },
+    {
+      "id": "sb-commerce-longitudinal_f11-t6",
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-commerce-longitudinal_f11-t7",
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-commerce-longitudinal_f04_pricing-t5",
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-subscription-longitudinal_f11-t6",
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-subscription-longitudinal_f11-t7",
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-subscription-longitudinal_f04_pricing-t5",
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "payer"
+      }
+    },
+    {
+      "id": "sb-local-longitudinal_f11-t6",
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-local-longitudinal_f11-t7",
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-local-longitudinal_f04_pricing-t5",
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "payer"
+      }
+    },
+    {
+      "id": "sb-platform-longitudinal_f11-t6",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-platform-longitudinal_f11-t7",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-platform-longitudinal_f04_pricing-t5",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "payer"
+      }
+    },
+    {
+      "id": "sb-hardware-longitudinal_f11-t6",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-hardware-longitudinal_f11-t7",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-hardware-longitudinal_f04_pricing-t6",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validated revenue FACT downgraded or lost on weak follow-up turn.",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "was FACT → none"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-professional-longitudinal_f11-t6",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-professional-longitudinal_f11-t7",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-professional-longitudinal_f04_pricing-t5",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "payer"
+      }
+    },
+    {
+      "id": "sb-ai-service-longitudinal_f11-t6",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-ai-service-longitudinal_f11-t7",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-ai-service-longitudinal_f04_pricing-t6",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validated revenue FACT downgraded or lost on weak follow-up turn.",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "was FACT → none"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    }
+  ],
+  "rows": [
+    {
+      "id": "sb-b2c-saas-longitudinal_f11-t4",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 4,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoRationale": "Turn 4 is correction/refinement, not persona reversal — GT transition should not require CONFLICT yet.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "GT↔harness: correction turn vs CONFLICT expectation"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-b2c-saas-longitudinal_f11-t5",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Turn 5+ contradiction preserved (CONTRADICTED/CONFLICT) and reflected in gap or next question.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "customerPersona=CONTRADICTED",
+        "contradictions=1"
+      ],
+      "metrics": {
+        "customerPersona": "CONTRADICTED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "customerPersona"
+      }
+    },
+    {
+      "id": "sb-b2c-saas-longitudinal_f11-t6",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-b2c-saas-longitudinal_f11-t7",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-b2c-saas-longitudinal_f04_pricing-t3",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 3,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Assumption hedge respected in evidence class.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "evidenceClass=ASSUMPTION"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "ASSUMPTION",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "marketChannel"
+      }
+    },
+    {
+      "id": "sb-b2c-saas-longitudinal_f04_pricing-t5",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Validation cues produced revenue FACT.",
+      "confirmedForFix": false,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "FACT",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-b2c-saas-longitudinal_f04_pricing-t6",
+      "businessId": "sb-b2c-saas",
+      "archetype": "B2C SaaS",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validated revenue FACT downgraded or lost on weak follow-up turn.",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "was FACT → none"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-b2b-saas-longitudinal_f11-t4",
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 4,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoRationale": "Turn 4 is correction/refinement, not persona reversal — GT transition should not require CONFLICT yet.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "GT↔harness: correction turn vs CONFLICT expectation"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-b2b-saas-longitudinal_f11-t5",
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Turn 5+ contradiction preserved (CONTRADICTED/CONFLICT) and reflected in gap or next question.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "customerPersona=CONTRADICTED",
+        "contradictions=1"
+      ],
+      "metrics": {
+        "customerPersona": "CONTRADICTED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "customerPersona"
+      }
+    },
+    {
+      "id": "sb-b2b-saas-longitudinal_f11-t6",
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-b2b-saas-longitudinal_f11-t7",
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-b2b-saas-longitudinal_f04_pricing-t3",
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 3,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Assumption hedge respected in evidence class.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "evidenceClass=ASSUMPTION"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "ASSUMPTION",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "marketChannel"
+      }
+    },
+    {
+      "id": "sb-b2b-saas-longitudinal_f04_pricing-t5",
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Validation cues produced revenue FACT.",
+      "confirmedForFix": false,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "FACT",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-b2b-saas-longitudinal_f04_pricing-t6",
+      "businessId": "sb-b2b-saas",
+      "archetype": "B2B SaaS",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validated revenue FACT downgraded or lost on weak follow-up turn.",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "was FACT → none"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-marketplace-longitudinal_f11-t4",
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 4,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoRationale": "Turn 4 is correction/refinement, not persona reversal — GT transition should not require CONFLICT yet.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "GT↔harness: correction turn vs CONFLICT expectation"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-marketplace-longitudinal_f11-t5",
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Turn 5+ contradiction preserved (CONTRADICTED/CONFLICT) and reflected in gap or next question.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "customerPersona=CONTRADICTED",
+        "contradictions=1"
+      ],
+      "metrics": {
+        "customerPersona": "CONTRADICTED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "customerPersona"
+      }
+    },
+    {
+      "id": "sb-marketplace-longitudinal_f11-t6",
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-marketplace-longitudinal_f11-t7",
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-marketplace-longitudinal_f04_pricing-t3",
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 3,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Assumption hedge respected in evidence class.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "evidenceClass=ASSUMPTION"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "ASSUMPTION",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-marketplace-longitudinal_f04_pricing-t5",
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "payer"
+      }
+    },
+    {
+      "id": "sb-marketplace-longitudinal_f04_pricing-t6",
+      "businessId": "sb-marketplace",
+      "archetype": "Marketplace",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Insufficient prior FACT at turn 5 to judge longitudinal pricing drift.",
+      "confirmedForFix": false,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-commerce-longitudinal_f11-t4",
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 4,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoRationale": "Turn 4 is correction/refinement, not persona reversal — GT transition should not require CONFLICT yet.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "GT↔harness: correction turn vs CONFLICT expectation"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-commerce-longitudinal_f11-t5",
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Turn 5+ contradiction preserved (CONTRADICTED/CONFLICT) and reflected in gap or next question.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "customerPersona=CONTRADICTED",
+        "contradictions=1"
+      ],
+      "metrics": {
+        "customerPersona": "CONTRADICTED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "customerPersona"
+      }
+    },
+    {
+      "id": "sb-commerce-longitudinal_f11-t6",
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-commerce-longitudinal_f11-t7",
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-commerce-longitudinal_f04_pricing-t3",
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 3,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Assumption hedge respected in evidence class.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "evidenceClass=ASSUMPTION"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "ASSUMPTION",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "marketChannel"
+      }
+    },
+    {
+      "id": "sb-commerce-longitudinal_f04_pricing-t5",
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-commerce-longitudinal_f04_pricing-t6",
+      "businessId": "sb-commerce",
+      "archetype": "Commerce",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Insufficient prior FACT at turn 5 to judge longitudinal pricing drift.",
+      "confirmedForFix": false,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-subscription-longitudinal_f11-t4",
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 4,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoRationale": "Turn 4 is correction/refinement, not persona reversal — GT transition should not require CONFLICT yet.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "GT↔harness: correction turn vs CONFLICT expectation"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-subscription-longitudinal_f11-t5",
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Turn 5+ contradiction preserved (CONTRADICTED/CONFLICT) and reflected in gap or next question.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "customerPersona=CONTRADICTED",
+        "contradictions=1"
+      ],
+      "metrics": {
+        "customerPersona": "CONTRADICTED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "customerPersona"
+      }
+    },
+    {
+      "id": "sb-subscription-longitudinal_f11-t6",
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-subscription-longitudinal_f11-t7",
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-subscription-longitudinal_f04_pricing-t3",
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 3,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Assumption hedge respected in evidence class.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "evidenceClass=ASSUMPTION"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "ASSUMPTION",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "marketChannel"
+      }
+    },
+    {
+      "id": "sb-subscription-longitudinal_f04_pricing-t5",
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "payer"
+      }
+    },
+    {
+      "id": "sb-subscription-longitudinal_f04_pricing-t6",
+      "businessId": "sb-subscription",
+      "archetype": "Subscription",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Insufficient prior FACT at turn 5 to judge longitudinal pricing drift.",
+      "confirmedForFix": false,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-local-longitudinal_f11-t4",
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 4,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoRationale": "Turn 4 is correction/refinement, not persona reversal — GT transition should not require CONFLICT yet.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "GT↔harness: correction turn vs CONFLICT expectation"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-local-longitudinal_f11-t5",
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Turn 5+ contradiction preserved (CONTRADICTED/CONFLICT) and reflected in gap or next question.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "customerPersona=CONTRADICTED",
+        "contradictions=1"
+      ],
+      "metrics": {
+        "customerPersona": "CONTRADICTED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "customerPersona"
+      }
+    },
+    {
+      "id": "sb-local-longitudinal_f11-t6",
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-local-longitudinal_f11-t7",
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-local-longitudinal_f04_pricing-t3",
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 3,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Assumption hedge respected in evidence class.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "evidenceClass=ASSUMPTION"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "ASSUMPTION",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "marketChannel"
+      }
+    },
+    {
+      "id": "sb-local-longitudinal_f04_pricing-t5",
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "payer"
+      }
+    },
+    {
+      "id": "sb-local-longitudinal_f04_pricing-t6",
+      "businessId": "sb-local",
+      "archetype": "Local Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Insufficient prior FACT at turn 5 to judge longitudinal pricing drift.",
+      "confirmedForFix": false,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-platform-longitudinal_f11-t4",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 4,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoRationale": "Turn 4 is correction/refinement, not persona reversal — GT transition should not require CONFLICT yet.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "GT↔harness: correction turn vs CONFLICT expectation"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-platform-longitudinal_f11-t5",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Turn 5+ contradiction preserved (CONTRADICTED/CONFLICT) and reflected in gap or next question.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "customerPersona=CONTRADICTED",
+        "contradictions=1"
+      ],
+      "metrics": {
+        "customerPersona": "CONTRADICTED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "customerPersona"
+      }
+    },
+    {
+      "id": "sb-platform-longitudinal_f11-t6",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-platform-longitudinal_f11-t7",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-platform-longitudinal_f04_pricing-t3",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 3,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Assumption hedge respected in evidence class.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "evidenceClass=ASSUMPTION"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "ASSUMPTION",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "marketChannel"
+      }
+    },
+    {
+      "id": "sb-platform-longitudinal_f04_pricing-t5",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "payer"
+      }
+    },
+    {
+      "id": "sb-platform-longitudinal_f04_pricing-t6",
+      "businessId": "sb-platform",
+      "archetype": "Platform",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Insufficient prior FACT at turn 5 to judge longitudinal pricing drift.",
+      "confirmedForFix": false,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-hardware-longitudinal_f11-t4",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 4,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoRationale": "Turn 4 is correction/refinement, not persona reversal — GT transition should not require CONFLICT yet.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "GT↔harness: correction turn vs CONFLICT expectation"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-hardware-longitudinal_f11-t5",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Turn 5+ contradiction preserved (CONTRADICTED/CONFLICT) and reflected in gap or next question.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "customerPersona=CONTRADICTED",
+        "contradictions=1"
+      ],
+      "metrics": {
+        "customerPersona": "CONTRADICTED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "customerPersona"
+      }
+    },
+    {
+      "id": "sb-hardware-longitudinal_f11-t6",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-hardware-longitudinal_f11-t7",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-hardware-longitudinal_f04_pricing-t3",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 3,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Assumption hedge respected in evidence class.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "evidenceClass=ASSUMPTION"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "ASSUMPTION",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "marketChannel"
+      }
+    },
+    {
+      "id": "sb-hardware-longitudinal_f04_pricing-t5",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Validation cues produced revenue FACT.",
+      "confirmedForFix": false,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "FACT",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-hardware-longitudinal_f04_pricing-t6",
+      "businessId": "sb-hardware",
+      "archetype": "Hardware",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validated revenue FACT downgraded or lost on weak follow-up turn.",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "was FACT → none"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-professional-longitudinal_f11-t4",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 4,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoRationale": "Turn 4 is correction/refinement, not persona reversal — GT transition should not require CONFLICT yet.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "GT↔harness: correction turn vs CONFLICT expectation"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-professional-longitudinal_f11-t5",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Turn 5+ contradiction preserved (CONTRADICTED/CONFLICT) and reflected in gap or next question.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "customerPersona=CONTRADICTED",
+        "contradictions=1"
+      ],
+      "metrics": {
+        "customerPersona": "CONTRADICTED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "customerPersona"
+      }
+    },
+    {
+      "id": "sb-professional-longitudinal_f11-t6",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-professional-longitudinal_f11-t7",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-professional-longitudinal_f04_pricing-t3",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 3,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Assumption hedge respected in evidence class.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "evidenceClass=ASSUMPTION"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "ASSUMPTION",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "marketChannel"
+      }
+    },
+    {
+      "id": "sb-professional-longitudinal_f04_pricing-t5",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validation utterance did not yield revenue FACT (got none).",
+      "confirmedForFix": true,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "payer"
+      }
+    },
+    {
+      "id": "sb-professional-longitudinal_f04_pricing-t6",
+      "businessId": "sb-professional",
+      "archetype": "Professional Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Insufficient prior FACT at turn 5 to judge longitudinal pricing drift.",
+      "confirmedForFix": false,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-ai-service-longitudinal_f11-t4",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 4,
+      "cpoCalibratedVerdict": "PARTIAL",
+      "calibrationClass": "GROUND_TRUTH_DEFECT",
+      "cpoRationale": "Turn 4 is correction/refinement, not persona reversal — GT transition should not require CONFLICT yet.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "GT↔harness: correction turn vs CONFLICT expectation"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-ai-service-longitudinal_f11-t5",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Turn 5+ contradiction preserved (CONTRADICTED/CONFLICT) and reflected in gap or next question.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "customerPersona=CONTRADICTED",
+        "contradictions=1"
+      ],
+      "metrics": {
+        "customerPersona": "CONTRADICTED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 1,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "customerPersona"
+      }
+    },
+    {
+      "id": "sb-ai-service-longitudinal_f11-t6",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 6 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn6=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "alternativesCompetitors"
+      }
+    },
+    {
+      "id": "sb-ai-service-longitudinal_f11-t7",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f11",
+      "priority": "P0",
+      "turn": 7,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Contradiction state lost between turn 5 and 7 without resolution (CLOSED).",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "turn5=CONTRADICTED",
+        "turn7=CLOSED"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "CONFLICT",
+        "nextTargetGap": "differentiationVsAlternatives"
+      }
+    },
+    {
+      "id": "sb-ai-service-longitudinal_f04_pricing-t3",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 3,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Assumption hedge respected in evidence class.",
+      "confirmedForFix": false,
+      "preservationNotes": [
+        "evidenceClass=ASSUMPTION"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "ASSUMPTION",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "marketChannel"
+      }
+    },
+    {
+      "id": "sb-ai-service-longitudinal_f04_pricing-t5",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 5,
+      "cpoCalibratedVerdict": "PASS",
+      "calibrationClass": "EVALUATOR_DEFECT",
+      "cpoRationale": "Validation cues produced revenue FACT.",
+      "confirmedForFix": false,
+      "preservationNotes": [],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": "FACT",
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    },
+    {
+      "id": "sb-ai-service-longitudinal_f04_pricing-t6",
+      "businessId": "sb-ai-service",
+      "archetype": "AI Service",
+      "behavior": "longitudinal_f04_pricing",
+      "priority": "P1",
+      "turn": 6,
+      "cpoCalibratedVerdict": "FAIL",
+      "calibrationClass": "AI_PM_DEFECT",
+      "cpoRationale": "Validated revenue FACT downgraded or lost on weak follow-up turn.",
+      "confirmedForFix": true,
+      "preservationNotes": [
+        "was FACT → none"
+      ],
+      "metrics": {
+        "customerPersona": "CLOSED",
+        "pricingHint": null,
+        "revenueEvidenceClass": null,
+        "contradictionCount": 0,
+        "gtCustomerExpectation": "OPEN",
+        "nextTargetGap": "validationTestability"
+      }
+    }
+  ]
+}
