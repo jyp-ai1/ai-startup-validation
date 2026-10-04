@@ -4,6 +4,22 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## P0 — Production 36b241e J3 Question-Loop RCA ✅
+
+**Branch:** `cursor/production-j3-question-loop-rca-e648` · Production SHA `36b241e` 보존  
+**Report:** [`docs/evidence/ALABOM/PRODUCTION_36B241E_J3_QUESTION_LOOP_RCA.md`](./evidence/ALABOM/PRODUCTION_36B241E_J3_QUESTION_LOOP_RCA.md)
+
+| 항목 | 판정 |
+|---|---|
+| Canonical pipeline 실행 | ✅ Answer→Review→Gap→Readiness→`decideNextQuestionFromReview` (payer) |
+| 단절 지점 | `applyNoGapTermination` (`no_askable_gap` false positive + Fix10 hard-null) |
+| A vs B | **B** — UI/hydration 아님 |
+| Stage 전환 | 잘못된 early Business Review (Stage A `NOT_READY`) |
+| J5/J6 | 미도달 — 기능 결함으로 확정하지 않음 |
+| 제품 코드 / Production | 변경 없음 |
+
+---
+
 ## P0 — ALABOM Product Journey E2E Recovery Sprint 🔄
 
 **Branch:** `cursor/product-journey-e2e-recovery-e648` · base `5a34ae7`  
