@@ -87,7 +87,16 @@ export function canonicalizeSubmitSemantics(input: {
   const displayedGapForCanonical =
     inferTargetGapFromQuestionText(input.displayedQuestionText) ?? input.visibleGap;
 
-  if (displayedGapForCanonical === 'solution' && semantic.mergeable && !semantic.slotConflict) {
+  if (displayedGapForCanonical === 'businessOneLiner' && semantic.mergeable) {
+    resolvedAskedGap = 'businessOneLiner';
+    semantic = {
+      ...semantic,
+      factKey: 'business',
+      resolvedIssueId: 'bm_design',
+      facts: [{ key: 'business', issueId: 'bm_design' }],
+      slotConflict: null,
+    };
+  } else if (displayedGapForCanonical === 'solution' && semantic.mergeable && !semantic.slotConflict) {
     resolvedAskedGap = 'solution';
     if (!semantic.facts.some((f) => f.key === 'business')) {
       semantic = {

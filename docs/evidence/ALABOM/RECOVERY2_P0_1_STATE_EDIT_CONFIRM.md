@@ -65,6 +65,31 @@ F13: no dedicated `f13*.test.ts` on main. core-v4 multi-fact keys PASS. Two wron
 
 Browser spec now also reads `aiPmLoop.gapState` evidence, not only `conversationMemory`.
 
+## Production STOP Recovery (f8f13cf)
+
+**Branch:** `cursor/p0-1-business-confirm-slot-e648`
+
+Confirmed first-write path:
+
+```text
+handleConfirmYes
+  → submitAnswer(confirmKnownValue = clipped source)
+  → inferTargetGapFromQuestionText("제가 이해한 사업은 … 맞나요?") = null  (before fix)
+  → interpretAnswerSemantics scoreRoutes(관광객) → factKey=customer
+  → answer-first skip of business honor
+  → buildAnswerReview extractedFacts.customer = source
+  → gapVerdicts.customerPersona = CLOSED
+```
+
+Fix (no SoT / priority / schema change):
+
+- `isBusinessUnderstandingConfirmQuestion` + infer bind → `businessOneLiner`
+- interpret honors asked `businessOneLiner` as `business` (incidental `관광객` does not steal)
+- canonicalizeSubmitSemantics keeps Confirm Yes on `businessOneLiner`
+- submitAnswer falls back to `confirmGapId` when infer is stale
+
+J6–J8 in `recovery2-p0-1-state-edit-confirm.test.ts`.
+
 ## Events
 
 Existing `recordFunnelEvent()` convention. Added only missing names:

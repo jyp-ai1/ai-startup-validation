@@ -4,9 +4,26 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Recovery 2 — P0-1 State / Edit / Confirm 🔄
+## Recovery 2 — P0-1 Production STOP Recovery 🔄
 
-**Branch:** `cursor/product-journey-recovery2-p0-1-e648` · base `36b241e`  
+**Branch:** `cursor/p0-1-business-confirm-slot-e648` · base Production `f8f13cf` (PR #85)  
+**Symptom:** Confirm Yes on `제가 이해한 사업은 … 맞나요?` wrote the business source into `customerPersona` and CLOSED it.  
+**Out of scope:** P0-2 priority · `decideNextQuestionFromReview` · V3 SoT · Auth · DB schema · Stage ③/④ · Result/PDF · Project Brief
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| J1–J5 | Existing P0-1 confirm / correction / refresh / edit | ✅ unit kept |
+| J6 | Business Confirm Yes → business CLOSED, customerPersona OPEN | ✅ unit |
+| J7 | On-slot customer correction `방한 외국인` → `내국인·외국인` | ✅ unit |
+| J8 | business / customer / payer / problem uncontaminated | ✅ unit |
+
+Root cause: `handleConfirmYes` submits `confirmKnownValue` (source clip containing `관광객`). `inferTargetGapFromQuestionText` did not bind the FIX-10 confirm copy to `businessOneLiner`, and interpret answer-first routed `관광객` → `customer`. First-write fix: bind confirm copy + honor asked `businessOneLiner` as `business`.
+
+---
+
+## Recovery 2 — P0-1 State / Edit / Confirm ✅ MERGED
+
+**Branch:** `cursor/product-journey-recovery2-p0-1-e648` · merged as `f8f13cf` (PR #85)  
 **Isolated from:** PR #84 (`cursor/production-j3-question-loop-rca-e648`) — Draft, no-gap only  
 **Out of scope:** Auth · V3 SoT · Gap/Readiness/Question-priority semantics · DB schema · P0-2 question loop · PDF
 
@@ -20,7 +37,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 SoT reused: Answer → buildAnswerReview → gapVerdicts → updateGapStateFromReview → gapState → evaluateStageReadiness → decideNextQuestionFromReview → lastDecision → hydrate.
 
-**CPO 2-Pass 1:** PASS · **2-Pass 2 canonical state:** unit PASS (`recovery2-p0-1-2pass2-canonical-state.test.ts`) · Merge/Production still gated.
+**CPO 2-Pass 1:** PASS · **2-Pass 2 canonical state:** unit PASS · **Production smoke:** STOP (J6 business confirm → customerPersona) — see STOP Recovery above.
 
 ---
 

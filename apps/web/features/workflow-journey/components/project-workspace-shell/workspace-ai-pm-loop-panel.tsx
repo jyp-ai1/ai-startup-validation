@@ -1620,6 +1620,8 @@ export function WorkspaceAiPmLoopPanel({
         : refText ?? liveText;
     const displayedGap =
       inferTargetGapFromQuestionText(displayedQuestionText) ??
+      questionPresentation.confirmGapId ??
+      loopState.lastDecision?.confirmGapId ??
       lastAskSurfaceRef.current.targetGap ??
       whyThisQuestionNow?.targetGap ??
       null;
@@ -2163,6 +2165,7 @@ export function WorkspaceAiPmLoopPanel({
     nextIssue,
     projectId,
     questionOverride,
+    questionPresentation.confirmGapId,
     readOnly,
     resetAnswerDraft,
     startProcessing,
