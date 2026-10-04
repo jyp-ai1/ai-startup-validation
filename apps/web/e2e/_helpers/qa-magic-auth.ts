@@ -110,7 +110,8 @@ export async function injectQaSession(
 export async function loginWithQaMagicLink(
   page: Page,
   context: BrowserContext,
-  baseUrl = process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:3198',
+  baseUrl = process.env.PLAYWRIGHT_BASE_URL ??
+    `http://${process.env.PLAYWRIGHT_E2E_HOST ?? '127.0.0.1'}:${process.env.PLAYWRIGHT_E2E_PORT ?? '3199'}`,
 ) {
   const { session, supabaseUrl, email } = await createQaMagicSession();
   await injectQaSession(context, session, supabaseUrl, baseUrl);
