@@ -33,12 +33,18 @@ export function WorkspaceBusinessSummaryRail({
         <h2 className="mt-2 text-base font-semibold leading-snug" data-testid="summary-project-title">
           {summary.projectTitle}
         </h2>
-        <WorkspaceExpandableText
-          text={summary.fullDescription || summary.shortDescription}
-          preview={summary.shortDescription}
-          testId="summary-business-description"
-          className="mt-2 text-muted-foreground"
-        />
+        <p data-testid="summary-project-oneliner" className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {summary.displayOneLiner || summary.understoodNarrative}
+        </p>
+        {summary.fullDescription ? (
+          <WorkspaceExpandableText
+            text={summary.fullDescription}
+            preview=""
+            toggleLabel="사업내용 보기"
+            testId="summary-business-description"
+            className="mt-2 text-muted-foreground"
+          />
+        ) : null}
       </div>
 
       <div>

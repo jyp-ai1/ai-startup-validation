@@ -23,8 +23,9 @@ export function WorkspaceExpandableText({
 }: WorkspaceExpandableTextProps) {
   const [open, setOpen] = useState(false);
   const full = text.trim();
-  const shown = preview?.trim() || full;
-  const needsExpand = full.length > 0 && full !== shown;
+  const previewText = preview?.trim() ?? '';
+  const shown = previewText || (preview === '' ? '' : full);
+  const needsExpand = full.length > 0 && shown !== full;
 
   return (
     <div data-testid={testId} className={cn('min-w-0', className)}>

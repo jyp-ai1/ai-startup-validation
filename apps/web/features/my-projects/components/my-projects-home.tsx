@@ -64,11 +64,11 @@ export function MyProjectsHome({
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(260px,0.8fr)]">
       <div className="rounded-2xl border border-border/70 bg-card p-5">
-        <h2 className="mb-4 text-sm font-semibold">새 프로젝트</h2>
+        <h2 className="mb-4 text-sm font-semibold">{t('newProjectHeading')}</h2>
         <form action={formAction} className="space-y-5" data-testid="my-projects-create-form">
           <div className="space-y-2">
             <label htmlFor="new-project-title" className="text-sm font-medium">
-              프로젝트 제목
+              {t('projectTitleLabel')}
             </label>
             <input
               id="new-project-title"
@@ -122,7 +122,7 @@ export function MyProjectsHome({
             className="h-11 w-full gap-1"
           >
             <Plus className="size-4" aria-hidden />
-            {pending ? t('creating') : '사업 검토 시작'}
+            {pending ? t('creating') : t('startReviewCta')}
           </Button>
 
           {state.error ? (
@@ -147,7 +147,7 @@ export function MyProjectsHome({
               className="inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
               data-testid="all-projects-link"
             >
-              전체 프로젝트 보기
+              {t('allProjectsCta')}
             </a>
           ) : null}
         </section>

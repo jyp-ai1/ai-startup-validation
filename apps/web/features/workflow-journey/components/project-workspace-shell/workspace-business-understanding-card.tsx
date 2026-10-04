@@ -170,22 +170,25 @@ export function WorkspaceBusinessUnderstandingCard({
         <p className="mt-2 text-sm font-medium text-foreground">{t('confirmLead')}</p>
         <p className="mt-1 text-sm text-muted-foreground">{t('confirmLeadHint')}</p>
         <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <p className="text-xs font-medium text-muted-foreground">AI 이해 확인</p>
           <Button
             type="button"
             className="rounded-xl"
+            data-testid="understanding-confirm-yes"
             aria-label={t('confirmYes')}
             onClick={() => onConfirm('accepted')}
           >
-            계속하기
+            맞습니다
           </Button>
           <Button
             type="button"
             variant="outline"
             className="rounded-xl"
+            data-testid="understanding-confirm-edit"
             aria-label={t('confirmNo')}
             onClick={() => onConfirm('edit')}
           >
-            수정하기
+            이 이해 수정하기
           </Button>
           <Button
             type="button"

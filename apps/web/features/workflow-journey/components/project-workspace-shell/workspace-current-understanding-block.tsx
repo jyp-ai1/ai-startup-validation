@@ -24,12 +24,30 @@ export function WorkspaceCurrentUnderstandingBlock({
     >
       <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">AI PM</p>
       <h2 className="mt-2 text-[15px] font-semibold leading-snug">현재까지 이렇게 이해했습니다</h2>
-      <WorkspaceExpandableText
-        text={summary.fullDescription || summary.understoodNarrative}
-        preview={summary.shortDescription}
-        testId="current-understanding-text"
-        className="mt-3"
-      />
+      <p
+        data-testid="current-understanding-narrative"
+        className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground"
+      >
+        {summary.understoodNarrative}
+      </p>
+
+      {summary.fullDescription ? (
+        <div
+          data-testid="source-document-block"
+          className="mt-4 border-t border-border/50 pt-3"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            사업 원문
+          </p>
+          <WorkspaceExpandableText
+            text={summary.fullDescription}
+            preview=""
+            toggleLabel="사업내용 보기"
+            testId="source-document-text"
+            className="mt-2 text-muted-foreground"
+          />
+        </div>
+      ) : null}
     </section>
   );
 }

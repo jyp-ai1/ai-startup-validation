@@ -12,7 +12,7 @@ export type UxClaimTrust = 'ceo_provided' | 'ai_understood' | 'needs_check';
 export type UxSummarySlotId =
   | 'business'
   | 'user'
-  | 'customer'
+  | 'payer'
   | 'problem'
   | 'market'
   | 'competition';
@@ -30,6 +30,7 @@ export type UxBusinessSummaryView = {
   shortDescription: string;
   fullDescription: string;
   understoodNarrative: string;
+  displayOneLiner?: string;
   slots: UxSummarySlot[];
   unknowns: string[];
   judgment: string;
@@ -42,12 +43,12 @@ const SLOT_DEFS: Array<{
   fieldKey: string;
   unknownLabel: string;
 }> = [
-  { id: 'business', label: '사업', fieldKey: 'businessOneLiner', unknownLabel: '사업이 무엇을 하는지' },
+  { id: 'business', label: '사업', fieldKey: 'businessOneLiner', unknownLabel: '무엇을 하는 사업인가' },
   { id: 'user', label: '실제 사용자', fieldKey: 'customerPersona', unknownLabel: '실제로 사용하는 사람' },
-  { id: 'customer', label: '고객', fieldKey: 'payer', unknownLabel: '비용을 지불할 이유' },
-  { id: 'problem', label: '문제', fieldKey: 'problemJtbd', unknownLabel: '고객이 실제로 겪는 핵심 문제' },
-  { id: 'market', label: '시장', fieldKey: 'marketChannel', unknownLabel: '현재 사용하는 대안' },
-  { id: 'competition', label: '경쟁', fieldKey: 'alternativesCompetitors', unknownLabel: '현재 사용하는 대안' },
+  { id: 'payer', label: '결제자', fieldKey: 'payer', unknownLabel: '돈을 지불하는 사람' },
+  { id: 'problem', label: '문제', fieldKey: 'problemJtbd', unknownLabel: '해결하려는 핵심 문제' },
+  { id: 'market', label: '시장/채널', fieldKey: 'marketChannel', unknownLabel: '어디서 누구에게 어떻게 접근하는가' },
+  { id: 'competition', label: '대안/경쟁', fieldKey: 'alternativesCompetitors', unknownLabel: '현재 고객이 사용하는 대안/경쟁' },
 ];
 
 function claimByKey(living: LivingUnderstandingState, key: string): LivingClaim | undefined {
@@ -76,8 +77,22 @@ function isFilled(claim: LivingClaim | undefined): boolean {
   return true;
 }
 
+function normalizeComparable(text: string): string {
+  return text.replace(/\s+/g, ' ').trim();
+}
+
+function isNearDuplicateOfSource(value: string, source: string): boolean {
+  const a = normalizeComparable(value);
+  const b = normalizeComparable(source);
+  if (!a || !b) return false;
+  if (a === b) return true;
+  if (a.length >= 24 && b.includes(a)) return true;
+  if (b.length >= 24 && a.includes(b)) return true;
+  return false;
+}
+
 function clipSentence(text: string, max = 160): string {
-  const trimmed = text.replace(/\s+/g, ' ').trim();
+  const trimmed = normalizeComparable(text);
   if (trimmed.length <= max) return trimmed;
   const cut = trimmed.slice(0, max);
   const lastStop = Math.max(cut.lastIndexOf('.'), cut.lastIndexOf('다.'), cut.lastIndexOf('요.'));
@@ -85,19 +100,50 @@ function clipSentence(text: string, max = 160): string {
   return `${cut.trim()}…`;
 }
 
+/** Presentation paraphrase — never returns the founder source document. */
+export function composeUnderstoodNarrative(
+  living: LivingUnderstandingState,
+  sourceDocument: string,
+): string {
+  const source = sourceDocument.trim();
+  const business = claimByKey(living, 'businessOneLiner');
+  const user = claimByKey(living, 'customerPersona');
+  const problem = claimByKey(living, 'problemJtbd');
+  const businessValue = isFilled(business) ? business!.value!.trim() : '';
+  const userValue = isFilled(user) ? user!.value!.trim() : '';
+  const problemValue = isFilled(problem) ? problem!.value!.trim() : '';
+  const usableBusiness =
+    businessValue && !isNearDuplicateOfSource(businessValue, source) ? businessValue : '';
+
+  if (userValue && usableBusiness) {
+    return `${userValue}를 대상으로 ${usableBusiness.replace(/입니다\.?$/, '')}를 연계하는 서비스로 이해했습니다.`;
+  }
+  if (userValue && problemValue && !isNearDuplicateOfSource(problemValue, source)) {
+    return `${userValue}의 ${problemValue.replace(/입니다\.?$/, '')}를 푸는 사업으로 이해했습니다.`;
+  }
+  if (usableBusiness) {
+    return `${usableBusiness.replace(/입니다\.?$/, '')}로 이해했습니다.`;
+  }
+  if (userValue) {
+    return `${userValue}를 위한 사업으로 이해했습니다.`;
+  }
+
+  const spine = living.spine.business?.trim() ?? '';
+  if (spine && spine !== SHARED_UNDERSTANDING_PENDING && !isNearDuplicateOfSource(spine, source)) {
+    return `${spine.replace(/입니다\.?$/, '')}로 이해했습니다.`;
+  }
+  return '아직 사업을 충분히 이해하지 못했습니다.';
+}
+
 export function buildUxBusinessSummary(input: {
   projectTitle: string;
   documentText?: string | null;
   living: LivingUnderstandingState;
   questionIndex?: number;
+  displayOneLiner?: string;
 }): UxBusinessSummaryView {
   const fullDescription = (input.documentText ?? '').trim();
-  const business = claimByKey(input.living, 'businessOneLiner');
-  const spineBusiness = input.living.spine.business?.trim() ?? '';
-  const understoodSource =
-    (isFilled(business) ? business!.value!.trim() : '') ||
-    (spineBusiness && spineBusiness !== SHARED_UNDERSTANDING_PENDING ? spineBusiness : '') ||
-    fullDescription;
+  const understoodNarrative = composeUnderstoodNarrative(input.living, fullDescription);
 
   const slots = SLOT_DEFS.map((def) => {
     const claim = claimByKey(input.living, def.fieldKey);
@@ -124,9 +170,10 @@ export function buildUxBusinessSummary(input: {
 
   return {
     projectTitle: input.projectTitle.trim() || '새 프로젝트',
-    shortDescription: clipSentence(understoodSource || fullDescription || '아직 사업 설명이 없습니다.'),
-    fullDescription: fullDescription || understoodSource,
-    understoodNarrative: understoodSource || '아직 사업을 충분히 이해하지 못했습니다.',
+    shortDescription: clipSentence(understoodNarrative),
+    fullDescription,
+    understoodNarrative,
+    displayOneLiner: input.displayOneLiner?.trim() || undefined,
     slots,
     unknowns: uniqueUnknowns,
     judgment: sanitizeUxCopy(input.living.judgmentSummary) || defaultJudgment,

@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { buildBusinessUnderstanding } from '../../business-understanding/build-business-understanding';
 import { emptyConversationMemory, upsertConfirmedFact } from '../../business-understanding/conversation-memory';
 import { buildLivingUnderstandingState } from '../../business-understanding/living-understanding-state';
-import { buildUxBusinessSummary, uxTrustLabel } from '../build-ux-business-summary';
+import { CLINICFLOW_UX_DISPLAY, resolveDemoUxDisplay } from '@/lib/demo/demo-ux-display';
+import { buildUxBusinessSummary, composeUnderstoodNarrative, uxTrustLabel } from '../build-ux-business-summary';
 import { buildUxViabilityResult } from '../build-ux-viability-result';
 import { hasInternalUxLeak, sanitizeUxCopy } from '../sanitize-ux-copy';
 
@@ -26,7 +27,13 @@ describe('UX-01 / UX-02 new project + full business text', () => {
     expect(view.projectTitle).toBe('양조장 체험 관광 서비스');
     expect(view.fullDescription).toBe(BREWERY);
     expect(view.fullDescription).toContain('전통주와 양조장 체험');
-    expect(view.shortDescription.length).toBeLessThanOrEqual(view.fullDescription.length);
+    expect(view.understoodNarrative).not.toBe(BREWERY);
+    expect(view.understoodNarrative).not.toContain(BREWERY.slice(0, 40));
+    expect(view.slots.find((slot) => slot.id === 'payer')?.label).toBe('결제자');
+    expect(view.slots.find((slot) => slot.id === 'market')?.label).toBe('시장/채널');
+    expect(view.slots.find((slot) => slot.id === 'competition')?.label).toBe('대안/경쟁');
+    expect(view.unknowns).toContain('어디서 누구에게 어떻게 접근하는가');
+    expect(view.unknowns).not.toContain('현재 사용하는 대안');
   });
 });
 
@@ -92,7 +99,7 @@ describe('UX-04 / UX-07 / UX-08 edit, long, multi-fact values', () => {
     });
 
     expect(view.slots.find((slot) => slot.id === 'user')?.value).toBe(long);
-    expect(view.slots.find((slot) => slot.id === 'customer')?.value).toContain('양조장 대표');
+    expect(view.slots.find((slot) => slot.id === 'payer')?.value).toContain('양조장 대표');
   });
 });
 
@@ -183,6 +190,31 @@ describe('UX-10 / UX-11 / UX-12 viability result + PDF CTA data', () => {
     expect(result.pdfReady).toBe(false);
     expect(result.why).toContain('지불 의향');
     expect(result.nextValidation.length).toBeGreaterThan(0);
+  });
+});
+
+describe('Demo UX fixture', () => {
+  it('uses an explicit clinicflow title and one-liner, not a document extract', () => {
+    const display = resolveDemoUxDisplay('clinicflow');
+    expect(display).toEqual(CLINICFLOW_UX_DISPLAY);
+    expect(display?.projectTitle).toBe('클리닉플로우');
+    expect(display?.projectDescription).toBe(
+      '다양한 병원의 CS를 SaaS 형태로 지원하고 진료와 예약관리를 돕는 서비스입니다.',
+    );
+    expect(display?.projectTitle).not.toContain('SaaS');
+  });
+});
+
+describe('composeUnderstoodNarrative', () => {
+  it('never returns the founder source document', () => {
+    const understanding = buildBusinessUnderstanding(BREWERY);
+    const living = buildLivingUnderstandingState({
+      documentText: BREWERY,
+      understanding,
+    });
+    const narrative = composeUnderstoodNarrative(living, BREWERY);
+    expect(narrative).not.toBe(BREWERY);
+    expect(narrative).toMatch(/이해했습니다|아직 사업을 충분히 이해하지 못했습니다/);
   });
 });
 

@@ -73,6 +73,7 @@ import { WorkspaceViabilityResultView } from './workspace-viability-result-view'
 import { buildUxBusinessSummary } from '../../lib/ux-flow-recovery/build-ux-business-summary';
 import { buildUxViabilityResult } from '../../lib/ux-flow-recovery/build-ux-viability-result';
 import { buildConversationalFinalOutput } from '../../lib/business-understanding/build-conversational-final-output';
+import { resolveDemoUxDisplay } from '@/lib/demo/demo-ux-display';
 import { loadAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentAnalysisScreen } from '../../lib/business-understanding/present-analysis-screen';
 import { buildLivingUnderstandingState } from '../../lib/business-understanding/living-understanding-state';
@@ -279,16 +280,24 @@ export function WorkspaceAiPmMain({
     });
   }, [documentContext, entities, loopState, projectId, understanding]);
 
+  const demoDisplay = useMemo(() => {
+    const slug = projectId?.startsWith('demo-sample-')
+      ? projectId.slice('demo-sample-'.length)
+      : null;
+    return resolveDemoUxDisplay(slug);
+  }, [projectId]);
+
   const uxSummary = useMemo(() => {
     if (!livingState) return null;
     return buildUxBusinessSummary({
-      projectTitle: projectName?.trim() || '새 프로젝트',
+      projectTitle: demoDisplay?.projectTitle || projectName?.trim() || '새 프로젝트',
+      displayOneLiner: demoDisplay?.projectDescription,
       documentText: storedDocumentText ?? documentContext,
       living: livingState,
       questionIndex:
         loopState.turns.filter((turn) => !turn.superseded && Boolean(turn.answer?.trim())).length + 1,
     });
-  }, [documentContext, livingState, loopState.turns, projectName, storedDocumentText]);
+  }, [demoDisplay?.projectTitle, documentContext, livingState, loopState.turns, projectName, storedDocumentText]);
 
   const viabilityResult = useMemo(() => {
     if (!livingState) return null;
@@ -762,7 +771,34 @@ export function WorkspaceAiPmMain({
           understanding={understanding}
           entities={entities}
           projectId={projectId}
+          display={{
+            projectTitle: projectName?.trim() || '내 사업',
+            projectDescription:
+              uxSummary?.understoodNarrative ||
+              '입력하신 사업 내용을 기준으로 이해를 정리하고 있습니다.',
+            projectFullDescription: storedDocumentText ?? documentContext ?? '',
+          }}
         />
+      ) : null}
+
+      {demoDisplay && !demoMyBusinessPreview ? (
+        <section
+          data-testid="demo-project-identity"
+          className="rounded-2xl border border-border/60 bg-card px-5 py-4"
+        >
+          <h2 className="text-lg font-semibold" data-testid="demo-project-title">
+            {demoDisplay.projectTitle}
+          </h2>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground" data-testid="demo-project-oneliner">
+            {demoDisplay.projectDescription}
+          </p>
+          <details className="mt-3" data-testid="demo-business-details">
+            <summary className="cursor-pointer text-xs font-medium text-primary">사업내용 보기</summary>
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+              {demoDisplay.projectFullDescription}
+            </p>
+          </details>
+        </section>
       ) : null}
 
       {uxSummary && !demoMyBusinessPreview ? (

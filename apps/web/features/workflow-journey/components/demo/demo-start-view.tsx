@@ -145,6 +145,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
         <div className="grid gap-4 sm:grid-cols-2">
           <button
             type="button"
+            data-testid="demo-entry-sample"
             className="rounded-2xl border border-border bg-card p-6 text-left transition hover:border-primary/40 hover:bg-primary/[0.03]"
             onClick={() => setMode('sample')}
           >
@@ -156,6 +157,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
           </button>
           <button
             type="button"
+            data-testid="demo-entry-custom"
             className="rounded-2xl border border-border bg-card p-6 text-left transition hover:border-primary/40 hover:bg-primary/[0.03]"
             onClick={() => setMode('custom')}
           >
@@ -175,6 +177,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
               <button
                 key={sample.id}
                 type="button"
+                data-testid={`demo-sample-${sample.id}`}
                 onClick={() => setSelectedSample(sample.id)}
                 className={cn(
                   'rounded-xl border px-4 py-4 text-left transition',
@@ -192,7 +195,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
             <Button type="button" variant="outline" onClick={() => setMode('pick')}>
               뒤로
             </Button>
-            <Button type="button" onClick={() => startDemoWorkspace(selectedSample)}>
+            <Button type="button" data-testid="demo-start-sample-read" onClick={() => startDemoWorkspace(selectedSample)}>
               샘플 문서로 AI Read 시작
               <ArrowRight className="ml-2 size-4" aria-hidden />
             </Button>
@@ -304,6 +307,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
             <Button
               type="button"
               disabled={!canStartCustom || loading}
+              data-testid="demo-start-custom-read"
               onClick={() => startDemoWorkspace('custom', composedIntake)}
             >
               AI Read 시작

@@ -73,7 +73,7 @@ export function WorkspaceAnswerComposer({
           data-testid="my-last-answer"
           className="rounded-xl border border-border/60 bg-muted/15 px-4 py-3"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">내 답변</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">기존 답변</p>
           <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed">{lastAnswer.answer}</p>
           {onStartEdit ? (
             <Button
@@ -85,7 +85,7 @@ export function WorkspaceAnswerComposer({
               disabled={readOnly}
               onClick={onStartEdit}
             >
-              수정하기
+              답변 수정하기
             </Button>
           ) : null}
         </div>
@@ -185,11 +185,11 @@ export function WorkspaceAnswerComposer({
                 variant="ghost"
                 className="rounded-xl"
                 data-testid="confirm-no-cta"
-                aria-label="아니요, 수정할게요"
+                aria-label="이 이해 수정하기"
                 disabled={readOnly}
                 onClick={onConfirmNo}
               >
-                수정하기
+                이 이해 수정하기
               </Button>
             ) : null}
           </div>
