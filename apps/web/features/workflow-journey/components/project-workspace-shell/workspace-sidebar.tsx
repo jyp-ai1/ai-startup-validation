@@ -85,6 +85,13 @@ export function WorkspaceSidebar({
       aria-label={t('sidebar.label')}
     >
       <div className="border-b border-border/60 p-5 lg:border-b-0 lg:p-7 lg:pb-5">
+        {snapshot.hideProgressMetrics ? (
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              진행상태
+            </p>
+          </div>
+        ) : (
         <button
           type="button"
           onClick={onSelectOverview}
@@ -137,6 +144,7 @@ export function WorkspaceSidebar({
             </>
           )}
         </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto p-5 pt-0 lg:p-7 lg:pt-2">
@@ -204,6 +212,7 @@ export function WorkspaceSidebar({
           </ul>
         ) : null}
 
+        {!snapshot.hideProgressMetrics ? (
         <button
           type="button"
           onClick={onSelectAiPm}
@@ -219,6 +228,7 @@ export function WorkspaceSidebar({
           </span>
           {t('strip.label')}
         </button>
+        ) : null}
 
         {!snapshot.hideProgressMetrics ? (
           <div className="mb-6">
@@ -259,6 +269,7 @@ export function WorkspaceSidebar({
           </div>
         ) : null}
 
+        {!snapshot.hideProgressMetrics ? (
         <div className="space-y-4 opacity-45">
           {[t('sections.insights'), t('sections.recommendations'), t('sections.actions')].map(
             (label) => (
@@ -268,6 +279,7 @@ export function WorkspaceSidebar({
             ),
           )}
         </div>
+        ) : null}
       </div>
     </aside>
   );

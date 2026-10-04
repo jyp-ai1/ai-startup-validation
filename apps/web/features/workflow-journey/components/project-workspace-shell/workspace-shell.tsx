@@ -102,7 +102,7 @@ export function ProjectWorkspaceShell({
         <WorkspaceBusinessStateHeader projectName={projectName} state={businessState} />
       ) : null}
 
-      {sharedUnderstanding ? (
+      {sharedUnderstanding && mainView !== 'ai-pm' ? (
         <WorkspaceSharedUnderstandingPanel
           understanding={sharedUnderstanding}
           spine={understandingSpine}

@@ -2657,6 +2657,23 @@ P0s from 8-E (Answer Target Binding · Confirm/Open · Edit binding · Research 
 
 ---
 
+## ALABOM AI PM UX / Flow Recovery — P0 🟡 DRAFT PR
+
+**Branch:** `cursor/ai-pm-ux-flow-recovery-e648` · **Merge gate:** CPO acceptance (CTO does not merge or deploy)  
+**Goal:** 질문 → 답변 → 이해 업데이트 → 수정 → 다음 질문 → 최종 사업성 검토까지 끊김 없는 UX Flow  
+**Forbidden:** V3 SoT · Auth · F11/F13/F04/F08 · Validation Engine · Holdout · new semantic rules
+
+| Item | Status |
+|------|--------|
+| Desktop 3-column (진행 / AI PM / 사업 요약) | ✅ |
+| Single answer + edit UX | ✅ |
+| Conflict only when parked contradiction | ✅ |
+| Final review → result → PDF CTA | ✅ |
+| New project + Demo presentation | ✅ |
+| UX-01~12 unit | ✅ |
+
+---
+
 ## Task Lifecycle
 
 ```

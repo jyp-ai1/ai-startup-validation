@@ -12,15 +12,23 @@ import {
 type DemoSamplePlaybackBarProps = {
   projectId: string;
   onAdvanced: () => void;
+  onOpenResult?: () => void;
 };
 
-export function DemoSamplePlaybackBar({ projectId, onAdvanced }: DemoSamplePlaybackBarProps) {
+export function DemoSamplePlaybackBar({
+  projectId,
+  onAdvanced,
+  onOpenResult,
+}: DemoSamplePlaybackBarProps) {
   const frame = currentDemoPlaybackFrame(projectId);
   const visibleQuestion = frame?.presenter?.questionText?.trim();
   const atEnd = isDemoPlaybackAtTerminalFrame(projectId);
 
   const handleNext = () => {
-    if (atEnd) return;
+    if (atEnd) {
+      onOpenResult?.();
+      return;
+    }
     advanceDemoPlaybackFrame(projectId);
     onAdvanced();
   };
@@ -41,8 +49,15 @@ export function DemoSamplePlaybackBar({ projectId, onAdvanced }: DemoSamplePlayb
         </p>
       ) : null}
       <div className="mt-3">
-        <Button type="button" size="sm" disabled={atEnd} onClick={handleNext}>
-          다음
+        <Button
+          type="button"
+          size="sm"
+          disabled={atEnd && !onOpenResult}
+          onClick={handleNext}
+          data-testid={atEnd ? 'demo-open-result-cta' : 'demo-playback-next'}
+          aria-label={atEnd ? '✓ 맞습니다 — 분석 시작' : '다음'}
+        >
+          {atEnd ? '사업성 검토 결과 보기' : '다음'}
           <ArrowRight className="ml-2 size-4" aria-hidden />
         </Button>
       </div>

@@ -154,6 +154,7 @@ import { WorkspaceAiPmJudgmentView } from './workspace-ai-pm-judgment-view';
 import { WorkspaceAiPmBusinessReview } from './workspace-ai-pm-business-review';
 import { WorkspaceAiPmSupplementSurface } from './workspace-ai-pm-supplement-surface';
 import { WorkspaceS11Surface } from './workspace-s11-surface';
+import { WorkspaceAnswerComposer } from './workspace-answer-composer';
 import type { WorkspacePersistedFacts } from '@/lib/project/workspace-persisted-facts';
 import type { AiPmFocusedSnapshot } from '../../lib/business-understanding/ai-pm-focused-presenter';
 
@@ -2223,7 +2224,7 @@ export function WorkspaceAiPmLoopPanel({
   );
 
   const resolveContradiction = useCallback(
-    (choice: 'keep_prior' | 'accept_new') => {
+    (choice: 'keep_prior' | 'accept_new' | 'accept_both') => {
       if (!contradiction || readOnly) return;
       const { issueId, prior, next, factKey } = contradiction;
       if (choice === 'keep_prior') {
@@ -2232,11 +2233,13 @@ export function WorkspaceAiPmLoopPanel({
         resetAnswerDraft();
         return;
       }
+      const accepted =
+        choice === 'accept_both' ? `${prior.trim()} / ${next.trim()}` : next;
       setContradiction(null);
       setAnswerQualityHint(null);
       const correctionTurn = {
         issueId,
-        answer: next,
+        answer: accepted,
         appliedAt: new Date().toISOString(),
         semanticFactKey: factKey,
         intent: 'correction' as const,
@@ -2254,7 +2257,7 @@ export function WorkspaceAiPmLoopPanel({
             askedGapId: correctionTurn.targetGap ?? 'problemJtbd',
             askedQuestionText: whyThisQuestionNow?.questionText ?? '',
             askedIssueId: issueId,
-            userAnswer: next,
+            userAnswer: accepted,
             displayedQuestionText: whyThisQuestionNow?.questionText ?? '',
           },
           projectId,
@@ -2262,14 +2265,14 @@ export function WorkspaceAiPmLoopPanel({
       } else {
         appendAiPmLoopTurn(correctionTurn, projectId);
       }
-      applyWorkspaceLoopAnswer(issueId, next, projectId, {
+      applyWorkspaceLoopAnswer(issueId, accepted, projectId, {
         forceAccept: true,
         semantic: {
           intent: 'correction',
           factKey,
           resolvedIssueId: issueId,
           facts: [{ key: factKey, issueId }],
-          value: next,
+          value: accepted,
           mergeable: true,
           displayOnly: false,
           rationale: 'founder accepted new after conflict',
@@ -2415,6 +2418,62 @@ export function WorkspaceAiPmLoopPanel({
     updateAnswerDraft,
   ]);
 
+  const lastSavedAnswer = editableTurns[0]
+    ? {
+        issueId: editableTurns[0].issueId,
+        label: t(`issues.${editableTurns[0].issueId}.riskLabel`),
+        answer: editableTurns[0].answer,
+      }
+    : null;
+  const questionIndex =
+    loopState.turns.filter((turn) => !turn.superseded && Boolean(turn.answer?.trim())).length + 1;
+
+  const answerComposer = (
+    <WorkspaceAnswerComposer
+      draft={answerDraft}
+      onDraftChange={(value) => {
+        setAnswerQualityHint(null);
+        if (value.length > 0) activateQuestionLock();
+        updateAnswerDraft(value);
+      }}
+      onSubmit={() => submitAnswer(confirmCorrectionMode ? answerDraft : undefined)}
+      readOnly={readOnly}
+      placeholder={
+        confirmCorrectionMode
+          ? '수정할 내용을 입력하세요'
+          : simpleQuestionUiActive
+            ? '답변을 입력해 주세요.'
+            : whyThisQuestionNow?.questionText?.trim() ||
+              (activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : '답변을 입력해 주세요.')
+      }
+      questionIndex={questionIndex}
+      lastAnswer={confirmCorrectionMode ? null : lastSavedAnswer}
+      editingPrior={confirmCorrectionMode}
+      onStartEdit={
+        lastSavedAnswer && !readOnly
+          ? () => {
+              setEditPriorOpen(false);
+              beginEditPriorAnswer(lastSavedAnswer.issueId as AiPmLoopIssueId);
+            }
+          : undefined
+      }
+      onCancelEdit={() => {
+        setConfirmCorrectionMode(false);
+        resetAnswerDraft();
+      }}
+      showConfirmYes={isConfirmQuestion && !confirmCorrectionMode && !contradiction}
+      onConfirmYes={handleConfirmYes}
+      showConfirmNo={isConfirmQuestion && !confirmCorrectionMode && !contradiction}
+      onConfirmNo={handleConfirmNo}
+      contradiction={
+        contradiction ? { prior: contradiction.prior, next: contradiction.next } : null
+      }
+      onKeepPrior={() => resolveContradiction('keep_prior')}
+      onAcceptNew={() => resolveContradiction('accept_new')}
+      onAcceptBoth={() => resolveContradiction('accept_both')}
+      qualityHint={answerQualityHint ? t(`answerQuality.${answerQualityHint}`) : null}
+    />
+  );
 
   if (sessionPaused && loopState.turns.length > 0) {
     const lastTurn = loopState.turns[loopState.turns.length - 1]!;
@@ -2686,192 +2745,8 @@ export function WorkspaceAiPmLoopPanel({
             </div>
           </div>
         ) : null}
-        {confirmCorrectionMode ? (
-          <div data-testid="confirm-correction-flow" className="mt-4 space-y-3">
-            <p className="text-sm font-medium">제가 이해한 사업</p>
-            <p className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm leading-relaxed">
-              {confirmCorrectionKnownValue || '—'}
-            </p>
-            <p className="text-sm font-medium">어떻게 수정하면 될까요?</p>
-            <textarea
-              value={answerDraft}
-              onChange={(event) => updateAnswerDraft(event.target.value)}
-              rows={4}
-              readOnly={readOnly}
-              placeholder="수정할 내용을 입력하세요"
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
-              aria-label="CEO correction"
-            />
-            <Button
-              type="button"
-              className="rounded-xl"
-              data-testid="confirm-correction-submit"
-              disabled={readOnly || !answerDraft.trim()}
-              onClick={() => submitAnswer(answerDraft)}
-            >
-              수정 내용 반영
-            </Button>
-          </div>
-        ) : isConfirmQuestion ? (
-          <div
-            data-testid="confirm-question-actions"
-            className="mt-4 flex flex-wrap gap-2"
-          >
-            <Button
-              type="button"
-              className="rounded-xl"
-              data-testid="confirm-yes-cta"
-              disabled={readOnly}
-              onClick={handleConfirmYes}
-            >
-              네, 맞습니다
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-xl"
-              data-testid="confirm-no-cta"
-              disabled={readOnly}
-              onClick={handleConfirmNo}
-            >
-              아니요, 수정할게요
-            </Button>
-          </div>
-        ) : (
-          <textarea
-            value={answerDraft}
-            onFocus={() => {
-              setAnswerInputFocused(true);
-              activateQuestionLock();
-            }}
-            onBlur={() => setAnswerInputFocused(false)}
-            onChange={(event) => {
-              setAnswerQualityHint(null);
-              if (event.target.value.length > 0) {
-                activateQuestionLock();
-              }
-              updateAnswerDraft(event.target.value);
-            }}
-            rows={4}
-            readOnly={readOnly}
-            placeholder={
-              simpleQuestionUiActive
-                ? '답변을 입력하세요'
-                : whyThisQuestionNow?.questionText?.trim() || t(`issues.${activeIssue}.placeholder`)
-            }
-            className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[4.5rem]"
-            aria-label={displayQuestionText || t('submitAnswerCta')}
-          />
-        )}
-        {answerQualityHint ? (
-          <p
-            data-testid="answer-quality-hint"
-            className="mt-2 text-sm text-amber-800 dark:text-amber-200"
-            role="status"
-          >
-            {t(`answerQuality.${answerQualityHint}`)}
-          </p>
-        ) : null}
-        {contradiction ? (
-          <div
-            data-testid="contradiction-confirm"
-            className="mt-3 space-y-3 rounded-xl border border-amber-500/40 bg-amber-500/[0.06] px-4 py-3"
-          >
-            <p className="text-sm font-medium text-foreground">
-              이전에 확인한 내용과 새 답변이 다릅니다. 어느 쪽이 맞는지 확인해 주세요.
-            </p>
-            <dl className="grid gap-2 text-sm sm:grid-cols-2">
-              <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  이전 확인
-                </dt>
-                <dd className="mt-1 font-medium">{contradiction.prior}</dd>
-              </div>
-              <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  새 답변
-                </dt>
-                <dd className="mt-1 font-medium">{contradiction.next}</dd>
-              </div>
-            </dl>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                className="rounded-xl"
-                disabled={readOnly}
-                onClick={() => resolveContradiction('keep_prior')}
-              >
-                이전 내용이 맞아요
-              </Button>
-              <Button
-                type="button"
-                className="rounded-xl"
-                disabled={readOnly}
-                onClick={() => resolveContradiction('accept_new')}
-              >
-                새 답변이 맞아요
-              </Button>
-            </div>
-          </div>
-        ) : null}
-        {editPriorOpen && editableTurns.length > 0 ? (
-          <div
-            data-testid="edit-prior-answer-panel"
-            className="mt-3 space-y-2 rounded-xl border border-border/60 bg-background px-4 py-3"
-          >
-            <p className="text-sm font-medium">수정할 이전 답변을 선택하세요</p>
-            <ul className="space-y-2">
-              {editableTurns.map((turn) => (
-                <li key={turn.issueId}>
-                  <button
-                    type="button"
-                    className="w-full rounded-lg border border-border/50 px-3 py-2 text-left text-sm hover:bg-muted/40"
-                    disabled={readOnly}
-                    onClick={() => beginEditPriorAnswer(turn.issueId)}
-                  >
-                    <span className="font-medium">{t(`issues.${turn.issueId}.riskLabel`)}</span>
-                    <span className="mt-1 block text-muted-foreground line-clamp-2">
-                      {turn.answer}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <Button
-              type="button"
-              variant="ghost"
-              className="rounded-xl"
-              onClick={() => setEditPriorOpen(false)}
-            >
-              닫기
-            </Button>
-          </div>
-        ) : null}
-        <div className="mt-4 flex flex-wrap gap-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:bg-gradient-to-t max-sm:from-background max-sm:via-background max-sm:to-background/80 max-sm:pt-2">
-          {!isConfirmQuestion && !confirmCorrectionMode ? (
-            <Button
-              type="button"
-              className="rounded-xl max-sm:w-full"
-              data-testid="submit-answer-cta"
-              disabled={readOnly || answerDraft.trim().length < 2}
-              onClick={() => submitAnswer()}
-            >
-              {t('submitAnswerCta')}
-            </Button>
-          ) : null}
-          {editableTurns.length > 0 ? (
-            <Button
-              type="button"
-              variant="ghost"
-              className="rounded-xl"
-              data-testid="edit-prior-answer-cta"
-              disabled={readOnly}
-              onClick={() => setEditPriorOpen((open) => !open)}
-            >
-              ← 이전 답변 수정
-            </Button>
-          ) : null}
+        <div className="mt-4" data-testid={confirmCorrectionMode ? 'confirm-correction-flow' : 'confirm-question-actions'}>
+          {answerComposer}
         </div>
         <ConversationSecondaryBlocks
           s11Surface={s11Surface}
@@ -2937,6 +2812,7 @@ export function WorkspaceAiPmLoopPanel({
               displayQuestionText={displayQuestionText}
               hideForFocusedUi={focusedUiActive || simpleQuestionUiActive}
             />
+            <div className="mt-4">{answerComposer}</div>
             <Button
               type="button"
               className="rounded-xl"
@@ -3021,143 +2897,9 @@ export function WorkspaceAiPmLoopPanel({
                 </div>
               ) : null}
               {!loopState.researchPending && !midJudgmentText && !whyPanel ? (
-              <>
-              {confirmCorrectionMode ? (
-                <div data-testid="confirm-correction-flow" className="mt-4 space-y-3">
-                  <p className="text-sm font-medium">제가 이해한 사업</p>
-                  <p className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm leading-relaxed">
-                    {confirmCorrectionKnownValue || '—'}
-                  </p>
-                  <p className="text-sm font-medium">어떻게 수정하면 될까요?</p>
-                  <textarea
-                    value={answerDraft}
-                    onChange={(event) => updateAnswerDraft(event.target.value)}
-                    rows={4}
-                    readOnly={readOnly}
-                    placeholder="수정할 내용을 입력하세요"
-                    className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2"
-                    aria-label="CEO correction"
-                  />
-                  <Button
-                    type="button"
-                    className="rounded-xl"
-                    data-testid="confirm-correction-submit"
-                    disabled={readOnly || !answerDraft.trim()}
-                    onClick={() => submitAnswer(answerDraft)}
-                  >
-                    수정 내용 반영
-                  </Button>
+                <div className="mt-4" data-testid={confirmCorrectionMode ? 'confirm-correction-flow' : 'confirm-question-actions'}>
+                  {answerComposer}
                 </div>
-              ) : isConfirmQuestion ? (
-                <div
-                  data-testid="confirm-question-actions"
-                  className="mt-4 flex flex-wrap gap-2"
-                >
-                  <Button
-                    type="button"
-                    className="rounded-xl"
-                    data-testid="confirm-yes-cta"
-                    disabled={readOnly}
-                    onClick={handleConfirmYes}
-                  >
-                    네, 맞습니다
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="rounded-xl"
-                    data-testid="confirm-no-cta"
-                    disabled={readOnly}
-                    onClick={handleConfirmNo}
-                  >
-                    아니요, 수정할게요
-                  </Button>
-                </div>
-              ) : (
-                <textarea
-                  value={answerDraft}
-                  onFocus={() => {
-                    setAnswerInputFocused(true);
-                    activateQuestionLock();
-                  }}
-                  onBlur={() => setAnswerInputFocused(false)}
-                  onChange={(event) => {
-                    setAnswerQualityHint(null);
-                    if (event.target.value.length > 0) {
-                      activateQuestionLock();
-                    }
-                    updateAnswerDraft(event.target.value);
-                  }}
-                  rows={4}
-                  readOnly={readOnly}
-                  placeholder={
-                    whyThisQuestionNow?.questionText?.trim() ||
-                    (activeIssueId ? t(`issues.${activeIssueId}.placeholder`) : undefined)
-                  }
-                  className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-primary/30 focus:ring-2 max-sm:min-h-[5rem]"
-                  aria-label={displayQuestionText || t('submitAnswerCta')}
-                />
-              )}
-              {answerQualityHint ? (
-                <p
-                  data-testid="answer-quality-hint"
-                  className="mt-2 text-sm text-amber-800 dark:text-amber-200"
-                  role="status"
-                >
-                  {t(`answerQuality.${answerQualityHint}`)}
-                </p>
-              ) : null}
-              <div className="mt-4 flex flex-wrap gap-2 pb-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:bg-gradient-to-t max-sm:from-background max-sm:via-background max-sm:to-background/80 max-sm:pt-2">
-                {!isConfirmQuestion && !confirmCorrectionMode ? (
-                  <Button
-                    type="button"
-                    className="rounded-xl max-sm:w-full"
-                    data-testid="submit-answer-cta"
-                    disabled={readOnly || answerDraft.trim().length < 2}
-                    onClick={() => submitAnswer()}
-                  >
-                    {t('submitAnswerCta')}
-                  </Button>
-                ) : null}
-                {editableTurns.length > 0 ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="rounded-xl"
-                    data-testid="edit-prior-answer-cta"
-                    disabled={readOnly}
-                    onClick={() => setEditPriorOpen((open) => !open)}
-                  >
-                    ← 이전 답변 수정
-                  </Button>
-                ) : null}
-              </div>
-              {editPriorOpen && editableTurns.length > 0 ? (
-                <div
-                  data-testid="edit-prior-answer-panel"
-                  className="mt-3 space-y-2 rounded-xl border border-border/60 bg-background px-4 py-3"
-                >
-                  <p className="text-sm font-medium">수정할 이전 답변을 선택하세요</p>
-                  <ul className="space-y-2">
-                    {editableTurns.map((turn) => (
-                      <li key={turn.issueId}>
-                        <button
-                          type="button"
-                          className="w-full rounded-lg border border-border/50 px-3 py-2 text-left text-sm hover:bg-muted/40"
-                          disabled={readOnly}
-                          onClick={() => beginEditPriorAnswer(turn.issueId)}
-                        >
-                          <span className="font-medium">{t(`issues.${turn.issueId}.riskLabel`)}</span>
-                          <span className="mt-1 block text-muted-foreground line-clamp-2">
-                            {turn.answer}
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                ) : null}
-              </>
               ) : null}
               <ConversationSecondaryBlocks
                 s11Surface={s11Surface}

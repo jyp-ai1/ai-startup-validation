@@ -72,13 +72,20 @@ export function WorkspaceDemoMyBusinessPreview({
         className,
       )}
     >
-      <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-        My Business Preview
+      <p className="text-xs font-semibold uppercase tracking-widest text-primary">Demo Workspace</p>
+      <h2 className="mt-2 text-lg font-semibold" data-testid="demo-project-title">
+        {understanding.business.value?.trim() || '클리닉플로우'}
+      </h2>
+      <p className="mt-1 text-sm leading-relaxed text-muted-foreground" data-testid="demo-project-oneliner">
+        {documentText.split('\n').find((line) => line.trim().length > 12)?.trim() ||
+          '다양한 병원의 CS를 SaaS 형태로 지원하고 진료와 예약관리를 돕는 서비스입니다.'}
       </p>
-      <p className="mt-2 text-sm text-muted-foreground">
-        로그인 전까지는 AI PM 미리보기입니다. 전체 Stage · Judgment · Final Review는 Production
-        프로젝트에서 이어집니다.
-      </p>
+      <details className="mt-3" data-testid="demo-business-details">
+        <summary className="cursor-pointer text-xs font-medium text-primary">사업내용 보기</summary>
+        <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+          {documentText}
+        </p>
+      </details>
 
       {draft ? (
         <ul className="mt-4 space-y-3">

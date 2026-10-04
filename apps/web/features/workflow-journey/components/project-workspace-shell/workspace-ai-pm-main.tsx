@@ -67,7 +67,12 @@ import { WorkspaceNextStepPanel } from './workspace-next-step-panel';
 import { WorkspaceAnalysisResultPanel } from './workspace-analysis-result-panel';
 import { WorkspacePostReviewRoadmap } from './workspace-post-review-roadmap';
 import { WorkspaceProgressiveOverview } from './workspace-progressive-overview';
-import { WorkspaceEvidenceReviewStrip } from './workspace-evidence-review-strip';
+import { WorkspaceCurrentUnderstandingBlock } from './workspace-current-understanding-block';
+import { WorkspaceBusinessSummaryRail } from './workspace-business-summary-rail';
+import { WorkspaceViabilityResultView } from './workspace-viability-result-view';
+import { buildUxBusinessSummary } from '../../lib/ux-flow-recovery/build-ux-business-summary';
+import { buildUxViabilityResult } from '../../lib/ux-flow-recovery/build-ux-viability-result';
+import { buildConversationalFinalOutput } from '../../lib/business-understanding/build-conversational-final-output';
 import { loadAnalysisResult } from '../../lib/business-understanding/analysis-result-store';
 import { presentAnalysisScreen } from '../../lib/business-understanding/present-analysis-screen';
 import { buildLivingUnderstandingState } from '../../lib/business-understanding/living-understanding-state';
@@ -261,6 +266,38 @@ export function WorkspaceAiPmMain({
       understandingPhase,
     });
   }, [documentContext, entities, loopState.turns, understanding, understandingPhase]);
+
+  const livingState = useMemo(() => {
+    if (!understanding) return null;
+    return buildLivingUnderstandingState({
+      documentText: documentContext,
+      understanding,
+      entities,
+      turns: loopState.turns,
+      memory: loadConversationMemory(projectId),
+      resolvedIssueIds: getResolvedIssueIds(loopState),
+    });
+  }, [documentContext, entities, loopState, projectId, understanding]);
+
+  const uxSummary = useMemo(() => {
+    if (!livingState) return null;
+    return buildUxBusinessSummary({
+      projectTitle: projectName?.trim() || '새 프로젝트',
+      documentText: storedDocumentText ?? documentContext,
+      living: livingState,
+      questionIndex:
+        loopState.turns.filter((turn) => !turn.superseded && Boolean(turn.answer?.trim())).length + 1,
+    });
+  }, [documentContext, livingState, loopState.turns, projectName, storedDocumentText]);
+
+  const viabilityResult = useMemo(() => {
+    if (!livingState) return null;
+    return buildUxViabilityResult({
+      finalOutput: buildConversationalFinalOutput(livingState),
+      presenter: analysisPresenter,
+      unknowns: uxSummary?.unknowns,
+    });
+  }, [analysisPresenter, livingState, uxSummary?.unknowns]);
 
   /** S16 P0-2 / P1-2 — confirm → next question (loop) or review-ready; never force market analysis */
   const proceedAfterUnderstandingConfirm = useCallback(() => {
@@ -644,7 +681,7 @@ export function WorkspaceAiPmMain({
 
   if (phase === 'reviewing' || reviewError) {
     return (
-      <div className={cn('mx-auto max-w-[720px] space-y-6 py-2', className)}>
+      <div className={cn('mx-auto max-w-[960px] space-y-6 py-2', className)}>
         <WorkspaceAnalysisResultPanel
           presenter={
             analysisPresenter ?? {
@@ -665,6 +702,12 @@ export function WorkspaceAiPmMain({
           reviewError={reviewError}
           onRetryReview={reviewError ? onReview : undefined}
         />
+        {viabilityResult && phase !== 'reviewing' ? (
+          <WorkspaceViabilityResultView
+            result={viabilityResult}
+            pdfHref={projectId ? `/projects/${projectId}/executive-report` : null}
+          />
+        ) : null}
       </div>
     );
   }
@@ -694,14 +737,19 @@ export function WorkspaceAiPmMain({
     );
   }
 
-  return (
-    <div className={cn('mx-auto max-w-[720px] space-y-6 py-2', className)}>
+  const flowBody = (
+    <div className="space-y-6">
       {demoSamplePlayback && projectId ? (
         <DemoSamplePlaybackBar
           projectId={projectId}
           onAdvanced={() => {
             setLoopState(loadAiPmLoopState(projectId));
             setUnderstandingPhase(loadUnderstandingPhase(projectId));
+          }}
+          onOpenResult={() => {
+            saveUnderstandingPhase('review-ready', projectId);
+            setUnderstandingPhase('review-ready');
+            onReview();
           }}
         />
       ) : null}
@@ -717,15 +765,8 @@ export function WorkspaceAiPmMain({
         />
       ) : null}
 
-      {!demoSamplePlayback &&
-      !demoMyBusinessPreview &&
-      understanding &&
-      isWorkspaceDocumentReadable(loadWorkspaceDocumentText(projectId) ?? '') ? (
-        <WorkspaceEvidenceReviewStrip
-          understanding={understanding}
-          entities={entities}
-          projectId={projectId}
-        />
+      {uxSummary && !demoMyBusinessPreview ? (
+        <WorkspaceCurrentUnderstandingBlock summary={uxSummary} />
       ) : null}
 
       {showAiPmLoop &&
@@ -837,6 +878,12 @@ export function WorkspaceAiPmMain({
 
       {isPostReview ? (
         <div className="space-y-6">
+          {viabilityResult ? (
+            <WorkspaceViabilityResultView
+              result={viabilityResult}
+              pdfHref={projectId ? `/projects/${projectId}/executive-report` : null}
+            />
+          ) : null}
           {analysisPresenter ? (
             <WorkspaceAnalysisResultPanel
               presenter={analysisPresenter}
@@ -899,6 +946,20 @@ export function WorkspaceAiPmMain({
             />
           ) : null}
         </div>
+      ) : null}
+    </div>
+  );
+
+  return (
+    <div
+      className={cn(
+        'mx-auto grid max-w-[1120px] gap-6 py-2 lg:grid-cols-[minmax(0,1fr)_minmax(240px,300px)]',
+        className,
+      )}
+    >
+      <div className="min-w-0">{flowBody}</div>
+      {uxSummary ? (
+        <WorkspaceBusinessSummaryRail summary={uxSummary} className="max-lg:border-t max-lg:pt-6 lg:sticky lg:top-6 lg:self-start" />
       ) : null}
     </div>
   );

@@ -113,11 +113,13 @@ export function WorkspaceNextStepPanel({
           <Button
             type="button"
             className="rounded-xl"
+            data-testid="start-viability-result-cta"
             disabled={!canStartReview}
             onClick={onStartReview}
             aria-disabled={!canStartReview}
+            aria-label={t('finalConfirmCta')}
           >
-            {t('finalConfirmCta')}
+            사업성 검토 결과 보기
           </Button>
           {canStartReview && onContinueRefining ? (
             <Button

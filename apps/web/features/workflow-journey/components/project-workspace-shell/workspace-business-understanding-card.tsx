@@ -170,11 +170,22 @@ export function WorkspaceBusinessUnderstandingCard({
         <p className="mt-2 text-sm font-medium text-foreground">{t('confirmLead')}</p>
         <p className="mt-1 text-sm text-muted-foreground">{t('confirmLeadHint')}</p>
         <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <Button type="button" className="rounded-xl" onClick={() => onConfirm('accepted')}>
-            {t('confirmYes')}
+          <Button
+            type="button"
+            className="rounded-xl"
+            aria-label={t('confirmYes')}
+            onClick={() => onConfirm('accepted')}
+          >
+            계속하기
           </Button>
-          <Button type="button" variant="outline" className="rounded-xl" onClick={() => onConfirm('edit')}>
-            {t('confirmNo')}
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-xl"
+            aria-label={t('confirmNo')}
+            onClick={() => onConfirm('edit')}
+          >
+            수정하기
           </Button>
           <Button
             type="button"

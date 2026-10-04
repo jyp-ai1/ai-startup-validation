@@ -195,6 +195,19 @@ export function WorkspaceAnalysisResultPanel({
             >
               {hero.cta}
             </Button>
+            <Button
+              type="button"
+              variant="outline"
+              data-testid="pdf-report-cta"
+              className="mt-2 w-full rounded-xl sm:w-auto"
+              onClick={() => {
+                const status = document.getElementById('analysis-pdf-status');
+                if (status) status.textContent = 'PDF 보고서는 아직 준비 중입니다. 위 판단 요약을 먼저 확인해 주세요.';
+              }}
+            >
+              PDF 보고서 생성
+            </Button>
+            <p id="analysis-pdf-status" data-testid="pdf-report-status" className="mt-2 text-sm text-muted-foreground" />
           </div>
         ) : null}
 

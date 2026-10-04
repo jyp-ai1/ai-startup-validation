@@ -45,8 +45,10 @@ export function MyProjectsHome({
   const greetingName = displayName(userName, userEmail);
   const uploadBlocking = uploadStatus === 'loading';
 
+  const recentPreview = projects.slice(0, 4);
+
   return (
-    <div className="mx-auto max-w-lg space-y-8 py-4">
+    <div className="mx-auto max-w-6xl space-y-8 py-4">
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">
           {t('greeting', { name: greetingName })}
@@ -60,12 +62,13 @@ export function MyProjectsHome({
         </p>
       ) : null}
 
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(260px,0.8fr)]">
       <div className="rounded-2xl border border-border/70 bg-card p-5">
-        <h2 className="mb-4 text-sm font-semibold">{t('newProjectSectionTitle')}</h2>
+        <h2 className="mb-4 text-sm font-semibold">새 프로젝트</h2>
         <form action={formAction} className="space-y-5" data-testid="my-projects-create-form">
           <div className="space-y-2">
             <label htmlFor="new-project-title" className="text-sm font-medium">
-              {t('newProjectLabel')}
+              프로젝트 제목
             </label>
             <input
               id="new-project-title"
@@ -119,7 +122,7 @@ export function MyProjectsHome({
             className="h-11 w-full gap-1"
           >
             <Plus className="size-4" aria-hidden />
-            {pending ? t('creating') : t('newProjectCta')}
+            {pending ? t('creating') : '사업 검토 시작'}
           </Button>
 
           {state.error ? (
@@ -130,18 +133,28 @@ export function MyProjectsHome({
         </form>
       </div>
 
-      {projects.length > 0 ? (
-        <section className="space-y-0">
-          <h2 className="mb-4 text-sm font-medium text-muted-foreground">{t('recentProjects')}</h2>
-          <ul className="divide-y divide-border/60 rounded-2xl border border-border/70 bg-card">
-            {projects.map((project) => (
+      {recentPreview.length > 0 ? (
+        <section className="space-y-3" data-testid="recent-projects-preview">
+          <h2 className="text-sm font-medium text-muted-foreground">{t('recentProjects')}</h2>
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {recentPreview.map((project) => (
               <MyProjectListItem key={project.id} project={project} variant="active" />
             ))}
           </ul>
+          {projects.length > recentPreview.length ? (
+            <a
+              href="/projects"
+              className="inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
+              data-testid="all-projects-link"
+            >
+              전체 프로젝트 보기
+            </a>
+          ) : null}
         </section>
       ) : dbReady ? (
         <p className="text-center text-sm text-muted-foreground">{t('emptyHint')}</p>
       ) : null}
+      </div>
 
       {archivedProjects.length > 0 ? (
         <section className="space-y-3">
