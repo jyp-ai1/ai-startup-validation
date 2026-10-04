@@ -32,7 +32,8 @@ const DEFAULT_SECTION_ORDER: ResultSectionId[] = [
 ];
 
 export function resolveFounderContext(reviewType?: string | null): FounderContextId {
-  return isReviewType(reviewType ?? '') ? reviewType : 'startup-idea';
+  const value = reviewType ?? '';
+  return isReviewType(value) ? value : 'startup-idea';
 }
 
 export function founderContextLabel(id: FounderContextId): string {

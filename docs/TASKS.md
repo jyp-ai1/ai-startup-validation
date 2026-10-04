@@ -516,6 +516,10 @@ See [SPRINT_2_PRINCIPLES.md](./SPRINT_2_PRINCIPLES.md) · [sprints/SPRINT_2_LAND
 **Events:** [EVENT_TAXONOMY.md](./EVENT_TAXONOMY.md)  
 **OAuth QA:** [OAUTH_QA_CHECKLIST.md](./templates/OAUTH_QA_CHECKLIST.md)
 
+### Product IA Implementation Sprint 1 (in review)
+
+Presenter-only recovery of Title/Source, single AI interpretation card, C1 unmount, gapState Right rail, Stage ①–④ from V3 readiness, Stage ③ synthesis, Founder Context lens. Design SoT: PR #80 `ab98b75`. V3 functions not modified. Draft PR — not Production.
+
 ### Sprint 5 exit — Release Checklist driven
 
 **Doc:** [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md) · Admin **Release Readiness** panel
