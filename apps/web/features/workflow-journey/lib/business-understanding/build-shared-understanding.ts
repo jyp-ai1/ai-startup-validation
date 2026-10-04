@@ -5,6 +5,7 @@ import type { UnderstandingPhase } from './business-understanding-store';
 import { memoryHasFact, type ConversationMemory } from './conversation-memory';
 import {
   confidenceFromProvenance,
+  extractPreservedCustomerPersona,
   type UnderstandingConfidence,
   type UnderstandingProvenance,
 } from './understanding-contract';
@@ -162,6 +163,7 @@ function resolveCustomerField(
   entities: LaunchLensDomainContext | null,
   understanding: BusinessUnderstanding | null,
   memory?: ConversationMemory | null,
+  documentText = '',
 ): { value: string; provenance: UnderstandingProvenance } {
   if (memory && memoryHasFact(memory, 'customer')) {
     const fact = memory.facts.find((f) => f.key === 'customer');
@@ -176,7 +178,7 @@ function resolveCustomerField(
               turn.semanticFactKeys?.includes('customer')),
         );
       return {
-        value: truncate(fact.value, 48),
+        value: truncate(fact.value, 160),
         provenance: correctedTurn ? 'USER_CORRECTED' : 'USER_CONFIRMED',
       };
     }
@@ -192,7 +194,7 @@ function resolveCustomerField(
   );
   if (customerTurn?.answer.trim()) {
     return {
-      value: truncate(customerTurn.answer.replace(/\s+/g, ' '), 48),
+      value: truncate(customerTurn.answer.replace(/\s+/g, ' '), 160),
       provenance: 'USER_CONFIRMED',
     };
   }
@@ -216,6 +218,11 @@ function resolveCustomerField(
     }
   }
 
+  const preserved = extractPreservedCustomerPersona(documentText);
+  if (preserved) {
+    return { value: truncate(preserved, 160), provenance: 'DOCUMENT' };
+  }
+
   if (understanding && understanding.customerMentions.length > 0) {
     return {
       value: truncate(
@@ -223,7 +230,7 @@ function resolveCustomerField(
           .slice(0, 2)
           .map((mention) => mention.label)
           .join(' · '),
-        48,
+        160,
       ),
       provenance: 'AI_INFERENCE',
     };
@@ -306,6 +313,7 @@ export function buildUnderstandingSpine(input: {
     input.entities,
     input.understanding,
     input.memory,
+    text,
   );
   const problem = resolveProblemField(input.turns, input.understanding, input.memory);
 

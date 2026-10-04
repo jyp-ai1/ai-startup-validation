@@ -27,6 +27,7 @@ type WorkspaceBusinessUnderstandingCardProps = {
   documentText?: string | null;
   projectId?: string;
   understoodNarrative?: string | null;
+  projectTitle?: string | null;
   onConfirm: (mode: UnderstandingConfirmMode) => void;
   className?: string;
 };
@@ -60,6 +61,7 @@ export function WorkspaceBusinessUnderstandingCard({
   documentText,
   projectId,
   understoodNarrative = null,
+  projectTitle = null,
   onConfirm,
   className,
 }: WorkspaceBusinessUnderstandingCardProps) {
@@ -102,7 +104,15 @@ export function WorkspaceBusinessUnderstandingCard({
       )}
     >
       <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">AI PM</p>
+      {projectTitle?.trim() ? (
+        <p data-testid="understanding-project-title" className="mt-2 text-base font-semibold">
+          {projectTitle.trim()}
+        </p>
+      ) : null}
       <h2 className="mt-2 text-[15px] font-semibold leading-snug">AI가 이해한 내용</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        {readable ? t('documentFirstSub') : t('documentFirstSubUnreadable')}
+      </p>
       {understoodNarrative ? (
         <p
           data-testid="current-understanding-narrative"
@@ -110,47 +120,15 @@ export function WorkspaceBusinessUnderstandingCard({
         >
           {understoodNarrative}
         </p>
-      ) : (
-        <p className="mt-2 text-[15px] font-medium leading-snug">
-          {readable ? 'AI가 이해한 내용' : t('documentFirstLeadUnreadable')}
-        </p>
-      )}
-      <p className="mt-1 text-sm text-muted-foreground">
-        {readable ? t('documentFirstSub') : t('documentFirstSubUnreadable')}
-      </p>
-      {resolvedText.length >= 8 ? (
-        <div data-testid="source-document-block" className="mt-4 border-t border-border/50 pt-3">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-            사업 원문
-          </p>
-          <WorkspaceExpandableText
-            text={resolvedText}
-            preview=""
-            toggleLabel="전체 사업내용 보기"
-            testId="source-document-text"
-            className="mt-2 text-muted-foreground"
-          />
-        </div>
       ) : null}
 
       {draft ? (
         <div className="mt-4 rounded-xl border border-primary/25 bg-gradient-to-br from-primary/[0.06] to-background px-4 py-4">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
-              {t('documentFirstDraftLabel')}
-            </p>
-            <p
-              data-testid="document-first-confidence"
-              className="text-xs font-medium tabular-nums text-muted-foreground"
-            >
-              {t('confidencePercent', { percent: draft.confidencePercent })}
-              <span className="mx-1 text-border">·</span>
-              {t(`confidenceMode.${draft.confidenceMode}`)}
-            </p>
-          </div>
-          <dl className="mt-3 space-y-3">
-            {draft.fields.map((field) => (
-              <div key={field.id} className="min-w-0">
+          <dl className="space-y-3">
+            {draft.fields
+              .filter((field) => field.id === 'business' || field.id === 'customer' || field.id === 'problem')
+              .map((field) => (
+              <div key={field.id} className="min-w-0" data-testid={`understanding-field-${field.id}`}>
                 <dt className="flex flex-wrap items-baseline gap-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                   <span>{t(`draftFields.${field.id}`)}</span>
                   <span className="font-normal normal-case tracking-normal">
@@ -175,6 +153,21 @@ export function WorkspaceBusinessUnderstandingCard({
           ))}
         </ul>
       )}
+
+      {resolvedText.length >= 8 ? (
+        <div data-testid="source-document-block" className="mt-4 border-t border-border/50 pt-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            사업 원문
+          </p>
+          <WorkspaceExpandableText
+            text={resolvedText}
+            preview=""
+            toggleLabel="전체 사업내용 보기"
+            testId="source-document-text"
+            className="mt-2 text-muted-foreground"
+          />
+        </div>
+      ) : null}
 
       {unconfirmedLines.length > 0 ? (
         <div className="mt-4 border-t border-border/50 pt-4">
@@ -215,7 +208,7 @@ export function WorkspaceBusinessUnderstandingCard({
             aria-label={t('confirmNo')}
             onClick={() => onConfirm('edit')}
           >
-            이 이해 수정하기
+            아니요. 수정할게요.
           </Button>
         </div>
       </div>

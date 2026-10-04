@@ -185,11 +185,11 @@ export function WorkspaceAnswerComposer({
                 variant="ghost"
                 className="rounded-xl"
                 data-testid="confirm-no-cta"
-                aria-label="이 이해 수정하기"
+                aria-label="아니요. 수정할게요."
                 disabled={readOnly}
                 onClick={onConfirmNo}
               >
-                이 이해 수정하기
+                아니요. 수정할게요.
               </Button>
             ) : null}
           </div>

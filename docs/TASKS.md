@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## P0 — ALABOM Product Journey E2E Recovery Sprint 🔄
+
+**Branch:** `cursor/product-journey-e2e-recovery-e648` · base `5a34ae7`  
+**Out of scope:** PDF/Vercel · V3 SoT redesign · Auth · schema · new required gaps · Accuracy Sprint 2
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | Title ≠ Source ≠ AI interpretation | ✅ unit + auth E2E |
+| 2 | Correction persist (no 방한 외국인 / no 중소 truncation) | ✅ unit + browser snapshot |
+| 3 | Confirm monotonicity (accepted ↛ pending) | ✅ 인증 브라우저 J5 refresh + re-entry |
+| 4 | Stage ①→②→③→④ existing V3 gaps | ✅ 인증 브라우저 Stage ③→④ DOM/URL |
+| 5 | Golden J1–J6 + long-form + refresh | ✅ browser E2E PASS (`product-journey-e2e-recovery.spec.ts`) |
+
+---
+
 ## Sprint S0.5 — AI PM Core Loop Reconstruction ✅ 조건부 PASS
 
 **Status:** CPO **조건부 PASS** · gap = CEO 감정선 → **S0.6**

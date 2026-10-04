@@ -10,6 +10,10 @@ import { defineConfig, devices } from '@playwright/test';
  * Production spot-check: PLAYWRIGHT_BASE_URL + CI=1 (no webServer).
  */
 const useProd = Boolean(process.env.PLAYWRIGHT_BASE_URL?.includes('vercel.app'));
+const skipWebServer =
+  useProd ||
+  process.env.PLAYWRIGHT_SKIP_WEBSERVER === '1' ||
+  process.env.PLAYWRIGHT_SKIP_WEBSERVER === 'true';
 
 const E2E_HOST = process.env.PLAYWRIGHT_E2E_HOST ?? 'localhost';
 const E2E_PORT = process.env.PLAYWRIGHT_E2E_PORT ?? '3199';
@@ -30,12 +34,12 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  webServer: useProd
+  webServer: skipWebServer
     ? undefined
     : {
-        command: `pnpm exec next start --hostname ${E2E_HOST} --port ${E2E_PORT}`,
+        command: `pnpm exec next start --port ${E2E_PORT}`,
         url: healthURL,
-        reuseExistingServer: false,
+        reuseExistingServer: true,
         timeout: 240_000,
         env: {
           ...process.env,

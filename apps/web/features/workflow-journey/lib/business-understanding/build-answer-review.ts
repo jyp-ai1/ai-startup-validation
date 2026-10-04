@@ -263,10 +263,9 @@ function extractFactValue(
       break;
     }
     case 'customer': {
-      const m = t.match(
-        /(마케팅\s*팀|[\w가-힣]+팀|관광객|여행객|중소기업|스타트업|직장인|학생|커플|부부)/i,
-      );
-      if (m) return m[0];
+      if (/^(마케팅\s*팀|관광객|여행객|중소기업|스타트업|직장인|학생|커플|부부)$/i.test(t)) {
+        return t;
+      }
       break;
     }
     default:
