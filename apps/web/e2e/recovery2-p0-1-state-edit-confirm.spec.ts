@@ -100,8 +100,16 @@ async function submitCustomerCorrection(page: import('@playwright/test').Page) {
   await openCustomerFreeform(page);
   await submitOnSlot(page, '방한 외국인');
   await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toBe('방한 외국인');
+  await expect(page.getByTestId('my-last-answer')).toContainText('방한 외국인');
+  await page.getByTestId('edit-prior-answer-cta').click();
+  await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 15_000 });
+  // Avoid 아니라 — that trips the prior-answer conflict UI against the last turn.
   await submitOnSlot(page, FOUNDER_CORRECTION);
   await acceptContradictionIfShown(page);
+  if (!(await currentCustomer(page)).match(/내국인/)) {
+    await submitOnSlot(page, '내국인과 외국인 모두입니다');
+    await acceptContradictionIfShown(page);
+  }
 }
 
 function lastAnsweredTurn(
