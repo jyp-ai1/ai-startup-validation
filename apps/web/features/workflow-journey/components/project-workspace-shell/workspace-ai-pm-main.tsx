@@ -282,10 +282,8 @@ export function WorkspaceAiPmMain({
   }, [documentContext, entities, loopState, projectId, understanding]);
 
   const demoDisplay = useMemo(() => {
-    const slug = projectId?.startsWith('demo-sample-')
-      ? projectId.slice('demo-sample-'.length)
-      : null;
-    return resolveDemoUxDisplay(slug);
+    if (!projectId?.startsWith('demo-sample-')) return null;
+    return resolveDemoUxDisplay(projectId.slice('demo-sample-'.length));
   }, [projectId]);
 
   const uxSummary = useMemo(() => {

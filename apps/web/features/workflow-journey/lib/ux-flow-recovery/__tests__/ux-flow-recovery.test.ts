@@ -203,6 +203,13 @@ describe('Demo UX fixture', () => {
     );
     expect(display?.projectTitle).not.toContain('SaaS');
   });
+
+  it('does not leak clinicflow onto authenticated or empty project ids', () => {
+    expect(resolveDemoUxDisplay(null)).toBeNull();
+    expect(resolveDemoUxDisplay('')).toBeNull();
+    expect(resolveDemoUxDisplay('custom')).toBeNull();
+    expect(resolveDemoUxDisplay('8f1c2a6e-1234-4bcd-8ef0-1234567890ab')).toBeNull();
+  });
 });
 
 describe('composeUnderstoodNarrative', () => {

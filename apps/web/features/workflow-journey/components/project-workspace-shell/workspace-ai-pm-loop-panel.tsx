@@ -1798,6 +1798,24 @@ export function WorkspaceAiPmLoopPanel({
       return;
     }
 
+    const priorFounderAnswer = [...loadAiPmLoopState(projectId).turns]
+      .reverse()
+      .find((turn) => Boolean(turn.answer?.trim()) && !turn.superseded)
+      ?.answer?.trim();
+    const explicitConflictCue = /다릅니다|아니라/.test(trimmed);
+    if (explicitConflictCue && priorFounderAnswer && priorFounderAnswer !== trimmed) {
+      setAnswerQualityHint('CONTRADICTORY');
+      setContradiction({
+        issueId: semantic.resolvedIssueId ?? issueId,
+        factKey: semantic.factKey ?? 'customer',
+        prior: priorFounderAnswer,
+        next: trimmed,
+      });
+      resetAnswerDraft();
+      syncState(loadAiPmLoopState(projectId));
+      return;
+    }
+
     // Why / mid-judgment — display only, never append Fact turn; reframe on return (W8)
     if (semantic.intent === 'why_meta' || semantic.intent === 'mid_judgment') {
       const preview = applyWorkspaceLoopAnswer(issueId, trimmed, projectId, { semantic });

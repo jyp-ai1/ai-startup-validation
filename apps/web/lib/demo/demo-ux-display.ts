@@ -5,7 +5,6 @@
 
 import { CLINICFLOW_DOCUMENT } from './demo-seed-documents';
 import { getDemoSeedBundle } from './seed';
-import { normalizeDemoSampleSlug } from './demo-isolation';
 
 export type DemoUxDisplay = {
   projectTitle: string;
@@ -20,11 +19,14 @@ export const CLINICFLOW_UX_DISPLAY: DemoUxDisplay = {
   projectFullDescription: CLINICFLOW_DOCUMENT,
 };
 
+const CLINICFLOW_ALIASES = new Set(['clinicflow', 'saas', 'launchlens']);
+
 export function resolveDemoUxDisplay(sampleId?: string | null): DemoUxDisplay | null {
-  const slug = normalizeDemoSampleSlug(sampleId);
-  if (slug === 'clinicflow') return CLINICFLOW_UX_DISPLAY;
-  if (slug === 'custom') return null;
-  const bundle = getDemoSeedBundle(slug);
+  const raw = sampleId?.trim() ?? '';
+  if (!raw) return null;
+  if (raw === 'custom') return null;
+  if (CLINICFLOW_ALIASES.has(raw)) return CLINICFLOW_UX_DISPLAY;
+  const bundle = getDemoSeedBundle(raw);
   if (!bundle) return null;
   return {
     projectTitle: bundle.project.displayName,
