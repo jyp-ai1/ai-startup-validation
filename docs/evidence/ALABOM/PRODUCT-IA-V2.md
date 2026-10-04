@@ -1,6 +1,6 @@
 # Product IA V2 — ALABOM Information Architecture
 
-**Status:** DESIGN ONLY — CPO review. No code.  
+**Status:** DESIGN ONLY — CPO 2차 보완. No code.  
 **Production:** PR #79 (`ecdec53`) remains live and untouched.  
 **Scope:** Founder가 사업을 입력한 뒤 사업성 판단/보고서를 받을 때까지 **무엇을 보고, 확인하고, 검증하는지**.
 
@@ -132,29 +132,72 @@ Interpretation을 확인하기 전에는 Confirmed가 아니다.
 | 아직 모름 | `UNKNOWN` / gap `OPEN` |
 | 서로 다름 | `CONTRADICTION` / `CONTRADICTED` |
 
-### 3.6 Project Context (창업자 정보 — 질문이 아님)
+### 3.6 Founder Context — 입력 / 보존 / 소비 계약
 
-생성 시 확보하는 **사용 목적**은 이후 매 턴 질문이 아니다.
+Founder Context는 “나중에 정의할 역할”이 아니다.  
+**프로젝트 생성 때 이미 받는 값을, AI PM과 결과가 끝까지 읽는 Context**다.
+
+새 컬럼·새 테이블·새 V3 키·DB migration **없음**.
+
+#### 입력 (이미 존재)
 
 ```text
-Founder Context (역할 — 매 턴 질문 금지)
-예비창업자
-초기 스타트업 대표
-사업전략 담당자
-기존 사업 운영자
+화면   apps/web/features/my-projects/components/my-projects-home.tsx
+필드   <input name="reviewType">
+값     startup-idea | new-business | existing-strategy | investment-prep
+필수   createMyProjectAction이 isReviewType()로 거부
 ```
 
-새 Knowledge Store를 만들지 않는다.  
-현재 Production `reviewType` (`창업 아이디어` / `신사업` / `기존 사업 전략` / `투자 준비`)은 **무엇을 검토하는가**이며, 구현 전까지 Context 렌즈의 **임시 입력**으로 읽는다.
+구현 Sprint 1에서 라디오 **값(enum)은 유지**하고, 사용자 라벨만 Founder Context 언어로 바꾼다 (i18n). 새 입력 컨트롤을 추가하지 않는다.
 
-| Founder Context | 질문·검증 무게 | 결과·보고서 무게 |
+| `reviewType` (SoT 값) | 사용자 라벨 (카피) | 렌즈 |
 | --- | --- | --- |
-| 예비창업자 | 실행 가능성, 첫 검증 | 다음 실험, 당장 할 일 |
-| 초기 스타트업 대표 | 고객획득, 반복, 결제 | 다음 검증, 실행 제약 |
-| 사업전략 담당자 | 시장 / 경쟁 / 차별 | 전략 선택지 |
-| 기존 사업 운영자 | 채널, 수익, 진입 | 기존 사업과의 충돌·확장 |
+| `startup-idea` | 예비창업자 · 초기 대표 | 실행 가능성, 첫 검증 |
+| `new-business` | 기존 사업 운영자 | 진입, 수익, 기존 사업 충돌 |
+| `existing-strategy` | 사업전략 담당자 | 시장 / 경쟁 / 차별 |
+| `investment-prep` | 투자검토 | 리스크, 경제성, HOLD 이유 |
 
-`reviewType = investment-prep`이면 렌즈에 리스크/경제성/HOLD 이유를 더한다. 별도 저장소 없음.
+`예비창업자`와 `초기 스타트업 대표`를 **서로 다른 enum으로 쪼개지 않는다.** 같은 `startup-idea` 렌즈다. 쪼개려면 이후 CPO 승인 하에 `REVIEW_TYPES`에 값 하나를 더하는 최소 변경이며, 새 저장소가 아니다. 구현 Sprint 1 범위 밖.
+
+#### 보존 (이미 존재)
+
+```text
+쓰기    createMyProjectAction
+        → createOwnedProject.onboardingContext.sprint12
+        → buildInitialInterviewState(reviewType, summary)
+
+경로    project.onboarding_context.sprint12.reviewType
+타입    Sprint12InterviewState.reviewType
+읽기    parseInterviewBundle(project.onboardingContext).sprint12?.reviewType
+기본값  없거나 파싱 실패 → startup-idea
+```
+
+`onboarding_context` JSON은 이미 프로젝트 행에 있다. 마이그레이션 없음.
+
+#### 소비 (구현 Sprint 1 — presenter only, V3 결정 함수 금지)
+
+```text
+AI PM 질문 카피 / 「왜 이 질문인가요」
+  read  reviewType
+  write 없음 (decideNextQuestionFromReview 입력에 넣지 않음)
+
+Right 「판단 가능 여부」 부가 문장
+  read  reviewType
+  write 없음
+
+④ 결과 · 보고서 섹션 순서
+  read  reviewType
+  write 없음
+        startup-idea      → 다음 실행 / 첫 검증 먼저
+        new-business      → 진입 / 수익 / 충돌 먼저
+        existing-strategy → 시장 / 경쟁 / 차별 먼저
+        investment-prep   → 리스크 / 경제성 / HOLD 먼저
+
+재질문 금지
+  Center에서 Founder Context를 다시 묻지 않음
+```
+
+`BusinessUnderstanding.founder` 필드는 문서에서 읽힌 **창업자 언급**이다. Founder Context(검토 관점)와 다른 객체다. 섞어 쓰지 않는다.
 
 ---
 
@@ -184,13 +227,21 @@ RIGHT  = HOW MUCH VERIFIED  얼마나 검증되었는가
 사용자 Stage (V2):
 
 ```text
-① 사업 정의
-② 시장 검증
-③ 사업성 검토
-④ 결과
+① 사업 정의                         V3 Stage A — Canonical gap 완료
+② 시장 검증                         V3 Stage B — Canonical gap 완료
+③ 사업성 판단에 필요한 정보 확인/종합  새 required gap 없음. 종합 화면
+④ 결과                              판단 + 보고서
 ```
 
-**완료 기준 = 해당 Stage의 핵심 정보 확보. 화면 진입 ≠ 완료.**
+**③은 새로운 검증 Stage가 아니다.**  
+①②에서 닫힌 지식(+ living Facet 표시)을 **판단 재료로 모아 보여주는 화면**이다.
+
+```text
+③ = 실제 C-stage required-gap 검증 단계  ❌ 금지
+③ = A/B 확보 정보로 사업성을 판단하기 위한 확인/종합  ✅
+```
+
+**완료 기준:** ①②는 Canonical 확보. ③은 자체 readiness SoT가 없다. ④는 기존 판단 산출물. 화면 진입 ≠ ①② 완료.
 
 ```text
 사업내용 입력  ≠  사업 정의 완료
@@ -215,15 +266,19 @@ V3 `ProductStageId` / readiness는 그대로 둔다.
 | --- | --- | --- | --- |
 | ① 사업 정의 | `A_understanding` | Stage A required 4개가 충분히 확인 | `evaluateStageReadiness.stageAReady` — `businessOneLiner`, `customerPersona`, `payer`, `problemJtbd` 모두 `CLOSED` |
 | ② 시장 검증 | `B_validation` | Stage B required 4개가 충분히 확인 | `STAGE_B_REQUIRED_GAPS` 전부 `CLOSED` |
-| ③ 사업성 검토 | `C_risk` + 기존 living C 필드 | 판단에 필요한 경제/실행 정보가 충분 | **새 required gap 없음.** 기존 living `revenueModel`, `pricingHint`, `executionConstraints`, `topRisks`의 확인 상태를 **표시만** |
-| ④ 결과 | `D_decision` | 판단 산출물이 존재 | 기존 결과 presenter / `currentJudgment` — 새 엔진 없음 |
+| ③ 확인/종합 | 없음. `C_risk`를 required로 승격하지 않음 | **완료 게이트 없음.** A/B 지식을 한 화면에 종합 | living Facet(`revenueModel`, `pricingHint`, `executionConstraints`, `topRisks`) **표시만**. `evaluateStageReadiness`에 stageC 추가 금지 |
+| ④ 결과 | `D_decision` 산출물 | 판단 화면이 존재 | 기존 결과 presenter / `currentJudgment` — 새 엔진 없음 |
+
+③ 진입: V3 `stageAReady` 그리고 Stage B required가 CLOSED이거나, Founder가 결과로 가려 할 때 종합 한 박자.  
+③에서 새 질문을 강제하지 않는다. 비어 있는 Facet은 Right에 ○로만 보이고, ④ 판단을 새 gap으로 막지 않는다.  
+`stageCReady` 같은 새 SoT를 만들지 않는다.
 
 입력 직후 Left는 이렇게 보여야 한다.
 
 ```text
 ① 사업 정의   ●
 ② 시장 검증   ○
-③ 사업성 검토 ○
+③ 확인/종합   ○
 ④ 결과       ○
 ```
 
@@ -265,7 +320,7 @@ CPO가 준 목록을 **구현하지 않는다.**
 
 기존 대안과 경쟁을 두 개의 신규 `gapId`로 쪼개지 않는다. Right는 두 줄로 보여줄 수 있으나 Completeness는 `alternativesCompetitors` 하나다.
 
-### ③ 사업성 검토
+### ③ 확인/종합 (표시 Facet — required 아님)
 
 | 표시 | 매핑 | 종류 |
 | --- | --- | --- |
@@ -278,8 +333,8 @@ CPO가 준 목록을 **구현하지 않는다.**
 | 경제성 | 수익·가격·payer 합성 | Facet |
 | 시장 진입 가능성 | `marketChannel` + `executionConstraints` | Facet |
 
-③의 완료는 **새 V3 required 집합을 만들지 않는다.**  
-표시 규칙: 결과 화면으로 가기 전에 Founder가 「지금 판단해도 되는가」를 Right에서 보게 한다. 강제 게이트는 기존 final integrity / handoff를 읽기만 한다.
+③ 카탈로그는 **종합 화면의 표시 목록**이다. Stage 완료 집합이 아니다.  
+강제 게이트는 기존 final integrity / handoff를 읽기만 한다.
 
 ### ④ 결과 (gap이 아님 — 산출물)
 

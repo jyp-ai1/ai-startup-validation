@@ -1,6 +1,6 @@
 # Product State / Data Model V2
 
-**Status:** DESIGN ONLY — CPO review. No code.  
+**Status:** DESIGN ONLY — CPO 2차 보완. No code.  
 **Rule:** 새 SoT를 만들지 않는다. 기존 V3 + Living + Project 필드의 **읽기 모델**만 정의한다.
 
 ---
@@ -63,24 +63,27 @@ V2는 이 체인 **앞뒤의 제품 의미**를 적는다. 함수 시그니처�
 | Stage Readiness | gapState | `evaluateStageReadiness` (순수 계산) | 화면 진입으로 READY |
 | Next Question | gapState + living + lastDecision | `decideNextQuestionFromReview` | CLOSED 칸 재질문 표현 |
 | Judgment | living + analysis presenter | 기존 결과 스토어 | 새 viability 엔진 |
-| Report | judgment view + Context 렌즈 | PDF는 향후. 지금은 CTA 상태 | Production 데이터 변환 |
+| Founder Context | `sprint12.reviewType` | 생성 시에만 기록. 이후 읽기 전용 | 새 컬럼 / V3 입력 |
+| Report | judgment view + `reviewType` 렌즈 | PDF는 향후. 지금은 CTA 상태 | Production 데이터 변환 |
 
 ---
 
 ## 2. 계층 정의
 
-### 2.1 Project Context
+### 2.1 Founder Context
 
 | | |
 | --- | --- |
-| SoT | 프로젝트 레코드. 현재 `reviewType`. V2 설계 필드 `founderPurpose`는 **미구현** |
-| 입력 | 생성 화면 |
-| 출력 | 질문 톤 / 결과 렌즈 가중치 (구현 Sprint) |
-| 상태 | 불변에 가깝다. AI PM이 재질문하지 않음 |
-| 사용자 표현 | 「사용 목적」한 줄. 폼 슬롯 「창업자」가 아님 |
+| SoT | `project.onboardingContext.sprint12.reviewType` (`ReviewType`) |
+| 입력 | 생성 폼 `reviewType` — **이미 필수** |
+| 보존 | `createOwnedProject` → `onboarding_context` JSON. 컬럼 추가 없음 |
+| 읽기 | `parseInterviewBundle(...).sprint12?.reviewType` 없으면 `startup-idea` |
+| 출력 | presenter 렌즈만. V3 decision 입력 아님 |
+| 상태 | 생성 후 고정. AI PM 재질문 금지 |
+| 사용자 표현 | 같은 4값의 Founder 라벨 (i18n). `BusinessUnderstanding.founder`와 혼동 금지 |
 
-기존 `reviewType`: `startup-idea` / `new-business` / `existing-strategy` / `investment-prep`.  
-의미 유지. Context는 별 축이다. 이번 Phase 스키마 변경 없음.
+구현 Sprint 1 최소 변경: **읽기 + 카피**. 스키마/enum 확장/migration 없음.  
+`예비창업자` vs `초기 대표` 분리는 같은 `startup-idea`다. 값 추가는 CPO 별도 승인.
 
 ### 2.2 Source
 
@@ -188,7 +191,7 @@ Migration 불필요. Production 데이터 변환 없음.
 | 입력 | gapState |
 | 출력 | `stageAReady` `stageBAllowed` `currentStageFocus` |
 | 상태 | A not ready → A focus. A ready → B 허용 |
-| 사용자 표현 | Left ①~② 완료. ③④는 living C/D 필드의 **표시 뷰** (새 readiness 함수 없음) |
+| 사용자 표현 | Left ①②는 V3 readiness. **③은 readiness SoT 없음** — A/B 지식 종합 화면. ④는 기존 판단 산출물 |
 
 ```text
 사업내용 입력  ≠  stageAReady
