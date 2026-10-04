@@ -1,6 +1,6 @@
 # Production 36b241e — J3 이후 질문 루프 단절 RCA
 
-**Status:** RCA COMPLETE — product code unchanged · Production `36b241e` preserved  
+**Status:** RCA COMPLETE · 종료 가드 정합 수정은 PR #84 (Draft, 미머지) · Production `36b241e` 보존  
 **Date:** 2026-10-04  
 **SHA under investigation:** `36b241e48b9a1caf75ae5c4f77cfe5356562b54d`  
 **Replay:** `apps/web/features/workflow-journey/lib/business-understanding/__tests__/production-j3-question-loop-rca.test.ts`  
@@ -127,10 +127,10 @@ Budget(`CEO_JUDGMENT_SESSION_MAX_QUESTIONS=5`)는 원인이 아니다. C 이후 
 
 ## 하지 않은 것
 
-- 제품 코드 수정
 - Playwright locator 수정 / `my-last-answer` 강제 생성
 - Production 데이터 조회·변경
-- V3 SoT / gap / 질문 알고리즘 수정
+- V3 SoT / `buildAnswerReview` / `updateGapStateFromReview` / `evaluateStageReadiness` 의미 / 질문 우선순위 변경
+- Fix10 제거 또는 우회
 - Merge / 재배포 / CEO 테스트
 
 CPO 수정 지시 반영 (PR #84, 미머지): `hasNoAskableGap`은 Canonical Stage A/B + 기록된 키를 보고, missing 키는 OPEN과 같다. `applyNoGapTermination`은 askable Canonical 결정을 hard-null 하지 않는다. Fix10 종료 목적(진짜 no-gap)은 유지한다.
