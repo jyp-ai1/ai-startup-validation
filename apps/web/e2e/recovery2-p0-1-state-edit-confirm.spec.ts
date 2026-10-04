@@ -220,8 +220,7 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     expect(afterNext?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
     expect(afterNext?.gapState?.gaps?.payer?.completeness).not.toBe('CONTRADICTED');
 
-    const priorAnswer = page.getByTestId('prior-answer-text');
-    const priorText = (await priorAnswer.innerText().catch(() => '')) || '';
+    const priorText = (await page.getByTestId('my-last-answer').innerText().catch(() => '')) || '';
     const editCta = page.getByTestId('edit-prior-answer-cta');
     if (
       /내국인|방한|체험객/.test(priorText) &&
