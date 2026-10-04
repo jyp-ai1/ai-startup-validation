@@ -84,7 +84,9 @@ const v3Env = {
     process.env.NEXT_PUBLIC_AI_PM_JUDGMENT_AGGREGATION_V1 ?? 'true',
 };
 
-const reuseCandidates = [...new Set([PREFERRED, 3100, 3201])];
+// Do not reuse :3100 — that process booted before this SHA and can stay
+// "healthy" while serving a stale workspace. Prefer a current-SHA server.
+const reuseCandidates = [...new Set([PREFERRED, 3201, 3198])];
 let port = 0;
 for (const candidate of reuseCandidates) {
   if (await isHealthy(candidate)) {

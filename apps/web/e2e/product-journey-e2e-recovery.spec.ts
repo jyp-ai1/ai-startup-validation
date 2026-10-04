@@ -83,7 +83,12 @@ async function clickThroughReading(page: Page) {
     }
     await page.waitForTimeout(400);
   }
-  throw new Error('Reading sequence never reached AI PM understanding or answer UI');
+  await shot(page, 'journey-reading-stuck');
+  const stuckUrl = page.url();
+  const stuckBody = ((await page.locator('body').innerText().catch(() => '')) || '').slice(0, 400);
+  throw new Error(
+    `Reading sequence never reached AI PM understanding or answer UI url=${stuckUrl} body=${stuckBody}`,
+  );
 }
 
 async function readUnderstandingPhase(page: Page): Promise<string> {
