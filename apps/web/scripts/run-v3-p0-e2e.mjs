@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 /**
- * PR8.5-INFRA-UNBLOCK — pick a free port, export PLAYWRIGHT_E2E_PORT, run Playwright.
- * Keeps webServer listen port and baseURL in sync (avoids 3000→3001 drift).
+ * V3 P0 E2E runner.
+ *
+ * Playwright's webServer child hits EvalError
+ * "Code generation from strings disallowed for this context" in middleware.js
+ * in this environment. That is a harness race — not a product 500.
+ * Start or reuse `next start` here, then skip Playwright webServer.
  */
 import net from 'node:net';
 import { spawn } from 'node:child_process';
@@ -31,16 +35,85 @@ async function findFreePort(start) {
   throw new Error(`No free port in ${start}..${start + MAX_TRIES - 1} on ${HOST}`);
 }
 
-const port = await findFreePort(PREFERRED);
+async function isHealthy(port) {
+  try {
+    const res = await fetch(`http://${HOST}:${port}/health`, {
+      signal: AbortSignal.timeout(2500),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function waitForHealth(port, timeoutMs = 120_000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (await isHealthy(port)) return true;
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+  return false;
+}
+
 const webDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-console.log(`[v3-p0-e2e] PLAYWRIGHT_E2E_PORT=${port} (${HOST})`);
-
-const env = {
+const v3Env = {
   ...process.env,
-  PLAYWRIGHT_E2E_HOST: HOST,
-  PLAYWRIGHT_E2E_PORT: String(port),
+  HOSTNAME: HOST,
+  NODE_OPTIONS: '--max-old-space-size=6144',
+  V3_REVIEW_PIPELINE: 'true',
+  NEXT_PUBLIC_V3_REVIEW_PIPELINE: 'true',
+  NEXT_PUBLIC_AI_PM_FOCUSED_UI: process.env.NEXT_PUBLIC_AI_PM_FOCUSED_UI ?? 'false',
+  AI_PM_FOCUSED_UI: process.env.AI_PM_FOCUSED_UI ?? 'false',
+  AI_PM_JUDGMENT_POLICY_V1: process.env.AI_PM_JUDGMENT_POLICY_V1 ?? 'true',
+  NEXT_PUBLIC_AI_PM_JUDGMENT_POLICY_V1:
+    process.env.NEXT_PUBLIC_AI_PM_JUDGMENT_POLICY_V1 ?? 'true',
+  AI_PM_ANSWER_FIRST_ROUTING_V1: process.env.AI_PM_ANSWER_FIRST_ROUTING_V1 ?? 'true',
+  NEXT_PUBLIC_AI_PM_ANSWER_FIRST_ROUTING_V1:
+    process.env.NEXT_PUBLIC_AI_PM_ANSWER_FIRST_ROUTING_V1 ?? 'true',
+  AI_PM_NO_ASK_POLICY_V1: process.env.AI_PM_NO_ASK_POLICY_V1 ?? 'true',
+  NEXT_PUBLIC_AI_PM_NO_ASK_POLICY_V1:
+    process.env.NEXT_PUBLIC_AI_PM_NO_ASK_POLICY_V1 ?? 'true',
+  AI_PM_RESEARCH_UX_V1: process.env.AI_PM_RESEARCH_UX_V1 ?? 'true',
+  NEXT_PUBLIC_AI_PM_RESEARCH_UX_V1: process.env.NEXT_PUBLIC_AI_PM_RESEARCH_UX_V1 ?? 'true',
+  AI_PM_ANSWER_TARGET_BINDING_V1: process.env.AI_PM_ANSWER_TARGET_BINDING_V1 ?? 'true',
+  NEXT_PUBLIC_AI_PM_ANSWER_TARGET_BINDING_V1:
+    process.env.NEXT_PUBLIC_AI_PM_ANSWER_TARGET_BINDING_V1 ?? 'true',
+  AI_PM_JUDGMENT_AGGREGATION_V1: process.env.AI_PM_JUDGMENT_AGGREGATION_V1 ?? 'true',
+  NEXT_PUBLIC_AI_PM_JUDGMENT_AGGREGATION_V1:
+    process.env.NEXT_PUBLIC_AI_PM_JUDGMENT_AGGREGATION_V1 ?? 'true',
 };
+
+let port;
+if (await isHealthy(PREFERRED)) {
+  port = PREFERRED;
+  console.log(`[v3-p0-e2e] reuse healthy next on ${HOST}:${port}`);
+} else if (await isPortFree(PREFERRED)) {
+  port = PREFERRED;
+} else {
+  port = await findFreePort(PREFERRED + 1);
+}
+
+let serverChild = null;
+if (!(await isHealthy(port))) {
+  console.log(`[v3-p0-e2e] starting next start on ${HOST}:${port} (outside Playwright)`);
+  serverChild = spawn(
+    'pnpm',
+    ['exec', 'next', 'start', '--hostname', HOST, '--port', String(port)],
+    {
+      cwd: webDir,
+      env: { ...v3Env, PORT: String(port), HOSTNAME: HOST },
+      stdio: ['ignore', 'inherit', 'inherit'],
+      shell: process.platform === 'win32',
+    },
+  );
+  if (!(await waitForHealth(port))) {
+    serverChild.kill('SIGTERM');
+    throw new Error(`[v3-p0-e2e] next start on ${port} never became healthy`);
+  }
+}
+
+console.log(`[v3-p0-e2e] PLAYWRIGHT_E2E_PORT=${port} (${HOST}) skipWebServer=1`);
 
 const extraArgs = process.argv.slice(2);
 const defaultSpec = 'e2e/v3-p0-production-readiness.spec.ts';
@@ -57,9 +130,31 @@ const args = [
 
 const child = spawn('pnpm', args, {
   cwd: webDir,
-  env,
+  env: {
+    ...process.env,
+    PLAYWRIGHT_E2E_HOST: HOST,
+    PLAYWRIGHT_E2E_PORT: String(port),
+    PLAYWRIGHT_SKIP_WEBSERVER: '1',
+  },
   stdio: 'inherit',
   shell: process.platform === 'win32',
 });
 
-child.on('exit', (code) => process.exit(code ?? 1));
+function cleanup() {
+  if (serverChild && !serverChild.killed) {
+    serverChild.kill('SIGTERM');
+  }
+}
+
+child.on('exit', (code) => {
+  cleanup();
+  process.exit(code ?? 1);
+});
+process.on('SIGINT', () => {
+  cleanup();
+  process.exit(130);
+});
+process.on('SIGTERM', () => {
+  cleanup();
+  process.exit(143);
+});

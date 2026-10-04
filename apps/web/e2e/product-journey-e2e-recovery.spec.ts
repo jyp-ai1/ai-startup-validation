@@ -285,14 +285,21 @@ test.describe('Authenticated Golden J1–J6', () => {
     const lastBeforeRefresh = (
       await page.getByTestId('my-last-answer').innerText().catch(() => '')
     ).trim();
+    const gapBeforeRefresh = await readActiveTargetGap(page);
     expect(phaseBeforeRefresh).not.toBe('pending');
+    expect(phaseBeforeRefresh).toMatch(/accepted|review-ready|aligning/);
     await page.reload({ waitUntil: 'domcontentloaded' });
     await dismissCookies(page);
     await clickThroughReading(page);
     await expect(page.getByTestId('document-first-card')).toHaveCount(0);
-    expect(await readUnderstandingPhase(page)).not.toBe('pending');
+    await expect(page.getByTestId('understanding-confirm-yes')).toHaveCount(0);
+    await expect(page.getByTestId('understanding-confirm-edit')).toHaveCount(0);
+    const phaseAfterReload = await readUnderstandingPhase(page);
+    expect(phaseAfterReload).not.toBe('pending');
+    expect(phaseAfterReload).toMatch(/accepted|review-ready|aligning/);
     const afterReload = await page.locator('body').innerText();
     expect(afterReload).not.toMatch(/방한 외국인/);
+    expect(afterReload).not.toMatch(/아니요\.?\s*수정할게요/);
     if (lastBeforeRefresh) {
       expect(afterReload).toContain(lastBeforeRefresh.slice(0, 12));
     }
@@ -304,6 +311,37 @@ test.describe('Authenticated Golden J1–J6', () => {
     ).toBeVisible({ timeout: 30_000 });
     await shot(page, 'journey-j5-refresh');
 
+    await page.goto(projectUrl, { waitUntil: 'domcontentloaded' });
+    await dismissCookies(page);
+    await clickThroughReading(page);
+    await expect(page.getByTestId('document-first-card')).toHaveCount(0);
+    await expect(page.getByTestId('understanding-confirm-yes')).toHaveCount(0);
+    const phaseAfterReentry = await readUnderstandingPhase(page);
+    expect(phaseAfterReentry).not.toBe('pending');
+    const afterReentry = await page.locator('body').innerText();
+    expect(afterReentry).not.toMatch(/방한 외국인/);
+    expect(afterReentry).not.toMatch(/아니요\.?\s*수정할게요/);
+    if (lastBeforeRefresh) {
+      expect(afterReentry).toContain(lastBeforeRefresh.slice(0, 12));
+    }
+    test.info().attach('j5-refresh-reentry', {
+      body: JSON.stringify(
+        {
+          projectUrl,
+          urlAfterReentry: page.url(),
+          phaseBeforeRefresh,
+          phaseAfterReload,
+          phaseAfterReentry,
+          lastBeforeRefresh,
+          gapBeforeRefresh,
+          gapAfterReentry: await readActiveTargetGap(page),
+        },
+        null,
+        2,
+      ),
+    });
+    await shot(page, 'journey-j5-reentry');
+
     const closedAfter = await closeCanonicalGaps(page);
     if (closedAfter === 'loop' || closedAfter === 'none') {
       throw new Error('Stage ③ did not appear after closing canonical gaps');
@@ -311,6 +349,17 @@ test.describe('Authenticated Golden J1–J6', () => {
     if (closedAfter === 'synthesis') {
       await expect(page.getByTestId('stage-synthesis-panel')).toBeVisible();
       await expect(page.getByTestId('synthesis-facts')).toBeVisible();
+      test.info().attach('stage-3-dom', {
+        body: JSON.stringify(
+          {
+            url: page.url(),
+            synthesisVisible: true,
+            openResultCta: await page.getByTestId('open-result-cta').isVisible(),
+          },
+          null,
+          2,
+        ),
+      });
       await shot(page, 'journey-j6-stage-3');
       await page.getByTestId('open-result-cta').click();
     }
@@ -319,6 +368,17 @@ test.describe('Authenticated Golden J1–J6', () => {
     await expect(page.url()).toMatch(/workspace/);
     await shot(page, 'journey-j6-stage-4');
     test.info().attach('journey-url', { body: `${projectUrl} → ${page.url()}` });
+    test.info().attach('stage-4-dom', {
+      body: JSON.stringify(
+        {
+          url: page.url(),
+          resultView: true,
+          verdict: (await page.getByTestId('viability-verdict').innerText()).trim(),
+        },
+        null,
+        2,
+      ),
+    });
     test.info().attach('closed-gaps', {
       body: (await readClosedGaps(page)).join(','),
     });
