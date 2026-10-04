@@ -78,6 +78,8 @@ import { isWorkspaceDocumentAnalyzable, looksLikeDocumentFileName } from '../../
 import {
   deriveWorkspaceState,
 } from '../../lib/business-understanding/workspace-state';
+import { buildUxJourneyStages } from '../../lib/ux-flow-recovery/build-ux-journey-stages';
+import { resolveProjectDisplayTitle, resolveBusinessSourceText } from '../../lib/ux-flow-recovery/resolve-project-display-title';
 import {
   presentWorkspaceHeader,
   presentWorkspaceReviewGate,
@@ -137,6 +139,8 @@ type V2StrategyWorkspaceViewProps = {
   demoFresh?: boolean;
   seedDocument?: string;
   isNewProject?: boolean;
+  projectTitle?: string | null;
+  reviewType?: string | null;
   /** DB snapshot — authoritative workspace state on entry. */
   initialWorkspaceSnapshot?: WorkspacePersistedSnapshot | null;
 };
@@ -149,6 +153,8 @@ export function V2StrategyWorkspaceView({
   demoFresh = false,
   seedDocument,
   isNewProject = false,
+  projectTitle = null,
+  reviewType = null,
   initialWorkspaceSnapshot = null,
 }: V2StrategyWorkspaceViewProps) {
   const router = useRouter();
@@ -863,13 +869,26 @@ export function V2StrategyWorkspaceView({
     ? 'AI SaaS 검토'
     : isDemoGuided
       ? demoProjectName || tDemo('sampleProjectName')
-      : domain.business.trim() || deriveProjectName(idea) || deriveProjectName(evidence.idea);
+      : resolveProjectDisplayTitle({
+          projectTitle,
+          seedDocument: seedDocument ?? documentContext,
+        });
+
+  const sourceDocument = resolveBusinessSourceText({
+    seedDocument,
+    storedDocument: documentContext,
+  });
 
   const showDemoLoginCta = isDemoGuided;
 
   const hasCompletedReview = isDemoGuided
     ? reviewCount >= 1
     : reviewCount >= 1 || loadPersistedReviewCount(storageProjectId) > 0;
+
+  const productStages = buildUxJourneyStages({
+    gapState: workspaceState.loop.gapState,
+    resultOpen: hasCompletedReview || reviewCount >= 1,
+  });
 
   const stripMessage = useMemo(() => {
     if (reviewCount > 0) {
@@ -933,6 +952,7 @@ export function V2StrategyWorkspaceView({
           hasCompletedReview={hasCompletedReview}
           onDocumentIntake={handleDocumentIntake}
           projectName={projectName}
+          reviewType={reviewType}
           onLoopDocumentUpdated={handleLoopDocumentUpdated}
           onLoopComplete={handleLoopComplete}
           onSessionPause={handleSessionPause}
@@ -967,7 +987,8 @@ export function V2StrategyWorkspaceView({
       demoBadge={isDemoGuided}
       guestDemoMode={isDemoGuided}
       user={isDemoGuided ? null : user}
-      sidebar={sidebarSnapshot}
+      sidebar={{ ...sidebarSnapshot, productStages }}
+      sourceDocument={sourceDocument}
       mainView={mainView}
       activeNodeId={activeNavNodeId}
       stripMessage={stripMessage}

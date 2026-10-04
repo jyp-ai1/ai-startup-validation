@@ -45,6 +45,11 @@ export type WorkspaceSidebarSnapshot = {
     id: 'business' | 'customer' | 'market' | 'review' | 'analysis';
     lifecycle: NavNodeLifecycle;
   }>;
+  /** Product IA V2 — Stage A/B readiness overlay. */
+  productStages?: Array<{
+    id: 'understand' | 'market' | 'viability' | 'result';
+    lifecycle: NavNodeLifecycle;
+  }>;
   stepFirstProgress?: boolean;
   /** v2 — deterministic specificity % (NOT success probability). */
   understandingCoveragePercent?: number | null;

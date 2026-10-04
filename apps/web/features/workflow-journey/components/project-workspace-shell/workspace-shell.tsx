@@ -39,6 +39,7 @@ type ProjectWorkspaceShellProps = {
   businessState?: WorkspaceBusinessState | null;
   sharedUnderstanding?: WorkspaceSharedUnderstanding | null;
   understandingSpine?: WorkspaceUnderstandingSpine | null;
+  sourceDocument?: string | null;
   children: React.ReactNode;
   className?: string;
 };
@@ -58,6 +59,7 @@ export function ProjectWorkspaceShell({
   businessState = null,
   sharedUnderstanding = null,
   understandingSpine = null,
+  sourceDocument = null,
   children,
   className,
 }: ProjectWorkspaceShellProps) {
@@ -88,7 +90,12 @@ export function ProjectWorkspaceShell({
               </span>
             ) : null}
             {!businessState && projectName ? (
-              <p className="truncate text-sm font-medium text-foreground">{projectName}</p>
+              <p
+                data-testid="project-display-title"
+                className="truncate text-sm font-medium text-foreground"
+              >
+                {projectName}
+              </p>
             ) : null}
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -99,7 +106,11 @@ export function ProjectWorkspaceShell({
       </header>
 
       {businessState ? (
-        <WorkspaceBusinessStateHeader projectName={projectName} state={businessState} />
+        <WorkspaceBusinessStateHeader
+          projectName={projectName}
+          state={businessState}
+          sourceDocument={sourceDocument}
+        />
       ) : null}
 
       {sharedUnderstanding && mainView !== 'ai-pm' ? (

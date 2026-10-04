@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
+import type { ResultSectionId } from '../../lib/ux-flow-recovery/founder-context-lens';
 import type { UxViabilityResultView } from '../../lib/ux-flow-recovery/build-ux-viability-result';
 
 type WorkspaceViabilityResultViewProps = {
@@ -12,6 +13,104 @@ type WorkspaceViabilityResultViewProps = {
   pdfHref?: string | null;
   className?: string;
 };
+
+function ResultSection({
+  id,
+  result,
+}: {
+  id: ResultSectionId;
+  result: UxViabilityResultView;
+}) {
+  switch (id) {
+    case 'judgment':
+      return (
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">현재 사업성 판단</p>
+          <p data-testid="viability-verdict" className="mt-2 text-[17px] font-semibold">
+            {result.verdict}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed">{result.judgment}</p>
+        </div>
+      );
+    case 'why':
+      return (
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">판단 근거</p>
+          <p data-testid="viability-why" className="mt-2 text-sm leading-relaxed">
+            {result.why}
+          </p>
+        </div>
+      );
+    case 'facts':
+      return (
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">확인된 사실</p>
+          <ul className="mt-2 space-y-1 text-sm" data-testid="viability-confirmed">
+            {(result.confirmedFacts.length ? result.confirmedFacts : ['아직 확정된 사실이 없습니다.']).map(
+              (line) => (
+                <li key={line}>• {line}</li>
+              ),
+            )}
+          </ul>
+        </div>
+      );
+    case 'assumptions':
+      return (
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">AI의 가정</p>
+          <ul className="mt-2 space-y-1 text-sm text-muted-foreground" data-testid="viability-assumptions">
+            {(result.assumptions.length ? result.assumptions : ['표시할 가정이 없습니다.']).map((line) => (
+              <li key={line}>• {line}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    case 'unknowns':
+      return (
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">아직 모르는 것</p>
+          <ul className="mt-2 space-y-1 text-sm text-muted-foreground" data-testid="viability-unknowns">
+            {result.unknowns.map((line) => (
+              <li key={line}>• {line}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    case 'risks':
+      return (
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">핵심 리스크</p>
+          <ul className="mt-2 space-y-1 text-sm" data-testid="viability-risks">
+            {result.risks.map((line) => (
+              <li key={line}>• {line}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    case 'nextValidation':
+      return (
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">추가 검증해야 할 것</p>
+          <ul className="mt-2 space-y-1 text-sm" data-testid="viability-next">
+            {result.nextValidation.map((line) => (
+              <li key={line}>• {line}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    case 'nextActions':
+      return (
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">다음 실행/검증</p>
+          <ul className="mt-2 space-y-1 text-sm" data-testid="viability-next-actions">
+            {result.nextActions.map((line) => (
+              <li key={line}>• {line}</li>
+            ))}
+          </ul>
+        </div>
+      );
+  }
+}
 
 export function WorkspaceViabilityResultView({
   result,
@@ -40,58 +139,9 @@ export function WorkspaceViabilityResultView({
       <h2 className="mt-3 text-xl font-semibold tracking-tight">{result.title}</h2>
 
       <div className="mt-5 space-y-5">
-        <div>
-          <p className="text-xs font-semibold text-muted-foreground">현재 판단</p>
-          <p data-testid="viability-verdict" className="mt-2 text-[17px] font-semibold">
-            {result.verdict}
-          </p>
-          <p className="mt-1 text-sm leading-relaxed">{result.judgment}</p>
-        </div>
-
-        <div>
-          <p className="text-xs font-semibold text-muted-foreground">왜 이렇게 판단했나요?</p>
-          <p data-testid="viability-why" className="mt-2 text-sm leading-relaxed">
-            {result.why}
-          </p>
-        </div>
-
-        <div>
-          <p className="text-xs font-semibold text-muted-foreground">확인된 사실</p>
-          <ul className="mt-2 space-y-1 text-sm" data-testid="viability-confirmed">
-            {(result.confirmedFacts.length ? result.confirmedFacts : ['아직 확정된 사실이 없습니다.']).map(
-              (line) => (
-                <li key={line}>• {line}</li>
-              ),
-            )}
-          </ul>
-        </div>
-
-        <div>
-          <p className="text-xs font-semibold text-muted-foreground">검증되지 않은 가정</p>
-          <ul className="mt-2 space-y-1 text-sm text-muted-foreground" data-testid="viability-assumptions">
-            {(result.assumptions.length ? result.assumptions : ['표시할 가정이 없습니다.']).map((line) => (
-              <li key={line}>• {line}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <p className="text-xs font-semibold text-muted-foreground">아직 모르는 것</p>
-          <ul className="mt-2 space-y-1 text-sm text-muted-foreground" data-testid="viability-unknowns">
-            {result.unknowns.map((line) => (
-              <li key={line}>• {line}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <p className="text-xs font-semibold text-muted-foreground">다음 검증</p>
-          <ul className="mt-2 space-y-1 text-sm" data-testid="viability-next">
-            {result.nextValidation.map((line) => (
-              <li key={line}>• {line}</li>
-            ))}
-          </ul>
-        </div>
+        {result.sectionOrder.map((id) => (
+          <ResultSection key={id} id={id} result={result} />
+        ))}
 
         <div>
           <Button
@@ -100,7 +150,7 @@ export function WorkspaceViabilityResultView({
             data-testid="pdf-report-cta"
             onClick={handlePdf}
           >
-            PDF 보고서 생성
+            보고서
           </Button>
           {pdfMessage ? (
             <p data-testid="pdf-report-status" className="mt-2 text-sm text-muted-foreground" role="status">

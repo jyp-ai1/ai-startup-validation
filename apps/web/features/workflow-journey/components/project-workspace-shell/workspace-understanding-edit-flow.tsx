@@ -87,9 +87,11 @@ export function WorkspaceUnderstandingEditFlow({
     >
       <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{t('aiLabel')}</p>
       <p className="mt-3 text-[15px] leading-relaxed">
-        {mode === 'together' ? t('togetherHint') : t('editHintDocumentFirst')}
+        {mode === 'together' ? t('togetherHint') : 'AI 초안입니다. 틀린 부분만 수정하세요.'}
       </p>
-      <p className="mt-1 text-sm text-muted-foreground">{t('editHintDocumentFirstSub')}</p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        사업/제품 · 실제 사용자 · 시장 · 경쟁을 처음부터 다시 쓰지 않아도 됩니다.
+      </p>
       <WorkspaceDomainFields
         domain={{
           founder: domain.founder || seededDomain.founder,

@@ -72,9 +72,11 @@ export function WorkspaceSidebar({
 }: WorkspaceSidebarProps) {
   const t = useTranslations('workflow.journey.workspaceShell');
   const simplifiedSteps =
-    snapshot.hideProgressMetrics && snapshot.journeySteps?.length
-      ? toSimplifiedJourneySteps(snapshot.journeySteps)
-      : null;
+    snapshot.productStages?.length
+      ? snapshot.productStages
+      : snapshot.hideProgressMetrics && snapshot.journeySteps?.length
+        ? toSimplifiedJourneySteps(snapshot.journeySteps)
+        : null;
 
   return (
     <aside

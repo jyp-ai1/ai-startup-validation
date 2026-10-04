@@ -23,7 +23,7 @@ export function WorkspaceCurrentUnderstandingBlock({
       )}
     >
       <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">AI PM</p>
-      <h2 className="mt-2 text-[15px] font-semibold leading-snug">현재까지 이렇게 이해했습니다</h2>
+      <h2 className="mt-2 text-[15px] font-semibold leading-snug">AI가 이해한 내용</h2>
       <p
         data-testid="current-understanding-narrative"
         className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground"

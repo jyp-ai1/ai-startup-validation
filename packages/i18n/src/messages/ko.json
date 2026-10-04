@@ -350,12 +350,12 @@
     "lead": "오늘 어떤 전략을 이어가시겠어요?",
     "newProjectLabel": "프로젝트 이름",
     "newProjectPlaceholder": "프로젝트 이름",
-    "reviewTypeLabel": "무엇을 검토하시나요?",
+    "reviewTypeLabel": "Founder Context — 어떤 관점으로 보나요?",
     "reviewTypes": {
-      "startup-idea": "창업 아이디어",
-      "new-business": "신사업",
-      "existing-strategy": "기존 사업 전략",
-      "investment-prep": "투자 준비"
+      "startup-idea": "예비창업자 · 초기 대표",
+      "new-business": "기존 사업 운영자",
+      "existing-strategy": "사업전략 담당자",
+      "investment-prep": "투자검토"
     },
     "descriptionLabel": "사업 설명 (선택)",
     "descriptionPlaceholder": "사업 아이디어를 자유롭게 설명해주세요...",
@@ -6737,14 +6737,14 @@
           "understandingEmpty": "아직 정리된 내용이 없습니다.",
           "progressHint": "AI PM과 함께 검증 중",
           "journey": {
-            "understand": "사업 이해",
-            "market": "시장 검증",
-            "viability": "사업성 검토",
-            "result": "결과 확인"
+            "understand": "① 사업 정의",
+            "market": "② 시장 검증",
+            "viability": "③ 확인/종합",
+            "result": "④ 결과"
           }
         },
         "sharedUnderstanding": {
-          "label": "제가 이해한 내용",
+          "label": "AI가 이해한 내용",
           "reflectUpdated": "이렇게 이해를 수정했습니다",
           "detailCta": "자세히",
           "summaryCta": "요약",
@@ -7203,7 +7203,7 @@
           },
           "title": "사업 이해를 먼저 맞춰보겠습니다",
           "intro": "검토 전에, 문서에서 확인한 내용만 정리했습니다.",
-          "documentFirstLead": "제가 이렇게 이해했습니다",
+          "documentFirstLead": "AI가 이해한 내용",
           "documentFirstSub": "틀린 부분만 확인해 주세요. 빈 양식을 채울 필요는 없습니다.",
           "documentFirstLeadUnreadable": "문서 본문은 아직 충분히 읽지 못했습니다",
           "documentFirstSubUnreadable": "확인한 범위만 초안으로 정리했습니다. 맞는지 확인해 주세요.",

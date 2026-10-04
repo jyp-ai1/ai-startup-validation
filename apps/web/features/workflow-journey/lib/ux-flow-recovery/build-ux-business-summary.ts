@@ -3,8 +3,12 @@
  * Presentation only — does not write gap/state/decision.
  */
 
+import type { GapCompleteness } from '@repo/types/domain/answer-review';
+import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
+
 import type { LivingClaim, LivingUnderstandingState } from '../business-understanding/living-understanding-state';
 import { SHARED_UNDERSTANDING_PENDING } from '../business-understanding/build-shared-understanding';
+import { resolveFounderContext, founderContextLensHint } from './founder-context-lens';
 import { sanitizeUxCopy } from './sanitize-ux-copy';
 
 export type UxClaimTrust = 'ceo_provided' | 'ai_understood' | 'needs_check';
@@ -17,12 +21,16 @@ export type UxSummarySlotId =
   | 'market'
   | 'competition';
 
+export type UxSlotMark = 'open' | 'partial' | 'current' | 'closed' | 'conflict';
+
 export type UxSummarySlot = {
   id: UxSummarySlotId;
   label: string;
   confirmed: boolean;
   value: string | null;
   trust: UxClaimTrust;
+  mark: UxSlotMark;
+  fieldKey: string;
 };
 
 export type UxBusinessSummaryView = {
@@ -31,6 +39,7 @@ export type UxBusinessSummaryView = {
   fullDescription: string;
   understoodNarrative: string;
   displayOneLiner?: string;
+  founderContextHint?: string;
   slots: UxSummarySlot[];
   unknowns: string[];
   judgment: string;
@@ -146,25 +155,72 @@ export function composeUnderstoodNarrative(
   return '아직 사업을 충분히 이해하지 못했습니다.';
 }
 
+function markFromCompleteness(
+  completeness: GapCompleteness | undefined,
+  isCurrent: boolean,
+  livingConfirmed: boolean,
+  filled: boolean,
+): UxSlotMark {
+  if (completeness === 'CONTRADICTED') return 'conflict';
+  if (completeness === 'CLOSED') return 'closed';
+  if (isCurrent) return 'current';
+  if (completeness === 'PARTIAL') return 'partial';
+  if (completeness === 'OPEN') return filled ? 'partial' : 'open';
+  if (livingConfirmed) return 'closed';
+  if (filled) return 'partial';
+  return 'open';
+}
+
+export function uxSlotSymbol(mark: UxSlotMark): string {
+  switch (mark) {
+    case 'closed':
+      return '✓';
+    case 'partial':
+      return '△';
+    case 'current':
+      return '●';
+    case 'conflict':
+      return '△';
+    default:
+      return '○';
+  }
+}
+
 export function buildUxBusinessSummary(input: {
   projectTitle: string;
   documentText?: string | null;
   living: LivingUnderstandingState;
   questionIndex?: number;
   displayOneLiner?: string;
+  gapState?: GapKnowledgeState | null;
+  targetGapId?: string | null;
+  reviewType?: string | null;
 }): UxBusinessSummaryView {
   const fullDescription = (input.documentText ?? '').trim();
   const understoodNarrative = composeUnderstoodNarrative(input.living, fullDescription);
+  const founderContext = resolveFounderContext(input.reviewType);
 
   const slots = SLOT_DEFS.map((def) => {
     const claim = claimByKey(input.living, def.fieldKey);
     const filled = isFilled(claim);
+    const livingConfirmed = filled && trustFor(claim) !== 'needs_check';
+    const completeness = input.gapState
+      ? (input.gapState.gaps[def.fieldKey]?.completeness ?? 'OPEN')
+      : undefined;
+    const mark = markFromCompleteness(
+      completeness,
+      input.targetGapId === def.fieldKey,
+      livingConfirmed,
+      filled,
+    );
     return {
       id: def.id,
       label: def.label,
-      confirmed: filled && trustFor(claim) !== 'needs_check',
+      confirmed: mark === 'closed',
       value: filled ? claim!.value!.trim() : null,
       trust: trustFor(claim),
+      mark,
+      fieldKey: def.fieldKey,
     } satisfies UxSummarySlot;
   });
 
@@ -185,6 +241,7 @@ export function buildUxBusinessSummary(input: {
     fullDescription,
     understoodNarrative,
     displayOneLiner: input.displayOneLiner?.trim() || undefined,
+    founderContextHint: founderContextLensHint(founderContext),
     slots,
     unknowns: uniqueUnknowns,
     judgment: sanitizeUxCopy(input.living.judgmentSummary) || defaultJudgment,

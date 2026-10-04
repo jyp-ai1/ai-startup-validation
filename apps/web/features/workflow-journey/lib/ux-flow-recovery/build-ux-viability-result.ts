@@ -5,6 +5,11 @@
 
 import type { ConversationalFinalOutput } from '../business-understanding/build-conversational-final-output';
 import type { AnalysisScreenPresenter } from '../business-understanding/present-analysis-screen';
+import {
+  resolveFounderContext,
+  resultSectionOrder,
+  type ResultSectionId,
+} from './founder-context-lens';
 import { sanitizeUxCopy } from './sanitize-ux-copy';
 
 export type UxVerdictLabel = 'GO' | 'HOLD' | '조건부';
@@ -17,7 +22,10 @@ export type UxViabilityResultView = {
   confirmedFacts: string[];
   assumptions: string[];
   unknowns: string[];
+  risks: string[];
   nextValidation: string[];
+  nextActions: string[];
+  sectionOrder: ResultSectionId[];
   pdfReady: boolean;
 };
 
@@ -31,6 +39,7 @@ export function buildUxViabilityResult(input: {
   finalOutput?: ConversationalFinalOutput | null;
   presenter?: AnalysisScreenPresenter | null;
   unknowns?: string[];
+  reviewType?: string | null;
 }): UxViabilityResultView {
   const judgment =
     sanitizeUxCopy(input.presenter?.judgment) ||
@@ -61,17 +70,32 @@ export function buildUxViabilityResult(input: {
     .filter((line): line is string => Boolean(line?.trim()))
     .slice(0, 3);
 
+  const risks = [
+    ...(input.presenter?.evidence ?? []),
+    input.presenter?.criticalGap,
+  ]
+    .filter((line): line is string => Boolean(line?.trim()))
+    .filter((line, index, all) => all.indexOf(line) === index)
+    .slice(0, 4);
+
+  const resolvedNext = nextValidation.length
+    ? nextValidation
+    : ['핵심 문제와 지불 의향을 실제 근거로 확인해 주세요.'];
+
+  const founderContext = resolveFounderContext(input.reviewType);
+
   return {
-    title: '사업성 검토 결과',
+    title: '현재 사업성 판단',
     verdict: verdictFromJudgment(judgment),
     judgment,
     why: sanitizeUxCopy(why),
     confirmedFacts,
     assumptions,
     unknowns: unknowns.length ? unknowns : ['아직 확인되지 않은 핵심 공백이 있습니다.'],
-    nextValidation: nextValidation.length
-      ? nextValidation
-      : ['핵심 문제와 지불 의향을 실제 근거로 확인해 주세요.'],
+    risks: risks.length ? risks : ['아직 핵심 리스크를 확정하지 못했습니다.'],
+    nextValidation: resolvedNext,
+    nextActions: resolvedNext,
+    sectionOrder: resultSectionOrder(founderContext),
     pdfReady: false,
   };
 }

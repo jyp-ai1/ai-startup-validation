@@ -350,12 +350,12 @@
     "lead": "What strategy will you continue today?",
     "newProjectLabel": "Project name",
     "newProjectPlaceholder": "Project name",
-    "reviewTypeLabel": "What are you reviewing?",
+    "reviewTypeLabel": "Founder Context — which lens should AI use?",
     "reviewTypes": {
-      "startup-idea": "Startup idea",
-      "new-business": "New business",
-      "existing-strategy": "Existing business strategy",
-      "investment-prep": "Investment preparation"
+      "startup-idea": "Pre-founder / early founder",
+      "new-business": "Existing business operator",
+      "existing-strategy": "Strategy owner",
+      "investment-prep": "Investment review"
     },
     "descriptionLabel": "Business description (optional)",
     "descriptionPlaceholder": "What is this business trying to do? Write only what you know.",
@@ -6584,14 +6584,14 @@
           "understandingEmpty": "Nothing confirmed yet.",
           "progressHint": "Validating with AI PM",
           "journey": {
-            "understand": "Business understanding",
-            "market": "Market validation",
-            "viability": "Viability review",
-            "result": "Results"
+            "understand": "① Business definition",
+            "market": "② Market validation",
+            "viability": "③ Synthesis",
+            "result": "④ Result"
           }
         },
         "sharedUnderstanding": {
-          "label": "What I understand so far",
+          "label": "What AI understood",
           "reflectUpdated": "I've updated my understanding like this",
           "detailCta": "Detail",
           "summaryCta": "Summary",
@@ -7050,7 +7050,7 @@
           },
           "title": "Let's align on your business first",
           "intro": "Before review — only what we read in your document.",
-          "documentFirstLead": "Here's how I understand it",
+          "documentFirstLead": "What AI understood",
           "documentFirstSub": "Confirm or correct — you don't need to fill an empty form.",
           "documentFirstLeadUnreadable": "I haven't fully read the document body yet",
           "documentFirstSubUnreadable": "Here's a honest partial draft from what we know. Please confirm.",

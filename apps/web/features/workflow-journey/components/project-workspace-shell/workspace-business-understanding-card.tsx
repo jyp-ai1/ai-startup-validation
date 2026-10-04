@@ -18,6 +18,7 @@ import {
 import type { UnderstandingProvenance } from '../../lib/business-understanding/understanding-contract';
 import { buildDiscoveryItems, collectUnconfirmedLines } from '../../lib/business-understanding/discovery-summary';
 import { loadWorkspaceDocumentText } from '../../lib/workspace-ai-pm-messages';
+import { WorkspaceExpandableText } from './workspace-expandable-text';
 
 type WorkspaceBusinessUnderstandingCardProps = {
   understanding: BusinessUnderstanding;
@@ -25,6 +26,7 @@ type WorkspaceBusinessUnderstandingCardProps = {
   documentReadable?: boolean;
   documentText?: string | null;
   projectId?: string;
+  understoodNarrative?: string | null;
   onConfirm: (mode: UnderstandingConfirmMode) => void;
   className?: string;
 };
@@ -57,6 +59,7 @@ export function WorkspaceBusinessUnderstandingCard({
   documentReadable = true,
   documentText,
   projectId,
+  understoodNarrative = null,
   onConfirm,
   className,
 }: WorkspaceBusinessUnderstandingCardProps) {
@@ -98,13 +101,37 @@ export function WorkspaceBusinessUnderstandingCard({
         className,
       )}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">{t('aiLabel')}</p>
-      <p className="mt-2 text-[15px] font-medium leading-snug">
-        {readable ? t('documentFirstLead') : t('documentFirstLeadUnreadable')}
-      </p>
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">AI PM</p>
+      <h2 className="mt-2 text-[15px] font-semibold leading-snug">AI가 이해한 내용</h2>
+      {understoodNarrative ? (
+        <p
+          data-testid="current-understanding-narrative"
+          className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground"
+        >
+          {understoodNarrative}
+        </p>
+      ) : (
+        <p className="mt-2 text-[15px] font-medium leading-snug">
+          {readable ? 'AI가 이해한 내용' : t('documentFirstLeadUnreadable')}
+        </p>
+      )}
       <p className="mt-1 text-sm text-muted-foreground">
         {readable ? t('documentFirstSub') : t('documentFirstSubUnreadable')}
       </p>
+      {resolvedText.length >= 8 ? (
+        <div data-testid="source-document-block" className="mt-4 border-t border-border/50 pt-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            사업 원문
+          </p>
+          <WorkspaceExpandableText
+            text={resolvedText}
+            preview=""
+            toggleLabel="전체 사업내용 보기"
+            testId="source-document-text"
+            className="mt-2 text-muted-foreground"
+          />
+        </div>
+      ) : null}
 
       {draft ? (
         <div className="mt-4 rounded-xl border border-primary/25 bg-gradient-to-br from-primary/[0.06] to-background px-4 py-4">
@@ -189,14 +216,6 @@ export function WorkspaceBusinessUnderstandingCard({
             onClick={() => onConfirm('edit')}
           >
             이 이해 수정하기
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            className="rounded-xl"
-            onClick={() => onConfirm('together')}
-          >
-            {t('confirmTogether')}
           </Button>
         </div>
       </div>
