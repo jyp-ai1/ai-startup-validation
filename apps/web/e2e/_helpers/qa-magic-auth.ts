@@ -115,8 +115,8 @@ export async function loginWithQaMagicLink(
   const { session, supabaseUrl, email } = await createQaMagicSession();
   await injectQaSession(context, session, supabaseUrl, baseUrl);
   await page.goto(`${baseUrl}/ko/workspace`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-  if (/\/auth\/login/i.test(page.url())) {
-    throw new Error(`QA magic-link injection failed — redirected to login (${email})`);
+  if (page.url().includes('/auth/login')) {
+    throw new Error(`QA magic-link injection failed — redirected to /auth/login (${email})`);
   }
   return { email };
 }

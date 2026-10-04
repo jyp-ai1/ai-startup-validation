@@ -88,9 +88,9 @@ async function main() {
   ]);
   const page = await context.newPage();
   await page.goto(`${BASE}/ko/workspace`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-  if (/\/auth\/login/i.test(page.url())) {
+  if (page.url().includes('/auth/login')) {
     await browser.close();
-    throw new Error(`QA magic-link injection failed — redirected to login (${email})`);
+    throw new Error(`QA magic-link injection failed — redirected to /auth/login (${email})`);
   }
   mkdirSync(dirname(STATE_PATH), { recursive: true });
   await context.storageState({ path: STATE_PATH });
