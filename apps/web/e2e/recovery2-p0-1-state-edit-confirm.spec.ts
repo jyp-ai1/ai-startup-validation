@@ -76,11 +76,23 @@ async function waitForCustomerAsk(page: import('@playwright/test').Page) {
 
 async function openCustomerFreeform(page: import('@playwright/test').Page) {
   await waitForLoopPrompt(page);
-  if (await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false)) {
-    await page.getByTestId('confirm-no-cta').click();
-    await page.waitForTimeout(600);
-  }
+  // Do not click Confirm No — handleConfirmNo edits editableTurns[0], which is
+  // the business Confirm Yes turn. Type on the customer ask instead.
   await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 30_000 });
+}
+
+async function correctCustomerPrior(
+  page: import('@playwright/test').Page,
+  nextAnswer: string,
+) {
+  await expect
+    .poll(async () => (await page.getByTestId('my-last-answer').innerText().catch(() => '')) ?? '', {
+      timeout: 15_000,
+    })
+    .toMatch(/방한 외국인/);
+  await page.getByTestId('edit-prior-answer-cta').click();
+  await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 15_000 });
+  await submitOnSlot(page, nextAnswer);
 }
 
 async function submitOnSlot(page: import('@playwright/test').Page, answer: string) {
