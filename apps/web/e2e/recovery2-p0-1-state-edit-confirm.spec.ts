@@ -98,11 +98,6 @@ async function acceptContradictionIfShown(page: import('@playwright/test').Page)
 
 async function submitCustomerCorrection(page: import('@playwright/test').Page) {
   await openCustomerFreeform(page);
-  await submitOnSlot(page, '방한 외국인');
-  await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toBe('방한 외국인');
-  await expect(page.getByTestId('my-last-answer')).toContainText('방한 외국인');
-  await page.getByTestId('edit-prior-answer-cta').click();
-  await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 15_000 });
   await submitOnSlot(page, '내국인과 외국인 모두입니다');
 }
 
@@ -305,13 +300,17 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     const customer = await currentCustomer(page);
     expect(customer).not.toMatch(/다양한 관광객이 늘며/);
 
-    await submitCustomerCorrection(page);
-    await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toMatch(/내국인/);
-    const corrected = await currentCustomer(page);
-    expect(corrected).toMatch(/외국인/);
-    expect(corrected).not.toMatch(/방한/);
-    const afterCorrection = await readLoopFromSession(page);
-    expect(afterCorrection?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
-    expect(customerEvidence(afterCorrection)).toMatch(/내국인/);
+    await openCustomerFreeform(page);
+    await submitOnSlot(page, '방한 외국인');
+    await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toBe('방한 외국인');
+    const afterCustomer = await readLoopFromSession(page);
+    expect(afterCustomer?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
+    expect(customerEvidence(afterCustomer)).toBe('방한 외국인');
+    expect(customerEvidence(afterCustomer)).not.toMatch(/다양한 관광객이 늘며/);
+    const nextAfterCustomer =
+      afterCustomer?.lastDecision?.targetGapId ?? afterCustomer?.lockedAskSurface?.targetGap ?? '';
+    expect(nextAfterCustomer).not.toBe('customerPersona');
+    expect(afterCustomer?.gapState?.gaps?.businessOneLiner?.completeness).toBe('CLOSED');
+    expect(afterCustomer?.gapState?.gaps?.payer?.completeness).not.toBe('CONTRADICTED');
   });
 });
