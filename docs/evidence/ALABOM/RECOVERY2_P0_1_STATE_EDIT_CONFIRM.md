@@ -109,6 +109,24 @@ Cluster policy had hard-replaced that OPEN Stage A gap with `payer` because both
 
 After the policy fix, resolved next is `customerPersona`.
 
+## Preview-equivalent E2E J6 (`a7c0959` / `7bc5c1d`)
+
+Local `next start` of branch SHA (Vercel Preview is SSO-walled). Dedicated browser test:
+
+`J6 business Confirm Yes leaves customerPersona OPEN` — **PASS (17.2s)**
+
+| Probe | Browser |
+|-------|---------|
+| lastTurn.targetGap / askedGap | `businessOneLiner` |
+| semanticFactKey / factKey | `business` |
+| `review.extractedFacts` | no `customer` |
+| `gapState.customerPersona` | not CLOSED |
+| next `targetGapId` | `customerPersona` |
+| next question | `/누구\|고객/` |
+| forbidden path `관광객` → customer CLOSED | blocked |
+
+J7/J8 browser still in harness: `아니라` on the next problem ask does not replace CLOSED `방한 외국인`. Unit J7 remains the on-slot SoT.
+
 ## Events
 
 Existing `recordFunnelEvent()` convention. Added only missing names:
