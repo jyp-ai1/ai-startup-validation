@@ -42,6 +42,19 @@ async function clickThroughReading(page: import('@playwright/test').Page) {
   throw new Error('Reading sequence never reached understanding or answer UI');
 }
 
+async function waitForLoopPrompt(page: import('@playwright/test').Page) {
+  await expect
+    .poll(
+      async () => {
+        const yes = await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false);
+        const input = await page.getByTestId('answer-input').isVisible().catch(() => false);
+        return yes || input;
+      },
+      { timeout: 30_000 },
+    )
+    .toBe(true);
+}
+
 async function currentCustomer(page: import('@playwright/test').Page): Promise<string> {
   return page.evaluate(() => {
     const keys = Object.keys(sessionStorage).filter((key) =>
@@ -100,9 +113,7 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     await page.getByTestId('understanding-confirm-yes').click();
     await page.waitForTimeout(1_200);
     await expect(page.getByTestId('document-first-card')).toHaveCount(0);
-    await expect(
-      page.getByTestId('answer-input').or(page.getByTestId('confirm-yes-cta')),
-    ).toBeVisible({ timeout: 30_000 });
+    await waitForLoopPrompt(page);
 
     await dismissRecognition(page);
     if (await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false)) {
@@ -180,9 +191,7 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
 
     await page.getByTestId('understanding-confirm-yes').click();
     await page.waitForTimeout(1_200);
-    await expect(
-      page.getByTestId('answer-input').or(page.getByTestId('confirm-yes-cta')),
-    ).toBeVisible({ timeout: 30_000 });
+    await waitForLoopPrompt(page);
     await dismissRecognition(page);
 
     const question = await page.evaluate(() => {
