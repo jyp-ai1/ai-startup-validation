@@ -2,6 +2,8 @@
 
 Draft PR: #78 (`cursor/sprint2-phase2d-long-sprint-e648` → `#77` / `cursor/sprint2-phase2c-repro-e648`).
 
+HEAD at final report: `7b7af1e`.
+
 CTO does not merge. Production is not deployed. CPO review is the merge gate. #73 Project Brief stays a separate stack.
 
 ## 1. PR stack
@@ -39,7 +41,8 @@ See `git log cursor/sprint2-phase2c-repro-e648..HEAD`. Logical bundles:
 - Behaviors mixed by the adaptive User Agent: sparse, normal, multi_fact, contradiction, correction, repetition, repetition_paraphrase, off_slot, uncertainty, overclaim, partial.
 - Question order is the AI PM's actual next question (production `resolveNextQuestionDecision`).
 - Lengths: 10 / 20 / 30 / 40. Some sessions end earlier when every Stage A+B required gap is CLOSED (`completed`).
-- After A: 80 sessions, 1499 turns, 35 completed, 57 `L4_PREMATURE_STOP` (production path ended with a required gap still open — defect E, reproduce only).
+- Final (after A–D + F16 + harness): 80 sessions, 1519 turns, 36 completed, 57 `L4_PREMATURE_STOP`.
+- Holdout universe (biz-16/17, written before the run, report-only): 8 sessions, 179 turns, 3 completed, 4 premature stops. Not used to tune.
 
 ## 7. AI PM defects (fixed this sprint)
 
@@ -77,7 +80,7 @@ Holdout test EXIT=0 on every A–D / F16 bundle. No rule was written from a hold
 - F11 all-businesses: EXIT=0
 - F04 evidence: EXIT=0
 - F13 claim tests: pass (particle string updated with harness)
-- F16: evaluator-only; AI output identical on golden + long-pack vs D2
+- F16: evaluator-only. Same-runtime replay of mini 150 + ladder 300 + matrix 200 = **650 turns**: AI fingerprint identical, F16 flags **116 → 0**. That drop is the keyword check, not an AI PM fix. Not used as PASS evidence.
 
 ## 13. A–D
 
@@ -87,7 +90,7 @@ Holdout test EXIT=0 on every A–D / F16 bundle. No rule was written from a hold
 | B | PASS — A/A/A, A/A′, A/B |
 | A | PASS — Phase 2-C pins are `it`; GT aligned |
 | D2 | PASS — pins are `it` |
-| D1 | HOLD — question leak is D2; whether a Production document stores the unreadable claim is harness investigation, not asserted as a Production AI PM defect |
+| D1 | HOLD — Production path confirmed separately from short sandbox docs (see below) |
 
 ## 14. Production
 
@@ -96,10 +99,10 @@ Not deployed. SHA alignment gate is not opened.
 ## 15. Remaining known defects
 
 - **E — premature stop:** `applyNoGapTermination` / `hasNoAskableGap` ignores never-asked required gaps. Stress records `L4_PREMATURE_STOP` and continues via the raw V3 decider. Not patched (new high-impact stop; CPO approval required).
-- D1 HOLD (short-doc placeholder as a living claim).
+- D1 HOLD. Production *can* store the placeholder: a failed PDF/DOCX extract is analyzable, `WorkspaceDocumentTrustBlock` offers Continue, and `resolveBusinessField` writes `SHARED_UNDERSTANDING_UNREADABLE_BUSINESS` into the living claim. D2 already stops the question leak. Claim storage is not patched.
 - Pre-existing unit pin set: 34 failures, same titles as the F13 baseline.
 - Stress L4_PRIORITY_SKIP / residual L2 findings: mix of alias-gap asks (pricingHint/solution while Stage A open) and remaining evaluator/harness disagreement — adjudicate, do not auto-patch.
 
 ## 16. CEO review items
 
-None until CPO Review 1–3. CEO use-test is after Production Gate, not this PR.
+None until CPO Review 1–4. CEO use-test is after Production Gate, not this PR.
