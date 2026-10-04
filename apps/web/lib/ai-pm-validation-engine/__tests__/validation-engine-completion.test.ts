@@ -41,7 +41,12 @@ describe('validation engine — sprint completion pack', () => {
     );
     expect(pack.miniSandbox.matrix.totalTurns).toBe(150);
     expect(pack.scaleLadder.matrix.totalTurns).toBe(300);
-    expect(pack.failureMining.clusters.length).toBeGreaterThan(0);
+    // Clusters exist only on failed turns. Zero failures is a valid mining result, not a pack error.
+    if (pack.failureMining.failedTurns > 0) {
+      expect(pack.failureMining.clusters.length).toBeGreaterThan(0);
+    } else {
+      expect(pack.failureMining.clusters).toEqual([]);
+    }
 
     if (process.env.VALIDATION_ENGINE_COMPLETION === '1') {
       const evalDir = join(
