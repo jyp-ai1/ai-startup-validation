@@ -13,7 +13,7 @@ const CUSTOMER_FIELD_CUE_RE =
 
 /** Capture the full accepted phrase — never a single leading token (중소 제조 CEO ≠ 중소). */
 const NOT_X_BUT_Y_RE =
-  /([\w가-힣]+(?:가게|집|점|사|팀|업|인)?)\s*(?:이|가)\s*아니(?:요|라)\s*(.+?)(?:입니다|이에요|예요|이다|[.。]|$)/u;
+  /(.+?)\s*(?:이|가)\s*아니(?:요|라)\s*(.+?)(?:입니다|이에요|예요|이다|[.。]|$)/u;
 
 const CORRECTION_RAW_RE =
   /^(?:아니(?:요|라)[,.]?\s*)?(?:제가\s*말한\s*)?(?:핵심\s*)?고객(?:은|이)?\s*/i;
@@ -33,16 +33,42 @@ export type ParsedNotXButY = {
   accepted: string;
 };
 
+function stripCorrectionLeadIn(rejected: string): string {
+  let next = rejected.trim();
+  next = next.replace(/^.*[.。]\s*/u, '').trim();
+  next = next.replace(/^.*(?:은|는)\s+/u, '').trim();
+  return next.replace(/[입니다.]+$/u, '').trim();
+}
+
 /** Parse "꽃집이 아니라 반찬가게" → { rejected: 꽃집, accepted: 반찬가게 }. */
 export function parseNotXButYCorrection(text: string): ParsedNotXButY | null {
   const trimmed = text.trim();
   const match = trimmed.match(NOT_X_BUT_Y_RE);
   if (!match?.[1] || !match?.[2]) return null;
-  const rejected = match[1].trim().replace(/[입니다.]+$/u, '');
+  const rejected = stripCorrectionLeadIn(match[1]);
   const accepted = match[2].trim().replace(/[입니다.]+$/u, '');
   if (rejected.length < 1 || accepted.length < 1) return null;
   if (rejected === accepted) return null;
   return { rejected, accepted };
+}
+
+/** Collapse “내국인과 외국인 모두” to the confirmed persona — never “외국인” alone. */
+export function canonicalizeCorrectedCustomerPersona(value: string): string {
+  const trimmed = value.trim().replace(/\s+/g, ' ');
+  if (!trimmed) return trimmed;
+  const shortBoth =
+    /^(?:실제\s*)?(?:핵심\s*)?(?:고객(?:은|이)\s*)?(?:내국인.+(?:과|와|·|\/|,).+외국인|외국인.+(?:과|와|·|\/|,).+내국인)(?:\s*모두)?(?:입니다|이에요|예요|이다)?[.。]?$/u;
+  if (shortBoth.test(trimmed)) return '내국인·외국인';
+  if (
+    /내국인/.test(trimmed) &&
+    /외국인/.test(trimmed) &&
+    /모두|둘\s*다|전부/.test(trimmed) &&
+    trimmed.length <= 48 &&
+    !/(전통주|양조장|체험)/.test(trimmed)
+  ) {
+    return '내국인·외국인';
+  }
+  return trimmed;
 }
 
 function enrichCustomerCorrectionValue(accepted: string, fullText: string): string {
@@ -61,15 +87,19 @@ export function extractCorrectedFactValue(
   if (key === 'customer') {
     const parsed = parseNotXButYCorrection(trimmed);
     if (parsed) {
-      return enrichCustomerCorrectionValue(parsed.accepted, trimmed);
+      return canonicalizeCorrectedCustomerPersona(
+        enrichCustomerCorrectionValue(parsed.accepted, trimmed),
+      );
     }
     const labeled = trimmed.match(
       /(?:실제\s*(?:최종\s*)?)?(?:핵심\s*)?고객(?:은|이)\s*(.+?)(?:입니다|이에요|예요|이다|[.。]|)$/u,
     );
     if (labeled?.[1]?.trim()) {
-      return labeled[1].trim().replace(/[입니다.]+$/u, '');
+      return canonicalizeCorrectedCustomerPersona(
+        labeled[1].trim().replace(/[입니다.]+$/u, ''),
+      );
     }
-    return sanitizeCorrectionDisplayText(trimmed);
+    return canonicalizeCorrectedCustomerPersona(sanitizeCorrectionDisplayText(trimmed));
   }
   if (key === 'buyer') {
     const parsed = parseNotXButYCorrection(trimmed);
@@ -95,9 +125,11 @@ export function sanitizeCorrectionDisplayText(text: string): string {
   }
   const parsed = parseNotXButYCorrection(t);
   if (parsed) {
-    return enrichCustomerCorrectionValue(parsed.accepted, t);
+    return canonicalizeCorrectedCustomerPersona(
+      enrichCustomerCorrectionValue(parsed.accepted, t),
+    );
   }
-  return t;
+  return canonicalizeCorrectedCustomerPersona(t);
 }
 
 export function shouldSkipContradictionForCorrection(input: {

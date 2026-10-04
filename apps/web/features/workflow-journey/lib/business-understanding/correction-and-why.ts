@@ -3,6 +3,7 @@
  * Correction → USER_CORRECTED provenance; Why explains evidence then returns to loop.
  */
 
+import { canonicalizeCorrectedCustomerPersona } from './ai-pm-correction-semantics';
 import type { UnderstandingProvenance } from './understanding-contract';
 import type { ConversationFactKey } from './conversation-memory';
 import {
@@ -29,10 +30,14 @@ export function applyUserCorrection(input: {
   const previousValue =
     input.previous?.facts.find((f) => f.key === input.fieldKey)?.value ?? null;
   const base = input.previous ?? emptyConversationMemory(input.projectId);
+  const nextValue =
+    input.fieldKey === 'customer'
+      ? canonicalizeCorrectedCustomerPersona(input.nextValue)
+      : input.nextValue;
   const memory = upsertConfirmedFact(
     base,
     input.fieldKey,
-    input.nextValue,
+    nextValue,
     'user_turn',
   );
   return {
@@ -40,7 +45,7 @@ export function applyUserCorrection(input: {
     provenance: 'USER_CORRECTED',
     fieldKey: input.fieldKey,
     previousValue,
-    nextValue: input.nextValue.trim(),
+    nextValue: nextValue.trim(),
   };
 }
 

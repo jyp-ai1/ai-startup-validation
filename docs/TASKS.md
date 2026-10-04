@@ -4,6 +4,26 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Recovery 2 — P0-1 State / Edit / Confirm 🔄
+
+**Branch:** `cursor/product-journey-recovery2-p0-1-e648` · base `36b241e`  
+**Isolated from:** PR #84 (`cursor/production-j3-question-loop-rca-e648`) — Draft, no-gap only  
+**Out of scope:** Auth · V3 SoT · Gap/Readiness/Question-priority semantics · DB schema · P0-2 question loop · PDF
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| J1 | 사업 입력 → AI 이해 → 확인 → 다음 질문 (Source ≠ Interpretation) | ✅ unit |
+| J2 | 긴 correction `방한 외국인` → `내국인·외국인` | ✅ unit |
+| J3 | 수정 → 저장 → refresh 동일 값 | ✅ unit |
+| J4 | confirmed → 다음 turn → CLOSED 유지 | ✅ unit |
+| J5 | 이전 답변 수정 → 실제 edit → 새 값 유지 | ✅ unit |
+
+SoT reused: Answer → buildAnswerReview → gapVerdicts → updateGapStateFromReview → gapState → evaluateStageReadiness → decideNextQuestionFromReview → lastDecision → hydrate.
+
+**CPO 2-Pass 1:** PASS · **2-Pass 2 canonical state:** unit PASS (`recovery2-p0-1-2pass2-canonical-state.test.ts`) · Merge/Production still gated.
+
+---
+
 ## P0 — ALABOM Product Journey E2E Recovery Sprint 🔄
 
 **Branch:** `cursor/product-journey-e2e-recovery-e648` · base `5a34ae7`  

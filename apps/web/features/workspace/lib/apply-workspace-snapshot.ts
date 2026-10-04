@@ -1,3 +1,4 @@
+import { hydrateAiPmLoopState } from '@/features/workflow-journey/lib/business-understanding/hydrate-ai-pm-loop-state';
 import {
   loadAiPmLoopState,
   saveAiPmLoopState,
@@ -82,7 +83,12 @@ export function applyWorkspaceSnapshotToCache(
 
   if (snapshot.aiPmLoop) {
     const merged = mergeAiPmLoopForHydrate(clientLoop, snapshot.aiPmLoop);
-    saveAiPmLoopState(merged, projectId);
+    const hydrated = hydrateAiPmLoopState({
+      merged,
+      client: clientLoop,
+      db: snapshot.aiPmLoop,
+    });
+    saveAiPmLoopState(hydrated, projectId);
   }
 
   if (snapshot.understandingPhase) {

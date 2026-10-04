@@ -10,6 +10,10 @@ import { Button } from '@repo/ui';
 import { cn } from '@repo/ui/lib/utils';
 
 import { applyWorkspaceLoopAnswer } from '../../lib/business-understanding/workspace-state-update';
+import {
+  trackBusinessUnderstandingConfirmed,
+  trackBusinessUnderstandingCorrected,
+} from '../../lib/business-understanding/track-understanding-funnel';
 import { buildAiPmRuntimeJudgment } from '../../lib/business-understanding/build-workspace-ai-pm-state';
 import {
   appendAiPmLoopTurn,
@@ -2045,6 +2049,9 @@ export function WorkspaceAiPmLoopPanel({
       ...projectedTurn,
       understandingDelta,
     };
+    if (semantic.intent === 'correction') {
+      trackBusinessUnderstandingCorrected(projectId);
+    }
     if (isV3ReviewPipelineActive()) {
       appendLoopTurnWithReview(
         turnPayload,
@@ -2405,6 +2412,7 @@ export function WorkspaceAiPmLoopPanel({
       loopState.lastDecision?.confirmKnownValue?.trim() ||
       extractConfirmKnownValueFromQuestion(displayQuestionText);
     if (!known || readOnly) return;
+    trackBusinessUnderstandingConfirmed(projectId);
     submitAnswer(known);
   }, [
     questionPresentation.confirmKnownValue,
