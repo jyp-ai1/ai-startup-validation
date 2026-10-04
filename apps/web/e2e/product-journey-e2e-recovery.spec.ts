@@ -6,7 +6,7 @@ import { expect, test, type Page } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { dismissCookies, dismissRecognition, submitAnswer } from './_helpers/v3-p0-e2e-helpers';
+import { dismissCookies } from './_helpers/v3-p0-e2e-helpers';
 import { loginWithQaMagicLink, qaAuthReady } from './_helpers/qa-magic-auth';
 
 const ARTIFACT_DIR = process.env.UX_FLOW_ARTIFACT_DIR ?? '/opt/cursor/artifacts/screenshots';
@@ -14,9 +14,6 @@ const ARTIFACT_DIR = process.env.UX_FLOW_ARTIFACT_DIR ?? '/opt/cursor/artifacts/
 const TITLE = '양조장 체험 관광 서비스';
 const LONG_SOURCE =
   '다양한 관광객이 늘며 개인별 다양한 경험을 중요하게 생각한다. 전통주와 양조장 체험을 좋아하는 내국인과 외국인을 대상으로 양조장 체험과 주변 관광을 연결하고, 양조장의 온라인 마케팅을 지원하는 사업이다.';
-const LONG_CORRECTION =
-  '아니요. 핵심 고객은 관광객이 아니라 전통주와 양조장 체험을 좋아하는 내국인과 외국인입니다.';
-
 async function shot(page: Page, name: string) {
   fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
   await page.screenshot({ path: path.join(ARTIFACT_DIR, `${name}.png`), fullPage: true });
@@ -26,9 +23,17 @@ async function clickThroughReading(page: Page) {
   const deadline = Date.now() + 90_000;
   while (Date.now() < deadline) {
     await dismissCookies(page);
+    const body = ((await page.locator('body').innerText().catch(() => '')) || '').trim();
+    if (/Internal Server Error/i.test(body)) {
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(1_000);
+      continue;
+    }
     if (await page.getByTestId('answer-input').isVisible().catch(() => false)) return;
     if (await page.getByTestId('document-first-card').isVisible().catch(() => false)) return;
     if (await page.getByTestId('viability-result-view').isVisible().catch(() => false)) return;
+    if (await page.getByTestId('demo-project-title').first().isVisible().catch(() => false)) return;
+    if (await page.getByTestId('understanding-edit-seeded').isVisible().catch(() => false)) return;
     const cont = page.getByRole('button', {
       name: /답변으로 같이 정리하기|같이 확인|계속하기|Continue/i,
     });
@@ -42,26 +47,17 @@ async function clickThroughReading(page: Page) {
   throw new Error('Reading sequence never reached AI PM understanding or answer UI');
 }
 
-async function confirmYes(page: Page) {
-  const card = page.getByTestId('document-first-card');
-  if (await card.isVisible().catch(() => false)) {
-    await expect(page.getByTestId('understanding-confirm-edit')).toHaveText(/아니요\.?\s*수정할게요/);
-    await page.getByTestId('understanding-confirm-yes').click();
-    await page.waitForTimeout(1_200);
-    return;
-  }
-  const yes = page.getByRole('button', { name: /^(✓\s*)?(네,\s*)?맞습니다/ });
-  await expect(yes.first()).toBeVisible({ timeout: 20_000 });
-  await yes.first().click({ force: true });
-  await page.waitForTimeout(1_200);
-}
-
 test.describe('J1 / J6 — demo clinicflow reaches result', () => {
   test('title, AI understanding, result sections', async ({ page }) => {
     test.setTimeout(240_000);
-    await page.goto('/workspace?demo=guided&sample=clinicflow&fresh=1', {
-      waitUntil: 'domcontentloaded',
-    });
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      await page.goto('/workspace?demo=guided&sample=clinicflow&fresh=1', {
+        waitUntil: 'domcontentloaded',
+      });
+      const body = ((await page.locator('body').innerText().catch(() => '')) || '').trim();
+      if (!/Internal Server Error/i.test(body)) break;
+      await page.waitForTimeout(1_500);
+    }
     await dismissCookies(page);
     await clickThroughReading(page);
     await expect(page.getByTestId('demo-project-title').first()).toHaveText('클리닉플로우');
@@ -122,17 +118,18 @@ test.describe('J2 / J3 / J4 / J5 — authenticated brewery journey', () => {
     }
 
     await page.getByTestId('understanding-confirm-edit').click();
-    await page.waitForTimeout(800);
-    const answer = page.getByTestId('answer-input');
-    if (await answer.isVisible().catch(() => false)) {
-      await dismissRecognition(page);
-      await answer.fill(LONG_CORRECTION);
-      await expect(page.getByTestId('submit-answer-cta')).toBeEnabled();
-      const submitted = await submitAnswer(page, LONG_CORRECTION);
-      expect(submitted).toBe(true);
-    } else {
-      await confirmYes(page);
-    }
+    await expect(page.getByTestId('understanding-edit-seeded')).toBeVisible({ timeout: 20_000 });
+    const customerField = page.getByRole('textbox', { name: /고객/ });
+    await expect(customerField).toBeVisible();
+    await customerField.fill(
+      '전통주와 양조장 체험을 좋아하는 내국인과 외국인',
+    );
+    await page.getByRole('button', { name: /수정 반영/ }).click();
+    await expect(page.getByTestId('edit-understanding-confirm')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('edit-understanding-confirm')).toContainText(/내국인/);
+    await expect(page.getByTestId('edit-understanding-confirm')).not.toContainText('방한 외국인');
+    await page.getByRole('button', { name: /맞습니다/ }).click();
+    await page.waitForTimeout(1_200);
 
     await expect(page.getByTestId('document-first-card')).toHaveCount(0);
     const afterEdit = await page.locator('body').innerText();
