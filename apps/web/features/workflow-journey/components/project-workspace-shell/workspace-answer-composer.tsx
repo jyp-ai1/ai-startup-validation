@@ -85,7 +85,7 @@ export function WorkspaceAnswerComposer({
               disabled={readOnly}
               onClick={onStartEdit}
             >
-              답변 수정하기
+              이전 답변 수정하기
             </Button>
           ) : null}
         </div>

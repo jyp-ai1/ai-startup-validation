@@ -213,7 +213,7 @@ test.describe('E2E 2+3 — QA Auth brewery writable flow', () => {
 
     const edit = page.getByTestId('edit-prior-answer-cta');
     await expect(edit).toBeVisible();
-    await expect(edit).toHaveText(/답변 수정하기/);
+    await expect(edit).toHaveText(/이전 답변 수정하기|답변 수정하기/);
     await edit.click();
     await expectWritableAnswer(page);
     await page.getByTestId('answer-input').fill(EDITED_ANSWER);

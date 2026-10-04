@@ -8,6 +8,8 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   workflowStarted: 'workflow_started',
   workspaceEntered: 'workspace_entered',
   projectCreated: 'project_created',
+  businessUnderstandingConfirmed: 'business_understanding_confirmed',
+  businessUnderstandingCorrected: 'business_understanding_corrected',
   analysisStarted: 'analysis_started',
   decisionGenerated: 'decision_generated',
   decisionChanged: 'decision_changed',

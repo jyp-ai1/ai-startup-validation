@@ -35,6 +35,21 @@ describe('ai-pm-correction-semantics (DAY 8-B P0)', () => {
     });
   });
 
+  it('parses inbound-tourist correction without truncating 내국인·외국인', () => {
+    expect(
+      parseNotXButYCorrection('방한 외국인이 아니라 내국인과 외국인 모두입니다.'),
+    ).toEqual({
+      rejected: '방한 외국인',
+      accepted: '내국인과 외국인 모두',
+    });
+    expect(
+      extractCorrectedFactValue(
+        'customer',
+        '방한 외국인이 아니라 내국인과 외국인 모두입니다.',
+      ),
+    ).toBe('내국인·외국인');
+  });
+
   it('detects customer field correction cues', () => {
     expect(isCustomerFieldCorrection(CORRECTION)).toBe(true);
     expect(classifyAiPmCeoIntent(CORRECTION, 'correction').intent).toBe('CORRECT');

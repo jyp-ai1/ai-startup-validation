@@ -96,6 +96,7 @@ import { WorkspaceDemoMyBusinessPreview } from '../demo/workspace-demo-my-busine
 import { advanceDemoPlaybackFrame } from '@/lib/demo/demo-playback';
 import { applyWorkspaceDomainToMemory } from '../../lib/business-understanding/apply-workspace-domain-to-memory';
 import { applyUserCorrection } from '../../lib/business-understanding/correction-and-why';
+import { trackBusinessUnderstandingConfirmed, trackBusinessUnderstandingCorrected } from '../../lib/business-understanding/track-understanding-funnel';
 import {
   loadConversationMemory,
   saveConversationMemory,
@@ -495,6 +496,7 @@ export function WorkspaceAiPmMain({
   const handleConfirmMode = (mode: UnderstandingConfirmMode) => {
     saveUnderstandingConfirmMode(mode, projectId);
     if (mode === 'accepted') {
+      trackBusinessUnderstandingConfirmed(projectId);
       proceedAfterUnderstandingConfirm();
       return;
     }
@@ -601,6 +603,7 @@ export function WorkspaceAiPmMain({
     }
 
     saveConversationMemory(nextMemory, projectId);
+    trackBusinessUnderstandingCorrected(projectId);
     if (projectId && enableDbPersistence) {
       void persistWorkspaceStateDbFirst({ projectId });
     }

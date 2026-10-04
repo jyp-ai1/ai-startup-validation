@@ -1,3 +1,4 @@
+import { aggregateGapState, createEmptyGapState } from './update-gap-state-from-review';
 import {
   AI_PM_LOOP_MIN_TURNS,
   type AiPmLoopIssueId,
@@ -88,6 +89,14 @@ export function getResolvedIssueIds(state: AiPmLoopState): AiPmLoopIssueId[] {
     .map((turn) => turn.issueId);
 }
 
+function rebuildGapStateFromActiveTurns(turns: AiPmLoopTurn[]): AiPmLoopState['gapState'] {
+  const reviews = turns
+    .filter((turn) => !turn.superseded && turn.review)
+    .sort((a, b) => a.appliedAt.localeCompare(b.appliedAt))
+    .map((turn) => turn.review!);
+  return reviews.length > 0 ? aggregateGapState(reviews) : createEmptyGapState();
+}
+
 /** Mark turn superseded and trim downstream turns after prior-answer edit. */
 export function supersedeTurnAndInvalidateDownstream(
   editedIssueId: AiPmLoopIssueId,
@@ -114,6 +123,7 @@ export function supersedeTurnAndInvalidateDownstream(
     turns,
     phase: 'answer',
     currentIssueId: editedIssueId,
+    gapState: rebuildGapStateFromActiveTurns(turns),
   };
   saveAiPmLoopState(next, projectId);
   return next;
