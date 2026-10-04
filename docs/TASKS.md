@@ -12,13 +12,13 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 | # | Deliverable | Status |
 |---|-------------|--------|
-| J1–J5 | Existing P0-1 confirm / correction / refresh / edit | ✅ unit kept |
-| J6 | Business Confirm Yes → business CLOSED, customerPersona OPEN, next Q = customer | ✅ unit · Preview E2E in progress |
-| J7 | On-slot customer correction `방한 외국인` → `내국인·외국인` | ✅ unit · Preview E2E in progress |
-| J8 | business / customer / payer / problem uncontaminated | ✅ unit |
-| Preview E2E J1–J8 | Confirm Yes → customer OPEN → customer Q | 🔄 |
-| CPO 2-Pass 1 / 2 | Independent after Preview E2E evidence | pending |
-| Production J1–J8 | SHA triangle then J6→J7 continuous | pending — P0-2 / CEO test forbidden until J6 PASS |
+| J1–J5 | Existing P0-1 confirm / correction / refresh / edit | ✅ unit + Preview E2E |
+| J6 | Business Confirm Yes → business CLOSED, customerPersona OPEN, next Q = customer | ✅ unit + Preview E2E |
+| J7 | On-slot customer write after J6 (`방한 외국인`); 방한→내국인·외국인 replacement | ✅ unit · browser on-slot write PASS |
+| J8 | business / customer / payer / problem uncontaminated | ✅ unit + Preview E2E |
+| Preview E2E J1–J8 | Confirm Yes → customer OPEN → customer Q | ✅ 3 passed / 59.6s |
+| CPO 2-Pass 1 / 2 | Independent after Preview E2E evidence | ✅ |
+| Production J1–J8 | SHA triangle then J6→J7 continuous | pending — P0-2 / CEO test forbidden until Production J6 PASS |
 
 Root cause: `handleConfirmYes` submits `confirmKnownValue` (source clip containing `관광객`). FIX-10 confirm copy is not a free-form question — `confirmGapId` is the authoritative target. First-write fix: bind confirm copy + honor asked `businessOneLiner` as `business`. Forbidden path: 사업 원문 `관광객` → extract to `customerPersona` → CLOSED.
 
