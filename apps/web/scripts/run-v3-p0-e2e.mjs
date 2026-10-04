@@ -84,18 +84,19 @@ const v3Env = {
     process.env.NEXT_PUBLIC_AI_PM_JUDGMENT_AGGREGATION_V1 ?? 'true',
 };
 
-let port;
-if (await isHealthy(PREFERRED)) {
-  port = PREFERRED;
-  console.log(`[v3-p0-e2e] reuse healthy next on ${HOST}:${port}`);
-} else if (await isPortFree(PREFERRED)) {
-  port = PREFERRED;
-} else {
-  port = await findFreePort(PREFERRED + 1);
+const reuseCandidates = [...new Set([PREFERRED, 3100, 3201])];
+let port = 0;
+for (const candidate of reuseCandidates) {
+  if (await isHealthy(candidate)) {
+    port = candidate;
+    console.log(`[v3-p0-e2e] reuse healthy next on ${HOST}:${port}`);
+    break;
+  }
 }
 
 let serverChild = null;
-if (!(await isHealthy(port))) {
+if (!port) {
+  port = (await isPortFree(PREFERRED)) ? PREFERRED : await findFreePort(PREFERRED + 1);
   console.log(`[v3-p0-e2e] starting next start on ${HOST}:${port} (outside Playwright)`);
   serverChild = spawn(
     'pnpm',
@@ -109,7 +110,10 @@ if (!(await isHealthy(port))) {
   );
   if (!(await waitForHealth(port))) {
     serverChild.kill('SIGTERM');
-    throw new Error(`[v3-p0-e2e] next start on ${port} never became healthy`);
+    throw new Error(
+      `[v3-p0-e2e] next start on ${port} never became healthy. ` +
+        'Fresh next start in this VM hits middleware EvalError; reuse the environment production server.',
+    );
   }
 }
 
