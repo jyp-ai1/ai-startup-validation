@@ -11,11 +11,11 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 | # | Deliverable | Status |
 |---|-------------|--------|
-| 1 | Title ≠ Source ≠ AI interpretation | 🔄 |
-| 2 | Correction persist (no 방한 외국인 / no 중소 truncation) | 🔄 |
-| 3 | Confirm monotonicity (accepted ↛ pending) | 🔄 |
-| 4 | Stage ①→②→③→④ existing V3 gaps | 🔄 |
-| 5 | Golden J1–J6 + long-form + refresh | 🔄 |
+| 1 | Title ≠ Source ≠ AI interpretation | ✅ unit + auth E2E |
+| 2 | Correction persist (no 방한 외국인 / no 중소 truncation) | ✅ unit + browser snapshot |
+| 3 | Confirm monotonicity (accepted ↛ pending) | ✅ unit; browser refresh 미완 |
+| 4 | Stage ①→②→③→④ existing V3 gaps | ✅ unit; browser ③④ 미완 |
+| 5 | Golden J1–J6 + long-form + refresh | 🔄 unit PASS / browser 부분 |
 
 ---
 
