@@ -194,12 +194,44 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
       await page.waitForTimeout(1_500);
     }
 
+    const nextCustomerDeadline = Date.now() + 45_000;
+    while (Date.now() < nextCustomerDeadline) {
+      const loop = await readLoopFromSession(page);
+      const next =
+        loop?.lastDecision?.targetGapId ?? loop?.lockedAskSurface?.targetGap ?? '';
+      if (next === 'customerPersona') break;
+      await page.waitForTimeout(500);
+    }
+
     const afterBusinessYes = await readLoopFromSession(page);
+    const lastTurn = [...(afterBusinessYes?.turns ?? [])]
+      .reverse()
+      .find((turn) => !turn.superseded && Boolean(turn.answer?.trim()));
+    expect(lastTurn?.targetGap ?? lastTurn?.review?.askedGapId).toBe('businessOneLiner');
+    expect(lastTurn?.semanticFactKey ?? lastTurn?.review?.extractedFacts?.[0]?.key).toBe(
+      'business',
+    );
+    expect(lastTurn?.review?.extractedFacts?.some((fact) => fact.key === 'customer')).not.toBe(
+      true,
+    );
     const customerGap = afterBusinessYes?.gapState?.gaps?.customerPersona?.completeness;
     expect(customerGap).not.toBe('CLOSED');
+    const customerEvidence = (afterBusinessYes?.gapState?.gaps?.customerPersona?.evidence ?? [])
+      .map((item) => item.value)
+      .join(' ');
+    expect(customerEvidence).not.toMatch(/다양한 관광객이 늘며/);
+    const nextGap =
+      afterBusinessYes?.lastDecision?.targetGapId ??
+      afterBusinessYes?.lockedAskSurface?.targetGap ??
+      '';
+    expect(nextGap).toBe('customerPersona');
     const customer = await currentCustomer(page);
     expect(customer).not.toMatch(/다양한 관광객이 늘며/);
 
+    if (await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false)) {
+      const nextQ = afterBusinessYes?.lastDecision?.questionText ?? '';
+      expect(nextQ).toMatch(/누구|고객/);
+    }
     if (await page.getByTestId('answer-input').isVisible().catch(() => false)) {
       await submitAnswer(page, '방한 외국인');
       await page.waitForTimeout(1_200);
@@ -209,6 +241,13 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
       expect(corrected).toMatch(/내국인/);
       expect(corrected).toMatch(/외국인/);
       expect(corrected).not.toMatch(/방한/);
+      const afterCorrection = await readLoopFromSession(page);
+      expect(afterCorrection?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
+      expect(
+        (afterCorrection?.gapState?.gaps?.customerPersona?.evidence ?? [])
+          .map((item) => item.value)
+          .join(' '),
+      ).toMatch(/내국인/);
     }
   });
 });

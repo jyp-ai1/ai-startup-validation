@@ -593,6 +593,10 @@ describe('Recovery 2 P0-1 — Production J6/J7/J8 business confirm slot', () => 
       projectId: PROJECT_ID,
       persistLastDecision: true,
     });
+    const nextGap =
+      (next && 'targetGapId' in next ? next.targetGapId : null) ?? next?.targetGap ?? null;
+    expect(nextGap).toBe('customerPersona');
+    expect(next?.questionText ?? '').toMatch(/누구|고객/);
     expect(isBusinessUnderstandingConfirmQuestion(next?.questionText)).toBe(false);
     expect(processed.loop.gapState?.gaps.customerPersona?.completeness ?? 'OPEN').not.toBe(
       'CLOSED',
