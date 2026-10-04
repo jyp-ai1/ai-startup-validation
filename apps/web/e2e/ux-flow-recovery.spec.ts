@@ -109,8 +109,10 @@ async function createBreweryProject(page: Page) {
 }
 
 test.describe('E2E 1 — Demo clinicflow fixture and result', () => {
-  test('clinicflow title, one-liner, source, result, and PDF status', async ({ page }) => {
+  test('clinicflow title, one-liner, source, result, and PDF status', async ({ page, request }) => {
     test.setTimeout(240_000);
+    const health = await request.get('/health');
+    expect(health.ok(), `webServer not ready: health ${health.status()}`).toBe(true);
     await page.goto('/workspace?demo=guided&sample=clinicflow&fresh=1', {
       waitUntil: 'domcontentloaded',
     });
