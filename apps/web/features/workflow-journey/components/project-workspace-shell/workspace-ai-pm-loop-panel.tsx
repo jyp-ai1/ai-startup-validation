@@ -285,6 +285,8 @@ type WorkspaceAiPmLoopPanelProps = {
   onSessionPause?: () => void;
   /** FIX 1 CASE A — re-sync when DB hydrator applies a new snapshot */
   workspaceSnapshotUpdatedAt?: string | null;
+  /** After C1, hide interpretation-style 맞습니다 on the composer. */
+  hideInterpretationConfirm?: boolean;
   className?: string;
 };
 
@@ -300,6 +302,7 @@ export function WorkspaceAiPmLoopPanel({
   onLoopComplete,
   onSessionPause,
   workspaceSnapshotUpdatedAt = null,
+  hideInterpretationConfirm = false,
   className,
 }: WorkspaceAiPmLoopPanelProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
@@ -2479,9 +2482,13 @@ export function WorkspaceAiPmLoopPanel({
         setConfirmCorrectionMode(false);
         resetAnswerDraft();
       }}
-      showConfirmYes={isConfirmQuestion && !confirmCorrectionMode && !contradiction}
+      showConfirmYes={
+        isConfirmQuestion && !confirmCorrectionMode && !contradiction && !hideInterpretationConfirm
+      }
       onConfirmYes={handleConfirmYes}
-      showConfirmNo={isConfirmQuestion && !confirmCorrectionMode && !contradiction}
+      showConfirmNo={
+        isConfirmQuestion && !confirmCorrectionMode && !contradiction && !hideInterpretationConfirm
+      }
       onConfirmNo={handleConfirmNo}
       contradiction={
         contradiction ? { prior: contradiction.prior, next: contradiction.next } : null

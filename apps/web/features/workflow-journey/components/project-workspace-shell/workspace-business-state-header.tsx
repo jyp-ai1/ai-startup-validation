@@ -1,13 +1,12 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-
 import type { WorkspaceBusinessState } from '../../lib/business-understanding/build-ai-pm-business-clarity';
 import { cn } from '@repo/ui/lib/utils';
 
 type WorkspaceBusinessStateHeaderProps = {
   projectName: string;
   state: WorkspaceBusinessState;
+  sourceDocument?: string | null;
   className?: string;
 };
 
@@ -15,10 +14,11 @@ type WorkspaceBusinessStateHeaderProps = {
 export function WorkspaceBusinessStateHeader({
   projectName,
   state,
+  sourceDocument = null,
   className,
 }: WorkspaceBusinessStateHeaderProps) {
-  const t = useTranslations('workflow.journey.workspaceShell.conversationUx');
   const seedText =
+    sourceDocument?.trim() ||
     state.clarity?.initialSummary?.trim() ||
     state.headline?.trim() ||
     state.headlineLines.join('\n').trim();
@@ -31,7 +31,10 @@ export function WorkspaceBusinessStateHeader({
       )}
       aria-label={projectName}
     >
-      <h1 className="truncate text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+      <h1
+        data-testid="project-display-title"
+        className="truncate text-lg font-semibold tracking-tight text-foreground sm:text-xl"
+      >
         {projectName}
       </h1>
       {seedText ? (

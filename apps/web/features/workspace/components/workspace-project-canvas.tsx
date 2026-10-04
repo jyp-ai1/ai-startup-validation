@@ -41,6 +41,8 @@ type WorkspaceProjectCanvasProps = {
   demoSampleId?: import('@/features/workflow-journey/lib/demo-samples').DemoSampleId;
   demoFresh?: boolean;
   seedDocument?: string;
+  projectTitle?: string | null;
+  reviewType?: string | null;
   persistedWorkspace?: WorkspacePersistedSnapshot | null;
 };
 
@@ -56,6 +58,8 @@ export function WorkspaceProjectCanvas({
   demoSampleId = 'clinicflow',
   demoFresh = false,
   seedDocument,
+  projectTitle = null,
+  reviewType = null,
   persistedWorkspace = null,
 }: WorkspaceProjectCanvasProps) {
   const effectiveSnapshot = usePromotedWorkspaceSnapshot(projectId, promoted, persistedWorkspace);
@@ -116,6 +120,8 @@ export function WorkspaceProjectCanvas({
         demoFresh={demoFresh}
         seedDocument={resolvedSeedDocument}
         isNewProject={welcome}
+        projectTitle={projectTitle}
+        reviewType={reviewType}
         initialWorkspaceSnapshot={effectiveSnapshot}
       />
     </>

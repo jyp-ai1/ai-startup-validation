@@ -170,6 +170,11 @@ test.describe('E2E 2+3 — QA Auth brewery writable flow', () => {
     await clickThroughReading(page);
     await shot(page, 'ux-auth-brewery-created');
 
+    await expect(page.getByTestId('project-display-title')).toHaveText('양조장 체험 관광 서비스');
+    await expect(page.getByTestId('document-first-card')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('document-first-card')).toContainText('AI가 이해한 내용');
+    await expect(page.getByTestId('current-understanding-block')).toHaveCount(0);
+
     const narrative = page.getByTestId('current-understanding-narrative');
     await expect(narrative).toBeVisible({ timeout: 20_000 });
     const narrativeText = (await narrative.innerText()).trim();
@@ -180,10 +185,13 @@ test.describe('E2E 2+3 — QA Auth brewery writable flow', () => {
 
     await confirmAiUnderstanding(page);
     await shot(page, 'ux-auth-brewery-first-question');
+    await expect(page.getByTestId('document-first-card')).toHaveCount(0);
+    await expect(page.getByTestId('current-understanding-block')).toHaveCount(0);
 
     const answer = await expectWritableAnswer(page);
-    await expect(page.getByTestId('question-progress-label')).toBeVisible();
-    const questionBefore = (await page.getByTestId('question-progress-label').innerText()).trim();
+    const progress = page.getByTestId('answer-composer').getByTestId('question-progress-label');
+    await expect(progress).toBeVisible();
+    const questionBefore = (await progress.innerText()).trim();
     const summaryBefore = (await page.getByTestId('summary-confirmed-slots').innerText()).trim();
 
     await answer.fill(FIRST_ANSWER);
@@ -196,7 +204,9 @@ test.describe('E2E 2+3 — QA Auth brewery writable flow', () => {
     const summaryAfter = (await page.getByTestId('summary-confirmed-slots').innerText()).trim();
     expect(summaryAfter).not.toBe(summaryBefore);
     expect(summaryAfter).toMatch(/관광객|양조장 대표/);
-    const questionAfter = (await page.getByTestId('question-progress-label').innerText()).trim();
+    const questionAfter = (
+      await page.getByTestId('answer-composer').getByTestId('question-progress-label').innerText()
+    ).trim();
     expect(questionAfter).not.toBe(questionBefore);
 
     const edit = page.getByTestId('edit-prior-answer-cta');
@@ -222,7 +232,9 @@ test.describe('E2E 2+3 — QA Auth brewery writable flow', () => {
     const summaryAfterConflict = (await page.getByTestId('summary-confirmed-slots').innerText()).trim();
     expect(summaryAfterConflict).toMatch(/직접 예약|직접 결제|관광객|양조장/);
     await expectWritableAnswer(page);
-    const nextQuestion = (await page.getByTestId('question-progress-label').innerText()).trim();
+    const nextQuestion = (
+      await page.getByTestId('answer-composer').getByTestId('question-progress-label').innerText()
+    ).trim();
     expect(nextQuestion).not.toBe(questionAfter);
     await shot(page, 'ux-auth-brewery-next-question');
   });

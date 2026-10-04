@@ -25,6 +25,7 @@ import {
 import { isDemoSampleId } from '@/features/workflow-journey/lib/demo-samples';
 import { extractProjectSeedDocument } from '@/lib/project/project-seed-document';
 import { parseWorkspacePersistedSnapshot } from '@/lib/project/workspace-persisted-state';
+import { parseInterviewBundle } from '@/features/interview/types/interview-state';
 import { isSupabaseConfigured } from '@repo/db';
 
 export const dynamic = 'force-dynamic';
@@ -164,6 +165,8 @@ export default async function WorkspaceHomePage({ searchParams }: WorkspaceHomeP
         authComplete={authComplete}
         needsPersona={false}
         seedDocument={seedDocument}
+        projectTitle={owned?.title}
+        reviewType={parseInterviewBundle(owned?.onboardingContext).sprint12?.reviewType}
         persistedWorkspace={persistedWorkspace}
         demoMode={
           params.demo === 'readonly'

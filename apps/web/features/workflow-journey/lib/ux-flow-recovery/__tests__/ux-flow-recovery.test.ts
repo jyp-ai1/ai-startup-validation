@@ -186,7 +186,10 @@ describe('UX-10 / UX-11 / UX-12 viability result + PDF CTA data', () => {
     });
 
     expect(result.verdict).toBe('HOLD');
-    expect(result.title).toBe('사업성 검토 결과');
+    expect(result.title).toBe('현재 사업성 판단');
+    expect(result.risks.length).toBeGreaterThan(0);
+    expect(result.nextActions.length).toBeGreaterThan(0);
+    expect(result.sectionOrder[0]).toBe('nextActions');
     expect(result.pdfReady).toBe(false);
     expect(result.why).toContain('지불 의향');
     expect(result.nextValidation.length).toBeGreaterThan(0);
