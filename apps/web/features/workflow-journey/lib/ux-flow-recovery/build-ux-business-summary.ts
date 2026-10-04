@@ -91,6 +91,17 @@ function isNearDuplicateOfSource(value: string, source: string): boolean {
   return false;
 }
 
+function hasJongseong(text: string): boolean {
+  const last = text.trim().slice(-1);
+  const code = last.codePointAt(0);
+  if (!code || code < 0xac00 || code > 0xd7a3) return false;
+  return (code - 0xac00) % 28 !== 0;
+}
+
+function withObjectParticle(noun: string): string {
+  return `${noun}${hasJongseong(noun) ? '을' : '를'}`;
+}
+
 function clipSentence(text: string, max = 160): string {
   const trimmed = normalizeComparable(text);
   if (trimmed.length <= max) return trimmed;
@@ -109,23 +120,23 @@ export function composeUnderstoodNarrative(
   const business = claimByKey(living, 'businessOneLiner');
   const user = claimByKey(living, 'customerPersona');
   const problem = claimByKey(living, 'problemJtbd');
-  const businessValue = isFilled(business) ? business!.value!.trim() : '';
-  const userValue = isFilled(user) ? user!.value!.trim() : '';
-  const problemValue = isFilled(problem) ? problem!.value!.trim() : '';
+  const businessValue = isFilled(business) ? business!.value!.trim().replace(/[.。]+$/u, '') : '';
+  const userValue = isFilled(user) ? user!.value!.trim().replace(/[.。]+$/u, '') : '';
+  const problemValue = isFilled(problem) ? problem!.value!.trim().replace(/[.。]+$/u, '') : '';
   const usableBusiness =
     businessValue && !isNearDuplicateOfSource(businessValue, source) ? businessValue : '';
 
   if (userValue && usableBusiness) {
-    return `${userValue}를 대상으로 ${usableBusiness.replace(/입니다\.?$/, '')}를 연계하는 서비스로 이해했습니다.`;
+    return `${withObjectParticle(userValue)} 대상으로 하는 서비스로 이해했습니다.`;
   }
   if (userValue && problemValue && !isNearDuplicateOfSource(problemValue, source)) {
-    return `${userValue}의 ${problemValue.replace(/입니다\.?$/, '')}를 푸는 사업으로 이해했습니다.`;
+    return `${withObjectParticle(userValue)} 위한 사업으로 이해했습니다.`;
   }
   if (usableBusiness) {
     return `${usableBusiness.replace(/입니다\.?$/, '')}로 이해했습니다.`;
   }
   if (userValue) {
-    return `${userValue}를 위한 사업으로 이해했습니다.`;
+    return `${withObjectParticle(userValue)} 위한 사업으로 이해했습니다.`;
   }
 
   const spine = living.spine.business?.trim() ?? '';

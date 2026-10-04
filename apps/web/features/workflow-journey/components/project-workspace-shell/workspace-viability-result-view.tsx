@@ -21,7 +21,7 @@ export function WorkspaceViabilityResultView({
   const [pdfMessage, setPdfMessage] = useState<string | null>(null);
 
   const handlePdf = () => {
-    if (pdfHref) {
+    if (result.pdfReady && pdfHref) {
       window.location.assign(pdfHref);
       return;
     }

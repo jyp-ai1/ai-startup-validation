@@ -207,6 +207,7 @@ export function WorkspaceAiPmMain({
   const [savedAlignment, setSavedAlignment] = useState<MarketAlignmentState | null>(null);
   const [workshopAgreement, setWorkshopAgreement] = useState(() => loadWorkshopAgreement(projectId));
   const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));
+  const [uxResultRequested, setUxResultRequested] = useState(false);
   const analysisPresenter = useMemo(() => {
     const result = loadAnalysisResult(projectId);
     if (!result) return null;
@@ -444,7 +445,14 @@ export function WorkspaceAiPmMain({
     workshopAgreement?.agreed && workshopAgreement.reviewRound === reviewCount,
   );
 
-  const isPostReview = reviewCount >= 1 || hasCompletedReview;
+  const isPostReview = reviewCount >= 1 || hasCompletedReview || uxResultRequested;
+
+  const openViabilityResult = useCallback(() => {
+    saveUnderstandingPhase('review-ready', projectId);
+    setUnderstandingPhase('review-ready');
+    setUxResultRequested(true);
+    onReview();
+  }, [onReview, projectId]);
 
   const message = buildAiPmPrimaryMessage(domain, reviewCount, entities);
   const paragraphs = sanitizeAiPmParagraphs(message.paragraphs);
@@ -755,11 +763,7 @@ export function WorkspaceAiPmMain({
             setLoopState(loadAiPmLoopState(projectId));
             setUnderstandingPhase(loadUnderstandingPhase(projectId));
           }}
-          onOpenResult={() => {
-            saveUnderstandingPhase('review-ready', projectId);
-            setUnderstandingPhase('review-ready');
-            onReview();
-          }}
+          onOpenResult={openViabilityResult}
         />
       ) : null}
 
@@ -888,7 +892,7 @@ export function WorkspaceAiPmMain({
             saveUnderstandingPhase('aligning', projectId);
             setUnderstandingPhase('aligning');
           }}
-          onStartReview={onReview}
+          onStartReview={openViabilityResult}
         />
       ) : null}
 
