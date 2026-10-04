@@ -216,10 +216,11 @@ export function scanSemanticKnowledgeForGap(input: {
   if (input.memory && memoryHasFact(input.memory, factKey)) {
     const mem = getFact(input.memory, factKey)!;
     if (mem.value.trim()) {
+      const raw = mem.value.trim();
       return {
         gapId,
         factKey,
-        value: clipValue(mem.value),
+        value: mem.source === 'user_turn' ? raw : clipValue(raw),
         source: mem.source === 'document' ? 'memory_document' : 'memory_user',
         userConfirmed: mem.source === 'user_turn',
       };
@@ -234,7 +235,7 @@ export function scanSemanticKnowledgeForGap(input: {
       return {
         gapId,
         factKey,
-        value: clipValue(claim.value),
+        value: userConfirmed ? claim.value.trim() : clipValue(claim.value),
         source: 'claim',
         userConfirmed,
       };
@@ -288,6 +289,17 @@ function closedGapExcludeSet(gapState: GapKnowledgeState): Set<string> {
     if (!isGapAskable(gapId, gapState)) exclude.add(gapId);
   }
   return exclude;
+}
+
+function alreadyCapturedKnownValue(turns: AiPmLoopTurn[], value: string): boolean {
+  const known = value.trim().replace(/\s+/g, ' ').toLowerCase();
+  if (!known) return false;
+  const active = turns.filter((turn) => !turn.superseded && Boolean(turn.answer?.trim()));
+  const last = active[active.length - 1];
+  if (!last) return false;
+  const answer = last.answer?.trim().replace(/\s+/g, ' ').toLowerCase() ?? '';
+  if (answer !== known) return false;
+  return active.some((turn) => turn !== last);
 }
 
 function lastAskedGapId(turns: AiPmLoopTurn[]): string | null {
@@ -441,7 +453,9 @@ export function evaluateNoAskPolicy(input: {
     ) {
       return { action: 'ASK' };
     }
-    if (CONFIRM_FIRST_GAPS.has(targetGapId) || !knowledge.userConfirmed) {
+    if (alreadyCapturedKnownValue(input.turns, knowledge.value)) {
+      // 맞습니다 already persisted this value — never remount the same confirm card
+    } else if (CONFIRM_FIRST_GAPS.has(targetGapId) || !knowledge.userConfirmed) {
       return {
         action: 'CONFIRM',
         gapId: targetGapId,

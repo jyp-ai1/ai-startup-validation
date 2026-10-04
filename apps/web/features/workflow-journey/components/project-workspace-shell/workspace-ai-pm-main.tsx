@@ -208,7 +208,9 @@ export function WorkspaceAiPmMain({
   useWorkspacePersistFlush(projectId, enableDbPersistence);
   const t = useTranslations('workflow.journey.workspaceShell.aiPmMain');
   const tPostReview = useTranslations('workflow.journey.workspaceShell.postReview');
-  const [understandingPhase, setUnderstandingPhase] = useState<UnderstandingPhase>('pending');
+  const [understandingPhase, setUnderstandingPhase] = useState<UnderstandingPhase>(() =>
+    loadUnderstandingPhase(projectId),
+  );
   const [savedAlignment, setSavedAlignment] = useState<MarketAlignmentState | null>(null);
   const [workshopAgreement, setWorkshopAgreement] = useState(() => loadWorkshopAgreement(projectId));
   const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));

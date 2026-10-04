@@ -26,6 +26,13 @@ const nextConfig: NextConfig = {
     ];
   },
   outputFileTracingRoot: path.join(__dirname, '../../'),
+  outputFileTracingIncludes: {
+    '/api/intake/extract-document': [
+      './node_modules/pdf-parse/**/*',
+      './node_modules/pdfjs-dist/**/*',
+      './node_modules/@napi-rs/canvas/**/*',
+    ],
+  },
   transpilePackages: [
     '@repo/ui',
     '@repo/core',
@@ -42,6 +49,9 @@ const nextConfig: NextConfig = {
     'sharp',
     '@repo/browser',
     '@repo/automation',
+    'pdf-parse',
+    'pdfjs-dist',
+    '@napi-rs/canvas',
   ],
   env: {
     NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: process.env.VERCEL_GIT_COMMIT_SHA,
@@ -128,6 +138,9 @@ const nextConfig: NextConfig = {
         'playwright',
         'playwright-core',
         '@repo/browser',
+        'pdf-parse',
+        'pdfjs-dist',
+        '@napi-rs/canvas',
       ];
     }
     return config;

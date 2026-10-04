@@ -205,9 +205,30 @@ export function evaluateAnswerQuality(
 export function extractDeclaredCustomerSegment(text: string): string | null {
   const t = text.trim();
   const m = t.match(
-    /(?:실제\s*(?:최종\s*)?)?고객(?:은|이)\s*([^,.]+?)(?:입니다|이고|이며|였습니다|\.|,|$)/u,
+    /(?:실제\s*(?:최종\s*)?)?(?:핵심\s*)?(?:주요\s*)?고객(?:은|이)\s*(.+?)(?:입니다|이에요|예요|이고|이며|였습니다|[.。,]|$)/u,
   );
-  return m?.[1]?.trim() ?? null;
+  return m?.[1]?.trim() || null;
+}
+
+const WEAK_PERSONA_TOKENS = new Set([
+  '외국인',
+  '관광객',
+  '내국인',
+  '고객',
+  '사용자',
+  '여행객',
+  '사람',
+  '대상',
+]);
+
+/** Inbound tourist inference vs local+foreign brewery enthusiast — must replace, not merge. */
+export function customerPersonaReplacesPrior(prior: string, next: string): boolean {
+  const a = prior.trim();
+  const b = next.trim();
+  if (!a || !b || a === b) return false;
+  const inbound = /(방한|fit\b|외국인\s*관광)/i;
+  const localBrewery = /(전통주|양조장|내국인)/i;
+  return (inbound.test(a) && localBrewery.test(b)) || (localBrewery.test(a) && inbound.test(b));
 }
 
 /** Lightweight contradiction: both claims look like replacements of the same slot. */
@@ -220,6 +241,7 @@ export function answersContradict(prior: string, next: string): boolean {
 
   // P0-3 — payer archetype conflict (B2B/hotel vs tourist/direct) never silently merge
   if (payerArchetypesConflict(a, b)) return true;
+  if (customerPersonaReplacesPrior(a, b)) return true;
 
   // Distinct short noun phrases that share almost no tokens → treat as conflict
   const tokensA = new Set(a.split(/[\s,/·]+/).filter((t) => t.length >= 2));
@@ -227,9 +249,13 @@ export function answersContradict(prior: string, next: string): boolean {
   if (tokensA.size === 0 || tokensB.size === 0) return false;
   let overlap = 0;
   for (const t of tokensA) {
+    if (WEAK_PERSONA_TOKENS.has(t)) continue;
     if (tokensB.has(t)) overlap += 1;
   }
-  const ratio = overlap / Math.min(tokensA.size, tokensB.size);
+  const distinctiveA = [...tokensA].filter((t) => !WEAK_PERSONA_TOKENS.has(t)).length;
+  const distinctiveB = [...tokensB].filter((t) => !WEAK_PERSONA_TOKENS.has(t)).length;
+  const denom = Math.min(distinctiveA || tokensA.size, distinctiveB || tokensB.size);
+  const ratio = denom === 0 ? 0 : overlap / denom;
   if (declared) {
     return ratio < 0.35;
   }

@@ -176,7 +176,7 @@ function resolveCustomerField(
               turn.semanticFactKeys?.includes('customer')),
         );
       return {
-        value: truncate(fact.value, 48),
+        value: truncate(fact.value, 160),
         provenance: correctedTurn ? 'USER_CORRECTED' : 'USER_CONFIRMED',
       };
     }

@@ -13,6 +13,7 @@ function extensionOf(fileName: string): string {
 }
 
 async function extractPdfText(buffer: Buffer): Promise<string> {
+  await import('pdf-parse/worker');
   const { PDFParse } = await import('pdf-parse');
   const parser = new PDFParse({ data: buffer });
   try {

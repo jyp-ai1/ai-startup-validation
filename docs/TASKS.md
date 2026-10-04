@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## P0 — Correction persist + business-plan upload (in progress)
+
+**Status:** Production regression after PR #81. CEO test stopped.
+
+| # | Work | Path | Status |
+|---|---|---|---|
+| 1 | Replace inferred `방한 외국인` with full founder correction | `understanding-contract.ts`, `interpret-answer-semantics.ts` | 진행중 |
+| 2 | Stop correction truncation (`중소 제조 CEO`) | `ai-pm-correction-semantics.ts` | 진행중 |
+| 3 | Stop confirm remount after `맞습니다` / stale hydrate | `ai-pm-no-ask-policy.ts`, `apply-workspace-snapshot.ts` | 진행중 |
+| 4 | PDF extract `DOMMatrix` on Vercel | `extract-document-text.ts`, `next.config.ts` | 진행중 |
+
+**Evidence test:** `apps/web/features/workflow-journey/lib/business-understanding/__tests__/p0-correction-persist-hydrate.test.ts`
+
+---
+
 ## Sprint S0.5 — AI PM Core Loop Reconstruction ✅ 조건부 PASS
 
 **Status:** CPO **조건부 PASS** · gap = CEO 감정선 → **S0.6**

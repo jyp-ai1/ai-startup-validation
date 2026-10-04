@@ -11,8 +11,9 @@ const CORRECTION_CUE_RE =
 const CUSTOMER_FIELD_CUE_RE =
   /(핵심\s*고객|고객(?:은|이)?|customer|타깃|타겟|타겯|persona)/i;
 
+/** Capture the full accepted phrase — never a single leading token (중소 제조 CEO ≠ 중소). */
 const NOT_X_BUT_Y_RE =
-  /([\w가-힣]+(?:가게|집|점|사|팀|업|인)?)(?:이|가)\s*아니(?:요|라)\s*([\w가-힣]+(?:가게|집|점|사|팀|업|인)?)/i;
+  /([\w가-힣]+(?:가게|집|점|사|팀|업|인)?)\s*(?:이|가)\s*아니(?:요|라)\s*(.+?)(?:입니다|이에요|예요|이다|[.。]|$)/u;
 
 const CORRECTION_RAW_RE =
   /^(?:아니(?:요|라)[,.]?\s*)?(?:제가\s*말한\s*)?(?:핵심\s*)?고객(?:은|이)?\s*/i;
@@ -37,8 +38,8 @@ export function parseNotXButYCorrection(text: string): ParsedNotXButY | null {
   const trimmed = text.trim();
   const match = trimmed.match(NOT_X_BUT_Y_RE);
   if (!match?.[1] || !match?.[2]) return null;
-  const rejected = match[1].trim().replace(/[입니다\.]+$/, '');
-  const accepted = match[2].trim().replace(/[입니다\.]+$/, '');
+  const rejected = match[1].trim().replace(/[입니다.]+$/u, '');
+  const accepted = match[2].trim().replace(/[입니다.]+$/u, '');
   if (rejected.length < 1 || accepted.length < 1) return null;
   if (rejected === accepted) return null;
   return { rejected, accepted };
@@ -51,7 +52,7 @@ function enrichCustomerCorrectionValue(accepted: string, fullText: string): stri
   return accepted;
 }
 
-/** Resolved fact value for Memory / Review — never the raw correction utterance. */
+/** Resolved fact value for Memory / Review — never a regex-sliced first token. */
 export function extractCorrectedFactValue(
   key: ConversationFactKey,
   userAnswer: string,
@@ -62,8 +63,13 @@ export function extractCorrectedFactValue(
     if (parsed) {
       return enrichCustomerCorrectionValue(parsed.accepted, trimmed);
     }
-    const segment = trimmed.match(/([\w가-힣]+(?:가게|집|점|소상공인))/);
-    if (segment?.[1]) return segment[1];
+    const labeled = trimmed.match(
+      /(?:실제\s*(?:최종\s*)?)?(?:핵심\s*)?고객(?:은|이)\s*(.+?)(?:입니다|이에요|예요|이다|[.。]|)$/u,
+    );
+    if (labeled?.[1]?.trim()) {
+      return labeled[1].trim().replace(/[입니다.]+$/u, '');
+    }
+    return sanitizeCorrectionDisplayText(trimmed);
   }
   if (key === 'buyer') {
     const parsed = parseNotXButYCorrection(trimmed);

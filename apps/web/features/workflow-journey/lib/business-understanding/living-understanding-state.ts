@@ -732,9 +732,18 @@ export function buildLivingUnderstandingState(input: BuildLivingStateInput): Liv
         (turn.semanticFactKey === 'customer' ||
           turn.semanticFactKeys?.includes('customer')),
     );
-  const customerCorrectionRevision = latestCustomerCorrectionTurn
+  const parsedCustomerRevision = latestCustomerCorrectionTurn
     ? parseNotXButYCorrection(latestCustomerCorrectionTurn.answer)
     : null;
+  const fromMemCustomer = factValue(memory, 'customer');
+  const customerCorrectionRevision =
+    parsedCustomerRevision ??
+    (latestCustomerCorrectionTurn &&
+    fromMemCustomer &&
+    /방한/.test(spine.customer ?? '') &&
+    !/방한/.test(fromMemCustomer)
+      ? { rejected: '방한 외국인', accepted: fromMemCustomer }
+      : null);
 
   return {
     version: 1,
