@@ -7,6 +7,7 @@ import type { BusinessUnderstanding } from '@repo/types/domain/business-understa
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 import { cn } from '@repo/ui/lib/utils';
 
+import type { DemoUxDisplay } from '@/lib/demo/demo-ux-display';
 import { buildDocumentFirstDraft } from '../../lib/business-understanding/build-document-first-draft';
 import { founderFieldLabel } from '../../lib/business-understanding/founder-field-labels';
 import { formatGapCeoSurfaceLine } from '../../lib/business-understanding/gap-state-ceo-surface';
@@ -17,6 +18,7 @@ type WorkspaceDemoMyBusinessPreviewProps = {
   understanding: BusinessUnderstanding;
   entities?: LaunchLensDomainContext | null;
   projectId?: string;
+  display: DemoUxDisplay;
   className?: string;
 };
 
@@ -24,9 +26,9 @@ function provenanceShort(provenance: string): string {
   switch (provenance) {
     case 'DOCUMENT':
     case 'USER_CONFIRMED':
-      return '사용자·문서';
+      return 'CEO 제공';
     case 'USER_CORRECTED':
-      return '사용자 수정';
+      return 'CEO 수정';
     case 'AI_INFERENCE':
       return 'AI 추정 · 확인 필요';
     default:
@@ -38,19 +40,15 @@ export function WorkspaceDemoMyBusinessPreview({
   understanding,
   entities = null,
   projectId,
+  display,
   className,
 }: WorkspaceDemoMyBusinessPreviewProps) {
   const t = useTranslations('workflow.journey.workspaceShell.businessUnderstanding');
 
   const documentText =
+    display.projectFullDescription.trim() ||
     loadWorkspaceDocumentText(projectId)?.trim() ||
-    [
-      understanding.business.value,
-      understanding.customer.value,
-      understanding.problem.value,
-    ]
-      .filter(Boolean)
-      .join('\n');
+    '';
 
   const draft = useMemo(
     () =>
@@ -60,10 +58,6 @@ export function WorkspaceDemoMyBusinessPreview({
     [documentText, understanding, entities],
   );
 
-  const payerLabel =
-    entities?.business.model?.trim() ||
-    (understanding.revenue.value?.trim() ? understanding.revenue.value.trim() : null);
-
   return (
     <section
       data-testid="demo-my-business-preview"
@@ -72,13 +66,21 @@ export function WorkspaceDemoMyBusinessPreview({
         className,
       )}
     >
-      <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-        My Business Preview
+      <p className="text-xs font-semibold uppercase tracking-widest text-primary">Demo Workspace</p>
+      <h2 className="mt-2 text-lg font-semibold" data-testid="demo-project-title">
+        {display.projectTitle}
+      </h2>
+      <p className="mt-1 text-sm leading-relaxed text-muted-foreground" data-testid="demo-project-oneliner">
+        {display.projectDescription}
       </p>
-      <p className="mt-2 text-sm text-muted-foreground">
-        로그인 전까지는 AI PM 미리보기입니다. 전체 Stage · Judgment · Final Review는 Production
-        프로젝트에서 이어집니다.
-      </p>
+      {documentText ? (
+        <details className="mt-3" data-testid="demo-business-details">
+          <summary className="cursor-pointer text-xs font-medium text-primary">사업내용 보기</summary>
+          <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+            {documentText}
+          </p>
+        </details>
+      ) : null}
 
       {draft ? (
         <ul className="mt-4 space-y-3">
@@ -88,25 +90,18 @@ export function WorkspaceDemoMyBusinessPreview({
                 {field.id === 'business'
                   ? '사업'
                   : field.id === 'customer'
-                    ? '고객'
+                    ? '실제 사용자'
                     : field.id === 'problem'
                       ? '문제'
                       : field.id}
               </p>
               <p className="mt-1 text-sm font-medium leading-relaxed">{field.value}</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                출처 · {provenanceShort(field.provenance)}
+                {provenanceShort(field.provenance)}
               </p>
             </li>
           ))}
         </ul>
-      ) : null}
-
-      {payerLabel ? (
-        <div className="mt-3 rounded-xl border border-border/60 bg-background/80 px-4 py-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">구매·수익</p>
-          <p className="mt-1 text-sm">{payerLabel}</p>
-        </div>
       ) : null}
 
       {draft && draft.gapFieldIds.length > 0 ? (

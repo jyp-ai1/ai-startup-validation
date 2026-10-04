@@ -37,7 +37,7 @@ export function WorkspaceBusinessStateHeader({
       {seedText ? (
         <details className="mt-2" data-testid="business-seed-details">
           <summary className="cursor-pointer text-xs font-medium text-primary">
-            {t('seedToggle')}
+            전체 사업내용 보기
           </summary>
           <p className="mt-2 max-w-3xl whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
             {seedText}
