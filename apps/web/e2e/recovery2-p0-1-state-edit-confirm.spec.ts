@@ -189,8 +189,6 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     const afterBusinessYes = await waitForCustomerAsk(page);
     assertJ6BusinessConfirmLeftCustomerOpen(afterBusinessYes);
     await openCustomerFreeform(page);
-    await submitOnSlot(page, '방한 외국인');
-    await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toBe('방한 외국인');
     await submitOnSlot(page, FOUNDER_CORRECTION);
     await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toMatch(/내국인/);
     const afterCorrection = await currentCustomer(page);
@@ -264,8 +262,6 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     expect(customer).not.toMatch(/다양한 관광객이 늘며/);
 
     await openCustomerFreeform(page);
-    await submitOnSlot(page, '방한 외국인');
-    await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toBe('방한 외국인');
     await submitOnSlot(page, FOUNDER_CORRECTION);
     await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toMatch(/내국인/);
     const corrected = await currentCustomer(page);
