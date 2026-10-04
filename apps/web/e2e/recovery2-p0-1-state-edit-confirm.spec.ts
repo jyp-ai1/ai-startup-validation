@@ -81,24 +81,27 @@ async function openCustomerFreeform(page: import('@playwright/test').Page) {
   await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 30_000 });
 }
 
-async function correctCustomerPrior(
-  page: import('@playwright/test').Page,
-  nextAnswer: string,
-) {
-  await expect
-    .poll(async () => (await page.getByTestId('my-last-answer').innerText().catch(() => '')) ?? '', {
-      timeout: 15_000,
-    })
-    .toMatch(/방한 외국인/);
-  await page.getByTestId('edit-prior-answer-cta').click();
-  await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 15_000 });
-  await submitOnSlot(page, nextAnswer);
-}
-
 async function submitOnSlot(page: import('@playwright/test').Page, answer: string) {
   await waitForLoopPrompt(page);
   const submitted = await submitAnswer(page, answer);
   expect(submitted, `submitAnswer(${answer})`).toBe(true);
+}
+
+async function acceptContradictionIfShown(page: import('@playwright/test').Page) {
+  const acceptNew = page.getByRole('button', { name: '새 답변이 맞아요' });
+  await acceptNew.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => null);
+  if (await acceptNew.isVisible().catch(() => false)) {
+    await acceptNew.click();
+    await page.waitForTimeout(1_500);
+  }
+}
+
+async function submitCustomerCorrection(page: import('@playwright/test').Page) {
+  await openCustomerFreeform(page);
+  await submitOnSlot(page, '방한 외국인');
+  await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toBe('방한 외국인');
+  await submitOnSlot(page, FOUNDER_CORRECTION);
+  await acceptContradictionIfShown(page);
 }
 
 function lastAnsweredTurn(
@@ -161,7 +164,35 @@ function assertJ6BusinessConfirmLeftCustomerOpen(
   expect(loop?.lastDecision?.questionText ?? '').toMatch(/누구|고객/);
 }
 
+async function startAlabomAndConfirmBusiness(page: import('@playwright/test').Page, context: import('@playwright/test').BrowserContext) {
+  expect(qaAuthReady(), 'QA magic-link env must be present — do not skip').toBe(true);
+  await loginWithQaMagicLink(page, context, e2eBaseUrl());
+  await dismissCookies(page);
+  await expect(page.getByTestId('my-projects-create-form')).toBeVisible({ timeout: 20_000 });
+  await page.locator('#new-project-title').fill(TITLE);
+  await page.locator('input[name="reviewType"][value="startup-idea"]').check();
+  await page.locator('#project-description').fill(LONG_SOURCE);
+  await page.getByRole('button', { name: /사업 검토 시작|Start business review/ }).click();
+  await page.waitForURL(/\/workspace\?project=/, { timeout: 60_000 });
+  await clickThroughReading(page);
+  if (await page.getByTestId('understanding-confirm-yes').isVisible().catch(() => false)) {
+    await page.getByTestId('understanding-confirm-yes').click();
+    await page.waitForTimeout(1_200);
+  }
+  await waitForLoopPrompt(page);
+  await dismissRecognition(page);
+  await confirmBusinessUnderstandingIfShown(page);
+  return waitForCustomerAsk(page);
+}
+
 test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
+  test('J6 business Confirm Yes leaves customerPersona OPEN', async ({ page, context }) => {
+    test.setTimeout(300_000);
+    const afterBusinessYes = await startAlabomAndConfirmBusiness(page, context);
+    assertJ6BusinessConfirmLeftCustomerOpen(afterBusinessYes);
+    expect(await currentCustomer(page)).not.toMatch(/다양한 관광객이 늘며/);
+  });
+
   test('J1–J5 confirm, long correction, remount, CLOSED hold, edit prior', async ({
     page,
     context,
@@ -200,8 +231,7 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     await confirmBusinessUnderstandingIfShown(page);
     const afterBusinessYes = await waitForCustomerAsk(page);
     assertJ6BusinessConfirmLeftCustomerOpen(afterBusinessYes);
-    await openCustomerFreeform(page);
-    await submitOnSlot(page, FOUNDER_CORRECTION);
+    await submitCustomerCorrection(page);
     await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toMatch(/내국인/);
     const afterCorrection = await currentCustomer(page);
     expect(afterCorrection).toMatch(/외국인/);
@@ -273,8 +303,7 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     const customer = await currentCustomer(page);
     expect(customer).not.toMatch(/다양한 관광객이 늘며/);
 
-    await openCustomerFreeform(page);
-    await submitOnSlot(page, FOUNDER_CORRECTION);
+    await submitCustomerCorrection(page);
     await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toMatch(/내국인/);
     const corrected = await currentCustomer(page);
     expect(corrected).toMatch(/외국인/);
