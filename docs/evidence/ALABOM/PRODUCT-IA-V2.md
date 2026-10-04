@@ -4,7 +4,13 @@
 **Production:** PR #79 (`ecdec53`) remains live and untouched.  
 **Scope:** Founder가 사업을 입력한 뒤 사업성 판단/보고서를 받을 때까지 **무엇을 보고, 확인하고, 검증하는지**.
 
-이 문서는 구현 지시서가 아니다. **정보 역할 분리**의 제품 SoT다.
+제품 기본 흐름:
+
+```text
+입력 → AI 이해 → 검증 → 판단 → 결과
+```
+
+이 문서는 아이디어가 아니라 **구현 Sprint가 바로 쪼갤 수 있는 IA 계약**이다. 이번 Phase는 코드 없음.
 
 ---
 
@@ -28,7 +34,7 @@ ALABOM Workspace는 보고서를 읽는 곳이 아니다.
 **AI PM이 Source를 해석하고, Founder가 확인하고, 확인된 지식으로 단계를 닫고, 그 결과로 사업성을 판단하는 곳**이다.
 
 사용자는 사업/고객/시장/경쟁 폼을 채우지 않는다.  
-사용자는 **사업내용**을 주고, 필요한 칸만 **확인/수정**한다.
+사용자는 **사업내용**을 주고, **맞습니다** 또는 **이 부분은 다릅니다**로 검증한다.
 
 ---
 
@@ -131,22 +137,24 @@ Interpretation을 확인하기 전에는 Confirmed가 아니다.
 생성 시 확보하는 **사용 목적**은 이후 매 턴 질문이 아니다.
 
 ```text
-사용 목적
-예비창업자 | 창업자 | 투자검토 | 전략기획 | 시장조사 | 기타
+Founder Context (역할 — 매 턴 질문 금지)
+예비창업자
+초기 스타트업 대표
+사업전략 담당자
+기존 사업 운영자
 ```
 
-현재 Production `reviewType` (`창업 아이디어` / `신사업` / `기존 사업 전략` / `투자 준비`)은 **무엇을 검토하는가**다.  
-V2는 이와 별도로 **누가 어떤 관점으로 보는가**를 Project Context로 둔다.
+새 Knowledge Store를 만들지 않는다.  
+현재 Production `reviewType` (`창업 아이디어` / `신사업` / `기존 사업 전략` / `투자 준비`)은 **무엇을 검토하는가**이며, 구현 전까지 Context 렌즈의 **임시 입력**으로 읽는다.
 
-| Context | 질문·분석 무게 | 결과 보고서 무게 |
+| Founder Context | 질문·검증 무게 | 결과·보고서 무게 |
 | --- | --- | --- |
-| 예비창업자 / 창업자 | 실행 가능성, 첫 검증 | 다음 실험, 실행 제약 |
-| 전략기획 | 시장 / 경쟁 / 차별 | 전략 선택지 |
-| 투자검토 | 리스크 / 시장 / 경제성 | HOLD 이유, 핵심 리스크 |
-| 시장조사 | 수요 / 채널 / 대안 | 검증 설계 |
-| 기타 | 기본 균형 | 기본 결과 템플릿 |
+| 예비창업자 | 실행 가능성, 첫 검증 | 다음 실험, 당장 할 일 |
+| 초기 스타트업 대표 | 고객획득, 반복, 결제 | 다음 검증, 실행 제약 |
+| 사업전략 담당자 | 시장 / 경쟁 / 차별 | 전략 선택지 |
+| 기존 사업 운영자 | 채널, 수익, 진입 | 기존 사업과의 충돌·확장 |
 
-구현 시 스키마 추가는 **별도 Sprint + CPO 승인**. 이번 문서는 역할만 정의한다.
+`reviewType = investment-prep`이면 렌즈에 리스크/경제성/HOLD 이유를 더한다. 별도 저장소 없음.
 
 ---
 
@@ -156,9 +164,9 @@ V2는 이와 별도로 **누가 어떤 관점으로 보는가**를 Project Conte
 PR #79가 이미 3열을 그렸으므로, V2는 그 열의 **중복을 제거하고 역할을 고정**한다. V3 로직 freeze와 무관하다.
 
 ```text
-LEFT   = Journey     어디에 있는가
-CENTER = AI PM       지금 무엇을 하는가
-RIGHT  = Verification 얼마나 확인됐는가
+LEFT   = WHERE              어디에 있는가
+CENTER = NOW                지금 무엇을 이해하고 묻는가
+RIGHT  = HOW MUCH VERIFIED  얼마나 검증되었는가
 ```
 
 동일 서술(한 줄 이해, 원문 앞부분)을 Center와 Right에 동시에 두지 않는다.
@@ -237,38 +245,38 @@ CPO가 준 목록을 **구현하지 않는다.**
 
 | 표시 | 매핑 | 종류 | Stage ① 완료에 필요 |
 | --- | --- | --- | --- |
-| 사업 | `businessOneLiner` | Canonical | Yes |
-| 고객 | `customerPersona` | Canonical | Yes |
+| 사업/제품 | `businessOneLiner` | Canonical | Yes |
+| 실제 사용자 | `customerPersona` | Canonical | Yes |
 | 핵심 문제 | `problemJtbd` | Canonical | Yes |
-| 구매자 | `payer` | Canonical | Yes |
-| 사용 상황 | `problemFrequencySeverity` 등에서 파생 | Facet | No |
+| 결제자 | `payer` | Canonical | Yes |
+| 사용 맥락 | `problemFrequencySeverity` 등에서 파생 | Facet | No |
 
-`사용 상황`을 Stage A required에 넣으면 Accuracy Matrix / `evaluateStageReadiness`와 충돌한다. **넣지 않는다.** Right에는 ○/△로 보여줄 수 있으나, 이 칸이 비어도 ① 완료를 막지 않는다.
+`사용 맥락`을 Stage A required에 넣으면 Accuracy Matrix / `evaluateStageReadiness`와 충돌한다. **넣지 않는다.** Right에는 ○/△로 보여줄 수 있으나, 이 칸이 비어도 ① 완료를 막지 않는다.
 
 ### ② 시장 검증
 
 | 표시 | 매핑 | 종류 | Stage ② 완료에 필요 |
 | --- | --- | --- | --- |
 | 시장 / 채널 | `marketChannel` | Canonical | Yes |
-| 대안/경쟁 | `alternativesCompetitors` | Canonical | Yes |
+| 기존 대안 | `alternativesCompetitors` (대안 측면) | Canonical — **한 키** | Yes (경쟁과 동일 SoT) |
+| 경쟁 | `alternativesCompetitors` (경쟁 측면) | Canonical — **한 키** | Yes |
 | 차별성 | `differentiationVsAlternatives` | Canonical | Yes |
 | 검증 가능성 | `validationTestability` | Canonical | Yes |
-| 고객 수요 | 고객·문제 확인값의 수요 서술 | Facet | No |
-| 시장 진입 | `marketChannel`의 진입 측면 | Facet | No (채널과 동일 SoT) |
 
-「시장」과 「시장 진입/채널」을 두 개의 신규 gap으로 쪼개지 않는다. Right에는 한 줄 `시장/채널`만 둔다.
+기존 대안과 경쟁을 두 개의 신규 `gapId`로 쪼개지 않는다. Right는 두 줄로 보여줄 수 있으나 Completeness는 `alternativesCompetitors` 하나다.
 
 ### ③ 사업성 검토
 
 | 표시 | 매핑 | 종류 |
 | --- | --- | --- |
-| 지불의사 | `payer` 확인 + 답변 서술 | Facet (payer는 ①에서 이미 Canonical) |
-| 가격/결제 | `pricingHint` | Facet |
+| 지불 의향 | `payer` 확인 + 답변 서술 | Facet (결제자는 ① Canonical) |
+| 가격 | `pricingHint` | Facet |
+| 결제 가능성 | `payer` + `pricingHint` 합성 | Facet |
 | 수익모델 | `revenueModel` | Facet |
-| 반복사용/구매 | living / 답변 파생 | Facet |
-| 획득 방식 | `marketChannel` 파생 | Facet |
-| 경제성 | 수익·가격·payer 합성 표시 | Facet |
-| 실행 가능성 | `executionConstraints` | Facet |
+| 반복 사용/구매 | living / 답변 파생 | Facet |
+| 고객획득 | `marketChannel` 파생 | Facet |
+| 경제성 | 수익·가격·payer 합성 | Facet |
+| 시장 진입 가능성 | `marketChannel` + `executionConstraints` | Facet |
 
 ③의 완료는 **새 V3 required 집합을 만들지 않는다.**  
 표시 규칙: 결과 화면으로 가기 전에 Founder가 「지금 판단해도 되는가」를 Right에서 보게 한다. 강제 게이트는 기존 final integrity / handoff를 읽기만 한다.
@@ -278,13 +286,16 @@ CPO가 준 목록을 **구현하지 않는다.**
 ```text
 현재 사업성 판단
 확인된 사실
-가정
-미확인 사항
+AI의 가정
+아직 모르는 것
 핵심 리스크
-다음 검증
+추가 검증해야 할 것
+다음 실행/검증 항목
+Founder Context에 맞춘 보고서
+[보고서] → 향후 PDF 생성
 ```
 
-이미 PR #79 결과 view가 이 뼈대를 가진다. V2는 여기에 **Project Context 렌즈**만 얹는다.
+이미 PR #79 결과 view가 뼈대를 가진다. V2는 **추가 검증 / 다음 실행 / Context 렌즈 / PDF 연결점**을 같은 산출물에 고정한다. 새 판단 엔진 없음.
 
 ---
 
@@ -371,3 +382,15 @@ Confirmed Knowledge (Canonical gaps + 사용자 확정 claim)
 | Confirmed Knowledge SoT | **명확** — 신규 스토어 없이 기존 living + gapState 뷰 |
 
 STOP 조건 해당 없음.
+
+---
+
+## 12. CPO 5항목 자체검토
+
+| Check | 질문 | 이 IA의 답 | 판정 |
+| --- | --- | --- | --- |
+| 1 | 사업내용 3~4줄 입력 = 사업 정의 완료인가? | 아니오. ① 완료는 Canonical 4키 `CLOSED`만. 입력 직후 Left는 ① ● | **PASS** |
+| 2 | Source / Interpretation / Confirmed가 분리되는가? | §3.2–3.4. 원문 접힘, 이해 서술 하나, Confirmed는 사용자 확정만 | **PASS** |
+| 3 | Left / Center / Right가 같은 내용을 반복하지 않는가? | WHERE / NOW / HOW MUCH. 서술 전문은 Center만 | **PASS** |
+| 4 | 맞습니다 → 카드 제거 → 다음 unresolved → 다음 질문인가? | C1은 카드 unmount만. C2(답변)가 해당 gap CLOSED. 카드 재렌더 금지. State Model §4 | **PASS** |
+| 5 | V3 SoT 변경 없이 구현 가능한가? | required gap 추가 없음. living ∪ gapState 뷰. presenter/unmount만 | **PASS** |

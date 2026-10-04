@@ -48,6 +48,23 @@ submit
 
 V2는 이 체인 **앞뒤의 제품 의미**를 적는다. 함수 시그니처를 바꾸라는 뜻이 아니다.
 
+### 1.1 단계별 Read / Write (구현 계약)
+
+| 단계 | 읽기 SoT | 쓰기 SoT | 금지 |
+| --- | --- | --- | --- |
+| Source | `project.title`, seed document | 생성 폼만 | title ← description 복사 |
+| AI Interpretation | Source + living claims | 기존 living 빌더 (구현 Sprint에서 presenter만) | Source substring을 이해 본문으로 |
+| Evidence | `AnswerReview.extractedFacts` | 기존 review persist | evidenceClass 의미 변경 |
+| Knowledge State | `LivingUnderstandingState.claims` | 기존 living 재계산 | 새 스토어 |
+| User Confirmation C1 | interpretation phase | phase `confirmed` → unmount | gapState 일괄 CLOSED |
+| User Confirmation C2 | locked ask + answer | `buildAnswerReview` → `updateGapStateFromReview` | 이해 카드 재마운트 |
+| Confirmed Knowledge | living confirmed ∪ `gapState.CLOSED` | C2를 통해서만 | 신규 Knowledge table |
+| Gap State | `GapKnowledgeState` | `updateGapStateFromReview`만 | 새 required gapId |
+| Stage Readiness | gapState | `evaluateStageReadiness` (순수 계산) | 화면 진입으로 READY |
+| Next Question | gapState + living + lastDecision | `decideNextQuestionFromReview` | CLOSED 칸 재질문 표현 |
+| Judgment | living + analysis presenter | 기존 결과 스토어 | 새 viability 엔진 |
+| Report | judgment view + Context 렌즈 | PDF는 향후. 지금은 CTA 상태 | Production 데이터 변환 |
+
 ---
 
 ## 2. 계층 정의
@@ -161,7 +178,7 @@ Migration 불필요. Production 데이터 변환 없음.
 | Canonical keys | Stage A: `businessOneLiner` `customerPersona` `payer` `problemJtbd` · Stage B: `marketChannel` `alternativesCompetitors` `differentiationVsAlternatives` `validationTestability` |
 | 사용자 표현 | Right 기호. gapId 문자열은 숨김 |
 
-**gap 의미 변경 없음.** Facet(`사용 상황` 등)은 gapState 키가 아니다.
+**gap 의미 변경 없음.** Facet(`사용 맥락` 등)은 gapState 키가 아니다.
 
 ### 2.9 Stage Readiness
 
@@ -239,21 +256,31 @@ V3 completeness를 바꾸지 않는다. UI 기호만 대응한다.
 S0  SOURCE_RECEIVED
       Interpretation 생성
       ↓
-S1  INTERPRETATION_SHOWN     Center: AI가 이해한 내용 + 맞습니다/수정
-      이벤트 CONFIRM
+S1  INTERPRETATION_SHOWN     Center: AI가 이해한 내용 + 맞습니다 / 이 부분은 다릅니다
+      이벤트 C1 CONFIRM
       ↓
-S2  INTERPRETATION_CONFIRMED  카드 unmount. 서술 동의만. Canonical 자동 CLOSED 금지
+S2  INTERPRETATION_CONFIRMED  카드 unmount. 서술 동의만.
+      Canonical 일괄 CLOSED 금지  ← Check 1
       ↓
 S3  ASKING                    locked ask = 1 unresolved Canonical
-      이벤트 ANSWER | EDIT | CONFLICT
+      이벤트 C2 ANSWER | EDIT | CONFLICT
       ↓
-S4  KNOWLEDGE_UPDATED         review → gapState → readiness
+S4  KNOWLEDGE_UPDATED         review → 해당 gap CLOSED/PARTIAL → readiness
       ↓
       if stageAReady then Stage ② focus
-      else S3 next unresolved
+      else S3 next unresolved     ← Check 4
       ↓
 S5  JUDGMENT_AVAILABLE        결과 CTA
-S6  REPORT
+S6  REPORT                    Context 렌즈 + 향후 PDF
+```
+
+구현 presenter 계약 (코드는 아직 없음):
+
+```text
+interpretationCard.visible  ===  phase === S1
+composer.confirmYes.visible ===  false when phase !== S1
+after C1: phase = S3; card unmount; do not call bulk gap close
+after C2: V3 pipeline only; never remount S1 card
 ```
 
 금지 전이:
@@ -335,7 +362,7 @@ display.interpretation = compose(living)  ≠  sourceText.slice
 | 기존 gap state 의미 변경 | **아니오.** 기호 매핑만 |
 | Production data migration | **아니오** |
 | PR #79 수정 필요 | **아니오.** 구현은 승인 후 신규 Sprint |
-| Stage/GAP vs Accuracy Matrix 충돌 | **아니오.** `사용 상황` 등 Facet은 required에 안 넣음 |
+| Stage/GAP vs Accuracy Matrix 충돌 | **아니오.** `사용 맥락` 등 Facet은 required에 안 넣음 |
 | Confirmed Knowledge SoT 불명확 | **아니오.** §2.7 |
 
 해당 STOP 없음. 구현 Sprint가 required gap을 늘리려 하면 그때 STOP.
@@ -352,3 +379,15 @@ display.interpretation = compose(living)  ≠  sourceText.slice
 | PR #79 UX recovery | Production 유지. V2는 그 위의 역할 정리 |
 
 Code change: **NONE**
+
+---
+
+## 9. CPO Check 1–5 (State)
+
+| Check | 판정 |
+| --- | --- |
+| 1 | S0→①✓ 금지. C1은 gap 일괄 CLOSED 금지 |
+| 2 | §2.2 Source / §2.3 Interpretation / §2.7 Confirmed |
+| 3 | 상태 모델은 열 역할을 바꾸지 않음. 표시 계약은 IA §4 |
+| 4 | S1→S2 unmount→S3→S4→next unresolved. S2→S1 / S3→S1 금지 |
+| 5 | Read/Write 표. V3 함수는 C2에서만 호출. 새 SoT 없음 |
