@@ -576,12 +576,17 @@ describe('Production 36b241e J3 question-loop RCA', () => {
     expect(production.afterC.stageReadiness.stageId).toBe('A_understanding');
     expect(production.afterC.stageReadiness.blocker).toEqual({ gapId: 'payer', reason: 'OPEN' });
     expect(production.afterC.decideNextQuestionFromReview?.targetGap).toBe('payer');
-    expect(production.afterC.noGapVerdict).toEqual({ terminate: true, reason: 'no_askable_gap' });
-    expect(production.afterC.resolveNextQuestionDecision).toBeNull();
+    expect(production.afterC.afterNoGap?.targetGap).toBe('payer');
+    expect(production.afterC.hasNoAskableGap).toBe(false);
+    expect(production.afterC.noGapVerdict).toEqual({ terminate: false, reason: 'continue' });
+    expect(production.afterC.resolveNextQuestionDecision).toBeTruthy();
+    expect(['payer', 'problemJtbd']).toContain(
+      production.afterC.resolveNextQuestionDecision?.targetGap,
+    );
     expect(production.afterC.budgetBlock).toBe(false);
     expect(production.afterC.judgment?.questionCount).toBe(1);
-    expect(production.afterC.finishBranch).toBe('open_business_review_or_judgment');
-    expect(production.afterC.viewMode).toBe('review');
+    expect(production.afterC.finishBranch).toBe('keep_question_loop');
+    expect(production.afterC.viewMode).not.toBe('review');
     expect(production.afterC.turnCount).toBe(4);
 
     expect(local.afterC.finishBranch).toBe('keep_question_loop');

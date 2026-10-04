@@ -133,9 +133,7 @@ Budget(`CEO_JUDGMENT_SESSION_MAX_QUESTIONS=5`)는 원인이 아니다. C 이후 
 - V3 SoT / gap / 질문 알고리즘 수정
 - Merge / 재배포 / CEO 테스트
 
-다음 수정이 지시되면 범위는 UI hydration이 아니라
-`hasNoAskableGap` ↔ Stage A required OPEN gaps ↔ `applyNoGapTermination` Fix10 hard-null
-의 최소 정합이다. 이번 브랜치는 그 수정을 포함하지 않는다.
+CPO 수정 지시 반영 (PR #84, 미머지): `hasNoAskableGap`은 Canonical Stage A/B + 기록된 키를 보고, missing 키는 OPEN과 같다. `applyNoGapTermination`은 askable Canonical 결정을 hard-null 하지 않는다. Fix10 종료 목적(진짜 no-gap)은 유지한다.
 
 ---
 
