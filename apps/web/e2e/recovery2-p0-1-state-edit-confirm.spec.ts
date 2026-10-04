@@ -120,12 +120,23 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     expect(afterCorrection).toMatch(/외국인/);
     expect(afterCorrection).not.toMatch(/방한/);
     expect(afterCorrection).not.toBe('외국인');
+    const loopAfterCorrection = await readLoopFromSession(page);
+    const customerEvidence = (loopAfterCorrection?.gapState?.gaps?.customerPersona?.evidence ?? [])
+      .map((item) => item.value)
+      .join(' ');
+    expect(customerEvidence).toMatch(/내국인/);
+    expect(customerEvidence).not.toMatch(/방한 외국인/);
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     await clickThroughReading(page);
     expect(await currentCustomer(page)).toBe(afterCorrection);
     const loopAfterReload = await readLoopFromSession(page);
-    expect(loopAfterReload?.gapState?.gaps?.customerPersona?.completeness).not.toBe('OPEN');
+    expect(loopAfterReload?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
+    expect(
+      (loopAfterReload?.gapState?.gaps?.customerPersona?.evidence ?? [])
+        .map((item) => item.value)
+        .join(' '),
+    ).toMatch(/내국인/);
 
     if (await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false)) {
       await page.getByTestId('confirm-yes-cta').click();
@@ -136,7 +147,8 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     }
     expect(await currentCustomer(page)).toBe(afterCorrection);
     const afterNext = await readLoopFromSession(page);
-    expect(afterNext?.gapState?.gaps?.customerPersona?.completeness).not.toBe('OPEN');
+    expect(afterNext?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
+    expect(afterNext?.gapState?.gaps?.payer?.completeness).not.toBe('CONTRADICTED');
 
     const editCta = page.getByTestId('edit-prior-answer-cta');
     if (await editCta.isVisible().catch(() => false)) {

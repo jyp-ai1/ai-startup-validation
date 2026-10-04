@@ -46,6 +46,25 @@ Automated in `recovery2-p0-1-state-edit-confirm.test.ts` (engine) and `e2e/recov
 | J4 next turn cannot reopen CLOSED | PASS (unit) |
 | J5 edit prior saves and remounts the new value | PASS (unit) |
 
+## CPO 2-Pass 2 — canonical state (not UI / memory alone)
+
+Independent file: `recovery2-p0-1-2pass2-canonical-state.test.ts`
+
+Asserts `review.extractedFacts`, `gapState.evidence`, `living.spine`, and `snapshot.aiPmLoop` after each action.
+
+| # | Check | Result |
+|---|-------|--------|
+| 1 | Explicit edit rebuilds gapState and drops prior `방한 외국인` review evidence | PASS |
+| 2 | Next payer turn cannot overwrite correction with AI inference | PASS |
+| 3 | CLOSED stays CLOSED on next turn; explicit edit is the only reopen | PASS |
+| 4 | refresh → snapshot → cache → hydrate keeps gapState/review/living | PASS |
+| 5 | Customer correction does not contaminate payer/problem/business | PASS |
+| 6 | Golden / F11 / F04 re-run | PASS / PASS / PASS |
+
+F13: no dedicated `f13*.test.ts` on main. core-v4 multi-fact keys PASS. Two wrong-slot tests fail on Production `36b241e` unchanged by this PR.
+
+Browser spec now also reads `aiPmLoop.gapState` evidence, not only `conversationMemory`.
+
 ## Events
 
 Existing `recordFunnelEvent()` convention. Added only missing names:

@@ -20,6 +20,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 SoT reused: Answer → buildAnswerReview → gapVerdicts → updateGapStateFromReview → gapState → evaluateStageReadiness → decideNextQuestionFromReview → lastDecision → hydrate.
 
+**CPO 2-Pass 1:** PASS · **2-Pass 2 canonical state:** unit PASS (`recovery2-p0-1-2pass2-canonical-state.test.ts`) · Merge/Production still gated.
+
 ---
 
 ## P0 — ALABOM Product Journey E2E Recovery Sprint 🔄
