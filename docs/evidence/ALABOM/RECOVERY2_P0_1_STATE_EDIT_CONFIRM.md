@@ -90,6 +90,25 @@ Fix (no SoT / priority / schema change):
 
 J6–J8 in `recovery2-p0-1-state-edit-confirm.test.ts`.
 
+## J6 next-question evidence (`d9df613`)
+
+Confirm Yes first write (clipped source / known value):
+
+| Probe | Value |
+|-------|--------|
+| `askedGap` | `businessOneLiner` |
+| `factKey` | `business` |
+| `answerKind` | `business_fact` |
+| `review.extractedFacts` | `business` only |
+| `gapState.businessOneLiner` | CLOSED |
+| `gapState.customerPersona` | OPEN (absent from closed set) |
+
+`decideNextQuestionFromReview` already returns `customerPersona` / `이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?`.
+
+Cluster policy had hard-replaced that OPEN Stage A gap with `payer` because both sit in C1. Soft-penalty contract restored for Stage A required OPEN gaps.
+
+After the policy fix, resolved next is `customerPersona`.
+
 ## Events
 
 Existing `recordFunnelEvent()` convention. Added only missing names:

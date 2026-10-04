@@ -55,6 +55,25 @@ async function waitForLoopPrompt(page: import('@playwright/test').Page) {
     .toBe(true);
 }
 
+async function confirmBusinessUnderstandingIfShown(page: import('@playwright/test').Page) {
+  await dismissRecognition(page);
+  if (await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false)) {
+    await page.getByTestId('confirm-yes-cta').click();
+    await page.waitForTimeout(1_500);
+  }
+}
+
+async function waitForCustomerAsk(page: import('@playwright/test').Page) {
+  const deadline = Date.now() + 45_000;
+  while (Date.now() < deadline) {
+    const loop = await readLoopFromSession(page);
+    const next = loop?.lastDecision?.targetGapId ?? loop?.lockedAskSurface?.targetGap ?? '';
+    if (next === 'customerPersona') return loop;
+    await page.waitForTimeout(400);
+  }
+  return readLoopFromSession(page);
+}
+
 async function currentCustomer(page: import('@playwright/test').Page): Promise<string> {
   return page.evaluate(() => {
     const keys = Object.keys(sessionStorage).filter((key) =>
@@ -115,15 +134,14 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     await expect(page.getByTestId('document-first-card')).toHaveCount(0);
     await waitForLoopPrompt(page);
 
-    await dismissRecognition(page);
+    await confirmBusinessUnderstandingIfShown(page);
+    await waitForCustomerAsk(page);
+    await waitForLoopPrompt(page);
     if (await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false)) {
       await page.getByTestId('confirm-no-cta').click();
       await page.waitForTimeout(600);
     }
-    const input = page.getByTestId('answer-input');
-    await expect(input).toBeVisible({ timeout: 30_000 });
-    await input.fill(FOUNDER_CORRECTION);
-    await expect(page.getByTestId('submit-answer-cta')).toBeEnabled();
+    await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 30_000 });
     await submitAnswer(page, FOUNDER_CORRECTION);
     await page.waitForTimeout(1_500);
     const afterCorrection = await currentCustomer(page);
@@ -194,25 +212,8 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     await waitForLoopPrompt(page);
     await dismissRecognition(page);
 
-    const question = await page.evaluate(() => {
-      const nodes = Array.from(document.querySelectorAll('p, h2, h3, [data-testid]'));
-      return nodes.map((node) => node.textContent ?? '').find((text) => /맞나요/.test(text)) ?? '';
-    });
-    if (/제가 이해한 사업/.test(question) || (await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false))) {
-      await page.getByTestId('confirm-yes-cta').click();
-      await page.waitForTimeout(1_500);
-    }
-
-    const nextCustomerDeadline = Date.now() + 45_000;
-    while (Date.now() < nextCustomerDeadline) {
-      const loop = await readLoopFromSession(page);
-      const next =
-        loop?.lastDecision?.targetGapId ?? loop?.lockedAskSurface?.targetGap ?? '';
-      if (next === 'customerPersona') break;
-      await page.waitForTimeout(500);
-    }
-
-    const afterBusinessYes = await readLoopFromSession(page);
+    await confirmBusinessUnderstandingIfShown(page);
+    const afterBusinessYes = await waitForCustomerAsk(page);
     const lastTurn = [...(afterBusinessYes?.turns ?? [])]
       .reverse()
       .find((turn) => !turn.superseded && Boolean(turn.answer?.trim()));
@@ -237,26 +238,35 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     const customer = await currentCustomer(page);
     expect(customer).not.toMatch(/다양한 관광객이 늘며/);
 
+    expect(afterBusinessYes?.lastDecision?.questionText ?? '').toMatch(/누구|고객/);
+
+    await waitForLoopPrompt(page);
     if (await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false)) {
-      const nextQ = afterBusinessYes?.lastDecision?.questionText ?? '';
-      expect(nextQ).toMatch(/누구|고객/);
+      await page.getByTestId('confirm-no-cta').click();
+      await page.waitForTimeout(600);
     }
-    if (await page.getByTestId('answer-input').isVisible().catch(() => false)) {
-      await submitAnswer(page, '방한 외국인');
-      await page.waitForTimeout(1_200);
+    await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 30_000 });
+    await submitAnswer(page, '방한 외국인');
+    await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toBe('방한 외국인');
+
+    const editCta = page.getByTestId('edit-prior-answer-cta');
+    if (await editCta.isVisible().catch(() => false)) {
+      await editCta.click();
+      await expect(page.getByTestId('answer-input')).toBeVisible();
       await submitAnswer(page, FOUNDER_CORRECTION);
-      await page.waitForTimeout(1_500);
-      const corrected = await currentCustomer(page);
-      expect(corrected).toMatch(/내국인/);
-      expect(corrected).toMatch(/외국인/);
-      expect(corrected).not.toMatch(/방한/);
-      const afterCorrection = await readLoopFromSession(page);
-      expect(afterCorrection?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
-      expect(
-        (afterCorrection?.gapState?.gaps?.customerPersona?.evidence ?? [])
-          .map((item) => item.value)
-          .join(' '),
-      ).toMatch(/내국인/);
+    } else {
+      await submitAnswer(page, FOUNDER_CORRECTION);
     }
+    await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toMatch(/내국인/);
+    const corrected = await currentCustomer(page);
+    expect(corrected).toMatch(/외국인/);
+    expect(corrected).not.toMatch(/방한/);
+    const afterCorrection = await readLoopFromSession(page);
+    expect(afterCorrection?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
+    expect(
+      (afterCorrection?.gapState?.gaps?.customerPersona?.evidence ?? [])
+        .map((item) => item.value)
+        .join(' '),
+    ).toMatch(/내국인/);
   });
 });
