@@ -134,18 +134,15 @@ export function composeUnderstoodNarrative(
   const problemValue = isFilled(problem) ? problem!.value!.trim().replace(/[.。]+$/u, '') : '';
   const usableBusiness =
     businessValue && !isNearDuplicateOfSource(businessValue, source) ? businessValue : '';
+  const usableProblem =
+    problemValue && !isNearDuplicateOfSource(problemValue, source) ? problemValue : '';
 
-  if (userValue && usableBusiness) {
-    return `${withObjectParticle(userValue)} 대상으로 하는 서비스로 이해했습니다.`;
-  }
-  if (userValue && problemValue && !isNearDuplicateOfSource(problemValue, source)) {
-    return `${withObjectParticle(userValue)} 위한 사업으로 이해했습니다.`;
-  }
-  if (usableBusiness) {
-    return `${usableBusiness.replace(/입니다\.?$/, '')}로 이해했습니다.`;
-  }
-  if (userValue) {
-    return `${withObjectParticle(userValue)} 위한 사업으로 이해했습니다.`;
+  const parts: string[] = [];
+  if (usableBusiness) parts.push(`사업은 ${usableBusiness.replace(/입니다\.?$/, '')}`);
+  if (userValue) parts.push(`고객은 ${userValue}`);
+  if (usableProblem) parts.push(`문제는 ${usableProblem.replace(/입니다\.?$/, '')}`);
+  if (parts.length > 0) {
+    return `${parts.join('. ')}로 이해했습니다.`;
   }
 
   const spine = living.spine.business?.trim() ?? '';

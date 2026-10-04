@@ -10,7 +10,11 @@ import {
   hasPersistedQuestionTransitionLock,
   mergeAiPmLoopHonoringQuestionLock,
 } from '@/features/workflow-journey/lib/business-understanding/question-transition-lock';
-import { saveUnderstandingPhase } from '@/features/workflow-journey/lib/business-understanding/business-understanding-store';
+import {
+  loadUnderstandingPhase,
+  saveUnderstandingPhase,
+  type UnderstandingPhase,
+} from '@/features/workflow-journey/lib/business-understanding/business-understanding-store';
 import {
   saveWorkspaceDocumentText,
   saveWorkspaceDomain,
@@ -82,7 +86,10 @@ export function applyWorkspaceSnapshotToCache(
   }
 
   if (snapshot.understandingPhase) {
-    saveUnderstandingPhase(snapshot.understandingPhase, projectId);
+    const clientPhase = loadUnderstandingPhase(projectId);
+    if (!isUnderstandingPhaseRegression(clientPhase, snapshot.understandingPhase)) {
+      saveUnderstandingPhase(snapshot.understandingPhase, projectId);
+    }
   }
 
   if (typeof snapshot.reviewCount === 'number') {
@@ -120,6 +127,24 @@ export function readWorkspaceCacheUpdatedAt(projectId: string): string | null {
   return sessionStorage.getItem(CACHE_META_KEY(projectId));
 }
 
+const PHASE_RANK: Record<UnderstandingPhase, number> = {
+  pending: 0,
+  edit: 1,
+  together: 1,
+  edit_confirm: 2,
+  accepted: 3,
+  aligning: 4,
+  'review-ready': 5,
+};
+
+/** Stale DB pending must not remount a confirmation the founder already passed. */
+export function isUnderstandingPhaseRegression(
+  client: UnderstandingPhase,
+  incoming: UnderstandingPhase,
+): boolean {
+  return PHASE_RANK[client] > PHASE_RANK[incoming];
+}
+
 /** True when DB snapshot should replace stale client cache. */
 export function shouldApplyDbSnapshot(
   projectId: string,
@@ -129,6 +154,13 @@ export function shouldApplyDbSnapshot(
 
   const clientLoop = loadAiPmLoopState(projectId);
   const dbLoop = snapshot.aiPmLoop;
+  const clientPhase = loadUnderstandingPhase(projectId);
+  if (
+    snapshot.understandingPhase &&
+    isUnderstandingPhaseRegression(clientPhase, snapshot.understandingPhase)
+  ) {
+    return false;
+  }
 
   // FIX 1 CASE A — post-answer: stale DB must not overwrite newer client turns
   if (dbLoop && isClientLoopAheadOfDb(clientLoop, dbLoop)) {

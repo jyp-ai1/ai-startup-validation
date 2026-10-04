@@ -117,8 +117,10 @@ function clipValue(value: string, max = 48): string {
 function extractPersonaSnippet(text: string): string | null {
   const trimmed = text.trim();
   const segment = trimmed.match(/([\w가-힣]+(?:가게|집|점|소상공인|팀|업)[^.，,]*)/);
-  if (segment?.[1]) return clipValue(segment[1], 40);
-  if (hasCustomerPersonaCue(trimmed)) return clipValue(trimmed, 40);
+  if (segment?.[1] && segment[1].length >= trimmed.length * 0.6) {
+    return clipValue(segment[1], 160);
+  }
+  if (hasCustomerPersonaCue(trimmed)) return clipValue(trimmed, 160);
   return null;
 }
 
@@ -216,10 +218,11 @@ export function scanSemanticKnowledgeForGap(input: {
   if (input.memory && memoryHasFact(input.memory, factKey)) {
     const mem = getFact(input.memory, factKey)!;
     if (mem.value.trim()) {
+      const raw = mem.value.trim();
       return {
         gapId,
         factKey,
-        value: clipValue(mem.value),
+        value: mem.source === 'user_turn' ? raw : clipValue(raw),
         source: mem.source === 'document' ? 'memory_document' : 'memory_user',
         userConfirmed: mem.source === 'user_turn',
       };
@@ -234,7 +237,7 @@ export function scanSemanticKnowledgeForGap(input: {
       return {
         gapId,
         factKey,
-        value: clipValue(claim.value),
+        value: userConfirmed ? claim.value.trim() : clipValue(claim.value),
         source: 'claim',
         userConfirmed,
       };
@@ -275,11 +278,12 @@ function buildConfirmText(gapId: string, value: string, userConfirmed = false): 
       return `제가 이해한 사업은 「${clipValue(value, 80)}」입니다. 맞나요?`;
     }
     if (gapId === 'customerPersona' && !userConfirmed) {
-      return `AI가 「${clipValue(value, 36)}」을(를) 주요 고객으로 추정했습니다. 맞나요?`;
+      return `AI가 「${clipValue(value, 160)}」을(를) 주요 고객으로 추정했습니다. 맞나요?`;
     }
   }
   const label = GAP_CONFIRM_LABEL[gapId] ?? '내용';
-  return `${label}은(는) 「${clipValue(value, 36)}」으로 이해했습니다. 맞나요?`;
+  const budget = gapId === 'customerPersona' ? 160 : 80;
+  return `${label}은(는) 「${clipValue(value, budget)}」으로 이해했습니다. 맞나요?`;
 }
 
 function closedGapExcludeSet(gapState: GapKnowledgeState): Set<string> {
@@ -288,6 +292,17 @@ function closedGapExcludeSet(gapState: GapKnowledgeState): Set<string> {
     if (!isGapAskable(gapId, gapState)) exclude.add(gapId);
   }
   return exclude;
+}
+
+function alreadyCapturedKnownValue(turns: AiPmLoopTurn[], value: string): boolean {
+  const known = value.trim().replace(/\s+/g, ' ').toLowerCase();
+  if (!known) return false;
+  const active = turns.filter((turn) => !turn.superseded && Boolean(turn.answer?.trim()));
+  const last = active[active.length - 1];
+  if (!last) return false;
+  const answer = last.answer?.trim().replace(/\s+/g, ' ').toLowerCase() ?? '';
+  if (answer !== known) return false;
+  return active.some((turn) => turn !== last);
 }
 
 function lastAskedGapId(turns: AiPmLoopTurn[]): string | null {
@@ -441,7 +456,9 @@ export function evaluateNoAskPolicy(input: {
     ) {
       return { action: 'ASK' };
     }
-    if (CONFIRM_FIRST_GAPS.has(targetGapId) || !knowledge.userConfirmed) {
+    if (alreadyCapturedKnownValue(input.turns, knowledge.value)) {
+      // 맞습니다 already persisted this value — never remount the same confirm card
+    } else if (CONFIRM_FIRST_GAPS.has(targetGapId) || !knowledge.userConfirmed) {
       return {
         action: 'CONFIRM',
         gapId: targetGapId,

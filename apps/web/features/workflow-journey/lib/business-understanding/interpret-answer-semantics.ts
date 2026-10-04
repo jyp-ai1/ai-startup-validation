@@ -6,7 +6,12 @@
 
 import type { ConversationFactKey } from './conversation-memory';
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
-import { evaluateAnswerQuality, answersContradict, hasDiffRelevanceEvidence } from './understanding-contract';
+import {
+  evaluateAnswerQuality,
+  answersContradict,
+  customerPersonaReplacesPrior,
+  hasDiffRelevanceEvidence,
+} from './understanding-contract';
 import {
   isOnSlotCompetitorAnswer,
 } from './competitor-answer-cues';
@@ -654,6 +659,24 @@ export function interpretAnswerSemantics(input: {
   const personaHypothesisReversal =
     /실제\s*(최종\s*)?고객|이전에\s*말한|초기\s*가설/u.test(trimmed);
 
+  const priorPersona =
+    input.existingFactsByKey?.customer ??
+    (askedFact === 'customer' ? input.existingFact : null) ??
+    null;
+  if (priorPersona && customerPersonaReplacesPrior(priorPersona, trimmed)) {
+    return emptyInterpretation({
+      intent: 'correction',
+      factKey: 'customer',
+      resolvedIssueId: 'customer_definition',
+      facts: [{ key: 'customer', issueId: 'customer_definition' }],
+      value: extractCorrectedFactValue('customer', trimmed) || trimmed,
+      mergeable: true,
+      displayOnly: false,
+      rationale: 'CEO customer replacement — prior inferred persona overwritten.',
+      quality: 'VALID',
+    });
+  }
+
   const personaReversalOnCustomerCue =
     !explicitCorrectionDecl &&
     personaHypothesisReversal &&
@@ -662,10 +685,6 @@ export function interpretAnswerSemantics(input: {
       facts.some((f) => f.key === 'customer') ||
       hasCustomerPersonaCue(trimmed));
   if (personaReversalOnCustomerCue) {
-    const priorPersona =
-      input.existingFactsByKey?.customer ??
-      (askedFact === 'customer' ? input.existingFact : null) ??
-      null;
     if (priorPersona && answersContradict(priorPersona, trimmed)) {
       return emptyInterpretation({
         intent: 'business_fact',

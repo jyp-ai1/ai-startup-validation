@@ -1,8 +1,12 @@
-import type { UnderstandingPhase } from '@/features/workflow-journey/lib/business-understanding/business-understanding-store';
+import {
+  loadUnderstandingPhase,
+  type UnderstandingPhase,
+} from '@/features/workflow-journey/lib/business-understanding/business-understanding-store';
 import type { WorkspacePersistedSnapshot } from '@/lib/project/workspace-persisted-state';
 
 import {
   applyWorkspaceSnapshotToCache,
+  isUnderstandingPhaseRegression,
   shouldApplyDbSnapshot,
 } from './apply-workspace-snapshot';
 
@@ -31,8 +35,12 @@ export function bootstrapWorkspaceFromDb(
     applyWorkspaceSnapshotToCache(projectId, snapshot);
   }
 
+  const snapshotPhase = snapshot.understandingPhase ?? 'pending';
+  const clientPhase = typeof window !== 'undefined' ? loadUnderstandingPhase(projectId) : snapshotPhase;
   return {
-    understandingPhase: snapshot.understandingPhase ?? 'pending',
+    understandingPhase: isUnderstandingPhaseRegression(clientPhase, snapshotPhase)
+      ? clientPhase
+      : snapshotPhase,
     reviewCount: snapshot.reviewCount ?? 0,
     hasDocument: Boolean(snapshot.documentText?.trim()),
     loopTurnCount: snapshot.aiPmLoop?.turns.length ?? 0,

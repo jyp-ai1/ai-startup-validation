@@ -11,7 +11,7 @@ import { extractDocumentEntities } from '../domain/extract-document-entities';
 const CUSTOMER_MENTION_PATTERNS: Array<{ label: string; keywords: string[]; quote: string }> = [
   { label: 'MZ 관광객', keywords: ['mz', 'mz세대', 'mz 세대'], quote: 'MZ' },
   { label: 'FIT 관광객', keywords: ['fit', '개별 관광', '자유여행'], quote: 'FIT' },
-  { label: '방한 외국인', keywords: ['방한', '외국인 관광', '외국인'], quote: '외국인' },
+  { label: '방한 외국인', keywords: ['방한', '외국인 관광'], quote: '방한' },
   {
     label: '전통주 관심 소비자',
     keywords: ['전통주 관심', '전통주 소비', '전통주 애호'],
@@ -73,6 +73,9 @@ function extractCustomerMentions(text: string): CustomerMention[] {
 
   for (const { label, keywords, quote } of CUSTOMER_MENTION_PATTERNS) {
     if (!keywords.some((k) => lower.includes(k))) continue;
+    if (label === '방한 외국인' && /내국인|전통주|양조장/.test(lower) && !lower.includes('방한')) {
+      continue;
+    }
     const lineIndex = findLineIndex(lines, (l) => keywords.some((k) => l.toLowerCase().includes(k)));
     const line = lineIndex >= 0 ? lines[lineIndex]! : label;
     if (!mentions.some((m) => m.label === label)) {

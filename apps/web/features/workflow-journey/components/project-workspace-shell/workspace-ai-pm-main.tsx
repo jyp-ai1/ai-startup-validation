@@ -208,7 +208,9 @@ export function WorkspaceAiPmMain({
   useWorkspacePersistFlush(projectId, enableDbPersistence);
   const t = useTranslations('workflow.journey.workspaceShell.aiPmMain');
   const tPostReview = useTranslations('workflow.journey.workspaceShell.postReview');
-  const [understandingPhase, setUnderstandingPhase] = useState<UnderstandingPhase>('pending');
+  const [understandingPhase, setUnderstandingPhase] = useState<UnderstandingPhase>(() =>
+    loadUnderstandingPhase(projectId),
+  );
   const [savedAlignment, setSavedAlignment] = useState<MarketAlignmentState | null>(null);
   const [workshopAgreement, setWorkshopAgreement] = useState(() => loadWorkshopAgreement(projectId));
   const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));
@@ -858,7 +860,7 @@ export function WorkspaceAiPmMain({
             onLoopStateChange={() => setLoopState(loadAiPmLoopState(projectId))}
             onLoopComplete={handleLoopComplete}
             onSessionPause={onSessionPause}
-            hideInterpretationConfirm={understandingPhase !== 'pending'}
+            hideInterpretationConfirm={showUnderstandingCard}
           />
         </div>
       ) : null}
@@ -871,6 +873,7 @@ export function WorkspaceAiPmMain({
           documentText={storedDocumentText ?? documentContext}
           projectId={projectId}
           understoodNarrative={uxSummary?.understoodNarrative}
+          projectTitle={projectName}
           onConfirm={handleConfirmMode}
         />
       ) : null}
@@ -923,6 +926,14 @@ export function WorkspaceAiPmMain({
           alignment={savedAlignment}
           finalUnderstanding={finalUnderstanding}
           onContinueUnderstanding={() => {
+            if (
+              understandingPhase === 'accepted' ||
+              understandingPhase === 'review-ready' ||
+              understandingPhase === 'aligning'
+            ) {
+              handleContinueRefining();
+              return;
+            }
             saveUnderstandingPhase('pending', projectId);
             setUnderstandingPhase('pending');
           }}

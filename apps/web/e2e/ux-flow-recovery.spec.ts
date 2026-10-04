@@ -55,7 +55,7 @@ async function clickThroughReading(page: Page) {
 async function confirmAiUnderstanding(page: Page) {
   const card = page.getByTestId('document-first-card');
   if (await card.isVisible().catch(() => false)) {
-    await expect(page.getByTestId('understanding-confirm-edit')).toHaveText(/이 이해 수정하기/);
+    await expect(page.getByTestId('understanding-confirm-edit')).toHaveText(/아니요\.?\s*수정할게요/);
     await expect(page.getByTestId('understanding-confirm-yes')).toBeVisible();
     await page.getByTestId('understanding-confirm-yes').click();
     await page.waitForTimeout(1_200);
