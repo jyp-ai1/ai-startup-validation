@@ -37,7 +37,7 @@ export default defineConfig({
   webServer: skipWebServer
     ? undefined
     : {
-        command: `pnpm exec next start --hostname ${E2E_HOST} --port ${E2E_PORT}`,
+        command: `pnpm exec next start --port ${E2E_PORT}`,
         url: healthURL,
         reuseExistingServer: true,
         timeout: 240_000,

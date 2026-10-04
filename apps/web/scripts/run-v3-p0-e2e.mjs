@@ -14,6 +14,8 @@ import path from 'node:path';
 
 const PREFERRED = Number(process.env.PLAYWRIGHT_E2E_PORT ?? 3199);
 const HOST = process.env.PLAYWRIGHT_E2E_HOST ?? '127.0.0.1';
+// Next's intl/middleware proxies to localhost. Binding only 127.0.0.1
+// makes that proxy ECONNRESET — a harness 500, not a product 500.
 const MAX_TRIES = 20;
 
 function isPortFree(port) {
@@ -102,10 +104,10 @@ if (!port) {
   console.log(`[v3-p0-e2e] starting next start on ${HOST}:${port} (outside Playwright)`);
   serverChild = spawn(
     'pnpm',
-    ['exec', 'next', 'start', '--hostname', HOST, '--port', String(port)],
+    ['exec', 'next', 'start', '--port', String(port)],
     {
       cwd: webDir,
-      env: { ...v3Env, PORT: String(port), HOSTNAME: HOST },
+      env: { ...v3Env, PORT: String(port) },
       stdio: ['ignore', 'inherit', 'inherit'],
       shell: process.platform === 'win32',
     },

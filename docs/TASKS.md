@@ -13,9 +13,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 |---|-------------|--------|
 | 1 | Title ≠ Source ≠ AI interpretation | ✅ unit + auth E2E |
 | 2 | Correction persist (no 방한 외국인 / no 중소 truncation) | ✅ unit + browser snapshot |
-| 3 | Confirm monotonicity (accepted ↛ pending) | 🔄 harness 보정 후 인증 브라우저 J5 재검증 |
-| 4 | Stage ①→②→③→④ existing V3 gaps | 🔄 harness 보정 후 인증 브라우저 ③④ 재검증 |
-| 5 | Golden J1–J6 + long-form + refresh | 🔄 unit PASS / Playwright webServer EvalError = harness |
+| 3 | Confirm monotonicity (accepted ↛ pending) | ✅ 인증 브라우저 J5 refresh + re-entry |
+| 4 | Stage ①→②→③→④ existing V3 gaps | ✅ 인증 브라우저 Stage ③→④ DOM/URL |
+| 5 | Golden J1–J6 + long-form + refresh | ✅ browser E2E PASS (`product-journey-e2e-recovery.spec.ts`) |
 
 ---
 
