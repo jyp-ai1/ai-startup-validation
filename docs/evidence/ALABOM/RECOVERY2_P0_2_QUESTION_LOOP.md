@@ -110,4 +110,15 @@ customer evidence = 방한 외국인
 사업 원문 관광객 not in customer evidence
 ```
 
-CEO test stays closed until CPO Production Acceptance.
+## CPO Production Acceptance
+
+**PASS** on Production `1394a8d4403ebb9d2eeba443e5b05e29ae8364ae`.
+
+| Gate | Result |
+|------|--------|
+| PR #87 Merge | `1394a8d` |
+| SHA triangle | Git = Vercel = `/api/build-info` |
+| Production J1–J5 | PASS 30.7s |
+| DB snapshot hydrate | lastDecision / CLOSED / customer evidence unchanged after reload |
+
+CEO test stays closed. Next sprint is Founder Conversation UX Acceptance only — `docs/sprints/FOUNDER_CONVERSATION_UX_ACCEPTANCE.md`. No UI/UX code in this close-out.

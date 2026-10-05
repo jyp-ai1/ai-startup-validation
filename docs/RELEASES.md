@@ -9,7 +9,8 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 ### Recovery 2 P0-2 — Question Loop (2026-10-05) ✅ Production
 
 **Production SHA:** `1394a8d4403ebb9d2eeba443e5b05e29ae8364ae` · **PR:** #87  
-**Prod:** https://ai-startup-validation-tau.vercel.app
+**Prod:** https://ai-startup-validation-tau.vercel.app · **CPO Production Acceptance:** PASS  
+**CEO TEST:** closed
 
 - Confirm Yes → next canonical gap stays `customerPersona`
 - customer CLOSED → remaining Stage A OPEN; no CLOSED re-ask; no source→customer evidence

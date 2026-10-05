@@ -4,7 +4,19 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Recovery 2 — P0-2 Question Loop ✅ MERGED
+## Founder Conversation UX — Acceptance 📋 SPEC ONLY
+
+**Contract:** `docs/sprints/FOUNDER_CONVERSATION_UX_ACCEPTANCE.md`  
+**Status:** not started — no UI/UX code  
+**After:** Recovery 2 P0-2 Production Acceptance on `1394a8d`  
+**CEO test:** closed  
+**Order when CPO opens:** UX Acceptance → 재현 → 최소 수정 → E2E → Production
+
+Engine (P0-1 / P0-2) and UX are separate. A serious break on any of the 10 items is a UX fix, not more accuracy loops.
+
+---
+
+## Recovery 2 — P0-2 Question Loop ✅ PRODUCTION ACCEPTANCE
 
 **Branch:** `cursor/recovery2-p0-2-question-loop-e648` · merged PR #87 as `1394a8d`  
 **Verified Production SHA:** `1394a8d4403ebb9d2eeba443e5b05e29ae8364ae`  
@@ -26,7 +38,8 @@ P0-1 success is not question-accuracy PASS. CEO test stays closed until CPO open
 Preview-equivalent E2E J1–J3 + J5: PASS 25.4s.  
 CPO 2-Pass 1 / 2: PASS.  
 SHA triangle: Git = Build = Production `1394a8d`.  
-Production J1–J5 + DB snapshot hydrate: PASS 30.7s.
+Production J1–J5 + DB snapshot hydrate: PASS 30.7s.  
+**CPO Production Acceptance:** PASS `1394a8d` — CEO test stays closed.
 
 ---
 
