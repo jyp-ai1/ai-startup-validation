@@ -87,15 +87,6 @@ async function submitOnSlot(page: import('@playwright/test').Page, answer: strin
   expect(submitted, `submitAnswer(${answer})`).toBe(true);
 }
 
-async function acceptContradictionIfShown(page: import('@playwright/test').Page) {
-  const acceptNew = page.getByRole('button', { name: '새 답변이 맞아요' });
-  await acceptNew.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => null);
-  if (await acceptNew.isVisible().catch(() => false)) {
-    await acceptNew.click();
-    await page.waitForTimeout(1_500);
-  }
-}
-
 async function submitCustomerCorrection(page: import('@playwright/test').Page) {
   await openCustomerFreeform(page);
   await submitOnSlot(page, '내국인과 외국인 모두입니다');
