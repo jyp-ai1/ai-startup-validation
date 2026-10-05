@@ -1,5 +1,5 @@
 /**
- * Recovery 2 P0-2 — browser question-loop gates J1–J3.
+ * Recovery 2 P0-2 — browser question-loop gates J1–J3 + J5.
  * Data-path SoT: recovery2-p0-2-question-loop.test.ts
  */
 import { expect, test } from '@playwright/test';
@@ -52,7 +52,10 @@ async function waitForLoopPrompt(page: import('@playwright/test').Page) {
     .toBe(true);
 }
 
-test('P0-2 J1–J3 priority, no CLOSED re-ask, no multi-fact steal', async ({ page, context }) => {
+test('P0-2 J1–J3 + J5 priority, no CLOSED re-ask, no multi-fact steal, longitudinal', async ({
+  page,
+  context,
+}) => {
   test.setTimeout(300_000);
   expect(qaAuthReady(), 'QA magic-link env must be present — do not skip').toBe(true);
   await loginWithQaMagicLink(page, context, e2eBaseUrl());
@@ -119,4 +122,31 @@ test('P0-2 J1–J3 priority, no CLOSED re-ask, no multi-fact steal', async ({ pa
     .map((item) => item.value)
     .join(' ');
   expect(customerEvidence).not.toMatch(/다양한 관광객이 늘며/);
+
+  await waitForLoopPrompt(page);
+  await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 30_000 });
+  const thirdAnswer =
+    nextGap === 'payer'
+      ? '체험 예약은 관광객이 결제합니다.'
+      : '양조장마다 홍보 채널이 달라 관광객이 체험을 찾기 어렵습니다.';
+  expect(await submitAnswer(page, thirdAnswer)).toBe(true);
+  await expect
+    .poll(
+      async () => {
+        const loop = await readLoopFromSession(page);
+        return loop?.gapState?.gaps?.customerPersona?.completeness ?? '';
+      },
+      { timeout: 20_000 },
+    )
+    .toBe('CLOSED');
+  const afterThird = await readLoopFromSession(page);
+  expect(afterThird?.gapState?.gaps?.businessOneLiner?.completeness).toBe('CLOSED');
+  const afterThirdNext =
+    afterThird?.lastDecision?.targetGapId ?? afterThird?.lockedAskSurface?.targetGap ?? '';
+  expect(afterThirdNext).not.toBe('customerPersona');
+  expect(afterThirdNext).not.toBe('businessOneLiner');
+  const afterThirdCustomer = (afterThird?.gapState?.gaps?.customerPersona?.evidence ?? [])
+    .map((item) => item.value)
+    .join(' ');
+  expect(afterThirdCustomer).not.toMatch(/다양한 관광객이 늘며/);
 });

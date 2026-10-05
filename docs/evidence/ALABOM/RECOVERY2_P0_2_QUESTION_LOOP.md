@@ -51,3 +51,22 @@ Local `next start` of branch SHA.
 | Spec | Result |
 |------|--------|
 | J1–J3 priority, no CLOSED re-ask, no multi-fact steal | PASS 23.4s |
+| J5 longitudinal after customer CLOSED | pending Preview-equivalent re-run |
+
+## CPO 2-Pass 1
+
+Independent vs `origin/main`: this PR is verification only.
+
+| Check | Result |
+|-------|--------|
+| Auth / `update-session` | unchanged |
+| DB schema / analytics migration | unchanged |
+| V3 SoT / `decideNextQuestionFromReview` | unchanged |
+| Product first-write / cluster policy | unchanged (P0-1 closed) |
+| Product files in PR | none — tests + evidence only |
+
+## CPO 2-Pass 2
+
+Independent file: `recovery2-p0-2-2pass2-canonical-state.test.ts`
+
+Asserts `review.askedGapId`, `semanticFactKey` / `intent`, `gapState`, `lastDecision.targetGapId`, and `snapshot.aiPmLoop` — not `conversationMemory` or UI copy.

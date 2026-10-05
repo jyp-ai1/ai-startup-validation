@@ -22,7 +22,9 @@ CPO gates (separate from P0-1 confirm/slot):
 
 P0-1 success is not question-accuracy PASS. CEO test stays closed until CPO opens it.
 
-Preview-equivalent E2E J1–J3: PASS 23.4s.
+Preview-equivalent E2E J1–J3: PASS 23.4s.  
+CPO 2-Pass 2 canonical lastDecision: in progress.  
+Preview E2E J5 longitudinal after customer CLOSED: in progress.
 
 ---
 
