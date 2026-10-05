@@ -74,6 +74,7 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   bmChanged: 'bm_changed',
   blindSpotDetected: 'blind_spot_detected',
   clarityQuestionRaised: 'clarity_question_raised',
+  reviewCentricSurfaceShown: 'review_centric_surface_shown',
 } as const;
 
 export type ProductAnalyticsEvent =

@@ -16,16 +16,19 @@ CEO 테스트                 CLOSED
 
 정확한 AI와 사람이 쉽게 대화하는 제품은 별개 Acceptance다.
 
-## Review-Centric Journey Strategy Validation 📋 GATE
+## Review-Centric Journey Strategy Validation ✅ GATE PASS
 
-**CPO:** 질문 중심 → 검토 중심 전환. P0-1/P0-2 CLOSED (하부 엔진).  
+**CPO:** Journey C 확정. 질문은 판단을 바꾸는 도구. P0-1/P0-2 CLOSED (하부 엔진).  
 **Contract:** `docs/sprints/REVIEW_CENTRIC_JOURNEY_STRATEGY_VALIDATION.md`  
-**Status:** 구현 0 — Strategy Gate 통과 전 코드 금지  
-**추천:** Journey C (구조화 → 판단 → 질문 1개 → 판단 업데이트)  
+**ADR:** ADR-046 — Review surface = View Model, not new persistent SoT  
+**Status:** Sprint 1 Review Surface Prototype — presentation only  
 **Paper Test:** 양조장 Prod / 주인집1 / 반찬 SaaS / AI PM / 클리닉플로우 — A=NO, C=YES  
-**CEO test:** CLOSED. 다음 테스트는 “내 사업을 검토해 주는가”만.
+**CEO test:** CLOSED until CPO OPEN after Review Surface E2E/Production
 
-UX 10항 계약은 `docs/sprints/FOUNDER_CONVERSATION_UX_ACCEPTANCE.md`에 남아 있으나, 구현은 전략 판단 이후에만.
+Frozen: Auth · DB schema · V3 semantic SoT · `buildAnswerReview` · `updateGapStateFromReview` · `evaluateStageReadiness` · `decideNextQuestionFromReview`  
+Allowed: Founder-facing Review surface + progress language + question context
+
+UX 10항 계약은 `docs/sprints/FOUNDER_CONVERSATION_UX_ACCEPTANCE.md`에 남아 있으나, CEO 테스트는 CPO OPEN 전 금지.
 
 ---
 

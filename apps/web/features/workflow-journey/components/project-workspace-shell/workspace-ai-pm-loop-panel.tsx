@@ -154,6 +154,8 @@ import { WorkspaceAiPmConversationDetail } from './workspace-ai-pm-conversation-
 import { WorkspaceCeoSixSurfaces } from './workspace-ceo-six-surfaces';
 import { WorkspaceAiPmFocusedSurface } from './workspace-ai-pm-focused-surface';
 import { WorkspaceAiPmSimpleQuestion } from './workspace-ai-pm-simple-question';
+import { WorkspaceReviewCentricSurface } from './workspace-review-centric-surface';
+import { buildReviewCentricSurface } from '../../lib/business-understanding/build-review-centric-surface';
 import { WorkspaceAiPmJudgmentView } from './workspace-ai-pm-judgment-view';
 import { WorkspaceAiPmBusinessReview } from './workspace-ai-pm-business-review';
 import { WorkspaceAiPmSupplementSurface } from './workspace-ai-pm-supplement-surface';
@@ -167,6 +169,7 @@ function AiPmQuestionSurface({
   focusedSnapshot,
   simpleQuestionUiActive,
   simpleSnapshot,
+  reviewSnapshot,
   onShowInterimJudgment,
   s11Surface,
   displayQuestionText,
@@ -176,33 +179,48 @@ function AiPmQuestionSurface({
   focusedSnapshot: AiPmFocusedSnapshot | null;
   simpleQuestionUiActive: boolean;
   simpleSnapshot: ReturnType<typeof buildAiPmSimpleQuestionSnapshot> | null;
+  reviewSnapshot: ReturnType<typeof buildReviewCentricSurface> | null;
   onShowInterimJudgment?: () => void;
   s11Surface: ReturnType<typeof presentS11Surface>;
   displayQuestionText: string;
   className?: string;
 }) {
-  if (simpleQuestionUiActive && simpleSnapshot) {
+  const question = (() => {
+    if (simpleQuestionUiActive && simpleSnapshot) {
+      return (
+        <WorkspaceAiPmSimpleQuestion
+          snapshot={simpleSnapshot}
+          onShowInterimJudgment={onShowInterimJudgment}
+          className={reviewSnapshot ? undefined : className}
+        />
+      );
+    }
+    if (focusedUiActive && focusedSnapshot) {
+      return (
+        <WorkspaceAiPmFocusedSurface
+          snapshot={focusedSnapshot}
+          className={reviewSnapshot ? undefined : className}
+        />
+      );
+    }
     return (
-      <WorkspaceAiPmSimpleQuestion
-        snapshot={simpleSnapshot}
-        onShowInterimJudgment={onShowInterimJudgment}
-        className={className}
+      <WorkspaceS11Surface
+        surface={s11Surface}
+        sections="question"
+        hideWhyNow
+        questionTextOverride={displayQuestionText}
+        className={reviewSnapshot ? undefined : className}
       />
     );
-  }
-  if (focusedUiActive && focusedSnapshot) {
-    return (
-      <WorkspaceAiPmFocusedSurface snapshot={focusedSnapshot} className={className} />
-    );
-  }
+  })();
+
+  if (!reviewSnapshot) return question;
+
   return (
-    <WorkspaceS11Surface
-      surface={s11Surface}
-      sections="question"
-      hideWhyNow
-      questionTextOverride={displayQuestionText}
-      className={className}
-    />
+    <div className={cn('space-y-5', className)}>
+      <WorkspaceReviewCentricSurface snapshot={reviewSnapshot} />
+      {question}
+    </div>
   );
 }
 
@@ -751,6 +769,17 @@ export function WorkspaceAiPmLoopPanel({
     loopState.ceoJudgment?.questionCount,
     loopState.turns,
   ]);
+  const reviewSnapshot = useMemo(
+    () =>
+      buildReviewCentricSurface({
+        living: livingState,
+        gapState: loopState.gapState,
+        documentText: documentText ?? '',
+        displayQuestionText,
+        targetGap: activeTargetGap,
+      }),
+    [livingState, loopState.gapState, documentText, displayQuestionText, activeTargetGap],
+  );
   const focusedSnapshot = useMemo(() => {
     if (!focusedUiActive) return null;
     return buildAiPmFocusedSnapshot({
@@ -2719,6 +2748,7 @@ export function WorkspaceAiPmLoopPanel({
           focusedSnapshot={focusedSnapshot}
           simpleQuestionUiActive={simpleQuestionUiActive}
           simpleSnapshot={simpleQuestionSnapshot}
+          reviewSnapshot={reviewSnapshot}
           onShowInterimJudgment={showInterimJudgment}
           s11Surface={s11Surface}
           displayQuestionText={displayQuestionText}
@@ -2835,6 +2865,7 @@ export function WorkspaceAiPmLoopPanel({
               focusedSnapshot={focusedSnapshot}
               simpleQuestionUiActive={simpleQuestionUiActive}
               simpleSnapshot={simpleQuestionSnapshot}
+              reviewSnapshot={reviewSnapshot}
               onShowInterimJudgment={showInterimJudgment}
               s11Surface={s11Surface}
               displayQuestionText={displayQuestionText}
@@ -2870,6 +2901,7 @@ export function WorkspaceAiPmLoopPanel({
                 focusedSnapshot={focusedSnapshot}
                 simpleQuestionUiActive={simpleQuestionUiActive}
                 simpleSnapshot={simpleQuestionSnapshot}
+                reviewSnapshot={reviewSnapshot}
                 onShowInterimJudgment={showInterimJudgment}
                 s11Surface={s11Surface}
                 displayQuestionText={displayQuestionText}

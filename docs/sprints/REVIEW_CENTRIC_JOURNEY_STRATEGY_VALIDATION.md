@@ -1,7 +1,7 @@
 # Review-Centric Journey — Strategy Validation
 
-**Status:** 📋 Strategy Gate · 구현 0  
-**CPO decision:** 질문 중심 → 검토 중심 전환  
+**Status:** ✅ Strategy Gate PASS · Sprint 1 Review Surface Prototype in progress  
+**CPO decision:** Journey C 확정. Review 타입은 View Model 후보 — persistent SoT 아님.  
 **Production evidence:** `1394a8d` walk in `docs/evidence/ALABOM/FOUNDER_JOURNEY_STRATEGY_REVALIDATION.md`  
 **P0-1 / P0-2:** CLOSED — 하부 Question Engine으로 보존. 다시 열지 않음.  
 **CEO test:** CLOSED
@@ -94,7 +94,7 @@ CPO 루프 ①–⑧. 질문은 판단을 바꾸는 빈칸일 때만.
 | 사업 | 양조장 체험과 지역 관광을 묶고, 양조장의 온라인 노출을 대행하는 플랫폼 |
 | 고객 | 체험을 원하는 내국인·외국인 관광객 (문서). 동시에 마케팅이 필요한 양조장 (암시) |
 | 구매자 | 미확인 — 관광객인가 양조장인가 |
-| 문제 | 양조장이 혼자 온라인에 못 나가고, 체험 수요가  entur로 흩어짐 (추론, 근거 약함) |
+| 문제 | 양조장이 혼자 온라인에 못 나가고, 체험 수요가 채널마다 흩어짐 (추론, 근거 약함) |
 
 현재 판단: 고객 스케치는 있으나 **누가 돈을 내는지**가 안 갈라져 사업이 두 개다 (D2C 관광 vs B2B 마케팅).  
 핵심 리스크: 지불 주체.  
@@ -217,14 +217,12 @@ Review Engine      Question Engine (P0-1/P0-2)
 구조화 / 판단            gapState / next Q
 ```
 
-필요 (아직 구현 안 함):
+Sprint 1 구현 (View Model — persist 없음, ADR-046):
 
-- `ReviewState`: 구조화 슬롯 (사업/고객/구매자/문제) — **원문 문자열이 아님**
-- `CurrentJudgment` + `KeyUncertainty` — 질문보다 위에 필수
-- `ValidationProgress`: 테마 상태 (확인됨 / 진행 중 / 미검증). 질문 카운트 아님
-- 게이트: judgment + uncertainty 없으면 next Q 렌더 금지
-- Confirm copy `제가 이해한 사업은 「원문」입니다. 맞나요?`를 1차 표면에서 제거
-- 기존 `gapState` / `lastDecision` / `decideNextQuestionFromReview`는 ④⑤의 후보 선택에만 사용
+- `buildReviewCentricSurface`가 living + `gapState` + `lastDecision` 후보 gap에서 슬롯/판단/불확실성/테마 진행을 만듦
+- 원문 재출력 슬롯은 `isSourceReprint`로 거부하고 `문서에서 보이나 아직 검증되지 않음`으로 표시
+- 기존 질문 UI는 유지. Review 표면을 그 위에 합성
+- `ReviewState` / `CurrentJudgment` / `KeyUncertainty` / `ValidationProgress`는 **아직 persistent SoT가 아님**
 
 만지지 않음: Auth, DB 스키마 전면, P0-1/P0-2 계약, Stage ③/④, PDF, CEO test.
 
