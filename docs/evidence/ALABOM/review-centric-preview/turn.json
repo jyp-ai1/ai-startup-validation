@@ -1,5 +1,9 @@
 {
   "baseUrl": "http://127.0.0.1:3001",
+  "productSha": "3876f69f499dc4227cf330637815e404ad8a9afd",
+  "previewReadySha": "16fdfd6ef3c6f078ede8a4dd990094069541470f",
+  "previewUrl": "https://ai-startup-validation-git-cursor-found-b697fe-jyp-ai1s-projects.vercel.app",
+  "previewUrlAccess": "vercel_sso_blocked",
   "capturedAt": "2026-10-05T12:00:46.671Z",
   "structure": {
     "business": "○문서에서 보이나 아직 검증되지 않음",

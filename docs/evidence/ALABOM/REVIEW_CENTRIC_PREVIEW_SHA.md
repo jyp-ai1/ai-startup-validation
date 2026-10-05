@@ -2,32 +2,44 @@
 
 **PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/89  
 **Branch:** `cursor/founder-journey-strategy-revalidation-e648`  
-**Git SHA:** `3876f69f499dc4227cf330637815e404ad8a9afd`  
-**Vercel Preview:** READY `dpl` inspector `CrUqK7mFXiuEFziB77i7iveTZgdv`  
-**Preview URL:** https://ai-startup-validation-git-cursor-found-b697fe-jyp-ai1s-projects.vercel.app  
-**Deployment URL:** https://ai-startup-validation-n0u8g2ogk-jyp-ai1s-projects.vercel.app  
+**Product SHA (last product change):** `3876f69f499dc4227cf330637815e404ad8a9afd`  
+**Preview-ready Git SHA:** `16fdfd6ef3c6f078ede8a4dd990094069541470f`  
+**Vercel inspector (16fdfd6):** `FQ9jzf4KwEr2vJgKpDqr1Ku6mzpw`  
+**Vercel inspector (3876f69):** `CrUqK7mFXiuEFziB77i7iveTZgdv`  
+**Preview alias:** https://ai-startup-validation-git-cursor-found-b697fe-jyp-ai1s-projects.vercel.app  
+**Deployment URL (16fdfd6):** https://ai-startup-validation-ikhdcjp1x-jyp-ai1s-projects.vercel.app  
 **Captured:** 2026-10-05  
 **CEO test:** CLOSED  
-**Production merge/deploy:** not done
+**Production merge/deploy:** not done  
+**Preview Acceptance:** not declared — live Preview URL 1턴 is SSO-blocked for this agent
 
 ## SHA triangle
 
 | Source | Value |
 |--------|--------|
-| Git HEAD / PR head | `3876f69f499dc4227cf330637815e404ad8a9afd` |
-| Vercel Preview check | PASS — Deployment has completed |
-| GitHub deployment | Preview `6858233605` state `success` |
+| Product SHA | `3876f69f499dc4227cf330637815e404ad8a9afd` |
+| Preview-ready Git SHA | `16fdfd6ef3c6f078ede8a4dd990094069541470f` (docs/evidence only; same product as `3876f69`) |
+| Vercel Preview check `16fdfd6` | SUCCESS — Deployment has completed |
+| GitHub Preview deployment | `6858473473` state `success` |
+| Vercel Preview check `3876f69` | SUCCESS — Deployment has completed |
 
 Root cause of earlier Preview FAIL (`9ba56d1`–`e274bcb`): `confirmed_count` was not on `ProductAnalyticsParams`. Fixed in `3876f69` by mapping to existing `checks_passed` / `checks_total`.
 
-## Preview URL access
+## Preview URL 1턴
 
-Unauthenticated fetch of the Preview URL returns Vercel Authentication SSO (`Protected by Vercel Authentication`). This agent has no Vercel SSO / `vercel curl` token. CPO can open the Preview URL in a logged-in browser.
+Unauthenticated GET of both the alias and the `16fdfd6` deployment URL returns **HTTP 302** to `https://vercel.com/sso-api?...` and the Vercel login page (`Log in to Vercel`).
 
-The 1-turn below is the **same spec** (`e2e/review-centric-surface-turn.spec.ts`) against a live workspace of this SHA. It is not a Production run.
+Screenshot: `docs/evidence/ALABOM/review-centric-preview/03-preview-url-vercel-sso.png`
 
-## One-turn evidence (5 items)
+This agent has no Vercel SSO session and no `x-vercel-protection-bypass` secret. The live Preview URL 1턴 cannot be clicked here.
 
+CPO can open the Preview URL in a logged-in Vercel browser to close Preview Acceptance.
+
+## One-turn evidence (5 items) — SHA-matched local
+
+Same spec: `apps/web/e2e/review-centric-surface-turn.spec.ts`  
+Same product SHA: `3876f69`  
+Base: `http://127.0.0.1:3001`  
 Source: `docs/evidence/ALABOM/review-centric-preview/turn.json`  
 Screens: `01-before-answer.png` · `02-after-answer.png`
 
@@ -43,8 +55,8 @@ Screens: `01-before-answer.png` · `02-after-answer.png`
 
 ## P0-2 regression
 
-`recovery2-p0-2-question-loop.test.ts` on this SHA: **5/5 PASS**.
+`recovery2-p0-2-question-loop.test.ts` reconfirmed on this checkout: **5/5 PASS** (2026-10-05 12:06 UTC).
 
 ## Out of scope
 
-기능 추가 · 질문 엔진 변경 · Production merge · CEO 테스트
+기능 추가 · 질문 엔진 변경 · Production merge · CEO 테스트 · Preview Acceptance 선언
