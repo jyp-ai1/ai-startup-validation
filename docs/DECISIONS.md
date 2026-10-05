@@ -1290,6 +1290,41 @@ Sprint 4 P0 ships Insight → Candidate → Agreement after Review. Product iden
 
 ---
 
+## ADR-046: QA password login is allowlisted and role-less
+
+**Status:** Accepted  
+**Date:** 2026-10-05  
+**Sprint:** QA Auth (separate from PR #89)
+
+### Context
+
+Vercel Preview SSO blocks unauthenticated agents. CPO asked for internal Auth identities so CTO can test the app login independently of Vercel protection. Public founders must keep seeing Google only. The `admin` login id must not become an authorization role.
+
+### Decision
+
+- Create six Supabase Auth users (`admin`, `user1`–`user5`) via Admin API at provision time.
+- Public `/auth/login` stays Google-only.
+- QA/CTO use unlinked `/auth/qa` with login id + password.
+- Only allowlisted ids resolve to emails (`*@alabom-qa.invalid`).
+- `admin` is an Auth identity only — no `app_metadata.role`, no ADMIN_EMAIL binding, no CRM/dashboard in this PR.
+- Passwords are runtime env (`QA_AUTH_ADMIN_PASSWORD`, `QA_AUTH_USER_PASSWORD`) and are never written to Git, code, `.env`, or docs.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+|--------|------|------|
+| Enable password login for every email | Simple | Opens public password auth |
+| Put ID/PW on `/auth/login` | Discoverable | Breaks “Google only” for founders |
+| Grant admin RBAC now | Faster ops later | Violates CPO “no admin permission yet” |
+
+### Consequences
+
+**Positive:** CTO can sign in without Google or magic-link once a reachable host exists.  
+**Negative:** `/auth/qa` is a known internal path; allowlist is the control.  
+**Neutral:** Preview Vercel SSO remains a separate gate.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

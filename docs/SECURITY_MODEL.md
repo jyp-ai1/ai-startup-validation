@@ -57,6 +57,7 @@ Owned by Supabase via `@repo/db` AuthPort:
 - OAuth providers (configurable in Supabase dashboard)
 - Password policies managed by Supabase Auth settings
 - Session tokens never exposed to client-side permission logic directly
+- QA password login (`/auth/qa`) is allowlisted (`admin`, `user1`–`user5`) and does not grant RBAC. Secrets are not stored in Git, code, `.env`, or docs.
 
 Apps access auth only through:
 

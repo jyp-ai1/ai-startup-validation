@@ -10,6 +10,7 @@ export default defineConfig({
       'features/**/business-understanding/**/__tests__/**/*.test.ts',
       'features/**/ux-flow-recovery/**/__tests__/**/*.test.ts',
       'lib/analysis-engine/**/__tests__/**/*.test.ts',
+      'lib/auth/**/__tests__/**/*.test.ts',
       'lib/brand/**/__tests__/**/*.test.ts',
       'lib/project/**/__tests__/**/*.test.ts',
       'lib/intake/**/__tests__/**/*.test.ts',

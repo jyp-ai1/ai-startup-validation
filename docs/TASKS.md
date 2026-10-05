@@ -4,6 +4,25 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## QA Auth — ID/PW accounts (separate from PR #89)
+
+**Branch:** `cursor/qa-auth-password-login-e648`  
+**Out of scope:** Admin RBAC · CRM · dashboard · Google OAuth rewrite · V3 SoT · PR #89 Review Surface · Production merge until CPO QA Auth Acceptance
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Create `admin` + `user1`–`user5` Auth users | STOP — Admin API `weak_password` (specified QA passwords rejected). No users created. |
+| 2 | `admin` has no admin role | PASS — no user created; provision never sets `app_metadata.role` |
+| 3 | Public login remains Google-only | PASS — `/auth/login` has 0 password inputs |
+| 4 | `/auth/qa` ID/PW for allowlisted ids | PASS — form present; sign-in blocked until accounts exist |
+| 5 | Local `user1` → Workspace | STOP — accounts not created |
+| 6 | Preview Vercel SSO | separate blocker |
+
+Passwords are runtime-only. Do not commit them.
+
+---
+
+
 ## Recovery 2 — P0-2 Question Loop 🔄
 
 **Branch:** `cursor/recovery2-p0-2-question-loop-e648` · base Production `64c8882` (PR #86)  

@@ -3154,6 +3154,12 @@
     "demoHint": "Just exploring?",
     "demoLink": "Try Demo Workspace",
     "continueWithGoogle": "Continue with Google",
+    "qaSignIn": "QA sign in",
+    "qaLoginDesc": "Sign in with an internal test account. Public users should use Google.",
+    "qaLoginId": "Login ID",
+    "qaPassword": "Password",
+    "qaSubmit": "Sign in",
+    "qaLoginError": "Sign-in failed. Check the login ID and password.",
     "signingIn": "Signing in…"
   }
 }

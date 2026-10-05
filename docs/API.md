@@ -31,6 +31,29 @@ GET /api/health
 
 ---
 
+## Auth surfaces
+
+### Public login
+
+```
+GET /auth/login
+```
+
+Google OAuth only. No password fields.
+
+### QA login (internal)
+
+```
+GET /auth/qa
+```
+
+Allowlisted login id + password. Not linked from the public login screen.  
+Server Action: `signInWithQaPasswordAction` in `apps/web/features/auth/actions/auth-actions.ts`.
+
+**Out of scope:** admin dashboard, CRM, Google OAuth changes.
+
+---
+
 ## Server Actions (Planned)
 
 Server Actions will be documented here with:
