@@ -16,17 +16,14 @@ CEO 테스트                 CLOSED
 
 정확한 AI와 사람이 쉽게 대화하는 제품은 별개 Acceptance다.
 
-## Founder Journey Strategy Revalidation 📋 REPRO ONLY
+## Review-Centric Journey Strategy Validation 📋 GATE
 
-**Contract:** `docs/sprints/FOUNDER_JOURNEY_STRATEGY_REVALIDATION.md`  
-**Status:** 구현 0 — UI/엔진 패치 금지  
-**Production SHA:** `1394a8d`  
-**CEO test:** CLOSED  
-**This slice:** Production `1394a8d` 재현 기록됨 → CPO 전략 유지/전환 판단 대기  
-**KPI forbidden:** 질문 수 · Gap 수 · 정확도 · J1–Jn PASS 보고  
-**CTO 권고:** 질문 중심 → 검토 중심 전환 가설을 작은 검증으로. 구현 0.
-
-Value > Accuracy > UX polish. B–F = NO. 엔진 PASS ≠ 검토 가치.
+**CPO:** 질문 중심 → 검토 중심 전환. P0-1/P0-2 CLOSED (하부 엔진).  
+**Contract:** `docs/sprints/REVIEW_CENTRIC_JOURNEY_STRATEGY_VALIDATION.md`  
+**Status:** 구현 0 — Strategy Gate 통과 전 코드 금지  
+**추천:** Journey C (구조화 → 판단 → 질문 1개 → 판단 업데이트)  
+**Paper Test:** 양조장 Prod / 주인집1 / 반찬 SaaS / AI PM / 클리닉플로우 — A=NO, C=YES  
+**CEO test:** CLOSED. 다음 테스트는 “내 사업을 검토해 주는가”만.
 
 UX 10항 계약은 `docs/sprints/FOUNDER_CONVERSATION_UX_ACCEPTANCE.md`에 남아 있으나, 구현은 전략 판단 이후에만.
 

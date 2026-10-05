@@ -1,6 +1,7 @@
 # Founder Journey — Strategy Revalidation
 
-**Status:** 📋 OPEN for reproduction + classification only · 구현 0  
+**Status:** 📋 CPO SWITCHED to review-centric · 구현 0  
+**Next:** `docs/sprints/REVIEW_CENTRIC_JOURNEY_STRATEGY_VALIDATION.md`  
 **Production SHA:** `1394a8d`  
 **Not:** UI 개선 Sprint · 질문 루프 최적화 Sprint  
 **KPI forbidden:** 질문 수 · Gap 수 · 정확도 · E2E PASS as UX PASS  
