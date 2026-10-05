@@ -29,7 +29,10 @@ export function LoginPanel({ redirectTo, errorKey, signedOut = false, supabaseRe
   }, []);
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center bg-background px-4 sm:px-6">
+    <main
+      data-testid="public-login-panel"
+      className="relative flex min-h-screen items-center justify-center bg-background px-4 sm:px-6"
+    >
       <div className="absolute right-4 top-4 flex items-center gap-2 sm:right-6 sm:top-6">
         <LocaleSwitcher />
       </div>

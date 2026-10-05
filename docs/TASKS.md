@@ -4,6 +4,25 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## QA Auth — ID/PW accounts (separate from PR #89)
+
+**Branch:** `cursor/qa-auth-password-login-e648`  
+**Out of scope:** Admin RBAC · CRM · dashboard · Google OAuth rewrite · V3 SoT · PR #89 Review Surface · Production merge until CPO QA Auth Acceptance
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Create `admin` + `user1`–`user5` Auth users | PASS — `*@launchlens.dev`, policy-compliant passwords, no PIN bypass |
+| 2 | `admin` has no admin role | PASS — `app_metadata.role` is null |
+| 3 | Public login remains Google-only | PASS — `/auth/login` has 0 password inputs |
+| 4 | `/auth/qa` ID/PW for allowlisted ids | PASS — POST server action; all 6 UI logins reach `/workspace` |
+| 5 | Local `user1` → Workspace | PASS — create-project form visible |
+| 6 | Preview Vercel SSO | separate blocker |
+
+Passwords are runtime-only. Do not commit them.
+
+---
+
+
 ## Recovery 2 — P0-2 Question Loop 🔄
 
 **Branch:** `cursor/recovery2-p0-2-question-loop-e648` · base Production `64c8882` (PR #86)  
