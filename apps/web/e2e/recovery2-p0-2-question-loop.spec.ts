@@ -52,6 +52,32 @@ async function waitForLoopPrompt(page: import('@playwright/test').Page) {
     .toBe(true);
 }
 
+function customerEvidenceOf(loop: Awaited<ReturnType<typeof readLoopFromSession>>): string {
+  return (loop?.gapState?.gaps?.customerPersona?.evidence ?? [])
+    .map((item) => item.value)
+    .join(' ');
+}
+
+function nextGapOf(loop: Awaited<ReturnType<typeof readLoopFromSession>>): string {
+  return loop?.lastDecision?.targetGapId ?? loop?.lockedAskSurface?.targetGap ?? '';
+}
+
+async function remountAndHydrate(page: import('@playwright/test').Page) {
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await clickThroughReading(page);
+  await waitForLoopPrompt(page);
+  await dismissRecognition(page);
+  await expect
+    .poll(
+      async () => {
+        const loop = await readLoopFromSession(page);
+        return loop?.gapState?.gaps?.customerPersona?.completeness ?? '';
+      },
+      { timeout: 45_000 },
+    )
+    .toBe('CLOSED');
+}
+
 test('P0-2 J1–J3 + J5 priority, no CLOSED re-ask, no multi-fact steal, longitudinal', async ({
   page,
   context,
@@ -118,10 +144,17 @@ test('P0-2 J1–J3 + J5 priority, no CLOSED re-ask, no multi-fact steal, longitu
   expect(afterCustomer?.gapState?.gaps?.businessOneLiner?.completeness).toBe('CLOSED');
   expect(afterCustomer?.gapState?.gaps?.payer?.completeness).not.toBe('CLOSED');
   expect(afterCustomer?.gapState?.gaps?.problemJtbd?.completeness).not.toBe('CLOSED');
-  const customerEvidence = (afterCustomer?.gapState?.gaps?.customerPersona?.evidence ?? [])
-    .map((item) => item.value)
-    .join(' ');
+  const customerEvidence = customerEvidenceOf(afterCustomer);
   expect(customerEvidence).not.toMatch(/다양한 관광객이 늘며/);
+  expect(customerEvidence).toMatch(/방한 외국인/);
+
+  await remountAndHydrate(page);
+  const afterHydrate = await readLoopFromSession(page);
+  expect(afterHydrate?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
+  expect(afterHydrate?.gapState?.gaps?.businessOneLiner?.completeness).toBe('CLOSED');
+  expect(nextGapOf(afterHydrate)).toBe(nextGap);
+  expect(customerEvidenceOf(afterHydrate)).toMatch(/방한 외국인/);
+  expect(customerEvidenceOf(afterHydrate)).not.toMatch(/다양한 관광객이 늘며/);
 
   await waitForLoopPrompt(page);
   await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 30_000 });
@@ -145,8 +178,15 @@ test('P0-2 J1–J3 + J5 priority, no CLOSED re-ask, no multi-fact steal, longitu
     afterThird?.lastDecision?.targetGapId ?? afterThird?.lockedAskSurface?.targetGap ?? '';
   expect(afterThirdNext).not.toBe('customerPersona');
   expect(afterThirdNext).not.toBe('businessOneLiner');
-  const afterThirdCustomer = (afterThird?.gapState?.gaps?.customerPersona?.evidence ?? [])
-    .map((item) => item.value)
-    .join(' ');
+  const afterThirdCustomer = customerEvidenceOf(afterThird);
   expect(afterThirdCustomer).not.toMatch(/다양한 관광객이 늘며/);
+
+  await remountAndHydrate(page);
+  const afterThirdHydrate = await readLoopFromSession(page);
+  expect(afterThirdHydrate?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
+  expect(afterThirdHydrate?.gapState?.gaps?.businessOneLiner?.completeness).toBe('CLOSED');
+  expect(nextGapOf(afterThirdHydrate)).not.toBe('customerPersona');
+  expect(nextGapOf(afterThirdHydrate)).not.toBe('businessOneLiner');
+  expect(customerEvidenceOf(afterThirdHydrate)).toMatch(/방한 외국인/);
+  expect(customerEvidenceOf(afterThirdHydrate)).not.toMatch(/다양한 관광객이 늘며/);
 });

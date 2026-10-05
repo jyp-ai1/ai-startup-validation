@@ -6,6 +6,17 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### Recovery 2 P0-2 — Question Loop (2026-10-05) ✅ Production
+
+**Production SHA:** `1394a8d4403ebb9d2eeba443e5b05e29ae8364ae` · **PR:** #87  
+**Prod:** https://ai-startup-validation-tau.vercel.app
+
+- Confirm Yes → next canonical gap stays `customerPersona`
+- customer CLOSED → remaining Stage A OPEN; no CLOSED re-ask; no source→customer evidence
+- Production remount hydrate keeps `review → gapState → lastDecision`
+
+Evidence: [`docs/evidence/ALABOM/RECOVERY2_P0_2_QUESTION_LOOP.md`](./evidence/ALABOM/RECOVERY2_P0_2_QUESTION_LOOP.md)
+
 ### ALABOM DAY 8-I P0 FIX-10 — CEO Trust Journey + Judgment→Next Q (2026-09-07) ✅ Production
 
 **Production SHA:** `cf180e068a3554828a8f4cd3681569fe44132cf2` · **PR:** #36  
