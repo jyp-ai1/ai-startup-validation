@@ -28,8 +28,8 @@ export function WorkspaceReviewCentricSurface({
 }: WorkspaceReviewCentricSurfaceProps) {
   useEffect(() => {
     void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.reviewCentricSurfaceShown, {
-      confirmed_count: snapshot.confirmedCount,
-      open_count: snapshot.importantOpenCount,
+      checks_passed: snapshot.confirmedCount,
+      checks_total: snapshot.confirmedCount + snapshot.importantOpenCount,
     });
   }, [snapshot.confirmedCount, snapshot.importantOpenCount]);
 
