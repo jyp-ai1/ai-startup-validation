@@ -1290,6 +1290,41 @@ Sprint 4 P0 ships Insight → Candidate → Agreement after Review. Product iden
 
 ---
 
+## ADR-046: Review-Centric Surface is a View Model, not a new SoT
+
+**Status:** Accepted  
+**Date:** 2026-10-05  
+**Sprint:** Review Surface Prototype  
+**Approver:** CPO Strategy Gate PASS — Journey C
+
+### Context
+
+Question-centric Journey A on Production `1394a8d` did not give Founders a review. Journey C (structure → judgment → one judgment-changing question → updated judgment) passed Paper Test on five businesses. Creating `ReviewState` / `CurrentJudgment` / `KeyUncertainty` / `ValidationProgress` as persistent SoT would repeat the failure mode: fix → new SoT → new state bugs.
+
+### Decision
+
+1. Journey C is the Founder Journey standard.
+2. Review-Centric types are **presentation / View Model only**. First prove they can be derived from `buildAnswerReview` → `gapState` → `evaluateStageReadiness` → `lastDecision` → living snapshot.
+3. New persistent Review SoT is deferred until the View Model is proven insufficient.
+4. P0-1 / P0-2 / V3 semantic SoT / Auth / DB schema stay frozen. Only Founder-facing presentation may change.
+5. Questions are tools to change judgment — not the unit of progress. Internal gap ids are not Founder progress.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+|--------|------|------|
+| New Review SoT now | Clean product types | New state bugs; CPO rejected |
+| Keep question-only UI | No UI risk | Paper Test A = NO on all five businesses |
+| View Model from existing chain | Reuses P0-1/P0-2; no persist | Presentation may be thinner than a dedicated engine |
+
+### Consequences
+
+- Mapper: `apps/web/features/workflow-journey/lib/business-understanding/build-review-centric-surface.ts`
+- Surface: `workspace-review-centric-surface.tsx` composed above the existing question UI
+- CEO test stays CLOSED until CPO opens it after Review Surface E2E/Production
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
