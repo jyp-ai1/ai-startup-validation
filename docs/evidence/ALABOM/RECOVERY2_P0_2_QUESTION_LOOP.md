@@ -43,3 +43,11 @@ Missing gap = OPEN (`isGapAskable`). CLOSED is not a candidate.
 | J5 | Longitudinal Stage A walk keeps CLOSED; source never lands in customer evidence | PASS |
 
 No product change required for these five contracts on `64c8882`. This PR is the independent verification harness, not a priority rewrite.
+
+## Preview-equivalent E2E
+
+Local `next start` of branch SHA.
+
+| Spec | Result |
+|------|--------|
+| J1–J3 priority, no CLOSED re-ask, no multi-fact steal | PASS 23.4s |

@@ -22,6 +22,8 @@ CPO gates (separate from P0-1 confirm/slot):
 
 P0-1 success is not question-accuracy PASS. CEO test stays closed until CPO opens it.
 
+Preview-equivalent E2E J1–J3: PASS 23.4s.
+
 ---
 
 ## Recovery 2 — P0-1 Production STOP Recovery ✅ MERGED
