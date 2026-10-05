@@ -112,7 +112,7 @@ customer evidence = 방한 외국인
 
 ## CPO Production Acceptance
 
-**PASS** on Production `1394a8d4403ebb9d2eeba443e5b05e29ae8364ae`.
+**CLOSED** — PASS on Production `1394a8d4403ebb9d2eeba443e5b05e29ae8364ae`.
 
 | Gate | Result |
 |------|--------|
