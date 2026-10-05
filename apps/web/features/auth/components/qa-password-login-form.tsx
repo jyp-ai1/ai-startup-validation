@@ -15,7 +15,9 @@ type QaPasswordLoginFormProps = {
 
 export function QaPasswordLoginForm({ redirectTo }: QaPasswordLoginFormProps) {
   const t = useTranslations('auth');
-  const [state, formAction, pending] = useActionState(signInWithQaPasswordAction, null);
+  const [state, formAction, pending] = useActionState(signInWithQaPasswordAction, {
+    error: null,
+  });
 
   function handleSubmit() {
     const browser = getBrowserFamily();
