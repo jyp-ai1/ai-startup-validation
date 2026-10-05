@@ -138,6 +138,34 @@ Independent vs `origin/main`: product diff is first-write slot routing + Stage A
 
 `recovery2-p0-1-2pass2-canonical-state.test.ts` + J1–J8 unit + J6 probe: **14 passed**.
 
+## Production SHA triangle + J1–J8 (`64c8882`)
+
+| Source | SHA |
+|--------|-----|
+| Git `origin/main` | `64c8882610024086265c216f2c736c7fab993f62` |
+| Vercel Production deploy | `64c8882610024086265c216f2c736c7fab993f62` |
+| `GET /api/build-info` | `64c8882610024086265c216f2c736c7fab993f62` |
+
+Production E2E against https://ai-startup-validation-tau.vercel.app:
+
+| Spec | Result |
+|------|--------|
+| J6 business Confirm Yes leaves customerPersona OPEN | PASS 20.6s |
+| J1–J5 confirm, remount, CLOSED hold, edit prior | PASS 25.3s |
+| J6–J8 on-slot customer write after Confirm Yes | PASS 18.5s |
+| **Suite** | **3 passed / 1.1m** |
+
+J6 Production contract:
+
+```text
+Confirm Yes → businessOneLiner CLOSED
+customerPersona OPEN
+next question = customerPersona
+관광객 in source did not CLOSE customer
+```
+
+P0-2 and CEO test stay closed until CPO Production Acceptance.
+
 ## Events
 
 Existing `recordFunnelEvent()` convention. Added only missing names:
