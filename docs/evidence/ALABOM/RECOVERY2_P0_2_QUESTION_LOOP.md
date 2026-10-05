@@ -51,11 +51,13 @@ Local `next start` of branch SHA.
 | Spec | Result |
 |------|--------|
 | J1–J3 priority, no CLOSED re-ask, no multi-fact steal | PASS 23.4s |
-| J5 longitudinal after customer CLOSED | pending Preview-equivalent re-run |
+| J1–J3 + J5 longitudinal after customer CLOSED | PASS 25.4s (`ca703fa`) |
+
+Forbidden path blocked: after customer CLOSED, next Stage A write does not retarget `customerPersona` / `businessOneLiner` and does not write 사업 원문 into customer evidence.
 
 ## CPO 2-Pass 1
 
-Independent vs `origin/main`: this PR is verification only.
+Independent vs `origin/main` @ `ca703fa`. Product files unchanged.
 
 | Check | Result |
 |-------|--------|
@@ -67,6 +69,16 @@ Independent vs `origin/main`: this PR is verification only.
 
 ## CPO 2-Pass 2
 
-Independent file: `recovery2-p0-2-2pass2-canonical-state.test.ts`
+Independent file: `recovery2-p0-2-2pass2-canonical-state.test.ts` — **5 passed**.
 
 Asserts `review.askedGapId`, `semanticFactKey` / `intent`, `gapState`, `lastDecision.targetGapId`, and `snapshot.aiPmLoop` — not `conversationMemory` or UI copy.
+
+| # | Check | Result |
+|---|-------|--------|
+| 1 | Confirm Yes review/gapState/lastDecision stay on business → customer | PASS |
+| 2 | customer CLOSED then lastDecision = first remaining OPEN Stage A | PASS |
+| 3 | next Stage A write cannot reopen CLOSED customer or rewrite source | PASS |
+| 4 | snapshot → hydrate keeps lastDecision and CLOSED | PASS |
+| 5 | on-slot correction does not retarget lastDecision to CLOSED customer | PASS |
+
+Also re-ran P0-2 J1–J5 unit + P0-1 J1–J8 + 2-Pass 2 + J6 probe: **24 passed**.
