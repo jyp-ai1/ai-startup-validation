@@ -4,21 +4,23 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Recovery 2 — P0-1 Production STOP Recovery 🔄
+## Recovery 2 — P0-1 Production STOP Recovery ✅ MERGED
 
-**Branch:** `cursor/p0-1-business-confirm-slot-e648` · base Production `f8f13cf` (PR #85)  
+**Branch:** `cursor/p0-1-business-confirm-slot-e648` · merged PR #86 as `64c8882`  
+**Verified Production SHA:** `64c8882610024086265c216f2c736c7fab993f62`  
 **Symptom:** Confirm Yes on `제가 이해한 사업은 … 맞나요?` wrote the business source into `customerPersona` and CLOSED it.  
 **Out of scope:** P0-2 priority · `decideNextQuestionFromReview` · V3 SoT · Auth · DB schema · Stage ③/④ · Result/PDF · Project Brief
 
 | # | Deliverable | Status |
 |---|-------------|--------|
-| J1–J5 | Existing P0-1 confirm / correction / refresh / edit | ✅ unit + Preview E2E |
-| J6 | Business Confirm Yes → business CLOSED, customerPersona OPEN, next Q = customer | ✅ unit + Preview E2E |
-| J7 | On-slot customer write after J6 (`방한 외국인`); 방한→내국인·외국인 replacement | ✅ unit · browser on-slot write PASS |
-| J8 | business / customer / payer / problem uncontaminated | ✅ unit + Preview E2E |
+| J1–J5 | Existing P0-1 confirm / correction / refresh / edit | ✅ unit + Preview + Production |
+| J6 | Business Confirm Yes → business CLOSED, customerPersona OPEN, next Q = customer | ✅ unit + Preview + Production |
+| J7 | On-slot customer write after J6 (`방한 외국인`); 방한→내국인·외국인 replacement | ✅ unit · Production on-slot write PASS |
+| J8 | business / customer / payer / problem uncontaminated | ✅ unit + Preview + Production |
 | Preview E2E J1–J8 | Confirm Yes → customer OPEN → customer Q | ✅ 3 passed / 59.6s |
 | CPO 2-Pass 1 / 2 | Independent after Preview E2E evidence | ✅ |
-| Production J1–J8 | SHA triangle then J6→J7 continuous | pending — P0-2 / CEO test forbidden until Production J6 PASS |
+| SHA triangle | Git = Build = Production | ✅ `64c8882` |
+| Production J1–J8 | SHA triangle then J6 | ✅ 3 passed / 1.1m |
 
 Root cause: `handleConfirmYes` submits `confirmKnownValue` (source clip containing `관광객`). FIX-10 confirm copy is not a free-form question — `confirmGapId` is the authoritative target. First-write fix: bind confirm copy + honor asked `businessOneLiner` as `business`. Forbidden path: 사업 원문 `관광객` → extract to `customerPersona` → CLOSED.
 
