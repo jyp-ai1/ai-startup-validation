@@ -47,7 +47,7 @@ Google OAuth only. No password fields.
 GET /auth/qa
 ```
 
-Allowlisted login id + password. Not linked from the public login screen.  
+Allowlisted login id + password. Login id maps to `*@launchlens.dev`. Not linked from the public login screen.  
 Server Action: `signInWithQaPasswordAction` in `apps/web/features/auth/actions/auth-actions.ts`.
 
 **Out of scope:** admin dashboard, CRM, Google OAuth changes.

@@ -7,9 +7,9 @@ import {
 
 describe('QA password login ids', () => {
   it('maps allowlisted ids to qa emails', () => {
-    expect(resolveQaLoginEmail('user1')).toBe('user1@alabom-qa.invalid');
-    expect(resolveQaLoginEmail('ADMIN')).toBe('admin@alabom-qa.invalid');
-    expect(resolveQaLoginEmail('user5')).toBe('user5@alabom-qa.invalid');
+    expect(resolveQaLoginEmail('user1')).toBe('user1@launchlens.dev');
+    expect(resolveQaLoginEmail('ADMIN')).toBe('admin@launchlens.dev');
+    expect(resolveQaLoginEmail('user5')).toBe('user5@launchlens.dev');
   });
 
   it('rejects unknown or malformed ids', () => {

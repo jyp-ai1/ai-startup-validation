@@ -11,11 +11,11 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 | # | Gate | Status |
 |---|------|--------|
-| 1 | Create `admin` + `user1`–`user5` Auth users | STOP — Admin API `weak_password` (specified QA passwords rejected). No users created. |
-| 2 | `admin` has no admin role | PASS — no user created; provision never sets `app_metadata.role` |
+| 1 | Create `admin` + `user1`–`user5` Auth users | PASS — `*@launchlens.dev`, policy-compliant passwords, no PIN bypass |
+| 2 | `admin` has no admin role | PASS — `app_metadata.role` is null |
 | 3 | Public login remains Google-only | PASS — `/auth/login` has 0 password inputs |
-| 4 | `/auth/qa` ID/PW for allowlisted ids | PASS — form present; sign-in blocked until accounts exist |
-| 5 | Local `user1` → Workspace | STOP — accounts not created |
+| 4 | `/auth/qa` ID/PW for allowlisted ids | PASS — POST server action; all 6 UI logins reach `/workspace` |
+| 5 | Local `user1` → Workspace | PASS — create-project form visible |
 | 6 | Preview Vercel SSO | separate blocker |
 
 Passwords are runtime-only. Do not commit them.

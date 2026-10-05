@@ -15,6 +15,7 @@ export async function signOutAction() {
 
 /** Allowlisted QA login ids only. Does not enable general password signup. */
 export async function signInWithQaPasswordAction(
+  _prev: { error: 'invalid' | 'config' } | null,
   formData: FormData,
 ): Promise<{ error: 'invalid' | 'config' } | void> {
   const loginId = String(formData.get('loginId') ?? '');

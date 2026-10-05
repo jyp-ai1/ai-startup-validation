@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useActionState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { Button, Input } from '@repo/ui';
@@ -15,13 +15,9 @@ type QaPasswordLoginFormProps = {
 
 export function QaPasswordLoginForm({ redirectTo }: QaPasswordLoginFormProps) {
   const t = useTranslations('auth');
-  const [pending, setPending] = useState(false);
-  const [errorKey, setErrorKey] = useState<string | null>(null);
+  const [state, formAction, pending] = useActionState(signInWithQaPasswordAction, null);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setErrorKey(null);
-    setPending(true);
+  function handleSubmit() {
     const browser = getBrowserFamily();
     void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.loginStarted, {
       provider: 'qa_password',
@@ -34,41 +30,13 @@ export function QaPasswordLoginForm({ redirectTo }: QaPasswordLoginFormProps) {
       screen: '/auth/qa',
       browser,
     });
-
-    try {
-      const result = await signInWithQaPasswordAction(new FormData(event.currentTarget));
-      if (result?.error === 'config') {
-        setErrorKey('supabaseNotConfigured');
-        void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.loginFailed, {
-          provider: 'qa_password',
-          screen: '/auth/qa',
-          error: 'config',
-          browser,
-        });
-        return;
-      }
-      if (result?.error) {
-        setErrorKey('qaLoginError');
-        void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.loginFailed, {
-          provider: 'qa_password',
-          screen: '/auth/qa',
-          error: 'invalid',
-          browser,
-        });
-      }
-    } catch (error) {
-      if (error && typeof error === 'object' && 'digest' in error) {
-        throw error;
-      }
-      setErrorKey('qaLoginError');
+    if (state?.error) {
       void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.loginFailed, {
         provider: 'qa_password',
         screen: '/auth/qa',
-        error: 'invalid',
+        error: state.error,
         browser,
       });
-    } finally {
-      setPending(false);
     }
   }
 
@@ -76,7 +44,10 @@ export function QaPasswordLoginForm({ redirectTo }: QaPasswordLoginFormProps) {
     <form
       data-testid="qa-login-form"
       className="mt-6 space-y-4"
-      onSubmit={(event) => void handleSubmit(event)}
+      action={formAction}
+      method="post"
+      autoComplete="on"
+      onSubmit={handleSubmit}
     >
       <input type="hidden" name="next" value={redirectTo} />
       <label className="block space-y-1.5 text-sm">
@@ -99,9 +70,14 @@ export function QaPasswordLoginForm({ redirectTo }: QaPasswordLoginFormProps) {
           required
         />
       </label>
-      {errorKey ? (
+      {state?.error === 'config' ? (
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800" role="alert">
+          {t('supabaseNotConfigured')}
+        </p>
+      ) : null}
+      {state?.error === 'invalid' ? (
         <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300" role="alert">
-          {t(errorKey)}
+          {t('qaLoginError')}
         </p>
       ) : null}
       <Button type="submit" className="h-11 w-full rounded-xl" disabled={pending} aria-busy={pending}>

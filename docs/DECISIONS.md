@@ -1305,7 +1305,8 @@ Vercel Preview SSO blocks unauthenticated agents. CPO asked for internal Auth id
 - Create six Supabase Auth users (`admin`, `user1`–`user5`) via Admin API at provision time.
 - Public `/auth/login` stays Google-only.
 - QA/CTO use unlinked `/auth/qa` with login id + password.
-- Only allowlisted ids resolve to emails (`*@alabom-qa.invalid`).
+- Only allowlisted ids resolve to emails (`admin@launchlens.dev`, `user1@launchlens.dev`, …).
+- Supabase password policy on this project rejects 4-character PINs (`weak_password`) and accepts length ≥ 6. QA passwords stay policy-compliant (12+ mixed). Policy is not bypassed.
 - `admin` is an Auth identity only — no `app_metadata.role`, no ADMIN_EMAIL binding, no CRM/dashboard in this PR.
 - Passwords are runtime env (`QA_AUTH_ADMIN_PASSWORD`, `QA_AUTH_USER_PASSWORD`) and are never written to Git, code, `.env`, or docs.
 
