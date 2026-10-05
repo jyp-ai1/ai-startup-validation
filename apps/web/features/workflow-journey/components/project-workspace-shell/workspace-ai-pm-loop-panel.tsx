@@ -777,8 +777,19 @@ export function WorkspaceAiPmLoopPanel({
         documentText: documentText ?? '',
         displayQuestionText,
         targetGap: activeTargetGap,
+        lastAnsweredGap: lastTurn?.review?.askedGapId ?? lastTurn?.targetGap ?? null,
+        lastAnswerText: lastTurn?.answer ?? null,
       }),
-    [livingState, loopState.gapState, documentText, displayQuestionText, activeTargetGap],
+    [
+      livingState,
+      loopState.gapState,
+      documentText,
+      displayQuestionText,
+      activeTargetGap,
+      lastTurn?.review?.askedGapId,
+      lastTurn?.targetGap,
+      lastTurn?.answer,
+    ],
   );
   const focusedSnapshot = useMemo(() => {
     if (!focusedUiActive) return null;

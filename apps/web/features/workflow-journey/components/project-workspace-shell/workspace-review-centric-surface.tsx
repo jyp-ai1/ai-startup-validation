@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 
 import { cn } from '@repo/ui/lib/utils';
 
@@ -26,23 +26,12 @@ export function WorkspaceReviewCentricSurface({
   snapshot,
   className,
 }: WorkspaceReviewCentricSurfaceProps) {
-  const previousJudgmentRef = useRef<string | null>(null);
-  const [judgmentUpdated, setJudgmentUpdated] = useState(false);
-
   useEffect(() => {
     void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.reviewCentricSurfaceShown, {
       confirmed_count: snapshot.confirmedCount,
       open_count: snapshot.importantOpenCount,
     });
   }, [snapshot.confirmedCount, snapshot.importantOpenCount]);
-
-  useEffect(() => {
-    const previous = previousJudgmentRef.current;
-    if (previous && previous !== snapshot.judgment) {
-      setJudgmentUpdated(true);
-    }
-    previousJudgmentRef.current = snapshot.judgment;
-  }, [snapshot.judgment]);
 
   return (
     <section
@@ -65,7 +54,14 @@ export function WorkspaceReviewCentricSurface({
         {snapshot.slots.map((slot) => (
           <div key={slot.key} className="grid grid-cols-[4.5rem_1fr] gap-2 text-sm">
             <dt className="text-muted-foreground">{slot.label}</dt>
-            <dd data-testid={`review-slot-${slot.key}`} className="text-foreground">
+            <dd
+              data-testid={`review-slot-${slot.key}`}
+              data-status={slot.status}
+              className="text-foreground"
+            >
+              <span data-testid={`review-slot-${slot.key}-status`} className="mr-1 text-muted-foreground">
+                {STATUS_MARK[slot.status]}
+              </span>
               {slot.value}
             </dd>
           </div>
@@ -74,7 +70,7 @@ export function WorkspaceReviewCentricSurface({
 
       <div data-testid="review-current-judgment">
         <p className="text-xs font-semibold text-muted-foreground">현재 판단</p>
-        {judgmentUpdated ? (
+        {snapshot.judgmentJustUpdated ? (
           <p
             data-testid="review-judgment-updated"
             className="mt-1 text-sm font-medium text-emerald-700 dark:text-emerald-300"
@@ -82,17 +78,32 @@ export function WorkspaceReviewCentricSurface({
             방금 답변으로 판단이 바뀌었습니다.
           </p>
         ) : null}
-        <p className="mt-1 text-sm leading-relaxed text-foreground">{snapshot.judgment}</p>
+        <p
+          data-testid="review-judgment-text"
+          className="mt-1 text-sm leading-relaxed text-foreground"
+        >
+          {snapshot.judgment}
+        </p>
       </div>
 
       <div data-testid="review-key-uncertainty">
         <p className="text-xs font-semibold text-muted-foreground">가장 큰 불확실성</p>
-        <p className="mt-1 text-sm leading-relaxed text-foreground">{snapshot.uncertainty}</p>
+        <p
+          data-testid="review-uncertainty-text"
+          className="mt-1 text-sm leading-relaxed text-foreground"
+        >
+          {snapshot.uncertainty}
+        </p>
       </div>
 
       <div data-testid="review-why-this-question">
         <p className="text-xs font-semibold text-muted-foreground">그래서 확인할 것</p>
-        <p className="mt-1 text-sm leading-relaxed text-foreground">{snapshot.whyThisQuestion}</p>
+        <p
+          data-testid="review-why-text"
+          className="mt-1 text-sm leading-relaxed text-foreground"
+        >
+          {snapshot.whyThisQuestion}
+        </p>
       </div>
 
       <ul data-testid="review-theme-progress" className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">

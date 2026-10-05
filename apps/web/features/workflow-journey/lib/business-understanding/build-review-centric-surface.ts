@@ -35,6 +35,7 @@ export type ReviewCentricSurfaceSnapshot = {
   themes: ReviewCentricTheme[];
   confirmedCount: number;
   importantOpenCount: number;
+  judgmentJustUpdated: boolean;
 };
 
 export const REVIEW_SLOT_PENDING = '아직 확인되지 않음';
@@ -70,11 +71,11 @@ function normalize(text: string): string {
 
 /** True when a slot value is just the founder source reprinted. */
 export function isSourceReprint(value: string, documentText: string): boolean {
-  const slot = normalize(value);
+  const slot = normalize(value).replace(/[…]+$/g, '').trim();
   const doc = normalize(documentText);
   if (slot.length < 12 || doc.length < 12) return false;
-  if (doc.startsWith(slot.slice(0, 36)) || slot.startsWith(doc.slice(0, 36))) return true;
-  if (doc.includes(slot) && slot.length >= 48) return true;
+  if (doc.includes(slot.slice(0, 36)) || slot.startsWith(doc.slice(0, 36))) return true;
+  if (doc.includes(slot) && slot.length >= 40) return true;
   return false;
 }
 
@@ -85,16 +86,42 @@ function claimValue(living: LivingUnderstandingState, fieldKey: string): string 
   return raw;
 }
 
+function isFounderVerified(
+  living: LivingUnderstandingState,
+  fieldKey: string,
+  gapState?: GapKnowledgeState | null,
+): boolean {
+  if (gapState?.gaps[fieldKey]?.completeness === 'CLOSED') return true;
+  const claim = living.claims.find((item) => item.fieldKey === fieldKey);
+  return (
+    claim?.status === 'confirmed' ||
+    claim?.provenance === 'USER_CONFIRMED' ||
+    claim?.provenance === 'USER_CORRECTED'
+  );
+}
+
+/** Verbatim source token — not a review. 「관광객」 in the document is not a verified customer. */
+export function isShortDocumentToken(value: string, documentText: string): boolean {
+  const slot = normalize(value);
+  const doc = normalize(documentText);
+  if (slot.length < 2 || doc.length < 2) return false;
+  if (!doc.includes(slot)) return false;
+  return slot.length < 18;
+}
+
 function slotValue(
   raw: string | null,
   documentText: string,
   fallback: string | null,
+  founderVerified: boolean,
 ): string {
-  const candidate = raw && !isSourceReprint(raw, documentText) ? raw : null;
-  if (candidate) return candidate;
-  if (fallback && !isSourceReprint(fallback, documentText)) return fallback;
-  if (raw || fallback) return REVIEW_SLOT_SEEN_UNVERIFIED;
-  return REVIEW_SLOT_PENDING;
+  const pick = raw && raw !== '아직 확인 중' ? raw : fallback && fallback !== '아직 확인 중' ? fallback : null;
+  if (!pick) return REVIEW_SLOT_PENDING;
+  if (isSourceReprint(pick, documentText)) return REVIEW_SLOT_SEEN_UNVERIFIED;
+  if (!founderVerified && isShortDocumentToken(pick, documentText)) {
+    return REVIEW_SLOT_SEEN_UNVERIFIED;
+  }
+  return pick;
 }
 
 function themeStatus(gapId: string, gapState: GapKnowledgeState | null | undefined): ReviewThemeStatus {
@@ -113,6 +140,8 @@ function buildJudgment(input: {
   customerShown: boolean;
   payerShown: boolean;
   businessShown: boolean;
+  lastAnsweredGap?: string | null;
+  lastAnswerText?: string | null;
 }): string {
   const closed = new Set(input.closed);
   if (closed.has('customerPersona') && !closed.has('payer')) {
@@ -124,12 +153,27 @@ function buildJudgment(input: {
   if (closed.has('problemJtbd') && !closed.has('payer')) {
     return '문제 후보는 있으나, 그 문제를 누가 돈 내고 푸는지가 미검증입니다.';
   }
+  if (closed.has('alternativesCompetitors') && !closed.has('customerPersona')) {
+    return '대안 스케치는 있으나, 누구의 문제를 푸는 사업인지는 아직 검증되지 않았습니다.';
+  }
+  if (closed.has('alternativesCompetitors') && !closed.has('payer')) {
+    return '기존 쓰는 방법은 보이나, 그 대비 지불 이유는 아직 검증되지 않았습니다.';
+  }
+  if (input.lastAnsweredGap === 'alternativesCompetitors' && !closed.has('customerPersona')) {
+    return '방금 현재 쓰는 방법을 들었지만, 고객과 지불 구조는 아직 검증되지 않았습니다.';
+  }
+  if (input.lastAnsweredGap && !closed.has(input.lastAnsweredGap) && !closed.has('businessOneLiner')) {
+    return '방금 답이 들어왔지만, 그 내용이 판단을 바꿀 만큼 검증되지는 않았습니다.';
+  }
+  if (input.lastAnswerText?.trim() && !closed.has('businessOneLiner') && !closed.has('customerPersona')) {
+    return '방금 답이 들어왔지만, 그 내용이 판단을 바꿀 만큼 검증되지는 않았습니다.';
+  }
   if (!closed.has('businessOneLiner')) {
     if (input.customerShown && input.payerShown) {
       return '문서에서 고객과 구매자 스케치는 보이지만, 그 구조가 아직 검증되지 않았습니다.';
     }
     if (input.customerShown && !input.payerShown) {
-      return '문서에서 고객 스케치는 보이지만, 무엇을 팔고 누가 돈을 내는지가 갈라지지 않았습니다.';
+      return '문서에서 고객 스케치는 보이지만, 그 고객이 검증되지 않았고 누가 돈을 내는지도 갈라지지 않았습니다.';
     }
     if (input.businessShown) {
       return '사업 윤곽은 문서에서 보이지만, 한 줄 정의와 지불 구조가 아직 검증되지 않았습니다.';
@@ -145,23 +189,33 @@ export function buildReviewCentricSurface(input: {
   documentText: string;
   displayQuestionText: string;
   targetGap?: string | null;
+  lastAnsweredGap?: string | null;
+  lastAnswerText?: string | null;
 }): ReviewCentricSurfaceSnapshot {
   const closed = input.gapState ? getClosedGapIds(input.gapState) : [];
   const business = slotValue(
     claimValue(input.living, 'businessOneLiner') ?? input.living.spine.business,
     input.documentText,
     null,
+    isFounderVerified(input.living, 'businessOneLiner', input.gapState),
   );
   const customer = slotValue(
     claimValue(input.living, 'customerPersona') ?? input.living.spine.customer,
     input.documentText,
     null,
+    isFounderVerified(input.living, 'customerPersona', input.gapState),
   );
-  const payer = slotValue(claimValue(input.living, 'payer'), input.documentText, null);
+  const payer = slotValue(
+    claimValue(input.living, 'payer'),
+    input.documentText,
+    null,
+    isFounderVerified(input.living, 'payer', input.gapState),
+  );
   const problem = slotValue(
     claimValue(input.living, 'problemJtbd') ?? input.living.spine.problem,
     input.documentText,
     null,
+    isFounderVerified(input.living, 'problemJtbd', input.gapState),
   );
 
   const slots: ReviewCentricSlot[] = [
@@ -205,7 +259,11 @@ export function buildReviewCentricSurface(input: {
     {
       id: 'market',
       label: '시장/대안',
-      status: themeStatus('alternativesCompetitors', input.gapState),
+      status:
+        themeStatus('alternativesCompetitors', input.gapState) === 'unverified' &&
+        input.lastAnsweredGap === 'alternativesCompetitors'
+          ? 'in_progress'
+          : themeStatus('alternativesCompetitors', input.gapState),
     },
     {
       id: 'viability',
@@ -224,6 +282,8 @@ export function buildReviewCentricSurface(input: {
       customerShown: isFilled(customer),
       payerShown: isFilled(payer),
       businessShown: isFilled(business),
+      lastAnsweredGap: input.lastAnsweredGap,
+      lastAnswerText: input.lastAnswerText,
     }),
     uncertainty: UNCERTAINTY_BY_GAP[target] ?? '지금 판단을 바꿀 빈칸이 무엇인가?',
     whyThisQuestion: WHY_BY_GAP[target] ?? '이 답이 바뀌면 현재 판단이 달라집니다.',
@@ -232,5 +292,6 @@ export function buildReviewCentricSurface(input: {
     themes,
     confirmedCount,
     importantOpenCount,
+    judgmentJustUpdated: Boolean(input.lastAnswerText?.trim()),
   };
 }

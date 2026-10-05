@@ -14,8 +14,11 @@ import {
   REVIEW_SLOT_PENDING,
   REVIEW_SLOT_SEEN_UNVERIFIED,
   buildReviewCentricSurface,
+  isShortDocumentToken,
   isSourceReprint,
 } from '../build-review-centric-surface';
+import { decideNextQuestionFromReview } from '../decide-next-question-from-review';
+import { evaluateStageReadiness } from '../evaluate-stage-readiness';
 import {
   createEmptyGapState,
   getClosedGapIds,
@@ -120,6 +123,12 @@ describe('buildReviewCentricSurface — Journey C presentation only', () => {
   it('rejects source reprint as a structured slot', () => {
     expect(isSourceReprint(BREWERY_PROD, BREWERY_PROD)).toBe(true);
     expect(isSourceReprint('내국인·외국인 관광객', BREWERY_PROD)).toBe(false);
+    expect(
+      isSourceReprint(
+        '다양한 관광객이 늘며 개인별 다양한 경험을 중요하게 생각한다. 전통주와 양조장 체험을…',
+        `프로젝트 이름: 양조장\n\n사업 설명:\n${BREWERY_PROD}`,
+      ),
+    ).toBe(true);
 
     const reprintLiving = livingFrom(BREWERY_PROD);
     reprintLiving.spine.business = BREWERY_PROD;
@@ -225,6 +234,111 @@ describe('buildReviewCentricSurface — Journey C presentation only', () => {
     }
     expect(snapshot.uncertainty.length).toBeGreaterThan(4);
     expect(snapshot.whyThisQuestion).toMatch(/달라집니다/);
+  });
+
+  it('a founder answer updates judgment even when the engine does not CLOSE the gap', () => {
+    const before = surfaceFor(BREWERY_PROD, { targetGap: 'alternativesCompetitors' });
+    const after = buildReviewCentricSurface({
+      living: livingFrom(BREWERY_PROD),
+      gapState: createEmptyGapState(),
+      documentText: BREWERY_PROD,
+      displayQuestionText: '비슷한 역할을 이미 하고 있는 서비스가 있나요?',
+      targetGap: 'alternativesCompetitors',
+      lastAnsweredGap: 'alternativesCompetitors',
+      lastAnswerText: '지금은 네이버 플레이스와 인스타로 홍보하고 있습니다.',
+    });
+    expect(after.judgment).not.toBe(before.judgment);
+    expect(after.judgment).toMatch(/방금|검증되지/);
+    expect(after.judgmentJustUpdated).toBe(true);
+    expect(after.themes.find((theme) => theme.id === 'market')?.status).toBe('in_progress');
+  });
+
+  it('alternatives close updates judgment without changing the question engine', () => {
+    const before = surfaceFor(BREWERY_PROD, { targetGap: 'alternativesCompetitors' });
+    const gapState = updateGapStateFromReview(
+      closeGapReview('alternativesCompetitors', '네이버 플레이스와 인스타', 'competitor'),
+      createEmptyGapState(),
+    );
+    const after = surfaceFor(BREWERY_PROD, {
+      targetGap: 'customerPersona',
+      gapState,
+      question: '이 서비스를 가장 필요로 하는 사람은 누구인가요?',
+    });
+    expect(after.judgment).not.toBe(before.judgment);
+    expect(after.judgment).toMatch(/대안|누구/);
+    expect(after.uncertainty).toMatch(/누구|고객/);
+  });
+
+  it('does not treat 관광객 in the source as a verified customer', () => {
+    expect(isShortDocumentToken('관광객', BREWERY_PROD)).toBe(true);
+
+    const living = livingFrom(BREWERY_PROD);
+    living.claims = living.claims.map((claim) =>
+      claim.fieldKey === 'customerPersona'
+        ? { ...claim, value: '관광객', status: 'known', provenance: 'DOCUMENT' }
+        : claim,
+    );
+    living.spine.customer = '관광객';
+
+    const snapshot = buildReviewCentricSurface({
+      living,
+      gapState: createEmptyGapState(),
+      documentText: BREWERY_PROD,
+      displayQuestionText: '이 서비스를 가장 필요로 하는 사람은 누구인가요?',
+      targetGap: 'customerPersona',
+    });
+
+    expect(snapshot.slots.find((slot) => slot.key === 'customer')?.value).toBe(
+      REVIEW_SLOT_SEEN_UNVERIFIED,
+    );
+    expect(snapshot.slots.find((slot) => slot.key === 'customer')?.status).toBe('unverified');
+    expect(snapshot.judgment).not.toMatch(/고객이 명확|고객은 명확|고객이 확실|고객이 확인/);
+    expect(snapshot.judgment).toMatch(/검증되지|아직/);
+  });
+
+  it('does not import or replace decideNextQuestionFromReview', () => {
+    const source = readFileSync(
+      resolve(__dirname, '../build-review-centric-surface.ts'),
+      'utf8',
+    );
+    expect(source).not.toMatch(/decideNextQuestionFromReview/);
+
+    const living = livingFrom(BREWERY_PROD);
+    const gapState = updateGapStateFromReview(
+      closeGapReview('customerPersona', '방한 외국인', 'customer'),
+      createEmptyGapState(),
+    );
+    const stageReadiness = evaluateStageReadiness({ gapState });
+    const before = decideNextQuestionFromReview({
+      living,
+      turns: [],
+      memory: emptyConversationMemory('review-surface'),
+      lastReview: closeGapReview('customerPersona', '방한 외국인', 'customer'),
+      gapState,
+      stageReadiness,
+    });
+    buildReviewCentricSurface({
+      living,
+      gapState,
+      documentText: BREWERY_PROD,
+      displayQuestionText: '이 서비스 비용은 누가 지불하나요?',
+      targetGap: 'payer',
+    });
+    const after = decideNextQuestionFromReview({
+      living,
+      turns: [],
+      memory: emptyConversationMemory('review-surface'),
+      lastReview: closeGapReview('customerPersona', '방한 외국인', 'customer'),
+      gapState,
+      stageReadiness,
+    });
+    expect(after?.targetGapId).toBe(before?.targetGapId);
+    expect(gapState).toEqual(
+      updateGapStateFromReview(
+        closeGapReview('customerPersona', '방한 외국인', 'customer'),
+        createEmptyGapState(),
+      ),
+    );
   });
 
   it('does not invent persistent ReviewState — empty gapState stays empty after mapping', () => {
