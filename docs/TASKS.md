@@ -16,15 +16,19 @@ CEO 테스트                 CLOSED
 
 정확한 AI와 사람이 쉽게 대화하는 제품은 별개 Acceptance다.
 
-## Founder Conversation UX — Acceptance 📋 SPEC LOCKED
+## Founder Journey Strategy Revalidation 📋 REPRO ONLY
 
-**Contract:** `docs/sprints/FOUNDER_CONVERSATION_UX_ACCEPTANCE.md`  
-**Status:** 구현 0 — CPO open 전 구현 금지  
-**After:** Recovery 2 P0-2 Production Acceptance CLOSED on `1394a8d`  
+**Contract:** `docs/sprints/FOUNDER_JOURNEY_STRATEGY_REVALIDATION.md`  
+**Status:** 구현 0 — UI/엔진 패치 금지  
+**Production SHA:** `1394a8d`  
 **CEO test:** CLOSED  
-**When CPO opens:** Production에서 UX 10항 + CEO 발견 9건을 재현/측정 → 최소 수정 → E2E → Production → CPO 검증 → CEO 최종 1회
+**This slice:** Production `1394a8d` 재현 기록됨 → CPO 전략 유지/전환 판단 대기  
+**KPI forbidden:** 질문 수 · Gap 수 · 정확도 · J1–Jn PASS 보고  
+**CTO 권고:** 질문 중심 → 검토 중심 전환 가설을 작은 검증으로. 구현 0.
 
-Engine (P0-1 / P0-2) and UX are separate. Do not start from a UI inventory.
+Value > Accuracy > UX polish. B–F = NO. 엔진 PASS ≠ 검토 가치.
+
+UX 10항 계약은 `docs/sprints/FOUNDER_CONVERSATION_UX_ACCEPTANCE.md`에 남아 있으나, 구현은 전략 판단 이후에만.
 
 ---
 

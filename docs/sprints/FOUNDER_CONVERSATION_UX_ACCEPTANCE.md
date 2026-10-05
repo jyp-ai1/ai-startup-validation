@@ -1,6 +1,7 @@
 # Founder Conversation UX — Acceptance Contract
 
-**Status:** 📋 SPEC LOCKED · 구현 0  
+**Status:** 📋 SPEC LOCKED · 구현 0 · **parent = Strategy Revalidation**  
+**Do not implement until CPO decides keep/change of the question-centric journey.**  
 **After:** Recovery 2 P0-2 Production Acceptance CLOSED on `1394a8d`  
 **CEO test:** CLOSED until CPO opens a single final user test  
 **Engine accuracy:** already gated by P0-1 / P0-2 — separate Acceptance from UX
