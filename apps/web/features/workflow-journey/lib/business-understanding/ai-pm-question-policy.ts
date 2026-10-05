@@ -160,6 +160,20 @@ function applyClusterSoftRanking(
     };
   }
 
+  // Cluster contract: soft penalty, never a hard block.
+  // P0-1 J6: decide already advanced to OPEN Stage A customerPersona after
+  // business confirm. Replacing that with payer skips the customer question.
+  if (
+    (STAGE_A_REQUIRED_GAPS as readonly string[]).includes(decision.targetGapId) &&
+    isGapAskable(decision.targetGapId, input.gapState)
+  ) {
+    return {
+      ...decision,
+      score: Math.max(0, (decision.score ?? 0) - SAME_CLUSTER_SOFT_PENALTY),
+      actionRationale: `${decision.actionRationale} (동일 주제 연속 — 필요 시 재확인)`,
+    };
+  }
+
   const binding = resolveGapQuestionBinding(alternative);
   return {
     ...decision,

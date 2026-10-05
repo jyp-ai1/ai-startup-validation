@@ -331,10 +331,34 @@ export async function readLoopFromSession(page: Page) {
       if (!raw) continue;
       try {
         return JSON.parse(raw) as {
-          gapState?: { gaps?: Record<string, { completeness?: string }> };
-          lastDecision?: { questionText?: string; targetGapId?: string };
+          gapState?: {
+            gaps?: Record<
+              string,
+              {
+                completeness?: string;
+                evidence?: Array<{ factKey?: string; value?: string }>;
+              }
+            >;
+          };
+          lastDecision?: {
+            questionText?: string;
+            targetGapId?: string;
+            confirmGapId?: string;
+            questionType?: string;
+          };
           lockedAskSurface?: { questionText?: string; targetGap?: string };
-          turns?: Array<{ review?: unknown; targetGap?: string; answer?: string; superseded?: boolean }>;
+          turns?: Array<{
+            review?: {
+              askedGapId?: string;
+              extractedFacts?: Array<{ key?: string; value?: string }>;
+              semanticInterpretationRef?: { intent?: string };
+            };
+            targetGap?: string;
+            answer?: string;
+            superseded?: boolean;
+            semanticFactKey?: string;
+            intent?: string;
+          }>;
         };
       } catch {
         /* ignore */

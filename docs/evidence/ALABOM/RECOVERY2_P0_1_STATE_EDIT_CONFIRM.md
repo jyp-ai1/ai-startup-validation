@@ -65,6 +65,79 @@ F13: no dedicated `f13*.test.ts` on main. core-v4 multi-fact keys PASS. Two wron
 
 Browser spec now also reads `aiPmLoop.gapState` evidence, not only `conversationMemory`.
 
+## Production STOP Recovery (f8f13cf)
+
+**Branch:** `cursor/p0-1-business-confirm-slot-e648`
+
+Confirmed first-write path:
+
+```text
+handleConfirmYes
+  → submitAnswer(confirmKnownValue = clipped source)
+  → inferTargetGapFromQuestionText("제가 이해한 사업은 … 맞나요?") = null  (before fix)
+  → interpretAnswerSemantics scoreRoutes(관광객) → factKey=customer
+  → answer-first skip of business honor
+  → buildAnswerReview extractedFacts.customer = source
+  → gapVerdicts.customerPersona = CLOSED
+```
+
+Fix (no SoT / priority / schema change):
+
+- `isBusinessUnderstandingConfirmQuestion` + infer bind → `businessOneLiner`
+- interpret honors asked `businessOneLiner` as `business` (incidental `관광객` does not steal)
+- canonicalizeSubmitSemantics keeps Confirm Yes on `businessOneLiner`
+- submitAnswer falls back to `confirmGapId` when infer is stale
+
+J6–J8 in `recovery2-p0-1-state-edit-confirm.test.ts`.
+
+## J6 next-question evidence (`d9df613`)
+
+Confirm Yes first write (clipped source / known value):
+
+| Probe | Value |
+|-------|--------|
+| `askedGap` | `businessOneLiner` |
+| `factKey` | `business` |
+| `answerKind` | `business_fact` |
+| `review.extractedFacts` | `business` only |
+| `gapState.businessOneLiner` | CLOSED |
+| `gapState.customerPersona` | OPEN (absent from closed set) |
+
+`decideNextQuestionFromReview` already returns `customerPersona` / `이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?`.
+
+Cluster policy had hard-replaced that OPEN Stage A gap with `payer` because both sit in C1. Soft-penalty contract restored for Stage A required OPEN gaps.
+
+After the policy fix, resolved next is `customerPersona`.
+
+## Preview-equivalent E2E (`219007d`)
+
+Local `next start` of branch SHA (Vercel Preview is SSO-walled).
+
+| Spec | Result |
+|------|--------|
+| J6 business Confirm Yes leaves customerPersona OPEN | PASS 16.7s |
+| J1–J5 confirm, remount, CLOSED hold, edit prior | PASS 25.2s |
+| J6–J8 on-slot customer write after Confirm Yes | PASS 17.1s |
+| **Suite** | **3 passed / 59.6s** |
+
+Forbidden path blocked: 사업 원문 `관광객` is not extracted into `customerPersona` / CLOSED.
+
+## CPO 2-Pass 1
+
+Independent vs `origin/main`: product diff is first-write slot routing + Stage A cluster soft-penalty only.
+
+| Check | Result |
+|-------|--------|
+| Auth / `update-session` | unchanged |
+| DB schema / analytics migration | unchanged |
+| V3 SoT / `decideNextQuestionFromReview` | unchanged |
+| Post-hoc customer reopen | absent |
+| `confirmGapId` authoritative | loop-panel fallback + infer bind to `businessOneLiner` |
+
+## CPO 2-Pass 2
+
+`recovery2-p0-1-2pass2-canonical-state.test.ts` + J1–J8 unit + J6 probe: **14 passed**.
+
 ## Events
 
 Existing `recordFunnelEvent()` convention. Added only missing names:

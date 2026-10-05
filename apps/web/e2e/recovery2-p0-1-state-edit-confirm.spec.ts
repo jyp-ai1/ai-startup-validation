@@ -42,8 +42,74 @@ async function clickThroughReading(page: import('@playwright/test').Page) {
   throw new Error('Reading sequence never reached understanding or answer UI');
 }
 
+async function waitForLoopPrompt(page: import('@playwright/test').Page) {
+  await expect
+    .poll(
+      async () => {
+        const yes = await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false);
+        const input = await page.getByTestId('answer-input').isVisible().catch(() => false);
+        return yes || input;
+      },
+      { timeout: 30_000 },
+    )
+    .toBe(true);
+}
+
+async function confirmBusinessUnderstandingIfShown(page: import('@playwright/test').Page) {
+  await dismissRecognition(page);
+  if (await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false)) {
+    await page.getByTestId('confirm-yes-cta').click();
+    await page.waitForTimeout(1_500);
+  }
+}
+
+async function waitForCustomerAsk(page: import('@playwright/test').Page) {
+  const deadline = Date.now() + 45_000;
+  while (Date.now() < deadline) {
+    const loop = await readLoopFromSession(page);
+    const next = loop?.lastDecision?.targetGapId ?? loop?.lockedAskSurface?.targetGap ?? '';
+    if (next === 'customerPersona') return loop;
+    await page.waitForTimeout(400);
+  }
+  return readLoopFromSession(page);
+}
+
+async function openCustomerFreeform(page: import('@playwright/test').Page) {
+  await waitForLoopPrompt(page);
+  // Do not click Confirm No — handleConfirmNo edits editableTurns[0], which is
+  // the business Confirm Yes turn. Type on the customer ask instead.
+  await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 30_000 });
+}
+
+async function submitOnSlot(page: import('@playwright/test').Page, answer: string) {
+  await waitForLoopPrompt(page);
+  const submitted = await submitAnswer(page, answer);
+  expect(submitted, `submitAnswer(${answer})`).toBe(true);
+}
+
+async function submitCustomerCorrection(page: import('@playwright/test').Page) {
+  await openCustomerFreeform(page);
+  await submitOnSlot(page, '내국인과 외국인 모두입니다');
+}
+
+function lastAnsweredTurn(
+  loop: Awaited<ReturnType<typeof readLoopFromSession>>,
+) {
+  return [...(loop?.turns ?? [])]
+    .reverse()
+    .find((turn) => !turn.superseded && Boolean(turn.answer?.trim()));
+}
+
+function customerEvidence(
+  loop: Awaited<ReturnType<typeof readLoopFromSession>>,
+): string {
+  return (loop?.gapState?.gaps?.customerPersona?.evidence ?? [])
+    .map((item) => item.value)
+    .join(' ');
+}
+
 async function currentCustomer(page: import('@playwright/test').Page): Promise<string> {
-  return page.evaluate(() => {
+  const fromMemory = await page.evaluate(() => {
     const keys = Object.keys(sessionStorage).filter((key) =>
       key.includes('conversationMemory'),
     );
@@ -64,9 +130,57 @@ async function currentCustomer(page: import('@playwright/test').Page): Promise<s
     }
     return '';
   });
+  if (fromMemory) return fromMemory;
+  return customerEvidence(await readLoopFromSession(page));
+}
+
+function assertJ6BusinessConfirmLeftCustomerOpen(
+  loop: Awaited<ReturnType<typeof readLoopFromSession>>,
+) {
+  const lastTurn = lastAnsweredTurn(loop);
+  expect(lastTurn?.targetGap ?? lastTurn?.review?.askedGapId).toBe('businessOneLiner');
+  expect(lastTurn?.semanticFactKey ?? lastTurn?.review?.extractedFacts?.[0]?.key).toBe(
+    'business',
+  );
+  expect(lastTurn?.review?.extractedFacts?.some((fact) => fact.key === 'customer')).not.toBe(
+    true,
+  );
+  expect(loop?.gapState?.gaps?.customerPersona?.completeness).not.toBe('CLOSED');
+  expect(customerEvidence(loop)).not.toMatch(/다양한 관광객이 늘며/);
+  const nextGap = loop?.lastDecision?.targetGapId ?? loop?.lockedAskSurface?.targetGap ?? '';
+  expect(nextGap).toBe('customerPersona');
+  expect(loop?.lastDecision?.questionText ?? '').toMatch(/누구|고객/);
+}
+
+async function startAlabomAndConfirmBusiness(page: import('@playwright/test').Page, context: import('@playwright/test').BrowserContext) {
+  expect(qaAuthReady(), 'QA magic-link env must be present — do not skip').toBe(true);
+  await loginWithQaMagicLink(page, context, e2eBaseUrl());
+  await dismissCookies(page);
+  await expect(page.getByTestId('my-projects-create-form')).toBeVisible({ timeout: 20_000 });
+  await page.locator('#new-project-title').fill(TITLE);
+  await page.locator('input[name="reviewType"][value="startup-idea"]').check();
+  await page.locator('#project-description').fill(LONG_SOURCE);
+  await page.getByRole('button', { name: /사업 검토 시작|Start business review/ }).click();
+  await page.waitForURL(/\/workspace\?project=/, { timeout: 60_000 });
+  await clickThroughReading(page);
+  if (await page.getByTestId('understanding-confirm-yes').isVisible().catch(() => false)) {
+    await page.getByTestId('understanding-confirm-yes').click();
+    await page.waitForTimeout(1_200);
+  }
+  await waitForLoopPrompt(page);
+  await dismissRecognition(page);
+  await confirmBusinessUnderstandingIfShown(page);
+  return waitForCustomerAsk(page);
 }
 
 test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
+  test('J6 business Confirm Yes leaves customerPersona OPEN', async ({ page, context }) => {
+    test.setTimeout(300_000);
+    const afterBusinessYes = await startAlabomAndConfirmBusiness(page, context);
+    assertJ6BusinessConfirmLeftCustomerOpen(afterBusinessYes);
+    expect(await currentCustomer(page)).not.toMatch(/다양한 관광객이 늘며/);
+  });
+
   test('J1–J5 confirm, long correction, remount, CLOSED hold, edit prior', async ({
     page,
     context,
@@ -100,43 +214,27 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     await page.getByTestId('understanding-confirm-yes').click();
     await page.waitForTimeout(1_200);
     await expect(page.getByTestId('document-first-card')).toHaveCount(0);
-    await expect(
-      page.getByTestId('answer-input').or(page.getByTestId('confirm-yes-cta')),
-    ).toBeVisible({ timeout: 30_000 });
+    await waitForLoopPrompt(page);
 
-    await dismissRecognition(page);
-    if (await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false)) {
-      await page.getByTestId('confirm-no-cta').click();
-      await page.waitForTimeout(600);
-    }
-    const input = page.getByTestId('answer-input');
-    await expect(input).toBeVisible({ timeout: 30_000 });
-    await input.fill(FOUNDER_CORRECTION);
-    await expect(page.getByTestId('submit-answer-cta')).toBeEnabled();
-    await submitAnswer(page, FOUNDER_CORRECTION);
-    await page.waitForTimeout(1_500);
+    await confirmBusinessUnderstandingIfShown(page);
+    const afterBusinessYes = await waitForCustomerAsk(page);
+    assertJ6BusinessConfirmLeftCustomerOpen(afterBusinessYes);
+    await submitCustomerCorrection(page);
+    await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toMatch(/내국인/);
     const afterCorrection = await currentCustomer(page);
-    expect(afterCorrection).toMatch(/내국인/);
     expect(afterCorrection).toMatch(/외국인/);
     expect(afterCorrection).not.toMatch(/방한/);
     expect(afterCorrection).not.toBe('외국인');
     const loopAfterCorrection = await readLoopFromSession(page);
-    const customerEvidence = (loopAfterCorrection?.gapState?.gaps?.customerPersona?.evidence ?? [])
-      .map((item) => item.value)
-      .join(' ');
-    expect(customerEvidence).toMatch(/내국인/);
-    expect(customerEvidence).not.toMatch(/방한 외국인/);
+    expect(customerEvidence(loopAfterCorrection)).toMatch(/내국인/);
+    expect(customerEvidence(loopAfterCorrection)).not.toMatch(/방한 외국인/);
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     await clickThroughReading(page);
     expect(await currentCustomer(page)).toBe(afterCorrection);
     const loopAfterReload = await readLoopFromSession(page);
     expect(loopAfterReload?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
-    expect(
-      (loopAfterReload?.gapState?.gaps?.customerPersona?.evidence ?? [])
-        .map((item) => item.value)
-        .join(' '),
-    ).toMatch(/내국인/);
+    expect(customerEvidence(loopAfterReload)).toMatch(/내국인/);
 
     if (await page.getByTestId('confirm-yes-cta').isVisible().catch(() => false)) {
       await page.getByTestId('confirm-yes-cta').click();
@@ -150,8 +248,12 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
     expect(afterNext?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
     expect(afterNext?.gapState?.gaps?.payer?.completeness).not.toBe('CONTRADICTED');
 
+    const priorText = (await page.getByTestId('my-last-answer').innerText().catch(() => '')) || '';
     const editCta = page.getByTestId('edit-prior-answer-cta');
-    if (await editCta.isVisible().catch(() => false)) {
+    if (
+      /내국인|방한|체험객/.test(priorText) &&
+      (await editCta.isVisible().catch(() => false))
+    ) {
       await editCta.click();
       await expect(page.getByTestId('answer-input')).toBeVisible();
       await page.getByTestId('answer-input').fill(EDITED);
@@ -162,5 +264,44 @@ test.describe('Recovery 2 P0-1 State / Edit / Confirm', () => {
       await clickThroughReading(page);
       expect(await currentCustomer(page)).toBe(EDITED);
     }
+  });
+
+  test('J6–J8 business confirm does not close customerPersona', async ({ page, context }) => {
+    test.setTimeout(300_000);
+    expect(qaAuthReady(), 'QA magic-link env must be present — do not skip').toBe(true);
+    await loginWithQaMagicLink(page, context, e2eBaseUrl());
+    await dismissCookies(page);
+
+    await expect(page.getByTestId('my-projects-create-form')).toBeVisible({ timeout: 20_000 });
+    await page.locator('#new-project-title').fill(TITLE);
+    await page.locator('input[name="reviewType"][value="startup-idea"]').check();
+    await page.locator('#project-description').fill(LONG_SOURCE);
+    await page.getByRole('button', { name: /사업 검토 시작|Start business review/ }).click();
+    await page.waitForURL(/\/workspace\?project=/, { timeout: 60_000 });
+    await clickThroughReading(page);
+
+    await page.getByTestId('understanding-confirm-yes').click();
+    await page.waitForTimeout(1_200);
+    await waitForLoopPrompt(page);
+    await dismissRecognition(page);
+
+    await confirmBusinessUnderstandingIfShown(page);
+    const afterBusinessYes = await waitForCustomerAsk(page);
+    assertJ6BusinessConfirmLeftCustomerOpen(afterBusinessYes);
+    const customer = await currentCustomer(page);
+    expect(customer).not.toMatch(/다양한 관광객이 늘며/);
+
+    await openCustomerFreeform(page);
+    await submitOnSlot(page, '방한 외국인');
+    await expect.poll(async () => currentCustomer(page), { timeout: 20_000 }).toBe('방한 외국인');
+    const afterCustomer = await readLoopFromSession(page);
+    expect(afterCustomer?.gapState?.gaps?.customerPersona?.completeness).toBe('CLOSED');
+    expect(customerEvidence(afterCustomer)).toBe('방한 외국인');
+    expect(customerEvidence(afterCustomer)).not.toMatch(/다양한 관광객이 늘며/);
+    const nextAfterCustomer =
+      afterCustomer?.lastDecision?.targetGapId ?? afterCustomer?.lockedAskSurface?.targetGap ?? '';
+    expect(nextAfterCustomer).not.toBe('customerPersona');
+    expect(afterCustomer?.gapState?.gaps?.businessOneLiner?.completeness).toBe('CLOSED');
+    expect(afterCustomer?.gapState?.gaps?.payer?.completeness).not.toBe('CONTRADICTED');
   });
 });

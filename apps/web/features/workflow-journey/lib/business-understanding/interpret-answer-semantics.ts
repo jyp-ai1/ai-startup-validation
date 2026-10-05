@@ -459,6 +459,13 @@ export function interpretAnswerSemantics(input: {
     factKey = 'customer';
     resolvedIssueId = 'customer_definition';
     facts = [{ key: 'customer', issueId: 'customer_definition' }];
+  } else if (askedGap === 'businessOneLiner') {
+    // P0-1: confirming the business one-liner is not a customerPersona write.
+    // Intake/source text mentions 관광객 as business context; that cue must not
+    // answer-first steal into customer and CLOSE the persona slot.
+    factKey = 'business';
+    resolvedIssueId = 'bm_design';
+    facts = [{ key: 'business', issueId: 'bm_design' }];
   } else if (askedGap === 'problemJtbd') {
     const problemCue =
       /(불편|문제|JTBD|해결하려|겪는|pain|pein|부족|어렵|못하고|힘들|인력|홍보(?:가|를)?\s*어렵|알릴\s*방법)/i.test(

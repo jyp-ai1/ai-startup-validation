@@ -137,12 +137,25 @@ const ISSUE_FALLBACK: Record<AiPmLoopIssueId, GapQuestionBinding> = {
   },
 };
 
+/** No-Ask FIX-10 business-understanding confirm — not a customerPersona ask. */
+export function isBusinessUnderstandingConfirmQuestion(
+  questionText: string | null | undefined,
+): boolean {
+  const q = questionText?.trim() ?? '';
+  return /제가 이해한 사업/.test(q) && /맞나요/.test(q);
+}
+
 /** Match visible ask text → gap fieldKey (Loop 7 append fallback). */
 export function inferTargetGapFromQuestionText(
   questionText: string | null | undefined,
 ): string | null {
   const q = questionText?.trim().replace(/\s+/g, ' ');
   if (!q || q.length < 6) return null;
+
+  // Production f8f13cf: "제가 이해한 사업은 「…」입니다. 맞나요?" is not stock GAP_BINDINGS
+  // copy. Without this bind, Confirm Yes falls through and 관광객 in the known value
+  // is attributed to customerPersona.
+  if (isBusinessUnderstandingConfirmQuestion(q)) return 'businessOneLiner';
 
   for (const [gap, binding] of Object.entries(GAP_BINDINGS)) {
     const stock = binding.questionText.trim();

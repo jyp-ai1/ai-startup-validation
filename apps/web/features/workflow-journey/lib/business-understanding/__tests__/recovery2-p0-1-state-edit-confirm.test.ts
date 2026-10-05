@@ -21,9 +21,19 @@ import {
 } from '../business-understanding-store';
 import { getFact } from '../conversation-memory';
 import { loadConversationMemory } from '../conversation-memory-store';
+import { setAiPmAnswerFirstRoutingV1ForTest } from '../ai-pm-answer-first-routing-policy-v1';
+import { setAiPmJudgmentFix10V1ForTest } from '../ai-pm-judgment-fix10-v1';
+import { setAiPmNoAskPolicyV1ForTest } from '../ai-pm-no-ask-policy-v1';
+import {
+  inferTargetGapFromQuestionText,
+  isBusinessUnderstandingConfirmQuestion,
+} from '../gap-question-map';
 import { interpretAnswerSemantics } from '../interpret-answer-semantics';
 import { buildLivingUnderstandingState } from '../living-understanding-state';
+import { extractConfirmKnownValueFromQuestion } from '../ai-pm-question-presentation';
 import { appendLoopTurnWithReview, runLoopAnswerProcessing } from '../process-loop-answer';
+import { resolveAskedTargetGapForAppend } from '../resolve-asked-target-gap';
+import { resolveNextQuestionDecision } from '../resolve-next-question-decision';
 import {
   composeUnderstoodNarrative,
 } from '../../ux-flow-recovery/build-ux-business-summary';
@@ -373,5 +383,394 @@ describe('Recovery 2 P0-1 — state / edit / confirm', () => {
     const remount = livingCustomer(loadAiPmLoopState(PROJECT_ID).turns);
     expect(remount.persona).toBe(EDITED_PERSONA);
     expect(remount.spine).toBe(EDITED_PERSONA);
+  });
+});
+
+function clippedBusinessSource(): string {
+  return `${LONG_SOURCE.trim().replace(/\s+/g, ' ').slice(0, 79).trim()}…`;
+}
+
+function productionBusinessConfirmQuestion(): string {
+  return `제가 이해한 사업은 「${clippedBusinessSource()}」입니다. 맞나요?`;
+}
+
+function appendProductionBusinessConfirmYes(appliedAt: string) {
+  const known = clippedBusinessSource();
+  const question = productionBusinessConfirmQuestion();
+  return appendLoopTurnWithReview(
+    {
+      issueId: 'bm_design',
+      answer: known,
+      appliedAt,
+      semanticFactKey: 'business',
+      semanticFactKeys: ['business'],
+      targetGap: 'businessOneLiner',
+      intent: 'business_fact',
+      askedQuestionText: question,
+    },
+    {
+      askedGapId: 'businessOneLiner',
+      askedQuestionText: question,
+      askedIssueId: 'bm_design',
+      userAnswer: known,
+      displayedQuestionText: question,
+    },
+    PROJECT_ID,
+  );
+}
+
+/**
+ * Production f8f13cf path: handleConfirmYes submits confirmKnownValue (clipped source),
+ * not the CTA label "네, 맞습니다".
+ */
+function simulateProductionConfirmYes(projectId: string) {
+  const loop = loadAiPmLoopState(projectId);
+  const questionText =
+    loop.lastDecision?.questionText ?? loop.lockedAskSurface?.questionText ?? '';
+  const confirmGapId =
+    loop.lastDecision?.confirmGapId ??
+    loop.lastDecision?.targetGapId ??
+    loop.lockedAskSurface?.targetGap ??
+    null;
+  const known =
+    loop.lastDecision?.confirmKnownValue?.trim() ||
+    extractConfirmKnownValueFromQuestion(questionText) ||
+    '';
+  const inferred = inferTargetGapFromQuestionText(questionText);
+  const askedTargetGap = resolveAskedTargetGapForAppend({
+    issueId: loop.currentIssueId ?? 'bm_design',
+    whyTargetGap: inferred ?? confirmGapId,
+    questionText,
+    fallbackTargetGap: confirmGapId,
+  });
+  const visibleGap = inferred ?? askedTargetGap;
+  const semantic = interpretAnswerSemantics({
+    answer: known,
+    askedIssueId: loop.currentIssueId ?? 'bm_design',
+    askedTargetGap: visibleGap,
+  });
+  const { review } = buildAnswerReview({
+    turnId: 'j6-confirm-yes',
+    askedGapId: visibleGap ?? askedTargetGap,
+    askedQuestionText: questionText,
+    askedIssueId: loop.currentIssueId ?? 'bm_design',
+    userAnswer: known,
+    displayedQuestionText: questionText,
+  });
+  return {
+    questionText,
+    confirmGapId,
+    known,
+    inferred,
+    askedTargetGap,
+    visibleGap,
+    semantic,
+    review,
+    issueId: loop.currentIssueId ?? 'bm_design',
+  };
+}
+
+describe('Recovery 2 P0-1 — Production J6/J7/J8 business confirm slot', () => {
+  beforeEach(() => {
+    setV3ReviewPipelineForTest(true);
+    setAiPmNoAskPolicyV1ForTest(true);
+    setAiPmAnswerFirstRoutingV1ForTest(true);
+    setAiPmJudgmentFix10V1ForTest(true);
+    stubSessionStorage();
+    clearAiPmLoopState(PROJECT_ID);
+    saveWorkspaceDocumentText(LONG_SOURCE, PROJECT_ID);
+    patchAiPmLoopState(
+      {
+        readingCompleted: true,
+        dismissedReadAck: true,
+        phase: 'issue',
+      },
+      PROJECT_ID,
+    );
+    saveUnderstandingPhase('accepted', PROJECT_ID);
+  });
+
+  afterEach(() => {
+    setV3ReviewPipelineForTest(null);
+    setAiPmNoAskPolicyV1ForTest(null);
+    setAiPmAnswerFirstRoutingV1ForTest(null);
+    setAiPmJudgmentFix10V1ForTest(null);
+    vi.unstubAllGlobals();
+  });
+
+  it('J6 Business Confirmation — Confirm Yes closes business, leaves customerPersona OPEN', () => {
+    const understanding = buildBusinessUnderstanding(LONG_SOURCE);
+    const first = commitFirstAskAfterUnderstandingConfirm({
+      projectId: PROJECT_ID,
+      documentText: LONG_SOURCE,
+      understanding,
+      entities: null,
+    });
+    const firstQuestion =
+      first.lastDecision?.questionText ?? first.lockedAskSurface?.questionText ?? '';
+    expect(isBusinessUnderstandingConfirmQuestion(firstQuestion)).toBe(true);
+    expect(inferTargetGapFromQuestionText(firstQuestion)).toBe('businessOneLiner');
+
+    const clippedSource = `${LONG_SOURCE.trim().replace(/\s+/g, ' ').slice(0, 79).trim()}…`;
+    const productionQuestion = `제가 이해한 사업은 「${clippedSource}」입니다. 맞나요?`;
+    expect(isBusinessUnderstandingConfirmQuestion(productionQuestion)).toBe(true);
+    expect(inferTargetGapFromQuestionText(productionQuestion)).toBe('businessOneLiner');
+
+    const sourceYes = interpretAnswerSemantics({
+      answer: clippedSource,
+      askedIssueId: 'bm_design',
+      askedTargetGap: inferTargetGapFromQuestionText(productionQuestion),
+    });
+    expect(sourceYes.factKey).toBe('business');
+    expect(sourceYes.facts.map((f) => f.key)).toEqual(['business']);
+    const sourceReview = buildAnswerReview({
+      turnId: 'j6-source-confirm',
+      askedGapId: 'businessOneLiner',
+      askedQuestionText: productionQuestion,
+      askedIssueId: 'bm_design',
+      userAnswer: clippedSource,
+      displayedQuestionText: productionQuestion,
+    }).review;
+    expect(sourceReview.extractedFacts.some((f) => f.key === 'customer')).toBe(false);
+    expect(sourceReview.gapVerdicts.customerPersona?.completeness).not.toBe('CLOSED');
+    expect(sourceReview.gapVerdicts.businessOneLiner?.completeness).toBe('CLOSED');
+
+    const path = simulateProductionConfirmYes(PROJECT_ID);
+    expect(path.known.length).toBeGreaterThan(4);
+    expect(path.inferred).toBe('businessOneLiner');
+    expect(path.visibleGap).toBe('businessOneLiner');
+    expect(path.askedTargetGap).toBe('businessOneLiner');
+    expect(path.semantic.factKey).toBe('business');
+    expect(path.semantic.facts.map((f) => f.key)).toEqual(['business']);
+    expect(path.semantic.facts.some((f) => f.key === 'customer')).toBe(false);
+    expect(path.review.askedGapId).toBe('businessOneLiner');
+    expect(path.review.extractedFacts.some((f) => f.key === 'customer')).toBe(false);
+    expect(path.review.gapVerdicts.businessOneLiner?.completeness).toBe('CLOSED');
+    expect(path.review.gapVerdicts.customerPersona?.completeness).not.toBe('CLOSED');
+
+    const loop = appendLoopTurnWithReview(
+      {
+        issueId: path.issueId,
+        answer: path.known,
+        appliedAt: '2026-10-04T18:00:00.000Z',
+        semanticFactKey: path.semantic.factKey,
+        semanticFactKeys: path.semantic.facts.map((f) => f.key),
+        targetGap: path.visibleGap,
+        intent: path.semantic.intent,
+        askedQuestionText: path.questionText,
+      },
+      {
+        askedGapId: path.visibleGap,
+        askedQuestionText: path.questionText,
+        askedIssueId: path.issueId,
+        userAnswer: path.known,
+        displayedQuestionText: path.questionText,
+      },
+      PROJECT_ID,
+    );
+
+    const processed = runLoopAnswerProcessing({
+      projectId: PROJECT_ID,
+      documentText: LONG_SOURCE,
+      understanding,
+    });
+
+    expect(getClosedGapIds(loop.gapState!)).toContain('businessOneLiner');
+    expect(getClosedGapIds(loop.gapState!)).not.toContain('customerPersona');
+    expect(loop.gapState?.gaps.customerPersona?.completeness ?? 'OPEN').not.toBe('CLOSED');
+    const customerEvidence = (loop.gapState?.gaps.customerPersona?.evidence ?? [])
+      .map((item) => item.value)
+      .join(' ');
+    expect(customerEvidence).not.toMatch(/다양한 관광객이 늘며/);
+    expect(currentCustomer(PROJECT_ID)).not.toMatch(/다양한 관광객이 늘며/);
+    expect(processed.living.spine.customer).not.toMatch(/다양한 관광객이 늘며/);
+
+    const next = resolveNextQuestionDecision({
+      living: processed.living,
+      turns: processed.loop.turns,
+      memory: processed.memory,
+      gapState: processed.loop.gapState,
+      projectId: PROJECT_ID,
+      persistLastDecision: true,
+    });
+    const nextGap =
+      (next && 'targetGapId' in next ? next.targetGapId : null) ?? next?.targetGap ?? null;
+    expect(nextGap).toBe('customerPersona');
+    expect(next?.questionText ?? '').toMatch(/누구|고객/);
+    expect(isBusinessUnderstandingConfirmQuestion(next?.questionText)).toBe(false);
+    expect(processed.loop.gapState?.gaps.customerPersona?.completeness ?? 'OPEN').not.toBe(
+      'CLOSED',
+    );
+  });
+
+  it('J7 Customer Correction — 방한 외국인 → 내국인·외국인 after business confirm', () => {
+    const understanding = buildBusinessUnderstanding(LONG_SOURCE);
+    commitFirstAskAfterUnderstandingConfirm({
+      projectId: PROJECT_ID,
+      documentText: LONG_SOURCE,
+      understanding,
+      entities: null,
+    });
+    appendProductionBusinessConfirmYes('2026-10-04T18:01:00.000Z');
+    runLoopAnswerProcessing({
+      projectId: PROJECT_ID,
+      documentText: LONG_SOURCE,
+      understanding,
+    });
+    expect(getClosedGapIds(loadAiPmLoopState(PROJECT_ID).gapState!)).not.toContain(
+      'customerPersona',
+    );
+
+    const onSlotCorrection = interpretAnswerSemantics({
+      answer: FOUNDER_CORRECTION,
+      askedIssueId: 'customer_definition',
+      askedTargetGap: 'customerPersona',
+      existingFactsByKey: { customer: PRIOR_INFERRED },
+    });
+    expect(onSlotCorrection.intent).toBe('correction');
+    expect(onSlotCorrection.factKey).toBe('customer');
+    expect(onSlotCorrection.value).toBe(CONFIRMED_PERSONA);
+
+    appendLoopTurnWithReview(
+      {
+        issueId: 'customer_definition',
+        answer: FOUNDER_CORRECTION,
+        appliedAt: '2026-10-04T18:03:00.000Z',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        targetGap: 'customerPersona',
+        intent: 'correction',
+      },
+      {
+        askedGapId: 'customerPersona',
+        askedQuestionText: '실제 사용자 / 고객은 누구인가요?',
+        askedIssueId: 'customer_definition',
+        userAnswer: FOUNDER_CORRECTION,
+        existingFactsByKey: { customer: PRIOR_INFERRED },
+        displayedQuestionText: '실제 사용자 / 고객은 누구인가요?',
+      },
+      PROJECT_ID,
+    );
+    const processed = runLoopAnswerProcessing({
+      projectId: PROJECT_ID,
+      documentText: LONG_SOURCE,
+      understanding,
+    });
+
+    expect(currentCustomer(PROJECT_ID)).toBe(CONFIRMED_PERSONA);
+    expect(processed.living.spine.customer).toBe(CONFIRMED_PERSONA);
+    expect(processed.living.claims.find((c) => c.fieldKey === 'customerPersona')?.value).toBe(
+      CONFIRMED_PERSONA,
+    );
+    expect(getClosedGapIds(loadAiPmLoopState(PROJECT_ID).gapState!)).toContain('customerPersona');
+
+    const snapshot = buildWorkspacePersistedSnapshot(PROJECT_ID);
+    sessionStorage.clear();
+    applyWorkspaceSnapshotToCache(PROJECT_ID, snapshot);
+    expect(currentCustomer(PROJECT_ID)).toBe(CONFIRMED_PERSONA);
+    expect(livingCustomer(loadAiPmLoopState(PROJECT_ID).turns).spine).toBe(CONFIRMED_PERSONA);
+  });
+
+  it('J8 Cross-slot — business / customer / payer / problem stay uncontaminated', () => {
+    const understanding = buildBusinessUnderstanding(LONG_SOURCE);
+    commitFirstAskAfterUnderstandingConfirm({
+      projectId: PROJECT_ID,
+      documentText: LONG_SOURCE,
+      understanding,
+      entities: null,
+    });
+    appendProductionBusinessConfirmYes('2026-10-04T18:04:00.000Z');
+    appendLoopTurnWithReview(
+      {
+        issueId: 'customer_definition',
+        answer: FOUNDER_CORRECTION,
+        appliedAt: '2026-10-04T18:05:00.000Z',
+        semanticFactKey: 'customer',
+        semanticFactKeys: ['customer'],
+        targetGap: 'customerPersona',
+        intent: 'correction',
+      },
+      {
+        askedGapId: 'customerPersona',
+        askedIssueId: 'customer_definition',
+        userAnswer: FOUNDER_CORRECTION,
+        existingFactsByKey: { customer: PRIOR_INFERRED },
+        askedQuestionText: '실제 사용자 / 고객은 누구인가요?',
+        displayedQuestionText: '실제 사용자 / 고객은 누구인가요?',
+      },
+      PROJECT_ID,
+    );
+    appendLoopTurnWithReview(
+      {
+        issueId: 'bm_design',
+        answer: '체험 예약은 관광객이 결제합니다.',
+        appliedAt: '2026-10-04T18:06:00.000Z',
+        semanticFactKey: 'buyer',
+        semanticFactKeys: ['buyer'],
+        targetGap: 'payer',
+        intent: 'business_fact',
+      },
+      {
+        askedGapId: 'payer',
+        askedIssueId: 'bm_design',
+        userAnswer: '체험 예약은 관광객이 결제합니다.',
+        askedQuestionText: '서비스 비용은 누가 지불하나요?',
+        displayedQuestionText: '서비스 비용은 누가 지불하나요?',
+      },
+      PROJECT_ID,
+    );
+    appendLoopTurnWithReview(
+      {
+        issueId: 'problem_definition',
+        answer: '양조장이 온라인으로 손님을 모으지 못해 빈 시간이 생깁니다.',
+        appliedAt: '2026-10-04T18:07:00.000Z',
+        semanticFactKey: 'problem',
+        semanticFactKeys: ['problem'],
+        targetGap: 'problemJtbd',
+        intent: 'business_fact',
+      },
+      {
+        askedGapId: 'problemJtbd',
+        askedIssueId: 'problem_definition',
+        userAnswer: '양조장이 온라인으로 손님을 모으지 못해 빈 시간이 생깁니다.',
+        askedQuestionText: '지금 가장 크게 해결하려는 불편은 무엇인가요?',
+        displayedQuestionText: '지금 가장 크게 해결하려는 불편은 무엇인가요?',
+      },
+      PROJECT_ID,
+    );
+
+    const processed = runLoopAnswerProcessing({
+      projectId: PROJECT_ID,
+      documentText: LONG_SOURCE,
+      understanding,
+    });
+    const memory = processed.memory;
+    const business = getFact(memory, 'business')?.value ?? '';
+    const customer = getFact(memory, 'customer')?.value ?? '';
+    const payer = getFact(memory, 'buyer')?.value ?? '';
+    const problem = getFact(memory, 'problem')?.value ?? '';
+
+    expect(business).toMatch(/다양한 관광객이 늘며/);
+    expect(customer).toBe(CONFIRMED_PERSONA);
+    expect(payer).toMatch(/관광객이 결제/);
+    expect(problem).toMatch(/빈 시간/);
+    expect(customer).not.toBe(business);
+    expect(customer).not.toBe(payer);
+    expect(customer).not.toBe(problem);
+    expect(payer).not.toBe(business);
+    expect(problem).not.toBe(business);
+    expect(problem).not.toBe(payer);
+
+    const gaps = loadAiPmLoopState(PROJECT_ID).gapState?.gaps ?? {};
+    expect(gaps.businessOneLiner?.completeness).toBe('CLOSED');
+    expect(gaps.customerPersona?.completeness).toBe('CLOSED');
+    expect(gaps.payer?.completeness).toBe('CLOSED');
+    expect(gaps.problemJtbd?.completeness).toBe('CLOSED');
+    expect((gaps.customerPersona?.evidence ?? []).map((e) => e.value).join(' ')).toBe(
+      CONFIRMED_PERSONA,
+    );
+    expect((gaps.customerPersona?.evidence ?? []).map((e) => e.value).join(' ')).not.toMatch(
+      /다양한 관광객이 늘며/,
+    );
   });
 });
