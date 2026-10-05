@@ -1,9 +1,9 @@
 # Founder Conversation UX — Acceptance Contract
 
-**Status:** 📋 SPEC LOCKED · implementation not started  
-**After:** Recovery 2 P0-2 Production Acceptance on `1394a8d`  
-**CEO test:** closed until CPO opens it  
-**Engine accuracy:** already gated by P0-1 / P0-2 — do not re-run as a substitute for UX
+**Status:** 📋 SPEC LOCKED · 구현 0  
+**After:** Recovery 2 P0-2 Production Acceptance CLOSED on `1394a8d`  
+**CEO test:** CLOSED until CPO opens a single final user test  
+**Engine accuracy:** already gated by P0-1 / P0-2 — separate Acceptance from UX
 
 CPO locked this contract before any UI/UX code. Sequence for the next sprint only:
 
@@ -72,6 +72,24 @@ Observe on https://ai-startup-validation-tau.vercel.app after CPO opens the spri
 | 10 | 화면 어디를 봐도 현재 상태가 하나로 일치함 | Question · last answer · AI 이해 · gap completeness tell the same story | Surfaces disagree (UI says customer open, evidence shows source, next Q already left) |
 
 Serious FAIL on any one item → fix UX first. Do not add accuracy tests to paper over a lost path.
+
+## CEO-discovered reproduction targets
+
+These are the Production evidence to capture when CPO opens — not a UI inventory, not CEO re-test.
+
+| CEO finding | UX item | Capture on Production `1394a8d` |
+|-------------|---------|----------------------------------|
+| 질문과 답변 영역이 불명확함 | 1, 2 | Which surface is the ask vs the answer at first loop prompt |
+| 첫 질문에서 입력창이 없는 현상 | 2 | First ask after 맞나요? — input present or only confirm chrome |
+| `아니요. 수정할게요`가 실제 편집으로 연결되지 않음 | 6 | Confirm No → does an editor open on the confirmed slot |
+| `이전 답변 수정`이 실제 수정이 아님 | 7 | Edit-prior CTA → same slot replaced, or a new off-slot turn |
+| AI 이해와 원문이 중복됨 | 4 | document-first / 이해 카드 vs source clip on one screen |
+| 현재 사업 검토 영역이 질문 상태와 불일치 | 10 | Review panel vs lastDecision / locked ask |
+| `다음`이 무엇을 하는지 불명확함 | 9 | Any 다음 / continue control vs the current ask |
+| 수정 후 이전 값이 되살아남 | 8 | After correction, remount / next turn value |
+| 현재 단계와 화면 내용이 서로 다른 상태를 표시함 | 10 | Stage / 사업 검토 chrome vs question · answer · AI 이해 |
+
+CPO open order: reproduce and measure these first. Then smallest fix → E2E → Production. CPO verifies. CEO gets one final user test only.
 
 ## Out of this document
 

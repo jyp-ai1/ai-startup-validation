@@ -4,19 +4,31 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Founder Conversation UX — Acceptance 📋 SPEC ONLY
+## Lock (2026-10-05)
+
+```text
+P0-1 상태/수정/확정        CLOSED
+P0-2 질문 루프             CLOSED
+P0-2 Production SHA        1394a8d
+Founder Conversation UX    SPEC LOCKED / 구현 0
+CEO 테스트                 CLOSED
+```
+
+정확한 AI와 사람이 쉽게 대화하는 제품은 별개 Acceptance다.
+
+## Founder Conversation UX — Acceptance 📋 SPEC LOCKED
 
 **Contract:** `docs/sprints/FOUNDER_CONVERSATION_UX_ACCEPTANCE.md`  
-**Status:** not started — no UI/UX code  
-**After:** Recovery 2 P0-2 Production Acceptance on `1394a8d`  
-**CEO test:** closed  
-**Order when CPO opens:** UX Acceptance → 재현 → 최소 수정 → E2E → Production
+**Status:** 구현 0 — CPO open 전 구현 금지  
+**After:** Recovery 2 P0-2 Production Acceptance CLOSED on `1394a8d`  
+**CEO test:** CLOSED  
+**When CPO opens:** Production에서 UX 10항 + CEO 발견 9건을 재현/측정 → 최소 수정 → E2E → Production → CPO 검증 → CEO 최종 1회
 
-Engine (P0-1 / P0-2) and UX are separate. A serious break on any of the 10 items is a UX fix, not more accuracy loops.
+Engine (P0-1 / P0-2) and UX are separate. Do not start from a UI inventory.
 
 ---
 
-## Recovery 2 — P0-2 Question Loop ✅ PRODUCTION ACCEPTANCE
+## Recovery 2 — P0-2 Question Loop ✅ CLOSED
 
 **Branch:** `cursor/recovery2-p0-2-question-loop-e648` · merged PR #87 as `1394a8d`  
 **Verified Production SHA:** `1394a8d4403ebb9d2eeba443e5b05e29ae8364ae`  
