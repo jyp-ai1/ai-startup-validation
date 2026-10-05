@@ -211,6 +211,22 @@ describe('buildReviewCentricSurface — Journey C presentation only', () => {
     expect(after.confirmedCount).toBeGreaterThan(before.confirmedCount);
   });
 
+  it('clinicflow-like slots produce a judgment that mentions visible customer/payer', () => {
+    const snapshot = buildReviewCentricSurface({
+      living: livingFrom(CLINICFLOW_DOCUMENT),
+      gapState: createEmptyGapState(),
+      documentText: CLINICFLOW_DOCUMENT,
+      displayQuestionText: '그 차별점이 고객에게 왜 중요한가요?',
+    });
+    const customer = snapshot.slots.find((slot) => slot.key === 'customer')?.value ?? '';
+    const payer = snapshot.slots.find((slot) => slot.key === 'payer')?.value ?? '';
+    if (customer !== REVIEW_SLOT_PENDING && payer !== REVIEW_SLOT_PENDING) {
+      expect(snapshot.judgment).toMatch(/고객과 구매자|검증되지/);
+    }
+    expect(snapshot.uncertainty.length).toBeGreaterThan(4);
+    expect(snapshot.whyThisQuestion).toMatch(/달라집니다/);
+  });
+
   it('does not invent persistent ReviewState — empty gapState stays empty after mapping', () => {
     const gapState = createEmptyGapState();
     surfaceFor(BANCHAN, { gapState, targetGap: 'payer' });
