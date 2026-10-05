@@ -1,0 +1,18 @@
+{
+  "baseUrl": "http://127.0.0.1:3001",
+  "capturedAt": "2026-10-05T12:00:46.671Z",
+  "structure": {
+    "business": "○문서에서 보이나 아직 검증되지 않음",
+    "customer": "○문서에서 보이나 아직 검증되지 않음"
+  },
+  "judgmentBefore": "문서에서 고객 스케치는 보이지만, 그 고객이 검증되지 않았고 누가 돈을 내는지도 갈라지지 않았습니다.",
+  "uncertaintyBefore": "지금 쓰는 대안과 무엇이 다른가?",
+  "whyThisQuestion": "기존 대안이 확인되면 차별 판단이 달라집니다.",
+  "questionBefore": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+  "answer": "지금은 네이버 플레이스와 인스타로 홍보하고 있습니다.",
+  "judgmentAfter": "방금 현재 쓰는 방법을 들었지만, 고객과 지불 구조는 아직 검증되지 않았습니다.",
+  "uncertaintyAfter": "지금 쓰는 대안과 무엇이 다른가?",
+  "questionAfter": "「다양한 관광객이 늘며 개인별 다양한 경험을 중요하게 생각한다. 전통주와 …」와 비슷한 역할을 이미 하는 서비스가 있나요?",
+  "lastDecisionTargetGap": "alternativesCompetitors",
+  "judgmentUpdatedVisible": true
+}

@@ -21,7 +21,7 @@ CEO 테스트                 CLOSED
 **CPO:** Journey C 확정. 질문은 판단을 바꾸는 도구. P0-1/P0-2 CLOSED (하부 엔진).  
 **Contract:** `docs/sprints/REVIEW_CENTRIC_JOURNEY_STRATEGY_VALIDATION.md`  
 **ADR:** ADR-046 — Review surface = View Model, not new persistent SoT  
-**Status:** Sprint 1 Review Surface — Preview-equivalent 1턴 PASS (답변 → 판단 업데이트). Vercel Preview SHA는 별도 확인.  
+**Status:** Vercel Preview READY `3876f69`. 1턴 5항 증거 `docs/evidence/ALABOM/REVIEW_CENTRIC_PREVIEW_SHA.md`. Production/CEO 잠금.  
 **Paper Test:** 양조장 Prod / 주인집1 / 반찬 SaaS / AI PM / 클리닉플로우 — A=NO, C=YES  
 **CEO test:** CLOSED until CPO OPEN after Review Surface E2E/Production
 

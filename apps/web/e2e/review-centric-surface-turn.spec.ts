@@ -3,6 +3,9 @@
  * Answer → same-screen judgment/uncertainty update → next question.
  * Does not reopen P0-1/P0-2 or CEO test. Does not replace decideNextQuestionFromReview.
  */
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { expect, test } from '@playwright/test';
 
 import {
@@ -103,6 +106,12 @@ test('Preview-equivalent — one founder turn updates judgment and next question
   const questionBefore = await readVisibleQuestion(page);
   expect(questionBefore.length).toBeGreaterThan(4);
   expect(whyAlignsWithQuestion(whyText, questionBefore)).toBe(true);
+  const evidenceDir = resolve(process.cwd(), '../../docs/evidence/ALABOM/review-centric-preview');
+  mkdirSync(evidenceDir, { recursive: true });
+  await page.screenshot({
+    path: resolve(evidenceDir, '01-before-answer.png'),
+    fullPage: true,
+  });
 
   await expect(page.getByTestId('answer-input')).toBeVisible({ timeout: 30_000 });
   const answer = answerForQuestion(questionBefore);
@@ -136,6 +145,37 @@ test('Preview-equivalent — one founder turn updates judgment and next question
   const questionAfter = await readVisibleQuestion(page);
   expect(questionAfter.length).toBeGreaterThan(4);
   expect(questionAfter).not.toBe(questionBefore);
+
+  await page.screenshot({
+    path: resolve(evidenceDir, '02-after-answer.png'),
+    fullPage: true,
+  });
+  writeFileSync(
+    resolve(evidenceDir, 'turn.json'),
+    JSON.stringify(
+      {
+        baseUrl: e2eBaseUrl(),
+        capturedAt: new Date().toISOString(),
+        structure: {
+          business: businessSlot,
+          customer: customerSlot,
+        },
+        judgmentBefore,
+        uncertaintyBefore,
+        whyThisQuestion: whyText,
+        questionBefore,
+        answer,
+        judgmentAfter,
+        uncertaintyAfter,
+        questionAfter,
+        lastDecisionTargetGap: nextGap,
+        judgmentUpdatedVisible: true,
+      },
+      null,
+      2,
+    ),
+    'utf8',
+  );
 });
 
 function isSourceLike(value: string, source: string): boolean {
