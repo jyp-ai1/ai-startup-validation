@@ -82,3 +82,43 @@ Asserts `review.askedGapId`, `semanticFactKey` / `intent`, `gapState`, `lastDeci
 | 5 | on-slot correction does not retarget lastDecision to CLOSED customer | PASS |
 
 Also re-ran P0-2 J1–J5 unit + P0-1 J1–J8 + 2-Pass 2 + J6 probe: **24 passed**.
+
+## Production SHA triangle + J1–J5 (`1394a8d`)
+
+| Source | SHA |
+|--------|-----|
+| Git `origin/main` | `1394a8d4403ebb9d2eeba443e5b05e29ae8364ae` |
+| Vercel Production deploy | `1394a8d4403ebb9d2eeba443e5b05e29ae8364ae` |
+| `GET /api/build-info` | `1394a8d4403ebb9d2eeba443e5b05e29ae8364ae` |
+
+Production E2E against https://ai-startup-validation-tau.vercel.app:
+
+| Spec | Result |
+|------|--------|
+| J1–J3 + J5 + remount hydrate after customer CLOSED | PASS 30.7s |
+
+Production hydrate contract:
+
+```text
+Confirm Yes → lastDecision = customerPersona · customer OPEN
+방한 외국인 → customerPersona CLOSED
+lastDecision = remaining OPEN Stage A (payer | problemJtbd)
+reload → snapshot.aiPmLoop hydrate
+customerPersona stays CLOSED
+lastDecision unchanged
+customer evidence = 방한 외국인
+사업 원문 관광객 not in customer evidence
+```
+
+## CPO Production Acceptance
+
+**CLOSED** — PASS on Production `1394a8d4403ebb9d2eeba443e5b05e29ae8364ae`.
+
+| Gate | Result |
+|------|--------|
+| PR #87 Merge | `1394a8d` |
+| SHA triangle | Git = Vercel = `/api/build-info` |
+| Production J1–J5 | PASS 30.7s |
+| DB snapshot hydrate | lastDecision / CLOSED / customer evidence unchanged after reload |
+
+CEO test stays closed. Next sprint is Founder Conversation UX Acceptance only — `docs/sprints/FOUNDER_CONVERSATION_UX_ACCEPTANCE.md`. No UI/UX code in this close-out.
