@@ -4,6 +4,26 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Recovery 2 — P0-2 Question Loop 🔄
+
+**Branch:** `cursor/recovery2-p0-2-question-loop-e648` · base Production `64c8882` (PR #86)  
+**Isolated from:** P0-1 first-write slot routing (closed) · PR #84 no-gap termination Draft  
+**Out of scope:** Auth · DB schema · V3 SoT meaning · Stage ③/④ · Result/PDF · Project Brief · CEO test
+
+CPO gates (separate from P0-1 confirm/slot):
+
+| # | Gate | Status |
+|---|------|--------|
+| J1 | Question priority after business Confirm Yes → customerPersona | ✅ unit |
+| J2 | CLOSED re-ask — decide/resolved never retargets CLOSED Stage A | ✅ unit |
+| J3 | Multi-fact — 관광객/customer write does not steal other Stage A slots | ✅ unit |
+| J4 | Contradiction — on-slot correction does not reopen CLOSED as next ask | ✅ unit |
+| J5 | Longitudinal Stage A walk keeps CLOSED and never writes source into customer | ✅ unit |
+
+P0-1 success is not question-accuracy PASS. CEO test stays closed until CPO opens it.
+
+---
+
 ## Recovery 2 — P0-1 Production STOP Recovery ✅ MERGED
 
 **Branch:** `cursor/p0-1-business-confirm-slot-e648` · merged PR #86 as `64c8882`  
