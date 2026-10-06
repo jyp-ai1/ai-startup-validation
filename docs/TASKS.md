@@ -4,6 +4,22 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Core V1 — Judgment First 🔄
+
+**Branch:** `cursor/si-core-v1-e648` · independent of PR #89  
+**Out of scope:** Question engine · V3 SoT · PR #89 edits · new persist SoT · scores-first UI · Phase 2 evidence update · Phase 3 AI PM bind
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | Independent `analyzeStrategicIntelligence()` from existing business input | ✅ |
+| 2 | Review Surface V1 — judgment / why / evidence / unknown / decision evidence / next 1 | ✅ |
+| 3 | Calibration: 주인집 · LMULM · RIDM AI (no name-hardcode) | ✅ |
+| 4 | `si_judgment_viewed` funnel · no score-first copy | ✅ |
+
+Gate: first judgment on the three businesses must state prose verdict + Critical Unknown + decision-changing evidence before any AI PM question work.
+
+---
+
 ## Recovery 2 — P0-2 Question Loop 🔄
 
 **Branch:** `cursor/recovery2-p0-2-question-loop-e648` · base Production `64c8882` (PR #86)  

@@ -18,7 +18,8 @@
     "./domain/launchlens-domain": "./src/domain/launchlens-domain.ts",
     "./domain/business-understanding": "./src/domain/business-understanding.ts",
     "./domain/answer-review": "./src/domain/answer-review.ts",
-    "./domain/gap-knowledge-state": "./src/domain/gap-knowledge-state.ts"
+    "./domain/gap-knowledge-state": "./src/domain/gap-knowledge-state.ts",
+    "./domain/strategic-intelligence": "./src/domain/strategic-intelligence.ts"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",

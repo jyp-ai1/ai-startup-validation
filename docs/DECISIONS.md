@@ -1290,6 +1290,39 @@ Sprint 4 P0 ships Insight → Candidate → Agreement after Review. Product iden
 
 ---
 
+## ADR-046: S.I. Core V1 — judgment before questions
+
+**Status:** Accepted  
+**Date:** 2026-10-06  
+**Sprint:** S.I. V1  
+**Authors:** CTO (autonomous)
+
+### Context
+
+The first founder path after business input was interpretation + question generation, not a viability judgment. Design-only S.I. docs did not change the product. Question-engine work (including PR #89) stays frozen.
+
+### Decision
+
+1. Ship an independent Strategic Intelligence analyzer that recomputes from existing business input. No new persist SoT.
+2. First workspace surface after document input is S.I. Review: current judgment, why possible, why fail, evidence classes (FACT / CLAIM / INFERENCE / ASSUMPTION / VALIDATED), Critical Unknown, decision-changing evidence, next one validation.
+3. Five axes A–E and stages S0–S4 inform the prose. Scores are not shown first.
+4. AI PM questions remain a later layer (Phase 3). This PR does not edit the question engine.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+|--------|------|------|
+| Improve question engine first | Existing path | Repeats the wrong product |
+| Persist a new SI SoT | Stable history | Premature; Phase 1 is recomputed |
+| Score-first viability | Easy UI | Hides the actual judgment |
+
+### Consequences
+
+- Calibration cases 주인집 / LMULM / RIDM AI lock quality before more UI or AI PM bind.
+- PR #89 is not modified.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

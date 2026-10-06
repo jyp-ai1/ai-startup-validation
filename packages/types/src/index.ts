@@ -89,6 +89,24 @@ export type {
 export type { GapKnowledgeRecord, GapKnowledgeState } from './domain/gap-knowledge-state';
 
 export type {
+  SiEvidenceClass,
+  SiAxisId,
+  SiStageId,
+  SiVerdictId,
+  SiAxisStatus,
+  SiBusinessInput,
+  SiEvidenceItem,
+  SiAxisJudgment,
+  SiStrategicJudgment,
+} from './domain/strategic-intelligence';
+
+export {
+  SI_AXIS_LABELS,
+  SI_VERDICT_LABELS,
+  SI_STAGE_LABELS,
+} from './domain/strategic-intelligence';
+
+export type {
   StartupProject,
   StartupProjectStatus,
   CreateStartupProjectInput,

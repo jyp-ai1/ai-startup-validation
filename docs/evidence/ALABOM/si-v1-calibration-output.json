@@ -1,0 +1,348 @@
+[
+  {
+    "id": "juinjip",
+    "title": "주인집",
+    "verdictId": "judgment_deferred",
+    "stageId": "S1",
+    "judgment": "현재 판단: 지금은 판단을 보류한다. 사용자와 결제자가 분리되어 있어 지불 이유가 따로 검증되지 않았다. 실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가.",
+    "whyPossible": "문서에서 확인할 수 있는 구체적 문제가 있다.",
+    "whyFail": "사용자와 결제자가 분리되어 있어 지불 이유가 따로 검증되지 않았다. 지목된 고객 세그먼트는 아직 가설이다. 출시·매출 등 상업 실행 증거가 없다.",
+    "strengths": [
+      "문서에서 확인할 수 있는 구체적 문제가 있다."
+    ],
+    "risks": [
+      "사용자와 결제자가 분리되어 있어 지불 이유가 따로 검증되지 않았다.",
+      "지목된 고객 세그먼트는 아직 가설이다.",
+      "출시·매출 등 상업 실행 증거가 없다."
+    ],
+    "criticalUnknown": "실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가.",
+    "decisionChangingEvidence": "결제 후보의 지불 의향 인터뷰와 실제 지불 시도(견적·계약·선결제).",
+    "validationPriority": "사용자와 결제자를 분리해, 결제자 한 명의 지불 이유를 확인한다.",
+    "evidenceMap": [
+      {
+        "id": "ev-1",
+        "text": "주인집은 영세 전통주 양조장의 온라인 마케팅을 연결하는 사업이다.",
+        "evidenceClass": "CLAIM",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-2",
+        "text": "영세한 양조장들이 온라인 마케팅을 잘 못하고 있어서, 양조장을 온라인 시장에 홍보하고 지역경제를 활성화하는 모델입니다.",
+        "evidenceClass": "FACT",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-3",
+        "text": "타깃은 MZ 관광객과 FIT 개별 여행객으로 보고 있다.",
+        "evidenceClass": "CLAIM",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-4",
+        "text": "사용자는 전통주 체험을 원하는 관광객이고, 실제 비용을 내는 구매자는 양조장 대표가 될 것으로 본다.",
+        "evidenceClass": "CLAIM",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-5",
+        "text": "아직 앱이나 서비스는 출시되지 않았고, 매출은 없다.",
+        "evidenceClass": "FACT",
+        "axisId": "validationStrength"
+      },
+      {
+        "id": "ev-6",
+        "text": "MZ와 FIT가 실제로 이 서비스를 원하는지는 조사되지 않았다.",
+        "evidenceClass": "ASSUMPTION",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-7",
+        "text": "양조장 대표가 마케팅비를 낼 의향인지도 확인되지 않았다.",
+        "evidenceClass": "ASSUMPTION",
+        "axisId": "businessModel"
+      },
+      {
+        "id": "ev-8",
+        "text": "경쟁 대안으로는 각 양조장이 직접 인스타그램·네이버에 올리는 방식과 지역 관광 안내소가 있다.",
+        "evidenceClass": "FACT",
+        "axisId": "marketAlternatives"
+      },
+      {
+        "id": "ev-inf-1",
+        "text": "사용자와 결제자가 다르면 문제 인식과 지불 의향을 따로 검증해야 한다.",
+        "evidenceClass": "INFERENCE",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-inf-2",
+        "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+        "evidenceClass": "INFERENCE",
+        "axisId": "validationStrength"
+      }
+    ],
+    "axes": [
+      {
+        "axisId": "customerProblemFit",
+        "label": "A. Customer / Problem Fit",
+        "status": "partial",
+        "summary": "문제는 보이지만 실제 고객·결제자·직무가 검증되지 않았다."
+      },
+      {
+        "axisId": "marketAlternatives",
+        "label": "B. Market / Alternatives",
+        "status": "supported",
+        "summary": "기존 대안이 언급되어 비교 출발점은 있다."
+      },
+      {
+        "axisId": "businessModel",
+        "label": "C. Business Model",
+        "status": "weak",
+        "summary": "누가 왜 돈을 내는지가 가설 수준이다."
+      },
+      {
+        "axisId": "executionAdvantage",
+        "label": "D. Execution Advantage",
+        "status": "weak",
+        "summary": "아직 실행 자산(출시·운영)이 없다."
+      },
+      {
+        "axisId": "validationStrength",
+        "label": "E. Validation Strength",
+        "status": "weak",
+        "summary": "실제 검증 사실이 없다."
+      }
+    ]
+  },
+  {
+    "id": "lmulm",
+    "title": "LMULM",
+    "verdictId": "viable",
+    "stageId": "S3",
+    "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+    "whyPossible": "실제 매출·공급망·고객 구매가 존재한다. 실제 판매·매출 증거가 있다. 분사·공급망·운영 등 실행 자산이 있다. 제품 또는 앱이 이미 출시되어 있다.",
+    "whyFail": "C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+    "strengths": [
+      "실제 판매·매출 증거가 있다.",
+      "분사·공급망·운영 등 실행 자산이 있다.",
+      "제품 또는 앱이 이미 출시되어 있다."
+    ],
+    "risks": [
+      "C2C 재판매가 반복적으로 발생하는지 확인되지 않았다."
+    ],
+    "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가.",
+    "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터.",
+    "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+    "evidenceMap": [
+      {
+        "id": "ev-1",
+        "text": "LMULM은 교보문고 사내벤처에서 출발한 한정판 문구 브랜드이자 C2C 재판매 플랫폼이다.",
+        "evidenceClass": "CLAIM",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-2",
+        "text": "LMULM은 교보문고 사내벤처에서 출발한 한정판 문구 브랜드이자 C2C 재판매 플랫폼이다.",
+        "evidenceClass": "FACT",
+        "axisId": "executionAdvantage"
+      },
+      {
+        "id": "ev-3",
+        "text": "교보에서 분사하여 독립 법인으로 운영 중이며, 자체 앱을 출시했다.",
+        "evidenceClass": "CLAIM",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-4",
+        "text": "교보에서 분사하여 독립 법인으로 운영 중이며, 자체 앱을 출시했다.",
+        "evidenceClass": "FACT",
+        "axisId": "executionAdvantage"
+      },
+      {
+        "id": "ev-5",
+        "text": "오로라 한정판 문구를 실제로 판매했고, 공급망과 초기 고객 구매가 존재한다.",
+        "evidenceClass": "FACT",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-6",
+        "text": "1차 한정판 판매 매출이 있다.",
+        "evidenceClass": "CLAIM",
+        "axisId": "businessModel"
+      },
+      {
+        "id": "ev-7",
+        "text": "1차 한정판 판매 매출이 있다.",
+        "evidenceClass": "FACT",
+        "axisId": "businessModel"
+      },
+      {
+        "id": "ev-8",
+        "text": "사업 모델은 한정판을 산 구매자가 이후 C2C로 재판매하고, 그 거래가 반복되는 것이다.",
+        "evidenceClass": "CLAIM",
+        "axisId": "businessModel"
+      },
+      {
+        "id": "ev-9",
+        "text": "현재까지 1차 판매는 있으나, C2C 재판매가 반복적으로 발생하는지는 확인되지 않았다.",
+        "evidenceClass": "ASSUMPTION",
+        "axisId": "businessModel"
+      },
+      {
+        "id": "ev-10",
+        "text": "재구매·재판매 등록·2차 거래 데이터는 아직 없다.",
+        "evidenceClass": "ASSUMPTION",
+        "axisId": "businessModel"
+      },
+      {
+        "id": "ev-11",
+        "text": "기존 대안은 중고나라·번개장터 같은 범용 중고 거래와 브랜드 공식 재입고다.",
+        "evidenceClass": "FACT",
+        "axisId": "marketAlternatives"
+      },
+      {
+        "id": "ev-inf-1",
+        "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+        "evidenceClass": "INFERENCE",
+        "axisId": "validationStrength"
+      }
+    ],
+    "axes": [
+      {
+        "axisId": "customerProblemFit",
+        "label": "A. Customer / Problem Fit",
+        "status": "partial",
+        "summary": "구매·이용 언급은 있으나 그들이 겪는 문제가 검증되지 않았다."
+      },
+      {
+        "axisId": "marketAlternatives",
+        "label": "B. Market / Alternatives",
+        "status": "partial",
+        "summary": "기존 대안이 언급되어 비교 출발점은 있다."
+      },
+      {
+        "axisId": "businessModel",
+        "label": "C. Business Model",
+        "status": "partial",
+        "summary": "1차 매출은 있으나 반복 수익 루프는 미검증이다."
+      },
+      {
+        "axisId": "executionAdvantage",
+        "label": "D. Execution Advantage",
+        "status": "supported",
+        "summary": "출시·운영·공급 등 실행 자산이 존재한다."
+      },
+      {
+        "axisId": "validationStrength",
+        "label": "E. Validation Strength",
+        "status": "partial",
+        "summary": "초기 판매는 있으나 주장 수준을 넘는 반복 검증은 없다."
+      }
+    ]
+  },
+  {
+    "id": "ridm",
+    "title": "RIDM AI",
+    "verdictId": "judgment_deferred",
+    "stageId": "S1",
+    "judgment": "현재 판단: 지금은 판단을 보류한다. 결제자가 확인되지 않았다. 누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가.",
+    "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+    "whyFail": "결제자가 확인되지 않았다. 이 제품이 대체하는 직무가 검증되지 않았다. 출시·매출 등 상업 실행 증거가 없다.",
+    "strengths": [],
+    "risks": [
+      "결제자가 확인되지 않았다.",
+      "이 제품이 대체하는 직무가 검증되지 않았다.",
+      "출시·매출 등 상업 실행 증거가 없다."
+    ],
+    "criticalUnknown": "누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가.",
+    "decisionChangingEvidence": "구체적 사용 상황에서 결제자 한 명이 실제로 지불하거나 유료 사용을 시작한 증거.",
+    "validationPriority": "결제자와 Job-to-be-done을 한 쌍으로 확인한다.",
+    "evidenceMap": [
+      {
+        "id": "ev-1",
+        "text": "RIDM AI(ridm.ai)는 감정과 기억을 함께 다루는 AI 컴패니언이다.",
+        "evidenceClass": "CLAIM",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-2",
+        "text": "사용자는 대화하며 감정을 기록하고, AI가 기억을 쌓아 관계를 유지한다.",
+        "evidenceClass": "FACT",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-3",
+        "text": "아직 유료 고객과 결제자는 확인되지 않았다.",
+        "evidenceClass": "ASSUMPTION",
+        "axisId": "businessModel"
+      },
+      {
+        "id": "ev-4",
+        "text": "어떤 직무(Job-to-be-done)를 대체하는 제품인지도 검증되지 않았다.",
+        "evidenceClass": "ASSUMPTION",
+        "axisId": "customerProblemFit"
+      },
+      {
+        "id": "ev-5",
+        "text": "매출·파일럿·고객 인터뷰 검증은 없다.",
+        "evidenceClass": "FACT",
+        "axisId": "validationStrength"
+      },
+      {
+        "id": "ev-6",
+        "text": "매출·파일럿·고객 인터뷰 검증은 없다.",
+        "evidenceClass": "ASSUMPTION",
+        "axisId": "validationStrength"
+      },
+      {
+        "id": "ev-7",
+        "text": "누가 왜 돈을 내야 하는지가 정의되지 않았다.",
+        "evidenceClass": "ASSUMPTION",
+        "axisId": "businessModel"
+      },
+      {
+        "id": "ev-8",
+        "text": "기존 대안은 일반 챗봇, 일기 앱, 상담 서비스다.",
+        "evidenceClass": "FACT",
+        "axisId": "marketAlternatives"
+      },
+      {
+        "id": "ev-inf-1",
+        "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+        "evidenceClass": "INFERENCE",
+        "axisId": "validationStrength"
+      }
+    ],
+    "axes": [
+      {
+        "axisId": "customerProblemFit",
+        "label": "A. Customer / Problem Fit",
+        "status": "partial",
+        "summary": "구매·이용 언급은 있으나 그들이 겪는 문제가 검증되지 않았다."
+      },
+      {
+        "axisId": "marketAlternatives",
+        "label": "B. Market / Alternatives",
+        "status": "partial",
+        "summary": "기존 대안이 언급되어 비교 출발점은 있다."
+      },
+      {
+        "axisId": "businessModel",
+        "label": "C. Business Model",
+        "status": "weak",
+        "summary": "누가 왜 돈을 내는지가 가설 수준이다."
+      },
+      {
+        "axisId": "executionAdvantage",
+        "label": "D. Execution Advantage",
+        "status": "unknown",
+        "summary": "이 팀이 실행할 우위가 문서에서 드러나지 않는다."
+      },
+      {
+        "axisId": "validationStrength",
+        "label": "E. Validation Strength",
+        "status": "weak",
+        "summary": "실제 검증 사실이 없다."
+      }
+    ]
+  }
+]

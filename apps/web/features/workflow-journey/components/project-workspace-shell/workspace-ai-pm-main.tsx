@@ -108,6 +108,8 @@ import {
 import { type ConversationFactKey } from '../../lib/business-understanding/conversation-memory';
 
 import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
+import { analyzeStrategicIntelligence } from '@/features/strategic-intelligence/lib/analyze-strategic-intelligence';
+import { SiReviewSurface } from '@/features/strategic-intelligence/components/si-review-surface';
 
 type WorkspaceAiPmMainProps = {
   domain: WorkspaceDomainEvidence;
@@ -258,6 +260,17 @@ export function WorkspaceAiPmMain({
   const documentAnalyzable = isWorkspaceDocumentAnalyzable(documentContext);
   const storedDocumentText = loadWorkspaceDocumentText(projectId);
   const documentReadable = isWorkspaceDocumentReadable(storedDocumentText ?? documentContext);
+  const siInputText = (storedDocumentText ?? documentContext ?? '').trim();
+  const siJudgment = useMemo(
+    () =>
+      documentAnalyzable && siInputText.length >= 8
+        ? analyzeStrategicIntelligence({
+            title: projectName,
+            documentText: siInputText,
+          })
+        : null,
+    [documentAnalyzable, projectName, siInputText],
+  );
 
   const understanding = useMemo(
     () => (documentAnalyzable ? buildBusinessUnderstanding(documentContext) : null),
@@ -794,6 +807,10 @@ export function WorkspaceAiPmMain({
 
   const flowBody = (
     <div className="space-y-6">
+      {siJudgment && !isPostReview ? (
+        <SiReviewSurface judgment={siJudgment} projectId={projectId} />
+      ) : null}
+
       {demoSamplePlayback && projectId ? (
         <DemoSamplePlaybackBar
           projectId={projectId}
