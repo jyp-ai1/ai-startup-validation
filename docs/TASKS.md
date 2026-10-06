@@ -4,7 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## S.I. Question DCE Ask Gate
+## S.I. Decision Quality / Founder Outcome Calibration
+
+**Branch:** `cursor/si-decision-quality-e648` · base PR #102 · 측정만 · 새 기능/UI 금지 · Production 금지
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 5사업 t0 판단·리스크·CU·DCE·Priority·질문 | 진행중 |
+| 2 | 답변 후 재판단 정직성 | 진행중 |
+| 3 | Founder 검증/중단/집중이 읽히는가 | 진행중 |
+| 4 | 방향 일치 ≠ 더 좋은 의사결정 구분 | 진행중 |
+| 5 | 엔진/질문 생성기 수정 | 없음 |
+
+---
+
+## S.I. Question DCE Ask Gate ✅ CLOSED
 
 **Branch:** `cursor/si-question-dce-ask-e648` · base PR #101 · 질문 하드코딩 금지 · 엔진 재설계 금지 · Production 금지  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-DCE-ASK.md`
