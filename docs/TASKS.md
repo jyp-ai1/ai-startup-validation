@@ -4,6 +4,20 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Question Alignment Batch — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-question-alignment-batch-e648` · Fix `30504b7` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-BATCH.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | CU resolved → next unresolved CU | ✅ 8/8 |
+| 2 | Question binds next CU | ✅ 측정 · generic_ask 5 · stake_weave 2 |
+| 3 | Negative 후 질문 재정렬 | ✅ 8/8 |
+| 4 | #104 / #107 / analyzer / Presenter | ✅ 0-diff · Fix 없음 |
+
+---
+
 ## S.I. Accuracy Fix Batch #2 — Evidence Reconciliation
 
 **Branch:** `cursor/si-accuracy-fix-batch-2-e648` · Production `dea7cb1` 불변 · Negative Fix `4b2aa21` 유지  
