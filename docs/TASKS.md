@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Post-Negative Accuracy Batch — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-post-negative-accuracy-e648` · Fix `4b2aa21` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-POST-NEGATIVE-ACCURACY.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Negative 이후 Judgment 하향 연결 | ✅ 8/8 |
+| 2 | CU/Priority · Founder 4항 재계산 | ✅ 하향 후 leftover headline 0 |
+| 3 | Question vs CU/Priority/DCE | ✅ 측정 · generic_ask 5 (2/2 승격) |
+| 4 | #104 / #107 / Negative Fix | ✅ |
+| 5 | Presenter / Fix / Production | 없음 |
+
+---
+
 ## S.I. Negative Judgment Fix — ACCURACY FIX BATCH
 
 **Branch:** `cursor/si-negative-judgment-fix-e648` · Production `dea7cb1` 불변  
