@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Decision Quality Follow-up ✅ MEASUREMENT COMPLETE (Fix 아님)
+
+**PR:** #105 측정 전용 · **Branch:** `cursor/si-decision-quality-followup-e648` · base PR #104 SHA `fbf6f1c`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DECISION-QUALITY-FOLLOWUP.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | #104 기준선 유지 (지불만 ≠ S3) | ✅ |
+| 2 | 클리닉/핏브릿지 5시나리오 × Judgment/CU/Priority | ✅ |
+| 3 | Founder 4항 가독성 | ✅ 10/10 |
+| 4 | 실패 유형 분류 | ✅ stale_cu_after_full_dce 2행 |
+| 5 | 엔진 / Fix PR / Production | 없음 |
+
+---
+
 ## S.I. Partial DCE Promotion Gate ✅ PASS CLOSED — 기준선 고정
 
 **Branch:** `cursor/si-partial-dce-e648` · SHA `fbf6f1c` · base PR #103 · CPO PASS · Production 불변  
