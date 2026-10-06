@@ -86,6 +86,14 @@ function isQuantifiedCompletion(line: string): boolean {
   );
 }
 
+/** Counted own payment — not a planned offer, not customer-size 매출. */
+function isQuantifiedPayment(line: string): boolean {
+  if (isIntentWithoutAction(line) || isHypothesis(line) || isQuantifiedCompletion(line)) {
+    return false;
+  }
+  return /\d+\s*(명|건)/.test(line) && /(결제했|지불했|유료로\s*(썼|사용|전환))/.test(line);
+}
+
 /** Own commercial revenue — not the customer's size, not a problem symptom. */
 function isOwnCommercialRevenue(line: string): boolean {
   if (/연\s*매출|고객.{0,12}매출|브랜드.{0,20}매출/.test(line)) return false;
@@ -180,6 +188,8 @@ function scanLine(line: string): DetectedSignal[] {
 
   if (isQuantifiedCompletion(line) && !negated) {
     push('repeat_validation', 'VALIDATED', 'validationStrength');
+  } else if (isQuantifiedPayment(line) && !negated) {
+    push('revenue', 'VALIDATED', 'validationStrength');
   } else if (matchAny(line, [/재구매/, /반복적으로/, /리텐션/, /2차 거래/, /파일럿/, /인터뷰 검증/])) {
     if (negated || isHypothesis(line) || isIntentWithoutAction(line) || /파일럿/.test(line)) {
       push('unverified', 'ASSUMPTION', 'validationStrength');

@@ -19,6 +19,31 @@ cursor-project/                    # pnpm workspace root
 
 **Principle:** Apps consume packages. Packages never import from apps. Shared code flows downward only.
 
+### Product layers (S.I. V1 — frozen)
+
+S.I. is the business-judgment owner. AI PM is the validation executor. The gap engine may remain, but it cannot choose the judgment or overwrite it.
+
+```
+┌─────────────────────────────┐
+│ S.I. — Business Judgment    │
+│ 판단 / 근거 / 리스크 /      │
+│ Critical Unknown / Evidence │
+└──────────────┬──────────────┘
+               ↓
+       Validation Priority
+               ↓
+┌─────────────────────────────┐
+│ AI PM — Validation Executor │
+│ 질문 / 대화 / 답변 수집     │
+└──────────────┬──────────────┘
+               ↓
+          Evidence
+               ↓
+             S.I.
+```
+
+`decideNextQuestionFromReview` is not this layer. If it later conflicts with this principle, replacement is a CPO decision — do not rewrite it to fit S.I. in the meantime.
+
 ---
 
 ## Workspace Architecture

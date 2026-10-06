@@ -110,7 +110,7 @@ import { type ConversationFactKey } from '../../lib/business-understanding/conve
 import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
 import { SiAiPmBindSurface } from '@/features/strategic-intelligence/components/si-ai-pm-bind-surface';
 import { SiReviewSurface } from '@/features/strategic-intelligence/components/si-review-surface';
-import { resolveSiAiPmBindView } from '@/features/strategic-intelligence/lib/run-si-ai-pm-bind-turn';
+import { resolveSiJourneyIntegration } from '@/features/strategic-intelligence/lib/resolve-si-journey-integration';
 
 type WorkspaceAiPmMainProps = {
   domain: WorkspaceDomainEvidence;
@@ -263,20 +263,27 @@ export function WorkspaceAiPmMain({
   const documentReadable = isWorkspaceDocumentReadable(storedDocumentText ?? documentContext);
   const siInputText = (storedDocumentText ?? documentContext ?? '').trim();
   const [siFounderAnswer, setSiFounderAnswer] = useState<string | null>(null);
+  const [siBusinessDocument, setSiBusinessDocument] = useState<string | null>(null);
   useEffect(() => {
     setSiFounderAnswer(null);
-  }, [siInputText]);
-  const siBindView = useMemo(
-    () =>
-      documentAnalyzable && siInputText.length >= 8
-        ? resolveSiAiPmBindView({
-            title: projectName,
-            documentText: siInputText,
-            founderAnswer: siFounderAnswer,
-          })
-        : null,
-    [documentAnalyzable, projectName, siInputText, siFounderAnswer],
-  );
+    setSiBusinessDocument(null);
+  }, [projectId]);
+  useEffect(() => {
+    if (!siBusinessDocument && siInputText.length >= 8) {
+      setSiBusinessDocument(siInputText);
+    }
+  }, [siBusinessDocument, siInputText]);
+  const siJourney = useMemo(() => {
+    const businessDocument = siBusinessDocument ?? siInputText;
+    if (!documentAnalyzable || businessDocument.length < 8) return null;
+    return resolveSiJourneyIntegration({
+      title: projectName,
+      businessDocument,
+      founderAnswer: siFounderAnswer,
+      gapLoopDocument: siInputText !== businessDocument ? siInputText : null,
+    });
+  }, [documentAnalyzable, projectName, siBusinessDocument, siFounderAnswer, siInputText]);
+  const siBindView = siJourney?.current ?? null;
   const siJudgment = siBindView?.judgment ?? null;
 
   const understanding = useMemo(
@@ -815,7 +822,7 @@ export function WorkspaceAiPmMain({
   const flowBody = (
     <div className="space-y-6">
       {siJudgment && !isPostReview ? (
-        <>
+        <div data-testid="si-journey-block" data-si-source="business-input">
           <SiReviewSurface judgment={siJudgment} projectId={projectId} />
           {siBindView?.question ? (
             <SiAiPmBindSurface
@@ -824,7 +831,7 @@ export function WorkspaceAiPmMain({
               onAnswer={setSiFounderAnswer}
             />
           ) : null}
-        </>
+        </div>
       ) : null}
 
       {demoSamplePlayback && projectId ? (

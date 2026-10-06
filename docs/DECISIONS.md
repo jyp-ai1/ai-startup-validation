@@ -1392,6 +1392,39 @@ Phase 2 PASS proved one founder answer can move the judgment. The missing produc
 
 ---
 
+## ADR-049: S.I. is the judgment owner in the Founder Journey
+
+**Status:** Accepted  
+**Date:** 2026-10-06  
+**Sprint:** S.I. Integration Gate  
+**Authors:** CTO (autonomous)
+
+### Context
+
+Phase 3 PASS proved S.I. → AI PM bind. The next risk is not missing questions. It is the existing gap loop taking the journey back to a non-S.I. ask and overwriting the judgment. CPO forbids rewriting `decideNextQuestionFromReview` until this gate is measured.
+
+### Decision
+
+1. Lock the product layering: S.I. judges, AI PM executes one validation, evidence returns to S.I.
+2. S.I. reads the original business input. Gap-loop document rewrites are ignored as S.I. source.
+3. Keep the gap loop mounted. Do not delete or retarget `decideNextQuestionFromReview`.
+4. Integration Gate measures five calibration businesses against six acceptances. Gap-loop overwrite is P0.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+|--------|------|------|
+| Replace gap loop now | One question source | Unmeasured P0-1/P0-2 risk |
+| Let gap loop rewrite the SI document | Simple state | Overwrites the judgment owner |
+| Copy Critical Unknown as the ask | Fast | Already rejected in Phase 3 |
+
+### Consequences
+
+- Replacement of the gap engine is a later CPO decision, not this PR.
+- PR #89, P0-1/P0-2, and Production stay untouched.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
