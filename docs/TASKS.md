@@ -4,9 +4,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## S.I. Partial DCE Promotion Gate
+## S.I. Partial DCE Promotion Gate — GATE COMPLETE / CPO 판정 대기
 
-**Branch:** `cursor/si-partial-dce-e648` · base PR #103 · P0 정확도 · 질문 생성기 금지 · 사업명 분기 금지 · Production 금지  
+**Branch:** `cursor/si-partial-dce-e648` · SHA `fbf6f1c` · base PR #103 · P0 정확도 · 질문 생성기 금지 · 사업명 분기 금지 · Production 금지  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-PARTIAL-DCE.md`
 
 | # | Gate | Status |
