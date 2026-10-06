@@ -69,11 +69,23 @@ function isNegated(line: string): boolean {
   );
 }
 
+function isHypothesis(line: string): boolean {
+  return /(가설|목표|예정|계획|시 ROI|감소 시)/.test(line);
+}
+
+/** Own commercial revenue — not the customer's size, not a problem symptom. */
+function isOwnCommercialRevenue(line: string): boolean {
+  if (/연\s*매출|고객.{0,12}매출|브랜드.{0,20}매출/.test(line)) return false;
+  if (/매출이?\s*(흔들|감소|악화)|매출과/.test(line)) return false;
+  return /(판매했|실제로 판매|판매 매출이 있|1차.{0,10}판매|구매가 존재|매출이 있다|매출은 있다)/.test(line);
+}
+
 function matchAny(line: string, patterns: RegExp[]): boolean {
   return patterns.some((pattern) => pattern.test(line));
 }
 
 function scanLine(line: string): DetectedSignal[] {
+  if (/^#{1,6}\s/.test(line)) return [];
   const negated = isNegated(line);
   const found: DetectedSignal[] = [];
 
@@ -92,12 +104,12 @@ function scanLine(line: string): DetectedSignal[] {
     });
   };
 
-  const isTargetClaim = matchAny(line, [/\bMZ\b/i, /\bFIT\b/i, /타깃은/, /대상으로 보고/]);
+  const isTargetClaim = matchAny(line, [/\bMZ\b/i, /FIT\s*(관광|개별|여행)/i, /타깃은/, /대상으로 보고/]);
   const isModelLine = /사업 모델|비즈니스 모델|C2C|재판매/.test(line);
   const isAbsenceLine = negated && matchAny(line, [/출시/, /매출/, /검증/, /파일럿/, /인터뷰/]);
 
-  if (matchAny(line, [/문제/, /못하고/, /부족/, /어렵/, /불편/, /못 하/])) {
-    push('problem', negated ? 'CLAIM' : 'FACT', 'customerProblemFit');
+  if (matchAny(line, [/문제/, /못하고/, /부족/, /어렵/, /불편/, /못 하/, /반품률/, /악화/, /누락/, /no-show/i, /부하/, /흔들/])) {
+    push('problem', negated || isHypothesis(line) ? 'CLAIM' : 'FACT', 'customerProblemFit');
   }
 
   if (isTargetClaim) {
@@ -138,9 +150,10 @@ function scanLine(line: string): DetectedSignal[] {
     push('model', negated ? 'ASSUMPTION' : 'CLAIM', 'businessModel');
   }
 
-  if (matchAny(line, [/매출/, /판매했/, /실제로 판매/, /구매가 존재/, /주문/, /거래가 있/])) {
-    if (negated) push('no_revenue', 'FACT', 'validationStrength');
-    else push('revenue', 'FACT', 'businessModel');
+  if (negated && /매출/.test(line) && !/연\s*매출/.test(line)) {
+    push('no_revenue', 'FACT', 'validationStrength');
+  } else if (isOwnCommercialRevenue(line)) {
+    push('revenue', 'FACT', 'businessModel');
   }
 
   if (matchAny(line, [/출시/, /런칭/, /launch/i])) {
@@ -153,8 +166,11 @@ function scanLine(line: string): DetectedSignal[] {
   }
 
   if (matchAny(line, [/재구매/, /반복적으로/, /리텐션/, /2차 거래/, /파일럿/, /인터뷰 검증/])) {
-    if (negated) push('unverified', 'ASSUMPTION', 'validationStrength');
-    else push('repeat_validation', 'VALIDATED', 'validationStrength');
+    if (negated || isHypothesis(line) || /파일럿/.test(line)) {
+      push('unverified', 'ASSUMPTION', 'validationStrength');
+    } else {
+      push('repeat_validation', 'VALIDATED', 'validationStrength');
+    }
   }
 
   if (matchAny(line, [/직무/, /Job-to-be-done/i, /누가 왜 돈을/])) {
@@ -170,6 +186,35 @@ function scanLine(line: string): DetectedSignal[] {
   }
 
   return found;
+}
+
+function headingSection(line: string): 'alternatives' | 'other' | null {
+  if (!/^#{1,6}\s/.test(line)) return null;
+  return /대안|경쟁/.test(line) ? 'alternatives' : 'other';
+}
+
+function scanDocument(text: string): DetectedSignal[] {
+  let section: 'alternatives' | 'other' | null = null;
+  const out: DetectedSignal[] = [];
+  for (const line of linesOf(text)) {
+    const nextSection = headingSection(line);
+    if (nextSection) {
+      section = nextSection;
+      continue;
+    }
+    const found = scanLine(line);
+    if (section === 'alternatives' && !found.some((signal) => signal.kind === 'alternatives')) {
+      found.push({
+        kind: 'alternatives',
+        evidenceClass: 'FACT',
+        axisId: 'marketAlternatives',
+        text: clip(line),
+        negated: false,
+      });
+    }
+    out.push(...found);
+  }
+  return out;
 }
 
 function uniqueEvidence(signals: DetectedSignal[]): SiEvidenceItem[] {
@@ -356,47 +401,59 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
 } {
   if (hasKind(signals, 'resale_thesis') && !hasKind(signals, 'repeat_validation', false)) {
     return {
-      criticalUnknown: 'C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가.',
-      decisionChangingEvidence: '최근 구매자의 실제 재판매 등록·거래·재구매 데이터.',
+      criticalUnknown:
+        'C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.',
+      decisionChangingEvidence:
+        '최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.',
       validationPriority: '최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.',
     };
   }
 
   if (hasKind(signals, 'job_unknown') || (hasKind(signals, 'payer_unknown') && !hasKind(signals, 'problem', false))) {
     return {
-      criticalUnknown: '누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가.',
-      decisionChangingEvidence: '구체적 사용 상황에서 결제자 한 명이 실제로 지불하거나 유료 사용을 시작한 증거.',
+      criticalUnknown:
+        '누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.',
+      decisionChangingEvidence:
+        '구체적 사용 상황에서 결제자 한 명이 실제로 지불하거나 유료 사용을 시작한 증거. 이 증거가 있으면 보류를 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.',
       validationPriority: '결제자와 Job-to-be-done을 한 쌍으로 확인한다.',
     };
   }
 
   if (hasKind(signals, 'payer_split') || hasKind(signals, 'payer_unknown')) {
     return {
-      criticalUnknown: '실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가.',
-      decisionChangingEvidence: '결제 후보의 지불 의향 인터뷰와 실제 지불 시도(견적·계약·선결제).',
+      criticalUnknown:
+        '실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가. 결제자가 확인되지 않으면 사용자 수요만으로 사업화 판단을 확정할 수 없다.',
+      decisionChangingEvidence:
+        '결제 후보의 지불 의향 인터뷰와 실제 지불 시도(견적·계약·선결제). 이 증거가 있으면 보류를 조건부 가능 이상으로 올리고, 거절이면 보류를 유지하거나 내린다.',
       validationPriority: '사용자와 결제자를 분리해, 결제자 한 명의 지불 이유를 확인한다.',
     };
   }
 
   if (hasKind(signals, 'segment_claim')) {
     return {
-      criticalUnknown: '문서가 지목한 고객 세그먼트가 실제로 이 문제를 갖고 돈을 낼 의사가 있는가.',
-      decisionChangingEvidence: '해당 세그먼트의 실사용 또는 지불 증거(예약·결제·반복 방문).',
+      criticalUnknown:
+        '문서가 지목한 고객 세그먼트가 실제로 이 문제를 갖고 돈을 낼 의사가 있는가. 세그먼트가 가설이면 시장 크기를 말할 수 없다.',
+      decisionChangingEvidence:
+        '해당 세그먼트의 실사용 또는 지불 증거(예약·결제·반복 방문). 이 증거가 있으면 고객 축을 지지로 올리고, 없으면 세그먼트 주장을 내린다.',
       validationPriority: '주장된 세그먼트에서 실사용·지불 증거 한 건을 확인한다.',
     };
   }
 
   if (!hasKind(signals, 'revenue', false) && !hasKind(signals, 'repeat_validation', false)) {
     return {
-      criticalUnknown: '이 사업이 주장하는 가치가 실제 지불로 이어지는가.',
-      decisionChangingEvidence: '최초 유료 거래 또는 유료 파일럿 한 건.',
+      criticalUnknown:
+        '이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.',
+      decisionChangingEvidence:
+        '최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.',
       validationPriority: '가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.',
     };
   }
 
   return {
-    criticalUnknown: '현재 강점이 반복 가능한 사업으로 이어지는가.',
-    decisionChangingEvidence: '반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터.',
+    criticalUnknown:
+      '현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.',
+    decisionChangingEvidence:
+      '반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.',
     validationPriority: '이미 구매한 고객의 두 번째 행동을 확인한다.',
   };
 }
@@ -440,6 +497,9 @@ function buildRisks(signals: DetectedSignal[], criticalUnknown: string): string[
   if (hasKind(signals, 'no_revenue') || hasKind(signals, 'no_launch')) {
     out.push('출시·매출 등 상업 실행 증거가 없다.');
   }
+  if (hasKind(signals, 'unverified') && !hasKind(signals, 'revenue', false)) {
+    out.push('유료 전환·파일럿 성과가 아직 검증되지 않았다.');
+  }
   if (out.length === 0) {
     out.push(criticalUnknown);
   }
@@ -476,7 +536,11 @@ function proseJudgment(verdictId: SiVerdictId, strengths: string[], risks: strin
   if (verdictId === 'insufficient_basis') {
     return `${headline}. 고객·문제·검증 사실이 문서에서 충분하지 않아 사업성 문장을 내릴 수 없다.`;
   }
-  return `${headline}. ${risks[0] ?? '핵심 고객과 결제 이유가 검증되지 않았다.'} ${criticalUnknown}`;
+  const risk = risks[0] ?? '핵심 고객과 결제 이유가 검증되지 않았다.';
+  if (criticalUnknown.includes(risk) || risk.includes(criticalUnknown.slice(0, 24))) {
+    return `${headline}. ${criticalUnknown}`;
+  }
+  return `${headline}. ${risk} ${criticalUnknown}`;
 }
 
 function addInferences(items: SiEvidenceItem[], signals: DetectedSignal[], stageId: SiStageId): SiEvidenceItem[] {
@@ -534,7 +598,7 @@ export function analyzeStrategicIntelligence(input: SiBusinessInput): SiStrategi
     };
   }
 
-  const signals = linesOf(documentText).flatMap(scanLine);
+  const signals = scanDocument(documentText);
   const axes = buildAxes(signals);
   const stageId = decideStage(signals);
   const verdictId = decideVerdict(stageId, signals, axes);

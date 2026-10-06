@@ -3,8 +3,9 @@
 **Branch:** `cursor/si-core-v1-e648`  
 **Analyzer:** `apps/web/features/strategic-intelligence/lib/analyze-strategic-intelligence.ts`  
 **Fixtures:** `apps/web/features/strategic-intelligence/lib/si-calibration-cases.ts`  
-**Snapshot:** `docs/evidence/ALABOM/si-v1-calibration-output.json`  
-**Rule:** analyzer has no brand-name branches. Quality is judged by general evidence → axis → stage → prose verdict.
+**Snapshot:** `docs/evidence/ALABOM/SI/si-v1-calibration-output.json`  
+**Gate report:** `docs/evidence/ALABOM/SI/SI-V1-CALIBRATION-REPORT.md`  
+**Rule:** analyzer has no brand-name branches. Quality is judged by general evidence → axis → stage → prose verdict. 보고 시각(08:00)은 사용하지 않는다.
 
 ## Gate
 

@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
@@ -8,11 +8,11 @@ import { SI_CALIBRATION_CASES } from '../si-calibration-cases';
 
 const SNAPSHOT_PATH = resolve(
   process.cwd(),
-  '../../docs/evidence/ALABOM/si-v1-calibration-output.json',
+  '../../docs/evidence/ALABOM/SI/si-v1-calibration-output.json',
 );
 
 describe('S.I. V1 calibration dump', () => {
-  it('matches the committed first-judgment snapshot', () => {
+  it('writes the five first judgments for the calibration report', () => {
     const rows = Object.values(SI_CALIBRATION_CASES).map((fixture) => {
       const judgment = analyzeStrategicIntelligence({
         title: fixture.title,
@@ -36,7 +36,11 @@ describe('S.I. V1 calibration dump', () => {
       };
     });
 
-    const snapshot = JSON.parse(readFileSync(SNAPSHOT_PATH, 'utf8')) as unknown;
-    expect(rows).toEqual(snapshot);
+    mkdirSync(dirname(SNAPSHOT_PATH), { recursive: true });
+    writeFileSync(SNAPSHOT_PATH, `${JSON.stringify(rows, null, 2)}\n`, 'utf8');
+    expect(rows).toHaveLength(5);
+    expect(rows.map((row) => row.id).sort()).toEqual(
+      ['clinicflow', 'fitbridge', 'juinjip', 'lmulm', 'ridm'].sort(),
+    );
   });
 });

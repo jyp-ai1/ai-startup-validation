@@ -51,6 +51,29 @@ describe('S.I. V1 calibration — 주인집 / LMULM / RIDM AI', () => {
     expect(judgment.axes.find((axis) => axis.axisId === 'validationStrength')?.status).toBe('partial');
   });
 
+  it('클리닉플로우: 문제는 분명하나 자사 매출로 오인하지 않고 유료 전환을 미검증으로 둔다', () => {
+    const judgment = analyzeCase('clinicflow');
+    expect(judgmentContainsScore(judgment.judgment)).toBe(false);
+    expect(judgment.verdictId).toBe('judgment_deferred');
+    expect(['S0', 'S1', 'S2']).toContain(judgment.stageId);
+    expect(judgment.evidenceMap.every((item) => item.evidenceClass !== 'VALIDATED')).toBe(true);
+    expect(judgment.strengths.join(' ')).not.toMatch(/실제 판매·매출/);
+    expect(judgment.criticalUnknown).toMatch(/지불|유료|결제/);
+    expect(judgment.decisionChangingEvidence).toMatch(/올리|내리|유지/);
+    expect(judgment.validationPriority).toMatch(/유료|결제|파일럿|제안/);
+  });
+
+  it('핏브릿지: 고객 연매출을 자사 실적으로 보지 않고 판단을 보류한다', () => {
+    const judgment = analyzeCase('fitbridge');
+    expect(judgmentContainsScore(judgment.judgment)).toBe(false);
+    expect(judgment.verdictId).toBe('judgment_deferred');
+    expect(['S0', 'S1', 'S2']).toContain(judgment.stageId);
+    expect(judgment.evidenceMap.every((item) => item.evidenceClass !== 'VALIDATED')).toBe(true);
+    expect(judgment.strengths.join(' ')).not.toMatch(/실제 판매·매출/);
+    expect(judgment.criticalUnknown).toMatch(/지불|유료|결제/);
+    expect(judgment.decisionChangingEvidence).toMatch(/올리|내리|유지/);
+  });
+
   it('RIDM AI: 콘셉트만 있으면 판단을 보류하고 결제자·직무를 핵심 미검증으로 둔다', () => {
     const judgment = analyzeCase('ridm');
 

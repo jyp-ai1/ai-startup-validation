@@ -3,7 +3,9 @@
  * Analyzer must judge these without name-specific branches.
  */
 
-export type SiCalibrationCaseId = 'juinjip' | 'lmulm' | 'ridm';
+import { CLINICFLOW_DOCUMENT, FITBRIDGE_DOCUMENT } from '@/lib/demo/demo-seed-documents';
+
+export type SiCalibrationCaseId = 'juinjip' | 'lmulm' | 'ridm' | 'clinicflow' | 'fitbridge';
 
 export type SiCalibrationCase = {
   id: SiCalibrationCaseId;
@@ -42,6 +44,16 @@ MZ와 FIT가 실제로 이 서비스를 원하는지는 조사되지 않았다.
 재구매·재판매 등록·2차 거래 데이터는 아직 없다.
 
 기존 대안은 중고나라·번개장터 같은 범용 중고 거래와 브랜드 공식 재입고다.`,
+  },
+  clinicflow: {
+    id: 'clinicflow',
+    title: '클리닉플로우',
+    documentText: CLINICFLOW_DOCUMENT,
+  },
+  fitbridge: {
+    id: 'fitbridge',
+    title: '핏브릿지',
+    documentText: FITBRIDGE_DOCUMENT,
   },
   ridm: {
     id: 'ridm',
