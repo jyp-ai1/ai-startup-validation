@@ -1450,6 +1450,30 @@ PR #96 classified 5/5 as B. CPO chose ADAPT: do not KEEP the dual path, do not R
 
 ---
 
+## ADR-051: S.I. V1 Founder Journey is a two-turn evidence loop
+
+**Status:** Accepted  
+**Date:** 2026-10-06  
+**Sprint:** S.I. Founder Journey E2E Gate  
+**Authors:** CTO (autonomous)
+
+### Context
+
+PR #92–#97 built judgment, evidence update, AI PM bind, journey integration, and the ADAPT adapter. CPO required the product loop to run twice before Production.
+
+### Decision
+
+1. A Founder Journey E2E Gate proves: input → judgment → ask → answer → `si-v1-update` → re-judgment → next ask → second answer → re-judgment.
+2. No new product capability. Founder answers accumulate on the original business document via the existing `[Founder evidence]` append.
+3. Gap Loop remains fallback. The question engine is not edited.
+
+### Consequences
+
+- LMULM/클리닉/핏브릿지 move Critical Unknown and Validation Priority on the first validated answer.
+- 주인집/RIDM can change stage/verdict while the original unverified sentence still holds CU. That is recorded, not patched here.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

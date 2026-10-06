@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Founder Journey E2E Gate ✅
+
+**Branch:** `cursor/si-founder-journey-e2e-e648` · base PR #97 · 기능 추가 없음  
+**범위:** 3사업 × 2회 Evidence → 재판단. 엔진/PR #89/새 SoT/Production 금지.
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 초기 판단 → 1차 검증 → 재판단 → 2차 검증 → 재판단 | ✅ unit |
+| 2 | CU / Validation Priority 이동 (LMULM·클리닉·핏브릿지) | ✅ unit |
+| 3 | Gap Loop fallback | ✅ |
+| 4 | P0-1/P0-2 unit | ✅ |
+| 5 | Browser 3사업 × 2턴 | ✅ |
+
+---
+
 ## S.I. Validation Priority Adapter ✅
 
 **Branch:** `cursor/si-validation-priority-adapter-e648` · CPO ADAPT · base PR #96  
