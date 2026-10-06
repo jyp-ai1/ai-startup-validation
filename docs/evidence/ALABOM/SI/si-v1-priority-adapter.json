@@ -22,7 +22,7 @@
   {
     "id": "clinicflow",
     "siKind": "paid_conversion",
-    "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+    "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
     "gapQuestion": "이 사업은 누구에게 무엇을 제공하나요?",
     "adaptedSource": "si-v1-priority",
     "adaptedQuestion": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
@@ -32,7 +32,7 @@
   {
     "id": "fitbridge",
     "siKind": "paid_conversion",
-    "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+    "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
     "gapQuestion": "이 사업은 누구에게 무엇을 제공하나요?",
     "adaptedSource": "si-v1-priority",
     "adaptedQuestion": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",

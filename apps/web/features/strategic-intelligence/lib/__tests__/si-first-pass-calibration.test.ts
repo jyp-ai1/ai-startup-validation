@@ -84,5 +84,7 @@ describe('S.I. First-Pass Judgment Calibration Gate', () => {
     expect(rows.find((row) => row.id === 'lmulm')?.overall).toBe('PASS');
     expect(rows.find((row) => row.id === 'juinjip')?.overall).toBe('PASS');
     expect(rows.find((row) => row.id === 'ridm')?.overall).toBe('PASS');
+    expect(rows.find((row) => row.id === 'clinicflow')?.overall).toBe('PASS');
+    expect(rows.find((row) => row.id === 'fitbridge')?.overall).toBe('PASS');
   });
 });

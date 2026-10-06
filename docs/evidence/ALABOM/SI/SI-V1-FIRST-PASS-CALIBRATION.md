@@ -51,3 +51,5 @@ MEASURED — 5/5 방향 일치, 3 PASS / 2 PARTIAL, FAIL 없음
 ```
 
 고치지 않았다. 다음 정확도 작업이 필요하면 클리닉/핏브릿지의 **도메인 CU**(no-show, 반품)부터다.
+
+**Follow-up:** PR #100 CU Calibration — `SI-V1-CU-CALIBRATION.md`. 측정 결과는 이 문서에 두고, 이후 t0 재실행 dump는 #100이 갱신한다.

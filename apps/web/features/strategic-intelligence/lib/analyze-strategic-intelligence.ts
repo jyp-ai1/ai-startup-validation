@@ -436,8 +436,14 @@ function decideVerdict(stageId: SiStageId, signals: DetectedSignal[], axes: SiAx
   return 'judgment_deferred';
 }
 
+const STAKE_NOUN = /(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하)/i;
+
 function stakeNoun(line: string): string {
-  const match = line.match(/(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하)/i);
+  const adjacent = line.match(
+    /(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하).{0,3}\d+\s*(?:~\s*)?\d*\s*%/i,
+  );
+  if (adjacent?.[1]) return adjacent[1];
+  const match = line.match(STAKE_NOUN);
   return match?.[1] ?? '수치화된 문제 지표';
 }
 
