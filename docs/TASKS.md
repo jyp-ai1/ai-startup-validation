@@ -4,6 +4,20 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Phase 3 — AI PM Bind 🔄
+
+**Branch:** `cursor/si-phase3-ai-pm-bind-e648` · base PR #93 `9b16059`  
+**Out of scope:** `decideNextQuestionFromReview` rewrite · PR #89 · P0-1/P0-2 · new persist SoT · per-business questions · CU copy · Production
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | S.I. decides validation ask from CU / Decision Evidence / Priority | ✅ |
+| 2 | AI PM presents one executable question (not CU copy) | ✅ |
+| 3 | Founder answer re-enters Phase 2 `updateStrategicIntelligence()` | ✅ |
+| 4 | LMULM closed loop: VALIDATED moves S3→S4; INTENT holds | ✅ |
+
+---
+
 ## S.I. Phase 2 — Evidence Update ✅
 
 **Branch:** `cursor/si-phase2-evidence-update-e648` · base PR #92 lock `940bd47`  

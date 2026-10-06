@@ -46,5 +46,6 @@ Server Actions will be documented here with:
 
 | Date | Change |
 |------|--------|
+| 2026-10-06 | Funnel events `si_ai_pm_question_asked` / `si_ai_pm_answer_applied` for S.I.→AI PM bind (no new REST route) |
 | 2026-10-06 | Funnel event `si_judgment_viewed` when S.I. Review Surface renders (no new REST route) |
 | 2026-07-19 | Initial API documentation scaffold |

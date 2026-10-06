@@ -84,6 +84,47 @@ export type SiEvidenceUpdateResult = {
   source: 'si-v1-update';
 };
 
+export type SiValidationKind =
+  | 'repeat_loop'
+  | 'payer_job'
+  | 'payer_split'
+  | 'segment_proof'
+  | 'paid_conversion'
+  | 'customer_problem'
+  | 'generic';
+
+/** What S.I. decided must be known before the judgment can move. */
+export type SiValidationAsk = {
+  kind: SiValidationKind;
+  criticalUnknown: string;
+  decisionChangingEvidence: string;
+  validationPriority: string;
+  source: 'si-v1';
+};
+
+/** AI PM execution of one S.I. validation ask. Not a gap-engine question. */
+export type SiAiPmQuestion = {
+  questionText: string;
+  whyAsking: string;
+  evidenceSought: string;
+  kind: SiValidationKind;
+  source: 'si-v1-ai-pm-bind';
+};
+
+export type SiAiPmBindTurnInput = {
+  documentText: string;
+  founderAnswer: string;
+  title?: string | null;
+};
+
+export type SiAiPmBindTurnResult = {
+  previous: SiStrategicJudgment;
+  asked: SiAiPmQuestion;
+  update: SiEvidenceUpdateResult;
+  nextAsk: SiAiPmQuestion;
+  source: 'si-v1-ai-pm-bind';
+};
+
 export const SI_AXIS_LABELS: Record<SiAxisId, string> = {
   customerProblemFit: 'A. Customer / Problem Fit',
   marketAlternatives: 'B. Market / Alternatives',
