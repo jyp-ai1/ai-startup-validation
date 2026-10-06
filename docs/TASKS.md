@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Stale Critical Unknown ✅ MEASUREMENT COMPLETE (Fix 아님)
+
+**PR:** #106 측정 전용 · **Branch:** `cursor/si-stale-cu-e648` · base #105 · Baseline `fbf6f1c`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-STALE-CU.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | #104 지불만 ≠ S3 유지 | ✅ |
+| 2 | stale_cu_after_full_dce 정의 고정 | ✅ |
+| 3 | 일반 DCE 0/2 1/2 2/2 2/2+extra | ✅ 이름 없는 이탈 포함 |
+| 4 | 2/2에서 J/CU/DCE/Priority/질문 | ✅ 5/5 FAIL |
+| 5 | 엔진 / Fix / Production | 없음 |
+
+---
+
 ## S.I. Decision Quality Follow-up ✅ MEASUREMENT COMPLETE (Fix 아님)
 
 **PR:** #105 측정 전용 · **Branch:** `cursor/si-decision-quality-followup-e648` · base PR #104 SHA `fbf6f1c`  
