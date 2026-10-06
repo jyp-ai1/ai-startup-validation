@@ -95,8 +95,8 @@ function runAlignment(id: (typeof CASE_IDS)[number]) {
   return { fixture, t0, t1, t1Ask, t2, answer1, answer2, scored };
 }
 
-describe('S.I. Question Alignment Gate — measure only', () => {
-  it('does not rewrite the presenter or special-case brands', () => {
+describe('S.I. Question Alignment Gate', () => {
+  it('does not special-case brands or import the question engine', () => {
     expect(PRESENTER_SRC).toContain(GENERIC_PAID_QUESTION);
     expect(PRESENTER_SRC).toMatch(/QUESTION_BY_KIND/);
     expect(`${PRESENTER_SRC}\n${ASK_SRC}\n${SCORER_SRC}`).not.toMatch(
@@ -129,10 +129,15 @@ describe('S.I. Question Alignment Gate — measure only', () => {
       ).toBe(true);
       expect(t2.current.update?.source).toBe('si-v1-update');
       expect(t0.firstQuestion.questionText).not.toBe(t0.firstJudgment.criticalUnknown);
+      if (id !== 'lmulm') {
+        expect(t0.firstQuestion.questionText).not.toMatch(/재판매/);
+        expect(t1Ask.firstQuestion.questionText).not.toMatch(/재판매/);
+        expect(t1Ask.firstQuestion.questionText).toMatch(/no-show|노쇼|반품|전후/);
+      }
     }
   });
 
-  it('writes the five-business question alignment dump without fixing the presenter', () => {
+  it('writes the five-business question alignment dump', () => {
     const rows = CASE_IDS.map((id) => {
       const { t0, t1, t1Ask, t2, answer1, answer2, scored } = runAlignment(id);
       return {
@@ -170,5 +175,11 @@ describe('S.I. Question Alignment Gate — measure only', () => {
     expect(rows.find((row) => row.id === 'lmulm')?.overall).toBe('PASS');
     expect(rows.find((row) => row.id === 'juinjip')?.overall).toBe('PASS');
     expect(rows.find((row) => row.id === 'ridm')?.overall).toBe('PASS');
+    expect(rows.find((row) => row.id === 'clinicflow')?.overall).toBe('PASS');
+    expect(rows.find((row) => row.id === 'fitbridge')?.overall).toBe('PASS');
+    expect(rows.find((row) => row.id === 'clinicflow')?.isGenericPaidQuestion).toBe(false);
+    expect(rows.find((row) => row.id === 'fitbridge')?.isGenericPaidQuestion).toBe(false);
+    expect(rows.find((row) => row.id === 'clinicflow')?.t2Question).not.toMatch(/재판매/);
+    expect(rows.find((row) => row.id === 'fitbridge')?.t2Question).not.toMatch(/재판매/);
   });
 });

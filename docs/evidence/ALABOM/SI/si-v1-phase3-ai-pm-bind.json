@@ -31,7 +31,7 @@
       "judgmentChanged": true,
       "validationPriorityChanged": true
     },
-    "nextQuestionText": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다."
+    "nextQuestionText": "이탈 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
   },
   "intent": {
     "founderAnswer": "재판매를 생각하고 있지만 아직 아무도 등록하지 않았다.",
