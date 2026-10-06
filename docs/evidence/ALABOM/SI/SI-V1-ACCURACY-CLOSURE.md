@@ -1,6 +1,6 @@
 # S.I. V1 Accuracy Closure — MEASUREMENT COMPLETE
 
-**Branch:** `cursor/si-accuracy-closure-e648`  
+**Branch:** `cursor/si-accuracy-closure-e648` (`05adbc4`)  
 **Prior:** Question Alignment Fix `6926d6f` · Pattern A obstruction `c39253c`  
 **Production:** `dea7cb1916cfbd4e6f8c54a86e6da920ed708bd2` 불변  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-accuracy-closure.json`  
@@ -59,6 +59,7 @@ Pattern A `다음 고객/기간` → generic. 다른 CU로 이동하지 않음. 
 | Check | Result |
 |---|---|
 | Full build | PASS (Next.js 15.5.20, 392 pages) |
+| Git SHA | `05adbc4d` (branch `cursor/si-accuracy-closure-e648`) |
 | Local build commit | `local-dev` (Vercel SHA 없음) |
 | Production SHA | `dea7cb1` 불변 |
 | Production smoke | 이 환경에서 GitHub/Vercel DNS 실패. live 미검증 |
