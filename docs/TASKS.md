@@ -6,7 +6,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## S.I. Question DCE Ask Gate
 
-**Branch:** `cursor/si-question-dce-ask-e648` · base PR #101 · 질문 하드코딩 금지 · 엔진 재설계 금지 · Production 금지
+**Branch:** `cursor/si-question-dce-ask-e648` · base PR #101 · 질문 하드코딩 금지 · 엔진 재설계 금지 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-DCE-ASK.md`
 
 | # | Gate | Status |
 |---|------|--------|
