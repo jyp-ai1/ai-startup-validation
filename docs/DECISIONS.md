@@ -1425,6 +1425,31 @@ Phase 3 PASS proved S.I. → AI PM bind. The next risk is not missing questions.
 
 ---
 
+## ADR-050: ADAPT — S.I. Validation Priority sits above the gap engine
+
+**Status:** Accepted  
+**Date:** 2026-10-06  
+**Sprint:** S.I. Validation Priority Adapter  
+**Authors:** CTO (autonomous)
+
+### Context
+
+PR #96 classified 5/5 as B. CPO chose ADAPT: do not KEEP the dual path, do not REPLACE the gap engine. S.I. Validation Priority must win when it exists.
+
+### Decision
+
+1. `resolveSiV1ValidationPriority()` is an independent adapter. It does not edit `decideNextQuestionFromReview`.
+2. Final ask: SI priority present → SI validation question; else existing gap-loop question.
+3. Business-understanding confirm is not stolen. SI errors fall back to the gap loop.
+4. Founder answers enter `updateStrategicIntelligence()` (`si-v1-update`).
+
+### Consequences
+
+- Gap loop remains mounted as fallback/state.
+- Long-term KEEP/ADAPT/REPLACE of the engine waits for this adapter's evidence.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Validation Priority Adapter 🔄
+
+**Branch:** `cursor/si-validation-priority-adapter-e648` · CPO ADAPT · base PR #96  
+**Out of scope:** engine rewrite · gap-loop delete · PR #89 · new SoT · Production
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | SI priority 있으면 SI 질문 우선 | ✅ |
+| 2 | SI 없거나 오류면 Gap Loop fallback | ✅ |
+| 3 | Answer → `si-v1-update` | ✅ |
+| 4 | Confirm 질문은 훔치지 않음 | ✅ |
+| 5 | `decideNextQuestionFromReview` 불변 | ✅ |
+
+---
+
 ## S.I. vs Gap Loop Diagnostic ✅
 
 **Branch:** `cursor/si-gap-loop-diagnostic-e648` · base PR #95  
