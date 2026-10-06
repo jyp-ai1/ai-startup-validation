@@ -32,3 +32,5 @@ LMULM이 CPO 예시와 같다: C2C 미검증 → 35명/12건 → S4에서 기준
 ## 유지
 
 `decideNextQuestionFromReview` 불변 · Confirm 불침범 · P0-1/P0-2 unit · SI 오류 시 Gap Loop fallback · 새 SoT 없음.
+
+**Browser:** `e2e/si-founder-journey-e2e.spec.ts` 3 passed on :3055 (LMULM S3→S4 포함).
