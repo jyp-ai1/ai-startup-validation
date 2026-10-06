@@ -4,10 +4,11 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## S.I. Partial DCE Promotion Gate — GATE COMPLETE / CPO 판정 대기
+## S.I. Partial DCE Promotion Gate ✅ PASS CLOSED — 기준선 고정
 
-**Branch:** `cursor/si-partial-dce-e648` · SHA `fbf6f1c` · base PR #103 · P0 정확도 · 질문 생성기 금지 · 사업명 분기 금지 · Production 금지  
-**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-PARTIAL-DCE.md`
+**Branch:** `cursor/si-partial-dce-e648` · SHA `fbf6f1c` · base PR #103 · CPO PASS · Production 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-PARTIAL-DCE.md`  
+**기준선:** 부분 Evidence는 전체 DCE/S3로 승격하지 않는다. 클리닉/핏브릿지 PARTIAL은 정직한 상태다.
 
 | # | Gate | Status |
 |---|------|--------|
