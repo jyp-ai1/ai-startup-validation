@@ -4,6 +4,11 @@ import path from 'node:path';
 
 import { CLINICFLOW_DOCUMENT, FITBRIDGE_DOCUMENT } from '../lib/demo/demo-seed-documents';
 import { SI_INTEGRATION_ANSWERS } from '../features/strategic-intelligence/lib/si-integration-answers';
+import {
+  answerFitsValidationAsk,
+  secondTurnAnswerForCase,
+  type SiE2eGateCaseId,
+} from '../features/strategic-intelligence/lib/__tests__/si-founder-journey-e2e-fixtures';
 import { dismissCookies } from './_helpers/v3-p0-e2e-helpers';
 
 const ARTIFACT_DIR = '/opt/cursor/artifacts/screenshots';
@@ -37,14 +42,8 @@ function firstAnswer(questionText: string): string {
   return SI_INTEGRATION_ANSWERS.generic.validated;
 }
 
-function secondAnswer(questionText: string): string {
-  if (/재판매|재구매|두 번째/.test(questionText)) {
-    return '같은 구매 코호트에서 18명이 실제 재판매를 등록했고 9건이 거래됐다.';
-  }
-  if (/유료로 제안/.test(questionText)) {
-    return '결제 후보 3명이 월 구독을 결제했고 유료 전환 2건이 발생했다.';
-  }
-  return '최근 고객 4명이 실제로 결제했고 유료 전환 2건이 발생했다.';
+function secondAnswer(id: SiE2eGateCaseId): string {
+  return secondTurnAnswerForCase(id);
 }
 
 for (const fixture of CASES) {
@@ -103,8 +102,20 @@ for (const fixture of CASES) {
     };
     expect(t1.unknown !== t0.unknown || t1.priority !== t0.priority).toBeTruthy();
 
+    const answer2 = secondAnswer(fixture.id);
+    expect(
+      answerFitsValidationAsk({
+        caseId: fixture.id,
+        kind: /재판매|재구매|두 번째/.test(t1.question) ? 'repeat_loop' : 'paid_conversion',
+        answer: answer2,
+      }),
+    ).toBe(true);
+    if (fixture.id !== 'lmulm') {
+      expect(answer2.includes('재판매')).toBe(false);
+    }
+
     await expect(page.getByTestId('si-ai-pm-answer')).toHaveValue('');
-    await page.getByTestId('si-ai-pm-answer').fill(secondAnswer(t1.question));
+    await page.getByTestId('si-ai-pm-answer').fill(answer2);
     await page.getByTestId('si-ai-pm-submit').click();
 
     await expect(surface).toBeVisible();

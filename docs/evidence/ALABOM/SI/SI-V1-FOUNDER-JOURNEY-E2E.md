@@ -21,9 +21,9 @@
 
 | 사업 | t0 | 답 1 후 | 답 2 |
 |---|---|---|---|
-| LMULM | S3 · C2C 반복성 미검증 | S4 · 반복 가능한 사업 / 두 번째 행동 | 재판매 18명·9건 재계산 |
-| 클리닉플로우 | S1 · 유료 전환 | S3 · 두 번째 행동 | 반복 거래 재계산 |
-| 핏브릿지 | S1 · 유료 전환 | S3 · 두 번째 행동 | 반복 거래 재계산 |
+| LMULM | S3 · C2C 반복성 미검증 | S4 · 반복 가능한 사업 / 두 번째 행동 | 재판매 18명·9건 |
+| 클리닉플로우 | S1 · 유료 전환 | S3 · 두 번째 행동 | 유료 병원 재결제·리콜 재사용 (재판매 금지) |
+| 핏브릿지 | S1 · 유료 전환 | S3 · 두 번째 행동 | 유료 브랜드 위젯 재결제 (재판매 금지) |
 
 LMULM이 CPO 예시와 같다: C2C 미검증 → 35명/12건 → S4에서 기준이 반복 구매로 이동 → 다음 검증은 두 번째 행동.
 
@@ -33,4 +33,6 @@ LMULM이 CPO 예시와 같다: C2C 미검증 → 35명/12건 → S4에서 기준
 
 `decideNextQuestionFromReview` 불변 · Confirm 불침범 · P0-1/P0-2 unit · SI 오류 시 Gap Loop fallback · 새 SoT 없음.
 
-**Browser:** `e2e/si-founder-journey-e2e.spec.ts` 3 passed on :3055 (LMULM S3→S4 포함).
+원본 샘플: `docs/evidence/ALABOM/SI/samples/` (LMULM·RIDM·주인집 사업계획서). 런타임 SoT 아님.
+
+**HOLD 수정:** 2차 답은 사업별 의미에 맞아야 한다. 클리닉/핏브릿지에 LMULM 재판매를 넣으면 fixture assertion이 FAIL한다.

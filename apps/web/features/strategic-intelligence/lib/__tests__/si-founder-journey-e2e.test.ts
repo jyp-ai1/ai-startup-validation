@@ -4,8 +4,6 @@ import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
 
-import type { SiValidationKind } from '@repo/types/domain/strategic-intelligence';
-
 import { appendFounderEvidenceToDocument } from '../update-strategic-intelligence';
 import { pickSiIntegrationAnswer } from '../si-integration-answers';
 import { getSiCalibrationCase } from '../si-calibration-cases';
@@ -14,8 +12,15 @@ import {
   adaptFounderJourneyQuestion,
   resolveSiV1ValidationPriority,
 } from '../resolve-si-v1-validation-priority';
+import {
+  E2E_GATE_CASES,
+  LMULM_SECOND_ANSWER,
+  answerFitsValidationAsk,
+  secondTurnAnswerForCase,
+  type SiE2eGateCaseId,
+} from './si-founder-journey-e2e-fixtures';
 
-const GATE_CASES = ['lmulm', 'clinicflow', 'fitbridge'] as const;
+const GATE_CASES = E2E_GATE_CASES;
 const SNAPSHOT_PATH = resolve(
   process.cwd(),
   '../../docs/evidence/ALABOM/SI/si-v1-founder-journey-e2e.json',
@@ -32,26 +37,7 @@ const ENGINE_SRC = [
   ),
 ].join('\n');
 
-function secondTurnAnswer(kind: SiValidationKind): string {
-  if (kind === 'repeat_loop') {
-    return '같은 구매 코호트에서 18명이 실제 재판매를 등록했고 9건이 거래됐다.';
-  }
-  if (kind === 'payer_job') {
-    return '결제자 2명이 실제로 월 구독을 결제했고 감정 기록 직무를 이 제품으로 대체했다.';
-  }
-  if (kind === 'payer_split') {
-    return '결제자 2명이 실제로 마케팅비를 결제했고 쓰는 사람이 아니라 그 결제자가 돈을 냈다.';
-  }
-  if (kind === 'paid_conversion') {
-    return '결제 후보 3명이 월 구독을 결제했고 유료 전환 2건이 발생했다.';
-  }
-  if (kind === 'segment_proof') {
-    return '지목한 고객 6명이 실제로 예약하고 지불했다.';
-  }
-  return '최근 고객 4명이 실제로 결제했고 유료 전환 2건이 발생했다.';
-}
-
-function runTwoTurns(id: (typeof GATE_CASES)[number]) {
+function runTwoTurns(id: SiE2eGateCaseId) {
   const fixture = getSiCalibrationCase(id);
   const t0 = resolveSiJourneyIntegration({
     title: fixture.title,
@@ -68,7 +54,7 @@ function runTwoTurns(id: (typeof GATE_CASES)[number]) {
     title: fixture.title,
     businessDocument: documentAfter1,
   });
-  const answer2 = secondTurnAnswer(t1Ask.firstQuestion.kind);
+  const answer2 = secondTurnAnswerForCase(id);
   const t2 = resolveSiJourneyIntegration({
     title: fixture.title,
     businessDocument: documentAfter1,
@@ -81,6 +67,23 @@ describe('S.I. Founder Journey E2E Gate', () => {
   it('does not import the question engine or special-case brands', () => {
     expect(ENGINE_SRC).not.toMatch(/from ['"].*decide-next-question-from-review['"]/);
     expect(ENGINE_SRC).not.toMatch(/주인집|LMULM|RIDM|클리닉플로우|핏브릿지|ClinicFlow|FitBridge/i);
+  });
+
+  it('rejects a resale answer on clinicflow or fitbridge second ask', () => {
+    expect(
+      answerFitsValidationAsk({
+        caseId: 'clinicflow',
+        kind: 'repeat_loop',
+        answer: LMULM_SECOND_ANSWER,
+      }),
+    ).toBe(false);
+    expect(
+      answerFitsValidationAsk({
+        caseId: 'fitbridge',
+        kind: 'repeat_loop',
+        answer: LMULM_SECOND_ANSWER,
+      }),
+    ).toBe(false);
   });
 
   it('falls back to the gap loop when S.I. has no document', () => {
@@ -104,6 +107,20 @@ describe('S.I. Founder Journey E2E Gate', () => {
       expect(t2.current.update?.addedEvidence[0]?.evidenceClass).toBe('VALIDATED');
       expect(t1.current.update?.addedEvidence[0]?.text).toBe(answer1);
       expect(t2.current.update?.addedEvidence[0]?.text).toBe(answer2);
+      expect(
+        answerFitsValidationAsk({
+          caseId: id,
+          kind: t1Ask.firstQuestion.kind,
+          answer: answer2,
+        }),
+      ).toBe(true);
+      expect(
+        answerFitsValidationAsk({
+          caseId: id,
+          kind: t1Ask.firstQuestion.kind,
+          answer: LMULM_SECOND_ANSWER,
+        }),
+      ).toBe(id === 'lmulm');
 
       expect(t1Ask.firstQuestion.questionText).not.toBe(t0.firstJudgment.criticalUnknown);
       expect(t2.current.question.questionText).not.toBe(t2.current.judgment.criticalUnknown);
@@ -163,6 +180,12 @@ describe('S.I. Founder Journey E2E Gate', () => {
           validationPriority: t2.current.judgment.validationPriority,
           question: t2.current.question.questionText,
           answer: answer2,
+          answerFitsKind: answerFitsValidationAsk({
+            caseId: id,
+            kind: t1Ask.firstQuestion.kind,
+            answer: answer2,
+          }),
+          containsResale: /재판매/.test(answer2),
           judgmentChanged: t2.current.update?.judgmentChanged ?? false,
           criticalUnknownChanged: t2.current.update?.criticalUnknownChanged ?? false,
           validationPriorityChanged: t2.current.update?.validationPriorityChanged ?? false,
@@ -176,5 +199,7 @@ describe('S.I. Founder Journey E2E Gate', () => {
     expect(rows.every((row) => row.t1.criticalUnknownChanged || row.t1.validationPriorityChanged)).toBe(
       true,
     );
+    expect(rows.every((row) => row.t2.answerFitsKind)).toBe(true);
+    expect(rows.filter((row) => row.id !== 'lmulm').every((row) => !row.t2.containsResale)).toBe(true);
   });
 });
