@@ -44,8 +44,8 @@
       "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
     },
     "t1": {
-      "stageId": "S3",
-      "verdictId": "viable",
+      "stageId": "S1",
+      "verdictId": "judgment_deferred",
       "criticalUnknown": "유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
       "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 no-show의 전후를 한 번 잰다.",
       "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
@@ -55,8 +55,8 @@
       "validationPriorityChanged": true
     },
     "t2": {
-      "stageId": "S3",
-      "verdictId": "viable",
+      "stageId": "S1",
+      "verdictId": "judgment_deferred",
       "criticalUnknown": "유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
       "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 no-show의 전후를 한 번 잰다.",
       "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
@@ -66,7 +66,7 @@
       "judgmentChanged": false,
       "criticalUnknownChanged": false,
       "validationPriorityChanged": false,
-      "evidenceCount": 17
+      "evidenceCount": 19
     }
   },
   {
@@ -79,8 +79,8 @@
       "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
     },
     "t1": {
-      "stageId": "S3",
-      "verdictId": "viable",
+      "stageId": "S1",
+      "verdictId": "judgment_deferred",
       "criticalUnknown": "유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
       "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 반품률의 전후를 한 번 잰다.",
       "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
@@ -90,8 +90,8 @@
       "validationPriorityChanged": true
     },
     "t2": {
-      "stageId": "S3",
-      "verdictId": "viable",
+      "stageId": "S1",
+      "verdictId": "judgment_deferred",
       "criticalUnknown": "유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
       "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 반품률의 전후를 한 번 잰다.",
       "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
@@ -101,7 +101,7 @@
       "judgmentChanged": false,
       "criticalUnknownChanged": false,
       "validationPriorityChanged": false,
-      "evidenceCount": 14
+      "evidenceCount": 16
     }
   }
 ]

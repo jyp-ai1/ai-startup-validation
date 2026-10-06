@@ -144,7 +144,7 @@
   {
     "id": "clinicflow",
     "directionMatch": "PASS",
-    "founderOutcome": "FAIL",
+    "founderOutcome": "PARTIAL",
     "t0": {
       "verdictId": "judgment_deferred",
       "stageId": "S1",
@@ -157,9 +157,9 @@
     },
     "answer": "결제 후보 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
     "t1": {
-      "verdictId": "viable",
-      "stageId": "S3",
-      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+      "verdictId": "judgment_deferred",
+      "stageId": "S1",
+      "judgment": "현재 판단: 지금은 판단을 보류한다. 유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
       "criticalUnknown": "유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
       "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 no-show의 전후를 한 번 잰다.",
       "evidenceEntered": true
@@ -202,8 +202,8 @@
       },
       {
         "id": "rejudgmentHonest",
-        "score": "FAIL",
-        "note": "Incomplete answer upgraded to viable"
+        "score": "PARTIAL",
+        "note": "Evidence entered; t1=judgment_deferred/S1; stake in answer=false"
       },
       {
         "id": "founderNextStep",
@@ -215,7 +215,7 @@
   {
     "id": "fitbridge",
     "directionMatch": "PASS",
-    "founderOutcome": "FAIL",
+    "founderOutcome": "PARTIAL",
     "t0": {
       "verdictId": "judgment_deferred",
       "stageId": "S1",
@@ -228,9 +228,9 @@
     },
     "answer": "결제 후보 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
     "t1": {
-      "verdictId": "viable",
-      "stageId": "S3",
-      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+      "verdictId": "judgment_deferred",
+      "stageId": "S1",
+      "judgment": "현재 판단: 지금은 판단을 보류한다. 유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
       "criticalUnknown": "유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
       "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 반품률의 전후를 한 번 잰다.",
       "evidenceEntered": true
@@ -273,8 +273,8 @@
       },
       {
         "id": "rejudgmentHonest",
-        "score": "FAIL",
-        "note": "Incomplete answer upgraded to viable"
+        "score": "PARTIAL",
+        "note": "Evidence entered; t1=judgment_deferred/S1; stake in answer=false"
       },
       {
         "id": "founderNextStep",

@@ -121,7 +121,7 @@
     "answerEnteredEvidence": true,
     "t1Moved": true,
     "t2Question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "t2EvidenceCount": 17,
+    "t2EvidenceCount": 19,
     "axes": [
       {
         "id": "priorityPresent",
@@ -176,7 +176,7 @@
     "answerEnteredEvidence": true,
     "t1Moved": true,
     "t2Question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "t2EvidenceCount": 14,
+    "t2EvidenceCount": 16,
     "axes": [
       {
         "id": "priorityPresent",

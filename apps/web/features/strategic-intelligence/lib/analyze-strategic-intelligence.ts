@@ -31,7 +31,8 @@ type SignalKind =
   | 'no_launch'
   | 'unverified'
   | 'quantified_problem'
-  | 'named_alternative';
+  | 'named_alternative'
+  | 'stake_improved';
 
 type DetectedSignal = {
   kind: SignalKind;
@@ -74,6 +75,8 @@ function isNegated(line: string): boolean {
 function isHypothesis(line: string): boolean {
   return /(가설|목표|예정|계획|시 ROI|감소 시)/.test(line);
 }
+
+const STAKE_NOUN = /(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하)/i;
 
 function isIntentWithoutAction(line: string): boolean {
   return /(생각|의향|하려고|검토 중)/.test(line) && /(아직|아무도|없)/.test(line);
@@ -217,6 +220,15 @@ function scanLine(line: string): DetectedSignal[] {
     matchAny(line, [/no-show/i, /노쇼/, /반품/, /누락/, /불일치/, /미스매치/, /이탈/, /부하/])
   ) {
     push('quantified_problem', negated || isHypothesis(line) ? 'CLAIM' : 'FACT', 'customerProblemFit');
+  }
+
+  if (
+    !negated &&
+    !isHypothesis(line) &&
+    STAKE_NOUN.test(line) &&
+    (/(줄었|감소했|개선됐|개선되)/.test(line) || /\d+\s*%.{0,8}(에서|→)\s*\d+\s*%/.test(line))
+  ) {
+    push('stake_improved', 'VALIDATED', 'validationStrength');
   }
 
   if (
@@ -393,9 +405,16 @@ function buildAxes(signals: DetectedSignal[]): SiAxisJudgment[] {
   }));
 }
 
+function dceStakeOpen(signals: DetectedSignal[]): boolean {
+  return hasKind(signals, 'quantified_problem') && !hasKind(signals, 'stake_improved', false);
+}
+
 function decideStage(signals: DetectedSignal[]): SiStageId {
   if (hasKind(signals, 'repeat_validation', false)) return 'S4';
-  if (hasKind(signals, 'revenue', false) || hasKind(signals, 'launch', false)) return 'S3';
+  const paymentWithoutStake = hasKind(signals, 'revenue', false) && dceStakeOpen(signals);
+  if ((hasKind(signals, 'revenue', false) && !paymentWithoutStake) || hasKind(signals, 'launch', false)) {
+    return 'S3';
+  }
   const commerciallyStarted =
     hasKind(signals, 'revenue', false) ||
     hasKind(signals, 'launch', false) ||
@@ -425,6 +444,7 @@ function decideVerdict(stageId: SiStageId, signals: DetectedSignal[], axes: SiAx
   const jobUnknown = hasKind(signals, 'job_unknown');
 
   if (hasRepeat && hasRevenue) return 'viable';
+  if (dceStakeOpen(signals)) return 'judgment_deferred';
   if ((hasRevenue || (hasLaunch && hasOps)) && customerAxis?.status !== 'unknown' && !jobUnknown) {
     return hasRevenue ? 'viable' : 'conditionally_viable';
   }
@@ -435,8 +455,6 @@ function decideVerdict(stageId: SiStageId, signals: DetectedSignal[], axes: SiAx
   if (stageId === 'S0' && evidenceCount < 3) return 'insufficient_basis';
   return 'judgment_deferred';
 }
-
-const STAKE_NOUN = /(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하)/i;
 
 function stakeNoun(line: string): string {
   const adjacent = line.match(
@@ -668,6 +686,14 @@ function addInferences(items: SiEvidenceItem[], signals: DetectedSignal[], stage
       text: '사용자와 결제자가 다르면 문제 인식과 지불 의향을 따로 검증해야 한다.',
       evidenceClass: 'INFERENCE',
       axisId: 'customerProblemFit',
+    });
+  }
+  if (hasKind(signals, 'revenue', false) && dceStakeOpen(signals)) {
+    inferences.push({
+      id: `ev-inf-${inferences.length + 1}`,
+      text: '유료 전환 증거는 있으나, 문서가 수치화한 지표 전후는 아직 열려 있어 DCE는 부분이다.',
+      evidenceClass: 'INFERENCE',
+      axisId: 'validationStrength',
     });
   }
   if (stageId === 'S0' || stageId === 'S1') {
