@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Accuracy Batch #2 — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-accuracy-batch-2-e648` · Fix `4b2aa21` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-BATCH-2.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Positive promotion → CU/Priority/Question | ✅ 측정 · 2/2 generic_ask 5 · stale CU 주인집·RIDM 2 |
+| 2 | Direct denial → CONFLICT → 재판단 | ✅ 측정 · ignored_direct_conflict 8/8 FACT no-op |
+| 3 | 재구매 0 ≠ CONFLICT | ✅ 유지 · 7/8은 S3→S4 추가 승격 |
+| 4 | Negative / Founder / #104 / #107 / P0 | ✅ 회귀 8/8 |
+| 5 | Presenter / Fix / Production | 없음 |
+
+---
+
 ## S.I. Post-Negative Accuracy Batch — MEASUREMENT COMPLETE
 
 **Branch:** `cursor/si-post-negative-accuracy-e648` · Fix `4b2aa21` · Production `dea7cb1` 불변  
