@@ -4,6 +4,7 @@
 **Base:** PR #93 Phase 2 PASS `9b16059`  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-phase3-ai-pm-bind.json`  
 **Tests:** `pnpm exec vitest run features/strategic-intelligence` → 7 files / 25 passed  
+**Browser:** Playwright `e2e/si-phase3-ai-pm-bind.spec.ts` PASS 3.6s on :3044 (S3 → answer → S4). Review surface regression PASS 9.2s.  
 **금지:** `decideNextQuestionFromReview` 개조 · PR #89 · P0-1/P0-2 · 새 persist SoT · 사업별 질문 하드코딩 · Critical Unknown 복사 · 질문 수 증가를 성공으로 취급
 
 PR #93 원본은 보존한다. 이 PR에 Phase 2를 되돌려 쓰지 않는다.

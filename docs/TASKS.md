@@ -4,7 +4,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## S.I. Phase 3 — AI PM Bind 🔄
+## S.I. Phase 3 — AI PM Bind ✅
 
 **Branch:** `cursor/si-phase3-ai-pm-bind-e648` · base PR #93 `9b16059`  
 **Out of scope:** `decideNextQuestionFromReview` rewrite · PR #89 · P0-1/P0-2 · new persist SoT · per-business questions · CU copy · Production
