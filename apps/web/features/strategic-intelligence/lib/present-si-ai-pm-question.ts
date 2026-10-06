@@ -23,11 +23,38 @@ function firstSentence(text: string): string {
   return (stop === -1 ? clipped : clipped.slice(0, stop)).trim();
 }
 
+function stakeFromAsk(text: string): string | null {
+  const match = text.match(/(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하)/i);
+  return match?.[1] ?? null;
+}
+
+function alternativeFromAsk(text: string): string | null {
+  const known = text.match(/\b(?:EMR|CRM|ERP|PDP|API)\b/);
+  if (known) return known[0];
+  const titled = text.match(/[A-Z][a-z]+(?:\s+[A-Z][a-zA-Z]+)+/);
+  return titled?.[0] ?? null;
+}
+
+function composeQuestion(ask: SiValidationAsk): string {
+  const blob = [ask.criticalUnknown, ask.decisionChangingEvidence, ask.validationPriority].join(' ');
+  const stake = stakeFromAsk(blob);
+  const versus = alternativeFromAsk(blob);
+  const namesResale = /(C2C|재판매)/.test(blob);
+
+  if (stake && !namesResale && (ask.kind === 'paid_conversion' || ask.kind === 'repeat_loop')) {
+    const versusClause = versus ? ` ${versus} 대비` : '';
+    return `${stake} 수치를 실제로 얼마나 줄였고,${versusClause} 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.`;
+  }
+
+  return QUESTION_BY_KIND[ask.kind];
+}
+
 /**
  * AI PM executes one S.I. ask. The question is not a copy of Critical Unknown.
+ * When DCE names a quantified stake, the spoken question must carry that stake.
  */
 export function presentSiAiPmQuestion(ask: SiValidationAsk): SiAiPmQuestion {
-  const questionText = QUESTION_BY_KIND[ask.kind];
+  const questionText = composeQuestion(ask);
   return {
     questionText,
     whyAsking: `이 답이 들어오면 S.I.가 판단을 다시 계산합니다. ${firstSentence(ask.decisionChangingEvidence)}.`,

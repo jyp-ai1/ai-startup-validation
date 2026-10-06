@@ -22,20 +22,20 @@
   {
     "id": "clinicflow",
     "siKind": "paid_conversion",
-    "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+    "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
     "gapQuestion": "이 사업은 누구에게 무엇을 제공하나요?",
     "adaptedSource": "si-v1-priority",
-    "adaptedQuestion": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+    "adaptedQuestion": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
     "copiedCriticalUnknown": false,
     "preferSi": true
   },
   {
     "id": "fitbridge",
     "siKind": "paid_conversion",
-    "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+    "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
     "gapQuestion": "이 사업은 누구에게 무엇을 제공하나요?",
     "adaptedSource": "si-v1-priority",
-    "adaptedQuestion": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+    "adaptedQuestion": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
     "copiedCriticalUnknown": false,
     "preferSi": true
   },

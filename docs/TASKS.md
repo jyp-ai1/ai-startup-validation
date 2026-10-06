@@ -4,6 +4,140 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Full DCE State Reconciliation ✅ PASS CLOSED
+
+**PR:** #107 Fix · **Branch:** `cursor/si-dce-reconciliation-e648` · CPO 2-pass PASS · Production 미배포  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DCE-RECONCILIATION.md`  
+**기준선:** #104 Partial DCE → #106 stale CU FAIL → #107 DCE Reconciliation PASS CLOSED
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | #104 1/2 · 지불만 ≠ S3 | ✅ |
+| 2 | DCE 2/2에서 CU/DCE/Priority/질문 재계산 | ✅ |
+| 3 | unnamed 3-domain + 클리닉/핏브릿지 2/2 | ✅ PASS |
+| 4 | 2/2 + 추가 evidence | ✅ PASS |
+| 5 | SI 118 + P0-1/P0-2 23 · Production | ✅ / 불변 |
+
+---
+
+## S.I. Stale Critical Unknown ✅ MEASUREMENT COMPLETE (Fix 아님)
+
+**PR:** #106 측정 전용 · **Branch:** `cursor/si-stale-cu-e648` · base #105 · Baseline `fbf6f1c`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-STALE-CU.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | #104 지불만 ≠ S3 유지 | ✅ |
+| 2 | stale_cu_after_full_dce 정의 고정 | ✅ |
+| 3 | 일반 DCE 0/2 1/2 2/2 2/2+extra | ✅ 이름 없는 이탈 포함 |
+| 4 | 2/2에서 J/CU/DCE/Priority/질문 | ✅ 5/5 FAIL |
+| 5 | 엔진 / Fix / Production | 없음 |
+
+---
+
+## S.I. Decision Quality Follow-up ✅ MEASUREMENT COMPLETE (Fix 아님)
+
+**PR:** #105 측정 전용 · **Branch:** `cursor/si-decision-quality-followup-e648` · base PR #104 SHA `fbf6f1c`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DECISION-QUALITY-FOLLOWUP.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | #104 기준선 유지 (지불만 ≠ S3) | ✅ |
+| 2 | 클리닉/핏브릿지 5시나리오 × Judgment/CU/Priority | ✅ |
+| 3 | Founder 4항 가독성 | ✅ 10/10 |
+| 4 | 실패 유형 분류 | ✅ stale_cu_after_full_dce 2행 |
+| 5 | 엔진 / Fix PR / Production | 없음 |
+
+---
+
+## S.I. Partial DCE Promotion Gate ✅ PASS CLOSED — 기준선 고정
+
+**Branch:** `cursor/si-partial-dce-e648` · SHA `fbf6f1c` · base PR #103 · CPO PASS · Production 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-PARTIAL-DCE.md`  
+**기준선:** 부분 Evidence는 전체 DCE/S3로 승격하지 않는다. 클리닉/핏브릿지 PARTIAL은 정직한 상태다.
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 지불만으로 S3/viable 금지 | ✅ |
+| 2 | 전체 DCE 충족 시에만 승격 | ✅ |
+| 3 | 5사업 방향 + 주인집/LMULM/RIDM 회귀 | ✅ |
+| 4 | PR #98 2회 루프 유지 | ✅ |
+| 5 | 질문 생성기 / `decideNextQuestionFromReview` / Production | 불변 |
+
+---
+
+## S.I. Decision Quality / Founder Outcome Calibration ✅ MEASUREMENT COMPLETE / FAIL
+
+**Branch:** `cursor/si-decision-quality-e648` · base PR #102 · 측정만 · 새 기능/UI 금지 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-OUTCOME.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 5사업 t0 판단·리스크·CU·DCE·Priority·질문 | ✅ |
+| 2 | 답변 후 재판단 정직성 | ✅ 클리닉/핏브릿지 지불만으로 viable |
+| 3 | Founder 검증/중단/집중이 읽히는가 | ✅ t0 5/5 |
+| 4 | 방향 일치 ≠ 더 좋은 의사결정 구분 | ✅ 방향 5/5, Outcome 3/2 |
+| 5 | 엔진/질문 생성기 수정 | 없음 |
+
+---
+
+## S.I. Question DCE Ask Gate ✅ CLOSED
+
+**Branch:** `cursor/si-question-dce-ask-e648` · base PR #101 · 질문 하드코딩 금지 · 엔진 재설계 금지 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-DCE-ASK.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | DCE 특수 지표를 실제 Founder 질문에 반영 | ✅ |
+| 2 | 주인집·LMULM·RIDM 질문 회귀 고정 | ✅ |
+| 3 | 5사업 Evidence 재진입 + PR #98 2회 루프 | ✅ |
+| 4 | 유료 답 이후 클리닉/핏브릿지가 재판매로 새지 않음 | ✅ |
+| 5 | `decideNextQuestionFromReview` / Production | 불변 |
+
+---
+
+## S.I. Question Alignment Gate ✅ MEASUREMENT COMPLETE / CONDITIONAL PASS
+
+**Branch:** `cursor/si-question-alignment-e648` · base PR #100 · 측정만 · 질문 하드코딩 금지 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 5사업 Priority → AI PM 질문 기록 | ✅ |
+| 2 | 질문이 DCE를 묻는가 / 일반 paid_conversion 퇴행인가 | ✅ 3 PASS / 2 PARTIAL |
+| 3 | 답변 → S.I. Evidence | ✅ 5/5 |
+| 4 | PR #98 2회 루프 유지 | ✅ |
+| 5 | 질문 생성기 수정 | 없음 |
+
+---
+
+## S.I. CU Calibration Gate ✅ CLOSED
+
+**Branch:** `cursor/si-cu-calibration-e648` · base PR #99 · First-Pass 재설계 금지 · 사업명 하드코딩 금지 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-CU-CALIBRATION.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 주인집·LMULM·RIDM t0 회귀 고정 | ✅ |
+| 2 | 수치화 문제 + 이름 있는 대안 → CU 일반화 | ✅ |
+| 3 | 5사업 t0 재실행 · 2 개선 + 3 회귀 | ✅ 클리닉/핏브릿지 PASS, 3개 불변 |
+| 4 | 클리닉플로우·핏브릿지 브랜드 예외 없음 | ✅ 이름 없는 입력으로 동일 규칙 |
+
+---
+
+## S.I. First-Pass Judgment Calibration Gate ✅
+
+**Branch:** `cursor/si-first-pass-calibration-e648` · 측정만 · engine/UI/Production 금지
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 5사업 t0 6필드 추출 | ✅ |
+| 2 | GPT/Gemini 독립 비교 6축 | ✅ 3 PASS / 2 PARTIAL / 0 FAIL |
+| 3 | 판단 방향 5/5 | ✅ |
+| 4 | 엔진 수정 | 없음 |
+
+---
+
 ## S.I. Founder Journey E2E Gate ✅
 
 **Branch:** `cursor/si-founder-journey-e2e-e648` · base PR #97 · 기능 추가 없음  

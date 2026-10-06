@@ -29,7 +29,10 @@ type SignalKind =
   | 'payer_unknown'
   | 'no_revenue'
   | 'no_launch'
-  | 'unverified';
+  | 'unverified'
+  | 'quantified_problem'
+  | 'named_alternative'
+  | 'stake_improved';
 
 type DetectedSignal = {
   kind: SignalKind;
@@ -72,6 +75,8 @@ function isNegated(line: string): boolean {
 function isHypothesis(line: string): boolean {
   return /(가설|목표|예정|계획|시 ROI|감소 시)/.test(line);
 }
+
+const STAKE_NOUN = /(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하)/i;
 
 function isIntentWithoutAction(line: string): boolean {
   return /(생각|의향|하려고|검토 중)/.test(line) && /(아직|아무도|없)/.test(line);
@@ -208,6 +213,30 @@ function scanLine(line: string): DetectedSignal[] {
 
   if (matchAny(line, [/조사되지/, /확인되지/, /검증되지/, /데이터는 아직/]) && found.length === 0) {
     push('unverified', 'ASSUMPTION', 'validationStrength');
+  }
+
+  if (
+    /\d+\s*(?:~\s*)?\d*\s*%/.test(line) &&
+    matchAny(line, [/no-show/i, /노쇼/, /반품/, /누락/, /불일치/, /미스매치/, /이탈/, /부하/])
+  ) {
+    push('quantified_problem', negated || isHypothesis(line) ? 'CLAIM' : 'FACT', 'customerProblemFit');
+  }
+
+  if (
+    !negated &&
+    !isHypothesis(line) &&
+    STAKE_NOUN.test(line) &&
+    (/(줄었|감소했|개선됐|개선되)/.test(line) || /\d+\s*%.{0,8}(에서|→)\s*\d+\s*%/.test(line))
+  ) {
+    push('stake_improved', 'VALIDATED', 'validationStrength');
+  }
+
+  if (
+    matchAny(line, [/대안/, /경쟁/, /대비/, /차별/, /솔루션/, /연동/]) &&
+    (/\b(?:EMR|CRM|ERP|PDP|API)\b/.test(line) ||
+      /[A-Z][a-zA-Z]{2,}(?:\s+[A-Z][a-zA-Z]+)?/.test(line))
+  ) {
+    push('named_alternative', 'FACT', 'marketAlternatives');
   }
 
   return found;
@@ -376,9 +405,16 @@ function buildAxes(signals: DetectedSignal[]): SiAxisJudgment[] {
   }));
 }
 
+function dceStakeOpen(signals: DetectedSignal[]): boolean {
+  return hasKind(signals, 'quantified_problem') && !hasKind(signals, 'stake_improved', false);
+}
+
 function decideStage(signals: DetectedSignal[]): SiStageId {
   if (hasKind(signals, 'repeat_validation', false)) return 'S4';
-  if (hasKind(signals, 'revenue', false) || hasKind(signals, 'launch', false)) return 'S3';
+  const paymentWithoutStake = hasKind(signals, 'revenue', false) && dceStakeOpen(signals);
+  if ((hasKind(signals, 'revenue', false) && !paymentWithoutStake) || hasKind(signals, 'launch', false)) {
+    return 'S3';
+  }
   const commerciallyStarted =
     hasKind(signals, 'revenue', false) ||
     hasKind(signals, 'launch', false) ||
@@ -408,6 +444,7 @@ function decideVerdict(stageId: SiStageId, signals: DetectedSignal[], axes: SiAx
   const jobUnknown = hasKind(signals, 'job_unknown');
 
   if (hasRepeat && hasRevenue) return 'viable';
+  if (dceStakeOpen(signals)) return 'judgment_deferred';
   if ((hasRevenue || (hasLaunch && hasOps)) && customerAxis?.status !== 'unknown' && !jobUnknown) {
     return hasRevenue ? 'viable' : 'conditionally_viable';
   }
@@ -417,6 +454,58 @@ function decideVerdict(stageId: SiStageId, signals: DetectedSignal[], axes: SiAx
   }
   if (stageId === 'S0' && evidenceCount < 3) return 'insufficient_basis';
   return 'judgment_deferred';
+}
+
+function stakeNoun(line: string): string {
+  const adjacent = line.match(
+    /(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하).{0,3}\d+\s*(?:~\s*)?\d*\s*%/i,
+  );
+  if (adjacent?.[1]) return adjacent[1];
+  const match = line.match(STAKE_NOUN);
+  return match?.[1] ?? '수치화된 문제 지표';
+}
+
+function alternativeNoun(line: string): string {
+  const known = line.match(/\b(?:EMR|CRM|ERP|PDP|API)\b/);
+  if (known) return known[0];
+  const titled = line.match(/[A-Z][a-z]+(?:\s+[A-Z][a-zA-Z]+)+/);
+  if (titled) return titled[0];
+  const word = line.match(/[A-Z][a-zA-Z]{2,}/);
+  return word?.[0] ?? '기존 대안';
+}
+
+function pickNamedAlternative(signals: DetectedSignal[]): DetectedSignal | undefined {
+  const named = signals.filter((signal) => signal.kind === 'named_alternative');
+  return named.find((signal) => /대안|경쟁|대비|솔루션|차별/.test(signal.text)) ?? named[0];
+}
+
+function paidConversionUnknown(signals: DetectedSignal[]): {
+  criticalUnknown: string;
+  decisionChangingEvidence: string;
+  validationPriority: string;
+} {
+  const metric = signals.find((signal) => signal.kind === 'quantified_problem');
+  const alternative = pickNamedAlternative(signals);
+  if (!metric) {
+    return {
+      criticalUnknown:
+        '이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.',
+      decisionChangingEvidence:
+        '최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.',
+      validationPriority: '가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.',
+    };
+  }
+
+  const stake = stakeNoun(metric.text);
+  const versus = alternative ? alternativeNoun(alternative.text) : null;
+  const versusClause = versus
+    ? ` ${versus} 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다.`
+    : '';
+  return {
+    criticalUnknown: `결제 후보가 유료로 썼을 때 문서가 수치화한 ${stake} 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.`,
+    decisionChangingEvidence: `유료 파일럿 1건과 ${stake} 전후 비교.${versusClause} 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.`,
+    validationPriority: `가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 ${stake}의 전후를 한 번 잰다.`,
+  };
 }
 
 function pickCriticalUnknown(signals: DetectedSignal[]): {
@@ -465,12 +554,31 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
   }
 
   if (!hasKind(signals, 'revenue', false) && !hasKind(signals, 'repeat_validation', false)) {
+    return paidConversionUnknown(signals);
+  }
+
+  const metric = signals.find((signal) => signal.kind === 'quantified_problem');
+  if (metric && dceStakeOpen(signals) && !hasKind(signals, 'repeat_validation', false)) {
+    const stake = stakeNoun(metric.text);
+    const alternative = pickNamedAlternative(signals);
+    const versus = alternative ? alternativeNoun(alternative.text) : null;
+    const versusClause = versus
+      ? ` ${versus} 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다.`
+      : '';
+    return {
+      criticalUnknown: `유료 전환 이후 문서가 수치화한 ${stake} 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.`,
+      decisionChangingEvidence: `이미 결제한 후보의 ${stake} 전후 비교.${versusClause} 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.`,
+      validationPriority: `이미 돈을 낸 후보에서 문서가 적은 ${stake}의 전후를 한 번 잰다.`,
+    };
+  }
+
+  if (metric && hasKind(signals, 'stake_improved', false) && !hasKind(signals, 'resale_thesis')) {
     return {
       criticalUnknown:
-        '이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.',
+        '이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.',
       decisionChangingEvidence:
-        '최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.',
-      validationPriority: '가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.',
+        '다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.',
+      validationPriority: '다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.',
     };
   }
 
@@ -524,6 +632,10 @@ function buildRisks(signals: DetectedSignal[], criticalUnknown: string): string[
   }
   if (hasKind(signals, 'unverified') && !hasKind(signals, 'revenue', false)) {
     out.push('유료 전환·파일럿 성과가 아직 검증되지 않았다.');
+  }
+  const metric = signals.find((signal) => signal.kind === 'quantified_problem');
+  if (metric && !hasKind(signals, 'revenue', false)) {
+    out.push(`문서가 수치화한 ${stakeNoun(metric.text)} 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.`);
   }
   if (out.length === 0) {
     out.push(criticalUnknown);
@@ -584,6 +696,14 @@ function addInferences(items: SiEvidenceItem[], signals: DetectedSignal[], stage
       text: '사용자와 결제자가 다르면 문제 인식과 지불 의향을 따로 검증해야 한다.',
       evidenceClass: 'INFERENCE',
       axisId: 'customerProblemFit',
+    });
+  }
+  if (hasKind(signals, 'revenue', false) && dceStakeOpen(signals)) {
+    inferences.push({
+      id: `ev-inf-${inferences.length + 1}`,
+      text: '유료 전환 증거는 있으나, 문서가 수치화한 지표 전후는 아직 열려 있어 DCE는 부분이다.',
+      evidenceClass: 'INFERENCE',
+      axisId: 'validationStrength',
     });
   }
   if (stageId === 'S0' || stageId === 'S1') {
