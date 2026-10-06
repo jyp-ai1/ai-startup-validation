@@ -4,6 +4,19 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. vs Gap Loop Diagnostic ✅
+
+**Branch:** `cursor/si-gap-loop-diagnostic-e648` · base PR #95  
+**Out of scope:** engine rewrite · gap-loop delete · UI · new SoT · Production · per-business patches  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-GAP-LOOP-DIAGNOSTIC.md`
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | Compare S.I. Validation Priority vs `decideNextQuestionFromReview` on 5 businesses | ✅ |
+| 2 | Classify A/B/C/D without changing the engine | ✅ 5×B · C/D=0 |
+
+---
+
 ## S.I. Integration Gate ✅
 
 **Branch:** `cursor/si-integration-gate-e648` · base PR #94  
