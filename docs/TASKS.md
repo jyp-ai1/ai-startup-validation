@@ -4,9 +4,17 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. DCE Reconciliation ✅ PRODUCTION ACCEPTED
+
+**PR:** #107 · **Promotion:** #108 PASS · **Production SHA:** `127162b`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DCE-RECONCILIATION-PRODUCTION.md`  
+**기준선:** #104 → #106 FAIL → #107 PASS CLOSED → #108 PASS → Production
+
+---
+
 ## S.I. Full DCE State Reconciliation ✅ PASS CLOSED
 
-**PR:** #107 Fix · **Branch:** `cursor/si-dce-reconciliation-e648` · CPO 2-pass PASS · Production 미배포  
+**PR:** #107 Fix · **Branch:** `cursor/si-dce-reconciliation-e648` · CPO 2-pass PASS  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DCE-RECONCILIATION.md`  
 **기준선:** #104 Partial DCE → #106 stale CU FAIL → #107 DCE Reconciliation PASS CLOSED
 

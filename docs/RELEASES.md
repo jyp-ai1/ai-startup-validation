@@ -6,6 +6,17 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### S.I. DCE Reconciliation (2026-10-06) ✅ Production
+
+**Production SHA:** `127162b2c0a1db715dc12fbeaa51a14c9e0c830f` · **PR:** #107 · **Promotion:** #108 PASS  
+**Prod:** https://ai-startup-validation-tau.vercel.app · **SHA triangle:** MATCH
+
+- DCE 2/2 retires the previous CU and moves the next unknown to repeatability
+- DCE 0/2 · 1/2 stay honest PARTIAL (#104)
+- `decideNextQuestionFromReview` unchanged
+
+Evidence: [`docs/evidence/ALABOM/SI/SI-V1-DCE-RECONCILIATION-PRODUCTION.md`](./evidence/ALABOM/SI/SI-V1-DCE-RECONCILIATION-PRODUCTION.md)
+
 ### S.I. Founder Journey E2E Gate (2026-10-06) ✅ Production
 
 **Production SHA:** `9221861176f243fb233bfc79a5fd9502ad474d20` · **PR:** #98  
