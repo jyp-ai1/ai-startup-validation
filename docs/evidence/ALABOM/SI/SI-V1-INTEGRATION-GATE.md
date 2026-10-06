@@ -4,6 +4,7 @@
 **Base:** PR #94 Phase 3 PASS  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-integration-gate.json`  
 **Tests:** `pnpm exec vitest run features/strategic-intelligence` → 9 files / 47 passed  
+**Browser:** Playwright 5-business Integration Gate + Phase 3/Review regression **7 passed / 17.9s**  
 **금지:** `decideNextQuestionFromReview` 개조 · PR #89 · P0-1/P0-2 · 새 SoT · 사업별 예외 · gap loop 교체 · Production
 
 #94는 보존한다. Gap loop는 유지한다. S.I.가 원본 사업 입력만 읽고, gap-loop 문서 재작성은 무시한다.
