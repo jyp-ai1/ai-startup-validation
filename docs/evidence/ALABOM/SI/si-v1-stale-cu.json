@@ -93,20 +93,20 @@
       "verdictId": "viable",
       "stageId": "S3",
       "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
-      "criticalUnknown": "유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "decisionChangingEvidence": "이미 결제한 후보의 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
-      "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 no-show의 전후를 한 번 잰다."
+      "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+      "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다."
     },
-    "nextQuestion": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "nextKind": "paid_conversion",
+    "nextQuestion": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+    "nextKind": "generic",
     "promoted": true,
     "stale": {
-      "cu": true,
-      "dce": true,
-      "priority": true,
-      "question": true
+      "cu": false,
+      "dce": false,
+      "priority": false,
+      "question": false
     },
-    "verdict": "FAIL"
+    "verdict": "PASS"
   },
   {
     "id": "nameless_noshow",
@@ -131,20 +131,20 @@
       "verdictId": "viable",
       "stageId": "S3",
       "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
-      "criticalUnknown": "유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "decisionChangingEvidence": "이미 결제한 후보의 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
-      "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 no-show의 전후를 한 번 잰다."
+      "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+      "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다."
     },
-    "nextQuestion": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "nextKind": "paid_conversion",
+    "nextQuestion": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+    "nextKind": "generic",
     "promoted": true,
     "stale": {
-      "cu": true,
-      "dce": true,
-      "priority": true,
-      "question": true
+      "cu": false,
+      "dce": false,
+      "priority": false,
+      "question": false
     },
-    "verdict": "FAIL"
+    "verdict": "PASS"
   },
   {
     "id": "nameless_returns",
@@ -240,20 +240,20 @@
       "verdictId": "viable",
       "stageId": "S3",
       "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
-      "criticalUnknown": "유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "decisionChangingEvidence": "이미 결제한 후보의 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
-      "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 반품률의 전후를 한 번 잰다."
+      "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+      "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다."
     },
-    "nextQuestion": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "nextKind": "paid_conversion",
+    "nextQuestion": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+    "nextKind": "generic",
     "promoted": true,
     "stale": {
-      "cu": true,
-      "dce": true,
-      "priority": true,
-      "question": true
+      "cu": false,
+      "dce": false,
+      "priority": false,
+      "question": false
     },
-    "verdict": "FAIL"
+    "verdict": "PASS"
   },
   {
     "id": "nameless_returns",
@@ -278,20 +278,20 @@
       "verdictId": "viable",
       "stageId": "S3",
       "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
-      "criticalUnknown": "유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "decisionChangingEvidence": "이미 결제한 후보의 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
-      "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 반품률의 전후를 한 번 잰다."
+      "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+      "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다."
     },
-    "nextQuestion": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "nextKind": "paid_conversion",
+    "nextQuestion": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+    "nextKind": "generic",
     "promoted": true,
     "stale": {
-      "cu": true,
-      "dce": true,
-      "priority": true,
-      "question": true
+      "cu": false,
+      "dce": false,
+      "priority": false,
+      "question": false
     },
-    "verdict": "FAIL"
+    "verdict": "PASS"
   },
   {
     "id": "nameless_churn",
@@ -386,21 +386,21 @@
     "tFinal": {
       "verdictId": "conditionally_viable",
       "stageId": "S3",
-      "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 유료 전환 이후 문서가 수치화한 이탈 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
-      "criticalUnknown": "유료 전환 이후 문서가 수치화한 이탈 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "decisionChangingEvidence": "이미 결제한 후보의 이탈 전후 비교. CRM 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
-      "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 이탈의 전후를 한 번 잰다."
+      "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+      "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+      "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다."
     },
-    "nextQuestion": "이탈 수치를 실제로 얼마나 줄였고, CRM 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "nextKind": "paid_conversion",
+    "nextQuestion": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+    "nextKind": "generic",
     "promoted": true,
     "stale": {
-      "cu": true,
-      "dce": true,
-      "priority": true,
-      "question": true
+      "cu": false,
+      "dce": false,
+      "priority": false,
+      "question": false
     },
-    "verdict": "FAIL"
+    "verdict": "PASS"
   },
   {
     "id": "nameless_churn",
@@ -425,20 +425,20 @@
       "verdictId": "viable",
       "stageId": "S3",
       "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
-      "criticalUnknown": "유료 전환 이후 문서가 수치화한 이탈 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "decisionChangingEvidence": "이미 결제한 후보의 이탈 전후 비교. CRM 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
-      "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 이탈의 전후를 한 번 잰다."
+      "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+      "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다."
     },
-    "nextQuestion": "이탈 수치를 실제로 얼마나 줄였고, CRM 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "nextKind": "paid_conversion",
+    "nextQuestion": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+    "nextKind": "generic",
     "promoted": true,
     "stale": {
-      "cu": true,
-      "dce": true,
-      "priority": true,
-      "question": true
+      "cu": false,
+      "dce": false,
+      "priority": false,
+      "question": false
     },
-    "verdict": "FAIL"
+    "verdict": "PASS"
   },
   {
     "id": "clinicflow",
@@ -533,21 +533,21 @@
     "tFinal": {
       "verdictId": "viable",
       "stageId": "S3",
-      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "criticalUnknown": "유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "decisionChangingEvidence": "이미 결제한 후보의 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
-      "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 no-show의 전후를 한 번 잰다."
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+      "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다."
     },
-    "nextQuestion": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "nextKind": "paid_conversion",
+    "nextQuestion": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+    "nextKind": "generic",
     "promoted": true,
     "stale": {
-      "cu": true,
-      "dce": true,
-      "priority": true,
-      "question": true
+      "cu": false,
+      "dce": false,
+      "priority": false,
+      "question": false
     },
-    "verdict": "FAIL"
+    "verdict": "PASS"
   },
   {
     "id": "clinicflow",
@@ -571,21 +571,21 @@
     "tFinal": {
       "verdictId": "viable",
       "stageId": "S3",
-      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "criticalUnknown": "유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "decisionChangingEvidence": "이미 결제한 후보의 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
-      "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 no-show의 전후를 한 번 잰다."
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+      "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다."
     },
-    "nextQuestion": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "nextKind": "paid_conversion",
+    "nextQuestion": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+    "nextKind": "generic",
     "promoted": true,
     "stale": {
-      "cu": true,
-      "dce": true,
-      "priority": true,
-      "question": true
+      "cu": false,
+      "dce": false,
+      "priority": false,
+      "question": false
     },
-    "verdict": "FAIL"
+    "verdict": "PASS"
   },
   {
     "id": "fitbridge",
@@ -680,21 +680,21 @@
     "tFinal": {
       "verdictId": "viable",
       "stageId": "S3",
-      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "criticalUnknown": "유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "decisionChangingEvidence": "이미 결제한 후보의 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
-      "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 반품률의 전후를 한 번 잰다."
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+      "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다."
     },
-    "nextQuestion": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "nextKind": "paid_conversion",
+    "nextQuestion": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+    "nextKind": "generic",
     "promoted": true,
     "stale": {
-      "cu": true,
-      "dce": true,
-      "priority": true,
-      "question": true
+      "cu": false,
+      "dce": false,
+      "priority": false,
+      "question": false
     },
-    "verdict": "FAIL"
+    "verdict": "PASS"
   },
   {
     "id": "fitbridge",
@@ -718,20 +718,20 @@
     "tFinal": {
       "verdictId": "viable",
       "stageId": "S3",
-      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "criticalUnknown": "유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
-      "decisionChangingEvidence": "이미 결제한 후보의 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
-      "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 반품률의 전후를 한 번 잰다."
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+      "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다."
     },
-    "nextQuestion": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
-    "nextKind": "paid_conversion",
+    "nextQuestion": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+    "nextKind": "generic",
     "promoted": true,
     "stale": {
-      "cu": true,
-      "dce": true,
-      "priority": true,
-      "question": true
+      "cu": false,
+      "dce": false,
+      "priority": false,
+      "question": false
     },
-    "verdict": "FAIL"
+    "verdict": "PASS"
   }
 ]

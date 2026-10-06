@@ -558,7 +558,7 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
   }
 
   const metric = signals.find((signal) => signal.kind === 'quantified_problem');
-  if (metric && !hasKind(signals, 'repeat_validation', false)) {
+  if (metric && dceStakeOpen(signals) && !hasKind(signals, 'repeat_validation', false)) {
     const stake = stakeNoun(metric.text);
     const alternative = pickNamedAlternative(signals);
     const versus = alternative ? alternativeNoun(alternative.text) : null;
@@ -569,6 +569,16 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
       criticalUnknown: `유료 전환 이후 문서가 수치화한 ${stake} 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.`,
       decisionChangingEvidence: `이미 결제한 후보의 ${stake} 전후 비교.${versusClause} 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.`,
       validationPriority: `이미 돈을 낸 후보에서 문서가 적은 ${stake}의 전후를 한 번 잰다.`,
+    };
+  }
+
+  if (metric && hasKind(signals, 'stake_improved', false) && !hasKind(signals, 'resale_thesis')) {
+    return {
+      criticalUnknown:
+        '이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.',
+      decisionChangingEvidence:
+        '다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.',
+      validationPriority: '다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.',
     };
   }
 

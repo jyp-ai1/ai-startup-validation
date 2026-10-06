@@ -190,18 +190,27 @@ describe('S.I. Stale CU after full DCE — measure only', () => {
       expect(row.nextQuestion).not.toMatch(/재판매/);
     }
 
-    for (const row of two) {
+    for (const row of one) {
+      expect(row.tFinal.criticalUnknown).toMatch(/지불만|줄었는가/);
+      expect(row.nextQuestion).toMatch(/전후 수치|얼마나 줄였/);
+    }
+
+    for (const row of [...two, ...extra]) {
       expect(row.promoted).toBe(true);
       expect(row.tFinal.stageId).toBe('S3');
+      expect(row.verdict).toBe('PASS');
+      expect(row.stale.cu).toBe(false);
+      expect(row.stale.question).toBe(false);
+      expect(row.tFinal.criticalUnknown).not.toMatch(/지불만|실제로 줄었는가/);
+      expect(row.nextQuestion).not.toMatch(/전후 수치|얼마나 줄였|재판매/);
     }
 
     const namelessTwo = two.filter((row) => row.generalized);
     const brandTwo = two.filter((row) => !row.generalized);
     expect(namelessTwo).toHaveLength(3);
     expect(brandTwo).toHaveLength(2);
-    expect(namelessTwo.every((row) => row.verdict === brandTwo[0]?.verdict)).toBe(true);
-    expect(extra.every((row) => row.verdict === two[0]?.verdict)).toBe(true);
-    expect(rows.every((row) => row.nextQuestion.includes('재판매'))).toBe(false);
+    expect(namelessTwo.every((row) => row.verdict === 'PASS')).toBe(true);
+    expect(brandTwo.every((row) => row.verdict === 'PASS')).toBe(true);
   });
 
   it('keeps #104: payment-only on a nameless quantified problem stays off S3', () => {
