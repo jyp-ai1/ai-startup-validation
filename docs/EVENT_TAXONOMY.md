@@ -78,6 +78,16 @@ All product events use `recordFunnelEvent()` → ops store → Supabase `analyti
 
 ---
 
+## S.I. events
+
+| Event | Purpose |
+|-------|---------|
+| `si_judgment_viewed` | S.I. Review Surface rendered |
+| `si_ai_pm_question_asked` | AI PM presented the S.I. validation ask |
+| `si_ai_pm_answer_applied` | Founder answer entered Phase 2 re-judgment |
+
+---
+
 ## Feedback events
 
 | Event | Purpose |

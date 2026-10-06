@@ -108,8 +108,9 @@ import {
 import { type ConversationFactKey } from '../../lib/business-understanding/conversation-memory';
 
 import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
-import { analyzeStrategicIntelligence } from '@/features/strategic-intelligence/lib/analyze-strategic-intelligence';
+import { SiAiPmBindSurface } from '@/features/strategic-intelligence/components/si-ai-pm-bind-surface';
 import { SiReviewSurface } from '@/features/strategic-intelligence/components/si-review-surface';
+import { resolveSiAiPmBindView } from '@/features/strategic-intelligence/lib/run-si-ai-pm-bind-turn';
 
 type WorkspaceAiPmMainProps = {
   domain: WorkspaceDomainEvidence;
@@ -261,16 +262,22 @@ export function WorkspaceAiPmMain({
   const storedDocumentText = loadWorkspaceDocumentText(projectId);
   const documentReadable = isWorkspaceDocumentReadable(storedDocumentText ?? documentContext);
   const siInputText = (storedDocumentText ?? documentContext ?? '').trim();
-  const siJudgment = useMemo(
+  const [siFounderAnswer, setSiFounderAnswer] = useState<string | null>(null);
+  useEffect(() => {
+    setSiFounderAnswer(null);
+  }, [siInputText]);
+  const siBindView = useMemo(
     () =>
       documentAnalyzable && siInputText.length >= 8
-        ? analyzeStrategicIntelligence({
+        ? resolveSiAiPmBindView({
             title: projectName,
             documentText: siInputText,
+            founderAnswer: siFounderAnswer,
           })
         : null,
-    [documentAnalyzable, projectName, siInputText],
+    [documentAnalyzable, projectName, siInputText, siFounderAnswer],
   );
+  const siJudgment = siBindView?.judgment ?? null;
 
   const understanding = useMemo(
     () => (documentAnalyzable ? buildBusinessUnderstanding(documentContext) : null),
@@ -808,7 +815,16 @@ export function WorkspaceAiPmMain({
   const flowBody = (
     <div className="space-y-6">
       {siJudgment && !isPostReview ? (
-        <SiReviewSurface judgment={siJudgment} projectId={projectId} />
+        <>
+          <SiReviewSurface judgment={siJudgment} projectId={projectId} />
+          {siBindView?.question ? (
+            <SiAiPmBindSurface
+              question={siBindView.question}
+              projectId={projectId}
+              onAnswer={setSiFounderAnswer}
+            />
+          ) : null}
+        </>
       ) : null}
 
       {demoSamplePlayback && projectId ? (

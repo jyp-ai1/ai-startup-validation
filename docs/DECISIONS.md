@@ -1357,6 +1357,41 @@ Calibration Gate is CONDITIONAL PASS on PR #92. The remaining product question i
 
 ---
 
+## ADR-048: S.I. Phase 3 — AI PM binds to the S.I. validation ask
+
+**Status:** Accepted  
+**Date:** 2026-10-06  
+**Sprint:** S.I. V1 Phase 3  
+**Authors:** CTO (autonomous)
+
+### Context
+
+Phase 2 PASS proved one founder answer can move the judgment. The missing product structure is who chooses the next ask. The gap engine (`decideNextQuestionFromReview`) must not be rewritten to fit S.I.
+
+### Decision
+
+1. S.I. decides the validation ask from Critical Unknown + Decision Evidence + Validation Priority.
+2. AI PM is the execution layer: it presents one executable question for that ask. It does not pick the topic.
+3. The founder answer re-enters `updateStrategicIntelligence()` (PR #93). No new persist SoT.
+4. The question is composed from the ask kind, not copied from Critical Unknown, and not hardcoded to a business name.
+5. PR #93 stays frozen. This ships on a separate branch. PR #89 and P0-1/P0-2 paths are not edited.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+|--------|------|------|
+| Rewrite `decideNextQuestionFromReview` | One question source | Breaks P0-1/P0-2 and PR #89 |
+| Copy Critical Unknown as the question | Fast | Not a verification ask |
+| Full AI PM replacement | Clean IA | Out of Phase 3 scope |
+
+### Consequences
+
+- First AI PM question after S.I. Review is the S.I. validation ask.
+- The existing gap loop remains for P0 paths; it is not the source of this ask.
+- Phase 3 success is the closed loop, not question count.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.

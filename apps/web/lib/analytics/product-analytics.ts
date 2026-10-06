@@ -75,6 +75,8 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   blindSpotDetected: 'blind_spot_detected',
   clarityQuestionRaised: 'clarity_question_raised',
   siJudgmentViewed: 'si_judgment_viewed',
+  siAiPmQuestionAsked: 'si_ai_pm_question_asked',
+  siAiPmAnswerApplied: 'si_ai_pm_answer_applied',
 } as const;
 
 export type ProductAnalyticsEvent =

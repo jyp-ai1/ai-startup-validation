@@ -101,6 +101,11 @@ export type {
   SiEvidenceStrengthDelta,
   SiEvidenceUpdateInput,
   SiEvidenceUpdateResult,
+  SiValidationKind,
+  SiValidationAsk,
+  SiAiPmQuestion,
+  SiAiPmBindTurnInput,
+  SiAiPmBindTurnResult,
 } from './domain/strategic-intelligence';
 
 export {
