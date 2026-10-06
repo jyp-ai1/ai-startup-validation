@@ -4,6 +4,25 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. V1 Next Accuracy Discovery — MEASUREMENT COMPLETE (Fix 아님)
+
+**PR:** 측정 전용 · **Branch:** `cursor/si-judgment-transition-e648` · Production SHA `dea7cb1` 고정  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-JUDGMENT-TRANSITION.md`  
+**Dump:** `docs/evidence/ALABOM/SI/si-v1-judgment-transition.json`  
+**기준선:** #107 PASS CLOSED → #108 PASS → Production `dea7cb1` · 엔진/Fix/배포 없음
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Production `dea7cb1` 불변 | ✅ |
+| 2 | 5사업 × Judgment 전환 (긍정/부정/상충/번복) | ✅ |
+| 3 | CU / Priority 전환 + S0–S4 일관성 | ✅ 일관성 5/5 · S2 미사용 |
+| 4 | 실패 유형 분류 | ✅ missed_downgrade / ignored_conflict / ignored_contradiction 5/5 |
+| 5 | 엔진 / Fix PR / Gate 자동 개방 / Production | 없음 |
+
+방향: 긍정 승격 5/5. 부정·상충·번복은 판단을 내리지 않음. Fix는 CPO 판정 후.
+
+---
+
 ## S.I. DCE Reconciliation ✅ PRODUCTION ACCEPTED
 
 **PR:** #107 · **Promotion:** #108 PASS · **Production SHA:** `127162b`  
