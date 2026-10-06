@@ -4,6 +4,19 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. First-Pass Judgment Calibration Gate ✅
+
+**Branch:** `cursor/si-first-pass-calibration-e648` · 측정만 · engine/UI/Production 금지
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 5사업 t0 6필드 추출 | ✅ |
+| 2 | GPT/Gemini 독립 비교 6축 | ✅ 3 PASS / 2 PARTIAL / 0 FAIL |
+| 3 | 판단 방향 5/5 | ✅ |
+| 4 | 엔진 수정 | 없음 |
+
+---
+
 ## S.I. Founder Journey E2E Gate ✅
 
 **Branch:** `cursor/si-founder-journey-e2e-e648` · base PR #97 · 기능 추가 없음  
