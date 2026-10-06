@@ -107,6 +107,8 @@ for (const fixture of CASES) {
     if (await loop.isVisible().catch(() => false)) {
       const loopBox = await loop.boundingBox();
       expect(journey && loopBox && (await journey.boundingBox())!.y < loopBox.y).toBeTruthy();
+      const loopText = (await loop.innerText()).trim();
+      expect(loopText.includes('이 사업은 누구에게 무엇을 제공하나요?')).toBe(false);
     }
 
     const question = page.getByTestId('si-ai-pm-question');
