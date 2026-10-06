@@ -111,6 +111,7 @@ import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
 import { SiAiPmBindSurface } from '@/features/strategic-intelligence/components/si-ai-pm-bind-surface';
 import { SiReviewSurface } from '@/features/strategic-intelligence/components/si-review-surface';
 import { resolveSiJourneyIntegration } from '@/features/strategic-intelligence/lib/resolve-si-journey-integration';
+import { appendFounderEvidenceToDocument } from '@/features/strategic-intelligence/lib/update-strategic-intelligence';
 
 type WorkspaceAiPmMainProps = {
   domain: WorkspaceDomainEvidence;
@@ -273,6 +274,14 @@ export function WorkspaceAiPmMain({
       setSiBusinessDocument(siInputText);
     }
   }, [siBusinessDocument, siInputText]);
+  const applySiFounderAnswer = useCallback((answer: string) => {
+    const trimmed = answer.trim();
+    if (!trimmed) return;
+    setSiBusinessDocument((current) =>
+      appendFounderEvidenceToDocument(current ?? siInputText, trimmed),
+    );
+    setSiFounderAnswer(null);
+  }, [siInputText]);
   const siJourney = useMemo(() => {
     const businessDocument = siBusinessDocument ?? siInputText;
     if (!documentAnalyzable || businessDocument.length < 8) return null;
@@ -828,7 +837,7 @@ export function WorkspaceAiPmMain({
             <SiAiPmBindSurface
               question={siBindView.question}
               projectId={projectId}
-              onAnswer={setSiFounderAnswer}
+              onAnswer={applySiFounderAnswer}
             />
           ) : null}
         </div>
@@ -905,7 +914,7 @@ export function WorkspaceAiPmMain({
             onSessionPause={onSessionPause}
             hideInterpretationConfirm={showUnderstandingCard}
             siValidationAsk={siBindView?.question ?? null}
-            onSiValidationAnswer={setSiFounderAnswer}
+            onSiValidationAnswer={applySiFounderAnswer}
           />
         </div>
       ) : null}

@@ -1,0 +1,101 @@
+[
+  {
+    "id": "lmulm",
+    "t0": {
+      "stageId": "S3",
+      "verdictId": "viable",
+      "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+      "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+      "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다."
+    },
+    "t1": {
+      "stageId": "S4",
+      "verdictId": "viable",
+      "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+      "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+      "answer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+      "judgmentChanged": true,
+      "criticalUnknownChanged": true,
+      "validationPriorityChanged": true
+    },
+    "t2": {
+      "stageId": "S4",
+      "verdictId": "viable",
+      "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+      "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+      "answer": "같은 구매 코호트에서 18명이 실제 재판매를 등록했고 9건이 거래됐다.",
+      "judgmentChanged": false,
+      "criticalUnknownChanged": false,
+      "validationPriorityChanged": false,
+      "evidenceCount": 17
+    }
+  },
+  {
+    "id": "clinicflow",
+    "t0": {
+      "stageId": "S1",
+      "verdictId": "judgment_deferred",
+      "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+      "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+      "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+    },
+    "t1": {
+      "stageId": "S3",
+      "verdictId": "viable",
+      "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+      "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+      "answer": "결제 후보 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+      "judgmentChanged": true,
+      "criticalUnknownChanged": true,
+      "validationPriorityChanged": true
+    },
+    "t2": {
+      "stageId": "S4",
+      "verdictId": "viable",
+      "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+      "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+      "answer": "같은 구매 코호트에서 18명이 실제 재판매를 등록했고 9건이 거래됐다.",
+      "judgmentChanged": true,
+      "criticalUnknownChanged": false,
+      "validationPriorityChanged": false,
+      "evidenceCount": 17
+    }
+  },
+  {
+    "id": "fitbridge",
+    "t0": {
+      "stageId": "S1",
+      "verdictId": "judgment_deferred",
+      "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+      "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+      "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+    },
+    "t1": {
+      "stageId": "S3",
+      "verdictId": "viable",
+      "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+      "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+      "answer": "결제 후보 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+      "judgmentChanged": true,
+      "criticalUnknownChanged": true,
+      "validationPriorityChanged": true
+    },
+    "t2": {
+      "stageId": "S4",
+      "verdictId": "viable",
+      "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+      "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+      "answer": "같은 구매 코호트에서 18명이 실제 재판매를 등록했고 9건이 거래됐다.",
+      "judgmentChanged": true,
+      "criticalUnknownChanged": false,
+      "validationPriorityChanged": false,
+      "evidenceCount": 14
+    }
+  }
+]
