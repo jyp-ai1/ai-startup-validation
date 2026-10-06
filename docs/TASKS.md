@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. DCE Reconciliation Promotion Gate — MEASUREMENT COMPLETE
+
+**PR:** #108 승격 검증 · **Branch:** `cursor/si-promotion-e648` · base #107 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-PROMOTION-GATE.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 0/2 · 1/2 PARTIAL · 2/2 stale CU 제거 | ✅ |
+| 2 | 5사업 calibration + loop | ✅ |
+| 3 | P0-1 / P0-2 + SI 124 | ✅ |
+| 4 | 질문 엔진 / 사업명 / 신규 SoT | 불변 |
+| 5 | Production merge/deploy | 없음 |
+
+---
+
 ## S.I. Full DCE State Reconciliation ✅ PASS CLOSED
 
 **PR:** #107 Fix · **Branch:** `cursor/si-dce-reconciliation-e648` · CPO 2-pass PASS · Production 미배포  
