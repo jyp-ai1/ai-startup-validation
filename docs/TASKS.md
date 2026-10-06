@@ -16,6 +16,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 3 | Gap Loop fallback | ✅ |
 | 4 | P0-1/P0-2 unit | ✅ |
 | 5 | Browser 3사업 × 2턴 | ✅ |
+| 6 | Production SHA triangle + Smoke | ✅ `9221861` |
 
 ---
 
