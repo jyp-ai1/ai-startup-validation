@@ -4,6 +4,24 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Pattern A Obstruction — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-pattern-a-obstruction-e648` · Alignment Fix `6926d6f` · Production `dea7cb1` 불변 · Fix Gate NOT OPEN  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-PATTERN-A-OBSTRUCTION.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Pattern A 6건 generic next-CU ask | ✅ 유지 |
+| 2 | generic-literal 추가 결제가 next CU를 닫는가 | ✅ 6 PARTIAL · 닫지 않음 |
+| 3 | on-CU 다음 기간 답이 루프를 막는가 | ✅ 6 PARTIAL · 오염 없음 |
+| 4 | whyAsking/CU surface 복구 | ✅ 6/6 |
+| 5 | Obstruction FAIL | ✅ **0** |
+| 6 | #104 / #107 / Negative / P0 / Pattern B | ✅ |
+| 7 | Presenter / ask kind / analyzer | 0-diff |
+| 8 | Production | 불변 · HOLD |
+
+---
+
 ## S.I. Question Alignment Fix — CU axis
 
 **Branch:** `cursor/si-question-alignment-fix-e648` · Production `dea7cb1` 불변  
