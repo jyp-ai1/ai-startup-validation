@@ -4,6 +4,23 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Negative Judgment Fix — ACCURACY FIX BATCH
+
+**Branch:** `cursor/si-negative-judgment-fix-e648` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-NEGATIVE-JUDGMENT-FIX.md`  
+**범위:** 분석 시점 retract + CONFLICT + stake 방향. Presenter/SoT/Production 없음.
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | VALIDATED 철회 후 하향 | ✅ |
+| 2 | CONFLICT는 양립 불가만 | ✅ |
+| 3 | #104 1/2 ≠ S3 | ✅ |
+| 4 | #107 2/2 CU 이동 | ✅ |
+| 5 | SI + P0-1/P0-2 unit | ✅ 150 |
+| 6 | Production merge | 없음 |
+
+---
+
 ## S.I. DCE Reconciliation ✅ PRODUCTION ACCEPTED
 
 **PR:** #107 · **Promotion:** #108 PASS · **Production SHA:** `127162b`  
