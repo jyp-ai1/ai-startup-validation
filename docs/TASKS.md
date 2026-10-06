@@ -4,6 +4,22 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Accuracy Fix Batch #2 — Evidence Reconciliation
+
+**Branch:** `cursor/si-accuracy-fix-batch-2-e648` · Production `dea7cb1` 불변 · Negative Fix `4b2aa21` 유지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-FIX-BATCH-2.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 직접 부인 → CONFLICT + VALIDATED 철회 + 재판단 | ✅ 8/8 |
+| 2 | 재구매 0 ≠ CONFLICT · ≠ S4 | ✅ |
+| 3 | Positive promotion CU/Priority | ✅ 주인집·RIDM 포함 8/8 |
+| 4 | Question generator | 미수정 · generic_ask 5 재측정 |
+| 5 | #104 / #107 / Negative hops / Founder / P0 | ✅ 155 |
+| 6 | Production merge | 없음 |
+
+---
+
 ## S.I. Accuracy Batch #2 — MEASUREMENT COMPLETE
 
 **Branch:** `cursor/si-accuracy-batch-2-e648` · Fix `4b2aa21` · Production `dea7cb1` 불변  

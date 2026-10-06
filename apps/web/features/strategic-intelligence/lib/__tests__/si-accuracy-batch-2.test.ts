@@ -21,6 +21,7 @@ import {
 } from './score-si-post-negative-batch';
 
 const SNAPSHOT_PATH = resolve(process.cwd(), '../../docs/evidence/ALABOM/SI/si-v1-accuracy-batch-2.json');
+const FREEZE_DUMP = true;
 const ANALYZER_SRC = readFileSync(
   resolve(dirname(fileURLToPath(import.meta.url)), '../analyze-strategic-intelligence.ts'),
   'utf8',
@@ -55,6 +56,13 @@ const NAMELESS = {
 } as const;
 
 type CaseId = keyof typeof SI_CALIBRATION_CASES | keyof typeof NAMELESS;
+
+export function accuracyBatch2CaseIds(): CaseId[] {
+  return [
+    ...(Object.keys(SI_CALIBRATION_CASES) as Array<keyof typeof SI_CALIBRATION_CASES>),
+    ...(Object.keys(NAMELESS) as Array<keyof typeof NAMELESS>),
+  ];
+}
 type Batch2Failure =
   | PostNegFailure
   | 'stale_cu_after_promotion'
@@ -152,7 +160,7 @@ function isNextUnknown(text: string): boolean {
   return /다음 고객|다음 기간/.test(text);
 }
 
-function scoreCase(id: CaseId) {
+export function scoreCase(id: CaseId) {
   const input = caseInput(id);
   const t0 = runTurns(input.title, input.documentText, [])[0]!;
   const book = playbook(t0.kind, t0.criticalUnknown);
@@ -377,26 +385,28 @@ describe('S.I. Accuracy Batch #2 — measure only', () => {
       .map(([id]) => id)
       .sort();
 
-    mkdirSync(dirname(SNAPSHOT_PATH), { recursive: true });
-    writeFileSync(
-      SNAPSHOT_PATH,
-      `${JSON.stringify(
-        {
-          productionSha: PRODUCTION_SHA,
-          fixSha: FIX_SHA,
-          scenarioCount: rows.length * 6,
-          axisCounts,
-          focusCounts,
-          failureCounts,
-          repeated,
-          oneOff,
-          rows,
-        },
-        null,
-        2,
-      )}\n`,
-      'utf8',
-    );
+    if (!FREEZE_DUMP) {
+      mkdirSync(dirname(SNAPSHOT_PATH), { recursive: true });
+      writeFileSync(
+        SNAPSHOT_PATH,
+        `${JSON.stringify(
+          {
+            productionSha: PRODUCTION_SHA,
+            fixSha: FIX_SHA,
+            scenarioCount: rows.length * 6,
+            axisCounts,
+            focusCounts,
+            failureCounts,
+            repeated,
+            oneOff,
+            rows,
+          },
+          null,
+          2,
+        )}\n`,
+        'utf8',
+      );
+    }
 
     expect(rows).toHaveLength(8);
     expect(rows.filter((row) => row.dceTwoTwo)).toHaveLength(5);
