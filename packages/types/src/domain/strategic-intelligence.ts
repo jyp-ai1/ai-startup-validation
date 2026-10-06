@@ -64,6 +64,26 @@ export type SiStrategicJudgment = {
   source: 'si-v1';
 };
 
+export type SiEvidenceStrengthDelta = 'up' | 'down' | 'unchanged';
+
+export type SiEvidenceUpdateInput = {
+  previous: SiStrategicJudgment;
+  documentText: string;
+  founderAnswer: string;
+  title?: string | null;
+};
+
+export type SiEvidenceUpdateResult = {
+  previous: SiStrategicJudgment;
+  next: SiStrategicJudgment;
+  addedEvidence: SiEvidenceItem[];
+  evidenceStrengthDelta: SiEvidenceStrengthDelta;
+  criticalUnknownChanged: boolean;
+  judgmentChanged: boolean;
+  validationPriorityChanged: boolean;
+  source: 'si-v1-update';
+};
+
 export const SI_AXIS_LABELS: Record<SiAxisId, string> = {
   customerProblemFit: 'A. Customer / Problem Fit',
   marketAlternatives: 'B. Market / Alternatives',

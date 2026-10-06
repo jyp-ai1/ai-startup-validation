@@ -64,13 +64,26 @@ function clip(line: string, max = 140): string {
 }
 
 function isNegated(line: string): boolean {
-  return /(확인되지\s*않|검증되지\s*않|조사되지\s*않|정의되지\s*않|출시되지\s*않|아직\s*없|아직\s*없다|매출은\s*없|미검증|없다\.|없음)/.test(
+  return /(확인되지\s*않|검증되지\s*않|조사되지\s*않|정의되지\s*않|출시되지\s*않|아직\s*없|아직\s*없다|아직.{0,8}아무도|하지\s*않|매출은\s*없|미검증|없다\.|없음)/.test(
     line,
   );
 }
 
 function isHypothesis(line: string): boolean {
   return /(가설|목표|예정|계획|시 ROI|감소 시)/.test(line);
+}
+
+function isIntentWithoutAction(line: string): boolean {
+  return /(생각|의향|하려고|검토 중)/.test(line) && /(아직|아무도|없)/.test(line);
+}
+
+/** Counted completed actions — not intent, not a planned pilot. */
+function isQuantifiedCompletion(line: string): boolean {
+  if (isIntentWithoutAction(line) || isHypothesis(line)) return false;
+  return (
+    /\d+\s*(명|건)/.test(line) &&
+    /(등록했|거래됐|거래가 됐|거래가 발생|재구매했|체결됐|실제로\s*재판매)/.test(line)
+  );
 }
 
 /** Own commercial revenue — not the customer's size, not a problem symptom. */
@@ -165,8 +178,10 @@ function scanLine(line: string): DetectedSignal[] {
     push('operations', negated ? 'CLAIM' : 'FACT', 'executionAdvantage');
   }
 
-  if (matchAny(line, [/재구매/, /반복적으로/, /리텐션/, /2차 거래/, /파일럿/, /인터뷰 검증/])) {
-    if (negated || isHypothesis(line) || /파일럿/.test(line)) {
+  if (isQuantifiedCompletion(line) && !negated) {
+    push('repeat_validation', 'VALIDATED', 'validationStrength');
+  } else if (matchAny(line, [/재구매/, /반복적으로/, /리텐션/, /2차 거래/, /파일럿/, /인터뷰 검증/])) {
+    if (negated || isHypothesis(line) || isIntentWithoutAction(line) || /파일럿/.test(line)) {
       push('unverified', 'ASSUMPTION', 'validationStrength');
     } else {
       push('repeat_validation', 'VALIDATED', 'validationStrength');

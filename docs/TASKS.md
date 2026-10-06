@@ -4,7 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## S.I. Core V1 — Judgment First 🔄
+## S.I. Phase 2 — Evidence Update ✅
+
+**Branch:** `cursor/si-phase2-evidence-update-e648` · base PR #92 lock `940bd47`  
+**Out of scope:** Question engine · AI PM · PR #89 · UI · scores · C4/C5 prose · per-business patches · Production  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-PHASE2-EVIDENCE-UPDATE.md`
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 1 | `updateStrategicIntelligence()` from previous judgment + one founder answer | ✅ |
+| 2 | CLAIM/INTENT ≠ VALIDATED | ✅ |
+| 3 | Quantified completion moves CU / stage / next validation | ✅ |
+
+---
+
+## S.I. Core V1 — Judgment First ✅
 
 **Branch:** `cursor/si-core-v1-e648` · independent of PR #89  
 **Out of scope:** Question engine · V3 SoT · PR #89 edits · new persist SoT · scores-first UI · Phase 2 evidence update · Phase 3 AI PM bind

@@ -1,0 +1,216 @@
+[
+  {
+    "id": "lmulm-validated",
+    "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+    "addedEvidenceClass": "VALIDATED",
+    "previous": {
+      "verdictId": "viable",
+      "stageId": "S3",
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+      "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+      "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+      "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+      "evidenceClasses": [
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "ASSUMPTION",
+        "FACT",
+        "ASSUMPTION",
+        "FACT",
+        "INFERENCE"
+      ]
+    },
+    "next": {
+      "verdictId": "viable",
+      "stageId": "S4",
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+      "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+      "evidenceClasses": [
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "ASSUMPTION",
+        "FACT",
+        "ASSUMPTION",
+        "FACT",
+        "CLAIM",
+        "VALIDATED",
+        "INFERENCE"
+      ]
+    },
+    "deltas": {
+      "evidenceStrengthDelta": "up",
+      "criticalUnknownChanged": true,
+      "judgmentChanged": true,
+      "validationPriorityChanged": true
+    }
+  },
+  {
+    "id": "lmulm-intent",
+    "founderAnswer": "재판매를 생각하고 있지만 아직 아무도 등록하지 않았다.",
+    "addedEvidenceClass": "CLAIM",
+    "previous": {
+      "verdictId": "viable",
+      "stageId": "S3",
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+      "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+      "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+      "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+      "evidenceClasses": [
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "ASSUMPTION",
+        "FACT",
+        "ASSUMPTION",
+        "FACT",
+        "INFERENCE"
+      ]
+    },
+    "next": {
+      "verdictId": "viable",
+      "stageId": "S3",
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+      "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+      "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+      "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+      "evidenceClasses": [
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "ASSUMPTION",
+        "FACT",
+        "ASSUMPTION",
+        "FACT",
+        "ASSUMPTION",
+        "INFERENCE"
+      ]
+    },
+    "deltas": {
+      "evidenceStrengthDelta": "unchanged",
+      "criticalUnknownChanged": false,
+      "judgmentChanged": false,
+      "validationPriorityChanged": false
+    }
+  },
+  {
+    "id": "generic-marketplace-validated",
+    "founderAnswer": "최근 구매자 80명 중 20명이 실제 재판매를 등록했고 7건이 거래됐다.",
+    "addedEvidenceClass": "VALIDATED",
+    "previous": {
+      "verdictId": "viable",
+      "stageId": "S3",
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+      "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+      "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+      "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+      "evidenceClasses": [
+        "CLAIM",
+        "FACT",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "ASSUMPTION",
+        "INFERENCE"
+      ]
+    },
+    "next": {
+      "verdictId": "viable",
+      "stageId": "S4",
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+      "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+      "evidenceClasses": [
+        "CLAIM",
+        "FACT",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "ASSUMPTION",
+        "CLAIM",
+        "VALIDATED",
+        "INFERENCE"
+      ]
+    },
+    "deltas": {
+      "evidenceStrengthDelta": "up",
+      "criticalUnknownChanged": true,
+      "judgmentChanged": true,
+      "validationPriorityChanged": true
+    }
+  },
+  {
+    "id": "generic-marketplace-intent",
+    "founderAnswer": "재판매를 생각하고 있지만 아직 아무도 등록하지 않았다.",
+    "addedEvidenceClass": "CLAIM",
+    "previous": {
+      "verdictId": "viable",
+      "stageId": "S3",
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+      "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+      "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+      "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+      "evidenceClasses": [
+        "CLAIM",
+        "FACT",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "ASSUMPTION",
+        "INFERENCE"
+      ]
+    },
+    "next": {
+      "verdictId": "viable",
+      "stageId": "S3",
+      "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+      "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+      "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+      "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+      "evidenceClasses": [
+        "CLAIM",
+        "FACT",
+        "FACT",
+        "CLAIM",
+        "FACT",
+        "CLAIM",
+        "ASSUMPTION",
+        "ASSUMPTION",
+        "INFERENCE"
+      ]
+    },
+    "deltas": {
+      "evidenceStrengthDelta": "unchanged",
+      "criticalUnknownChanged": false,
+      "judgmentChanged": false,
+      "validationPriorityChanged": false
+    }
+  }
+]
