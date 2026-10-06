@@ -6,14 +6,15 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## S.I. Question Alignment Gate
 
-**Branch:** `cursor/si-question-alignment-e648` · base PR #100 · 측정만 · 질문 하드코딩 금지 · Production 금지
+**Branch:** `cursor/si-question-alignment-e648` · base PR #100 · 측정만 · 질문 하드코딩 금지 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT.md`
 
 | # | Gate | Status |
 |---|------|--------|
-| 1 | 5사업 Priority → AI PM 질문 기록 | 진행중 |
-| 2 | 질문이 DCE를 묻는가 / 일반 paid_conversion 퇴행인가 | 진행중 |
-| 3 | 답변 → S.I. Evidence | 진행중 |
-| 4 | PR #98 2회 루프 유지 | 진행중 |
+| 1 | 5사업 Priority → AI PM 질문 기록 | ✅ |
+| 2 | 질문이 DCE를 묻는가 / 일반 paid_conversion 퇴행인가 | ✅ 3 PASS / 2 PARTIAL |
+| 3 | 답변 → S.I. Evidence | ✅ 5/5 |
+| 4 | PR #98 2회 루프 유지 | ✅ |
 | 5 | 질문 생성기 수정 | 없음 |
 
 ---
