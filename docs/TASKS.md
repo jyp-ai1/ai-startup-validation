@@ -4,6 +4,19 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. CU Calibration Gate
+
+**Branch:** `cursor/si-cu-calibration-e648` · base PR #99 · First-Pass 재설계 금지 · 사업명 하드코딩 금지 · Production 금지
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 주인집·LMULM·RIDM t0 회귀 고정 | 진행중 |
+| 2 | 수치화 문제 + 이름 있는 대안 → CU 일반화 | 진행중 |
+| 3 | 5사업 t0 재실행 · 2 개선 + 3 회귀 | 진행중 |
+| 4 | 클리닉플로우·핏브릿지 브랜드 예외 없음 | 진행중 |
+
+---
+
 ## S.I. First-Pass Judgment Calibration Gate ✅
 
 **Branch:** `cursor/si-first-pass-calibration-e648` · 측정만 · engine/UI/Production 금지
