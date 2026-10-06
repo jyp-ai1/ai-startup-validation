@@ -39,8 +39,8 @@
     "t0": {
       "stageId": "S1",
       "verdictId": "judgment_deferred",
-      "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
-      "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+      "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+      "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
       "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
     },
     "t1": {
@@ -74,8 +74,8 @@
     "t0": {
       "stageId": "S1",
       "verdictId": "judgment_deferred",
-      "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
-      "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+      "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+      "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
       "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
     },
     "t1": {
@@ -101,7 +101,7 @@
       "judgmentChanged": false,
       "criticalUnknownChanged": false,
       "validationPriorityChanged": false,
-      "evidenceCount": 13
+      "evidenceCount": 14
     }
   }
 ]
