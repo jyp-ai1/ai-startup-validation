@@ -10,10 +10,10 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 | # | Gate | Status |
 |---|------|--------|
-| 1 | DCE 특수 지표를 실제 Founder 질문에 반영 | 진행중 |
-| 2 | 주인집·LMULM·RIDM 질문 회귀 고정 | 진행중 |
-| 3 | 5사업 Evidence 재진입 + PR #98 2회 루프 | 진행중 |
-| 4 | 유료 답 이후 클리닉/핏브릿지가 재판매로 새지 않음 | 진행중 |
+| 1 | DCE 특수 지표를 실제 Founder 질문에 반영 | ✅ |
+| 2 | 주인집·LMULM·RIDM 질문 회귀 고정 | ✅ |
+| 3 | 5사업 Evidence 재진입 + PR #98 2회 루프 | ✅ |
+| 4 | 유료 답 이후 클리닉/핏브릿지가 재판매로 새지 않음 | ✅ |
 | 5 | `decideNextQuestionFromReview` / Production | 불변 |
 
 ---

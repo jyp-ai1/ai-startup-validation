@@ -65,7 +65,7 @@
     "answer2": "같은 구매 코호트에서 18명이 실제 재판매를 등록했고 9건이 거래됐다.",
     "answerEnteredEvidence": true,
     "t1Moved": true,
-    "t2Question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+    "t2Question": "이탈 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
     "t2EvidenceCount": 17,
     "axes": [
       {
@@ -107,7 +107,7 @@
     "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
     "decisionChangingEvidence": "유료 파일럿 1건과 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
     "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
-    "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+    "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
     "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 no-show 전후 비교.",
     "evidenceSought": "유료 파일럿 1건과 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
     "specializedStakes": [
@@ -115,12 +115,12 @@
       "EMR",
       "전후"
     ],
-    "isGenericPaidQuestion": true,
+    "isGenericPaidQuestion": false,
     "answer1": "결제 후보 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
     "answer2": "기존 유료 병원 2건이 다음 달에도 월 구독을 결제했고 리콜 시나리오를 두 번째로 유료로 사용했다.",
     "answerEnteredEvidence": true,
     "t1Moved": true,
-    "t2Question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+    "t2Question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
     "t2EvidenceCount": 17,
     "axes": [
       {
@@ -135,13 +135,13 @@
       },
       {
         "id": "asksDce",
-        "score": "PARTIAL",
-        "note": "Question stays on the payment axis but misses DCE stakes: no-show, EMR, 전후"
+        "score": "PASS",
+        "note": "Question asks for the DCE axis and any specialized stake"
       },
       {
         "id": "noGenericRegression",
-        "score": "PARTIAL",
-        "note": "Kind-level paid_conversion dropped specialized stakes: no-show, EMR, 전후"
+        "score": "PASS",
+        "note": "Question is not the generic paid template"
       },
       {
         "id": "answerToEvidence",
@@ -154,7 +154,7 @@
         "note": "Two evidence turns still recompute judgment / CU / priority"
       }
     ],
-    "overall": "PARTIAL"
+    "overall": "PASS"
   },
   {
     "id": "fitbridge",
@@ -162,7 +162,7 @@
     "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
     "decisionChangingEvidence": "유료 파일럿 1건과 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
     "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
-    "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+    "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
     "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 반품률 전후 비교.",
     "evidenceSought": "유료 파일럿 1건과 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
     "specializedStakes": [
@@ -170,12 +170,12 @@
       "True Fit",
       "전후"
     ],
-    "isGenericPaidQuestion": true,
+    "isGenericPaidQuestion": false,
     "answer1": "결제 후보 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
     "answer2": "기존 유료 브랜드 2건이 다음 분기에도 사이즈 위젯을 결제했고 핏 추천을 두 번째로 유료로 사용했다.",
     "answerEnteredEvidence": true,
     "t1Moved": true,
-    "t2Question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+    "t2Question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
     "t2EvidenceCount": 14,
     "axes": [
       {
@@ -190,13 +190,13 @@
       },
       {
         "id": "asksDce",
-        "score": "PARTIAL",
-        "note": "Question stays on the payment axis but misses DCE stakes: 반품, True Fit, 전후"
+        "score": "PASS",
+        "note": "Question asks for the DCE axis and any specialized stake"
       },
       {
         "id": "noGenericRegression",
-        "score": "PARTIAL",
-        "note": "Kind-level paid_conversion dropped specialized stakes: 반품, True Fit, 전후"
+        "score": "PASS",
+        "note": "Question is not the generic paid template"
       },
       {
         "id": "answerToEvidence",
@@ -209,7 +209,7 @@
         "note": "Two evidence turns still recompute judgment / CU / priority"
       }
     ],
-    "overall": "PARTIAL"
+    "overall": "PASS"
   },
   {
     "id": "ridm",
