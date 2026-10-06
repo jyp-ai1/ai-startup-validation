@@ -15,9 +15,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 2 | Review Surface V1 — judgment / why / evidence / unknown / decision evidence / next 1 | ✅ |
 | 3 | Calibration: 주인집 · LMULM · RIDM AI (no name-hardcode) | ✅ |
 | 4 | `si_judgment_viewed` funnel · no score-first copy | ✅ |
-| 5 | Gate: 5-business calibration report vs GPT/Gemini (C4 클리닉플로우 · C5 핏브릿지) | ✅ CONDITIONAL |
+| 5 | Gate: 5-business calibration vs GPT/Gemini | ✅ CONDITIONAL PASS (CPO) |
 
-보고 기준은 시각(08:00)이 아니라 Gate 제출이다. Phase 2/3는 CPO 지시 전 대기.
+기준선 SHA `ff3e23f`. C4/C5 PARTIAL은 blocker 아님. Phase 2는 별도 브랜치. Production 승격 없음.
 
 ---
 

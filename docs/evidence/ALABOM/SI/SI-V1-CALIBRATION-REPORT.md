@@ -237,18 +237,10 @@ C4/C5를 **수정 전 코어**에 넣으면 Gate A가 깨진다.
 ## 7. 최종 Gate 판정
 
 ```text
-CONDITIONAL
+CONDITIONAL PASS
 ```
 
-- 5/5 **최초 판단 방향**은 GPT/Gemini와 동등 이상.
-- Critical Unknown / Decision Evidence / Validation Priority는 5/5 명확.
-- 사업별 하드코딩 없음.
-- C4·C5는 실행 우위·모델 문장을 GPT만큼 깊게 쓰지 못해 8항 PARTIAL.
-
-**Phase 2를 구조적으로 막지는 않는다.**  
-CPO가 보완 범위를 정하면 된다. 권고 보완(원하면): 실행 자산(연동·데이터·규제) 일반 신호, 유료 모델 표현(SaaS/성과 보너스) 일반 신호. 사업별 patch 금지 유지.
-
-Phase 2 자동 착수 조건(5/5 전항 PASS)은 아직 아니다.
+CPO 확정. C4·C5 PARTIAL은 blocker가 아니다. 기준선 SHA `ff3e23f`. 원문 고정. Phase 2는 별도 PR.
 
 ---
 
