@@ -98,6 +98,9 @@ export type {
   SiEvidenceItem,
   SiAxisJudgment,
   SiStrategicJudgment,
+  SiEvidenceStrengthDelta,
+  SiEvidenceUpdateInput,
+  SiEvidenceUpdateResult,
 } from './domain/strategic-intelligence';
 
 export {

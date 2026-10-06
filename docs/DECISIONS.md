@@ -1323,6 +1323,40 @@ The first founder path after business input was interpretation + question genera
 
 ---
 
+## ADR-047: S.I. Phase 2 — founder evidence updates the judgment
+
+**Status:** Accepted  
+**Date:** 2026-10-06  
+**Sprint:** S.I. V1 Phase 2  
+**Authors:** CTO (autonomous)
+
+### Context
+
+Calibration Gate is CONDITIONAL PASS on PR #92. The remaining product question is not C4/C5 prose. It is whether one founder answer can reclassify evidence and move Critical Unknown, judgment, and Validation Priority. Intent must stay CLAIM, not VALIDATED.
+
+### Decision
+
+1. Keep PR #92 Core/Review Surface as the frozen first-judgment baseline. Phase 2 ships on a separate branch.
+2. `updateStrategicIntelligence()` recomputes from `documentText + [Founder evidence]` plus the previous judgment. No new persist SoT.
+3. Quantified completed action (count + 등록/거래/재구매) is VALIDATED and can lift stage / unknown / next validation. Intent-without-action stays CLAIM.
+4. Analyzer generalization only: quantified completion vs intent. No brand-name branches, scores, question-engine bind, AI PM, or UI.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+|--------|------|------|
+| Patch C4/C5 sentences on #92 | Looks complete | Misses the actual product loop |
+| Merge Phase 2 into #92 | One PR | Mixes a locked gate with new behavior |
+| Treat any founder answer as FACT | Simple | Collapses CLAIM/INTENT into VALIDATED |
+
+### Consequences
+
+- First-path judgments on the five calibration cases stay identical to the #92 lock.
+- Question engine and PR #89 remain untouched.
+- Phase 3 (AI PM bind) waits until this update loop is proven.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
