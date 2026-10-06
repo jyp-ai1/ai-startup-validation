@@ -4,7 +4,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## S.I. Validation Priority Adapter 🔄
+## S.I. Validation Priority Adapter ✅
 
 **Branch:** `cursor/si-validation-priority-adapter-e648` · CPO ADAPT · base PR #96  
 **Out of scope:** engine rewrite · gap-loop delete · PR #89 · new SoT · Production

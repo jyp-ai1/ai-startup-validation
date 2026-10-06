@@ -26,3 +26,5 @@ Confirm 질문(`제가 이해한 사업… 맞나요?`)은 훔치지 않는다.
 | 핏브릿지 | 사업 한 줄 | **si-v1-priority** | 유료 제안/결제 한 건 |
 
 답변은 Phase 2 `si-v1-update`. 질문 엔진 파일 diff 없음. P0-1/P0-2 unit 유지.
+
+**Browser 2026-10-06:** Integration Gate 5사업 + Phase 3 bind = 6 passed. `#ai-pm-loop`가 보여도 `이 사업은 누구에게 무엇을 제공하나요?`는 없음.
