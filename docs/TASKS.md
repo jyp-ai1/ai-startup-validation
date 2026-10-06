@@ -4,6 +4,23 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Integration Gate ✅
+
+**Branch:** `cursor/si-integration-gate-e648` · base PR #94  
+**Out of scope:** `decideNextQuestionFromReview` rewrite · PR #89 · P0-1/P0-2 · new persist SoT · per-business patches · Production · gap-loop replacement  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-INTEGRATION-GATE.md`
+
+| # | Acceptance | Status |
+|---|-------------|--------|
+| 1 | S.I. judgment appears before the question | ✅ |
+| 2 | Question verifies Decision Evidence | ✅ |
+| 3 | Founder answer enters Evidence | ✅ |
+| 4 | Evidence recomputes S.I. | ✅ |
+| 5 | INTENT holds CU / Validation Priority | ✅ |
+| 6 | Gap loop cannot overwrite S.I. (P0) | ✅ |
+
+---
+
 ## S.I. Phase 3 — AI PM Bind ✅
 
 **Branch:** `cursor/si-phase3-ai-pm-bind-e648` · base PR #93 `9b16059`  

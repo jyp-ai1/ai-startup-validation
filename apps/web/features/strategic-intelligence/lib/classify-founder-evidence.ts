@@ -14,11 +14,17 @@ export function isFounderQuantifiedCompletion(answer: string): boolean {
   );
 }
 
+export function isFounderQuantifiedPayment(answer: string): boolean {
+  const text = answer.replace(/\s+/g, ' ').trim();
+  if (isFounderIntentOnly(text) || isFounderQuantifiedCompletion(text)) return false;
+  return /\d+\s*(명|건)/.test(text) && /(결제했|지불했|유료로\s*(썼|사용|전환))/.test(text);
+}
+
 export function classifyFounderEvidenceClass(answer: string): SiEvidenceClass {
   const text = answer.replace(/\s+/g, ' ').trim();
   if (!text) return 'ASSUMPTION';
   if (isFounderIntentOnly(text)) return 'CLAIM';
-  if (isFounderQuantifiedCompletion(text)) return 'VALIDATED';
+  if (isFounderQuantifiedCompletion(text) || isFounderQuantifiedPayment(text)) return 'VALIDATED';
   if (/(아직|확인되지|검증되지|없다|없음)/.test(text)) return 'ASSUMPTION';
   if (/(생각|의향|할 것이다|예정)/.test(text)) return 'CLAIM';
   return 'FACT';
