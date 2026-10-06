@@ -37,7 +37,9 @@ function alternativeFromAsk(text: string): string | null {
 
 function composeQuestion(ask: SiValidationAsk): string {
   const blob = [ask.criticalUnknown, ask.decisionChangingEvidence, ask.validationPriority].join(' ');
-  const stake = stakeFromAsk(blob);
+  // Stake may only come from the CU. DCE boilerplate like "이탈 없는 두 번째 거래"
+  // is not a new verification axis.
+  const stake = stakeFromAsk(ask.criticalUnknown);
   const versus = alternativeFromAsk(blob);
   const namesResale = /(C2C|재판매)/.test(blob);
 
@@ -51,7 +53,7 @@ function composeQuestion(ask: SiValidationAsk): string {
 
 /**
  * AI PM executes one S.I. ask. The question is not a copy of Critical Unknown.
- * When DCE names a quantified stake, the spoken question must carry that stake.
+ * Weave a quantified stake only when that stake is the CU's verification object.
  */
 export function presentSiAiPmQuestion(ask: SiValidationAsk): SiAiPmQuestion {
   const questionText = composeQuestion(ask);

@@ -27,6 +27,7 @@ const SNAPSHOT_PATH = resolve(
   process.cwd(),
   '../../docs/evidence/ALABOM/SI/si-v1-question-alignment-holdout.json',
 );
+const FREEZE_DUMP = true;
 const ANALYZER_SRC = readFileSync(
   resolve(dirname(fileURLToPath(import.meta.url)), '../analyze-strategic-intelligence.ts'),
   'utf8',
@@ -304,33 +305,35 @@ describe('S.I. Question Alignment Holdout — measure only', () => {
       ]),
     );
 
-    mkdirSync(dirname(SNAPSHOT_PATH), { recursive: true });
-    writeFileSync(
-      SNAPSHOT_PATH,
-      `${JSON.stringify(
-        {
-          productionSha: PRODUCTION_SHA,
-          fixBatch2Sha: FIX_SHA,
-          scenarioCount: rows.length,
-          spokenCounts,
-          patternCounts,
-          failureCounts,
-          repeated,
-          oneOff,
-          regression: {
-            paymentOnlyOffS3: paidOnly.stageId !== 'S3' && paidOnly.stageId !== 'S4',
-            twoTwoNextCu: omission.promotion.nextUnknownCu,
-            negativeDeclined: rows.every((row) => row.downgrade.declined),
-            leftoverPositive: rows.filter((row) => row.downgrade.leftoverPositive).length,
-            negativeQuestionBinds: rows.filter((row) => row.downgrade.binds).length,
+    if (!FREEZE_DUMP) {
+      mkdirSync(dirname(SNAPSHOT_PATH), { recursive: true });
+      writeFileSync(
+        SNAPSHOT_PATH,
+        `${JSON.stringify(
+          {
+            productionSha: PRODUCTION_SHA,
+            fixBatch2Sha: FIX_SHA,
+            scenarioCount: rows.length,
+            spokenCounts,
+            patternCounts,
+            failureCounts,
+            repeated,
+            oneOff,
+            regression: {
+              paymentOnlyOffS3: paidOnly.stageId !== 'S3' && paidOnly.stageId !== 'S4',
+              twoTwoNextCu: omission.promotion.nextUnknownCu,
+              negativeDeclined: rows.every((row) => row.downgrade.declined),
+              leftoverPositive: rows.filter((row) => row.downgrade.leftoverPositive).length,
+              negativeQuestionBinds: rows.filter((row) => row.downgrade.binds).length,
+            },
+            rows,
           },
-          rows,
-        },
-        null,
-        2,
-      )}\n`,
-      'utf8',
-    );
+          null,
+          2,
+        )}\n`,
+        'utf8',
+      );
+    }
 
     expect(rows).toHaveLength(11);
     expect(rows.filter((row) => row.unnamed)).toHaveLength(6);

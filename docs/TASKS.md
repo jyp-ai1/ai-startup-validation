@@ -4,6 +4,22 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Question Alignment Fix — CU axis
+
+**Branch:** `cursor/si-question-alignment-fix-e648` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-FIX.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | RCA: weave vs kind | ✅ DCE boilerplate stake |
+| 2 | Pattern B 반복 가능 CU 축 보존 | ✅ 4 PASS · 이탈 weave 제거 |
+| 3 | Pattern A generic 보호 | ✅ 6 PARTIAL 유지 |
+| 4 | 주인집 control / unnamed | ✅ |
+| 5 | #104 / #107 / Negative / P0 | ✅ |
+| 6 | Production | 불변 |
+
+---
+
 ## S.I. Question Alignment Holdout — MEASUREMENT COMPLETE
 
 **Branch:** `cursor/si-question-alignment-holdout-e648` · Production `dea7cb1` 불변 · Fix Gate NOT OPEN  
