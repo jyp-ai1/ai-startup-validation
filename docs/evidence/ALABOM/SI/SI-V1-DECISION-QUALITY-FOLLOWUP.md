@@ -1,6 +1,6 @@
 # S.I. Decision Quality Follow-up — MEASUREMENT COMPLETE
 
-**PR:** 측정 전용 (Fix 아님)  
+**PR:** #105 측정 전용 (Fix 아님)  
 **Branch:** `cursor/si-decision-quality-followup-e648`  
 **Base / Baseline:** PR #104 PASS CLOSED · SHA `fbf6f1c`  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-decision-quality-followup.json`  

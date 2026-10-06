@@ -4,9 +4,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## S.I. Decision Quality Follow-up — MEASUREMENT COMPLETE
+## S.I. Decision Quality Follow-up ✅ MEASUREMENT COMPLETE (Fix 아님)
 
-**Branch:** `cursor/si-decision-quality-followup-e648` · base PR #104 SHA `fbf6f1c` · 측정만 · 엔진/Production 금지  
+**PR:** #105 측정 전용 · **Branch:** `cursor/si-decision-quality-followup-e648` · base PR #104 SHA `fbf6f1c`  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DECISION-QUALITY-FOLLOWUP.md`
 
 | # | Gate | Status |
