@@ -539,6 +539,21 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
     return paidConversionUnknown(signals);
   }
 
+  const metric = signals.find((signal) => signal.kind === 'quantified_problem');
+  if (metric && !hasKind(signals, 'repeat_validation', false)) {
+    const stake = stakeNoun(metric.text);
+    const alternative = pickNamedAlternative(signals);
+    const versus = alternative ? alternativeNoun(alternative.text) : null;
+    const versusClause = versus
+      ? ` ${versus} 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다.`
+      : '';
+    return {
+      criticalUnknown: `유료 전환 이후 문서가 수치화한 ${stake} 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.`,
+      decisionChangingEvidence: `이미 결제한 후보의 ${stake} 전후 비교.${versusClause} 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.`,
+      validationPriority: `이미 돈을 낸 후보에서 문서가 적은 ${stake}의 전후를 한 번 잰다.`,
+    };
+  }
+
   return {
     criticalUnknown:
       '현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.',

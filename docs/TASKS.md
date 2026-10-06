@@ -4,7 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## S.I. Question Alignment Gate
+## S.I. Question DCE Ask Gate
+
+**Branch:** `cursor/si-question-dce-ask-e648` · base PR #101 · 질문 하드코딩 금지 · 엔진 재설계 금지 · Production 금지
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | DCE 특수 지표를 실제 Founder 질문에 반영 | 진행중 |
+| 2 | 주인집·LMULM·RIDM 질문 회귀 고정 | 진행중 |
+| 3 | 5사업 Evidence 재진입 + PR #98 2회 루프 | 진행중 |
+| 4 | 유료 답 이후 클리닉/핏브릿지가 재판매로 새지 않음 | 진행중 |
+| 5 | `decideNextQuestionFromReview` / Production | 불변 |
+
+---
+
+## S.I. Question Alignment Gate ✅ MEASUREMENT COMPLETE / CONDITIONAL PASS
 
 **Branch:** `cursor/si-question-alignment-e648` · base PR #100 · 측정만 · 질문 하드코딩 금지 · Production 금지  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT.md`
