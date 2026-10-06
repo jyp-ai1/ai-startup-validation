@@ -30,6 +30,8 @@ import {
   saveAnswerDraft,
 } from '../../lib/business-understanding/workspace-answer-draft-store';
 import { resolveNextQuestionDecision } from '../../lib/business-understanding/resolve-next-question-decision';
+import { isBusinessUnderstandingConfirmQuestion } from '../../lib/business-understanding/gap-question-map';
+import type { SiAiPmQuestion } from '@repo/types/domain/strategic-intelligence';
 import { shouldSkipLiveRankOnRemount } from '../../lib/business-understanding/resolve-remount-ask-surface';
 import { resolveV3DisplayPriority } from '../../lib/business-understanding/v3-legacy-bypass-guards';
 import { isV3ReviewPipelineActive } from '../../lib/business-understanding/v3-review-pipeline';
@@ -291,6 +293,9 @@ type WorkspaceAiPmLoopPanelProps = {
   workspaceSnapshotUpdatedAt?: string | null;
   /** After C1, hide interpretation-style 맞습니다 on the composer. */
   hideInterpretationConfirm?: boolean;
+  /** PR #97 — S.I. validation ask. Does not rewrite decideNextQuestionFromReview. */
+  siValidationAsk?: SiAiPmQuestion | null;
+  onSiValidationAnswer?: (answer: string) => void;
   className?: string;
 };
 
@@ -307,6 +312,8 @@ export function WorkspaceAiPmLoopPanel({
   onSessionPause,
   workspaceSnapshotUpdatedAt = null,
   hideInterpretationConfirm = false,
+  siValidationAsk = null,
+  onSiValidationAnswer,
   className,
 }: WorkspaceAiPmLoopPanelProps) {
   const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
@@ -547,6 +554,15 @@ export function WorkspaceAiPmLoopPanel({
       }
     }
 
+    if (
+      siValidationAsk &&
+      targetGap === 'businessOneLiner' &&
+      !isBusinessUnderstandingConfirmQuestion(questionText)
+    ) {
+      questionText = siValidationAsk.questionText;
+      whyNow = siValidationAsk.whyAsking;
+    }
+
     const purity = enforceQuestionPurity({
       questionText,
       targetGap,
@@ -573,6 +589,7 @@ export function WorkspaceAiPmLoopPanel({
     livingState,
     lockedAskSurface,
     questionLockActive,
+    siValidationAsk,
   ]);
   const s11Surface = useMemo(() => {
     const askIssueId = loopState.currentIssueId ?? nextIssue;
@@ -1594,6 +1611,17 @@ export function WorkspaceAiPmLoopPanel({
     const trimmed = (forcedText ?? answerDraft).trim();
     if (!issueId || trimmed.length < 2 || readOnly) return;
 
+    const siAskText = siValidationAsk?.questionText?.trim();
+    const liveAskText =
+      whyThisQuestionNow?.questionText?.trim() ||
+      lastAskSurfaceRef.current.questionText?.trim() ||
+      '';
+    if (siAskText && liveAskText === siAskText && onSiValidationAnswer) {
+      onSiValidationAnswer(trimmed);
+      setAnswerDraft('');
+      return;
+    }
+
     activateQuestionLock();
 
     const memory = loadConversationMemory(projectId);
@@ -2172,6 +2200,9 @@ export function WorkspaceAiPmLoopPanel({
     syncState,
     understanding,
     whyThisQuestionNow,
+    siValidationAsk,
+    onSiValidationAnswer,
+    answerDraft,
   ]);
 
   const submitSupplementAnswer = useCallback(

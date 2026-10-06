@@ -904,6 +904,8 @@ export function WorkspaceAiPmMain({
             onLoopComplete={handleLoopComplete}
             onSessionPause={onSessionPause}
             hideInterpretationConfirm={showUnderstandingCard}
+            siValidationAsk={siBindView?.question ?? null}
+            onSiValidationAnswer={setSiFounderAnswer}
           />
         </div>
       ) : null}
