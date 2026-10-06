@@ -4,6 +4,24 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. V1 Accuracy Closure — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-accuracy-closure-e648` · Production `dea7cb1` 불변 · Fix 없음 · Promotion HOLD  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-CLOSURE.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Fresh holdout 11 (cal 5 + unnamed 6) | ✅ |
+| 2 | Taxonomy 9축 FAIL | ✅ **0** |
+| 3 | Pattern A generic PARTIAL | ✅ 허용 · obstruction 0 |
+| 4 | Pattern B / #104 / #107 / Negative / Conflict | ✅ |
+| 5 | P0-1 / P0-2 | ✅ |
+| 6 | Full build | ✅ |
+| 7 | Production smoke / SHA triangle | HOLD · DNS · mismatch |
+| 8 | Production | 불변 `dea7cb1` |
+
+---
+
 ## S.I. Pattern A Obstruction — MEASUREMENT COMPLETE
 
 **Branch:** `cursor/si-pattern-a-obstruction-e648` · Alignment Fix `6926d6f` · Production `dea7cb1` 불변 · Fix Gate NOT OPEN  
