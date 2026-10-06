@@ -4,7 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## S.I. Decision Quality / Founder Outcome Calibration
+## S.I. Partial DCE Promotion Gate
+
+**Branch:** `cursor/si-partial-dce-e648` · base PR #103 · P0 정확도 · 질문 생성기 금지 · 사업명 분기 금지 · Production 금지
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 지불만으로 S3/viable 금지 | ✅ |
+| 2 | 전체 DCE 충족 시에만 승격 | ✅ |
+| 3 | 5사업 방향 + 주인집/LMULM/RIDM 회귀 | ✅ |
+| 4 | PR #98 2회 루프 유지 | ✅ |
+| 5 | 질문 생성기 / `decideNextQuestionFromReview` / Production | 불변 |
+
+---
+
+## S.I. Decision Quality / Founder Outcome Calibration ✅ MEASUREMENT COMPLETE / FAIL
 
 **Branch:** `cursor/si-decision-quality-e648` · base PR #102 · 측정만 · 새 기능/UI 금지 · Production 금지  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-OUTCOME.md`

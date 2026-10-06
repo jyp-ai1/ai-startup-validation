@@ -226,8 +226,7 @@ function scanLine(line: string): DetectedSignal[] {
     !negated &&
     !isHypothesis(line) &&
     STAKE_NOUN.test(line) &&
-    /\d+/.test(line) &&
-    /(줄었|감소|개선됐|개선되|→)/.test(line)
+    (/(줄었|감소했|개선됐|개선되)/.test(line) || /\d+\s*%.{0,8}(에서|→)\s*\d+\s*%/.test(line))
   ) {
     push('stake_improved', 'VALIDATED', 'validationStrength');
   }

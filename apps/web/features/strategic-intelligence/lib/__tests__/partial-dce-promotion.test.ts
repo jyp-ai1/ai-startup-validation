@@ -58,7 +58,7 @@ describe('Partial DCE must not promote the verdict — P0', () => {
     const t1 = analyzeStrategicIntelligence({
       documentText: appendFounderEvidenceToDocument(
         NO_SHOW_DOC,
-        '유료 병원 2곳이 결제했고 no-show가 18%에서 9%로 줄었다.',
+        '결제 후보 2명이 월 구독을 결제했고 no-show가 18%에서 9%로 줄었다.',
       ),
     });
     expect(t1.stageId).toBe('S3');
@@ -78,7 +78,7 @@ describe('Partial DCE must not promote the verdict — P0', () => {
     const t1 = analyzeStrategicIntelligence({
       documentText: appendFounderEvidenceToDocument(
         RETURN_DOC,
-        '유료 브랜드 2곳이 결제했고 반품률이 32%에서 20%로 줄었다.',
+        '결제 후보 2명이 월 구독을 결제했고 반품률이 32%에서 20%로 줄었다.',
       ),
     });
     expect(t1.stageId).toBe('S3');
