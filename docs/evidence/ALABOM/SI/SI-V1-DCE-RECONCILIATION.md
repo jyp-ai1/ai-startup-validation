@@ -1,10 +1,19 @@
-# S.I. Full DCE State Reconciliation — GATE COMPLETE
+# S.I. Full DCE State Reconciliation ✅ PASS CLOSED
 
 **PR:** #107 Fix  
+**CPO 판정:** PASS CLOSED — Fix Gate 종료 · Production 미배포  
 **Branch:** `cursor/si-dce-reconciliation-e648`  
 **Base:** PR #106 MEASUREMENT COMPLETE / FAIL · Baseline SHA `fbf6f1c` (#104)  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-stale-cu.json`  
 **금지:** #104 부분 정직 회귀 · 1/2→S3 · 사업명 분기 · `decideNextQuestionFromReview` · 신규 SoT · 질문 생성기 덮어쓰기 · Production
+
+```text
+#104 Partial DCE
+        ↓
+#106 stale CU — FAIL
+        ↓
+#107 DCE Reconciliation — PASS CLOSED
+```
 
 #106이 고정한 결함: DCE 2/2 이후 Judgment는 S3인데 CU/Priority/질문이 이전 미충족 상태를 반복한다.
 
@@ -46,3 +55,7 @@ Ask      = generic — 전후/재판매 질문 아님
 - `decideNextQuestionFromReview` 미사용
 - Analyzer 사업명 토큰 없음
 - Production 불변. CEO 재테스트 없음.
+
+## CPO Lock
+
+CPO 2-pass PASS. DCE 2/2가 충족되면 이전 CU를 폐기하고 다음 검증 단위로 상태를 옮긴다. Fix Gate는 여기서 닫는다. 다음 Gate는 CPO가 연다. Production은 올리지 않는다.
