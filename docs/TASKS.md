@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Question Alignment Holdout — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-question-alignment-holdout-e648` · Production `dea7cb1` 불변 · Fix Gate NOT OPEN  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-HOLDOUT.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | A. next-CU generic (새 지표 조합) | ✅ 6 PARTIAL |
+| 2 | B. stake weave-off (새 입력) | ✅ 4 FAIL 측정 · Fix 없음 |
+| 3 | Control bind (주인집 alt) | ✅ PASS |
+| 4 | #104 / #107 / Negative / P0 | ✅ |
+| 5 | Presenter / ask kind / analyzer | 0-diff |
+
+---
+
 ## S.I. Question Alignment Batch — MEASUREMENT COMPLETE
 
 **Branch:** `cursor/si-question-alignment-batch-e648` · Fix `30504b7` · Production `dea7cb1` 불변  
