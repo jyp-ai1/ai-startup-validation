@@ -6,14 +6,15 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## S.I. Decision Quality / Founder Outcome Calibration
 
-**Branch:** `cursor/si-decision-quality-e648` · base PR #102 · 측정만 · 새 기능/UI 금지 · Production 금지
+**Branch:** `cursor/si-decision-quality-e648` · base PR #102 · 측정만 · 새 기능/UI 금지 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-OUTCOME.md`
 
 | # | Gate | Status |
 |---|------|--------|
-| 1 | 5사업 t0 판단·리스크·CU·DCE·Priority·질문 | 진행중 |
-| 2 | 답변 후 재판단 정직성 | 진행중 |
-| 3 | Founder 검증/중단/집중이 읽히는가 | 진행중 |
-| 4 | 방향 일치 ≠ 더 좋은 의사결정 구분 | 진행중 |
+| 1 | 5사업 t0 판단·리스크·CU·DCE·Priority·질문 | ✅ |
+| 2 | 답변 후 재판단 정직성 | ✅ 클리닉/핏브릿지 지불만으로 viable |
+| 3 | Founder 검증/중단/집중이 읽히는가 | ✅ t0 5/5 |
+| 4 | 방향 일치 ≠ 더 좋은 의사결정 구분 | ✅ 방향 5/5, Outcome 3/2 |
 | 5 | 엔진/질문 생성기 수정 | 없음 |
 
 ---

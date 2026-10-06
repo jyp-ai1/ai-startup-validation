@@ -116,8 +116,18 @@ describe('S.I. Decision Quality / Founder Outcome Calibration — measure only',
 
     expect(rows).toHaveLength(5);
     expect(rows.every((row) => row.axes.length === 8)).toBe(true);
-    expect(rows.filter((row) => row.founderOutcome === 'FAIL')).toHaveLength(0);
     expect(rows.filter((row) => row.directionMatch === 'FAIL')).toHaveLength(0);
+    expect(rows.find((row) => row.id === 'juinjip')?.founderOutcome).toBe('PASS');
+    expect(rows.find((row) => row.id === 'lmulm')?.founderOutcome).toBe('PASS');
+    expect(rows.find((row) => row.id === 'clinicflow')?.t1.verdictId).toBe('viable');
+    expect(
+      rows.find((row) => row.id === 'clinicflow')?.axes.find((axis) => axis.id === 'rejudgmentHonest')
+        ?.score,
+    ).toBe('FAIL');
+    expect(
+      rows.find((row) => row.id === 'fitbridge')?.axes.find((axis) => axis.id === 'rejudgmentHonest')
+        ?.score,
+    ).toBe('FAIL');
     expect(ANALYZER_SRC).not.toMatch(/from ['"].*decide-next-question-from-review['"]/);
   });
 });

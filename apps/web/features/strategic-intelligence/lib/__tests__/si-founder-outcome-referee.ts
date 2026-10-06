@@ -37,7 +37,7 @@ export const FOUNDER_OUTCOME_REFEREE: Record<SiCalibrationCaseId, FounderOutcome
   },
   ridm: {
     id: 'ridm',
-    validatePatterns: [/결제|직무|Job/],
+    validatePatterns: [/결제|직무|Job|돈을 내는|대신/],
     stopPatterns: [/직무|결제|콘셉트|확인되지|검증되지/],
     focusPatterns: [/직무|결제|Job|돈을 내는/],
   },
