@@ -67,8 +67,12 @@ Local: SI + P0-1 + P0-2 = **178 passed**
 
 ## 8. Commit SHA
 
-(푸시 후 이 문서와 PR에 기록)
+`0b3429f44db8596be2b5676930af9a31adf075de`  
+PR: https://github.com/jyp-ai1/ai-startup-validation/pull/118
 
 ## 9. Preview evidence
 
-Production deploy 없음. Preview URL은 PR에 첨부.
+Production deploy 없음.
+
+- PR: https://github.com/jyp-ai1/ai-startup-validation/pull/118
+- Preview: https://ai-startup-validation-git-cursor-si-ne-243c22-jyp-ai1s-projects.vercel.app
