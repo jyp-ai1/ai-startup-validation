@@ -4,6 +4,326 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Founder Decision Presentation Gate — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-decision-presentation-e648` · Production `1690cbf` 불변 · Analyzer 0-diff · 재배포 없음  
+**Prior:** Founder Decision Value CONDITIONAL PASS  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-DECISION-PRESENTATION.md`  
+**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/114 (draft)
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | RCA: verdict label만 그려 S3=S4 headline | ✅ Presenter |
+| 2 | A/B/C/D 5 cal + 3 unnamed | ✅ FAIL 0 |
+| 3 | S4→S3 headline 분리 · 재구매 0 ≠ CONFLICT | ✅ |
+| 4 | #104 / #107 / P0-1 / P0-2 | ✅ |
+| 5 | Production | 불변 `1690cbf` |
+| 6 | Gate | PASS · CPO CEO Founder Test 승인 판단 |
+
+---
+
+## CPO Checkpoint — 2026-10-07
+
+**CEO 복귀 점검.** Accuracy PASS CLOSED · Production HOLD `dea7cb1` · merge/deploy 없음  
+**Report:** `docs/evidence/ALABOM/SI/SI-V1-CPO-CHECKPOINT-2026-10-07.md`  
+**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/110 (draft)
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Accuracy 9축 FAIL 0 | CLOSED |
+| 2 | Pattern A blocker | 아님 (CPO) |
+| 3 | Promotion 후보 | `6939479` |
+| 4 | Production | `dea7cb1` |
+| 5 | CPO 점검 | PR #110 merge 여부 |
+
+---
+
+## S.I. V1 Accuracy Closure — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-accuracy-closure-e648` · Production `dea7cb1` 불변 · Fix 없음 · Promotion HOLD  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-CLOSURE.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Fresh holdout 11 (cal 5 + unnamed 6) | ✅ |
+| 2 | Taxonomy 9축 FAIL | ✅ **0** |
+| 3 | Pattern A generic PARTIAL | ✅ 허용 · obstruction 0 |
+| 4 | Pattern B / #104 / #107 / Negative / Conflict | ✅ |
+| 5 | P0-1 / P0-2 | ✅ |
+| 6 | Full build | ✅ |
+| 7 | Production smoke / SHA triangle | HOLD · DNS · mismatch |
+| 8 | Production | 불변 `dea7cb1` |
+
+---
+
+## S.I. Pattern A Obstruction — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-pattern-a-obstruction-e648` · Alignment Fix `6926d6f` · Production `dea7cb1` 불변 · Fix Gate NOT OPEN  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-PATTERN-A-OBSTRUCTION.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Pattern A 6건 generic next-CU ask | ✅ 유지 |
+| 2 | generic-literal 추가 결제가 next CU를 닫는가 | ✅ 6 PARTIAL · 닫지 않음 |
+| 3 | on-CU 다음 기간 답이 루프를 막는가 | ✅ 6 PARTIAL · 오염 없음 |
+| 4 | whyAsking/CU surface 복구 | ✅ 6/6 |
+| 5 | Obstruction FAIL | ✅ **0** |
+| 6 | #104 / #107 / Negative / P0 / Pattern B | ✅ |
+| 7 | Presenter / ask kind / analyzer | 0-diff |
+| 8 | Production | 불변 · HOLD |
+
+---
+
+## S.I. Question Alignment Fix — CU axis
+
+**Branch:** `cursor/si-question-alignment-fix-e648` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-FIX.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | RCA: weave vs kind | ✅ DCE boilerplate stake |
+| 2 | Pattern B 반복 가능 CU 축 보존 | ✅ 4 PASS · 이탈 weave 제거 |
+| 3 | Pattern A generic 보호 | ✅ 6 PARTIAL 유지 |
+| 4 | 주인집 control / unnamed | ✅ |
+| 5 | #104 / #107 / Negative / P0 | ✅ |
+| 6 | Production | 불변 |
+
+---
+
+## S.I. Question Alignment Holdout — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-question-alignment-holdout-e648` · Production `dea7cb1` 불변 · Fix Gate NOT OPEN  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-HOLDOUT.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | A. next-CU generic (새 지표 조합) | ✅ 6 PARTIAL |
+| 2 | B. stake weave-off (새 입력) | ✅ 4 FAIL 측정 · Fix 없음 |
+| 3 | Control bind (주인집 alt) | ✅ PASS |
+| 4 | #104 / #107 / Negative / P0 | ✅ |
+| 5 | Presenter / ask kind / analyzer | 0-diff |
+
+---
+
+## S.I. Question Alignment Batch — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-question-alignment-batch-e648` · Fix `30504b7` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-BATCH.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | CU resolved → next unresolved CU | ✅ 8/8 |
+| 2 | Question binds next CU | ✅ 측정 · generic_ask 5 · stake_weave 2 |
+| 3 | Negative 후 질문 재정렬 | ✅ 8/8 |
+| 4 | #104 / #107 / analyzer / Presenter | ✅ 0-diff · Fix 없음 |
+
+---
+
+## S.I. Accuracy Fix Batch #2 — Evidence Reconciliation
+
+**Branch:** `cursor/si-accuracy-fix-batch-2-e648` · Production `dea7cb1` 불변 · Negative Fix `4b2aa21` 유지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-FIX-BATCH-2.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 직접 부인 → CONFLICT + VALIDATED 철회 + 재판단 | ✅ 8/8 |
+| 2 | 재구매 0 ≠ CONFLICT · ≠ S4 | ✅ |
+| 3 | Positive promotion CU/Priority | ✅ 주인집·RIDM 포함 8/8 |
+| 4 | Question generator | 미수정 · generic_ask 5 재측정 |
+| 5 | #104 / #107 / Negative hops / Founder / P0 | ✅ 155 |
+| 6 | Production merge | 없음 |
+
+---
+
+## S.I. Accuracy Batch #2 — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-accuracy-batch-2-e648` · Fix `4b2aa21` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-BATCH-2.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Positive promotion → CU/Priority/Question | ✅ 측정 · 2/2 generic_ask 5 · stale CU 주인집·RIDM 2 |
+| 2 | Direct denial → CONFLICT → 재판단 | ✅ 측정 · ignored_direct_conflict 8/8 FACT no-op |
+| 3 | 재구매 0 ≠ CONFLICT | ✅ 유지 · 7/8은 S3→S4 추가 승격 |
+| 4 | Negative / Founder / #104 / #107 / P0 | ✅ 회귀 8/8 |
+| 5 | Presenter / Fix / Production | 없음 |
+
+---
+
+## S.I. Post-Negative Accuracy Batch — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-post-negative-accuracy-e648` · Fix `4b2aa21` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-POST-NEGATIVE-ACCURACY.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Negative 이후 Judgment 하향 연결 | ✅ 8/8 |
+| 2 | CU/Priority · Founder 4항 재계산 | ✅ 하향 후 leftover headline 0 |
+| 3 | Question vs CU/Priority/DCE | ✅ 측정 · generic_ask 5 (2/2 승격) |
+| 4 | #104 / #107 / Negative Fix | ✅ |
+| 5 | Presenter / Fix / Production | 없음 |
+
+---
+
+## S.I. Negative Judgment Fix — ACCURACY FIX BATCH
+
+**Branch:** `cursor/si-negative-judgment-fix-e648` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-NEGATIVE-JUDGMENT-FIX.md`  
+**범위:** 분석 시점 retract + CONFLICT + stake 방향. Presenter/SoT/Production 없음.
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | VALIDATED 철회 후 하향 | ✅ |
+| 2 | CONFLICT는 양립 불가만 | ✅ |
+| 3 | #104 1/2 ≠ S3 | ✅ |
+| 4 | #107 2/2 CU 이동 | ✅ |
+| 5 | SI + P0-1/P0-2 unit | ✅ 150 |
+| 6 | Production merge | 없음 |
+
+---
+
+## S.I. DCE Reconciliation ✅ PRODUCTION ACCEPTED
+
+**PR:** #107 · **Promotion:** #108 PASS · **Production SHA:** `127162b`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DCE-RECONCILIATION-PRODUCTION.md`  
+**기준선:** #104 → #106 FAIL → #107 PASS CLOSED → #108 PASS → Production
+
+---
+
+## S.I. Full DCE State Reconciliation ✅ PASS CLOSED
+
+**PR:** #107 Fix · **Branch:** `cursor/si-dce-reconciliation-e648` · CPO 2-pass PASS  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DCE-RECONCILIATION.md`  
+**기준선:** #104 Partial DCE → #106 stale CU FAIL → #107 DCE Reconciliation PASS CLOSED
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | #104 1/2 · 지불만 ≠ S3 | ✅ |
+| 2 | DCE 2/2에서 CU/DCE/Priority/질문 재계산 | ✅ |
+| 3 | unnamed 3-domain + 클리닉/핏브릿지 2/2 | ✅ PASS |
+| 4 | 2/2 + 추가 evidence | ✅ PASS |
+| 5 | SI 118 + P0-1/P0-2 23 · Production | ✅ / 불변 |
+
+---
+
+## S.I. Stale Critical Unknown ✅ MEASUREMENT COMPLETE (Fix 아님)
+
+**PR:** #106 측정 전용 · **Branch:** `cursor/si-stale-cu-e648` · base #105 · Baseline `fbf6f1c`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-STALE-CU.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | #104 지불만 ≠ S3 유지 | ✅ |
+| 2 | stale_cu_after_full_dce 정의 고정 | ✅ |
+| 3 | 일반 DCE 0/2 1/2 2/2 2/2+extra | ✅ 이름 없는 이탈 포함 |
+| 4 | 2/2에서 J/CU/DCE/Priority/질문 | ✅ 5/5 FAIL |
+| 5 | 엔진 / Fix / Production | 없음 |
+
+---
+
+## S.I. Decision Quality Follow-up ✅ MEASUREMENT COMPLETE (Fix 아님)
+
+**PR:** #105 측정 전용 · **Branch:** `cursor/si-decision-quality-followup-e648` · base PR #104 SHA `fbf6f1c`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DECISION-QUALITY-FOLLOWUP.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | #104 기준선 유지 (지불만 ≠ S3) | ✅ |
+| 2 | 클리닉/핏브릿지 5시나리오 × Judgment/CU/Priority | ✅ |
+| 3 | Founder 4항 가독성 | ✅ 10/10 |
+| 4 | 실패 유형 분류 | ✅ stale_cu_after_full_dce 2행 |
+| 5 | 엔진 / Fix PR / Production | 없음 |
+
+---
+
+## S.I. Partial DCE Promotion Gate ✅ PASS CLOSED — 기준선 고정
+
+**Branch:** `cursor/si-partial-dce-e648` · SHA `fbf6f1c` · base PR #103 · CPO PASS · Production 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-PARTIAL-DCE.md`  
+**기준선:** 부분 Evidence는 전체 DCE/S3로 승격하지 않는다. 클리닉/핏브릿지 PARTIAL은 정직한 상태다.
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 지불만으로 S3/viable 금지 | ✅ |
+| 2 | 전체 DCE 충족 시에만 승격 | ✅ |
+| 3 | 5사업 방향 + 주인집/LMULM/RIDM 회귀 | ✅ |
+| 4 | PR #98 2회 루프 유지 | ✅ |
+| 5 | 질문 생성기 / `decideNextQuestionFromReview` / Production | 불변 |
+
+---
+
+## S.I. Decision Quality / Founder Outcome Calibration ✅ MEASUREMENT COMPLETE / FAIL
+
+**Branch:** `cursor/si-decision-quality-e648` · base PR #102 · 측정만 · 새 기능/UI 금지 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-OUTCOME.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 5사업 t0 판단·리스크·CU·DCE·Priority·질문 | ✅ |
+| 2 | 답변 후 재판단 정직성 | ✅ 클리닉/핏브릿지 지불만으로 viable |
+| 3 | Founder 검증/중단/집중이 읽히는가 | ✅ t0 5/5 |
+| 4 | 방향 일치 ≠ 더 좋은 의사결정 구분 | ✅ 방향 5/5, Outcome 3/2 |
+| 5 | 엔진/질문 생성기 수정 | 없음 |
+
+---
+
+## S.I. Question DCE Ask Gate ✅ CLOSED
+
+**Branch:** `cursor/si-question-dce-ask-e648` · base PR #101 · 질문 하드코딩 금지 · 엔진 재설계 금지 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-DCE-ASK.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | DCE 특수 지표를 실제 Founder 질문에 반영 | ✅ |
+| 2 | 주인집·LMULM·RIDM 질문 회귀 고정 | ✅ |
+| 3 | 5사업 Evidence 재진입 + PR #98 2회 루프 | ✅ |
+| 4 | 유료 답 이후 클리닉/핏브릿지가 재판매로 새지 않음 | ✅ |
+| 5 | `decideNextQuestionFromReview` / Production | 불변 |
+
+---
+
+## S.I. Question Alignment Gate ✅ MEASUREMENT COMPLETE / CONDITIONAL PASS
+
+**Branch:** `cursor/si-question-alignment-e648` · base PR #100 · 측정만 · 질문 하드코딩 금지 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 5사업 Priority → AI PM 질문 기록 | ✅ |
+| 2 | 질문이 DCE를 묻는가 / 일반 paid_conversion 퇴행인가 | ✅ 3 PASS / 2 PARTIAL |
+| 3 | 답변 → S.I. Evidence | ✅ 5/5 |
+| 4 | PR #98 2회 루프 유지 | ✅ |
+| 5 | 질문 생성기 수정 | 없음 |
+
+---
+
+## S.I. CU Calibration Gate ✅ CLOSED
+
+**Branch:** `cursor/si-cu-calibration-e648` · base PR #99 · First-Pass 재설계 금지 · 사업명 하드코딩 금지 · Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-CU-CALIBRATION.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 주인집·LMULM·RIDM t0 회귀 고정 | ✅ |
+| 2 | 수치화 문제 + 이름 있는 대안 → CU 일반화 | ✅ |
+| 3 | 5사업 t0 재실행 · 2 개선 + 3 회귀 | ✅ 클리닉/핏브릿지 PASS, 3개 불변 |
+| 4 | 클리닉플로우·핏브릿지 브랜드 예외 없음 | ✅ 이름 없는 입력으로 동일 규칙 |
+
+---
+
+## S.I. First-Pass Judgment Calibration Gate ✅
+
+**Branch:** `cursor/si-first-pass-calibration-e648` · 측정만 · engine/UI/Production 금지
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 5사업 t0 6필드 추출 | ✅ |
+| 2 | GPT/Gemini 독립 비교 6축 | ✅ 3 PASS / 2 PARTIAL / 0 FAIL |
+| 3 | 판단 방향 5/5 | ✅ |
+| 4 | 엔진 수정 | 없음 |
+
+---
+
 ## S.I. Founder Journey E2E Gate ✅
 
 **Branch:** `cursor/si-founder-journey-e2e-e648` · base PR #97 · 기능 추가 없음  
@@ -16,6 +336,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 3 | Gap Loop fallback | ✅ |
 | 4 | P0-1/P0-2 unit | ✅ |
 | 5 | Browser 3사업 × 2턴 | ✅ |
+| 6 | Production SHA triangle + Smoke | ✅ `9221861` |
 
 ---
 

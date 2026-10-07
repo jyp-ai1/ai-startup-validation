@@ -1,0 +1,99 @@
+{
+  "productionSha": "dea7cb1916cfbd4e6f8c54a86e6da920ed708bd2",
+  "scenarioCount": 11,
+  "spokenCounts": {
+    "PASS": 5,
+    "PARTIAL": 6,
+    "FAIL": 0
+  },
+  "rows": [
+    {
+      "id": "unnamed_ledger",
+      "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "kind": "repeat_loop",
+      "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+      "spoken": "PASS",
+      "failure": null
+    },
+    {
+      "id": "unnamed_fieldops",
+      "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "kind": "repeat_loop",
+      "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+      "spoken": "PASS",
+      "failure": null
+    },
+    {
+      "id": "lmulm_alt",
+      "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "kind": "repeat_loop",
+      "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+      "spoken": "PASS",
+      "failure": null
+    },
+    {
+      "id": "ridm_alt",
+      "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+      "kind": "repeat_loop",
+      "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+      "spoken": "PASS",
+      "failure": null
+    },
+    {
+      "id": "unnamed_omission",
+      "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "kind": "generic",
+      "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+      "spoken": "PARTIAL",
+      "failure": "generic_ask_after_specific_cu"
+    },
+    {
+      "id": "unnamed_load",
+      "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "kind": "generic",
+      "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+      "spoken": "PARTIAL",
+      "failure": "generic_ask_after_specific_cu"
+    },
+    {
+      "id": "unnamed_mismatch",
+      "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "kind": "generic",
+      "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+      "spoken": "PARTIAL",
+      "failure": "generic_ask_after_specific_cu"
+    },
+    {
+      "id": "unnamed_inconsistency",
+      "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "kind": "generic",
+      "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+      "spoken": "PARTIAL",
+      "failure": "generic_ask_after_specific_cu"
+    },
+    {
+      "id": "clinicflow_alt",
+      "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "kind": "generic",
+      "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+      "spoken": "PARTIAL",
+      "failure": "generic_ask_after_specific_cu"
+    },
+    {
+      "id": "fitbridge_alt",
+      "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+      "kind": "generic",
+      "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+      "spoken": "PARTIAL",
+      "failure": "generic_ask_after_specific_cu"
+    },
+    {
+      "id": "juinjip_alt",
+      "cu": "문서가 지목한 고객 세그먼트가 실제로 이 문제를 갖고 돈을 낼 의사가 있는가. 세그먼트가 가설이면 시장 크기를 말할 수 없다.",
+      "kind": "segment_proof",
+      "question": "지목한 고객 그룹에서 실제로 쓰거나 돈을 낸 사례가 있습니까? 있다면 한 건만 구체적으로 알려주세요. 아직이면 가정이라고 답해도 됩니다.",
+      "spoken": "PASS",
+      "failure": null
+    }
+  ]
+}
