@@ -4,7 +4,7 @@ import type {
   SiStrategicJudgment,
 } from '@repo/types/domain/strategic-intelligence';
 
-import { analyzeStrategicIntelligence } from './analyze-strategic-intelligence';
+import { analyzeStrategicIntelligence, isRepeatZeroLine } from './analyze-strategic-intelligence';
 import { classifyFounderEvidence } from './classify-founder-evidence';
 
 const FOUNDER_EVIDENCE_MARK = '[Founder evidence]';
@@ -22,6 +22,27 @@ function evidenceStrengthRank(judgment: SiStrategicJudgment): number {
   return stageRank * 10 + validated * 3 + facts;
 }
 
+const VERDICT_RANK = {
+  insufficient_basis: 0,
+  judgment_deferred: 1,
+  conditionally_viable: 2,
+  viable: 3,
+} as const;
+
+function reconcileEvidenceStrengthDelta(args: {
+  previous: SiStrategicJudgment;
+  next: SiStrategicJudgment;
+  prevRank: number;
+  nextRank: number;
+  founderAnswer: string;
+}): SiEvidenceUpdateResult['evidenceStrengthDelta'] {
+  const computed = args.nextRank > args.prevRank ? 'up' : args.nextRank < args.prevRank ? 'down' : 'unchanged';
+  const verdictDelta = VERDICT_RANK[args.next.verdictId] - VERDICT_RANK[args.previous.verdictId];
+  if (verdictDelta < 0) return 'down';
+  if (isRepeatZeroLine(args.founderAnswer) && computed === 'up') return 'unchanged';
+  return computed;
+}
+
 export function updateStrategicIntelligence(input: SiEvidenceUpdateInput): SiEvidenceUpdateResult {
   const previous = input.previous;
   const addedEvidence = [classifyFounderEvidence(input.founderAnswer)];
@@ -36,8 +57,13 @@ export function updateStrategicIntelligence(input: SiEvidenceUpdateInput): SiEvi
 
   const prevRank = evidenceStrengthRank(previous);
   const nextRank = evidenceStrengthRank(next);
-  const evidenceStrengthDelta =
-    nextRank > prevRank ? 'up' : nextRank < prevRank ? 'down' : 'unchanged';
+  const evidenceStrengthDelta = reconcileEvidenceStrengthDelta({
+    previous,
+    next,
+    prevRank,
+    nextRank,
+    founderAnswer: input.founderAnswer,
+  });
 
   return {
     previous,

@@ -4,6 +4,22 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## [P0] Negative Evidence → Re-Judgment Integrity
+
+**CPO Gate:** FIX GATE OPEN · Production `0638f77` 불변 · Preview only  
+**Branch:** `cursor/si-neg-rejudgment-e648`  
+**Scope:** Evidence → reconciliation → promotion 경계만. CONFLICT-only 금지.
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | RCA | 측정 0건이 ASSUMPTION으로 빠지고 `hasRevenue → viable`이 C2C CU를 우회 |
+| 2 | `repeat_zero` FACT + same-axis promotion block | ✅ |
+| 3 | Positive / Negative / Partial | ✅ |
+| 4 | #104 / #107 / P0-1 / P0-2 / S.I. regression | ✅ 178 |
+| 5 | Production | 금지 · CPO 2-pass 후 별도 게이트 |
+
+---
+
 ## P0 PDF Ingestion Hotfix
 
 **Branch:** `cursor/p0-pdf-ingestion-e648` @ `768866a` · Production `1690cbf` 불변  

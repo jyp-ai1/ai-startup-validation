@@ -25,6 +25,7 @@ type SignalKind =
   | 'launch'
   | 'operations'
   | 'repeat_validation'
+  | 'repeat_zero'
   | 'job_unknown'
   | 'payer_unknown'
   | 'no_revenue'
@@ -102,8 +103,10 @@ function isStakeWorsenedLine(line: string): boolean {
   return pair !== null && pair.to > pair.from;
 }
 
-function isRepeatZeroLine(line: string): boolean {
-  return /(재구매는?\s*0|재구매\s*고객은\s*0|재구매는 없)/.test(line);
+export function isRepeatZeroLine(line: string): boolean {
+  return /(재구매는?\s*0|재구매\s*고객은\s*0|재구매는 없|재판매\s*등록\s*0|재판매는?\s*0\s*건)/.test(
+    line,
+  );
 }
 
 function isRepeatPlanOrIntent(line: string): boolean {
@@ -264,11 +267,12 @@ function scanLine(line: string): DetectedSignal[] {
     push('repeat_validation', 'VALIDATED', 'validationStrength');
   } else if (isQuantifiedPayment(line) && !negated) {
     push('revenue', 'VALIDATED', 'validationStrength');
+  } else if (isRepeatZeroLine(line)) {
+    push('repeat_zero', 'FACT', 'validationStrength');
   } else if (matchAny(line, [/재구매/, /반복적으로/, /리텐션/, /2차 거래/, /파일럿/, /인터뷰 검증/])) {
     if (
       negated ||
       isRepeatPlanOrIntent(line) ||
-      isRepeatZeroLine(line) ||
       deniesValidatedRepeat(line) ||
       /파일럿/.test(line)
     ) {
@@ -512,7 +516,8 @@ function buildAxes(signals: DetectedSignal[]): SiAxisJudgment[] {
   const operations = hasKind(signals, 'operations', false);
   const noLaunch = hasKind(signals, 'no_launch');
   const validated = hasKind(signals, 'repeat_validation', false);
-  const unverified = hasKind(signals, 'unverified') || hasKind(signals, 'no_revenue');
+  const unverified =
+    hasKind(signals, 'unverified') || hasKind(signals, 'no_revenue') || hasKind(signals, 'repeat_zero');
 
   const customerProblemFit = axisStatus({
     supported: problem && customer && !split && !segment && !jobUnknown,
@@ -571,9 +576,11 @@ function buildAxes(signals: DetectedSignal[]): SiAxisJudgment[] {
         : '이 팀이 실행할 우위가 문서에서 드러나지 않는다.',
     validationStrength: validated
       ? '반복 사용·재구매 등 검증 사실이 있다.'
-      : revenue
-        ? '초기 판매는 있으나 주장 수준을 넘는 반복 검증은 없다.'
-        : '실제 검증 사실이 없다.',
+      : hasKind(signals, 'repeat_zero')
+        ? '1차 판매는 유지되지만 재구매·재판매 0건이라 반복성은 미검증이다.'
+        : revenue
+          ? '초기 판매는 있으나 주장 수준을 넘는 반복 검증은 없다.'
+          : '실제 검증 사실이 없다.',
   };
 
   const statuses: Record<SiAxisId, SiAxisStatus> = {
@@ -594,6 +601,15 @@ function buildAxes(signals: DetectedSignal[]): SiAxisJudgment[] {
 
 function dceStakeOpen(signals: DetectedSignal[]): boolean {
   return hasKind(signals, 'quantified_problem') && !hasKind(signals, 'stake_improved', false);
+}
+
+/** Measured 0 on the open C2C/resale axis — not a CONFLICT, not a promotion. */
+function repeatMeasuredUnproven(signals: DetectedSignal[]): boolean {
+  return (
+    hasKind(signals, 'repeat_zero') &&
+    !hasKind(signals, 'repeat_validation', false) &&
+    hasKind(signals, 'resale_thesis')
+  );
 }
 
 function decideStage(signals: DetectedSignal[]): SiStageId {
@@ -633,6 +649,7 @@ function decideVerdict(stageId: SiStageId, signals: DetectedSignal[], axes: SiAx
   if (hasRepeat && hasRevenue) return 'viable';
   if (dceStakeOpen(signals)) return 'judgment_deferred';
   if ((hasRevenue || (hasLaunch && hasOps)) && customerAxis?.status !== 'unknown' && !jobUnknown) {
+    if (repeatMeasuredUnproven(signals)) return 'conditionally_viable';
     return hasRevenue ? 'viable' : 'conditionally_viable';
   }
   if (stageId === 'S3' && (hasLaunch || hasRevenue)) return 'conditionally_viable';
@@ -806,7 +823,9 @@ function buildStrengths(signals: DetectedSignal[]): string[] {
 
 function buildRisks(signals: DetectedSignal[], criticalUnknown: string): string[] {
   const out: string[] = [];
-  if (hasKind(signals, 'resale_thesis') && !hasKind(signals, 'repeat_validation', false)) {
+  if (repeatMeasuredUnproven(signals)) {
+    out.push('재구매·재판매가 0건이라 반복 사업은 검증되지 않았다.');
+  } else if (hasKind(signals, 'resale_thesis') && !hasKind(signals, 'repeat_validation', false)) {
     out.push('C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.');
   }
   if (hasKind(signals, 'payer_split')) {
@@ -878,7 +897,9 @@ function addInferences(items: SiEvidenceItem[], signals: DetectedSignal[], stage
   if (hasKind(signals, 'revenue', false) && hasKind(signals, 'resale_thesis')) {
     inferences.push({
       id: `ev-inf-${inferences.length + 1}`,
-      text: '1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.',
+      text: repeatMeasuredUnproven(signals)
+        ? '재구매·재판매 0건은 1차 판매를 부정하지 않지만, 반복 사업이 검증됐다는 뜻은 아니다.'
+        : '1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.',
       evidenceClass: 'INFERENCE',
       axisId: 'validationStrength',
     });
