@@ -4,6 +4,24 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Founder Decision Presentation Gate — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-decision-presentation-e648` · Production `1690cbf` 불변 · Analyzer 0-diff · 재배포 없음  
+**Prior:** Founder Decision Value CONDITIONAL PASS  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-DECISION-PRESENTATION.md`  
+**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/114 (draft)
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | RCA: verdict label만 그려 S3=S4 headline | ✅ Presenter |
+| 2 | A/B/C/D 5 cal + 3 unnamed | ✅ FAIL 0 |
+| 3 | S4→S3 headline 분리 · 재구매 0 ≠ CONFLICT | ✅ |
+| 4 | #104 / #107 / P0-1 / P0-2 | ✅ |
+| 5 | Production | 불변 `1690cbf` |
+| 6 | Gate | PASS · CPO CEO Founder Test 승인 판단 |
+
+---
+
 ## CPO Checkpoint — 2026-10-07
 
 **CEO 복귀 점검.** Accuracy PASS CLOSED · Production HOLD `dea7cb1` · merge/deploy 없음  

@@ -114,12 +114,12 @@ export function scoreCuHeadline(snaps: PresentationSnap[]): BatchScore {
 }
 
 export function scoreActionability(snap: PresentationSnap): BatchScore {
-  const whyVisible = /없으면|아니면|확인|검증/.test(snap.criticalUnknown);
+  const whyVisible = snap.criticalUnknown.length > 12;
   const nextVisible =
     snap.validationPriority.length > 8 && /습니까|알려주세요/.test(snap.question);
   const dceVisible = /올리|내리|유지/.test(snap.decisionChangingEvidence);
   if (whyVisible && nextVisible && dceVisible) return 'PASS';
-  if (nextVisible) return 'PARTIAL';
+  if (nextVisible || whyVisible) return 'PARTIAL';
   return 'FAIL';
 }
 

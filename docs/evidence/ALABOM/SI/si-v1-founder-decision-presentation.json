@@ -1,0 +1,343 @@
+{
+  "productionSha": "1690cbf",
+  "productionUnchanged": true,
+  "presenterOnly": true,
+  "scenarioCount": 8,
+  "calibration": 5,
+  "unnamed": 3,
+  "taxonomy": {
+    "positive_promotion": "PASS",
+    "partial_evidence": "PASS",
+    "direct_conflict": "PASS",
+    "s4_to_s3": "PASS",
+    "headline_stage": "PASS",
+    "cu_headline": "PASS",
+    "actionability": "PASS"
+  },
+  "axisCounts": {
+    "positive_promotion": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "N/A": 0
+    },
+    "partial_evidence": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "N/A": 0
+    },
+    "direct_conflict": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "N/A": 0
+    },
+    "s4_to_s3": {
+      "PASS": 1,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "N/A": 7
+    },
+    "headline_stage": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "N/A": 0
+    },
+    "cu_headline": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "N/A": 0
+    },
+    "actionability": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0,
+      "N/A": 0
+    }
+  },
+  "rows": [
+    {
+      "id": "juinjip",
+      "unnamed": false,
+      "kind": "payer_split",
+      "hops": {
+        "hold": "S1",
+        "go": "S1→S3",
+        "stop": "S3→S1",
+        "conflict": "S3→S1"
+      },
+      "headlines": {
+        "hold": "지금은 판단을 보류한다",
+        "go": "출시·초기 매출은 있으나 반복 검증은 아직이다",
+        "stop": "지금은 판단을 보류한다",
+        "conflict": "지금은 판단을 보류한다",
+        "partial": "출시·초기 매출은 있으나 반복 검증은 아직이다"
+      },
+      "internal": {
+        "goVerdict": "viable",
+        "stopVerdict": "judgment_deferred",
+        "stopClass": "CONFLICT",
+        "stopCu": "실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가. 결제자가 확인되지 않으면 사용자 수요만으로 사업화 판단을 확정할 수 없다.",
+        "conflictClass": "CONFLICT"
+      },
+      "axes": {
+        "positive_promotion": "PASS",
+        "partial_evidence": "PASS",
+        "direct_conflict": "PASS",
+        "s4_to_s3": "N/A",
+        "headline_stage": "PASS",
+        "cu_headline": "PASS",
+        "actionability": "PASS"
+      },
+      "rollup": "PASS"
+    },
+    {
+      "id": "lmulm",
+      "unnamed": false,
+      "kind": "repeat_loop",
+      "hops": {
+        "hold": "S3",
+        "go": "S3→S4",
+        "stop": "S4→S3",
+        "conflict": "S4→S3"
+      },
+      "headlines": {
+        "hold": "출시·초기 매출은 있으나 반복 검증은 아직이다",
+        "go": "사업화 가능성이 높음",
+        "stop": "출시·초기 매출은 있으나 반복 검증은 아직이다",
+        "conflict": "출시·초기 매출은 있으나 반복 검증은 아직이다",
+        "partial": "출시·초기 매출은 있으나 반복 검증은 아직이다"
+      },
+      "internal": {
+        "goVerdict": "viable",
+        "stopVerdict": "viable",
+        "stopClass": "FACT",
+        "stopCu": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+        "conflictClass": "CONFLICT"
+      },
+      "axes": {
+        "positive_promotion": "PASS",
+        "partial_evidence": "PASS",
+        "direct_conflict": "PASS",
+        "s4_to_s3": "PASS",
+        "headline_stage": "PASS",
+        "cu_headline": "PASS",
+        "actionability": "PASS"
+      },
+      "rollup": "PASS"
+    },
+    {
+      "id": "clinicflow",
+      "unnamed": false,
+      "kind": "paid_conversion",
+      "hops": {
+        "hold": "S1",
+        "go": "S1→S3",
+        "stop": "S3→S1",
+        "conflict": "S3→S1"
+      },
+      "headlines": {
+        "hold": "지금은 판단을 보류한다",
+        "go": "출시·초기 매출은 있으나 반복 검증은 아직이다",
+        "stop": "지금은 판단을 보류한다",
+        "conflict": "지금은 판단을 보류한다",
+        "partial": "지금은 판단을 보류한다"
+      },
+      "internal": {
+        "goVerdict": "viable",
+        "stopVerdict": "judgment_deferred",
+        "stopClass": "CONFLICT",
+        "stopCu": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "conflictClass": "CONFLICT"
+      },
+      "axes": {
+        "positive_promotion": "PASS",
+        "partial_evidence": "PASS",
+        "direct_conflict": "PASS",
+        "s4_to_s3": "N/A",
+        "headline_stage": "PASS",
+        "cu_headline": "PASS",
+        "actionability": "PASS"
+      },
+      "rollup": "PASS"
+    },
+    {
+      "id": "fitbridge",
+      "unnamed": false,
+      "kind": "paid_conversion",
+      "hops": {
+        "hold": "S1",
+        "go": "S1→S3",
+        "stop": "S3→S1",
+        "conflict": "S3→S1"
+      },
+      "headlines": {
+        "hold": "지금은 판단을 보류한다",
+        "go": "출시·초기 매출은 있으나 반복 검증은 아직이다",
+        "stop": "지금은 판단을 보류한다",
+        "conflict": "지금은 판단을 보류한다",
+        "partial": "지금은 판단을 보류한다"
+      },
+      "internal": {
+        "goVerdict": "viable",
+        "stopVerdict": "judgment_deferred",
+        "stopClass": "CONFLICT",
+        "stopCu": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "conflictClass": "CONFLICT"
+      },
+      "axes": {
+        "positive_promotion": "PASS",
+        "partial_evidence": "PASS",
+        "direct_conflict": "PASS",
+        "s4_to_s3": "N/A",
+        "headline_stage": "PASS",
+        "cu_headline": "PASS",
+        "actionability": "PASS"
+      },
+      "rollup": "PASS"
+    },
+    {
+      "id": "ridm",
+      "unnamed": false,
+      "kind": "payer_job",
+      "hops": {
+        "hold": "S1",
+        "go": "S1→S3",
+        "stop": "S3→S1",
+        "conflict": "S3→S1"
+      },
+      "headlines": {
+        "hold": "지금은 판단을 보류한다",
+        "go": "조건부 사업화 가능",
+        "stop": "지금은 판단을 보류한다",
+        "conflict": "지금은 판단을 보류한다",
+        "partial": "조건부 사업화 가능"
+      },
+      "internal": {
+        "goVerdict": "conditionally_viable",
+        "stopVerdict": "judgment_deferred",
+        "stopClass": "ASSUMPTION",
+        "stopCu": "누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.",
+        "conflictClass": "CONFLICT"
+      },
+      "axes": {
+        "positive_promotion": "PASS",
+        "partial_evidence": "PASS",
+        "direct_conflict": "PASS",
+        "s4_to_s3": "N/A",
+        "headline_stage": "PASS",
+        "cu_headline": "PASS",
+        "actionability": "PASS"
+      },
+      "rollup": "PASS"
+    },
+    {
+      "id": "unnamed_salon_noshow",
+      "unnamed": true,
+      "kind": "paid_conversion",
+      "hops": {
+        "hold": "S1",
+        "go": "S1→S3",
+        "stop": "S3→S1",
+        "conflict": "S3→S1"
+      },
+      "headlines": {
+        "hold": "지금은 판단을 보류한다",
+        "go": "출시·초기 매출은 있으나 반복 검증은 아직이다",
+        "stop": "지금은 판단을 보류한다",
+        "conflict": "지금은 판단을 보류한다",
+        "partial": "지금은 판단을 보류한다"
+      },
+      "internal": {
+        "goVerdict": "viable",
+        "stopVerdict": "judgment_deferred",
+        "stopClass": "CONFLICT",
+        "stopCu": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "conflictClass": "CONFLICT"
+      },
+      "axes": {
+        "positive_promotion": "PASS",
+        "partial_evidence": "PASS",
+        "direct_conflict": "PASS",
+        "s4_to_s3": "N/A",
+        "headline_stage": "PASS",
+        "cu_headline": "PASS",
+        "actionability": "PASS"
+      },
+      "rollup": "PASS"
+    },
+    {
+      "id": "unnamed_handoff_nometric",
+      "unnamed": true,
+      "kind": "paid_conversion",
+      "hops": {
+        "hold": "S1",
+        "go": "S1→S3",
+        "stop": "S3→S1",
+        "conflict": "S3→S1"
+      },
+      "headlines": {
+        "hold": "지금은 판단을 보류한다",
+        "go": "출시·초기 매출은 있으나 반복 검증은 아직이다",
+        "stop": "지금은 판단을 보류한다",
+        "conflict": "지금은 판단을 보류한다",
+        "partial": "출시·초기 매출은 있으나 반복 검증은 아직이다"
+      },
+      "internal": {
+        "goVerdict": "viable",
+        "stopVerdict": "judgment_deferred",
+        "stopClass": "CONFLICT",
+        "stopCu": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+        "conflictClass": "CONFLICT"
+      },
+      "axes": {
+        "positive_promotion": "PASS",
+        "partial_evidence": "PASS",
+        "direct_conflict": "PASS",
+        "s4_to_s3": "N/A",
+        "headline_stage": "PASS",
+        "cu_headline": "PASS",
+        "actionability": "PASS"
+      },
+      "rollup": "PASS"
+    },
+    {
+      "id": "unnamed_care_job",
+      "unnamed": true,
+      "kind": "payer_job",
+      "hops": {
+        "hold": "S0",
+        "go": "S0→S3",
+        "stop": "S3→S0",
+        "conflict": "S3→S1"
+      },
+      "headlines": {
+        "hold": "지금은 판단을 보류한다",
+        "go": "조건부 사업화 가능",
+        "stop": "지금은 판단을 보류한다",
+        "conflict": "지금은 판단을 보류한다",
+        "partial": "출시·초기 매출은 있으나 반복 검증은 아직이다"
+      },
+      "internal": {
+        "goVerdict": "conditionally_viable",
+        "stopVerdict": "judgment_deferred",
+        "stopClass": "ASSUMPTION",
+        "stopCu": "누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.",
+        "conflictClass": "CONFLICT"
+      },
+      "axes": {
+        "positive_promotion": "PASS",
+        "partial_evidence": "PASS",
+        "direct_conflict": "PASS",
+        "s4_to_s3": "N/A",
+        "headline_stage": "PASS",
+        "cu_headline": "PASS",
+        "actionability": "PASS"
+      },
+      "rollup": "PASS"
+    }
+  ]
+}
