@@ -40,6 +40,9 @@ type DetectedSignal = {
   axisId: SiAxisId;
   text: string;
   negated: boolean;
+  order: number;
+  retracted: boolean;
+  sourceLine: string;
 };
 
 const AXIS_ORDER: SiAxisId[] = [
@@ -78,13 +81,76 @@ function isHypothesis(line: string): boolean {
 
 const STAKE_NOUN = /(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하)/i;
 
+function percentPair(line: string): { from: number; to: number } | null {
+  const match = line.match(/(\d+)\s*%.{0,12}(에서|→)\s*(\d+)\s*%/);
+  if (!match) return null;
+  return { from: Number(match[1]), to: Number(match[3]) };
+}
+
+function isStakeImprovedLine(line: string): boolean {
+  if (!STAKE_NOUN.test(line) || isHypothesis(line) || isIntentWithoutAction(line)) return false;
+  if (/(악화|늘었|증가했)/.test(line) && !/(줄었|감소했|개선)/.test(line)) return false;
+  if (/(줄었|감소했|개선됐|개선되)/.test(line)) return true;
+  const pair = percentPair(line);
+  return pair !== null && pair.to < pair.from;
+}
+
+function isStakeWorsenedLine(line: string): boolean {
+  if (!STAKE_NOUN.test(line)) return false;
+  if (/(악화|늘었|증가했|나빠)/.test(line)) return true;
+  const pair = percentPair(line);
+  return pair !== null && pair.to > pair.from;
+}
+
+function isRepeatZeroLine(line: string): boolean {
+  return /(재구매는?\s*0|재구매\s*고객은\s*0|재구매는 없)/.test(line);
+}
+
+function isRepeatPlanOrIntent(line: string): boolean {
+  return (
+    isHypothesis(line) ||
+    isIntentWithoutAction(line) ||
+    /(재구매|재판매|반복).{0,12}(계획|의도|예정|생각|의향)/.test(line) ||
+    /(계획|예정|향후).{0,12}(재구매|재판매)/.test(line)
+  );
+}
+
+function deniesValidatedPayment(line: string): boolean {
+  if (isRepeatZeroLine(line) && !/결제/.test(line)) return false;
+  return /(아무도 결제하지 않|유료 전환은 없었|실제 결제.{0,10}(없다|없었|발생하지 않)|결제[는은] 없다|결제하지 않았다|결제한 고객은 없었|실제로 결제한.{0,12}(없|발생하지 않)|모두 거절)/.test(
+    line,
+  );
+}
+
+function deniesValidatedRepeat(line: string): boolean {
+  return (
+    isRepeatZeroLine(line) ||
+    /(재판매는 멈췄|아무도 등록하지 않|실제 재판매.{0,12}(없다|없었|발생하지 않)|실제 재판매·재구매는 없다)/.test(
+      line,
+    )
+  );
+}
+
+function isRepeatDirectDenial(line: string): boolean {
+  if (isRepeatZeroLine(line) && !/실제 재판매/.test(line)) return false;
+  return /(실제 재판매.{0,12}(없다|없었|발생하지 않)|실제 재판매·재구매는 없다)/.test(line);
+}
+
+function isFounderFlip(line: string): boolean {
+  return /지난번에는 됐다고 했지만 이번에는 아니다|이번에는 아니다/.test(line);
+}
+
+function isPaidChurnLine(line: string): boolean {
+  return /(해지|취소됐)/.test(line);
+}
+
 function isIntentWithoutAction(line: string): boolean {
   return /(생각|의향|하려고|검토 중)/.test(line) && /(아직|아무도|없)/.test(line);
 }
 
 /** Counted completed actions — not intent, not a planned pilot. */
 function isQuantifiedCompletion(line: string): boolean {
-  if (isIntentWithoutAction(line) || isHypothesis(line)) return false;
+  if (isIntentWithoutAction(line) || isHypothesis(line) || isRepeatZeroLine(line)) return false;
   return (
     /\d+\s*(명|건)/.test(line) &&
     /(등록했|거래됐|거래가 됐|거래가 발생|재구매했|체결됐|실제로\s*재판매)/.test(line)
@@ -127,6 +193,9 @@ function scanLine(line: string): DetectedSignal[] {
       axisId,
       text: clip(line),
       negated,
+      order: 0,
+      retracted: false,
+      sourceLine: line,
     });
   };
 
@@ -196,10 +265,14 @@ function scanLine(line: string): DetectedSignal[] {
   } else if (isQuantifiedPayment(line) && !negated) {
     push('revenue', 'VALIDATED', 'validationStrength');
   } else if (matchAny(line, [/재구매/, /반복적으로/, /리텐션/, /2차 거래/, /파일럿/, /인터뷰 검증/])) {
-    if (negated || isHypothesis(line) || isIntentWithoutAction(line) || /파일럿/.test(line)) {
+    if (
+      negated ||
+      isRepeatPlanOrIntent(line) ||
+      isRepeatZeroLine(line) ||
+      deniesValidatedRepeat(line) ||
+      /파일럿/.test(line)
+    ) {
       push('unverified', 'ASSUMPTION', 'validationStrength');
-    } else {
-      push('repeat_validation', 'VALIDATED', 'validationStrength');
     }
   }
 
@@ -224,9 +297,7 @@ function scanLine(line: string): DetectedSignal[] {
 
   if (
     !negated &&
-    !isHypothesis(line) &&
-    STAKE_NOUN.test(line) &&
-    (/(줄었|감소했|개선됐|개선되)/.test(line) || /\d+\s*%.{0,8}(에서|→)\s*\d+\s*%/.test(line))
+    isStakeImprovedLine(line)
   ) {
     push('stake_improved', 'VALIDATED', 'validationStrength');
   }
@@ -250,13 +321,19 @@ function headingSection(line: string): 'alternatives' | 'other' | null {
 function scanDocument(text: string): DetectedSignal[] {
   let section: 'alternatives' | 'other' | null = null;
   const out: DetectedSignal[] = [];
+  let order = 0;
   for (const line of linesOf(text)) {
     const nextSection = headingSection(line);
     if (nextSection) {
       section = nextSection;
       continue;
     }
+    order += 1;
     const found = scanLine(line);
+    for (const signal of found) {
+      signal.order = order;
+      signal.sourceLine = line;
+    }
     if (section === 'alternatives' && !found.some((signal) => signal.kind === 'alternatives')) {
       found.push({
         kind: 'alternatives',
@@ -264,10 +341,14 @@ function scanDocument(text: string): DetectedSignal[] {
         axisId: 'marketAlternatives',
         text: clip(line),
         negated: false,
+        order,
+        retracted: false,
+        sourceLine: line,
       });
     }
     out.push(...found);
   }
+  applySignalRetractions(out);
   return out;
 }
 
@@ -291,11 +372,117 @@ function uniqueEvidence(signals: DetectedSignal[]): SiEvidenceItem[] {
 }
 
 function hasKind(signals: DetectedSignal[], kind: SignalKind, negated?: boolean): boolean {
-  return signals.some((signal) => signal.kind === kind && (negated === undefined || signal.negated === negated));
+  return signals.some(
+    (signal) =>
+      !signal.retracted &&
+      signal.kind === kind &&
+      (negated === undefined || signal.negated === negated),
+  );
 }
 
-function hasClass(signals: DetectedSignal[], evidenceClass: SiEvidenceClass): boolean {
-  return signals.some((signal) => signal.evidenceClass === evidenceClass);
+function hasLiveValidated(signals: DetectedSignal[], kind: SignalKind): boolean {
+  return signals.some(
+    (signal) =>
+      !signal.retracted &&
+      signal.kind === kind &&
+      signal.evidenceClass === 'VALIDATED',
+  );
+}
+
+function liveValidated(signals: DetectedSignal[], kind: SignalKind, beforeOrder: number): boolean {
+  return signals.some(
+    (signal) =>
+      !signal.retracted &&
+      signal.order < beforeOrder &&
+      signal.kind === kind &&
+      signal.evidenceClass === 'VALIDATED',
+  );
+}
+
+function retractPrior(
+  signals: DetectedSignal[],
+  beforeOrder: number,
+  kind: SignalKind,
+): boolean {
+  let retracted = false;
+  for (const signal of signals) {
+    if (
+      signal.order < beforeOrder &&
+      !signal.retracted &&
+      signal.kind === kind &&
+      signal.evidenceClass === 'VALIDATED'
+    ) {
+      signal.retracted = true;
+      retracted = true;
+    }
+  }
+  return retracted;
+}
+
+function markLineConflict(signals: DetectedSignal[], order: number, sourceLine: string): void {
+  const onLine = signals.filter((signal) => signal.order === order);
+  if (onLine.length === 0) {
+    signals.push({
+      kind: 'unverified',
+      evidenceClass: 'CONFLICT',
+      axisId: 'validationStrength',
+      text: clip(sourceLine),
+      negated: false,
+      order,
+      retracted: false,
+      sourceLine,
+    });
+    return;
+  }
+  for (const signal of onLine) {
+    signal.evidenceClass = 'CONFLICT';
+  }
+}
+
+function applySignalRetractions(signals: DetectedSignal[]): void {
+  const lineByOrder = new Map<number, string>();
+  for (const signal of signals) {
+    if (!lineByOrder.has(signal.order)) lineByOrder.set(signal.order, signal.sourceLine);
+  }
+  const orders = [...lineByOrder.keys()].sort((left, right) => left - right);
+  for (const order of orders) {
+    const line = lineByOrder.get(order) ?? '';
+    const paymentDenied = deniesValidatedPayment(line) && liveValidated(signals, 'revenue', order);
+    const repeatDenied = deniesValidatedRepeat(line) && liveValidated(signals, 'repeat_validation', order);
+    const repeatContradicted =
+      isRepeatDirectDenial(line) && liveValidated(signals, 'repeat_validation', order);
+    const stakeWorsened = isStakeWorsenedLine(line) && liveValidated(signals, 'stake_improved', order);
+    const flip = isFounderFlip(line);
+    const conflicting =
+      paymentDenied ||
+      stakeWorsened ||
+      repeatContradicted ||
+      (flip &&
+        (liveValidated(signals, 'revenue', order) || liveValidated(signals, 'repeat_validation', order)));
+
+    if (paymentDenied || (flip && deniesValidatedPayment(line))) {
+      retractPrior(signals, order, 'revenue');
+    }
+    if (repeatDenied || (flip && deniesValidatedRepeat(line))) {
+      retractPrior(signals, order, 'repeat_validation');
+    }
+    if (stakeWorsened) {
+      retractPrior(signals, order, 'stake_improved');
+    }
+    if (flip && !paymentDenied && !repeatDenied) {
+      if (liveValidated(signals, 'revenue', order)) retractPrior(signals, order, 'revenue');
+      if (liveValidated(signals, 'repeat_validation', order)) {
+        retractPrior(signals, order, 'repeat_validation');
+      }
+      if (liveValidated(signals, 'stake_improved', order)) retractPrior(signals, order, 'stake_improved');
+    }
+    if (isPaidChurnLine(line) && !deniesValidatedPayment(line)) {
+      retractPrior(signals, order, 'revenue');
+    }
+    if (conflicting) {
+      markLineConflict(signals, order, line);
+    }
+  }
 }
 
 function axisStatus(args: {
@@ -513,6 +700,9 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
   decisionChangingEvidence: string;
   validationPriority: string;
 } {
+  const payerResolved =
+    hasLiveValidated(signals, 'revenue') || hasLiveValidated(signals, 'repeat_validation');
+
   if (hasKind(signals, 'resale_thesis') && !hasKind(signals, 'repeat_validation', false)) {
     return {
       criticalUnknown:
@@ -523,7 +713,10 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
     };
   }
 
-  if (hasKind(signals, 'job_unknown') || (hasKind(signals, 'payer_unknown') && !hasKind(signals, 'problem', false))) {
+  if (
+    !payerResolved &&
+    (hasKind(signals, 'job_unknown') || (hasKind(signals, 'payer_unknown') && !hasKind(signals, 'problem', false)))
+  ) {
     return {
       criticalUnknown:
         '누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.',
@@ -533,7 +726,7 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
     };
   }
 
-  if (hasKind(signals, 'payer_split') || hasKind(signals, 'payer_unknown')) {
+  if (!payerResolved && (hasKind(signals, 'payer_split') || hasKind(signals, 'payer_unknown'))) {
     return {
       criticalUnknown:
         '실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가. 결제자가 확인되지 않으면 사용자 수요만으로 사업화 판단을 확정할 수 없다.',

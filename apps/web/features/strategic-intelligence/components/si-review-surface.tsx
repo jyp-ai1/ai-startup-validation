@@ -20,6 +20,7 @@ const EVIDENCE_CLASS_LABEL: Record<SiEvidenceClass, string> = {
   INFERENCE: 'INFERENCE',
   ASSUMPTION: 'ASSUMPTION',
   VALIDATED: 'VALIDATED',
+  CONFLICT: 'CONFLICT',
 };
 
 function Section({

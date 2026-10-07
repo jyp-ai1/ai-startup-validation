@@ -29,6 +29,10 @@ export function updateStrategicIntelligence(input: SiEvidenceUpdateInput): SiEvi
     title: input.title,
     documentText: appendFounderEvidenceToDocument(input.documentText, input.founderAnswer),
   });
+  const conflict = next.evidenceMap.find((item) => item.evidenceClass === 'CONFLICT');
+  if (conflict && addedEvidence[0]) {
+    addedEvidence[0] = { ...addedEvidence[0], evidenceClass: 'CONFLICT' };
+  }
 
   const prevRank = evidenceStrengthRank(previous);
   const nextRank = evidenceStrengthRank(next);

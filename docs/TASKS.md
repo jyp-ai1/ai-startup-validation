@@ -4,6 +4,166 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## CPO Checkpoint — 2026-10-07
+
+**CEO 복귀 점검.** Accuracy PASS CLOSED · Production HOLD `dea7cb1` · merge/deploy 없음  
+**Report:** `docs/evidence/ALABOM/SI/SI-V1-CPO-CHECKPOINT-2026-10-07.md`  
+**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/110 (draft)
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Accuracy 9축 FAIL 0 | CLOSED |
+| 2 | Pattern A blocker | 아님 (CPO) |
+| 3 | Promotion 후보 | `6939479` |
+| 4 | Production | `dea7cb1` |
+| 5 | CPO 점검 | PR #110 merge 여부 |
+
+---
+
+## S.I. V1 Accuracy Closure — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-accuracy-closure-e648` · Production `dea7cb1` 불변 · Fix 없음 · Promotion HOLD  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-CLOSURE.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Fresh holdout 11 (cal 5 + unnamed 6) | ✅ |
+| 2 | Taxonomy 9축 FAIL | ✅ **0** |
+| 3 | Pattern A generic PARTIAL | ✅ 허용 · obstruction 0 |
+| 4 | Pattern B / #104 / #107 / Negative / Conflict | ✅ |
+| 5 | P0-1 / P0-2 | ✅ |
+| 6 | Full build | ✅ |
+| 7 | Production smoke / SHA triangle | HOLD · DNS · mismatch |
+| 8 | Production | 불변 `dea7cb1` |
+
+---
+
+## S.I. Pattern A Obstruction — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-pattern-a-obstruction-e648` · Alignment Fix `6926d6f` · Production `dea7cb1` 불변 · Fix Gate NOT OPEN  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-PATTERN-A-OBSTRUCTION.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Pattern A 6건 generic next-CU ask | ✅ 유지 |
+| 2 | generic-literal 추가 결제가 next CU를 닫는가 | ✅ 6 PARTIAL · 닫지 않음 |
+| 3 | on-CU 다음 기간 답이 루프를 막는가 | ✅ 6 PARTIAL · 오염 없음 |
+| 4 | whyAsking/CU surface 복구 | ✅ 6/6 |
+| 5 | Obstruction FAIL | ✅ **0** |
+| 6 | #104 / #107 / Negative / P0 / Pattern B | ✅ |
+| 7 | Presenter / ask kind / analyzer | 0-diff |
+| 8 | Production | 불변 · HOLD |
+
+---
+
+## S.I. Question Alignment Fix — CU axis
+
+**Branch:** `cursor/si-question-alignment-fix-e648` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-FIX.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | RCA: weave vs kind | ✅ DCE boilerplate stake |
+| 2 | Pattern B 반복 가능 CU 축 보존 | ✅ 4 PASS · 이탈 weave 제거 |
+| 3 | Pattern A generic 보호 | ✅ 6 PARTIAL 유지 |
+| 4 | 주인집 control / unnamed | ✅ |
+| 5 | #104 / #107 / Negative / P0 | ✅ |
+| 6 | Production | 불변 |
+
+---
+
+## S.I. Question Alignment Holdout — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-question-alignment-holdout-e648` · Production `dea7cb1` 불변 · Fix Gate NOT OPEN  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-HOLDOUT.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | A. next-CU generic (새 지표 조합) | ✅ 6 PARTIAL |
+| 2 | B. stake weave-off (새 입력) | ✅ 4 FAIL 측정 · Fix 없음 |
+| 3 | Control bind (주인집 alt) | ✅ PASS |
+| 4 | #104 / #107 / Negative / P0 | ✅ |
+| 5 | Presenter / ask kind / analyzer | 0-diff |
+
+---
+
+## S.I. Question Alignment Batch — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-question-alignment-batch-e648` · Fix `30504b7` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-BATCH.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | CU resolved → next unresolved CU | ✅ 8/8 |
+| 2 | Question binds next CU | ✅ 측정 · generic_ask 5 · stake_weave 2 |
+| 3 | Negative 후 질문 재정렬 | ✅ 8/8 |
+| 4 | #104 / #107 / analyzer / Presenter | ✅ 0-diff · Fix 없음 |
+
+---
+
+## S.I. Accuracy Fix Batch #2 — Evidence Reconciliation
+
+**Branch:** `cursor/si-accuracy-fix-batch-2-e648` · Production `dea7cb1` 불변 · Negative Fix `4b2aa21` 유지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-FIX-BATCH-2.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | 직접 부인 → CONFLICT + VALIDATED 철회 + 재판단 | ✅ 8/8 |
+| 2 | 재구매 0 ≠ CONFLICT · ≠ S4 | ✅ |
+| 3 | Positive promotion CU/Priority | ✅ 주인집·RIDM 포함 8/8 |
+| 4 | Question generator | 미수정 · generic_ask 5 재측정 |
+| 5 | #104 / #107 / Negative hops / Founder / P0 | ✅ 155 |
+| 6 | Production merge | 없음 |
+
+---
+
+## S.I. Accuracy Batch #2 — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-accuracy-batch-2-e648` · Fix `4b2aa21` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-BATCH-2.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Positive promotion → CU/Priority/Question | ✅ 측정 · 2/2 generic_ask 5 · stale CU 주인집·RIDM 2 |
+| 2 | Direct denial → CONFLICT → 재판단 | ✅ 측정 · ignored_direct_conflict 8/8 FACT no-op |
+| 3 | 재구매 0 ≠ CONFLICT | ✅ 유지 · 7/8은 S3→S4 추가 승격 |
+| 4 | Negative / Founder / #104 / #107 / P0 | ✅ 회귀 8/8 |
+| 5 | Presenter / Fix / Production | 없음 |
+
+---
+
+## S.I. Post-Negative Accuracy Batch — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-post-negative-accuracy-e648` · Fix `4b2aa21` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-POST-NEGATIVE-ACCURACY.md`
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | Negative 이후 Judgment 하향 연결 | ✅ 8/8 |
+| 2 | CU/Priority · Founder 4항 재계산 | ✅ 하향 후 leftover headline 0 |
+| 3 | Question vs CU/Priority/DCE | ✅ 측정 · generic_ask 5 (2/2 승격) |
+| 4 | #104 / #107 / Negative Fix | ✅ |
+| 5 | Presenter / Fix / Production | 없음 |
+
+---
+
+## S.I. Negative Judgment Fix — ACCURACY FIX BATCH
+
+**Branch:** `cursor/si-negative-judgment-fix-e648` · Production `dea7cb1` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-NEGATIVE-JUDGMENT-FIX.md`  
+**범위:** 분석 시점 retract + CONFLICT + stake 방향. Presenter/SoT/Production 없음.
+
+| # | Gate | Status |
+|---|------|--------|
+| 1 | VALIDATED 철회 후 하향 | ✅ |
+| 2 | CONFLICT는 양립 불가만 | ✅ |
+| 3 | #104 1/2 ≠ S3 | ✅ |
+| 4 | #107 2/2 CU 이동 | ✅ |
+| 5 | SI + P0-1/P0-2 unit | ✅ 150 |
+| 6 | Production merge | 없음 |
+
+---
+
 ## S.I. DCE Reconciliation ✅ PRODUCTION ACCEPTED
 
 **PR:** #107 · **Promotion:** #108 PASS · **Production SHA:** `127162b`  
