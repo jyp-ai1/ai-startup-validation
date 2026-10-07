@@ -122,7 +122,7 @@ function ensurePdfNodeGlobals() {
     }
   }
 
-  globalObject.DOMMatrix = DOMMatrixShim;
+  globalObject.DOMMatrix = DOMMatrixShim as unknown as typeof DOMMatrix;
 }
 
 async function extractPdfText(buffer: Buffer): Promise<string> {
