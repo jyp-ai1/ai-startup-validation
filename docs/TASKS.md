@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## P0 PDF Ingestion Hotfix
+
+**Branch:** `cursor/p0-pdf-ingestion-e648` · Production `1690cbf` 불변  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-P0-PDF-INGESTION.md`  
+**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/115
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | RCA | Parser · `DOMMatrix is not defined` |
+| 2 | 3 PDF extract → S.I. loop | ✅ |
+| 3 | #104 / #107 / P0-1 / P0-2 | ✅ |
+| 4 | Production | 불변 `1690cbf` · Preview로 CPO 확인 |
+
+---
+
 ## CPO Checkpoint — 2026-10-07
 
 **CEO 복귀 점검.** Accuracy PASS CLOSED · Production HOLD `dea7cb1` · merge/deploy 없음  
