@@ -4,6 +4,20 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Founder Test — `0638f77`
+
+**Production / Git:** `0638f77` · 엔진 수정 없음  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-TEST-0638f77.md`  
+**Dump:** `docs/evidence/ALABOM/SI/si-v1-founder-test-0638f77.json`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | RIDM / LMULM / 주인집 PDF → S.I. 루프 | 기록 완료 |
+| 2 | Fix PR | 없음 |
+| 3 | CPO Founder Decision Value | 판정 대기 |
+
+---
+
 ## P0 PDF Ingestion Hotfix
 
 **Branch:** `cursor/p0-pdf-ingestion-e648` @ `768866a` · Production `1690cbf` 불변  
