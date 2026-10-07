@@ -8,7 +8,8 @@ export type SiEvidenceClass =
   | 'CLAIM'
   | 'INFERENCE'
   | 'ASSUMPTION'
-  | 'VALIDATED';
+  | 'VALIDATED'
+  | 'CONFLICT';
 
 export type SiAxisId =
   | 'customerProblemFit'

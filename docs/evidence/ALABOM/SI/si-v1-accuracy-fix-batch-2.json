@@ -1,0 +1,862 @@
+{
+  "productionSha": "dea7cb1916cfbd4e6f8c54a86e6da920ed708bd2",
+  "negativeJudgmentFixSha": "4b2aa21fc1cca089357e59cfcbeda327d3af2846",
+  "scenarioCount": 48,
+  "axisCounts": {
+    "judgment": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0
+    },
+    "evidence": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0
+    },
+    "state": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0
+    },
+    "negative_contradictory": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0
+    },
+    "cu_priority": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0
+    },
+    "question": {
+      "PASS": 3,
+      "PARTIAL": 5,
+      "FAIL": 0
+    },
+    "founder_outcome": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0
+    }
+  },
+  "focusCounts": {
+    "positive_promotion": {
+      "PASS": 3,
+      "PARTIAL": 5,
+      "FAIL": 0
+    },
+    "conflict": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0
+    },
+    "regression": {
+      "PASS": 8,
+      "PARTIAL": 0,
+      "FAIL": 0
+    }
+  },
+  "failureCounts": {
+    "generic_ask_after_specific_cu": 5
+  },
+  "repeated": [
+    "generic_ask_after_specific_cu"
+  ],
+  "oneOff": [],
+  "rows": [
+    {
+      "id": "juinjip",
+      "unnamed": false,
+      "kind": "payer_split",
+      "dceTwoTwo": false,
+      "hops": "S1→S3→S1",
+      "paymentOnly": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "offS3": false
+      },
+      "promotion": {
+        "cuMoved": true,
+        "priorityMoved": true,
+        "nextUnknownCu": false,
+        "t0Cu": "실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가. 결제자가 확인되지 않으면 사용자 수요만으로 사업화 판단을 확정할 수 없다.",
+        "upgradedCu": "문서가 지목한 고객 세그먼트가 실제로 이 문제를 갖고 돈을 낼 의사가 있는가. 세그먼트가 가설이면 시장 크기를 말할 수 없다.",
+        "questionKind": "segment_proof",
+        "question": "지목한 고객 그룹에서 실제로 쓰거나 돈을 낸 사례가 있습니까? 있다면 한 건만 구체적으로 알려주세요. 아직이면 가정이라고 답해도 됩니다.",
+        "genericAfterNext": false,
+        "questionTracks": true
+      },
+      "conflict": {
+        "stimulus": "실제로 결제한 고객은 없었다.",
+        "class": "CONFLICT",
+        "stage": "S3→S1",
+        "verdict": "viable→judgment_deferred",
+        "rejudged": true,
+        "promoted": false,
+        "cuMoved": true,
+        "priorityMoved": true,
+        "cu": "실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가. 결제자가 확인되지 않으면 사용자 수요만으로 사업화 판단을 확정할 수 없다.",
+        "questionKind": "payer_split",
+        "question": "쓰는 사람과 돈을 내는 사람이 같습니까? 결제자 한 명이 이 문제를 비용으로 해결할 이유가 있다면 그 이유를 알려주세요. 아직 확인 전이면 모른다고 답해도 됩니다."
+      },
+      "notConflict": {
+        "stimulus": "재구매는 0건이다.",
+        "class": "FACT",
+        "stage": "S3→S3",
+        "promoted": false
+      },
+      "downgrade": {
+        "questionKind": "payer_split",
+        "questionTracks": true,
+        "leftoverPositive": false,
+        "question": "쓰는 사람과 돈을 내는 사람이 같습니까? 결제자 한 명이 이 문제를 비용으로 해결할 이유가 있다면 그 이유를 알려주세요. 아직 확인 전이면 모른다고 답해도 됩니다."
+      },
+      "focus": {
+        "positive_promotion": "PASS",
+        "conflict": "PASS",
+        "regression": "PASS"
+      },
+      "axes": [
+        {
+          "id": "judgment",
+          "score": "PASS",
+          "note": "S1→S3→S1",
+          "failure": null
+        },
+        {
+          "id": "evidence",
+          "score": "PASS",
+          "note": "direct=CONFLICT repeat-zero=FACT",
+          "failure": null
+        },
+        {
+          "id": "state",
+          "score": "PASS",
+          "note": "CU moved or t0 already promoted",
+          "failure": null
+        },
+        {
+          "id": "negative_contradictory",
+          "score": "PASS",
+          "note": "conflict S3→S1 class=CONFLICT",
+          "failure": null
+        },
+        {
+          "id": "cu_priority",
+          "score": "PASS",
+          "note": "cuMoved=true priorityMoved=true",
+          "failure": null
+        },
+        {
+          "id": "question",
+          "score": "PASS",
+          "note": "up=segment_proof down=payer_split conflict=payer_split",
+          "failure": null
+        },
+        {
+          "id": "founder_outcome",
+          "score": "PASS",
+          "note": "down leftover=false conflict leftover=false",
+          "failure": null
+        }
+      ],
+      "failures": []
+    },
+    {
+      "id": "lmulm",
+      "unnamed": false,
+      "kind": "repeat_loop",
+      "dceTwoTwo": false,
+      "hops": "S3→S4→S3",
+      "paymentOnly": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "offS3": false
+      },
+      "promotion": {
+        "cuMoved": true,
+        "priorityMoved": true,
+        "nextUnknownCu": false,
+        "t0Cu": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+        "upgradedCu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "questionKind": "repeat_loop",
+        "question": "이탈 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "genericAfterNext": false,
+        "questionTracks": true
+      },
+      "conflict": {
+        "stimulus": "실제 재판매는 발생하지 않았다.",
+        "class": "CONFLICT",
+        "stage": "S4→S3",
+        "verdict": "viable→viable",
+        "rejudged": true,
+        "promoted": false,
+        "cuMoved": true,
+        "priorityMoved": true,
+        "cu": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+        "questionKind": "repeat_loop",
+        "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다."
+      },
+      "notConflict": {
+        "stimulus": "재구매는 0건이다.",
+        "class": "FACT",
+        "stage": "S4→S3",
+        "promoted": false
+      },
+      "downgrade": {
+        "questionKind": "repeat_loop",
+        "questionTracks": true,
+        "leftoverPositive": false,
+        "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다."
+      },
+      "focus": {
+        "positive_promotion": "PASS",
+        "conflict": "PASS",
+        "regression": "PASS"
+      },
+      "axes": [
+        {
+          "id": "judgment",
+          "score": "PASS",
+          "note": "S3→S4→S3",
+          "failure": null
+        },
+        {
+          "id": "evidence",
+          "score": "PASS",
+          "note": "direct=CONFLICT repeat-zero=FACT",
+          "failure": null
+        },
+        {
+          "id": "state",
+          "score": "PASS",
+          "note": "CU moved or t0 already promoted",
+          "failure": null
+        },
+        {
+          "id": "negative_contradictory",
+          "score": "PASS",
+          "note": "conflict S4→S3 class=CONFLICT",
+          "failure": null
+        },
+        {
+          "id": "cu_priority",
+          "score": "PASS",
+          "note": "cuMoved=true priorityMoved=true",
+          "failure": null
+        },
+        {
+          "id": "question",
+          "score": "PASS",
+          "note": "up=repeat_loop down=repeat_loop conflict=repeat_loop",
+          "failure": null
+        },
+        {
+          "id": "founder_outcome",
+          "score": "PASS",
+          "note": "down leftover=false conflict leftover=false",
+          "failure": null
+        }
+      ],
+      "failures": []
+    },
+    {
+      "id": "clinicflow",
+      "unnamed": false,
+      "kind": "paid_conversion",
+      "dceTwoTwo": true,
+      "hops": "S1→S3→S1",
+      "paymentOnly": {
+        "stageId": "S1",
+        "verdictId": "judgment_deferred",
+        "offS3": true
+      },
+      "promotion": {
+        "cuMoved": true,
+        "priorityMoved": true,
+        "nextUnknownCu": true,
+        "t0Cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "upgradedCu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionKind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "genericAfterNext": true,
+        "questionTracks": false
+      },
+      "conflict": {
+        "stimulus": "실제로 결제한 고객은 없었다.",
+        "class": "CONFLICT",
+        "stage": "S3→S1",
+        "verdict": "viable→judgment_deferred",
+        "rejudged": true,
+        "promoted": false,
+        "cuMoved": true,
+        "priorityMoved": true,
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "questionKind": "paid_conversion",
+        "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+      },
+      "notConflict": {
+        "stimulus": "재구매는 0건이다.",
+        "class": "FACT",
+        "stage": "S3→S3",
+        "promoted": false
+      },
+      "downgrade": {
+        "questionKind": "paid_conversion",
+        "questionTracks": true,
+        "leftoverPositive": false,
+        "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+      },
+      "focus": {
+        "positive_promotion": "PARTIAL",
+        "conflict": "PASS",
+        "regression": "PASS"
+      },
+      "axes": [
+        {
+          "id": "judgment",
+          "score": "PASS",
+          "note": "S1→S3→S1",
+          "failure": null
+        },
+        {
+          "id": "evidence",
+          "score": "PASS",
+          "note": "direct=CONFLICT repeat-zero=FACT",
+          "failure": null
+        },
+        {
+          "id": "state",
+          "score": "PASS",
+          "note": "CU moved or t0 already promoted",
+          "failure": null
+        },
+        {
+          "id": "negative_contradictory",
+          "score": "PASS",
+          "note": "conflict S3→S1 class=CONFLICT",
+          "failure": null
+        },
+        {
+          "id": "cu_priority",
+          "score": "PASS",
+          "note": "cuMoved=true priorityMoved=true",
+          "failure": null
+        },
+        {
+          "id": "question",
+          "score": "PARTIAL",
+          "note": "up=generic down=paid_conversion conflict=paid_conversion",
+          "failure": "generic_ask_after_specific_cu"
+        },
+        {
+          "id": "founder_outcome",
+          "score": "PASS",
+          "note": "down leftover=false conflict leftover=false",
+          "failure": null
+        }
+      ],
+      "failures": [
+        "generic_ask_after_specific_cu"
+      ]
+    },
+    {
+      "id": "fitbridge",
+      "unnamed": false,
+      "kind": "paid_conversion",
+      "dceTwoTwo": true,
+      "hops": "S1→S3→S1",
+      "paymentOnly": {
+        "stageId": "S1",
+        "verdictId": "judgment_deferred",
+        "offS3": true
+      },
+      "promotion": {
+        "cuMoved": true,
+        "priorityMoved": true,
+        "nextUnknownCu": true,
+        "t0Cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "upgradedCu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionKind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "genericAfterNext": true,
+        "questionTracks": false
+      },
+      "conflict": {
+        "stimulus": "실제로 결제한 고객은 없었다.",
+        "class": "CONFLICT",
+        "stage": "S3→S1",
+        "verdict": "viable→judgment_deferred",
+        "rejudged": true,
+        "promoted": false,
+        "cuMoved": true,
+        "priorityMoved": true,
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "questionKind": "paid_conversion",
+        "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+      },
+      "notConflict": {
+        "stimulus": "재구매는 0건이다.",
+        "class": "FACT",
+        "stage": "S3→S3",
+        "promoted": false
+      },
+      "downgrade": {
+        "questionKind": "paid_conversion",
+        "questionTracks": true,
+        "leftoverPositive": false,
+        "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+      },
+      "focus": {
+        "positive_promotion": "PARTIAL",
+        "conflict": "PASS",
+        "regression": "PASS"
+      },
+      "axes": [
+        {
+          "id": "judgment",
+          "score": "PASS",
+          "note": "S1→S3→S1",
+          "failure": null
+        },
+        {
+          "id": "evidence",
+          "score": "PASS",
+          "note": "direct=CONFLICT repeat-zero=FACT",
+          "failure": null
+        },
+        {
+          "id": "state",
+          "score": "PASS",
+          "note": "CU moved or t0 already promoted",
+          "failure": null
+        },
+        {
+          "id": "negative_contradictory",
+          "score": "PASS",
+          "note": "conflict S3→S1 class=CONFLICT",
+          "failure": null
+        },
+        {
+          "id": "cu_priority",
+          "score": "PASS",
+          "note": "cuMoved=true priorityMoved=true",
+          "failure": null
+        },
+        {
+          "id": "question",
+          "score": "PARTIAL",
+          "note": "up=generic down=paid_conversion conflict=paid_conversion",
+          "failure": "generic_ask_after_specific_cu"
+        },
+        {
+          "id": "founder_outcome",
+          "score": "PASS",
+          "note": "down leftover=false conflict leftover=false",
+          "failure": null
+        }
+      ],
+      "failures": [
+        "generic_ask_after_specific_cu"
+      ]
+    },
+    {
+      "id": "ridm",
+      "unnamed": false,
+      "kind": "payer_job",
+      "dceTwoTwo": false,
+      "hops": "S1→S3→S1",
+      "paymentOnly": {
+        "stageId": "S3",
+        "verdictId": "conditionally_viable",
+        "offS3": false
+      },
+      "promotion": {
+        "cuMoved": true,
+        "priorityMoved": true,
+        "nextUnknownCu": false,
+        "t0Cu": "누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.",
+        "upgradedCu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "questionKind": "repeat_loop",
+        "question": "이탈 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "genericAfterNext": false,
+        "questionTracks": true
+      },
+      "conflict": {
+        "stimulus": "실제로 결제한 고객은 없었다.",
+        "class": "CONFLICT",
+        "stage": "S3→S1",
+        "verdict": "conditionally_viable→judgment_deferred",
+        "rejudged": true,
+        "promoted": false,
+        "cuMoved": true,
+        "priorityMoved": true,
+        "cu": "누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.",
+        "questionKind": "payer_job",
+        "question": "이 제품을 쓰며 돈을 내는 사람은 누구이고, 그 사람이 어떤 일을 이 제품으로 대신합니까? 실제 지불이 있으면 그 사람과 이유를 한 쌍으로 알려주세요. 아직이면 가설이라고 답해도 됩니다."
+      },
+      "notConflict": {
+        "stimulus": "재구매는 0건이다.",
+        "class": "FACT",
+        "stage": "S3→S3",
+        "promoted": false
+      },
+      "downgrade": {
+        "questionKind": "payer_job",
+        "questionTracks": true,
+        "leftoverPositive": false,
+        "question": "이 제품을 쓰며 돈을 내는 사람은 누구이고, 그 사람이 어떤 일을 이 제품으로 대신합니까? 실제 지불이 있으면 그 사람과 이유를 한 쌍으로 알려주세요. 아직이면 가설이라고 답해도 됩니다."
+      },
+      "focus": {
+        "positive_promotion": "PASS",
+        "conflict": "PASS",
+        "regression": "PASS"
+      },
+      "axes": [
+        {
+          "id": "judgment",
+          "score": "PASS",
+          "note": "S1→S3→S1",
+          "failure": null
+        },
+        {
+          "id": "evidence",
+          "score": "PASS",
+          "note": "direct=CONFLICT repeat-zero=FACT",
+          "failure": null
+        },
+        {
+          "id": "state",
+          "score": "PASS",
+          "note": "CU moved or t0 already promoted",
+          "failure": null
+        },
+        {
+          "id": "negative_contradictory",
+          "score": "PASS",
+          "note": "conflict S3→S1 class=CONFLICT",
+          "failure": null
+        },
+        {
+          "id": "cu_priority",
+          "score": "PASS",
+          "note": "cuMoved=true priorityMoved=true",
+          "failure": null
+        },
+        {
+          "id": "question",
+          "score": "PASS",
+          "note": "up=repeat_loop down=payer_job conflict=payer_job",
+          "failure": null
+        },
+        {
+          "id": "founder_outcome",
+          "score": "PASS",
+          "note": "down leftover=false conflict leftover=false",
+          "failure": null
+        }
+      ],
+      "failures": []
+    },
+    {
+      "id": "nameless_noshow",
+      "unnamed": true,
+      "kind": "paid_conversion",
+      "dceTwoTwo": true,
+      "hops": "S1→S3→S1",
+      "paymentOnly": {
+        "stageId": "S1",
+        "verdictId": "judgment_deferred",
+        "offS3": true
+      },
+      "promotion": {
+        "cuMoved": true,
+        "priorityMoved": true,
+        "nextUnknownCu": true,
+        "t0Cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "upgradedCu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionKind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "genericAfterNext": true,
+        "questionTracks": false
+      },
+      "conflict": {
+        "stimulus": "실제로 결제한 고객은 없었다.",
+        "class": "CONFLICT",
+        "stage": "S3→S1",
+        "verdict": "viable→judgment_deferred",
+        "rejudged": true,
+        "promoted": false,
+        "cuMoved": true,
+        "priorityMoved": true,
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "questionKind": "paid_conversion",
+        "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+      },
+      "notConflict": {
+        "stimulus": "재구매는 0건이다.",
+        "class": "FACT",
+        "stage": "S3→S3",
+        "promoted": false
+      },
+      "downgrade": {
+        "questionKind": "paid_conversion",
+        "questionTracks": true,
+        "leftoverPositive": false,
+        "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+      },
+      "focus": {
+        "positive_promotion": "PARTIAL",
+        "conflict": "PASS",
+        "regression": "PASS"
+      },
+      "axes": [
+        {
+          "id": "judgment",
+          "score": "PASS",
+          "note": "S1→S3→S1",
+          "failure": null
+        },
+        {
+          "id": "evidence",
+          "score": "PASS",
+          "note": "direct=CONFLICT repeat-zero=FACT",
+          "failure": null
+        },
+        {
+          "id": "state",
+          "score": "PASS",
+          "note": "CU moved or t0 already promoted",
+          "failure": null
+        },
+        {
+          "id": "negative_contradictory",
+          "score": "PASS",
+          "note": "conflict S3→S1 class=CONFLICT",
+          "failure": null
+        },
+        {
+          "id": "cu_priority",
+          "score": "PASS",
+          "note": "cuMoved=true priorityMoved=true",
+          "failure": null
+        },
+        {
+          "id": "question",
+          "score": "PARTIAL",
+          "note": "up=generic down=paid_conversion conflict=paid_conversion",
+          "failure": "generic_ask_after_specific_cu"
+        },
+        {
+          "id": "founder_outcome",
+          "score": "PASS",
+          "note": "down leftover=false conflict leftover=false",
+          "failure": null
+        }
+      ],
+      "failures": [
+        "generic_ask_after_specific_cu"
+      ]
+    },
+    {
+      "id": "nameless_returns",
+      "unnamed": true,
+      "kind": "paid_conversion",
+      "dceTwoTwo": true,
+      "hops": "S1→S3→S1",
+      "paymentOnly": {
+        "stageId": "S1",
+        "verdictId": "judgment_deferred",
+        "offS3": true
+      },
+      "promotion": {
+        "cuMoved": true,
+        "priorityMoved": true,
+        "nextUnknownCu": true,
+        "t0Cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "upgradedCu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionKind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "genericAfterNext": true,
+        "questionTracks": false
+      },
+      "conflict": {
+        "stimulus": "실제로 결제한 고객은 없었다.",
+        "class": "CONFLICT",
+        "stage": "S3→S1",
+        "verdict": "viable→judgment_deferred",
+        "rejudged": true,
+        "promoted": false,
+        "cuMoved": true,
+        "priorityMoved": true,
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "questionKind": "paid_conversion",
+        "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+      },
+      "notConflict": {
+        "stimulus": "재구매는 0건이다.",
+        "class": "FACT",
+        "stage": "S3→S3",
+        "promoted": false
+      },
+      "downgrade": {
+        "questionKind": "paid_conversion",
+        "questionTracks": true,
+        "leftoverPositive": false,
+        "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+      },
+      "focus": {
+        "positive_promotion": "PARTIAL",
+        "conflict": "PASS",
+        "regression": "PASS"
+      },
+      "axes": [
+        {
+          "id": "judgment",
+          "score": "PASS",
+          "note": "S1→S3→S1",
+          "failure": null
+        },
+        {
+          "id": "evidence",
+          "score": "PASS",
+          "note": "direct=CONFLICT repeat-zero=FACT",
+          "failure": null
+        },
+        {
+          "id": "state",
+          "score": "PASS",
+          "note": "CU moved or t0 already promoted",
+          "failure": null
+        },
+        {
+          "id": "negative_contradictory",
+          "score": "PASS",
+          "note": "conflict S3→S1 class=CONFLICT",
+          "failure": null
+        },
+        {
+          "id": "cu_priority",
+          "score": "PASS",
+          "note": "cuMoved=true priorityMoved=true",
+          "failure": null
+        },
+        {
+          "id": "question",
+          "score": "PARTIAL",
+          "note": "up=generic down=paid_conversion conflict=paid_conversion",
+          "failure": "generic_ask_after_specific_cu"
+        },
+        {
+          "id": "founder_outcome",
+          "score": "PASS",
+          "note": "down leftover=false conflict leftover=false",
+          "failure": null
+        }
+      ],
+      "failures": [
+        "generic_ask_after_specific_cu"
+      ]
+    },
+    {
+      "id": "nameless_churn",
+      "unnamed": true,
+      "kind": "paid_conversion",
+      "dceTwoTwo": true,
+      "hops": "S0→S3→S0",
+      "paymentOnly": {
+        "stageId": "S0",
+        "verdictId": "judgment_deferred",
+        "offS3": true
+      },
+      "promotion": {
+        "cuMoved": true,
+        "priorityMoved": true,
+        "nextUnknownCu": true,
+        "t0Cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 이탈 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "upgradedCu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionKind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "genericAfterNext": true,
+        "questionTracks": false
+      },
+      "conflict": {
+        "stimulus": "실제로 결제한 고객은 없었다.",
+        "class": "CONFLICT",
+        "stage": "S3→S1",
+        "verdict": "conditionally_viable→judgment_deferred",
+        "rejudged": true,
+        "promoted": false,
+        "cuMoved": true,
+        "priorityMoved": true,
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 이탈 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "questionKind": "paid_conversion",
+        "question": "이탈 수치를 실제로 얼마나 줄였고, CRM 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+      },
+      "notConflict": {
+        "stimulus": "재구매는 0건이다.",
+        "class": "FACT",
+        "stage": "S3→S3",
+        "promoted": false
+      },
+      "downgrade": {
+        "questionKind": "paid_conversion",
+        "questionTracks": true,
+        "leftoverPositive": false,
+        "question": "이탈 수치를 실제로 얼마나 줄였고, CRM 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다."
+      },
+      "focus": {
+        "positive_promotion": "PARTIAL",
+        "conflict": "PASS",
+        "regression": "PASS"
+      },
+      "axes": [
+        {
+          "id": "judgment",
+          "score": "PASS",
+          "note": "S0→S3→S0",
+          "failure": null
+        },
+        {
+          "id": "evidence",
+          "score": "PASS",
+          "note": "direct=CONFLICT repeat-zero=FACT",
+          "failure": null
+        },
+        {
+          "id": "state",
+          "score": "PASS",
+          "note": "CU moved or t0 already promoted",
+          "failure": null
+        },
+        {
+          "id": "negative_contradictory",
+          "score": "PASS",
+          "note": "conflict S3→S1 class=CONFLICT",
+          "failure": null
+        },
+        {
+          "id": "cu_priority",
+          "score": "PASS",
+          "note": "cuMoved=true priorityMoved=true",
+          "failure": null
+        },
+        {
+          "id": "question",
+          "score": "PARTIAL",
+          "note": "up=generic down=paid_conversion conflict=paid_conversion",
+          "failure": "generic_ask_after_specific_cu"
+        },
+        {
+          "id": "founder_outcome",
+          "score": "PASS",
+          "note": "down leftover=false conflict leftover=false",
+          "failure": null
+        }
+      ],
+      "failures": [
+        "generic_ask_after_specific_cu"
+      ]
+    }
+  ]
+}

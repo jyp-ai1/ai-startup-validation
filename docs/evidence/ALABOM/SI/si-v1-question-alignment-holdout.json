@@ -1,0 +1,361 @@
+{
+  "productionSha": "dea7cb1916cfbd4e6f8c54a86e6da920ed708bd2",
+  "fixBatch2Sha": "30504b71950a61fc767d94a4bb56d415268f33cd",
+  "scenarioCount": 11,
+  "spokenCounts": {
+    "PASS": 1,
+    "PARTIAL": 6,
+    "FAIL": 4
+  },
+  "patternCounts": {
+    "next_cu_generic": 6,
+    "stake_weave_off": 4,
+    "control_bind": 1
+  },
+  "failureCounts": {
+    "generic_ask_after_specific_cu": 6,
+    "stake_weave_off_cu": 4
+  },
+  "repeated": [
+    "generic_ask_after_specific_cu",
+    "stake_weave_off_cu"
+  ],
+  "oneOff": [],
+  "regression": {
+    "paymentOnlyOffS3": true,
+    "twoTwoNextCu": true,
+    "negativeDeclined": true,
+    "leftoverPositive": 0,
+    "negativeQuestionBinds": 10
+  },
+  "rows": [
+    {
+      "id": "unnamed_omission",
+      "unnamed": true,
+      "expectedPattern": "next_cu_generic",
+      "observedPattern": "next_cu_generic",
+      "hops": "S1→S3→S1",
+      "t0Kind": "paid_conversion",
+      "promotion": {
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "dce": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "nextUnknownCu": true
+      },
+      "spoken": {
+        "score": "PARTIAL",
+        "note": "generic ask generalizes 다음 고객/기간",
+        "failure": "generic_ask_after_specific_cu"
+      },
+      "downgrade": {
+        "declined": true,
+        "kind": "paid_conversion",
+        "binds": true,
+        "leftoverPositive": false
+      },
+      "failures": [
+        "generic_ask_after_specific_cu"
+      ]
+    },
+    {
+      "id": "unnamed_load",
+      "unnamed": true,
+      "expectedPattern": "next_cu_generic",
+      "observedPattern": "next_cu_generic",
+      "hops": "S1→S3→S1",
+      "t0Kind": "paid_conversion",
+      "promotion": {
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "dce": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "nextUnknownCu": true
+      },
+      "spoken": {
+        "score": "PARTIAL",
+        "note": "generic ask generalizes 다음 고객/기간",
+        "failure": "generic_ask_after_specific_cu"
+      },
+      "downgrade": {
+        "declined": true,
+        "kind": "paid_conversion",
+        "binds": true,
+        "leftoverPositive": false
+      },
+      "failures": [
+        "generic_ask_after_specific_cu"
+      ]
+    },
+    {
+      "id": "unnamed_mismatch",
+      "unnamed": true,
+      "expectedPattern": "next_cu_generic",
+      "observedPattern": "next_cu_generic",
+      "hops": "S0→S3→S0",
+      "t0Kind": "paid_conversion",
+      "promotion": {
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "dce": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "nextUnknownCu": true
+      },
+      "spoken": {
+        "score": "PARTIAL",
+        "note": "generic ask generalizes 다음 고객/기간",
+        "failure": "generic_ask_after_specific_cu"
+      },
+      "downgrade": {
+        "declined": true,
+        "kind": "paid_conversion",
+        "binds": true,
+        "leftoverPositive": false
+      },
+      "failures": [
+        "generic_ask_after_specific_cu"
+      ]
+    },
+    {
+      "id": "unnamed_inconsistency",
+      "unnamed": true,
+      "expectedPattern": "next_cu_generic",
+      "observedPattern": "next_cu_generic",
+      "hops": "S0→S3→S0",
+      "t0Kind": "paid_conversion",
+      "promotion": {
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "dce": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "nextUnknownCu": true
+      },
+      "spoken": {
+        "score": "PARTIAL",
+        "note": "generic ask generalizes 다음 고객/기간",
+        "failure": "generic_ask_after_specific_cu"
+      },
+      "downgrade": {
+        "declined": true,
+        "kind": "paid_conversion",
+        "binds": true,
+        "leftoverPositive": false
+      },
+      "failures": [
+        "generic_ask_after_specific_cu"
+      ]
+    },
+    {
+      "id": "unnamed_ledger",
+      "unnamed": true,
+      "expectedPattern": "stake_weave_off",
+      "observedPattern": "stake_weave_off",
+      "hops": "S1→S3→S1",
+      "t0Kind": "paid_conversion",
+      "promotion": {
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "dce": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "priority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "kind": "repeat_loop",
+        "question": "이탈 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "nextUnknownCu": false
+      },
+      "spoken": {
+        "score": "FAIL",
+        "note": "question moved onto a stake noun that is not the CU",
+        "failure": "stake_weave_off_cu"
+      },
+      "downgrade": {
+        "declined": true,
+        "kind": "paid_conversion",
+        "binds": false,
+        "leftoverPositive": false
+      },
+      "failures": [
+        "stake_weave_off_cu"
+      ]
+    },
+    {
+      "id": "unnamed_fieldops",
+      "unnamed": true,
+      "expectedPattern": "stake_weave_off",
+      "observedPattern": "stake_weave_off",
+      "hops": "S1→S3→S1",
+      "t0Kind": "paid_conversion",
+      "promotion": {
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "dce": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "priority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "kind": "repeat_loop",
+        "question": "이탈 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "nextUnknownCu": false
+      },
+      "spoken": {
+        "score": "FAIL",
+        "note": "question moved onto a stake noun that is not the CU",
+        "failure": "stake_weave_off_cu"
+      },
+      "downgrade": {
+        "declined": true,
+        "kind": "payer_job",
+        "binds": true,
+        "leftoverPositive": false
+      },
+      "failures": [
+        "stake_weave_off_cu"
+      ]
+    },
+    {
+      "id": "clinicflow_alt",
+      "unnamed": false,
+      "expectedPattern": "next_cu_generic",
+      "observedPattern": "next_cu_generic",
+      "hops": "S1→S3→S1",
+      "t0Kind": "paid_conversion",
+      "promotion": {
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "dce": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "nextUnknownCu": true
+      },
+      "spoken": {
+        "score": "PARTIAL",
+        "note": "generic ask generalizes 다음 고객/기간",
+        "failure": "generic_ask_after_specific_cu"
+      },
+      "downgrade": {
+        "declined": true,
+        "kind": "paid_conversion",
+        "binds": true,
+        "leftoverPositive": false
+      },
+      "failures": [
+        "generic_ask_after_specific_cu"
+      ]
+    },
+    {
+      "id": "fitbridge_alt",
+      "unnamed": false,
+      "expectedPattern": "next_cu_generic",
+      "observedPattern": "next_cu_generic",
+      "hops": "S1→S3→S1",
+      "t0Kind": "paid_conversion",
+      "promotion": {
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "dce": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "nextUnknownCu": true
+      },
+      "spoken": {
+        "score": "PARTIAL",
+        "note": "generic ask generalizes 다음 고객/기간",
+        "failure": "generic_ask_after_specific_cu"
+      },
+      "downgrade": {
+        "declined": true,
+        "kind": "paid_conversion",
+        "binds": true,
+        "leftoverPositive": false
+      },
+      "failures": [
+        "generic_ask_after_specific_cu"
+      ]
+    },
+    {
+      "id": "juinjip_alt",
+      "unnamed": false,
+      "expectedPattern": "control_bind",
+      "observedPattern": "control_bind",
+      "hops": "S1→S3→S1",
+      "t0Kind": "payer_split",
+      "promotion": {
+        "cu": "문서가 지목한 고객 세그먼트가 실제로 이 문제를 갖고 돈을 낼 의사가 있는가. 세그먼트가 가설이면 시장 크기를 말할 수 없다.",
+        "dce": "해당 세그먼트의 실사용 또는 지불 증거(예약·결제·반복 방문). 이 증거가 있으면 고객 축을 지지로 올리고, 없으면 세그먼트 주장을 내린다.",
+        "priority": "주장된 세그먼트에서 실사용·지불 증거 한 건을 확인한다.",
+        "kind": "segment_proof",
+        "question": "지목한 고객 그룹에서 실제로 쓰거나 돈을 낸 사례가 있습니까? 있다면 한 건만 구체적으로 알려주세요. 아직이면 가정이라고 답해도 됩니다.",
+        "nextUnknownCu": false
+      },
+      "spoken": {
+        "score": "PASS",
+        "note": "kind=segment_proof preserves CU object",
+        "failure": null
+      },
+      "downgrade": {
+        "declined": true,
+        "kind": "payer_split",
+        "binds": true,
+        "leftoverPositive": false
+      },
+      "failures": []
+    },
+    {
+      "id": "lmulm_alt",
+      "unnamed": false,
+      "expectedPattern": "stake_weave_off",
+      "observedPattern": "stake_weave_off",
+      "hops": "S3→S4→S3",
+      "t0Kind": "repeat_loop",
+      "promotion": {
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "dce": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "priority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "kind": "repeat_loop",
+        "question": "이탈 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "nextUnknownCu": false
+      },
+      "spoken": {
+        "score": "FAIL",
+        "note": "question moved onto a stake noun that is not the CU",
+        "failure": "stake_weave_off_cu"
+      },
+      "downgrade": {
+        "declined": true,
+        "kind": "repeat_loop",
+        "binds": true,
+        "leftoverPositive": false
+      },
+      "failures": [
+        "stake_weave_off_cu"
+      ]
+    },
+    {
+      "id": "ridm_alt",
+      "unnamed": false,
+      "expectedPattern": "stake_weave_off",
+      "observedPattern": "stake_weave_off",
+      "hops": "S1→S3→S1",
+      "t0Kind": "payer_job",
+      "promotion": {
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "dce": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "priority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "kind": "repeat_loop",
+        "question": "이탈 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "nextUnknownCu": false
+      },
+      "spoken": {
+        "score": "FAIL",
+        "note": "question moved onto a stake noun that is not the CU",
+        "failure": "stake_weave_off_cu"
+      },
+      "downgrade": {
+        "declined": true,
+        "kind": "payer_job",
+        "binds": true,
+        "leftoverPositive": false
+      },
+      "failures": [
+        "stake_weave_off_cu"
+      ]
+    }
+  ]
+}

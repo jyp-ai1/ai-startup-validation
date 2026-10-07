@@ -1,0 +1,419 @@
+{
+  "productionSha": "dea7cb1916cfbd4e6f8c54a86e6da920ed708bd2",
+  "alignmentFixSha": "6926d6ffc108f677fcc274ca4523ebfb71ac2351",
+  "scenarioCount": 6,
+  "obstructionCounts": {
+    "PASS": 0,
+    "PARTIAL": 6,
+    "FAIL": 0
+  },
+  "branchCounts": {
+    "on_cu": {
+      "PASS": 0,
+      "PARTIAL": 6,
+      "FAIL": 0
+    },
+    "generic_literal": {
+      "PASS": 0,
+      "PARTIAL": 6,
+      "FAIL": 0
+    },
+    "wrong_axis": {
+      "PASS": 0,
+      "PARTIAL": 6,
+      "FAIL": 0
+    },
+    "plan_only": {
+      "PASS": 0,
+      "PARTIAL": 6,
+      "FAIL": 0
+    }
+  },
+  "failureCounts": {},
+  "regression": {
+    "patternA": true,
+    "surfaceRecovers": 6,
+    "negativeDeclined": 6,
+    "leftoverPositive": 0
+  },
+  "rows": [
+    {
+      "id": "unnamed_omission",
+      "unnamed": true,
+      "ask": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "nextUnknownCu": true,
+        "genericAsk": true,
+        "surfaceRecovers": true
+      },
+      "branches": {
+        "on_cu": {
+          "answer": "다음 기간에도 누락이 6%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "on-CU next-period evidence kept CU open (no dedicated next-period signal)"
+        },
+        "generic_literal": {
+          "answer": "최근 고객 3명이 실제로 결제했고 유료 전환 1건이 발생했다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "generic payment wastes a turn; next CU stays honest"
+        },
+        "wrong_axis": {
+          "answer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+          "stageId": "S4",
+          "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "kind": "repeat_loop",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "wrong-axis repeat_validation closed next CU S3→S4"
+        },
+        "plan_only": {
+          "answer": "검증을 생각하고 있지만 아직 아무도 실행하지 않았다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "plan-only delays; next CU stays open"
+        }
+      },
+      "obstruction": {
+        "score": "PARTIAL",
+        "failure": null,
+        "note": "generic ask underspecifies; whyAsking/CU recover next-period action; state stays honest"
+      },
+      "negative": {
+        "declined": true,
+        "leftoverPositive": false
+      }
+    },
+    {
+      "id": "unnamed_load",
+      "unnamed": true,
+      "ask": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "nextUnknownCu": true,
+        "genericAsk": true,
+        "surfaceRecovers": true
+      },
+      "branches": {
+        "on_cu": {
+          "answer": "다음 기간에도 부하가 19%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "on-CU next-period evidence kept CU open (no dedicated next-period signal)"
+        },
+        "generic_literal": {
+          "answer": "최근 고객 3명이 실제로 결제했고 유료 전환 1건이 발생했다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "generic payment wastes a turn; next CU stays honest"
+        },
+        "wrong_axis": {
+          "answer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+          "stageId": "S4",
+          "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "kind": "repeat_loop",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "wrong-axis repeat_validation closed next CU S3→S4"
+        },
+        "plan_only": {
+          "answer": "검증을 생각하고 있지만 아직 아무도 실행하지 않았다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "plan-only delays; next CU stays open"
+        }
+      },
+      "obstruction": {
+        "score": "PARTIAL",
+        "failure": null,
+        "note": "generic ask underspecifies; whyAsking/CU recover next-period action; state stays honest"
+      },
+      "negative": {
+        "declined": true,
+        "leftoverPositive": false
+      }
+    },
+    {
+      "id": "unnamed_mismatch",
+      "unnamed": true,
+      "ask": {
+        "stageId": "S3",
+        "verdictId": "conditionally_viable",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "nextUnknownCu": true,
+        "genericAsk": true,
+        "surfaceRecovers": true
+      },
+      "branches": {
+        "on_cu": {
+          "answer": "다음 기간에도 미스매치가 10%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "on-CU next-period evidence kept CU open (no dedicated next-period signal)"
+        },
+        "generic_literal": {
+          "answer": "최근 고객 3명이 실제로 결제했고 유료 전환 1건이 발생했다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "generic payment wastes a turn; next CU stays honest"
+        },
+        "wrong_axis": {
+          "answer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+          "stageId": "S4",
+          "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "kind": "repeat_loop",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "wrong-axis repeat_validation closed next CU S3→S4"
+        },
+        "plan_only": {
+          "answer": "검증을 생각하고 있지만 아직 아무도 실행하지 않았다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "plan-only delays; next CU stays open"
+        }
+      },
+      "obstruction": {
+        "score": "PARTIAL",
+        "failure": null,
+        "note": "generic ask underspecifies; whyAsking/CU recover next-period action; state stays honest"
+      },
+      "negative": {
+        "declined": true,
+        "leftoverPositive": false
+      }
+    },
+    {
+      "id": "unnamed_inconsistency",
+      "unnamed": true,
+      "ask": {
+        "stageId": "S3",
+        "verdictId": "conditionally_viable",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "nextUnknownCu": true,
+        "genericAsk": true,
+        "surfaceRecovers": true
+      },
+      "branches": {
+        "on_cu": {
+          "answer": "다음 기간에도 불일치가 8%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "on-CU next-period evidence kept CU open (no dedicated next-period signal)"
+        },
+        "generic_literal": {
+          "answer": "최근 고객 3명이 실제로 결제했고 유료 전환 1건이 발생했다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "generic payment wastes a turn; next CU stays honest"
+        },
+        "wrong_axis": {
+          "answer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+          "stageId": "S4",
+          "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "kind": "repeat_loop",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "wrong-axis repeat_validation closed next CU S3→S4"
+        },
+        "plan_only": {
+          "answer": "검증을 생각하고 있지만 아직 아무도 실행하지 않았다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "plan-only delays; next CU stays open"
+        }
+      },
+      "obstruction": {
+        "score": "PARTIAL",
+        "failure": null,
+        "note": "generic ask underspecifies; whyAsking/CU recover next-period action; state stays honest"
+      },
+      "negative": {
+        "declined": true,
+        "leftoverPositive": false
+      }
+    },
+    {
+      "id": "clinicflow_alt",
+      "unnamed": false,
+      "ask": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "nextUnknownCu": true,
+        "genericAsk": true,
+        "surfaceRecovers": true
+      },
+      "branches": {
+        "on_cu": {
+          "answer": "다음 기간에도 no-show가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "on-CU next-period evidence kept CU open (no dedicated next-period signal)"
+        },
+        "generic_literal": {
+          "answer": "최근 고객 3명이 실제로 결제했고 유료 전환 1건이 발생했다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "generic payment wastes a turn; next CU stays honest"
+        },
+        "wrong_axis": {
+          "answer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+          "stageId": "S4",
+          "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "kind": "repeat_loop",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "wrong-axis repeat_validation closed next CU S3→S4"
+        },
+        "plan_only": {
+          "answer": "검증을 생각하고 있지만 아직 아무도 실행하지 않았다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "plan-only delays; next CU stays open"
+        }
+      },
+      "obstruction": {
+        "score": "PARTIAL",
+        "failure": null,
+        "note": "generic ask underspecifies; whyAsking/CU recover next-period action; state stays honest"
+      },
+      "negative": {
+        "declined": true,
+        "leftoverPositive": false
+      }
+    },
+    {
+      "id": "fitbridge_alt",
+      "unnamed": false,
+      "ask": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "priority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "kind": "generic",
+        "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "nextUnknownCu": true,
+        "genericAsk": true,
+        "surfaceRecovers": true
+      },
+      "branches": {
+        "on_cu": {
+          "answer": "다음 기간에도 반품률이 29%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "on-CU next-period evidence kept CU open (no dedicated next-period signal)"
+        },
+        "generic_literal": {
+          "answer": "최근 고객 3명이 실제로 결제했고 유료 전환 1건이 발생했다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "generic payment wastes a turn; next CU stays honest"
+        },
+        "wrong_axis": {
+          "answer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+          "stageId": "S4",
+          "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "kind": "repeat_loop",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "wrong-axis repeat_validation closed next CU S3→S4"
+        },
+        "plan_only": {
+          "answer": "검증을 생각하고 있지만 아직 아무도 실행하지 않았다.",
+          "stageId": "S3",
+          "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "kind": "generic",
+          "score": "PARTIAL",
+          "failure": null,
+          "note": "plan-only delays; next CU stays open"
+        }
+      },
+      "obstruction": {
+        "score": "PARTIAL",
+        "failure": null,
+        "note": "generic ask underspecifies; whyAsking/CU recover next-period action; state stays honest"
+      },
+      "negative": {
+        "declined": true,
+        "leftoverPositive": false
+      }
+    }
+  ]
+}

@@ -29,7 +29,10 @@ type SignalKind =
   | 'payer_unknown'
   | 'no_revenue'
   | 'no_launch'
-  | 'unverified';
+  | 'unverified'
+  | 'quantified_problem'
+  | 'named_alternative'
+  | 'stake_improved';
 
 type DetectedSignal = {
   kind: SignalKind;
@@ -37,6 +40,9 @@ type DetectedSignal = {
   axisId: SiAxisId;
   text: string;
   negated: boolean;
+  order: number;
+  retracted: boolean;
+  sourceLine: string;
 };
 
 const AXIS_ORDER: SiAxisId[] = [
@@ -73,13 +79,78 @@ function isHypothesis(line: string): boolean {
   return /(가설|목표|예정|계획|시 ROI|감소 시)/.test(line);
 }
 
+const STAKE_NOUN = /(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하)/i;
+
+function percentPair(line: string): { from: number; to: number } | null {
+  const match = line.match(/(\d+)\s*%.{0,12}(에서|→)\s*(\d+)\s*%/);
+  if (!match) return null;
+  return { from: Number(match[1]), to: Number(match[3]) };
+}
+
+function isStakeImprovedLine(line: string): boolean {
+  if (!STAKE_NOUN.test(line) || isHypothesis(line) || isIntentWithoutAction(line)) return false;
+  if (/(악화|늘었|증가했)/.test(line) && !/(줄었|감소했|개선)/.test(line)) return false;
+  if (/(줄었|감소했|개선됐|개선되)/.test(line)) return true;
+  const pair = percentPair(line);
+  return pair !== null && pair.to < pair.from;
+}
+
+function isStakeWorsenedLine(line: string): boolean {
+  if (!STAKE_NOUN.test(line)) return false;
+  if (/(악화|늘었|증가했|나빠)/.test(line)) return true;
+  const pair = percentPair(line);
+  return pair !== null && pair.to > pair.from;
+}
+
+function isRepeatZeroLine(line: string): boolean {
+  return /(재구매는?\s*0|재구매\s*고객은\s*0|재구매는 없)/.test(line);
+}
+
+function isRepeatPlanOrIntent(line: string): boolean {
+  return (
+    isHypothesis(line) ||
+    isIntentWithoutAction(line) ||
+    /(재구매|재판매|반복).{0,12}(계획|의도|예정|생각|의향)/.test(line) ||
+    /(계획|예정|향후).{0,12}(재구매|재판매)/.test(line)
+  );
+}
+
+function deniesValidatedPayment(line: string): boolean {
+  if (isRepeatZeroLine(line) && !/결제/.test(line)) return false;
+  return /(아무도 결제하지 않|유료 전환은 없었|실제 결제.{0,10}(없다|없었|발생하지 않)|결제[는은] 없다|결제하지 않았다|결제한 고객은 없었|실제로 결제한.{0,12}(없|발생하지 않)|모두 거절)/.test(
+    line,
+  );
+}
+
+function deniesValidatedRepeat(line: string): boolean {
+  return (
+    isRepeatZeroLine(line) ||
+    /(재판매는 멈췄|아무도 등록하지 않|실제 재판매.{0,12}(없다|없었|발생하지 않)|실제 재판매·재구매는 없다)/.test(
+      line,
+    )
+  );
+}
+
+function isRepeatDirectDenial(line: string): boolean {
+  if (isRepeatZeroLine(line) && !/실제 재판매/.test(line)) return false;
+  return /(실제 재판매.{0,12}(없다|없었|발생하지 않)|실제 재판매·재구매는 없다)/.test(line);
+}
+
+function isFounderFlip(line: string): boolean {
+  return /지난번에는 됐다고 했지만 이번에는 아니다|이번에는 아니다/.test(line);
+}
+
+function isPaidChurnLine(line: string): boolean {
+  return /(해지|취소됐)/.test(line);
+}
+
 function isIntentWithoutAction(line: string): boolean {
   return /(생각|의향|하려고|검토 중)/.test(line) && /(아직|아무도|없)/.test(line);
 }
 
 /** Counted completed actions — not intent, not a planned pilot. */
 function isQuantifiedCompletion(line: string): boolean {
-  if (isIntentWithoutAction(line) || isHypothesis(line)) return false;
+  if (isIntentWithoutAction(line) || isHypothesis(line) || isRepeatZeroLine(line)) return false;
   return (
     /\d+\s*(명|건)/.test(line) &&
     /(등록했|거래됐|거래가 됐|거래가 발생|재구매했|체결됐|실제로\s*재판매)/.test(line)
@@ -122,6 +193,9 @@ function scanLine(line: string): DetectedSignal[] {
       axisId,
       text: clip(line),
       negated,
+      order: 0,
+      retracted: false,
+      sourceLine: line,
     });
   };
 
@@ -191,10 +265,14 @@ function scanLine(line: string): DetectedSignal[] {
   } else if (isQuantifiedPayment(line) && !negated) {
     push('revenue', 'VALIDATED', 'validationStrength');
   } else if (matchAny(line, [/재구매/, /반복적으로/, /리텐션/, /2차 거래/, /파일럿/, /인터뷰 검증/])) {
-    if (negated || isHypothesis(line) || isIntentWithoutAction(line) || /파일럿/.test(line)) {
+    if (
+      negated ||
+      isRepeatPlanOrIntent(line) ||
+      isRepeatZeroLine(line) ||
+      deniesValidatedRepeat(line) ||
+      /파일럿/.test(line)
+    ) {
       push('unverified', 'ASSUMPTION', 'validationStrength');
-    } else {
-      push('repeat_validation', 'VALIDATED', 'validationStrength');
     }
   }
 
@@ -210,6 +288,28 @@ function scanLine(line: string): DetectedSignal[] {
     push('unverified', 'ASSUMPTION', 'validationStrength');
   }
 
+  if (
+    /\d+\s*(?:~\s*)?\d*\s*%/.test(line) &&
+    matchAny(line, [/no-show/i, /노쇼/, /반품/, /누락/, /불일치/, /미스매치/, /이탈/, /부하/])
+  ) {
+    push('quantified_problem', negated || isHypothesis(line) ? 'CLAIM' : 'FACT', 'customerProblemFit');
+  }
+
+  if (
+    !negated &&
+    isStakeImprovedLine(line)
+  ) {
+    push('stake_improved', 'VALIDATED', 'validationStrength');
+  }
+
+  if (
+    matchAny(line, [/대안/, /경쟁/, /대비/, /차별/, /솔루션/, /연동/]) &&
+    (/\b(?:EMR|CRM|ERP|PDP|API)\b/.test(line) ||
+      /[A-Z][a-zA-Z]{2,}(?:\s+[A-Z][a-zA-Z]+)?/.test(line))
+  ) {
+    push('named_alternative', 'FACT', 'marketAlternatives');
+  }
+
   return found;
 }
 
@@ -221,13 +321,19 @@ function headingSection(line: string): 'alternatives' | 'other' | null {
 function scanDocument(text: string): DetectedSignal[] {
   let section: 'alternatives' | 'other' | null = null;
   const out: DetectedSignal[] = [];
+  let order = 0;
   for (const line of linesOf(text)) {
     const nextSection = headingSection(line);
     if (nextSection) {
       section = nextSection;
       continue;
     }
+    order += 1;
     const found = scanLine(line);
+    for (const signal of found) {
+      signal.order = order;
+      signal.sourceLine = line;
+    }
     if (section === 'alternatives' && !found.some((signal) => signal.kind === 'alternatives')) {
       found.push({
         kind: 'alternatives',
@@ -235,10 +341,14 @@ function scanDocument(text: string): DetectedSignal[] {
         axisId: 'marketAlternatives',
         text: clip(line),
         negated: false,
+        order,
+        retracted: false,
+        sourceLine: line,
       });
     }
     out.push(...found);
   }
+  applySignalRetractions(out);
   return out;
 }
 
@@ -262,11 +372,117 @@ function uniqueEvidence(signals: DetectedSignal[]): SiEvidenceItem[] {
 }
 
 function hasKind(signals: DetectedSignal[], kind: SignalKind, negated?: boolean): boolean {
-  return signals.some((signal) => signal.kind === kind && (negated === undefined || signal.negated === negated));
+  return signals.some(
+    (signal) =>
+      !signal.retracted &&
+      signal.kind === kind &&
+      (negated === undefined || signal.negated === negated),
+  );
 }
 
-function hasClass(signals: DetectedSignal[], evidenceClass: SiEvidenceClass): boolean {
-  return signals.some((signal) => signal.evidenceClass === evidenceClass);
+function hasLiveValidated(signals: DetectedSignal[], kind: SignalKind): boolean {
+  return signals.some(
+    (signal) =>
+      !signal.retracted &&
+      signal.kind === kind &&
+      signal.evidenceClass === 'VALIDATED',
+  );
+}
+
+function liveValidated(signals: DetectedSignal[], kind: SignalKind, beforeOrder: number): boolean {
+  return signals.some(
+    (signal) =>
+      !signal.retracted &&
+      signal.order < beforeOrder &&
+      signal.kind === kind &&
+      signal.evidenceClass === 'VALIDATED',
+  );
+}
+
+function retractPrior(
+  signals: DetectedSignal[],
+  beforeOrder: number,
+  kind: SignalKind,
+): boolean {
+  let retracted = false;
+  for (const signal of signals) {
+    if (
+      signal.order < beforeOrder &&
+      !signal.retracted &&
+      signal.kind === kind &&
+      signal.evidenceClass === 'VALIDATED'
+    ) {
+      signal.retracted = true;
+      retracted = true;
+    }
+  }
+  return retracted;
+}
+
+function markLineConflict(signals: DetectedSignal[], order: number, sourceLine: string): void {
+  const onLine = signals.filter((signal) => signal.order === order);
+  if (onLine.length === 0) {
+    signals.push({
+      kind: 'unverified',
+      evidenceClass: 'CONFLICT',
+      axisId: 'validationStrength',
+      text: clip(sourceLine),
+      negated: false,
+      order,
+      retracted: false,
+      sourceLine,
+    });
+    return;
+  }
+  for (const signal of onLine) {
+    signal.evidenceClass = 'CONFLICT';
+  }
+}
+
+function applySignalRetractions(signals: DetectedSignal[]): void {
+  const lineByOrder = new Map<number, string>();
+  for (const signal of signals) {
+    if (!lineByOrder.has(signal.order)) lineByOrder.set(signal.order, signal.sourceLine);
+  }
+  const orders = [...lineByOrder.keys()].sort((left, right) => left - right);
+  for (const order of orders) {
+    const line = lineByOrder.get(order) ?? '';
+    const paymentDenied = deniesValidatedPayment(line) && liveValidated(signals, 'revenue', order);
+    const repeatDenied = deniesValidatedRepeat(line) && liveValidated(signals, 'repeat_validation', order);
+    const repeatContradicted =
+      isRepeatDirectDenial(line) && liveValidated(signals, 'repeat_validation', order);
+    const stakeWorsened = isStakeWorsenedLine(line) && liveValidated(signals, 'stake_improved', order);
+    const flip = isFounderFlip(line);
+    const conflicting =
+      paymentDenied ||
+      stakeWorsened ||
+      repeatContradicted ||
+      (flip &&
+        (liveValidated(signals, 'revenue', order) || liveValidated(signals, 'repeat_validation', order)));
+
+    if (paymentDenied || (flip && deniesValidatedPayment(line))) {
+      retractPrior(signals, order, 'revenue');
+    }
+    if (repeatDenied || (flip && deniesValidatedRepeat(line))) {
+      retractPrior(signals, order, 'repeat_validation');
+    }
+    if (stakeWorsened) {
+      retractPrior(signals, order, 'stake_improved');
+    }
+    if (flip && !paymentDenied && !repeatDenied) {
+      if (liveValidated(signals, 'revenue', order)) retractPrior(signals, order, 'revenue');
+      if (liveValidated(signals, 'repeat_validation', order)) {
+        retractPrior(signals, order, 'repeat_validation');
+      }
+      if (liveValidated(signals, 'stake_improved', order)) retractPrior(signals, order, 'stake_improved');
+    }
+    if (isPaidChurnLine(line) && !deniesValidatedPayment(line)) {
+      retractPrior(signals, order, 'revenue');
+    }
+    if (conflicting) {
+      markLineConflict(signals, order, line);
+    }
+  }
 }
 
 function axisStatus(args: {
@@ -376,9 +592,16 @@ function buildAxes(signals: DetectedSignal[]): SiAxisJudgment[] {
   }));
 }
 
+function dceStakeOpen(signals: DetectedSignal[]): boolean {
+  return hasKind(signals, 'quantified_problem') && !hasKind(signals, 'stake_improved', false);
+}
+
 function decideStage(signals: DetectedSignal[]): SiStageId {
   if (hasKind(signals, 'repeat_validation', false)) return 'S4';
-  if (hasKind(signals, 'revenue', false) || hasKind(signals, 'launch', false)) return 'S3';
+  const paymentWithoutStake = hasKind(signals, 'revenue', false) && dceStakeOpen(signals);
+  if ((hasKind(signals, 'revenue', false) && !paymentWithoutStake) || hasKind(signals, 'launch', false)) {
+    return 'S3';
+  }
   const commerciallyStarted =
     hasKind(signals, 'revenue', false) ||
     hasKind(signals, 'launch', false) ||
@@ -408,6 +631,7 @@ function decideVerdict(stageId: SiStageId, signals: DetectedSignal[], axes: SiAx
   const jobUnknown = hasKind(signals, 'job_unknown');
 
   if (hasRepeat && hasRevenue) return 'viable';
+  if (dceStakeOpen(signals)) return 'judgment_deferred';
   if ((hasRevenue || (hasLaunch && hasOps)) && customerAxis?.status !== 'unknown' && !jobUnknown) {
     return hasRevenue ? 'viable' : 'conditionally_viable';
   }
@@ -419,11 +643,66 @@ function decideVerdict(stageId: SiStageId, signals: DetectedSignal[], axes: SiAx
   return 'judgment_deferred';
 }
 
+function stakeNoun(line: string): string {
+  const adjacent = line.match(
+    /(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하).{0,3}\d+\s*(?:~\s*)?\d*\s*%/i,
+  );
+  if (adjacent?.[1]) return adjacent[1];
+  const match = line.match(STAKE_NOUN);
+  return match?.[1] ?? '수치화된 문제 지표';
+}
+
+function alternativeNoun(line: string): string {
+  const known = line.match(/\b(?:EMR|CRM|ERP|PDP|API)\b/);
+  if (known) return known[0];
+  const titled = line.match(/[A-Z][a-z]+(?:\s+[A-Z][a-zA-Z]+)+/);
+  if (titled) return titled[0];
+  const word = line.match(/[A-Z][a-zA-Z]{2,}/);
+  return word?.[0] ?? '기존 대안';
+}
+
+function pickNamedAlternative(signals: DetectedSignal[]): DetectedSignal | undefined {
+  const named = signals.filter((signal) => signal.kind === 'named_alternative');
+  return named.find((signal) => /대안|경쟁|대비|솔루션|차별/.test(signal.text)) ?? named[0];
+}
+
+function paidConversionUnknown(signals: DetectedSignal[]): {
+  criticalUnknown: string;
+  decisionChangingEvidence: string;
+  validationPriority: string;
+} {
+  const metric = signals.find((signal) => signal.kind === 'quantified_problem');
+  const alternative = pickNamedAlternative(signals);
+  if (!metric) {
+    return {
+      criticalUnknown:
+        '이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.',
+      decisionChangingEvidence:
+        '최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.',
+      validationPriority: '가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.',
+    };
+  }
+
+  const stake = stakeNoun(metric.text);
+  const versus = alternative ? alternativeNoun(alternative.text) : null;
+  const versusClause = versus
+    ? ` ${versus} 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다.`
+    : '';
+  return {
+    criticalUnknown: `결제 후보가 유료로 썼을 때 문서가 수치화한 ${stake} 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.`,
+    decisionChangingEvidence: `유료 파일럿 1건과 ${stake} 전후 비교.${versusClause} 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.`,
+    validationPriority: `가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 ${stake}의 전후를 한 번 잰다.`,
+  };
+}
+
 function pickCriticalUnknown(signals: DetectedSignal[]): {
   criticalUnknown: string;
   decisionChangingEvidence: string;
   validationPriority: string;
 } {
+  const payerResolved =
+    hasLiveValidated(signals, 'revenue') || hasLiveValidated(signals, 'repeat_validation');
+
   if (hasKind(signals, 'resale_thesis') && !hasKind(signals, 'repeat_validation', false)) {
     return {
       criticalUnknown:
@@ -434,7 +713,10 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
     };
   }
 
-  if (hasKind(signals, 'job_unknown') || (hasKind(signals, 'payer_unknown') && !hasKind(signals, 'problem', false))) {
+  if (
+    !payerResolved &&
+    (hasKind(signals, 'job_unknown') || (hasKind(signals, 'payer_unknown') && !hasKind(signals, 'problem', false)))
+  ) {
     return {
       criticalUnknown:
         '누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.',
@@ -444,7 +726,7 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
     };
   }
 
-  if (hasKind(signals, 'payer_split') || hasKind(signals, 'payer_unknown')) {
+  if (!payerResolved && (hasKind(signals, 'payer_split') || hasKind(signals, 'payer_unknown'))) {
     return {
       criticalUnknown:
         '실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가. 결제자가 확인되지 않으면 사용자 수요만으로 사업화 판단을 확정할 수 없다.',
@@ -465,12 +747,31 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
   }
 
   if (!hasKind(signals, 'revenue', false) && !hasKind(signals, 'repeat_validation', false)) {
+    return paidConversionUnknown(signals);
+  }
+
+  const metric = signals.find((signal) => signal.kind === 'quantified_problem');
+  if (metric && dceStakeOpen(signals) && !hasKind(signals, 'repeat_validation', false)) {
+    const stake = stakeNoun(metric.text);
+    const alternative = pickNamedAlternative(signals);
+    const versus = alternative ? alternativeNoun(alternative.text) : null;
+    const versusClause = versus
+      ? ` ${versus} 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다.`
+      : '';
+    return {
+      criticalUnknown: `유료 전환 이후 문서가 수치화한 ${stake} 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.`,
+      decisionChangingEvidence: `이미 결제한 후보의 ${stake} 전후 비교.${versusClause} 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.`,
+      validationPriority: `이미 돈을 낸 후보에서 문서가 적은 ${stake}의 전후를 한 번 잰다.`,
+    };
+  }
+
+  if (metric && hasKind(signals, 'stake_improved', false) && !hasKind(signals, 'resale_thesis')) {
     return {
       criticalUnknown:
-        '이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.',
+        '이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.',
       decisionChangingEvidence:
-        '최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.',
-      validationPriority: '가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.',
+        '다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.',
+      validationPriority: '다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.',
     };
   }
 
@@ -524,6 +825,10 @@ function buildRisks(signals: DetectedSignal[], criticalUnknown: string): string[
   }
   if (hasKind(signals, 'unverified') && !hasKind(signals, 'revenue', false)) {
     out.push('유료 전환·파일럿 성과가 아직 검증되지 않았다.');
+  }
+  const metric = signals.find((signal) => signal.kind === 'quantified_problem');
+  if (metric && !hasKind(signals, 'revenue', false)) {
+    out.push(`문서가 수치화한 ${stakeNoun(metric.text)} 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.`);
   }
   if (out.length === 0) {
     out.push(criticalUnknown);
@@ -584,6 +889,14 @@ function addInferences(items: SiEvidenceItem[], signals: DetectedSignal[], stage
       text: '사용자와 결제자가 다르면 문제 인식과 지불 의향을 따로 검증해야 한다.',
       evidenceClass: 'INFERENCE',
       axisId: 'customerProblemFit',
+    });
+  }
+  if (hasKind(signals, 'revenue', false) && dceStakeOpen(signals)) {
+    inferences.push({
+      id: `ev-inf-${inferences.length + 1}`,
+      text: '유료 전환 증거는 있으나, 문서가 수치화한 지표 전후는 아직 열려 있어 DCE는 부분이다.',
+      evidenceClass: 'INFERENCE',
+      axisId: 'validationStrength',
     });
   }
   if (stageId === 'S0' || stageId === 'S1') {
