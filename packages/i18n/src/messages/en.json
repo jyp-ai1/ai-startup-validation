@@ -385,6 +385,7 @@
       "fileReadError": "Unsupported or unreadable file. Use TXT, PDF, or DOCX.",
       "fileReadFailed": "We couldn't read the document.",
       "fileReadFailedHint": "Try uploading again, or paste the content in the business description field.",
+      "fileImagePdf": "This PDF has no extractable text, so automatic analysis is not available yet.",
       "fileUnsupported": "Unsupported file type. Only TXT, PDF, and DOCX are supported.",
       "retryUpload": "Upload again"
     },
@@ -6727,6 +6728,7 @@
           "invalidFile": "Could not read the file. Use text, PDF, or DOCX.",
           "readFailed": "We couldn't read the document.",
           "readFailedHint": "Try uploading again, or paste the content below.",
+          "imagePdf": "This PDF has no extractable text, so automatic analysis is not available yet.",
           "unsupportedFile": "Unsupported file type. Only TXT, PDF, and DOCX are supported.",
           "retryUpload": "Upload again",
           "pasteInstead": "Enter content directly"

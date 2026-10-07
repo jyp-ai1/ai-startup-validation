@@ -63,6 +63,8 @@ export function WorkspaceDocumentIntake({
       } catch (err) {
         if (err instanceof SmartIntakeFileReadError && err.reason === 'unsupported') {
           setError(t('unsupportedFile'));
+        } else if (err instanceof SmartIntakeFileReadError && err.reason === 'image_pdf') {
+          setError(t('imagePdf'));
         } else {
           setError(t('readFailed'));
         }
@@ -108,7 +110,7 @@ export function WorkspaceDocumentIntake({
       <input
         ref={fileInputRef}
         type="file"
-        accept=".txt,.md,.pdf,.doc,.docx"
+        accept=".txt,.md,.pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         className="hidden"
         onChange={(event) => void handleFileChange(event)}
       />

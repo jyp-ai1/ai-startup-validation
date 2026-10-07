@@ -177,7 +177,7 @@ export function buildDraftFromAnalysis(
 }
 
 export class SmartIntakeFileReadError extends Error {
-  readonly reason: 'unsupported' | 'empty' | 'parse_failed' | 'network';
+  readonly reason: 'unsupported' | 'empty' | 'parse_failed' | 'image_pdf' | 'network';
 
   constructor(reason: SmartIntakeFileReadError['reason'], message: string) {
     super(message);
@@ -213,7 +213,9 @@ async function readBinaryIntakeFile(
         ? 'unsupported'
         : payload && 'reason' in payload && payload.reason === 'parse_failed'
           ? 'parse_failed'
-          : 'empty';
+          : payload && 'reason' in payload && payload.reason === 'image_pdf'
+            ? 'image_pdf'
+            : 'empty';
     throw new SmartIntakeFileReadError(
       reason,
       payload && 'detail' in payload && payload.detail

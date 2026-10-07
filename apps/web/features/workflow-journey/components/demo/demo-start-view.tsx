@@ -22,7 +22,7 @@ import {
   DEMO_SAMPLES,
   type DemoSampleId,
 } from '../../lib/demo-samples';
-import { readSmartIntakeFile } from '../../lib/v2-smart-intake-engine';
+import { readSmartIntakeFile, SmartIntakeFileReadError } from '../../lib/v2-smart-intake-engine';
 import {
   persistDemoProjectDraftForLogin,
   type DemoProjectDraft,
@@ -121,8 +121,14 @@ export function DemoStartView({ className }: DemoStartViewProps) {
       }
       setFileDocumentText(text);
       setFileName(file.name);
-    } catch {
-      setError('문서를 읽을 수 없습니다. TXT, PDF, DOCX를 사용해 주세요.');
+    } catch (err) {
+      if (err instanceof SmartIntakeFileReadError && err.reason === 'image_pdf') {
+        setError('이 PDF는 텍스트를 추출할 수 없어 현재 자동 분석이 어렵습니다.');
+      } else if (err instanceof SmartIntakeFileReadError && err.reason === 'unsupported') {
+        setError('지원하지 않는 파일 형식입니다. TXT, PDF, DOCX를 사용해 주세요.');
+      } else {
+        setError('문서를 읽지 못했습니다. 다시 업로드해 주세요.');
+      }
       setFileName(null);
     } finally {
       setLoading(false);
@@ -208,7 +214,7 @@ export function DemoStartView({ className }: DemoStartViewProps) {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".txt,.md,.pdf,.doc,.docx"
+            accept=".txt,.md,.pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             className="hidden"
             onChange={(event) => {
               const file = event.target.files?.[0];

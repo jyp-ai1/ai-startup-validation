@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  const result = await extractDocumentText(buffer, file.name);
+  const result = await extractDocumentText(buffer, file.name, file.type);
 
   if (!result.ok) {
     return NextResponse.json(result, { status: 422 });

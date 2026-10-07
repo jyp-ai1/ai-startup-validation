@@ -70,6 +70,8 @@ export function ProjectIntakeDocumentField({
       } catch (error) {
         if (error instanceof SmartIntakeFileReadError && error.reason === 'unsupported') {
           setError(t('fileUnsupported'));
+        } else if (error instanceof SmartIntakeFileReadError && error.reason === 'image_pdf') {
+          setError(t('fileImagePdf'));
         } else {
           setError(t('fileReadFailed'));
         }
@@ -107,7 +109,7 @@ export function ProjectIntakeDocumentField({
       <input
         ref={fileInputRef}
         type="file"
-        accept=".txt,.md,.pdf,.doc,.docx"
+        accept=".txt,.md,.pdf,.doc,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         className="hidden"
         disabled={disabled || loading}
         onChange={(event) => {

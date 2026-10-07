@@ -385,6 +385,7 @@
       "fileReadError": "지원하지 않는 파일이거나 읽을 수 없습니다. TXT, PDF, DOCX를 사용해 주세요.",
       "fileReadFailed": "문서를 읽지 못했습니다.",
       "fileReadFailedHint": "다시 업로드하거나, 아래 사업 설명란에 내용을 직접 입력해 주세요.",
+      "fileImagePdf": "이 PDF는 텍스트를 추출할 수 없어 현재 자동 분석이 어렵습니다.",
       "fileUnsupported": "지원하지 않는 파일 형식입니다. TXT, PDF, DOCX만 업로드할 수 있습니다.",
       "retryUpload": "다시 업로드"
     },
@@ -6880,6 +6881,7 @@
           "invalidFile": "문서를 읽을 수 없습니다. 텍스트 파일 또는 PDF/DOCX를 사용해 주세요.",
           "readFailed": "문서를 읽지 못했습니다.",
           "readFailedHint": "다시 업로드하거나, 아래에 내용을 직접 붙여넣어 주세요.",
+          "imagePdf": "이 PDF는 텍스트를 추출할 수 없어 현재 자동 분석이 어렵습니다.",
           "unsupportedFile": "지원하지 않는 파일 형식입니다. TXT, PDF, DOCX만 사용할 수 있습니다.",
           "retryUpload": "다시 업로드",
           "pasteInstead": "내용 직접 입력"
