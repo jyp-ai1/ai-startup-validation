@@ -6,6 +6,29 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### S.I. DCE Reconciliation (2026-10-06) ✅ Production
+
+**Production SHA:** `127162b2c0a1db715dc12fbeaa51a14c9e0c830f` · **PR:** #107 · **Promotion:** #108 PASS  
+**Prod:** https://ai-startup-validation-tau.vercel.app · **SHA triangle:** MATCH
+
+- DCE 2/2 retires the previous CU and moves the next unknown to repeatability
+- DCE 0/2 · 1/2 stay honest PARTIAL (#104)
+- `decideNextQuestionFromReview` unchanged
+
+Evidence: [`docs/evidence/ALABOM/SI/SI-V1-DCE-RECONCILIATION-PRODUCTION.md`](./evidence/ALABOM/SI/SI-V1-DCE-RECONCILIATION-PRODUCTION.md)
+
+### S.I. Founder Journey E2E Gate (2026-10-06) ✅ Production
+
+**Production SHA:** `9221861176f243fb233bfc79a5fd9502ad474d20` · **PR:** #98  
+**Prod:** https://ai-startup-validation-tau.vercel.app · **CPO Gate:** PASS · **SHA triangle:** MATCH
+
+- S.I. V1 loop on main: judgment → validation ask → business-fit evidence → re-judgment (2 turns)
+- Gap Loop remains ADAPT fallback. `decideNextQuestionFromReview` unchanged.
+
+Evidence: [`docs/evidence/ALABOM/SI/SI-V1-FOUNDER-JOURNEY-PRODUCTION-GATE.md`](./evidence/ALABOM/SI/SI-V1-FOUNDER-JOURNEY-PRODUCTION-GATE.md)
+
+---
+
 ### ALABOM DAY 8-I P0 FIX-10 — CEO Trust Journey + Judgment→Next Q (2026-09-07) ✅ Production
 
 **Production SHA:** `cf180e068a3554828a8f4cd3681569fe44132cf2` · **PR:** #36  

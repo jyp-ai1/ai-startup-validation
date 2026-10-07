@@ -1,0 +1,277 @@
+[
+  {
+    "id": "juinjip",
+    "si": {
+      "verdictId": "judgment_deferred",
+      "stageId": "S1",
+      "executiveJudgment": "현재 판단: 지금은 판단을 보류한다. 사용자와 결제자가 분리되어 있어 지불 이유가 따로 검증되지 않았다. 실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가. 결제자가 확인되지 않으면 사용자 수요만으로 사업화 판단을 확정할 수 없다.",
+      "whyItCanWin": "문서에서 확인할 수 있는 구체적 문제가 있다.",
+      "whyItCanFail": "사용자와 결제자가 분리되어 있어 지불 이유가 따로 검증되지 않았다. 지목된 고객 세그먼트는 아직 가설이다. 출시·매출 등 상업 실행 증거가 없다.",
+      "criticalUnknown": "실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가. 결제자가 확인되지 않으면 사용자 수요만으로 사업화 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "결제 후보의 지불 의향 인터뷰와 실제 지불 시도(견적·계약·선결제). 이 증거가 있으면 보류를 조건부 가능 이상으로 올리고, 거절이면 보류를 유지하거나 내린다.",
+      "validationPriority": "사용자와 결제자를 분리해, 결제자 한 명의 지불 이유를 확인한다."
+    },
+    "referee": {
+      "verdictId": "judgment_deferred",
+      "executiveJudgment": "출시 전이고 결제자와 세그먼트가 가설이므로 사업화 판단을 보류한다.",
+      "whyItCanWin": "영세 양조장의 온라인 마케팅 공백은 문서에서 확인되는 구체적 문제다.",
+      "whyItCanFail": "관광객(사용자)과 양조장 대표(결제 후보)가 다르고, MZ/FIT 수요와 대표의 지불이 모두 미검증이다. 출시·매출이 없다.",
+      "criticalUnknown": "양조장 대표가 이 연결을 마케팅비로 살 이유가 있는가.",
+      "decisionChangingEvidence": "대표 1명의 지불 의향 인터뷰 또는 견적·선결제. 수락이면 보류를 조건부 가능 이상으로, 거절이면 보류를 유지한다.",
+      "validationPriority": "확인된 양조장 대표 한 명에게 유료 제안하고 지불 이유를 듣는다."
+    },
+    "axes": [
+      {
+        "id": "direction",
+        "score": "PASS",
+        "note": "judgment_deferred/S1 vs judgment_deferred/S0|S1|S2"
+      },
+      {
+        "id": "coreRisk",
+        "score": "PASS",
+        "note": "3/3 core risks named"
+      },
+      {
+        "id": "criticalUnknown",
+        "score": "PASS",
+        "note": "CU names the unknown and why it blocks a decision"
+      },
+      {
+        "id": "decisionEvidence",
+        "score": "PASS",
+        "note": "DCE names artifact and judgment move"
+      },
+      {
+        "id": "validationPriority",
+        "score": "PASS",
+        "note": "Priority is one action on the same axis as CU"
+      },
+      {
+        "id": "grounding",
+        "score": "PASS",
+        "note": "No ungrounded optimism on t0"
+      }
+    ],
+    "overall": "PASS"
+  },
+  {
+    "id": "lmulm",
+    "si": {
+      "verdictId": "viable",
+      "stageId": "S3",
+      "executiveJudgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+      "whyItCanWin": "실제 매출·공급망·고객 구매가 존재한다. 실제 판매·매출 증거가 있다. 분사·공급망·운영 등 실행 자산이 있다. 제품 또는 앱이 이미 출시되어 있다.",
+      "whyItCanFail": "C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+      "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+      "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+      "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다."
+    },
+    "referee": {
+      "verdictId": "viable",
+      "executiveJudgment": "1차 판매·출시·공급이 있어 사업화 가능성은 있다. C2C 반복이 없으면 플랫폼이 아니라 브랜드다.",
+      "whyItCanWin": "실제 판매 매출, 앱 출시, 공급망, 분사 운영이 있다.",
+      "whyItCanFail": "재판매가 반복되지 않으면 1차 한정판 판매 브랜드로 남는다.",
+      "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복되는가.",
+      "decisionChangingEvidence": "최근 구매 코호트의 재판매 등록·체결·재구매 수치. 있으면 양면 시장으로 올리고, 없으면 브랜드로 내린다.",
+      "validationPriority": "최근 구매 코호트에서 재판매 등록·체결·재구매 한 가지를 확인한다."
+    },
+    "axes": [
+      {
+        "id": "direction",
+        "score": "PASS",
+        "note": "viable/S3 vs viable/S3"
+      },
+      {
+        "id": "coreRisk",
+        "score": "PASS",
+        "note": "1/1 core risks named"
+      },
+      {
+        "id": "criticalUnknown",
+        "score": "PASS",
+        "note": "CU names the unknown and why it blocks a decision"
+      },
+      {
+        "id": "decisionEvidence",
+        "score": "PASS",
+        "note": "DCE names artifact and judgment move"
+      },
+      {
+        "id": "validationPriority",
+        "score": "PASS",
+        "note": "Priority is one action on the same axis as CU"
+      },
+      {
+        "id": "grounding",
+        "score": "PASS",
+        "note": "No ungrounded optimism on t0"
+      }
+    ],
+    "overall": "PASS"
+  },
+  {
+    "id": "clinicflow",
+    "si": {
+      "verdictId": "judgment_deferred",
+      "stageId": "S1",
+      "executiveJudgment": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+      "whyItCanWin": "문서에서 확인할 수 있는 구체적 문제가 있다.",
+      "whyItCanFail": "유료 전환·파일럿 성과가 아직 검증되지 않았다. 문서가 수치화한 no-show 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+      "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "유료 파일럿 1건과 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+      "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다."
+    },
+    "referee": {
+      "verdictId": "judgment_deferred",
+      "executiveJudgment": "no-show 문제는 선명하나 출시 전이고 유료 전환이 없다. 사업화 판단을 보류한다.",
+      "whyItCanWin": "no-show 15–25%, 원장/법인 결제 후보, 과별 패턴+EMR 연동이 대안 대비 포인트다.",
+      "whyItCanFail": "원장이 월 구독을 내지 않거나, EMR·개인정보 연동이 막히거나, 파일럿에서 no-show가 줄지 않으면 사업이 아니다.",
+      "criticalUnknown": "한 병원이 유료로 쓰고 no-show가 실제로 주는가.",
+      "decisionChangingEvidence": "유료 파일럿 1곳과 전후 no-show. 성과가 있으면 조건부 가능 이상으로, 없으면 보류를 유지한다.",
+      "validationPriority": "가장 가까운 병원에 유료 제안을 하고 no-show 전후를 잰다."
+    },
+    "axes": [
+      {
+        "id": "direction",
+        "score": "PASS",
+        "note": "judgment_deferred/S1 vs judgment_deferred/S0|S1|S2"
+      },
+      {
+        "id": "coreRisk",
+        "score": "PASS",
+        "note": "2/2 core risks named"
+      },
+      {
+        "id": "criticalUnknown",
+        "score": "PASS",
+        "note": "CU names the unknown and why it blocks a decision"
+      },
+      {
+        "id": "decisionEvidence",
+        "score": "PASS",
+        "note": "DCE names artifact and judgment move"
+      },
+      {
+        "id": "validationPriority",
+        "score": "PASS",
+        "note": "Priority is one action on the same axis as CU"
+      },
+      {
+        "id": "grounding",
+        "score": "PASS",
+        "note": "No ungrounded optimism on t0"
+      }
+    ],
+    "overall": "PASS"
+  },
+  {
+    "id": "fitbridge",
+    "si": {
+      "verdictId": "judgment_deferred",
+      "stageId": "S1",
+      "executiveJudgment": "현재 판단: 지금은 판단을 보류한다. 문서가 수치화한 반품률 수치가 유료 사용 전후로 줄었는지 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+      "whyItCanWin": "문서에서 확인할 수 있는 구체적 문제가 있다.",
+      "whyItCanFail": "문서가 수치화한 반품률 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+      "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+      "decisionChangingEvidence": "유료 파일럿 1건과 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+      "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다."
+    },
+    "referee": {
+      "verdictId": "judgment_deferred",
+      "executiveJudgment": "반품 문제는 크나 출시 전이고 자사 매출이 없다. 연 5–50억은 고객 규모이므로 판단을 보류한다.",
+      "whyItCanWin": "반품률 30–40%라는 금액 감각과 True Fit 대비 한국 체형·브랜드 실측 차별점.",
+      "whyItCanFail": "브랜드가 위젯에 돈을 내지 않거나 실측 데이터가 없거나 반품이 줄지 않으면 사업이 아니다.",
+      "criticalUnknown": "브랜드가 위젯에 돈을 내고 반품률이 실제로 주는가.",
+      "decisionChangingEvidence": "브랜드 1곳 PDP A/B와 유료 파일럿. 반품이 줄고 결제가 있으면 올리고, 없으면 보류를 유지한다.",
+      "validationPriority": "가장 가까운 브랜드에 유료 위젯을 제안하고 반품률을 잰다."
+    },
+    "axes": [
+      {
+        "id": "direction",
+        "score": "PASS",
+        "note": "judgment_deferred/S1 vs judgment_deferred/S0|S1|S2"
+      },
+      {
+        "id": "coreRisk",
+        "score": "PASS",
+        "note": "2/2 core risks named"
+      },
+      {
+        "id": "criticalUnknown",
+        "score": "PASS",
+        "note": "CU names the unknown and why it blocks a decision"
+      },
+      {
+        "id": "decisionEvidence",
+        "score": "PASS",
+        "note": "DCE names artifact and judgment move"
+      },
+      {
+        "id": "validationPriority",
+        "score": "PASS",
+        "note": "Priority is one action on the same axis as CU"
+      },
+      {
+        "id": "grounding",
+        "score": "PASS",
+        "note": "No ungrounded optimism on t0"
+      }
+    ],
+    "overall": "PASS"
+  },
+  {
+    "id": "ridm",
+    "si": {
+      "verdictId": "judgment_deferred",
+      "stageId": "S1",
+      "executiveJudgment": "현재 판단: 지금은 판단을 보류한다. 결제자가 확인되지 않았다. 누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.",
+      "whyItCanWin": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+      "whyItCanFail": "결제자가 확인되지 않았다. 이 제품이 대체하는 직무가 검증되지 않았다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환·파일럿 성과가 아직 검증되지 않았다.",
+      "criticalUnknown": "누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.",
+      "decisionChangingEvidence": "구체적 사용 상황에서 결제자 한 명이 실제로 지불하거나 유료 사용을 시작한 증거. 이 증거가 있으면 보류를 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+      "validationPriority": "결제자와 Job-to-be-done을 한 쌍으로 확인한다."
+    },
+    "referee": {
+      "verdictId": "judgment_deferred",
+      "executiveJudgment": "콘셉트와 사이트만 있다. 직무와 결제자 없이 사업화 판단을 보류한다.",
+      "whyItCanWin": "문서에 상업 사실이 거의 없다. 가능성을 만들 근거가 부족하다.",
+      "whyItCanFail": "챗봇·일기·상담과 차별이 지불로 증명되지 않았다.",
+      "criticalUnknown": "누가 어떤 직무를 이 제품으로 대체하며 왜 돈을 내는가.",
+      "decisionChangingEvidence": "결제자 한 명이 실제로 지불하고 그 직무를 이 제품으로 대체한 증거. 있으면 보류를 올리고, 없으면 유지한다.",
+      "validationPriority": "결제자와 Job-to-be-done을 한 쌍으로 확인한다."
+    },
+    "axes": [
+      {
+        "id": "direction",
+        "score": "PASS",
+        "note": "judgment_deferred/S1 vs judgment_deferred/S0|S1|S2"
+      },
+      {
+        "id": "coreRisk",
+        "score": "PASS",
+        "note": "1/1 core risks named"
+      },
+      {
+        "id": "criticalUnknown",
+        "score": "PASS",
+        "note": "CU names the unknown and why it blocks a decision"
+      },
+      {
+        "id": "decisionEvidence",
+        "score": "PASS",
+        "note": "DCE names artifact and judgment move"
+      },
+      {
+        "id": "validationPriority",
+        "score": "PASS",
+        "note": "Priority is one action on the same axis as CU"
+      },
+      {
+        "id": "grounding",
+        "score": "PASS",
+        "note": "No ungrounded optimism on t0"
+      }
+    ],
+    "overall": "PASS"
+  }
+]
