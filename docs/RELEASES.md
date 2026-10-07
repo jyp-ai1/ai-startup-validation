@@ -6,6 +6,17 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### S.I. Negative Evidence Re-Judgment (2026-10-07) ✅ Production
+
+**Production SHA:** `6c52fff9c8325aff9ce6faa6f1f91ef26795a3f4` · **PR:** #118 · **CPO 2-Pass:** PASS  
+**Prod:** https://ai-startup-validation-tau.vercel.app · **SHA triangle:** MATCH
+
+- Measured repeat-zero is a `repeat_zero` FACT, not ASSUMPTION or CONFLICT
+- Same-axis reconciliation blocks `hasRevenue → viable` while C2C CU stays OPEN
+- Positive 35/12 still reaches S4; partial resale-zero does not
+
+Evidence: [`docs/evidence/ALABOM/SI/SI-V1-NEG-REJUDGMENT-PRODUCTION.md`](./evidence/ALABOM/SI/SI-V1-NEG-REJUDGMENT-PRODUCTION.md)
+
 ### S.I. DCE Reconciliation (2026-10-06) ✅ Production
 
 **Production SHA:** `127162b2c0a1db715dc12fbeaa51a14c9e0c830f` · **PR:** #107 · **Promotion:** #108 PASS  

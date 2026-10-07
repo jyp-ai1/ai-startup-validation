@@ -6,8 +6,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## [P0] Negative Evidence → Re-Judgment Integrity
 
-**CPO Gate:** FIX GATE OPEN · Production `0638f77` 불변 · Preview only  
-**Branch:** `cursor/si-neg-rejudgment-e648`  
+**CPO Gate:** 2-Pass PASS · Production `6c52fff` · SHA triangle MATCH  
+**PR:** #118 · **Fix:** `0b3429f`  
 **Scope:** Evidence → reconciliation → promotion 경계만. CONFLICT-only 금지.
 
 | # | Item | Status |
@@ -15,8 +15,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 1 | RCA | 측정 0건이 ASSUMPTION으로 빠지고 `hasRevenue → viable`이 C2C CU를 우회 |
 | 2 | `repeat_zero` FACT + same-axis promotion block | ✅ |
 | 3 | Positive / Negative / Partial | ✅ |
-| 4 | #104 / #107 / P0-1 / P0-2 / S.I. regression | ✅ 178 |
-| 5 | Production | 금지 · CPO 2-pass 증거 제출 (`SI-V1-NEG-REJUDGMENT-2PASS.md`) |
+| 4 | #104 / #107 / P0-1 / P0-2 / S.I. regression | ✅ 179 |
+| 5 | Production | ✅ `6c52fff` · SHA triangle MATCH · CPO 2-pass PASS |
 
 ---
 
