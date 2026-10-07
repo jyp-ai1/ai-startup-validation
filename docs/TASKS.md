@@ -6,9 +6,10 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## P0 PDF Ingestion Hotfix
 
-**Branch:** `cursor/p0-pdf-ingestion-e648` · Production `1690cbf` 불변  
+**Branch:** `cursor/p0-pdf-ingestion-e648` @ `768866a` · Production `1690cbf` 불변  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-P0-PDF-INGESTION.md`  
-**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/115
+**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/115  
+**Preview:** https://ai-startup-validation-git-cursor-p0-pd-f2be48-jyp-ai1s-projects.vercel.app
 
 | # | Item | Status |
 |---|------|--------|

@@ -1,8 +1,10 @@
 # P0 PDF Ingestion Hotfix
 
-**Branch:** `cursor/p0-pdf-ingestion-e648`  
+**Branch:** `cursor/p0-pdf-ingestion-e648` @ `768866a`  
 **Production baseline:** `1690cbf` **UNCHANGED**  
-**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/115
+**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/115  
+**Preview (CPO):** https://ai-startup-validation-git-cursor-p0-pd-f2be48-jyp-ai1s-projects.vercel.app  
+Vercel SSO 로그인 후 RIDM PDF 업로드 → 추출 → S.I. 초기 판단. Production merge 전 확인용.
 
 CEO Founder Test는 PDF 업로드가 막혀 중단. Analyzer / Accuracy / Auth는 변경하지 않았다.
 
