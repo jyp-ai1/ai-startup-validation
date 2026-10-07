@@ -16,7 +16,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 2 | `repeat_zero` FACT + same-axis promotion block | ✅ |
 | 3 | Positive / Negative / Partial | ✅ |
 | 4 | #104 / #107 / P0-1 / P0-2 / S.I. regression | ✅ 178 |
-| 5 | Production | 금지 · CPO 2-pass 후 별도 게이트 |
+| 5 | Production | 금지 · CPO 2-pass 증거 제출 (`SI-V1-NEG-REJUDGMENT-2PASS.md`) |
 
 ---
 
