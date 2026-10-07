@@ -1,4 +1,7 @@
+import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import mammoth from 'mammoth';
 
@@ -16,12 +19,34 @@ export type DocumentKind = 'txt' | 'md' | 'pdf' | 'docx' | 'unsupported';
 
 const MIN_EXTRACTED_CHARS = 8;
 
-type PdfParseModule = {
-  PDFParse: new (options: { data: Buffer | Uint8Array }) => {
-    getText: () => Promise<{ text?: string }>;
-    destroy: () => Promise<void>;
-  };
+type PdfParseCtor = (new (options: { data: Buffer | Uint8Array }) => {
+  getText: () => Promise<{ text?: string }>;
+  destroy: () => Promise<void>;
+}) & {
+  setWorker: (workerSrc?: string) => string;
 };
+
+type PdfParseModule = {
+  PDFParse: PdfParseCtor;
+};
+
+export function resolvePdfWorkerPath(requireFn: NodeRequire = createRequire(import.meta.url)): string | undefined {
+  const candidates = [
+    () => requireFn.resolve('pdf-parse/dist/pdf-parse/cjs/pdf.worker.mjs'),
+    () => join(dirname(requireFn.resolve('pdf-parse')), 'pdf.worker.mjs'),
+  ];
+
+  for (const resolveCandidate of candidates) {
+    try {
+      const filePath = resolveCandidate();
+      if (existsSync(filePath)) return filePath;
+    } catch {
+      // try the next candidate
+    }
+  }
+
+  return undefined;
+}
 
 function extensionOf(fileName: string): string {
   return fileName.split('.').pop()?.toLowerCase() ?? '';
@@ -129,6 +154,10 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
   ensurePdfNodeGlobals();
   const require = createRequire(import.meta.url);
   const { PDFParse } = require('pdf-parse') as PdfParseModule;
+  const workerPath = resolvePdfWorkerPath(require);
+  if (workerPath) {
+    PDFParse.setWorker(pathToFileURL(workerPath).href);
+  }
   const parser = new PDFParse({ data: buffer });
   try {
     const parsed = await parser.getText();

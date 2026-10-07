@@ -26,6 +26,12 @@ const nextConfig: NextConfig = {
     ];
   },
   outputFileTracingRoot: path.join(__dirname, '../../'),
+  outputFileTracingIncludes: {
+    '/api/intake/extract-document': [
+      './node_modules/pdf-parse/dist/pdf-parse/cjs/**',
+      '../../node_modules/.pnpm/pdf-parse@*/node_modules/pdf-parse/dist/pdf-parse/cjs/**',
+    ],
+  },
   transpilePackages: [
     '@repo/ui',
     '@repo/core',

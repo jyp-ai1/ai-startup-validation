@@ -4,19 +4,19 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## P0 PDF Ingestion Hotfix
+## P0 PDF Ingestion — Production E2E HOLD
 
-**Branch:** `cursor/p0-pdf-ingestion-e648` @ `768866a` · Production `1690cbf` 불변  
-**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-P0-PDF-INGESTION.md`  
-**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/115  
-**Preview:** https://ai-startup-validation-git-cursor-p0-pd-f2be48-jyp-ai1s-projects.vercel.app
+**Promoted:** `0638f77` = Git = Production `build-info` (PR #115 → `main`)  
+**Production E2E:** **FAIL 0/3** — `pdf.worker.mjs` missing in Vercel `/var/task`  
+**Follow-up branch:** `cursor/p0-pdf-worker-e648`  
+**CEO Founder Test:** 열지 않음
 
 | # | Item | Status |
 |---|------|--------|
-| 1 | RCA | Parser · `DOMMatrix is not defined` |
-| 2 | 3 PDF extract → S.I. loop | ✅ |
-| 3 | #104 / #107 / P0-1 / P0-2 | ✅ |
-| 4 | Production | 불변 `1690cbf` · Preview로 CPO 확인 |
+| 1 | SHA Triangle | MATCH `0638f77` |
+| 2 | Production PDF 3 E2E | FAIL · fake worker / pdf.worker.mjs |
+| 3 | Worker packaging fix | 진행중 · intake only |
+| 4 | CEO Founder Test | HOLD |
 
 ---
 

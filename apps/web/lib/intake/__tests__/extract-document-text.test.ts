@@ -3,7 +3,11 @@ import { resolve } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { detectDocumentKind, extractDocumentText } from '@/lib/intake/extract-document-text';
+import {
+  detectDocumentKind,
+  extractDocumentText,
+  resolvePdfWorkerPath,
+} from '@/lib/intake/extract-document-text';
 import { resolveSiJourneyIntegration } from '@/features/strategic-intelligence/lib/resolve-si-journey-integration';
 
 const SAMPLE_DIR = resolve(process.cwd(), '../../docs/evidence/ALABOM/SI/samples');
@@ -99,6 +103,14 @@ describe('readSmartIntakeFile', () => {
     expect(result.text).toBe(content);
     expect(result.source).toBe('txt');
     expect(result.text).not.toContain('추출되지 않았습니다');
+  });
+});
+
+describe('PDF worker packaging', () => {
+  it('resolves pdf-parse CJS worker so serverless fake-worker can load', () => {
+    const workerPath = resolvePdfWorkerPath();
+    expect(workerPath).toBeTruthy();
+    expect(workerPath).toMatch(/pdf\.worker\.mjs$/);
   });
 });
 
