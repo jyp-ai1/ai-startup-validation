@@ -86,7 +86,11 @@ export function verdictMatchesProse(snap: DecisionSnap): boolean {
   return snap.judgment.includes(label) && snap.verdictLabel === label;
 }
 
-export function inducesOppositeDecision(scenario: DecisionScenario, snap: DecisionSnap): boolean {
+export function inducesOppositeDecision(
+  scenario: DecisionScenario,
+  snap: DecisionSnap,
+  previous?: DecisionSnap,
+): boolean {
   const four = founderFour({
     verdictId: snap.verdictId,
     stageId: snap.stageId,
@@ -102,16 +106,23 @@ export function inducesOppositeDecision(scenario: DecisionScenario, snap: Decisi
   if (scenario === 'HOLD' && /가능성이 높음/.test(snap.judgment) && snap.stageId !== 'S3' && snap.stageId !== 'S4') {
     return true;
   }
-  if (scenario === 'STOP' && snap.verdictId === 'viable' && !/CONFLICT/.test(snap.evidenceClasses.join(' '))) {
+  if (scenario === 'GO' && previous && !rose(snapAsPostNeg(previous), snapAsPostNeg(snap)) && snap.stageId === 'S0') {
     return true;
   }
-  if (scenario === 'GO' && (snap.verdictId === 'insufficient_basis' || snap.stageId === 'S0')) {
-    return true;
+  if (scenario === 'STOP' && previous) {
+    const wentDown = declined(snapAsPostNeg(previous), snapAsPostNeg(snap));
+    const cuMoved = snap.criticalUnknown !== previous.criticalUnknown;
+    if (!wentDown && !cuMoved) return true;
   }
   return false;
 }
 
-export function scoreJudgmentClarity(scenario: DecisionScenario, snap: DecisionSnap, read: FounderRead): BatchScore {
+export function scoreJudgmentClarity(
+  scenario: DecisionScenario,
+  snap: DecisionSnap,
+  read: FounderRead,
+  previous?: DecisionSnap,
+): BatchScore {
   if (!verdictMatchesProse(snap)) return 'FAIL';
   if (leaksInternalIds(read.understoodJudgment)) return 'FAIL';
   if (VAGUE.test(read.understoodJudgment) && read.understoodJudgment.length < 24) return 'FAIL';
@@ -122,7 +133,12 @@ export function scoreJudgmentClarity(scenario: DecisionScenario, snap: DecisionS
   if (scenario === 'GO' && snap.verdictId === 'judgment_deferred' && snap.stageId !== 'S3' && snap.stageId !== 'S4') {
     return 'PARTIAL';
   }
-  if (scenario === 'STOP' && /가능성이 높음/.test(read.understoodJudgment)) return 'FAIL';
+  if (scenario === 'STOP' && /가능성이 높음/.test(read.understoodJudgment)) {
+    const stageOrCuMoved =
+      Boolean(previous) &&
+      (previous!.stageId !== snap.stageId || previous!.criticalUnknown !== snap.criticalUnknown);
+    return stageOrCuMoved ? 'PARTIAL' : 'FAIL';
+  }
   return 'PASS';
 }
 

@@ -4,6 +4,26 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Founder Decision Value Gate — MEASUREMENT COMPLETE
+
+**Branch:** `cursor/si-founder-decision-value-e648` · Production `1690cbf` 불변 · Fix 없음 · 재배포 없음  
+**Prior:** Founder Strategy Validation PASS CLOSED  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-DECISION-VALUE.md`  
+**Dump:** `docs/evidence/ALABOM/SI/si-v1-founder-decision-value.json`  
+**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/113 (draft)
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 5 calibration + 3 unnamed × HOLD/GO/STOP | ✅ |
+| 2 | Judgment / Risk / Validation / Actionability | ✅ FAIL 0 · Judgment PARTIAL 1 (LMULM STOP headline) |
+| 3 | Opposite decision / ID leak | ✅ 0 |
+| 4 | #104 / #107 / P0-1 / P0-2 | ✅ |
+| 5 | Engine vs `1690cbf` | 0-diff |
+| 6 | Production | 불변 `1690cbf` |
+| 7 | Gate | CONDITIONAL PASS · CPO 제품 전략 판단 |
+
+---
+
 ## CPO Checkpoint — 2026-10-07
 
 **CEO 복귀 점검.** Accuracy PASS CLOSED · Production HOLD `dea7cb1` · merge/deploy 없음  

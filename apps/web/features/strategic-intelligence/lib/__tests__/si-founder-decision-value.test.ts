@@ -178,12 +178,12 @@ function playbook(id: DecisionId, kind: string, cu: string) {
   };
 }
 
-function scoreScenario(scenario: DecisionScenario, snap: DecisionSnap) {
+function scoreScenario(scenario: DecisionScenario, snap: DecisionSnap, previous?: DecisionSnap) {
   const read = readAsFounder(snap);
-  const opposite = inducesOppositeDecision(scenario, snap);
+  const opposite = inducesOppositeDecision(scenario, snap, previous);
   const leak = leaksInternalIds(founderVisible(snap));
   const axes = {
-    judgment_clarity: opposite ? 'FAIL' : scoreJudgmentClarity(scenario, snap, read),
+    judgment_clarity: opposite ? 'FAIL' : scoreJudgmentClarity(scenario, snap, read, previous),
     risk_clarity: scoreRiskClarity(snap, read),
     validation_clarity: scoreValidationClarity(snap, read),
     actionability: scoreActionability(scenario, snap, read),
@@ -230,8 +230,8 @@ export function scoreCase(id: DecisionId) {
   const stop = last(runTurns(input.title, input.documentText, [book.upgrade, book.negative]));
 
   const hold = scoreScenario('HOLD', t0);
-  const goScored = scoreScenario('GO', go);
-  const stopScored = scoreScenario('STOP', stop);
+  const goScored = scoreScenario('GO', go, t0);
+  const stopScored = scoreScenario('STOP', stop, go);
 
   const axisRollup = Object.fromEntries(
     AXIS_IDS.map((axis) => [
