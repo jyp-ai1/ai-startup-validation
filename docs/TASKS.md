@@ -4,17 +4,18 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## S.I. Founder Test — `0638f77`
+## S.I. Founder Test GO — `0638f77`
 
-**Production / Git:** `0638f77` · 엔진 수정 없음  
-**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-TEST-0638f77.md`  
-**Dump:** `docs/evidence/ALABOM/SI/si-v1-founder-test-0638f77.json`
+**CPO Gate:** GO · Production `0638f77` 불변 · PDF 422는 Input 분리  
+**Sources:** `docs/evidence/ALABOM/SI/founder-test-sources/`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-TEST-GO-0638f77.md`
 
 | # | Item | Status |
 |---|------|--------|
-| 1 | RIDM / LMULM / 주인집 PDF → S.I. 루프 | 기록 완료 |
-| 2 | Fix PR | 없음 |
-| 3 | CPO Founder Decision Value | 판정 대기 |
+| 1 | 원문 Source 3개 | 확보 |
+| 2 | t0 + 상향/유지/하향 재판단 | 기록 완료 |
+| 3 | Fix / merge / deploy | 없음 |
+| 4 | CPO Decision Value | 3사업 일괄 판정 대기 |
 
 ---
 

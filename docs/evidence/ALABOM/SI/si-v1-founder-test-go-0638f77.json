@@ -1,0 +1,261 @@
+{
+  "head": "0638f77",
+  "measuredAt": "2026-10-07T23:00:17.812Z",
+  "rows": [
+    {
+      "id": "ridm",
+      "title": "RIDM AI",
+      "sourceFile": "docs/evidence/ALABOM/SI/founder-test-sources/ridm-source.txt",
+      "input": {
+        "fileName": "투자자 사업계획서_ridm_260317.pdf",
+        "bytes": 601350,
+        "extractedChars": 9335
+      },
+      "t0": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "whyPossible": "분사·공급망·운영 등 실행 자산이 있다. 제품 또는 앱이 이미 출시되어 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+        "whyFail": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+        "strengths": [
+          "분사·공급망·운영 등 실행 자산이 있다.",
+          "제품 또는 앱이 이미 출시되어 있다.",
+          "문서에서 확인할 수 있는 구체적 문제가 있다."
+        ],
+        "risks": [
+          "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+        ],
+        "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+        "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+        "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+        "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과.",
+        "evidenceSought": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+        "kind": "paid_conversion"
+      },
+      "turns": {
+        "validated": {
+          "answer": "결제 후보 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "whyFail": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "nextQuestion": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+          "nextKind": "repeat_loop",
+          "evidenceClass": "VALIDATED",
+          "evidenceText": "결제 후보 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+          "judgmentChanged": true,
+          "evidenceStrengthDelta": "up",
+          "criticalUnknownChanged": true
+        },
+        "intent": {
+          "answer": "유료 제안을 생각하고 있지만 아직 아무도 결제하지 않았다.",
+          "verdictId": "conditionally_viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+          "whyFail": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+          "nextQuestion": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "nextKind": "paid_conversion",
+          "evidenceClass": "CLAIM",
+          "evidenceText": "유료 제안을 생각하고 있지만 아직 아무도 결제하지 않았다.",
+          "judgmentChanged": false,
+          "evidenceStrengthDelta": "unchanged",
+          "criticalUnknownChanged": false
+        },
+        "extraNegative": {
+          "answer": "아직 유료 고객은 없고, 결제 제안도 하지 않았다.",
+          "verdictId": "conditionally_viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가. 결제자가 확인되지 않으면 사용자 수요만으로 사업화 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+          "whyFail": "결제자가 확인되지 않았다.",
+          "criticalUnknown": "실제 돈을 내는 사람이 누구이며, 그 사람이 이 문제를 비용으로 해결할 이유가 있는가. 결제자가 확인되지 않으면 사용자 수요만으로 사업화 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "결제 후보의 지불 의향 인터뷰와 실제 지불 시도(견적·계약·선결제). 이 증거가 있으면 보류를 조건부 가능 이상으로 올리고, 거절이면 보류를 유지하거나 내린다.",
+          "validationPriority": "사용자와 결제자를 분리해, 결제자 한 명의 지불 이유를 확인한다.",
+          "nextQuestion": "쓰는 사람과 돈을 내는 사람이 같습니까? 결제자 한 명이 이 문제를 비용으로 해결할 이유가 있다면 그 이유를 알려주세요. 아직 확인 전이면 모른다고 답해도 됩니다.",
+          "nextKind": "payer_split",
+          "evidenceClass": "ASSUMPTION",
+          "evidenceText": "아직 유료 고객은 없고, 결제 제안도 하지 않았다.",
+          "judgmentChanged": true,
+          "evidenceStrengthDelta": "unchanged",
+          "criticalUnknownChanged": true
+        }
+      }
+    },
+    {
+      "id": "lmulm",
+      "title": "LMULM",
+      "sourceFile": "docs/evidence/ALABOM/SI/founder-test-sources/lmulm-source.txt",
+      "input": {
+        "fileName": "lmulm-2024-초기창업패키지-사업계획서.pdf",
+        "bytes": 1839621,
+        "extractedChars": 12937
+      },
+      "t0": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "whyPossible": "분사·공급망·운영 등 실행 자산이 있다. 제품 또는 앱이 이미 출시되어 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+        "whyFail": "C2C 재판매가 반복적으로 발생하는지 확인되지 않았다. 지목된 고객 세그먼트는 아직 가설이다.",
+        "strengths": [
+          "분사·공급망·운영 등 실행 자산이 있다.",
+          "제품 또는 앱이 이미 출시되어 있다.",
+          "문서에서 확인할 수 있는 구체적 문제가 있다."
+        ],
+        "risks": [
+          "C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+          "지목된 고객 세그먼트는 아직 가설이다."
+        ],
+        "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+        "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+        "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+        "question": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최근 구매자의 실제 재판매 등록·거래·재구매 데이터.",
+        "evidenceSought": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+        "kind": "repeat_loop"
+      },
+      "turns": {
+        "validated": {
+          "answer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+          "verdictId": "conditionally_viable",
+          "stageId": "S4",
+          "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 문서가 지목한 고객 세그먼트가 실제로 이 문제를 갖고 돈을 낼 의사가 있는가. 세그먼트가 가설이면 시장 크기를 말할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+          "whyFail": "지목된 고객 세그먼트는 아직 가설이다.",
+          "criticalUnknown": "문서가 지목한 고객 세그먼트가 실제로 이 문제를 갖고 돈을 낼 의사가 있는가. 세그먼트가 가설이면 시장 크기를 말할 수 없다.",
+          "decisionChangingEvidence": "해당 세그먼트의 실사용 또는 지불 증거(예약·결제·반복 방문). 이 증거가 있으면 고객 축을 지지로 올리고, 없으면 세그먼트 주장을 내린다.",
+          "validationPriority": "주장된 세그먼트에서 실사용·지불 증거 한 건을 확인한다.",
+          "nextQuestion": "지목한 고객 그룹에서 실제로 쓰거나 돈을 낸 사례가 있습니까? 있다면 한 건만 구체적으로 알려주세요. 아직이면 가정이라고 답해도 됩니다.",
+          "nextKind": "segment_proof",
+          "evidenceClass": "VALIDATED",
+          "evidenceText": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+          "judgmentChanged": true,
+          "evidenceStrengthDelta": "up",
+          "criticalUnknownChanged": true
+        },
+        "intent": {
+          "answer": "재판매를 생각하고 있지만 아직 아무도 등록하지 않았다.",
+          "verdictId": "conditionally_viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다가 확인되기 전에는 판단을 확정하지 않는다.",
+          "whyFail": "C2C 재판매가 반복적으로 발생하는지 확인되지 않았다. 지목된 고객 세그먼트는 아직 가설이다.",
+          "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+          "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+          "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+          "nextQuestion": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+          "nextKind": "repeat_loop",
+          "evidenceClass": "CLAIM",
+          "evidenceText": "재판매를 생각하고 있지만 아직 아무도 등록하지 않았다.",
+          "judgmentChanged": false,
+          "evidenceStrengthDelta": "unchanged",
+          "criticalUnknownChanged": false
+        },
+        "extraNegative": {
+          "answer": "1차 판매는 있었지만 재판매 등록 0건, 재구매 0건이다.",
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+          "whyFail": "C2C 재판매가 반복적으로 발생하는지 확인되지 않았다. 지목된 고객 세그먼트는 아직 가설이다.",
+          "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+          "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+          "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+          "nextQuestion": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+          "nextKind": "repeat_loop",
+          "evidenceClass": "FACT",
+          "evidenceText": "1차 판매는 있었지만 재판매 등록 0건, 재구매 0건이다.",
+          "judgmentChanged": true,
+          "evidenceStrengthDelta": "up",
+          "criticalUnknownChanged": false
+        }
+      }
+    },
+    {
+      "id": "juinjip",
+      "title": "주인집",
+      "sourceFile": "docs/evidence/ALABOM/SI/founder-test-sources/juinjip-source.txt",
+      "input": {
+        "fileName": "juinjip-예비관광벤처-사업실행계획서-260519.pdf",
+        "bytes": 176925,
+        "extractedChars": 4787
+      },
+      "t0": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "whyPossible": "제품 또는 앱이 이미 출시되어 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+        "whyFail": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+        "strengths": [
+          "제품 또는 앱이 이미 출시되어 있다.",
+          "문서에서 확인할 수 있는 구체적 문제가 있다."
+        ],
+        "risks": [
+          "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+        ],
+        "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+        "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+        "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+        "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과.",
+        "evidenceSought": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+        "kind": "paid_conversion"
+      },
+      "turns": {
+        "validated": {
+          "answer": "결제 후보 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "whyFail": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "nextQuestion": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+          "nextKind": "repeat_loop",
+          "evidenceClass": "VALIDATED",
+          "evidenceText": "결제 후보 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+          "judgmentChanged": true,
+          "evidenceStrengthDelta": "up",
+          "criticalUnknownChanged": true
+        },
+        "intent": {
+          "answer": "유료 제안을 생각하고 있지만 아직 아무도 결제하지 않았다.",
+          "verdictId": "conditionally_viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+          "whyFail": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+          "nextQuestion": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "nextKind": "paid_conversion",
+          "evidenceClass": "CLAIM",
+          "evidenceText": "유료 제안을 생각하고 있지만 아직 아무도 결제하지 않았다.",
+          "judgmentChanged": false,
+          "evidenceStrengthDelta": "unchanged",
+          "criticalUnknownChanged": false
+        },
+        "extraNegative": {
+          "answer": "양조장 대표에게 제안했지만 아직 한 건도 결제되지 않았다.",
+          "verdictId": "conditionally_viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+          "whyFail": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+          "nextQuestion": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "nextKind": "paid_conversion",
+          "evidenceClass": "ASSUMPTION",
+          "evidenceText": "양조장 대표에게 제안했지만 아직 한 건도 결제되지 않았다.",
+          "judgmentChanged": false,
+          "evidenceStrengthDelta": "unchanged",
+          "criticalUnknownChanged": false
+        }
+      }
+    }
+  ]
+}
