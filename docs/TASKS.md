@@ -15,7 +15,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 1 | 원문 Source 3개 | 확보 |
 | 2 | t0 + 상향/유지/하향 재판단 | 기록 완료 |
 | 3 | Fix / merge / deploy | 없음 |
-| 4 | CPO Decision Value | 3사업 일괄 판정 대기 |
+| 4 | Batch 1 Evidence | 3사업 확정 · LMULM 0건 상향 실측 |
+| 5 | CPO 일괄 판정 | HOLD 유지 · Fix Gate 여부 대기 |
 
 ---
 

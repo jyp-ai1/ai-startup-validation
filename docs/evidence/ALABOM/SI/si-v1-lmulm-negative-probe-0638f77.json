@@ -1,0 +1,30 @@
+{
+  "head": "0638f77",
+  "answer": "1차 판매는 있었지만 재판매 등록 0건, 재구매 0건이다.",
+  "classified": {
+    "evidenceClass": "FACT",
+    "axisId": "validationStrength"
+  },
+  "t0": {
+    "verdictId": "conditionally_viable",
+    "stageId": "S3"
+  },
+  "t1": {
+    "verdictId": "viable",
+    "stageId": "S3",
+    "headline": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다.",
+    "criticalUnknownUnchanged": true,
+    "evidenceStrengthDelta": "up",
+    "conflictInMap": [],
+    "analyzerSplit": [
+      { "class": "CLAIM", "axis": "businessModel" },
+      { "class": "FACT", "axis": "businessModel" },
+      { "class": "ASSUMPTION", "axis": "validationStrength" },
+      {
+        "class": "INFERENCE",
+        "axis": "validationStrength",
+        "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다."
+      }
+    ]
+  }
+}
