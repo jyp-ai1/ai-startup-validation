@@ -3,9 +3,10 @@
 import { useEffect, type ReactNode } from 'react';
 
 import type { SiEvidenceClass, SiStrategicJudgment } from '@repo/types/domain/strategic-intelligence';
-import { SI_STAGE_LABELS, SI_VERDICT_LABELS } from '@repo/types/domain/strategic-intelligence';
+import { SI_STAGE_LABELS } from '@repo/types/domain/strategic-intelligence';
 import { cn } from '@repo/ui/lib/utils';
 
+import { presentSiFounderJudgment } from '@/features/strategic-intelligence/lib/present-si-founder-judgment';
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 
 type SiReviewSurfaceProps = {
@@ -41,6 +42,8 @@ function Section({
 }
 
 export function SiReviewSurface({ judgment, projectId, className }: SiReviewSurfaceProps) {
+  const presented = presentSiFounderJudgment(judgment);
+
   useEffect(() => {
     void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.siJudgmentViewed, {
       project_id: projectId,
@@ -66,10 +69,10 @@ export function SiReviewSurface({ judgment, projectId, className }: SiReviewSurf
 
       <Section testId="si-current-judgment" label="현재 사업성 판단">
         <p data-testid="si-verdict-label" className="text-[17px] font-semibold leading-snug">
-          현재 판단: {SI_VERDICT_LABELS[judgment.verdictId]}
+          현재 판단: {presented.headline}
         </p>
         <p data-testid="si-judgment-prose" className="text-sm leading-relaxed">
-          {judgment.judgment}
+          {presented.prose}
         </p>
       </Section>
 
