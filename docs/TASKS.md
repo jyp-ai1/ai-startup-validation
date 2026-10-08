@@ -4,6 +4,24 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Conversation Quality Evidence Batch
+
+**CPO Gate:** OPEN · `#128` 코드 Freeze `71df6f9` · 코드 미변경  
+**Branch:** `cursor/si-conversation-evidence-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-CONVERSATION-EVIDENCE.md`  
+**#127:** Freeze `3015c9a`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 2/2 → next-period CU 실제 표면 | ✅ |
+| 2 | 유지 → CU 퇴직 + 질문 변경 | ✅ |
+| 3 | 악화 → 성공 퇴직 금지 | ✅ |
+| 4 | 예정 → CLAIM | ✅ |
+| 5 | 다른 metric 일반화 | ✅ |
+| 6 | `#128` 코드 변경 | 없음 |
+
+---
+
 ## Accuracy Batch — Conversation Quality
 
 **CPO Gate:** OPEN · Draft · Production `5226fa1` 불변 · Merge 금지  

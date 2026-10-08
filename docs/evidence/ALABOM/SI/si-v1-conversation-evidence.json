@@ -1,0 +1,127 @@
+{
+  "codeSha": "71df6f90057e2b8123bfb79e331c9b46d978491b",
+  "measuredOn": "71df6f90057e2b8123bfb79e331c9b46d978491b",
+  "rows": [
+    {
+      "id": "after_2_2",
+      "metric": "누락",
+      "founderInput": "결제 후보 3명이 월 구독을 결제했고 누락이 14%에서 6%로 줄었다.",
+      "expected": "S3 · CU=다음 고객/기간 · 질문이 그 CU를 붙잡음",
+      "actual": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+        "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "questionText": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "evidenceClass": "VALIDATED",
+        "evidenceStrengthDelta": "up",
+        "criticalUnknownChanged": true
+      },
+      "referee": {
+        "id": "after_2_2",
+        "score": "PASS",
+        "note": "2/2 opens next-period CU and the ask stays on that unknown"
+      }
+    },
+    {
+      "id": "held_retires_cu",
+      "metric": "누락",
+      "founderInput": "다음 기간에도 누락이 6%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+      "expected": "기존 next-period CU 퇴직 · 반복 가능 CU · 질문 변경 · VALIDATED 아님 · S3 유지",
+      "actual": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+        "evidenceClass": "FACT",
+        "evidenceStrengthDelta": "up",
+        "criticalUnknownChanged": true
+      },
+      "previousQuestion": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+      "referee": {
+        "id": "held_retires_cu",
+        "score": "PASS",
+        "note": "held outcome retires next-period CU and changes the ask"
+      }
+    },
+    {
+      "id": "worse_does_not_retire",
+      "metric": "누락",
+      "founderInput": "다음 기간에 누락이 6%에서 18%로 늘었다.",
+      "expected": "악화를 유지 성공으로 퇴직시키지 않음",
+      "actual": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S1",
+        "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 누락 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+        "criticalUnknown": "유료 전환 이후 문서가 수치화한 누락 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+        "decisionChangingEvidence": "이미 결제한 후보의 누락 전후 비교. SAP 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+        "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 누락의 전후를 한 번 잰다.",
+        "questionText": "누락 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 누락 전후 비교.",
+        "evidenceClass": "CONFLICT",
+        "evidenceStrengthDelta": "down",
+        "criticalUnknownChanged": true
+      },
+      "referee": {
+        "id": "worse_does_not_retire",
+        "score": "PASS",
+        "note": "worsened next period is not treated as a successful CU retirement"
+      }
+    },
+    {
+      "id": "plan_stays_claim",
+      "metric": "누락",
+      "founderInput": "다음 기간 성과를 측정할 예정이다.",
+      "expected": "CLAIM · 승격 없음 · next-period CU 유지",
+      "actual": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+        "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "questionText": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "evidenceClass": "CLAIM",
+        "evidenceStrengthDelta": "unchanged",
+        "criticalUnknownChanged": false
+      },
+      "referee": {
+        "id": "plan_stays_claim",
+        "score": "PASS",
+        "note": "planned next-period stay CLAIM and keep the next-period CU"
+      }
+    },
+    {
+      "id": "generalized_metric",
+      "metric": "부하",
+      "founderInput": "다음 기간에도 부하가 19%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+      "expected": "다른 metric에서도 held → CU 퇴직 · S3 유지",
+      "actual": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+        "evidenceClass": "FACT",
+        "evidenceStrengthDelta": "up",
+        "criticalUnknownChanged": true
+      },
+      "referee": {
+        "id": "generalized_metric",
+        "score": "PASS",
+        "note": "same held-outcome rule applies on a different metric"
+      }
+    }
+  ]
+}
