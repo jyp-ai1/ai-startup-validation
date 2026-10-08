@@ -6,10 +6,10 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## spoken_generic_after_promotion Presentation Fix
 
-**CPO Gate:** 2-pass PASS · Merge GO · Production Acceptance 제출  
-**PR:** #134 · Freeze `32f2483` · main `0b46522`  
-**Production:** `0b46522` SHA Triangle MATCH  
-**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-SPOKEN-GENERIC-FIX-PRODUCTION.md`
+**CPO Gate:** 2-pass PASS · Merge GO · Production SHA Triangle MATCH 제출  
+**PR:** #134 · Freeze `32f2483` · main/Production `0b46522`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-SPOKEN-GENERIC-FIX-PRODUCTION.md`  
+**Live:** 2026-10-08T09:02Z · Git = Build = Production `0b46522`
 
 | # | Item | Status |
 |---|------|--------|
