@@ -4,6 +4,22 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Question Alignment Fix Gate — P1-A
+
+**CPO Gate:** Draft PR · CPO 2-pass 전 Merge/Production 금지 · Production `acbbf24` 불변  
+**Branch:** `cursor/si-question-alignment-p1a-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-P1A.md`  
+**Scope:** `present-si-ai-pm-question.ts` binding only. Analyzer / SoT / Auth / P1-B 금지.
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | `repeat_loop` CU/DCE → 원문 축 → generic | ✅ |
+| 2 | RIDM paid → 구독 유지 · 주인집 paid → 관광 수요 · LMULM C2C 유지 | ✅ |
+| 3 | SI 170 + P0-1/P0-2 23 | ✅ |
+| 4 | Production | 불변 `acbbf24` · 2-pass 대기 |
+
+---
+
 ## [P0] Negative Evidence → Re-Judgment Integrity
 
 **CPO Gate:** 2-Pass PASS · Production `6c52fff` · SHA triangle MATCH  

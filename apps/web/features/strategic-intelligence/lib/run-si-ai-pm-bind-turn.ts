@@ -26,7 +26,8 @@ export function resolveSiAiPmBindView(input: {
     title: input.title,
     documentText: input.documentText,
   });
-  const asked = presentSiAiPmQuestion(decideSiValidationAsk(previous));
+  const binding = { documentText: input.documentText };
+  const asked = presentSiAiPmQuestion(decideSiValidationAsk(previous), binding);
   const answer = input.founderAnswer?.trim() ?? '';
   if (!answer) {
     return { judgment: previous, question: asked, update: null };
@@ -40,7 +41,7 @@ export function resolveSiAiPmBindView(input: {
   });
   return {
     judgment: update.next,
-    question: presentSiAiPmQuestion(decideSiValidationAsk(update.next)),
+    question: presentSiAiPmQuestion(decideSiValidationAsk(update.next), binding),
     update,
   };
 }
@@ -55,7 +56,9 @@ export function runSiAiPmBindTurn(input: SiAiPmBindTurnInput): SiAiPmBindTurnRes
   }
   return {
     previous: view.update.previous,
-    asked: presentSiAiPmQuestion(decideSiValidationAsk(view.update.previous)),
+    asked: presentSiAiPmQuestion(decideSiValidationAsk(view.update.previous), {
+      documentText: input.documentText,
+    }),
     update: view.update,
     nextAsk: view.question,
     source: 'si-v1-ai-pm-bind',
