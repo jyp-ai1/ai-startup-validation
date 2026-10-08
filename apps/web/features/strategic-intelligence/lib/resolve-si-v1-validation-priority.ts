@@ -47,7 +47,9 @@ export function resolveSiV1ValidationPriority(input: {
     const view = input.judgment
       ? {
           judgment: input.judgment,
-          question: presentSiAiPmQuestion(decideSiValidationAsk(input.judgment)),
+          question: presentSiAiPmQuestion(decideSiValidationAsk(input.judgment), {
+            documentText,
+          }),
           update: null,
         }
       : resolveSiAiPmBindView({

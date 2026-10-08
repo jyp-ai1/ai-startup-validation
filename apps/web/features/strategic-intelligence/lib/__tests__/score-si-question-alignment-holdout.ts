@@ -33,7 +33,10 @@ export function questionPreservesCuPurpose(snap: PostNegSnap): boolean {
   const q = snap.question;
   if (isNextUnresolvedCu(cu)) return /다음 고객|다음 기간/.test(q);
   if (isRepeatabilityCu(cu)) {
-    return /(두 번째|재구매|반복 가능|재판매|두 번째 행동)/.test(q) && !stakeWeavedOffCu(snap);
+    return (
+      /(두 번째|재구매|반복 가능|재판매|두 번째 행동|구독|재결제|다시 결제|관광 수요)/.test(q) &&
+      !stakeWeavedOffCu(snap)
+    );
   }
   if (/세그먼트/.test(cu)) return /(고객 그룹|세그먼트|돈을 낸)/.test(q);
   if (/직무|Job/.test(cu)) return /(직무|Job|돈을 내는|지불)/i.test(q);
