@@ -4,6 +4,24 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Accuracy Batch — 10 types × 15 scenes
+
+**CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge HOLD · Production `0b46522` UNCHANGED  
+**PR:** #139 · **SHA:** `f9bee12` · Draft  
+**Preview:** https://ai-startup-validation-git-cursor-si-ac-95a338-jyp-ai1s-projects.vercel.app  
+**Branch:** `cursor/si-accuracy-batch-large-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-BATCH-LARGE.md`
+
+| # | Item | Status |
+|---|---|---|
+| 1 | 10사업유형 × 15장면 | ✅ 150 |
+| 2 | Judgment / Evidence / CU / Question / DV | ✅ 149/147/150/127/125 PASS · FAIL 0 |
+| 3 | generic-after-promotion | ✅ 0 |
+| 4 | Regression #104 #107 P1-A P1-C P0-1 P0-2 | ✅ 47 passed |
+| 5 | Fix Gate | HOLD |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  
