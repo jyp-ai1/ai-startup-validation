@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Accuracy Batch — Repeat-loop CU after held
+
+**CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge/Production 금지 · Production `0b46522` 불변  
+**Branch:** `cursor/si-repeat-cu-stale-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-REPEAT-CU-STALE.md`
+
+| # | Item | Status |
+|---|---|---|
+| 1 | 8사업군 held 후 반복 CU/spoken | ✅ 8/8 착지 |
+| 2 | spoken 답 후 CU 퇴직 | ✅ 0 PASS · 8 PARTIAL · 0 FAIL |
+| 3 | verdict divergence | ✅ 0 |
+| 4 | Fix Gate | HOLD |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  
