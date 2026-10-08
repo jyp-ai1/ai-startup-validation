@@ -2,8 +2,11 @@
 
 **CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge HOLD · Production `0b46522` UNCHANGED  
 **Frozen:** #139 Draft `0c362c7` 미변경  
+**PR:** #146 · **Evidence SHA:** `436d010` · Draft  
+**Preview:** https://ai-startup-validation-git-cursor-si-ac-9133da-jyp-ai1s-projects.vercel.app  
+**GitHub Vercel check:** pass (`9j5T5vC8hh5CJtTkLcAp1jaFBr3g`, Deployment has completed)  
+**Preview probe:** `/` HTTP 302 Vercel SSO. SHA triangle 미확인. Preview 검증 PASS 아님.  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-accuracy-holdout-7.json`  
-**Preview:** Ready 이후 기록. Ready 전 PASS 아님.  
 **CEO Founder Test:** 없음
 
 #139–#145와 **겹치지 않는** 10유형에서 같은 판단 사슬이 살아남는지 잰다.
