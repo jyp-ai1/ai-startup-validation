@@ -7,6 +7,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 ## Accuracy Batch — Repeat-loop CU after held
 
 **CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge/Production 금지 · Production `0b46522` 불변  
+**PR:** #138 · **SHA:** `deacb3c` · Draft  
+**Preview:** https://ai-startup-validation-git-cursor-si-re-948355-jyp-ai1s-projects.vercel.app  
 **Branch:** `cursor/si-repeat-cu-stale-e648`  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-REPEAT-CU-STALE.md`
 

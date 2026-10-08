@@ -2,6 +2,8 @@
 
 **CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge/Production 금지  
 **Production:** `0b46522` 불변  
+**PR:** #138 · **SHA:** `deacb3c` · Draft  
+**Preview:** https://ai-startup-validation-git-cursor-si-re-948355-jyp-ai1s-projects.vercel.app  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-repeat-cu-stale.json`  
 **Prior:** #137 Decision Value 2-pass PASS (승격 경로 11/11). 이 Batch는 held **이후** 반복 CU만 잰다.
 
