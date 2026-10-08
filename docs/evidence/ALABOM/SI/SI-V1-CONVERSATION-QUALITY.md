@@ -4,7 +4,10 @@
 **Production baseline:** `5226fa1` (P1-C CLOSED) · Git `a7a4a28`  
 **P1-A:** CLOSED · **P1-C:** CLOSED  
 **PR #127:** Freeze `3015c9a` · 이 Batch에 포함하지 않음  
-**Branch:** `cursor/si-conversation-quality-e648`
+**Branch:** `cursor/si-conversation-quality-e648`  
+**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/128 (Draft)  
+**Fix SHA:** `ddbfb38f9db1b7aec6e468d38f20a78227942214`  
+**Preview:** https://ai-startup-validation-git-cursor-si-co-befde9-jyp-ai1s-projects.vercel.app
 
 Founder가 다음 기간 CU에 답해도 루프가 같은 미검증을 반복하면, 질문은 CU를 검증하지 못한 것과 같다.
 
@@ -67,6 +70,16 @@ Founder가 다음 기간 CU에 답해도 루프가 같은 미검증을 반복하
 | Pattern A obstruction | PASS (6) |
 | P0-1 | PASS (14) |
 | P0-2 | PASS (10) |
+
+## Preview / SHA
+
+| | |
+|---|---|
+| Fix SHA | `ddbfb38` |
+| Preview | https://ai-startup-validation-git-cursor-si-co-befde9-jyp-ai1s-projects.vercel.app |
+| Vercel | Ready · Preview Comments PASS · Deployment SSO |
+| Production | UNCHANGED `5226fa1` |
+| `#127` | Freeze `3015c9a` |
 
 ## Production 영향
 

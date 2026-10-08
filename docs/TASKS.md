@@ -7,6 +7,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 ## Accuracy Batch — Conversation Quality
 
 **CPO Gate:** OPEN · Draft · Production `5226fa1` 불변 · Merge 금지  
+**PR:** #128 · **SHA:** `ddbfb38`  
+**Preview:** https://ai-startup-validation-git-cursor-si-co-befde9-jyp-ai1s-projects.vercel.app  
 **Branch:** `cursor/si-conversation-quality-e648`  
 **PR #127:** Freeze `3015c9a` · 미포함  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-CONVERSATION-QUALITY.md`  
