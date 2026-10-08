@@ -1,64 +1,76 @@
-# Founder Decision Value — reproducibility / strategic impact
+# [ACCURACY BATCH COMPLETE] Founder Decision Value after #134
 
-**CPO Gate:** 측정 전용 · Fix Gate 미개방 · Merge/Production 금지  
-**Production:** `0b46522` 불변  
-**PR:** #137 · **SHA:** `77702c9` · Draft  
+**CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge/Production 금지  
+**대상 SHA:** #137 `e7e6dd3` (engine = Production `0b46522`)  
 **Preview:** https://ai-startup-validation-git-cursor-si-dv-394f6e-jyp-ai1s-projects.vercel.app  
-**#134:** Production Acceptance CLOSED · **`spoken_generic_after_promotion`:** FIX CLOSED  
-**#136:** 3사업군 5층 측정 CLOSED (`a46ffe3`, 미머지)  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-decision-value-repro.json`
 
-#136은 물류·의류·의원 3곳에서 2/2 Decision Value가 PASS로 돌아왔다는 **한 번**의 관찰이다. 같은 5층을 8사업군 + 지불만/계획/악화/held 이후 팔로업 + C2C·결제자 분리·직무 CU에서 다시 잰다. 엔진은 고치지 않았다.
+#134 `spoken_generic_after_promotion` Fix 이후 Founder Decision Value가 실제로 개선됐는지 잰다. Analyzer · Judgment · classifier · SoT · Question Engine은 고치지 않았다.
 
-## 질문
+## 규모
 
-1. Closed 소견(`spoken_generic_after_promotion` = 0, 2/2 spoken = 다음 기간)이 더 많은 사업에서 반복되는가.
-2. held 이후 남은 관찰이 반복되는가.
-3. 그 관찰이 Founder의 판단(verdict/stage/CU 퇴직)을 바꾸는가.
+시나리오 **11**. 이름 없는 8사업군 2/2 + C2C 재판매 t0 + 결제자 분리 + 직무 CU.
 
-## 5층
+## 축 집계
 
-Accuracy · Judgment · Validation · Decision Value · Strategy
+| 축 | PASS | PARTIAL | FAIL |
+|---|---|---|---|
+| Judgment | **11** | 0 | 0 |
+| CU | **11** | 0 | 0 |
+| DCE | **11** | 0 | 0 |
+| Question Alignment | **11** | 0 | 0 |
+| Founder Decision Value | **11** | 0 | 0 |
+| generic-after-promotion | **0** | — | — |
 
-## 결과
+Failure cluster: **없음**.
 
-| 축 | 규모 | 결과 |
-|---|---|---|
-| 2/2 5층 | 8/8 | **PASS** · spoken = 다음 고객/기간 · generic 0 |
-| held 5층 | 8/8 | **PASS** |
-| 지불만 승격 | 0/8 | 승격 없음 |
-| 계획만 CU 닫힘 | 0/8 | 닫히지 않음 |
-| extra CU (C2C t0/검증, 결제자 분리, 직무) | 6/6 | 5층 PASS |
-| 질문 경로 vs 원래 stake 경로 | 0/8 | verdict/stage/CU **불변** |
+## 시나리오 표
 
-## 반복된 관찰 (Fix 아님)
+| 사업군 | t0 Judgment | t0 CU | t0 DCE | 승격 조건 | 승격 후 CU | whyAsking | spoken question | Generic | DV | 비고 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| B2B 물류 | 보류 · 누락 전후 미검증 | 유료 사용 후 누락이 줄었는가 | 유료 파일럿 1건 + 누락 전후 | 결제 3명 + 누락 14%→6% | 다음 고객/기간 같은 방향 | 다음 고객/기간 유지 | 다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? | No | PASS | — |
+| D2C 의류 | 보류 · 반품률 전후 미검증 | 유료 사용 후 반품률이 줄었는가 | 유료 파일럿 + 반품 전후 | 결제 2명 + 반품률 32%→20% | 다음 고객/기간 | 다음 고객/기간 유지 | 같은 성과 유지 질문 | No | PASS | — |
+| B2B 고객지원 | 보류 · 부하 전후 미검증 | 유료 사용 후 부하가 줄었는가 | 유료 파일럿 + 부하 전후 | 결제 4명 + 부하 41%→19% | 다음 고객/기간 | 다음 고객/기간 유지 | 같은 성과 유지 질문 | No | PASS | — |
+| 중고 카탈로그 | 보류 · 미스매치 전후 미검증 | 유료 사용 후 미스매치가 줄었는가 | 유료 파일럿 + 미스매치 전후 | 결제 2명 + 미스매치 22%→10% | 다음 고객/기간 | 다음 고객/기간 유지 | 같은 성과 유지 질문 | No | PASS | — |
+| 병원 청구 | 보류 · 불일치 전후 미검증 | 유료 사용 후 불일치가 줄었는가 | 유료 파일럿 + 불일치 전후 | 결제 6명 + 불일치 19%→8% | 다음 고객/기간 | 다음 고객/기간 유지 | 같은 성과 유지 질문 | No | PASS | — |
+| 동네 의원 | 보류 · no-show 전후 미검증 | 유료 사용 후 no-show가 줄었는가 | 유료 파일럿 + no-show 전후 | 결제 3명 + no-show 22%→12% | 다음 고객/기간 | 다음 고객/기간 유지 | 같은 성과 유지 질문 | No | PASS | — |
+| B2B 온보딩 | 보류 · 이탈 전후 미검증 | 유료 사용 후 이탈이 줄었는가 | 유료 파일럿 + 이탈 전후 | 결제 4명 + 이탈 37%→21% | 다음 고객/기간 | 다음 고객/기간 유지 | 같은 성과 유지 질문 | No | PASS | — |
+| 식품 창고 | 보류 · 누락 전후 미검증 | 유료 사용 후 누락이 줄었는가 | 유료 파일럿 + 누락 전후 | 결제 5명 + 누락 11%→4% | 다음 고객/기간 | 다음 고객/기간 유지 | 같은 성과 유지 질문 | No | PASS | — |
+| C2C 재판매 | 조건부 가능 · 재판매 루프 미검증 | C2C 재판매가 반복되는가 | 재판매 등록·거래·재구매 | t0 (1차 판매 이미 있음) | — | 재판매 데이터 | 재판매 등록·거래 체결·재구매 | No | PASS | 다른 CU |
+| 양조장 마케팅 | 보류 · 결제자/직무 미검증 | 누가 어떤 직무를 대체하며 왜 돈을 내는가 | 결제자 1명 실지불 | 결제자 3명 마케팅비 | 반복 가능 | 두 번째 계약·관광 수요 | 두 번째 계약이나 반복되는 관광 수요 | No | PASS | P1-A 축 유지 |
+| 감정 기록 컴패니언 | 보류 · 결제자/직무 미검증 | 누가 어떤 직무를 대체하며 왜 돈을 내는가 | 결제자 1명 실지불 | 결제 1명 + 직무 대체 | 반복 가능 | 두 번째 행동·반복성 | 두 번째 행동이나 반복 사용 | No | PASS | — |
 
-| 관찰 | 횟수 | 전략 영향 |
-|---|---|---|
-| `stake_dropped_after_held` — held 이후 spoken이 원래 지표(누락·반품 등)를 잃는다 | **8/8** | OBSERVED |
-| `answered_spoken_stale_cu` — spoken 반복 질문에 수량 답(VALIDATED)을 해도 CU가 남는다 | **8/8** | OBSERVED · 한 턴 낭비, 오판정 없음 |
-| `spoken_followup_diverges` | **0/8** | 없음 |
-| `wrong_axis_promotes` — Founder가 재판매를 **주입**하면 S4 | **8/8** | 질문이 재판매를 묻지 않음. 기존 engine `repeat_validation` 경로 |
+전문 문장은 dump에 있다.
 
-`impactCounts`: OBSERVED 8 · IMPACT 0 · NONE 0
+## 핵심 검증
 
-## 판정
+1. t0 리스크/검증축: 8/8 스테이크(누락·반품·부하·미스매치·불일치·no-show·이탈) + 3 extra CU 정확  
+2. DCE 충족 후 CU 이동: 8/8 `paid_conversion` → `next_period`. extra는 `payer_job` → `repeat_loop` 또는 C2C `resale` 유지  
+3. 이동한 CU가 spoken에 반영: 11/11  
+4. whyAsking ↔ spoken 축 일치: 11/11  
+5. 질문만 보고 다음 검증을 알 수 있음: 11/11  
+6. generic 후퇴: **0**  
+7. 사업명 하드코딩: analyzer / presenter / classifier / referee **없음**
 
-Closed #134 소견은 8사업군에서 반복된다. 남은 관찰도 8/8 반복되지만, spoken을 따라도 원래 stake를 따라도 **판단이 갈라지지 않는다**. 오승격·오하향 없음.
+## Regression
 
-Fix Gate **미개방**. 단일 관찰을 Fix로 승격하지 않는다. 다음 판단은 이 반복 관찰이 실제 Founder 결정을 막는다고 CPO가 확정할 때다.
+| Gate | 결과 |
+|---|---|
+| #104 payment-only off S3 | PASS (`si-negative-judgment` · `si-evidence-reconciliation` · `si-stale-cu`) |
+| #107 2/2 next-unknown CU | PASS |
+| P1-A 4축 | PASS 4 |
+| P1-C · quantity-unit | PASS 5 + 5 |
+| P0-1 | PASS 8 |
+| P0-2 | PASS 5 |
+
+Regression 8 files / 46 passed. Dump 재작성분은 restore.
+
+## Fix Gate
+
+**HOLD.** 구조적 FAIL 반복 없음. 단일 PARTIAL도 없음. Founder Decision Value를 저해하는 클러스터가 없다.
 
 ## 미변경
 
-Analyzer · Judgment · Presenter · SoT · Question Engine · Auth · `#127` · `#129` · `#131` · `#135` · `#136` · Production `0b46522`
+Analyzer · Judgment · Evidence classifier · SoT · Question Engine · Auth · `#127` · `#129` · `#131` · Production `0b46522`
 
-## Preview / SHA
-
-| | |
-|---|---|
-| Evidence SHA | `77702c9` |
-| Preview | https://ai-startup-validation-git-cursor-si-dv-394f6e-jyp-ai1s-projects.vercel.app |
-| Vercel | Ready |
-| Production | UNCHANGED `0b46522` |
-
-CEO Founder Test 미요청.
+CEO Founder Test 없음.

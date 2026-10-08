@@ -4,10 +4,10 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
-## Accuracy Batch — Decision Value reproducibility
+## Accuracy Batch — Founder Decision Value after #134
 
-**CPO Gate:** 측정 전용 · Fix Gate 미개방 · Merge/Production 금지 · Production `0b46522` 불변  
-**PR:** #137 · **SHA:** `77702c9` · Draft  
+**CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge/Production 금지 · Production `0b46522` 불변  
+**PR:** #137 · Draft · baseline `e7e6dd3`  
 **Preview:** https://ai-startup-validation-git-cursor-si-dv-394f6e-jyp-ai1s-projects.vercel.app  
 **Branch:** `cursor/si-dv-repro-e648`  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DECISION-VALUE-REPRO.md`  
@@ -15,10 +15,10 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 | # | Item | Status |
 |---|---|---|
-| 1 | 8사업군 2/2 5층 | ✅ 8/8 PASS · generic 0 |
-| 2 | held 이후 stake 소실 / spoken 답 후 CU 잔류 | ✅ 8/8 OBSERVED · IMPACT 0 |
-| 3 | 지불만 · 계획만 · C2C · 결제자/직무 CU | ✅ 오승격 0 · extra 6/6 PASS |
-| 4 | Fix Gate | 미개방 |
+| 1 | 11시나리오 Judgment→CU→DCE→Priority→whyAsking→spoken | ✅ 11/11 PASS |
+| 2 | generic-after-promotion | ✅ 0 |
+| 3 | #104 #107 P1-A P1-C P0-1 P0-2 | ✅ 46 passed |
+| 4 | Fix Gate | HOLD |
 
 ---
 

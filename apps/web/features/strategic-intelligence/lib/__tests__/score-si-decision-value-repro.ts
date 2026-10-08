@@ -1,30 +1,25 @@
 /**
- * Founder Decision Value — reproducibility and strategic impact.
- * Measure only. Not imported by the analyzer or presenter. Not a persist SoT.
+ * Founder Decision Value Accuracy Batch — measure only.
+ * Not imported by the analyzer or presenter. Not a persist SoT.
  *
- * Layer 1 Accuracy — did the state update honestly?
- * Layer 2 Judgment — did the verdict/stage move for the right reason?
- * Layer 3 Validation — does the spoken question seek the current DCE?
- * Layer 4 Decision Value — can a Founder tell what to check now?
- * Layer 5 Strategy — S.I. judges; AI PM executes the current CU, not another axis.
- *
- * Extra: after next-period held, does dropping the original stake from the
- * spoken question change the Founder's next judgment? Repeat across sectors
- * before any Fix Gate.
+ * Axes from the CPO work order:
+ * Judgment · CU · DCE · Question Alignment · Founder Decision Value
  */
 
 export type DvScore = 'PASS' | 'PARTIAL' | 'FAIL';
 
-export type StrategicImpact = 'NONE' | 'OBSERVED' | 'IMPACT';
+export type AxisId = 'judgment' | 'cu' | 'dce' | 'questionAlignment' | 'decisionValue';
 
-export type ObservationId =
-  | 'spoken_generic_after_promotion'
-  | 'payment_only_promoted'
-  | 'plan_only_closes_cu'
-  | 'stake_dropped_after_held'
-  | 'answered_spoken_stale_cu'
-  | 'spoken_followup_diverges'
-  | 'wrong_axis_promotes';
+export type ValidationAxis =
+  | 'next_period'
+  | 'repeat_loop'
+  | 'paid_conversion'
+  | 'resale'
+  | 'payer_split'
+  | 'payer_job'
+  | 'segment'
+  | 'generic'
+  | 'other';
 
 export type DvActual = {
   verdictId: string;
@@ -41,207 +36,192 @@ export type DvActual = {
   evidenceStrengthDelta: string | null;
 };
 
-export type DvLayer = {
-  id: 'accuracy' | 'judgment' | 'validation' | 'decisionValue' | 'strategy';
+export type AxisScore = {
+  id: AxisId;
   score: DvScore;
   note: string;
 };
 
-function rollup(scores: DvScore[]): DvScore {
-  if (scores.includes('FAIL')) return 'FAIL';
-  if (scores.includes('PARTIAL')) return 'PARTIAL';
-  return 'PASS';
-}
-
 function leak(text: string): boolean {
   return /targetGap|gapId|gapTarget|internalId|\bscore\b/i.test(text);
-}
-
-function spokenSeeksCu(actual: DvActual): boolean {
-  const cu = actual.criticalUnknown;
-  const ask = actual.questionText;
-  if (/다음 고객|다음 기간/.test(cu)) {
-    return /다음 고객|다음 기간|같은 성과|유지/.test(ask);
-  }
-  if (/재판매|C2C/.test(cu)) {
-    return /재판매|재구매|두 번째/.test(ask);
-  }
-  if (/지불만|줄었는가|유료 전환/.test(cu)) {
-    return /전후|줄였|결제|유료/.test(ask);
-  }
-  if (/세그먼트/.test(cu)) {
-    return /고객 그룹|세그먼트|쓰거나 돈을/.test(ask);
-  }
-  if (/반복 가능/.test(cu)) {
-    return /두 번째|재구매|반복|재판매|계약/.test(ask);
-  }
-  return ask.length > 12;
-}
-
-function axisDrift(actual: DvActual): boolean {
-  const cu = actual.criticalUnknown;
-  const ask = actual.questionText;
-  if (/다음 고객|다음 기간/.test(cu) && /재판매/.test(ask) && !/재판매|C2C/.test(cu)) {
-    return true;
-  }
-  if (/재판매|C2C/.test(cu) && /다음 기간/.test(ask) && !/재판매|두 번째/.test(ask)) {
-    return true;
-  }
-  return false;
 }
 
 export function isGenericSpoken(text: string): boolean {
   return /실제 행동 증거가 필요합니다/.test(text);
 }
 
-export function isNextPeriodCu(text: string): boolean {
-  return /다음 고객|다음 기간/.test(text);
+export function validationAxis(text: string): ValidationAxis {
+  if (/실제 행동 증거가 필요합니다/.test(text)) return 'generic';
+  if (/다음 고객|다음 기간/.test(text)) return 'next_period';
+  if (/재판매|C2C/.test(text)) return 'resale';
+  if (/직무|Job-to-be-done/i.test(text)) return 'payer_job';
+  if (/쓰는 사람|돈을 내는 사람|결제자가 분리/.test(text)) return 'payer_split';
+  if (/세그먼트|고객 그룹/.test(text)) return 'segment';
+  if (/반복 가능|두 번째|재구매|반복 사용|반복되는|관광 수요/.test(text)) return 'repeat_loop';
+  if (/지불만|줄었는가|유료 파일럿|전후|누락|반품|no-show|노쇼|부하|미스매치|불일치/.test(text)) {
+    return 'paid_conversion';
+  }
+  return 'other';
 }
 
-export function isRepeatLoopCu(text: string): boolean {
-  return /반복 가능/.test(text);
+export function chainAxes(actual: DvActual) {
+  return {
+    cu: validationAxis(actual.criticalUnknown),
+    dce: validationAxis(actual.decisionChangingEvidence),
+    priority: validationAxis(actual.validationPriority),
+    whyAsking: validationAxis(actual.whyAsking),
+    spoken: validationAxis(actual.questionText),
+  };
 }
 
-export function spokenNamesStake(spoken: string, stake: string): boolean {
-  if (!stake) return true;
-  const escaped = stake.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(escaped, 'i').test(spoken);
+function sameAxis(left: ValidationAxis, right: ValidationAxis): boolean {
+  return left === right && left !== 'other' && left !== 'generic';
 }
 
-export function closedRepeatLoop(before: DvActual, after: DvActual): boolean {
-  return isRepeatLoopCu(before.criticalUnknown) && !isRepeatLoopCu(after.criticalUnknown);
+function chainAligned(actual: DvActual): boolean {
+  const axes = chainAxes(actual);
+  return (
+    sameAxis(axes.cu, axes.dce) &&
+    sameAxis(axes.cu, axes.priority) &&
+    sameAxis(axes.cu, axes.whyAsking) &&
+    sameAxis(axes.cu, axes.spoken)
+  );
 }
 
-export function scoreDecisionValue(actual: DvActual): {
-  layers: DvLayer[];
-  overall: DvScore;
-} {
-  const surface = [
-    actual.judgment,
-    actual.criticalUnknown,
-    actual.decisionChangingEvidence,
-    actual.validationPriority,
-    actual.questionText,
-  ].join('\n');
-
-  const accuracy: DvLayer = {
-    id: 'accuracy',
-    score: leak(surface) ? 'FAIL' : actual.judgment.startsWith('현재 판단:') ? 'PASS' : 'FAIL',
-    note: leak(surface) ? 'internal id leaked' : `${actual.verdictId}/${actual.stageId}`,
-  };
-
-  const judgmentReadable =
-    actual.criticalUnknown.length > 12 && /올리|내리|유지/.test(actual.decisionChangingEvidence);
-  const judgment: DvLayer = {
-    id: 'judgment',
-    score: judgmentReadable ? 'PASS' : 'FAIL',
-    note: actual.judgment.slice(0, 72),
-  };
-
-  const seeks = spokenSeeksCu(actual);
-  const recovered = /다음 고객|다음 기간|재판매|전후|유료/.test(actual.whyAsking);
-  const validation: DvLayer = {
-    id: 'validation',
-    score: seeks ? 'PASS' : recovered ? 'PARTIAL' : 'FAIL',
-    note: seeks
-      ? 'spoken question seeks the current CU/DCE'
-      : recovered
-        ? 'spoken question is generic; whyAsking still names the CU'
-        : 'question does not seek a decision-changing proof',
-  };
-
-  const nextClear =
-    actual.validationPriority.length > 8 &&
-    actual.validationPriority.length < 140 &&
-    /확인|잰다|검증/.test(actual.validationPriority);
-  const decisionValue: DvLayer = {
-    id: 'decisionValue',
-    score: seeks && nextClear ? 'PASS' : nextClear ? 'PARTIAL' : 'FAIL',
-    note: seeks
-      ? 'Founder can hear what to check from the question'
-      : nextClear
-        ? 'Priority names the next proof; spoken question does not'
-        : 'Founder cannot tell what to check now',
-  };
-
-  const strategy: DvLayer = {
-    id: 'strategy',
-    score: axisDrift(actual) ? 'FAIL' : 'PASS',
-    note: axisDrift(actual)
-      ? 'AI PM asks a different validation axis than the current CU'
-      : 'AI PM executes the current CU, not another thesis',
-  };
-
-  const layers = [accuracy, judgment, validation, decisionValue, strategy];
-  return { layers, overall: rollup(layers.map((layer) => layer.score)) };
-}
-
-export function scoreHeldFollowupImpact(input: {
-  stake: string;
-  held: DvActual;
-  onStake: DvActual;
-  spokenFollow: DvActual;
-  wrongAxis: DvActual;
-  planOnly: DvActual;
+export function scoreScenario(input: {
+  stake?: string;
+  t0: DvActual;
+  promoted?: DvActual;
 }): {
-  stakeDropped: boolean;
-  observations: ObservationId[];
-  strategicImpact: StrategicImpact;
-  note: string;
+  axes: AxisScore[];
+  overall: DvScore;
+  genericAfterPromotion: boolean;
+  founderDecisionValue: DvScore;
 } {
-  const observations: ObservationId[] = [];
-  const stakeDropped =
-    isRepeatLoopCu(input.held.criticalUnknown) &&
-    !spokenNamesStake(input.held.questionText, input.stake);
-  if (stakeDropped) observations.push('stake_dropped_after_held');
+  const { t0, promoted } = input;
+  const surface = [
+    t0.judgment,
+    t0.criticalUnknown,
+    t0.decisionChangingEvidence,
+    t0.validationPriority,
+    t0.questionText,
+    promoted?.judgment,
+    promoted?.criticalUnknown,
+    promoted?.questionText,
+  ]
+    .filter(Boolean)
+    .join('\n');
 
-  const spokenDiverges =
-    closedRepeatLoop(input.held, input.spokenFollow) !== closedRepeatLoop(input.held, input.onStake) ||
-    input.spokenFollow.stageId !== input.onStake.stageId ||
-    input.spokenFollow.verdictId !== input.onStake.verdictId;
-  if (spokenDiverges) observations.push('spoken_followup_diverges');
-
-  const answeredSpokenStale =
-    isRepeatLoopCu(input.held.criticalUnknown) &&
-    isRepeatLoopCu(input.spokenFollow.criticalUnknown) &&
-    input.spokenFollow.stageId === input.held.stageId &&
-    (input.spokenFollow.evidenceClass === 'VALIDATED' || input.spokenFollow.evidenceClass === 'FACT');
-  if (answeredSpokenStale) observations.push('answered_spoken_stale_cu');
-
-  const wrongPromotes =
-    input.wrongAxis.stageId === 'S4' && input.held.stageId !== 'S4' && !/재판매|C2C/.test(input.held.criticalUnknown);
-  if (wrongPromotes) observations.push('wrong_axis_promotes');
-
-  if (closedRepeatLoop(input.held, input.planOnly) || input.planOnly.stageId === 'S4') {
-    observations.push('plan_only_closes_cu');
+  const t0Readable = t0.judgment.startsWith('현재 판단:') && t0.criticalUnknown.length > 12;
+  const t0Deferred = t0.verdictId === 'judgment_deferred' || t0.stageId === 'S1' || t0.stageId === 'S0';
+  const promotedMoved = promoted
+    ? promoted.verdictId !== 'judgment_deferred' && promoted.stageId !== t0.stageId
+    : true;
+  const judgment: AxisScore = {
+    id: 'judgment',
+    score: leak(surface) ? 'FAIL' : t0Readable && (!promoted || promotedMoved || promoted.verdictId !== t0.verdictId)
+      ? 'PASS'
+      : t0Readable
+        ? 'PARTIAL'
+        : 'FAIL',
+    note: promoted
+      ? `${t0.verdictId}/${t0.stageId} → ${promoted.verdictId}/${promoted.stageId}`
+      : `${t0.verdictId}/${t0.stageId}`,
+  };
+  if (!promoted && t0Readable && !leak(surface)) {
+    judgment.score = t0Deferred || t0.judgment.startsWith('현재 판단:') ? 'PASS' : 'FAIL';
   }
 
-  // Wrong-axis S4 is a known engine path if the Founder injects 재판매.
-  // Decision Value impact is only what the spoken question itself causes.
-  if (spokenDiverges) {
-    return {
-      stakeDropped,
-      observations,
-      strategicImpact: 'IMPACT',
-      note: 'following spoken vs original stake changes judgment/CU',
-    };
-  }
+  const t0CuClear = t0.criticalUnknown.length > 12 && validationAxis(t0.criticalUnknown) !== 'generic';
+  const cuMoved = promoted
+    ? validationAxis(promoted.criticalUnknown) !== validationAxis(t0.criticalUnknown)
+    : true;
+  const cu: AxisScore = {
+    id: 'cu',
+    score: !t0CuClear
+      ? 'FAIL'
+      : promoted && !cuMoved
+        ? 'FAIL'
+        : 'PASS',
+    note: promoted
+      ? `${validationAxis(t0.criticalUnknown)} → ${validationAxis(promoted.criticalUnknown)}`
+      : validationAxis(t0.criticalUnknown),
+  };
 
-  if (stakeDropped || answeredSpokenStale) {
-    return {
-      stakeDropped,
-      observations,
-      strategicImpact: 'OBSERVED',
-      note: answeredSpokenStale
-        ? 'Founder can answer the spoken repeat-loop question and the CU stays; verdict does not move'
-        : 'spoken drops the original stake after held; CU/whyAsking still name repeat-loop',
-    };
+  const dceMoves =
+    /올리|내리|유지/.test(t0.decisionChangingEvidence) &&
+    (!promoted || /올리|내리|유지/.test(promoted.decisionChangingEvidence));
+  const dceFollowsCu = promoted
+    ? sameAxis(validationAxis(promoted.criticalUnknown), validationAxis(promoted.decisionChangingEvidence))
+    : sameAxis(validationAxis(t0.criticalUnknown), validationAxis(t0.decisionChangingEvidence));
+  const dce: AxisScore = {
+    id: 'dce',
+    score: dceMoves && dceFollowsCu ? 'PASS' : dceMoves ? 'PARTIAL' : 'FAIL',
+    note: promoted
+      ? validationAxis(promoted.decisionChangingEvidence)
+      : validationAxis(t0.decisionChangingEvidence),
+  };
+
+  const target = promoted ?? t0;
+  const genericAfterPromotion = Boolean(promoted && isGenericSpoken(promoted.questionText));
+  const spokenMatchesCu = sameAxis(validationAxis(target.criticalUnknown), validationAxis(target.questionText));
+  const whyMatchesSpoken = sameAxis(validationAxis(target.whyAsking), validationAxis(target.questionText));
+  const closedAxisReturn = Boolean(
+    promoted &&
+      validationAxis(promoted.questionText) === validationAxis(t0.criticalUnknown) &&
+      validationAxis(promoted.criticalUnknown) !== validationAxis(t0.criticalUnknown),
+  );
+  let questionScore: DvScore = 'PASS';
+  let questionNote = 'whyAsking and spoken bind the current CU';
+  if (genericAfterPromotion || closedAxisReturn || !spokenMatchesCu) {
+    questionScore = 'FAIL';
+    questionNote = genericAfterPromotion
+      ? 'spoken retreated to generic after promotion'
+      : closedAxisReturn
+        ? 'spoken returned to the closed t0 axis'
+        : `spoken ${validationAxis(target.questionText)} ≠ CU ${validationAxis(target.criticalUnknown)}`;
+  } else if (!whyMatchesSpoken) {
+    questionScore = 'PARTIAL';
+    questionNote = `whyAsking ${validationAxis(target.whyAsking)} / spoken ${validationAxis(target.questionText)}`;
   }
+  const questionAlignment: AxisScore = {
+    id: 'questionAlignment',
+    score: questionScore,
+    note: questionNote,
+  };
+
+  const founderHearsNext = spokenMatchesCu && !isGenericSpoken(target.questionText) && target.questionText.length > 20;
+  const aligned = chainAligned(target);
+  let decisionScore: DvScore = 'PASS';
+  let decisionNote = 'Founder can hear what to check from the question';
+  if (!founderHearsNext || closedAxisReturn || genericAfterPromotion) {
+    decisionScore = 'FAIL';
+    decisionNote = genericAfterPromotion
+      ? 'generic-after-promotion'
+      : closedAxisReturn
+        ? 'spoken asks a closed axis'
+        : 'Founder cannot tell what to check now';
+  } else if (!aligned) {
+    decisionScore = 'PARTIAL';
+    decisionNote = 'CU is clear; spoken is weaker than the full chain';
+  }
+  const decisionValue: AxisScore = {
+    id: 'decisionValue',
+    score: decisionScore,
+    note: decisionNote,
+  };
+
+  const axes = [judgment, cu, dce, questionAlignment, decisionValue];
+  const overall = axes.some((axis) => axis.score === 'FAIL')
+    ? 'FAIL'
+    : axes.some((axis) => axis.score === 'PARTIAL')
+      ? 'PARTIAL'
+      : 'PASS';
 
   return {
-    stakeDropped,
-    observations,
-    strategicImpact: 'NONE',
-    note: 'held follow-ups stay on the current CU',
+    axes,
+    overall,
+    genericAfterPromotion,
+    founderDecisionValue: decisionScore,
   };
 }
