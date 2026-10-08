@@ -11,6 +11,7 @@ import type {
 } from '@repo/types/domain/strategic-intelligence';
 import { SI_AXIS_LABELS, SI_VERDICT_LABELS } from '@repo/types/domain/strategic-intelligence';
 
+import { isCompletedLaunchText, isPlannedLaunchText } from './launch-status';
 import { hasCountedCompletion, hasCountedPaidConversion } from './quantity-unit';
 
 type SignalKind =
@@ -253,9 +254,15 @@ function scanLine(line: string): DetectedSignal[] {
     push('revenue', 'FACT', 'businessModel');
   }
 
-  if (matchAny(line, [/출시/, /런칭/, /launch/i])) {
+  if (isCompletedLaunchText(line) && !negated && !isPlannedLaunchText(line)) {
+    push('launch', 'FACT', 'executionAdvantage');
+  } else if (matchAny(line, [/출시/, /런칭/, /launch/i])) {
     if (negated) push('no_launch', 'FACT', 'executionAdvantage');
-    else push('launch', 'FACT', 'executionAdvantage');
+    else if (isPlannedLaunchText(line) || isHypothesis(line)) {
+      push('unverified', 'CLAIM', 'executionAdvantage');
+    } else {
+      push('launch', 'FACT', 'executionAdvantage');
+    }
   }
 
   if (matchAny(line, [/분사/, /사내벤처/, /독립 법인/, /공급망/, /운영 중/])) {

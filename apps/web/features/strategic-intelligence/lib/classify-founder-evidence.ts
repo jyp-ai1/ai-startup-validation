@@ -1,5 +1,6 @@
 import type { SiAxisId, SiEvidenceClass, SiEvidenceItem } from '@repo/types/domain/strategic-intelligence';
 
+import { isCompletedLaunchText, isPlannedLaunchText } from './launch-status';
 import { hasCountedCompletion, hasCountedPaidConversion } from './quantity-unit';
 
 export function isFounderIntentOnly(answer: string): boolean {
@@ -24,6 +25,7 @@ export function classifyFounderEvidenceClass(answer: string): SiEvidenceClass {
   if (!text) return 'ASSUMPTION';
   if (isFounderIntentOnly(text)) return 'CLAIM';
   if (isFounderQuantifiedCompletion(text) || isFounderQuantifiedPayment(text)) return 'VALIDATED';
+  if (isPlannedLaunchText(text) && !isCompletedLaunchText(text)) return 'CLAIM';
   if (/(아직|확인되지|검증되지|없다|없음)/.test(text)) return 'ASSUMPTION';
   if (/(생각|의향|할 것이다|예정)/.test(text)) return 'CLAIM';
   return 'FACT';
