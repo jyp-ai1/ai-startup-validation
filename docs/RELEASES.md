@@ -6,6 +6,17 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### S.I. Question Alignment P1-A (2026-10-08) ✅ Production
+
+**Production SHA:** `671005fcd540eb6132185cd58953b66a6ac2f538` · **PR:** #121 · **CPO 2-Pass:** PASS  
+**Prod:** https://ai-startup-validation-tau.vercel.app · **SHA triangle:** MATCH
+
+- `repeat_loop` binds CU/DCE axis, then source document, then generic second action
+- RIDM paid → 구독 유지/재결제 · 주인집 paid → 계약/관광 수요 · LMULM C2C 재판매 유지
+- P1-B (`MVP 런칭` → 이미 출시) 미수정
+
+Evidence: [`docs/evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-P1A-PRODUCTION.md`](./evidence/ALABOM/SI/SI-V1-QUESTION-ALIGNMENT-P1A-PRODUCTION.md)
+
 ### S.I. Negative Evidence Re-Judgment (2026-10-07) ✅ Production
 
 **Production SHA:** `6c52fff9c8325aff9ce6faa6f1f91ef26795a3f4` · **PR:** #118 · **CPO 2-Pass:** PASS  
