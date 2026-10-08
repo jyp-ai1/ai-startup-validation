@@ -4,6 +4,22 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Accuracy Batch — Decision Value reproducibility
+
+**CPO Gate:** 측정 전용 · Fix Gate 미개방 · Merge/Production 금지 · Production `0b46522` 불변  
+**Branch:** `cursor/si-dv-repro-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DECISION-VALUE-REPRO.md`  
+**#134:** Production Acceptance CLOSED · **`spoken_generic_after_promotion`:** FIX CLOSED
+
+| # | Item | Status |
+|---|---|---|
+| 1 | 8사업군 2/2 5층 | ✅ 8/8 PASS · generic 0 |
+| 2 | held 이후 stake 소실 / spoken 답 후 CU 잔류 | ✅ 8/8 OBSERVED · IMPACT 0 |
+| 3 | 지불만 · 계획만 · C2C · 결제자/직무 CU | ✅ 오승격 0 · extra 6/6 PASS |
+| 4 | Fix Gate | 미개방 |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  

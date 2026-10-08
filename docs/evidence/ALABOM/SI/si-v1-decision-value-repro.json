@@ -1,0 +1,2655 @@
+{
+  "productionSha": "0b465226516e1a4f3eb9ce2087f8bca2c2c091da",
+  "priorBatch": "#136",
+  "closedPattern": "spoken_generic_after_promotion",
+  "fixGate": "NOT_OPEN",
+  "sectorCount": 8,
+  "extraCount": 6,
+  "layerCounts": {
+    "promotedPass": 8,
+    "heldPass": 8,
+    "extraPass": 6
+  },
+  "observationCounts": {
+    "spoken_generic_after_promotion": 0,
+    "payment_only_promoted": 0,
+    "plan_only_closes_cu": 0,
+    "stake_dropped_after_held": 8,
+    "answered_spoken_stale_cu": 8,
+    "spoken_followup_diverges": 0,
+    "wrong_axis_promotes": 8
+  },
+  "impactCounts": {
+    "NONE": 0,
+    "OBSERVED": 8,
+    "IMPACT": 0
+  },
+  "rows": [
+    {
+      "id": "logistics_omission",
+      "sector": "B2B 물류",
+      "stake": "누락",
+      "t0": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 누락 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "whyPossible": "문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 누락 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 누락 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 누락 전후 비교. SAP 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 누락의 전후를 한 번 잰다.",
+          "questionText": "누락 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 누락 전후 비교.",
+          "evidenceClass": null,
+          "evidenceStrengthDelta": null
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 누락 수"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "paymentOnly": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 누락 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 누락 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 누락 전후 비교. SAP 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 누락의 전후를 한 번 잰다.",
+          "questionText": "누락 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 누락 전후 비교.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 누락 수치가 실제로 "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "promoted": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+          "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+          "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "planAfterPromotion": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "evidenceClass": "CLAIM",
+        "evidenceStrengthDelta": "unchanged"
+      },
+      "worse": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 누락 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 누락 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 누락 전후 비교. SAP 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 누락의 전후를 한 번 잰다.",
+          "questionText": "누락 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 누락 전후 비교.",
+          "evidenceClass": "CONFLICT",
+          "evidenceStrengthDelta": "down"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 누락 수치가 실제로 "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "held": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "followups": {
+        "onStake": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "spokenFollow": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "wrongAxis": {
+          "verdictId": "viable",
+          "stageId": "S4",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "planOnly": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "CLAIM",
+          "evidenceStrengthDelta": "unchanged"
+        }
+      },
+      "impact": {
+        "stakeDropped": true,
+        "observations": [
+          "stake_dropped_after_held",
+          "answered_spoken_stale_cu",
+          "wrong_axis_promotes"
+        ],
+        "strategicImpact": "OBSERVED",
+        "note": "Founder can answer the spoken repeat-loop question and the CU stays; verdict does not move"
+      }
+    },
+    {
+      "id": "apparel_returns",
+      "sector": "D2C 의류",
+      "stake": "반품률",
+      "t0": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "whyPossible": "문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 반품률 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 반품률 전후 비교. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionText": "반품률 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 반품률 전후 비교.",
+          "evidenceClass": null,
+          "evidenceStrengthDelta": null
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "paymentOnly": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 반품률 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionText": "반품률 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 반품률 전후 비교.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 반품률 수치가 실제로"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "promoted": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+          "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+          "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "planAfterPromotion": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "evidenceClass": "CLAIM",
+        "evidenceStrengthDelta": "unchanged"
+      },
+      "worse": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 반품률 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionText": "반품률 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 반품률 전후 비교.",
+          "evidenceClass": "CONFLICT",
+          "evidenceStrengthDelta": "down"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 반품률 수치가 실제로"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "held": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "followups": {
+        "onStake": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "spokenFollow": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "wrongAxis": {
+          "verdictId": "viable",
+          "stageId": "S4",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "planOnly": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "CLAIM",
+          "evidenceStrengthDelta": "unchanged"
+        }
+      },
+      "impact": {
+        "stakeDropped": true,
+        "observations": [
+          "stake_dropped_after_held",
+          "answered_spoken_stale_cu",
+          "wrong_axis_promotes"
+        ],
+        "strategicImpact": "OBSERVED",
+        "note": "Founder can answer the spoken repeat-loop question and the CU stays; verdict does not move"
+      }
+    },
+    {
+      "id": "support_load",
+      "sector": "B2B 고객지원",
+      "stake": "부하",
+      "t0": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 부하 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "whyPossible": "문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 부하 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 부하 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 부하 전후 비교. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 부하의 전후를 한 번 잰다.",
+          "questionText": "부하 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 부하 전후 비교.",
+          "evidenceClass": null,
+          "evidenceStrengthDelta": null
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 부하 수"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "paymentOnly": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 부하 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 부하 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 부하 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 부하의 전후를 한 번 잰다.",
+          "questionText": "부하 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 부하 전후 비교.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 부하 수치가 실제로 "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "promoted": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+          "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+          "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "planAfterPromotion": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "evidenceClass": "CLAIM",
+        "evidenceStrengthDelta": "unchanged"
+      },
+      "worse": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 부하 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 부하 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 부하 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 부하의 전후를 한 번 잰다.",
+          "questionText": "부하 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 부하 전후 비교.",
+          "evidenceClass": "CONFLICT",
+          "evidenceStrengthDelta": "down"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 부하 수치가 실제로 "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "held": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "followups": {
+        "onStake": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "spokenFollow": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "wrongAxis": {
+          "verdictId": "viable",
+          "stageId": "S4",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "planOnly": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "CLAIM",
+          "evidenceStrengthDelta": "unchanged"
+        }
+      },
+      "impact": {
+        "stakeDropped": true,
+        "observations": [
+          "stake_dropped_after_held",
+          "answered_spoken_stale_cu",
+          "wrong_axis_promotes"
+        ],
+        "strategicImpact": "OBSERVED",
+        "note": "Founder can answer the spoken repeat-loop question and the CU stays; verdict does not move"
+      }
+    },
+    {
+      "id": "marketplace_mismatch",
+      "sector": "중고 카탈로그",
+      "stake": "미스매치",
+      "t0": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S0",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 미스매치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 미스매치 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 미스매치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 미스매치 전후 비교. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 미스매치의 전후를 한 번 잰다.",
+          "questionText": "미스매치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 미스매치 전후 비교.",
+          "evidenceClass": null,
+          "evidenceStrengthDelta": null
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S0"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 미스매치"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "paymentOnly": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S0",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 미스매치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 미스매치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 미스매치 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 미스매치의 전후를 한 번 잰다.",
+          "questionText": "미스매치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 미스매치 전후 비교.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S0"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 미스매치 수치가 실제"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "promoted": {
+        "actual": {
+          "verdictId": "conditionally_viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+          "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+          "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "conditionally_viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "planAfterPromotion": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "evidenceClass": "CLAIM",
+        "evidenceStrengthDelta": "unchanged"
+      },
+      "worse": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S0",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 미스매치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 미스매치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 미스매치 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 미스매치의 전후를 한 번 잰다.",
+          "questionText": "미스매치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 미스매치 전후 비교.",
+          "evidenceClass": "CONFLICT",
+          "evidenceStrengthDelta": "down"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S0"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 미스매치 수치가 실제"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "held": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "followups": {
+        "onStake": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "spokenFollow": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "wrongAxis": {
+          "verdictId": "viable",
+          "stageId": "S4",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "planOnly": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "CLAIM",
+          "evidenceStrengthDelta": "unchanged"
+        }
+      },
+      "impact": {
+        "stakeDropped": true,
+        "observations": [
+          "stake_dropped_after_held",
+          "answered_spoken_stale_cu",
+          "wrong_axis_promotes"
+        ],
+        "strategicImpact": "OBSERVED",
+        "note": "Founder can answer the spoken repeat-loop question and the CU stays; verdict does not move"
+      }
+    },
+    {
+      "id": "billing_inconsistency",
+      "sector": "병원 청구",
+      "stake": "불일치",
+      "t0": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S0",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 불일치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 불일치 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 불일치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 불일치 전후 비교. EHR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 불일치의 전후를 한 번 잰다.",
+          "questionText": "불일치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 불일치 전후 비교.",
+          "evidenceClass": null,
+          "evidenceStrengthDelta": null
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S0"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 불일치 "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "paymentOnly": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S0",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 불일치 전후 비교. EHR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 불일치의 전후를 한 번 잰다.",
+          "questionText": "불일치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 불일치 전후 비교.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S0"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 불일치 수치가 실제로"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "promoted": {
+        "actual": {
+          "verdictId": "conditionally_viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+          "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+          "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "conditionally_viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "planAfterPromotion": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "evidenceClass": "CLAIM",
+        "evidenceStrengthDelta": "unchanged"
+      },
+      "worse": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S0",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 불일치 전후 비교. EHR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 불일치의 전후를 한 번 잰다.",
+          "questionText": "불일치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 불일치 전후 비교.",
+          "evidenceClass": "CONFLICT",
+          "evidenceStrengthDelta": "down"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S0"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 불일치 수치가 실제로"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "held": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "followups": {
+        "onStake": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "spokenFollow": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "wrongAxis": {
+          "verdictId": "viable",
+          "stageId": "S4",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "planOnly": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "CLAIM",
+          "evidenceStrengthDelta": "unchanged"
+        }
+      },
+      "impact": {
+        "stakeDropped": true,
+        "observations": [
+          "stake_dropped_after_held",
+          "answered_spoken_stale_cu",
+          "wrong_axis_promotes"
+        ],
+        "strategicImpact": "OBSERVED",
+        "note": "Founder can answer the spoken repeat-loop question and the CU stays; verdict does not move"
+      }
+    },
+    {
+      "id": "clinic_noshow",
+      "sector": "동네 의원",
+      "stake": "no-show",
+      "t0": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "whyPossible": "문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 no-show 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 no-show 전후 비교. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionText": "no-show 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 no-show 전후 비교.",
+          "evidenceClass": null,
+          "evidenceStrengthDelta": null
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 no-s"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "paymentOnly": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 no-show 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionText": "no-show 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 no-show 전후 비교.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 no-show 수치가"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "promoted": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+          "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+          "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "planAfterPromotion": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "evidenceClass": "CLAIM",
+        "evidenceStrengthDelta": "unchanged"
+      },
+      "worse": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 no-show 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionText": "no-show 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 no-show 전후 비교.",
+          "evidenceClass": "CONFLICT",
+          "evidenceStrengthDelta": "down"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 no-show 수치가"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "held": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "followups": {
+        "onStake": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "spokenFollow": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "wrongAxis": {
+          "verdictId": "viable",
+          "stageId": "S4",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "planOnly": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "CLAIM",
+          "evidenceStrengthDelta": "unchanged"
+        }
+      },
+      "impact": {
+        "stakeDropped": true,
+        "observations": [
+          "stake_dropped_after_held",
+          "answered_spoken_stale_cu",
+          "wrong_axis_promotes"
+        ],
+        "strategicImpact": "OBSERVED",
+        "note": "Founder can answer the spoken repeat-loop question and the CU stays; verdict does not move"
+      }
+    },
+    {
+      "id": "saas_churn",
+      "sector": "B2B 온보딩",
+      "stake": "이탈",
+      "t0": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S0",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 이탈 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 이탈 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 이탈 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 이탈 전후 비교. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 이탈의 전후를 한 번 잰다.",
+          "questionText": "이탈 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 이탈 전후 비교.",
+          "evidenceClass": null,
+          "evidenceStrengthDelta": null
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S0"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 이탈 수"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "paymentOnly": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S0",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 이탈 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 이탈 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 이탈 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 이탈의 전후를 한 번 잰다.",
+          "questionText": "이탈 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 이탈 전후 비교.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S0"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 이탈 수치가 실제로 "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "promoted": {
+        "actual": {
+          "verdictId": "conditionally_viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+          "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+          "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "conditionally_viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "planAfterPromotion": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "evidenceClass": "CLAIM",
+        "evidenceStrengthDelta": "unchanged"
+      },
+      "worse": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S0",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 이탈 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 이탈 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 이탈 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 이탈의 전후를 한 번 잰다.",
+          "questionText": "이탈 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 이탈 전후 비교.",
+          "evidenceClass": "CONFLICT",
+          "evidenceStrengthDelta": "down"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S0"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 이탈 수치가 실제로 "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "held": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "questionText": "이미 유료로 전환한 고객 외에, 두 번째 고객이나 계약이 있습니까? 있다면 그 한 건을 알려주세요. 아직 없다면 1회 전환만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 전환 이후 두 번째 고객·계약이 있는지 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "followups": {
+        "onStake": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 유료로 전환한 고객 외에, 두 번째 고객이나 계약이 있습니까? 있다면 그 한 건을 알려주세요. 아직 없다면 1회 전환만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 전환 이후 두 번째 고객·계약이 있는지 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "spokenFollow": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 유료로 전환한 고객 외에, 두 번째 고객이나 계약이 있습니까? 있다면 그 한 건을 알려주세요. 아직 없다면 1회 전환만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 전환 이후 두 번째 고객·계약이 있는지 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "wrongAxis": {
+          "verdictId": "viable",
+          "stageId": "S4",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 유료로 전환한 고객 외에, 두 번째 고객이나 계약이 있습니까? 있다면 그 한 건을 알려주세요. 아직 없다면 1회 전환만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 전환 이후 두 번째 고객·계약이 있는지 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "planOnly": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 유료로 전환한 고객 외에, 두 번째 고객이나 계약이 있습니까? 있다면 그 한 건을 알려주세요. 아직 없다면 1회 전환만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 전환 이후 두 번째 고객·계약이 있는지 확인합니다.",
+          "evidenceClass": "CLAIM",
+          "evidenceStrengthDelta": "unchanged"
+        }
+      },
+      "impact": {
+        "stakeDropped": true,
+        "observations": [
+          "stake_dropped_after_held",
+          "answered_spoken_stale_cu",
+          "wrong_axis_promotes"
+        ],
+        "strategicImpact": "OBSERVED",
+        "note": "Founder can answer the spoken repeat-loop question and the CU stays; verdict does not move"
+      }
+    },
+    {
+      "id": "warehouse_omission",
+      "sector": "식품 창고",
+      "stake": "누락",
+      "t0": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 누락 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "whyPossible": "문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 누락 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 누락 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 누락 전후 비교. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 누락의 전후를 한 번 잰다.",
+          "questionText": "누락 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 누락 전후 비교.",
+          "evidenceClass": null,
+          "evidenceStrengthDelta": null
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 누락 수"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "paymentOnly": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 누락 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 누락 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 누락 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 누락의 전후를 한 번 잰다.",
+          "questionText": "누락 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 누락 전후 비교.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 누락 수치가 실제로 "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "promoted": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "다음 고객 또는 다음 기간에서 같은 성과가 유지되는지. 유지되면 판단을 유지하고, 1회성이면 내린다.",
+          "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+          "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "planAfterPromotion": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "questionText": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+        "evidenceClass": "CLAIM",
+        "evidenceStrengthDelta": "unchanged"
+      },
+      "worse": {
+        "actual": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 누락 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 누락 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "이미 결제한 후보의 누락 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 누락의 전후를 한 번 잰다.",
+          "questionText": "누락 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 누락 전후 비교.",
+          "evidenceClass": "CONFLICT",
+          "evidenceStrengthDelta": "down"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "judgment_deferred/S1"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 누락 수치가 실제로 "
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "held": {
+        "actual": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+          "whyPossible": "실제 판매·매출 증거가 있다. 문서에서 확인할 수 있는 구체적 문제가 있다.",
+          "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "scored": {
+          "layers": [
+            {
+              "id": "accuracy",
+              "score": "PASS",
+              "note": "viable/S3"
+            },
+            {
+              "id": "judgment",
+              "score": "PASS",
+              "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다"
+            },
+            {
+              "id": "validation",
+              "score": "PASS",
+              "note": "spoken question seeks the current CU/DCE"
+            },
+            {
+              "id": "decisionValue",
+              "score": "PASS",
+              "note": "Founder can hear what to check from the question"
+            },
+            {
+              "id": "strategy",
+              "score": "PASS",
+              "note": "AI PM executes the current CU, not another thesis"
+            }
+          ],
+          "overall": "PASS"
+        }
+      },
+      "followups": {
+        "onStake": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "FACT",
+          "evidenceStrengthDelta": "up"
+        },
+        "spokenFollow": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "wrongAxis": {
+          "verdictId": "viable",
+          "stageId": "S4",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "VALIDATED",
+          "evidenceStrengthDelta": "up"
+        },
+        "planOnly": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+          "evidenceClass": "CLAIM",
+          "evidenceStrengthDelta": "unchanged"
+        }
+      },
+      "impact": {
+        "stakeDropped": true,
+        "observations": [
+          "stake_dropped_after_held",
+          "answered_spoken_stale_cu",
+          "wrong_axis_promotes"
+        ],
+        "strategicImpact": "OBSERVED",
+        "note": "Founder can answer the spoken repeat-loop question and the CU stays; verdict does not move"
+      }
+    }
+  ],
+  "extras": [
+    {
+      "id": "resale_t0",
+      "sector": "C2C 재판매",
+      "actual": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "whyPossible": "실제 판매·매출 증거가 있다.",
+        "whyFail": "C2C 재판매가 반복적으로 발생하는지 확인되지 않았다.",
+        "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+        "decisionChangingEvidence": "최근 구매자의 실제 재판매 등록·거래·재구매 데이터. 이 데이터가 있으면 반복 가능한 양면 시장으로 판단을 올리고, 없으면 1차 판매 브랜드로 내린다.",
+        "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+        "questionText": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최근 구매자의 실제 재판매 등록·거래·재구매 데이터.",
+        "evidenceClass": null,
+        "evidenceStrengthDelta": null
+      },
+      "scored": {
+        "layers": [
+          {
+            "id": "accuracy",
+            "score": "PASS",
+            "note": "conditionally_viable/S3"
+          },
+          {
+            "id": "judgment",
+            "score": "PASS",
+            "note": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 "
+          },
+          {
+            "id": "validation",
+            "score": "PASS",
+            "note": "spoken question seeks the current CU/DCE"
+          },
+          {
+            "id": "decisionValue",
+            "score": "PASS",
+            "note": "Founder can hear what to check from the question"
+          },
+          {
+            "id": "strategy",
+            "score": "PASS",
+            "note": "AI PM executes the current CU, not another thesis"
+          }
+        ],
+        "overall": "PASS"
+      }
+    },
+    {
+      "id": "resale_validated",
+      "sector": "C2C 재판매",
+      "actual": {
+        "verdictId": "viable",
+        "stageId": "S4",
+        "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+        "whyFail": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "questionText": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터.",
+        "evidenceClass": "VALIDATED",
+        "evidenceStrengthDelta": "up"
+      },
+      "scored": {
+        "layers": [
+          {
+            "id": "accuracy",
+            "score": "PASS",
+            "note": "viable/S4"
+          },
+          {
+            "id": "judgment",
+            "score": "PASS",
+            "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 현재 강점이 반복 가능한 사업으로 이"
+          },
+          {
+            "id": "validation",
+            "score": "PASS",
+            "note": "spoken question seeks the current CU/DCE"
+          },
+          {
+            "id": "decisionValue",
+            "score": "PASS",
+            "note": "Founder can hear what to check from the question"
+          },
+          {
+            "id": "strategy",
+            "score": "PASS",
+            "note": "AI PM executes the current CU, not another thesis"
+          }
+        ],
+        "overall": "PASS"
+      }
+    },
+    {
+      "id": "payer_split_t0",
+      "sector": "양조장 마케팅",
+      "actual": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S1",
+        "judgment": "현재 판단: 지금은 판단을 보류한다. 사용자와 결제자가 분리되어 있어 지불 이유가 따로 검증되지 않았다. 누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.",
+        "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+        "whyFail": "사용자와 결제자가 분리되어 있어 지불 이유가 따로 검증되지 않았다. 출시·매출 등 상업 실행 증거가 없다.",
+        "criticalUnknown": "누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.",
+        "decisionChangingEvidence": "구체적 사용 상황에서 결제자 한 명이 실제로 지불하거나 유료 사용을 시작한 증거. 이 증거가 있으면 보류를 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+        "validationPriority": "결제자와 Job-to-be-done을 한 쌍으로 확인한다.",
+        "questionText": "이 제품을 쓰며 돈을 내는 사람은 누구이고, 그 사람이 어떤 일을 이 제품으로 대신합니까? 실제 지불이 있으면 그 사람과 이유를 한 쌍으로 알려주세요. 아직이면 가설이라고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 구체적 사용 상황에서 결제자 한 명이 실제로 지불하거나 유료 사용을 시작한 증거.",
+        "evidenceClass": null,
+        "evidenceStrengthDelta": null
+      },
+      "scored": {
+        "layers": [
+          {
+            "id": "accuracy",
+            "score": "PASS",
+            "note": "judgment_deferred/S1"
+          },
+          {
+            "id": "judgment",
+            "score": "PASS",
+            "note": "현재 판단: 지금은 판단을 보류한다. 사용자와 결제자가 분리되어 있어 지불 이유가 따로 검증되지 않았다. 누가 어떤 직무를 이 제"
+          },
+          {
+            "id": "validation",
+            "score": "PASS",
+            "note": "spoken question seeks the current CU/DCE"
+          },
+          {
+            "id": "decisionValue",
+            "score": "PASS",
+            "note": "Founder can hear what to check from the question"
+          },
+          {
+            "id": "strategy",
+            "score": "PASS",
+            "note": "AI PM executes the current CU, not another thesis"
+          }
+        ],
+        "overall": "PASS"
+      }
+    },
+    {
+      "id": "payer_split_validated",
+      "sector": "양조장 마케팅",
+      "actual": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 사용자와 결제자가 분리되어 있어 지불 이유가 따로 검증되지 않았다.",
+        "whyPossible": "실제 판매·매출 증거가 있다.",
+        "whyFail": "사용자와 결제자가 분리되어 있어 지불 이유가 따로 검증되지 않았다. 출시·매출 등 상업 실행 증거가 없다.",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "questionText": "이미 유료로 전환한 고객 외에, 두 번째 계약이나 반복되는 관광 수요가 있습니까? 있다면 그 한 건을 알려주세요. 아직 없다면 1회 전환만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 전환 이후 두 번째 계약이나 관광 수요가 반복되는지 확인합니다.",
+        "evidenceClass": "VALIDATED",
+        "evidenceStrengthDelta": "up"
+      },
+      "scored": {
+        "layers": [
+          {
+            "id": "accuracy",
+            "score": "PASS",
+            "note": "viable/S3"
+          },
+          {
+            "id": "judgment",
+            "score": "PASS",
+            "note": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 사용자와 결제자가 분리되어 있어 지불"
+          },
+          {
+            "id": "validation",
+            "score": "PASS",
+            "note": "spoken question seeks the current CU/DCE"
+          },
+          {
+            "id": "decisionValue",
+            "score": "PASS",
+            "note": "Founder can hear what to check from the question"
+          },
+          {
+            "id": "strategy",
+            "score": "PASS",
+            "note": "AI PM executes the current CU, not another thesis"
+          }
+        ],
+        "overall": "PASS"
+      }
+    },
+    {
+      "id": "payer_job_t0",
+      "sector": "감정 기록 컴패니언",
+      "actual": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S1",
+        "judgment": "현재 판단: 지금은 판단을 보류한다. 결제자가 확인되지 않았다. 누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.",
+        "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+        "whyFail": "결제자가 확인되지 않았다. 이 제품이 대체하는 직무가 검증되지 않았다.",
+        "criticalUnknown": "누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와 결제자가 없으면 콘셉트만으로 사업화 판단을 내릴 수 없다.",
+        "decisionChangingEvidence": "구체적 사용 상황에서 결제자 한 명이 실제로 지불하거나 유료 사용을 시작한 증거. 이 증거가 있으면 보류를 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+        "validationPriority": "결제자와 Job-to-be-done을 한 쌍으로 확인한다.",
+        "questionText": "이 제품을 쓰며 돈을 내는 사람은 누구이고, 그 사람이 어떤 일을 이 제품으로 대신합니까? 실제 지불이 있으면 그 사람과 이유를 한 쌍으로 알려주세요. 아직이면 가설이라고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 구체적 사용 상황에서 결제자 한 명이 실제로 지불하거나 유료 사용을 시작한 증거.",
+        "evidenceClass": null,
+        "evidenceStrengthDelta": null
+      },
+      "scored": {
+        "layers": [
+          {
+            "id": "accuracy",
+            "score": "PASS",
+            "note": "judgment_deferred/S1"
+          },
+          {
+            "id": "judgment",
+            "score": "PASS",
+            "note": "현재 판단: 지금은 판단을 보류한다. 결제자가 확인되지 않았다. 누가 어떤 직무를 이 제품으로 대체하며, 왜 돈을 내는가. 직무와"
+          },
+          {
+            "id": "validation",
+            "score": "PASS",
+            "note": "spoken question seeks the current CU/DCE"
+          },
+          {
+            "id": "decisionValue",
+            "score": "PASS",
+            "note": "Founder can hear what to check from the question"
+          },
+          {
+            "id": "strategy",
+            "score": "PASS",
+            "note": "AI PM executes the current CU, not another thesis"
+          }
+        ],
+        "overall": "PASS"
+      }
+    },
+    {
+      "id": "payer_job_validated",
+      "sector": "감정 기록 컴패니언",
+      "actual": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "whyPossible": "실제 판매·매출 증거가 있다.",
+        "whyFail": "결제자가 확인되지 않았다. 이 제품이 대체하는 직무가 검증되지 않았다.",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+        "evidenceClass": "VALIDATED",
+        "evidenceStrengthDelta": "up"
+      },
+      "scored": {
+        "layers": [
+          {
+            "id": "accuracy",
+            "score": "PASS",
+            "note": "conditionally_viable/S3"
+          },
+          {
+            "id": "judgment",
+            "score": "PASS",
+            "note": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 "
+          },
+          {
+            "id": "validation",
+            "score": "PASS",
+            "note": "spoken question seeks the current CU/DCE"
+          },
+          {
+            "id": "decisionValue",
+            "score": "PASS",
+            "note": "Founder can hear what to check from the question"
+          },
+          {
+            "id": "strategy",
+            "score": "PASS",
+            "note": "AI PM executes the current CU, not another thesis"
+          }
+        ],
+        "overall": "PASS"
+      }
+    }
+  ]
+}
