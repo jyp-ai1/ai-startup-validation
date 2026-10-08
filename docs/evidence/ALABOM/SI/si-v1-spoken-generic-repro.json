@@ -1,0 +1,266 @@
+{
+  "productionSha": "5cd89dc3bdbc78c845da35a8adff7577f81444b8",
+  "pattern": "spoken_generic_after_promotion",
+  "rows": [
+    {
+      "id": "omission_t0",
+      "role": "control",
+      "metric": "누락",
+      "actual": {
+        "kind": "paid_conversion",
+        "verdictId": "judgment_deferred",
+        "stageId": "S1",
+        "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 누락 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 누락의 전후를 한 번 잰다.",
+        "questionText": "누락 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 누락 전후 비교."
+      },
+      "referee": {
+        "score": "CONTROL",
+        "spokenGeneric": false,
+        "nextPeriodCu": false,
+        "note": "kind=paid_conversion; spoken question names a concrete proof"
+      }
+    },
+    {
+      "id": "omission_2_2",
+      "role": "candidate",
+      "metric": "누락",
+      "actual": {
+        "kind": "generic",
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "questionText": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지."
+      },
+      "referee": {
+        "score": "REPRO",
+        "spokenGeneric": true,
+        "nextPeriodCu": true,
+        "note": "kind=generic; CU is next-period but spoken question is generic"
+      }
+    },
+    {
+      "id": "omission_held",
+      "role": "control",
+      "metric": "누락",
+      "actual": {
+        "kind": "repeat_loop",
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+      },
+      "referee": {
+        "score": "ABSENT",
+        "spokenGeneric": false,
+        "nextPeriodCu": false,
+        "note": "kind=repeat_loop; spoken question names a concrete proof"
+      }
+    },
+    {
+      "id": "returns_t0",
+      "role": "control",
+      "metric": "반품률",
+      "actual": {
+        "kind": "paid_conversion",
+        "verdictId": "judgment_deferred",
+        "stageId": "S1",
+        "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
+        "questionText": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 반품률 전후 비교."
+      },
+      "referee": {
+        "score": "CONTROL",
+        "spokenGeneric": false,
+        "nextPeriodCu": false,
+        "note": "kind=paid_conversion; spoken question names a concrete proof"
+      }
+    },
+    {
+      "id": "returns_2_2",
+      "role": "candidate",
+      "metric": "반품률",
+      "actual": {
+        "kind": "generic",
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "questionText": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지."
+      },
+      "referee": {
+        "score": "REPRO",
+        "spokenGeneric": true,
+        "nextPeriodCu": true,
+        "note": "kind=generic; CU is next-period but spoken question is generic"
+      }
+    },
+    {
+      "id": "returns_held",
+      "role": "control",
+      "metric": "반품률",
+      "actual": {
+        "kind": "repeat_loop",
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+      },
+      "referee": {
+        "score": "ABSENT",
+        "spokenGeneric": false,
+        "nextPeriodCu": false,
+        "note": "kind=repeat_loop; spoken question names a concrete proof"
+      }
+    },
+    {
+      "id": "load_t0",
+      "role": "control",
+      "metric": "부하",
+      "actual": {
+        "kind": "paid_conversion",
+        "verdictId": "judgment_deferred",
+        "stageId": "S1",
+        "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 부하 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 부하의 전후를 한 번 잰다.",
+        "questionText": "부하 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 부하 전후 비교."
+      },
+      "referee": {
+        "score": "CONTROL",
+        "spokenGeneric": false,
+        "nextPeriodCu": false,
+        "note": "kind=paid_conversion; spoken question names a concrete proof"
+      }
+    },
+    {
+      "id": "load_2_2",
+      "role": "candidate",
+      "metric": "부하",
+      "actual": {
+        "kind": "generic",
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "questionText": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지."
+      },
+      "referee": {
+        "score": "REPRO",
+        "spokenGeneric": true,
+        "nextPeriodCu": true,
+        "note": "kind=generic; CU is next-period but spoken question is generic"
+      }
+    },
+    {
+      "id": "load_held",
+      "role": "control",
+      "metric": "부하",
+      "actual": {
+        "kind": "repeat_loop",
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+      },
+      "referee": {
+        "score": "ABSENT",
+        "spokenGeneric": false,
+        "nextPeriodCu": false,
+        "note": "kind=repeat_loop; spoken question names a concrete proof"
+      }
+    },
+    {
+      "id": "mismatch_t0",
+      "role": "control",
+      "metric": "미스매치",
+      "actual": {
+        "kind": "paid_conversion",
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 미스매치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 미스매치의 전후를 한 번 잰다.",
+        "questionText": "미스매치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 미스매치 전후 비교."
+      },
+      "referee": {
+        "score": "CONTROL",
+        "spokenGeneric": false,
+        "nextPeriodCu": false,
+        "note": "kind=paid_conversion; spoken question names a concrete proof"
+      }
+    },
+    {
+      "id": "mismatch_2_2",
+      "role": "candidate",
+      "metric": "미스매치",
+      "actual": {
+        "kind": "generic",
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+        "questionText": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지."
+      },
+      "referee": {
+        "score": "REPRO",
+        "spokenGeneric": true,
+        "nextPeriodCu": true,
+        "note": "kind=generic; CU is next-period but spoken question is generic"
+      }
+    },
+    {
+      "id": "mismatch_held",
+      "role": "control",
+      "metric": "미스매치",
+      "actual": {
+        "kind": "repeat_loop",
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+      },
+      "referee": {
+        "score": "ABSENT",
+        "spokenGeneric": false,
+        "nextPeriodCu": false,
+        "note": "kind=repeat_loop; spoken question names a concrete proof"
+      }
+    },
+    {
+      "id": "resale_t0",
+      "role": "control",
+      "metric": "C2C",
+      "actual": {
+        "kind": "repeat_loop",
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "criticalUnknown": "C2C 재판매가 한 번의 이벤트가 아니라 반복적으로 발생하는가. 이 루프가 없으면 1차 판매만 있는 브랜드이지 플랫폼 사업이 아니다.",
+        "validationPriority": "최근 구매 코호트의 재판매 등록·체결·재구매 여부 한 가지를 확인한다.",
+        "questionText": "최근 실제로 구매한 고객 중에서, 재판매 등록·거래 체결·재구매처럼 두 번째 행동이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 계획만 있다고 답해도 됩니다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최근 구매자의 실제 재판매 등록·거래·재구매 데이터."
+      },
+      "referee": {
+        "score": "ABSENT",
+        "spokenGeneric": false,
+        "nextPeriodCu": false,
+        "note": "kind=repeat_loop; spoken question names a concrete proof"
+      }
+    }
+  ]
+}
