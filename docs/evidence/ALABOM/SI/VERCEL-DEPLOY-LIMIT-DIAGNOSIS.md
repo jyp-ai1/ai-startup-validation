@@ -118,4 +118,10 @@ Mixed creates after the first reject (GitHub Deployments):
 
 Recovery probe, if CPO later approves one, is a **already-locked** Preview (#140) — not #194, not a new factory PR.
 
-Evidence commits after this note use `[skip vercel]` so they do not create another Preview.
+Evidence commits after this note use `[skip vercel]`. GitHub may still record a Vercel status; that is not recovery.
+
+## 9. Clock at Fix Gate review (2026-10-08T23:37Z)
+
+Elapsed since first reject: **~5.6 hours**. Dashboard plan/usage/reset still unread.  
+#192 / #193 dump commit statuses remain the 18:28Z rate-limit text.  
+`a79c81c` and `e399319` later showed GitHub `Deployment has completed`. Not Preview PASS. Not `[VERCEL RECOVERY COMPLETE]`. #194 not retried.
