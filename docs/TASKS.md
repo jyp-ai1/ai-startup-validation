@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Founder Test Batch 3 — P1 Pattern Confirmation
+
+**CPO Gate:** 측정 완료 · Production `acbbf24` 불변 · Fix 없음 · PR #119 Draft 유지  
+**Branch:** `cursor/si-founder-test-batch3-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-TEST-BATCH3.md`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | P1-A 유료 → 재판매 (RIDM · 주인집) | 3 Batch 반복 · FIX GATE 후보 |
+| 2 | P1-B 예비/일정 `MVP 런칭` → 출시 FACT (주인집) | 3 Batch 반복 · Analyzer 전체 rewrite 아님 |
+| 3 | LMULM P0 Pos S4 / Neg S3 / Partial S3 | 재발 없음 |
+| 4 | Production / PR #119 | 불변 · Draft · Merge 금지 |
+
+---
+
 ## [P0] Negative Evidence → Re-Judgment Integrity
 
 **CPO Gate:** 2-Pass PASS · Production `6c52fff` · SHA triangle MATCH  
