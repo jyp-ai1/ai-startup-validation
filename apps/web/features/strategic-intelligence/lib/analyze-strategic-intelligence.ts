@@ -11,6 +11,8 @@ import type {
 } from '@repo/types/domain/strategic-intelligence';
 import { SI_AXIS_LABELS, SI_VERDICT_LABELS } from '@repo/types/domain/strategic-intelligence';
 
+import { hasCountedCompletion, hasCountedPaidConversion } from './quantity-unit';
+
 type SignalKind =
   | 'problem'
   | 'customer'
@@ -154,10 +156,7 @@ function isIntentWithoutAction(line: string): boolean {
 /** Counted completed actions — not intent, not a planned pilot. */
 function isQuantifiedCompletion(line: string): boolean {
   if (isIntentWithoutAction(line) || isHypothesis(line) || isRepeatZeroLine(line)) return false;
-  return (
-    /\d+\s*(명|건)/.test(line) &&
-    /(등록했|거래됐|거래가 됐|거래가 발생|재구매했|체결됐|실제로\s*재판매)/.test(line)
-  );
+  return hasCountedCompletion(line);
 }
 
 /** Counted own payment — not a planned offer, not customer-size 매출. */
@@ -165,7 +164,7 @@ function isQuantifiedPayment(line: string): boolean {
   if (isIntentWithoutAction(line) || isHypothesis(line) || isQuantifiedCompletion(line)) {
     return false;
   }
-  return /\d+\s*(명|건)/.test(line) && /(결제했|지불했|유료로\s*(썼|사용|전환))/.test(line);
+  return hasCountedPaidConversion(line);
 }
 
 /** Own commercial revenue — not the customer's size, not a problem symptom. */
