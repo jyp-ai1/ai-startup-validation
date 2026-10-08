@@ -155,7 +155,7 @@ describe('Question Alignment Fix — CU axis preserved in spoken question', () =
     }
   });
 
-  it('leaves Pattern A next-CU generic asks unchanged', () => {
+  it('binds Pattern A next-CU asks to the held-outcome axis', () => {
     const clinic = getSiCalibrationCase('clinicflow');
     const fit = getSiCalibrationCase('fitbridge');
     const clinicView = afterAnswer(
@@ -181,7 +181,9 @@ describe('Question Alignment Fix — CU axis preserved in spoken question', () =
     for (const view of [clinicView, fitView, omission, load]) {
       expect(view.judgment.criticalUnknown).toMatch(/다음 고객|다음 기간/);
       expect(view.question.kind).toBe('generic');
-      expect(view.question.questionText).toMatch(/지금 판단을 바꾸려면 실제 행동 증거/);
+      expect(view.question.questionText).toMatch(/다음 고객|다음 기간/);
+      expect(view.question.questionText).not.toMatch(/지금 판단을 바꾸려면 실제 행동 증거/);
+      expect(view.question.whyAsking).toMatch(/다음 고객|다음 기간/);
     }
   });
 
@@ -349,7 +351,7 @@ describe('Question Alignment Fix — CU axis preserved in spoken question', () =
     expect(patternB).toHaveLength(4);
     expect(patternA).toHaveLength(6);
     expect(patternB.every((row) => row.spoken === 'PASS')).toBe(true);
-    expect(patternA.every((row) => row.spoken === 'PARTIAL')).toBe(true);
+    expect(patternA.every((row) => row.spoken === 'PASS')).toBe(true);
     expect(rows.find((row) => row.id === 'juinjip_alt')?.spoken).toBe('PASS');
     expect(rows.every((row) => row.spoken !== 'FAIL')).toBe(true);
   });

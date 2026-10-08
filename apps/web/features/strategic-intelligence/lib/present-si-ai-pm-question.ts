@@ -17,6 +17,8 @@ const REPEAT_B2B_CONTRACT_QUESTION =
   '이미 유료로 전환한 고객 외에, 두 번째 고객이나 계약이 있습니까? 있다면 그 한 건을 알려주세요. 아직 없다면 1회 전환만 있다고 답해도 됩니다.';
 const REPEAT_GENERIC_QUESTION =
   '이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.';
+const NEXT_PERIOD_QUESTION =
+  '다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.';
 
 const QUESTION_BY_KIND: Record<SiValidationKind, string> = {
   repeat_loop: REPEAT_GENERIC_QUESTION,
@@ -104,6 +106,10 @@ function whyAskingForRepeatAxis(ask: SiValidationAsk, axis: RepeatAxis): string 
   return `${prefix} 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.`;
 }
 
+function isNextPeriodTriad(ask: SiValidationAsk): boolean {
+  return /다음 고객|다음 기간/.test(triadText(ask));
+}
+
 function composeQuestion(ask: SiValidationAsk, documentText?: string | null): string {
   const blob = triadText(ask);
   // Stake may only come from the CU. DCE boilerplate like "이탈 없는 두 번째 거래"
@@ -121,6 +127,10 @@ function composeQuestion(ask: SiValidationAsk, documentText?: string | null): st
     return questionForRepeatAxis(detectRepeatAxis(ask, documentText));
   }
 
+  if (isNextPeriodTriad(ask)) {
+    return NEXT_PERIOD_QUESTION;
+  }
+
   return QUESTION_BY_KIND[ask.kind];
 }
 
@@ -128,6 +138,7 @@ function composeQuestion(ask: SiValidationAsk, documentText?: string | null): st
  * AI PM executes one S.I. ask. The question is not a copy of Critical Unknown.
  * Weave a quantified stake only when that stake is the CU's verification object.
  * repeat_loop binds to the CU/DCE axis, then to document-derived meaning, then generic.
+ * next-period CU binds to a held-outcome question. generic Pattern A only when the axis is unknown.
  */
 export function presentSiAiPmQuestion(
   ask: SiValidationAsk,

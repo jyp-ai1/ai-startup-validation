@@ -4,6 +4,22 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## spoken_generic_after_promotion Presentation Fix
+
+**CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  
+**Branch:** `cursor/si-spoken-generic-fix-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-SPOKEN-GENERIC-FIX.md`  
+**#131:** CLOSED `8c3b652` · **#133:** 8/8 REPRO `c4c36a8`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Presenter next-period bind | ✅ |
+| 2 | 8/8 generic-after-promotion 0 | ✅ |
+| 3 | P1-A / #104 / #107 / P0 / Accuracy | ✅ |
+| 4 | Analyzer / Judgment / SoT | 미변경 |
+
+---
+
 ## Accuracy Batch — Conversation Quality
 
 **CPO Gate:** OPEN · Draft · Production `5226fa1` 불변 · Merge 금지  
