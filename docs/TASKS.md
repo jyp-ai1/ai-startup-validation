@@ -8,9 +8,11 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 **CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge HOLD · Production `0b46522` UNCHANGED  
 **#139:** Draft `0c362c7` Freeze · 미변경  
+**PR:** #152 · **Evidence SHA:** `fbc8e1a` · Draft  
+**Preview:** https://ai-startup-validation-git-cursor-si-ac-4ea9c2-jyp-ai1s-projects.vercel.app  
+**Preview 검증:** PASS 아님 (SSO 302)  
 **Branch:** `cursor/si-accuracy-holdout-13-e648`  
-**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-HOLDOUT-13.md`  
-**Preview:** Ready 이후 기록. Ready 전 PASS 아님.
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-HOLDOUT-13.md`
 
 | # | Item | Status |
 |---|---|---|
