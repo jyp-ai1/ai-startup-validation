@@ -2,6 +2,11 @@
 
 **CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge HOLD · Production `0b46522` UNCHANGED  
 **Frozen:** #139 Draft `0c362c7` 미변경 · #140 Draft 미변경  
+**PR:** #141 · **Evidence SHA:** `01b586a` · Draft  
+**Preview:** https://ai-startup-validation-git-cursor-si-ac-ae6bbf-jyp-ai1s-projects.vercel.app  
+**Vercel comment:** Ready (`Ds229scwPgigubCZCCdEDnzJ5d9k`, 2026-10-08T14:56:17Z)  
+**GitHub Vercel check:** pending (`Aiw3zCGXWtLctCcam1tAoaZWxK4D`) — Preview PASS 아님  
+**Preview probe:** `/` · `/api/build-info` · `/api/health` → HTTP 302 Vercel SSO. SHA triangle 미확인. Preview 검증 PASS 아님.  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-accuracy-holdout-2.json`  
 **CEO Founder Test:** 없음
 
