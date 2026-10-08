@@ -7,6 +7,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 ## P1-B Launch Status Interpretation
 
 **CPO Gate:** OPEN · Draft · Production `5226fa1` 불변 · Merge 금지  
+**PR:** #127 · **SHA:** `c039616`  
+**Preview:** https://ai-startup-validation-git-cursor-si-p1-fd35fa-jyp-ai1s-projects.vercel.app  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-P1B-LAUNCH-STATUS.md`  
 **P1-A / P1-C:** CLOSED
 
@@ -15,8 +17,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 1 | 계획 출시 ≠ 이미 출시 | ✅ |
 | 2 | 실제 출시/사용 = launch FACT | ✅ |
 | 3 | 계획 답 VALIDATED 금지 · surface leak 없음 | ✅ |
-| 4 | P1-A / P1-C / #104 / #107 / P0 회귀 | ✅ 198 |
-| 5 | CPO 2-pass · Merge | 대기 |
+| 4 | P1-A / P1-C / #104 / #107 / P0 회귀 | ✅ SI 185 · P0-1 14 · P0-2 10 |
+| 5 | Preview · Vercel Ready | ✅ SSO · Comments PASS |
+| 6 | CPO 2-pass · Merge | 대기 |
 
 ---
 
