@@ -6,17 +6,18 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## spoken_generic_after_promotion Presentation Fix
 
-**CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  
-**Branch:** `cursor/si-spoken-generic-fix-e648`  
-**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-SPOKEN-GENERIC-FIX.md`  
-**#131:** CLOSED `8c3b652` · **#133:** 8/8 REPRO `c4c36a8`
+**CPO Gate:** 2-pass PASS · Merge GO · Production SHA Triangle MATCH 제출  
+**PR:** #134 · Freeze `32f2483` · main/Production `0b46522`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-SPOKEN-GENERIC-FIX-PRODUCTION.md`  
+**Live:** 2026-10-08T09:02Z · Git = Build = Production `0b46522`
 
 | # | Item | Status |
 |---|------|--------|
 | 1 | Presenter next-period bind | ✅ |
 | 2 | 8/8 generic-after-promotion 0 | ✅ |
-| 3 | P1-A / #104 / #107 / P0 / Accuracy | ✅ |
-| 4 | Analyzer / Judgment / SoT | 미변경 |
+| 3 | #134 Merge rebase | ✅ `0b46522` |
+| 4 | SHA Triangle | ✅ Git = Build = Production `0b46522` |
+| 5 | Smoke / #104 / #107 / P1-A / P1-C / P0 | ✅ |
 
 ---
 
