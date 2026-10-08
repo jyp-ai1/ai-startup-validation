@@ -6,6 +6,17 @@ Release history for the AI SaaS Starter Kit. Semantic versioning.
 
 ## [Unreleased]
 
+### S.I. P1-C DCE Quantity Normalization (2026-10-08) ✅ Production
+
+**Production SHA:** `5226fa1458207fdc4480a27f9b4861ec10b2cb77` · **PR:** #125 · **CPO 2-Pass:** PASS  
+**Prod:** https://ai-startup-validation-tau.vercel.app · **SHA triangle:** MATCH
+
+- `곳` / `명` / `건` / `계약` kind 보존. `곳 → 건` 치환 없음
+- ClinicFlow / FitBridge Semantic Full (`2곳` + KPI) → VALIDATED · viable S3
+- Partial / ASSUMPTION / Negative 경계 유지 · 동네장터 기존 S3 유지
+
+Evidence: [`docs/evidence/ALABOM/SI/SI-V1-P1C-PRODUCTION.md`](./evidence/ALABOM/SI/SI-V1-P1C-PRODUCTION.md)
+
 ### S.I. Question Alignment P1-A (2026-10-08) ✅ Production
 
 **Production SHA:** `671005fcd540eb6132185cd58953b66a6ac2f538` · **PR:** #121 · **CPO 2-Pass:** PASS  
