@@ -90,3 +90,32 @@ Not taken (forbidden during diagnosis):
 - Dump SHA lock rewrite
 
 Further Preview creation should stay at **one** independent measurement PR maximum. Duplicate factory Previews are the cause, not the product engine.
+
+## 8. Recovery clock (do not treat as reset)
+
+Observed 2026-10-08T21:39:54Z.
+
+| Clock | Value |
+|---|---|
+| First dump-SHA reject | #173 `ede47bb` **2026-10-08T18:02:05Z** — `Deployment rate limited — retry in 24 hours.` |
+| Elapsed since first reject | **3.63 hours** |
+| 24h-from-first-reject remaining | **~20.4 hours** → earliest that clock would open **~2026-10-09T18:02Z** |
+| Team plan / usage dashboard / reset timestamp | **unread** — no `VERCEL_TOKEN`, no Vercel CLI |
+| Pro upgrade | **not executed** (CEO approval required) |
+
+24시간 경과만으로 한도 해제를 단정하지 않는다. 롤링 윈도일 수는 있으나 대시보드 해제 시각이 없다.
+
+Mixed creates after the first reject (GitHub Deployments):
+
+| Time | SHA | Note |
+|---|---|---|
+| 18:03:53Z | `0909d3d` | holdout-34 **test** SHA, not dump `ede47bb` |
+| 18:17–18:30Z | `ff0aa80`, `b8117f3` | other test SHAs; dump SHAs of #192/#193 still rejected |
+| 21:36:30Z | `a79c81c` | #194 dump — status **pending** at observation. Not locked. Not recovery. |
+| 21:37:58Z | `91e427d` | #194 **first test commit** GitHub status `Deployment has completed` (`RuzbqddjBHErjdxRwMeJrU6PAnVA`). **Not dump SHA. Not #194 Preview PASS. SSO 302 still applies.** |
+
+`91e427d` completed ≠ daily cap cleared. Do not retry #194 dump `a79c81c`. Do not Redeploy. Do not use this as `[VERCEL RECOVERY COMPLETE]`.
+
+Recovery probe, if CPO later approves one, is a **already-locked** Preview (#140) — not #194, not a new factory PR.
+
+Evidence commits after this note use `[skip vercel]` so they do not create another Preview.
