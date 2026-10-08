@@ -4,6 +4,22 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## P1-C DCE Fulfillment / Evidence Normalization
+
+**CPO Gate:** OPEN · Production `671005f` 불변 · Merge/Production 금지  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-P1C-DCE-NORMALIZE.md`  
+**P1-A:** CLOSED · **P1-B:** Backlog · PR #119 / #120 / #124 Draft 유지
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 수량 단위 의미 정규화 (`곳`/`명`/`건`/`계약` 보존) | ✅ |
+| 2 | Semantic Full 2/2 승격 · Token Full 유지 | ✅ |
+| 3 | Partial / ASSUMPTION / Negative / 동네장터 | ✅ |
+| 4 | SI 193 + P0-1/P0-2 + P1-A 4축 | ✅ |
+| 5 | CPO 2-pass · Merge | 대기 |
+
+---
+
 ## Question Alignment Fix Gate — P1-A
 
 **CPO Gate:** 2-Pass PASS · Production `671005f` · SHA triangle MATCH  
