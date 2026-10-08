@@ -2,6 +2,8 @@
 
 **CPO Gate:** 측정 전용 · Fix Gate 미개방 · Merge/Production 금지  
 **Production:** `0b46522` 불변  
+**PR:** #137 · **SHA:** `77702c9` · Draft  
+**Preview:** https://ai-startup-validation-git-cursor-si-dv-394f6e-jyp-ai1s-projects.vercel.app  
 **#134:** Production Acceptance CLOSED · **`spoken_generic_after_promotion`:** FIX CLOSED  
 **#136:** 3사업군 5층 측정 CLOSED (`a46ffe3`, 미머지)  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-decision-value-repro.json`
@@ -49,5 +51,14 @@ Fix Gate **미개방**. 단일 관찰을 Fix로 승격하지 않는다. 다음 �
 ## 미변경
 
 Analyzer · Judgment · Presenter · SoT · Question Engine · Auth · `#127` · `#129` · `#131` · `#135` · `#136` · Production `0b46522`
+
+## Preview / SHA
+
+| | |
+|---|---|
+| Evidence SHA | `77702c9` |
+| Preview | https://ai-startup-validation-git-cursor-si-dv-394f6e-jyp-ai1s-projects.vercel.app |
+| Vercel | Ready |
+| Production | UNCHANGED `0b46522` |
 
 CEO Founder Test 미요청.

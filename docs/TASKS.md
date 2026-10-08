@@ -7,6 +7,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 ## Accuracy Batch — Decision Value reproducibility
 
 **CPO Gate:** 측정 전용 · Fix Gate 미개방 · Merge/Production 금지 · Production `0b46522` 불변  
+**PR:** #137 · **SHA:** `77702c9` · Draft  
+**Preview:** https://ai-startup-validation-git-cursor-si-dv-394f6e-jyp-ai1s-projects.vercel.app  
 **Branch:** `cursor/si-dv-repro-e648`  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DECISION-VALUE-REPRO.md`  
 **#134:** Production Acceptance CLOSED · **`spoken_generic_after_promotion`:** FIX CLOSED
