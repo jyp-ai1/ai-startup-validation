@@ -86,11 +86,32 @@ function promoted(snap: Snap): boolean {
   return snap.verdictId === 'viable' || snap.stageId === 'S3' || snap.stageId === 'S4';
 }
 
+const VERDICT_RANK: Record<string, number> = {
+  insufficient_basis: 0,
+  judgment_deferred: 1,
+  conditionally_viable: 2,
+  viable: 3,
+};
+
 function leftoverPositive(snap: Snap): boolean {
-  return (
+  const headlineUp =
     /가능성이 높음/.test(snap.judgment) &&
-    (snap.verdictId === 'judgment_deferred' || snap.verdictId === 'insufficient_basis')
+    (snap.verdictId === 'judgment_deferred' || snap.verdictId === 'insufficient_basis');
+  const contradict =
+    /판매·매출 증거가 있다/.test(snap.judgment) && /상업 실행 증거가 없다/.test(snap.judgment);
+  return headlineUp || contradict;
+}
+
+function clearlyDropped(snap: Snap, t0: Snap): boolean {
+  return (
+    (VERDICT_RANK[snap.verdictId] ?? 0) < (VERDICT_RANK[t0.verdictId] ?? 0) ||
+    snap.stageId < t0.stageId ||
+    snap.evidenceClass === 'CONFLICT'
   );
+}
+
+function clearlyPromotedFrom(snap: Snap, t0: Snap): boolean {
+  return (VERDICT_RANK[snap.verdictId] ?? 0) > (VERDICT_RANK[t0.verdictId] ?? 0) || snap.stageId > t0.stageId;
 }
 
 function mentionsStake(text: string, stake: string): boolean {
@@ -122,10 +143,14 @@ export function scoreScene(input: {
     judgment = 'FAIL';
     failures.push('over_promote_on_plan');
     judgmentNote = 'plan/intent promoted';
-  } else if (scene === 'partial' && snap.verdictId === 'viable') {
+  } else if (scene === 'partial' && promoted(snap)) {
     judgment = 'FAIL';
     failures.push('over_promote_on_partial');
-    judgmentNote = 'payment-only reached viable';
+    judgmentNote = 'payment-only promoted off deferred';
+  } else if (scene === 'wrong_axis' && t0 && clearlyPromotedFrom(snap, t0)) {
+    judgment = 'FAIL';
+    failures.push('axis_drift');
+    judgmentNote = 'wrong-axis resale promoted the verdict';
   } else if (scene === 'revenue_no_repeat' && snap.verdictId === 'viable' && snap.stageId === 'S4') {
     judgment = 'FAIL';
     failures.push('revenue_as_viability');
@@ -152,20 +177,16 @@ export function scoreScene(input: {
     failures.push('over_promote_on_partial');
     evidenceNote = 'payment-only VALIDATED and promoted';
   } else if ((scene === 'negative' || scene === 'conflict' || scene === 'revenue_no_repeat') && t0) {
-    const dropped =
-      snap.verdictId !== 'viable' ||
-      snap.stageId < t0.stageId ||
-      /보류|조건부/.test(snap.judgment) ||
-      snap.evidenceClass === 'CONFLICT';
-    if (!dropped && t0.verdictId === 'viable') {
+    const dropped = clearlyDropped(snap, t0);
+    if (!dropped && promoted(t0) && scene !== 'revenue_no_repeat') {
       evidence = 'FAIL';
       failures.push('missed_downgrade');
-      evidenceNote = 'negative/conflict did not move a prior viable headline';
-    } else if (!dropped && promoted(t0) && scene !== 'revenue_no_repeat') {
-      evidence = 'PARTIAL';
-      failures.push('missed_downgrade');
-      evidenceNote = 'negative/conflict did not clearly move the headline';
+      evidenceNote = 'negative/conflict left the prior promoted headline in place';
     }
+  } else if (scene === 'wrong_axis' && t0 && clearlyPromotedFrom(snap, t0)) {
+    evidence = 'FAIL';
+    failures.push('axis_drift');
+    evidenceNote = 'C2C resale counts treated as decision-changing for a non-resale CU';
   }
 
   let cu: Score = 'PASS';
