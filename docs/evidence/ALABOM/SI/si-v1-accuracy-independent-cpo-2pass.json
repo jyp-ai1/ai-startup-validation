@@ -1,0 +1,3886 @@
+{
+  "purpose": "CPO 2-pass independent verification. Not a quality PASS. Engine unmodified.",
+  "dumpSha": "a79c81cb2de1c74ea1e956daa02f2ae0c18ad8be",
+  "productionSha": "0b465226516e1a4f3eb9ce2087f8bca2c2c091da",
+  "production": "UNCHANGED",
+  "preview": "UNVERIFIED",
+  "fixGate": "CANDIDATE",
+  "merge": "HOLD",
+  "ceoFounderTest": "HOLD",
+  "engineModified": false,
+  "wrongAxisAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+  "classes": {
+    "payment_only_s3": {
+      "claim": "지불만으로 S3/conditionally_viable. 6 unseen vs 2 known-noun control.",
+      "failing": [
+        {
+          "id": "coldchain_3pl_partial",
+          "businessType": "냉동물류 IoT",
+          "domain": "B2B 3PL 센서",
+          "stake": "온도 초과",
+          "knownStakeNoun": false,
+          "scene": "partial",
+          "input": {
+            "businessDocument": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": "물류사 2곳이 월 구독을 결제했다."
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "over_promote_on_partial",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "payment-only VALIDATED and promoted"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              }
+            }
+          }
+        },
+        {
+          "id": "dental_lab_match_partial",
+          "businessType": "치과기공 매칭",
+          "domain": "헬스케어 마켓플레이스",
+          "stake": "재작업",
+          "knownStakeNoun": false,
+          "scene": "partial",
+          "input": {
+            "businessDocument": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": "치과 3곳이 월 구독을 결제했다."
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "over_promote_on_partial",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "payment-only VALIDATED and promoted"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              }
+            }
+          }
+        },
+        {
+          "id": "excavator_idle_partial",
+          "businessType": "굴착기 단기렌탈",
+          "domain": "중고 건설장비",
+          "stake": "공회",
+          "knownStakeNoun": false,
+          "scene": "partial",
+          "input": {
+            "businessDocument": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": "토목 사장 2명이 단기 렌탈을 결제했다."
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "over_promote_on_partial",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "payment-only VALIDATED and promoted"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              }
+            }
+          }
+        },
+        {
+          "id": "bunker_delay_partial",
+          "businessType": "선박 급유 중개",
+          "domain": "해운 B2B",
+          "stake": "급유 지연",
+          "knownStakeNoun": false,
+          "scene": "partial",
+          "input": {
+            "businessDocument": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": "선사 2곳이 중개 수수료를 결제했다."
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "over_promote_on_partial",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "payment-only VALIDATED and promoted"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              }
+            }
+          }
+        },
+        {
+          "id": "print_tolerance_partial",
+          "businessType": "산업 3D 수탁",
+          "domain": "제조 수탁",
+          "stake": "치수 불량",
+          "knownStakeNoun": false,
+          "scene": "partial",
+          "input": {
+            "businessDocument": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": "공장 2곳이 수탁 비용을 결제했다."
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "over_promote_on_partial",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "payment-only VALIDATED and promoted"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              }
+            }
+          }
+        },
+        {
+          "id": "meal_leftover_partial",
+          "businessType": "학교급식 잔반",
+          "domain": "공공 급식",
+          "stake": "잔반",
+          "knownStakeNoun": false,
+          "scene": "partial",
+          "input": {
+            "businessDocument": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": "학교 2곳이 월 구독을 결제했다."
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "over_promote_on_partial",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "payment-only VALIDATED and promoted"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "payment-only promoted off deferred"
+              }
+            }
+          }
+        }
+      ],
+      "control": [
+        {
+          "id": "trial_noshow_partial",
+          "businessType": "임상 피험자 모집",
+          "domain": "CRO 헬스케어",
+          "stake": "노쇼",
+          "knownStakeNoun": true,
+          "scene": "partial",
+          "input": {
+            "businessDocument": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": "CRO 2곳이 월 구독을 결제했다."
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 노쇼 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 노쇼 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "유료 전환 이후 문서가 수치화한 노쇼 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "이미 결제한 후보의 노쇼 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+            "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 노쇼의 전후를 한 번 잰다.",
+            "askKind": "paid_conversion",
+            "question": "노쇼 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 노쇼 전후 비교."
+          },
+          "score": {
+            "overall": "PASS",
+            "failureType": "none",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "VALIDATED"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "paid_conversion"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken paid_conversion / CU paid_conversion / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        },
+        {
+          "id": "remit_mismatch_partial",
+          "businessType": "소상공인 해외송금",
+          "domain": "핀테크 B2B",
+          "stake": "불일치",
+          "knownStakeNoun": true,
+          "scene": "partial",
+          "input": {
+            "businessDocument": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": "수출 대표 3명이 송금 수수료를 결제했다."
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 불일치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "이미 결제한 후보의 불일치 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+            "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 불일치의 전후를 한 번 잰다.",
+            "askKind": "paid_conversion",
+            "question": "불일치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 불일치 전후 비교."
+          },
+          "score": {
+            "overall": "PASS",
+            "failureType": "none",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "VALIDATED"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "paid_conversion"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken paid_conversion / CU paid_conversion / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "missed_negative_downgrade": {
+      "claim": "지표 악화 후에도 조건부 S3 유지. 6 unseen vs 2 known-noun CONFLICT control.",
+      "failing": [
+        {
+          "id": "coldchain_3pl_negative",
+          "businessType": "냉동물류 IoT",
+          "domain": "B2B 3PL 센서",
+          "stake": "온도 초과",
+          "knownStakeNoun": false,
+          "scene": "negative",
+          "input": {
+            "businessDocument": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.",
+            "priorAnswerForChain": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "다음 주에 온도 초과가 4건에서 13건으로 늘었다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "missed_downgrade",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "conditionally_viable/S3"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "negative/conflict left the prior promoted headline in place"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        },
+        {
+          "id": "dental_lab_match_negative",
+          "businessType": "치과기공 매칭",
+          "domain": "헬스케어 마켓플레이스",
+          "stake": "재작업",
+          "knownStakeNoun": false,
+          "scene": "negative",
+          "input": {
+            "businessDocument": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.",
+            "priorAnswerForChain": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "다음 달에 재작업이 8%에서 18%로 늘었다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "missed_downgrade",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "conditionally_viable/S3"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "negative/conflict left the prior promoted headline in place"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        },
+        {
+          "id": "excavator_idle_negative",
+          "businessType": "굴착기 단기렌탈",
+          "domain": "중고 건설장비",
+          "stake": "공회",
+          "knownStakeNoun": false,
+          "scene": "negative",
+          "input": {
+            "businessDocument": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.",
+            "priorAnswerForChain": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "다음 기간에 공회가 17%에서 39%로 늘었다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "missed_downgrade",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "conditionally_viable/S3"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "negative/conflict left the prior promoted headline in place"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        },
+        {
+          "id": "bunker_delay_negative",
+          "businessType": "선박 급유 중개",
+          "domain": "해운 B2B",
+          "stake": "급유 지연",
+          "knownStakeNoun": false,
+          "scene": "negative",
+          "input": {
+            "businessDocument": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.",
+            "priorAnswerForChain": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "다음 기간에 급유 지연이 7%에서 17%로 늘었다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "missed_downgrade",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "conditionally_viable/S3"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "negative/conflict left the prior promoted headline in place"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        },
+        {
+          "id": "print_tolerance_negative",
+          "businessType": "산업 3D 수탁",
+          "domain": "제조 수탁",
+          "stake": "치수 불량",
+          "knownStakeNoun": false,
+          "scene": "negative",
+          "input": {
+            "businessDocument": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.",
+            "priorAnswerForChain": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "다음 기간에 치수 불량이 6%에서 21%로 늘었다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "missed_downgrade",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "conditionally_viable/S3"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "negative/conflict left the prior promoted headline in place"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        },
+        {
+          "id": "meal_leftover_negative",
+          "businessType": "학교급식 잔반",
+          "domain": "공공 급식",
+          "stake": "잔반",
+          "knownStakeNoun": false,
+          "scene": "negative",
+          "input": {
+            "businessDocument": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.",
+            "priorAnswerForChain": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "다음 기간에 잔반이 11%에서 27%로 늘었다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "missed_downgrade",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "conditionally_viable/S3"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "negative/conflict left the prior promoted headline in place"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        }
+      ],
+      "control": [
+        {
+          "id": "trial_noshow_negative",
+          "businessType": "임상 피험자 모집",
+          "domain": "CRO 헬스케어",
+          "stake": "노쇼",
+          "knownStakeNoun": true,
+          "scene": "negative",
+          "input": {
+            "businessDocument": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.",
+            "priorAnswerForChain": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "다음 기간에 노쇼가 12%에서 29%로 늘었다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 노쇼 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "CONFLICT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT",
+              "CONFLICT",
+              "INFERENCE",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "유료 전환 이후 문서가 수치화한 노쇼 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "이미 결제한 후보의 노쇼 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+            "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 노쇼의 전후를 한 번 잰다.",
+            "askKind": "paid_conversion",
+            "question": "노쇼 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 노쇼 전후 비교."
+          },
+          "score": {
+            "overall": "PASS",
+            "failureType": "none",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "CONFLICT"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "paid_conversion"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken paid_conversion / CU paid_conversion / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        },
+        {
+          "id": "remit_mismatch_negative",
+          "businessType": "소상공인 해외송금",
+          "domain": "핀테크 B2B",
+          "stake": "불일치",
+          "knownStakeNoun": true,
+          "scene": "negative",
+          "input": {
+            "businessDocument": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.",
+            "priorAnswerForChain": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "다음 기간에 불일치가 5%에서 15%로 늘었다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "CONFLICT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT",
+              "CONFLICT",
+              "INFERENCE",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "이미 결제한 후보의 불일치 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+            "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 불일치의 전후를 한 번 잰다.",
+            "askKind": "paid_conversion",
+            "question": "불일치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 불일치 전후 비교."
+          },
+          "score": {
+            "overall": "PASS",
+            "failureType": "none",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "CONFLICT"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "paid_conversion"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken paid_conversion / CU paid_conversion / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "wrong_axis_s4": {
+      "claim": "C2C 재판매 답이 8개 사업 모두 viable/S4로 승격.",
+      "failing": [
+        {
+          "id": "coldchain_3pl_wrong_axis",
+          "businessType": "냉동물류 IoT",
+          "domain": "B2B 3PL 센서",
+          "stake": "온도 초과",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.",
+            "priorAnswerForChain": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "dental_lab_match_wrong_axis",
+          "businessType": "치과기공 매칭",
+          "domain": "헬스케어 마켓플레이스",
+          "stake": "재작업",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.",
+            "priorAnswerForChain": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "excavator_idle_wrong_axis",
+          "businessType": "굴착기 단기렌탈",
+          "domain": "중고 건설장비",
+          "stake": "공회",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.",
+            "priorAnswerForChain": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "trial_noshow_wrong_axis",
+          "businessType": "임상 피험자 모집",
+          "domain": "CRO 헬스케어",
+          "stake": "노쇼",
+          "knownStakeNoun": true,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.",
+            "priorAnswerForChain": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "bunker_delay_wrong_axis",
+          "businessType": "선박 급유 중개",
+          "domain": "해운 B2B",
+          "stake": "급유 지연",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.",
+            "priorAnswerForChain": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "print_tolerance_wrong_axis",
+          "businessType": "산업 3D 수탁",
+          "domain": "제조 수탁",
+          "stake": "치수 불량",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.",
+            "priorAnswerForChain": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "meal_leftover_wrong_axis",
+          "businessType": "학교급식 잔반",
+          "domain": "공공 급식",
+          "stake": "잔반",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.",
+            "priorAnswerForChain": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "remit_mismatch_wrong_axis",
+          "businessType": "소상공인 해외송금",
+          "domain": "핀테크 B2B",
+          "stake": "불일치",
+          "knownStakeNoun": true,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.",
+            "priorAnswerForChain": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "unseen_stake_cu_omitted": {
+      "claim": "미등록 지표는 최초 CU/질문에 지표 명사가 없음.",
+      "failing": [
+        {
+          "id": "coldchain_3pl_normal",
+          "businessType": "냉동물류 IoT",
+          "domain": "B2B 3PL 센서",
+          "stake": "온도 초과",
+          "knownStakeNoun": false,
+          "scene": "normal",
+          "input": {
+            "businessDocument": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": null
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": null,
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+            "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+            "askKind": "paid_conversion",
+            "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과."
+          },
+          "score": {
+            "overall": "PARTIAL",
+            "failureType": "stake_blind_overfit",
+            "founderDecisionValue": "PARTIAL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "none"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PARTIAL",
+                "note": "CU omits unseen stake \"온도 초과\""
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken other / CU other / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PARTIAL",
+                "note": "chain is readable; one layer is weaker"
+              }
+            }
+          }
+        },
+        {
+          "id": "dental_lab_match_normal",
+          "businessType": "치과기공 매칭",
+          "domain": "헬스케어 마켓플레이스",
+          "stake": "재작업",
+          "knownStakeNoun": false,
+          "scene": "normal",
+          "input": {
+            "businessDocument": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": null
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": null,
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+            "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+            "askKind": "paid_conversion",
+            "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과."
+          },
+          "score": {
+            "overall": "PARTIAL",
+            "failureType": "stake_blind_overfit",
+            "founderDecisionValue": "PARTIAL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "none"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PARTIAL",
+                "note": "CU omits unseen stake \"재작업\""
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken other / CU other / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PARTIAL",
+                "note": "chain is readable; one layer is weaker"
+              }
+            }
+          }
+        },
+        {
+          "id": "excavator_idle_normal",
+          "businessType": "굴착기 단기렌탈",
+          "domain": "중고 건설장비",
+          "stake": "공회",
+          "knownStakeNoun": false,
+          "scene": "normal",
+          "input": {
+            "businessDocument": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": null
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": null,
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+            "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+            "askKind": "paid_conversion",
+            "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과."
+          },
+          "score": {
+            "overall": "PARTIAL",
+            "failureType": "stake_blind_overfit",
+            "founderDecisionValue": "PARTIAL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "none"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PARTIAL",
+                "note": "CU omits unseen stake \"공회\""
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken other / CU other / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PARTIAL",
+                "note": "chain is readable; one layer is weaker"
+              }
+            }
+          }
+        },
+        {
+          "id": "bunker_delay_normal",
+          "businessType": "선박 급유 중개",
+          "domain": "해운 B2B",
+          "stake": "급유 지연",
+          "knownStakeNoun": false,
+          "scene": "normal",
+          "input": {
+            "businessDocument": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": null
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": null,
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+            "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+            "askKind": "paid_conversion",
+            "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과."
+          },
+          "score": {
+            "overall": "PARTIAL",
+            "failureType": "stake_blind_overfit",
+            "founderDecisionValue": "PARTIAL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "none"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PARTIAL",
+                "note": "CU omits unseen stake \"급유 지연\""
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken other / CU other / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PARTIAL",
+                "note": "chain is readable; one layer is weaker"
+              }
+            }
+          }
+        },
+        {
+          "id": "print_tolerance_normal",
+          "businessType": "산업 3D 수탁",
+          "domain": "제조 수탁",
+          "stake": "치수 불량",
+          "knownStakeNoun": false,
+          "scene": "normal",
+          "input": {
+            "businessDocument": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": null
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": null,
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+            "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+            "askKind": "paid_conversion",
+            "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과."
+          },
+          "score": {
+            "overall": "PARTIAL",
+            "failureType": "stake_blind_overfit",
+            "founderDecisionValue": "PARTIAL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "none"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PARTIAL",
+                "note": "CU omits unseen stake \"치수 불량\""
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken other / CU other / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PARTIAL",
+                "note": "chain is readable; one layer is weaker"
+              }
+            }
+          }
+        },
+        {
+          "id": "meal_leftover_normal",
+          "businessType": "학교급식 잔반",
+          "domain": "공공 급식",
+          "stake": "잔반",
+          "knownStakeNoun": false,
+          "scene": "normal",
+          "input": {
+            "businessDocument": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": null
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": null,
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+            "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+            "askKind": "paid_conversion",
+            "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과."
+          },
+          "score": {
+            "overall": "PARTIAL",
+            "failureType": "stake_blind_overfit",
+            "founderDecisionValue": "PARTIAL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "none"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PARTIAL",
+                "note": "CU omits unseen stake \"잔반\""
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken other / CU other / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PARTIAL",
+                "note": "chain is readable; one layer is weaker"
+              }
+            }
+          }
+        }
+      ],
+      "control": [
+        {
+          "id": "trial_noshow_normal",
+          "businessType": "임상 피험자 모집",
+          "domain": "CRO 헬스케어",
+          "stake": "노쇼",
+          "knownStakeNoun": true,
+          "scene": "normal",
+          "input": {
+            "businessDocument": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": null
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 노쇼 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 노쇼 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+            "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 노쇼 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+            "strengths": [],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다.",
+              "문서가 수치화한 노쇼 수치가 유료 사용 전후로 줄었는지 검증되지 않았다."
+            ],
+            "evidenceClass": null,
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 노쇼 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "유료 파일럿 1건과 노쇼 전후 비교. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+            "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 노쇼의 전후를 한 번 잰다.",
+            "askKind": "paid_conversion",
+            "question": "노쇼 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 노쇼 전후 비교."
+          },
+          "score": {
+            "overall": "PASS",
+            "failureType": "none",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "none"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "paid_conversion"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken paid_conversion / CU paid_conversion / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        },
+        {
+          "id": "remit_mismatch_normal",
+          "businessType": "소상공인 해외송금",
+          "domain": "핀테크 B2B",
+          "stake": "불일치",
+          "knownStakeNoun": true,
+          "scene": "normal",
+          "input": {
+            "businessDocument": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.",
+            "priorAnswerForChain": null,
+            "heldAnswerForChain": null,
+            "founderAnswer": null
+          },
+          "first": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 불일치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다."
+          },
+          "after": {
+            "verdictId": "judgment_deferred",
+            "stageId": "S0",
+            "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 불일치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+            "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 불일치 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+            "strengths": [],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다.",
+              "문서가 수치화한 불일치 수치가 유료 사용 전후로 줄었는지 검증되지 않았다."
+            ],
+            "evidenceClass": null,
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 불일치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+            "decisionChangingEvidence": "유료 파일럿 1건과 불일치 전후 비교. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+            "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 불일치의 전후를 한 번 잰다.",
+            "askKind": "paid_conversion",
+            "question": "불일치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 불일치 전후 비교."
+          },
+          "score": {
+            "overall": "PASS",
+            "failureType": "none",
+            "founderDecisionValue": "PASS",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "PASS",
+                "note": "judgment_deferred/S0"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "none"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "paid_conversion"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken paid_conversion / CU paid_conversion / kind paid_conversion"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "PASS",
+                "note": "Founder can hear why this judgment and what to prove next"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "headline_contradiction": {
+      "claim": "viable 헤드라인에 매출 있음과 상업 실행 증거 없음이 공존.",
+      "wrong_axis": [
+        {
+          "id": "coldchain_3pl_wrong_axis",
+          "businessType": "냉동물류 IoT",
+          "domain": "B2B 3PL 센서",
+          "stake": "온도 초과",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.",
+            "priorAnswerForChain": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "dental_lab_match_wrong_axis",
+          "businessType": "치과기공 매칭",
+          "domain": "헬스케어 마켓플레이스",
+          "stake": "재작업",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.",
+            "priorAnswerForChain": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "excavator_idle_wrong_axis",
+          "businessType": "굴착기 단기렌탈",
+          "domain": "중고 건설장비",
+          "stake": "공회",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.",
+            "priorAnswerForChain": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "trial_noshow_wrong_axis",
+          "businessType": "임상 피험자 모집",
+          "domain": "CRO 헬스케어",
+          "stake": "노쇼",
+          "knownStakeNoun": true,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.",
+            "priorAnswerForChain": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "bunker_delay_wrong_axis",
+          "businessType": "선박 급유 중개",
+          "domain": "해운 B2B",
+          "stake": "급유 지연",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.",
+            "priorAnswerForChain": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "print_tolerance_wrong_axis",
+          "businessType": "산업 3D 수탁",
+          "domain": "제조 수탁",
+          "stake": "치수 불량",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.",
+            "priorAnswerForChain": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "meal_leftover_wrong_axis",
+          "businessType": "학교급식 잔반",
+          "domain": "공공 급식",
+          "stake": "잔반",
+          "knownStakeNoun": false,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.",
+            "priorAnswerForChain": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "remit_mismatch_wrong_axis",
+          "businessType": "소상공인 해외송금",
+          "domain": "핀테크 B2B",
+          "stake": "불일치",
+          "knownStakeNoun": true,
+          "scene": "wrong_axis",
+          "input": {
+            "businessDocument": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.",
+            "priorAnswerForChain": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+            "heldAnswerForChain": null,
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다."
+          },
+          "first": {
+            "verdictId": "conditionally_viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "VALIDATED",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT",
+              "CLAIM",
+              "VALIDATED",
+              "INFERENCE"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "FAIL",
+                "note": "C2C resale counts treated as decision-changing for a non-resale CU"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        }
+      ],
+      "closed_reask": [
+        {
+          "id": "coldchain_3pl_closed_reask",
+          "businessType": "냉동물류 IoT",
+          "domain": "B2B 3PL 센서",
+          "stake": "온도 초과",
+          "knownStakeNoun": false,
+          "scene": "closed_reask",
+          "input": {
+            "businessDocument": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.",
+            "priorAnswerForChain": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+            "heldAnswerForChain": "다음 기간에도 온도 초과가 4건으로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+            "founderAnswer": "다음 기간에도 온도 초과가 4건으로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+          },
+          "first": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "FACT"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "dental_lab_match_closed_reask",
+          "businessType": "치과기공 매칭",
+          "domain": "헬스케어 마켓플레이스",
+          "stake": "재작업",
+          "knownStakeNoun": false,
+          "scene": "closed_reask",
+          "input": {
+            "businessDocument": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.",
+            "priorAnswerForChain": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+            "heldAnswerForChain": "다음 기간에도 재작업이 8%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+            "founderAnswer": "다음 기간에도 재작업이 8%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+          },
+          "first": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "FACT"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "excavator_idle_closed_reask",
+          "businessType": "굴착기 단기렌탈",
+          "domain": "중고 건설장비",
+          "stake": "공회",
+          "knownStakeNoun": false,
+          "scene": "closed_reask",
+          "input": {
+            "businessDocument": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.",
+            "priorAnswerForChain": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+            "heldAnswerForChain": "다음 기간에도 공회가 17%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+            "founderAnswer": "다음 기간에도 공회가 17%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+          },
+          "first": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "FACT"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "trial_noshow_closed_reask",
+          "businessType": "임상 피험자 모집",
+          "domain": "CRO 헬스케어",
+          "stake": "노쇼",
+          "knownStakeNoun": true,
+          "scene": "closed_reask",
+          "input": {
+            "businessDocument": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.",
+            "priorAnswerForChain": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+            "heldAnswerForChain": "다음 기간에도 노쇼가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+            "founderAnswer": "다음 기간에도 노쇼가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+          },
+          "first": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT",
+              "FACT",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "FACT"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "bunker_delay_closed_reask",
+          "businessType": "선박 급유 중개",
+          "domain": "해운 B2B",
+          "stake": "급유 지연",
+          "knownStakeNoun": false,
+          "scene": "closed_reask",
+          "input": {
+            "businessDocument": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.",
+            "priorAnswerForChain": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+            "heldAnswerForChain": "다음 기간에도 급유 지연이 7%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+            "founderAnswer": "다음 기간에도 급유 지연이 7%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+          },
+          "first": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "FACT"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "print_tolerance_closed_reask",
+          "businessType": "산업 3D 수탁",
+          "domain": "제조 수탁",
+          "stake": "치수 불량",
+          "knownStakeNoun": false,
+          "scene": "closed_reask",
+          "input": {
+            "businessDocument": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.",
+            "priorAnswerForChain": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+            "heldAnswerForChain": "다음 기간에도 치수 불량이 6%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+            "founderAnswer": "다음 기간에도 치수 불량이 6%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+          },
+          "first": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "FACT"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "meal_leftover_closed_reask",
+          "businessType": "학교급식 잔반",
+          "domain": "공공 급식",
+          "stake": "잔반",
+          "knownStakeNoun": false,
+          "scene": "closed_reask",
+          "input": {
+            "businessDocument": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.",
+            "priorAnswerForChain": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+            "heldAnswerForChain": "다음 기간에도 잔반이 11%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+            "founderAnswer": "다음 기간에도 잔반이 11%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+          },
+          "first": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "FACT"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        },
+        {
+          "id": "remit_mismatch_closed_reask",
+          "businessType": "소상공인 해외송금",
+          "domain": "핀테크 B2B",
+          "stake": "불일치",
+          "knownStakeNoun": true,
+          "scene": "closed_reask",
+          "input": {
+            "businessDocument": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.",
+            "priorAnswerForChain": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+            "heldAnswerForChain": "다음 기간에도 불일치가 5%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+            "founderAnswer": "다음 기간에도 불일치가 5%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+          },
+          "first": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다."
+          },
+          "after": {
+            "verdictId": "viable",
+            "stageId": "S3",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "evidenceClass": "FACT",
+            "evidenceClasses": [
+              "FACT",
+              "FACT",
+              "FACT",
+              "CLAIM",
+              "CLAIM",
+              "VALIDATED",
+              "FACT",
+              "FACT",
+              "VALIDATED"
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다."
+          },
+          "score": {
+            "overall": "FAIL",
+            "failureType": "leftover_positive",
+            "founderDecisionValue": "FAIL",
+            "axes": {
+              "judgment": {
+                "id": "judgment",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              },
+              "evidence": {
+                "id": "evidence",
+                "score": "PASS",
+                "note": "FACT"
+              },
+              "cu": {
+                "id": "cu",
+                "score": "PASS",
+                "note": "repeat_loop"
+              },
+              "questionAlignment": {
+                "id": "questionAlignment",
+                "score": "PASS",
+                "note": "spoken repeat_loop / CU repeat_loop / kind repeat_loop"
+              },
+              "decisionValue": {
+                "id": "decisionValue",
+                "score": "FAIL",
+                "note": "positive headline on deferred verdict"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "cause": {
+    "stakeNounAllowlist": "no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하",
+    "files": {
+      "allowlistAndStakeFns": "apps/web/features/strategic-intelligence/lib/analyze-strategic-intelligence.ts",
+      "quantifiedProblemPush": "same file ~L296-308",
+      "dceStakeOpen": "same file L607-609",
+      "decideStage": "same file L620-638",
+      "decideVerdict": "same file L641-666",
+      "buildRisksNoRevenueSticky": "same file L852-854",
+      "completionVerb": "apps/web/features/strategic-intelligence/lib/quantity-unit.ts L17 / L90-95"
+    },
+    "doNotFix": "CPO 2-pass 전 Analyzer/Judgment/SoT 수정 금지. 허용 목록 확대만으로 덮지 말 것."
+  }
+}
