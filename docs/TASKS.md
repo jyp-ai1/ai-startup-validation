@@ -4,22 +4,48 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## spoken_generic_after_promotion Repro
+
+**CPO Gate:** OPEN · 측정 전용 · Fix Gate 미개방 · Production `5cd89dc` 불변  
+**Branch:** `cursor/si-spoken-generic-repro-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-SPOKEN-GENERIC-REPRO.md`  
+**#131:** CLOSED · **#127:** Freeze `3015c9a`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 4 metric × 2/2 candidate | ✅ 4/4 REPRO |
+| 2 | t0 / held / C2C control | ✅ 0 REPRO |
+| 3 | Fix Gate | 미개방 · CPO 판단 |
+
+---
+
+## Founder Decision Value Accuracy Batch
+
+**CPO Gate:** PASS / CLOSED · Production `5cd89dc`  
+**PR:** #131 · **SHA:** `8c3b652`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DECISION-VALUE-BATCH.md`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 5층 측정 | ✅ |
+| 2 | `spoken_generic_after_promotion` 발견 | ✅ |
+| 3 | Fix Gate | 열지 않음 |
+
+---
+
 ## Accuracy Batch — Conversation Quality
 
-**CPO Gate:** OPEN · Draft · Production `5226fa1` 불변 · Merge 금지  
-**PR:** #128 · **SHA:** `ddbfb38`  
-**Preview:** https://ai-startup-validation-git-cursor-si-co-befde9-jyp-ai1s-projects.vercel.app  
-**Branch:** `cursor/si-conversation-quality-e648`  
-**PR #127:** Freeze `3015c9a` · 미포함  
-**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-CONVERSATION-QUALITY.md`  
-**P1-A / P1-C:** CLOSED
+**CPO Gate:** 2-Pass PASS · Production `5cd89dc` · **CLOSED**  
+**PR:** #128 · **Merge:** rebase `71df6f9` → `5cd89dc`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-CONVERSATION-QUALITY-PRODUCTION.md`  
+**#129:** `44fdb33` PASS / CLOSED · **#127:** Freeze `3015c9a`
 
 | # | Item | Status |
 |---|------|--------|
 | 1 | 다음 기간 계획 ≠ 유지된 성과 | ✅ |
 | 2 | 2/2 후 held 답 → 이전 CU 퇴직 | ✅ |
 | 3 | #104 / #107 / P1-A / P1-C / P0 회귀 | ✅ |
-| 4 | CPO 2-pass · Merge | 대기 |
+| 4 | CPO 2-pass · Merge · Production | ✅ `5cd89dc` · CLOSED |
 
 ---
 
