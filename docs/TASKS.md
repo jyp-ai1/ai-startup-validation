@@ -6,12 +6,10 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## Accuracy Batch — Conversation Quality
 
-**CPO Gate:** OPEN · Draft · Production `5226fa1` 불변 · Merge 금지  
-**PR:** #128 · **SHA:** `ddbfb38`  
-**Preview:** https://ai-startup-validation-git-cursor-si-co-befde9-jyp-ai1s-projects.vercel.app  
-**Branch:** `cursor/si-conversation-quality-e648`  
-**PR #127:** Freeze `3015c9a` · 미포함  
-**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-CONVERSATION-QUALITY.md`  
+**CPO Gate:** 2-Pass PASS · Merge GO · Production `5cd89dc` · SHA triangle MATCH  
+**PR:** #128 · **Merge:** rebase `71df6f9` → `5cd89dc`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-CONVERSATION-QUALITY-PRODUCTION.md`  
+**#129:** `44fdb33` PASS / CLOSED · **#127:** Freeze `3015c9a`  
 **P1-A / P1-C:** CLOSED
 
 | # | Item | Status |
@@ -19,7 +17,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 1 | 다음 기간 계획 ≠ 유지된 성과 | ✅ |
 | 2 | 2/2 후 held 답 → 이전 CU 퇴직 | ✅ |
 | 3 | #104 / #107 / P1-A / P1-C / P0 회귀 | ✅ |
-| 4 | CPO 2-pass · Merge | 대기 |
+| 4 | CPO 2-pass · Merge · Production | ✅ `5cd89dc` · SHA triangle MATCH · smoke PASS |
 
 ---
 
