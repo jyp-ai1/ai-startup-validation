@@ -1,7 +1,9 @@
-# [ACCURACY BATCH COMPLETE] Holdout — 10 new types × 15 scenes
+# Accuracy Batch Holdout — 10 new types × 15 scenes
 
 **CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge HOLD · Production `0b46522` UNCHANGED  
 **Frozen:** #139 Draft `0c362c7` 미변경  
+**PR:** #140 · **SHA:** `be10d6d` · Draft  
+**Preview:** https://ai-startup-validation-git-cursor-si-ac-4e7a72-jyp-ai1s-projects.vercel.app  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-accuracy-holdout.json`  
 **CEO Founder Test:** 없음
 
