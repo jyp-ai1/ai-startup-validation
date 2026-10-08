@@ -70,6 +70,8 @@ Dump: `si-v1-question-alignment-p1a.json`
 
 ## Preview / Production
 
+- Preview: https://ai-startup-validation-git-cursor-si-qu-b67f1e-jyp-ai1s-projects.vercel.app
+- Vercel: Ready
 - Production `acbbf24` 불변
 - Merge · Production deploy: CPO 2-pass 승인 이후
 - P1-B는 별도 Analyzer Fix Gate를 열지 않는다
