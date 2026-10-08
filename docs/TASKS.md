@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Founder Decision Value Batch 4 — 신규 사업
+
+**CPO Gate:** 측정 · Production `671005f` 불변 · Fix 없음  
+**사업:** 클리닉플로우 · 핏브릿지 · 동네장터알림 (RIDM/주인집/LMULM 제외)  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-DV-BATCH4.md`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | T0 원문 충실 / 리스크 / 질문=DCE | PASS |
+| 2 | 클리닉·핏브릿지 DCE 충족 후 재판단 | 정지 · HOLD cluster |
+| 3 | P1-A 재판매 이탈 | 없음 |
+| 4 | P1-B 출시 승격 | 신규 증거 없음 · Backlog |
+
+---
+
 ## Question Alignment Fix Gate — P1-A
 
 **CPO Gate:** 2-Pass PASS · Production `671005f` · SHA triangle MATCH  
