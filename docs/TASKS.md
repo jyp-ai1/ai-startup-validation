@@ -4,6 +4,23 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## spoken_generic_after_promotion Repeatability Batch
+
+**CPO Gate:** 측정 완료 · Fix Gate 후보 제출 · 엔진 미수정 · Production `5cd89dc` 불변  
+**Branch:** `cursor/si-spoken-generic-batch-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-SPOKEN-GENERIC-BATCH.md`  
+**#131:** CLOSED `8c3b652` · **CI:** `6338f2b` PASS · **#127:** Freeze `3015c9a` · **#129:** Freeze `44fdb33`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 8 사업군 × DCE 충족 → 승격 → 다음 CU | ✅ 8/8 REPRO |
+| 2 | t0 / held / C2C / 관광 / 지불만 control | ✅ 0 REPRO |
+| 3 | Pattern A obstruction과 분리 | ✅ obstruction 0 · Decision Value만 해당 |
+| 4 | Judgment / CU / DCE / State Failure | ✅ 0 |
+| 5 | Fix Gate | 후보 제출 · 엔진 미개방 |
+
+---
+
 ## Accuracy Batch — Conversation Quality
 
 **CPO Gate:** OPEN · Draft · Production `5226fa1` 불변 · Merge 금지  
