@@ -1,6 +1,8 @@
 # [ACCURACY BATCH COMPLETE] Judgment chain across 10 business types
 
 **CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge HOLD · Production `0b46522` UNCHANGED  
+**PR:** #139 · **SHA:** `f9bee12` · Draft  
+**Preview:** https://ai-startup-validation-git-cursor-si-ac-95a338-jyp-ai1s-projects.vercel.app  
 **Dump:** `docs/evidence/ALABOM/SI/si-v1-accuracy-batch-large.json`  
 **CEO Founder Test:** 없음
 

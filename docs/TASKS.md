@@ -7,6 +7,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 ## Accuracy Batch — 10 types × 15 scenes
 
 **CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge HOLD · Production `0b46522` UNCHANGED  
+**PR:** #139 · **SHA:** `f9bee12` · Draft  
+**Preview:** https://ai-startup-validation-git-cursor-si-ac-95a338-jyp-ai1s-projects.vercel.app  
 **Branch:** `cursor/si-accuracy-batch-large-e648`  
 **Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-BATCH-LARGE.md`
 
