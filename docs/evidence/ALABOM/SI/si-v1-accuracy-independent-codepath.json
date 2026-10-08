@@ -1,0 +1,4260 @@
+{
+  "productionSha": "0b465226516e1a4f3eb9ce2087f8bca2c2c091da",
+  "dumpSha": "a79c81cb2de1c74ea1e956daa02f2ae0c18ad8be",
+  "production": "UNCHANGED",
+  "preview": "UNVERIFIED",
+  "fixGate": "CANDIDATE",
+  "engineModified": false,
+  "liveMatchesDump": true,
+  "replayed": 48,
+  "paths": {
+    "A1_paymentOnlyS3": {
+      "file": "analyze-strategic-intelligence.ts",
+      "gates": [
+        "L87 STAKE_NOUN",
+        "L296 quantified_problem",
+        "L607 dceStakeOpen",
+        "L622 decideStage",
+        "L655 decideVerdict"
+      ],
+      "rows": {
+        "failing": [
+          {
+            "businessType": "냉동물류 IoT",
+            "stake": "온도 초과",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.\n\n[Founder evidence]\n물류사 2곳이 월 구독을 결제했다.",
+              "founderAnswer": "물류사 2곳이 월 구독을 결제했다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": true,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 종이 온도기록지와 기사 수기 보고입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 물류사 운영팀장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "물류사 2곳이 월 구독을 결제했다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "물류사 2곳이 월 구독을 결제했다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "치과기공 매칭",
+            "stake": "재작업",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.\n\n[Founder evidence]\n치과 3곳이 월 구독을 결제했다.",
+              "founderAnswer": "치과 3곳이 월 구독을 결제했다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": true,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 치과 원장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "치과 3곳이 월 구독을 결제했다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "치과 3곳이 월 구독을 결제했다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "굴착기 단기렌탈",
+            "stake": "공회",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.\n\n[Founder evidence]\n토목 사장 2명이 단기 렌탈을 결제했다.",
+              "founderAnswer": "토목 사장 2명이 단기 렌탈을 결제했다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": true,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 소규모 토목 사장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "토목 사장 2명이 단기 렌탈을 결제했다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "토목 사장 2명이 단기 렌탈을 결제했다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "선박 급유 중개",
+            "stake": "급유 지연",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.\n\n[Founder evidence]\n선사 2곳이 중개 수수료를 결제했다.",
+              "founderAnswer": "선사 2곳이 중개 수수료를 결제했다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": true,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 항만 급유업자 전화 중개입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 선사 운항팀입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "선사 2곳이 중개 수수료를 결제했다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "선사 2곳이 중개 수수료를 결제했다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "산업 3D 수탁",
+            "stake": "치수 불량",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.\n\n[Founder evidence]\n공장 2곳이 수탁 비용을 결제했다.",
+              "founderAnswer": "공장 2곳이 수탁 비용을 결제했다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": true,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 공장 보전팀장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "공장 2곳이 수탁 비용을 결제했다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "공장 2곳이 수탁 비용을 결제했다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "학교급식 잔반",
+            "stake": "잔반",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.\n\n[Founder evidence]\n학교 2곳이 월 구독을 결제했다.",
+              "founderAnswer": "학교 2곳이 월 구독을 결제했다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": true,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 교육청 급식담당입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "학교 2곳이 월 구독을 결제했다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "학교 2곳이 월 구독을 결제했다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          }
+        ],
+        "control": [
+          {
+            "businessType": "임상 피험자 모집",
+            "stake": "노쇼",
+            "knownStakeNoun": true,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.\n\n[Founder evidence]\nCRO 2곳이 월 구독을 결제했다.",
+              "founderAnswer": "CRO 2곳이 월 구독을 결제했다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": true,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 노쇼 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "유료 전환 이후 문서가 수치화한 노쇼 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "이미 결제한 후보의 노쇼 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+              "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 노쇼의 전후를 한 번 잰다.",
+              "askKind": "paid_conversion",
+              "question": "노쇼 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 노쇼 전후 비교.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "기존 대안은 병원 게시판과 간호사 전화 독촉입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "결제자는 CRO 프로젝트 매니저입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "CRO 2곳이 월 구독을 결제했다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "CRO 2곳이 월 구독을 결제했다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "유료 전환 증거는 있으나, 문서가 수치화한 지표 전후는 아직 열려 있어 DCE는 부분이다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-2",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [
+                  "노쇼"
+                ],
+                "quantifiedProblemLines": [
+                  "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다."
+                ],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": true,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "소상공인 해외송금",
+            "stake": "불일치",
+            "knownStakeNoun": true,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.\n\n[Founder evidence]\n수출 대표 3명이 송금 수수료를 결제했다.",
+              "founderAnswer": "수출 대표 3명이 송금 수수료를 결제했다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": true,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "이미 결제한 후보의 불일치 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+              "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 불일치의 전후를 한 번 잰다.",
+              "askKind": "paid_conversion",
+              "question": "불일치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 불일치 전후 비교.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "기존 대안은 시중은행 전신환과 수기 대사입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "결제자는 무역 소상공인 대표입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "수출 대표 3명이 송금 수수료를 결제했다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "수출 대표 3명이 송금 수수료를 결제했다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "유료 전환 증거는 있으나, 문서가 수치화한 지표 전후는 아직 열려 있어 DCE는 부분이다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-2",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [
+                  "불일치"
+                ],
+                "quantifiedProblemLines": [
+                  "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다."
+                ],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": true,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    "A2_missedDowngrade": {
+      "file": "analyze-strategic-intelligence.ts",
+      "gates": [
+        "L103 isStakeWorsenedLine",
+        "L451 applySignalRetractions",
+        "L463 stakeWorsened"
+      ],
+      "rows": {
+        "failing": [
+          {
+            "businessType": "냉동물류 IoT",
+            "stake": "온도 초과",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.\n\n[Founder evidence]\n물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.\n\n[Founder evidence]\n다음 주에 온도 초과가 4건에서 13건으로 늘었다.",
+              "founderAnswer": "다음 주에 온도 초과가 4건에서 13건으로 늘었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 종이 온도기록지와 기사 수기 보고입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 물류사 운영팀장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "치과기공 매칭",
+            "stake": "재작업",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.\n\n[Founder evidence]\n치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.\n\n[Founder evidence]\n다음 달에 재작업이 8%에서 18%로 늘었다.",
+              "founderAnswer": "다음 달에 재작업이 8%에서 18%로 늘었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 치과 원장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "굴착기 단기렌탈",
+            "stake": "공회",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.\n\n[Founder evidence]\n토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.\n\n[Founder evidence]\n다음 기간에 공회가 17%에서 39%로 늘었다.",
+              "founderAnswer": "다음 기간에 공회가 17%에서 39%로 늘었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 소규모 토목 사장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "선박 급유 중개",
+            "stake": "급유 지연",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.\n\n[Founder evidence]\n선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.\n\n[Founder evidence]\n다음 기간에 급유 지연이 7%에서 17%로 늘었다.",
+              "founderAnswer": "다음 기간에 급유 지연이 7%에서 17%로 늘었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 항만 급유업자 전화 중개입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 선사 운항팀입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "산업 3D 수탁",
+            "stake": "치수 불량",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.\n\n[Founder evidence]\n공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.\n\n[Founder evidence]\n다음 기간에 치수 불량이 6%에서 21%로 늘었다.",
+              "founderAnswer": "다음 기간에 치수 불량이 6%에서 21%로 늘었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 공장 보전팀장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "학교급식 잔반",
+            "stake": "잔반",
+            "knownStakeNoun": false,
+            "dumpVerdict": "conditionally_viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.\n\n[Founder evidence]\n학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.\n\n[Founder evidence]\n다음 기간에 잔반이 11%에서 27%로 늘었다.",
+              "founderAnswer": "다음 기간에 잔반이 11%에서 27%로 늘었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "conditionally_viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 교육청 급식담당입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          }
+        ],
+        "control": [
+          {
+            "businessType": "임상 피험자 모집",
+            "stake": "노쇼",
+            "knownStakeNoun": true,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.\n\n[Founder evidence]\nCRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.\n\n[Founder evidence]\n다음 기간에 노쇼가 12%에서 29%로 늘었다.",
+              "founderAnswer": "다음 기간에 노쇼가 12%에서 29%로 늘었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 노쇼 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "유료 전환 이후 문서가 수치화한 노쇼 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "이미 결제한 후보의 노쇼 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+              "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 노쇼의 전후를 한 번 잰다.",
+              "askKind": "paid_conversion",
+              "question": "노쇼 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 노쇼 전후 비교.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "기존 대안은 병원 게시판과 간호사 전화 독촉입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "결제자는 CRO 프로젝트 매니저입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-8",
+                  "text": "다음 기간에 노쇼가 12%에서 29%로 늘었다.",
+                  "evidenceClass": "CONFLICT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "유료 전환 증거는 있으나, 문서가 수치화한 지표 전후는 아직 열려 있어 DCE는 부분이다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-2",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [
+                  "노쇼",
+                  "노쇼",
+                  "노쇼"
+                ],
+                "quantifiedProblemLines": [
+                  "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.",
+                  "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "다음 기간에 노쇼가 12%에서 29%로 늘었다."
+                ],
+                "stakeImprovedLines": [
+                  "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다."
+                ],
+                "stakeWorsenedLines": [
+                  "다음 기간에 노쇼가 12%에서 29%로 늘었다."
+                ],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "소상공인 해외송금",
+            "stake": "불일치",
+            "knownStakeNoun": true,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.\n\n[Founder evidence]\n수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.\n\n[Founder evidence]\n다음 기간에 불일치가 5%에서 15%로 늘었다.",
+              "founderAnswer": "다음 기간에 불일치가 5%에서 15%로 늘었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "유료 전환 이후 문서가 수치화한 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "이미 결제한 후보의 불일치 전후 비교. 지표가 줄면 판단을 올리고, 그대로면 보류를 유지한다.",
+              "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 불일치의 전후를 한 번 잰다.",
+              "askKind": "paid_conversion",
+              "question": "불일치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 불일치 전후 비교.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "기존 대안은 시중은행 전신환과 수기 대사입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "결제자는 무역 소상공인 대표입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-8",
+                  "text": "다음 기간에 불일치가 5%에서 15%로 늘었다.",
+                  "evidenceClass": "CONFLICT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "유료 전환 증거는 있으나, 문서가 수치화한 지표 전후는 아직 열려 있어 DCE는 부분이다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-2",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [
+                  "불일치",
+                  "불일치",
+                  "불일치"
+                ],
+                "quantifiedProblemLines": [
+                  "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.",
+                  "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "다음 기간에 불일치가 5%에서 15%로 늘었다."
+                ],
+                "stakeImprovedLines": [
+                  "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다."
+                ],
+                "stakeWorsenedLines": [
+                  "다음 기간에 불일치가 5%에서 15%로 늘었다."
+                ],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    "A3_wrongAxisS4": {
+      "files": [
+        "quantity-unit.ts L17 COMPLETION_VERB / L90 hasCountedCompletion",
+        "analyze L267 repeat_validation",
+        "L621 S4",
+        "L654 viable"
+      ],
+      "rows": [
+        {
+          "businessType": "냉동물류 IoT",
+          "stake": "온도 초과",
+          "knownStakeNoun": false,
+          "dumpVerdict": "viable",
+          "dumpStage": "S4",
+          "liveMatchesDump": true,
+          "live": {
+            "document": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.\n\n[Founder evidence]\n물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderEvidenceClass": "VALIDATED",
+            "paidConversionOnAnswer": false,
+            "completionOnAnswer": true,
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+            "evidenceMap": [
+              {
+                "id": "ev-1",
+                "text": "기존 대안은 종이 온도기록지와 기사 수기 보고입니다.",
+                "evidenceClass": "FACT",
+                "axisId": "marketAlternatives"
+              },
+              {
+                "id": "ev-2",
+                "text": "아직 출시되지 않았고 매출은 없습니다.",
+                "evidenceClass": "FACT",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-3",
+                "text": "결제자는 물류사 운영팀장입니다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-4",
+                "text": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-5",
+                "text": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-6",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-7",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-inf-1",
+                "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                "evidenceClass": "INFERENCE",
+                "axisId": "validationStrength"
+              }
+            ],
+            "gates": {
+              "stakeNounHits": [],
+              "quantifiedProblemLines": [],
+              "stakeImprovedLines": [],
+              "stakeWorsenedLines": [],
+              "dceStakeOpenWouldHold": false,
+              "stickyNoRevenueOrNoLaunch": true,
+              "headlineNamesViable": true,
+              "strengthNamesRevenue": true,
+              "riskNamesNoCommercial": true
+            }
+          }
+        },
+        {
+          "businessType": "치과기공 매칭",
+          "stake": "재작업",
+          "knownStakeNoun": false,
+          "dumpVerdict": "viable",
+          "dumpStage": "S4",
+          "liveMatchesDump": true,
+          "live": {
+            "document": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.\n\n[Founder evidence]\n치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderEvidenceClass": "VALIDATED",
+            "paidConversionOnAnswer": false,
+            "completionOnAnswer": true,
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+            "evidenceMap": [
+              {
+                "id": "ev-1",
+                "text": "기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.",
+                "evidenceClass": "FACT",
+                "axisId": "marketAlternatives"
+              },
+              {
+                "id": "ev-2",
+                "text": "아직 출시되지 않았고 매출은 없습니다.",
+                "evidenceClass": "FACT",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-3",
+                "text": "결제자는 치과 원장입니다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-4",
+                "text": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-5",
+                "text": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-6",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-7",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-inf-1",
+                "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                "evidenceClass": "INFERENCE",
+                "axisId": "validationStrength"
+              }
+            ],
+            "gates": {
+              "stakeNounHits": [],
+              "quantifiedProblemLines": [],
+              "stakeImprovedLines": [],
+              "stakeWorsenedLines": [],
+              "dceStakeOpenWouldHold": false,
+              "stickyNoRevenueOrNoLaunch": true,
+              "headlineNamesViable": true,
+              "strengthNamesRevenue": true,
+              "riskNamesNoCommercial": true
+            }
+          }
+        },
+        {
+          "businessType": "굴착기 단기렌탈",
+          "stake": "공회",
+          "knownStakeNoun": false,
+          "dumpVerdict": "viable",
+          "dumpStage": "S4",
+          "liveMatchesDump": true,
+          "live": {
+            "document": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.\n\n[Founder evidence]\n토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderEvidenceClass": "VALIDATED",
+            "paidConversionOnAnswer": false,
+            "completionOnAnswer": true,
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+            "evidenceMap": [
+              {
+                "id": "ev-1",
+                "text": "기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.",
+                "evidenceClass": "FACT",
+                "axisId": "marketAlternatives"
+              },
+              {
+                "id": "ev-2",
+                "text": "아직 출시되지 않았고 매출은 없습니다.",
+                "evidenceClass": "FACT",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-3",
+                "text": "결제자는 소규모 토목 사장입니다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-4",
+                "text": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-5",
+                "text": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-6",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-7",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-inf-1",
+                "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                "evidenceClass": "INFERENCE",
+                "axisId": "validationStrength"
+              }
+            ],
+            "gates": {
+              "stakeNounHits": [],
+              "quantifiedProblemLines": [],
+              "stakeImprovedLines": [],
+              "stakeWorsenedLines": [],
+              "dceStakeOpenWouldHold": false,
+              "stickyNoRevenueOrNoLaunch": true,
+              "headlineNamesViable": true,
+              "strengthNamesRevenue": true,
+              "riskNamesNoCommercial": true
+            }
+          }
+        },
+        {
+          "businessType": "임상 피험자 모집",
+          "stake": "노쇼",
+          "knownStakeNoun": true,
+          "dumpVerdict": "viable",
+          "dumpStage": "S4",
+          "liveMatchesDump": true,
+          "live": {
+            "document": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.\n\n[Founder evidence]\nCRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderEvidenceClass": "VALIDATED",
+            "paidConversionOnAnswer": false,
+            "completionOnAnswer": true,
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+            "evidenceMap": [
+              {
+                "id": "ev-1",
+                "text": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.",
+                "evidenceClass": "FACT",
+                "axisId": "customerProblemFit"
+              },
+              {
+                "id": "ev-2",
+                "text": "기존 대안은 병원 게시판과 간호사 전화 독촉입니다.",
+                "evidenceClass": "FACT",
+                "axisId": "marketAlternatives"
+              },
+              {
+                "id": "ev-3",
+                "text": "아직 출시되지 않았고 매출은 없습니다.",
+                "evidenceClass": "FACT",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-4",
+                "text": "결제자는 CRO 프로젝트 매니저입니다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-5",
+                "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-6",
+                "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-7",
+                "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                "evidenceClass": "FACT",
+                "axisId": "customerProblemFit"
+              },
+              {
+                "id": "ev-8",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-9",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-inf-1",
+                "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                "evidenceClass": "INFERENCE",
+                "axisId": "validationStrength"
+              }
+            ],
+            "gates": {
+              "stakeNounHits": [
+                "노쇼",
+                "노쇼"
+              ],
+              "quantifiedProblemLines": [
+                "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.",
+                "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다."
+              ],
+              "stakeImprovedLines": [
+                "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다."
+              ],
+              "stakeWorsenedLines": [],
+              "dceStakeOpenWouldHold": false,
+              "stickyNoRevenueOrNoLaunch": true,
+              "headlineNamesViable": true,
+              "strengthNamesRevenue": true,
+              "riskNamesNoCommercial": true
+            }
+          }
+        },
+        {
+          "businessType": "선박 급유 중개",
+          "stake": "급유 지연",
+          "knownStakeNoun": false,
+          "dumpVerdict": "viable",
+          "dumpStage": "S4",
+          "liveMatchesDump": true,
+          "live": {
+            "document": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.\n\n[Founder evidence]\n선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderEvidenceClass": "VALIDATED",
+            "paidConversionOnAnswer": false,
+            "completionOnAnswer": true,
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+            "evidenceMap": [
+              {
+                "id": "ev-1",
+                "text": "기존 대안은 항만 급유업자 전화 중개입니다.",
+                "evidenceClass": "FACT",
+                "axisId": "marketAlternatives"
+              },
+              {
+                "id": "ev-2",
+                "text": "아직 출시되지 않았고 매출은 없습니다.",
+                "evidenceClass": "FACT",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-3",
+                "text": "결제자는 선사 운항팀입니다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-4",
+                "text": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-5",
+                "text": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-6",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-7",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-inf-1",
+                "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                "evidenceClass": "INFERENCE",
+                "axisId": "validationStrength"
+              }
+            ],
+            "gates": {
+              "stakeNounHits": [],
+              "quantifiedProblemLines": [],
+              "stakeImprovedLines": [],
+              "stakeWorsenedLines": [],
+              "dceStakeOpenWouldHold": false,
+              "stickyNoRevenueOrNoLaunch": true,
+              "headlineNamesViable": true,
+              "strengthNamesRevenue": true,
+              "riskNamesNoCommercial": true
+            }
+          }
+        },
+        {
+          "businessType": "산업 3D 수탁",
+          "stake": "치수 불량",
+          "knownStakeNoun": false,
+          "dumpVerdict": "viable",
+          "dumpStage": "S4",
+          "liveMatchesDump": true,
+          "live": {
+            "document": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.\n\n[Founder evidence]\n공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderEvidenceClass": "VALIDATED",
+            "paidConversionOnAnswer": false,
+            "completionOnAnswer": true,
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+            "evidenceMap": [
+              {
+                "id": "ev-1",
+                "text": "기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.",
+                "evidenceClass": "FACT",
+                "axisId": "marketAlternatives"
+              },
+              {
+                "id": "ev-2",
+                "text": "아직 출시되지 않았고 매출은 없습니다.",
+                "evidenceClass": "FACT",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-3",
+                "text": "결제자는 공장 보전팀장입니다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-4",
+                "text": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-5",
+                "text": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-6",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-7",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-inf-1",
+                "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                "evidenceClass": "INFERENCE",
+                "axisId": "validationStrength"
+              }
+            ],
+            "gates": {
+              "stakeNounHits": [],
+              "quantifiedProblemLines": [],
+              "stakeImprovedLines": [],
+              "stakeWorsenedLines": [],
+              "dceStakeOpenWouldHold": false,
+              "stickyNoRevenueOrNoLaunch": true,
+              "headlineNamesViable": true,
+              "strengthNamesRevenue": true,
+              "riskNamesNoCommercial": true
+            }
+          }
+        },
+        {
+          "businessType": "학교급식 잔반",
+          "stake": "잔반",
+          "knownStakeNoun": false,
+          "dumpVerdict": "viable",
+          "dumpStage": "S4",
+          "liveMatchesDump": true,
+          "live": {
+            "document": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.\n\n[Founder evidence]\n학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderEvidenceClass": "VALIDATED",
+            "paidConversionOnAnswer": false,
+            "completionOnAnswer": true,
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+            "evidenceMap": [
+              {
+                "id": "ev-1",
+                "text": "기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.",
+                "evidenceClass": "FACT",
+                "axisId": "marketAlternatives"
+              },
+              {
+                "id": "ev-2",
+                "text": "아직 출시되지 않았고 매출은 없습니다.",
+                "evidenceClass": "FACT",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-3",
+                "text": "결제자는 교육청 급식담당입니다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-4",
+                "text": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-5",
+                "text": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-6",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-7",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-inf-1",
+                "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                "evidenceClass": "INFERENCE",
+                "axisId": "validationStrength"
+              }
+            ],
+            "gates": {
+              "stakeNounHits": [],
+              "quantifiedProblemLines": [],
+              "stakeImprovedLines": [],
+              "stakeWorsenedLines": [],
+              "dceStakeOpenWouldHold": false,
+              "stickyNoRevenueOrNoLaunch": true,
+              "headlineNamesViable": true,
+              "strengthNamesRevenue": true,
+              "riskNamesNoCommercial": true
+            }
+          }
+        },
+        {
+          "businessType": "소상공인 해외송금",
+          "stake": "불일치",
+          "knownStakeNoun": true,
+          "dumpVerdict": "viable",
+          "dumpStage": "S4",
+          "liveMatchesDump": true,
+          "live": {
+            "document": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.\n\n[Founder evidence]\n수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+            "founderEvidenceClass": "VALIDATED",
+            "paidConversionOnAnswer": false,
+            "completionOnAnswer": true,
+            "verdictId": "viable",
+            "stageId": "S4",
+            "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+            "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+            "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+            "strengths": [
+              "실제 판매·매출 증거가 있다.",
+              "반복 사용 또는 재구매가 검증되어 있다."
+            ],
+            "risks": [
+              "출시·매출 등 상업 실행 증거가 없다."
+            ],
+            "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+            "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+            "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+            "askKind": "repeat_loop",
+            "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+            "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+            "evidenceMap": [
+              {
+                "id": "ev-1",
+                "text": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.",
+                "evidenceClass": "FACT",
+                "axisId": "customerProblemFit"
+              },
+              {
+                "id": "ev-2",
+                "text": "기존 대안은 시중은행 전신환과 수기 대사입니다.",
+                "evidenceClass": "FACT",
+                "axisId": "marketAlternatives"
+              },
+              {
+                "id": "ev-3",
+                "text": "아직 출시되지 않았고 매출은 없습니다.",
+                "evidenceClass": "FACT",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-4",
+                "text": "결제자는 무역 소상공인 대표입니다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-5",
+                "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-6",
+                "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-7",
+                "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                "evidenceClass": "FACT",
+                "axisId": "customerProblemFit"
+              },
+              {
+                "id": "ev-8",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "CLAIM",
+                "axisId": "businessModel"
+              },
+              {
+                "id": "ev-9",
+                "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                "evidenceClass": "VALIDATED",
+                "axisId": "validationStrength"
+              },
+              {
+                "id": "ev-inf-1",
+                "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                "evidenceClass": "INFERENCE",
+                "axisId": "validationStrength"
+              }
+            ],
+            "gates": {
+              "stakeNounHits": [
+                "불일치",
+                "불일치"
+              ],
+              "quantifiedProblemLines": [
+                "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.",
+                "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다."
+              ],
+              "stakeImprovedLines": [
+                "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다."
+              ],
+              "stakeWorsenedLines": [],
+              "dceStakeOpenWouldHold": false,
+              "stickyNoRevenueOrNoLaunch": true,
+              "headlineNamesViable": true,
+              "strengthNamesRevenue": true,
+              "riskNamesNoCommercial": true
+            }
+          }
+        }
+      ]
+    },
+    "A4_cuOmitted": {
+      "gates": [
+        "L296 quantified_problem",
+        "L720 pickCriticalUnknown"
+      ],
+      "rows": {
+        "failing": [
+          {
+            "businessType": "냉동물류 IoT",
+            "stake": "온도 초과",
+            "knownStakeNoun": false,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.",
+              "founderAnswer": null,
+              "founderEvidenceClass": null,
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+              "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+              "askKind": "paid_conversion",
+              "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 종이 온도기록지와 기사 수기 보고입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 물류사 운영팀장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": false,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "치과기공 매칭",
+            "stake": "재작업",
+            "knownStakeNoun": false,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.",
+              "founderAnswer": null,
+              "founderEvidenceClass": null,
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+              "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+              "askKind": "paid_conversion",
+              "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 치과 원장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": false,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "굴착기 단기렌탈",
+            "stake": "공회",
+            "knownStakeNoun": false,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.",
+              "founderAnswer": null,
+              "founderEvidenceClass": null,
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+              "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+              "askKind": "paid_conversion",
+              "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 소규모 토목 사장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": false,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "선박 급유 중개",
+            "stake": "급유 지연",
+            "knownStakeNoun": false,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.",
+              "founderAnswer": null,
+              "founderEvidenceClass": null,
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+              "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+              "askKind": "paid_conversion",
+              "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 항만 급유업자 전화 중개입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 선사 운항팀입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": false,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "산업 3D 수탁",
+            "stake": "치수 불량",
+            "knownStakeNoun": false,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.",
+              "founderAnswer": null,
+              "founderEvidenceClass": null,
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+              "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+              "askKind": "paid_conversion",
+              "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 공장 보전팀장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": false,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "학교급식 잔반",
+            "stake": "잔반",
+            "knownStakeNoun": false,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.",
+              "founderAnswer": null,
+              "founderEvidenceClass": null,
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+              "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+              "askKind": "paid_conversion",
+              "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 교육청 급식담당입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": false,
+                "riskNamesNoCommercial": true
+              }
+            }
+          }
+        ],
+        "control": [
+          {
+            "businessType": "임상 피험자 모집",
+            "stake": "노쇼",
+            "knownStakeNoun": true,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.",
+              "founderAnswer": null,
+              "founderEvidenceClass": null,
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 노쇼 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+              "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 노쇼 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+              "strengths": [],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다.",
+                "문서가 수치화한 노쇼 수치가 유료 사용 전후로 줄었는지 검증되지 않았다."
+              ],
+              "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 노쇼 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "유료 파일럿 1건과 노쇼 전후 비교. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+              "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 노쇼의 전후를 한 번 잰다.",
+              "askKind": "paid_conversion",
+              "question": "노쇼 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 노쇼 전후 비교.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "기존 대안은 병원 게시판과 간호사 전화 독촉입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "결제자는 CRO 프로젝트 매니저입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [
+                  "노쇼"
+                ],
+                "quantifiedProblemLines": [
+                  "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다."
+                ],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": true,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": false,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "소상공인 해외송금",
+            "stake": "불일치",
+            "knownStakeNoun": true,
+            "dumpVerdict": "judgment_deferred",
+            "dumpStage": "S0",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.",
+              "founderAnswer": null,
+              "founderEvidenceClass": null,
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "judgment_deferred",
+              "stageId": "S0",
+              "judgment": "현재 판단: 지금은 판단을 보류한다. 출시·매출 등 상업 실행 증거가 없다. 결제 후보가 유료로 썼을 때 문서가 수치화한 불일치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+              "whyPossible": "지금은 가능성을 뒷받침할 상업 사실이 거의 없다. 가능성보다 미검증 가정이 먼저다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다. 문서가 수치화한 불일치 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.",
+              "strengths": [],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다.",
+                "문서가 수치화한 불일치 수치가 유료 사용 전후로 줄었는지 검증되지 않았다."
+              ],
+              "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 불일치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+              "decisionChangingEvidence": "유료 파일럿 1건과 불일치 전후 비교. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+              "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 불일치의 전후를 한 번 잰다.",
+              "askKind": "paid_conversion",
+              "question": "불일치 수치를 실제로 얼마나 줄였고, 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 불일치 전후 비교.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "기존 대안은 시중은행 전신환과 수기 대사입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "결제자는 무역 소상공인 대표입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [
+                  "불일치"
+                ],
+                "quantifiedProblemLines": [
+                  "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다."
+                ],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": true,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": false,
+                "strengthNamesRevenue": false,
+                "riskNamesNoCommercial": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    "A5_headline": {
+      "gates": [
+        "L252 no_revenue",
+        "L814 buildStrengths",
+        "L852 buildRisks",
+        "L885 proseJudgment"
+      ],
+      "rows": {
+        "wrong_axis": [
+          {
+            "businessType": "냉동물류 IoT",
+            "stake": "온도 초과",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S4",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.\n\n[Founder evidence]\n물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": true,
+              "verdictId": "viable",
+              "stageId": "S4",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다.",
+                "반복 사용 또는 재구매가 검증되어 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 종이 온도기록지와 기사 수기 보고입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 물류사 운영팀장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "치과기공 매칭",
+            "stake": "재작업",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S4",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.\n\n[Founder evidence]\n치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": true,
+              "verdictId": "viable",
+              "stageId": "S4",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다.",
+                "반복 사용 또는 재구매가 검증되어 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 치과 원장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "굴착기 단기렌탈",
+            "stake": "공회",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S4",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.\n\n[Founder evidence]\n토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": true,
+              "verdictId": "viable",
+              "stageId": "S4",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다.",
+                "반복 사용 또는 재구매가 검증되어 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 소규모 토목 사장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "임상 피험자 모집",
+            "stake": "노쇼",
+            "knownStakeNoun": true,
+            "dumpVerdict": "viable",
+            "dumpStage": "S4",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.\n\n[Founder evidence]\nCRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": true,
+              "verdictId": "viable",
+              "stageId": "S4",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다.",
+                "반복 사용 또는 재구매가 검증되어 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "기존 대안은 병원 게시판과 간호사 전화 독촉입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "결제자는 CRO 프로젝트 매니저입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-8",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-9",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [
+                  "노쇼",
+                  "노쇼"
+                ],
+                "quantifiedProblemLines": [
+                  "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.",
+                  "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다."
+                ],
+                "stakeImprovedLines": [
+                  "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다."
+                ],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "선박 급유 중개",
+            "stake": "급유 지연",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S4",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.\n\n[Founder evidence]\n선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": true,
+              "verdictId": "viable",
+              "stageId": "S4",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다.",
+                "반복 사용 또는 재구매가 검증되어 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 항만 급유업자 전화 중개입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 선사 운항팀입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "산업 3D 수탁",
+            "stake": "치수 불량",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S4",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.\n\n[Founder evidence]\n공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": true,
+              "verdictId": "viable",
+              "stageId": "S4",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다.",
+                "반복 사용 또는 재구매가 검증되어 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 공장 보전팀장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "학교급식 잔반",
+            "stake": "잔반",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S4",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.\n\n[Founder evidence]\n학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": true,
+              "verdictId": "viable",
+              "stageId": "S4",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다.",
+                "반복 사용 또는 재구매가 검증되어 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 교육청 급식담당입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "소상공인 해외송금",
+            "stake": "불일치",
+            "knownStakeNoun": true,
+            "dumpVerdict": "viable",
+            "dumpStage": "S4",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.\n\n[Founder evidence]\n수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.\n\n[Founder evidence]\n최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderAnswer": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+              "founderEvidenceClass": "VALIDATED",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": true,
+              "verdictId": "viable",
+              "stageId": "S4",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다. 반복 사용 또는 재구매가 검증되어 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다.",
+                "반복 사용 또는 재구매가 검증되어 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "기존 대안은 시중은행 전신환과 수기 대사입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "결제자는 무역 소상공인 대표입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-8",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-9",
+                  "text": "최근 구매자 100명 중 35명이 실제 재판매를 등록했고 12건이 거래됐다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-inf-1",
+                  "text": "1차 판매 성공이 곧바로 C2C 반복 거래의 증거는 아니다.",
+                  "evidenceClass": "INFERENCE",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [
+                  "불일치",
+                  "불일치"
+                ],
+                "quantifiedProblemLines": [
+                  "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.",
+                  "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다."
+                ],
+                "stakeImprovedLines": [
+                  "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다."
+                ],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          }
+        ],
+        "closed_reask": [
+          {
+            "businessType": "냉동물류 IoT",
+            "stake": "온도 초과",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "수도권 냉동탑차 30대를 운용하는 3PL은 종이 온도기록지로 관리해서 하절기 온도 초과가 주 14건입니다.\n기존 대안은 종이 온도기록지와 기사 수기 보고입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 물류사 운영팀장입니다.\n\n[Founder evidence]\n물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.\n\n[Founder evidence]\n다음 기간에도 온도 초과가 4건으로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.\n\n[Founder evidence]\n다음 기간에도 온도 초과가 4건으로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderAnswer": "다음 기간에도 온도 초과가 4건으로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 종이 온도기록지와 기사 수기 보고입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 물류사 운영팀장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "물류사 2곳이 월 구독을 결제했고 온도 초과가 주 14건에서 4건으로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "다음 기간에도 온도 초과가 4건으로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "치과기공 매칭",
+            "stake": "재작업",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "개인 치과 40곳은 전화로 기공소를 돌려 보철 재작업이 월 19%입니다.\n기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 치과 원장입니다.\n\n[Founder evidence]\n치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.\n\n[Founder evidence]\n다음 기간에도 재작업이 8%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.\n\n[Founder evidence]\n다음 기간에도 재작업이 8%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderAnswer": "다음 기간에도 재작업이 8%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 원장이 아는 기공소에 전화하는 방식입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 치과 원장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "치과 3곳이 월 구독을 결제했고 재작업이 19%에서 8%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "다음 기간에도 재작업이 8%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "굴착기 단기렌탈",
+            "stake": "공회",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "지방 토목 사장은 월단위 대기업 렌탈을 써서 굴착기 공회가 42%입니다.\n기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 소규모 토목 사장입니다.\n\n[Founder evidence]\n토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.\n\n[Founder evidence]\n다음 기간에도 공회가 17%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.\n\n[Founder evidence]\n다음 기간에도 공회가 17%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderAnswer": "다음 기간에도 공회가 17%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 대기업 렌탈의 월단위 강제 계약입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 소규모 토목 사장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "토목 사장 2명이 단기 렌탈을 결제했고 공회가 42%에서 17%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "다음 기간에도 공회가 17%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "임상 피험자 모집",
+            "stake": "노쇼",
+            "knownStakeNoun": true,
+            "dumpVerdict": "viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.\n기존 대안은 병원 게시판과 간호사 전화 독촉입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 CRO 프로젝트 매니저입니다.\n\n[Founder evidence]\nCRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.\n\n[Founder evidence]\n다음 기간에도 노쇼가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.\n\n[Founder evidence]\n다음 기간에도 노쇼가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderAnswer": "다음 기간에도 노쇼가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "기존 대안은 병원 게시판과 간호사 전화 독촉입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "결제자는 CRO 프로젝트 매니저입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-8",
+                  "text": "다음 기간에도 노쇼가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-9",
+                  "text": "다음 기간에도 노쇼가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [
+                  "노쇼",
+                  "노쇼",
+                  "노쇼",
+                  "노쇼"
+                ],
+                "quantifiedProblemLines": [
+                  "국내 CRO는 병원 게시판으로 피험자를 모아 스크리닝 방문 노쇼가 31%입니다.",
+                  "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "다음 기간에도 노쇼가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "다음 기간에도 노쇼가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+                ],
+                "stakeImprovedLines": [
+                  "CRO 2곳이 월 구독을 결제했고 노쇼가 31%에서 12%로 줄었다.",
+                  "다음 기간에도 노쇼가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "다음 기간에도 노쇼가 12%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+                ],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "선박 급유 중개",
+            "stake": "급유 지연",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "연근해 선사는 항만 전화 중개로 급유를 잡아 급유 지연이 출항 건당 18%입니다.\n기존 대안은 항만 급유업자 전화 중개입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 선사 운항팀입니다.\n\n[Founder evidence]\n선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.\n\n[Founder evidence]\n다음 기간에도 급유 지연이 7%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.\n\n[Founder evidence]\n다음 기간에도 급유 지연이 7%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderAnswer": "다음 기간에도 급유 지연이 7%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 항만 급유업자 전화 중개입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 선사 운항팀입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "선사 2곳이 중개 수수료를 결제했고 급유 지연이 18%에서 7%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "다음 기간에도 급유 지연이 7%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "산업 3D 수탁",
+            "stake": "치수 불량",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "중소 설비보전팀은 해외 수탁 6주로 Spare part를 뽑아 치수 불량이 22%입니다.\n기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 공장 보전팀장입니다.\n\n[Founder evidence]\n공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.\n\n[Founder evidence]\n다음 기간에도 치수 불량이 6%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.\n\n[Founder evidence]\n다음 기간에도 치수 불량이 6%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderAnswer": "다음 기간에도 치수 불량이 6%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 해외 수탁 3D 프린팅 6주 리드타임입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 공장 보전팀장입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "공장 2곳이 수탁 비용을 결제했고 치수 불량이 22%에서 6%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "다음 기간에도 치수 불량이 6%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "학교급식 잔반",
+            "stake": "잔반",
+            "knownStakeNoun": false,
+            "dumpVerdict": "viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "광역시 초등 급식은 전날 눈대중 식수로 잔반이 1인당 28%입니다.\n기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 교육청 급식담당입니다.\n\n[Founder evidence]\n학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.\n\n[Founder evidence]\n다음 기간에도 잔반이 11%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.\n\n[Founder evidence]\n다음 기간에도 잔반이 11%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderAnswer": "다음 기간에도 잔반이 11%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "기존 대안은 영양사가 전날 눈대중으로 식수를 정하는 방식입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "결제자는 교육청 급식담당입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "학교 2곳이 월 구독을 결제했고 잔반이 28%에서 11%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "다음 기간에도 잔반이 11%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [],
+                "quantifiedProblemLines": [],
+                "stakeImprovedLines": [],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          },
+          {
+            "businessType": "소상공인 해외송금",
+            "stake": "불일치",
+            "knownStakeNoun": true,
+            "dumpVerdict": "viable",
+            "dumpStage": "S3",
+            "liveMatchesDump": true,
+            "live": {
+              "document": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.\n기존 대안은 시중은행 전신환과 수기 대사입니다.\n아직 출시되지 않았고 매출은 없습니다.\n결제자는 무역 소상공인 대표입니다.\n\n[Founder evidence]\n수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.\n\n[Founder evidence]\n다음 기간에도 불일치가 5%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.\n\n[Founder evidence]\n다음 기간에도 불일치가 5%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderAnswer": "다음 기간에도 불일치가 5%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+              "founderEvidenceClass": "FACT",
+              "paidConversionOnAnswer": false,
+              "completionOnAnswer": false,
+              "verdictId": "viable",
+              "stageId": "S3",
+              "judgment": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 출시·매출 등 상업 실행 증거가 없다.",
+              "whyPossible": "실제 판매·매출 증거가 있다.",
+              "whyFail": "출시·매출 등 상업 실행 증거가 없다.",
+              "strengths": [
+                "실제 판매·매출 증거가 있다."
+              ],
+              "risks": [
+                "출시·매출 등 상업 실행 증거가 없다."
+              ],
+              "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+              "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+              "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+              "askKind": "repeat_loop",
+              "question": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+              "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+              "evidenceMap": [
+                {
+                  "id": "ev-1",
+                  "text": "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-2",
+                  "text": "기존 대안은 시중은행 전신환과 수기 대사입니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "marketAlternatives"
+                },
+                {
+                  "id": "ev-3",
+                  "text": "아직 출시되지 않았고 매출은 없습니다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-4",
+                  "text": "결제자는 무역 소상공인 대표입니다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-5",
+                  "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "evidenceClass": "CLAIM",
+                  "axisId": "businessModel"
+                },
+                {
+                  "id": "ev-6",
+                  "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                },
+                {
+                  "id": "ev-7",
+                  "text": "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-8",
+                  "text": "다음 기간에도 불일치가 5%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "evidenceClass": "FACT",
+                  "axisId": "customerProblemFit"
+                },
+                {
+                  "id": "ev-9",
+                  "text": "다음 기간에도 불일치가 5%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "evidenceClass": "VALIDATED",
+                  "axisId": "validationStrength"
+                }
+              ],
+              "gates": {
+                "stakeNounHits": [
+                  "불일치",
+                  "불일치",
+                  "불일치",
+                  "불일치"
+                ],
+                "quantifiedProblemLines": [
+                  "수출 소상공인은 은행 전신환으로 대금 회수할 때 송금 불일치가 건당 16%입니다.",
+                  "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "다음 기간에도 불일치가 5%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "다음 기간에도 불일치가 5%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+                ],
+                "stakeImprovedLines": [
+                  "수출 대표 3명이 송금 수수료를 결제했고 불일치가 16%에서 5%로 줄었다.",
+                  "다음 기간에도 불일치가 5%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다.",
+                  "다음 기간에도 불일치가 5%로 유지됐고, 다음 고객 2곳에서도 같은 방향으로 줄었다."
+                ],
+                "stakeWorsenedLines": [],
+                "dceStakeOpenWouldHold": false,
+                "stickyNoRevenueOrNoLaunch": true,
+                "headlineNamesViable": true,
+                "strengthNamesRevenue": true,
+                "riskNamesNoCommercial": true
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
