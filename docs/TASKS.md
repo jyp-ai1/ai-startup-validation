@@ -4,6 +4,23 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Accuracy Batch Holdout — 10 new types × 15 scenes
+
+**CPO Gate:** 측정 전용 · Fix Gate HOLD · Merge HOLD · Production `0b46522` UNCHANGED  
+**#139:** Draft `0c362c7` Freeze · 미변경  
+**Branch:** `cursor/si-accuracy-holdout-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-HOLDOUT.md`
+
+| # | Item | Status |
+|---|---|---|
+| 1 | 10 holdout 유형 × 15장면 | ✅ 150 |
+| 2 | Judgment / Evidence / CU | ✅ 150/150/150 PASS · FAIL 0 |
+| 3 | Question / DV | ✅ 142 PASS · 8 PARTIAL · FAIL 0 |
+| 4 | generic-after-promotion | ✅ 0 |
+| 5 | Fix Gate | HOLD |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  
