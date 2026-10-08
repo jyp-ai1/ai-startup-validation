@@ -4,19 +4,33 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Founder Decision Value after Fix
+
+**CPO Gate:** 측정 전용 · Fix Gate 미개방 · Production `0b46522` 불변  
+**Branch:** `cursor/si-dv-after-fix-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DECISION-VALUE-AFTER-FIX.md`  
+**#134:** Production Acceptance CLOSED · **`spoken_generic_after_promotion`:** FIX CLOSED
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 5층 × 물류/의류/의원/C2C | ✅ 13/13 PASS |
+| 2 | 2/2 Decision Value | ✅ PASS (was PARTIAL on #131) |
+| 3 | generic spoken | ✅ 0 |
+| 4 | Fix Gate | 미개방 |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
-**CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  
-**Branch:** `cursor/si-spoken-generic-fix-e648`  
-**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-SPOKEN-GENERIC-FIX.md`  
-**#131:** CLOSED `8c3b652` · **#133:** 8/8 REPRO `c4c36a8`
+**CPO Gate:** Production Acceptance CLOSED · Production `0b46522`  
+**PR:** #134 · Freeze `32f2483` · main `0b46522`
 
 | # | Item | Status |
 |---|------|--------|
 | 1 | Presenter next-period bind | ✅ |
 | 2 | 8/8 generic-after-promotion 0 | ✅ |
-| 3 | P1-A / #104 / #107 / P0 / Accuracy | ✅ |
-| 4 | Analyzer / Judgment / SoT | 미변경 |
+| 3 | Merge / SHA Triangle | ✅ `0b46522` MATCH |
+| 4 | Production Acceptance | ✅ CLOSED |
 
 ---
 
