@@ -11,6 +11,7 @@ import type {
 } from '@repo/types/domain/strategic-intelligence';
 import { SI_AXIS_LABELS, SI_VERDICT_LABELS } from '@repo/types/domain/strategic-intelligence';
 
+import { isNextPeriodHeldText } from './next-period-outcome';
 import { hasCountedCompletion, hasCountedPaidConversion } from './quantity-unit';
 
 type SignalKind =
@@ -35,7 +36,8 @@ type SignalKind =
   | 'unverified'
   | 'quantified_problem'
   | 'named_alternative'
-  | 'stake_improved';
+  | 'stake_improved'
+  | 'next_period_held';
 
 type DetectedSignal = {
   kind: SignalKind;
@@ -303,6 +305,10 @@ function scanLine(line: string): DetectedSignal[] {
     isStakeImprovedLine(line)
   ) {
     push('stake_improved', 'VALIDATED', 'validationStrength');
+  }
+
+  if (!negated && isNextPeriodHeldText(line)) {
+    push('next_period_held', 'FACT', 'validationStrength');
   }
 
   if (
@@ -781,7 +787,12 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
     };
   }
 
-  if (metric && hasKind(signals, 'stake_improved', false) && !hasKind(signals, 'resale_thesis')) {
+  if (
+    metric &&
+    hasKind(signals, 'stake_improved', false) &&
+    !hasKind(signals, 'resale_thesis') &&
+    !hasKind(signals, 'next_period_held', false)
+  ) {
     return {
       criticalUnknown:
         '이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.',
