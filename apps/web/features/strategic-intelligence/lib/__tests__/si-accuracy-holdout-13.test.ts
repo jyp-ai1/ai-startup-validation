@@ -53,9 +53,9 @@ type Biz = {
 
 function biz(
   id: string,
-  type: string;
-  stake: string;
-  subject: string;
+  type: string,
+  stake: string,
+  subject: string,
   pct: number,
   alt: string,
   thin: string,
