@@ -4,6 +4,25 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Founder Decision Value Batch 5 — P1-C Pattern Confirmation
+
+**CPO Gate:** 측정 · Production `671005f` 불변 · Fix 없음 · Analyzer rewrite 금지  
+**사업:** 클리닉플로우 · 핏브릿지 · 동네장터알림  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-FOUNDER-DV-BATCH5.md`  
+**Dump:** `docs/evidence/ALABOM/SI/si-v1-founder-dv-batch5-671005f.json`  
+**P1-A:** CLOSED · **P1-B:** Backlog · PR #119 / #120 Draft 유지
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Semantic Full (`2곳`+지표) → S1 + 동일 질문 | 클리닉·핏 2/2 재현 · **P1-C 후보 확정** |
+| 2 | Token Full (`2건`+지표) → viable S3 | 승격됨. 연결 전체 단절은 아님 |
+| 3 | Partial Pay → S3/S4 금지 | PASS · #104 유지 |
+| 4 | ASSUMPTION → VALIDATED 금지 | PASS. 핏 `delta up`은 verdict 고정 |
+| 5 | 동네장터 1건 → viable | 엔진상 정당 (stake DCE 없음). 문장은 전후 성과도 요구 |
+| 6 | P1-C Fix Gate | **미개방** — CPO 결정 |
+
+---
+
 ## Question Alignment Fix Gate — P1-A
 
 **CPO Gate:** 2-Pass PASS · Production `671005f` · SHA triangle MATCH  

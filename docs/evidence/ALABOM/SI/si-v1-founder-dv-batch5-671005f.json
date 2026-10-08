@@ -1,0 +1,638 @@
+{
+  "production": "671005f",
+  "analyzerBaseline": "c0b9bc3",
+  "measuredAt": "2026-10-08T00:47:29.915Z",
+  "answers": {
+    "clinicSemanticFull": "결제 후보 2곳이 월 구독을 결제했고 no-show가 22%에서 12%로 줄었다.",
+    "clinicTokenFull": "결제 후보 2곳이 월 구독을 결제했고 유료 전환 2건이 발생했으며 no-show가 22%에서 12%로 줄었다.",
+    "clinicPartialPay": "결제 후보 2곳이 월 구독을 결제했고 유료 전환 2건이 발생했다.",
+    "clinicPartialStake": "no-show가 22%에서 12%로 줄었지만 아직 한 건도 결제되지 않았다.",
+    "clinicAssumption": "유료 제안을 생각하고 있지만 아직 아무도 결제하지 않았다.",
+    "fitSemanticFull": "결제 후보 2곳이 위젯을 결제했고 반품률이 38%에서 29%로 줄었다.",
+    "fitTokenFull": "결제 후보 2곳이 위젯을 결제했고 유료 전환 2건이 발생했으며 반품률이 38%에서 29%로 줄었다.",
+    "fitPartialPay": "결제 후보 2곳이 위젯을 결제했고 유료 전환 2건이 발생했다.",
+    "fitPartialStake": "반품률이 38%에서 29%로 줄었지만 아직 한 건도 결제되지 않았다.",
+    "fitAssumption": "브랜드 3곳에 제안했지만 아직 한 건도 결제되지 않았다.",
+    "localSemanticFull": "파일럿 사장 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+    "localTokenFull": "파일럿 사장 2명이 월 구독을 결제했고 유료 전환 2건이 발생했으며 주간 게시가 반복됐다.",
+    "localPartialPay": "파일럿 사장 1명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+    "localAssumption": "유료 제안을 생각하고 있지만 아직 아무도 결제하지 않았다."
+  },
+  "clinicflow": {
+    "dce": "유료 파일럿 1건과 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+    "paths": {
+      "semanticFull": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 no-show 전후 비교."
+        },
+        "after": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 no-show 전후 비교.",
+          "addedClass": "FACT",
+          "addedText": "결제 후보 2곳이 월 구독을 결제했고 no-show가 22%에서 12%로 줄었다.",
+          "delta": "up",
+          "judgmentChanged": false,
+          "cuChanged": false,
+          "priorityChanged": false,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "결제 후보 2곳이 월 구독을 결제했고 no-show가 22%에서 12%로 줄었다.",
+            "evidenceClass": "FACT",
+            "axisId": "businessModel"
+          }
+        },
+        "moved": {
+          "verdictMoved": false,
+          "stageMoved": false,
+          "cuMoved": false,
+          "priorityMoved": false,
+          "questionMoved": false,
+          "sameQuestion": true
+        }
+      },
+      "tokenFull": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 no-show 전후 비교."
+        },
+        "after": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "headline": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+          "questionKind": "generic",
+          "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+          "addedClass": "VALIDATED",
+          "addedText": "결제 후보 2곳이 월 구독을 결제했고 유료 전환 2건이 발생했으며 no-show가 22%에서 12%로 줄었다.",
+          "delta": "up",
+          "judgmentChanged": true,
+          "cuChanged": true,
+          "priorityChanged": true,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "결제 후보 2곳이 월 구독을 결제했고 유료 전환 2건이 발생했으며 no-show가 22%에서 12%로 줄었다.",
+            "evidenceClass": "VALIDATED",
+            "axisId": "validationStrength"
+          }
+        },
+        "moved": {
+          "verdictMoved": true,
+          "stageMoved": true,
+          "cuMoved": true,
+          "priorityMoved": true,
+          "questionMoved": true,
+          "sameQuestion": false
+        }
+      },
+      "partialPay": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 no-show 전후 비교."
+        },
+        "after": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 no-show 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 no-show 전후 비교.",
+          "addedClass": "VALIDATED",
+          "addedText": "결제 후보 2곳이 월 구독을 결제했고 유료 전환 2건이 발생했다.",
+          "delta": "up",
+          "judgmentChanged": true,
+          "cuChanged": true,
+          "priorityChanged": true,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "결제 후보 2곳이 월 구독을 결제했고 유료 전환 2건이 발생했다.",
+            "evidenceClass": "VALIDATED",
+            "axisId": "validationStrength"
+          }
+        },
+        "moved": {
+          "verdictMoved": false,
+          "stageMoved": false,
+          "cuMoved": true,
+          "priorityMoved": true,
+          "questionMoved": false,
+          "sameQuestion": true
+        }
+      },
+      "partialStake": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 no-show 전후 비교."
+        },
+        "after": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 no-show 전후 비교.",
+          "addedClass": "ASSUMPTION",
+          "addedText": "no-show가 22%에서 12%로 줄었지만 아직 한 건도 결제되지 않았다.",
+          "delta": "up",
+          "judgmentChanged": false,
+          "cuChanged": false,
+          "priorityChanged": false,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "no-show가 22%에서 12%로 줄었지만 아직 한 건도 결제되지 않았다.",
+            "evidenceClass": "ASSUMPTION",
+            "axisId": "businessModel"
+          }
+        },
+        "moved": {
+          "verdictMoved": false,
+          "stageMoved": false,
+          "cuMoved": false,
+          "priorityMoved": false,
+          "questionMoved": false,
+          "sameQuestion": true
+        }
+      },
+      "assumption": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 no-show 전후 비교. EMR 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 no-show 전후 비교."
+        },
+        "after": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 no-show 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 no-show의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "no-show 수치를 실제로 얼마나 줄였고, EMR 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 no-show 전후 비교.",
+          "addedClass": "CLAIM",
+          "addedText": "유료 제안을 생각하고 있지만 아직 아무도 결제하지 않았다.",
+          "delta": "unchanged",
+          "judgmentChanged": false,
+          "cuChanged": false,
+          "priorityChanged": false,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "유료 제안을 생각하고 있지만 아직 아무도 결제하지 않았다.",
+            "evidenceClass": "CLAIM",
+            "axisId": "businessModel"
+          }
+        },
+        "moved": {
+          "verdictMoved": false,
+          "stageMoved": false,
+          "cuMoved": false,
+          "priorityMoved": false,
+          "questionMoved": false,
+          "sameQuestion": true
+        }
+      }
+    }
+  },
+  "fitbridge": {
+    "dce": "유료 파일럿 1건과 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+    "paths": {
+      "semanticFull": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 문서가 수치화한 반품률 수치가 유료 사용 전후로 줄었는지 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 반품률 전후 비교."
+        },
+        "after": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 문서가 수치화한 반품률 수치가 유료 사용 전후로 줄었는지 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 반품률 전후 비교.",
+          "addedClass": "FACT",
+          "addedText": "결제 후보 2곳이 위젯을 결제했고 반품률이 38%에서 29%로 줄었다.",
+          "delta": "up",
+          "judgmentChanged": false,
+          "cuChanged": false,
+          "priorityChanged": false,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "결제 후보 2곳이 위젯을 결제했고 반품률이 38%에서 29%로 줄었다.",
+            "evidenceClass": "FACT",
+            "axisId": "businessModel"
+          }
+        },
+        "moved": {
+          "verdictMoved": false,
+          "stageMoved": false,
+          "cuMoved": false,
+          "priorityMoved": false,
+          "questionMoved": false,
+          "sameQuestion": true
+        }
+      },
+      "tokenFull": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 문서가 수치화한 반품률 수치가 유료 사용 전후로 줄었는지 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 반품률 전후 비교."
+        },
+        "after": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "headline": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "criticalUnknown": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+          "validationPriority": "다음 고객 또는 다음 기간에서 같은 성과가 반복되는지 한 번 확인한다.",
+          "questionKind": "generic",
+          "question": "지금 판단을 바꾸려면 실제 행동 증거가 필요합니다. 숫자나 사례가 있으면 알려주세요. 아직이면 계획만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 다음 고객 또는 다음 기간에서 같은 성과가 유지되는지.",
+          "addedClass": "VALIDATED",
+          "addedText": "결제 후보 2곳이 위젯을 결제했고 유료 전환 2건이 발생했으며 반품률이 38%에서 29%로 줄었다.",
+          "delta": "up",
+          "judgmentChanged": true,
+          "cuChanged": true,
+          "priorityChanged": true,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "결제 후보 2곳이 위젯을 결제했고 유료 전환 2건이 발생했으며 반품률이 38%에서 29%로 줄었다.",
+            "evidenceClass": "VALIDATED",
+            "axisId": "validationStrength"
+          }
+        },
+        "moved": {
+          "verdictMoved": true,
+          "stageMoved": true,
+          "cuMoved": true,
+          "priorityMoved": true,
+          "questionMoved": true,
+          "sameQuestion": false
+        }
+      },
+      "partialPay": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 문서가 수치화한 반품률 수치가 유료 사용 전후로 줄었는지 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 반품률 전후 비교."
+        },
+        "after": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "criticalUnknown": "유료 전환 이후 문서가 수치화한 반품률 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+          "validationPriority": "이미 돈을 낸 후보에서 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 후보의 반품률 전후 비교.",
+          "addedClass": "VALIDATED",
+          "addedText": "결제 후보 2곳이 위젯을 결제했고 유료 전환 2건이 발생했다.",
+          "delta": "up",
+          "judgmentChanged": true,
+          "cuChanged": true,
+          "priorityChanged": true,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "결제 후보 2곳이 위젯을 결제했고 유료 전환 2건이 발생했다.",
+            "evidenceClass": "VALIDATED",
+            "axisId": "validationStrength"
+          }
+        },
+        "moved": {
+          "verdictMoved": false,
+          "stageMoved": false,
+          "cuMoved": true,
+          "priorityMoved": true,
+          "questionMoved": false,
+          "sameQuestion": true
+        }
+      },
+      "partialStake": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 문서가 수치화한 반품률 수치가 유료 사용 전후로 줄었는지 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 반품률 전후 비교."
+        },
+        "after": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 문서가 수치화한 반품률 수치가 유료 사용 전후로 줄었는지 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 반품률 전후 비교.",
+          "addedClass": "ASSUMPTION",
+          "addedText": "반품률이 38%에서 29%로 줄었지만 아직 한 건도 결제되지 않았다.",
+          "delta": "up",
+          "judgmentChanged": false,
+          "cuChanged": false,
+          "priorityChanged": false,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "반품률이 38%에서 29%로 줄었지만 아직 한 건도 결제되지 않았다.",
+            "evidenceClass": "ASSUMPTION",
+            "axisId": "businessModel"
+          }
+        },
+        "moved": {
+          "verdictMoved": false,
+          "stageMoved": false,
+          "cuMoved": false,
+          "priorityMoved": false,
+          "questionMoved": false,
+          "sameQuestion": true
+        }
+      },
+      "assumption": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 문서가 수치화한 반품률 수치가 유료 사용 전후로 줄었는지 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "유료 파일럿 1건과 반품률 전후 비교. True Fit 대비 문서가 주장한 차별이 그 지표에서 보이는지도 같이 본다. 지표가 줄면 판단을 조건부 가능 이상으로 올리고, 지불만 있거나 지표가 그대로면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 반품률 전후 비교."
+        },
+        "after": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 문서가 수치화한 반품률 수치가 유료 사용 전후로 줄었는지 검증되지 않았다. 결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "criticalUnknown": "결제 후보가 유료로 썼을 때 문서가 수치화한 반품률 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 하고, 문서가 적은 반품률의 전후를 한 번 잰다.",
+          "questionKind": "paid_conversion",
+          "question": "반품률 수치를 실제로 얼마나 줄였고, True Fit 대비 그 결과로 결제 후보가 돈을 낸 사례가 있습니까? 있다면 전후 수치와 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 파일럿 1건과 반품률 전후 비교.",
+          "addedClass": "ASSUMPTION",
+          "addedText": "브랜드 3곳에 제안했지만 아직 한 건도 결제되지 않았다.",
+          "delta": "up",
+          "judgmentChanged": false,
+          "cuChanged": false,
+          "priorityChanged": false,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "브랜드 3곳에 제안했지만 아직 한 건도 결제되지 않았다.",
+            "evidenceClass": "ASSUMPTION",
+            "axisId": "businessModel"
+          }
+        },
+        "moved": {
+          "verdictMoved": false,
+          "stageMoved": false,
+          "cuMoved": false,
+          "priorityMoved": false,
+          "questionMoved": false,
+          "sameQuestion": true
+        }
+      }
+    }
+  },
+  "localSns": {
+    "dce": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+    "paths": {
+      "semanticFull": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+          "questionKind": "paid_conversion",
+          "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과."
+        },
+        "after": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "headline": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "questionKind": "repeat_loop",
+          "question": "이미 유료로 결제한 고객 중에서, 다음 주기에도 구독을 유지하거나 다시 결제한 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회 결제만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 고객의 구독 유지·재결제가 반복되는지 확인합니다.",
+          "addedClass": "VALIDATED",
+          "addedText": "파일럿 사장 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+          "delta": "up",
+          "judgmentChanged": true,
+          "cuChanged": true,
+          "priorityChanged": true,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "파일럿 사장 2명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+            "evidenceClass": "VALIDATED",
+            "axisId": "validationStrength"
+          }
+        },
+        "moved": {
+          "verdictMoved": true,
+          "stageMoved": true,
+          "cuMoved": true,
+          "priorityMoved": true,
+          "questionMoved": true,
+          "sameQuestion": false
+        }
+      },
+      "tokenFull": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+          "questionKind": "paid_conversion",
+          "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과."
+        },
+        "after": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "headline": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "questionKind": "repeat_loop",
+          "question": "이미 유료로 결제한 고객 중에서, 다음 주기에도 구독을 유지하거나 다시 결제한 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회 결제만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 고객의 구독 유지·재결제가 반복되는지 확인합니다.",
+          "addedClass": "VALIDATED",
+          "addedText": "파일럿 사장 2명이 월 구독을 결제했고 유료 전환 2건이 발생했으며 주간 게시가 반복됐다.",
+          "delta": "up",
+          "judgmentChanged": true,
+          "cuChanged": true,
+          "priorityChanged": true,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "파일럿 사장 2명이 월 구독을 결제했고 유료 전환 2건이 발생했으며 주간 게시가 반복됐다.",
+            "evidenceClass": "VALIDATED",
+            "axisId": "validationStrength"
+          }
+        },
+        "moved": {
+          "verdictMoved": true,
+          "stageMoved": true,
+          "cuMoved": true,
+          "priorityMoved": true,
+          "questionMoved": true,
+          "sameQuestion": false
+        }
+      },
+      "partialPay": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+          "questionKind": "paid_conversion",
+          "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과."
+        },
+        "after": {
+          "verdictId": "viable",
+          "stageId": "S3",
+          "headline": "현재 판단: 사업화 가능성이 높음. 핵심 근거: 실제 판매·매출 증거가 있다. 핵심 리스크: 현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+          "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+          "questionKind": "repeat_loop",
+          "question": "이미 유료로 결제한 고객 중에서, 다음 주기에도 구독을 유지하거나 다시 결제한 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회 결제만 있다고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 결제한 고객의 구독 유지·재결제가 반복되는지 확인합니다.",
+          "addedClass": "VALIDATED",
+          "addedText": "파일럿 사장 1명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+          "delta": "up",
+          "judgmentChanged": true,
+          "cuChanged": true,
+          "priorityChanged": true,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "파일럿 사장 1명이 월 구독을 결제했고 유료 전환 1건이 발생했다.",
+            "evidenceClass": "VALIDATED",
+            "axisId": "validationStrength"
+          }
+        },
+        "moved": {
+          "verdictMoved": true,
+          "stageMoved": true,
+          "cuMoved": true,
+          "priorityMoved": true,
+          "questionMoved": true,
+          "sameQuestion": false
+        }
+      },
+      "assumption": {
+        "t0": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "decisionChangingEvidence": "최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+          "questionKind": "paid_conversion",
+          "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과."
+        },
+        "after": {
+          "verdictId": "judgment_deferred",
+          "stageId": "S1",
+          "headline": "현재 판단: 지금은 판단을 보류한다. 유료 전환·파일럿 성과가 아직 검증되지 않았다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "criticalUnknown": "이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.",
+          "validationPriority": "가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.",
+          "questionKind": "paid_conversion",
+          "question": "가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.",
+          "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과.",
+          "addedClass": "CLAIM",
+          "addedText": "유료 제안을 생각하고 있지만 아직 아무도 결제하지 않았다.",
+          "delta": "unchanged",
+          "judgmentChanged": false,
+          "cuChanged": false,
+          "priorityChanged": false,
+          "classified": {
+            "id": "founder-ev-1",
+            "text": "유료 제안을 생각하고 있지만 아직 아무도 결제하지 않았다.",
+            "evidenceClass": "CLAIM",
+            "axisId": "businessModel"
+          }
+        },
+        "moved": {
+          "verdictMoved": false,
+          "stageMoved": false,
+          "cuMoved": false,
+          "priorityMoved": false,
+          "questionMoved": false,
+          "sameQuestion": true
+        }
+      }
+    }
+  }
+}
