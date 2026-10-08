@@ -3,7 +3,10 @@
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지  
 **Production:** `671005f` 불변 · Analyzer architecture `c0b9bc3` 불변  
 **P1-A:** CLOSED · **P1-B:** Backlog · PR #119 / #120 / #124 Draft 유지  
-**Branch:** `cursor/si-p1c-dce-normalize-e648`
+**Branch:** `cursor/si-p1c-dce-normalize-e648`  
+**PR:** https://github.com/jyp-ai1/ai-startup-validation/pull/125 (Draft)  
+**SHA:** `984df710153acc4814ee26e3a5ce315a90f82009`  
+**Preview:** https://ai-startup-validation-git-cursor-si-p1-6d75e4-jyp-ai1s-projects.vercel.app
 
 수량 표현의 표면형(`곳` vs `건`)이 아니라, 그 수량이 의미하는 사업 사실을 Evidence class와 DCE fulfillment가 같이 본다.
 
@@ -69,6 +72,12 @@ Analyzer는 helper import만 추가했다. Judgment architecture rewrite 없음.
 
 ASSUMPTION→VALIDATED · Partial→S3/S4 · Negative→viable · P1-A 재판매 · 사업명 분기 · Analyzer rewrite · 단위 의미 소거: **없음**.
 
-## Production
+## Preview / SHA
 
-UNCHANGED `671005f`. Merge / deploy는 CPO 2-pass 후.
+| | |
+|---|---|
+| Fix SHA | `984df71` |
+| Preview | https://ai-startup-validation-git-cursor-si-p1-6d75e4-jyp-ai1s-projects.vercel.app |
+| Production | UNCHANGED `671005f` |
+
+Vercel Preview Comments PASS. Deployment SSO. Merge / deploy는 CPO 2-pass 후.
