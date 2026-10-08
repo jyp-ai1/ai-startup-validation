@@ -1,0 +1,366 @@
+{
+  "productionSha": "0b465226516e1a4f3eb9ce2087f8bca2c2c091da",
+  "fixGate": "HOLD",
+  "scenarioCount": 8,
+  "spokenScores": {
+    "PASS": 0,
+    "PARTIAL": 8,
+    "FAIL": 0
+  },
+  "verdictDiverges": 0,
+  "genericHeld": 0,
+  "rows": [
+    {
+      "id": "logistics_omission",
+      "sector": "B2B 물류",
+      "stake": "누락",
+      "promoted": {
+        "stageId": "S3",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "spoken": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "nextPeriod": true
+      },
+      "held": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "spoken": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "repeatCu": true,
+        "spokenAsksRepeat": true,
+        "generic": false
+      },
+      "spokenFollow": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "evidenceClass": "VALIDATED",
+        "scored": {
+          "score": "PARTIAL",
+          "note": "Founder answered the spoken question; CU and question stayed. Verdict honest."
+        }
+      },
+      "onStake": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "FACT"
+      },
+      "planOnly": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "CLAIM"
+      }
+    },
+    {
+      "id": "apparel_returns",
+      "sector": "D2C 의류",
+      "stake": "반품률",
+      "promoted": {
+        "stageId": "S3",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "spoken": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "nextPeriod": true
+      },
+      "held": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "spoken": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "repeatCu": true,
+        "spokenAsksRepeat": true,
+        "generic": false
+      },
+      "spokenFollow": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "evidenceClass": "VALIDATED",
+        "scored": {
+          "score": "PARTIAL",
+          "note": "Founder answered the spoken question; CU and question stayed. Verdict honest."
+        }
+      },
+      "onStake": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "FACT"
+      },
+      "planOnly": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "CLAIM"
+      }
+    },
+    {
+      "id": "support_load",
+      "sector": "B2B 고객지원",
+      "stake": "부하",
+      "promoted": {
+        "stageId": "S3",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "spoken": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "nextPeriod": true
+      },
+      "held": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "spoken": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "repeatCu": true,
+        "spokenAsksRepeat": true,
+        "generic": false
+      },
+      "spokenFollow": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "evidenceClass": "VALIDATED",
+        "scored": {
+          "score": "PARTIAL",
+          "note": "Founder answered the spoken question; CU and question stayed. Verdict honest."
+        }
+      },
+      "onStake": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "FACT"
+      },
+      "planOnly": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "CLAIM"
+      }
+    },
+    {
+      "id": "marketplace_mismatch",
+      "sector": "중고 카탈로그",
+      "stake": "미스매치",
+      "promoted": {
+        "stageId": "S3",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "spoken": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "nextPeriod": true
+      },
+      "held": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "spoken": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "repeatCu": true,
+        "spokenAsksRepeat": true,
+        "generic": false
+      },
+      "spokenFollow": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "evidenceClass": "VALIDATED",
+        "scored": {
+          "score": "PARTIAL",
+          "note": "Founder answered the spoken question; CU and question stayed. Verdict honest."
+        }
+      },
+      "onStake": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "FACT"
+      },
+      "planOnly": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "CLAIM"
+      }
+    },
+    {
+      "id": "billing_inconsistency",
+      "sector": "병원 청구",
+      "stake": "불일치",
+      "promoted": {
+        "stageId": "S3",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "spoken": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "nextPeriod": true
+      },
+      "held": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "spoken": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "repeatCu": true,
+        "spokenAsksRepeat": true,
+        "generic": false
+      },
+      "spokenFollow": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "evidenceClass": "VALIDATED",
+        "scored": {
+          "score": "PARTIAL",
+          "note": "Founder answered the spoken question; CU and question stayed. Verdict honest."
+        }
+      },
+      "onStake": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "FACT"
+      },
+      "planOnly": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "CLAIM"
+      }
+    },
+    {
+      "id": "clinic_noshow",
+      "sector": "동네 의원",
+      "stake": "no-show",
+      "promoted": {
+        "stageId": "S3",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "spoken": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "nextPeriod": true
+      },
+      "held": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "spoken": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "repeatCu": true,
+        "spokenAsksRepeat": true,
+        "generic": false
+      },
+      "spokenFollow": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "evidenceClass": "VALIDATED",
+        "scored": {
+          "score": "PARTIAL",
+          "note": "Founder answered the spoken question; CU and question stayed. Verdict honest."
+        }
+      },
+      "onStake": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "FACT"
+      },
+      "planOnly": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "CLAIM"
+      }
+    },
+    {
+      "id": "saas_churn",
+      "sector": "B2B 온보딩",
+      "stake": "이탈",
+      "promoted": {
+        "stageId": "S3",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "spoken": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "nextPeriod": true
+      },
+      "held": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "spoken": "이미 유료로 전환한 고객 외에, 두 번째 고객이나 계약이 있습니까? 있다면 그 한 건을 알려주세요. 아직 없다면 1회 전환만 있다고 답해도 됩니다.",
+        "repeatCu": true,
+        "spokenAsksRepeat": true,
+        "generic": false
+      },
+      "spokenFollow": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 유료 전환 이후 두 번째 고객·계약이 있는지 확인합니다.",
+        "questionText": "이미 유료로 전환한 고객 외에, 두 번째 고객이나 계약이 있습니까? 있다면 그 한 건을 알려주세요. 아직 없다면 1회 전환만 있다고 답해도 됩니다.",
+        "evidenceClass": "VALIDATED",
+        "scored": {
+          "score": "PARTIAL",
+          "note": "Founder answered the spoken question; CU and question stayed. Verdict honest."
+        }
+      },
+      "onStake": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "FACT"
+      },
+      "planOnly": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "CLAIM"
+      }
+    },
+    {
+      "id": "warehouse_omission",
+      "sector": "식품 창고",
+      "stake": "누락",
+      "promoted": {
+        "stageId": "S3",
+        "cu": "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다.",
+        "spoken": "다음 고객 또는 다음 기간에서 같은 성과가 유지된 경우가 있습니까? 있다면 규모(곳, 명, 또는 기간)를 알려주세요. 아직 1회만 있으면 그렇다고 답해도 됩니다.",
+        "nextPeriod": true
+      },
+      "held": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "spoken": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "repeatCu": true,
+        "spokenAsksRepeat": true,
+        "generic": false
+      },
+      "spokenFollow": {
+        "verdictId": "viable",
+        "stageId": "S3",
+        "criticalUnknown": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "decisionChangingEvidence": "반복 구매·재사용 또는 이탈 없는 두 번째 거래 데이터. 이 데이터가 있으면 판단을 유지·상향하고, 없으면 1회성으로 내린다.",
+        "validationPriority": "이미 구매한 고객의 두 번째 행동을 확인한다.",
+        "whyAsking": "이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 이미 구매한 고객의 두 번째 행동·반복성을 확인합니다.",
+        "questionText": "이미 구매하거나 결제한 고객 중에서, 두 번째 행동이나 반복 사용이 일어난 경우가 있습니까? 있다면 규모(명 또는 건)를 알려주세요. 아직 없다면 1회만 있다고 답해도 됩니다.",
+        "evidenceClass": "VALIDATED",
+        "scored": {
+          "score": "PARTIAL",
+          "note": "Founder answered the spoken question; CU and question stayed. Verdict honest."
+        }
+      },
+      "onStake": {
+        "stageId": "S3",
+        "verdictId": "viable",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "FACT"
+      },
+      "planOnly": {
+        "stageId": "S3",
+        "cu": "현재 강점이 반복 가능한 사업으로 이어지는가. 1회 성과가 반복되지 않으면 사업화 판단을 유지할 수 없다.",
+        "evidenceClass": "CLAIM"
+      }
+    }
+  ]
+}
