@@ -4,6 +4,25 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## Accuracy Batch — Founder Decision Value after #134
+
+**CPO Gate:** 2-pass PASS · Fix Gate HOLD · Merge HOLD · Production `0b46522` MATCH  
+**PR:** #137 · Draft · baseline `e7e6dd3`  
+**Preview:** https://ai-startup-validation-git-cursor-si-dv-394f6e-jyp-ai1s-projects.vercel.app  
+**Branch:** `cursor/si-dv-repro-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-DECISION-VALUE-REPRO.md` · `SI-V1-DECISION-VALUE-2PASS.md`  
+**#134:** Production Acceptance CLOSED · **`spoken_generic_after_promotion`:** FIX CLOSED
+
+| # | Item | Status |
+|---|---|---|
+| 1 | 11시나리오 Judgment→CU→DCE→Priority→whyAsking→spoken | ✅ 11/11 PASS |
+| 2 | generic-after-promotion | ✅ 0 |
+| 3 | #104 #107 P1-A P1-C P0-1 P0-2 | ✅ 46 passed |
+| 4 | CPO 2-pass Accuracy / Strategy | ✅ 11/11 · 11/11 |
+| 5 | Fix Gate / Merge / Production | HOLD / HOLD / `0b46522` |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  
