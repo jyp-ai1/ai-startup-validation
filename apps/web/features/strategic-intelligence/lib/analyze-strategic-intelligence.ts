@@ -13,6 +13,12 @@ import { SI_AXIS_LABELS, SI_VERDICT_LABELS } from '@repo/types/domain/strategic-
 
 import { isNextPeriodHeldText } from './next-period-outcome';
 import { hasCountedCompletion, hasCountedPaidConversion } from './quantity-unit';
+import {
+  extractProblemMetric,
+  isOffAxisResaleCompletion,
+  isProblemMetricImproved,
+  isProblemMetricWorsened,
+} from './si-problem-metric';
 
 type SignalKind =
   | 'problem'
@@ -48,6 +54,7 @@ type DetectedSignal = {
   order: number;
   retracted: boolean;
   sourceLine: string;
+  fromFounder: boolean;
 };
 
 const AXIS_ORDER: SiAxisId[] = [
@@ -84,27 +91,13 @@ function isHypothesis(line: string): boolean {
   return /(가설|목표|예정|계획|시 ROI|감소 시)/.test(line);
 }
 
-const STAKE_NOUN = /(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하)/i;
-
-function percentPair(line: string): { from: number; to: number } | null {
-  const match = line.match(/(\d+)\s*%.{0,12}(에서|→)\s*(\d+)\s*%/);
-  if (!match) return null;
-  return { from: Number(match[1]), to: Number(match[3]) };
-}
-
 function isStakeImprovedLine(line: string): boolean {
-  if (!STAKE_NOUN.test(line) || isHypothesis(line) || isIntentWithoutAction(line)) return false;
-  if (/(악화|늘었|증가했)/.test(line) && !/(줄었|감소했|개선)/.test(line)) return false;
-  if (/(줄었|감소했|개선됐|개선되)/.test(line)) return true;
-  const pair = percentPair(line);
-  return pair !== null && pair.to < pair.from;
+  if (isHypothesis(line) || isIntentWithoutAction(line)) return false;
+  return isProblemMetricImproved(line);
 }
 
 function isStakeWorsenedLine(line: string): boolean {
-  if (!STAKE_NOUN.test(line)) return false;
-  if (/(악화|늘었|증가했|나빠)/.test(line)) return true;
-  const pair = percentPair(line);
-  return pair !== null && pair.to > pair.from;
+  return isProblemMetricWorsened(line);
 }
 
 export function isRepeatZeroLine(line: string): boolean {
@@ -180,7 +173,7 @@ function matchAny(line: string, patterns: RegExp[]): boolean {
   return patterns.some((pattern) => pattern.test(line));
 }
 
-function scanLine(line: string): DetectedSignal[] {
+function scanLine(line: string, fromFounder = false): DetectedSignal[] {
   if (/^#{1,6}\s/.test(line)) return [];
   const negated = isNegated(line);
   const found: DetectedSignal[] = [];
@@ -200,6 +193,7 @@ function scanLine(line: string): DetectedSignal[] {
       order: 0,
       retracted: false,
       sourceLine: line,
+      fromFounder,
     });
   };
 
@@ -293,10 +287,7 @@ function scanLine(line: string): DetectedSignal[] {
     push('unverified', 'ASSUMPTION', 'validationStrength');
   }
 
-  if (
-    /\d+\s*(?:~\s*)?\d*\s*%/.test(line) &&
-    matchAny(line, [/no-show/i, /노쇼/, /반품/, /누락/, /불일치/, /미스매치/, /이탈/, /부하/])
-  ) {
+  if (extractProblemMetric(line) && (/\d+\s*%/.test(line) || /\d+\s*건/.test(line))) {
     push('quantified_problem', negated || isHypothesis(line) ? 'CLAIM' : 'FACT', 'customerProblemFit');
   }
 
@@ -327,21 +318,47 @@ function headingSection(line: string): 'alternatives' | 'other' | null {
   return /대안|경쟁/.test(line) ? 'alternatives' : 'other';
 }
 
+function bindRepeatValidationToOpenAxis(signals: DetectedSignal[]): void {
+  const sourceResale = signals.some(
+    (signal) => signal.kind === 'resale_thesis' && !signal.fromFounder && !signal.retracted,
+  );
+  const hasMetricAxis = signals.some(
+    (signal) => !signal.retracted && signal.kind === 'quantified_problem',
+  );
+  for (const signal of signals) {
+    if (!signal.fromFounder || sourceResale || !isOffAxisResaleCompletion(signal.sourceLine)) {
+      continue;
+    }
+    if (signal.kind === 'resale_thesis') {
+      signal.retracted = true;
+    }
+    if (signal.kind === 'repeat_validation' && hasMetricAxis) {
+      signal.retracted = true;
+    }
+  }
+}
+
 function scanDocument(text: string): DetectedSignal[] {
   let section: 'alternatives' | 'other' | null = null;
   const out: DetectedSignal[] = [];
   let order = 0;
+  let fromFounder = false;
   for (const line of linesOf(text)) {
+    if (/^\[Founder evidence\]/i.test(line)) {
+      fromFounder = true;
+      continue;
+    }
     const nextSection = headingSection(line);
     if (nextSection) {
       section = nextSection;
       continue;
     }
     order += 1;
-    const found = scanLine(line);
+    const found = scanLine(line, fromFounder);
     for (const signal of found) {
       signal.order = order;
       signal.sourceLine = line;
+      signal.fromFounder = fromFounder;
     }
     if (section === 'alternatives' && !found.some((signal) => signal.kind === 'alternatives')) {
       found.push({
@@ -353,11 +370,18 @@ function scanDocument(text: string): DetectedSignal[] {
         order,
         retracted: false,
         sourceLine: line,
+        fromFounder,
       });
     }
     out.push(...found);
   }
+  bindRepeatValidationToOpenAxis(out);
   applySignalRetractions(out);
+  if (hasKind(out, 'revenue', false)) {
+    for (const signal of out) {
+      if (signal.kind === 'no_revenue') signal.retracted = true;
+    }
+  }
   return out;
 }
 
@@ -386,6 +410,16 @@ function hasKind(signals: DetectedSignal[], kind: SignalKind, negated?: boolean)
       !signal.retracted &&
       signal.kind === kind &&
       (negated === undefined || signal.negated === negated),
+  );
+}
+
+function liveQuantifiedProblem(signals: DetectedSignal[]): DetectedSignal | undefined {
+  return (
+    signals.find(
+      (signal) =>
+        !signal.retracted && signal.kind === 'quantified_problem' && signal.evidenceClass === 'FACT',
+    ) ??
+    signals.find((signal) => !signal.retracted && signal.kind === 'quantified_problem')
   );
 }
 
@@ -440,6 +474,7 @@ function markLineConflict(signals: DetectedSignal[], order: number, sourceLine: 
       order,
       retracted: false,
       sourceLine,
+      fromFounder: false,
     });
     return;
   }
@@ -605,7 +640,14 @@ function buildAxes(signals: DetectedSignal[]): SiAxisJudgment[] {
 }
 
 function dceStakeOpen(signals: DetectedSignal[]): boolean {
-  return hasKind(signals, 'quantified_problem') && !hasKind(signals, 'stake_improved', false);
+  const openFact = signals.some(
+    (signal) =>
+      !signal.retracted &&
+      signal.kind === 'quantified_problem' &&
+      signal.evidenceClass === 'FACT' &&
+      !signal.negated,
+  );
+  return openFact && !hasKind(signals, 'stake_improved', false);
 }
 
 /** Measured 0 on the open C2C/resale axis — not a CONFLICT, not a promotion. */
@@ -666,12 +708,7 @@ function decideVerdict(stageId: SiStageId, signals: DetectedSignal[], axes: SiAx
 }
 
 function stakeNoun(line: string): string {
-  const adjacent = line.match(
-    /(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하).{0,3}\d+\s*(?:~\s*)?\d*\s*%/i,
-  );
-  if (adjacent?.[1]) return adjacent[1];
-  const match = line.match(STAKE_NOUN);
-  return match?.[1] ?? '수치화된 문제 지표';
+  return extractProblemMetric(line) ?? '수치화된 문제 지표';
 }
 
 function alternativeNoun(line: string): string {
@@ -693,7 +730,7 @@ function paidConversionUnknown(signals: DetectedSignal[]): {
   decisionChangingEvidence: string;
   validationPriority: string;
 } {
-  const metric = signals.find((signal) => signal.kind === 'quantified_problem');
+  const metric = liveQuantifiedProblem(signals);
   const alternative = pickNamedAlternative(signals);
   if (!metric) {
     return {
@@ -772,7 +809,7 @@ function pickCriticalUnknown(signals: DetectedSignal[]): {
     return paidConversionUnknown(signals);
   }
 
-  const metric = signals.find((signal) => signal.kind === 'quantified_problem');
+  const metric = liveQuantifiedProblem(signals);
   if (metric && dceStakeOpen(signals) && !hasKind(signals, 'repeat_validation', false)) {
     const stake = stakeNoun(metric.text);
     const alternative = pickNamedAlternative(signals);
@@ -849,13 +886,16 @@ function buildRisks(signals: DetectedSignal[], criticalUnknown: string): string[
   if (hasKind(signals, 'job_unknown')) {
     out.push('이 제품이 대체하는 직무가 검증되지 않았다.');
   }
-  if (hasKind(signals, 'no_revenue') || hasKind(signals, 'no_launch')) {
+  if (
+    (hasKind(signals, 'no_revenue') || hasKind(signals, 'no_launch')) &&
+    !hasKind(signals, 'revenue', false)
+  ) {
     out.push('출시·매출 등 상업 실행 증거가 없다.');
   }
   if (hasKind(signals, 'unverified') && !hasKind(signals, 'revenue', false)) {
     out.push('유료 전환·파일럿 성과가 아직 검증되지 않았다.');
   }
-  const metric = signals.find((signal) => signal.kind === 'quantified_problem');
+  const metric = liveQuantifiedProblem(signals);
   if (metric && !hasKind(signals, 'revenue', false)) {
     out.push(`문서가 수치화한 ${stakeNoun(metric.text)} 수치가 유료 사용 전후로 줄었는지 검증되지 않았다.`);
   }

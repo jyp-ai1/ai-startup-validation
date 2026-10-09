@@ -43,6 +43,8 @@ function firstSentence(text: string): string {
 }
 
 function stakeFromAsk(text: string): string | null {
+  const named = text.match(/수치화한\s+(.+?)\s+수치/);
+  if (named?.[1]) return named[1];
   const match = text.match(/(no-show|노쇼|반품률|반품|누락|불일치|미스매치|이탈|부하)/i);
   return match?.[1] ?? null;
 }

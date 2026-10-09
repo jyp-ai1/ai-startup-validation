@@ -1,0 +1,298 @@
+{
+  "dumpLock": "a79c81c",
+  "productionSha": "0b46522",
+  "fixGate": "OPEN",
+  "merge": "forbidden",
+  "preview": "unverified_until_attempt",
+  "scenarioCount": 8,
+  "rows": [
+    {
+      "type": "냉동물류 IoT",
+      "stake": "온도 초과",
+      "knownStakeNoun": false,
+      "t0": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 온도 초과 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "namesStake": true
+      },
+      "paymentOnly": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "유료 전환 이후 문서가 수치화한 온도 초과 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+        "offS3": true
+      },
+      "full": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3"
+      },
+      "worsen": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "notViableS3": true
+      },
+      "wrongAxis": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "risks": [
+          "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다."
+        ],
+        "notS4Viable": true,
+        "noHeadlineContradiction": true
+      }
+    },
+    {
+      "type": "치과기공 매칭",
+      "stake": "재작업",
+      "knownStakeNoun": false,
+      "t0": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 보철 재작업 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "namesStake": true
+      },
+      "paymentOnly": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "유료 전환 이후 문서가 수치화한 보철 재작업 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+        "offS3": true
+      },
+      "full": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3"
+      },
+      "worsen": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "notViableS3": true
+      },
+      "wrongAxis": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "risks": [
+          "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다."
+        ],
+        "notS4Viable": true,
+        "noHeadlineContradiction": true
+      }
+    },
+    {
+      "type": "굴착기 단기렌탈",
+      "stake": "공회",
+      "knownStakeNoun": false,
+      "t0": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 굴착기 공회 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "namesStake": true
+      },
+      "paymentOnly": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "유료 전환 이후 문서가 수치화한 굴착기 공회 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+        "offS3": true
+      },
+      "full": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3"
+      },
+      "worsen": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "notViableS3": true
+      },
+      "wrongAxis": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "risks": [
+          "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다."
+        ],
+        "notS4Viable": true,
+        "noHeadlineContradiction": true
+      }
+    },
+    {
+      "type": "선박 급유 중개",
+      "stake": "급유 지연",
+      "knownStakeNoun": false,
+      "t0": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 급유 지연 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "namesStake": true
+      },
+      "paymentOnly": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "유료 전환 이후 문서가 수치화한 급유 지연 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+        "offS3": true
+      },
+      "full": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3"
+      },
+      "worsen": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "notViableS3": true
+      },
+      "wrongAxis": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "risks": [
+          "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다."
+        ],
+        "notS4Viable": true,
+        "noHeadlineContradiction": true
+      }
+    },
+    {
+      "type": "산업 3D 수탁",
+      "stake": "치수 불량",
+      "knownStakeNoun": false,
+      "t0": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 치수 불량 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "namesStake": true
+      },
+      "paymentOnly": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "유료 전환 이후 문서가 수치화한 치수 불량 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+        "offS3": true
+      },
+      "full": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3"
+      },
+      "worsen": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "notViableS3": true
+      },
+      "wrongAxis": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "risks": [
+          "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다."
+        ],
+        "notS4Viable": true,
+        "noHeadlineContradiction": true
+      }
+    },
+    {
+      "type": "학교급식 잔반",
+      "stake": "잔반",
+      "knownStakeNoun": false,
+      "t0": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 식수로 잔반 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "namesStake": true
+      },
+      "paymentOnly": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "유료 전환 이후 문서가 수치화한 식수로 잔반 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+        "offS3": true
+      },
+      "full": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3"
+      },
+      "worsen": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "notViableS3": true
+      },
+      "wrongAxis": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "risks": [
+          "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다."
+        ],
+        "notS4Viable": true,
+        "noHeadlineContradiction": true
+      }
+    },
+    {
+      "type": "임상 피험자 모집",
+      "stake": "노쇼",
+      "knownStakeNoun": true,
+      "t0": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 방문 노쇼 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "namesStake": true
+      },
+      "paymentOnly": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "유료 전환 이후 문서가 수치화한 방문 노쇼 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+        "offS3": true
+      },
+      "full": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3"
+      },
+      "worsen": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "notViableS3": true
+      },
+      "wrongAxis": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "risks": [
+          "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다."
+        ],
+        "notS4Viable": true,
+        "noHeadlineContradiction": true
+      }
+    },
+    {
+      "type": "소상공인 해외송금",
+      "stake": "불일치",
+      "knownStakeNoun": true,
+      "t0": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "결제 후보가 유료로 썼을 때 문서가 수치화한 송금 불일치 수치가 실제로 줄어드는가. 지불만 있고 그 지표가 그대로면 유료 전환으로 판단을 확정할 수 없다.",
+        "namesStake": true
+      },
+      "paymentOnly": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "cu": "유료 전환 이후 문서가 수치화한 송금 불일치 수치가 실제로 줄었는가. 지불만 있고 그 지표가 그대로면 판단을 확정할 수 없다.",
+        "offS3": true
+      },
+      "full": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3"
+      },
+      "worsen": {
+        "verdictId": "judgment_deferred",
+        "stageId": "S0",
+        "notViableS3": true
+      },
+      "wrongAxis": {
+        "verdictId": "conditionally_viable",
+        "stageId": "S3",
+        "judgment": "현재 판단: 조건부 사업화 가능. 일부 실행 증거는 있으나, 이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다가 확인되기 전에는 판단을 확정하지 않는다.",
+        "risks": [
+          "이번 성과가 다음 고객이나 다음 기간에도 같은 방향으로 이어지는가. 1회 결과만이면 판단을 확정할 수 없다."
+        ],
+        "notS4Viable": true,
+        "noHeadlineContradiction": true
+      }
+    }
+  ]
+}
