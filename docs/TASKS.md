@@ -4,6 +4,26 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Independent Fix Gate — five #194 types
+
+**CPO Gate:** OPEN · 별도 Fix Draft · Merge/Production 금지 · Production `0b46522` 불변  
+**기준 Dump Lock:** `a79c81c` (#194 미변경)  
+**Branch:** `cursor/si-accuracy-independent-fix-e648`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-ACCURACY-INDEPENDENT-FIX.md`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 부분 매출 과대 승격 | ✅ payment-only stays off S3 when metric unmoved |
+| 2 | 악화 증거 누락 | ✅ unseen metrics worsen retracts stake_improved |
+| 3 | 반복 검증 과대 승격 | ✅ off-axis resale does not S4 a metric-axis business |
+| 4 | Critical Unknown 누락 | ✅ CU names document token, not STAKE_NOUN only |
+| 5 | 판단 문구 모순 | ✅ no_revenue retracts when live revenue exists |
+| 6 | #104 / #107 / P1-A / P1-C / SI 201 | ✅ |
+| 7 | Preview | 1회 배포됨 · SSO 302 · UNVERIFIED · 재시도 없음 |
+| 8 | CPO 수용 / Merge | 대기 · CTO Merge 금지 |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  
