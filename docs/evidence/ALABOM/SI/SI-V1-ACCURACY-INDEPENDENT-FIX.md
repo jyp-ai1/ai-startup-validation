@@ -81,8 +81,8 @@ Before = #194 dump `a79c81c` on Production `0b46522`. After = this branch live a
 
 - 문서에 현재 피해 문형(`가/이 N%`)이 없고 목표 KPI만 있으면 지표를 열지 않는다. 의도된 경계다.
 - 지표 없는 사업의 공식 `repeat_loop` 답(`재판매를 등록했고 12건이 거래됐다`)은 기존 playbook대로 S4가 될 수 있다. 지표 축이 있는 사업에서만 오축 S4를 막는다.
-- Preview는 별도 시도. Hobby `api-deployments-free-per-day`가 남으면 재시도하지 않는다.
-- Vercel 대시보드 플랜·사용량·리셋 시각은 미확인. recovery 주장 없음.
+- Preview 1회: GitHub Vercel `Deployment has completed` on `09c0734`. URL `https://ai-startup-validation-git-cursor-si-ac-7abe34-jyp-ai1s-projects.vercel.app` → HTTP 302 `vercel.com/sso-api`, body `Protected by Vercel Authentication`. **SSO ≠ Preview PASS.** 재시도 없음.
+- Vercel 대시보드 플랜·사용량·리셋 시각은 미확인. recovery 주장 없음. `api-deployments-free-per-day`는 이번 1회에서 관측되지 않았으나 한도 해제로 해석하지 않는다.
 
 ## CPO
 

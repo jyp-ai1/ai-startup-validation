@@ -19,7 +19,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 4 | Critical Unknown 누락 | ✅ CU names document token, not STAKE_NOUN only |
 | 5 | 판단 문구 모순 | ✅ no_revenue retracts when live revenue exists |
 | 6 | #104 / #107 / P1-A / P1-C / SI 201 | ✅ |
-| 7 | Preview / CPO 수용 | 대기 |
+| 7 | Preview | 1회 배포됨 · SSO 302 · UNVERIFIED · 재시도 없음 |
+| 8 | CPO 수용 / Merge | 대기 · CTO Merge 금지 |
 
 ---
 

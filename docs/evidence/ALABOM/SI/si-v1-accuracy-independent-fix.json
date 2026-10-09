@@ -3,7 +3,18 @@
   "productionSha": "0b46522",
   "fixGate": "OPEN",
   "merge": "forbidden",
-  "preview": "unverified_until_attempt",
+  "preview": {
+    "attempt": 1,
+    "sha": "09c0734",
+    "githubVercel": "Deployment has completed",
+    "url": "https://ai-startup-validation-git-cursor-si-ac-7abe34-jyp-ai1s-projects.vercel.app",
+    "http": 302,
+    "location": "vercel.com/sso-api",
+    "body": "Protected by Vercel Authentication",
+    "verdict": "UNVERIFIED — SSO ≠ PASS",
+    "retry": "none",
+    "dashboard": "unread"
+  },
   "scenarioCount": 8,
   "rows": [
     {
