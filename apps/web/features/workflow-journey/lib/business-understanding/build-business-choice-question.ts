@@ -16,6 +16,14 @@ export const UNKNOWN_CHOICE_ANSWER = '아직 모르겠습니다.';
 export const OTHER_CHOICE_LABEL = '기타';
 export const UNKNOWN_CHOICE_LABEL = '아직 모르겠음';
 
+/** CPO core unknowns — each must get business-specific options when the engine asks them. */
+export const CORE_BUSINESS_CHOICE_GAPS = [
+  'problemJtbd',
+  'payer',
+  'revenueModel',
+  'alternativesCompetitors',
+] as const;
+
 export type BusinessChoiceKind = 'specific' | 'other' | 'unknown';
 
 export type BusinessChoiceEvidenceClass = 'FACT' | 'ASSUMPTION' | 'UNKNOWN';
@@ -80,7 +88,8 @@ function splitCandidates(raw: string): string[] {
     .replace(/[()（）\[\]]/g, ' ')
     .split(/\s*(?:·|•|,|，|\/|／|\||및|과|와|등)\s*/)
     .map((part) => part.replace(/^[#*\-]\s*/, '').replace(/[:：].*$/, '').trim())
-    .filter((part) => part.length >= 2 && part.length <= 36)
+    .map((part) => (part.length > 40 ? clip(part, 36) : part))
+    .filter((part) => part.length >= 2)
     .filter((part) => !/^(등|및|또는|기타|없음)$/.test(part));
 }
 
@@ -90,7 +99,7 @@ function labeledValues(documentText: string, labels: string[]): string[] {
     const trimmed = line.replace(/^[#*\-]\s*/, '').trim();
     if (!trimmed) continue;
     for (const label of labels) {
-      const match = trimmed.match(new RegExp(`${label}\\s*[:：]\\s*(.+)$`, 'i'));
+      const match = trimmed.match(new RegExp(`${label}\\s*(?:은|는|[:：])\\s*(.+)$`, 'i'));
       if (match?.[1]) {
         out.push(...splitCandidates(match[1]));
       }
@@ -221,28 +230,70 @@ function uniqueOptions(
   return out;
 }
 
+const ACTOR_NOUN_RE =
+  /[가-힣A-Za-z0-9]{2,12}(?:가게|사장|양조장|관광객|소상공인|병원|학원|공장|식당|여행객|파트너|업체|기공소|원장)/g;
+
+function extractDocumentActors(documentText: string): string[] {
+  const labeled = labeledValues(documentText, [
+    '대상',
+    '고객',
+    '타깃',
+    '타겟',
+    '사용자',
+    '구매자',
+  ]);
+  const nouns = documentText.match(ACTOR_NOUN_RE) ?? [];
+  return uniqueOptions([...labeled, ...nouns], new Set(), 5);
+}
+
+function extractStatusQuo(documentText: string): string[] {
+  const problems = labeledValues(documentText, ['문제', '불편', '페인', '과제']);
+  const tools: string[] = [];
+  const blob = documentText.replace(/\s+/g, ' ');
+  if (/(엑셀|스프레드시트)/.test(blob)) tools.push('엑셀·수기 관리');
+  if (/(카톡|카카오)/.test(blob)) tools.push('카카오톡으로 따로 관리');
+  if (/수기/.test(blob)) tools.push('수기 장부');
+  return uniqueOptions(
+    [
+      ...problems.map((problem) => `지금은 ${problem}`),
+      ...tools,
+      ...labeledValues(documentText, ['경쟁', '대안', '기존', '지금은']),
+    ],
+    new Set(),
+    4,
+  );
+}
+
 function fallbackOptionsForGap(targetGap: string, documentText: string): string[] {
   const blob = documentText.replace(/\s+/g, ' ');
-  if (targetGap === 'payer') {
-    const options: string[] = [];
-    if (/(고객|사용자|관광객|소비자)/.test(blob)) {
-      options.push('서비스를 쓰는 사람이 직접 지불합니다');
-    }
-    if (/(기업|사장|양조장|가게|B2B|파트너)/i.test(blob)) {
-      options.push('가게·파트너가 비용을 지불합니다');
-    }
-    return options;
+  const actors = extractDocumentActors(documentText);
+
+  if (targetGap === 'customerPersona') {
+    return actors;
   }
+
+  if (targetGap === 'payer') {
+    const options = actors.slice(0, 3).map((actor) => `${actor}가 비용을 지불합니다`);
+    if (/(쓰는 사람|사용자|관광객|소비자)/.test(blob) && /(양조장|가게|B2B|파트너|사장)/i.test(blob)) {
+      options.push('쓰는 사람과 돈 내는 사람이 다릅니다');
+    }
+    return uniqueOptions(options, new Set(), 4);
+  }
+
   if (targetGap === 'revenueModel' || targetGap === 'pricingHint') {
     const options: string[] = [];
     if (/구독/.test(blob)) options.push('월 구독으로 받습니다');
     if (/(수수료|중개)/.test(blob)) options.push('거래 수수료로 받습니다');
     if (/(건당|회당|사용량)/.test(blob)) options.push('사용량·건당으로 받습니다');
-    if (options.length === 0 && /(수익|매출|가격|요금)/.test(blob)) {
-      options.push('문서에 적힌 수익 단서가 맞습니다');
-    }
-    return options;
+    const labeled = labeledValues(documentText, ['수익', '매출', '가격', '요금']);
+    options.push(...labeled.map((item) => `${item}으로 수익이 납니다`));
+    return uniqueOptions(options, new Set(), 4);
   }
+
+  if (targetGap === 'alternativesCompetitors') {
+    return extractStatusQuo(documentText);
+  }
+
   if (targetGap === 'validationTestability' || targetGap === 'marketSizeEvidence') {
     return ['실제 결제나 사용 증거가 있습니다', '아직 실제 결제·사용 증거는 없습니다'];
   }
@@ -266,7 +317,9 @@ function answerTextForOption(targetGap: string, label: string): string {
         ? label
         : `수익은 ${label} 구조로 발생합니다.`;
     case 'alternativesCompetitors':
-      return `지금은 ${label}으로 비슷한 일을 하고 있습니다.`;
+      return /지금은|대안|경쟁/.test(label)
+        ? `${label}이 현재 대안입니다.`
+        : `지금은 ${label}으로 비슷한 일을 하고 있습니다. 그게 현재 대안입니다.`;
     case 'differentiationVsAlternatives':
     case 'differentiationHypothesis':
       return `경쟁 대비 차별점은 ${label}입니다.`;

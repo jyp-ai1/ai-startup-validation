@@ -17,8 +17,9 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 2 | 요약 · 사실/가정 · 1개 미확인 · 객관식 | ✅ `build-business-choice-question.ts` |
 | 3 | 선택 → 기존 답변 파이프라인 · 다음 질문 변경 | ✅ composer + `apply-business-choice.ts` |
 | 4 | 시나리오 A–G 테스트 | ✅ 7/7 · 관련 루프 회귀는 main 기존 실패와 동일 |
-| 5 | Preview SHA = PR SHA | 대기 · 증거 없으면 STOP |
-| 6 | CPO 승인 전 Merge/Production | 금지 |
+| 5 | 문제·구매자·수익·대안 객관식 + 재판단 경로 | ✅ `apply-business-choice-turn.ts` · journey 5 |
+| 6 | Preview SHA | 별도 추적 · 개발 차단 아님 |
+| 7 | CPO 승인 전 Merge/Production | 금지 |
 
 ---
 
