@@ -74,6 +74,8 @@ export const PRODUCT_ANALYTICS_EVENTS = {
   bmChanged: 'bm_changed',
   blindSpotDetected: 'blind_spot_detected',
   clarityQuestionRaised: 'clarity_question_raised',
+  clarityQuestionAnswered: 'clarity_question_answered',
+  clarityQuestionSkipped: 'clarity_question_skipped',
   siJudgmentViewed: 'si_judgment_viewed',
   siAiPmQuestionAsked: 'si_ai_pm_question_asked',
   siAiPmAnswerApplied: 'si_ai_pm_answer_applied',

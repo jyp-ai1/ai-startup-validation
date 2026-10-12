@@ -4,6 +4,24 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## AI PM 사업 이해 · 객관식 대화
+
+**CPO Gate:** OPEN · 별도 Draft · Merge/Production 금지 · Production `0b465226` 불변  
+**Branch:** `cursor/ai-pm-mcq-understanding-e648`  
+**Reuse:** V3 living / review / next-question / DAY 8-G presenter. 엔진 재작성 없음.  
+**#196 P1:** Merge 보류 유지 · 이 작업에 포함하지 않음
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 기존 대화·객관식 구현 점검 | ✅ 재사용: living·review·next Q. 미구현: 사업 특화 MCQ |
+| 2 | 요약 · 사실/가정 · 1개 미확인 · 객관식 | ✅ `build-business-choice-question.ts` |
+| 3 | 선택 → 기존 답변 파이프라인 · 다음 질문 변경 | ✅ composer + `apply-business-choice.ts` |
+| 4 | 시나리오 A–G 테스트 | ✅ 7/7 · 관련 루프 회귀는 main 기존 실패와 동일 |
+| 5 | Preview SHA = PR SHA | 대기 · 증거 없으면 STOP |
+| 6 | CPO 승인 전 Merge/Production | 금지 |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  

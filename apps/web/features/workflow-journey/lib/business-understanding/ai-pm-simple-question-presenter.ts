@@ -3,6 +3,10 @@
  */
 
 import { buildAnswerGuide, formatAnswerGuideText } from './ai-pm-answer-guide';
+import {
+  type BusinessChoiceOption,
+  buildBusinessChoiceQuestion,
+} from './build-business-choice-question';
 import { toHumanLanguageQuestion } from './ai-pm-question-human-language';
 import { sanitizeCeoWhyNow } from './ai-pm-question-presentation';
 import {
@@ -10,6 +14,7 @@ import {
   CEO_JUDGMENT_SESSION_MAX_QUESTIONS,
   judgmentViewTitle,
 } from './ai-pm-question-budget';
+import type { LivingUnderstandingState } from './living-understanding-state';
 
 export type AiPmSimpleQuestionSnapshot = {
   screenTitle: string;
@@ -20,6 +25,11 @@ export type AiPmSimpleQuestionSnapshot = {
   questionIndex: number;
   maxQuestions: number;
   showInterimJudgmentCta: boolean;
+  businessSummary?: string;
+  facts?: string[];
+  assumptions?: string[];
+  targetUnknown?: string;
+  choiceOptions?: BusinessChoiceOption[];
 };
 
 const WHY_BY_GAP: Record<string, string> = {
@@ -54,6 +64,8 @@ export function buildAiPmSimpleQuestionSnapshot(input: {
   targetGap?: string | null;
   whyNow?: string | null;
   questionCount: number;
+  living?: LivingUnderstandingState | null;
+  documentText?: string | null;
 }): AiPmSimpleQuestionSnapshot {
   const questionText = toHumanLanguageQuestion(
     input.displayQuestionText,
@@ -61,15 +73,29 @@ export function buildAiPmSimpleQuestionSnapshot(input: {
   );
   const guide = buildAnswerGuide({ targetGap: input.targetGap });
   const index = Math.min(input.questionCount + 1, CEO_JUDGMENT_SESSION_MAX_QUESTIONS);
+  const choice =
+    input.living && input.documentText
+      ? buildBusinessChoiceQuestion({
+          living: input.living,
+          documentText: input.documentText,
+          targetGap: input.targetGap,
+          displayQuestionText: input.displayQuestionText,
+        })
+      : null;
 
   return {
     screenTitle: judgmentViewTitle(input.questionCount, 'question'),
-    questionText,
+    questionText: choice?.questionText ?? questionText,
     answerGuideText: formatAnswerGuideText(guide),
     whyQuestionSummary: buildWhySummary(input.targetGap, input.whyNow),
     progressLabel: `확인 진행 중 · ${index}번째 질문`,
     questionIndex: index,
     maxQuestions: CEO_JUDGMENT_SESSION_MAX_QUESTIONS,
     showInterimJudgmentCta: index >= CEO_JUDGMENT_EARLY_VIEW_FROM,
+    businessSummary: choice?.businessSummary,
+    facts: choice?.facts,
+    assumptions: choice?.assumptions,
+    targetUnknown: choice?.targetUnknown,
+    choiceOptions: choice?.options,
   };
 }

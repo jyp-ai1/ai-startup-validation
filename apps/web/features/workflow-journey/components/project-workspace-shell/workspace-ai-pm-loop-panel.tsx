@@ -11,9 +11,17 @@ import { cn } from '@repo/ui/lib/utils';
 
 import { applyWorkspaceLoopAnswer } from '../../lib/business-understanding/workspace-state-update';
 import {
+  trackBlindSpotDetected,
   trackBusinessUnderstandingConfirmed,
   trackBusinessUnderstandingCorrected,
+  trackClarityQuestionAnswered,
+  trackClarityQuestionRaised,
 } from '../../lib/business-understanding/track-understanding-funnel';
+import {
+  type BusinessChoiceOption,
+  isEscapeChoice,
+} from '../../lib/business-understanding/build-business-choice-question';
+import { resolveBusinessChoiceAnswer } from '../../lib/business-understanding/apply-business-choice';
 import { buildAiPmRuntimeJudgment } from '../../lib/business-understanding/build-workspace-ai-pm-state';
 import {
   appendAiPmLoopTurn,
@@ -319,6 +327,7 @@ export function WorkspaceAiPmLoopPanel({
   const t = useTranslations('workflow.journey.workspaceShell.aiPmLoop');
   const [loopState, setLoopState] = useState(() => loadAiPmLoopState(projectId));
   const [answerDraft, setAnswerDraft] = useState('');
+  const [selectedChoiceId, setSelectedChoiceId] = useState<string | null>(null);
   const [reanalyzing, setReanalyzing] = useState(false);
   const [processingStageIds, setProcessingStageIds] = useState<ThinkingStageId[]>([
     'confirmAnswer',
@@ -757,6 +766,8 @@ export function WorkspaceAiPmLoopPanel({
       questionCount: loopState.ceoJudgment?.questionCount ?? loopState.turns.filter(
         (t) => !t.superseded && t.answer?.trim() && t.intent !== 'why_meta' && t.intent !== 'mid_judgment',
       ).length,
+      living: livingState,
+      documentText,
     });
   }, [
     simpleQuestionUiActive,
@@ -767,7 +778,36 @@ export function WorkspaceAiPmLoopPanel({
     s11Surface.question.purpose,
     loopState.ceoJudgment?.questionCount,
     loopState.turns,
+    livingState,
+    documentText,
   ]);
+  const choiceOptions = useMemo(() => {
+    if (simpleQuestionSnapshot?.choiceOptions?.length) {
+      return simpleQuestionSnapshot.choiceOptions;
+    }
+    if (!documentText?.trim()) return null;
+    return buildAiPmSimpleQuestionSnapshot({
+      displayQuestionText,
+      targetGap: activeTargetGap,
+      questionCount: loopState.turns.length,
+      living: livingState,
+      documentText,
+    }).choiceOptions ?? null;
+  }, [
+    simpleQuestionSnapshot?.choiceOptions,
+    documentText,
+    displayQuestionText,
+    activeTargetGap,
+    loopState.turns.length,
+    livingState,
+  ]);
+
+  useEffect(() => {
+    if (!choiceOptions?.length || !activeTargetGap) return;
+    trackClarityQuestionRaised({ projectId, targetGap: activeTargetGap });
+    trackBlindSpotDetected({ projectId, targetGap: activeTargetGap });
+  }, [activeTargetGap, choiceOptions?.length, projectId]);
+
   const focusedSnapshot = useMemo(() => {
     if (!focusedUiActive) return null;
     return buildAiPmFocusedSnapshot({
@@ -958,6 +998,7 @@ export function WorkspaceAiPmLoopPanel({
   const resetAnswerDraft = useCallback(() => {
     clearAnswerDraft(projectId);
     setAnswerDraft('');
+    setSelectedChoiceId(null);
     setConfirmCorrectionMode(false);
   }, [projectId]);
 
@@ -1610,6 +1651,13 @@ export function WorkspaceAiPmLoopPanel({
     const issueId = storedLoop.currentIssueId ?? loopState.currentIssueId ?? nextIssue;
     const trimmed = (forcedText ?? answerDraft).trim();
     if (!issueId || trimmed.length < 2 || readOnly) return;
+    if (selectedChoiceId || simpleQuestionSnapshot?.choiceOptions?.length) {
+      trackClarityQuestionAnswered({
+        projectId,
+        targetGap: activeTargetGap,
+        kind: selectedChoiceId ? 'choice' : 'text',
+      });
+    }
 
     const siAskText = siValidationAsk?.questionText?.trim();
     const liveAskText =
@@ -2203,7 +2251,24 @@ export function WorkspaceAiPmLoopPanel({
     siValidationAsk,
     onSiValidationAnswer,
     answerDraft,
+    selectedChoiceId,
+    simpleQuestionSnapshot?.choiceOptions?.length,
+    activeTargetGap,
   ]);
+
+  const handleSelectBusinessChoice = useCallback(
+    (option: BusinessChoiceOption) => {
+      if (readOnly) return;
+      setSelectedChoiceId(option.id);
+      const resolved = resolveBusinessChoiceAnswer(option, answerDraft);
+      if (isEscapeChoice(option) || resolved.needsFreeText) {
+        setAnswerQualityHint(null);
+        return;
+      }
+      submitAnswer(resolved.answerText);
+    },
+    [answerDraft, readOnly, submitAnswer],
+  );
 
   const submitSupplementAnswer = useCallback(
     (answer: string) => {
@@ -2539,6 +2604,9 @@ export function WorkspaceAiPmLoopPanel({
       onAcceptNew={() => resolveContradiction('accept_new')}
       onAcceptBoth={() => resolveContradiction('accept_both')}
       qualityHint={answerQualityHint ? t(`answerQuality.${answerQualityHint}`) : null}
+      choiceOptions={isConfirmQuestion || contradiction ? null : choiceOptions}
+      selectedChoiceId={selectedChoiceId}
+      onSelectChoice={handleSelectBusinessChoice}
     />
   );
 
