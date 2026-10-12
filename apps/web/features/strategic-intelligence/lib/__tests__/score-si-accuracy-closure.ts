@@ -186,7 +186,10 @@ export function scoreClosureAxes(input: {
   );
 
   const nextCuAfterPromo =
-    isNextUnresolvedCu(upgraded.criticalUnknown) || isRepeatabilityCu(upgraded.criticalUnknown) || s4Ok;
+    isNextUnresolvedCu(upgraded.criticalUnknown) ||
+    isRepeatabilityCu(upgraded.criticalUnknown) ||
+    s4Ok ||
+    (/세그먼트|결제자/.test(upgraded.criticalUnknown) && upgraded.stageId !== 'S0');
   const cu = axis(
     'cu',
     staleCu || !nextCuAfterPromo ? 'FAIL' : 'PASS',

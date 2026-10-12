@@ -18,6 +18,12 @@ describe('si-problem-metric — document token, not an allowlist', () => {
     expect(extractProblemMetric('스크리닝 방문 노쇼가 31%입니다.')).toMatch(/노쇼/);
     expect(extractProblemMetric('송금 불일치가 건당 16%입니다.')).toMatch(/불일치/);
     expect(extractProblemMetric('no-show가 18%에 달합니다.')).toMatch(/no-show/i);
+    expect(extractProblemMetric('하절기 온도 초과 주 14건입니다.')).toMatch(/초과|온도/);
+    expect(extractProblemMetric('보철 재작업률 19%')).toMatch(/재작업/);
+    expect(extractProblemMetric('14건의 온도 초과가 발생했다.')).toMatch(/초과|온도/);
+    expect(extractProblemMetric('클레임: 12건')).toMatch(/클레임/);
+    expect(extractProblemMetric('치수 불량(22%)')).toMatch(/불량/);
+    expect(extractProblemMetric('현재 잔반 28퍼센트')).toMatch(/잔반/);
   });
 
   it('does not treat payment-only, forecast, or target KPI as a problem metric', () => {

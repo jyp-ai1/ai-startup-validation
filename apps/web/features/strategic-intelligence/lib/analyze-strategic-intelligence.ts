@@ -322,17 +322,11 @@ function bindRepeatValidationToOpenAxis(signals: DetectedSignal[]): void {
   const sourceResale = signals.some(
     (signal) => signal.kind === 'resale_thesis' && !signal.fromFounder && !signal.retracted,
   );
-  const hasMetricAxis = signals.some(
-    (signal) => !signal.retracted && signal.kind === 'quantified_problem',
-  );
   for (const signal of signals) {
     if (!signal.fromFounder || sourceResale || !isOffAxisResaleCompletion(signal.sourceLine)) {
       continue;
     }
-    if (signal.kind === 'resale_thesis') {
-      signal.retracted = true;
-    }
-    if (signal.kind === 'repeat_validation' && hasMetricAxis) {
+    if (signal.kind === 'resale_thesis' || signal.kind === 'repeat_validation') {
       signal.retracted = true;
     }
   }

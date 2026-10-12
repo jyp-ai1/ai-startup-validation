@@ -4,6 +4,22 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## S.I. Residual P1 Accuracy Fix
+
+**CPO Gate:** OPEN · 별도 Draft · Merge/Production 금지 · Production `0b465226` 불변  
+**Branch:** `cursor/si-p1-accuracy-fix-e648`  
+**Base:** #195 `dc82497`  
+**Evidence:** `docs/evidence/ALABOM/SI/SI-V1-P1-ACCURACY-FIX.md`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | P1-A 가/이 없는 현재 피해 수치 | ✅ 피해 단서·N%의 명사. 구성비/전망 제외 |
+| 2 | P1-B 지표 없는 사업의 오축 S4 | ✅ 비재판매 문서에서 공식 재판매/거래 횟수 S4 아님. C2C·재결제 유지 |
+| 3 | 72셀 + SI 206 + build | ✅ 41 files / 206 tests · web build PASS |
+| 4 | Preview / CPO Merge | 대기 · CTO Merge 금지 |
+
+---
+
 ## S.I. Independent Fix Gate — five #194 types
 
 **CPO Gate:** OPEN · 별도 Fix Draft · Merge/Production 금지 · Production `0b46522` 불변  

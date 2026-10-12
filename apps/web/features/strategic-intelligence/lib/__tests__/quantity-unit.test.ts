@@ -70,5 +70,10 @@ describe('quantity-unit — meaning-preserving counts', () => {
     ).toBe(true);
     expect(hasCountedCompletion('결제 후보 2곳이 월 구독을 결제했다.')).toBe(false);
     expect(hasCountedCompletion('재구매 2건은 있었으나 재판매 등록은 0건이다.')).toBe(false);
+    expect(hasCountedCompletion('12건이 거래됐다.')).toBe(false);
+    expect(hasCountedCompletion('현장 작업을 12건 등록했다.')).toBe(false);
+    expect(
+      hasCountedCompletion('이미 결제한 고객 중 2명이 다음 달에도 다시 결제했다.'),
+    ).toBe(true);
   });
 });

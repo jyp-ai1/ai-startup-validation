@@ -15,6 +15,8 @@ export type CountedQuantity = {
 
 const PAYMENT_VERB = /(결제했|지불했|유료로\s*(썼|사용|전환))/;
 const COMPLETION_VERB = /(등록했|거래됐|거래가 됐|거래가 발생|재구매했|체결됐|실제로\s*재판매)/;
+const RESALE_MARK = /(C2C|재판매|리세일)/;
+const REPEAT_MARK = /(재구매했|다시 결제했|재계약했|계약을 갱신)/;
 const COMMERCIAL_MARK = /(결제|지불|유료)/;
 
 const ORG_NOUN = '병원|의원|클리닉|브랜드|업체|회사|가게|점포|매장|식당|카페';
@@ -87,9 +89,15 @@ export function hasCountedPaidConversion(text: string): boolean {
   return positiveQuantities(text, ['customer_org', 'person', 'transaction', 'contract']).length > 0;
 }
 
+/**
+ * Counted repeat that can close a model — not a raw job or trade tally.
+ * Resale completion stays valid on a C2C thesis. Repurchase / renewal is
+ * on-axis repeat. "12건이 거래됐다" alone is not business-model proof.
+ */
 export function hasCountedCompletion(text: string): boolean {
   const counted = extractQuantities(text);
-  if (!COMPLETION_VERB.test(text)) return false;
   if (isPersonUsageWithoutPayment(text, counted)) return false;
-  return positiveQuantities(text, ['person', 'transaction', 'contract']).length > 0;
+  if (positiveQuantities(text, ['person', 'transaction', 'contract']).length === 0) return false;
+  if (RESALE_MARK.test(text) && COMPLETION_VERB.test(text)) return true;
+  return REPEAT_MARK.test(text);
 }
