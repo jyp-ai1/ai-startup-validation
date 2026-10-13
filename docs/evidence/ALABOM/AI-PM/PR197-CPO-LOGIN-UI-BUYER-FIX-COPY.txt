@@ -11,9 +11,9 @@ PR: https://github.com/jyp-ai1/ai-startup-validation/pull/197
 브랜치: cursor/ai-pm-mcq-understanding-e648
 엔진 불변: 8965af43 CPO VERIFIED
 S4 라우팅: 08a36d8c CPO VERIFIED
-이번 수정: 이 커밋 (아래 파일)
+이번 수정: f95bb167
 수정 전 dump: executedAt 2026-10-13T12:04:43Z · payer CLOSED · buyer current=T6 문장
-수정 후 dump: executedAt 2026-10-13T12:21:52Z · meta.implSha bc4a0bd5 + 이번 수정 워킹트리
+수정 후 dump: executedAt 2026-10-13T12:21:52Z · pin f95bb167
 Production: 0b465226 불변
 경로: QA magic-link → /ko/workspace → WorkspaceAiPmLoopPanel
 원시 I/O: docs/evidence/ALABOM/AI-PM/PR197-CPO-LOGIN-UI-DUMP.json

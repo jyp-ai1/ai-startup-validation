@@ -356,7 +356,7 @@ pnpm --filter web exec vitest run \
 | S4 T7 재확인 | **CTO VERIFIED** | current=20대 · 부모=superseded · next=대안 |
 | R1–R4 · GO 가드 | **CTO VERIFIED** (유지) | 덤프 재실행 |
 | 로그인 UI S4 T6/T7 | **CPO VERIFIED** | 라우팅·상태 일관성. `PR197-CPO-LOGIN-UI-S4-ROUTING.md` |
-| 잔여 · T6 buyer 구매자 오사용 | **FAIL** | extractedFacts buyer + payer CLOSED. `PR197-CPO-LOGIN-UI-RESIDUAL-COPY.txt` |
+| 잔여 · T6 buyer 구매자 오사용 | **CTO VERIFIED** (차단 후) | payer 미CLOSED · Memory buyer current 없음 · `PR197-CPO-LOGIN-UI-BUYER-FIX-COPY.txt` |
 | 잔여 · T7 선택지 / 화면 문구 | **CTO VERIFIED** | 파편+기타로 확정 가능. 화면≠lastDecision, 둘 다 고객 재확인 |
 | 로그인 UI S6 / S2 / S3 / S5 | **CTO VERIFIED** | payer CLOSED · next=대안 · 한 줄 후퇴 없음 |
 | 동결 8턴 문구 | **NOT VERIFIED** | 엔진 팔로우 ≠ 문구 일치 |

@@ -5,7 +5,7 @@
     "path": "QA magic-link → /ko/workspace create project → WorkspaceAiPmLoopPanel confirm/MCQ/기타+submitAnswer",
     "login": "qa-magic-link (authenticated workspace, not engine dump, not Google button)",
     "production": "NOT VERIFIED",
-    "note": "Residual-risk verify after S4 CPO VERIFIED. Engine CPO VERIFIED kept. Do not merge."
+    "note": "Buyer-as-payer block re-verify. Engine CPO VERIFIED kept. Do not merge."
   },
   "login": {
     "landed": "http://127.0.0.1:3210/ko/workspace",
