@@ -6,7 +6,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 사업 이해 · 객관식 대화
 
-**CPO Gate:** OPEN · 엔진 실패 원인 분석 제출 · 구현·병합·배포 보류  
+**CPO Gate:** OPEN · 일괄 수정안 제출 · 구현·병합·배포 보류  
 **Branch:** `cursor/ai-pm-mcq-understanding-e648`  
 **Scenarios:** `docs/product/ai-pm-closed-conversation-scenarios.md`  
 **Reuse:** V3 living / review / next-question / DAY 8-G presenter. 엔진 재작성 없음.  
@@ -27,7 +27,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 11 | 결제 증거 재판단 | 1차 검증: 결론/customerChange 불변 · 엔진 미개작 |
 | 12 | 완결형 시나리오 초안 | 📤 1차 패키지 `d151b25d` · CPO: 수정 후 재검토 |
 | 13 | R1–R4 시나리오 수정 · 재검토 패키지 | 📤 패키지 `03415eed` · CPO: 문서 수용, 구현 재개 보류 |
-| 14 | R1–R4 엔진 실패 원인 · 가드 실행 증거 | 📤 `docs/evidence/ALABOM/AI-PM/PR197-R1-R4-ENGINE-FAILURE-ANALYSIS.md` · 제품 코드 미변경 |
+| 14 | R1–R4 엔진 실패 원인 · 가드 실행 증거 | 📤 증상 로그 `20eb6985` · 제품 코드 미변경 |
+| 15 | V3 단계 추적 · 일괄 수정안 | 📤 `docs/evidence/ALABOM/AI-PM/PR197-JUDGMENT-ENGINE-BATCH-FIX-PLAN.md` · 구현 보류 |
 
 ---
 
