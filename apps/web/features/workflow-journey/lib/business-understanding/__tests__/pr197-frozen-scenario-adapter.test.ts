@@ -11,6 +11,7 @@ import {
   FROZEN_PLAYBACK_FIRST_GAP,
   FROZEN_SCENARIO_SHA,
   pickFrozenAnswerForGap,
+  scoreTrackBQuality,
 } from './pr197-frozen-scenario-adapter';
 
 describe('PR #197 frozen scenario adapter (verification only)', () => {
@@ -81,6 +82,43 @@ describe('PR #197 frozen scenario adapter (verification only)', () => {
       readFileSync(join(runtimeDir, file), 'utf8').includes('pr197-frozen-scenario-adapter'),
     );
     expect(runtimeHits).toEqual([]);
+  });
+
+  it('flags Track B payer streaks and gap revisits as NEEDS FIX, not 8-turn PASS', () => {
+    const scored = scoreTrackBQuality([
+      { askedGap: 'customerPersona', askedQuestion: '고객은 누구인가요?' },
+      { askedGap: 'problemJtbd', askedQuestion: '불편은 무엇인가요?' },
+      { askedGap: 'payer', askedQuestion: '누가 내나요?' },
+      { askedGap: 'payer', askedQuestion: '누가 내나요? 조금 더 구체적으로 알려 주세요.' },
+      { askedGap: 'payer', askedQuestion: '누가 내나요?' },
+      { askedGap: 'payer', askedQuestion: '누가 내나요?' },
+      { askedGap: 'customerPersona', askedQuestion: '고객은 누구인가요?' },
+      { askedGap: 'payer', askedQuestion: '누가 내나요?' },
+    ]);
+    expect(scored.reachedEight).toBe(true);
+    expect(scored.qualityStatus).toBe('NEEDS FIX');
+    expect(scored.maxPayerStreak).toBeGreaterThanOrEqual(3);
+    expect(scored.gapRevisits.length).toBeGreaterThan(0);
+    expect(scored.unresolvedGapEarlyStop).toBe(false);
+  });
+
+  it('flags unresolved-gap early stop separately from 8-turn reach', () => {
+    const scored = scoreTrackBQuality(
+      [
+        { askedGap: 'customerPersona', askedQuestion: '고객은 누구인가요?' },
+        { askedGap: 'problemJtbd', askedQuestion: '불편은 무엇인가요?' },
+      ],
+      {
+        lastSpine: {
+          customerPersona: 'OPEN',
+          problemJtbd: 'PARTIAL',
+          payer: 'OPEN',
+        },
+      },
+    );
+    expect(scored.reachedEight).toBe(false);
+    expect(scored.unresolvedGapEarlyStop).toBe(true);
+    expect(scored.qualityStatus).toBe('NEEDS FIX');
   });
 
   it('maps frozen founder answer onto the asked gap, not turn index', () => {

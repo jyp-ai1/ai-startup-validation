@@ -269,6 +269,120 @@ export const ONSLOT_FALLBACK: Record<string, string> = {
   businessOneLiner: '문서에 적은 한 줄이 맞습니다',
 };
 
+export function normalizeAskedQuestion(text: string): string {
+  return text
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/\s*조금 더 구체적으로 알려 주세요\.?/g, '')
+    .replace(/[?？]/g, '?');
+}
+
+export type TrackBQualityTurn = {
+  askedGap?: string | null;
+  askedQuestion?: string | null;
+  nextTargetGap?: string | null;
+};
+
+export type TrackBTurnFlags = {
+  consecutiveSameAsPrevious: boolean;
+  questionRepeat: boolean;
+  gapRevisit: boolean;
+};
+
+export type SpineCompleteness = {
+  customerPersona: string;
+  problemJtbd: string;
+  payer: string;
+};
+
+export function annotateTrackBTurnFlags(turns: TrackBQualityTurn[]): TrackBTurnFlags[] {
+  const seenGaps: string[] = [];
+  const askedNorms: string[] = [];
+  return turns.map((turn, i) => {
+    const gap = String(turn.askedGap ?? '');
+    const q = normalizeAskedQuestion(String(turn.askedQuestion ?? ''));
+    const consecutiveSameAsPrevious = i > 0 && Boolean(gap) && gap === String(turns[i - 1]?.askedGap ?? '');
+    const gapRevisit = Boolean(gap) && seenGaps.includes(gap) && seenGaps.at(-1) !== gap;
+    const questionRepeat = Boolean(q) && askedNorms.includes(q);
+    if (gap) seenGaps.push(gap);
+    if (q) askedNorms.push(q);
+    return { consecutiveSameAsPrevious, questionRepeat, gapRevisit };
+  });
+}
+
+export function scoreTrackBQuality(
+  turns: TrackBQualityTurn[],
+  options?: { lastSpine?: SpineCompleteness },
+): {
+  reachedEight: boolean;
+  consecutiveSameGapCount: number;
+  maxPayerStreak: number;
+  exactQuestionRepeatCount: number;
+  gapRevisits: string[];
+  repeatedQuestions: string[];
+  unresolvedGapEarlyStop: boolean;
+  qualityStatus: 'PASS' | 'NEEDS FIX';
+  qualityReason: string;
+} {
+  const asked = turns.filter((t) => t.askedGap);
+  let consecutiveSameGapCount = 0;
+  let maxPayerStreak = 0;
+  let payerStreak = 0;
+  const seenGaps: string[] = [];
+  const gapRevisits: string[] = [];
+  const askedNorms: string[] = [];
+  const repeatedQuestions: string[] = [];
+
+  for (let i = 0; i < asked.length; i += 1) {
+    const gap = String(asked[i]?.askedGap ?? '');
+    const q = normalizeAskedQuestion(String(asked[i]?.askedQuestion ?? ''));
+    if (i > 0 && gap && gap === asked[i - 1]?.askedGap) consecutiveSameGapCount += 1;
+    if (gap === 'payer') {
+      payerStreak += 1;
+      maxPayerStreak = Math.max(maxPayerStreak, payerStreak);
+    } else {
+      payerStreak = 0;
+    }
+    if (gap && seenGaps.includes(gap) && seenGaps.at(-1) !== gap) {
+      gapRevisits.push(`${gap}@T${i + 1}`);
+    }
+    if (gap) seenGaps.push(gap);
+    if (q && askedNorms.includes(q)) repeatedQuestions.push(q);
+    if (q) askedNorms.push(q);
+  }
+
+  const lastSpine = options?.lastSpine;
+  const unresolvedGapEarlyStop = Boolean(
+    asked.length < 8 &&
+      lastSpine &&
+      (lastSpine.customerPersona !== 'CLOSED' ||
+        lastSpine.problemJtbd !== 'CLOSED' ||
+        lastSpine.payer !== 'CLOSED'),
+  );
+
+  const problems: string[] = [];
+  if (consecutiveSameGapCount >= 2) problems.push(`consecutiveSameGap=${consecutiveSameGapCount}`);
+  if (maxPayerStreak >= 3) problems.push(`payerStreak=${maxPayerStreak}`);
+  if (repeatedQuestions.length > 0) problems.push(`questionRepeat=${repeatedQuestions.length}`);
+  if (gapRevisits.length > 0) problems.push(`gapRevisit=${gapRevisits.join(',')}`);
+  if (unresolvedGapEarlyStop) problems.push('unresolvedGapEarlyStop');
+  const qualityStatus = problems.length > 0 ? 'NEEDS FIX' : 'PASS';
+  return {
+    reachedEight: asked.length >= 8,
+    consecutiveSameGapCount,
+    maxPayerStreak,
+    exactQuestionRepeatCount: repeatedQuestions.length,
+    gapRevisits,
+    repeatedQuestions,
+    unresolvedGapEarlyStop,
+    qualityStatus,
+    qualityReason:
+      problems.length > 0
+        ? problems.join('; ')
+        : 'no consecutive same-gap streak, payer streak < 3, no question/gap revisit, no unresolved-gap early stop',
+  };
+}
+
 export function resolveOnSlotAnswer(
   frozenTurns: Array<{ expectedQuestion: string; founderAnswer: string }>,
   intendedGaps: string[],

@@ -1,0 +1,86 @@
+PR #197 CPO 분리 상태 보고. 이 블록 전체를 복사. 표 없음. 병합 요청 없음.
+
+한 줄: 계약 분리는 유지한다. Track A FAIL 0/35. Track B 어댑터 8턴은 품질 NEEDS FIX. 로그인 UI 8턴 FAIL. OAuth와 Production은 NOT VERIFIED. 병합하지 않는다.
+
+식별
+PR: 197
+브랜치: cursor/ai-pm-mcq-understanding-e648
+덤프에 찍힌 테스트 대상 SHA: 4e53a422a07daa8e5f810c7357ff3baf26340b03
+구현 SHA: 커밋 후 HEAD (이 제출의 테스트/어댑터/e2e/보고서). 엔진 SoT 파일은 미변경.
+동결 본문 SHA: 5263e83e (런타임 승격 안 함)
+Production 잠금: 0b465226516e1a4f3eb9ce2087f8bca2c2c091da
+Production 실측 /api/build-info commit: 0b465226516e1a4f3eb9ce2087f8bca2c2c091da matchesLockedSha=true thisPrOnProduction=false
+
+===== 별도 상태 (합산하지 말 것) =====
+
+1. 엔진 Track A 동결 문구 1:1
+상태: FAIL
+근거: compared=35 exact=0. 오프슬롯 답변으로 상태 왜곡. S1/S2/S3/S4/S6 next=null 이고 noAskableGap=false. S5는 8턴이나 문구 0일치.
+파일: docs/evidence/ALABOM/AI-PM/PR197-CPO-TRACK-A-COPY.txt
+엔진 계약 변경 근거로 쓰지 않음.
+
+2. 엔진 Track B 온슬롯 어댑터
+상태: NEEDS FIX (8턴 도달과 분리)
+근거: S1-S6 reachedEight=true. quality 전부 NEEDS FIX.
+S1: payer 4연속, customerPersona@T4 회귀, 질문반복 2.
+S2: validationTestability@T7 회귀.
+S3: solution 반복 후 customerPersona@T5 회귀, payer 3연속, 질문반복 2.
+S4: customerPersona@T4 회귀, payer 4연속, 질문반복 3.
+S5: alternativesCompetitors@T8 회귀.
+S6: alternativesCompetitors@T8 회귀.
+파일: docs/evidence/ALABOM/AI-PM/PR197-CPO-TRACK-B-COPY.txt
+어댑터 PASS를 UI/OAuth/Production PASS로 확대하지 않음.
+
+3. 어댑터 런타임 비침투 / 엔진 SoT
+상태: CTO VERIFIED (이번 제출 증거)
+pr197-frozen-scenario-adapter 런타임 import 0건. 참조는 __tests__ 3파일뿐.
+STAGE_A_REQUIRED_GAPS = businessOneLiner, customerPersona, payer, problemJtbd.
+엔진 SoT git diff 공집합: evaluate-stage-readiness.ts, ai-pm-judgment-next-question-binding.ts, ai-pm-anti-repeat-policy.ts, ai-pm-no-gap-termination.ts, gap-question-map.ts, resolve-next-question-decision.ts, decide-next-question-from-review.ts.
+problem-first 엔진 변경안: 제출하지 않음.
+
+4. 로그인 UI 8턴
+상태: FAIL
+경로: QA magic-link 인증 워크스페이스. 실제 페이지에서 프로젝트 생성 후 클릭/확인 입력.
+S1-S6 모두 6턴. 8턴 미도달. T1 businessOneLiner 확인 → customerPersona → problemJtbd → payer → alternativesCompetitors 반복 → T6 submit-failed.
+Playwright "6 passed"는 dump 기록 성공이지 UI 8턴 PASS가 아님.
+파일: docs/evidence/ALABOM/AI-PM/PR197-CPO-LOGIN-UI-EIGHT-TURNS-COPY.txt
+
+5. Google OAuth 8턴
+상태: NOT VERIFIED
+근거: 실제 계정 동의와 세션 진입 없음. 이번 제출의 로그인은 QA magic-link.
+
+6. Production 대화
+상태: NOT VERIFIED
+근거: Production SHA 0b465226. PR #197 미배포. 대화 증거 없음. 배포하지 않음.
+
+===== 기존 게이트 =====
+T6 buyer 오사용 차단: 재실행 7 passed. CPO VERIFIED 유지. 재구현 없음.
+명령: pnpm --filter web exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-login-ui-s4-routing.test.ts
+T7 next=payer: 재실행 5 passed. CPO VERIFIED 유지. 재구현 없음.
+명령: pnpm --filter web exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-t7-payer-hold.test.ts
+엔진 대화 품질 회귀: 24 passed.
+명령: pnpm --filter web exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-conversation-quality.test.ts
+AC16: FAIL 유지. expected businessOneLiner received alternativesCompetitors. 기대값 미하향.
+AC5 V3-09: FAIL 유지. expected marketChannel received alternativesCompetitors. 기대값 미하향.
+명령: pnpm --filter web exec vitest run features/workflow-journey/lib/business-understanding/__tests__/ai-pm-loop-v3.test.ts -t "AC16: V3-08|AC5 V3-09"
+
+===== 런타임 변경 =====
+변경 범위: 테스트 어댑터, 품질 채점, Track A/B dump, 로그인 UI e2e, 증거 문서.
+미변경: 엔진 SoT, T6/T7 구현, 모순 모델, 5263e83e 동결 문구, Production.
+
+===== 미해결 / 다음 조치 =====
+1. Track A 0/35 FAIL는 유지. 엔진 problem-first 변경 금지.
+2. Track B 반복 질문과 갭 회귀는 엔진 수정 없이 기록. CPO 승인 전 고치지 않음.
+3. 로그인 UI는 8턴 실패. alternativesCompetitors 확인 루프/submit-failed. UI PASS 아님.
+4. Google OAuth 실제 동의 세션 필요. 이번 미실행.
+5. Production 배포 금지. SHA 잠금 유지.
+6. AC16/AC5 부채 유지.
+
+병합 요청: 없음. 어댑터 8턴과 엔진 회귀만으로 병합을 요청하지 않는다.
+CPO 재판정 요청: 예. 상태는 분리되어 있다. 전체 병합 승인을 주장하지 않는다.
+
+[CTO] CPO 요청 작업: 제출 — Track A FAIL 유지, Track B 반복·갭 회귀 채점, 로그인 UI 8턴 FAIL 증거, OAuth/Production NOT VERIFIED
+[CPO] 검토·지시 필요: 예 — 엔진 PASS만으로 병합 승인 불가, 로그인 UI는 FAIL, OAuth·Production은 미검증
+
+Next Autonomous Target
+Epic PR197 검증 범위 확정 / Track A FAIL·Track B NEEDS FIX·UI FAIL 분리 제출 / 예상 완료 이번 제출 / 다음 보고 08:00

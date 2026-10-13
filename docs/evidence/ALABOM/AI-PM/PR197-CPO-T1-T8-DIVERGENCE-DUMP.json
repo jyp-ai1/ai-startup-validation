@@ -1,12 +1,13 @@
 {
   "meta": {
-    "implSha": "77147a56fa4eb1ebeffd758156d3ebce773ef9e0",
-    "executedAt": "2026-10-13T13:34:18.876Z",
+    "implSha": "4e53a422a07daa8e5f810c7357ff3baf26340b03",
+    "executedAt": "2026-10-13T14:12:17.696Z",
     "frozenScenarioSha": "5263e83e",
     "engineSotFirstGap": "customerPersona",
-    "note": "Expected wording is 5263e83e and is not relaxed. Track A reproduces the merge-gate 1:1 FAIL. Track B isolates stop. Track C is scripted problem-first playback, not engine SoT.",
+    "note": "Expected wording is 5263e83e and is not relaxed. Track A reproduces the merge-gate 1:1 FAIL. Track B isolates stop and scores repeats/gap regression. Track C is scripted problem-first playback, not engine SoT. Engine PASS is not UI PASS.",
     "production": "NOT VERIFIED",
-    "googleOauth": "NOT VERIFIED"
+    "googleOauth": "NOT VERIFIED",
+    "mergeRequest": "none — adapter PASS is not a merge request"
   },
   "contract": {
     "frozenDocument": "CPO review script — not runtime SoT. CEO: problem-first engine change is not approved.",
@@ -15,12 +16,183 @@
     "existingPlaybackAdapter": "followEngine hardcodes first gap=problemJtbd — not engine SoT",
     "s6SideSelect": "frozen T1 marketplaceSide has no engine gap"
   },
+  "separatedStatus": {
+    "engineTrackA_frozenWording": {
+      "status": "FAIL",
+      "compared": 35,
+      "exactMatches": 0
+    },
+    "engineTrackB_onSlotAdapter": {
+      "status": "NEEDS FIX",
+      "note": "8-turn reach is not quality PASS. Repeats and gap revisits score NEEDS FIX."
+    },
+    "adapterRuntimeImport": {
+      "status": "CTO VERIFIED",
+      "note": "adapter lives under __tests__ only"
+    },
+    "loginUiEightTurn": {
+      "status": "NOT VERIFIED",
+      "note": "see PR197-CPO-LOGIN-UI-EIGHT-TURNS-DUMP.json"
+    },
+    "googleOauth": {
+      "status": "NOT VERIFIED"
+    },
+    "production": {
+      "status": "NOT VERIFIED",
+      "lock": "0b465226"
+    }
+  },
   "trackA_verbatimSotTurnIndex": {
     "totals": {
       "compared": 35,
       "exactMatches": 0,
       "allScenariosExact": false
     },
+    "failureModes": [
+      {
+        "id": "S1",
+        "firstAskedGap": "customerPersona",
+        "firstExpectedGap": "problemJtbd",
+        "turnCount": 5,
+        "stoppedEarly": true,
+        "offSlotAnswerTurns": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "nextNullStops": [
+          {
+            "turn": 4,
+            "noAskableGap": false,
+            "reason": "next_null_with_askable_gaps_after_off_slot_or_repeat_policy"
+          },
+          {
+            "turn": 5,
+            "noAskableGap": false,
+            "reason": "next_null_with_askable_gaps_after_off_slot_or_repeat_policy"
+          }
+        ]
+      },
+      {
+        "id": "S2",
+        "firstAskedGap": "customerPersona",
+        "firstExpectedGap": "problemJtbd",
+        "turnCount": 7,
+        "stoppedEarly": true,
+        "offSlotAnswerTurns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "nextNullStops": [
+          {
+            "turn": 6,
+            "noAskableGap": false,
+            "reason": "next_null_with_askable_gaps_after_off_slot_or_repeat_policy"
+          },
+          {
+            "turn": 7,
+            "noAskableGap": false,
+            "reason": "next_null_with_askable_gaps_after_off_slot_or_repeat_policy"
+          }
+        ]
+      },
+      {
+        "id": "S3",
+        "firstAskedGap": "customerPersona",
+        "firstExpectedGap": "problemJtbd",
+        "turnCount": 5,
+        "stoppedEarly": true,
+        "offSlotAnswerTurns": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "nextNullStops": [
+          {
+            "turn": 4,
+            "noAskableGap": false,
+            "reason": "next_null_with_askable_gaps_after_off_slot_or_repeat_policy"
+          },
+          {
+            "turn": 5,
+            "noAskableGap": false,
+            "reason": "next_null_with_askable_gaps_after_off_slot_or_repeat_policy"
+          }
+        ]
+      },
+      {
+        "id": "S4",
+        "firstAskedGap": "customerPersona",
+        "firstExpectedGap": "problemJtbd",
+        "turnCount": 5,
+        "stoppedEarly": true,
+        "offSlotAnswerTurns": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "nextNullStops": [
+          {
+            "turn": 4,
+            "noAskableGap": false,
+            "reason": "next_null_with_askable_gaps_after_off_slot_or_repeat_policy"
+          },
+          {
+            "turn": 5,
+            "noAskableGap": false,
+            "reason": "next_null_with_askable_gaps_after_off_slot_or_repeat_policy"
+          }
+        ]
+      },
+      {
+        "id": "S5",
+        "firstAskedGap": "customerPersona",
+        "firstExpectedGap": "problemJtbd",
+        "turnCount": 8,
+        "stoppedEarly": false,
+        "offSlotAnswerTurns": [
+          1,
+          2,
+          3,
+          4,
+          6,
+          7,
+          8
+        ],
+        "nextNullStops": []
+      },
+      {
+        "id": "S6",
+        "firstAskedGap": "customerPersona",
+        "firstExpectedGap": "marketplaceSide",
+        "turnCount": 5,
+        "stoppedEarly": true,
+        "offSlotAnswerTurns": [
+          1,
+          3,
+          4
+        ],
+        "nextNullStops": [
+          {
+            "turn": 4,
+            "noAskableGap": false,
+            "reason": "next_null_with_askable_gaps_after_off_slot_or_repeat_policy"
+          },
+          {
+            "turn": 5,
+            "noAskableGap": false,
+            "reason": "next_null_with_askable_gaps_after_off_slot_or_repeat_policy"
+          }
+        ]
+      }
+    ],
     "scenarios": {
       "S1": {
         "firstAskedGap": "customerPersona",
@@ -978,6 +1150,22 @@
         ],
         "reachedEight": true,
         "stoppedEarly": false,
+        "quality": {
+          "reachedEight": true,
+          "consecutiveSameGapCount": 3,
+          "maxPayerStreak": 4,
+          "exactQuestionRepeatCount": 2,
+          "gapRevisits": [
+            "customerPersona@T4"
+          ],
+          "repeatedQuestions": [
+            "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+            "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?"
+          ],
+          "unresolvedGapEarlyStop": false,
+          "qualityStatus": "NEEDS FIX",
+          "qualityReason": "consecutiveSameGap=3; payerStreak=4; questionRepeat=2; gapRevisit=customerPersona@T4"
+        },
         "turns": [
           {
             "turn": 1,
@@ -986,14 +1174,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "반찬가게",
             "frozenTurnUsed": 2,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "nextTargetGap": "problemJtbd",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "OPEN",
               "problemJtbd": "OPEN",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 2,
@@ -1002,14 +1201,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "주문과 배송을 따로 관리해야 함",
             "frozenTurnUsed": 1,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
             "nextTargetGap": "solution",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "OPEN",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 3,
@@ -1018,14 +1228,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "하루에 주문을 한 번에 보고 싶다",
             "frozenTurnUsed": 6,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "「주문과 배송을 따로 관리해야 함」을 가장 절실히 느끼는 사람은 누구인가요?",
             "nextTargetGap": "customerPersona",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "OPEN",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 4,
@@ -1034,14 +1255,25 @@
             "answerSource": "fallback",
             "founderAnswer": "이 서비스를 가장 필요로 하는 사람은 문서에 적은 대상입니다",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": true
           },
           {
             "turn": 5,
@@ -1050,14 +1282,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "아직 모르겠음",
             "frozenTurnUsed": 3,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "문서에 적은 대상에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 6,
@@ -1066,14 +1309,25 @@
             "answerSource": "fallback",
             "founderAnswer": "도입을 결정하는 사람은 아직 모르겠음",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": true,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 7,
@@ -1082,14 +1336,25 @@
             "answerSource": "fallback",
             "founderAnswer": "도입을 결정하는 사람은 아직 모르겠음",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": true,
+            "questionRepeat": true,
+            "gapRevisit": false
           },
           {
             "turn": 8,
@@ -1098,14 +1363,25 @@
             "answerSource": "fallback",
             "founderAnswer": "도입을 결정하는 사람은 아직 모르겠음",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": true,
+            "questionRepeat": true,
+            "gapRevisit": false
           }
         ]
       },
@@ -1124,6 +1400,19 @@
         ],
         "reachedEight": true,
         "stoppedEarly": false,
+        "quality": {
+          "reachedEight": true,
+          "consecutiveSameGapCount": 0,
+          "maxPayerStreak": 1,
+          "exactQuestionRepeatCount": 0,
+          "gapRevisits": [
+            "validationTestability@T7"
+          ],
+          "repeatedQuestions": [],
+          "unresolvedGapEarlyStop": false,
+          "qualityStatus": "NEEDS FIX",
+          "qualityReason": "gapRevisit=validationTestability@T7"
+        },
         "turns": [
           {
             "turn": 1,
@@ -1132,14 +1421,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "선물하는 30–40대",
             "frozenTurnUsed": 2,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "nextTargetGap": "problemJtbd",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "OPEN",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 2,
@@ -1148,14 +1448,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "전통주를 발견하기 어렵다",
             "frozenTurnUsed": 1,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 3,
@@ -1164,14 +1475,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "선물하는 사람이 냄",
             "frozenTurnUsed": 3,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
             "nextTargetGap": "alternativesCompetitors",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 4,
@@ -1180,14 +1502,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "지인에게 물어 추천받는다",
             "frozenTurnUsed": 5,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "그 차별점이 고객에게 왜 중요한가요?",
             "nextTargetGap": "validationTestability",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 5,
@@ -1196,14 +1529,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "아직 없다",
             "frozenTurnUsed": 7,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
             "nextTargetGap": "solution",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 6,
@@ -1212,14 +1556,25 @@
             "answerSource": "fallback",
             "founderAnswer": "문제를 한곳에서 보이게 하는 방식입니다",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?",
             "nextTargetGap": "validationTestability",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 7,
@@ -1228,14 +1583,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "창업자 확인",
             "frozenTurnUsed": 8,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "PARTIAL",
+            "answerMovedAskedGap": true,
             "nextQuestion": "수익은 어떤 구조로 발생하나요?",
             "nextTargetGap": "revenueModel",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": true
           },
           {
             "turn": 8,
@@ -1244,14 +1610,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "일단 병 판매가 먼저고 수수료는 나중",
             "frozenTurnUsed": 4,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요? 조금 더 구체적으로 알려 주세요.",
             "nextTargetGap": "validationTestability",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           }
         ]
       },
@@ -1270,6 +1647,22 @@
         ],
         "reachedEight": true,
         "stoppedEarly": false,
+        "quality": {
+          "reachedEight": true,
+          "consecutiveSameGapCount": 3,
+          "maxPayerStreak": 3,
+          "exactQuestionRepeatCount": 2,
+          "gapRevisits": [
+            "customerPersona@T5"
+          ],
+          "repeatedQuestions": [
+            "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+            "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?"
+          ],
+          "unresolvedGapEarlyStop": false,
+          "qualityStatus": "NEEDS FIX",
+          "qualityReason": "consecutiveSameGap=3; payerStreak=3; questionRepeat=2; gapRevisit=customerPersona@T5"
+        },
         "turns": [
           {
             "turn": 1,
@@ -1278,14 +1671,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "영업관리자",
             "frozenTurnUsed": 2,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "nextTargetGap": "problemJtbd",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "OPEN",
               "problemJtbd": "OPEN",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 2,
@@ -1294,14 +1698,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "메일 숫자를 엑셀에 옮기다 나는 오타",
             "frozenTurnUsed": 1,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
             "nextTargetGap": "solution",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "OPEN",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 3,
@@ -1310,14 +1725,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "잘못된 단가로 발주",
             "frozenTurnUsed": 6,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "PARTIAL",
+            "answerMovedAskedGap": true,
             "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
             "nextTargetGap": "solution",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "OPEN",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 4,
@@ -1326,14 +1752,25 @@
             "answerSource": "fallback",
             "founderAnswer": "문제를 한곳에서 보이게 하는 방식입니다",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "PARTIAL",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "「문제를 한곳에서 보이게 하는 방식」을 가장 절실히 느끼는 사람은 누구인가요?",
             "nextTargetGap": "customerPersona",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "OPEN",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": true,
+            "questionRepeat": true,
+            "gapRevisit": false
           },
           {
             "turn": 5,
@@ -1342,14 +1779,25 @@
             "answerSource": "fallback",
             "founderAnswer": "이 서비스를 가장 필요로 하는 사람은 문서에 적은 대상입니다",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": true
           },
           {
             "turn": 6,
@@ -1358,14 +1806,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "대표",
             "frozenTurnUsed": 3,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "문서에 적은 대상에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 7,
@@ -1374,14 +1833,25 @@
             "answerSource": "fallback",
             "founderAnswer": "도입을 결정하는 사람은 아직 모르겠음",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": true,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 8,
@@ -1390,14 +1860,25 @@
             "answerSource": "fallback",
             "founderAnswer": "도입을 결정하는 사람은 아직 모르겠음",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": true,
+            "questionRepeat": true,
+            "gapRevisit": false
           }
         ]
       },
@@ -1416,6 +1897,23 @@
         ],
         "reachedEight": true,
         "stoppedEarly": false,
+        "quality": {
+          "reachedEight": true,
+          "consecutiveSameGapCount": 3,
+          "maxPayerStreak": 4,
+          "exactQuestionRepeatCount": 3,
+          "gapRevisits": [
+            "customerPersona@T4"
+          ],
+          "repeatedQuestions": [
+            "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+            "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+            "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?"
+          ],
+          "unresolvedGapEarlyStop": false,
+          "qualityStatus": "NEEDS FIX",
+          "qualityReason": "consecutiveSameGap=3; payerStreak=4; questionRepeat=3; gapRevisit=customerPersona@T4"
+        },
         "turns": [
           {
             "turn": 1,
@@ -1424,14 +1922,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "아이",
             "frozenTurnUsed": 2,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "nextTargetGap": "problemJtbd",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "OPEN",
               "problemJtbd": "OPEN",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 2,
@@ -1440,14 +1949,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "무엇을 줄지 고르기 싫다",
             "frozenTurnUsed": 1,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
             "nextTargetGap": "solution",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "OPEN",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 3,
@@ -1456,14 +1976,25 @@
             "answerSource": "fallback",
             "founderAnswer": "문제를 한곳에서 보이게 하는 방식입니다",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
             "nextTargetGap": "customerPersona",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "OPEN",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 4,
@@ -1472,14 +2003,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "사실 아이가 아니라 혼자 사는 20대가 메인이에요",
             "frozenTurnUsed": 6,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": true,
+            "gapRevisit": true
           },
           {
             "turn": 5,
@@ -1488,14 +2030,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "부모",
             "frozenTurnUsed": 3,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "혼자 사는 20대가 메인에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 6,
@@ -1504,14 +2057,25 @@
             "answerSource": "fallback",
             "founderAnswer": "도입을 결정하는 사람은 아직 모르겠음",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": true,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 7,
@@ -1520,14 +2084,25 @@
             "answerSource": "fallback",
             "founderAnswer": "도입을 결정하는 사람은 아직 모르겠음",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": true,
+            "questionRepeat": true,
+            "gapRevisit": false
           },
           {
             "turn": 8,
@@ -1536,14 +2111,25 @@
             "answerSource": "fallback",
             "founderAnswer": "도입을 결정하는 사람은 아직 모르겠음",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "OPEN",
+            "answerMovedAskedGap": false,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": true,
+            "questionRepeat": true,
+            "gapRevisit": false
           }
         ]
       },
@@ -1562,6 +2148,19 @@
         ],
         "reachedEight": true,
         "stoppedEarly": false,
+        "quality": {
+          "reachedEight": true,
+          "consecutiveSameGapCount": 0,
+          "maxPayerStreak": 1,
+          "exactQuestionRepeatCount": 0,
+          "gapRevisits": [
+            "alternativesCompetitors@T8"
+          ],
+          "repeatedQuestions": [],
+          "unresolvedGapEarlyStop": false,
+          "qualityStatus": "NEEDS FIX",
+          "qualityReason": "gapRevisit=alternativesCompetitors@T8"
+        },
         "turns": [
           {
             "turn": 1,
@@ -1570,14 +2169,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "헬스장 다니는 20–30대",
             "frozenTurnUsed": 2,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "nextTargetGap": "problemJtbd",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "OPEN",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 2,
@@ -1586,14 +2196,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "맛이 없다",
             "frozenTurnUsed": 1,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "PARTIAL",
+            "answerMovedAskedGap": true,
             "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
             "nextTargetGap": "solution",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "PARTIAL",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 3,
@@ -1602,14 +2223,25 @@
             "answerSource": "fallback",
             "founderAnswer": "문제를 한곳에서 보이게 하는 방식입니다",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "PARTIAL",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 4,
@@ -1618,14 +2250,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "헬스 트레이너가 회원에게 추천하고 회원이 결제",
             "frozenTurnUsed": 5,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
             "nextTargetGap": "alternativesCompetitors",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 5,
@@ -1634,14 +2277,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "시중 단백질바",
             "frozenTurnUsed": 3,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "PARTIAL",
+            "answerMovedAskedGap": true,
             "nextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
             "nextTargetGap": "differentiationVsAlternatives",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 6,
@@ -1650,14 +2304,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "더 맛있다",
             "frozenTurnUsed": 4,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "PARTIAL",
+            "answerMovedAskedGap": true,
             "nextQuestion": "수익은 어떤 구조로 발생하나요?",
             "nextTargetGap": "revenueModel",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 7,
@@ -1666,14 +2331,25 @@
             "answerSource": "fallback",
             "founderAnswer": "월 구독",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "헬스장 다니는 20–30대이 「문제를 한곳에서 보이게 하는 방식」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?",
             "nextTargetGap": "alternativesCompetitors",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 8,
@@ -1682,14 +2358,25 @@
             "answerSource": "fallback",
             "founderAnswer": "지금은 기존 방식으로 처리합니다",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "PARTIAL",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?",
             "nextTargetGap": "validationTestability",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": true
           }
         ]
       },
@@ -1708,6 +2395,19 @@
         ],
         "reachedEight": true,
         "stoppedEarly": false,
+        "quality": {
+          "reachedEight": true,
+          "consecutiveSameGapCount": 0,
+          "maxPayerStreak": 1,
+          "exactQuestionRepeatCount": 0,
+          "gapRevisits": [
+            "alternativesCompetitors@T8"
+          ],
+          "repeatedQuestions": [],
+          "unresolvedGapEarlyStop": false,
+          "qualityStatus": "NEEDS FIX",
+          "qualityReason": "gapRevisit=alternativesCompetitors@T8"
+        },
         "turns": [
           {
             "turn": 1,
@@ -1716,14 +2416,25 @@
             "answerSource": "fallback",
             "founderAnswer": "이 서비스를 가장 필요로 하는 사람은 문서에 적은 대상입니다",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "nextTargetGap": "problemJtbd",
+            "spineBefore": {
+              "customerPersona": "OPEN",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "OPEN",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 2,
@@ -1732,14 +2443,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "사람을 못 믿음",
             "frozenTurnUsed": 2,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "PARTIAL",
+            "answerMovedAskedGap": true,
             "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
             "nextTargetGap": "solution",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "OPEN",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "PARTIAL",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 3,
@@ -1748,14 +2470,25 @@
             "answerSource": "fallback",
             "founderAnswer": "문제를 한곳에서 보이게 하는 방식입니다",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
             "nextTargetGap": "payer",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "PARTIAL",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "OPEN"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 4,
@@ -1764,14 +2497,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "집이 냄",
             "frozenTurnUsed": 4,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
             "nextTargetGap": "alternativesCompetitors",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "OPEN"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 5,
@@ -1780,14 +2524,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "지인 소개",
             "frozenTurnUsed": 3,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "PARTIAL",
+            "answerMovedAskedGap": true,
             "nextQuestion": "경쟁 대비 이 서비스만의 차별점은 무엇인가요?",
             "nextTargetGap": "differentiationVsAlternatives",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 6,
@@ -1796,14 +2551,25 @@
             "answerSource": "frozen-mapped",
             "founderAnswer": "신원 확인",
             "frozenTurnUsed": 5,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "PARTIAL",
+            "answerMovedAskedGap": true,
             "nextQuestion": "수익은 어떤 구조로 발생하나요?",
             "nextTargetGap": "revenueModel",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 7,
@@ -1812,14 +2578,25 @@
             "answerSource": "fallback",
             "founderAnswer": "월 구독",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "OPEN",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "사람을 못 믿음이 「문제를 한곳에서 보이게 하는 방식」을 풀 때 이미 쓰는 대안·서비스는 무엇인가요?",
             "nextTargetGap": "alternativesCompetitors",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": false
           },
           {
             "turn": 8,
@@ -1828,14 +2605,25 @@
             "answerSource": "fallback",
             "founderAnswer": "지금은 기존 방식으로 처리합니다",
             "frozenTurnUsed": null,
+            "askedGapCompletenessBefore": "PARTIAL",
+            "askedGapCompletenessAfter": "CLOSED",
+            "answerMovedAskedGap": true,
             "nextQuestion": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?",
             "nextTargetGap": "validationTestability",
+            "spineBefore": {
+              "customerPersona": "CLOSED",
+              "problemJtbd": "CLOSED",
+              "payer": "CLOSED"
+            },
             "spineAfter": {
               "customerPersona": "CLOSED",
               "problemJtbd": "CLOSED",
               "payer": "CLOSED"
             },
-            "stopCause": null
+            "stopCause": null,
+            "consecutiveSameAsPrevious": false,
+            "questionRepeat": false,
+            "gapRevisit": true
           }
         ]
       }

@@ -35,6 +35,8 @@ import {
   FROZEN_TURNS,
   normalizeQuestion,
   resolveOnSlotAnswer,
+  annotateTrackBTurnFlags,
+  scoreTrackBQuality,
   type ScenarioId,
 } from './pr197-frozen-scenario-adapter';
 
@@ -248,6 +250,8 @@ function runTrackB(id: ScenarioId) {
       break;
     }
     const picked = resolveOnSlotAnswer(frozen, intended, gap, used);
+    const spineBefore = spineAfter(pid);
+    const completenessBefore = completenessMap(pid);
     const after = applyTypedAnswerThroughLoop({
       projectId: pid,
       documentText: doc,
@@ -256,6 +260,7 @@ function runTrackB(id: ScenarioId) {
       askedQuestionText: asked,
       customerCompleteness: loadAiPmLoopState(pid).gapState?.gaps.customerPersona?.completeness,
     });
+    const completenessAfter = completenessMap(pid);
     turns.push({
       turn: i + 1,
       askedQuestion: asked,
@@ -263,8 +268,12 @@ function runTrackB(id: ScenarioId) {
       answerSource: picked.source,
       founderAnswer: picked.answer,
       frozenTurnUsed: picked.frozenTurn,
+      askedGapCompletenessBefore: completenessBefore[gap] ?? 'OPEN',
+      askedGapCompletenessAfter: completenessAfter[gap] ?? 'OPEN',
+      answerMovedAskedGap: (completenessBefore[gap] ?? 'OPEN') !== (completenessAfter[gap] ?? 'OPEN'),
       nextQuestion: after.nextQuestionText,
       nextTargetGap: after.nextTargetGap,
+      spineBefore,
       spineAfter: spineAfter(pid),
       stopCause: after.nextQuestionText ? null : stopCause(pid, after.nextQuestionText),
     });
@@ -272,13 +281,28 @@ function runTrackB(id: ScenarioId) {
     nextGap = after.nextTargetGap ?? null;
   }
 
+  const askedTurns = turns.filter((t) => t.askedGap);
+  const qualityTurns = askedTurns.map((t) => ({
+    askedGap: String(t.askedGap ?? ''),
+    askedQuestion: String(t.askedQuestion ?? ''),
+    nextTargetGap: t.nextTargetGap ? String(t.nextTargetGap) : null,
+  }));
+  const flags = annotateTrackBTurnFlags(qualityTurns);
+  const annotated = askedTurns.map((t, i) => ({
+    ...t,
+    consecutiveSameAsPrevious: flags[i]?.consecutiveSameAsPrevious ?? false,
+    questionRepeat: flags[i]?.questionRepeat ?? false,
+    gapRevisit: flags[i]?.gapRevisit ?? false,
+  }));
+  const lastSpine = (annotated.at(-1)?.spineAfter as ReturnType<typeof spineAfter> | undefined) ?? spineAfter(pid);
   return {
     firstAskedGap: turns[0]?.askedGap ?? null,
-    turnCount: turns.filter((t) => t.status !== 'STOP').length,
-    askedGaps: turns.filter((t) => t.askedGap).map((t) => t.askedGap),
-    reachedEight: turns.filter((t) => t.askedGap).length >= 8,
+    turnCount: askedTurns.length,
+    askedGaps: askedTurns.map((t) => t.askedGap),
+    reachedEight: askedTurns.length >= 8,
     stoppedEarly: turns.some((t) => t.status === 'STOP'),
-    turns,
+    quality: scoreTrackBQuality(qualityTurns, { lastSpine }),
+    turns: annotated.length ? annotated : turns,
   };
 }
 
@@ -385,6 +409,33 @@ describe('PR #197 frozen T1–T8 divergence (contract vs adapter)', () => {
       verbatimExact += a.exactMatchCount;
     }
 
+    const trackAFailureModes = ids.map((id) => {
+      const a = trackA[id] as {
+        turnCount: number;
+        stoppedEarly: boolean;
+        turns: Array<{
+          turn: number;
+          mismatchClasses?: string[];
+          stopCause?: { nextNull?: boolean; noAskableGap?: boolean | null; reason?: string } | null;
+        }>;
+      };
+      const offSlot = a.turns.filter((t) => t.mismatchClasses?.includes('OFF_SLOT_ANSWER')).map((t) => t.turn);
+      const nextNull = a.turns.filter((t) => t.stopCause?.nextNull).map((t) => ({
+        turn: t.turn,
+        noAskableGap: t.stopCause?.noAskableGap ?? null,
+        reason: t.stopCause?.reason ?? null,
+      }));
+      return {
+        id,
+        firstAskedGap: ENGINE_SOT_FIRST_GAP,
+        firstExpectedGap: FROZEN_INTENDED_GAP[id][0],
+        turnCount: a.turnCount,
+        stoppedEarly: a.stoppedEarly,
+        offSlotAnswerTurns: offSlot,
+        nextNullStops: nextNull,
+      };
+    });
+
     const dump = {
       meta: {
         implSha: gitSha(),
@@ -392,9 +443,10 @@ describe('PR #197 frozen T1–T8 divergence (contract vs adapter)', () => {
         frozenScenarioSha: FROZEN_SCENARIO_SHA,
         engineSotFirstGap: ENGINE_SOT_FIRST_GAP,
         note:
-          'Expected wording is 5263e83e and is not relaxed. Track A reproduces the merge-gate 1:1 FAIL. Track B isolates stop. Track C is scripted problem-first playback, not engine SoT.',
+          'Expected wording is 5263e83e and is not relaxed. Track A reproduces the merge-gate 1:1 FAIL. Track B isolates stop and scores repeats/gap regression. Track C is scripted problem-first playback, not engine SoT. Engine PASS is not UI PASS.',
         production: 'NOT VERIFIED',
         googleOauth: 'NOT VERIFIED',
+        mergeRequest: 'none — adapter PASS is not a merge request',
       },
       contract: {
         frozenDocument: 'CPO review script — not runtime SoT. CEO: problem-first engine change is not approved.',
@@ -404,12 +456,31 @@ describe('PR #197 frozen T1–T8 divergence (contract vs adapter)', () => {
         existingPlaybackAdapter: 'followEngine hardcodes first gap=problemJtbd — not engine SoT',
         s6SideSelect: 'frozen T1 marketplaceSide has no engine gap',
       },
+      separatedStatus: {
+        engineTrackA_frozenWording: {
+          status: 'FAIL',
+          compared: verbatimCompared,
+          exactMatches: verbatimExact,
+        },
+        engineTrackB_onSlotAdapter: {
+          status: 'NEEDS FIX',
+          note: '8-turn reach is not quality PASS. Repeats and gap revisits score NEEDS FIX.',
+        },
+        adapterRuntimeImport: {
+          status: 'CTO VERIFIED',
+          note: 'adapter lives under __tests__ only',
+        },
+        loginUiEightTurn: { status: 'NOT VERIFIED', note: 'see PR197-CPO-LOGIN-UI-EIGHT-TURNS-DUMP.json' },
+        googleOauth: { status: 'NOT VERIFIED' },
+        production: { status: 'NOT VERIFIED', lock: '0b465226' },
+      },
       trackA_verbatimSotTurnIndex: {
         totals: {
           compared: verbatimCompared,
           exactMatches: verbatimExact,
           allScenariosExact: verbatimExact === 48,
         },
+        failureModes: trackAFailureModes,
         scenarios: trackA,
       },
       trackB_sotOnSlotAdapter: {

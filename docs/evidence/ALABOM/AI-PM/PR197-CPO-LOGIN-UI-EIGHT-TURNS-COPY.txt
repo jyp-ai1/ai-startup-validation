@@ -1,0 +1,226 @@
+PR #197 로그인 UI 8턴. 이 블록만 복사.
+엔진 PASS / 어댑터 8턴을 UI PASS로 대체하지 않는다.
+로그인 방식: QA magic-link → /ko/workspace. Google OAuth가 아니다.
+덤프 SHA: 4e53a422a07daa8e5f810c7357ff3baf26340b03
+실행 시각: 2026-10-13T14:12:55.197Z
+명령: PLAYWRIGHT_BASE_URL=http://127.0.0.1:3210 pnpm exec playwright test e2e/pr197-cpo-login-ui-eight-turns.spec.ts --reporter=list --workers=1
+원문 결과: 6 passed (16.2m). 이 6 passed는 증거 수집 하니스가 시나리오마다 dump를 남겼다는 뜻이다. 제품 8턴 PASS가 아니다.
+제품 상태: S1-S6 전부 uiStatus=FAIL. reachedEight=false. 6턴에서 alternativesCompetitors 반복 후 submit-failed로 중단.
+
+--- Login UI S1 turns=6 eight=false uiStatus=FAIL ---
+askedGaps: businessOneLiner -> customerPersona -> problemJtbd -> payer -> alternativesCompetitors -> alternativesCompetitors
+quality: NEEDS FIX questionRepeat=1; unresolvedGapEarlyStop
+error: null
+T1 gap=businessOneLiner via=confirm-yes
+  질문: 제가 이해한 사업은 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」입니다. 맞나요?
+  입력: [confirm-yes]
+  다음갭: customerPersona  다음질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+T2 gap=customerPersona via=choice-click
+  질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  입력: [choice /반찬|꽃|소상공/]
+  다음갭: problemJtbd  다음질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  customer=CLOSED problem=OPEN payer=OPEN
+T3 gap=problemJtbd via=first-specific
+  질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  입력: [first-specific]
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+T4 gap=payer via=first-specific
+  질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  입력: [first-specific]
+  다음갭: alternativesCompetitors  다음질문: 경쟁·대안은(는) 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」으로 이해했습니다. 맞나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T5 gap=alternativesCompetitors via=confirm-yes
+  질문: 경쟁·대안은(는) 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」으로 이해했습니다. 맞나요?
+  입력: [confirm-yes]
+  다음갭: alternativesCompetitors  다음질문: 경쟁·대안은(는) 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」으로 이해했습니다. 맞나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T6 gap=alternativesCompetitors via=submit-failed
+  질문: 경쟁·대안은(는) 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」으로 이해했습니다. 맞나요?
+  입력: 창업자 확인
+  다음갭: alternativesCompetitors  다음질문: 경쟁·대안은(는) 「서비스: 주문부터 배송까지 관리하는 B2B SaaS 대상: 반찬가게·꽃집 등 직접 배…」으로 이해했습니다. 맞나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  종료원인: alternativesCompetitors 반복. T6 via=submit-failed (confirm/입력 표면이 다음 질문을 받지 못함). 8턴 미도달.
+
+--- Login UI S2 turns=6 eight=false uiStatus=FAIL ---
+askedGaps: businessOneLiner -> customerPersona -> problemJtbd -> payer -> alternativesCompetitors -> alternativesCompetitors
+quality: NEEDS FIX questionRepeat=1; unresolvedGapEarlyStop
+error: null
+T1 gap=businessOneLiner via=confirm-yes
+  질문: 제가 이해한 사업은 「서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를…」입니다. 맞나요?
+  입력: [confirm-yes]
+  다음갭: customerPersona  다음질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+T2 gap=customerPersona via=choice-click
+  질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  입력: [choice /선물|30|40|애호/]
+  다음갭: problemJtbd  다음질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  customer=CLOSED problem=OPEN payer=OPEN
+T3 gap=problemJtbd via=first-specific
+  질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  입력: [first-specific]
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+T4 gap=payer via=choice-click
+  질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  입력: [choice /선물|30|40|애호/]
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T5 gap=alternativesCompetitors via=first-specific
+  질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  입력: [first-specific]
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T6 gap=alternativesCompetitors via=submit-failed
+  질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  입력: 창업자 확인
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  종료원인: alternativesCompetitors 반복. T6 via=submit-failed (confirm/입력 표면이 다음 질문을 받지 못함). 8턴 미도달.
+
+--- Login UI S3 turns=6 eight=false uiStatus=FAIL ---
+askedGaps: businessOneLiner -> customerPersona -> problemJtbd -> payer -> alternativesCompetitors -> alternativesCompetitors
+quality: NEEDS FIX questionRepeat=1; unresolvedGapEarlyStop
+error: null
+T1 gap=businessOneLiner via=confirm-yes
+  질문: 제가 이해한 사업은 「서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상…」입니다. 맞나요?
+  입력: [confirm-yes]
+  다음갭: customerPersona  다음질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+T2 gap=customerPersona via=choice-click
+  질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  입력: [choice /영업|관리자|제조/]
+  다음갭: problemJtbd  다음질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  customer=CLOSED problem=OPEN payer=OPEN
+T3 gap=problemJtbd via=first-specific
+  질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  입력: [first-specific]
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+T4 gap=payer via=choice-click
+  질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  입력: [choice /영업|관리자|제조/]
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T5 gap=alternativesCompetitors via=first-specific
+  질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  입력: [first-specific]
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T6 gap=alternativesCompetitors via=submit-failed
+  질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  입력: 창업자 확인
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  종료원인: alternativesCompetitors 반복. T6 via=submit-failed (confirm/입력 표면이 다음 질문을 받지 못함). 8턴 미도달.
+
+--- Login UI S4 turns=6 eight=false uiStatus=FAIL ---
+askedGaps: businessOneLiner -> customerPersona -> problemJtbd -> payer -> alternativesCompetitors -> alternativesCompetitors
+quality: NEEDS FIX questionRepeat=1; unresolvedGapEarlyStop
+error: null
+T1 gap=businessOneLiner via=confirm-yes
+  질문: 제가 이해한 사업은 「서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…」입니다. 맞나요?
+  입력: [confirm-yes]
+  다음갭: customerPersona  다음질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+T2 gap=customerPersona via=choice-click
+  질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  입력: [choice /아이|부모/]
+  다음갭: problemJtbd  다음질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  customer=CLOSED problem=OPEN payer=OPEN
+T3 gap=problemJtbd via=choice-click
+  질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  입력: [choice /아이|부모/]
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+T4 gap=payer via=choice-click
+  질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  입력: [choice /아이|부모/]
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T5 gap=alternativesCompetitors via=first-specific
+  질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  입력: [first-specific]
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T6 gap=alternativesCompetitors via=submit-failed
+  질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  입력: 창업자 확인
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  종료원인: alternativesCompetitors 반복. T6 via=submit-failed (confirm/입력 표면이 다음 질문을 받지 못함). 8턴 미도달.
+
+--- Login UI S5 turns=6 eight=false uiStatus=FAIL ---
+askedGaps: businessOneLiner -> customerPersona -> problemJtbd -> payer -> alternativesCompetitors -> alternativesCompetitors
+quality: NEEDS FIX questionRepeat=1; unresolvedGapEarlyStop
+error: null
+T1 gap=businessOneLiner via=confirm-yes
+  질문: 제가 이해한 사업은 「서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단…」입니다. 맞나요?
+  입력: [confirm-yes]
+  다음갭: customerPersona  다음질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+T2 gap=customerPersona via=choice-click
+  질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  입력: [choice /20|30|헬스|운동/]
+  다음갭: problemJtbd  다음질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  customer=CLOSED problem=OPEN payer=OPEN
+T3 gap=problemJtbd via=first-specific
+  질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  입력: [first-specific]
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+T4 gap=payer via=first-specific
+  질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  입력: [first-specific]
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T5 gap=alternativesCompetitors via=first-specific
+  질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  입력: [first-specific]
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T6 gap=alternativesCompetitors via=submit-failed
+  질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  입력: 창업자 확인
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  종료원인: alternativesCompetitors 반복. T6 via=submit-failed (confirm/입력 표면이 다음 질문을 받지 못함). 8턴 미도달.
+
+--- Login UI S6 turns=6 eight=false uiStatus=FAIL ---
+askedGaps: businessOneLiner -> customerPersona -> problemJtbd -> payer -> alternativesCompetitors -> alternativesCompetitors
+quality: NEEDS FIX questionRepeat=1; unresolvedGapEarlyStop
+error: null
+T1 gap=businessOneLiner via=confirm-yes
+  질문: 제가 이해한 사업은 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」입니다. 맞나요?
+  입력: [confirm-yes]
+  다음갭: customerPersona  다음질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+T2 gap=customerPersona via=choice-click
+  질문: 이 서비스를 가장 필요로 하는 사람은 누구인가요?
+  입력: [choice /맞벌이|집|가정/]
+  다음갭: problemJtbd  다음질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  customer=CLOSED problem=OPEN payer=OPEN
+T3 gap=problemJtbd via=first-specific
+  질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  입력: [first-specific]
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+T4 gap=payer via=choice-click
+  질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  입력: [choice /맞벌이|집|가정/]
+  다음갭: alternativesCompetitors  다음질문: 경쟁·대안은(는) 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」으로 이해했습니다. 맞나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T5 gap=alternativesCompetitors via=confirm-yes
+  질문: 경쟁·대안은(는) 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」으로 이해했습니다. 맞나요?
+  입력: [confirm-yes]
+  다음갭: alternativesCompetitors  다음질문: 경쟁·대안은(는) 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」으로 이해했습니다. 맞나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+T6 gap=alternativesCompetitors via=submit-failed
+  질문: 경쟁·대안은(는) 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」으로 이해했습니다. 맞나요?
+  입력: 창업자 확인
+  다음갭: alternativesCompetitors  다음질문: 경쟁·대안은(는) 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」으로 이해했습니다. 맞나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  종료원인: alternativesCompetitors 반복. T6 via=submit-failed (confirm/입력 표면이 다음 질문을 받지 못함). 8턴 미도달.
+
+로그인 UI 판정: FAIL (8턴 미도달). Google OAuth로 확대 해석하지 않음.

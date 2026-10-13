@@ -1,0 +1,371 @@
+PR #197 Track A — 동결 문구 1:1 (5263e83e). 이 블록만 복사.
+이 섹션은 엔진 계약 변경 근거가 아니다. 검토용 문서와 엔진 차이를 보여주는 증거다.
+상태: FAIL. compared=35 exactMatches=0. 기대 문구를 낮추지 않았다.
+덤프 SHA: 4e53a422a07daa8e5f810c7357ff3baf26340b03
+실행 시각: 2026-10-13T14:12:17.544Z
+명령: pnpm --filter web exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-t1-t8-wording.test.ts features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-t1-t8-divergence.test.ts
+원문 결과: Test Files 2 passed. wording 1 test. divergence 1 test. totals compared=35 exactMatches=0.
+
+실패 유형 요약 (오프슬롯 / 조기종료 / next=null)
+- S1 firstAsked=customerPersona firstExpected=problemJtbd turnCount=5 stoppedEarly=true
+  offSlotTurns=1,2,3,4
+  next=null at T4 noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+  next=null at T5 noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+- S2 firstAsked=customerPersona firstExpected=problemJtbd turnCount=7 stoppedEarly=true
+  offSlotTurns=1,2,3,4,5,6
+  next=null at T6 noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+  next=null at T7 noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+- S3 firstAsked=customerPersona firstExpected=problemJtbd turnCount=5 stoppedEarly=true
+  offSlotTurns=1,2,3,4
+  next=null at T4 noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+  next=null at T5 noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+- S4 firstAsked=customerPersona firstExpected=problemJtbd turnCount=5 stoppedEarly=true
+  offSlotTurns=1,2,3,4
+  next=null at T4 noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+  next=null at T5 noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+- S5 firstAsked=customerPersona firstExpected=problemJtbd turnCount=8 stoppedEarly=false
+  offSlotTurns=1,2,3,4,6,7,8
+  next=null: 없음 (S5는 8턴 도달했으나 문구 0일치)
+- S6 firstAsked=customerPersona firstExpected=marketplaceSide turnCount=5 stoppedEarly=true
+  offSlotTurns=1,3,4
+  next=null at T4 noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+  next=null at T5 noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+
+--- Track A S1 turnCount=5 exact=0 stoppedEarly=true ---
+T1 FAIL exact=false
+  기대질문: 고객이 지금 가장 불편해하는 점은 무엇인가요?
+  실제갭: customerPersona  의도갭: problemJtbd
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답(턴번호 오프슬롯): 주문과 배송을 따로 관리해야 함
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=false
+  기대질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  실제갭: problemJtbd  의도갭: customerPersona
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 반찬가게
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T3 FAIL exact=false
+  기대질문: 반찬가게에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  실제갭: solution  의도갭: payer
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 아직 모르겠음
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=false
+  기대질문: 수익은 어떤 구조로 발생하나요?
+  실제갭: problemJtbd  의도갭: revenueModel
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답(턴번호 오프슬롯): 월 구독
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: (없음)  다음질문: (없음)
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+  종료원인 nextNull=true noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+T5 FAIL exact=false
+  기대질문: 지금은 이 문제를 어떻게 처리하나요?
+  실제갭: (없음)  의도갭: alternativesCompetitors
+  실제질문: (없음)
+  창업자답(턴번호 오프슬롯): 지금은 주문과 배송을 따로 관리함
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=false)
+  다음갭: (없음)  다음질문: (없음)
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=STOP
+  종료원인 nextNull=true noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+
+--- Track A S2 turnCount=7 exact=0 stoppedEarly=true ---
+T1 FAIL exact=false
+  기대질문: 지금 가장 크게 풀려는 불편은 무엇인가요?
+  실제갭: customerPersona  의도갭: problemJtbd
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답(턴번호 오프슬롯): 전통주를 발견하기 어렵다
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=false
+  기대질문: 이 브랜드를 가장 필요로 하는 사람은 누구인가요?
+  실제갭: problemJtbd  의도갭: customerPersona
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 선물하는 30–40대
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=PARTIAL problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T3 FAIL exact=false
+  기대질문: 술값을 실제로 내는 사람은 누구인가요?
+  실제갭: solution  의도갭: payer
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 선물하는 사람이 냄
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: customerPersona  다음질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  customer=PARTIAL problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=false
+  기대질문: 매출은 어디서 더 나오나요?
+  실제갭: customerPersona  의도갭: revenueModel
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답(턴번호 오프슬롯): 일단 병 판매가 먼저고 수수료는 나중
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T5 FAIL exact=false
+  기대질문: 선물하는 30–40대는 좋은 전통주를 찾기 어려울 때 지금은 어떻게 하나요?
+  실제갭: problemJtbd  의도갭: alternativesCompetitors
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답(턴번호 오프슬롯): 지인에게 물어 추천받는다
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  customer=OPEN problem=CLOSED payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T6 FAIL exact=false
+  기대질문: 지인 추천 대비 이 브랜드만의 차이는 무엇인가요?
+  실제갭: solution  의도갭: differentiationVsAlternatives
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답(턴번호 오프슬롯): 여러 양조장을 한곳에서 고른다
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: (없음)  다음질문: (없음)
+  customer=OPEN problem=CLOSED payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+  종료원인 nextNull=true noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+T7 FAIL exact=false
+  기대질문: 그 이유로 이미 산 사람이 있나요?
+  실제갭: (없음)  의도갭: validationTestability
+  실제질문: (없음)
+  창업자답(턴번호 오프슬롯): 아직 없다
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=false)
+  다음갭: (없음)  다음질문: (없음)
+  customer=OPEN problem=CLOSED payer=OPEN
+  class=STOP
+  종료원인 nextNull=true noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+
+--- Track A S3 turnCount=5 exact=0 stoppedEarly=true ---
+T1 FAIL exact=false
+  기대질문: 지금 가장 크게 줄이려는 실수는 무엇인가요?
+  실제갭: customerPersona  의도갭: problemJtbd
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답(턴번호 오프슬롯): 메일 숫자를 엑셀에 옮기다 나는 오타
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=false
+  기대질문: 이 툴을 매일 쓰는 사람은 누구인가요?
+  실제갭: problemJtbd  의도갭: customerPersona
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 영업관리자
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T3 FAIL exact=false
+  기대질문: 월 구독료 결재자는 누구인가요?
+  실제갭: solution  의도갭: payer
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 대표
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: customerPersona  다음질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=false
+  기대질문: 한 달에 견적 메일이 얼마나 오나요?
+  실제갭: customerPersona  의도갭: problemFrequencySeverity
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답(턴번호 오프슬롯): 아직 모르겠음
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: (없음)  다음질문: (없음)
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+  종료원인 nextNull=true noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+T5 FAIL exact=false
+  기대질문: 지금은 이 숫자를 어떻게 옮기나요?
+  실제갭: (없음)  의도갭: alternativesCompetitors
+  실제질문: (없음)
+  창업자답(턴번호 오프슬롯): 엑셀에 손으로
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=false)
+  다음갭: (없음)  다음질문: (없음)
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=STOP
+  종료원인 nextNull=true noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+
+--- Track A S4 turnCount=5 exact=0 stoppedEarly=true ---
+T1 FAIL exact=false
+  기대질문: 부모가 지금 가장 귀찮아하는 점은 무엇인가요?
+  실제갭: customerPersona  의도갭: problemJtbd
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답(턴번호 오프슬롯): 무엇을 줄지 고르기 싫다
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=false
+  기대질문: 박스를 가장 반기는 사람은 누구인가요?
+  실제갭: problemJtbd  의도갭: customerPersona
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 아이
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T3 FAIL exact=false
+  기대질문: 구독료는 누가 내나요?
+  실제갭: solution  의도갭: payer
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 부모
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  customer=OPEN problem=OPEN payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=false
+  기대질문: 지금은 아이 간식을 어떻게 사나요?
+  실제갭: problemJtbd  의도갭: alternativesCompetitors
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답(턴번호 오프슬롯): 쿠팡 검색
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: (없음)  다음질문: (없음)
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+  종료원인 nextNull=true noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+T5 FAIL exact=false
+  기대질문: 쿠팡 대신 이 박스를 고르는 이유는 무엇인가요?
+  실제갭: (없음)  의도갭: differentiationVsAlternatives
+  실제질문: (없음)
+  창업자답(턴번호 오프슬롯): 고민 없이 온다
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=false)
+  다음갭: (없음)  다음질문: (없음)
+  customer=OPEN problem=PARTIAL payer=OPEN
+  class=STOP
+  종료원인 nextNull=true noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+
+--- Track A S5 turnCount=8 exact=0 stoppedEarly=false ---
+T1 FAIL exact=false
+  기대질문: 고객이 지금 단백질 간식에서 가장 불만인 점은 무엇인가요?
+  실제갭: customerPersona  의도갭: problemJtbd
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답(턴번호 오프슬롯): 맛이 없다
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=OPEN problem=OPEN payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=false
+  기대질문: 그 불만을 가장 세게 느끼는 사람은 누구인가요?
+  실제갭: problemJtbd  의도갭: customerPersona
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 헬스장 다니는 20–30대
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T3 FAIL exact=false
+  기대질문: 지금은 어떤 단백질 간식을 사나요?
+  실제갭: payer  의도갭: alternativesCompetitors
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답(턴번호 오프슬롯): 시중 단백질바
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: payer  다음질문: 헬스장 다니는 20–30대에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  customer=CLOSED problem=CLOSED payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=false
+  기대질문: 기존 바 대신 고르는 이유는 무엇인가요?
+  실제갭: payer  의도갭: differentiationVsAlternatives
+  실제질문: 헬스장 다니는 20–30대에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?
+  창업자답(턴번호 오프슬롯): 더 맛있다
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: payer  다음질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  customer=CLOSED problem=CLOSED payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T5 FAIL exact=false
+  기대질문: 쿠키값은 누가 내나요?
+  실제갭: payer  의도갭: payer
+  실제질문: 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답(턴번호 오프슬롯): 헬스 트레이너가 회원에게 추천하고 회원이 결제
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=false)
+  다음갭: alternativesCompetitors  다음질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  class=WORDING
+T6 FAIL exact=false
+  기대질문: 이미 두 번 이상 산 고객이 있나요?
+  실제갭: alternativesCompetitors  의도갭: validationTestability
+  실제질문: 비슷한 역할을 이미 하고 있는 서비스가 있나요?
+  창업자답(턴번호 오프슬롯): 한 번만
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  class=ORDER,OFF_SLOT_ANSWER
+T7 FAIL exact=false
+  기대질문: 그 1회 구매를 어떻게 보나요?
+  실제갭: solution  의도갭: validationTestability
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 내가 지인에게 판 것
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: revenueModel  다음질문: 수익은 어떤 구조로 발생하나요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  class=ORDER,OFF_SLOT_ANSWER
+T8 FAIL exact=false
+  기대질문: 다음에 무슨 증거가 있으면 판단이 바뀌나요?
+  실제갭: revenueModel  의도갭: validationTestability
+  실제질문: 수익은 어떤 구조로 발생하나요?
+  창업자답(턴번호 오프슬롯): 창업자 확인
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: marketSizeEvidence  다음질문: 이 시장에 수요가 있다는 근거는 무엇인가요?
+  customer=CLOSED problem=CLOSED payer=CLOSED
+  class=ORDER,OFF_SLOT_ANSWER
+
+--- Track A S6 turnCount=5 exact=0 stoppedEarly=true ---
+T1 FAIL exact=false
+  기대질문: 지금 먼저 풀 쪽은 어디인가요?
+  실제갭: customerPersona  의도갭: marketplaceSide
+  실제질문: 이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?
+  창업자답(턴번호 오프슬롯): 집이 믿을 사람을 못 구함
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  customer=CLOSED problem=OPEN payer=OPEN
+  class=FIRST_QUESTION,ORDER,OFF_SLOT_ANSWER
+T2 FAIL exact=false
+  기대질문: 집이 지금 가장 걱정하는 점은 무엇인가요?
+  실제갭: problemJtbd  의도갭: problemJtbd
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 사람을 못 믿음
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=false)
+  다음갭: solution  다음질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  customer=CLOSED problem=PARTIAL payer=OPEN
+  class=WORDING
+T3 FAIL exact=false
+  기대질문: 지금은 도우미를 어떻게 구하나요?
+  실제갭: solution  의도갭: alternativesCompetitors
+  실제질문: 문제를 해결하는 방식(제공 가치)은 무엇인가요?
+  창업자답(턴번호 오프슬롯): 지인 소개
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: problemJtbd  다음질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  customer=CLOSED problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+T4 FAIL exact=false
+  기대질문: 중개 수수료는 누가 내나요?
+  실제갭: problemJtbd  의도갭: payer
+  실제질문: 지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.
+  창업자답(턴번호 오프슬롯): 집이 냄
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=true)
+  다음갭: (없음)  다음질문: (없음)
+  customer=CLOSED problem=PARTIAL payer=OPEN
+  class=ORDER,OFF_SLOT_ANSWER
+  종료원인 nextNull=true noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+T5 FAIL exact=false
+  기대질문: 지인 소개 대신 이 앱을 쓰는 이유는 무엇인가요?
+  실제갭: (없음)  의도갭: differentiationVsAlternatives
+  실제질문: (없음)
+  창업자답(턴번호 오프슬롯): 신원 확인
+  답변반영: 물은 갭과 다른 답을 넣음 (OFF_SLOT=false)
+  다음갭: (없음)  다음질문: (없음)
+  customer=CLOSED problem=PARTIAL payer=OPEN
+  class=STOP
+  종료원인 nextNull=true noAskableGap=false reason=next_null_with_askable_gaps_after_off_slot_or_repeat_policy
+
+Track A 판정: FAIL 유지. 엔진 SoT를 problem-first로 바꾸지 않는다.
