@@ -68,7 +68,7 @@ function pickAlternateGap(input: {
 
   for (const gapId of [...STAGE_A_REQUIRED_GAPS, ...STAGE_B_REQUIRED_GAPS]) {
     if (exclude.has(gapId)) continue;
-    if (input.blockSolution && (gapId === 'solution' || isStageBGap(gapId))) continue;
+    if (input.blockSolution && isStageBGap(gapId)) continue;
     if (isGapAskable(gapId, input.gapState)) return gapId;
   }
 

@@ -1,10 +1,12 @@
 PR #197 CPO 전략 복원 1단계 후속 검증 및 최소 수정. 이 블록 전체를 한 번에 복사. 표 없음. 병합 요청 없음. Production 배포 없음.
 
-한 줄: FIX-10 overallPass=false의 직접 원인은 D7 원문 confirm-yes 제거이고, 그와 별개로 identity가 열린 채 solution을 묻던 하네스 경로는 최소 수정으로 막았다. S1–S6는 이해 수정·증거 강도·판단·검증 행동은 답에 따라 달라지나, 이해 답 이후 다음 gap은 모두 problemJtbd라 NEEDS FIX다.
+한 줄: FIX-10 overallPass=false의 직접 원인은 D7 원문 confirm-yes 제거이고, 그와 별개로 identity가 열린 채 solution을 묻던 하네스 경로는 최소 수정으로 막았다. 그 수정이 STAGE_A/B 리터럴에 solution을 비교해 Preview typecheck를 깨뜨렸고, 비교만 제거했다. S1–S6는 이해 수정·증거 강도·판단·검증 행동은 답에 따라 달라지나, 이해 답 이후 다음 gap은 모두 problemJtbd라 NEEDS FIX다.
 
 기준점
 Phase 1 구현 SHA: bcf443b7
-이 수정·증거 커밋: 푸시 후 HEAD. Production 잠금: 0b465226
+D4 최소 수정 SHA: 2b583754
+이 수정·증거 커밋: 푸시 후 HEAD
+Production 잠금: 0b465226
 브랜치: cursor/ai-pm-mcq-understanding-e648
 PR: https://github.com/jyp-ai1/ai-startup-validation/pull/197
 병합·Production 배포: 하지 않음. FIX-10/AC16/AC5/Track A 기대값 미하향
@@ -16,7 +18,7 @@ FIX-10 재검증 overallPass: FAIL 유지. day8i-fix10-revalidation 기대값 �
 FIX-10 D4 하네스 solution 누수: 수정함. harnessSolutionWhileIdentityOpen=[] . pr197-fix10-failure-classification 1/1 PASS
 S1–S6 전략 품질: NEEDS FIX. 측정 테스트 PASS. 시나리오 6/6 NEEDS FIX. 실패 축은 nextAfterUnderstanding뿐
 T6: CPO VERIFIED 유지. pr197-login-ui-s4-routing 7/7 PASS
-T7: CPO VERIFIED 유지. pr197-t7-payer-hold 5/5 PASS
+T7: CPO VERIFIED 유지. pr197-t7-payer-hold 5/5 PASS. 후속 변경 후 회귀 없음
 conversation-quality: 24/24 PASS
 Track A: FAIL. compared=32 exact=0. 동결 문구 5263e83e 미하향. 이전 compared=36에서 턴 수가 줄어 비교 수가 줄었을 뿐 exact=0 FAIL은 유지
 Track B: NEEDS FIX 유지
@@ -25,93 +27,148 @@ V3 AC5: FAIL 유지. expected marketChannel. received validationTestability
 로그인 UI 8턴: NOT VERIFIED
 Google OAuth: NOT VERIFIED
 Production: NOT VERIFIED. lock 0b465226
-Vercel Preview: bcf443b7 2/2는 Production 검증 아님
+Vercel Preview 2b583754: FAIL. 원인 TS2367. Production 검증 아님
+로컬 pnpm --filter web build: PASS after type-only fix. Preview 재실행 전 NOT VERIFIED
 병합: 금지
 
-===== 변경 파일 =====
+===== 변경 SHA와 파일 =====
 
+2b583754 이후 제품 파일
 ai-pm-judgment-next-question-binding.ts — isIdentityStillOpenForFix10. solution/customerChange를 identity open에서 후보 제외
-ai-pm-anti-repeat-policy.ts — identity open이면 solution/Stage B로 점프하지 않고 reframe
+ai-pm-anti-repeat-policy.ts — identity open이면 solution/Stage B로 점프하지 않고 reframe. STAGE_A/B 루프의 gapId==='solution' 비교 제거(TS2367)
 ai-pm-no-ask-policy.ts — MOVE 폴백이 Stage B로 탈출하지 않음
 resolve-next-question-decision.ts — 정책 체인 마지막 constrainIdentityBeforeSolution
 apply-business-choice-through-loop.ts — unknown yield는 Stage A. 순서 problem → customer → payer
 decide-next-question-from-review.ts — whyNowAfterEvidence. 결제 단서 vs 증거 없음
 테스트·덤프: pr197-fix10-failure-classification, pr197-s1-s6-strategy-quality, PR197-CPO-FIX10-FAILURE-CLASSIFICATION.json, PR197-CPO-S1-S6-STRATEGY-QUALITY-DUMP.json, PR197-CPO-T1-T8-DIVERGENCE-DUMP.json
 
-===== FIX-10 원인과 수정 =====
+===== FIX-10 실패 원인과 수정 =====
 
 명령: cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-fix10-failure-classification.test.ts
 결과: 1/1 PASS. overallPass=false 보존
 
-D7 원문 confirm-yes 제거. 수정하지 않음
+원인 분리 1. D7 원문 confirm-yes 제거. 수정하지 않음
 첫 질문 type=open. targetGap=customerPersona. 「이 서비스를 가장 필요로 하는 사람은 누구인가요?」
 직접 FAIL: Scenario B, FIX10-R02. 기대 「제가 이해한 사업은 … 맞나요?」를 맞추지 않음
+이 FAIL을 PASS로 바꾸지 않음
 
-D4 solution 선행 금지. 최소 수정함
+원인 분리 2. D4 solution 선행 금지. 최소 수정함
 원인: resolveTurnDecision은 next=customerPersona였으나, DAY 8-I 하네스 resolveNextQuestionDecision → FIX-10 binding/anti-repeat가 이미 물은 problem을 건너뛰고 solution으로 이동. 고객 needs_check·문제 unknown인데도 solution이 나왔음
+확인: 고객 또는 문제가 미확정인 상태에서 solution을 먼저 묻는 경로가 하네스에 있었다
 수정: identity(customer/problem)가 unknown/needs_check이거나 gap OPEN이면 solution·Stage B 금지. 반복이면 reframe
 검증: brewerySolutionTurns=[]. harnessSolutionWhileIdentityOpen=[]
 이 수정을 overallPass PASS로 바꾸지 않음
 
+원인 분리 3. D4 수정이 Preview를 깨뜨림. 타입만 수정함
+2b583754 Vercel Preview FAIL. 명령 재현: cd apps/web && pnpm exec tsc --noEmit
+프로덕션 오류: ai-pm-anti-repeat-policy.ts:71 TS2367. STAGE_A_REQUIRED_GAPS+STAGE_B_REQUIRED_GAPS 리터럴에 gapId==='solution' 비교. solution은 그 유니온에 없음. bcf443b7과 같은 종류의 오류
+수정: 비교 제거. Stage B skip은 유지. 동작 변경 없음
+로컬 pnpm --filter web build: PASS
+공식 FIX-10 R24 기대값은 그대로. overallPass=false 유지
+
 남은 FAIL. 기대 미하향
 DOWNSTREAM_OF_D7_SCRIPT: H, R14, J, F2, F5-T03~T06. 스크립트 첫 답이 「네, 맞습니다.」로 고객 슬롯에 떨어짐
 REGRESSION_HARNESS: R18 FIX-9 실패 50, R21 FIX-4 FAIL, R22 실패 3, R20 noGapTerminations=0
-BUILD_SKIP: R24. Preview bcf443b7 2/2와 분리
+BUILD_SKIP: R24. 하네스가 공식 빌드 게이트를 실행하지 않음. 로컬 빌드 PASS와 분리
 
 ===== S1–S6 전략 흐름 =====
 
 명령: cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-s1-s6-strategy-quality.test.ts
 경로: applyBusinessChoiceThroughLoop. 8턴 도달은 성공 지표가 아님
-전체: NEEDS FIX. S1–S6 모두 nextAfterUnderstanding FAIL. 나머지 축 PASS
+전체: NEEDS FIX. S1–S6 모두 nextAfterUnderstanding FAIL. 나머지 축 PASS. 타입 수정 후 동일
 
-첫 표면. 6/6
-understanding-verification. 문서 echo confirm-yes 없음
-S1: 「지금 이해로는 고객 페르소나이(가) 「반찬가게·꽃집 등 직접 배송 소상공인」입니다. 이 이해가 맞나요?」
+공통 첫 표면. 6/6
+mode=understanding-verification. 문서 echo confirm-yes 없음. 첫 targetGap=customerPersona. 첫 next≠solution
 
-이해 수정. 6/6 PASS. 확인만으로 FACT 승격 없음
-정확함: customerPersona CLOSED + ASSUMPTION. S1 「반찬가게·꽃집 등 직접 배송 소상공인」
-수정: 이전 가설을 현재 사실로 남기지 않음. S1 「대기업 물류본부」. S2 「혼자 마시는 20대」. S3 「개인 프리랜서」. S4 「혼자 사는 20대」. S5 「초등학생 부모」. S6 「1인 가구 대학생」
+S1 소상공인 배송 SaaS
+첫 질문: 「지금 이해로는 고객 페르소나이(가) 「반찬가게·꽃집 등 직접 배송 소상공인」입니다. 이 이해가 맞나요?」
+정확함: customer=반찬가게·꽃집 등 직접 배송 소상공인. CLOSED+ASSUMPTION. FACT 아님. 판단 「고객은 어느 정도 파악. 나머지 부족」. next=problemJtbd
+수정: customer=대기업 물류본부. 이전 소상공인 가설을 현재 사실로 남기지 않음. next=problemJtbd
 모르겠음: customerPersona OPEN. FACT 없음. next=problemJtbd. Stage B 탈출 없음
+결제 3건: customerChangeReason 「약증거 — 검증 완료·Fact 아님」. validation OPEN. GO 없음. whyNow 「결제·사용 단서는 약증거이며 검증된 사실이 아닙니다」
+결제 없음: 「결제 의향·지불 사실 미확정」. whyNow 「아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다」
 
-증거 등급. 6/6 PASS
-정확함 확인은 CLAIM=ASSUMPTION. FACT 아님
-결제 3건: customerChangeReason 「약증거 — 검증 완료·Fact 아님」. validation OPEN. GO 없음
-결제 없음: 「결제 의향·지불 사실 미확정」
+S2 전통주 브랜드
+첫 질문: 「…전통주를 선물·취미로 찾는 30–40대… 이 이해가 맞나요?」
+정확함: 30–40대 CLOSED+ASSUMPTION
+수정: 혼자 마시는 20대. 이전 30–40대 가설을 현재 사실로 남기지 않음
+모르겠음·증거 축: S1과 동일 패턴. nextAfterUnderstanding=problemJtbd
 
-completeness. 6/6 PASS. 정확함 CLOSED. 모르겠음 OPEN
+S3 견적 자동화
+첫 질문: 「…직원 20–80명 제조사 영업관리자…」
+정확함: 영업관리자 CLOSED+ASSUMPTION
+수정: 개인 프리랜서
+모르겠음·증거 축: 동일
 
-사업 판단. 6/6 PASS
-conclusion 헤드라인은 같음. customerChange reason/summary가 답에 따라 갈림
+S4 구독 박스
+첫 질문: 「…맞벌이 부모…」
+정확함: 맞벌이 부모 CLOSED+ASSUMPTION
+수정: 혼자 사는 20대
+모르겠음·증거 축: 동일
 
+S5 단백질 쿠키
+첫 질문: 「…운동하는 20–30대…」
+정확함: 운동하는 20–30대 CLOSED+ASSUMPTION
+수정: 초등학생 부모
+모르겠음·증거 축: 동일
+
+S6 가사 중개
+첫 질문: 「…맞벌이 가정 / 도우미…」
+정확함: 맞벌이 가정 / 도우미 CLOSED+ASSUMPTION
+수정: 1인 가구 대학생
+모르겠음·증거 축: 동일
+
+이해 수정 6/6 PASS. 확인만으로 FACT 승격 없음
+증거 등급 6/6 PASS. 확인=ASSUMPTION. 결제 단서=약증거. 결제 없음=미확정
+completeness 6/6 PASS. 정확함 CLOSED. 모르겠음 OPEN
+사업 판단 6/6 PASS. customerChange reason/summary가 답에 따라 갈림
 다음 질문/검증 행동
-이해 답 이후 next gap은 confirm/revise/unknown 모두 problemJtbd. nextAfterUnderstanding FAIL. 커버리지 바닥이 정체성 분기보다 앞선 결과. 이 축을 PASS로 내리지 않음
+이해 답 이후 next gap은 confirm/revise/unknown 모두 problemJtbd. nextAfterUnderstanding FAIL. 이 축을 PASS로 내리지 않음
 증거 이후 next gap은 둘 다 problemJtbd이나 검증 행동이 갈림
-있음: 「결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. …」
-없음: 「아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. …」
-모르겠음이 alternativesCompetitors로 나가던 경로는 수정. 지금은 problemJtbd
+모르겠음이 alternativesCompetitors로 나가던 경로는 이전 수정으로 problemJtbd
+T7: customer+problem CLOSED이고 payer OPEN이면 next=payer. pr197-t7-payer-hold 5/5 PASS
 
-T7: customer+problem CLOSED이고 payer OPEN이면 next=payer. pr197-t7-payer-hold 5/5 PASS. 후속 변경 후 회귀 없음
+===== 테스트별 명령과 결과 =====
 
-===== 회귀 명령과 결과 =====
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-fix10-failure-classification.test.ts
+1/1 PASS. overallPass=false 보존
 
-pr197-strategy-restore-phase1.test.ts 8/8 PASS
-pr197-login-ui-s4-routing.test.ts 7/7 PASS
-pr197-t7-payer-hold.test.ts 5/5 PASS
-pr197-conversation-quality.test.ts 24/24 PASS
-pr197-frozen-t1-t8-divergence.test.ts PASS as dump. Track A exact=0 FAIL 기록. Track B NEEDS FIX 기록
-ai-pm-loop-v3 AC16 FAIL. expected businessOneLiner received validationTestability
-ai-pm-loop-v3 AC5 V3-09 FAIL. expected marketChannel received validationTestability
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-s1-s6-strategy-quality.test.ts
+측정 PASS. 시나리오 6/6 NEEDS FIX
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-strategy-restore-phase1.test.ts
+8/8 PASS
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-login-ui-s4-routing.test.ts
+7/7 PASS. T6 CPO VERIFIED 회귀 없음
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-t7-payer-hold.test.ts
+5/5 PASS. T7 CPO VERIFIED 회귀 없음
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-conversation-quality.test.ts
+24/24 PASS
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-t1-t8-divergence.test.ts
+PASS as dump. Track A exact=0 FAIL 기록. Track B NEEDS FIX 기록
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/ai-pm-loop-v3.test.ts
+AC16 FAIL. expected businessOneLiner received validationTestability
+AC5 V3-09 FAIL. expected marketChannel received validationTestability
+
+pnpm --filter web build
+PASS after TS2367 제거. 2b583754 Preview FAIL의 로컬 재현 해소. Production 검증 아님
+
 로그인 UI Playwright 8턴: 미실행 NOT VERIFIED
 Google OAuth: 미실행 NOT VERIFIED
 Production: 미실행 NOT VERIFIED
 
 ===== CPO 재검토 =====
 
-D7 표면 FAIL과 D4 solution 누수는 분리됐다. D4 누수는 최소 수정했다. FIX-10 overallPass는 여전히 false다
+D7 표면 FAIL과 D4 solution 누수는 분리됐다. D4 누수는 최소 수정했다. 그 수정이 Preview typecheck를 깨뜨린 비교는 제거했다. FIX-10 overallPass는 여전히 false다
 S1–S6는 확인≠FACT, 이해 수정, 증거 강도, 판단 변화, 증거 이후 검증 행동까지 증거가 있다. 이해 답 이후 다음 gap이 갈리지 않아 전략 품질은 NEEDS FIX다
 별도 승인 전 병합 및 Production 배포는 하지 않는다
 
-[CTO] CPO 요청 작업: 제출 — FIX-10 원인 분리+D4 최소 수정, S1–S6 전략 증거. 병합·배포 보류
+[CTO] CPO 요청 작업: 제출 — FIX-10 원인 분리+D4 최소 수정+Preview TS2367 수정, S1–S6 전략 증거. 병합·배포 보류
 [CPO] 검토·지시 필요: 예 — 후속 증거 검토 전 병합·배포 승인 불가
 
 Next Autonomous Target

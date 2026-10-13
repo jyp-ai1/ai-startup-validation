@@ -235,7 +235,7 @@ describe('PR #197 FIX-10 failure classification', () => {
         executedAt: new Date().toISOString(),
         officialReportUntouched: 'docs/evidence/ALABOM/DAY_8I_P0_FIX10_REVALIDATION_REPORT.md',
         note:
-          'FIX-10 expected wording is not lowered. overallPass=false is preserved. R24 is BUILD_SKIP because this run did not execute pnpm build; Preview 2/2 PASS on bcf443b7 is recorded separately.',
+          'FIX-10 expected wording is not lowered. overallPass=false is preserved. Official R24 stays classified BUILD_SKIP in this harness (it does not invoke the DAY 8-I build gate). Local pnpm --filter web build is recorded separately and is not used to flip overallPass.',
         production: 'NOT VERIFIED',
         mergeRequest: 'none',
       },

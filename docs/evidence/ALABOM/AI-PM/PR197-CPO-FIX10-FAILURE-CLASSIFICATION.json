@@ -1,10 +1,10 @@
 {
   "meta": {
     "implementationSha": "bcf443b7",
-    "executedSha": "f1ed2732b976220742437d3798d9c8eef1f7880a",
-    "executedAt": "2026-10-13T16:24:45.101Z",
+    "executedSha": "2b58375438583ddcc617cc8cda26bedcbc42e946",
+    "executedAt": "2026-10-13T16:42:57.275Z",
     "officialReportUntouched": "docs/evidence/ALABOM/DAY_8I_P0_FIX10_REVALIDATION_REPORT.md",
-    "note": "FIX-10 expected wording is not lowered. overallPass=false is preserved. R24 is BUILD_SKIP because this run did not execute pnpm build; Preview 2/2 PASS on bcf443b7 is recorded separately.",
+    "note": "FIX-10 expected wording is not lowered. overallPass=false is preserved. Official R24 stays classified BUILD_SKIP in this harness (it does not invoke the DAY 8-I build gate). Local pnpm --filter web build is recorded separately and is not used to flip overallPass.",
     "production": "NOT VERIFIED",
     "mergeRequest": "none"
   },
