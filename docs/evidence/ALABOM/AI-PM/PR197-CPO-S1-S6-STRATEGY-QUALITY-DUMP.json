@@ -1,0 +1,1321 @@
+{
+  "meta": {
+    "implementationSha": "bcf443b7",
+    "executedSha": "b3c1ab46dc52489475622b9aa4d7ce9ec2baa933",
+    "executedAt": "2026-10-13T16:02:44.791Z",
+    "note": "Success is answer-dependent understanding, evidence, completeness, judgment, and next action. 8-turn reach is not success. Track A 0/36, Track B NEEDS FIX, AC16/AC5 FAIL are not rewritten here.",
+    "production": "NOT VERIFIED",
+    "loginUiEightTurn": "NOT VERIFIED",
+    "googleOauth": "NOT VERIFIED",
+    "mergeRequest": "none"
+  },
+  "overallStatus": "NEEDS FIX",
+  "scenarioStatuses": {
+    "S1": "NEEDS FIX",
+    "S2": "NEEDS FIX",
+    "S3": "NEEDS FIX",
+    "S4": "NEEDS FIX",
+    "S5": "NEEDS FIX",
+    "S6": "NEEDS FIX"
+  },
+  "scenarios": {
+    "S1": {
+      "status": "NEEDS FIX",
+      "firstSurface": {
+        "targetGap": "customerPersona",
+        "mode": "understanding-verification",
+        "question": "지금 이해로는 고객 페르소나이(가) 「반찬가게·꽃집 등 직접 배송 소상공인」입니다. 이 이해가 맞나요?",
+        "d7NoDocumentEchoConfirmYes": true,
+        "d4NoSolutionFirst": true
+      },
+      "branches": {
+        "confirm": {
+          "spine": {
+            "business": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다.",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다.",
+            "problem": "주문과 배송을 따로 관리해야 함"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION",
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
+            "customerStatus": "clear",
+            "customerSummary": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "revise": {
+          "spine": {
+            "business": "이 서비스를 가장 필요로 하는 사람은 대기업 물류본부입니다.",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 대기업 물류본부입니다.",
+            "problem": "주문과 배송을 따로 관리해야 함"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION",
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "대기업 물류본부",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "unknown": {
+          "spine": {
+            "business": "소상공인 배송 SaaS · B2B",
+            "customer": "아직 모르겠습니다.",
+            "problem": "주문과 배송을 따로 관리해야 함"
+          },
+          "completeness": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": null,
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "unknown",
+            "customerSummary": "",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "alternativesCompetitors",
+            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+          }
+        },
+        "paymentYes": {
+          "spine": {
+            "business": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다.",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다.",
+            "problem": "주문과 배송을 따로 관리해야 함"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
+            "customerStatus": "clear",
+            "customerSummary": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "약증거 — 검증 완료·Fact 아님",
+            "customerChangeSummary": "이미 결제 3건이 있어 고객이 돈을 내고 있습니다.",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "paymentNone": {
+          "spine": {
+            "business": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다.",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다.",
+            "problem": "주문과 배송을 따로 관리해야 함"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
+            "customerStatus": "clear",
+            "customerSummary": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "결제 의향·지불 사실 미확정",
+            "customerChangeSummary": "결제·사용 증거 없음",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        }
+      },
+      "axes": {
+        "understandingRevision": {
+          "pass": true,
+          "evidence": "confirm.customer=\"이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다.\" revise.customer=\"이 서비스를 가장 필요로 하는 사람은 대기업 물류본부입니다.\" reviseInstalled=true"
+        },
+        "evidenceClass": {
+          "pass": true,
+          "evidence": "confirmFacts=ASSUMPTION,ASSUMPTION; yesReason=\"약증거 — 검증 완료·Fact 아님\"; noneReason=\"결제 의향·지불 사실 미확정\"; validationYes=null; validationNone=null"
+        },
+        "completeness": {
+          "pass": true,
+          "evidence": "confirm={\"customerPersona\":\"CLOSED\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"} unknown={\"customerPersona\":\"OPEN\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"}"
+        },
+        "judgment": {
+          "pass": true,
+          "evidence": "yes=\"고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.\" none=\"고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
+        },
+        "nextAfterUnderstanding": {
+          "pass": true,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+        },
+        "nextAfterEvidence": {
+          "pass": false,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+        },
+        "unknownKeepsIdentityAskable": {
+          "pass": false,
+          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+        }
+      },
+      "failedAxes": [
+        "nextAfterEvidence",
+        "unknownKeepsIdentityAskable"
+      ],
+      "noSolutionWhileIdentityOpen": true
+    },
+    "S2": {
+      "status": "NEEDS FIX",
+      "firstSurface": {
+        "targetGap": "customerPersona",
+        "mode": "understanding-verification",
+        "question": "지금 이해로는 고객 페르소나이(가) 「전통주를 선물·취미로 찾는 30–40대」입니다. 이 이해가 맞나요?",
+        "d7NoDocumentEchoConfirmYes": true,
+        "d4NoSolutionFirst": true
+      },
+      "branches": {
+        "confirm": {
+          "spine": {
+            "business": "전통주 브랜드",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
+            "problem": "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "전통주를 선물·취미로 찾는 30–40대",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "revise": {
+          "spine": {
+            "business": "전통주 브랜드",
+            "customer": "이 브랜드를 가장 필요로 하는 사람은 혼자 마시는 20대입니다.",
+            "problem": "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
+            "customerStatus": "clear",
+            "customerSummary": "이 브랜드를 가장 필요로 하는 사람은 혼자 마시는 20대",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "unknown": {
+          "spine": {
+            "business": "전통주 브랜드 · B2C",
+            "customer": "아직 모르겠습니다.",
+            "problem": "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다"
+          },
+          "completeness": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": null,
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "unknown",
+            "customerSummary": "",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "alternativesCompetitors",
+            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+          }
+        },
+        "paymentYes": {
+          "spine": {
+            "business": "전통주 브랜드",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
+            "problem": "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "전통주를 선물·취미로 찾는 30–40대",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "약증거 — 검증 완료·Fact 아님",
+            "customerChangeSummary": "이미 결제 3건이 있어 고객이 돈을 내고 있습니다.",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "paymentNone": {
+          "spine": {
+            "business": "전통주 브랜드",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
+            "problem": "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "전통주를 선물·취미로 찾는 30–40대",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "결제 의향·지불 사실 미확정",
+            "customerChangeSummary": "결제·사용 증거 없음",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        }
+      },
+      "axes": {
+        "understandingRevision": {
+          "pass": true,
+          "evidence": "confirm.customer=\"이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.\" revise.customer=\"이 브랜드를 가장 필요로 하는 사람은 혼자 마시는 20대입니다.\" reviseInstalled=true"
+        },
+        "evidenceClass": {
+          "pass": true,
+          "evidence": "confirmFacts=ASSUMPTION; yesReason=\"약증거 — 검증 완료·Fact 아님\"; noneReason=\"결제 의향·지불 사실 미확정\"; validationYes=null; validationNone=null"
+        },
+        "completeness": {
+          "pass": true,
+          "evidence": "confirm={\"customerPersona\":\"CLOSED\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"} unknown={\"customerPersona\":\"OPEN\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"}"
+        },
+        "judgment": {
+          "pass": true,
+          "evidence": "yes=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" none=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
+        },
+        "nextAfterUnderstanding": {
+          "pass": true,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+        },
+        "nextAfterEvidence": {
+          "pass": false,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+        },
+        "unknownKeepsIdentityAskable": {
+          "pass": false,
+          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+        }
+      },
+      "failedAxes": [
+        "nextAfterEvidence",
+        "unknownKeepsIdentityAskable"
+      ],
+      "noSolutionWhileIdentityOpen": true
+    },
+    "S3": {
+      "status": "NEEDS FIX",
+      "firstSurface": {
+        "targetGap": "customerPersona",
+        "mode": "understanding-verification",
+        "question": "지금 이해로는 고객 페르소나이(가) 「직원 20–80명 제조사 영업관리자」입니다. 이 이해가 맞나요?",
+        "d7NoDocumentEchoConfirmYes": true,
+        "d4NoSolutionFirst": true
+      },
+      "branches": {
+        "confirm": {
+          "spine": {
+            "business": "견적 자동화",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
+            "problem": "메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "직원 20–80명 제조사 영업관리자",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "revise": {
+          "spine": {
+            "business": "견적 자동화",
+            "customer": "이 툴을 가장 필요로 하는 사람은 개인 프리랜서입니다.",
+            "problem": "메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
+            "customerStatus": "clear",
+            "customerSummary": "이 툴을 가장 필요로 하는 사람은 개인 프리랜서",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "unknown": {
+          "spine": {
+            "business": "견적 자동화",
+            "customer": "아직 모르겠습니다.",
+            "problem": "메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다"
+          },
+          "completeness": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": null,
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "unknown",
+            "customerSummary": "",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "alternativesCompetitors",
+            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+          }
+        },
+        "paymentYes": {
+          "spine": {
+            "business": "견적 자동화",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
+            "problem": "메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "직원 20–80명 제조사 영업관리자",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "약증거 — 검증 완료·Fact 아님",
+            "customerChangeSummary": "이미 결제 3건이 있어 고객이 돈을 내고 있습니다.",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "paymentNone": {
+          "spine": {
+            "business": "견적 자동화",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
+            "problem": "메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "직원 20–80명 제조사 영업관리자",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "결제 의향·지불 사실 미확정",
+            "customerChangeSummary": "결제·사용 증거 없음",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        }
+      },
+      "axes": {
+        "understandingRevision": {
+          "pass": true,
+          "evidence": "confirm.customer=\"이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.\" revise.customer=\"이 툴을 가장 필요로 하는 사람은 개인 프리랜서입니다.\" reviseInstalled=true"
+        },
+        "evidenceClass": {
+          "pass": true,
+          "evidence": "confirmFacts=ASSUMPTION; yesReason=\"약증거 — 검증 완료·Fact 아님\"; noneReason=\"결제 의향·지불 사실 미확정\"; validationYes=null; validationNone=null"
+        },
+        "completeness": {
+          "pass": true,
+          "evidence": "confirm={\"customerPersona\":\"CLOSED\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"} unknown={\"customerPersona\":\"OPEN\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"}"
+        },
+        "judgment": {
+          "pass": true,
+          "evidence": "yes=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" none=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
+        },
+        "nextAfterUnderstanding": {
+          "pass": true,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+        },
+        "nextAfterEvidence": {
+          "pass": false,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+        },
+        "unknownKeepsIdentityAskable": {
+          "pass": false,
+          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+        }
+      },
+      "failedAxes": [
+        "nextAfterEvidence",
+        "unknownKeepsIdentityAskable"
+      ],
+      "noSolutionWhileIdentityOpen": true
+    },
+    "S4": {
+      "status": "NEEDS FIX",
+      "firstSurface": {
+        "targetGap": "customerPersona",
+        "mode": "understanding-verification",
+        "question": "지금 이해로는 고객 페르소나이(가) 「맞벌이 부모」입니다. 이 이해가 맞나요?",
+        "d7NoDocumentEchoConfirmYes": true,
+        "d4NoSolutionFirst": true
+      },
+      "branches": {
+        "confirm": {
+          "spine": {
+            "business": "구독 박스",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
+            "problem": "장을 볼 시간이 없고 과자 고르기가 피곤하다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "맞벌이 부모",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "revise": {
+          "spine": {
+            "business": "구독 박스",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 혼자 사는 20대입니다.",
+            "problem": "장을 볼 시간이 없고 과자 고르기가 피곤하다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "혼자 사는 20대",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "unknown": {
+          "spine": {
+            "business": "구독 박스",
+            "customer": "아직 모르겠습니다.",
+            "problem": "장을 볼 시간이 없고 과자 고르기가 피곤하다"
+          },
+          "completeness": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": null,
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "unknown",
+            "customerSummary": "",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "alternativesCompetitors",
+            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+          }
+        },
+        "paymentYes": {
+          "spine": {
+            "business": "구독 박스",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
+            "problem": "장을 볼 시간이 없고 과자 고르기가 피곤하다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "맞벌이 부모",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "약증거 — 검증 완료·Fact 아님",
+            "customerChangeSummary": "이미 결제 3건이 있어 고객이 돈을 내고 있습니다.",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "paymentNone": {
+          "spine": {
+            "business": "구독 박스",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
+            "problem": "장을 볼 시간이 없고 과자 고르기가 피곤하다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "맞벌이 부모",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "결제 의향·지불 사실 미확정",
+            "customerChangeSummary": "결제·사용 증거 없음",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        }
+      },
+      "axes": {
+        "understandingRevision": {
+          "pass": true,
+          "evidence": "confirm.customer=\"이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.\" revise.customer=\"이 서비스를 가장 필요로 하는 사람은 혼자 사는 20대입니다.\" reviseInstalled=true"
+        },
+        "evidenceClass": {
+          "pass": true,
+          "evidence": "confirmFacts=ASSUMPTION; yesReason=\"약증거 — 검증 완료·Fact 아님\"; noneReason=\"결제 의향·지불 사실 미확정\"; validationYes=null; validationNone=null"
+        },
+        "completeness": {
+          "pass": true,
+          "evidence": "confirm={\"customerPersona\":\"CLOSED\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"} unknown={\"customerPersona\":\"OPEN\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"}"
+        },
+        "judgment": {
+          "pass": true,
+          "evidence": "yes=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" none=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
+        },
+        "nextAfterUnderstanding": {
+          "pass": true,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+        },
+        "nextAfterEvidence": {
+          "pass": false,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+        },
+        "unknownKeepsIdentityAskable": {
+          "pass": false,
+          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+        }
+      },
+      "failedAxes": [
+        "nextAfterEvidence",
+        "unknownKeepsIdentityAskable"
+      ],
+      "noSolutionWhileIdentityOpen": true
+    },
+    "S5": {
+      "status": "NEEDS FIX",
+      "firstSurface": {
+        "targetGap": "customerPersona",
+        "mode": "understanding-verification",
+        "question": "지금 이해로는 고객 페르소나이(가) 「운동하는 20–30대」입니다. 이 이해가 맞나요?",
+        "d7NoDocumentEchoConfirmYes": true,
+        "d4NoSolutionFirst": true
+      },
+      "branches": {
+        "confirm": {
+          "spine": {
+            "business": "단백질 쿠키",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
+            "problem": "시중 단백질바는 맛없거나 비싸다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "운동하는 20–30대",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "revise": {
+          "spine": {
+            "business": "단백질 쿠키",
+            "customer": "이 쿠키를 가장 필요로 하는 사람은 간식 찾는 초등학생 부모입니다.",
+            "problem": "시중 단백질바는 맛없거나 비싸다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
+            "customerStatus": "clear",
+            "customerSummary": "이 쿠키를 가장 필요로 하는 사람은 간식 찾는 초등학생 부모",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "unknown": {
+          "spine": {
+            "business": "단백질 쿠키",
+            "customer": "아직 모르겠습니다.",
+            "problem": "시중 단백질바는 맛없거나 비싸다"
+          },
+          "completeness": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": null,
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "unknown",
+            "customerSummary": "",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "alternativesCompetitors",
+            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+          }
+        },
+        "paymentYes": {
+          "spine": {
+            "business": "단백질 쿠키",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
+            "problem": "시중 단백질바는 맛없거나 비싸다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "운동하는 20–30대",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "약증거 — 검증 완료·Fact 아님",
+            "customerChangeSummary": "이미 결제 3건이 있어 고객이 돈을 내고 있습니다.",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "paymentNone": {
+          "spine": {
+            "business": "단백질 쿠키",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
+            "problem": "시중 단백질바는 맛없거나 비싸다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "운동하는 20–30대",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "결제 의향·지불 사실 미확정",
+            "customerChangeSummary": "결제·사용 증거 없음",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        }
+      },
+      "axes": {
+        "understandingRevision": {
+          "pass": true,
+          "evidence": "confirm.customer=\"이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.\" revise.customer=\"이 쿠키를 가장 필요로 하는 사람은 간식 찾는 초등학생 부모입니다.\" reviseInstalled=true"
+        },
+        "evidenceClass": {
+          "pass": true,
+          "evidence": "confirmFacts=ASSUMPTION; yesReason=\"약증거 — 검증 완료·Fact 아님\"; noneReason=\"결제 의향·지불 사실 미확정\"; validationYes=null; validationNone=null"
+        },
+        "completeness": {
+          "pass": true,
+          "evidence": "confirm={\"customerPersona\":\"CLOSED\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"} unknown={\"customerPersona\":\"OPEN\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"}"
+        },
+        "judgment": {
+          "pass": true,
+          "evidence": "yes=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" none=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
+        },
+        "nextAfterUnderstanding": {
+          "pass": true,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+        },
+        "nextAfterEvidence": {
+          "pass": false,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+        },
+        "unknownKeepsIdentityAskable": {
+          "pass": false,
+          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+        }
+      },
+      "failedAxes": [
+        "nextAfterEvidence",
+        "unknownKeepsIdentityAskable"
+      ],
+      "noSolutionWhileIdentityOpen": true
+    },
+    "S6": {
+      "status": "NEEDS FIX",
+      "firstSurface": {
+        "targetGap": "customerPersona",
+        "mode": "understanding-verification",
+        "question": "지금 이해로는 고객 페르소나이(가) 「맞벌이 가정 / 도우미」입니다. 이 이해가 맞나요?",
+        "d7NoDocumentEchoConfirmYes": true,
+        "d4NoSolutionFirst": true
+      },
+      "branches": {
+        "confirm": {
+          "spine": {
+            "business": "가사 중개",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정 / 도우미입니다.",
+            "problem": "믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "맞벌이 가정 / 도우미",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "revise": {
+          "spine": {
+            "business": "가사 중개",
+            "customer": "이 앱을 가장 필요로 하는 사람은 1인 가구 대학생입니다.",
+            "problem": "믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [
+            "ASSUMPTION"
+          ],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
+            "customerStatus": "clear",
+            "customerSummary": "이 앱을 가장 필요로 하는 사람은 1인 가구 대학생",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "unknown": {
+          "spine": {
+            "business": "가사 중개",
+            "customer": "아직 모르겠습니다.",
+            "problem": "믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다"
+          },
+          "completeness": {
+            "customerPersona": "OPEN",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": null,
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "unknown",
+            "customerSummary": "",
+            "customerChangeStatus": "unknown",
+            "customerChangeReason": "아직 확인되지 않음",
+            "customerChangeSummary": "",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "alternativesCompetitors",
+            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+          }
+        },
+        "paymentYes": {
+          "spine": {
+            "business": "가사 중개",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정 / 도우미입니다.",
+            "problem": "믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "맞벌이 가정 / 도우미",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "약증거 — 검증 완료·Fact 아님",
+            "customerChangeSummary": "이미 결제 3건이 있어 고객이 돈을 내고 있습니다.",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        },
+        "paymentNone": {
+          "spine": {
+            "business": "가사 중개",
+            "customer": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정 / 도우미입니다.",
+            "problem": "믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다"
+          },
+          "completeness": {
+            "customerPersona": "CLOSED",
+            "problemJtbd": "OPEN",
+            "payer": "OPEN",
+            "validationTestability": "OPEN"
+          },
+          "evidenceClasses": [],
+          "gapEvidence": {
+            "customerPersona": "ASSUMPTION",
+            "problemJtbd": null,
+            "validationTestability": null
+          },
+          "judgment": {
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
+            "customerSummary": "맞벌이 가정 / 도우미",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "결제 의향·지불 사실 미확정",
+            "customerChangeSummary": "결제·사용 증거 없음",
+            "problemStatus": "unknown"
+          },
+          "next": {
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+          }
+        }
+      },
+      "axes": {
+        "understandingRevision": {
+          "pass": true,
+          "evidence": "confirm.customer=\"이 서비스를 가장 필요로 하는 사람은 맞벌이 가정 / 도우미입니다.\" revise.customer=\"이 앱을 가장 필요로 하는 사람은 1인 가구 대학생입니다.\" reviseInstalled=true"
+        },
+        "evidenceClass": {
+          "pass": true,
+          "evidence": "confirmFacts=ASSUMPTION; yesReason=\"약증거 — 검증 완료·Fact 아님\"; noneReason=\"결제 의향·지불 사실 미확정\"; validationYes=null; validationNone=null"
+        },
+        "completeness": {
+          "pass": true,
+          "evidence": "confirm={\"customerPersona\":\"CLOSED\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"} unknown={\"customerPersona\":\"OPEN\",\"problemJtbd\":\"OPEN\",\"payer\":\"OPEN\",\"validationTestability\":\"OPEN\"}"
+        },
+        "judgment": {
+          "pass": true,
+          "evidence": "yes=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" none=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
+        },
+        "nextAfterUnderstanding": {
+          "pass": true,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+        },
+        "nextAfterEvidence": {
+          "pass": false,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+        },
+        "unknownKeepsIdentityAskable": {
+          "pass": false,
+          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+        }
+      },
+      "failedAxes": [
+        "nextAfterEvidence",
+        "unknownKeepsIdentityAskable"
+      ],
+      "noSolutionWhileIdentityOpen": true
+    }
+  }
+}

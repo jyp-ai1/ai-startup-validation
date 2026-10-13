@@ -1,0 +1,248 @@
+{
+  "meta": {
+    "implementationSha": "bcf443b7",
+    "executedSha": "b3c1ab46dc52489475622b9aa4d7ce9ec2baa933",
+    "executedAt": "2026-10-13T16:02:45.172Z",
+    "officialReportUntouched": "docs/evidence/ALABOM/DAY_8I_P0_FIX10_REVALIDATION_REPORT.md",
+    "note": "FIX-10 expected wording is not lowered. overallPass=false is preserved. R24 is BUILD_SKIP because this run did not execute pnpm build; Preview 2/2 PASS on bcf443b7 is recorded separately.",
+    "production": "NOT VERIFIED",
+    "mergeRequest": "none"
+  },
+  "overallPass": false,
+  "failedR": [
+    {
+      "id": "FIX10-R02",
+      "expected": "Initial business understanding confirm",
+      "actual": "이 서비스를 가장 필요로 하는 사람은 누구인가요?"
+    },
+    {
+      "id": "FIX10-R14",
+      "expected": "Customer Change = needs_check",
+      "actual": "unknown"
+    },
+    {
+      "id": "FIX10-R18",
+      "expected": "Canonical state preservation (FIX-9 turns)",
+      "actual": "53"
+    },
+    {
+      "id": "FIX10-R21",
+      "expected": "DAY 8-H regression (30-turn)",
+      "actual": "FAIL"
+    },
+    {
+      "id": "FIX10-R22",
+      "expected": "FIX-9 R regression",
+      "actual": "1"
+    },
+    {
+      "id": "FIX10-R24",
+      "expected": "Build",
+      "actual": "FAIL"
+    },
+    {
+      "id": "FIX10-F2",
+      "expected": "Next Q targets unresolved dimension",
+      "actual": "비슷한 역할을 이미 하고 있는 서비스가 있나요?"
+    },
+    {
+      "id": "FIX10-F5-T04",
+      "expected": "Turn 4 audit verdict",
+      "actual": "FAIL"
+    },
+    {
+      "id": "FIX10-F5-T05",
+      "expected": "Turn 5 audit verdict",
+      "actual": "FAIL"
+    },
+    {
+      "id": "FIX10-F5-T06",
+      "expected": "Turn 6 audit verdict",
+      "actual": "FAIL"
+    }
+  ],
+  "failedScenarios": [
+    {
+      "id": "B",
+      "title": "최초 AI 이해 확인",
+      "expected": "「제가 이해한 사업은 … 맞나요?」",
+      "actual": "이 서비스를 가장 필요로 하는 사람은 누구인가요?"
+    },
+    {
+      "id": "H",
+      "title": "고객 변화",
+      "expected": "needs_check; validation=pending",
+      "actual": "status=unknown; validation=n/a"
+    },
+    {
+      "id": "J",
+      "title": "Customer correction preserved",
+      "expected": "Customer preserved; next Q must not repeat stale customer",
+      "actual": "customer=\"양조장뿐 아니라 반찬가게와 꽃집도 대상입니다.\"; next=\"비슷한 역할을 이미 하고 있는 서비스가 있나요?\""
+    }
+  ],
+  "classified": [
+    {
+      "id": "B",
+      "expected": "「제가 이해한 사업은 … 맞나요?」",
+      "actual": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+      "class": "D7_CONFIRM_YES_SURFACE"
+    },
+    {
+      "id": "H",
+      "expected": "needs_check; validation=pending",
+      "actual": "status=unknown; validation=n/a",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "J",
+      "expected": "Customer preserved; next Q must not repeat stale customer",
+      "actual": "customer=\"양조장뿐 아니라 반찬가게와 꽃집도 대상입니다.\"; next=\"비슷한 역할을 이미 하고 있는 서비스가 있나요?\"",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "FIX10-R02",
+      "expected": "Initial business understanding confirm",
+      "actual": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+      "class": "D7_CONFIRM_YES_SURFACE"
+    },
+    {
+      "id": "FIX10-R14",
+      "expected": "Customer Change = needs_check",
+      "actual": "unknown",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "FIX10-R18",
+      "expected": "Canonical state preservation (FIX-9 turns)",
+      "actual": "53",
+      "class": "REGRESSION_HARNESS"
+    },
+    {
+      "id": "FIX10-R21",
+      "expected": "DAY 8-H regression (30-turn)",
+      "actual": "FAIL",
+      "class": "REGRESSION_HARNESS"
+    },
+    {
+      "id": "FIX10-R22",
+      "expected": "FIX-9 R regression",
+      "actual": "1",
+      "class": "REGRESSION_HARNESS"
+    },
+    {
+      "id": "FIX10-R24",
+      "expected": "Build",
+      "actual": "FAIL",
+      "class": "BUILD_SKIP"
+    },
+    {
+      "id": "FIX10-F2",
+      "expected": "Next Q targets unresolved dimension",
+      "actual": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "FIX10-F5-T04",
+      "expected": "Turn 4 audit verdict",
+      "actual": "FAIL",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "FIX10-F5-T05",
+      "expected": "Turn 5 audit verdict",
+      "actual": "FAIL",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "FIX10-F5-T06",
+      "expected": "Turn 6 audit verdict",
+      "actual": "FAIL",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    }
+  ],
+  "byClass": {
+    "D7_CONFIRM_YES_SURFACE": [
+      "B",
+      "FIX10-R02"
+    ],
+    "DOWNSTREAM_OF_D7_SCRIPT": [
+      "H",
+      "J",
+      "FIX10-R14",
+      "FIX10-F2",
+      "FIX10-F5-T04",
+      "FIX10-F5-T05",
+      "FIX10-F5-T06"
+    ],
+    "REGRESSION_HARNESS": [
+      "FIX10-R18",
+      "FIX10-R21",
+      "FIX10-R22"
+    ],
+    "BUILD_SKIP": [
+      "FIX10-R24"
+    ]
+  },
+  "d7": {
+    "role": "default first-question document-echo confirm-yes removed",
+    "firstQuestionType": "open",
+    "firstTargetGap": "customerPersona",
+    "firstQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+    "confirmYesRemoved": true,
+    "failedIds": [
+      "B",
+      "FIX10-R02"
+    ]
+  },
+  "d4": {
+    "role": "solution forbidden while customer or problem still askable",
+    "shouldBlock": true,
+    "resolveTurnDecisionGap": "customerPersona",
+    "firstTargetGap": "customerPersona",
+    "resolvePathHolds": true,
+    "brewerySolutionTurns": [
+      {
+        "turn": 2,
+        "targetGap": "problemJtbd",
+        "nextTargetGap": "solution",
+        "note": "Scenario D — question-back / confusion",
+        "customerStatus": "needs_check",
+        "problemStatus": "unknown",
+        "identityStillOpen": true
+      },
+      {
+        "turn": 3,
+        "targetGap": "solution",
+        "nextTargetGap": "problemJtbd",
+        "note": "Scenario G — explicit problem",
+        "customerStatus": "needs_check",
+        "problemStatus": "needs_check",
+        "identityStillOpen": true
+      }
+    ],
+    "harnessSolutionWhileIdentityOpen": [
+      {
+        "turn": 2,
+        "targetGap": "problemJtbd",
+        "nextTargetGap": "solution",
+        "note": "Scenario D — question-back / confusion",
+        "customerStatus": "needs_check",
+        "problemStatus": "unknown",
+        "identityStillOpen": true
+      },
+      {
+        "turn": 3,
+        "targetGap": "solution",
+        "nextTargetGap": "problemJtbd",
+        "note": "Scenario G — explicit problem",
+        "customerStatus": "needs_check",
+        "problemStatus": "needs_check",
+        "identityStillOpen": true
+      }
+    ],
+    "failedIds": [],
+    "note": "resolveTurnDecision empty-state next≠solution is the D4 unit. Brewery harness uses resolveNextQuestionDecision; solution after 「네, 맞습니다」 on the D7 customer surface is classified separately and is not rewritten to PASS."
+  },
+  "breweryScriptNote": "FIX10_BREWERY_SCENARIO first CEO answer is 「네, 맞습니다.」 written for Scenario B confirm-yes. After D7 that answer lands on a different first surface, so H/J/F2/F5 can fail without solution-before-identity regressing."
+}
