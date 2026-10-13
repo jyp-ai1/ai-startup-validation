@@ -265,8 +265,8 @@ export function resolveTurnDecision(
       return true;
     });
 
-  const stageBIds = STAGE_B_REQUIRED_GAPS.filter(
-    (gapId) => isGapAskable(gapId, input.gapState) && !(blockSolution && gapId === 'solution'),
+  const stageBIds = STAGE_B_REQUIRED_GAPS.filter((gapId) =>
+    isGapAskable(gapId, input.gapState),
   );
   const rankedPool = [...new Set([...adaptiveIds, ...stageBIds])];
   const picked = rankAskableGaps({
