@@ -1,7 +1,7 @@
 {
   "meta": {
-    "implSha": "212e7b0d714d9f7877b62ba2737c7a871c80d880",
-    "executedAt": "2026-10-13T13:23:00.574Z",
+    "implSha": "77147a56fa4eb1ebeffd758156d3ebce773ef9e0",
+    "executedAt": "2026-10-13T13:34:18.756Z",
     "frozenScenarioSha": "5263e83e",
     "path": "engine resolveNextQuestionDecision → applyTypedAnswerThroughLoop",
     "note": "1:1 wording. Expected text is 5263e83e. Failures are not relaxed.",
