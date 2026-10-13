@@ -28,7 +28,8 @@ V3 AC5: FAIL 유지. expected marketChannel. received validationTestability
 Google OAuth: NOT VERIFIED
 Production: NOT VERIFIED. lock 0b465226
 Vercel Preview 2b583754: FAIL. 원인 TS2367. Production 검증 아님
-로컬 pnpm --filter web build: PASS after type-only fix. Preview 재실행 전 NOT VERIFIED
+로컬 pnpm --filter web build: PASS after type-only fix
+Vercel Preview b78e4d29: 2/2 PASS. Production 검증 아님. Deployment has completed
 병합: 금지
 
 ===== 변경 SHA와 파일 =====
@@ -156,7 +157,7 @@ AC16 FAIL. expected businessOneLiner received validationTestability
 AC5 V3-09 FAIL. expected marketChannel received validationTestability
 
 pnpm --filter web build
-PASS after TS2367 제거. 2b583754 Preview FAIL의 로컬 재현 해소. Production 검증 아님
+PASS after TS2367 제거. 2b583754 Preview FAIL의 로컬 재현 해소. Vercel Preview b78e4d29 2/2 PASS. Production 검증 아님
 
 로그인 UI Playwright 8턴: 미실행 NOT VERIFIED
 Google OAuth: 미실행 NOT VERIFIED
