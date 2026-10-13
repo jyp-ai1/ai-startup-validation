@@ -208,18 +208,25 @@ function resolveDomainValue(
     }
     case 'customerPersona': {
       const conflict = mem ? getConflictFact(mem, 'customer') : null;
-      if (conflict) {
+      if (
+        conflict ||
+        input.gapState?.gaps.customerPersona?.completeness === 'CONTRADICTED'
+      ) {
+        const incoming = conflict?.value?.trim() || spine.customer;
+        const prior = conflict?.conflictWith?.trim();
+        const value =
+          incoming && prior && incoming !== prior
+            ? `충돌: ${prior} ↔ ${incoming} — 재확인 필요`
+            : incoming || '고객 정의가 이전 답과 충돌합니다 — 재확인 필요';
         return {
           fieldKey,
-          value: conflict.value,
+          value,
           status: 'contradiction',
           provenance: 'USER_CORRECTED',
           confidence: 'INFERRED',
           evidence: [
-            { kind: 'user_answer', excerpt: conflict.value.slice(0, 80) },
-            ...(conflict.conflictWith
-              ? [{ kind: 'user_answer' as const, excerpt: conflict.conflictWith.slice(0, 80) }]
-              : []),
+            { kind: 'user_answer', excerpt: (incoming || value).slice(0, 80) },
+            ...(prior ? [{ kind: 'user_answer' as const, excerpt: prior.slice(0, 80) }] : []),
           ],
         };
       }
@@ -684,6 +691,7 @@ export type BuildLivingStateInput = {
   turns?: AiPmLoopTurn[];
   memory?: ConversationMemory | null;
   resolvedIssueIds?: AiPmLoopIssueId[];
+  gapState?: import('@repo/types/domain/gap-knowledge-state').GapKnowledgeState | null;
 };
 
 /** Single SoT builder — all workspace readers must call this. */

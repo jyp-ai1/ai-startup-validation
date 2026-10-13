@@ -115,12 +115,14 @@ function livingNow(projectId: string, documentText: string) {
     projectId,
     documentText,
     turns: loop.turns,
+    gapState: loop.gapState,
   });
   return { loop, living: buildLivingUnderstandingState({
     documentText,
     understanding,
     turns: loop.turns,
     memory,
+    gapState: loop.gapState,
   }), memory };
 }
 
@@ -507,9 +509,26 @@ describe('PR #197 CPO second-verify dump', () => {
       },
       '이미 구독료를 낸 부모가 있나요?',
     );
+    const s4LivingT6 = s4t6.knowledge.livingClaims.find((c) => c.field === 'customerPersona');
+    const s4MemT6 = s4t6.knowledge.memoryFacts.filter((f) => f.key === 'customer');
+    const s4t7 = applyCustom(
+      'pkg-s4',
+      DOCS.S4,
+      {
+        id: 's4-reconfirm',
+        label: '혼자 사는 20대',
+        answerText: '지금 메인 고객은 혼자 사는 20대예요',
+        kind: 'specific',
+        appliesToGap: 'customerPersona',
+        evidenceClassHint: 'FACT',
+      },
+      s4t6.nextQuestionText ?? '이 서비스를 가장 필요로 하는 사람은 누구인가요?',
+    );
+    const s4LivingT7 = s4t7.knowledge.livingClaims.find((c) => c.field === 'customerPersona');
+    const s4MemT7 = s4t7.knowledge.memoryFacts.filter((f) => f.key === 'customer');
     scripted.S4 = {
       business: BUSINESS.S4,
-      turns: [s4t1, s4t2, s4t3, s4t6],
+      turns: [s4t1, s4t2, s4t3, s4t6, s4t7],
       verdicts: [
         verdict(
           s4t6.gapStateAfter.customerPersona === 'CONTRADICTED',
@@ -522,8 +541,39 @@ describe('PR #197 CPO second-verify dump', () => {
           'S4 CONTRADICTED customer updates judgment summary',
         ),
         verdict(
+          s4LivingT6?.status === 'contradiction' &&
+            /충돌/.test(s4LivingT6.value ?? '') &&
+            s4LivingT6.provenance !== 'USER_CONFIRMED',
+          'S4 T6 living customer is contradiction, not leftover USER_CONFIRMED',
+        ),
+        verdict(
+          !s4MemT6.some((f) => f.lifecycle === 'current') &&
+            s4MemT6.some((f) => f.lifecycle === 'superseded' && /맞벌이|부모/.test(f.value)) &&
+            s4MemT6.some((f) => f.lifecycle === 'conflict' && /20대/.test(f.value)),
+          'S4 T6 Memory keeps parents as superseded and 20s as unresolved conflict',
+        ),
+        verdict(
           !/검증 완료|사업성이 충분|GO/.test(s4t6.judgmentAfter.conclusion),
           'S4 contradiction does not emit GO',
+        ),
+        verdict(
+          s4t7.gapStateAfter.customerPersona === 'CLOSED' &&
+            s4LivingT7?.status === 'confirmed' &&
+            /20대/.test(s4LivingT7.value ?? '') &&
+            !/맞벌이 부모/.test(s4LivingT7.value ?? ''),
+          'S4 T7 living current customer is 20s, not dual-income parents',
+        ),
+        verdict(
+          s4MemT7.some((f) => f.lifecycle === 'current' && /20대/.test(f.value)) &&
+            s4MemT7.some((f) => f.lifecycle === 'superseded' && /맞벌이|부모/.test(f.value)) &&
+            !s4MemT7.some((f) => f.lifecycle === 'current' && /맞벌이 부모/.test(f.value)),
+          'S4 T7 Memory current is 20s and parents are superseded',
+        ),
+        verdict(
+          s4t7.nextTargetGap !== 'customerPersona' &&
+            /20대/.test(s4t7.judgmentAfter.customer.summary) &&
+            s4t7.judgmentAfter.customer.summary !== '맞벌이 부모',
+          'S4 T7 next ask and judgment use the reconfirmed customer',
         ),
       ],
     };
@@ -787,10 +837,12 @@ describe('PR #197 CPO second-verify dump', () => {
         ),
       },
       s4Contradiction: {
-        after: s4t6,
+        afterT6: s4t6,
+        afterT7: s4t7,
         verdict: verdict(
-          s4t6.gapStateAfter.customerPersona === 'CONTRADICTED',
-          'off-slot customer correction CONTRADICTED',
+          s4t6.gapStateAfter.customerPersona === 'CONTRADICTED' &&
+            s4t7.gapStateAfter.customerPersona === 'CLOSED',
+          'off-slot customer correction CONTRADICTED then T7 CLOSED',
         ),
       },
     };
@@ -802,6 +854,7 @@ describe('PR #197 CPO second-verify dump', () => {
       s1NoPay: s1t7.knowledge,
       s5Friend: s5friend.knowledge,
       s4Contradiction: s4t6.knowledge,
+      s4Reconfirm: s4t7.knowledge,
       notes: [
         'Memory Fact = conversation-memory current facts only (mergeable answers).',
         'Review evidenceClass comes from buildAnswerReview (FACT/INFERENCE/ASSUMPTION/UNKNOWN/CONTRADICTION).',
@@ -821,6 +874,20 @@ describe('PR #197 CPO second-verify dump', () => {
         verdict(
           r2Yes.applied === false && r2No.applied === false,
           'payment answers are not merged as Memory Facts',
+        ),
+        verdict(
+          s4t6.knowledge.livingClaims.find((c) => c.field === 'customerPersona')?.status ===
+            'contradiction' &&
+            !s4t6.knowledge.memoryFacts.some(
+              (f) => f.key === 'customer' && f.lifecycle === 'current',
+            ),
+          'S4 T6 has no current Memory customer Fact',
+        ),
+        verdict(
+          s4t7.knowledge.memoryFacts.some(
+            (f) => f.key === 'customer' && f.lifecycle === 'current' && /20대/.test(f.value),
+          ),
+          'S4 T7 current Memory customer is 20s',
         ),
       ],
     };

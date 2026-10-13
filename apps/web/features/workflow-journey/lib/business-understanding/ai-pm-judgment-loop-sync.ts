@@ -128,12 +128,19 @@ export function overlayContradictedCustomer(
     return judgment;
   }
 
+  const existing = judgment.dimensions.customer.summary.trim();
+  const alreadyCollision = /충돌:/.test(existing) && /재확인/.test(existing);
   const parsed = answer?.trim() ? parseNotXButYCorrection(answer) : null;
   const accepted = parsed?.accepted.trim().replace(/\s+/g, ' ') ?? '';
-  const prior = judgment.dimensions.customer.summary.trim();
-  const summary = accepted
-    ? `충돌: ${prior || '이전 고객'} ↔ ${accepted} — 재확인 필요`
-    : '고객 정의가 이전 답과 충돌합니다 — 재확인 필요';
+  const priorFromCollision = existing.match(/충돌:\s*(.+?)\s*↔/)?.[1]?.trim();
+  const prior = alreadyCollision
+    ? priorFromCollision || '이전 고객'
+    : existing;
+  const summary = alreadyCollision
+    ? existing
+    : accepted
+      ? `충돌: ${prior || '이전 고객'} ↔ ${accepted} — 재확인 필요`
+      : '고객 정의가 이전 답과 충돌합니다 — 재확인 필요';
 
   return {
     ...judgment,

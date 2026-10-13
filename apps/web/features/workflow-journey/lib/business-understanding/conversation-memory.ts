@@ -132,6 +132,61 @@ export function upsertConfirmedFact(
   };
 }
 
+/**
+ * Customer contradiction awaiting reconfirm — prior is past claim, not current Fact.
+ * Incoming stays conflict (not current) until founder confirms.
+ */
+function valuesOverlap(left: string, right: string): boolean {
+  if (left.length < 2 || right.length < 2) return false;
+  return left === right || left.includes(right) || right.includes(left);
+}
+
+export function parkUnresolvedContradiction(
+  memory: ConversationMemory,
+  key: ConversationFactKey,
+  priorValue: string,
+  incomingValue: string,
+): ConversationMemory {
+  const now = new Date().toISOString();
+  const prior = trimValue(priorValue);
+  const incoming = trimValue(incomingValue);
+  const normalized = memory.facts.map(normalizeLifecycle);
+  const others = normalized.filter((fact) => fact.key !== key);
+  const history: ConversationFact[] = normalized
+    .filter((fact) => fact.key === key && fact.lifecycle !== 'conflict')
+    .filter((fact) => {
+      const value = fact.value.trim();
+      if (value.length < 2) return false;
+      // Incoming must not be stored as a past confirmed Fact before reconfirm.
+      return !valuesOverlap(value, incoming);
+    })
+    .map((fact) => ({ ...fact, lifecycle: 'superseded' as const }));
+
+  if (prior.length >= 2 && !history.some((fact) => valuesOverlap(fact.value, prior))) {
+    history.push({
+      key,
+      value: prior,
+      source: 'user_turn',
+      confirmedAt: now,
+      lifecycle: 'superseded',
+    });
+  }
+
+  const conflict: ConversationFact = {
+    key,
+    value: incoming.length >= 2 ? incoming : prior,
+    source: 'user_turn',
+    confirmedAt: now,
+    lifecycle: 'conflict',
+    conflictWith: prior.length >= 2 ? prior : null,
+  };
+  return {
+    ...memory,
+    facts: [...others, ...history, conflict],
+    updatedAt: now,
+  };
+}
+
 /** Park contradiction — do not silently pick. No dual current. */
 export function parkConflictFact(
   memory: ConversationMemory,

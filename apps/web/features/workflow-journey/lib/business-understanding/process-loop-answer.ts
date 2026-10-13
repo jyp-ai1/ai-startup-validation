@@ -120,6 +120,7 @@ export function runLoopAnswerProcessing(input: RunLoopProcessingInput): LoopProc
     turns: loop.turns,
     entities: input.entities ?? null,
     previous,
+    gapState: loop.gapState,
   });
   saveConversationMemory(memory, input.projectId);
 
@@ -130,6 +131,7 @@ export function runLoopAnswerProcessing(input: RunLoopProcessingInput): LoopProc
     turns: loop.turns,
     memory,
     resolvedIssueIds: getResolvedIssueIds(loop),
+    gapState: loop.gapState,
   });
 
   const nextIssueId = isV3ReviewPipelineActive()
@@ -217,6 +219,7 @@ export function reopenAiPmLoopForRefinement(input: RunLoopProcessingInput): AiPm
     turns: loop.turns,
     memory,
     resolvedIssueIds: getResolvedIssueIds(loop),
+    gapState: loop.gapState,
   });
 
   const answeredFactGaps = getAnsweredTargetGaps(loop.turns);

@@ -17,6 +17,7 @@ import {
 } from '../build-business-choice-question';
 import { buildBusinessUnderstanding } from '../build-business-understanding';
 import { buildConversationMemoryFromSources } from '../build-conversation-memory';
+import { getConflictFact, getFact } from '../conversation-memory';
 import { buildLivingUnderstandingState } from '../living-understanding-state';
 import { setV3ReviewPipelineForTest } from '../v3-review-pipeline';
 import {
@@ -92,19 +93,26 @@ function reset(projectId: string, documentText: string) {
   );
 }
 
-function livingNow(projectId: string, documentText: string) {
+function memoryNow(projectId: string, documentText: string) {
   const loop = loadAiPmLoopState(projectId);
-  const understanding = buildBusinessUnderstanding(documentText);
-  const memory = buildConversationMemoryFromSources({
+  return buildConversationMemoryFromSources({
     projectId,
     documentText,
     turns: loop.turns,
+    gapState: loop.gapState,
   });
+}
+
+function livingNow(projectId: string, documentText: string) {
+  const loop = loadAiPmLoopState(projectId);
+  const understanding = buildBusinessUnderstanding(documentText);
+  const memory = memoryNow(projectId, documentText);
   return buildLivingUnderstandingState({
     documentText,
     understanding,
     turns: loop.turns,
     memory,
+    gapState: loop.gapState,
   });
 }
 
@@ -310,6 +318,24 @@ describe('PR #197 conversation quality', () => {
       loadAiPmLoopState('cq-s4').gapState?.gaps.customerPersona?.completeness,
     ).toBe('CONTRADICTED');
     expect(contradicted.judgmentAfter.conclusion).not.toMatch(/검증 완료|사업성이 충분|GO/);
+    const livingCustomer = contradicted.livingAfter.claims.find(
+      (claim) => claim.fieldKey === 'customerPersona',
+    );
+    expect(livingCustomer?.status).toBe('contradiction');
+    expect(livingCustomer?.value).toMatch(/충돌/);
+    expect(livingCustomer?.value).toMatch(/20대/);
+    expect(livingCustomer?.provenance).not.toBe('USER_CONFIRMED');
+    const memory = memoryNow('cq-s4', DOCS.S4);
+    expect(getFact(memory, 'customer')).toBeNull();
+    expect(getConflictFact(memory, 'customer')?.value).toMatch(/20대/);
+    expect(
+      memory.facts.some(
+        (fact) =>
+          fact.key === 'customer' &&
+          fact.lifecycle === 'superseded' &&
+          /맞벌이|부모/.test(fact.value),
+      ),
+    ).toBe(true);
   });
 
   it('S5 — acquaintance one-time sale is weak evidence, not validated demand', () => {
@@ -431,6 +457,65 @@ describe('PR #197 conversation quality', () => {
     );
     expect(contradicted.judgmentAfter.dimensions.customer.summary).toMatch(/충돌|20대/);
     expect(contradicted.judgmentAfter.dimensions.customer.status).toBe('needs_check');
+    expect(
+      contradicted.livingAfter.claims.find((claim) => claim.fieldKey === 'customerPersona')
+        ?.status,
+    ).toBe('contradiction');
+  });
+
+  it('S4 T7 — reconfirm promotes 20s and supersedes dual-income parents', () => {
+    reset('cq-s4-t7', DOCS.S4);
+    applyGap('cq-s4-t7', DOCS.S4, 'customerPersona', 'specific', /아이|부모/);
+    applyBusinessChoiceThroughLoop({
+      projectId: 'cq-s4-t7',
+      documentText: DOCS.S4,
+      option: {
+        id: 's4-contradict',
+        label: '기타',
+        answerText: '사실 아이가 아니라 혼자 사는 20대가 메인이에요',
+        kind: 'specific',
+        appliesToGap: 'validationTestability',
+        evidenceClassHint: 'ASSUMPTION',
+      },
+      askedQuestionText: '이미 구독료를 낸 부모가 있나요?',
+    });
+    const confirmed = applyBusinessChoiceThroughLoop({
+      projectId: 'cq-s4-t7',
+      documentText: DOCS.S4,
+      option: {
+        id: 's4-reconfirm',
+        label: '혼자 사는 20대',
+        answerText: '지금 메인 고객은 혼자 사는 20대예요',
+        kind: 'specific',
+        appliesToGap: 'customerPersona',
+        evidenceClassHint: 'FACT',
+      },
+      askedQuestionText: '이 서비스를 가장 필요로 하는 사람은 누구인가요?',
+    });
+    expect(
+      loadAiPmLoopState('cq-s4-t7').gapState?.gaps.customerPersona?.completeness,
+    ).toBe('CLOSED');
+    const livingCustomer = confirmed.livingAfter.claims.find(
+      (claim) => claim.fieldKey === 'customerPersona',
+    );
+    expect(livingCustomer?.status).toBe('confirmed');
+    expect(livingCustomer?.value).toMatch(/20대/);
+    expect(livingCustomer?.value).not.toMatch(/맞벌이 부모/);
+    expect(confirmed.judgmentAfter.dimensions.customer.summary).toMatch(/20대/);
+    expect(confirmed.judgmentAfter.dimensions.customer.summary).not.toBe('맞벌이 부모');
+    expect(confirmed.nextTargetGap).not.toBe('customerPersona');
+    const memory = memoryNow('cq-s4-t7', DOCS.S4);
+    expect(getFact(memory, 'customer')?.value).toMatch(/20대/);
+    expect(getFact(memory, 'customer')?.value).not.toMatch(/맞벌이 부모/);
+    expect(getConflictFact(memory, 'customer')).toBeNull();
+    expect(
+      memory.facts.some(
+        (fact) =>
+          fact.key === 'customer' &&
+          fact.lifecycle === 'superseded' &&
+          /맞벌이|부모/.test(fact.value),
+      ),
+    ).toBe(true);
   });
 
   it('S6 — role payer 「집이 낸다」 closes payer and continues past it', () => {

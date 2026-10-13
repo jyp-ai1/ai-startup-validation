@@ -68,18 +68,21 @@ function livingFromDocument(
   documentText: string,
   projectId: string | undefined,
   turns: ReturnType<typeof loadAiPmLoopState>['turns'],
+  gapState?: ReturnType<typeof loadAiPmLoopState>['gapState'],
 ) {
   const understanding = buildBusinessUnderstanding(documentText);
   const memory = buildConversationMemoryFromSources({
     projectId: projectId ?? 'default',
     documentText,
     turns,
+    gapState,
   });
   return buildLivingUnderstandingState({
     documentText,
     understanding,
     turns,
     memory,
+    gapState,
   });
 }
 
@@ -113,6 +116,7 @@ export function applyBusinessChoiceThroughLoop(
     input.documentText,
     input.projectId,
     prior.turns,
+    prior.gapState,
   );
   const judgmentBefore = prior.ceoJudgment ?? null;
   const emptyResult = {

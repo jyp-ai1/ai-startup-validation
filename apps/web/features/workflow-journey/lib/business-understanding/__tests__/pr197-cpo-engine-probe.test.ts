@@ -102,12 +102,14 @@ function livingNow(projectId: string, documentText: string) {
     projectId,
     documentText,
     turns: loop.turns,
+    gapState: loop.gapState,
   });
   return buildLivingUnderstandingState({
     documentText,
     understanding,
     turns: loop.turns,
     memory,
+    gapState: loop.gapState,
   });
 }
 

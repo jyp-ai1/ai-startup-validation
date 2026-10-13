@@ -2,7 +2,12 @@ import type { BusinessUnderstanding } from '@repo/types/domain/business-understa
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
 import type { UnderstandingPhase } from './business-understanding-store';
-import { memoryHasFact, type ConversationMemory } from './conversation-memory';
+import {
+  getConflictFact,
+  getFact,
+  memoryHasFact,
+  type ConversationMemory,
+} from './conversation-memory';
 import {
   confidenceFromProvenance,
   extractPreservedCustomerPersona,
@@ -165,8 +170,16 @@ function resolveCustomerField(
   memory?: ConversationMemory | null,
   documentText = '',
 ): { value: string; provenance: UnderstandingProvenance } {
+  const conflict = memory ? getConflictFact(memory, 'customer') : null;
+  if (conflict?.value.trim()) {
+    const prior = conflict.conflictWith?.trim() || '이전 고객';
+    return {
+      value: truncate(`충돌: ${prior} ↔ ${conflict.value} — 재확인 필요`, 160),
+      provenance: 'USER_CORRECTED',
+    };
+  }
   if (memory && memoryHasFact(memory, 'customer')) {
-    const fact = memory.facts.find((f) => f.key === 'customer');
+    const fact = getFact(memory, 'customer');
     if (fact?.value.trim()) {
       const correctedTurn = [...turns]
         .reverse()
