@@ -6,9 +6,11 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 사업 이해 · 객관식 대화
 
-**CPO Gate:** OPEN · 일괄 수정안 제출 · 구현·병합·배포 보류  
+**CPO Gate:** OPEN · 대화 품질 중심 개선안 제출 · 구현·병합·배포 보류  
 **Branch:** `cursor/ai-pm-mcq-understanding-e648`  
-**Scenarios:** `docs/product/ai-pm-closed-conversation-scenarios.md`  
+**Scenarios:** `docs/product/ai-pm-closed-conversation-scenarios.md` (본문 동결 `5263e83e`)  
+**Quality package:** `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-IMPROVEMENT.md`  
+**Baseline:** 일괄 수정안 `83596930` · Production `0b465226`  
 **Reuse:** V3 living / review / next-question / DAY 8-G presenter. 엔진 재작성 없음.  
 **#196 P1:** Merge 보류 유지 · 이 작업에 포함하지 않음
 
@@ -29,6 +31,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 13 | R1–R4 시나리오 수정 · 재검토 패키지 | 📤 패키지 `03415eed` · CPO: 문서 수용, 구현 재개 보류 |
 | 14 | R1–R4 엔진 실패 원인 · 가드 실행 증거 | 📤 증상 로그 `20eb6985` · 제품 코드 미변경 |
 | 15 | V3 단계 추적 · 일괄 수정안 | 📤 `docs/evidence/ALABOM/AI-PM/PR197-JUDGMENT-ENGINE-BATCH-FIX-PLAN.md` · 구현 보류 |
+| 16 | 대화 품질 기준 · 6사업 전후 · 공통 원인 | 📤 `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-IMPROVEMENT.md` · CPO: 구현 범위 승인 전 |
 
 ---
 
