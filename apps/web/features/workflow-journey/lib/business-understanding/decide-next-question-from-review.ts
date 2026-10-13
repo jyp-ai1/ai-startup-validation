@@ -11,13 +11,17 @@ import { selectAdaptiveNextGaps } from './adaptive-question-select';
 import {
   isStageBGap,
   STAGE_A_REQUIRED_GAPS,
-  STAGE_B_REQUIRED_GAPS,
   type StageReadiness,
 } from './evaluate-stage-readiness';
 import type { ConversationFactKey, ConversationMemory } from './conversation-memory';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import { whyNowForGapField } from './living-understanding-state';
+import {
+  resolveTurnDecision,
+  shouldSkipDocumentOneLiner,
+} from './resolve-turn-decision';
+import type { SiTurnInsight } from './si-turn-insight';
 import {
   countUnclosedGapAsks,
   type QuestionDecision,
@@ -55,6 +59,8 @@ export type DecideNextQuestionFromReviewInput = {
   /** PR5 SoT — decision engine consumes readiness; does not compute it. */
   stageReadiness: StageReadiness;
   previousQuestionText?: string | null;
+  /** Optional in-app S.I. ranking hint. Never a per-turn @repo/agents call. */
+  siInsight?: SiTurnInsight | null;
 };
 
 function closedGapExcludeSet(gapState: GapKnowledgeState): Set<string> {
@@ -127,84 +133,26 @@ function lastAskTextForGap(turns: AiPmLoopTurn[], targetGap: string): string | n
   return null;
 }
 
-function pickBootstrapGap(gapState: GapKnowledgeState): string {
-  for (const gapId of STAGE_A_REQUIRED_GAPS) {
-    if (isGapAskable(gapId, gapState)) return gapId;
-  }
-  for (const gapId of STAGE_B_REQUIRED_GAPS) {
-    if (isGapAskable(gapId, gapState)) return gapId;
-  }
-  return STAGE_A_REQUIRED_GAPS[0]!;
-}
-
-function pickContradictedGap(gapState: GapKnowledgeState): string | null {
-  const priority = ['customerPersona', 'problemJtbd', 'payer', 'businessOneLiner'];
-  for (const gapId of priority) {
-    if (gapState.gaps[gapId]?.completeness === 'CONTRADICTED') return gapId;
-  }
-  for (const [gapId, record] of Object.entries(gapState.gaps)) {
-    if (record.completeness === 'CONTRADICTED') return gapId;
-  }
-  return null;
-}
-
-function shouldSkipDocumentOneLiner(gapState: GapKnowledgeState): boolean {
-  if (!isGapAskable('businessOneLiner', gapState)) return false;
-  return (
-    gapState.gaps.customerPersona?.completeness === 'CLOSED' ||
-    gapState.gaps.problemJtbd?.completeness === 'CLOSED'
-  );
-}
-
-/** First askable Required gap — Stage B blocked until PR5 readiness allows entry. */
-function pickNextRequiredGap(
-  gapState: GapKnowledgeState,
-  stageReadiness: StageReadiness,
-  living?: LivingUnderstandingState,
-): string | null {
-  const contradicted = pickContradictedGap(gapState);
-  if (contradicted) return contradicted;
-  const skipOneLiner = shouldSkipDocumentOneLiner(gapState);
-  void living;
-  for (const gapId of STAGE_A_REQUIRED_GAPS) {
-    if (skipOneLiner && gapId === 'businessOneLiner') continue;
-    if (isGapAskable(gapId, gapState)) return gapId;
-  }
-  // Document one-liner is not an unresolved hypothesis once customer/problem exist.
-  // Do not let its leftover OPEN block Stage B (FIX-ONELINER).
-  if (stageReadiness.stageBAllowed || skipOneLiner) {
-    const judgmentFirst = [
-      'alternativesCompetitors',
-      'validationTestability',
-      'differentiationVsAlternatives',
-      'marketChannel',
-    ];
-    for (const gapId of judgmentFirst) {
-      if (isGapAskable(gapId, gapState)) return gapId;
-    }
-    for (const gapId of STAGE_B_REQUIRED_GAPS) {
-      if (isGapAskable(gapId, gapState)) return gapId;
-    }
-  }
-  return null;
-}
-
 function pickAdvanceTargetGap(input: {
   living: LivingUnderstandingState;
   turns: AiPmLoopTurn[];
   gapState: GapKnowledgeState;
   stageReadiness: StageReadiness;
+  lastReview?: AnswerReview | null;
+  siInsight?: SiTurnInsight | null;
 }): string | null {
-  const contradicted = pickContradictedGap(input.gapState);
-  if (contradicted) return contradicted;
-  const requiredNext = pickNextRequiredGap(
-    input.gapState,
-    input.stageReadiness,
-    input.living,
-  );
-  if (requiredNext) return requiredNext;
+  const turned = resolveTurnDecision({
+    living: input.living,
+    gapState: input.gapState,
+    stageReadiness: input.stageReadiness,
+    turns: input.turns,
+    lastReview: input.lastReview,
+    siInsight: input.siInsight,
+  });
+  if (turned.targetGapId) return turned.targetGapId;
 
   const exclude = closedGapExcludeSet(input.gapState);
+  const skipOneLiner = shouldSkipDocumentOneLiner(input.gapState, input.living);
   const candidates = selectAdaptiveNextGaps(input.living, {
     excludeGaps: exclude,
     turns: input.turns,
@@ -213,6 +161,7 @@ function pickAdvanceTargetGap(input: {
   for (const candidate of candidates) {
     if (
       !input.stageReadiness.stageBAllowed &&
+      !skipOneLiner &&
       isStageBGap(candidate.fieldKey)
     ) {
       continue;
@@ -232,11 +181,28 @@ function resolveTargetGapId(
   living: LivingUnderstandingState,
   turns: AiPmLoopTurn[],
   stageReadiness: StageReadiness,
+  siInsight?: SiTurnInsight | null,
 ): string {
-  const contradicted = pickContradictedGap(gapState);
-  if (contradicted) return contradicted;
+  const turned = resolveTurnDecision({
+    living,
+    gapState,
+    stageReadiness,
+    turns,
+    lastReview: review,
+    siInsight,
+  });
+  if (turned.mode === 'contradiction' && turned.targetGapId) {
+    return turned.targetGapId;
+  }
   if (action === 'advance') {
-    const next = pickAdvanceTargetGap({ living, turns, gapState, stageReadiness });
+    const next = pickAdvanceTargetGap({
+      living,
+      turns,
+      gapState,
+      stageReadiness,
+      lastReview: review,
+      siInsight,
+    });
     if (next) return next;
   }
 
@@ -328,11 +294,27 @@ function buildQuestionForDecision(input: {
 export function decideNextQuestionFromReview(
   input: DecideNextQuestionFromReviewInput,
 ): NextQuestionDecision | null {
-  const { living, turns, gapState, lastReview, previousQuestionText, stageReadiness } =
-    input;
+  const {
+    living,
+    turns,
+    gapState,
+    lastReview,
+    previousQuestionText,
+    stageReadiness,
+    siInsight,
+  } = input;
 
   if (!lastReview) {
-    const targetGapId = pickBootstrapGap(gapState);
+    const bootstrapped = resolveTurnDecision({
+      living,
+      gapState,
+      stageReadiness,
+      turns,
+      lastReview: null,
+      siInsight,
+    });
+    const targetGapId =
+      bootstrapped.targetGapId ?? STAGE_A_REQUIRED_GAPS[0]!;
     if (!isGapAskable(targetGapId, gapState) && gapState.gaps[targetGapId]) {
       return null;
     }
@@ -355,7 +337,7 @@ export function decideNextQuestionFromReview(
       reviewAction: 'advance',
       action: 'advance',
       actionRationale,
-      reason: traceReason('advance', targetGapId, null),
+      reason: bootstrapped.reason || traceReason('advance', targetGapId, null),
     };
   }
 
@@ -368,6 +350,7 @@ export function decideNextQuestionFromReview(
     living,
     turns,
     stageReadiness,
+    siInsight,
   );
 
   if (!isGapAskable(targetGapId, gapState)) {
@@ -379,18 +362,33 @@ export function decideNextQuestionFromReview(
       turns,
       gapState,
       stageReadiness,
+      lastReview,
+      siInsight,
     });
     if (!fallback || !isGapAskable(fallback, gapState)) return null;
   }
 
   const finalTarget =
     action === 'advance' && !isGapAskable(targetGapId, gapState)
-      ? pickAdvanceTargetGap({ living, turns, gapState, stageReadiness }) ??
-        targetGapId
+      ? pickAdvanceTargetGap({
+          living,
+          turns,
+          gapState,
+          stageReadiness,
+          lastReview,
+          siInsight,
+        }) ?? targetGapId
       : action === 'advance' &&
           !stageReadiness.stageBAllowed &&
           isStageBGap(targetGapId)
-        ? pickNextRequiredGap(gapState, stageReadiness) ?? targetGapId
+        ? pickAdvanceTargetGap({
+            living,
+            turns,
+            gapState,
+            stageReadiness,
+            lastReview,
+            siInsight,
+          }) ?? targetGapId
         : targetGapId;
 
   if (!isGapAskable(finalTarget, gapState)) return null;

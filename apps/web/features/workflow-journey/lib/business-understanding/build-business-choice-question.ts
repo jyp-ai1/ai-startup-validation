@@ -13,6 +13,10 @@ import {
 } from './living-understanding-state';
 
 export const UNKNOWN_CHOICE_ANSWER = '아직 모르겠습니다.';
+export const ACCURATE_CHOICE_LABEL = '정확함';
+export const REVISE_CHOICE_LABEL = '일부 수정';
+export const REJECT_CHOICE_LABEL = '이 이해가 아님';
+export const REJECT_CHOICE_ANSWER = '지금 이해한 내용은 아닙니다.';
 export const OTHER_CHOICE_LABEL = '기타';
 export const UNKNOWN_CHOICE_LABEL = '아직 모르겠음';
 
@@ -24,7 +28,13 @@ export const CORE_BUSINESS_CHOICE_GAPS = [
   'alternativesCompetitors',
 ] as const;
 
-export type BusinessChoiceKind = 'specific' | 'other' | 'unknown';
+export type BusinessChoiceKind =
+  | 'accurate'
+  | 'specific'
+  | 'revise'
+  | 'reject'
+  | 'other'
+  | 'unknown';
 
 export type BusinessChoiceEvidenceClass = 'FACT' | 'ASSUMPTION' | 'UNKNOWN';
 
@@ -46,6 +56,7 @@ export type BusinessChoiceQuestion = {
   targetGap: string;
   questionText: string;
   options: BusinessChoiceOption[];
+  mode: 'understanding-verification';
 };
 
 const CONFIRMED_PROVENANCE = new Set(['USER_CONFIRMED', 'USER_CORRECTED']);
@@ -430,6 +441,62 @@ function buildSpecificOptions(input: {
   }));
 }
 
+function currentClaimValue(
+  living: LivingUnderstandingState,
+  targetGap: string,
+): string | null {
+  const assumed = assumedValuesForGap(living, targetGap)[0];
+  if (assumed?.trim()) return assumed.trim();
+  const confirmed = [...confirmedValuesForGap(living, targetGap)][0];
+  if (confirmed?.trim()) return confirmed.trim();
+  if (targetGap === 'customerPersona' && living.spine.customer?.trim()) {
+    return clip(living.spine.customer, 36);
+  }
+  if (targetGap === 'problemJtbd' && living.spine.problem?.trim()) {
+    return clip(living.spine.problem, 36);
+  }
+  if (targetGap === 'businessOneLiner' && living.spine.business?.trim()) {
+    return clip(living.spine.business, 36);
+  }
+  return null;
+}
+
+function accurateChoice(
+  targetGap: string,
+  claimValue: string,
+): BusinessChoiceOption {
+  return {
+    id: `${targetGap}-accurate`,
+    label: ACCURATE_CHOICE_LABEL,
+    answerText: answerTextForOption(targetGap, claimValue),
+    kind: 'accurate',
+    appliesToGap: targetGap,
+    evidenceClassHint: 'ASSUMPTION',
+  };
+}
+
+function reviseChoice(targetGap: string): BusinessChoiceOption {
+  return {
+    id: `${targetGap}-revise`,
+    label: REVISE_CHOICE_LABEL,
+    answerText: '',
+    kind: 'revise',
+    appliesToGap: targetGap,
+    evidenceClassHint: 'ASSUMPTION',
+  };
+}
+
+function rejectChoice(targetGap: string): BusinessChoiceOption {
+  return {
+    id: `${targetGap}-reject`,
+    label: REJECT_CHOICE_LABEL,
+    answerText: REJECT_CHOICE_ANSWER,
+    kind: 'reject',
+    appliesToGap: targetGap,
+    evidenceClassHint: 'UNKNOWN',
+  };
+}
+
 function escapeChoiceValue(targetGap: string): BusinessChoiceOption {
   return {
     id: `${targetGap}-other`,
@@ -452,6 +519,16 @@ function unknownChoice(targetGap: string): BusinessChoiceOption {
   };
 }
 
+function understandingQuestionText(
+  targetGap: string,
+  claimValue: string | null,
+  fallback: string,
+): string {
+  if (!claimValue) return fallback;
+  const label = founderFieldLabel(targetGap);
+  return `지금 이해로는 ${label}이(가) 「${clip(claimValue, 48)}」입니다. 이 이해가 맞나요?`;
+}
+
 function resolveTargetGap(living: LivingUnderstandingState, requested?: string | null): string {
   const requestedGap = requested?.trim();
   if (requestedGap) return requestedGap;
@@ -459,8 +536,9 @@ function resolveTargetGap(living: LivingUnderstandingState, requested?: string |
 }
 
 /**
- * Build one founder-facing MCQ for the already-selected unknown.
- * Reuses living summary + gap question text. Does not pick a new engine gap.
+ * Build one founder-facing MCQ as understanding verification.
+ * Options confirm, revise, or reject the current claim; they do not
+ * pick a new engine gap.
  */
 export function buildBusinessChoiceQuestion(input: {
   living: LivingUnderstandingState;
@@ -471,17 +549,22 @@ export function buildBusinessChoiceQuestion(input: {
   const targetGap = resolveTargetGap(input.living, input.targetGap);
   const binding = resolveGapQuestionBinding(targetGap);
   const { facts, assumptions } = partitionUnderstanding(input.living);
-  const questionText = toHumanLanguageQuestion(
+  const claimValue = currentClaimValue(input.living, targetGap);
+  const fallbackQuestion = toHumanLanguageQuestion(
     input.displayQuestionText?.trim() || binding.questionText,
     targetGap,
   );
-  const options = [
-    ...buildSpecificOptions({
-      targetGap,
-      documentText: input.documentText,
-      living: input.living,
-    }),
+  const specific = buildSpecificOptions({
+    targetGap,
+    documentText: input.documentText,
+    living: input.living,
+  }).slice(0, 3);
+  const options: BusinessChoiceOption[] = [
+    ...(claimValue ? [accurateChoice(targetGap, claimValue)] : []),
+    ...specific,
+    reviseChoice(targetGap),
     escapeChoiceValue(targetGap),
+    rejectChoice(targetGap),
     unknownChoice(targetGap),
   ];
 
@@ -491,13 +574,14 @@ export function buildBusinessChoiceQuestion(input: {
     assumptions,
     targetUnknown: founderFieldLabel(targetGap),
     targetGap,
-    questionText,
+    questionText: understandingQuestionText(targetGap, claimValue, fallbackQuestion),
     options,
+    mode: 'understanding-verification',
   };
 }
 
 export function isEscapeChoice(option: Pick<BusinessChoiceOption, 'kind'>): boolean {
-  return option.kind === 'other';
+  return option.kind === 'other' || option.kind === 'revise';
 }
 
 export function isUnknownChoice(option: Pick<BusinessChoiceOption, 'kind'>): boolean {

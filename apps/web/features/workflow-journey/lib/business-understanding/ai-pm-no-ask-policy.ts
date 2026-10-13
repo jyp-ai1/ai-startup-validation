@@ -40,11 +40,9 @@ import {
 import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 import {
   isStaleKnowledgeForJudgment,
-  turnMapsToGapByJudgment,
 } from './ai-pm-judgment-next-question-binding';
 import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
-import { isMetaConfirmationAnswer } from './ai-pm-answer-meta-slots';
 
 export type NoAskAction = 'ASK' | 'CONFIRM' | 'MOVE';
 
@@ -379,15 +377,6 @@ function isSemanticRepeatAsk(input: {
   return hit;
 }
 
-function hasUserConfirmedBusinessOneLiner(turns: AiPmLoopTurn[]): boolean {
-  return turns.some(
-    (t) =>
-      !t.superseded &&
-      t.targetGap === 'businessOneLiner' &&
-      isMetaConfirmationAnswer(t.answer?.trim() ?? ''),
-  );
-}
-
 /**
  * Evaluate whether the proposed question should be suppressed or confirmed.
  */
@@ -406,28 +395,9 @@ export function evaluateNoAskPolicy(input: {
 
   const targetGapId = input.targetGapId.trim();
 
-  // FIX-10 — intake business description must be confirmed before open re-ask
-  if (
-    isAiPmJudgmentFix10V1Active() &&
-    targetGapId === 'businessOneLiner' &&
-    !hasUserConfirmedBusinessOneLiner(input.turns)
-  ) {
-    const intakeHit = scanSemanticKnowledgeForGap({
-      gapId: 'businessOneLiner',
-      living: input.living,
-      memory: input.memory,
-      turns: input.turns,
-    });
-    if (intakeHit && !isConfirmPollutionValue(intakeHit.value)) {
-      return {
-        action: 'CONFIRM',
-        gapId: targetGapId,
-        confirmText: buildConfirmText(targetGapId, intakeHit.value, intakeHit.userConfirmed),
-        knownValue: intakeHit.value,
-        reason: 'FIX-10 intake business — CEO confirm required',
-      };
-    }
-  }
+  // D7 — document-echo confirm-yes is not the default first surface.
+  // Understanding verification MCQ presents the draft; FIX-10 remains a
+  // solution-before-identity constraint, not a one-liner confirm gate.
 
   if (!targetGapId || !isGapAskable(targetGapId, input.gapState)) {
     return { action: 'ASK' };

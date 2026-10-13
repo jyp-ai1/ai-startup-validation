@@ -55,7 +55,7 @@ export function WorkspaceAiPmSimpleQuestion({
         <div className="grid gap-2 sm:grid-cols-2">
           <div data-testid="understood-facts" className="rounded-xl border border-border/50 px-3 py-2">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              확인된 사실
+              확인된 주장
             </p>
             {facts.length > 0 ? (
               <ul className="mt-1 list-disc space-y-1 pl-4 text-sm">
@@ -64,7 +64,7 @@ export function WorkspaceAiPmSimpleQuestion({
                 ))}
               </ul>
             ) : (
-              <p className="mt-1 text-sm text-muted-foreground">아직 확정된 사실은 없습니다.</p>
+              <p className="mt-1 text-sm text-muted-foreground">아직 확인된 주장은 없습니다.</p>
             )}
           </div>
           <div data-testid="unverified-assumptions" className="rounded-xl border border-border/50 px-3 py-2">

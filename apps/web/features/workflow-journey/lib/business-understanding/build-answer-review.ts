@@ -366,6 +366,10 @@ function evidenceForExtractedFact(
   askedGapId: string,
 ): { evidenceClass: ExtractedFact['evidenceClass']; confidence: ExtractedFact['confidence'] } {
   const validationBacked = hasValidationEvidenceCue(userAnswer);
+  // D5: VALIDATED maps to FACT + validation cue, independent of slot.
+  if (validationBacked && semantic.mergeable) {
+    return { evidenceClass: 'FACT', confidence: 'high' };
+  }
   if (isWtpHypothesisOnly(userAnswer) && (hit.key === 'revenue' || hit.key === 'buyer' || hit.key === 'customer')) {
     return { evidenceClass: 'ASSUMPTION', confidence: 'low' };
   }
@@ -412,8 +416,9 @@ function evidenceForExtractedFact(
     (hit.key === 'customer' && askedGapId === 'customerPersona' && isOnSlotPersonaAnswer(userAnswer)) ||
     (hit.key === 'revenue' && REVENUE_CUE_RE.test(userAnswer));
 
+  // D5: founder confirmation is CLAIM → ASSUMPTION. Do not auto-promote to FACT.
   if (onSlot && semantic.mergeable) {
-    return { evidenceClass: 'FACT', confidence: 'high' };
+    return { evidenceClass: 'ASSUMPTION', confidence: 'medium' };
   }
   if (semantic.quality === 'CONTRADICTORY') {
     return { evidenceClass: 'CONTRADICTION', confidence: 'low' };
@@ -422,10 +427,30 @@ function evidenceForExtractedFact(
     return { evidenceClass: 'ASSUMPTION', confidence: 'low' };
   }
   if (semantic.quality === 'VALID') {
-    return { evidenceClass: 'FACT', confidence: 'high' };
+    if (validationBacked) {
+      return { evidenceClass: 'FACT', confidence: 'high' };
+    }
+    return { evidenceClass: 'ASSUMPTION', confidence: 'medium' };
   }
   return { evidenceClass: 'INFERENCE', confidence: 'medium' };
 }
+
+/** Evidence-sensitive gaps stay PARTIAL on CLAIM; FACT/VALIDATED only CLOSE them. */
+const EVIDENCE_SENSITIVE_GAPS = new Set([
+  'validationTestability',
+  'differentiationVsAlternatives',
+  'differentiationHypothesis',
+  'marketChannel',
+  'pricingHint',
+]);
+
+/** Stage A identity + claimed revenue model may CLOSE completeness while evidence stays CLAIM. */
+const IDENTITY_COMPLETENESS_GAPS = new Set([
+  'customerPersona',
+  'problemJtbd',
+  'businessOneLiner',
+  'revenueModel',
+]);
 
 function isOnSlotSufficient(
   askedGapId: string,
@@ -480,9 +505,25 @@ function deriveGapCompleteness(
   if (isAmbiguousHedge(userAnswer) || semantic.quality === 'AMBIGUOUS') return 'OPEN';
   if (semantic.intent === 'nonsense' || semantic.quality === 'IRRELEVANT') return 'OPEN';
   if (semantic.quality === 'UNKNOWN') return 'OPEN';
-  if (isOnSlotSufficient(askedGapId, userAnswer, semantic)) return 'CLOSED';
+  if (isOnSlotSufficient(askedGapId, userAnswer, semantic)) {
+    if (
+      EVIDENCE_SENSITIVE_GAPS.has(askedGapId) &&
+      !hasValidationEvidenceCue(userAnswer)
+    ) {
+      return 'PARTIAL';
+    }
+    return 'CLOSED';
+  }
   if (semantic.quality === 'PARTIAL' && semantic.mergeable) return 'PARTIAL';
-  if (semantic.quality === 'VALID' && semantic.mergeable) return 'CLOSED';
+  if (semantic.quality === 'VALID' && semantic.mergeable) {
+    if (
+      EVIDENCE_SENSITIVE_GAPS.has(askedGapId) &&
+      !hasValidationEvidenceCue(userAnswer)
+    ) {
+      return 'PARTIAL';
+    }
+    return 'CLOSED';
+  }
   return 'OPEN';
 }
 
@@ -574,16 +615,12 @@ function deriveSecondaryGapCompleteness(
   fact: ExtractedFact,
   askedGapId: string,
 ): GapCompleteness {
+  void askedGapId;
   if (fact.targetGap === 'payer') {
-    if (fact.key === 'buyer' && fact.evidenceClass === 'FACT') return 'CLOSED';
+    // T6: off-slot buyer never closes payer. Asked payer uses deriveGapCompleteness.
     return 'OPEN';
   }
-  const evidenceSensitiveGap =
-    fact.targetGap === 'differentiationVsAlternatives' ||
-    fact.targetGap === 'differentiationHypothesis' ||
-    fact.targetGap === 'marketChannel' ||
-    fact.targetGap === 'pricingHint' ||
-    fact.targetGap === 'validationTestability';
+  const evidenceSensitiveGap = EVIDENCE_SENSITIVE_GAPS.has(fact.targetGap);
   if (evidenceSensitiveGap && fact.evidenceClass !== 'FACT') {
     return fact.evidenceClass === 'ASSUMPTION' ? 'PARTIAL' : 'OPEN';
   }
@@ -596,6 +633,12 @@ function deriveSecondaryGapCompleteness(
     return 'PARTIAL';
   }
   if (fact.evidenceClass === 'FACT') return 'CLOSED';
+  if (
+    (fact.evidenceClass === 'ASSUMPTION' || fact.evidenceClass === 'INFERENCE') &&
+    IDENTITY_COMPLETENESS_GAPS.has(fact.targetGap)
+  ) {
+    return 'CLOSED';
+  }
   if (fact.evidenceClass === 'ASSUMPTION' || fact.evidenceClass === 'INFERENCE') return 'PARTIAL';
   return 'OPEN';
 }
@@ -675,6 +718,11 @@ function buildGapVerdicts(
 
     if (existing) {
       if (existing.completeness === 'CONTRADICTED') {
+        continue;
+      }
+      // Asked completeness is owned by deriveGapCompleteness — secondary
+      // identity CLAIM must not overwrite PARTIAL/OPEN/CLOSED.
+      if (gapId === askedGapId) {
         continue;
       }
       // Never downgrade asked gap OPEN from ambiguous/irrelevant to PARTIAL via fact evidence

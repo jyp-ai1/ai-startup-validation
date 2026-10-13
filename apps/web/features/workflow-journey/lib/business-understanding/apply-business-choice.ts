@@ -52,7 +52,7 @@ export function resolveBusinessChoiceAnswer(
     evidenceClassHint: option.evidenceClassHint,
   };
 
-  if (option.kind === 'other') {
+  if (option.kind === 'other' || option.kind === 'revise') {
     const extra = freeText?.trim() ?? '';
     return {
       answerText: extra,
@@ -60,6 +60,17 @@ export function resolveBusinessChoiceAnswer(
       choiceApplied: {
         ...choiceApplied,
         evidenceClassHint: extra.length >= 2 ? 'ASSUMPTION' : 'UNKNOWN',
+      },
+    };
+  }
+
+  if (option.kind === 'reject') {
+    return {
+      answerText: option.answerText,
+      needsFreeText: false,
+      choiceApplied: {
+        ...choiceApplied,
+        evidenceClassHint: 'UNKNOWN',
       },
     };
   }

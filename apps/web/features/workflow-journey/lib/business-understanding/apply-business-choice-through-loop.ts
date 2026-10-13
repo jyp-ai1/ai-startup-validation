@@ -28,7 +28,9 @@ import {
 } from './living-understanding-state';
 import { appendLoopTurnWithReview, runLoopAnswerProcessing } from './process-loop-answer';
 import { resolveNextQuestionDecision } from './resolve-next-question-decision';
+import { resolveTurnDecision } from './resolve-turn-decision';
 import { isGapAskable } from './update-gap-state-from-review';
+import { evaluateStageReadiness } from './evaluate-stage-readiness';
 import { isV3ReviewPipelineActive } from './v3-review-pipeline';
 import {
   appendAiPmLoopTurn,
@@ -91,6 +93,18 @@ export function nextGapAfterUnknownChoice(
   askedGap: string,
   gapState?: ReturnType<typeof loadAiPmLoopState>['gapState'],
 ): string | null {
+  if (gapState) {
+    const turned = resolveTurnDecision({
+      living,
+      gapState,
+      stageReadiness: evaluateStageReadiness({ gapState }),
+      turns: [],
+      lastReview: null,
+    });
+    if (turned.targetGapId && turned.targetGapId !== askedGap) {
+      return turned.targetGapId;
+    }
+  }
   const fromLiving = living.gaps.find((gap) => gap.fieldKey !== askedGap)?.fieldKey;
   if (fromLiving) return fromLiving;
   if (gapState) {
@@ -111,6 +125,8 @@ export function applyBusinessChoiceThroughLoop(
   input: ApplyBusinessChoiceThroughLoopInput,
 ): ApplyBusinessChoiceThroughLoopResult {
   const resolved = resolveBusinessChoiceAnswer(input.option, input.freeText);
+  const skipFactMerge =
+    input.option.kind === 'unknown' || input.option.kind === 'reject';
   const prior = loadAiPmLoopState(input.projectId);
   const livingBefore = livingFromDocument(
     input.documentText,
@@ -181,7 +197,7 @@ export function applyBusinessChoiceThroughLoop(
   }
 
   const applied =
-    semantic.mergeable
+    !skipFactMerge && semantic.mergeable
       ? applyWorkspaceLoopAnswer(
           binding.issueId,
           resolved.answerText,
@@ -223,7 +239,7 @@ export function applyBusinessChoiceThroughLoop(
   });
 
   if (
-    input.option.kind === 'unknown' &&
+    (input.option.kind === 'unknown' || input.option.kind === 'reject') &&
     (!next || next.targetGap === input.option.appliesToGap)
   ) {
     const yielded = nextGapAfterUnknownChoice(

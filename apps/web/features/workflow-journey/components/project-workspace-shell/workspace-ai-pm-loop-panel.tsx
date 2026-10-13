@@ -45,6 +45,7 @@ import {
 } from '../../lib/business-understanding/workspace-answer-draft-store';
 import { resolveNextQuestionDecision } from '../../lib/business-understanding/resolve-next-question-decision';
 import { isBusinessUnderstandingConfirmQuestion } from '../../lib/business-understanding/gap-question-map';
+import { siTurnInsightFromQuestion } from '../../lib/business-understanding/si-turn-insight';
 import type { SiAiPmQuestion } from '@repo/types/domain/strategic-intelligence';
 import { shouldSkipLiveRankOnRemount } from '../../lib/business-understanding/resolve-remount-ask-surface';
 import { resolveV3DisplayPriority } from '../../lib/business-understanding/v3-legacy-bypass-guards';
@@ -533,6 +534,7 @@ export function WorkspaceAiPmLoopPanel({
       };
     }
 
+    const siInsight = siTurnInsightFromQuestion(siValidationAsk);
     const decision = resolveNextQuestionDecision({
       living: livingState,
       turns: freshTurns,
@@ -541,6 +543,7 @@ export function WorkspaceAiPmLoopPanel({
       projectId,
       gapState: loadAiPmLoopState(projectId).gapState,
       researchPending: Boolean(loadAiPmLoopState(projectId).researchPending),
+      siInsight,
     });
     if (!decision) return null;
 
@@ -573,7 +576,7 @@ export function WorkspaceAiPmLoopPanel({
 
     if (
       siValidationAsk &&
-      targetGap === 'businessOneLiner' &&
+      siInsight?.preferredGapIds.includes(targetGap) &&
       !isBusinessUnderstandingConfirmQuestion(questionText)
     ) {
       questionText = siValidationAsk.questionText;

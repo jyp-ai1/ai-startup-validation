@@ -32,6 +32,7 @@ import {
   patchAiPmLoopState,
 } from './workspace-ai-pm-loop-store';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
+import type { SiTurnInsight } from './si-turn-insight';
 
 export type ResolveNextQuestionInput = {
   living: LivingUnderstandingState;
@@ -46,6 +47,8 @@ export type ResolveNextQuestionInput = {
   persistLastDecision?: boolean;
   /** Phase D — when research pending, question engine must not advance. */
   researchPending?: boolean;
+  /** Optional in-app S.I. ranking hint. Not an analyzer re-run. */
+  siInsight?: SiTurnInsight | null;
 };
 
 export function resolveNextQuestionDecision(
@@ -90,6 +93,7 @@ export function resolveNextQuestionDecision(
       gapState,
       stageReadiness,
       previousQuestionText: input.previousQuestionText,
+      siInsight: input.siInsight,
     }) ??
     (!lastReview
       ? createBootstrapDecisionWithPolicy(gapState, stageReadiness)

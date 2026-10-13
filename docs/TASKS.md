@@ -45,6 +45,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 27 | 남은 병합 게이트 증거 | 📤 `PR197-CPO-MERGE-GATE-COPY.txt` · T1–T8 문구 FAIL 0/8 · OAuth·Production NOT VERIFIED · AC16/AC5 유지 · 병합 금지 |
 | 28 | T1–T8 불일치 원인 · 계약 | 📤 `PR197-CPO-T1-T8-DIVERGENCE-COPY.txt` · 동결=시나리오 문서, 엔진 SoT=고객 먼저 · 1:1 0/35 FAIL 유지 · 5턴 중단=오프슬롯 하네스 · 온슬롯 8턴 · SoT 미개작 · 병합 금지 |
 | 29 | T1–T8 계약 분리 · Track A/B | 📤 `PR197-CPO-CONTRACT-SEPARATION-COPY.txt` · CEO problem-first 미승인 · Track A 0/35 FAIL · Track B 8턴 · 어댑터 비런타임 · T6/T7/CQ PASS · AC16/AC5 유지 · OAuth·Prod NOT VERIFIED · 병합 금지 |
+| 30 | D1–D7 전략 복원 1단계 | 📤 `PR197-CPO-STRATEGY-RESTORE-PHASE1-COPY.txt` · resolveTurnDecision · 이해 검증 MCQ · CLOSED≠FACT · T6/T7 PASS · Track A FAIL · AC16/AC5 FAIL · 병합 금지 |
 
 ---
 
