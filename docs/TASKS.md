@@ -6,7 +6,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 사업 이해 · 객관식 대화
 
-**CPO Gate:** 기존 NEEDS FIX 수정 제출 · 인라인 보고서 `PR197-CPO-REVIEW-READY.md` · CPO 2차 미판정 · 병합·배포 보류  
+**CPO Gate:** 엔진 범위 CPO VERIFIED · 로그인 UI S4 FAIL 제출 · 병합·배포 보류  
 **Branch:** `cursor/ai-pm-mcq-understanding-e648`  
 **Scenarios:** `docs/product/ai-pm-closed-conversation-scenarios.md` (본문 동결 `5263e83e`)  
 **Quality package:** `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-IMPROVEMENT.md`  
@@ -36,7 +36,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 18 | CPO 2차 검증 패키지 (A–I) | 📤 CTO 1차 `PR197-CPO-SECOND-VERIFY-PACKAGE.md` · I/O `PR197-CPO-SECOND-VERIFY-DUMP.json` |
 | 19 | CPO 2차 검증 · CEO 보고 | 📤 **NEEDS FIX** `PR197-CPO-SECOND-VERIFY-VERDICT.md` · S6 지속·한 줄 후퇴·S4 판단 반영이 다음 수정 |
 | 20 | NEEDS FIX 3건 수정 + CPO 인라인 보고서 | 📤 `PR197-CPO-REVIEW-READY.md` · FIX-S6/ONELINER CPO 확인 · S4 판단만 부분 해결 |
-| 21 | S4 고객 모순 상태 일관성 · T6/T7 실행 증거 | 📤 living/Memory/judgment 정합 · T7 20대 확정 · CPO 재판정 대기 · 병합 금지 |
+| 21 | S4 고객 모순 상태 일관성 · T6/T7 실행 증거 | 📤 엔진 CPO VERIFIED (`8965af43`) · 고객 모순 모델 추가 확장 없음 · 병합 금지 |
+| 22 | PR #197 로그인 UI 검증 | 📤 `PR197-CPO-LOGIN-UI-VERIFY.md` · S4 T6/T7 **FAIL** · S6/S2/S3/S5 PASS · Google/Production NOT VERIFIED · 병합 금지 |
 
 ---
 

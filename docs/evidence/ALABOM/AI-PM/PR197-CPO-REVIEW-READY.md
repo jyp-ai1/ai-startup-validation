@@ -16,8 +16,8 @@ CPO가 저장소 링크를 열지 않고 이 본문만으로 실패·수정·재
 | 시나리오 동결 | `5263e83e` |
 | Production | `0b465226` 불변 |
 | Merge | 하지 않음 |
-| CPO 2차 | **미판정** — 이 보고서 수령 후 독립 검증 |
-| 로그인 UI | **NOT VERIFIED** |
+| CPO 2차 (엔진) | **CPO VERIFIED** — 첨부 엔진 I/O 한정. 로그인 UI·Production 아님 |
+| 로그인 UI | **CTO VERIFIED — S4 FAIL** · S6/S2/S3/S5 PASS · `PR197-CPO-LOGIN-UI-VERIFY.md` |
 
 상태 어휘: NOT STARTED · IMPLEMENTED · CTO VERIFIED · CPO VERIFIED · NEEDS FIX · NOT VERIFIED  
 계획 · 테스트 작성 · 테스트 실행을 섞지 않는다.
@@ -355,9 +355,11 @@ pnpm --filter web exec vitest run \
 | S4 T6 상태 일관성 | **CTO VERIFIED** | gap=CONTRADICTED · living=contradiction · Memory current 없음 |
 | S4 T7 재확인 | **CTO VERIFIED** | current=20대 · 부모=superseded · next=대안 |
 | R1–R4 · GO 가드 | **CTO VERIFIED** (유지) | 덤프 재실행 |
-| 로그인 UI 8턴 | **NOT VERIFIED** | 미실행 |
+| 로그인 UI S4 T6/T7 | **FAIL** | T6 미저장 · 부모 current 유지 · T7은 payer/buyer |
+| 로그인 UI S6 / S2 / S3 / S5 | **CTO VERIFIED** | payer CLOSED · next=대안 · 한 줄 후퇴 없음 |
 | 동결 8턴 문구 | **NOT VERIFIED** | 엔진 팔로우 ≠ 문구 일치 |
-| CPO 2차 | **미판정** | 이 보고서 수령 후 |
+| Google 버튼 · Production | **NOT VERIFIED** | QA magic-link만 실행 |
+| CPO 2차 (엔진) | **CPO VERIFIED** | 첨부 엔진 I/O 한정 |
 | Merge / Production | **하지 않음** | 승인 대상 아님 |
 
 ### D5. 잔여 위험
@@ -367,7 +369,7 @@ pnpm --filter web exec vitest run \
 3. 문서 solution 스파인에 맞벌이 부모가 문서 출처로 남을 수 있다. current customer Fact는 아님.
 4. S6 팔로우는 5턴. 공급 측 전용 검증까지는 이전과 같이 미도달.
 5. V3-03/V3-12는 baseline부터 실패. 기대를 낮추지 않음.
-6. 로그인 화면에서 같은 대화가 되는지는 모른다. 엔진 PASS ≠ UI PASS.
+6. 로그인 UI S4 T6/T7은 FAIL. 엔진 PASS ≠ UI PASS. 상세는 F.
 
 ---
 
@@ -381,3 +383,21 @@ CPO는 위 A–D만으로 다음을 판정하면 된다.
 4. T7 이후 living · Memory · judgment · next ask가 같은 20대 고객을 참조하는가.
 
 CTO는 병합하지 않는다. PR synchronize는 별도 작업 사유가 아니다.
+
+---
+
+## F. 로그인 UI 검증 (CPO 후속 지시)
+
+인라인 전문: `docs/evidence/ALABOM/AI-PM/PR197-CPO-LOGIN-UI-VERIFY.md`  
+원시 I/O: `PR197-CPO-LOGIN-UI-DUMP.json` (`meta.implSha`=`febe7a83`)
+
+경로: QA magic-link → `/ko/workspace` → 프로젝트 생성 → confirm/MCQ/기타+`submitAnswer`.  
+엔진 dump 경로 아님. Playwright green ≠ UI PASS.
+
+| 항목 | UI 실제 | 판정 |
+|---|---|---|
+| S4 T6 모순 표시 | 입력은 typed. 턴 미저장. gap=CLOSED 부모. dialog 없음 | **FAIL** |
+| T6 후 Fact 분리 | Memory customer current=맞벌이 부모. 20대 미승격이 아니라 미반영 | **FAIL** |
+| S4 T7 일치 | T7이 payer에 저장. buyer=20대. customer current=부모. judgment 요약만 20대. next=대안 | **FAIL** |
+| S6 `집이 낸다` | payer CLOSED. next=대안 확인 | **PASS** |
+| S2/S3/S5 한 줄 후퇴 | next=`비슷한 역할을 이미 하고 있는 서비스가 있나요?` | **PASS** |
