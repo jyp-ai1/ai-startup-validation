@@ -20,8 +20,10 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 5 | 문제·구매자·수익·대안 객관식 + 재판단 경로 | ✅ `apply-business-choice-turn.ts` · journey 5 |
 | 6 | Preview SHA | 별도 추적 · 개발 차단 아님 |
 | 7 | CPO 승인 전 Merge/Production | 금지 |
-| 8 | 실사용 루프 7문 검증 | ✅ `ai-pm-mcq-real-loop.test.ts` · submitAnswer 경로 + 판단 전후 |
-| 9 | `아직 모르겠음` 막힘 | ✅ 턴 저장 후 다른 공백으로 이동 · Fact 미병합 |
+| 8 | 실사용 루프 7문 검증 | ✅ 함수 경로 전후 수집 · UI는 미검증 |
+| 9 | `아직 모르겠음` 막힘 | ✅ 턴 저장 · Fact 미병합 · 다음 공백 이동 |
+| 10 | 선택지 품질 | ✅ 문제 문장 미절단 · 이/가 조사 · 대안 파편 제거 |
+| 11 | 결제 증거 재판단 | 1차 검증: 결론/customerChange 불변 · 엔진 미개작 |
 
 ---
 

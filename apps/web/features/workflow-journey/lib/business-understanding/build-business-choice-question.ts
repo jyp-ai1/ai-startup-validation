@@ -86,7 +86,7 @@ function normalizeToken(value: string): string {
 function splitCandidates(raw: string): string[] {
   return raw
     .replace(/[()（）\[\]]/g, ' ')
-    .split(/\s*(?:·|•|,|，|\/|／|\||및|과|와|등)\s*/)
+    .split(/\s*(?:·|•|,|，|\/|／|\||및|등)\s*/)
     .map((part) => part.replace(/^[#*\-]\s*/, '').replace(/[:：].*$/, '').trim())
     .map((part) => (part.length > 40 ? clip(part, 36) : part))
     .filter((part) => part.length >= 2)
@@ -243,25 +243,35 @@ function extractDocumentActors(documentText: string): string[] {
     '구매자',
   ]);
   const nouns = documentText.match(ACTOR_NOUN_RE) ?? [];
-  return uniqueOptions([...labeled, ...nouns], new Set(), 5);
+  return uniqueOptions([...nouns, ...labeled], new Set(), 5);
+}
+
+function topicParticle(noun: string): string {
+  const trimmed = noun.trim();
+  const last = trimmed.charCodeAt(trimmed.length - 1);
+  if (last >= 0xac00 && last <= 0xd7a3) {
+    return (last - 0xac00) % 28 === 0 ? '가' : '이';
+  }
+  return '가';
 }
 
 function extractStatusQuo(documentText: string): string[] {
-  const problems = labeledValues(documentText, ['문제', '불편', '페인', '과제']);
   const tools: string[] = [];
   const blob = documentText.replace(/\s+/g, ' ');
   if (/(엑셀|스프레드시트)/.test(blob)) tools.push('엑셀·수기 관리');
   if (/(카톡|카카오)/.test(blob)) tools.push('카카오톡으로 따로 관리');
+  if (/전화/.test(blob)) tools.push('전화로 확인하고 있음');
   if (/수기/.test(blob)) tools.push('수기 장부');
-  return uniqueOptions(
-    [
-      ...problems.map((problem) => `지금은 ${problem}`),
-      ...tools,
-      ...labeledValues(documentText, ['경쟁', '대안', '기존', '지금은']),
-    ],
-    new Set(),
-    4,
-  );
+  const labeled = labeledValues(documentText, ['경쟁', '대안', '기존', '지금은']);
+  const problemLine = documentText
+    .split('\n')
+    .map((line) => line.replace(/^[#*\-]\s*/, '').trim())
+    .map((line) => line.match(/^(?:문제|불편|페인|과제)\s*(?:은|는|[:：])\s*(.+)$/i)?.[1]?.trim())
+    .find((value): value is string => Boolean(value && value.length >= 6));
+  const statusQuo = problemLine
+    ? [`지금은 ${problemLine.replace(/해야\s*함$/, '함')}`]
+    : [];
+  return uniqueOptions([...tools, ...labeled, ...statusQuo], new Set(), 4);
 }
 
 function fallbackOptionsForGap(targetGap: string, documentText: string): string[] {
@@ -273,7 +283,9 @@ function fallbackOptionsForGap(targetGap: string, documentText: string): string[
   }
 
   if (targetGap === 'payer') {
-    const options = actors.slice(0, 3).map((actor) => `${actor}가 비용을 지불합니다`);
+    const options = actors.slice(0, 3).map(
+      (actor) => `${actor}${topicParticle(actor)} 비용을 지불합니다`,
+    );
     if (/(쓰는 사람|사용자|관광객|소비자)/.test(blob) && /(양조장|가게|B2B|파트너|사장)/i.test(blob)) {
       options.push('쓰는 사람과 돈 내는 사람이 다릅니다');
     }
@@ -310,7 +322,7 @@ function answerTextForOption(targetGap: string, label: string): string {
         : `서비스 비용은 ${label}이 지불합니다.`;
     case 'problemJtbd':
     case 'problemFrequencySeverity':
-      return `지금 가장 크게 해결하려는 불편은 ${label}입니다.`;
+      return `지금 가장 크게 해결하려는 불편은 「${label.replace(/입니다$/, '')}」입니다.`;
     case 'revenueModel':
     case 'pricingHint':
       return label.includes('받') || label.includes('수익')
@@ -318,8 +330,8 @@ function answerTextForOption(targetGap: string, label: string): string {
         : `수익은 ${label} 구조로 발생합니다.`;
     case 'alternativesCompetitors':
       return /지금은|대안|경쟁/.test(label)
-        ? `${label}이 현재 대안입니다.`
-        : `지금은 ${label}으로 비슷한 일을 하고 있습니다. 그게 현재 대안입니다.`;
+        ? `${label}으로 비슷한 일을 하고 있습니다.`
+        : `지금은 ${label}으로 비슷한 일을 하고 있습니다.`;
     case 'differentiationVsAlternatives':
     case 'differentiationHypothesis':
       return `경쟁 대비 차별점은 ${label}입니다.`;
