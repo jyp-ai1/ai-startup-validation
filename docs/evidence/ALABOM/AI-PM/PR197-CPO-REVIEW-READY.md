@@ -276,7 +276,7 @@ R2 yes reason ≠ no reason. 둘 다 Fact/GO 아님.
 | 커밋 | 역할 |
 |---|---|
 | 구현 | `59339f93` `feat(ai-pm): close CPO NEEDS FIX with inline review evidence` |
-| 재실행 덤프 `meta.implSha` | `8965af43` |
+| 재실행 덤프 `meta.implSha` | `8965af43` · 핀 커밋 `db3f5cb8` |
 | S4 일관성 구현 | `8965af43` |
 | 이전 엔진 수정 | `59339f93` |
 | 이전 실패 기준 | 구현 `404da1cf` · 덤프 핀 `f83d15ed` · CPO 판정 `f9911ed6` |
