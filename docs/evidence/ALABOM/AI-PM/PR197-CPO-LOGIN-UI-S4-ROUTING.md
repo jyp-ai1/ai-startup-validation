@@ -1,5 +1,7 @@
 # PR #197 로그인 UI S4 입력 라우팅 — CTO 제출 (병합 보류)
 
+**CPO 전달용 한 페이지 평문(전체 선택 복사):** `docs/evidence/ALABOM/AI-PM/PR197-CPO-LOGIN-UI-S4-ROUTING-COPY.txt`
+
 고객 모순 모델은 확장하지 않았다. UI typed submit이 엔진 `applyBusinessChoiceThroughLoop`로 들어가게만 고쳤다.  
 엔진 CPO VERIFIED는 유지. 엔진 PASS와 UI PASS를 한 줄로 합치지 않는다. 병합·Production 하지 않는다.
 

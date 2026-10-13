@@ -38,7 +38,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 20 | NEEDS FIX 3건 수정 + CPO 인라인 보고서 | 📤 `PR197-CPO-REVIEW-READY.md` · FIX-S6/ONELINER CPO 확인 · S4 판단만 부분 해결 |
 | 21 | S4 고객 모순 상태 일관성 · T6/T7 실행 증거 | 📤 엔진 CPO VERIFIED (`8965af43`) · 고객 모순 모델 추가 확장 없음 · 병합 금지 |
 | 22 | PR #197 로그인 UI 검증 | 📤 `PR197-CPO-LOGIN-UI-VERIFY.md` · 당시 S4 T6/T7 FAIL · S6/S2/S3/S5 PASS |
-| 23 | 로그인 UI S4 입력 라우팅 | 📤 `PR197-CPO-LOGIN-UI-S4-ROUTING.md` · T6/T7 throughLoop · CPO 재판정 대기 · 병합 금지 |
+| 23 | 로그인 UI S4 입력 라우팅 | 📤 `PR197-CPO-LOGIN-UI-S4-ROUTING-COPY.txt` (한 페이지 복사) · T6/T7 throughLoop · CPO 재판정 대기 · 병합 금지 |
 
 ---
 
