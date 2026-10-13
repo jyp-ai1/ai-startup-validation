@@ -11,7 +11,7 @@ CPO가 저장소 링크를 열지 않고 이 본문만으로 실패·수정·재
 | 기존 CPO 판정 | **NEEDS FIX** — S4 living/Memory Fact 잔류 · T7 미검증 |
 | 이번 구현 | S4 고객 모순 상태 일관성 · SHA `8965af43` |
 | 이전 엔진 수정 | FIX-S6 · FIX-ONELINER · FIX-S4-JUDGMENT · SHA `59339f93` (CPO 2차에서 개선 확인) |
-| 재실행 덤프 `meta.implSha` | `8965af43` |
+| 재실행 덤프 `meta.implSha` | `8965af43` · 핀 커밋 `db3f5cb8` |
 | 실행 경로 | `applyBusinessChoiceThroughLoop` |
 | 시나리오 동결 | `5263e83e` |
 | Production | `0b465226` 불변 |
@@ -58,7 +58,7 @@ CPO가 저장소 링크를 열지 않고 이 본문만으로 실패·수정·재
 
 **PASS (기존, 이번에도 깨지지 않음):** R1, R2, R4, 선택지 절단 방지, 모름/빈 기타, 결제·지인 GO 가드, S4 다음 질문(재확인).
 
-**NOT VERIFIED:** 로그인 UI 8턴 · 동결 시나리오 T1–T8 문구 일대일 · S4 T7(20대 확정 후 superseded).
+**NOT VERIFIED:** 로그인 UI 8턴 · 동결 시나리오 T1–T8 문구 일대일.
 
 ---
 
@@ -260,10 +260,17 @@ R2 yes reason ≠ no reason. 둘 다 Fact/GO 아님.
 | 원인 | `isCustomerCorrectionAnswer`는 `고객\|타깃`+양조/반찬 패턴만 본다. `사실 아이가 아니라 혼자 사는 20대가 메인이에요`는 고객 차원으로 merge되지 않는다. targetGap=`validationTestability`라 차원 바인딩이 customerChange 쪽. applied=false라 living도 안 바뀜. 판단은 이전 `맞벌이 부모`/`ceo_confirmed`를 유지. |
 | 근거 | 수정 전 gap=CONTRADICTED인데 judgment.summary=`맞벌이 부모`. next Q는 이미 맞음. |
 | 공통/개별 | 질문 층은 이전 PASS. **판단 층만 개별 실패.** |
-| 최소 수정 | `overlayContradictedCustomer` — gapState.customerPersona===CONTRADICTED이면 summary를 충돌 문구로 덮고 `ceo_confirmed`를 제거. living/Memory는 이 패스에서 바꾸지 않음. |
+| 최소 수정 (1차) | `overlayContradictedCustomer` — gapState.customerPersona===CONTRADICTED이면 summary를 충돌 문구로 덮고 `ceo_confirmed`를 제거. |
 | 회귀 | quality S4 judgment · dump S4 verdict `CONTRADICTED customer updates judgment summary` · recovery2 on-slot 정정은 CONTRADICTED 예외 유지 |
 
-확인하지 못한 것(**추정**): living claim을 같은 턴에 contradicted로 내리는 것이 CPO 5항을 완전히 닫는지는 이번 최소 수정 밖. S4 T7(20대 선택 후 superseded)은 덤프에 없어 미실행.
+### C4. S4 상태 일관성 — living/Memory 잔류 (이번 수정)
+
+| 항목 | 내용 |
+|---|---|
+| 실행 경로 | `buildConversationMemoryFromSources` → `applyOpenCustomerContradiction` → `parkUnresolvedContradiction` → `buildLivingUnderstandingState` / `resolveCustomerField` |
+| 원인 | T6는 applied=false라 Memory가 T2 맞벌이 부모를 current로 재구성했다. living은 current Memory를 USER_CONFIRMED로 읽었다. 판단 overlay만 덮어서 gap=CONTRADICTED와 Fact가 어긋났다. |
+| 최소 수정 | CONTRADICTED면 이전 고객을 superseded, 신규를 conflict로 두고 current를 비운다. living/spine은 conflict 또는 gap CONTRADICTED를 contradiction으로 표시. T7 on-slot 확정은 upsert로 20대를 current, 부모를 superseded. `parkConflictFact`(prior current 유지)는 그대로. |
+| 근거 | 수정 후 T6 Memory current 없음 · living contradiction. T7 current=20대 · next=대안. |
 
 ---
 
@@ -275,7 +282,7 @@ R2 yes reason ≠ no reason. 둘 다 Fact/GO 아님.
 
 | 커밋 | 역할 |
 |---|---|
-| 구현 | `59339f93` `feat(ai-pm): close CPO NEEDS FIX with inline review evidence` |
+| 구현 | `8965af43` `fix(ai-pm): keep S4 contradicted customer out of current Fact` |
 | 재실행 덤프 `meta.implSha` | `8965af43` · 핀 커밋 `db3f5cb8` |
 | S4 일관성 구현 | `8965af43` |
 | 이전 엔진 수정 | `59339f93` |
