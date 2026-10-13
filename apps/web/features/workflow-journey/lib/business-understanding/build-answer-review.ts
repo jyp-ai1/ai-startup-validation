@@ -21,7 +21,9 @@ import {
 } from './interpret-answer-semantics';
 import {
   extractCorrectedFactValue,
+  isCorrectionUtterance,
   isCustomerFieldCorrection,
+  parseNotXButYCorrection,
 } from './ai-pm-correction-semantics';
 import { isAskedGapOpenDueToSlotConflict } from './ai-pm-answer-first-routing';
 import { isOnSlotCompetitorAnswer } from './competitor-answer-cues';
@@ -621,7 +623,22 @@ function buildGapVerdicts(
 ): Record<string, GapVerdict> {
   const verdicts: Record<string, GapVerdict> = {};
 
-  const askedCompleteness = deriveGapCompleteness(semantic, askedGapId, userAnswer);
+  let askedCompleteness = deriveGapCompleteness(semantic, askedGapId, userAnswer);
+  const customerReversedOffSlot =
+    askedGapId !== 'customerPersona' &&
+    (priorClosedGaps?.includes('customerPersona') ?? false) &&
+    (semantic.intent === 'correction' || isCorrectionUtterance(userAnswer)) &&
+    Boolean(parseNotXButYCorrection(userAnswer) || isCustomerFieldCorrection(userAnswer));
+
+  if (customerReversedOffSlot) {
+    verdicts.customerPersona = {
+      gapId: 'customerPersona',
+      completeness: 'CONTRADICTED',
+      rationale: 'Founder corrected a previously closed customer claim from another slot.',
+      factKeys: ['customer'],
+    };
+  }
+
   const askedFactKeys =
     semantic.facts.length > 0
       ? semantic.facts.map((f) => f.key)
@@ -644,10 +661,13 @@ function buildGapVerdicts(
     const existing = verdicts[gapId];
 
     if (existing) {
+      if (existing.completeness === 'CONTRADICTED') {
+        continue;
+      }
       // Never downgrade asked gap OPEN from ambiguous/irrelevant to PARTIAL via fact evidence
       if (
         gapId === askedGapId &&
-        (existing.completeness === 'OPEN' || existing.completeness === 'CONTRADICTED') &&
+        existing.completeness === 'OPEN' &&
         completeness !== 'CLOSED'
       ) {
         continue;

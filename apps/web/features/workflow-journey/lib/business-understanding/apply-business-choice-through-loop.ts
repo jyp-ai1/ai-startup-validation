@@ -13,10 +13,7 @@ import {
   type ResolveBusinessChoiceResult,
 } from './apply-business-choice';
 import { buildBusinessUnderstanding } from './build-business-understanding';
-import {
-  isEscapeChoice,
-  type BusinessChoiceOption,
-} from './build-business-choice-question';
+import { type BusinessChoiceOption } from './build-business-choice-question';
 import { buildConversationMemoryFromSources } from './build-conversation-memory';
 import {
   STAGE_A_REQUIRED_GAPS,
@@ -135,7 +132,7 @@ export function applyBusinessChoiceThroughLoop(
     conversationContinues: true,
   };
 
-  if (isEscapeChoice(input.option) || resolved.needsFreeText) {
+  if (resolved.needsFreeText) {
     return emptyResult;
   }
 

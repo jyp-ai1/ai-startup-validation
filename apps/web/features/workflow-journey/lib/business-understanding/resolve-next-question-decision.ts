@@ -129,6 +129,7 @@ export function resolveNextQuestionDecision(
       decision,
       judgment: judgmentSnapshot,
       turns,
+      gapState,
     });
   } else if (
     !decision &&

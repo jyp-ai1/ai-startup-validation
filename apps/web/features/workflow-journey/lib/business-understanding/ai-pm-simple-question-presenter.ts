@@ -45,11 +45,30 @@ const WHY_BY_GAP: Record<string, string> = {
     '지금 쓰는 방법과 비교해 무엇이 달라지는지 확인하려고 합니다.',
 };
 
+function customerStillUnknown(living?: LivingUnderstandingState | null): boolean {
+  if (!living) return true;
+  const confirmed = living.claims.some(
+    (claim) => claim.fieldKey === 'customerPersona' && claim.status === 'confirmed',
+  );
+  const pending =
+    !living.spine.customer?.trim() || living.spine.customer.includes('아직 확인');
+  return !confirmed && pending;
+}
+
 function buildWhySummary(
   targetGap: string | null | undefined,
   whyNow: string | null | undefined,
+  living?: LivingUnderstandingState | null,
 ): string {
-  if (targetGap && WHY_BY_GAP[targetGap]) {
+  if (targetGap === 'customerPersona' && !customerStillUnknown(living)) {
+    const sanitized = sanitizeCeoWhyNow(whyNow);
+    return sanitized || '구매자·결제 주체를 확인하려고 합니다.';
+  }
+  if (
+    targetGap &&
+    WHY_BY_GAP[targetGap] &&
+    (targetGap !== 'customerPersona' || customerStillUnknown(living))
+  ) {
     return WHY_BY_GAP[targetGap]!;
   }
   const sanitized = sanitizeCeoWhyNow(whyNow);
@@ -87,7 +106,7 @@ export function buildAiPmSimpleQuestionSnapshot(input: {
     screenTitle: judgmentViewTitle(input.questionCount, 'question'),
     questionText: choice?.questionText ?? questionText,
     answerGuideText: formatAnswerGuideText(guide),
-    whyQuestionSummary: buildWhySummary(input.targetGap, input.whyNow),
+    whyQuestionSummary: buildWhySummary(input.targetGap, input.whyNow, input.living),
     progressLabel: `확인 진행 중 · ${index}번째 질문`,
     questionIndex: index,
     maxQuestions: CEO_JUDGMENT_SESSION_MAX_QUESTIONS,

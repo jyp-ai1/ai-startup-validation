@@ -135,6 +135,7 @@ function stageDump(label: string) {
         decision: afterNoAsk,
         judgment: loop.ceoJudgment,
         turns: loop.turns,
+        gapState,
       })
     : null;
   const final = resolveNextQuestionDecision({
@@ -267,6 +268,7 @@ describe('PR #197 V3 stage trace', () => {
 
     const out = { afterProblem, afterCustomer, payYes, payNo };
     writeFileSync(OUT, JSON.stringify(out, null, 2));
-    expect(afterCustomer.overwrite).toBe(true);
+    expect(afterCustomer.final?.gap).toBe('payer');
+    expect(afterCustomer.final?.q ?? '').not.toMatch(/핵심 불편은/);
   });
 });

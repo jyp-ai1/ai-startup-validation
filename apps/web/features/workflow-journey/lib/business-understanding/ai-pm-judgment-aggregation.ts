@@ -128,6 +128,19 @@ function mergeDimension(
     prior.id === 'customerChange' &&
     next.summary?.trim()
   ) {
+    const weakValidation =
+      next.evidenceType === 'hypothesis' &&
+      /약증거|미확정|지인 1회|반복 수요/.test(next.statusReason ?? '');
+    if (weakValidation) {
+      return {
+        ...prior,
+        ...next,
+        id: 'customerChange',
+        status: next.status === 'unknown' ? 'unknown' : 'needs_check',
+        evidenceType: 'hypothesis',
+        statusReason: next.statusReason,
+      };
+    }
     const ceoSupplementConfirmed =
       isAiPmP02cSupplementHandoffActive() &&
       isValidationTestabilitySupplementTarget(options?.targetGap) &&
@@ -504,7 +517,114 @@ function dimensionsFromAnswerText(
     };
   }
 
+  if (askedGap === 'customerPersona' && !out.customer && !isVagueOrUnknownAnswer(trimmed)) {
+    const persona = clip(
+      trimmed
+        .replace(/^이 서비스를 가장 필요로 하는 사람은\s*/, '')
+        .replace(/입니다\.?$/, ''),
+    );
+    if (persona.length >= 2) {
+      out.customer = {
+        id: 'customer',
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customer,
+        status: 'needs_check',
+        summary: persona,
+        statusReason: '창업자가 고객 후보를 확인함. 구매자·결제와는 별개',
+        knowledgeSource: 'ceo_confirmed',
+      };
+      meta.customer = {
+        interpretedMeaning: 'asked-gap customer persona — not payer or payment',
+        evidence: trimmed,
+        reason: 'customerPersona 답변',
+      };
+    }
+  }
+
+  const validationHit = classifyValidationEvidence(trimmed, askedGap);
+  if (validationHit) {
+    out.customerChange = validationHit.dimension;
+    meta.customerChange = validationHit.meta;
+  }
+
   return { dimensions: out, meta, frozen: false };
+}
+
+function classifyValidationEvidence(
+  text: string,
+  askedGap?: string,
+): {
+  dimension: CeoJudgmentDimension;
+  meta: {
+    interpretedMeaning: string;
+    evidence: string;
+    reason: string;
+    evidenceType?: 'fact' | 'hypothesis' | 'expectation';
+  };
+} | null {
+  if (askedGap !== 'validationTestability' && askedGap !== 'marketSizeEvidence') {
+    if (!/(결제|지인|사용 증거)/.test(text)) return null;
+  }
+  const friendOnce = /지인|친구/.test(text) && /(1회|한\s*번|한번|판 것)/.test(text);
+  const noPayment =
+    /(아직\s*(없|없습)|증거는\s*없|결제[·\s]*사용 증거는 없|낸 적은 없)/.test(text) &&
+    !/\d+\s*건/.test(text);
+  const weakPayment = /(결제\s*\d+\s*건|돈을\s*내고|실제\s*결제)/.test(text) && !friendOnce;
+
+  if (noPayment) {
+    return {
+      dimension: {
+        id: 'customerChange',
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
+        status: 'needs_check',
+        summary: '결제·사용 증거 없음',
+        statusReason: '결제 의향·지불 사실 미확정',
+        evidenceType: 'hypothesis',
+      },
+      meta: {
+        interpretedMeaning: 'no payment evidence — unconfirmed',
+        evidence: text,
+        reason: '결제 의향·지불 사실 미확정',
+        evidenceType: 'hypothesis',
+      },
+    };
+  }
+  if (friendOnce) {
+    return {
+      dimension: {
+        id: 'customerChange',
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
+        status: 'needs_check',
+        summary: clip(text),
+        statusReason: '지인 1회 — 반복 수요 검증 아님',
+        evidenceType: 'hypothesis',
+      },
+      meta: {
+        interpretedMeaning: 'acquaintance one-time sale — weak evidence',
+        evidence: text,
+        reason: '지인 1회 ≠ 반복 수요',
+        evidenceType: 'hypothesis',
+      },
+    };
+  }
+  if (weakPayment) {
+    return {
+      dimension: {
+        id: 'customerChange',
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
+        status: 'needs_check',
+        summary: clip(text),
+        statusReason: '약증거 — 검증 완료·Fact 아님',
+        evidenceType: 'hypothesis',
+      },
+      meta: {
+        interpretedMeaning: 'weak payment evidence — not validated',
+        evidence: text,
+        reason: '약증거',
+        evidenceType: 'hypothesis',
+      },
+    };
+  }
+  return null;
 }
 
 type DimensionHitMap = Partial<Record<CeoJudgmentDimensionId, CeoJudgmentDimension>>;

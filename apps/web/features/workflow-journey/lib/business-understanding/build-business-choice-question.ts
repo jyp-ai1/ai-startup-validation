@@ -255,6 +255,37 @@ function topicParticle(noun: string): string {
   return '가';
 }
 
+function extractProblemLinkedWorkarounds(documentText: string): string[] {
+  const blob = documentText.replace(/\s+/g, ' ');
+  const problemLine =
+    documentText
+      .split('\n')
+      .map((line) => line.replace(/^[#*\-]\s*/, '').trim())
+      .map((line) => line.match(/^(?:문제|불편|페인|과제)\s*(?:은|는|[:：])\s*(.+)$/i)?.[1]?.trim())
+      .find((value): value is string => Boolean(value && value.length >= 4)) ?? '';
+  const source = `${problemLine} ${blob}`;
+  const out: string[] = [];
+  if (/(발견|흩어|채널이)/.test(source)) {
+    out.push('이미 아는 술만 마트에서 산다', '지인에게 물어 추천받는다', '아는 양조장만 찾아간다');
+  }
+  if (/(주문|배송|따로 관리)/.test(source)) {
+    out.push('엑셀·수첩으로 따로 관리함');
+  }
+  if (/(메일|오타|전사|엑셀 발주)/.test(source)) {
+    out.push('엑셀에 손으로 옮긴다', 'ERP에 다시 친다');
+  }
+  if (/(고르|선택 피로|장\s*볼|과자)/.test(source)) {
+    out.push('마트·편의점에서 산다', '쿠팡에서 검색한다');
+  }
+  if (/(맛없|단백질바|비싸)/.test(source)) {
+    out.push('시중 단백질바를 산다', '일반 쿠키를 산다');
+  }
+  if (/(믿|도우미|신원|가사)/.test(source)) {
+    out.push('지인 소개로 구한다', '당근·카페에서 찾는다');
+  }
+  return out;
+}
+
 function extractStatusQuo(documentText: string): string[] {
   const tools: string[] = [];
   const blob = documentText.replace(/\s+/g, ' ');
@@ -263,15 +294,8 @@ function extractStatusQuo(documentText: string): string[] {
   if (/전화/.test(blob)) tools.push('전화로 확인하고 있음');
   if (/수기/.test(blob)) tools.push('수기 장부');
   const labeled = labeledValues(documentText, ['경쟁', '대안', '기존', '지금은']);
-  const problemLine = documentText
-    .split('\n')
-    .map((line) => line.replace(/^[#*\-]\s*/, '').trim())
-    .map((line) => line.match(/^(?:문제|불편|페인|과제)\s*(?:은|는|[:：])\s*(.+)$/i)?.[1]?.trim())
-    .find((value): value is string => Boolean(value && value.length >= 6));
-  const statusQuo = problemLine
-    ? [`지금은 ${problemLine.replace(/해야\s*함$/, '함')}`]
-    : [];
-  return uniqueOptions([...tools, ...labeled, ...statusQuo], new Set(), 4);
+  const workarounds = extractProblemLinkedWorkarounds(documentText);
+  return uniqueOptions([...tools, ...labeled, ...workarounds], new Set(), 4);
 }
 
 function fallbackOptionsForGap(targetGap: string, documentText: string): string[] {

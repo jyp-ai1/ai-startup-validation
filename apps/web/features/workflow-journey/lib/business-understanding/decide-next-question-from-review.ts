@@ -137,12 +137,32 @@ function pickBootstrapGap(gapState: GapKnowledgeState): string {
   return STAGE_A_REQUIRED_GAPS[0]!;
 }
 
+function documentAlreadyHasOneLiner(living: LivingUnderstandingState): boolean {
+  const business = living.spine.business?.trim() ?? '';
+  return business.length >= 8 && !business.includes('아직 확인');
+}
+
+function shouldSkipDocumentOneLiner(
+  gapState: GapKnowledgeState,
+  living: LivingUnderstandingState,
+): boolean {
+  if (!isGapAskable('businessOneLiner', gapState)) return false;
+  if (!documentAlreadyHasOneLiner(living)) return false;
+  const customerOrProblemClosed =
+    gapState.gaps.customerPersona?.completeness === 'CLOSED' ||
+    gapState.gaps.problemJtbd?.completeness === 'CLOSED';
+  return customerOrProblemClosed && isGapAskable('payer', gapState);
+}
+
 /** First askable Required gap — Stage B blocked until PR5 readiness allows entry. */
 function pickNextRequiredGap(
   gapState: GapKnowledgeState,
   stageReadiness: StageReadiness,
+  living?: LivingUnderstandingState,
 ): string | null {
+  const skipOneLiner = living ? shouldSkipDocumentOneLiner(gapState, living) : false;
   for (const gapId of STAGE_A_REQUIRED_GAPS) {
+    if (skipOneLiner && gapId === 'businessOneLiner') continue;
     if (isGapAskable(gapId, gapState)) return gapId;
   }
   if (stageReadiness.stageBAllowed) {
@@ -159,7 +179,11 @@ function pickAdvanceTargetGap(input: {
   gapState: GapKnowledgeState;
   stageReadiness: StageReadiness;
 }): string | null {
-  const requiredNext = pickNextRequiredGap(input.gapState, input.stageReadiness);
+  const requiredNext = pickNextRequiredGap(
+    input.gapState,
+    input.stageReadiness,
+    input.living,
+  );
   if (requiredNext) return requiredNext;
 
   const exclude = closedGapExcludeSet(input.gapState);
