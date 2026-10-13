@@ -425,6 +425,39 @@ describe('PR #197 conversation quality', () => {
     });
     expect(contradicted.nextTargetGap).toBe('customerPersona');
     expect(contradicted.nextQuestionText ?? '').toMatch(/맞는 고객|누구/);
+    expect(contradicted.judgmentAfter.dimensions.customer.summary).not.toBe('맞벌이 부모');
+    expect(contradicted.judgmentAfter.dimensions.customer.knowledgeSource).not.toBe(
+      'ceo_confirmed',
+    );
+    expect(contradicted.judgmentAfter.dimensions.customer.summary).toMatch(/충돌|20대/);
+    expect(contradicted.judgmentAfter.dimensions.customer.status).toBe('needs_check');
+  });
+
+  it('S6 — role payer 「집이 낸다」 closes payer and continues past it', () => {
+    reset('cq-s6-payer', DOCS.S6);
+    applyGap('cq-s6-payer', DOCS.S6, 'problemJtbd', 'specific', /믿|사람|도우미/);
+    applyGap('cq-s6-payer', DOCS.S6, 'customerPersona', 'specific', /맞벌이|집|가정/);
+    const afterPayer = applyGap('cq-s6-payer', DOCS.S6, 'payer', 'specific', /집이 낸다|집/);
+    expect(loadAiPmLoopState('cq-s6-payer').gapState?.gaps.payer?.completeness).toBe('CLOSED');
+    expect(afterPayer.nextTargetGap).not.toBe('payer');
+    expect(afterPayer.nextTargetGap).not.toBe('businessOneLiner');
+    expect(afterPayer.nextQuestionText ?? '').not.toMatch(/누구에게 무엇을 제공/);
+  });
+
+  it('S2–S5 — after payer closes, next ask is not the document one-liner', () => {
+    for (const [id, doc, problemRe, customerRe] of [
+      ['S2', DOCS.S2, /발견|흩어|전통주/, /선물|30|40|애호|양조/],
+      ['S3', DOCS.S3, /메일|오타|엑셀/, /영업|관리자|제조/],
+      ['S5', DOCS.S5, /맛|비싸|단백질/, /20|30|헬스|운동/],
+    ] as const) {
+      const pid = `cq-after-payer-${id}`;
+      reset(pid, doc);
+      applyGap(pid, doc, 'problemJtbd', 'specific', problemRe);
+      applyGap(pid, doc, 'customerPersona', 'specific', customerRe);
+      const afterPayer = applyGap(pid, doc, 'payer', 'specific');
+      expect(afterPayer.nextTargetGap, id).not.toBe('businessOneLiner');
+      expect(afterPayer.nextQuestionText ?? '', id).not.toMatch(/누구에게 무엇을 제공/);
+    }
   });
 
   it('S1 — after payment-none, does not reconfirm the closed problem', () => {

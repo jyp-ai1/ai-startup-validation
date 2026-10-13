@@ -1,7 +1,7 @@
 {
   "meta": {
-    "implSha": "404da1cf1e58340da2fb0631f6d783fea6c27bbc",
-    "executedAt": "2026-10-13T05:25:59.549Z",
+    "implSha": "f9911ed6c5e523a5ff31d84b7e18a182c075fbe1",
+    "executedAt": "2026-10-13T09:25:01.967Z",
     "applyPath": "applyBusinessChoiceThroughLoop",
     "loginUi": "NOT VERIFIED",
     "note": "Planned expected output, test-code written, and tests executed are distinct. This JSON is executed I/O only."
@@ -1341,9 +1341,9 @@
             "reviewUnconfirmed": [],
             "contradictions": []
           },
-          "nextTargetGap": "businessOneLiner",
-          "nextQuestionText": "이 사업은 누구에게 무엇을 제공하나요?",
-          "nextWhyNow": "한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.",
+          "nextTargetGap": "alternativesCompetitors",
+          "nextQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextWhyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
           "conversationContinues": true
         },
         {
@@ -1523,9 +1523,9 @@
             "reviewUnconfirmed": [],
             "contradictions": []
           },
-          "nextTargetGap": "businessOneLiner",
-          "nextQuestionText": "이 사업은 누구에게 무엇을 제공하나요?",
-          "nextWhyNow": "한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.",
+          "nextTargetGap": "validationTestability",
+          "nextQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+          "nextWhyNow": "차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.",
           "conversationContinues": true
         }
       ],
@@ -1958,9 +1958,9 @@
             "reviewUnconfirmed": [],
             "contradictions": []
           },
-          "nextTargetGap": "businessOneLiner",
-          "nextQuestionText": "이 사업은 누구에게 무엇을 제공하나요?",
-          "nextWhyNow": "한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.",
+          "nextTargetGap": "alternativesCompetitors",
+          "nextQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextWhyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
           "conversationContinues": true
         },
         {
@@ -2431,7 +2431,7 @@
           },
           "gapStateAfter": {
             "customerPersona": "CLOSED",
-            "payer": "OPEN",
+            "payer": "CLOSED",
             "problemJtbd": "CLOSED"
           },
           "knowledge": {
@@ -2515,20 +2515,18 @@
               {
                 "key": "buyer",
                 "value": "부모가 낸다",
-                "evidenceClass": "ASSUMPTION",
-                "confidence": "low",
+                "evidenceClass": "FACT",
+                "confidence": "high",
                 "targetGap": "payer"
               }
             ],
-            "reviewUnknown": [
-              "payer"
-            ],
+            "reviewUnknown": [],
             "reviewUnconfirmed": [],
             "contradictions": []
           },
-          "nextTargetGap": "payer",
-          "nextQuestionText": "맞벌이 부모에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
-          "nextWhyNow": "누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다. (현재 이해: 구독 박스 · 맞벌이 부모 · 장을 볼 시간이 없고 과자 고르기가 피곤하다)",
+          "nextTargetGap": "alternativesCompetitors",
+          "nextQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextWhyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
           "conversationContinues": true
         },
         {
@@ -2554,10 +2552,10 @@
           "judgmentAfter": {
             "customer": {
               "status": "needs_check",
-              "summary": "맞벌이 부모",
-              "reason": "CEO 답변 — 추가 확인 필요",
+              "summary": "충돌: 맞벌이 부모 ↔ 혼자 사는 20대가 메인 — 재확인 필요",
+              "reason": "Founder가 이전 고객 이해와 다른 고객을 말해 충돌로 표시함",
               "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
+              "knowledgeSource": null
             },
             "problem": {
               "status": "needs_check",
@@ -2580,7 +2578,7 @@
           },
           "gapStateAfter": {
             "customerPersona": "CONTRADICTED",
-            "payer": "OPEN",
+            "payer": "CLOSED",
             "problemJtbd": "CLOSED",
             "validationTestability": "OPEN"
           },
@@ -2685,6 +2683,10 @@
         {
           "status": "PASS",
           "reason": "S4 off-slot customer reversal marks CONTRADICTED"
+        },
+        {
+          "status": "PASS",
+          "reason": "S4 CONTRADICTED customer updates judgment summary"
         },
         {
           "status": "PASS",
@@ -3094,9 +3096,9 @@
             "reviewUnconfirmed": [],
             "contradictions": []
           },
-          "nextTargetGap": "businessOneLiner",
-          "nextQuestionText": "이 사업은 누구에게 무엇을 제공하나요?",
-          "nextWhyNow": "한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.",
+          "nextTargetGap": "alternativesCompetitors",
+          "nextQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextWhyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
           "conversationContinues": true
         },
         {
@@ -3242,9 +3244,9 @@
             "reviewUnconfirmed": [],
             "contradictions": []
           },
-          "nextTargetGap": "businessOneLiner",
-          "nextQuestionText": "이 사업은 누구에게 무엇을 제공하나요?",
-          "nextWhyNow": "한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.",
+          "nextTargetGap": "alternativesCompetitors",
+          "nextQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextWhyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
           "conversationContinues": true
         }
       ],
@@ -5188,29 +5190,23 @@
         "type": "브랜드+유통",
         "name": "전통주 브랜드"
       },
-      "turnCount": 8,
+      "turnCount": 5,
       "askedGaps": [
         "problemJtbd",
         "customerPersona",
         "payer",
-        "businessOneLiner",
         "alternativesCompetitors",
-        "validationTestability",
-        "solution",
         "validationTestability"
       ],
       "nextGaps": [
         "customerPersona",
         "payer",
-        "businessOneLiner",
         "alternativesCompetitors",
         "validationTestability",
-        "solution",
-        "validationTestability",
-        "revenueModel"
+        "validationTestability"
       ],
       "lastConclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-      "reaskedSameGap": true,
+      "reaskedSameGap": false,
       "conversationContinues": true,
       "turns": [
         {
@@ -5674,182 +5670,6 @@
             "reviewUnconfirmed": [],
             "contradictions": []
           },
-          "nextTargetGap": "businessOneLiner",
-          "nextQuestionText": "이 사업은 누구에게 무엇을 제공하나요?",
-          "nextWhyNow": "한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "businessOneLiner",
-          "askedQuestion": "이 사업은 누구에게 무엇을 제공하나요?",
-          "optionLabels": [
-            "소규모 양조장 전통주를 브랜드로 묶어 온라인",
-            "팝업으로 판매",
-            "전통주 브랜드 · B2C",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "소규모 양조장 전통주를 브랜드로 묶어 온라인",
-          "freeText": null,
-          "actualUserInput": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-          "intent": "business_fact",
-          "applied": true,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "unknown",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "전통주를 선물·취미로 찾는 30–40대",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음",
-              "evidenceType": null
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "고객 변화 가설·기대효과를 실제로 검증할 방법을 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "전통주 브랜드",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "쓰는 사람이 직접 낸다",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를 선물·취미로 찾는 30–40대 문제: 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다 수익: 제품 판매 + 양조장 입점",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "revenueModel",
-                "value": "수익: 제품 판매 + 양조장 입점 수수료",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "marketChannel",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "marketSizeEvidence",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "market",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [
-              {
-                "key": "business",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "evidenceClass": "FACT",
-                "confidence": "high",
-                "targetGap": "businessOneLiner"
-              }
-            ],
-            "reviewUnknown": [],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
           "nextTargetGap": "alternativesCompetitors",
           "nextQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
           "nextWhyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
@@ -5907,7 +5727,6 @@
             "nextCheck": "고객 변화 가설·기대효과를 실제로 검증할 방법을 확인해야 합니다."
           },
           "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
             "customerPersona": "CLOSED",
             "payer": "CLOSED",
             "problemJtbd": "CLOSED",
@@ -5917,9 +5736,9 @@
             "livingClaims": [
               {
                 "field": "businessOneLiner",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
+                "value": "전통주 브랜드 · B2C",
+                "status": "known",
+                "provenance": "DOCUMENT"
               },
               {
                 "field": "categoryScope",
@@ -6014,12 +5833,6 @@
                 "source": "user_turn"
               },
               {
-                "key": "business",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
                 "key": "competitor",
                 "value": "지금은 이미 아는 술만 마트에서 산다으로 비슷한 일을 하고 있습니다.",
                 "lifecycle": "current",
@@ -6040,8 +5853,8 @@
             "contradictions": []
           },
           "nextTargetGap": "validationTestability",
-          "nextQuestionText": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?",
-          "nextWhyNow": "차별점의 고객 관련성을 행동·경험 관점에서 확인합니다. (내부 검증 항목)",
+          "nextQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+          "nextWhyNow": "차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.",
           "conversationContinues": true
         },
         {
@@ -6095,7 +5908,6 @@
             "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
           },
           "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
             "customerPersona": "CLOSED",
             "payer": "CLOSED",
             "problemJtbd": "CLOSED",
@@ -6106,9 +5918,9 @@
             "livingClaims": [
               {
                 "field": "businessOneLiner",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
+                "value": "전통주 브랜드 · B2C",
+                "status": "known",
+                "provenance": "DOCUMENT"
               },
               {
                 "field": "categoryScope",
@@ -6203,12 +6015,6 @@
                 "source": "user_turn"
               },
               {
-                "key": "business",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
                 "key": "competitor",
                 "value": "지금은 이미 아는 술만 마트에서 산다으로 비슷한 일을 하고 있습니다.",
                 "lifecycle": "current",
@@ -6225,402 +6031,12 @@
             "reviewUnknown": [
               "validationTestability"
             ],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
-          "nextTargetGap": "solution",
-          "nextQuestionText": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "nextWhyNow": "해결 방식(솔루션)이 비면 문제–제공가치 연결을 판단할 수 없습니다.",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "solution",
-          "askedQuestion": "그래서 무엇을 해결하려고 하나요?",
-          "optionLabels": [
-            "소규모 양조장 전통주를 브랜드로 묶어 온라인",
-            "팝업으로 판매",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "소규모 양조장 전통주를 브랜드로 묶어 온라인",
-          "freeText": null,
-          "actualUserInput": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-          "intent": "business_fact",
-          "applied": true,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "needs_check",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "전통주를 선물·취미로 찾는 30–40대",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "needs_check",
-              "summary": "실제 결제나 사용 증거가 있습니다",
-              "reason": "약증거 — 검증 완료·Fact 아님",
-              "evidenceType": "hypothesis"
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED",
-            "alternativesCompetitors": "CLOSED",
-            "validationTestability": "OPEN"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "전통주 브랜드",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "쓰는 사람이 직접 낸다",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "revenueModel",
-                "value": "수익: 제품 판매 + 양조장 입점 수수료",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "marketChannel",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "marketSizeEvidence",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "alternativesCompetitors",
-                "value": "지금은 이미 아는 술만 마트에서 산다으로 비슷한 일을 하고 있습니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "market",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "competitor",
-                "value": "지금은 이미 아는 술만 마트에서 산다으로 비슷한 일을 하고 있습니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [
-              {
-                "key": "business",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "evidenceClass": "FACT",
-                "confidence": "high",
-                "targetGap": "businessOneLiner"
-              }
-            ],
-            "reviewUnknown": [],
             "reviewUnconfirmed": [],
             "contradictions": []
           },
           "nextTargetGap": "validationTestability",
-          "nextQuestionText": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?",
-          "nextWhyNow": "차별점의 고객 관련성을 행동·경험 관점에서 확인합니다. (내부 검증 항목)",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "validationTestability",
-          "askedQuestion": "이 서비스를 쓰면 고객에게 가장 좋아지는 점은 무엇인가요?",
-          "optionLabels": [
-            "실제 결제나 사용 증거가 있습니다",
-            "아직 실제 결제·사용 증거는 없습니다",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "실제 결제나 사용 증거가 있습니다",
-          "freeText": null,
-          "actualUserInput": "실제 결제나 사용 증거가 있습니다",
-          "intent": "business_fact",
-          "applied": false,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "needs_check",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "전통주를 선물·취미로 찾는 30–40대",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "needs_check",
-              "summary": "실제 결제나 사용 증거가 있습니다",
-              "reason": "약증거 — 검증 완료·Fact 아님",
-              "evidenceType": "hypothesis"
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED",
-            "alternativesCompetitors": "CLOSED",
-            "validationTestability": "OPEN"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "전통주 브랜드",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "쓰는 사람이 직접 낸다",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "revenueModel",
-                "value": "수익: 제품 판매 + 양조장 입점 수수료",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "marketChannel",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "marketSizeEvidence",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "alternativesCompetitors",
-                "value": "지금은 이미 아는 술만 마트에서 산다으로 비슷한 일을 하고 있습니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "market",
-                "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 소규모 양조장 전통주를 브랜드로 묶어 온라인을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "competitor",
-                "value": "지금은 이미 아는 술만 마트에서 산다으로 비슷한 일을 하고 있습니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [],
-            "reviewUnknown": [
-              "validationTestability"
-            ],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
-          "nextTargetGap": "revenueModel",
-          "nextQuestionText": "수익은 어떤 구조로 발생하나요?",
-          "nextWhyNow": "수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+          "nextQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+          "nextWhyNow": "차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.",
           "conversationContinues": true
         }
       ],
@@ -6645,29 +6061,23 @@
         "type": "B2B SaaS",
         "name": "견적 자동화"
       },
-      "turnCount": 8,
+      "turnCount": 5,
       "askedGaps": [
         "problemJtbd",
         "customerPersona",
         "payer",
-        "businessOneLiner",
         "alternativesCompetitors",
-        "validationTestability",
-        "solution",
         "validationTestability"
       ],
       "nextGaps": [
         "customerPersona",
         "payer",
-        "businessOneLiner",
         "alternativesCompetitors",
         "validationTestability",
-        "solution",
-        "validationTestability",
-        "revenueModel"
+        "validationTestability"
       ],
       "lastConclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-      "reaskedSameGap": true,
+      "reaskedSameGap": false,
       "conversationContinues": true,
       "turns": [
         {
@@ -7070,164 +6480,6 @@
             "reviewUnconfirmed": [],
             "contradictions": []
           },
-          "nextTargetGap": "businessOneLiner",
-          "nextQuestionText": "이 사업은 누구에게 무엇을 제공하나요?",
-          "nextWhyNow": "한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "businessOneLiner",
-          "askedQuestion": "이 사업은 누구에게 무엇을 제공하나요?",
-          "optionLabels": [
-            "중소 제조사의 견적",
-            "발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴",
-            "견적 자동화",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "중소 제조사의 견적",
-          "freeText": null,
-          "actualUserInput": "이 사업은 중소 제조사의 견적을 제공합니다.",
-          "intent": "business_fact",
-          "applied": true,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "unknown",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "서비스 비용은 사장님 본인이 지불합니다.",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「메일",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음",
-              "evidenceType": null
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "고객 변화 가설·기대효과를 실제로 검증할 방법을 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "견적 자동화",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "서비스 비용은 사장님 본인이 지불합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상: 직원 20–80명 제조사 영업관리자 문제: 메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다 수익: 좌석 월 구독",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "revenueModel",
-                "value": "수익: 좌석 월 구독",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "서비스 비용은 사장님 본인이 지불합니다.",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "서비스 비용은 사장님 본인이 지불합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [
-              {
-                "key": "business",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "evidenceClass": "FACT",
-                "confidence": "high",
-                "targetGap": "businessOneLiner"
-              }
-            ],
-            "reviewUnknown": [],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
           "nextTargetGap": "alternativesCompetitors",
           "nextQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
           "nextWhyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
@@ -7285,7 +6537,6 @@
             "nextCheck": "고객 변화 가설·기대효과를 실제로 검증할 방법을 확인해야 합니다."
           },
           "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
             "customerPersona": "CLOSED",
             "payer": "CLOSED",
             "problemJtbd": "CLOSED",
@@ -7295,9 +6546,9 @@
             "livingClaims": [
               {
                 "field": "businessOneLiner",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
+                "value": "견적 자동화",
+                "status": "known",
+                "provenance": "DOCUMENT"
               },
               {
                 "field": "categoryScope",
@@ -7374,12 +6625,6 @@
                 "source": "user_turn"
               },
               {
-                "key": "business",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
                 "key": "competitor",
                 "value": "지금은 엑셀·수기 관리으로 비슷한 일을 하고 있습니다.",
                 "lifecycle": "current",
@@ -7400,8 +6645,8 @@
             "contradictions": []
           },
           "nextTargetGap": "validationTestability",
-          "nextQuestionText": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?",
-          "nextWhyNow": "차별점의 고객 관련성을 행동·경험 관점에서 확인합니다. (내부 검증 항목)",
+          "nextQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+          "nextWhyNow": "차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.",
           "conversationContinues": true
         },
         {
@@ -7455,7 +6700,6 @@
             "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
           },
           "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
             "customerPersona": "CLOSED",
             "payer": "CLOSED",
             "problemJtbd": "CLOSED",
@@ -7466,9 +6710,9 @@
             "livingClaims": [
               {
                 "field": "businessOneLiner",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
+                "value": "견적 자동화",
+                "status": "known",
+                "provenance": "DOCUMENT"
               },
               {
                 "field": "categoryScope",
@@ -7545,12 +6789,6 @@
                 "source": "user_turn"
               },
               {
-                "key": "business",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
                 "key": "competitor",
                 "value": "지금은 엑셀·수기 관리으로 비슷한 일을 하고 있습니다.",
                 "lifecycle": "current",
@@ -7567,366 +6805,12 @@
             "reviewUnknown": [
               "validationTestability"
             ],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
-          "nextTargetGap": "solution",
-          "nextQuestionText": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "nextWhyNow": "해결 방식(솔루션)이 비면 문제–제공가치 연결을 판단할 수 없습니다.",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "solution",
-          "askedQuestion": "그래서 무엇을 해결하려고 하나요?",
-          "optionLabels": [
-            "중소 제조사의 견적",
-            "발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "중소 제조사의 견적",
-          "freeText": null,
-          "actualUserInput": "이 사업은 중소 제조사의 견적을 제공합니다.",
-          "intent": "business_fact",
-          "applied": true,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "needs_check",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "서비스 비용은 사장님 본인이 지불합니다.",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「메일\nRELATED:\n- 엑셀/카카오톡 관리",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "needs_check",
-              "summary": "실제 결제나 사용 증거가 있습니다",
-              "reason": "약증거 — 검증 완료·Fact 아님",
-              "evidenceType": "hypothesis"
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED",
-            "alternativesCompetitors": "CLOSED",
-            "validationTestability": "OPEN"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "견적 자동화",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "서비스 비용은 사장님 본인이 지불합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "revenueModel",
-                "value": "수익: 좌석 월 구독",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "alternativesCompetitors",
-                "value": "지금은 엑셀·수기 관리으로 비슷한 일을 하고 있습니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "서비스 비용은 사장님 본인이 지불합니다.",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "서비스 비용은 사장님 본인이 지불합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "competitor",
-                "value": "지금은 엑셀·수기 관리으로 비슷한 일을 하고 있습니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [
-              {
-                "key": "business",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "evidenceClass": "FACT",
-                "confidence": "high",
-                "targetGap": "businessOneLiner"
-              }
-            ],
-            "reviewUnknown": [],
             "reviewUnconfirmed": [],
             "contradictions": []
           },
           "nextTargetGap": "validationTestability",
-          "nextQuestionText": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?",
-          "nextWhyNow": "차별점의 고객 관련성을 행동·경험 관점에서 확인합니다. (내부 검증 항목)",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "validationTestability",
-          "askedQuestion": "이 서비스를 쓰면 고객에게 가장 좋아지는 점은 무엇인가요?",
-          "optionLabels": [
-            "실제 결제나 사용 증거가 있습니다",
-            "아직 실제 결제·사용 증거는 없습니다",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "실제 결제나 사용 증거가 있습니다",
-          "freeText": null,
-          "actualUserInput": "실제 결제나 사용 증거가 있습니다",
-          "intent": "business_fact",
-          "applied": false,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "needs_check",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "서비스 비용은 사장님 본인이 지불합니다.",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「메일\nRELATED:\n- 엑셀/카카오톡 관리",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "needs_check",
-              "summary": "실제 결제나 사용 증거가 있습니다",
-              "reason": "약증거 — 검증 완료·Fact 아님",
-              "evidenceType": "hypothesis"
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED",
-            "alternativesCompetitors": "CLOSED",
-            "validationTestability": "OPEN"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "견적 자동화",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "서비스 비용은 사장님 본인이 지불합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "revenueModel",
-                "value": "수익: 좌석 월 구독",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "alternativesCompetitors",
-                "value": "지금은 엑셀·수기 관리으로 비슷한 일을 하고 있습니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "서비스 비용은 사장님 본인이 지불합니다.",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "서비스 비용은 사장님 본인이 지불합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 중소 제조사의 견적을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "competitor",
-                "value": "지금은 엑셀·수기 관리으로 비슷한 일을 하고 있습니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [],
-            "reviewUnknown": [
-              "validationTestability"
-            ],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
-          "nextTargetGap": "revenueModel",
-          "nextQuestionText": "수익은 어떤 구조로 발생하나요?",
-          "nextWhyNow": "수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+          "nextQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+          "nextWhyNow": "차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.",
           "conversationContinues": true
         }
       ],
@@ -7951,29 +6835,23 @@
         "type": "B2C 구독",
         "name": "아이 간식 구독 박스"
       },
-      "turnCount": 8,
+      "turnCount": 5,
       "askedGaps": [
         "problemJtbd",
         "customerPersona",
         "payer",
-        "businessOneLiner",
         "alternativesCompetitors",
-        "validationTestability",
-        "solution",
         "validationTestability"
       ],
       "nextGaps": [
         "customerPersona",
         "payer",
-        "businessOneLiner",
         "alternativesCompetitors",
         "validationTestability",
-        "solution",
-        "validationTestability",
-        "pricingHint"
+        "validationTestability"
       ],
       "lastConclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-      "reaskedSameGap": true,
+      "reaskedSameGap": false,
       "conversationContinues": true,
       "turns": [
         {
@@ -8375,182 +7253,6 @@
             "reviewUnconfirmed": [],
             "contradictions": []
           },
-          "nextTargetGap": "businessOneLiner",
-          "nextQuestionText": "이 사업은 누구에게 무엇을 제공하나요?",
-          "nextWhyNow": "한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "businessOneLiner",
-          "askedQuestion": "이 사업은 누구에게 무엇을 제공하나요?",
-          "optionLabels": [
-            "아이 간식을 매주 집 앞으로 보내는 구독 박스",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "아이 간식을 매주 집 앞으로 보내는 구독 박스",
-          "freeText": null,
-          "actualUserInput": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-          "intent": "business_fact",
-          "applied": true,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "unknown",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "맞벌이 부모",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「장을 볼 시간이 없고 과자 고르기가 피곤하다」입니",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음",
-              "evidenceType": null
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "고객 변화 가설·기대효과를 실제로 검증할 방법을 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED",
-            "revenueModel": "CLOSED"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "구독 박스",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "쓰는 사람이 직접 낸다",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「장을 볼 시간이 없고 과자 고르기가 피곤하다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "장을 볼 시간이 없고 과자 고르기가 피곤하다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장을 볼 시간이 없고 과자 고르기가 피곤하다 수익: 월 구독",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "revenueModel",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "pricingHint",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「장을 볼 시간이 없고 과자 고르기가 피곤하다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "revenue",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [
-              {
-                "key": "business",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "evidenceClass": "FACT",
-                "confidence": "high",
-                "targetGap": "businessOneLiner"
-              },
-              {
-                "key": "revenue",
-                "value": "구독 박스을 제공합니다",
-                "evidenceClass": "FACT",
-                "confidence": "high",
-                "targetGap": "revenueModel"
-              }
-            ],
-            "reviewUnknown": [],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
           "nextTargetGap": "alternativesCompetitors",
           "nextQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
           "nextWhyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
@@ -8607,20 +7309,18 @@
             "nextCheck": "고객 변화 가설·기대효과를 실제로 검증할 방법을 확인해야 합니다."
           },
           "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
             "customerPersona": "CLOSED",
             "payer": "CLOSED",
             "problemJtbd": "CLOSED",
-            "revenueModel": "CLOSED",
             "alternativesCompetitors": "CLOSED"
           },
           "knowledge": {
             "livingClaims": [
               {
                 "field": "businessOneLiner",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
+                "value": "구독 박스",
+                "status": "known",
+                "provenance": "DOCUMENT"
               },
               {
                 "field": "categoryScope",
@@ -8660,15 +7360,9 @@
               },
               {
                 "field": "revenueModel",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "pricingHint",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
+                "value": "# 구독 박스",
+                "status": "known",
+                "provenance": "DOCUMENT"
               },
               {
                 "field": "alternativesCompetitors",
@@ -8703,18 +7397,6 @@
                 "source": "user_turn"
               },
               {
-                "key": "business",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "revenue",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
                 "key": "competitor",
                 "value": "지금은 마트·편의점에서 산다으로 비슷한 일을 하고 있습니다.",
                 "lifecycle": "current",
@@ -8735,8 +7417,8 @@
             "contradictions": []
           },
           "nextTargetGap": "validationTestability",
-          "nextQuestionText": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?",
-          "nextWhyNow": "차별점의 고객 관련성을 행동·경험 관점에서 확인합니다. (내부 검증 항목)",
+          "nextQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+          "nextWhyNow": "차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.",
           "conversationContinues": true
         },
         {
@@ -8790,11 +7472,9 @@
             "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
           },
           "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
             "customerPersona": "CLOSED",
             "payer": "CLOSED",
             "problemJtbd": "CLOSED",
-            "revenueModel": "CLOSED",
             "alternativesCompetitors": "CLOSED",
             "validationTestability": "OPEN"
           },
@@ -8802,9 +7482,9 @@
             "livingClaims": [
               {
                 "field": "businessOneLiner",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
+                "value": "구독 박스",
+                "status": "known",
+                "provenance": "DOCUMENT"
               },
               {
                 "field": "categoryScope",
@@ -8844,15 +7524,9 @@
               },
               {
                 "field": "revenueModel",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "pricingHint",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
+                "value": "# 구독 박스",
+                "status": "known",
+                "provenance": "DOCUMENT"
               },
               {
                 "field": "alternativesCompetitors",
@@ -8883,18 +7557,6 @@
               {
                 "key": "buyer",
                 "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "revenue",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
                 "lifecycle": "current",
                 "source": "user_turn"
               },
@@ -8915,410 +7577,12 @@
             "reviewUnknown": [
               "validationTestability"
             ],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
-          "nextTargetGap": "solution",
-          "nextQuestionText": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "nextWhyNow": "해결 방식(솔루션)이 비면 문제–제공가치 연결을 판단할 수 없습니다.",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "solution",
-          "askedQuestion": "그래서 무엇을 해결하려고 하나요?",
-          "optionLabels": [
-            "아이 간식을 매주 집 앞으로 보내는 구독 박스",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "아이 간식을 매주 집 앞으로 보내는 구독 박스",
-          "freeText": null,
-          "actualUserInput": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-          "intent": "business_fact",
-          "applied": true,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "needs_check",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "맞벌이 부모",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「장을 볼 시간이 없고 과자 고르기가 피곤하다」입니",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "needs_check",
-              "summary": "실제 결제나 사용 증거가 있습니다",
-              "reason": "약증거 — 검증 완료·Fact 아님",
-              "evidenceType": "hypothesis"
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED",
-            "revenueModel": "CLOSED",
-            "alternativesCompetitors": "CLOSED",
-            "validationTestability": "OPEN"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "구독 박스",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "쓰는 사람이 직접 낸다",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「장을 볼 시간이 없고 과자 고르기가 피곤하다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "장을 볼 시간이 없고 과자 고르기가 피곤하다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "revenueModel",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "pricingHint",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "alternativesCompetitors",
-                "value": "지금은 마트·편의점에서 산다으로 비슷한 일을 하고 있습니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「장을 볼 시간이 없고 과자 고르기가 피곤하다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "competitor",
-                "value": "지금은 마트·편의점에서 산다으로 비슷한 일을 하고 있습니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "revenue",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "revenue",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [
-              {
-                "key": "business",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "evidenceClass": "FACT",
-                "confidence": "high",
-                "targetGap": "businessOneLiner"
-              },
-              {
-                "key": "revenue",
-                "value": "구독 박스을 제공합니다",
-                "evidenceClass": "FACT",
-                "confidence": "high",
-                "targetGap": "revenueModel"
-              }
-            ],
-            "reviewUnknown": [],
             "reviewUnconfirmed": [],
             "contradictions": []
           },
           "nextTargetGap": "validationTestability",
-          "nextQuestionText": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?",
-          "nextWhyNow": "차별점의 고객 관련성을 행동·경험 관점에서 확인합니다. (내부 검증 항목)",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "validationTestability",
-          "askedQuestion": "이 서비스를 쓰면 고객에게 가장 좋아지는 점은 무엇인가요?",
-          "optionLabels": [
-            "실제 결제나 사용 증거가 있습니다",
-            "아직 실제 결제·사용 증거는 없습니다",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "실제 결제나 사용 증거가 있습니다",
-          "freeText": null,
-          "actualUserInput": "실제 결제나 사용 증거가 있습니다",
-          "intent": "business_fact",
-          "applied": false,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "needs_check",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "맞벌이 부모",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「장을 볼 시간이 없고 과자 고르기가 피곤하다」입니",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "needs_check",
-              "summary": "실제 결제나 사용 증거가 있습니다",
-              "reason": "약증거 — 검증 완료·Fact 아님",
-              "evidenceType": "hypothesis"
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED",
-            "revenueModel": "CLOSED",
-            "alternativesCompetitors": "CLOSED",
-            "validationTestability": "OPEN"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "구독 박스",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "쓰는 사람이 직접 낸다",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「장을 볼 시간이 없고 과자 고르기가 피곤하다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "장을 볼 시간이 없고 과자 고르기가 피곤하다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "revenueModel",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "pricingHint",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "alternativesCompetitors",
-                "value": "지금은 마트·편의점에서 산다으로 비슷한 일을 하고 있습니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「장을 볼 시간이 없고 과자 고르기가 피곤하다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "competitor",
-                "value": "지금은 마트·편의점에서 산다으로 비슷한 일을 하고 있습니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "revenue",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "revenue",
-                "value": "이 사업은 아이 간식을 매주 집 앞으로 보내는 구독 박스을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [],
-            "reviewUnknown": [
-              "validationTestability"
-            ],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
-          "nextTargetGap": "pricingHint",
-          "nextQuestionText": "가격·요금에 대한 가설이나 신호가 있나요?",
-          "nextWhyNow": "가격 신호가 없으면 수익·지불 의사 검증을 설계할 수 없습니다.",
+          "nextQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+          "nextWhyNow": "차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.",
           "conversationContinues": true
         }
       ],
@@ -9343,29 +7607,23 @@
         "type": "D2C 커머스",
         "name": "단백질 쿠키"
       },
-      "turnCount": 8,
+      "turnCount": 5,
       "askedGaps": [
         "problemJtbd",
         "customerPersona",
         "payer",
-        "businessOneLiner",
         "alternativesCompetitors",
-        "validationTestability",
-        "solution",
         "validationTestability"
       ],
       "nextGaps": [
         "customerPersona",
         "payer",
-        "businessOneLiner",
         "alternativesCompetitors",
         "validationTestability",
-        "solution",
-        "validationTestability",
-        "revenueModel"
+        "validationTestability"
       ],
       "lastConclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-      "reaskedSameGap": true,
+      "reaskedSameGap": false,
       "conversationContinues": true,
       "turns": [
         {
@@ -9767,162 +8025,6 @@
             "reviewUnconfirmed": [],
             "contradictions": []
           },
-          "nextTargetGap": "businessOneLiner",
-          "nextQuestionText": "이 사업은 누구에게 무엇을 제공하나요?",
-          "nextWhyNow": "한 줄 사업 정의가 비면 이후 질문을 정렬할 기준이 없습니다.",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "businessOneLiner",
-          "askedQuestion": "이 사업은 누구에게 무엇을 제공하나요?",
-          "optionLabels": [
-            "단백질 쿠키를 자사몰에서 팝니다",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "단백질 쿠키를 자사몰에서 팝니다",
-          "freeText": null,
-          "actualUserInput": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-          "intent": "business_fact",
-          "applied": true,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "unknown",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "운동하는 20–30대",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「시중 단백질바는 맛없거나 비싸다」입니다",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음",
-              "evidenceType": null
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "고객 변화 가설·기대효과를 실제로 검증할 방법을 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "단백질 쿠키",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "쓰는 사람이 직접 낸다",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "시중 단백질바는 맛없거나 비싸다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단백질바는 맛없거나 비싸다 수익: 제품 판매",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "revenueModel",
-                "value": "수익: 제품 판매",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [
-              {
-                "key": "business",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "evidenceClass": "FACT",
-                "confidence": "high",
-                "targetGap": "businessOneLiner"
-              }
-            ],
-            "reviewUnknown": [],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
           "nextTargetGap": "alternativesCompetitors",
           "nextQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
           "nextWhyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
@@ -9979,7 +8081,6 @@
             "nextCheck": "고객 변화 가설·기대효과를 실제로 검증할 방법을 확인해야 합니다."
           },
           "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
             "customerPersona": "CLOSED",
             "payer": "CLOSED",
             "problemJtbd": "CLOSED",
@@ -9989,9 +8090,9 @@
             "livingClaims": [
               {
                 "field": "businessOneLiner",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
+                "value": "단백질 쿠키",
+                "status": "known",
+                "provenance": "DOCUMENT"
               },
               {
                 "field": "categoryScope",
@@ -10068,12 +8169,6 @@
                 "source": "user_turn"
               },
               {
-                "key": "business",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
                 "key": "competitor",
                 "value": "지금은 시중 단백질바를 산다으로 비슷한 일을 하고 있습니다.",
                 "lifecycle": "current",
@@ -10094,8 +8189,8 @@
             "contradictions": []
           },
           "nextTargetGap": "validationTestability",
-          "nextQuestionText": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?",
-          "nextWhyNow": "차별점의 고객 관련성을 행동·경험 관점에서 확인합니다. (내부 검증 항목)",
+          "nextQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+          "nextWhyNow": "차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.",
           "conversationContinues": true
         },
         {
@@ -10149,7 +8244,6 @@
             "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
           },
           "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
             "customerPersona": "CLOSED",
             "payer": "CLOSED",
             "problemJtbd": "CLOSED",
@@ -10160,9 +8254,9 @@
             "livingClaims": [
               {
                 "field": "businessOneLiner",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
+                "value": "단백질 쿠키",
+                "status": "known",
+                "provenance": "DOCUMENT"
               },
               {
                 "field": "categoryScope",
@@ -10239,12 +8333,6 @@
                 "source": "user_turn"
               },
               {
-                "key": "business",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
                 "key": "competitor",
                 "value": "지금은 시중 단백질바를 산다으로 비슷한 일을 하고 있습니다.",
                 "lifecycle": "current",
@@ -10261,365 +8349,12 @@
             "reviewUnknown": [
               "validationTestability"
             ],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
-          "nextTargetGap": "solution",
-          "nextQuestionText": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "nextWhyNow": "해결 방식(솔루션)이 비면 문제–제공가치 연결을 판단할 수 없습니다.",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "solution",
-          "askedQuestion": "그래서 무엇을 해결하려고 하나요?",
-          "optionLabels": [
-            "단백질 쿠키를 자사몰에서 팝니다",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "단백질 쿠키를 자사몰에서 팝니다",
-          "freeText": null,
-          "actualUserInput": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-          "intent": "business_fact",
-          "applied": true,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "needs_check",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "운동하는 20–30대",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「시중 단백질바는 맛없거나 비싸다」입니다",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "needs_check",
-              "summary": "실제 결제나 사용 증거가 있습니다",
-              "reason": "약증거 — 검증 완료·Fact 아님",
-              "evidenceType": "hypothesis"
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED",
-            "alternativesCompetitors": "CLOSED",
-            "validationTestability": "OPEN"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "단백질 쿠키",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "쓰는 사람이 직접 낸다",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "시중 단백질바는 맛없거나 비싸다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "revenueModel",
-                "value": "수익: 제품 판매",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "alternativesCompetitors",
-                "value": "지금은 시중 단백질바를 산다으로 비슷한 일을 하고 있습니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "competitor",
-                "value": "지금은 시중 단백질바를 산다으로 비슷한 일을 하고 있습니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [
-              {
-                "key": "business",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "evidenceClass": "FACT",
-                "confidence": "high",
-                "targetGap": "businessOneLiner"
-              }
-            ],
-            "reviewUnknown": [],
             "reviewUnconfirmed": [],
             "contradictions": []
           },
           "nextTargetGap": "validationTestability",
-          "nextQuestionText": "그 차별점이 실제로 드러나는 고객 경험 순간은 언제인가요?",
-          "nextWhyNow": "차별점의 고객 관련성을 행동·경험 관점에서 확인합니다. (내부 검증 항목)",
-          "conversationContinues": true
-        },
-        {
-          "askedGap": "validationTestability",
-          "askedQuestion": "이 서비스를 쓰면 고객에게 가장 좋아지는 점은 무엇인가요?",
-          "optionLabels": [
-            "실제 결제나 사용 증거가 있습니다",
-            "아직 실제 결제·사용 증거는 없습니다",
-            "기타",
-            "아직 모르겠음"
-          ],
-          "pickedLabel": "실제 결제나 사용 증거가 있습니다",
-          "freeText": null,
-          "actualUserInput": "실제 결제나 사용 증거가 있습니다",
-          "intent": "business_fact",
-          "applied": false,
-          "persisted": true,
-          "waitingForFreeText": false,
-          "judgmentBefore": {
-            "customer": "needs_check",
-            "problem": "needs_check",
-            "solution": "unknown",
-            "customerChange": "needs_check",
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
-          },
-          "judgmentAfter": {
-            "customer": {
-              "status": "needs_check",
-              "summary": "운동하는 20–30대",
-              "reason": "CEO 답변 — 추가 확인 필요",
-              "evidenceType": null,
-              "knowledgeSource": "ceo_confirmed"
-            },
-            "problem": {
-              "status": "needs_check",
-              "summary": "PRIMARY: 불편은 「시중 단백질바는 맛없거나 비싸다」입니다",
-              "reason": "CEO 답변 evidence — canonical problem state"
-            },
-            "solution": {
-              "status": "unknown",
-              "summary": "",
-              "reason": "아직 확인되지 않음"
-            },
-            "customerChange": {
-              "status": "needs_check",
-              "summary": "실제 결제나 사용 증거가 있습니다",
-              "reason": "약증거 — 검증 완료·Fact 아님",
-              "evidenceType": "hypothesis"
-            },
-            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
-            "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
-          },
-          "gapStateAfter": {
-            "businessOneLiner": "CLOSED",
-            "customerPersona": "CLOSED",
-            "payer": "CLOSED",
-            "problemJtbd": "CLOSED",
-            "alternativesCompetitors": "CLOSED",
-            "validationTestability": "OPEN"
-          },
-          "knowledge": {
-            "livingClaims": [
-              {
-                "field": "businessOneLiner",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "categoryScope",
-                "value": "단백질 쿠키",
-                "status": "inferred",
-                "provenance": "AI_INFERENCE"
-              },
-              {
-                "field": "customerPersona",
-                "value": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "payer",
-                "value": "쓰는 사람이 직접 낸다",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemJtbd",
-                "value": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "problemFrequencySeverity",
-                "value": "시중 단백질바는 맛없거나 비싸다",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "solution",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              },
-              {
-                "field": "revenueModel",
-                "value": "수익: 제품 판매",
-                "status": "known",
-                "provenance": "DOCUMENT"
-              },
-              {
-                "field": "alternativesCompetitors",
-                "value": "지금은 시중 단백질바를 산다으로 비슷한 일을 하고 있습니다.",
-                "status": "confirmed",
-                "provenance": "USER_CONFIRMED"
-              }
-            ],
-            "memoryFacts": [
-              {
-                "key": "problem",
-                "value": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "customer",
-                "value": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "buyer",
-                "value": "쓰는 사람이 직접 낸다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "business",
-                "value": "이 사업은 단백질 쿠키를 자사몰에서 팝니다을 제공합니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "competitor",
-                "value": "지금은 시중 단백질바를 산다으로 비슷한 일을 하고 있습니다.",
-                "lifecycle": "current",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "superseded",
-                "source": "user_turn"
-              },
-              {
-                "key": "diffRelevance",
-                "value": "실제 결제나 사용 증거가 있습니다",
-                "lifecycle": "current",
-                "source": "user_turn"
-              }
-            ],
-            "extractedFacts": [],
-            "reviewUnknown": [
-              "validationTestability"
-            ],
-            "reviewUnconfirmed": [],
-            "contradictions": []
-          },
-          "nextTargetGap": "revenueModel",
-          "nextQuestionText": "수익은 어떤 구조로 발생하나요?",
-          "nextWhyNow": "수익 구조가 비면 지속 가능성을 판단할 수 없습니다. 누가·어떻게 돈을 버는지 확인합니다.",
+          "nextQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+          "nextWhyNow": "차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.",
           "conversationContinues": true
         }
       ],
@@ -10644,16 +8379,20 @@
         "type": "양면 중개",
         "name": "가사 도우미 중개"
       },
-      "turnCount": 3,
+      "turnCount": 5,
       "askedGaps": [
         "problemJtbd",
         "customerPersona",
-        "payer"
+        "payer",
+        "alternativesCompetitors",
+        "validationTestability"
       ],
       "nextGaps": [
         "customerPersona",
         "payer",
-        "payer"
+        "alternativesCompetitors",
+        "validationTestability",
+        "validationTestability"
       ],
       "lastConclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
       "reaskedSameGap": false,
@@ -10965,7 +8704,7 @@
           },
           "gapStateAfter": {
             "customerPersona": "CLOSED",
-            "payer": "OPEN",
+            "payer": "CLOSED",
             "problemJtbd": "CLOSED"
           },
           "knowledge": {
@@ -11049,20 +8788,345 @@
               {
                 "key": "buyer",
                 "value": "집이 낸다",
-                "evidenceClass": "ASSUMPTION",
-                "confidence": "low",
+                "evidenceClass": "FACT",
+                "confidence": "high",
                 "targetGap": "payer"
               }
             ],
+            "reviewUnknown": [],
+            "reviewUnconfirmed": [],
+            "contradictions": []
+          },
+          "nextTargetGap": "alternativesCompetitors",
+          "nextQuestionText": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextWhyNow": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다.",
+          "conversationContinues": true
+        },
+        {
+          "askedGap": "alternativesCompetitors",
+          "askedQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "optionLabels": [
+            "지인 소개로 구한다",
+            "당근·카페에서 찾는다",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "pickedLabel": "지인 소개로 구한다",
+          "freeText": null,
+          "actualUserInput": "지금은 지인 소개로 구한다으로 비슷한 일을 하고 있습니다.",
+          "intent": "business_fact",
+          "applied": true,
+          "persisted": true,
+          "waitingForFreeText": false,
+          "judgmentBefore": {
+            "customer": "needs_check",
+            "problem": "needs_check",
+            "solution": "unknown",
+            "customerChange": "unknown",
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
+          },
+          "judgmentAfter": {
+            "customer": {
+              "status": "needs_check",
+              "summary": "맞벌이 가정",
+              "reason": "CEO 답변 — 추가 확인 필요",
+              "evidenceType": null,
+              "knowledgeSource": "ceo_confirmed"
+            },
+            "problem": {
+              "status": "needs_check",
+              "summary": "PRIMARY: 불편은 「믿을 사람을 찾기 어렵고",
+              "reason": "CEO 답변 evidence — canonical problem state"
+            },
+            "solution": {
+              "status": "unknown",
+              "summary": "",
+              "reason": "아직 확인되지 않음"
+            },
+            "customerChange": {
+              "status": "unknown",
+              "summary": "",
+              "reason": "아직 확인되지 않음",
+              "evidenceType": null
+            },
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "nextCheck": "고객 변화 가설·기대효과를 실제로 검증할 방법을 확인해야 합니다."
+          },
+          "gapStateAfter": {
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "alternativesCompetitors": "CLOSED"
+          },
+          "knowledge": {
+            "livingClaims": [
+              {
+                "field": "businessOneLiner",
+                "value": "가사 중개",
+                "status": "known",
+                "provenance": "DOCUMENT"
+              },
+              {
+                "field": "categoryScope",
+                "value": "가사 중개",
+                "status": "inferred",
+                "provenance": "AI_INFERENCE"
+              },
+              {
+                "field": "customerPersona",
+                "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다.",
+                "status": "confirmed",
+                "provenance": "USER_CONFIRMED"
+              },
+              {
+                "field": "payer",
+                "value": "집이 낸다",
+                "status": "confirmed",
+                "provenance": "USER_CONFIRMED"
+              },
+              {
+                "field": "problemJtbd",
+                "value": "지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다」입니다.",
+                "status": "confirmed",
+                "provenance": "USER_CONFIRMED"
+              },
+              {
+                "field": "problemFrequencySeverity",
+                "value": "믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다",
+                "status": "known",
+                "provenance": "DOCUMENT"
+              },
+              {
+                "field": "solution",
+                "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미 문제: 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다 수익: 거래 수수료",
+                "status": "known",
+                "provenance": "DOCUMENT"
+              },
+              {
+                "field": "revenueModel",
+                "value": "수익: 거래 수수료",
+                "status": "known",
+                "provenance": "DOCUMENT"
+              },
+              {
+                "field": "alternativesCompetitors",
+                "value": "지금은 지인 소개로 구한다으로 비슷한 일을 하고 있습니다.",
+                "status": "confirmed",
+                "provenance": "USER_CONFIRMED"
+              }
+            ],
+            "memoryFacts": [
+              {
+                "key": "problem",
+                "value": "지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다」입니다.",
+                "lifecycle": "current",
+                "source": "user_turn"
+              },
+              {
+                "key": "customer",
+                "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다.",
+                "lifecycle": "current",
+                "source": "user_turn"
+              },
+              {
+                "key": "buyer",
+                "value": "집이 낸다",
+                "lifecycle": "superseded",
+                "source": "user_turn"
+              },
+              {
+                "key": "buyer",
+                "value": "집이 낸다",
+                "lifecycle": "current",
+                "source": "user_turn"
+              },
+              {
+                "key": "competitor",
+                "value": "지금은 지인 소개로 구한다으로 비슷한 일을 하고 있습니다.",
+                "lifecycle": "current",
+                "source": "user_turn"
+              }
+            ],
+            "extractedFacts": [
+              {
+                "key": "competitor",
+                "value": "지금은 지인 소개로 구한다으로 비슷한 일을 하고 있습니다.",
+                "evidenceClass": "FACT",
+                "confidence": "high",
+                "targetGap": "alternativesCompetitors"
+              }
+            ],
+            "reviewUnknown": [],
+            "reviewUnconfirmed": [],
+            "contradictions": []
+          },
+          "nextTargetGap": "validationTestability",
+          "nextQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+          "nextWhyNow": "차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.",
+          "conversationContinues": true
+        },
+        {
+          "askedGap": "validationTestability",
+          "askedQuestion": "이 서비스를 쓰면 고객에게 가장 좋아지는 점은 무엇인가요?",
+          "optionLabels": [
+            "실제 결제나 사용 증거가 있습니다",
+            "아직 실제 결제·사용 증거는 없습니다",
+            "기타",
+            "아직 모르겠음"
+          ],
+          "pickedLabel": "실제 결제나 사용 증거가 있습니다",
+          "freeText": null,
+          "actualUserInput": "실제 결제나 사용 증거가 있습니다",
+          "intent": "business_fact",
+          "applied": false,
+          "persisted": true,
+          "waitingForFreeText": false,
+          "judgmentBefore": {
+            "customer": "needs_check",
+            "problem": "needs_check",
+            "solution": "unknown",
+            "customerChange": "unknown",
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다."
+          },
+          "judgmentAfter": {
+            "customer": {
+              "status": "needs_check",
+              "summary": "맞벌이 가정",
+              "reason": "CEO 답변 — 추가 확인 필요",
+              "evidenceType": null,
+              "knowledgeSource": "ceo_confirmed"
+            },
+            "problem": {
+              "status": "needs_check",
+              "summary": "PRIMARY: 불편은 「믿을 사람을 찾기 어렵고",
+              "reason": "CEO 답변 evidence — canonical problem state"
+            },
+            "solution": {
+              "status": "unknown",
+              "summary": "",
+              "reason": "아직 확인되지 않음"
+            },
+            "customerChange": {
+              "status": "needs_check",
+              "summary": "실제 결제나 사용 증거가 있습니다",
+              "reason": "약증거 — 검증 완료·Fact 아님",
+              "evidenceType": "hypothesis"
+            },
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "nextCheck": "무엇을 어떻게 해결하려는지 더 구체적으로 확인해야 합니다."
+          },
+          "gapStateAfter": {
+            "customerPersona": "CLOSED",
+            "payer": "CLOSED",
+            "problemJtbd": "CLOSED",
+            "alternativesCompetitors": "CLOSED",
+            "validationTestability": "OPEN"
+          },
+          "knowledge": {
+            "livingClaims": [
+              {
+                "field": "businessOneLiner",
+                "value": "가사 중개",
+                "status": "known",
+                "provenance": "DOCUMENT"
+              },
+              {
+                "field": "categoryScope",
+                "value": "가사 중개",
+                "status": "inferred",
+                "provenance": "AI_INFERENCE"
+              },
+              {
+                "field": "customerPersona",
+                "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다.",
+                "status": "confirmed",
+                "provenance": "USER_CONFIRMED"
+              },
+              {
+                "field": "payer",
+                "value": "집이 낸다",
+                "status": "confirmed",
+                "provenance": "USER_CONFIRMED"
+              },
+              {
+                "field": "problemJtbd",
+                "value": "지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다」입니다.",
+                "status": "confirmed",
+                "provenance": "USER_CONFIRMED"
+              },
+              {
+                "field": "problemFrequencySeverity",
+                "value": "믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다",
+                "status": "known",
+                "provenance": "DOCUMENT"
+              },
+              {
+                "field": "solution",
+                "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미 문제: 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다 수익: 거래 수수료",
+                "status": "known",
+                "provenance": "DOCUMENT"
+              },
+              {
+                "field": "revenueModel",
+                "value": "수익: 거래 수수료",
+                "status": "known",
+                "provenance": "DOCUMENT"
+              },
+              {
+                "field": "alternativesCompetitors",
+                "value": "지금은 지인 소개로 구한다으로 비슷한 일을 하고 있습니다.",
+                "status": "confirmed",
+                "provenance": "USER_CONFIRMED"
+              }
+            ],
+            "memoryFacts": [
+              {
+                "key": "problem",
+                "value": "지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다」입니다.",
+                "lifecycle": "current",
+                "source": "user_turn"
+              },
+              {
+                "key": "customer",
+                "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다.",
+                "lifecycle": "current",
+                "source": "user_turn"
+              },
+              {
+                "key": "buyer",
+                "value": "집이 낸다",
+                "lifecycle": "superseded",
+                "source": "user_turn"
+              },
+              {
+                "key": "buyer",
+                "value": "집이 낸다",
+                "lifecycle": "current",
+                "source": "user_turn"
+              },
+              {
+                "key": "competitor",
+                "value": "지금은 지인 소개로 구한다으로 비슷한 일을 하고 있습니다.",
+                "lifecycle": "current",
+                "source": "user_turn"
+              },
+              {
+                "key": "diffRelevance",
+                "value": "실제 결제나 사용 증거가 있습니다",
+                "lifecycle": "current",
+                "source": "user_turn"
+              }
+            ],
+            "extractedFacts": [],
             "reviewUnknown": [
-              "payer"
+              "validationTestability"
             ],
             "reviewUnconfirmed": [],
             "contradictions": []
           },
-          "nextTargetGap": "payer",
-          "nextQuestionText": "맞벌이 가정에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
-          "nextWhyNow": "누가 비용을 지불하는지 모르면 GO/HOLD를 결정할 수 없습니다. 지불자를 지금 확정합니다. (현재 이해: 가사 중개 · 맞벌이 가정 · 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하…)",
+          "nextTargetGap": "validationTestability",
+          "nextQuestionText": "그 차별점이 고객에게 왜 중요한가요?",
+          "nextWhyNow": "차별점이 고객에게 왜 중요한지 모르면 검증 설계를 할 수 없습니다. 고객 관련성을 지금 확인합니다.",
           "conversationContinues": true
         }
       ],
@@ -11072,7 +9136,7 @@
           "reason": "S6 engine-follow continues at least 3 turns"
         },
         {
-          "status": "FAIL",
+          "status": "PASS",
           "reason": "S6 engine-follow reaches payer and a later Stage B gap"
         },
         {
@@ -11707,10 +9771,10 @@
         "judgmentAfter": {
           "customer": {
             "status": "needs_check",
-            "summary": "맞벌이 부모",
-            "reason": "CEO 답변 — 추가 확인 필요",
+            "summary": "충돌: 맞벌이 부모 ↔ 혼자 사는 20대가 메인 — 재확인 필요",
+            "reason": "Founder가 이전 고객 이해와 다른 고객을 말해 충돌로 표시함",
             "evidenceType": null,
-            "knowledgeSource": "ceo_confirmed"
+            "knowledgeSource": null
           },
           "problem": {
             "status": "needs_check",
@@ -11733,7 +9797,7 @@
         },
         "gapStateAfter": {
           "customerPersona": "CONTRADICTED",
-          "payer": "OPEN",
+          "payer": "CLOSED",
           "problemJtbd": "CLOSED",
           "validationTestability": "OPEN"
         },

@@ -516,6 +516,12 @@ describe('PR #197 CPO second-verify dump', () => {
           'S4 off-slot customer reversal marks CONTRADICTED',
         ),
         verdict(
+          s4t6.judgmentAfter.customer.summary !== '맞벌이 부모' &&
+            s4t6.judgmentAfter.customer.knowledgeSource !== 'ceo_confirmed' &&
+            /충돌|20대/.test(s4t6.judgmentAfter.customer.summary),
+          'S4 CONTRADICTED customer updates judgment summary',
+        ),
+        verdict(
           !/검증 완료|사업성이 충분|GO/.test(s4t6.judgmentAfter.conclusion),
           'S4 contradiction does not emit GO',
         ),

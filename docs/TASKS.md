@@ -6,7 +6,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 사업 이해 · 객관식 대화
 
-**CPO Gate:** NEEDS FIX · CEO 보고 `PR197-CPO-SECOND-VERIFY-VERDICT.md` · 병합·배포 보류  
+**CPO Gate:** 기존 NEEDS FIX 수정 제출 · 인라인 보고서 `PR197-CPO-REVIEW-READY.md` · CPO 2차 미판정 · 병합·배포 보류  
 **Branch:** `cursor/ai-pm-mcq-understanding-e648`  
 **Scenarios:** `docs/product/ai-pm-closed-conversation-scenarios.md` (본문 동결 `5263e83e`)  
 **Quality package:** `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-IMPROVEMENT.md`  
@@ -35,6 +35,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 17 | 대화 엔진 구현 · 1차 회귀 | 📤 `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-EXECUTION.md` · 1차 실행 증거 |
 | 18 | CPO 2차 검증 패키지 (A–I) | 📤 CTO 1차 `PR197-CPO-SECOND-VERIFY-PACKAGE.md` · I/O `PR197-CPO-SECOND-VERIFY-DUMP.json` |
 | 19 | CPO 2차 검증 · CEO 보고 | 📤 **NEEDS FIX** `PR197-CPO-SECOND-VERIFY-VERDICT.md` · S6 지속·한 줄 후퇴·S4 판단 반영이 다음 수정 |
+| 20 | NEEDS FIX 3건 수정 + CPO 인라인 보고서 | 📤 `PR197-CPO-REVIEW-READY.md` · 엔진 CTO VERIFIED · CPO 2차 미판정 · UI/T7 NOT VERIFIED |
 
 ---
 

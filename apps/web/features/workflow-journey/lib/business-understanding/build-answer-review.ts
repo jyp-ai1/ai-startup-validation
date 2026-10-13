@@ -32,7 +32,7 @@ import {
   hasPersonaSegmentCue,
   isRelevanceDominantOnPersonaAsk,
 } from './persona-answer-cues';
-import { isOnSlotPayerAnswer } from './payer-answer-cues';
+import { isOnSlotPayerAnswer, isRolePayerAnswer } from './payer-answer-cues';
 import type { AiPmLoopIssueId } from './workspace-ai-pm-loop-types';
 import {
   resolveNuclearWrongSlotAtSubmit,
@@ -436,7 +436,9 @@ function isOnSlotSufficient(
     if (!semantic.mergeable) return false;
     return (
       isOnSlotPayerAnswer(userAnswer) &&
-      (semantic.factKey === 'buyer' || hasImplicitPayerCue(userAnswer))
+      (semantic.factKey === 'buyer' ||
+        hasImplicitPayerCue(userAnswer) ||
+        isRolePayerAnswer(userAnswer))
     );
   }
   if (askedGapId === 'customerPersona') {

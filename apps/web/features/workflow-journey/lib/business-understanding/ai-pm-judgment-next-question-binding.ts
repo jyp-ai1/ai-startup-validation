@@ -22,8 +22,16 @@ import type { NextQuestionDecision } from './decide-next-question-from-review';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import { whyNowForGapField } from './living-understanding-state';
 import { isRepeatedQuestion } from './ai-pm-no-gap-termination';
+import { isGapAskable } from './update-gap-state-from-review';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import type { JudgmentTurnTrace } from './ai-pm-judgment-trace';
+
+const STAGE_B_AFTER_ONELINER = [
+  'alternativesCompetitors',
+  'validationTestability',
+  'differentiationVsAlternatives',
+  'marketChannel',
+] as const;
 
 const DIMENSION_TO_PRIMARY_GAP: Record<CeoJudgmentDimensionId, string> = {
   customer: 'customerPersona',
@@ -362,22 +370,38 @@ export function applyJudgmentNextQuestionBinding(input: {
   }
 
   if (isCustomerAndProblemClosed(input.gapState)) {
-    if (
-      input.decision.targetGapId === 'businessOneLiner' &&
-      !isGapClosedInState(input.gapState, 'payer')
-    ) {
-      const payerBinding = resolveGapQuestionBinding('payer');
-      return {
-        ...input.decision,
-        targetGap: 'payer',
-        targetGapId: 'payer',
-        issueId: payerBinding.issueId,
-        questionText: payerBinding.questionText,
-        whyNow: whyNowForGapField('payer') || payerBinding.whyNow,
-        rationale: payerBinding.whyNow,
-        actionRationale: 'CLOSED customer+problem — skip document one-liner for payer',
-        reason: 'judgment-bound skip one-liner → payer',
-      };
+    if (input.decision.targetGapId === 'businessOneLiner') {
+      if (!isGapClosedInState(input.gapState, 'payer')) {
+        const payerBinding = resolveGapQuestionBinding('payer');
+        return {
+          ...input.decision,
+          targetGap: 'payer',
+          targetGapId: 'payer',
+          issueId: payerBinding.issueId,
+          questionText: payerBinding.questionText,
+          whyNow: whyNowForGapField('payer') || payerBinding.whyNow,
+          rationale: payerBinding.whyNow,
+          actionRationale: 'CLOSED customer+problem — skip document one-liner for payer',
+          reason: 'judgment-bound skip one-liner → payer',
+        };
+      }
+      const nextStageB = STAGE_B_AFTER_ONELINER.find((gapId) =>
+        isGapAskable(gapId, input.gapState ?? { version: 1, gaps: {}, lastReviewByGap: {} }),
+      );
+      if (nextStageB) {
+        const stageBBinding = resolveGapQuestionBinding(nextStageB);
+        return {
+          ...input.decision,
+          targetGap: nextStageB,
+          targetGapId: nextStageB,
+          issueId: stageBBinding.issueId,
+          questionText: stageBBinding.questionText,
+          whyNow: whyNowForGapField(nextStageB) || stageBBinding.whyNow,
+          rationale: stageBBinding.whyNow,
+          actionRationale: 'CLOSED Stage A spine — skip document one-liner for Stage B',
+          reason: 'judgment-bound skip one-liner → Stage B',
+        };
+      }
     }
     return input.decision;
   }

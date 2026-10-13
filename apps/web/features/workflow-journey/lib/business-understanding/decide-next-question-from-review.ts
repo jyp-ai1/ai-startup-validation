@@ -150,10 +150,10 @@ function pickContradictedGap(gapState: GapKnowledgeState): string | null {
 
 function shouldSkipDocumentOneLiner(gapState: GapKnowledgeState): boolean {
   if (!isGapAskable('businessOneLiner', gapState)) return false;
-  const customerOrProblemClosed =
+  return (
     gapState.gaps.customerPersona?.completeness === 'CLOSED' ||
-    gapState.gaps.problemJtbd?.completeness === 'CLOSED';
-  return customerOrProblemClosed && isGapAskable('payer', gapState);
+    gapState.gaps.problemJtbd?.completeness === 'CLOSED'
+  );
 }
 
 /** First askable Required gap — Stage B blocked until PR5 readiness allows entry. */
@@ -170,7 +170,9 @@ function pickNextRequiredGap(
     if (skipOneLiner && gapId === 'businessOneLiner') continue;
     if (isGapAskable(gapId, gapState)) return gapId;
   }
-  if (stageReadiness.stageBAllowed) {
+  // Document one-liner is not an unresolved hypothesis once customer/problem exist.
+  // Do not let its leftover OPEN block Stage B (FIX-ONELINER).
+  if (stageReadiness.stageBAllowed || skipOneLiner) {
     const judgmentFirst = [
       'alternativesCompetitors',
       'validationTestability',

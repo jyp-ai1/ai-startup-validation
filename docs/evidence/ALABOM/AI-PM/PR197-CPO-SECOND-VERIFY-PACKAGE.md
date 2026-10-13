@@ -217,7 +217,7 @@
 2. `pnpm --filter web exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-cpo-second-verify-dump.test.ts`  
 3. `docs/evidence/ALABOM/AI-PM/PR197-CPO-SECOND-VERIFY-DUMP.json` 을 연다.  
 4. 각 시나리오 `turns[]`에서 `actualUserInput` / `judgmentBefore` / `judgmentAfter` / `nextQuestionText` / `gapStateAfter` / `knowledge` 를 본다.  
-5. `engineFollowEightTurns.S1`–`S6`으로 대화 지속을 본다. S6는 3턴에서 끊긴다.  
+5. `engineFollowEightTurns.S1`–`S6`으로 대화 지속을 본다. 수정 후 S6는 5턴(대안+검증). 인라인 대조는 `PR197-CPO-REVIEW-READY.md`.  
 6. 로그인 UI는 이 절차에 없다. UI를 열지 않고 엔진 PASS를 승인하지 말 것.
 
 플래그: 덤프는 `setV3ReviewPipelineForTest(true)` + `setAiPmJudgmentAggregationV1ForTest(true)`.
@@ -226,12 +226,9 @@
 
 ## CPO 판정
 
-CEO 보고: `PR197-CPO-SECOND-VERIFY-VERDICT.md`
+기존 CEO 보고: `PR197-CPO-SECOND-VERIFY-VERDICT.md` (판정 **NEEDS FIX**, `f9911ed6`)
 
-- 판정: **NEEDS FIX**
-- 검증한 범위: 엔진 apply-path · R1–R4 · S1–S6 스크립트 · S1–S5 팔로우 8턴 · 모름/기타/모순 다음 질문 · GO 가드
-- 미검증 범위: 로그인 UI · S4 T7 superseded · 동결 8턴 문구 일치
-- 핵심 근거: R1–R4·GO는 덤프 출력이 맞음. S6 3턴 정지·S4 판단이 맞벌이 부모로 잔류·payer 후 문서 한 줄 후퇴는 실패
-- 다음 작업: S6 지속 · 한 줄 후퇴 제거 · CONTRADICTED→판단 반영. 그다음 T7·UI
+CPO가 링크 없이 읽을 인라인 보고서: **`PR197-CPO-REVIEW-READY.md`**  
+(실패 I/O · 원인 · 수정 후 재실행 I/O를 본문에 직접 수록. 인덱스가 아님.)
 
 CTO는 병합하지 않는다. 미검증 항목은 완료가 아니다.
