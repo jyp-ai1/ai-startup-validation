@@ -1,6 +1,6 @@
 {
   "meta": {
-    "implSha": "bc4a0bd5c16bc3f9d4e108ac723b02c9a8c51ef2",
+    "implSha": "f95bb1676079063bd9ac5184e4fa43cfaf860da8",
     "executedAt": "2026-10-13T12:21:52.544Z",
     "path": "QA magic-link → /ko/workspace create project → WorkspaceAiPmLoopPanel confirm/MCQ/기타+submitAnswer",
     "login": "qa-magic-link (authenticated workspace, not engine dump, not Google button)",
