@@ -33,7 +33,9 @@ AC16 / AC5: FAIL 부채 유지. 기대값 미하향.
 책임: workspace-ai-pm-messages / create form
 입력: 창업자 문서 원문
 출력: project-scoped document text
-SoT: 문서 문자열. SI 파이프라인(@repo/agents)은 이 턴 루프에 호출되지 않음.
+SoT: 문서 문자열.
+SI 두 겹: @repo/agents StrategyPipeline 은 API strategy-run/overnight 전용. 대화 루프 import 없음.
+앱 내부 SI (apps/web/features/strategic-intelligence) 는 문서에서 별도 판단을 만들 수 있다. 질문 선택 SoT가 아니다. 패널이 targetGap===businessOneLiner 이고 confirm이 아닐 때만 siValidationAsk 문구로 덮는다. 갭 자체는 바꾸지 않는다.
 
 2) 기존 정보·답변의 종합
 구현: buildBusinessUnderstanding (정규·키워드 추출)
@@ -54,8 +56,9 @@ MCQ specific 옵션의 hint는 ASSUMPTION 이지만, 같은 문자열이 리뷰 
 4) 현재 사업성 판단
 구현 A: living.judgmentSummary — 확인된 필드 나열 + 커버리지% + 다음 공백. 사업성 GO/HOLD가 아님.
 구현 B: buildCeoJudgmentState / syncJudgmentAfterAnswer — 차원은 customer, problem, solution, customerChange 네 개. 상태 clear/needs_check/unknown.
-구현 C: @repo/agents StrategyPipeline / SI — API strategy-run, overnight, founder dashboard. 대화 한 턴의 resolveNextQuestionDecision 경로에는 import 없음.
-공백: 「확인된 사실 vs 주장 vs 추론 vs 가정이 사업성을 어떻게 뒷받침/위협하는가」를 매 턴 재계산하는 SI SoT가 대화 엔진에 연결되어 있지 않다.
+구현 C: @repo/agents StrategyPipeline — API strategy-run, overnight, founder dashboard. resolveNextQuestionDecision 경로에 import 없음.
+구현 D: apps/web/features/strategic-intelligence (resolveSiJourneyIntegration / decideSiValidationAsk). 문서 기반 별도 판단. 루프 패널에서 businessOneLiner 질문 문구만 선택적으로 교체. gapState·Stage A 순서·CeoJudgmentState 를 다음 갭 SoT로 바꾸지 않음.
+공백: SI 판단이 「이번 답이 사업성 근거/실패 위험을 어떻게 바꿨는가」로 다음 갭을 고르는 연결은 없다.
 
 5) 핵심 미확인 사항의 우선순위
 구현되어 있으나 질문 선택 SoT가 아님.
@@ -64,7 +67,7 @@ decideNextQuestionFromReview.pickNextRequiredGap 은 living을 void 처리한다
 실제 우선순위 SoT: STAGE_A_REQUIRED_GAPS 순서 = businessOneLiner → customerPersona → payer → problemJtbd.
 Stage A가 닫히면 judgmentFirst = alternativesCompetitors → validationTestability → differentiationVsAlternatives → marketChannel.
 selectAdaptiveNextGaps 는 Required 갭이 모두 닫힌 뒤에만 호출된다.
-FIX-10 applyJudgmentNextQuestionBinding 이 그 위를 customer → problem → solution 으로 덮고, T7 shouldHoldOpenStageAPayer 가 customer+problem CLOSED 이고 payer OPEN 이면 next=payer 로 고정한다.
+FIX-10 applyJudgmentNextQuestionBinding 은 기본 항상 ON (ai-pm-judgment-fix10-v1.ts 가 env 없어도 true). customer → problem → solution 으로 덮고, T7 shouldHoldOpenStageAPayer 가 customer+problem CLOSED 이고 payer OPEN 이면 next=payer 로 고정한다.
 결론: 우선순위 함수는 있으나, 다음 질문 SoT는 단계 순서 + FIX-10 + T7 이다.
 
 6) 다음 질문 선택
@@ -73,6 +76,7 @@ FIX-10 applyJudgmentNextQuestionBinding 이 그 위를 customer → problem → 
 질문 문구 SoT: gap-question-map.resolveGapQuestionBinding. 재질문은 reframeQuestion (「조금 더 구체적으로」).
 MCQ는 갭을 고르지 않는다. buildBusinessChoiceQuestion 주석: Does not replace question selection.
 객관식은 이미 고른 갭 위에 선택지를 얹는 오버레이다.
+SI 오버레이도 갭을 고르지 않는다. workspace-ai-pm-loop-panel.tsx: siValidationAsk && targetGap===businessOneLiner 일 때만 문구 교체.
 
 7) 답변 반영
 구현: applyBusinessChoiceThroughLoop 또는 applyTypedAnswerThroughLoop
@@ -98,7 +102,7 @@ S1. 입력 우선 — 문서와 이전 답변을 먼저 종합하는가
 증거: decide-next-question-from-review.ts pickNextRequiredGap: void living. 로그인 UI S1-S6 모두 같은 첫 네 갭: businessOneLiner → customerPersona → problemJtbd → payer.
 
 S2. 판단 우선 — 사업성 판단·근거·실패 위험·핵심 불확실성을 먼저 갱신하는가
-부분 구현. 답변 후 judgment sync는 돈다. 그러나 질문 엔진은 gap completeness + Stage A/FIX-10/T7 을 읽는다. SI 사업성 재판단은 대화 루프 밖이다.
+부분 구현. 답변 후 judgment sync는 돈다. 질문 엔진은 gap completeness + Stage A/FIX-10/T7 을 읽는다. 앱 내부 SI는 원라이너 문구를 덮을 수 있을 뿐 다음 갭 SoT가 아니다.
 
 S3. 질문 선택 — 판단을 바꿀 가능성이 가장 큰 미확인을 고르는가
 미구현에 가깝다. 열린 갭 때문에 고른다. Stage B 첫 갭은 답변 내용과 무관하게 alternativesCompetitors 인 경우가 관측된다.
@@ -156,7 +160,7 @@ unknown 선택의 가짜 사실 방지.
 적응형 갭 점수: 코드 있음, Required 갭이 비어 있을 때만 사용.
 
 미구현 (공백)
-대화 루프에 연결된 SI 사업성 재판단.
+SI 판단이 다음 갭을 고르는 연결. (앱 내부 SI의 원라이너 문구 오버레이는 있음.)
 「판단을 바꿀 영향」으로 다음 질문을 고르는 SoT.
 AI 이해 정확도 4분 객관식.
 선택지 = 판단 분기 (지불 의사 vs 대안 vs 확보 가능성 중 최대 위험).
@@ -172,7 +176,7 @@ AI 이해 정확도 4분 객관식.
 
 읽기 후 확인 카드
 이해: document-first draft (문서 필드 나열).
-판단: 없음 (SI 미호출).
+판단: 읽기 확인 단계의 다음 갭은 Stage A bootstrap. 앱 내부 SI가 있어도 갭을 바꾸지 않음.
 핵심 불확실성: 카드의 미확인 줄. 질문 엔진과 별개.
 다음: 맞습니다 → commitFirstAskAfterUnderstandingConfirm → Stage A 첫 열린 갭.
 
@@ -297,7 +301,7 @@ Q6. FIX-10 customer→problem→solution 과 Stage A customer→payer→problem 
 아니오. 문서는 보기와 요약을 채운다. 다음 갭은 열린 Required 순서다.
 
 답변이 들어오면 사업성 판단이 실제로 갱신되는가
-부분. CeoJudgmentState와 living summary는 다시 그려진다. SI 사업성 재계산은 대화 경로에 없다.
+부분. CeoJudgmentState와 living summary는 다시 그려진다. 앱 내부 SI는 원라이너 문구만 덮을 수 있고, @repo/agents 및 SI 판단은 다음 갭 SoT가 아니다.
 
 다음 질문은 열린 갭 때문인가, 판단 영향 때문인가
 열린 갭 때문이다. pickNextRequiredGap, Stage B judgmentFirst, T7/FIX-10.
