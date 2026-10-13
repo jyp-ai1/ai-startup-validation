@@ -10,6 +10,7 @@ CPO가 저장소 링크를 열지 않고 이 본문만으로 실패·수정·재
 | 브랜치 | `cursor/ai-pm-mcq-understanding-e648` |
 | 기존 CPO 판정 | **NEEDS FIX** (`f9911ed6`) |
 | 이번 구현 | FIX-S6 · FIX-ONELINER · FIX-S4-JUDGMENT · SHA `59339f93` |
+| 보고서·덤프 핀 | `956bc6c7` |
 | 실행 경로 | `applyBusinessChoiceThroughLoop` |
 | 시나리오 동결 | `5263e83e` |
 | Production | `0b465226` 불변 |
@@ -246,7 +247,7 @@ R2 yes reason ≠ no reason. 둘 다 Fact/GO 아님.
 | 커밋 | 역할 |
 |---|---|
 | 구현 | `59339f93` `feat(ai-pm): close CPO NEEDS FIX with inline review evidence` |
-| 재실행 덤프 `meta.implSha` | `59339f93` (아래 핀 커밋에 JSON 수록) |
+| 재실행 덤프 `meta.implSha` | `59339f93` · 핀 커밋 `956bc6c7` |
 | 이전 실패 기준 | 구현 `404da1cf` · 덤프 핀 `f83d15ed` · CPO 판정 `f9911ed6` |
 
 | 파일 | 함수 | 변경 |
