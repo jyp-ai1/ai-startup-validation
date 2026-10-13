@@ -11,6 +11,7 @@ Google OAuth 8턴 · Production 대화는 **NOT VERIFIED**. 병합·배포하지
 | 항목 | 값 |
 |---|---|
 | 동결 본문 SHA | `5263e83e` |
+| 구현 SHA | `212e7b0d` (덤프 `meta.implSha`) |
 | 1:1 덤프 | `PR197-CPO-FROZEN-T1-T8-DUMP.json` · compared=35 · exact=0 |
 | 분류 덤프 | `PR197-CPO-T1-T8-DIVERGENCE-DUMP.json` |
 | 엔진 경로 | `resolveNextQuestionDecision` → `applyTypedAnswerThroughLoop` |
