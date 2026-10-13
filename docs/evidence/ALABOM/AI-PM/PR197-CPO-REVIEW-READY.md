@@ -9,7 +9,7 @@ CPO가 저장소 링크를 열지 않고 이 본문만으로 실패·수정·재
 | PR | #197 |
 | 브랜치 | `cursor/ai-pm-mcq-understanding-e648` |
 | 기존 CPO 판정 | **NEEDS FIX** (`f9911ed6`) |
-| 이번 구현 | FIX-S6 · FIX-ONELINER · FIX-S4-JUDGMENT |
+| 이번 구현 | FIX-S6 · FIX-ONELINER · FIX-S4-JUDGMENT · SHA `59339f93` |
 | 실행 경로 | `applyBusinessChoiceThroughLoop` |
 | 시나리오 동결 | `5263e83e` |
 | Production | `0b465226` 불변 |
