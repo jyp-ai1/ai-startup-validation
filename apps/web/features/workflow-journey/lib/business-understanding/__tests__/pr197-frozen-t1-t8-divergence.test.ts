@@ -108,6 +108,29 @@ function completenessMap(projectId: string) {
   return out;
 }
 
+function spineAfter(projectId: string) {
+  const gaps = loadAiPmLoopState(projectId).gapState?.gaps ?? {};
+  return {
+    customerPersona: gaps.customerPersona?.completeness ?? 'OPEN',
+    problemJtbd: gaps.problemJtbd?.completeness ?? 'OPEN',
+    payer: gaps.payer?.completeness ?? 'OPEN',
+  };
+}
+
+function stopCause(projectId: string, nextQuestion: string | null) {
+  if (nextQuestion) return null;
+  const gapState = loadAiPmLoopState(projectId).gapState;
+  const noAskable = gapState ? hasNoAskableGap(gapState) : null;
+  return {
+    nextNull: true,
+    noAskableGap: noAskable,
+    reason: noAskable
+      ? 'no_askable_gap'
+      : 'next_null_with_askable_gaps_after_off_slot_or_repeat_policy',
+    spine: spineAfter(projectId),
+  };
+}
+
 function gitSha() {
   try {
     return execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
@@ -153,10 +176,9 @@ function runTrackA(id: ScenarioId) {
         mismatchClasses: classes,
         status: 'FAIL',
         reason: 'engine had no next question',
+        spineAfter: spineAfter(pid),
         gapCompletenessAtStop: completenessMap(pid),
-        noAskableGap: loadAiPmLoopState(pid).gapState
-          ? hasNoAskableGap(loadAiPmLoopState(pid).gapState!)
-          : null,
+        stopCause: stopCause(pid, null),
       });
       break;
     }
@@ -181,6 +203,8 @@ function runTrackA(id: ScenarioId) {
       status: exact ? 'PASS' : 'FAIL',
       nextQuestion: after.nextQuestionText,
       nextTargetGap: after.nextTargetGap,
+      spineAfter: spineAfter(pid),
+      stopCause: after.nextQuestionText ? null : stopCause(pid, after.nextQuestionText),
     });
     nextQ = after.nextQuestionText ?? null;
     nextGap = after.nextTargetGap ?? null;
@@ -217,10 +241,9 @@ function runTrackB(id: ScenarioId) {
         askedQuestion: null,
         askedGap: null,
         status: 'STOP',
+        spineAfter: spineAfter(pid),
         gapCompletenessAtStop: completenessMap(pid),
-        noAskableGap: loadAiPmLoopState(pid).gapState
-          ? hasNoAskableGap(loadAiPmLoopState(pid).gapState!)
-          : null,
+        stopCause: stopCause(pid, null),
       });
       break;
     }
@@ -242,6 +265,8 @@ function runTrackB(id: ScenarioId) {
       frozenTurnUsed: picked.frozenTurn,
       nextQuestion: after.nextQuestionText,
       nextTargetGap: after.nextTargetGap,
+      spineAfter: spineAfter(pid),
+      stopCause: after.nextQuestionText ? null : stopCause(pid, after.nextQuestionText),
     });
     nextQ = after.nextQuestionText ?? null;
     nextGap = after.nextTargetGap ?? null;
@@ -372,10 +397,11 @@ describe('PR #197 frozen T1–T8 divergence (contract vs adapter)', () => {
         googleOauth: 'NOT VERIFIED',
       },
       contract: {
-        frozenDocument: 'CPO review script — not runtime SoT until CPO re-authorizes code change',
+        frozenDocument: 'CPO review script — not runtime SoT. CEO: problem-first engine change is not approved.',
         engineSot:
           'Stage A businessOneLiner → customerPersona → payer → problemJtbd; FIX-10 customer → problem → solution; T7 payer-hold',
-        existingPlaybackAdapter: 'followEngine hardcodes first gap=problemJtbd',
+        adapterScope: 'verification only under __tests__; not imported by runtime',
+        existingPlaybackAdapter: 'followEngine hardcodes first gap=problemJtbd — not engine SoT',
         s6SideSelect: 'frozen T1 marketplaceSide has no engine gap',
       },
       trackA_verbatimSotTurnIndex: {

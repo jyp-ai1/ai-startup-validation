@@ -1,5 +1,9 @@
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
+import { STAGE_A_REQUIRED_GAPS } from '../evaluate-stage-readiness';
 import {
   classifyTurnMismatch,
   ENGINE_SOT_FIRST_GAP,
@@ -55,6 +59,28 @@ describe('PR #197 frozen scenario adapter (verification only)', () => {
         founderAnswerAppliedToAskedGap: false,
       }),
     ).toEqual(['STOP']);
+  });
+
+  it('does not change runtime Stage A order and is not imported outside tests', () => {
+    expect([...STAGE_A_REQUIRED_GAPS]).toEqual([
+      'businessOneLiner',
+      'customerPersona',
+      'payer',
+      'problemJtbd',
+    ]);
+    expect(ENGINE_SOT_FIRST_GAP).toBe('customerPersona');
+    const runtimeDir = join(dirname(fileURLToPath(import.meta.url)), '..');
+    const runtimeHits = [
+      'ai-pm-judgment-next-question-binding.ts',
+      'ai-pm-anti-repeat-policy.ts',
+      'ai-pm-no-gap-termination.ts',
+      'decide-next-question-from-review.ts',
+      'evaluate-stage-readiness.ts',
+      'resolve-next-question-decision.ts',
+    ].filter((file) =>
+      readFileSync(join(runtimeDir, file), 'utf8').includes('pr197-frozen-scenario-adapter'),
+    );
+    expect(runtimeHits).toEqual([]);
   });
 
   it('maps frozen founder answer onto the asked gap, not turn index', () => {

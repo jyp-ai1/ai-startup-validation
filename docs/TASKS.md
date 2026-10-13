@@ -6,7 +6,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 사업 이해 · 객관식 대화
 
-**CPO Gate:** 엔진·S4 라우팅·buyer 차단·T7 next=payer CPO VERIFIED · T1–T8 문구 FAIL · OAuth·Production NOT VERIFIED · 병합·배포 보류  
+**CPO Gate:** 엔진 SoT 유지 · 5263e83e 검토 문서 · T1–T8 1:1 FAIL · T6/T7 CPO VERIFIED · OAuth·Production NOT VERIFIED · 병합·배포 보류  
 **Branch:** `cursor/ai-pm-mcq-understanding-e648`  
 **Scenarios:** `docs/product/ai-pm-closed-conversation-scenarios.md` (본문 동결 `5263e83e`)  
 **Quality package:** `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-IMPROVEMENT.md`  
@@ -44,6 +44,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 26 | T7 next=payer 정책 | 📤 `PR197-CPO-LOGIN-UI-T7-PAYER-COPY.txt` · next=payer · **CPO VERIFIED** · 병합 금지 |
 | 27 | 남은 병합 게이트 증거 | 📤 `PR197-CPO-MERGE-GATE-COPY.txt` · T1–T8 문구 FAIL 0/8 · OAuth·Production NOT VERIFIED · AC16/AC5 유지 · 병합 금지 |
 | 28 | T1–T8 불일치 원인 · 계약 | 📤 `PR197-CPO-T1-T8-DIVERGENCE-COPY.txt` · 동결=시나리오 문서, 엔진 SoT=고객 먼저 · 1:1 0/35 FAIL 유지 · 5턴 중단=오프슬롯 하네스 · 온슬롯 8턴 · SoT 미개작 · 병합 금지 |
+| 29 | T1–T8 계약 분리 · Track A/B | 📤 `PR197-CPO-CONTRACT-SEPARATION-COPY.txt` · CEO problem-first 미승인 · Track A 0/35 FAIL · Track B 8턴 · 어댑터 비런타임 · T6/T7/CQ PASS · AC16/AC5 유지 · OAuth·Prod NOT VERIFIED · 병합 금지 |
 
 ---
 
