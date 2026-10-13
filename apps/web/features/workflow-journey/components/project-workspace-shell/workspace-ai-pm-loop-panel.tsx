@@ -24,6 +24,10 @@ import {
 } from '../../lib/business-understanding/build-business-choice-question';
 import { resolveBusinessChoiceAnswer } from '../../lib/business-understanding/apply-business-choice';
 import { applyBusinessChoiceThroughLoop } from '../../lib/business-understanding/apply-business-choice-through-loop';
+import {
+  applyTypedAnswerThroughLoop,
+  shouldRouteTypedAnswerThroughLoop,
+} from '../../lib/business-understanding/route-typed-answer-through-loop';
 import { buildAiPmRuntimeJudgment } from '../../lib/business-understanding/build-workspace-ai-pm-state';
 import {
   appendAiPmLoopTurn,
@@ -1729,6 +1733,54 @@ export function WorkspaceAiPmLoopPanel({
     const visibleGap =
       inferTargetGapFromQuestionText(displayedQuestionText) ?? displayedGap;
     let resolvedAskedGap = visibleGap ?? askedTargetGap;
+
+    const askedGapForRoute =
+      visibleGap ?? resolvedAskedGap ?? storedLoop.lastDecision?.targetGap ?? null;
+    const customerCompleteness =
+      storedLoop.gapState?.gaps.customerPersona?.completeness ?? null;
+    if (
+      shouldRouteTypedAnswerThroughLoop({
+        answer: trimmed,
+        askedGap: askedGapForRoute,
+        customerCompleteness,
+      })
+    ) {
+      const doc = loadWorkspaceDocumentText(projectId) ?? documentText ?? '';
+      const result = applyTypedAnswerThroughLoop({
+        projectId,
+        documentText: doc,
+        answer: trimmed,
+        askedGap: askedGapForRoute || 'payer',
+        askedQuestionText: displayedQuestionText,
+        customerCompleteness,
+      });
+      if (result.nextTargetGap && result.nextQuestionText && result.nextIssueId) {
+        const purity = enforceQuestionPurity({
+          questionText: result.nextQuestionText,
+          targetGap: result.nextTargetGap,
+        });
+        setQuestionOverride({
+          targetGap: result.nextTargetGap,
+          questionText: purity.sanitizedText,
+          whyNow: result.nextWhyNow ?? '',
+          reason: 'adaptive',
+        });
+        commitQuestionLock(
+          captureLockedAskSurface({
+            issueId: result.nextIssueId,
+            targetGap: result.nextTargetGap,
+            questionText: purity.sanitizedText,
+            whyNow: result.nextWhyNow ?? '',
+            fallbackIssueId: result.nextIssueId,
+          }),
+        );
+      }
+      setContradiction(null);
+      setAnswerQualityHint(null);
+      resetAnswerDraft();
+      syncState(loadAiPmLoopState(projectId));
+      return;
+    }
 
     let semantic = interpretAnswerSemantics({
       answer: trimmed,

@@ -314,10 +314,15 @@ async function answerOnGap(page: Page, patterns: GapPatterns, fallbackText?: str
 async function typeFreeText(page: Page, text: string) {
   const asked = await readSurfaceQuestion(page).catch(() => '');
   const labels = await choiceLabels(page);
-  if (labels.some((l) => /기타/.test(l))) {
-    await clickChoiceMatching(page, /기타/);
+  const other = page.getByTestId('business-choice-other');
+  if (await other.first().isVisible().catch(() => false)) {
+    await other.first().click({ force: true });
     await page.waitForTimeout(400);
+  } else if (labels.some((l) => /기타/.test(l))) {
+    await clickChoiceMatching(page, /기타/);
   }
+  const box = page.getByTestId('answer-input');
+  await box.waitFor({ state: 'visible', timeout: 8_000 }).catch(() => null);
   const typed = await submitAnswer(page, text);
   return captureTurn(page, text, typed ? 'typed' : 'submit-failed', asked, labels);
 }
@@ -468,7 +473,9 @@ test.describe('PR #197 CPO login UI', () => {
       (f) => f.lifecycle === 'current' && /20대/.test(f.value ?? ''),
     );
     const t7Next = String(s4t7.nextQuestion ?? '');
-    const t7NextIsAlt = /대안|경쟁|지금은 어떻게|쿠팡|대신/.test(t7Next);
+    const t7NextIsAlt =
+      /대안|경쟁|지금은 어떻게|쿠팡|대신|비슷한 역할/.test(t7Next) ||
+      s4t7.targetGap === 'alternativesCompetitors';
 
     evidence.S4 = {
       prep: s4prep,
