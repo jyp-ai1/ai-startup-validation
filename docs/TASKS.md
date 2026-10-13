@@ -6,7 +6,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 사업 이해 · 객관식 대화
 
-**CPO Gate:** OPEN · 완결형 시나리오 초안 검토 대기 · 구현 확대 정지  
+**CPO Gate:** OPEN · CPO 검토 패키지 제출 · 구현 확대 정지  
 **Branch:** `cursor/ai-pm-mcq-understanding-e648`  
 **Scenarios:** `docs/product/ai-pm-closed-conversation-scenarios.md`  
 **Reuse:** V3 living / review / next-question / DAY 8-G presenter. 엔진 재작성 없음.  
@@ -25,7 +25,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 9 | `아직 모르겠음` 막힘 | ✅ 턴 저장 · Fact 미병합 · 다음 공백 이동 |
 | 10 | 선택지 품질 | ✅ 문제 문장 미절단 · 이/가 조사 · 대안 파편 제거 |
 | 11 | 결제 증거 재판단 | 1차 검증: 결론/customerChange 불변 · 엔진 미개작 |
-| 12 | 완결형 시나리오 초안 | 📝 `docs/product/ai-pm-closed-conversation-scenarios.md` · CPO 일괄 검토 대기 · 구현 확대 정지 |
+| 12 | 완결형 시나리오 초안 | 📤 CPO 검토 패키지 제출 · `docs/product/ai-pm-closed-conversation-scenarios.md` · 본문 SHA `5263e83e` · 구현 확대 정지 |
 
 ---
 
