@@ -30,9 +30,9 @@ PR: https://github.com/jyp-ai1/ai-startup-validation/pull/197
 엔진 불변: 8965af43 CPO VERIFIED
 S4 라우팅: 08a36d8c CPO VERIFIED
 buyer 차단: f95bb167 CPO VERIFIED
-이번 수정: (commit 후 dump implSha pin)
+이번 수정: 5720ff8b
 수정 전 dump: executedAt 2026-10-13T12:21:52Z · T7 next=solution · reason=anti-repeat judgment advance to solution
-수정 후 dump: executedAt 2026-10-13T12:41:46Z · T7 next=payer
+수정 후 dump: executedAt 2026-10-13T12:41:46Z · pin 5720ff8b · T7 next=payer
 Production: 0b465226 불변
 경로: QA magic-link → /ko/workspace → WorkspaceAiPmLoopPanel
 원시 I/O: docs/evidence/ALABOM/AI-PM/PR197-CPO-LOGIN-UI-DUMP.json
