@@ -1,0 +1,60 @@
+PR #197 동결 T1–T8 불일치 — CTO 분석 제출 (병합 보류)
+
+T7 next=payer · T6 buyer 차단 CPO VERIFIED 유지. 동결 기대 문구를 낮추지 않음. 엔진 Stage A/FIX-10/T7를 재작성하지 않음. AC16/AC5 완화하지 않음. 엔진 PASS와 UI PASS를 한 줄로 합치지 않음. 병합·Production 배포하지 않음.
+
+상태 어휘: NOT STARTED / IMPLEMENTED / CTO VERIFIED / CPO VERIFIED / NEEDS FIX / NOT VERIFIED
+
+한 줄: 동결 5263e83e는 CPO 검토용 시나리오 문서이지 런타임 SoT가 아니다. 엔진 첫 질문은 고객 페르소나, 동결 첫 질문은 문제/면 선택이다. 1:1 문구는 35비교 0 exact FAIL. 5턴 중단은 동결 답을 턴 번호로 다른 갭에 넣은 하네스 오염이며, 온슬롯 재생은 6사업 모두 8턴이다.
+
+계약
+동결 문서 머리글: 승인 전 코드 변경 금지, 엔진 재작성 없음, 승인 후 테스트로 옮긴다.
+런타임 SoT: Stage A 한 줄→고객→payer→문제. 문서에 고객/문제가 있으면 한 줄 생략 → 첫 질문=고객. FIX-10 고객→문제→solution. T7 고객+문제 CLOSED면 next=payer.
+followEngine 첫 갭=problemJtbd는 이미 시나리오 재생기이며 엔진 SoT가 아니다.
+S6 T1 「지금 먼저 풀 쪽은 어디인가요?」는 엔진 갭이 없다.
+
+Track A (CPO 1:1 재현, 기대 문구 불변)
+compared=35 exactMatches=0
+S1 T1 expected=고객이 지금 가장 불편해하는 점은 무엇인가요? actual=이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? class=FIRST_QUESTION+ORDER+OFF_SLOT next=problemJtbd
+S2 T1 expected=지금 가장 크게 풀려는 불편은 무엇인가요? actual=같은 고객 질문
+S3 T1 expected=지금 가장 크게 줄이려는 실수는 무엇인가요? actual=같은 고객 질문
+S4 T1 expected=부모가 지금 가장 귀찮아하는 점은 무엇인가요? actual=같은 고객 질문
+S5 T1 expected=고객이 지금 단백질 간식에서 가장 불만인 점은 무엇인가요? actual=같은 고객 질문. 8턴 지속, 문구 0/8
+S6 T1 expected=지금 먼저 풀 쪽은 어디인가요? actual=같은 고객 질문
+S1 T5 STOP. gapState customer=OPEN problem=PARTIAL revenue=CLOSED noAskableGap=false. 물을 갭이 없어서가 아님.
+
+Track B (SoT 첫 질문 + 답을 물은 갭에 매핑)
+S1–S6 모두 turnCount=8 reachedEight=true stoppedEarly=false
+S2 askedGaps=customerPersona → problemJtbd → payer → alternatives → validation → solution → validation → revenue
+
+Track C (problem-first 재생, SoT 아님)
+S1 T2만 exact 1건(고객 질문). S1 T1은 같은 problem 갭이어도 gap-map 「지금 가장 크게 해결하려는 불편은」 ≠ 동결 「고객이 지금 가장 불편해하는 점은」. MCQ 프레젠터만 동결 S1 T1과 같다.
+
+최소 수정
+엔진 첫 질문을 문제로 바꾸지 않음 (T7·Stage A 충돌).
+동결 기대 문구를 낮추지 않음.
+검증 어댑터만 추가해 중단/순서/문구를 분리 측정.
+문구 PASS가 되려면 CPO가 (1) 5263e83e를 SoT 순서로 개정하거나 (2) problem-first SoT를 재승인해야 한다. 이번 작업은 (2)를 실행하지 않는다.
+
+회귀
+엔진: T7 payer-hold PASS. S4 T6/T7 라우팅 PASS.
+UI: 이번 재실행 없음. 이전 로그인 UI 증거 유지.
+AC16 expected=businessOneLiner received=alternativesCompetitors
+AC5 expected=marketChannel received=alternativesCompetitors
+
+원시 I/O
+docs/evidence/ALABOM/AI-PM/PR197-CPO-FROZEN-T1-T8-DUMP.json
+docs/evidence/ALABOM/AI-PM/PR197-CPO-T1-T8-DIVERGENCE-DUMP.json
+
+판정 표
+T6 고객 정정 / buyer 오사용 차단 = CPO VERIFIED 유지
+T7 고객 재확인 / next=payer = CPO VERIFIED 유지
+S6 / S2 / S3 / S5 회귀 = 이전 제출 PASS 유지
+동결 T1–T8 문구 일대일 = NEEDS FIX / FAIL (0/35)
+Google OAuth 8턴 = NOT VERIFIED
+Production 대화 = NOT VERIFIED
+AC16 / AC5 = 기존 부채
+PR #197 전체 병합 = 승인 보류
+
+CTO는 병합하지 않는다. Production 배포하지 않는다.
+(CTO) CPO 요청 작업: T1–T8 불일치 원인 분석 제출 — 시나리오 문서 vs 엔진 SoT 계약 충돌, 1:1 FAIL 유지, 온슬롯 8턴, 병합 보류
+(CPO) 검토·지시 필요: 예 — 동결 본문을 SoT에 맞출지, 엔진 SoT를 problem-first로 재승인할지 결정 필요. OAuth·Production은 별도 NOT VERIFIED
