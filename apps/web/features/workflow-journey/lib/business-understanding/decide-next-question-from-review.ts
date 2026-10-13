@@ -293,6 +293,12 @@ export function whyNowAfterEvidence(
   base: string,
 ): string {
   if (!review || review.askedGapId !== 'validationTestability') return base;
+  if (
+    base.includes('결제·사용 단서는 약증거이며') ||
+    base.includes('아직 결제·사용 증거가 없어')
+  ) {
+    return base;
+  }
   const answer = review.userAnswer ?? '';
   const denied = /아직.{0,16}(없|없습)|증거는 없/.test(answer);
   if (denied) {
@@ -302,6 +308,58 @@ export function whyNowAfterEvidence(
     return `결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. ${base}`;
   }
   return `아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. ${base}`;
+}
+
+function quotedHypothesis(question: string): string | null {
+  const matches = [...question.matchAll(/「([^」]+)」/g)].map((m) => m[1] ?? '');
+  return matches.find((text) => text.length >= 4) ?? null;
+}
+
+/** Understanding answers change why the next ask exists. They do not change next-gap coverage. */
+export function whyNowAfterUnderstanding(
+  review: AnswerReview | null,
+  base: string,
+): string {
+  if (!review) return base;
+  const gap = review.askedGapId;
+  if (gap !== 'customerPersona' && gap !== 'problemJtbd') return base;
+  if (
+    base.includes('창업자 확인은 이해 마감이지') ||
+    base.includes('고객 가설이 바뀌었습니다') ||
+    base.includes('문제 가설이 바뀌었습니다') ||
+    base.includes('고객은 아직 확정되지 않았고') ||
+    base.includes('문제는 아직 확정되지 않았습니다')
+  ) {
+    return base;
+  }
+  const answer = review.userAnswer ?? '';
+  if (/아직.{0,12}모르|모르겠/.test(answer)) {
+    return gap === 'customerPersona'
+      ? `고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. ${base}`
+      : `문제는 아직 확정되지 않았습니다. ${base}`;
+  }
+  const hypothesis = quotedHypothesis(review.askedQuestionText ?? '');
+  const revised =
+    Boolean(hypothesis) &&
+    hypothesis!.length >= 4 &&
+    !answer.includes(hypothesis!.slice(0, Math.min(8, hypothesis!.length)));
+  if (revised && gap === 'customerPersona') {
+    return `고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. ${base}`;
+  }
+  if (revised && gap === 'problemJtbd') {
+    return `문제 가설이 바뀌었습니다. 이전 문제 가정은 현재 사실이 아닙니다. ${base}`;
+  }
+  if (gap === 'customerPersona') {
+    return `창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. ${base}`;
+  }
+  return base;
+}
+
+export function applyAnswerSensitiveWhyNow(
+  review: AnswerReview | null,
+  base: string,
+): string {
+  return whyNowAfterEvidence(review, whyNowAfterUnderstanding(review, base));
 }
 
 /**
@@ -420,7 +478,7 @@ export function decideNextQuestionFromReview(
     previousQuestionText,
   });
   const questionText = built.questionText;
-  const whyNow = whyNowAfterEvidence(lastReview, built.whyNow);
+  const whyNow = applyAnswerSensitiveWhyNow(lastReview, built.whyNow);
   const reframed = built.reframed;
 
   const priorAsks = countUnclosedGapAsks(turns, finalTarget);

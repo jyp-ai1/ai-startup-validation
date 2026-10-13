@@ -267,10 +267,23 @@ function snapshotAfter(
     validationTestability:
       loop.gapState?.gaps.validationTestability?.completeness ?? 'OPEN',
   };
+  const evidenceClasses = lastEvidenceClasses(projectId);
   return {
+    before: {
+      spine: result.livingBefore.spine,
+      judgmentConclusion: result.judgmentBefore?.conclusion ?? null,
+      customerStatus: result.judgmentBefore?.dimensions.customer.status ?? 'unknown',
+      problemStatus: result.judgmentBefore?.dimensions.problem.status ?? 'unknown',
+    },
+    after: {
+      spine: result.livingAfter.spine,
+    },
+    founderAnswer: result.resolved.answerText,
     spine: result.livingAfter.spine,
     completeness,
-    evidenceClasses: lastEvidenceClasses(projectId),
+    evidenceClasses,
+    evidenceHasFact: evidenceClasses.includes('FACT'),
+    evidenceHasValidated: evidenceClasses.includes('VALIDATED'),
     gapEvidence: {
       customerPersona:
         loop.gapState?.gaps.customerPersona?.evidence?.[0]?.evidenceClass ?? null,
@@ -290,6 +303,7 @@ function snapshotAfter(
     next: {
       targetGap: result.nextTargetGap,
       question: result.nextQuestionText,
+      whyNow: result.nextWhyNow,
       validationAction: result.nextValidationAction,
     },
   };
@@ -421,10 +435,10 @@ describe('PR #197 S1–S6 strategy quality', () => {
         yesSnap.judgment.customerChangeReason !== noneSnap.judgment.customerChangeReason ||
         yesSnap.judgment.customerChangeSummary !== noneSnap.judgment.customerChangeSummary;
       const nextAfterUnderstandingDiverged =
-        confirmSnap.next.targetGap !== unknownSnap.next.targetGap ||
-        confirmSnap.next.question !== unknownSnap.next.question ||
-        confirmSnap.next.targetGap !== reviseSnap.next.targetGap ||
-        confirmSnap.next.question !== reviseSnap.next.question;
+        confirmSnap.next.validationAction !== unknownSnap.next.validationAction ||
+        confirmSnap.next.validationAction !== reviseSnap.next.validationAction ||
+        confirmSnap.next.whyNow !== unknownSnap.next.whyNow ||
+        confirmSnap.next.whyNow !== reviseSnap.next.whyNow;
       const nextAfterEvidenceDiverged =
         yesSnap.next.targetGap !== noneSnap.next.targetGap ||
         yesSnap.next.question !== noneSnap.next.question ||
@@ -456,7 +470,7 @@ describe('PR #197 S1–S6 strategy quality', () => {
         ),
         nextAfterUnderstanding: axisPass(
           nextAfterUnderstandingDiverged,
-          `confirmNext=${confirmSnap.next.targetGap} reviseNext=${reviseSnap.next.targetGap} unknownNext=${unknownSnap.next.targetGap}`,
+          `confirmNext=${confirmSnap.next.targetGap} reviseNext=${reviseSnap.next.targetGap} unknownNext=${unknownSnap.next.targetGap} confirmWhy="${confirmSnap.next.whyNow}" reviseWhy="${reviseSnap.next.whyNow}" unknownWhy="${unknownSnap.next.whyNow}"`,
         ),
         nextAfterEvidence: axisPass(
           nextAfterEvidenceDiverged,
@@ -508,7 +522,7 @@ describe('PR #197 S1–S6 strategy quality', () => {
         executedSha: gitSha(),
         executedAt: new Date().toISOString(),
         note:
-          'Success is answer-dependent understanding, evidence, completeness, judgment, and next action. 8-turn reach is not success. Track A 0/36, Track B NEEDS FIX, AC16/AC5 FAIL are not rewritten here.',
+          'Success is answer-dependent understanding, evidence, completeness, judgment, and next-action reason. 8-turn reach is not success. Track A FAIL, Track B NEEDS FIX, AC16/AC5 FAIL are not rewritten here.',
         production: 'NOT VERIFIED',
         loginUiEightTurn: 'NOT VERIFIED',
         googleOauth: 'NOT VERIFIED',
@@ -533,5 +547,18 @@ describe('PR #197 S1–S6 strategy quality', () => {
     }
     expect(ids).toHaveLength(6);
     expect(overallStatus).toMatch(/PASS|NEEDS FIX|FAIL/);
+    const s1 = scenarios.S1 as {
+      branches: {
+        confirm: { next: { whyNow: string | null }; evidenceHasFact: boolean };
+        revise: { next: { whyNow: string | null }; spine: { customer: string } };
+        unknown: { next: { whyNow: string | null }; completeness: { customerPersona: string } };
+      };
+    };
+    expect(s1.branches.confirm.evidenceHasFact).toBe(false);
+    expect(s1.branches.confirm.next.whyNow ?? '').toContain('검증된 사실이 아닙니다');
+    expect(s1.branches.revise.next.whyNow ?? '').toContain('고객 가설이 바뀌었습니다');
+    expect(s1.branches.unknown.next.whyNow ?? '').toContain('아직 확정되지 않았고');
+    expect(s1.branches.unknown.completeness.customerPersona).not.toBe('CLOSED');
+    expect(s1.branches.revise.spine.customer).toMatch(/대기업|물류/);
   }, 120_000);
 });

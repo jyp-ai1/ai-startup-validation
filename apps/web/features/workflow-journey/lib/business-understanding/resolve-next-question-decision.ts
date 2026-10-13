@@ -18,9 +18,9 @@ import {
 import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 import {
+  applyAnswerSensitiveWhyNow,
   decideNextQuestionFromReview,
   isNextQuestionDecision,
-  whyNowAfterEvidence,
   type NextQuestionDecision,
 } from './decide-next-question-from-review';
 import { evaluateStageReadiness, isStageBGap } from './evaluate-stage-readiness';
@@ -257,7 +257,7 @@ export function resolveNextQuestionDecision(
       lastReview,
       judgment: judgmentSnapshot,
     });
-    const evidenced = whyNowAfterEvidence(lastReview, decision.whyNow ?? '');
+    const evidenced = applyAnswerSensitiveWhyNow(lastReview, decision.whyNow ?? '');
     if (evidenced !== decision.whyNow) {
       decision = { ...decision, whyNow: evidenced };
     }

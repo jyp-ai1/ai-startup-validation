@@ -35,6 +35,7 @@ import {
   shouldSkipDocumentOneLiner,
 } from './resolve-turn-decision';
 import { isGapAskable } from './update-gap-state-from-review';
+import { applyAnswerSensitiveWhyNow } from './decide-next-question-from-review';
 import { evaluateStageReadiness } from './evaluate-stage-readiness';
 import { isV3ReviewPipelineActive } from './v3-review-pipeline';
 import {
@@ -273,11 +274,15 @@ export function applyBusinessChoiceThroughLoop(
     );
     if (yielded) {
       const nextBinding = resolveGapQuestionBinding(yielded);
+      const lastReview = [...loopAfter.turns].reverse().find((t) => t.review)?.review ?? null;
       next = {
         targetGap: yielded,
         issueId: nextBinding.issueId,
         questionText: nextBinding.questionText,
-        whyNow: whyNowForGapField(yielded) || nextBinding.whyNow,
+        whyNow: applyAnswerSensitiveWhyNow(
+          lastReview,
+          whyNowForGapField(yielded) || nextBinding.whyNow,
+        ),
         rationale: nextBinding.whyNow,
         score: 40_000,
         reframed: false,
@@ -302,7 +307,11 @@ export function applyBusinessChoiceThroughLoop(
   }
 
   const nextTargetGap = next?.targetGap ?? null;
-  const nextWhyNow = next?.whyNow ?? (nextTargetGap ? whyNowForGapField(nextTargetGap) : null);
+  const lastReview = [...loopAfter.turns].reverse().find((t) => t.review)?.review ?? null;
+  const nextWhyNow = applyAnswerSensitiveWhyNow(
+    lastReview,
+    next?.whyNow ?? (nextTargetGap ? whyNowForGapField(nextTargetGap) : ''),
+  ) || null;
 
   return {
     waitingForFreeText: false,

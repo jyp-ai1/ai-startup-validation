@@ -1,0 +1,148 @@
+PR #197 CPO S1–S6 전략 품질 검증. 이 블록 전체를 한 번에 복사. 표 없음. 병합 요청 없음. Production 배포 없음.
+
+한 줄: Preview PASS는 전략 성공이 아니다. S1–S6 엔진 경로에서 창업자 답에 따라 이해·증거·판단·다음 행동 이유가 갈린다. 다음 gap은 문제가 아직 OPEN이라 confirm/revise/unknown 모두 problemJtbd다. 확인은 FACT가 아니다. Track A/AC16/AC5는 실패 유지. 로그인 UI·OAuth·Production은 NOT VERIFIED.
+
+기준점
+기준 기록 SHA: e499fab8
+Preview 보고 SHA: b78e4d29
+이 검증·whyNow 커밋: 푸시 후 HEAD
+Production 잠금: 0b465226
+브랜치: cursor/ai-pm-mcq-understanding-e648
+PR: https://github.com/jyp-ai1/ai-startup-validation/pull/197
+병합·Production 배포: 하지 않음
+
+===== 상태 분리 =====
+
+FIX-10 D4 최소 수정: 유지. harnessSolutionWhileIdentityOpen=[]
+TS2367: 재발 없음. ai-pm-anti-repeat-policy.ts에 gapId==='solution' 비교 없음. 남은 TS2367은 기존 e2e/테스트 파일뿐
+Vercel Preview b78e4d29: 2/2 PASS. 이 커밋 Preview는 푸시 후. Production 아님
+FIX-10 overallPass: FAIL 유지. 기대값 미하향
+S1–S6 엔진 경로 측정: PASS. 8턴 도달은 사용하지 않음. 로그인 UI 8턴과 합치지 않음
+T6: CPO VERIFIED 유지. 7/7 PASS
+T7: CPO VERIFIED 유지. 5/5 PASS
+conversation-quality: 24/24 PASS
+Track A: FAIL. compared=32 exact=0. 동결 문구 5263e83e 미하향
+Track B: NEEDS FIX 유지
+V3 AC16: FAIL 유지. expected businessOneLiner received validationTestability
+V3 AC5: FAIL 유지. expected marketChannel received validationTestability
+로그인 UI 8턴: NOT VERIFIED
+Google OAuth: NOT VERIFIED
+Production: NOT VERIFIED. lock 0b465226
+병합: 금지
+
+===== 변경 파일 =====
+
+decide-next-question-from-review.ts — whyNowAfterUnderstanding. 확인=CLAIM, 수정=이전 가설 폐기, 모르겠음=미확정. gap 선택은 바꾸지 않음
+resolve-next-question-decision.ts — constrain 이후 applyAnswerSensitiveWhyNow
+apply-business-choice-through-loop.ts — unknown yield와 최종 whyNow에 동일 적용
+pr197-s1-s6-strategy-quality.test.ts — 전후 이해, FACT 여부, completeness, 판단, 다음 행동 이유를 덤프. 다음 gap 불일치가 아니라 이유 분기를 측정. Track A/AC16 기대값 미변경
+
+===== TS2367 =====
+
+명령: cd apps/web && pnpm exec tsc --noEmit
+프로덕션: ai-pm-anti-repeat-policy.ts TS2367 없음
+STAGE_A/B 루프는 isStageBGap만 사용
+
+===== S1–S6 시나리오 증거 =====
+
+경로: applyBusinessChoiceThroughLoop. 첫 표면 6/6 understanding-verification. 문서 echo confirm-yes 없음. 첫 next≠solution
+
+S1 소상공인 배송 SaaS
+응답 전: customer=반찬가게·꽃집 등 직접 배송 소상공인. 판단 「아직 1차 판단 정보 부족」. customer unknown
+정확함 답: 「이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다.」
+이후 이해: customer 동일 가설 유지. CLOSED. evidence=ASSUMPTION. FACT 없음. VALIDATED 없음
+판단: 「고객은 어느 정도 파악. 나머지 부족」. customer clear
+다음: gap=problemJtbd. 이유 「창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.」
+수정 답: 「…대기업 물류본부입니다.」
+이후 이해: customer=대기업 물류본부. 이전 소상공인 가설을 현재 사실로 남기지 않음. CLOSED+ASSUMPTION. FACT 없음
+판단: 「대화만으로 1차 판단 어려움」. customer needs_check
+다음: gap=problemJtbd. 이유 「고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다.」
+모르겠음 답: 「아직 모르겠습니다.」
+이후: customerPersona OPEN. FACT 없음. Stage B 탈출 없음
+다음: gap=problemJtbd. 이유 「고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다.」
+결제 3건: customerChangeReason 「약증거 — 검증 완료·Fact 아님」. validation OPEN. FACT 없음. 이유 「결제·사용 단서는 약증거이며 검증된 사실이 아닙니다.」
+결제 없음: 「결제 의향·지불 사실 미확정」. 이유 「아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다.」
+
+S2 전통주 브랜드
+전: customer=전통주를 선물·취미로 찾는 30–40대
+정확함: 30–40대 유지. CLOSED+ASSUMPTION. FACT 아님. 이유=확인≠FACT
+수정: 혼자 마시는 20대. 이전 30–40대를 현재 사실로 남기지 않음. 이유=가설 교체
+모르겠음: OPEN. 이유=미확정
+결제 있음/없음: S1과 동일 증거 분기
+
+S3 견적 자동화
+전: 직원 20–80명 제조사 영업관리자
+정확함: 영업관리자 CLOSED+ASSUMPTION
+수정: 개인 프리랜서. 이전 영업관리자 가설 폐기
+모르겠음: OPEN
+결제 분기: 동일
+
+S4 구독 박스
+전: 맞벌이 부모
+정확함: 맞벌이 부모 CLOSED+ASSUMPTION
+수정: 혼자 사는 20대
+모르겠음: OPEN
+결제 분기: 동일
+
+S5 단백질 쿠키
+전: 운동하는 20–30대
+정확함: 운동하는 20–30대 CLOSED+ASSUMPTION
+수정: 초등학생 부모
+모르겠음: OPEN
+결제 분기: 동일
+
+S6 가사 중개
+전: 맞벌이 가정 / 도우미
+정확함: 맞벌이 가정 / 도우미 CLOSED+ASSUMPTION
+수정: 1인 가구 대학생
+모르겠음: OPEN
+결제 분기: 동일
+
+공통
+확인만으로 FACT/VALIDATED 승격 없음. 6/6 evidenceHasFact=false
+completeness: 정확함·수정 CLOSED. 모르겠음 OPEN
+다음 gap은 문제가 OPEN이라 세 갈래 모두 problemJtbd. 다음 행동 이유만 갈림. 이 점을 숨기지 않음
+T7: customer+problem CLOSED이고 payer OPEN이면 next=payer. 5/5 PASS
+
+===== 테스트별 명령과 결과 =====
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-s1-s6-strategy-quality.test.ts
+측정 PASS. S1–S6 6/6 PASS. 8턴 미사용
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-strategy-restore-phase1.test.ts
+8/8 PASS
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-fix10-failure-classification.test.ts
+1/1 PASS. overallPass=false 보존
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-login-ui-s4-routing.test.ts
+7/7 PASS
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-t7-payer-hold.test.ts
+5/5 PASS
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-conversation-quality.test.ts
+24/24 PASS
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-t1-t8-divergence.test.ts
+PASS as dump. Track A exact=0 FAIL. Track B NEEDS FIX
+
+cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/ai-pm-loop-v3.test.ts
+AC16 FAIL. AC5 FAIL. 기대값 미하향
+
+로그인 UI Playwright 8턴: 미실행 NOT VERIFIED
+Google OAuth: 미실행 NOT VERIFIED
+Production: 미실행 NOT VERIFIED
+
+===== CPO 재검토 =====
+
+엔진 경로 S1–S6는 이해 수정, 확인≠FACT, completeness, 판단, 다음 행동 이유까지 증거가 있다. 다음 gap 자체는 갈리지 않는다. 이것은 Preview 성공이 아니고 로그인 UI·Production 성공이 아니다
+별도 승인 전 병합 및 Production 배포는 하지 않는다
+
+[CTO] CPO 요청 작업: 제출 — S1–S6 전략 품질 엔진 경로 증거. 병합·배포 보류
+[CPO] 검토·지시 필요: 예 — 전략 검증 증거 검토 전 병합·배포 승인 불가
+
+Next Autonomous Target
+Epic PR197 S1–S6 전략 검증 / 증거 제출 / 다음 보고 08:00
+
+AI는 Founder의 성공 확률을 높이기 위한 다음 개선을 계속 진행 중입니다.
