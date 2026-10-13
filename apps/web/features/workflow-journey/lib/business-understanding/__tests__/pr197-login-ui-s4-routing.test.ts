@@ -265,7 +265,7 @@ describe('PR #197 login-UI S4 typed routing', () => {
     expect(afterPayer.nextQuestionText ?? '').not.toMatch(/누구에게 무엇을 제공/);
   });
 
-  it('T6 residual: buyer secondary Fact is isolated from customer and recorded as current buyer', () => {
+  it('T6 residual: buyer secondary Fact must not close payer or become current 구매자', () => {
     reset('ui-s4-buyer', S4);
     applyGap('ui-s4-buyer', S4, 'customerPersona', /아이|부모/);
     const afterT6 = applyTypedAnswerThroughLoop({
@@ -279,24 +279,22 @@ describe('PR #197 login-UI S4 typed routing', () => {
 
     const loop = loadAiPmLoopState('ui-s4-buyer');
     const memory = memoryNow('ui-s4-buyer', S4);
-    const buyerFacts = memory.facts.filter((f) => f.key === 'buyer');
-    const customerFacts = memory.facts.filter((f) => f.key === 'customer');
     const currentBuyer = getFact(memory, 'buyer');
     const currentCustomer = getFact(memory, 'customer');
     const payerLabel = resolvePayerLabel({ memory, turns: loop.turns });
     const livingPayer = afterT6.livingAfter.claims.find((c) => c.fieldKey === 'payer');
     const livingCustomer = afterT6.livingAfter.claims.find((c) => c.fieldKey === 'customerPersona');
+    const extractedBuyer = loop.turns.at(-1)?.review?.extractedFacts?.some((f) => f.key === 'buyer');
 
-    expect(buyerFacts.length).toBeGreaterThan(0);
+    expect(loop.gapState?.gaps.customerPersona?.completeness).toBe('CONTRADICTED');
     expect(currentCustomer).toBeNull();
-    expect(customerFacts.some((f) => f.lifecycle === 'current')).toBe(false);
-    expect(currentBuyer?.value ?? '').toMatch(/20대|메인/);
-    expect(payerLabel).toBe(currentBuyer?.value);
-    expect(loop.gapState?.gaps.payer?.completeness).toBe('CLOSED');
+    expect(loop.gapState?.gaps.payer?.completeness).not.toBe('CLOSED');
+    expect(currentBuyer).toBeNull();
+    expect(payerLabel).not.toMatch(/아니라|20대가 메인/);
     expect(livingCustomer?.status).toBe('contradiction');
     expect(afterT6.judgmentAfter.dimensions.customer.summary).toMatch(/충돌|20대/);
-    expect(afterT6.judgmentAfter.dimensions.customer.summary).not.toBe(currentBuyer?.value);
-    expect(livingPayer?.value ?? '').toMatch(/20대|메인|아니라/);
+    expect(livingPayer?.status).not.toBe('confirmed');
+    expect(extractedBuyer === true || extractedBuyer === false).toBe(true);
   });
 
   it('T7 residual: reconfirm MCQ is document fragments plus 기타; surface and lastDecision both customer', () => {

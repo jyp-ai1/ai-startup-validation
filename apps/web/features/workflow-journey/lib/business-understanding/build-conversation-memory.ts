@@ -18,6 +18,7 @@ import {
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import {
   extractCorrectedFactValue,
+  isCustomerCorrectionWithoutPayerEvidence,
   isMisroutedCustomerDescription,
   parseNotXButYCorrection,
   scrubRejectedCustomerMention,
@@ -104,6 +105,9 @@ function upsertSemanticFacts(
   let next = memory;
   const unique = filterMemoryFactKeys([...new Set(keys)], targetGap);
   for (const key of unique) {
+    if (key === 'buyer' && isCustomerCorrectionWithoutPayerEvidence(answer)) {
+      continue;
+    }
     const value =
       intent === 'correction' ? extractCorrectedFactValue(key, answer) : answer;
     if (!value || value.trim().length < 2) continue;
@@ -112,10 +116,12 @@ function upsertSemanticFacts(
   if (intent === 'correction' && unique.includes('customer')) {
     next = applyCustomerCorrectionRevision(next, answer);
   }
-  // Payer-oriented answers also lock buyer when payment cue present
+  // Payer-oriented answers also lock buyer when payment cue present.
+  // Customer-correction leftovers must not become the current 구매자.
   if (
-    unique.includes('buyer') ||
-    (unique.includes('customer') && /(결제|지불|payer)/i.test(answer))
+    !isCustomerCorrectionWithoutPayerEvidence(answer) &&
+    (unique.includes('buyer') ||
+      (unique.includes('customer') && /(결제|지불|payer)/i.test(answer)))
   ) {
     next = upsertConfirmedFact(next, 'buyer', answer, 'user_turn');
   }

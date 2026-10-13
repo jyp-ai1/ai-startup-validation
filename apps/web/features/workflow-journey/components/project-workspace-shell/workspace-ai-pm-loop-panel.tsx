@@ -395,8 +395,9 @@ export function WorkspaceAiPmLoopPanel({
       turns: loopState.turns,
       entities,
       previous: loadConversationMemory(projectId),
+      gapState: loopState.gapState,
     });
-  }, [projectId, documentText, loopState.turns, entities]);
+  }, [projectId, documentText, loopState.turns, loopState.gapState, entities]);
 
   const livingState = useMemo(
     () =>
@@ -407,6 +408,7 @@ export function WorkspaceAiPmLoopPanel({
         turns: loopState.turns,
         memory: conversationMemory,
         resolvedIssueIds: getResolvedIssueIds(loopState),
+        gapState: loopState.gapState,
       }),
     [conversationMemory, documentText, entities, loopState, understanding],
   );
@@ -1778,7 +1780,19 @@ export function WorkspaceAiPmLoopPanel({
       setContradiction(null);
       setAnswerQualityHint(null);
       resetAnswerDraft();
-      syncState(loadAiPmLoopState(projectId));
+      const afterLoop = loadAiPmLoopState(projectId);
+      saveConversationMemory(
+        buildConversationMemoryFromSources({
+          projectId: projectId ?? 'default',
+          documentText: doc,
+          turns: afterLoop.turns,
+          entities,
+          previous: loadConversationMemory(projectId),
+          gapState: afterLoop.gapState,
+        }),
+        projectId,
+      );
+      syncState(afterLoop);
       return;
     }
 

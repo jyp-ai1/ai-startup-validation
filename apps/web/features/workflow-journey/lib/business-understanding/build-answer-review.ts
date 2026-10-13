@@ -22,6 +22,7 @@ import {
 import {
   extractCorrectedFactValue,
   isCorrectionUtterance,
+  isCustomerCorrectionWithoutPayerEvidence,
   isCustomerFieldCorrection,
   parseNotXButYCorrection,
 } from './ai-pm-correction-semantics';
@@ -639,6 +640,9 @@ function buildGapVerdicts(
       rationale: 'Founder corrected a previously closed customer claim from another slot.',
       factKeys: ['customer'],
     };
+    if (askedGapId === 'payer' && askedCompleteness === 'CLOSED') {
+      askedCompleteness = 'OPEN';
+    }
   }
 
   const askedFactKeys =
@@ -658,6 +662,13 @@ function buildGapVerdicts(
   for (const fact of extractedFacts) {
     const gapId = fact.targetGap;
     if (!gapId) continue;
+    if (
+      customerReversedOffSlot &&
+      isCustomerCorrectionWithoutPayerEvidence(userAnswer) &&
+      (fact.key === 'buyer' || gapId === 'payer')
+    ) {
+      continue;
+    }
 
     const completeness = deriveSecondaryGapCompleteness(fact, askedGapId);
     const existing = verdicts[gapId];

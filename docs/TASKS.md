@@ -6,7 +6,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 사업 이해 · 객관식 대화
 
-**CPO Gate:** 엔진·S4 라우팅 CPO VERIFIED · 잔여 위험 buyer 오사용 FAIL · 병합·배포 보류  
+**CPO Gate:** 엔진·S4 라우팅 CPO VERIFIED · buyer 오사용 차단 제출 · 병합·배포 보류  
 **Branch:** `cursor/ai-pm-mcq-understanding-e648`  
 **Scenarios:** `docs/product/ai-pm-closed-conversation-scenarios.md` (본문 동결 `5263e83e`)  
 **Quality package:** `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-IMPROVEMENT.md`  
@@ -39,7 +39,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 21 | S4 고객 모순 상태 일관성 · T6/T7 실행 증거 | 📤 엔진 CPO VERIFIED (`8965af43`) · 고객 모순 모델 추가 확장 없음 · 병합 금지 |
 | 22 | PR #197 로그인 UI 검증 | 📤 `PR197-CPO-LOGIN-UI-VERIFY.md` · 당시 S4 T6/T7 FAIL · S6/S2/S3/S5 PASS |
 | 23 | 로그인 UI S4 입력 라우팅 | 📤 `PR197-CPO-LOGIN-UI-S4-ROUTING-COPY.txt` · T6/T7 CPO VERIFIED · 병합 금지 |
-| 24 | 병합 전 잔여 위험 확인 | 📤 `PR197-CPO-LOGIN-UI-RESIDUAL-COPY.txt` · buyer 구매자 오사용 FAIL · T7 기타 확정 PASS · 병합 금지 |
+| 24 | 병합 전 잔여 위험 확인 | 📤 당시 buyer 오사용 FAIL · 확인 dump `12:04` |
+| 25 | buyer 오사용 차단 | 📤 `PR197-CPO-LOGIN-UI-BUYER-FIX-COPY.txt` · T6 payer 미CLOSED · CPO 재판정 대기 · 병합 금지 |
 
 ---
 

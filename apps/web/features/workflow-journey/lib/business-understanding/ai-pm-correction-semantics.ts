@@ -4,6 +4,7 @@
  */
 
 import type { ConversationFactKey } from './conversation-memory';
+import { isRolePayerAnswer } from './payer-answer-cues';
 
 const CORRECTION_CUE_RE =
   /(아니\s*그게\s*아니라|사실은|정정|고쳐|수정하|아니(?:요|라)|다시\s*말하|correction|actually\s+it)/i;
@@ -26,6 +27,19 @@ export function isCorrectionUtterance(text: string): boolean {
 export function isCustomerFieldCorrection(text: string): boolean {
   const trimmed = text.trim();
   return isCorrectionUtterance(trimmed) && CUSTOMER_FIELD_CUE_RE.test(trimmed);
+}
+
+/**
+ * Off-slot customer correction may still extract a buyer token.
+ * That token is not valid payer/payment evidence.
+ */
+export function isCustomerCorrectionWithoutPayerEvidence(text: string): boolean {
+  const trimmed = text.trim();
+  if (!isCorrectionUtterance(trimmed)) return false;
+  if (!(parseNotXButYCorrection(trimmed) || isCustomerFieldCorrection(trimmed))) return false;
+  if (isRolePayerAnswer(trimmed)) return false;
+  if (/(결제|지불|payer|결재)/i.test(trimmed)) return false;
+  return true;
 }
 
 export type ParsedNotXButY = {
