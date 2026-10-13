@@ -111,10 +111,14 @@ export function applyBusinessChoiceTurn(
         targetGap: input.option.appliesToGap,
       });
 
+  const nextGap =
+    input.option.kind === 'unknown'
+      ? livingAfter.gaps.find((gap) => gap.fieldKey !== input.option.appliesToGap)?.fieldKey
+      : livingAfter.gaps[0]?.fieldKey;
   const nextQuestion = buildBusinessChoiceQuestion({
     living: livingAfter,
     documentText: input.documentText,
-    targetGap: livingAfter.gaps[0]?.fieldKey,
+    targetGap: nextGap,
   });
   const nextValidationAction = whyNowForGapField(nextQuestion.targetGap);
   const impact = traceBusinessChoiceImpact({

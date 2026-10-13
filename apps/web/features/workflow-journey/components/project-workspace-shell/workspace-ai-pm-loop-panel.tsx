@@ -20,8 +20,10 @@ import {
 import {
   type BusinessChoiceOption,
   isEscapeChoice,
+  isUnknownChoice,
 } from '../../lib/business-understanding/build-business-choice-question';
 import { resolveBusinessChoiceAnswer } from '../../lib/business-understanding/apply-business-choice';
+import { applyBusinessChoiceThroughLoop } from '../../lib/business-understanding/apply-business-choice-through-loop';
 import { buildAiPmRuntimeJudgment } from '../../lib/business-understanding/build-workspace-ai-pm-state';
 import {
   appendAiPmLoopTurn,
@@ -2265,9 +2267,53 @@ export function WorkspaceAiPmLoopPanel({
         setAnswerQualityHint(null);
         return;
       }
+      if (isUnknownChoice(option)) {
+        const doc = loadWorkspaceDocumentText(projectId) ?? documentText ?? '';
+        const result = applyBusinessChoiceThroughLoop({
+          projectId,
+          documentText: doc,
+          option,
+          askedQuestionText: displayQuestionText,
+        });
+        if (result.nextTargetGap && result.nextQuestionText && result.nextIssueId) {
+          const purity = enforceQuestionPurity({
+            questionText: result.nextQuestionText,
+            targetGap: result.nextTargetGap,
+          });
+          setQuestionOverride({
+            targetGap: result.nextTargetGap,
+            questionText: purity.sanitizedText,
+            whyNow: result.nextWhyNow ?? '',
+            reason: 'unknown_signal',
+          });
+          commitQuestionLock(
+            captureLockedAskSurface({
+              issueId: result.nextIssueId,
+              targetGap: result.nextTargetGap,
+              questionText: purity.sanitizedText,
+              whyNow: result.nextWhyNow ?? '',
+              fallbackIssueId: result.nextIssueId,
+            }),
+          );
+        }
+        syncState(loadAiPmLoopState(projectId));
+        resetAnswerDraft();
+        setAnswerQualityHint(null);
+        return;
+      }
       submitAnswer(resolved.answerText);
     },
-    [answerDraft, readOnly, submitAnswer],
+    [
+      answerDraft,
+      commitQuestionLock,
+      displayQuestionText,
+      documentText,
+      projectId,
+      readOnly,
+      resetAnswerDraft,
+      submitAnswer,
+      syncState,
+    ],
   );
 
   const submitSupplementAnswer = useCallback(
