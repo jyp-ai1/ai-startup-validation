@@ -11,6 +11,7 @@ T7 next=payer = CPO VERIFIED 유지
 
 동결 시나리오 T1–T8 문구 = FAIL (일대일 0건)
 기준 본문 SHA 5263e83e. 엔진 resolveNextQuestionDecision 후 동결 창업자 답을 턴 순서로 넣음. 기대한 질문 문구를 낮추지 않음.
+구현/핀: 10904302
 원시 I/O: docs/evidence/ALABOM/AI-PM/PR197-CPO-FROZEN-T1-T8-DUMP.json
 totals: compared=35 exactMatches=0 allScenariosExact=false
 S1 0/8. T1 actual=이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? expected=고객이 지금 가장 불편해하는 점은 무엇인가요?
