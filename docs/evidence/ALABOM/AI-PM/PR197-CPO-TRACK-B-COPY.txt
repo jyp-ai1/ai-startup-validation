@@ -2,8 +2,9 @@ PR #197 Track B — 온슬롯 엔진 검증 (테스트 어댑터 전용). 이 �
 8턴 도달은 품질 PASS가 아니다. 로그인 UI PASS도 아니다. Production PASS도 아니다.
 어댑터: apps/web/features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-scenario-adapter.ts
 런타임 import: 0건 (__tests__ 외). 엔진 SoT 파일 git diff: 공집합.
-덤프 SHA: 4e53a422a07daa8e5f810c7357ff3baf26340b03
-실행 시각: 2026-10-13T14:12:17.696Z
+구현 SHA: a14938af49f0e045e590dffe2fc6a92c9cae29ba
+덤프 SHA: a14938af49f0e045e590dffe2fc6a92c9cae29ba
+실행 시각: 2026-10-13T14:31:06.681Z
 명령: pnpm --filter web exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-t1-t8-divergence.test.ts features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-scenario-adapter.test.ts
 원문 결과: adapter 8 passed. divergence 1 passed. Track B S1-S6 reachedEight=true. qualityStatus 전부 NEEDS FIX.
 

@@ -1,7 +1,7 @@
 {
   "meta": {
-    "implSha": "4e53a422a07daa8e5f810c7357ff3baf26340b03",
-    "executedAt": "2026-10-13T14:12:17.696Z",
+    "implSha": "a14938af49f0e045e590dffe2fc6a92c9cae29ba",
+    "executedAt": "2026-10-13T14:31:06.681Z",
     "frozenScenarioSha": "5263e83e",
     "engineSotFirstGap": "customerPersona",
     "note": "Expected wording is 5263e83e and is not relaxed. Track A reproduces the merge-gate 1:1 FAIL. Track B isolates stop and scores repeats/gap regression. Track C is scripted problem-first playback, not engine SoT. Engine PASS is not UI PASS.",

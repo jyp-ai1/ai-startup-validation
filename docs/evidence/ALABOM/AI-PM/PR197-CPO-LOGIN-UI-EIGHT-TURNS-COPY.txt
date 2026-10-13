@@ -1,7 +1,8 @@
 PR #197 로그인 UI 8턴. 이 블록만 복사.
 엔진 PASS / 어댑터 8턴을 UI PASS로 대체하지 않는다.
 로그인 방식: QA magic-link → /ko/workspace. Google OAuth가 아니다.
-덤프 SHA: 4e53a422a07daa8e5f810c7357ff3baf26340b03
+구현 SHA: a14938af49f0e045e590dffe2fc6a92c9cae29ba
+덤프 SHA: a14938af49f0e045e590dffe2fc6a92c9cae29ba
 실행 시각: 2026-10-13T14:12:55.197Z
 명령: PLAYWRIGHT_BASE_URL=http://127.0.0.1:3210 pnpm exec playwright test e2e/pr197-cpo-login-ui-eight-turns.spec.ts --reporter=list --workers=1
 원문 결과: 6 passed (16.2m). 이 6 passed는 증거 수집 하니스가 시나리오마다 dump를 남겼다는 뜻이다. 제품 8턴 PASS가 아니다.

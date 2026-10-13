@@ -1,13 +1,14 @@
 {
   "meta": {
-    "implSha": "4e53a422a07daa8e5f810c7357ff3baf26340b03",
+    "implSha": "a14938af49f0e045e590dffe2fc6a92c9cae29ba",
     "executedAt": "2026-10-13T14:12:55.197Z",
     "path": "QA magic-link → /ko/workspace create → 8 typed/MCQ turns",
     "login": "qa-magic-link (not Google OAuth)",
     "enginePassIsNotUiPass": true,
     "googleOauth": "NOT VERIFIED",
     "production": "NOT VERIFIED",
-    "mergeRequest": "none"
+    "mergeRequest": "none",
+    "note": " Playwright collected evidence on the tree committed as a14938af. 6 passed is dump recording, not UI 8-turn PASS."
   },
   "scenarios": {
     "S1": {

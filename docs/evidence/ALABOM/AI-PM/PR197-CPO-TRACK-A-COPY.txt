@@ -1,8 +1,9 @@
 PR #197 Track A — 동결 문구 1:1 (5263e83e). 이 블록만 복사.
 이 섹션은 엔진 계약 변경 근거가 아니다. 검토용 문서와 엔진 차이를 보여주는 증거다.
 상태: FAIL. compared=35 exactMatches=0. 기대 문구를 낮추지 않았다.
-덤프 SHA: 4e53a422a07daa8e5f810c7357ff3baf26340b03
-실행 시각: 2026-10-13T14:12:17.544Z
+구현 SHA: a14938af49f0e045e590dffe2fc6a92c9cae29ba
+덤프 SHA: a14938af49f0e045e590dffe2fc6a92c9cae29ba
+실행 시각: 2026-10-13T14:31:06.549Z
 명령: pnpm --filter web exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-t1-t8-wording.test.ts features/workflow-journey/lib/business-understanding/__tests__/pr197-frozen-t1-t8-divergence.test.ts
 원문 결과: Test Files 2 passed. wording 1 test. divergence 1 test. totals compared=35 exactMatches=0.
 

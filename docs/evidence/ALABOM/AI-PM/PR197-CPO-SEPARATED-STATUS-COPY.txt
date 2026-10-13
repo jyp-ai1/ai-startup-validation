@@ -5,8 +5,8 @@ PR #197 CPO 분리 상태 보고. 이 블록 전체를 복사. 표 없음. 병�
 식별
 PR: 197
 브랜치: cursor/ai-pm-mcq-understanding-e648
-덤프에 찍힌 테스트 대상 SHA: 4e53a422a07daa8e5f810c7357ff3baf26340b03
-구현 SHA: 커밋 후 HEAD (이 제출의 테스트/어댑터/e2e/보고서). 엔진 SoT 파일은 미변경.
+구현 SHA: a14938af49f0e045e590dffe2fc6a92c9cae29ba
+테스트 대상 SHA: a14938af49f0e045e590dffe2fc6a92c9cae29ba (Track A/B vitest 재실행). 로그인 UI e2e는 동일 트리에서 수집 후 이 SHA로 기록.
 동결 본문 SHA: 5263e83e (런타임 승격 안 함)
 Production 잠금: 0b465226516e1a4f3eb9ce2087f8bca2c2c091da
 Production 실측 /api/build-info commit: 0b465226516e1a4f3eb9ce2087f8bca2c2c091da matchesLockedSha=true thisPrOnProduction=false
