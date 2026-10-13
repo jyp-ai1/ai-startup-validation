@@ -24,6 +24,8 @@ STAGE_A_REQUIRED_GAPS 단언: businessOneLiner, customerPersona, payer, problemJ
 이번 작업 git diff 엔진 파일: 공집합
 evaluate-stage-readiness.ts / judgment-next-question-binding.ts / anti-repeat / no-gap-termination 미변경
 
+구현 SHA 77147a56 (덤프 meta.implSha와 동일)
+
 Track A — 동결 문구 1:1 (기대 불변)
 명령: pnpm --filter web exec vitest run pr197-frozen-t1-t8-wording.test.ts pr197-frozen-t1-t8-divergence.test.ts
 결과: compared=35 exactMatches=0

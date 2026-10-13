@@ -8,6 +8,7 @@ CPO: 엔진 SoT 유지 · `5263e83e`는 승인 전 검토용 문서 · 1:1 기�
 
 | 항목 | 값 |
 |---|---|
+| 구현 SHA | `77147a56` (덤프 `meta.implSha`) |
 | 동결 본문 | `5263e83e` |
 | Track 덤프 | `PR197-CPO-T1-T8-DIVERGENCE-DUMP.json` |
 | 1:1 덤프 | `PR197-CPO-FROZEN-T1-T8-DUMP.json` compared=35 exact=0 |
