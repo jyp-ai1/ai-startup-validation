@@ -35,7 +35,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 17 | 대화 엔진 구현 · 1차 회귀 | 📤 `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-EXECUTION.md` · 1차 실행 증거 |
 | 18 | CPO 2차 검증 패키지 (A–I) | 📤 CTO 1차 `PR197-CPO-SECOND-VERIFY-PACKAGE.md` · I/O `PR197-CPO-SECOND-VERIFY-DUMP.json` |
 | 19 | CPO 2차 검증 · CEO 보고 | 📤 **NEEDS FIX** `PR197-CPO-SECOND-VERIFY-VERDICT.md` · S6 지속·한 줄 후퇴·S4 판단 반영이 다음 수정 |
-| 20 | NEEDS FIX 3건 수정 + CPO 인라인 보고서 | 📤 `PR197-CPO-REVIEW-READY.md` · 엔진 CTO VERIFIED · CPO 2차 미판정 · UI/T7 NOT VERIFIED |
+| 20 | NEEDS FIX 3건 수정 + CPO 인라인 보고서 | 📤 `PR197-CPO-REVIEW-READY.md` · FIX-S6/ONELINER CPO 확인 · S4 판단만 부분 해결 |
+| 21 | S4 고객 모순 상태 일관성 · T6/T7 실행 증거 | 📤 living/Memory/judgment 정합 · T7 20대 확정 · CPO 재판정 대기 · 병합 금지 |
 
 ---
 

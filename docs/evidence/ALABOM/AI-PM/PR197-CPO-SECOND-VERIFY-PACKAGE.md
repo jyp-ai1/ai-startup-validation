@@ -6,7 +6,7 @@
 |---|---|
 | 구현 | **IMPLEMENTED** — 제품 코드 변경 있음. 커밋 SHA는 이 문서와 같은 커밋 |
 | CTO 1차 검증 | 아래 표의 **PASS / FAIL / NOT VERIFIED** 만. 빌드 성공 ≠ 대화 검증 |
-| CPO 2차 검증 | **NEEDS FIX** — `PR197-CPO-SECOND-VERIFY-VERDICT.md` |
+| CPO 2차 검증 | **NEEDS FIX 후 재제출** — S4 상태 일관성 `8965af43` · 인라인 보고서 `PR197-CPO-REVIEW-READY.md` |
 | 병합 · Production | **하지 않음** · Production `0b465226` 불변 |
 
 **기준:** 시나리오 본문 동결 `5263e83e` · 일괄안 `83596930` · 이전 구현 `cf9f39aa`  

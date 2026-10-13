@@ -8,9 +8,10 @@ CPO가 저장소 링크를 열지 않고 이 본문만으로 실패·수정·재
 |---|---|
 | PR | #197 |
 | 브랜치 | `cursor/ai-pm-mcq-understanding-e648` |
-| 기존 CPO 판정 | **NEEDS FIX** (`f9911ed6`) |
-| 이번 구현 | FIX-S6 · FIX-ONELINER · FIX-S4-JUDGMENT · SHA `59339f93` |
-| 보고서·덤프 핀 | `956bc6c7` |
+| 기존 CPO 판정 | **NEEDS FIX** — S4 living/Memory Fact 잔류 · T7 미검증 |
+| 이번 구현 | S4 고객 모순 상태 일관성 · SHA `8965af43` |
+| 이전 엔진 수정 | FIX-S6 · FIX-ONELINER · FIX-S4-JUDGMENT · SHA `59339f93` (CPO 2차에서 개선 확인) |
+| 재실행 덤프 `meta.implSha` | `8965af43` |
 | 실행 경로 | `applyBusinessChoiceThroughLoop` |
 | 시나리오 동결 | `5263e83e` |
 | Production | `0b465226` 불변 |
@@ -184,7 +185,35 @@ S3 T3 · S5 T3도 next=`alternativesCompetitors`. 문서 한 줄 문구 없음.
 | status | `needs_check` |
 | conclusion | GO/검증 완료 없음 |
 
-**잔여 (고치지 않음):** livingClaims.customerPersona는 여전히 `맞벌이 부모` USER_CONFIRMED. Memory customer도 이전 문장. 판단 층만 덮었다.
+**이전 잔여 (CPO 2차 NEEDS FIX, `59339f93` 당시):** livingClaims.customerPersona=`맞벌이 부모` · confirmed · USER_CONFIRMED. Memory customer current도 같은 문장. 판단만 덮음.
+
+**이번 수정 후 T6** (같은 입력, `8965af43`)
+
+| 필드 | 실제 값 |
+|---|---|
+| gapStateAfter.customerPersona | CONTRADICTED |
+| judgmentAfter.customer.summary | `충돌: 맞벌이 부모 ↔ 혼자 사는 20대가 메인 — 재확인 필요` |
+| judgmentAfter.customer.status / knowledgeSource | `needs_check` / null |
+| livingClaims.customerPersona | **`충돌: 이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다. ↔ 혼자 사는 20대가 메인 — 재확인 필요`** · **contradiction** · USER_CORRECTED |
+| Memory customer | current **없음**. superseded=`이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.` · conflict=`혼자 사는 20대가 메인` |
+| nextTargetGap / nextQuestion | `customerPersona` / `어느 쪽이 지금 맞는 고객인가요? 이전 고객 이해와 방금 답이 충돌합니다.` |
+| 20대 승격 | 없음. conflict만 존재. USER_CONFIRMED 아님 |
+
+### B3b. S4 T7 — 고객 재확인 (이번 실행, 이전에는 NOT VERIFIED)
+
+**입력:** asked=`customerPersona` · 질문=`어느 쪽이 지금 맞는 고객인가요? 이전 고객 이해와 방금 답이 충돌합니다.` · 입력=`지금 메인 고객은 혼자 사는 20대예요`
+
+| 필드 | 실제 값 |
+|---|---|
+| intent / applied | `business_fact` / true |
+| gapStateAfter.customerPersona | **CLOSED** |
+| livingClaims.customerPersona | **`지금 메인 고객은 혼자 사는 20대예요`** · confirmed · USER_CONFIRMED |
+| Memory customer current | `지금 메인 고객은 혼자 사는 20대예요` |
+| Memory customer superseded | `이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.` |
+| Memory customer conflict | 없음 |
+| judgmentAfter.customer | status=`clear` · summary=`지금 메인 고객은 혼자 사는 20대예요` · knowledgeSource=`ceo_confirmed` |
+| nextTargetGap | `alternativesCompetitors` (이전 고객을 현재 Fact로 다시 묻지 않음) |
+| nextQuestionText | `비슷한 역할을 이미 하고 있는 서비스가 있나요?` |
 
 ### B4. 기존 PASS 항목 — 재실행에서도 유지
 
@@ -247,7 +276,9 @@ R2 yes reason ≠ no reason. 둘 다 Fact/GO 아님.
 | 커밋 | 역할 |
 |---|---|
 | 구현 | `59339f93` `feat(ai-pm): close CPO NEEDS FIX with inline review evidence` |
-| 재실행 덤프 `meta.implSha` | `59339f93` · 핀 커밋 `956bc6c7` |
+| 재실행 덤프 `meta.implSha` | `8965af43` |
+| S4 일관성 구현 | `8965af43` |
+| 이전 엔진 수정 | `59339f93` |
 | 이전 실패 기준 | 구현 `404da1cf` · 덤프 핀 `f83d15ed` · CPO 판정 `f9911ed6` |
 
 | 파일 | 함수 | 변경 |
@@ -256,7 +287,12 @@ R2 yes reason ≠ no reason. 둘 다 Fact/GO 아님.
 | `build-answer-review.ts` | `isOnSlotSufficient` | 역할 답을 payer CLOSE로 인정 |
 | `decide-next-question-from-review.ts` | `shouldSkipDocumentOneLiner` · `pickNextRequiredGap` | 고객/문제 CLOSED면 한 줄 skip, Stage B 허용 |
 | `ai-pm-judgment-next-question-binding.ts` | `applyJudgmentNextQuestionBinding` | 한 줄이 남으면 payer 또는 Stage B로 보냄 |
-| `ai-pm-judgment-loop-sync.ts` | `overlayContradictedCustomer` | CONTRADICTED → 판단 충돌 문구 |
+| `ai-pm-judgment-loop-sync.ts` | `overlayContradictedCustomer` | CONTRADICTED → 판단 충돌 문구. 이미 충돌 문구면 이중 포장 안 함 |
+| `conversation-memory.ts` | `parkUnresolvedContradiction` | 이전 고객=superseded, 신규=conflict, current 없음 |
+| `build-conversation-memory.ts` | `applyOpenCustomerContradiction` | gap CONTRADICTED면 Memory를 위 규칙으로 재구성 |
+| `living-understanding-state.ts` | `resolveDomainValue(customerPersona)` | conflict 또는 gap CONTRADICTED면 contradiction. current Fact 아님 |
+| `build-shared-understanding.ts` | `resolveCustomerField` | conflict면 충돌 문구. current는 `getFact`만 사용 |
+| `process-loop-answer.ts` · dump/quality `livingNow` | Memory/living 재구성 | `gapState` 전달 |
 
 V3 계약·CLOSED 단조성·결제/지인 약한 증거·unknown 비병합은 유지.
 
@@ -268,7 +304,9 @@ V3 계약·CLOSED 단조성·결제/지인 약한 증거·unknown 비병합은 �
 |---|---|---|---|---|
 | FIX-S6 | `집이 낸다` | payer OPEN · next=payer · 3턴 정지 | payer CLOSED · next=대안 · 5턴 (대안+검증) | **PASS** (엔진) |
 | FIX-ONELINER | S2 `쓰는 사람이 직접 낸다` | next=`이 사업은 누구에게 무엇을 제공하나요?` | next=`비슷한 역할을 이미 하고 있는 서비스가 있나요?` | **PASS** (엔진) |
-| FIX-S4-JUDGMENT | `사실 아이가 아니라 혼자 사는 20대가 메인이에요` | summary=`맞벌이 부모` · ceo_confirmed | summary=`충돌: 맞벌이 부모 ↔ 혼자 사는 20대가 메인 — 재확인 필요` · knowledgeSource null | **PASS** (판단 층) |
+| FIX-S4-JUDGMENT | `사실 아이가 아니라 혼자 사는 20대가 메인이에요` | summary=`맞벌이 부모` · ceo_confirmed | summary=`충돌: 맞벌이 부모 ↔ 혼자 사는 20대가 메인 — 재확인 필요` · knowledgeSource null | **PASS** (판단 층, CPO 확인) |
+| S4 T6 상태 | 같은 입력 | living=USER_CONFIRMED 맞벌이 부모 · Memory current=맞벌이 부모 | living=contradiction · Memory current 없음 · superseded=부모 · conflict=20대 | **CTO VERIFIED** |
+| S4 T7 | `지금 메인 고객은 혼자 사는 20대예요` | 미실행 | living/judgment/Memory current=20대 · 부모=superseded · next=대안 | **CTO VERIFIED** |
 
 ### D3. 테스트 명령과 결과
 
@@ -276,14 +314,19 @@ V3 계약·CLOSED 단조성·결제/지인 약한 증거·unknown 비병합은 �
 pnpm --filter web exec vitest run \
   features/workflow-journey/lib/business-understanding/__tests__/pr197-conversation-quality.test.ts \
   features/workflow-journey/lib/business-understanding/__tests__/pr197-cpo-second-verify-dump.test.ts
-→ 2 files / 24 tests PASS
+→ 2 files / 25 tests PASS (quality 24 + dump 1; quality에 S4 T6 living/Memory · T7 추가)
 
 pnpm --filter web exec vitest run \
-  features/workflow-journey/lib/business-understanding/__tests__/recovery2-p0-1-2pass2-canonical-state.test.ts \
+  features/workflow-journey/lib/business-understanding/__tests__/core-v3-conversation-engine.test.ts
+→ parkUnresolvedContradiction PASS. V3-03/V3-12는 baseline부터 실패 (이번 변경과 무관)
+
+pnpm --filter web exec vitest run \
+  features/workflow-journey/lib/business-understanding/__tests__/recovery2-p0-1-state-edit-confirm.test.ts \
   features/workflow-journey/lib/business-understanding/__tests__/recovery2-p0-2-question-loop.test.ts \
   features/workflow-journey/lib/business-understanding/__tests__/ai-pm-mcq-journey.test.ts \
-  features/workflow-journey/lib/business-understanding/__tests__/ai-pm-mcq-real-loop.test.ts
-→ 4 files / 21 tests PASS
+  features/workflow-journey/lib/business-understanding/__tests__/ai-pm-mcq-real-loop.test.ts \
+  features/workflow-journey/lib/business-understanding/__tests__/ai-pm-mcq-business-understanding.test.ts
+→ 5 files / 31 tests PASS
 ```
 
 덤프 재현:
@@ -301,10 +344,10 @@ pnpm --filter web exec vitest run \
 |---|---|---|
 | FIX-S6 | **CTO VERIFIED** (엔진) | 새 덤프 S6 follow turnCount=5, asked에 alternatives+validation |
 | FIX-ONELINER | **CTO VERIFIED** (엔진) | S2/S3/S5 payer 다음 ≠ 누구에게 무엇을 제공 |
-| FIX-S4-JUDGMENT | **CTO VERIFIED** (판단 층) | S4 T6 summary가 맞벌이 부모 Fact가 아님 |
+| FIX-S4-JUDGMENT | **CTO VERIFIED** (판단 층) | CPO 2차에서 충돌 문구 확인 |
+| S4 T6 상태 일관성 | **CTO VERIFIED** | gap=CONTRADICTED · living=contradiction · Memory current 없음 |
+| S4 T7 재확인 | **CTO VERIFIED** | current=20대 · 부모=superseded · next=대안 |
 | R1–R4 · GO 가드 | **CTO VERIFIED** (유지) | 덤프 재실행 |
-| living claim S4 고객 | **NEEDS FIX 잔여** | USER_CONFIRMED `맞벌이 부모` 유지 |
-| S4 T7 | **NOT VERIFIED** | 덤프에 20대 확정 턴 없음 |
 | 로그인 UI 8턴 | **NOT VERIFIED** | 미실행 |
 | 동결 8턴 문구 | **NOT VERIFIED** | 엔진 팔로우 ≠ 문구 일치 |
 | CPO 2차 | **미판정** | 이 보고서 수령 후 |
@@ -312,11 +355,12 @@ pnpm --filter web exec vitest run \
 
 ### D5. 잔여 위험
 
-1. S4 living/Memory 고객이 이전 문장을 confirmed로 유지한다. 판단은 충돌, 이해 클레임은 잔류.
-2. S2–S6 엔진 팔로우는 validation에서 같은 gap이 나와 5턴에서 멈춘다. 3턴 정지는 해소. 공급(도우미 일감) 전용 슬롯까지는 자동 팔로우가 가지 않았다. 대안·검증은 들어갔다.
-3. 문제 판단 요약 `PRIMARY: 주문` 절단은 이번 범위 밖.
-4. V3-03/V3-12는 baseline부터 실패. 기대를 낮추지 않음.
-5. 로그인 화면에서 같은 대화가 되는지는 모른다. 엔진 PASS ≠ UI PASS.
+1. T6 오슬롯 정정 문장이 `diffRelevance` current로도 남는다. 고객 Fact는 아님.
+2. T7 이후 payer는 여전히 `부모가 낸다`. 고객 정정이 구매자 Gap을 자동으로 뒤집지는 않는다.
+3. 문서 solution 스파인에 맞벌이 부모가 문서 출처로 남을 수 있다. current customer Fact는 아님.
+4. S6 팔로우는 5턴. 공급 측 전용 검증까지는 이전과 같이 미도달.
+5. V3-03/V3-12는 baseline부터 실패. 기대를 낮추지 않음.
+6. 로그인 화면에서 같은 대화가 되는지는 모른다. 엔진 PASS ≠ UI PASS.
 
 ---
 
@@ -324,8 +368,9 @@ pnpm --filter web exec vitest run \
 
 CPO는 위 A–D만으로 다음을 판정하면 된다.
 
-1. FIX-S6 / FIX-ONELINER / FIX-S4-JUDGMENT가 기존 NEEDS FIX를 해소하는가.
-2. living claim 잔류를 이번 통과 조건에 넣을 것인가, 다음 수정으로 남길 것인가.
-3. 로그인 UI · S4 T7을 열기 전에 엔진만으로 2차를 끝낼 것인가.
+1. T6에서 현재 확정 고객이 모순 상태와 일치하는가 (living contradiction, Memory current 없음).
+2. 과거 맞벌이 부모 발언과 현재 유효 Fact가 구분되는가 (superseded vs current).
+3. T7 확인 전까지 20대가 확정 Fact로 승격되지 않는가.
+4. T7 이후 living · Memory · judgment · next ask가 같은 20대 고객을 참조하는가.
 
 CTO는 병합하지 않는다. PR synchronize는 별도 작업 사유가 아니다.
