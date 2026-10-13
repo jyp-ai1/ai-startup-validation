@@ -70,6 +70,36 @@ function isCustomerAndProblemClosed(
   );
 }
 
+/**
+ * Stage A remaining required gap: after customer+problem CLOSE, ask payer
+ * before FIX-10 solution / Stage B. Intended policy — not solution-first.
+ */
+export function shouldHoldOpenStageAPayer(
+  gapState?: GapKnowledgeState | null,
+): boolean {
+  if (!isCustomerAndProblemClosed(gapState) || !gapState) return false;
+  return isGapAskable('payer', gapState);
+}
+
+function buildPayerHoldDecision(
+  decision: NextQuestionDecision,
+  reason: string,
+  actionRationale: string,
+): NextQuestionDecision {
+  const payerBinding = resolveGapQuestionBinding('payer');
+  return {
+    ...decision,
+    targetGap: 'payer',
+    targetGapId: 'payer',
+    issueId: payerBinding.issueId,
+    questionText: payerBinding.questionText,
+    whyNow: whyNowForGapField('payer') || payerBinding.whyNow,
+    rationale: payerBinding.whyNow,
+    actionRationale,
+    reason,
+  };
+}
+
 export function isOffTrackGapForFix10(
   gapId: string,
   gapState?: GapKnowledgeState | null,
@@ -370,21 +400,21 @@ export function applyJudgmentNextQuestionBinding(input: {
   }
 
   if (isCustomerAndProblemClosed(input.gapState)) {
-    if (input.decision.targetGapId === 'businessOneLiner') {
-      if (!isGapClosedInState(input.gapState, 'payer')) {
-        const payerBinding = resolveGapQuestionBinding('payer');
-        return {
-          ...input.decision,
-          targetGap: 'payer',
-          targetGapId: 'payer',
-          issueId: payerBinding.issueId,
-          questionText: payerBinding.questionText,
-          whyNow: whyNowForGapField('payer') || payerBinding.whyNow,
-          rationale: payerBinding.whyNow,
-          actionRationale: 'CLOSED customer+problem — skip document one-liner for payer',
-          reason: 'judgment-bound skip one-liner → payer',
-        };
+    if (shouldHoldOpenStageAPayer(input.gapState)) {
+      if (input.decision.targetGapId === 'payer') {
+        return input.decision;
       }
+      return buildPayerHoldDecision(
+        input.decision,
+        input.decision.targetGapId === 'businessOneLiner'
+          ? 'judgment-bound skip one-liner → payer'
+          : `judgment-bound hold open Stage A payer (was ${input.decision.targetGapId})`,
+        input.decision.targetGapId === 'businessOneLiner'
+          ? 'CLOSED customer+problem — skip document one-liner for payer'
+          : 'CLOSED customer+problem — Stage A payer still OPEN, ask payer before solution',
+      );
+    }
+    if (input.decision.targetGapId === 'businessOneLiner') {
       const nextStageB = STAGE_B_AFTER_ONELINER.find((gapId) =>
         isGapAskable(gapId, input.gapState ?? { version: 1, gaps: {}, lastReviewByGap: {} }),
       );
@@ -458,6 +488,28 @@ export function createJudgmentBoundDecision(
   gapState?: GapKnowledgeState | null,
 ): NextQuestionDecision | null {
   if (!isAiPmJudgmentFix10V1Active()) return null;
+  if (shouldHoldOpenStageAPayer(gapState)) {
+    const payerBinding = resolveGapQuestionBinding('payer');
+    return {
+      targetGap: 'payer',
+      targetGapId: 'payer',
+      issueId: payerBinding.issueId,
+      questionText: payerBinding.questionText,
+      whyNow: whyNowForGapField('payer') || payerBinding.whyNow,
+      rationale: payerBinding.whyNow,
+      score: 45_000,
+      reframed: true,
+      excludedGaps: [],
+      drivenByReview: true,
+      sourceAnswerId: 'judgment-bound',
+      sourceReviewId: 'judgment-bound',
+      reviewAction: 'advance',
+      action: 'advance',
+      actionRationale: 'CLOSED customer+problem — Stage A payer still OPEN, ask payer before solution',
+      reason: 'judgment-bootstrap hold open Stage A payer',
+      questionType: 'open',
+    };
+  }
   const bound = resolveJudgmentBoundTargetGap(judgment, gapState);
   if (!bound) return null;
   if (isGapClosedInState(gapState, bound.gapId)) return null;

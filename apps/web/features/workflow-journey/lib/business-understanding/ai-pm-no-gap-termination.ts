@@ -14,6 +14,7 @@ import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 import {
   createJudgmentBoundDecision,
+  shouldHoldOpenStageAPayer,
 } from './ai-pm-judgment-next-question-binding';
 import {
   STAGE_A_REQUIRED_GAPS,
@@ -113,7 +114,14 @@ export function evaluateNoGapTermination(input: {
     return { terminate: true, reason: 'no_decision' };
   }
 
-  if (isRepeatedQuestion(input.turns, q)) {
+  const surfaceOnlyPayerAsk =
+    shouldHoldOpenStageAPayer(input.gapState) &&
+    input.decision.targetGapId === 'payer' &&
+    !input.turns.some(
+      (t) => !t.superseded && t.targetGap?.trim() === 'payer' && Boolean(t.askedQuestionText?.trim()),
+    );
+
+  if (isRepeatedQuestion(input.turns, q) && !surfaceOnlyPayerAsk) {
     return { terminate: true, reason: 'repeat_loop_kill' };
   }
 
@@ -142,6 +150,13 @@ export function applyNoGapTermination(input: {
     const bootstrap = createJudgmentBoundDecision(input.judgment, input.gapState);
     const q = bootstrap?.questionText?.trim() ?? '';
     if (q && !isRepeatedQuestion(input.turns, q)) {
+      return bootstrap;
+    }
+    if (
+      bootstrap &&
+      shouldHoldOpenStageAPayer(input.gapState) &&
+      bootstrap.targetGapId === 'payer'
+    ) {
       return bootstrap;
     }
   }

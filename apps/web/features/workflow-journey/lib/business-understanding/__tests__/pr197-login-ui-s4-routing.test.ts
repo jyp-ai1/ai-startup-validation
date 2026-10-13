@@ -210,6 +210,7 @@ describe('PR #197 login-UI S4 typed routing', () => {
   it('T7 typed reconfirm aligns customer gap / Memory / living / judgment and leaves payer', () => {
     reset('ui-s4-t7', S4);
     applyGap('ui-s4-t7', S4, 'customerPersona', /아이|부모/);
+    applyGap('ui-s4-t7', S4, 'problemJtbd', /장|과자|피곤/);
     applyTypedAnswerThroughLoop({
       projectId: 'ui-s4-t7',
       documentText: S4,
@@ -244,7 +245,9 @@ describe('PR #197 login-UI S4 typed routing', () => {
     expect(afterT7.judgmentAfter.dimensions.customer.summary).toMatch(/20대/);
     expect(afterT7.judgmentAfter.dimensions.customer.summary).not.toBe('맞벌이 부모');
     expect(afterT7.nextTargetGap).not.toBe('customerPersona');
-    expect(afterT7.nextTargetGap).not.toBe('payer');
+    expect(afterT7.nextTargetGap).toBe('payer');
+    expect(loop.gapState?.gaps.payer?.completeness).not.toBe('CLOSED');
+    expect(afterT7.nextQuestionText ?? '').toMatch(/지불|도입을 결정|결제/);
     expect(afterT7.nextQuestionText ?? '').not.toMatch(/누구에게 무엇을 제공/);
   });
 
@@ -300,6 +303,7 @@ describe('PR #197 login-UI S4 typed routing', () => {
   it('T7 residual: reconfirm MCQ is document fragments plus 기타; surface and lastDecision both customer', () => {
     reset('ui-s4-opts', S4);
     applyGap('ui-s4-opts', S4, 'customerPersona', /아이|부모/);
+    applyGap('ui-s4-opts', S4, 'problemJtbd', /장|과자|피곤/);
     const afterT6 = applyTypedAnswerThroughLoop({
       projectId: 'ui-s4-opts',
       documentText: S4,
@@ -339,6 +343,44 @@ describe('PR #197 login-UI S4 typed routing', () => {
     const memory = memoryNow('ui-s4-opts', S4);
     expect(getFact(memory, 'customer')?.value).toMatch(/20대/);
     expect(afterT7.nextTargetGap).not.toBe('customerPersona');
-    expect(afterT7.nextTargetGap).not.toBe('payer');
+    expect(afterT7.nextTargetGap).toBe('payer');
+    expect(loadAiPmLoopState('ui-s4-opts').gapState?.gaps.payer?.completeness).not.toBe(
+      'CLOSED',
+    );
+    expect(afterT7.nextQuestionText ?? '').toMatch(/지불|도입을 결정|결제/);
+  });
+
+  it('T7 policy: customer+problem CLOSED and payer OPEN must ask payer, not solution', () => {
+    reset('ui-s4-t7-payer', S4);
+    applyGap('ui-s4-t7-payer', S4, 'customerPersona', /아이|부모/);
+    applyGap('ui-s4-t7-payer', S4, 'problemJtbd', /장|과자|피곤/);
+    applyTypedAnswerThroughLoop({
+      projectId: 'ui-s4-t7-payer',
+      documentText: S4,
+      answer: T6,
+      askedGap: 'payer',
+      askedQuestionText:
+        '이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?',
+      customerCompleteness: 'CLOSED',
+    });
+
+    const afterT7 = applyTypedAnswerThroughLoop({
+      projectId: 'ui-s4-t7-payer',
+      documentText: S4,
+      answer: T7,
+      askedGap: 'customerPersona',
+      askedQuestionText: '어느 쪽이 지금 맞는 고객인가요?',
+      customerCompleteness: 'CONTRADICTED',
+    });
+
+    const loop = loadAiPmLoopState('ui-s4-t7-payer');
+    expect(loop.gapState?.gaps.customerPersona?.completeness).toBe('CLOSED');
+    expect(loop.gapState?.gaps.problemJtbd?.completeness).toBe('CLOSED');
+    expect(loop.gapState?.gaps.payer?.completeness).not.toBe('CLOSED');
+    expect(afterT7.nextTargetGap).toBe('payer');
+    expect(afterT7.nextTargetGap).not.toBe('solution');
+    expect(afterT7.nextQuestionText ?? '').toMatch(/지불|도입을 결정|결제/);
+    expect(afterT7.nextQuestionText ?? '').not.toMatch(/제공 가치|해결하는 방식/);
+    expect(getFact(memoryNow('ui-s4-t7-payer', S4), 'buyer')).toBeNull();
   });
 });

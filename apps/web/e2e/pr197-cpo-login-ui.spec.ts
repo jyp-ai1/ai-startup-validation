@@ -403,7 +403,7 @@ test.describe('PR #197 CPO login UI', () => {
       path: 'QA magic-link → /ko/workspace create project → WorkspaceAiPmLoopPanel confirm/MCQ/기타+submitAnswer',
       login: 'qa-magic-link (authenticated workspace, not engine dump, not Google button)',
       production: 'NOT VERIFIED',
-      note: 'Residual-risk verify after S4 CPO VERIFIED. Engine CPO VERIFIED kept. Do not merge.',
+      note: 'T7 next-question policy: customer+problem CLOSED and payer OPEN → next=payer, not solution. Buyer-as-payer block kept. Do not merge.',
     },
   };
 
@@ -473,9 +473,10 @@ test.describe('PR #197 CPO login UI', () => {
       (f) => f.lifecycle === 'current' && /20대/.test(f.value ?? ''),
     );
     const t7Next = String(s4t7.nextQuestion ?? '');
-    const t7NextIsAlt =
-      /대안|경쟁|지금은 어떻게|쿠팡|대신|비슷한 역할/.test(t7Next) ||
-      s4t7.targetGap === 'alternativesCompetitors';
+    const t7NextIsPayer =
+      /지불|도입을 결정|결제/.test(t7Next) || s4t7.targetGap === 'payer';
+    const t7NextIsSolution =
+      /제공 가치|해결하는 방식/.test(t7Next) || s4t7.targetGap === 'solution';
 
     const t6Facts = s4t6.memoryFacts as Array<{ key?: string; lifecycle?: string; value?: string }>;
     const t7Facts =
@@ -535,8 +536,8 @@ test.describe('PR #197 CPO login UI', () => {
               'S4 T7 not executed — login UI contradiction dialog intercepted T6 (아니라) without persisting; forceAccept would promote 20s immediately and is not T7 reconfirm',
             )
           : verdict(
-              t7Current20s && t7NextIsAlt && !isOneLinerAsk(t7Next),
-              `S4 T7 current20s=${t7Current20s} nextAlt=${t7NextIsAlt} next=${t7Next.slice(0, 80)}`,
+              t7Current20s && t7NextIsPayer && !t7NextIsSolution && !isOneLinerAsk(t7Next),
+              `S4 T7 current20s=${t7Current20s} nextPayer=${t7NextIsPayer} nextSolution=${t7NextIsSolution} next=${t7Next.slice(0, 80)}`,
             ),
         t6Landed
           ? verdict(

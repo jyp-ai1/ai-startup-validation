@@ -353,10 +353,11 @@ pnpm --filter web exec vitest run \
 | FIX-ONELINER | **CTO VERIFIED** (엔진) | S2/S3/S5 payer 다음 ≠ 누구에게 무엇을 제공 |
 | FIX-S4-JUDGMENT | **CTO VERIFIED** (판단 층) | CPO 2차에서 충돌 문구 확인 |
 | S4 T6 상태 일관성 | **CTO VERIFIED** | gap=CONTRADICTED · living=contradiction · Memory current 없음 |
-| S4 T7 재확인 | **CTO VERIFIED** | current=20대 · 부모=superseded · next=대안 |
+| S4 T7 재확인 | **CTO VERIFIED** | current=20대 · 부모=superseded · next=payer (OPEN) |
 | R1–R4 · GO 가드 | **CTO VERIFIED** (유지) | 덤프 재실행 |
 | 로그인 UI S4 T6/T7 | **CPO VERIFIED** | 라우팅·상태 일관성. `PR197-CPO-LOGIN-UI-S4-ROUTING.md` |
-| 잔여 · T6 buyer 구매자 오사용 | **CTO VERIFIED** (차단 후) | payer 미CLOSED · Memory buyer current 없음 · `PR197-CPO-LOGIN-UI-BUYER-FIX-COPY.txt` |
+| 잔여 · T6 buyer 구매자 오사용 | **CPO VERIFIED** | payer 미CLOSED · Memory buyer current 없음 · `PR197-CPO-LOGIN-UI-BUYER-FIX-COPY.txt` |
+| 잔여 · T7 next=solution | **CTO VERIFIED** (payer first 고정) | customer+problem CLOSED·payer OPEN → next=payer · `PR197-CPO-LOGIN-UI-T7-PAYER-COPY.txt` |
 | 잔여 · T7 선택지 / 화면 문구 | **CTO VERIFIED** | 파편+기타로 확정 가능. 화면≠lastDecision, 둘 다 고객 재확인 |
 | 로그인 UI S6 / S2 / S3 / S5 | **CTO VERIFIED** | payer CLOSED · next=대안 · 한 줄 후퇴 없음 |
 | 동결 8턴 문구 | **NOT VERIFIED** | 엔진 팔로우 ≠ 문구 일치 |
