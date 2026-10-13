@@ -1,8 +1,8 @@
 {
   "meta": {
     "implementationSha": "bcf443b7",
-    "executedSha": "b3c1ab46dc52489475622b9aa4d7ce9ec2baa933",
-    "executedAt": "2026-10-13T16:02:45.172Z",
+    "executedSha": "f1ed2732b976220742437d3798d9c8eef1f7880a",
+    "executedAt": "2026-10-13T16:24:45.101Z",
     "officialReportUntouched": "docs/evidence/ALABOM/DAY_8I_P0_FIX10_REVALIDATION_REPORT.md",
     "note": "FIX-10 expected wording is not lowered. overallPass=false is preserved. R24 is BUILD_SKIP because this run did not execute pnpm build; Preview 2/2 PASS on bcf443b7 is recorded separately.",
     "production": "NOT VERIFIED",
@@ -23,7 +23,12 @@
     {
       "id": "FIX10-R18",
       "expected": "Canonical state preservation (FIX-9 turns)",
-      "actual": "53"
+      "actual": "50"
+    },
+    {
+      "id": "FIX10-R20",
+      "expected": "Judgment Review regression",
+      "actual": "0"
     },
     {
       "id": "FIX10-R21",
@@ -33,7 +38,7 @@
     {
       "id": "FIX10-R22",
       "expected": "FIX-9 R regression",
-      "actual": "1"
+      "actual": "3"
     },
     {
       "id": "FIX10-R24",
@@ -43,7 +48,12 @@
     {
       "id": "FIX10-F2",
       "expected": "Next Q targets unresolved dimension",
-      "actual": "비슷한 역할을 이미 하고 있는 서비스가 있나요?"
+      "actual": "제가 이해한 사업은 「영세한 양조장들이 온라인 마케팅을 잘 못하고 있어서, 양조장을 온"
+    },
+    {
+      "id": "FIX10-F5-T03",
+      "expected": "Turn 3 audit verdict",
+      "actual": "FAIL"
     },
     {
       "id": "FIX10-F5-T04",
@@ -78,7 +88,7 @@
       "id": "J",
       "title": "Customer correction preserved",
       "expected": "Customer preserved; next Q must not repeat stale customer",
-      "actual": "customer=\"양조장뿐 아니라 반찬가게와 꽃집도 대상입니다.\"; next=\"비슷한 역할을 이미 하고 있는 서비스가 있나요?\""
+      "actual": "customer=\"고객은 양조장입니다.\"; next=\"제가 이해한 사업은 「영세한 양조장들이 온라인 마케팅을 잘 못하고 있어서, 양조장을 온라인 시장에 홍보하고…\""
     }
   ],
   "classified": [
@@ -97,7 +107,7 @@
     {
       "id": "J",
       "expected": "Customer preserved; next Q must not repeat stale customer",
-      "actual": "customer=\"양조장뿐 아니라 반찬가게와 꽃집도 대상입니다.\"; next=\"비슷한 역할을 이미 하고 있는 서비스가 있나요?\"",
+      "actual": "customer=\"고객은 양조장입니다.\"; next=\"제가 이해한 사업은 「영세한 양조장들이 온라인 마케팅을 잘 못하고 있어서, 양조장을 온라인 시장에 홍보하고…\"",
       "class": "DOWNSTREAM_OF_D7_SCRIPT"
     },
     {
@@ -115,8 +125,14 @@
     {
       "id": "FIX10-R18",
       "expected": "Canonical state preservation (FIX-9 turns)",
-      "actual": "53",
+      "actual": "50",
       "class": "REGRESSION_HARNESS"
+    },
+    {
+      "id": "FIX10-R20",
+      "expected": "Judgment Review regression",
+      "actual": "0",
+      "class": "OTHER"
     },
     {
       "id": "FIX10-R21",
@@ -127,7 +143,7 @@
     {
       "id": "FIX10-R22",
       "expected": "FIX-9 R regression",
-      "actual": "1",
+      "actual": "3",
       "class": "REGRESSION_HARNESS"
     },
     {
@@ -139,7 +155,13 @@
     {
       "id": "FIX10-F2",
       "expected": "Next Q targets unresolved dimension",
-      "actual": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+      "actual": "제가 이해한 사업은 「영세한 양조장들이 온라인 마케팅을 잘 못하고 있어서, 양조장을 온",
+      "class": "DOWNSTREAM_OF_D7_SCRIPT"
+    },
+    {
+      "id": "FIX10-F5-T03",
+      "expected": "Turn 3 audit verdict",
+      "actual": "FAIL",
       "class": "DOWNSTREAM_OF_D7_SCRIPT"
     },
     {
@@ -171,6 +193,7 @@
       "J",
       "FIX10-R14",
       "FIX10-F2",
+      "FIX10-F5-T03",
       "FIX10-F5-T04",
       "FIX10-F5-T05",
       "FIX10-F5-T06"
@@ -179,6 +202,9 @@
       "FIX10-R18",
       "FIX10-R21",
       "FIX10-R22"
+    ],
+    "OTHER": [
+      "FIX10-R20"
     ],
     "BUILD_SKIP": [
       "FIX10-R24"
@@ -201,46 +227,8 @@
     "resolveTurnDecisionGap": "customerPersona",
     "firstTargetGap": "customerPersona",
     "resolvePathHolds": true,
-    "brewerySolutionTurns": [
-      {
-        "turn": 2,
-        "targetGap": "problemJtbd",
-        "nextTargetGap": "solution",
-        "note": "Scenario D — question-back / confusion",
-        "customerStatus": "needs_check",
-        "problemStatus": "unknown",
-        "identityStillOpen": true
-      },
-      {
-        "turn": 3,
-        "targetGap": "solution",
-        "nextTargetGap": "problemJtbd",
-        "note": "Scenario G — explicit problem",
-        "customerStatus": "needs_check",
-        "problemStatus": "needs_check",
-        "identityStillOpen": true
-      }
-    ],
-    "harnessSolutionWhileIdentityOpen": [
-      {
-        "turn": 2,
-        "targetGap": "problemJtbd",
-        "nextTargetGap": "solution",
-        "note": "Scenario D — question-back / confusion",
-        "customerStatus": "needs_check",
-        "problemStatus": "unknown",
-        "identityStillOpen": true
-      },
-      {
-        "turn": 3,
-        "targetGap": "solution",
-        "nextTargetGap": "problemJtbd",
-        "note": "Scenario G — explicit problem",
-        "customerStatus": "needs_check",
-        "problemStatus": "needs_check",
-        "identityStillOpen": true
-      }
-    ],
+    "brewerySolutionTurns": [],
+    "harnessSolutionWhileIdentityOpen": [],
     "failedIds": [],
     "note": "resolveTurnDecision empty-state next≠solution is the D4 unit. Brewery harness uses resolveNextQuestionDecision; solution after 「네, 맞습니다」 on the D7 customer surface is classified separately and is not rewritten to PASS."
   },

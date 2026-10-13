@@ -1,8 +1,8 @@
 {
   "meta": {
     "implementationSha": "bcf443b7",
-    "executedSha": "b3c1ab46dc52489475622b9aa4d7ce9ec2baa933",
-    "executedAt": "2026-10-13T16:02:44.791Z",
+    "executedSha": "f1ed2732b976220742437d3798d9c8eef1f7880a",
+    "executedAt": "2026-10-13T16:25:41.420Z",
     "note": "Success is answer-dependent understanding, evidence, completeness, judgment, and next action. 8-turn reach is not success. Track A 0/36, Track B NEEDS FIX, AC16/AC5 FAIL are not rewritten here.",
     "production": "NOT VERIFIED",
     "loginUiEightTurn": "NOT VERIFIED",
@@ -129,9 +129,9 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "alternativesCompetitors",
-            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
-            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
           }
         },
         "paymentYes": {
@@ -164,7 +164,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         },
         "paymentNone": {
@@ -197,7 +197,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         }
       },
@@ -219,21 +219,20 @@
           "evidence": "yes=\"고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.\" none=\"고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
         },
         "nextAfterUnderstanding": {
-          "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+          "pass": false,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd"
         },
         "nextAfterEvidence": {
-          "pass": false,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+          "pass": true,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         },
         "unknownKeepsIdentityAskable": {
-          "pass": false,
-          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+          "pass": true,
+          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
         }
       },
       "failedAxes": [
-        "nextAfterEvidence",
-        "unknownKeepsIdentityAskable"
+        "nextAfterUnderstanding"
       ],
       "noSolutionWhileIdentityOpen": true
     },
@@ -345,9 +344,9 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "alternativesCompetitors",
-            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
-            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
           }
         },
         "paymentYes": {
@@ -380,7 +379,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         },
         "paymentNone": {
@@ -413,7 +412,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         }
       },
@@ -435,21 +434,20 @@
           "evidence": "yes=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" none=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
         },
         "nextAfterUnderstanding": {
-          "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+          "pass": false,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd"
         },
         "nextAfterEvidence": {
-          "pass": false,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+          "pass": true,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         },
         "unknownKeepsIdentityAskable": {
-          "pass": false,
-          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+          "pass": true,
+          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
         }
       },
       "failedAxes": [
-        "nextAfterEvidence",
-        "unknownKeepsIdentityAskable"
+        "nextAfterUnderstanding"
       ],
       "noSolutionWhileIdentityOpen": true
     },
@@ -561,9 +559,9 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "alternativesCompetitors",
-            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
-            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
           }
         },
         "paymentYes": {
@@ -596,7 +594,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         },
         "paymentNone": {
@@ -629,7 +627,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         }
       },
@@ -651,21 +649,20 @@
           "evidence": "yes=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" none=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
         },
         "nextAfterUnderstanding": {
-          "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+          "pass": false,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd"
         },
         "nextAfterEvidence": {
-          "pass": false,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+          "pass": true,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         },
         "unknownKeepsIdentityAskable": {
-          "pass": false,
-          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+          "pass": true,
+          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
         }
       },
       "failedAxes": [
-        "nextAfterEvidence",
-        "unknownKeepsIdentityAskable"
+        "nextAfterUnderstanding"
       ],
       "noSolutionWhileIdentityOpen": true
     },
@@ -777,9 +774,9 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "alternativesCompetitors",
-            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
-            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
           }
         },
         "paymentYes": {
@@ -812,7 +809,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         },
         "paymentNone": {
@@ -845,7 +842,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         }
       },
@@ -867,21 +864,20 @@
           "evidence": "yes=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" none=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
         },
         "nextAfterUnderstanding": {
-          "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+          "pass": false,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd"
         },
         "nextAfterEvidence": {
-          "pass": false,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+          "pass": true,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         },
         "unknownKeepsIdentityAskable": {
-          "pass": false,
-          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+          "pass": true,
+          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
         }
       },
       "failedAxes": [
-        "nextAfterEvidence",
-        "unknownKeepsIdentityAskable"
+        "nextAfterUnderstanding"
       ],
       "noSolutionWhileIdentityOpen": true
     },
@@ -993,9 +989,9 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "alternativesCompetitors",
-            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
-            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
           }
         },
         "paymentYes": {
@@ -1028,7 +1024,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         },
         "paymentNone": {
@@ -1061,7 +1057,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         }
       },
@@ -1083,21 +1079,20 @@
           "evidence": "yes=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" none=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
         },
         "nextAfterUnderstanding": {
-          "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+          "pass": false,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd"
         },
         "nextAfterEvidence": {
-          "pass": false,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+          "pass": true,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         },
         "unknownKeepsIdentityAskable": {
-          "pass": false,
-          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+          "pass": true,
+          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
         }
       },
       "failedAxes": [
-        "nextAfterEvidence",
-        "unknownKeepsIdentityAskable"
+        "nextAfterUnderstanding"
       ],
       "noSolutionWhileIdentityOpen": true
     },
@@ -1209,9 +1204,9 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "alternativesCompetitors",
-            "question": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
-            "validationAction": "이미 쓰는 대안·경쟁이 비면 차별화를 판단할 기준이 없습니다. 지금 쓰는 대안을 확인합니다."
+            "targetGap": "problemJtbd",
+            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "validationAction": "해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
           }
         },
         "paymentYes": {
@@ -1244,7 +1239,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         },
         "paymentNone": {
@@ -1277,7 +1272,7 @@
           "next": {
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "validationAction": "고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
           }
         }
       },
@@ -1299,21 +1294,20 @@
           "evidence": "yes=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" none=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
         },
         "nextAfterUnderstanding": {
-          "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=alternativesCompetitors"
+          "pass": false,
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd"
         },
         "nextAfterEvidence": {
-          "pass": false,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\" noneQ=\"지금 가장 크게 해결하려는 불편은 무엇인가요?\""
+          "pass": true,
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         },
         "unknownKeepsIdentityAskable": {
-          "pass": false,
-          "evidence": "unknownNext=alternativesCompetitors customerCompleteness=OPEN"
+          "pass": true,
+          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
         }
       },
       "failedAxes": [
-        "nextAfterEvidence",
-        "unknownKeepsIdentityAskable"
+        "nextAfterUnderstanding"
       ],
       "noSolutionWhileIdentityOpen": true
     }

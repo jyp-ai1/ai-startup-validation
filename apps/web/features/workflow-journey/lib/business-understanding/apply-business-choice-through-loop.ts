@@ -16,6 +16,7 @@ import { buildBusinessUnderstanding } from './build-business-understanding';
 import { type BusinessChoiceOption } from './build-business-choice-question';
 import { buildConversationMemoryFromSources } from './build-conversation-memory';
 import {
+  isStageBGap,
   STAGE_A_REQUIRED_GAPS,
   STAGE_B_REQUIRED_GAPS,
 } from './evaluate-stage-readiness';
@@ -28,7 +29,11 @@ import {
 } from './living-understanding-state';
 import { appendLoopTurnWithReview, runLoopAnswerProcessing } from './process-loop-answer';
 import { resolveNextQuestionDecision } from './resolve-next-question-decision';
-import { resolveTurnDecision } from './resolve-turn-decision';
+import {
+  resolveTurnDecision,
+  shouldBlockSolutionBeforeIdentity,
+  shouldSkipDocumentOneLiner,
+} from './resolve-turn-decision';
 import { isGapAskable } from './update-gap-state-from-review';
 import { evaluateStageReadiness } from './evaluate-stage-readiness';
 import { isV3ReviewPipelineActive } from './v3-review-pipeline';
@@ -93,6 +98,15 @@ export function nextGapAfterUnknownChoice(
   askedGap: string,
   gapState?: ReturnType<typeof loadAiPmLoopState>['gapState'],
 ): string | null {
+  const blockSolution = gapState ? shouldBlockSolutionBeforeIdentity(gapState) : false;
+  const skipOneLiner = gapState ? shouldSkipDocumentOneLiner(gapState, living) : false;
+  const allowed = (gapId: string) => {
+    if (gapId === askedGap) return false;
+    if (blockSolution && (gapId === 'solution' || isStageBGap(gapId))) return false;
+    if (skipOneLiner && gapId === 'businessOneLiner') return false;
+    return true;
+  };
+
   if (gapState) {
     const turned = resolveTurnDecision({
       living,
@@ -101,17 +115,27 @@ export function nextGapAfterUnknownChoice(
       turns: [],
       lastReview: null,
     });
-    if (turned.targetGapId && turned.targetGapId !== askedGap) {
+    if (turned.targetGapId && allowed(turned.targetGapId)) {
       return turned.targetGapId;
     }
-  }
-  const fromLiving = living.gaps.find((gap) => gap.fieldKey !== askedGap)?.fieldKey;
-  if (fromLiving) return fromLiving;
-  if (gapState) {
-    for (const gapId of [...STAGE_A_REQUIRED_GAPS, ...STAGE_B_REQUIRED_GAPS]) {
-      if (gapId !== askedGap && isGapAskable(gapId, gapState)) return gapId;
+    const stageAYieldOrder = [
+      'problemJtbd',
+      'customerPersona',
+      'payer',
+      'businessOneLiner',
+    ] as const;
+    for (const gapId of stageAYieldOrder) {
+      if (allowed(gapId) && isGapAskable(gapId, gapState)) return gapId;
+    }
+    for (const gapId of STAGE_A_REQUIRED_GAPS) {
+      if (allowed(gapId) && isGapAskable(gapId, gapState)) return gapId;
+    }
+    for (const gapId of STAGE_B_REQUIRED_GAPS) {
+      if (allowed(gapId) && isGapAskable(gapId, gapState)) return gapId;
     }
   }
+  const fromLiving = living.gaps.find((gap) => allowed(gap.fieldKey))?.fieldKey;
+  if (fromLiving) return fromLiving;
   return living.gaps[0]?.fieldKey && living.gaps[0].fieldKey !== askedGap
     ? living.gaps[0].fieldKey
     : null;

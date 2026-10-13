@@ -330,8 +330,15 @@ function findMoveTargetGap(input: {
     turns: input.turns,
   });
 
+  const identityOpen =
+    isGapAskable('customerPersona', input.gapState) ||
+    isGapAskable('problemJtbd', input.gapState);
+
   for (const candidate of candidates) {
     if (!input.stageReadiness.stageBAllowed && isStageBGap(candidate.fieldKey)) continue;
+    if (identityOpen && (candidate.fieldKey === 'solution' || isStageBGap(candidate.fieldKey))) {
+      continue;
+    }
     if (!isGapAskable(candidate.fieldKey, input.gapState)) continue;
     const cluster = gapSemanticCluster(candidate.fieldKey);
     if (fromCluster && cluster === fromCluster) {
@@ -347,6 +354,9 @@ function findMoveTargetGap(input: {
   }
 
   for (const candidate of candidates) {
+    if (identityOpen && (candidate.fieldKey === 'solution' || isStageBGap(candidate.fieldKey))) {
+      continue;
+    }
     if (!isGapAskable(candidate.fieldKey, input.gapState)) continue;
     return candidate.fieldKey;
   }

@@ -460,7 +460,7 @@ describe('PR #197 S1–S6 strategy quality', () => {
         ),
         nextAfterEvidence: axisPass(
           nextAfterEvidenceDiverged,
-          `yesNext=${yesSnap.next.targetGap} noneNext=${noneSnap.next.targetGap} yesQ="${yesSnap.next.question}" noneQ="${noneSnap.next.question}"`,
+          `yesNext=${yesSnap.next.targetGap} noneNext=${noneSnap.next.targetGap} yesAction="${yesSnap.next.validationAction}" noneAction="${noneSnap.next.validationAction}"`,
         ),
         unknownKeepsIdentityAskable: axisPass(
           !unknownEscapesIdentity,

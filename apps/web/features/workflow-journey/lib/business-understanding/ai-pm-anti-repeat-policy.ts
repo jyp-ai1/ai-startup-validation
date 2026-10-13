@@ -5,6 +5,7 @@
 import { selectAdaptiveNextGaps } from './adaptive-question-select';
 import type { NextQuestionDecision } from './decide-next-question-from-review';
 import {
+  isIdentityStillOpenForFix10,
   isOffTrackGapForFix10,
   listFix10FocusCandidates,
   buildJudgmentBoundQuestion,
@@ -12,7 +13,11 @@ import {
 } from './ai-pm-judgment-next-question-binding';
 import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
-import { STAGE_A_REQUIRED_GAPS, STAGE_B_REQUIRED_GAPS } from './evaluate-stage-readiness';
+import {
+  isStageBGap,
+  STAGE_A_REQUIRED_GAPS,
+  STAGE_B_REQUIRED_GAPS,
+} from './evaluate-stage-readiness';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import { whyNowForGapField } from './living-understanding-state';
@@ -54,6 +59,7 @@ function pickAlternateGap(input: {
   living: LivingUnderstandingState;
   turns: AiPmLoopTurn[];
   gapState: GapKnowledgeState;
+  blockSolution?: boolean;
 }): string | null {
   const exclude = new Set<string>([input.currentGap]);
   for (const gapId of Object.keys(input.gapState.gaps)) {
@@ -62,6 +68,7 @@ function pickAlternateGap(input: {
 
   for (const gapId of [...STAGE_A_REQUIRED_GAPS, ...STAGE_B_REQUIRED_GAPS]) {
     if (exclude.has(gapId)) continue;
+    if (input.blockSolution && (gapId === 'solution' || isStageBGap(gapId))) continue;
     if (isGapAskable(gapId, input.gapState)) return gapId;
   }
 
@@ -144,6 +151,12 @@ export function applyAntiRepeatPolicy(input: {
       if (candidate.gapId === decision.targetGapId) continue;
       if (!isGapAskable(candidate.gapId, gapState)) continue;
       if (isOffTrackGapForFix10(candidate.gapId, gapState)) continue;
+      if (
+        isIdentityStillOpenForFix10(judgment, gapState) &&
+        (candidate.gapId === 'solution' || isStageBGap(candidate.gapId))
+      ) {
+        continue;
+      }
       const built = buildJudgmentBoundQuestion({
         focus: candidate.focus,
         gapId: candidate.gapId,
@@ -184,6 +197,7 @@ export function applyAntiRepeatPolicy(input: {
     living,
     turns,
     gapState,
+    blockSolution: Boolean(judgment && isIdentityStillOpenForFix10(judgment, gapState)),
   });
 
   if (alternateGap && repeatCount >= 1) {

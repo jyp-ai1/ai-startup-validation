@@ -70,6 +70,20 @@ function isCustomerAndProblemClosed(
   );
 }
 
+/** D4 — solution is illegal while customer or problem is not yet clear. */
+export function isIdentityStillOpenForFix10(
+  judgment: CeoJudgmentState,
+  gapState?: GapKnowledgeState | null,
+): boolean {
+  const customer = judgment.dimensions.customer.status;
+  const problem = judgment.dimensions.problem.status;
+  if (customer === 'unknown' || customer === 'needs_check') return true;
+  if (problem === 'unknown' || problem === 'needs_check') return true;
+  if (gapState && isGapAskable('customerPersona', gapState)) return true;
+  if (gapState && isGapAskable('problemJtbd', gapState)) return true;
+  return false;
+}
+
 /**
  * Stage A remaining required gap: after customer+problem CLOSE, ask payer
  * before FIX-10 solution / Stage B. Intended policy — not solution-first.
@@ -179,7 +193,9 @@ export function pickFix10JudgmentFocus(
     if (isFix10DimensionUnresolved(judgment, 'problem', gapState)) return 'problem';
   }
 
+  const identityOpen = isIdentityStillOpenForFix10(judgment, gapState);
   for (const id of FIX10_FOCUS_ORDER) {
+    if (identityOpen && (id === 'solution' || id === 'customerChange')) continue;
     if (isFix10DimensionUnresolved(judgment, id, gapState)) return id;
   }
   return null;
@@ -302,9 +318,11 @@ export function listFix10FocusCandidates(
     out.push({ focus: primary, gapId: gapForJudgmentDimension(primary) });
     seen.add(primary);
   }
+  const identityOpen = isIdentityStillOpenForFix10(judgment, gapState);
   for (const id of listFix10UnresolvedDimensions(judgment, gapState)) {
     if (seen.has(id)) continue;
     if (coreOpen && id === 'customerChange') continue;
+    if (identityOpen && (id === 'solution' || id === 'customerChange')) continue;
     out.push({ focus: id, gapId: gapForJudgmentDimension(id) });
     seen.add(id);
   }

@@ -31,6 +31,7 @@ import {
   isSameMeaningQuestion,
   reframeQuestion,
 } from './reframe-question';
+import { hasValidationEvidenceCue } from './semantic-slot-normalization';
 import { isGapAskable } from './update-gap-state-from-review';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
@@ -287,6 +288,22 @@ function buildQuestionForDecision(input: {
   return { questionText, whyNow, reframed };
 }
 
+export function whyNowAfterEvidence(
+  review: AnswerReview | null,
+  base: string,
+): string {
+  if (!review || review.askedGapId !== 'validationTestability') return base;
+  const answer = review.userAnswer ?? '';
+  const denied = /아직.{0,16}(없|없습)|증거는 없/.test(answer);
+  if (denied) {
+    return `아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. ${base}`;
+  }
+  if (hasValidationEvidenceCue(answer) || /결제\s*\d|돈을 내고/.test(answer)) {
+    return `결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. ${base}`;
+  }
+  return `아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. ${base}`;
+}
+
 /**
  * Decide next question from last AnswerReview + authoritative gapState.
  * Bootstrap (lastReview=null): first OPEN Stage A Required gap.
@@ -394,7 +411,7 @@ export function decideNextQuestionFromReview(
   if (!isGapAskable(finalTarget, gapState)) return null;
 
   const binding = resolveGapQuestionBinding(finalTarget);
-  const { questionText, whyNow, reframed } = buildQuestionForDecision({
+  const built = buildQuestionForDecision({
     action,
     targetGapId: finalTarget,
     review: lastReview,
@@ -402,6 +419,9 @@ export function decideNextQuestionFromReview(
     turns,
     previousQuestionText,
   });
+  const questionText = built.questionText;
+  const whyNow = whyNowAfterEvidence(lastReview, built.whyNow);
+  const reframed = built.reframed;
 
   const priorAsks = countUnclosedGapAsks(turns, finalTarget);
   const actionRationale = actionRationaleForReview(lastReview, action);

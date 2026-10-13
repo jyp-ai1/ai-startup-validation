@@ -2,6 +2,7 @@
  * PR4 — Route next-question decision: V3 review path (primary) or legacy rollback.
  */
 
+import type { AnswerReview } from '@repo/types/domain/answer-review';
 import type { GapKnowledgeState } from '@repo/types/domain/gap-knowledge-state';
 
 import { applyQuestionPolicy, createBootstrapDecisionWithPolicy } from './ai-pm-question-policy';
@@ -11,16 +12,26 @@ import { applyNoGapTermination } from './ai-pm-no-gap-termination';
 import {
   applyJudgmentNextQuestionBinding,
   createJudgmentBoundDecision,
+  isIdentityStillOpenForFix10,
+  shouldHoldOpenStageAPayer,
 } from './ai-pm-judgment-next-question-binding';
+import type { CeoJudgmentState } from './ai-pm-ceo-judgment-dimensions';
 import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 import {
   decideNextQuestionFromReview,
   isNextQuestionDecision,
+  whyNowAfterEvidence,
   type NextQuestionDecision,
 } from './decide-next-question-from-review';
-import { evaluateStageReadiness } from './evaluate-stage-readiness';
+import { evaluateStageReadiness, isStageBGap } from './evaluate-stage-readiness';
 import type { ConversationMemory } from './conversation-memory';
 import type { LivingUnderstandingState } from './living-understanding-state';
+import { whyNowForGapField } from './living-understanding-state';
+import { resolveGapQuestionBinding } from './gap-question-map';
+import {
+  resolveTurnDecision,
+  shouldBlockSolutionBeforeIdentity,
+} from './resolve-turn-decision';
 import {
   decideNextQuestion,
   type QuestionDecision,
@@ -50,6 +61,77 @@ export type ResolveNextQuestionInput = {
   /** Optional in-app S.I. ranking hint. Not an analyzer re-run. */
   siInsight?: SiTurnInsight | null;
 };
+
+function constrainIdentityBeforeSolution(input: {
+  decision: NextQuestionDecision;
+  living: LivingUnderstandingState;
+  gapState: GapKnowledgeState;
+  turns: AiPmLoopTurn[];
+  stageReadiness: ReturnType<typeof evaluateStageReadiness>;
+  lastReview: AnswerReview | null;
+  judgment?: CeoJudgmentState | null;
+}): NextQuestionDecision {
+  const { decision, living, gapState, turns, stageReadiness, lastReview, judgment } = input;
+  if (shouldHoldOpenStageAPayer(gapState) && decision.targetGapId !== 'payer') {
+    const payerBinding = resolveGapQuestionBinding('payer');
+    return {
+      ...decision,
+      targetGap: 'payer',
+      targetGapId: 'payer',
+      issueId: payerBinding.issueId,
+      questionText: payerBinding.questionText,
+      whyNow: whyNowForGapField('payer') || payerBinding.whyNow,
+      actionRationale: 'CLOSED customer+problem — Stage A payer still OPEN',
+      reason: `${decision.reason}; constrain T7 payer`,
+    };
+  }
+  const blockSolution =
+    shouldBlockSolutionBeforeIdentity(gapState) ||
+    Boolean(judgment && isIdentityStillOpenForFix10(judgment, gapState));
+  const illegal =
+    (blockSolution && decision.targetGapId === 'solution') ||
+    (blockSolution && isStageBGap(decision.targetGapId));
+  if (!illegal) return decision;
+
+  const turned = resolveTurnDecision({
+    living,
+    gapState,
+    stageReadiness,
+    turns,
+    lastReview,
+  });
+  const nextGap = turned.targetGapId;
+  if (!nextGap || nextGap === decision.targetGapId) {
+    const fallback =
+      (isGapAskable('problemJtbd', gapState) && 'problemJtbd') ||
+      (isGapAskable('customerPersona', gapState) && 'customerPersona') ||
+      (isGapAskable('payer', gapState) && 'payer') ||
+      null;
+    if (!fallback) return decision;
+    const binding = resolveGapQuestionBinding(fallback);
+    return {
+      ...decision,
+      targetGap: fallback,
+      targetGapId: fallback,
+      issueId: binding.issueId,
+      questionText: binding.questionText,
+      whyNow: whyNowForGapField(fallback) || binding.whyNow,
+      actionRationale: 'identity still open — solution/Stage B blocked',
+      reason: `${decision.reason}; constrain identity before ${decision.targetGapId}`,
+    };
+  }
+  const binding = resolveGapQuestionBinding(nextGap);
+  return {
+    ...decision,
+    targetGap: nextGap,
+    targetGapId: nextGap,
+    issueId: binding.issueId,
+    questionText: binding.questionText,
+    whyNow: whyNowForGapField(nextGap) || binding.whyNow,
+    actionRationale: 'identity still open — solution/Stage B blocked',
+    reason: `${decision.reason}; constrain to ${nextGap}`,
+  };
+}
 
 export function resolveNextQuestionDecision(
   input: ResolveNextQuestionInput,
@@ -163,6 +245,22 @@ export function resolveNextQuestionDecision(
       gapState,
       judgment: judgmentSnapshot,
     });
+  }
+
+  if (decision && isNextQuestionDecision(decision)) {
+    decision = constrainIdentityBeforeSolution({
+      decision,
+      living: input.living,
+      gapState,
+      turns,
+      stageReadiness,
+      lastReview,
+      judgment: judgmentSnapshot,
+    });
+    const evidenced = whyNowAfterEvidence(lastReview, decision.whyNow ?? '');
+    if (evidenced !== decision.whyNow) {
+      decision = { ...decision, whyNow: evidenced };
+    }
   }
 
   if (

@@ -283,6 +283,7 @@ describe('PR #197 FIX-10 failure classification', () => {
       expect.arrayContaining(['B', 'FIX10-R02']),
     );
     expect(byClass.SOLUTION_BEFORE_IDENTITY ?? []).toEqual([]);
+    expect(harnessSolutionWhileIdentityOpen).toEqual([]);
     expect(loadAiPmLoopState(probeProjectId).turns).toEqual([]);
   }, 180_000);
 });

@@ -1,128 +1,117 @@
-PR #197 CPO 전략 복원 1단계 후속 검증. 이 블록 전체를 한 번에 복사. 표 없음. 병합 요청 없음. Production 배포 없음.
+PR #197 CPO 전략 복원 1단계 후속 검증 및 최소 수정. 이 블록 전체를 한 번에 복사. 표 없음. 병합 요청 없음. Production 배포 없음.
 
-한 줄: 구현 SHA bcf443b7을 유지한 채 FIX-10 overallPass=false를 D7 원문 confirm-yes 제거와 solution 선행 금지로 분리했고, S1–S6는 이해 수정·증거 강도·completeness·판단은 답에 따라 달라지나 증거 이후 다음 질문/검증 행동은 갈리지 않아 NEEDS FIX다.
+한 줄: FIX-10 overallPass=false의 직접 원인은 D7 원문 confirm-yes 제거이고, 그와 별개로 identity가 열린 채 solution을 묻던 하네스 경로는 최소 수정으로 막았다. S1–S6는 이해 수정·증거 강도·판단·검증 행동은 답에 따라 달라지나, 이해 답 이후 다음 gap은 모두 problemJtbd라 NEEDS FIX다.
 
 기준점
-구현 SHA: bcf443b7
-검증 실행 SHA: b3c1ab46 위에서 덤프 기록. 이 보고 커밋은 그 위 증거만 추가
+Phase 1 구현 SHA: bcf443b7
+이 수정·증거 커밋: 푸시 후 HEAD. Production 잠금: 0b465226
 브랜치: cursor/ai-pm-mcq-understanding-e648
 PR: https://github.com/jyp-ai1/ai-startup-validation/pull/197
-Production 잠금: 0b465226
-병합·Production 배포: 하지 않음. 기대값 미하향. 테스트 억지 PASS 없음
+병합·Production 배포: 하지 않음. FIX-10/AC16/AC5/Track A 기대값 미하향
 
-===== 상태 분리. 한 줄로 합치지 않음 =====
+===== 상태 분리 =====
 
 Phase 1 전략 경로: IMPLEMENTED 유지. pr197-strategy-restore-phase1 8/8 PASS
-FIX-10 재검증 overallPass: FAIL 유지. day8i-fix10-revalidation 기대값 미변경. 공식 보고서 DAY_8I_P0_FIX10_REVALIDATION_REPORT.md 미덮어씀 (구 SHA 0f75f63a PASS 문서 보존)
-FIX-10 실패 분류: IMPLEMENTED. pr197-fix10-failure-classification 1/1 PASS. 덤프 PR197-CPO-FIX10-FAILURE-CLASSIFICATION.json
-S1–S6 전략 품질: NEEDS FIX. pr197-s1-s6-strategy-quality 측정 테스트 PASS. 품질 판정 6/6 NEEDS FIX. 덤프 PR197-CPO-S1-S6-STRATEGY-QUALITY-DUMP.json
-T6 buyer 오사용 차단: CPO VERIFIED 유지. pr197-login-ui-s4-routing 7/7 PASS
-T7 payer hold: CPO VERIFIED 유지. pr197-t7-payer-hold 5/5 PASS
-conversation-quality: 24/24 PASS. 8턴 도달을 전략 PASS로 쓰지 않음
-Track A 동결 문구 1:1: FAIL 유지. compared=36 exact=0. pr197-frozen-t1-t8-divergence 덤프 재기록. 기대 미하향
-Track B 품질: NEEDS FIX 유지. S1–S4 payer streak/repeat/revisit. S5–S6 qualityStatus=PASS여도 전체를 PASS로 올리지 않음
+FIX-10 재검증 overallPass: FAIL 유지. day8i-fix10-revalidation 기대값 미변경. 공식 DAY_8I_P0_FIX10_REVALIDATION_REPORT.md 미덮어씀
+FIX-10 D4 하네스 solution 누수: 수정함. harnessSolutionWhileIdentityOpen=[] . pr197-fix10-failure-classification 1/1 PASS
+S1–S6 전략 품질: NEEDS FIX. 측정 테스트 PASS. 시나리오 6/6 NEEDS FIX. 실패 축은 nextAfterUnderstanding뿐
+T6: CPO VERIFIED 유지. pr197-login-ui-s4-routing 7/7 PASS
+T7: CPO VERIFIED 유지. pr197-t7-payer-hold 5/5 PASS
+conversation-quality: 24/24 PASS
+Track A: FAIL. compared=32 exact=0. 동결 문구 5263e83e 미하향. 이전 compared=36에서 턴 수가 줄어 비교 수가 줄었을 뿐 exact=0 FAIL은 유지
+Track B: NEEDS FIX 유지
 V3 AC16: FAIL 유지. expected businessOneLiner. received validationTestability
 V3 AC5: FAIL 유지. expected marketChannel. received validationTestability
-Vercel Preview: bcf443b7 2/2 PASS. Production 검증 아님
-로그인 UI 8턴: 이번 검증에서 재실행하지 않음. NOT VERIFIED
+로그인 UI 8턴: NOT VERIFIED
 Google OAuth: NOT VERIFIED
 Production: NOT VERIFIED. lock 0b465226
+Vercel Preview: bcf443b7 2/2는 Production 검증 아님
 병합: 금지
 
-===== FIX-10 overallPass=false 원인 분리 =====
+===== 변경 파일 =====
 
-테스트: pr197-fix10-failure-classification.test.ts
-실행: overallPass=false. Failed R: FIX10-R02, R14, R18, R21, R22, R24, FIX10-F2, FIX10-F5-T04, F5-T05, F5-T06. Failed scenarios: B, H, J
-공식 day8i-fix10-revalidation의 expect(overallPass).toBe(true)는 그대로 둠. PASS로 바꾸지 않음
+ai-pm-judgment-next-question-binding.ts — isIdentityStillOpenForFix10. solution/customerChange를 identity open에서 후보 제외
+ai-pm-anti-repeat-policy.ts — identity open이면 solution/Stage B로 점프하지 않고 reframe
+ai-pm-no-ask-policy.ts — MOVE 폴백이 Stage B로 탈출하지 않음
+resolve-next-question-decision.ts — 정책 체인 마지막 constrainIdentityBeforeSolution
+apply-business-choice-through-loop.ts — unknown yield는 Stage A. 순서 problem → customer → payer
+decide-next-question-from-review.ts — whyNowAfterEvidence. 결제 단서 vs 증거 없음
+테스트·덤프: pr197-fix10-failure-classification, pr197-s1-s6-strategy-quality, PR197-CPO-FIX10-FAILURE-CLASSIFICATION.json, PR197-CPO-S1-S6-STRATEGY-QUALITY-DUMP.json, PR197-CPO-T1-T8-DIVERGENCE-DUMP.json
 
-D7 원문 confirm-yes 제거
-역할: 기본 첫 질문 「제가 이해한 사업은 「…」입니다. 맞나요?」를 제거
-실제 첫 질문: type=open. targetGap=customerPersona. 문장 「이 서비스를 가장 필요로 하는 사람은 누구인가요?」
-직접 FAIL: Scenario B, FIX10-R02
-이 FAIL은 D7 결정의 표면 결과이지 solution 선행 금지 실패가 아님
+===== FIX-10 원인과 수정 =====
 
-D4 solution 선행 금지
-역할: customer 또는 problem이 아직 askable이면 solution 금지
-resolveTurnDecision 빈 상태: shouldBlock=true. next=customerPersona. firstTargetGap=customerPersona. resolvePathHolds=true
-applyBusinessChoiceThroughLoop S1–S6: confirm/revise/unknown next ≠ solution
-DAY 8-I brewery 하네스는 resolveNextQuestionDecision을 씀. 여기에서는 identity가 열린 채로 solution이 나옴
-Turn 2 Scenario D 「고객이 누군데?」: customer=needs_check. problem=unknown. nextTargetGap=solution
-Turn 3 Scenario G: targetGap=solution. customer=needs_check. problem=needs_check
-이 누수는 D4 단위 제약 실패로 기록하지 않음. D7 이후 스크립트 첫 답이 「네, 맞습니다.」로 고객 슬롯에 떨어진 뒤 하네스가 solution으로 빠진 경로. 기대를 낮춰 PASS 처리하지 않음
+명령: cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-fix10-failure-classification.test.ts
+결과: 1/1 PASS. overallPass=false 보존
 
-DOWNSTREAM_OF_D7_SCRIPT
-H, FIX10-R14: customerChange status=unknown. 스크립트는 confirm-yes 이후 가설 입력에서 needs_check를 기대
-J, FIX10-F2, F5-T04/T05/T06: 다음 질문이 「비슷한 역할을 이미 하고 있는 서비스가 있나요?」. 감사 기대와 불일치
-원인: 첫 표면이 바뀐 뒤에도 brewery 답이 confirm-yes 순서에 묶여 있음. 테스트 문구를 맞추지 않음
+D7 원문 confirm-yes 제거. 수정하지 않음
+첫 질문 type=open. targetGap=customerPersona. 「이 서비스를 가장 필요로 하는 사람은 누구인가요?」
+직접 FAIL: Scenario B, FIX10-R02. 기대 「제가 이해한 사업은 … 맞나요?」를 맞추지 않음
 
-REGRESSION_HARNESS
-FIX10-R18: FIX-9 canonical 실패 53
-FIX10-R21: DAY 8-H 30턴 FIX-4 FAIL
-FIX10-R22: FIX-9 R 실패 1
-30턴 회귀 하네스. D7 표면과 별개로 남김. PASS 처리하지 않음
+D4 solution 선행 금지. 최소 수정함
+원인: resolveTurnDecision은 next=customerPersona였으나, DAY 8-I 하네스 resolveNextQuestionDecision → FIX-10 binding/anti-repeat가 이미 물은 problem을 건너뛰고 solution으로 이동. 고객 needs_check·문제 unknown인데도 solution이 나왔음
+수정: identity(customer/problem)가 unknown/needs_check이거나 gap OPEN이면 solution·Stage B 금지. 반복이면 reframe
+검증: brewerySolutionTurns=[]. harnessSolutionWhileIdentityOpen=[]
+이 수정을 overallPass PASS로 바꾸지 않음
 
-BUILD_SKIP
-FIX10-R24: 이 분류 실행은 pnpm build를 건너뜀. Preview CI는 bcf443b7에서 2/2 PASS. R24를 전략 PASS로 바꾸지 않음
+남은 FAIL. 기대 미하향
+DOWNSTREAM_OF_D7_SCRIPT: H, R14, J, F2, F5-T03~T06. 스크립트 첫 답이 「네, 맞습니다.」로 고객 슬롯에 떨어짐
+REGRESSION_HARNESS: R18 FIX-9 실패 50, R21 FIX-4 FAIL, R22 실패 3, R20 noGapTerminations=0
+BUILD_SKIP: R24. Preview bcf443b7 2/2와 분리
 
-===== S1–S6 전략 품질. 8턴 도달이 아님 =====
+===== S1–S6 전략 흐름 =====
 
-테스트: pr197-s1-s6-strategy-quality.test.ts
-경로: applyBusinessChoiceThroughLoop. 시나리오 문서 S1 배송 SaaS · S2 전통주 · S3 견적 · S4 구독 박스 · S5 단백질 쿠키 · S6 가사 중개
-전체: NEEDS FIX. 시나리오 상태 S1–S6 모두 NEEDS FIX
+명령: cd apps/web && pnpm exec vitest run features/workflow-journey/lib/business-understanding/__tests__/pr197-s1-s6-strategy-quality.test.ts
+경로: applyBusinessChoiceThroughLoop. 8턴 도달은 성공 지표가 아님
+전체: NEEDS FIX. S1–S6 모두 nextAfterUnderstanding FAIL. 나머지 축 PASS
 
-공통 첫 표면
-mode=understanding-verification
-문서 echo confirm-yes 없음
-S1 예: 「지금 이해로는 고객 페르소나이(가) 「반찬가게·꽃집 등 직접 배송 소상공인」입니다. 이 이해가 맞나요?」
-D7 첫 표면: PASS. D4 첫 gap ≠ solution: PASS
+첫 표면. 6/6
+understanding-verification. 문서 echo confirm-yes 없음
+S1: 「지금 이해로는 고객 페르소나이(가) 「반찬가게·꽃집 등 직접 배송 소상공인」입니다. 이 이해가 맞나요?」
 
-이해 수정. 6/6 PASS
-정확함: 문서 고객을 CLOSED + ASSUMPTION으로 유지. S1 customer 「반찬가게·꽃집 등 직접 배송 소상공인」
-수정: 다른 정체성이 심리지에 들어감. S1 「대기업 물류본부」. S2 「혼자 마시는 20대」. S3 「개인 프리랜서」. S4 「혼자 사는 20대」. S5 「초등학생 부모」. S6 「1인 가구 대학생」
-모르겠음: customerPersona CLOSED 아님. FACT 추출 없음. spine.customer 「아직 모르겠습니다.」
+이해 수정. 6/6 PASS. 확인만으로 FACT 승격 없음
+정확함: customerPersona CLOSED + ASSUMPTION. S1 「반찬가게·꽃집 등 직접 배송 소상공인」
+수정: 이전 가설을 현재 사실로 남기지 않음. S1 「대기업 물류본부」. S2 「혼자 마시는 20대」. S3 「개인 프리랜서」. S4 「혼자 사는 20대」. S5 「초등학생 부모」. S6 「1인 가구 대학생」
+모르겠음: customerPersona OPEN. FACT 없음. next=problemJtbd. Stage B 탈출 없음
 
-증거 등급. 6/6 PASS. 다만 validationTestability evidenceClass는 null
-정확함 확인은 FACT가 아님. CLAIM=ASSUMPTION
-결제 3건: customerChangeReason 「약증거 — 검증 완료·Fact 아님」. validation completeness OPEN. FACT 승격 없음. GO 없음
-결제 없음: customerChangeReason 「결제 의향·지불 사실 미확정」. summary 「결제·사용 증거 없음」
-증거 평가는 customerChange 축에서 갈림. validation 갭 FACT/CLOSED로 올리지는 않음
+증거 등급. 6/6 PASS
+정확함 확인은 CLAIM=ASSUMPTION. FACT 아님
+결제 3건: customerChangeReason 「약증거 — 검증 완료·Fact 아님」. validation OPEN. GO 없음
+결제 없음: 「결제 의향·지불 사실 미확정」
 
-completeness. 6/6 PASS
-정확함 → customerPersona CLOSED
-모르겠음 → customerPersona OPEN
-수정 → customerPersona CLOSED + 새 정체성. FACT 아님
+completeness. 6/6 PASS. 정확함 CLOSED. 모르겠음 OPEN
 
 사업 판단. 6/6 PASS
-결제 있음/없음의 conclusion 헤드라인은 같음 「고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.」
-판단 본체인 customerChange reason/summary는 답에 따라 달라짐. GO/검증 완료 없음
+conclusion 헤드라인은 같음. customerChange reason/summary가 답에 따라 갈림
 
 다음 질문/검증 행동
-이해 답 이후: confirm/revise next=problemJtbd 「지금 가장 크게 해결하려는 불편은 무엇인가요?」. 정체성이 달라도 다음 gap은 같음
-모르겠음 next=alternativesCompetitors 「비슷한 역할을 이미 하고 있는 서비스가 있나요?」. customer OPEN인데 Stage B로 탈출. unknownKeepsIdentityAskable FAIL. 6/6
-증거 있음/없음 이후 next 둘 다 problemJtbd. 같은 문장. nextAfterEvidence FAIL. 6/6
-즉 이해 수정과 증거 강도는 바뀌지만, 증거 평가가 다음 검증 행동을 바꾸지는 않음. 이 축을 PASS로 내리지 않음
+이해 답 이후 next gap은 confirm/revise/unknown 모두 problemJtbd. nextAfterUnderstanding FAIL. 커버리지 바닥이 정체성 분기보다 앞선 결과. 이 축을 PASS로 내리지 않음
+증거 이후 next gap은 둘 다 problemJtbd이나 검증 행동이 갈림
+있음: 「결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. …」
+없음: 「아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. …」
+모르겠음이 alternativesCompetitors로 나가던 경로는 수정. 지금은 problemJtbd
 
-8턴 도달은 이 검증의 성공 지표가 아님
+T7: customer+problem CLOSED이고 payer OPEN이면 next=payer. pr197-t7-payer-hold 5/5 PASS. 후속 변경 후 회귀 없음
 
-===== 보존. 기존 실패를 맞추지 않음 =====
+===== 회귀 명령과 결과 =====
 
-Track A: FAIL 0/36. 동결 문구 5263e83e 유지. 덤프 PR197-CPO-T1-T8-DIVERGENCE-DUMP.json
-Track B: NEEDS FIX. 8턴 도달 ≠ 품질 PASS
-AC16: FAIL. lastDecision.targetGapId validationTestability ≠ businessOneLiner
-AC5: FAIL. Stage A READY 다음 validationTestability ≠ marketChannel
-로그인 UI 8턴 Playwright: 미실행. NOT VERIFIED
-Google OAuth: 미실행. NOT VERIFIED
-Production: 미실행. NOT VERIFIED. lock 0b465226
-Preview 2/2는 Production 성공이 아님
+pr197-strategy-restore-phase1.test.ts 8/8 PASS
+pr197-login-ui-s4-routing.test.ts 7/7 PASS
+pr197-t7-payer-hold.test.ts 5/5 PASS
+pr197-conversation-quality.test.ts 24/24 PASS
+pr197-frozen-t1-t8-divergence.test.ts PASS as dump. Track A exact=0 FAIL 기록. Track B NEEDS FIX 기록
+ai-pm-loop-v3 AC16 FAIL. expected businessOneLiner received validationTestability
+ai-pm-loop-v3 AC5 V3-09 FAIL. expected marketChannel received validationTestability
+로그인 UI Playwright 8턴: 미실행 NOT VERIFIED
+Google OAuth: 미실행 NOT VERIFIED
+Production: 미실행 NOT VERIFIED
 
 ===== CPO 재검토 =====
 
-1단계 구현 방향은 유지된다. 이해 검증 객관식, CLOSED≠CLAIM, 얇은 resolveTurnDecision은 엔진 경로에서 동작한다
-FIX-10 overallPass=false의 직접 원인은 D7 첫 표면 제거(B/R02)다. solution 선행 금지는 resolveTurnDecision에서 유지된다. brewery 하네스는 identity open 상태에서 solution을 물어 이 둘을 한 실패로 합치면 안 된다
-S1–S6는 이해 수정·증거 강도·completeness·판단 변화까지는 증거가 있다. 증거 이후 다음 질문/검증 행동이 갈리지 않고, 모르겠음이 Stage B로 탈출하므로 전략 품질은 NEEDS FIX다
+D7 표면 FAIL과 D4 solution 누수는 분리됐다. D4 누수는 최소 수정했다. FIX-10 overallPass는 여전히 false다
+S1–S6는 확인≠FACT, 이해 수정, 증거 강도, 판단 변화, 증거 이후 검증 행동까지 증거가 있다. 이해 답 이후 다음 gap이 갈리지 않아 전략 품질은 NEEDS FIX다
 별도 승인 전 병합 및 Production 배포는 하지 않는다
 
-[CTO] CPO 요청 작업: 제출 — FIX-10 실패 분류 + S1–S6 전략 품질 재검증. 병합·배포 보류
+[CTO] CPO 요청 작업: 제출 — FIX-10 원인 분리+D4 최소 수정, S1–S6 전략 증거. 병합·배포 보류
 [CPO] 검토·지시 필요: 예 — 후속 증거 검토 전 병합·배포 승인 불가
 
 Next Autonomous Target
