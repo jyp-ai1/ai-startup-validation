@@ -6,7 +6,7 @@
 |---|---|
 | 구현 | **IMPLEMENTED** — 제품 코드 변경 있음. 커밋 SHA는 이 문서와 같은 커밋 |
 | CTO 1차 검증 | 아래 표의 **PASS / FAIL / NOT VERIFIED** 만. 빌드 성공 ≠ 대화 검증 |
-| CPO 2차 검증 | **미착수** — CPO가 이 자료를 독립 검토하기 전 |
+| CPO 2차 검증 | **NEEDS FIX** — `PR197-CPO-SECOND-VERIFY-VERDICT.md` |
 | 병합 · Production | **하지 않음** · Production `0b465226` 불변 |
 
 **기준:** 시나리오 본문 동결 `5263e83e` · 일괄안 `83596930` · 이전 구현 `cf9f39aa`  
@@ -224,14 +224,14 @@
 
 ---
 
-## CPO 판정 칸 (비움)
+## CPO 판정
 
-CPO만 채운다. CTO가 승인하지 않는다.
+CEO 보고: `PR197-CPO-SECOND-VERIFY-VERDICT.md`
 
-- 판정: APPROVE / NEEDS FIX / HOLD  
-- 검증한 범위:  
-- 미검증 범위:  
-- 핵심 근거:  
-- 다음 작업:  
+- 판정: **NEEDS FIX**
+- 검증한 범위: 엔진 apply-path · R1–R4 · S1–S6 스크립트 · S1–S5 팔로우 8턴 · 모름/기타/모순 다음 질문 · GO 가드
+- 미검증 범위: 로그인 UI · S4 T7 superseded · 동결 8턴 문구 일치
+- 핵심 근거: R1–R4·GO는 덤프 출력이 맞음. S6 3턴 정지·S4 판단이 맞벌이 부모로 잔류·payer 후 문서 한 줄 후퇴는 실패
+- 다음 작업: S6 지속 · 한 줄 후퇴 제거 · CONTRADICTED→판단 반영. 그다음 T7·UI
 
 CTO는 병합하지 않는다. 미검증 항목은 완료가 아니다.

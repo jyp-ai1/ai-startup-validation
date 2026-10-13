@@ -6,7 +6,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 사업 이해 · 객관식 대화
 
-**CPO Gate:** OPEN · 표준 2차 검증 패키지 제출 · CPO 독립 검토 전 · 병합·배포 보류  
+**CPO Gate:** NEEDS FIX · CEO 보고 `PR197-CPO-SECOND-VERIFY-VERDICT.md` · 병합·배포 보류  
 **Branch:** `cursor/ai-pm-mcq-understanding-e648`  
 **Scenarios:** `docs/product/ai-pm-closed-conversation-scenarios.md` (본문 동결 `5263e83e`)  
 **Quality package:** `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-IMPROVEMENT.md`  
@@ -33,7 +33,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 15 | V3 단계 추적 · 일괄 수정안 | 📤 `docs/evidence/ALABOM/AI-PM/PR197-JUDGMENT-ENGINE-BATCH-FIX-PLAN.md` · 구현 보류 |
 | 16 | 대화 품질 기준 · 6사업 전후 · 공통 원인 | 📤 패키지 `47f62572` · CPO: 구현 지시 |
 | 17 | 대화 엔진 구현 · 1차 회귀 | 📤 `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-EXECUTION.md` · 1차 실행 증거 |
-| 18 | CPO 2차 검증 패키지 (A–I) | 📤 `docs/evidence/ALABOM/AI-PM/PR197-CPO-SECOND-VERIFY-PACKAGE.md` · 원시 I/O `PR197-CPO-SECOND-VERIFY-DUMP.json` · CPO 판정 전. 로그인 UI·S4 T7·S6 8턴 팔로우는 NOT VERIFIED/FAIL |
+| 18 | CPO 2차 검증 패키지 (A–I) | 📤 CTO 1차 `PR197-CPO-SECOND-VERIFY-PACKAGE.md` · I/O `PR197-CPO-SECOND-VERIFY-DUMP.json` |
+| 19 | CPO 2차 검증 · CEO 보고 | 📤 **NEEDS FIX** `PR197-CPO-SECOND-VERIFY-VERDICT.md` · S6 지속·한 줄 후퇴·S4 판단 반영이 다음 수정 |
 
 ---
 
