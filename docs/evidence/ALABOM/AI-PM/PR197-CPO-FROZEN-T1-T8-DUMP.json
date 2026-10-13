@@ -1,0 +1,464 @@
+{
+  "meta": {
+    "implSha": "45423a517cd14383985e0448227cc8bb25a1af20",
+    "executedAt": "2026-10-13T12:55:45.701Z",
+    "frozenScenarioSha": "5263e83e",
+    "path": "engine resolveNextQuestionDecision → applyTypedAnswerThroughLoop",
+    "note": "1:1 wording. Expected text is 5263e83e. Failures are not relaxed.",
+    "production": "NOT VERIFIED",
+    "googleOauth": "NOT VERIFIED"
+  },
+  "totals": {
+    "compared": 35,
+    "exactMatches": 0,
+    "allScenariosExact": false
+  },
+  "scenarios": {
+    "S1": {
+      "turnCount": 5,
+      "exactMatchCount": 0,
+      "allEightExact": false,
+      "verdict": {
+        "status": "FAIL",
+        "reason": "S1 exact wording 0/8 vs frozen 5263e83e"
+      },
+      "turns": [
+        {
+          "turn": 1,
+          "expectedQuestion": "고객이 지금 가장 불편해하는 점은 무엇인가요?",
+          "askedQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "주문과 배송을 따로 관리해야 함",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "nextTargetGap": "problemJtbd"
+        },
+        {
+          "turn": 2,
+          "expectedQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "반찬가게",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "nextTargetGap": "solution"
+        },
+        {
+          "turn": 3,
+          "expectedQuestion": "반찬가게에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "askedGap": "solution",
+          "founderAnswer": "아직 모르겠음",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
+          "nextTargetGap": "problemJtbd"
+        },
+        {
+          "turn": 4,
+          "expectedQuestion": "수익은 어떤 구조로 발생하나요?",
+          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "월 구독",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": null,
+          "nextTargetGap": null
+        },
+        {
+          "turn": 5,
+          "expectedQuestion": "지금은 이 문제를 어떻게 처리하나요?",
+          "askedQuestion": null,
+          "askedGap": null,
+          "founderAnswer": "지금은 주문과 배송을 따로 관리함",
+          "exactMatch": false,
+          "status": "FAIL",
+          "reason": "engine had no next question"
+        }
+      ]
+    },
+    "S2": {
+      "turnCount": 7,
+      "exactMatchCount": 0,
+      "allEightExact": false,
+      "verdict": {
+        "status": "FAIL",
+        "reason": "S2 exact wording 0/8 vs frozen 5263e83e"
+      },
+      "turns": [
+        {
+          "turn": 1,
+          "expectedQuestion": "지금 가장 크게 풀려는 불편은 무엇인가요?",
+          "askedQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "전통주를 발견하기 어렵다",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "nextTargetGap": "problemJtbd"
+        },
+        {
+          "turn": 2,
+          "expectedQuestion": "이 브랜드를 가장 필요로 하는 사람은 누구인가요?",
+          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "선물하는 30–40대",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "nextTargetGap": "solution"
+        },
+        {
+          "turn": 3,
+          "expectedQuestion": "술값을 실제로 내는 사람은 누구인가요?",
+          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "askedGap": "solution",
+          "founderAnswer": "선물하는 사람이 냄",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
+          "nextTargetGap": "customerPersona"
+        },
+        {
+          "turn": 4,
+          "expectedQuestion": "매출은 어디서 더 나오나요?",
+          "askedQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
+          "askedGap": "customerPersona",
+          "founderAnswer": "일단 병 판매가 먼저고 수수료는 나중",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
+          "nextTargetGap": "problemJtbd"
+        },
+        {
+          "turn": 5,
+          "expectedQuestion": "선물하는 30–40대는 좋은 전통주를 찾기 어려울 때 지금은 어떻게 하나요?",
+          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "지인에게 물어 추천받는다",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
+          "nextTargetGap": "solution"
+        },
+        {
+          "turn": 6,
+          "expectedQuestion": "지인 추천 대비 이 브랜드만의 차이는 무엇인가요?",
+          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
+          "askedGap": "solution",
+          "founderAnswer": "여러 양조장을 한곳에서 고른다",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": null,
+          "nextTargetGap": null
+        },
+        {
+          "turn": 7,
+          "expectedQuestion": "그 이유로 이미 산 사람이 있나요?",
+          "askedQuestion": null,
+          "askedGap": null,
+          "founderAnswer": "아직 없다",
+          "exactMatch": false,
+          "status": "FAIL",
+          "reason": "engine had no next question"
+        }
+      ]
+    },
+    "S3": {
+      "turnCount": 5,
+      "exactMatchCount": 0,
+      "allEightExact": false,
+      "verdict": {
+        "status": "FAIL",
+        "reason": "S3 exact wording 0/8 vs frozen 5263e83e"
+      },
+      "turns": [
+        {
+          "turn": 1,
+          "expectedQuestion": "지금 가장 크게 줄이려는 실수는 무엇인가요?",
+          "askedQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "메일 숫자를 엑셀에 옮기다 나는 오타",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "nextTargetGap": "problemJtbd"
+        },
+        {
+          "turn": 2,
+          "expectedQuestion": "이 툴을 매일 쓰는 사람은 누구인가요?",
+          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "영업관리자",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "nextTargetGap": "solution"
+        },
+        {
+          "turn": 3,
+          "expectedQuestion": "월 구독료 결재자는 누구인가요?",
+          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "askedGap": "solution",
+          "founderAnswer": "대표",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
+          "nextTargetGap": "customerPersona"
+        },
+        {
+          "turn": 4,
+          "expectedQuestion": "한 달에 견적 메일이 얼마나 오나요?",
+          "askedQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
+          "askedGap": "customerPersona",
+          "founderAnswer": "아직 모르겠음",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": null,
+          "nextTargetGap": null
+        },
+        {
+          "turn": 5,
+          "expectedQuestion": "지금은 이 숫자를 어떻게 옮기나요?",
+          "askedQuestion": null,
+          "askedGap": null,
+          "founderAnswer": "엑셀에 손으로",
+          "exactMatch": false,
+          "status": "FAIL",
+          "reason": "engine had no next question"
+        }
+      ]
+    },
+    "S4": {
+      "turnCount": 5,
+      "exactMatchCount": 0,
+      "allEightExact": false,
+      "verdict": {
+        "status": "FAIL",
+        "reason": "S4 exact wording 0/8 vs frozen 5263e83e"
+      },
+      "turns": [
+        {
+          "turn": 1,
+          "expectedQuestion": "부모가 지금 가장 귀찮아하는 점은 무엇인가요?",
+          "askedQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "무엇을 줄지 고르기 싫다",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "nextTargetGap": "problemJtbd"
+        },
+        {
+          "turn": 2,
+          "expectedQuestion": "박스를 가장 반기는 사람은 누구인가요?",
+          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "아이",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "nextTargetGap": "solution"
+        },
+        {
+          "turn": 3,
+          "expectedQuestion": "구독료는 누가 내나요?",
+          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "askedGap": "solution",
+          "founderAnswer": "부모",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
+          "nextTargetGap": "problemJtbd"
+        },
+        {
+          "turn": 4,
+          "expectedQuestion": "지금은 아이 간식을 어떻게 사나요?",
+          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "쿠팡 검색",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": null,
+          "nextTargetGap": null
+        },
+        {
+          "turn": 5,
+          "expectedQuestion": "쿠팡 대신 이 박스를 고르는 이유는 무엇인가요?",
+          "askedQuestion": null,
+          "askedGap": null,
+          "founderAnswer": "고민 없이 온다",
+          "exactMatch": false,
+          "status": "FAIL",
+          "reason": "engine had no next question"
+        }
+      ]
+    },
+    "S5": {
+      "turnCount": 8,
+      "exactMatchCount": 0,
+      "allEightExact": false,
+      "verdict": {
+        "status": "FAIL",
+        "reason": "S5 exact wording 0/8 vs frozen 5263e83e"
+      },
+      "turns": [
+        {
+          "turn": 1,
+          "expectedQuestion": "고객이 지금 단백질 간식에서 가장 불만인 점은 무엇인가요?",
+          "askedQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "맛이 없다",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "nextTargetGap": "problemJtbd"
+        },
+        {
+          "turn": 2,
+          "expectedQuestion": "그 불만을 가장 세게 느끼는 사람은 누구인가요?",
+          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "헬스장 다니는 20–30대",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "nextTargetGap": "payer"
+        },
+        {
+          "turn": 3,
+          "expectedQuestion": "지금은 어떤 단백질 간식을 사나요?",
+          "askedQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "askedGap": "payer",
+          "founderAnswer": "시중 단백질바",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "헬스장 다니는 20–30대에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "nextTargetGap": "payer"
+        },
+        {
+          "turn": 4,
+          "expectedQuestion": "기존 바 대신 고르는 이유는 무엇인가요?",
+          "askedQuestion": "헬스장 다니는 20–30대에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "askedGap": "payer",
+          "founderAnswer": "더 맛있다",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
+          "nextTargetGap": "payer"
+        },
+        {
+          "turn": 5,
+          "expectedQuestion": "쿠키값은 누가 내나요?",
+          "askedQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
+          "askedGap": "payer",
+          "founderAnswer": "헬스 트레이너가 회원에게 추천하고 회원이 결제",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "nextTargetGap": "alternativesCompetitors"
+        },
+        {
+          "turn": 6,
+          "expectedQuestion": "이미 두 번 이상 산 고객이 있나요?",
+          "askedQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
+          "askedGap": "alternativesCompetitors",
+          "founderAnswer": "한 번만",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "nextTargetGap": "solution"
+        },
+        {
+          "turn": 7,
+          "expectedQuestion": "그 1회 구매를 어떻게 보나요?",
+          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "askedGap": "solution",
+          "founderAnswer": "내가 지인에게 판 것",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "수익은 어떤 구조로 발생하나요?",
+          "nextTargetGap": "revenueModel"
+        },
+        {
+          "turn": 8,
+          "expectedQuestion": "다음에 무슨 증거가 있으면 판단이 바뀌나요?",
+          "askedQuestion": "수익은 어떤 구조로 발생하나요?",
+          "askedGap": "revenueModel",
+          "founderAnswer": "창업자 확인",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "이 시장에 수요가 있다는 근거는 무엇인가요?",
+          "nextTargetGap": "marketSizeEvidence"
+        }
+      ]
+    },
+    "S6": {
+      "turnCount": 5,
+      "exactMatchCount": 0,
+      "allEightExact": false,
+      "verdict": {
+        "status": "FAIL",
+        "reason": "S6 exact wording 0/8 vs frozen 5263e83e"
+      },
+      "turns": [
+        {
+          "turn": 1,
+          "expectedQuestion": "지금 먼저 풀 쪽은 어디인가요?",
+          "askedQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+          "askedGap": "customerPersona",
+          "founderAnswer": "집이 믿을 사람을 못 구함",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "nextTargetGap": "problemJtbd"
+        },
+        {
+          "turn": 2,
+          "expectedQuestion": "집이 지금 가장 걱정하는 점은 무엇인가요?",
+          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "사람을 못 믿음",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "nextTargetGap": "solution"
+        },
+        {
+          "turn": 3,
+          "expectedQuestion": "지금은 도우미를 어떻게 구하나요?",
+          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
+          "askedGap": "solution",
+          "founderAnswer": "지인 소개",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
+          "nextTargetGap": "problemJtbd"
+        },
+        {
+          "turn": 4,
+          "expectedQuestion": "중개 수수료는 누가 내나요?",
+          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
+          "askedGap": "problemJtbd",
+          "founderAnswer": "집이 냄",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": null,
+          "nextTargetGap": null
+        },
+        {
+          "turn": 5,
+          "expectedQuestion": "지인 소개 대신 이 앱을 쓰는 이유는 무엇인가요?",
+          "askedQuestion": null,
+          "askedGap": null,
+          "founderAnswer": "신원 확인",
+          "exactMatch": false,
+          "status": "FAIL",
+          "reason": "engine had no next question"
+        }
+      ]
+    }
+  }
+}

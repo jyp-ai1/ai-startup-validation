@@ -1,0 +1,62 @@
+PR #197 남은 병합 게이트 증거 — CTO 제출 (병합 보류)
+
+T7 next=payer CPO VERIFIED는 유지. buyer 오사용 차단은 재구현하지 않았다. AC16/AC5는 완화하지 않았다. 엔진 PASS와 UI PASS를 한 줄로 합치지 않는다. 병합·Production 배포하지 않는다.
+
+상태 어휘: NOT STARTED / IMPLEMENTED / CTO VERIFIED / CPO VERIFIED / NEEDS FIX / NOT VERIFIED
+
+한 줄: 남은 병합 게이트 세 건을 실행해 제출한다. 동결 T1–T8 문구 일대일은 FAIL(0/8×6). Google OAuth는 버튼→accounts.google.com까지이고 8턴 세션은 없다. Production은 잠금 SHA 0b465226이며 이 PR이 올라가 있지 않다.
+
+T7 next=payer = CPO VERIFIED 유지
+구현 5720ff8b · dump 2026-10-13T12:41:46Z · next=payer · reason=anti-repeat hold open Stage A payer
+
+동결 시나리오 T1–T8 문구 = FAIL (일대일 0건)
+기준 본문 SHA 5263e83e. 엔진 resolveNextQuestionDecision 후 동결 창업자 답을 턴 순서로 넣음. 기대한 질문 문구를 낮추지 않음.
+원시 I/O: docs/evidence/ALABOM/AI-PM/PR197-CPO-FROZEN-T1-T8-DUMP.json
+totals: compared=35 exactMatches=0 allScenariosExact=false
+S1 0/8. T1 actual=이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? expected=고객이 지금 가장 불편해하는 점은 무엇인가요?
+S2 0/8. T1 actual=이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? expected=지금 가장 크게 풀려는 불편은 무엇인가요?
+S3 0/8. T1 actual=같은 고객 질문. expected=지금 가장 크게 줄이려는 실수는 무엇인가요?
+S4 0/8. T1 actual=같은 고객 질문. expected=부모가 지금 가장 귀찮아하는 점은 무엇인가요?
+S5 0/8. T3 actual=payer 질문. expected=지금은 어떤 단백질 간식을 사나요?
+S6 0/8. T1 actual=같은 고객 질문. expected=지금 먼저 풀 쪽은 어디인가요?
+S1/S3/S4/S6는 5턴 전후에서 next가 비어 중단. 문구를 맞추려고 기대를 바꾸지 않음.
+
+Google OAuth 8턴 = NOT VERIFIED
+로컬·Production /auth/login에서 Google 버튼 보임. 클릭 후 host=accounts.google.com. 사람 계정 동의 없이 워크스페이스 8턴을 만들지 않음. QA magic-link는 이 게이트가 아님.
+원시 I/O: docs/evidence/ALABOM/AI-PM/PR197-CPO-OAUTH-PROD-DUMP.json (URL은 host만 남김)
+
+Production = NOT VERIFIED
+GET https://ai-startup-validation-tau.vercel.app/api/build-info
+commit=0b465226516e1a4f3eb9ce2087f8bca2c2c091da branch=main environment=production
+잠금 SHA 0b465226과 일치. PR #197(T7 payer-hold)은 Production에 없음. 배포하지 않음. Production 8턴 대화 없음.
+
+AC16 / AC5 = 기존 부채 유지
+ai-pm-loop-v3 AC16: target=alternativesCompetitors, 기대 businessOneLiner. payer CLOSED 단언은 유지.
+ai-pm-loop-v3 AC5 V3-09: target=alternativesCompetitors, 기대 marketChannel.
+테스트를 바꾸거나 실패를 숨기지 않음. 이번 게이트 덤프와 경로가 다름.
+
+실행 명령과 실제 결과
+pnpm --filter web exec vitest run pr197-frozen-t1-t8-wording.test.ts → 1 passed (덤프 기록. 문구 PASS 단언 없음)
+PLAYWRIGHT_BASE_URL=http://127.0.0.1:3210 pnpm exec playwright test e2e/pr197-cpo-merge-gates.spec.ts → 1 passed (9.7s)
+pnpm --filter web exec vitest run ai-pm-loop-v3.test.ts -t "AC16: V3-08|AC5 V3-09" → 2 failed, 문구 그대로
+curl /api/build-info → commit 0b465226…
+
+판정 표
+T6 고객 정정 / buyer 오사용 차단 / Memory·gapState = CPO VERIFIED 유지
+T7 고객 재확인 / next=payer = CPO VERIFIED 유지
+S6 / S2 / S3 / S5 회귀 = 이전 제출 증거 PASS 유지
+동결 T1–T8 문구 일대일 = FAIL
+Google OAuth 8턴 = NOT VERIFIED
+Production 대화 = NOT VERIFIED
+AC16 / AC5 = 기존 부채
+PR #197 전체 병합 = 승인 보류
+
+남은 위험
+1. 동결 본문은 사업별 첫 질문이 문제/면 선택인데 엔진 첫 질문은 고객 페르소나다. 순서와 문장이 둘 다 어긋난다.
+2. Google 8턴은 사람 Google 계정 동의와 Production/로컬 콜백이 필요하다.
+3. Production에 이 PR을 올리지 않는 한 T7 next=payer는 Production에서 확인할 수 없다.
+4. AC16/AC5 next-target 문구는 별도 부채.
+
+CTO는 병합하지 않는다. Production 배포하지 않는다.
+(CTO) CPO 요청 작업: 남은 병합 게이트 증거 제출 — T1–T8 문구 FAIL, OAuth·Production NOT VERIFIED, 병합 보류
+(CPO) 검토·지시 필요: 예 — 동결 문구·Google 8턴·Production 미통과로 PR 전체 병합 승인 불가

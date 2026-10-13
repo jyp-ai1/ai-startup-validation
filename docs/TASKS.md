@@ -6,7 +6,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ## AI PM 사업 이해 · 객관식 대화
 
-**CPO Gate:** 엔진·S4 라우팅·buyer 차단 CPO VERIFIED · T7 next=payer 제출 · 병합·배포 보류  
+**CPO Gate:** 엔진·S4 라우팅·buyer 차단·T7 next=payer CPO VERIFIED · 병합 게이트 증거 제출 · 병합·배포 보류  
 **Branch:** `cursor/ai-pm-mcq-understanding-e648`  
 **Scenarios:** `docs/product/ai-pm-closed-conversation-scenarios.md` (본문 동결 `5263e83e`)  
 **Quality package:** `docs/evidence/ALABOM/AI-PM/PR197-CONVERSATION-QUALITY-IMPROVEMENT.md`  
@@ -41,7 +41,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 23 | 로그인 UI S4 입력 라우팅 | 📤 `PR197-CPO-LOGIN-UI-S4-ROUTING-COPY.txt` · T6/T7 CPO VERIFIED · 병합 금지 |
 | 24 | 병합 전 잔여 위험 확인 | 📤 당시 buyer 오사용 FAIL · 확인 dump `12:04` |
 | 25 | buyer 오사용 차단 | 📤 `PR197-CPO-LOGIN-UI-BUYER-FIX-COPY.txt` · T6 payer 미CLOSED · CPO VERIFIED · 병합 금지 |
-| 26 | T7 next=payer 정책 | 📤 `PR197-CPO-LOGIN-UI-T7-PAYER-COPY.txt` · customer+problem CLOSED·payer OPEN → next=payer · AC16/AC5는 기존 실패로 분리 · 병합 금지 |
+| 26 | T7 next=payer 정책 | 📤 `PR197-CPO-LOGIN-UI-T7-PAYER-COPY.txt` · next=payer · **CPO VERIFIED** · 병합 금지 |
+| 27 | 남은 병합 게이트 증거 | 📤 `PR197-CPO-MERGE-GATE-COPY.txt` · T1–T8 문구 FAIL 0/8 · OAuth·Production NOT VERIFIED · AC16/AC5 유지 · 병합 금지 |
 
 ---
 

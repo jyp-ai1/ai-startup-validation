@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "implSha": "45423a517cd14383985e0448227cc8bb25a1af20",
+    "executedAt": "2026-10-13T12:56:16.667Z",
+    "note": "Google OAuth 8-turn was not completed. Production was not deployed. SHA lock held. OAuth URLs redacted to host only.",
+    "productionLock": "0b465226"
+  },
+  "production": {
+    "url": "https://ai-startup-validation-tau.vercel.app",
+    "buildInfo": {
+      "ok": true,
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "version": "0.1.0",
+          "commit": "0b465226516e1a4f3eb9ce2087f8bca2c2c091da",
+          "branch": "main",
+          "deployTime": "2026-10-13T12:56:08.104Z",
+          "nodeVersion": "v24.21.0",
+          "environment": "production",
+          "gaConfigured": false
+        }
+      }
+    },
+    "commit": "0b465226516e1a4f3eb9ce2087f8bca2c2c091da",
+    "matchesLockedSha": true,
+    "thisPrOnProduction": false,
+    "eightTurnConversation": "NOT VERIFIED",
+    "verdict": {
+      "status": "NOT VERIFIED",
+      "reason": "Production commit 0b465226516e1a4f3eb9ce2087f8bca2c2c091da is the locked SHA 0b465226. PR #197 T7/payer-hold is not on Production."
+    }
+  },
+  "googleOauth": {
+    "local": {
+      "loginUrl": "http://127.0.0.1:3210/auth/login",
+      "landed": "accounts.google.com",
+      "googleVisible": true,
+      "afterClick": {
+        "navigated": true,
+        "url": "accounts.google.com",
+        "host": "accounts.google.com",
+        "looksLikeGoogleAccounts": true,
+        "errorText": null
+      },
+      "eightTurns": "NOT EXECUTED — Google OAuth session was not completed"
+    },
+    "production": {
+      "loginUrl": "https://ai-startup-validation-tau.vercel.app/auth/login",
+      "landed": "accounts.google.com",
+      "googleVisible": true,
+      "afterClick": {
+        "navigated": true,
+        "url": "accounts.google.com",
+        "host": "accounts.google.com",
+        "looksLikeGoogleAccounts": true,
+        "errorText": null
+      },
+      "eightTurns": "NOT EXECUTED — Google OAuth session was not completed"
+    },
+    "eightTurnsCompleted": false,
+    "verdict": {
+      "status": "NOT VERIFIED",
+      "reason": "Google button visible. Click reached accounts.google.com. No authenticated 8-turn workspace session. QA magic-link is not this gate."
+    }
+  }
+}
