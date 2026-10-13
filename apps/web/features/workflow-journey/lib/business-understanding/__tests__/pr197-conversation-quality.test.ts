@@ -365,6 +365,119 @@ describe('PR #197 conversation quality', () => {
     expect(noPay.judgmentAfter.dimensions.customerChange.evidenceType).not.toBe('fact');
   });
 
+  it('S2–S6 — after customer, next ask is payer not the document one-liner', () => {
+    for (const [id, doc, problemRe, customerRe] of [
+      ['S2', DOCS.S2, /발견|흩어|전통주/, /선물|30|40|애호|양조/],
+      ['S3', DOCS.S3, /메일|오타|엑셀/, /영업|관리자|제조/],
+      ['S5', DOCS.S5, /맛|비싸|단백질/, /20|30|헬스|운동/],
+    ] as const) {
+      const pid = `cq-payer-not-oneliner-${id}`;
+      reset(pid, doc);
+      applyGap(pid, doc, 'problemJtbd', 'specific', problemRe);
+      const afterCustomer = applyGap(pid, doc, 'customerPersona', 'specific', customerRe);
+      expect(afterCustomer.nextTargetGap, id).toBe('payer');
+      expect(afterCustomer.nextQuestionText ?? '', id).not.toMatch(/누구에게 무엇을 제공/);
+    }
+  });
+
+  it('S3 — problem options keep the full typo clause, not 「메일」', () => {
+    reset('cq-s3-label', DOCS.S3);
+    const labels = asked('cq-s3-label', DOCS.S3, 'problemJtbd')
+      .options.filter((o) => o.kind === 'specific')
+      .map((o) => o.label);
+    expect(labels.some((label) => label === '메일')).toBe(false);
+    expect(labels.join(' ')).toMatch(/오타|엑셀|옮기/);
+  });
+
+  it('S2 — customer options keep the gift/hobby clause, not 「전통주를 선물」', () => {
+    reset('cq-s2-label', DOCS.S2);
+    const labels = asked('cq-s2-label', DOCS.S2, 'customerPersona')
+      .options.filter((o) => o.kind === 'specific')
+      .map((o) => o.label);
+    expect(labels.some((label) => label === '전통주를 선물')).toBe(false);
+    expect(labels.join(' ')).toMatch(/30|40|선물|애호/);
+  });
+
+  it('S1 — payer options are roles, not the customer copied as buyer', () => {
+    reset('cq-s1-payer', DOCS.S1);
+    const labels = asked('cq-s1-payer', DOCS.S1, 'payer')
+      .options.filter((o) => o.kind === 'specific')
+      .map((o) => o.label);
+    expect(labels.join(' ')).toMatch(/사장님|본사|관리자|대표/);
+    expect(labels.some((label) => /반찬가게가 비용을 지불/.test(label))).toBe(false);
+  });
+
+  it('S4 — after off-slot contradiction, next ask reconfirms the customer', () => {
+    reset('cq-s4-next', DOCS.S4);
+    applyGap('cq-s4-next', DOCS.S4, 'customerPersona', 'specific', /아이|부모/);
+    const contradicted = applyBusinessChoiceThroughLoop({
+      projectId: 'cq-s4-next',
+      documentText: DOCS.S4,
+      option: {
+        id: 's4-contradict',
+        label: '기타',
+        answerText: '사실 아이가 아니라 혼자 사는 20대가 메인이에요',
+        kind: 'specific',
+        appliesToGap: 'validationTestability',
+        evidenceClassHint: 'ASSUMPTION',
+      },
+      askedQuestionText: '이미 구독료를 낸 부모가 있나요?',
+    });
+    expect(contradicted.nextTargetGap).toBe('customerPersona');
+    expect(contradicted.nextQuestionText ?? '').toMatch(/맞는 고객|누구/);
+  });
+
+  it('S1 — after payment-none, does not reconfirm the closed problem', () => {
+    reset('cq-s1-nopay-next', DOCS.S1);
+    applyGap('cq-s1-nopay-next', DOCS.S1, 'problemJtbd', 'specific', /주문|배송/);
+    applyGap('cq-s1-nopay-next', DOCS.S1, 'customerPersona', 'specific', /반찬/);
+    applyGap('cq-s1-nopay-next', DOCS.S1, 'payer', 'unknown');
+    applyGap('cq-s1-nopay-next', DOCS.S1, 'revenueModel', 'specific', /구독/);
+    applyGap('cq-s1-nopay-next', DOCS.S1, 'alternativesCompetitors', 'specific');
+    const noPay = applyBusinessChoiceThroughLoop({
+      projectId: 'cq-s1-nopay-next',
+      documentText: DOCS.S1,
+      option: {
+        id: 'v-no',
+        label: '아직 없다',
+        answerText: '아직 실제 결제·사용 증거는 없습니다.',
+        kind: 'specific',
+        appliesToGap: 'validationTestability',
+        evidenceClassHint: 'UNKNOWN',
+      },
+    });
+    expect(noPay.nextTargetGap).not.toBe('problemJtbd');
+    expect(noPay.nextQuestionText ?? '').not.toMatch(/핵심 불편은|맞나요\?/);
+  });
+
+  it('engine-follow continues past Stage A into a later gap', () => {
+    reset('cq-follow-s1', DOCS.S1);
+    let gap = 'problemJtbd';
+    const askedGaps: string[] = [];
+    for (let i = 0; i < 8; i += 1) {
+      const q = asked('cq-follow-s1', DOCS.S1, gap);
+      const specific = q.options.find((o) => o.kind === 'specific') ?? q.options[0]!;
+      const result = applyBusinessChoiceThroughLoop({
+        projectId: 'cq-follow-s1',
+        documentText: DOCS.S1,
+        option: specific,
+        askedQuestionText: q.questionText,
+      });
+      askedGaps.push(gap);
+      if (!result.nextTargetGap || result.nextTargetGap === gap) break;
+      gap = result.nextTargetGap;
+    }
+    expect(askedGaps.length).toBeGreaterThanOrEqual(4);
+    expect(askedGaps).toContain('payer');
+    expect(
+      askedGaps.some((item) =>
+        ['alternativesCompetitors', 'validationTestability', 'marketChannel'].includes(item),
+      ),
+    ).toBe(true);
+    expect(askedGaps.at(-1)).not.toBe('customerPersona');
+    expect(askedGaps.at(-1)).not.toBe('problemJtbd');
+  });
+
   it('presenter does not keep the canned customer why after customer is confirmed', () => {
     reset('cq-why', DOCS.S1);
     applyGap('cq-why', DOCS.S1, 'customerPersona', 'specific', /반찬/);

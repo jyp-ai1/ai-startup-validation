@@ -84,13 +84,23 @@ function normalizeToken(value: string): string {
 }
 
 function splitCandidates(raw: string): string[] {
-  return raw
-    .replace(/[()（）\[\]]/g, ' ')
+  const cleaned = raw.replace(/[()（）\[\]]/g, ' ').trim();
+  const midClause =
+    /[가-힣]{2,}[·•,][가-힣]{2,}.*(다|요|함|이다|습니다|어렵다|피곤하다|찾는다|찾는)/.test(
+      cleaned,
+    );
+  if (midClause || (cleaned.length >= 18 && /(다|요|함|이다|습니다)$/.test(cleaned))) {
+    return [cleaned.length > 48 ? clip(cleaned, 48) : cleaned];
+  }
+  const parts = cleaned
     .split(/\s*(?:·|•|,|，|\/|／|\||및|등)\s*/)
     .map((part) => part.replace(/^[#*\-]\s*/, '').replace(/[:：].*$/, '').trim())
-    .map((part) => (part.length > 40 ? clip(part, 36) : part))
-    .filter((part) => part.length >= 2)
+    .map((part) => (part.length > 40 ? clip(part, 40) : part))
+    .filter((part) => part.length >= 6)
+    .filter((part) => !/(고|을|를|은|는)$/.test(part))
     .filter((part) => !/^(등|및|또는|기타|없음)$/.test(part));
+  if (parts.length >= 1) return parts;
+  return [cleaned.length > 48 ? clip(cleaned, 48) : cleaned].filter((part) => part.length >= 2);
 }
 
 function labeledValues(documentText: string, labels: string[]): string[] {
@@ -217,7 +227,7 @@ function uniqueOptions(
   const out: string[] = [];
   const seen = new Set<string>();
   for (const value of values) {
-    const label = clip(value, 36);
+    const label = clip(value, 48);
     const key = normalizeToken(label);
     if (key.length < 2 || seen.has(key) || isCoveredByKnown(key, confirmed)) continue;
     if ([...seen].some((existing) => existing.includes(key) || key.includes(existing))) {
@@ -307,11 +317,26 @@ function fallbackOptionsForGap(targetGap: string, documentText: string): string[
   }
 
   if (targetGap === 'payer') {
-    const options = actors.slice(0, 3).map(
-      (actor) => `${actor}${topicParticle(actor)} 비용을 지불합니다`,
-    );
-    if (/(쓰는 사람|사용자|관광객|소비자)/.test(blob) && /(양조장|가게|B2B|파트너|사장)/i.test(blob)) {
+    const options: string[] = [];
+    if (/(B2B|소상공인|가게|제조|영업관리|견적)/.test(blob)) {
+      options.push('사장님 본인', '매장·팀 관리자', '본사·가맹본부', '대표가 결재한다');
+    }
+    if (/(선물|30|40|부모|구독|쿠키|자사몰|아이)/.test(blob)) {
+      options.push('쓰는 사람이 직접 낸다', '선물하는 사람이 낸다', '부모가 낸다');
+    }
+    if (/(중개|도우미|맞벌이 집|가사)/.test(blob)) {
+      options.push('집이 낸다', '도우미가 낸다', '양쪽이 낸다');
+    }
+    if (/(여행객|현장 발견)/.test(blob)) {
+      options.push('여행객이 낸다', '양조장이 입점료를 낸다');
+    }
+    if (/(사용자|관리자|영업|선물)/.test(blob)) {
       options.push('쓰는 사람과 돈 내는 사람이 다릅니다');
+    }
+    if (options.length === 0) {
+      options.push(
+        ...actors.slice(0, 2).map((actor) => `${actor}${topicParticle(actor)} 비용을 지불합니다`),
+      );
     }
     return uniqueOptions(options, new Set(), 4);
   }
@@ -333,6 +358,17 @@ function fallbackOptionsForGap(targetGap: string, documentText: string): string[
   if (targetGap === 'validationTestability' || targetGap === 'marketSizeEvidence') {
     return ['실제 결제나 사용 증거가 있습니다', '아직 실제 결제·사용 증거는 없습니다'];
   }
+
+  if (targetGap === 'marketChannel') {
+    const options: string[] = [];
+    if (/(반찬|소상공인|가게|배송)/.test(blob)) options.push('사장님 단톡·상인 모임', '직접 방문');
+    if (/(전통주|선물|양조)/.test(blob)) options.push('온라인몰', '팝업·선물 시즌');
+    if (/(제조|견적|영업관리)/.test(blob)) options.push('기존 거래 메일', '영업 방문');
+    if (/(부모|구독|간식)/.test(blob)) options.push('맘카페', '쿠팡·인스타');
+    if (/(쿠키|헬스|단백질)/.test(blob)) options.push('헬스장', '자사몰');
+    if (/(도우미|가사|중개)/.test(blob)) options.push('맞벌이 단지 단톡', '지역 카페');
+    return uniqueOptions(options, new Set(), 4);
+  }
   return [];
 }
 
@@ -341,7 +377,7 @@ function answerTextForOption(targetGap: string, label: string): string {
     case 'customerPersona':
       return `이 서비스를 가장 필요로 하는 사람은 ${label}입니다.`;
     case 'payer':
-      return label.includes('지불') || label.includes('결제')
+      return /지불|결제|낸다|냄|결재/.test(label)
         ? label
         : `서비스 비용은 ${label}이 지불합니다.`;
     case 'problemJtbd':

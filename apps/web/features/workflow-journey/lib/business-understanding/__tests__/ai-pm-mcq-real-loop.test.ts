@@ -188,7 +188,7 @@ describe('AI PM MCQ real workspace loop', () => {
       /주문|배송/,
     );
     expect(asked('payer').options.map((option) => option.label).join(' ')).toMatch(
-      /반찬|꽃집|소상공인|지불/,
+      /사장님|본사|관리자|대표|지불/,
     );
     expect(asked('revenueModel').options.map((option) => option.label).join(' ')).toMatch(/구독/);
     expect(asked('alternativesCompetitors').options.map((option) => option.label).join(' ')).toMatch(

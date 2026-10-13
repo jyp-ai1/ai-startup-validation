@@ -95,13 +95,15 @@ export function applyAntiRepeatPolicy(input: {
   if (repeatCount === 0) return decision;
 
   if (isAiPmJudgmentFix10V1Active() && judgment) {
-    for (const candidate of listFix10FocusCandidates(judgment)) {
+    for (const candidate of listFix10FocusCandidates(judgment, gapState)) {
       if (candidate.gapId === decision.targetGapId) continue;
-      if (isOffTrackGapForFix10(candidate.gapId)) continue;
+      if (!isGapAskable(candidate.gapId, gapState)) continue;
+      if (isOffTrackGapForFix10(candidate.gapId, gapState)) continue;
       const built = buildJudgmentBoundQuestion({
         focus: candidate.focus,
         gapId: candidate.gapId,
         judgment,
+        gapState,
       });
       if (!wasQuestionAskedBefore(turns, built.questionText)) {
         return {

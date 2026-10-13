@@ -97,8 +97,8 @@ describe('AI PM MCQ journey — problem / payer / revenue / alternatives', () =>
 
     expect(specificLabels(DELIVERY_DOC, 'problemJtbd').join(' ')).toMatch(/주문|배송/);
     expect(specificLabels(TOURISM_DOC, 'problemJtbd').join(' ')).toMatch(/전통주|발견/);
-    expect(specificLabels(DELIVERY_DOC, 'payer').join(' ')).toMatch(/반찬|꽃집|소상공인|지불/);
-    expect(specificLabels(TOURISM_DOC, 'payer').join(' ')).toMatch(/여행객|양조장|지불/);
+    expect(specificLabels(DELIVERY_DOC, 'payer').join(' ')).toMatch(/사장님|본사|관리자|대표/);
+    expect(specificLabels(TOURISM_DOC, 'payer').join(' ')).toMatch(/여행객|양조장|낸다|지불/);
     expect(specificLabels(DELIVERY_DOC, 'revenueModel').join(' ')).toMatch(/구독/);
     expect(specificLabels(TOURISM_DOC, 'revenueModel').join(' ')).toMatch(/수수료/);
     expect(specificLabels(DELIVERY_DOC, 'alternativesCompetitors').join(' ')).toMatch(

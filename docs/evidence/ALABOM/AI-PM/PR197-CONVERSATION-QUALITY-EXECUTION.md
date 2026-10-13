@@ -1,6 +1,7 @@
 # PR #197 대화 엔진 구현 — CTO 1차 실행 증거
 
-**구현 SHA:** 이 문서와 같은 커밋  
+**구현 SHA:** 후속 커밋이 표준 패키지를 대체한다  
+**표준 패키지:** `PR197-CPO-SECOND-VERIFY-PACKAGE.md` · 원시 I/O `PR197-CPO-SECOND-VERIFY-DUMP.json`  
 **기준:** `83596930` 일괄안 · 시나리오 본문 동결 `5263e83e` · Production `0b465226`  
 **경로:** `applyBusinessChoiceThroughLoop`  
 **로그인 UI:** NOT VERIFIED

@@ -138,7 +138,7 @@ export function resolveNextQuestionDecision(
     loop &&
     loop.turns.filter((t) => !t.superseded).length < 7
   ) {
-    decision = createJudgmentBoundDecision(judgmentSnapshot);
+    decision = createJudgmentBoundDecision(judgmentSnapshot, gapState);
   }
 
   if (decision && isNextQuestionDecision(decision)) {

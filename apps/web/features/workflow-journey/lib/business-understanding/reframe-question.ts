@@ -24,14 +24,25 @@ export type ReframedQuestion = {
   reason: ReframeReason;
 };
 
+function cleanClaimValue(value: string): string {
+  return value
+    .replace(/^이 서비스를 가장 필요로 하는 사람은\s*/, '')
+    .replace(/^지금 가장 크게 해결하려는 불편은\s*[「"]?/, '')
+    .replace(/[」"]입니다\.?$/, '')
+    .replace(/입니다\.?$/, '')
+    .trim();
+}
+
 function claimSnippet(
   living: LivingUnderstandingState,
   fieldKey: string,
   max = 48,
 ): string | null {
   const claim = living.claims.find((c) => c.fieldKey === fieldKey);
-  const v = claim?.value?.trim();
-  if (!v || claim?.status === 'unknown') return null;
+  const raw = claim?.value?.trim();
+  if (!raw || claim?.status === 'unknown') return null;
+  const v = cleanClaimValue(raw);
+  if (!v) return null;
   return v.length > max ? `${v.slice(0, max)}…` : v;
 }
 
@@ -91,9 +102,9 @@ function reframeStem(targetGap: string, living: LivingUnderstandingState): strin
       return '따라오기 어려운 방어력·해자는 무엇인가요?';
     case 'payer':
       if (customer) {
-        return `${customer}이 쓰는 이 서비스의 비용은 누가 지불하나요?`;
+        return `${customer}에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?`;
       }
-      return '실제 결제·정산 주체는 누구인가요?';
+      return '이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?';
     case 'problemJtbd':
       if (customer) {
         return `${customer}이 가장 크게 겪는 불편은 무엇인가요?`;

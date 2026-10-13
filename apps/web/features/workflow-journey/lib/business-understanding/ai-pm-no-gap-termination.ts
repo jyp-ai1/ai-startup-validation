@@ -15,6 +15,10 @@ import { isAiPmJudgmentFix10V1Active } from './ai-pm-judgment-fix10-v1';
 import {
   createJudgmentBoundDecision,
 } from './ai-pm-judgment-next-question-binding';
+import {
+  STAGE_A_REQUIRED_GAPS,
+  STAGE_B_REQUIRED_GAPS,
+} from './evaluate-stage-readiness';
 
 function normalizeQuestion(text: string): string {
   return text.trim().replace(/\s+/g, ' ');
@@ -39,9 +43,14 @@ export function isRepeatedQuestion(turns: AiPmLoopTurn[], questionText: string):
   );
 }
 
-/** True when no askable gap remains in gapState. */
+/** True when no askable gap remains — include Stage A/B required gaps not yet recorded. */
 export function hasNoAskableGap(gapState: GapKnowledgeState): boolean {
-  for (const gapId of Object.keys(gapState.gaps)) {
+  const known = new Set([
+    ...Object.keys(gapState.gaps),
+    ...STAGE_A_REQUIRED_GAPS,
+    ...STAGE_B_REQUIRED_GAPS,
+  ]);
+  for (const gapId of known) {
     if (isGapAskable(gapId, gapState)) return false;
   }
   return true;
@@ -70,10 +79,8 @@ export function hasNoMeaningfulGap(input: {
   );
   if (askableFromCandidates) return false;
 
-  // Adaptive list empty but OPEN gaps remain — still meaningful (bootstrap path).
-  for (const gapId of Object.keys(input.gapState.gaps)) {
-    if (isGapAskable(gapId, input.gapState)) return false;
-  }
+  // Adaptive list empty but OPEN/unrecorded required gaps remain.
+  if (!hasNoAskableGap(input.gapState)) return false;
 
   return true;
 }
@@ -132,7 +139,7 @@ export function applyNoGapTermination(input: {
     if (verdict.reason === 'no_askable_gap' && input.turns.length >= 4) {
       return null;
     }
-    const bootstrap = createJudgmentBoundDecision(input.judgment);
+    const bootstrap = createJudgmentBoundDecision(input.judgment, input.gapState);
     const q = bootstrap?.questionText?.trim() ?? '';
     if (q && !isRepeatedQuestion(input.turns, q)) {
       return bootstrap;

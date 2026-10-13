@@ -15,6 +15,7 @@ const GAP_QUESTION_OVERRIDES: Record<string, string> = {
   problemJtbd: '고객이 지금 가장 불편해하는 점은 무엇인가요?',
   customerPersona: '이 서비스를 가장 필요로 하는 사람은 누구인가요?',
   businessOneLiner: '이 사업은 누구에게 무엇을 제공하나요?',
+  payer: '이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?',
 };
 
 const PHRASE_REPLACEMENTS: [RegExp, string][] = [

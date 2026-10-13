@@ -137,17 +137,19 @@ function pickBootstrapGap(gapState: GapKnowledgeState): string {
   return STAGE_A_REQUIRED_GAPS[0]!;
 }
 
-function documentAlreadyHasOneLiner(living: LivingUnderstandingState): boolean {
-  const business = living.spine.business?.trim() ?? '';
-  return business.length >= 8 && !business.includes('아직 확인');
+function pickContradictedGap(gapState: GapKnowledgeState): string | null {
+  const priority = ['customerPersona', 'problemJtbd', 'payer', 'businessOneLiner'];
+  for (const gapId of priority) {
+    if (gapState.gaps[gapId]?.completeness === 'CONTRADICTED') return gapId;
+  }
+  for (const [gapId, record] of Object.entries(gapState.gaps)) {
+    if (record.completeness === 'CONTRADICTED') return gapId;
+  }
+  return null;
 }
 
-function shouldSkipDocumentOneLiner(
-  gapState: GapKnowledgeState,
-  living: LivingUnderstandingState,
-): boolean {
+function shouldSkipDocumentOneLiner(gapState: GapKnowledgeState): boolean {
   if (!isGapAskable('businessOneLiner', gapState)) return false;
-  if (!documentAlreadyHasOneLiner(living)) return false;
   const customerOrProblemClosed =
     gapState.gaps.customerPersona?.completeness === 'CLOSED' ||
     gapState.gaps.problemJtbd?.completeness === 'CLOSED';
@@ -160,12 +162,24 @@ function pickNextRequiredGap(
   stageReadiness: StageReadiness,
   living?: LivingUnderstandingState,
 ): string | null {
-  const skipOneLiner = living ? shouldSkipDocumentOneLiner(gapState, living) : false;
+  const contradicted = pickContradictedGap(gapState);
+  if (contradicted) return contradicted;
+  const skipOneLiner = shouldSkipDocumentOneLiner(gapState);
+  void living;
   for (const gapId of STAGE_A_REQUIRED_GAPS) {
     if (skipOneLiner && gapId === 'businessOneLiner') continue;
     if (isGapAskable(gapId, gapState)) return gapId;
   }
   if (stageReadiness.stageBAllowed) {
+    const judgmentFirst = [
+      'alternativesCompetitors',
+      'validationTestability',
+      'differentiationVsAlternatives',
+      'marketChannel',
+    ];
+    for (const gapId of judgmentFirst) {
+      if (isGapAskable(gapId, gapState)) return gapId;
+    }
     for (const gapId of STAGE_B_REQUIRED_GAPS) {
       if (isGapAskable(gapId, gapState)) return gapId;
     }
@@ -179,6 +193,8 @@ function pickAdvanceTargetGap(input: {
   gapState: GapKnowledgeState;
   stageReadiness: StageReadiness;
 }): string | null {
+  const contradicted = pickContradictedGap(input.gapState);
+  if (contradicted) return contradicted;
   const requiredNext = pickNextRequiredGap(
     input.gapState,
     input.stageReadiness,
@@ -215,6 +231,8 @@ function resolveTargetGapId(
   turns: AiPmLoopTurn[],
   stageReadiness: StageReadiness,
 ): string {
+  const contradicted = pickContradictedGap(gapState);
+  if (contradicted) return contradicted;
   if (action === 'advance') {
     const next = pickAdvanceTargetGap({ living, turns, gapState, stageReadiness });
     if (next) return next;

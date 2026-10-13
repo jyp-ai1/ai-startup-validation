@@ -338,7 +338,47 @@ export function applyJudgmentNextQuestionBinding(input: {
     return input.decision;
   }
 
+  if (input.gapState?.gaps.customerPersona?.completeness === 'CONTRADICTED') {
+    const built = buildJudgmentBoundQuestion({
+      focus: 'customer',
+      gapId: 'customerPersona',
+      judgment: input.judgment,
+      gapState: input.gapState,
+    });
+    return {
+      ...input.decision,
+      targetGap: 'customerPersona',
+      targetGapId: 'customerPersona',
+      issueId: built.issueId,
+      questionText:
+        '어느 쪽이 지금 맞는 고객인가요? 이전 고객 이해와 방금 답이 충돌합니다.',
+      whyNow:
+        '고객 이해가 뒤집혔습니다. 이전 고객을 사실로 남기지 않고 다시 확인합니다.',
+      rationale: built.whyNow,
+      questionType: 'open',
+      actionRationale: 'CONTRADICTED customer — reconfirm before advancing',
+      reason: 'judgment-bound customer reconfirm after contradiction',
+    };
+  }
+
   if (isCustomerAndProblemClosed(input.gapState)) {
+    if (
+      input.decision.targetGapId === 'businessOneLiner' &&
+      !isGapClosedInState(input.gapState, 'payer')
+    ) {
+      const payerBinding = resolveGapQuestionBinding('payer');
+      return {
+        ...input.decision,
+        targetGap: 'payer',
+        targetGapId: 'payer',
+        issueId: payerBinding.issueId,
+        questionText: payerBinding.questionText,
+        whyNow: whyNowForGapField('payer') || payerBinding.whyNow,
+        rationale: payerBinding.whyNow,
+        actionRationale: 'CLOSED customer+problem — skip document one-liner for payer',
+        reason: 'judgment-bound skip one-liner → payer',
+      };
+    }
     return input.decision;
   }
 
@@ -391,11 +431,13 @@ export function applyJudgmentNextQuestionBinding(input: {
 /** Bootstrap next question purely from canonical judgment when V3 decision is null. */
 export function createJudgmentBoundDecision(
   judgment: CeoJudgmentState,
+  gapState?: GapKnowledgeState | null,
 ): NextQuestionDecision | null {
   if (!isAiPmJudgmentFix10V1Active()) return null;
-  const bound = resolveJudgmentBoundTargetGap(judgment);
+  const bound = resolveJudgmentBoundTargetGap(judgment, gapState);
   if (!bound) return null;
-  const built = buildJudgmentBoundQuestion({ ...bound, judgment });
+  if (isGapClosedInState(gapState, bound.gapId)) return null;
+  const built = buildJudgmentBoundQuestion({ ...bound, judgment, gapState });
   return {
     targetGap: bound.gapId,
     targetGapId: bound.gapId,
