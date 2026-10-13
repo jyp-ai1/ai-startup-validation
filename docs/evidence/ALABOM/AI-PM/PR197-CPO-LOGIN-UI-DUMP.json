@@ -1,11 +1,11 @@
 {
   "meta": {
-    "implSha": "08a36d8c72818bc62a74de9fec911e464afa5a62",
-    "executedAt": "2026-10-13T11:37:46.785Z",
+    "implSha": "9558de7bb1d5b70e0626d9a5d77cf6a899a2c618",
+    "executedAt": "2026-10-13T12:04:43.144Z",
     "path": "QA magic-link → /ko/workspace create project → WorkspaceAiPmLoopPanel confirm/MCQ/기타+submitAnswer",
     "login": "qa-magic-link (authenticated workspace, not engine dump, not Google button)",
     "production": "NOT VERIFIED",
-    "note": "S4 routing re-verify after 08a36d8c. Engine CPO VERIFIED ≠ UI CPO VERIFIED. Dump executed on the same routing as 08a36d8c."
+    "note": "Residual-risk verify after S4 CPO VERIFIED. Engine CPO VERIFIED kept. Do not merge."
   },
   "login": {
     "landed": "http://127.0.0.1:3210/ko/workspace",
@@ -16,14 +16,14 @@
       "ready": true,
       "asked": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
       "snap": {
-        "projectId": "bce62b35-822c-40cf-ad13-4cca7a3091d8",
+        "projectId": "0c91cde0-6b15-456d-8bfc-c17c78381d81",
         "targetGap": "payer",
         "gapState": {
           "businessOneLiner": {
             "gapId": "businessOneLiner",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:38:11.902Z",
-            "sourceReviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
+            "sourceTurnId": "2026-10-13T12:05:12.042Z",
+            "sourceReviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
             "evidence": [
               {
                 "factKey": "business",
@@ -32,14 +32,14 @@
               }
             ],
             "confidence": "medium",
-            "lastUpdated": "2026-10-13T11:38:11.902Z",
+            "lastUpdated": "2026-10-13T12:05:12.043Z",
             "rationale": "Prior turn CLOSED — preserved in review."
           },
           "revenueModel": {
             "gapId": "revenueModel",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:38:11.902Z",
-            "sourceReviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
+            "sourceTurnId": "2026-10-13T12:05:12.042Z",
+            "sourceReviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
             "evidence": [
               {
                 "factKey": "revenue",
@@ -48,14 +48,14 @@
               }
             ],
             "confidence": "high",
-            "lastUpdated": "2026-10-13T11:38:11.902Z",
+            "lastUpdated": "2026-10-13T12:05:12.043Z",
             "rationale": "Multi-fact utterance — revenue"
           },
           "customerPersona": {
             "gapId": "customerPersona",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:38:11.902Z",
-            "sourceReviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
+            "sourceTurnId": "2026-10-13T12:05:12.042Z",
+            "sourceReviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
             "evidence": [
               {
                 "factKey": "customer",
@@ -64,14 +64,14 @@
               }
             ],
             "confidence": "medium",
-            "lastUpdated": "2026-10-13T11:38:11.902Z",
+            "lastUpdated": "2026-10-13T12:05:12.043Z",
             "rationale": "Prior turn CLOSED — preserved in review."
           },
           "problemJtbd": {
             "gapId": "problemJtbd",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:38:11.902Z",
-            "sourceReviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
+            "sourceTurnId": "2026-10-13T12:05:12.042Z",
+            "sourceReviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
             "evidence": [
               {
                 "factKey": "problem",
@@ -80,7 +80,7 @@
               }
             ],
             "confidence": "high",
-            "lastUpdated": "2026-10-13T11:38:11.902Z",
+            "lastUpdated": "2026-10-13T12:05:12.043Z",
             "rationale": "의미 라우팅: problem+revenue (primary=problem, signal≥10)"
           }
         },
@@ -100,8 +100,8 @@
             "problemJtbd"
           ],
           "drivenByReview": true,
-          "sourceAnswerId": "2026-10-13T11:38:11.902Z",
-          "sourceReviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
+          "sourceAnswerId": "2026-10-13T12:05:12.042Z",
+          "sourceReviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
           "reviewAction": "advance",
           "action": "advance",
           "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -110,7 +110,7 @@
         "lastTurn": {
           "issueId": "problem_definition",
           "answer": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
-          "appliedAt": "2026-10-13T11:38:11.902Z",
+          "appliedAt": "2026-10-13T12:05:12.042Z",
           "semanticFactKey": "problem",
           "semanticFactKeys": [
             "problem",
@@ -142,12 +142,12 @@
           "previousUnderstanding": "businessOneLiner=서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부 · customerPersona=이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다. · problemJtbd=장을 볼 시간이 없고 과자 고르기가 피곤하다 · problemFrequencySeverity=장을 볼 시간이 없고 과자 고르기가 피곤하다 · solution=서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스\r 대상: 맞벌이 ",
           "unresolvedGap": "problemJtbd",
           "expectedInformation": "해결하려는 핵심 불편·JTBD",
-          "understandingDelta": "기존: 사업 한 줄: 서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다. · 문제 빈도·심각도: 장을 볼 시간이 없고 과자 고르기가 피곤하다 · 신규: 가격: 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상 · 변경: 핵심 문제: 장을 볼 시간이 없고 과자 고르기가 피곤하다 → 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집  · 수익 모델: 서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대 → 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집  · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
+          "understandingDelta": "기존: 사업 한 줄: 서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다. · 문제 빈도·심각도: 장을 볼 시간이 없고 과자 고르기가 피곤하다 · 신규: 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다. · 가격: 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상 · 변경: 핵심 문제: 장을 볼 시간이 없고 과자 고르기가 피곤하다 → 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집  · 수익 모델: 서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대 → 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집  · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
           "review": {
-            "reviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
-            "turnId": "2026-10-13T11:38:11.902Z",
-            "sourceTurnId": "2026-10-13T11:38:11.902Z",
-            "createdAt": "2026-10-13T11:38:11.902Z",
+            "reviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
+            "turnId": "2026-10-13T12:05:12.042Z",
+            "sourceTurnId": "2026-10-13T12:05:12.042Z",
+            "createdAt": "2026-10-13T12:05:12.043Z",
             "askedGapId": "problemJtbd",
             "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "askedIssueId": "problem_definition",
@@ -225,42 +225,28 @@
             "key": "business",
             "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장을 볼 시간이 없고 과자 고르…",
             "source": "document",
-            "confirmedAt": "2026-10-13T11:38:12.307Z",
+            "confirmedAt": "2026-10-13T12:05:10.772Z",
             "lifecycle": "superseded"
           },
           {
             "key": "business",
             "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:38:12.307Z",
-            "lifecycle": "current"
-          },
-          {
-            "key": "customer",
-            "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
-            "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:38:12.307Z",
-            "lifecycle": "current"
-          },
-          {
-            "key": "problem",
-            "value": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
-            "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:38:12.307Z",
+            "confirmedAt": "2026-10-13T12:05:10.772Z",
             "lifecycle": "current"
           },
           {
             "key": "revenue",
             "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:38:12.307Z",
-            "lifecycle": "superseded"
+            "confirmedAt": "2026-10-13T12:05:10.772Z",
+            "lifecycle": "current"
           },
           {
-            "key": "revenue",
-            "value": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
+            "key": "customer",
+            "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:38:12.307Z",
+            "confirmedAt": "2026-10-13T12:05:10.772Z",
             "lifecycle": "current"
           }
         ],
@@ -320,8 +306,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:08.556Z",
-              "sourceReviewId": "5c75c362-e26b-487e-aac0-1c77968942c2",
+              "sourceTurnId": "2026-10-13T12:05:08.681Z",
+              "sourceReviewId": "08e00c7f-0dc7-49e0-b33f-6714f97ae4df",
               "evidence": [
                 {
                   "factKey": "business",
@@ -330,14 +316,14 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:38:08.559Z",
+              "lastUpdated": "2026-10-13T12:05:08.683Z",
               "rationale": "의미 라우팅: business (primary=business, signal≥10; asked-slot revenue 무시)"
             },
             "revenueModel": {
               "gapId": "revenueModel",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:08.556Z",
-              "sourceReviewId": "5c75c362-e26b-487e-aac0-1c77968942c2",
+              "sourceTurnId": "2026-10-13T12:05:08.681Z",
+              "sourceReviewId": "08e00c7f-0dc7-49e0-b33f-6714f97ae4df",
               "evidence": [
                 {
                   "factKey": "revenue",
@@ -346,7 +332,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:38:08.559Z",
+              "lastUpdated": "2026-10-13T12:05:08.683Z",
               "rationale": "Multi-fact utterance — revenue"
             }
           },
@@ -364,19 +350,19 @@
               "revenueModel"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:38:08.556Z",
-            "sourceReviewId": "5c75c362-e26b-487e-aac0-1c77968942c2",
+            "sourceAnswerId": "2026-10-13T12:05:08.681Z",
+            "sourceReviewId": "08e00c7f-0dc7-49e0-b33f-6714f97ae4df",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "FIX-10 P0-FIX-A-2 — judgment focus customer",
             "reason": "judgment-bound customer→customerPersona",
             "questionType": "open",
-            "confirmSourceTurnAppliedAt": "2026-10-13T11:38:08.556Z"
+            "confirmSourceTurnAppliedAt": "2026-10-13T12:05:08.681Z"
           },
           "lastTurn": {
             "issueId": "bm_design",
             "answer": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
-            "appliedAt": "2026-10-13T11:38:08.556Z",
+            "appliedAt": "2026-10-13T12:05:08.681Z",
             "semanticFactKey": "business",
             "semanticFactKeys": [
               "business",
@@ -410,10 +396,10 @@
             "expectedInformation": "한 줄 사업 정의",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞 · 고객 페르소나: 맞벌이 부모 · 핵심 문제: 장을 볼 시간이 없고 과자 고르기가 피곤하다 · 신규: 사업 한 줄: 서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장… · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 고객 페르소나 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "5c75c362-e26b-487e-aac0-1c77968942c2",
-              "turnId": "2026-10-13T11:38:08.556Z",
-              "sourceTurnId": "2026-10-13T11:38:08.556Z",
-              "createdAt": "2026-10-13T11:38:08.559Z",
+              "reviewId": "08e00c7f-0dc7-49e0-b33f-6714f97ae4df",
+              "turnId": "2026-10-13T12:05:08.681Z",
+              "sourceTurnId": "2026-10-13T12:05:08.681Z",
+              "createdAt": "2026-10-13T12:05:08.683Z",
               "askedGapId": "businessOneLiner",
               "askedQuestionText": "제가 이해한 사업은 「서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…」입니다. 맞나요?",
               "askedIssueId": "bm_design",
@@ -477,21 +463,21 @@
               "key": "business",
               "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장을 볼 시간이 없고 과자 고르…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:38:08.964Z",
+              "confirmedAt": "2026-10-13T12:05:09.089Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:08.964Z",
+              "confirmedAt": "2026-10-13T12:05:09.089Z",
               "lifecycle": "current"
             },
             {
               "key": "revenue",
               "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:08.964Z",
+              "confirmedAt": "2026-10-13T12:05:09.089Z",
               "lifecycle": "current"
             }
           ],
@@ -530,8 +516,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:10.235Z",
-              "sourceReviewId": "54daebc4-d980-47e9-8f95-1e3f0ac929ea",
+              "sourceTurnId": "2026-10-13T12:05:10.366Z",
+              "sourceReviewId": "85805223-22e5-43e1-bb94-1c13fcc4e432",
               "evidence": [
                 {
                   "factKey": "business",
@@ -540,14 +526,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:38:10.236Z",
+              "lastUpdated": "2026-10-13T12:05:10.367Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "revenueModel": {
               "gapId": "revenueModel",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:10.235Z",
-              "sourceReviewId": "54daebc4-d980-47e9-8f95-1e3f0ac929ea",
+              "sourceTurnId": "2026-10-13T12:05:10.366Z",
+              "sourceReviewId": "85805223-22e5-43e1-bb94-1c13fcc4e432",
               "evidence": [
                 {
                   "factKey": "revenue",
@@ -556,14 +542,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:38:10.236Z",
+              "lastUpdated": "2026-10-13T12:05:10.367Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "customerPersona": {
               "gapId": "customerPersona",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:10.235Z",
-              "sourceReviewId": "54daebc4-d980-47e9-8f95-1e3f0ac929ea",
+              "sourceTurnId": "2026-10-13T12:05:10.366Z",
+              "sourceReviewId": "85805223-22e5-43e1-bb94-1c13fcc4e432",
               "evidence": [
                 {
                   "factKey": "customer",
@@ -572,7 +558,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:38:10.236Z",
+              "lastUpdated": "2026-10-13T12:05:10.367Z",
               "rationale": "의미 라우팅: customer (primary=customer, signal≥10)"
             }
           },
@@ -591,8 +577,8 @@
               "customerPersona"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:38:10.235Z",
-            "sourceReviewId": "54daebc4-d980-47e9-8f95-1e3f0ac929ea",
+            "sourceAnswerId": "2026-10-13T12:05:10.366Z",
+            "sourceReviewId": "85805223-22e5-43e1-bb94-1c13fcc4e432",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "FIX-10 P0-FIX-A-2 — judgment focus problem",
@@ -602,7 +588,7 @@
           "lastTurn": {
             "issueId": "customer_definition",
             "answer": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
-            "appliedAt": "2026-10-13T11:38:10.235Z",
+            "appliedAt": "2026-10-13T12:05:10.366Z",
             "semanticFactKey": "customer",
             "semanticFactKeys": [
               "customer"
@@ -635,10 +621,10 @@
             "expectedInformation": "가장 필요로 하는 구체 고객·페르소나",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞 · 핵심 문제: 장을 볼 시간이 없고 과자 고르기가 피곤하다 · 문제 빈도·심각도: 장을 볼 시간이 없고 과자 고르기가 피곤하다 · 변경: 고객 페르소나: 맞벌이 부모 → 이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다. · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 핵심 문제 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "54daebc4-d980-47e9-8f95-1e3f0ac929ea",
-              "turnId": "2026-10-13T11:38:10.235Z",
-              "sourceTurnId": "2026-10-13T11:38:10.235Z",
-              "createdAt": "2026-10-13T11:38:10.236Z",
+              "reviewId": "85805223-22e5-43e1-bb94-1c13fcc4e432",
+              "turnId": "2026-10-13T12:05:10.366Z",
+              "sourceTurnId": "2026-10-13T12:05:10.366Z",
+              "createdAt": "2026-10-13T12:05:10.367Z",
               "askedGapId": "customerPersona",
               "askedQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
               "askedIssueId": "customer_definition",
@@ -698,28 +684,21 @@
               "key": "business",
               "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장을 볼 시간이 없고 과자 고르…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:38:10.640Z",
+              "confirmedAt": "2026-10-13T12:05:09.089Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:10.640Z",
+              "confirmedAt": "2026-10-13T12:05:09.089Z",
               "lifecycle": "current"
             },
             {
               "key": "revenue",
               "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:10.640Z",
-              "lifecycle": "current"
-            },
-            {
-              "key": "customer",
-              "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
-              "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:10.640Z",
+              "confirmedAt": "2026-10-13T12:05:09.089Z",
               "lifecycle": "current"
             }
           ],
@@ -779,8 +758,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:11.902Z",
-              "sourceReviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
+              "sourceTurnId": "2026-10-13T12:05:12.042Z",
+              "sourceReviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
               "evidence": [
                 {
                   "factKey": "business",
@@ -789,14 +768,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:38:11.902Z",
+              "lastUpdated": "2026-10-13T12:05:12.043Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "revenueModel": {
               "gapId": "revenueModel",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:11.902Z",
-              "sourceReviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
+              "sourceTurnId": "2026-10-13T12:05:12.042Z",
+              "sourceReviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
               "evidence": [
                 {
                   "factKey": "revenue",
@@ -805,14 +784,14 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:38:11.902Z",
+              "lastUpdated": "2026-10-13T12:05:12.043Z",
               "rationale": "Multi-fact utterance — revenue"
             },
             "customerPersona": {
               "gapId": "customerPersona",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:11.902Z",
-              "sourceReviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
+              "sourceTurnId": "2026-10-13T12:05:12.042Z",
+              "sourceReviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
               "evidence": [
                 {
                   "factKey": "customer",
@@ -821,14 +800,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:38:11.902Z",
+              "lastUpdated": "2026-10-13T12:05:12.043Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "problemJtbd": {
               "gapId": "problemJtbd",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:11.902Z",
-              "sourceReviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
+              "sourceTurnId": "2026-10-13T12:05:12.042Z",
+              "sourceReviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
               "evidence": [
                 {
                   "factKey": "problem",
@@ -837,7 +816,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:38:11.902Z",
+              "lastUpdated": "2026-10-13T12:05:12.043Z",
               "rationale": "의미 라우팅: problem+revenue (primary=problem, signal≥10)"
             }
           },
@@ -857,8 +836,8 @@
               "problemJtbd"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:38:11.902Z",
-            "sourceReviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
+            "sourceAnswerId": "2026-10-13T12:05:12.042Z",
+            "sourceReviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -867,7 +846,7 @@
           "lastTurn": {
             "issueId": "problem_definition",
             "answer": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
-            "appliedAt": "2026-10-13T11:38:11.902Z",
+            "appliedAt": "2026-10-13T12:05:12.042Z",
             "semanticFactKey": "problem",
             "semanticFactKeys": [
               "problem",
@@ -899,12 +878,12 @@
             "previousUnderstanding": "businessOneLiner=서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부 · customerPersona=이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다. · problemJtbd=장을 볼 시간이 없고 과자 고르기가 피곤하다 · problemFrequencySeverity=장을 볼 시간이 없고 과자 고르기가 피곤하다 · solution=서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스\r 대상: 맞벌이 ",
             "unresolvedGap": "problemJtbd",
             "expectedInformation": "해결하려는 핵심 불편·JTBD",
-            "understandingDelta": "기존: 사업 한 줄: 서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다. · 문제 빈도·심각도: 장을 볼 시간이 없고 과자 고르기가 피곤하다 · 신규: 가격: 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상 · 변경: 핵심 문제: 장을 볼 시간이 없고 과자 고르기가 피곤하다 → 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집  · 수익 모델: 서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대 → 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집  · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
+            "understandingDelta": "기존: 사업 한 줄: 서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다. · 문제 빈도·심각도: 장을 볼 시간이 없고 과자 고르기가 피곤하다 · 신규: 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다. · 가격: 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상 · 변경: 핵심 문제: 장을 볼 시간이 없고 과자 고르기가 피곤하다 → 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집  · 수익 모델: 서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대 → 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집  · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "2c297f6a-fcf2-411f-8030-59d3495afed0",
-              "turnId": "2026-10-13T11:38:11.902Z",
-              "sourceTurnId": "2026-10-13T11:38:11.902Z",
-              "createdAt": "2026-10-13T11:38:11.902Z",
+              "reviewId": "d18979dc-97a2-4543-9965-2c4241d1dae2",
+              "turnId": "2026-10-13T12:05:12.042Z",
+              "sourceTurnId": "2026-10-13T12:05:12.042Z",
+              "createdAt": "2026-10-13T12:05:12.043Z",
               "askedGapId": "problemJtbd",
               "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
               "askedIssueId": "problem_definition",
@@ -982,42 +961,28 @@
               "key": "business",
               "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장을 볼 시간이 없고 과자 고르…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:38:12.307Z",
+              "confirmedAt": "2026-10-13T12:05:10.772Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:12.307Z",
-              "lifecycle": "current"
-            },
-            {
-              "key": "customer",
-              "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
-              "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:12.307Z",
-              "lifecycle": "current"
-            },
-            {
-              "key": "problem",
-              "value": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
-              "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:12.307Z",
+              "confirmedAt": "2026-10-13T12:05:10.772Z",
               "lifecycle": "current"
             },
             {
               "key": "revenue",
               "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:12.307Z",
-              "lifecycle": "superseded"
+              "confirmedAt": "2026-10-13T12:05:10.772Z",
+              "lifecycle": "current"
             },
             {
-              "key": "revenue",
-              "value": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
+              "key": "customer",
+              "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:12.307Z",
+              "confirmedAt": "2026-10-13T12:05:10.772Z",
               "lifecycle": "current"
             }
           ],
@@ -1095,7 +1060,7 @@
           "gapId": "businessOneLiner",
           "completeness": "CLOSED",
           "sourceTurnId": "choice-4",
-          "sourceReviewId": "c7220a18-729c-42b1-8dd2-0280d6293966",
+          "sourceReviewId": "7f99bd11-c7e5-4edd-98e7-6f1d9351093d",
           "evidence": [
             {
               "factKey": "business",
@@ -1104,14 +1069,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:14.009Z",
+          "lastUpdated": "2026-10-13T12:05:14.144Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "revenueModel": {
           "gapId": "revenueModel",
           "completeness": "CLOSED",
           "sourceTurnId": "choice-4",
-          "sourceReviewId": "c7220a18-729c-42b1-8dd2-0280d6293966",
+          "sourceReviewId": "7f99bd11-c7e5-4edd-98e7-6f1d9351093d",
           "evidence": [
             {
               "factKey": "revenue",
@@ -1120,24 +1085,24 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:14.009Z",
+          "lastUpdated": "2026-10-13T12:05:14.144Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "customerPersona": {
           "gapId": "customerPersona",
           "completeness": "CONTRADICTED",
           "sourceTurnId": "choice-4",
-          "sourceReviewId": "c7220a18-729c-42b1-8dd2-0280d6293966",
+          "sourceReviewId": "7f99bd11-c7e5-4edd-98e7-6f1d9351093d",
           "evidence": [],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:14.009Z",
+          "lastUpdated": "2026-10-13T12:05:14.144Z",
           "rationale": "Founder corrected a previously closed customer claim from another slot."
         },
         "problemJtbd": {
           "gapId": "problemJtbd",
           "completeness": "CLOSED",
           "sourceTurnId": "choice-4",
-          "sourceReviewId": "c7220a18-729c-42b1-8dd2-0280d6293966",
+          "sourceReviewId": "7f99bd11-c7e5-4edd-98e7-6f1d9351093d",
           "evidence": [
             {
               "factKey": "problem",
@@ -1146,24 +1111,24 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:14.009Z",
+          "lastUpdated": "2026-10-13T12:05:14.144Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "validationTestability": {
           "gapId": "validationTestability",
           "completeness": "CLOSED",
           "sourceTurnId": "choice-4",
-          "sourceReviewId": "c7220a18-729c-42b1-8dd2-0280d6293966",
+          "sourceReviewId": "7f99bd11-c7e5-4edd-98e7-6f1d9351093d",
           "evidence": [],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:14.009Z",
+          "lastUpdated": "2026-10-13T12:05:14.144Z",
           "rationale": "약한 prior: asked issue → buyer"
         },
         "payer": {
           "gapId": "payer",
           "completeness": "CLOSED",
           "sourceTurnId": "choice-4",
-          "sourceReviewId": "c7220a18-729c-42b1-8dd2-0280d6293966",
+          "sourceReviewId": "7f99bd11-c7e5-4edd-98e7-6f1d9351093d",
           "evidence": [
             {
               "factKey": "buyer",
@@ -1172,7 +1137,7 @@
             }
           ],
           "confidence": "high",
-          "lastUpdated": "2026-10-13T11:38:14.009Z",
+          "lastUpdated": "2026-10-13T12:05:14.144Z",
           "rationale": "Multi-fact utterance — buyer"
         }
       },
@@ -1194,7 +1159,7 @@
         ],
         "drivenByReview": true,
         "sourceAnswerId": "choice-4",
-        "sourceReviewId": "c7220a18-729c-42b1-8dd2-0280d6293966",
+        "sourceReviewId": "7f99bd11-c7e5-4edd-98e7-6f1d9351093d",
         "reviewAction": "advance",
         "action": "advance",
         "actionRationale": "CONTRADICTED customer — reconfirm before advancing",
@@ -1213,10 +1178,10 @@
         "targetGap": "validationTestability",
         "askedQuestionText": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
         "review": {
-          "reviewId": "c7220a18-729c-42b1-8dd2-0280d6293966",
+          "reviewId": "7f99bd11-c7e5-4edd-98e7-6f1d9351093d",
           "turnId": "choice-4",
           "sourceTurnId": "choice-4",
-          "createdAt": "2026-10-13T11:38:14.009Z",
+          "createdAt": "2026-10-13T12:05:14.144Z",
           "askedGapId": "validationTestability",
           "askedQuestionText": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
           "askedIssueId": "competitor_analysis",
@@ -1300,60 +1265,45 @@
       "memoryFacts": [
         {
           "key": "business",
-          "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
-          "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:14.010Z",
-          "lifecycle": "current"
-        },
-        {
-          "key": "problem",
-          "value": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
-          "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:14.010Z",
-          "lifecycle": "current"
-        },
-        {
-          "key": "revenue",
-          "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
-          "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:14.010Z",
+          "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장을 볼 시간이 없고 과자 고르…",
+          "source": "document",
+          "confirmedAt": "2026-10-13T12:05:12.448Z",
           "lifecycle": "superseded"
         },
         {
-          "key": "revenue",
-          "value": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
+          "key": "business",
+          "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:14.010Z",
-          "lifecycle": "current"
-        },
-        {
-          "key": "buyer",
-          "value": "혼자 사는 20대가 메인",
-          "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:14.010Z",
-          "lifecycle": "superseded"
-        },
-        {
-          "key": "buyer",
-          "value": "사실 아이가 아니라 혼자 사는 20대가 메인이에요",
-          "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:14.010Z",
+          "confirmedAt": "2026-10-13T12:05:12.448Z",
           "lifecycle": "current"
         },
         {
           "key": "customer",
           "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:14.010Z",
+          "confirmedAt": "2026-10-13T12:05:12.448Z",
+          "lifecycle": "current"
+        },
+        {
+          "key": "problem",
+          "value": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
+          "source": "user_turn",
+          "confirmedAt": "2026-10-13T12:05:12.448Z",
+          "lifecycle": "current"
+        },
+        {
+          "key": "revenue",
+          "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
+          "source": "user_turn",
+          "confirmedAt": "2026-10-13T12:05:12.448Z",
           "lifecycle": "superseded"
         },
         {
-          "key": "customer",
-          "value": "혼자 사는 20대가 메인",
+          "key": "revenue",
+          "value": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:14.010Z",
-          "lifecycle": "conflict",
-          "conflictWith": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다."
+          "confirmedAt": "2026-10-13T12:05:12.448Z",
+          "lifecycle": "current"
         }
       ],
       "judgmentCustomer": {
@@ -1402,14 +1352,12 @@
           "intent": "correction"
         }
       ],
-      "visibleExcerpt": "본문으로 건너뛰기\nALABOM\nWorkspace\nSettings\nLogout\nKO\n아이 간식 구독 박스\n전체 사업내용 보기\n\n진행상태\n\n진행\n\n●\n① 사업 정의\n○\n② 시장 검증\n○\n③ 확인/종합\n○\n④ 결과\n\nS.I. 사업성 판단\n\nS1 문제·고객 가설 · 점수 없음\n\n현재 사업성 판단\n\n현재 판단: 지금은 판단을 보류한다\n\n현재 판단: 지금은 판단을 보류한다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n왜 가능한가\n\n문서에서 확인할 수 있는 구체적 문제가 있다.\n\n왜 실패할 수 있는가\n\n이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n현재 근거\n\nCLAIM\n프로젝트 이름: 아이 간식 구독 박스\nCLAIM\n서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스\nFACT\n문제: 장을 볼 시간이 없고 과자 고르기가 피곤하다\nCLAIM\n수익: 월 구독\nCLAIM\n[AI PM 확인 · 수익·지불 확인]\nFACT\n서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…\nCLAIM\n서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…\nFACT\n[AI PM 확인 · 문제 확인]\nFACT\n지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.\nCLAIM\n지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.\nINFERENCE\n출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.\n\n강점\n\n• 문서에서 확인할 수 있는 구체적 문제가 있다.\n\n리스크\n\n• 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n가장 중요한 미검증 가정\n\n이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n이 판단을 바꿀 증거\n\n최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.\n\n다음에 검증해야 할 1개\n\n가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.\n\nAI PM · S.I.가 지정한"
+      "visibleExcerpt": "본문으로 건너뛰기\nALABOM\nWorkspace\nSettings\nLogout\nKO\n아이 간식 구독 박스\n전체 사업내용 보기\n\n진행상태\n\n진행\n\n●\n① 사업 정의\n○\n② 시장 검증\n○\n③ 확인/종합\n○\n④ 결과\n\nS.I. 사업성 판단\n\nS1 문제·고객 가설 · 점수 없음\n\n현재 사업성 판단\n\n현재 판단: 지금은 판단을 보류한다\n\n현재 판단: 지금은 판단을 보류한다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n왜 가능한가\n\n문서에서 확인할 수 있는 구체적 문제가 있다.\n\n왜 실패할 수 있는가\n\n이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n현재 근거\n\nCLAIM\n프로젝트 이름: 아이 간식 구독 박스\nCLAIM\n서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스\nFACT\n문제: 장을 볼 시간이 없고 과자 고르기가 피곤하다\nCLAIM\n수익: 월 구독\nINFERENCE\n출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.\n\n강점\n\n• 문서에서 확인할 수 있는 구체적 문제가 있다.\n\n리스크\n\n• 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n가장 중요한 미검증 가정\n\n이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n이 판단을 바꿀 증거\n\n최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.\n\n다음에 검증해야 할 1개\n\n가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.\n\nAI PM · S.I.가 지정한 검증\n\n질문 엔진이 고른 다음 질문이 아닙니다.\n\n가장 가까운 결제 후보에게 유료로 제안했거나, 실제로 받은 돈이 있습니까? 있다면 그 한 건을 알려주세요. 아직이면 제안 전이라고 답해도 됩니다.\n\n이 답이 들어오면 S.I.가 판단을 다시 계산합니다. 최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과.\n\n이 답으로 판단 갱신\n\n현재까지의 사업 판단\n\n확인 진행 중 · 5번째 질문\n\n지금까지 이해한 사업\n\n서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장"
     },
     "t7": {
       "askedQuestion": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
       "optionLabels": [
         "○ 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상",
-        "○ AI PM 확인",
-        "○ 페르소나 확인",
         "○ 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는…",
         "○ 기타",
         "○ 아직 모르겠음"
@@ -1425,7 +1373,7 @@
           "gapId": "businessOneLiner",
           "completeness": "CLOSED",
           "sourceTurnId": "choice-5",
-          "sourceReviewId": "87036a81-4327-4f42-bfaa-01d22d483a4b",
+          "sourceReviewId": "96298403-8078-495f-861a-a0eb4ffd44c0",
           "evidence": [
             {
               "factKey": "business",
@@ -1434,14 +1382,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:18.796Z",
+          "lastUpdated": "2026-10-13T12:05:18.140Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "revenueModel": {
           "gapId": "revenueModel",
           "completeness": "CLOSED",
           "sourceTurnId": "choice-5",
-          "sourceReviewId": "87036a81-4327-4f42-bfaa-01d22d483a4b",
+          "sourceReviewId": "96298403-8078-495f-861a-a0eb4ffd44c0",
           "evidence": [
             {
               "factKey": "revenue",
@@ -1450,14 +1398,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:18.796Z",
+          "lastUpdated": "2026-10-13T12:05:18.140Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "customerPersona": {
           "gapId": "customerPersona",
           "completeness": "CLOSED",
           "sourceTurnId": "choice-5",
-          "sourceReviewId": "87036a81-4327-4f42-bfaa-01d22d483a4b",
+          "sourceReviewId": "96298403-8078-495f-861a-a0eb4ffd44c0",
           "evidence": [
             {
               "factKey": "customer",
@@ -1466,14 +1414,14 @@
             }
           ],
           "confidence": "high",
-          "lastUpdated": "2026-10-13T11:38:18.796Z",
+          "lastUpdated": "2026-10-13T12:05:18.140Z",
           "rationale": "의미 라우팅: customer (primary=customer, signal≥10)"
         },
         "problemJtbd": {
           "gapId": "problemJtbd",
           "completeness": "CLOSED",
           "sourceTurnId": "choice-5",
-          "sourceReviewId": "87036a81-4327-4f42-bfaa-01d22d483a4b",
+          "sourceReviewId": "96298403-8078-495f-861a-a0eb4ffd44c0",
           "evidence": [
             {
               "factKey": "problem",
@@ -1482,24 +1430,24 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:18.796Z",
+          "lastUpdated": "2026-10-13T12:05:18.140Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "validationTestability": {
           "gapId": "validationTestability",
           "completeness": "CLOSED",
           "sourceTurnId": "choice-5",
-          "sourceReviewId": "87036a81-4327-4f42-bfaa-01d22d483a4b",
+          "sourceReviewId": "96298403-8078-495f-861a-a0eb4ffd44c0",
           "evidence": [],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:18.796Z",
+          "lastUpdated": "2026-10-13T12:05:18.140Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "payer": {
           "gapId": "payer",
           "completeness": "CLOSED",
           "sourceTurnId": "choice-5",
-          "sourceReviewId": "87036a81-4327-4f42-bfaa-01d22d483a4b",
+          "sourceReviewId": "96298403-8078-495f-861a-a0eb4ffd44c0",
           "evidence": [
             {
               "factKey": "buyer",
@@ -1508,7 +1456,7 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:18.796Z",
+          "lastUpdated": "2026-10-13T12:05:18.140Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         }
       },
@@ -1531,7 +1479,7 @@
         ],
         "drivenByReview": true,
         "sourceAnswerId": "choice-5",
-        "sourceReviewId": "87036a81-4327-4f42-bfaa-01d22d483a4b",
+        "sourceReviewId": "96298403-8078-495f-861a-a0eb4ffd44c0",
         "reviewAction": "advance",
         "action": "advance",
         "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -1549,10 +1497,10 @@
         "targetGap": "customerPersona",
         "askedQuestionText": "어느 쪽이 지금 맞는 고객인가요? 이전 고객 이해와 방금 답이 충돌합니다?",
         "review": {
-          "reviewId": "87036a81-4327-4f42-bfaa-01d22d483a4b",
+          "reviewId": "96298403-8078-495f-861a-a0eb4ffd44c0",
           "turnId": "choice-5",
           "sourceTurnId": "choice-5",
-          "createdAt": "2026-10-13T11:38:18.796Z",
+          "createdAt": "2026-10-13T12:05:18.140Z",
           "askedGapId": "customerPersona",
           "askedQuestionText": "어느 쪽이 지금 맞는 고객인가요? 이전 고객 이해와 방금 답이 충돌합니다?",
           "askedIssueId": "customer_definition",
@@ -1633,56 +1581,56 @@
           "key": "business",
           "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:18.797Z",
+          "confirmedAt": "2026-10-13T12:05:18.141Z",
           "lifecycle": "current"
         },
         {
           "key": "problem",
           "value": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:18.797Z",
+          "confirmedAt": "2026-10-13T12:05:18.141Z",
           "lifecycle": "current"
         },
         {
           "key": "revenue",
           "value": "서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:18.797Z",
+          "confirmedAt": "2026-10-13T12:05:18.141Z",
           "lifecycle": "superseded"
         },
         {
           "key": "revenue",
           "value": "지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:18.797Z",
+          "confirmedAt": "2026-10-13T12:05:18.141Z",
           "lifecycle": "current"
         },
         {
           "key": "buyer",
           "value": "혼자 사는 20대가 메인",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:18.797Z",
+          "confirmedAt": "2026-10-13T12:05:18.141Z",
           "lifecycle": "superseded"
         },
         {
           "key": "buyer",
           "value": "사실 아이가 아니라 혼자 사는 20대가 메인이에요",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:18.797Z",
+          "confirmedAt": "2026-10-13T12:05:18.141Z",
           "lifecycle": "current"
         },
         {
           "key": "customer",
           "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:18.797Z",
+          "confirmedAt": "2026-10-13T12:05:18.141Z",
           "lifecycle": "superseded"
         },
         {
           "key": "customer",
           "value": "지금 메인 고객은 혼자 사는 20대예요",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:18.797Z",
+          "confirmedAt": "2026-10-13T12:05:18.141Z",
           "lifecycle": "current"
         }
       ],
@@ -1739,7 +1687,41 @@
           "intent": "business_fact"
         }
       ],
-      "visibleExcerpt": "본문으로 건너뛰기\nALABOM\nWorkspace\nSettings\nLogout\nKO\n아이 간식 구독 박스\n전체 사업내용 보기\n\n진행상태\n\n진행\n\n●\n① 사업 정의\n○\n② 시장 검증\n○\n③ 확인/종합\n○\n④ 결과\n\nS.I. 사업성 판단\n\nS1 문제·고객 가설 · 점수 없음\n\n현재 사업성 판단\n\n현재 판단: 지금은 판단을 보류한다\n\n현재 판단: 지금은 판단을 보류한다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n왜 가능한가\n\n문서에서 확인할 수 있는 구체적 문제가 있다.\n\n왜 실패할 수 있는가\n\n이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n현재 근거\n\nCLAIM\n프로젝트 이름: 아이 간식 구독 박스\nCLAIM\n서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스\nFACT\n문제: 장을 볼 시간이 없고 과자 고르기가 피곤하다\nCLAIM\n수익: 월 구독\nCLAIM\n[AI PM 확인 · 수익·지불 확인]\nFACT\n서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…\nCLAIM\n서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…\nFACT\n[AI PM 확인 · 문제 확인]\nFACT\n지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.\nCLAIM\n지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.\nINFERENCE\n출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.\n\n강점\n\n• 문서에서 확인할 수 있는 구체적 문제가 있다.\n\n리스크\n\n• 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n가장 중요한 미검증 가정\n\n이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n이 판단을 바꿀 증거\n\n최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.\n\n다음에 검증해야 할 1개\n\n가장 가까운 결제 후보에게 유료 제안을 한 번 검증한다.\n\nAI PM · S.I.가 지정한"
+      "visibleExcerpt": "본문으로 건너뛰기\nALABOM\nWorkspace\nSettings\nLogout\nKO\n아이 간식 구독 박스\n전체 사업내용 보기\n\n진행상태\n\n진행\n\n✔\n① 사업 정의\n●\n② 시장 검증\n○\n③ 확인/종합\n○\n④ 결과\n\nS.I. 사업성 판단\n\nS1 문제·고객 가설 · 점수 없음\n\n현재 사업성 판단\n\n현재 판단: 지금은 판단을 보류한다\n\n현재 판단: 지금은 판단을 보류한다. 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n왜 가능한가\n\n문서에서 확인할 수 있는 구체적 문제가 있다.\n\n왜 실패할 수 있는가\n\n이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n현재 근거\n\nCLAIM\n프로젝트 이름: 아이 간식 구독 박스\nCLAIM\n서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스\nFACT\n문제: 장을 볼 시간이 없고 과자 고르기가 피곤하다\nCLAIM\n수익: 월 구독\nCLAIM\n[AI PM 확인 · 수익·지불 확인]\nFACT\n서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…\nCLAIM\n서비스: 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상: 맞벌이 부모 문제: 장…\nFACT\n[AI PM 확인 · 문제 확인]\nFACT\n지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.\nCLAIM\n지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는 구독 박스 대상」입니다.\nFACT\n지금 메인 고객은 혼자 사는 20대예요\nINFERENCE\n출시·매출 이전 단계에서는 가능성 문장보다 미검증 가정을 먼저 적는다.\n\n강점\n\n• 문서에서 확인할 수 있는 구체적 문제가 있다.\n\n리스크\n\n• 이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n가장 중요한 미검증 가정\n\n이 사업이 주장하는 가치가 실제 지불로 이어지는가. 문제와 대안이 있어도 유료 전환이 없으면 사업화 판단을 확정할 수 없다.\n\n이 판단을 바꿀 증거\n\n최초 유료 거래 또는 유료 파일럿 한 건과 그 전후 성과. 이 증거가 있으면 판단을 조건부 가능 이상으로 올리고, 없으면 보류를 유지한다.\n\n다음에 검증해야 할 1개\n\n가장 가까운 결제 후보에게 유료 제안을 한"
+    },
+    "residual": {
+      "t6BuyerCurrent": [],
+      "t6CustomerCurrent": [
+        {
+          "key": "customer",
+          "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.",
+          "source": "user_turn",
+          "confirmedAt": "2026-10-13T12:05:12.448Z",
+          "lifecycle": "current"
+        }
+      ],
+      "t7BuyerCurrent": [
+        {
+          "key": "buyer",
+          "value": "사실 아이가 아니라 혼자 사는 20대가 메인이에요",
+          "source": "user_turn",
+          "confirmedAt": "2026-10-13T12:05:18.141Z",
+          "lifecycle": "current"
+        }
+      ],
+      "t6PayerClosed": true,
+      "t6PayerEvidence": "[{\"factKey\":\"buyer\",\"value\":\"혼자 사는 20대가 메인\",\"evidenceClass\":\"FACT\"}]",
+      "t7Options": [
+        "○ 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상",
+        "○ 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는…",
+        "○ 기타",
+        "○ 아직 모르겠음"
+      ],
+      "t6Surface": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+      "t6Decision": "어느 쪽이 지금 맞는 고객인가요? 이전 고객 이해와 방금 답이 충돌합니다.",
+      "t7Asked": "이 서비스를 가장 필요로 하는 사람은 누구인가요?",
+      "buyerUsedAsCurrentPayer": false,
+      "customerConfusedWithBuyer": false
     },
     "verdicts": [
       {
@@ -1747,12 +1729,28 @@
         "reason": "S4 T6 UI shows contradicted customer (gap=CONTRADICTED, dialog=false, via=typed)"
       },
       {
-        "status": "PASS",
-        "reason": "S4 T6 parents current=false 20s current=false"
+        "status": "FAIL",
+        "reason": "S4 T6 parents current=true 20s current=false"
       },
       {
         "status": "PASS",
         "reason": "S4 T7 current20s=true nextAlt=true next=비슷한 역할을 이미 하고 있는 서비스가 있나요?"
+      },
+      {
+        "status": "PASS",
+        "reason": "T6 buyer created=false customerConfused=false customerCurrent=[{\"key\":\"customer\",\"value\":\"이 서비스를 가장 필요로 하는 사람은 맞벌이 부모입니다.\",\"source\":\"user_turn\",\"confirmedAt\":\"2026-10-13T12:05:12.448Z\",\"lifecycle\":\"current\"}]"
+      },
+      {
+        "status": "PASS",
+        "reason": "T6 buyer used as current payer=false buyerCurrent=[] payerClosed=true"
+      },
+      {
+        "status": "PASS",
+        "reason": "T7 options fragments=true has기타=true via=typed labels=○ 아이 간식을 매주 집 앞으로 보내는 구독 박스 대상 | ○ 지금 가장 크게 해결하려는 불편은 「아이 간식을 매주 집 앞으로 보내는… | ○ 기타 | ○ 아직 모르겠음"
+      },
+      {
+        "status": "PASS",
+        "reason": "T6 surface=이 서비스를 가장 필요로 하는 사람은 누구인가요? lastDecision=어느 쪽이 지금 맞는 고객인가요? 이전 고객 이해와 방금 답이 충돌합니다. t7Asked=이 서비스를 가장 필요로 하는 사람은 누구인가요?"
       }
     ]
   },
@@ -1761,14 +1759,14 @@
       "reached": true,
       "asked": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
       "snap": {
-        "projectId": "03b1a13f-2fea-42f6-af18-112d35d773c5",
+        "projectId": "718b5c3a-9134-4a21-aa6c-e8aabb16b79f",
         "targetGap": "payer",
         "gapState": {
           "businessOneLiner": {
             "gapId": "businessOneLiner",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:38:43.086Z",
-            "sourceReviewId": "3bea6026-dcbf-4682-92b4-035f4fdf77b2",
+            "sourceTurnId": "2026-10-13T12:05:42.633Z",
+            "sourceReviewId": "8f11cd54-a59c-449d-bf75-db613d13a0f1",
             "evidence": [
               {
                 "factKey": "business",
@@ -1777,14 +1775,14 @@
               }
             ],
             "confidence": "medium",
-            "lastUpdated": "2026-10-13T11:38:43.087Z",
+            "lastUpdated": "2026-10-13T12:05:42.634Z",
             "rationale": "Prior turn CLOSED — preserved in review."
           },
           "customerPersona": {
             "gapId": "customerPersona",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:38:43.086Z",
-            "sourceReviewId": "3bea6026-dcbf-4682-92b4-035f4fdf77b2",
+            "sourceTurnId": "2026-10-13T12:05:42.633Z",
+            "sourceReviewId": "8f11cd54-a59c-449d-bf75-db613d13a0f1",
             "evidence": [
               {
                 "factKey": "customer",
@@ -1793,14 +1791,14 @@
               }
             ],
             "confidence": "medium",
-            "lastUpdated": "2026-10-13T11:38:43.087Z",
+            "lastUpdated": "2026-10-13T12:05:42.634Z",
             "rationale": "Prior turn CLOSED — preserved in review."
           },
           "problemJtbd": {
             "gapId": "problemJtbd",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:38:43.086Z",
-            "sourceReviewId": "3bea6026-dcbf-4682-92b4-035f4fdf77b2",
+            "sourceTurnId": "2026-10-13T12:05:42.633Z",
+            "sourceReviewId": "8f11cd54-a59c-449d-bf75-db613d13a0f1",
             "evidence": [
               {
                 "factKey": "problem",
@@ -1809,7 +1807,7 @@
               }
             ],
             "confidence": "high",
-            "lastUpdated": "2026-10-13T11:38:43.087Z",
+            "lastUpdated": "2026-10-13T12:05:42.634Z",
             "rationale": "의미 라우팅: problem (primary=problem, signal≥10)"
           }
         },
@@ -1828,8 +1826,8 @@
             "problemJtbd"
           ],
           "drivenByReview": true,
-          "sourceAnswerId": "2026-10-13T11:38:43.086Z",
-          "sourceReviewId": "3bea6026-dcbf-4682-92b4-035f4fdf77b2",
+          "sourceAnswerId": "2026-10-13T12:05:42.633Z",
+          "sourceReviewId": "8f11cd54-a59c-449d-bf75-db613d13a0f1",
           "reviewAction": "advance",
           "action": "advance",
           "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -1838,7 +1836,7 @@
         "lastTurn": {
           "issueId": "problem_definition",
           "answer": "지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다」입니다.",
-          "appliedAt": "2026-10-13T11:38:43.086Z",
+          "appliedAt": "2026-10-13T12:05:42.633Z",
           "semanticFactKey": "problem",
           "semanticFactKeys": [
             "problem"
@@ -1871,10 +1869,10 @@
           "expectedInformation": "해결하려는 핵심 불편·JTBD",
           "understandingDelta": "기존: 사업 한 줄: 서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다. · 문제 빈도·심각도: 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다 · 변경: 핵심 문제: 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다 → 지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵 · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
           "review": {
-            "reviewId": "3bea6026-dcbf-4682-92b4-035f4fdf77b2",
-            "turnId": "2026-10-13T11:38:43.086Z",
-            "sourceTurnId": "2026-10-13T11:38:43.086Z",
-            "createdAt": "2026-10-13T11:38:43.087Z",
+            "reviewId": "8f11cd54-a59c-449d-bf75-db613d13a0f1",
+            "turnId": "2026-10-13T12:05:42.633Z",
+            "sourceTurnId": "2026-10-13T12:05:42.633Z",
+            "createdAt": "2026-10-13T12:05:42.634Z",
             "askedGapId": "problemJtbd",
             "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "askedIssueId": "problem_definition",
@@ -1934,28 +1932,28 @@
             "key": "business",
             "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미 문제: 믿을 사람을 찾기 어렵…",
             "source": "document",
-            "confirmedAt": "2026-10-13T11:38:43.490Z",
+            "confirmedAt": "2026-10-13T12:05:43.037Z",
             "lifecycle": "superseded"
           },
           {
             "key": "business",
             "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:38:43.490Z",
+            "confirmedAt": "2026-10-13T12:05:43.037Z",
             "lifecycle": "current"
           },
           {
             "key": "customer",
             "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다.",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:38:43.490Z",
+            "confirmedAt": "2026-10-13T12:05:43.037Z",
             "lifecycle": "current"
           },
           {
             "key": "problem",
             "value": "지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다」입니다.",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:38:43.490Z",
+            "confirmedAt": "2026-10-13T12:05:43.037Z",
             "lifecycle": "current"
           }
         ],
@@ -2015,8 +2013,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:39.743Z",
-              "sourceReviewId": "6fff0541-2349-4d03-b761-b1d728a78ff6",
+              "sourceTurnId": "2026-10-13T12:05:39.295Z",
+              "sourceReviewId": "5225f255-8dcf-436c-a599-3f1039837198",
               "evidence": [
                 {
                   "factKey": "business",
@@ -2025,7 +2023,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:38:39.744Z",
+              "lastUpdated": "2026-10-13T12:05:39.296Z",
               "rationale": "약한 prior: asked issue → business"
             }
           },
@@ -2042,19 +2040,19 @@
               "businessOneLiner"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:38:39.743Z",
-            "sourceReviewId": "6fff0541-2349-4d03-b761-b1d728a78ff6",
+            "sourceAnswerId": "2026-10-13T12:05:39.295Z",
+            "sourceReviewId": "5225f255-8dcf-436c-a599-3f1039837198",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "FIX-10 P0-FIX-A-2 — judgment focus customer",
             "reason": "judgment-bound customer→customerPersona",
             "questionType": "open",
-            "confirmSourceTurnAppliedAt": "2026-10-13T11:38:39.743Z"
+            "confirmSourceTurnAppliedAt": "2026-10-13T12:05:39.295Z"
           },
           "lastTurn": {
             "issueId": "bm_design",
             "answer": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…",
-            "appliedAt": "2026-10-13T11:38:39.743Z",
+            "appliedAt": "2026-10-13T12:05:39.295Z",
             "semanticFactKey": "business",
             "semanticFactKeys": [
               "business"
@@ -2087,10 +2085,10 @@
             "expectedInformation": "한 줄 사업 정의",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌 · 고객 페르소나: 맞벌이 가정 / 도우미 · 핵심 문제: 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다 · 신규: 사업 한 줄: 서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미… · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 고객 페르소나 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "6fff0541-2349-4d03-b761-b1d728a78ff6",
-              "turnId": "2026-10-13T11:38:39.743Z",
-              "sourceTurnId": "2026-10-13T11:38:39.743Z",
-              "createdAt": "2026-10-13T11:38:39.744Z",
+              "reviewId": "5225f255-8dcf-436c-a599-3f1039837198",
+              "turnId": "2026-10-13T12:05:39.295Z",
+              "sourceTurnId": "2026-10-13T12:05:39.295Z",
+              "createdAt": "2026-10-13T12:05:39.296Z",
               "askedGapId": "businessOneLiner",
               "askedQuestionText": "제가 이해한 사업은 「서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…」입니다. 맞나요?",
               "askedIssueId": "bm_design",
@@ -2136,14 +2134,14 @@
               "key": "business",
               "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미 문제: 믿을 사람을 찾기 어렵…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:38:40.148Z",
+              "confirmedAt": "2026-10-13T12:05:39.700Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:40.148Z",
+              "confirmedAt": "2026-10-13T12:05:39.700Z",
               "lifecycle": "current"
             }
           ],
@@ -2182,8 +2180,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:41.412Z",
-              "sourceReviewId": "ef596162-7da0-44db-b161-21c6e45aac80",
+              "sourceTurnId": "2026-10-13T12:05:40.966Z",
+              "sourceReviewId": "f806c6ec-851a-4d44-a93e-3d46e3a8d8f3",
               "evidence": [
                 {
                   "factKey": "business",
@@ -2192,14 +2190,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:38:41.413Z",
+              "lastUpdated": "2026-10-13T12:05:40.966Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "customerPersona": {
               "gapId": "customerPersona",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:41.412Z",
-              "sourceReviewId": "ef596162-7da0-44db-b161-21c6e45aac80",
+              "sourceTurnId": "2026-10-13T12:05:40.966Z",
+              "sourceReviewId": "f806c6ec-851a-4d44-a93e-3d46e3a8d8f3",
               "evidence": [
                 {
                   "factKey": "customer",
@@ -2208,7 +2206,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:38:41.413Z",
+              "lastUpdated": "2026-10-13T12:05:40.966Z",
               "rationale": "의미 라우팅: customer (primary=customer, signal≥10)"
             }
           },
@@ -2226,8 +2224,8 @@
               "customerPersona"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:38:41.412Z",
-            "sourceReviewId": "ef596162-7da0-44db-b161-21c6e45aac80",
+            "sourceAnswerId": "2026-10-13T12:05:40.966Z",
+            "sourceReviewId": "f806c6ec-851a-4d44-a93e-3d46e3a8d8f3",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "FIX-10 P0-FIX-A-2 — judgment focus problem",
@@ -2237,7 +2235,7 @@
           "lastTurn": {
             "issueId": "customer_definition",
             "answer": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다.",
-            "appliedAt": "2026-10-13T11:38:41.412Z",
+            "appliedAt": "2026-10-13T12:05:40.966Z",
             "semanticFactKey": "customer",
             "semanticFactKeys": [
               "customer"
@@ -2270,10 +2268,10 @@
             "expectedInformation": "가장 필요로 하는 구체 고객·페르소나",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌 · 핵심 문제: 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다 · 문제 빈도·심각도: 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다 · 변경: 고객 페르소나: 맞벌이 가정 / 도우미 → 이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다. · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 핵심 문제 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "ef596162-7da0-44db-b161-21c6e45aac80",
-              "turnId": "2026-10-13T11:38:41.412Z",
-              "sourceTurnId": "2026-10-13T11:38:41.412Z",
-              "createdAt": "2026-10-13T11:38:41.413Z",
+              "reviewId": "f806c6ec-851a-4d44-a93e-3d46e3a8d8f3",
+              "turnId": "2026-10-13T12:05:40.966Z",
+              "sourceTurnId": "2026-10-13T12:05:40.966Z",
+              "createdAt": "2026-10-13T12:05:40.966Z",
               "askedGapId": "customerPersona",
               "askedQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
               "askedIssueId": "customer_definition",
@@ -2326,21 +2324,21 @@
               "key": "business",
               "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미 문제: 믿을 사람을 찾기 어렵…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:38:41.817Z",
+              "confirmedAt": "2026-10-13T12:05:41.370Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:41.817Z",
+              "confirmedAt": "2026-10-13T12:05:41.370Z",
               "lifecycle": "current"
             },
             {
               "key": "customer",
               "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:41.817Z",
+              "confirmedAt": "2026-10-13T12:05:41.370Z",
               "lifecycle": "current"
             }
           ],
@@ -2398,8 +2396,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:43.086Z",
-              "sourceReviewId": "3bea6026-dcbf-4682-92b4-035f4fdf77b2",
+              "sourceTurnId": "2026-10-13T12:05:42.633Z",
+              "sourceReviewId": "8f11cd54-a59c-449d-bf75-db613d13a0f1",
               "evidence": [
                 {
                   "factKey": "business",
@@ -2408,14 +2406,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:38:43.087Z",
+              "lastUpdated": "2026-10-13T12:05:42.634Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "customerPersona": {
               "gapId": "customerPersona",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:43.086Z",
-              "sourceReviewId": "3bea6026-dcbf-4682-92b4-035f4fdf77b2",
+              "sourceTurnId": "2026-10-13T12:05:42.633Z",
+              "sourceReviewId": "8f11cd54-a59c-449d-bf75-db613d13a0f1",
               "evidence": [
                 {
                   "factKey": "customer",
@@ -2424,14 +2422,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:38:43.087Z",
+              "lastUpdated": "2026-10-13T12:05:42.634Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "problemJtbd": {
               "gapId": "problemJtbd",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:38:43.086Z",
-              "sourceReviewId": "3bea6026-dcbf-4682-92b4-035f4fdf77b2",
+              "sourceTurnId": "2026-10-13T12:05:42.633Z",
+              "sourceReviewId": "8f11cd54-a59c-449d-bf75-db613d13a0f1",
               "evidence": [
                 {
                   "factKey": "problem",
@@ -2440,7 +2438,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:38:43.087Z",
+              "lastUpdated": "2026-10-13T12:05:42.634Z",
               "rationale": "의미 라우팅: problem (primary=problem, signal≥10)"
             }
           },
@@ -2459,8 +2457,8 @@
               "problemJtbd"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:38:43.086Z",
-            "sourceReviewId": "3bea6026-dcbf-4682-92b4-035f4fdf77b2",
+            "sourceAnswerId": "2026-10-13T12:05:42.633Z",
+            "sourceReviewId": "8f11cd54-a59c-449d-bf75-db613d13a0f1",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -2469,7 +2467,7 @@
           "lastTurn": {
             "issueId": "problem_definition",
             "answer": "지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다」입니다.",
-            "appliedAt": "2026-10-13T11:38:43.086Z",
+            "appliedAt": "2026-10-13T12:05:42.633Z",
             "semanticFactKey": "problem",
             "semanticFactKeys": [
               "problem"
@@ -2502,10 +2500,10 @@
             "expectedInformation": "해결하려는 핵심 불편·JTBD",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다. · 문제 빈도·심각도: 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다 · 변경: 핵심 문제: 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다 → 지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵 · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "3bea6026-dcbf-4682-92b4-035f4fdf77b2",
-              "turnId": "2026-10-13T11:38:43.086Z",
-              "sourceTurnId": "2026-10-13T11:38:43.086Z",
-              "createdAt": "2026-10-13T11:38:43.087Z",
+              "reviewId": "8f11cd54-a59c-449d-bf75-db613d13a0f1",
+              "turnId": "2026-10-13T12:05:42.633Z",
+              "sourceTurnId": "2026-10-13T12:05:42.633Z",
+              "createdAt": "2026-10-13T12:05:42.634Z",
               "askedGapId": "problemJtbd",
               "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
               "askedIssueId": "problem_definition",
@@ -2565,28 +2563,28 @@
               "key": "business",
               "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미 문제: 믿을 사람을 찾기 어렵…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:38:43.490Z",
+              "confirmedAt": "2026-10-13T12:05:43.037Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:43.490Z",
+              "confirmedAt": "2026-10-13T12:05:43.037Z",
               "lifecycle": "current"
             },
             {
               "key": "customer",
               "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:43.490Z",
+              "confirmedAt": "2026-10-13T12:05:43.037Z",
               "lifecycle": "current"
             },
             {
               "key": "problem",
               "value": "지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다」입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:38:43.490Z",
+              "confirmedAt": "2026-10-13T12:05:43.037Z",
               "lifecycle": "current"
             }
           ],
@@ -2663,8 +2661,8 @@
         "businessOneLiner": {
           "gapId": "businessOneLiner",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:38:44.741Z",
-          "sourceReviewId": "0ad174be-178c-4d9d-8428-a7cd81186ec1",
+          "sourceTurnId": "2026-10-13T12:05:44.290Z",
+          "sourceReviewId": "347b8de1-3309-4096-818f-eda8cee380b2",
           "evidence": [
             {
               "factKey": "business",
@@ -2673,14 +2671,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:44.741Z",
+          "lastUpdated": "2026-10-13T12:05:44.291Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "customerPersona": {
           "gapId": "customerPersona",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:38:44.741Z",
-          "sourceReviewId": "0ad174be-178c-4d9d-8428-a7cd81186ec1",
+          "sourceTurnId": "2026-10-13T12:05:44.290Z",
+          "sourceReviewId": "347b8de1-3309-4096-818f-eda8cee380b2",
           "evidence": [
             {
               "factKey": "customer",
@@ -2689,14 +2687,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:44.741Z",
+          "lastUpdated": "2026-10-13T12:05:44.291Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "problemJtbd": {
           "gapId": "problemJtbd",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:38:44.741Z",
-          "sourceReviewId": "0ad174be-178c-4d9d-8428-a7cd81186ec1",
+          "sourceTurnId": "2026-10-13T12:05:44.290Z",
+          "sourceReviewId": "347b8de1-3309-4096-818f-eda8cee380b2",
           "evidence": [
             {
               "factKey": "problem",
@@ -2705,14 +2703,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:38:44.741Z",
+          "lastUpdated": "2026-10-13T12:05:44.291Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "payer": {
           "gapId": "payer",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:38:44.741Z",
-          "sourceReviewId": "0ad174be-178c-4d9d-8428-a7cd81186ec1",
+          "sourceTurnId": "2026-10-13T12:05:44.290Z",
+          "sourceReviewId": "347b8de1-3309-4096-818f-eda8cee380b2",
           "evidence": [
             {
               "factKey": "buyer",
@@ -2721,7 +2719,7 @@
             }
           ],
           "confidence": "high",
-          "lastUpdated": "2026-10-13T11:38:44.741Z",
+          "lastUpdated": "2026-10-13T12:05:44.291Z",
           "rationale": "약한 prior: asked issue → buyer"
         }
       },
@@ -2741,8 +2739,8 @@
           "payer"
         ],
         "drivenByReview": true,
-        "sourceAnswerId": "2026-10-13T11:38:44.741Z",
-        "sourceReviewId": "0ad174be-178c-4d9d-8428-a7cd81186ec1",
+        "sourceAnswerId": "2026-10-13T12:05:44.290Z",
+        "sourceReviewId": "347b8de1-3309-4096-818f-eda8cee380b2",
         "reviewAction": "advance",
         "action": "advance",
         "actionRationale": "No-Ask CONFIRM — gap OPEN이지만 의미상 이미 충족",
@@ -2750,12 +2748,12 @@
         "questionType": "confirm",
         "confirmKnownValue": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…",
         "confirmGapId": "alternativesCompetitors",
-        "confirmSourceTurnAppliedAt": "2026-10-13T11:38:44.741Z"
+        "confirmSourceTurnAppliedAt": "2026-10-13T12:05:44.290Z"
       },
       "lastTurn": {
         "issueId": "bm_design",
         "answer": "집이 낸다",
-        "appliedAt": "2026-10-13T11:38:44.741Z",
+        "appliedAt": "2026-10-13T12:05:44.290Z",
         "semanticFactKey": "buyer",
         "semanticFactKeys": [
           "buyer"
@@ -2788,10 +2786,10 @@
         "expectedInformation": "비용을 실제로 지불하는 주체",
         "understandingDelta": "기존: 사업 한 줄: 서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다. · 핵심 문제: 지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵고, 도 · 신규: 구매자: 집이 낸다 · 미확인: 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
         "review": {
-          "reviewId": "0ad174be-178c-4d9d-8428-a7cd81186ec1",
-          "turnId": "2026-10-13T11:38:44.741Z",
-          "sourceTurnId": "2026-10-13T11:38:44.741Z",
-          "createdAt": "2026-10-13T11:38:44.741Z",
+          "reviewId": "347b8de1-3309-4096-818f-eda8cee380b2",
+          "turnId": "2026-10-13T12:05:44.290Z",
+          "sourceTurnId": "2026-10-13T12:05:44.290Z",
+          "createdAt": "2026-10-13T12:05:44.291Z",
           "askedGapId": "payer",
           "askedQuestionText": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
           "askedIssueId": "bm_design",
@@ -2858,42 +2856,28 @@
           "key": "business",
           "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미 문제: 믿을 사람을 찾기 어렵…",
           "source": "document",
-          "confirmedAt": "2026-10-13T11:38:45.145Z",
+          "confirmedAt": "2026-10-13T12:05:43.037Z",
           "lifecycle": "superseded"
         },
         {
           "key": "business",
           "value": "서비스: 가사 도우미와 맞벌이 집을 연결하는 중개 앱 대상: 맞벌이 가정 / 도우미…",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:45.145Z",
+          "confirmedAt": "2026-10-13T12:05:43.037Z",
           "lifecycle": "current"
         },
         {
           "key": "customer",
           "value": "이 서비스를 가장 필요로 하는 사람은 맞벌이 가정입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:45.145Z",
+          "confirmedAt": "2026-10-13T12:05:43.037Z",
           "lifecycle": "current"
         },
         {
           "key": "problem",
           "value": "지금 가장 크게 해결하려는 불편은 「믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다」입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:45.145Z",
-          "lifecycle": "current"
-        },
-        {
-          "key": "buyer",
-          "value": "집이 낸다",
-          "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:45.145Z",
-          "lifecycle": "superseded"
-        },
-        {
-          "key": "buyer",
-          "value": "집이 낸다",
-          "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:38:45.145Z",
+          "confirmedAt": "2026-10-13T12:05:43.037Z",
           "lifecycle": "current"
         }
       ],
@@ -2958,14 +2942,14 @@
       "reached": true,
       "asked": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
       "snap": {
-        "projectId": "dc9cf789-f180-48a2-ad92-3536d061b3cf",
+        "projectId": "06eb85ca-262d-48bd-bbdd-ab7d258e12c4",
         "targetGap": "payer",
         "gapState": {
           "businessOneLiner": {
             "gapId": "businessOneLiner",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:39:05.366Z",
-            "sourceReviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
+            "sourceTurnId": "2026-10-13T12:06:04.275Z",
+            "sourceReviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
             "evidence": [
               {
                 "factKey": "business",
@@ -2974,14 +2958,14 @@
               }
             ],
             "confidence": "medium",
-            "lastUpdated": "2026-10-13T11:39:05.367Z",
+            "lastUpdated": "2026-10-13T12:06:04.275Z",
             "rationale": "Prior turn CLOSED — preserved in review."
           },
           "customerPersona": {
             "gapId": "customerPersona",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:39:05.366Z",
-            "sourceReviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
+            "sourceTurnId": "2026-10-13T12:06:04.275Z",
+            "sourceReviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
             "evidence": [
               {
                 "factKey": "customer",
@@ -2990,14 +2974,14 @@
               }
             ],
             "confidence": "medium",
-            "lastUpdated": "2026-10-13T11:39:05.367Z",
+            "lastUpdated": "2026-10-13T12:06:04.275Z",
             "rationale": "Prior turn CLOSED — preserved in review."
           },
           "problemJtbd": {
             "gapId": "problemJtbd",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:39:05.366Z",
-            "sourceReviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
+            "sourceTurnId": "2026-10-13T12:06:04.275Z",
+            "sourceReviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
             "evidence": [
               {
                 "factKey": "problem",
@@ -3006,14 +2990,14 @@
               }
             ],
             "confidence": "high",
-            "lastUpdated": "2026-10-13T11:39:05.367Z",
+            "lastUpdated": "2026-10-13T12:06:04.275Z",
             "rationale": "의미 라우팅: problem+market (primary=problem, signal≥10)"
           },
           "marketChannel": {
             "gapId": "marketChannel",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:39:05.366Z",
-            "sourceReviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
+            "sourceTurnId": "2026-10-13T12:06:04.275Z",
+            "sourceReviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
             "evidence": [
               {
                 "factKey": "market",
@@ -3022,7 +3006,7 @@
               }
             ],
             "confidence": "high",
-            "lastUpdated": "2026-10-13T11:39:05.367Z",
+            "lastUpdated": "2026-10-13T12:06:04.275Z",
             "rationale": "Multi-fact utterance — market"
           }
         },
@@ -3042,8 +3026,8 @@
             "marketChannel"
           ],
           "drivenByReview": true,
-          "sourceAnswerId": "2026-10-13T11:39:05.366Z",
-          "sourceReviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
+          "sourceAnswerId": "2026-10-13T12:06:04.275Z",
+          "sourceReviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
           "reviewAction": "advance",
           "action": "advance",
           "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -3052,7 +3036,7 @@
         "lastTurn": {
           "issueId": "problem_definition",
           "answer": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-          "appliedAt": "2026-10-13T11:39:05.366Z",
+          "appliedAt": "2026-10-13T12:06:04.275Z",
           "semanticFactKey": "problem",
           "semanticFactKeys": [
             "problem",
@@ -3086,10 +3070,10 @@
           "expectedInformation": "해결하려는 핵심 불편·JTBD",
           "understandingDelta": "기존: 사업 한 줄: 서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는  · 문제 빈도·심각도: 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다 · 신규: 시장: 지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하 · 수요: 지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하 · 변경: 핵심 문제: 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵 → 지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어 · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
           "review": {
-            "reviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
-            "turnId": "2026-10-13T11:39:05.366Z",
-            "sourceTurnId": "2026-10-13T11:39:05.366Z",
-            "createdAt": "2026-10-13T11:39:05.367Z",
+            "reviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
+            "turnId": "2026-10-13T12:06:04.275Z",
+            "sourceTurnId": "2026-10-13T12:06:04.275Z",
+            "createdAt": "2026-10-13T12:06:04.275Z",
             "askedGapId": "problemJtbd",
             "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "askedIssueId": "problem_definition",
@@ -3167,35 +3151,35 @@
             "key": "business",
             "value": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를 선물·취미로 찾는 30–40대…",
             "source": "document",
-            "confirmedAt": "2026-10-13T11:39:05.771Z",
+            "confirmedAt": "2026-10-13T12:06:04.679Z",
             "lifecycle": "superseded"
           },
           {
             "key": "business",
             "value": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를…",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:39:05.771Z",
+            "confirmedAt": "2026-10-13T12:06:04.679Z",
             "lifecycle": "current"
           },
           {
             "key": "customer",
             "value": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:39:05.771Z",
+            "confirmedAt": "2026-10-13T12:06:04.679Z",
             "lifecycle": "current"
           },
           {
             "key": "problem",
             "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:39:05.771Z",
+            "confirmedAt": "2026-10-13T12:06:04.679Z",
             "lifecycle": "current"
           },
           {
             "key": "market",
             "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:39:05.771Z",
+            "confirmedAt": "2026-10-13T12:06:04.679Z",
             "lifecycle": "current"
           }
         ],
@@ -3255,8 +3239,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:02.014Z",
-              "sourceReviewId": "cfdc251d-259f-47d2-b460-ea80b2733dd9",
+              "sourceTurnId": "2026-10-13T12:06:00.931Z",
+              "sourceReviewId": "73d8b913-76f9-4ad3-84c4-11219e9f6d90",
               "evidence": [
                 {
                   "factKey": "business",
@@ -3265,7 +3249,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:39:02.014Z",
+              "lastUpdated": "2026-10-13T12:06:00.932Z",
               "rationale": "약한 prior: asked issue → business"
             }
           },
@@ -3282,19 +3266,19 @@
               "businessOneLiner"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:39:02.014Z",
-            "sourceReviewId": "cfdc251d-259f-47d2-b460-ea80b2733dd9",
+            "sourceAnswerId": "2026-10-13T12:06:00.931Z",
+            "sourceReviewId": "73d8b913-76f9-4ad3-84c4-11219e9f6d90",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "FIX-10 P0-FIX-A-2 — judgment focus customer",
             "reason": "judgment-bound customer→customerPersona",
             "questionType": "open",
-            "confirmSourceTurnAppliedAt": "2026-10-13T11:39:02.014Z"
+            "confirmSourceTurnAppliedAt": "2026-10-13T12:06:00.931Z"
           },
           "lastTurn": {
             "issueId": "bm_design",
             "answer": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를…",
-            "appliedAt": "2026-10-13T11:39:02.014Z",
+            "appliedAt": "2026-10-13T12:06:00.931Z",
             "semanticFactKey": "business",
             "semanticFactKeys": [
               "business"
@@ -3327,10 +3311,10 @@
             "expectedInformation": "한 줄 사업 정의",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판 · 고객 페르소나: 전통주를 선물·취미로 찾는 30–40대 · 핵심 문제: 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다 · 신규: 사업 한 줄: 서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를… · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 고객 페르소나 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "cfdc251d-259f-47d2-b460-ea80b2733dd9",
-              "turnId": "2026-10-13T11:39:02.014Z",
-              "sourceTurnId": "2026-10-13T11:39:02.014Z",
-              "createdAt": "2026-10-13T11:39:02.014Z",
+              "reviewId": "73d8b913-76f9-4ad3-84c4-11219e9f6d90",
+              "turnId": "2026-10-13T12:06:00.931Z",
+              "sourceTurnId": "2026-10-13T12:06:00.931Z",
+              "createdAt": "2026-10-13T12:06:00.932Z",
               "askedGapId": "businessOneLiner",
               "askedQuestionText": "제가 이해한 사업은 「서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를…」입니다. 맞나요?",
               "askedIssueId": "bm_design",
@@ -3376,14 +3360,14 @@
               "key": "business",
               "value": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를 선물·취미로 찾는 30–40대…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:39:02.418Z",
+              "confirmedAt": "2026-10-13T12:06:01.336Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:02.418Z",
+              "confirmedAt": "2026-10-13T12:06:01.336Z",
               "lifecycle": "current"
             }
           ],
@@ -3424,8 +3408,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:03.682Z",
-              "sourceReviewId": "5e7a9de5-783e-43a2-a4c2-60670eb0482b",
+              "sourceTurnId": "2026-10-13T12:06:02.602Z",
+              "sourceReviewId": "6e66adcd-3dc1-4158-a879-3fa4ee91b733",
               "evidence": [
                 {
                   "factKey": "business",
@@ -3434,14 +3418,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:39:03.683Z",
+              "lastUpdated": "2026-10-13T12:06:02.603Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "customerPersona": {
               "gapId": "customerPersona",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:03.682Z",
-              "sourceReviewId": "5e7a9de5-783e-43a2-a4c2-60670eb0482b",
+              "sourceTurnId": "2026-10-13T12:06:02.602Z",
+              "sourceReviewId": "6e66adcd-3dc1-4158-a879-3fa4ee91b733",
               "evidence": [
                 {
                   "factKey": "customer",
@@ -3450,7 +3434,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:39:03.683Z",
+              "lastUpdated": "2026-10-13T12:06:02.603Z",
               "rationale": "의미 라우팅: customer (primary=customer, signal≥10)"
             }
           },
@@ -3468,8 +3452,8 @@
               "customerPersona"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:39:03.682Z",
-            "sourceReviewId": "5e7a9de5-783e-43a2-a4c2-60670eb0482b",
+            "sourceAnswerId": "2026-10-13T12:06:02.602Z",
+            "sourceReviewId": "6e66adcd-3dc1-4158-a879-3fa4ee91b733",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "FIX-10 P0-FIX-A-2 — judgment focus problem",
@@ -3479,7 +3463,7 @@
           "lastTurn": {
             "issueId": "customer_definition",
             "answer": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
-            "appliedAt": "2026-10-13T11:39:03.682Z",
+            "appliedAt": "2026-10-13T12:06:02.602Z",
             "semanticFactKey": "customer",
             "semanticFactKeys": [
               "customer"
@@ -3512,10 +3496,10 @@
             "expectedInformation": "가장 필요로 하는 구체 고객·페르소나",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판 · 핵심 문제: 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다 · 문제 빈도·심각도: 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다 · 변경: 고객 페르소나: 전통주를 선물·취미로 찾는 30–40대 → 이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 핵심 문제 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "5e7a9de5-783e-43a2-a4c2-60670eb0482b",
-              "turnId": "2026-10-13T11:39:03.682Z",
-              "sourceTurnId": "2026-10-13T11:39:03.682Z",
-              "createdAt": "2026-10-13T11:39:03.683Z",
+              "reviewId": "6e66adcd-3dc1-4158-a879-3fa4ee91b733",
+              "turnId": "2026-10-13T12:06:02.602Z",
+              "sourceTurnId": "2026-10-13T12:06:02.602Z",
+              "createdAt": "2026-10-13T12:06:02.603Z",
               "askedGapId": "customerPersona",
               "askedQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
               "askedIssueId": "customer_definition",
@@ -3568,21 +3552,21 @@
               "key": "business",
               "value": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를 선물·취미로 찾는 30–40대…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:39:04.088Z",
+              "confirmedAt": "2026-10-13T12:06:03.007Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:04.088Z",
+              "confirmedAt": "2026-10-13T12:06:03.007Z",
               "lifecycle": "current"
             },
             {
               "key": "customer",
               "value": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:04.088Z",
+              "confirmedAt": "2026-10-13T12:06:03.007Z",
               "lifecycle": "current"
             }
           ],
@@ -3640,8 +3624,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:05.366Z",
-              "sourceReviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
+              "sourceTurnId": "2026-10-13T12:06:04.275Z",
+              "sourceReviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
               "evidence": [
                 {
                   "factKey": "business",
@@ -3650,14 +3634,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:39:05.367Z",
+              "lastUpdated": "2026-10-13T12:06:04.275Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "customerPersona": {
               "gapId": "customerPersona",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:05.366Z",
-              "sourceReviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
+              "sourceTurnId": "2026-10-13T12:06:04.275Z",
+              "sourceReviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
               "evidence": [
                 {
                   "factKey": "customer",
@@ -3666,14 +3650,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:39:05.367Z",
+              "lastUpdated": "2026-10-13T12:06:04.275Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "problemJtbd": {
               "gapId": "problemJtbd",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:05.366Z",
-              "sourceReviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
+              "sourceTurnId": "2026-10-13T12:06:04.275Z",
+              "sourceReviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
               "evidence": [
                 {
                   "factKey": "problem",
@@ -3682,14 +3666,14 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:39:05.367Z",
+              "lastUpdated": "2026-10-13T12:06:04.275Z",
               "rationale": "의미 라우팅: problem+market (primary=problem, signal≥10)"
             },
             "marketChannel": {
               "gapId": "marketChannel",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:05.366Z",
-              "sourceReviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
+              "sourceTurnId": "2026-10-13T12:06:04.275Z",
+              "sourceReviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
               "evidence": [
                 {
                   "factKey": "market",
@@ -3698,7 +3682,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:39:05.367Z",
+              "lastUpdated": "2026-10-13T12:06:04.275Z",
               "rationale": "Multi-fact utterance — market"
             }
           },
@@ -3718,8 +3702,8 @@
               "marketChannel"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:39:05.366Z",
-            "sourceReviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
+            "sourceAnswerId": "2026-10-13T12:06:04.275Z",
+            "sourceReviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -3728,7 +3712,7 @@
           "lastTurn": {
             "issueId": "problem_definition",
             "answer": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
-            "appliedAt": "2026-10-13T11:39:05.366Z",
+            "appliedAt": "2026-10-13T12:06:04.275Z",
             "semanticFactKey": "problem",
             "semanticFactKeys": [
               "problem",
@@ -3762,10 +3746,10 @@
             "expectedInformation": "해결하려는 핵심 불편·JTBD",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는  · 문제 빈도·심각도: 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다 · 신규: 시장: 지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하 · 수요: 지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하 · 변경: 핵심 문제: 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵 → 지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어 · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "9634fa70-922b-4a9a-9343-3c82466f334c",
-              "turnId": "2026-10-13T11:39:05.366Z",
-              "sourceTurnId": "2026-10-13T11:39:05.366Z",
-              "createdAt": "2026-10-13T11:39:05.367Z",
+              "reviewId": "a2f657e2-1526-4c42-89b8-0e8cf729aed5",
+              "turnId": "2026-10-13T12:06:04.275Z",
+              "sourceTurnId": "2026-10-13T12:06:04.275Z",
+              "createdAt": "2026-10-13T12:06:04.275Z",
               "askedGapId": "problemJtbd",
               "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
               "askedIssueId": "problem_definition",
@@ -3843,35 +3827,35 @@
               "key": "business",
               "value": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를 선물·취미로 찾는 30–40대…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:39:05.771Z",
+              "confirmedAt": "2026-10-13T12:06:04.679Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:05.771Z",
+              "confirmedAt": "2026-10-13T12:06:04.679Z",
               "lifecycle": "current"
             },
             {
               "key": "customer",
               "value": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:05.771Z",
+              "confirmedAt": "2026-10-13T12:06:04.679Z",
               "lifecycle": "current"
             },
             {
               "key": "problem",
               "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:05.771Z",
+              "confirmedAt": "2026-10-13T12:06:04.679Z",
               "lifecycle": "current"
             },
             {
               "key": "market",
               "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:05.771Z",
+              "confirmedAt": "2026-10-13T12:06:04.679Z",
               "lifecycle": "current"
             }
           ],
@@ -3948,8 +3932,8 @@
         "businessOneLiner": {
           "gapId": "businessOneLiner",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:07.027Z",
-          "sourceReviewId": "57bbcfa4-3d44-42e5-8358-02150cbe95af",
+          "sourceTurnId": "2026-10-13T12:06:05.935Z",
+          "sourceReviewId": "7c6b77f8-720c-4eaa-8747-3e75dadd68f0",
           "evidence": [
             {
               "factKey": "business",
@@ -3958,14 +3942,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:39:07.027Z",
+          "lastUpdated": "2026-10-13T12:06:05.935Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "customerPersona": {
           "gapId": "customerPersona",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:07.027Z",
-          "sourceReviewId": "57bbcfa4-3d44-42e5-8358-02150cbe95af",
+          "sourceTurnId": "2026-10-13T12:06:05.935Z",
+          "sourceReviewId": "7c6b77f8-720c-4eaa-8747-3e75dadd68f0",
           "evidence": [
             {
               "factKey": "customer",
@@ -3974,14 +3958,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:39:07.027Z",
+          "lastUpdated": "2026-10-13T12:06:05.935Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "problemJtbd": {
           "gapId": "problemJtbd",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:07.027Z",
-          "sourceReviewId": "57bbcfa4-3d44-42e5-8358-02150cbe95af",
+          "sourceTurnId": "2026-10-13T12:06:05.935Z",
+          "sourceReviewId": "7c6b77f8-720c-4eaa-8747-3e75dadd68f0",
           "evidence": [
             {
               "factKey": "problem",
@@ -3990,14 +3974,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:39:07.027Z",
+          "lastUpdated": "2026-10-13T12:06:05.935Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "marketChannel": {
           "gapId": "marketChannel",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:07.027Z",
-          "sourceReviewId": "57bbcfa4-3d44-42e5-8358-02150cbe95af",
+          "sourceTurnId": "2026-10-13T12:06:05.935Z",
+          "sourceReviewId": "7c6b77f8-720c-4eaa-8747-3e75dadd68f0",
           "evidence": [
             {
               "factKey": "market",
@@ -4006,14 +3990,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:39:07.027Z",
+          "lastUpdated": "2026-10-13T12:06:05.935Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "payer": {
           "gapId": "payer",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:07.027Z",
-          "sourceReviewId": "57bbcfa4-3d44-42e5-8358-02150cbe95af",
+          "sourceTurnId": "2026-10-13T12:06:05.935Z",
+          "sourceReviewId": "7c6b77f8-720c-4eaa-8747-3e75dadd68f0",
           "evidence": [
             {
               "factKey": "buyer",
@@ -4022,7 +4006,7 @@
             }
           ],
           "confidence": "high",
-          "lastUpdated": "2026-10-13T11:39:07.027Z",
+          "lastUpdated": "2026-10-13T12:06:05.935Z",
           "rationale": "약한 prior: asked issue → buyer"
         }
       },
@@ -4043,8 +4027,8 @@
           "payer"
         ],
         "drivenByReview": true,
-        "sourceAnswerId": "2026-10-13T11:39:07.027Z",
-        "sourceReviewId": "57bbcfa4-3d44-42e5-8358-02150cbe95af",
+        "sourceAnswerId": "2026-10-13T12:06:05.935Z",
+        "sourceReviewId": "7c6b77f8-720c-4eaa-8747-3e75dadd68f0",
         "reviewAction": "advance",
         "action": "advance",
         "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -4053,7 +4037,7 @@
       "lastTurn": {
         "issueId": "bm_design",
         "answer": "쓰는 사람이 직접 낸다",
-        "appliedAt": "2026-10-13T11:39:07.027Z",
+        "appliedAt": "2026-10-13T12:06:05.935Z",
         "semanticFactKey": "buyer",
         "semanticFactKeys": [
           "buyer"
@@ -4086,10 +4070,10 @@
         "expectedInformation": "비용을 실제로 지불하는 주체",
         "understandingDelta": "기존: 사업 한 줄: 서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판 · 시장 범위: [AI PM 확인 · 시장 검증 확인] 지금 가장 크게 해결하려는 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는  · 신규: 구매자: 쓰는 사람이 직접 낸다 · 미확인: 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
         "review": {
-          "reviewId": "57bbcfa4-3d44-42e5-8358-02150cbe95af",
-          "turnId": "2026-10-13T11:39:07.027Z",
-          "sourceTurnId": "2026-10-13T11:39:07.027Z",
-          "createdAt": "2026-10-13T11:39:07.027Z",
+          "reviewId": "7c6b77f8-720c-4eaa-8747-3e75dadd68f0",
+          "turnId": "2026-10-13T12:06:05.935Z",
+          "sourceTurnId": "2026-10-13T12:06:05.935Z",
+          "createdAt": "2026-10-13T12:06:05.935Z",
           "askedGapId": "payer",
           "askedQuestionText": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
           "askedIssueId": "bm_design",
@@ -4163,49 +4147,49 @@
           "key": "business",
           "value": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를 선물·취미로 찾는 30–40대…",
           "source": "document",
-          "confirmedAt": "2026-10-13T11:39:07.431Z",
+          "confirmedAt": "2026-10-13T12:06:06.339Z",
           "lifecycle": "superseded"
         },
         {
           "key": "business",
           "value": "서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인·팝업으로 판매 대상: 전통주를…",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:07.431Z",
+          "confirmedAt": "2026-10-13T12:06:06.339Z",
           "lifecycle": "current"
         },
         {
           "key": "customer",
           "value": "이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:07.431Z",
+          "confirmedAt": "2026-10-13T12:06:06.339Z",
           "lifecycle": "current"
         },
         {
           "key": "problem",
           "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:07.431Z",
+          "confirmedAt": "2026-10-13T12:06:06.339Z",
           "lifecycle": "current"
         },
         {
           "key": "market",
           "value": "지금 가장 크게 해결하려는 불편은 「양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다」입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:07.431Z",
+          "confirmedAt": "2026-10-13T12:06:06.339Z",
           "lifecycle": "current"
         },
         {
           "key": "buyer",
           "value": "쓰는 사람이 직접 낸다",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:07.431Z",
+          "confirmedAt": "2026-10-13T12:06:06.339Z",
           "lifecycle": "superseded"
         },
         {
           "key": "buyer",
           "value": "쓰는 사람이 직접 낸다",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:07.431Z",
+          "confirmedAt": "2026-10-13T12:06:06.339Z",
           "lifecycle": "current"
         }
       ],
@@ -4270,14 +4254,14 @@
       "reached": true,
       "asked": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
       "snap": {
-        "projectId": "5d0adfb2-4714-4b63-b15d-49cf5a62fd3b",
+        "projectId": "fbec0706-5504-49d5-90ce-51e859bbe27e",
         "targetGap": "payer",
         "gapState": {
           "businessOneLiner": {
             "gapId": "businessOneLiner",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:39:26.934Z",
-            "sourceReviewId": "da1b6d39-2fdc-42a0-861a-4759dad33f2b",
+            "sourceTurnId": "2026-10-13T12:06:25.711Z",
+            "sourceReviewId": "5817277a-ccc4-4792-a965-8e315357a13b",
             "evidence": [
               {
                 "factKey": "business",
@@ -4286,14 +4270,14 @@
               }
             ],
             "confidence": "medium",
-            "lastUpdated": "2026-10-13T11:39:26.934Z",
+            "lastUpdated": "2026-10-13T12:06:25.712Z",
             "rationale": "Prior turn CLOSED — preserved in review."
           },
           "customerPersona": {
             "gapId": "customerPersona",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:39:26.934Z",
-            "sourceReviewId": "da1b6d39-2fdc-42a0-861a-4759dad33f2b",
+            "sourceTurnId": "2026-10-13T12:06:25.711Z",
+            "sourceReviewId": "5817277a-ccc4-4792-a965-8e315357a13b",
             "evidence": [
               {
                 "factKey": "customer",
@@ -4302,14 +4286,14 @@
               }
             ],
             "confidence": "medium",
-            "lastUpdated": "2026-10-13T11:39:26.934Z",
+            "lastUpdated": "2026-10-13T12:06:25.712Z",
             "rationale": "Prior turn CLOSED — preserved in review."
           },
           "problemJtbd": {
             "gapId": "problemJtbd",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:39:26.934Z",
-            "sourceReviewId": "da1b6d39-2fdc-42a0-861a-4759dad33f2b",
+            "sourceTurnId": "2026-10-13T12:06:25.711Z",
+            "sourceReviewId": "5817277a-ccc4-4792-a965-8e315357a13b",
             "evidence": [
               {
                 "factKey": "problem",
@@ -4318,7 +4302,7 @@
               }
             ],
             "confidence": "high",
-            "lastUpdated": "2026-10-13T11:39:26.934Z",
+            "lastUpdated": "2026-10-13T12:06:25.712Z",
             "rationale": "의미 라우팅: problem (primary=problem, signal≥10)"
           }
         },
@@ -4337,8 +4321,8 @@
             "problemJtbd"
           ],
           "drivenByReview": true,
-          "sourceAnswerId": "2026-10-13T11:39:26.934Z",
-          "sourceReviewId": "da1b6d39-2fdc-42a0-861a-4759dad33f2b",
+          "sourceAnswerId": "2026-10-13T12:06:25.711Z",
+          "sourceReviewId": "5817277a-ccc4-4792-a965-8e315357a13b",
           "reviewAction": "advance",
           "action": "advance",
           "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -4347,7 +4331,7 @@
         "lastTurn": {
           "issueId": "problem_definition",
           "answer": "지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다」입니다.",
-          "appliedAt": "2026-10-13T11:39:26.934Z",
+          "appliedAt": "2026-10-13T12:06:25.711Z",
           "semanticFactKey": "problem",
           "semanticFactKeys": [
             "problem"
@@ -4380,10 +4364,10 @@
           "expectedInformation": "해결하려는 핵심 불편·JTBD",
           "understandingDelta": "기존: 사업 한 줄: 서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영 · 문제 빈도·심각도: 메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다 · 변경: 핵심 문제: 메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다 → 지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같 · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
           "review": {
-            "reviewId": "da1b6d39-2fdc-42a0-861a-4759dad33f2b",
-            "turnId": "2026-10-13T11:39:26.934Z",
-            "sourceTurnId": "2026-10-13T11:39:26.934Z",
-            "createdAt": "2026-10-13T11:39:26.934Z",
+            "reviewId": "5817277a-ccc4-4792-a965-8e315357a13b",
+            "turnId": "2026-10-13T12:06:25.711Z",
+            "sourceTurnId": "2026-10-13T12:06:25.711Z",
+            "createdAt": "2026-10-13T12:06:25.712Z",
             "askedGapId": "problemJtbd",
             "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "askedIssueId": "problem_definition",
@@ -4443,28 +4427,28 @@
             "key": "business",
             "value": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상: 직원 20–80명 제조사…",
             "source": "document",
-            "confirmedAt": "2026-10-13T11:39:27.338Z",
+            "confirmedAt": "2026-10-13T12:06:26.116Z",
             "lifecycle": "superseded"
           },
           {
             "key": "business",
             "value": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상…",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:39:27.338Z",
+            "confirmedAt": "2026-10-13T12:06:26.116Z",
             "lifecycle": "current"
           },
           {
             "key": "customer",
             "value": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:39:27.338Z",
+            "confirmedAt": "2026-10-13T12:06:26.116Z",
             "lifecycle": "current"
           },
           {
             "key": "problem",
             "value": "지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다」입니다.",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:39:27.338Z",
+            "confirmedAt": "2026-10-13T12:06:26.116Z",
             "lifecycle": "current"
           }
         ],
@@ -4524,8 +4508,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:23.580Z",
-              "sourceReviewId": "e0971fcc-40bc-423f-9201-29e42bda8c51",
+              "sourceTurnId": "2026-10-13T12:06:22.358Z",
+              "sourceReviewId": "96d3ae9f-a6e5-429b-9bc5-451d6f07b606",
               "evidence": [
                 {
                   "factKey": "business",
@@ -4534,7 +4518,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:39:23.581Z",
+              "lastUpdated": "2026-10-13T12:06:22.358Z",
               "rationale": "약한 prior: asked issue → business"
             }
           },
@@ -4551,19 +4535,19 @@
               "businessOneLiner"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:39:23.580Z",
-            "sourceReviewId": "e0971fcc-40bc-423f-9201-29e42bda8c51",
+            "sourceAnswerId": "2026-10-13T12:06:22.358Z",
+            "sourceReviewId": "96d3ae9f-a6e5-429b-9bc5-451d6f07b606",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "FIX-10 P0-FIX-A-2 — judgment focus customer",
             "reason": "judgment-bound customer→customerPersona",
             "questionType": "open",
-            "confirmSourceTurnAppliedAt": "2026-10-13T11:39:23.580Z"
+            "confirmSourceTurnAppliedAt": "2026-10-13T12:06:22.358Z"
           },
           "lastTurn": {
             "issueId": "bm_design",
             "answer": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상…",
-            "appliedAt": "2026-10-13T11:39:23.580Z",
+            "appliedAt": "2026-10-13T12:06:22.358Z",
             "semanticFactKey": "business",
             "semanticFactKeys": [
               "business"
@@ -4596,10 +4580,10 @@
             "expectedInformation": "한 줄 사업 정의",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동 · 고객 페르소나: 직원 20–80명 제조사 영업관리자 · 핵심 문제: 메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다 · 신규: 사업 한 줄: 서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상… · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 고객 페르소나 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "e0971fcc-40bc-423f-9201-29e42bda8c51",
-              "turnId": "2026-10-13T11:39:23.580Z",
-              "sourceTurnId": "2026-10-13T11:39:23.580Z",
-              "createdAt": "2026-10-13T11:39:23.581Z",
+              "reviewId": "96d3ae9f-a6e5-429b-9bc5-451d6f07b606",
+              "turnId": "2026-10-13T12:06:22.358Z",
+              "sourceTurnId": "2026-10-13T12:06:22.358Z",
+              "createdAt": "2026-10-13T12:06:22.358Z",
               "askedGapId": "businessOneLiner",
               "askedQuestionText": "제가 이해한 사업은 「서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상…」입니다. 맞나요?",
               "askedIssueId": "bm_design",
@@ -4645,14 +4629,14 @@
               "key": "business",
               "value": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상: 직원 20–80명 제조사…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:39:23.985Z",
+              "confirmedAt": "2026-10-13T12:06:22.762Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:23.985Z",
+              "confirmedAt": "2026-10-13T12:06:22.762Z",
               "lifecycle": "current"
             }
           ],
@@ -4692,8 +4676,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:25.250Z",
-              "sourceReviewId": "048adb5d-1ce7-476f-a178-ebad70670d44",
+              "sourceTurnId": "2026-10-13T12:06:24.025Z",
+              "sourceReviewId": "ac1cc007-44b7-41f1-9ab6-760c21e095c3",
               "evidence": [
                 {
                   "factKey": "business",
@@ -4702,14 +4686,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:39:25.251Z",
+              "lastUpdated": "2026-10-13T12:06:24.026Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "customerPersona": {
               "gapId": "customerPersona",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:25.250Z",
-              "sourceReviewId": "048adb5d-1ce7-476f-a178-ebad70670d44",
+              "sourceTurnId": "2026-10-13T12:06:24.025Z",
+              "sourceReviewId": "ac1cc007-44b7-41f1-9ab6-760c21e095c3",
               "evidence": [
                 {
                   "factKey": "customer",
@@ -4718,7 +4702,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:39:25.251Z",
+              "lastUpdated": "2026-10-13T12:06:24.026Z",
               "rationale": "의미 라우팅: customer (primary=customer, signal≥10)"
             }
           },
@@ -4736,8 +4720,8 @@
               "customerPersona"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:39:25.250Z",
-            "sourceReviewId": "048adb5d-1ce7-476f-a178-ebad70670d44",
+            "sourceAnswerId": "2026-10-13T12:06:24.025Z",
+            "sourceReviewId": "ac1cc007-44b7-41f1-9ab6-760c21e095c3",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "FIX-10 P0-FIX-A-2 — judgment focus problem",
@@ -4747,7 +4731,7 @@
           "lastTurn": {
             "issueId": "customer_definition",
             "answer": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
-            "appliedAt": "2026-10-13T11:39:25.250Z",
+            "appliedAt": "2026-10-13T12:06:24.025Z",
             "semanticFactKey": "customer",
             "semanticFactKeys": [
               "customer"
@@ -4780,10 +4764,10 @@
             "expectedInformation": "가장 필요로 하는 구체 고객·페르소나",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동 · 핵심 문제: 메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다 · 문제 빈도·심각도: 메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다 · 변경: 고객 페르소나: 직원 20–80명 제조사 영업관리자 → 이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제 · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 핵심 문제 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "048adb5d-1ce7-476f-a178-ebad70670d44",
-              "turnId": "2026-10-13T11:39:25.250Z",
-              "sourceTurnId": "2026-10-13T11:39:25.250Z",
-              "createdAt": "2026-10-13T11:39:25.251Z",
+              "reviewId": "ac1cc007-44b7-41f1-9ab6-760c21e095c3",
+              "turnId": "2026-10-13T12:06:24.025Z",
+              "sourceTurnId": "2026-10-13T12:06:24.025Z",
+              "createdAt": "2026-10-13T12:06:24.026Z",
               "askedGapId": "customerPersona",
               "askedQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
               "askedIssueId": "customer_definition",
@@ -4836,21 +4820,21 @@
               "key": "business",
               "value": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상: 직원 20–80명 제조사…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:39:25.655Z",
+              "confirmedAt": "2026-10-13T12:06:24.429Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:25.655Z",
+              "confirmedAt": "2026-10-13T12:06:24.429Z",
               "lifecycle": "current"
             },
             {
               "key": "customer",
               "value": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:25.655Z",
+              "confirmedAt": "2026-10-13T12:06:24.429Z",
               "lifecycle": "current"
             }
           ],
@@ -4908,8 +4892,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:26.934Z",
-              "sourceReviewId": "da1b6d39-2fdc-42a0-861a-4759dad33f2b",
+              "sourceTurnId": "2026-10-13T12:06:25.711Z",
+              "sourceReviewId": "5817277a-ccc4-4792-a965-8e315357a13b",
               "evidence": [
                 {
                   "factKey": "business",
@@ -4918,14 +4902,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:39:26.934Z",
+              "lastUpdated": "2026-10-13T12:06:25.712Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "customerPersona": {
               "gapId": "customerPersona",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:26.934Z",
-              "sourceReviewId": "da1b6d39-2fdc-42a0-861a-4759dad33f2b",
+              "sourceTurnId": "2026-10-13T12:06:25.711Z",
+              "sourceReviewId": "5817277a-ccc4-4792-a965-8e315357a13b",
               "evidence": [
                 {
                   "factKey": "customer",
@@ -4934,14 +4918,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:39:26.934Z",
+              "lastUpdated": "2026-10-13T12:06:25.712Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "problemJtbd": {
               "gapId": "problemJtbd",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:26.934Z",
-              "sourceReviewId": "da1b6d39-2fdc-42a0-861a-4759dad33f2b",
+              "sourceTurnId": "2026-10-13T12:06:25.711Z",
+              "sourceReviewId": "5817277a-ccc4-4792-a965-8e315357a13b",
               "evidence": [
                 {
                   "factKey": "problem",
@@ -4950,7 +4934,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:39:26.934Z",
+              "lastUpdated": "2026-10-13T12:06:25.712Z",
               "rationale": "의미 라우팅: problem (primary=problem, signal≥10)"
             }
           },
@@ -4969,8 +4953,8 @@
               "problemJtbd"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:39:26.934Z",
-            "sourceReviewId": "da1b6d39-2fdc-42a0-861a-4759dad33f2b",
+            "sourceAnswerId": "2026-10-13T12:06:25.711Z",
+            "sourceReviewId": "5817277a-ccc4-4792-a965-8e315357a13b",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -4979,7 +4963,7 @@
           "lastTurn": {
             "issueId": "problem_definition",
             "answer": "지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다」입니다.",
-            "appliedAt": "2026-10-13T11:39:26.934Z",
+            "appliedAt": "2026-10-13T12:06:25.711Z",
             "semanticFactKey": "problem",
             "semanticFactKeys": [
               "problem"
@@ -5012,10 +4996,10 @@
             "expectedInformation": "해결하려는 핵심 불편·JTBD",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영 · 문제 빈도·심각도: 메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다 · 변경: 핵심 문제: 메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다 → 지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같 · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "da1b6d39-2fdc-42a0-861a-4759dad33f2b",
-              "turnId": "2026-10-13T11:39:26.934Z",
-              "sourceTurnId": "2026-10-13T11:39:26.934Z",
-              "createdAt": "2026-10-13T11:39:26.934Z",
+              "reviewId": "5817277a-ccc4-4792-a965-8e315357a13b",
+              "turnId": "2026-10-13T12:06:25.711Z",
+              "sourceTurnId": "2026-10-13T12:06:25.711Z",
+              "createdAt": "2026-10-13T12:06:25.712Z",
               "askedGapId": "problemJtbd",
               "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
               "askedIssueId": "problem_definition",
@@ -5075,28 +5059,28 @@
               "key": "business",
               "value": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상: 직원 20–80명 제조사…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:39:27.338Z",
+              "confirmedAt": "2026-10-13T12:06:26.116Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:27.338Z",
+              "confirmedAt": "2026-10-13T12:06:26.116Z",
               "lifecycle": "current"
             },
             {
               "key": "customer",
               "value": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:27.338Z",
+              "confirmedAt": "2026-10-13T12:06:26.116Z",
               "lifecycle": "current"
             },
             {
               "key": "problem",
               "value": "지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다」입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:27.338Z",
+              "confirmedAt": "2026-10-13T12:06:26.116Z",
               "lifecycle": "current"
             }
           ],
@@ -5173,8 +5157,8 @@
         "businessOneLiner": {
           "gapId": "businessOneLiner",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:28.594Z",
-          "sourceReviewId": "eacd360c-29c4-4fe1-966f-2aae5b1492d6",
+          "sourceTurnId": "2026-10-13T12:06:27.371Z",
+          "sourceReviewId": "247493ab-cb0e-47cb-b260-609a7030cd01",
           "evidence": [
             {
               "factKey": "business",
@@ -5183,14 +5167,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:39:28.594Z",
+          "lastUpdated": "2026-10-13T12:06:27.372Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "customerPersona": {
           "gapId": "customerPersona",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:28.594Z",
-          "sourceReviewId": "eacd360c-29c4-4fe1-966f-2aae5b1492d6",
+          "sourceTurnId": "2026-10-13T12:06:27.371Z",
+          "sourceReviewId": "247493ab-cb0e-47cb-b260-609a7030cd01",
           "evidence": [
             {
               "factKey": "customer",
@@ -5199,14 +5183,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:39:28.594Z",
+          "lastUpdated": "2026-10-13T12:06:27.372Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "problemJtbd": {
           "gapId": "problemJtbd",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:28.594Z",
-          "sourceReviewId": "eacd360c-29c4-4fe1-966f-2aae5b1492d6",
+          "sourceTurnId": "2026-10-13T12:06:27.371Z",
+          "sourceReviewId": "247493ab-cb0e-47cb-b260-609a7030cd01",
           "evidence": [
             {
               "factKey": "problem",
@@ -5215,14 +5199,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:39:28.594Z",
+          "lastUpdated": "2026-10-13T12:06:27.372Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "payer": {
           "gapId": "payer",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:28.594Z",
-          "sourceReviewId": "eacd360c-29c4-4fe1-966f-2aae5b1492d6",
+          "sourceTurnId": "2026-10-13T12:06:27.371Z",
+          "sourceReviewId": "247493ab-cb0e-47cb-b260-609a7030cd01",
           "evidence": [
             {
               "factKey": "buyer",
@@ -5231,7 +5215,7 @@
             }
           ],
           "confidence": "high",
-          "lastUpdated": "2026-10-13T11:39:28.594Z",
+          "lastUpdated": "2026-10-13T12:06:27.372Z",
           "rationale": "의미 라우팅: buyer (primary=buyer, signal≥12; asked-slot revenue 무시)"
         }
       },
@@ -5251,8 +5235,8 @@
           "payer"
         ],
         "drivenByReview": true,
-        "sourceAnswerId": "2026-10-13T11:39:28.594Z",
-        "sourceReviewId": "eacd360c-29c4-4fe1-966f-2aae5b1492d6",
+        "sourceAnswerId": "2026-10-13T12:06:27.371Z",
+        "sourceReviewId": "247493ab-cb0e-47cb-b260-609a7030cd01",
         "reviewAction": "advance",
         "action": "advance",
         "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -5261,7 +5245,7 @@
       "lastTurn": {
         "issueId": "bm_design",
         "answer": "서비스 비용은 매장·팀 관리자이 지불합니다.",
-        "appliedAt": "2026-10-13T11:39:28.594Z",
+        "appliedAt": "2026-10-13T12:06:27.371Z",
         "semanticFactKey": "buyer",
         "semanticFactKeys": [
           "buyer"
@@ -5294,10 +5278,10 @@
         "expectedInformation": "비용을 실제로 지불하는 주체",
         "understandingDelta": "기존: 사업 한 줄: 서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영 · 핵심 문제: 지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자 · 신규: 구매자: 서비스 비용은 매장·팀 관리자이 지불합니다. · 미확인: 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
         "review": {
-          "reviewId": "eacd360c-29c4-4fe1-966f-2aae5b1492d6",
-          "turnId": "2026-10-13T11:39:28.594Z",
-          "sourceTurnId": "2026-10-13T11:39:28.594Z",
-          "createdAt": "2026-10-13T11:39:28.594Z",
+          "reviewId": "247493ab-cb0e-47cb-b260-609a7030cd01",
+          "turnId": "2026-10-13T12:06:27.371Z",
+          "sourceTurnId": "2026-10-13T12:06:27.371Z",
+          "createdAt": "2026-10-13T12:06:27.372Z",
           "askedGapId": "payer",
           "askedQuestionText": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
           "askedIssueId": "bm_design",
@@ -5364,42 +5348,42 @@
           "key": "business",
           "value": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상: 직원 20–80명 제조사…",
           "source": "document",
-          "confirmedAt": "2026-10-13T11:39:28.998Z",
+          "confirmedAt": "2026-10-13T12:06:27.775Z",
           "lifecycle": "superseded"
         },
         {
           "key": "business",
           "value": "서비스: 중소 제조사의 견적·발주 메일을 읽어 엑셀 발주서를 자동으로 채우는 툴 대상…",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:28.998Z",
+          "confirmedAt": "2026-10-13T12:06:27.776Z",
           "lifecycle": "current"
         },
         {
           "key": "customer",
           "value": "이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:28.998Z",
+          "confirmedAt": "2026-10-13T12:06:27.776Z",
           "lifecycle": "current"
         },
         {
           "key": "problem",
           "value": "지금 가장 크게 해결하려는 불편은 「메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다」입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:28.998Z",
+          "confirmedAt": "2026-10-13T12:06:27.776Z",
           "lifecycle": "current"
         },
         {
           "key": "buyer",
           "value": "서비스 비용은 매장·팀 관리자이 지불합니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:28.998Z",
+          "confirmedAt": "2026-10-13T12:06:27.776Z",
           "lifecycle": "superseded"
         },
         {
           "key": "buyer",
           "value": "서비스 비용은 매장·팀 관리자이 지불합니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:28.998Z",
+          "confirmedAt": "2026-10-13T12:06:27.776Z",
           "lifecycle": "current"
         }
       ],
@@ -5464,14 +5448,14 @@
       "reached": true,
       "asked": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
       "snap": {
-        "projectId": "c2e46a08-4431-4966-9040-2accc76de47d",
+        "projectId": "aec482ab-45ac-469c-9e14-27f8c1ce76b4",
         "targetGap": "payer",
         "gapState": {
           "businessOneLiner": {
             "gapId": "businessOneLiner",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:39:47.920Z",
-            "sourceReviewId": "e364e844-dbd1-491d-bc4d-b3021640b780",
+            "sourceTurnId": "2026-10-13T12:06:47.805Z",
+            "sourceReviewId": "2a90bd98-2b3d-4cd0-a5bf-3a8a3ff04504",
             "evidence": [
               {
                 "factKey": "business",
@@ -5480,14 +5464,14 @@
               }
             ],
             "confidence": "medium",
-            "lastUpdated": "2026-10-13T11:39:47.921Z",
+            "lastUpdated": "2026-10-13T12:06:47.806Z",
             "rationale": "Prior turn CLOSED — preserved in review."
           },
           "customerPersona": {
             "gapId": "customerPersona",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:39:47.920Z",
-            "sourceReviewId": "e364e844-dbd1-491d-bc4d-b3021640b780",
+            "sourceTurnId": "2026-10-13T12:06:47.805Z",
+            "sourceReviewId": "2a90bd98-2b3d-4cd0-a5bf-3a8a3ff04504",
             "evidence": [
               {
                 "factKey": "customer",
@@ -5496,14 +5480,14 @@
               }
             ],
             "confidence": "medium",
-            "lastUpdated": "2026-10-13T11:39:47.921Z",
+            "lastUpdated": "2026-10-13T12:06:47.806Z",
             "rationale": "Prior turn CLOSED — preserved in review."
           },
           "problemJtbd": {
             "gapId": "problemJtbd",
             "completeness": "CLOSED",
-            "sourceTurnId": "2026-10-13T11:39:47.920Z",
-            "sourceReviewId": "e364e844-dbd1-491d-bc4d-b3021640b780",
+            "sourceTurnId": "2026-10-13T12:06:47.805Z",
+            "sourceReviewId": "2a90bd98-2b3d-4cd0-a5bf-3a8a3ff04504",
             "evidence": [
               {
                 "factKey": "problem",
@@ -5512,7 +5496,7 @@
               }
             ],
             "confidence": "high",
-            "lastUpdated": "2026-10-13T11:39:47.921Z",
+            "lastUpdated": "2026-10-13T12:06:47.806Z",
             "rationale": "의미 라우팅: problem (primary=problem, signal≥10)"
           }
         },
@@ -5531,8 +5515,8 @@
             "problemJtbd"
           ],
           "drivenByReview": true,
-          "sourceAnswerId": "2026-10-13T11:39:47.920Z",
-          "sourceReviewId": "e364e844-dbd1-491d-bc4d-b3021640b780",
+          "sourceAnswerId": "2026-10-13T12:06:47.805Z",
+          "sourceReviewId": "2a90bd98-2b3d-4cd0-a5bf-3a8a3ff04504",
           "reviewAction": "advance",
           "action": "advance",
           "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -5541,7 +5525,7 @@
         "lastTurn": {
           "issueId": "problem_definition",
           "answer": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
-          "appliedAt": "2026-10-13T11:39:47.920Z",
+          "appliedAt": "2026-10-13T12:06:47.805Z",
           "semanticFactKey": "problem",
           "semanticFactKeys": [
             "problem"
@@ -5574,10 +5558,10 @@
           "expectedInformation": "해결하려는 핵심 불편·JTBD",
           "understandingDelta": "기존: 사업 한 줄: 서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–3 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다. · 문제 빈도·심각도: 시중 단백질바는 맛없거나 비싸다 · 변경: 핵심 문제: 시중 단백질바는 맛없거나 비싸다 → 지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거 · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
           "review": {
-            "reviewId": "e364e844-dbd1-491d-bc4d-b3021640b780",
-            "turnId": "2026-10-13T11:39:47.920Z",
-            "sourceTurnId": "2026-10-13T11:39:47.920Z",
-            "createdAt": "2026-10-13T11:39:47.921Z",
+            "reviewId": "2a90bd98-2b3d-4cd0-a5bf-3a8a3ff04504",
+            "turnId": "2026-10-13T12:06:47.805Z",
+            "sourceTurnId": "2026-10-13T12:06:47.805Z",
+            "createdAt": "2026-10-13T12:06:47.806Z",
             "askedGapId": "problemJtbd",
             "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "askedIssueId": "problem_definition",
@@ -5637,28 +5621,28 @@
             "key": "business",
             "value": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단백질바는 맛없거나 비싸다 수익…",
             "source": "document",
-            "confirmedAt": "2026-10-13T11:39:48.327Z",
+            "confirmedAt": "2026-10-13T12:06:48.210Z",
             "lifecycle": "superseded"
           },
           {
             "key": "business",
             "value": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단…",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:39:48.327Z",
+            "confirmedAt": "2026-10-13T12:06:48.210Z",
             "lifecycle": "current"
           },
           {
             "key": "customer",
             "value": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:39:48.327Z",
+            "confirmedAt": "2026-10-13T12:06:48.210Z",
             "lifecycle": "current"
           },
           {
             "key": "problem",
             "value": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
             "source": "user_turn",
-            "confirmedAt": "2026-10-13T11:39:48.327Z",
+            "confirmedAt": "2026-10-13T12:06:48.210Z",
             "lifecycle": "current"
           }
         ],
@@ -5718,8 +5702,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:44.580Z",
-              "sourceReviewId": "f470605e-d433-4d81-af55-b16a9fa3f0d9",
+              "sourceTurnId": "2026-10-13T12:06:44.450Z",
+              "sourceReviewId": "712d3d24-4cc6-4ef9-862c-6945de7d926f",
               "evidence": [
                 {
                   "factKey": "business",
@@ -5728,7 +5712,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:39:44.581Z",
+              "lastUpdated": "2026-10-13T12:06:44.451Z",
               "rationale": "의미 라우팅: business (primary=business, signal≥10; asked-slot revenue 무시)"
             }
           },
@@ -5745,19 +5729,19 @@
               "businessOneLiner"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:39:44.580Z",
-            "sourceReviewId": "f470605e-d433-4d81-af55-b16a9fa3f0d9",
+            "sourceAnswerId": "2026-10-13T12:06:44.450Z",
+            "sourceReviewId": "712d3d24-4cc6-4ef9-862c-6945de7d926f",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "FIX-10 P0-FIX-A-2 — judgment focus customer",
             "reason": "judgment-bound customer→customerPersona",
             "questionType": "open",
-            "confirmSourceTurnAppliedAt": "2026-10-13T11:39:44.580Z"
+            "confirmSourceTurnAppliedAt": "2026-10-13T12:06:44.450Z"
           },
           "lastTurn": {
             "issueId": "bm_design",
             "answer": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단…",
-            "appliedAt": "2026-10-13T11:39:44.580Z",
+            "appliedAt": "2026-10-13T12:06:44.450Z",
             "semanticFactKey": "business",
             "semanticFactKeys": [
               "business"
@@ -5790,10 +5774,10 @@
             "expectedInformation": "한 줄 사업 정의",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–3 · 고객 페르소나: 운동하는 20–30대 · 핵심 문제: 시중 단백질바는 맛없거나 비싸다 · 신규: 사업 한 줄: 서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단… · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 고객 페르소나 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "f470605e-d433-4d81-af55-b16a9fa3f0d9",
-              "turnId": "2026-10-13T11:39:44.580Z",
-              "sourceTurnId": "2026-10-13T11:39:44.580Z",
-              "createdAt": "2026-10-13T11:39:44.581Z",
+              "reviewId": "712d3d24-4cc6-4ef9-862c-6945de7d926f",
+              "turnId": "2026-10-13T12:06:44.450Z",
+              "sourceTurnId": "2026-10-13T12:06:44.450Z",
+              "createdAt": "2026-10-13T12:06:44.451Z",
               "askedGapId": "businessOneLiner",
               "askedQuestionText": "제가 이해한 사업은 「서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단…」입니다. 맞나요?",
               "askedIssueId": "bm_design",
@@ -5839,14 +5823,14 @@
               "key": "business",
               "value": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단백질바는 맛없거나 비싸다 수익…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:39:44.984Z",
+              "confirmedAt": "2026-10-13T12:06:44.855Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:44.984Z",
+              "confirmedAt": "2026-10-13T12:06:44.855Z",
               "lifecycle": "current"
             }
           ],
@@ -5885,8 +5869,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:46.252Z",
-              "sourceReviewId": "584fa7e1-d1e1-4dc7-9bd4-a3de5d0b3989",
+              "sourceTurnId": "2026-10-13T12:06:46.137Z",
+              "sourceReviewId": "057bccad-8a49-4f58-9da0-1b67734e2bcd",
               "evidence": [
                 {
                   "factKey": "business",
@@ -5895,14 +5879,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:39:46.253Z",
+              "lastUpdated": "2026-10-13T12:06:46.138Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "customerPersona": {
               "gapId": "customerPersona",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:46.252Z",
-              "sourceReviewId": "584fa7e1-d1e1-4dc7-9bd4-a3de5d0b3989",
+              "sourceTurnId": "2026-10-13T12:06:46.137Z",
+              "sourceReviewId": "057bccad-8a49-4f58-9da0-1b67734e2bcd",
               "evidence": [
                 {
                   "factKey": "customer",
@@ -5911,7 +5895,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:39:46.253Z",
+              "lastUpdated": "2026-10-13T12:06:46.138Z",
               "rationale": "의미 라우팅: customer (primary=customer, signal≥10)"
             }
           },
@@ -5929,8 +5913,8 @@
               "customerPersona"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:39:46.252Z",
-            "sourceReviewId": "584fa7e1-d1e1-4dc7-9bd4-a3de5d0b3989",
+            "sourceAnswerId": "2026-10-13T12:06:46.137Z",
+            "sourceReviewId": "057bccad-8a49-4f58-9da0-1b67734e2bcd",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "FIX-10 P0-FIX-A-2 — judgment focus problem",
@@ -5940,7 +5924,7 @@
           "lastTurn": {
             "issueId": "customer_definition",
             "answer": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
-            "appliedAt": "2026-10-13T11:39:46.252Z",
+            "appliedAt": "2026-10-13T12:06:46.137Z",
             "semanticFactKey": "customer",
             "semanticFactKeys": [
               "customer"
@@ -5973,10 +5957,10 @@
             "expectedInformation": "가장 필요로 하는 구체 고객·페르소나",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–3 · 핵심 문제: 시중 단백질바는 맛없거나 비싸다 · 문제 빈도·심각도: 시중 단백질바는 맛없거나 비싸다 · 변경: 고객 페르소나: 운동하는 20–30대 → 이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대 · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 핵심 문제 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "584fa7e1-d1e1-4dc7-9bd4-a3de5d0b3989",
-              "turnId": "2026-10-13T11:39:46.252Z",
-              "sourceTurnId": "2026-10-13T11:39:46.252Z",
-              "createdAt": "2026-10-13T11:39:46.253Z",
+              "reviewId": "057bccad-8a49-4f58-9da0-1b67734e2bcd",
+              "turnId": "2026-10-13T12:06:46.137Z",
+              "sourceTurnId": "2026-10-13T12:06:46.137Z",
+              "createdAt": "2026-10-13T12:06:46.138Z",
               "askedGapId": "customerPersona",
               "askedQuestionText": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
               "askedIssueId": "customer_definition",
@@ -6029,21 +6013,21 @@
               "key": "business",
               "value": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단백질바는 맛없거나 비싸다 수익…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:39:46.656Z",
+              "confirmedAt": "2026-10-13T12:06:46.541Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:46.656Z",
+              "confirmedAt": "2026-10-13T12:06:46.541Z",
               "lifecycle": "current"
             },
             {
               "key": "customer",
               "value": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:46.656Z",
+              "confirmedAt": "2026-10-13T12:06:46.541Z",
               "lifecycle": "current"
             }
           ],
@@ -6103,8 +6087,8 @@
             "businessOneLiner": {
               "gapId": "businessOneLiner",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:47.920Z",
-              "sourceReviewId": "e364e844-dbd1-491d-bc4d-b3021640b780",
+              "sourceTurnId": "2026-10-13T12:06:47.805Z",
+              "sourceReviewId": "2a90bd98-2b3d-4cd0-a5bf-3a8a3ff04504",
               "evidence": [
                 {
                   "factKey": "business",
@@ -6113,14 +6097,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:39:47.921Z",
+              "lastUpdated": "2026-10-13T12:06:47.806Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "customerPersona": {
               "gapId": "customerPersona",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:47.920Z",
-              "sourceReviewId": "e364e844-dbd1-491d-bc4d-b3021640b780",
+              "sourceTurnId": "2026-10-13T12:06:47.805Z",
+              "sourceReviewId": "2a90bd98-2b3d-4cd0-a5bf-3a8a3ff04504",
               "evidence": [
                 {
                   "factKey": "customer",
@@ -6129,14 +6113,14 @@
                 }
               ],
               "confidence": "medium",
-              "lastUpdated": "2026-10-13T11:39:47.921Z",
+              "lastUpdated": "2026-10-13T12:06:47.806Z",
               "rationale": "Prior turn CLOSED — preserved in review."
             },
             "problemJtbd": {
               "gapId": "problemJtbd",
               "completeness": "CLOSED",
-              "sourceTurnId": "2026-10-13T11:39:47.920Z",
-              "sourceReviewId": "e364e844-dbd1-491d-bc4d-b3021640b780",
+              "sourceTurnId": "2026-10-13T12:06:47.805Z",
+              "sourceReviewId": "2a90bd98-2b3d-4cd0-a5bf-3a8a3ff04504",
               "evidence": [
                 {
                   "factKey": "problem",
@@ -6145,7 +6129,7 @@
                 }
               ],
               "confidence": "high",
-              "lastUpdated": "2026-10-13T11:39:47.921Z",
+              "lastUpdated": "2026-10-13T12:06:47.806Z",
               "rationale": "의미 라우팅: problem (primary=problem, signal≥10)"
             }
           },
@@ -6164,8 +6148,8 @@
               "problemJtbd"
             ],
             "drivenByReview": true,
-            "sourceAnswerId": "2026-10-13T11:39:47.920Z",
-            "sourceReviewId": "e364e844-dbd1-491d-bc4d-b3021640b780",
+            "sourceAnswerId": "2026-10-13T12:06:47.805Z",
+            "sourceReviewId": "2a90bd98-2b3d-4cd0-a5bf-3a8a3ff04504",
             "reviewAction": "advance",
             "action": "advance",
             "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -6174,7 +6158,7 @@
           "lastTurn": {
             "issueId": "problem_definition",
             "answer": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
-            "appliedAt": "2026-10-13T11:39:47.920Z",
+            "appliedAt": "2026-10-13T12:06:47.805Z",
             "semanticFactKey": "problem",
             "semanticFactKeys": [
               "problem"
@@ -6207,10 +6191,10 @@
             "expectedInformation": "해결하려는 핵심 불편·JTBD",
             "understandingDelta": "기존: 사업 한 줄: 서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–3 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다. · 문제 빈도·심각도: 시중 단백질바는 맛없거나 비싸다 · 변경: 핵심 문제: 시중 단백질바는 맛없거나 비싸다 → 지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거 · 미확인: 구매자, 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
             "review": {
-              "reviewId": "e364e844-dbd1-491d-bc4d-b3021640b780",
-              "turnId": "2026-10-13T11:39:47.920Z",
-              "sourceTurnId": "2026-10-13T11:39:47.920Z",
-              "createdAt": "2026-10-13T11:39:47.921Z",
+              "reviewId": "2a90bd98-2b3d-4cd0-a5bf-3a8a3ff04504",
+              "turnId": "2026-10-13T12:06:47.805Z",
+              "sourceTurnId": "2026-10-13T12:06:47.805Z",
+              "createdAt": "2026-10-13T12:06:47.806Z",
               "askedGapId": "problemJtbd",
               "askedQuestionText": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
               "askedIssueId": "problem_definition",
@@ -6270,28 +6254,28 @@
               "key": "business",
               "value": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단백질바는 맛없거나 비싸다 수익…",
               "source": "document",
-              "confirmedAt": "2026-10-13T11:39:48.327Z",
+              "confirmedAt": "2026-10-13T12:06:48.210Z",
               "lifecycle": "superseded"
             },
             {
               "key": "business",
               "value": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단…",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:48.327Z",
+              "confirmedAt": "2026-10-13T12:06:48.210Z",
               "lifecycle": "current"
             },
             {
               "key": "customer",
               "value": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:48.327Z",
+              "confirmedAt": "2026-10-13T12:06:48.210Z",
               "lifecycle": "current"
             },
             {
               "key": "problem",
               "value": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
               "source": "user_turn",
-              "confirmedAt": "2026-10-13T11:39:48.327Z",
+              "confirmedAt": "2026-10-13T12:06:48.210Z",
               "lifecycle": "current"
             }
           ],
@@ -6368,8 +6352,8 @@
         "businessOneLiner": {
           "gapId": "businessOneLiner",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:49.578Z",
-          "sourceReviewId": "00a0cec2-054b-43a9-9b78-97d06ab20fd3",
+          "sourceTurnId": "2026-10-13T12:06:49.466Z",
+          "sourceReviewId": "ef5c4826-b6e1-4b60-9c46-c7117a7bf899",
           "evidence": [
             {
               "factKey": "business",
@@ -6378,14 +6362,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:39:49.579Z",
+          "lastUpdated": "2026-10-13T12:06:49.466Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "customerPersona": {
           "gapId": "customerPersona",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:49.578Z",
-          "sourceReviewId": "00a0cec2-054b-43a9-9b78-97d06ab20fd3",
+          "sourceTurnId": "2026-10-13T12:06:49.466Z",
+          "sourceReviewId": "ef5c4826-b6e1-4b60-9c46-c7117a7bf899",
           "evidence": [
             {
               "factKey": "customer",
@@ -6394,14 +6378,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:39:49.579Z",
+          "lastUpdated": "2026-10-13T12:06:49.466Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "problemJtbd": {
           "gapId": "problemJtbd",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:49.578Z",
-          "sourceReviewId": "00a0cec2-054b-43a9-9b78-97d06ab20fd3",
+          "sourceTurnId": "2026-10-13T12:06:49.466Z",
+          "sourceReviewId": "ef5c4826-b6e1-4b60-9c46-c7117a7bf899",
           "evidence": [
             {
               "factKey": "problem",
@@ -6410,14 +6394,14 @@
             }
           ],
           "confidence": "medium",
-          "lastUpdated": "2026-10-13T11:39:49.579Z",
+          "lastUpdated": "2026-10-13T12:06:49.466Z",
           "rationale": "Prior turn CLOSED — preserved in review."
         },
         "payer": {
           "gapId": "payer",
           "completeness": "CLOSED",
-          "sourceTurnId": "2026-10-13T11:39:49.578Z",
-          "sourceReviewId": "00a0cec2-054b-43a9-9b78-97d06ab20fd3",
+          "sourceTurnId": "2026-10-13T12:06:49.466Z",
+          "sourceReviewId": "ef5c4826-b6e1-4b60-9c46-c7117a7bf899",
           "evidence": [
             {
               "factKey": "buyer",
@@ -6426,7 +6410,7 @@
             }
           ],
           "confidence": "high",
-          "lastUpdated": "2026-10-13T11:39:49.579Z",
+          "lastUpdated": "2026-10-13T12:06:49.466Z",
           "rationale": "약한 prior: asked issue → buyer"
         }
       },
@@ -6446,8 +6430,8 @@
           "payer"
         ],
         "drivenByReview": true,
-        "sourceAnswerId": "2026-10-13T11:39:49.578Z",
-        "sourceReviewId": "00a0cec2-054b-43a9-9b78-97d06ab20fd3",
+        "sourceAnswerId": "2026-10-13T12:06:49.466Z",
+        "sourceReviewId": "ef5c4826-b6e1-4b60-9c46-c7117a7bf899",
         "reviewAction": "advance",
         "action": "advance",
         "actionRationale": "답변에서 여러 항목이 확인되었습니다. 다음 주제로 넘어갑니다.",
@@ -6456,7 +6440,7 @@
       "lastTurn": {
         "issueId": "bm_design",
         "answer": "쓰는 사람이 직접 낸다",
-        "appliedAt": "2026-10-13T11:39:49.578Z",
+        "appliedAt": "2026-10-13T12:06:49.466Z",
         "semanticFactKey": "buyer",
         "semanticFactKeys": [
           "buyer"
@@ -6489,10 +6473,10 @@
         "expectedInformation": "비용을 실제로 지불하는 주체",
         "understandingDelta": "기존: 사업 한 줄: 서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–3 · 고객 페르소나: 이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다. · 핵심 문제: 지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸 · 신규: 구매자: 쓰는 사람이 직접 낸다 · 미확인: 대안/경쟁, 차별점, 검증 가능성, 솔루션 · 다음 공백: 대안/경쟁",
         "review": {
-          "reviewId": "00a0cec2-054b-43a9-9b78-97d06ab20fd3",
-          "turnId": "2026-10-13T11:39:49.578Z",
-          "sourceTurnId": "2026-10-13T11:39:49.578Z",
-          "createdAt": "2026-10-13T11:39:49.579Z",
+          "reviewId": "ef5c4826-b6e1-4b60-9c46-c7117a7bf899",
+          "turnId": "2026-10-13T12:06:49.466Z",
+          "sourceTurnId": "2026-10-13T12:06:49.466Z",
+          "createdAt": "2026-10-13T12:06:49.466Z",
           "askedGapId": "payer",
           "askedQuestionText": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
           "askedIssueId": "bm_design",
@@ -6559,42 +6543,28 @@
           "key": "business",
           "value": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단백질바는 맛없거나 비싸다 수익…",
           "source": "document",
-          "confirmedAt": "2026-10-13T11:39:49.983Z",
+          "confirmedAt": "2026-10-13T12:06:48.210Z",
           "lifecycle": "superseded"
         },
         {
           "key": "business",
           "value": "서비스: 단백질 쿠키를 자사몰에서 팝니다 대상: 운동하는 20–30대 문제: 시중 단…",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:49.983Z",
+          "confirmedAt": "2026-10-13T12:06:48.210Z",
           "lifecycle": "current"
         },
         {
           "key": "customer",
           "value": "이 서비스를 가장 필요로 하는 사람은 운동하는 20–30대입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:49.983Z",
+          "confirmedAt": "2026-10-13T12:06:48.210Z",
           "lifecycle": "current"
         },
         {
           "key": "problem",
           "value": "지금 가장 크게 해결하려는 불편은 「시중 단백질바는 맛없거나 비싸다」입니다.",
           "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:49.983Z",
-          "lifecycle": "current"
-        },
-        {
-          "key": "buyer",
-          "value": "쓰는 사람이 직접 낸다",
-          "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:49.983Z",
-          "lifecycle": "superseded"
-        },
-        {
-          "key": "buyer",
-          "value": "쓰는 사람이 직접 낸다",
-          "source": "user_turn",
-          "confirmedAt": "2026-10-13T11:39:49.983Z",
+          "confirmedAt": "2026-10-13T12:06:48.210Z",
           "lifecycle": "current"
         }
       ],

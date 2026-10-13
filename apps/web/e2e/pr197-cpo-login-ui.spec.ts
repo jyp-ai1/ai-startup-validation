@@ -403,7 +403,7 @@ test.describe('PR #197 CPO login UI', () => {
       path: 'QA magic-link → /ko/workspace create project → WorkspaceAiPmLoopPanel confirm/MCQ/기타+submitAnswer',
       login: 'qa-magic-link (authenticated workspace, not engine dump, not Google button)',
       production: 'NOT VERIFIED',
-      note: 'Run 2 — walk live asked gap; project-scoped session. Engine PASS ≠ UI PASS.',
+      note: 'Residual-risk verify after S4 CPO VERIFIED. Engine CPO VERIFIED kept. Do not merge.',
     },
   };
 
@@ -477,10 +477,46 @@ test.describe('PR #197 CPO login UI', () => {
       /대안|경쟁|지금은 어떻게|쿠팡|대신|비슷한 역할/.test(t7Next) ||
       s4t7.targetGap === 'alternativesCompetitors';
 
+    const t6Facts = s4t6.memoryFacts as Array<{ key?: string; lifecycle?: string; value?: string }>;
+    const t7Facts =
+      (s4t7.memoryFacts as Array<{ key?: string; lifecycle?: string; value?: string }>) ?? [];
+    const t6BuyerCurrent = t6Facts.filter((f) => f.key === 'buyer' && f.lifecycle === 'current');
+    const t6CustomerCurrent = t6Facts.filter((f) => f.key === 'customer' && f.lifecycle === 'current');
+    const t7BuyerCurrent = t7Facts.filter((f) => f.key === 'buyer' && f.lifecycle === 'current');
+    const t6PayerClosed = s4t6.gapState?.payer?.completeness === 'CLOSED';
+    const t6PayerEvidence = JSON.stringify(s4t6.gapState?.payer?.evidence ?? []);
+    const t7Options = (s4t7.optionLabels ?? []) as string[];
+    const t7HasOther = t7Options.some((l) => /기타/.test(l));
+    const t7HasCustomerCandidate = t7Options.some((l) => /20대|맞벌이|부모/.test(l));
+    const t6Surface = String(s4t6.nextQuestion ?? '');
+    const t6Decision = String(
+      (s4t6.lastDecision as { questionText?: string } | null)?.questionText ?? '',
+    );
+    const t7Asked = String(s4t7.askedQuestion ?? '');
+    const buyerUsedAsCurrentPayer =
+      t6BuyerCurrent.length > 0 &&
+      (t6PayerClosed || /20대|메인|아니라/.test(t6PayerEvidence));
+    const customerConfusedWithBuyer =
+      t6CustomerCurrent.some((f) => /아니라/.test(f.value ?? '')) ||
+      customerGapT6 === 'CLOSED' && leftoverConfirmed === false && promoted20s;
+
     evidence.S4 = {
       prep: s4prep,
       t6: s4t6,
       t7: s4t7,
+      residual: {
+        t6BuyerCurrent,
+        t6CustomerCurrent,
+        t7BuyerCurrent,
+        t6PayerClosed,
+        t6PayerEvidence,
+        t7Options,
+        t6Surface,
+        t6Decision,
+        t7Asked,
+        buyerUsedAsCurrentPayer,
+        customerConfusedWithBuyer,
+      },
       verdicts: [
         t6Landed
           ? verdict(
@@ -502,6 +538,30 @@ test.describe('PR #197 CPO login UI', () => {
               t7Current20s && t7NextIsAlt && !isOneLinerAsk(t7Next),
               `S4 T7 current20s=${t7Current20s} nextAlt=${t7NextIsAlt} next=${t7Next.slice(0, 80)}`,
             ),
+        t6Landed
+          ? verdict(
+              t6BuyerCurrent.length === 0 || !customerConfusedWithBuyer,
+              `T6 buyer created=${t6BuyerCurrent.length > 0} customerConfused=${customerConfusedWithBuyer} customerCurrent=${JSON.stringify(t6CustomerCurrent)}`,
+            )
+          : notVerified('T6 buyer isolation — input did not land'),
+        t6Landed
+          ? verdict(
+              !buyerUsedAsCurrentPayer,
+              `T6 buyer used as current payer=${buyerUsedAsCurrentPayer} buyerCurrent=${JSON.stringify(t6BuyerCurrent)} payerClosed=${t6PayerClosed}`,
+            )
+          : notVerified('T6 buyer-as-payer — input did not land'),
+        s4t6.contradictionVisible
+          ? notVerified('T7 options — T7 not executed')
+          : verdict(
+              t7HasOther && (s4t7.via === 'typed') && t7Current20s,
+              `T7 options fragments=${!t7HasCustomerCandidate} has기타=${t7HasOther} via=${s4t7.via} labels=${t7Options.join(' | ')}`,
+            ),
+        t6Landed
+          ? verdict(
+              /고객|누구/.test(t6Surface) && /고객|누구/.test(t6Decision || t7Asked),
+              `T6 surface=${t6Surface.slice(0, 60)} lastDecision=${t6Decision.slice(0, 60)} t7Asked=${t7Asked.slice(0, 60)}`,
+            )
+          : notVerified('surface vs lastDecision — T6 did not land'),
       ],
     };
 

@@ -14,6 +14,7 @@ import { buildBusinessUnderstanding } from '../build-business-understanding';
 import { buildConversationMemoryFromSources } from '../build-conversation-memory';
 import { getConflictFact, getFact } from '../conversation-memory';
 import { buildLivingUnderstandingState } from '../living-understanding-state';
+import { resolvePayerLabel } from '../resolve-payer-label';
 import {
   applyTypedAnswerThroughLoop,
   shouldRouteTypedAnswerThroughLoop,
@@ -262,5 +263,84 @@ describe('PR #197 login-UI S4 typed routing', () => {
     expect(loadAiPmLoopState('ui-s6').gapState?.gaps.payer?.completeness).toBe('CLOSED');
     expect(afterPayer.nextTargetGap).not.toBe('payer');
     expect(afterPayer.nextQuestionText ?? '').not.toMatch(/누구에게 무엇을 제공/);
+  });
+
+  it('T6 residual: buyer secondary Fact is isolated from customer and recorded as current buyer', () => {
+    reset('ui-s4-buyer', S4);
+    applyGap('ui-s4-buyer', S4, 'customerPersona', /아이|부모/);
+    const afterT6 = applyTypedAnswerThroughLoop({
+      projectId: 'ui-s4-buyer',
+      documentText: S4,
+      answer: T6,
+      askedGap: 'payer',
+      askedQuestionText: '이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?',
+      customerCompleteness: 'CLOSED',
+    });
+
+    const loop = loadAiPmLoopState('ui-s4-buyer');
+    const memory = memoryNow('ui-s4-buyer', S4);
+    const buyerFacts = memory.facts.filter((f) => f.key === 'buyer');
+    const customerFacts = memory.facts.filter((f) => f.key === 'customer');
+    const currentBuyer = getFact(memory, 'buyer');
+    const currentCustomer = getFact(memory, 'customer');
+    const payerLabel = resolvePayerLabel({ memory, turns: loop.turns });
+    const livingPayer = afterT6.livingAfter.claims.find((c) => c.fieldKey === 'payer');
+    const livingCustomer = afterT6.livingAfter.claims.find((c) => c.fieldKey === 'customerPersona');
+
+    expect(buyerFacts.length).toBeGreaterThan(0);
+    expect(currentCustomer).toBeNull();
+    expect(customerFacts.some((f) => f.lifecycle === 'current')).toBe(false);
+    expect(currentBuyer?.value ?? '').toMatch(/20대|메인/);
+    expect(payerLabel).toBe(currentBuyer?.value);
+    expect(loop.gapState?.gaps.payer?.completeness).toBe('CLOSED');
+    expect(livingCustomer?.status).toBe('contradiction');
+    expect(afterT6.judgmentAfter.dimensions.customer.summary).toMatch(/충돌|20대/);
+    expect(afterT6.judgmentAfter.dimensions.customer.summary).not.toBe(currentBuyer?.value);
+    expect(livingPayer?.value ?? '').toMatch(/20대|메인|아니라/);
+  });
+
+  it('T7 residual: reconfirm MCQ is document fragments plus 기타; surface and lastDecision both customer', () => {
+    reset('ui-s4-opts', S4);
+    applyGap('ui-s4-opts', S4, 'customerPersona', /아이|부모/);
+    const afterT6 = applyTypedAnswerThroughLoop({
+      projectId: 'ui-s4-opts',
+      documentText: S4,
+      answer: T6,
+      askedGap: 'payer',
+      askedQuestionText: '이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?',
+      customerCompleteness: 'CLOSED',
+    });
+
+    const loop = loadAiPmLoopState('ui-s4-opts');
+    const lastDecisionText = loop.lastDecision?.questionText ?? '';
+    const nextText = afterT6.nextQuestionText ?? '';
+    expect(afterT6.nextTargetGap).toBe('customerPersona');
+    expect(lastDecisionText).toMatch(/고객|누구/);
+    expect(nextText).toMatch(/고객|누구/);
+
+    const mcq = buildBusinessChoiceQuestion({
+      living: livingNow('ui-s4-opts', S4),
+      documentText: S4,
+      targetGap: 'customerPersona',
+    });
+    const specific = mcq.options.filter((o) => o.kind === 'specific').map((o) => o.label);
+    const hasOther = mcq.options.some((o) => o.kind === 'other');
+    const has20s = specific.some((l) => /20대/.test(l));
+    const hasParents = specific.some((l) => /맞벌이|부모/.test(l));
+    expect(hasOther).toBe(true);
+    expect(has20s || hasParents).toBe(false);
+
+    const afterT7 = applyTypedAnswerThroughLoop({
+      projectId: 'ui-s4-opts',
+      documentText: S4,
+      answer: T7,
+      askedGap: 'customerPersona',
+      askedQuestionText: nextText || lastDecisionText,
+      customerCompleteness: 'CONTRADICTED',
+    });
+    const memory = memoryNow('ui-s4-opts', S4);
+    expect(getFact(memory, 'customer')?.value).toMatch(/20대/);
+    expect(afterT7.nextTargetGap).not.toBe('customerPersona');
+    expect(afterT7.nextTargetGap).not.toBe('payer');
   });
 });
