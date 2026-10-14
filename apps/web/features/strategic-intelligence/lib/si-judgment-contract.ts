@@ -39,7 +39,7 @@ export {
 const STAGE_RANK: Record<SiStageId, number> = { S0: 0, S1: 1, S2: 2, S3: 3, S4: 4 };
 const CLASS_RANK: Record<JudgmentChangeClass, number> = { none: 0, annotation: 1, identity: 2, conflict: 3 };
 const SUPPLIED_TIE_KEYS = ['stage-delta', 'verdict-delta', 'fail-drops-stage', 'validation-over-question', 'critical-unknown'] as const;
-const DERIVED_TIE_KEYS = ['stage-delta', 'verdict-delta', 'fail-drops-stage', 'judgment-class', 'validation-over-question', 'critical-unknown'] as const;
+const DERIVED_TIE_KEYS = ['open-pair', 'stage-delta', 'verdict-delta', 'fail-drops-stage', 'judgment-class', 'validation-over-question', 'critical-unknown'] as const;
 
 export const CUSTOMER_STATEMENT = '반찬가게·꽃집 등 직접 배송 소상공인';
 export const PROBLEM_STATEMENT = '주문과 배송을 따로 관리해야 함';
@@ -167,6 +167,12 @@ function noteAsked(ledger: JudgmentLedger, decision: DecisionRecord): JudgmentLe
   return { ...ledger, askedQuestionHashes: [...ledger.askedQuestionHashes, hash] };
 }
 
+function noteAskedForAct(ledger: JudgmentLedger, decision: DecisionRecord, act: FounderAnswerAct): JudgmentLedger {
+  const target = act.targetHypothesisId ?? decision.hypothesisId;
+  if ((act.kind === 'payment_claim' || act.kind === 'absence_claim') && target !== decision.hypothesisId) return ledger;
+  return noteAsked(ledger, decision);
+}
+
 function nextCritical(ledger: JudgmentLedger): string {
   if (ledger.hypotheses['h-customer']?.outcome === 'conflict_unresolved') return 'h-customer';
   if (ledger.hypotheses['h-problem']?.outcome === 'conflict_unresolved') return 'h-problem';
@@ -205,7 +211,10 @@ function refreshNarrative(ledger: JudgmentLedger): JudgmentLedger {
   let whyFail = '';
 
   if (customer?.outcome === 'conflict_unresolved') {
-    judgment = `고객 문장이 충돌했다. 이전 문장은 「${customer.statement}」. 새 문장은 「${successor?.statement ?? ''}」. 해소 전까지 어느 쪽도 작업 기준이 아니다. 이전 고객과 문제의 짝은 철회되었다.`;
+    const pair = nextProblem?.statement?.trim()
+      ? `새 고객의 문제는 「${nextProblem.statement}」이다. 고객 충돌이 해소되기 전에는 단계 근거가 아니다.`
+      : '새 고객의 문제는 아직 없다.';
+    judgment = `고객 문장이 충돌했다. 이전 문장은 「${customer.statement}」. 새 문장은 「${successor?.statement ?? ''}」. 해소 전까지 어느 쪽도 작업 기준이 아니다. 이전 고객과 문제의 짝은 철회되었다. ${pair}`;
     whyPossible = '이전 고객 문장은 철회되었다.';
     whyFail = 'h-customer의 충돌이 해소되기 전에는 단계 근거가 아니다.';
   } else if (problem?.outcome === 'conflict_unresolved') {
@@ -514,7 +523,7 @@ export function applyFounderAnswer(ledger: JudgmentLedger, decision: DecisionRec
   else if (act.kind === 'reject') after = commitReject(ledger, target, act.proposition ?? '');
   else if (act.kind === 'payment_claim') after = commitWeakPayment(ledger, act.proposition);
   else after = commitAbsence(ledger, act.proposition);
-  after = noteAsked(after, decision);
+  after = noteAskedForAct(after, decision, act);
   const bindingIds = after.bindings.filter((item) => !beforeIds.has(item.id)).map((item) => item.id);
   return appliedResult(ledger, after, target, matches, bindingIds, null);
 }
@@ -760,6 +769,13 @@ function maxPreviewStage(item: DecisionCandidate): number {
   return Math.max(0, ...(item.previews ?? []).map((preview) => Math.abs(STAGE_RANK[preview.stageAfter] - STAGE_RANK[preview.stageBefore])));
 }
 
+function opensEmptyPair(ledger: JudgmentLedger, item: DecisionCandidate): number {
+  const nextProblem = ledger.hypotheses['h-problem-next'];
+  if (!ledger.pairBroken || !nextProblem || nextProblem.statement.trim() || nextProblem.alreadyKnown) return 0;
+  if (item.hypothesisId !== 'h-problem-next') return 0;
+  return (item.previews ?? []).some((preview) => preview.judgmentChanged) ? 1 : 0;
+}
+
 function derivedTuple(ledger: JudgmentLedger, item: DecisionCandidate): number[] {
   const previews = item.previews ?? [];
   const verdict = previews.some((preview) => preview.verdictChanged) ? 1 : 0;
@@ -767,7 +783,7 @@ function derivedTuple(ledger: JudgmentLedger, item: DecisionCandidate): number[]
   const klass = previews.reduce((max, preview) => Math.max(max, CLASS_RANK[preview.judgmentChangeClass]), 0);
   const validation = item.resolvableByQuestion ? 0 : 1;
   const critical = item.hypothesisId === ledger.criticalUnknownHypothesisId ? 1 : 0;
-  return [maxPreviewStage(item), verdict, drop, klass, validation, critical];
+  return [opensEmptyPair(ledger, item), maxPreviewStage(item), verdict, drop, klass, validation, critical];
 }
 
 function bestPreview(item: DecisionCandidate): PreviewBranchRecord | undefined {
@@ -787,7 +803,10 @@ function derivedReason(winner: DecisionCandidate, tieBreak: DecisionTieBreak): s
   if (tieBreak === 'stable-id') {
     return `키 1부터 5가 같다. hypothesisId 사전순으로 ${winner.hypothesisId}를 고른다. tieBreak는 stable-id다. 사업 근거가 아니다.`;
   }
-  if (winner.hypothesisId === 'h-problem-next') return `${winner.id}는 새 고객과 문제의 짝이 비어 있다. ${act} 분기의 ${stageText}.`;
+  if (winner.hypothesisId === 'h-problem-next') {
+    const judgmentText = best?.judgmentChanged ? '판단 문장이 달라진다' : '판단 문장은 그대로다';
+    return `${winner.id}는 새 고객과 문제의 짝이 비어 있다. ${act} 분기는 ${judgmentText}. ${stageText}.`;
+  }
   if (tieBreak === 'none') return `${winner.id}의 ${act} 분기가 ${stageText}.`;
   return `${winner.id}의 ${act} 분기가 ${stageText}. tieBreak는 ${tieBreak}다.`;
 }
@@ -812,7 +831,9 @@ function rankDerived(ledger: JudgmentLedger): DecisionRecord {
   const hasStage = judged.some((item) => maxPreviewStage(item) > 0);
   const staged: DecisionCandidate[] = [];
   for (const item of judged) {
-    if (hasStage && maxPreviewStage(item) === 0) eliminated.push({ candidateId: item.id, hypothesisId: item.hypothesisId, key: 'no-stage-branch' });
+    if (hasStage && maxPreviewStage(item) === 0 && opensEmptyPair(ledger, item) === 0) {
+      eliminated.push({ candidateId: item.id, hypothesisId: item.hypothesisId, key: 'no-stage-branch' });
+    }
     else staged.push(item);
   }
   if (staged.length === 0) throw new Error('selectNextAction found no candidate');

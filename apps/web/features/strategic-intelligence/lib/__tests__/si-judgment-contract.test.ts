@@ -239,7 +239,7 @@ describe('AT-03 payer text does not replace the customer', () => {
   });
 });
 
-describe('AT-04 revised customer keeps both statements and asks to resolve', () => {
+describe('AT-04 revised customer keeps both statements and asks the new problem', () => {
   it('does not ask the old problem and does not pick a winner inside replace', () => {
     const revised = replaceCustomer(confirmProblem(), '우리 고객은 물류본부다.');
     expect(revised.stageId).toBe('S0');
@@ -249,16 +249,27 @@ describe('AT-04 revised customer keeps both statements and asks to resolve', () 
     expect(revised.hypotheses['h-customer']?.statement).toBe(CUSTOMER_STATEMENT);
     expect(revised.hypotheses['h-customer-next']?.statement).toContain('물류본부');
     expect(revised.hypotheses['h-customer-next']?.evidenceClass).toBe('CLAIM');
+    expect(revised.hypotheses['h-problem-next']?.statement).toBe('');
+    expect(revised.hypotheses['h-problem-next']?.pairedCustomerId).toBe('h-customer-next');
     expect(revised.bindings.map((item) => item.id)).toEqual(expect.arrayContaining(['b-customer-doc']));
     expect(revised.conflicts.some((item) => item.hypothesisId === 'h-customer' && !item.resolved)).toBe(true);
 
     const decision = selectNextAction(revised);
     const choice = selected(decision);
-    expect(choice.hypothesisId).toBe('h-customer');
-    expect(choice.id).toContain('resolve');
+    expect(choice.hypothesisId).toBe('h-problem-next');
+    expect(choice.id).toBe('q-problem-next');
     expect(choice.prompt).toContain('물류본부');
-    expect(choice.prompt).toContain('작업 기준');
+    expect(choice.prompt).toContain('짝이 비어');
     expect(choice.prompt).not.toContain(PROBLEM_STATEMENT);
+    expect(decision.selectedId).not.toContain('resolve');
+    expect(decision.previews?.some((item) => item.act === 'resolve_retain_new')).toBe(true);
+    const affirm = previewOf(decision, 'q-problem-next', 'affirm');
+    expect(affirm.judgmentChanged).toBe(true);
+    expect(affirm.stageChanged).toBe(false);
+    expect(decision.priorityReason).toContain('q-problem-next');
+    expect(decision.priorityReason).toContain('판단 문장이 달라진다');
+    expect(decision.priorityReason).toContain('단계 변화는 없다');
+    expect(decision.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
     expect(decision.eliminated).toEqual(
       expect.arrayContaining([expect.objectContaining({ hypothesisId: 'h-problem', key: 'alreadyKnown' })]),
     );
@@ -275,7 +286,8 @@ describe('AT-05 old problem confirmation stays on the new pair', () => {
     expect(answered.hypotheses['h-problem']?.statement).toBe(PROBLEM_STATEMENT);
     expect(answered.hypotheses['h-customer']?.outcome).toBe('conflict_unresolved');
     const after = selectNextAction(answered);
-    expect(selected(after).id).toContain('resolve');
+    expect(selected(after).id).toBe('q-problem-next');
+    expect(selected(after).hypothesisId).toBe('h-problem-next');
     expect(selected(after).prompt).not.toContain(PROBLEM_STATEMENT);
     expect(after.priorityReason).toBe(before.priorityReason);
     expect(after.priorityReason).not.toContain(FORBIDDEN_PROBLEM_CHANGED);
@@ -786,16 +798,18 @@ describe('supplement B preview ranking', () => {
     expect(backToCustomer.hypothesisId).not.toBe('h-channel');
 
     const opened = replaceCustomer(createSeedLedger(), '다른 작업 기준 고객');
-    const resolveChoice = selectNextAction(opened);
-    assertHonestStageReason(resolveChoice);
-    expect(resolveChoice.selectedId).toContain('resolve');
-    expect(resolveChoice.priorityReason).toContain('단계 변화는 없다');
-    expect(resolveChoice.priorityReason).not.toContain('바꾼다');
-    expect(previewOf(resolveChoice, resolveChoice.selectedId, 'resolve_retain_new').judgmentChangeClass).toBe('conflict');
-    expect(previewOf(resolveChoice, resolveChoice.selectedId, 'resolve_retain_new').outcomeAfter).toBe('not_run');
-    expect(previewOf(resolveChoice, resolveChoice.selectedId, 'resolve_retain_new').stageChanged).toBe(false);
-    expect(previewOf(resolveChoice, resolveChoice.selectedId, 'resolve_retain_old').stageChanged).toBe(false);
-    expect(previewOf(resolveChoice, resolveChoice.selectedId, 'unknown').outcomeAfter).toBe('conflict_unresolved');
+    const pairChoice = selectNextAction(opened);
+    assertHonestStageReason(pairChoice);
+    expect(pairChoice.hypothesisId).toBe('h-problem-next');
+    expect(pairChoice.selectedId).toBe('q-problem-next');
+    expect(pairChoice.priorityReason).toContain('단계 변화는 없다');
+    expect(pairChoice.priorityReason).toContain('판단 문장이 달라진다');
+    expect(pairChoice.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
+    expect(previewOf(pairChoice, 'q-resolve-h-customer', 'resolve_retain_new').judgmentChangeClass).toBe('conflict');
+    expect(previewOf(pairChoice, 'q-resolve-h-customer', 'resolve_retain_new').outcomeAfter).toBe('not_run');
+    expect(previewOf(pairChoice, 'q-resolve-h-customer', 'resolve_retain_new').stageChanged).toBe(false);
+    expect(previewOf(pairChoice, 'q-resolve-h-customer', 'resolve_retain_old').stageChanged).toBe(false);
+    expect(previewOf(pairChoice, 'q-resolve-h-customer', 'unknown').outcomeAfter).toBe('conflict_unresolved');
   });
 });
 
@@ -844,5 +858,91 @@ describe('causal recovery fixtures', () => {
     expect(absent.judgment).toContain(ABSENCE_SENTENCE);
     expect(absent.hypotheses['h-problem']?.evidenceClass).not.toBe('FACT');
     expect(absent.hypotheses['h-market']?.evidenceClass).not.toBe('FACT');
+  });
+});
+
+describe('revise next action', () => {
+  it('asks the new problem for the revised customer and leaves conflict resolution as a separate act', () => {
+    const problem = '양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다';
+    const ledger = createProjectLedger({
+      customerStatement: '전통주를 선물·취미로 찾는 30–40대',
+      problemStatement: problem,
+      businessStatement: '전통주 브랜드',
+    });
+    const revised = answer(ledger, {
+      kind: 'replace',
+      targetHypothesisId: 'h-customer',
+      nextStatement: '이 브랜드를 가장 필요로 하는 사람은 혼자 마시는 20대입니다.',
+    });
+    expect(revised.hypotheses['h-customer']?.statement).toBe('전통주를 선물·취미로 찾는 30–40대');
+    expect(revised.hypotheses['h-customer']?.outcome).toBe('conflict_unresolved');
+    expect(revised.hypotheses['h-customer-next']?.evidenceClass).toBe('CLAIM');
+    expect(revised.hypotheses['h-customer-next']?.statement).toContain('혼자 마시는 20대');
+    expect(revised.hypotheses['h-problem']?.statement).toBe(problem);
+    expect(revised.hypotheses['h-problem-next']?.statement).toBe('');
+    expect(revised.hypotheses['h-problem-next']?.pairedCustomerId).toBe('h-customer-next');
+    expect(revised.bindings.map((item) => item.id)).toEqual(expect.arrayContaining(['b-customer-doc', 'b-problem-doc']));
+    expect(revised.judgment).toContain('전통주를 선물·취미로 찾는 30–40대');
+    expect(revised.judgment).toContain('혼자 마시는 20대');
+    expect(revised.judgment).toContain('새 고객의 문제는 아직 없다');
+
+    const decision = selectNextAction(revised);
+    assertHonestStageReason(decision);
+    expect(decision.hypothesisId).toBe('h-problem-next');
+    expect(decision.selectedId).toBe('q-problem-next');
+    expect(decision.prompt).toContain('혼자 마시는 20대');
+    expect(decision.prompt).not.toContain(problem);
+    const affirm = previewOf(decision, 'q-problem-next', 'affirm');
+    expect(affirm.hypothesisId).toBe('h-problem-next');
+    expect(affirm.judgmentChanged).toBe(true);
+    expect(affirm.stageChanged).toBe(false);
+    expect(affirm.judgmentAfter).toContain('혼자 마시는 20대');
+    expect(decision.priorityReason).toContain('q-problem-next');
+    expect(decision.priorityReason).toContain('판단 문장이 달라진다');
+    expect(decision.priorityReason).toContain('단계 변화는 없다');
+    expect(decision.previews?.some((item) => item.candidateId === 'q-resolve-h-customer' && item.act === 'resolve_retain_new')).toBe(true);
+    expect(revised.conflicts.some((item) => item.hypothesisId === 'h-customer' && !item.resolved)).toBe(true);
+  });
+});
+
+describe('payment next action', () => {
+  it('keeps the unjudged problem as the next question after a payment claim', () => {
+    const problem = '메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다';
+    const ledger = createProjectLedger({
+      customerStatement: '직원 20–80명 제조사 영업관리자',
+      problemStatement: problem,
+      businessStatement: '견적 자동화',
+    });
+    const customer = answer(ledger, {
+      kind: 'affirm',
+      targetHypothesisId: 'h-customer',
+      proposition: '이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.',
+    });
+    const asked = selectNextAction(customer);
+    expect(asked.hypothesisId).toBe('h-problem');
+    const paid = applyFounderAnswer(customer, asked, {
+      kind: 'payment_claim',
+      proposition: WEAK_PAYMENT_SENTENCE,
+      targetHypothesisId: 'h-business-model',
+    }).ledger;
+    expect(paid.hypotheses['h-customer']?.evidenceClass).toBe('CLAIM');
+    expect(paid.hypotheses['h-problem']?.evidenceClass).not.toBe('CLAIM');
+    expect(paid.judgment).toContain(WEAK_PAYMENT_SENTENCE);
+    expect(paid.stageId).toBe('S0');
+
+    const next = selectNextAction(paid);
+    assertHonestStageReason(next);
+    expect(next.hypothesisId).toBe('h-problem');
+    expect(next.selectedId).toBe('q-problem');
+    expect(next.prompt).toContain(problem);
+    expect(next.prompt).not.toContain('더 좁혀');
+    expect(next.selectedId).not.toBe('v-business-model');
+    const affirm = previewOf(next, 'q-problem', 'affirm');
+    expect(affirm.stageChanged).toBe(true);
+    expect(affirm.stageBefore).toBe('S0');
+    expect(affirm.stageAfter).toBe('S1');
+    expect(affirm.judgmentChanged).toBe(true);
+    expect(next.priorityReason).toContain('q-problem');
+    expect(next.priorityReason).toContain('단계를 S0에서 S1로 바꾼다');
   });
 });

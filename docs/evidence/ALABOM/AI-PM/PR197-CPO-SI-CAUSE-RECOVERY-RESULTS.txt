@@ -1,4 +1,6 @@
-PR #197 순수 SI 인과 복구 실행 기록. 화면 연결 없음. DB 없음. 모델 호출 없음. 병합 없음. Production 배포 없음. Production 잠금 0b465226.
+PR #197 순수 SI 인과 복구 2차 실행 기록. 화면 연결 없음. DB 없음. 모델 호출 없음. 병합 없음. Production 배포 없음. Production 잠금 0b465226.
+
+1차 실행 c78bd671 은 revise 의 선택을 q-resolve-h-customer 로 두고, 결제 뒤 다음 행동의 설계 문장 차이를 실패 건수에서 뺐다. 그 passed 30 은 이번 기록의 통과가 아니다. 아래 숫자는 두 불일치를 30행 단언에 넣은 뒤의 실행이다.
 
 이 파일의 숫자는 아래 명령의 출력이다. 설계 문서의 기대 문장을 통과로 세지 않는다.
 
@@ -6,20 +8,20 @@ PR #197 순수 SI 인과 복구 실행 기록. 화면 연결 없음. DB 없음. 
 pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts --reporter=verbose
 
 시각
-2026-10-14 08:55:54 UTC
+2026-10-14 09:04:29 UTC
 
 출력
 Test Files  2 passed (2)
-Tests  19 passed (19)
-Duration  512ms
-Start at  08:55:54
+Tests  21 passed (21)
+Duration  536ms
+Start at  09:04:29
 
 항목
 AT-01 passed. 고객·문제 확인 후 판단은 고정 문장이 아니고 단계 S1, judgment_deferred, reviewCompletion decision_ready. closeReview 는 closed_complete 가 아니다.
 AT-02 passed. 한 줄 요약은 passed 도 FACT 도 아니다.
 AT-03 passed. 지불자 문장이 고객 statement 를 바꾸지 않는다.
-AT-04 passed. replace 후 옛 고객 statement 유지, outcome conflict_unresolved, 후속 h-customer-next 는 CLAIM. 선택은 q-resolve-h-customer. 옛 문제 문장은 prompt 에 없다.
-AT-05 passed. 옛 문제 affirm 은 장부를 유지하고 선택은 해소 후보로 남는다.
+AT-04 passed. replace 후 옛 고객 statement 유지, outcome conflict_unresolved, 후속 h-customer-next 는 CLAIM, h-problem-next 는 빈 문장. 선택은 q-problem-next. prompt 에 물류본부가 있고 옛 문제 문장은 없다. replace 는 충돌을 해소하지 않는다.
+AT-05 passed. 옛 문제 affirm 은 장부를 유지하고 선택은 q-problem-next 로 남는다.
 AT-06 passed. 부재는 h-business-model CLAIM. 문제·시장은 FACT 가 아니다. 단계는 그대로다.
 AT-07 passed. 결제 3건은 CLAIM. 단계는 그대로다. 판단에 주체·금액·기록 문장이 있다.
 AT-08 passed. 문자 한 줄은 FACT, authenticityGuaranteed false, 귀속 unreviewed, outcome insufficient_record. S3 가 아니다.
@@ -53,55 +55,64 @@ v-business-model 의 payment_claim 은 S3 가 아니고, absence_claim 과 crite
 같은 spine 의 payment_claim 은 h-business-model CLAIM, 단계 유지, 판단에 결제 문장과 전통주와 가정이 있다. 다음은 h-customer.
 absence_claim 의 판단에 아직 실제 결제·사용 증거는 없습니다 가 있다. 문제와 시장은 FACT 가 아니다.
 
+독립 회귀
+revise next action passed. 전통주 spine 의 replace 후 옛 고객은 conflict_unresolved, 새 고객은 혼자 마시는 20대 CLAIM, 새 문제 statement 는 빈 문자열이고 pairedCustomerId 는 h-customer-next. 문서 binding 은 남는다. 선택은 q-problem-next. prompt 에 혼자 마시는 20대가 있고 양조장 문장은 없다. affirm 미리보기는 judgmentChanged true, stageChanged false. 이유에 판단 문장이 달라진다 와 단계 변화는 없다 가 있다. resolve_retain_new 미리보기는 후보에 남고 선택되지 않는다.
+payment next action passed. 제조사 고객 CLAIM 뒤 결제 주장을 넣으면 단계는 S0 이고 문제 evidenceClass 는 CLAIM 이 아니다. 선택은 q-problem. prompt 에 메일·엑셀 문장이 있고 더 좁혀 는 없다. 선택은 h-customer 도 v-business-model 도 아니다. affirm 미리보기는 S0 에서 S1 이고 이유가 그 문장과 같다.
+
 30행 회귀
 파일 docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-CAUSE-RECOVERY-REPLAY.json
 branchCount 30. passed 30. failed 0. failures 길이 0.
+revise 6행과 paymentYes 6행과 paymentNone 6행은 실패 건수에서 빼지 않았다. 단언이 어긋나면 failures 에 들어 테스트가 실패한다.
 각 행은 confirm 분기의 고객·문제·수익으로 createProjectLedger 한 뒤, 분기 id 와 appliesToGap 으로 행위를 만들어 applyFounderAnswer 에 넘겼다. 사업 문구 목록으로 가설을 고르지 않았다.
 세 열 단언이 어긋나면 failures 에 행과 열이 쌓이고 테스트가 실패한다. 길이 30 만으로는 통과하지 않는다. 화면 일치는 읽지 않았다. 30행 모두 screenMismatch 판단 불가.
 
 실행된 결정 턴. 열은 시나리오, 분기, 턴, 단계, 판정, 다음 가설, 선택 id.
 S1 confirm 2 S1 judgment_deferred h-business-model v-business-model
-S1 revise 0 S0 insufficient_basis h-customer q-resolve-h-customer
+S1 revise 0 S0 insufficient_basis h-problem-next q-problem-next
 S1 unknown 0 S0 insufficient_basis h-customer q-customer
 S1 paymentYes 1 S0 insufficient_basis h-problem q-problem
 S1 paymentNone 1 S0 insufficient_basis h-problem q-problem
 S2 confirm 2 S1 judgment_deferred h-business-model v-business-model
-S2 revise 0 S0 insufficient_basis h-customer q-resolve-h-customer
+S2 revise 0 S0 insufficient_basis h-problem-next q-problem-next
 S2 unknown 0 S0 insufficient_basis h-customer q-customer
 S2 paymentYes 1 S0 insufficient_basis h-problem q-problem
 S2 paymentNone 1 S0 insufficient_basis h-problem q-problem
 S3 confirm 2 S1 judgment_deferred h-business-model v-business-model
-S3 revise 0 S0 insufficient_basis h-customer q-resolve-h-customer
+S3 revise 0 S0 insufficient_basis h-problem-next q-problem-next
 S3 unknown 0 S0 insufficient_basis h-customer q-customer
 S3 paymentYes 1 S0 insufficient_basis h-problem q-problem
 S3 paymentNone 1 S0 insufficient_basis h-problem q-problem
 S4 confirm 2 S1 judgment_deferred h-business-model v-business-model
-S4 revise 0 S0 insufficient_basis h-customer q-resolve-h-customer
+S4 revise 0 S0 insufficient_basis h-problem-next q-problem-next
 S4 unknown 0 S0 insufficient_basis h-customer q-customer
 S4 paymentYes 1 S0 insufficient_basis h-problem q-problem
 S4 paymentNone 1 S0 insufficient_basis h-problem q-problem
 S5 confirm 2 S1 judgment_deferred h-business-model v-business-model
-S5 revise 0 S0 insufficient_basis h-customer q-resolve-h-customer
+S5 revise 0 S0 insufficient_basis h-problem-next q-problem-next
 S5 unknown 0 S0 insufficient_basis h-customer q-customer
 S5 paymentYes 1 S0 insufficient_basis h-problem q-problem
 S5 paymentNone 1 S0 insufficient_basis h-problem q-problem
 S6 confirm 2 S1 judgment_deferred h-business-model v-business-model
-S6 revise 0 S0 insufficient_basis h-customer q-resolve-h-customer
+S6 revise 0 S0 insufficient_basis h-problem-next q-problem-next
 S6 unknown 0 S0 insufficient_basis h-customer q-customer
 S6 paymentYes 1 S0 insufficient_basis h-problem q-problem
 S6 paymentNone 1 S0 insufficient_basis h-problem q-problem
 
 확인된 출력
 confirm. 고객 affirm 후 단계 S0, 다음은 그 시나리오의 문제. 문제 affirm 후 단계 S1, judgment_deferred, 판단에 두 statement. 지불자 affirm 후 다음은 h-business-model. h-channel 이 아니고 tieBreak 는 stable-id 가 아니다. S2 지불자 statement 는 쓰는 사람이 직접 낸다. S6 지불자 statement 는 집이 낸다. S2 판단에 반찬가게가 없다.
-revise. 옛 고객 statement 와 conflict_unresolved 유지. 새 문장은 h-customer-next CLAIM. h-problem-next statement 는 빈 문자열. 판단에 두 문장과 철회. 선택은 q-resolve-h-customer. prompt 에 옛 문제 문장이 없다. S6 판단은 맞벌이 가정 / 도우미 와 1인 가구 대학생 을 둘 다 말한다.
+revise. 옛 고객 statement 와 conflict_unresolved 유지. 새 문장은 h-customer-next CLAIM. h-problem-next statement 는 빈 문자열이고 pairedCustomerId 는 h-customer-next. 판단에 두 고객 문장, 철회, 새 고객의 문제는 아직 없다. 선택은 q-problem-next. 이유는 affirm 분기가 판단 문장을 바꾸고 단계 변화는 없다고 말한다. prompt 에 새 고객 문장이 있고 옛 문제 문장은 없다. S1 prompt 는 대기업 물류본부. S6 prompt 는 1인 가구 대학생. resolveConflict 는 호출되지 않는다.
 unknown. 첫 턴 고객 evidenceClass 는 ASSUMPTION. 판단에 아직 확인되지 않았다 와 그 고객 문장. 다음 질문 해시는 답 전과 다르다. 이후 고객 affirm 의 다음은 h-problem.
-paymentYes. weak-payment 는 h-business-model CLAIM. FACT 와 VALIDATED 없음. 단계는 답 전과 같다. 판단에 결제 문장, 주체·금액·기록, 그 고객 문장. 다음은 h-problem.
-paymentNone. binding id b-absence, h-business-model CLAIM. 문제·시장 FACT 아님. 판단에 아직 실제 결제·사용 증거는 없습니다. 단계는 답 전과 같다. 다음은 h-problem.
+paymentYes. weak-payment 는 h-business-model CLAIM. FACT 와 VALIDATED 없음. 단계는 S0. 판단에 결제 문장, 주체·금액·기록, 그 고객 문장. 다음은 q-problem. prompt 는 그 문제 문장이고 더 좁혀 가 없다. 이유는 q-problem 의 affirm 이 단계를 S0 에서 S1 로 바꾼다고 말한다. h-customer 와 v-business-model 은 선택되지 않는다.
+paymentNone. binding id b-absence, h-business-model CLAIM. 문제·시장 FACT 아님. 판단에 아직 실제 결제·사용 증거는 없습니다. 단계는 S0. 다음은 q-problem. 이유와 prompt 조건은 paymentYes 와 같다.
 
-설계 표와 다른 실행
-revise 의 다음은 h-problem-next 가 아니다. 보완 B 의 해소 후보다. 옛 문제는 묻지 않는다. 새 문제 가설은 비어 있다.
-paymentYes 와 paymentNone 의 다음은, 고객이 이미 CLAIM 이고 문제가 아직이면 h-problem 이다. 고객이 ASSUMPTION 인 고정 입력에서만 다음은 h-customer 다. 재생 원문의 결제 턴은 고객 확인 다음이다.
-이 두 차이는 실패 건수에 넣지 않았다. 단언은 보완 A·B 와 원인 설계의 조건부 다음 행동이다. 설계 표의 "다음: 새 문제" 와 "다음: 고객" 문장 그대로는 이 실행의 선택 id 가 아니다.
+불일치 A 기대와 실제
+기대. revise 다음 가설 h-problem-next, 선택 q-problem-next. 새 문제 statement 는 비어 있고 새 고객과 짝이다. 옛 binding 유지. 충돌은 미해소. 이유와 미리보기는 판단 문장 변화, 단계 변화 없음.
+실제. S1–S6 revise 턴 0 이 모두 그 기대와 같다. 실패 0.
+
+불일치 B 기대와 실제
+기대. 고객 CLAIM, 문제 미판정, 결제 또는 부재 응답 뒤 다음 가설 h-problem, 선택 q-problem. prompt 에 그 문제 문장. 더 좁혀 없음. 이유의 단계 변화는 affirm 미리보기의 S0 에서 S1 과 같다.
+실제. S1–S6 paymentYes 와 paymentNone 의 결제 턴이 모두 그 기대와 같다. 실패 0.
+고객이 아직 ASSUMPTION 인 고정 입력에서 결제 주장의 다음은 h-customer 다. 그 입력은 30행의 결제 턴이 아니다.
 
 남은 문
 전략 적합성을 이 테스트 통과로 승인하지 않는다.

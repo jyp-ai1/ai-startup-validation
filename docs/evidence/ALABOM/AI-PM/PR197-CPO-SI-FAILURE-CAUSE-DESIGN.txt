@@ -207,7 +207,7 @@ F5 입력. 전통주 spine. 고객이 아직 ASSUMPTION. 행위 payment_claim, p
 기대. h-business-model CLAIM absence. judgment 에 아직 실제 결제·사용 증거는 없습니다 가 있다. whyFail 만 채워지고 judgment 가 시드 문장인 출력은 실패다.
 
 30개 회귀 검증표
-공통 전제. 각 행은 createProjectLedger(그 시나리오 spine) 로 시작한다. 판정은 장부, 판단 문장, 다음 행동 세 열이 모두 맞을 때만 통과다. S1 revise 한 행의 통과로 표를 통과시키지 않는다. 이 표는 설계 기대다. 실행된 선택 id 는 결과 파일에 있다. revise 의 실행 선택은 이 표의 새 문제가 아니라 보완 B 의 해소 후보다.
+공통 전제. 각 행은 createProjectLedger(그 시나리오 spine) 로 시작한다. 판정은 장부, 판단 문장, 다음 행동 세 열이 모두 맞을 때만 통과다. S1 revise 한 행의 통과로 표를 통과시키지 않는다. 이 표는 설계 기대다. 2차 실행의 선택 id 는 결과 파일에 있다. revise 의 선택은 새 문제 가설이고, 충돌 해소는 별도 행위로 남는다. 고객이 CLAIM 이고 문제가 미판정이면 결제 응답 뒤의 선택은 그 문제다.
 
 열 정의
 장부: 대상 가설의 statement 와 evidenceClass 와 binding id 가 기대와 같다. 미반영이면 실패다.

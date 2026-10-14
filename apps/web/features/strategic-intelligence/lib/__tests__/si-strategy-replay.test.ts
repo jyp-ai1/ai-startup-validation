@@ -206,8 +206,19 @@ describe('pure SI cause recovery replay', () => {
           if (!first?.judgment.includes(spine.customer) || !first.judgment.includes(branch.turns[0]?.founderAnswer ?? '') || !first.judgment.includes('철회')) {
             fail('판단', first?.judgment ?? '');
           }
-          if (!first || !first.selectedId.includes('resolve') || first.prompt.includes(spine.problem)) fail('다음', `${first?.selectedId} ${first?.prompt}`);
-          if (turns.some((item) => item.prompt.includes(spine.problem))) fail('다음', 'old problem asked after replace');
+          if (ledger.hypotheses['h-problem-next']?.pairedCustomerId !== 'h-customer-next') fail('장부', 'new problem is not paired to the new customer');
+          if (!first || first.hypothesisId !== 'h-problem-next' || first.selectedId !== 'q-problem-next') {
+            fail('다음', `${first?.selectedId} ${first?.hypothesisId}`);
+          }
+          if (!first.prompt.includes(branch.turns[0]?.founderAnswer ?? '') || first.prompt.includes(spine.problem)) {
+            fail('다음', first.prompt);
+          }
+          if (!first.priorityReason.includes('q-problem-next') || !first.priorityReason.includes('판단 문장이 달라진다') || /단계를 .+에서 .+로 바꾼다/.test(first.priorityReason)) {
+            fail('다음', first.priorityReason);
+          }
+          if (turns.some((item) => item.hypothesisId !== 'h-problem-next' || item.prompt.includes(spine.problem))) {
+            fail('다음', 'revise left the new problem or asked the old problem');
+          }
         }
 
         if (branchId === 'unknown') {
@@ -227,7 +238,11 @@ describe('pure SI cause recovery replay', () => {
           if (!paid?.judgment.includes(branch.turns[1]?.founderAnswer ?? '') || !paid.judgment.includes('주체·금액·기록') || !paid.judgment.includes(spine.customer)) {
             fail('판단', paid?.judgment ?? '');
           }
-          if (paid?.hypothesisId !== 'h-problem') fail('다음', paid?.hypothesisId ?? '');
+          if (paid?.hypothesisId !== 'h-problem' || paid.selectedId !== 'q-problem' || !paid.prompt.includes(spine.problem) || paid.prompt.includes('더 좁혀')) {
+            fail('다음', `${paid?.selectedId} ${paid?.prompt}`);
+          }
+          if (!paid.priorityReason.includes('q-problem') || !paid.priorityReason.includes('단계를 S0에서 S1로 바꾼다')) fail('다음', paid.priorityReason);
+          if (paid.hypothesisId === 'h-customer' || paid.selectedId === 'v-business-model') fail('다음', 'repeated a known customer or the payment claim');
         }
 
         if (branchId === 'paymentNone') {
@@ -239,7 +254,11 @@ describe('pure SI cause recovery replay', () => {
           if (ledger.hypotheses['h-problem']?.evidenceClass === 'FACT' || ledger.hypotheses['h-market']?.evidenceClass === 'FACT') fail('장부', 'absence copied');
           if (!absent?.judgment.includes('아직 실제 결제·사용 증거는 없습니다')) fail('판단', absent?.judgment ?? '');
           if (absent?.stageId !== absent.stageBefore) fail('장부', `stage moved ${absent?.stageBefore} ${absent?.stageId}`);
-          if (absent?.hypothesisId !== 'h-problem') fail('다음', absent?.hypothesisId ?? '');
+          if (absent?.hypothesisId !== 'h-problem' || absent.selectedId !== 'q-problem' || !absent.prompt.includes(spine.problem) || absent.prompt.includes('더 좁혀')) {
+            fail('다음', `${absent?.selectedId} ${absent?.prompt}`);
+          }
+          if (!absent.priorityReason.includes('q-problem') || !absent.priorityReason.includes('단계를 S0에서 S1로 바꾼다')) fail('다음', absent.priorityReason);
+          if (absent.hypothesisId === 'h-customer' || absent.selectedId === 'v-business-model') fail('다음', 'repeated a known customer or the absence claim');
         }
 
         for (const item of turns) {
