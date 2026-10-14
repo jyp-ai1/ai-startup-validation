@@ -1810,3 +1810,114 @@ describe('section 10 reassess contracts', () => {
     writeFileSync(REASSESS_TRACE, JSON.stringify({ rows }, null, 2));
   });
 });
+
+const PLAN_TRANSITION_TRACE = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../../../../../docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-PLAN-TRANSITION.json',
+);
+
+function contractPlanStatus(uncertainties: ReadonlyArray<{ resolvableByQuestion: boolean }>): 'not_required' | 'proposed' {
+  return uncertainties.some((item) => !item.resolvableByQuestion) ? 'proposed' : 'not_required';
+}
+
+function walkToLiteralRows(): { row7: JudgmentLedger; row8: JudgmentLedger; factId: string } {
+  let ledger = createSeedLedger();
+  ledger = answer(ledger, { kind: 'affirm', targetHypothesisId: 'h-customer', proposition: CUSTOMER_CONFIRM });
+  ledger = answer(ledger, { kind: 'replace', targetHypothesisId: 'h-customer', nextStatement: '우리 고객은 대기업 물류본부다.' });
+  const asked = selectNextAction(ledger);
+  ledger = applyFounderAnswer(ledger, asked, { kind: 'unknown', targetHypothesisId: 'h-problem-next' }).ledger;
+  ledger = answer(ledger, { kind: 'affirm', targetHypothesisId: 'h-problem-next', proposition: '배차 기준이 현장에 없다' });
+  ledger = answer(ledger, { kind: 'payment_claim', proposition: WEAK_PAYMENT_SENTENCE, targetHypothesisId: 'h-business-model' });
+  ledger = answer(ledger, { kind: 'absence_claim', proposition: ABSENCE_SENTENCE, targetHypothesisId: 'h-business-model' });
+  const fact = bindLiteralFact(ledger, { hypothesisId: 'h-business-model', recordText: TAX_LINE, role: 'payment-literal' });
+  const row7 = fact.ledger;
+  const row8 = resolveConflict(row7, {
+    hypothesisId: 'h-business-model',
+    evidenceId: fact.binding.id,
+    reason: '문자 기록을 작업 기준으로 둔다',
+  });
+  return { row7, row8, factId: fact.binding.id };
+}
+
+function planRow(step: string, event: string, ledger: JudgmentLedger, factId: string) {
+  const fact = ledger.bindings.find((item) => item.id === factId);
+  const contractStatus = contractPlanStatus(ledger.uncertainties);
+  const external = ledger.uncertainties.filter((item) => !item.resolvableByQuestion).map((item) => item.id);
+  return {
+    step,
+    event,
+    uncertainties: ledger.uncertainties.map((item) => ({
+      id: item.id,
+      hypothesisId: item.hypothesisId,
+      resolvableByQuestion: item.resolvableByQuestion,
+      evidenceIds: item.evidenceIds,
+    })),
+    conflicts: ledger.conflicts.map((item) => ({
+      hypothesisId: item.hypothesisId,
+      leftId: item.leftId,
+      rightId: item.rightId,
+      resolved: item.resolved,
+    })),
+    attribution: fact?.projectAttribution ?? 'missing',
+    authenticityGuaranteed: fact?.authenticityGuaranteed ?? null,
+    modelOutcome: ledger.hypotheses['h-business-model']?.outcome ?? 'missing',
+    planStatus: ledger.validationPlan.status,
+    contractStatus,
+    evidenceNeeded: ledger.validationPlan.evidenceNeeded,
+    reviewCompletion: ledger.reviewCompletion,
+    externalUncertaintyIds: external,
+  };
+}
+
+describe('validation plan transition rows 7 and 8', () => {
+  it('keeps not_required for question-only uncertainties and proposes when attribution remains', () => {
+    const source = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../si-judgment-contract.ts'), 'utf8');
+    expect(source).not.toMatch(/status:\s*'executed'/);
+    const first = walkToLiteralRows();
+    const second = walkToLiteralRows();
+    const left = [planRow('7', 'bindLiteralFact payment-literal', first.row7, first.factId), planRow('8', 'resolveConflict chooses the literal fact', first.row8, first.factId)];
+    const right = [planRow('7', 'bindLiteralFact payment-literal', second.row7, second.factId), planRow('8', 'resolveConflict chooses the literal fact', second.row8, second.factId)];
+    expect(left).toEqual(right);
+
+    const row7 = left[0]!;
+    const row8 = left[1]!;
+    expect(row7.uncertainties.length).toBeGreaterThan(0);
+    expect(row7.uncertainties.every((item) => item.resolvableByQuestion)).toBe(true);
+    expect(row7.externalUncertaintyIds).toEqual([]);
+    expect(row7.planStatus).toBe('not_required');
+    expect(row7.planStatus).toBe(row7.contractStatus);
+    expect(row7.conflicts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ hypothesisId: 'h-customer', resolved: false }),
+        expect.objectContaining({ hypothesisId: 'h-business-model', resolved: false }),
+      ]),
+    );
+    expect(row7.attribution).toBe('unreviewed');
+    expect(row7.authenticityGuaranteed).toBe(false);
+    expect(row7.modelOutcome).toBe('conflict_unresolved');
+    expect(row7.modelOutcome).not.toBe('passed');
+    expect(row7.planStatus).not.toBe('executed');
+    expect(row7.reviewCompletion).not.toBe('closed_complete');
+    expect(row7.reviewCompletion).not.toBe(row7.planStatus);
+
+    expect(row8.externalUncertaintyIds).toContain('u-attribution');
+    expect(row8.planStatus).toBe('proposed');
+    expect(row8.planStatus).toBe(row8.contractStatus);
+    expect(row8.evidenceNeeded).toContain('귀속');
+    expect(row8.conflicts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ hypothesisId: 'h-customer', resolved: false }),
+        expect.objectContaining({ hypothesisId: 'h-business-model', resolved: true }),
+      ]),
+    );
+    expect(row8.attribution).toBe('unreviewed');
+    expect(row8.authenticityGuaranteed).toBe(false);
+    expect(row8.modelOutcome).toBe('insufficient_record');
+    expect(row8.modelOutcome).not.toBe('passed');
+    expect(row8.planStatus).not.toBe('executed');
+    expect(row8.reviewCompletion).not.toBe('closed_complete');
+    expect(row8.reviewCompletion).not.toBe(row8.planStatus);
+    expect(first.row8.bindings.some((item) => item.evidenceClass === 'VALIDATED')).toBe(false);
+    writeFileSync(PLAN_TRANSITION_TRACE, JSON.stringify({ rows: left }, null, 2));
+  });
+});

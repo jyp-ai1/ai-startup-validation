@@ -1,0 +1,90 @@
+PR #197 검증 계획 상태 전이 재실행 기록.
+
+이 파일은 2026-10-14 17:40:15 UTC 에 실행한 결과다. 엔진 코드는 바꾸지 않았다. 10.3의 문장을 이번 실행의 계약으로 읽었고, 그 읽기와 실제 상태가 다르면 실패로 남기도록 테스트를 추가했다. 실패는 없었다.
+
+작업 시작 시 HEAD: adf59e400155fd0cf4013d63250b1e07bb3cbe3a
+구현 커밋: abc670df38e5bce3db2b012fd7c67199e3aaac9c
+둘은 일치했다. abc670df 는 그 HEAD 의 부모다.
+Production 잠금 SHA: 0b465226
+브라우저를 열지 않았다. next lint 와 next build 는 실행하지 않았다. 병합과 배포는 하지 않았다.
+
+1. 상태 전이 표
+
+계약 출처는 재설계안 10.3이다. 구현 위치는 buildValidationPlan 과 sevenReady, syncCompletion 이다. validationPlan.status 를 쓰는 함수는 reassess 안의 buildValidationPlan 뿐이다.
+
+not_required
+진입: 재계산된 활성 불확실성 가운데 resolvableByQuestion 이 false 인 항목이 하나도 없다.
+유지: 다음 재계산에서도 그 조건이 같다.
+이탈: 재계산이 질문으로 닫히지 않는 불확실성을 하나 이상 만든다. 그 결과는 proposed 다.
+의미: 검증이 영원히 불필요하다는 뜻이 아니다. 미해결 불확실성이 없다는 뜻도 아니다. 지금 열린 불확실성은 질문이나 충돌 선택으로 닫히는 종류뿐이라는 뜻이다.
+이번 실행의 7행이 이 경우다. 불확실성은 세 개 열려 있다.
+
+proposed
+진입: 질문으로 닫히지 않는 불확실성이 하나 이상 있다. 계획은 그 목록의 첫 항목을 대상으로 삼고, evidenceNeeded, passIf, failIf, pendingWork 를 채운다. pendingWork 는 실행되지 않았다고 말한다.
+유지: 그런 불확실성이 남아 있다.
+이탈: 그런 불확실성이 모두 사라지면 not_required 로 돌아간다. executed 로는 가지 않는다.
+의미: 질문만으로는 생기지 않는 구체적 증거가 아직 필요하다. 8행의 대상은 문자 기록의 귀속 판단이다.
+8행 evidenceNeeded: 선택한 문자 기록이 이 사업의 거래인지에 대한 귀속 판단.
+
+executed
+진입 조건: 이 엔진에는 없다. si-judgment-contract.ts 에 status: 'executed' 대입이 없고, 이번 테스트가 그 부재를 확인했다.
+유지와 이탈: 엔진이 이 상태를 만들지 않으므로 해당하지 않는다.
+
+상태를 바꾸는 이벤트는 reassess 를 호출하는 입력이다. applyFounderAnswer, bindLiteralFact, resolveConflict, defineCriterion, judgeAttribution, judgeRequiredHypothesis, createProjectLedger 가 그 경로다. closeReview 는 reviewCompletion 만 쓰고 validationPlan 을 쓰지 않는다. sevenReady 는 validationPlan 을 읽지 않는다. decision_ready 가 계획을 만들거나 실행하지 않고, proposed 가 reviewCompletion 을 closed_complete 로 만들지 않는다.
+
+2. 7행과 8행
+
+같은 여정을 다시 걸었다. 0 시드, 1 고객 확인, 2 대기업 물류본부로 교체, 3 새 문제 unknown, 4 새 문제 affirm, 5 약한 결제, 6 부재, 7 bindLiteralFact, 8 resolveConflict 가 문자 FACT 를 선택. 원문은 PR197-CPO-SI-PLAN-TRANSITION.json 이다. 같은 입력을 두 번 실행했고 두 스냅샷은 같았다.
+
+7행 이벤트: bindLiteralFact payment-literal
+활성 불확실성: u-conflict-h-customer, u-payer, u-conflict-h-business-model. 셋 다 resolvableByQuestion true.
+충돌: h-customer 미해소. h-business-model 미해소. 왼쪽 b-absence, 오른쪽 b-fact-payment-literal-h-business-model.
+귀속: unreviewed. authenticityGuaranteed false.
+사업모델 outcome: conflict_unresolved.
+검증 계획: not_required. evidenceNeeded 빈 문자열.
+검토: decision_ready.
+질문으로 닫히지 않는 불확실성: 없음.
+
+8행 이벤트: resolveConflict, 이유 「문자 기록을 작업 기준으로 둔다」, 선택 근거는 문자 FACT.
+활성 불확실성: u-conflict-h-customer, u-payer, u-attribution. u-attribution 만 resolvableByQuestion false.
+충돌: h-customer 는 여전히 미해소. h-business-model 은 resolved true. 두 binding id 는 그대로다.
+귀속: unreviewed. authenticityGuaranteed false.
+사업모델 outcome: insufficient_record. passed 가 아니다.
+검증 계획: proposed. 대상 h-business-model. evidenceNeeded 는 귀속 판단.
+검토: decision_ready. 7행과 같다.
+질문으로 닫히지 않는 불확실성: u-attribution.
+
+7행에서 8행으로 바뀐 원인: 결제 충돌이 열려 있는 동안 listUncertainties 는 귀속 불확실성을 올리지 않는다. 조건이 문자 FACT 가 있고 귀속이 accepted 가 아니며 사업모델 충돌이 없을 것이다. 8행은 충돌 행만 닫는다. 귀속을 accepted 로 바꾸지 않는다. 그래서 u-conflict-h-business-model 이 빠지고 u-attribution 이 생긴다. 계획이 not_required 에서 proposed 로 바뀌는 이유는 이 새 불확실성이다. 해소 함수가 계획을 직접 쓰지 않는다.
+
+3. 계약 일치
+
+10.3과 일치한다. 7행은 질문으로 닫히지 않는 불확실성이 없어 not_required 다. 불확실성 목록은 비어 있지 않다. 8행은 u-attribution 이 질문으로 닫히지 않아 proposed 다. 그 제안은 귀속 판단이라는 구체적 작업을 가리킨다.
+
+핵심 구분도 이 스냅샷에서 유지됐다.
+충돌 해소는 귀속 승인이 아니다. 8행 귀속은 unreviewed 다.
+문자 기록은 사업모델 성공이 아니다. 7행 outcome 은 conflict_unresolved, 8행은 insufficient_record 다. VALIDATED binding 은 없다. 진위는 false 다.
+질문으로 닫을 수 있다는 사실과 사업 검증이 필요 없다는 사실은 같지 않다. 7행 not_required 는 전자만 말한다. 미해결 충돌 두 개와 지불자 미확인이 남아 있다.
+decision_ready 는 계획의 실행 완료가 아니다. 7행과 8행 모두 decision_ready 이고, 계획은 not_required 와 proposed 로 서로 다르다.
+엔진은 executed 를 기록하지 않는다.
+
+불일치는 없었다. 기대값을 실제값에 맞춰 기존 테스트를 고치지 않았다.
+
+4. 회귀
+
+명령: pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts --reporter=verbose
+시각: 2026-10-14 17:40:15 UTC
+결과: Test Files 2 passed, Tests 43 passed, Duration 646ms
+이전 42개와 30행 재생은 다시 통과했다. 추가된 테스트는 validation plan transition rows 7 and 8 하나다. 실패 이유는 빈 문자열이다.
+모델 호출은 이 명령의 AT-14 에서 chat 0, OpenAI HTTP 0 이다. 패킷 캡처는 하지 않았다.
+
+5. 구현하지 않은 계약 변경 제안
+
+이름 not_required 를 「사업 검증이 필요 없다」로 읽는 위험을 없애려면 동작 변경이 필요하다. 이번 작업에서는 구현하지 않는다.
+
+제안: 사업모델 충돌이 열려 있고 그 안의 문자 FACT 귀속이 accepted 가 아니면, 질문으로 어느 쪽을 고를 수 있어도 계획을 not_required 로 두지 않는다. 7행은 proposed 로 남고, 대상은 귀속 판단이다. 8행은 지금처럼 proposed 다.
+
+영향: buildValidationPlan 한 곳. 기존 42개 테스트는 7행의 계획 상태를 단언하지 않는다. 이번 새 테스트는 10.3 읽기를 잠그므로, 이 제안을 채택하면 그 테스트의 7행 기대만 승인된 문장으로 바꿔야 한다. UI, DB, 모델 호출은 영향이 없다.
+
+6. 미검증
+
+브라우저와 screenMismatch 판단 불가는 그대로다. next lint, next build, 병합, Production 배포는 하지 않았다. 이 기록은 엔진 재실행이지 화면 일치가 아니다.
