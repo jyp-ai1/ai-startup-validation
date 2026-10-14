@@ -1,0 +1,154 @@
+PR #197 UI·판단 엔진 통합 계약.
+
+이 파일은 구현 전 계약이다. 제품 코드와 테스트는 바꾸지 않았다. 이 계약이 구현 승인은 아니다.
+조사 시작 HEAD: 1366411ff2212c94e138f9867d7f80c8c34e2bb2
+설계 문서 HEAD: 8e0b48f84c5c03f1e4ed09261e95e608db1554f6
+이 계약을 쓰는 시점의 로컬 HEAD 는 설계 문서 HEAD 와 같았다.
+Production 잠금 SHA: 0b465226
+
+엔진 함수는 apps/web/features/strategic-intelligence/lib/si-judgment-contract.ts 의 현재 동작이다. 화면 연결은 아직 없다. 브라우저 문장은 아직 읽지 못했다.
+
+공통 실패 규칙. 입력이 아래 이벤트로 안전하게 분류되지 않으면 엔진을 호출하지 않는다. reassess 를 호출하지 않는다. 직전 JudgmentLedger 와 직전 DecisionRecord.prompt 를 유지한다. 다른 이벤트로 추측하지 않는다. 창업자 문장을 FACT 나 VALIDATED 로 올리지 않는다. binding() 은 VALIDATED 를 거절한다.
+
+1. 이벤트 계약
+
+고객 확인.
+이벤트: FounderAnswerAct kind affirm. 대상은 h-customer. proposition 은 지금 고객 문장을 확인한다는 뜻일 때만.
+ledger: commitAffirm 이 고객 evidenceClass 를 CLAIM, alreadyKnown 를 true 로 두고 CLAIM binding 을 추가한다. 기존 문서 binding 은 삭제하지 않는다. FACT 가 아니다.
+reassess: commitAffirm 끝의 applyStage 가 호출한다. applyStage 는 reassess 다.
+실패: 확인인지 변경인지 나누어지지 않으면 호출하지 않는다. 문장이 비고 기존 고객 문장도 없으면 호출하지 않는다.
+
+고객 변경.
+이벤트: kind replace. 대상은 h-customer. nextStatement 는 다른 고객 유형이다.
+ledger: 이전 고객 문장은 남고 outcome 은 conflict_unresolved, evidenceClass 는 CONFLICT 다. h-customer-next 는 새 문장의 CLAIM 이다. h-problem 은 preservedHypothesisIds 에 들어가 활성 평가에서 빠진다. 문장과 binding 은 삭제되지 않는다. h-problem-next 는 빈 문장, ASSUMPTION, outcome not_run 이다. pairBroken 은 true 다. 충돌 행은 resolved false 다.
+reassess: commitReplace 끝의 applyStage.
+실패: nextStatement 가 비면 호출하지 않는다. 현재 엔진은 빈 문자열도 받지만, 연결 어댑터는 호출 전에 거절한다. 엔진 전이 자체는 이 계약에서 바꾸지 않는다.
+
+새 고객의 문제 입력.
+이벤트: kind affirm. 대상은 h-problem-next. proposition 은 새 문제 문장이다. 대상은 h-problem 이 아니다.
+ledger: 새 문제 칸이 CLAIM 이 된다. 이전 h-problem 문장과 binding 은 유지된다. 이전 문제에 대한 affirm 은, pairBroken 이고 그 문제가 alreadyKnown 이면 엔진이 상태를 바꾸지 않고 이유 「옛 문제는 새 고객의 짝이 아니다」만 남긴다.
+reassess: 새 문제 affirm 은 commitAffirm 의 applyStage. 거절된 옛 문제 affirm 은 reassess 로 가설을 다시 계산하지 않는다.
+실패: 새 문제 문장으로 분류되지 않으면 호출하지 않는다. 옛 문제로 돌려 분류하지 않는다.
+
+모름·불확실 응답.
+이벤트: kind unknown. 대상은 화면에 물어 둔 그 가설뿐이다.
+ledger: unknownCounts 가 1 늘고 pendingUnknownId 가 그 가설이 된다. 질문 해시가 askedQuestionHashes 에 들어간다. evidenceClass 와 outcome 은 이 이벤트가 바꾸지 않는다. FACT 가 생기지 않는다.
+reassess: commitUnknown 의 applyStage.
+다음 선택: selectNextAction 은 그 해시가 있는 후보를 뺀다. 같은 prompt 가 다시 만들어지면 askedPrompt 가 「더 좁혀 근거가 될 기록의 범위를 지정해 달라.」를 붙인다. 같은 가설의 unknownCounts 가 2 이상이면 그 가설은 후보에서 빠진다.
+실패: 모름이 아니면 unknown 으로 두지 않는다. 다른 가설로 대상을 옮기지 않는다.
+
+결제 주장.
+이벤트: kind payment_claim. proposition 은 주체·금액·문자 기록이 없는 결제 문장이다.
+ledger: h-business-model 에 weak-payment CLAIM binding. outcome 은 not_run. 단계 값은 이벤트 전 값으로 다시 고정된다.
+reassess: applyStage 다음, freezeStage true 인 reassess.
+실패: 문장이 비거나, 문자 기록으로 보여 결제 주장과 문자 기록을 나누지 못하면 호출하지 않는다.
+
+결제 부재 주장.
+이벤트: kind absence_claim. proposition 은 결제·사용 증거가 없다는 문장이다.
+ledger: classReason absence 인 CLAIM binding. 문자 FACT 가 없으면 h-business-model evidenceClass 는 CLAIM 이다. 문자 FACT 가 이미 있으면 contradictIfNeeded 가 충돌을 연다.
+reassess: commitAbsence 의 applyStage, 충돌이 열리면 applyConflict 의 applyStage.
+실패: 부재인지 문자 기록인지 나누어지지 않으면 호출하지 않는다.
+
+문자 기록 추가.
+이벤트: bindLiteralFact. hypothesisId 는 h-business-model. role 은 payment-literal. recordText 는 주체와 금액이 있는 문자다.
+ledger: evidenceClass FACT, authenticityGuaranteed false, projectAttribution unreviewed. 부재 CLAIM 이 있으면 사업모델 충돌이 열리고 outcome 은 conflict_unresolved 다. 귀속을 accepted 로 바꾸지 않는다. passed 로 두지 않는다.
+reassess: storeOutcome 과, 충돌이 생기면 applyConflict 가 각각 applyStage 를 호출한다.
+실패: recordText 가 비거나 문자 기록으로 분류되지 않으면 호출하지 않는다. 현재 엔진은 빈 문자열도 binding 할 수 있으나 어댑터는 호출 전에 거절한다.
+
+충돌 해소.
+이벤트: resolveConflict. hypothesisId, evidenceId, reason. reason 은 비어 있으면 안 된다. evidenceId 는 그 가설의 기존 binding 이다.
+ledger: 그 가설의 충돌 행은 resolved true. 고른 binding 의 문장이 작업 기준이 된다. 고른 쪽이 FACT 이면 evidenceClass 는 FACT, 아니면 CLAIM 이다. outcome 은 not_run 으로 둔 뒤 evaluateHypothesis 를 적용하고, passed 가 나오면 insufficient_record 로 내린다. 귀속은 그대로다. 진위는 false 다. VALIDATED binding 을 만들지 않는다. 고객에서 새 쪽을 고르면 h-problem 은 계속 보존되고 activePairCustomerId 는 h-customer-next, pairBroken 은 false 다. 이전 쪽을 고르면 h-problem 은 보존 목록에서 빠지고 h-problem-next 가 보존된다.
+reassess: 함수 끝의 reassess. freezeStage 가 아니다. 해소 함수가 단계를 직접 성공으로 쓰지 않는다.
+실패: reason 이 비거나 evidenceId 가 없으면 엔진은 throw 한다. 어댑터는 그 호출을 하지 않고 직전 ledger 와 prompt 를 유지한다. throw 를 새 판단 문장으로 보여 주지 않는다.
+
+검증 기준 정의.
+이벤트: defineCriterion. hypothesisId, measure, passIf, failIf, requiredLiteralScopes. passIf 와 failIf 는 둘 다 비어 있으면 안 된다.
+ledger: 그 가설의 criterion 이 교체된다. 저장된 단계와 reviewCompletion 은 쓰기 전 값으로 남는다. 기준을 썼다는 이유만으로 단계가 오르지 않는다. executed 를 쓰지 않는다.
+reassess: freezeStage true. 그 다음 reviewCompletion 을 호출 전 값으로 되돌린다.
+실패: passIf 또는 failIf 가 비면 호출하지 않는다.
+
+2. 공개 뷰
+
+타입 이름은 WorkspaceJudgmentView 다. 구현 파일이 아니다.
+
+judgmentText: string. 출처는 그 시점 ledger.judgment 의 의미다. 표시 함수는 두 번째 판단을 만들지 않는다. 가설 id, binding id, 불확실성 id, 후보 id, targetGap, tieBreak, 순위 score 를 빼기만 한다. 빼는 일이 고객 문장, 문제 문장, CLAIM 인지, 충돌이 열렸는지, 귀속이 검토 전인지, 성과가 미확인인지 중 하나를 지우면 그 뷰는 실패다.
+nextActionText: string. 출처는 같은 ledger 로 계산한 DecisionRecord.prompt 다. 위와 같은 내부 토큰만 뺀다. 선택을 바꾸지 않는다. priorityReason 은 뷰에 넣지 않는다.
+validationPlanStatus: 'not_required' 또는 'proposed'. 엔진이 executed 를 대입하지 않는다. 공개 뷰는 executed 를 방출하지 않는다. ledger 에 executed 가 보이면 뷰를 만들지 않고 직전 뷰를 유지한다.
+validationPlanText: string. status 가 not_required 이면 빈 문자열이다. proposed 일 때만 ledger.validationPlan.evidenceNeeded 와 pendingWork 를 잇는다. pendingWork 의 의미는 계획이 제안일 뿐 실행 기록이 아니라는 것이다.
+reviewCompletion: 'in_progress' | 'decision_ready' | 'closed_incomplete' | 'closed_complete'. decision_ready 의 화면 뜻은 판단 필드를 보여 줄 수 있다는 것이다. 사업 검증이 끝났다는 뜻이 아니다. 화면은 이 값을 「검증 완료」로 번역하지 않는다. closeReview 만이 closed_complete 를 쓸 수 있고, 표시 경로가 closeReview 를 대신 호출하지 않는다.
+
+이 다섯 필드 밖에 가설 id, 불확실성 id, score, targetGap, tieBreak 를 두지 않는다.
+
+3. 화면 책임과 노출
+
+판단 문장의 유일한 출처: WorkspaceJudgmentView.judgmentText.
+다음 행동 문장의 유일한 출처: WorkspaceJudgmentView.nextActionText.
+문서 분석기 analyzeStrategicIntelligence: 이 워크스페이스의 판단 문장과 다음 행동을 계산하지 않는다. 화면에 그 반환 문장을 그리지 않는다.
+gap 랭킹 resolveNextQuestionDecision 과 siInsight 점수: 다음 행동 문장을 고르거나 덮어쓰지 않는다.
+SiReviewSurface: 분석기 판단을 렌더하지 않는다. 마운트한다면 judgmentText 만 보여 준다.
+SiAiPmBindSurface: presentSiAiPmQuestion 의 질문을 렌더하지 않는다. 마운트한다면 nextActionText 만 보여 준다.
+WorkspaceAiPmJudgmentView: CeoJudgmentState 의 oneLiner, conclusion, nextCheck 를 판단 문장이나 다음 행동으로 렌더하지 않는다. ledger 뷰가 있는 동안 그 세 문자열은 숨긴다.
+isPostReview: 지금 코드는 reviewCount 가 1 이상이거나 리뷰가 끝났거나 결과를 요청하면 S.I. 블록을 렌더하지 않는다. 그 조건으로 ledger 뷰를 숨기지 않는다. 리뷰 전후 모두 judgmentText 와 nextActionText 가 보인다.
+중복 방지: 워크스페이스에 판단 문장 노드와 다음 행동 노드가 각각 하나다. 루프 입력칸은 그 nextActionText 에 대한 답만 받고, 답을 이벤트 분류로 보낸다. 루프가 다른 질문을 만들어 위에 덮지 않는다.
+화면이 ledger 문장을 다시 해석하거나 다른 엔진 문장으로 덮어쓰면 이 계약을 어긴다.
+
+4. 수용 시나리오
+
+브라우저 열의 문장은 확인할 문장이다. 이번 계약에서 브라우저로 읽지 않았다. 엔진 열과 뷰 열을 브라우저 통과로 적지 않는다.
+
+A. 고객 변경.
+전제: 고객이 CLAIM 으로 확인된 뒤, 다른 고객 유형으로 변경한다.
+엔진: 이전 고객 문장과 binding 이 남는다. 이전 고객 outcome 은 conflict_unresolved 다. 이전 문제 문장과 binding 이 남고 역할은 inactive-preserved 라 단계, 핵심 불확실성, 후보에 들어가지 않는다. 새 문제 칸은 빈 not_run 이다. 새 고객은 CLAIM 이다. FACT 나 VALIDATED 가 아니다. selectNextAction 의 선택은 새 문제 질문이다. 계획은 not_required 다. 질문으로 닫히는 불확실성만 열려 있기 때문이다. 미해결이 없다는 뜻이 아니다.
+뷰: judgmentText 에 새 고객 문장과, 이전 문제가 활성 판단이 아니라는 뜻이 있다. 가설 id 는 없다. nextActionText 는 새 고객이 겪는 불편을 묻는 문장이다. validationPlanStatus 는 not_required. validationPlanText 는 빈 문자열. reviewCompletion 이 decision_ready 여도 검증 끝으로 보이지 않는다.
+브라우저: 위 judgmentText 와 nextActionText 가 화면의 유일한 판단 문장과 다음 행동이다. 미검증.
+
+B. 고객 충돌 해소.
+전제: A 의 고객 충돌이 열린 상태에서 새 고객 쪽 binding 을 고르고 이유를 적는다.
+엔진: 그 충돌 행은 resolved true 다. 고객 outcome 은 passed 가 아니다. 비사업 가설의 evaluateHypothesis 는 not_run 이다. 귀속은 unreviewed 다. authenticityGuaranteed 는 false 다. VALIDATED binding 은 없다. 이전 문제는 계속 활성 평가 밖이다. 사업 성과를 passed 로 두지 않는다. 단계 기록은 해소 함수가 직접 쓰지 않고 이후 reassess 가 활성 가설로 계산한다.
+뷰: judgmentText 가 충돌이 정리됐다고 하면서 귀속 승인, 진위 보장, 성과 확인을 말하지 않는다. nextActionText 는 그 ledger 의 prompt 다. 새 문제가 비어 있으면 새 문제 질문이다. validationPlanStatus 는 그 ledger 의 계획과 같다. reviewCompletion 은 검증 완료 문장이 아니다.
+브라우저: 같은 두 문장. 미검증.
+
+C. 문자 결제 기록 선택.
+전제: 부재 CLAIM 과 문자 FACT 의 사업모델 충돌이 열린 뒤, 문자 FACT 를 작업 기준으로 고른다. 대표 여정에서는 고객 충돌이 아직 열려 있다.
+엔진: 문자 binding 의 projectAttribution 은 unreviewed 다. authenticityGuaranteed 는 false 다. 사업모델 outcome 은 insufficient_record 다. passed 가 아니고 VALIDATED 가 아니다. 계획은 proposed 다. evidenceNeeded 는 「선택한 문자 기록이 이 사업의 거래인지에 대한 귀속 판단」이다. 고객 충돌이 핵심으로 남아 있으면 다음 선택은 그 충돌을 묻는 질문이지 성과 확정이 아니다. 엔진은 executed 를 쓰지 않는다. reviewCompletion 은 decision_ready 일 수 있고 그것은 계획 실행이 아니다.
+뷰: validationPlanStatus 는 proposed. validationPlanText 는 그 evidenceNeeded 와, 계획이 제안일 뿐이라는 pendingWork 다. judgmentText 는 기록이 확정된 사업 성과가 아니라는 뜻을 유지한다. nextActionText 는 그 시점 prompt 다. executed 는 없다.
+브라우저: 같은 문장과 proposed 표시. 미검증.
+
+D. 모름 응답.
+전제: 화면에 나온 nextActionText 에 대해 모르겠다고 답한다.
+엔진: 그 질문 해시가 저장된다. 대상 가설의 evidenceClass 는 그대로다. FACT 가 생기지 않는다. 다음 prompt 는 직전 prompt 와 같지 않다. 같으면 안 되며, 해시가 남으면 후보에서 빠지거나 「더 좁혀」가 붙는다.
+뷰: nextActionText 가 직전 nextActionText 와 다르다. judgmentText 가 그 가설을 확인됨으로 올리지 않는다. 계획은 이 응답만으로 executed 가 되지 않는다.
+브라우저: 같은 질문이 그대로 다시 보이지 않는다. 미검증.
+
+E. 결제 부재만 존재.
+전제: 문자 FACT 가 없는 상태에서 부재 주장만 들어온다. 고객 충돌이 없다.
+엔진: 부재 binding 은 CLAIM 이다. 사업모델은 passed 가 아니다. 불확실성 u-record 는 질문으로 닫히지 않는다. 계획은 proposed 이고 evidenceNeeded 는 「주체와 금액이 적힌 문자 기록」이다. 다음 prompt 는 문제 문장을 다시 확인하는 질문이 아니다. 부재는 CLAIM 이고, 주체와 금액이 적힌 문자 기록이 있어야 부재와 구분된다는 검증 행동이다.
+뷰: nextActionText 는 그 검증 문장이다. validationPlanStatus 는 proposed. validationPlanText 에 그 필요 근거가 있다. executed 는 없다. reviewCompletion 은 검증 완료가 아니다.
+브라우저: 같은 다음 행동과 proposed. 미검증.
+
+5. 회귀 계획. 실행하지 않음.
+
+기존 43개 테스트와 30행 재생은 유지한다. 기대값을 화면에 맞추어 바꾸지 않는다.
+승인 후 추가할 검사:
+분류되지 않은 입력은 같은 judgmentText 와 같은 nextActionText 를 반환한다.
+A 부터 E 의 엔진 열을 각각 단언한다.
+뷰가 다섯 필드만 가지고, 금지 토큰이 없고, A 부터 E 의 뷰 열과 같다.
+뷰를 만들 때 analyzeStrategicIntelligence 와 decideSiValidationAsk 와 resolveNextQuestionDecision 을 호출하지 않는다.
+ledger.status 가 executed 인 입력이 오면 뷰가 executed 를 방출하지 않는다.
+이 검사가 통과해도 브라우저 검증이 아니다.
+
+6. 나중에 승인되면 손댈 파일과 위험
+
+새 표시 함수. ledger 와 DecisionRecord 를 WorkspaceJudgmentView 로 투영한다. 판단을 다시 쓰지 않는다.
+workspace-ai-pm-main.tsx. 표시 출처를 그 뷰로 두고 isPostReview 에서 숨기지 않는다.
+workspace-ai-pm-loop-panel.tsx. siValidationAsk 로 질문 문장을 덮는 부분을 이 뷰의 출처에서 뺀다.
+이벤트 분류 어댑터. 아홉 사건과 거절만 한다. 엔진 파일의 전이 규칙은 바꾸지 않는다.
+
+위험: 표시 함수가 id 를 빼다가 필요한 뜻을 지우면 실패로 잡아야 한다. 고객 변경과 고객 확인을 잘못 나누면 이전 문제가 활성 평가에서 빠진다. 루프 패널을 남겨 두면 문장이 둘이 된다. 어댑터가 빈 문자 기록이나 빈 변경 문장을 엔진에 넘기면 현재 엔진은 받아 들이므로, 거절은 어댑터에 있어야 한다.
+
+7. 아직 검증할 수 없는 브라우저 항목
+
+Preview 는 Vercel SSO 뒤다. 인증을 우회하지 않았고 새 배포를 만들지 않았다.
+A 부터 E 의 브라우저 열은 모두 미검증이다.
+화면과 엔진의 일치와 불일치는 선언하지 않는다.
+isPostReview 전후의 실제 픽셀은 보지 못했다. 노출 규칙은 이 계약의 문장이지 화면 확인이 아니다.
