@@ -1,0 +1,248 @@
+PR #197 판단 엔진 재설계안. 통합 재생 67044a05 에서 확인된 판단 갱신, 증거 반영, 다음 행동 선택의 결함을 하나의 설계로 묶는다.
+
+이 문서는 설계안이다. 구현 변경은 시작하지 않았다. si-judgment-contract.ts, 테스트, UI, DB, 모델/API 는 그대로다. 병합과 Production 배포는 없다. Production 잠금 SHA 는 0b465226 이다. 게이트 2·4 는 미달, 게이트 3 은 미검증, 다음 게이트 진입은 보류다. 테스트 통과 수로 수용하지 않는다.
+
+CPO 는 이 재생을 저장소에서 독립 재현하지 않았다. 아래 원인은 제출된 재생과 현재 엔진 코드를 대조한 것이다.
+
+1. 원인
+
+세 P0 와 P1 은 서로 다른 기능 누락이 아니다. 입력이 들어와도 사업 판단을 다시 매기지 않고, 문장 덧붙임과 체크리스트의 다음 칸이 각각 따로 움직인다.
+
+현재 흐름은 이렇다.
+
+입력 → commitAffirm / commitReplace / commitUnknown / commitWeakPayment / commitAbsence / bindLiteralFact / resolveConflict / defineCriterion
+→ applyStage
+→ evaluateStage 가 단계만 정한다
+→ nextCritical 이 핵심 미확인을 정한다
+→ refreshNarrative 가 판단 문장을 조립한다
+→ selectNextAction 이 후보를 만들고 activeGap 으로 고른다
+
+재평가 한 함수는 없다. 성공 가능성, 실패 위험, 핵심 미확인, 근거 강도, 다음 행동이 같은 불확실성 목록에서 나오지 않는다.
+
+P0 판단이 실질적으로 갱신되지 않는 원인.
+
+고객 replace 는 commitReplace 가 h-customer 를 conflict_unresolved 로 두고, h-customer-next CLAIM 을 열고, 옛 h-problem 을 alreadyKnown 으로 두고, 빈 h-problem-next 를 연다. evaluateStage 는 h-customer 의 미해소 충돌이면 즉시 S0 / insufficient_basis 를 반환한다. 근거가 부족하면 단계가 오르지 않는 이 규칙은 유지 대상이다. 결함은 그 다음이다.
+
+refreshNarrative 의 고객 충돌 분기는 whyPossible 을 「이전 고객 문장은 철회되었다」로 고정하고, whyFail 을 「h-customer의 충돌이 해소되기 전에는 단계 근거가 아니다」로 고정한다. 그 뒤 결제 증거가 들어와도 이 두 문장을 다시 계산하지 않는다. 부재 문장과 약한 결제 문장만 뒤에 붙는다. 성공 가능성은 고객이 바뀌어도, 문자 기록이 들어와도 다시 평가되지 않는다.
+
+같은 분기는 옛 문제에 대해 「그 문제는 새 고객의 문제가 아니다」를 확인 전에 확정 문장으로 쓴다. 옛 문제 가설의 outcome 은 새 고객 기준으로 다시 매겨지지 않는다. 고객 문장만 갈리고, 문제 가설의 유효성은 평가되지 않는다.
+
+nextCritical 은 pairBroken 이고 h-customer-next 가 CLAIM 이면, 새 문제가 비었을 때 h-problem-next 를 반환하고, 새 문제가 CLAIM 이면 지불자가 CLAIM 이 아닐 때 h-payer 를 반환한다. h-customer 충돌을 보는 분기는 그 아래에 있어 이 경로에서는 실행되지 않는다. 그래서 단계 차단 사유는 고객 충돌인데 핵심 미확인은 h-payer 가 된다. 재생 4단계부터 10단계가 이 상태다.
+
+P0 증거 해소와 판단 근거가 분리되는 원인.
+
+refreshNarrative 는 absence binding 이 있으면 해소 여부와 관계없이 부재 문장을 판단과 whyFail 에 붙인다. 그 다음에야, 충돌이 열려 있으면 충돌 문장을 붙이고, 충돌이 닫혀 있으면 해소 문장을 붙인다. 해소 문장은 부재 문장을 지우지 않는다. 재생 8단계에서 「아직 실제 결제·사용 증거는 없습니다」와 「작업 기준으로 고른 근거는 문자 FACT」가 한 판단에 같이 있는 이유다.
+
+판단 문장은 하나의 문자열이다. 충돌 문단만 근거 id 를 본문에 넣고, 나머지 문장은 evidence id 와 연결되어 있지 않다. decisionChangingEvidence 는 결제 충돌이 열려 있을 때만 두 id 를 말한다. 그 외에는 「결제 주체·금액·기록이 나와야 단계가 움직인다」는 한 문장이다.
+
+귀속 미수락, 진위 미확인, 거래 성과 미확인은 필드가 아니라 해소 문장 안의 말이다. projectAttribution 은 unreviewed | accepted | rejected 다. authenticityGuaranteed 는 항상 false 다. outcome insufficient_record 는 성과 미확인에 해당한다. 해소가 문자 FACT 를 작업 기준으로 골라도 attribution 은 unreviewed 로 남고 outcome 은 insufficient_record 가 된다. 이 상태 구분은 연산에는 있으나, 부재 문장이 활성 판단으로 남아 선택이 곧 성과 판단인 것처럼 읽힌다. 기록 선택이 진위를 보장하지 않는 것과, 선택된 기록을 활성 판단에 반영하지 않는 것은 지금 구조에서 한 문장 덧붙임으로 섞인다.
+
+VALIDATED 로 올리는 경로는 이 결함의 원인이 아니다. binding 은 VALIDATED 를 거절한다. 그 금지는 유지한다.
+
+P0 다음 행동이 q-payer 에 고정되는 원인.
+
+후보와 미리보기는 이미 있다. deriveCandidates 가 질문, q-resolve-h-customer, v-business-model 을 만들고, 각 분기는 applyFounderAnswer 또는 resolveConflict 또는 bindLiteralFact 를 실제로 호출한다. 재생 출력기가 후보별 미리보기를 찍지 않았을 뿐, 비교 함수가 그 미리보기의 불확실성 감소를 보지 않는다.
+
+activeGap 은 pairBroken 이고 새 고객이 CLAIM 일 때, 후보의 hypothesisId 가 nextCritical 과 같으면 1 이다. nextCritical 이 h-payer 를 반환하므로 q-payer 만 1 을 받는다. derivedTuple 에서 activeGap 은 단계 차이와 판단 변화 등급보다 앞이다. q-resolve-h-customer 와 v-business-model 은 판단이 바뀌어도 이 키에서 진다. 선택은 「미리보기가 어떤 불확실성을 닫는가」가 아니라 「nextCritical 이 가리키는 가설인가」다. 그래서 q-payer 가 반복되고, 그 선택이 최선이라는 근거가 없다.
+
+q-payer 프롬프트는 금액과 거래 기록이 질문으로 생기지 않는다고 말하면서도 선택된다. paymentGap 이 v-business-model 을 올리는 조건은 부재가 있고 약한 결제가 없을 때뿐이다. 재생은 약한 결제와 부재가 같이 있어 paymentGap 이 0 이고, activeGap 이 남는다.
+
+판단 문장이 한 줄이라도 바뀌면 judgmentChangeClass 가 none 이 아니다. rankDerived 는 그런 후보가 하나라도 있으면 질문을 유지한다. v-record-needed 는 모든 분기가 none 일 때만이다. 문장 덧붙임이 곧 판단 변화로 집계되므로, 단계 차단을 닫지 못하는 질문도 탈락하지 않는다.
+
+P1 검증 계획이 없는 원인.
+
+validationPriority 와 decisionChangingEvidence 는 위 일반 문장이다. reviewCompletion 의 decision_ready 는 판단, whyPossible, whyFail, evidenceMap, criticalUnknown, decisionChangingEvidence, validationPriority 칸이 비어 있지 않다는 뜻이다. 시장 검증 행동이 아니다. 질문으로 닫히지 않는 불확실성을 담는 검증 계획 필드는 없다. 재생 10단계의 마지막이 q-payer 와 「더 좁혀」인 이유다.
+
+2. 목표 구조
+
+단계 상승은 목표가 아니다. evaluateStage 의 결과는 그대로 두고, 왜 그 단계인지와 무엇을 닫을지만 다시 계산한다.
+
+모든 확정 입력 뒤에 reassess 한 번이 돈다. 입력 종류는 고객 수정, 문제 수정, 확인, 모름, 약한 결제, 부재, 문자 기록, 충돌 해소, 기준 작성이다. 각 입력을 독립된 문장 덧붙임으로 끝내지 않는다.
+
+reassess 가 만드는 판단:
+
+- stageId, verdictId. evaluateStage 의 기존 반환.
+- stageReason. 왜 이 단계인지. 근거 id 목록. 단계를 올리기 위한 문장이 아니다.
+- clauses. 판단 문장의 단위. 각 절은 id, 문장, 역할, hypothesisId, evidenceIds 를 가진다. 역할은 active, history, retired, conflicting, uncertainty 다. 화면에 보일 판단 문자열은 active 와 uncertainty 와, 구분된 history 에서만 조립한다. retired 와 conflicting 은 활성 결론으로 조립하지 않는다.
+- whyPossible, whyFail. 절에서 다시 계산한다. 각각 근거 id 를 가진다. 이전 입력의 문장을 유지한 채 뒤에 붙이지 않는다.
+- uncertainties. 열린 불확실성 목록. 각 항목은 id, hypothesisId, blocksStage, resolvableByQuestion, closingEvidence, evidenceIds 를 가진다.
+- criticalUnknownHypothesisId. 그 목록의 맨 위 항목이다. 체크리스트의 다음 칸이 아니다.
+- evidenceStatus. binding 마다 evidenceClass, projectAttribution, authenticity, businessOutcome, validity. authenticity 는 unverified 로 둔다. authenticityGuaranteed false 를 유지한다. businessOutcome 은 outcome 이 passed 이고 귀속 수락과 기준 충족이 있기 전에는 unconfirmed 다. validity 는 active, retired, conflicting.
+- validationPlan. resolvableByQuestion 이 거짓인 불확실성이 하나라도 있으면 채운다. 질문으로 생기지 않는 증거, 대상 가설, 그 질문이 왜 그 불확실성을 닫지 못하는지를 적는다. 없으면 null 이 아니라 「질문으로 닫히지 않는 불확실성이 없다」는 명시 값이다. decision_ready 와 섞지 않는다.
+
+불확실성 순위. 단계 사다리가 아니다.
+
+1. 방금 입력이 만들었고 질문으로는 증거가 생기지 않는 불확실성. 부재 뒤의 문자 기록, 미수락 귀속, 기준을 충족하지 못한 거래 성과가 여기 있다. 다만 단계 사유를 막는 미해소 충돌이 따로 열려 있고 그 충돌은 질문으로 작업 기준을 고를 수 있으면, 그 충돌이 위다. 질문으로 닫히지 않는 항목은 validationPlan 에 남는다.
+2. evaluateStage 가 단계 근거로 쓰지 못하게 하는 미해소 충돌. 고객 충돌, 그다음 문제 충돌. 질문으로 어느 쪽을 작업 기준으로 둘지 고를 수 있다.
+3. 고객이 바뀐 뒤 아직 판정하지 않은 문제 이전. 옛 문제가 새 고객에게 유효한지는 확인 전의 결론이 아니다.
+4. 주체만 비어 있는 결제. 금액과 기록은 1 의 검증 계획으로 남고, 주체 질문은 그보다 높은 항목이 없을 때만 핵심 미확인이 된다.
+5. 위가 없고 지불자 CLAIM 과 기준이 있을 때의 h-repeat. 격리된 사례 D 의 조건과 같다.
+
+귀속 미수락, 진위 미확인, 거래 성과 미확인은 evidenceStatus 의 세 칸이다. 한 문장으로 합치지 않는다. 어느 칸도 수락 또는 기준 충족 없이 VALIDATED 가 되지 않는다. 문자 기록을 작업 기준으로 고르는 resolveConflict 는 projectAttribution 을 accepted 로 만들지 않는다. outcome 을 passed 로 만들지 않는다.
+
+모름은 근거 id 를 추가하지 않는다. 판단 절이 그대로이면 uncertainty 절이 「새 근거가 없어 판단은 그대로다」라고 그 질문의 hash 를 인용한다. 프롬프트에만 「더 좁혀」를 붙이는 것으로 재평가를 대신하지 않는다. 같은 질문의 모름이 두 번이면 resolvableByQuestion 은 거짓이 되고, 그 불확실성은 검증 계획으로 넘어간다. 세 번째 질문을 고르지 않는다.
+
+3. 변경 전후 데이터 흐름
+
+변경 전.
+
+commitReplace(고객)
+→ h-customer conflict_unresolved, h-customer-next CLAIM, h-problem alreadyKnown, h-problem-next 빈 값, pairBroken
+→ evaluateStage: 고객 충돌이라 S0
+→ nextCritical: 새 문제가 없으면 h-problem-next, 있으면 h-payer. 고객 충돌 분기에 도달하지 않음
+→ refreshNarrative: 활성 고객 문장 + 「그 문제는 새 고객의 문제가 아니다」 + 고정 whyPossible / whyFail
+→ 이후 결제 입력마다 부재·약한 결제 문장을 뒤에 추가
+→ selectNextAction: activeGap 이 h-payer 질문만 1
+
+bindLiteralFact + 부재
+→ contradictIfNeeded: outcome conflict_unresolved, 두 binding 유지, 귀속 unreviewed
+→ refreshNarrative: 부재 문장을 먼저 붙인 뒤 충돌 문장을 붙임
+
+resolveConflict(문자 FACT)
+→ 충돌 행 resolved, 두 id 유지, 귀속 unreviewed, storeOutcome → insufficient_record
+→ refreshNarrative: 부재 문장을 다시 붙인 뒤 해소 문장을 붙임
+→ nextCritical 은 그대로 h-payer
+
+변경 후.
+
+같은 commit 함수가 binding 과 가설 상태를 기록한다. 그 직후 reassess 만 판단 필드를 다시 쓴다.
+
+reassess
+→ 충돌 행으로 binding validity 를 정한다. 열린 충돌의 양쪽은 conflicting. 해소 후 선택되지 않은 쪽은 retired. 선택된 쪽은 active. 어느 쪽도 binding 목록에서 지우지 않는다.
+→ evaluateHypothesis 와 contradictIfNeeded 의 순서는 유지한다. 부재 CLAIM 과 문자 FACT 가 같이 있으면 outcome 은 conflict_unresolved 이고, 이 값이 insufficient_record 보다 우선이다. FACT 만 있으면 insufficient_record 다.
+→ evaluateStage 는 바꾸지 않는다. 고객 또는 문제의 미해소 충돌이면 S0. 고객 CLAIM 과 문제 CLAIM 이 아니면 S0. 기준 작성만으로 단계를 올리지 않는다.
+→ stageReason 은 그 반환의 근거 id 를 적는다.
+→ 영향 받은 가설만 절을 다시 만든다. 고객 replace 의 영향은 h-customer, h-customer-next, h-problem, h-problem-next 다. 결제 입력의 영향은 h-business-model 과 그 binding 이다. 고객 수정이 결제 가설의 귀속을 자동으로 accepted 로 바꾸지 않는다.
+→ uncertainties 를 위 순위로 정렬하고 critical 을 그 맨 위로 둔다.
+→ whyPossible 과 whyFail 을 활성 절과 불확실성에서 다시 쓴다.
+→ validationPlan 을 질문으로 닫히지 않는 항목으로 채운다.
+
+selectNextAction
+→ 후보 생성은 유지한다. 여기에 더해, h-business-model 충돌이 열려 있으면 그 충돌의 resolve 후보를 만든다. 문자 FACT 의 귀속이 unreviewed 이면 귀속 확인 후보를 만든다. 귀속 확인은 수락과 거절만 하고 VALIDATED 로 올리지 않는다.
+→ 각 후보의 분기는 지금의 미리보기처럼 실제 판정 함수를 호출한다. 호출 뒤의 장부도 reassess 를 거친다.
+→ 순위 키 activeGap 의 정의 「hypothesisId == nextCritical」는 제거한다. 비교는 각 후보가 핵심 불확실성을 닫는 미리보기 하나다.
+→ 그 미리보기가 핵심 불확실성을 닫는가, 그 불확실성의 resolvableByQuestion 과 행동 종류가 맞는가, 그 미리보기의 judgmentChangeClass, failureDropsStage, alreadyKnown 순으로 비교한다. 단계 상승 폭은 순위 키가 아니다. 미리보기에 단계 변화가 있으면 이유에 그 사실만 인용한다.
+→ 핵심 불확실성을 닫는 후보가 없고, 더 낮은 불확실성을 닫는 후보가 있으면 그 후보를 고르고 이유에 「핵심 불확실성은 남은 후보가 닫지 못한다」를 적는다. 어떤 분기도 판단을 바꾸지 않으면 지금의 v-record-needed 를 유지하고, 필요한 추가 증거를 validationPlan 과 같은 문장으로 적는다. q-payer 로 떨어뜨리지 않는다.
+→ 이유 문장은 순위에 쓴 그 미리보기의 act 를 인용한다. 다른 후보의 미리보기가 닫지 못하는 불확실성 id 를 같이 적는다. 이유와 미리보기가 어긋나면 실패다.
+
+고객 충돌을 새 고객 쪽으로 해소할 때, 지금의 resolveConflict 는 h-problem 을 ASSUMPTION 으로 되돌린다. 설계는 그렇게 하지 않는다. h-problem-next 가 CLAIM 이면 그 CLAIM 이 활성 문제가 되고, 옛 문제 binding 은 history 로 남는다. 해소 전 테스트가 보는 「h-problem 문장은 옛 문제」는 해소 전에만 유지된다.
+
+4. 유지할 계약과 충돌하는 계약
+
+유지한다.
+
+- 계약 B1. 문자 FACT 는 authenticityGuaranteed false, projectAttribution unreviewed 로 저장된다. 기준의 조상 커밋이 없거나 결제 귀속이 accepted 가 아니면 outcome 은 insufficient_record 다. 부재 CLAIM 과 FACT 가 같이 있으면 contradictIfNeeded 가 outcome 을 conflict_unresolved 로 덮고, 이 값이 insufficient_record 보다 우선이다. 실패 판정이 아니다. FACT 만 있으면 insufficient_record 다. 두 binding 은 남는다.
+- 계약 B1 해소. 문자 FACT 를 골라도 두 id 가 남고, 충돌 행은 resolved, 귀속은 unreviewed, outcome 은 insufficient_record, passed 도 S3 도 아니다. 기록 선택은 귀속 수락이 아니다.
+- 계약 B2. defineCriterion 은 단계, 판정, reviewCompletion 을 호출 전 값으로 되돌린다. 기준 작성은 단계 상승이 아니다. S2 는 applyStage 가 돌고 고객 CLAIM, 문제 CLAIM, 지불자 CLAIM, passIf, failIf 가 있고 모델이 passed 가 아닐 때만이다. S3 는 모델 passed 와 귀속 수락된 결제 FACT 와 귀속 수락된 metric:pass FACT 가 같이 있을 때만이다.
+- 고객 또는 문제의 conflict_unresolved 는 evaluateStage 를 S0 / insufficient_basis 로 둔다. 이 재생에서 S0 에 머무는 것 자체가 결함이 아니다.
+- 창업자 확인은 CLAIM 이다. FACT 나 VALIDATED 가 아니다. binding 의 VALIDATED 거절은 유지한다.
+- 사례 A 의 격리 장부. 고객만 확인된 상태에서 부재와 문자 FACT 가 충돌하면 outcome 은 conflict_unresolved, 단계 S0, 다음은 q-problem 이다. 문제 미확인이 단계 사유이고, 결제 충돌 해소는 그 사유를 닫지 않는다. 해소 후 판단은 부재 id 를 history 로 남긴다. 활성 절은 부재 문장을 현재 결론으로 말하지 않는다. 사례 A 테스트가 해소 후 부재 id 의 존재를 요구하는 것은 history 인용으로 충족한다.
+- 사례 B. FACT 만 있으면 insufficient_record, S0.
+- 사례 C. 기준 작성 직후 저장 단계는 오르지 않는다.
+- 사례 D. 고객 충돌이 없고 지불자 CLAIM 과 기준이 있어 critical 이 h-repeat 인 격리 장부에서는 q-repeat 가 후보에 있고, affirm 이 판단을 바꾸면 그 미리보기를 인용해 선택된다. 이번 대표 경로는 고객 충돌이 열려 있으므로 이 경로에 들어가지 않는다. 그 차이를 숨기지 않는다.
+- paymentNone. 고객 확인 뒤 부재만 있으면 다음은 v-business-model 이다. 문제 질문이 문자 기록을 만들지 못한다. 이유의 literal_unreviewed 인용은 유지한다.
+- paymentYes. 고객과 문제가 CLAIM 이고 고객 충돌이 없으며 약한 결제만 있으면, 주체 질문 q-payer 는 남을 수 있다. 조건이 추가된다. validationPlan 이 「이 질문은 금액과 기록을 만들지 못한다」를 적어야 한다. 고객 충돌이 열려 있으면 이 선택 규칙을 쓰지 않는다.
+- 약한 결제와 부재는 그 입력만으로 단계를 올리지 않는다. 약한 결제는 FACT 나 VALIDATED 가 아니다. commitWeakPayment 가 단계를 호출 전으로 되돌리는 것은 유지한다.
+- AT-14. chat 0, OpenAI HTTP 0. 원문에 api.openai.com, openai-http, fetch(, .chat( 가 없다.
+- 이유 문장이 단계 변화를 말하면 인용한 미리보기의 stageChanged 는 true 다. 「단계 변화는 없다」를 단계 상승으로 읽지 않는다.
+- 공급 후보 경로의 다섯 키는 대표 재생의 대상이 아니다. 구현 단계에서 AT-11 을 깨면 그때 따로 적는다. 이 설계는 파생 후보 경로를 고친다.
+
+충돌한다. 승인 뒤에 고칠 계약이지, 이번 제출에서 테스트나 명세를 고치지 않는다.
+
+- 사례 4A 와 revised-customer 테스트. 새 문제 CLAIM 뒤 선택이 q-payer 이고 q-resolve 가 아니다. 이유에 「활성 고객의 다음 미확인인 h-payer」와 「과거 문제는 새 고객의 문제가 아니다」가 있다. 이 잠금이 P0 의 반복 선택이다. 설계의 대표 경로는 여기서 q-resolve-h-customer 를 고른다.
+- 고객 replace 직후의 문장 「그 문제는 새 고객의 문제가 아니다」. 30행 revise 와 revised-customer 테스트가 history 에서 이 문장을 요구한다. 설계는 replace 직후 이 문장을 결론으로 쓰지 않는다. 옛 문제는 history 이고, 새 고객에 대한 유효성은 미판정이다. 새 문제 CLAIM 이 들어온 뒤에야 활성 문제와 옛 문제를 구분하는 결론을 그 affirm id 에 연결한다.
+- 재생 8단계의 활성 판단에 부재 문장 전체가 남는 현재 동작. 사례 A 는 해소 후 부재 id 를 요구할 뿐 부재 문장을 활성 결론으로 요구하지 않는다. 대표 경로의 활성 절에서 그 문장을 빼는 것이 이 설계다.
+
+5. 대표 시나리오의 예상 결과
+
+입력 순서는 67044a05 의 11단계와 같다. 고객 「반찬가게·꽃집 등 직접 배송 소상공인」, 문제 「주문과 배송을 따로 관리해야 함」, 수익 「월 구독」. 확인, 「대기업 물류본부」로 수정, 모름, 「배차 기준이 현장에 없다」, 약한 결제, 부재, 미수락 문자 FACT 「2026-03-02 반찬가게 A, 3만 원, 1회」, 그 FACT 를 작업 기준으로 해소, 기준 작성, 선택과 다른 h-channel 모름.
+
+단계 목표는 없다. 고객 충돌이 열려 있는 동안 S0 / insufficient_basis 가 정상이다. 아래는 그 상태에서 달라져야 하는 판단과 선택이다.
+
+0 최초.
+stageReason 은 세 문서 가정 id. critical 은 h-customer. 다음은 q-customer. 확인 미리보기가 고객 절을 CLAIM 으로 바꾸고 단계는 S0 에 남는다. 문제 가정이 남아 있기 때문이다. 이 선택은 현재와 같다.
+
+1 확인.
+활성 절은 b-affirm-h-customer-1 CLAIM. 문제는 b-problem-doc 가정. stageReason 은 문제 미확인. critical 은 h-problem. 다음은 q-problem. 그 affirm 미리보기가 문제 절을 바꾸고 단계가 S0 에서 S1 로 바뀌면 이유에 그 미리보기를 인용한다. 저장 단계는 아직 S0 이다.
+
+2 고객 수정. 질문 1의 답.
+무엇이 달라지는가. 활성 고객 절의 근거가 b-affirm-h-customer-1 에서 b-h-customer-next-2 로 바뀐다. 옛 고객 binding 과 b-problem-doc 은 history 다. 새 불확실성 u-problem-transfer 가 열린다. 근거는 b-problem-doc 이다. 문장은 「옛 문제가 새 고객에게 유효한지는 아직 판정하지 않았다」다. 「그 문제는 새 고객의 문제가 아니다」는 쓰지 않는다.
+왜 달라지는가. replace 가 고객 짝을 깨므로 문제 가설의 짝이 사라진다. 유효성 결론은 그 가설을 다시 묻기 전에 생기지 않는다. whyPossible 은 새 고객 CLAIM 의 id 만 인용하고, 성공 가능성이 올라갔다고 말하지 않는다. whyFail 은 고객 충돌의 두 id 를 단계 사유로 인용한다. 단계와 판정은 S0 / insufficient_basis 그대로다.
+critical 은 u-problem-transfer 다. h-payer 가 아니다.
+다음. q-problem-next. q-resolve-h-customer 의 해소 미리보기는 작업 기준 고객만 고르고 문제 이전을 판정하지 않는다. q-payer 의 affirm 미리보기는 지불자 문장만 바꾸고 u-problem-transfer 를 닫지 않는다. v-business-model 의 문자 기록 미리보기는 결제 기록을 만들 뿐 문제 이전을 판정하지 않는다. 그래서 문제 이전 질문이 이긴다. 이유에 세 미리보기가 남는다.
+
+3 모름.
+활성 절은 2와 같다. uncertainty 절이 새 근거 id 가 없어 판단이 그대로라고 말한다. critical 은 u-problem-transfer. 다음은 아직 q-problem-next. 모름이 두 번째가 아니므로 질문을 검증으로 바꾸지 않는다. 프롬프트의 「더 좁혀」만으로 재평가로 치지 않는다.
+
+4 새 문제. 질문 3의 첫 답.
+u-problem-transfer 가 닫힌다. 활성 문제 절의 근거는 b-affirm-h-problem-next-4 다. 옛 문제 binding 은 history 다. 이 구분 결론은 이 affirm id 에만 연결된다.
+고객 충돌은 그대로 미해소다. stageReason 과 whyFail 은 그 두 id 다. 단계와 판정은 S0 / insufficient_basis. critical 은 고객 충돌이다. h-payer 가 아니다.
+다음. q-resolve-h-customer. 인용 분기는 resolve_retain_new. 그 미리보기는 고객 충돌을 닫고, 새 문제 CLAIM 을 활성 문제로 유지한다. 단계가 바뀌더라도 그것은 결과로 기록할 뿐 선택 이유가 아니다. 선택 이유는 단계 사유의 충돌 id 가 그 미리보기에서 사라진다는 것이다.
+q-payer affirm 은 지불자 문장을 바꾸지만 고객 충돌 id 가 whyFail 에 남는다. v-business-model 의 문자 기록 미리보기도 그 충돌 id 를 남긴다. 이유에 이 두 미리보기가 진다. q-payer 를 기본값으로 고르지 않는다.
+
+5 약한 결제. 질문 2의 첫 답.
+새 절의 근거는 b-weak-payment id. evidenceStatus 는 CLAIM, attribution unreviewed, authenticity unverified, businessOutcome unconfirmed. 세 칸을 한 말로 합치지 않는다. 문장은 주체·금액·기록이 없다고 말한다. FACT 나 VALIDATED 가 아니다.
+고객 충돌 절과 stageReason 은 바뀌지 않는다. whyPossible 은 이 CLAIM 으로 올라가지 않는다. whyFail 에 이 id 가 추가되며, 단계 사유는 여전히 고객 충돌이다.
+critical 은 고객 충돌. 다음은 4와 같이 q-resolve-h-customer. 주체 질문은 validationPlan 에 「금액과 기록은 질문으로 생기지 않는다」로 남되, 선택이 되지 않는다. 고객 충돌이 더 높기 때문이다.
+
+6 부재.
+b-absence 절이 추가된다. 약한 결제 절은 남는다. 둘 다 CLAIM 이다. FACT 가 없으므로 outcome 은 conflict_unresolved 가 아니다. 계약 B1 을 유지한다. 판단은 두 주장이 다르고, 문자 기록이 없어 충돌 행은 아직 없다고 말한다. 그 불확실성은 질문으로 닫히지 않으므로 validationPlan 에 문자 기록을 적는다.
+critical 은 여전히 고객 충돌이다. 다음은 q-resolve-h-customer. v-business-model 은 비교에 남고, 고객 충돌을 닫지 못해 진다. 검증 계획은 비어 있지 않다.
+
+7 반대 기록.
+outcome 은 conflict_unresolved. model evidenceClass 는 CONFLICT. 두 id 가 남는다. 귀속은 unreviewed. authenticity 는 unverified. businessOutcome 은 unconfirmed. VALIDATED 가 아니다. 단계와 판정은 S0 / insufficient_basis. 고객 충돌이 단계 사유로 남기 때문이다.
+부재 절의 역할은 conflicting 이다. 활성 결론으로 「아직 실제 결제·사용 증거는 없습니다」를 말하지 않는다. 충돌 절이 부재 id 와 문자 id 를 같이 인용한다. 약한 결제 절은 그 충돌의 양쪽이 아니므로 active 로 남고, 충돌의 한쪽이 아니라고 말한다.
+whyFail 은 두 덩어리다. 고객 충돌 id 가 단계 사유. 부재 id 와 문자 id 와 귀속 unreviewed 가 결제 충돌. whyPossible 은 성공 가능성이 올라갔다고 말하지 않는다.
+후보에는 q-resolve-h-customer 와 h-business-model 의 resolve 가 같이 있다. 결제 해소 미리보기는 귀속이 unreviewed 로 남고 outcome 이 insufficient_record 가 되며 고객 충돌 id 는 남는다. 그래서 고객 해소가 이긴다. 결제 해소는 이유에 비교로 남고 validationPlan 에도 남는다. q-payer 는 어느 충돌도 닫지 못한다.
+
+8 해소.
+두 id 는 evidenceMap 에 남는다. 충돌 행은 resolved. 귀속은 unreviewed. outcome 은 insufficient_record. passed 가 아니고 S3 가 아니다.
+부재 절은 retired 다. history 가 그 id 를 인용한다. 활성 절은 문자 id 를 작업 기준으로 고른 기록이라고 말하고, 세 칸을 따로 말한다. 귀속은 미수락. 진위는 미확인. 거래 성과는 미확인. 「아직 실제 결제·사용 증거는 없습니다」는 활성 판단과 whyFail 에 없다.
+stageReason 은 고객 충돌 id. 단계는 S0. critical 은 고객 충돌. 다음은 q-resolve-h-customer. 귀속 확인 후보는 비교에 남고, 고객 충돌을 닫지 못해 진다. 귀속 확인을 해도 VALIDATED 가 되지 않는다는 내용이 그 미리보기에 있다.
+
+9 기준 작성.
+저장 단계와 판정은 호출 전과 같다. S0 / insufficient_basis. 기준 절은 passIf 와 failIf 의 id 를 인용하고, 기준 작성이 단계를 올리지 않는다고 말한다. critical 은 h-repeat 가 되지 않는다. 고객 충돌이 열려 있기 때문이다. 다음은 8과 같다. 사례 D 의 q-repeat 조건과 다르다는 것을 이유 또는 재생 기록에 한 줄로 남긴다.
+
+10 재평가. 입력은 선택된 행동이 아니라 h-channel 모름.
+활성 절은 9와 같다. uncertainty 절은 h-channel 모름이 근거 id 를 추가하지 않아 판단이 그대로라고 말한다. critical 은 고객 충돌. 선택 id 는 q-resolve-h-customer.
+validationPlan 은 비어 있지 않다. 미수락 문자 기록의 귀속 수락, 그리고 기준의 passIf 인 귀속된 결제와 반복 사용을 보여줄 기록이 적힌다. h-channel 질문과 q-payer 는 그 기록을 만들지 못한다고 적는다. 마지막이 결제 주체 질문만인 상태는 실패다.
+
+이 경로 전체에서 h-repeat 는 핵심 미확인이 되지 않는다. b2a419da 의 q-repeat 를 이 경로의 선택으로 적지 않는다.
+
+6. 실패 조건
+
+대표 재생에서 하나라도 해당하면 이 설계의 구현은 미달이다. 테스트 개수로 상쇄하지 않는다.
+
+- 고객 수정 직후 판단이 옛 문제에 대해 유효하지 않다고 결론 낸다.
+- 새 문제 확인 이후 critical 이 h-payer 이거나 선택이 q-payer 다. 고객 충돌이 미해소인 동안 그렇다.
+- 선택 이유가 인용 미리보기 외의 후보가 어떤 불확실성을 닫지 못하는지 말하지 않는다.
+- 해소 후 활성 판단 또는 whyFail 에 「아직 실제 결제·사용 증거는 없습니다」가 있다.
+- 문자 FACT 를 작업 기준으로 고른 뒤 projectAttribution 이 accepted 이거나 evidenceClass 가 VALIDATED 이거나 outcome 이 passed 이거나 단계가 S3 이다.
+- 귀속 미수락, 진위 미확인, 거래 성과 미확인이 한 문장으로만 있고 세 칸으로 구분되지 않는다.
+- 판단 절에 evidence id 가 없다.
+- 모름 뒤에 판단이 그대로인데 그 이유가 판단에 없다.
+- 10단계의 validationPlan 이 비어 있거나, 선택된 행동이 결제 주체 질문뿐이다.
+- 고객 충돌이 없는 사례 D 가 q-repeat 조건을 잃거나, 사례 A 의 공존 outcome 이 insufficient_record 가 되거나, FACT 만 있는 사례 B 가 conflict_unresolved 가 되거나, 기준 작성만으로 저장 단계가 오른다.
+- 이유의 단계 문장과 인용 미리보기의 stageChanged 가 다르다.
+- chat 또는 OpenAI HTTP 가 1회라도 있다.
+
+7. 회귀와 통합 검증 계획
+
+구현은 이 설계가 승인된 뒤에만 시작한다. 승인 전에 테스트를 추가하지 않는다. 작은 단위 테스트를 새로 만들어 이 설계를 통과시키는 방식으로 진행하지 않는다.
+
+승인 후 검증은 대표 11단계를 한 번 재생하는 것이다. 각 단계의 기록 칸은 단계와 판정, stageReason 과 근거 id, 판단 절과 근거 id, critical, 후보별 미리보기의 판단 변화와 critical 변화와 failureDropsStage 와 alreadyKnown, 선택된 행동과 이유와 인용한 act, evidenceStatus 의 세 칸, validationPlan 의 유무와 문장이다. 기대 결과는 5절이고 실패 조건은 6절이다.
+
+그 재생과 같은 실행에서 기존 계약을 같이 본다. 유지 목록은 깨지면 안 된다. 충돌 목록은 구현이 4절의 기대대로 바뀌어야 하며, 바뀐 뒤의 문장을 명세에 먼저 고치고 테스트를 그 문장에 맞춘다. 실패를 집계에서 빼지 않는다. 30행 재생은 유지 계약인 revise 직후의 q-problem-next, paymentYes 의 q-payer 와 validationPlan, paymentNone 의 v-business-model 을 본다. 30행이 새 문제 CLAIM 이후까지 가지 않으면, 그 이후 선택은 대표 11단계 재생이 담당한다. 30행 통과만으로 대표 경로를 합격으로 보지 않는다.
+
+v-record-needed 는 대표 11단계가 그 장부를 만들지 않으면 미검증으로 남긴다. 그 분기만을 위한 테스트를 추가하지 않는다.
+
+8. UI 와 엔진 일치 검증 계획
+
+이번 단계에서 화면은 열지 않는다. UI 를 바꾸지 않는다. 게이트 3 은 미검증이다.
+
+구현이 승인되고 대표 재생이 6절을 통과한 뒤에만 Preview 검증을 연다. 창업자 경로로 0단계부터 10단계까지 진행하고, 화면에 보인 이해 문장, 과거 기록, 선택지, 판단, 다음 행동, 검증 계획이 그 단계의 엔진 기록과 같은지 본다. 브라우저에서 확인하지 않은 화면은 검증 완료로 보고하지 않는다. 엔진 재생 통과를 화면 일치로 보고하지 않는다.
+
+9. 상태
+
+[CTO] CPO 요청 작업: 진행중 — 통합 재생 결함의 원인 분석과 판단 엔진 재설계안 제출
+[CPO] 검토·지시 필요: 예 — 설계 승인 전 구현 변경과 다음 검증 게이트 진입 보류
