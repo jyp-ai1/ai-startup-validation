@@ -2,6 +2,8 @@ PR #197 전략 재생 실패 원인과 수정 설계. 구현 없음. 화면 연�
 
 이 문서는 원인 감사와 이후 구현의 계약이다. 여기의 기대 출력은 아직 테스트로 실행하지 않았다. 실행한 것은 기존 재생 JSON의 대조와, 현재 모듈에 대한 원인 프로브 한 번이다.
 
+보완 A와 보완 B는 이 파일 맨 뒤에 있다. 방향은 유지한다. 구현 착수는 이 보완의 별도 승인 전이다. replace 절이 충돌 해소 함수를 부르지 않는다고 적은 부분은 보완 A가 메운다. 미리보기를 함수 한 번 호출로 적었던 부분은 보완 B가 메운다.
+
 프로브 명령
 pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-cause-probe.test.ts
 
@@ -272,3 +274,138 @@ CTO 판정
 원인은 확인되었다. 시드가 시나리오를 받지 않고, 적용 함수가 직전 결정과 끊긴 문구 표이며, 선택 순위가 실제 판단 변화의 미리보기가 아니고, 보이는 판단이 장부 statement 를 따라가지 않는다.
 hypothesisId 부재는 점검 지점으로 맞다. 그것만의 원인은 아니다.
 구현은 이 설계를 CPO 가 승인하기 전에 시작하지 않는다. 승인 후에도 30행 회귀가 세 열 모두 통과하기 전에 2단계 화면 연결을 시작하지 않는다.
+
+===== 보완 A. 가설 교체와 충돌 해소 =====
+
+이 절의 기대 결과는 설계값이다. 미실행이다.
+근거로 재사용한 잠금은 docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-CONTRACT-LOCK.txt 의 CONFLICT 절이다. 해소 함수 이름은 그 잠금의 resolveConflict 이다. 현재 모듈 si-judgment-contract.ts 에는 이 함수가 없다. recordConflict 와 applyConflict 만 있다. 이번 보완은 그 함수를 구현하지 않는다.
+
+1. 기존 가설과 기존 근거의 보존
+replace 는 대상 가설의 기존 binding 을 삭제하지 않는다. 기존 statement 도 가설 필드에서 지우기 전에 binding proposition 으로 남아 있어야 한다. 문서 가정 binding 이 있으면 그 id 가 왼쪽 근거다. 창업자 확인 binding 이 있으면 그 id 가 왼쪽 근거다. 새 문장은 새 binding id 로 추가하고 오른쪽 근거가 된다.
+필수 검토 id 는 h-customer, h-problem, h-payer, h-business-model, h-repeat 그대로다. 후속 가설을 여섯 번째 필수 id 로 올리지 않는다. 후속 id 가 필수 목록 밖에 있으면 closeReview 가 그 id 의 passed 를 기다리지 않는다. 완료 차단은 필수 id 의 outcome 으로만 판단한다.
+
+2. 새 가설 CLAIM 과 후속 문제의 연결
+고객 replace 는 필수 id h-customer 를 바꾸지 않은 채 후속 가설을 하나 만든다. id 는 h-customer-next 처럼 필수 목록 밖이다. statement 는 nextStatement 이다. evidenceClass 는 CLAIM 이다. outcome 은 not_run 이다. FACT 나 VALIDATED 가 아니다.
+같은 커밋에서 후속 문제 가설을 만든다. id 는 h-problem-next 이다. statement 는 빈 문자열이다. evidenceClass 는 ASSUMPTION 이다. outcome 은 not_run 이다. pairedCustomerId 는 h-customer-next 이다.
+필수 h-problem 의 기존 statement 와 기존 binding 은 유지한다. 그 문제를 새 고객의 문제로 복사하지 않는다. activePairCustomerId 는 해소 전까지 옛 고객을 가리킨다. 선택 후보는 h-problem-next 를 새 고객의 빈 문제로 물을 수 있으나, h-customer 가 conflict_unresolved 인 동안 그 답은 단계를 올리지 않는다.
+문제 replace 도 같은 구조다. 필수 h-problem 은 양쪽 근거를 유지하고 outcome 은 conflict_unresolved 다. 후속 h-problem-next 가 CLAIM 이다. 고객 후속은 만들지 않는다. pairedCustomerId 는 현재 작업 기준 고객이다.
+
+3. conflict_unresolved 를 유지하는 조건
+다음이면 필수 가설의 outcome 은 conflict_unresolved 로 남는다.
+replace 직후, resolveConflict 가 아직 없을 때.
+같은 필수 가설에 양립하지 않는 binding 이 둘 있고, 어느 쪽도 명시적으로 작업 기준으로 선택되지 않았을 때.
+결제 가설에 부재 CLAIM 과 문자 FACT 가 둘 다 있을 때. 순서는 무관하다. 어느 쪽도 삭제하지 않는다.
+다음이면 conflict_unresolved 로 두지 않는다.
+고객이 바뀌었다는 이유만으로 옛 문제의 outcome 을 conflict 로 바꾸는 것. 옛 문제는 보존하고 짝만 분리한다.
+새 문장이 더 나중이라는 이유로 replace 안에서 승자를 정하는 것.
+모델 초안이나 bindLiteralFact 가 resolveConflict 를 호출하는 것.
+
+4. 명시적 해소 행동과 필요한 근거
+해소는 resolveConflict(ledger, { hypothesisId, evidenceId, reason }) 뿐이다.
+evidenceId 는 그 가설에 이미 있는 binding id 여야 한다. 새 문장을 이 호출의 인자로 넣어 승자를 만들지 않는다.
+reason 은 빈 문자열이면 거절한다. 이유 문장은 classReason conflict-resolution 인 CLAIM binding 으로 추가한다. 이 binding 은 FACT 가 아니다.
+선택되지 않은 binding 은 삭제하지 않는다. history 에 남긴다. conflict.resolved 는 true 가 된다.
+projectAttribution 은 이 함수가 accepted 로 바꾸지 않는다. outcome 을 passed 나 failed 로 바꾸지 않는다. 선택된 근거가 창업자 CLAIM 이면 작업 기준 statement 는 그 proposition 이고 evidenceClass 는 CLAIM 이며 outcome 은 not_run 이다.
+선택된 근거가 문자 FACT 이면 작업 기준 문자로 남기되 귀속이 unreviewed 이면 evaluateHypothesis 는 insufficient_record 다. S3 로 올리지 않는다.
+고객 해소에서 evidenceId 가 새 고객 binding 이면 필수 h-customer.statement 는 그 문장이 된다. activePairCustomerId 는 h-customer-next 가 된다. 필수 h-problem.statement 는 h-problem-next 의 statement 로 옮긴다. 옛 문제 binding 은 h-problem 의 이력에 남는다.
+evidenceId 가 옛 고객 binding 이면 필수 h-customer.statement 는 옛 문장으로 남는다. h-problem-next 는 이력에 남고 활성 짝이 되지 않는다. 필수 h-problem 은 옛 statement 를 유지한다.
+문제 해소도 같다. 선택된 문제 문장이 필수 h-problem.statement 가 되고, 다른 문제 문장은 binding 으로 남는다.
+
+5. 해소 전후의 기대. 미실행.
+evaluateHypothesis(h-customer) 는 해소 전에 conflict_unresolved 를 반환한다. passed 를 반환하면 실패다.
+evaluateStage 는 h-customer 또는 h-problem 이 conflict_unresolved 이면 S0, insufficient_basis 다. 후속 가설이 CLAIM 이어도 S1 이 되면 실패다.
+closeReview 는 해소 전에 closed_complete 가 아니다. blockingConflictIds 에 h-customer 가 있다. 일곱 필드가 채워지면 reviewCompletion 은 decision_ready 일 수 있다. decision_ready 는 완료가 아니다. founderStopped 이면 closed_incomplete 이고 blockingConflictIds 는 그대로다.
+resolveConflict 로 새 고객 binding 을 선택한 직후 evaluateHypothesis(h-customer) 의 반환은 not_run 이다. conflict_unresolved 이거나 passed 이거나 failed 이면 실패다.
+evaluateStage 는 그 시점의 활성 문제가 아직 CLAIM 이 아니면 S0 이다. 활성 문제가 CLAIM 이고 고객 작업 기준이 CLAIM 이면 S1, judgment_deferred 다. S2 나 S3 이면 실패다.
+closeReview 는 blockingConflictIds 에서 h-customer 가 빠진다. h-customer outcome 이 not_run 이면 blockingHypothesisIds 에 h-customer 가 남는다. closed_complete 는 필수 다섯이 passed 또는 failed 이고 충돌이 없을 때의 기존 조건 그대로다. 해소만으로 closed_complete 가 되면 실패다.
+옛 binding id 와 새 binding id 가 해소 후에도 둘 다 있으면 보존 조건과 같다. 한쪽이 사라지면 실패다.
+결제 가설의 부재와 문자 FACT 는 resolveConflict 후에도 두 id 가 남는다. 귀속 accepted 와 outcome passed 는 judgeAttribution 과 기준 조상 조건이 따로 있을 때만 가능하다.
+
+===== 보완 B. 후보별 판단 미리보기 =====
+
+이 절의 분기 표는 설계값이다. 미실행이다.
+미리보기는 후보마다 applyFounderAnswer 를 한 번 호출하는 것이 아니다. 후보마다 아래 분기 집합을 장부 복사본에 적용하고, 분기마다 차이를 기록한다.
+
+질문 후보의 분기
+affirm. 현재 statement 를 유지하고 CLAIM 으로 둔다.
+replace. nextStatement 는 현재 statement 와 다른 구조적 자리표시자다. 사업 문구 목록이 아니다.
+unknown. 등급을 올리지 않는다.
+
+검증 후보의 분기
+payment_claim.
+absence_claim.
+literal_unreviewed. 문자 FACT 를 넣고 귀속은 unreviewed 로 둔다.
+criterion_defined. defineCriterion 만 적용한다. 이 호출만으로 단계가 움직이면 실패다.
+
+충돌이 열려 있을 때의 해소 후보 분기
+resolve_retain_new. evidenceId 는 새 binding.
+resolve_retain_old. evidenceId 는 옛 binding.
+unknown. outcome 은 conflict_unresolved 로 남는다.
+
+각 분기에 남기는 필드
+candidateId.
+hypothesisId.
+act.
+stageBefore, stageAfter, stageChanged.
+verdictBefore, verdictAfter, verdictChanged.
+judgmentBefore, judgmentAfter, judgmentChanged.
+judgmentChangeClass. none, annotation, identity, conflict 중 하나다.
+none 은 판단 문장과 필수 가설 statement 와 등급이 그대로다.
+annotation 은 문장이 늘지만 필수 가설의 작업 기준 statement 는 그대로다.
+identity 는 필수 가설의 statement 등급이 ASSUMPTION 에서 CLAIM 으로 바뀌거나 작업 기준 statement 가 바뀐다.
+conflict 는 conflict_unresolved 가 열리거나 닫힌다.
+criticalUnknownBefore, criticalUnknownAfter.
+outcomeBefore, outcomeAfter.
+failureDropsStage.
+bindingIdsBefore, bindingIdsAfter.
+
+순위는 이 기록에서 계산한다. 후보 id 의 고정 순서로 계산하지 않는다.
+키 1. 그 후보의 분기 가운데 단계 순위 차이의 최대 절대값.
+키 2. 어느 분기라도 verdictChanged 이면 1.
+키 3. 어느 분기라도 failureDropsStage 이면 1.
+키 J. 분기들의 judgmentChangeClass 최댓값. conflict 가 identity 보다 앞이고, identity 가 annotation 보다 앞이고, annotation 이 none 보다 앞이다.
+키 4. 앞의 키가 같을 때만, resolvableByQuestion 이 false 이면 1.
+키 5. critical unknown 과 같으면 1.
+키 6. hypothesisId 사전순. 이 키로만 갈라지면 tieBreak 는 stable-id 이고 이유는 사업 근거가 아니라고 말한다.
+priorityReason 은 이긴 분기의 act 와, 실제로 true 인 변화 필드를 답변 전에 적는다.
+이유 문장이 단계 변화를 말하는데 그 후보의 모든 분기에서 stageChanged 가 false 이면 그 선택은 실패다.
+단계 변화가 있는 분기가 하나도 없는 후보가 이유에서 유일한 단계 변화라고 말하면 실패다.
+judgmentChangeClass 가 none 인 분기로만 이루어진 후보는, 다른 후보에 none 이 아닌 분기가 있으면 no-judgment-branch 로 탈락한다.
+
+시드 장부에서의 설계 비교. 고객과 문제는 ASSUMPTION, 단계 S0, critical unknown 은 h-customer. 미실행.
+q-customer affirm. judgmentChangeClass identity. stageChanged false. verdictChanged false. critical unknown 은 h-problem 으로 바뀐다.
+q-customer replace. judgmentChangeClass conflict. stageChanged false. h-customer outcome 은 conflict_unresolved. 양쪽 binding 유지.
+q-customer unknown. judgmentChangeClass annotation. stageChanged false.
+q-problem affirm. judgmentChangeClass identity. stageChanged false. 고객이 아직 CLAIM 이 아니므로 단계는 S0 이다.
+q-channel 의 affirm, replace, unknown. judgmentChangeClass none. stageChanged false. verdictChanged false. 탈락 키 no-judgment-branch.
+v-payment 의 payment_claim 과 absence_claim. judgmentChangeClass annotation. stageChanged false. S3 이면 실패다.
+비교 결과. q-customer 와 q-problem 의 최댓값은 identity 이상이다. v-payment 의 최댓값은 annotation 이다. 키 J 에서 질문 후보가 검증 후보보다 앞이다. q-customer 와 q-problem 은 키 1 부터 키 J 까지 같다. critical unknown 이 h-customer 이므로 선택은 q-customer, tieBreak critical-unknown 이다. 이유에 단계 변화를 쓰면 실패다.
+
+고객만 CLAIM 인 장부에서의 설계 비교. 미실행.
+q-problem affirm. stageChanged true. S0 에서 S1. verdictChanged true. insufficient_basis 에서 judgment_deferred. judgmentChangeClass identity.
+q-payer affirm. stageChanged false. 기준이 없으므로 S2 가 아니다. judgmentChangeClass identity 또는 annotation.
+v-payment. stageChanged false. judgmentChangeClass annotation.
+선택 이유. q-problem 의 affirm 분기가 단계를 S1 로 바꾼다. 이 경우에만 이유 문장이 단계 변화를 말할 수 있다.
+
+고객과 문제가 CLAIM 이고 기준이 없는 장부에서의 설계 비교. 미실행.
+q-payer affirm. stageChanged false. 단계는 S1 유지.
+criterion 후보의 criterion_defined. stageChanged false. defineCriterion 단독으로 단계가 움직이면 실패다.
+어느 후보도 stageChanged true 가 아니면 이유에 유일한 단계 변화라고 쓰지 않는다. critical unknown 이 h-payer 이면 선택은 q-payer, tieBreak critical-unknown 이다.
+
+고객이 ASSUMPTION 이고 지불자만 CLAIM 인 장부에서의 설계 비교. 미실행.
+q-customer affirm. judgmentChangeClass identity. stageChanged false.
+q-channel 의 세 분기. judgmentChangeClass none. 탈락.
+선택. q-customer. tieBreak 는 stable-id 가 아니다. 이유에 h-channel 의 단계 변화라고 쓰면 실패다.
+
+충돌이 열린 장부에서의 설계 비교. 미실행.
+q-resolve resolve_retain_new. judgmentChangeClass conflict. outcome 은 not_run. stageChanged false. 두 binding 유지. closeReview 의 blockingConflictIds 에서 그 가설이 빠지고 blockingHypothesisIds 에는 not_run 으로 남는다.
+q-resolve resolve_retain_old. 옛 statement 가 작업 기준이 된다. 새 binding 은 남는다. 단계 상승은 없다.
+q-resolve unknown. outcome 은 conflict_unresolved. closeReview 는 closed_complete 가 아니다.
+q-channel. none 이면 탈락.
+선택 이유. 해소 분기가 충돌 상태를 바꾼다. 단계 변화는 없다고 적는다. 단계 변화가 유일하다고 적으면 실패다.
+
+회귀에 추가하는 검사. 미실행.
+미리보기 기록에 후보 id, 가설 id, act, 장부 차이, 판단·단계·판정 변경 여부, 실패 분기, critical unknown 변화가 없으면 실패다.
+이유의 단계 주장과 stageChanged 가 모순이면 실패다.
+resolveConflict 없이 replace 만으로 closed_complete 이거나, replace 직후 옛 binding 이 없으면 실패다.
+resolveConflict 만으로 outcome 이 passed 이거나 귀속이 accepted 이거나 선택되지 않은 binding 이 사라지면 실패다.
