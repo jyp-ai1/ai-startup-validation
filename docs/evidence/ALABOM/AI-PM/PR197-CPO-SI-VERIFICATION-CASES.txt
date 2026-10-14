@@ -1,0 +1,98 @@
+PR #197 순수 SI 검증의 최소 사례와 실패 조건. 문서만 작성했다. 테스트 파일을 추가하지 않았다. vitest 를 실행하지 않았다. 화면, DB, 모델 연결, 병합, Production 배포를 하지 않았다. Production 잠금 0b465226.
+
+이 문서는 승인된 합격 기준이 아니고 검증 착수 승인도 아니다. 아래 명령은 나중에 순수 SI 검증이 따로 승인된 뒤에 쓸 명령이다. 이 턴의 명령 실행 횟수는 0이다.
+
+공통 입력 함수는 apps/web/features/strategic-intelligence/lib/si-judgment-contract.ts 의 createProjectLedger, createSeedLedger, applyFounderAnswer, selectNextAction, bindLiteralFact, defineCriterion, closeReview, offerModelDraft 다. 시드 고객은 반찬가게·꽃집 등 직접 배송 소상공인. 시드 문제는 주문과 배송을 따로 관리해야 함. 시드 수익은 월 구독. 결제 문장은 이미 결제 3건이 있어 고객이 돈을 내고 있습니다. 부재 문장은 아직 실제 결제·사용 증거는 없습니다.
+
+나중에 승인되면 쓸 기존 명령
+pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts --reporter=verbose
+
+이 명령이 다루는 기존 단언은 AT-01 부터 AT-14, 보완 A, 보완 B, revise next action, payment next action, revised customer judgment, 30행 재생이다. 그 단언을 이 턴에 다시 실행하지 않았다. 새 사례용 테스트 파일은 만들지 않았다.
+
+1. 판단 변화의 실질성
+
+사례 1A. 변화가 있어야 하는 입력.
+최소 입력. createSeedLedger. 고객 affirm. 그 다음 문제 affirm. 문제 문장은 시드 문제 문장이다.
+기대. 고객만 확인한 직후는 단계 S0, 판정 insufficient_basis, 판단에 고객 CLAIM 이 있다. 문제까지 확인한 직후는 단계 S1, 판정 judgment_deferred, 판단에 고객 문장과 문제 문장이 함께 CLAIM 으로 있다. 전후 단계, 전후 판정, 전후 판단 문장이 한 기록에 남는다.
+실패. 문제 확인 뒤에도 단계가 S0 이거나 판정이 insufficient_basis 로 남는다. 판단이 두 문장을 아직 가정이라고만 말한다. 전후 값 중 하나가 기록되지 않는다.
+자리. 기존 AT-01. 새 파일 없음. 이 턴 실행 없음.
+나중에 쓸 명령. 공통 기존 명령.
+
+사례 1B. 변화가 없어야 하는 대조.
+최소 입력. 시드에서 고객만 affirm 해 문제는 ASSUMPTION 인 장부. 행위는 payment_claim, 대상 h-business-model, 문장은 결제 3건 문장.
+기대. 단계는 S0, 판정은 insufficient_basis 로 답 전과 같다. binding 은 h-business-model CLAIM, classReason weak-payment. FACT 와 VALIDATED 가 아니다. 판단에 결제 문장과 주체·금액·기록이 없어 단계를 움직이지 않았다는 문장이 있다. 단계가 그대로인 이유가 그 문장으로 남는다.
+실패. 단계가 S1 이상으로 오른다. 판정이 judgment_deferred 로 바뀐다. 결제 binding 이 FACT 또는 VALIDATED 가 된다. 판단이 단계가 그대로인 이유를 빠뜨린다.
+자리. 기존 AT-07 과 인과 고정 입력의 단계 유지. 새 파일 없음. 이 턴 실행 없음.
+나중에 쓸 명령. 공통 기존 명령.
+
+사례 1C. 판단 문장만 바뀌고 단계는 그대로인 대조.
+최소 입력. createSeedLedger 뒤 고객 affirm 한 번.
+기대. 판단은 확인 전 가정 문장에서 고객 CLAIM 문장으로 바뀐다. 단계 S0 과 판정 insufficient_basis 는 유지된다. 문장 변화와 단계 불변이 둘 다 기록된다.
+실패. 고객 확인만으로 단계가 S1 이 된다. 판단 문장이 확인 전과 같다.
+자리. 기존 AT-01 의 고객 확인 구간. 새 파일 없음. 이 턴 실행 없음.
+나중에 쓸 명령. 공통 기존 명령.
+
+2. 질문 후보별 정보가치
+
+사례 2A. 경쟁 후보 비교에서 결제 주체가 문제 재확인보다 앞인 경우.
+최소 입력. createProjectLedger. 고객은 직원 20–80명 제조사 영업관리자. 문제는 메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다. 고객 affirm 뒤 payment_claim.
+기대. 선택 id 는 q-payer, 가설은 h-payer, tieBreak 는 payment-gap 이다. prompt 는 누구의 결제인지를 묻고, 금액과 거래 기록은 이 질문으로 생기지 않는다고 말한다. prompt 에 문제 문장이 없다. 후보 q-problem 의 affirm 미리보기는 단계 S0 에서 S1 이다. 순위는 q-payer 가 q-problem 보다 앞이다. 선택 이유는 affirm 분기의 판단 문장 변화와 단계 불변을 말하고, 문제 문장 재확인보다 결제 주체를 고른다고 말한다.
+실패. 선택이 q-problem 이거나 prompt 가 문제 문장을 다시 묻는다. 이유가 단계를 S0 에서 S1 로 바꾼다고 말하면서 선택된 후보의 그 분기는 stageChanged false 다. q-problem 과의 비교 기록이 없다.
+자리. 기존 payment next action 의 첫 사례와 30행 paymentYes. 새 파일 없음. 이 턴 실행 없음.
+나중에 쓸 명령. 공통 기존 명령.
+
+사례 2B. 잘못된 선택을 판별하는 부재 대조.
+최소 입력. 사례 2A 와 같은 고객 affirm 장부. 행위만 absence_claim, 문장은 부재 문장.
+기대. 선택 id 는 v-business-model, 가설은 h-business-model 이다. prompt 는 문자 기록을 요구하고 누구의 결제를 묻지 않는다. prompt 에 문제 문장이 없다. literal_unreviewed 미리보기의 판단 변화 등급은 conflict 이고 stageChanged 는 false 다. q-problem 은 순위 뒤에 남는다. 이유는 문제 문장을 다시 확인해도 기록이 생기지 않고, 필요한 증거는 주체와 금액이 적힌 문자 기록이라고 말한다. paymentYes 의 prompt 와 글자가 다르다.
+실패. 선택이 q-problem 또는 q-payer 다. 두 분기의 prompt 가 같다. 이유가 literal_unreviewed 의 등급과 다르게 판단 문장 변화를 단정한다. 경쟁 후보 비교가 한 후보만 남긴다.
+자리. 기존 payment next action 의 부재 사례와 30행 paymentNone. 새 파일 없음. 이 턴 실행 없음.
+나중에 쓸 명령. 공통 기존 명령.
+
+3. 증거와 판단 근거 연결
+
+사례 3A. CLAIM, ASSUMPTION, FACT 를 섞지 않는 입력.
+최소 입력. 시드 장부. 고객 affirm. 문제는 문서 binding 그대로 둔다. 부재 문장을 h-business-model 에 넣는다. 그 다음 h-business-model 에 문자 한 줄을 bindLiteralFact, role payment-literal. 귀속은 수락하지 않는다. VALIDATED 를 binding evidenceClass 로 넣는 호출을 따로 둔다.
+기대. 고객 affirm 의 evidenceClass 는 CLAIM 이다. FACT 도 VALIDATED 도 아니다. 문제의 문서 binding 은 ASSUMPTION 으로 남는다. 부재는 h-business-model 의 CLAIM 이고 문제와 시장의 evidenceClass 는 FACT 가 아니다. 문자 기록은 FACT, authenticityGuaranteed false, projectAttribution unreviewed, outcome insufficient_record, 단계 S3 가 아니다. VALIDATED binding 은 거절된다. 창업자 확인만으로 closeReview 가 closed_complete 가 되지 않는다.
+실패. affirm 이 FACT 또는 VALIDATED 로 저장된다. 부재가 문제나 시장에 FACT 로 복사된다. 귀속 미수락 문자 기록의 outcome 이 passed 이거나 단계가 S3 다. VALIDATED binding 이 받아들여진다. 고객과 문제 CLAIM 만으로 closed_complete 가 된다.
+자리. 기존 AT-02, AT-06, AT-08, AT-09, AT-13. VALIDATED 거절은 binding 함수가 던지는 동작이며, 그 한 줄만 따로 단언한 기존 사례 이름은 이 문서에서 지정하지 않는다. 그 단언을 추가하는 테스트 파일은 만들지 않았다.
+나중에 쓸 명령. 공통 기존 명령. VALIDATED 거절의 별도 단언이 필요하면 그 파일 추가는 검증 착수 승인 뒤의 일이다.
+
+사례 3B. 근거가 부족한데 판정이 오르는 입력을 실패로 둔다.
+최소 입력은 네 갈래다.
+갈래 가. 고객 CLAIM 만 있고 문제는 ASSUMPTION.
+갈래 나. 고객과 문제가 CLAIM 이고 결제 3건 CLAIM 만 추가. 문자 FACT 없음.
+갈래 다. 고객과 문제가 CLAIM 이고 defineCriterion 만 호출. 지불자는 CLAIM 이 아님.
+갈래 라. 지불자 CLAIM 과 기준이 있고, 문자 FACT 하나의 귀속은 unreviewed. 지표 FACT 의 귀속 수락은 없음.
+기대. 가 는 단계 S0, 판정 insufficient_basis. 나 는 단계 S1 을 넘지 않는다. 다는 단계 S1, 판정 judgment_deferred 를 넘지 않고 defineCriterion 호출 전후 단계가 같다. 라는 단계 S3 가 아니고 outcome passed 가 아니다. S2 는 지불자 CLAIM 과 passIf 와 failIf 가 함께 있을 때만이다. S3 는 h-business-model outcome passed, 기준이 조상 커밋, payment-literal FACT 와 metric:pass FACT 의 귀속이 둘 다 accepted 일 때만이다.
+실패. 가 가 S1 이상이 된다. 나 가 S2 또는 S3 가 된다. 다가 S2 가 된다. 라가 S3 또는 passed 가 된다.
+자리. 가 와 나는 AT-01, AT-07. 다 의 단계 불변은 보완 B 의 criterion_defined stageChanged false. 라는 AT-08 과 보완 A 의 미수락 FACT. 네 갈래를 한 사례 이름으로 묶은 테스트는 없다. 그 파일을 만들지 않았다.
+나중에 쓸 명령. 공통 기존 명령. 네 갈래를 한 이름으로 묶는 추가는 검증 착수 승인 뒤의 일이다.
+
+4. 기존 계약 회귀
+
+최소 입력. 기존 테스트 파일이 이미 가진 AT-01 부터 AT-14, 보완 A, 보완 B, 그리고 S1 부터 S6 의 confirm, revise, unknown, paymentYes, paymentNone.
+기대. 고객 정정 뒤 활성 판단은 새 고객만 말하고 새 문제는 확인 전까지 미확인이다. 옛 고객과 옛 문제는 과거 기록이며 그 문제는 새 고객의 문제가 아니다. 새 문제 CLAIM 뒤 다음은 q-payer 이고 단계는 S0, 충돌은 미해소다. paymentYes 는 q-payer, paymentNone 은 v-business-model 이다. 30행 failed 는 0 이다. AT-01 부터 AT-14 의 기존 단언이 유지된다.
+실패. 활성 판단이 옛 문제를 새 고객의 문제처럼 말한다. revise 가 옛 문제 문장을 다음 질문으로 고른다. 새 문제 CLAIM 뒤 선택이 q-resolve 이거나 옛 문제다. paymentYes 가 q-problem 으로 문제 문장을 다시 묻는다. paymentNone 이 paymentYes 와 같은 질문을 고른다. 두 불일치를 실패 건수에서 뺀다. AT-01 부터 AT-14 중 하나라도 실패한다.
+자리. 기존 두 테스트 파일. 새 파일 없음. 이 턴 실행 없음.
+나중에 쓸 명령. 공통 기존 명령.
+
+5. 비용 경로
+
+최소 입력. si-judgment-contract.ts 원문. createSeedLedger 에서 offerModelDraft 를 호출하고, 인자로 chat 함수를 가진 객체를 넘겨도 그 함수는 호출되지 않는 경로. 고객 확인, 문제 확인, 고객 replace, 부재, 결제 주장, 문자 FACT, selectNextAction, unknown 을 한 번씩 지나친 뒤의 호출 횟수.
+기대. 원문에 api.openai.com, openai-http, fetch(, .chat( 가 없다. chat 호출 횟수 0. OpenAI HTTP 횟수 0. offerModelDraft 는 headCommitId 를 바꾸지 않고 rejected true 다.
+실패. 위 호출이 한 번이라도 발생한다. 원문에 그 문자열이 있다. 초안 문자열이 장부 판단을 덮어쓴다.
+자리. 기존 AT-14. 새 파일 없음. 이 턴 실행 없음.
+나중에 쓸 명령. 공통 기존 명령.
+
+6. 화면 검증 분리
+
+순수 SI 검증에서 빼는 것. 화면에 보이는 질문 문장, 선택지 라벨, 근거 문장의 화면 배치, 창업자가 그 문장을 이해했는지에 대한 사용 관찰.
+순수 SI 에 남는 것. 장부의 judgment, prompt, priorityReason, 선택 id, 단계, 판정, binding 의 evidenceClass.
+실패. 순수 SI 명령이 브라우저를 띄우거나 화면 문구의 렌더 결과를 합격 조건으로 넣는다. 화면 일치를 순수 SI 통과로 보고한다.
+이 항목의 테스트 명령은 없다. 브라우저 명령은 화면 검증 승인 뒤에만 별도로 정한다. 이 턴에 브라우저를 열지 않았다.
+
+착수 전 상태
+테스트 추가 없음. 명령 실행 없음. 통과 표시 없음. 전략 적합성 승인 없음. 화면, DB, 모델, 병합, Production 배포 없음. Production 잠금 0b465226.
+
+[CTO] CPO 요청 작업: 완료 — 검증 범위 초안 접수, 구현·테스트 실행 지시 없음
+[CPO] 검토·지시 필요: 예 — 최소 테스트 사례와 실패 조건을 검토한 뒤 순수 SI 검증 착수 여부 결정 필요
