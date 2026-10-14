@@ -1,0 +1,37 @@
+PR #197 순수 SI 검증 실행 기록. 화면 없음. DB 없음. 모델 연결 없음. 병합 없음. Production 배포 없음. Production 잠금 0b465226. 전략 적합성 승인은 이 통과로 하지 않는다.
+
+명령
+pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts --reporter=verbose
+
+시각
+2026-10-14 12:06:45 UTC
+
+출력
+Test Files  2 passed (2)
+Tests  29 passed (29)
+Duration  611ms
+Start at  12:06:45
+실패 행 없음. 실패를 집계에서 빼지 않았다.
+
+30행
+docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-CAUSE-RECOVERY-REPLAY.json
+branchCount 30. passed 30. failed 0. failures 길이 0.
+
+비용
+AT-14 가 같은 명령에서 통과했다. 그 단언은 chat 호출 0, OpenAI HTTP 0, 원문에 api.openai.com 과 openai-http 와 fetch( 와 .chat( 없음, offerModelDraft 가 head 를 유지함이다.
+
+명세 사례의 실행값
+1A. 시드 S0 insufficient_basis 에서 고객과 문제 affirm 뒤 S1 judgment_deferred. 판단에 고객 확인과 문제 확인, 두 statement CLAIM, 결제 기록은 없다. 다음은 h-payer. 전후 단계와 판정과 판단을 한 비교 기록으로 단언했다.
+1B. 같은 시드에 결제 CLAIM 만 넣으면 S0 insufficient_basis. 1A 의 S1 judgment_deferred 가 아니다. binding 은 weak-payment CLAIM. 판단에 결제 문장, 주체·금액·기록, 가정이 있다. 다음은 q-customer.
+1C. S1 장부에 결제 CLAIM 을 넣으면 S1 judgment_deferred. S2 와 S3 가 아니다. 다음은 q-payer. affirm 미리보기는 judgmentChanged true, stageChanged false. 이유가 그 미리보기와 같다.
+2A. q-payer, tieBreak payment-gap. 이유는 affirm 의 판단 문장 변화와 단계 불변을 말하고 S0 에서 S1 을 말하지 않는다. q-problem affirm 미리보기는 stageChanged true 이고 순위는 뒤다.
+2B. v-business-model. literal_unreviewed 미리보기는 등급 conflict, stageChanged false. 이유는 그 등급과 단계 불변을 말한다. prompt 는 2A 와 다르다.
+3A. 고객 affirm 은 CLAIM. 문제 문서 binding 은 ASSUMPTION. 부재와 문자 FACT 가 함께 있으면 outcome 은 conflict_unresolved 다. insufficient_record 가 아니다. 부재 없이 문자 FACT 만 있으면 outcome 은 insufficient_record 다. 둘 다 단계 S3 가 아니고 귀속은 unreviewed 이며 authenticityGuaranteed 는 false 다. VALIDATED binding 은 실행 장부에 없다. 원문은 VALIDATED 클래스를 거절한다.
+3B. 기준을 넣은 직후의 저장 단계는 S1 이다. defineCriterion 은 단계를 올리지 않는다. 문자 FACT 가 없는 h-channel unknown 으로 단계를 다시 계산하면 S2 judgment_deferred 다. 그 상태에서 귀속 unreviewed 인 payment-literal FACT 와 metric:pass FACT 를 넣으면 단계는 S2, 판정 judgment_deferred, outcome insufficient_record, S3 가 아니다. closeReview 는 closed_complete 가 아니다.
+4. AT-01 부터 AT-14, 보완 A, 보완 B, revise, payment, 활성 고객 판단, 30행이 같은 명령에서 통과했다. 실패 행 없음.
+5. 위 비용 단언.
+6. 브라우저를 열지 않았다. 화면 일치는 이 통과에 없다.
+
+명세 문장과의 차이
+3A 명세는 부재와 문자 기록을 한 입력으로 두고 outcome 을 insufficient_record 로 적었다. 실행값은 그 입력에서 conflict_unresolved 다. AT-09 가 그 충돌을 유지한다. 문자 기록만 있는 입력의 outcome 은 insufficient_record 다. 귀속 unreviewed 에서 S3 로 오른 행은 없다.
+3B 명세의 초기 단계 S2 는 기준을 쓴 직후가 아니라, 그 기준이 있는 장부를 다시 계산한 뒤의 값이다.

@@ -1104,3 +1104,220 @@ describe('revised customer judgment stays on the active customer', () => {
     }
   });
 });
+
+function citedPreview(record: ReturnType<typeof selectNextAction>) {
+  const acts = ['literal_unreviewed', 'resolve_retain_new', 'resolve_retain_old', 'payment_claim', 'absence_claim', 'criterion_defined', 'affirm', 'replace', 'unknown'];
+  const act = acts.find((name) => record.priorityReason.includes(name));
+  if (!act) return undefined;
+  return previewOf(record, record.selectedId, act);
+}
+
+function assertReasonMatchesCitedPreview(record: ReturnType<typeof selectNextAction>) {
+  const cited = citedPreview(record);
+  const reason = record.priorityReason;
+  if (cited && reason.includes('판단 문장이 달라진다')) expect(cited.judgmentChanged).toBe(true);
+  if (cited && reason.includes('판단 문장은 그대로다')) expect(cited.judgmentChanged).toBe(false);
+  if (cited && reason.includes('단계 변화는 없다')) expect(cited.stageChanged).toBe(false);
+  const moved = reason.match(/단계를 (S\d)에서 (S\d)로 바꾼다/);
+  if (cited && moved) {
+    expect(cited.stageChanged).toBe(true);
+    expect(cited.stageBefore).toBe(moved[1]);
+    expect(cited.stageAfter).toBe(moved[2]);
+  }
+  if (cited && /등급은 conflict|등급 conflict/.test(reason)) expect(cited.judgmentChangeClass).toBe('conflict');
+  assertHonestStageReason(record);
+}
+
+describe('verification spec 9a1c0aad', () => {
+  it('compares a real S1 change with a payment claim that stays at S0', () => {
+    const seed = createSeedLedger();
+    const before = {
+      stageId: seed.stageId,
+      verdictId: seed.verdictId,
+      judgment: seed.judgment,
+      customerClass: seed.hypotheses['h-customer']?.evidenceClass,
+      problemClass: seed.hypotheses['h-problem']?.evidenceClass,
+    };
+    expect(before).toEqual({
+      stageId: 'S0',
+      verdictId: 'insufficient_basis',
+      judgment: expect.stringContaining('아직 확인되지 않은 가정이다'),
+      customerClass: 'ASSUMPTION',
+      problemClass: 'ASSUMPTION',
+    });
+
+    const customerOnly = confirmCustomer(seed);
+    expect(customerOnly.stageId).toBe('S0');
+    expect(customerOnly.verdictId).toBe('insufficient_basis');
+    expect(customerOnly.judgment).not.toBe(before.judgment);
+    const confirmed = confirmProblem(customerOnly);
+    const next = selectNextAction(confirmed);
+    assertReasonMatchesCitedPreview(next);
+    expect(confirmed.stageId).toBe('S1');
+    expect(confirmed.verdictId).toBe('judgment_deferred');
+    expect(confirmed.judgment).toContain('고객 확인과 문제 확인을 반영했다');
+    expect(confirmed.judgment).toContain(CUSTOMER_STATEMENT);
+    expect(confirmed.judgment).toContain(PROBLEM_STATEMENT);
+    expect(confirmed.judgment).toContain('CLAIM');
+    expect(confirmed.whyPossible).toContain('h-customer');
+    expect(confirmed.whyPossible).toContain('h-problem');
+    expect(confirmed.whyFail).toContain('결제 기록은 없다');
+    expect(next.hypothesisId).toBe('h-payer');
+    expect(next.hypothesisId).not.toBe('h-channel');
+    expect({
+      beforeStage: before.stageId,
+      afterStage: confirmed.stageId,
+      beforeVerdict: before.verdictId,
+      afterVerdict: confirmed.verdictId,
+      beforeJudgment: before.judgment,
+      afterJudgment: confirmed.judgment,
+    }).toEqual({
+      beforeStage: 'S0',
+      afterStage: 'S1',
+      beforeVerdict: 'insufficient_basis',
+      afterVerdict: 'judgment_deferred',
+      beforeJudgment: before.judgment,
+      afterJudgment: confirmed.judgment,
+    });
+
+    const paidOnly = answer(seed, { kind: 'payment_claim', proposition: WEAK_PAYMENT_SENTENCE, targetHypothesisId: 'h-business-model' });
+    const paidNext = selectNextAction(paidOnly);
+    const weak = paidOnly.bindings.find((item) => item.classReason === 'weak-payment');
+    expect(paidOnly.stageId).toBe('S0');
+    expect(paidOnly.verdictId).toBe('insufficient_basis');
+    expect(paidOnly.stageId).not.toBe(confirmed.stageId);
+    expect(paidOnly.verdictId).not.toBe(confirmed.verdictId);
+    expect(paidOnly.judgment).toContain(WEAK_PAYMENT_SENTENCE);
+    expect(paidOnly.judgment).toContain('주체·금액·기록이 없어 단계를 움직이지 않았다');
+    expect(paidOnly.judgment).toContain('가정');
+    expect(weak?.evidenceClass).toBe('CLAIM');
+    expect(weak?.hypothesisId).toBe('h-business-model');
+    expect(weak?.evidenceClass).not.toBe('FACT');
+    expect(weak?.evidenceClass).not.toBe('VALIDATED');
+    expect(paidNext.hypothesisId).toBe('h-customer');
+    expect(paidNext.selectedId).toBe('q-customer');
+    expect(paidNext.selectedId).not.toBe('q-payer');
+    expect(paidNext.selectedId).not.toBe('v-business-model');
+  });
+
+  it('does not raise S2 or S3 when a payment claim arrives after S1', () => {
+    const ready = confirmProblem();
+    expect(ready.stageId).toBe('S1');
+    expect(ready.verdictId).toBe('judgment_deferred');
+    expect(ready.hypotheses['h-payer']?.evidenceClass).not.toBe('CLAIM');
+    const paid = answer(ready, { kind: 'payment_claim', proposition: WEAK_PAYMENT_SENTENCE, targetHypothesisId: 'h-business-model' });
+    const next = selectNextAction(paid);
+    assertReasonMatchesCitedPreview(next);
+    const weak = paid.bindings.find((item) => item.classReason === 'weak-payment');
+    expect(paid.stageId).toBe('S1');
+    expect(paid.verdictId).toBe('judgment_deferred');
+    expect(paid.stageId).not.toBe('S2');
+    expect(paid.stageId).not.toBe('S3');
+    expect(paid.verdictId).not.toBe('conditionally_viable');
+    expect(paid.verdictId).not.toBe('viable');
+    expect(paid.judgment).toContain(CUSTOMER_STATEMENT);
+    expect(paid.judgment).toContain(PROBLEM_STATEMENT);
+    expect(paid.judgment).toContain(WEAK_PAYMENT_SENTENCE);
+    expect(paid.judgment).toContain('주체·금액·기록이 없어 단계를 움직이지 않았다');
+    expect(weak?.evidenceClass).toBe('CLAIM');
+    expect(next.hypothesisId).toBe('h-payer');
+    expect(next.selectedId).toBe('q-payer');
+    expect(next.prompt).toContain('누구의 결제');
+    expect(next.prompt).toContain('금액과 거래 기록은 이 질문으로 생기지 않는다');
+    const affirm = previewOf(next, 'q-payer', 'affirm');
+    expect(affirm.judgmentChanged).toBe(true);
+    expect(affirm.stageChanged).toBe(false);
+  });
+
+  it('matches the payer and absence reasons to the cited previews', () => {
+    const problem = '메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다';
+    const customer = answer(
+      createProjectLedger({
+        customerStatement: '직원 20–80명 제조사 영업관리자',
+        problemStatement: problem,
+        businessStatement: '견적 자동화',
+      }),
+      { kind: 'affirm', targetHypothesisId: 'h-customer', proposition: '이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.' },
+    );
+    expect(customer.stageId).toBe('S0');
+    expect(customer.verdictId).toBe('insufficient_basis');
+    const paid = answer(customer, { kind: 'payment_claim', proposition: WEAK_PAYMENT_SENTENCE, targetHypothesisId: 'h-business-model' });
+    const payerChoice = selectNextAction(paid);
+    assertReasonMatchesCitedPreview(payerChoice);
+    expect(payerChoice.selectedId).toBe('q-payer');
+    expect(payerChoice.tieBreak).toBe('payment-gap');
+    expect(payerChoice.prompt).not.toContain(problem);
+    expect(previewOf(payerChoice, 'q-payer', 'affirm').stageChanged).toBe(false);
+    expect(previewOf(payerChoice, 'q-problem', 'affirm').stageChanged).toBe(true);
+    expect(payerChoice.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
+    expect(payerChoice.candidates.map((item) => item.id).length).toBeGreaterThan(1);
+
+    const absent = answer(customer, { kind: 'absence_claim', proposition: ABSENCE_SENTENCE, targetHypothesisId: 'h-business-model' });
+    const recordChoice = selectNextAction(absent);
+    assertReasonMatchesCitedPreview(recordChoice);
+    expect(recordChoice.selectedId).toBe('v-business-model');
+    expect(recordChoice.prompt).not.toBe(payerChoice.prompt);
+    expect(recordChoice.prompt).not.toContain(problem);
+    expect(previewOf(recordChoice, 'v-business-model', 'literal_unreviewed').judgmentChangeClass).toBe('conflict');
+    expect(previewOf(recordChoice, 'v-business-model', 'literal_unreviewed').stageChanged).toBe(false);
+    expect(recordChoice.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
+    expect(recordChoice.candidates.map((item) => item.id)).toEqual(expect.arrayContaining(['v-business-model', 'q-problem']));
+  });
+
+  it('keeps an unreviewed literal record off S3 and rejects a validated class', () => {
+    const source = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../si-judgment-contract.ts'), 'utf8');
+    expect(source).toContain("if (input.evidenceClass === 'VALIDATED') throw new Error('VALIDATED is not a binding class')");
+    const customer = confirmCustomer();
+    expect(customer.hypotheses['h-customer']?.evidenceClass).toBe('CLAIM');
+    expect(customer.bindings.some((item) => item.evidenceClass === 'FACT' || item.evidenceClass === 'VALIDATED')).toBe(false);
+    expect(customer.bindings.find((item) => item.id === 'b-problem-doc')?.evidenceClass).toBe('ASSUMPTION');
+    const absent = answer(customer, { kind: 'absence_claim', proposition: ABSENCE_SENTENCE, targetHypothesisId: 'h-business-model' });
+    const conflicted = bindLiteralFact(absent, { hypothesisId: 'h-business-model', recordText: TAX_LINE, role: 'payment-literal' }).ledger;
+    const fact = conflicted.bindings.find((item) => item.classReason === 'payment-literal');
+    expect(conflicted.hypotheses['h-problem']?.evidenceClass).toBe('ASSUMPTION');
+    expect(conflicted.hypotheses['h-market']?.evidenceClass).not.toBe('FACT');
+    expect(conflicted.bindings.find((item) => item.classReason === 'absence')?.evidenceClass).toBe('CLAIM');
+    expect(fact?.evidenceClass).toBe('FACT');
+    expect(fact?.authenticityGuaranteed).toBe(false);
+    expect(fact?.projectAttribution).toBe('unreviewed');
+    expect(conflicted.hypotheses['h-business-model']?.outcome).toBe('conflict_unresolved');
+    expect(conflicted.hypotheses['h-business-model']?.outcome).not.toBe('passed');
+    expect(conflicted.stageId).not.toBe('S3');
+    expect(conflicted.verdictId).not.toBe('conditionally_viable');
+    expect(conflicted.bindings.some((item) => item.evidenceClass === 'VALIDATED')).toBe(false);
+    expect(closeReview(conflicted).reviewCompletion).not.toBe('closed_complete');
+
+    const factOnly = bindLiteralFact(customer, { hypothesisId: 'h-business-model', recordText: TAX_LINE, role: 'payment-literal' });
+    expect(factOnly.ledger.hypotheses['h-business-model']?.outcome).toBe('insufficient_record');
+    expect(factOnly.ledger.stageId).not.toBe('S3');
+    expect(factOnly.binding.projectAttribution).toBe('unreviewed');
+  });
+
+  it('does not reach S3 from unreviewed payment and metric facts', () => {
+    const ready = defineCriterion(confirmPayer(), {
+      hypothesisId: 'h-business-model',
+      measure: '결제',
+      passIf: '통과 조건',
+      failIf: '실패 조건',
+      requiredLiteralScopes: [],
+    });
+    const opened = answer(ready, { kind: 'unknown', targetHypothesisId: 'h-channel' });
+    expect(opened.stageId).toBe('S2');
+    expect(opened.verdictId).toBe('judgment_deferred');
+    expect(opened.bindings.some((item) => item.evidenceClass === 'FACT')).toBe(false);
+    const payment = bindLiteralFact(opened, { hypothesisId: 'h-business-model', recordText: TAX_LINE, role: 'payment-literal' });
+    const metric = bindLiteralFact(payment.ledger, { hypothesisId: 'h-business-model', recordText: '지표 한 줄', role: 'metric:pass' });
+    expect(payment.binding.projectAttribution).toBe('unreviewed');
+    expect(metric.binding.projectAttribution).toBe('unreviewed');
+    expect(payment.binding.authenticityGuaranteed).toBe(false);
+    expect(metric.binding.authenticityGuaranteed).toBe(false);
+    expect(metric.ledger.stageId).toBe('S2');
+    expect(metric.ledger.verdictId).toBe('judgment_deferred');
+    expect(metric.ledger.stageId).not.toBe('S3');
+    expect(metric.ledger.verdictId).not.toBe('conditionally_viable');
+    expect(metric.ledger.verdictId).not.toBe('viable');
+    expect(metric.ledger.hypotheses['h-business-model']?.outcome).toBe('insufficient_record');
+    expect(metric.ledger.hypotheses['h-business-model']?.outcome).not.toBe('passed');
+    expect(closeReview(metric.ledger).reviewCompletion).not.toBe('closed_complete');
+  });
+});
