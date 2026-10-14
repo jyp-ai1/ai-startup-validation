@@ -186,6 +186,7 @@ export type DecisionTieBreak =
   | 'fail-drops-stage'
   | 'validation-over-question'
   | 'critical-unknown'
+  | 'repeat-critical'
   | 'judgment-class'
   | 'stable-id';
 

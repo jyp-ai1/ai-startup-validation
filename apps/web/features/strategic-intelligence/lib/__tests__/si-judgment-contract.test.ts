@@ -1371,6 +1371,17 @@ describe('contract B cases A-D', () => {
         expect.objectContaining({ id: bound.binding.id, text: TAX_LINE, evidenceClass: 'FACT' }),
       ]),
     );
+    expect(ledger.judgment).toContain('판단은 충돌이다');
+    expect(ledger.judgment).toContain(`부재 근거 ${absence?.id}`);
+    expect(ledger.judgment).toContain(`문자 근거 ${bound.binding.id}`);
+    expect(ledger.judgment).toContain(ABSENCE_SENTENCE);
+    expect(ledger.judgment).toContain(TAX_LINE);
+    expect(ledger.judgment).toContain('귀속은 unreviewed');
+    expect(ledger.judgment).toContain('검증된 사실이 아니고');
+    expect(ledger.judgment).toContain('확정된 사업 성과가 아니다');
+    expect(ledger.judgment).not.toContain('VALIDATED');
+    expect(ledger.decisionChangingEvidence).toContain(absence?.id ?? '');
+    expect(ledger.decisionChangingEvidence).toContain(bound.binding.id);
     const next = selectNextAction(ledger);
     expect(next.hypothesisId).toBe('h-problem');
     expect(next.selectedId).toBe('q-problem');
@@ -1394,6 +1405,19 @@ describe('contract B cases A-D', () => {
     expect(resolved.verdictId).toBe('insufficient_basis');
     expect(resolved.stageId).not.toBe('S3');
     expect(closeReview(resolved).reviewCompletion).not.toBe('closed_complete');
+    expect(resolved.judgment).toContain('충돌은 해소되었다');
+    expect(resolved.judgment).toContain(bound.binding.id);
+    expect(resolved.judgment).toContain(absence?.id ?? '');
+    expect(resolved.judgment).toContain('귀속은 unreviewed');
+    expect(resolved.judgment).toContain('확정된 사업 성과로 두지 않는다');
+    expect(resolved.judgment).not.toContain('해소 전에는');
+    expect(resolved.judgment).not.toContain('VALIDATED');
+    expect(resolved.evidenceMap).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: absence?.id, evidenceClass: 'CLAIM' }),
+        expect.objectContaining({ id: bound.binding.id, text: TAX_LINE, evidenceClass: 'FACT' }),
+      ]),
+    );
   });
 
   it('keeps the same conflict when the literal fact arrives before the absence claim', () => {
@@ -1473,9 +1497,32 @@ describe('contract B cases A-D', () => {
     expect(reevaluated.bindings.some((item) => item.evidenceClass === 'FACT')).toBe(false);
     expect(reevaluated.criticalUnknownHypothesisId).toBe('h-repeat');
     const next = selectNextAction(reevaluated);
-    expect(next.hypothesisId).toBe('h-business-model');
-    expect(next.selectedId).toBe('v-business-model');
+    expect(next.candidates.map((item) => item.id)).toEqual(expect.arrayContaining(['q-repeat', 'v-business-model']));
+    expect(next.hypothesisId).toBe('h-repeat');
+    expect(next.selectedId).toBe('q-repeat');
+    expect(next.tieBreak).toBe('repeat-critical');
+    expect(next.priorityReason).toContain('affirm');
+    expect(next.priorityReason).toContain('판단 문장이 달라진다');
     expect(next.priorityReason).toContain('단계 변화는 없다');
+    expect(next.priorityReason).toContain('사업 성과를 확정하지 않는다');
+    assertReasonMatchesCitedPreview(next);
+    const compared = next.candidates.map((item) => {
+      const previews = item.previews ?? [];
+      return {
+        id: item.id,
+        alreadyKnown: item.alreadyKnown,
+        judgmentChanged: previews.some((preview) => preview.judgmentChanged),
+        failureDropsStage: previews.some((preview) => preview.failureDropsStage),
+        critical: item.hypothesisId === reevaluated.criticalUnknownHypothesisId,
+      };
+    });
+    expect(compared.find((item) => item.id === 'q-repeat')).toMatchObject({
+      alreadyKnown: false,
+      judgmentChanged: true,
+      failureDropsStage: false,
+      critical: true,
+    });
+    expect(compared.find((item) => item.id === 'v-business-model')?.judgmentChanged).toBe(true);
     expect(closeReview(reevaluated).reviewCompletion).not.toBe('closed_complete');
   });
 });

@@ -1,0 +1,28 @@
+PR #197 판단 문장과 다음 행동 실행 기록. 화면, DB, 모델/API, 병합, Production 배포는 없다. Production 잠금 0b465226. 이 통과는 전략 적합성이 아니고 전체 SI 최종 승인이 아니다. 화면 일치를 말하지 않는다.
+
+명령
+pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts --reporter=verbose
+
+시각
+2026-10-14 12:51:55 UTC
+
+출력
+Test Files 2 passed. Tests 33 passed. Duration 565ms. Start at 12:51:55.
+실패 테스트 0. AT-01 부터 AT-14, 보완 A, 보완 B, 계약 B 사례 A–D 가 같은 명령에서 통과했다.
+AT-14 통과. chat 0. OpenAI HTTP 0.
+
+7A 전후. 사례 A. 부재 CLAIM 과 문자 FACT.
+변경 전 b29de79c. outcome 은 conflict_unresolved 였다. judgment 는 고객 CLAIM 과 부재 문장만 말했다. 문자 근거 id 와 충돌이라는 문장은 없었다.
+변경 후 이번 실행. 두 binding 이 남는다. evidenceMap 에 부재 id b-absence CLAIM 과 문자 id b-fact-payment-literal-h-business-model FACT 가 있다. judgment 는 판단은 충돌이다, 두 근거 id, 두 문장, 귀속 unreviewed, 진위는 보장되지 않는다, 검증된 사실이 아니고, 확정된 사업 성과가 아니다 를 말한다. outcome 은 conflict_unresolved 이고 passed 도 failed 도 아니다. VALIDATED binding 은 없다.
+해소 후. resolveConflict 가 문자 id 를 고른다. 두 id 는 evidenceMap 에 남는다. conflict 행은 resolved true 다. outcome 은 insufficient_record 다. 귀속은 unreviewed 다. judgment 는 충돌은 해소되었다 와 고른 문자 id 와 남은 부재 id 를 말하고, 해소 전 문장은 없다. 단계 S0, 판정 insufficient_basis, S3 아님.
+
+7B 전후. 사례 D. 기준 작성 뒤 applyStage. 저장 단계는 변경 전과 같이 S2, judgment_deferred, outcome not_run, FACT 없음, critical h-repeat.
+변경 전. 후보에 q-repeat 가 없었고 선택은 v-business-model 이었다.
+변경 후 이번 실행. 후보에 q-repeat 와 v-business-model 이 있다. q-repeat 는 alreadyKnown false, affirm 의 judgmentChanged true, failureDropsStage false, critical unknown 과 같다. v-business-model 도 judgmentChanged true 라 비교에 남는다. 선택은 q-repeat. tieBreak repeat-critical. 이유는 affirm 분기의 판단 문장이 달라진다고 말하고 단계 변화는 없다고 말한다. 그 affirm 미리보기의 judgmentChanged 는 true, stageChanged 는 false 다. 질문은 결제 기록을 만들지 않고 사업 성과를 확정하지 않는다.
+
+빈 후보. 모든 분기가 판단을 바꾸지 않으면 selectedId v-record-needed 와 추가 검증 필요를 반환하는 경로는 코드에 있다. 사례 A–D 와 30행은 그 장부를 만들지 않았다. 그 분기의 실행은 미검증이다.
+
+30행
+branchCount 30. passed 30. failed 0. failures 길이 0.
+재생 JSON 은 이번 실행에서 바뀌지 않았다. 단언은 장부, 판단, 다음을 본다. confirm 은 S1 과 고객·문제 CLAIM 과 q-payer. revise 는 S0 과 q-problem-next 와 활성 고객. paymentYes 는 S0 과 결제 CLAIM 과 q-payer. paymentNone 은 부재 CLAIM 과 v-business-model 과 literal_unreviewed conflict.
+screenMismatch 는 30행 모두 판단 불가다. 화면은 열지 않았다.
