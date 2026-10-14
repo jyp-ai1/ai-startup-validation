@@ -1,0 +1,99 @@
+PR #197 순수 SI 계약 결정안. 선택지 A와 선택지 B를 비교한다. 어느 쪽도 적용하지 않았다. si-judgment-contract.ts, 기존 테스트, 명세 9a1c0aad 는 수정하지 않았다. 화면, DB, 모델/API, 병합, Production 배포는 없다. Production 잠금 0b465226. 전략 적합성은 이 문서의 대상이 아니다.
+
+실행한 범위
+명령 pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts --reporter=verbose
+시각 2026-10-14 12:30:42 UTC. Test Files 2 passed. Tests 29 passed. Duration 623ms. 30행 회귀의 failures 는 빈 배열이다. chat 호출과 OpenAI HTTP 를 추가하지 않았고 AT-14 가 같은 명령에서 통과했다.
+사례 A–D의 실행값은 ff7fecda 프로브다. 확인 시각 2026-10-14 12:23:19 UTC. 선택지 A를 구현하거나 그 경로를 실행하지 않았다. 아래 선택지 A의 사례 값은 코드가 고정하는 예상이다.
+
+현재 순서. 이 순서가 12:30:42 실행의 계약이다.
+bindLiteralFact 는 문장을 FACT 로 저장한다. authenticityGuaranteed 는 false 다. projectAttribution 은 unreviewed 다. 그 다음 storeOutcome 이 evaluateHypothesis 를 호출한다. FACT 가 있고 기준의 조상 조건이 없으면 반환은 insufficient_record 다. 기준이 있어도 payment 귀속이 accepted 가 아니면 반환은 insufficient_record 다. 그 다음 contradictIfNeeded 가 같은 가설의 부재 binding 과 FACT 를 보면 applyConflict 로 outcome 을 conflict_unresolved, evidenceClass 를 CONFLICT 로 덮어쓰고 미해소 conflict 행을 남긴다. 두 binding 은 유지된다. 부재가 없으면 덮어쓰기가 없어 insufficient_record 가 남는다.
+evaluateHypothesis 는 미해소 conflict 행이 있으면 conflict_unresolved 를 반환한다. insufficient_record 와 미해소 conflict 행은 현재 함수에서 동시에 성립하지 않는다.
+defineCriterion 은 기준 행을 추가하고 stageId, verdictId, reviewCompletion 을 호출 전 값으로 되돌린다. evaluateStage 는 그 함수 안에서 호출되지 않는다. 지불자 CLAIM 과 passIf, failIf 가 있을 때의 S2, judgment_deferred 는 applyStage 가 evaluateStage 를 호출할 때 저장된다. 사례 D의 h-channel unknown 이 그 호출이다. 기준 작성 직후의 미리보기가 S1 에서 S2 를 말하는 것은 저장 단계가 S2 라는 뜻이 아니다.
+
+선택지 A. 명세 문장을 만족시키는 상태 전이. 적용하지 않음.
+사례 A를 만족시키려면 contradictIfNeeded 가 부재와 FACT 를 봐도 applyConflict 를 호출하지 않아야 한다. 최종 outcome 은 evaluateHypothesis 의 insufficient_record 다. 가설 evidenceClass 는 bindLiteralFact 가 쓴 FACT 로 남는다. 부재 binding 은 CLAIM 으로 남는다. conflict 행은 생기지 않는다. 미해소 conflict 행을 남기면서 outcome 만 insufficient_record 로 두는 전이는 현재 evaluateHypothesis 와 동시에 성립하지 않는다. 그 전이를 만들려면 evaluateHypothesis 의 conflict 우선 반환도 함께 바꿔야 한다.
+사례 C를 만족시키려면 defineCriterion 이 기준 저장 뒤 applyStage 를 호출하고, stageId 를 호출 전 값으로 되돌리지 않아야 한다. 고객 CLAIM, 문제 CLAIM, 지불자 CLAIM, passIf, failIf 가 있으면 저장 단계는 S2, 판정은 judgment_deferred 다. 그 조건이 없으면 evaluateStage 의 다른 결과가 저장된다. 기준 문장만으로 항상 S2 가 되는 전이는 아니다.
+이 두 변경을 넣으면 사례 C와 사례 D의 차이가 사라진다. S2 는 기준을 저장하는 호출 안에서 생기고, 이후의 applyStage 는 그 단계를 다시 만나는 호출이 된다.
+
+선택지 B. 실행 순서를 명세의 계약으로 둔다. 적용하지 않음.
+계약 B1. 문자 기록의 책임 순서.
+1. bindLiteralFact 는 문장을 FACT 로 저장하고 귀속을 수락하지 않는다.
+2. evaluateHypothesis 는 사업 가설의 통과 여부를 계산한다. 조상 기준이 없거나 귀속이 accepted 가 아니면 insufficient_record 다. 이 값은 기록이 기준을 통과하거나 실패했다는 뜻이 아니다.
+3. contradictIfNeeded 는 그 다음이다. 부재 CLAIM 과 문자 FACT 가 함께 있으면 이 단계가 우선한다. outcome 은 conflict_unresolved, evidenceClass 는 CONFLICT, conflict 행은 미해소다. 두 binding 은 남는다. 이 값은 실패 판정이 아니다. 어느 쪽도 작업 기준으로 고르지 않았다는 값이다.
+4. 문자 FACT 만 있으면 3이 실행되지 않아 insufficient_record 가 남는다. 귀속 unreviewed 는 그 거래가 이 사업의 거래로 인정됐다는 뜻이 아니다.
+계약 B2. 기준 저장과 단계 재평가를 분리한다.
+1. defineCriterion 은 기준 행만 추가한다. stageId, verdictId, reviewCompletion 은 호출 전 값이다. 지불자 CLAIM 직후라면 저장 단계는 S1, 판정은 judgment_deferred 다. passIf 와 failIf 를 쓴 행위는 단계 상승이 아니다.
+2. applyStage 가 evaluateStage 를 호출할 때, 고객 CLAIM, 문제 CLAIM, 지불자 CLAIM, passIf, failIf 가 있고 사업 가설이 passed 가 아니면 저장 단계는 S2, 판정은 judgment_deferred 다. 이 전이에 문자 FACT 는 필요 없다.
+3. S3 는 사업 가설 outcome 이 passed 이고 payment FACT 와 metric:pass FACT 의 귀속이 둘 다 accepted 일 때다. unreviewed FACT 는 S3 근거가 아니다.
+4. 미리보기가 S1 에서 S2 를 말해도 저장 단계는 그 미리보기의 입력이 실행되기 전 값이다.
+
+선택지 B에서 고칠 명세 문장. 파일은 고치지 않았고 아래는 검토용 문장이다.
+명세 3A 기대 판단 근거의 outcome 문장. 현재 문장은 outcome 을 insufficient_record 로 적는다. 검토용 문장. 문자 FACT 만 있으면 outcome 은 insufficient_record 다. 부재 CLAIM 과 문자 FACT 가 함께 있으면 evaluateHypothesis 의 첫 반환이 insufficient_record 여도 contradictIfNeeded 가 outcome 을 conflict_unresolved 로 덮어쓴다. evidenceClass 는 CONFLICT 다. 두 binding 은 남고 귀속은 unreviewed 다. 이 outcome 은 통과도 실패도 아니다.
+명세 3A 실패 조건에 더할 검토용 문장. 부재와 문자 FACT 가 함께 있는데 outcome 이 insufficient_record 이거나 conflict 행이 없으면 실패다. 귀속 unreviewed 인데 outcome 이 passed 이거나 단계가 S3 이면 실패다. 이 둘째 문장은 현재 실패 조건에 이미 있다.
+명세 3B 초기 상태. 현재 문장은 기준이 있는 저장 단계를 S2 로 적는다. 검토용 문장. 기준 저장 직후의 저장 단계는 호출 전 단계다. 고객 CLAIM, 문제 CLAIM, 지불자 CLAIM 직후라면 S1, judgment_deferred 다. 그 다음 applyStage 가 돈 뒤의 저장 단계는 S2, judgment_deferred 다. 문자 FACT 는 아직 없다.
+명세 3B 의 미수락 FACT 입력 이후 기대는 유지한다. 저장 단계 S2, judgment_deferred, outcome 은 passed 가 아니고 insufficient_record, S3 가 아니다.
+명세 3B 실패 조건에 더할 검토용 문장. defineCriterion 호출만으로 저장 단계가 바뀌면 실패다.
+
+사례별 예상. 선택지 B의 값은 12:23:19 UTC 실행값이다. 선택지 A의 값은 미실행 예상이다.
+
+사례 A. 부재 CLAIM 다음 문자 FACT. 초기 상태는 고객 affirm 과 부재 문장. S0, insufficient_basis.
+선택지 A. outcome insufficient_record. 가설 evidenceClass FACT. 부재 binding CLAIM. conflict 행 없음. 단계 S0. 판정 insufficient_basis. 귀속 unreviewed. 다음 행동은 h-problem, q-problem. 문제는 아직 ASSUMPTION 이라 nextCritical 이 h-problem 을 반환한다. 이 다음 행동 id 는 outcome 과 별개로 남을 가능성이 있다. 미실행.
+선택지 B. outcome conflict_unresolved. evidenceClass CONFLICT. 단계 S0. 판정 insufficient_basis. 귀속 unreviewed. 다음 행동은 q-problem. 근거는 affirm 분기가 단계를 S0 에서 S1 로 바꾼다. 판단 문장은 부재 CLAIM 문장이고 충돌을 문장으로 말하지 않는다.
+
+사례 B. 문자 FACT 만. 초기 상태는 고객 affirm. 부재 없음.
+선택지 A. outcome insufficient_record. 단계 S0. 판정 insufficient_basis. 귀속 unreviewed. 다음 행동은 q-problem. AT-08 과 같은 경로다.
+선택지 B. 실행값과 같다. outcome insufficient_record. 단계 S0. 판정 insufficient_basis. 귀속 unreviewed. 다음 행동은 q-problem.
+
+사례 C. defineCriterion 직후. 초기 상태는 고객, 문제, 지불자 affirm. 실행 단계는 S1, judgment_deferred, outcome not_run.
+선택지 A. 저장 단계 S2. 판정 judgment_deferred. outcome not_run. FACT 없음. critical unknown 은 applyStage 가 돌면 h-repeat 다. 선택 후보는 deriveCandidates 에 h-repeat 가 없어 v-business-model 로 남을 수 있다. 그 이유 문장은 S2 장부에서 다시 계산되므로 현재의 absence_claim S1 에서 S2 문장과 달라질 수 있다. 미실행.
+선택지 B. 저장 단계 S1. 판정 judgment_deferred. outcome not_run. 다음 행동은 v-business-model. 근거는 absence_claim 미리보기가 단계를 S1 에서 S2 로 바꾼다. 저장 단계는 S1 이다.
+
+사례 D. FACT 없이 applyStage. 입력은 h-channel unknown.
+선택지 A. 사례 C에서 이미 S2 다. unknown 은 S2 를 새로 만들지 않는다. 단계 S2. 판정 judgment_deferred. outcome not_run. C와 D의 단계 차이가 없다.
+선택지 B. 저장 단계 S2. 판정 judgment_deferred. outcome not_run. critical unknown 은 h-repeat. 선택 다음은 v-business-model. 근거는 payment_claim 분기의 단계 변화는 없다.
+
+AT 영향. 선택지 B 열은 12:30:42 UTC 실행이다. 선택지 A 열은 그 변경을 넣었을 때 깨지는 단언이며, 실패 실행은 하지 않았다.
+
+AT-01 고객과 문제 확인으로 판단 문장이 고정 문장에서 벗어난다. A 영향 없음 예상. B 통과.
+AT-02 한 줄 확인은 통과나 FACT 가 아니다. A 영향 없음 예상. B 통과.
+AT-03 지불자 문장이 고객을 바꾸지 않는다. A 영향 없음 예상. B 통과.
+AT-04 고객 replace 는 conflict_unresolved 다. 이 경로는 commitReplace 다. 선택지 A가 contradictIfNeeded 만 바꾸면 이 단언은 남는다. B 통과.
+AT-05 옛 문제 확인은 새 짝의 다음 행동을 바꾸지 않는다. A 영향 없음 예상. B 통과.
+AT-06 부재는 다른 가설의 FACT 가 아니다. A 영향 없음 예상. B 통과.
+AT-07 약한 결제는 단계를 호출 전 값으로 되돌린다. 선택지 A의 defineCriterion 은 그 반대 방향이다. AT-07 단언 자체는 약한 결제라 남을 수 있다. 미실행. B 통과.
+AT-08 문자 FACT 만 있으면 outcome insufficient_record 이고 S3 가 아니다. 선택지 A도 이 경로는 유지해야 한다. B 통과.
+AT-09 부재 다음 FACT 와 FACT 다음 부재가 모두 outcome conflict_unresolved 이고 S3 가 아니다. 선택지 A는 이 단언을 깨뜨린다. 두 binding id 단언은 남을 수 있다. outcome 단언은 남지 않는다. B 통과.
+AT-10 unknown 은 질문 해시를 반복하지 않는다. A 영향 없음 예상. B 통과.
+AT-11 후보 순서를 뒤집어도 선택 id 가 같다. defineCriterion 미리보기가 단계 변화를 만들기 시작하면 순위 키가 바뀔 수 있다. 미실행. B 통과.
+AT-12 S3 와 reviewCompletion 은 별개다. 끝 상태는 귀속 수락 뒤의 S3 다. 기준 직후 단계를 단언하지 않는다. 끝 상태는 남을 수 있다. 미실행. B 통과.
+AT-13 closeReview 는 필수 가설과 고객 충돌을 본다. 기준 직후 단계를 단언하지 않는다. 미실행. B 통과.
+AT-14 chat 0, OpenAI HTTP 0. 소스 단언은 네트워크 호출이 없는 한 남는다. B 통과.
+보완 A. 미해소 결제 FACT 는 passed 가 아니다. 첫 단언이 outcome conflict_unresolved 다. 선택지 A는 그 단언을 깨뜨리고, resolveConflict 로 문자 기록을 작업 기준으로 고르는 시작 상태를 없앤다. 해소 뒤 insufficient_record 인 이유는 귀속 unreviewed 다. B 통과.
+보완 B. 단계 근거 없는 단계 문장을 거절한다. 미리보기 단계 변화가 바뀌면 이유 문장이 바뀐다. 미실행. B 통과.
+검증 테스트. 부재 다음 FACT 의 outcome 을 conflict_unresolved 로 단언한다. 선택지 A는 이 단언을 깨뜨린다. 미수락 두 FACT 의 S3 금지 끝 상태는 남을 수 있다. 미실행. B 통과.
+30행 paymentNone. 이유에 literal_unreviewed 와 conflict 가 있어야 한다. derivedReason 은 literal_unreviewed 미리보기의 judgmentChangeClass 를 그대로 적는다. 선택지 A가 충돌 덮어쓰기를 없애면 그 등급은 conflict 가 아니고, 이 행의 이유 단언이 깨진다. 고객 replace 행의 conflict_unresolved 는 commitReplace 라 선택지 A의 대상이 아니다. B 는 30행 통과, 실패 0.
+
+판단 근거
+insufficient_record 는 문자 기록이 기준의 통과나 실패를 아직 지지하지 않는다는 값이다. 부재 CLAIM 과 문자 FACT 가 함께 있을 때 이 값을 최종 outcome 으로 두면, 기록과 반대 주장이 있는데도 기록이 부족한 상태처럼 읽힌다. 가설 evidenceClass 는 FACT 로 남고 부재는 binding 에만 남는다. 창업자가 어느 쪽을 작업 기준으로 고르는 resolveConflict 의 시작 상태가 없다.
+conflict_unresolved 는 실패 판정이 아니다. 두 근거가 남아 있고 어느 쪽도 선택되지 않았다는 값이다. AT-09 와 보완 A가 그 값을 잠근다. 선택지 A는 이 값을 사례 A에서 지운다.
+defineCriterion 이 저장 단계를 S2 로 올리면, 통과 조건과 실패 조건을 쓴 행위가 사업 단계의 상승이 된다. 결제 기록은 없고 재평가 호출도 그 함수 밖에 있다. commitWeakPayment 는 결제 CLAIM 이 단계를 올리지 않도록 호출 전 단계를 되돌린다. 현재 defineCriterion 은 그 저장 방식과 같다. 선택지 A는 기준 작성만으로 단계를 올린다.
+미리보기의 S1 에서 S2 는 absence_claim 을 실행했을 때의 저장 단계다. 기준을 쓴 직후의 저장 단계가 아니다.
+
+남는 불확실성
+사례 A의 판단 문장은 충돌을 말하지 않는다. 부재 CLAIM 문장만 있다. 선택지 B를 골라도 그 문장은 그대로다. 판단 문장에 두 근거를 적는 일은 이번 계약 선택이 아니다.
+사례 A의 다음 행동이 q-problem 인 이유는 문제가 ASSUMPTION 이기 때문이다. nextCritical 은 h-business-model 의 conflict_unresolved 를 다음 미확인으로 반환하지 않는다. 충돌을 해소하는 질문이 선택되지 않는 이유는 이번 두 선택지 밖에 있다.
+사례 D 이후 critical unknown 은 h-repeat 이고 선택 다음은 v-business-model 이다. h-repeat 는 deriveCandidates 에 없다. 반복 가설을 묻는 일은 이번 선택이 아니다.
+선택지 A의 다음 행동 id 와 AT-11, AT-12, AT-13 의 끝 상태는 실행하지 않았다. 깨진다고 적은 단언은 그 단언이 읽는 outcome 과 judgmentChangeClass 가 코드에 고정되어 있다.
+
+필요한 테스트와 실행 결과
+이번 턴에 테스트를 추가하지 않았다. 선택지 A용 테스트를 작성하거나 실행하지 않았다.
+실행 결과는 변경 없는 기존 묶음뿐이다. 12:30:42 UTC. Tests 29 passed. 30행 failures 빈 배열. AT-14 통과.
+선택지 B를 CPO 가 고르면 다음에 할 테스트는 명세 문장을 위 검토용 문장으로 고친 뒤, 같은 vitest 명령을 다시 실행하는 일이다. 구현 변경은 없다. 그 실행은 아직 없다.
+선택지 A를 CPO 가 고르면 다음에 할 테스트는 AT-09, 보완 A의 미해소 결제 FACT, literal_unreviewed 등급 conflict, 30행 paymentNone 이유, 검증 테스트의 conflict_unresolved 단언을 새 outcome 으로 다시 쓰고, 기준 직후 S2 를 단언하는 사례를 추가한 뒤 같은 명령을 실행하는 일이다. 그 실행은 아직 없다.
+
+권고
+권고는 선택지 B다. 부재와 문자 기록이 함께 있으면 미해소 충돌로 두고, 문자 기록만 있으면 insufficient_record 로 둔다. 기준을 저장하는 호출과 단계를 재평가하는 호출을 별도 계약으로 둔다. 이 권고는 증거의 두 종류를 한 outcome 으로 합치지 않고, 기준 문장을 사업 단계의 상승으로 읽지 않는다.
+이 문서는 권고를 적용하지 않는다. CPO 가 고르기 전에는 구현, 기존 테스트, 명세를 수정하지 않는다.
+
+[CTO] CPO 요청 작업: 진행중 — 명세 우선안과 실행 순서 우선안의 영향 비교 및 권고안 제출
+[CPO] 검토·지시 필요: 예 — 계약 선택 전까지 순수 SI 최종 합격과 전략 적합성 승인 보류
