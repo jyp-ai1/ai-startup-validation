@@ -1,0 +1,274 @@
+PR #197 전략 재생 실패 원인과 수정 설계. 구현 없음. 화면 연결 없음. DB 없음. 모델 호출 없음. 병합 없음. Production 배포 없음. Production 잠금 0b465226.
+
+이 문서는 원인 감사와 이후 구현의 계약이다. 여기의 기대 출력은 아직 테스트로 실행하지 않았다. 실행한 것은 기존 재생 JSON의 대조와, 현재 모듈에 대한 원인 프로브 한 번이다.
+
+프로브 명령
+pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-cause-probe.test.ts
+
+프로브 시각
+2026-10-14 08:20:10
+
+프로브 결과
+Test Files 1 passed. Tests 1 passed. Duration 272ms. 이 통과는 진단 출력용이다. 전략 적합성이 아니다. 프로브 파일은 기록 후 삭제했다. 아래에 찍힌 값이 실행 증거다.
+
+프로브가 찍은 값
+createSeedLedger.length = 0
+시드 고객 = 반찬가게·꽃집 등 직접 배송 소상공인
+시드 문제 = 주문과 배송을 따로 관리해야 함
+시드 판단 = 문서의 고객, 문제, 수익은 아직 확인되지 않은 가정이다.
+첫 선택 = selectedId q-customer, hypothesisId h-customer, prompt 는 반찬가게·꽃집 확인.
+전통주 문장을 hypothesisId 없이 넣음. head c0. 판단 시드 문장. 고객 문장 반찬가게.
+같은 문장을 hypothesisId h-customer 로 넣음. head c1. evidenceClass CLAIM. statement 는 전통주 문장. judgment 는 「고객 가설은 창업자 확인을 받았다. 이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다. CLAIM.」 stageId S0.
+부재 문장을 시드에 넣음. judgment 는 시드 문장. whyFail 만 「아직 실제 결제·사용 증거는 없습니다.」 binding 은 h-business-model CLAIM.
+첫 질문이 h-customer 인 상태에서 「사장님 본인이 지불합니다」를 넣음. h-payer 는 CLAIM. h-customer 는 ASSUMPTION. judgment 는 시드 문장. 다음 hypothesisId h-channel. tieBreak stable-id. 이유 「키 1부터 5가 같다. hypothesisId 사전순으로 h-channel를 고른다. tieBreak는 stable-id다. 사업 근거가 아니다.」
+
+재생 JSON 대조
+파일 docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-STRATEGY-REPLAY.json
+커밋 e6f100f8. 모듈 cce572f5.
+150턴. 미반영 121. 반영 29.
+반영 29 가운데 답변 전 선택 hypothesisId 와 binding hypothesisId 가 같은 턴 8.
+다른 턴 21.
+8은 S1에서 고객·문제 문구가 그때 선택된 슬롯과 우연히 같을 때다.
+
+작업 1. 재생 입력과 장부 연결
+
+1. 시나리오 입력이 createSeedLedger 에 전달되는 방식.
+확인. 전달되지 않는다.
+함수는 apps/web/features/strategic-intelligence/lib/si-judgment-contract.ts 의 createSeedLedger(): JudgmentLedger 이다. 인자가 없다. 프로브에서 length 는 0이다.
+고객·문제·수익 문장은 같은 파일의 CUSTOMER_STATEMENT, PROBLEM_STATEMENT, 그리고 월 구독 상수다.
+재생 하네스 apps/web/features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts 는 시나리오 질문에서 spine.customer, spine.problem, spine.business 를 뽑는다. 그 값은 createSeedLedger() 에 들어가지 않는다. 호출은 createSeedLedger() 한 줄이다. spine 은 이후 판정 문구 검색에만 쓰인다.
+그래서 S2–S6 의 첫 장부는 그 사업의 고객이 아니라 반찬가게다. 실행 결과의 seedCustomer 가 30개 분기 모두 반찬가게·꽃집이다.
+
+2. hypothesisId 가 없을 때 commitFounderStatement 가 고르는 가설.
+확인. 직전 선택을 읽지 않는다. 문장 포함 검사로 고정 가설에 붙이거나 장부를 그대로 반환한다.
+함수 commitFounderStatement(ledger, { proposition, hypothesisId? }).
+순서대로 포함되면 분기한다.
+물류본부 → reviseCustomer. 가설은 h-customer-logistics.
+모르겠 → 선택 질문의 해시만 저장. 가설 문장은 그대로.
+아직 실제 결제·사용 증거는 없습니다. → h-business-model.
+이미 결제 3건 → h-business-model.
+사장님 본인 → h-payer.
+pairBroken 이고 주문과 배송을 따로 관리해야 → 장부 유지.
+반찬가게 그리고 필요로 → h-customer. statement 는 입력 문장이 아니라 CUSTOMER_STATEMENT 상수.
+주문과 배송을 따로 관리해야 → h-problem. statement 는 PROBLEM_STATEMENT 상수.
+hypothesisId 가 있으면 그 id 에 CLAIM, alreadyKnown, statement 는 입력 전문.
+하나도 아니면 return ledger. head 불변.
+재생은 hypothesisId 를 넘기지 않았다. 호출은 commitFounderStatement(ledger, { proposition: turn.founderAnswer }) 이다.
+hypothesisId 를 넘기는 기존 분기로는 전략 실패가 닫히지 않는다. 프로브에서 전통주 문장을 h-customer 에 강제 귀속하면 statement 는 전통주가 되지만, 고객만 CLAIM 인 판단 문장은 상수 CUSTOMER_CONFIRM 인 반찬가게 문장을 출력한다. refreshNarrative 가 customer.statement 를 쓰지 않기 때문이다.
+
+3. 응답 귀속이 답변 전 선택 가설과 일치하는가.
+확인. 반영된 29턴 중 21턴이 불일치다.
+불일치의 공통 형태는 세 가지다.
+결제 문장 또는 부재 문장. 선택 가설은 h-customer 또는 h-problem. 귀속은 h-business-model. S1 paymentYes T1, S1 paymentNone T1, S2–S6 의 paymentYes T1 과 paymentNone T1, S3 의 같은 턴.
+사장님 본인. 선택 가설은 h-customer 또는 h-problem-logistics. 귀속은 h-payer. S3 confirm T2, S3 revise T2, S3 unknown T3, S1 revise T2, S1 paymentYes T2, S1 paymentNone T2, S3 paymentYes T2, S3 paymentNone T2.
+물류본부 수정. 선택 가설은 h-customer. 귀속은 h-customer-logistics. S1 revise T0.
+일치 8턴은 S1 confirm, S1 unknown, S1 paymentYes, S1 paymentNone 에서 반찬가게 확인과 주문·배송 확인이 그때의 선택과 겹친 경우다.
+쓰는 사람이 직접 낸다, 집이 낸다 는 사장님 본인 검사를 통과하지 못해 121턴의 미반영에 포함된다. 귀속 불일치가 아니라 귀속 거절이다.
+
+4. 고객 수정 이후 기존 고객·문제의 처리 기준.
+확인. 기준은 사업 수정이 아니라 부분 문자열 물류본부 이다.
+reviseCustomer 만 다음을 한다.
+h-customer outcome 을 conflict_unresolved, evidenceClass 를 CONFLICT 로 둔다. 가설을 제거하지 않는다.
+h-customer-logistics 를 만들고 statement 에 입력 문장, CLAIM, alreadyKnown true.
+h-problem 은 statement 를 유지한 채 alreadyKnown true. 선택에서 빠진다.
+h-problem-logistics 는 statement 빈 문자열, ASSUMPTION, alreadyKnown false.
+pairBroken true. critical unknown 은 h-problem-logistics.
+conflict 의 leftId 는 b-customer-claim 이다. S1 revise 첫 턴은 그 binding 이 생기기 전에 실행되므로 leftId 가 없는 근거를 가리킨다.
+물류본부가 없는 수정은 return ledger 이다. S2 혼자 마시는 20대, S3 개인 프리랜서, S4 혼자 사는 20대, S5 간식 찾는 초등학생 부모, S6 1인 가구 대학생. 다섯 분기 모두 첫 턴 answerApplied false. 기존 고객은 ASSUMPTION 인 반찬가게로 남고, 충돌 처리도 교체도 없다.
+
+5. selectedId, hypothesisId, prompt, priorityReason, 장부 변경의 일치.
+확인된 부분과 불일치 부분이 있다.
+selectNextAction 안에서 네 필드는 같은 winner 에서 한 번에 쓰인다. 서로 간의 불일치는 재생에서 보이지 않았다.
+그 레코드는 commitFounderStatement 에 전달되지 않는다. 그래서 선택과 장부 변경은 다른 기준이다.
+이유 문장도 장부 변화와 어긋난다. tieBreak none 이고 탈락이 없으면 reasonFor 는 「단계 변화가 남아 있는 후보 중 유일하다」를 쓴다. h-channel 의 branches 는 현재 단계를 유지하는 세 갈래다. 단계 델타는 0이다. S1 confirm T2 이후의 이유가 이 문장이다.
+h-payer 를 CLAIM 으로 만들면 criticalUnknownHypothesisId 가 h-business-model 이 된다. proposeCandidates 목록에는 h-business-model 이 없다. 고객이 아직 CLAIM 이 아니면 남은 후보의 단계 델타는 모두 0이고 critical 일치는 0이다. compareRank 의 마지막 키가 hypothesisId 사전순이라 h-channel 이 이긴다. 프로브의 사장님 본인 경로와 S3 confirm T2 가 이 경로다.
+proposeCandidates 의 단계 갈래는 commit 함수의 결과를 계산하지 않는다. 고객 후보의 세 갈래는 모두 S0 이다. 지불자 후보와 채널 후보는 현재 단계 유지다. 문제 후보만, 고객이 이미 CLAIM 일 때 S1 을 적어 둔다. 순위는 이 표의 선언된 단계 차이를 본다. 판단 문장이 바뀌는지는 키에 없다.
+
+미확인으로 남긴 것
+워크스페이스가 이 모듈에 hypothesisId 를 넘길지는 미확인이다. 화면을 호출하지 않았다. 저장소 검색에서 si-judgment-contract 를 부르는 곳은 모듈 자신과 그 테스트뿐이다. 워크스페이스 적용 함수는 applyBusinessChoiceThroughLoop 이며 입력은 documentText 와 BusinessChoiceOption 이다. 그 함수는 이 장부를 만들지 않는다.
+화면 질문과 엔진 질문의 일치는 미확인이다.
+올바른 미리보기가 S4–S6 에서 만들 단계 숫자는 미실행이다. 아래 기대 출력은 설계값이다.
+
+작업 2. 판단 갱신 계약
+
+새 순수 함수 하나의 경계다. 문구 목록을 늘리는 분기가 아니다.
+
+입력
+현재 ledger.
+답변 전에 고정된 DecisionRecord.
+창업자 응답. 응답은 구조 행위와 대상 가설을 가진다.
+행위는 affirm, replace, unknown, reject, payment_claim, absence_claim 이다.
+replace 는 nextStatement 를 가진다.
+payment_claim 과 absence_claim 은 proposition 을 가진다.
+대상 가설은 기본으로 DecisionRecord.hypothesisId 이다. 재생처럼 답이 다른 갭을 말하면 행위가 targetHypothesisId 를 가진다.
+
+처리
+귀속 대상은 행위의 대상 가설이다. 문장 포함으로 다른 가설을 고르지 않는다.
+affirm 은 그 가설의 현재 statement 를 유지하고 evidenceClass 를 CLAIM 으로 둔다. FACT 나 VALIDATED 로 올리지 않는다. alreadyKnown 은 그 가설만 true.
+replace 는 기존 가설의 statement 를 남긴 채 outcome 을 conflict_unresolved, evidenceClass 를 CONFLICT 로 둔다. 후속 가설을 만들고 statement 는 nextStatement, evidenceClass 는 CLAIM 이다. 고객 가설의 후속이면 그 고객에 묶인 문제 가설은 새 문제 가설로 연다. 옛 문제 statement 는 남기되 새 고객의 다음 질문으로 고르지 않는다. 후속 id 는 물류본부 상수가 아니다. 대상 가설 id 와 커밋 순번으로 만든다.
+unknown 은 evidenceClass 와 statement 를 올리지 않는다. 같은 질문 해시를 다시 선택하지 못하게 기록한다. 두 번째 unknown 은 질문 반복 대신 검증 행위 후보를 연다.
+reject 는 그 가설을 확인으로 닫지 않는다. CLAIM 으로 올리지 않는다.
+payment_claim 은 h-business-model 에 CLAIM, classReason weak-payment 다. 단계와 판정을 답 전 값으로 유지한다.
+absence_claim 은 h-business-model 에 CLAIM, classReason absence 다. h-problem 과 h-market 에 복사하지 않는다. FACT 가 아니다.
+행위의 대상과 DecisionRecord.hypothesisId 가 다르면 결과에 attributionMatchesDecision false 를 남긴다. 저장은 행위의 대상에 한다. 선택을 사후에 답에 맞춰 고치지 않는다.
+모델 초안 sourceKind 는 장부를 바꾸지 않는다. 기존 계약과 같다.
+
+출력
+변경된 가설 id, 이전 statement, 다음 statement, outcome, evidenceClass.
+추가된 binding id 와 classReason.
+stageId 와 verdictId 의 이전값과 다음값.
+judgment, whyPossible, whyFail. judgment 는 이번 행위가 바꾼 내용을 문장으로 담는다. whyFail 만 바꾸는 것으로 출력을 끝내지 않는다.
+남은 criticalUnknownHypothesisId.
+다음 selectNextAction 이 볼 후보 입력.
+attributionMatchesDecision.
+headCommitId. 잘 된 행위는 head 가 움직이거나, 움직이지 않으면 unchangedReason 을 반환한다. 침묵한 return ledger 는 이 함수에 없다.
+
+보이는 판단
+affirm 이면 judgment 에 그 가설의 statement 와 CLAIM 과 단계가 그대로인지 움직였는지를 쓴다. 고객만 확인된 문장은 시드 상수 CUSTOMER_CONFIRM 을 쓰지 않는다.
+replace 이면 judgment 에 철회된 statement 와 새 statement 와 짝이 열렸는지를 쓴다.
+absence_claim 이면 judgment 에 부재 문장과 CLAIM 과 단계가 그대로임을 쓴다.
+payment_claim 이면 judgment 에 그 문장과 주체·금액·기록 부재와 단계가 그대로임을 쓴다.
+unknown 이면 judgment 에 아직 확인되지 않은 가설 statement 를 쓴다.
+internal evidenceClass 가 맞아도 judgment 가 시드 문장이면 그 출력은 실패다.
+
+단계
+창업자 확인만으로 S2, S3, FACT, VALIDATED 가 되지 않는다.
+고객 CLAIM 과 문제 CLAIM 이 같은 짝이면 S1, judgment_deferred. 기존 evaluateStage 와 같다.
+지불자 CLAIM 만으로 S2 가 되지 않는다. 기준의 passIf 와 failIf 가 있을 때 S2 다. defineCriterion 호출 자체는 단계를 움직이지 않는다.
+문자 그대로의 결제 기록과 지표 기록, 귀속 수락이 있을 때만 S3 후보가 된다. payment_claim 은 그 기록이 아니다.
+
+작업 3. 다음 행동 선택
+
+후보 생성은 고정 슬롯 네 개가 아니다. 장부의 미해결 가설마다 미리보기를 만든다.
+미리보기는 같은 applyFounderAnswer 를 복사본에 적용한 결과다. 손으로 적은 S0, S0, S0 표가 아니다.
+각 후보에 남기는 값
+hypothesisId 와 현재 statement, evidenceClass.
+가능한 행위별 stageId, verdictId, judgment 가 바뀌는지.
+alreadyKnown.
+resolvableByQuestion. 질문으로 문장이나 단계가 바뀌면 true. 기록이나 기준이 있어야만 바뀌면 false 이고 actionKind 는 validation.
+탈락 키와 선택 이유. 이유는 답변 전에 쓴다.
+
+순위
+judgment 또는 stage 또는 verdict 가 바뀌는 미리보기가 하나라도 있으면, 셋 다 그대로인 후보는 순위 전에 탈락한다.
+그 다음 절대 단계 차이, 판정 변화, 실패 시 단계 하락, 검증 행위가 질문보다 앞서는 경우, critical unknown 일치.
+마지막에만 hypothesisId 사전순. 이유에는 사업 근거가 아니라고 쓴다.
+사전순은 판단 변화가 있는 후보가 남아 있는 동안 쓰이지 않는다.
+h-channel 은 evaluateStage 가 읽지 않는 동안 판단 변화 후보가 아니다. 고객이나 문제가 ASSUMPTION 인 동안 선택되지 않는다.
+지불자가 CLAIM 이고 기준이 없으면 다음 행위는 기준을 정하는 행위다. 채널 질문이 아니다.
+결제 불확실성은 h-business-model 검증 행위다. 질문 해시가 같으면 그 질문을 반복하지 않는다. 두 번째 unknown 은 검증 행위로 바꾼다.
+critical unknown 이 후보 목록에 없으면 그 id 를 건너뛰고 채널로 떨어지지 않는다. 그 불확실성의 검증 행위를 후보로 넣는다.
+
+작업 4. 수정 설계와 회귀 계획
+
+확인된 원인
+장부 신원이 시나리오가 아니다. createSeedLedger 가 인자를 받지 않고 재생이 spine 을 넘기지 않는다.
+답변 적용이 DecisionRecord 를 읽지 않는 문구 표다. 표에 없으면 head 가 그대로다. 121턴.
+귀속이 선택 가설과 다르다. 반영 29턴 중 21턴.
+고객 수정은 물류본부 부분 문자열 한 경로다. 나머지 다섯 revise 는 장부를 유지한다.
+후보의 단계 갈래가 실제 갱신의 미리보기가 아니다. 채널은 델타 0 인데 이유 문장은 단계 변화를 말한다. 사업모형 불확실성은 후보에 없다.
+보이는 판단이 가설 statement 와 어긋난다. 고객만 CLAIM 이면 반찬가게 상수를 쓰고, 부재는 whyFail 에만 남는다.
+
+미확인 가설
+화면이 이 모듈의 prompt 를 그대로 보여줄지는 미확인이다.
+워크스페이스 BusinessChoiceKind 를 이 함수에 연결하는 작업은 2단계다. 이번 설계는 그 연결을 하지 않는다. 재생 어댑터만 answerKind 를 행위로 옮긴다.
+S4–S6 를 시드한 뒤의 실제 단계 숫자는 구현 후 재생으로만 확인한다.
+
+함수와 타입 변경안
+packages/types 의 strategic-intelligence 에 FounderAnswerAct, ApplyFounderAnswerResult 를 추가한다.
+createProjectLedger({ customerStatement, problemStatement, businessStatement }) 를 추가한다. 가설 statement 는 그 세 문장이다. evidenceClass 는 ASSUMPTION 이다. 판단 문장은 그 세 문장이 아직 가정임을 말한다. 반찬가게 상수를 넣지 않는다.
+createSeedLedger 는 createProjectLedger(반찬가게, 주문과 배송, 월 구독) 로 남긴다. 기존 AT 의 고정 사업이다.
+applyFounderAnswer(ledger, decision, answer) 를 추가한다. commitFounderStatement 의 문구 분기는 이 함수의 구현에서 제거한다. 물류본부, 반찬가게, 사장님 본인, 전통주, 대학생을 포함하는 검사를 추가하지 않는다.
+selectNextAction 은 deriveCandidates 의 미리보기를 순위에 쓴다. 고정 prompt 상수 네 개로 후보를 만들지 않는다.
+refreshNarrative 는 행위 결과의 statement 를 judgment 에 쓴다.
+재생 하네스는 createProjectLedger(spine) 후, 턴마다 직전 DecisionRecord 와 answerKind 로 만든 행위를 applyFounderAnswer 에 넘긴다. answerKind 매핑은 테스트 경계다. confirm 은 affirm, revise 는 replace, unknown 은 unknown, paymentYes 는 payment_claim, paymentNone 은 absence_claim. 매핑 표에 사업 문구를 넣지 않는다.
+
+실패 재현 입력과 기대 출력
+아래는 현재 코드가 실패한 입력이다. 기대 출력은 설계값이며 미실행이다.
+
+F1 입력. spine 고객 전통주를 선물·취미로 찾는 30–40대. 문제 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다. 첫 행위 affirm, 대상 h-customer.
+기대. 적용 전 고객 statement 가 그 전통주 문장이다. 적용 후 CLAIM. 단계는 S0. judgment 에 전통주 문장과 CLAIM 이 있다. 반찬가게가 없다. 다음 hypothesis 는 h-problem. prompt 에 양조장 문장이 있다. 질문 해시는 턴마다 고객 질문으로 고정되지 않는다.
+
+F2 입력. S1 사업으로 createProjectLedger. 고객 affirm, 문제 affirm, 지불자 affirm 까지 적용한 뒤의 다음 선택.
+기대. 다음 후보는 h-business-model 의 기준 또는 결제 기록 검증이다. h-channel 이 아니다. priorityReason 이 단계 델타 0 인 후보를 유일한 단계 변화라고 말하지 않는다. 그 다음 채널 문장을 넣어도 같은 해시를 반복하지 않는다.
+
+F3 입력. spine 고객 맞벌이 가정 / 도우미. 행위 replace, nextStatement 이 앱을 가장 필요로 하는 사람은 1인 가구 대학생입니다. 대상은 고객 가설.
+기대. 옛 고객 statement 는 맞벌이 가정 / 도우미 로 남고 outcome 은 conflict_unresolved. 새 가설 statement 에 1인 가구 대학생, CLAIM. judgment 에 두 문장과 짝이 열렸다는 말이 있다. 다음 prompt 에 믿을 사람을 찾기 어렵고 가 없다. 물류본부 상수 prompt 가 아니다.
+
+F4 입력. 제조사 영업관리자가 아직 ASSUMPTION 인 장부. 행위는 지불자 affirm 이 아니라, 선택이 h-customer 인 동안 들어온 payment 행위가 아니다. 재현은 두 줄이다.
+줄 A. 고객을 affirm 하기 전에 사장님 본인 문장이 지불자 행위로 들어오면 대상은 h-payer 다. 고객은 ASSUMPTION 으로 남는다. judgment 는 시드 침묵이 아니라 지불자 문장이 CLAIM 이고 고객은 아직 가정임을 말한다. 다음 선택은 h-channel 이 아니다. 고객 가설이 단계 변화를 만들 수 있으면 고객이다.
+줄 B. 선택이 이미 h-payer 일 때 같은 행위면 attributionMatchesDecision true.
+
+F5 입력. 전통주 spine. 고객이 아직 ASSUMPTION. 행위 payment_claim, proposition 이미 결제 3건이 있어 고객이 돈을 내고 있습니다.
+기대. binding 은 h-business-model CLAIM weak-payment. 문제와 시장은 FACT 가 아니다. 단계는 답 전과 같다. judgment 에 그 문장과 주체·금액·기록 부재와 전통주 고객이 아직 가정임이 함께 있다. 다음 질문은 반찬가게가 아니다. 고객 확인이 판단 변화를 만들면 다음 가설은 그 고객이다.
+
+부재 입력. 같은 spine. absence_claim.
+기대. h-business-model CLAIM absence. judgment 에 아직 실제 결제·사용 증거는 없습니다 가 있다. whyFail 만 채워지고 judgment 가 시드 문장인 출력은 실패다.
+
+30개 회귀 검증표
+공통 전제. 각 행은 createProjectLedger(그 시나리오 spine) 로 시작한다. 판정은 장부, 판단 문장, 다음 행동 세 열이 모두 맞을 때만 통과다. S1 revise 한 행의 통과로 표를 통과시키지 않는다. 이 표는 기대값이다. 미실행이다.
+
+열 정의
+장부: 대상 가설의 statement 와 evidenceClass 와 binding id 가 기대와 같다. 미반영이면 실패다.
+판단: judgment 가 그 사업의 문장과 이번 행위의 이유를 담고, 다른 사업의 시드 문장을 담지 않는다.
+다음: 미리보기 순위가 고른 hypothesisId 와 prompt. 철회된 문제 문장을 묻지 않는다. 같은 해시를 판단 변화 없이 반복하지 않는다.
+
+S1 고객 반찬가게·꽃집 등 직접 배송 소상공인. 문제 주문과 배송을 따로 관리해야 함.
+S1 confirm. 장부: 고객 affirm CLAIM, 문제 affirm CLAIM, 지불자 CLAIM, 채널 문장 미반영이어도 고객·문제는 유지. 판단: 두 CLAIM 의 statement. 부재·결제 문장 없음. 다음: 지불자 다음이 채널 반복이 아님.
+S1 revise. 장부: 첫 replace 가 대기업 물류본부를 새 고객 CLAIM 으로, 옛 고객 conflict_unresolved. 옛 문제 문장 재입력은 새 문제에 복사되지 않음. 판단: 철회와 새 고객. 다음: 새 문제. prompt 에 주문과 배송을 따로 관리해야 없음.
+S1 unknown. 장부: 첫 unknown 은 CLAIM 상승 없음. 이후 affirm 은 CLAIM. 판단: unknown 턴에 미확인이라고 말함. 다음: 첫 unknown 의 해시와 다음 질문이 다름. 이후 채널 해시 반복 없음.
+S1 paymentYes. 장부: weak-payment CLAIM, 단계 유지, FACT 아님. 판단: 결제 문장과 단계 유지 이유와 고객 statement. 다음: 문제가 아직이면 문제. 채널 반복 없음.
+S1 paymentNone. 장부: absence CLAIM 이 h-business-model. 문제·시장 FACT 아님. 판단: 부재 문장이 judgment 에 있음. 다음: 문제가 아직이면 문제.
+
+S2 고객 전통주를 선물·취미로 찾는 30–40대. 문제 양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다.
+S2 confirm. 장부: 다섯 턴 중 고객 affirm, 문제 affirm, 지불자 「쓰는 사람이 직접 낸다」 CLAIM 이 각각 반영. 판단: 전통주 statement. 반찬가게 없음. 다음: 고객 확인 후 문제는 양조장 문장.
+S2 revise. 장부: 혼자 마시는 20대 가 새 고객 CLAIM. 옛 고객 conflict. 판단: 두 고객 문장. 다음: 새 문제. 양조장 문장을 묻지 않음. 반찬가게를 묻지 않음.
+S2 unknown. 장부: unknown 은 CLAIM 아님. 판단: 전통주가 미확인. 다음: 해시가 한 번 바뀐 뒤 같은 좁힌 반찬가게 질문을 반복하지 않음.
+S2 paymentYes. 장부: weak-payment CLAIM, 단계 유지. 판단: 결제 문장과 전통주가 아직 가정임. 다음: 고객. 반찬가게 아님.
+S2 paymentNone. 장부: absence CLAIM. 문제·시장 FACT 아님. 판단: 부재 문장이 judgment 에 있음. 다음: 고객이 아직이면 그 고객.
+
+S3 고객 직원 20–80명 제조사 영업관리자. 문제 메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다.
+S3 confirm. 장부: 제조사 고객 CLAIM 이 지불자보다 먼저 반영될 수 있어야 한다. 지불자 문장만 반영되고 고객이 ASSUMPTION 이면 실패. 판단: 제조사 statement. 다음: 고객이 가정이면 채널 stable-id 가 아님.
+S3 revise. 장부: 개인 프리랜서 가 새 고객. 옛 제조사 고객 conflict. 판단: 두 문장. 다음: 새 문제. 메일·엑셀 문장을 새 고객의 문제로 유지하지 않음.
+S3 unknown. 장부: unknown 은 CLAIM 아님. 판단: 제조사가 미확인. 다음: 해시 반복 없음. 사장님 본인 이후 채널 stable-id 없음.
+S3 paymentYes. 장부: weak-payment CLAIM, 단계 유지, 제조사 고객 답은 고객 가설에 반영. 판단: 결제 한계와 제조사 상태. 다음: 채널 stable-id 아님.
+S3 paymentNone. 장부: absence CLAIM. FACT 복사 없음. 판단: 부재 문장. 다음: 채널 stable-id 아님.
+
+S4 고객 맞벌이 부모. 문제 장을 볼 시간이 없고 과자 고르기가 피곤하다.
+S4 confirm. 장부: 맞벌이 부모 CLAIM, 문제 CLAIM, 지불자 쓰는 사람이 직접 낸다 CLAIM. 판단: 그 statement. 반찬가게 없음. 다음: 고객 다음이 그 문제.
+S4 revise. 장부: 혼자 사는 20대 가 새 고객. 옛 고객 conflict. 판단: 두 문장. 다음: 새 문제. 장보기 문장을 묻지 않음.
+S4 unknown. 장부: CLAIM 상승 없음. 판단: 맞벌이 부모가 미확인. 다음: 같은 해시 반복 없음.
+S4 paymentYes. 장부: weak-payment CLAIM, 단계 유지. 판단: 결제 한계와 맞벌이 부모 상태. 다음: 고객이 아직이면 그 고객.
+S4 paymentNone. 장부: absence CLAIM. 판단: 부재 문장. 다음: 그 고객 또는 아직 열린 문제.
+
+S5 고객 운동하는 20–30대. 문제 시중 단백질바는 맛없거나 비싸다.
+S5 confirm. 장부: 그 고객 CLAIM, 문제 CLAIM, 지불자 CLAIM. 판단: 단백질 문장. 반찬가게 없음. 다음: 고객 다음이 그 문제.
+S5 revise. 장부: 간식 찾는 초등학생 부모 가 새 고객. 옛 고객 conflict. 판단: 두 문장. 다음: 새 문제. 단백질바 문장을 묻지 않음.
+S5 unknown. 장부: CLAIM 상승 없음. 판단: 운동하는 20–30대가 미확인. 다음: 해시 반복 없음.
+S5 paymentYes. 장부: weak-payment CLAIM, 단계 유지. 판단: 결제 한계와 그 고객 상태. 다음: 고객이 아직이면 그 고객.
+S5 paymentNone. 장부: absence CLAIM. 판단: 부재 문장. 다음: 그 고객 또는 열린 문제.
+
+S6 고객 맞벌이 가정 / 도우미. 문제 믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다.
+S6 confirm. 장부: 그 고객 CLAIM, 문제 CLAIM, 지불자 집이 낸다 CLAIM. 사장님 본인 이 없어도 반영. 판단: 가사 statement. 반찬가게 없음. 다음: 고객 다음이 그 문제.
+S6 revise. 장부: 1인 가구 대학생 이 새 고객. 옛 고객 conflict. 판단: 두 문장. 다음: 새 문제. 믿을 사람 문장을 묻지 않음.
+S6 unknown. 장부: CLAIM 상승 없음. 판단: 맞벌이 가정 / 도우미 가 미확인. 다음: 해시 반복 없음.
+S6 paymentYes. 장부: weak-payment CLAIM, 단계 유지. 판단: 결제 한계와 그 고객 상태. 다음: 고객이 아직이면 그 고객.
+S6 paymentNone. 장부: absence CLAIM. 판단: 부재 문장. 다음: 그 고객 또는 열린 문제.
+
+테스트 기준
+장부 테스트. head 변화, binding.hypothesisId 가 행위 대상과 같음, evidenceClass 가 계약과 같음, FACT 와 VALIDATED 가 창업자 affirm 과 payment_claim 과 absence_claim 에 없음, replace 가 옛 statement 를 지우지 않음, 문제·시장 binding 에 부재 문장의 FACT 가 없음.
+판단 테스트. judgment 가 이번 statement 와 이유를 포함. 고객만 CLAIM 인 문장이 반찬가게 상수를 포함하면 실패. 다만 그 사업의 spine 이 반찬가게인 S1 은 그 문장을 포함하는 것이 맞다. absence 턴의 judgment 가 부재 문장을 포함하지 않으면 실패. whyFail 만 맞는 것은 통과가 아니다.
+다음 행동 테스트. 선택 hypothesis 의 미리보기만 판단 또는 단계 또는 판정을 바꿈. 델타 0 후보가 델타가 있는 후보보다 앞서면 실패. 같은 questionHash 가 판단 변화 없이 연속이면 실패. replace 다음 prompt 가 옛 문제 statement 를 포함하면 실패. stable-id 가 판단 변화 후보가 있을 때 나오면 실패.
+회귀 테스트. 위 30행. 세 열이 모두 맞을 때만 그 행을 통과로 센다. 하네스의 길이 30 단언은 통과 조건이 아니다.
+기존 AT-01 부터 AT-14 는 문구 분기를 제거한 뒤 같은 사업 고정 입력으로 다시 실행한다. 기대는 그대로다. 고객 확인은 CLAIM 이고 단계 S0, 문제 확인 후 S1, 부재는 사업모형 CLAIM, 약한 결제는 단계를 유지, closeReview 는 전체 검토 문, 모델 호출 0. AT 를 지우거나 문구를 더 넣어 맞추지 않는다.
+
+구현 때 하지 않을 것
+실패 문구를 includes 목록에 추가하지 않는다.
+hypothesisId 강제 귀속만으로 반영 턴 수를 올리지 않는다. 프로브가 그 경로의 판단 문장이 반찬가게로 남는 것을 보여 줬다.
+화면, DB, 모델, 병합, 배포를 하지 않는다.
+이 문서의 기대 출력을 실행 결과로 보고하지 않는다.
+
+CTO 판정
+전략 적합성은 여전히 미승인이다.
+원인은 확인되었다. 시드가 시나리오를 받지 않고, 적용 함수가 직전 결정과 끊긴 문구 표이며, 선택 순위가 실제 판단 변화의 미리보기가 아니고, 보이는 판단이 장부 statement 를 따라가지 않는다.
+hypothesisId 부재는 점검 지점으로 맞다. 그것만의 원인은 아니다.
+구현은 이 설계를 CPO 가 승인하기 전에 시작하지 않는다. 승인 후에도 30행 회귀가 세 열 모두 통과하기 전에 2단계 화면 연결을 시작하지 않는다.
