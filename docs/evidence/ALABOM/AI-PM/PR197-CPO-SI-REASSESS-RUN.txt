@@ -1,5 +1,9 @@
 PR #197 순수 판단 엔진 재계산 실행 기록.
 
+구현 커밋: abc670df38e5bce3db2b012fd7c67199e3aaac9c
+이 줄은 그 커밋 다음에 기록한다. PR HEAD 는 이 파일이 가리키는 최신 커밋이다.
+Production 잠금 SHA: 0b465226. 이 실행은 Production 을 배포하지 않았다.
+
 이 파일은 실행 결과다. 설계 의도는 docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-JUDGMENT-REDESIGN.txt 의 10절이다. 설계 문장과 아래 결과가 다르면 아래가 이번에 실행된 동작이다.
 
 실행 시각: 2026-10-14 13:48:52 UTC
