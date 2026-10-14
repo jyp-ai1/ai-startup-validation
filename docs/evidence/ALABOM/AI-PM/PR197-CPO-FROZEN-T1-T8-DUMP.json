@@ -1,7 +1,7 @@
 {
   "meta": {
-    "implSha": "a14938af49f0e045e590dffe2fc6a92c9cae29ba",
-    "executedAt": "2026-10-13T14:31:06.549Z",
+    "implSha": "e3fb9683812ae5fd5868e9212283064f20657efa",
+    "executedAt": "2026-10-14T04:06:06.232Z",
     "frozenScenarioSha": "5263e83e",
     "path": "engine resolveNextQuestionDecision → applyTypedAnswerThroughLoop",
     "note": "1:1 wording. Expected text is 5263e83e. Failures are not relaxed.",
@@ -9,13 +9,13 @@
     "googleOauth": "NOT VERIFIED"
   },
   "totals": {
-    "compared": 35,
+    "compared": 32,
     "exactMatches": 0,
     "allScenariosExact": false
   },
   "scenarios": {
     "S1": {
-      "turnCount": 5,
+      "turnCount": 4,
       "exactMatchCount": 0,
       "allEightExact": false,
       "verdict": {
@@ -42,37 +42,26 @@
           "founderAnswer": "반찬가게",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "nextTargetGap": "solution"
-        },
-        {
-          "turn": 3,
-          "expectedQuestion": "반찬가게에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
-          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "askedGap": "solution",
-          "founderAnswer": "아직 모르겠음",
-          "exactMatch": false,
-          "status": "FAIL",
           "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
           "nextTargetGap": "problemJtbd"
         },
         {
-          "turn": 4,
-          "expectedQuestion": "수익은 어떤 구조로 발생하나요?",
+          "turn": 3,
+          "expectedQuestion": "반찬가게에서 이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
           "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
           "askedGap": "problemJtbd",
-          "founderAnswer": "월 구독",
+          "founderAnswer": "아직 모르겠음",
           "exactMatch": false,
           "status": "FAIL",
           "nextQuestion": null,
           "nextTargetGap": null
         },
         {
-          "turn": 5,
-          "expectedQuestion": "지금은 이 문제를 어떻게 처리하나요?",
+          "turn": 4,
+          "expectedQuestion": "수익은 어떤 구조로 발생하나요?",
           "askedQuestion": null,
           "askedGap": null,
-          "founderAnswer": "지금은 주문과 배송을 따로 관리함",
+          "founderAnswer": "월 구독",
           "exactMatch": false,
           "status": "FAIL",
           "reason": "engine had no next question"
@@ -80,7 +69,7 @@
       ]
     },
     "S2": {
-      "turnCount": 7,
+      "turnCount": 8,
       "exactMatchCount": 0,
       "allEightExact": false,
       "verdict": {
@@ -96,78 +85,90 @@
           "founderAnswer": "전통주를 발견하기 어렵다",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-          "nextTargetGap": "problemJtbd"
-        },
-        {
-          "turn": 2,
-          "expectedQuestion": "이 브랜드를 가장 필요로 하는 사람은 누구인가요?",
-          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-          "askedGap": "problemJtbd",
-          "founderAnswer": "선물하는 30–40대",
-          "exactMatch": false,
-          "status": "FAIL",
-          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "nextTargetGap": "solution"
-        },
-        {
-          "turn": 3,
-          "expectedQuestion": "술값을 실제로 내는 사람은 누구인가요?",
-          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "askedGap": "solution",
-          "founderAnswer": "선물하는 사람이 냄",
-          "exactMatch": false,
-          "status": "FAIL",
           "nextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
           "nextTargetGap": "customerPersona"
         },
         {
-          "turn": 4,
-          "expectedQuestion": "매출은 어디서 더 나오나요?",
+          "turn": 2,
+          "expectedQuestion": "이 브랜드를 가장 필요로 하는 사람은 누구인가요?",
           "askedQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
           "askedGap": "customerPersona",
+          "founderAnswer": "선물하는 30–40대",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "nextTargetGap": "payer"
+        },
+        {
+          "turn": 3,
+          "expectedQuestion": "술값을 실제로 내는 사람은 누구인가요?",
+          "askedQuestion": "이 문제를 해결할 때, 실제로 비용을 지불하거나 도입을 결정하는 사람은 누구인가요?",
+          "askedGap": "payer",
+          "founderAnswer": "선물하는 사람이 냄",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "지금 이해로는 사업 한 줄이(가) 「서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인 팝업으로 판매」입니다. 이 이해가 맞나요?",
+          "nextTargetGap": "businessOneLiner"
+        },
+        {
+          "turn": 4,
+          "expectedQuestion": "매출은 어디서 더 나오나요?",
+          "askedQuestion": "지금 이해로는 사업 한 줄이(가) 「서비스: 소규모 양조장 전통주를 브랜드로 묶어 온라인 팝업으로 판매」입니다. 이 이해가 맞나요?",
+          "askedGap": "businessOneLiner",
           "founderAnswer": "일단 병 판매가 먼저고 수수료는 나중",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
-          "nextTargetGap": "problemJtbd"
+          "nextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+          "nextTargetGap": "marketChannel"
         },
         {
           "turn": 5,
           "expectedQuestion": "선물하는 30–40대는 좋은 전통주를 찾기 어려울 때 지금은 어떻게 하나요?",
-          "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
-          "askedGap": "problemJtbd",
+          "askedQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+          "askedGap": "marketChannel",
           "founderAnswer": "지인에게 물어 추천받는다",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
-          "nextTargetGap": "solution"
+          "nextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+          "nextTargetGap": "marketChannel"
         },
         {
           "turn": 6,
           "expectedQuestion": "지인 추천 대비 이 브랜드만의 차이는 무엇인가요?",
-          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
-          "askedGap": "solution",
+          "askedQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+          "askedGap": "marketChannel",
           "founderAnswer": "여러 양조장을 한곳에서 고른다",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": null,
-          "nextTargetGap": null
+          "nextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+          "nextTargetGap": "marketChannel"
         },
         {
           "turn": 7,
           "expectedQuestion": "그 이유로 이미 산 사람이 있나요?",
-          "askedQuestion": null,
-          "askedGap": null,
+          "askedQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+          "askedGap": "marketChannel",
           "founderAnswer": "아직 없다",
           "exactMatch": false,
           "status": "FAIL",
-          "reason": "engine had no next question"
+          "nextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+          "nextTargetGap": "marketChannel"
+        },
+        {
+          "turn": 8,
+          "expectedQuestion": "다음에 무엇을 확인하면 판단이 바뀌나요?",
+          "askedQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+          "askedGap": "marketChannel",
+          "founderAnswer": "창업자 확인",
+          "exactMatch": false,
+          "status": "FAIL",
+          "nextQuestion": "고객·수요를 검증할 채널은 어디인가요?",
+          "nextTargetGap": "marketChannel"
         }
       ]
     },
     "S3": {
-      "turnCount": 5,
+      "turnCount": 4,
       "exactMatchCount": 0,
       "allEightExact": false,
       "verdict": {
@@ -194,37 +195,26 @@
           "founderAnswer": "영업관리자",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "nextTargetGap": "solution"
-        },
-        {
-          "turn": 3,
-          "expectedQuestion": "월 구독료 결재자는 누구인가요?",
-          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "askedGap": "solution",
-          "founderAnswer": "대표",
-          "exactMatch": false,
-          "status": "FAIL",
           "nextQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
           "nextTargetGap": "customerPersona"
         },
         {
-          "turn": 4,
-          "expectedQuestion": "한 달에 견적 메일이 얼마나 오나요?",
+          "turn": 3,
+          "expectedQuestion": "월 구독료 결재자는 누구인가요?",
           "askedQuestion": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요? 조금 더 구체적으로 알려 주세요.",
           "askedGap": "customerPersona",
-          "founderAnswer": "아직 모르겠음",
+          "founderAnswer": "대표",
           "exactMatch": false,
           "status": "FAIL",
           "nextQuestion": null,
           "nextTargetGap": null
         },
         {
-          "turn": 5,
-          "expectedQuestion": "지금은 이 숫자를 어떻게 옮기나요?",
+          "turn": 4,
+          "expectedQuestion": "한 달에 견적 메일이 얼마나 오나요?",
           "askedQuestion": null,
           "askedGap": null,
-          "founderAnswer": "엑셀에 손으로",
+          "founderAnswer": "아직 모르겠음",
           "exactMatch": false,
           "status": "FAIL",
           "reason": "engine had no next question"
@@ -232,7 +222,7 @@
       ]
     },
     "S4": {
-      "turnCount": 5,
+      "turnCount": 4,
       "exactMatchCount": 0,
       "allEightExact": false,
       "verdict": {
@@ -259,37 +249,26 @@
           "founderAnswer": "아이",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "nextTargetGap": "solution"
-        },
-        {
-          "turn": 3,
-          "expectedQuestion": "구독료는 누가 내나요?",
-          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "askedGap": "solution",
-          "founderAnswer": "부모",
-          "exactMatch": false,
-          "status": "FAIL",
           "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
           "nextTargetGap": "problemJtbd"
         },
         {
-          "turn": 4,
-          "expectedQuestion": "지금은 아이 간식을 어떻게 사나요?",
+          "turn": 3,
+          "expectedQuestion": "구독료는 누가 내나요?",
           "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
           "askedGap": "problemJtbd",
-          "founderAnswer": "쿠팡 검색",
+          "founderAnswer": "부모",
           "exactMatch": false,
           "status": "FAIL",
           "nextQuestion": null,
           "nextTargetGap": null
         },
         {
-          "turn": 5,
-          "expectedQuestion": "쿠팡 대신 이 박스를 고르는 이유는 무엇인가요?",
+          "turn": 4,
+          "expectedQuestion": "지금은 아이 간식을 어떻게 사나요?",
           "askedQuestion": null,
           "askedGap": null,
-          "founderAnswer": "고민 없이 온다",
+          "founderAnswer": "쿠팡 검색",
           "exactMatch": false,
           "status": "FAIL",
           "reason": "engine had no next question"
@@ -357,46 +336,46 @@
           "founderAnswer": "헬스 트레이너가 회원에게 추천하고 회원이 결제",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
-          "nextTargetGap": "alternativesCompetitors"
+          "nextQuestion": "지금 이해로는 사업 한 줄이(가) 「서비스: 단백질 쿠키를 자사몰에서 팝니다」입니다. 이 이해가 맞나요?",
+          "nextTargetGap": "businessOneLiner"
         },
         {
           "turn": 6,
           "expectedQuestion": "이미 두 번 이상 산 고객이 있나요?",
-          "askedQuestion": "비슷한 역할을 이미 하고 있는 서비스가 있나요?",
-          "askedGap": "alternativesCompetitors",
+          "askedQuestion": "지금 이해로는 사업 한 줄이(가) 「서비스: 단백질 쿠키를 자사몰에서 팝니다」입니다. 이 이해가 맞나요?",
+          "askedGap": "businessOneLiner",
           "founderAnswer": "한 번만",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "nextTargetGap": "solution"
+          "nextQuestion": "지금 이해로는 사업 한 줄이(가) 「한 번만」입니다. 이 이해가 맞나요?",
+          "nextTargetGap": "businessOneLiner"
         },
         {
           "turn": 7,
           "expectedQuestion": "그 1회 구매를 어떻게 보나요?",
-          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "askedGap": "solution",
+          "askedQuestion": "지금 이해로는 사업 한 줄이(가) 「한 번만」입니다. 이 이해가 맞나요?",
+          "askedGap": "businessOneLiner",
           "founderAnswer": "내가 지인에게 판 것",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": "수익은 어떤 구조로 발생하나요?",
-          "nextTargetGap": "revenueModel"
+          "nextQuestion": "지금 이해로는 사업 한 줄이(가) 「내가 지인에게 판 것」입니다. 이 이해가 맞나요?",
+          "nextTargetGap": "businessOneLiner"
         },
         {
           "turn": 8,
           "expectedQuestion": "다음에 무슨 증거가 있으면 판단이 바뀌나요?",
-          "askedQuestion": "수익은 어떤 구조로 발생하나요?",
-          "askedGap": "revenueModel",
+          "askedQuestion": "지금 이해로는 사업 한 줄이(가) 「내가 지인에게 판 것」입니다. 이 이해가 맞나요?",
+          "askedGap": "businessOneLiner",
           "founderAnswer": "창업자 확인",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": "이 시장에 수요가 있다는 근거는 무엇인가요?",
-          "nextTargetGap": "marketSizeEvidence"
+          "nextQuestion": "지금 이해로는 사업 한 줄이(가) 「창업자 확인」입니다. 이 이해가 맞나요?",
+          "nextTargetGap": "businessOneLiner"
         }
       ]
     },
     "S6": {
-      "turnCount": 5,
+      "turnCount": 4,
       "exactMatchCount": 0,
       "allEightExact": false,
       "verdict": {
@@ -423,37 +402,26 @@
           "founderAnswer": "사람을 못 믿음",
           "exactMatch": false,
           "status": "FAIL",
-          "nextQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "nextTargetGap": "solution"
-        },
-        {
-          "turn": 3,
-          "expectedQuestion": "지금은 도우미를 어떻게 구하나요?",
-          "askedQuestion": "문제를 해결하는 방식(제공 가치)은 무엇인가요?",
-          "askedGap": "solution",
-          "founderAnswer": "지인 소개",
-          "exactMatch": false,
-          "status": "FAIL",
           "nextQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
           "nextTargetGap": "problemJtbd"
         },
         {
-          "turn": 4,
-          "expectedQuestion": "중개 수수료는 누가 내나요?",
+          "turn": 3,
+          "expectedQuestion": "지금은 도우미를 어떻게 구하나요?",
           "askedQuestion": "지금 가장 크게 해결하려는 불편은 무엇인가요? 조금 더 구체적으로 알려 주세요.",
           "askedGap": "problemJtbd",
-          "founderAnswer": "집이 냄",
+          "founderAnswer": "지인 소개",
           "exactMatch": false,
           "status": "FAIL",
           "nextQuestion": null,
           "nextTargetGap": null
         },
         {
-          "turn": 5,
-          "expectedQuestion": "지인 소개 대신 이 앱을 쓰는 이유는 무엇인가요?",
+          "turn": 4,
+          "expectedQuestion": "중개 수수료는 누가 내나요?",
           "askedQuestion": null,
           "askedGap": null,
-          "founderAnswer": "신원 확인",
+          "founderAnswer": "집이 냄",
           "exactMatch": false,
           "status": "FAIL",
           "reason": "engine had no next question"

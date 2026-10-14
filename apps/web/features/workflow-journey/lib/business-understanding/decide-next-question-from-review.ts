@@ -17,10 +17,7 @@ import type { ConversationFactKey, ConversationMemory } from './conversation-mem
 import { resolveGapQuestionBinding } from './gap-question-map';
 import type { LivingUnderstandingState } from './living-understanding-state';
 import { whyNowForGapField } from './living-understanding-state';
-import {
-  resolveTurnDecision,
-  shouldSkipDocumentOneLiner,
-} from './resolve-turn-decision';
+import { resolveTurnDecision } from './resolve-turn-decision';
 import type { SiTurnInsight } from './si-turn-insight';
 import {
   countUnclosedGapAsks,
@@ -153,18 +150,13 @@ function pickAdvanceTargetGap(input: {
   if (turned.targetGapId) return turned.targetGapId;
 
   const exclude = closedGapExcludeSet(input.gapState);
-  const skipOneLiner = shouldSkipDocumentOneLiner(input.gapState, input.living);
   const candidates = selectAdaptiveNextGaps(input.living, {
     excludeGaps: exclude,
     turns: input.turns,
   });
 
   for (const candidate of candidates) {
-    if (
-      !input.stageReadiness.stageBAllowed &&
-      !skipOneLiner &&
-      isStageBGap(candidate.fieldKey)
-    ) {
+    if (!input.stageReadiness.stageBAllowed && isStageBGap(candidate.fieldKey)) {
       continue;
     }
     if (isGapAskable(candidate.fieldKey, input.gapState)) {

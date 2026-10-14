@@ -46,6 +46,7 @@ import {
 import { resolveNextQuestionDecision } from '../../lib/business-understanding/resolve-next-question-decision';
 import { isBusinessUnderstandingConfirmQuestion } from '../../lib/business-understanding/gap-question-map';
 import { siTurnInsightFromQuestion } from '../../lib/business-understanding/si-turn-insight';
+import { resolveSiMatchedAnswerStorage } from '../../lib/business-understanding/si-matched-answer-storage';
 import type { SiAiPmQuestion } from '@repo/types/domain/strategic-intelligence';
 import { shouldSkipLiveRankOnRemount } from '../../lib/business-understanding/resolve-remount-ask-surface';
 import { resolveV3DisplayPriority } from '../../lib/business-understanding/v3-legacy-bypass-guards';
@@ -1675,8 +1676,11 @@ export function WorkspaceAiPmLoopPanel({
       whyThisQuestionNow?.questionText?.trim() ||
       lastAskSurfaceRef.current.questionText?.trim() ||
       '';
-    if (siAskText && liveAskText === siAskText && onSiValidationAnswer) {
+    const siStorage = resolveSiMatchedAnswerStorage({ siAskText, liveAskText });
+    if (siStorage.appendDocument && onSiValidationAnswer) {
       onSiValidationAnswer(trimmed);
+    }
+    if (!siStorage.updateLoop) {
       setAnswerDraft('');
       return;
     }

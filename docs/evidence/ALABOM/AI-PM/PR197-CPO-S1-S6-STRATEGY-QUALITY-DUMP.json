@@ -1,8 +1,8 @@
 {
   "meta": {
     "implementationSha": "bcf443b7",
-    "executedSha": "e499fab8ab7e96880bdc0d900e82a6c00f27a062",
-    "executedAt": "2026-10-13T22:51:18.253Z",
+    "executedSha": "e3fb9683812ae5fd5868e9212283064f20657efa",
+    "executedAt": "2026-10-14T04:06:05.660Z",
     "note": "Success is answer-dependent understanding, evidence, completeness, judgment, and next-action reason. 8-turn reach is not success. Track A FAIL, Track B NEEDS FIX, AC16/AC5 FAIL are not rewritten here.",
     "production": "NOT VERIFIED",
     "loginUiEightTurn": "NOT VERIFIED",
@@ -71,8 +71,8 @@
             "validationTestability": null
           },
           "judgment": {
-            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
-            "customerStatus": "clear",
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
             "customerSummary": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접",
             "customerChangeStatus": "unknown",
             "customerChangeReason": "아직 확인되지 않음",
@@ -83,7 +83,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "창업자 확인은 이해 마감입니다. 현장 결제·사용을 확인하는 검증 행동은 아직 없습니다."
           }
         },
         "revise": {
@@ -131,16 +131,16 @@
             "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
             "customerStatus": "needs_check",
             "customerSummary": "대기업 물류본부",
-            "customerChangeStatus": "unknown",
-            "customerChangeReason": "아직 확인되지 않음",
-            "customerChangeSummary": "",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다.",
+            "customerChangeSummary": "고객 가설을 「대기업 물류본부」(으)로 수정",
             "problemStatus": "unknown"
           },
           "next": {
             "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "question": "새 고객 「대기업 물류본부」 기준으로, 지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "고객 가설이 바뀌었습니다. 새 고객 기준으로 문제가 같은지 확인하는 검증입니다. 이전 고객은 현재 사실이 아닙니다."
           }
         },
         "unknown": {
@@ -157,14 +157,14 @@
           "after": {
             "spine": {
               "business": "소상공인 배송 SaaS · B2B",
-              "customer": "아직 모르겠습니다.",
+              "customer": "반찬가게·꽃집 등 직접 배송 소상공인",
               "problem": "주문과 배송을 따로 관리해야 함"
             }
           },
           "founderAnswer": "아직 모르겠습니다.",
           "spine": {
             "business": "소상공인 배송 SaaS · B2B",
-            "customer": "아직 모르겠습니다.",
+            "customer": "반찬가게·꽃집 등 직접 배송 소상공인",
             "problem": "주문과 배송을 따로 관리해야 함"
           },
           "completeness": {
@@ -191,10 +191,10 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
-            "validationAction": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
+            "targetGap": "customerPersona",
+            "question": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+            "validationAction": "아직 확정되지 않은 가설입니다. 기존 이해를 유지하고 한 가지 구체 예로 다시 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentYes": {
@@ -204,8 +204,8 @@
               "customer": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다.",
               "problem": "주문과 배송을 따로 관리해야 함"
             },
-            "judgmentConclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
-            "customerStatus": "clear",
+            "judgmentConclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
             "problemStatus": "unknown"
           },
           "after": {
@@ -236,8 +236,8 @@
             "validationTestability": null
           },
           "judgment": {
-            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
-            "customerStatus": "clear",
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
             "customerSummary": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접",
             "customerChangeStatus": "needs_check",
             "customerChangeReason": "약증거 — 검증 완료·Fact 아님",
@@ -248,7 +248,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentNone": {
@@ -258,8 +258,8 @@
               "customer": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다.",
               "problem": "주문과 배송을 따로 관리해야 함"
             },
-            "judgmentConclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
-            "customerStatus": "clear",
+            "judgmentConclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
             "problemStatus": "unknown"
           },
           "after": {
@@ -290,8 +290,8 @@
             "validationTestability": null
           },
           "judgment": {
-            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
-            "customerStatus": "clear",
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
             "customerSummary": "이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접",
             "customerChangeStatus": "needs_check",
             "customerChangeReason": "결제 의향·지불 사실 미확정",
@@ -302,7 +302,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다."
           }
         }
       },
@@ -321,23 +321,34 @@
         },
         "judgment": {
           "pass": true,
-          "evidence": "yes=\"고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.\" none=\"고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
+          "evidence": "yes=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" none=\"현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.\" reasonYes=\"약증거 — 검증 완료·Fact 아님\" reasonNone=\"결제 의향·지불 사실 미확정\""
         },
         "nextAfterUnderstanding": {
           "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.\""
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=customerPersona confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.\""
         },
         "nextAfterEvidence": {
           "pass": true,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\""
         },
         "unknownKeepsIdentityAskable": {
           "pass": true,
-          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
+          "evidence": "unknownNext=customerPersona customerCompleteness=OPEN"
+        },
+        "unknownKeepsDocumentCustomer": {
+          "pass": true,
+          "evidence": "unknownCustomer=\"반찬가게·꽃집 등 직접 배송 소상공인\" completeness=OPEN"
+        },
+        "validationActionSplit": {
+          "pass": true,
+          "evidence": "yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\" yesWhy=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneWhy=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         }
       },
       "failedAxes": [],
-      "noSolutionWhileIdentityOpen": true
+      "noSolutionWhileIdentityOpen": true,
+      "unknownKeptDocumentCustomer": true,
+      "validationActionsSplit": true,
+      "nextAfterUnderstandingDiverged": true
     },
     "S2": {
       "status": "PASS",
@@ -402,7 +413,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "창업자 확인은 이해 마감입니다. 현장 결제·사용을 확인하는 검증 행동은 아직 없습니다."
           }
         },
         "revise": {
@@ -446,19 +457,19 @@
             "validationTestability": null
           },
           "judgment": {
-            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
-            "customerStatus": "clear",
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
             "customerSummary": "이 브랜드를 가장 필요로 하는 사람은 혼자 마시는 20대",
-            "customerChangeStatus": "unknown",
-            "customerChangeReason": "아직 확인되지 않음",
-            "customerChangeSummary": "",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다.",
+            "customerChangeSummary": "고객 가설을 「혼자 마시는 20대」(으)로 수정",
             "problemStatus": "unknown"
           },
           "next": {
             "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "question": "새 고객 「혼자 마시는 20대」 기준으로, 지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "고객 가설이 바뀌었습니다. 새 고객 기준으로 문제가 같은지 확인하는 검증입니다. 이전 고객은 현재 사실이 아닙니다."
           }
         },
         "unknown": {
@@ -475,14 +486,14 @@
           "after": {
             "spine": {
               "business": "전통주 브랜드 · B2C",
-              "customer": "아직 모르겠습니다.",
+              "customer": "전통주를 선물·취미로 찾는 30–40대",
               "problem": "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다"
             }
           },
           "founderAnswer": "아직 모르겠습니다.",
           "spine": {
             "business": "전통주 브랜드 · B2C",
-            "customer": "아직 모르겠습니다.",
+            "customer": "전통주를 선물·취미로 찾는 30–40대",
             "problem": "양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다"
           },
           "completeness": {
@@ -509,10 +520,10 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
-            "validationAction": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
+            "targetGap": "customerPersona",
+            "question": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+            "validationAction": "아직 확정되지 않은 가설입니다. 기존 이해를 유지하고 한 가지 구체 예로 다시 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentYes": {
@@ -566,7 +577,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentNone": {
@@ -620,7 +631,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다."
           }
         }
       },
@@ -643,19 +654,30 @@
         },
         "nextAfterUnderstanding": {
           "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.\""
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=customerPersona confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.\""
         },
         "nextAfterEvidence": {
           "pass": true,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\""
         },
         "unknownKeepsIdentityAskable": {
           "pass": true,
-          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
+          "evidence": "unknownNext=customerPersona customerCompleteness=OPEN"
+        },
+        "unknownKeepsDocumentCustomer": {
+          "pass": true,
+          "evidence": "unknownCustomer=\"전통주를 선물·취미로 찾는 30–40대\" completeness=OPEN"
+        },
+        "validationActionSplit": {
+          "pass": true,
+          "evidence": "yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\" yesWhy=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneWhy=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         }
       },
       "failedAxes": [],
-      "noSolutionWhileIdentityOpen": true
+      "noSolutionWhileIdentityOpen": true,
+      "unknownKeptDocumentCustomer": true,
+      "validationActionsSplit": true,
+      "nextAfterUnderstandingDiverged": true
     },
     "S3": {
       "status": "PASS",
@@ -720,7 +742,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "창업자 확인은 이해 마감입니다. 현장 결제·사용을 확인하는 검증 행동은 아직 없습니다."
           }
         },
         "revise": {
@@ -764,19 +786,19 @@
             "validationTestability": null
           },
           "judgment": {
-            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
-            "customerStatus": "clear",
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
             "customerSummary": "이 툴을 가장 필요로 하는 사람은 개인 프리랜서",
-            "customerChangeStatus": "unknown",
-            "customerChangeReason": "아직 확인되지 않음",
-            "customerChangeSummary": "",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다.",
+            "customerChangeSummary": "고객 가설을 「개인 프리랜서」(으)로 수정",
             "problemStatus": "unknown"
           },
           "next": {
             "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "question": "새 고객 「개인 프리랜서」 기준으로, 지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "고객 가설이 바뀌었습니다. 새 고객 기준으로 문제가 같은지 확인하는 검증입니다. 이전 고객은 현재 사실이 아닙니다."
           }
         },
         "unknown": {
@@ -793,14 +815,14 @@
           "after": {
             "spine": {
               "business": "견적 자동화",
-              "customer": "아직 모르겠습니다.",
+              "customer": "직원 20–80명 제조사 영업관리자",
               "problem": "메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다"
             }
           },
           "founderAnswer": "아직 모르겠습니다.",
           "spine": {
             "business": "견적 자동화",
-            "customer": "아직 모르겠습니다.",
+            "customer": "직원 20–80명 제조사 영업관리자",
             "problem": "메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다"
           },
           "completeness": {
@@ -827,10 +849,10 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
-            "validationAction": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
+            "targetGap": "customerPersona",
+            "question": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+            "validationAction": "아직 확정되지 않은 가설입니다. 기존 이해를 유지하고 한 가지 구체 예로 다시 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentYes": {
@@ -884,7 +906,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentNone": {
@@ -938,7 +960,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다."
           }
         }
       },
@@ -961,19 +983,30 @@
         },
         "nextAfterUnderstanding": {
           "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.\""
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=customerPersona confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.\""
         },
         "nextAfterEvidence": {
           "pass": true,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\""
         },
         "unknownKeepsIdentityAskable": {
           "pass": true,
-          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
+          "evidence": "unknownNext=customerPersona customerCompleteness=OPEN"
+        },
+        "unknownKeepsDocumentCustomer": {
+          "pass": true,
+          "evidence": "unknownCustomer=\"직원 20–80명 제조사 영업관리자\" completeness=OPEN"
+        },
+        "validationActionSplit": {
+          "pass": true,
+          "evidence": "yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\" yesWhy=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneWhy=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         }
       },
       "failedAxes": [],
-      "noSolutionWhileIdentityOpen": true
+      "noSolutionWhileIdentityOpen": true,
+      "unknownKeptDocumentCustomer": true,
+      "validationActionsSplit": true,
+      "nextAfterUnderstandingDiverged": true
     },
     "S4": {
       "status": "PASS",
@@ -1038,7 +1071,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "창업자 확인은 이해 마감입니다. 현장 결제·사용을 확인하는 검증 행동은 아직 없습니다."
           }
         },
         "revise": {
@@ -1085,16 +1118,16 @@
             "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
             "customerStatus": "needs_check",
             "customerSummary": "혼자 사는 20대",
-            "customerChangeStatus": "unknown",
-            "customerChangeReason": "아직 확인되지 않음",
-            "customerChangeSummary": "",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다.",
+            "customerChangeSummary": "고객 가설을 「혼자 사는 20대」(으)로 수정",
             "problemStatus": "unknown"
           },
           "next": {
             "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "question": "새 고객 「혼자 사는 20대」 기준으로, 지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "고객 가설이 바뀌었습니다. 새 고객 기준으로 문제가 같은지 확인하는 검증입니다. 이전 고객은 현재 사실이 아닙니다."
           }
         },
         "unknown": {
@@ -1111,14 +1144,14 @@
           "after": {
             "spine": {
               "business": "구독 박스",
-              "customer": "아직 모르겠습니다.",
+              "customer": "맞벌이 부모",
               "problem": "장을 볼 시간이 없고 과자 고르기가 피곤하다"
             }
           },
           "founderAnswer": "아직 모르겠습니다.",
           "spine": {
             "business": "구독 박스",
-            "customer": "아직 모르겠습니다.",
+            "customer": "맞벌이 부모",
             "problem": "장을 볼 시간이 없고 과자 고르기가 피곤하다"
           },
           "completeness": {
@@ -1145,10 +1178,10 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
-            "validationAction": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
+            "targetGap": "customerPersona",
+            "question": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+            "validationAction": "아직 확정되지 않은 가설입니다. 기존 이해를 유지하고 한 가지 구체 예로 다시 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentYes": {
@@ -1202,7 +1235,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentNone": {
@@ -1256,7 +1289,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다."
           }
         }
       },
@@ -1279,19 +1312,30 @@
         },
         "nextAfterUnderstanding": {
           "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.\""
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=customerPersona confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.\""
         },
         "nextAfterEvidence": {
           "pass": true,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\""
         },
         "unknownKeepsIdentityAskable": {
           "pass": true,
-          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
+          "evidence": "unknownNext=customerPersona customerCompleteness=OPEN"
+        },
+        "unknownKeepsDocumentCustomer": {
+          "pass": true,
+          "evidence": "unknownCustomer=\"맞벌이 부모\" completeness=OPEN"
+        },
+        "validationActionSplit": {
+          "pass": true,
+          "evidence": "yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\" yesWhy=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneWhy=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         }
       },
       "failedAxes": [],
-      "noSolutionWhileIdentityOpen": true
+      "noSolutionWhileIdentityOpen": true,
+      "unknownKeptDocumentCustomer": true,
+      "validationActionsSplit": true,
+      "nextAfterUnderstandingDiverged": true
     },
     "S5": {
       "status": "PASS",
@@ -1356,7 +1400,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "창업자 확인은 이해 마감입니다. 현장 결제·사용을 확인하는 검증 행동은 아직 없습니다."
           }
         },
         "revise": {
@@ -1400,19 +1444,19 @@
             "validationTestability": null
           },
           "judgment": {
-            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
-            "customerStatus": "clear",
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
             "customerSummary": "이 쿠키를 가장 필요로 하는 사람은 간식 찾는 초등학생 부모",
-            "customerChangeStatus": "unknown",
-            "customerChangeReason": "아직 확인되지 않음",
-            "customerChangeSummary": "",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다.",
+            "customerChangeSummary": "고객 가설을 「간식 찾는 초등학생 부모」(으)로 수정",
             "problemStatus": "unknown"
           },
           "next": {
             "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "question": "새 고객 「간식 찾는 초등학생 부모」 기준으로, 지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "고객 가설이 바뀌었습니다. 새 고객 기준으로 문제가 같은지 확인하는 검증입니다. 이전 고객은 현재 사실이 아닙니다."
           }
         },
         "unknown": {
@@ -1429,14 +1473,14 @@
           "after": {
             "spine": {
               "business": "단백질 쿠키",
-              "customer": "아직 모르겠습니다.",
+              "customer": "운동하는 20–30대",
               "problem": "시중 단백질바는 맛없거나 비싸다"
             }
           },
           "founderAnswer": "아직 모르겠습니다.",
           "spine": {
             "business": "단백질 쿠키",
-            "customer": "아직 모르겠습니다.",
+            "customer": "운동하는 20–30대",
             "problem": "시중 단백질바는 맛없거나 비싸다"
           },
           "completeness": {
@@ -1463,10 +1507,10 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
-            "validationAction": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
+            "targetGap": "customerPersona",
+            "question": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+            "validationAction": "아직 확정되지 않은 가설입니다. 기존 이해를 유지하고 한 가지 구체 예로 다시 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentYes": {
@@ -1520,7 +1564,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentNone": {
@@ -1574,7 +1618,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다."
           }
         }
       },
@@ -1597,19 +1641,30 @@
         },
         "nextAfterUnderstanding": {
           "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.\""
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=customerPersona confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.\""
         },
         "nextAfterEvidence": {
           "pass": true,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\""
         },
         "unknownKeepsIdentityAskable": {
           "pass": true,
-          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
+          "evidence": "unknownNext=customerPersona customerCompleteness=OPEN"
+        },
+        "unknownKeepsDocumentCustomer": {
+          "pass": true,
+          "evidence": "unknownCustomer=\"운동하는 20–30대\" completeness=OPEN"
+        },
+        "validationActionSplit": {
+          "pass": true,
+          "evidence": "yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\" yesWhy=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneWhy=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         }
       },
       "failedAxes": [],
-      "noSolutionWhileIdentityOpen": true
+      "noSolutionWhileIdentityOpen": true,
+      "unknownKeptDocumentCustomer": true,
+      "validationActionsSplit": true,
+      "nextAfterUnderstandingDiverged": true
     },
     "S6": {
       "status": "PASS",
@@ -1674,7 +1729,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "창업자 확인은 이해 마감입니다. 현장 결제·사용을 확인하는 검증 행동은 아직 없습니다."
           }
         },
         "revise": {
@@ -1718,19 +1773,19 @@
             "validationTestability": null
           },
           "judgment": {
-            "conclusion": "고객은(는) 어느 정도 파악되었습니다. 나머지 항목은 아직 정보가 부족합니다.",
-            "customerStatus": "clear",
+            "conclusion": "현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다. 핵심 정보를 더 확인해야 합니다.",
+            "customerStatus": "needs_check",
             "customerSummary": "이 앱을 가장 필요로 하는 사람은 1인 가구 대학생",
-            "customerChangeStatus": "unknown",
-            "customerChangeReason": "아직 확인되지 않음",
-            "customerChangeSummary": "",
+            "customerChangeStatus": "needs_check",
+            "customerChangeReason": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다.",
+            "customerChangeSummary": "고객 가설을 「1인 가구 대학생」(으)로 수정",
             "problemStatus": "unknown"
           },
           "next": {
             "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
+            "question": "새 고객 「1인 가구 대학생」 기준으로, 지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "고객 가설이 바뀌었습니다. 새 고객 기준으로 문제가 같은지 확인하는 검증입니다. 이전 고객은 현재 사실이 아닙니다."
           }
         },
         "unknown": {
@@ -1747,14 +1802,14 @@
           "after": {
             "spine": {
               "business": "가사 중개",
-              "customer": "아직 모르겠습니다.",
+              "customer": "맞벌이 가정 / 도우미",
               "problem": "믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다"
             }
           },
           "founderAnswer": "아직 모르겠습니다.",
           "spine": {
             "business": "가사 중개",
-            "customer": "아직 모르겠습니다.",
+            "customer": "맞벌이 가정 / 도우미",
             "problem": "믿을 사람을 찾기 어렵고, 도우미는 일감이 불안정하다"
           },
           "completeness": {
@@ -1781,10 +1836,10 @@
             "problemStatus": "unknown"
           },
           "next": {
-            "targetGap": "problemJtbd",
-            "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
-            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.",
-            "validationAction": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다."
+            "targetGap": "customerPersona",
+            "question": "이 서비스를 실제로 가장 필요로 하는 사람은 누구인가요?",
+            "whyNow": "고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.",
+            "validationAction": "아직 확정되지 않은 가설입니다. 기존 이해를 유지하고 한 가지 구체 예로 다시 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentYes": {
@@ -1838,7 +1893,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다."
           }
         },
         "paymentNone": {
@@ -1892,7 +1947,7 @@
             "targetGap": "problemJtbd",
             "question": "지금 가장 크게 해결하려는 불편은 무엇인가요?",
             "whyNow": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.",
-            "validationAction": "아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다."
+            "validationAction": "결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다."
           }
         }
       },
@@ -1915,19 +1970,30 @@
         },
         "nextAfterUnderstanding": {
           "pass": true,
-          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=problemJtbd confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 해결하려는 불편이 비어 있으면 사업 판단의 출발점이 없습니다. 핵심 문제를 먼저 고정합니다.\""
+          "evidence": "confirmNext=problemJtbd reviseNext=problemJtbd unknownNext=customerPersona confirmWhy=\"창업자 확인은 이해 마감이지 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" reviseWhy=\"고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다. 새 고객 기준으로 문제를 다시 확인합니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" unknownWhy=\"고객은 아직 확정되지 않았고, 확인 없이는 현재 사실로 두지 않습니다. 누구를 위한 사업인지 더 구체적으로 확인해야 합니다.\""
         },
         "nextAfterEvidence": {
           "pass": true,
-          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneAction=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
+          "evidence": "yesNext=problemJtbd noneNext=problemJtbd yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\""
         },
         "unknownKeepsIdentityAskable": {
           "pass": true,
-          "evidence": "unknownNext=problemJtbd customerCompleteness=OPEN"
+          "evidence": "unknownNext=customerPersona customerCompleteness=OPEN"
+        },
+        "unknownKeepsDocumentCustomer": {
+          "pass": true,
+          "evidence": "unknownCustomer=\"맞벌이 가정 / 도우미\" completeness=OPEN"
+        },
+        "validationActionSplit": {
+          "pass": true,
+          "evidence": "yesAction=\"결제 단서는 약증거입니다. 누가, 얼마를, 어떤 기록으로 냈는지 확인합니다. 검증된 사실이 아닙니다.\" noneAction=\"결제·사용 증거가 없습니다. 누구에게 어떤 금액을 확인할지 검증 행동을 정합니다. 대화만으로 닫지 않습니다.\" yesWhy=\"결제·사용 단서는 약증거이며 검증된 사실이 아닙니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\" noneWhy=\"아직 결제·사용 증거가 없어 대화만으로 판단을 닫을 수 없습니다. 고객이 실제로 겪는 핵심 문제와 우선순위를 더 확인해야 합니다.\""
         }
       },
       "failedAxes": [],
-      "noSolutionWhileIdentityOpen": true
+      "noSolutionWhileIdentityOpen": true,
+      "unknownKeptDocumentCustomer": true,
+      "validationActionsSplit": true,
+      "nextAfterUnderstandingDiverged": true
     }
   }
 }

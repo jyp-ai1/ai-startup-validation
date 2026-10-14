@@ -525,8 +525,9 @@ describe('PR #197 conversation quality', () => {
     const afterPayer = applyGap('cq-s6-payer', DOCS.S6, 'payer', 'specific', /집이 낸다|집/);
     expect(loadAiPmLoopState('cq-s6-payer').gapState?.gaps.payer?.completeness).toBe('CLOSED');
     expect(afterPayer.nextTargetGap).not.toBe('payer');
-    expect(afterPayer.nextTargetGap).not.toBe('businessOneLiner');
+    expect(afterPayer.nextTargetGap).toBe('businessOneLiner');
     expect(afterPayer.nextQuestionText ?? '').not.toMatch(/누구에게 무엇을 제공/);
+    expect(afterPayer.nextQuestionText ?? '').not.toMatch(/제가 이해한 사업은/);
   });
 
   it('S2–S5 — after payer closes, next ask is not the document one-liner', () => {
@@ -540,8 +541,9 @@ describe('PR #197 conversation quality', () => {
       applyGap(pid, doc, 'problemJtbd', 'specific', problemRe);
       applyGap(pid, doc, 'customerPersona', 'specific', customerRe);
       const afterPayer = applyGap(pid, doc, 'payer', 'specific');
-      expect(afterPayer.nextTargetGap, id).not.toBe('businessOneLiner');
+      expect(afterPayer.nextTargetGap, id).toBe('businessOneLiner');
       expect(afterPayer.nextQuestionText ?? '', id).not.toMatch(/누구에게 무엇을 제공/);
+      expect(afterPayer.nextQuestionText ?? '', id).not.toMatch(/제가 이해한 사업은/);
     }
   });
 

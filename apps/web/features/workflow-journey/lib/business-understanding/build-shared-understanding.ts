@@ -2,6 +2,7 @@ import type { BusinessUnderstanding } from '@repo/types/domain/business-understa
 import type { LaunchLensDomainContext } from '@repo/types/domain/launchlens-domain';
 
 import type { UnderstandingPhase } from './business-understanding-store';
+import { isUncertainFounderAnswer } from './validation-action-for-answer';
 import {
   getConflictFact,
   getFact,
@@ -180,7 +181,7 @@ function resolveCustomerField(
   }
   if (memory && memoryHasFact(memory, 'customer')) {
     const fact = getFact(memory, 'customer');
-    if (fact?.value.trim()) {
+    if (fact?.value.trim() && !isUncertainFounderAnswer(fact.value)) {
       const correctedTurn = [...turns]
         .reverse()
         .find(
@@ -205,7 +206,7 @@ function resolveCustomerField(
           turn.issueId === 'customer_definition' &&
           !/(결제|지불|payer)/i.test(turn.answer))),
   );
-  if (customerTurn?.answer.trim()) {
+  if (customerTurn?.answer.trim() && !isUncertainFounderAnswer(customerTurn.answer)) {
     return {
       value: truncate(customerTurn.answer.replace(/\s+/g, ' '), 160),
       provenance: 'USER_CONFIRMED',
@@ -259,7 +260,7 @@ function resolveProblemField(
 ): { value: string; provenance: UnderstandingProvenance } {
   if (memory && memoryHasFact(memory, 'problem')) {
     const fact = memory.facts.find((f) => f.key === 'problem');
-    if (fact?.value.trim()) {
+    if (fact?.value.trim() && !isUncertainFounderAnswer(fact.value)) {
       return {
         value: truncate(fact.value, 48),
         provenance: fact.source === 'user_turn' ? 'USER_CONFIRMED' : 'DOCUMENT',
@@ -273,7 +274,7 @@ function resolveProblemField(
       (turn.semanticFactKey === 'problem' ||
         (turn.semanticFactKey == null && turn.issueId === 'problem_definition')),
   );
-  if (problemTurn?.answer.trim()) {
+  if (problemTurn?.answer.trim() && !isUncertainFounderAnswer(problemTurn.answer)) {
     return {
       value: truncate(problemTurn.answer, 48),
       provenance: 'USER_CONFIRMED',

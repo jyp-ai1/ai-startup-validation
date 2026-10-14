@@ -1,7 +1,7 @@
 /**
  * Workspace apply path for an MCQ choice.
  * Specific answers reuse the existing V3 write path.
- * Unknown answers persist without merging a fake fact, then yield to a new gap.
+ * Unknown answers persist without merging a fake fact and stay on the open slot.
  */
 
 import { saveWorkspaceDocumentText } from '../workspace-ai-pm-messages';
@@ -13,13 +13,11 @@ import {
   type ResolveBusinessChoiceResult,
 } from './apply-business-choice';
 import { buildBusinessUnderstanding } from './build-business-understanding';
-import { type BusinessChoiceOption } from './build-business-choice-question';
-import { buildConversationMemoryFromSources } from './build-conversation-memory';
 import {
-  isStageBGap,
-  STAGE_A_REQUIRED_GAPS,
-  STAGE_B_REQUIRED_GAPS,
-} from './evaluate-stage-readiness';
+  buildBusinessChoiceQuestion,
+  type BusinessChoiceOption,
+} from './build-business-choice-question';
+import { buildConversationMemoryFromSources } from './build-conversation-memory';
 import { resolveGapQuestionBinding } from './gap-question-map';
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import {
@@ -29,14 +27,13 @@ import {
 } from './living-understanding-state';
 import { appendLoopTurnWithReview, runLoopAnswerProcessing } from './process-loop-answer';
 import { resolveNextQuestionDecision } from './resolve-next-question-decision';
-import {
-  resolveTurnDecision,
-  shouldBlockSolutionBeforeIdentity,
-  shouldSkipDocumentOneLiner,
-} from './resolve-turn-decision';
-import { isGapAskable } from './update-gap-state-from-review';
 import { applyAnswerSensitiveWhyNow } from './decide-next-question-from-review';
-import { evaluateStageReadiness } from './evaluate-stage-readiness';
+import { reframeQuestion } from './reframe-question';
+import {
+  answerRevisesQuotedHypothesis,
+  questionBoundToRevisedCustomer,
+  validationActionForAnswer,
+} from './validation-action-for-answer';
 import { isV3ReviewPipelineActive } from './v3-review-pipeline';
 import {
   appendAiPmLoopTurn,
@@ -94,54 +91,6 @@ function livingFromDocument(
   });
 }
 
-export function nextGapAfterUnknownChoice(
-  living: LivingUnderstandingState,
-  askedGap: string,
-  gapState?: ReturnType<typeof loadAiPmLoopState>['gapState'],
-): string | null {
-  const blockSolution = gapState ? shouldBlockSolutionBeforeIdentity(gapState) : false;
-  const skipOneLiner = gapState ? shouldSkipDocumentOneLiner(gapState, living) : false;
-  const allowed = (gapId: string) => {
-    if (gapId === askedGap) return false;
-    if (blockSolution && (gapId === 'solution' || isStageBGap(gapId))) return false;
-    if (skipOneLiner && gapId === 'businessOneLiner') return false;
-    return true;
-  };
-
-  if (gapState) {
-    const turned = resolveTurnDecision({
-      living,
-      gapState,
-      stageReadiness: evaluateStageReadiness({ gapState }),
-      turns: [],
-      lastReview: null,
-    });
-    if (turned.targetGapId && allowed(turned.targetGapId)) {
-      return turned.targetGapId;
-    }
-    const stageAYieldOrder = [
-      'problemJtbd',
-      'customerPersona',
-      'payer',
-      'businessOneLiner',
-    ] as const;
-    for (const gapId of stageAYieldOrder) {
-      if (allowed(gapId) && isGapAskable(gapId, gapState)) return gapId;
-    }
-    for (const gapId of STAGE_A_REQUIRED_GAPS) {
-      if (allowed(gapId) && isGapAskable(gapId, gapState)) return gapId;
-    }
-    for (const gapId of STAGE_B_REQUIRED_GAPS) {
-      if (allowed(gapId) && isGapAskable(gapId, gapState)) return gapId;
-    }
-  }
-  const fromLiving = living.gaps.find((gap) => allowed(gap.fieldKey))?.fieldKey;
-  if (fromLiving) return fromLiving;
-  return living.gaps[0]?.fieldKey && living.gaps[0].fieldKey !== askedGap
-    ? living.gaps[0].fieldKey
-    : null;
-}
-
 /**
  * Apply one founder MCQ choice through the workspace loop.
  * Does not rewrite question selection or judgment engines.
@@ -150,6 +99,12 @@ export function applyBusinessChoiceThroughLoop(
   input: ApplyBusinessChoiceThroughLoopInput,
 ): ApplyBusinessChoiceThroughLoopResult {
   const resolved = resolveBusinessChoiceAnswer(input.option, input.freeText);
+  const answeredKind =
+    input.option.kind !== 'unknown' &&
+    input.option.kind !== 'reject' &&
+    answerRevisesQuotedHypothesis(input.askedQuestionText ?? '', resolved.answerText)
+      ? 'revise'
+      : input.option.kind;
   const skipFactMerge =
     input.option.kind === 'unknown' || input.option.kind === 'reject';
   const prior = loadAiPmLoopState(input.projectId);
@@ -173,7 +128,10 @@ export function applyBusinessChoiceThroughLoop(
     nextQuestionText: input.askedQuestionText ?? null,
     nextWhyNow: whyNowForGapField(input.option.appliesToGap),
     nextIssueId: prior.currentIssueId,
-    nextValidationAction: whyNowForGapField(input.option.appliesToGap),
+    nextValidationAction: validationActionForAnswer({
+      answer: resolved.answerText,
+      kind: answeredKind,
+    }),
     conversationContinues: true,
   };
 
@@ -264,39 +222,39 @@ export function applyBusinessChoiceThroughLoop(
   });
 
   if (
+    next &&
     (input.option.kind === 'unknown' || input.option.kind === 'reject') &&
-    (!next || next.targetGap === input.option.appliesToGap)
+    next.targetGap === input.option.appliesToGap &&
+    next.questionText.trim() === askedQuestionText.trim()
   ) {
-    const yielded = nextGapAfterUnknownChoice(
-      processed.living,
-      input.option.appliesToGap,
-      loopAfter.gapState,
-    );
-    if (yielded) {
-      const nextBinding = resolveGapQuestionBinding(yielded);
-      const lastReview = [...loopAfter.turns].reverse().find((t) => t.review)?.review ?? null;
-      next = {
-        targetGap: yielded,
-        issueId: nextBinding.issueId,
-        questionText: nextBinding.questionText,
-        whyNow: applyAnswerSensitiveWhyNow(
-          lastReview,
-          whyNowForGapField(yielded) || nextBinding.whyNow,
-        ),
-        rationale: nextBinding.whyNow,
-        score: 40_000,
-        reframed: false,
-        excludedGaps: [input.option.appliesToGap],
-      };
-      patchAiPmLoopState(
-        {
-          phase: 'answer',
-          currentIssueId: nextBinding.issueId,
-        },
-        input.projectId,
-      );
-    }
-  } else if (next) {
+    const reframed = reframeQuestion({
+      targetGap: next.targetGap,
+      living: processed.living,
+      reason: 'unknown_signal',
+      previousQuestionText: askedQuestionText,
+    });
+    next = {
+      ...next,
+      questionText: reframed.questionText,
+      whyNow: reframed.whyNow || next.whyNow,
+      reframed: true,
+    };
+  }
+  if (next?.targetGap === 'businessOneLiner') {
+    const verification = buildBusinessChoiceQuestion({
+      living: processed.living,
+      documentText: input.documentText,
+      targetGap: 'businessOneLiner',
+    });
+    next = { ...next, questionText: verification.questionText };
+  }
+  if (next && answeredKind === 'revise' && next.targetGap === 'problemJtbd') {
+    next = {
+      ...next,
+      questionText: questionBoundToRevisedCustomer(next.questionText, resolved.answerText),
+    };
+  }
+  if (next) {
     patchAiPmLoopState(
       {
         phase: 'answer',
@@ -326,7 +284,10 @@ export function applyBusinessChoiceThroughLoop(
     nextQuestionText: next?.questionText ?? null,
     nextWhyNow,
     nextIssueId: next?.issueId ?? null,
-    nextValidationAction: nextWhyNow,
+    nextValidationAction: validationActionForAnswer({
+      answer: resolved.answerText,
+      kind: answeredKind,
+    }),
     conversationContinues: Boolean(nextTargetGap) || Boolean(nextWhyNow),
   };
 }

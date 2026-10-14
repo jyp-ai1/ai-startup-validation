@@ -25,9 +25,9 @@ import { resolveGapQuestionBinding } from './gap-question-map';
 import { interpretAnswerSemantics } from './interpret-answer-semantics';
 import {
   buildLivingUnderstandingState,
-  whyNowForGapField,
   type LivingUnderstandingState,
 } from './living-understanding-state';
+import { validationActionForAnswer } from './validation-action-for-answer';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 export type ApplyBusinessChoiceTurnInput = {
@@ -120,7 +120,10 @@ export function applyBusinessChoiceTurn(
     documentText: input.documentText,
     targetGap: nextGap,
   });
-  const nextValidationAction = whyNowForGapField(nextQuestion.targetGap);
+  const nextValidationAction = validationActionForAnswer({
+    answer: resolved.answerText,
+    kind: input.option.kind,
+  });
   const impact = traceBusinessChoiceImpact({
     option: input.option,
     livingBefore,

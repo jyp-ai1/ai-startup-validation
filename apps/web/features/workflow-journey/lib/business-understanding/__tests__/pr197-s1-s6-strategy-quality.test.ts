@@ -434,11 +434,19 @@ describe('PR #197 S1–S6 strategy quality', () => {
         yesSnap.judgment.customerChangeStatus !== noneSnap.judgment.customerChangeStatus ||
         yesSnap.judgment.customerChangeReason !== noneSnap.judgment.customerChangeReason ||
         yesSnap.judgment.customerChangeSummary !== noneSnap.judgment.customerChangeSummary;
+      const nextSurfaceDiverged = (left: typeof confirmSnap, right: typeof confirmSnap) =>
+        left.next.targetGap !== right.next.targetGap || left.next.question !== right.next.question;
       const nextAfterUnderstandingDiverged =
-        confirmSnap.next.validationAction !== unknownSnap.next.validationAction ||
-        confirmSnap.next.validationAction !== reviseSnap.next.validationAction ||
-        confirmSnap.next.whyNow !== unknownSnap.next.whyNow ||
-        confirmSnap.next.whyNow !== reviseSnap.next.whyNow;
+        nextSurfaceDiverged(confirmSnap, reviseSnap) &&
+        nextSurfaceDiverged(confirmSnap, unknownSnap) &&
+        nextSurfaceDiverged(reviseSnap, unknownSnap);
+      const unknownKeptDocumentCustomer = IDENTITY[id].keep.test(unknownSnap.spine.customer);
+      const validationActionsSplit =
+        Boolean(yesSnap.next.validationAction) &&
+        Boolean(noneSnap.next.validationAction) &&
+        yesSnap.next.validationAction !== noneSnap.next.validationAction &&
+        yesSnap.next.validationAction !== yesSnap.next.whyNow &&
+        noneSnap.next.validationAction !== noneSnap.next.whyNow;
       const nextAfterEvidenceDiverged =
         yesSnap.next.targetGap !== noneSnap.next.targetGap ||
         yesSnap.next.question !== noneSnap.next.question ||
@@ -480,6 +488,14 @@ describe('PR #197 S1–S6 strategy quality', () => {
           !unknownEscapesIdentity,
           `unknownNext=${unknownSnap.next.targetGap} customerCompleteness=${unknownSnap.completeness.customerPersona}`,
         ),
+        unknownKeepsDocumentCustomer: axisPass(
+          unknownKeptDocumentCustomer && unknownStaysOpen && unknownNotFact,
+          `unknownCustomer="${unknownSnap.spine.customer}" completeness=${unknownSnap.completeness.customerPersona}`,
+        ),
+        validationActionSplit: axisPass(
+          validationActionsSplit,
+          `yesAction="${yesSnap.next.validationAction}" noneAction="${noneSnap.next.validationAction}" yesWhy="${yesSnap.next.whyNow}" noneWhy="${noneSnap.next.whyNow}"`,
+        ),
       };
       const failedAxes = Object.entries(axes)
         .filter(([, v]) => !v.pass)
@@ -506,6 +522,9 @@ describe('PR #197 S1–S6 strategy quality', () => {
         axes,
         failedAxes,
         noSolutionWhileIdentityOpen: noSolutionWhileOpen,
+        unknownKeptDocumentCustomer,
+        validationActionsSplit,
+        nextAfterUnderstandingDiverged,
       };
     }
 
@@ -540,10 +559,27 @@ describe('PR #197 S1–S6 strategy quality', () => {
       const row = scenarios[id] as {
         firstSurface: { d7NoDocumentEchoConfirmYes: boolean; d4NoSolutionFirst: boolean };
         noSolutionWhileIdentityOpen: boolean;
+        unknownKeptDocumentCustomer: boolean;
+        validationActionsSplit: boolean;
+        nextAfterUnderstandingDiverged: boolean;
       };
       expect(row.firstSurface.d7NoDocumentEchoConfirmYes, `${id} D7`).toBe(true);
       expect(row.firstSurface.d4NoSolutionFirst, `${id} D4 first`).toBe(true);
       expect(row.noSolutionWhileIdentityOpen, `${id} D4 next`).toBe(true);
+      expect(row.unknownKeptDocumentCustomer, `${id} unknown keeps document customer`).toBe(true);
+      expect(row.validationActionsSplit, `${id} payment validation actions`).toBe(true);
+      expect(row.nextAfterUnderstandingDiverged, `${id} next question or gap`).toBe(true);
+      const branches = (scenarios[id] as {
+        branches: {
+          confirm: { evidenceHasFact: boolean; judgment: { customerStatus: string } };
+          revise: { evidenceHasFact: boolean; judgment: { customerStatus: string; customerChangeReason: string } };
+        };
+      }).branches;
+      expect(branches.confirm.evidenceHasFact, `${id} confirm is not FACT`).toBe(false);
+      expect(branches.confirm.judgment.customerStatus, `${id} confirm is not clear`).not.toBe('clear');
+      expect(branches.revise.evidenceHasFact, `${id} revise is not FACT`).toBe(false);
+      expect(branches.revise.judgment.customerStatus, `${id} revise is not clear`).not.toBe('clear');
+      expect(branches.revise.judgment.customerChangeReason, `${id} revise reason`).toMatch(/가설이 바뀌었습니다/);
     }
     expect(ids).toHaveLength(6);
     expect(overallStatus).toMatch(/PASS|NEEDS FIX|FAIL/);

@@ -19,6 +19,8 @@ import {
 import type { LivingUnderstandingState } from './living-understanding-state';
 import { siInsightPrefersGap, type SiTurnInsight } from './si-turn-insight';
 import { isGapAskable } from './update-gap-state-from-review';
+import { MAX_SAME_GAP_ASKS_BEFORE_YIELD } from './question-decision-engine';
+import { isUncertainFounderAnswer } from './validation-action-for-answer';
 import type { AiPmLoopTurn } from './workspace-ai-pm-loop-types';
 
 const STAGE_A_IMPACT: Partial<Record<string, number>> = {
@@ -89,6 +91,21 @@ export function shouldSkipDocumentOneLiner(
   );
 }
 
+/**
+ * D7 may defer the one-liner while another Stage A gap is still open.
+ * It must not drop businessOneLiner once it is the remaining Stage A gap,
+ * and it must not unlock Stage B.
+ */
+export function shouldDeferDocumentOneLiner(
+  gapState: GapKnowledgeState,
+  living?: LivingUnderstandingState,
+): boolean {
+  if (!shouldSkipDocumentOneLiner(gapState, living)) return false;
+  return STAGE_A_REQUIRED_GAPS.some(
+    (gapId) => gapId !== 'businessOneLiner' && isGapAskable(gapId, gapState),
+  );
+}
+
 /** D4 — solution is forbidden while customer or problem understanding is still open. */
 export function shouldBlockSolutionBeforeIdentity(
   gapState: GapKnowledgeState,
@@ -109,6 +126,25 @@ function remainingStageAGaps(
   });
 }
 
+function openUncertainSlot(
+  lastReview: AnswerReview | null | undefined,
+  gapState: GapKnowledgeState,
+  turns: AiPmLoopTurn[],
+): string | null {
+  const asked = lastReview?.askedGapId?.trim();
+  if (!asked || !lastReview) return null;
+  if (!isGapAskable(asked, gapState)) return null;
+  const quality = lastReview.semanticInterpretationRef?.quality;
+  const uncertain =
+    quality === 'UNKNOWN' ||
+    quality === 'AMBIGUOUS' ||
+    isUncertainFounderAnswer(lastReview.userAnswer ?? '');
+  if (!uncertain) return null;
+  const asks = turns.filter((turn) => !turn.superseded && turn.targetGap?.trim() === asked).length;
+  if (asks >= MAX_SAME_GAP_ASKS_BEFORE_YIELD) return null;
+  return asked;
+}
+
 function lastAskedGapId(turns: AiPmLoopTurn[]): string | null {
   for (let i = turns.length - 1; i >= 0; i -= 1) {
     const t = turns[i]!;
@@ -119,22 +155,10 @@ function lastAskedGapId(turns: AiPmLoopTurn[]): string | null {
   return null;
 }
 
-function lastReviewWasUnknownYield(
-  lastReview: AnswerReview | null | undefined,
-  gapId: string,
-): boolean {
-  if (!lastReview) return false;
-  if (lastReview.askedGapId !== gapId) return false;
-  const verdict = lastReview.gapVerdicts[gapId]?.completeness;
-  const quality = lastReview.semanticInterpretationRef?.quality;
-  return verdict === 'OPEN' && (quality === 'UNKNOWN' || quality === 'AMBIGUOUS');
-}
-
 function scoreCandidate(input: {
   gapId: string;
   adaptiveScore: number;
   siInsight?: SiTurnInsight | null;
-  lastReview?: AnswerReview | null;
   inStageACoverage: boolean;
 }): number {
   const impact = input.inStageACoverage
@@ -143,9 +167,6 @@ function scoreCandidate(input: {
   let score = impact * 1_000 + Math.min(input.adaptiveScore, 20_000) / 100;
   if (siInsightPrefersGap(input.siInsight, input.gapId)) {
     score += 800;
-  }
-  if (lastReviewWasUnknownYield(input.lastReview, input.gapId)) {
-    score -= 20_000;
   }
   return score;
 }
@@ -180,7 +201,6 @@ function rankAskableGaps(input: {
         gapId,
         adaptiveScore: adaptiveScore.get(gapId) ?? 0,
         siInsight: input.siInsight,
-        lastReview: input.lastReview,
         inStageACoverage: input.inStageACoverage,
       }),
     }))
@@ -196,7 +216,7 @@ function rankAskableGaps(input: {
 export function resolveTurnDecision(
   input: ResolveTurnDecisionInput,
 ): ResolveTurnDecisionResult {
-  const skipOneLiner = shouldSkipDocumentOneLiner(input.gapState, input.living);
+  const deferOneLiner = shouldDeferDocumentOneLiner(input.gapState, input.living);
   const blockSolution = shouldBlockSolutionBeforeIdentity(input.gapState);
 
   const contradicted = pickContradictedGap(input.gapState);
@@ -216,7 +236,16 @@ export function resolveTurnDecision(
     };
   }
 
-  const stageAOpen = remainingStageAGaps(input.gapState, skipOneLiner);
+  const uncertainSlot = openUncertainSlot(input.lastReview, input.gapState, input.turns);
+  if (uncertainSlot) {
+    return {
+      targetGapId: uncertainSlot,
+      reason: `turn-decision uncertain slot stays open ${uncertainSlot}`,
+      mode: 'coverage',
+    };
+  }
+
+  const stageAOpen = remainingStageAGaps(input.gapState, deferOneLiner);
   if (stageAOpen.length > 0) {
     const picked = rankAskableGaps({
       gapIds: stageAOpen,
@@ -237,12 +266,19 @@ export function resolveTurnDecision(
     };
   }
 
-  const stageBUnlocked = input.stageReadiness.stageBAllowed || skipOneLiner;
-  if (!stageBUnlocked) {
+  if (!input.stageReadiness.stageBAllowed) {
     return {
       targetGapId: null,
       reason: 'turn-decision Stage B blocked',
       mode: 'none',
+    };
+  }
+
+  if (isGapAskable('marketChannel', input.gapState)) {
+    return {
+      targetGapId: 'marketChannel',
+      reason: 'turn-decision Stage B entry marketChannel',
+      mode: 'ranked',
     };
   }
 
@@ -259,9 +295,7 @@ export function resolveTurnDecision(
     .filter((gapId) => {
       if (!isGapAskable(gapId, input.gapState)) return false;
       if (blockSolution && gapId === 'solution') return false;
-      if (!input.stageReadiness.stageBAllowed && isStageBGap(gapId) && !skipOneLiner) {
-        return false;
-      }
+      if (!input.stageReadiness.stageBAllowed && isStageBGap(gapId)) return false;
       return true;
     });
 

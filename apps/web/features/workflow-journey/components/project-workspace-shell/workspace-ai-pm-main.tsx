@@ -111,7 +111,7 @@ import type { WorkspaceScoreDimensionSnapshot } from './workspace-shell-types';
 import { SiAiPmBindSurface } from '@/features/strategic-intelligence/components/si-ai-pm-bind-surface';
 import { SiReviewSurface } from '@/features/strategic-intelligence/components/si-review-surface';
 import { resolveSiJourneyIntegration } from '@/features/strategic-intelligence/lib/resolve-si-journey-integration';
-import { appendFounderEvidenceToDocument } from '@/features/strategic-intelligence/lib/update-strategic-intelligence';
+import { recordSiMatchedAnswerOnLoop } from '../../lib/business-understanding/si-matched-answer-storage';
 
 type WorkspaceAiPmMainProps = {
   domain: WorkspaceDomainEvidence;
@@ -274,14 +274,6 @@ export function WorkspaceAiPmMain({
       setSiBusinessDocument(siInputText);
     }
   }, [siBusinessDocument, siInputText]);
-  const applySiFounderAnswer = useCallback((answer: string) => {
-    const trimmed = answer.trim();
-    if (!trimmed) return;
-    setSiBusinessDocument((current) =>
-      appendFounderEvidenceToDocument(current ?? siInputText, trimmed),
-    );
-    setSiFounderAnswer(null);
-  }, [siInputText]);
   const siJourney = useMemo(() => {
     const businessDocument = siBusinessDocument ?? siInputText;
     if (!documentAnalyzable || businessDocument.length < 8) return null;
@@ -294,6 +286,19 @@ export function WorkspaceAiPmMain({
   }, [documentAnalyzable, projectName, siBusinessDocument, siFounderAnswer, siInputText]);
   const siBindView = siJourney?.current ?? null;
   const siJudgment = siBindView?.judgment ?? null;
+  const applySiFounderAnswer = useCallback((answer: string) => {
+    const trimmed = answer.trim();
+    const question = siBindView?.question;
+    if (!trimmed || !question) return;
+    recordSiMatchedAnswerOnLoop({
+      projectId,
+      documentText: siInputText,
+      answer: trimmed,
+      question,
+    });
+    setSiFounderAnswer(null);
+    setLoopState(loadAiPmLoopState(projectId));
+  }, [projectId, siBindView?.question, siInputText]);
 
   const understanding = useMemo(
     () => (documentAnalyzable ? buildBusinessUnderstanding(documentContext) : null),

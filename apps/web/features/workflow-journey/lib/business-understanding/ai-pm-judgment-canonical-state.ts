@@ -22,6 +22,7 @@ import {
   inferenceStatusReason,
   resolveCustomerJudgmentStatus,
 } from './ai-pm-judgment-trust-policy';
+import { hasValidationEvidenceCue } from './semantic-slot-normalization';
 
 export const CUSTOMER_CHANGE_CLAIM_LABEL = '고객에게 달라질 것으로 보는 점';
 
@@ -233,7 +234,14 @@ export function mergeCanonicalCustomer(
       {
         ...prior,
         label: CEO_JUDGMENT_DIMENSION_LABELS.customer,
-        status: prior.status === 'unknown' ? 'clear' : prior.status,
+        status: hasValidationEvidenceCue(conclusion)
+          ? 'clear'
+          : prior.status === 'clear' &&
+              hasValidationEvidenceCue(prior.currentConclusion ?? prior.summary)
+            ? prior.status
+            : prior.status === 'unknown' || prior.status === 'clear'
+              ? 'needs_check'
+              : prior.status,
         evidenceRecords: records,
       },
       {

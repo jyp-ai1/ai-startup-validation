@@ -15,6 +15,11 @@ import {
 } from './ai-pm-ceo-judgment-dimensions';
 import { extractDimensionSummaries } from './ai-pm-dimension-extract';
 import { finalizeJudgmentPresentation } from './ai-pm-judgment-conclusion';
+import { hasValidationEvidenceCue } from './semantic-slot-normalization';
+import {
+  answerRevisesQuotedHypothesis,
+  isUncertainFounderAnswer,
+} from './validation-action-for-answer';
 import { isAiPmJudgmentAggregationV1Active } from './ai-pm-judgment-aggregation-v1';
 import {
   isDocumentEchoSummary,
@@ -94,8 +99,11 @@ function toStatus(
   if (!value.trim() || value.trim().length < 4) {
     return { status: 'unknown', reason: '아직 확인되지 않음' };
   }
+  if (strength === 'strong' && hasValidationEvidenceCue(value)) {
+    return { status: 'clear', reason: '검증 단서가 있는 답변' };
+  }
   if (strength === 'strong') {
-    return { status: 'clear', reason: 'CEO 답변에 구체적으로 나타남' };
+    return { status: 'needs_check', reason: '구체적으로 답했으나 검증된 사실은 아닙니다.' };
   }
   return { status: 'needs_check', reason: '방향은 보이나 구체성이 더 필요함' };
 }
@@ -333,7 +341,7 @@ function dimensionFromLiving(living: LivingUnderstandingState): Partial<
 
   const customerSpine = living.spine.customer?.trim() ?? '';
   if (!isPending(customerSpine)) {
-    const { status, reason } = toStatus(customerSpine, 'strong');
+    const { status, reason } = toStatus(customerSpine, 'partial');
     out.customer = {
       id: 'customer',
       label: CEO_JUDGMENT_DIMENSION_LABELS.customer,
@@ -688,6 +696,74 @@ function seedJudgmentFromLivingSpine(
   return next;
 }
 
+function customerBackedByFact(turns: AiPmLoopTurn[], customer: CeoJudgmentDimension): boolean {
+  if (hasValidationEvidenceCue(customer.summary)) return true;
+  if (hasValidationEvidenceCue(customer.currentConclusion ?? '')) return true;
+  return turns.some((turn) =>
+    (turn.review?.extractedFacts ?? []).some(
+      (fact) => fact.evidenceClass === 'FACT' && fact.targetGap === 'customerPersona',
+    ),
+  );
+}
+
+/** ASSUMPTION must not render as clear. A revised customer hypothesis records why. */
+function alignClaimJudgment(
+  state: CeoJudgmentState,
+  turns: AiPmLoopTurn[],
+): CeoJudgmentState {
+  let next = state;
+  const customer = next.dimensions.customer;
+  if (customer.status === 'clear' && !customerBackedByFact(turns, customer)) {
+    next = {
+      ...next,
+      dimensions: {
+        ...next.dimensions,
+        customer: {
+          ...customer,
+          status: 'needs_check',
+          statusReason: '창업자 확인은 이해 마감입니다. 검증된 사실이 아닙니다.',
+          knowledgeSource: customer.knowledgeSource ?? 'ceo_confirmed',
+        },
+      },
+    };
+  }
+
+  const last = [...turns].reverse().find((turn) => Boolean(turn.answer?.trim()) && !turn.superseded);
+  const answer = last?.answer?.trim() ?? '';
+  const question = last?.askedQuestionText ?? '';
+  if (
+    !last ||
+    !question ||
+    !answer ||
+    isUncertainFounderAnswer(answer) ||
+    answer === '지금 이해한 내용은 아닙니다.' ||
+    !answerRevisesQuotedHypothesis(question, answer)
+  ) {
+    return next;
+  }
+
+  const subject = answer.match(/사람은\s+(.+?)(?:입니다|이에요|예요|[.。]|$)/)?.[1]?.trim();
+  const summary = subject
+    ? `고객 가설을 「${clip(subject, 40)}」(으)로 수정`
+    : '고객 가설이 바뀌었습니다';
+  return {
+    ...next,
+    dimensions: {
+      ...next.dimensions,
+      customerChange: {
+        ...next.dimensions.customerChange,
+        id: 'customerChange',
+        label: CEO_JUDGMENT_DIMENSION_LABELS.customerChange,
+        status: 'needs_check',
+        summary,
+        statusReason: '고객 가설이 바뀌었습니다. 이전 고객 가정은 현재 사실이 아닙니다.',
+        evidenceType: 'hypothesis',
+      },
+    },
+    recentCorrections: [...new Set([...(next.recentCorrections ?? []), 'customer' as const])],
+  };
+}
+
 function countActionableTurns(turns: AiPmLoopTurn[]): number {
   return turns.filter(
     (t) =>
@@ -816,7 +892,7 @@ export function buildCeoJudgmentState(input: {
     };
   }
 
-  return finalizeJudgmentPresentation(state);
+  return finalizeJudgmentPresentation(alignClaimJudgment(state, input.turns));
 }
 
 export function applyAnswerToJudgment(input: {
