@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -12,6 +12,7 @@ import {
   PAYER_CONFIRM,
   PROBLEM_STATEMENT,
   WEAK_PAYMENT_SENTENCE,
+  HYPOTHESIS_ROLE_RULES,
   applyBudgetHold,
   applyFounderAnswer,
   bindLiteralFact,
@@ -205,7 +206,9 @@ describe('AT-01 frozen conclusion', () => {
 
     const second = selectNextAction(customer);
     expect(second.hypothesisId).toBe('h-problem');
-    expect(second.eliminated.map((item) => item.hypothesisId)).toEqual(expect.arrayContaining(['h-payer', 'h-channel']));
+    expect(second.selectedId).toBe('q-problem');
+    expect(second.eliminated.map((item) => item.hypothesisId)).toEqual(expect.arrayContaining(['h-customer']));
+    expect(second.candidates.map((item) => item.id)).toEqual(expect.arrayContaining(['q-payer', 'q-channel']));
 
     const problem = confirmProblem(customer);
     expect(problem.stageId).toBe('S1');
@@ -270,9 +273,9 @@ describe('AT-04 revised customer keeps both statements and asks the new problem'
     expect(decision.priorityReason).toContain('판단 문장이 달라진다');
     expect(decision.priorityReason).toContain('단계 변화는 없다');
     expect(decision.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
-    expect(decision.eliminated).toEqual(
-      expect.arrayContaining([expect.objectContaining({ hypothesisId: 'h-problem', key: 'alreadyKnown' })]),
-    );
+    expect(revised.hypotheses['h-problem']?.role).toBe('inactive-preserved');
+    expect(decision.candidates.some((item) => item.hypothesisId === 'h-problem')).toBe(false);
+    expect(decision.priorityReason).toContain('u-empty-problem');
     expect(closeReview(revised).reviewCompletion).not.toBe('closed_complete');
     expect(closeReview(revised).blockingConflictIds).toContain('h-customer');
   });
@@ -686,10 +689,13 @@ describe('supplement A conflict resolution', () => {
 
     const paired = answer(resolved, {
       kind: 'affirm',
-      targetHypothesisId: 'h-problem',
+      targetHypothesisId: 'h-problem-next',
       proposition: '배차 기준이 현장에 없다',
     });
-    expect(paired.hypotheses['h-problem']?.evidenceClass).toBe('CLAIM');
+    expect(paired.hypotheses['h-problem-next']?.evidenceClass).toBe('CLAIM');
+    expect(paired.hypotheses['h-problem-next']?.statement).toBe('배차 기준이 현장에 없다');
+    expect(paired.hypotheses['h-problem']?.statement).toBe(PROBLEM_STATEMENT);
+    expect(paired.hypotheses['h-problem']?.role).toBe('inactive-preserved');
     expect(paired.stageId).toBe('S1');
     const prepared = defineAll(answer(paired, { kind: 'affirm', targetHypothesisId: 'h-payer', proposition: PAYER_CONFIRM }));
     const judged = ['h-customer', 'h-problem', 'h-payer', 'h-repeat'].reduce(
@@ -699,7 +705,10 @@ describe('supplement A conflict resolution', () => {
     const completed = closeReview(failBusinessModel(judged));
     expect(completed.reviewCompletion).toBe('closed_complete');
     expect(completed.blockingConflictIds).toEqual([]);
-    expect(REQUIRED_NOT_WAITING(completed.ledger)).toBe(true);
+    expect(completed.ledger.hypotheses['h-customer-next']?.outcome).not.toBe('passed');
+    expect(completed.ledger.hypotheses['h-problem']?.outcome).not.toBe('passed');
+    expect(completed.ledger.hypotheses['h-problem']?.statement).toBe(PROBLEM_STATEMENT);
+    expect(completed.ledger.hypotheses['h-problem-next']?.outcome).toBe('passed');
   });
 
   it('does not pass an unresolved payment fact', () => {
@@ -726,10 +735,6 @@ describe('supplement A conflict resolution', () => {
   });
 });
 
-function REQUIRED_NOT_WAITING(ledger: JudgmentLedger): boolean {
-  return ledger.hypotheses['h-customer-next']?.outcome !== 'passed' && ledger.hypotheses['h-problem-next']?.outcome !== 'passed';
-}
-
 describe('supplement B preview ranking', () => {
   it('names the assumed branch and refuses a stage reason without a stage change', () => {
     const seed = createSeedLedger();
@@ -737,7 +742,7 @@ describe('supplement B preview ranking', () => {
     assertHonestStageReason(first);
     expect(first.selectedId).toBe('q-customer');
     expect(first.hypothesisId).toBe('h-customer');
-    expect(first.tieBreak).toBe('critical-unknown');
+    expect(first.tieBreak).toBe('uncertainty-closed');
     expect(first.priorityReason).toContain('단계 변화는 없다');
     expect(first.priorityReason).not.toContain('유일한 단계 변화');
     const customerAffirm = previewOf(first, 'q-customer', 'affirm');
@@ -754,7 +759,8 @@ describe('supplement B preview ranking', () => {
     expect(previewOf(first, 'q-channel', 'affirm').judgmentChangeClass).toBe('none');
     expect(previewOf(first, 'q-channel', 'replace').judgmentChangeClass).toBe('none');
     expect(previewOf(first, 'q-channel', 'unknown').judgmentChangeClass).toBe('none');
-    expect(first.eliminated).toEqual(expect.arrayContaining([expect.objectContaining({ hypothesisId: 'h-channel', key: 'no-judgment-branch' })]));
+    expect(first.candidates.map((item) => item.id)).toEqual(expect.arrayContaining(['q-channel']));
+    expect(first.selectedId).not.toBe('q-channel');
     expect(previewOf(first, 'v-business-model', 'payment_claim').stageAfter).not.toBe('S3');
     expect(previewOf(first, 'v-business-model', 'absence_claim').stageChanged).toBe(false);
     expect(previewOf(first, 'v-business-model', 'criterion_defined').stageChanged).toBe(false);
@@ -770,13 +776,15 @@ describe('supplement B preview ranking', () => {
     expect(problemAffirm.verdictBefore).toBe('insufficient_basis');
     expect(problemAffirm.verdictAfter).toBe('judgment_deferred');
     expect(problemAffirm.judgmentChangeClass).toBe('identity');
-    expect(problemChoice.priorityReason).toContain('단계를 S0에서 S1로 바꾼다');
+    expect(problemChoice.priorityReason).toContain('u-unconfirmed-h-problem');
+    expect(problemChoice.priorityReason).toContain('선택 이유가 아니다');
+    expect(problemChoice.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
 
     const ready = confirmProblem();
     const payerChoice = selectNextAction(ready);
     assertHonestStageReason(payerChoice);
     expect(payerChoice.hypothesisId).toBe('h-payer');
-    expect(['critical-unknown', 'judgment-class']).toContain(payerChoice.tieBreak);
+    expect(payerChoice.tieBreak).toBe('uncertainty-closed');
     expect(previewOf(payerChoice, 'q-payer', 'affirm').stageChanged).toBe(false);
     expect(previewOf(payerChoice, 'v-business-model', 'criterion_defined').stageChanged).toBe(false);
     expect(payerChoice.priorityReason).toContain('단계 변화는 없다');
@@ -885,7 +893,8 @@ describe('revise next action', () => {
     expect(revised.judgment).toContain('전통주를 선물·취미로 찾는 30–40대');
     expect(revised.judgment).toContain('혼자 마시는 20대');
     expect(revised.judgment).toContain('활성 판단의 문제는 아직 확인되지 않았다');
-    expect(revised.judgment).toContain('그 문제는 새 고객의 문제가 아니다');
+    expect(revised.judgment).toContain('이 문제는 이전 고객 짝에 속하며 활성 평가에서 제외되었다');
+    expect(revised.judgment).toContain('새 고객에 대한 판정이 아니다');
     expect(revised.judgment).not.toContain('어느 쪽도 작업 기준이 아니다');
     const active = revised.judgment.split('과거 기록')[0] ?? '';
     expect(active).toContain('혼자 마시는 20대');
@@ -958,12 +967,13 @@ describe('payment next action', () => {
     const ranked = next.candidates.map((item) => item.id);
     expect(ranked[0]).toBe('q-payer');
     expect(ranked.indexOf('q-payer')).toBeLessThan(ranked.indexOf('q-problem'));
-    expect(next.tieBreak).toBe('payment-gap');
+    expect(next.tieBreak).toBe('uncertainty-closed');
     expect(next.priorityReason).toContain('q-payer');
-    expect(next.priorityReason).toContain('확인할 가설이 h-payer');
+    expect(next.priorityReason).toContain('u-payer');
     expect(next.priorityReason).toContain('판단 문장이 달라진다');
-    expect(next.priorityReason).toContain('문제 문장 재확인보다');
+    expect(next.priorityReason).toContain('q-problem는 u-payer를 남긴다');
     expect(next.priorityReason).toContain('단계 변화는 없다');
+    expect(next.priorityReason).toContain('사업 성과를 확정하지 않는다');
     expect(next.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
   });
 
@@ -1058,13 +1068,14 @@ describe('revised customer judgment stays on the active customer', () => {
       const revised = answer(ledger, { kind: 'replace', targetHypothesisId: 'h-customer', nextStatement: item.revised });
       const before = selectNextAction(revised);
       const activeBefore = revised.judgment.split('과거 기록')[0] ?? '';
-      const historyBefore = revised.judgment.split('과거 기록')[1] ?? '';
+      const historyBefore = revised.judgment.split('과거 기록').slice(1).join('과거 기록');
       expect(activeBefore).toContain(item.revised);
       expect(activeBefore).toContain('활성 판단의 문제는 아직 확인되지 않았다');
       expect(activeBefore).not.toContain(item.problem);
       expect(historyBefore).toContain(item.customer);
       expect(historyBefore).toContain(item.problem);
-      expect(historyBefore).toContain('그 문제는 새 고객의 문제가 아니다');
+      expect(historyBefore).toContain('이 문제는 이전 고객 짝에 속하며 활성 평가에서 제외되었다');
+      expect(historyBefore).toContain('새 고객에 대한 판정이 아니다');
       expect(before.hypothesisId).toBe('h-problem-next');
       expect(before.selectedId).toBe('q-problem-next');
       expect(revised.criticalUnknownHypothesisId).toBe(before.hypothesisId);
@@ -1076,7 +1087,7 @@ describe('revised customer judgment stays on the active customer', () => {
         proposition: item.nextProblem,
       }).ledger;
       const activeAfter = filled.judgment.split('과거 기록')[0] ?? '';
-      const historyAfter = filled.judgment.split('과거 기록')[1] ?? '';
+      const historyAfter = filled.judgment.split('과거 기록').slice(1).join('과거 기록');
       expect(filled.stageId).toBe('S0');
       expect(filled.hypotheses['h-customer']?.outcome).toBe('conflict_unresolved');
       expect(filled.hypotheses['h-problem']?.statement).toBe(item.problem);
@@ -1087,19 +1098,18 @@ describe('revised customer judgment stays on the active customer', () => {
       expect(activeAfter).toContain('이 문제는 새 고객의 문제이며 과거 문제와 다르다');
       expect(activeAfter).not.toContain(item.problem);
       expect(historyAfter).toContain(item.problem);
-      expect(historyAfter).toContain('그 문제는 새 고객의 문제가 아니다');
+      expect(historyAfter).toContain('이 문제는 이전 고객 짝에 속하며 활성 평가에서 제외되었다');
       const after = selectNextAction(filled);
       assertHonestStageReason(after);
-      expect(after.hypothesisId).toBe('h-payer');
-      expect(after.selectedId).toBe('q-payer');
-      expect(after.selectedId).not.toContain('resolve');
+      expect(after.hypothesisId).toBe('h-customer');
+      expect(after.selectedId).toBe('q-resolve-h-customer');
+      expect(after.selectedId).not.toBe('q-payer');
       expect(after.hypothesisId).not.toBe('h-problem');
       expect(after.prompt).not.toContain(item.problem);
-      expect(filled.criticalUnknownHypothesisId).toBe(after.hypothesisId);
-      expect(after.priorityReason).toContain('h-payer');
-      expect(after.priorityReason).toContain('판단 문장이 달라진다');
-      expect(after.priorityReason).toContain('과거 문제는 새 고객의 문제가 아니다');
-      expect(after.priorityReason).toContain('단계 변화는 없다');
+      expect(filled.uncertainties[0]?.id).toBe('u-conflict-h-customer');
+      expect(after.priorityReason).toContain('u-conflict-h-customer');
+      expect(after.priorityReason).toContain('q-payer는 u-conflict-h-customer를 남긴다');
+      expect(after.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
       expect(previewOf(after, 'q-resolve-h-customer', 'resolve_retain_old').stageChanged).toBe(item.confirmProblemFirst);
     }
   });
@@ -1245,7 +1255,7 @@ describe('verification spec 9a1c0aad', () => {
     const payerChoice = selectNextAction(paid);
     assertReasonMatchesCitedPreview(payerChoice);
     expect(payerChoice.selectedId).toBe('q-payer');
-    expect(payerChoice.tieBreak).toBe('payment-gap');
+    expect(payerChoice.tieBreak).toBe('uncertainty-closed');
     expect(payerChoice.prompt).not.toContain(problem);
     expect(previewOf(payerChoice, 'q-payer', 'affirm').stageChanged).toBe(false);
     expect(previewOf(payerChoice, 'q-problem', 'affirm').stageChanged).toBe(true);
@@ -1385,7 +1395,11 @@ describe('contract B cases A-D', () => {
     const next = selectNextAction(ledger);
     expect(next.hypothesisId).toBe('h-problem');
     expect(next.selectedId).toBe('q-problem');
-    expect(next.priorityReason).toContain('단계를 S0에서 S1로 바꾼다');
+    expect(next.priorityReason).toContain('u-unconfirmed-h-problem');
+    expect(next.priorityReason).toContain('선택 이유가 아니다');
+    expect(next.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
+    expect(previewOf(next, 'q-problem', 'affirm').stageBefore).toBe('S0');
+    expect(previewOf(next, 'q-problem', 'affirm').stageAfter).toBe('S1');
     expect(closeReview(ledger).reviewCompletion).not.toBe('closed_complete');
 
     const resolved = resolveConflict(ledger, {
@@ -1460,7 +1474,11 @@ describe('contract B cases A-D', () => {
     const next = selectNextAction(ledger);
     expect(next.hypothesisId).toBe('h-problem');
     expect(next.selectedId).toBe('q-problem');
-    expect(next.priorityReason).toContain('단계를 S0에서 S1로 바꾼다');
+    expect(next.priorityReason).toContain('u-unconfirmed-h-problem');
+    expect(next.priorityReason).toContain('선택 이유가 아니다');
+    expect(next.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
+    expect(previewOf(next, 'q-problem', 'affirm').stageBefore).toBe('S0');
+    expect(previewOf(next, 'q-problem', 'affirm').stageAfter).toBe('S1');
     expect(closeReview(ledger).reviewCompletion).not.toBe('closed_complete');
   });
 
@@ -1483,7 +1501,12 @@ describe('contract B cases A-D', () => {
     const preview = selectNextAction(written);
     expect(preview.hypothesisId).toBe('h-business-model');
     expect(preview.selectedId).toBe('v-business-model');
-    expect(preview.priorityReason).toContain('단계를 S1에서 S2로 바꾼다');
+    expect(preview.priorityReason).toContain('u-model-record');
+    expect(preview.priorityReason).toContain('선택 이유가 아니다');
+    expect(preview.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
+    expect(previewOf(preview, 'v-business-model', 'absence_claim').stageChanged).toBe(true);
+    expect(previewOf(preview, 'v-business-model', 'absence_claim').stageBefore).toBe('S1');
+    expect(previewOf(preview, 'v-business-model', 'absence_claim').stageAfter).toBe('S2');
     expect(written.stageId).toBe('S1');
 
     const reevaluated = answer(written, { kind: 'unknown', targetHypothesisId: 'h-channel' });
@@ -1500,7 +1523,7 @@ describe('contract B cases A-D', () => {
     expect(next.candidates.map((item) => item.id)).toEqual(expect.arrayContaining(['q-repeat', 'v-business-model']));
     expect(next.hypothesisId).toBe('h-repeat');
     expect(next.selectedId).toBe('q-repeat');
-    expect(next.tieBreak).toBe('repeat-critical');
+    expect(next.tieBreak).toBe('uncertainty-closed');
     expect(next.priorityReason).toContain('affirm');
     expect(next.priorityReason).toContain('판단 문장이 달라진다');
     expect(next.priorityReason).toContain('단계 변화는 없다');
@@ -1524,5 +1547,266 @@ describe('contract B cases A-D', () => {
     });
     expect(compared.find((item) => item.id === 'v-business-model')?.judgmentChanged).toBe(true);
     expect(closeReview(reevaluated).reviewCompletion).not.toBe('closed_complete');
+  });
+});
+
+const REASSESS_TRACE = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../../../docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-REASSESS-TRACE.json');
+const PRESERVED_PROBLEM = '이 문제는 이전 고객 짝에 속하며 활성 평가에서 제외되었다. 새 고객에 대한 판정이 아니다.';
+
+describe('section 10 reassess contracts', () => {
+  it('states which roles enter stage, outcome, critical unknown, and candidates', () => {
+    expect(HYPOTHESIS_ROLE_RULES).toEqual({
+      active: { stage: true, outcome: true, critical: true, candidates: true },
+      'conflict-side': { stage: true, outcome: true, critical: true, candidates: true },
+      'inactive-preserved': { stage: false, outcome: false, critical: false, candidates: false },
+    });
+  });
+
+  it('keeps the old problem out of evaluation and opens an empty unjudged problem', () => {
+    const revised = replaceCustomer(confirmProblem(), '우리 고객은 물류본부다.');
+    const decision = selectNextAction(revised);
+    expect(revised.hypotheses['h-problem']?.statement).toBe(PROBLEM_STATEMENT);
+    expect(revised.hypotheses['h-problem']?.role).toBe('inactive-preserved');
+    expect(revised.bindings.some((item) => item.id === 'b-problem-doc' && item.proposition === PROBLEM_STATEMENT)).toBe(true);
+    expect(revised.hypotheses['h-problem-next']?.statement).toBe('');
+    expect(revised.hypotheses['h-problem-next']?.outcome).toBe('not_run');
+    expect(revised.hypotheses['h-problem-next']?.evidenceClass).toBe('ASSUMPTION');
+    expect(revised.hypotheses['h-problem-next']?.role).toBe('active');
+    expect(revised.uncertainties[0]?.id).toBe('u-empty-problem');
+    expect(revised.uncertainties.map((item) => item.id)).toContain('u-conflict-h-customer');
+    expect(decision.selectedId).toBe('q-problem-next');
+    expect(decision.candidates.some((item) => item.hypothesisId === 'h-problem')).toBe(false);
+    expect(decision.prompt).not.toContain(PROBLEM_STATEMENT);
+    expect(revised.judgment).toContain(PRESERVED_PROBLEM);
+    expect(revised.stageId).toBe('S0');
+    expect(revised.hypotheses['h-customer']?.evidenceClass).not.toBe('FACT');
+    expect(revised.hypotheses['h-customer-next']?.evidenceClass).toBe('CLAIM');
+  });
+
+  it('leaves the customer conflict active until resolve, then refuses passed and VALIDATED', () => {
+    const revised = replaceCustomer(confirmProblem(), '우리 고객은 물류본부다.');
+    const filled = answer(revised, {
+      kind: 'affirm',
+      targetHypothesisId: 'h-problem-next',
+      proposition: '배차 기준이 현장에 없다',
+    });
+    expect(filled.uncertainties[0]?.id).toBe('u-conflict-h-customer');
+    expect(filled.hypotheses['h-problem']?.role).toBe('inactive-preserved');
+    expect(filled.hypotheses['h-problem']?.statement).toBe(PROBLEM_STATEMENT);
+    const beforeResolve = selectNextAction(filled);
+    expect(beforeResolve.selectedId).toBe('q-resolve-h-customer');
+    const conflict = filled.conflicts.find((item) => item.hypothesisId === 'h-customer' && !item.resolved);
+    if (!conflict) throw new Error('customer conflict missing');
+    const resolved = resolveConflict(filled, {
+      hypothesisId: 'h-customer',
+      evidenceId: conflict.rightId,
+      reason: '새 고객을 작업 기준으로 둔다',
+    });
+    expect(resolved.conflicts.some((item) => item.hypothesisId === 'h-customer' && !item.resolved)).toBe(false);
+    expect(resolved.hypotheses['h-customer']?.outcome).toBe('not_run');
+    expect(resolved.hypotheses['h-customer']?.outcome).not.toBe('passed');
+    expect(resolved.bindings.find((item) => item.id === conflict.rightId)?.projectAttribution).toBe('unreviewed');
+    expect(resolved.bindings.find((item) => item.id === conflict.rightId)?.authenticityGuaranteed).toBe(false);
+    expect(resolved.bindings.some((item) => item.evidenceClass === 'VALIDATED')).toBe(false);
+    expect(resolved.bindings.some((item) => item.id === conflict.leftId)).toBe(true);
+    expect(resolved.hypotheses['h-problem']?.statement).toBe(PROBLEM_STATEMENT);
+    expect(resolved.hypotheses['h-problem']?.role).toBe('inactive-preserved');
+
+    const absent = answer(confirmCustomer(), {
+      kind: 'absence_claim',
+      proposition: ABSENCE_SENTENCE,
+      targetHypothesisId: 'h-business-model',
+    });
+    const bound = bindLiteralFact(absent, { hypothesisId: 'h-business-model', recordText: TAX_LINE, role: 'payment-literal' });
+    const model = resolveConflict(bound.ledger, {
+      hypothesisId: 'h-business-model',
+      evidenceId: bound.binding.id,
+      reason: '문자 기록을 작업 기준으로 둔다',
+    });
+    expect(model.hypotheses['h-business-model']?.outcome).toBe('insufficient_record');
+    expect(model.hypotheses['h-business-model']?.outcome).not.toBe('passed');
+    expect(model.bindings.find((item) => item.id === bound.binding.id)?.projectAttribution).toBe('unreviewed');
+    expect(model.bindings.find((item) => item.id === bound.binding.id)?.authenticityGuaranteed).toBe(false);
+    expect(model.bindings.some((item) => item.id === 'b-absence')).toBe(true);
+    expect(model.bindings.some((item) => item.evidenceClass === 'VALIDATED')).toBe(false);
+    expect(model.judgment).not.toContain('VALIDATED');
+  });
+
+  it('does not let decision_ready create or execute a validation plan', () => {
+    const ready = confirmProblem();
+    expect(ready.reviewCompletion).toBe('decision_ready');
+    expect(ready.validationPlan.status).toBe('not_required');
+    expect(ready.validationPriority.length).toBeGreaterThan(0);
+    const absent = answer(ready, { kind: 'absence_claim', proposition: ABSENCE_SENTENCE, targetHypothesisId: 'h-business-model' });
+    expect(absent.reviewCompletion).toBe('decision_ready');
+    expect(absent.validationPlan.status).toBe('proposed');
+    expect(absent.validationPlan.targetHypothesisId).toBe('h-business-model');
+    expect(absent.validationPlan.evidenceNeeded).toContain('주체와 금액이 적힌 문자 기록');
+    expect(absent.validationPlan.passIf.length).toBeGreaterThan(0);
+    expect(absent.validationPlan.failIf.length).toBeGreaterThan(0);
+    expect(absent.validationPlan.pendingWork).toContain('설정하지 않는다');
+    expect(absent.validationPlan.status).not.toBe('executed');
+    const source = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../si-judgment-contract.ts'), 'utf8');
+    expect(source).not.toMatch(/status:\s*'executed'/);
+  });
+
+  it('does not close the critical uncertainty when only the sentence changes', () => {
+    const ready = confirmProblem();
+    const decision = selectNextAction(ready);
+    expect(ready.uncertainties[0]?.id).toBe('u-payer');
+    const unknown = previewOf(decision, 'q-payer', 'unknown');
+    expect(unknown.judgmentChanged).toBe(true);
+    expect(unknown.closedUncertaintyIds ?? []).not.toContain('u-payer');
+    expect(unknown.uncertaintyIdsAfter ?? []).toContain('u-payer');
+  });
+
+  it('prefers the candidate that closes the critical uncertainty', () => {
+    const conflicted = answer(replaceCustomer(confirmProblem(), '우리 고객은 물류본부다.'), {
+      kind: 'affirm',
+      targetHypothesisId: 'h-problem-next',
+      proposition: '배차 기준이 현장에 없다',
+    });
+    const resolveChoice = selectNextAction(conflicted);
+    expect(conflicted.uncertainties[0]?.id).toBe('u-conflict-h-customer');
+    expect(resolveChoice.selectedId).toBe('q-resolve-h-customer');
+    expect(resolveChoice.priorityReason).toContain('q-payer는 u-conflict-h-customer를 남긴다');
+    const payerClosed = previewOf(resolveChoice, 'q-payer', 'affirm').closedUncertaintyIds ?? [];
+    const resolveClosed = previewOf(resolveChoice, 'q-resolve-h-customer', 'resolve_retain_new').closedUncertaintyIds ?? [];
+    expect(payerClosed).not.toContain('u-conflict-h-customer');
+    expect(resolveClosed).toContain('u-conflict-h-customer');
+
+    const payerOnly = answer(confirmCustomer(), {
+      kind: 'payment_claim',
+      proposition: WEAK_PAYMENT_SENTENCE,
+      targetHypothesisId: 'h-business-model',
+    });
+    const payerChoice = selectNextAction(payerOnly);
+    expect(payerOnly.uncertainties[0]?.id).toBe('u-payer');
+    expect(payerOnly.conflicts.some((item) => item.hypothesisId === 'h-customer' && !item.resolved)).toBe(false);
+    expect(payerChoice.selectedId).toBe('q-payer');
+    expect(previewOf(payerChoice, 'q-payer', 'affirm').closedUncertaintyIds ?? []).toContain('u-payer');
+
+    const recordOnly = answer(confirmCustomer(), {
+      kind: 'absence_claim',
+      proposition: ABSENCE_SENTENCE,
+      targetHypothesisId: 'h-business-model',
+    });
+    const recordChoice = selectNextAction(recordOnly);
+    expect(recordOnly.uncertainties[0]?.id).toBe('u-record');
+    expect(recordChoice.selectedId).toBe('v-business-model');
+    expect(previewOf(recordChoice, 'v-business-model', 'literal_unreviewed').closedUncertaintyIds ?? []).toContain('u-record');
+    expect(previewOf(recordChoice, 'q-payer', 'affirm').closedUncertaintyIds ?? []).not.toContain('u-record');
+    expect(recordChoice.priorityReason).toContain('필요한 증거는 주체와 금액이 적힌 문자 기록');
+  });
+
+  it('proposes evidence collection when no candidate closes the critical uncertainty', () => {
+    const written = defineCriterion(confirmPayer(), {
+      hypothesisId: 'h-business-model',
+      measure: '결제',
+      passIf: '귀속된 결제와 반복 사용이 있다',
+      failIf: '결제 기록이 이 사업의 거래로 확인되지 않는다',
+      requiredLiteralScopes: [],
+    });
+    const bound = bindLiteralFact(written, { hypothesisId: 'h-business-model', recordText: TAX_LINE, role: 'payment-literal' });
+    expect(bound.ledger.uncertainties[0]?.id).toBe('u-attribution');
+    expect(bound.binding.projectAttribution).toBe('unreviewed');
+    const decision = selectNextAction(bound.ledger);
+    expect(decision.selectedId).toBe('v-record-needed');
+    expect(decision.priorityReason).toContain('u-attribution');
+    expect(decision.priorityReason).toContain('닫지 못한다');
+    expect(bound.ledger.validationPlan.status).toBe('proposed');
+    expect(bound.ledger.validationPlan.status).not.toBe('executed');
+    expect(bound.ledger.hypotheses['h-business-model']?.outcome).toBe('insufficient_record');
+    expect(bound.ledger.hypotheses['h-business-model']?.outcome).not.toBe('passed');
+  });
+
+  it('returns the same decision for the same ledger', () => {
+    const ready = confirmProblem();
+    expect(selectNextAction(ready)).toEqual(selectNextAction(ready));
+    const revised = replaceCustomer(ready, '우리 고객은 물류본부다.');
+    const first = selectNextAction(revised);
+    const second = selectNextAction(revised);
+    expect(second.selectedId).toBe(first.selectedId);
+    expect(second.priorityReason).toBe(first.priorityReason);
+    expect(second.tieBreak).toBe(first.tieBreak);
+  });
+
+  it('walks one founder journey without promoting a claim or a literal record', () => {
+    const rows: Array<Record<string, string>> = [];
+    let ledger = createSeedLedger();
+    const snap = (step: string, expected: string) => {
+      const decision = selectNextAction(ledger);
+      const actual = decision.selectedId;
+      const failure = actual === expected ? '' : `expected ${expected} actual ${actual}`;
+      rows.push({
+        step,
+        input: step,
+        expected,
+        actual,
+        critical: ledger.uncertainties[0]?.id ?? '',
+        plan: ledger.validationPlan.status,
+        stage: ledger.stageId,
+        modelOutcome: ledger.hypotheses['h-business-model']?.outcome ?? '',
+        failure,
+      });
+      expect(failure, JSON.stringify(rows.at(-1))).toBe('');
+      expect(ledger.validationPlan.status).not.toBe('executed');
+      return decision;
+    };
+
+    snap('0 seed', 'q-customer');
+    ledger = answer(ledger, { kind: 'affirm', targetHypothesisId: 'h-customer', proposition: CUSTOMER_CONFIRM });
+    expect(ledger.hypotheses['h-customer']?.evidenceClass).toBe('CLAIM');
+    snap('1 confirm customer', 'q-problem');
+    ledger = answer(ledger, { kind: 'replace', targetHypothesisId: 'h-customer', nextStatement: '우리 고객은 대기업 물류본부다.' });
+    expect(ledger.hypotheses['h-problem']?.role).toBe('inactive-preserved');
+    expect(ledger.hypotheses['h-problem']?.statement).toBe(PROBLEM_STATEMENT);
+    expect(ledger.judgment).toContain(PRESERVED_PROBLEM);
+    const replaced = snap('2 replace customer', 'q-problem-next');
+    expect(replaced.prompt).not.toContain(PROBLEM_STATEMENT);
+    ledger = applyFounderAnswer(ledger, replaced, { kind: 'unknown', targetHypothesisId: 'h-problem-next' }).ledger;
+    expect(ledger.hypotheses['h-problem-next']?.statement).toBe('');
+    expect(ledger.hypotheses['h-problem-next']?.outcome).toBe('not_run');
+    snap('3 unknown new problem', 'q-problem-next');
+    ledger = answer(ledger, { kind: 'affirm', targetHypothesisId: 'h-problem-next', proposition: '배차 기준이 현장에 없다' });
+    const resolving = snap('4 affirm new problem', 'q-resolve-h-customer');
+    expect(resolving.priorityReason).toContain('q-payer는 u-conflict-h-customer를 남긴다');
+    expect(previewOf(resolving, 'q-payer', 'affirm').closedUncertaintyIds ?? []).not.toContain('u-conflict-h-customer');
+    ledger = answer(ledger, { kind: 'payment_claim', proposition: WEAK_PAYMENT_SENTENCE, targetHypothesisId: 'h-business-model' });
+    snap('5 weak payment', 'q-resolve-h-customer');
+    ledger = answer(ledger, { kind: 'absence_claim', proposition: ABSENCE_SENTENCE, targetHypothesisId: 'h-business-model' });
+    expect(ledger.validationPlan.status).toBe('proposed');
+    snap('6 absence', 'q-resolve-h-customer');
+    const fact = bindLiteralFact(ledger, { hypothesisId: 'h-business-model', recordText: TAX_LINE, role: 'payment-literal' });
+    ledger = fact.ledger;
+    expect(ledger.hypotheses['h-business-model']?.outcome).toBe('conflict_unresolved');
+    snap('7 literal fact', 'q-resolve-h-customer');
+    ledger = resolveConflict(ledger, {
+      hypothesisId: 'h-business-model',
+      evidenceId: fact.binding.id,
+      reason: '문자 기록을 작업 기준으로 둔다',
+    });
+    expect(ledger.hypotheses['h-business-model']?.outcome).toBe('insufficient_record');
+    expect(ledger.bindings.find((item) => item.id === fact.binding.id)?.projectAttribution).toBe('unreviewed');
+    expect(ledger.stageId).toBe('S0');
+    expect(ledger.hypotheses['h-customer']?.outcome).toBe('conflict_unresolved');
+    snap('8 resolve literal', 'q-resolve-h-customer');
+    ledger = defineCriterion(ledger, {
+      hypothesisId: 'h-business-model',
+      measure: '결제',
+      passIf: '귀속된 결제와 반복 사용이 있다',
+      failIf: '결제 기록이 이 사업의 거래로 확인되지 않는다',
+      requiredLiteralScopes: [],
+    });
+    expect(ledger.stageId).toBe('S0');
+    snap('9 criterion', 'q-resolve-h-customer');
+    const off = selectNextAction(ledger);
+    expect(off.hypothesisId).not.toBe('h-channel');
+    ledger = applyFounderAnswer(ledger, off, { kind: 'unknown', targetHypothesisId: 'h-channel' }).ledger;
+    snap('10 off-selection unknown', 'q-resolve-h-customer');
+    expect(ledger.validationPlan.status).toBe('proposed');
+    expect(ledger.validationPlan.evidenceNeeded.length).toBeGreaterThan(0);
+    expect(ledger.bindings.some((item) => item.evidenceClass === 'VALIDATED')).toBe(false);
+    writeFileSync(REASSESS_TRACE, JSON.stringify({ rows }, null, 2));
   });
 });

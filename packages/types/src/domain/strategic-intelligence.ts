@@ -188,6 +188,7 @@ export type DecisionTieBreak =
   | 'critical-unknown'
   | 'repeat-critical'
   | 'judgment-class'
+  | 'uncertainty-closed'
   | 'stable-id';
 
 export type ReviewRunStatus = 'open' | 'budget_held' | 'provider_limited' | 'provider_down';
@@ -229,6 +230,8 @@ export type ValidationCriterion = {
   requiredLiteralScopes: string[];
 };
 
+export type HypothesisRole = 'active' | 'conflict-side' | 'inactive-preserved';
+
 export type HypothesisJudgment = {
   id: string;
   statement: string;
@@ -237,6 +240,27 @@ export type HypothesisJudgment = {
   evidenceClass: SiEvidenceClass;
   alreadyKnown: boolean;
   pairedCustomerId?: string | null;
+  /** Missing means active. reassess writes one of the three roles. */
+  role?: HypothesisRole;
+};
+
+export type OpenUncertainty = {
+  id: string;
+  hypothesisId: string;
+  blocksStage: boolean;
+  resolvableByQuestion: boolean;
+  evidenceIds: string[];
+};
+
+export type ValidationPlanStatus = 'not_required' | 'proposed' | 'executed';
+
+export type ValidationPlan = {
+  status: ValidationPlanStatus;
+  targetHypothesisId: string | null;
+  evidenceNeeded: string;
+  passIf: string;
+  failIf: string;
+  pendingWork: string;
 };
 
 export type JudgmentChangeClass = 'none' | 'annotation' | 'identity' | 'conflict';
@@ -270,6 +294,9 @@ export type PreviewBranchRecord = {
   failureDropsStage: boolean;
   bindingIdsBefore: string[];
   bindingIdsAfter: string[];
+  uncertaintyIdsBefore?: string[];
+  uncertaintyIdsAfter?: string[];
+  closedUncertaintyIds?: string[];
 };
 
 export type ApplyFounderAnswerResult = {

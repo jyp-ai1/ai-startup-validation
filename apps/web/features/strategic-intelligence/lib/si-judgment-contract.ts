@@ -8,7 +8,10 @@ import type {
   FounderAnswerAct,
   HypothesisEvidenceBinding,
   HypothesisJudgment,
+  HypothesisRole,
   JudgmentChangeClass,
+  OpenUncertainty,
+  ValidationPlan,
   PreviewBranchRecord,
   ProjectAttribution,
   ReviewCompletion,
@@ -39,7 +42,13 @@ export {
 const STAGE_RANK: Record<SiStageId, number> = { S0: 0, S1: 1, S2: 2, S3: 3, S4: 4 };
 const CLASS_RANK: Record<JudgmentChangeClass, number> = { none: 0, annotation: 1, identity: 2, conflict: 3 };
 const SUPPLIED_TIE_KEYS = ['stage-delta', 'verdict-delta', 'fail-drops-stage', 'validation-over-question', 'critical-unknown'] as const;
-const DERIVED_TIE_KEYS = ['open-pair', 'payment-gap', 'active-gap', 'stage-delta', 'repeat-critical', 'verdict-delta', 'fail-drops-stage', 'judgment-class', 'validation-over-question', 'critical-unknown'] as const;
+
+/** Active evaluation include/exclude. 미판정 is not a role. */
+export const HYPOTHESIS_ROLE_RULES = {
+  active: { stage: true, outcome: true, critical: true, candidates: true },
+  'conflict-side': { stage: true, outcome: true, critical: true, candidates: true },
+  'inactive-preserved': { stage: false, outcome: false, critical: false, candidates: false },
+} as const;
 
 export const CUSTOMER_STATEMENT = '반찬가게·꽃집 등 직접 배송 소상공인';
 export const PROBLEM_STATEMENT = '주문과 배송을 따로 관리해야 함';
@@ -76,6 +85,10 @@ export type JudgmentLedger = {
   activePairCustomerId: string;
   unknownCounts: Record<string, number>;
   pendingUnknownId: string | null;
+  uncertainties: OpenUncertainty[];
+  validationPlan: ValidationPlan;
+  preservedHypothesisIds: string[];
+  stageReason: string;
 };
 
 export type CloseReviewResult = {
@@ -94,7 +107,7 @@ function hypothesis(
   statement: string,
   evidenceClass: SiEvidenceClass = 'ASSUMPTION',
 ): HypothesisJudgment {
-  return { id, statement, outcome: 'not_run', criterionId: null, evidenceClass, alreadyKnown: false, pairedCustomerId: null };
+  return { id, statement, outcome: 'not_run', criterionId: null, evidenceClass, alreadyKnown: false, pairedCustomerId: null, role: 'active' };
 }
 
 function binding(input: {
@@ -187,36 +200,125 @@ function hasPaymentFact(ledger: JudgmentLedger): boolean {
   );
 }
 
-function activeCustomerClaimed(ledger: JudgmentLedger): boolean {
-  if (ledger.pairBroken && ledger.hypotheses['h-customer-next']?.evidenceClass === 'CLAIM') return true;
-  const customer = ledger.hypotheses['h-customer'];
-  return customer?.evidenceClass === 'CLAIM' && customer.outcome !== 'conflict_unresolved';
+function roleOf(item: HypothesisJudgment | undefined): HypothesisRole {
+  return item?.role ?? 'active';
 }
 
-function nextCritical(ledger: JudgmentLedger): string {
-  if (ledger.pairBroken && ledger.hypotheses['h-customer-next']?.evidenceClass === 'CLAIM') {
-    const nextProblem = ledger.hypotheses['h-problem-next'];
-    if (!nextProblem?.statement.trim() || nextProblem.evidenceClass !== 'CLAIM') return 'h-problem-next';
-    if (ledger.hypotheses['h-payer']?.evidenceClass !== 'CLAIM') return 'h-payer';
+export function roleAllows(item: HypothesisJudgment | undefined, use: 'stage' | 'outcome' | 'critical' | 'candidates'): boolean {
+  return HYPOTHESIS_ROLE_RULES[roleOf(item)][use];
+}
+
+function activeProblem(ledger: JudgmentLedger): HypothesisJudgment | undefined {
+  const stored = ledger.hypotheses['h-problem'];
+  if (stored && !roleAllows(stored, 'critical')) return ledger.hypotheses['h-problem-next'];
+  return stored;
+}
+
+function emptyPlan(): ValidationPlan {
+  return { status: 'not_required', targetHypothesisId: null, evidenceNeeded: '', passIf: '', failIf: '', pendingWork: '' };
+}
+
+function assignRoles(ledger: JudgmentLedger): JudgmentLedger {
+  const preserved = new Set(ledger.preservedHypothesisIds ?? []);
+  const customerConflict = ledger.conflicts.some((item) => item.hypothesisId === 'h-customer' && !item.resolved);
+  const hypotheses: Record<string, HypothesisJudgment> = {};
+  for (const [id, item] of Object.entries(ledger.hypotheses)) {
+    let role: HypothesisRole = preserved.has(id) ? 'inactive-preserved' : 'active';
+    if (id === 'h-customer' && customerConflict) role = 'conflict-side';
+    hypotheses[id] = { ...item, role };
   }
-  if (
-    activeCustomerClaimed(ledger) &&
-    hasWeakPayment(ledger) &&
-    !hasAbsence(ledger) &&
-    !hasPaymentFact(ledger) &&
-    ledger.hypotheses['h-payer']?.evidenceClass !== 'CLAIM'
-  ) {
-    return 'h-payer';
+  return { ...ledger, hypotheses };
+}
+
+function openConflict(ledger: JudgmentLedger, hypothesisId: string): UnresolvedConflict | undefined {
+  return ledger.conflicts.find((item) => item.hypothesisId === hypothesisId && !item.resolved);
+}
+
+function listUncertainties(ledger: JudgmentLedger): OpenUncertainty[] {
+  const list: OpenUncertainty[] = [];
+  const customer = ledger.hypotheses['h-customer'];
+  const problem = ledger.hypotheses['h-problem'];
+  const currentProblem = activeProblem(ledger);
+  const payer = ledger.hypotheses['h-payer'];
+  const customerConflict = openConflict(ledger, 'h-customer');
+  const problemConflict = roleAllows(problem, 'critical') ? openConflict(ledger, 'h-problem') : undefined;
+  const modelConflict = openConflict(ledger, 'h-business-model');
+  const absence = ledger.bindings.find((item) => item.classReason === 'absence');
+  const fact = ledger.bindings.find((item) => item.classReason === 'payment-literal' && item.evidenceClass === 'FACT');
+  const customerClaim = Boolean(customer && customer.evidenceClass === 'CLAIM' && customer.outcome !== 'conflict_unresolved') || Boolean(ledger.hypotheses['h-customer-next']?.evidenceClass === 'CLAIM' && customerConflict);
+  const problemClaim = Boolean(currentProblem && roleAllows(currentProblem, 'outcome') && currentProblem.evidenceClass === 'CLAIM' && currentProblem.statement.trim());
+
+  if (currentProblem && roleAllows(currentProblem, 'critical') && !currentProblem.statement.trim() && currentProblem.evidenceClass !== 'CLAIM') {
+    list.push({ id: 'u-empty-problem', hypothesisId: currentProblem.id, blocksStage: true, resolvableByQuestion: true, evidenceIds: [] });
   }
-  if (activeCustomerClaimed(ledger) && hasAbsence(ledger) && !hasPaymentFact(ledger)) return 'h-business-model';
-  if (ledger.hypotheses['h-customer']?.outcome === 'conflict_unresolved') return 'h-customer';
-  if (ledger.hypotheses['h-problem']?.outcome === 'conflict_unresolved') return 'h-problem';
-  if (ledger.hypotheses['h-customer']?.evidenceClass !== 'CLAIM') return 'h-customer';
-  if (ledger.hypotheses['h-problem']?.evidenceClass !== 'CLAIM') return 'h-problem';
-  if (ledger.hypotheses['h-payer']?.evidenceClass !== 'CLAIM') return 'h-payer';
+  if (customerConflict) {
+    list.push({ id: 'u-conflict-h-customer', hypothesisId: 'h-customer', blocksStage: true, resolvableByQuestion: true, evidenceIds: [customerConflict.leftId, customerConflict.rightId] });
+  }
+  if (problemConflict) {
+    list.push({ id: 'u-conflict-h-problem', hypothesisId: 'h-problem', blocksStage: true, resolvableByQuestion: true, evidenceIds: [problemConflict.leftId, problemConflict.rightId] });
+  }
+  if (absence && !fact) {
+    list.push({ id: 'u-record', hypothesisId: 'h-business-model', blocksStage: false, resolvableByQuestion: false, evidenceIds: [absence.id] });
+  }
+  if (!customerConflict && customer && customer.evidenceClass !== 'CLAIM' && customer.statement.trim()) {
+    const doc = ledger.bindings.find((item) => item.id === 'b-customer-doc');
+    list.push({ id: 'u-unconfirmed-h-customer', hypothesisId: 'h-customer', blocksStage: true, resolvableByQuestion: true, evidenceIds: doc ? [doc.id] : [] });
+  }
+  if (customerClaim && hasWeakPayment(ledger) && !hasAbsence(ledger) && !hasPaymentFact(ledger) && payer?.evidenceClass !== 'CLAIM') {
+    const weak = ledger.bindings.find((item) => item.classReason === 'weak-payment');
+    list.push({ id: 'u-payer', hypothesisId: 'h-payer', blocksStage: false, resolvableByQuestion: true, evidenceIds: weak ? [weak.id] : [] });
+  }
+  if (!problemConflict && currentProblem && roleAllows(currentProblem, 'critical') && currentProblem.statement.trim() && currentProblem.evidenceClass !== 'CLAIM') {
+    const doc = ledger.bindings.find((item) => item.hypothesisId === currentProblem.id);
+    list.push({ id: `u-unconfirmed-${currentProblem.id}`, hypothesisId: currentProblem.id, blocksStage: true, resolvableByQuestion: true, evidenceIds: doc ? [doc.id] : [] });
+  }
+  if (customerClaim && problemClaim && payer?.evidenceClass !== 'CLAIM' && !list.some((item) => item.id === 'u-payer')) {
+    list.push({ id: 'u-payer', hypothesisId: 'h-payer', blocksStage: false, resolvableByQuestion: true, evidenceIds: [] });
+  }
+  if (modelConflict) {
+    list.push({ id: 'u-conflict-h-business-model', hypothesisId: 'h-business-model', blocksStage: false, resolvableByQuestion: true, evidenceIds: [modelConflict.leftId, modelConflict.rightId] });
+  }
+  if (fact && fact.projectAttribution !== 'accepted' && !modelConflict) {
+    list.push({ id: 'u-attribution', hypothesisId: 'h-business-model', blocksStage: false, resolvableByQuestion: false, evidenceIds: [fact.id] });
+  }
+  if (customerClaim && problemClaim && payer?.evidenceClass === 'CLAIM' && !fact && !absence && !modelConflict && ledger.stageId !== 'S2') {
+    list.push({ id: 'u-model-record', hypothesisId: 'h-business-model', blocksStage: false, resolvableByQuestion: false, evidenceIds: [] });
+  }
   const criterion = ledger.criteria.find((item) => item.hypothesisId === 'h-business-model');
-  if (!criterion?.passIf || !criterion.failIf) return 'h-business-model';
-  return 'h-repeat';
+  const repeat = ledger.hypotheses['h-repeat'];
+  if (ledger.stageId === 'S2' && criterion?.passIf && criterion.failIf && repeat?.evidenceClass !== 'CLAIM' && !customerConflict) {
+    list.push({ id: 'u-repeat', hypothesisId: 'h-repeat', blocksStage: false, resolvableByQuestion: true, evidenceIds: [] });
+  }
+  return list;
+}
+
+function buildValidationPlan(ledger: JudgmentLedger, uncertainties: OpenUncertainty[]): ValidationPlan {
+  const pending = uncertainties.filter((item) => !item.resolvableByQuestion);
+  if (pending.length === 0) return emptyPlan();
+  const top = pending[0]!;
+  const criterion = ledger.criteria.find((item) => item.hypothesisId === top.hypothesisId);
+  const evidenceNeeded =
+    top.id === 'u-record'
+      ? '주체와 금액이 적힌 문자 기록'
+      : top.id === 'u-attribution'
+        ? '선택한 문자 기록이 이 사업의 거래인지에 대한 귀속 판단'
+        : top.id === 'u-model-record'
+          ? '사업 가설을 판정할 문자 기록'
+          : top.evidenceIds.join(', ') || top.id;
+  return {
+    status: 'proposed',
+    targetHypothesisId: top.hypothesisId,
+    evidenceNeeded,
+    passIf: criterion?.passIf || '귀속이 accepted 이고 기준을 통과하는 기록이 있다',
+    failIf: criterion?.failIf || '기록이 이 사업의 거래로 확인되지 않는다',
+    pendingWork: '계획은 제안만 되었다. 엔진은 executed 를 설정하지 않는다.',
+  };
+}
+
+function stageReasonFor(ledger: JudgmentLedger, uncertainties: OpenUncertainty[]): string {
+  const blocking = uncertainties.find((item) => item.blocksStage);
+  if (blocking) return `단계는 ${ledger.stageId}다. 사유는 ${blocking.id}이며 근거는 ${blocking.evidenceIds.join(', ') || '없음'}이다.`;
+  return `단계는 ${ledger.stageId}다. 단계 상승은 선택 이유가 아니다.`;
 }
 
 function sevenReady(ledger: JudgmentLedger): boolean {
@@ -245,18 +347,19 @@ function refreshNarrative(ledger: JudgmentLedger): JudgmentLedger {
   let whyPossible = '';
   let whyFail = '';
 
-  if (customer?.outcome === 'conflict_unresolved') {
-    const activeProblem = nextProblem?.statement?.trim()
-      ? `활성 판단의 문제는 「${nextProblem.statement}」이다. 이 문제는 새 고객의 문제이며 과거 문제와 다르다.`
+  if (customer?.outcome === 'conflict_unresolved' || customer?.role === 'conflict-side') {
+    const visibleProblem = problem && !roleAllows(problem, 'critical') ? nextProblem : problem;
+    const activeProblemText = visibleProblem?.statement?.trim() && visibleProblem.evidenceClass === 'CLAIM'
+      ? `활성 판단의 문제는 「${visibleProblem.statement}」이다. 이 문제는 새 고객의 문제이며 과거 문제와 다르다.`
       : '활성 판단의 문제는 아직 확인되지 않았다.';
     const payerText =
       payer?.evidenceClass === 'CLAIM' && payer.statement
         ? ` 활성 고객의 결제 주체는 「${payer.statement}」 CLAIM이다. 금액과 기록은 아직 없다.`
         : '';
-    judgment = `활성 판단의 고객은 새 CLAIM 「${successor?.statement ?? ''}」이다. ${activeProblem}${payerText} 과거 기록의 고객은 「${customer.statement}」이고 그 문제는 「${problem?.statement ?? ''}」이다. 그 문제는 새 고객의 문제가 아니다. 과거 기록은 활성 판단이 아니다. 이전 고객과 문제의 짝은 철회되었다.`;
-    whyPossible = '이전 고객 문장은 철회되었다.';
+    judgment = `활성 판단의 고객은 새 CLAIM 「${successor?.statement ?? ''}」이다. ${activeProblemText}${payerText} 이전 고객 문장은 작업 기준에서 철회되었다. 과거 기록의 고객은 「${customer.statement}」이다. 과거 기록의 문제는 「${problem?.statement ?? ''}」이다. 이 문제는 이전 고객 짝에 속하며 활성 평가에서 제외되었다. 새 고객에 대한 판정이 아니다.`;
+    whyPossible = '이전 고객 문장은 작업 기준에서 철회되었다. 새 고객 문장은 CLAIM이며 성공 가능성은 그 CLAIM을 넘지 않는다.';
     whyFail = 'h-customer의 충돌이 해소되기 전에는 단계 근거가 아니다.';
-  } else if (problem?.outcome === 'conflict_unresolved') {
+  } else if (problem?.role !== 'inactive-preserved' && problem?.outcome === 'conflict_unresolved') {
     judgment = `문제 문장이 충돌했다. 이전 문장은 「${problem.statement}」. 새 문장은 「${nextProblem?.statement ?? ''}」. 해소 전까지 작업 기준이 아니다.`;
     whyPossible = '이전 문제 문장은 보존되었다.';
     whyFail = 'h-problem의 충돌이 해소되기 전에는 단계 근거가 아니다.';
@@ -280,7 +383,7 @@ function refreshNarrative(ledger: JudgmentLedger): JudgmentLedger {
   );
   const businessConflictOpen = ledger.conflicts.some((item) => item.hypothesisId === 'h-business-model' && !item.resolved);
   const businessConflictClosed = ledger.conflicts.some((item) => item.hypothesisId === 'h-business-model' && item.resolved);
-  if (absence) {
+  if (absence && !paymentFact) {
     judgment = `${judgment} ${absence.proposition} 이것은 h-business-model의 CLAIM이며 단계는 그대로다.`;
     whyFail = `${whyFail} ${absence.proposition}`.trim();
   }
@@ -288,7 +391,7 @@ function refreshNarrative(ledger: JudgmentLedger): JudgmentLedger {
     judgment = `${judgment} 판단은 충돌이다. 부재 근거 ${absence.id}는 CLAIM 「${absence.proposition}」이다. 문자 근거 ${paymentFact.id}는 FACT 「${paymentFact.proposition}」이고 귀속은 ${paymentFact.projectAttribution}다. 진위는 보장되지 않는다. 둘 다 검증된 사실이 아니고 확정된 사업 성과가 아니다. 해소 전에는 어느 쪽도 작업 기준으로 고르지 않는다.`;
     whyFail = `${whyFail} 부재 ${absence.id}와 문자 ${paymentFact.id}가 충돌한다. 귀속은 ${paymentFact.projectAttribution}다.`.trim();
   } else if (absence && paymentFact && businessConflictClosed && !businessConflictOpen) {
-    judgment = `${judgment} 충돌은 해소되었다. 작업 기준으로 고른 근거는 ${paymentFact.id} FACT 「${paymentFact.proposition}」이고 귀속은 ${paymentFact.projectAttribution}다. 부재 근거 ${absence.id}는 이력으로 남아 있다. 귀속이 unreviewed이면 이 기록을 확정된 사업 성과로 두지 않는다.`;
+    judgment = `${judgment} 충돌은 해소되었다. 작업 기준으로 고른 근거는 ${paymentFact.id} FACT 「${paymentFact.proposition}」이고 귀속은 ${paymentFact.projectAttribution}다. 진위는 보장되지 않는다. 거래 성과는 미확인이다. 부재 근거 ${absence.id}는 이력으로 남아 활성 결론이 아니다. 귀속이 unreviewed이면 이 기록을 확정된 사업 성과로 두지 않는다.`;
   }
   const repeat = ledger.hypotheses['h-repeat'];
   if (repeat?.evidenceClass === 'CLAIM' && repeat.statement.trim()) {
@@ -328,7 +431,7 @@ function refreshNarrative(ledger: JudgmentLedger): JudgmentLedger {
     whyPossible,
     whyFail,
     evidenceMap: ledger.bindings.map(bindingToItem),
-    criticalUnknown: ledger.criticalUnknownHypothesisId,
+    criticalUnknown: ledger.uncertainties?.[0]?.id || ledger.criticalUnknown,
     decisionChangingEvidence: conflictEvidence
       ? `충돌 근거는 부재 ${absence?.id}와 문자 ${paymentFact?.id}다. 귀속은 ${paymentFact?.projectAttribution}다.`
       : talked
@@ -367,9 +470,14 @@ function s3FactsReady(ledger: JudgmentLedger): boolean {
 
 export function evaluateStage(ledger: JudgmentLedger): { stageId: SiStageId; verdictId: SiVerdictId } {
   if (ledger.hypotheses['h-customer']?.outcome === 'conflict_unresolved') return { stageId: 'S0', verdictId: 'insufficient_basis' };
-  if (ledger.hypotheses['h-problem']?.outcome === 'conflict_unresolved') return { stageId: 'S0', verdictId: 'insufficient_basis' };
-  const customerClaim = ledger.hypotheses['h-customer']?.evidenceClass === 'CLAIM';
-  const problemClaim = ledger.hypotheses['h-problem']?.evidenceClass === 'CLAIM';
+  const storedProblem = ledger.hypotheses['h-problem'];
+  if (roleAllows(storedProblem, 'stage') && storedProblem?.outcome === 'conflict_unresolved') {
+    return { stageId: 'S0', verdictId: 'insufficient_basis' };
+  }
+  const customer = ledger.hypotheses['h-customer'];
+  const problem = activeProblem(ledger);
+  const customerClaim = customer?.evidenceClass === 'CLAIM' && customer.outcome !== 'conflict_unresolved';
+  const problemClaim = Boolean(problem && roleAllows(problem, 'outcome') && problem.evidenceClass === 'CLAIM' && problem.statement.trim());
   if (!customerClaim || !problemClaim) return { stageId: 'S0', verdictId: 'insufficient_basis' };
   const model = ledger.hypotheses['h-business-model'];
   if (model?.outcome === 'passed' && s3FactsReady(ledger)) {
@@ -382,12 +490,27 @@ export function evaluateStage(ledger: JudgmentLedger): { stageId: SiStageId; ver
   return { stageId: 'S1', verdictId: 'judgment_deferred' };
 }
 
+function reassess(ledger: JudgmentLedger, options?: { freezeStage?: boolean }): JudgmentLedger {
+  const roled = assignRoles(ledger);
+  const stage = options?.freezeStage
+    ? { stageId: roled.stageId, verdictId: roled.verdictId }
+    : evaluateStage(roled);
+  const staged = { ...roled, stageId: stage.stageId, verdictId: stage.verdictId };
+  const uncertainties = listUncertainties(staged);
+  const critical = uncertainties[0];
+  const narrated = refreshNarrative({
+    ...staged,
+    uncertainties,
+    criticalUnknownHypothesisId: critical?.hypothesisId ?? '',
+    criticalUnknown: critical?.id ?? '',
+    stageReason: stageReasonFor(staged, uncertainties),
+  });
+  const validationPlan = buildValidationPlan(narrated, uncertainties);
+  return syncCompletion({ ...narrated, validationPlan, uncertainties });
+}
+
 function applyStage(ledger: JudgmentLedger): JudgmentLedger {
-  const stage = evaluateStage(ledger);
-  const critical = nextCritical(ledger);
-  return syncCompletion(
-    refreshNarrative({ ...ledger, stageId: stage.stageId, verdictId: stage.verdictId, criticalUnknownHypothesisId: critical, criticalUnknown: critical }),
-  );
+  return reassess(ledger);
 }
 
 export function evaluateHypothesis(ledger: JudgmentLedger, hypothesisId: string): ValidationOutcome {
@@ -482,7 +605,7 @@ function commitReplace(ledger: JudgmentLedger, hypothesisId: string, nextStateme
       alreadyKnown: false,
       pairedCustomerId: 'h-customer-next',
     });
-    opened = { ...opened, pairBroken: true };
+    opened = { ...opened, pairBroken: true, preservedHypothesisIds: [...new Set([...(opened.preservedHypothesisIds ?? []), 'h-problem'])] };
   }
   const withBindings: JudgmentLedger = {
     ...opened,
@@ -527,7 +650,7 @@ function commitWeakPayment(ledger: JudgmentLedger, proposition: string): Judgmen
     bindings: [...classed.bindings, founderBinding(ledger, `b-weak-payment-${ledger.commitIds.length}`, 'h-business-model', proposition, 'weak-payment', 'CLAIM')],
   };
   const next = applyStage(bump(withBinding));
-  return { ...next, stageId, verdictId };
+  return reassess({ ...next, stageId, verdictId }, { freezeStage: true });
 }
 
 function commitAbsence(ledger: JudgmentLedger, proposition: string): JudgmentLedger {
@@ -607,27 +730,25 @@ export function resolveConflict(
     outcome: 'not_run',
     alreadyKnown: true,
   });
+  let preserved = [...(ledger.preservedHypothesisIds ?? [])];
   if (input.hypothesisId === 'h-customer' && chosen.hypothesisId === 'h-customer-next') {
-    const successorProblem = ledger.hypotheses['h-problem-next'];
-    next = replaceHypothesis(next, 'h-problem', {
-      statement: successorProblem?.statement ?? '',
-      evidenceClass: 'ASSUMPTION',
-      outcome: 'not_run',
-      alreadyKnown: false,
-    });
-    next = { ...next, activePairCustomerId: 'h-customer-next', pairBroken: false };
+    if (!preserved.includes('h-problem')) preserved.push('h-problem');
+    next = { ...next, activePairCustomerId: 'h-customer-next', pairBroken: false, preservedHypothesisIds: preserved };
   }
   if (input.hypothesisId === 'h-customer' && chosen.hypothesisId !== 'h-customer-next') {
+    preserved = preserved.filter((id) => id !== 'h-problem');
+    if (!preserved.includes('h-problem-next')) preserved.push('h-problem-next');
     next = replaceHypothesis(next, 'h-problem', { alreadyKnown: false });
-    next = { ...next, activePairCustomerId: 'h-customer', pairBroken: false };
+    next = { ...next, activePairCustomerId: 'h-customer', pairBroken: false, preservedHypothesisIds: preserved };
   }
   const withReason: JudgmentLedger = {
     ...next,
     bindings: [...next.bindings, founderBinding(ledger, `b-conflict-resolution-${input.hypothesisId}-${ledger.commitIds.length}`, input.hypothesisId, input.reason, 'conflict-resolution', 'CLAIM')],
   };
-  const staged = applyStage(bump(withReason));
-  if (chosen.evidenceClass === 'FACT') return storeOutcome(staged, input.hypothesisId);
-  return staged;
+  const bumped = bump(withReason);
+  const outcome = evaluateHypothesis(bumped, input.hypothesisId);
+  const landed = outcome === 'passed' ? 'insufficient_record' : outcome;
+  return reassess(replaceHypothesis(bumped, input.hypothesisId, { outcome: landed }));
 }
 
 function judgmentChangeClass(before: JudgmentLedger, after: JudgmentLedger): JudgmentChangeClass {
@@ -650,9 +771,24 @@ function judgmentChangeClass(before: JudgmentLedger, after: JudgmentLedger): Jud
   return 'none';
 }
 
+function uncertaintyWasClosed(before: JudgmentLedger, after: JudgmentLedger, id: string): boolean {
+  if ((after.uncertainties ?? []).some((item) => item.id === id)) return false;
+  if (id === 'u-empty-problem') {
+    const hypothesisId = (before.uncertainties ?? []).find((item) => item.id === id)?.hypothesisId;
+    const slot = hypothesisId ? after.hypotheses[hypothesisId] : undefined;
+    return Boolean(slot && roleAllows(slot, 'critical') && slot.statement.trim() && slot.evidenceClass === 'CLAIM');
+  }
+  if (id === 'u-attribution') {
+    const fact = after.bindings.find((item) => item.classReason === 'payment-literal' && item.evidenceClass === 'FACT');
+    return fact?.projectAttribution === 'accepted';
+  }
+  return true;
+}
+
 function previewRecord(before: JudgmentLedger, after: JudgmentLedger, candidateId: string, hypothesisId: string, act: string): PreviewBranchRecord {
   const outcomeBefore = before.hypotheses[hypothesisId]?.outcome ?? 'missing';
   const outcomeAfter = after.hypotheses[hypothesisId]?.outcome ?? 'missing';
+  const closedUncertaintyIds = (before.uncertainties ?? []).map((item) => item.id).filter((id) => uncertaintyWasClosed(before, after, id));
   return {
     candidateId,
     hypothesisId,
@@ -674,6 +810,9 @@ function previewRecord(before: JudgmentLedger, after: JudgmentLedger, candidateI
     failureDropsStage: STAGE_RANK[after.stageId] < STAGE_RANK[before.stageId],
     bindingIdsBefore: before.bindings.map((item) => item.id),
     bindingIdsAfter: after.bindings.map((item) => item.id),
+    uncertaintyIdsBefore: (before.uncertainties ?? []).map((item) => item.id),
+    uncertaintyIdsAfter: (after.uncertainties ?? []).map((item) => item.id),
+    closedUncertaintyIds,
   };
 }
 
@@ -808,11 +947,20 @@ function validationCandidate(ledger: JudgmentLedger): DecisionCandidate {
 function resolveCandidate(ledger: JudgmentLedger, hypothesisId: string): DecisionCandidate {
   const id = `q-resolve-${hypothesisId}`;
   const conflict = [...ledger.conflicts].reverse().find((item) => item.hypothesisId === hypothesisId && !item.resolved);
-  const successor = ledger.hypotheses[hypothesisId === 'h-customer' ? 'h-customer-next' : 'h-problem-next'];
+  const successorStatement =
+    hypothesisId === 'h-customer'
+      ? (ledger.hypotheses['h-customer-next']?.statement ?? '')
+      : hypothesisId === 'h-business-model'
+        ? (ledger.bindings.find((item) => item.id === conflict?.rightId)?.proposition ?? '')
+        : (ledger.hypotheses['h-problem-next']?.statement ?? '');
+  const previousStatement =
+    hypothesisId === 'h-business-model'
+      ? (ledger.bindings.find((item) => item.id === conflict?.leftId)?.proposition ?? '')
+      : (ledger.hypotheses[hypothesisId]?.statement ?? '');
   const prompt = askedPrompt(
     ledger,
     hypothesisId,
-    `어느 근거를 ${hypothesisId}의 작업 기준으로 둘까요? 이전 「${ledger.hypotheses[hypothesisId]?.statement ?? ''}」. 새 문장 「${successor?.statement ?? ''}」.`,
+    `어느 근거를 ${hypothesisId}의 작업 기준으로 둘까요? 이전 「${previousStatement}」. 새 문장 「${successorStatement}」.`,
   );
   const previews: PreviewBranchRecord[] = [];
   for (const side of ['resolve_retain_new', 'resolve_retain_old'] as const) {
@@ -844,6 +992,8 @@ function resolveCandidate(ledger: JudgmentLedger, hypothesisId: string): Decisio
 function deriveCandidates(ledger: JudgmentLedger): DecisionCandidate[] {
   const list: DecisionCandidate[] = [];
   for (const hypothesisId of ['h-customer', 'h-problem', 'h-payer', 'h-channel']) {
+    const item = ledger.hypotheses[hypothesisId];
+    if (!roleAllows(item, 'candidates')) continue;
     if ((ledger.unknownCounts[hypothesisId] ?? 0) >= 2) continue;
     if (ledger.hypotheses[hypothesisId]?.outcome === 'conflict_unresolved') {
       list.push(resolveCandidate(ledger, hypothesisId));
@@ -851,115 +1001,46 @@ function deriveCandidates(ledger: JudgmentLedger): DecisionCandidate[] {
     }
     list.push(questionCandidate(ledger, hypothesisId));
   }
-  if (ledger.pairBroken && ledger.hypotheses['h-problem-next'] && !ledger.hypotheses['h-problem-next'].alreadyKnown) {
-    list.push(questionCandidate(ledger, 'h-problem-next'));
-  }
   if (ledger.criticalUnknownHypothesisId === 'h-repeat' && (ledger.unknownCounts['h-repeat'] ?? 0) < 2) {
     if (ledger.hypotheses['h-repeat']?.outcome === 'conflict_unresolved') list.push(resolveCandidate(ledger, 'h-repeat'));
     else list.push(questionCandidate(ledger, 'h-repeat'));
+  }
+  const successor = ledger.hypotheses['h-problem-next'];
+  if (
+    successor &&
+    roleAllows(successor, 'candidates') &&
+    !successor.alreadyKnown &&
+    (ledger.unknownCounts['h-problem-next'] ?? 0) < 2 &&
+    !list.some((item) => item.hypothesisId === 'h-problem-next')
+  ) {
+    list.push(questionCandidate(ledger, 'h-problem-next'));
+  }
+  if (ledger.conflicts.some((item) => item.hypothesisId === 'h-business-model' && !item.resolved)) {
+    list.push(resolveCandidate(ledger, 'h-business-model'));
   }
   list.push(validationCandidate(ledger));
   return list;
 }
 
-function maxPreviewStage(item: DecisionCandidate): number {
-  return Math.max(0, ...(item.previews ?? []).map((preview) => Math.abs(STAGE_RANK[preview.stageAfter] - STAGE_RANK[preview.stageBefore])));
+function closingPreview(item: DecisionCandidate, uncertaintyId: string): PreviewBranchRecord | undefined {
+  return (item.previews ?? []).find((preview) => (preview.closedUncertaintyIds ?? []).includes(uncertaintyId));
 }
 
-function opensEmptyPair(ledger: JudgmentLedger, item: DecisionCandidate): number {
-  const nextProblem = ledger.hypotheses['h-problem-next'];
-  if (!ledger.pairBroken || !nextProblem || nextProblem.statement.trim() || nextProblem.alreadyKnown) return 0;
-  if (item.hypothesisId !== 'h-problem-next') return 0;
-  return (item.previews ?? []).some((preview) => preview.judgmentChanged) ? 1 : 0;
-}
-
-function paymentGap(ledger: JudgmentLedger, item: DecisionCandidate): number {
-  if (!activeCustomerClaimed(ledger) || hasPaymentFact(ledger)) return 0;
-  const previews = item.previews ?? [];
-  const changesJudgment = previews.some((preview) => preview.judgmentChanged || preview.judgmentChangeClass === 'conflict');
-  if (!changesJudgment) return 0;
-  if (
-    item.hypothesisId === 'h-payer' &&
-    hasWeakPayment(ledger) &&
-    !hasAbsence(ledger) &&
-    ledger.hypotheses['h-payer']?.evidenceClass !== 'CLAIM'
-  ) {
-    return 1;
-  }
-  if (item.id === 'v-business-model' && hasAbsence(ledger) && !hasWeakPayment(ledger)) return 1;
-  return 0;
-}
-
-function repeatGap(ledger: JudgmentLedger, item: DecisionCandidate): number {
-  if (ledger.criticalUnknownHypothesisId !== 'h-repeat' || item.hypothesisId !== 'h-repeat') return 0;
-  return (item.previews ?? []).some((preview) => preview.act === 'affirm' && preview.judgmentChanged) ? 1 : 0;
-}
-
-function activeGap(ledger: JudgmentLedger, item: DecisionCandidate): number {
-  if (!ledger.pairBroken || ledger.hypotheses['h-customer-next']?.evidenceClass !== 'CLAIM') return 0;
-  if (item.hypothesisId !== nextCritical(ledger)) return 0;
-  return (item.previews ?? []).some((preview) => preview.judgmentChanged) ? 1 : 0;
-}
-
-function derivedTuple(ledger: JudgmentLedger, item: DecisionCandidate): number[] {
-  const previews = item.previews ?? [];
-  const verdict = previews.some((preview) => preview.verdictChanged) ? 1 : 0;
-  const drop = previews.some((preview) => preview.failureDropsStage) ? 1 : 0;
-  const klass = previews.reduce((max, preview) => Math.max(max, CLASS_RANK[preview.judgmentChangeClass]), 0);
-  const validation = item.resolvableByQuestion ? 0 : 1;
-  const critical = item.hypothesisId === ledger.criticalUnknownHypothesisId ? 1 : 0;
-  return [opensEmptyPair(ledger, item), paymentGap(ledger, item), activeGap(ledger, item), maxPreviewStage(item), repeatGap(ledger, item), verdict, drop, klass, validation, critical];
-}
-
-function bestPreview(item: DecisionCandidate): PreviewBranchRecord | undefined {
-  return [...(item.previews ?? [])].sort((left, right) => {
-    const stage = Number(right.stageChanged) - Number(left.stageChanged);
-    if (stage) return stage;
-    const klass = CLASS_RANK[right.judgmentChangeClass] - CLASS_RANK[left.judgmentChangeClass];
-    if (klass) return klass;
-    return Number(right.verdictChanged) - Number(left.verdictChanged);
-  })[0];
-}
-
-function stageTextOf(preview: PreviewBranchRecord | undefined): string {
-  return preview?.stageChanged ? `단계를 ${preview.stageBefore}에서 ${preview.stageAfter}로 바꾼다` : '단계 변화는 없다';
-}
-
-function derivedReason(winner: DecisionCandidate, tieBreak: DecisionTieBreak): string {
-  const best = bestPreview(winner);
-  const act = best?.act ?? 'affirm';
-  const stageText = stageTextOf(best);
-  if (tieBreak === 'stable-id') {
-    return `키 1부터 5가 같다. hypothesisId 사전순으로 ${winner.hypothesisId}를 고른다. tieBreak는 stable-id다. 사업 근거가 아니다.`;
-  }
-  if (winner.hypothesisId === 'h-problem-next') {
-    const judgmentText = best?.judgmentChanged ? '판단 문장이 달라진다' : '판단 문장은 그대로다';
-    return `${winner.id}는 새 고객과 문제의 짝이 비어 있다. ${act} 분기는 ${judgmentText}. ${stageText}.`;
-  }
-  if (winner.hypothesisId === 'h-payer' && winner.prompt.includes('누구의 결제')) {
-    const affirm = winner.previews?.find((preview) => preview.act === 'affirm');
-    const judgmentText = affirm?.judgmentChanged ? '판단 문장이 달라진다' : '판단 문장은 그대로다';
-    return `${winner.id}는 확인할 가설이 h-payer다. 이미 알려진 정보는 고객 CLAIM과 주체·금액·기록이 없는 결제 CLAIM이다. affirm 분기는 ${judgmentText}. 금액과 기록은 이 질문으로 생기지 않는다. 문제 문장 재확인보다 결제 주체의 불확실성을 줄인다. ${stageTextOf(affirm)}.`;
-  }
-  if (winner.id === 'v-business-model' && winner.prompt.includes('문자 기록')) {
-    const literal = winner.previews?.find((preview) => preview.act === 'literal_unreviewed');
-    return `${winner.id}는 확인할 가설이 h-business-model이다. 이미 알려진 정보는 부재 CLAIM이다. literal_unreviewed 분기는 부재 CLAIM과 문자 기록을 구분하고 판단 변화 등급은 ${literal?.judgmentChangeClass ?? 'none'}다. 문제 문장을 다시 확인해도 기록이 생기지 않는다. 필요한 증거는 주체와 금액이 적힌 문자 기록이다. ${stageTextOf(literal)}.`;
-  }
-  if (winner.hypothesisId === 'h-repeat' && tieBreak === 'repeat-critical') {
-    const affirm = winner.previews?.find((preview) => preview.act === 'affirm');
-    const judgmentText = affirm?.judgmentChanged ? '판단 문장이 달라진다' : '판단 문장은 그대로다';
-    return `${winner.id}는 핵심 미확인이 h-repeat다. 이미 알려진 정보는 지불자 CLAIM과 기준이다. affirm 분기는 ${judgmentText}. 이 질문은 결제 기록을 만들지 않고 사업 성과를 확정하지 않는다. ${stageTextOf(affirm)}. tieBreak는 repeat-critical다.`;
-  }
-  if (winner.hypothesisId === 'h-payer' && tieBreak === 'active-gap') {
-    const affirm = winner.previews?.find((preview) => preview.act === 'affirm');
-    const judgmentText = affirm?.judgmentChanged ? '판단 문장이 달라진다' : '판단 문장은 그대로다';
-    return `${winner.id}는 활성 고객의 다음 미확인인 h-payer다. affirm 분기는 ${judgmentText}. 과거 문제는 새 고객의 문제가 아니다. ${stageTextOf(affirm)}.`;
-  }
-  if ((winner.previews ?? []).every((preview) => preview.judgmentChangeClass === 'none')) {
-    return `${winner.id}는 질문을 반복해도 판단이 달라지지 않는다. 필요한 증거가 부족하다. 단계 변화는 없다.`;
-  }
-  if (tieBreak === 'none') return `${winner.id}의 ${act} 분기가 ${stageText}.`;
-  return `${winner.id}의 ${act} 분기가 ${stageText}. tieBreak는 ${tieBreak}다.`;
+function uncertaintyReason(winner: DecisionCandidate, cited: PreviewBranchRecord, criticalId: string, losers: DecisionCandidate[], ledger: JudgmentLedger): string {
+  const closed = (cited.closedUncertaintyIds ?? []).join(', ') || '없음';
+  const loserText = losers
+    .slice(0, 3)
+    .map((item) => `${item.id}는 ${criticalId}를 남긴다`)
+    .join('. ');
+  const sentence = cited.judgmentChanged ? '판단 문장이 달라진다' : '판단 문장만의 변화는 없다';
+  const stageNote = cited.stageChanged ? '단계 값도 미리보기에 바뀌지만 선택 이유가 아니다' : '단계 변화는 없다';
+  const grade = `판단 변화 등급은 ${cited.judgmentChangeClass}다.`;
+  const needed = ledger.validationPlan?.evidenceNeeded || '주체와 금액이 적힌 문자 기록';
+  const tail =
+    winner.actionKind === 'question'
+      ? '이 질문은 결제 기록을 만들지 않고 사업 성과를 확정하지 않는다.'
+      : `필요한 증거는 ${needed}이다. 문제 문장을 다시 확인해도 기록이 생기지 않는다.`;
+  return `${winner.id}의 ${cited.act} 분기가 가설 ${cited.hypothesisId}의 outcome을 ${cited.outcomeBefore}에서 ${cited.outcomeAfter}로 바꾼다. 닫히는 불확실성은 ${closed}다. ${loserText}. 핵심 불확실성 ${criticalId}를 닫는 분기다. ${sentence}. ${stageNote}. ${grade} ${tail}`;
 }
 
 function rankDerived(ledger: JudgmentLedger): DecisionRecord {
@@ -972,61 +1053,45 @@ function rankDerived(ledger: JudgmentLedger): DecisionRecord {
   }
   const unasked = pool.filter((item) => !ledger.askedQuestionHashes.includes(questionHash(item)));
   const source = unasked.length > 0 ? unasked : pool;
-  const hasJudgment = source.some((item) => (item.previews ?? []).some((preview) => preview.judgmentChangeClass !== 'none'));
-  if (!hasJudgment) {
+  const critical = ledger.uncertainties?.[0];
+  const criticalId = critical?.id ?? '';
+  const closers = source.filter((item) => Boolean(criticalId && closingPreview(item, criticalId)));
+  const previews = derived.flatMap((item) => item.previews ?? []);
+  if (!critical || closers.length === 0) {
     const blocked = source.map((item) => ({ candidateId: item.id, hypothesisId: item.hypothesisId, key: 'no-judgment-branch' as const }));
+    const needed = ledger.validationPlan?.evidenceNeeded || criticalId || '추가 근거';
     return {
       id: `decision-${ledger.headCommitId}-v-record-needed`,
       committedBeforeAnswer: true,
-      candidates: [],
+      candidates: source,
       eliminated: [...eliminated, ...blocked].sort((left, right) => left.hypothesisId.localeCompare(right.hypothesisId)),
       selectedId: 'v-record-needed',
-      tieBreak: 'none',
-      hypothesisId: ledger.criticalUnknownHypothesisId,
-      prompt: '판단을 바꾸는 후보가 없다. 추가 검증이 필요하다.',
-      priorityReason: '모든 후보의 분기가 판단을 바꾸지 않는다. 질문을 임의로 고르지 않았다. 추가 검증이 필요하다. 단계 변화는 없다.',
-      previews: derived.flatMap((item) => item.previews ?? []),
+      tieBreak: 'uncertainty-closed',
+      hypothesisId: critical?.hypothesisId ?? ledger.criticalUnknownHypothesisId,
+      prompt: `핵심 불확실성 ${criticalId || '없음'}을 닫는 후보가 없다. 필요한 증거는 ${needed}다.`,
+      priorityReason: `어떤 후보도 ${criticalId || '핵심 불확실성'}을 닫지 못한다. 문장 변경과 단계 변경은 해소가 아니다. 필요한 증거는 ${needed}다. 검증 계획은 ${ledger.validationPlan?.status ?? 'not_required'}다.`,
+      previews,
     };
   }
-  const judged: DecisionCandidate[] = [];
-  for (const item of source) {
-    const noneOnly = (item.previews ?? []).every((preview) => preview.judgmentChangeClass === 'none');
-    if (hasJudgment && noneOnly) eliminated.push({ candidateId: item.id, hypothesisId: item.hypothesisId, key: 'no-judgment-branch' });
-    else judged.push(item);
-  }
-  const hasStage = judged.some((item) => maxPreviewStage(item) > 0);
-  const staged: DecisionCandidate[] = [];
-  for (const item of judged) {
-    if (hasStage && maxPreviewStage(item) === 0 && opensEmptyPair(ledger, item) === 0 && paymentGap(ledger, item) === 0 && activeGap(ledger, item) === 0) {
-      eliminated.push({ candidateId: item.id, hypothesisId: item.hypothesisId, key: 'no-stage-branch' });
-    }
-    else staged.push(item);
-  }
-  if (staged.length === 0) throw new Error('selectNextAction found no candidate');
-  const ranked = staged.slice().sort((left, right) => {
-    const leftRank = derivedTuple(ledger, left);
-    const rightRank = derivedTuple(ledger, right);
-    for (let index = 0; index < leftRank.length; index += 1) {
-      if (leftRank[index] !== rightRank[index]) return rightRank[index]! - leftRank[index]!;
-    }
-    if (left.hypothesisId === right.hypothesisId) return left.id < right.id ? -1 : left.id > right.id ? 1 : 0;
-    return left.hypothesisId < right.hypothesisId ? -1 : 1;
+  const rankedClosers = closers.slice().sort((left, right) => {
+    const leftPreview = closingPreview(left, criticalId)!;
+    const rightPreview = closingPreview(right, criticalId)!;
+    const leftDirect = left.hypothesisId === critical.hypothesisId ? 1 : 0;
+    const rightDirect = right.hypothesisId === critical.hypothesisId ? 1 : 0;
+    if (leftDirect !== rightDirect) return rightDirect - leftDirect;
+    const leftKind = left.resolvableByQuestion === critical.resolvableByQuestion ? 1 : 0;
+    const rightKind = right.resolvableByQuestion === critical.resolvableByQuestion ? 1 : 0;
+    if (leftKind !== rightKind) return rightKind - leftKind;
+    const klass = CLASS_RANK[rightPreview.judgmentChangeClass] - CLASS_RANK[leftPreview.judgmentChangeClass];
+    if (klass) return klass;
+    return left.hypothesisId < right.hypothesisId ? -1 : left.hypothesisId > right.hypothesisId ? 1 : 0;
   });
-  const winner = ranked[0]!;
-  const second = ranked[1];
-  let tieBreak: DecisionTieBreak = 'none';
-  if (second) {
-    const winnerRank = derivedTuple(ledger, winner);
-    const secondRank = derivedTuple(ledger, second);
-    const splitAt = winnerRank.findIndex((value, index) => value !== secondRank[index]);
-    tieBreak = splitAt === -1 ? 'stable-id' : DERIVED_TIE_KEYS[splitAt]!;
-  }
-  const priorityReason = derivedReason(winner, tieBreak);
-  const winnerPreviews = winner.previews ?? [];
-  if (/단계를 .+에서 .+로 바꾼다|유일한 단계 변화/.test(priorityReason) && winnerPreviews.every((item) => !item.stageChanged)) {
-    throw new Error(`stage reason without stage change: ${priorityReason}`);
-  }
-  const previews = derived.flatMap((item) => item.previews ?? []);
+  const winner = rankedClosers[0]!;
+  const cited = closingPreview(winner, criticalId)!;
+  const losers = source.filter((item) => item.id !== winner.id);
+  const ranked = [...rankedClosers, ...source.filter((item) => !rankedClosers.includes(item))];
+  const tieBreak: DecisionTieBreak = rankedClosers.length > 1 ? 'uncertainty-closed' : 'uncertainty-closed';
+  const priorityReason = uncertaintyReason(winner, cited, criticalId, losers, ledger);
   return {
     id: `decision-${ledger.headCommitId}-${winner.id}`,
     committedBeforeAnswer: true,
@@ -1165,8 +1230,12 @@ export function createProjectLedger(input: { customerStatement: string; problemS
     activePairCustomerId: 'h-customer',
     unknownCounts: {},
     pendingUnknownId: null,
+    uncertainties: [],
+    validationPlan: emptyPlan(),
+    preservedHypothesisIds: [],
+    stageReason: '',
   };
-  return syncCompletion(refreshNarrative(ledger));
+  return reassess(ledger);
 }
 
 export function createSeedLedger(): JudgmentLedger {
@@ -1210,7 +1279,8 @@ export function defineCriterion(
   };
   const criteria = [...ledger.criteria.filter((item) => item.hypothesisId !== input.hypothesisId), criterion];
   const bumped = bump({ ...ledger, criteria });
-  return { ...bumped, stageId: ledger.stageId, verdictId: ledger.verdictId, reviewCompletion: ledger.reviewCompletion };
+  const frozen = reassess(bumped, { freezeStage: true });
+  return { ...frozen, reviewCompletion: ledger.reviewCompletion };
 }
 
 export function judgeAttribution(
@@ -1227,9 +1297,10 @@ export function judgeAttribution(
 export function judgeRequiredHypothesis(ledger: JudgmentLedger, hypothesisId: string, outcome: ValidationOutcome, caller: string): JudgmentLedger {
   if (caller !== 'si') return ledger;
   if (hypothesisId === 'h-business-model') return ledger;
-  const criterion = ledger.criteria.find((item) => item.hypothesisId === hypothesisId);
+  const target = hypothesisId === 'h-problem' && ledger.hypotheses['h-problem']?.role === 'inactive-preserved' ? 'h-problem-next' : hypothesisId;
+  const criterion = ledger.criteria.find((item) => item.hypothesisId === hypothesisId) ?? ledger.criteria.find((item) => item.hypothesisId === target);
   if (!criterion) return ledger;
-  return applyStage(bump(replaceHypothesis(ledger, hypothesisId, { outcome, criterionId: criterion.id })));
+  return applyStage(bump(replaceHypothesis(ledger, target, { outcome, criterionId: criterion.id })));
 }
 
 export function recordConflict(
@@ -1264,7 +1335,9 @@ export function recordCriticalUnknown(ledger: JudgmentLedger, hypothesisId: stri
 
 export function closeReview(ledger: JudgmentLedger, options?: { founderStopped?: boolean }): CloseReviewResult {
   const blockingHypothesisIds = REQUIRED_REVIEW_IDS.filter((id) => {
-    const outcome = ledger.hypotheses[id]?.outcome;
+    const stored = ledger.hypotheses[id];
+    const reviewed = id === 'h-problem' && stored?.role === 'inactive-preserved' ? ledger.hypotheses['h-problem-next'] : stored;
+    const outcome = reviewed?.outcome;
     return outcome !== 'passed' && outcome !== 'failed';
   });
   const blockingConflictIds = Object.values(ledger.hypotheses)

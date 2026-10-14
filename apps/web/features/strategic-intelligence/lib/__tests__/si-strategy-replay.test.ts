@@ -136,7 +136,7 @@ describe('pure SI cause recovery replay', () => {
             }
           }
           const hash = after ? questionHash(after) : '';
-          if (after && hash === previousHash && ledger.judgment === previousJudgment) {
+          if (after && hash === previousHash && ledger.judgment === previousJudgment && !applied.unchangedReason) {
             failures.push({ row, column: '다음', detail: `${turn.step} repeated ${hash} without a judgment change` });
           }
           if (act.kind === 'unknown' && after && questionHash(before) === hash) {
@@ -229,7 +229,7 @@ describe('pure SI cause recovery replay', () => {
             if (!active.includes(branch.turns[0]?.founderAnswer ?? '') || active.includes(spine.problem) || !active.includes('활성 판단의 문제는 아직 확인되지 않았다')) {
               fail('판단', active || item.judgment);
             }
-            if (!history.includes(spine.customer) || !history.includes(spine.problem) || !history.includes('그 문제는 새 고객의 문제가 아니다')) {
+            if (!history.includes(spine.customer) || !history.includes(spine.problem) || !history.includes('이 문제는 이전 고객 짝에 속하며 활성 평가에서 제외되었다') || !history.includes('새 고객에 대한 판정이 아니다')) {
               fail('판단', history || item.judgment);
             }
             if (item.judgment.includes('어느 쪽도 작업 기준이 아니다')) fail('판단', item.judgment);
@@ -258,7 +258,7 @@ describe('pure SI cause recovery replay', () => {
             fail('다음', `${paid?.selectedId} ${paid?.prompt}`);
           }
           if (!paid.prompt.includes('누구의 결제') || !paid.prompt.includes('금액과 거래 기록은 이 질문으로 생기지 않는다')) fail('다음', paid.prompt);
-          if (!paid.priorityReason.includes('확인할 가설이 h-payer') || !paid.priorityReason.includes('판단 문장이 달라진다') || !paid.priorityReason.includes('문제 문장 재확인보다') || !paid.priorityReason.includes('단계 변화는 없다') || STAGE_CLAIM.test(paid.priorityReason)) {
+          if (!paid.priorityReason.includes('q-payer') || !paid.priorityReason.includes('u-payer') || !paid.priorityReason.includes('판단 문장이 달라진다') || !paid.priorityReason.includes('q-problem는 u-payer를 남긴다') || !paid.priorityReason.includes('단계 변화는 없다') || !paid.priorityReason.includes('사업 성과를 확정하지 않는다') || STAGE_CLAIM.test(paid.priorityReason)) {
             fail('다음', paid.priorityReason);
           }
           if (paid.rankedIds[0] !== 'q-payer' || !paid.rankedIds.includes('q-problem') || paid.rankedIds.indexOf('q-payer') > paid.rankedIds.indexOf('q-problem')) {

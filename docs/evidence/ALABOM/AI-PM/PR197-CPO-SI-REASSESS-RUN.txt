@@ -1,0 +1,137 @@
+PR #197 순수 판단 엔진 재계산 실행 기록.
+
+이 파일은 실행 결과다. 설계 의도는 docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-JUDGMENT-REDESIGN.txt 의 10절이다. 설계 문장과 아래 결과가 다르면 아래가 이번에 실행된 동작이다.
+
+실행 시각: 2026-10-14 13:48:52 UTC
+명령: pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts --reporter=verbose
+결과: Test Files 2 passed, Tests 42 passed, Duration 620ms
+30행 재생: passed 30, failed 0, failures []
+screenMismatch: 판단 불가. 브라우저를 열지 않았다.
+모델 호출: AT-14 가 chat 0, OpenAI HTTP 0 을 관측했다. si-judgment-contract.ts 에 api.openai.com, openai-http, fetch(, .chat( 가 없다.
+외부 패킷 캡처는 하지 않았다. next lint 와 next build 는 실행하지 않았다.
+Production 잠금 SHA: 0b465226. 이 실행은 Production 을 배포하지 않았다.
+UI, DB 스키마, 마이그레이션, 저장소, provider 변경은 없다. 병합하지 않았다.
+
+1. 계약과 구현 위치
+
+단일 재계산. reassess (si-judgment-contract.ts). assignRoles, evaluateStage 또는 freezeStage, listUncertainties, refreshNarrative, buildValidationPlan, syncCompletion 을 한 경로로 호출한다. applyStage 는 reassess 다. createProjectLedger 도 reassess 로 끝난다. 판단 문장과 selectNextAction 은 이 장부의 uncertainties, validationPlan, judgment 를 읽는다.
+
+가설 역할. HYPOTHESIS_ROLE_RULES, roleAllows, assignRoles, activeProblem. 역할은 active, conflict-side, inactive-preserved 뿐이다. 미판정은 역할이 아니다. 빈 문장과 outcome not_run 이다. inactive-preserved 는 stage, outcome, critical, candidates 가 모두 false 다. conflict-side 와 active 는 네 칸이 true 다. 고객 변경은 commitReplace 가 h-problem 을 preservedHypothesisIds 에 넣고 빈 h-problem-next 를 연다. 평가 코드는 roleAllows 가 false 인 h-problem 을 단계, 핵심 미확인, 후보에서 뺀다.
+
+충돌 해소. resolveConflict. 충돌 행을 resolved 로 두고, 고른 문장을 가설에 복사하고, 고르지 않은 binding 은 삭제하지 않는다. projectAttribution 과 authenticityGuaranteed 는 건드리지 않는다. outcome 이 passed 이면 insufficient_record 로 내린다. 사업모델은 evaluateHypothesis 가 insufficient_record 를 반환한다. 고객은 not_run 이다. stageId 를 이 함수가 직접 쓰지 않는다. 그 뒤 reassess 가 evaluateStage 를 호출한다.
+
+검증 계획. buildValidationPlan 과 sevenReady. status 는 not_required 또는 proposed 만 쓴다. status: 'executed' 대입은 소스에 없다. sevenReady 는 validationPlan 을 읽지 않는다. validationPriority 문장은 계획이 아니다.
+
+후보 비교. deriveCandidates, previewRecord, uncertaintyWasClosed, closingPreview, rankDerived, uncertaintyReason. 각 분기는 applyFounderAnswer, resolveConflict, bindLiteralFact, defineCriterion 을 실제로 호출한다. 승자 조건에 시나리오 id 나 단계 번호는 없다.
+
+2. 상태 전이
+
+입력 후 reassess 가 역할을 다시 쓰고, freeze 가 아니면 단계를 다시 쓰고, 불확실성 목록의 첫 항목을 critical 로 둔다. criticalUnknown 은 불확실성 id 다. criticalUnknownHypothesisId 는 그 불확실성의 가설 id 다.
+
+고객 replace. 이전 고객과 이전 문제의 문장과 binding 은 남는다. 이전 고객은 conflict-side. 이전 문제는 inactive-preserved. 새 문제 가설은 빈 ASSUMPTION, outcome not_run. 단계 S0. 첫 불확실성은 u-empty-problem. 다음 선택은 q-problem-next.
+
+새 문제 CLAIM 이후 고객 충돌이 열려 있으면 첫 불확실성은 u-conflict-h-customer. 단계는 S0. 선택은 q-resolve-h-customer.
+
+resolveConflict 가 고객 충돌을 닫아도 고객 outcome 은 not_run 이고 귀속은 unreviewed 다. 새 문제가 비어 있으면 단계는 S0 으로 남는다.
+
+부재와 문자 FACT 가 같이 있으면 사업모델 outcome 은 conflict_unresolved 다. 문자 FACT 를 작업 기준으로 고르면 outcome 은 insufficient_record 다. passed 와 VALIDATED 는 생기지 않는다. 귀속은 unreviewed 다. 진위는 보장되지 않는다.
+
+decision_ready 는 일곱 칸이 채워졌다는 뜻이다. 질문으로만 닫히는 불확실성만 있으면 validationPlan.status 는 not_required 다. 질문으로 닫히지 않는 불확실성이 있으면 proposed 다. 엔진은 executed 를 쓰지 않는다.
+
+3. 필수 회귀의 입력, 기대, 실제, 실패
+
+아래는 2026-10-14 13:48:52 UTC 실행에서 통과한 단언이다. 실패 이유는 빈 문자열이다. 통과 개수만으로 수용하지 않는다.
+
+고객 변경 후 이전 문제 보존과 평가 제외.
+입력: confirmProblem 뒤 고객을 「우리 고객은 물류본부다.」로 replace.
+기대: h-problem 문장은 시드 문제, role 은 inactive-preserved, b-problem-doc 유지, 후보에 h-problem 없음, 단계는 S0.
+실제: 기대와 같음. 실패 없음.
+
+새 고객의 문제 가설이 빈 미판정.
+입력: 같은 replace.
+기대: h-problem-next statement 빈 문자열, outcome not_run, evidenceClass ASSUMPTION, role active. 첫 불확실성 u-empty-problem. 선택 q-problem-next. 프롬프트에 이전 문제 문장 없음.
+실제: 기대와 같음. 실패 없음.
+
+충돌 해소 전 고객 충돌이 활성 불확실성.
+입력: replace 뒤 h-problem-next 를 「배차 기준이 현장에 없다」로 affirm.
+기대: 첫 불확실성 u-conflict-h-customer. 선택 q-resolve-h-customer. q-payer 의 affirm 은 그 id 를 닫지 않음.
+실제: 기대와 같음. 실패 없음.
+
+충돌 해소 후 귀속 unreviewed, 진위 미보장, VALIDATED 없음.
+입력: 고객 충돌은 새 고객 binding 을 선택. 사업모델 충돌은 문자 FACT 를 선택.
+기대: 고객 outcome not_run. 사업모델 outcome insufficient_record. 두 binding 의 projectAttribution unreviewed, authenticityGuaranteed false. VALIDATED binding 없음. 부재 binding 유지.
+실제: 기대와 같음. 실패 없음.
+
+decision_ready 와 검증 계획의 독립.
+입력: confirmProblem. 그 다음 부재 CLAIM.
+기대: confirmProblem 은 reviewCompletion decision_ready, validationPlan not_required, validationPriority 는 비어 있지 않음. 부재 후에는 decision_ready 유지, status proposed, 대상 h-business-model, evidenceNeeded 에 문자 기록, passIf 와 failIf 와 pendingWork 가 있음. status 는 executed 가 아님.
+실제: 기대와 같음. 소스에 status: 'executed' 대입 없음. 실패 없음.
+
+문장 변경만으로 불확실성이 닫히지 않음.
+입력: confirmProblem 의 q-payer unknown 미리보기.
+기대: judgmentChanged true. closedUncertaintyIds 에 u-payer 없음. uncertaintyIdsAfter 에 u-payer 있음.
+실제: 기대와 같음. 실패 없음.
+
+고객 충돌이 핵심이면 해소 후보가 지불자 질문보다 우선.
+입력: 위 새 문제 affirm 장부.
+기대: 선택 q-resolve-h-customer. 이유에 「q-payer는 u-conflict-h-customer를 남긴다」. resolve_retain_new 의 closedUncertaintyIds 에 그 id 있음.
+실제: 기대와 같음. 실패 없음.
+
+고객 충돌이 없고 지불자만 미확인이면 지불자 질문.
+입력: 고객 CLAIM 뒤 약한 결제 문장. 문제 미확인. 부재 없음. 문자 FACT 없음.
+기대: 첫 불확실성 u-payer. 선택 q-payer. affirm 이 u-payer 를 닫음.
+실제: 기대와 같음. 실패 없음.
+
+문자 기록만 닫을 수 있으면 사업모델 검증 행동.
+입력: 고객 CLAIM 뒤 부재 문장. 문자 FACT 없음.
+기대: 첫 불확실성 u-record. 선택 v-business-model. literal_unreviewed 가 u-record 를 닫음. q-payer affirm 은 닫지 않음. 이유에 「필요한 증거는 주체와 금액이 적힌 문자 기록」.
+실제: 기대와 같음. 실패 없음.
+
+어떤 후보도 핵심 불확실성을 닫지 못하면 근거 수집.
+입력: 고객, 문제, 지불자 CLAIM. 기준 작성. 문자 FACT 의 귀속은 unreviewed.
+기대: 첫 불확실성 u-attribution. 선택 v-record-needed. 이유에 u-attribution 과 「닫지 못한다」. 계획 proposed. outcome insufficient_record. passed 아님.
+실제: 기대와 같음. 실패 없음.
+이 경로가 성립하는 추가 규칙: u-attribution 은 id 가 사라져도 귀속이 accepted 가 아니면 닫힘으로 세지 않는다. 부재 문장이 충돌을 열어 id 만 지우는 분기는 닫힘이 아니다. 미리보기 중 judgeAttribution 을 호출하는 후보는 없다.
+
+같은 장부를 두 번 selectNextAction 하면 selectedId, priorityReason, tieBreak 가 같다.
+입력: confirmProblem, 그리고 그 장부의 고객 replace.
+실제: 두 호출이 같았다. 실패 없음.
+
+기존 충돌 처리와 Founder CLAIM.
+AT-08, AT-09, AT-14, 계약 B A–D, supplement A 가 같은 실행에서 통과했다. 고객 확인은 CLAIM 이고 FACT 나 VALIDATED 가 아니다. 부재와 문자 FACT 는 conflict_unresolved 이고 insufficient_record 로 내려가지 않는다. 해소 후 insufficient_record 이며 S3 가 아니다. 기준 작성은 저장 단계를 올리지 않는다. 이후 unknown 재계산에서 h-repeat 가 핵심이면 선택은 q-repeat 다. tieBreak 는 uncertainty-closed 다. 이유에 단계 상승 문장은 없다.
+
+4. 통합 여정 실제 값
+
+TRACE: docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-REASSESS-TRACE.json
+같은 명령이 이 파일을 썼다. 11행 모두 failure 는 빈 문자열이다.
+
+0 seed. 기대 q-customer. 실제 q-customer. critical u-unconfirmed-h-customer. plan not_required. stage S0. model not_run.
+1 고객 확인. 기대 q-problem. 실제 q-problem. critical u-unconfirmed-h-problem. plan not_required. stage S0.
+2 고객을 대기업 물류본부로 replace. 기대 q-problem-next. 실제 q-problem-next. critical u-empty-problem. 이전 문제 문장 유지, role inactive-preserved. 판단에 「이전 고객 짝에 속하며 활성 평가에서 제외되었다」.
+3 새 문제에 unknown. 기대 q-problem-next. 실제 q-problem-next. 새 문제 문장은 빈 문자열, outcome not_run.
+4 새 문제 affirm 「배차 기준이 현장에 없다」. 기대 q-resolve-h-customer. 실제 q-resolve-h-customer. critical u-conflict-h-customer. q-payer affirm 은 그 id 를 남긴다.
+5 약한 결제. 기대와 실제 q-resolve-h-customer. critical 유지. plan not_required. model not_run.
+6 부재. 기대와 실제 q-resolve-h-customer. plan proposed.
+7 문자 FACT. 기대와 실제 q-resolve-h-customer. model conflict_unresolved. plan not_required.
+8 문자 FACT 를 작업 기준으로 resolve. 기대와 실제 q-resolve-h-customer. model insufficient_record. 귀속 unreviewed. stage S0. 고객 outcome conflict_unresolved. plan proposed.
+9 기준 작성. stage S0 유지. 기대와 실제 q-resolve-h-customer. plan proposed. model insufficient_record.
+10 선택이 h-channel 이 아닌데 h-channel 에 unknown. 기대와 실제 q-resolve-h-customer. plan proposed. evidenceNeeded 비어 있지 않음. VALIDATED binding 없음.
+
+7행의 plan not_required 는 설계 초안의 「기록이 있으면 계획이 유지된다」와 다르다. 실행된 규칙에서는 부재 id 가 사라지고, 열린 결제 충돌이 질문으로 해소 가능한 불확실성이므로 질문으로 닫히지 않는 항목이 없어 not_required 가 된다. 8행에서 충돌을 고른 뒤에는 귀속 불확실성이 남아 proposed 로 돌아온다. 문자 기록을 고른 사실만으로 outcome 이 passed 가 되지는 않았다.
+
+5. 구현이 10.4 문장과 다르게 둔 규칙
+
+id 가 목록에서 빠지는 것은 닫힘의 필요 조건이다. 두 경우에는 충분 조건이 아니다.
+u-empty-problem 은 그 불확실성이 가리키는 가설이 평가에 남는 비어 있지 않은 CLAIM 이 될 때만 닫힌다. resolve_retain_old 가 빈 칸을 포기하는 것은 닫힘이 아니다.
+u-attribution 은 문자 FACT 의 projectAttribution 이 accepted 일 때만 닫힌다.
+
+critical 을 닫는 후보가 없으면 더 낮은 불확실성의 후보로 내려가지 않는다. selectedId 는 v-record-needed 다. 작업지시서 6절을 따른 것이다.
+
+닫는 후보가 여럿이면 hypothesisId 가 critical 의 가설과 같은 쪽을 먼저 둔다. 그 다음 resolvableByQuestion 일치, judgmentChangeClass, hypothesisId 사전순이다. 단계 변화는 이유 문장에 「단계를 A에서 B로 바꾼다」로 쓰지 않는다. 미리보기의 stageChanged 는 따로 남긴다.
+
+6. 미검증
+
+브라우저를 열지 않았다. Preview 화면과 엔진의 일치는 확인하지 않았다. screenMismatch 는 30행 모두 판단 불가다.
+next lint 와 next build 는 실행하지 않았다. 이번 명령은 vitest 다.
+UI 플로우, DB, 모델 provider, 병합, Production 배포는 하지 않았다.
+CPO 가 이 기록을 검토하기 전의 게이트 판단은 없다.
