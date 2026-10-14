@@ -1,0 +1,154 @@
+PR #197 CTO 최종 설계 정리. SI 계약 잠금. 이 블록 전체를 한 번에 복사. 표 없음. 제품 코드 수정 없음. DECISIONS.md 수정 없음. DB 마이그레이션 없음. 병합 없음. Production 배포 없음. 비용 실측 없음. 테스트 실행 없음. 통과 표시 없음.
+
+한 줄: 보완안 58af4fe7의 방향은 유지한다. 이번 문서는 그 위에 FACT의 보증 범위, S2와 S3의 분리, CONFLICT의 보류, 동점의 재현 순서, 타입과 함수 경계를 잠근다. 이것은 구현 가능한 계약 정리이지 구현도 테스트 통과도 아니다.
+
+[CTO] CPO 요청 작업: 진행중 — 구현 전 SI 계약과 수용 기준의 최종 정리
+[CPO] 검토·지시 필요: 예 — 계약 정리와 회귀 검증 계획 확인 후 구현 승인 여부 결정
+
+기준
+이전 설계: b94ca470 docs/evidence/ALABOM/AI-PM/PR197-CPO-ORCHESTRATION-SI-DESIGN.txt
+이전 보완: 58af4fe7 docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-CONTRACT-SUPPLEMENT.txt
+이번 턴에 다시 연 타입: packages/types/src/domain/strategic-intelligence.ts 의 SiEvidenceItem, SiStrategicJudgment. 필드는 id, text, evidenceClass, axisId 와 판단 머리의 기존 문장 필드뿐이다. 가설 id, 출처, 이력, validationOutcome, DecisionRecord, budget_held 는 없다.
+이번 턴에 실행하지 않은 것. vitest. 재생. 마이그레이션. DB. 브라우저. 모델 호출. 따라서 아래 테스트 방법은 앞으로의 절차다. 결과 칸은 비어 있고 통과가 아니다.
+Production 잠금 0b465226 은 유지한다.
+
+===== 1. 기존 계약 대비 변경점 =====
+
+유지. 모델은 초안이다. 머리의 최종 판정은 SI다. CLOSED 는 검증이 아니다. 창업자 확인은 FACT 와 VALIDATED 가 아니다. 결제 한 줄은 반복 구매·문제 해결·수익성이 아니다. 검증 과제 문장만으로 단계를 올리지 않는다. judgment_deferred 는 유보지 부정 판정이 아니다. 8회는 초기 운영 상한이지 완료도 최적값도 아니다. 호출 실패와 상한은 머리를 유지하고 완료로 쓰지 않는다. sessionStorage 는 캐시다. 복구 충족은 선언하지 않는다. 브라우저 자동화는 상용 경로가 아니다.
+
+이번 잠금이 58af4fe7 에서 더 좁히는 것.
+FACT 는 기록에 그 문자가 있다는 뜻만 가진다. 문서가 진짜인지, 이 프로젝트의 거래인지까지 보증하지 않는다. 58af4fe7 은 문자 범위를 적었으나 진위와 귀속을 자동 보증에서 빼는 문장이 없었다.
+S2 는 측정 대상과 통과·실패 때 판단이 어떻게 바뀌는지를 미리 적는 단계다. 그 정의만으로 S2 를 넘는 상승은 없다. S3 는 그 기준이 이미 적힌 뒤의 결제 문자 FACT, 문제 지표 문자 FACT, 그리고 귀속 판정이 따로 수락된 뒤에만 연다. 58af4fe7 의 S3 는 결제 FACT 와 지표 FACT 를 통과 조건으로 적었고, 귀속 미판정을 통과 장애로 적지 않았다.
+CONFLICT 는 출처와 명제와 가설 id 를 둘 다 남긴다. 기록을 자동 채택하지 않는다. 그 가설의 outcome 은 conflict_unresolved 다. 이 값은 58af4fe7 의 not_run, insufficient_record, passed, failed 에 없다. 해소 전까지 그 가설은 단계 상승 근거가 아니다.
+동점은 정렬 키로 한 명을 고른다. 입력 배열 순서와 갭 순서는 키에 없다. 마지막 키가 쓰이면 tieBreak 가 stable-id 로 남아 회귀에서 보여야 한다. 58af4fe7 의 동점 문장은 「실패 분기가 큰 쪽, 그래도 같으면 검증 과제」까지였고 정렬 키와 순서 뒤집기 테스트가 없었다.
+타입과 함수 경계를 아래에 이름까지 고정한다. 파일을 만들지는 않는다.
+
+===== 2. FACT 의 보증 범위 =====
+
+계약.
+bindLiteralFact 가 만드는 FACT 의 뜻은 하나다. 인용한 기록 안에 그 명제의 문자가 그대로 있다.
+보증하지 않는 것. 기록이 위조되지 않았다. 발행자가 실재한다. 그 거래가 이 프로젝트의 매출이다. 고객이 반복해서 낸다. 문제가 줄었다. 수익성이 있다.
+authenticityGuaranteed 는 이 함수가 항상 false 로 둔다. true 로 바꾸는 함수는 없다.
+projectAttribution 의 초기값은 unreviewed 다. 창업자가 「우리 세금계산서다」라고 하면 그 문장은 귀속 가설의 CLAIM 이다. FACT 가 귀속을 수락하지 않는다. 귀속 수락은 judgeAttribution 이라는 별도 SI 커밋이다. 모델 초안은 이 함수를 호출하지 못한다.
+문자 FACT 와 귀속 미판정이 같이 있으면 결제 가설의 outcome 은 passed 가 될 수 없다. insufficient_record 다.
+
+수용 기준과 테스트 방법. 실행하지 않음.
+나중에 순수 함수 테스트에 기록 문자열 「2026-03-02 반찬가게 A, 3만 원, 1회」를 넣는다.
+기대. evidenceClass FACT. literalScope 는 그 한 줄. authenticityGuaranteed false. projectAttribution unreviewed. 반복 구매 가설과 문제 해결 가설의 클래스는 변하지 않는다. 단계 인자는 이 함수의 반환에 없다.
+실패로 볼 결과. attribution accepted 가 따라오거나 VALIDATED 가 붙거나 단계가 오른다.
+이번 결과. 실행하지 않음. 통과 아님.
+
+===== 3. S2 정의와 S3 통과의 분리 =====
+
+계약.
+defineCriterion 은 기준만 적는다. 필수 내용. hypothesisId. 무엇을 측정하는지. 통과 시 바뀌는 판단 필드. 실패 시 바뀌는 판단 필드. writtenAtCommitId 는 현재 머리보다 나중 결과의 커밋이 될 수 없다. 반환에 단계 변화는 없다.
+S2 진입. S1 조건이 유지되고, 지불자 CLAIM 이 있고, 위 기준이 통과 분기와 실패 분기를 모두 가진 채 이미 커밋되어 있다. 결제 FACT 는 S2 의 입력이 아니다. 기준 문장만 있고 지불자 CLAIM 이 없으면 S1 에 남는다.
+S3 진입. 네 가지가 모두 있을 때만. 그 기준의 writtenAtCommitId 가 결과 커밋의 조상이다. 결제 명제의 문자 FACT 가 있다. 문제 지표가 기준이 적은 방향으로 움직였다는 별도 문자 FACT 가 있다. 두 기록의 projectAttribution 이 judgeAttribution 으로 accepted 다. outcome 은 passed 다.
+하나라도 빠지면 S3 가 아니다. 지표가 없으면 insufficient_record 이고 S2 이하다. 지표가 측정됐으나 방향이 아니면 failed 이고 S3 에 들어가지 않는다. 귀속이 unreviewed 이면 문자 FACT 가 있어도 insufficient_record 이고 S2 이하다. 기준이 결과와 같은 커밋에서 처음 생기면 passed 가 아니다.
+S2 에 있다는 것은 초기 사업화 판단을 위한 측정 계약이 있다는 뜻이다. 결제와 지표가 확인됐다는 뜻이 아니다.
+conditionally_viable 는 S3 이고 outcome passed 일 때만이다.
+
+수용 기준과 테스트 방법. 실행하지 않음.
+케이스 A. 지불자 CLAIM 과 기준 정의만 넣는다. 기대 단계 S2. verdict judgment_deferred. 결제 가설 outcome not_run.
+케이스 B. A 에 문자 결제 FACT 만 추가하고 귀속은 unreviewed, 지표는 없다. 기대 단계 S2. outcome insufficient_record. conditionally_viable 아님.
+케이스 C. 문자 결제 FACT 와 지표 미이동 FACT 와 귀속 accepted. 기대 단계 S2. outcome failed. S3 아님.
+케이스 D. 문자 결제 FACT, 기준 방향의 지표 FACT, 귀속 accepted, 기준 커밋이 결과보다 앞. 기대 단계 S3. outcome passed. conditionally_viable.
+실패로 볼 결과. A 가 S3 이거나, B 가 귀속 없이 passed 이거나, C 가 S3 이거나, 기준이 결과와 동시에 생겨 D 가 passed 인 것.
+이번 결과. 실행하지 않음. 통과 아님.
+
+===== 4. CONFLICT 와 단계 =====
+
+계약.
+같은 hypothesisId 에서 두 명제가 양립하지 않으면 recordConflict 를 호출한다. 왼쪽 근거 id 와 오른쪽 근거 id 와 각각의 출처와 문자 범위를 모두 남긴다. 어느 쪽도 삭제하지 않는다. 기록이 창업자 문장보다 새롭다는 이유로 승자를 고르지 않는다.
+그 가설의 validationOutcome 은 conflict_unresolved 다. failed 나 passed 로 바꾸지 않는다.
+evaluateStage 는 outcome 이 conflict_unresolved 인 가설을 상승 근거에서 제외한다. 다른 가설이 S2 나 S3 조건을 따로 충족하지 않으면 단계는 충돌 전의 단계와 verdict 를 유지하거나, 그 가설이 현재 단계의 필수 근거였으면 그 단계의 하향 규칙을 따른다. 결제 가설이 S3 의 필수인데 충돌하면 S3 에 남을 수 없다. S2 이하로 내린다. 자동으로 기록 쪽을 채택해 S3 를 유지하지 않는다.
+해소는 resolveConflict 뿐이다. 인자는 hypothesisId, 선택한 evidenceId, 이유 문장, SI 커밋 id 다. 모델 초안과 bindLiteralFact 는 이 함수를 호출하지 못한다. 선택 후에도 선택되지 않은 근거는 이력에 남는다.
+
+배송 SaaS 기대. 실행하지 않음.
+부재 CLAIM 이 있는 결제 가설에 세금계산서 문자 FACT 가 들어온다. 기대. 두 id 유지. outcome conflict_unresolved. 단계 상승 없음. 기록 자동 채택 없음. 다음 행동은 어느 출처를 이 가설의 근거로 볼지 묻는 이해 확인이거나, 그 질문이 이미 알려진 반복이면 추가 기록을 요구하는 검증 과제다. 단계가 오르면 실패다.
+
+수용 기준의 테스트 방법.
+입력을 부재 CLAIM 다음 문자 FACT 순서로 넣고, 순서를 뒤집어 한 번 더 넣는다. 두 실행의 outcome 이 모두 conflict_unresolved 이고 head 의 단계가 오르지 않으면 순서는 무관하다. 한 실행이라도 기록 id 만 남고 부재 id 가 사라지면 실패다.
+이번 결과. 실행하지 않음. 통과 아님.
+
+===== 5. 다음 행동 동점 =====
+
+계약.
+selectNextAction 은 순수 함수다. 후보 배열의 입력 순서를 키로 쓰지 않는다. 갭 id 순서와 CLOSED 를 키로 쓰지 않는다.
+후보를 뺀 뒤의 정렬 키. 앞이 이긴다.
+1. 분기 중 단계 변화의 최대 절대값. 큰 쪽이 앞이다.
+2. 어느 분기라도 verdict 가 바뀌면 1, 아니면 0.
+3. 실패 분기가 단계를 내리면 1, 아니면 0.
+4. resolvableByQuestion 이 false 이면 1, 아니면 0. 앞의 키가 같을 때만 검증 과제가 이해 확인보다 앞이다.
+5. targetHypothesisId 가 현재 criticalUnknown 의 가설과 같으면 1, 아니면 0.
+6. hypothesisId 의 사전순 오름차순. 이 키로 갈라진 경우에만 tieBreak 는 stable-id 다. 비즈니스 이유가 아니다. 재현용 안정 키다.
+1 에서 5 로 갈라지면 tieBreak 는 그 키 이름이다. 갈라지지 않고 한 후보만 남으면 tieBreak 는 none 이다.
+priorityReason 은 이 키 비교를 답을 받기 전에 적는다. 답변 뒤에 이유를 고치지 않는다.
+DecisionRecord 는 답의 시각보다 앞서 커밋된다. 선택한 candidateId, 탈락 후보와 탈락 키, tieBreak 가 들어 있다.
+
+회귀로 고정할 경우. 모두 실행하지 않음.
+T1 순서 무관. 고객 CLAIM 이후 후보를 [지불자, 문제] 와 [문제, 지불자] 로 넣는다. 선택은 둘 다 문제 이해 확인. tieBreak none. 지불자는 단계 분기가 없어 키 1 이전에 탈락한다.
+T2 슬롯 함정. 갭 배열의 첫 항목이 marketChannel 이어도 문제 후보의 단계 변화가 더 크면 선택은 문제다. 이유 문자열에 advance after 와 CLOSED 와 target= 가 없으면 이 케이스의 기대다.
+T3 동점. 단계 변화, verdict 변화, 실패 시 하향, 질문 가능 여부가 같은 검증 과제 둘. 하나만 criticalUnknown 과 같다. 선택은 그 가설. tieBreak critical-unknown. 배열을 뒤집어도 같다.
+T4 완전 동점. 키 1 부터 5 가 같고 hypothesisId 만 h-pay-b 와 h-pay-a 다. 선택은 h-pay-a. tieBreak stable-id. 배열을 뒤집어도 h-pay-a 다. stable-id 인데 이유 문장이 사업 근거인 척하면 실패다.
+T5 이미 아는 문제. 옛 고객의 문제 문장은 alreadyKnown 으로 빠진다. 물류본부 수정 뒤 선택이 그 문장이면 실패다.
+
+테스트 방법. 위 입력을 selectNextAction 에 직접 넣고 반환의 selectedId 와 tieBreak 만 비교한다. 렌더와 모델을 호출하지 않는 단위 테스트다. 파일은 만들지 않았다. 제안 위치는 apps/web/features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts 이다. 이번 턴에 그 파일은 없다.
+이번 결과. 실행하지 않음. 통과 아님.
+
+===== 6. 타입 계약과 함수 경계 =====
+
+현재 타입으로 불가능한 이유. 이번 턴에 읽은 SiEvidenceItem 은 id, text, evidenceClass, axisId 만 가진다. SiStrategicJudgment 는 문장과 단계와 verdict 와 evidenceMap 을 가진다. 가설별 outcome, 기준의 사전 커밋, 동점 키, budget_held 를 넣을 곳이 없다. 이 필드를 주석이나 화면 문자열로만 두면 계약은 문서에 남는다. 구현 승인이 나기 전에는 이 타입을 코드에 넣지 않는다.
+
+나중에 packages/types/src/domain/strategic-intelligence.ts 에 추가할 계약. 지금 추가하지 않는다.
+EvidenceSourceKind. document, founder_answer, record, model_draft, si_inference.
+ProjectAttribution. unreviewed, accepted, rejected.
+ValidationOutcome. not_run, insufficient_record, passed, failed, conflict_unresolved.
+HypothesisEvidenceBinding. id, hypothesisId, proposition, sourceKind, sourceRef, evidenceClass, classReason, literalScope, authenticityGuaranteed, projectAttribution, history. history 의 원소는 commitId, from, to, reason.
+ValidationCriterion. id, hypothesisId, writtenAtCommitId, measure, passIf, failIf, requiredLiteralScopes.
+HypothesisJudgment. id, statement, outcome, criterionId.
+DecisionTieBreak. none, stage-delta, verdict-delta, fail-drops-stage, validation-over-question, critical-unknown, stable-id.
+DecisionCandidate. id, hypothesisId, actionKind 은 question 또는 validation, alreadyKnown, resolvableByQuestion, branches 최소 셋, priorityReason.
+DecisionRecord. id, committedBeforeAnswer, candidates, eliminated, selectedId, tieBreak.
+ReviewRunStatus. open, budget_held, provider_limited, provider_down. 완료 값은 없다. 완료는 이 상태가 아니라 S3 또는 S4 의 outcome passed 로만 말한다.
+
+함수 경계. 제안 모듈은 apps/web/features/strategic-intelligence/lib/si-judgment-contract.ts 이다. 만들지 않는다. 기존 classifyFounderEvidenceClass 와 decideStage 는 이 모듈의 최종 판정이 아니다. classifyFounderEvidenceClass 의 기본 FACT 와 수량 결제의 VALIDATED 반환은 이 계약과 충돌한다. decideStage 의 단어 승격은 사용자 단계가 아니다.
+bindLiteralFact. FACT 바인딩만 반환한다. VALIDATED, 단계, attribution accepted 를 쓰지 않는다.
+commitFounderStatement. CLAIM 또는 ASSUMPTION 만 반환한다. FACT 와 VALIDATED 를 반환하면 그 구현은 실패다.
+judgeAttribution. SI 커밋만 호출한다. 모델이 호출하면 거절하고 머리는 그대로다.
+defineCriterion. 기준을 저장하고 단계를 바꾸지 않는다.
+recordConflict. 두 근거를 유지하고 outcome 을 conflict_unresolved 로 둔다. 승자를 고르지 않는다.
+resolveConflict. 선택한 evidenceId 와 이유가 있는 SI 커밋만 통과한다.
+evaluateHypothesis. 기준 커밋이 조상이 아니면 passed 를 반환하지 않는다. 귀속이 accepted 가 아니면 passed 를 반환하지 않는다. conflict_unresolved 가설은 passed 를 반환하지 않는다.
+evaluateStage. conflict_unresolved 와 not_run 과 insufficient_record 를 상승 근거에서 제외한다. S2 와 S3 의 입력을 섹션 3 대로만 본다.
+selectNextAction. 섹션 5 의 키만 쓴다. 같은 후보 집합의 순서 변경은 selectedId 를 바꾸지 않는다.
+rejectModelDraft. headCommitId 를 바꾸지 않는다. VALIDATED 와 viable 초안도 같다.
+applyBudgetHold. status 를 budget_held 로 두고 판단 머리의 stage 와 verdict 는 그대로 둔다. 완료 문구를 만들지 않는다. 그 이후 창업자 답은 모델 없이 SI 함수로 받을 수 있다. 9 회째 모델 호출은 나가지 않는다.
+
+테스트 방법. 각 함수를 위 금지 출력에 대해 한 케이스씩 호출한다. 모델과 DB 는 쓰지 않는다. 파일은 만들지 않았다. 이번 결과. 실행하지 않음. 통과 아님.
+
+===== 7. 배송 SaaS 기존 셋의 잠금 =====
+
+58af4fe7 의 입력 문장은 유지한다. 기대만 이번 경계에 맞춘다. 실행하지 않음.
+고객 확인. CLAIM. S0. insufficient_basis. DecisionRecord 는 답보다 먼저 문제 확인을 고른다. tieBreak none.
+물류본부 수정. 새 CLAIM 과 이전 고객의 CONFLICT. 문제 짝이 깨지면 S0. 옛 문제 문장은 alreadyKnown 으로 탈락. 기록 자동 채택 없음.
+결제 부재. 결제 가설의 부재 CLAIM. 다른 슬롯 FACT 없음. S1 유지. 다음은 문자 범위와 귀속을 만들 검증 과제다.
+이 세 케이스에 통과를 적지 않는다.
+
+===== 8. 미확인 =====
+
+테스트를 실행하지 않았다. 재생을 다시 하지 않았다.
+classifyFounderEvidenceClass 와 decideStage 를 이번 턴에 호출하지 않았다. 기본 FACT 와 단어 승격은 이전 보완안의 코드 읽기 인용이다. 이번 턴에 그 함수 본문을 다시 열지는 않았다.
+startup_projects 행에 장부 컬럼이 없는 것은 이전 보완안에서 StartupProjectRow 를 읽은 결과다. 이번 턴에 그 파일을 다시 열지 않았다. 마이그레이션은 열지 않았다.
+동시 쓰기의 현재 DB 동작은 모른다. 부모 커밋 거절은 앞으로의 계약이다. 복구 충족이 아니다.
+8 회가 TokenManager 의 기존 값인지는 확인하지 않았다. 최적값이라는 뜻으로 쓰지 않는다.
+제안한 타입 파일과 테스트 파일은 저장소에 없다.
+구현, DECISIONS.md, DB, 병합, Production 배포는 하지 않았다.
+
+===== 게이트 =====
+
+설계 보완은 CPO 가 조건부 수용한 방향을 유지한 채 다섯 경계를 잠근 상태다. 구현 승인은 이 문서에 포함되지 않는다. 제품 코드와 DECISIONS.md 와 DB 와 병합과 배포는 별도 승인 전에 열지 않는다.
+
+Next Autonomous Target
+Epic: PR #197 SI 계약 잠금. 진행률: FACT 보증 범위, S2 와 S3 분리, CONFLICT 보류, 동점 정렬 키, 타입과 함수 경계까지 문서에 고정. 테스트는 방법만 있고 실행은 없다. 구현은 열지 않음. 예상 완료: CPO 가 이 잠금과 회귀 계획을 본 뒤의 별도 지시. 다음 보고 08:00.
+AI는 Founder의 성공 확률을 높이기 위한 다음 개선을 계속 진행 중입니다.
