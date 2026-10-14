@@ -1,25 +1,33 @@
-PR #197 구현 계획과 수용 테스트. 설계를 더 늘리지 않는다. 제품 코드 수정 없음. DECISIONS.md 수정 없음. DB 없음. 병합 없음. 배포 없음. 테스트 실행 없음. 통과 표시 없음.
+PR #197 구현 계획과 수용 테스트. 이번 턴은 완료 게이트와 관측값만 고친다. 설계를 더 늘리지 않는다. 제품 코드 수정 없음. 타입 수정 없음. 테스트 파일 생성 없음. DECISIONS.md 수정 없음. DB 없음. 병합 없음. 배포 없음. 테스트 실행 없음. 통과 표시 없음.
 
-한 줄: 기본 여정은 모델 호출 0회로 입력에서 판단 결과까지 간다. 가설 통과, 단계, 운영 상태, 전체 검토 완료는 서로 다른 필드다. S3나 S4는 검토 완료가 아니다. 아래 테스트가 통과하기 전에는 그 여정이 동작한다고 말하지 않는다. 이 문서는 그 테스트의 목록이고, 실행 결과가 아니다.
+한 줄: closeReview 는 가설 하나의 passed 나 failed 로 전체 검토 완료를 선언하지 않는다. AT-14 는 호출 횟수, OpenAI HTTP 요청, 스텁 거절 뒤의 장부 불변을 각각 관측한다. AT-04·AT-05·AT-11 은 금지 문장 부재가 아니라 선택된 행동과 동점 사유의 관측값으로 통과한다. 이 문서는 그 기준이고 실행 증거가 아니다.
 
-[CTO] CPO 요청 작업: 진행중 — 전체 검토 완료 계약과 SI 수용 기준을 구현 계획에 연결
-[CPO] 검토·지시 필요: 예 — 설계 방향은 수용하지만 구현 착수는 아직 승인하지 않음
+[CTO] CPO 요청 작업: 진행중 — 전체 완료 게이트 및 네트워크 0회 검증 조건 보완
+[CPO] 검토·지시 필요: 예 — 보완된 계약 확인 후 1단계 구현 착수 승인 필요
 
 기준
 계약: 784b411e docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-CONTRACT-LOCK.txt
 비용 경로: c39f8152 docs/evidence/ALABOM/AI-PM/PR197-CPO-ZERO-COST-ARCHITECTURE.txt
 실패 증거: b17161ec docs/evidence/ALABOM/AI-PM/PR197-CPO-STRATEGY-FIT-COPY.txt
 Production 잠금: 0b465226
-이번 턴 실행: 없음. 아래 AT 항목의 결과는 모두 미실행이다.
+784b411e 6절의 「완료는 S3 또는 S4 의 outcome passed 로만 말한다」는 reviewCompletion 에 쓰지 않는다. 단계 진입은 784b411e 3절을 유지한다. 전체 검토 완료는 이 문서의 closeReview 만 쓴다.
+이번 턴 실행: 없음. AT 결과는 모두 미실행이다.
+
+게이트
+1단계 순수 SI 모듈과 AT-01 부터 AT-14. 이 문서 확인 후 착수 승인을 기다린다. 이번 턴에 착수하지 않는다.
+2단계 화면 연결. 1단계 테스트가 실행되어 통과한 뒤 별도 승인.
+3단계 DB 와 영속 저장. 별도 승인.
+4단계 모델 초안기와 유료 API. 별도 승인. 현재 비활성.
+병합과 Production 배포. 승인 없음.
 
 ===== 1. 모델 호출 0회 여정 =====
 
-구현 시 한 함수 추적에 provider.chat 과 openai fetch 가 0이어야 한다. 아직 그 함수는 없다.
+구현 시 한 함수 추적의 관측값은 셋이다. provider.chat 호출 수 0. OpenAI HTTP 요청 수 0. 스텁을 넣어도 머리가 바뀌지 않음. 아직 그 함수는 없다.
 
 입력. 배송 SaaS 문서. 고객 반찬가게·꽃집 등 직접 배송 소상공인. 문제 주문과 배송을 따로 관리해야 함. 수익 월 구독.
 0. seed. 셋 다 ASSUMPTION. 단계 S0. verdict insufficient_basis. reviewCompletion in_progress. runStatus open. 가설 outcome 전부 not_run.
 1. selectNextAction 이 답변 전에 고객 이해 확인을 고른다. 화면 문장은 그 선택과 같다. 스냅샷이 바꾸지 못한다.
-2. 창업자 답. 이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다. 고객 가설 CLAIM. judgment 문장이 그 주장을 받았다고 바뀐다. 단계 S0 유지. 한 줄 정의를 닫지 않는다. FACT 없음. reviewCompletion 은 아직 closed_complete 가 아니다.
+2. 창업자 답. 이 서비스를 가장 필요로 하는 사람은 반찬가게·꽃집 등 직접 배송 소상공인입니다. 고객 가설 CLAIM. judgment 문장이 그 주장을 받았다고 바뀐다. 단계 S0 유지. 한 줄 정의를 닫지 않는다. FACT 없음. reviewCompletion 은 closed_complete 가 아니다.
 3. 다음 선택. 문제 이해 확인. 지불자와 채널은 단계 분기가 없어 탈락한다.
 4. 문제 확인 답. 문제 가설 CLAIM. 단계 S1. verdict judgment_deferred. whyPossible 과 whyFail 이 고객 id 와 문제 id 를 인용한다. 문장은 「현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다」가 아니다. 일곱 항목이 장부에서 렌더되면 reviewCompletion 은 decision_ready 다. 검증을 실행하지 않았으므로 closed_complete 가 아니다.
 5. 이후 지불자 CLAIM 과 사전 기준이 있으면 S2. 기준 문장만으로 S3 가 아니다. 다음 행동이 검증 과제가 되어도 검토 완료가 아니다.
@@ -33,68 +41,81 @@ Production 잠금: 0b465226
 
 고객 확인. 바뀌는 것. 고객 가설 ASSUMPTION 에서 CLAIM. judgment 문장. 바뀌지 않는 것. 단계, verdict, 문제 가설, 결제 가설. 다음. 문제 확인.
 문제 확인. 바뀌는 것. 문제 CLAIM. S0 에서 S1. insufficient_basis 에서 judgment_deferred. whyPossible 과 whyFail. 바뀌지 않는 것. 결제 outcome. reviewCompletion 은 decision_ready 까지이고 closed_complete 가 아니다.
-물류본부로 수정. 전제 S1. 바뀌는 것. 새 고객 CLAIM. 이전 고객 CONFLICT. 문제 짝이 깨지면 S1 에서 S0. verdict 는 insufficient_basis. whyPossible 은 이전 소상공인 문장을 철회한다. 다음. 물류본부의 불편. 옛 문장 「주문과 배송을 따로 관리해야 함」은 선택이 아니다. 화면이 그 문장이면 실패다. 「문제 가설이 바뀌었습니다」를 옛 문제 확인에 붙이면 실패다.
+물류본부로 수정. 전제 S1. 바뀌는 것. 새 고객 CLAIM. 이전 고객 CONFLICT. 문제 짝이 깨지면 S1 에서 S0. verdict 는 insufficient_basis. whyPossible 은 이전 소상공인 문장을 철회한다. 다음 선택의 hypothesisId 는 물류본부 문제 가설이다. 선택 문장은 그 고객의 불편을 묻는다. 옛 문제 id 는 eliminated 에 있고 이유는 alreadyKnown 이다. 옛 문장 「주문과 배송을 따로 관리해야 함」이 선택 문장에 있으면 실패다. 「문제 가설이 바뀌었습니다」를 옛 문제 확인에 붙이면 실패다.
 지불자 답 「서비스 비용은 사장님 본인이 지불합니다」. 고객 가설 문장은 그대로다. 지불자는 별도 CLAIM 이다. 고객 요약이 이 문장으로 바뀌면 실패다.
-부재 답 「아직 실제 결제·사용 증거는 없습니다」. 결제 가설에 부재 CLAIM. 문제와 시장의 클래스는 그대로다. FACT 로 복사하지 않는다. 검증 outcome 을 passed 나 CLOSED 로 두지 않는다. whyFail 에 부재 한 줄이 추가된다. 단계가 오르지 않는다. 다음. 주체·금액·기록의 검증 과제.
+부재 답 「아직 실제 결제·사용 증거는 없습니다」. 결제 가설에 부재 CLAIM. 문제와 시장의 클래스는 그대로다. FACT 로 복사하지 않는다. 검증 outcome 을 passed 로 두지 않는다. whyFail 에 부재 한 줄이 추가된다. 단계가 오르지 않는다. 다음. 주체·금액·기록의 검증 과제.
 「이미 결제 3건」. 결제 가설 CLAIM. FACT 와 VALIDATED 아님. 단계와 verdict 유지. judgment 에 주체·금액·기록이 없어 단계를 움직이지 않았다고 적는다.
 세금계산서 한 줄. 그 문자만 FACT. 진위와 귀속은 보증하지 않는다. 지표와 귀속 수락이 없으면 outcome insufficient_record. 단계 S3 아님.
-지표가 기준과 반대로 측정되고 귀속이 accepted. outcome failed. 단계 S3 아님. verdict judgment_deferred. 화면은 가설이 기준을 통과하지 못했다고 말하고, 사업성이 없다는 문장과 근거 부족 문장을 쓰지 않는다. 그 가설이 당시 critical unknown 이면 closeReview 가 closed_complete 를 허용한다. 실패한 가설의 완료와 사업 성공은 다르다.
+지표가 기준과 반대로 측정되고 귀속이 accepted. 그 가설 outcome 만 failed 다. 단계 S3 아님. verdict judgment_deferred. 화면은 그 가설이 기준을 통과하지 못했다고 말한다. 금지 문장은 「사업성이 없다」와 「현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다」다. 이 가설 하나의 failed 는 전체 검토 완료가 아니다. 다른 필수 가설이 not_run 이거나 insufficient_record 이거나, 어느 가설이든 conflict_unresolved 이면 closeReview 는 closed_complete 를 반환하지 않는다.
 부재 CLAIM 과 세금계산서. 둘 다 남음. outcome conflict_unresolved. 기록 자동 채택 없음. 단계 상승 없음. closed_complete 불가.
-모르겠음. 같은 질문 해시를 다시 고르지 않는다.  narrower 한 증거 요청이거나 검증 과제다.
+모르겠음. 같은 질문 해시를 다시 고르지 않는다. 더 좁은 증거 요청이거나 검증 과제다.
 
-===== 3. 네 필드의 독립 =====
+===== 3. 네 필드의 독립과 closeReview =====
 
-hypothesis.outcome. evaluateHypothesis 만 쓴다. 값은 not_run, insufficient_record, passed, failed, conflict_unresolved.
+hypothesis.outcome. evaluateHypothesis 만 쓴다. 값은 not_run, insufficient_record, passed, failed, conflict_unresolved. 가설 하나의 failed 는 그 가설의 판정이다. 전체 검토 완료가 아니다.
 stageId 와 verdictId. evaluateStage 만 쓴다. outcome 을 읽는다. reviewCompletion 과 runStatus 를 쓰지 않는다.
 runStatus. open, budget_held, provider_limited, provider_down. 운영 함수만 쓴다. 단계와 검토 완료를 바꾸지 않는다. 기본 경로에는 모델이 없으므로 budget_held 는 초안기가 승인되기 전에는 쓰이지 않는다.
-reviewCompletion. in_progress, decision_ready, closed_complete, closed_incomplete. closeReview 와 일곱 항목 렌더 가능 여부만 바꾼다.
+reviewCompletion. in_progress, decision_ready, closed_complete, closed_incomplete. closeReview 만 closed_complete 와 closed_incomplete 를 쓴다. evaluateStage 와 evaluateHypothesis 는 이 필드를 쓰지 않는다.
 
-decision_ready. 일곱 항목이 렌더되고 다음 행동이 있으며, 현재 critical unknown 가설이 not_run 또는 insufficient_record 또는 conflict_unresolved 다.
-closed_complete. closeReview 시점의 critical unknown 가설 outcome 이 passed 또는 failed 이고, 일곱 항목이 그 머리를 렌더하고, 그 가설이 conflict_unresolved 가 아니다. S3 이거나 S4 인 것은 조건이 아니다. S0 이어도 그 가설이 failed 로 판정됐으면 허용된다.
-closed_incomplete. 창업자가 멈추거나 세션이 끊길 때 critical unknown 이 아직 not_run, insufficient_record, conflict_unresolved 다. 장부는 유지한다. 성공이 아니다.
-S3 이고 사업모델 가설만 passed 이고 critical unknown 이 반복 가설이면 reviewCompletion 은 decision_ready 다. closed_complete 가 아니다.
-S4 이고 반복 가설이 passed 여도, closeReview 를 호출하기 전에는 closed_complete 가 아니다. 호출 시 그 가설이 critical unknown 이었고 passed 이면 closed_complete 다.
+필수 검토 집합. 고정 id 다. 입력 순서와 critical unknown 이 이 집합을 바꾸지 않는다.
+h-customer. h-problem. h-payer. h-business-model. h-repeat.
+
+closeReview 의 반환. reviewCompletion. blockingHypothesisIds. blockingConflictIds. 테스트는 세 값을 모두 관측한다.
+closed_complete 의 조건은 셋이 동시에 참일 때만이다.
+1. 일곱 항목이 현재 머리를 렌더한다.
+2. 필수 검토 집합의 모든 outcome 이 passed 또는 failed 다.
+3. 장부의 어떤 가설도 outcome 이 conflict_unresolved 가 아니다.
+하나라도 거짓이면 reviewCompletion 은 closed_complete 가 아니고, 막힌 id 가 반환 배열에 있다. critical unknown 하나의 passed 나 failed 는 이 조건의 입력이 아니다. S3 이거나 S4 인 것도 조건이 아니다.
+
+decision_ready. 일곱 항목이 렌더되고 다음 행동이 있으며, closeReview 의 완료 조건이 아직 거짓이다.
+closed_incomplete. 창업자가 멈추거나 세션이 끊길 때 완료 조건이 거짓이다. 장부는 유지한다. 성공이 아니다.
+S3 이고 h-business-model 만 passed 이고 h-repeat 가 not_run 이면 closeReview 는 closed_complete 가 아니다. blockingHypothesisIds 에 h-repeat 가 있다. reviewCompletion 은 decision_ready 다.
+S4 이고 h-repeat 가 passed 여도 closeReview 를 호출하기 전에는 closed_complete 가 아니다. 호출 시 필수 집합의 나머지가 passed 또는 failed 이고 충돌이 없을 때만 closed_complete 다.
 runStatus budget_held 는 reviewCompletion 을 closed_complete 로 만들지 않는다.
 질문 수, 갭 CLOSED, 모델 호출 수는 네 필드 중 어느 것도 직접 쓰지 않는다.
 
 ===== 4. 저장과 복구의 범위 =====
 
-이번 구현 계획의 1단계에 저장은 없다. sessionStorage 는 캐시로 남는다. 1단계 테스트는 순수 함수다. 복구 통과를 1단계에서 선언하지 않는다.
+1단계에 저장은 없다. sessionStorage 는 캐시로 남는다. 1단계 테스트는 순수 함수다. 복구 통과를 1단계에서 선언하지 않는다.
 
-2단계로 미룬 저장. 별도 승인 전 마이그레이션하지 않는다. 승인 후 레코드는 projectId, headVersion, headCommitId, parentCommitId, idempotencyKey, 근거 id, DecisionRecord id, 네 필드다. 소유자는 프로젝트 소유자다. 같은 키의 재요청은 버전을 한 번만 올린다. parent 가 현재 머리가 아니면 거절하고 머리를 유지한다. onboarding_context 에 넣지 않는다.
+3단계로 미룬 저장. 별도 승인 전 마이그레이션하지 않는다. 승인 후 레코드는 projectId, headVersion, headCommitId, parentCommitId, idempotencyKey, 근거 id, DecisionRecord id, 네 필드다. 소유자는 프로젝트 소유자다. 같은 키의 재요청은 버전을 한 번만 올린다. parent 가 현재 머리가 아니면 거절하고 머리를 유지한다. onboarding_context 에 넣지 않는다.
 
-2단계 수용. 같은 키 두 번. 과거 parent 거절. 저장소에서 읽은 다음 행동이 마지막 DecisionRecord 와 같다. 이 테스트는 1단계 파일에 넣지 않는다. 저장 승인 뒤에만 만든다. 지금은 미실행이고, 복구 보장 없음이 맞다.
+3단계 수용. 같은 키 두 번. 과거 parent 거절. 저장소에서 읽은 다음 행동이 마지막 DecisionRecord 와 같다. 이 테스트는 1단계 파일에 넣지 않는다. 3단계 승인 뒤에만 만든다. 지금은 미실행이고, 복구 보장 없음이 맞다.
 
 ===== 5. 수용 테스트 =====
 
-파일은 만들지 않았다. 승인 후 위치. apps/web/features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts. 모델과 DB 와 브라우저를 부르지 않는다. 각 테스트는 provider.chat 호출 수가 0인지 함께 본다. 현재 결과. 전부 미실행.
+파일은 만들지 않았다. 승인 후 위치. apps/web/features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts. 모델과 DB 와 브라우저를 부르지 않는다. 현재 결과. 전부 미실행. 금지 문자열이 없다는 사실만으로 AT-04, AT-05, AT-13, AT-14 를 통과로 보지 않는다.
 
 AT-01 고정 결론. 입력은 1절의 고객 확인과 문제 확인. 기대. 고객 확인 후 judgment 가 고객 CLAIM 을 말한다. 문제 확인 후 단계 S1, verdict judgment_deferred, whyPossible 과 whyFail 이 두 id 를 인용한다. 금지 문장 「현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다」가 없다. b17161ec 에서 30개 분기가 그 문장으로 고정된 실패를 겨냥한다.
 AT-02 한 줄 자동 닫힘. 고객 확인만으로 한 줄 가설이 passed 이거나 FACT 이면 실패다.
 AT-03 지불 문장이 고객을 덮음. 지불자 답 뒤 고객 가설 proposition 은 배송 소상공인 CLAIM 그대로다.
-AT-04 수정 후 옛 문제. 물류본부 수정 뒤 selected 문장에 「주문과 배송을 따로 관리해야 함」이 없으면 통과다. 있으면 실패다. b17161ec 에서 엔진 질문과 화면 질문이 갈라진 실패를 겨냥한다.
-AT-05 거짓 문제 변경 이유. 옛 문제 확인 답에 「문제 가설이 바뀌었습니다」가 없으면 통과다.
+AT-04 수정 후 다음 행동. 입력은 S1 의 배송 소상공인 CLAIM 과 문제 CLAIM 「주문과 배송을 따로 관리해야 함」 다음에 고객을 물류본부로 고친 장부다. 관측. selectedId. 그 선택의 hypothesisId. 선택 문장. eliminated 의 옛 문제 id 와 이유. 통과. hypothesisId 는 물류본부 문제 가설이다. 선택 문장은 그 고객의 불편을 묻는다. 옛 문제 id 는 eliminated 이고 이유는 alreadyKnown 이다. 선택 문장에 「주문과 배송을 따로 관리해야 함」이 없다. 금지 문장이 없어도 hypothesisId 가 옛 문제이거나 지불자이거나 채널이면 실패다.
+AT-05 수정 후 의미. 입력은 AT-04 의 장부에 옛 문제 문장을 확인하는 창업자 답을 더한 것이다. 관측. 옛 문제 proposition. 선택 hypothesisId. 선택 이유. 통과. 옛 문제 proposition 은 그대로다. 선택 hypothesisId 는 물류본부 문제 가설이다. 선택 이유는 새 고객과 그 문제의 짝이 비어 있다는 답변 전 이유다. 이유에 「문제 가설이 바뀌었습니다」가 없다. 그 문장이 없어도 선택이 옛 문제 id 이면 실패다.
 AT-06 부재의 FACT 승격. 부재 답 뒤 문제 가설과 시장 가설의 evidenceClass 는 FACT 가 아니다. 결제 가설은 부재 CLAIM 이다. outcome 은 passed 가 아니다.
 AT-07 약한 결제. 「이미 결제 3건이 있어 고객이 돈을 내고 있습니다.」는 CLAIM 이다. 단계와 verdict 는 답 전과 같다. judgment 에 움직이지 않은 이유가 있다.
 AT-08 좁은 기록. 세금계산서 한 줄은 FACT, authenticityGuaranteed false, attribution unreviewed, 사업모델 outcome insufficient_record, 단계 S3 아님.
 AT-09 충돌. 부재 CLAIM 다음 세금계산서. 두 id 유지. outcome conflict_unresolved. 단계 상승 없음. 순서를 뒤집어도 같다.
 AT-10 모르겠음. 같은 질문 해시가 두 번 selected 가 아니다.
-AT-11 동점 순서. 후보 배열을 뒤집어도 selectedId 와 tieBreak 가 같다. 갭 첫 항목이 marketChannel 이어도 문제의 단계 변화가 크면 문제는 문제다. 이유에 advance after, CLOSED, target= 이 없다.
-AT-12 네 필드. 사업모델 passed 와 단계 S3 를 만든 뒤 critical unknown 이 반복 가설이면 reviewCompletion 은 decision_ready 다. closeReview 없이 closed_complete 가 아니다. 그 상태에서 runStatus 를 budget_held 로 둬도 단계와 reviewCompletion 은 그대로다.
-AT-13 실패로 완료. critical unknown 인 결제 가설이 failed 이면 closeReview 는 closed_complete 다. verdict 는 judgment_deferred 다. 화면 이유에 기준 실패가 있고, 금지 문장 두 개(사업성이 없다, 현재 대화만으로는)는 없다.
-AT-14 호출 0. AT-01 부터 AT-13 의 추적에서 chat 과 OpenAI fetch 가 0이다. 스텁 문자열을 넣으면 거절되고 머리는 그대로다.
-AT-15 저장은 이 파일에 없다. 2단계 승인 전에는 이 번호를 실행하지 않는다.
+AT-11 동점의 세 값. 같은 후보를 배열 순서를 뒤집어 두 번 넣는다. 784b411e 의 T1, T2, T3, T4 를 포함한다. T2 는 갭 첫 항목이 marketChannel 이다. 각 쌍에서 관측하는 값은 selectedId, tieBreak, priorityReason 이다. 셋이 순서와 무관하게 같다. eliminated 의 탈락 키도 집합으로 같다. priorityReason 은 답변 전에 적힌 키 비교 문장이다. selectedId 만 같고 priorityReason 이나 tieBreak 가 순서에 따라 바뀌면 실패다. 이유에 advance after, CLOSED, target= 이 없다.
+AT-12 네 필드. h-business-model passed 와 단계 S3 를 만든 뒤 h-repeat 가 not_run 이면 closeReview 의 reviewCompletion 은 closed_complete 가 아니다. blockingHypothesisIds 에 h-repeat 가 있다. runStatus 를 budget_held 로 둬도 단계와 reviewCompletion 과 blockingHypothesisIds 는 그대로다.
+AT-13 전체 완료 게이트. 가설 하나의 failed 와 전체 완료를 분리해 세 경우를 관측한다.
+경우 A. 필수 집합 다섯의 outcome 이 모두 passed 또는 failed 이고, 충돌이 없고, h-business-model 은 failed 다. closeReview 의 reviewCompletion 은 closed_complete 다. blockingHypothesisIds 와 blockingConflictIds 는 비어 있다. verdict 는 judgment_deferred 다. 렌더된 이유는 그 기준의 실패를 말한다. 금지 문장 「사업성이 없다」와 「현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다」는 없다.
+경우 B. h-business-model 이 failed 이고 그것이 critical unknown 이며 h-repeat 는 not_run 이다. closeReview 의 reviewCompletion 은 closed_complete 가 아니다. blockingHypothesisIds 에 h-repeat 가 있다. h-business-model 의 outcome 은 failed 로 남는다.
+경우 C. h-business-model 이 failed 이고 h-customer 가 conflict_unresolved 다. closeReview 의 reviewCompletion 은 closed_complete 가 아니다. blockingConflictIds 에 h-customer 가 있다. h-business-model 의 outcome 은 failed 로 남는다.
+경우 A 만 통과하고 경우 B 나 C 가 closed_complete 이면 AT-13 은 실패다.
+AT-14 네트워크 0 과 장부 불변. AT-01 부터 AT-13 의 각 추적에서 세 수를 관측한다. provider.chat 호출 수는 0 이다. api.openai.com 으로 가는 HTTP 요청과 openai-http 의 fetch 진입은 0 이다. chat 횟수만 0 이고 HTTP 요청이 있으면 실패다. 스텁 `{ stub: true }` 또는 모델 초안 문자열을 넣으면 거절된다. 거절 뒤 머리의 judgment, stageId, verdictId, 가설 outcome, evidenceClass, reviewCompletion 은 넣기 전과 같다. 거절 뒤 필드가 하나라도 바뀌면 실패다.
+AT-15 저장은 이 파일에 없다. 3단계 승인 전에는 이 번호를 실행하지 않는다.
 
 AT-01 부터 AT-14 가 실행에서 통과하기 전에는 새 SI 가 b17161ec 의 실패를 해결했다고 보고하지 않는다.
 
 ===== 6. 구현 순서 =====
 
-지금 열지 않는다. CPO 가 이 목록을 구현 착수로 승인하기 전에 파일을 만들지 않는다.
+지금 열지 않는다. 이 수정본을 CPO 가 확인하고 1단계 착수를 승인하기 전에 제품 코드, 타입, 테스트 파일을 만들지 않는다.
 
-1단계. 승인 후. 순수 모듈과 AT-01 부터 AT-14. 타입은 784b411e 의 필드를 packages/types 에 둔다. 화면과 DB 와 provider 호출은 연결하지 않는다. 끝 조건은 그 테스트의 실행 통과다. 문서 제출이 끝 조건이 아니다.
-2단계. 승인 후. 화면이 DecisionRecord 의 선택 문장을 그대로 보여 준다. 스냅샷이 덮어쓰지 못한다. 모델 호출은 여전히 0이다. 복구 보장은 말하지 않는다.
+1단계. 그 승인 후. 순수 모듈과 AT-01 부터 AT-14. 타입은 784b411e 의 필드를 packages/types 에 둔다. 화면과 DB 와 provider 호출은 연결하지 않는다. 끝 조건은 그 테스트의 실행 통과다. 문서 제출이 끝 조건이 아니다. 통과를 미리 선언하지 않는다.
+2단계. 1단계 실행 통과 후 별도 승인. 화면이 DecisionRecord 의 선택 문장을 그대로 보여 준다. 스냅샷이 덮어쓰지 못한다. 모델 호출은 여전히 0이다. 복구 보장은 말하지 않는다.
 3단계. 저장 게이트. 4절. 별도 승인 전 마이그레이션 없음.
-4단계. 초안기와 유료 API. c39f8152 의 빈 허용 목록과 자동 전환 금지를 유지한다. 1단계에서 3단계의 끝 조건이 아니다.
+4단계. 초안기와 유료 API. 별도 승인. 현재 비활성. c39f8152 의 빈 허용 목록과 자동 전환 금지를 유지한다.
 
 ===== 7. 미확인 =====
 
@@ -103,7 +124,8 @@ b17161ec 재생을 다시 돌리지 않았다. 실패 문장은 그 보고서의
 저장소에 si-judgment-contract 모듈은 없다.
 복구는 보장되지 않는다.
 결정론적 SI 의 판단 품질은 이 목록이 통과하기 전에는 미검증이다.
+이 문서의 수정은 실행 증거가 아니다.
 
 Next Autonomous Target
-Epic: PR #197 수용 테스트 계획. 진행률: 0회 여정, 분기, 네 필드의 독립, 저장 게이트, AT-01 부터 AT-15 까지 문서에 고정. 구현과 테스트 실행은 없음. 예상 완료: CPO 가 이 목록의 구현 착수를 따로 승인한 뒤. 다음 보고 08:00.
+Epic: PR #197 1단계 착수 전 수용 기준. 진행률: closeReview 전체 게이트, AT-13 경우 B·C, AT-04·AT-05 의 선택 관측, AT-11 의 세 값, AT-14 의 HTTP 0 과 장부 불변을 문서에 고정. 구현과 테스트 실행은 없음. 예상 완료: CPO 가 이 수정본을 확인하고 1단계 착수를 승인한 뒤. 다음 보고 08:00.
 AI는 Founder의 성공 확률을 높이기 위한 다음 개선을 계속 진행 중입니다.
