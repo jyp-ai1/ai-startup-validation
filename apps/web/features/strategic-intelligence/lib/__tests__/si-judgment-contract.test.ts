@@ -1321,3 +1321,161 @@ describe('verification spec 9a1c0aad', () => {
     expect(closeReview(metric.ledger).reviewCompletion).not.toBe('closed_complete');
   });
 });
+
+describe('contract B cases A-D', () => {
+  function criterionOn(ledger: JudgmentLedger): JudgmentLedger {
+    return defineCriterion(ledger, {
+      hypothesisId: 'h-business-model',
+      measure: '결제',
+      passIf: '통과 조건',
+      failIf: '실패 조건',
+      requiredLiteralScopes: [],
+    });
+  }
+
+  it('keeps absence plus a literal fact unresolved instead of an insufficient record', () => {
+    const absent = answer(confirmCustomer(), {
+      kind: 'absence_claim',
+      proposition: ABSENCE_SENTENCE,
+      targetHypothesisId: 'h-business-model',
+    });
+    expect(absent.stageId).toBe('S0');
+    expect(absent.verdictId).toBe('insufficient_basis');
+    expect(absent.hypotheses['h-business-model']?.outcome).toBe('not_run');
+    const bound = bindLiteralFact(absent, {
+      hypothesisId: 'h-business-model',
+      recordText: TAX_LINE,
+      role: 'payment-literal',
+    });
+    const ledger = bound.ledger;
+    const absence = ledger.bindings.find((item) => item.classReason === 'absence');
+    expect(ledger.hypotheses['h-business-model']?.outcome).toBe('conflict_unresolved');
+    expect(ledger.hypotheses['h-business-model']?.outcome).not.toBe('insufficient_record');
+    expect(ledger.hypotheses['h-business-model']?.outcome).not.toBe('passed');
+    expect(ledger.hypotheses['h-business-model']?.outcome).not.toBe('failed');
+    expect(ledger.hypotheses['h-business-model']?.evidenceClass).toBe('CONFLICT');
+    expect(ledger.stageId).toBe('S0');
+    expect(ledger.verdictId).toBe('insufficient_basis');
+    expect(ledger.stageId).not.toBe('S3');
+    expect(ledger.verdictId).not.toBe('conditionally_viable');
+    expect(bound.binding.evidenceClass).toBe('FACT');
+    expect(bound.binding.authenticityGuaranteed).toBe(false);
+    expect(bound.binding.projectAttribution).toBe('unreviewed');
+    expect(absence?.evidenceClass).toBe('CLAIM');
+    expect(ledger.hypotheses['h-problem']?.evidenceClass).toBe('ASSUMPTION');
+    expect(ledger.hypotheses['h-market']?.evidenceClass).not.toBe('FACT');
+    expect(ledger.conflicts.some((item) => item.hypothesisId === 'h-business-model' && item.resolved === false)).toBe(true);
+    expect(ledger.evidenceMap).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: absence?.id, text: ABSENCE_SENTENCE, evidenceClass: 'CLAIM' }),
+        expect.objectContaining({ id: bound.binding.id, text: TAX_LINE, evidenceClass: 'FACT' }),
+      ]),
+    );
+    const next = selectNextAction(ledger);
+    expect(next.hypothesisId).toBe('h-problem');
+    expect(next.selectedId).toBe('q-problem');
+    expect(next.priorityReason).toContain('단계를 S0에서 S1로 바꾼다');
+    expect(closeReview(ledger).reviewCompletion).not.toBe('closed_complete');
+
+    const resolved = resolveConflict(ledger, {
+      hypothesisId: 'h-business-model',
+      evidenceId: bound.binding.id,
+      reason: '문자 기록을 작업 기준으로 둔다',
+    });
+    expect(resolved.bindings.map((item) => item.id)).toEqual(expect.arrayContaining(['b-absence', bound.binding.id]));
+    expect(resolved.conflicts.some((item) => item.hypothesisId === 'h-business-model' && item.resolved === false)).toBe(false);
+    expect(resolved.conflicts.some((item) => item.hypothesisId === 'h-business-model' && item.resolved === true)).toBe(true);
+    expect(resolved.hypotheses['h-business-model']?.outcome).toBe('insufficient_record');
+    expect(resolved.hypotheses['h-business-model']?.outcome).not.toBe('conflict_unresolved');
+    expect(resolved.hypotheses['h-business-model']?.outcome).not.toBe('passed');
+    expect(resolved.hypotheses['h-business-model']?.outcome).not.toBe('failed');
+    expect(resolved.bindings.find((item) => item.id === bound.binding.id)?.projectAttribution).toBe('unreviewed');
+    expect(resolved.stageId).toBe('S0');
+    expect(resolved.verdictId).toBe('insufficient_basis');
+    expect(resolved.stageId).not.toBe('S3');
+    expect(closeReview(resolved).reviewCompletion).not.toBe('closed_complete');
+  });
+
+  it('keeps the same conflict when the literal fact arrives before the absence claim', () => {
+    const fact = bindLiteralFact(confirmCustomer(), {
+      hypothesisId: 'h-business-model',
+      recordText: TAX_LINE,
+      role: 'payment-literal',
+    });
+    expect(fact.ledger.hypotheses['h-business-model']?.outcome).toBe('insufficient_record');
+    const both = answer(fact.ledger, {
+      kind: 'absence_claim',
+      proposition: ABSENCE_SENTENCE,
+      targetHypothesisId: 'h-business-model',
+    });
+    expect(both.hypotheses['h-business-model']?.outcome).toBe('conflict_unresolved');
+    expect(both.hypotheses['h-business-model']?.outcome).not.toBe('insufficient_record');
+    expect(both.hypotheses['h-business-model']?.evidenceClass).toBe('CONFLICT');
+    expect(both.bindings.find((item) => item.classReason === 'payment-literal')?.projectAttribution).toBe('unreviewed');
+    expect(both.bindings.find((item) => item.classReason === 'absence')?.evidenceClass).toBe('CLAIM');
+    expect(both.stageId).not.toBe('S3');
+  });
+
+  it('keeps a literal fact alone as an insufficient record at S0', () => {
+    const bound = bindLiteralFact(confirmCustomer(), {
+      hypothesisId: 'h-business-model',
+      recordText: TAX_LINE,
+      role: 'payment-literal',
+    });
+    const ledger = bound.ledger;
+    expect(ledger.hypotheses['h-business-model']?.outcome).toBe('insufficient_record');
+    expect(ledger.hypotheses['h-business-model']?.outcome).not.toBe('conflict_unresolved');
+    expect(ledger.hypotheses['h-business-model']?.evidenceClass).toBe('FACT');
+    expect(ledger.stageId).toBe('S0');
+    expect(ledger.verdictId).toBe('insufficient_basis');
+    expect(ledger.stageId).not.toBe('S3');
+    expect(bound.binding.projectAttribution).toBe('unreviewed');
+    expect(bound.binding.authenticityGuaranteed).toBe(false);
+    expect(ledger.bindings.some((item) => item.classReason === 'absence')).toBe(false);
+    expect(ledger.conflicts.some((item) => item.hypothesisId === 'h-business-model')).toBe(false);
+    const next = selectNextAction(ledger);
+    expect(next.hypothesisId).toBe('h-problem');
+    expect(next.selectedId).toBe('q-problem');
+    expect(next.priorityReason).toContain('단계를 S0에서 S1로 바꾼다');
+    expect(closeReview(ledger).reviewCompletion).not.toBe('closed_complete');
+  });
+
+  it('keeps the stored stage when a criterion is written and moves it only on a later reevaluation', () => {
+    const payer = confirmPayer();
+    expect(payer.stageId).toBe('S1');
+    expect(payer.verdictId).toBe('judgment_deferred');
+    expect(payer.hypotheses['h-business-model']?.outcome).toBe('not_run');
+    const written = criterionOn(payer);
+    expect(written.stageId).toBe('S1');
+    expect(written.stageId).toBe(payer.stageId);
+    expect(written.verdictId).toBe('judgment_deferred');
+    expect(written.verdictId).toBe(payer.verdictId);
+    expect(written.reviewCompletion).toBe(payer.reviewCompletion);
+    expect(written.hypotheses['h-business-model']?.outcome).toBe('not_run');
+    expect(written.hypotheses['h-business-model']?.evidenceClass).toBe('ASSUMPTION');
+    expect(written.bindings.some((item) => item.evidenceClass === 'FACT')).toBe(false);
+    expect(written.criteria.find((item) => item.hypothesisId === 'h-business-model')?.passIf).toBe('통과 조건');
+    expect(written.criteria.find((item) => item.hypothesisId === 'h-business-model')?.failIf).toBe('실패 조건');
+    const preview = selectNextAction(written);
+    expect(preview.hypothesisId).toBe('h-business-model');
+    expect(preview.selectedId).toBe('v-business-model');
+    expect(preview.priorityReason).toContain('단계를 S1에서 S2로 바꾼다');
+    expect(written.stageId).toBe('S1');
+
+    const reevaluated = answer(written, { kind: 'unknown', targetHypothesisId: 'h-channel' });
+    expect(reevaluated.stageId).toBe('S2');
+    expect(reevaluated.stageId).not.toBe(written.stageId);
+    expect(reevaluated.verdictId).toBe('judgment_deferred');
+    expect(reevaluated.verdictId).not.toBe('conditionally_viable');
+    expect(reevaluated.stageId).not.toBe('S3');
+    expect(reevaluated.hypotheses['h-business-model']?.outcome).toBe('not_run');
+    expect(reevaluated.hypotheses['h-business-model']?.evidenceClass).toBe('ASSUMPTION');
+    expect(reevaluated.bindings.some((item) => item.evidenceClass === 'FACT')).toBe(false);
+    expect(reevaluated.criticalUnknownHypothesisId).toBe('h-repeat');
+    const next = selectNextAction(reevaluated);
+    expect(next.hypothesisId).toBe('h-business-model');
+    expect(next.selectedId).toBe('v-business-model');
+    expect(next.priorityReason).toContain('단계 변화는 없다');
+    expect(closeReview(reevaluated).reviewCompletion).not.toBe('closed_complete');
+  });
+});

@@ -1,0 +1,31 @@
+PR #197 계약 B 반영 실행 기록. 구현 si-judgment-contract.ts 는 수정하지 않았다. 화면, DB, 모델/API, 병합, Production 배포는 없다. Production 잠금 0b465226. 이 통과는 전략 적합성이 아니고 전체 SI 최종 승인이 아니다.
+
+명령
+pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts --reporter=verbose
+
+시각
+2026-10-14 12:40:12 UTC
+
+출력
+Test Files 2 passed. Tests 33 passed. Duration 579ms. Start at 12:40:12.
+계약 B 사례 A–D 4개가 포함된다. 이전 29개에 더해진 수다. 실패 테스트는 없다.
+AT-01 부터 AT-14, 보완 A, 보완 B, AT-08, AT-09 가 같은 명령에서 통과했다.
+AT-14 가 같은 명령에서 통과했다. chat 0. OpenAI HTTP 0.
+
+30행
+branchCount 30. passed 30. failed 0. failures 길이 0.
+행 종류는 confirm 6, revise 6, unknown 6, paymentYes 6, paymentNone 6.
+재생 단언은 행 개수 밖에 장부, 판단, 다음을 본다.
+confirm 의 문제 확인 턴은 S1 이고 판단에 고객 CLAIM 과 문제 CLAIM 이 있으며 다음은 q-payer 다. S1 부터 S6 모두 같다.
+revise 직후 단계는 S0 이고 선택은 q-problem-next 다. 판단은 새 고객 CLAIM 을 활성 판단으로 말하고 문제는 아직 확인되지 않았다고 말한다.
+paymentYes 의 결제 턴은 단계가 그대로 S0 이다. 판단에 고객 CLAIM 과 결제 문장과 주체·금액·기록이 있다. binding 은 weak-payment CLAIM 이고 FACT 가 아니다. 선택은 q-payer 다.
+paymentNone 의 부재 턴은 단계가 그대로 S0 이다. 부재 binding 은 h-business-model CLAIM 이고 문제와 시장으로 복사되지 않는다. 판단에 부재 문장이 있다. 선택은 v-business-model 이고 이유에 literal_unreviewed 와 conflict 가 있다.
+screenMismatch 는 30행 모두 판단 불가다. 이 재생은 화면 일치와 전략 적합성을 합격으로 두지 않는다.
+
+사례 전후. 명세 문장만 바뀌었다. 실행 값은 채택 전과 같다.
+사례 A. 이전 명세 outcome insufficient_record. 채택 후 기대와 이번 실행 outcome conflict_unresolved, evidenceClass CONFLICT, 단계 S0, 판정 insufficient_basis, 귀속 unreviewed, 다음 q-problem. 해소 뒤 outcome insufficient_record, 귀속 unreviewed, 두 binding 유지, S3 아님.
+사례 B. 기대와 실행 outcome insufficient_record, 단계 S0, 판정 insufficient_basis, 귀속 unreviewed, 다음 q-problem.
+사례 C. 이전 명세의 저장 단계 S2. 채택 후 기대와 이번 실행 저장 단계 S1, 판정 judgment_deferred, outcome not_run. 이유는 미리보기 S1 에서 S2 를 말한다.
+사례 D. 기대와 실행 저장 단계 S2, 판정 judgment_deferred, outcome not_run, critical h-repeat, 선택 v-business-model.
+
+7A 와 7B 는 합격 단언으로 실행하지 않았다. 구현을 바꾸지 않았다. 후보 추가와 판단 문장 수정도 없다.

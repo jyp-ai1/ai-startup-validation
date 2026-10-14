@@ -1,4 +1,6 @@
-PR #197 순수 SI 계약 결정안. 선택지 A와 선택지 B를 비교한다. 어느 쪽도 적용하지 않았다. si-judgment-contract.ts, 기존 테스트, 명세 9a1c0aad 는 수정하지 않았다. 화면, DB, 모델/API, 병합, Production 배포는 없다. Production 잠금 0b465226. 전략 적합성은 이 문서의 대상이 아니다.
+사후 기록. CPO 가 선택지 B를 상태 전이 계약으로 채택했다. 이 파일의 비교는 채택 전 근거로 유지한다. 채택된 문장은 PR197-CPO-SI-VERIFICATION-SPEC.txt 의 계약 B 절이다. 이 채택은 전략 적합성과 전체 SI 최종 승인이 아니다.
+
+PR #197 순수 SI 계약 결정안. 선택지 A와 선택지 B를 비교한다. 이 파일을 쓸 때는 어느 쪽도 적용하지 않았다. si-judgment-contract.ts, 기존 테스트, 명세 9a1c0aad 는 수정하지 않았다. 화면, DB, 모델/API, 병합, Production 배포는 없다. Production 잠금 0b465226. 전략 적합성은 이 문서의 대상이 아니다.
 
 실행한 범위
 명령 pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts --reporter=verbose
