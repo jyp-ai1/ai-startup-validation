@@ -155,6 +155,9 @@ describe('pure SI cause recovery replay', () => {
             prompt: after?.prompt ?? '',
             priorityReason: after?.priorityReason ?? '',
             tieBreak: after?.tieBreak ?? '',
+            criticalUnknownHypothesisId: ledger.criticalUnknownHypothesisId,
+            rankedIds: after?.candidates.map((item) => item.id) ?? [],
+            judgmentChanged: ledger.judgment !== beforeJudgment,
             unchangedReason: applied.unchangedReason,
             stageBefore: beforeStage,
             judgmentBefore: beforeJudgment,
@@ -219,6 +222,19 @@ describe('pure SI cause recovery replay', () => {
           if (turns.some((item) => item.hypothesisId !== 'h-problem-next' || item.prompt.includes(spine.problem))) {
             fail('다음', 'revise left the new problem or asked the old problem');
           }
+          for (const item of turns) {
+            const splitAt = item.judgment.indexOf('과거 기록');
+            const active = splitAt >= 0 ? item.judgment.slice(0, splitAt) : '';
+            const history = splitAt >= 0 ? item.judgment.slice(splitAt) : '';
+            if (!active.includes(branch.turns[0]?.founderAnswer ?? '') || active.includes(spine.problem) || !active.includes('활성 판단의 문제는 아직 확인되지 않았다')) {
+              fail('판단', active || item.judgment);
+            }
+            if (!history.includes(spine.customer) || !history.includes(spine.problem) || !history.includes('그 문제는 새 고객의 문제가 아니다')) {
+              fail('판단', history || item.judgment);
+            }
+            if (item.judgment.includes('어느 쪽도 작업 기준이 아니다')) fail('판단', item.judgment);
+            if (item.criticalUnknownHypothesisId !== item.hypothesisId) fail('다음', `${item.criticalUnknownHypothesisId} ${item.hypothesisId}`);
+          }
         }
 
         if (branchId === 'unknown') {
@@ -238,11 +254,18 @@ describe('pure SI cause recovery replay', () => {
           if (!paid?.judgment.includes(branch.turns[1]?.founderAnswer ?? '') || !paid.judgment.includes('주체·금액·기록') || !paid.judgment.includes(spine.customer)) {
             fail('판단', paid?.judgment ?? '');
           }
-          if (paid?.hypothesisId !== 'h-problem' || paid.selectedId !== 'q-problem' || !paid.prompt.includes(spine.problem) || paid.prompt.includes('더 좁혀')) {
+          if (paid?.hypothesisId !== 'h-payer' || paid.selectedId !== 'q-payer' || paid.prompt.includes(spine.problem) || paid.prompt.includes('더 좁혀')) {
             fail('다음', `${paid?.selectedId} ${paid?.prompt}`);
           }
-          if (!paid.priorityReason.includes('q-problem') || !paid.priorityReason.includes('단계를 S0에서 S1로 바꾼다')) fail('다음', paid.priorityReason);
-          if (paid.hypothesisId === 'h-customer' || paid.selectedId === 'v-business-model') fail('다음', 'repeated a known customer or the payment claim');
+          if (!paid.prompt.includes('누구의 결제') || !paid.prompt.includes('금액과 거래 기록은 이 질문으로 생기지 않는다')) fail('다음', paid.prompt);
+          if (!paid.priorityReason.includes('확인할 가설이 h-payer') || !paid.priorityReason.includes('판단 문장이 달라진다') || !paid.priorityReason.includes('문제 문장 재확인보다') || !paid.priorityReason.includes('단계 변화는 없다') || STAGE_CLAIM.test(paid.priorityReason)) {
+            fail('다음', paid.priorityReason);
+          }
+          if (paid.rankedIds[0] !== 'q-payer' || !paid.rankedIds.includes('q-problem') || paid.rankedIds.indexOf('q-payer') > paid.rankedIds.indexOf('q-problem')) {
+            fail('다음', paid.rankedIds.join(','));
+          }
+          if (paid.criticalUnknownHypothesisId !== 'h-payer') fail('다음', paid.criticalUnknownHypothesisId);
+          if (paid.hypothesisId === 'h-customer' || paid.selectedId === 'v-business-model' || paid.selectedId === 'q-problem') fail('다음', 'repeated a known customer, the problem sentence, or the payment claim');
         }
 
         if (branchId === 'paymentNone') {
@@ -254,11 +277,18 @@ describe('pure SI cause recovery replay', () => {
           if (ledger.hypotheses['h-problem']?.evidenceClass === 'FACT' || ledger.hypotheses['h-market']?.evidenceClass === 'FACT') fail('장부', 'absence copied');
           if (!absent?.judgment.includes('아직 실제 결제·사용 증거는 없습니다')) fail('판단', absent?.judgment ?? '');
           if (absent?.stageId !== absent.stageBefore) fail('장부', `stage moved ${absent?.stageBefore} ${absent?.stageId}`);
-          if (absent?.hypothesisId !== 'h-problem' || absent.selectedId !== 'q-problem' || !absent.prompt.includes(spine.problem) || absent.prompt.includes('더 좁혀')) {
+          if (absent?.hypothesisId !== 'h-business-model' || absent.selectedId !== 'v-business-model' || absent.prompt.includes(spine.problem) || absent.prompt.includes('누구의 결제') || absent.prompt.includes('더 좁혀')) {
             fail('다음', `${absent?.selectedId} ${absent?.prompt}`);
           }
-          if (!absent.priorityReason.includes('q-problem') || !absent.priorityReason.includes('단계를 S0에서 S1로 바꾼다')) fail('다음', absent.priorityReason);
-          if (absent.hypothesisId === 'h-customer' || absent.selectedId === 'v-business-model') fail('다음', 'repeated a known customer or the absence claim');
+          if (!absent.prompt.includes('문자 기록') || !absent.prompt.includes('기록이 생기지 않는다')) fail('다음', absent.prompt);
+          if (!absent.priorityReason.includes('literal_unreviewed') || !absent.priorityReason.includes('conflict') || !absent.priorityReason.includes('기록이 생기지 않는다') || !absent.priorityReason.includes('필요한 증거') || STAGE_CLAIM.test(absent.priorityReason)) {
+            fail('다음', absent.priorityReason);
+          }
+          if (absent.rankedIds[0] !== 'v-business-model' || !absent.rankedIds.includes('q-problem') || absent.rankedIds.indexOf('v-business-model') > absent.rankedIds.indexOf('q-problem')) {
+            fail('다음', absent.rankedIds.join(','));
+          }
+          if (absent.criticalUnknownHypothesisId !== 'h-business-model') fail('다음', absent.criticalUnknownHypothesisId);
+          if (absent.hypothesisId === 'h-customer' || absent.selectedId === 'q-problem') fail('다음', 'repeated a known customer or the problem sentence');
         }
 
         for (const item of turns) {

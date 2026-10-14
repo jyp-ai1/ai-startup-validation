@@ -39,7 +39,7 @@ export {
 const STAGE_RANK: Record<SiStageId, number> = { S0: 0, S1: 1, S2: 2, S3: 3, S4: 4 };
 const CLASS_RANK: Record<JudgmentChangeClass, number> = { none: 0, annotation: 1, identity: 2, conflict: 3 };
 const SUPPLIED_TIE_KEYS = ['stage-delta', 'verdict-delta', 'fail-drops-stage', 'validation-over-question', 'critical-unknown'] as const;
-const DERIVED_TIE_KEYS = ['open-pair', 'stage-delta', 'verdict-delta', 'fail-drops-stage', 'judgment-class', 'validation-over-question', 'critical-unknown'] as const;
+const DERIVED_TIE_KEYS = ['open-pair', 'payment-gap', 'active-gap', 'stage-delta', 'verdict-delta', 'fail-drops-stage', 'judgment-class', 'validation-over-question', 'critical-unknown'] as const;
 
 export const CUSTOMER_STATEMENT = '반찬가게·꽃집 등 직접 배송 소상공인';
 export const PROBLEM_STATEMENT = '주문과 배송을 따로 관리해야 함';
@@ -173,7 +173,42 @@ function noteAskedForAct(ledger: JudgmentLedger, decision: DecisionRecord, act: 
   return noteAsked(ledger, decision);
 }
 
+function hasWeakPayment(ledger: JudgmentLedger): boolean {
+  return ledger.bindings.some((item) => item.hypothesisId === 'h-business-model' && item.classReason === 'weak-payment');
+}
+
+function hasAbsence(ledger: JudgmentLedger): boolean {
+  return ledger.bindings.some((item) => item.hypothesisId === 'h-business-model' && item.classReason === 'absence');
+}
+
+function hasPaymentFact(ledger: JudgmentLedger): boolean {
+  return ledger.bindings.some(
+    (item) => item.hypothesisId === 'h-business-model' && item.evidenceClass === 'FACT' && item.classReason === 'payment-literal',
+  );
+}
+
+function activeCustomerClaimed(ledger: JudgmentLedger): boolean {
+  if (ledger.pairBroken && ledger.hypotheses['h-customer-next']?.evidenceClass === 'CLAIM') return true;
+  const customer = ledger.hypotheses['h-customer'];
+  return customer?.evidenceClass === 'CLAIM' && customer.outcome !== 'conflict_unresolved';
+}
+
 function nextCritical(ledger: JudgmentLedger): string {
+  if (ledger.pairBroken && ledger.hypotheses['h-customer-next']?.evidenceClass === 'CLAIM') {
+    const nextProblem = ledger.hypotheses['h-problem-next'];
+    if (!nextProblem?.statement.trim() || nextProblem.evidenceClass !== 'CLAIM') return 'h-problem-next';
+    if (ledger.hypotheses['h-payer']?.evidenceClass !== 'CLAIM') return 'h-payer';
+  }
+  if (
+    activeCustomerClaimed(ledger) &&
+    hasWeakPayment(ledger) &&
+    !hasAbsence(ledger) &&
+    !hasPaymentFact(ledger) &&
+    ledger.hypotheses['h-payer']?.evidenceClass !== 'CLAIM'
+  ) {
+    return 'h-payer';
+  }
+  if (activeCustomerClaimed(ledger) && hasAbsence(ledger) && !hasPaymentFact(ledger)) return 'h-business-model';
   if (ledger.hypotheses['h-customer']?.outcome === 'conflict_unresolved') return 'h-customer';
   if (ledger.hypotheses['h-problem']?.outcome === 'conflict_unresolved') return 'h-problem';
   if (ledger.hypotheses['h-customer']?.evidenceClass !== 'CLAIM') return 'h-customer';
@@ -211,10 +246,14 @@ function refreshNarrative(ledger: JudgmentLedger): JudgmentLedger {
   let whyFail = '';
 
   if (customer?.outcome === 'conflict_unresolved') {
-    const pair = nextProblem?.statement?.trim()
-      ? `새 고객의 문제는 「${nextProblem.statement}」이다. 고객 충돌이 해소되기 전에는 단계 근거가 아니다.`
-      : '새 고객의 문제는 아직 없다.';
-    judgment = `고객 문장이 충돌했다. 이전 문장은 「${customer.statement}」. 새 문장은 「${successor?.statement ?? ''}」. 해소 전까지 어느 쪽도 작업 기준이 아니다. 이전 고객과 문제의 짝은 철회되었다. ${pair}`;
+    const activeProblem = nextProblem?.statement?.trim()
+      ? `활성 판단의 문제는 「${nextProblem.statement}」이다. 이 문제는 새 고객의 문제이며 과거 문제와 다르다.`
+      : '활성 판단의 문제는 아직 확인되지 않았다.';
+    const payerText =
+      payer?.evidenceClass === 'CLAIM' && payer.statement
+        ? ` 활성 고객의 결제 주체는 「${payer.statement}」 CLAIM이다. 금액과 기록은 아직 없다.`
+        : '';
+    judgment = `활성 판단의 고객은 새 CLAIM 「${successor?.statement ?? ''}」이다. ${activeProblem}${payerText} 과거 기록의 고객은 「${customer.statement}」이고 그 문제는 「${problem?.statement ?? ''}」이다. 그 문제는 새 고객의 문제가 아니다. 과거 기록은 활성 판단이 아니다. 이전 고객과 문제의 짝은 철회되었다.`;
     whyPossible = '이전 고객 문장은 철회되었다.';
     whyFail = 'h-customer의 충돌이 해소되기 전에는 단계 근거가 아니다.';
   } else if (problem?.outcome === 'conflict_unresolved') {
@@ -636,7 +675,22 @@ function promptFor(ledger: JudgmentLedger, hypothesisId: string): string {
     }
     return askedPrompt(ledger, hypothesisId, `「${statement}」가 맞는지 확인해 달라.`);
   }
-  if (hypothesisId === 'h-payer') return askedPrompt(ledger, hypothesisId, '누가 비용을 지불하는지 확인해 달라.');
+  if (hypothesisId === 'h-payer') {
+    const activeCustomer = ledger.pairBroken
+      ? (ledger.hypotheses['h-customer-next']?.statement ?? '')
+      : (ledger.hypotheses['h-customer']?.statement ?? '');
+    if (hasWeakPayment(ledger) && !hasPaymentFact(ledger) && ledger.hypotheses['h-payer']?.evidenceClass !== 'CLAIM') {
+      return askedPrompt(
+        ledger,
+        hypothesisId,
+        `이미 알려진 정보는 고객 「${activeCustomer}」 CLAIM과 주체·금액·기록이 없는 결제 주장이다. 이 결제는 누구의 결제인가? 금액과 거래 기록은 이 질문으로 생기지 않는다.`,
+      );
+    }
+    if (ledger.pairBroken) {
+      return askedPrompt(ledger, hypothesisId, `활성 고객 「${activeCustomer}」의 결제 주체는 누구인가? 과거 문제 문장은 이 질문의 대상이 아니다.`);
+    }
+    return askedPrompt(ledger, hypothesisId, '누가 비용을 지불하는지 확인해 달라.');
+  }
   if (hypothesisId === 'h-channel') return askedPrompt(ledger, hypothesisId, '어느 채널에서 만나는지 확인해 달라.');
   return askedPrompt(ledger, hypothesisId, `${hypothesisId}를 확인해 달라.`);
 }
@@ -707,7 +761,13 @@ function validationCandidate(ledger: JudgmentLedger): DecisionCandidate {
       judgmentChanges: item.judgmentChanged,
     })),
     priorityReason: '',
-    prompt: askedPrompt(ledger, 'h-business-model', '주체·금액·기록이 있는 결제 기록이나 기준을 확인해 달라.'),
+    prompt: askedPrompt(
+      ledger,
+      'h-business-model',
+      hasAbsence(ledger) && !hasPaymentFact(ledger)
+        ? '부재는 결제 가설의 CLAIM이다. 문제 문장을 다시 확인해도 기록이 생기지 않는다. 주체와 금액이 적힌 문자 기록이 있어야 부재와 구분된다.'
+        : '주체·금액·기록이 있는 결제 기록이나 기준을 확인해 달라.',
+    ),
     previews,
   };
 }
@@ -776,6 +836,29 @@ function opensEmptyPair(ledger: JudgmentLedger, item: DecisionCandidate): number
   return (item.previews ?? []).some((preview) => preview.judgmentChanged) ? 1 : 0;
 }
 
+function paymentGap(ledger: JudgmentLedger, item: DecisionCandidate): number {
+  if (!activeCustomerClaimed(ledger) || hasPaymentFact(ledger)) return 0;
+  const previews = item.previews ?? [];
+  const changesJudgment = previews.some((preview) => preview.judgmentChanged || preview.judgmentChangeClass === 'conflict');
+  if (!changesJudgment) return 0;
+  if (
+    item.hypothesisId === 'h-payer' &&
+    hasWeakPayment(ledger) &&
+    !hasAbsence(ledger) &&
+    ledger.hypotheses['h-payer']?.evidenceClass !== 'CLAIM'
+  ) {
+    return 1;
+  }
+  if (item.id === 'v-business-model' && hasAbsence(ledger) && !hasWeakPayment(ledger)) return 1;
+  return 0;
+}
+
+function activeGap(ledger: JudgmentLedger, item: DecisionCandidate): number {
+  if (!ledger.pairBroken || ledger.hypotheses['h-customer-next']?.evidenceClass !== 'CLAIM') return 0;
+  if (item.hypothesisId !== nextCritical(ledger)) return 0;
+  return (item.previews ?? []).some((preview) => preview.judgmentChanged) ? 1 : 0;
+}
+
 function derivedTuple(ledger: JudgmentLedger, item: DecisionCandidate): number[] {
   const previews = item.previews ?? [];
   const verdict = previews.some((preview) => preview.verdictChanged) ? 1 : 0;
@@ -783,7 +866,7 @@ function derivedTuple(ledger: JudgmentLedger, item: DecisionCandidate): number[]
   const klass = previews.reduce((max, preview) => Math.max(max, CLASS_RANK[preview.judgmentChangeClass]), 0);
   const validation = item.resolvableByQuestion ? 0 : 1;
   const critical = item.hypothesisId === ledger.criticalUnknownHypothesisId ? 1 : 0;
-  return [opensEmptyPair(ledger, item), maxPreviewStage(item), verdict, drop, klass, validation, critical];
+  return [opensEmptyPair(ledger, item), paymentGap(ledger, item), activeGap(ledger, item), maxPreviewStage(item), verdict, drop, klass, validation, critical];
 }
 
 function bestPreview(item: DecisionCandidate): PreviewBranchRecord | undefined {
@@ -796,16 +879,37 @@ function bestPreview(item: DecisionCandidate): PreviewBranchRecord | undefined {
   })[0];
 }
 
+function stageTextOf(preview: PreviewBranchRecord | undefined): string {
+  return preview?.stageChanged ? `단계를 ${preview.stageBefore}에서 ${preview.stageAfter}로 바꾼다` : '단계 변화는 없다';
+}
+
 function derivedReason(winner: DecisionCandidate, tieBreak: DecisionTieBreak): string {
   const best = bestPreview(winner);
   const act = best?.act ?? 'affirm';
-  const stageText = best?.stageChanged ? `단계를 ${best.stageBefore}에서 ${best.stageAfter}로 바꾼다` : '단계 변화는 없다';
+  const stageText = stageTextOf(best);
   if (tieBreak === 'stable-id') {
     return `키 1부터 5가 같다. hypothesisId 사전순으로 ${winner.hypothesisId}를 고른다. tieBreak는 stable-id다. 사업 근거가 아니다.`;
   }
   if (winner.hypothesisId === 'h-problem-next') {
     const judgmentText = best?.judgmentChanged ? '판단 문장이 달라진다' : '판단 문장은 그대로다';
     return `${winner.id}는 새 고객과 문제의 짝이 비어 있다. ${act} 분기는 ${judgmentText}. ${stageText}.`;
+  }
+  if (winner.hypothesisId === 'h-payer' && winner.prompt.includes('누구의 결제')) {
+    const affirm = winner.previews?.find((preview) => preview.act === 'affirm');
+    const judgmentText = affirm?.judgmentChanged ? '판단 문장이 달라진다' : '판단 문장은 그대로다';
+    return `${winner.id}는 확인할 가설이 h-payer다. 이미 알려진 정보는 고객 CLAIM과 주체·금액·기록이 없는 결제 CLAIM이다. affirm 분기는 ${judgmentText}. 금액과 기록은 이 질문으로 생기지 않는다. 문제 문장 재확인보다 결제 주체의 불확실성을 줄인다. ${stageTextOf(affirm)}.`;
+  }
+  if (winner.id === 'v-business-model' && winner.prompt.includes('문자 기록')) {
+    const literal = winner.previews?.find((preview) => preview.act === 'literal_unreviewed');
+    return `${winner.id}는 확인할 가설이 h-business-model이다. 이미 알려진 정보는 부재 CLAIM이다. literal_unreviewed 분기는 부재 CLAIM과 문자 기록을 구분하고 판단 변화 등급은 ${literal?.judgmentChangeClass ?? 'none'}다. 문제 문장을 다시 확인해도 기록이 생기지 않는다. 필요한 증거는 주체와 금액이 적힌 문자 기록이다. ${stageTextOf(literal)}.`;
+  }
+  if (winner.hypothesisId === 'h-payer' && tieBreak === 'active-gap') {
+    const affirm = winner.previews?.find((preview) => preview.act === 'affirm');
+    const judgmentText = affirm?.judgmentChanged ? '판단 문장이 달라진다' : '판단 문장은 그대로다';
+    return `${winner.id}는 활성 고객의 다음 미확인인 h-payer다. affirm 분기는 ${judgmentText}. 과거 문제는 새 고객의 문제가 아니다. ${stageTextOf(affirm)}.`;
+  }
+  if ((winner.previews ?? []).every((preview) => preview.judgmentChangeClass === 'none')) {
+    return `${winner.id}는 질문을 반복해도 판단이 달라지지 않는다. 필요한 증거가 부족하다. 단계 변화는 없다.`;
   }
   if (tieBreak === 'none') return `${winner.id}의 ${act} 분기가 ${stageText}.`;
   return `${winner.id}의 ${act} 분기가 ${stageText}. tieBreak는 ${tieBreak}다.`;
@@ -831,7 +935,7 @@ function rankDerived(ledger: JudgmentLedger): DecisionRecord {
   const hasStage = judged.some((item) => maxPreviewStage(item) > 0);
   const staged: DecisionCandidate[] = [];
   for (const item of judged) {
-    if (hasStage && maxPreviewStage(item) === 0 && opensEmptyPair(ledger, item) === 0) {
+    if (hasStage && maxPreviewStage(item) === 0 && opensEmptyPair(ledger, item) === 0 && paymentGap(ledger, item) === 0 && activeGap(ledger, item) === 0) {
       eliminated.push({ candidateId: item.id, hypothesisId: item.hypothesisId, key: 'no-stage-branch' });
     }
     else staged.push(item);

@@ -1,5 +1,7 @@
 PR #197 전략 재생 실패 원인과 수정 설계. 순수 SI 구현과 회귀는 실행되었다. 실행 기록은 docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-CAUSE-RECOVERY-RESULTS.txt 와 PR197-CPO-SI-CAUSE-RECOVERY-REPLAY.json 이다. 화면 연결 없음. DB 없음. 모델 호출 없음. 병합 없음. Production 배포 없음. Production 잠금 0b465226.
 
+아래 본문의 「다음: 문제가 아직이면 문제」는 설계 당시 문장이다. 2026-10-14 09:26:01 UTC 실행에서는 고객 정정 판단이 활성 고객과 과거 기록을 나누고, 결제 주장 뒤의 다음 행동은 문제 문장 재확인이 아니다. 그 값은 결과 파일에만 있다.
+
 이 파일의 앞부분은 원인 감사다. 감사 본문에 남은 기대 출력은 감사 시점의 설계값이다. 그 문장을 실행 통과로 읽지 않는다. 실행 결과는 결과 파일에만 있다. 프로브 시각 2026-10-14 08:20:10 의 출력은 당시 모듈의 증거로 남긴다.
 
 보완 A와 보완 B는 이 파일 맨 뒤에 있다. 그 방향으로 createProjectLedger, applyFounderAnswer, resolveConflict, 미리보기 순위가 모듈에 들어갔다. "구현 착수 전"은 이 문장으로 갈음한다. replace 는 resolveConflict 를 호출하지 않는다. 미리보기는 후보마다 분기 집합을 장부 복사본에 적용한다.

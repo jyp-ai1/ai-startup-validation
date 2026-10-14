@@ -884,7 +884,13 @@ describe('revise next action', () => {
     expect(revised.bindings.map((item) => item.id)).toEqual(expect.arrayContaining(['b-customer-doc', 'b-problem-doc']));
     expect(revised.judgment).toContain('전통주를 선물·취미로 찾는 30–40대');
     expect(revised.judgment).toContain('혼자 마시는 20대');
-    expect(revised.judgment).toContain('새 고객의 문제는 아직 없다');
+    expect(revised.judgment).toContain('활성 판단의 문제는 아직 확인되지 않았다');
+    expect(revised.judgment).toContain('그 문제는 새 고객의 문제가 아니다');
+    expect(revised.judgment).not.toContain('어느 쪽도 작업 기준이 아니다');
+    const active = revised.judgment.split('과거 기록')[0] ?? '';
+    expect(active).toContain('혼자 마시는 20대');
+    expect(active).not.toContain(problem);
+    expect(revised.criticalUnknownHypothesisId).toBe('h-problem-next');
 
     const decision = selectNextAction(revised);
     assertHonestStageReason(decision);
@@ -906,7 +912,7 @@ describe('revise next action', () => {
 });
 
 describe('payment next action', () => {
-  it('keeps the unjudged problem as the next question after a payment claim', () => {
+  it('asks whose payment instead of repeating the open problem sentence', () => {
     const problem = '메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다';
     const ledger = createProjectLedger({
       customerStatement: '직원 20–80명 제조사 영업관리자',
@@ -932,17 +938,169 @@ describe('payment next action', () => {
 
     const next = selectNextAction(paid);
     assertHonestStageReason(next);
-    expect(next.hypothesisId).toBe('h-problem');
-    expect(next.selectedId).toBe('q-problem');
-    expect(next.prompt).toContain(problem);
+    expect(next.hypothesisId).toBe('h-payer');
+    expect(next.selectedId).toBe('q-payer');
+    expect(paid.criticalUnknownHypothesisId).toBe('h-payer');
+    expect(next.prompt).toContain('누구의 결제');
+    expect(next.prompt).toContain('금액과 거래 기록은 이 질문으로 생기지 않는다');
+    expect(next.prompt).not.toContain(problem);
     expect(next.prompt).not.toContain('더 좁혀');
     expect(next.selectedId).not.toBe('v-business-model');
-    const affirm = previewOf(next, 'q-problem', 'affirm');
-    expect(affirm.stageChanged).toBe(true);
-    expect(affirm.stageBefore).toBe('S0');
-    expect(affirm.stageAfter).toBe('S1');
-    expect(affirm.judgmentChanged).toBe(true);
-    expect(next.priorityReason).toContain('q-problem');
-    expect(next.priorityReason).toContain('단계를 S0에서 S1로 바꾼다');
+    expect(next.selectedId).not.toBe('q-problem');
+    const payerAffirm = previewOf(next, 'q-payer', 'affirm');
+    expect(payerAffirm.judgmentChanged).toBe(true);
+    expect(payerAffirm.stageChanged).toBe(false);
+    expect(payerAffirm.hypothesisId).toBe('h-payer');
+    const problemAffirm = previewOf(next, 'q-problem', 'affirm');
+    expect(problemAffirm.stageChanged).toBe(true);
+    expect(problemAffirm.stageBefore).toBe('S0');
+    expect(problemAffirm.stageAfter).toBe('S1');
+    const ranked = next.candidates.map((item) => item.id);
+    expect(ranked[0]).toBe('q-payer');
+    expect(ranked.indexOf('q-payer')).toBeLessThan(ranked.indexOf('q-problem'));
+    expect(next.tieBreak).toBe('payment-gap');
+    expect(next.priorityReason).toContain('q-payer');
+    expect(next.priorityReason).toContain('확인할 가설이 h-payer');
+    expect(next.priorityReason).toContain('판단 문장이 달라진다');
+    expect(next.priorityReason).toContain('문제 문장 재확인보다');
+    expect(next.priorityReason).toContain('단계 변화는 없다');
+    expect(next.priorityReason).not.toMatch(/단계를 .+에서 .+로 바꾼다/);
+  });
+
+  it('asks for a literal record after an absence claim instead of repeating the problem', () => {
+    const problem = '메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다';
+    const ledger = createProjectLedger({
+      customerStatement: '직원 20–80명 제조사 영업관리자',
+      problemStatement: problem,
+      businessStatement: '견적 자동화',
+    });
+    const customer = answer(ledger, {
+      kind: 'affirm',
+      targetHypothesisId: 'h-customer',
+      proposition: '이 서비스를 가장 필요로 하는 사람은 직원 20–80명 제조사 영업관리자입니다.',
+    });
+    const asked = selectNextAction(customer);
+    const absent = applyFounderAnswer(customer, asked, {
+      kind: 'absence_claim',
+      proposition: ABSENCE_SENTENCE,
+      targetHypothesisId: 'h-business-model',
+    }).ledger;
+    const next = selectNextAction(absent);
+    assertHonestStageReason(next);
+    expect(next.selectedId).toBe('v-business-model');
+    expect(next.hypothesisId).toBe('h-business-model');
+    expect(next.prompt).toContain('문자 기록');
+    expect(next.prompt).toContain('기록이 생기지 않는다');
+    expect(next.prompt).not.toContain('누구의 결제');
+    expect(next.prompt).not.toContain(problem);
+    const literal = previewOf(next, 'v-business-model', 'literal_unreviewed');
+    expect(literal.judgmentChangeClass).toBe('conflict');
+    expect(literal.stageChanged).toBe(false);
+    const problemAffirm = previewOf(next, 'q-problem', 'affirm');
+    expect(problemAffirm.stageAfter).toBe('S1');
+    const ranked = next.candidates.map((item) => item.id);
+    expect(ranked[0]).toBe('v-business-model');
+    expect(ranked.indexOf('v-business-model')).toBeLessThan(ranked.indexOf('q-problem'));
+    expect(next.priorityReason).toContain('literal_unreviewed');
+    expect(next.priorityReason).toContain('conflict');
+    expect(next.priorityReason).toContain('필요한 증거는 주체와 금액이 적힌 문자 기록');
+    expect(next.priorityReason).toContain('단계 변화는 없다');
+    expect(next.candidates[0]?.resolvableByQuestion).toBe(false);
+    expect(next.candidates[0]?.alreadyKnown).toBe(false);
+  });
+
+  it('records missing evidence when the remaining questions cannot create a payment record', () => {
+    const ready = confirmProblem();
+    const payer = answer(ready, { kind: 'affirm', targetHypothesisId: 'h-payer', proposition: PAYER_CONFIRM });
+    const absent = answer(payer, { kind: 'absence_claim', proposition: ABSENCE_SENTENCE, targetHypothesisId: 'h-business-model' });
+    const next = selectNextAction(absent);
+    assertHonestStageReason(next);
+    expect(next.selectedId).toBe('v-business-model');
+    expect(next.hypothesisId).toBe('h-business-model');
+    expect(next.prompt).not.toContain(PROBLEM_STATEMENT);
+    expect(next.priorityReason).toContain('필요한 증거는 주체와 금액이 적힌 문자 기록');
+    expect(next.priorityReason).toContain('문제 문장을 다시 확인해도 기록이 생기지 않는다');
+    expect(next.candidates.some((item) => item.id === 'q-problem')).toBe(false);
+    expect(next.eliminated).toEqual(expect.arrayContaining([expect.objectContaining({ hypothesisId: 'h-problem', key: 'alreadyKnown' })]));
+  });
+});
+
+describe('revised customer judgment stays on the active customer', () => {
+  it('separates the new problem from the old problem and then asks the active payer', () => {
+    const cases = [
+      {
+        customer: '전통주를 선물·취미로 찾는 30–40대',
+        problem: '양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다',
+        business: '전통주 브랜드',
+        revised: '이 브랜드를 가장 필요로 하는 사람은 혼자 마시는 20대입니다.',
+        nextProblem: '동네 편의점에는 찾는 술이 없다',
+        confirmProblemFirst: false,
+      },
+      {
+        customer: '직원 20–80명 제조사 영업관리자',
+        problem: '메일·엑셀·ERP에 같은 숫자를 세 번 옮기다 오타가 난다',
+        business: '견적 자동화',
+        revised: '이 툴을 가장 필요로 하는 사람은 개인 프리랜서입니다.',
+        nextProblem: '견적 문서를 혼자 다시 쓴다',
+        confirmProblemFirst: true,
+      },
+    ];
+    for (const item of cases) {
+      let ledger = createProjectLedger({
+        customerStatement: item.customer,
+        problemStatement: item.problem,
+        businessStatement: item.business,
+      });
+      if (item.confirmProblemFirst) {
+        ledger = answer(ledger, { kind: 'affirm', targetHypothesisId: 'h-customer', proposition: item.customer });
+        ledger = answer(ledger, { kind: 'affirm', targetHypothesisId: 'h-problem', proposition: item.problem });
+      }
+      const revised = answer(ledger, { kind: 'replace', targetHypothesisId: 'h-customer', nextStatement: item.revised });
+      const before = selectNextAction(revised);
+      const activeBefore = revised.judgment.split('과거 기록')[0] ?? '';
+      const historyBefore = revised.judgment.split('과거 기록')[1] ?? '';
+      expect(activeBefore).toContain(item.revised);
+      expect(activeBefore).toContain('활성 판단의 문제는 아직 확인되지 않았다');
+      expect(activeBefore).not.toContain(item.problem);
+      expect(historyBefore).toContain(item.customer);
+      expect(historyBefore).toContain(item.problem);
+      expect(historyBefore).toContain('그 문제는 새 고객의 문제가 아니다');
+      expect(before.hypothesisId).toBe('h-problem-next');
+      expect(before.selectedId).toBe('q-problem-next');
+      expect(revised.criticalUnknownHypothesisId).toBe(before.hypothesisId);
+      expect(revised.bindings.some((binding) => binding.id === 'b-problem-doc' && binding.proposition === item.problem)).toBe(true);
+
+      const filled = applyFounderAnswer(revised, before, {
+        kind: 'affirm',
+        targetHypothesisId: 'h-problem-next',
+        proposition: item.nextProblem,
+      }).ledger;
+      const activeAfter = filled.judgment.split('과거 기록')[0] ?? '';
+      const historyAfter = filled.judgment.split('과거 기록')[1] ?? '';
+      expect(filled.stageId).toBe('S0');
+      expect(filled.hypotheses['h-customer']?.outcome).toBe('conflict_unresolved');
+      expect(filled.hypotheses['h-problem']?.statement).toBe(item.problem);
+      expect(filled.hypotheses['h-problem-next']?.statement).toBe(item.nextProblem);
+      expect(filled.hypotheses['h-problem-next']?.evidenceClass).toBe('CLAIM');
+      expect(activeAfter).toContain(item.revised);
+      expect(activeAfter).toContain(item.nextProblem);
+      expect(activeAfter).toContain('이 문제는 새 고객의 문제이며 과거 문제와 다르다');
+      expect(activeAfter).not.toContain(item.problem);
+      expect(historyAfter).toContain(item.problem);
+      expect(historyAfter).toContain('그 문제는 새 고객의 문제가 아니다');
+      const after = selectNextAction(filled);
+      assertHonestStageReason(after);
+      expect(after.hypothesisId).toBe('h-payer');
+      expect(after.selectedId).toBe('q-payer');
+      expect(after.selectedId).not.toContain('resolve');
+      expect(after.hypothesisId).not.toBe('h-problem');
+      expect(after.prompt).not.toContain(item.problem);
+      expect(filled.criticalUnknownHypothesisId).toBe(after.hypothesisId);
+      expect(after.priorityReason).toContain('h-payer');
+      expect(after.priorityReason).toContain('판단 문장이 달라진다');
+      expect(after.priorityReason).toContain('과거 문제는 새 고객의 문제가 아니다');
+      expect(after.priorityReason).toContain('단계 변화는 없다');
+      expect(previewOf(after, 'q-resolve-h-customer', 'resolve_retain_old').stageChanged).toBe(item.confirmProblemFirst);
+    }
   });
 });

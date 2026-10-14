@@ -179,6 +179,8 @@ export type ValidationOutcome =
 export type DecisionTieBreak =
   | 'none'
   | 'open-pair'
+  | 'payment-gap'
+  | 'active-gap'
   | 'stage-delta'
   | 'verdict-delta'
   | 'fail-drops-stage'
