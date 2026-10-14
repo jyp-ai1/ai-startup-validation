@@ -148,3 +148,132 @@ export const SI_STAGE_LABELS: Record<SiStageId, string> = {
   S3: 'S3 출시·초기 매출',
   S4: 'S4 반복 검증',
 };
+
+/** Stage-1 judgment ledger. Review completion is not a stage and not a run status. */
+export const REQUIRED_REVIEW_IDS = [
+  'h-customer',
+  'h-problem',
+  'h-payer',
+  'h-business-model',
+  'h-repeat',
+] as const;
+
+export type RequiredReviewId = (typeof REQUIRED_REVIEW_IDS)[number];
+
+export type EvidenceSourceKind =
+  | 'document'
+  | 'founder_answer'
+  | 'record'
+  | 'model_draft'
+  | 'si_inference';
+
+export type ProjectAttribution = 'unreviewed' | 'accepted' | 'rejected';
+
+export type ValidationOutcome =
+  | 'not_run'
+  | 'insufficient_record'
+  | 'passed'
+  | 'failed'
+  | 'conflict_unresolved';
+
+export type DecisionTieBreak =
+  | 'none'
+  | 'stage-delta'
+  | 'verdict-delta'
+  | 'fail-drops-stage'
+  | 'validation-over-question'
+  | 'critical-unknown'
+  | 'stable-id';
+
+export type ReviewRunStatus = 'open' | 'budget_held' | 'provider_limited' | 'provider_down';
+
+export type ReviewCompletion =
+  | 'in_progress'
+  | 'decision_ready'
+  | 'closed_complete'
+  | 'closed_incomplete';
+
+export type EvidenceHistoryEntry = {
+  commitId: string;
+  from: string;
+  to: string;
+  reason: string;
+};
+
+export type HypothesisEvidenceBinding = {
+  id: string;
+  hypothesisId: string;
+  proposition: string;
+  sourceKind: EvidenceSourceKind;
+  sourceRef: string;
+  evidenceClass: SiEvidenceClass;
+  classReason: string;
+  literalScope: string | null;
+  authenticityGuaranteed: false;
+  projectAttribution: ProjectAttribution;
+  history: EvidenceHistoryEntry[];
+};
+
+export type ValidationCriterion = {
+  id: string;
+  hypothesisId: string;
+  writtenAtCommitId: string;
+  measure: string;
+  passIf: string;
+  failIf: string;
+  requiredLiteralScopes: string[];
+};
+
+export type HypothesisJudgment = {
+  id: string;
+  statement: string;
+  outcome: ValidationOutcome;
+  criterionId: string | null;
+  evidenceClass: SiEvidenceClass;
+  alreadyKnown: boolean;
+};
+
+export type DecisionBranch = {
+  id: string;
+  stageId: SiStageId;
+  verdictId: SiVerdictId;
+  dropsStage: boolean;
+  judgmentChanges: boolean;
+};
+
+export type DecisionCandidate = {
+  id: string;
+  hypothesisId: string;
+  actionKind: 'question' | 'validation';
+  alreadyKnown: boolean;
+  resolvableByQuestion: boolean;
+  branches: DecisionBranch[];
+  priorityReason: string;
+  prompt: string;
+  gapId?: string;
+};
+
+export type EliminatedCandidate = {
+  candidateId: string;
+  hypothesisId: string;
+  key: 'alreadyKnown' | 'no-stage-branch';
+};
+
+export type DecisionRecord = {
+  id: string;
+  committedBeforeAnswer: true;
+  candidates: DecisionCandidate[];
+  eliminated: EliminatedCandidate[];
+  selectedId: string;
+  tieBreak: DecisionTieBreak;
+  hypothesisId: string;
+  prompt: string;
+  priorityReason: string;
+};
+
+export type UnresolvedConflict = {
+  hypothesisId: string;
+  leftId: string;
+  rightId: string;
+  resolved: boolean;
+};

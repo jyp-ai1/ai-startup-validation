@@ -1,0 +1,44 @@
+PR #197 1단계 실행 결과. 순수 SI 모듈과 AT-01~AT-14. 화면 연결 없음. DB 없음. 모델 호출 없음. 병합 없음. Production 배포 없음. Production 잠금 0b465226.
+
+이 파일은 테스트를 실행한 뒤의 기록이다. 통과는 계약 테스트 14개가 통과했다는 뜻이다. 전략 적합성 재생 b17161ec 을 화면에서 다시 돌린 결과가 아니고, 사업 판단 품질이 입증됐다는 뜻이 아니다.
+
+명령
+pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts
+
+결과
+Test Files  1 passed (1)
+Tests  14 passed (14)
+Duration  292ms
+실패 항목 없음.
+
+항목
+AT-01 passed. 고객 확인 뒤 judgment 가 CLAIM 을 말하고 단계는 S0. 문제 확인 뒤 단계 S1, verdict judgment_deferred, whyPossible 과 whyFail 이 h-customer 와 h-problem 을 포함. 금지 문장 「현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다」 없음. reviewCompletion 은 decision_ready. closed_complete 아님.
+AT-02 passed. 고객 확인만으로 h-one-liner 가 passed 나 FACT 가 아님.
+AT-03 passed. 지불자 답 뒤 h-customer 문장은 배송 소상공인. 사장님 본인 문장으로 바뀌지 않음.
+AT-04 passed. 물류본부 수정 뒤 selected hypothesisId 는 h-problem-logistics. 선택 문장은 물류본부 불편. 옛 문제 문장은 선택에 없음. 옛 문제 id 는 eliminated, key alreadyKnown.
+AT-05 passed. 옛 문제 문장을 다시 넣어도 h-problem 문장은 그대로. 다음 hypothesisId 는 h-problem-logistics. priorityReason 은 답 전과 같고 「짝이 비어」를 포함. 「문제 가설이 바뀌었습니다」 없음.
+AT-06 passed. 부재 답은 h-business-model 의 CLAIM. h-problem 과 h-market 은 FACT 아님. outcome 은 passed 아님. 단계는 답 전과 같음.
+AT-07 passed. 「이미 결제 3건」은 CLAIM. FACT 와 VALIDATED 아님. 단계와 verdict 는 답 전과 같음. judgment 에 주체·금액·기록 문장이 있음.
+AT-08 passed. 세금계산서 한 줄은 FACT. authenticityGuaranteed false. projectAttribution unreviewed. literalScope 는 그 한 줄. outcome insufficient_record. 단계 S3 아님.
+AT-09 passed. 부재 다음 기록, 기록 다음 부재. 두 id 유지. outcome conflict_unresolved. 단계 S3 아님.
+AT-10 passed. 모르겠음 다음 questionHash 가 직전과 다름.
+AT-11 passed. 네 쌍 모두 배열을 뒤집어도 selectedId, tieBreak, priorityReason, 탈락 키 집합이 같음. T1 선택은 q-problem, tieBreak none. T2 선택은 q-problem. T3 선택은 v-repeat, tieBreak critical-unknown. T4 선택은 v-a, tieBreak stable-id. 이유에 advance after, CLOSED, target= 없음. stable-id 이유에 「사업 근거가 아니다」가 있음.
+AT-12 passed. h-business-model passed, 단계 S3, h-repeat not_run. closeReview 는 closed_complete 아님. blockingHypothesisIds 에 h-repeat. budget_held 뒤 단계, verdict, reviewCompletion, blockingHypothesisIds 동일.
+AT-13 passed. 경우 A 는 필수 다섯이 passed 또는 failed 이고 충돌이 없을 때 closed_complete. blocking 배열은 빔. verdict judgment_deferred. 이유에 기준 실패 문장. 금지 문장 두 개 없음. 경우 B 는 h-repeat 가 not_run 이면 closed_complete 아님. blockingHypothesisIds 에 h-repeat. h-business-model 은 failed 유지. 경우 C 는 h-customer 가 conflict_unresolved 이면 closed_complete 아님. blockingConflictIds 에 h-customer. h-business-model 은 failed 유지.
+AT-14 passed. provider.chat 호출 0. OpenAI HTTP 요청 0. 모듈 소스에 api.openai.com, openai-http, fetch 호출, .chat( 없음. 스텁과 초안 문자열을 넣은 뒤 머리 스냅샷이 넣기 전과 같음.
+
+같이 실행한 기존 테스트
+pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/analyze-strategic-intelligence.test.ts
+Tests  7 passed (7)
+
+미해결
+2단계 화면 연결은 하지 않았다. 기존 워크스페이스 루프는 이 모듈을 부르지 않는다.
+3단계 DB 와 마이그레이션은 하지 않았다. 복구 보장은 없다.
+4단계 모델 초안기와 유료 API 는 연결하지 않았다. 허용 목록은 비어 있는 상태가 유지된다.
+병합과 Production 배포는 하지 않았다.
+b17161ec 의 30개 분기를 이 모듈로 다시 재생하지 않았다.
+이 14개 통과는 계약과 회귀 테스트의 통과다. 사업 판단 품질의 별도 입증은 아니다.
+
+Next Autonomous Target
+Epic: PR #197 1단계 순수 SI. 진행률: AT-01 부터 AT-14 까지 실행 14 passed. 2단계 화면, 3단계 DB, 4단계 모델, 병합, 배포는 열지 않음. 예상 완료: 그 단계들은 별도 승인 전 착수하지 않음. 다음 보고 08:00.
+AI는 Founder의 성공 확률을 높이기 위한 다음 개선을 계속 진행 중입니다.
