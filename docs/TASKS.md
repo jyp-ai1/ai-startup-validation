@@ -48,6 +48,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 30 | D1–D7 전략 복원 1단계 | 📤 `PR197-CPO-STRATEGY-RESTORE-PHASE1-COPY.txt` · resolveTurnDecision · 이해 검증 MCQ · CLOSED≠FACT · T6/T7 PASS · Track A FAIL · AC16/AC5 FAIL · 병합 금지 |
 | 31 | 1단계 후속 검증 FIX-10·S1–S6 | 📤 `PR197-CPO-STRATEGY-RESTORE-FOLLOWUP-COPY.txt` · D7≠D4 분리 · D4 하네스 solution 누수 최소 수정 · `b78e4d29` Preview 2/2 PASS(TS2367 수정) · FIX-10 overallPass=false 유지 · Track A exact=0 · AC16/AC5 FAIL · 병합 금지 |
 | 32 | S1–S6 전략 품질 검증 | 📤 `PR197-CPO-S1-S6-VERIFY-COPY.txt` · 답에 따라 이해·증거·판단·다음 이유 분기 · next gap은 problemJtbd 유지 · Track A FAIL · AC16/AC5 FAIL · 로그인/OAuth/Prod NOT VERIFIED · 병합 금지 |
+| 33 | 신규 페이지 인수인계 | 📤 `PR197-NEW-PAGE-HANDOVER.md` · 프롬프트 `PR197-NEW-PAGE-PROMPT.txt` · HEAD `956a9438` · 병합 금지 · CPO 다음 지시 대기 |
 
 ---
 
