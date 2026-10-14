@@ -122,6 +122,10 @@ export type {
   EliminatedCandidate,
   DecisionRecord,
   UnresolvedConflict,
+  JudgmentChangeClass,
+  FounderAnswerAct,
+  PreviewBranchRecord,
+  ApplyFounderAnswerResult,
 } from './domain/strategic-intelligence';
 
 export {

@@ -2,27 +2,29 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { DecisionBranch, DecisionCandidate } from '@repo/types/domain/strategic-intelligence';
+import type { DecisionBranch, DecisionCandidate, FounderAnswerAct } from '@repo/types/domain/strategic-intelligence';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   ABSENCE_SENTENCE,
   CUSTOMER_CONFIRM,
   CUSTOMER_STATEMENT,
-  LOGISTICS_PROBLEM_ID,
-  LOGISTICS_PROMPT,
   PAYER_CONFIRM,
   PROBLEM_STATEMENT,
   WEAK_PAYMENT_SENTENCE,
   applyBudgetHold,
+  applyFounderAnswer,
   bindLiteralFact,
   closeReview,
-  commitFounderStatement,
+  createProjectLedger,
   createSeedLedger,
   defineCriterion,
+  evaluateHypothesis,
+  evaluateStage,
   judgeAttribution,
   judgeRequiredHypothesis,
   offerModelDraft,
+  resolveConflict,
   questionHash,
   recordConflict,
   recordCriticalUnknown,
@@ -59,16 +61,24 @@ function narrative(ledger: JudgmentLedger): string {
   return [ledger.judgment, ledger.whyPossible, ledger.whyFail, ledger.decisionChangingEvidence, ledger.validationPriority].join('\n');
 }
 
+function answer(ledger: JudgmentLedger, act: FounderAnswerAct): JudgmentLedger {
+  return applyFounderAnswer(ledger, selectNextAction(ledger), act).ledger;
+}
+
 function confirmCustomer(ledger: JudgmentLedger = createSeedLedger()): JudgmentLedger {
-  return commitFounderStatement(ledger, { proposition: CUSTOMER_CONFIRM });
+  return answer(ledger, { kind: 'affirm', targetHypothesisId: 'h-customer', proposition: CUSTOMER_CONFIRM });
 }
 
 function confirmProblem(ledger: JudgmentLedger = confirmCustomer()): JudgmentLedger {
-  return commitFounderStatement(ledger, { proposition: '주문과 배송을 따로 관리해야 하는 문제가 맞습니다.' });
+  return answer(ledger, { kind: 'affirm', targetHypothesisId: 'h-problem', proposition: '주문과 배송을 따로 관리해야 하는 문제가 맞습니다.' });
 }
 
 function confirmPayer(ledger: JudgmentLedger = confirmProblem()): JudgmentLedger {
-  return commitFounderStatement(ledger, { proposition: PAYER_CONFIRM });
+  return answer(ledger, { kind: 'affirm', targetHypothesisId: 'h-payer', proposition: PAYER_CONFIRM });
+}
+
+function replaceCustomer(ledger: JudgmentLedger, nextStatement: string): JudgmentLedger {
+  return answer(ledger, { kind: 'replace', targetHypothesisId: 'h-customer', nextStatement, proposition: nextStatement });
 }
 
 function branchSet(
@@ -229,39 +239,45 @@ describe('AT-03 payer text does not replace the customer', () => {
   });
 });
 
-describe('AT-04 revised customer selects the new problem', () => {
-  it('asks about the logistics customer problem and drops the old problem as already known', () => {
-    const revised = commitFounderStatement(confirmProblem(), { proposition: '우리 고객은 물류본부다.' });
+describe('AT-04 revised customer keeps both statements and asks to resolve', () => {
+  it('does not ask the old problem and does not pick a winner inside replace', () => {
+    const revised = replaceCustomer(confirmProblem(), '우리 고객은 물류본부다.');
     expect(revised.stageId).toBe('S0');
     expect(revised.verdictId).toBe('insufficient_basis');
     expect(revised.whyPossible).toContain('철회');
     expect(revised.hypotheses['h-customer']?.outcome).toBe('conflict_unresolved');
+    expect(revised.hypotheses['h-customer']?.statement).toBe(CUSTOMER_STATEMENT);
+    expect(revised.hypotheses['h-customer-next']?.statement).toContain('물류본부');
+    expect(revised.hypotheses['h-customer-next']?.evidenceClass).toBe('CLAIM');
+    expect(revised.bindings.map((item) => item.id)).toEqual(expect.arrayContaining(['b-customer-doc']));
+    expect(revised.conflicts.some((item) => item.hypothesisId === 'h-customer' && !item.resolved)).toBe(true);
 
     const decision = selectNextAction(revised);
     const choice = selected(decision);
-    expect(choice.hypothesisId).toBe(LOGISTICS_PROBLEM_ID);
-    expect(choice.hypothesisId).not.toBe('h-problem');
-    expect(choice.prompt).toBe(LOGISTICS_PROMPT);
+    expect(choice.hypothesisId).toBe('h-customer');
+    expect(choice.id).toContain('resolve');
     expect(choice.prompt).toContain('물류본부');
-    expect(choice.prompt).toContain('불편');
+    expect(choice.prompt).toContain('작업 기준');
     expect(choice.prompt).not.toContain(PROBLEM_STATEMENT);
     expect(decision.eliminated).toEqual(
       expect.arrayContaining([expect.objectContaining({ hypothesisId: 'h-problem', key: 'alreadyKnown' })]),
     );
+    expect(closeReview(revised).reviewCompletion).not.toBe('closed_complete');
+    expect(closeReview(revised).blockingConflictIds).toContain('h-customer');
   });
 });
 
 describe('AT-05 old problem confirmation stays on the new pair', () => {
   it('does not retarget the next action when the old problem sentence is repeated', () => {
-    const revised = commitFounderStatement(confirmProblem(), { proposition: '우리 고객은 물류본부다.' });
+    const revised = replaceCustomer(confirmProblem(), '우리 고객은 물류본부다.');
     const before = selectNextAction(revised);
-    const answered = commitFounderStatement(revised, { proposition: PROBLEM_STATEMENT });
+    const answered = applyFounderAnswer(revised, before, { kind: 'affirm', targetHypothesisId: 'h-problem', proposition: PROBLEM_STATEMENT }).ledger;
     expect(answered.hypotheses['h-problem']?.statement).toBe(PROBLEM_STATEMENT);
+    expect(answered.hypotheses['h-customer']?.outcome).toBe('conflict_unresolved');
     const after = selectNextAction(answered);
-    expect(selected(after).hypothesisId).toBe(LOGISTICS_PROBLEM_ID);
-    expect(selected(after).hypothesisId).not.toBe('h-problem');
+    expect(selected(after).id).toContain('resolve');
+    expect(selected(after).prompt).not.toContain(PROBLEM_STATEMENT);
     expect(after.priorityReason).toBe(before.priorityReason);
-    expect(after.priorityReason).toContain('짝이 비어');
     expect(after.priorityReason).not.toContain(FORBIDDEN_PROBLEM_CHANGED);
     expect(narrative(answered)).not.toContain(FORBIDDEN_PROBLEM_CHANGED);
   });
@@ -270,7 +286,7 @@ describe('AT-05 old problem confirmation stays on the new pair', () => {
 describe('AT-06 absence is not a fact on other hypotheses', () => {
   it('stores an absence claim only on the payment hypothesis', () => {
     const before = confirmProblem();
-    const next = commitFounderStatement(before, { proposition: ABSENCE_SENTENCE });
+    const next = answer(before, { kind: 'absence_claim', proposition: ABSENCE_SENTENCE, targetHypothesisId: 'h-business-model' });
     expect(next.hypotheses['h-problem']?.evidenceClass).not.toBe('FACT');
     expect(next.hypotheses['h-market']?.evidenceClass).not.toBe('FACT');
     expect(next.hypotheses['h-business-model']?.evidenceClass).toBe('CLAIM');
@@ -286,7 +302,7 @@ describe('AT-06 absence is not a fact on other hypotheses', () => {
 describe('AT-07 weak payment does not move the stage', () => {
   it('keeps a three-payment sentence as a claim', () => {
     const before = confirmProblem();
-    const next = commitFounderStatement(before, { proposition: WEAK_PAYMENT_SENTENCE });
+    const next = answer(before, { kind: 'payment_claim', proposition: WEAK_PAYMENT_SENTENCE, targetHypothesisId: 'h-business-model' });
     const weak = next.bindings.find((item) => item.proposition === WEAK_PAYMENT_SENTENCE);
     expect(weak?.evidenceClass).toBe('CLAIM');
     expect(weak?.evidenceClass).not.toBe('FACT');
@@ -323,18 +339,18 @@ describe('AT-09 conflict keeps both sides', () => {
       const stageBefore = start.stageId;
       const next =
         order === 'absence-first'
-          ? bindLiteralFact(commitFounderStatement(start, { proposition: ABSENCE_SENTENCE }), {
+          ? bindLiteralFact(answer(start, { kind: 'absence_claim', proposition: ABSENCE_SENTENCE, targetHypothesisId: 'h-business-model' }), {
               hypothesisId: 'h-business-model',
               recordText: TAX_LINE,
               role: 'payment-literal',
             }).ledger
-          : commitFounderStatement(
+          : answer(
               bindLiteralFact(start, {
                 hypothesisId: 'h-business-model',
                 recordText: TAX_LINE,
                 role: 'payment-literal',
               }).ledger,
-              { proposition: ABSENCE_SENTENCE },
+              { kind: 'absence_claim', proposition: ABSENCE_SENTENCE, targetHypothesisId: 'h-business-model' },
             );
       expect(next.bindings.map((item) => item.id)).toEqual(expect.arrayContaining(['b-absence', 'b-fact-payment-literal-h-business-model']));
       expect(next.hypotheses['h-business-model']?.outcome).toBe('conflict_unresolved');
@@ -350,7 +366,7 @@ describe('AT-10 unknown does not repeat the question hash', () => {
   it('selects a different hash after 모르겠음', () => {
     const ready = confirmProblem();
     const first = selectNextAction(ready);
-    const answered = commitFounderStatement(ready, { proposition: '모르겠음' });
+    const answered = answer(ready, { kind: 'unknown', targetHypothesisId: first.hypothesisId });
     const second = selectNextAction(answered);
     expect(questionHash(second)).not.toBe(questionHash(first));
   });
@@ -540,12 +556,12 @@ describe('AT-14 zero network and unchanged ledger', () => {
     const seed = createSeedLedger();
     const customer = confirmCustomer(seed);
     const problem = confirmProblem(customer);
-    commitFounderStatement(problem, { proposition: '우리 고객은 물류본부다.' });
-    commitFounderStatement(problem, { proposition: ABSENCE_SENTENCE });
-    commitFounderStatement(problem, { proposition: WEAK_PAYMENT_SENTENCE });
+    replaceCustomer(problem, '우리 고객은 물류본부다.');
+    answer(problem, { kind: 'absence_claim', proposition: ABSENCE_SENTENCE, targetHypothesisId: 'h-business-model' });
+    answer(problem, { kind: 'payment_claim', proposition: WEAK_PAYMENT_SENTENCE, targetHypothesisId: 'h-business-model' });
     bindLiteralFact(problem, { hypothesisId: 'h-business-model', recordText: TAX_LINE, role: 'payment-literal' });
     selectNextAction(problem);
-    commitFounderStatement(problem, { proposition: '모르겠음' });
+    answer(problem, { kind: 'unknown', targetHypothesisId: 'h-payer' });
     selectNextAction(confirmCustomer(), [
       {
         id: 'q-problem',
@@ -593,5 +609,240 @@ describe('AT-14 zero network and unchanged ledger', () => {
 
     expect(chatCalls.count).toBe(0);
     expect(openaiHttp.count).toBe(0);
+  });
+});
+
+function previewOf(record: ReturnType<typeof selectNextAction>, candidateId: string, act: string) {
+  const found = record.previews?.find((item) => item.candidateId === candidateId && item.act === act);
+  if (!found) throw new Error(`missing preview ${candidateId} ${act}`);
+  return found;
+}
+
+function assertHonestStageReason(record: ReturnType<typeof selectNextAction>) {
+  const winner = (record.previews ?? []).filter((item) => item.candidateId === record.selectedId);
+  const claimsStage = /단계를 .+에서 .+로 바꾼다|유일한 단계 변화/.test(record.priorityReason);
+  if (claimsStage && winner.every((item) => !item.stageChanged)) {
+    throw new Error(`stage claim without stage change: ${record.priorityReason}`);
+  }
+}
+
+describe('supplement A conflict resolution', () => {
+  it('keeps both bindings and reaches closed_complete only after real judgments', () => {
+    const revised = replaceCustomer(confirmProblem(), '우리 고객은 물류본부다.');
+    const conflict = revised.conflicts.find((item) => item.hypothesisId === 'h-customer' && !item.resolved);
+    if (!conflict) throw new Error('conflict missing');
+    expect(evaluateHypothesis(revised, 'h-customer')).toBe('conflict_unresolved');
+    expect(evaluateStage(revised)).toEqual({ stageId: 'S0', verdictId: 'insufficient_basis' });
+    expect(revised.hypotheses['h-customer-next']?.evidenceClass).toBe('CLAIM');
+    const stopped = closeReview(revised, { founderStopped: true });
+    expect(stopped.reviewCompletion).toBe('closed_incomplete');
+    expect(stopped.blockingConflictIds).toContain('h-customer');
+    expect(() => resolveConflict(revised, { hypothesisId: 'h-customer', evidenceId: conflict.rightId, reason: '  ' })).toThrow();
+    expect(() => resolveConflict(revised, { hypothesisId: 'h-customer', evidenceId: 'missing-binding', reason: '이유' })).toThrow();
+
+    const resolved = resolveConflict(revised, {
+      hypothesisId: 'h-customer',
+      evidenceId: conflict.rightId,
+      reason: '새 고객을 작업 기준으로 둔다',
+    });
+    expect(evaluateHypothesis(resolved, 'h-customer')).toBe('not_run');
+    expect(resolved.hypotheses['h-customer']?.statement).toContain('물류본부');
+    expect(resolved.hypotheses['h-customer']?.evidenceClass).toBe('CLAIM');
+    expect(resolved.hypotheses['h-customer']?.outcome).toBe('not_run');
+    expect(resolved.stageId).toBe('S0');
+    expect(resolved.verdictId).toBe('insufficient_basis');
+    expect(resolved.bindings.map((item) => item.id)).toEqual(expect.arrayContaining([conflict.leftId, conflict.rightId]));
+    expect(resolved.bindings.find((item) => item.id === conflict.rightId)?.projectAttribution).toBe('unreviewed');
+    expect(resolved.bindings.some((item) => item.classReason === 'conflict-resolution' && item.evidenceClass === 'CLAIM')).toBe(true);
+    expect(resolved.activePairCustomerId).toBe('h-customer-next');
+    const opened = closeReview(resolved);
+    expect(opened.reviewCompletion).not.toBe('closed_complete');
+    expect(opened.blockingConflictIds).not.toContain('h-customer');
+    expect(opened.blockingHypothesisIds).toContain('h-customer');
+
+    const kept = resolveConflict(revised, {
+      hypothesisId: 'h-customer',
+      evidenceId: conflict.leftId,
+      reason: '옛 고객을 작업 기준으로 둔다',
+    });
+    expect(kept.hypotheses['h-customer']?.statement).toBe(revised.bindings.find((item) => item.id === conflict.leftId)?.proposition);
+    expect(kept.bindings.find((item) => item.id === 'b-customer-doc')?.proposition).toBe(CUSTOMER_STATEMENT);
+    expect(kept.hypotheses['h-problem']?.statement).toBe(PROBLEM_STATEMENT);
+    expect(kept.bindings.map((item) => item.id)).toEqual(expect.arrayContaining([conflict.leftId, conflict.rightId]));
+    expect(evaluateHypothesis(kept, 'h-customer')).toBe('not_run');
+    expect(closeReview(kept).reviewCompletion).not.toBe('closed_complete');
+
+    const paired = answer(resolved, {
+      kind: 'affirm',
+      targetHypothesisId: 'h-problem',
+      proposition: '배차 기준이 현장에 없다',
+    });
+    expect(paired.hypotheses['h-problem']?.evidenceClass).toBe('CLAIM');
+    expect(paired.stageId).toBe('S1');
+    const prepared = defineAll(answer(paired, { kind: 'affirm', targetHypothesisId: 'h-payer', proposition: PAYER_CONFIRM }));
+    const judged = ['h-customer', 'h-problem', 'h-payer', 'h-repeat'].reduce(
+      (current, id) => judgeRequiredHypothesis(current, id, 'passed', 'si'),
+      prepared,
+    );
+    const completed = closeReview(failBusinessModel(judged));
+    expect(completed.reviewCompletion).toBe('closed_complete');
+    expect(completed.blockingConflictIds).toEqual([]);
+    expect(REQUIRED_NOT_WAITING(completed.ledger)).toBe(true);
+  });
+
+  it('does not pass an unresolved payment fact', () => {
+    const start = confirmProblem();
+    const absent = answer(start, { kind: 'absence_claim', proposition: ABSENCE_SENTENCE, targetHypothesisId: 'h-business-model' });
+    const conflicted = bindLiteralFact(absent, {
+      hypothesisId: 'h-business-model',
+      recordText: TAX_LINE,
+      role: 'payment-literal',
+    }).ledger;
+    expect(conflicted.hypotheses['h-business-model']?.outcome).toBe('conflict_unresolved');
+    const factId = 'b-fact-payment-literal-h-business-model';
+    const resolved = resolveConflict(conflicted, {
+      hypothesisId: 'h-business-model',
+      evidenceId: factId,
+      reason: '문자 기록을 작업 기준으로 둔다',
+    });
+    expect(resolved.bindings.map((item) => item.id)).toEqual(expect.arrayContaining(['b-absence', factId]));
+    expect(resolved.bindings.find((item) => item.id === factId)?.projectAttribution).toBe('unreviewed');
+    expect(evaluateHypothesis(resolved, 'h-business-model')).toBe('insufficient_record');
+    expect(resolved.hypotheses['h-business-model']?.outcome).not.toBe('passed');
+    expect(resolved.stageId).not.toBe('S3');
+    expect(closeReview(resolved).reviewCompletion).not.toBe('closed_complete');
+  });
+});
+
+function REQUIRED_NOT_WAITING(ledger: JudgmentLedger): boolean {
+  return ledger.hypotheses['h-customer-next']?.outcome !== 'passed' && ledger.hypotheses['h-problem-next']?.outcome !== 'passed';
+}
+
+describe('supplement B preview ranking', () => {
+  it('names the assumed branch and refuses a stage reason without a stage change', () => {
+    const seed = createSeedLedger();
+    const first = selectNextAction(seed);
+    assertHonestStageReason(first);
+    expect(first.selectedId).toBe('q-customer');
+    expect(first.hypothesisId).toBe('h-customer');
+    expect(first.tieBreak).toBe('critical-unknown');
+    expect(first.priorityReason).toContain('단계 변화는 없다');
+    expect(first.priorityReason).not.toContain('유일한 단계 변화');
+    const customerAffirm = previewOf(first, 'q-customer', 'affirm');
+    expect(customerAffirm.judgmentChangeClass).toBe('identity');
+    expect(customerAffirm.stageChanged).toBe(false);
+    expect(customerAffirm.verdictChanged).toBe(false);
+    expect(customerAffirm.criticalUnknownAfter).toBe('h-problem');
+    const customerReplace = previewOf(first, 'q-customer', 'replace');
+    expect(customerReplace.judgmentChangeClass).toBe('conflict');
+    expect(customerReplace.stageChanged).toBe(false);
+    expect(customerReplace.outcomeAfter).toBe('conflict_unresolved');
+    expect(previewOf(first, 'q-customer', 'unknown').judgmentChangeClass).toBe('annotation');
+    expect(previewOf(first, 'q-problem', 'affirm').stageChanged).toBe(false);
+    expect(previewOf(first, 'q-channel', 'affirm').judgmentChangeClass).toBe('none');
+    expect(previewOf(first, 'q-channel', 'replace').judgmentChangeClass).toBe('none');
+    expect(previewOf(first, 'q-channel', 'unknown').judgmentChangeClass).toBe('none');
+    expect(first.eliminated).toEqual(expect.arrayContaining([expect.objectContaining({ hypothesisId: 'h-channel', key: 'no-judgment-branch' })]));
+    expect(previewOf(first, 'v-business-model', 'payment_claim').stageAfter).not.toBe('S3');
+    expect(previewOf(first, 'v-business-model', 'absence_claim').stageChanged).toBe(false);
+    expect(previewOf(first, 'v-business-model', 'criterion_defined').stageChanged).toBe(false);
+
+    const customer = confirmCustomer();
+    const problemChoice = selectNextAction(customer);
+    assertHonestStageReason(problemChoice);
+    const problemAffirm = previewOf(problemChoice, 'q-problem', 'affirm');
+    expect(problemChoice.hypothesisId).toBe('h-problem');
+    expect(problemAffirm.stageBefore).toBe('S0');
+    expect(problemAffirm.stageAfter).toBe('S1');
+    expect(problemAffirm.stageChanged).toBe(true);
+    expect(problemAffirm.verdictBefore).toBe('insufficient_basis');
+    expect(problemAffirm.verdictAfter).toBe('judgment_deferred');
+    expect(problemAffirm.judgmentChangeClass).toBe('identity');
+    expect(problemChoice.priorityReason).toContain('단계를 S0에서 S1로 바꾼다');
+
+    const ready = confirmProblem();
+    const payerChoice = selectNextAction(ready);
+    assertHonestStageReason(payerChoice);
+    expect(payerChoice.hypothesisId).toBe('h-payer');
+    expect(['critical-unknown', 'judgment-class']).toContain(payerChoice.tieBreak);
+    expect(previewOf(payerChoice, 'q-payer', 'affirm').stageChanged).toBe(false);
+    expect(previewOf(payerChoice, 'v-business-model', 'criterion_defined').stageChanged).toBe(false);
+    expect(payerChoice.priorityReason).toContain('단계 변화는 없다');
+    expect(payerChoice.priorityReason).not.toContain('유일한 단계 변화');
+
+    const payerOnly = applyFounderAnswer(seed, first, {
+      kind: 'affirm',
+      targetHypothesisId: 'h-payer',
+      proposition: PAYER_CONFIRM,
+    }).ledger;
+    expect(payerOnly.hypotheses['h-customer']?.evidenceClass).toBe('ASSUMPTION');
+    expect(payerOnly.hypotheses['h-payer']?.evidenceClass).toBe('CLAIM');
+    expect(payerOnly.judgment).toContain('사장님 본인');
+    expect(payerOnly.judgment).toContain('가정');
+    const backToCustomer = selectNextAction(payerOnly);
+    assertHonestStageReason(backToCustomer);
+    expect(backToCustomer.hypothesisId).toBe('h-customer');
+    expect(backToCustomer.tieBreak).not.toBe('stable-id');
+    expect(backToCustomer.hypothesisId).not.toBe('h-channel');
+
+    const opened = replaceCustomer(createSeedLedger(), '다른 작업 기준 고객');
+    const resolveChoice = selectNextAction(opened);
+    assertHonestStageReason(resolveChoice);
+    expect(resolveChoice.selectedId).toContain('resolve');
+    expect(resolveChoice.priorityReason).toContain('단계 변화는 없다');
+    expect(resolveChoice.priorityReason).not.toContain('바꾼다');
+    expect(previewOf(resolveChoice, resolveChoice.selectedId, 'resolve_retain_new').judgmentChangeClass).toBe('conflict');
+    expect(previewOf(resolveChoice, resolveChoice.selectedId, 'resolve_retain_new').outcomeAfter).toBe('not_run');
+    expect(previewOf(resolveChoice, resolveChoice.selectedId, 'resolve_retain_new').stageChanged).toBe(false);
+    expect(previewOf(resolveChoice, resolveChoice.selectedId, 'resolve_retain_old').stageChanged).toBe(false);
+    expect(previewOf(resolveChoice, resolveChoice.selectedId, 'unknown').outcomeAfter).toBe('conflict_unresolved');
+  });
+});
+
+describe('causal recovery fixtures', () => {
+  it('judges a non-seed spine without copying the seed business', () => {
+    const ledger = createProjectLedger({
+      customerStatement: '전통주를 선물·취미로 찾는 30–40대',
+      problemStatement: '양조장마다 채널이 흩어져 소비자가 좋은 술을 발견하기 어렵다',
+      businessStatement: '전통주 브랜드',
+    });
+    expect(ledger.hypotheses['h-customer']?.statement).toBe('전통주를 선물·취미로 찾는 30–40대');
+    expect(ledger.judgment).toContain('전통주');
+    expect(ledger.judgment).not.toContain('반찬가게');
+    const confirmed = answer(ledger, {
+      kind: 'affirm',
+      targetHypothesisId: 'h-customer',
+      proposition: '이 서비스를 가장 필요로 하는 사람은 전통주를 선물·취미로 찾는 30–40대입니다.',
+    });
+    expect(confirmed.hypotheses['h-customer']?.evidenceClass).toBe('CLAIM');
+    expect(confirmed.stageId).toBe('S0');
+    expect(confirmed.judgment).toContain('전통주를 선물·취미로 찾는 30–40대');
+    expect(confirmed.judgment).toContain('CLAIM');
+    expect(confirmed.judgment).not.toContain('반찬가게');
+    const next = selectNextAction(confirmed);
+    expect(next.hypothesisId).toBe('h-problem');
+    expect(next.prompt).toContain('양조장마다 채널이 흩어져');
+
+    const paid = applyFounderAnswer(ledger, selectNextAction(ledger), {
+      kind: 'payment_claim',
+      proposition: WEAK_PAYMENT_SENTENCE,
+      targetHypothesisId: 'h-business-model',
+    }).ledger;
+    expect(paid.bindings.some((item) => item.classReason === 'weak-payment' && item.evidenceClass === 'CLAIM')).toBe(true);
+    expect(paid.stageId).toBe(ledger.stageId);
+    expect(paid.judgment).toContain(WEAK_PAYMENT_SENTENCE);
+    expect(paid.judgment).toContain('전통주');
+    expect(paid.judgment).toContain('가정');
+    expect(paid.judgment).not.toContain('반찬가게');
+    expect(selectNextAction(paid).hypothesisId).toBe('h-customer');
+
+    const absent = applyFounderAnswer(ledger, selectNextAction(ledger), {
+      kind: 'absence_claim',
+      proposition: ABSENCE_SENTENCE,
+      targetHypothesisId: 'h-business-model',
+    }).ledger;
+    expect(absent.judgment).toContain(ABSENCE_SENTENCE);
+    expect(absent.hypotheses['h-problem']?.evidenceClass).not.toBe('FACT');
+    expect(absent.hypotheses['h-market']?.evidenceClass).not.toBe('FACT');
   });
 });

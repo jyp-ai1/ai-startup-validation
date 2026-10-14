@@ -183,6 +183,7 @@ export type DecisionTieBreak =
   | 'fail-drops-stage'
   | 'validation-over-question'
   | 'critical-unknown'
+  | 'judgment-class'
   | 'stable-id';
 
 export type ReviewRunStatus = 'open' | 'budget_held' | 'provider_limited' | 'provider_down';
@@ -231,6 +232,55 @@ export type HypothesisJudgment = {
   criterionId: string | null;
   evidenceClass: SiEvidenceClass;
   alreadyKnown: boolean;
+  pairedCustomerId?: string | null;
+};
+
+export type JudgmentChangeClass = 'none' | 'annotation' | 'identity' | 'conflict';
+
+export type FounderAnswerAct =
+  | { kind: 'affirm'; proposition?: string; targetHypothesisId?: string }
+  | { kind: 'replace'; nextStatement: string; proposition?: string; targetHypothesisId?: string }
+  | { kind: 'unknown'; proposition?: string; targetHypothesisId?: string }
+  | { kind: 'reject'; proposition?: string; targetHypothesisId?: string }
+  | { kind: 'payment_claim'; proposition: string; targetHypothesisId?: string }
+  | { kind: 'absence_claim'; proposition: string; targetHypothesisId?: string };
+
+export type PreviewBranchRecord = {
+  candidateId: string;
+  hypothesisId: string;
+  act: string;
+  stageBefore: SiStageId;
+  stageAfter: SiStageId;
+  stageChanged: boolean;
+  verdictBefore: SiVerdictId;
+  verdictAfter: SiVerdictId;
+  verdictChanged: boolean;
+  judgmentBefore: string;
+  judgmentAfter: string;
+  judgmentChanged: boolean;
+  judgmentChangeClass: JudgmentChangeClass;
+  criticalUnknownBefore: string;
+  criticalUnknownAfter: string;
+  outcomeBefore: ValidationOutcome | 'missing';
+  outcomeAfter: ValidationOutcome | 'missing';
+  failureDropsStage: boolean;
+  bindingIdsBefore: string[];
+  bindingIdsAfter: string[];
+};
+
+export type ApplyFounderAnswerResult = {
+  attributionMatchesDecision: boolean;
+  targetHypothesisId: string;
+  changedHypothesisIds: string[];
+  bindingIds: string[];
+  stageBefore: SiStageId;
+  stageAfter: SiStageId;
+  verdictBefore: SiVerdictId;
+  verdictAfter: SiVerdictId;
+  judgmentBefore: string;
+  judgmentAfter: string;
+  criticalUnknownHypothesisId: string;
+  unchangedReason: string | null;
 };
 
 export type DecisionBranch = {
@@ -251,12 +301,13 @@ export type DecisionCandidate = {
   priorityReason: string;
   prompt: string;
   gapId?: string;
+  previews?: PreviewBranchRecord[];
 };
 
 export type EliminatedCandidate = {
   candidateId: string;
   hypothesisId: string;
-  key: 'alreadyKnown' | 'no-stage-branch';
+  key: 'alreadyKnown' | 'no-stage-branch' | 'no-judgment-branch';
 };
 
 export type DecisionRecord = {
@@ -269,6 +320,7 @@ export type DecisionRecord = {
   hypothesisId: string;
   prompt: string;
   priorityReason: string;
+  previews?: PreviewBranchRecord[];
 };
 
 export type UnresolvedConflict = {

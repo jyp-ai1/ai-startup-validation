@@ -2,20 +2,21 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import type { FounderAnswerAct } from '@repo/types/domain/strategic-intelligence';
 import { describe, expect, it } from 'vitest';
 
 import {
-  commitFounderStatement,
-  createSeedLedger,
+  applyFounderAnswer,
+  createProjectLedger,
   questionHash,
   selectNextAction,
   type JudgmentLedger,
 } from '../si-judgment-contract';
 
-const FROZEN = '현재 대화만으로는 사업에 대한 1차 판단을 내리기 어렵습니다';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../../../');
 const REPLAY_PATH = resolve(ROOT, 'docs/evidence/ALABOM/AI-PM/PR197-CPO-STRATEGY-FIT-REPLAY.json');
-const OUT_PATH = resolve(ROOT, 'docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-STRATEGY-REPLAY.json');
+const OUT_PATH = resolve(ROOT, 'docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-CAUSE-RECOVERY-REPLAY.json');
+const STAGE_CLAIM = /단계를 .+에서 .+로 바꾼다|유일한 단계 변화/;
 
 type OldTurn = {
   step: number;
@@ -23,236 +24,259 @@ type OldTurn = {
   answerKind: string;
   appliesToGap: string;
   shown?: { questionText?: string };
-  after?: { judgment?: { conclusion?: string } };
 };
 
 type ReplayFile = {
   scenarios: Record<string, Record<string, { turns: OldTurn[] }>>;
 };
 
-function snapshot(ledger: JudgmentLedger) {
+type Spine = { customer: string; problem: string; business: string };
+
+type ColumnFailure = { row: string; column: '장부' | '판단' | '다음'; detail: string };
+
+function quote(text: string): string {
+  const match = text.match(/「([^」]+)」/);
+  if (!match?.[1]) throw new Error(`quote missing: ${text}`);
+  return match[1];
+}
+
+function spineFor(replay: ReplayFile, scenarioId: string): Spine {
+  const branches = replay.scenarios[scenarioId];
+  if (!branches) throw new Error(`missing ${scenarioId}`);
+  const confirm = branches.confirm?.turns;
+  if (!confirm) throw new Error(`missing confirm ${scenarioId}`);
+  const problemTurn = confirm.find((turn) => turn.appliesToGap === 'problemJtbd');
+  const businessTurn = confirm.find((turn) => turn.appliesToGap === 'businessOneLiner');
+  if (!problemTurn?.shown?.questionText || !confirm[0]?.shown?.questionText) throw new Error(`spine missing ${scenarioId}`);
+  let business = businessTurn?.shown?.questionText ? quote(businessTurn.shown.questionText) : '';
+  if (!business) {
+    const revenue = Object.values(branches)
+      .flatMap((branch) => branch.turns)
+      .find((turn) => turn.appliesToGap === 'revenueModel');
+    business = revenue?.founderAnswer.replace(/^수익:\s*/, '') || '월 구독';
+  }
   return {
-    judgment: ledger.judgment,
-    stageId: ledger.stageId,
-    verdictId: ledger.verdictId,
-    reviewCompletion: ledger.reviewCompletion,
-    runStatus: ledger.runStatus,
-    criticalUnknownHypothesisId: ledger.criticalUnknownHypothesisId,
-    headCommitId: ledger.headCommitId,
-    pairBroken: ledger.pairBroken,
-    hypotheses: Object.fromEntries(
-      Object.entries(ledger.hypotheses).map(([id, item]) => [
-        id,
-        { outcome: item.outcome, evidenceClass: item.evidenceClass, statement: item.statement, alreadyKnown: item.alreadyKnown },
-      ]),
-    ),
-    bindings: ledger.bindings.map((item) => ({
-      id: item.id,
-      hypothesisId: item.hypothesisId,
-      evidenceClass: item.evidenceClass,
-      classReason: item.classReason,
-      proposition: item.proposition,
-    })),
+    customer: quote(confirm[0].shown.questionText),
+    problem: quote(problemTurn.shown.questionText),
+    business,
   };
+}
+
+function targetFor(gap: string): string {
+  if (gap === 'customerPersona') return 'h-customer';
+  if (gap === 'problemJtbd') return 'h-problem';
+  if (gap === 'payer') return 'h-payer';
+  if (gap === 'marketChannel') return 'h-channel';
+  if (gap === 'businessOneLiner' || gap === 'revenueModel') return 'h-business-model';
+  if (gap === 'alternativesCompetitors') return 'h-market';
+  return 'h-customer';
+}
+
+function actFor(branchId: string, turn: OldTurn, hypothesisId: string): FounderAnswerAct {
+  if (branchId === 'unknown' && turn.answerKind === 'unknown') return { kind: 'unknown', targetHypothesisId: hypothesisId };
+  if (branchId === 'paymentYes' && turn.appliesToGap === 'validationTestability') {
+    return { kind: 'payment_claim', proposition: turn.founderAnswer, targetHypothesisId: 'h-business-model' };
+  }
+  if (branchId === 'paymentNone' && turn.appliesToGap === 'validationTestability') {
+    return { kind: 'absence_claim', proposition: turn.founderAnswer, targetHypothesisId: 'h-business-model' };
+  }
+  if (branchId === 'revise' && turn.appliesToGap === 'customerPersona') {
+    return { kind: 'replace', nextStatement: turn.founderAnswer, proposition: turn.founderAnswer, targetHypothesisId: 'h-customer' };
+  }
+  return { kind: 'affirm', proposition: turn.founderAnswer, targetHypothesisId: targetFor(turn.appliesToGap) };
 }
 
 function decisionView(ledger: JudgmentLedger) {
   const decision = selectNextAction(ledger);
-  return {
-    hypothesisId: decision.hypothesisId,
-    prompt: decision.prompt,
-    priorityReason: decision.priorityReason,
-    tieBreak: decision.tieBreak,
-    selectedId: decision.selectedId,
-    questionHash: questionHash(decision),
-    eliminated: decision.eliminated,
-  };
+  return decision;
 }
 
-describe('pure SI strategy replay of b17161ec', () => {
-  it('replays 30 branches and writes the observed trace', () => {
+describe('pure SI cause recovery replay', () => {
+  it('checks ledger, judgment, and next action on all thirty branches', () => {
     const replay = JSON.parse(readFileSync(REPLAY_PATH, 'utf8')) as ReplayFile;
-    const branches = [];
-    for (const [scenarioId, branchMap] of Object.entries(replay.scenarios)) {
-      for (const [branchId, branch] of Object.entries(branchMap)) {
-        const spine = {
-          business: branch.turns[0] ? '' : '',
-          customer: '',
-          problem: '',
-        };
-        const firstQuestion = branch.turns[0]?.shown?.questionText ?? '';
-        const customerMatch = firstQuestion.match(/「([^」]+)」/);
-        spine.customer = customerMatch?.[1] ?? '';
-        const problemTurn = branch.turns.find((turn) => turn.appliesToGap === 'problemJtbd');
-        const problemMatch = problemTurn?.shown?.questionText?.match(/「([^」]+)」/);
-        spine.problem = problemMatch?.[1] ?? '';
-        const businessTurn = branch.turns.find((turn) => turn.appliesToGap === 'businessOneLiner');
-        const businessMatch = businessTurn?.shown?.questionText?.match(/「([^」]+)」/);
-        spine.business = businessMatch?.[1] ?? (scenarioId === 'S1' ? '소상공인 배송 SaaS · B2B' : '');
+    const spines = Object.fromEntries(Object.keys(replay.scenarios).map((id) => [id, spineFor(replay, id)])) as Record<string, Spine>;
+    const failures: ColumnFailure[] = [];
+    const rows = [];
 
-        let ledger = createSeedLedger();
-        const seed = snapshot(ledger);
+    for (const [scenarioId, branches] of Object.entries(replay.scenarios)) {
+      const spine = spines[scenarioId];
+      if (!spine) throw new Error(`spine ${scenarioId}`);
+      const foreignCustomers = Object.entries(spines)
+        .filter(([id, item]) => id !== scenarioId && item.customer !== spine.customer)
+        .map(([, item]) => item.customer);
+      for (const [branchId, branch] of Object.entries(branches)) {
+        const row = `${scenarioId} ${branchId}`;
+        let ledger = createProjectLedger({
+          customerStatement: spine.customer,
+          problemStatement: spine.problem,
+          businessStatement: spine.business,
+        });
         const turns = [];
+        let previousHash = '';
+        let previousJudgment = ledger.judgment;
         for (const turn of branch.turns) {
-          const before = snapshot(ledger);
-          const beforeDecision = decisionView(ledger);
-          const headBefore = ledger.headCommitId;
-          ledger = commitFounderStatement(ledger, { proposition: turn.founderAnswer });
-          let afterDecision: ReturnType<typeof decisionView> | null = null;
-          let decisionError: string | null = null;
+          const before = decisionView(ledger);
+          const beforeStage = ledger.stageId;
+          const beforeJudgment = ledger.judgment;
+          const act = actFor(branchId, turn, before.hypothesisId);
+          const applied = applyFounderAnswer(ledger, before, act);
+          ledger = applied.ledger;
+          let after: ReturnType<typeof decisionView> | null = null;
+          let decisionError = '';
           try {
-            afterDecision = decisionView(ledger);
+            after = decisionView(ledger);
           } catch (error) {
             decisionError = error instanceof Error ? error.message : String(error);
+            failures.push({ row, column: '다음', detail: `${turn.step} select threw ${decisionError}` });
+          }
+          if (after && STAGE_CLAIM.test(after.priorityReason)) {
+            const winner = (after.previews ?? []).filter((item) => item.candidateId === after?.selectedId);
+            if (winner.every((item) => !item.stageChanged)) {
+              failures.push({ row, column: '다음', detail: `${turn.step} stage claim without change: ${after.priorityReason}` });
+            }
+          }
+          const hash = after ? questionHash(after) : '';
+          if (after && hash === previousHash && ledger.judgment === previousJudgment) {
+            failures.push({ row, column: '다음', detail: `${turn.step} repeated ${hash} without a judgment change` });
+          }
+          if (act.kind === 'unknown' && after && questionHash(before) === hash) {
+            failures.push({ row, column: '다음', detail: `${turn.step} unknown kept ${hash}` });
           }
           turns.push({
             step: turn.step,
-            answerKind: turn.answerKind,
             appliesToGap: turn.appliesToGap,
-            founderAnswer: turn.founderAnswer,
-            oldScreenQuestion: turn.shown?.questionText ?? '',
-            oldConclusion: turn.after?.judgment?.conclusion ?? '',
-            answerApplied: ledger.headCommitId !== headBefore,
-            before,
-            beforeDecision,
-            after: snapshot(ledger),
-            afterDecision,
-            decisionError,
+            act: act.kind,
+            targetHypothesisId: applied.targetHypothesisId,
+            judgment: ledger.judgment,
+            stageId: ledger.stageId,
+            verdictId: ledger.verdictId,
+            selectedId: after?.selectedId ?? '',
+            hypothesisId: after?.hypothesisId ?? '',
+            prompt: after?.prompt ?? '',
+            priorityReason: after?.priorityReason ?? '',
+            tieBreak: after?.tieBreak ?? '',
+            unchangedReason: applied.unchangedReason,
+            stageBefore: beforeStage,
+            judgmentBefore: beforeJudgment,
+            customerClass: ledger.hypotheses['h-customer']?.evidenceClass ?? '',
+            customerOutcome: ledger.hypotheses['h-customer']?.outcome ?? '',
+            customerStatement: ledger.hypotheses['h-customer']?.statement ?? '',
+            problemStatement: ledger.hypotheses['h-problem']?.statement ?? '',
+            problemNextStatement: ledger.hypotheses['h-problem-next']?.statement ?? '',
           });
+          previousHash = hash;
+          previousJudgment = ledger.judgment;
         }
-        branches.push({ scenarioId, branchId, spine, seedCustomer: seed.hypotheses['h-customer']?.statement, seedProblem: seed.hypotheses['h-problem']?.statement, turns });
+
+        const fail = (column: ColumnFailure['column'], detail: string) => failures.push({ row, column, detail });
+        const turn = (step: number) => turns.find((item) => item.step === step);
+        const customer = ledger.hypotheses['h-customer'];
+        const problem = ledger.hypotheses['h-problem'];
+        const payer = ledger.hypotheses['h-payer'];
+
+        if (branchId === 'confirm') {
+          const first = turn(0);
+          const second = turn(1);
+          const third = turn(2);
+          if (ledger.hypotheses['h-customer']?.evidenceClass !== 'CLAIM' || ledger.hypotheses['h-customer']?.statement !== spine.customer) {
+            fail('장부', `customer ${customer?.evidenceClass} ${customer?.statement}`);
+          }
+          if (ledger.hypotheses['h-problem']?.evidenceClass !== 'CLAIM' || ledger.hypotheses['h-problem']?.statement !== spine.problem) {
+            fail('장부', `problem ${problem?.evidenceClass} ${problem?.statement}`);
+          }
+          if (payer?.evidenceClass !== 'CLAIM' || payer.statement !== branch.turns[2]?.founderAnswer) fail('장부', `payer ${payer?.statement}`);
+          if (!first || first.hypothesisId !== 'h-problem' || !first.prompt.includes(spine.problem)) fail('다음', `after customer ${first?.hypothesisId} ${first?.prompt}`);
+          if (!second || second.stageId !== 'S1' || !second.judgment.includes(spine.customer) || !second.judgment.includes(spine.problem)) {
+            fail('판단', `after problem ${second?.stageId} ${second?.judgment}`);
+          }
+          if (!third || third.hypothesisId !== 'h-business-model' || third.tieBreak === 'stable-id') fail('다음', `after payer ${third?.hypothesisId} ${third?.tieBreak} ${third?.priorityReason}`);
+          if (third?.priorityReason.includes('유일한 단계 변화')) fail('다음', third.priorityReason);
+          for (const later of turns.slice(3)) {
+            if (later.hypothesisId === 'h-channel') fail('다음', `channel selected at ${later.step}`);
+          }
+        }
+
+        if (branchId === 'revise') {
+          const first = turn(0);
+          const successor = ledger.hypotheses['h-customer-next'];
+          if (customer?.statement !== spine.customer || customer.outcome !== 'conflict_unresolved') fail('장부', `old customer ${customer?.statement} ${customer?.outcome}`);
+          if (successor?.statement !== branch.turns[0]?.founderAnswer || successor.evidenceClass !== 'CLAIM') fail('장부', `successor ${successor?.statement} ${successor?.evidenceClass}`);
+          if (ledger.hypotheses['h-problem-next']?.statement) fail('장부', `new problem copied ${ledger.hypotheses['h-problem-next']?.statement}`);
+          if (!ledger.bindings.some((item) => item.id === 'b-customer-doc')) fail('장부', 'document binding dropped');
+          if (!first?.judgment.includes(spine.customer) || !first.judgment.includes(branch.turns[0]?.founderAnswer ?? '') || !first.judgment.includes('철회')) {
+            fail('판단', first?.judgment ?? '');
+          }
+          if (!first || !first.selectedId.includes('resolve') || first.prompt.includes(spine.problem)) fail('다음', `${first?.selectedId} ${first?.prompt}`);
+          if (turns.some((item) => item.prompt.includes(spine.problem))) fail('다음', 'old problem asked after replace');
+        }
+
+        if (branchId === 'unknown') {
+          const first = turn(0);
+          if (first?.customerClass === 'CLAIM') fail('장부', `unknown promoted the customer to ${first.customerClass}`);
+          if (!first?.judgment.includes('아직 확인되지 않았다') || !first.judgment.includes(spine.customer)) fail('판단', first?.judgment ?? '');
+          const confirmed = turn(1);
+          if (confirmed?.hypothesisId !== 'h-problem') fail('다음', `after later confirm ${confirmed?.hypothesisId}`);
+        }
+
+        if (branchId === 'paymentYes') {
+          const paid = turn(1);
+          const weak = ledger.bindings.find((item) => item.classReason === 'weak-payment');
+          if (weak?.evidenceClass !== 'CLAIM' || weak.hypothesisId !== 'h-business-model') fail('장부', `weak ${weak?.evidenceClass} ${weak?.hypothesisId}`);
+          if (ledger.bindings.some((item) => item.evidenceClass === 'FACT' || item.evidenceClass === 'VALIDATED')) fail('장부', 'payment became fact');
+          if (!paid || paid.stageId !== paid.stageBefore) fail('장부', `stage moved ${paid?.stageBefore} ${paid?.stageId}`);
+          if (!paid?.judgment.includes(branch.turns[1]?.founderAnswer ?? '') || !paid.judgment.includes('주체·금액·기록') || !paid.judgment.includes(spine.customer)) {
+            fail('판단', paid?.judgment ?? '');
+          }
+          if (paid?.hypothesisId !== 'h-problem') fail('다음', paid?.hypothesisId ?? '');
+        }
+
+        if (branchId === 'paymentNone') {
+          const absent = turn(1);
+          const binding = ledger.bindings.find((item) => item.classReason === 'absence');
+          if (binding?.id !== 'b-absence' || binding.evidenceClass !== 'CLAIM' || binding.hypothesisId !== 'h-business-model') {
+            fail('장부', `absence ${binding?.id} ${binding?.hypothesisId} ${binding?.evidenceClass}`);
+          }
+          if (ledger.hypotheses['h-problem']?.evidenceClass === 'FACT' || ledger.hypotheses['h-market']?.evidenceClass === 'FACT') fail('장부', 'absence copied');
+          if (!absent?.judgment.includes('아직 실제 결제·사용 증거는 없습니다')) fail('판단', absent?.judgment ?? '');
+          if (absent?.stageId !== absent.stageBefore) fail('장부', `stage moved ${absent?.stageBefore} ${absent?.stageId}`);
+          if (absent?.hypothesisId !== 'h-problem') fail('다음', absent?.hypothesisId ?? '');
+        }
+
+        for (const item of turns) {
+          for (const foreign of foreignCustomers) {
+            if (item.judgment.includes(foreign)) fail('판단', `foreign ${foreign} at ${item.step}`);
+          }
+        }
+        if (customer?.statement !== spine.customer && branchId !== 'revise') fail('장부', `customer drifted ${customer?.statement}`);
+
+        rows.push({
+          scenarioId,
+          branchId,
+          spine,
+          passed: !failures.some((item) => item.row === row),
+          screenMismatch: '판단 불가',
+          turns,
+        });
       }
     }
 
-    const classified = branches.map((branch) => {
-      const texts = branch.turns.flatMap((turn) => [
-        turn.after.judgment,
-        turn.after.whyPossible ?? '',
-        turn.afterDecision?.prompt ?? '',
-        turn.afterDecision?.priorityReason ?? '',
-      ]);
-      const blob = texts.join('\n');
-      const customerToken = branch.spine.customer.slice(0, 8);
-      const problemToken = branch.spine.problem.slice(0, 10);
-      const mentionsCustomer = customerToken.length > 0 && blob.includes(customerToken);
-      const mentionsProblem = problemToken.length > 0 && blob.includes(problemToken);
-      const frozenAppears = branch.turns.some((turn) => turn.after.judgment.includes(FROZEN) || (turn.afterDecision?.prompt ?? '').includes(FROZEN));
-      const judgmentMoved = branch.turns.some((turn) => turn.before.judgment !== turn.after.judgment);
-      const stageMoved = branch.turns.some((turn) => turn.before.stageId !== turn.after.stageId);
-      const absenceFactOnOther = branch.turns.some((turn) =>
-        turn.after.bindings.some(
-          (item) =>
-            item.proposition.includes('아직 실제 결제·사용 증거는 없습니다') &&
-            item.evidenceClass === 'FACT' &&
-            (item.hypothesisId === 'h-problem' || item.hypothesisId === 'h-market'),
-        ),
-      );
-      const unknownTurn = branch.turns.find((turn) => turn.founderAnswer.includes('모르겠'));
-      const unknownRepeats = unknownTurn
-        ? unknownTurn.afterDecision?.questionHash === unknownTurn.beforeDecision.questionHash
-        : false;
-      const reviseTurn = branch.branchId === 'revise' ? branch.turns[0] : undefined;
-      const reviseSelectsOldProblem = reviseTurn
-        ? (reviseTurn.afterDecision?.prompt ?? '').includes(branch.spine.problem) ||
-          reviseTurn.afterDecision?.hypothesisId === 'h-problem'
-        : false;
-      const seedMatchesScenario = branch.seedCustomer.includes(customerToken);
-      const channelRepeatAfterJudgment = branch.turns.some(
-        (turn, index) =>
-          index > 0 &&
-          turn.afterDecision?.hypothesisId === 'h-channel' &&
-          turn.afterDecision.questionHash === turn.beforeDecision.questionHash &&
-          turn.before.judgment === turn.after.judgment,
-      );
-      const logisticsRevision =
-        branch.branchId === 'revise' &&
-        reviseTurn?.answerApplied === true &&
-        reviseTurn.afterDecision?.hypothesisId === 'h-problem-logistics' &&
-        !(reviseTurn.afterDecision?.prompt ?? '').includes(branch.spine.problem);
-      const weakPaymentOnly =
-        branch.branchId === 'paymentYes' &&
-        seedMatchesScenario &&
-        branch.turns.some(
-          (turn) =>
-            turn.after.bindings.some((item) => item.classReason === 'weak-payment' && item.evidenceClass === 'CLAIM') &&
-            turn.after.stageId === turn.before.stageId &&
-            turn.afterDecision?.hypothesisId === 'h-problem',
-        ) &&
-        !frozenAppears &&
-        !channelRepeatAfterJudgment;
-      const failure = {
-        frozenSentenceAppears: frozenAppears,
-        judgmentDidNotMove: !judgmentMoved,
-        channelRepeatsWithoutJudgmentChange: channelRepeatAfterJudgment,
-        reviseSelectsOldProblem,
-        reviseIgnored: branch.branchId === 'revise' && reviseTurn?.answerApplied === false,
-        absenceStoredAsFact: absenceFactOnOther,
-        unknownRepeatsSameHash: unknownRepeats,
-        screenMismatch: '판단 불가' as const,
-      };
-      let verdict: '개선' | '미개선' | '판단 불가' = '미개선';
-      if (logisticsRevision || weakPaymentOnly) verdict = '개선';
-      return {
-        scenarioId: branch.scenarioId,
-        branchId: branch.branchId,
-        spine: branch.spine,
-        seedCustomer: branch.seedCustomer,
-        seedProblem: branch.seedProblem,
-        seedMatchesScenario,
-        mentionsCustomer,
-        mentionsProblem,
-        judgmentMoved,
-        stageMoved,
-        frozenAppears,
-        verdict,
-        failure,
-        turns: branch.turns.map((turn) => ({
-          step: turn.step,
-          answerKind: turn.answerKind,
-          appliesToGap: turn.appliesToGap,
-          founderAnswer: turn.founderAnswer,
-          answerApplied: turn.answerApplied,
-          oldConclusion: turn.oldConclusion,
-          oldScreenQuestion: turn.oldScreenQuestion,
-          before: {
-            judgment: turn.before.judgment,
-            stageId: turn.before.stageId,
-            verdictId: turn.before.verdictId,
-            reviewCompletion: turn.before.reviewCompletion,
-            runStatus: turn.before.runStatus,
-          },
-          after: {
-            judgment: turn.after.judgment,
-            stageId: turn.after.stageId,
-            verdictId: turn.after.verdictId,
-            reviewCompletion: turn.after.reviewCompletion,
-            runStatus: turn.after.runStatus,
-            criticalUnknownHypothesisId: turn.after.criticalUnknownHypothesisId,
-          },
-          beforeDecision: turn.beforeDecision,
-          afterDecision: turn.afterDecision,
-          decisionError: turn.decisionError,
-          bindingDelta: turn.after.bindings
-            .filter((item) => !turn.before.bindings.some((prior) => prior.id === item.id))
-            .map((item) => ({ id: item.id, hypothesisId: item.hypothesisId, evidenceClass: item.evidenceClass, classReason: item.classReason })),
-        })),
-      };
-    });
-
-    const counts = classified.reduce<Record<string, number>>((acc, item) => {
-      acc[item.verdict] = (acc[item.verdict] ?? 0) + 1;
-      return acc;
-    }, {});
-    const payload = {
-      moduleCommit: 'cce572f5',
-      baselineReplay: 'b17161ec',
-      command: 'pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts',
-      branchCount: classified.length,
-      counts,
-      branches: classified,
-    };
-    writeFileSync(OUT_PATH, JSON.stringify(payload, null, 2));
-    expect(classified).toHaveLength(30);
-    expect(counts['개선']! + counts['미개선']! + (counts['판단 불가'] ?? 0)).toBe(30);
+    const passed = rows.filter((item) => item.passed).length;
+    writeFileSync(
+      OUT_PATH,
+      JSON.stringify(
+        {
+          sourceReplay: 'b17161ec',
+          command: 'pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts',
+          branchCount: rows.length,
+          passed,
+          failed: rows.length - passed,
+          failures,
+          rows,
+        },
+        null,
+        2,
+      ),
+    );
+    expect(failures).toEqual([]);
   });
 });
