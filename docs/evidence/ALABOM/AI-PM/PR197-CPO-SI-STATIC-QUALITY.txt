@@ -1,0 +1,63 @@
+PR #197 정적 품질 게이트 실행 기록.
+
+이 파일은 2026-10-14 17:54:53 UTC 부터 실행한 결과다. 검증 실행 당시 HEAD 는 36afa9b5dbca5a49522a722a5e7637407324aed6 이고, 지시서의 기준 SHA 와 같았다. 엔진 코드, 테스트 기대값, 검증 계획 상태 계약은 바꾸지 않았다. 7행을 proposed 로 바꾸는 계약 변경 제안은 구현하지 않았다. UI, DB, 모델/API, 병합, Production 배포는 하지 않았다. 브라우저는 열지 않았다.
+Production 잠금 SHA: 0b465226
+
+1. 테스트
+
+명령: pnpm --filter web exec vitest run features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts --reporter=verbose
+시각: 2026-10-14 17:54:53 UTC
+종료 코드: 0
+결과: Test Files 2 passed, Tests 43 passed, Duration 606ms
+30행 재생: docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-CAUSE-RECOVERY-REPLAY.json 의 passed 30, failed 0. 각 행 screenMismatch 는 판단 불가.
+AT-14: chat 0, OpenAI HTTP 0. 패킷 캡처는 하지 않았다.
+이 명령은 작업 트리를 바꾸지 않았다.
+
+2. lint
+
+명령: CI=1 pnpm --filter web lint
+동등 명령: apps/web 의 next lint. 루트 package.json 의 lint 가 이 필터를 가리킨다.
+시각: 2026-10-14 17:55:09 UTC
+종료 코드: 0
+오류: 없음.
+경고 두 건. 둘 다 종료 코드를 실패로 만들지 않았다.
+- apps/web/lib/ai-pm-accuracy/cpo-2pass-evidence.ts:198 summarizeNext 미사용. @typescript-eslint/no-unused-vars
+- apps/web/lib/sidebar-nav.ts:49 _projectId 미사용. @typescript-eslint/no-unused-vars
+두 파일은 origin/main 과 Production 잠금 0b465226 대비 이 브랜치에서 차이가 없다. 같은 줄이 origin/main 에 있다. 이번 SI 판단 엔진 변경분이 만든 경고가 아니다.
+next lint 는 Next.js 16 에서 제거될 예정이라는 안내를 출력했다. 규칙 위반이 아니고 종료 코드에 영향을 주지 않았다.
+
+3. build
+
+명령: CI=1 NEXT_TELEMETRY_DISABLED=1 pnpm --filter web build
+동등 명령: apps/web 의 next build. Next.js 15.5.20.
+시각: 2026-10-14 17:55:16 UTC
+종료 코드: 0
+Compiled successfully in 18.7s. 정적 페이지 392/392. 타입 검사 단계에서 lint 경고 두 건이 다시 출력되었고 빌드는 계속됐다.
+edge runtime 경고: 「Using edge runtime on a page currently disables static generation for that page」. 로그는 파일명을 출력하지 않는다. apps/web 에서 runtime = 'edge' 인 파일은 apps/web/app/opengraph-image.tsx 하나이고, 그 파일은 origin/main 과 같다. 이번 SI 변경 파일에는 없다. 경고의 정확한 페이지는 로그가 파일명을 주지 않으므로 미확정이다. 판단 엔진 변경이 원인이라는 근거는 없다.
+빌드 산출물은 git 에 들어가지 않았고 작업 트리는 깨끗했다.
+
+4. 이번 게이트에서 고친 코드
+
+없음. 실패가 없어 수정안을 만들지 않았다.
+
+5. 이번 게이트 이전에 이미 있던 SI 재설계 변경 파일
+
+apps/web/features/strategic-intelligence/lib/si-judgment-contract.ts
+apps/web/features/strategic-intelligence/lib/__tests__/si-judgment-contract.test.ts
+apps/web/features/strategic-intelligence/lib/__tests__/si-strategy-replay.test.ts
+packages/types/src/domain/strategic-intelligence.ts
+packages/types/src/index.ts
+docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-CAUSE-RECOVERY-REPLAY.json
+docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-JUDGMENT-REDESIGN.txt
+docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-PLAN-TRANSITION.json
+docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-PLAN-TRANSITION.txt
+docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-REASSESS-RUN.txt
+docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-REASSESS-TRACE.json
+
+6. 미검증
+
+브라우저를 열지 않았다. screenMismatch 판단 불가는 화면 일치가 아니다. 병합과 Production 배포는 하지 않았다.
+
+7. 다음 게이트 제안
+
+정적 품질은 종료 코드 0 이다. 병합은 제안하지 않는다. 다음으로 제안하는 범위는 브라우저에서 고객 변경, 고객 충돌 해소, 문자 기록 선택의 세 지점만 열어 화면의 판단 문장과 다음 행동이 엔진 상태와 같은지 보는 것이다. 그 범위는 이 기록으로 시작하지 않는다.
