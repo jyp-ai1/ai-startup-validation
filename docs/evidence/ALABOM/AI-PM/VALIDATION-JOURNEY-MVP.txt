@@ -240,6 +240,9 @@ Phase 6 의 모델 원문 상세. 호출이 없으므로 원문 없음으로만 
 11. 원문 연결과 독립 GPT 객체
 
 시각: 2026-10-15T03:24:36Z 여정 테스트 5 files, 40 passed, exit 0.
+03:26:50Z 원문·GPT 테스트 7 passed.
+features/business-validation-journey 와 openai provider eslint 통과.
+pnpm --filter web build exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
 네트워크 호출 없음. 키를 넣지 않았다. 페이지를 자동으로 열지 않았다.
 
 구현
