@@ -660,3 +660,59 @@ callsOpened 1 은 슬롯이 열렸다는 뜻이다. networkCalled true 만 전�
 - 104개 테스트는 시뮬레이션 로그의 접기와 전이이다. durableVerified false 를 유지한다
 - 화면은 수정하지 않았다. 라이브 화면은 계속 실행 원장 없음이다
 - Production 잠금 SHA 0b465226. 병합과 배포는 하지 않았다
+
+20. 서버 원장 저장 승인안
+
+시각: 2026-10-15T05:39:20Z 여정 테스트 14 files, 108 passed, exit 0.
+명령: pnpm --filter web exec vitest run features/business-validation-journey/lib/__tests__
+여정 폴더 eslint 통과. pnpm --filter web build 는 2026-10-15T05:39:30Z 시작, exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+fetch 호출 없음. DB 스키마, 저장소 어댑터, API 키, 자동 재시도, 화면 파일은 바꾸지 않았다.
+
+이 절의 4개 테스트는 저장 계약 픽스처다. storeKind 는 storage_contract_fixture, implemented 는 false, diskVerified 와 processRestartVerified 는 false 다. 108개 전체도 디스크 저장이나 프로세스 재시작을 입증하지 않는다. 재시작 계획 7건의 executed 는 모두 false 다.
+
+저장 방식
+
+| 방식 | 첫 기록 | 원자성 | 중복·순서 | 권고 |
+| --- | --- | --- | --- | --- |
+| 덧붙이는 이벤트 로그 | 첫 이벤트는 갱신하지 않는다. 실패 뒤의 성공 이벤트는 남아도 접기에서 무시한다 | phase 이벤트와 수용 seal 을 같은 commitId 로 쓴다. 덧붙이기만으로 원자성이 생기지는 않는다 | 같은 eventId 는 다시 추가하지 않는다. 새 eventId 의 불법 전이는 감사용으로 남기고 접힌 상태는 유지한다 | 권고. 구현 전 |
+| 실행 ID당 조건부 갱신 | 조건이 빠지면 첫 실패가 성공으로 바뀐다 | phase 열과 수용 테이블이 따로 커밋되면 불일치가 생긴다 | eventId 가 없으면 같은 갱신의 중복을 알아보기 어렵고, 나중 쓰기가 이전 phase 를 덮을 수 있다 | 대안 |
+
+원자성. 수용은 phase accepted 와 seal 이 함께 있을 때만 aligned 다. 커밋이 거절되면 둘 다 쓰이지 않고 여정 상태 참조는 유지된다. phase 만 있으면 phase_without_seal, seal 만 있으면 seal_without_phase 이며 둘 다 수용 집계에 넣지 않는다.
+
+멱등. 같은 실행의 seal 이 있으면 두 번째 수용 커밋은 같은 저장 객체를 반환하고 이벤트와 seal 을 늘리지 않는다. 같은 eventId 를 다시 넣어도 쓰지 않는다. unconfirmed 로그의 두 번째 복구는 실행 ID 를 추가하지 않는다.
+
+미확정. 자동 재호출은 없다. 새 슬롯은 새 실행 ID 와 외부 retryApproval 이 있을 때만 연다. callsOpened 1 은 비용이 아니다. 비용은 저장된 networkCalled true 만 센다. 출력 토큰 상한은 1024. priceStatus 는 unconfirmed 다.
+
+원문 보존. 제안이며 구현이 아니다. 로그에서 본문을 빼는 것만으로 저장 보안이 충족되지는 않는다.
+
+| 항목 | 제안 |
+| --- | --- |
+| 접근 | 서버 프로세스만. 창업자 화면은 실행 ID, 제공자, phase, callsOpened, networkCalled, 가설 ID |
+| 저장 본문 | 창업자 원문, 모델 주장, 발췌, 프롬프트. 클라이언트 번들과 분석 이벤트에는 넣지 않는다 |
+| 운영 로그 | executionId, providerId, phase, callsOpened, networkCalled, persisted |
+| 보존 | 프로젝트 수명 동안 서버에 둔다. 공개 개인정보 처리방침과 대조하기 전에는 확정 기간이 아니다 |
+| 삭제 | 프로젝트 삭제 또는 창업자 삭제 요청 후 30일 안에 본문을 지운다. 30일은 제안값이다 |
+| tombstone | 실행 ID, phase, 제공자, callsOpened, networkCalled, 시각만 남긴다 |
+| 키 | 원장에 넣지 않는다. 서버 전용. 이번 커밋은 키를 추가하지 않는다 |
+
+실제 재시작 검증 계획. 실행하지 않았다.
+
+| ID | 절차 | 기대 |
+| --- | --- | --- |
+| restart_after_event | 등록 커밋 후 프로세스를 재시작하고 같은 eventId 를 읽는다 | registered, callsOpened 0, networkCalled false. 복구가 슬롯을 열지 않는다 |
+| interrupt_in_progress | 슬롯만 커밋하고 응답 없이 재시작한다 | unconfirmed. networkCalled 는 저장값 유지. 자동 재호출 없음 |
+| interrupt_before_acceptance | 응답 커밋 후 수용 전에 재시작한다 | 본문은 남고 seal 은 없다. 복구는 수용하지 않는다 |
+| redelivery_after_acceptance | 수용 후 같은 eventId 를 다시 전달한다 | 이벤트와 seal 이 늘지 않는다. 집계 1. 가설과 판단 문장 유지 |
+| write_failure_and_partial | 트랜잭션 거절과, phase 또는 seal 만 있는 스냅샷 | 거절은 둘 다 없다. 부분 저장은 수용으로 세지 않는다 |
+| failure_then_success_same_id | 실패 뒤 같은 ID 의 성공 이벤트 | 접힌 phase 는 failed. 첫 실패가 남는다 |
+| recover_unconfirmed | unconfirmed 로그를 다시 읽고 복구를 반복한다 | 실행 ID 수 유지. 승인 없는 새 ID 는 슬롯을 열지 않는다 |
+
+구현 범위. 이번 커밋 밖이다. 별도 승인 두 단계다.
+
+- 저장 승인: 이벤트 로그와 seal 을 한 트랜잭션으로 쓰는 서버 저장소. 그 다음 위 7개 시나리오를 실제 프로세스 재시작으로 실행한다
+- 모델 승인: 재시작 검증이 끝난 뒤의 제한 입력. Gemini 1회, GPT 1회, 출력 토큰 상한 1024, 서버 전용 키. 저장 승인이 모델 승인을 대신하지 않는다
+
+미검증
+- 디스크, 데이터베이스, 프로세스 재시작, Gemini HTTP, 유료 GPT, 모델 품질, 사업 판단 정확도
+- 화면은 수정하지 않았다
+- Production 잠금 SHA 0b465226. 병합과 배포는 하지 않았다

@@ -28,6 +28,7 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 13 | 모델 연결 전 실행 계약. 실패·재시도·결과 누락 구분. 화면 다섯 상태 | 테스트 |
 | 14 | 실행 원장. 미확정은 실패와 구분. 자동 재호출 없음. 요금은 미확정. 화면은 원장 없음 | 테스트 |
 | 15 | 원장 복구 계약. 메모리 시뮬레이션. 디스크·재시작·모델 호출은 미검증 | 테스트 |
+| 16 | 서버 원장 저장 승인안. 원자성·멱등·보존 제안. 재시작 시험은 계획만 | 제안 |
 | 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
 
 ---
