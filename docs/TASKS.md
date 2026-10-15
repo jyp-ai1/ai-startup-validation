@@ -38,7 +38,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 | 23 | 실제 분석 수용 준비. 원문·출처 공백과 사용자 표시·시스템 확인 분리. 실제 결과 없음 | 미검증 · `docs/evidence/ALABOM/AI-PM/REAL-ANALYSIS-INTAKE.txt` |
 | 24 | 실제 원문 없음. 기능 확장 없이 최소 검증 경로만 기록 | 미검증 · `docs/evidence/ALABOM/AI-PM/REAL-ANALYSIS-MINIMUM-PATH.txt` |
 | 25 | LMULM·RIDM 문서 잠정 판단을 CPO 가 채택. 재구매·리셀·공헌이익, 유료 결제·유지·고객당 비용이 오기 전에는 같은 검토와 코드 변경을 반복하지 않음 | 채택 · `docs/evidence/ALABOM/AI-PM/LMULM-RIDM-DOCUMENT-JUDGMENT.txt` |
-| 26 | 두 사업계획서 발췌로 입력·판단·질문·재평가·검증 행동·마무리 거절을 한 여정으로 연결. 픽스처는 실제 검증이 아님 | 인수 전 · `docs/evidence/ALABOM/AI-PM/PLAN-JOURNEY-E2E.txt` |
+| 26 | 두 사업계획서 발췌로 입력·판단·질문·재평가·검증 행동·마무리 거절을 한 여정으로 연결. 픽스처는 실제 검증이 아님 | 로컬만 · `docs/evidence/ALABOM/AI-PM/PLAN-JOURNEY-E2E.txt` |
+| 27 | a2c8943e Preview 는 배포됐으나 Vercel 로그인으로 막힘. LMULM·RIDM 호스팅 여정은 미실행 | 미검증 · `docs/evidence/ALABOM/AI-PM/PREVIEW-ACCEPTANCE.txt` |
 | 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
 
 ---

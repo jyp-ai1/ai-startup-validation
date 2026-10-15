@@ -1,0 +1,41 @@
+PR #198 호스팅 Preview 인수 시도. 2026-10-15T11:49:00Z.
+
+대상 커밋 a2c8943eb29605ee3e40bd778942d74ceb880728. Draft PR https://github.com/jyp-ai1/ai-startup-validation/pull/198. 병합하지 않았다. Production 잠금 SHA 0b465226 을 배포하지 않았다. 모델 API 와 AI 웹은 호출하지 않았다.
+
+변경 범위. 여정 연결 커밋 a2c8943e.
+- apps/web/features/business-validation-journey/lib/plan-journey.ts
+- apps/web/features/business-validation-journey/lib/journey-engine.ts
+- apps/web/features/business-validation-journey/lib/journey-types.ts
+- apps/web/features/business-validation-journey/lib/judgment-development.ts
+- apps/web/features/business-validation-journey/lib/verification-action.ts
+- apps/web/features/business-validation-journey/components/validation-journey-screen.tsx
+- apps/web/features/business-validation-journey/lib/__tests__/plan-journey.test.ts
+- docs/evidence/ALABOM/AI-PM/PLAN-JOURNEY-E2E.txt
+- docs/TASKS.md
+9 files, +1143 −18. 판단 상태값은 judgment_deferred 유지.
+
+로컬 테스트. 이 커밋에서 이미 실행. 2026-10-15T10:25:45Z. 여정 라이브러리 18파일 123건, exit 0. 이번 턴에 다시 실행하지 않았다. 코드가 같기 때문이다. 123건은 여정 연결이다. 실제 사업성 정확도나 호스팅 작동이 아니다.
+
+호스팅 Preview.
+- 배포 시각 2026-10-15T10:32:58Z. SHA a2c8943e. Vercel 상태 success.
+- 브랜치 Preview: https://ai-startup-validation-git-cursor-exter-764725-jyp-ai1s-projects.vercel.app/ko/business-validation
+- 배포 URL: https://ai-startup-validation-5t4xcwk8x-jyp-ai1s-projects.vercel.app/ko/business-validation
+- 둘 다 HTTP 302 로 Vercel SSO 에 보낸다. 브라우저 최종 주소는 https://vercel.com/login. 제목 Login – Vercel. plan-intake 개수 0.
+- 이 환경에 Vercel 로그인과 protection bypass 비밀이 없다. 로그인을 시도하지 않았고, 보호를 우회하지 않았다.
+
+Preview 에서 실행하지 못한 항목. LMULM 과 RIDM 모두.
+- 사업계획서 발췌와 창업자 답변의 출처 분리: 미실행
+- 판단이 바뀌거나 유지된 이유의 화면 표시: 미실행
+- 모름, 반대 근거, 고객 변경, 중복 입력: 미실행
+- 검증 전 마무리와 유보 유지: 미실행
+- 새로고침 후 이력: 미실행
+
+환경 차이.
+- Production https://ai-startup-validation-tau.vercel.app/ 는 200 이다. /ko/business-validation 은 404 다. 이 커밋의 여정 화면이 아니다. Production 을 Preview 결과로 쓰지 않는다.
+
+잔여 결함.
+- 호스팅 Preview 가 로그인 벽에 막혀 인수 시나리오를 실행하지 못했다. 배포 성공을 화면 검증으로 세지 않는다.
+- 실제 외부 AI 조사는 여전히 미실행이다.
+- 실제 매출, 결제, 유지율 자료는 없다. 없는 자료를 검증 완료로 표시하지 않는다.
+
+인수 판단은 열림. 병합과 Production 배포는 하지 않았다.
