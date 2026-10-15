@@ -716,3 +716,37 @@ fetch 호출 없음. DB 스키마, 저장소 어댑터, API 키, 자동 재시�
 - 디스크, 데이터베이스, 프로세스 재시작, Gemini HTTP, 유료 GPT, 모델 품질, 사업 판단 정확도
 - 화면은 수정하지 않았다
 - Production 잠금 SHA 0b465226. 병합과 배포는 하지 않았다
+
+21. 로컬 SQLite 원장과 프로세스 재시작
+
+시각: 2026-10-15T05:51:27Z 여정 테스트 15 files, 109 passed, exit 0.
+명령: pnpm --filter web exec vitest run features/business-validation-journey/lib/__tests__
+여정 폴더 eslint 통과. pnpm --filter web build 는 2026-10-15T05:51:42Z 시작, exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
+실행 환경: Node v22.14.0. 저장은 node:sqlite DatabaseSync. 이 버전은 SQLite 를 experimental 로 경고한다. 파일 모드는 0600. HTTP 라우트에 붙이지 않았다.
+
+109개 가운데 108개는 메모리 계약과 픽스처다. 디스크와 프로세스 재시작의 증거는 ledger-disk-restart.test.ts 1개다. 그 테스트는 esbuild 로 워커를 묶은 뒤, 쓰기 프로세스와 읽기 프로세스를 따로 띄운다. 부모 프로세스는 SQLite 파일을 직접 읽지 않는다.
+
+저장 선택. ADR-052. 프로덕션 Supabase 스키마는 바꾸지 않았다. 로컬 SQLite 파일이 트랜잭션과 event_id 고유 제약을 가진다. 조건부 행 갱신은 쓰지 않는다. phase accepted 와 seal 은 BEGIN IMMEDIATE 부터 COMMIT 까지 한 트랜잭션이다. COMMIT 전에 예외가 나거나 프로세스가 SIGKILL 로 죽으면 둘 다 남지 않는다.
+
+재시작 결과. 같은 파일, 다른 pid.
+
+| 시나리오 | 쓰기 pid | 읽기 pid | 결과 |
+| --- | --- | --- | --- |
+| restart_after_event | 75026 | 75053 | registered. callsOpened 0. networkCalled false. 복구는 슬롯을 열지 않음 |
+| interrupt_in_progress | 75104 | 75115 | unconfirmed. callsOpened 1. networkCalled false. 비용 계수 0. 두 번째 복구의 이벤트 수는 3 으로 유지 |
+| interrupt_before_acceptance | 75194 | 75205 | response_received. 주장 본문 유지. seal 0. 자동 수용 없음. journeyMutated false |
+| redelivery_after_acceptance | 75295 | 75306 | 이벤트 4, seal 1 유지. 두 번째 커밋은 쓰지 않음. 가설 객체와 판단 문장 유지. verifiedFact false. 디스크 실패 시 여정 상태 참조 유지 |
+| write_failure_and_partial | SIGKILL | 75328 | 커밋 전 SIGKILL 행은 0. throw_before_commit 도 행 0. phase 만 있으면 phase_without_seal. seal 만 있으면 seal_without_phase. 둘 다 수용 집계 아님 |
+| failure_then_success_same_id | 75434 | 75473 | 이벤트 evt-fail 과 evt-success-same-id 가 파일에 있음. 접힌 phase 는 failed |
+| recover_unconfirmed | 75517 | 75552 | 실행 ID 는 exec-gemini-1 하나. 두 번째 복구는 쓰지 않음. 승인 없는 새 ID 는 retry_refused. 비용 계수 0 |
+
+networkCalled false 는 전송이 없었다는 증거가 아니다. 미확정 사유는 전송 기록이 남기 전에 중단됐을 수 있다고 말한다. callsOpened 1 은 비용이 아니다.
+
+보안 대조. 공개 개인정보 문장: "ALABOM은 사용자 데이터를 존중합니다. 프로젝트 정보는 Workspace에 저장되며 제3자에게 판매되지 않습니다. Sprint L2 인증 출시 전 전체 Privacy Policy가 게시됩니다." 이 문장에는 삭제 기한이 없다. 30일 삭제는 제안값으로 남고, 이 저장소는 그 기한으로 지우지 않는다. 운영 로그는 executionId, providerId, phase, callsOpened, networkCalled, persisted 만 본다. 재시작 워커의 stderr 에 원문과 주장은 없었다. API 키는 추가하지 않았다. 화면 파일은 수정하지 않았다.
+
+미검증
+- 프로덕션 데이터베이스, 배포된 서버의 재시작, Gemini HTTP, 유료 GPT, 자동 재시도
+- node:sqlite 는 Node v22.14.0 에서 experimental 이다
+- 라이브 화면은 여전히 실행 원장 없음이다. 이 파일 저장소를 요청 경로에 연결하지 않았다
+- 모델 품질과 사업 판단 정확도
+- Production 잠금 SHA 0b465226. 병합과 배포는 하지 않았다

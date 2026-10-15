@@ -1474,6 +1474,51 @@ PR #92–#97 built judgment, evidence update, AI PM bind, journey integration, a
 
 ---
 
+## ADR-052: Execution ledger file is local SQLite, not the production database
+
+**Status:** Accepted  
+**Date:** 2026-10-15  
+**Sprint:** ALABOM validation journey  
+**Authors:** CTO (autonomous)
+
+### Context
+
+CPO approved a server execution ledger and real process-restart checks. Production schema and deploy stay locked at `0b465226`. The published privacy text does not define an erasure window.
+
+### Decision
+
+1. The ledger adapter is a local SQLite file opened with Node's `node:sqlite`. It is not a Supabase or Prisma migration and it is not mounted on an HTTP route.
+2. An acceptance commit is one transaction: the `accepted` event and the seal. A killed process or a thrown error before `COMMIT` leaves neither row.
+3. `event_id` is unique. Replaying it does not add a row. An illegal later phase for the same execution id stays in the file and is ignored by the fold.
+4. Recovery of `in_progress` appends `unconfirmed` and does not open another execution. `networkCalled=false` is not treated as proof that no request was sent.
+5. The 30-day erasure proposal stays unconfirmed until a published privacy policy states a window. This adapter does not delete on a timer.
+
+### Alternatives Considered
+
+| Option | Pros | Cons |
+| --- | --- | --- |
+| Local SQLite file | Transactions, unique keys, survives process death, no production schema change | Not the production database. Node marks `node:sqlite` experimental on v22.14.0 |
+| Production Supabase migration | Shared server database | Touches the locked production schema and needs a deploy |
+| Conditional row update | One row per execution | A bad update can replace the first failure |
+
+### Consequences
+
+**Positive:**
+
+- Restart checks can kill a process and read the same file from a new process.
+- Acceptance cannot be counted from a phase row or a seal alone.
+
+**Negative:**
+
+- The live journey screen still has no ledger. Connecting this file to a request path is a later change.
+- Filesystem mode `0600` is the access control. There is no separate authz service.
+
+**Neutral:**
+
+- Model calls, API keys, and automatic retries stay out of this adapter.
+
+---
+
 ## Template
 
 See [templates/ADR_TEMPLATE.md](./templates/ADR_TEMPLATE.md) for new entries.
