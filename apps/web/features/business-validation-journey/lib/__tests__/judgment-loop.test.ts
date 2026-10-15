@@ -54,12 +54,14 @@ describe('judgment loop connection', () => {
     expect(corrected.redelivery?.sent).toBe(false);
     expect(corrected.judgmentText).toBe(beforeText);
     expect(trace.liveModelCall).toBe(false);
-    expect(trace.providerObjectsSeparated).toBe(false);
-    expect(trace.namedOpenAiProviderId).toBe('gemini');
+    expect(trace.providerObjectsSeparated).toBe(true);
+    expect(trace.namedOpenAiProviderId).toBe('openai');
     expect(trace.researchStatus).toBe('research_not_run');
     expect(trace.counterReviewStatus).toBe('counter_review_not_run');
     expect(trace.stages.find((stage) => stage.id === 'gemini-research')?.status).toBe('not_called');
-    expect(trace.stages.find((stage) => stage.id === 'gpt-counter-review')?.status).toBe('blocked_same_provider');
+    expect(trace.stages.find((stage) => stage.id === 'gpt-counter-review')?.status).not.toBe(
+      'blocked_same_provider',
+    );
     expect(trace.stages.find((stage) => stage.id === 'judgment')?.status).toBe('not_connected');
     expect(verification.action).toContain('대기업 물류본부');
     expect(verification.action).toContain('절차');

@@ -19,7 +19,7 @@ export const JUDGMENT_HOLD_REASON =
   '새 캡처 ID가 없다. 창업자 진술만으로 판단을 바꾸지 않는다.';
 
 export const COUNTER_REVIEW_NOTE =
-  'GPT 독립 호출을 실행하지 않았다. counter_review_not_run.';
+  '독립 GPT 객체는 Gemini와 분리되어 있다. 이 화면은 그 객체를 호출하지 않았다. counter_review_not_run.';
 
 export type PayerChoice = '' | 'owner' | 'end_customer' | 'organization' | 'unknown';
 
@@ -136,7 +136,28 @@ export type JourneyState = {
     reason: string;
   };
   captures: [];
+  sourceRecords: FounderSourceRecord[];
   redelivery: RedeliveryRecord | null;
+};
+
+export type FounderSourceRecord = {
+  id: string;
+  sourceKind: 'founder_paste';
+  text: string;
+  excerpt: string;
+  pageHash: string;
+  hypothesisIds: string[];
+  causeId: string;
+  receivedAt: string;
+  previousJudgmentText: string;
+  nextJudgmentText: string;
+  judgmentStatus: 'judgment_deferred';
+  verifiedFact: false;
+  claimLabel: '창업자가 붙인 원문 · 검증된 사실 아님';
+  relevance: 'unconfirmed';
+  accepted: false;
+  duplicate: boolean;
+  reason: string;
 };
 
 export type ContextRole =
@@ -155,6 +176,7 @@ export type ContextItem = {
   text: string;
   disposition: 'included' | 'omitted';
   reason: string;
+  relevance: 'unconfirmed' | 'kept';
 };
 
 export type ChangeClass = 'none' | 'wording_edit' | 'core_hypothesis_change' | 'new_claim';

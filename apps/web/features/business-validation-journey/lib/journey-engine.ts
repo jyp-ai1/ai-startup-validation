@@ -18,6 +18,7 @@ import {
   type EvidenceChoice,
   type FieldRevision,
   type FounderAnswer,
+  type FounderSourceRecord,
   type Intake,
   type JourneySource,
   type JourneyState,
@@ -58,7 +59,7 @@ export function startJourney(
   const normalized = normalizeIntake(intake);
   const missing = missingRequired(normalized);
   if (missing.length > 0) return { ok: false, missing };
-  return { ok: true, state: withRedelivery(null, finish(normalized, source, [], [])) };
+  return { ok: true, state: withRedelivery(null, finish(normalized, source, [], [], [])) };
 }
 
 export function applyAnswer(
@@ -98,7 +99,7 @@ export function applyAnswer(
     : state.intake;
   const next = withRedelivery(
     state,
-    finish(intake, state.source, [...state.answers, answer], state.revisions),
+    finish(intake, state.source, [...state.answers, answer], state.revisions, state.sourceRecords ?? []),
   );
 
   return {
@@ -138,7 +139,7 @@ export function correctField(
   const intake = duplicate ? state.intake : { ...state.intake, [field]: next };
   const finished = withRedelivery(
     state,
-    finish(intake, state.source, state.answers, [...state.revisions, revision]),
+    finish(intake, state.source, state.answers, [...state.revisions, revision], state.sourceRecords ?? []),
   );
 
   return {
@@ -201,6 +202,7 @@ function finish(
   source: JourneySource,
   answers: FounderAnswer[],
   revisions: FieldRevision[],
+  sourceRecords: FounderSourceRecord[],
 ): JourneyState {
   const materialAnswers = answers.filter((answer) => answer.material);
   const materialRevisions = revisions.filter((revision) => revision.material);
@@ -231,6 +233,7 @@ function finish(
       reason: '전체 답변 이력은 이 상태에 보존한다. 모델에는 관련 이력도 보내지 않았다.',
     },
     captures: [],
+    sourceRecords,
     redelivery: null,
   };
 }

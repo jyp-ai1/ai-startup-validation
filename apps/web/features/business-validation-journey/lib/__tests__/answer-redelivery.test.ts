@@ -50,6 +50,8 @@ describe('answer redelivery contract', () => {
     expect(included.map((item) => item.role)).toEqual(
       expect.arrayContaining(['customer', 'problem', 'solution', 'payer', 'revenue', 'answer']),
     );
+    expect(included.find((item) => item.id === 'intake:problem')?.relevance).toBe('unconfirmed');
+    expect(included.find((item) => item.id === 'intake:problem')?.reason).toContain('유효하다고 보지 않는다');
     expect(included.find((item) => item.id === 'intake:problem')?.text).toContain('주문 접수');
     expect(included.find((item) => item.id === 'intake:solution')?.text).toContain('구독형');
     expect(included.find((item) => item.id === 'intake:payer')?.text).toBe('사업자 본인');

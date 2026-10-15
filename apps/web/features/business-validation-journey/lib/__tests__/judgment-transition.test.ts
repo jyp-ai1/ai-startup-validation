@@ -134,11 +134,12 @@ describe('evidence transition and execution badges', () => {
     expect(executionBadgeLabel('counterReview', 'counter_review_completed')).toBe('반대 검토 기록 있음');
   });
 
-  it('keeps the named openai research provider on the Gemini object', () => {
+  it('keeps the openai provider object apart from Gemini', () => {
     const gemini = getResearchProvider('gemini');
     const openai = getResearchProvider('openai');
 
-    expect(openai).toBe(gemini);
+    expect(openai).not.toBe(gemini);
     expect(gemini.id).toBe('gemini');
+    expect(openai.id).toBe('openai');
   });
 });

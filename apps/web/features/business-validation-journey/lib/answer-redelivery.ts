@@ -176,6 +176,7 @@ function contextItems(
       text,
       disposition: 'included',
       reason: coreReason(field, changeClass),
+      relevance: changeClass === 'core_hypothesis_change' ? 'unconfirmed' : 'kept',
     });
   }
   for (const revision of revisions) {
@@ -185,7 +186,11 @@ function contextItems(
       role: revision.field === 'business' ? 'business' : revision.field,
       text: `이전: 「${revision.previous}」 이후: 「${revision.next}」`,
       disposition: 'included',
-      reason: '바뀐 문장과 직전 문장을 함께 둔다.',
+      reason:
+        changeClass === 'core_hypothesis_change'
+          ? '바뀐 문장과 직전 문장을 함께 둔다. 이전 가설이 새 고객에게 그대로 맞는지 확인하지 않았다.'
+          : '바뀐 문장과 직전 문장을 함께 둔다.',
+      relevance: changeClass === 'core_hypothesis_change' ? 'unconfirmed' : 'kept',
     });
   }
   for (const answer of state.answers) {
@@ -195,9 +200,8 @@ function contextItems(
       role: 'answer',
       text: `${answer.questionText} ${answer.choiceLabel} ${answer.freeText}`.trim(),
       disposition: answer.material ? 'included' : 'omitted',
-      reason: answer.material
-        ? '이 답은 고객·문제·해결책·지불자 가설을 다시 볼 때 함께 둔다.'
-        : '같은 진술의 반복이라 모델 입력에서 뺀다. 원본 이력에는 남아 있다.',
+      reason: answerReason(answer.material, changeClass),
+      relevance: changeClass === 'core_hypothesis_change' && answer.material ? 'unconfirmed' : 'kept',
     });
   }
   return items;
@@ -211,6 +215,7 @@ function omittedOriginals(state: JourneyState): ContextItem[] {
     text: answer.choiceLabel,
     disposition: 'omitted' as const,
     reason: '재조사를 열지 않아 모델 입력에서 뺀다. 원본 이력에는 남아 있다.',
+    relevance: 'kept' as const,
   }));
 }
 
@@ -231,9 +236,17 @@ function hypothesisFor(field: (typeof CORE_FIELDS)[number]): string {
 
 function coreReason(field: (typeof CORE_FIELDS)[number], changeClass: RedeliveryRecord['changeClass']): string {
   if (changeClass === 'core_hypothesis_change') {
-    return `${contextRoleLabel(field)} 가설은 핵심 변경과 함께 다시 평가한다.`;
+    return `${contextRoleLabel(field)} 문장은 바뀐 고객과의 관련성을 아직 확인하지 않았다. 다시 보기 위해 남긴다. 그대로 유효하다고 보지 않는다.`;
   }
   return `${contextRoleLabel(field)} 가설을 새 답의 맥락으로 함께 둔다.`;
+}
+
+function answerReason(material: boolean, changeClass: RedeliveryRecord['changeClass']): string {
+  if (!material) return '같은 진술의 반복이라 모델 입력에서 뺀다. 원본 이력에는 남아 있다.';
+  if (changeClass === 'core_hypothesis_change') {
+    return '이 답은 바뀐 고객과 아직 맞춰 보지 않았다. 관련 맥락으로만 남긴다.';
+  }
+  return '이 답은 고객·문제·해결책·지불자 가설을 다시 볼 때 함께 둔다.';
 }
 
 function classifyChange(

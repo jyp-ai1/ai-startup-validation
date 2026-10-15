@@ -6,6 +6,7 @@ import { Button, Input, Textarea } from '@repo/ui';
 
 import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
 
+import { attachFounderSource, SOURCE_HYPOTHESES, sourceHash } from '../lib/founder-source';
 import { applyAnswer, correctField, startJourney } from '../lib/journey-engine';
 import { contextRoleLabel, executionBadgeLabel } from '../lib/present-execution';
 import { verificationActionFor } from '../lib/verification-action';
@@ -147,6 +148,10 @@ export function ValidationJourneyScreen() {
         onAnswer={onAnswer}
         onCustomerDraft={setCustomerDraft}
         onCorrect={onCorrect}
+        onJourneyChange={(next) => {
+          setJourney(next);
+          saveJourneyDraft(next);
+        }}
         onBack={() => setView('form')}
       />
     );
@@ -271,6 +276,7 @@ function UnderstandingView({
   onAnswer,
   onCustomerDraft,
   onCorrect,
+  onJourneyChange,
   onBack,
 }: {
   journey: JourneyState;
@@ -284,10 +290,39 @@ function UnderstandingView({
   onAnswer: (event: React.FormEvent<HTMLFormElement>) => void;
   onCustomerDraft: (value: string) => void;
   onCorrect: (event: React.FormEvent<HTMLFormElement>) => void;
+  onJourneyChange: (state: JourneyState) => void;
   onBack: () => void;
 }) {
   const question = journey.nextQuestion;
   const verification = verificationActionFor(journey);
+  const [sourceText, setSourceText] = useState('');
+  const [sourceHypotheses, setSourceHypotheses] = useState<string[]>([]);
+  const [sourceNote, setSourceNote] = useState('');
+  const [sourceMissing, setSourceMissing] = useState<string[]>([]);
+
+  function onToggleHypothesis(id: string) {
+    setSourceHypotheses((current) =>
+      current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
+    );
+  }
+
+  function onAttachSource(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const text = sourceText.trim();
+    const result = attachFounderSource(journey, {
+      text,
+      hypothesisIds: sourceHypotheses,
+      causeId: text ? `cause-${sourceHash(text)}` : '',
+      now: new Date().toISOString(),
+    });
+    setSourceMissing(result.missing);
+    setSourceNote(result.reason);
+    if (result.transitionRan) {
+      onJourneyChange(result.state);
+      setSourceText('');
+      setSourceHypotheses([]);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-2xl space-y-8 px-6 py-10" data-testid="understanding">
@@ -396,6 +431,63 @@ function UnderstandingView({
         <p className="text-sm text-muted-foreground" data-testid="evidence-needed">
           필요한 증거: {verification.evidenceNeeded}
         </p>
+        <form className="space-y-3 border-t border-border pt-3" onSubmit={onAttachSource} data-testid="source-form">
+          <h3 className="text-base font-medium">원문 붙이기</h3>
+          <p className="text-sm text-muted-foreground">
+            붙여 넣은 문장은 창업자 원문이다. 그 자체로 사업성 판단을 바꾸지 않는다.
+          </p>
+          <Textarea
+            id="source-text"
+            data-testid="source-text"
+            value={sourceText}
+            onChange={(event) => setSourceText(event.target.value)}
+          />
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium">이 원문이 닿는 가설</legend>
+            {SOURCE_HYPOTHESES.map((item) => (
+              <label key={item.id} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={sourceHypotheses.includes(item.id)}
+                  data-testid={`source-hypothesis-${item.id}`}
+                  onChange={() => onToggleHypothesis(item.id)}
+                />
+                <span>{item.label}</span>
+              </label>
+            ))}
+          </fieldset>
+          {sourceMissing.length > 0 ? (
+            <p className="text-sm text-destructive" data-testid="source-missing" role="alert">
+              빠진 항목: {sourceMissing.join(', ')}. 판단 문장은 바꾸지 않는다.
+            </p>
+          ) : null}
+          {sourceNote ? (
+            <p className="text-sm" data-testid="source-note" role="status">
+              {sourceNote}
+            </p>
+          ) : null}
+          <Button type="submit" variant="outline" data-testid="submit-source">
+            이 원문을 가설에 연결
+          </Button>
+        </form>
+        <ul className="space-y-2 text-sm" data-testid="source-records">
+          {(journey.sourceRecords ?? []).map((record) => (
+            <li key={record.id}>
+              <p>
+                원문 {record.id} · 원인 {record.causeId} · {record.receivedAt}
+              </p>
+              <p>{record.excerpt}</p>
+              <p>
+                가설 {record.hypothesisIds.join(', ')} · {record.claimLabel}
+              </p>
+              <p>
+                이전 판단: {record.previousJudgmentText}
+              </p>
+              <p>이후 판단: {record.nextJudgmentText}</p>
+              <p>{record.reason}</p>
+            </li>
+          ))}
+        </ul>
         <p className="text-sm" data-testid="next-action">
           다음 행동: {journey.nextAction.text}
         </p>

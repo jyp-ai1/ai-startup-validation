@@ -1,4 +1,5 @@
 import { getResearchProvider } from '@/features/agents/research/providers';
+import { gateCounterReview } from '@/features/agents/research/providers/openai-counter-review-provider';
 
 import type { JourneyState } from './journey-types';
 
@@ -15,7 +16,7 @@ export const GPT_COUNTER_PATH = {
   providerId: 'openai',
   endpoint: 'https://api.openai.com/v1/chat/completions',
   modelId: 'gpt-4o-mini',
-  caller: 'packages/ai/src/providers/openai-http.ts',
+  caller: 'apps/web/features/agents/research/providers/openai-counter-review-provider.ts',
 } as const;
 
 export type ModelReading = {
@@ -36,7 +37,12 @@ export type ReadingComparison = {
   reason: string;
 };
 
-export type LoopStageStatus = 'connected_local' | 'not_called' | 'blocked_same_provider' | 'not_connected';
+export type LoopStageStatus =
+  | 'connected_local'
+  | 'not_called'
+  | 'blocked_same_provider'
+  | 'blocked_no_key'
+  | 'not_connected';
 
 export type LoopStage = {
   id: string;
@@ -105,6 +111,7 @@ export function traceJudgmentLoop(state: JourneyState): LoopTrace {
   const gemini = getResearchProvider('gemini');
   const namedOpenAi = getResearchProvider('openai');
   const sameObject = gemini === namedOpenAi;
+  const gate = gateCounterReview();
 
   return {
     stages: [
@@ -127,10 +134,10 @@ export function traceJudgmentLoop(state: JourneyState): LoopTrace {
       },
       {
         id: GPT_COUNTER_PATH.stageId,
-        status: sameObject ? 'blocked_same_provider' : 'not_connected',
+        status: sameObject ? 'blocked_same_provider' : 'blocked_no_key',
         detail: sameObject
-          ? `getResearchProvider('openai')는 id ${namedOpenAi.id}인 Gemini 객체다. ${GPT_COUNTER_PATH.endpoint}로 가지 않는다.`
-          : '이름만 분리되어 있어도 이 화면은 호출하지 않는다.',
+          ? `getResearchProvider('openai')는 id ${namedOpenAi.id}인 Gemini 객체다.`
+          : `id ${namedOpenAi.id}. model ${GPT_COUNTER_PATH.modelId}. ${gate.reason} networkCalled ${gate.networkCalled}.`,
       },
       {
         id: 'compare',
@@ -154,7 +161,7 @@ export function traceJudgmentLoop(state: JourneyState): LoopTrace {
     judgmentText: state.judgmentText,
     redeliveryId: state.redelivery?.id ?? null,
     includedAnswerIds: state.redelivery?.includedAnswerIds ?? [],
-    providerObjectsSeparated: !sameObject,
+    providerObjectsSeparated: !sameObject && namedOpenAi.id === 'openai' && gemini.id === 'gemini',
     liveModelCall: false,
     namedOpenAiProviderId: namedOpenAi.id,
   };
