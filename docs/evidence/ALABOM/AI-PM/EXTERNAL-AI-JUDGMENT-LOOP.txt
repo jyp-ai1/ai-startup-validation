@@ -1,0 +1,190 @@
+반복형 멀티 AI 사업 판단 루프.
+
+이 파일은 설계와 기술 타당성 기록이다. 제품 코드를 바꾸지 않았다. 모델 키를 넣지 않았다. 유료 모델 호출, DB 마이그레이션, Production 변경, PR 병합, 배포를 하지 않았다.
+
+앞선 단일 경로 설계: docs/evidence/ALABOM/AI-PM/EXTERNAL-AI-JUDGMENT-DESIGN.txt
+Production 잠금 SHA: 0b465226516e1a4f3eb9ce2087f8bca2c2c091da
+이 문서의 기준 트리: 388c2093f4be3f3a57060effaf5d126c963abea8 위의 origin/main
+미병합 규칙 엔진 PR #197 은 그대로 둔다.
+
+중심: 한 번의 AI 분석이 아니다. 조사와 반대 검토를 반복하고, 근거와 잠정 결론을 축적한 뒤, 판단의 진전으로 최종 사업 판단 또는 판단 유보에 도달한다. 사용자는 Gemini 와 GPT 를 오가거나 조사 과정을 관리하지 않는다. 루프는 제품 안에서 돈다.
+
+1. 반복형 전체 아키텍처
+
+① 초기 입력.
+사용자 사업 정보와 기존 대화 이력이다.
+현재 코드의 대화 이력은 apps/web/features/workflow-journey/lib/business-understanding/workspace-ai-pm-loop-store.ts 의 sessionStorage 키 launchlens.aiPmLoop 이다. 턴 타입은 workspace-ai-pm-loop-types.ts 의 AiPmLoopTurn 이다. 사실 메모는 conversation-memory.ts 의 ConversationMemory 이고 source 는 document 또는 user_turn 뿐이다.
+이 저장은 브라우저 세션이다. 서버의 조사 원본 저장소가 아니다. 탭이 끝나면 사라질 수 있다. 루프의 누적 기록은 이 sessionStorage 를 초기 입력으로 읽되, 조사 원본의 본체로 쓰지 않는다. 본체를 DB에 두는 변경은 별도 승인이다.
+
+② Gemini 조사·분석.
+역할: 시장, 고객, 경쟁, 가격, 수요의 조사와 추가 질문.
+모델 id 후보는 packages/ai/src/config/defaults.ts 의 google/gemini-2.5-flash 다.
+하는 일: 누적 패킷을 읽고, 이미 있는 URL에 대한 해석과, 다음에 열 URL 또는 창업자에게 물을 질문을 제안한다.
+하지 않는 일: 검색 엔진으로 URL을 찾지 않는다. 현재 저장소에 검색 실행 함수가 없다. 페이지를 직접 열지 않는다. 페이지를 여는 것은 제품 브라우저다.
+
+③ GPT 반대 검토.
+역할: 주장의 허점, 반대 근거, 빠진 가정, 추가 조사 항목.
+모델 id 후보는 같은 파일의 gpt-4o-mini 다.
+입력은 Gemini 의 문장이 아니라 ①의 원본, 브라우저가 저장한 페이지 기록, 직전 잠정 결론이다. Gemini 출력을 함께 보되, Gemini 가 적은 URL을 출처로 받지 않는다.
+
+④ 대화·조사 저장소.
+원본 대화, 출처, 분석 이력, 상충 의견, 잠정 결론, 변경 이유를 한 세션에 연결한다. 계약은 6항이다.
+
+⑤ 종합.
+누적 기록을 보고 핵심 미확인과 다음 조사·질문·검증 행동을 고른다. 종합은 표결이 아니다. Gemini 와 GPT 가 같은 문장이어도 독립 근거가 없으면 불확실성을 유지한다.
+
+⑥ 재진입.
+새 page_record, 새 founder_claim, 새 observed_outcome, 또는 잠정 결론의 본문이 바뀌면 ②로 돌아간다. 바뀐 결론은 원인 근거 id를 남긴다.
+
+⑦ 사용자 출력.
+판단, 핵심 근거, 실패 위험, 미확인 사항, 다음 행동. 브라우저 로그와 모델 이름은 화면에 두지 않는다. 미확인은 판단 문장과 따로 둔다.
+
+현재 코드와 이 역할의 차이.
+apps/web/features/agents/research/providers/index.ts 에서 gemini 와 openai 는 둘 다 OpenRouterResearchProvider 다.
+그 클래스의 execute 는 resolveDefaultModel('openrouter') 만 호출한다. 기본값은 google/gemini-2.5-flash 다.
+그래서 연구 경로에서 openai 를 골라도 GPT가 호출되지 않는다. GPT를 반대 검토자로 쓰려면 모델 id를 호출마다 지정하는 경로가 필요하다. 그 경로는 아직 없고, 이 검토에서 만들지 않았다.
+browser_agent 와 mcp_search 는 MockResearchProvider 다. MCP Playwright 어댑터는 stub 이다.
+
+2. 시작·재진입·종료
+
+시작.
+세션이 없고, 사업 정보 또는 기존 대화 턴이 하나라도 있으면 1회차를 시작한다.
+URL이 없어도 시작한다. 그때 Gemini 는 질문만 제안할 수 있고, 브라우저 조사 결과는 없다. 조사 결과가 없으면 조사 완료로 표시하지 않는다.
+
+한 바퀴의 순서.
+1. 저장소에서 초기 입력, 이전 캡처, 미해결 불확실성, 직전 잠정 결론을 읽는다.
+2. 제품 브라우저가 이번 바퀴에 새로 허용된 URL만 연다. 허용 URL은 창업자가 준 URL과, 이전에 실제로 회수된 URL뿐이다.
+3. Gemini 가 그 패킷을 분석한다.
+4. GPT가 같은 패킷과 Gemini 분석을 반대 검토한다.
+5. 저장소에 두 출력, 캡처, 충돌을 추가한다.
+6. 종합이 잠정 결론을 유지하거나 수정하고, 다음 행동을 하나 고른다.
+7. 종료 조건이면 ⑦을 낸다. 아니면 새 근거를 기다렸다가 ②로 돌아간다.
+
+재진입 조건. 하나라도 해당하면 다음 바퀴다.
+- 새 page_record 가 저장되었다.
+- 창업자 새 주장이 founder_claim 으로 저장되었다.
+- observed_outcome 이 추가되었다.
+- 종합이 잠정 결론의 본문을 바꿨다.
+
+재진입 금지.
+- 새 등급의 근거가 없는데 직전 질문과 같은 불확실성을 같은 문장으로 다시 묻지 않는다.
+- 모델이 추가 질문을 냈다는 이유만으로 같은 질문을 반복하지 않는다.
+- 대화 턴 수, 반복 횟수, 답변 길이는 재진입 이유가 아니다.
+
+기존 워크스페이스 루프는 질문 문장 반복을 일부 피한다. ai-pm-judgment-next-question-binding.ts 가 isRepeatedQuestion 으로 턴의 문장을 본다. isAiPmLoopComplete 는 phase 가 complete 일 때만 참이고, 주석대로 턴 수만으로 끝내지 않는다. 그 루프는 갭 질문 루프다. Gemini·GPT·페이지 원문을 축적하지 않는다. 문장이 조금 달라지면 같은 불확실성을 다시 물을 수 있다. PR #197 의 모름 경로가 그 예다. 선택 id 는 같고 문장만 길어진다. 이 루프는 그 방식을 가져오지 않는다. 막는 기준은 질문 문자열이 아니라 미해결 불확실성 id 와, 그 id에 연결된 새 근거 id 다.
+
+종료. 성공 기준은 반복 횟수가 아니다.
+
+판단 제공.
+잠정 결론의 사업 판단, 실패 위험, 다음 행동이 있고, 각 문장이 page_record 또는 observed_outcome 또는 founder_claim 을 가리킨다.
+founder_claim 만으로 이뤄진 문장은 판단 제공이 아니다. 창업자 주장을 독립 근거로 세지 않는다.
+Gemini 와 GPT의 문장이 같아도, 가리키는 독립 근거가 없거나 실제 고객 행동이 observed_outcome 으로 없으면 확정하지 않는다. 고객의 결제·재구매·인터뷰가 없으면 그 불확실성은 남는다.
+
+판단 유보.
+위 조건이 아니면 유보다. 유보 출력은 미확인 사항과 추가 검증 계획이다. 조사하지 못한 항목을 조사 완료로 적지 않는다. 빈 캡처를 성공 조사로 바꾸지 않는다.
+
+안전 중단.
+모델 호출 한도나 브라우저 연속 실패에 닿으면 유보로 나간다. 이 중단은 판단이 충분하다는 뜻이 아니다. 저장소에 stopReason budget 또는 fetch_failed 를 남긴다. 횟수 상한을 성공으로 세지 않는다.
+제안하는 안전 상한은 4바퀴다. CPO가 금액 한도를 정하기 전의 설계 값이고, 구현 승인이 아니다.
+
+3. 대화와 판단 이력의 축적
+
+한 바퀴는 이전 기록을 지우지 않는다. append 만 한다.
+
+LoopRound
+- roundId
+- startedAt
+- inputRevisionId: 이 바퀴가 읽은 창업자 입력의 개정
+- priorJudgmentHash: 직전 잠정 결론의 해시. 첫 바퀴는 null
+- allowedUrls: 이번 바퀴에 열 수 있는 URL
+- captures: 브라우저 결과. 실패도 남긴다
+- gemini: { modelId, promptId, raw, citedCaptureIds, proposedQuestions, error }
+- gpt: { modelId, promptId, raw, citedCaptureIds, objections, missingAssumptions, error }
+- conflicts: { topic, geminiClaim, gptClaim, captureIds }
+- provisional: { text, sourceIds, uncertaintyIds, changed, changeCauseIds, judgmentHash }
+- nextAction: { uncertaintyId, kind: ask | fetch | observe | withhold, text, previousUncertaintyId }
+- investigationStatus: not_run | partial | captured
+- stopReason: null | sufficient | insufficient | budget | fetch_failed
+
+investigationStatus 가 captured 이려면 이번 바퀴의 캡처 중 status 가 있고 excerpt 가 비어 있지 않은 것이 하나 이상이다. 모델이 조사를 마쳤다고 쓴 문장만으로는 captured 가 아니다. URL을 열지 않았으면 not_run 이다. 일부 URL만 열렸으면 partial 이다.
+
+provisional.changed 가 true 이면 changeCauseIds 가 비어 있으면 그 바퀴의 결론 변경은 저장하지 않고 직전 provisional 을 유지한다. 원인 없는 변경은 변경이 아니다.
+
+nextAction.uncertaintyId 가 previousUncertaintyId 와 같고, 그 불확실성에 새 sourceId 가 없으면 그 다음 행동은 거절한다. 종합은 다른 미확인을 고르거나 withhold 를 고른다.
+
+세션 본체의 저장 위치는 정하지 않는다. sessionStorage 의 AiPmLoopState 는 초기 입력이다. persistResearchEvidence 는 모델 요약을 Evidence 로 넣으므로 이 이력의 저장으로 쓰지 않는다.
+
+4. 새 근거가 결론을 바꾸는 시나리오
+
+사례는 배송 소상공인 입력이다. 성패를 알고 있다고 말하지 않는다. 이 검토에서 모델을 호출하지 않았으므로 아래 문장은 기대 동작이다.
+
+0바퀴 입력.
+창업자 주장: 고객은 반찬가게·꽃집 등 직접 배송 소상공인. 문제는 주문과 배송을 따로 관리해야 함. 수익은 월 구독.
+기존 대화 턴이 있으면 founder_claim 으로 읽는다. URL은 없다.
+
+1바퀴.
+브라우저를 열 URL이 없다. investigationStatus 는 not_run 이다.
+Gemini 가 수요 조사를 제안해도 페이지 기록이 없다.
+GPT가 월 구독은 결제 주체와 금액이 없다고 적는다. 이것도 model_inference 다.
+종합은 판단을 제공하지 않는다. 잠정 결론은 유보다. 미확인은 누가 돈을 내는지와, 그 고객의 수요를 보여주는 독립 기록이다.
+다음 행동은 창업자에게 공개 URL 또는 관찰 기록을 요청하는 질문 하나다. 같은 문장을 다음 바퀴에 그대로 다시 내지 않는다.
+
+2바퀴.
+창업자가 URL 하나를 준다. 브라우저가 그 URL만 연다. 회수에 성공하면 investigationStatus 는 captured 다.
+Gemini 가 excerpt 안의 문장을 수요 근거로 인용한다. citedCaptureIds 에 그 캡처가 있다.
+GPT가 같은 excerpt 에서 그 문장이 판매자 소개이지 고객의 결제 행동이 아니라고 반대한다.
+종합은 1바퀴의 유보를 유지하거나, 문장을 바꾼다. 문장을 바꾸면 changeCauseIds 에 그 captureId 가 있다. 고객 행동이 없으므로 확정하지 않는다. 미확인은 실제 결제 또는 재구매다.
+다음 행동은 같은 URL을 다시 보자고 하지 않는다. 관찰 가능한 고객 행동을 검증 계획으로 낸다.
+
+이 시나리오의 화면 실행은 없다.
+
+5. 실패·충돌·추가 검증
+
+브라우저 실패.
+example.invalid 처럼 이름을 찾지 못하면 캡처 error 만 남긴다. 앞선 설계의 2026-10-15T01:02:59Z 프로브가 이 실패를 한 번 봤다. 제품 crawl() 은 재시도가 없고, 여러 URL 중 하나가 실패하면 앞 결과를 반환하지 않는다.
+루프는 그 실패를 fetch_failed 로 남기고, 성공한 URL만 partial 로 남기는 쪽이 제품 크롤러와 다르다. 구현 전이다.
+실패 바퀴는 조사를 완료로 보이지 않는다. 직전 잠정 결론을 유지한다.
+
+모델 실패.
+Gemini 또는 GPT가 오류이거나 JSON 이 아니면 그 역할의 error 를 남긴다. 현재 OpenRouter 연구 경로는 실패 시 confidence 55 와 시장 점수 65 를 만든다. 루프는 그 대체를 쓰지 않는다. 한 역할이 없으면 종합은 판단을 제공하지 않는다.
+
+출처 날조.
+모델이 패킷에 없는 URL을 인용하면 citedCaptureIds 검사에서 빠진다. 그 문장은 근거가 없는 model_inference 다. 결론을 바꾸지 못한다.
+
+충돌.
+Gemini 와 GPT가 같은 캡처를 반대로 해석하면 conflicts 에 둘 다 남긴다. 합의로 한쪽을 지우지 않는다. 종합의 미확인에 그 충돌 id가 남는다. VALIDATED 를 주지 않는다.
+
+동의만 있는 경우.
+둘 다 시장이 크다고 쓰고 captureId 가 없으면 agreement 는 불확실성을 줄이지 않는다. investigationStatus 는 not_run 으로 남는다.
+
+추가 검증.
+고객 인터뷰, 유료 파일럿, 결제, 재구매만 observed_outcome 이 된다. 그 기록이 생기기 전에는 정확도가 검증된 세션이 아니다. 평가자 메모는 관찰이 아니다.
+
+같은 질문 반복.
+1바퀴 다음 행동이 수요의 독립 기록이었고, 2바퀴에 새 캡처가 없으면 그 질문을 다시 내지 않는다. 종합은 withhold 와 검증 계획을 낸다.
+
+6. 실제 실행 가능 범위와 비용
+
+이 검토에서 실행한 것.
+앞 문서의 브라우저 기록만 해당한다. 로컬 픽스처 크롤 1건. https://example.com 회수 1건. example.invalid 실패 1건. 모델 키는 unset 이었다. 이 루프 설계를 쓰면서 모델을 다시 호출하지 않았다. 브라우저를 다시 실행하지 않았다.
+
+지금 제품이 할 수 있는 것.
+아는 URL의 HTML 회수. 창업자 대화의 세션 저장. 모델 포트로 모델 id를 구별할 자리. google/gemini-2.5-flash 와 gpt-4o-mini 라는 이름과 저장소 가격표.
+
+지금 제품이 하지 못하는 것.
+Gemini 와 GPT를 서로 다른 호출로 돌리는 연구 경로. 검색으로 자료를 찾는 일. 조사 원본을 세션 밖으로 남기는 일. 페이지 수집 시각을 CrawlPageResult 에 남기는 일. 실패한 URL만 빼고 나머지를 반환하는 일. 모델 합의와 페이지 기록을 구분하는 일.
+
+비용.
+저장소 DEFAULT_PRICING. 오늘 공급자 가격을 조회하지 않았다.
+google/gemini-2.5-flash: 입력 1M 당 0.15 USD, 출력 1M 당 0.6 USD.
+gpt-4o-mini: 입력 1M 당 0.15 USD, 출력 1M 당 0.6 USD.
+한 바퀴를 Gemini 1회, GPT 1회, 종합 1회로 보면 3회다. 각 입력 8,000 토큰, 출력 2,000 토큰이면 입력 0.0036 USD, 출력 0.0036 USD, 합계 약 0.007 USD 다.
+안전 상한 4바퀴는 약 0.029 USD 다. 이 금액은 판단이 충분해지는 횟수가 아니다.
+이후 바퀴는 미해결 불확실성, 새 캡처 발췌, 직전 결론 해시만 보낸다. 전체 HTML과 전체 대화를 매 바퀴 다시 보내면 이 추정을 넘는다.
+이 검토의 모델 비용은 0 USD 다.
+두 모델을 실제로 호출하려면 키와 지출 한도의 별도 승인이 필요하다. 같은 OpenRouter 계정으로 두 모델 id를 부르는 것은 가능하나, 현재 연구 코드는 그렇게 분기하지 않는다. 두 모델은 독립 근거가 아니다. 독립 근거는 페이지 기록과 관찰 결과다.
+
+구현은 이 문서 다음에 승인된 범위만 한다. 이번 커밋의 최소 추가 제안은 루프 타입과, 새 근거 없이 같은 불확실성을 다시 고르면 거절하는 순수 함수와, 캡처가 없으면 investigationStatus 를 not_run 으로 두는 함수다. 모델 호출과 DB는 그 함수에 없다.
+
+CPO 판단이 필요한 것.
+Gemini 와 GPT를 서로 다른 모델 id로 부를 키와 한도. 안전 상한 4바퀴를 금액으로 바꿀지. 조사 이력을 sessionStorage 밖에 둘 위치. 검색 없이 창업자 URL만으로 1차 루프를 시작할지.
