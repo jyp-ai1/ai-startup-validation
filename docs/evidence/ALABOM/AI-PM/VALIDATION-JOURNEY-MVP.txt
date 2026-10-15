@@ -91,7 +91,25 @@ Chrome 으로 입력, 테스트 가설, 이해 확인, 객관식과 주관식, �
 
 소비자 ChatGPT·Gemini 웹을 자동으로 여는 경로는 그 뒤 robots.txt 로 닫았다. 기록: docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt
 
-6. 미검증
+6. 답변 재전달 계약
+
+apps/web/features/business-validation-journey/lib/answer-redelivery.ts
+
+새 답이 핵심 가설을 바꾸면 그 가설의 답만 포함 목록에 넣고, 다른 답 ID 는 생략 목록에 남긴다. 전체 답변 배열은 상태에서 지우지 않는다.
+같은 진술이면 reinvestigation 은 skipped 다. 조사 함수를 호출하지 않는다.
+sent 는 false 다. research_not_run, counter_review_not_run, judgmentChange preserved 다.
+원인 ID 가 없는 판단 문장 변경은 거절하고 이전 문장을 유지한다.
+같은 pageHash 는 캡처 목록에 다시 넣지 않는다.
+provider 이름을 openai 로 두고 model 이 gemini 이거나 liveCall 이 아니면 counter_review_not_run 이다. 이 저장소에는 그 호출을 실행하는 클라이언트를 넣지 않았다.
+
+2026-10-15T02:49:31Z
+명령: pnpm --filter web exec vitest run features/business-validation-journey/lib/__tests__/journey-engine.test.ts features/business-validation-journey/lib/__tests__/answer-redelivery.test.ts --reporter=verbose
+결과: 2 files, 20 passed, exit 0
+모델 네트워크 호출 없음.
+
+로컬 Chrome 에서 첫 입력 노트는 "조사를 열지 않는다", "포함 0건, 생략 0건", "모델에는 보내지 않았다" 였다. 가설 선택과 주관식 이후 노트는 "포함 1건, 생략 0건" 이었고 배지는 조사 미실행, 반대 검토 미실행으로 남았다.
+
+7. 미검증
 
 Phase 3 관련 이력 패킷을 모델에 보내는 경로.
 Phase 4 독립 GPT HTTP. 키를 넣지 않았다. counter_review_not_run 만 있다.

@@ -15,7 +15,8 @@ Current and recent sprint tasks. Update at sprint start and completion.
 |---|------|--------|
 | 1 | 8필드 입력 · 이해 · 객관식/주관식 한 질문 | 구현 |
 | 2 | 조사 미실행 · 반대 검토 미실행 · 판단 유보 | 구현 |
-| 3 | Phase 3~6 모델 재전달 · 독립 GPT · 판단 보고서 | 보류 |
+| 3 | 재전달 계약 · 생략 이력 · 호출 없는 상태 | 테스트 |
+| 4 | 독립 GPT 실호출 · 캡처 · 판단 변경 | 보류 |
 | 4 | 소비자 ChatGPT·Gemini 웹 자동화 | robots 로 닫음 · `docs/evidence/ALABOM/AI-PM/CONSUMER-WEB-ROBOTS-BOUNDARY.txt` |
 
 ---

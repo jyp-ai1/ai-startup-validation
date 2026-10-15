@@ -361,6 +361,12 @@ function UnderstandingView({
         <p className="text-sm" data-testid="counter-review-note">
           {journey.counterReviewNote}
         </p>
+        {journey.redelivery ? (
+          <p className="text-sm" data-testid="redelivery-note">
+            {journey.redelivery.reason} 포함 {journey.redelivery.includedAnswerIds.length}건, 생략{' '}
+            {journey.redelivery.omittedAnswerIds.length}건. 모델에는 보내지 않았다.
+          </p>
+        ) : null}
         <p className="text-sm" data-testid="next-action">
           다음 행동: {journey.nextAction.text}
         </p>

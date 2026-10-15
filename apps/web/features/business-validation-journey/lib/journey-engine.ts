@@ -1,3 +1,4 @@
+import { buildRedelivery } from './answer-redelivery';
 import {
   claimLabel,
   COUNTER_REVIEW_NOTE,
@@ -56,7 +57,7 @@ export function startJourney(
   const normalized = normalizeIntake(intake);
   const missing = missingRequired(normalized);
   if (missing.length > 0) return { ok: false, missing };
-  return { ok: true, state: finish(normalized, source, [], []) };
+  return { ok: true, state: withRedelivery(null, finish(normalized, source, [], [])) };
 }
 
 export function applyAnswer(
@@ -94,7 +95,10 @@ export function applyAnswer(
   const intake = classification.material
     ? intakeAfterAnswer(state.intake, question.uncertaintyId, choice.id)
     : state.intake;
-  const next = finish(intake, state.source, [...state.answers, answer], state.revisions);
+  const next = withRedelivery(
+    state,
+    finish(intake, state.source, [...state.answers, answer], state.revisions),
+  );
 
   return {
     state: next,
@@ -131,7 +135,10 @@ export function correctField(
     material: !duplicate,
   };
   const intake = duplicate ? state.intake : { ...state.intake, [field]: next };
-  const finished = finish(intake, state.source, state.answers, [...state.revisions, revision]);
+  const finished = withRedelivery(
+    state,
+    finish(intake, state.source, state.answers, [...state.revisions, revision]),
+  );
 
   return {
     state: finished,
@@ -184,6 +191,10 @@ export function gradeFromIntakeEvidence(evidence: EvidenceChoice): AnswerGrade |
   }
 }
 
+function withRedelivery(previous: JourneyState | null, next: JourneyState): JourneyState {
+  return { ...next, redelivery: buildRedelivery(previous, next) };
+}
+
 function finish(
   intake: Intake,
   source: JourneySource,
@@ -217,6 +228,7 @@ function finish(
       reason: '전체 답변 이력은 이 상태에 보존한다. 모델에는 관련 이력도 보내지 않았다.',
     },
     captures: [],
+    redelivery: null,
   };
 }
 

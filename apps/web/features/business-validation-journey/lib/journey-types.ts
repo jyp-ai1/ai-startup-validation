@@ -136,6 +136,27 @@ export type JourneyState = {
     reason: string;
   };
   captures: [];
+  redelivery: RedeliveryRecord | null;
+};
+
+export type RedeliveryRecord = {
+  id: string;
+  reinvestigation: 'skipped' | 'required';
+  sent: false;
+  reason: string;
+  summary: string;
+  includedAnswerIds: string[];
+  omittedAnswerIds: string[];
+  hypothesisIds: string[];
+  unknownIds: string[];
+  contradictionIds: string[];
+  evidenceIds: string[];
+  changedSincePrevious: string[];
+  changeConditions: string[];
+  researchStatus: 'research_not_run';
+  counterReviewStatus: 'counter_review_not_run';
+  judgmentChange: 'preserved';
+  preserveReason: string;
 };
 
 export const PAYER_OPTIONS: { id: Exclude<PayerChoice, ''>; label: string }[] = [
