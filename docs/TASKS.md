@@ -4,6 +4,21 @@ Current and recent sprint tasks. Update at sprint start and completion.
 
 ---
 
+## ALABOM 사업성 검증 여정 — Phase 1·2
+
+**CPO Gate:** OPEN · 유료 호출·DB·브라우저 자동화·병합·Production 금지 · Production 잠금 `0b465226`  
+**Branch:** `cursor/external-ai-judgment-design-4b88`  
+**PR:** #198  
+**Evidence:** `docs/evidence/ALABOM/AI-PM/VALIDATION-JOURNEY-MVP.txt`
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | 8필드 입력 · 이해 · 객관식/주관식 한 질문 | 구현 |
+| 2 | 조사 미실행 · 반대 검토 미실행 · 판단 유보 | 구현 |
+| 3 | Phase 3~6 모델 재전달 · 독립 GPT · 판단 보고서 | 보류 |
+
+---
+
 ## spoken_generic_after_promotion Presentation Fix
 
 **CPO Gate:** OPEN · 2-pass 전 Merge/Production 금지 · Production `5cd89dc` 불변  

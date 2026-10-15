@@ -1,0 +1,575 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+import { Button, Input, Textarea } from '@repo/ui';
+
+import { PRODUCT_ANALYTICS_EVENTS, recordFunnelEvent } from '@/lib/analytics/product-analytics';
+
+import { applyAnswer, correctField, startJourney } from '../lib/journey-engine';
+import { loadJourneyDraft, saveJourneyDraft } from '../lib/journey-session';
+import {
+  emptyIntake,
+  EVIDENCE_OPTIONS,
+  PAYER_OPTIONS,
+  PROTOTYPE_NOTE,
+  PROVISIONAL_NOTE,
+  REVENUE_OPTIONS,
+  TEST_HYPOTHESIS_INTAKE,
+  type EvidenceChoice,
+  type Intake,
+  type JourneySource,
+  type JourneyState,
+  type PayerChoice,
+  type RequiredField,
+  type RevenueChoice,
+} from '../lib/journey-types';
+
+const REQUIRED_LABEL: Record<RequiredField, string> = {
+  business: '어떤 사업인가요?',
+  customer: '주요 고객은 누구인가요?',
+  problem: '고객의 어떤 문제를 해결하나요?',
+};
+
+export function ValidationJourneyScreen() {
+  const [intake, setIntake] = useState<Intake>(emptyIntake());
+  const [source, setSource] = useState<JourneySource>('founder_input');
+  const [journey, setJourney] = useState<JourneyState | null>(null);
+  const [view, setView] = useState<'form' | 'understanding'>('form');
+  const [missing, setMissing] = useState<RequiredField[]>([]);
+  const [choiceId, setChoiceId] = useState('');
+  const [freeText, setFreeText] = useState('');
+  const [answerMessage, setAnswerMessage] = useState('');
+  const [customerDraft, setCustomerDraft] = useState('');
+  const [correctionMessage, setCorrectionMessage] = useState('');
+
+  useEffect(() => {
+    const saved = loadJourneyDraft();
+    if (!saved) return;
+    setJourney(saved);
+    setIntake(saved.intake);
+    setSource(saved.source);
+    setCustomerDraft(saved.intake.customer);
+    setView('understanding');
+  }, []);
+
+  function updateIntake<K extends keyof Intake>(key: K, value: Intake[K]) {
+    setIntake((current) => ({ ...current, [key]: value }));
+  }
+
+  function fillHypothesis() {
+    setIntake(TEST_HYPOTHESIS_INTAKE);
+    setSource('test_hypothesis');
+    setMissing([]);
+  }
+
+  function onStart(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const result = startJourney(intake, source);
+    if (!result.ok) {
+      setMissing(result.missing);
+      return;
+    }
+    setMissing([]);
+    setJourney(result.state);
+    setChoiceId('');
+    setFreeText('');
+    setAnswerMessage('');
+    setCorrectionMessage('');
+    setCustomerDraft(result.state.intake.customer);
+    setView('understanding');
+    saveJourneyDraft(result.state);
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.validationJourneyStarted, {
+      screen: '/business-validation',
+      status: 'research_not_run',
+    });
+  }
+
+  function onAnswer(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!journey) return;
+    const result = applyAnswer(journey, {
+      choiceId,
+      freeText,
+      now: new Date().toISOString(),
+    });
+    if (!result.applied) {
+      setAnswerMessage(result.reason);
+      return;
+    }
+    setJourney(result.state);
+    setAnswerMessage(result.reason);
+    setChoiceId('');
+    setFreeText('');
+    saveJourneyDraft(result.state);
+    const latest = result.state.answers[result.state.answers.length - 1];
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.validationJourneyAnswered, {
+      screen: '/business-validation',
+      status: 'research_not_run',
+      question_id: latest?.uncertaintyId,
+      category: latest?.grade,
+    });
+  }
+
+  function onCorrect(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!journey) return;
+    const result = correctField(journey, 'customer', customerDraft, new Date().toISOString());
+    if (!result.applied) {
+      setCorrectionMessage(result.reason);
+      return;
+    }
+    setJourney(result.state);
+    setCustomerDraft(result.state.intake.customer);
+    setCorrectionMessage(result.reason);
+    saveJourneyDraft(result.state);
+    void recordFunnelEvent(PRODUCT_ANALYTICS_EVENTS.validationJourneyAnswered, {
+      screen: '/business-validation',
+      status: 'research_not_run',
+      question_id: 'h-customer',
+      category: result.state.revisions.at(-1)?.delta,
+    });
+  }
+
+  if (view === 'understanding' && journey) {
+    return (
+      <UnderstandingView
+        journey={journey}
+        choiceId={choiceId}
+        freeText={freeText}
+        answerMessage={answerMessage}
+        customerDraft={customerDraft}
+        correctionMessage={correctionMessage}
+        onChoice={setChoiceId}
+        onFreeText={setFreeText}
+        onAnswer={onAnswer}
+        onCustomerDraft={setCustomerDraft}
+        onCorrect={onCorrect}
+        onBack={() => setView('form')}
+      />
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-2xl px-6 py-10">
+      <p className="text-sm text-muted-foreground">첫 단계 · 사업의 핵심 정보</p>
+      <h1 className="mt-2 text-3xl font-semibold tracking-tight">내 사업 이해하기</h1>
+      <p className="mt-4 text-sm leading-relaxed text-muted-foreground" data-testid="prototype-note">
+        {PROTOTYPE_NOTE}
+      </p>
+
+      <form className="mt-8 space-y-6" onSubmit={onStart} data-testid="journey-intake">
+        <TextField
+          id="field-business"
+          label="1. 어떤 사업인가요?"
+          required
+          value={intake.business}
+          invalid={missing.includes('business')}
+          onChange={(value) => updateIntake('business', value)}
+        />
+        <TextField
+          id="field-customer"
+          label="2. 주요 고객은 누구인가요?"
+          required
+          value={intake.customer}
+          invalid={missing.includes('customer')}
+          onChange={(value) => updateIntake('customer', value)}
+        />
+        <TextField
+          id="field-problem"
+          label="3. 고객의 어떤 문제를 해결하나요?"
+          required
+          multiline
+          value={intake.problem}
+          invalid={missing.includes('problem')}
+          onChange={(value) => updateIntake('problem', value)}
+        />
+        <TextField
+          id="field-solution"
+          label="4. 어떤 해결책을 제공하나요?"
+          value={intake.solution}
+          onChange={(value) => updateIntake('solution', value)}
+        />
+
+        <RadioGroup
+          name="payer"
+          legend="5. 누가 비용을 지불하나요?"
+          value={intake.payer}
+          options={PAYER_OPTIONS}
+          onChange={(value) => updateIntake('payer', value as PayerChoice)}
+        />
+        <RadioGroup
+          name="revenue"
+          legend="6. 수익 방식은 무엇인가요?"
+          value={intake.revenue}
+          options={REVENUE_OPTIONS}
+          onChange={(value) => updateIntake('revenue', value as RevenueChoice)}
+        />
+        <RadioGroup
+          name="evidence"
+          legend="7. 현재 확보한 사업 근거는 무엇인가요?"
+          value={intake.evidence}
+          options={EVIDENCE_OPTIONS}
+          onChange={(value) => updateIntake('evidence', value as EvidenceChoice)}
+        />
+
+        <div className="space-y-2">
+          <label htmlFor="field-url" className="text-sm font-medium">
+            8. 참고할 웹페이지 URL (선택)
+          </label>
+          <Input
+            id="field-url"
+            data-testid="field-url"
+            value={intake.url}
+            placeholder="https://"
+            onChange={(event) => updateIntake('url', event.target.value)}
+          />
+          <p className="text-sm text-muted-foreground">
+            URL이 없어도 시작할 수 있습니다. 페이지를 열지 않으면 조사 미실행으로 표시합니다.
+          </p>
+        </div>
+
+        {source === 'test_hypothesis' ? (
+          <p
+            className="rounded-md border border-border px-3 py-2 text-sm"
+            data-testid="hypothesis-badge"
+          >
+            테스트 가설 · 검증된 사업 사실이 아니다
+          </p>
+        ) : null}
+
+        {missing.length > 0 ? (
+          <p className="text-sm text-destructive" data-testid="intake-error" role="alert">
+            {missing.map((field) => REQUIRED_LABEL[field]).join(' ')} 비어 있으면 이해를 시작하지 않습니다.
+          </p>
+        ) : null}
+
+        <div className="flex flex-wrap gap-3">
+          <Button type="submit" data-testid="submit-intake">
+            이 내용으로 이해 확인
+          </Button>
+          <Button type="button" variant="outline" data-testid="fill-hypothesis" onClick={fillHypothesis}>
+            테스트 가설 채우기
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function UnderstandingView({
+  journey,
+  choiceId,
+  freeText,
+  answerMessage,
+  customerDraft,
+  correctionMessage,
+  onChoice,
+  onFreeText,
+  onAnswer,
+  onCustomerDraft,
+  onCorrect,
+  onBack,
+}: {
+  journey: JourneyState;
+  choiceId: string;
+  freeText: string;
+  answerMessage: string;
+  customerDraft: string;
+  correctionMessage: string;
+  onChoice: (value: string) => void;
+  onFreeText: (value: string) => void;
+  onAnswer: (event: React.FormEvent<HTMLFormElement>) => void;
+  onCustomerDraft: (value: string) => void;
+  onCorrect: (event: React.FormEvent<HTMLFormElement>) => void;
+  onBack: () => void;
+}) {
+  const question = journey.nextQuestion;
+
+  return (
+    <div className="mx-auto max-w-2xl space-y-8 px-6 py-10" data-testid="understanding">
+      <header className="space-y-3">
+        <p className="text-sm text-muted-foreground">현재 AI가 이해한 사업</p>
+        <h1 className="text-3xl font-semibold tracking-tight">잠정 이해</h1>
+        <div className="flex flex-wrap gap-2 text-sm">
+          <StatusBadge testId="badge-research">조사 미실행</StatusBadge>
+          <StatusBadge testId="badge-counter-review">반대 검토 미실행</StatusBadge>
+          <StatusBadge testId="badge-judgment">판단 유보</StatusBadge>
+        </div>
+        {journey.source === 'test_hypothesis' ? (
+          <p className="text-sm" data-testid="hypothesis-badge">
+            테스트 가설 · 검증된 사업 사실이 아니다
+          </p>
+        ) : null}
+        <p className="text-sm text-muted-foreground" data-testid="session-note">
+          {journey.sessionNote}
+        </p>
+      </header>
+
+      <section className="space-y-3" data-testid="known-list">
+        <h2 className="text-lg font-medium">알고 있는 것</h2>
+        <ul className="space-y-2 text-sm leading-relaxed">
+          {journey.understanding.known.map((item) => (
+            <li key={item.id}>{item.text}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="space-y-3" data-testid="inferred-list">
+        <h2 className="text-lg font-medium">추정한 것</h2>
+        {journey.understanding.inferred.map((item) => (
+          <p key={item.id} className="text-sm leading-relaxed">
+            {item.text}
+          </p>
+        ))}
+        <p className="text-sm text-muted-foreground" data-testid="provisional-note">
+          {PROVISIONAL_NOTE}
+        </p>
+      </section>
+
+      <section className="space-y-3" data-testid="contradiction-list">
+        <h2 className="text-lg font-medium">서로 모순되는 것</h2>
+        {journey.understanding.contradictions.length === 0 ? (
+          <p className="text-sm text-muted-foreground">지금 입력 안에서 충돌은 없다.</p>
+        ) : (
+          <ul className="space-y-2 text-sm leading-relaxed">
+            {journey.understanding.contradictions.map((item) => (
+              <li key={item.id}>{item.text}</li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="space-y-3" data-testid="unknown-list">
+        <h2 className="text-lg font-medium">아직 확인되지 않은 부분</h2>
+        <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed">
+          {journey.understanding.unknown.map((item) => (
+            <li key={item.id}>{item.text}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="space-y-3 rounded-xl border border-border p-4" data-testid="judgment-panel">
+        <h2 className="text-lg font-medium">사업성 판단</h2>
+        <p className="text-sm leading-relaxed" data-testid="judgment-text">
+          {journey.judgmentText}
+        </p>
+        <p className="text-sm text-muted-foreground">{journey.judgmentHoldReason}</p>
+        <p className="text-sm" data-testid="research-note">
+          {journey.researchNote}
+        </p>
+        <p className="text-sm" data-testid="counter-review-note">
+          {journey.counterReviewNote}
+        </p>
+        <p className="text-sm" data-testid="next-action">
+          다음 행동: {journey.nextAction.text}
+        </p>
+        <p className="text-sm text-muted-foreground">성공 기준: {journey.nextAction.successCriterion}</p>
+        <p className="text-sm text-muted-foreground">실패 기준: {journey.nextAction.failureCriterion}</p>
+      </section>
+
+      {question ? (
+        <form className="space-y-4" onSubmit={onAnswer} data-testid="question-form">
+          <h2 className="text-lg font-medium">다음으로 가장 중요한 질문</h2>
+          <p className="text-base leading-relaxed" data-testid="question-prompt">
+            {question.prompt}
+          </p>
+          {question.whyDifferent ? (
+            <p className="text-sm text-muted-foreground" data-testid="question-why">
+              {question.whyDifferent}
+            </p>
+          ) : null}
+          <fieldset className="space-y-2">
+            <legend className="sr-only">{question.prompt}</legend>
+            {question.choices.map((choice) => (
+              <label key={choice.id} className="flex items-start gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="journey-choice"
+                  className="mt-1"
+                  value={choice.id}
+                  checked={choiceId === choice.id}
+                  data-testid={`choice-${choice.id}`}
+                  onChange={() => onChoice(choice.id)}
+                  required
+                />
+                <span>{choice.label}</span>
+              </label>
+            ))}
+          </fieldset>
+          <div className="space-y-2">
+            <label htmlFor="free-text" className="text-sm font-medium">
+              구체적인 내용이나 근거 (선택)
+            </label>
+            <Textarea
+              id="free-text"
+              data-testid="free-text"
+              value={freeText}
+              onChange={(event) => onFreeText(event.target.value)}
+            />
+          </div>
+          {answerMessage ? (
+            <p className="text-sm" data-testid="answer-note" role="status">
+              {answerMessage}
+            </p>
+          ) : null}
+          <Button type="submit" data-testid="submit-answer">
+            이 답변으로 이해 갱신
+          </Button>
+        </form>
+      ) : (
+        <p className="text-sm" data-testid="question-hold">
+          더 물을 질문이 없다. 판단은 유보로 남아 있다.
+        </p>
+      )}
+
+      <form className="space-y-3 border-t border-border pt-6" onSubmit={onCorrect}>
+        <h2 className="text-lg font-medium">목표 고객 진술 수정</h2>
+        <label htmlFor="correct-customer" className="text-sm font-medium">
+          고객을 다르게 말하면 이전 문장도 남깁니다.
+        </label>
+        <Input
+          id="correct-customer"
+          data-testid="correct-customer"
+          value={customerDraft}
+          onChange={(event) => onCustomerDraft(event.target.value)}
+        />
+        {correctionMessage ? (
+          <p className="text-sm" data-testid="correction-note" role="status">
+            {correctionMessage}
+          </p>
+        ) : null}
+        <Button type="submit" variant="outline" data-testid="submit-correction">
+          이 진술을 수정
+        </Button>
+      </form>
+
+      <details className="text-sm" data-testid="answer-history">
+        <summary>답변 원문</summary>
+        {journey.answers.length === 0 && journey.revisions.length === 0 ? (
+          <p className="mt-2 text-muted-foreground">아직 기록된 답이 없다.</p>
+        ) : (
+          <ul className="mt-3 space-y-3">
+            {journey.answers.map((answer) => (
+              <li key={answer.id}>
+                <p>{answer.questionText}</p>
+                <p>
+                  {answer.choiceLabel}
+                  {answer.freeText ? ` / ${answer.freeText}` : ''}
+                </p>
+                <p data-testid={`grade-${answer.id}`}>{answer.claimLabel}</p>
+              </li>
+            ))}
+            {journey.revisions.map((revision) => (
+              <li key={revision.id}>
+                <p>
+                  이전: {revision.previous || '없음'} / 이후: {revision.next}
+                </p>
+                <p>{revision.material ? '가설 변경' : '같은 진술'}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="mt-3 text-muted-foreground">모델 원문 없음. 호출하지 않았다.</p>
+      </details>
+
+      {journey.repeatBlockedReason ? (
+        <p className="text-sm" data-testid="repeat-blocked">
+          {journey.repeatBlockedReason}
+        </p>
+      ) : null}
+
+      <Button type="button" variant="ghost" data-testid="back-to-intake" onClick={onBack}>
+        입력으로 돌아가기
+      </Button>
+    </div>
+  );
+}
+
+function StatusBadge({ children, testId }: { children: string; testId: string }) {
+  return (
+    <span className="rounded-full border border-border px-3 py-1" data-testid={testId}>
+      {children}
+    </span>
+  );
+}
+
+function TextField({
+  id,
+  label,
+  value,
+  onChange,
+  required,
+  invalid,
+  multiline,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  required?: boolean;
+  invalid?: boolean;
+  multiline?: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <label htmlFor={id} className="text-sm font-medium">
+        {label}
+        {required ? <span className="text-destructive"> *</span> : null}
+      </label>
+      {multiline ? (
+        <Textarea
+          id={id}
+          data-testid={id}
+          value={value}
+          required={required}
+          aria-invalid={invalid || undefined}
+          onChange={(event) => onChange(event.target.value)}
+        />
+      ) : (
+        <Input
+          id={id}
+          data-testid={id}
+          value={value}
+          required={required}
+          aria-invalid={invalid || undefined}
+          onChange={(event) => onChange(event.target.value)}
+        />
+      )}
+    </div>
+  );
+}
+
+function RadioGroup({
+  name,
+  legend,
+  value,
+  options,
+  onChange,
+}: {
+  name: string;
+  legend: string;
+  value: string;
+  options: { id: string; label: string }[];
+  onChange: (value: string) => void;
+}) {
+  return (
+    <fieldset className="space-y-2">
+      <legend className="text-sm font-medium">{legend}</legend>
+      {options.map((option) => (
+        <label key={option.id} className="flex items-start gap-2 text-sm">
+          <input
+            type="radio"
+            name={name}
+            className="mt-1"
+            value={option.id}
+            checked={value === option.id}
+            data-testid={`${name}-${option.id}`}
+            onChange={() => onChange(option.id)}
+          />
+          <span>{option.label}</span>
+        </label>
+      ))}
+    </fieldset>
+  );
+}
