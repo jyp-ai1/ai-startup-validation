@@ -8,6 +8,7 @@ Production 잠금 SHA: 0b465226
 
 엔진 함수는 apps/web/features/strategic-intelligence/lib/si-judgment-contract.ts 의 현재 동작이다. 화면 연결은 아직 없다. 브라우저 문장은 아직 읽지 못했다.
 계획 상태와 defineCriterion 의 재평가 순서는 아래 문장과 docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-UI-CONTRACT-CONSISTENCY.txt 가 같다. 그 파일이 이 두 항목의 대조 기록이다.
+계획 상태 규칙은 동결이다. A 와 E 를 다른 규칙으로 나누지 않는다. 수용 조건과 검증 공백은 docs/evidence/ALABOM/AI-PM/PR197-CPO-SI-UI-INTEGRATION-READINESS.txt 다. 그 파일은 구현 승인이 아니다.
 
 공통 실패 규칙. 입력이 아래 이벤트로 안전하게 분류되지 않으면 엔진을 호출하지 않는다. reassess 를 호출하지 않는다. 직전 JudgmentLedger 와 직전 DecisionRecord.prompt 를 유지한다. 다른 이벤트로 추측하지 않는다. 창업자 문장을 FACT 나 VALIDATED 로 올리지 않는다. binding() 은 VALIDATED 를 거절한다.
 
