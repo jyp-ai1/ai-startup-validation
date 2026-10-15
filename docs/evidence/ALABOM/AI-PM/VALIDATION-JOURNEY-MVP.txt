@@ -269,6 +269,7 @@ pnpm --filter web build exit 0. 기존 경고 2건은 이 여정 파일이 아�
 12. 가설 판단의 유지·수정·유보
 
 시각: 2026-10-15T03:32:54Z 여정 테스트 6 files, 47 passed, exit 0.
+여정 폴더 eslint 통과. pnpm --filter web build exit 0. 기존 경고 2건은 이 여정 파일이 아니다.
 로컬 화면에서 세 전이를 같은 세션에서 확인했다. fetch 없음.
 
 유지
